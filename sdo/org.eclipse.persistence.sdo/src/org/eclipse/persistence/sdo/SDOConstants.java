@@ -12,21 +12,13 @@
  ******************************************************************************/ 
 package org.eclipse.persistence.sdo;
 
-import java.util.ArrayList;
 import javax.xml.namespace.QName;
-import commonj.sdo.ChangeSummary;
-import commonj.sdo.DataObject;
-import commonj.sdo.Type;
 import commonj.sdo.helper.HelperContext;
-import commonj.sdo.impl.HelperProvider;
+import commonj.sdo.impl.*;
 import org.eclipse.persistence.internal.helper.ClassConstants;
 import org.eclipse.persistence.oxm.XMLConstants;
-import org.eclipse.persistence.oxm.XMLDescriptor;
-import org.eclipse.persistence.oxm.XMLField;
-import org.eclipse.persistence.oxm.mappings.UnmarshalKeepAsElementPolicy;
-import org.eclipse.persistence.oxm.mappings.XMLAnyCollectionMapping;
-import org.eclipse.persistence.oxm.mappings.XMLCompositeDirectCollectionMapping;
-import org.eclipse.persistence.oxm.mappings.XMLDirectMapping;
+import org.eclipse.persistence.sdo.types.*;
+import org.eclipse.persistence.sdo.helper.SDOTypeHelper;
 
 /**
  * <p><b>Purpose</b>: Maintain constants in one class
@@ -98,41 +90,17 @@ public class SDOConstants {
     public static final String XMLHELPER_LOAD_OPTIONS ="LoadOptions";
     public static final String TYPE_LOAD_OPTION = "type";
     
-    /**Type objects for types in the commonj.sdo namespace */
-
-    // make the HelperContext global
-    public static final HelperContext globalHelperContext = HelperProvider.getDefaultContext();
-    public static final SDOType SDO_OPEN_SEQUENCED = new SDOType(ORACLE_SDO_URL, "OpenSequencedType", globalHelperContext);
-    public static final SDOType SDO_BOOLEAN = new SDOType(SDO_URL, BOOLEAN, globalHelperContext);
-    public static final SDOType SDO_BYTE = new SDOType(SDO_URL, BYTE, globalHelperContext);
-    public static final SDOType SDO_BYTES = new SDOType(SDO_URL, BYTES, globalHelperContext);
-    public static final SDOType SDO_CHANGESUMMARY = new SDOType(SDO_URL, CHANGESUMMARY, globalHelperContext);
-    public static final SDOType SDO_CHARACTER = new SDOType(SDO_URL, CHARACTER, globalHelperContext);
-    public static final SDOType SDO_DATE = new SDOType(SDO_URL, DATE, globalHelperContext);
-    public static final SDOType SDO_DATETIME = new SDOType(SDO_URL, DATETIME, globalHelperContext);
-    public static final SDOType SDO_DATAOBJECT = new SDOType(SDO_URL, DATAOBJECT, globalHelperContext);
-    public static final SDOType SDO_DAY = new SDOType(SDO_URL, DAY, globalHelperContext);
-    public static final SDOType SDO_DECIMAL = new SDOType(SDO_URL, DECIMAL, globalHelperContext);
-    public static final SDOType SDO_DOUBLE = new SDOType(SDO_URL, DOUBLE, globalHelperContext);
-    public static final SDOType SDO_DURATION = new SDOType(SDO_URL, DURATION, globalHelperContext);
-    public static final SDOType SDO_FLOAT = new SDOType(SDO_URL, FLOAT, globalHelperContext);
-    public static final SDOType SDO_INT = new SDOType(SDO_URL, INT, globalHelperContext);
-    public static final SDOType SDO_INTEGER = new SDOType(SDO_URL, INTEGER, globalHelperContext);
-    public static final SDOType SDO_LONG = new SDOType(SDO_URL, LONG, globalHelperContext);
-    public static final SDOType SDO_MONTH = new SDOType(SDO_URL, MONTH, globalHelperContext);
-    public static final SDOType SDO_MONTHDAY = new SDOType(SDO_URL, MONTHDAY, globalHelperContext);
-    public static final SDOType SDO_OBJECT = new SDOType(SDO_URL, OBJECT, globalHelperContext);
-    public static final SDOType SDO_PROPERTY = new SDOType(SDO_URL, PROPERTY, globalHelperContext);
-    public static final SDOType SDO_SHORT = new SDOType(SDO_URL, SHORT, globalHelperContext);
-    public static final SDOType SDO_STRING = new SDOType(SDO_URL, STRING, globalHelperContext);
-    public static final SDOType SDO_STRINGS = new SDOType(SDO_URL, STRINGS, globalHelperContext);
-    public static final SDOType SDO_TIME = new SDOType(SDO_URL, TIME, globalHelperContext);
-    public static final SDOType SDO_TYPE = new SDOType(SDO_URL, TYPE, globalHelperContext);
-    public static final SDOType SDO_YEAR = new SDOType(SDO_URL, YEAR, globalHelperContext);
-    public static final SDOType SDO_YEARMONTH = new SDOType(SDO_URL, YEARMONTH, globalHelperContext);
-    public static final SDOType SDO_YEARMONTHDAY = new SDOType(SDO_URL, YEARMONTHDAY, globalHelperContext);
-    public static final SDOType SDO_URI = new SDOType(SDO_URL, URI, globalHelperContext);
-    public static final SDOType SDO_XMLHELPER_LOAD_OPTIONS = new SDOType(ORACLE_SDO_URL, XMLHELPER_LOAD_OPTIONS, globalHelperContext);
+    public static HelperContext globalHelperContext;
+    private static SDOTypeHelper sdoTypeHelper;
+    static {
+        try {
+            globalHelperContext = HelperProvider.getDefaultContext();
+            sdoTypeHelper = (SDOTypeHelper) globalHelperContext.getTypeHelper();
+        } catch(Throwable throwable) {
+            globalHelperContext = null;
+            sdoTypeHelper = null;
+        }
+    }
 
     /** Numeric primitive default instances see p 45 of Java Spec. 4th ed */
     public static final Boolean BOOLEAN_DEFAULT = Boolean.FALSE;
@@ -144,15 +112,41 @@ public class SDOConstants {
     public static final Long LONG_DEFAULT = new Long(0L);
     public static final Short SHORT_DEFAULT = new Short((short)0);
 
+    public static final SDOType SDO_BOOLEAN = new SDODataType(SDO_URL, BOOLEAN, ClassConstants.PBOOLEAN, sdoTypeHelper, BOOLEAN_DEFAULT);
+    public static final SDOType SDO_BYTE = new SDODataType(SDO_URL, BYTE, ClassConstants.PBYTE, sdoTypeHelper, BYTE_DEFAULT);
+    public static final SDOType SDO_BYTES = new SDODataType(SDO_URL, BYTES, ClassConstants.APBYTE, sdoTypeHelper);
+    public static final SDOType SDO_CHARACTER = new SDODataType(SDO_URL, CHARACTER, ClassConstants.PCHAR, sdoTypeHelper, CHARACTER_DEFAULT);
+    public static final SDOType SDO_DATE = new SDODataType(SDO_URL, DATE, ClassConstants.UTILDATE, sdoTypeHelper);
+    public static final SDOType SDO_DATETIME = new SDODataType(SDO_URL, DATETIME, ClassConstants.STRING, sdoTypeHelper);
+    public static final SDOType SDO_DAY = new SDODataType(SDO_URL, DAY, ClassConstants.STRING, sdoTypeHelper);
+    public static final SDOType SDO_DECIMAL = new SDODataType(SDO_URL, DECIMAL, ClassConstants.BIGDECIMAL, sdoTypeHelper);
+    public static final SDOType SDO_DOUBLE = new SDODataType(SDO_URL, DOUBLE, ClassConstants.PDOUBLE, sdoTypeHelper, DOUBLE_DEFAULT);
+    public static final SDOType SDO_DURATION = new SDODataType(SDO_URL, DURATION, ClassConstants.STRING, sdoTypeHelper);
+    public static final SDOType SDO_FLOAT = new SDODataType(SDO_URL, FLOAT, ClassConstants.PFLOAT, sdoTypeHelper, FLOAT_DEFAULT);
+    public static final SDOType SDO_INT = new SDODataType(SDO_URL, INT, ClassConstants.PINT, sdoTypeHelper, INTEGER_DEFAULT);
+    public static final SDOType SDO_INTEGER = new SDODataType(SDO_URL, INTEGER, ClassConstants.BIGINTEGER, sdoTypeHelper);
+    public static final SDOType SDO_LONG = new SDODataType(SDO_URL, LONG, ClassConstants.PLONG, sdoTypeHelper, LONG_DEFAULT);
+    public static final SDOType SDO_MONTH = new SDODataType(SDO_URL, MONTH, ClassConstants.STRING, sdoTypeHelper);
+    public static final SDOType SDO_MONTHDAY = new SDODataType(SDO_URL, MONTHDAY, ClassConstants.STRING, sdoTypeHelper);
+    public static final SDOType SDO_OBJECT = new SDODataType(SDO_URL, OBJECT, ClassConstants.OBJECT, sdoTypeHelper);
+    public static final SDOType SDO_SHORT = new SDODataType(SDO_URL, SHORT, ClassConstants.PSHORT, sdoTypeHelper, SHORT_DEFAULT);
+    public static final SDOType SDO_STRING = new SDODataType(SDO_URL, STRING, ClassConstants.STRING, sdoTypeHelper);
+    public static final SDOType SDO_STRINGS = new SDODataType(SDO_URL, STRINGS, ClassConstants.List_Class, sdoTypeHelper);
+    public static final SDOType SDO_TIME = new SDODataType(SDO_URL, TIME, ClassConstants.STRING, sdoTypeHelper);
+    public static final SDOType SDO_YEAR = new SDODataType(SDO_URL, YEAR, ClassConstants.STRING, sdoTypeHelper);
+    public static final SDOType SDO_YEARMONTH = new SDODataType(SDO_URL, YEARMONTH, ClassConstants.STRING, sdoTypeHelper);
+    public static final SDOType SDO_YEARMONTHDAY = new SDODataType(SDO_URL, YEARMONTHDAY, ClassConstants.STRING, sdoTypeHelper);
+    public static final SDOType SDO_URI = new SDODataType(SDO_URL, URI, ClassConstants.STRING, sdoTypeHelper);
+
     /**Type objects for types in the commonj.sdo/java namespace */
-    public static final SDOType SDO_BOOLEANOBJECT = new SDOType(SDOJAVA_URL, BOOLEANOBJECT, globalHelperContext);
-    public static final SDOType SDO_BYTEOBJECT = new SDOType(SDOJAVA_URL, BYTEOBJECT, globalHelperContext);
-    public static final SDOType SDO_CHARACTEROBJECT = new SDOType(SDOJAVA_URL, CHARACTEROBJECT, globalHelperContext);
-    public static final SDOType SDO_DOUBLEOBJECT = new SDOType(SDOJAVA_URL, DOUBLEOBJECT, globalHelperContext);
-    public static final SDOType SDO_FLOATOBJECT = new SDOType(SDOJAVA_URL, FLOATOBJECT, globalHelperContext);
-    public static final SDOType SDO_INTOBJECT = new SDOType(SDOJAVA_URL, INTOBJECT, globalHelperContext);
-    public static final SDOType SDO_LONGOBJECT = new SDOType(SDOJAVA_URL, LONGOBJECT, globalHelperContext);
-    public static final SDOType SDO_SHORTOBJECT = new SDOType(SDOJAVA_URL, SHORTOBJECT, globalHelperContext);
+    public static final SDOType SDO_BOOLEANOBJECT = new SDODataType(SDOJAVA_URL, BOOLEANOBJECT, ClassConstants.BOOLEAN, sdoTypeHelper);
+    public static final SDOType SDO_BYTEOBJECT = new SDODataType(SDOJAVA_URL, BYTEOBJECT, ClassConstants.BYTE, sdoTypeHelper);
+    public static final SDOType SDO_CHARACTEROBJECT = new SDODataType(SDOJAVA_URL, CHARACTEROBJECT, ClassConstants.CHAR, sdoTypeHelper);
+    public static final SDOType SDO_DOUBLEOBJECT = new SDODataType(SDOJAVA_URL, DOUBLEOBJECT, ClassConstants.DOUBLE, sdoTypeHelper);
+    public static final SDOType SDO_FLOATOBJECT = new SDODataType(SDOJAVA_URL, FLOATOBJECT, ClassConstants.FLOAT, sdoTypeHelper);
+    public static final SDOType SDO_INTOBJECT = new SDODataType(SDOJAVA_URL, INTOBJECT, ClassConstants.INTEGER, sdoTypeHelper);
+    public static final SDOType SDO_LONGOBJECT = new SDODataType(SDOJAVA_URL, LONGOBJECT, ClassConstants.LONG, sdoTypeHelper);
+    public static final SDOType SDO_SHORTOBJECT = new SDODataType(SDOJAVA_URL, SHORTOBJECT, ClassConstants.SHORT, sdoTypeHelper);
 
     /** XML String names and QName constants missing from org.eclipse.persistence.oxm.XMLConstants  */
     public static final String ANY_TYPE = "anyType";
@@ -235,8 +229,8 @@ public class SDOConstants {
     public static final QName SDOXML_PROPERTYTYPE_QNAME = new QName(SDOXML_URL, SDOXML_PROPERTYTYPE);
     public static final QName SDOXML_OPPOSITEPROPERTY_QNAME = new QName(SDOXML_URL, SDOXML_OPPOSITEPROPERTY);    
     public static final QName XML_ELEMENT_QNAME = new QName(SDOXML_URL, SDOConstants.XMLELEMENT_PROPERTY_NAME);
-    public static final SDOProperty XMLELEMENT_PROPERTY = new SDOProperty(globalHelperContext, XMLELEMENT_PROPERTY_NAME);
-    
+    public static final SDOProperty XMLELEMENT_PROPERTY = new SDOProperty(globalHelperContext, XMLELEMENT_PROPERTY_NAME, SDO_BOOLEAN);
+
     /** Strings and QNames for annotations defined in the commonj.sdo/XML namespace*/
     private static final String SDOJAVA_PACKAGE = "package";
     public static final String SDOJAVA_INSTANCECLASS = "instanceClass";
@@ -247,27 +241,24 @@ public class SDOConstants {
     public static final QName SDOJAVA_EXTENDEDINSTANCECLASS_QNAME = new QName(SDOJAVA_URL, SDOJAVA_EXTENDEDINSTANCECLASS);
     public static final QName SDOJAVA_NESTEDINTERFACES_QNAME = new QName(SDOJAVA_URL, SDOJAVA_NESTEDINTERFACES);
     public static final String MIME_TYPE_PROPERTY_NAME = "mimeType";
-    public static final SDOProperty MIME_TYPE_PROPERTY = new SDOProperty(globalHelperContext, MIME_TYPE_PROPERTY_NAME);
-    public static final SDOProperty MIME_TYPE_PROPERTY_PROPERTY = new SDOProperty(globalHelperContext, MIMETYPE_NAME);
+    public static final SDOProperty MIME_TYPE_PROPERTY = new SDOProperty(globalHelperContext, MIME_TYPE_PROPERTY_NAME, SDOConstants.SDO_STRING);
+    public static final SDOProperty MIME_TYPE_PROPERTY_PROPERTY = new SDOProperty(globalHelperContext, MIMETYPE_NAME, SDOConstants.SDO_STRING);
     public static final String XML_SCHEMA_TYPE_NAME = "xmlSchemaType";
-    public static final SDOProperty XML_SCHEMA_TYPE_PROPERTY = new SDOProperty(globalHelperContext, XML_SCHEMA_TYPE_NAME);
-    public static final SDOProperty DOCUMENTATION_PROPERTY = new SDOProperty(globalHelperContext, DOCUMENTATION);
+    public static final SDOProperty DOCUMENTATION_PROPERTY = new SDOProperty(globalHelperContext, DOCUMENTATION, SDOConstants.SDO_STRING);
     public static final String JAVACLASS_PROPERTY_NAME = "javaClass";
-   
-    public static final SDOProperty JAVA_CLASS_PROPERTY = new SDOProperty(globalHelperContext, JAVACLASS_PROPERTY_NAME);    
-    public static final SDOProperty XMLDATATYPE_PROPERTY = new SDOProperty(globalHelperContext, SDOXML_DATATYPE);
-    
-    
+
+    public static final SDOProperty JAVA_CLASS_PROPERTY = new SDOProperty(globalHelperContext, JAVACLASS_PROPERTY_NAME, SDOConstants.SDO_STRING);    
+
     /** open content property to be set when defining a Type via a DataObject for reference relationships */
-    public static final SDOProperty ID_PROPERTY = new SDOProperty(globalHelperContext, ID_PROPERTY_NAME);
+    public static final SDOProperty ID_PROPERTY = new SDOProperty(globalHelperContext, ID_PROPERTY_NAME, SDOConstants.SDO_STRING);
 
     /** generate built-in open content property QNames */
-    public static final QName MIME_TYPE_QNAME = new QName(ORACLE_SDO_URL, SDOConstants.MIME_TYPE_PROPERTY.getName());
-    public static final QName MIME_TYPE_PROPERTY_QNAME = new QName(ORACLE_SDO_URL, SDOConstants.MIME_TYPE_PROPERTY_PROPERTY.getName());
-    public static final QName SCHEMA_TYPE_QNAME = new QName(ORACLE_SDO_URL, SDOConstants.XML_SCHEMA_TYPE_PROPERTY.getName());
-    public static final QName JAVA_CLASS_QNAME = new QName(ORACLE_SDO_URL, SDOConstants.JAVA_CLASS_PROPERTY.getName());   
-    public static final QName XML_DATATYPE_QNAME = new QName(ORACLE_SDO_URL, SDOConstants.XMLDATATYPE_PROPERTY.getName());
-    public static final QName XML_ID_PROPERTY_QNAME = new QName(ORACLE_SDO_URL, SDOConstants.ID_PROPERTY.getName());
+    public static final QName MIME_TYPE_QNAME = new QName(ORACLE_SDO_URL, MIME_TYPE_PROPERTY.getName());
+    public static final QName MIME_TYPE_PROPERTY_QNAME = new QName(ORACLE_SDO_URL, MIME_TYPE_PROPERTY_PROPERTY.getName());
+    public static final QName SCHEMA_TYPE_QNAME = new QName(ORACLE_SDO_URL, XML_SCHEMA_TYPE_NAME);
+    public static final QName JAVA_CLASS_QNAME = new QName(ORACLE_SDO_URL, JAVA_CLASS_PROPERTY.getName());   
+    public static final QName XML_DATATYPE_QNAME = new QName(ORACLE_SDO_URL, SDOXML_DATATYPE);
+    public static final QName XML_ID_PROPERTY_QNAME = new QName(ORACLE_SDO_URL, ID_PROPERTY.getName());
     public static final QName DOCUMENTATION_PROPERTY_QNAME = new QName(ORACLE_SDO_URL, DOCUMENTATION);
 
     /** Strings used when generating javadocs in generated Java source files */
@@ -359,312 +350,9 @@ public class SDOConstants {
     /** Search string concatenated from default package for type generation and the package separator dot */
     public static final String JAVA_TYPE_GENERATION_DEFAULT_PACKAGE_NAME_SEARCH = JAVA_TYPEGENERATION_DEFAULT_PACKAGE_NAME + JAVA_PACKAGE_NAME_SEPARATOR;
 
-    // perform initialization of constants in use by HelperDelegates
     static {
-        SDO_OPEN_SEQUENCED.setDataType(false);
-        SDO_OPEN_SEQUENCED.setInstanceClassName("oracle.sdo.OpenSequencedClass");        
-        //need to call getInstanceClass to initialize the class in the SDOClassLoader
-        SDO_OPEN_SEQUENCED.getInstanceClass();
-        Class implClass = SDO_OPEN_SEQUENCED.getImplClass();
-        XMLDescriptor xmlDescriptor = new XMLDescriptor();
-        xmlDescriptor.setJavaClass(implClass);          
-        SDO_OPEN_SEQUENCED.setXmlDescriptor(xmlDescriptor);
-        SDO_OPEN_SEQUENCED.setSequenced(true);
-        SDO_OPEN_SEQUENCED.setOpen(true);               
-        
-        SDO_OPEN_SEQUENCED.setFinalized(true);        
-
-         /** JIRA-253 set pseudoDefaults on numeric primitives
-         * see http://java.sun.com/docs/books/tutorial/java/nutsandbolts/datatypes.html (primary ref)
-         * see p.45 of the Java Spec 4th edition (secondary ref)
-         **/
-        
-        // in use by initCommonjHashMap()
-        SDO_BOOLEAN.setDataType(true);
-        SDO_BOOLEAN.setInstanceClass(ClassConstants.PBOOLEAN);
-        SDO_BOOLEAN.setPseudoDefault(BOOLEAN_DEFAULT);
-
-        SDO_BYTE.setDataType(true);
-        SDO_BYTE.setInstanceClass(ClassConstants.PBYTE);
-        SDO_BYTE.setPseudoDefault(BYTE_DEFAULT);
-        
-        SDO_BYTES.setDataType(true);
-        SDO_BYTES.setInstanceClass(ClassConstants.APBYTE);
-
-        SDO_CHARACTER.setDataType(true);
-        SDO_CHARACTER.setInstanceClass(ClassConstants.PCHAR);
-        SDO_CHARACTER.setPseudoDefault(CHARACTER_DEFAULT);
-
-        SDO_DATAOBJECT.setDataType(false);
-        SDO_DATAOBJECT.setInstanceClass(DataObject.class);
-        SDO_DATAOBJECT.setAbstract(true);
-
-        SDO_DATE.setDataType(true);
-        SDO_DATE.setInstanceClass(ClassConstants.UTILDATE);
-
-        SDO_DATETIME.setDataType(true);
-        SDO_DATETIME.setInstanceClass(ClassConstants.STRING);
-
-        SDO_DAY.setDataType(true);
-        SDO_DAY.setInstanceClass(ClassConstants.STRING);
-
-        SDO_DECIMAL.setDataType(true);
-        SDO_DECIMAL.setInstanceClass(ClassConstants.BIGDECIMAL);
-
-        SDO_DOUBLE.setDataType(true);
-        SDO_DOUBLE.setInstanceClass(ClassConstants.PDOUBLE);
-        SDO_DOUBLE.setPseudoDefault(DOUBLE_DEFAULT);
-
-        SDO_DURATION.setDataType(true);
-        SDO_DURATION.setInstanceClass(ClassConstants.STRING);
-
-        SDO_FLOAT.setDataType(true);
-        SDO_FLOAT.setInstanceClass(ClassConstants.PFLOAT);
-        SDO_FLOAT.setPseudoDefault(FLOAT_DEFAULT);
-
-        SDO_INT.setDataType(true);
-        SDO_INT.setInstanceClass(ClassConstants.PINT);
-        SDO_INT.setPseudoDefault(INTEGER_DEFAULT);
-
-        SDO_INTEGER.setDataType(true);
-        SDO_INTEGER.setInstanceClass(ClassConstants.BIGINTEGER);
-
-        SDO_LONG.setDataType(true);
-        SDO_LONG.setInstanceClass(ClassConstants.PLONG);
-        SDO_LONG.setPseudoDefault(LONG_DEFAULT);
-
-        SDO_MONTH.setDataType(true);
-        SDO_MONTH.setInstanceClass(ClassConstants.STRING);
-
-        SDO_MONTHDAY.setDataType(true);
-        SDO_MONTHDAY.setInstanceClass(ClassConstants.STRING);
-
-        SDO_OBJECT.setDataType(true);
-        SDO_OBJECT.setInstanceClass(ClassConstants.OBJECT);
-        SDO_OBJECT.setAbstract(true);
-
-        SDO_SHORT.setDataType(true);
-        SDO_SHORT.setInstanceClass(ClassConstants.PSHORT);
-        SDO_SHORT.setPseudoDefault(SHORT_DEFAULT);
-
-        SDO_STRING.setDataType(true);
-        SDO_STRING.setInstanceClass(ClassConstants.STRING);
-
-        SDO_STRINGS.setDataType(true);
-        SDO_STRINGS.setInstanceClass(ClassConstants.List_Class);
-
-        SDO_TIME.setDataType(true);
-        SDO_TIME.setInstanceClass(ClassConstants.STRING);
-
-        SDO_YEAR.setDataType(true);
-        SDO_YEAR.setInstanceClass(ClassConstants.STRING);
-
-        SDO_YEARMONTH.setDataType(true);
-        SDO_YEARMONTH.setInstanceClass(ClassConstants.STRING);
-
-        SDO_YEARMONTHDAY.setDataType(true);
-        SDO_YEARMONTHDAY.setInstanceClass(ClassConstants.STRING);
-
-        SDO_URI.setDataType(true);
-        SDO_URI.setInstanceClass(ClassConstants.STRING);
-        
-        // TODO: dataType=false will cause copyHelper to fail on equality because default contructor is invoked
-        SDO_CHANGESUMMARY.setDataType(true);
-        SDO_CHANGESUMMARY.setAbstract(true);
-
-        // 6085307: use changeSummary interface javaClass over impl class (javaClass = CS interface, JavaClassName = CS Impl)
-        XMLDescriptor aDescriptor = new XMLDescriptor();
-        SDOConstants.SDO_CHANGESUMMARY.setInstanceClass(ChangeSummary.class);
-        aDescriptor.setJavaClass(SDOChangeSummary.class);
-
-        // logging attribute
-        XMLDirectMapping aMapping = new XMLDirectMapping();
-
-        // add attributes        
-        aMapping.setAttributeName("loggingMapping");
-        aMapping.setXPath("@logging");
-        aMapping.setNullValue(Boolean.TRUE);
-        aDescriptor.addMapping(aMapping);
-
-        XMLCompositeDirectCollectionMapping createdMapping = new XMLCompositeDirectCollectionMapping();
-        createdMapping.setAttributeName("createdXPaths");
-        createdMapping.setXPath("@create");
-        createdMapping.useCollectionClass(ArrayList.class);
-        ((XMLField)createdMapping.getField()).setUsesSingleNode(true);
-        aDescriptor.addMapping(createdMapping);
-
-        XMLCompositeDirectCollectionMapping deletedMapping = new XMLCompositeDirectCollectionMapping();
-        deletedMapping.setAttributeName("deletedXPaths");
-        deletedMapping.setXPath("@delete");
-        deletedMapping.useCollectionClass(ArrayList.class);
-        ((XMLField)deletedMapping.getField()).setUsesSingleNode(true);
-        aDescriptor.addMapping(deletedMapping);
-
-        XMLAnyCollectionMapping aChangeMapping = new XMLAnyCollectionMapping();
-        aChangeMapping.setAttributeName("modifiedDoms");
-        aChangeMapping.setKeepAsElementPolicy(UnmarshalKeepAsElementPolicy.KEEP_ALL_AS_ELEMENT);
-        aChangeMapping.useCollectionClass(ArrayList.class);
-        aDescriptor.addMapping(aChangeMapping);
-
-        SDOConstants.SDO_CHANGESUMMARY.setXmlDescriptor(aDescriptor);
-
-        // these properties are ordered as listed page 74 sect. 8.3 of the spec in "SDO Model for Types and Properties"
-        SDOProperty aliasNameProperty = new SDOProperty(globalHelperContext);
-        aliasNameProperty.setName("aliasName");
-        aliasNameProperty.setMany(true);
-        aliasNameProperty.setType(SDO_STRING);
-        SDO_PROPERTY.addDeclaredProperty(aliasNameProperty);
-
-        SDOProperty propNameProperty = new SDOProperty(globalHelperContext);
-        propNameProperty.setName("name");
-        propNameProperty.setType(SDO_STRING);
-        SDO_PROPERTY.addDeclaredProperty(propNameProperty);
-
-        SDOProperty manyProperty = new SDOProperty(globalHelperContext);
-        manyProperty.setName("many");
-        manyProperty.setType(SDO_BOOLEAN);
-        SDO_PROPERTY.addDeclaredProperty(manyProperty);
-
-        SDOProperty containmentProperty = new SDOProperty(globalHelperContext);
-        containmentProperty.setName("containment");
-        containmentProperty.setType(SDO_BOOLEAN);
-        SDO_PROPERTY.addDeclaredProperty(containmentProperty);
-
-        SDOProperty defaultProperty = new SDOProperty(globalHelperContext);
-        defaultProperty.setName("default");
-        defaultProperty.setType(SDO_OBJECT);
-        SDO_PROPERTY.addDeclaredProperty(defaultProperty);
-
-        SDOProperty readOnlyProperty = new SDOProperty(globalHelperContext);
-        readOnlyProperty.setName("readOnly");
-        readOnlyProperty.setType(SDO_BOOLEAN);
-        SDO_PROPERTY.addDeclaredProperty(readOnlyProperty);
-
-        SDOProperty typeProperty = new SDOProperty(globalHelperContext);
-        typeProperty.setName("type");
-        typeProperty.setType(SDO_TYPE);
-        SDO_PROPERTY.addDeclaredProperty(typeProperty);
-
-        SDOProperty oppositeProperty = new SDOProperty(globalHelperContext);
-        oppositeProperty.setName("opposite");
-        oppositeProperty.setType(SDO_PROPERTY);
-        SDO_PROPERTY.addDeclaredProperty(oppositeProperty);
-
-        SDOProperty nullableProperty = new SDOProperty(globalHelperContext);
-        nullableProperty.setName("nullable");
-        nullableProperty.setType(SDO_BOOLEAN);
-        SDO_PROPERTY.addDeclaredProperty(nullableProperty);
-
-        SDO_PROPERTY.setOpen(true);
-
-        // these properties are ordered as listed page 74 sect. 8.3 of the spec in "SDO Model for Types and Properties"
-        SDOProperty baseTypeProperty = new SDOProperty(globalHelperContext);
-        baseTypeProperty.setName("baseType");
-        baseTypeProperty.setMany(true);
-        baseTypeProperty.setType(SDO_TYPE);
-        SDO_TYPE.addDeclaredProperty(baseTypeProperty);
-
-        SDOProperty propertiesProperty = new SDOProperty(globalHelperContext);
-        propertiesProperty.setName("property");
-        propertiesProperty.setMany(true);
-        propertiesProperty.setContainment(true);
-        propertiesProperty.setType(SDO_PROPERTY);
-        SDO_TYPE.addDeclaredProperty(propertiesProperty);
-
-        SDOProperty typeAliasNameProperty = new SDOProperty(globalHelperContext);
-        typeAliasNameProperty.setName("aliasName");
-        typeAliasNameProperty.setMany(true);
-        typeAliasNameProperty.setType(SDO_STRING);
-        SDO_TYPE.addDeclaredProperty(typeAliasNameProperty);
-
-        SDOProperty nameProperty = new SDOProperty(globalHelperContext);
-        nameProperty.setName("name");
-        nameProperty.setType(SDO_STRING);
-        SDO_TYPE.addDeclaredProperty(nameProperty);
-
-        SDOProperty uriProperty = new SDOProperty(globalHelperContext);
-        uriProperty.setName("uri");
-        uriProperty.setType(SDO_STRING);
-        SDO_TYPE.addDeclaredProperty(uriProperty);
-
-        SDOProperty dataTypeProperty = new SDOProperty(globalHelperContext);
-        dataTypeProperty.setName("dataType");
-        dataTypeProperty.setType(SDO_BOOLEAN);
-        SDO_TYPE.addDeclaredProperty(dataTypeProperty);
-
-        SDOProperty openProperty = new SDOProperty(globalHelperContext);
-        openProperty.setName("open");
-        openProperty.setType(SDO_BOOLEAN);
-        SDO_TYPE.addDeclaredProperty(openProperty);
-
-        SDOProperty sequencedProperty = new SDOProperty(globalHelperContext);
-        sequencedProperty.setName("sequenced");
-        sequencedProperty.setType(SDO_BOOLEAN);
-        SDO_TYPE.addDeclaredProperty(sequencedProperty);
-
-        SDOProperty abstractProperty = new SDOProperty(globalHelperContext);
-        abstractProperty.setName("abstract");
-        abstractProperty.setType(SDO_BOOLEAN);
-        SDO_TYPE.addDeclaredProperty(abstractProperty);
-        // set the XMLAnyCollectionMapping on the descriptor on SDO_TYPE
-        SDO_TYPE.setOpen(true);
-
-        // in use by initCommonjJavaHashMap() 
-        SDO_BOOLEANOBJECT.setDataType(true);
-        SDO_BOOLEANOBJECT.setInstanceClass(ClassConstants.BOOLEAN);
-
-        SDO_BYTEOBJECT.setDataType(true);
-        SDO_BYTEOBJECT.setInstanceClass(ClassConstants.BYTE);
-
-        SDO_CHARACTEROBJECT.setDataType(true);
-        SDO_CHARACTEROBJECT.setInstanceClass(ClassConstants.CHAR);
-
-        SDO_DOUBLEOBJECT.setDataType(true);
-        SDO_DOUBLEOBJECT.setInstanceClass(ClassConstants.DOUBLE);
-
-        SDO_FLOATOBJECT.setDataType(true);
-        SDO_FLOATOBJECT.setInstanceClass(ClassConstants.FLOAT);
-
-        SDO_INTOBJECT.setDataType(true);
-        SDO_INTOBJECT.setInstanceClass(ClassConstants.INTEGER);
-
-        SDO_LONGOBJECT.setDataType(true);
-        SDO_LONGOBJECT.setInstanceClass(ClassConstants.LONG);
-
-        SDO_SHORTOBJECT.setDataType(true);
-        SDO_SHORTOBJECT.setInstanceClass(ClassConstants.SHORT);
-
-        SDO_XMLHELPER_LOAD_OPTIONS.setDataType(false);
-        SDOProperty typeOptionProperty = new SDOProperty(globalHelperContext);
-        typeOptionProperty.setName(TYPE_LOAD_OPTION);
-        typeOptionProperty.setMany(false);
-        typeOptionProperty.setType(SDO_TYPE);
-        SDO_XMLHELPER_LOAD_OPTIONS.addDeclaredProperty(typeOptionProperty);
-
-        // initialize the built-in open content property values (to be appended into the user defined open content properties map)
-        // the SDOTypeHelperDelegate.openContentProperties Map contains both global properties (here) and user defined properties
-        Type stringType = SDO_STRING;
-
-        // define open content xmlelement property
-        XMLELEMENT_PROPERTY.setType(SDO_BOOLEAN);
-        //define open content mimeType property  
-        MIME_TYPE_PROPERTY.setType(stringType);        
-        // define open content mimeType property  property
-        MIME_TYPE_PROPERTY_PROPERTY.setType(stringType);        
-        // define open content schema type property  
-        XML_SCHEMA_TYPE_PROPERTY.setType(SDO_TYPE);        
-        // define open content javaClass property
-        JAVA_CLASS_PROPERTY.setType(stringType);      
-        //define open content xmldatatype property
-        XMLDATATYPE_PROPERTY.setType(SDO_TYPE);        
-        //define open content idProp property        
-        ID_PROPERTY.setType(stringType);        
-        
-        //define documentation property  
-        DOCUMENTATION_PROPERTY.setType(stringType);        
-        DOCUMENTATION_PROPERTY.setMany(true);
-
-   
-      
+        if(null != sdoTypeHelper) {
+            sdoTypeHelper.reset();
+        }
     }
 }

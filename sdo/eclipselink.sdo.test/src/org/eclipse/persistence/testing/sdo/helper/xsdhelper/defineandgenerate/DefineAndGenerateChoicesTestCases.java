@@ -103,11 +103,6 @@ public class DefineAndGenerateChoicesTestCases extends XSDHelperDefineAndGenerat
         types.add(POType);
         types.add(addressType);
 
-        /*        DataObject propDO = dataFactory.create(SDOConstants.SDO_PROPERTY);
-                propDO.set("name", NON_DEFAULT_URI);
-                propDO.set("type", POType);
-                typeHelper.defineOpenContentProperty(NON_DEFAULT_URI, propDO);
-          */
         return types;
     }
 

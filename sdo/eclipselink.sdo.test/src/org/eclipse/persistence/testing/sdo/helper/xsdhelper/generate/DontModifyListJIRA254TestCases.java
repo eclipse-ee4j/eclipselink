@@ -17,6 +17,7 @@ import commonj.sdo.Type;
 import java.util.ArrayList;
 import java.util.List;
 import org.eclipse.persistence.sdo.SDOConstants;
+import org.eclipse.persistence.sdo.SDOType;
 import org.eclipse.persistence.testing.sdo.SDOTestCase;
 import junit.textui.TestRunner;
 
@@ -31,13 +32,15 @@ public class DontModifyListJIRA254TestCases extends SDOTestCase {
     }
 
     public void testListIsNotModified() {
-        DataObject childTypeDO = dataFactory.create(SDOConstants.SDO_TYPE);
+        SDOType typeType = (SDOType) typeHelper.getType(SDOConstants.SDO_URL, SDOConstants.TYPE);
+
+        DataObject childTypeDO = dataFactory.create(typeType);
         childTypeDO.set("uri", "someUri");
         childTypeDO.set("name", "childName");
         addProperty(childTypeDO, "name", SDOConstants.SDO_STRING, false, false, true);
         Type childType = typeHelper.define(childTypeDO);
 
-        DataObject testTypeDO = dataFactory.create(SDOConstants.SDO_TYPE);
+        DataObject testTypeDO = dataFactory.create(typeType);
         testTypeDO.set("uri", "someUri");
         testTypeDO.set("name", "testName");
         addProperty(testTypeDO, "id", SDOConstants.SDO_STRING, false, false, true);

@@ -43,6 +43,7 @@ public class DefineAndGenerateWithSDOImportsTestCases extends XSDHelperDefineAnd
 
         String uri = "my.uri";
         Type stringType = typeHelper.getType("commonj.sdo", "String");
+        SDOProperty xmlDataTypeProperty = (SDOProperty) typeHelper.getOpenContentProperty(SDOConstants.ORACLE_SDO_URL, SDOConstants.SDOXML_DATATYPE);
 
         /****Customer TYPE*****/
 
@@ -67,8 +68,7 @@ public class DefineAndGenerateWithSDOImportsTestCases extends XSDHelperDefineAnd
         idProp.setName("id");
         idProp.setXsd(true);
         idProp.setXsdLocalName("id");                
-        idProp.setInstanceProperty(SDOConstants.XMLDATATYPE_PROPERTY, SDOConstants.SDO_INTEGER);
-        //idProp.setInstanceProperty(typeHelper.getOpenContentProperty(SDOConstants.SDOXML_URL,SDOConstants.XMLDATATYPE_PROPERTY.getName()), SDOConstants.SDO_INTEGER);
+        idProp.setInstanceProperty(xmlDataTypeProperty, SDOConstants.SDO_INTEGER);
         idProp.setType(SDOConstants.SDO_INTEGER);
 
         customerType.addDeclaredProperty(fNameProp);

@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.List;
 import junit.textui.TestRunner;
 import org.eclipse.persistence.sdo.SDOConstants;
+import org.eclipse.persistence.sdo.SDOType;
 import org.eclipse.persistence.testing.sdo.SDOTestCase;
 
 public class SDODataObjectOpenContentBug6011530TestCases extends SDOTestCase {
@@ -87,11 +88,13 @@ public class SDODataObjectOpenContentBug6011530TestCases extends SDOTestCase {
     }
     
       public void testSetDefineOpenContentManyPropertyContainmentChild() throws Exception {
+        SDOType typeType = (SDOType) typeHelper.getType(SDOConstants.SDO_URL, SDOConstants.TYPE);
+
         List value = new ArrayList();
         Type addressSDOType = typeHelper.getType("my.uri", "address");
         DataObject childDataObjectContainment = dataFactory.create(addressSDOType);
         
-        DataObject someOther = dataFactory.create(SDOConstants.SDO_TYPE);
+        DataObject someOther = dataFactory.create(typeType);
         someOther.set("name", "someOther");
         someOther.set("uri", "my.uri");
         addProperty(someOther,"test", addressSDOType, true, false, true);        

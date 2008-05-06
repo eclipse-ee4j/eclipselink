@@ -18,6 +18,7 @@ import java.util.ArrayList;
 import java.util.List;
 import junit.textui.TestRunner;
 import org.eclipse.persistence.sdo.SDOConstants;
+import org.eclipse.persistence.sdo.SDOType;
 import org.eclipse.persistence.testing.sdo.SDOTestCase;
 
 public class BaseTypeAsDataObjectTestCases extends SDOTestCase {
@@ -31,10 +32,12 @@ public class BaseTypeAsDataObjectTestCases extends SDOTestCase {
     }
 
     public void testDefine() throws Exception {
-        DataObject personTypeDO = dataFactory.create(SDOConstants.SDO_TYPE);
+        SDOType typeType = (SDOType) typeHelper.getType(SDOConstants.SDO_URL, SDOConstants.TYPE);
+
+        DataObject personTypeDO = dataFactory.create(typeType);
         personTypeDO.set("uri", "theUri");
         personTypeDO.set("name", "person");
-        DataObject parentTypeDO = dataFactory.create(SDOConstants.SDO_TYPE);
+        DataObject parentTypeDO = dataFactory.create(typeType);
         parentTypeDO.set("uri", "theUri");
         parentTypeDO.set("name", "parent");
         List baseTypes = new ArrayList();

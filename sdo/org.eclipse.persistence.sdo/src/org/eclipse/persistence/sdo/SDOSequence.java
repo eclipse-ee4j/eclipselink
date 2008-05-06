@@ -110,7 +110,7 @@ public class SDOSequence implements Sequence {
                 }
             }
         } else {
-            dataObject.setPropertyInternal(property, value, false);
+            dataObject.setPropertyInternal((SDOProperty) property, value, false);
             // Update the settings
             Setting setting = convertToSetting(property, value);
             valuesToSettings.put(new Key(property, value), setting);
@@ -166,7 +166,7 @@ public class SDOSequence implements Sequence {
                 ListWrapper listWrapper = (ListWrapper) dataObject.getList(property);
                 listWrapper.add(value, false);
             } else {
-                dataObject.setPropertyInternal(property, value, false);
+                dataObject.setPropertyInternal((SDOProperty)property, value, false);
             }
             return true;
         }
@@ -399,7 +399,7 @@ public class SDOSequence implements Sequence {
             } else {
                 addSettingWithoutModifyingDataObject(property, value);
             }
-            dataObject.setPropertyInternal(property, value, false);
+            dataObject.setPropertyInternal((SDOProperty) property, value, false);
         }
         return oldValue;
     }

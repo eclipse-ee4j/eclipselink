@@ -108,7 +108,8 @@ public class SDODataObjectGetByPositionalPathTest extends SDODataObjectGetByPosi
 
     // purpose: test one of properties is not existed in path
     public void testGetByPositionalPathStringWithPropertyNameContainingDot() {        
-        SDODataObject myTypeDO = (SDODataObject)dataFactory.create(SDOConstants.SDO_TYPE);
+        SDOType typeType = (SDOType) typeHelper.getType(SDOConstants.SDO_URL, SDOConstants.TYPE);
+        SDODataObject myTypeDO = (SDODataObject)dataFactory.create(typeType);
         myTypeDO.set("name", "myType");
         myTypeDO.set("uri", "myUri");
         
@@ -125,10 +126,11 @@ public class SDODataObjectGetByPositionalPathTest extends SDODataObjectGetByPosi
     }
     
       public void testGetByPositionalPathStringWithPropertyNameContainingDotMany() {        
-        SDODataObject myTypeDO = (SDODataObject)dataFactory.create(SDOConstants.SDO_TYPE);
+        SDOType typeType = (SDOType) typeHelper.getType(SDOConstants.SDO_URL, SDOConstants.TYPE);
+        SDODataObject myTypeDO = (SDODataObject)dataFactory.create(typeType);
         myTypeDO.set("name", "myType");
         myTypeDO.set("uri", "myUri");
-                
+
         this.addProperty(myTypeDO, "P.Name-b",SDOConstants.SDO_STRING, false, true, true);
         
         Type myType = typeHelper.define(myTypeDO);

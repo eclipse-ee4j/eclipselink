@@ -158,6 +158,7 @@ public class LoadAndSaveOrderBookingTestCases extends LoadAndSaveTestCases {
         Type decimalType = typeHelper.getType("commonj.sdo", "Decimal");
         Type dateType = typeHelper.getType("commonj.sdo", "Date");
         Type booleanType = typeHelper.getType("commonj.sdo", "Boolean");
+        SDOType propertyType = (SDOType) typeHelper.getType(SDOConstants.SDO_URL, SDOConstants.PROPERTY);
 
         DataObject nameType = defineType("http://www.globalcompany.com/ns/order", "Name");
         addProperty(nameType, "First", stringType, false, false, true);
@@ -232,7 +233,7 @@ public class LoadAndSaveOrderBookingTestCases extends LoadAndSaveTestCases {
         addProperty(approveType, "approvalRequired", SDOConstants.SDO_BOOLEAN, false, false, true);
         Type approveSDOType = typeHelper.define(approveType);
 
-        DataObject purchaseOrderPropDO = dataFactory.create(SDOConstants.SDO_PROPERTY);
+        DataObject purchaseOrderPropDO = dataFactory.create(propertyType);
         purchaseOrderPropDO.set("name", "PurchaseOrder");
         purchaseOrderPropDO.set("type", poSDOType);
         Property prop = typeHelper.defineOpenContentProperty("http://www.globalcompany.com/ns/order", purchaseOrderPropDO);
@@ -243,7 +244,7 @@ public class LoadAndSaveOrderBookingTestCases extends LoadAndSaveTestCases {
         // now define the Customer type so that customers can be made
         Type SOAOrderBookingProcessRequestType = typeHelper.define(SOAOrderBookingProcessRequestTypeDO);
 
-        DataObject SOAOrderBookingProcessRequestPropDO = dataFactory.create(SDOConstants.SDO_PROPERTY);
+        DataObject SOAOrderBookingProcessRequestPropDO = dataFactory.create(propertyType);
         SOAOrderBookingProcessRequestPropDO.set("name", getControlRootName());
         SOAOrderBookingProcessRequestPropDO.set("type", SOAOrderBookingProcessRequestType);
         typeHelper.defineOpenContentProperty(getControlRootURI(), SOAOrderBookingProcessRequestPropDO);

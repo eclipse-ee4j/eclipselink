@@ -17,6 +17,7 @@ import java.util.List;
 import org.eclipse.persistence.sdo.SDOConstants;
 import org.eclipse.persistence.sdo.SDODataObject;
 import org.eclipse.persistence.sdo.SDOProperty;
+import org.eclipse.persistence.sdo.SDOType;
 
 public class SDODataObjectGetDoubleConversionByXPathQueryTest extends SDODataObjectGetByXPathQueryTestCases {
     public SDODataObjectGetDoubleConversionByXPathQueryTest(String name) {
@@ -53,9 +54,11 @@ public class SDODataObjectGetDoubleConversionByXPathQueryTest extends SDODataObj
 
     //2. purpose: getDataObject with property value is not dataobject
     public void testGetDataObjectConversionFromUndefinedProperty() {
+        SDOType dataObjectType = (SDOType) typeHelper.getType(SDOConstants.SDO_URL, SDOConstants.DATAOBJECT);
+
         property_c = new SDOProperty(aHelperContext);
         property_c.setName(PROPERTY_NAME_C);
-        property_c.setType(SDOConstants.SDO_DATAOBJECT);
+        property_c.setType(dataObjectType);
         type_c.addDeclaredProperty(property_c);
         dataObject_c._setType(type_c);
 

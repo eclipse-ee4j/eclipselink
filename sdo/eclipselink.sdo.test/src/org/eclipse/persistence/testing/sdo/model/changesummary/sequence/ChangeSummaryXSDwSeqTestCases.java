@@ -148,21 +148,6 @@ public class ChangeSummaryXSDwSeqTestCases extends SDOTestCase {
         int numberOfNodesInRootBeforeCSon = 14;
         assertEquals(numberOfNodesInRootBeforeCSon, numberOfDataObjectsInSubTree);
 
-        //DataObject rootPropertyTypeDO = defineType("rootPropertyTypeUri", "rootPropertyType");
-        //SDOType rootPropertyType = (SDOType)typeHelper.define(rootPropertyTypeDO);
-
-//        DataObject rootTypeDO = defineType(ChangeSummaryOnRootTestCases.URINAME,//
-//                ChangeSummaryOnRootTestCases.TYPENAME);
-        //DataObject changeSumPropertyDO = addProperty(rootTypeDO, "csmProp", SDOConstants.SDO_CHANGESUMMARY);
-        //changeSumPropertyDO.set("containment", true);
-        //DataObject rootPropertyDO = addProperty(rootTypeDO, "property-Containment", rootPropertyType);
-        //rootPropertyDO.set("containment", true);
-
-        //DataObject rootProperty1DO = addProperty(rootTypeDO, "property1-Containment", SDOConstants.SDO_STRING);
-        //SDOType rootTypeOC = (SDOType)typeHelper.define(rootTypeDO);
-        
-        // set a simple-single Open Content property
-//        SDOType aRootTypeOC = (SDOType)typeHelper.define(rootTypeDO);//(SDOType)rootObject.getType();
         SDOProperty openRootProperty = new SDOProperty(aHelperContext);
         openRootProperty.setName(OC_PROP1SimpleSingleNAME);
         openRootProperty.setType(SDOConstants.SDO_STRING);        

@@ -215,9 +215,11 @@ public class ChangeSummaryGetOldValueTest extends ChangeSummaryTestCases {
 
     // purpose: test an open content property's value can be recorded in old setting list
     public void testGetOldValueFromAnOpenContentProperty() {
+        SDOType propertyType = (SDOType) typeHelper.getType(SDOConstants.SDO_URL, SDOConstants.PROPERTY);
+
         rootType.setOpen(true);
         
-        DataObject openContentDO = dataFactory.create(SDOConstants.SDO_PROPERTY);
+        DataObject openContentDO = dataFactory.create(propertyType);
         openContentDO.set("name", "openContent");
         openContentDO.set("type", SDOConstants.SDO_STRING);        
 

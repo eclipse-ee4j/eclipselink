@@ -55,6 +55,7 @@ import org.eclipse.persistence.sdo.SDOProperty;
 import org.eclipse.persistence.sdo.SDOType;
 import org.eclipse.persistence.sdo.helper.ListWrapper;
 import org.eclipse.persistence.sdo.helper.SDOCopyHelper;
+import org.eclipse.persistence.sdo.helper.SDOTypeHelper;
 import org.eclipse.persistence.testing.sdo.helper.SDOCopyEqualityHelperTestCases;
 import commonj.sdo.ChangeSummary;
 import commonj.sdo.DataObject;
@@ -830,10 +831,10 @@ public class SDOCopyHelperDeepCopyTest extends SDOCopyEqualityHelperTestCases {
     public void testDataObjectNotInContainmentTree() {
         // create DataObject dataObjectNotInTreeroot contains another not in tree DataObject
         // dataObjectNotInTree
-        SDOType notInTreeRootType = new SDOType(aHelperContext);
+        SDOType notInTreeRootType = new SDOType((SDOTypeHelper) aHelperContext.getTypeHelper());
         SDOProperty notInTreeProperty = new SDOProperty(aHelperContext);
         notInTreeProperty.setName("notInTreeProperty");
-        SDOType notInTreePropertyType = new SDOType(aHelperContext);
+        SDOType notInTreePropertyType = new SDOType((SDOTypeHelper) aHelperContext.getTypeHelper());
         notInTreePropertyType.setDataType(false);
         notInTreeProperty.setContainment(true);
         notInTreeProperty.setType(notInTreePropertyType);

@@ -65,9 +65,12 @@ public class ChangeSummaryCreatedModifiedDeletedTestCase extends SDOTestCase {
         DataObject rootTypeDO = defineType(URINAME, TYPENAME);
         rootType = (SDOType)typeHelper.define(rootTypeDO);
 
-        rootContainingPropertyB = setUpProperty("propertyA-B", true, SDOConstants.SDO_DATAOBJECT, rootType);
-        rootContainingPropertyC = setUpProperty("propertyA-C", true, SDOConstants.SDO_DATAOBJECT, rootType);
-        rootChangeSummaryProperty = setUpProperty("changeSummaryA", true, SDOConstants.SDO_CHANGESUMMARY, null);
+        SDOType changeSummaryType = (SDOType) typeHelper.getType(SDOConstants.SDO_URL, SDOConstants.CHANGESUMMARY);
+        SDOType dataObjectType = (SDOType) typeHelper.getType(SDOConstants.SDO_URL, SDOConstants.DATAOBJECT);
+
+        rootContainingPropertyB = setUpProperty("propertyA-B", true, dataObjectType, rootType);
+        rootContainingPropertyC = setUpProperty("propertyA-C", true, dataObjectType, rootType);
+        rootChangeSummaryProperty = setUpProperty("changeSummaryA", true, changeSummaryType, null);
 
     }
 
@@ -91,17 +94,20 @@ public class ChangeSummaryCreatedModifiedDeletedTestCase extends SDOTestCase {
      *        -> CS-C
      */
     protected void buildTree() {
+        SDOType changeSummaryType = (SDOType) typeHelper.getType(SDOConstants.SDO_URL, SDOConstants.CHANGESUMMARY);
+        SDOType dataObjectType = (SDOType) typeHelper.getType(SDOConstants.SDO_URL, SDOConstants.DATAOBJECT);
+
         DataObject type_BDO = defineType("B_uri", "B");
         type_B = (SDOType)typeHelper.define(type_BDO);
 
-        propertyB = setUpProperty("propertyB", true, SDOConstants.SDO_DATAOBJECT, type_B);
-        changeSummaryPropertyB = setUpProperty("changeSummaryB", false, SDOConstants.SDO_CHANGESUMMARY, type_B);
+        propertyB = setUpProperty("propertyB", true, dataObjectType, type_B);
+        changeSummaryPropertyB = setUpProperty("changeSummaryB", false, changeSummaryType, type_B);
 
         DataObject type_CDO = defineType("C_uri", "C");
         type_C = (SDOType)typeHelper.define(type_CDO);
 
-        propertyC = setUpProperty("propertyC", true, SDOConstants.SDO_DATAOBJECT, type_C);
-        changeSummaryPropertyC = setUpProperty("changeSummaryC", false, SDOConstants.SDO_CHANGESUMMARY, type_C);
+        propertyC = setUpProperty("propertyC", true, dataObjectType, type_C);
+        changeSummaryPropertyC = setUpProperty("changeSummaryC", false, changeSummaryType, type_C);
 
         DataObject type_DDO = defineType("D_uri", "D");
         type_D = (SDOType)typeHelper.define(type_DDO);
@@ -144,22 +150,25 @@ public class ChangeSummaryCreatedModifiedDeletedTestCase extends SDOTestCase {
      *        -> CS-C
      */
     protected void buildTreeWith4LevelsOfProperties() {
+        SDOType changeSummaryType = (SDOType) typeHelper.getType(SDOConstants.SDO_URL, SDOConstants.CHANGESUMMARY);
+        SDOType dataObjectType = (SDOType) typeHelper.getType(SDOConstants.SDO_URL, SDOConstants.DATAOBJECT);
+
         DataObject type_BDO = defineType("B_uri", "B");
         type_B = (SDOType)typeHelper.define(type_BDO);
 
-        propertyB = setUpProperty("propertyB", true, SDOConstants.SDO_DATAOBJECT, type_B);
-        changeSummaryPropertyB = setUpProperty("changeSummaryB", false, SDOConstants.SDO_CHANGESUMMARY, type_B);
+        propertyB = setUpProperty("propertyB", true, dataObjectType, type_B);
+        changeSummaryPropertyB = setUpProperty("changeSummaryB", false, changeSummaryType, type_B);
 
         DataObject type_CDO = defineType("C_uri", "C");
         type_C = (SDOType)typeHelper.define(type_CDO);
 
-        propertyC = setUpProperty("propertyC", true, SDOConstants.SDO_DATAOBJECT, type_C);
-        changeSummaryPropertyC = setUpProperty("changeSummaryC", false, SDOConstants.SDO_CHANGESUMMARY, type_C);
+        propertyC = setUpProperty("propertyC", true, dataObjectType, type_C);
+        changeSummaryPropertyC = setUpProperty("changeSummaryC", false, changeSummaryType, type_C);
 
         DataObject type_DDO = defineType("D_uri", "D");
         type_D = (SDOType)typeHelper.define(type_DDO);
 
-        propertyD = setUpProperty("propertyD", true, SDOConstants.SDO_DATAOBJECT, type_D);
+        propertyD = setUpProperty("propertyD", true, dataObjectType, type_D);
 
         DataObject type_EDO = defineType("E_uri", "E");
         type_E = (SDOType)typeHelper.define(type_EDO);
@@ -194,14 +203,16 @@ public class ChangeSummaryCreatedModifiedDeletedTestCase extends SDOTestCase {
     }
 
     protected void buildTreeWithoutChildChangeSummaries() {
+        SDOType dataObjectType = (SDOType) typeHelper.getType(SDOConstants.SDO_URL, SDOConstants.DATAOBJECT);
+
         DataObject type_BDO = defineType("B_uri", "B");
         type_B = (SDOType)typeHelper.define(type_BDO);
 
-        propertyB = setUpProperty("propertyB", true, SDOConstants.SDO_DATAOBJECT, type_B);
+        propertyB = setUpProperty("propertyB", true, dataObjectType, type_B);
 
         DataObject type_CDO = defineType("C_uri", "C");
         type_C = (SDOType)typeHelper.define(type_CDO);
-        propertyC = setUpProperty("propertyC", true, SDOConstants.SDO_DATAOBJECT, type_C);
+        propertyC = setUpProperty("propertyC", true, dataObjectType, type_C);
 
         DataObject type_DDO = defineType("D_uri", "D");
         type_D = (SDOType)typeHelper.define(type_DDO);
@@ -213,10 +224,12 @@ public class ChangeSummaryCreatedModifiedDeletedTestCase extends SDOTestCase {
     }
 
     protected void buildTreeWithoutChangeSummary() {
+        SDOType dataObjectType = (SDOType) typeHelper.getType(SDOConstants.SDO_URL, SDOConstants.DATAOBJECT);
+
         DataObject type_root1DO = defineType("root1_uri", "root1");
         type_root1 = (SDOType)typeHelper.define(type_root1DO);
 
-        p_root1 = setUpProperty("p_root1", true, SDOConstants.SDO_DATAOBJECT, type_root1);
+        p_root1 = setUpProperty("p_root1", true, dataObjectType, type_root1);
         root1 = (SDODataObject)dataFactory.create(type_root1);
 
         DataObject type_FDO = defineType("F_uri", "F");

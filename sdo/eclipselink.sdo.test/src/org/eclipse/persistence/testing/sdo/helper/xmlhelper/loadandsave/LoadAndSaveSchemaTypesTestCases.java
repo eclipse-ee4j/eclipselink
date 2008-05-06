@@ -20,6 +20,7 @@ import commonj.sdo.Type;
 import junit.textui.TestRunner;
 import org.eclipse.persistence.sdo.SDOConstants;
 import org.eclipse.persistence.sdo.SDOProperty;
+import org.eclipse.persistence.sdo.SDOType;
 import org.eclipse.persistence.oxm.XMLConstants;
 import org.eclipse.persistence.oxm.XMLField;
 import org.eclipse.persistence.oxm.mappings.XMLDirectMapping;
@@ -66,6 +67,9 @@ public class LoadAndSaveSchemaTypesTestCases extends LoadAndSaveTestCases {
     }
 
     protected void registerTypes() {
+        SDOType dataObjectType = (SDOType) typeHelper.getType(SDOConstants.SDO_URL, SDOConstants.DATAOBJECT);
+        SDOType propertyType = (SDOType) typeHelper.getType(SDOConstants.SDO_URL, SDOConstants.PROPERTY);
+
         // create a new Type for Customers
         DataObject schemaTypesType = dataFactory.create("commonj.sdo", "Type");
 
@@ -76,10 +80,10 @@ public class LoadAndSaveSchemaTypesTestCases extends LoadAndSaveTestCases {
         schemaTypesType.set(prop, "Test");
 
         addProperty(schemaTypesType, "myAnySimpleTypeTest", SDOConstants.SDO_OBJECT, true, false, true);
-        addProperty(schemaTypesType, "myAnyTypeTest", SDOConstants.SDO_DATAOBJECT, true, false, true);
-        addProperty(schemaTypesType, "myAnyTypeTest2", SDOConstants.SDO_DATAOBJECT, true, false, true);
-        addProperty(schemaTypesType, "myAnyTypeTest3", SDOConstants.SDO_DATAOBJECT, true, true, true);
-        addProperty(schemaTypesType, "myAnyTypeTest4", SDOConstants.SDO_DATAOBJECT, true, true, true);
+        addProperty(schemaTypesType, "myAnyTypeTest", dataObjectType, true, false, true);
+        addProperty(schemaTypesType, "myAnyTypeTest2", dataObjectType, true, false, true);
+        addProperty(schemaTypesType, "myAnyTypeTest3", dataObjectType, true, true, true);
+        addProperty(schemaTypesType, "myAnyTypeTest4", dataObjectType, true, true, true);
         addProperty(schemaTypesType, "myAnyURITest", SDOConstants.SDO_URI, true, false, true);
         addProperty(schemaTypesType, "myBase64BinaryTest", SDOConstants.SDO_BYTES, true, false, true);
         addProperty(schemaTypesType, "myBooleanTest", SDOConstants.SDO_BOOLEAN, true, false, true);
@@ -130,7 +134,7 @@ public class LoadAndSaveSchemaTypesTestCases extends LoadAndSaveTestCases {
         SDOProperty hexProp = (SDOProperty) schemaTypes.getProperty("myHexBinaryTest");        
         ((XMLField)((XMLDirectMapping)hexProp.getXmlMapping()).getField()).setSchemaType(XMLConstants.HEX_BINARY_QNAME);
                 
-        DataObject propDO = dataFactory.create(SDOConstants.SDO_PROPERTY);
+        DataObject propDO = dataFactory.create(propertyType);
         propDO.set("name", getControlRootName());
         propDO.set("type", schemaTypes);
         typeHelper.defineOpenContentProperty(getControlRootURI(), propDO);

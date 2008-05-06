@@ -19,8 +19,8 @@ import commonj.sdo.helper.HelperContext;
 import commonj.sdo.impl.HelperProvider;
 import java.util.Iterator;
 import java.util.List;
-import org.eclipse.persistence.sdo.SDOConstants;
 import org.eclipse.persistence.sdo.SDODataObject;
+import org.eclipse.persistence.sdo.SDOProperty;
 import org.eclipse.persistence.sdo.SDOSequence;
 import org.eclipse.persistence.oxm.XMLRoot;
 import org.eclipse.persistence.oxm.sequenced.Setting;
@@ -425,7 +425,7 @@ public class SDOEqualityHelper implements EqualityHelper {
 
         while (iterProperties.hasNext()) {
             // !! assumption is two dataobjects share the same property    !!
-            Property p = (Property)iterProperties.next();
+            SDOProperty p = (SDOProperty)iterProperties.next();
             if (!compareProperty(dataObject1, dataObject2, isDeep, p)) {
                 return false;
             }
@@ -443,13 +443,13 @@ public class SDOEqualityHelper implements EqualityHelper {
      * @param p             the property shared by two DataObjects
      * @return              true if two DataObjects meet requirements of shallow equal or deep equal
      */
-    private boolean compareProperty(DataObject dataObject1, DataObject dataObject2, boolean isDeep, Property p) {
+    private boolean compareProperty(DataObject dataObject1, DataObject dataObject2, boolean isDeep, SDOProperty p) {
         if (p.isMany()) {
             return compareManyProperty(dataObject1, dataObject2, isDeep, p);
         }
 
         // base step
-        if (p.getType().isDataType() && (p.getType() != SDOConstants.SDO_CHANGESUMMARY)) {
+        if (p.getType().isDataType() && !p.getType().isChangeSummaryType()) {
             boolean isSet1 = dataObject1.isSet(p);
             boolean isSet2 = dataObject2.isSet(p);
             if (!isSet1 && !isSet2) {
@@ -473,7 +473,7 @@ public class SDOEqualityHelper implements EqualityHelper {
         }
 
         // recursive step
-        if (isDeep && (p.getType() != SDOConstants.SDO_CHANGESUMMARY)) {
+        if (isDeep && !p.getType().isChangeSummaryType()) {
             if (!dataObject1.isSet(p) && !dataObject2.isSet(p)) {
                 return true;
             }

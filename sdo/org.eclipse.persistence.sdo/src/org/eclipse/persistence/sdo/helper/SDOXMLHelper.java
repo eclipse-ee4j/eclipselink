@@ -19,6 +19,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.TimeZone;
 
+import org.eclipse.persistence.internal.oxm.XMLConversionManager;
 import org.eclipse.persistence.oxm.XMLContext;
 import org.eclipse.persistence.oxm.XMLMarshaller;
 import org.eclipse.persistence.oxm.XMLUnmarshaller;
@@ -156,4 +157,10 @@ public interface SDOXMLHelper extends XMLHelper {
      * 
      */
     public void reset();
+
+    /**
+     * INTERNAL:
+     * 
+     */
+    public XMLConversionManager getXmlConversionManager();
 }

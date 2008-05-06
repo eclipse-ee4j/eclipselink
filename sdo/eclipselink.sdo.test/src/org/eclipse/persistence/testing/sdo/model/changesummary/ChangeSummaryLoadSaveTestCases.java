@@ -54,7 +54,7 @@ public class ChangeSummaryLoadSaveTestCases extends ChangeSummaryTestCases {
 
     protected void setChangeSummary(SDODataObject aCSRoot) {
         // get and set change summary (temp workaround does not propagate to children)
-        SDOChangeSummary aCS = (SDOChangeSummary)aCSRoot.getInstanceProperty("myChangeSummary");
+        SDOChangeSummary aCS = (SDOChangeSummary)aCSRoot.get("myChangeSummary");
 
         //SDOChangeSummary aCS = new SDOChangeSummary();
         aCS.setRootDataObject(aCSRoot);

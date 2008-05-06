@@ -286,14 +286,14 @@ public class SDOTestCase extends junit.framework.TestCase {
             currentList.add(currentDO);
             // check DO's recursively
             List instanceProperties = currentDO.getInstanceProperties();
-            Property nextProperty = null;
+            SDOProperty nextProperty = null;
             Object value = null;
             if (recurse) {
                 for (int i = 0; i < instanceProperties.size(); i++) {
-                    nextProperty = (Property) instanceProperties.get(i);
+                    nextProperty = (SDOProperty) instanceProperties.get(i);
                     value = currentDO.get(nextProperty);
                     boolean recurseHopefullyNotToInfinityPlease = true;
-                    if (nextProperty.getType() != SDO_CHANGESUMMARY && !nextProperty.getType().isDataType()) {
+                    if (!nextProperty.getType().isChangeSummaryType() && !nextProperty.getType().isDataType()) {
                         // don't traverse into opposite properties to avoid an
                         // infinite loop
                         if (null != nextProperty.getOpposite()) {
@@ -529,10 +529,10 @@ public class SDOTestCase extends junit.framework.TestCase {
             // check DO's recursively
             List instanceProperties = currentDO.getInstanceProperties();
             for (int i = 0; i < instanceProperties.size(); i++) {
-                Property nextProperty = (Property) instanceProperties.get(i);
+                SDOProperty nextProperty = (SDOProperty) instanceProperties.get(i);
                 Object value = currentDO.get(nextProperty);
 
-                if (nextProperty.getType() != SDO_CHANGESUMMARY && !nextProperty.getType().isDataType() && value != null) {
+                if (!nextProperty.getType().isChangeSummaryType() && !nextProperty.getType().isDataType() && value != null) {
                     if (nextProperty.isMany()) {
                         // iterate list
                         Object manyItem;

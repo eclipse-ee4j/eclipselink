@@ -23,6 +23,7 @@ import java.util.ArrayList;
 import javax.xml.transform.stream.StreamSource;
 import junit.textui.TestRunner;
 import org.eclipse.persistence.sdo.SDOConstants;
+import org.eclipse.persistence.sdo.SDOType;
 import org.eclipse.persistence.sdo.helper.DefaultSchemaResolver;
 import org.eclipse.persistence.sdo.helper.SDOClassGenerator;
 import org.eclipse.persistence.testing.sdo.helper.xmlhelper.loadandsave.LoadAndSaveTestCases;
@@ -74,16 +75,21 @@ public class LoadAndSaveBug6680769TestCases extends LoadAndSaveTestCases {
     }
     
     protected void registerTypes() {
+        SDOType changeSummaryType = (SDOType) typeHelper.getType(SDOConstants.SDO_URL, SDOConstants.CHANGESUMMARY);
+        SDOType dataObjectType = (SDOType) typeHelper.getType(SDOConstants.SDO_URL, SDOConstants.DATAOBJECT);
+        SDOType typeType = (SDOType) typeHelper.getType(SDOConstants.SDO_URL, SDOConstants.TYPE);
+        SDOType propertyType = (SDOType) typeHelper.getType(SDOConstants.SDO_URL, SDOConstants.PROPERTY);
+
         //Data Type
-        DataObject dataTypeDO = dataFactory.create(SDOConstants.SDO_TYPE);
+        DataObject dataTypeDO = dataFactory.create(typeType);
         dataTypeDO.set("name", "Data");
         dataTypeDO.set("uri", "http://www.example.org/data");
-        addProperty(dataTypeDO, "Value", SDOConstants.SDO_DATAOBJECT, true, true, true);
-        addProperty(dataTypeDO, "ChangeSummary", SDOConstants.SDO_CHANGESUMMARY, true, false, true);
+        addProperty(dataTypeDO, "Value", dataObjectType, true, true, true);
+        addProperty(dataTypeDO, "ChangeSummary", changeSummaryType, true, false, true);
         Type dataType = typeHelper.define(dataTypeDO);
 
         //Emp Type
-        DataObject empTypeDO = dataFactory.create(SDOConstants.SDO_TYPE);
+        DataObject empTypeDO = dataFactory.create(typeType);
         empTypeDO.set("name", "Emp");
         empTypeDO.set("uri", "http://www.example.org/emp");
         addProperty(empTypeDO, "Empno", SDOConstants.SDO_STRING, false, false, true);
@@ -91,14 +97,14 @@ public class LoadAndSaveBug6680769TestCases extends LoadAndSaveTestCases {
         Type empType = typeHelper.define(empTypeDO);
 
         //Root Type
-        DataObject rootTypeDO = dataFactory.create(SDOConstants.SDO_TYPE);
+        DataObject rootTypeDO = dataFactory.create(typeType);
         rootTypeDO.set("name", "Root");
         rootTypeDO.set("uri", "http://www.example.org/root");
         addProperty(rootTypeDO, "data", dataType, true, false, true);
         Type rootType = typeHelper.define(rootTypeDO);
 
         //root open content property
-        DataObject rootPropDO = dataFactory.create(SDOConstants.SDO_PROPERTY);
+        DataObject rootPropDO = dataFactory.create(propertyType);
         rootPropDO.set("name", "root");
         rootPropDO.set("type", rootType);
 

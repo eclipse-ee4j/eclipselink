@@ -19,6 +19,7 @@ import java.util.List;
 import junit.textui.TestRunner;
 import org.eclipse.persistence.sdo.SDOConstants;
 import org.eclipse.persistence.sdo.SDOProperty;
+import org.eclipse.persistence.sdo.SDOType;
 import org.eclipse.persistence.sdo.helper.SDOTypeHelper;
 
 public class DefineAndGenerateSequencesPurchaseOrderTestCases extends XSDHelperDefineAndGenerateTestCases {
@@ -44,6 +45,8 @@ public class DefineAndGenerateSequencesPurchaseOrderTestCases extends XSDHelperD
     }
 
     public List getControlTypes() {
+        SDOType changeSummaryType = (SDOType) aHelperContext.getTypeHelper().getType(SDOConstants.SDO_URL, SDOConstants.CHANGESUMMARY);
+
         List<Type> types = new ArrayList<Type>();
         ((SDOTypeHelper)typeHelper).reset();
         //String xsdSchema = getSchema("org/eclipse/persistence/testing/sdo/schemas/PurchaseOrderComplexSequenced.xsd");
@@ -155,8 +158,6 @@ public class DefineAndGenerateSequencesPurchaseOrderTestCases extends XSDHelperD
         poTypeDO.set("uri", NON_DEFAULT_URI);
         poTypeDO.set("name", "PurchaseOrderType");
 
-        //DataObject csProp = addProperty(poTypeDO, "myCS", SDOConstants.SDO_CHANGESUMMARY, true, false, true);
-        //csProp.set("readOnly", true);
         addProperty(poTypeDO, "address", addressType, true, true, true);
         addProperty(poTypeDO, "comment", SDOConstants.SDO_STRING, false, false, true);
         addProperty(poTypeDO, "items", itemsType, true, false, true);
@@ -176,7 +177,7 @@ public class DefineAndGenerateSequencesPurchaseOrderTestCases extends XSDHelperD
         companyTypeDO.set("uri", NON_DEFAULT_URI);
         companyTypeDO.set("name", "CompanyType");
 
-        DataObject csProp = addProperty(companyTypeDO, "myCS", SDOConstants.SDO_CHANGESUMMARY, true, false, true);
+        DataObject csProp = addProperty(companyTypeDO, "myCS", changeSummaryType, true, false, true);
         csProp.set("readOnly", true);
         addProperty(companyTypeDO, "order", poType, true, false, true);        
 

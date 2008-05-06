@@ -19,6 +19,7 @@ import commonj.sdo.DataObject;
 import commonj.sdo.Type;
 import junit.textui.TestRunner;
 import org.eclipse.persistence.sdo.SDOConstants;
+import org.eclipse.persistence.sdo.SDOType;
 
 public class LoadAndSaveSimpleAttributeTestCases extends LoadAndSaveTestCases {
     public LoadAndSaveSimpleAttributeTestCases(String name) {
@@ -60,6 +61,7 @@ public class LoadAndSaveSimpleAttributeTestCases extends LoadAndSaveTestCases {
     public void registerTypes() {
         Type intType = typeHelper.getType("commonj.sdo", "Int");
         Type stringType = typeHelper.getType("commonj.sdo", "String");
+        SDOType propertyType = (SDOType) typeHelper.getType(SDOConstants.SDO_URL, SDOConstants.PROPERTY);
 
         // create a new Type for Customers
         DataObject customerType = dataFactory.create("commonj.sdo", "Type");
@@ -79,7 +81,7 @@ public class LoadAndSaveSimpleAttributeTestCases extends LoadAndSaveTestCases {
         // now define the Customer type so that customers can be made
         Type customerSDOType = typeHelper.define(customerType);
         
-         DataObject propDO = dataFactory.create(SDOConstants.SDO_PROPERTY);
+        DataObject propDO = dataFactory.create(propertyType);
         propDO.set("name", getControlRootName());
         propDO.set("type", customerSDOType);
         typeHelper.defineOpenContentProperty(getControlRootURI(), propDO);

@@ -17,9 +17,11 @@ import java.util.Iterator;
 import java.util.List;
 import commonj.sdo.DataObject;
 import commonj.sdo.Property;
+import org.eclipse.persistence.sdo.SDODataObject;
+import org.eclipse.persistence.sdo.SDOProperty;
+import org.eclipse.persistence.sdo.helper.SDOXMLHelper;
 import org.eclipse.persistence.sdo.helper.XPathEngine;
 import org.eclipse.persistence.exceptions.ConversionException;
-import org.eclipse.persistence.internal.oxm.XMLConversionManager;
 
 /**
  * This singleton provides support for querying DataObjects
@@ -273,7 +275,7 @@ public class XPathHelper {
 
         Iterator iterObjects = objects.iterator();
         while (iterObjects.hasNext()) {
-            DataObject cur = (DataObject)iterObjects.next();
+            SDODataObject cur = (SDODataObject)iterObjects.next();
             
             // this iteration, evaluate each QueryPart against the current DataObject
             ArrayList booleanValues = new ArrayList(); 
@@ -356,7 +358,7 @@ public class XPathHelper {
 
         Iterator iterObjects = objects.iterator();
         while (iterObjects.hasNext()) {
-            DataObject cur = (DataObject)iterObjects.next();
+            SDODataObject cur = (SDODataObject)iterObjects.next();
 
             if (queryPart.evaluate(cur)) {
                 valuesToReturn.add(cur);
@@ -575,13 +577,14 @@ public class XPathHelper {
          * @param dao
          * @return
          */
-        public boolean evaluate(DataObject dao) {
+        public boolean evaluate(SDODataObject dao) {
             Object queryVal = queryValue;
             Object actualVal = null;
 
-            Property prop = dao.getInstanceProperty(propertyName);
+            SDOProperty prop = dao.getInstanceProperty(propertyName);
             try {
-                queryVal = XMLConversionManager.getDefaultXMLManager().convertObject(queryValue, prop.getType().getInstanceClass());
+                SDOXMLHelper sdoXMLHelper = (SDOXMLHelper) prop.getType().getHelperContext().getXMLHelper();
+                queryVal = sdoXMLHelper.getXmlConversionManager().convertObject(queryValue, prop.getType().getInstanceClass());
             } catch (ConversionException e) {
                 // do nothing
             }

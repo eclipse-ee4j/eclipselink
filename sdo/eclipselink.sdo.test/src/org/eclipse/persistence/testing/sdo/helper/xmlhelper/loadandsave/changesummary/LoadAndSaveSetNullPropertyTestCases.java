@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.List;
 import junit.textui.TestRunner;
 import org.eclipse.persistence.sdo.SDOConstants;
+import org.eclipse.persistence.sdo.SDOType;
 import org.eclipse.persistence.testing.sdo.helper.xmlhelper.loadandsave.LoadAndSaveTestCases;
 
 public class LoadAndSaveSetNullPropertyTestCases extends LoadAndSaveTestCases {
@@ -87,13 +88,18 @@ public class LoadAndSaveSetNullPropertyTestCases extends LoadAndSaveTestCases {
     }
 
     public void registerTypes() {
-      DataObject addressTypeDO = dataFactory.create(SDOConstants.SDO_TYPE);
+        SDOType changeSummaryType = (SDOType) typeHelper.getType(SDOConstants.SDO_URL, SDOConstants.CHANGESUMMARY);
+        SDOType dataObjectType = (SDOType) typeHelper.getType(SDOConstants.SDO_URL, SDOConstants.DATAOBJECT);
+        SDOType typeType = (SDOType) typeHelper.getType(SDOConstants.SDO_URL, SDOConstants.TYPE);
+        SDOType propertyType = (SDOType) typeHelper.getType(SDOConstants.SDO_URL, SDOConstants.PROPERTY);
+
+      DataObject addressTypeDO = dataFactory.create(typeType);
       addressTypeDO.set("uri",getControlRootURI());
       addressTypeDO.set("name","Address");
       addProperty(addressTypeDO, "street", SDOConstants.SDO_STRING, false, false, true);
       Type addressType = typeHelper.define(addressTypeDO);
       
-      DataObject empTypeDO = dataFactory.create(SDOConstants.SDO_TYPE);
+      DataObject empTypeDO = dataFactory.create(typeType);
       empTypeDO.set("uri",getControlRootURI());
       empTypeDO.set("name","Emp");
       addProperty(empTypeDO, "Empno", SDOConstants.SDO_STRING, false, false, true);
@@ -107,14 +113,14 @@ public class LoadAndSaveSetNullPropertyTestCases extends LoadAndSaveTestCases {
       
       Type empType = typeHelper.define(empTypeDO);
       
-      DataObject rootTypeDO = dataFactory.create(SDOConstants.SDO_TYPE);
+      DataObject rootTypeDO = dataFactory.create(typeType);
       rootTypeDO.set("uri",getControlRootURI());
       rootTypeDO.set("name","Root");
-      addProperty(rootTypeDO, "Value", SDOConstants.SDO_DATAOBJECT, true, true, true);
-      addProperty(rootTypeDO, "ChangeSummary", SDOConstants.SDO_CHANGESUMMARY, true, false, true);
+      addProperty(rootTypeDO, "Value", dataObjectType, true, true, true);
+      addProperty(rootTypeDO, "ChangeSummary", changeSummaryType, true, false, true);
       Type rootType = typeHelper.define(rootTypeDO);
       
-      DataObject propDO=  dataFactory.create(SDOConstants.SDO_PROPERTY);
+      DataObject propDO=  dataFactory.create(propertyType);
       propDO.set("name", "theRoot");
       propDO.set("type", rootType);
       typeHelper.defineOpenContentProperty(getControlRootURI(), propDO);

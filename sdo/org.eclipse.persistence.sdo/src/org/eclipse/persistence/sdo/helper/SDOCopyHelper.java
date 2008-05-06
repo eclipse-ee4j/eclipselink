@@ -23,6 +23,7 @@ import java.util.Map;
 import org.eclipse.persistence.sdo.SDOChangeSummary;
 import org.eclipse.persistence.sdo.SDOConstants;
 import org.eclipse.persistence.sdo.SDODataObject;
+import org.eclipse.persistence.sdo.SDOProperty;
 import org.eclipse.persistence.sdo.SDOSequence;
 import org.eclipse.persistence.sdo.SDOType;
 import org.eclipse.persistence.sdo.ValueStore;
@@ -142,11 +143,11 @@ public class SDOCopyHelper implements CopyHelper {
         List allProperties = copy.getInstanceProperties();// start iterating all copy's properties
         Iterator iterProperties = allProperties.iterator();
         while (iterProperties.hasNext()) {
-            Property eachProperty = (Property)iterProperties.next();
+            SDOProperty eachProperty = (SDOProperty)iterProperties.next();
             if (dataObject.isSet(eachProperty)) {
                 Object o = getValue((SDODataObject)dataObject, eachProperty, null);
                 if (eachProperty.getType().isDataType()) {
-                    if (eachProperty.getType() != SDOConstants.SDO_CHANGESUMMARY) {
+                    if (!eachProperty.getType().isChangeSummaryType()) {
                         // we defer sequence updates at this point
                         copy.setInternal(eachProperty, o, false);// make copy if current property is datatype
                     }
@@ -291,7 +292,7 @@ public class SDOCopyHelper implements CopyHelper {
             // iterate property list
             for (Iterator propIterator = aList.iterator(); propIterator.hasNext();) {// p.142 limit scope of while by using for
                 // get current property
-                Property aProperty = (Property)propIterator.next();
+                SDOProperty aProperty = (SDOProperty)propIterator.next();
 
                 /*
                  * Stored in the map we have
@@ -614,7 +615,7 @@ public class SDOCopyHelper implements CopyHelper {
                 if (aVSOriginal.isSetDeclaredProperty(i)) {
                     // shallow copy the object values
                     // handle single case
-                    Property currentProperty = (Property)anOriginalObject.getType().getDeclaredProperties().get(i);
+                    SDOProperty currentProperty = (SDOProperty)anOriginalObject.getType().getDeclaredProperties().get(i);
                     if (currentProperty.isMany()) {
                         propertyToOriginalListMap.put(aVSPropertyItem, currentProperty);
 
@@ -634,7 +635,7 @@ public class SDOCopyHelper implements CopyHelper {
                         } else {
                             // SIMPLE SINGLE
                             // skip changeSummary property
-                            if (currentProperty.getType() != SDOConstants.SDO_CHANGESUMMARY) {
+                            if (!currentProperty.getType().isChangeSummaryType()) {
                                 // simple singles set
                                 aVSCopy.setDeclaredProperty(i, aVSPropertyItem);
                             }
@@ -898,12 +899,12 @@ public class SDOCopyHelper implements CopyHelper {
         //  start iterating all copy's properties
         for (Iterator iterInstanceProperties = copy.getInstanceProperties().iterator();
                  iterInstanceProperties.hasNext();) {
-            Property eachProperty = (Property)iterInstanceProperties.next();
+            SDOProperty eachProperty = (SDOProperty)iterInstanceProperties.next();
             boolean isSet = isSet(dataObject, eachProperty, cs);
             if (isSet) {
                 Object o = getValue(dataObject, eachProperty, cs);
                 if (eachProperty.getType().isDataType()) {
-                    if (eachProperty.getType() != SDOConstants.SDO_CHANGESUMMARY) {
+                    if (!eachProperty.getType().isChangeSummaryType()) {
 
                         /**
                          * ChangeSummaries must be cleared with logging set to the original state without creating oldSettings.
@@ -960,7 +961,7 @@ public class SDOCopyHelper implements CopyHelper {
      * @param doMap (cache original -> copy DataObject instances to set non-containment properties after tree construction)
      * @param propMap (cache original DO:non-containment property values to be set after tree construction)
      */
-    private void copyContainmentPropertyValue(SDODataObject copy, Property property, Object value,//
+    private void copyContainmentPropertyValue(SDODataObject copy, SDOProperty property, Object value,//
                                               HashMap doMap, HashMap ncPropMap, SDOChangeSummary cs) {
         if (property.isMany()) {
             List copyValue = new ArrayList();

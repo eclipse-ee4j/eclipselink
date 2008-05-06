@@ -27,6 +27,7 @@ import java.util.TimeZone;
 import java.util.WeakHashMap;
 import javax.xml.transform.Result;
 import javax.xml.transform.Source;
+import org.eclipse.persistence.internal.oxm.XMLConversionManager;
 import org.eclipse.persistence.sdo.SDOConstants;
 import org.eclipse.persistence.sdo.helper.SDOClassLoader;
 import org.eclipse.persistence.sdo.helper.SDOXMLHelper;
@@ -238,4 +239,9 @@ public class SDOXMLHelperDelegator implements SDOXMLHelper {
     public void reset() {
         getSDOXMLHelperDelegate().reset();
     }
+    
+    public XMLConversionManager getXmlConversionManager() {
+        return getSDOXMLHelperDelegate().getXmlConversionManager();
+    }
+
 }

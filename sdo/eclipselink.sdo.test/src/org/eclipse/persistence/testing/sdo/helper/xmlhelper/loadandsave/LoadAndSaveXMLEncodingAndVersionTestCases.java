@@ -24,6 +24,7 @@ import commonj.sdo.Type;
 import commonj.sdo.helper.XMLDocument;
 import junit.textui.TestRunner;
 import org.eclipse.persistence.sdo.SDOConstants;
+import org.eclipse.persistence.sdo.SDOType;
 
 public class LoadAndSaveXMLEncodingAndVersionTestCases extends LoadAndSaveTestCases {
     static String VERSION = "1.0";
@@ -69,6 +70,7 @@ public class LoadAndSaveXMLEncodingAndVersionTestCases extends LoadAndSaveTestCa
 
     public void registerTypes() {
         Type stringType = typeHelper.getType("commonj.sdo", "String");
+        SDOType propertyType = (SDOType) typeHelper.getType(SDOConstants.SDO_URL, SDOConstants.PROPERTY);
 
         // create a new Type for Customers
         DataObject customerType = dataFactory.create("commonj.sdo", "Type");
@@ -84,7 +86,7 @@ public class LoadAndSaveXMLEncodingAndVersionTestCases extends LoadAndSaveTestCa
         // now define the Customer type so that customers can be made
         Type customerSDOType = typeHelper.define(customerType);
         
-        DataObject propDO = dataFactory.create(SDOConstants.SDO_PROPERTY);
+        DataObject propDO = dataFactory.create(propertyType);
         propDO.set("name", getControlRootName());
         propDO.set("type", customerSDOType);
         typeHelper.defineOpenContentProperty(getControlRootURI(), propDO);

@@ -44,12 +44,10 @@ import org.eclipse.persistence.oxm.schema.XMLSchemaClassPathReference;
 import org.eclipse.persistence.oxm.schema.XMLSchemaReference;
 
 public class SDOType implements Type, Serializable {
-    private String typeName;// an unique name for this Type
-    private String typeUri;// URI of this type
+    private QName qName;
     private boolean open;// if this Type is open
     private boolean isAbstract;// if this is an abstract Type
-    private boolean isSequenced;// if this Type is sequenced
-    private boolean isDataType;// if this is a dataType
+    protected boolean isDataType;// if this is a dataType
     private List baseTypes;// a list of this Type's base Types (added for now waitting for final decision)
     private List declaredProperties;// a list of Properties defined by this Type.(Optional, leave it for now)
     private transient Map declaredPropertiesMap;
@@ -58,11 +56,11 @@ public class SDOType implements Type, Serializable {
     private boolean xsdList;
     private String xsdLocalName;
     private QName xsdType;
-    private transient XMLDescriptor xmlDescriptor;
+    protected transient XMLDescriptor xmlDescriptor;
     private Map propertyValues;
-    private Property changeSummaryProperty;
+    private SDOProperty changeSummaryProperty;
     private List allProperties;
-    private Property[] allPropertiesArr;
+    private SDOProperty[] allPropertiesArr;
     private List subTypes;
     private boolean finalized;
     private Class javaClass;
@@ -76,7 +74,7 @@ public class SDOType implements Type, Serializable {
     private Object pseudoDefault;
 
     // hold the context containing all helpers so that we can preserve inter-helper relationships
-    private HelperContext aHelperContext;
+    protected HelperContext aHelperContext;
     private List appInfoElements;
     private Map appInfoMap;
 
@@ -86,8 +84,16 @@ public class SDOType implements Type, Serializable {
     private static final String ANY_MAPPING_SET_METHOD_NAME = "_setOpenContentPropertiesWithXMLRoots";
     private static final String SDO_REF_MAPPING_ATTRIBUTE_NAME = "sdoRef";
 
-    public SDOType(HelperContext aContext) {
-        aHelperContext = aContext;
+    public SDOType(HelperContext helperContext) {
+        this((SDOTypeHelper)helperContext.getTypeHelper());
+    }
+
+    public SDOType(SDOTypeHelper sdoTypeHelper) {
+        this.xmlDescriptor = new XMLDescriptor();
+        if(null != sdoTypeHelper) {
+            aHelperContext = sdoTypeHelper.getHelperContext();
+            this.xmlDescriptor.setNamespaceResolver(sdoTypeHelper.getNamespaceResolver());
+        }
     }
 
     /**
@@ -99,7 +105,7 @@ public class SDOType implements Type, Serializable {
      */
     public SDOType(String uri, String type_name) {
         // JIRA129 - default to static global context - Do Not use this convenience constructor outside of JUnit testing
-        this(uri, type_name, HelperProvider.getDefaultContext());
+        this(uri, type_name, (SDOTypeHelper) HelperProvider.getDefaultContext().getTypeHelper());
     }
 
     /**
@@ -108,18 +114,26 @@ public class SDOType implements Type, Serializable {
      * @param type_name     the unique of this Type
      * @param aContext      the current HelperContext
      */
-    public SDOType(String uri, String type_name, HelperContext aContext) {
-        aHelperContext = aContext;
-        typeName = type_name;
-        typeUri = uri;
+    public SDOType(String uri, String name, SDOTypeHelper sdoTypeHelper) {
+        this(sdoTypeHelper);
+        this.qName = new QName(uri, name);
+    }
+
+    public QName getQName() {
+        return qName;
     }
 
     public String getName() {
-        return typeName;
+        return qName.getLocalPart();
     }
 
     public String getURI() {
-        return typeUri;
+        String uri = qName.getNamespaceURI();
+        if("".equals(uri)) {
+            return null;
+        } else {
+            return uri;
+        }
     }
 
     public Class getInstanceClass() {
@@ -142,7 +156,7 @@ public class SDOType implements Type, Serializable {
     }
 
     public boolean isInstance(Object object) {
-        if ((!isDataType) && (object instanceof DataObject)) {
+        if ((!isDataType()) && (object instanceof DataObject)) {
             Type doType = ((DataObject)object).getType();
             if (doType != null) {
                 return doType.equals(this);
@@ -165,11 +179,11 @@ public class SDOType implements Type, Serializable {
         return allProperties;
     }
 
-    public Property getProperty(String propertyName) {
-        Property queriedProperty = (Property)getDeclaredPropertiesMap().get(propertyName);
+    public SDOProperty getProperty(String propertyName) {
+        SDOProperty queriedProperty = (SDOProperty)getDeclaredPropertiesMap().get(propertyName);
         if (null == queriedProperty) {
             for (int i = 0; i < getBaseTypes().size(); i++) {
-                queriedProperty = ((Type)getBaseTypes().get(i)).getProperty(propertyName);
+                queriedProperty = ((SDOType)getBaseTypes().get(i)).getProperty(propertyName);
                 if (queriedProperty != null) {
                     break;
                 }
@@ -187,7 +201,7 @@ public class SDOType implements Type, Serializable {
     }
 
     public boolean isSequenced() {
-        return isSequenced;
+        return xmlDescriptor.isSequencedObject();
     }
 
     public boolean isAbstract() {
@@ -239,22 +253,13 @@ public class SDOType implements Type, Serializable {
 
     /**
      * INTERNAL:
-     * Assign a logic uri to this Type.
-     * @param uri    a logic uri of a package or target namespace.
-     */
-    public void setUri(String uri) {
-        typeUri = uri;
-    }
-
-    /**
-     * INTERNAL:
      * Make this Type an opened Type to allow open content by assigning true value
      * or a Type not to accept any additional properties by assigning false value,
      * {@link isOpen()}.
      * @param bOpen  boolean value implying if this Type is open
      */
     public void setOpen(boolean bOpen) {
-        if (isDataType && bOpen) {
+        if (isDataType() && bOpen) {
             throw SDOException.typeCannotBeOpenAndDataType(getURI(), getName());
         }
         if (open != bOpen) {
@@ -309,11 +314,7 @@ public class SDOType implements Type, Serializable {
      * @param sequenced     boolean value implying if this type is sequenced.
      */
     public void setSequenced(boolean sequenced) {
-        // setting sequence to true will not generate any sequences on instances of this property
-        isSequenced = sequenced;
-        if (xmlDescriptor != null) {
-            getXmlDescriptor().setSequencedObject(sequenced);
-        }
+        xmlDescriptor.setSequencedObject(sequenced);
     }
 
     /**
@@ -441,6 +442,14 @@ public class SDOType implements Type, Serializable {
      * @param property
     */
     public void addDeclaredProperty(Property property) {
+        addDeclaredProperty((SDOProperty)property);
+    }
+
+    /**
+     * INTERNAL:
+     * @param property
+    */
+    public void addDeclaredProperty(SDOProperty property) {
         int end = getDeclaredProperties().size();
         addDeclaredProperty(property, end);
     }
@@ -450,6 +459,14 @@ public class SDOType implements Type, Serializable {
     * @param property
     */
     public void addDeclaredProperty(Property property, int index) {
+        addDeclaredProperty((SDOProperty)property, index);
+    }
+
+    /**
+    * INTERNAL:
+    * @param property
+    */
+    public void addDeclaredProperty(SDOProperty property, int index) {
         if (!getDeclaredPropertiesMap().containsKey(property.getName())) {
             int currentSize = getDeclaredProperties().size();
 
@@ -471,7 +488,7 @@ public class SDOType implements Type, Serializable {
             for (int j = 0; j < property.getAliasNames().size(); j++) {
                 getDeclaredPropertiesMap().put(property.getAliasNames().get(j), property);
             }
-            if ((property.getType() != null) && (property.getType().equals(SDOConstants.SDO_CHANGESUMMARY))) {
+            if ((property.getType() != null) && (property.getType().isChangeSummaryType())) {
                 changeSummaryProperty = property;
             }
         }
@@ -557,17 +574,15 @@ public class SDOType implements Type, Serializable {
     }
    
     public XMLDescriptor getXmlDescriptor() {
-        return getXmlDescriptor(null);
+        return xmlDescriptor;
     }
 
     /**
       * INTERNAL:
       * Get the XMLDescriptor associated with this Type or generate a new one.
       */
-    public XMLDescriptor getXmlDescriptor(List namespaceResolvers) {
-        if (!isDataType() && (xmlDescriptor == null)) {
-            xmlDescriptor = new XMLDescriptor();
-            xmlDescriptor.setSequencedObject(isSequenced);
+    public void initializeNamespaces(List namespaceResolvers) {
+        if (!isDataType()) {
             NamespaceResolver nr = new NamespaceResolver();
 
             // copy namespaces between resolvers for well known and SDO namespaces
@@ -577,7 +592,9 @@ public class SDOType implements Type, Serializable {
                     if (nextNR != null) {
                         for (int j = 0, size = nextNR.getNamespaces().size(); j < size; j++) {
                             Namespace nextNamespace = (Namespace)nextNR.getNamespaces().get(j);
-                            if ((!nextNamespace.getPrefix().equals(XMLConstants.XMLNS)) && (!nextNamespace.getNamespaceURI().equals(XMLConstants.SCHEMA_URL)) && (!nextNamespace.getNamespaceURI().equals(SDOConstants.SDOJAVA_URL)) && (!nextNamespace.getNamespaceURI().equals(SDOConstants.SDOXML_URL)) && (!nextNamespace.getNamespaceURI().equals(SDOConstants.SDO_URL))) {
+                            if ((!nextNamespace.getPrefix().equals(XMLConstants.XMLNS)) && (!nextNamespace.getNamespaceURI().equals(XMLConstants.SCHEMA_URL)) &&
+                                (!nextNamespace.getNamespaceURI().equals(SDOConstants.SDOJAVA_URL)) && (!nextNamespace.getNamespaceURI().equals(SDOConstants.SDOXML_URL)) &&
+                                (!nextNamespace.getNamespaceURI().equals(SDOConstants.SDO_URL))) {
                                 String newPrefix = ((SDOTypeHelper)aHelperContext.getTypeHelper()).addNamespace(nextNamespace.getPrefix(), nextNamespace.getNamespaceURI());
                                 nr.put(newPrefix, nextNamespace.getNamespaceURI());
                             }
@@ -592,7 +609,6 @@ public class SDOType implements Type, Serializable {
             }
             xmlDescriptor.getNamespaceResolver().put(XMLConstants.SCHEMA_INSTANCE_PREFIX, XMLConstants.SCHEMA_INSTANCE_URL);
         }
-        return xmlDescriptor;
     }
 
     /**
@@ -628,6 +644,7 @@ public class SDOType implements Type, Serializable {
             xdesc.addMapping(sdoRefMapping);
         }
     }
+
     public void setupInheritance(SDOType parentType) {
         if (parentType == null) {
             // root of inheritance
@@ -715,9 +732,10 @@ public class SDOType implements Type, Serializable {
                                         "sdo_type_generation_processing_type", //
                                         new Object[] { Helper.getShortClassName(getClass()), getInstanceClassName() });
 
-        getXmlDescriptor(namespaceResolvers).setJavaClassName(getImplClassName());
+        initializeNamespaces(namespaceResolvers);
+        getXmlDescriptor().setJavaClassName(getImplClassName());
         // load classes by classloader by getting the current instance class
-        loadClasses();
+        getInstanceClass();
 
         // See SDOResolvable enhancement
         String schemaContext = getName();
@@ -846,30 +864,22 @@ public class SDOType implements Type, Serializable {
     /**
       * INTERNAL:
       */
-    public Property getChangeSummaryProperty() {
+    public SDOProperty getChangeSummaryProperty() {
         return changeSummaryProperty;
     }
 
     /**
      * INTERNAL:
-     * load classes by classloader by getting the current instance class
      */
-    private void loadClasses() {
-        getInstanceClass();
-    }
-
-    /**
-      * INTERNAL:
-      */
-    public Property[] getPropertiesArray() {
+    public SDOProperty[] getPropertiesArray() {
         if ((allPropertiesArr == null) || (allPropertiesArr.length != getProperties().size())) {
             List l = getProperties();
             int s = (l == null) ? 0 : l.size();
             if (s > 0) {
-                allPropertiesArr = (Property[])l.toArray(new Property[s]);
+                allPropertiesArr = (SDOProperty[])l.toArray(new SDOProperty[s]);
             } else {
                 // initialize an empty array
-                allPropertiesArr = new Property[0];
+                allPropertiesArr = new SDOProperty[0];
             }
         }
         return allPropertiesArr;
@@ -1022,4 +1032,21 @@ public class SDOType implements Type, Serializable {
     public HelperContext getHelperContext(){
       return aHelperContext;
     }
+
+    public boolean isChangeSummaryType() {
+        return false;
+    }
+    
+    public boolean isDataObjectType() {
+        return false;
+    }
+    
+    public boolean isTypeType() {
+        return false;
+    }
+
+    public boolean isOpenSequencedType() {
+        return false;
+    }
+
 }

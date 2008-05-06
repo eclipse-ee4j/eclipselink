@@ -15,11 +15,9 @@ package org.eclipse.persistence.testing.sdo.helper.xsdhelper.defineandgenerate;
 import commonj.sdo.DataObject;
 import commonj.sdo.Type;
 import java.io.FileInputStream;
-import java.io.InputStream;
 import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.List;
-import javax.xml.namespace.QName;
 import junit.textui.TestRunner;
 import org.eclipse.persistence.sdo.SDOConstants;
 import org.eclipse.persistence.sdo.SDOProperty;
@@ -54,6 +52,11 @@ public class DefineAndGenerateWrapperTypeTestCases extends XSDHelperDefineAndGen
         //return getControlTypes();
                 List types = new ArrayList();
         ((SDOTypeHelper)typeHelper).reset();
+
+        SDOType dataObjectType = (SDOType) typeHelper.getType(SDOConstants.SDO_URL, SDOConstants.DATAOBJECT);
+        SDOProperty xmlDataTypeProperty = (SDOProperty) typeHelper.getOpenContentProperty(SDOConstants.ORACLE_SDO_URL, SDOConstants.SDOXML_DATATYPE);
+        SDOProperty xmlSchemaTypeProperty = (SDOProperty) typeHelper.getOpenContentProperty(SDOConstants.ORACLE_SDO_URL, SDOConstants. XML_SCHEMA_TYPE_NAME);
+
         DataObject myChildTypeDO = dataFactory.create("commonj.sdo", "Type");
         myChildTypeDO.set("uri", "http://www.example.org");
         myChildTypeDO.set("name", "childType");
@@ -66,26 +69,26 @@ public class DefineAndGenerateWrapperTypeTestCases extends XSDHelperDefineAndGen
         myRootTypeDO.set("uri", "http://www.example.org");
         myRootTypeDO.set("name", "rootType");
         DataObject test1Prop = addProperty(myRootTypeDO, "test1", SDOConstants.SDO_INTOBJECT, false, false, true);
-        test1Prop.set(SDOConstants.XMLDATATYPE_PROPERTY, SDOConstants.SDO_INTOBJECT);
+        test1Prop.set(xmlDataTypeProperty, SDOConstants.SDO_INTOBJECT);
 
         DataObject test2Prop = addProperty(myRootTypeDO, "test2", SDOConstants.SDO_BOOLEANOBJECT, false, false, true);
-        test2Prop.set(SDOConstants.XMLDATATYPE_PROPERTY, SDOConstants.SDO_BOOLEANOBJECT);
+        test2Prop.set(xmlDataTypeProperty, SDOConstants.SDO_BOOLEANOBJECT);
 
         DataObject test3Prop = addProperty(myRootTypeDO, "test3", SDOConstants.SDO_DATE, false, false, true);
-        test3Prop.set(SDOConstants.XMLDATATYPE_PROPERTY, SDOConstants.SDO_DATE);
+        test3Prop.set(xmlDataTypeProperty, SDOConstants.SDO_DATE);
 
         DataObject test4Prop = addProperty(myRootTypeDO, "test4", SDOConstants.SDO_DATETIME, false, false, true);
-        test4Prop.set(SDOConstants.XMLDATATYPE_PROPERTY, SDOConstants.SDO_DATETIME);
+        test4Prop.set(xmlDataTypeProperty, SDOConstants.SDO_DATETIME);
         
-        DataObject test5Prop = addProperty(myRootTypeDO, "test5", SDOConstants.SDO_SHORT, false, false, true);
-        test5Prop.set(SDOConstants.XMLDATATYPE_PROPERTY, SDOConstants.SDO_SHORTOBJECT);
+        DataObject test5Prop = addProperty(myRootTypeDO, "test5", SDOConstants.SDO_SHORTOBJECT, false, false, true);
+        test5Prop.set(xmlDataTypeProperty, SDOConstants.SDO_SHORTOBJECT);
         
-        DataObject test6Prop = addProperty(myRootTypeDO, "test6", SDOConstants.SDO_DATAOBJECT, true, false, true);        
-        test6Prop.set(SDOConstants.XMLDATATYPE_PROPERTY, SDOConstants.SDO_DATAOBJECT);
+        DataObject test6Prop = addProperty(myRootTypeDO, "test6", dataObjectType, true, false, true);        
+        test6Prop.set(xmlDataTypeProperty, dataObjectType);
                 
-        DataObject test7Prop = addProperty(myRootTypeDO, "test7", SDOConstants.SDO_DATAOBJECT, true, false, true);        
-        test7Prop.set(SDOConstants.XML_SCHEMA_TYPE_PROPERTY, childType);
-        test7Prop.set(SDOConstants.XMLDATATYPE_PROPERTY, SDOConstants.SDO_DATAOBJECT);
+        DataObject test7Prop = addProperty(myRootTypeDO, "test7", dataObjectType, true, false, true);        
+        test7Prop.set(xmlSchemaTypeProperty, childType);
+        test7Prop.set(xmlDataTypeProperty, dataObjectType);
 
         Type myRootType = typeHelper.define(myRootTypeDO);
         ((SDOType)myRootType).setXsd(true);
@@ -122,6 +125,11 @@ public class DefineAndGenerateWrapperTypeTestCases extends XSDHelperDefineAndGen
    // public List getControlTypes() {
         List types = new ArrayList();
         ((SDOTypeHelper)typeHelper).reset();
+
+        SDOType dataObjectType = (SDOType) typeHelper.getType(SDOConstants.SDO_URL, SDOConstants.DATAOBJECT);
+        SDOProperty xmlDataTypeProperty = (SDOProperty) typeHelper.getOpenContentProperty(SDOConstants.ORACLE_SDO_URL, SDOConstants.SDOXML_DATATYPE);
+        SDOProperty xmlSchemaTypeProperty = (SDOProperty) typeHelper.getOpenContentProperty(SDOConstants.ORACLE_SDO_URL, SDOConstants. XML_SCHEMA_TYPE_NAME);
+
         DataObject myChildTypeDO = dataFactory.create("commonj.sdo", "Type");
         myChildTypeDO.set("uri", "http://www.example.org");
         myChildTypeDO.set("name", "childType");
@@ -136,21 +144,21 @@ public class DefineAndGenerateWrapperTypeTestCases extends XSDHelperDefineAndGen
         DataObject test1Prop = addProperty(myRootTypeDO, "test1", SDOConstants.SDO_INTOBJECT, false, false, true);
 
         DataObject test2Prop = addProperty(myRootTypeDO, "test2", SDOConstants.SDO_BOOLEANOBJECT, false, false, true);
-        test2Prop.set(SDOConstants.XMLDATATYPE_PROPERTY, SDOConstants.SDO_BOOLEANOBJECT);
+        test2Prop.set(xmlDataTypeProperty, SDOConstants.SDO_BOOLEANOBJECT);
 
         DataObject test3Prop = addProperty(myRootTypeDO, "test3", SDOConstants.SDO_DATE, false, false, true);
 
         DataObject test4Prop = addProperty(myRootTypeDO, "test4", SDOConstants.SDO_DATETIME, false, false, true);
         
         DataObject test5Prop = addProperty(myRootTypeDO, "test5", SDOConstants.SDO_SHORT, false, false, true);
-        test5Prop.set(SDOConstants.XMLDATATYPE_PROPERTY, SDOConstants.SDO_SHORTOBJECT);
+        test5Prop.set(xmlDataTypeProperty, SDOConstants.SDO_SHORTOBJECT);
                 
-        DataObject test6Prop = addProperty(myRootTypeDO, "test6", SDOConstants.SDO_DATAOBJECT, true, false, true);
-        test6Prop.set(SDOConstants.XMLDATATYPE_PROPERTY, SDOConstants.SDO_DATAOBJECT);
+        DataObject test6Prop = addProperty(myRootTypeDO, "test6", dataObjectType, true, false, true);
+        test6Prop.set(xmlDataTypeProperty, dataObjectType);
                 
         DataObject test7Prop = addProperty(myRootTypeDO, "test7", childType, true, false, true);        
-        test7Prop.set(SDOConstants.XML_SCHEMA_TYPE_PROPERTY, childType);
-        test7Prop.set(SDOConstants.XMLDATATYPE_PROPERTY, SDOConstants.SDO_DATAOBJECT);
+        test7Prop.set(xmlSchemaTypeProperty, childType);
+        test7Prop.set(xmlDataTypeProperty, dataObjectType);
 
         Type myRootType = typeHelper.define(myRootTypeDO);
         ((SDOType)myRootType).setXsd(true);
@@ -226,6 +234,11 @@ public class DefineAndGenerateWrapperTypeTestCases extends XSDHelperDefineAndGen
    // public List getControlTypes() {
         List types = new ArrayList();
         ((SDOTypeHelper)typeHelper).reset();
+
+        SDOType dataObjectType = (SDOType) typeHelper.getType(SDOConstants.SDO_URL, SDOConstants.DATAOBJECT);
+        SDOProperty xmlDataTypeProperty = (SDOProperty) typeHelper.getOpenContentProperty(SDOConstants.ORACLE_SDO_URL, SDOConstants.SDOXML_DATATYPE);
+        SDOProperty xmlSchemaTypeProperty = (SDOProperty) typeHelper.getOpenContentProperty(SDOConstants.ORACLE_SDO_URL, SDOConstants. XML_SCHEMA_TYPE_NAME);
+
         DataObject myChildTypeDO = dataFactory.create("commonj.sdo", "Type");
         myChildTypeDO.set("uri", "http://www.example.org");
         myChildTypeDO.set("name", "childType");
@@ -238,21 +251,21 @@ public class DefineAndGenerateWrapperTypeTestCases extends XSDHelperDefineAndGen
         DataObject test1Prop = addProperty(myRootTypeDO, "test1", SDOConstants.SDO_INTOBJECT, false, false, true);
 
         DataObject test2Prop = addProperty(myRootTypeDO, "test2", SDOConstants.SDO_BOOLEANOBJECT, false, false, true);
-        test2Prop.set(SDOConstants.XMLDATATYPE_PROPERTY, SDOConstants.SDO_BOOLEANOBJECT);
+        test2Prop.set(xmlDataTypeProperty, SDOConstants.SDO_BOOLEANOBJECT);
 
         DataObject test3Prop = addProperty(myRootTypeDO, "test3", SDOConstants.SDO_DATE, false, false, true);
 
         DataObject test4Prop = addProperty(myRootTypeDO, "test4", SDOConstants.SDO_DATETIME, false, false, true);
         
         DataObject test5Prop = addProperty(myRootTypeDO, "test5", SDOConstants.SDO_SHORT, false, false, true);
-        test5Prop.set(SDOConstants.XMLDATATYPE_PROPERTY, SDOConstants.SDO_SHORTOBJECT);
+        test5Prop.set(xmlDataTypeProperty, SDOConstants.SDO_SHORTOBJECT);
         
-        DataObject test6Prop = addProperty(myRootTypeDO, "test6", SDOConstants.SDO_DATAOBJECT, true, false, true);
-        test6Prop.set(SDOConstants.XMLDATATYPE_PROPERTY, SDOConstants.SDO_DATAOBJECT);
+        DataObject test6Prop = addProperty(myRootTypeDO, "test6", dataObjectType, true, false, true);
+        test6Prop.set(xmlDataTypeProperty, dataObjectType);
                 
         DataObject test7Prop = addProperty(myRootTypeDO, "test7", myChildTypeDO, true, false, true);        
-        test7Prop.set(SDOConstants.XML_SCHEMA_TYPE_PROPERTY, myChildTypeDO);
-        test7Prop.set(SDOConstants.XMLDATATYPE_PROPERTY, SDOConstants.SDO_DATAOBJECT);
+        test7Prop.set(xmlSchemaTypeProperty, myChildTypeDO);
+        test7Prop.set(xmlDataTypeProperty, dataObjectType);
 
         Type myRootType = typeHelper.define(myRootTypeDO);
         ((SDOType)myRootType).setXsd(true);

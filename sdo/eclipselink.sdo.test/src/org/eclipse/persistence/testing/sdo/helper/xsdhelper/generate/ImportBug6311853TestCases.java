@@ -25,6 +25,8 @@ import javax.xml.transform.stream.StreamSource;
 
 import junit.textui.TestRunner;
 import org.eclipse.persistence.sdo.SDOConstants;
+import org.eclipse.persistence.sdo.SDOProperty;
+import org.eclipse.persistence.sdo.SDOType;
 import org.eclipse.persistence.sdo.helper.DefaultSchemaLocationResolver;
 import org.eclipse.persistence.sdo.helper.SDOXSDHelper;
 import org.w3c.dom.Document;
@@ -56,20 +58,25 @@ public class ImportBug6311853TestCases extends XSDHelperGenerateTestCases {
         List types = new ArrayList();
         String uri = "my.uri2";
 
-        DataObject addressTypeDO = dataFactory.create(SDOConstants.SDO_TYPE);
+        SDOType dataObjectType = (SDOType) typeHelper.getType(SDOConstants.SDO_URL, SDOConstants.DATAOBJECT);
+        SDOType typeType = (SDOType) typeHelper.getType(SDOConstants.SDO_URL, SDOConstants.TYPE);
+        SDOProperty xmlDataTypeProperty = (SDOProperty) typeHelper.getOpenContentProperty(SDOConstants.ORACLE_SDO_URL, SDOConstants.SDOXML_DATATYPE);
+        SDOProperty xmlSchemaTypeProperty = (SDOProperty) typeHelper.getOpenContentProperty(SDOConstants.ORACLE_SDO_URL, SDOConstants. XML_SCHEMA_TYPE_NAME);
+
+        DataObject addressTypeDO = dataFactory.create(typeType);
         addressTypeDO.set("name", "Address");
         addressTypeDO.set("uri", "addressURI");
         addProperty(addressTypeDO, "street", SDOConstants.SDO_STRING, false, false, false);
         addProperty(addressTypeDO, "city", SDOConstants.SDO_STRING, false, false, false);
         Type addressType = typeHelper.define(addressTypeDO);
 
-        DataObject personTypeDO = dataFactory.create(SDOConstants.SDO_TYPE);
+        DataObject personTypeDO = dataFactory.create(typeType);
         personTypeDO.set("name", "Person");
         personTypeDO.set("uri", uri);
         addProperty(personTypeDO, "name", SDOConstants.SDO_STRING, false, false, false);
         DataObject addressPropDO = addProperty(personTypeDO, "address", addressType, true, false, true);
-        addressPropDO.set(SDOConstants.XMLDATATYPE_PROPERTY, SDOConstants.SDO_DATAOBJECT);
-        addressPropDO.set(SDOConstants.XML_SCHEMA_TYPE_PROPERTY, addressType);
+        addressPropDO.set(xmlDataTypeProperty, dataObjectType);
+        addressPropDO.set(xmlSchemaTypeProperty, addressType);
         Type personType = typeHelper.define(personTypeDO);
 
         types.add(personType);

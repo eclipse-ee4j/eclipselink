@@ -16,6 +16,7 @@ import commonj.sdo.DataObject;
 import commonj.sdo.Property;
 
 import org.eclipse.persistence.sdo.SDODataObject;
+import org.eclipse.persistence.sdo.SDOProperty;
 import org.eclipse.persistence.exceptions.DescriptorException;
 import org.eclipse.persistence.mappings.AttributeAccessor;
 
@@ -27,7 +28,7 @@ import org.eclipse.persistence.mappings.AttributeAccessor;
  */
 public class SDOMethodAttributeAccessor extends AttributeAccessor {
     protected Class attributeClass;
-    protected Property property;
+    protected SDOProperty property;
 
     public SDOMethodAttributeAccessor(Property property) {
         setProperty(property);
@@ -90,7 +91,7 @@ public class SDOMethodAttributeAccessor extends AttributeAccessor {
      * INTERNAL:   
      */
     public void setProperty(Property property) {
-        this.property = property;
+        this.property = (SDOProperty) property;
     }
 
     /**

@@ -17,6 +17,7 @@ import junit.textui.TestRunner;
 import org.eclipse.persistence.sdo.SDOConstants;
 import org.eclipse.persistence.sdo.SDODataObject;
 import org.eclipse.persistence.sdo.SDOProperty;
+import org.eclipse.persistence.sdo.SDOType;
 import org.eclipse.persistence.exceptions.SDOException;
 
 public class SDODataObjectGetDataObjectConversionTest extends SDODataObjectConversionTestCases {
@@ -30,8 +31,10 @@ public class SDODataObjectGetDataObjectConversionTest extends SDODataObjectConve
     }
 
     public void testGetDataObjectConversionFromDefinedProperty() {
+        SDOType dataObjectType = (SDOType) typeHelper.getType(SDOConstants.SDO_URL, SDOConstants.DATAOBJECT);
+
         SDOProperty property = ((SDOProperty)dataObject.getInstanceProperty(PROPERTY_NAME));
-        property.setType(SDOConstants.SDO_DATAOBJECT);
+        property.setType(dataObjectType);
 
         SDODataObject b = new SDODataObject();
 
@@ -41,9 +44,11 @@ public class SDODataObjectGetDataObjectConversionTest extends SDODataObjectConve
     }
 
     public void testGetDataObjectConversionFromDefinedPropertyWithPath() {
+        SDOType dataObjectType = (SDOType) typeHelper.getType(SDOConstants.SDO_URL, SDOConstants.DATAOBJECT);
+
         // dataObject's type add boolean property
         SDOProperty property = ((SDOProperty)dataObject.getInstanceProperty(PROPERTY_NAME));
-        property.setType(SDOConstants.SDO_DATAOBJECT);
+        property.setType(dataObjectType);
 
         SDODataObject b = new SDODataObject();
 
@@ -54,9 +59,11 @@ public class SDODataObjectGetDataObjectConversionTest extends SDODataObjectConve
 
     //2. purpose: getDataObject with Undefined Boolean Property
     public void testGetDataObjectConversionFromUndefinedProperty() {
+        SDOType dataObjectType = (SDOType) typeHelper.getType(SDOConstants.SDO_URL, SDOConstants.DATAOBJECT);
+
         SDOProperty property = new SDOProperty(aHelperContext);
         property.setName(PROPERTY_NAME);
-        property.setType(SDOConstants.SDO_DATAOBJECT);
+        property.setType(dataObjectType);
 
         try {
             dataObject.getDataObject(property);
@@ -67,9 +74,11 @@ public class SDODataObjectGetDataObjectConversionTest extends SDODataObjectConve
 
     //3. purpose: getDataObject with property set to boolean value
     public void testGetDataObjectConversionFromProperty() {
+        SDOType dataObjectType = (SDOType) typeHelper.getType(SDOConstants.SDO_URL, SDOConstants.DATAOBJECT);
+
         // dataObject's type add boolean property        
         SDOProperty property = ((SDOProperty)dataObject.getInstanceProperty(PROPERTY_NAME));
-        property.setType(SDOConstants.SDO_DATAOBJECT);                
+        property.setType(dataObjectType);
         type.setOpen(true);
 
         boolean b = true;
@@ -93,9 +102,11 @@ public class SDODataObjectGetDataObjectConversionTest extends SDODataObjectConve
 
     //purpose: getBoolean with Defined Boolean Property
     public void testGetDataObjectConversionFromPropertyIndex() {
+        SDOType dataObjectType = (SDOType) typeHelper.getType(SDOConstants.SDO_URL, SDOConstants.DATAOBJECT);
+
         // dataObject's type add boolean property
         SDOProperty property = ((SDOProperty)dataObject.getInstanceProperty(PROPERTY_NAME));
-        property.setType(SDOConstants.SDO_DATAOBJECT);
+        property.setType(dataObjectType);
         type.addDeclaredProperty(property);
         type.setOpen(true);
 

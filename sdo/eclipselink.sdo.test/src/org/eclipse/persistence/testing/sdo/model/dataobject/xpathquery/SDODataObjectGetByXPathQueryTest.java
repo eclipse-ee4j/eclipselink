@@ -50,9 +50,11 @@ public class SDODataObjectGetByXPathQueryTest extends SDODataObjectGetByXPathQue
     }
 
     public void testMiddleOpenContentPropertyAliasName() {
+        SDOType dataObjectType = (SDOType) typeHelper.getType(SDOConstants.SDO_URL, SDOConstants.DATAOBJECT);
+
         SDOProperty property_open = new SDOProperty(aHelperContext);
         property_open.setName("openProperty");
-        property_open.setType(SDOConstants.SDO_DATAOBJECT);
+        property_open.setType(dataObjectType);
         property_open.setMany(false);
         property_open.setContainment(true);
         List aliasNames_ = new ArrayList();

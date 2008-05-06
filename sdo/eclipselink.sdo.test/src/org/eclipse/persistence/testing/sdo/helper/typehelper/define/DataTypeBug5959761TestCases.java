@@ -13,12 +13,14 @@
 package org.eclipse.persistence.testing.sdo.helper.typehelper.define;
 
 import commonj.sdo.DataObject;
+import commonj.sdo.Property;
 import commonj.sdo.Type;
 import commonj.sdo.helper.XMLDocument;
 import java.io.FileInputStream;
 import java.sql.Timestamp;
 import junit.textui.TestRunner;
 import org.eclipse.persistence.sdo.SDOConstants;
+import org.eclipse.persistence.sdo.SDOType;
 import org.eclipse.persistence.testing.sdo.SDOTestCase;
 
 public class DataTypeBug5959761TestCases extends SDOTestCase {
@@ -32,6 +34,8 @@ public class DataTypeBug5959761TestCases extends SDOTestCase {
     }
 
     public void testDataTypeAnnotation() throws Exception {
+        SDOType propertyType = (SDOType) typeHelper.getType(SDOConstants.SDO_URL, SDOConstants.PROPERTY);
+
         DataObject timestampSTDo = dataFactory.create("commonj.sdo", "Type");
         timestampSTDo.set("uri", "http://sdo.sample.service/types/");
         timestampSTDo.set("name", "TimeStampeST");
@@ -47,11 +51,13 @@ public class DataTypeBug5959761TestCases extends SDOTestCase {
         DataObject rootPropDO = rootTypeDO.createDataObject("property");
         rootPropDO.set("name", "hireDate");
         rootPropDO.set("type", SDOConstants.SDO_DATETIME);
-        rootPropDO.set(SDOConstants.XMLDATATYPE_PROPERTY, timeStampType);
+
+        Property xmlDataTypeProperty = typeHelper.getOpenContentProperty(SDOConstants.ORACLE_SDO_URL, SDOConstants.SDOXML_DATATYPE);
+        rootPropDO.set(xmlDataTypeProperty, timeStampType);
         rootPropDO.set(SDOConstants.XMLELEMENT_PROPERTY, true);
         Type rootType = typeHelper.define(rootTypeDO);
         
-        DataObject propDO = dataFactory.create(SDOConstants.SDO_PROPERTY);
+        DataObject propDO = dataFactory.create(propertyType);
         propDO.set("name", "Root");
         propDO.set("type", rootType);
         typeHelper.defineOpenContentProperty("http://sdo.sample.service/types/", propDO);

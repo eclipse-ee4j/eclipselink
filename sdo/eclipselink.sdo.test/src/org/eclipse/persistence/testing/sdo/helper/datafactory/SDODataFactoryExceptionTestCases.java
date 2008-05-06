@@ -13,8 +13,11 @@
 package org.eclipse.persistence.testing.sdo.helper.datafactory;
 
 import commonj.sdo.Type;
+import commonj.sdo.impl.HelperProvider;
 import junit.textui.TestRunner;
 import org.eclipse.persistence.sdo.SDOType;
+import org.eclipse.persistence.sdo.helper.SDOTypeHelper;
+import org.eclipse.persistence.sdo.types.SDODataType;
 import org.eclipse.persistence.testing.sdo.helper.xmlhelper.SDOXMLHelperTestCases;
 
 public class SDODataFactoryExceptionTestCases extends SDOXMLHelperTestCases {
@@ -38,8 +41,7 @@ public class SDODataFactoryExceptionTestCases extends SDOXMLHelperTestCases {
     }
 
     public void testOpenTypeException() throws Exception {
-        SDOType type = new SDOType("uri", "name");
-        type.setDataType(true);
+        SDOType type = new SDODataType("uri", "name", (SDOTypeHelper) HelperProvider.getDefaultContext().getTypeHelper());
         try {
             dataFactory.create(type);
             fail("An IllegalArugmentException should have occurred");

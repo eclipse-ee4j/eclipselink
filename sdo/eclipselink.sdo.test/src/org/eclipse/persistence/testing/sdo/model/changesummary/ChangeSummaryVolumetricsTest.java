@@ -97,12 +97,15 @@ public class ChangeSummaryVolumetricsTest extends ChangeSummaryTestCases {
 
     public void setUp() {
         super.setUp();
+        SDOType changeSummaryType = (SDOType) typeHelper.getType(SDOConstants.SDO_URL, SDOConstants.CHANGESUMMARY);
+        SDOType dataObjectType = (SDOType) typeHelper.getType(SDOConstants.SDO_URL, SDOConstants.DATAOBJECT);
+
         DataObject rootTypeDO = defineType(URINAME, TYPENAME);
         rootType = (SDOType)typeHelper.define(rootTypeDO);
 
-        rootContainingPropertyB = setUpProperty("propertyA-B", true, SDOConstants.SDO_DATAOBJECT, rootType);
-        rootContainingPropertyC = setUpProperty("propertyA-C", true, SDOConstants.SDO_DATAOBJECT, rootType);
-        rootChangeSummaryProperty = setUpProperty("changeSummaryA", false, SDOConstants.SDO_CHANGESUMMARY, null);
+        rootContainingPropertyB = setUpProperty("propertyA-B", true, dataObjectType, rootType);
+        rootContainingPropertyC = setUpProperty("propertyA-C", true, dataObjectType, rootType);
+        rootChangeSummaryProperty = setUpProperty("changeSummaryA", false, changeSummaryType, null);
         root = (SDODataObject)dataFactory.create(rootType);
 
     }
@@ -127,19 +130,22 @@ public class ChangeSummaryVolumetricsTest extends ChangeSummaryTestCases {
      *        -> CS-C
      */
     protected void buildDeepTree() {
+        SDOType changeSummaryType = (SDOType) typeHelper.getType(SDOConstants.SDO_URL, SDOConstants.CHANGESUMMARY);
+        SDOType dataObjectType = (SDOType) typeHelper.getType(SDOConstants.SDO_URL, SDOConstants.DATAOBJECT);
+
         DataObject type_BDO = defineType("B_uri", "B");
 
-        DataObject propertyBDO = addProperty(type_BDO, "propertyB", SDOConstants.SDO_DATAOBJECT);
+        DataObject propertyBDO = addProperty(type_BDO, "propertyB", dataObjectType);
         propertyBDO.set("containment", true);
         type_B = (SDOType)typeHelper.define(type_BDO);
         propertyB = (SDOProperty)type_B.getDeclaredPropertiesMap().get("propertyB");
-        changeSummaryPropertyB = setUpProperty("changeSummaryB", false, SDOConstants.SDO_CHANGESUMMARY, type_B);
+        changeSummaryPropertyB = setUpProperty("changeSummaryB", false, changeSummaryType, type_B);
         DataObject type_CDO = defineType("C_uri", "C");
-        DataObject propertyCDO = addProperty(type_CDO, "propertyC", SDOConstants.SDO_DATAOBJECT);
+        DataObject propertyCDO = addProperty(type_CDO, "propertyC", dataObjectType);
         propertyBDO.set("containment", true);
         type_C = (SDOType)typeHelper.define(type_CDO);
         propertyC = (SDOProperty)type_C.getDeclaredPropertiesMap().get("propertyC");
-        changeSummaryPropertyC = setUpProperty("changeSummaryC", false, SDOConstants.SDO_CHANGESUMMARY, type_C);
+        changeSummaryPropertyC = setUpProperty("changeSummaryC", false, changeSummaryType, type_C);
 
         typeB_children = new SDOType[NUM_B_LEVELS];
         propertyB_children = new SDOProperty[NUM_B_LEVELS];
@@ -152,20 +158,10 @@ public class ChangeSummaryVolumetricsTest extends ChangeSummaryTestCases {
         for (int i = 0; i < NUM_B_LEVELS; i++) {
             DataObject typeB_childreniDO = defineType("D_uri" + String.valueOf(i), "D" + String.valueOf(i));
 
-            DataObject propDo = addProperty(typeB_childreniDO, "propertyD" + String.valueOf(i), SDOConstants.SDO_DATAOBJECT);
+            DataObject propDo = addProperty(typeB_childreniDO, "propertyD" + String.valueOf(i), dataObjectType);
             propDo.set("containment", true);
             typeB_children[i] = (SDOType)typeHelper.define(typeB_childreniDO);
             propertyB_children[i] = (SDOProperty)typeB_children[i].getDeclaredPropertiesMap().get("propertyD" + String.valueOf(i));
-
-            /*
-
-            SDOProperty property = new SDOProperty(aHelperContext);
-            property.setName("propertyD" + String.valueOf(i));
-            property.setContainment(true);
-            property.setType(SDOConstants.SDO_DATAOBJECT);
-            typeB_children[i].addDeclaredProperty(property);
-            propertyB_children[i] = property;
-            */
         }
 
         dataObjectB_children[0] = (SDODataObject)dataObjectB.createDataObject(propertyB, typeB_children[0]);

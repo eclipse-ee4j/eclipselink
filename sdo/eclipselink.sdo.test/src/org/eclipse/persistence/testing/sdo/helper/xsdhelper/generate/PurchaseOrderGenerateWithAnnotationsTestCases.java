@@ -13,6 +13,7 @@
 package org.eclipse.persistence.testing.sdo.helper.xsdhelper.generate;
 
 import commonj.sdo.Type;
+import commonj.sdo.helper.DataFactory;
 import java.io.InputStream;
 import java.io.StringReader;
 import java.util.ArrayList;
@@ -21,7 +22,9 @@ import junit.textui.TestRunner;
 import org.eclipse.persistence.sdo.SDOConstants;
 import org.eclipse.persistence.sdo.SDOProperty;
 import org.eclipse.persistence.sdo.SDOType;
+import org.eclipse.persistence.sdo.helper.SDOTypeHelper;
 import org.eclipse.persistence.sdo.helper.SDOXSDHelper;
+import org.eclipse.persistence.sdo.types.SDODataType;
 import org.w3c.dom.Document;
 import org.xml.sax.InputSource;
 
@@ -43,6 +46,9 @@ public class PurchaseOrderGenerateWithAnnotationsTestCases extends XSDHelperGene
     }
 
     public List getTypesToGenerateFrom() {
+        SDOType dataObjectType = (SDOType) typeHelper.getType(SDOConstants.SDO_URL, SDOConstants.DATAOBJECT);
+        SDOProperty xmlDataTypeProperty = (SDOProperty) typeHelper.getOpenContentProperty(SDOConstants.ORACLE_SDO_URL, SDOConstants.SDOXML_DATATYPE);
+
         List types = new ArrayList();
         String uri = getControlUri();
         Type stringType = typeHelper.getType("commonj.sdo", "String");
@@ -51,8 +57,7 @@ public class PurchaseOrderGenerateWithAnnotationsTestCases extends XSDHelperGene
         Type decimalType = typeHelper.getType("commonj.sdo", "Decimal");
         String javaPackage = "com.example.myPackage";
 
-        SDOType gregorianDateType = new SDOType(uri, "MyGregorianDate");
-        gregorianDateType.setDataType(true);
+        SDOType gregorianDateType = new SDODataType(uri, "MyGregorianDate", (SDOTypeHelper) typeHelper);
         gregorianDateType.setInstanceProperty(SDOConstants.JAVA_CLASS_PROPERTY, "java.sql.Time");
         List aliasNames = new ArrayList();
         aliasNames.add("TheGregorianDate");
@@ -120,15 +125,13 @@ public class PurchaseOrderGenerateWithAnnotationsTestCases extends XSDHelperGene
         USaddrType.getDeclaredProperties().add(countryProp);
 
         /****QUANTITY TYPE*****/
-        SDOType quantityType = new SDOType(uri, "quantityType");
-        quantityType.setDataType(true);
+        SDOType quantityType = new SDODataType(uri, "quantityType", (SDOTypeHelper) typeHelper);
         quantityType.setXsdType(SDOConstants.ANY_TYPE_QNAME);
         quantityType.getBaseTypes().add(intType);
         quantityType.setInstanceClassName("java.lang.Integer");
 
         /****SKU TYPE*****/
-        SDOType SKUType = new SDOType(uri, "SKUSDO");
-        SKUType.setDataType(true);
+        SDOType SKUType = new SDODataType(uri, "SKUSDO", (SDOTypeHelper) typeHelper);
         SKUType.setXsd(true);
         SKUType.setXsdLocalName("SKU");
         SKUType.setInstanceClassName("com.example.myPackage.SKU");
@@ -167,7 +170,7 @@ public class PurchaseOrderGenerateWithAnnotationsTestCases extends XSDHelperGene
         quantityProp.setName("quantity");
         quantityProp.setXsdLocalName("quantity");        
         quantityProp.setContainingType(itemType);          
-        quantityProp.setInstanceProperty(SDOConstants.XMLDATATYPE_PROPERTY, SDOConstants.SDO_INTEGER);
+        quantityProp.setInstanceProperty(xmlDataTypeProperty, SDOConstants.SDO_INTEGER);
         quantityProp.setType(SDOConstants.SDO_INTEGER);
         itemType.getDeclaredProperties().add(quantityProp);
 
@@ -275,8 +278,8 @@ public class PurchaseOrderGenerateWithAnnotationsTestCases extends XSDHelperGene
         itemsProp.setContainment(true);
         //temsProp.setElement(true);
         itemsProp.setInstanceProperty(SDOConstants.XMLELEMENT_PROPERTY, Boolean.TRUE);
-        itemsProp.setInstanceProperty(SDOConstants.XMLDATATYPE_PROPERTY, itemsType);
-        itemsProp.setType(SDOConstants.SDO_DATAOBJECT);
+        itemsProp.setInstanceProperty(xmlDataTypeProperty, itemsType);
+        itemsProp.setType(dataObjectType);
         itemsProp.setContainingType(POtype);
 
         SDOProperty commentProp = new SDOProperty(aHelperContext);
@@ -295,7 +298,7 @@ public class PurchaseOrderGenerateWithAnnotationsTestCases extends XSDHelperGene
         //orderDateProp.setType(yearMonthDayType);
         //orderDateProp.setAttribute(true);
         orderDateProp.setType(SDOConstants.SDO_YEARMONTHDAY);
-        orderDateProp.setInstanceProperty(SDOConstants.XMLDATATYPE_PROPERTY, gregorianDateType);
+        orderDateProp.setInstanceProperty(xmlDataTypeProperty, gregorianDateType);
         orderDateProp.setContainingType(POtype);
         orderDateProp.setContainment(false);
 

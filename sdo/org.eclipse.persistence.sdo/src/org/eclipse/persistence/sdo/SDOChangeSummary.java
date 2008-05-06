@@ -386,7 +386,7 @@ public class SDOChangeSummary implements ChangeSummary {
         if (!isCreated(dataObject) && isDirty(dataObject)) {
             List oldSettingsList = new ArrayList();
             for (int i = 0; i < dataObject.getInstanceProperties().size(); i++) {
-                Property nextProp = (Property)dataObject.getInstanceProperties().get(i);
+                SDOProperty nextProp = (SDOProperty)dataObject.getInstanceProperties().get(i);
                 Setting setting = getOldValueForChangedDataObject(dataObject, nextProp);
                 if (setting != null) {
                     oldSettingsList.add(setting);
@@ -396,7 +396,7 @@ public class SDOChangeSummary implements ChangeSummary {
             List openProps = (List)getUnsetOCPropertiesMap().get(dataObject);
             if(openProps != null){
               for(int i=0; i< openProps.size(); i++){
-                Property nextProp = (Property)openProps.get(i);
+                SDOProperty nextProp = (SDOProperty)openProps.get(i);
                 Setting setting = getOldValueForChangedDataObject(dataObject, nextProp);
                   if (setting != null) {
                       oldSettingsList.add(setting);
@@ -587,7 +587,7 @@ public class SDOChangeSummary implements ChangeSummary {
         }
 
         if (!isCreated(dataObject) && isDirty(dataObject)) {
-            return getOldValueForChangedDataObject(dataObject, property);
+            return getOldValueForChangedDataObject(dataObject, (SDOProperty) property);
         }
 
         // TODO: Investigate why the case of a null dataObject is not mentioned in the Spec.
@@ -600,8 +600,8 @@ public class SDOChangeSummary implements ChangeSummary {
     * @param property
     * @return new or already existing Setting
     */
-    private ChangeSummary.Setting getOldValueForChangedDataObject(DataObject dataObject, Property property) {
-        if ((null == property) || property.getType().equals(SDOConstants.SDO_CHANGESUMMARY)) {
+    private ChangeSummary.Setting getOldValueForChangedDataObject(DataObject dataObject, SDOProperty property) {
+        if ((null == property) || property.getType().isChangeSummaryType()) {
             return null;
         }
         Setting setting = getPropertyInOldSettings(dataObject, property);

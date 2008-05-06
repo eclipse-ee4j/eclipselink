@@ -410,7 +410,8 @@ public class SDOTypesGenerator {
 
         String value = (String) complexType.getAttributesMap().get(SDOConstants.SDOXML_ALIASNAME_QNAME);
         if (value != null) {
-            java.util.List names = (java.util.List) XMLConversionManager.getDefaultXMLManager().convertObject(value, java.util.List.class);
+            XMLConversionManager xmlConversionManager = ((SDOXMLHelper) aHelperContext.getXMLHelper()).getXmlConversionManager();
+            java.util.List names = (java.util.List) xmlConversionManager.convertObject(value, java.util.List.class);
             currentType.setAliasNames(names);
         }
 
@@ -639,7 +640,8 @@ public class SDOTypesGenerator {
         SDOType currentType = getSDOTypeForName(targetNamespace, defaultNamespace, false, sdoTypeName);
         String value = (String) simpleType.getAttributesMap().get(SDOConstants.SDOXML_ALIASNAME_QNAME);
         if (value != null) {
-            java.util.List names = (java.util.List) XMLConversionManager.getDefaultXMLManager().convertObject(value, java.util.List.class);
+            XMLConversionManager xmlConversionManager = ((SDOXMLHelper) aHelperContext.getXMLHelper()).getXmlConversionManager();
+            java.util.List names = (java.util.List) xmlConversionManager.convertObject(value, java.util.List.class);
             currentType.setAliasNames(names);
         }
 
@@ -1189,7 +1191,7 @@ public class SDOTypesGenerator {
 
         p.setMany(isMany);
 
-        if (p.getType().equals(SDOConstants.SDO_CHANGESUMMARY)) {
+        if (p.getType().isChangeSummaryType()) {
             p.setReadOnly(true);
         }
 
@@ -1495,7 +1497,7 @@ public class SDOTypesGenerator {
         p.setContainment(false);
         setDefaultValue(p, attribute);
 
-        if (p.getType().equals(SDOConstants.SDO_CHANGESUMMARY)) {
+        if (p.getType().isChangeSummaryType()) {
             p.setReadOnly(true);
         }
 
@@ -1509,7 +1511,8 @@ public class SDOTypesGenerator {
         //aliasName annotation
         String aliasNamesValue = (String) simpleComponent.getAttributesMap().get(SDOConstants.SDOXML_ALIASNAME_QNAME);
         if (aliasNamesValue != null) {
-            java.util.List names = (java.util.List) XMLConversionManager.getDefaultXMLManager().convertObject(aliasNamesValue, java.util.List.class);
+            XMLConversionManager xmlConversionManager = ((SDOXMLHelper) aHelperContext.getXMLHelper()).getXmlConversionManager();
+            java.util.List names = (java.util.List) xmlConversionManager.convertObject(aliasNamesValue, java.util.List.class);
             p.setAliasNames(names);
         }
 
@@ -1523,7 +1526,6 @@ public class SDOTypesGenerator {
         //dataType annotation
         String dataTypeValue = (String) simpleComponent.getAttributesMap().get(SDOConstants.SDOXML_DATATYPE_QNAME);
         if (dataTypeValue != null) {
-            //QName dataTypeQname = (QName)XMLConversionManager.getDefaultXMLManager().convertObject(dataTypeValue, QName.class);                      
             QName xsdQName = ((SDOTypeHelper) aHelperContext.getTypeHelper()).getXSDTypeFromSDOType(sdoPropertyType);
             if ((xsdQName == null) && !sdoPropertyType.isDataType()) {
                 xsdQName = new QName(sdoPropertyType.getURI(), sdoPropertyType.getName());
@@ -1531,7 +1533,8 @@ public class SDOTypesGenerator {
             p.setXsdType(xsdQName);
             SDOType sdoType = getSDOTypeForName(targetNamespace, defaultNamespace, dataTypeValue);
             sdoPropertyType = sdoType;
-            p.setInstanceProperty(SDOConstants.XMLDATATYPE_PROPERTY, sdoType);
+            Property xmlDataTypeProperty = aHelperContext.getTypeHelper().getOpenContentProperty(SDOConstants.ORACLE_SDO_URL, SDOConstants.SDOXML_DATATYPE);
+            p.setInstanceProperty(xmlDataTypeProperty, sdoType);
         }
 
         //string annotation
@@ -1741,13 +1744,14 @@ public class SDOTypesGenerator {
         if (index != -1) {
             lookupName = lookupName.substring(index + 1, lookupName.length());
         }
-        SDOType returnType = (SDOType) aHelperContext.getTypeHelper().getType(uri, lookupName);
+        SDOTypeHelper sdoTypeHelper = (SDOTypeHelper) aHelperContext.getTypeHelper();
+        SDOType returnType = (SDOType) sdoTypeHelper.getType(uri, lookupName);
         if (returnType == null) {
             QName qname = new QName(uri, lookupName);
             returnType = (SDOType) getGeneratedTypes().get(qname);
 
             if (returnType == null) {
-                returnType = new SDOType(uri, lookupName, aHelperContext);
+                returnType = new SDOType(uri, lookupName, sdoTypeHelper);
                 returnType.setXsd(true);
                 returnType.setXsdLocalName(xsdLocalName);
             }

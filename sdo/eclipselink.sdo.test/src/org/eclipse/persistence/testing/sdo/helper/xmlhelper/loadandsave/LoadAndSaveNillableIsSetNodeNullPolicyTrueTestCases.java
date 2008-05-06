@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.List;
 import junit.textui.TestRunner;
 import org.eclipse.persistence.sdo.SDOConstants;
+import org.eclipse.persistence.sdo.SDOType;
 
 public class LoadAndSaveNillableIsSetNodeNullPolicyTrueTestCases extends LoadAndSaveTestCases {
     public LoadAndSaveNillableIsSetNodeNullPolicyTrueTestCases(String name) {
@@ -99,10 +100,12 @@ public class LoadAndSaveNillableIsSetNodeNullPolicyTrueTestCases extends LoadAnd
     }
 
     public void registerTypes() {
-        Type stringType = typeHelper.getType("commonj.sdo", "String");
+        SDOType stringType = (SDOType) typeHelper.getType(SDOConstants.SDO_URL, SDOConstants.STRING);
+        SDOType propertyType = (SDOType) typeHelper.getType(SDOConstants.SDO_URL, SDOConstants.PROPERTY);
+        SDOType typeType = (SDOType) typeHelper.getType(SDOConstants.SDO_URL, SDOConstants.TYPE);
 
         //ADDRESS TYPE
-        DataObject addressTypeDO = dataFactory.create("commonj.sdo", "Type");
+        DataObject addressTypeDO = dataFactory.create(typeType);
         addressTypeDO.set("uri", getControlRootURI());
         addressTypeDO.set("name", "AddressType");
 
@@ -111,7 +114,7 @@ public class LoadAndSaveNillableIsSetNodeNullPolicyTrueTestCases extends LoadAnd
         Type addressType = typeHelper.define(addressTypeDO);
 
         // create a new Type for Customers        
-        DataObject customerType = dataFactory.create("commonj.sdo", "Type");
+        DataObject customerType = dataFactory.create(typeType);
         customerType.set("uri", getControlRootURI());
         customerType.set("name", "EmployeeType");
         //customerType.set("name", "Employee");        
@@ -128,7 +131,7 @@ public class LoadAndSaveNillableIsSetNodeNullPolicyTrueTestCases extends LoadAnd
         // now define the Customer type so that customers can be made        
         Type customerSDOType = typeHelper.define(customerType);
 
-        DataObject propDO = dataFactory.create(SDOConstants.SDO_PROPERTY);
+        DataObject propDO = dataFactory.create(propertyType);
         propDO.set("name", getControlRootName());
         propDO.set("type", customerSDOType);
         typeHelper.defineOpenContentProperty(getControlRootURI(), propDO);

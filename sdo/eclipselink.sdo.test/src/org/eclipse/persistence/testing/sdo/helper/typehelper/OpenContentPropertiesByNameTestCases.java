@@ -19,6 +19,7 @@ import java.io.InputStream;
 import java.util.List;
 import junit.textui.TestRunner;
 import org.eclipse.persistence.sdo.SDOConstants;
+import org.eclipse.persistence.sdo.SDOType;
 import org.eclipse.persistence.testing.sdo.SDOTestCase;
 
 public class OpenContentPropertiesByNameTestCases extends SDOTestCase {
@@ -100,7 +101,9 @@ public class OpenContentPropertiesByNameTestCases extends SDOTestCase {
     }
 
     public void testDefineOpenContentProperty() {
-        DataObject propDO = dataFactory.create(SDOConstants.SDO_PROPERTY);
+        SDOType propertyType = (SDOType) typeHelper.getType(SDOConstants.SDO_URL, SDOConstants.PROPERTY);
+
+        DataObject propDO = dataFactory.create(propertyType);
         propDO.set("name", "testProp");
         propDO.set("type", SDOConstants.SDO_STRING);
 
@@ -118,7 +121,9 @@ public class OpenContentPropertiesByNameTestCases extends SDOTestCase {
     }
 
     public void testDefineOpenContentPropertyNullUri() {
-        DataObject propDO = dataFactory.create(SDOConstants.SDO_PROPERTY);
+        SDOType propertyType = (SDOType) typeHelper.getType(SDOConstants.SDO_URL, SDOConstants.PROPERTY);
+
+        DataObject propDO = dataFactory.create(propertyType);
         propDO.set("name", "testProp");
         propDO.set("type", SDOConstants.SDO_STRING);
         typeHelper.defineOpenContentProperty(null, propDO);

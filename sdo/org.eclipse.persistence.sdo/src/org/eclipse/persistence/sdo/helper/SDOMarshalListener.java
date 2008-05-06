@@ -14,7 +14,6 @@ package org.eclipse.persistence.sdo.helper;
 
 import commonj.sdo.ChangeSummary;
 import commonj.sdo.DataObject;
-import commonj.sdo.helper.TypeHelper;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -26,7 +25,6 @@ import org.eclipse.persistence.sdo.SDODataObject;
 import org.eclipse.persistence.sdo.SDOProperty;
 import org.eclipse.persistence.sdo.SDOSetting;
 import org.eclipse.persistence.sdo.SDOType;
-import org.eclipse.persistence.sdo.helper.delegates.SDOXMLHelperDelegate;
 import org.eclipse.persistence.sessions.Session;
 import org.eclipse.persistence.internal.descriptors.Namespace;
 import org.eclipse.persistence.internal.oxm.XMLConversionManager;
@@ -51,13 +49,13 @@ import org.w3c.dom.Element;
 public class SDOMarshalListener implements XMLMarshalListener {
     // marshalledObject may or may not be the root object
     private Object marshalledObject;
-    private TypeHelper typeHelper;
+    private SDOTypeHelper typeHelper;
 
     /** maintain narrowed context from the larger HelperContext (inside the xmlMarshaller)<br>
      * Visibility reduced from [public] in 2.1.0. May 15 2007 */
     private XMLMarshaller xmlMarshaller;
 
-    public SDOMarshalListener(XMLMarshaller aMarshaller, TypeHelper aTypeHelper) {
+    public SDOMarshalListener(XMLMarshaller aMarshaller, SDOTypeHelper aTypeHelper) {
         xmlMarshaller = aMarshaller;
         typeHelper = aTypeHelper;
     }
@@ -183,7 +181,8 @@ public class SDOMarshalListener implements XMLMarshalListener {
 
                 List unsetPropNames = changeSummary.getUnsetProps(nextModifiedDO);
                 if (!unsetPropNames.isEmpty()) {
-                    String unsetPropsString = (String)XMLConversionManager.getDefaultXMLManager().convertObject(unsetPropNames, String.class);
+                    XMLConversionManager xmlConversionManager = ((SDOXMLHelper)typeHelper.getHelperContext().getXMLHelper()).getXmlConversionManager();
+                    String unsetPropsString = (String)xmlConversionManager.convertObject(unsetPropNames, String.class);
                     csNode.setAttributeNS(SDOConstants.SDO_URL, sdoPrefix +//
                                           SDOConstants.SDO_XPATH_NS_SEPARATOR_FRAGMENT +//
                                           SDOConstants.CHANGESUMMARY_UNSET, unsetPropsString);
@@ -254,7 +253,7 @@ public class SDOMarshalListener implements XMLMarshalListener {
                                            getPathFromAncestor(((SDODataObject)original), (SDODataObject)marshalledObject, cs));
 
             //Added for bug 6346754            
-            if ((((SDODataObject)original).getContainmentProperty() != null) && ((SDODataObject)original).getContainmentProperty().getType().equals(SDOConstants.SDO_DATAOBJECT)) {
+            if ((((SDODataObject)original).getContainmentProperty() != null) && ((SDODataObject)original).getContainmentProperty().getType().isDataObjectType()) {
                 //may also need xsi:type                      
                 String schemaContext = ((SDOType)value.getType()).getXmlDescriptor().getSchemaReference().getSchemaContext();
                 QName schemaContextQName = ((SDOType)value.getType()).getXmlDescriptor().getSchemaReference().getSchemaContextAsQName(((SDOType)value.getType()).getXmlDescriptor().getNonNullNamespaceResolver());

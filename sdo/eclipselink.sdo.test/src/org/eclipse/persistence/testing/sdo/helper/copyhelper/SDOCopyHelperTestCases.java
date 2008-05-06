@@ -111,6 +111,8 @@ public class SDOCopyHelperTestCases extends SDOTestCase {
     public void setUp() {
         super.setUp();
 
+        SDOType changeSummaryType = (SDOType) aHelperContext.getTypeHelper().getType(SDOConstants.SDO_URL, SDOConstants.CHANGESUMMARY);
+
         // first we set up root data object       
         rootType = new SDOType(rootTypeUri, rootTypeName);// root's type        
 
@@ -211,7 +213,7 @@ public class SDOCopyHelperTestCases extends SDOTestCase {
 
         containedProperty_ChangeSummary = new SDOProperty(aHelperContext);
         containedProperty_ChangeSummary.setContainment(false);
-        containedProperty_ChangeSummary.setType(SDOConstants.SDO_CHANGESUMMARY);
+        containedProperty_ChangeSummary.setType(changeSummaryType);
         containedProperty_ChangeSummary.setName("containedProperty_ChangeSummary");
         containedType.addDeclaredProperty((Property)containedProperty_ChangeSummary);
 

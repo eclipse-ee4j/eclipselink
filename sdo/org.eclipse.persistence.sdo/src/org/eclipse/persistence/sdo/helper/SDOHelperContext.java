@@ -43,17 +43,27 @@ import commonj.sdo.helper.XSDHelper;
 import commonj.sdo.impl.ExternalizableDelegator;
 
 public class SDOHelperContext implements HelperContext {
-    private final CopyHelper copyHelper = new SDOCopyHelper(this);
-    private final DataFactory dataFactory = new SDODataFactory(this);
-    private final DataHelper dataHelper = new SDODataHelper(this);
-    private final EqualityHelper equalityHelper = new SDOEqualityHelper(this);
-    private final TypeHelper typeHelper = new SDOTypeHelperDelegate(this);
-    private final XMLHelper xmlHelper = new SDOXMLHelperDelegate(this);
-    private final XSDHelper xsdHelper = new SDOXSDHelperDelegate(this);
+    private CopyHelper copyHelper;
+    private DataFactory dataFactory;
+    private DataHelper dataHelper;
+    private EqualityHelper equalityHelper;
+    private XMLHelper xmlHelper;
+    private TypeHelper typeHelper;
+    private XSDHelper xsdHelper;
 
     public SDOHelperContext() {
-        //AbstractSessionLog.getLog().log(AbstractSessionLog.FINEST, "{0} creating new instance of {1}", //
-        //		new Object[] {getClass().getName(), this}, false);
+        this(Thread.currentThread().getContextClassLoader());
+    }
+
+    public SDOHelperContext(ClassLoader aClassLoader) {
+        super();
+        copyHelper = new SDOCopyHelper(this);
+        dataFactory = new SDODataFactory(this);
+        dataHelper = new SDODataHelper(this);
+        equalityHelper = new SDOEqualityHelper(this);
+        xmlHelper = new SDOXMLHelperDelegate(this, aClassLoader);
+        typeHelper = new SDOTypeHelperDelegate(this);
+        xsdHelper = new SDOXSDHelperDelegate(this);
     }
 
     public void reset() {

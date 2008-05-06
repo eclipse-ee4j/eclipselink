@@ -21,6 +21,7 @@ import java.util.List;
 import junit.textui.TestRunner;
 import org.eclipse.persistence.sdo.SDOChangeSummary;
 import org.eclipse.persistence.sdo.SDOConstants;
+import org.eclipse.persistence.sdo.SDODataObject;
 import org.eclipse.persistence.sdo.SDOProperty;
 import org.eclipse.persistence.testing.sdo.helper.xmlhelper.loadandsave.changesummary.ChangeSummaryRootLoadAndSaveTestCases;
 
@@ -124,9 +125,9 @@ public class ChangeSummaryDeleteOpenContentTestCases extends ChangeSummaryRootLo
         assertNotNull(yardDefinedValue);
        // assertEquals("theYardDefined" ,oldSequence.getProperty(2).getName());
         
-        DataObject yardUnDefinedValue = (DataObject)oldSequence.getValue(3);
+        SDODataObject yardUnDefinedValue = (SDODataObject)oldSequence.getValue(3);
         assertNotNull(yardUnDefinedValue);
-        assertEquals(SDOConstants.SDO_OPEN_SEQUENCED, yardUnDefinedValue.getType());
+        assertTrue(yardUnDefinedValue.getType().isOpenSequencedType());
         assertEquals("theYardUndefined" ,oldSequence.getProperty(3).getName());
         
         DataObject addressValue = (DataObject)oldSequence.getValue(4);

@@ -55,6 +55,10 @@ public abstract class XSDHelperDefineAndGenerateTestCases extends XSDHelperTestC
 
     protected void compareGeneratedTypes(List controlTypes, List types) {
         assertEquals(controlTypes.size(), types.size());
+
+        SDOProperty xmlDataTypeProperty = (SDOProperty) typeHelper.getOpenContentProperty(SDOConstants.ORACLE_SDO_URL, SDOConstants.SDOXML_DATATYPE);
+        SDOProperty xmlSchemaTypeProperty = (SDOProperty) typeHelper.getOpenContentProperty(SDOConstants.ORACLE_SDO_URL, SDOConstants. XML_SCHEMA_TYPE_NAME);
+
         for (int i = 0; i < types.size(); i++) {
             SDOType control = (SDOType)controlTypes.get(i);
             SDOType generated = null;
@@ -108,8 +112,8 @@ public abstract class XSDHelperDefineAndGenerateTestCases extends XSDHelperTestC
                 }
                 
                 
-                Object controlDataTypeValue = controlProp.get(SDOConstants.XMLDATATYPE_PROPERTY);
-                Object generatedDataTypeValue = generatedProp.get(SDOConstants.XMLDATATYPE_PROPERTY);
+                Object controlDataTypeValue = controlProp.get(xmlDataTypeProperty);
+                Object generatedDataTypeValue = generatedProp.get(xmlDataTypeProperty);
                 if (controlDataTypeValue == null) {
                     assertNull(generatedDataTypeValue);
                 } else {
@@ -118,18 +122,7 @@ public abstract class XSDHelperDefineAndGenerateTestCases extends XSDHelperTestC
                     assertEquals(controlDataTypeValue, generatedDataTypeValue);
                 }
                 
-                Object generatedSchemaTypeValue = generatedProp.get(SDOConstants.XML_SCHEMA_TYPE_PROPERTY);
-                //assertNull(generatedSchemaTypeValue);
-                /*Object controlSchemaTypeValue = controlProp.get(SDOConstants.XML_SCHEMA_TYPE_PROPERTY);
-                Object generatedSchemaTypeValue = generated.get(SDOConstants.XML_SCHEMA_TYPE_PROPERTY);
-                if (controlSchemaTypeValue == null) {
-                    assertNull(generatedSchemaTypeValue);
-                } else {
-                    assertTrue(controlSchemaTypeValue instanceof Type);
-                    assertTrue(generatedSchemaTypeValue instanceof Type);
-                    assertEquals(controlSchemaTypeValue, generatedSchemaTypeValue);
-                }*/
-                
+                Object generatedSchemaTypeValue = generatedProp.get(xmlSchemaTypeProperty);
 
                 assertEquals(xsdHelper.isAttribute(controlProp), xsdHelper.isAttribute(generatedProp));
                 assertEquals(xsdHelper.isElement(controlProp), xsdHelper.isElement(generatedProp));

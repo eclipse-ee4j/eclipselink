@@ -117,18 +117,21 @@ public class ChangeSummaryIsCreatedIsDeletedIsModifiedTest extends ChangeSummary
     public void testIsModifiedMoveDataObjectFromOneTreeToAnother() {
         changeSummary.beginLogging();
 
+        SDOType changeSummaryType = (SDOType) typeHelper.getType(SDOConstants.SDO_URL, SDOConstants.CHANGESUMMARY);
+        SDOType dataObjectType = (SDOType) typeHelper.getType(SDOConstants.SDO_URL, SDOConstants.DATAOBJECT);
+
         SDODataObject o;//= new SDODataObject();
         SDOType ty = new SDOType("newTypeUri", "newType");
         ty.setOpen(true);
         SDOProperty p = new SDOProperty(aHelperContext);
         p.setName("new Property");
         p.setContainment(true);
-        p.setType(SDOConstants.SDO_DATAOBJECT);
+        p.setType(dataObjectType);
         ty.addDeclaredProperty(p);
         SDOProperty p1 = new SDOProperty(aHelperContext);
         p1.setName("new Property ChangeSummary");
         p1.setContainment(false);
-        p1.setType(SDOConstants.SDO_CHANGESUMMARY);
+        p1.setType(changeSummaryType);
         ty.addDeclaredProperty(p1);
 
         o = (SDODataObject)dataFactory.create(ty);

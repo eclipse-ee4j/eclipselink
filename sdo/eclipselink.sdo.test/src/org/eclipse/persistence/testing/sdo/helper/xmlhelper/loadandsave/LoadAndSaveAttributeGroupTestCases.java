@@ -23,6 +23,7 @@ import java.util.List;
 import javax.xml.transform.stream.StreamSource;
 import junit.textui.TestRunner;
 import org.eclipse.persistence.sdo.SDOConstants;
+import org.eclipse.persistence.sdo.SDOType;
 import org.eclipse.persistence.sdo.helper.DefaultSchemaResolver;
 import org.eclipse.persistence.sdo.helper.SDOClassGenerator;
 
@@ -129,23 +130,25 @@ public class LoadAndSaveAttributeGroupTestCases extends LoadAndSaveTestCases {
     }
     
     public void registerTypes() {
-        Type stringType = typeHelper.getType("commonj.sdo", "String");
+        SDOType stringType = (SDOType) typeHelper.getType("commonj.sdo", "String");
+        SDOType typeType = (SDOType) typeHelper.getType(SDOConstants.SDO_URL, SDOConstants.TYPE);
+        SDOType propertyType = (SDOType) typeHelper.getType(SDOConstants.SDO_URL, SDOConstants.PROPERTY);
 
-        DataObject arrayCoordinateDO = dataFactory.create(SDOConstants.SDO_TYPE);
+        DataObject arrayCoordinateDO = dataFactory.create(typeType);
         arrayCoordinateDO.set("name", "arrayCoordinate");
         arrayCoordinateDO.set("uri", "http://schemas.xmlsoap.org/soap/encoding/");
         arrayCoordinateDO.set("dataType", true);
         List baseTypes = new ArrayList();
-        baseTypes.add(SDOConstants.SDO_STRING);
+        baseTypes.add(stringType);
         arrayCoordinateDO.set("baseType", baseTypes);
         Type arrayCoordinate = typeHelper.define(arrayCoordinateDO);
 
-        DataObject rootDO = dataFactory.create(SDOConstants.SDO_TYPE);
+        DataObject rootDO = dataFactory.create(typeType);
         rootDO.set("name", "root");
         rootDO.set("uri", "http://schemas.xmlsoap.org/soap/encoding/");
         rootDO.set("open", true);
         baseTypes = new ArrayList();
-        baseTypes.add(SDOConstants.SDO_STRING);
+        baseTypes.add(stringType);
         rootDO.set("baseType", baseTypes);
         addProperty(rootDO, "value", SDOConstants.SDO_STRING, false, false, false);
         addProperty(rootDO, "arrayType", SDOConstants.SDO_STRING, false, false, false);
@@ -160,7 +163,7 @@ public class LoadAndSaveAttributeGroupTestCases extends LoadAndSaveTestCases {
         addProperty(rootDO, "importedsecond", SDOConstants.SDO_STRING, false, false, false);
         Type rootType = typeHelper.define(rootDO);
 
-        DataObject childDO = dataFactory.create(SDOConstants.SDO_TYPE);
+        DataObject childDO = dataFactory.create(typeType);
         childDO.set("name", "child");
         childDO.set("uri", "http://schemas.xmlsoap.org/soap/encoding/");
         childDO.set("open", true);
@@ -178,32 +181,22 @@ public class LoadAndSaveAttributeGroupTestCases extends LoadAndSaveTestCases {
         addProperty(childDO, "href", SDOConstants.SDO_STRING, false, false, false);
         Type childType = typeHelper.define(childDO);
 
-        DataObject rootPropDO = dataFactory.create(SDOConstants.SDO_PROPERTY);
+        DataObject rootPropDO = dataFactory.create(propertyType);
         rootPropDO.set("name", "root");
         rootPropDO.set("type", rootType);
         typeHelper.defineOpenContentProperty("http://schemas.xmlsoap.org/soap/encoding/", rootPropDO);
 
-        DataObject wrapperDO = dataFactory.create(SDOConstants.SDO_TYPE);
+        DataObject wrapperDO = dataFactory.create(typeType);
         wrapperDO.set("name", "wrapper");
         wrapperDO.set("uri", "http://schemas.xmlsoap.org/soap/encoding/");
         addProperty(wrapperDO, "root", rootType, true, false, true);
         addProperty(wrapperDO, "child", childType, true, false, true);
         Type wrapperType = typeHelper.define(wrapperDO);
 
-        DataObject wrapperPropDO = dataFactory.create(SDOConstants.SDO_PROPERTY);
+        DataObject wrapperPropDO = dataFactory.create(propertyType);
         wrapperPropDO.set("name", "wrapper");
         wrapperPropDO.set("type", wrapperType);
         typeHelper.defineOpenContentProperty("http://schemas.xmlsoap.org/soap/encoding/", wrapperPropDO);
-
-        /* DataObject arrayDO = dataFactory.create(SDOConstants.SDO_TYPE);
-         arrayDO.set("name", "Array");
-         arrayDO.set("uri", "http://schemas.xmlsoap.org/soap/encoding/");
-
-         addProperty(rootDO, "id", SDOConstants.SDO_STRING, false, false, false);
-         addProperty(rootDO, "href", SDOConstants.SDO_STRING, false, false, false);
-         addProperty(rootDO, "arrayType", SDOConstants.SDO_STRING, false, false, false);
-         addProperty(rootDO, "offset", arrayCoordinate, false, false, false);
-         */
         typeHelper.define(rootDO);
     }
 }

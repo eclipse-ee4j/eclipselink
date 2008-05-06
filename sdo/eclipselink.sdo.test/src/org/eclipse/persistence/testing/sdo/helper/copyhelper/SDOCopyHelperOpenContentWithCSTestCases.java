@@ -17,6 +17,7 @@ import commonj.sdo.Property;
 import junit.textui.TestRunner;
 import org.eclipse.persistence.sdo.SDOConstants;
 import org.eclipse.persistence.sdo.SDOProperty;
+import org.eclipse.persistence.sdo.SDOType;
 
 public class SDOCopyHelperOpenContentWithCSTestCases extends SDOCopyHelperOpenContentTestCases {
     private Property openPropString;
@@ -29,14 +30,16 @@ public class SDOCopyHelperOpenContentWithCSTestCases extends SDOCopyHelperOpenCo
 
     public void setUp() {
         super.setUp();
+        SDOType propertyType = (SDOType) typeHelper.getType(SDOConstants.SDO_URL, SDOConstants.PROPERTY);
+
         customerObject = rootObject.getDataObject("customer");
-        DataObject newProperty = dataFactory.create(SDOConstants.SDO_PROPERTY);
+        DataObject newProperty = dataFactory.create(propertyType);
         SDOProperty nameProp = (SDOProperty)newProperty.getType().getProperty("name");
         newProperty.set(nameProp, "openPropString");
         newProperty.set("type", SDOConstants.SDO_STRING);
         openPropString = typeHelper.defineOpenContentProperty("my.uri", newProperty);
 
-        DataObject newProperty2 = dataFactory.create(SDOConstants.SDO_PROPERTY);
+        DataObject newProperty2 = dataFactory.create(propertyType);
 
         newProperty2.set(nameProp, "openPropStringMany");
 

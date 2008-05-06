@@ -16,6 +16,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.persistence.sdo.SDOConstants;
+import org.eclipse.persistence.sdo.SDOType;
 import org.eclipse.persistence.testing.sdo.helper.xmlhelper.loadandsave.LoadAndSaveTestCases;
 
 import commonj.sdo.DataObject;
@@ -93,6 +94,7 @@ public abstract class IsSetNillableOptionalWithDefaultTestCases extends LoadAndS
     public void registerTypes() {
         Type stringType = typeHelper.getType("commonj.sdo", "String");
         Type intType = typeHelper.getType("commonj.sdo", "Int");
+        SDOType propertyType = (SDOType) typeHelper.getType(SDOConstants.SDO_URL, SDOConstants.PROPERTY);
 
         // create employee type
         DataObject employeeTypeDO = dataFactory.create("commonj.sdo", "Type");        
@@ -123,7 +125,7 @@ public abstract class IsSetNillableOptionalWithDefaultTestCases extends LoadAndS
         // define type
         Type employeeSDOType = typeHelper.define(employeeTypeDO);
         // create a property of type employee - and associate the discriptor by QName
-        DataObject propDO = dataFactory.create(SDOConstants.SDO_PROPERTY);
+        DataObject propDO = dataFactory.create(propertyType);
         propDO.set("name", getControlRootName());
         propDO.set("type", employeeSDOType);
         typeHelper.defineOpenContentProperty(getControlRootURI(), propDO);

@@ -42,11 +42,14 @@ public class ChangeSummaryTestCases extends SDOTestCase {
 
     public void setUp() {
         super.setUp();
+
+        SDOType changeSummaryType = (SDOType) typeHelper.getType(SDOConstants.SDO_URL, SDOConstants.CHANGESUMMARY);
+
         DataObject rootPropertyTypeDO = defineType("rootPropertyTypeUri", "rootPropertyType");
         SDOType rootPropertyType = (SDOType)typeHelper.define(rootPropertyTypeDO);
 
         DataObject rootTypeDO = defineType(URINAME, TYPENAME);
-        DataObject changeSumPropertyDO = addProperty(rootTypeDO, "csmProp", SDOConstants.SDO_CHANGESUMMARY);
+        DataObject changeSumPropertyDO = addProperty(rootTypeDO, "csmProp", changeSummaryType);
         changeSumPropertyDO.set("containment", true);
         DataObject rootPropertyDO = addProperty(rootTypeDO, "property-Containment", rootPropertyType);
         rootPropertyDO.set("containment", true);

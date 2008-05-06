@@ -19,6 +19,7 @@ import commonj.sdo.DataObject;
 import commonj.sdo.Type;
 import org.eclipse.persistence.sdo.SDOConstants;
 import org.eclipse.persistence.sdo.SDOProperty;
+import org.eclipse.persistence.sdo.SDOType;
 import org.eclipse.persistence.testing.sdo.helper.xmlhelper.loadandsave.LoadAndSaveTestCases;
 
 public abstract class ChangeSummaryChildLoadAndSaveTestCases extends LoadAndSaveTestCases {
@@ -53,6 +54,7 @@ public abstract class ChangeSummaryChildLoadAndSaveTestCases extends LoadAndSave
         
         Type stringType = typeHelper.getType("commonj.sdo", "String");
         Type employeeType = registerEmployeeType();
+        SDOType propertyType = (SDOType) typeHelper.getType(SDOConstants.SDO_URL, SDOConstants.PROPERTY);
 
         // create a new Type for Customers
         DataObject teamType = dataFactory.create("commonj.sdo", "Type");
@@ -69,13 +71,14 @@ public abstract class ChangeSummaryChildLoadAndSaveTestCases extends LoadAndSave
 
         Type teamSDOType = typeHelper.define(teamType);
 
-        DataObject propDO = dataFactory.create(SDOConstants.SDO_PROPERTY);
+        DataObject propDO = dataFactory.create(propertyType);
         propDO.set("name", getControlRootName());
         propDO.set("type", teamSDOType);
         typeHelper.defineOpenContentProperty(getControlRootURI(), propDO);
     }
 
     private Type registerEmployeeType() {
+        SDOType changeSummaryType = (SDOType) typeHelper.getType(SDOConstants.SDO_URL, SDOConstants.CHANGESUMMARY);
         Type stringType = typeHelper.getType("commonj.sdo", "String");
         Type addressType = registerAddressType();
         Type phoneType = registerPhoneType();
@@ -93,7 +96,7 @@ public abstract class ChangeSummaryChildLoadAndSaveTestCases extends LoadAndSave
         addProperty(employeeType, "name", stringType, false, false, true);
         addProperty(employeeType, "address", addressType, true, false, true);
         DataObject phoneProp = addProperty(employeeType, "phone", phoneType, true, true, true);
-        DataObject myChangeSummaryProp = addProperty(employeeType, "myChangeSummary", SDOConstants.SDO_CHANGESUMMARY);
+        DataObject myChangeSummaryProp = addProperty(employeeType, "myChangeSummary", changeSummaryType);
         myChangeSummaryProp.setBoolean("containment", true);
 
         return typeHelper.define(employeeType);

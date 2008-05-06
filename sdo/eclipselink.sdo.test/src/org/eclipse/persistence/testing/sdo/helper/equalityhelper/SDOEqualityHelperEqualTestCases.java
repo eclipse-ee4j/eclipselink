@@ -99,6 +99,8 @@ public class SDOEqualityHelperEqualTestCases extends SDOTestCase {
     public void setUp() {
         super.setUp();
 
+        SDOType changeSummaryType = (SDOType) typeHelper.getType(SDOConstants.SDO_URL, SDOConstants.CHANGESUMMARY);
+
         // first we set up root data object
         DataObject rootTypeDO = defineType(rootTypeUri, rootTypeName);
         rootType = (SDOType)typeHelper.define(rootTypeDO);
@@ -228,7 +230,7 @@ public class SDOEqualityHelperEqualTestCases extends SDOTestCase {
         containedProperty_ChangeSummary.setContainment(false);
         //SDOType containedProperty_ChangeSummary_type = new SDOType("containedProperty_ChangeSummaryuri", "containedProperty_ChangeSummary");
         //containedProperty_ChangeSummary_type.setDataType(false);
-        containedProperty_ChangeSummary.setType(SDOConstants.SDO_CHANGESUMMARY);
+        containedProperty_ChangeSummary.setType(changeSummaryType);
         containedProperty_ChangeSummary.setName("containedProperty_ChangeSummary");
         containedType.addDeclaredProperty(containedProperty_ChangeSummary);
 

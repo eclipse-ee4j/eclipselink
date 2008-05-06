@@ -65,7 +65,7 @@ import org.eclipse.persistence.sdo.helper.SDOFragmentMappingAttributeAccessor;
  */
 public class SDOProperty implements Property, Serializable {
     private String propertyName;// unique name for this Type within Type
-    private Type type;// the Type of this Property
+    private SDOType type;// the Type of this Property
     private Type containingType;
     private boolean isContainment;// if this Property is containment
     private boolean hasMany;// if this Property is many-valued
@@ -100,9 +100,19 @@ public class SDOProperty implements Property, Serializable {
         aHelperContext = aContext;
     }
 
-    public SDOProperty(HelperContext aContext, String propertyName) {
+    public SDOProperty(HelperContext aContext, String aName) {
         this(aContext);
-        setName(propertyName);
+        setName(aName);
+    }
+
+    public SDOProperty(HelperContext aContext, String aName, SDOType aType) {
+        this(aContext, aName);
+        setType(aType);
+    }
+    
+    public SDOProperty(HelperContext aContext, String aUri, String aName, SDOType aType) {
+    	this(aContext, aName, aType);
+    	this.setUri(aUri);
     }
 
     /**
@@ -117,7 +127,7 @@ public class SDOProperty implements Property, Serializable {
      * Returns the type of the Property.
      * @return the Property type.
      */
-    public Type getType() {
+    public SDOType getType() {
         return type;
     }
 
@@ -217,7 +227,7 @@ public class SDOProperty implements Property, Serializable {
      * @param type   the type of this property.
      */
     public void setType(Type type) {
-        this.type = type;
+        this.type = (SDOType) type;
     }
 
     /**
@@ -433,7 +443,7 @@ public class SDOProperty implements Property, Serializable {
             return;
         }
 
-        if (getType().equals(SDOConstants.SDO_CHANGESUMMARY)) {
+        if (getType().isChangeSummaryType()) {
             buildChangeSummaryMapping();
             addMappingToOwner(false, indexToAdd);
         } else if (isNameCollision()) {
@@ -443,7 +453,7 @@ public class SDOProperty implements Property, Serializable {
         } else {
             boolean sdoMethodAccessor = true;
             if (!getType().isDataType()) {
-                if (getType().equals(SDOConstants.SDO_DATAOBJECT)) {
+                if (getType().isDataObjectType()) {
                     ((SDOType)getType()).setImplClassName(SDOConstants.SDO_DATA_OBJECT_IMPL_CLASS_NAME);
                     if(getXsdType() != null && !getXsdType().equals(SDOConstants.ANY_TYPE_QNAME)) {
                        if (isMany()) {
@@ -687,7 +697,7 @@ public class SDOProperty implements Property, Serializable {
 
         mapping.setXPath(xpath);
 
-        if (getType() != SDOConstants.SDO_DATAOBJECT) {
+        if (!getType().isDataObjectType()) {
             QName schemaContext = ((SDOType)getType()).getXmlDescriptor().getSchemaReference().getSchemaContextAsQName(((SDOType)getType()).getXmlDescriptor().getNamespaceResolver());
             ((XMLField)mapping.getField()).setLeafElementType(schemaContext);
 
@@ -711,7 +721,7 @@ public class SDOProperty implements Property, Serializable {
 
         mapping.setXPath(xpath);
 
-        if (getType() != SDOConstants.SDO_DATAOBJECT) {
+        if (!getType().isDataObjectType()) {
             QName schemaContext = ((SDOType)getType()).getXmlDescriptor().getSchemaReference().getSchemaContextAsQName(((SDOType)getType()).getXmlDescriptor().getNamespaceResolver());
             ((XMLField)mapping.getField()).setLeafElementType(schemaContext);
             mapping.setReferenceClassName(((SDOType)getType()).getImplClassName());
@@ -736,7 +746,7 @@ public class SDOProperty implements Property, Serializable {
         XMLObjectReferenceMapping mapping = new XMLObjectReferenceMapping();
         mapping.setAttributeName(getName());
 
-        if (getType().equals(SDOConstants.SDO_DATAOBJECT)) {
+        if (getType().isDataObjectType()) {
             ((SDOType)getType()).setImplClassName(SDOConstants.SDO_DATA_OBJECT_IMPL_CLASS_NAME);
         }
         mapping.setReferenceClassName(((SDOType)getType()).getImplClassName());
@@ -803,7 +813,7 @@ public class SDOProperty implements Property, Serializable {
         XMLCollectionReferenceMapping mapping = new XMLCollectionReferenceMapping();
         mapping.setAttributeName(getName());
 
-        if (getType().equals(SDOConstants.SDO_DATAOBJECT)) {
+        if (getType().isDataObjectType()) {
             ((SDOType)getType()).setImplClassName(SDOConstants.SDO_DATA_OBJECT_IMPL_CLASS_NAME);
         }
         mapping.setReferenceClassName(((SDOType)getType()).getImplClassName());
@@ -935,10 +945,10 @@ public class SDOProperty implements Property, Serializable {
 
     public void setInstanceProperty(Property property, Object value) {
         getPropertyValues().put(property, value);
-        if ((property == SDOConstants.XMLDATATYPE_PROPERTY) && (value instanceof Type)) {
+        if(SDOConstants.ORACLE_SDO_URL.equals(((SDOProperty) property).getUri()) && SDOConstants.SDOXML_DATATYPE.equals(property.getName()) && value instanceof Type) {
             setType((Type)value);
         }
-        if ((property == SDOConstants.XML_SCHEMA_TYPE_PROPERTY) && (value instanceof Type)) {
+        if(SDOConstants.ORACLE_SDO_URL.equals(((SDOProperty) property).getUri()) && SDOConstants.XML_SCHEMA_TYPE_NAME.equals(property.getName()) && value instanceof Type) {
             Type schemaType = (Type)value;
             QName schemaTypeQName = new QName(schemaType.getURI(), schemaType.getName());
             setXsdType(schemaTypeQName);

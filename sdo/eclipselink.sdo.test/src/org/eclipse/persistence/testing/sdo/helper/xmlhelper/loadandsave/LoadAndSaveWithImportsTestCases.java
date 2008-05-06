@@ -24,6 +24,7 @@ import java.util.Map;
 import javax.xml.transform.stream.StreamSource;
 import junit.textui.TestRunner;
 import org.eclipse.persistence.sdo.SDOConstants;
+import org.eclipse.persistence.sdo.SDOType;
 import org.eclipse.persistence.sdo.helper.DefaultSchemaResolver;
 import org.eclipse.persistence.sdo.helper.SDOClassGenerator;
 import org.eclipse.persistence.sdo.helper.SDOXSDHelper;
@@ -116,6 +117,7 @@ public class LoadAndSaveWithImportsTestCases extends LoadAndSaveTestCases {
         Type decimalType = typeHelper.getType("commonj.sdo", "Decimal");
         Type dateType = typeHelper.getType("commonj.sdo", "Date");
         Type booleanType = typeHelper.getType("commonj.sdo", "Boolean");
+        SDOType propertyType = (SDOType) typeHelper.getType(SDOConstants.SDO_URL, SDOConstants.PROPERTY);
 
         DataObject nameType = defineType("http://www.globalcompany.com/ns/order", "Name");
         addProperty(nameType, "First", stringType,false, false, true);
@@ -181,22 +183,22 @@ public class LoadAndSaveWithImportsTestCases extends LoadAndSaveTestCases {
         Type poSDOType = typeHelper.define(poType);
 
 
-        DataObject purchaseOrderPropDO = dataFactory.create(SDOConstants.SDO_PROPERTY);
+        DataObject purchaseOrderPropDO = dataFactory.create(propertyType);
         purchaseOrderPropDO.set("name", "PurchaseOrder");
         purchaseOrderPropDO.set("type", poSDOType);
         Property prop = typeHelper.defineOpenContentProperty("http://www.globalcompany.com/ns/order", purchaseOrderPropDO);
         
-        DataObject purchaseOrderPropDO2 = dataFactory.create(SDOConstants.SDO_PROPERTY);
+        DataObject purchaseOrderPropDO2 = dataFactory.create(propertyType);
         purchaseOrderPropDO2.set("name", "PurchaseOrder2");
         purchaseOrderPropDO2.set("type", poSDOType);
         Property prop2 = typeHelper.defineOpenContentProperty("http://www.globalcompany.com/ns/order", purchaseOrderPropDO2);
         
-        DataObject purchaseOrderPropDO3 = dataFactory.create(SDOConstants.SDO_PROPERTY);
+        DataObject purchaseOrderPropDO3 = dataFactory.create(propertyType);
         purchaseOrderPropDO3.set("name", "PurchaseOrder3");
         purchaseOrderPropDO3.set("type", poSDOType);
         Property prop3 = typeHelper.defineOpenContentProperty("http://www.globalcompany.com/ns/order", purchaseOrderPropDO3);
         
-        DataObject purchaseOrderPropDO4 = dataFactory.create(SDOConstants.SDO_PROPERTY);
+        DataObject purchaseOrderPropDO4 = dataFactory.create(propertyType);
         purchaseOrderPropDO4.set("name", "PurchaseOrder4");
         purchaseOrderPropDO4.set("type", poSDOType);
         Property prop4 = typeHelper.defineOpenContentProperty("http://www.globalcompany.com/ns/order", purchaseOrderPropDO4);
@@ -211,53 +213,9 @@ public class LoadAndSaveWithImportsTestCases extends LoadAndSaveTestCases {
         // now define the Customer type so that customers can be made
         Type SOAOrderBookingProcessRequestType = typeHelper.define(SOAOrderBookingProcessRequestTypeDO);
         
-        DataObject SOAOrderBookingProcessRequestPropDO = dataFactory.create(SDOConstants.SDO_PROPERTY);
+        DataObject SOAOrderBookingProcessRequestPropDO = dataFactory.create(propertyType);
         SOAOrderBookingProcessRequestPropDO.set("name", getControlRootName());
         SOAOrderBookingProcessRequestPropDO.set("type", SOAOrderBookingProcessRequestType);
         typeHelper.defineOpenContentProperty(getControlRootURI(), SOAOrderBookingProcessRequestPropDO);
-        
-        
-        
-        /*
-        List types = new ArrayList();
-        types.add(nameSDOType);
-        types.add(itemSDOType);
-        types.add(orderItemsSDOType);
-        types.add(addressSDOType);
-        types.add(contactSDOType);
-        types.add(supplierInfoSDOType);
-        types.add(orderInfoSDOType);
-        types.add(poSDOType);
-        
-        
-        
-        System.out.println("********");
-        String xsd1 = xsdHelper.generate(types);
-        System.out.println(xsd1);
-        System.out.println("********");
-         List types2 = new ArrayList();
-         types2.add(SOAOrderBookingProcessRequestType);
-         Map nameSpaceMap = new HashMap();
-         nameSpaceMap.put("http://www.globalcompany.com/ns/order","OrderBookingPO.xsd");
-         //nameSpaceMap.put("http://www.globalcompany.com/ns/order");
-        String xsd2 = ((SDOXSDHelper)xsdHelper).generate(types2, nameSpaceMap);
-        System.out.println(xsd2);
-        
-        System.out.println("********");
-        */
-       /* DataObject propDO = dataFactory.create(SDOConstants.SDO_PROPERTY);
-        propDO.set("name", getControlRootName());
-        propDO.set("type", poSDOType);
-        typeHelper.defineOpenContentProperty(getControlRootURI(), propDO);
-        
-        DataObject propDO = dataFactory.create(SDOConstants.SDO_PROPERTY);
-        propDO.set("name", getControlRootName());
-        propDO.set("type", poSDOType);
-        typeHelper.defineOpenContentProperty(getControlRootURI(), propDO);
-        
-        DataObject propDO = dataFactory.create(SDOConstants.SDO_PROPERTY);
-        propDO.set("name", getControlRootName());
-        propDO.set("type", poSDOType);
-        typeHelper.defineOpenContentProperty(getControlRootURI(), propDO);*/
     }
 }

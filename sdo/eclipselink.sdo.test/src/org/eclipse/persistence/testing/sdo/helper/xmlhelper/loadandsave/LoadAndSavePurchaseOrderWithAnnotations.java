@@ -152,6 +152,7 @@ public class LoadAndSavePurchaseOrderWithAnnotations extends LoadAndSaveTestCase
     }
 
     protected void registerTypes() {
+        SDOType propertyType = (SDOType) typeHelper.getType(SDOConstants.SDO_URL, SDOConstants.PROPERTY);
         Type stringType = typeHelper.getType("commonj.sdo", "String");
         Type itemsType = registerItemsType();
         Type myTimeStampType = registerMyTimestampType();
@@ -172,7 +173,7 @@ public class LoadAndSavePurchaseOrderWithAnnotations extends LoadAndSaveTestCase
 
         Type poType = typeHelper.define(purchaseOrderTypeType);
 
-        DataObject propDO = dataFactory.create(SDOConstants.SDO_PROPERTY);
+        DataObject propDO = dataFactory.create(propertyType);
         propDO.set("name", getControlRootName());
         propDO.set("type", poType);
         typeHelper.defineOpenContentProperty(getControlRootURI(), propDO);

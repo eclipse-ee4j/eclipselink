@@ -202,6 +202,8 @@ public class SDOCopyEqualityHelperTestCases extends SDOTestCase {
     */
     public void setUp() {
         super.setUp();
+        SDOType changeSummaryType = (SDOType) aHelperContext.getTypeHelper().getType(SDOConstants.SDO_URL, SDOConstants.CHANGESUMMARY);
+
         // first we set up root data object       
         DataObject rootTypeDO = defineType(rootTypeUri, rootTypeName);
         rootType = (SDOType)typeHelper.define(rootTypeDO);
@@ -209,7 +211,6 @@ public class SDOCopyEqualityHelperTestCases extends SDOTestCase {
         rootProperty1 = new SDOProperty(aHelperContext);// root's property1
         rootProperty1.setName("rootproperty1-datatype");
         SDOType rootProperty1_type = SDOConstants.SDO_STRING;// string type
-        rootProperty1_type.setDataType(true);// datatype
         rootProperty1.setType(rootProperty1_type);
         rootType.addDeclaredProperty(rootProperty1);// add this property to root type's declared list
 
@@ -220,7 +221,6 @@ public class SDOCopyEqualityHelperTestCases extends SDOTestCase {
         QName qname = new QName("notDataTypeUri", "notDataType");
         ((SDOTypeHelper)typeHelper).getTypesHashMap().put(qname, rootProperty2_type);
 
-        rootProperty2_type.setDataType(false);// not datatype
         rootProperty2.setType(rootProperty2_type);
         rootType.addDeclaredProperty((Property)rootProperty2);
 
@@ -230,7 +230,6 @@ public class SDOCopyEqualityHelperTestCases extends SDOTestCase {
         DataObject rootProperty3_typeDO = defineType("notDataTypeUri1", "notDataType1");
         SDOType rootProperty3_type = (SDOType)typeHelper.define(rootProperty3_typeDO);
 
-        rootProperty3_type.setDataType(false);// not datatype
         rootProperty3.setType(rootProperty3_type);
         rootType.addDeclaredProperty(rootProperty3);
 
@@ -242,7 +241,6 @@ public class SDOCopyEqualityHelperTestCases extends SDOTestCase {
         DataObject rootProperty4_typeDO = defineType("listPropertyUri", "listProperty");
         SDOType rootProperty4_type = (SDOType)typeHelper.define(rootProperty4_typeDO);
 
-        rootProperty4_type.setDataType(false);
         rootProperty4.setType(rootProperty4_type);
         rootType.addDeclaredProperty(rootProperty4);
 
@@ -251,7 +249,6 @@ public class SDOCopyEqualityHelperTestCases extends SDOTestCase {
 
         DataObject rootProperty_NotContainment_typeDO = defineType("rootProperty_NotContainmenturi", "rootProperty_NotContainment");
         SDOType rootProperty_NotContainment_type = (SDOType)typeHelper.define(rootProperty_NotContainment_typeDO);
-        rootProperty_NotContainment_type.setDataType(false);
         rootProperty_NotContainment.setType(rootProperty_NotContainment_type);
         rootProperty_NotContainment.setName("rootProperty_NotContainment");
         rootType.addDeclaredProperty(rootProperty_NotContainment);
@@ -263,7 +260,6 @@ public class SDOCopyEqualityHelperTestCases extends SDOTestCase {
 
         DataObject contained1Property3_typeDO = defineType("contained1Property3Uri", "contained1Property3_notdataType");
         SDOType contained1Property3_type = (SDOType)typeHelper.define(contained1Property3_typeDO);
-        contained1Property3_type.setDataType(false);// non-datatype
         contained1Property3.setType(contained1Property3_type);
 
         objects = new ArrayList();
@@ -274,7 +270,6 @@ public class SDOCopyEqualityHelperTestCases extends SDOTestCase {
         SDOProperty obj1Property = new SDOProperty(aHelperContext);
         obj1Property.setName("obj1Property");
         SDOType obj1PropertyType = SDOConstants.SDO_STRING;
-        obj1PropertyType.setDataType(true);
         obj1Property.setType(obj1PropertyType);
         obj1Property.setContainment(false);
         obj1Type.addDeclaredProperty(obj1Property);
@@ -290,7 +285,6 @@ public class SDOCopyEqualityHelperTestCases extends SDOTestCase {
         containedProperty1 = new SDOProperty(aHelperContext);// containedDataObject's property1
         containedProperty1.setName("containedProperty1-dataType");
         SDOType containedProperty1_type = SDOConstants.SDO_STRING;// String Type
-        containedProperty1_type.setDataType(true);// dataType
         containedProperty1.setType(containedProperty1_type);
         containedType.addDeclaredProperty(containedProperty1);
 
@@ -319,7 +313,7 @@ public class SDOCopyEqualityHelperTestCases extends SDOTestCase {
 
         containedProperty_ChangeSummary = new SDOProperty(aHelperContext);
         containedProperty_ChangeSummary.setContainment(false);
-        containedProperty_ChangeSummary.setType(SDOConstants.SDO_CHANGESUMMARY);
+        containedProperty_ChangeSummary.setType(changeSummaryType);
         containedProperty_ChangeSummary.setName("containedProperty_ChangeSummary");
         containedType.addDeclaredProperty(containedProperty_ChangeSummary);
 

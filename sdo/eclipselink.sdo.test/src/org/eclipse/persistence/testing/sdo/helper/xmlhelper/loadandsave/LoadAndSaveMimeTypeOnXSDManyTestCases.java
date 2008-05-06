@@ -18,6 +18,7 @@ import commonj.sdo.Type;
 import junit.textui.TestRunner;
 
 import org.eclipse.persistence.sdo.SDOConstants;
+import org.eclipse.persistence.sdo.SDOType;
 import org.eclipse.persistence.sdo.helper.SDOXMLHelper;
 
 import org.eclipse.persistence.oxm.XMLMarshaller;
@@ -66,11 +67,13 @@ public class LoadAndSaveMimeTypeOnXSDManyTestCases extends LoadAndSaveTestCases 
     }
 
     public void registerTypes() {
-        Type stringType = typeHelper.getType("commonj.sdo", "String");
-        Type bytesType = typeHelper.getType("commonj.sdo", "Bytes");
+        SDOType bytesType = (SDOType) typeHelper.getType(SDOConstants.SDO_URL, SDOConstants.BYTES);
+        SDOType propertyType = (SDOType) typeHelper.getType(SDOConstants.SDO_URL, SDOConstants.PROPERTY);
+        SDOType stringType = (SDOType) typeHelper.getType(SDOConstants.SDO_URL, SDOConstants.STRING);
+        SDOType typeType = (SDOType) typeHelper.getType(SDOConstants.SDO_URL, SDOConstants.TYPE);
 
         // create a new Type for Customers
-        DataObject customerType = dataFactory.create("commonj.sdo", "Type");
+        DataObject customerType = dataFactory.create(typeType);
         customerType.set("uri", getControlRootURI());
         customerType.set("name", "EmployeeType");
 
@@ -87,7 +90,7 @@ public class LoadAndSaveMimeTypeOnXSDManyTestCases extends LoadAndSaveTestCases 
         // now define the Customer type so that customers can be made
         Type customerSDOType = typeHelper.define(customerType);
         
-        DataObject propDO = dataFactory.create(SDOConstants.SDO_PROPERTY);
+        DataObject propDO = dataFactory.create(propertyType);
         propDO.set("name", getControlRootName());
         propDO.set("type", customerSDOType);
         typeHelper.defineOpenContentProperty(getControlRootURI(), propDO);

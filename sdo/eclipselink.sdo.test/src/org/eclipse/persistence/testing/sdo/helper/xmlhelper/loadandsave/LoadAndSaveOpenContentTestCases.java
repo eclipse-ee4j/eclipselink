@@ -20,6 +20,7 @@ import commonj.sdo.Type;
 import junit.textui.TestRunner;
 import org.eclipse.persistence.sdo.SDOConstants;
 import org.eclipse.persistence.sdo.SDOProperty;
+import org.eclipse.persistence.sdo.SDOType;
 
 public class LoadAndSaveOpenContentTestCases extends LoadAndSaveTestCases {
     public LoadAndSaveOpenContentTestCases(String name) {
@@ -63,13 +64,15 @@ public class LoadAndSaveOpenContentTestCases extends LoadAndSaveTestCases {
      }
 
     public void registerTypes() {        
-        Type stringType = typeHelper.getType("commonj.sdo", "String");
-        Type addressType = registerAddressType();
-        Type phoneType = registerPhoneType();
-        Type orderType = registerOrderType();
+        SDOType stringType = (SDOType) typeHelper.getType(SDOConstants.SDO_URL, SDOConstants.STRING);
+        SDOType addressType = (SDOType) registerAddressType();
+        SDOType phoneType = (SDOType) registerPhoneType();
+        SDOType orderType = (SDOType) registerOrderType();
+        SDOType propertyType = (SDOType) typeHelper.getType(SDOConstants.SDO_URL, SDOConstants.PROPERTY);
+        SDOType typeType = (SDOType) typeHelper.getType(SDOConstants.SDO_URL, SDOConstants.TYPE);
 
         // create a new Type for Customers
-        DataObject customerType = dataFactory.create("commonj.sdo", "Type");
+        DataObject customerType = dataFactory.create(typeType);
         customerType.set("uri", getControlRootURI());
         customerType.set("name", "customer-type");
         customerType.set("open", true);
@@ -84,51 +87,51 @@ public class LoadAndSaveOpenContentTestCases extends LoadAndSaveTestCases {
         // now define the Customer type so that customers can be made
         Type customerSDOType = typeHelper.define(customerType);
 
-        DataObject agePropDO = dataFactory.create(SDOConstants.SDO_PROPERTY);
+        DataObject agePropDO = dataFactory.create(propertyType);
         agePropDO.set("name", "age");
         agePropDO.set("type", stringType);
         agePropDO.set(SDOConstants.XMLELEMENT_PROPERTY, true);
         typeHelper.defineOpenContentProperty(getControlRootURI(), agePropDO);
 
-        DataObject pricePropDO = dataFactory.create(SDOConstants.SDO_PROPERTY);
+        DataObject pricePropDO = dataFactory.create(propertyType);
         pricePropDO.set("name", "price");
         pricePropDO.set("type", SDOConstants.SDO_FLOAT);
         pricePropDO.set(SDOConstants.XMLELEMENT_PROPERTY, true);
         typeHelper.defineOpenContentProperty(getControlRootURI(), pricePropDO);
 
-        DataObject extraNamePropDO = dataFactory.create(SDOConstants.SDO_PROPERTY);
+        DataObject extraNamePropDO = dataFactory.create(propertyType);
         extraNamePropDO.set("name", "extraName");
         extraNamePropDO.set("type", stringType);
         extraNamePropDO.set(SDOConstants.XMLELEMENT_PROPERTY, true);
         typeHelper.defineOpenContentProperty(getControlRootURI(), extraNamePropDO);
 
-        DataObject bdPropDO = dataFactory.create(SDOConstants.SDO_PROPERTY);
+        DataObject bdPropDO = dataFactory.create(propertyType);
         bdPropDO.set("name", "birthDate");
         bdPropDO.set("type", SDOConstants.SDO_DATE);
         bdPropDO.set(SDOConstants.XMLELEMENT_PROPERTY, true);
         typeHelper.defineOpenContentProperty(getControlRootURI(), bdPropDO);
 
-        DataObject orderPropDO = dataFactory.create(SDOConstants.SDO_PROPERTY);
+        DataObject orderPropDO = dataFactory.create(propertyType);
         orderPropDO.set("name", "order");
         orderPropDO.set("type", orderType);
         orderPropDO.set("containment", true);
         orderPropDO.set(SDOConstants.XMLELEMENT_PROPERTY, true);
         typeHelper.defineOpenContentProperty(getControlRootURI(), orderPropDO);
 
-        DataObject customerPropDO = dataFactory.create(SDOConstants.SDO_PROPERTY);
+        DataObject customerPropDO = dataFactory.create(propertyType);
         customerPropDO.set("name", "customer");
         customerPropDO.set("type", customerSDOType);
         customerPropDO.set(SDOConstants.XMLELEMENT_PROPERTY, true);
         typeHelper.defineOpenContentProperty(getControlRootURI(), customerPropDO);
 
-        DataObject phonePropDO = dataFactory.create(SDOConstants.SDO_PROPERTY);
+        DataObject phonePropDO = dataFactory.create(propertyType);
         phonePropDO.set("name", "phone");
         phonePropDO.set("type", phoneType);
         phonePropDO.set("containment", true);
         phonePropDO.set(SDOConstants.XMLELEMENT_PROPERTY, true);
         typeHelper.defineOpenContentProperty(getControlRootURI(), phonePropDO);
 
-        DataObject blahPhonePropDO = dataFactory.create(SDOConstants.SDO_PROPERTY);
+        DataObject blahPhonePropDO = dataFactory.create(propertyType);
         blahPhonePropDO.set("name", "blahphone");
         blahPhonePropDO.set("type", phoneType);
         blahPhonePropDO.set("many", true);

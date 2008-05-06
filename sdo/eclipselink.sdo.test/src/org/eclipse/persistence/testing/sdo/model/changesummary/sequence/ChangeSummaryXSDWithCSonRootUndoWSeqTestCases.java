@@ -18,6 +18,7 @@ import org.eclipse.persistence.sdo.SDOConstants;
 import org.eclipse.persistence.sdo.SDODataObject;
 import org.eclipse.persistence.sdo.SDOProperty;
 import org.eclipse.persistence.sdo.SDOSequence;
+import org.eclipse.persistence.sdo.SDOType;
 import org.eclipse.persistence.sdo.ValueStore;
 import commonj.sdo.DataObject;
 import commonj.sdo.Property;
@@ -646,7 +647,8 @@ public class ChangeSummaryXSDWithCSonRootUndoWSeqTestCases extends ChangeSummary
     */
     
     private SDOProperty createOpenContentElementProperty(String name, Type type) {
-        DataObject newProperty = dataFactory.create(SDOConstants.SDO_PROPERTY);
+        SDOType propertyType = (SDOType) typeHelper.getType(SDOConstants.SDO_URL, SDOConstants.PROPERTY);
+        DataObject newProperty = dataFactory.create(propertyType);
         SDOProperty nameProp = (SDOProperty)newProperty.getType().getProperty("name");
         newProperty.set(nameProp, name);
         newProperty.set("type", type);

@@ -319,7 +319,7 @@ public class SDOUnmappedContentHandler implements UnmappedContentHandler {
                 newType = aHelperContext.getTypeHelper().getType(typeUri, typeName);
             }
             if (newType == null) {
-                newType = SDOConstants.SDO_OPEN_SEQUENCED;
+                newType = aHelperContext.getTypeHelper().getType(SDOConstants.ORACLE_SDO_URL, "OpenSequencedType");
                 Property property = defineNewSDOProperty(namespaceURI, localName, true, newType);
                 DataObject newDO = aHelperContext.getDataFactory().create(newType);
                 processAttributes(atts, newDO, false);
@@ -371,7 +371,7 @@ public class SDOUnmappedContentHandler implements UnmappedContentHandler {
             giveToOXToProcess(namespaceURI, localName, qName, atts, ((SDOType)rootObjectType).getXmlDescriptor());
             return;
         } else {
-            Type rootType = SDOConstants.SDO_OPEN_SEQUENCED;
+            Type rootType = aHelperContext.getTypeHelper().getType(SDOConstants.ORACLE_SDO_URL, "OpenSequencedType");
             rootObject = dataFactory.create(rootType);
         }
         currentDataObjects.push(rootObject);

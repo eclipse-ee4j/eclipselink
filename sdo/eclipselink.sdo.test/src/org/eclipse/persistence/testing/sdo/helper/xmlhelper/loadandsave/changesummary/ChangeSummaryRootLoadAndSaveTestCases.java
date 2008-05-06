@@ -19,6 +19,7 @@ import commonj.sdo.DataObject;
 import commonj.sdo.Type;
 import org.eclipse.persistence.sdo.SDOConstants;
 import org.eclipse.persistence.sdo.SDOProperty;
+import org.eclipse.persistence.sdo.SDOType;
 import org.eclipse.persistence.testing.sdo.helper.xmlhelper.loadandsave.LoadAndSaveTestCases;
 
 public abstract class ChangeSummaryRootLoadAndSaveTestCases extends LoadAndSaveTestCases {
@@ -50,6 +51,8 @@ public abstract class ChangeSummaryRootLoadAndSaveTestCases extends LoadAndSaveT
 	}
       
     protected void registerTypes() {
+        SDOType changeSummaryType = (SDOType) typeHelper.getType(SDOConstants.SDO_URL, SDOConstants.CHANGESUMMARY);
+        SDOType propertyType = (SDOType) typeHelper.getType(SDOConstants.SDO_URL, SDOConstants.PROPERTY);
         Type stringType = typeHelper.getType("commonj.sdo", "String");
         Type employeeType = registerEmployeeType();
         
@@ -66,23 +69,23 @@ public abstract class ChangeSummaryRootLoadAndSaveTestCases extends LoadAndSaveT
         addProperty(teamType, "name", stringType, true, false, true);
         DataObject managerProp = addProperty(teamType, "manager", employeeType, true, false, true);
         DataObject empProp = addProperty(teamType, "employee", employeeType, true, true, true);
-        DataObject myChangeSummaryProp = addProperty(teamType, "myChangeSummary", SDOConstants.SDO_CHANGESUMMARY, true, false, true);
+        DataObject myChangeSummaryProp = addProperty(teamType, "myChangeSummary", changeSummaryType, true, false, true);
 
         Type teamSDOType = typeHelper.define(teamType);
 
-        DataObject propDO = dataFactory.create(SDOConstants.SDO_PROPERTY);
+        DataObject propDO = dataFactory.create(propertyType);
         propDO.set("name", "team");
         propDO.set("type", teamSDOType);
         propDO.set(SDOConstants.XMLELEMENT_PROPERTY, true);
         typeHelper.defineOpenContentProperty(getControlRootURI(), propDO);        
         
-        DataObject propDO2 = dataFactory.create(SDOConstants.SDO_PROPERTY);
+        DataObject propDO2 = dataFactory.create(propertyType);
         propDO2.set("name", "simpleOpenTestDefined");
         propDO2.set("type", SDOConstants.SDO_INT);
         propDO2.set(SDOConstants.XMLELEMENT_PROPERTY, true);
         typeHelper.defineOpenContentProperty(getControlRootURI(), propDO2);
         
-        DataObject propDO3 = dataFactory.create(SDOConstants.SDO_PROPERTY);
+        DataObject propDO3 = dataFactory.create(propertyType);
         propDO3.set("name", "theYardDefined");
         propDO3.set(SDOConstants.XMLELEMENT_PROPERTY, true);
         Type yardType = typeHelper.getType("http://www.example.org", "Yard");

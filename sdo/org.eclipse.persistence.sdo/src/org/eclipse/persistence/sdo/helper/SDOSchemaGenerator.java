@@ -498,7 +498,8 @@ public class SDOSchemaGenerator {
             sc.getAttributesMap().put(qname, value);
         }
 
-        Type dataType = (Type)property.get(SDOConstants.XMLDATATYPE_PROPERTY);
+        Property xmlDataTypeProperty = aHelperContext.getTypeHelper().getOpenContentProperty(SDOConstants.ORACLE_SDO_URL, SDOConstants.SDOXML_DATATYPE);
+        Type dataType = (Type)property.get(xmlDataTypeProperty);
         if (dataType == null) {
             dataType = getAutomaticDataTypeForType(property.getType());
         }
@@ -564,7 +565,7 @@ public class SDOSchemaGenerator {
         // process default values that are defined in the schema (not via primitive numeric Object wrapped pseudo defaults)
         if (((SDOProperty)property).isDefaultSet()) {
             if (!property.isMany() && property.getType().isDataType()) {
-                XMLConversionManager xmlConversionManager = (XMLConversionManager)((SDOXMLHelper)aHelperContext.getXMLHelper()).getXmlContext().getSession(0).getDatasourcePlatform().getConversionManager();
+                XMLConversionManager xmlConversionManager = ((SDOXMLHelper)aHelperContext.getXMLHelper()).getXmlConversionManager();
                 elem.setDefaultValue((String)xmlConversionManager.convertObject(property.getDefault(), ClassConstants.STRING, ((SDOProperty)property).getXsdType()));
             }
 
@@ -685,7 +686,7 @@ public class SDOSchemaGenerator {
         // process default values that are defined in the schema (not via primitive numeric Object wrapped pseudo defaults)
         if (((SDOProperty)property).isDefaultSet()) {
             if (!property.isMany() && property.getType().isDataType()) {
-                XMLConversionManager xmlConversionManager = (XMLConversionManager)((SDOXMLHelper)aHelperContext.getXMLHelper()).getXmlContext().getSession(0).getDatasourcePlatform().getConversionManager();
+                XMLConversionManager xmlConversionManager = (XMLConversionManager)((SDOXMLHelper)aHelperContext.getXMLHelper()).getXmlConversionManager();
                 attr.setDefaultValue((String)xmlConversionManager.convertObject(property.getDefault(), ClassConstants.STRING, ((SDOProperty)property).getXsdType()));
             }
 

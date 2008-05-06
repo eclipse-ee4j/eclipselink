@@ -56,7 +56,7 @@ public class SDODataObject implements DataObject, SequencedObject {
      * where the generated get/set methods for POJO fields would collide with the same function here.
      */
     /** The Type that this DataObject represents */
-    private Type type;
+    private SDOType type;
 
     // t20070714_bc4j: Add pluggable DO support for BC4J using currentValueStore
     private DataObject container;
@@ -560,7 +560,7 @@ public class SDODataObject implements DataObject, SequencedObject {
      * @throws IllegalArgumentException
      */
     public Property defineOpenContentProperty(String name, Object value) throws UnsupportedOperationException, IllegalArgumentException {
-        DataObject propertyDO = aHelperContext.getDataFactory().create(SDOConstants.SDO_PROPERTY);
+        DataObject propertyDO = aHelperContext.getDataFactory().create(SDOConstants.SDO_URL, SDOConstants.PROPERTY);
 
         // TODO: see #5770518: we should not be here with a property that was not found in an instanceProperties call IE: value == null
         propertyDO.set("name", name);
@@ -612,7 +612,7 @@ public class SDODataObject implements DataObject, SequencedObject {
         if(sdotype == null){
           return defineOpenContentProperty(name, value);
         }
-        DataObject propertyDO = aHelperContext.getDataFactory().create(SDOConstants.SDO_PROPERTY);
+        DataObject propertyDO = aHelperContext.getDataFactory().create(SDOConstants.SDO_URL, SDOConstants.PROPERTY);
 
         propertyDO.set("name", name);        
         boolean isMany = false;
@@ -655,10 +655,10 @@ public class SDODataObject implements DataObject, SequencedObject {
     }
 
     public void set(Property property, Object value) throws UnsupportedOperationException, IllegalArgumentException {
-        set(property, value, true);
+        set((SDOProperty) property, value, true);
     }
 
-    public void setInternal(Property property, Object value, boolean updateSequence) throws UnsupportedOperationException, IllegalArgumentException {
+    public void setInternal(SDOProperty property, Object value, boolean updateSequence) throws UnsupportedOperationException, IllegalArgumentException {
         //TODO: if property is many do we check that the value is a list and if not create one              
         //TODO: if is many do we clear current list or just replace with the new one
         if (null == getType()) {
@@ -753,7 +753,7 @@ public class SDODataObject implements DataObject, SequencedObject {
      * @throws UnsupportedOperationException
      * @throws IllegalArgumentException
      */
-    public void set(Property property, Object value, boolean updateSequence) throws UnsupportedOperationException, IllegalArgumentException {
+    public void set(SDOProperty property, Object value, boolean updateSequence) throws UnsupportedOperationException, IllegalArgumentException {
         if (null == property) {
             throw new IllegalArgumentException("Illegal Argument.");
         }
@@ -981,7 +981,7 @@ public class SDODataObject implements DataObject, SequencedObject {
         }
 
         // set the property to a default empty list
-        setPropertyInternal(property, theList, false);
+        setPropertyInternal((SDOProperty) property, theList, false);
         return theList;
     }
 
@@ -1173,10 +1173,10 @@ public class SDODataObject implements DataObject, SequencedObject {
 
         List instancePropertiesList = getInstanceProperties();
         for (int i = 0, psize = instancePropertiesList.size(); i < psize; i++) {
-            Property nextProperty = (Property)instancePropertiesList.get(i);
+            SDOProperty nextProperty = (SDOProperty)instancePropertiesList.get(i);
             Object oldValue = get(nextProperty);
 
-            if (nextProperty.getType() != SDOConstants.SDO_CHANGESUMMARY) {
+            if (!nextProperty.getType().isChangeSummaryType()) {
             	// Non-containment nodes have changeSummary and dataGraph pointers if they were in a dataGraph
                 if (nextProperty.isContainment() || isContainedByDataGraph(previousDataGraph, nextProperty)) {
                     if (nextProperty.isMany()) {
@@ -1310,9 +1310,9 @@ public class SDODataObject implements DataObject, SequencedObject {
         return container;
     }
 
-    public Property getContainmentProperty() {
+    public SDOProperty getContainmentProperty() {
         if ((container != null) && (containmentPropertyName != null)) {
-            return container.getInstanceProperty(containmentPropertyName);
+            return (SDOProperty) container.getInstanceProperty(containmentPropertyName);
         } else {
             return null;
         }
@@ -1326,7 +1326,7 @@ public class SDODataObject implements DataObject, SequencedObject {
         this.dataGraph = dataGraph;
     }
 
-    public Type getType() {
+    public SDOType getType() {
         return type;
     }
 
@@ -1341,23 +1341,23 @@ public class SDODataObject implements DataObject, SequencedObject {
         return getInstanceProperty(propertyName);
     }
 
-    public Property getInstanceProperty(String propertyName) {
+    public SDOProperty getInstanceProperty(String propertyName) {
         if (getType() == null) {
             throw new UnsupportedOperationException("Type is null");
         }
-        Property property = getType().getProperty(propertyName);
+        SDOProperty property = getType().getProperty(propertyName);
         if (null == property) {
-            property = (Property)_getOpenContentAliasNamesMap().get(propertyName);
+            property = (SDOProperty)_getOpenContentAliasNamesMap().get(propertyName);
             if (null == property) {
                 for (int i = 0; i < _getOpenContentProperties().size(); i++) {
-                    Property nextProp = (Property)_getOpenContentProperties().get(i);
+                    SDOProperty nextProp = (SDOProperty)_getOpenContentProperties().get(i);
                     if (nextProp.getName().equals(propertyName)) {
                         return nextProp;
                     }
                 }
                 if (null == property) {
                     for (int i = 0; i < _getOpenContentPropertiesAttributes().size(); i++) {
-                        Property nextProp = (Property)_getOpenContentPropertiesAttributes().get(i);
+                        SDOProperty nextProp = (SDOProperty)_getOpenContentPropertiesAttributes().get(i);
                         if (nextProp.getName().equals(propertyName)) {
                            return nextProp;
                         }
@@ -1374,9 +1374,9 @@ public class SDODataObject implements DataObject, SequencedObject {
      * @return
      * @throws SDOException
      */
-    public Property getInstanceProperty(int propertyIndex) throws IllegalArgumentException {
+    public SDOProperty getInstanceProperty(int propertyIndex) throws IllegalArgumentException {
         try {
-            Property property = getInstancePropertiesArray()[propertyIndex];
+            SDOProperty property = getInstancePropertiesArray()[propertyIndex];
             return property;
         } catch (IndexOutOfBoundsException e) {
             throw SDOException.propertyNotFoundAtIndex(e, propertyIndex);
@@ -1442,7 +1442,7 @@ public class SDODataObject implements DataObject, SequencedObject {
         // set changeSummary instance using property
         changeSummary = csm;
         if (getType() != null) {
-            Property changeSummaryProperty = ((SDOType)getType()).getChangeSummaryProperty();
+            SDOProperty changeSummaryProperty = getType().getChangeSummaryProperty();
             if (changeSummaryProperty != null) {
                 setChangeSummaryProperty(changeSummaryProperty, csm);
             }
@@ -1556,7 +1556,7 @@ public class SDODataObject implements DataObject, SequencedObject {
      * @param property
      * @param value
      */
-    private void setChangeSummaryProperty(Property property, ChangeSummary value) {
+    private void setChangeSummaryProperty(SDOProperty property, ChangeSummary value) {
         if (property.isOpenContent()) {
             throw new IllegalArgumentException("ChangeSummary can not be on an open content property.");
         }
@@ -1673,7 +1673,7 @@ public class SDODataObject implements DataObject, SequencedObject {
         for (Iterator iterProperties = getInstanceProperties().iterator();
                  iterProperties.hasNext();) {
             SDOProperty property = (SDOProperty)iterProperties.next();
-            if (property.getType() != SDOConstants.SDO_CHANGESUMMARY) {
+            if (!property.getType().isChangeSummaryType()) {
                 Object value = get(property);
                 if ((null == value) && (null != getChangeSummary())) {
                     // no changes for null properties
@@ -1768,8 +1768,8 @@ public class SDODataObject implements DataObject, SequencedObject {
 
             // #5878436 12-FEB-07 do not recurse into a non-containment relationship unless inside a dataGraph
             if ((property.isContainment() || isContainedByDataGraph(property)) && //
-            		!property.isMany() && (value != null) && (property.getType() != SDOConstants.SDO_CHANGESUMMARY)) {
-            	
+                !property.isMany() && (value != null) && !property.getType().isChangeSummaryType()) {
+
                 // TODO: Do not shallowcopy child nodes
                 ((SDODataObject)value).resetChanges();
             } else {
@@ -1782,7 +1782,7 @@ public class SDODataObject implements DataObject, SequencedObject {
 
                             // do not recurse into a non-containment relationship unless inside a dataGraph                            
                             if ((property.isContainment() || isContainedByDataGraph(property)) && // 
-                            		(valueMany != null) && (property.getType() != SDOConstants.SDO_CHANGESUMMARY)) {
+                                (valueMany != null) && !property.getType().isChangeSummaryType()) {
                                 // TODO: Do not shallowcopy child nodes
                                 ((SDODataObject)valueMany).resetChanges();
                             }
@@ -1798,7 +1798,7 @@ public class SDODataObject implements DataObject, SequencedObject {
      * @param aType
      */
     public void _setType(Type aType) {
-        type = aType;
+        type = (SDOType) aType;
 
         if (getInstanceProperties().isEmpty()) {
             if (type != null) {
@@ -1880,7 +1880,7 @@ public class SDODataObject implements DataObject, SequencedObject {
                 Object value = openAttributeProperties.get(nextKey);
                 SDOProperty prop = (SDOProperty)aHelperContext.getXSDHelper().getGlobalProperty(nextKey.getNamespaceURI(), nextKey.getLocalPart(), false);
                 if (prop == null) {                
-                    DataObject propDo = aHelperContext.getDataFactory().create(SDOConstants.SDO_PROPERTY);
+                    DataObject propDo = aHelperContext.getDataFactory().create(SDOConstants.SDO_URL, SDOConstants.PROPERTY);
                     propDo.set("name", nextKey.getLocalPart());
                     propDo.set("type", SDOConstants.SDO_STRING);
                     propDo.set("many", false);                                        
@@ -1967,7 +1967,7 @@ public class SDODataObject implements DataObject, SequencedObject {
     }
     
     private SDOProperty createNewProperty(String propertyName,String propertyUri, Type theType){      
-       DataObject propDo = aHelperContext.getDataFactory().create(SDOConstants.SDO_PROPERTY);
+       DataObject propDo = aHelperContext.getDataFactory().create(SDOConstants.SDO_URL, SDOConstants.PROPERTY);
        propDo.set("name", propertyName);
        propDo.set("type", theType);
        propDo.set("many", true);
@@ -2411,18 +2411,18 @@ public class SDODataObject implements DataObject, SequencedObject {
      *
      * @return
      */
-    private Property[] getInstancePropertiesArray() {
+    private SDOProperty[] getInstancePropertiesArray() {
         if ((openContentProperties == null) || openContentProperties.isEmpty()) {
             return ((SDOType)getType()).getPropertiesArray();
         }
 
-        Property[] props = ((SDOType)getType()).getPropertiesArray();
-        Property[] ret = new Property[openContentProperties.size() + props.length];
+        SDOProperty[] props = ((SDOType)getType()).getPropertiesArray();
+        SDOProperty[] ret = new SDOProperty[openContentProperties.size() + props.length];
         for (int i = 0; i < props.length; i++) {
             ret[i] = props[i];
         }
         for (int i = props.length; i < ret.length; i++) {
-            ret[i] = (Property)openContentProperties.get(i - props.length);
+            ret[i] = (SDOProperty)openContentProperties.get(i - props.length);
         }
         return ret;
     }
@@ -2449,7 +2449,7 @@ public class SDODataObject implements DataObject, SequencedObject {
      * @param value
      * @param updateSequence (truncate call back from sequence when this function was called from sequence)
      */
-    public void setPropertyInternal(Property property, Object value, boolean updateSequence) {
+    public void setPropertyInternal(SDOProperty property, Object value, boolean updateSequence) {
         /*
          * Update sequence object if element and without invoking a back pointer from sequence.add() to this dataObject.
          * The sequence != null required in case where non-public type.setSequenced(true) called after type define.
@@ -2465,7 +2465,7 @@ public class SDODataObject implements DataObject, SequencedObject {
          * - two of which are valid for sequence setting creation.
          */
         if (type.isSequenced() && updateSequence//
-                 &&(property.getType() != SDOConstants.SDO_CHANGESUMMARY) && !aHelperContext.getXSDHelper().isAttribute(property)) {
+                 &&!property.getType().isChangeSummaryType() && !aHelperContext.getXSDHelper().isAttribute(property)) {
             // As we do for ListWrappers and DataObjects we will need to remove the previous setting if this set is actually a modify
             // keep sequence code here for backdoor sets
             if(property.isMany()) {

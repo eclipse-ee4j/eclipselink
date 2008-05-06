@@ -20,7 +20,7 @@ import junit.textui.TestRunner;
 
 import org.eclipse.persistence.sdo.SDOConstants;
 import org.eclipse.persistence.sdo.SDOProperty;
-
+import org.eclipse.persistence.sdo.SDOType;
 
 import commonj.sdo.DataObject;
 import commonj.sdo.Type;
@@ -64,6 +64,7 @@ public class LoadAndSaveWithReadOnlyTestCases extends LoadAndSaveTestCases {
 
     protected void registerTypes() {
         Type stringType = SDOConstants.SDO_STRING;
+        SDOType propertyType = (SDOType) typeHelper.getType(SDOConstants.SDO_URL, SDOConstants.PROPERTY);
 
         DataObject employeeTypeType = dataFactory.create("commonj.sdo", "Type");
         SDOProperty prop = (SDOProperty)employeeTypeType.getType().getProperty("uri");
@@ -74,7 +75,7 @@ public class LoadAndSaveWithReadOnlyTestCases extends LoadAndSaveTestCases {
 
         Type EMPType = typeHelper.define(employeeTypeType);
 
-        DataObject propDO = dataFactory.create(SDOConstants.SDO_PROPERTY);
+        DataObject propDO = dataFactory.create(propertyType);
         propDO.set("name", getControlRootName());
         propDO.set("type", EMPType);
         typeHelper.defineOpenContentProperty(getControlRootURI(), propDO);

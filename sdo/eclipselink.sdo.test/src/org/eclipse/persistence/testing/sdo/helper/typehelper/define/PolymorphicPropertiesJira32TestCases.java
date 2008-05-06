@@ -18,6 +18,7 @@ import java.util.ArrayList;
 import java.util.List;
 import junit.textui.TestRunner;
 import org.eclipse.persistence.sdo.SDOConstants;
+import org.eclipse.persistence.sdo.SDOType;
 import org.eclipse.persistence.testing.sdo.SDOTestCase;
 
 public class PolymorphicPropertiesJira32TestCases extends SDOTestCase {
@@ -31,13 +32,15 @@ public class PolymorphicPropertiesJira32TestCases extends SDOTestCase {
     }
 
     public void testPolymorphicProperty() {
-        DataObject addressTypeDO = dataFactory.create(SDOConstants.SDO_TYPE);
+        SDOType typeType = (SDOType) typeHelper.getType(SDOConstants.SDO_URL, SDOConstants.TYPE);
+
+        DataObject addressTypeDO = dataFactory.create(typeType);
         addressTypeDO.set("name", "addressType");
         addProperty(addressTypeDO, "street", SDOConstants.SDO_STRING, false, false, true);
         addProperty(addressTypeDO, "city", SDOConstants.SDO_STRING, false, false, true);
         Type addressType = typeHelper.define(addressTypeDO);
 
-        DataObject cdnAddressTypeDO = dataFactory.create(SDOConstants.SDO_TYPE);
+        DataObject cdnAddressTypeDO = dataFactory.create(typeType);
         cdnAddressTypeDO.set("name", "cdnAddressType");
         List baseTypes = new ArrayList();
         baseTypes.add(addressType);
@@ -45,7 +48,7 @@ public class PolymorphicPropertiesJira32TestCases extends SDOTestCase {
         addProperty(cdnAddressTypeDO, "postalCode", SDOConstants.SDO_STRING, false, false, true);
         Type cdnAddressType = typeHelper.define(cdnAddressTypeDO);
 
-        DataObject personTypeDO = dataFactory.create(SDOConstants.SDO_TYPE);
+        DataObject personTypeDO = dataFactory.create(typeType);
         personTypeDO.set("name", "personType");
         addProperty(personTypeDO, "name", SDOConstants.SDO_STRING, false, false, true);
         addProperty(personTypeDO, "address", addressType, true, false, true);

@@ -52,7 +52,7 @@ public class SDODataHelper implements DataHelper {
     }
     
     private XMLConversionManager getXMLConversionManager(){
-     return (XMLConversionManager)((SDOXMLHelper)getHelperContext().getXMLHelper()).getXmlContext().getSession(0).getDatasourceLogin().getDatasourcePlatform().getConversionManager();
+        return ((SDOXMLHelper)getHelperContext().getXMLHelper()).getXmlConversionManager();
     }
     
     /**

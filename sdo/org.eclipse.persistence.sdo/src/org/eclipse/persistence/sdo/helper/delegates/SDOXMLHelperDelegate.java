@@ -50,7 +50,6 @@ import org.eclipse.persistence.oxm.XMLMarshaller;
 import org.eclipse.persistence.oxm.XMLRoot;
 import org.eclipse.persistence.oxm.XMLUnmarshaller;
 import org.eclipse.persistence.sessions.Project;
-import org.eclipse.persistence.sessions.Session;
 import org.xml.sax.InputSource;
 
 /**
@@ -73,9 +72,13 @@ public class SDOXMLHelperDelegate implements SDOXMLHelper {
     private HelperContext aHelperContext;
 
     public SDOXMLHelperDelegate(HelperContext aContext) {
+        this(aContext, Thread.currentThread().getContextClassLoader());
+    }
+
+    public SDOXMLHelperDelegate(HelperContext aContext, ClassLoader aClassLoader) {
         aHelperContext = aContext;
         // This ClassLoader is internal to SDO so no inter servlet-ejb container context issues should arise
-        loader = new SDOClassLoader(Thread.currentThread().getContextClassLoader(), aContext);
+        loader = new SDOClassLoader(aClassLoader, aContext);
         xmlMarshallerMap = new WeakHashMap<Thread, XMLMarshaller>();
         xmlUnmarshallerMap = new WeakHashMap<Thread, XMLUnmarshaller>();        
     }
@@ -85,9 +88,7 @@ public class SDOXMLHelperDelegate implements SDOXMLHelper {
      * conversions.  By default the TimeZone from the JVM is used.
      */
     public void setTimeZone(TimeZone timeZone) {       
-        Session session = getXmlContext().getSession(0);
-        XMLConversionManager xmlConversionManager = (XMLConversionManager)session.getDatasourceLogin().getDatasourcePlatform().getConversionManager();                            
-        xmlConversionManager.setTimeZone(timeZone);
+        getXmlConversionManager().setTimeZone(timeZone);
     }
 
     /**
@@ -96,9 +97,7 @@ public class SDOXMLHelperDelegate implements SDOXMLHelper {
      * By default time information is not time zone qualified.
      */
     public void setTimeZoneQualified(boolean timeZoneQualified) {
-        Session session = getXmlContext().getSession(0);
-        XMLConversionManager xmlConversionManager = (XMLConversionManager)session.getDatasourceLogin().getDatasourcePlatform().getConversionManager();                
-        xmlConversionManager.setTimeZoneQualified(timeZoneQualified);                           
+        getXmlConversionManager().setTimeZoneQualified(timeZoneQualified);
     }
 
     /**
@@ -449,10 +448,7 @@ public class SDOXMLHelperDelegate implements SDOXMLHelper {
 
     public void setLoader(SDOClassLoader loader) {
         this.loader = loader;
-      
-        Session session = getXmlContext().getSession(0);
-        XMLConversionManager xmlConversionManager = (XMLConversionManager)session.getDatasourceLogin().getDatasourcePlatform().getConversionManager();                
-        xmlConversionManager.setLoader(this.loader);                                
+        getXmlConversionManager().setLoader(this.loader);
     }
 
     public SDOClassLoader getLoader() {
@@ -463,19 +459,16 @@ public class SDOXMLHelperDelegate implements SDOXMLHelper {
         this.xmlContext = xmlContext;
     }
 
-    public synchronized XMLContext getXmlContext() {        
+    public synchronized XMLContext getXmlContext() {  
         if (xmlContext == null) {
             xmlContext = new XMLContext(getTopLinkProject());
-            
-            Session session = getXmlContext().getSession(0);
-            XMLConversionManager xmlConversionManager = (XMLConversionManager)session.getDatasourceLogin().getDatasourcePlatform().getConversionManager();                
+            XMLConversionManager xmlConversionManager = getXmlConversionManager();
             xmlConversionManager.setLoader(this.loader);
-                        
-            xmlConversionManager.setTimeZone(TimeZone.getTimeZone("GMT"));            
-            xmlConversionManager.setTimeZoneQualified(true);                                 
+            xmlConversionManager.setTimeZone(TimeZone.getTimeZone("GMT"));
+            xmlConversionManager.setTimeZoneQualified(true);
         }
         return xmlContext;
-    }                            
+    }
    
     public void initializeDescriptor(XMLDescriptor descriptor){
         AbstractSession theSession = (AbstractSession)getXmlContext().getSession(0);
@@ -521,11 +514,14 @@ public class SDOXMLHelperDelegate implements SDOXMLHelper {
             topLinkProject.setDatasourceLogin(xmlLogin);
             // 200606_changeSummary
             NamespaceResolver nr = new NamespaceResolver();
-            String sdoPrefix = ((SDOTypeHelper)aHelperContext.getTypeHelper()).getPrefix(SDOConstants.SDO_URL);
+            SDOTypeHelper sdoTypeHelper = (SDOTypeHelper) aHelperContext.getTypeHelper();
+            String sdoPrefix = sdoTypeHelper.getPrefix(SDOConstants.SDO_URL);
             nr.put(sdoPrefix, SDOConstants.SDO_URL);
-            SDOConstants.SDO_CHANGESUMMARY.getXmlDescriptor().setNamespaceResolver(nr);
-            topLinkProject.addDescriptor(SDOConstants.SDO_CHANGESUMMARY.getXmlDescriptor());
-            topLinkProject.addDescriptor(SDOConstants.SDO_OPEN_SEQUENCED.getXmlDescriptor());
+            SDOType changeSummaryType = (SDOType) sdoTypeHelper.getType(SDOConstants.SDO_URL, SDOConstants.CHANGESUMMARY);
+            changeSummaryType.getXmlDescriptor().setNamespaceResolver(nr);
+            topLinkProject.addDescriptor(changeSummaryType.getXmlDescriptor());
+            SDOType openSequencedType = (SDOType) aHelperContext.getTypeHelper().getType(SDOConstants.ORACLE_SDO_URL, "OpenSequencedType");
+            topLinkProject.addDescriptor(openSequencedType.getXmlDescriptor());
         }
         return topLinkProject;
     }
@@ -539,7 +535,7 @@ public class SDOXMLHelperDelegate implements SDOXMLHelper {
     	
     	if (marshaller == null) {
             marshaller = getXmlContext().createMarshaller();
-            marshaller.setMarshalListener(new SDOMarshalListener(marshaller, aHelperContext.getTypeHelper()));
+            marshaller.setMarshalListener(new SDOMarshalListener(marshaller, (SDOTypeHelper) aHelperContext.getTypeHelper()));
             xmlMarshallerMap.put(Thread.currentThread(), marshaller);
         }
         
@@ -595,5 +591,9 @@ public class SDOXMLHelperDelegate implements SDOXMLHelper {
         }else{
             throw xmlException;
         }
+    }
+    
+    public XMLConversionManager getXmlConversionManager() {
+        return (XMLConversionManager)getXmlContext().getSession(0).getDatasourceLogin().getDatasourcePlatform().getConversionManager();
     }
 }

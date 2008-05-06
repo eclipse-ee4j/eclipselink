@@ -21,6 +21,7 @@ import java.util.List;
 import org.eclipse.persistence.sdo.SDOChangeSummary;
 import org.eclipse.persistence.sdo.SDOConstants;
 import org.eclipse.persistence.sdo.SDODataObject;
+import org.eclipse.persistence.sdo.SDOProperty;
 import org.eclipse.persistence.sdo.SDOSequence;
 import org.eclipse.persistence.sdo.SDOType;
 import org.eclipse.persistence.exceptions.SDOException;
@@ -118,7 +119,8 @@ public class SDOUnmarshalListener extends SDOCSUnmarshalListener {
                     String unsetValue = nextNode.getAttributeNS(SDOConstants.SDO_URL, SDOConstants.CHANGESUMMARY_UNSET);
                     List unsetValueList = new ArrayList();
                     if ((unsetValue != null) && (unsetValue.length() > 0)) {
-                        unsetValueList = (List)XMLConversionManager.getDefaultXMLManager().convertObject(unsetValue, List.class);
+                        XMLConversionManager xmlConversionManager = ((SDOXMLHelper) aHelperContext.getXMLHelper()).getXmlConversionManager();
+                        unsetValueList = (List)xmlConversionManager.convertObject(unsetValue, List.class);
                     }
                     if (nextModifiedDO != null) {
                         nextModifiedDO._setModified(true);
@@ -152,7 +154,7 @@ public class SDOUnmarshalListener extends SDOCSUnmarshalListener {
                         }
                         //instead of iterating over all props can we just check elements in cs and get appropriate properties from DO
                         for (int k = 0; k < modifiedProps.size(); k++) {
-                            Property nextProp = (Property)modifiedProps.get(k);
+                            SDOProperty nextProp = (SDOProperty)modifiedProps.get(k);
                             if (!nextProp.getType().isDataType()) {
                                 if (nextProp.isMany()) {
                                     //original value is the list from the changesummary xml

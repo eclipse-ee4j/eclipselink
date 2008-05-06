@@ -17,6 +17,7 @@ import junit.textui.TestRunner;
 import org.eclipse.persistence.sdo.SDOConstants;
 import org.eclipse.persistence.sdo.SDODataObject;
 import org.eclipse.persistence.sdo.SDOProperty;
+import org.eclipse.persistence.sdo.SDOType;
 
 public class SDODataObjectGetDataObjectConversionWithPathTest extends SDODataObjectConversionWithPathTestCases {
     public SDODataObjectGetDataObjectConversionWithPathTest(String name) {
@@ -35,11 +36,13 @@ public class SDODataObjectGetDataObjectConversionWithPathTest extends SDODataObj
 
     // purpose: opencontent properties
     public void testGetDataObjectConversionFromDefinedPropertyWithPath() {
+        SDOType dataObjectType = (SDOType) typeHelper.getType(SDOConstants.SDO_URL, SDOConstants.DATAOBJECT);
+
         // dataObject's type add boolean property
         type_b.setOpen(true);
         SDOProperty property = new SDOProperty(aHelperContext);
         property.setName("openTest");
-        property.setType(SDOConstants.SDO_DATAOBJECT);
+        property.setType(dataObjectType);
 
         SDODataObject b = new SDODataObject();
 

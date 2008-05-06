@@ -52,7 +52,9 @@ public class OpenContentDefineTestCases extends SDOTestCase {
     public void testDefineOpenContentProperty() {
         assertEquals(2, rootType.getDeclaredProperties().size());
 
-        DataObject newProperty = dataFactory.create(SDOConstants.SDO_PROPERTY);
+        SDOType propertyType = (SDOType) typeHelper.getType(SDOConstants.SDO_URL, SDOConstants.PROPERTY);
+
+        DataObject newProperty = dataFactory.create(propertyType);
         SDOProperty prop = (SDOProperty)newProperty.getType().getProperty("name");
         newProperty.set(prop, "myOpenProp");
         prop = (SDOProperty)newProperty.getType().getProperty("type");
@@ -80,7 +82,8 @@ public class OpenContentDefineTestCases extends SDOTestCase {
     }
 
     public void testDataTypeTrueFails() throws Exception {
-        DataObject newTypeDO = dataFactory.create(SDOConstants.SDO_TYPE);
+        SDOType typeType = (SDOType) typeHelper.getType(SDOConstants.SDO_URL, SDOConstants.TYPE);
+        DataObject newTypeDO = dataFactory.create(typeType);
         SDOProperty prop = (SDOProperty)newTypeDO.getType().getProperty("name");
         newTypeDO.set(prop, "myOpenType");
         newTypeDO.set("uri", "my.uri");
@@ -96,7 +99,8 @@ public class OpenContentDefineTestCases extends SDOTestCase {
     }
 
     public void testDataTypeTrueFails2() throws Exception {
-        DataObject newTypeDO = dataFactory.create(SDOConstants.SDO_TYPE);
+        SDOType typeType = (SDOType) typeHelper.getType(SDOConstants.SDO_URL, SDOConstants.TYPE);
+        DataObject newTypeDO = dataFactory.create(typeType);
         SDOProperty prop = (SDOProperty)newTypeDO.getType().getProperty("name");
         newTypeDO.set(prop, "myOpenType");
         newTypeDO.set("uri", "my.uri");

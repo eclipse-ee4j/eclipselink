@@ -356,10 +356,16 @@ public class SDOXSDHelperDelegate implements SDOXSDHelper {
     private void initOpenProps() {
         getGlobalAttributes().put(SDOConstants.MIME_TYPE_QNAME, SDOConstants.MIME_TYPE_PROPERTY);
         getGlobalAttributes().put(SDOConstants.MIME_TYPE_PROPERTY_QNAME, SDOConstants.MIME_TYPE_PROPERTY_PROPERTY);
-        getGlobalAttributes().put(SDOConstants.SCHEMA_TYPE_QNAME, SDOConstants.XML_SCHEMA_TYPE_PROPERTY);
+
+        Property xmlSchemaTypeProperty = aHelperContext.getTypeHelper().getOpenContentProperty(SDOConstants.SDO_URL, SDOConstants.XML_SCHEMA_TYPE_NAME);
+        getGlobalAttributes().put(SDOConstants.SCHEMA_TYPE_QNAME, xmlSchemaTypeProperty);
+
         getGlobalAttributes().put(SDOConstants.JAVA_CLASS_QNAME, SDOConstants.JAVA_CLASS_PROPERTY);
         getGlobalAttributes().put(SDOConstants.XML_ELEMENT_QNAME, SDOConstants.XMLELEMENT_PROPERTY);
-        getGlobalAttributes().put(SDOConstants.XML_DATATYPE_QNAME, SDOConstants.XMLDATATYPE_PROPERTY);
+
+        Property xmlDataTypeProperty = aHelperContext.getTypeHelper().getOpenContentProperty(SDOConstants.ORACLE_SDO_URL, SDOConstants.SDOXML_DATATYPE);
+        getGlobalAttributes().put(SDOConstants.XML_DATATYPE_QNAME, xmlDataTypeProperty);
+
         getGlobalAttributes().put(SDOConstants.XML_ID_PROPERTY_QNAME, SDOConstants.ID_PROPERTY);
         getGlobalAttributes().put(SDOConstants.DOCUMENTATION_PROPERTY_QNAME, SDOConstants.DOCUMENTATION_PROPERTY);
     }

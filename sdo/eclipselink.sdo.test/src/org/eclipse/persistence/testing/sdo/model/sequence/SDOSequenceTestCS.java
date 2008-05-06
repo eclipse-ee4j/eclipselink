@@ -306,6 +306,8 @@ public class SDOSequenceTestCS extends SDOSequenceTestCases {
 
     // not sequenced
     private Type registerCompanyType(boolean sequencedFlag, Type purchaseOrderType, Type customerType, Type itemType, Type csType) {
+        SDOType changeSummaryType = (SDOType) typeHelper.getType(SDOConstants.SDO_URL, SDOConstants.CHANGESUMMARY);
+
         DataObject companyType = dataFactory.create(SDOConstants.SDO_URL, SDOConstants.TYPE);
         SDOProperty prop = (SDOProperty)companyType.getType().getProperty("uri");
         companyType.set(prop, getControlRootURI());
@@ -324,7 +326,7 @@ public class SDOSequenceTestCS extends SDOSequenceTestCases {
         DataObject itemProp = addProperty(companyType, ITEM_PATH, itemType, true, true);
 
         // changeSummary property
-        DataObject changeSumPropertyDO = addProperty(companyType, "myChangeSummary", SDOConstants.SDO_CHANGESUMMARY);
+        DataObject changeSumPropertyDO = addProperty(companyType, "myChangeSummary", changeSummaryType);
         changeSumPropertyDO.set("containment", true);
         
         Type aType = typeHelper.define(companyType);
@@ -351,8 +353,6 @@ public class SDOSequenceTestCS extends SDOSequenceTestCases {
         csTypeDO.set(prop, "myChangeSummary");
         //csTypeDO.set("containment", false);
         SDOProperty typeProp = (SDOProperty)csTypeDO.getType().getProperty("type");//SDOConstants.SDOXML_PROPERTYTYPE);
-        //csTypeDO.set(typeProp, SDOConstants.SDO_CHANGESUMMARY);
-        //companyType.addDeclaredProperty(csTypeDO);
         Type aType = typeHelper.define(csTypeDO);
         return aType;
     }

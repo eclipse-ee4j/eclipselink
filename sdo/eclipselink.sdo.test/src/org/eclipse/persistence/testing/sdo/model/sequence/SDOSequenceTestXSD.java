@@ -309,10 +309,11 @@ public class SDOSequenceTestXSD extends SDOSequenceTestCases {
 
         // changeSummary property
         if(withChangeSummary) {
-        	DataObject changeSumPropertyDO = addProperty(companyType, "csmProp", SDOConstants.SDO_CHANGESUMMARY);
-        	changeSumPropertyDO.set("containment", true);
+            SDOType changeSummaryType = (SDOType) typeHelper.getType(SDOConstants.SDO_URL, SDOConstants.CHANGESUMMARY);
+            DataObject changeSumPropertyDO = addProperty(companyType, "csmProp", changeSummaryType);
+            changeSumPropertyDO.set("containment", true);
         }
-        
+
         DataObject name = addProperty(companyType, "name", stringType);
         //name.setInstanceProperty(SDOConstants.XMLELEMENT_PROPERTY, Boolean.TRUE);
         SDOProperty nameProp = (SDOProperty)companyType.getType().getProperty(SDOConstants.XMLELEMENT_PROPERTY_NAME);
@@ -468,7 +469,9 @@ public class SDOSequenceTestXSD extends SDOSequenceTestCases {
     }
 
     private SDOProperty createOpenContentElementProperty(String name, Type type) {
-        DataObject newProperty = dataFactory.create(SDOConstants.SDO_PROPERTY);
+        SDOType propertyType = (SDOType) typeHelper.getType(SDOConstants.SDO_URL, SDOConstants.PROPERTY);
+
+        DataObject newProperty = dataFactory.create(propertyType);
         SDOProperty nameProp = (SDOProperty)newProperty.getType().getProperty("name");
         newProperty.set(nameProp, name);
         newProperty.set("type", type);

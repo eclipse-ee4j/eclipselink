@@ -20,6 +20,7 @@ import commonj.sdo.Type;
 import commonj.sdo.helper.XMLDocument;
 import junit.textui.TestRunner;
 import org.eclipse.persistence.sdo.SDOConstants;
+import org.eclipse.persistence.sdo.SDOType;
 
 public class LoadAndSaveGroupTestCases extends LoadAndSaveTestCases {
     public LoadAndSaveGroupTestCases(String name) {
@@ -67,9 +68,11 @@ public class LoadAndSaveGroupTestCases extends LoadAndSaveTestCases {
     }
 
     public void registerTypes() {
-        Type stringType = typeHelper.getType("commonj.sdo", "String");
+        SDOType stringType = (SDOType) typeHelper.getType("commonj.sdo", "String");
+        SDOType typeType = (SDOType) typeHelper.getType(SDOConstants.SDO_URL, SDOConstants.TYPE);
+        SDOType propertyType = (SDOType) typeHelper.getType(SDOConstants.SDO_URL, SDOConstants.PROPERTY);
 
-        DataObject AAATypeDO = dataFactory.create(SDOConstants.SDO_TYPE);
+        DataObject AAATypeDO = dataFactory.create(typeType);
         AAATypeDO.set("uri", getControlRootURI());
         AAATypeDO.set("name", getControlRootName());
         addProperty(AAATypeDO, "BBB", SDOConstants.SDO_STRING, false, false, true);
@@ -79,7 +82,7 @@ public class LoadAndSaveGroupTestCases extends LoadAndSaveTestCases {
         addProperty(AAATypeDO, "YYY", SDOConstants.SDO_STRING, false, false, true);
         Type AAAType = typeHelper.define(AAATypeDO);
 
-        DataObject propDO = dataFactory.create(SDOConstants.SDO_PROPERTY);
+        DataObject propDO = dataFactory.create(propertyType);
         propDO.set("name", getControlRootName());
         propDO.set("type", AAAType);
         typeHelper.defineOpenContentProperty(getControlRootURI(), propDO);

@@ -81,6 +81,7 @@ public class SDODataObjectGetByXPathQueryTestCases extends SDOTestCase {
 
     public void setUp() {// set up as a/b/c
         super.setUp();
+        SDOType dataObjectType = (SDOType) typeHelper.getType(SDOConstants.SDO_URL, SDOConstants.DATAOBJECT);
 
         type_a = new SDOType(URINAME, TYPENAME_A);
 
@@ -154,7 +155,7 @@ public class SDODataObjectGetByXPathQueryTestCases extends SDOTestCase {
         property_c0.setName(PROPERTY_NAME_C0);
         property_c0.setContainment(true);
         property_c0.setMany(true);
-        property_c0.setType(SDOConstants.SDO_DATAOBJECT);
+        property_c0.setType(dataObjectType);
         type_c0.addDeclaredProperty(property_c0);
 
         property_c_number = new SDOProperty(aHelperContext);
@@ -265,7 +266,7 @@ public class SDODataObjectGetByXPathQueryTestCases extends SDOTestCase {
 
         baseProperty2 = new SDOProperty(aHelperContext);
         baseProperty2.setName("baseProperty2");
-        baseProperty2.setType(SDOConstants.SDO_DATAOBJECT);
+        baseProperty2.setType(dataObjectType);
         baseProperty2.setMany(false);
         baseProperty2.setContainment(true);
         List aliasNames_baseP2 = new ArrayList();

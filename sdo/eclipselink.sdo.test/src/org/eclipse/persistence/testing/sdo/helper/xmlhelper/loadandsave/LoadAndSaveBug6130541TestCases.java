@@ -16,6 +16,7 @@ import commonj.sdo.DataObject;
 import commonj.sdo.Type;
 import junit.textui.TestRunner;
 import org.eclipse.persistence.sdo.SDOConstants;
+import org.eclipse.persistence.sdo.SDOType;
 
 public class LoadAndSaveBug6130541TestCases extends LoadAndSaveTestCases {
     public LoadAndSaveBug6130541TestCases(String name) {
@@ -68,7 +69,8 @@ public class LoadAndSaveBug6130541TestCases extends LoadAndSaveTestCases {
          classGenerator.generate(ss, tmpDirName, schemaResolver);
      }*/
     public void registerTypes() {
-        Type stringType = typeHelper.getType("commonj.sdo", "String");
+        SDOType stringType = (SDOType) typeHelper.getType("commonj.sdo", "String");
+        SDOType propertyType = (SDOType) typeHelper.getType(SDOConstants.SDO_URL, SDOConstants.PROPERTY);
 
         // create a new Type for Employee
         DataObject empType = dataFactory.create("commonj.sdo", "Type");
@@ -91,7 +93,7 @@ public class LoadAndSaveBug6130541TestCases extends LoadAndSaveTestCases {
 
         Type companySDOType = typeHelper.define(compnayType);
 
-        DataObject propDO = dataFactory.create(SDOConstants.SDO_PROPERTY);
+        DataObject propDO = dataFactory.create(propertyType);
         propDO.set("name", "company");
         propDO.set("type", companySDOType);
        // typeHelper.defineOpenContentProperty(getControlRootURI(), propDO);

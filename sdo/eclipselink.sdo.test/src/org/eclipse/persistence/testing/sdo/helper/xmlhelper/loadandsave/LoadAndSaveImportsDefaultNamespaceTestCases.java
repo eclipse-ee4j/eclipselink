@@ -23,6 +23,7 @@ import java.util.List;
 import javax.xml.transform.stream.StreamSource;
 import junit.textui.TestRunner;
 import org.eclipse.persistence.sdo.SDOConstants;
+import org.eclipse.persistence.sdo.SDOType;
 import org.eclipse.persistence.sdo.helper.DefaultSchemaResolver;
 import org.eclipse.persistence.sdo.helper.SDOClassGenerator;
 
@@ -102,7 +103,9 @@ public class LoadAndSaveImportsDefaultNamespaceTestCases extends LoadAndSaveTest
     }
 
     public void registerTypes() {
-        Type stringType = typeHelper.getType("commonj.sdo", "String");
+        SDOType stringType = (SDOType) typeHelper.getType("commonj.sdo", "String");
+        SDOType propertyType = (SDOType) typeHelper.getType(SDOConstants.SDO_URL, SDOConstants.PROPERTY);
+
         DataObject empType = defineType("http://sdo.sample.service.types/Emp/", "Emp");
         DataObject empnoProp = addProperty(empType, "Empno", stringType);
         empnoProp.set(SDOConstants.XMLELEMENT_PROPERTY, true);
@@ -121,7 +124,7 @@ public class LoadAndSaveImportsDefaultNamespaceTestCases extends LoadAndSaveTest
 
         Type deptSDOType = typeHelper.define(deptType);
 
-        DataObject propDO = dataFactory.create(SDOConstants.SDO_PROPERTY);
+        DataObject propDO = dataFactory.create(propertyType);
         propDO.set("name", getControlRootName());
         propDO.set("type", deptSDOType);
         typeHelper.defineOpenContentProperty(getControlRootURI(), propDO);

@@ -108,6 +108,7 @@ public abstract class IsSetOptionalWithoutDefaultNumericPrimsTestCases extends L
         Type doubleType = typeHelper.getType(SDO_URL, DOUBLE);
         Type floatType = typeHelper.getType(SDO_URL, FLOAT);
         Type booleanType = typeHelper.getType(SDO_URL, BOOLEAN);
+        Type propertyType = typeHelper.getType(SDO_URL, PROPERTY);
 
         // create employee type
         DataObject employeeTypeDO = dataFactory.create(SDO_URL, TYPE);        
@@ -148,7 +149,7 @@ public abstract class IsSetOptionalWithoutDefaultNumericPrimsTestCases extends L
         // define type
         Type employeeSDOType = typeHelper.define(employeeTypeDO);
         // create a property of type employee - and associate the discriptor by QName
-        DataObject propDO = dataFactory.create(SDO_PROPERTY);
+        DataObject propDO = dataFactory.create(propertyType);
         propDO.set("name", getControlRootName());
         propDO.set("type", employeeSDOType);
         typeHelper.defineOpenContentProperty(getControlRootURI(), propDO);

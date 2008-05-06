@@ -34,8 +34,10 @@ public class ChangeSummaryExceptionTestCases extends SDOTestCase {
     }
 
     public void testManyPropForCS() {
+        SDOType changeSummaryType = (SDOType) typeHelper.getType(SDOConstants.SDO_URL, SDOConstants.CHANGESUMMARY);
+
         DataObject rootTypeDO = defineType("rootUri", "rootTypeName");
-        addProperty(rootTypeDO, "csmProp", SDOConstants.SDO_CHANGESUMMARY, true, true, true);
+        addProperty(rootTypeDO, "csmProp", changeSummaryType, true, true, true);
         SDOType rootType = (SDOType)typeHelper.define(rootTypeDO);
 
         try {

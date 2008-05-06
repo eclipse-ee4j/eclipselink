@@ -29,6 +29,7 @@ import org.eclipse.persistence.sdo.SDOType;
 import org.eclipse.persistence.sdo.helper.SDOTypeHelper;
 import org.eclipse.persistence.sdo.helper.SDOXMLHelper;
 import org.eclipse.persistence.sdo.helper.SDOXSDHelper;
+import org.eclipse.persistence.sdo.types.*;
 import org.eclipse.persistence.exceptions.SDOException;
 import org.eclipse.persistence.internal.helper.ClassConstants;
 import org.eclipse.persistence.oxm.NamespaceResolver;
@@ -49,19 +50,19 @@ public class SDOTypeHelperDelegate implements SDOTypeHelper {
     private Map typesHashMap;
 
     /** Map containing built-in types for primitive and SDO types */
-    private static final Map commonjHashMap = new HashMap();
+    private final Map commonjHashMap = new HashMap();
 
     /** Map containing built-in types for Java types */
-    private static final Map commonjJavaHashMap = new HashMap();
+    private final Map commonjJavaHashMap = new HashMap();
 
     /** Map containing built-in types for SDO Types keyed on Java class */
     private static final Map sdoTypeForSimpleJavaType = new HashMap();
 
     /** a HashMap having SDO object as key and corresponding XSD Qname Object as value */
-    private static final Map sdoToXSDTypes = new HashMap();
+    private final Map sdoToXSDTypes = new HashMap();
 
     /** a HashMap having XSD Qname Object as Key and corresponding SDO Object as value */
-    private static final Map xsdToSDOType = new HashMap();
+    private final Map xsdToSDOType = new HashMap();
 
     /** a HashMap keyed on Qname of defined open content properties */
     private Map openContentProperties;
@@ -72,10 +73,6 @@ public class SDOTypeHelperDelegate implements SDOTypeHelper {
 
     // create these maps once to avoid threading issues
     static {
-        initCommonjHashMap();
-        initCommonjJavaHashMap();
-        initXsdToSDOType();
-        initSdoToXSDType();
         initSDOTypeForSimpleJavaTypeMap();        
     }
 
@@ -83,18 +80,25 @@ public class SDOTypeHelperDelegate implements SDOTypeHelper {
         // set context before initializing maps
         aHelperContext = aContext;
         initTypesHashMap();
+        initCommonjHashMap();
+        initCommonjJavaHashMap();
+        initXsdToSDOType();
+        initSdoToXSDType();
         initOpenProps();
     }
 
     /**
-     * initlizes built-in HashMap commonjHashMap.
+     * initializes built-in HashMap commonjHashMap.
      */
-    private static void initCommonjHashMap() {
+    private void initCommonjHashMap() {
         commonjHashMap.put(SDOConstants.BOOLEAN, SDOConstants.SDO_BOOLEAN);
         commonjHashMap.put(SDOConstants.BYTE, SDOConstants.SDO_BYTE);
         commonjHashMap.put(SDOConstants.BYTES, SDOConstants.SDO_BYTES);
         commonjHashMap.put(SDOConstants.CHARACTER, SDOConstants.SDO_CHARACTER);
-        commonjHashMap.put(SDOConstants.DATAOBJECT, SDOConstants.SDO_DATAOBJECT);
+        
+        SDOType dataObjectType = new SDODataObjectType(this);    
+        commonjHashMap.put(dataObjectType.getName(), dataObjectType);
+        
         commonjHashMap.put(SDOConstants.DATE, SDOConstants.SDO_DATE);
         commonjHashMap.put(SDOConstants.DATETIME, SDOConstants.SDO_DATETIME);
         commonjHashMap.put(SDOConstants.DAY, SDOConstants.SDO_DAY);
@@ -116,12 +120,15 @@ public class SDOTypeHelperDelegate implements SDOTypeHelper {
         commonjHashMap.put(SDOConstants.YEARMONTH, SDOConstants.SDO_YEARMONTH);
         commonjHashMap.put(SDOConstants.YEARMONTHDAY, SDOConstants.SDO_YEARMONTHDAY);
         commonjHashMap.put(SDOConstants.URI, SDOConstants.SDO_URI);
-        commonjHashMap.put(SDOConstants.CHANGESUMMARY, SDOConstants.SDO_CHANGESUMMARY);
-        commonjHashMap.put(SDOConstants.TYPE, SDOConstants.SDO_TYPE);
-        commonjHashMap.put(SDOConstants.PROPERTY, SDOConstants.SDO_PROPERTY);
+
+        SDOType changeSummaryType = new SDOChangeSummaryType(this);
+        commonjHashMap.put(changeSummaryType.getName(), changeSummaryType);
+
+        SDOType typeType = new SDOTypeType(this);    
+        commonjHashMap.put(typeType.getName(), typeType);
     }
 
-    private static void initCommonjJavaHashMap() {
+    private void initCommonjJavaHashMap() {
         commonjJavaHashMap.put(SDOConstants.BOOLEANOBJECT, SDOConstants.SDO_BOOLEANOBJECT);
         commonjJavaHashMap.put(SDOConstants.BYTEOBJECT, SDOConstants.SDO_BYTEOBJECT);
         commonjJavaHashMap.put(SDOConstants.CHARACTEROBJECT, SDOConstants.SDO_CHARACTEROBJECT);
@@ -131,29 +138,36 @@ public class SDOTypeHelperDelegate implements SDOTypeHelper {
         commonjJavaHashMap.put(SDOConstants.LONGOBJECT, SDOConstants.SDO_LONGOBJECT);
         commonjJavaHashMap.put(SDOConstants.SHORTOBJECT, SDOConstants.SDO_SHORTOBJECT);
     }
-    
+
     /**
-     * initlizes HashMap typesHashMap.
+     * initializes HashMap typesHashMap.
      */
     private void initTypesHashMap() {
-      typesHashMap = new HashMap();
-      QName qname = new QName(SDOConstants.ORACLE_SDO_URL, SDOConstants.XMLHELPER_LOAD_OPTIONS);
-      typesHashMap.put(qname, SDOConstants.SDO_XMLHELPER_LOAD_OPTIONS);
-        QName customTypeQname = new QName(SDOConstants.SDO_OPEN_SEQUENCED.getURI(), SDOConstants.SDO_OPEN_SEQUENCED.getName());
-        typesHashMap.put(customTypeQname, SDOConstants.SDO_OPEN_SEQUENCED);
+        typesHashMap = new HashMap();
+
+        SDOType typeType = (SDOType) this.getType(SDOConstants.SDO_URL, SDOConstants.TYPE);
+
+        SDOType xmlHelperLoadOptionsType = new SDOXMLHelperLoadOptionsType(this, typeType);
+        typesHashMap.put(xmlHelperLoadOptionsType.getQName(), xmlHelperLoadOptionsType);
+
+        SDOType openSequencedType = new SDOOpenSequencedType(this);
+        typesHashMap.put(openSequencedType.getQName(), openSequencedType);
     }
 
     /**
-     * initlize the built-in HashMap sdoToXSDTypes
+     * initialize the built-in HashMap sdoToXSDTypes
      */
-    private static void initSdoToXSDType() {
+    private void initSdoToXSDType() {
         sdoToXSDTypes.put(SDOConstants.SDO_BOOLEAN, XMLConstants.BOOLEAN_QNAME);
         sdoToXSDTypes.put(SDOConstants.SDO_BYTE, XMLConstants.BYTE_QNAME);
         sdoToXSDTypes.put(SDOConstants.SDO_BYTES, XMLConstants.HEX_BINARY_QNAME);
         sdoToXSDTypes.put(SDOConstants.SDO_CHARACTER, XMLConstants.STRING_QNAME);
         sdoToXSDTypes.put(SDOConstants.SDO_DATE, XMLConstants.DATE_TIME_QNAME);
         sdoToXSDTypes.put(SDOConstants.SDO_DATETIME, XMLConstants.DATE_TIME_QNAME);
-        sdoToXSDTypes.put(SDOConstants.SDO_DATAOBJECT, SDOConstants.ANY_TYPE_QNAME);
+
+        Type dataObjectType = this.getType(SDOConstants.SDO_URL, SDOConstants.DATAOBJECT);
+        sdoToXSDTypes.put(dataObjectType, SDOConstants.ANY_TYPE_QNAME);
+
         sdoToXSDTypes.put(SDOConstants.SDO_DAY, SDOConstants.GDAY_QNAME);
         sdoToXSDTypes.put(SDOConstants.SDO_DECIMAL, XMLConstants.DECIMAL_QNAME);
         sdoToXSDTypes.put(SDOConstants.SDO_DOUBLE, XMLConstants.DOUBLE_QNAME);
@@ -185,11 +199,14 @@ public class SDOTypeHelperDelegate implements SDOTypeHelper {
     }
 
     /**
-     * initlize the built-in HashMap xsdToSDOTypes
+     * initialize the built-in HashMap xsdToSDOTypes
      */
-    private static void initXsdToSDOType() {
+    private void initXsdToSDOType() {
         xsdToSDOType.put(XMLConstants.ANY_SIMPLE_TYPE_QNAME, SDOConstants.SDO_OBJECT);
-        xsdToSDOType.put(SDOConstants.ANY_TYPE_QNAME, SDOConstants.SDO_DATAOBJECT);
+
+        Type dataObjectType = this.getType(SDOConstants.SDO_URL, SDOConstants.DATAOBJECT);
+        xsdToSDOType.put(SDOConstants.ANY_TYPE_QNAME, dataObjectType);
+
         xsdToSDOType.put(SDOConstants.ANY_URI_QNAME, SDOConstants.SDO_URI);
         xsdToSDOType.put(XMLConstants.BASE_64_BINARY_QNAME, SDOConstants.SDO_BYTES);
         xsdToSDOType.put(XMLConstants.BOOLEAN_QNAME, SDOConstants.SDO_BOOLEAN);
@@ -297,7 +314,7 @@ public class SDOTypeHelperDelegate implements SDOTypeHelper {
      * @return the Type specified by typeName with the given uri,
      *    or null if not found.
      */
-    public Type getType(String uri, String typeName) {
+    public SDOType getType(String uri, String typeName) {
         // for now, only the build in HashMap will be used to acquire
         // Type.a
         if (typeName == null) {
@@ -305,30 +322,22 @@ public class SDOTypeHelperDelegate implements SDOTypeHelper {
         }
 
         if ((uri != null) && (uri.equals(SDOConstants.SDO_URL))) {
-            return (Type)commonjHashMap.get(typeName);
+            return (SDOType)commonjHashMap.get(typeName);
         } else if ((uri != null) && (uri.equals(SDOConstants.SDOJAVA_URL))) {
-            return (Type)commonjJavaHashMap.get(typeName);
+            return (SDOType)commonjJavaHashMap.get(typeName);
         } else {
             QName qName = new QName(uri, typeName);
-            return (Type)getTypesHashMap().get(qName);
+            return (SDOType)getTypesHashMap().get(qName);
         }
     }
 
-    public void addType(Type newType) {
-        String uri = newType.getURI();
-        String name = newType.getName();
-        addType(uri, name, newType);        
-    }
-
-    private void addType(String uri, String name, Type newType) {          
-        if ((uri != null) && uri.equals(SDOConstants.SDO_URL)) {
-            commonjHashMap.put(name, newType);
-        } else if ((uri != null) && uri.equals(SDOConstants.SDOJAVA_URL)) {
-            commonjJavaHashMap.put(name, newType);
-
+    public void addType(SDOType newType) {
+    	if(SDOConstants.SDO_URL.equals(newType.getURI())) {
+            commonjHashMap.put(newType.getName(), newType);
+        } else if (SDOConstants.SDOJAVA_URL.equals(newType.getURI())) {
+            commonjJavaHashMap.put(newType.getName(), newType);
         } else {
-            QName qName = new QName(uri, name);
-            getTypesHashMap().put(qName, newType);
+            getTypesHashMap().put(newType.getQName(), newType);
         }
     }
 
@@ -338,14 +347,14 @@ public class SDOTypeHelperDelegate implements SDOTypeHelper {
      *    type.getInstanceClass();
      * @return the Type for this interfaceClass or null if not found.
      */
-    public Type getType(Class interfaceClass) {
+    public SDOType getType(Class interfaceClass) {
         //TODO: possibly have a separate Map
         //TODO: what is uri for qname if package is null or targetnamespace        
         //types keyed on qname				        
         Iterator iter = getTypesHashMap().keySet().iterator();
         while (iter.hasNext()) {
             QName key = (QName)iter.next();
-            Type value = (Type)getTypesHashMap().get(key);
+            SDOType value = (SDOType)getTypesHashMap().get(key);
             if (value.getInstanceClass() == interfaceClass) {
                 return value;
             }
@@ -358,19 +367,19 @@ public class SDOTypeHelperDelegate implements SDOTypeHelper {
      * INTERNAL:
      * Used to determine which SDO Type corresponds the given Java simple type
      */
-    public Type getTypeForSimpleJavaType(Class implClass) {
-        return (Type)getSDOTypeForSimpleJavaTypeMap().get(implClass);
+    public SDOType getTypeForSimpleJavaType(Class implClass) {
+        return (SDOType)getSDOTypeForSimpleJavaTypeMap().get(implClass);
     }
 
     public synchronized Type define(DataObject dataObject) {
         List types = new ArrayList();
         Type rootType = define(dataObject, types);
-        initializeTypes(types);             
+        initializeTypes(types);
         return rootType;
 
     }
     
-    private void initializeTypes(List types){        
+    private void initializeTypes(List types){
         List descriptorsToAdd = new ArrayList(types);
         for (int i = 0; i < types.size(); i++) {
             SDOType nextType = (SDOType)types.get(i);
@@ -421,17 +430,23 @@ public class SDOTypeHelperDelegate implements SDOTypeHelper {
         }
 
         SDOType type = (SDOType)typeHelper.getType(uri, name);
-        if (type == null) {
-            type = new SDOType(uri, name, aHelperContext);
-            addType(uri, name, type);
-            types.add(type);
-        } else {
+
+        if (null != type) {
             return type;
         }
 
-        type.setSequenced(dataObject.getBoolean("sequenced"));
+        boolean isDataType = dataObject.getBoolean("dataType");
+        if(isDataType) {
+            type = new SDODataType(uri, name, this);
+        } else {
+            type = new SDOType(uri, name, this);
+            type.setSequenced(dataObject.getBoolean("sequenced"));
+        }
+        type.setDataType(isDataType);
+        addType(type);
+        types.add(type);
+
         type.setAbstract(dataObject.getBoolean("abstract"));
-        type.setDataType(dataObject.getBoolean("dataType"));
 
         List baseTypes = dataObject.getList("baseType");
         for (int i = 0; i < baseTypes.size(); i++) {
@@ -459,6 +474,10 @@ public class SDOTypeHelperDelegate implements SDOTypeHelper {
             type.setInstanceProperty(nextProp, value);
         }
 
+        if (!type.isDataType()) {
+            type.preInitialize(null, null);
+        }
+
         List properties = dataObject.getList("property");
 
         for (int i = 0; i < properties.size(); i++) {
@@ -469,11 +488,7 @@ public class SDOTypeHelperDelegate implements SDOTypeHelper {
             }
         }
         type.setOpen(dataObject.getBoolean("open"));
-        
-        if (!type.isDataType()) {
-            type.preInitialize(null, null);                        
-        }
-  
+ 
         return type;
     }
 
@@ -491,9 +506,9 @@ public class SDOTypeHelperDelegate implements SDOTypeHelper {
     }
 
     private Object getValueFromObject(Object objectValue, List types) {
-        if (objectValue instanceof DataObject) {
-            if (((DataObject)objectValue).getType() == SDOConstants.SDO_TYPE) {                
-                return define((DataObject)objectValue, types);                
+        if (objectValue instanceof SDODataObject) {
+            if (((SDODataObject)objectValue).getType().isTypeType()) {
+                return define((DataObject)objectValue, types);
             }
         }
         return objectValue;
@@ -628,7 +643,12 @@ public class SDOTypeHelperDelegate implements SDOTypeHelper {
         initTypesHashMap();
         namespaceResolver = new NamespaceResolver();
         initOpenProps();
-        SDOConstants.SDO_OPEN_SEQUENCED.getXmlDescriptor().setNamespaceResolver(null);
+
+        SDOType openSequencedType = (SDOType) typesHashMap.get(new QName(SDOConstants.ORACLE_SDO_URL, "OpenSequencedType"));
+        openSequencedType.getXmlDescriptor().setNamespaceResolver(null);
+        
+        initSdoToXSDType();
+        initXsdToSDOType();
     }
 
     /**
@@ -651,7 +671,7 @@ public class SDOTypeHelperDelegate implements SDOTypeHelper {
             propertyToReturn = aHelperContext.getXSDHelper().getGlobalProperty(uri, name, false);
         }
 
-        if ((propertyToReturn == null) || (!(propertyToReturn instanceof Property))) {            
+        if ((propertyToReturn == null) || (!(propertyToReturn instanceof Property))) {
             List types = new ArrayList();
             propertyToReturn = buildPropertyFromDataObject(propertyDO, null, types);
             initializeTypes(types);
@@ -667,11 +687,11 @@ public class SDOTypeHelperDelegate implements SDOTypeHelper {
      * @param property
      */
     private void defineOpenContentProperty(String propertyUri, String propertyName, Property property) {
-        if (propertyUri != null) {            
-            QName propertyQName = new QName(propertyUri, propertyName);            
+        if (propertyUri != null) {
+            QName propertyQName = new QName(propertyUri, propertyName);
             openContentProperties.put(propertyQName, property);
             
-            boolean isElement = aHelperContext.getXSDHelper().isElement(property);            
+            boolean isElement = aHelperContext.getXSDHelper().isElement(property);
             ((SDOXSDHelper)aHelperContext.getXSDHelper()).addGlobalProperty(propertyQName, property, isElement);
             
 
@@ -707,7 +727,7 @@ public class SDOTypeHelperDelegate implements SDOTypeHelper {
     @param propertyName the name of the open Property.
     @return the open Property.
     */
-    public Property getOpenContentProperty(String uri, String propertyName) {    
+    public Property getOpenContentProperty(String uri, String propertyName) {
         QName qname = new QName(uri, propertyName);
         return (Property)openContentProperties.get(qname);
     }
@@ -816,13 +836,15 @@ public class SDOTypeHelperDelegate implements SDOTypeHelper {
     }
     
     private void initOpenProps() {
+        SDOType typeType = this.getType(SDOConstants.SDO_URL, SDOConstants.TYPE);
+
         openContentProperties = new HashMap();
         openContentProperties.put(SDOConstants.MIME_TYPE_QNAME, SDOConstants.MIME_TYPE_PROPERTY);
         openContentProperties.put(SDOConstants.MIME_TYPE_PROPERTY_QNAME, SDOConstants.MIME_TYPE_PROPERTY_PROPERTY);
-        openContentProperties.put(SDOConstants.SCHEMA_TYPE_QNAME, SDOConstants.XML_SCHEMA_TYPE_PROPERTY);
+        openContentProperties.put(SDOConstants.SCHEMA_TYPE_QNAME, new SDOProperty(aHelperContext, SDOConstants.ORACLE_SDO_URL, SDOConstants.XML_SCHEMA_TYPE_NAME, typeType));
         openContentProperties.put(SDOConstants.JAVA_CLASS_QNAME, SDOConstants.JAVA_CLASS_PROPERTY);
         openContentProperties.put(SDOConstants.XML_ELEMENT_QNAME, SDOConstants.XMLELEMENT_PROPERTY);
-        openContentProperties.put(SDOConstants.XML_DATATYPE_QNAME, SDOConstants.XMLDATATYPE_PROPERTY);
+        openContentProperties.put(SDOConstants.XML_DATATYPE_QNAME, new SDOProperty(aHelperContext, SDOConstants.ORACLE_SDO_URL, SDOConstants.SDOXML_DATATYPE, typeType));
         openContentProperties.put(SDOConstants.XML_ID_PROPERTY_QNAME, SDOConstants.ID_PROPERTY);
         openContentProperties.put(SDOConstants.DOCUMENTATION_PROPERTY_QNAME, SDOConstants.DOCUMENTATION_PROPERTY);
     }

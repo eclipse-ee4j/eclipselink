@@ -136,6 +136,8 @@ public class ContainmentTestCases extends SDOTestCase {
     public SDOType getSecondChildType() {
         Type stringType = typeHelper.getType("commonj.sdo", "String");
         Type intType = typeHelper.getType("commonj.sdo", "Int");
+        SDOType propertyType = (SDOType) typeHelper.getType(SDOConstants.SDO_URL, SDOConstants.PROPERTY);
+
         DataObject aTypeDO = dataFactory.create("commonj.sdo", "Type");        
         aTypeDO.set("uri", "http://testing");
         aTypeDO.set("name", "secondChildType");
@@ -145,7 +147,7 @@ public class ContainmentTestCases extends SDOTestCase {
         // define type
         SDOType anSDOType = (SDOType)typeHelper.define(aTypeDO);
         // create a property of type employee - and associate the discriptor by QName
-        DataObject propDO = dataFactory.create(SDOConstants.SDO_PROPERTY);
+        DataObject propDO = dataFactory.create(propertyType);
         propDO.set("name", getControlRootName());
         propDO.set("type", anSDOType);
         typeHelper.defineOpenContentProperty(getControlRootURI(), propDO);

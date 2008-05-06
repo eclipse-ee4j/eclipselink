@@ -21,7 +21,7 @@ import commonj.sdo.Type;
 import junit.textui.TestRunner;
 import org.eclipse.persistence.sdo.SDOConstants;
 import org.eclipse.persistence.sdo.SDOProperty;
-
+import org.eclipse.persistence.sdo.SDOType;
 
 public class LoadAndSavePurchaseOrderTestCases extends LoadAndSaveTestCases {
     public LoadAndSavePurchaseOrderTestCases(String name) {
@@ -65,6 +65,7 @@ public class LoadAndSavePurchaseOrderTestCases extends LoadAndSaveTestCases {
     }
   
     protected void registerTypes() {
+        SDOType propertyType = (SDOType) typeHelper.getType(SDOConstants.SDO_URL, SDOConstants.PROPERTY);
         Type intType = typeHelper.getType("commonj.sdo", "Int");
         Type stringType = typeHelper.getType("commonj.sdo", "String");
         Type dateType = typeHelper.getType("commonj.sdo", "YearMonthDay");
@@ -93,7 +94,7 @@ public class LoadAndSavePurchaseOrderTestCases extends LoadAndSaveTestCases {
 
         Type POType = typeHelper.define(purchaseOrderTypeType);
 
-        DataObject propDO = dataFactory.create(SDOConstants.SDO_PROPERTY);
+        DataObject propDO = dataFactory.create(propertyType);
         propDO.set("name", getControlRootName());
         propDO.set("type", POType);
         typeHelper.defineOpenContentProperty(getControlRootURI(), propDO);

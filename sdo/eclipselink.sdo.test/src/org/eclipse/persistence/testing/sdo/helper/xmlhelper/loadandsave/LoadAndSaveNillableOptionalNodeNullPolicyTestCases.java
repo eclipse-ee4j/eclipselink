@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.List;
 import junit.textui.TestRunner;
 import org.eclipse.persistence.sdo.SDOConstants;
+import org.eclipse.persistence.sdo.SDOType;
 
 public class LoadAndSaveNillableOptionalNodeNullPolicyTestCases extends LoadAndSaveTestCases {
     public LoadAndSaveNillableOptionalNodeNullPolicyTestCases(String name) {
@@ -96,10 +97,13 @@ public class LoadAndSaveNillableOptionalNodeNullPolicyTestCases extends LoadAndS
     }
 
     public void registerTypes() {
-        Type stringType = typeHelper.getType("commonj.sdo", "String");
-        Type intType = typeHelper.getType("commonj.sdo", "Int");
+        SDOType intType = (SDOType) typeHelper.getType(SDOConstants.SDO_URL, SDOConstants.INT);
+        SDOType propertyType = (SDOType) typeHelper.getType(SDOConstants.SDO_URL, SDOConstants.PROPERTY);
+        SDOType stringType = (SDOType) typeHelper.getType(SDOConstants.SDO_URL, SDOConstants.STRING);
+        SDOType typeType = (SDOType) typeHelper.getType(SDOConstants.SDO_URL, SDOConstants.TYPE);
+
         // create a new Type for Customers        
-        DataObject customerType = dataFactory.create("commonj.sdo", "Type");
+        DataObject customerType = dataFactory.create(typeType);
         customerType.set("uri", getControlRootURI());
         customerType.set("name", "EmployeeType");
         //customerType.set("name", "Employee");        
@@ -112,7 +116,7 @@ public class LoadAndSaveNillableOptionalNodeNullPolicyTestCases extends LoadAndS
         // now define the Customer type so that customers can be made
         Type customerSDOType = typeHelper.define(customerType);
 
-        DataObject propDO = dataFactory.create(SDOConstants.SDO_PROPERTY);
+        DataObject propDO = dataFactory.create(propertyType);
         propDO.set("name", getControlRootName());
         propDO.set("type", customerSDOType);
         typeHelper.defineOpenContentProperty(getControlRootURI(), propDO);

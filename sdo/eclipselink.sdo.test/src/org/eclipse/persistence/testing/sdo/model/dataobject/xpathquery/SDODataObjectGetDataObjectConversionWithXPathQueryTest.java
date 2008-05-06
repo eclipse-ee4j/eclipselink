@@ -20,6 +20,7 @@ import java.util.List;
 import org.eclipse.persistence.sdo.SDOConstants;
 import org.eclipse.persistence.sdo.SDODataObject;
 import org.eclipse.persistence.sdo.SDOProperty;
+import org.eclipse.persistence.sdo.SDOType;
 
 public class SDODataObjectGetDataObjectConversionWithXPathQueryTest extends SDODataObjectGetByXPathQueryTestCases {
     public SDODataObjectGetDataObjectConversionWithXPathQueryTest(String name) {
@@ -43,8 +44,10 @@ public class SDODataObjectGetDataObjectConversionWithXPathQueryTest extends SDOD
 
     // purpose: opencontent properties
     public void testGetDataObjectConversionFromDefinedPropertyWithPath() {
+        SDOType dataObjectType = (SDOType) typeHelper.getType(SDOConstants.SDO_URL, SDOConstants.DATAOBJECT);
+
         SDOProperty property_c1_object = ((SDOProperty)dataObject_c1.getInstanceProperty("PName-c1"));
-        property_c1_object.setType(SDOConstants.SDO_DATAOBJECT);
+        property_c1_object.setType(dataObjectType);
 
         //type_c0.addDeclaredProperty(property_c1_object);
         List objects = new ArrayList();
@@ -60,7 +63,9 @@ public class SDODataObjectGetDataObjectConversionWithXPathQueryTest extends SDOD
 
     //2. purpose: getDataObject with property value is not dataobject
     public void testGetDataObjectConversionFromUndefinedProperty() {
-        DataObject testDataObject = dataFactory.create(SDOConstants.SDO_TYPE);
+        SDOType typeType = (SDOType) typeHelper.getType(SDOConstants.SDO_URL, SDOConstants.TYPE);
+
+        DataObject testDataObject = dataFactory.create(typeType);
         testDataObject.set("name", "theName");
         testDataObject.set("uri", "theUri");
         addProperty(testDataObject, "testProp", SDOConstants.SDO_BOOLEAN, false, false, true);
@@ -95,11 +100,13 @@ public class SDODataObjectGetDataObjectConversionWithXPathQueryTest extends SDOD
     }
 
     public void testSetGetDataObjectWithQueryPath() {
+        SDOType dataObjectType = (SDOType) typeHelper.getType(SDOConstants.SDO_URL, SDOConstants.DATAOBJECT);
+
         SDOProperty property_c1_object = new SDOProperty(aHelperContext);
         property_c1_object.setName("PName-c1");
         property_c1_object.setContainment(true);
         property_c1_object.setMany(true);
-        property_c1_object.setType(SDOConstants.SDO_DATAOBJECT);
+        property_c1_object.setType(dataObjectType);
 
         type_c0.addDeclaredProperty(property_c1_object);
 

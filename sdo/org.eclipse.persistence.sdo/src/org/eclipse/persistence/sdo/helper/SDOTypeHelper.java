@@ -51,7 +51,7 @@ public interface SDOTypeHelper extends TypeHelper {
      * @param newType
      * @return
      */
-    public void addType(Type newType);
+    public void addType(SDOType newType);
 
     /**
      * INTERNAL:

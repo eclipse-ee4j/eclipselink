@@ -40,19 +40,21 @@ public class ChangeSummaryCopyTestCases extends SDOTestCase {
         super.setUp();
         DataObject rootTypeDO = defineType(URINAME, TYPENAME);
         rootType = (SDOType)typeHelper.define(rootTypeDO);
+        SDOType changeSummaryType = (SDOType) typeHelper.getType(SDOConstants.SDO_URL, SDOConstants.CHANGESUMMARY);
+        SDOType dataObjectType = (SDOType) typeHelper.getType(SDOConstants.SDO_URL, SDOConstants.DATAOBJECT);
 
-        SDOProperty rootContainingPropertyB = setUpProperty("propertyA-B", true, SDOConstants.SDO_DATAOBJECT, rootType);
+        SDOProperty rootContainingPropertyB = setUpProperty("propertyA-B", true, dataObjectType, rootType);
 
         DataObject type_BDO = defineType("B_uri", "B");
         type_B = (SDOType)typeHelper.define(type_BDO);
 
-        SDOProperty propertyB = setUpProperty("propertyB", true, SDOConstants.SDO_DATAOBJECT, type_B);
-        setUpProperty("changeSummaryB", false, SDOConstants.SDO_CHANGESUMMARY, type_B);
+        SDOProperty propertyB = setUpProperty("propertyB", true, dataObjectType, type_B);
+        setUpProperty("changeSummaryB", false, changeSummaryType, type_B);
 
         DataObject type_DDO = defineType("D_uri", "D");
         type_D = (SDOType)typeHelper.define(type_DDO);
 
-        SDOProperty propertyD = setUpProperty("propertyD", true, SDOConstants.SDO_DATAOBJECT, type_D);
+        SDOProperty propertyD = setUpProperty("propertyD", true, dataObjectType, type_D);
 
         //propertyD = setUpProperty("propertyD", false, SDOConstants.SDO_STRING, type_D);
         DataObject type_EDO = defineType("E_uri", "E");

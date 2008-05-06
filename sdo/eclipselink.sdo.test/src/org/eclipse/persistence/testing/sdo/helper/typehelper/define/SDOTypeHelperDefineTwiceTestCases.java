@@ -16,6 +16,7 @@ import commonj.sdo.Type;
 import junit.textui.TestRunner;
 import org.eclipse.persistence.sdo.SDOConstants;
 import org.eclipse.persistence.sdo.SDOProperty;
+import org.eclipse.persistence.sdo.SDOType;
 import org.eclipse.persistence.testing.sdo.SDOTestCase;
 
 public class SDOTypeHelperDefineTwiceTestCases extends SDOTestCase {
@@ -29,14 +30,16 @@ public class SDOTypeHelperDefineTwiceTestCases extends SDOTestCase {
     }
 
     public void testDefineTwiceName() {
-        DataObject theDO = dataFactory.create(SDOConstants.SDO_TYPE);
+        SDOType typeType = (SDOType) typeHelper.getType(SDOConstants.SDO_URL, SDOConstants.TYPE);
+
+        DataObject theDO = dataFactory.create(typeType);
         theDO.set("name","theName");
         theDO.set("uri","theUri");
         addProperty(theDO, "prop1", SDOConstants.SDO_STRING, false, false ,true);
         Type newType = typeHelper.define(theDO);
         assertEquals(1, newType.getDeclaredProperties().size());
         
-        DataObject theDO2 = dataFactory.create(SDOConstants.SDO_TYPE);
+        DataObject theDO2 = dataFactory.create(typeType);
         theDO2.set("name","theName");
         theDO2.set("uri","theUri");
         addProperty(theDO2, "prop2", SDOConstants.SDO_STRING, false, false ,true);
@@ -47,12 +50,14 @@ public class SDOTypeHelperDefineTwiceTestCases extends SDOTestCase {
     }
     
       public void testDefineTwiceDiffUri() {
-        DataObject theDO = dataFactory.create(SDOConstants.SDO_TYPE);
+        SDOType typeType = (SDOType) typeHelper.getType(SDOConstants.SDO_URL, SDOConstants.TYPE);
+
+        DataObject theDO = dataFactory.create(typeType);
         theDO.set("name","theName");
         theDO.set("uri","theUri");
         Type newType = typeHelper.define(theDO);
       
-        DataObject theDO2 = dataFactory.create(SDOConstants.SDO_TYPE);
+        DataObject theDO2 = dataFactory.create(typeType);
         theDO2.set("name","theName");
         theDO2.set("uri","theUri2");
         Type newType2 = typeHelper.define(theDO2);

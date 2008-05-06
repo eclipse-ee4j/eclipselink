@@ -16,6 +16,7 @@ import commonj.sdo.DataObject;
 import commonj.sdo.Type;
 import junit.textui.TestRunner;
 import org.eclipse.persistence.sdo.SDOConstants;
+import org.eclipse.persistence.sdo.SDOType;
 import org.eclipse.persistence.testing.sdo.SDOTestCase;
 
 public class SequenceJIRA242TestCases extends SDOTestCase {
@@ -32,7 +33,8 @@ public class SequenceJIRA242TestCases extends SDOTestCase {
 
     public void setUp() {
         super.setUp();
-        DataObject customerTypeDO = dataFactory.create(SDOConstants.SDO_TYPE);
+        SDOType typeType = (SDOType) typeHelper.getType(SDOConstants.SDO_URL, SDOConstants.TYPE);
+        DataObject customerTypeDO = dataFactory.create(typeType);
         customerTypeDO.set("uri", "someUri");
         customerTypeDO.set("name", "theName");
         customerTypeDO.set("sequenced", true);

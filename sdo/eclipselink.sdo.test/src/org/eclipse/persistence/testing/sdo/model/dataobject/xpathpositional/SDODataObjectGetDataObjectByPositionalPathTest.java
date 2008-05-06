@@ -34,12 +34,14 @@ public class SDODataObjectGetDataObjectByPositionalPathTest extends SDODataObjec
 
     // purpose: opencontent properties
     public void testGetDataObjectConversionFromDefinedPropertyWithPath() {
+        SDOType dataObjectType = (SDOType) typeHelper.getType(SDOConstants.SDO_URL, SDOConstants.DATAOBJECT);
+
         // dataObject's type add boolean property
         type_b.setOpen(true);
         SDOProperty property = new SDOProperty(aHelperContext);
         property.setName("openTest");
         property.setMany(true);
-        property.setType(SDOConstants.SDO_DATAOBJECT);
+        property.setType(dataObjectType);
 
         List objects = new ArrayList();
 
@@ -62,10 +64,12 @@ public class SDODataObjectGetDataObjectByPositionalPathTest extends SDODataObjec
 
     //1. purpose: getBoolean with Defined Boolean Property
     public void testGetDataObjectnWithPathFromDefinedBooleanPropertyBracketPositionalSet() {
+        SDOType dataObjectType = (SDOType) typeHelper.getType(SDOConstants.SDO_URL, SDOConstants.DATAOBJECT);
+
         // dataObject's type add boolean property
         property_c = new SDOProperty(aHelperContext);
         property_c.setName(PROPERTY_NAME_C);
-        property_c.setType(SDOConstants.SDO_DATAOBJECT);
+        property_c.setType(dataObjectType);
         property_c.setMany(true);
         type_c.addDeclaredProperty(property_c);
         dataObject_c._setType(type_c);
@@ -83,10 +87,12 @@ public class SDODataObjectGetDataObjectByPositionalPathTest extends SDODataObjec
 
     //1. purpose: getBoolean with Defined Boolean Property
     public void testGetDataObjectConversionWithPathFromDefinedBooleanPropertyDotPositionalSet() {
+        SDOType dataObjectType = (SDOType) typeHelper.getType(SDOConstants.SDO_URL, SDOConstants.DATAOBJECT);
+
         // dataObject's type add boolean property
         property_c = new SDOProperty(aHelperContext);
         property_c.setName(PROPERTY_NAME_C);
-        property_c.setType(SDOConstants.SDO_DATAOBJECT);
+        property_c.setType(dataObjectType);
         property_c.setMany(true);
         type_c.addDeclaredProperty(property_c);
         dataObject_c._setType(type_c);
@@ -103,9 +109,11 @@ public class SDODataObjectGetDataObjectByPositionalPathTest extends SDODataObjec
 
     //1. purpose: getBoolean with Defined Boolean Property
     public void testGetDataObjectConversionWithPathFromDefinedBooleanPropertyBracketInPathMiddle() {
+        SDOType dataObjectType = (SDOType) typeHelper.getType(SDOConstants.SDO_URL, SDOConstants.DATAOBJECT);
+
         property_c = new SDOProperty(aHelperContext);
         property_c.setName(PROPERTY_NAME_C);
-        property_c.setType(SDOConstants.SDO_DATAOBJECT);
+        property_c.setType(dataObjectType);
         type_c.addDeclaredProperty(property_c);
         dataObject_c._setType(type_c);
 
@@ -115,24 +123,6 @@ public class SDODataObjectGetDataObjectByPositionalPathTest extends SDODataObjec
 
         this.assertEquals(bb, dataObject_a.getDataObject(property1));
     }
-
-    /* public void testGetDataObjectConversionWithPathFromDefinedBooleanPropertyEqualSignBracketInPathDotSet() {
-        property_c = new SDOProperty(aHelperContext);
-        property_c.setName(PROPERTY_NAME_C);
-        property_c.setType(SDOConstants.SDO_DATAOBJECT);
-        property_c.setMany(true);
-        type_c.addDeclaredProperty(property_c);
-        dataObject_c.setType(type_c);
-
-        SDODataObject bb = new SDODataObject();
-        List b = new ArrayList();
-
-        dataObject_c.set(property_c, b);// c dataobject's a property has value boolean 'true'
-        dataObject_a.setDataObject(property2+"[number=1]", bb);
-
-        this.assertEquals(bb, dataObject_a.getDataObject(property2+"[number=1]"));
-
-    }*/
 
     //2. purpose: getDataObject with property value is not dataobject
     public void testGetDataObjectConversionFromUndefinedProperty() {
