@@ -4,7 +4,7 @@ Bundle-Name: Sdo
 Bundle-SymbolicName: org.eclipse.persistence.sdo
 Bundle-Version: 0.1
 Require-Bundle: org.eclipse.persistence.core;visibility:=reexport,
- commonj.sdo
+ commonj.sdo;visibility:=reexport
 Export-Package: commonj.sdo.impl,
  org.eclipse.persistence.sdo,
  org.eclipse.persistence.sdo.helper,
