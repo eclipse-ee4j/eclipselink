@@ -21,6 +21,7 @@
             <pathelement path="${eclipselink.core.lib}/eclipselink-antlr.jar"/>
             <pathelement path="${eclipselink.core.lib}/eclipselink-asm.jar"/>
             <pathelement path="${eclipselink.core}/${classes.dir}"/>
+            <pathelement path="${eclipselink.lib}/osgi.core.zip"/>
             <fileset
                 dir="${eclipselink.core.lib}"
                 includes="${eclipselink.core.depend}"/>
