@@ -15,11 +15,14 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.OutputStream;
 
-public interface DBWSBuilderPackager {
+import org.eclipse.persistence.internal.sessions.factories.model.SessionConfigs;
+
+public interface DBWSPackager {
+
+	public void start(); // lifecycle methods
+	public void end();
 
     public void setStageDir(File stageDir);
-    public void setMode(boolean javaseMode);
-    public boolean getMode();
     public void setHasAttachments(boolean hasAttachments);
     public boolean hasAttachments();
 
@@ -27,15 +30,19 @@ public interface DBWSBuilderPackager {
     public void closeSchemaStream(OutputStream schemaStream);
 
     public OutputStream getSessionsStream(String sessionsFileName) throws FileNotFoundException;
+	public SessionConfigs buildSessionsXML(OutputStream dbwsSessionsStream,
+			DBWSBuilder builder);
     public void closeSessionsStream(OutputStream sessionsStream);
 
     public OutputStream getServiceStream() throws FileNotFoundException;
     public void closeServiceStream(OutputStream serviceStream);
 
     public OutputStream getOrStream() throws FileNotFoundException;
+	public String getOrProjectPathPrefix();
     public void closeOrStream(OutputStream orStream);
 
     public OutputStream getOxStream() throws FileNotFoundException;
+	public String getOxProjectPathPrefix();
     public void closeOxStream(OutputStream oxStream);
 
     public OutputStream getWSDLStream() throws FileNotFoundException;
@@ -50,8 +57,11 @@ public interface DBWSBuilderPackager {
     public OutputStream getWebservicesXmlStream() throws FileNotFoundException;
     public void closeWebservicesXmlStream(OutputStream webservicesXmlStream);
 
-    public OutputStream getOracleWebservicesXmlStream() throws FileNotFoundException;
-    public void closeOracleWebservicesXmlStream(OutputStream oracleWebservicesXmlStream);
+    public String getPlatformWebservicesFilename();
+    public OutputStream getPlatformWebservicesXmlStream() throws FileNotFoundException;
+	public void writePlatformWebservicesXML(OutputStream platformWebservicesXmlStream,
+			DBWSBuilder builder);
+    public void closePlatformWebservicesXmlStream(OutputStream platformWebservicesXmlStream);
 
     public OutputStream getCodeGenProviderStream() throws FileNotFoundException;
     public void closeCodeGenProviderStream(OutputStream codeGenProviderStream);

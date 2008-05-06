@@ -15,9 +15,10 @@ import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
 
-// TopLink imports
+// EclipseLink imports
+import org.eclipse.persistence.exceptions.DBWSException;
 
-public class DBWSBaseBuilderPackager {
+public class DBWSBasePackager {
 
     protected static class NullOutputStream extends OutputStream {
             public void close(){}
@@ -26,29 +27,30 @@ public class DBWSBaseBuilderPackager {
             public void write(byte[]b,int i,int l){}
             public void write(int b){}
         }
-    protected static NullOutputStream __nullStream = new NullOutputStream();
+    public static NullOutputStream __nullStream = new NullOutputStream();
 
-    public static final String CLASSES_DIR = "classes";
     protected File stageDir;
-    protected boolean javaseMode;
     protected boolean hasAttachments;
 
-    public DBWSBaseBuilderPackager() {
+    public DBWSBasePackager() {
         super();
     }
+
+    // lifecycle methods
+	public void start() {
+        if (stageDir == null) {
+            throw new DBWSException(this.getClass().getSimpleName() + " - stageDir cannot be null");
+        }
+	}
+	public void end() {
+
+	}
 
     public File getStageDir() {
         return this.stageDir;
     }
     public void setStageDir(File stageDir) {
         this.stageDir = stageDir;
-    }
-
-    public boolean getMode() {
-        return javaseMode;
-    }
-    public void setMode(boolean javaseMode) {
-        this.javaseMode = javaseMode;
     }
 
     public boolean hasAttachments() {
@@ -148,11 +150,11 @@ public class DBWSBaseBuilderPackager {
         }
     }
 
-    public void closeOracleWebservicesXmlStream(OutputStream oracleWebservicesXmlStream) {
-        if (nonNullStream(oracleWebservicesXmlStream)) {
+    public void closePlatformWebservicesXmlStream(OutputStream platformWebservicesXmlStream) {
+        if (nonNullStream(platformWebservicesXmlStream)) {
             try {
-                oracleWebservicesXmlStream.flush();
-                oracleWebservicesXmlStream.close();
+                platformWebservicesXmlStream.flush();
+                platformWebservicesXmlStream.close();
             }
             catch (IOException e) {/* ignore */}
         }

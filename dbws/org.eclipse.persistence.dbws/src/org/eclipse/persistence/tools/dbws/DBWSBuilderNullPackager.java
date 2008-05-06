@@ -15,7 +15,9 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.OutputStream;
 
-public class DBWSBuilderNullPackager extends DBWSBaseBuilderPackager implements DBWSBuilderPackager {
+import org.eclipse.persistence.internal.sessions.factories.model.SessionConfigs;
+
+public class DBWSBuilderNullPackager extends DBWSBasePackager implements DBWSPackager {
 
     boolean mode;
     boolean hasAtttachments;
@@ -28,7 +30,7 @@ public class DBWSBuilderNullPackager extends DBWSBaseBuilderPackager implements 
     }
     public void closeWebservicesXmlStream(OutputStream webservicesXmlStream) {
     }
-    public void closeOracleWebservicesXmlStream(OutputStream oracleWebservicesXmlStream) {
+    public void closePlatformWebservicesXmlStream(OutputStream platformWebservicesXmlStream) {
     }
     public void closeOrStream(OutputStream orStream) {
     }
@@ -51,7 +53,7 @@ public class DBWSBuilderNullPackager extends DBWSBaseBuilderPackager implements 
     public OutputStream getCodeGenProviderStream() throws FileNotFoundException {
         return null;
     }
-    public OutputStream getOracleWebservicesXmlStream() throws FileNotFoundException {
+    public OutputStream getPlatformWebservicesXmlStream() throws FileNotFoundException {
         return null;
     }
     public OutputStream getWebservicesXmlStream() throws FileNotFoundException {
@@ -72,6 +74,9 @@ public class DBWSBuilderNullPackager extends DBWSBaseBuilderPackager implements 
     public OutputStream getSessionsStream(String sessionsFileName) throws FileNotFoundException {
         return null;
     }
+	public SessionConfigs buildSessionsXML(OutputStream dbwsSessionsStream,DBWSBuilder builder) {
+		return null;
+	}
     public OutputStream getSourceProviderStream() throws FileNotFoundException {
         return null;
     }
@@ -98,4 +103,16 @@ public class DBWSBuilderNullPackager extends DBWSBaseBuilderPackager implements 
     }
     public void setStageDir(File stageDir) {
     }
+	public String getPlatformWebservicesFilename() {
+		return "";
+	}
+	public void writePlatformWebservicesXML(OutputStream platformWebservicesXmlStream,
+		DBWSBuilder builder) {
+	}
+	public String getOrProjectPathPrefix() {
+		return null;
+	}
+	public String getOxProjectPathPrefix() {
+		return null;
+	}
 }

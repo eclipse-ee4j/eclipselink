@@ -74,10 +74,6 @@ public class Util {
         "org.eclipse.persistence.platform.database.oracle.OraclePlatform";
     public static final String WEBSERVICES_FILENAME =
         "webservices.xml";
-    public static final String ORACLE_WEBSERVICES_FILENAME =
-        "oracle-webservices.xml";
-    public static final String ORACLE_WEBSERVICES_FILE =
-        WEB_INF_DIR + ORACLE_WEBSERVICES_FILENAME;
     public static final String UNDER_DBWS =
         "_dbws";
     public static final String WSDL_DIR =

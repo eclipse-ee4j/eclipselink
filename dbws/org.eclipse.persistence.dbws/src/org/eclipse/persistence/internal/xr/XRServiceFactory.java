@@ -1,10 +1,10 @@
 /*******************************************************************************
  * Copyright (c) 1998, 2008 Oracle. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
@@ -34,7 +34,6 @@ import org.eclipse.persistence.oxm.XMLUnmarshaller;
 import org.eclipse.persistence.oxm.schema.XMLSchemaReference;
 import org.eclipse.persistence.sessions.DatabaseSession;
 import org.eclipse.persistence.sessions.Session;
-import org.eclipse.persistence.internal.sessions.factories.XMLSessionConfigLoader;
 import org.eclipse.persistence.sessions.factories.SessionManager;
 import static org.eclipse.persistence.internal.xr.sxf.SimpleXMLFormat.DEFAULT_SIMPLE_XML_FORMAT_TAG;
 import static org.eclipse.persistence.internal.xr.sxf.SimpleXMLFormat.SIMPLE_XML_FORMAT_TYPE;
@@ -245,9 +244,9 @@ public class XRServiceFactory  {
         boolean found = false;
         String sessionsFile =
             xrService.sessionsFile == null ? DBWS_SESSIONS_XML : xrService.sessionsFile;
-        for (String searchPath : META_INF_PATHS) {
-            String path = searchPath + sessionsFile;
-            XMLSessionConfigLoader loader = new XMLSessionConfigLoader(path);
+        for (String prefix : META_INF_PATHS) {
+            String searchPath = prefix + sessionsFile;
+            XRSessionConfigLoader loader = new XRSessionConfigLoader(searchPath);
             loader.setShouldLogin(false);
             try {
                 found = loader.load(sessionManager, projectLoader);

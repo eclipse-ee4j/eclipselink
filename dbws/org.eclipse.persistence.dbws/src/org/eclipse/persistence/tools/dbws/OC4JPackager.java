@@ -11,30 +11,46 @@
 package org.eclipse.persistence.tools.dbws;
 
 // Javase imports
+import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.OutputStream;
+import java.io.OutputStreamWriter;
 
-// TopLink imports
+// EclipseLink imports
+import org.eclipse.persistence.Version;
 import org.eclipse.persistence.exceptions.DBWSException;
+import org.eclipse.persistence.internal.sessions.factories.model.SessionConfigs;
+import org.eclipse.persistence.internal.sessions.factories.model.log.DefaultSessionLogConfig;
+import org.eclipse.persistence.internal.sessions.factories.model.login.DatabaseLoginConfig;
+import org.eclipse.persistence.internal.sessions.factories.model.platform.ServerPlatformConfig;
+import org.eclipse.persistence.internal.sessions.factories.model.platform.oc4j.Oc4j_11_1_1_PlatformConfig;
+import org.eclipse.persistence.internal.sessions.factories.model.project.ProjectConfig;
+import org.eclipse.persistence.internal.sessions.factories.model.session.DatabaseSessionConfig;
+import org.eclipse.persistence.internal.sessions.factories.model.session.ServerSessionConfig;
+
+import static org.eclipse.persistence.internal.xr.Util.DBWS_OR_SESSION_NAME_SUFFIX;
 import static org.eclipse.persistence.internal.xr.Util.DBWS_OR_XML;
+import static org.eclipse.persistence.internal.xr.Util.DBWS_OX_SESSION_NAME_SUFFIX;
 import static org.eclipse.persistence.internal.xr.Util.DBWS_OX_XML;
 import static org.eclipse.persistence.internal.xr.Util.DBWS_SCHEMA_XML;
 import static org.eclipse.persistence.internal.xr.Util.DBWS_SERVICE_XML;
 import static org.eclipse.persistence.internal.xr.Util.DBWS_WSDL;
+import static org.eclipse.persistence.internal.xr.Util.META_INF_PATHS;
 import static org.eclipse.persistence.internal.xr.Util.WEB_INF_PATHS;
 import static org.eclipse.persistence.tools.dbws.Util.DBWS_PROVIDER_SOURCE_FILE;
-import static org.eclipse.persistence.tools.dbws.Util.ORACLE_WEBSERVICES_FILENAME;
 import static org.eclipse.persistence.tools.dbws.Util.SWAREF_FILENAME;
 import static org.eclipse.persistence.tools.dbws.Util.UNDER_DBWS;
 import static org.eclipse.persistence.tools.dbws.Util.WEBSERVICES_FILENAME;
+import static org.eclipse.persistence.tools.dbws.Util.WEB_INF_DIR;
 import static org.eclipse.persistence.tools.dbws.Util.WEB_XML_FILENAME;
 import static org.eclipse.persistence.tools.dbws.Util.WSDL_DIR;
 
 /**
  * <p>
- * <b>INTERNAL:</b> DBWSBuilderJDevPackager implements the {@link DBWSBuilderPackager} interface
+ * <b>INTERNAL:</b> OC4JPackager implements the {@link DBWSPackager} interface
  * so that the output from the {@link DBWSBuilder} is written to the <tt>src</tt> and
  * <tt>public_html</tt> directories as JDev expects.
  * <p>
@@ -73,7 +89,32 @@ import static org.eclipse.persistence.tools.dbws.Util.WSDL_DIR;
  *                DBWSProvider.java
  * </pre>
  */
-public class DBWSBuilderJDevPackager extends DBWSBaseBuilderPackager implements DBWSBuilderPackager {
+public class OC4JPackager extends DBWSBasePackager implements DBWSPackager {
+
+    public static final String ORACLE_WEBSERVICES_FILENAME =
+        "oracle-webservices.xml";
+    public static final String ORACLE_WEBSERVICES_FILE = WEB_INF_DIR + ORACLE_WEBSERVICES_FILENAME;
+    public static final String ORACLE_WEBSERVICES_PREAMBLE =
+        "<?xml version=\"1.0\" encoding=\"UTF-8\"?> \n" +
+        "<oracle-webservices \n" +
+        "  xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" \n" +
+        "  xsi:noNamespaceSchemaLocation=\"http://xmlns.oracle.com/oracleas/schema/oracle-webservices-11_1.xsd\" \n" +
+        "  > \n" +
+        "  <webservice-description name=\"";
+                           // serviceName ^^ here
+    public static final String ORACLE_WEBSERVICES_PORT_COMPONENT_NAME =
+                                             "\"> \n" +
+        "    <port-component name=\"";
+              // dotted-format serviceName.portName ^^ here
+    public static final String ORACLE_WEBSERVICES_SUFFIX =
+                                        "\"> \n" +
+        "    <!-- add WS policies here \n" +
+        "      <policy-references>\n" +
+        "      </policy-references>\n" +
+        "    -->\n" +
+        "    </port-component>\n" +
+        "  </webservice-description>\n" +
+        "</oracle-webservices>";
 
     public static final String SRC_DIR = "src";
     public static final String PUBLIC_HTML_DIR = "public_html";
@@ -85,7 +126,7 @@ public class DBWSBuilderJDevPackager extends DBWSBaseBuilderPackager implements 
     protected File underDBWSDir;
 
     // default constructor
-    public DBWSBuilderJDevPackager() {
+    public OC4JPackager() {
         super();
     }
 
@@ -108,6 +149,65 @@ public class DBWSBuilderJDevPackager extends DBWSBaseBuilderPackager implements 
             throw new DBWSException("DBWSBuilderJDevPackager - Project root directory cannot be null");
         }
     }
+    public SessionConfigs buildSessionsXML(OutputStream dbwsSessionsStream, DBWSBuilder builder) {
+
+        SessionConfigs ts =	new SessionConfigs();
+        ts.setVersion(Version.getVersion());
+
+        DatabaseSessionConfig orSessionConfig = null;
+        String dataSource = builder.getDataSource();
+        if (dataSource != null) {
+            orSessionConfig = new ServerSessionConfig();
+        }
+        else {
+            orSessionConfig = new DatabaseSessionConfig();
+        }
+        String projectName = builder.getProjectName();
+        orSessionConfig.setName(projectName + "-" + DBWS_OR_SESSION_NAME_SUFFIX);
+        ProjectConfig orProjectConfig = builder.buildORProjectConfig();
+        orSessionConfig.setPrimaryProject(orProjectConfig);
+            String orSessionCustomizerClassName = builder.getOrSessionCustomizerClassName();
+            if (orSessionCustomizerClassName != null && !"".equals(orSessionCustomizerClassName)) {
+                orSessionConfig.setSessionCustomizerClass(orSessionCustomizerClassName);
+        }
+        DatabaseLoginConfig dlc = new DatabaseLoginConfig();
+        dlc.setBindAllParameters(true);
+        dlc.setJdbcBatchWriting(true);
+        if (dataSource != null) {
+            ServerPlatformConfig spc = new Oc4j_11_1_1_PlatformConfig();
+            spc.setEnableJTA(true);
+            spc.setEnableRuntimeServices(true);
+            orSessionConfig.setServerPlatformConfig(spc);
+            dlc.setExternalConnectionPooling(true);
+            dlc.setExternalTransactionController(true);
+            dlc.setDatasource(dataSource);
+        }
+        else {
+            dlc.setConnectionURL(builder.getUrl());
+            dlc.setDriverClass(builder.getDriver());
+            dlc.setUsername(builder.getUsername());
+            dlc.setEncryptedPassword(builder.getPassword());
+        }
+        dlc.setPlatformClass(builder.getPlatformClassname());
+        orSessionConfig.setLoginConfig(dlc);
+        DefaultSessionLogConfig orLogConfig = new DefaultSessionLogConfig();
+        orLogConfig.setLogLevel(builder.getLogLevel());
+        orSessionConfig.setLogConfig(orLogConfig);
+        ts.addSessionConfig(orSessionConfig);
+        DatabaseSessionConfig oxSessionConfig = new DatabaseSessionConfig();
+        oxSessionConfig.setName(projectName + "-" + DBWS_OX_SESSION_NAME_SUFFIX);
+        ProjectConfig oxProjectConfig = builder.buildOXProjectConfig();
+        oxSessionConfig.setPrimaryProject(oxProjectConfig);
+        DefaultSessionLogConfig oxLogConfig = new DefaultSessionLogConfig();
+        oxLogConfig.setLogLevel("off");
+        oxSessionConfig.setLogConfig(oxLogConfig);
+        String oxSessionCustomizerClassName = builder.getOxSessionCustomizerClassName();
+        if (oxSessionCustomizerClassName != null && !"".equals(oxSessionCustomizerClassName)) {
+            oxSessionConfig.setSessionCustomizerClass(oxSessionCustomizerClassName);
+        }
+        ts.addSessionConfig(oxSessionConfig);
+        return ts;
+	}
 
     public OutputStream getServiceStream() throws FileNotFoundException {
         if (stageDir != null) {
@@ -141,13 +241,8 @@ public class DBWSBuilderJDevPackager extends DBWSBaseBuilderPackager implements 
 
     public OutputStream getWSDLStream() throws FileNotFoundException {
         if (stageDir != null) {
-            if (!javaseMode) {
-                buildWSDLDir();
-                return new FileOutputStream(new File(wsdlDir, DBWS_WSDL));
-            }
-            else {
-                return __nullStream;
-            }
+            buildWSDLDir();
+            return new FileOutputStream(new File(wsdlDir, DBWS_WSDL));
         }
         else {
             throw new DBWSException("DBWSBuilder packager - stage directory cannot be null");
@@ -156,13 +251,8 @@ public class DBWSBuilderJDevPackager extends DBWSBaseBuilderPackager implements 
 
     public OutputStream getSWARefStream() throws FileNotFoundException {
         if (stageDir != null) {
-            if (!javaseMode && hasAttachments) {
-                buildWSDLDir();
-                return new FileOutputStream(new File(wsdlDir, SWAREF_FILENAME));
-            }
-            else {
-                return __nullStream;
-            }
+            buildWSDLDir();
+            return new FileOutputStream(new File(wsdlDir, SWAREF_FILENAME));
         }
         else {
             throw new DBWSException("DBWSBuilder packager - stage directory cannot be null");
@@ -171,13 +261,8 @@ public class DBWSBuilderJDevPackager extends DBWSBaseBuilderPackager implements 
 
     public OutputStream getWebXmlStream() throws FileNotFoundException {
         if (stageDir != null) {
-            if (!javaseMode) {
-                buildWebInfDir();
-                return new FileOutputStream(new File(webInfDir, WEB_XML_FILENAME));
-            }
-            else {
-                return __nullStream;
-            }
+            buildWebInfDir();
+            return new FileOutputStream(new File(webInfDir, WEB_XML_FILENAME));
         }
         else {
             throw new DBWSException("DBWSBuilder packager - stage directory cannot be null");
@@ -186,33 +271,42 @@ public class DBWSBuilderJDevPackager extends DBWSBaseBuilderPackager implements 
 
     public OutputStream getWebservicesXmlStream() throws FileNotFoundException {
         if (stageDir != null) {
-            if (!javaseMode) {
-                buildWebInfDir();
-                return new FileOutputStream(new File(webInfDir, WEBSERVICES_FILENAME));
-            }
-            else {
-                return __nullStream;
-            }
+            buildWebInfDir();
+            return new FileOutputStream(new File(webInfDir, WEBSERVICES_FILENAME));
         }
         else {
             throw new DBWSException("DBWSBuilder packager - stage directory cannot be null");
         }
     }
 
-    public OutputStream getOracleWebservicesXmlStream() throws FileNotFoundException {
+    public OutputStream getPlatformWebservicesXmlStream() throws FileNotFoundException {
         if (stageDir != null) {
-            if (!javaseMode) {
-                buildWebInfDir();
-                return new FileOutputStream(new File(webInfDir, ORACLE_WEBSERVICES_FILENAME));
-            }
-            else {
-                return __nullStream;
-            }
+            buildWebInfDir();
+            return new FileOutputStream(new File(webInfDir, ORACLE_WEBSERVICES_FILENAME));
         }
         else {
             throw new DBWSException("DBWSBuilder packager - stage directory cannot be null");
         }
     }
+	public String getPlatformWebservicesFilename() {
+		return ORACLE_WEBSERVICES_FILENAME;
+	}
+
+    public void writePlatformWebservicesXML(OutputStream platformWebservicesXmlStream,
+    	DBWSBuilder dbwsBuilder) {
+        StringBuilder sb = new StringBuilder(ORACLE_WEBSERVICES_PREAMBLE);
+        sb.append(dbwsBuilder.wsdlGenerator.serviceName);
+        sb.append(ORACLE_WEBSERVICES_PORT_COMPONENT_NAME);
+        sb.append(dbwsBuilder.wsdlGenerator.serviceName + "." + dbwsBuilder.wsdlGenerator.serviceName);
+        sb.append(ORACLE_WEBSERVICES_SUFFIX);
+        OutputStreamWriter osw =
+        	new OutputStreamWriter(new BufferedOutputStream(platformWebservicesXmlStream));
+        try {
+            osw.write(sb.toString());
+            osw.flush();
+        }
+        catch (IOException e) {/* ignore */}
+	}
 
     public OutputStream getCodeGenProviderStream() throws FileNotFoundException {
         return __nullStream;
@@ -224,18 +318,20 @@ public class DBWSBuilderJDevPackager extends DBWSBaseBuilderPackager implements 
 
     public OutputStream getSourceProviderStream() throws FileNotFoundException {
         if (stageDir != null) {
-            if (!javaseMode) {
-                buildUnderDBWS();
-                return new FileOutputStream(new File(underDBWSDir, DBWS_PROVIDER_SOURCE_FILE));
-            }
-            else {
-                return __nullStream;
-            }
+            buildUnderDBWS();
+            return new FileOutputStream(new File(underDBWSDir, DBWS_PROVIDER_SOURCE_FILE));
         }
         else {
             throw new DBWSException("DBWSBuilder packager - stage directory cannot be null");
         }
     }
+
+	public String getOrProjectPathPrefix() {
+		return META_INF_PATHS[0]; // META_INF_PATHS[0] is the upper-case version
+	}
+	public String getOxProjectPathPrefix() {
+		return META_INF_PATHS[0]; // META_INF_PATHS[0] is the upper-case version
+	}
 
     protected void buildSrcDir() throws FileNotFoundException {
         srcDir = new File(stageDir, SRC_DIR);

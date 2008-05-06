@@ -70,7 +70,7 @@ import static org.eclipse.persistence.oxm.mappings.UnmarshalKeepAsElementPolicy.
  * <p>
  * <b>INTERNAL:</b> ProviderHelper bridges between {@link DBWSAdapter}'s and JAX-WS {@link Provider}'s
  * <p>
- * 
+ *
  * @author Mike Norman - michael.norman@oracle.com
  * @since Oracle TopLink 11.x.x
  * <pre>
@@ -124,12 +124,12 @@ public class ProviderHelper extends XRServiceFactory {
       XSL_POSTSCRIPT;
     protected static TransformerFactory tf = TransformerFactory.newInstance();
     protected SOAPResponseWriter responseWriter;
-    
+
     // Default constructor required by servlet/jax-ws spec
     public ProviderHelper() {
         super();
     }
-    
+
     @SuppressWarnings("unchecked")
     public void init() {
         parentClassLoader = Thread.currentThread().getContextClassLoader();
@@ -156,8 +156,12 @@ public class ProviderHelper extends XRServiceFactory {
         }
 
         for (String searchPath : WEB_INF_PATHS) {
-            String path = searchPath + "wsdl/" + DBWS_SCHEMA_XML;
+            String path = searchPath + "/" + "wsdl" + "/" + DBWS_SCHEMA_XML;
             InputStream is = parentClassLoader.getResourceAsStream(path);
+            if (is == null) {
+                path = searchPath + "\\" + "wsdl" + "\\" + DBWS_SCHEMA_XML;
+                is = parentClassLoader.getResourceAsStream(path);
+            }
             if (is != null) {
                 xrSchemaStream = is;
                 break;
@@ -167,18 +171,22 @@ public class ProviderHelper extends XRServiceFactory {
             throw DBWSException.couldNotLocateFile(DBWS_SCHEMA_XML);
         }
         buildService(xrServiceModel); // inherit xrService processing from XRServiceFactory
-        
+
         // the xrService built by 'buildService' above is overridden to produce an
         // instance of DBWSAdapter (a sub-class of XRService)
         DBWSAdapter dbwsAdapter = (DBWSAdapter)xrService;
-        
+
         // get extended schema from WSDL - has additional types for the operations
         StringWriter sw = new StringWriter();
         InputStream wsdlInputStream = null;
         try {
             for (String searchPath : WEB_INF_PATHS) {
-                String path = searchPath + "/wsdl/" + DBWS_WSDL;
+                String path = searchPath + "/" + "wsdl" + "/" + DBWS_WSDL;
                 wsdlInputStream = parentClassLoader.getResourceAsStream(path);
+                if (wsdlInputStream == null) {
+                    path = searchPath + "\\" + "wsdl" + "\\" + DBWS_WSDL;
+                    wsdlInputStream = parentClassLoader.getResourceAsStream(path);
+                }
                 if (wsdlInputStream != null) {
                     break;
                 }
@@ -287,7 +295,7 @@ public class ProviderHelper extends XRServiceFactory {
         responseWriter = new SOAPResponseWriter(dbwsAdapter);
         responseWriter.initialize();
     }
-    
+
     @SuppressWarnings("unchecked")
     public SOAPMessage invoke(SOAPMessage request) {
 
@@ -306,11 +314,11 @@ public class ProviderHelper extends XRServiceFactory {
             Operation op = dbwsAdapter.getOperation(invocation.getName());
             /*
              * Fix up types for arguments - scan the extended schema for the operation's Request type.
-             * 
+             *
              * For most parameters, the textual node content is fine, but for date/time and
              * binary objects, we must convert
              */
-            org.eclipse.persistence.internal.oxm.schema.model.Element invocationElement = 
+            org.eclipse.persistence.internal.oxm.schema.model.Element invocationElement =
               (org.eclipse.persistence.internal.oxm.schema.model.Element)
                dbwsAdapter.getExtendedSchema().getTopLevelElements().get(invocation.getName());
             String typeName = invocationElement.getType();
@@ -319,13 +327,13 @@ public class ProviderHelper extends XRServiceFactory {
               // strip-off any namespace prefix
               typeName = typeName.substring(idx+1);
             }
-            ComplexType complexType = 
+            ComplexType complexType =
               (ComplexType)dbwsAdapter.getExtendedSchema().getTopLevelComplexTypes().get(typeName);
             if (complexType.getSequence() != null) {
                 // for each operation, there is a corresponding top-level Request type
                 // which has the arguments to the operation
                 for (Iterator i = complexType.getSequence().getOrderedElements().iterator(); i .hasNext();) {
-                    org.eclipse.persistence.internal.oxm.schema.model.Element e = 
+                    org.eclipse.persistence.internal.oxm.schema.model.Element e =
                     (org.eclipse.persistence.internal.oxm.schema.model.Element)i.next();
                   String argName = e.getName();
                   Object argValue = invocation.getParameter(argName);
@@ -337,10 +345,10 @@ public class ProviderHelper extends XRServiceFactory {
                      if (idx != -1) {
                        argTypePrefix = argType.substring(0,idx);
                        argType = argType.substring(idx+1);
-                       nameSpaceURI = 
+                       nameSpaceURI =
                          dbwsAdapter.getSchema().getNamespaceResolver().resolveNamespacePrefix(argTypePrefix);
                      }
-                     QName argQName = argTypePrefix == null ? new QName(nameSpaceURI, argType) : 
+                     QName argQName = argTypePrefix == null ? new QName(nameSpaceURI, argType) :
                          new QName(nameSpaceURI, argType, argTypePrefix);
                      Class clz = SCHEMA_2_CLASS.get(argQName);
                      if (clz != null) {
@@ -364,7 +372,7 @@ public class ProviderHelper extends XRServiceFactory {
         }
         return response;
     }
-    
+
     public void destroy() {
         logoutSessions();
         responseWriter = null;
@@ -389,7 +397,7 @@ public class ProviderHelper extends XRServiceFactory {
         initializeService(parentClassLoader, xrSchemaStream);
         return dbws;
     }
-    
+
     public static SOAPElement getSOAPBodyElement(SOAPMessage message) throws SOAPException {
         NodeList nodes = message.getSOAPPart().getEnvelope().getBody().getChildNodes();
         for (int i = 0; i < nodes.getLength(); i++) {

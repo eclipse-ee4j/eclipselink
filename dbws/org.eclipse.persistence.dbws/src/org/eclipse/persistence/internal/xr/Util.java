@@ -1,10 +1,10 @@
 /*******************************************************************************
  * Copyright (c) 1998, 2008 Oracle. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
@@ -17,9 +17,9 @@ package org.eclipse.persistence.internal.xr;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
-
 import org.w3c.dom.Document;
 
+// Java extension libraries
 import javax.xml.namespace.QName;
 
 // EclipseLink imports
@@ -447,9 +447,11 @@ public class Util {
     public static final String DEFAULT_ATTACHMENT_MIMETYPE =
         "application/octet-stream";
     public static final String[] META_INF_PATHS =
-        {"META-INF/", "meta-inf/", "/META-INF/", "/meta-inf/"};
+        {"META-INF/", "meta-inf/", "/META-INF/", "/meta-inf/",
+    	 "META-INF\\", "meta-inf\\", "\\META-INF\\", "\\meta-inf\\"
+    	 };
     public static final String[] WEB_INF_PATHS =
-        {"WEB-INF/", "web-inf/", "/WEB-INF/", "/web-inf/"};
+        {"WEB-INF", "web-inf"};
     public static final String DBWS_SERVICE_XML =
         "eclipselink-dbws.xml";
     public static final String DBWS_OR_LABEL =
