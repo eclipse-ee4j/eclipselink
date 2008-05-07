@@ -123,6 +123,26 @@
 
     <!-- Runs non-LRG tests -->
     <target name="test.non-lrg">
+        <!-- Requires remote config. 
+        The following JVM arguments must be set. 
+            -Djava.naming.factory.initial=com.sun.jndi.cosnaming.CNCtxFactory
+            -Djava.naming.provider.url=iiop://localhost:900
+            -Djava.security.policy=./java.policy.allpermissions
+        The follwing corba naming server must also be started on the computer.
+            <java_home>/bin/tnameserv.exe
+        -->
+        <antcall target="run.test.prompt" inheritRefs="true">
+            <param name="TEST_CLASS" value="org.eclipse.persistence.testing.tests.remote.RMIRemoteModel"/>
+        </antcall>
+        <antcall target="run.test.prompt" inheritRefs="true">
+            <param name="TEST_CLASS" value="org.eclipse.persistence.testing.tests.remote.rmi.IIOP.RMIIIOPRemoteModel"/>
+        </antcall>
+        <antcall target="run.test.prompt" inheritRefs="true">
+            <param name="TEST_CLASS" value="org.eclipse.persistence.testing.tests.remote.suncorba.SunCORBARemoteModel"/>
+        </antcall>
+        <antcall target="run.test.prompt" inheritRefs="true">
+            <param name="TEST_CLASS" value="org.eclipse.persistence.testing.tests.sessionbroker.RMISessionBrokerRemoteModel"/>
+        </antcall>
         <!-- Requires user "scott" unlocked and granted special privileges on oracle database -->
         <antcall target="run.test.prompt" inheritRefs="true">
             <param name="TEST_CLASS" value="org.eclipse.persistence.testing.tests.feature.NativeModeCreatorTestModel"/>
@@ -139,20 +159,7 @@
             <param name="TEST_CLASS" value="org.eclipse.persistence.testing.tests.sessionbroker.MultipleClientBrokersTestModel"/>
         </antcall>
         <antcall target="run.test.prompt" inheritRefs="true">
-            <param name="TEST_CLASS" value="org.eclipse.persistence.testing.tests.sessionbroker.RMISessionBrokerRemoteModel"/>
-        </antcall>
-        <antcall target="run.test.prompt" inheritRefs="true">
             <param name="TEST_CLASS" value="org.eclipse.persistence.testing.tests.sessionbroker.ServerBrokerTestModel"/>
-        </antcall>
-        <!-- Requires remote config. -->
-        <antcall target="run.test.prompt" inheritRefs="true">
-            <param name="TEST_CLASS" value="org.eclipse.persistence.testing.tests.remote.RMIRemoteModel"/>
-        </antcall>
-        <antcall target="run.test.prompt" inheritRefs="true">
-            <param name="TEST_CLASS" value="org.eclipse.persistence.testing.tests.remote.rmi.IIOP.RMIIIOPRemoteModel"/>
-        </antcall>
-        <antcall target="run.test.prompt" inheritRefs="true">
-            <param name="TEST_CLASS" value="org.eclipse.persistence.testing.tests.remote.suncorba.SunCORBARemoteModel"/>
         </antcall>
         <antcall target="run.test.prompt" inheritRefs="true">
             <param name="TEST_CLASS" value="org.eclipse.persistence.testing.tests.distributedservers.DistributedSessionBrokerServersModel"/>
@@ -214,6 +221,7 @@
             <jvmarg value="-Declipselink.logging.level=${logging.level}"/>
             <jvmarg value="${test.security-manager}"/>
             <jvmarg value="${test.security-manager.policy}"/>
+            <jvmarg value="-Djava.naming.factory.initial=com.sun.jndi.cosnaming.CNCtxFactory"/>
             <classpath>
                 <path refid="run.classpath"/>
             </classpath>
@@ -268,6 +276,7 @@
             <jvmarg value="-Ddb.platform=${db.platform}"/>
             <jvmarg value="${test.security-manager}"/>
             <jvmarg value="${test.security-manager.policy}"/>
+            <jvmarg value="-Djava.naming.factory.initial=com.sun.jndi.cosnaming.CNCtxFactory"/>
             <arg value="testmodel=${TEST_CLASS}" />
             <arg value="regressionlog=../${report.dir}/test.log" />
             <arg value="saveresults=true" />
