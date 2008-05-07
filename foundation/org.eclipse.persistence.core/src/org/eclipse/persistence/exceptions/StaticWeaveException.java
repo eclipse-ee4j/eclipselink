@@ -30,7 +30,7 @@ public class StaticWeaveException  extends EclipseLinkException {
 
     /**
      * INTERNAL:
-     * TopLink exceptions should only be thrown by TopLink.
+     * EclipseLink exceptions should only be thrown by EclipseLink.
      */
     public StaticWeaveException() {
         super();
@@ -38,7 +38,7 @@ public class StaticWeaveException  extends EclipseLinkException {
 
     /**
      * INTERNAL:
-     * TopLink exceptions should only be thrown by TopLink.
+     * EclipseLink exceptions should only be thrown by EclipseLink.
      */
     protected StaticWeaveException(String message) {
         super(message);
@@ -46,7 +46,7 @@ public class StaticWeaveException  extends EclipseLinkException {
 
     /**
      * INTERNAL:
-     * TopLink exceptions should only be thrown by TopLink.
+     * EclipseLink exceptions should only be thrown by EclipseLink.
      */
     protected StaticWeaveException(String message, Throwable internalException) {
         super(message);
@@ -55,7 +55,7 @@ public class StaticWeaveException  extends EclipseLinkException {
     
     /**
      * INTERNAL:
-     * TopLink exceptions should only be thrown by TopLink.
+     * EclipseLink exceptions should only be thrown by EclipseLink.
      */
     public static StaticWeaveException exceptionOpeningArchive(URL archive, Exception cause) {
         Object[] args = { archive };
@@ -68,7 +68,7 @@ public class StaticWeaveException  extends EclipseLinkException {
     
     /**
      * INTERNAL:
-     * TopLink exceptions should only be thrown by TopLink.
+     * EclipseLink exceptions should only be thrown by EclipseLink.
      */
     public static StaticWeaveException weaveInplaceForJar(String filePath) {
         Object[] args = { filePath };
@@ -81,7 +81,7 @@ public class StaticWeaveException  extends EclipseLinkException {
     
     /**
      * INTERNAL:
-     * TopLink exceptions should only be thrown by TopLink.
+     * EclipseLink exceptions should only be thrown by EclipseLink.
      */
     public static StaticWeaveException missingSource() {
         Object[] args = { null };
@@ -94,7 +94,7 @@ public class StaticWeaveException  extends EclipseLinkException {
     
     /**
      * INTERNAL:
-     * TopLink exceptions should only be thrown by TopLink.
+     * EclipseLink exceptions should only be thrown by EclipseLink.
      */
     public static StaticWeaveException missingTarget() {
         Object[] args = { null };
@@ -107,7 +107,7 @@ public class StaticWeaveException  extends EclipseLinkException {
 
     /**
      * INTERNAL:
-     * TopLink exceptions should only be thrown by TopLink.
+     * EclipseLink exceptions should only be thrown by EclipseLink.
      */
     public static StaticWeaveException openLoggingFileException(String LoggingFile,Exception cause) {
         Object[] args = { LoggingFile };
@@ -120,7 +120,7 @@ public class StaticWeaveException  extends EclipseLinkException {
     
     /**
      * INTERNAL:
-     * TopLink exceptions should only be thrown by TopLink.
+     * EclipseLink exceptions should only be thrown by EclipseLink.
      */
     public static StaticWeaveException illegalLoggingLevel(String loggingLevel) {
         Object[] args = { loggingLevel };

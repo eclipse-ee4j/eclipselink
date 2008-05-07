@@ -19,7 +19,7 @@ import org.eclipse.persistence.exceptions.i18n.ExceptionMessageGenerator;
 
 /**
  * <p>
- * <b>Purpose</b>: Any exception raised by TopLink should be a subclass of this exception class.
+ * <b>Purpose</b>: Any exception raised by EclipseLink should be a subclass of this exception class.
  */
 public abstract class EclipseLinkException extends RuntimeException {
     protected transient AbstractSession session;
@@ -41,7 +41,7 @@ public abstract class EclipseLinkException extends RuntimeException {
 
     /**
      * INTERNAL:
-     * TopLink exception should only be thrown by TopLink.
+     * EclipseLink exception should only be thrown by EclipseLink.
      */
     public EclipseLinkException(String theMessage) {
         super(theMessage);
@@ -51,7 +51,7 @@ public abstract class EclipseLinkException extends RuntimeException {
 
     /**
      * INTERNAL:
-     * TopLink exception should only be thrown by TopLink.
+     * EclipseLink exception should only be thrown by EclipseLink.
      */
     public EclipseLinkException(String message, Throwable internalException) {
         this(message);
@@ -85,7 +85,7 @@ public abstract class EclipseLinkException extends RuntimeException {
     /**
      * PUBLIC:
      * Return the internal native exception.
-     * TopLink frequently catches Java exceptions and wraps them in its own exception
+     * EclipseLink frequently catches Java exceptions and wraps them in its own exception
      * classes to provide more information.
      * The internal exception can still be accessed if required.
      */
@@ -96,7 +96,7 @@ public abstract class EclipseLinkException extends RuntimeException {
     /**
      * PUBLIC:
      * Return the exception error message.
-     * TopLink error messages are multi-line so that detail descriptions of the exception are given.
+     * EclipseLink error messages are multi-line so that detail descriptions of the exception are given.
      */
     public String getMessage() {
         StringWriter writer = new StringWriter(100);
@@ -222,10 +222,10 @@ public abstract class EclipseLinkException extends RuntimeException {
 
     /**
      * PUBLIC:
-     * Allows overiding of TopLink's exception chaining detection.
-     * @param booleam printException - If printException is true, the TopLink-stored
-     * Internal exception will be included in a stack traceor in the exception message of a EclipseLinkException.
-     * If printException is false, the TopLink-stored Internal Exception will not be included
+     * Allows overriding of EclipseLink's exception chaining detection.
+     * @param booleam printException - If printException is true, the EclipseLink-stored
+     * Internal exception will be included in a stack trace or in the exception message of a EclipseLinkException.
+     * If printException is false, the EclipseLink-stored Internal Exception will not be included
      * in the stack trace or the exception message of EclipseLinkExceptions
      */
     public static void setShouldPrintInternalException(boolean printException) {
@@ -234,7 +234,7 @@ public abstract class EclipseLinkException extends RuntimeException {
 
     /**
      * INTERNAL
-     * Check to see if the TopLink-stored internal exception should be printed in this
+     * Check to see if the EclipseLink-stored internal exception should be printed in this
      * a EclipseLinkException's stack trace.  This method will check the static ShouldPrintInternalException
      * variable and if it is not set, estimate based on the JDK version used.
      */
