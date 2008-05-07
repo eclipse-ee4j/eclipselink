@@ -23,8 +23,8 @@
 
     <!-- Classpath used for compiling tests, also used in running tests. -->
     <path id="compile.path">
-        <pathelement path="${eclipselink.core.lib}/eclipselink-antlr.jar"/>
-        <pathelement path="${eclipselink.core.lib}/eclipselink-asm.jar"/>
+        <pathelement path="${eclipselink.plugins}/${antlr}"/>
+        <pathelement path="${eclipselink.plugins}/${asm}"/>
         <pathelement path="${junit.lib}"/>
         <fileset
             dir="${eclipselink.core.lib}"

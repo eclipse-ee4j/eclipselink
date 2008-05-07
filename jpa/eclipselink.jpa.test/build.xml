@@ -62,8 +62,8 @@
                 includes="${eclipselink.core.depend}"/>
             <pathelement path="${eclipselink.jar}"/>
             <pathelement path="${junit.lib}"/>
-            <pathelement path="${eclipselink.core.lib.dir}/eclipselink-antlr.jar"/>
-            <pathelement path="${eclipselink.core.lib.dir}/eclipselink-asm.jar"/>
+            <pathelement path="${eclipselink.plugins}/${antlr}"/>
+            <pathelement path="${eclipselink.plugins}/${asm}"/>
         </path>
     </target>
 
