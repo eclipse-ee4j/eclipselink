@@ -40,7 +40,7 @@ public class RCMDistributedServersModel extends DistributedServersModel {
     }
 
     /**
-     * Factory method for a DistributedServer.  Overridden by sbuclasses;
+     * Factory method for a DistributedServer.  Overridden by subclasses;
      */
     public DistributedServer createDistributedServer(Session session) {
         return new RCMDistributedServer((DatabaseSession)session);
@@ -103,6 +103,7 @@ public class RCMDistributedServersModel extends DistributedServersModel {
         addTest(atest);
 
         addTest(new InvalidateObjectWithMissingReferenceTest());
+        addTest(new UpdateObjectInvalidationTest());
     }
 
     public void startCacheSynchronization() {

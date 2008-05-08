@@ -461,6 +461,13 @@ public class MergeManager {
         // This is required for registered new objects in a nested unit of work.
         Class localClassType = changeSet.getClassType(session);
         ClassDescriptor descriptor = session.getDescriptor(localClassType);
+        
+        // Perform invalidation of a cached object (when set on the ChangeSet) to avoid refreshing or merging
+        if (changeSet.getSynchronizationType() == ClassDescriptor.INVALIDATE_CHANGED_OBJECTS) {
+            getSession().getIdentityMapAccessorInstance().invalidateObject(changeSet.getPrimaryKeys(), localClassType);
+            return original;
+		}
+        
         if ((original != null) && descriptor.usesOptimisticLocking()) {
             if ((session.getCommandManager() != null) && (session.getCommandManager().getCommandConverter() != null)) {
                 // Rebuild the version value from user format i.e the change set was converted to XML
@@ -484,9 +491,7 @@ public class MergeManager {
         // Always merge into the original.
         getSession().log(SessionLog.FINEST, SessionLog.PROPAGATION, "Merging_from_remote_server", changeSet.getClassName(), changeSet.getPrimaryKeys());
 
-        if (changeSet.getSynchronizationType() == ClassDescriptor.INVALIDATE_CHANGED_OBJECTS) {
-            getSession().getIdentityMapAccessorInstance().invalidateObject(changeSet.getPrimaryKeys(), localClassType);
-        } else if (!(changeSet.getSynchronizationType() == ClassDescriptor.DO_NOT_SEND_CHANGES)) {
+        if (!(changeSet.getSynchronizationType() == ClassDescriptor.DO_NOT_SEND_CHANGES)) {
             descriptor.getObjectBuilder().mergeChangesIntoObject(original, changeSet, null, this);
             Vector primaryKey = changeSet.getPrimaryKeys();
 
