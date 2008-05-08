@@ -1,6 +1,6 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
-Bundle-Name: Asm Plug-in
+Bundle-Name: EclipseLink ASM
 Bundle-SymbolicName: org.eclipse.persistence.asm
 Bundle-Version: 0.1
 Export-Package: org.eclipse.persistence.internal.libraries.asm,
