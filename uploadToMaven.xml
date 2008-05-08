@@ -11,6 +11,9 @@
           <echo message="release.version ${release.version}"/>
           <echo message="build_id ${build_id}"/>
           
+          <!-- ensure installer_id is set - in general, installer id will be set by previous scripts when this script is called-->
+          <property name="installer_id" value="${build_date}">
+
           <!-- Get the subversion version for current working copy -->
           <!-- A freshly checked out copy of workspace is guaranteed to not have mixed revisions -->
     <exec outputproperty="subversion.revision" failonerror="true" executable="svnversion">
@@ -23,37 +26,37 @@
      <!-- call upload for each artifact we want to upload -->
         <antcall target="upload.artifact">
             <param name="artifactId" value="org.eclipse.persistence.core"/>
-            <param name="artifact" value="${eclipselink.foundation.base}/${plugins}/${eclipselink.core.jar}_${build_number}.jar"/>
+            <param name="artifact" value="${eclipselink.foundation.base}/${plugins.dir}/${eclipselink.core.jar}_${installer_id}.jar"/>
             <param name="artifactName" value="EclipseLink Core"/>
         </antcall>
         <antcall target="upload.artifact">
             <param name="artifactId" value="org.eclipse.persistence.jpa"/>
-            <param name="artifact" value="${eclipselink.jpa.base}/${plugins}/${eclipselink.jpa.jar}_${build_number}.jar"/>
+            <param name="artifact" value="${eclipselink.jpa.base}/${plugins.dir}/${eclipselink.jpa.jar}_${installer_id}.jar"/>
             <param name="artifactName" value="EclipseLink JPA"/>
         </antcall>
         <antcall target="upload.artifact">
             <param name="artifactId" value="org.eclipse.persistence.moxy"/>
-            <param name="artifact" value="${eclipselink.moxy.base}/${plugins}/${eclipselink.moxy.jar}_${build_number}.jar"/>
+            <param name="artifact" value="${eclipselink.moxy.base}/${plugins.dir}/${eclipselink.moxy.jar}_${installer_id}.jar"/>
             <param name="artifactName" value="EclipseLink Moxy"/>
         </antcall>
         <antcall target="upload.artifact">
             <param name="artifactId" value="org.eclipse.persistence.sdo"/>
-            <param name="artifact" value="${eclipselink.sdo.base}/${plugins}/${eclipselink.sdo.jar}_${build_number}.jar"/>
+            <param name="artifact" value="${eclipselink.sdo.base}/${plugins.dir}/${eclipselink.sdo.jar}_${installer_id}.jar"/>
             <param name="artifactName" value="EclipseLink SDO"/>
         </antcall>
         <antcall target="upload.artifact">
             <param name="artifactId" value="org.eclipse.persistence.oracle"/>
-            <param name="artifact" value="${eclipselink.foundation.base}/${plugins}/${eclipselink.extension.oracle.jar}_${build_number}.jar"/>
+            <param name="artifact" value="${eclipselink.foundation.base}/${plugins.dir}/${eclipselink.extension.oracle.jar}_${installer_id}.jar"/>
             <param name="artifactName" value="EclipseLink Oracle Extensions"/>
         </antcall>
         <antcall target="upload.artifact">
             <param name="artifactId" value="org.eclipse.persistence.antlr"/>
-            <param name="artifact" value="${eclipselink.plugins}/${eclipselink.antlr.jar}_${build_number}.jar"/>
+            <param name="artifact" value="${eclipselink.plugins}/${eclipselink.antlr.jar}_${installer_id}.jar"/>
             <param name="artifactName" value="EclipseLink ANTLR"/>
         </antcall>
         <antcall target="upload.artifact">
             <param name="artifactId" value="org.eclipse.persistence.asm"/>
-            <param name="artifact" value="${eclipselink.plugins}/${eclipselink.asm.jar}_${build_number}.jar"/>
+            <param name="artifact" value="${eclipselink.plugins}/${eclipselink.asm.jar}_${installer_id}.jar"/>
             <param name="artifactName" value="EclipseLink ASM"/>
         </antcall>
         <antcall target="upload.artifact">

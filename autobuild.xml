@@ -23,6 +23,17 @@
 
         <property file="${basedir}/autobuild.properties"/>
 
+        <!-- temporary need build_id in upload to maven.  This code should is duplicated from build.xml -->
+        <!-- ${build_id} will be given by the build system. Manual build is SNAPSHOT. -->
+        <tstamp>
+           <format property="build_date" pattern="yyyyMMdd"/>
+        </tstamp>
+        <condition property="build_number" value="${build_id}">
+            <isset property="build_id"/>
+        </condition>
+        <property name="build_number" value="SNAPSHOT"/>
+        <!-- end of temporary code-->
+
         <condition property="installer_id" value="${build_date}">
             <equals arg1="${build_id}" arg2="SNAPSHOT"/>
         </condition>
@@ -33,7 +44,6 @@
         <property name="download.path" value="${eclipse.download.path}"/>
         <!-- HACK: to fix workbench buildnumber stamping until workbench build files can be fixed -->
         <property name="_buildNumber" value="${installer_id}"/>
-
         <echo message="ANT_ARGS='${env.ANT_ARGS}'"/>
         <echo message="ANT_OPTS='${env.ANT_OPTS}'"/>
         <echo message=" "/>

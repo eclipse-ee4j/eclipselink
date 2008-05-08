@@ -10,7 +10,7 @@
             dir="${eclipselink.core.lib}"
             includes="${eclipselink.core.depend}"/>
         <pathelement path="${eclipselink.core}/${classes.dir}"/>
-        <pathelement path="${eclipselink.core.lib}/eclipselink-asm.jar"/>
+        <pathelement path="${eclipselink.plugins}/${asm}"/>
     </path>
 	<target name="all" depends="clean, compile.core" description="build moxy classes">
 		<javac srcdir="${eclipselink.moxy}/${src.dir}"

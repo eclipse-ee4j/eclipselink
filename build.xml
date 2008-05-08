@@ -39,6 +39,10 @@
     </condition>
     <property name="build_number" value="SNAPSHOT"/>
     <property name="build_number_string" value="${build_number} - ${build_date}"/>
+
+    <!-- usually, installer_id will already be set when we get here-->
+    <property name="installer_id" value="${build_date}"/>
+
     <path id="javadoc.path">
         <pathelement path="${eclipselink.jar}"/>
         <pathelement path="${commonj.sdo.lib}"/>
@@ -137,7 +141,7 @@
     <!-- Builds the eclipselink bundles. -->
 
     <target name="build.eclipselink.bundles" depends="create.build.dir" description="build eclipselink bundles">
-        <jar jarfile="${eclipselink.foundation.base}/${plugins.dir}/${eclipselink.core.jar}_${build_number}.jar" manifest="${eclipselink.core}/META-INF/MANIFEST.MF">
+        <jar jarfile="${eclipselink.foundation.base}/${plugins.dir}/${eclipselink.core.jar}_${installer_id}.jar" manifest="${eclipselink.core}/META-INF/MANIFEST.MF">
             <fileset dir="${eclipselink.core}/${classes.dir}">
                 <include name="org/eclipse/persistence/**/*.class"/>
                 <include name="deprecated/**/*.class"/>
@@ -147,7 +151,7 @@
                 <include name="org/eclipse/persistence/internal/helper/VendorNameToPlatformMapping.properties"/>
             </fileset>
         </jar>
-        <jar jarfile="${eclipselink.jpa.base}/${plugins.dir}/${eclipselink.jpa.jar}_${build_number}.jar" manifest="${eclipselink.jpa}/META-INF/MANIFEST.MF">
+        <jar jarfile="${eclipselink.jpa.base}/${plugins.dir}/${eclipselink.jpa.jar}_${installer_id}.jar" manifest="${eclipselink.jpa}/META-INF/MANIFEST.MF">
             <fileset dir="${eclipselink.core}/${resource.dir}">
                 <include name="META-INF/services/javax.persistence.spi.PersistenceProvider"/>
             </fileset>
@@ -155,28 +159,28 @@
                 <include name="org/eclipse/persistence/**/*.class"/>
             </fileset>
         </jar>
-        <jar jarfile="${eclipselink.moxy.base}/${plugins.dir}/${eclipselink.moxy.jar}_${build_number}.jar" manifest="${eclipselink.moxy}/META-INF/MANIFEST.MF">
+        <jar jarfile="${eclipselink.moxy.base}/${plugins.dir}/${eclipselink.moxy.jar}_${installer_id}.jar" manifest="${eclipselink.moxy}/META-INF/MANIFEST.MF">
             <fileset dir="${eclipselink.moxy}/${classes.dir}">
                 <include name="org/eclipse/persistence/**/*.class"/>
             </fileset>
         </jar>
-        <jar jarfile="${eclipselink.sdo.base}/${plugins.dir}/${eclipselink.sdo.jar}_${build_number}.jar" manifest="${eclipselink.sdo}/META-INF/MANIFEST.MF">
+        <jar jarfile="${eclipselink.sdo.base}/${plugins.dir}/${eclipselink.sdo.jar}_${installer_id}.jar" manifest="${eclipselink.sdo}/META-INF/MANIFEST.MF">
             <fileset dir="${eclipselink.sdo}/${classes.dir}">
                 <include name="org/eclipse/persistence/**/*.class"/>
                 <include name="commonj/sdo/impl/HelperProviderImpl.class"/>
             </fileset>
         </jar>
-        <jar jarfile="${eclipselink.foundation.base}/${plugins.dir}/${eclipselink.extension.oracle.jar}_${build_number}.jar" manifest="${eclipselink.extension.oracle}/META-INF/MANIFEST.MF">
+        <jar jarfile="${eclipselink.foundation.base}/${plugins.dir}/${eclipselink.extension.oracle.jar}_${installer_id}.jar" manifest="${eclipselink.extension.oracle}/META-INF/MANIFEST.MF">
             <fileset dir="${build.dir}">
                 <include name="org/eclipse/persistence/**/*.class"/>
             </fileset>
         </jar>
-        <jar jarfile="${eclipselink.plugins}/${eclipselink.asm.jar}_${build_number}.jar" manifest="${eclipselink.plugins}/${asm}/META-INF/MANIFEST.MF">
+        <jar jarfile="${eclipselink.plugins}/${eclipselink.asm.jar}_${installer_id}.jar" manifest="${eclipselink.plugins}/${asm}/META-INF/MANIFEST.MF">
             <fileset dir="${eclipselink.plugins}/${asm}">
                 <include name="org/eclipse/persistence/**/*.class"/>
             </fileset>
         </jar>
-        <jar jarfile="${eclipselink.plugins}/${eclipselink.antlr.jar}_${build_number}.jar" manifest="${eclipselink.plugins}/${antlr}/META-INF/MANIFEST.MF">
+        <jar jarfile="${eclipselink.plugins}/${eclipselink.antlr.jar}_${installer_id}.jar" manifest="${eclipselink.plugins}/${antlr}/META-INF/MANIFEST.MF">
             <fileset dir="${eclipselink.plugins}/${antlr}">
                 <include name="org/eclipse/persistence/**/*.class"/>
             </fileset>
