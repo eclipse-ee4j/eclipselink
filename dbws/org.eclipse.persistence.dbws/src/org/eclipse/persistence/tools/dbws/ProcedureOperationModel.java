@@ -16,6 +16,8 @@ import static java.util.logging.Level.FINEST;
 
 // Java extension imports
 import javax.xml.namespace.QName;
+import static javax.xml.XMLConstants.DEFAULT_NS_PREFIX;
+import static javax.xml.XMLConstants.NULL_NS_URI;
 import static javax.xml.XMLConstants.W3C_XML_SCHEMA_NS_URI;
 
 // EclipseLink imports
@@ -35,7 +37,9 @@ import org.eclipse.persistence.tools.dbws.Util.InOut;
 import org.eclipse.persistence.tools.dbws.jdbc.DbStoredArgument;
 import org.eclipse.persistence.tools.dbws.jdbc.DbStoredFunction;
 import org.eclipse.persistence.tools.dbws.jdbc.DbStoredProcedure;
+import static org.eclipse.persistence.internal.xr.QNameTransformer.SCHEMA_QNAMES;
 import static org.eclipse.persistence.internal.xr.sxf.SimpleXMLFormat.DEFAULT_SIMPLE_XML_FORMAT_TAG;
+import static org.eclipse.persistence.internal.xr.Util.SXF_QNAME;
 import static org.eclipse.persistence.tools.dbws.Util.SXF_QNAME_CURSOR;
 import static org.eclipse.persistence.tools.dbws.Util.addSimpleXMLFormat;
 import static org.eclipse.persistence.tools.dbws.Util.getXMLTypeFromJDBCType;
@@ -43,8 +47,6 @@ import static org.eclipse.persistence.tools.dbws.Util.noOutArguments;
 import static org.eclipse.persistence.tools.dbws.Util.qNameFromString;
 import static org.eclipse.persistence.tools.dbws.Util.InOut.IN;
 import static org.eclipse.persistence.tools.dbws.Util.InOut.INOUT;
-
-// Javase imports
 
 public class ProcedureOperationModel extends OperationModel {
 
@@ -175,7 +177,9 @@ public class ProcedureOperationModel extends OperationModel {
                 sxf.setXMLTag(xmlTag);
             }
             Result result = null;
-            if (!storedProcedure.isFunction() && noOutArguments(storedProcedure)) {
+            if (!storedProcedure.isFunction() &&
+            	builder.getPlatformClassname().contains("Oracle") &&
+            	noOutArguments(storedProcedure)) {
                 result = new Result();
                 result.setType(new QName(W3C_XML_SCHEMA_NS_URI, "int", "xsd")); // rowcount
             }
@@ -192,6 +196,54 @@ public class ProcedureOperationModel extends OperationModel {
                         result.setType(getXMLTypeFromJDBCType(rarg.getJdbcType()));
                     }
                 }
+                else if (!(builder.getPlatformClassname().contains("Oracle"))) {
+                    // if user overrides returnType, assume they're right
+                	if (returnType != null) {
+                        String nsURI = null;
+                        String prefix = null;
+                        String localPart = null;
+                        int colonIdx = returnType.indexOf(':');
+                        if (colonIdx > 0) {
+	                        result = new Result();
+                        	QName qName = null;
+                            prefix = returnType.substring(0, colonIdx);
+                            nsURI = builder.schema.getNamespaceResolver().resolveNamespacePrefix(prefix);
+                            if (nsURI == null) {
+                                nsURI = DEFAULT_NS_PREFIX;
+                            }
+                            localPart = returnType.substring(colonIdx+1);
+                            if (W3C_XML_SCHEMA_NS_URI.equals(nsURI)) {
+                            	qName = SCHEMA_QNAMES.get(localPart);
+                                if (qName == null) { // unknown W3C_XML_SCHEMA_NS_URI type ?
+                                    qName = new QName(W3C_XML_SCHEMA_NS_URI, localPart,
+                                        prefix == null ? DEFAULT_NS_PREFIX : prefix);
+                                }
+                            }
+                            else {
+                                qName = new QName(nsURI == null ? NULL_NS_URI : nsURI,
+                                    localPart, prefix == null ? DEFAULT_NS_PREFIX : prefix);
+                            }
+                            result.setType(qName);
+                        }
+                        else {
+                        	result.setType(qNameFromString("{" + builder.getTargetNamespace() +
+                        		"}" + returnType, builder.schema));
+                        }
+                	}
+                	else {
+	                    if (isCollection) {
+	                        result = new CollectionResult();
+	                        if (isSimpleXMLFormat()) {
+	                            result.setType(SXF_QNAME_CURSOR);
+	                        }
+	                    }
+	                    else {
+	                        result = new Result();
+	                        result.setType(SXF_QNAME);
+	                    }
+                	}
+                }
+                // if it is Oracle, then return types are determined by first OUT parameter (below)
             }
             if (binaryAttachment) {
                 Attachment attachment = new Attachment();

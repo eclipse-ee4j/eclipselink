@@ -39,6 +39,7 @@ import static org.eclipse.persistence.internal.helper.ClassConstants.LONG;
 import static org.eclipse.persistence.internal.helper.ClassConstants.Object_Class;
 import static org.eclipse.persistence.internal.helper.ClassConstants.SHORT;
 import static org.eclipse.persistence.internal.helper.ClassConstants.STRING;
+import static org.eclipse.persistence.internal.xr.sxf.SimpleXMLFormat.SIMPLE_XML_FORMAT_TYPE;
 import static org.eclipse.persistence.oxm.XMLConstants.ANY_SIMPLE_TYPE_QNAME;
 import static org.eclipse.persistence.oxm.XMLConstants.BASE_64_BINARY_QNAME;
 import static org.eclipse.persistence.oxm.XMLConstants.BOOLEAN_QNAME;
@@ -393,6 +394,7 @@ public class Util {
         return clz;
     }
 
+	public static final QName SXF_QNAME = new QName("", SIMPLE_XML_FORMAT_TYPE);
     /*
      *
                             if (xmlField.getSchemaType().equals(DATE_QNAME)) {

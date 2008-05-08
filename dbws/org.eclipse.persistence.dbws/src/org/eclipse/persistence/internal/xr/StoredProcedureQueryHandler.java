@@ -1,10 +1,10 @@
 /*******************************************************************************
  * Copyright (c) 1998, 2008 Oracle. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
@@ -29,6 +29,7 @@ import org.eclipse.persistence.queries.ReadAllQuery;
 import org.eclipse.persistence.queries.ReadObjectQuery;
 import org.eclipse.persistence.queries.StoredProcedureCall;
 import org.eclipse.persistence.queries.ValueReadQuery;
+import static org.eclipse.persistence.internal.xr.Util.SXF_QNAME;
 
 /**
  * <p><b>INTERNAL:</b> StoredProcedureQueryHandler sets up the StoredProcedureCall
@@ -66,7 +67,7 @@ public class StoredProcedureQueryHandler extends QueryHandler {
     public boolean isStoredFunctionQueryHandler() {
         return false;
     }
-    
+
     @Override
     public void initializeDatabaseQuery(XRServiceAdapter xrService, QueryOperation queryOperation) {
         DatabaseQuery databaseQueryToInitialize;
@@ -81,13 +82,13 @@ public class StoredProcedureQueryHandler extends QueryHandler {
                     if (!xrService.descriptorsByType.containsKey(type)) {
                         // data-read query
                         databaseQueryToInitialize = new DataReadQuery();
-                    } 
+                    }
                     else {
                         // read-all query for the class mapped to the type
                         databaseQueryToInitialize = new ReadAllQuery(xrService.getTypeClass(type));
                     }
                 }
-            } 
+            }
             else {
                 if (getOutArguments().size() == 0 && getInOutArguments().size() == 0) {
                     if (isStoredFunctionQueryHandler()) {
@@ -108,7 +109,12 @@ public class StoredProcedureQueryHandler extends QueryHandler {
                 }
                 else {
                     if (!xrService.descriptorsByType.containsKey(type)) {
-                        databaseQueryToInitialize = new ValueReadQuery();
+                    	if (type.equals(SXF_QNAME)) {
+                    		databaseQueryToInitialize = new DataReadQuery();
+                    	}
+                    	else {
+                    		databaseQueryToInitialize = new ValueReadQuery();
+                    	}
                     }
                     else {
                         // read object query for the class mapped to the type

@@ -24,8 +24,8 @@ import org.eclipse.persistence.internal.xr.sxf.SimpleXMLFormat;
 import org.eclipse.persistence.internal.xr.sxf.SimpleXMLFormatProject;
 import static org.eclipse.persistence.internal.xr.sxf.SimpleXMLFormat.DEFAULT_SIMPLE_XML_FORMAT_TAG;
 import static org.eclipse.persistence.internal.xr.Util.DEFAULT_ATTACHMENT_MIMETYPE;
+import static org.eclipse.persistence.internal.xr.Util.SXF_QNAME;
 import static org.eclipse.persistence.tools.dbws.BindingModel.convertJDBCParameterBindingMarkers;
-import static org.eclipse.persistence.tools.dbws.Util.SXF_QNAME;
 import static org.eclipse.persistence.tools.dbws.Util.addSimpleXMLFormat;
 import static org.eclipse.persistence.tools.dbws.Util.qNameFromString;
 
@@ -76,7 +76,7 @@ public class SQLOperationModel extends OperationModel {
             result = new Result();
         }
         SimpleXMLFormat sxf = null;
-        if (isSimpleXMLFormat() || getReturnType() == null) {            
+        if (isSimpleXMLFormat() || getReturnType() == null) {
             sxf = new SimpleXMLFormat();
             if (simpleXMLFormatTag != null && simpleXMLFormatTag.length() > 0) {
                 sxf.setSimpleXMLFormatTag(simpleXMLFormatTag);

@@ -1,10 +1,10 @@
 /*******************************************************************************
  * Copyright (c) 1998, 2008 Oracle. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
@@ -36,6 +36,9 @@ import static java.sql.DatabaseMetaData.procedureColumnReturn;
 
 // EclipseLink imports
 import org.eclipse.persistence.internal.databaseaccess.DatabasePlatform;
+import org.eclipse.persistence.platform.database.DerbyPlatform;
+import org.eclipse.persistence.platform.database.MySQL4Platform;
+import org.eclipse.persistence.platform.database.PostgreSQLPlatform;
 import org.eclipse.persistence.platform.database.oracle.OraclePlatform;
 import static org.eclipse.persistence.tools.dbws.Util.InOut.INOUT;
 import static org.eclipse.persistence.tools.dbws.Util.InOut.OUT;
@@ -87,13 +90,13 @@ import static org.eclipse.persistence.tools.dbws.Util.InOut.RETURN;
  * has an OUT parameter of type VARCHAR2 with a NOCOPY hint (parameter1 OUT NOCOPY  VARCHAR2).
  * The pl/sql procedure throws an exception as soon as the size of 'parameter1' exceeds ~2000
  * characters (~4000 bytes).
- * 
+ *
  * workaround : use oracle.jdbc.OracleTypes.VARCHAR
- * 
+ *
  * 7) databaseMetaData.getIndexInfo() does not work for VIEWS, a SQLException with the following
  * "ORA-01702: a view is not appropriate here: can't retrieve indexInfo" is thrown
  * (other platforms just ignore).
- * 
+ *
  * For IBM AS/400 via JTOpen
  * 1) In the result set returned by DatabaseMetaData.getColumns(), the CHAR_OCTET_LENGTH and
  *    ORDINAL_POSITION columns are not supported in Toolbox versions prior to V5R1 (JTOpen 2.x).
@@ -112,11 +115,11 @@ import static org.eclipse.persistence.tools.dbws.Util.InOut.RETURN;
  *
  * ODBC-JDBC Bridge
  * 1) for MS-ACCESS getPrimaryKeys not supported
- * 
+ *
  * Apache Derby (a.k.a. JavaDB)
  * 1) metadata for storedFunctions not available until JDK 6/JDBC 4
- *    (Oracle returns metadata for storedFunctions via databaseMetaData.getProcedures()) 
- * 
+ *    (Oracle returns metadata for storedFunctions via databaseMetaData.getProcedures())
+ *
  */
 public class JDBCHelper {
 
@@ -350,6 +353,14 @@ public class JDBCHelper {
         String originalProcedurePattern) {
 
         List<DbStoredProcedure> dbStoredProcedures = null;
+        boolean catalogMatchDontCare = false;
+        if (platform instanceof MySQL4Platform || platform instanceof DerbyPlatform ||
+        	platform instanceof PostgreSQLPlatform ) {
+        	// TODO - get info on other platforms that also require catalogMatchDontCare = true
+        	catalogMatchDontCare = true;
+        }
+        // Oracle is 'special' - the catalogMatchDontCare logic only applies if the catalogPattern
+        // is NULL vs. the empty "" string
         boolean isOracle = platform instanceof OraclePlatform ? true : false;
         String catalogPattern = trimPunctuation(originalCatalogPattern, isOracle);
         String schemaPattern = trimPunctuation(originalSchemaPattern, isOracle);
@@ -434,7 +445,7 @@ public class JDBCHelper {
                         DbStoredProcedure matchingProc = null;
                         for (int i = 0; i < tmpProcs.size();) {
                             if (tmpProcs.get(i).matches(actualCatalogName, actualSchemaName,
-                                actualProcedureName, isOracle)) {
+                                actualProcedureName, isOracle, catalogMatchDontCare)) {
                                 matchingProc = tmpProcs.remove(i);
                                 dbStoredProcedures.add(matchingProc);
                                 break;
@@ -445,7 +456,7 @@ public class JDBCHelper {
                             // look in dbStoredProcedures - matching proc already moved over ?
                             for (DbStoredProcedure dbStoredProcedure: dbStoredProcedures) {
                                 if (dbStoredProcedure.matches(actualCatalogName, actualSchemaName,
-                                    actualProcedureName, isOracle)) {
+                                    actualProcedureName, isOracle, catalogMatchDontCare)) {
                                     matchingProc = dbStoredProcedure;
                                     break;
                                 }
@@ -498,7 +509,7 @@ public class JDBCHelper {
                     for (int j = 0; j < tmpProcs.size();) {
                         DbStoredProcedure dbStoredProcedure = tmpProcs.get(j);
                         if (dbStoredProcedure.matches(ovrldhldr.packageName,
-                            ovrldhldr.procedureSchema, ovrldhldr.procedureName, true)) {
+                            ovrldhldr.procedureSchema, ovrldhldr.procedureName, true, false)) {
                             // check for function/procedures with same names
                             DbStoredArgument firstArg = ovrldhldr.getArgs().get(0);
                             if (firstArg.getName() == null && firstArg.getSeq() == 1) {

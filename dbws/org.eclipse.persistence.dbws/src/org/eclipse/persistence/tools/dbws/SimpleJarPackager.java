@@ -109,23 +109,27 @@ public class SimpleJarPackager extends SimplePackager {
 			}
 
 			// META-INF/eclipselink-dbws-or.xml
-			jarOutputStream.putNextEntry(new JarEntry(META_INF_PATHS[0] + DBWS_OR_XML));
 			f = new File(stageDir, DBWS_OR_XML);
-			fis = new FileInputStream(f);
-			for (int read = 0; read != -1; read = fis.read(buffer)) {
-				jarOutputStream.write(buffer, 0, read);
-			}
-			fis.close();
+			if (f.length() > 0) {
+				jarOutputStream.putNextEntry(new JarEntry(META_INF_PATHS[0] + DBWS_OR_XML));
+				fis = new FileInputStream(f);
+				for (int read = 0; read != -1; read = fis.read(buffer)) {
+					jarOutputStream.write(buffer, 0, read);
+				}
+				fis.close();
+				}
 			f.deleteOnExit();
 
 			// META-INF/eclipselink-dbws-ox.xml
-			jarOutputStream.putNextEntry(new JarEntry(META_INF_PATHS[0] + DBWS_OX_XML));
 			f = new File(stageDir, DBWS_OX_XML);
-			fis = new FileInputStream(f);
-			for (int read = 0; read != -1; read = fis.read(buffer)) {
-				jarOutputStream.write(buffer, 0, read);
+			if (f.length() > 0) {
+				jarOutputStream.putNextEntry(new JarEntry(META_INF_PATHS[0] + DBWS_OX_XML));
+				fis = new FileInputStream(f);
+				for (int read = 0; read != -1; read = fis.read(buffer)) {
+					jarOutputStream.write(buffer, 0, read);
+				}
+				fis.close();
 			}
-			fis.close();
 			f.deleteOnExit();
 
 			// META-INF/eclipselink-dbws-sessions.xml

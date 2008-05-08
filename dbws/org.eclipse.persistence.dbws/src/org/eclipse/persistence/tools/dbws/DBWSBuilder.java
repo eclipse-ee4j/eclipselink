@@ -26,6 +26,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -1250,7 +1251,13 @@ public class DBWSBuilder extends DBWSBuilderModel {
             else {
                 driverClass = PrivilegedAccessHelper.getClassForName(driverClassName);
             }
-            conn = DriverManager.getConnection(getUrl(), getUsername(), getPassword());
+            Properties props = new Properties();
+            props.put("user", getUsername());
+            props.put("password", getPassword());
+            if (getPlatformClassname().contains("MySQL")) {
+            	props.put("useInformationSchema", "true");
+            }
+            conn = DriverManager.getConnection(getUrl(), props);
         }
         catch (Exception e) {
             logMessage(SEVERE, "cannot load JDBC driver " + driverClassName);

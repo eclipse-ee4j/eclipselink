@@ -103,7 +103,6 @@ public class Util {
     public static final String DBWS_PROVIDER_CLASS_FILE = DBWS_PROVIDER_NAME + ".class";
     public static final String DBWS_PROVIDER_SOURCE_FILE = DBWS_PROVIDER_NAME + ".java";
 
-    public static final QName SXF_QNAME = new QName("", SIMPLE_XML_FORMAT_TYPE);
     public static final QName SXF_QNAME_CURSOR = new QName("", "cursor of " + SIMPLE_XML_FORMAT_TYPE);
     // TODO - expand to cover more cases
     public static QName getXMLTypeFromJDBCType(Short jdbcType) {

@@ -1,15 +1,15 @@
 /*******************************************************************************
  * Copyright (c) 1998, 2008 Oracle. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 
 package org.eclipse.persistence.tools.dbws.jdbc;
 
@@ -26,7 +26,7 @@ public class DbStoredProcedure {
     protected String name;
     protected List<DbStoredArgument> arguments = new ArrayList<DbStoredArgument>();
     protected int overload = 0; // oracle-specific info
-    
+
     public DbStoredProcedure(String name) {
         this.name = name;
     }
@@ -56,7 +56,7 @@ public class DbStoredProcedure {
     public boolean isFunction() {
         return false;
     }
-    
+
     public int getOverload() {
         return overload;
     }
@@ -68,28 +68,33 @@ public class DbStoredProcedure {
         return "PROCEDURE";
     }
 
-    public boolean matches(String catalog, String schema, String name, boolean isOracle) {
+    public boolean matches(String catalog, String schema, String name, boolean isOracle,
+    	boolean catalogMatchDontCare) {
 
-        // return true if all 3 match, sorta
-        
-        boolean catalogMatch = 
-            this.catalog == null ?
-                // for Oracle, catalog matching is 'dont-care' if null
-                (isOracle ? true : 
-                // other platforms: null has to match null
-               (catalog == null))
-                : this.catalog.equals(catalog);
-        boolean schemaMatch = 
-            // either they are both null or they match
-            this.schema == null ? (schema == null)
-                : this.schema.equals(schema);
-        boolean nameMatch = 
-            // either they are both null or they match
-            this.name == null ? (name == null)
-                : this.name.equals(name);
-        return catalogMatch && schemaMatch && nameMatch;
-    }
-    
+	    // return true if all 3 match, sorta
+
+	    boolean catalogMatch =
+	        this.catalog == null ?
+	            // for Oracle, catalog matching is 'dont-care' only if null
+	            (isOracle ? true :
+	            // other platforms: null has to match null
+	           (catalog == null))
+	            : this.catalog.equals(catalog);
+	    // but catalogDontCare trumps!
+	    if (catalogMatchDontCare) {
+	    	catalogMatch = true;
+	    }
+	    boolean schemaMatch =
+	        // either they are both null or they match
+	        this.schema == null ? (schema == null)
+	            : this.schema.equals(schema);
+	    boolean nameMatch =
+	        // either they are both null or they match
+	        this.name == null ? (name == null)
+	            : this.name.equals(name);
+	    return catalogMatch && schemaMatch && nameMatch;
+	}
+
     @Override
     public String toString() {
       StringBuilder sb = new StringBuilder();
