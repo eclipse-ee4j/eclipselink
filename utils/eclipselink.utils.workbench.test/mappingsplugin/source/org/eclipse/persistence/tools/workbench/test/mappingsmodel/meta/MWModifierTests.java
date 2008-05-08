@@ -167,7 +167,7 @@ public class MWModifierTests extends TestCase {
 		assertTrue( ! m.canBeSetAbstract());
 		m = this.modifierForMethod(org.eclipse.persistence.tools.workbench.utility.node.AbstractNodeModel.class, "markDirty()");	// private
 		assertTrue( ! m.canBeSetAbstract());
-		m = this.modifierForMethod(org.eclipse.persistence.tools.workbench.mappingsmodel.MWModel.class, "legacy50BuildStandardDescriptor()");	// static
+		m = this.modifierForMethod(org.eclipse.persistence.tools.workbench.mappingsmodel.MWModel.class, "legacy60BuildStandardDescriptor()");	// static
 		assertTrue( ! m.canBeSetAbstract());
 		m = this.modifierForMethod(org.eclipse.persistence.tools.workbench.utility.node.AbstractNodeModel.class, "children()");	// final
 		assertTrue( ! m.canBeSetAbstract());

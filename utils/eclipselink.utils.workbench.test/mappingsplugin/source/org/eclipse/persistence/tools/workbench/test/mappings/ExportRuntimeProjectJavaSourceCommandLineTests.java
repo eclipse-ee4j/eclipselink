@@ -15,6 +15,7 @@ package org.eclipse.persistence.tools.workbench.test.mappings;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.xerces.xni.parser.XMLParserConfiguration;
 import org.eclipse.persistence.tools.workbench.test.mappingsmodel.AbstractExportRuntimeProjectJavaSourceTests;
 import org.eclipse.persistence.tools.workbench.test.models.projects.LegacyEmployeeProject;
 import org.eclipse.persistence.tools.workbench.test.utility.JavaTools;
@@ -67,6 +68,7 @@ public class ExportRuntimeProjectJavaSourceCommandLineTests extends AbstractExpo
 		classpathEntries.add(Classpath.locationFor(MWProject.class));	// elmwcore.jar
 		classpathEntries.add(Classpath.locationFor(JavaSourceGenerator.class));	// eclipselinkmw.jar
 		classpathEntries.add(Classpath.locationFor(ValueHolderInterface.class));	// ecilpselink.jar
+		classpathEntries.add(Classpath.locationFor(XMLParserConfiguration.class));  // xercesImpl.jar
 		classpathEntries.add(FileTools.resourceFile("/platforms.dpr").getParentFile().getAbsolutePath());	// config dir
 		Classpath classpath = new Classpath(classpathEntries);
 
