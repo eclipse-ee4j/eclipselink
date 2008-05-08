@@ -29,7 +29,7 @@ import static org.eclipse.persistence.internal.xr.Util.META_INF_PATHS;
 public class XRSessionsFactory extends SessionsFactory {
 
 	static Pattern matchDBWSOrProject =
-		Pattern.compile("eclipselink-dbws-or", Pattern.CASE_INSENSITIVE);
+		Pattern.compile(DBWS_OR_XML, Pattern.CASE_INSENSITIVE);
 	static Pattern matchDBWSOxProject =
 		Pattern.compile(DBWS_OX_XML, Pattern.CASE_INSENSITIVE);
 
