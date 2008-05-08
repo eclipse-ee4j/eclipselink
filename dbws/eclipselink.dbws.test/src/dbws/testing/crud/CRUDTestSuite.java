@@ -14,10 +14,13 @@
 package dbws.testing.crud;
 
 // Javase imports
-import java.io.File;
 import java.io.IOException;
+import java.io.Reader;
 import java.io.StringReader;
+import java.util.Vector;
 import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.xml.sax.InputSource;
 
 // Java extension classes
 import javax.wsdl.WSDLException;
@@ -29,39 +32,31 @@ import static junit.framework.Assert.assertNotNull;
 import static junit.framework.Assert.assertTrue;
 
 // EclipseLink imports
+import org.eclipse.persistence.internal.xr.BaseEntity;
 import org.eclipse.persistence.internal.xr.Invocation;
 import org.eclipse.persistence.internal.xr.Operation;
 import org.eclipse.persistence.internal.xr.XRServiceAdapter;
-import org.eclipse.persistence.oxm.XMLContext;
 import org.eclipse.persistence.oxm.XMLMarshaller;
 import org.eclipse.persistence.oxm.XMLUnmarshaller;
-import org.eclipse.persistence.platform.database.MySQL4Platform;
-import org.eclipse.persistence.platform.xml.XMLComparer;
-import org.eclipse.persistence.platform.xml.XMLParser;
-import org.eclipse.persistence.platform.xml.XMLPlatform;
-import org.eclipse.persistence.platform.xml.XMLPlatformFactory;
-import org.eclipse.persistence.tools.dbws.DBWSBuilder;
-import org.eclipse.persistence.tools.dbws.DBWSBuilderModel;
-import org.eclipse.persistence.tools.dbws.DBWSBuilderModelProject;
-import org.eclipse.persistence.tools.dbws.SimpleJarPackager;
 
 // domain imports
 import dbws.testing.TestDBWSFactory;
+import static dbws.testing.TestDBWSFactory.buildJar;
+import static dbws.testing.TestDBWSFactory.comparer;
+import static dbws.testing.TestDBWSFactory.DATABASE_DRIVER_KEY;
+import static dbws.testing.TestDBWSFactory.DATABASE_PASSWORD_KEY;
+import static dbws.testing.TestDBWSFactory.DATABASE_PLATFORM_KEY;
+import static dbws.testing.TestDBWSFactory.DATABASE_URL_KEY;
+import static dbws.testing.TestDBWSFactory.DATABASE_USERNAME_KEY;
+import static dbws.testing.TestDBWSFactory.DEFAULT_DATABASE_DRIVER;
+import static dbws.testing.TestDBWSFactory.DEFAULT_DATABASE_PASSWORD;
+import static dbws.testing.TestDBWSFactory.DEFAULT_DATABASE_PLATFORM;
+import static dbws.testing.TestDBWSFactory.DEFAULT_DATABASE_URL;
+import static dbws.testing.TestDBWSFactory.DEFAULT_DATABASE_USERNAME;
+import static dbws.testing.TestDBWSFactory.xmlParser;
+import static dbws.testing.TestDBWSFactory.xmlPlatform;
 
 public class CRUDTestSuite {
-
-    public final static String DATABASE_USERNAME_KEY = "db.user";
-    public final static String DATABASE_PASSWORD_KEY = "db.pwd";
-    public final static String DATABASE_URL_KEY = "db.url";
-    public final static String DATABASE_DRIVER_KEY = "db.driver";
-    public final static String DATABASE_PLATFORM_KEY = "db.platform";
-    public final static String DEFAULT_DATABASE_USERNAME = "MNORMAN";
-    public final static String DEFAULT_DATABASE_PASSWORD = "password";
-    public final static String DEFAULT_DATABASE_URL = "jdbc:mysql://tlsvrdb4.ca.oracle.com/" +
-        DEFAULT_DATABASE_USERNAME;
-    public final static String DEFAULT_DATABASE_DRIVER = "com.mysql.jdbc.Driver";
-    public final static String DEFAULT_DATABASE_PLATFORM =
-        MySQL4Platform.class.getName();
 
     public static final String DBWS_BUILDER_XML_USERNAME =
         "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" +
@@ -81,11 +76,21 @@ public class CRUDTestSuite {
       public static final String DBWS_BUILDER_XML_MAIN =
               "</property>" +
           "</properties>" +
-          "<table schemaPattern=\"%\" tableNamePattern=\"crud_table\"/>" +
+          "<table " +
+            "schemaPattern=\"%\" " +
+            "tableNamePattern=\"crud_table\" " +
+            ">" +
+            "<sql " +
+              "name=\"findByName\" " +
+              "returnType=\"crud_tableType\" " +
+              "isCollection=\"true\" " +
+              ">" +
+              "<text><![CDATA[select * from crud_table where name like 'crud%']]></text>" +
+            "</sql>" +
+          "</table>" +
         "</dbws-builder>";
 
     public static void main(String[] args) throws IOException, WSDLException {
-
         String username = System.getProperty(DATABASE_USERNAME_KEY, DEFAULT_DATABASE_USERNAME);
         String password = System.getProperty(DATABASE_PASSWORD_KEY, DEFAULT_DATABASE_PASSWORD);
         String url = System.getProperty(DATABASE_URL_KEY, DEFAULT_DATABASE_URL);
@@ -96,29 +101,13 @@ public class CRUDTestSuite {
             password + DBWS_BUILDER_XML_URL + url + DBWS_BUILDER_XML_DRIVER + driver +
             DBWS_BUILDER_XML_PLATFORM + platform + DBWS_BUILDER_XML_MAIN;
 
-        XMLContext context = new XMLContext(new DBWSBuilderModelProject());
-        XMLUnmarshaller unmarshaller = context.createUnmarshaller();
-        DBWSBuilderModel builderModel =
-        	(DBWSBuilderModel)unmarshaller.unmarshal(new StringReader(builderString));
-    	DBWSBuilder dbwsBuilder = new DBWSBuilder();
-    	dbwsBuilder.quiet = true;
-    	dbwsBuilder.properties = builderModel.properties;
-    	dbwsBuilder.operations = builderModel.operations;
-    	SimpleJarPackager simpleDBWSJarPackager = new SimpleJarPackager("dbwsCRUD.jar");
-    	simpleDBWSJarPackager.setStageDir(new File("."));
-    	dbwsBuilder.setPackager(simpleDBWSJarPackager);
-    	dbwsBuilder.start();
+        buildJar(builderString, "CRUD");
     }
 
 	// test fixture(s)
-    static XMLComparer comparer = new XMLComparer();
-    static XMLPlatform xmlPlatform = XMLPlatformFactory.getInstance().getXMLPlatform();
-    static XMLParser xmlParser = xmlPlatform.newXMLParser();
     static XRServiceAdapter xrService = null;
-
     @BeforeClass
     public static void setUpDBWSService() {
-
         TestDBWSFactory serviceFactory = new TestDBWSFactory();
         xrService = serviceFactory.buildService();
     }
@@ -137,7 +126,7 @@ public class CRUDTestSuite {
         Document doc = xmlPlatform.createDocument();
         marshaller.marshal(result, doc);
         Document controlDoc = xmlParser.parse(new StringReader(CRUD1_CONTROL_DOC));
-        assertTrue("control document not same as XRService instance document",
+        assertTrue("control document not same as instance document",
             comparer.isNodeEqual(controlDoc, doc));
     }
     public static final String CRUD1_CONTROL_DOC =
@@ -147,4 +136,116 @@ public class CRUDTestSuite {
           "<ns1:id>1</ns1:id>" +
           "<ns1:name>crud1</ns1:name>" +
         "</ns1:crud_table>";
+
+    @SuppressWarnings("unchecked")
+    @Test
+    public void test2_readAll() {
+        Invocation invocation = new Invocation("findAll_crud_table");
+        Operation op = xrService.getOperation(invocation.getName());
+        Object result = op.invoke(xrService, invocation);
+        assertNotNull("result is null", result);
+        XMLMarshaller marshaller = xrService.getXMLContext().createMarshaller();
+        Document doc = xmlPlatform.createDocument();
+        Element ec = doc.createElement("all");
+        doc.appendChild(ec);
+        for (Object r : (Vector)result) {
+            marshaller.marshal(r, ec);
+        }
+        Document controlDoc = xmlParser.parse(new StringReader(FIND_ALL_CONTROL_DOC));
+        assertTrue("control document not same as instance document",
+            comparer.isNodeEqual(controlDoc, doc));
+    }
+    public static final String FIND_ALL_CONTROL_DOC =
+    	"<?xml version=\"1.0\" encoding=\"UTF-8\"?> " +
+    	"<all>" +
+    	  "<ns1:crud_table xmlns:ns1=\"urn:crud\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +
+    	    "<ns1:id>1</ns1:id>" +
+    	    "<ns1:name>crud1</ns1:name>" +
+    	  "</ns1:crud_table>" +
+    	  "<ns1:crud_table xmlns:ns1=\"urn:crud\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +
+    	    "<ns1:id>2</ns1:id>" +
+    	    "<ns1:name>crud2</ns1:name>" +
+    	  "</ns1:crud_table>" +
+    	  "<ns1:crud_table xmlns:ns1=\"urn:crud\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +
+    	    "<ns1:id>3</ns1:id>" +
+    	    "<ns1:name>other</ns1:name>" +
+    	  "</ns1:crud_table>" +
+    	"</all>";
+
+    @SuppressWarnings("unchecked")
+    @Test
+    public void test3_findByName() {
+        Invocation invocation = new Invocation("findByName");
+        Operation op = xrService.getOperation(invocation.getName());
+        Object result = op.invoke(xrService, invocation);
+        assertNotNull("result is null", result);
+        XMLMarshaller marshaller = xrService.getXMLContext().createMarshaller();
+        Document doc = xmlPlatform.createDocument();
+        Element ec = doc.createElement("some");
+        doc.appendChild(ec);
+        for (Object r : (Vector)result) {
+            marshaller.marshal(r, ec);
+        }
+        Document controlDoc = xmlParser.parse(new StringReader(FIND_BY_NAME_CONTROL_DOC));
+        assertTrue("control document not same as instance document",
+            comparer.isNodeEqual(controlDoc, doc));
+    }
+    public static final String FIND_BY_NAME_CONTROL_DOC =
+    	"<?xml version=\"1.0\" encoding=\"UTF-8\"?> " +
+    	"<some>" +
+    	  "<ns1:crud_table xmlns:ns1=\"urn:crud\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +
+    	    "<ns1:id>1</ns1:id>" +
+    	    "<ns1:name>crud1</ns1:name>" +
+    	  "</ns1:crud_table>" +
+    	  "<ns1:crud_table xmlns:ns1=\"urn:crud\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +
+    	    "<ns1:id>2</ns1:id>" +
+    	    "<ns1:name>crud2</ns1:name>" +
+    	  "</ns1:crud_table>" +
+    	"</some>";
+
+    @SuppressWarnings("unchecked")
+    @Test
+    public void test4_update() {
+        XMLUnmarshaller unMarshaller = xrService.getXMLContext().createUnmarshaller();
+        Reader reader = new StringReader(CRUD1_CONTROL_DOC);
+        InputSource inputSource = new InputSource(reader);
+        BaseEntity firstEmp = (BaseEntity)unMarshaller.unmarshal(inputSource);
+        firstEmp.set(1, "some other name");
+        Invocation invocation = new Invocation("update_crud_table");
+        invocation.setParameter("theInstance", firstEmp);
+        Operation op = xrService.getOperation(invocation.getName());
+        op.invoke(xrService, invocation);
+    }
+
+    @SuppressWarnings("unchecked")
+    @Test
+    public void test5_delete() {
+        Invocation invocation = new Invocation("findAll_crud_table");
+        Operation op = xrService.getOperation(invocation.getName());
+        Vector<BaseEntity> result = (Vector<BaseEntity>)op.invoke(xrService, invocation);
+        BaseEntity firstEmp = result.firstElement();
+        Invocation invocation2 = new Invocation("delete_crud_table");
+        invocation2.setParameter("theInstance", firstEmp);
+        Operation op2 = xrService.getOperation(invocation2.getName());
+        op2.invoke(xrService, invocation2);
+        Vector<BaseEntity> result2 = (Vector<BaseEntity>)op.invoke(xrService, invocation);
+        assertTrue("Wrong number of employees", result2.size() == 2);
+    }
+
+    @SuppressWarnings("unchecked")
+    @Test
+    public void test6_create() {
+        XMLUnmarshaller unMarshaller = xrService.getXMLContext().createUnmarshaller();
+        Reader reader = new StringReader(CRUD1_CONTROL_DOC);
+        InputSource inputSource = new InputSource(reader);
+        BaseEntity anotherEmployee = (BaseEntity)unMarshaller.unmarshal(inputSource);
+        Invocation invocation = new Invocation("create_crud_table");
+        invocation.setParameter("theInstance", anotherEmployee);
+        Operation op = xrService.getOperation(invocation.getName());
+        op.invoke(xrService, invocation);
+        Invocation invocation2 = new Invocation("findAll_crud_table");
+        Operation op2 = xrService.getOperation(invocation2.getName());
+        Vector<BaseEntity> result2 = (Vector<BaseEntity>)op2.invoke(xrService, invocation2);
+        assertTrue("Wrong number of employees", result2.size() == 3);
+    }
 }
