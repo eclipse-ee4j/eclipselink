@@ -100,6 +100,7 @@ public class JavaTools {
 	public static void compile(Iterator sourceFiles, String classpath) throws IOException, InterruptedException {
 		List cmd = new ArrayList();
 		cmd.add(javaCompiler());
+		cmd.add("-source 1.4");
 		if ((classpath != null) && (classpath.length() != 0)) {
 			cmd.add("-classpath");
 			cmd.add(classpath);
