@@ -203,8 +203,8 @@ public class ProcedureOperationModel extends OperationModel {
                         String prefix = null;
                         String localPart = null;
                         int colonIdx = returnType.indexOf(':');
+                        result = new Result();
                         if (colonIdx > 0) {
-	                        result = new Result();
                         	QName qName = null;
                             prefix = returnType.substring(0, colonIdx);
                             nsURI = builder.schema.getNamespaceResolver().resolveNamespacePrefix(prefix);
