@@ -203,7 +203,6 @@ public class CRUDTestSuite {
     	  "</ns1:crud_table>" +
     	"</some>";
 
-    @SuppressWarnings("unchecked")
     @Test
     public void test4_update() {
         XMLUnmarshaller unMarshaller = xrService.getXMLContext().createUnmarshaller();

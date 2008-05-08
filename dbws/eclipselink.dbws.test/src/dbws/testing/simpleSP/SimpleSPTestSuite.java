@@ -12,7 +12,6 @@ import javax.wsdl.WSDLException;
 
 // JUnit imports
 import org.junit.BeforeClass;
-import org.junit.Ignore;
 import org.junit.Test;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
@@ -118,7 +117,6 @@ public class SimpleSPTestSuite {
     }
 
     @Test
-    @Ignore
     public void varcharTest() {
         Invocation invocation = new Invocation("VarcharTest");
         invocation.setParameter("X", "this is a test");
@@ -142,7 +140,6 @@ public class SimpleSPTestSuite {
         "<value>1</value>";
 
     @Test
-    @Ignore
     public void noargsTest() {
         Invocation invocation = new Invocation("NoArgsTest");
         Operation op = xrService.getOperation(invocation.getName());
@@ -159,7 +156,6 @@ public class SimpleSPTestSuite {
     }
 
     @Test
-    @Ignore
     public void getAllTest() {
         Invocation invocation = new Invocation("GetAllTest");
         Operation op = xrService.getOperation(invocation.getName());
@@ -307,7 +303,6 @@ public class SimpleSPTestSuite {
     	"</simplesp-rows>";
 
     @Test
-    @Ignore
     public void findByJobTest() {
         Invocation invocation = new Invocation("FindByJobTest");
         invocation.setParameter("J","CL%");
