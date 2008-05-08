@@ -449,11 +449,7 @@ public class Util {
     public static final String DEFAULT_ATTACHMENT_MIMETYPE =
         "application/octet-stream";
     public static final String[] META_INF_PATHS =
-        {"META-INF/", "meta-inf/", "/META-INF/", "/meta-inf/",
-    	 "META-INF\\", "meta-inf\\", "\\META-INF\\", "\\meta-inf\\"
-    	 };
-    public static final String[] WEB_INF_PATHS =
-        {"WEB-INF", "web-inf"};
+        {"META-INF/", "/META-INF/"};
     public static final String DBWS_SERVICE_XML =
         "eclipselink-dbws.xml";
     public static final String DBWS_OR_LABEL =

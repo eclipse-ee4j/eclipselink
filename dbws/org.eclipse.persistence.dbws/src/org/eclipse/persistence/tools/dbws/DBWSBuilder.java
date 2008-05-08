@@ -45,7 +45,7 @@ import javax.xml.namespace.QName;
 import static javax.xml.XMLConstants.W3C_XML_SCHEMA_INSTANCE_NS_URI;
 import static javax.xml.XMLConstants.W3C_XML_SCHEMA_NS_URI;
 
-// TopLink imports
+// EclipseLink imports
 import org.eclipse.persistence.dbws.DBWSModel;
 import org.eclipse.persistence.dbws.DBWSModelProject;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
@@ -102,8 +102,8 @@ import org.eclipse.persistence.queries.ReadAllQuery;
 import org.eclipse.persistence.queries.ReadObjectQuery;
 import org.eclipse.persistence.sessions.DatabaseLogin;
 import org.eclipse.persistence.sessions.Project;
-import org.eclipse.persistence.sessions.factories.ObjectPersistenceWorkbenchXMLProject;
 import org.eclipse.persistence.sessions.factories.MissingDescriptorListener;
+import org.eclipse.persistence.sessions.factories.ObjectPersistenceWorkbenchXMLProject;
 import org.eclipse.persistence.tools.dbws.jdbc.DbColumn;
 import org.eclipse.persistence.tools.dbws.jdbc.DbStoredArgument;
 import org.eclipse.persistence.tools.dbws.jdbc.DbStoredProcedure;
@@ -134,32 +134,32 @@ import static org.eclipse.persistence.internal.xr.Util.DBWS_SERVICE_XML;
 import static org.eclipse.persistence.internal.xr.Util.DBWS_SESSIONS_XML;
 import static org.eclipse.persistence.internal.xr.Util.DBWS_WSDL;
 import static org.eclipse.persistence.internal.xr.Util.DEFAULT_ATTACHMENT_MIMETYPE;
-import static org.eclipse.persistence.internal.xr.Util.getClassFromJDBCType;
 import static org.eclipse.persistence.internal.xr.Util.TARGET_NAMESPACE_PREFIX;
-import static org.eclipse.persistence.internal.xr.Util.WEB_INF_PATHS;
+import static org.eclipse.persistence.internal.xr.Util.getClassFromJDBCType;
 import static org.eclipse.persistence.oxm.XMLConstants.BASE_64_BINARY_QNAME;
 import static org.eclipse.persistence.tools.dbws.Util.CREATE_OPERATION_NAME;
-import static org.eclipse.persistence.tools.dbws.Util.DEFAULT_WSDL_LOCATION_URI;
 import static org.eclipse.persistence.tools.dbws.Util.DBWS_PROVIDER_CLASS_FILE;
 import static org.eclipse.persistence.tools.dbws.Util.DBWS_PROVIDER_NAME;
 import static org.eclipse.persistence.tools.dbws.Util.DBWS_PROVIDER_PACKAGE;
 import static org.eclipse.persistence.tools.dbws.Util.DBWS_PROVIDER_SOURCE_FILE;
+import static org.eclipse.persistence.tools.dbws.Util.DEFAULT_PLATFORM_CLASSNAME;
+import static org.eclipse.persistence.tools.dbws.Util.DEFAULT_WSDL_LOCATION_URI;
 import static org.eclipse.persistence.tools.dbws.Util.FINDALL_QUERYNAME;
 import static org.eclipse.persistence.tools.dbws.Util.PK_QUERYNAME;
 import static org.eclipse.persistence.tools.dbws.Util.REMOVE_OPERATION_NAME;
 import static org.eclipse.persistence.tools.dbws.Util.SWAREF_FILENAME;
 import static org.eclipse.persistence.tools.dbws.Util.THE_INSTANCE_NAME;
 import static org.eclipse.persistence.tools.dbws.Util.UPDATE_OPERATION_NAME;
-import static org.eclipse.persistence.tools.dbws.Util.WEB_XML_FILENAME;
 import static org.eclipse.persistence.tools.dbws.Util.WEBSERVICES_FILENAME;
-import static org.eclipse.persistence.tools.dbws.Util.WSI_SWAREF_XSD_FILE;
-import static org.eclipse.persistence.tools.dbws.Util.DEFAULT_PLATFORM_CLASSNAME;
-import static org.eclipse.persistence.tools.dbws.Util.getXMLTypeFromJDBCType;
-import static org.eclipse.persistence.tools.dbws.Util.InOut.OUT;
+import static org.eclipse.persistence.tools.dbws.Util.WEB_INF_DIR;
+import static org.eclipse.persistence.tools.dbws.Util.WEB_XML_FILENAME;
 import static org.eclipse.persistence.tools.dbws.Util.WSDL_DIR;
 import static org.eclipse.persistence.tools.dbws.Util.WSI_SWAREF;
 import static org.eclipse.persistence.tools.dbws.Util.WSI_SWAREF_PREFIX;
 import static org.eclipse.persistence.tools.dbws.Util.WSI_SWAREF_URI;
+import static org.eclipse.persistence.tools.dbws.Util.WSI_SWAREF_XSD_FILE;
+import static org.eclipse.persistence.tools.dbws.Util.getXMLTypeFromJDBCType;
+import static org.eclipse.persistence.tools.dbws.Util.InOut.OUT;
 
 public class DBWSBuilder extends DBWSBuilderModel {
 
@@ -260,7 +260,7 @@ public class DBWSBuilder extends DBWSBuilderModel {
         "import " + ProviderHelper.class.getName() + ";\n" +
         "\n" +
         "@WebServiceProvider(\n" +
-        "    wsdlLocation = \"" + WEB_INF_PATHS[1] + "/" + WSDL_DIR + "/" + DBWS_WSDL + "\",\n" +
+        "    wsdlLocation = \"" + WEB_INF_DIR + WSDL_DIR + DBWS_WSDL + "\",\n" +
         "    serviceName = \"";
     public static final String DBWS_PROVIDER_SOURCE_PORT_NAME =
         "\",\n    portName = \"";
@@ -939,7 +939,7 @@ public class DBWSBuilder extends DBWSBuilderModel {
             // CLASS ATRIBUTE
             RuntimeVisibleAnnotations classAttr = new RuntimeVisibleAnnotations();
             Annotation attrann0 = new Annotation("L" + ASMIFIED_JAX_WS_WEB_SERVICE_PROVIDER + ";");
-            attrann0.add("wsdlLocation", WEB_INF_PATHS[1] + "/" + WSDL_DIR + "/" + DBWS_WSDL);
+            attrann0.add("wsdlLocation", WEB_INF_DIR + WSDL_DIR + DBWS_WSDL);
             attrann0.add("serviceName", wsdlGenerator.serviceName);
             attrann0.add("portName", wsdlGenerator.serviceName);
             attrann0.add("targetNamespace", getTargetNamespace());

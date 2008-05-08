@@ -62,9 +62,10 @@ import static org.eclipse.persistence.internal.xr.Util.DBWS_SCHEMA_XML;
 import static org.eclipse.persistence.internal.xr.Util.DBWS_SERVICE_XML;
 import static org.eclipse.persistence.internal.xr.Util.DBWS_WSDL;
 import static org.eclipse.persistence.internal.xr.Util.META_INF_PATHS;
-import static org.eclipse.persistence.internal.xr.Util.WEB_INF_PATHS;
 import static org.eclipse.persistence.internal.xr.Util.SCHEMA_2_CLASS;
 import static org.eclipse.persistence.oxm.mappings.UnmarshalKeepAsElementPolicy.KEEP_UNKNOWN_AS_ELEMENT;
+import static org.eclipse.persistence.tools.dbws.Util.WEB_INF_DIR;
+import static org.eclipse.persistence.tools.dbws.Util.WSDL_DIR;
 
 /**
  * <p>
@@ -155,18 +156,8 @@ public class ProviderHelper extends XRServiceFactory {
             /* ignore */
         }
 
-        for (String searchPath : WEB_INF_PATHS) {
-            String path = searchPath + "/" + "wsdl" + "/" + DBWS_SCHEMA_XML;
-            InputStream is = parentClassLoader.getResourceAsStream(path);
-            if (is == null) {
-                path = searchPath + "\\" + "wsdl" + "\\" + DBWS_SCHEMA_XML;
-                is = parentClassLoader.getResourceAsStream(path);
-            }
-            if (is != null) {
-                xrSchemaStream = is;
-                break;
-            }
-        }
+        String path = WEB_INF_DIR + WSDL_DIR + DBWS_SCHEMA_XML;
+        xrSchemaStream = parentClassLoader.getResourceAsStream(path);
         if (xrSchemaStream == null) {
             throw DBWSException.couldNotLocateFile(DBWS_SCHEMA_XML);
         }
@@ -178,30 +169,23 @@ public class ProviderHelper extends XRServiceFactory {
 
         // get extended schema from WSDL - has additional types for the operations
         StringWriter sw = new StringWriter();
-        InputStream wsdlInputStream = null;
+        path = WEB_INF_DIR + WSDL_DIR + DBWS_WSDL;
+        InputStream wsdlInputStream = parentClassLoader.getResourceAsStream(path);
+        if (wsdlInputStream == null) {
+            throw DBWSException.couldNotLocateFile(DBWS_WSDL);
+        }
         try {
-            for (String searchPath : WEB_INF_PATHS) {
-                String path = searchPath + "/" + "wsdl" + "/" + DBWS_WSDL;
-                wsdlInputStream = parentClassLoader.getResourceAsStream(path);
-                if (wsdlInputStream == null) {
-                    path = searchPath + "\\" + "wsdl" + "\\" + DBWS_WSDL;
-                    wsdlInputStream = parentClassLoader.getResourceAsStream(path);
-                }
-                if (wsdlInputStream != null) {
-                    break;
-                }
-            }
-          StreamSource wsdlStreamSource = new StreamSource(wsdlInputStream);
-          Transformer t = tf.newTransformer(
-              new StreamSource(new StringReader(MATCH_SCHEMA)));
-          StreamResult streamResult = new StreamResult(sw);
-          t.transform(wsdlStreamSource, streamResult);
-          sw.toString();
-          wsdlInputStream.close();
-        }
+            StreamSource wsdlStreamSource = new StreamSource(wsdlInputStream);
+			Transformer t = tf.newTransformer(new StreamSource(new StringReader(MATCH_SCHEMA)));
+			StreamResult streamResult = new StreamResult(sw);
+			t.transform(wsdlStreamSource, streamResult);
+			sw.toString();
+			wsdlInputStream.close();
+		}
         catch (Exception e) {
-          throw new RuntimeException("Something went wrong parsing WSDL's inline schema", e);
-        }
+			// e.printStackTrace();
+		}
+
         SchemaModelProject schemaProject = new SchemaModelProject();
         XMLContext xmlContext2 = new XMLContext(schemaProject);
         unmarshaller = xmlContext2.createUnmarshaller();

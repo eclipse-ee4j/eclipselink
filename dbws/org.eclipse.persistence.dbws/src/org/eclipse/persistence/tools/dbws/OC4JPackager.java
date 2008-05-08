@@ -39,7 +39,6 @@ import static org.eclipse.persistence.internal.xr.Util.DBWS_SCHEMA_XML;
 import static org.eclipse.persistence.internal.xr.Util.DBWS_SERVICE_XML;
 import static org.eclipse.persistence.internal.xr.Util.DBWS_WSDL;
 import static org.eclipse.persistence.internal.xr.Util.META_INF_PATHS;
-import static org.eclipse.persistence.internal.xr.Util.WEB_INF_PATHS;
 import static org.eclipse.persistence.tools.dbws.Util.DBWS_PROVIDER_SOURCE_FILE;
 import static org.eclipse.persistence.tools.dbws.Util.SWAREF_FILENAME;
 import static org.eclipse.persistence.tools.dbws.Util.UNDER_DBWS;
@@ -369,12 +368,12 @@ public class OC4JPackager extends DBWSBasePackager implements DBWSPackager {
 
     protected void buildWebInfDir() throws FileNotFoundException {
         buildPublicHTMLDir();
-        webInfDir = new File(publicHTMLDir, WEB_INF_PATHS[1]);
+        webInfDir = new File(publicHTMLDir, WEB_INF_DIR);
         if (!webInfDir.exists()) {
             boolean worked = webInfDir.mkdir();
             if (!worked) {
                 throw new FileNotFoundException("cannot create " +
-                    WEB_INF_PATHS[1] + " under " + PUBLIC_HTML_DIR);
+                		WEB_INF_DIR + " under " + PUBLIC_HTML_DIR);
             }
         }
     }
@@ -386,7 +385,7 @@ public class OC4JPackager extends DBWSBasePackager implements DBWSPackager {
             boolean worked = wsdlDir.mkdir();
             if (!worked) {
                 throw new FileNotFoundException("cannot create " +
-                    WSDL_DIR + " under " + WEB_INF_PATHS[1]);
+                    WSDL_DIR + " under " + WEB_INF_DIR);
             }
         }
     }

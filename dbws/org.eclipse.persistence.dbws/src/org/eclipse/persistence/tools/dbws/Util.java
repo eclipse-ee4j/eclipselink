@@ -77,7 +77,7 @@ public class Util {
     public static final String UNDER_DBWS =
         "_dbws";
     public static final String WSDL_DIR =
-        "wsdl";
+        "wsdl/";
     public static final String WSI_SWAREF =
         "swaref";
     public static final String WSI_SWAREF_PREFIX =
