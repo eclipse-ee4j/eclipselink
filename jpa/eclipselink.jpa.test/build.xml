@@ -17,6 +17,7 @@
         It requires some configuration of the build.properties and test.properties to run.
     -->
 <project name="Eclipse Persistence Services JPA Testing" default="all" basedir=".">
+    <property name="env" environment="env" value="env"/>
 
     <!-- Allows a user to overide certain user specific properties. -->
     <property file="${user.home}/build.properties"/>
@@ -769,12 +770,14 @@
             <formatter type="xml"/>
             <test name="${TEST_SUITE}" haltonfailure="no" outfile="${report.dir}/test-results"/>
         </junit>
+        <copy todir="${env.JAVA_HOME}/jre/lib" file="${eclipselink.jpa.test}/resource/weblogic/jaxp.properties"/>
         <junitreport todir="${eclipselink.jpa.test}/${report.dir}">
             <fileset dir="${eclipselink.jpa.test}/${report.dir}">
                 <include name="test-results.xml"/>
             </fileset>
             <report format="noframes" todir="${eclipselink.jpa.test}/${report.dir}"/>
         </junitreport>
+        <delete file="${env.JAVA_HOME}/jre/lib/jaxp.properties"/>
         <!-- fail is not used as undeploy must be called. -->
         <!--fail message="Some of the junit tests failed.  See the ${report.dir}/junit-noframes.html file for details." if="junit.failed"/-->
     </target>
