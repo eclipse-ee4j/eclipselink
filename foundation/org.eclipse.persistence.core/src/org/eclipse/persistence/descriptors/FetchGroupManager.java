@@ -56,21 +56,6 @@ public class FetchGroupManager implements Cloneable {
     private ClassDescriptor descriptor;
     
     /**
-     * INTERNAL:
-     * Load/fetch the unfetched object.
-     */
-    public static void loadUnfetchedObject(Object object) {
-        ReadObjectQuery query = new ReadObjectQuery(object);
-        query.setShouldUseDefaultFetchGroup(false);
-        Object result = ((FetchGroupTracker)object)._persistence_getSession().executeQuery(query);
-        if (result == null) {
-            Object[] args = {query.getSelectionKey()};
-            String message = ExceptionLocalization.buildMessage("no_entities_retrieved_for_get_reference", args);
-            throw new javax.persistence.EntityNotFoundException(message);
-        }
-    }
-
-    /**
      * Constructor
      */
     public FetchGroupManager() {

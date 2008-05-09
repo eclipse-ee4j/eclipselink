@@ -733,7 +733,7 @@ public class ClassWeaver extends ClassAdapter implements Constants {
      *  
      *  public void _persistence_checkFetched(String attribute) {
      *      if (!_persistence_isAttributeFetched(attribute)) {
-     *          FetchGroupManager.loadUnfetchedObject(this);
+     *          JpaHelper.loadUnfetchedObject(this);
      *      }
      *  }
      */
@@ -809,7 +809,7 @@ public class ClassWeaver extends ClassAdapter implements Constants {
         gotoReturn = new Label();
         cv_checkFetched.visitJumpInsn(IFNE, gotoReturn);
         cv_checkFetched.visitVarInsn(ALOAD, 0);
-        cv_checkFetched.visitMethodInsn(INVOKESTATIC, "org/eclipse/persistence/descriptors/FetchGroupManager", "loadUnfetchedObject", "(Ljava/lang/Object;)V");
+        cv_checkFetched.visitMethodInsn(INVOKESTATIC, "org/eclipse/persistence/jpa/JpaHelper", "loadUnfetchedObject", "(Ljava/lang/Object;)V");
         cv_checkFetched.visitLabel(gotoReturn);
         cv_checkFetched.visitInsn(RETURN);
         cv_checkFetched.visitMaxs(0 ,0);

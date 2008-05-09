@@ -21,6 +21,8 @@ import org.eclipse.persistence.queries.*;
 import org.eclipse.persistence.sessions.server.Server; 
 import org.eclipse.persistence.sessions.server.ServerSession; 
 import org.eclipse.persistence.sessions.factories.SessionFactory; 
+import org.eclipse.persistence.queries.FetchGroupTracker;
+
 
 /** 
  * This sample illustrates the JPA helper methods that may be of use 
@@ -188,4 +190,19 @@ public class JpaHelper {
         // Verify that shared session is a ServerSession 
         return new EntityManagerFactoryImpl((ServerSession)sf.getSharedSession()); 
     } 
+
+     /**
+      * Load/fetch the unfetched object.  This method is used by the ClassWeaver.
+      */
+     public static void loadUnfetchedObject(Object object) {
+        ReadObjectQuery query = new ReadObjectQuery(object);
+        query.setShouldUseDefaultFetchGroup(false);
+        Object result = ((FetchGroupTracker)object)._persistence_getSession().executeQuery(query);
+        if (result == null) {
+            Object[] args = {query.getSelectionKey()};
+            String message = ExceptionLocalization.buildMessage("no_entities_retrieved_for_get_reference", args);
+            throw new javax.persistence.EntityNotFoundException(message);
+        }
+    }
+
 }
