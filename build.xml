@@ -187,6 +187,33 @@
         </jar>
     </target>
 
+    <target name="package.eclipselink.bundles" depends="build.eclipselink.bundles">
+        <zip destfile="${eclipselink-plugins.prefix}${eclipselink-installer.suffix}">
+            <zipfileset dir="${eclipselink.plugins}" prefix="plugins">
+                <include name="**.jar"/>
+            </zipfileset>
+            <zipfileset dir="${eclipselink.plugins}" prefix="plugins">
+                <include name="**.zip"/>
+                <exclude name="osgi.core.zip"/>
+            </zipfileset>
+            <zipfileset dir="${eclipselink.foundation.base}/${plugins.dir}" prefix="plugins">
+                <include name="**.jar"/>
+            </zipfileset>
+             <zipfileset dir="${eclipselink.moxy.base}/${plugins.dir}" prefix="plugins">
+                <include name="**.jar"/>
+            </zipfileset>
+            <zipfileset dir="${eclipselink.sdo.base}/${plugins.dir}" prefix="plugins">
+                <include name="**.jar"/>
+            </zipfileset>
+            <zipfileset dir="${eclipselink.jpa.base}/${plugins.dir}" prefix="plugins">
+                <include name="**.jar"/>
+            </zipfileset>
+            <zipfileset dir="${eclipselink.plugins}/readme.for.distribution">
+                <include name="readme.txt"/>
+            </zipfileset>
+        </zip>
+    </target>
+
     <!-- Packages the eclipselink source jar. -->
     <target name="package.src.jar" description="build EclipseLink source jar">
         <zip zipfile="${eclipselink-src.zip}">

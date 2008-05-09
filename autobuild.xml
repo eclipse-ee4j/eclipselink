@@ -135,6 +135,7 @@
         <!-- Futute Note: Could avoid these copies by redefining the html output directly...         -->
         <!--              Would need to ensure that an erroniuos run didn't get partially published. -->
         <copy file="${build.root.dir}/${eclipselink.zip.name}${eclipselink.zip.extension}" tofile="${download.path}/${eclipselink.zip.name}-${installer_id}${eclipselink.zip.extension}"/>
+        <copy file="${build.root.dir}/${eclipselink.plugins.zip.name}${eclipselink.zip.extension}" tofile="${download.path}/${eclipselink.plugins.zip.name}-${installer_id}${eclipselink.zip.extension}"/>
         <copy file="${build.root.dir}/foundation/eclipselink.core.test/reports/junit-noframes.html" tofile="${download.path}/test-results/core/eclipselink-srg-${installer_id}.html"/>
         <copy file="${build.root.dir}/jpa/eclipselink.jpa.test/reports/junit-noframes.html" tofile="${download.path}/test-results/jpa/eclipselink-jpa-lrg-${installer_id}.html"/>
         <copy file="${build.root.dir}/moxy/eclipselink.moxy.test/reports/jaxb/junit-noframes.html" tofile="${download.path}/test-results/moxy/eclipselink-jaxb-lrg-${installer_id}.html"/>
