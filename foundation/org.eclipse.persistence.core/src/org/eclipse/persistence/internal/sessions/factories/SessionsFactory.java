@@ -79,9 +79,9 @@ import org.eclipse.persistence.internal.sessions.factories.model.transport.disco
  * @date November 18, 2003
  */
 public class SessionsFactory {
-    private Map m_sessions;
-    private Map m_logLevels;
-    private ClassLoader m_classLoader;
+	protected Map m_sessions;
+    protected Map m_logLevels;
+    protected ClassLoader m_classLoader;
 
     /**
      * INTERNAL:
@@ -144,7 +144,7 @@ public class SessionsFactory {
      * Process the user inputed session customizer class. Will be run at the
      * end of the session build process
      */
-    private void processSessionCustomizer(SessionConfig sessionConfig, AbstractSession session) {
+    protected void processSessionCustomizer(SessionConfig sessionConfig, AbstractSession session) {
         // Session customizer - MUST BE THE LAST THING TO PROCESS
         String sessionCustomizerClassName = sessionConfig.getSessionCustomizerClass();
         if (sessionCustomizerClassName != null) {
@@ -165,7 +165,7 @@ public class SessionsFactory {
      * INTERNAL:
      * Build the correct session based on the session config type
      */
-    private AbstractSession buildSession(SessionConfig sessionConfig) {
+    protected AbstractSession buildSession(SessionConfig sessionConfig) {
         if (sessionConfig instanceof ServerSessionConfig) {
             return buildServerSessionConfig((ServerSessionConfig)sessionConfig);
         } else {// if (sessionConfig instanceof DatabaseSessionConfig) {
@@ -178,7 +178,7 @@ public class SessionsFactory {
      * Wrapped by the getSession() call, therefore, config can't be null at this
      * point.
      */
-    private AbstractSession buildDatabaseSessionConfig(DatabaseSessionConfig databaseSessionConfig) {
+    protected AbstractSession buildDatabaseSessionConfig(DatabaseSessionConfig databaseSessionConfig) {
         // Create a new database session (null means use login from deployment xml if there is one)
         DatabaseSessionImpl databaseSession = createSession(databaseSessionConfig, null);
 
@@ -201,14 +201,14 @@ public class SessionsFactory {
      * INTERNAL
      * Process a DatabaseSessionConfig object.
      */
-    private void processDatabaseSessionConfig(DatabaseSessionConfig sessionConfig, AbstractSession session) {
+    protected void processDatabaseSessionConfig(DatabaseSessionConfig sessionConfig, AbstractSession session) {
     }
 
     /**
      * INTERNAL:
      * Builds a server server from the given ServerSessionConfig.
      */
-    private AbstractSession buildServerSessionConfig(ServerSessionConfig serverSessionConfig) {
+    protected AbstractSession buildServerSessionConfig(ServerSessionConfig serverSessionConfig) {
         // For server sessions we should build the login first, that way we can 
         // initialize the server session with the login (if there is one)
         Login login = buildLogin(serverSessionConfig.getLoginConfig());
@@ -236,7 +236,7 @@ public class SessionsFactory {
      * Return a DatabaseSession object from it's config object using either
      * the project classes or project XML files.
      */
-    private DatabaseSessionImpl createSession(DatabaseSessionConfig sessionConfig, Login login) {
+    protected DatabaseSessionImpl createSession(DatabaseSessionConfig sessionConfig, Login login) {
         Project primaryProject;
 
         if (sessionConfig.getPrimaryProject() != null) {
@@ -266,7 +266,7 @@ public class SessionsFactory {
      * INTERNAL:
      * Return the correct session type from the sessionConfig
      */
-    private void prepareProjectLogin(Project project, Login login) {
+    protected void prepareProjectLogin(Project project, Login login) {
         if (login != null) {
             project.setLogin(login);
         } else if (project.getDatasourceLogin() == null) {
@@ -281,7 +281,7 @@ public class SessionsFactory {
      * INTERNAL:
      * Return the correct session type from the sessionConfig
      */
-    private DatabaseSessionImpl getSession(SessionConfig sessionConfig, Project project) {
+    protected DatabaseSessionImpl getSession(SessionConfig sessionConfig, Project project) {
         if (sessionConfig instanceof ServerSessionConfig) {
             return (ServerSession)project.createServerSession();
         } else {
@@ -294,7 +294,7 @@ public class SessionsFactory {
      * Load a projectConfig from the session.xml file. This method will determine
      * the proper loading scheme, that is, for a class or xml project.
      */
-    private Project loadProjectConfig(ProjectConfig projectConfig) {
+    protected Project loadProjectConfig(ProjectConfig projectConfig) {
         Project project = null;
         String projectString = projectConfig.getProjectString();
 
@@ -331,7 +331,7 @@ public class SessionsFactory {
      * INTERNAL:
      * Build the correct login based on the login config type
      */
-    private Login buildLogin(LoginConfig loginConfig) {
+    protected Login buildLogin(LoginConfig loginConfig) {
         if (loginConfig instanceof EISLoginConfig) {
             return buildEISLoginConfig((EISLoginConfig)loginConfig);
         } else if (loginConfig instanceof XMLLoginConfig) {
@@ -348,7 +348,7 @@ public class SessionsFactory {
      * Wrapped by the getLogin() call, therefore, config can't be null at this
      * point.
      */
-    private Login buildEISLoginConfig(EISLoginConfig eisLoginConfig) {
+    protected Login buildEISLoginConfig(EISLoginConfig eisLoginConfig) {
         EISLogin eisLogin = new EISLogin();
 
         // Connection Spec
@@ -383,7 +383,7 @@ public class SessionsFactory {
       * Wrapped by the getLogin() call, therefore, config can't be null at this
       * point.
       */
-    private Login buildXMLLoginConfig(XMLLoginConfig xmlLoginConfig) {
+    protected Login buildXMLLoginConfig(XMLLoginConfig xmlLoginConfig) {
         XMLLogin xmlLogin = new XMLLogin();
 
         // Process the common elements in LoginConfig
@@ -399,7 +399,7 @@ public class SessionsFactory {
      * Wrapped by the getLogin() call, therefore, config can't be null at this
      * point.
      */
-    private Login buildDatabaseLoginConfig(DatabaseLoginConfig databaseLoginConfig) {
+    protected Login buildDatabaseLoginConfig(DatabaseLoginConfig databaseLoginConfig) {
         DatabaseLogin databaseLogin = new DatabaseLogin();
 
         // Driver class
@@ -495,7 +495,7 @@ public class SessionsFactory {
     /**
      * INTERNAL:
      */
-    private void processStructConverterConfig(StructConverterConfig converterClassConfig, DatabaseLogin login) {
+    protected void processStructConverterConfig(StructConverterConfig converterClassConfig, DatabaseLogin login) {
         if (converterClassConfig != null) {
             Platform platform = login.getDatasourcePlatform();
             if (platform instanceof DatabasePlatform){
@@ -528,7 +528,7 @@ public class SessionsFactory {
      * INTERNAL:
      * Process the common elements of a Login.
      */
-    private void processLoginConfig(LoginConfig loginConfig, DatasourceLogin login) {
+    protected void processLoginConfig(LoginConfig loginConfig, DatasourceLogin login) {
         // Platform class
         String platformClassName = loginConfig.getPlatformClass();
         if (platformClassName != null) {
@@ -598,7 +598,7 @@ public class SessionsFactory {
      * INTERNAL:
      * Process the PoolsConfig object.
      */
-    private void processPoolsConfig(PoolsConfig poolsConfig, ServerSession serverSession) {
+    protected void processPoolsConfig(PoolsConfig poolsConfig, ServerSession serverSession) {
         if (poolsConfig != null) {
             // Read connection pool
             ReadConnectionPoolConfig readConnectionPoolConfig = poolsConfig.getReadConnectionPoolConfig();
@@ -631,7 +631,7 @@ public class SessionsFactory {
      * INTERNAL:
      * Process a SequenceConnectionPoolConfig object.
      */
-    private void processSequenceConnectionPoolConfig(ConnectionPoolConfig poolConfig, ServerSession serverSession) {
+    protected void processSequenceConnectionPoolConfig(ConnectionPoolConfig poolConfig, ServerSession serverSession) {
         // Set the Sequence connection pool flag to true
         serverSession.getSequencingControl().setShouldUseSeparateConnection(true);
 
@@ -654,7 +654,7 @@ public class SessionsFactory {
      * INTERNAL:
      * Process a ServerPlatformConfig object.
      */
-    private void processServerPlatformConfig(ServerPlatformConfig platformConfig, ServerPlatform platform) {
+    protected void processServerPlatformConfig(ServerPlatformConfig platformConfig, ServerPlatform platform) {
         // Enable runtime services - XML schema default is true
         if (!platformConfig.getEnableRuntimeServices()) {
             platform.disableRuntimeServices();
@@ -670,7 +670,7 @@ public class SessionsFactory {
      * INTERNAL:
      * Build a connection pool from the config to store on the server session.
      */
-    private ConnectionPool buildConnectionPoolConfig(ConnectionPoolConfig poolConfig, ServerSession serverSession) {
+    protected ConnectionPool buildConnectionPoolConfig(ConnectionPoolConfig poolConfig, ServerSession serverSession) {
         ConnectionPool connectionPool = new ConnectionPool();
 
         // Process the common elements in ConnectionPool
@@ -682,7 +682,7 @@ public class SessionsFactory {
     /**
      * INTERNAL:
      */
-    private ServerPlatform buildCustomServerPlatformConfig(CustomServerPlatformConfig platformConfig, DatabaseSessionImpl session) {
+    protected ServerPlatform buildCustomServerPlatformConfig(CustomServerPlatformConfig platformConfig, DatabaseSessionImpl session) {
         ServerPlatform platform;
 
         // Server class - XML schema default is org.eclipse.persistence.platform.server.CustomServerPlatform
@@ -717,7 +717,7 @@ public class SessionsFactory {
      * INTERNAL:
      * Build a read connection pool from the config to store on the server session.
      */
-    private ConnectionPool buildReadConnectionPoolConfig(ReadConnectionPoolConfig poolConfig, ServerSession serverSession) {
+    protected ConnectionPool buildReadConnectionPoolConfig(ReadConnectionPoolConfig poolConfig, ServerSession serverSession) {
         // Exclusive tag - XML Schema default is false
         ConnectionPool connectionPool = (poolConfig.getExclusive()) ? new ConnectionPool() : new ReadConnectionPool();
 
@@ -731,7 +731,7 @@ public class SessionsFactory {
      * INTERNAL:
      * Process the common elements from a ConnectionPoolConfig
      */
-    private void processConnectionPolicyConfig(ConnectionPolicyConfig connectionPolicyConfig, ServerSession serverSession) {
+    protected void processConnectionPolicyConfig(ConnectionPolicyConfig connectionPolicyConfig, ServerSession serverSession) {
         if (connectionPolicyConfig != null) {
             ConnectionPolicy connectionPolicy = serverSession.getDefaultConnectionPolicy();
             connectionPolicy.setShouldUseExclusiveConnection(connectionPolicyConfig.getUseExclusiveConnection());
@@ -743,7 +743,7 @@ public class SessionsFactory {
      * INTERNAL:
      * Process the common elements from a ConnectionPoolConfig
      */
-    private void processConnectionPoolConfig(ConnectionPoolConfig poolConfig, ConnectionPool connectionPool, AbstractSession session) {
+    protected void processConnectionPoolConfig(ConnectionPoolConfig poolConfig, ConnectionPool connectionPool, AbstractSession session) {
         // Login - if null, set it to the same as the session login
         Login login = buildLogin(poolConfig.getLoginConfig());
         if (login != null) {
@@ -772,7 +772,7 @@ public class SessionsFactory {
      * INTERNAL:
      * Process the common elements from a SessionConfig.
      */
-    private void processSessionConfig(SessionConfig sessionConfig, AbstractSession session) {
+    protected void processSessionConfig(SessionConfig sessionConfig, AbstractSession session) {
         // Session Event Manager
         processSessionEventManagerConfig(sessionConfig.getSessionEventManagerConfig(), session);
 
@@ -820,7 +820,7 @@ public class SessionsFactory {
     /**
      * INTERNAL: Build the appropriate server platform
      */
-    private ServerPlatform buildServerPlatformConfig(ServerPlatformConfig platformConfig, DatabaseSessionImpl session) {
+    protected ServerPlatform buildServerPlatformConfig(ServerPlatformConfig platformConfig, DatabaseSessionImpl session) {
         if (platformConfig == null) {
             return new NoServerPlatform(session);
         }
@@ -859,7 +859,7 @@ public class SessionsFactory {
     /**
      * INTERNAL:
      */
-    private void buildRemoteCommandManagerConfig(RemoteCommandManagerConfig rcmConfig, AbstractSession session) {
+    protected void buildRemoteCommandManagerConfig(RemoteCommandManagerConfig rcmConfig, AbstractSession session) {
         if (rcmConfig != null) {
             RemoteCommandManager rcm = new RemoteCommandManager(session);
 
@@ -878,7 +878,7 @@ public class SessionsFactory {
     /**
      * INTERNAL:
      */
-    private void buildTransportManager(TransportManagerConfig tmConfig, RemoteCommandManager rcm) {
+    protected void buildTransportManager(TransportManagerConfig tmConfig, RemoteCommandManager rcm) {
         if (tmConfig instanceof RMITransportManagerConfig) {
             buildRMITransportManagerConfig((RMITransportManagerConfig)tmConfig, rcm);
         } else if (tmConfig instanceof RMIIIOPTransportManagerConfig) {
@@ -897,7 +897,7 @@ public class SessionsFactory {
     /**
      * INTERNAL:
      */
-    private void buildRMITransportManagerConfig(RMITransportManagerConfig tmConfig, RemoteCommandManager rcm) {
+    protected void buildRMITransportManagerConfig(RMITransportManagerConfig tmConfig, RemoteCommandManager rcm) {
         RMITransportManager tm = new RMITransportManager(rcm);
 
         // Set the transport manager. This will initialize the DiscoveryManager
@@ -934,7 +934,7 @@ public class SessionsFactory {
      * INTERNAL:
      * Builds a Sequence from the given SequenceConfig.
      */
-    private Sequence buildSequence(SequenceConfig sequenceConfig) {
+    protected Sequence buildSequence(SequenceConfig sequenceConfig) {
         if (sequenceConfig == null) {
             return null;
         }
@@ -965,14 +965,14 @@ public class SessionsFactory {
      * Left this in for now since in the future we may add more IIOP specific
      * configurations?
      */
-    private void buildRMIIIOPTransportManagerConfig(RMIIIOPTransportManagerConfig tmConfig, RemoteCommandManager rcm) {
+    protected void buildRMIIIOPTransportManagerConfig(RMIIIOPTransportManagerConfig tmConfig, RemoteCommandManager rcm) {
         buildRMITransportManagerConfig(tmConfig, rcm);
     }
 
     /**
      * INTERNAL:
      */
-    private void buildJMSTopicTransportManagerConfig(JMSTopicTransportManagerConfig tmConfig, RemoteCommandManager rcm) {
+    protected void buildJMSTopicTransportManagerConfig(JMSTopicTransportManagerConfig tmConfig, RemoteCommandManager rcm) {
         JMSTopicTransportManager tm = new JMSTopicTransportManager(rcm);
 
         // Set the transport manager. This will initialize the DiscoveryManager
@@ -1003,7 +1003,7 @@ public class SessionsFactory {
     /**
      * INTERNAL:
      */
-    private void buildOc4jJGroupsTransportManagerConfig(Oc4jJGroupsTransportManagerConfig tmConfig, RemoteCommandManager rcm) {
+    protected void buildOc4jJGroupsTransportManagerConfig(Oc4jJGroupsTransportManagerConfig tmConfig, RemoteCommandManager rcm) {
         TransportManager tm = null;
         try {
             Class tmClass = m_classLoader.loadClass(tmConfig.getTransportManagerClassName());
@@ -1028,7 +1028,7 @@ public class SessionsFactory {
     /**
      * INTERNAL:
      */
-    private void buildUserDefinedTransportManagerConfig(UserDefinedTransportManagerConfig tmConfig, RemoteCommandManager rcm) {
+    protected void buildUserDefinedTransportManagerConfig(UserDefinedTransportManagerConfig tmConfig, RemoteCommandManager rcm) {
         TransportManager tm = null;
 
         // Transport class
@@ -1056,7 +1056,7 @@ public class SessionsFactory {
     /**
      * INTERNAL:
      */
-    private void processJNDINamingServiceConfig(JNDINamingServiceConfig namingConfig, TransportManager tm) {
+    protected void processJNDINamingServiceConfig(JNDINamingServiceConfig namingConfig, TransportManager tm) {
         // URL
         String url = namingConfig.getURL();
         if (url != null) {
@@ -1087,7 +1087,7 @@ public class SessionsFactory {
     /**
      * INTERNAL:
      */
-    private void processRMIRegistryNamingServiceConfig(RMIRegistryNamingServiceConfig namingConfig, TransportManager tm) {
+    protected void processRMIRegistryNamingServiceConfig(RMIRegistryNamingServiceConfig namingConfig, TransportManager tm) {
         // URL
         tm.getRemoteCommandManager().setUrl(namingConfig.getURL());
     }
@@ -1095,7 +1095,7 @@ public class SessionsFactory {
     /**
      * INTERNAL:
      */
-    private void processDiscoveryConfig(DiscoveryConfig discoveryConfig, DiscoveryManager discoveryManager) {
+    protected void processDiscoveryConfig(DiscoveryConfig discoveryConfig, DiscoveryManager discoveryManager) {
         // Multicast group address - XML Schema default is 226.10.12.64
         discoveryManager.setMulticastGroupAddress(discoveryConfig.getMulticastGroupAddress());
 
@@ -1112,7 +1112,7 @@ public class SessionsFactory {
     /**
      * INTERNAL:
      */
-    private void processTransportManagerConfig(TransportManagerConfig tmConfig, TransportManager tm) {
+    protected void processTransportManagerConfig(TransportManagerConfig tmConfig, TransportManager tm) {
         // On connection error - Can only be DiscardConnection (true) or 
         // KeepConnection (false), validated by the schema
         // XML Schema default is DiscardConnection
@@ -1122,7 +1122,7 @@ public class SessionsFactory {
     /**
      * INTERNAL:
      */
-    private void processSessionEventManagerConfig(SessionEventManagerConfig sessionEventManagerConfig, AbstractSession session) {
+    protected void processSessionEventManagerConfig(SessionEventManagerConfig sessionEventManagerConfig, AbstractSession session) {
         if (sessionEventManagerConfig != null) {
             Enumeration e = sessionEventManagerConfig.getSessionEventListeners().elements();
 
@@ -1147,7 +1147,7 @@ public class SessionsFactory {
     /**
      * INTERNAL:
      */
-    private SessionLog buildSessionLog(LogConfig logConfig, AbstractSession session) {
+    protected SessionLog buildSessionLog(LogConfig logConfig, AbstractSession session) {
         if (logConfig instanceof JavaLogConfig) {
             return buildJavaLogConfig((JavaLogConfig)logConfig, session);
         } else if (logConfig instanceof DefaultSessionLogConfig) {
@@ -1162,7 +1162,7 @@ public class SessionsFactory {
     /**
      * INTERNAL:
      */
-    private SessionLog buildJavaLogConfig(JavaLogConfig javaLogConfig, AbstractSession session) {
+    protected SessionLog buildJavaLogConfig(JavaLogConfig javaLogConfig, AbstractSession session) {
         SessionLog javaLog = null;
         try {
             // use ConversionManager to avoid loading the JDK 1.4 class unless it is needed.
@@ -1183,7 +1183,7 @@ public class SessionsFactory {
      * Wrapped by the getSessionLog() call, therefore, config can't be null at
      * this point.
      */
-    private SessionLog buildDefaultSessionLogConfig(DefaultSessionLogConfig defaultSessionLogConfig) {
+    protected SessionLog buildDefaultSessionLogConfig(DefaultSessionLogConfig defaultSessionLogConfig) {
         DefaultSessionLog defaultSessionLog = new DefaultSessionLog();
 
         // Log level - XML Schema default is info
@@ -1201,7 +1201,7 @@ public class SessionsFactory {
     /**
      * INTERNAL:
      */
-    private SessionLog buildServerLogConfig(ServerLogConfig serverLogConfig, AbstractSession session) {
+    protected SessionLog buildServerLogConfig(ServerLogConfig serverLogConfig, AbstractSession session) {
         SessionLog serverLog = ((DatabaseSessionImpl)session).getServerPlatform().getServerLog();
 
         return serverLog;
@@ -1210,7 +1210,7 @@ public class SessionsFactory {
     /**
      * INTERNAL:
      */
-    private void processLogConfig(LogConfig logConfig, SessionLog log) {
+    protected void processLogConfig(LogConfig logConfig, SessionLog log) {
         if (logConfig.getLoggingOptions() != null) {
             if (logConfig.getLoggingOptions().getShouldLogExceptionStackTrace() != null) {
                 log.setShouldLogExceptionStackTrace(logConfig.getLoggingOptions().getShouldLogExceptionStackTrace().booleanValue());
@@ -1235,7 +1235,7 @@ public class SessionsFactory {
      * INTERNAL:
      * Builds a Sun CORBA transport manager with the given remote command manager
      */
-    private void buildSunCORBATransportManagerConfig(SunCORBATransportManagerConfig tmConfig, RemoteCommandManager rcm) {
+    protected void buildSunCORBATransportManagerConfig(SunCORBATransportManagerConfig tmConfig, RemoteCommandManager rcm) {
         SunCORBATransportManager tm = new SunCORBATransportManager(rcm);
 
         // Set the transport manager. This will initialize the DiscoveryManager
@@ -1248,7 +1248,7 @@ public class SessionsFactory {
     /**
      * INTERNAL:
      */
-    private void processCommandsConfig(CommandsConfig commandsConfig, RemoteCommandManager rcm) {
+    protected void processCommandsConfig(CommandsConfig commandsConfig, RemoteCommandManager rcm) {
         if (commandsConfig != null) {
             // cache-sync - XML Schema default is false
             ((AbstractSession)rcm.getCommandProcessor()).setShouldPropagateChanges(commandsConfig.getCacheSync());
@@ -1259,7 +1259,7 @@ public class SessionsFactory {
      * INTERNAL:
      * Builds a session broker from the given SessionBrokerConfig.
      */
-    private SessionBroker buildSessionBrokerConfig(SessionBrokerConfig sessionBrokerConfig) {
+    protected SessionBroker buildSessionBrokerConfig(SessionBrokerConfig sessionBrokerConfig) {
         SessionBroker sessionBroker = new SessionBroker();
 
         // Session names
