@@ -770,14 +770,14 @@
             <formatter type="xml"/>
             <test name="${TEST_SUITE}" haltonfailure="no" outfile="${report.dir}/test-results"/>
         </junit>
-        <copy todir="${env.JAVA_HOME}/jre/lib" file="${eclipselink.jpa.test}/resource/weblogic/jaxp.properties"/>
+        <copy todir="${env.JAVA_HOME}/jre/lib" file="${eclipselink.jpa.test}/resource/weblogic/jaxp.properties" failonerror="false"/>
         <junitreport todir="${eclipselink.jpa.test}/${report.dir}">
             <fileset dir="${eclipselink.jpa.test}/${report.dir}">
                 <include name="test-results.xml"/>
             </fileset>
             <report format="noframes" todir="${eclipselink.jpa.test}/${report.dir}"/>
         </junitreport>
-        <delete file="${env.JAVA_HOME}/jre/lib/jaxp.properties"/>
+        <delete file="${env.JAVA_HOME}/jre/lib/jaxp.properties" failonerror="false"/>
         <!-- fail is not used as undeploy must be called. -->
         <!--fail message="Some of the junit tests failed.  See the ${report.dir}/junit-noframes.html file for details." if="junit.failed"/-->
     </target>
