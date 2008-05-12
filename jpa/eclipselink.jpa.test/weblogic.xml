@@ -17,10 +17,9 @@
 <project name="Eclipse Persistence Services JPA WLS Testing" basedir=".">
 
     <property name="env" environment="env" value="env"/>
-    <property name="jdbc.driver.jar" value="../../../extension.oracle.lib.external/ojdbc5_11.jar"/>
-    <property file="./test.properties"/>
     <!-- Allows a user to overide certain user specific properties. -->
     <property file="${user.home}/weblogic.properties"/>
+    <property file="./test.properties"/>
     <property file="./weblogic.properties"/>
 
     <!-- WebLogic ant tasks -->
