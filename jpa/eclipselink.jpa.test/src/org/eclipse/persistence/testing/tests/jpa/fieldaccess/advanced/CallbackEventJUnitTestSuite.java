@@ -93,12 +93,14 @@ public class CallbackEventJUnitTestSuite extends JUnitTestCase {
         int m_beforePrePersistEvent = EmployeeListener.PRE_PERSIST_COUNT;
         
         EntityManager em = createEntityManager("fieldaccess");
-        beginTransaction(em);        
-        try{
-            em.persist(new_emp);//ensure we only check the cache or this test will fail
-            em.remove(new_emp);
+        beginTransaction(em);      
+        Employee employee = new Employee();
+        try {
+            employee = new Employee();
+            em.persist(employee);
+            em.remove(employee);
             commitTransaction(em);
-        }catch (RuntimeException ex){
+        } catch (RuntimeException ex) {
             if (isTransactionActive(em)){
                 rollbackTransaction(em);
             }
@@ -107,6 +109,9 @@ public class CallbackEventJUnitTestSuite extends JUnitTestCase {
         }
         m_afterEvent = EmployeeListener.PRE_REMOVE_COUNT;
         int m_afterPrePersistEvent = EmployeeListener.PRE_PERSIST_COUNT;
+        if (em.find(Employee.class, employee.getId()) != null) {
+            fail("Employee was inserted.");
+        }
         closeEntityManager(em);
         this.assertTrue("The prePersist callback method was not called.", m_beforePrePersistEvent != m_afterPrePersistEvent);
         this.assertTrue("The preRemove callback method was not called.", m_beforeEvent != m_afterEvent);

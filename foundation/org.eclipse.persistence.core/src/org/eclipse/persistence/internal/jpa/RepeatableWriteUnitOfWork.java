@@ -245,12 +245,11 @@ public class RepeatableWriteUnitOfWork extends UnitOfWorkImpl {
         Object mergedObject = super.mergeCloneWithReferences(rmiClone, manager);
         
         //iterate over new objects, assign sequences and put in the identitymap
-        IdentityHashMap itable = manager.getMergedNewObjects();
-        Iterator i = itable.values().iterator();
-        while ( i.hasNext() ){
-            Object newObjectClone = i.next();
+        Iterator iterator = manager.getMergedNewObjects().values().iterator();
+        while (iterator.hasNext()) {
+            Object newObjectClone = iterator.next();
             ClassDescriptor descriptor = getDescriptor(newObjectClone);
-            assignSequenceNumber(newObjectClone);
+            assignSequenceNumber(newObjectClone, descriptor);
             registerNewObjectInIdentityMap(newObjectClone, null, descriptor);
         }
         
@@ -388,6 +387,14 @@ public class RepeatableWriteUnitOfWork extends UnitOfWorkImpl {
             this.unregisteredDeletedObjectsCloneToBackupAndOriginal = null;
             super.synchronizeAndResume();
         }
+    }
+    
+    /**
+     * INTERNAL:
+     * Return if the object was deleted previously (in a flush).
+     */
+    public boolean wasDeleted(Object original) {
+        return getUnregisteredDeletedCloneForOriginal(original) != null;
     }
     
     /**

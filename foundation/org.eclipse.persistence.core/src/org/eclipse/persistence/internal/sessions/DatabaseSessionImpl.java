@@ -285,9 +285,6 @@ public class DatabaseSessionImpl extends AbstractSession implements org.eclipse.
      * @see org.eclipse.persistence.platform.server.ServerPlatformBase
      */
     public void setServerPlatform(ServerPlatform newServerPlatform) {
-        if (this.isConnected()) {
-            throw ValidationException.serverPlatformIsReadOnlyAfterLogin(newServerPlatform.getClass().getName());
-        }
         this.serverPlatform = newServerPlatform;
     }
 

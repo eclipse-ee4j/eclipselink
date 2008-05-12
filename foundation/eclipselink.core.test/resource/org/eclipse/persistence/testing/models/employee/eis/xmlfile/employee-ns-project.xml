@@ -392,9 +392,6 @@
       </eclipselink:class-mapping-descriptor>
    </eclipselink:class-mapping-descriptors>
    <eclipselink:login xsi:type="eclipselink:eis-login">
-      <eclipselink:platform-class>org.eclipse.persistence.eis.adapters.attunity.AttunityPlatform</eclipselink:platform-class>
-      <eclipselink:user-name></eclipselink:user-name>
-      <eclipselink:password></eclipselink:password>
       <eclipselink:connection-spec-class>org.eclipse.persistence.eis.EISConnectionSpec</eclipselink:connection-spec-class>
    </eclipselink:login>
 </eclipselink:object-persistence>

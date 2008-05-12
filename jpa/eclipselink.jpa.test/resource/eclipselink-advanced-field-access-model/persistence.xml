@@ -25,6 +25,7 @@
             <property name="eclipselink.logging.timestamp" value="false"/>
             <property name="eclipselink.orm.throw.exceptions" value="false"/>
             <!--property name="eclipselink.ddl-generation" value="drop-and-create-tables"/-->
+            <property name="eclipselink.validate-existence" value="true"/>
         </properties>
     </persistence-unit>
 

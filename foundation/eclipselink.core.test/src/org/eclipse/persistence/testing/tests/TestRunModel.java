@@ -174,24 +174,19 @@ public class TestRunModel extends TestModel {
         Vector models = new Vector();
 
         try {
-            models.addElement(Class.forName("org.eclipse.persistence.testing.tests.SRGTestModel").newInstance());
+            models.add(Class.forName("org.eclipse.persistence.testing.tests.SRGTestModel").newInstance());
         } catch (Exception exception) {
             System.out.println("Failed to set up org.eclipse.persistence.testing.tests.SRGTestModel" + " \n" + exception);
         }
-        models.addElement(buildLRGTestModel());
-        models.addElement(buildNonLRGTestModel());
-        models.addElement(buildAllTestModels());
-        models.addElement(buildJPATestModel());
-        models.addElement(buildPerformanceTestModel());
-        try {
-            models.addElement(Class.forName("org.eclipse.persistence.testing.tests.OracleTestModel").newInstance());
-        } catch (Exception exception) {
-            System.out.println("Failed to set up org.eclipse.persistence.testing.tests.OracleTestModel" + " \n" + exception);
-        }
+        models.add(buildLRGTestModel());
+        models.add(buildNonLRGTestModel());
+        models.add(buildOracleTestModel());
+        models.add(buildJPATestModel());
+        models.add(buildPerformanceTestModel());
 
         Vector manualTest = new Vector();
-        manualTest.addElement("org.eclipse.persistence.testing.tests.stress.StressTestModel");
-        manualTest.addElement("org.eclipse.persistence.testing.tests.manual.ManualVerificationModel");
+        manualTest.add("org.eclipse.persistence.testing.tests.stress.StressTestModel");
+        manualTest.add("org.eclipse.persistence.testing.tests.manual.ManualVerificationModel");
 
         TestModel manual = new TestModel();
         manual.setName("Manual Tests");
@@ -202,7 +197,7 @@ public class TestRunModel extends TestModel {
                 System.out.println("Failed to set up " + manualTest.elementAt(index) + " \n" + exception);
             }
         }
-        models.addElement(manual);
+        models.add(manual);
 
         return models;
     }
@@ -216,6 +211,28 @@ public class TestRunModel extends TestModel {
                     
         TestModel model = new TestModel();
         model.setName("JPA Tests");
+        for (int index = 0; index < tests.size(); ++index) {
+            try {
+                model.addTest((TestModel)Class.forName((String)tests.get(index)).newInstance());
+            } catch (Throwable exception) {
+                System.out.println("Failed to set up " + tests.get(index) + " \n" + exception);
+            }
+        }
+        return model;
+    }    
+    
+    /**
+     * Build and return a model of all Oracle specific tests.
+     */
+    public static TestModel buildOracleTestModel() {
+        List tests = new ArrayList();
+        tests.add("org.eclipse.persistence.testing.tests.OracleTestModel");
+        // Requires specific oracle database/driver (oci).
+        tests.add("org.eclipse.persistence.testing.tests.xdb.XDBTestModel");
+        tests.add("org.eclipse.persistence.testing.tests.xdb.XDBTestModelMWIntegration");
+                    
+        TestModel model = new TestModel();
+        model.setName("Oracle Tests");
         for (int index = 0; index < tests.size(); ++index) {
             try {
                 model.addTest((TestModel)Class.forName((String)tests.get(index)).newInstance());
@@ -302,14 +319,14 @@ public class TestRunModel extends TestModel {
      */
     public static TestModel buildPerformanceTestModel() {
         Vector performanceTests = new Vector();
-        performanceTests.addElement("org.eclipse.persistence.testing.tests.performance.PerformanceComparisonModel");
-        performanceTests.addElement("org.eclipse.persistence.testing.tests.performance.PerformanceTestModel");
-        performanceTests.addElement("org.eclipse.persistence.testing.tests.performance.PerformanceTestModelRun");
-        performanceTests.addElement("org.eclipse.persistence.testing.tests.performance.ConcurrencyComparisonTestModel");
-        performanceTests.addElement("org.eclipse.persistence.testing.tests.performance.ConcurrencyRegressionTestModel");
-        performanceTests.addElement("org.eclipse.persistence.testing.tests.performance.JavaPerformanceComparisonModel");
-        performanceTests.addElement("org.eclipse.persistence.testing.tests.jpa.performance.JPAPerformanceTestModel");
-        performanceTests.addElement("org.eclipse.persistence.testing.tests.jpa.memory.JPAMemoryTestModel");
+        performanceTests.add("org.eclipse.persistence.testing.tests.performance.PerformanceComparisonModel");
+        performanceTests.add("org.eclipse.persistence.testing.tests.performance.PerformanceTestModel");
+        performanceTests.add("org.eclipse.persistence.testing.tests.performance.PerformanceTestModelRun");
+        performanceTests.add("org.eclipse.persistence.testing.tests.performance.ConcurrencyComparisonTestModel");
+        performanceTests.add("org.eclipse.persistence.testing.tests.performance.ConcurrencyRegressionTestModel");
+        performanceTests.add("org.eclipse.persistence.testing.tests.performance.JavaPerformanceComparisonModel");
+        performanceTests.add("org.eclipse.persistence.testing.tests.jpa.performance.JPAPerformanceTestModel");
+        performanceTests.add("org.eclipse.persistence.testing.tests.jpa.memory.JPAMemoryTestModel");
                     
         TestModel performanceModel = new TestModel();
         performanceModel.setName("Performance Tests");

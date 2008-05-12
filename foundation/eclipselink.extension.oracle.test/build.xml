@@ -131,6 +131,7 @@
     <target name="test">
         <antcall target="run.test" inheritRefs="true">
             <param name="TEST_CLASS" value="${test.class}"/>
+            <param name="DB_URL" value="{db.url}"/>
         </antcall>
     </target>
 
@@ -150,6 +151,15 @@ CREATE OR REPLACE TYPE MY_GEOMETRY AS OBJECT (id NUMBER, geom MDSYS.SDO_GEOMETRY
         </sql>
         <antcall target="run.test" inheritRefs="true">
             <param name="TEST_CLASS" value="org.eclipse.persistence.testing.tests.OracleTestModel"/>
+            <param name="DB_URL" value="{db.url}"/>
+        </antcall>
+        <antcall target="run.test" inheritRefs="true">
+            <param name="TEST_CLASS" value="org.eclipse.persistence.testing.tests.xdb.XDBTestModel"/>
+            <param name="DB_URL" value="{db.oci.url}"/>
+        </antcall>
+        <antcall target="run.test" inheritRefs="true">
+            <param name="TEST_CLASS" value="org.eclipse.persistence.testing.tests.xdb.XDBTestModelMWIntegration"/>
+            <param name="DB_URL" value="{db.oci.url}"/>
         </antcall>
     </target>
 
@@ -157,6 +167,7 @@ CREATE OR REPLACE TYPE MY_GEOMETRY AS OBJECT (id NUMBER, geom MDSYS.SDO_GEOMETRY
     <target name="test.prompt">
         <antcall target="run.test.prompt" inheritRefs="true">
             <param name="TEST_CLASS" value="${test.class}"/>
+            <param name="DB_URL" value="{db.url}"/>
         </antcall>
     </target>
 
@@ -193,7 +204,7 @@ CREATE OR REPLACE TYPE MY_GEOMETRY AS OBJECT (id NUMBER, geom MDSYS.SDO_GEOMETRY
         <junit printsummary="yes" failureproperty="junit.failed" fork="yes" showoutput="true" maxmemory="512m" dir="${eclipselink.core.test}/${run.dir}">
             <jvmarg value="-Declipselink.logging.level=${logging.level}"/>
             <jvmarg value="-Ddb.driver=${db.driver}"/>
-            <jvmarg value="-Ddb.url=${db.url}"/>
+            <jvmarg value="-Ddb.url=${DB_URL}"/>
             <jvmarg value="-Ddb.user=${db.user}"/>
             <jvmarg value="-Ddb.pwd=${db.pwd}"/>
             <jvmarg value="-Ddb.platform=${db.platform}"/>
@@ -203,12 +214,12 @@ CREATE OR REPLACE TYPE MY_GEOMETRY AS OBJECT (id NUMBER, geom MDSYS.SDO_GEOMETRY
                 <path refid="run.classpath"/>
             </classpath>
             <formatter type="xml"/>
-            <test name="${TEST_CLASS}" haltonfailure="no" outfile="${eclipselink.extension.oracle.test}/${report.dir}/test-results">
+            <test name="${TEST_CLASS}" haltonfailure="no" outfile="${eclipselink.extension.oracle.test}/${report.dir}/${TEST_CLASS}-test-results">
             </test>
         </junit>
         <junitreport todir="${eclipselink.extension.oracle.test}/${report.dir}">
             <fileset dir="${eclipselink.extension.oracle.test}/${report.dir}">
-                <include name="test-results.xml"/>
+                <include name="*test-results.xml"/>
             </fileset>
             <report format="noframes" todir="${eclipselink.extension.oracle.test}/${report.dir}"/>
         </junitreport>
@@ -227,7 +238,7 @@ CREATE OR REPLACE TYPE MY_GEOMETRY AS OBJECT (id NUMBER, geom MDSYS.SDO_GEOMETRY
              dir="${eclipselink.extension.oracle.test}/${run.dir}">
             <jvmarg value="-Declipselink.logging.level=${logging.level}"/>
             <jvmarg value="-Ddb.driver=${db.driver}"/>
-            <jvmarg value="-Ddb.url=${db.url}"/>
+            <jvmarg value="-Ddb.url=${DB_URL}"/>
             <jvmarg value="-Ddb.user=${db.user}"/>
             <jvmarg value="-Ddb.pwd=${db.pwd}"/>
             <jvmarg value="-Ddb.platform=${db.platform}"/>
@@ -235,7 +246,7 @@ CREATE OR REPLACE TYPE MY_GEOMETRY AS OBJECT (id NUMBER, geom MDSYS.SDO_GEOMETRY
             <jvmarg value="${test.security-manager.policy}"/>
             <arg value="pfile=../test.properties" />
             <arg value="testmodel=${TEST_CLASS}" />
-            <arg value="regressionlog=../${report.dir}/test.log" />
+            <arg value="regressionlog=../${report.dir}/${TEST_CLASS}-test.log" />
             <arg value="saveresults=true" />
             <classpath>
                 <path refid="run.classpath"/>

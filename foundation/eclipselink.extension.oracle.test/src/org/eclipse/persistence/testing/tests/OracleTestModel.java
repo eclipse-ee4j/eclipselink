@@ -14,7 +14,6 @@ package org.eclipse.persistence.testing.tests;
 
 import java.util.*;
 import org.eclipse.persistence.internal.helper.Helper;
-import org.eclipse.persistence.sessions.DatabaseLogin;
 import org.eclipse.persistence.testing.framework.*;
 
 public class OracleTestModel extends TestModel {
@@ -23,6 +22,7 @@ public class OracleTestModel extends TestModel {
     public OracleTestModel() {
         setName("OracleTestModel");
         setDescription("This model runs all of the Oracle specific tests.");
+        addTests();
     }
 
     public void addTests() {
@@ -53,10 +53,6 @@ public class OracleTestModel extends TestModel {
         tests.add("org.eclipse.persistence.testing.tests.flashback.FlashbackTestModel");
         tests.add("org.eclipse.persistence.testing.tests.returning.ReturningPolicyTestModel");
 
-        // Requires specific oracle database/driver (oci).
-        tests.add("org.eclipse.persistence.testing.tests.xdb.XDBTestModel");
-        tests.add("org.eclipse.persistence.testing.tests.xdb.XDBTestModelMWIntegration");
-
         for (int index = 0; index < tests.size(); ++index) {
             try {
                 addTest((TestModel)Class.forName((String)tests.get(index)).newInstance());
@@ -84,7 +80,6 @@ public class OracleTestModel extends TestModel {
     
     public static OracleTestModel buildOracleTestModel() {
         OracleTestModel model = new OracleTestModel();
-        model.addTests();
         return model;
     }
 }

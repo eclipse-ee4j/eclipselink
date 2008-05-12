@@ -290,6 +290,7 @@
     <!-- Cleans all build generated files. -->
     <target name="clean" description="Clean the build">
         <ant antfile="${eclipselink.core}/build.xml" target="clean"/>
+        <ant antfile="${eclipselink.extension.oracle}/build.xml" target="clean"/>
         <ant antfile="${eclipselink.jpa}/build.xml" target="clean"/>
         <ant antfile="${eclipselink.util.rename.utility}/build.xml" target="clean"/>
         <ant antfile="${eclipselink.moxy}/build.xml" target="clean"/>

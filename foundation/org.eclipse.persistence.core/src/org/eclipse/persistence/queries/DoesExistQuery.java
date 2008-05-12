@@ -16,6 +16,7 @@ import java.util.*;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.exceptions.*;
 import org.eclipse.persistence.internal.helper.*;
+import org.eclipse.persistence.internal.identitymaps.CacheKey;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.internal.sessions.UnitOfWorkImpl;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
@@ -46,13 +47,19 @@ public class DoesExistQuery extends DatabaseQuery {
     /** Flag to determine existence check policy. */
     protected int existencePolicy;
     
-    /** Flag to determine cache invalidation policy support.  This overrides
-     *  checkcache existence settings if the object is set to be invalid or if 
-     *  the cache cannot be trusted
-     *  */
-    protected boolean checkDatabaseIfInvalid;//default to true, allows users to override
-    /** Flag to get checkearlyreturn to override assume(non)existence and database checks with a cache check */
-    public boolean checkCacheFirst;//default to false, set in uow to true
+    /**
+     * Flag to determine cache invalidation policy support.  This overrides
+     * the CheckCache existence setting if the object is invalid or if the
+     * cache cannot be trusted because a flush or DML has occurred.
+     * The default is true.
+     */
+    protected boolean checkDatabaseIfInvalid; //default to true, allows users to override
+    
+    /**
+     * Flag to determine if the cache should be check first in addition to another option.
+     * The default is true;
+     */
+    public boolean checkCacheFirst; //default to true
 
     /**
      * PUBLIC:
@@ -62,7 +69,7 @@ public class DoesExistQuery extends DatabaseQuery {
     public DoesExistQuery() {
         this.existencePolicy = CheckCache;
         this.checkDatabaseIfInvalid = true;
-        this.checkCacheFirst = false;
+        this.checkCacheFirst = true;
     }
 
     /**
@@ -130,73 +137,63 @@ public class DoesExistQuery extends DatabaseQuery {
         // For bug 3136413/2610803 building the selection criteria from an EJBQL string or
         // an example object is done just in time.
         buildSelectionCriteria(session);
-        // Return false on null since it can't exist.  Little more done incase PK not set in the query
+        // Return false on null since it can't exist.  Little more done in case PK not set in the query
         if  (object == null){ 
             return Boolean.FALSE;
         }
         ClassDescriptor descriptor = session.getDescriptor(object.getClass());
         if (primaryKey == null) {
             primaryKey = this.getPrimaryKey();
-            if ( primaryKey == null ){
+            if (primaryKey == null) {
                 primaryKey = descriptor.getObjectBuilder().extractPrimaryKeyFromObject(object, session);
             }
                 
         }
-        if ((primaryKey == null)|| (primaryKey.contains(null)) ) {
+        if ((primaryKey == null) || (primaryKey.contains(null))) {
             return Boolean.FALSE;
         }
         
-        //need to do the cache check first if flag set or if we should check the cache only for existence
-        if (shouldCheckCacheForDoesExist() ||(checkCacheFirst)) {
+        // Need to do the cache check first if flag set or if we should check the cache only for existence.
+        if (shouldCheckCacheForDoesExist() ||(this.checkCacheFirst)) {
         
-            //if this is a UOW and modification queries have been executed, the cache cannot be trusted
-            if ( checkDatabaseIfInvalid && (session.isUnitOfWork() && 
-                    ((UnitOfWorkImpl)session).shouldReadFromDB() ) ){
+            // If this is a UOW and modification queries have been executed, the cache cannot be trusted.
+            if (this.checkDatabaseIfInvalid && (session.isUnitOfWork() &&  ((UnitOfWorkImpl)session).shouldReadFromDB())) {
                 return null;
             }
                 
-            org.eclipse.persistence.internal.identitymaps.CacheKey cacheKey;
+            CacheKey cacheKey;
             Class objectClass = object.getClass();
             AbstractSession tempSession = session;
             while (tempSession.isUnitOfWork()){ //could be nested lets check all UOWs
-                cacheKey = tempSession.getIdentityMapAccessorInstance().getCacheKeyForObject(primaryKey,objectClass, descriptor);
-                if (cacheKey!=null) {
-                    //if in the UOW cache it can't be invalid
+                cacheKey = tempSession.getIdentityMapAccessorInstance().getCacheKeyForObject(primaryKey, objectClass, descriptor);
+                if (cacheKey != null) {
+                    // If in the UOW cache it can't be invalid.
                     return Boolean.TRUE;
                 }
                 tempSession = ((UnitOfWorkImpl)tempSession).getParent();
             }
-            //did not find it registered in UOW so check main cache and check for invalidation
+            // Did not find it registered in UOW so check main cache and check for invalidation.
             cacheKey = tempSession.getIdentityMapAccessorInstance().getCacheKeyForObject(primaryKey,objectClass, descriptor);
                 
-            if ((cacheKey !=null)){
-                //assume that if there is a cachekey, object exists
-                boolean invalid;
-                if ( checkDatabaseIfInvalid ){
-                    long currentTimeInMillis = System.currentTimeMillis();
-                    invalid = session.getDescriptor(objectClass).getCacheInvalidationPolicy().isInvalidated(cacheKey, currentTimeInMillis);
-                }else {
-                    invalid = false;
+            if ((cacheKey != null)) {
+                // Assume that if there is a cachekey, object exists.
+                if (this.checkDatabaseIfInvalid) {
+                    checkDescriptor(object, session);
+                    if (getDescriptor().getCacheInvalidationPolicy().isInvalidated(cacheKey, System.currentTimeMillis())) {
+                        return null;
+                    }
                 }
                 
-                if (!invalid){
-                    Object objectFromCache = cacheKey.getObject();
-                    if ((session instanceof org.eclipse.persistence.internal.jpa.RepeatableWriteUnitOfWork)&&
-                            (((org.eclipse.persistence.internal.jpa.RepeatableWriteUnitOfWork)session).getUnregisteredDeletedCloneForOriginal(objectFromCache)!=null)){
-                  //session.isUnitOfWork() && objectFromCache!=null && ((UnitOfWorkImpl)session).isObjectDeleted(objectFromCache)){
-                        if(shouldCheckCacheForDoesExist()){
-                            return Boolean.FALSE;
-                        }
-                    }else {
-                        return Boolean.TRUE;
+                Object objectFromCache = cacheKey.getObject();
+                if ((session.isUnitOfWork()) && ((UnitOfWorkImpl)session).wasDeleted(objectFromCache)) {
+                    if (shouldCheckCacheForDoesExist()) {
+                        return Boolean.FALSE;
                     }
-                    
-                }else {
-                    //We know it is invalid, and checkDatabaseIfInvalid policy so skip to the database
-                    return null;
+                } else {
+                    return Boolean.TRUE;
                 }
-            }else if(shouldCheckCacheForDoesExist()){
-                //We know its not in cache, and a checkcache policy so return false
+            } else if (shouldCheckCacheForDoesExist()) {
+                // We know its not in cache, and a checkcache policy so return false.
                 return Boolean.FALSE;
             }
         }
@@ -297,12 +294,9 @@ public class DoesExistQuery extends DatabaseQuery {
      * Prepare the receiver for execution in a session.
      */
     protected void prepare() throws QueryException {
-        if (getDescriptor() == null) {
-            //Bug#3947714  Pass the object instead of class in case object is proxy            
-            setDescriptor(getSession().getDescriptor(getObject()));
-        }
 
         if (getObject() != null) {// Prepare can be called without the object set yet.
+            checkDescriptor(getObject(), getSession());
             setObject(getDescriptor().getObjectBuilder().unwrapObject(getObject(), getSession()));
         }
 
@@ -311,7 +305,26 @@ public class DoesExistQuery extends DatabaseQuery {
         // It will only get to prepare if check database if required.
         getQueryMechanism().prepareDoesExist(getDoesExistField());
     }
+    
+    /**
+     * INTERNAL:
+     * Ensure that the descriptor has been set.
+     */
+    public void checkDescriptor(Object object, AbstractSession session) throws QueryException {
+        if (getDescriptor() == null) {
+            if (object == null) {
+                throw QueryException.objectToModifyNotSpecified(this);
+            }
 
+            //Bug#3947714  Pass the object instead of class in case object is proxy            
+            ClassDescriptor referenceDescriptor = session.getDescriptor(object);
+            if (referenceDescriptor == null) {
+                throw QueryException.descriptorIsMissing(object.getClass(), this);
+            }
+            setDescriptor(referenceDescriptor);
+        }
+    }
+    
     /**
      * INTERNAL:
      * Prepare the receiver for execution in a session.

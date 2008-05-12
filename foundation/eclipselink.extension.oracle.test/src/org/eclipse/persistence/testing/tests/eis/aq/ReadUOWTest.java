@@ -108,8 +108,10 @@ public class ReadUOWTest extends TestCase {
         };
         thread.start();
 
-        while (!received) {
+        int count = 0;
+        while (!received && count < 1000) {
             try {
+                count++;
                 Thread.sleep(10);
             } catch (Exception ignore) {
             }

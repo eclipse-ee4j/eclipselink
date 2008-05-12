@@ -23,7 +23,10 @@ import static org.eclipse.persistence.annotations.ExistenceType.CHECK_CACHE;
 
 /** 
  * The ExistenceChecking annotation is used to specify the type of checking 
- * EclipseLink should use when updating entities.
+ * EclipseLink should use when determining if an entity is new or existing.
+ * It is specifically used on a merge() operation to determine if only the cache
+ * should be used to determine if an object exists, or the object should
+ * be read (from the database or cache).  By default the object is read.
  * 
  * An existence-checking specification is supported on an Entity or 
  * MappedSuperclass annotation.

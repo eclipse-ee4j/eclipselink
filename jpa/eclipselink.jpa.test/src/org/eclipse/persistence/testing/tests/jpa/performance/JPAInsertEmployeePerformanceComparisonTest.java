@@ -32,7 +32,7 @@ public class JPAInsertEmployeePerformanceComparisonTest extends PerformanceRegre
     public void reset() {
         EntityManager manager = createEntityManager();
         manager.getTransaction().begin();
-        manager.createQuery("Delete from Phone where number = '9991111'").executeUpdate();
+        manager.createQuery("Delete from PhoneNumber where number = '9991111'").executeUpdate();
         manager.createQuery("Delete from Employee where firstName = 'NewGuy'").executeUpdate();
         manager.createQuery("Delete from Address where street = 'Hasting Perf'").executeUpdate();
         manager.getTransaction().commit();

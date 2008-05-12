@@ -179,6 +179,7 @@ public class DbChangeNotificationTest extends TestCase {
     }
 
     protected void verify() throws Exception {
+        Thread.sleep(1000);
         // 1 ********************************************************
         // Original session: Begin transaction, update SmallProjects, rollback transaction
         // No change notification should be sent

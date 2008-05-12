@@ -22,6 +22,7 @@ import org.eclipse.persistence.internal.localization.ExceptionLocalization;
 import org.eclipse.persistence.platform.server.ServerPlatform;
 import org.eclipse.persistence.queries.*;
 import org.eclipse.persistence.internal.identitymaps.*;
+import org.eclipse.persistence.internal.jpa.PropertiesHandler;
 import org.eclipse.persistence.internal.databaseaccess.*;
 import org.eclipse.persistence.expressions.*;
 import org.eclipse.persistence.exceptions.*;
@@ -31,6 +32,7 @@ import org.eclipse.persistence.sessions.factories.ReferenceMode;
 import org.eclipse.persistence.logging.SessionLog;
 import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.internal.localization.LoggingLocalization;
+import org.eclipse.persistence.jpa.config.PersistenceUnitProperties;
 import org.eclipse.persistence.sessions.SessionProfiler;
 import org.eclipse.persistence.descriptors.changetracking.AttributeChangeTrackingPolicy;
 import org.eclipse.persistence.descriptors.changetracking.ObjectChangePolicy;
@@ -228,6 +230,9 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
     /** PERF: Cache isNestedUnitOfWork check. */
     protected boolean isNestedUnitOfWork;
     
+    /** Determine if does-exist should be performed on persist. */
+    protected Boolean shouldValidateExistence;
+
     /** This stored the reference mode for this UOW.  If the reference mode is
      * weak then this unit of work will retain only weak references to non new, 
      * non-deleted objects allowing for garbage collection.  If ObjectChangeTracking
@@ -603,23 +608,25 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
 
     /**
      * INTERNAL:
+     * Return if the object is an existing object (but has not been registered),
+     * or a new object (that has not be persisted).
      */
     public boolean checkForUnregisteredExistingObject(Object object) {
-        ClassDescriptor descriptor = getDescriptor(object.getClass());
-        Vector primaryKey = descriptor.getObjectBuilder().extractPrimaryKeyFromObject(object, this);
-
-        DoesExistQuery existQuery = descriptor.getQueryManager().getDoesExistQuery();
-
-        existQuery = (DoesExistQuery)existQuery.clone();
-        existQuery.setObject(object);
-        existQuery.setPrimaryKey(primaryKey);
-        existQuery.setDescriptor(descriptor);
-        existQuery.setCheckCacheFirst(true);
-
-        if (((Boolean)executeQuery(existQuery)).booleanValue()) {
-            return true;
+        // Since this just results in an error, assume it exists unless validating.
+        if (shouldValidateExistence()) {
+            ClassDescriptor descriptor = getDescriptor(object.getClass());
+            Vector primaryKey = descriptor.getObjectBuilder().extractPrimaryKeyFromObject(object, this);
+            DoesExistQuery existQuery = descriptor.getQueryManager().getDoesExistQuery();
+    
+            existQuery = (DoesExistQuery)existQuery.clone();
+            existQuery.setObject(object);
+            existQuery.setPrimaryKey(primaryKey);
+            existQuery.setDescriptor(descriptor);
+            existQuery.setIsExecutionClone(true);
+            
+            return ((Boolean)executeQuery(existQuery)).booleanValue();
         } else {
-            return false;
+            return true;
         }
     }
 
@@ -637,13 +644,18 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
         }
         DoesExistQuery existQuery = descriptor.getQueryManager().getDoesExistQuery();
 
-        existQuery = (DoesExistQuery)existQuery.clone();
-        existQuery.setObject(object);
-        existQuery.setPrimaryKey(primaryKey);
-        existQuery.setDescriptor(descriptor);
-        existQuery.setCheckCacheFirst(true);
-
-        if (((Boolean)executeQuery(existQuery)).booleanValue()) {
+        // PERF: Avoid cost of query execution as normally can determine from checkEarlyReturn.
+        Boolean exists = (Boolean)existQuery.checkEarlyReturn(object, primaryKey, this, null);
+        if (exists == null) {
+            // Need to execute database query.
+            existQuery = (DoesExistQuery)existQuery.clone();
+            existQuery.setObject(object);
+            existQuery.setPrimaryKey(primaryKey);
+            existQuery.setDescriptor(descriptor);
+            existQuery.setIsExecutionClone(true);
+            exists = ((Boolean)executeQuery(existQuery)).booleanValue();
+        }
+        if (exists) {
             //we know if it exists or not, now find or register it
             Object objectFromCache = getIdentityMapAccessorInstance().getFromIdentityMap(primaryKey, object.getClass(), descriptor);
     
@@ -3197,7 +3209,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
 
     /**
      * INTERNAL:
-     * This method will perform a delete operation on the provided objects pre-determing
+     * This method will perform a delete operation on the provided objects pre-determining
      * the objects that will be deleted by a commit of the UnitOfWork including privately
      * owned objects.  It does not execute a query for the deletion of these objects as the
      * normal deleteobject operation does.  Mainly implemented to provide EJB 3.0 deleteObject
@@ -3228,6 +3240,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
                 existQuery.setObject(toBeDeleted);
                 existQuery.setPrimaryKey(primaryKey);
                 existQuery.setDescriptor(descriptor);
+                existQuery.setIsExecutionClone(true);
         
                 existQuery.setCheckCacheFirst(true);
                 if (((Boolean)executeQuery(existQuery)).booleanValue()){
@@ -3813,6 +3826,14 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
 
     /**
      * INTERNAL:
+     * Return if the object was deleted previously (in a flush).
+     */
+    public boolean wasDeleted(Object original) {
+        return false;
+    }
+    
+    /**
+     * INTERNAL:
      * Called only by registerNewObjectForPersist method,
      * and only if newObject is not already registered.
      * Could be overridden in subclasses.
@@ -3821,16 +3842,16 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
         // Ensure that the registered object is not detached.
         newObject.getClass();
 
-        DoesExistQuery existQuery = descriptor.getQueryManager().getDoesExistQuery();
-        existQuery = (DoesExistQuery)existQuery.clone();
-        existQuery.setObject(newObject);
-        existQuery.setDescriptor(descriptor);
-        // only check the cache as we can wait until commit for the unique 
-        // constraint error to be thrown.  This does ignore user's settings
-        // on descriptor but calling persist() tells us the object is new.
-        existQuery.checkCacheForDoesExist(); 
-        if (((Boolean)executeQuery(existQuery)).booleanValue()) {
-            throw ValidationException.cannotPersistExistingObject(newObject, this);
+        // Only check existence if validating, as only results in an earlier error.
+        if (shouldValidateExistence()) {
+            DoesExistQuery existQuery = descriptor.getQueryManager().getDoesExistQuery();
+            existQuery = (DoesExistQuery)existQuery.clone();
+            existQuery.setObject(newObject);
+            existQuery.setDescriptor(descriptor);
+            existQuery.setIsExecutionClone(true);
+            if (((Boolean)executeQuery(existQuery)).booleanValue()) {
+                throw ValidationException.cannotPersistExistingObject(newObject, this);
+            }
         }
         
         logDebugMessage(newObject, "register_new_for_persist");
@@ -4619,6 +4640,18 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
         return shouldNewObjectsBeCached;
     }
 
+    /**
+     * INTERNAL:
+     * Determine if does-exist should be performed on persist.
+     */
+    protected boolean shouldValidateExistence() {
+        if (this.shouldValidateExistence == null) {
+            String value = PropertiesHandler.getSessionPropertyValueLogDebug(PersistenceUnitProperties.VALIDATE_EXISTENCE, this);
+            this.shouldValidateExistence = ((value != null) && value.equalsIgnoreCase("true"));
+        }
+        return shouldValidateExistence;
+    }
+    
     /**
      * ADVANCED:
      * By default all objects are inserted and updated in the database before

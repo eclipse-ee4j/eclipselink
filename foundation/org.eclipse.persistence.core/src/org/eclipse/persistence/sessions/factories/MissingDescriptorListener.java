@@ -59,7 +59,7 @@ public class MissingDescriptorListener extends SessionEventAdapter {
                 }else{
                     javaClass = PrivilegedAccessHelper.getClassForName(XML_INTERACTION_CLASS);
                 }
-                session.getDescriptor(Call.class).getInheritancePolicy().addClassIndicator(javaClass, "toplink:xml-interaction");
+                session.getDescriptor(Call.class).getInheritancePolicy().addClassIndicator(javaClass, "eclipselink:xml-interaction");
             } catch (Exception classLoadFailure) {
                 throw ValidationException.fatalErrorOccurred(classLoadFailure);
             }

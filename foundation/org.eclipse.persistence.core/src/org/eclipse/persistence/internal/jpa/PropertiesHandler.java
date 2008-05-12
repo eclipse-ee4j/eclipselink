@@ -183,6 +183,7 @@ public class PropertiesHandler {
             addProp(new DescriptorCustomizerProp());
             addProp(new BatchWritingProp());
             addProp(new FlushClearCacheProp());
+            addProp(new ValidateExistenceProp());
         }
         
         Prop(String name) {
@@ -559,6 +560,16 @@ public class PropertiesHandler {
         }
     }
 
+    protected static class ValidateExistenceProp extends Prop {
+        ValidateExistenceProp() {
+            super(PersistenceUnitProperties.VALIDATE_EXISTENCE, "false");
+            valueArray = new Object[] {
+                "true",
+                "false"
+            };
+        }  
+    }
+    
     protected static class CacheSharedProp extends Prop {
         CacheSharedProp() {
             super(PersistenceUnitProperties.CACHE_SHARED_, "false");

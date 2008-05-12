@@ -37,6 +37,7 @@ public class PersistenceUnitProperties {
     public static final String JTA_DATASOURCE = "javax.persistence.jtaDataSource";
     /** Standard JPA non-JTA DataSource name. */
     public static final String NON_JTA_DATASOURCE = "javax.persistence.nonJtaDataSource";
+    
     /** JDBC DriverManager class name. */
     public static final String JDBC_DRIVER = "eclipselink.jdbc.driver";
     /** JDBC DriverManager driver URL. */
@@ -289,19 +290,23 @@ public class PersistenceUnitProperties {
      * Specify the classloader to use to create an EntityManagerFactory in the
      * property map passed to Persistence.createEntityManagerFactory.
      */
-	public static final String CLASSLOADER = "eclipselink.classloader";
-
+    public static final String CLASSLOADER = "eclipselink.classloader";
     
-    /** INTERNAL: The following properties will not be displayed through logging but instead have an alternate value shown in the log. */
-    public static final Map<String, String> PROPERTY_LOG_OVERRIDES = new HashMap<String, String>(1);
-
-    static {
-        PROPERTY_LOG_OVERRIDES.put(JDBC_PASSWORD, "xxxxxx");
-    }
-    
+    /**
+     * Configures if the first exception that occurs during deployment should be thrown,
+     * or if all exceptions should be caught and summary thrown at end of deployment attempt.
+     * "true" by default.
+     */
     public static final String TOPLINK_ORM_THROW_EXCEPTIONS = "eclipselink.orm.throw.exceptions";
+    
+    /** Validate deployment, but do not connect. */
     public static final String TOPLINK_VALIDATION_ONLY_PROPERTY = "eclipselink.validation-only";
 
+    /**
+     * Allows the database schema to be generated on deployment.
+     * Valid values, CREATE_ONLY, DROP_AND_CREATE, NONE ("create-tables", "drop-and-create-tables", "none").
+     * Default is NONE.
+     */
     public static final String DDL_GENERATION   = "eclipselink.ddl-generation";
     
     public static final String CREATE_ONLY      = "create-tables";
@@ -318,26 +323,47 @@ public class PersistenceUnitProperties {
     public static final String DEFAULT_DROP_JDBC_FILE_NAME = "dropDDL.jdbc";
     public static final String JAVASE_DB_INTERACTION = "INTERACT_WITH_DB";    
     
+    /**
+     * Configures if database schema should be generated on the database, to a file, or both.
+     * Valid values, DDL_SQL_SCRIPT_GENERATION, DDL_DATABASE_GENERATION, DDL_BOTH_GENERATION ("sql-script", "database", "both")
+     * DDL_GENERATION must also be set, for this to have an effect.
+     * Default is DDL_DATABASE_GENERATION.
+     */
     public static final String DDL_GENERATION_MODE = "eclipselink.ddl-generation.output-mode";
     public static final String DDL_SQL_SCRIPT_GENERATION = "sql-script";
     public static final String DDL_DATABASE_GENERATION = "database";
     public static final String DDL_BOTH_GENERATION = "both";
-    // This is the default for now to ensure we still play nicely with Glassfish.
     public static final String DEFAULT_DDL_GENERATION_MODE = DDL_DATABASE_GENERATION;
     
     public static final String DEFAULT_PERSISTENCE_CONTEXT_REFERENCE_MODE = "eclipselink.persistence-context.reference-mode.default";
     
-    
-    /** INTERNAL: Return the overridden log string. */
-    public static final String getOverriddenLogStringForProperty(String propertyName){
-        return PROPERTY_LOG_OVERRIDES.get(propertyName);
-    }
+    /**
+     * Configures if the existence of an object should be verified on persist(),
+     * otherwise it will assume to be new if not in the persistence context.
+     * If checked and existing and not in the persistence context and error will be thrown.
+     * "false" by default.
+     */    
+    public static final String VALIDATE_EXISTENCE = "eclipselink.validate-existence";
     
     /**
      * The type of performance profiler. Valid values are names of profiler defined in ProfilerType,
      * default value is NoProfiler.
+     * @see ProfilerType
      */
     public static final String PROFILER = "eclipselink.profiler";
+
+    /** INTERNAL: The following properties will not be displayed through logging but instead have an alternate value shown in the log. */
+    public static final Map<String, String> PROPERTY_LOG_OVERRIDES = new HashMap<String, String>(1);
     
+    static {
+        PROPERTY_LOG_OVERRIDES.put(JDBC_PASSWORD, "xxxxxx");
+    }
+    
+    /**
+     * INTERNAL: Return the overridden log string.
+     */
+    public static final String getOverriddenLogStringForProperty(String propertyName){
+        return PROPERTY_LOG_OVERRIDES.get(propertyName);
+    }    
 
 }
