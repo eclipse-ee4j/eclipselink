@@ -148,5 +148,4 @@ Export-Package: org.eclipse.persistence,
  org.eclipse.persistence.transaction.was,
  org.eclipse.persistence.transaction.wls,
  xsd
-Bundle-ClassPath: .,
- META-INF/
+Bundle-ClassPath: .

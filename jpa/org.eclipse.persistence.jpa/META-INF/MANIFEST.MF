@@ -37,5 +37,4 @@ Export-Package: org.eclipse.persistence.internal.jpa,
  org.eclipse.persistence.queries,
  org.eclipse.persistence.tools.weaving.jpa
 Bundle-Activator: org.eclipse.persistence.jpa.osgi.Activator
-Bundle-ClassPath: .,
- META-INF/
+Bundle-ClassPath: .

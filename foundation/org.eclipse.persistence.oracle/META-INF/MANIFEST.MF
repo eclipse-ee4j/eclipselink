@@ -14,5 +14,4 @@ Export-Package: org.eclipse.persistence.eis.adapters.aq,
  org.eclipse.persistence.sessions.factories
 Require-Bundle: org.eclipse.persistence.core;visibility:=reexport,
  javax.resource
-Bundle-ClassPath: .,
- META-INF/
+Bundle-ClassPath: .
