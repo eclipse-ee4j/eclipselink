@@ -7,3 +7,5 @@ Export-Package: org.eclipse.persistence.internal.libraries.antlr.runtime,
  org.eclipse.persistence.internal.libraries.antlr.runtime.debug,
  org.eclipse.persistence.internal.libraries.antlr.runtime.misc,
  org.eclipse.persistence.internal.libraries.antlr.runtime.tree
+Bundle-ClassPath: META-INF/,
+ .

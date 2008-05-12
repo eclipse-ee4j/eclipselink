@@ -11,3 +11,5 @@ Export-Package: org.eclipse.persistence.internal.libraries.asm,
  org.eclipse.persistence.internal.libraries.asm.util,
  org.eclipse.persistence.internal.libraries.asm.util.attrs,
  org.eclipse.persistence.internal.libraries.asm.xml
+Bundle-ClassPath: META-INF/,
+ .

@@ -12,4 +12,7 @@ Export-Package: org.eclipse.persistence.eis.adapters.aq,
  org.eclipse.persistence.platform.database.oracle.converters,
  org.eclipse.persistence.platform.xml.xdk,
  org.eclipse.persistence.sessions.factories
-Require-Bundle: org.eclipse.persistence.core;visibility:=reexport
+Require-Bundle: org.eclipse.persistence.core;visibility:=reexport,
+ javax.resource
+Bundle-ClassPath: .,
+ META-INF/

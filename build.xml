@@ -138,9 +138,30 @@
     </target>
 
 
+    <target name="clean.eclipselink.bundles">
+        <delete>
+            <fileset dir="${eclipselink.foundation.base}/${plugins.dir}" includes="org.eclipse.persistence*.jar"/>
+        </delete>
+        <delete>
+            <fileset dir="${eclipselink.jpa.base}/${plugins.dir}" includes="${eclipselink.jpa.jar}_*.jar"/>
+        </delete>
+        <delete>
+            <fileset dir="${eclipselink.moxy.base}/${plugins.dir}" includes="${eclipselink.moxy.jar}_*.jar"/>
+        </delete>
+         <delete>
+            <fileset dir="${eclipselink.sdo.base}/${plugins.dir}" includes="${eclipselink.sdo.jar}_*.jar"/>
+        </delete>
+        <delete>
+            <fileset dir="${eclipselink.plugins}" includes="${eclipselink.asm.jar}_*.jar"/>
+        </delete>
+        <delete>
+            <fileset dir="${eclipselink.plugins}" includes="${eclipselink.antlr.jar}_*.jar"/>
+        </delete>
+    </target>
+
     <!-- Builds the eclipselink bundles. -->
 
-    <target name="build.eclipselink.bundles" depends="create.build.dir" description="build eclipselink bundles">
+    <target name="build.eclipselink.bundles" depends="create.build.dir, clean.eclipselink.bundles" description="build eclipselink bundles">
         <jar jarfile="${eclipselink.foundation.base}/${plugins.dir}/${eclipselink.core.jar}_${installer_id}.jar" manifest="${eclipselink.core}/META-INF/MANIFEST.MF">
             <fileset dir="${eclipselink.core}/${classes.dir}">
                 <include name="org/eclipse/persistence/**/*.class"/>

@@ -3,16 +3,16 @@ Bundle-ManifestVersion: 2
 Bundle-Name: Core
 Bundle-SymbolicName: org.eclipse.persistence.core
 Bundle-Version: 0.1
-Require-Bundle: javax.activation;resolution:=optional;visibility:=reexport,
- javax.mail;resolution:=optional;visibility:=reexport,
+Require-Bundle: javax.activation;resolution:=optional,
+ javax.mail;resolution:=optional,
  org.eclipse.persistence.antlr;resolution:=optional,
- org.eclipse.persistence.asm;resolution:=optional;visibility:=reexport,
- javax.ejb;resolution:=optional;visibility:=reexport,
- javax.jms;resolution:=optional;visibility:=reexport,
- javax.resource;resolution:=optional;visibility:=reexport,
- javax.transaction;resolution:=optional;visibility:=reexport,
- javax.xml.stream;resolution:=optional;visibility:=reexport,
- javax.persistence;bundle-version="1.99.0";visibility:=reexport
+ org.eclipse.persistence.asm;resolution:=optional,
+ javax.ejb;resolution:=optional,
+ javax.jms;resolution:=optional,
+ javax.resource;resolution:=optional,
+ javax.transaction;resolution:=optional,
+ javax.xml.stream;resolution:=optional,
+ javax.persistence
 Export-Package: org.eclipse.persistence,
  org.eclipse.persistence.annotations,
  org.eclipse.persistence.descriptors,
@@ -148,5 +148,5 @@ Export-Package: org.eclipse.persistence,
  org.eclipse.persistence.transaction.was,
  org.eclipse.persistence.transaction.wls,
  xsd
-Bundle-ClassPath: META-INF/,
- src/
+Bundle-ClassPath: .,
+ META-INF/

@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: %pluginName
 Bundle-SymbolicName: org.apache.ant
-Bundle-Version: 1.7.0.qualifier
+Bundle-Version: 1.7.0
 Bundle-ClassPath: lib/ant.jar,
  lib/ant-antlr.jar,
  lib/ant-apache-bcel.jar,

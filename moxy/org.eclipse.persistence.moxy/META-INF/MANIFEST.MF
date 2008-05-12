@@ -10,4 +10,11 @@ Export-Package: org.eclipse.persistence.internal.jaxb,
  org.eclipse.persistence.jaxb.javamodel,
  org.eclipse.persistence.jaxb.javamodel.reflection
 Require-Bundle: org.eclipse.persistence.core;visibility:=reexport,
- javax.xml.bind
+ javax.xml.bind,
+ javax.activation,
+ javax.mail,
+ javax.xml.soap,
+ javax.xml.stream,
+ org.eclipse.persistence.asm
+Bundle-ClassPath: .,
+ META-INF/
