@@ -68,4 +68,13 @@ public class XDBTestModel extends TestModel {
             }
         }
     }
+
+    /**
+     * Return the JUnit suite to allow JUnit runner to find it.
+     */
+    public static junit.framework.TestSuite suite() {
+        XDBTestModel model = new XDBTestModel();
+        model.addTests();
+        return model;
+    }
 }

@@ -133,6 +133,7 @@
             <param name="TEST_CLASS" value="${test.class}"/>
             <param name="DB_URL" value="${db.url}"/>
         </antcall>
+        <antcall target="generate.report" inheritRefs="true"/>
     </target>
 
     <!-- Runs OracleTestModel. -->
@@ -161,6 +162,7 @@ CREATE OR REPLACE TYPE MY_GEOMETRY AS OBJECT (id NUMBER, geom MDSYS.SDO_GEOMETRY
             <param name="TEST_CLASS" value="org.eclipse.persistence.testing.tests.xdb.XDBTestModelMWIntegration"/>
             <param name="DB_URL" value="${db.oci.url}"/>
         </antcall>
+        <antcall target="generate.report" inheritRefs="true"/>
     </target>
 
     <!-- Prompt runner test target, runs test.class from test.properties (default is OracleTestModel). -->
@@ -217,13 +219,15 @@ CREATE OR REPLACE TYPE MY_GEOMETRY AS OBJECT (id NUMBER, geom MDSYS.SDO_GEOMETRY
             <test name="${TEST_CLASS}" haltonfailure="no" outfile="${eclipselink.extension.oracle.test}/${report.dir}/${TEST_CLASS}-test-results">
             </test>
         </junit>
+    </target>
+
+    <target name="generate.report">
         <junitreport todir="${eclipselink.extension.oracle.test}/${report.dir}">
             <fileset dir="${eclipselink.extension.oracle.test}/${report.dir}">
                 <include name="*test-results.xml"/>
             </fileset>
             <report format="noframes" todir="${eclipselink.extension.oracle.test}/${report.dir}"/>
         </junitreport>
-        <fail message="Some of the junit tests failed.  See the ${report.dir}/junit-noframes.html file for details." if="junit.failed"/>
     </target>
 
     <!-- Runs the test using the PromptTestRunner -->

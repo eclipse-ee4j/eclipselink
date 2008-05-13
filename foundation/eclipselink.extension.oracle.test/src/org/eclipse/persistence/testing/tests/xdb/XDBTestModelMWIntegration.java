@@ -67,4 +67,13 @@ public class XDBTestModelMWIntegration extends TestModel {
             }
         }
     }
+
+    /**
+     * Return the JUnit suite to allow JUnit runner to find it.
+     */
+    public static junit.framework.TestSuite suite() {
+        XDBTestModelMWIntegration model = new XDBTestModelMWIntegration();
+        model.addTests();
+        return model;
+    }
 }
