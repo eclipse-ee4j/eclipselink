@@ -1,10 +1,24 @@
+/*******************************************************************************
+ * Copyright (c) 1998, 2008 Oracle. All rights reserved.
+ * This program and the accompanying materials are made available under the 
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
+ * which accompanies this distribution. 
+ * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
+ * and the Eclipse Distribution License is available at 
+ * http://www.eclipse.org/org/documents/edl-v10.php.
+ *
+ * Contributors:
+ *     Oracle - initial API and implementation from Oracle TopLink
+ ******************************************************************************/  
 package org.eclipse.persistence.internal.xr;
 
+// javase imports
 import java.net.URL;
 import java.security.AccessController;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+// EclipseLink imports
 import org.eclipse.persistence.exceptions.SessionLoaderException;
 import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
@@ -21,7 +35,6 @@ import org.eclipse.persistence.platform.xml.XMLPlatformFactory;
 import org.eclipse.persistence.sessions.Project;
 import org.eclipse.persistence.sessions.factories.EclipseLinkObjectPersistenceRuntimeXMLProject;
 import org.eclipse.persistence.sessions.factories.MissingDescriptorListener;
-import org.eclipse.persistence.sessions.factories.XMLProjectReader;
 import static org.eclipse.persistence.internal.xr.Util.DBWS_OR_XML;
 import static org.eclipse.persistence.internal.xr.Util.DBWS_OX_XML;
 import static org.eclipse.persistence.internal.xr.Util.META_INF_PATHS;
@@ -94,30 +107,20 @@ public class XRSessionsFactory extends SessionsFactory {
 	                context.getSession(Project.class).getEventManager().addListener(
 	                	new MissingDescriptorListener());
 	                XMLUnmarshaller unmarshaller = context.createUnmarshaller();
-	                try {
-						project = (Project)unmarshaller.unmarshal(url);
-					}
-	                catch (RuntimeException e) {
-						e.printStackTrace();
-					}
+	                project = (Project)unmarshaller.unmarshal(url);
             	}
             }
             catch (ValidationException validationException) {
                 if (validationException.getErrorCode() == ValidationException.PROJECT_XML_NOT_FOUND) {
-                    try {
-                        project = XMLProjectReader.read(projectString);
-                    } catch (Exception e) {
-                        throw SessionLoaderException.failedToLoadProjectXml(projectString,
-                        	validationException);
-                    }
-                } else {
                     throw SessionLoaderException.failedToLoadProjectXml(projectString,
                     	validationException);
                 }
+                else {
+                	throw SessionLoaderException. failedToParseXML(projectString,
+                			validationException);
+                }
             }
         }
-
         return project;
 	}
-
 }
