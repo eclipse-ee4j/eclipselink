@@ -34,14 +34,14 @@ public class ExternalTransactionControllerInitializationTest extends AutoVerifyT
     }
 
     public static DatabaseLogin getLogin1() {
-        //Oracle 10.2
+        //Oracle 11.1
         DatabaseLogin login = new DatabaseLogin();
         try {
             login.usePlatform(OracleDBPlatformHelper.getInstance().getOracle9Platform());
         } catch (Exception e) {
         }
         login.useOracleThinJDBCDriver();
-        login.setDatabaseURL("tlsvrdb3.ca.oracle.com:1521:toplink");
+        login.setDatabaseURL("tlsvrdb7.ca.oracle.com:1521:toplink");
         login.setUserName("QA7");
         login.setPassword("password");
         login.useNativeSequencing();
