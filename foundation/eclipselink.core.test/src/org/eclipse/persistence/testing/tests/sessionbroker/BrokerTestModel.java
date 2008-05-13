@@ -132,24 +132,14 @@ public class BrokerTestModel extends TestModel {
     }
 
     public static DatabaseLogin getLogin1() {
-        /*
-	//Sybase
-	DatabaseLogin login = new DatabaseLogin();
-	login.useSybase();
-        login.setDriverClassName("com.sybase.jdbc2.jdbc.SybDriver");
-        login.setDriverURLHeader("jdbc:sybase:Tds:");
-	login.setDatabaseURL("tlsvrdb2.ca.oracle.com:5001/CORETEST1");
-	login.setUserName("CORETEST1");
-	login.setPassword("password");
-	*/
-        //Oracle 10.2
+        //Oracle 11.1
         DatabaseLogin login = new DatabaseLogin();
         try {
             login.usePlatform(OracleDBPlatformHelper.getInstance().getOracle9Platform());
         } catch (Exception e) {
         }
         login.useOracleThinJDBCDriver();
-        login.setDatabaseURL("tlsvrdb3.ca.oracle.com:1521:toplink");
+        login.setDatabaseURL("tlsvrdb7.ca.oracle.com:1521:toplink");
         login.setUserName("QA7");
         login.setPassword("password");
         login.useNativeSequencing();
