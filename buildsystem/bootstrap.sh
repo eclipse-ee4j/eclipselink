@@ -158,7 +158,7 @@ echo "Results logged to: ${DATED_LOG}"
 
 touch ${DATED_LOG}
 echo "Build started at: `date`" >> ${DATED_LOG}
-source ~/.ssh-agent >> ${DATED_LOG}
+source ~/.ssh-agent >> ${DATED_LOG} 2>&1
 echo "ant ${ANT_BASEARG} $TARGET" >> ${DATED_LOG}
-ant ${ANT_BASEARG} -Ddb.user="$DB_USER" -Ddb.pwd="$DB_PWD" -Ddb.url="$DB_URL" $TARGET >> ${DATED_LOG}
+ant ${ANT_BASEARG} -Ddb.user="$DB_USER" -Ddb.pwd="$DB_PWD" -Ddb.url="$DB_URL" $TARGET >> ${DATED_LOG} 2>&1
 echo "Build completed at: `date`" >> ${DATED_LOG}
