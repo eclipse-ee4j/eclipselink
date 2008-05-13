@@ -242,7 +242,7 @@ public class JavaTools {
 		stderrStream.close();
 		stdoutStream.close();
 
-		if (exitValue != 0) {
+		if (!(exitValue == 0 || exitValue == 2)) {
 			StringBuffer sb = new StringBuffer(2000);
 			sb.append(CR);
 			sb.append("**** exit value: ");

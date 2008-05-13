@@ -12,7 +12,6 @@
 ******************************************************************************/
 package org.eclipse.persistence.tools.workbench.test.mappingsplugin;
 
-import org.eclipse.persistence.tools.workbench.test.ant.AntBuildTests;
 import org.eclipse.persistence.tools.workbench.test.ant.EisProjectExporterTests;
 import org.eclipse.persistence.tools.workbench.test.ant.EisProjectValidatorTests;
 import org.eclipse.persistence.tools.workbench.test.ant.OXProjectExporterTests;
@@ -52,7 +51,6 @@ public class AllMappingsPluginTests {
 		suite.addTest(OXProjectExporterTests.suite());
 		suite.addTest(ProjectValidatorTests.suite());
 		suite.addTest(ProjectExporterTests.suite());
-		suite.addTest(AntBuildTests.suite());
 
 		return suite;
 	}
