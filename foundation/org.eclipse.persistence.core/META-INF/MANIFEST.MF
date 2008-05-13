@@ -149,3 +149,4 @@ Export-Package: org.eclipse.persistence,
  org.eclipse.persistence.transaction.wls,
  xsd
 Bundle-ClassPath: .
+Import-Package: org.w3c.dom
