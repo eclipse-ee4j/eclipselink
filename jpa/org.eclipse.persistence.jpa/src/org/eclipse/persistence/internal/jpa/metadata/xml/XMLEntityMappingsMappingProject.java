@@ -31,6 +31,7 @@ import org.eclipse.persistence.annotations.OptimisticLockingType;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 
 import org.eclipse.persistence.internal.jpa.metadata.accessors.PropertyMetadata;
+import org.eclipse.persistence.internal.jpa.metadata.accessors.AccessMethodsMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.classes.EmbeddableAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.classes.EntityAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.classes.MappedSuperclassAccessor;
@@ -139,6 +140,7 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         addDescriptor(buildColumnDescriptor());
         addDescriptor(buildJoinColumnDescriptor());
         addDescriptor(buildPrimaryKeyJoinColumnDescriptor());
+        addDescriptor(buildAccessMethodsDescriptor());
         addDescriptor(buildAssociationOverrideDescriptor());
         addDescriptor(buildAttributeOverrideDescriptor());
         addDescriptor(buildDiscriminatorColumnDescriptor());
@@ -206,6 +208,32 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         xmlLogin.setDatasourcePlatform(platform);
         this.setDatasourceLogin(xmlLogin);
     }
+	
+    /**
+     * INTERNAL:
+     * XSD: access-methods
+     */
+    protected ClassDescriptor buildAccessMethodsDescriptor() {
+        XMLDescriptor descriptor = new XMLDescriptor();
+        descriptor.setJavaClass(AccessMethodsMetadata.class);
+    
+        //descriptor.addMapping(getNameAttributeMapping());
+        XMLDirectMapping getMethodMapping = new XMLDirectMapping();
+        getMethodMapping.setAttributeName("m_getMethodName");
+        getMethodMapping.setGetMethodName("getGetMethodName");
+        getMethodMapping.setSetMethodName("setGetMethodName");
+        getMethodMapping.setXPath("@get-method");
+        descriptor.addMapping(getMethodMapping);
+        
+        XMLDirectMapping setMethodMapping = new XMLDirectMapping();
+        setMethodMapping.setAttributeName("m_getMethodName");
+        setMethodMapping.setGetMethodName("getSetMethodName");
+        setMethodMapping.setSetMethodName("setSetMethodName");
+        setMethodMapping.setXPath("@set-method");
+        descriptor.addMapping(setMethodMapping);
+        
+        return descriptor;
+    }
 
 	/**
      * INTERNAL:
@@ -231,6 +259,7 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         
         descriptor.addMapping(getColumnMapping());
         descriptor.addMapping(getNameAttributeMapping());
+        descriptor.addMapping(getAccessMethodsMapping());
         
         return descriptor;
 	}
@@ -374,6 +403,7 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         descriptor.addMapping(getPropertiesMapping());
         descriptor.addMapping(getNameAttributeMapping());
         descriptor.addMapping(getFetchAttributeMapping());
+        descriptor.addMapping(getAccessMethodsMapping());
         
         return descriptor;
     }
@@ -411,6 +441,7 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         descriptor.addMapping(getFetchAttributeMapping());
         descriptor.addMapping(getOptionalAttributeMapping());
         descriptor.addMapping(getMutableAttributeMapping());
+        descriptor.addMapping(getAccessMethodsMapping());
     	
         return descriptor;
     }
@@ -454,6 +485,7 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         
         descriptor.addMapping(getNameAttributeMapping());
         descriptor.addMapping(getFetchAttributeMapping());
+        descriptor.addMapping(getAccessMethodsMapping());
         
         return descriptor;
     }
@@ -834,6 +866,7 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         descriptor.addMapping(getAttributeOverrideMapping());
         descriptor.addMapping(getPropertiesMapping());
         descriptor.addMapping(getNameAttributeMapping());
+        descriptor.addMapping(getAccessMethodsMapping());
         
         return descriptor;
     }
@@ -849,6 +882,7 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         descriptor.addMapping(getAttributeOverrideMapping());
         descriptor.addMapping(getPropertiesMapping());
         descriptor.addMapping(getNameAttributeMapping());
+        descriptor.addMapping(getAccessMethodsMapping());
         
         return descriptor;
     }
@@ -1164,6 +1198,7 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         descriptor.addMapping(getPropertiesMapping());
         descriptor.addMapping(getNameAttributeMapping());
         descriptor.addMapping(getMutableAttributeMapping());
+        descriptor.addMapping(getAccessMethodsMapping());
         
         return descriptor;
     }
@@ -1260,6 +1295,7 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         descriptor.addMapping(getTargetEntityAttributeMapping()); 
         descriptor.addMapping(getFetchAttributeMapping());
         descriptor.addMapping(getOptionalAttributeMapping());
+        descriptor.addMapping(getAccessMethodsMapping());
         
         return descriptor;
     }
@@ -1299,7 +1335,6 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         descriptor.addMapping(getAccessAttributeMapping());
         descriptor.addMapping(getMetadataCompleteAttributeMapping());
         descriptor.addMapping(getReadOnlyAttributeMapping());
-        descriptor.addMapping(getExistenceCheckingAttributeMapping());
         
         return descriptor;
     }
@@ -1324,6 +1359,7 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         descriptor.addMapping(getTargetEntityAttributeMapping()); 
         descriptor.addMapping(getFetchAttributeMapping());
         descriptor.addMapping(getMappedByAttributeMapping());
+        descriptor.addMapping(getAccessMethodsMapping());
         
         return descriptor;
     }
@@ -1451,6 +1487,7 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         descriptor.addMapping(getFetchAttributeMapping());
         descriptor.addMapping(getOptionalAttributeMapping());
         descriptor.addMapping(getMappedByAttributeMapping());
+        descriptor.addMapping(getAccessMethodsMapping());
         
         return descriptor;
     }
@@ -1510,6 +1547,7 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         descriptor.addMapping(getTargetEntityAttributeMapping()); 
         descriptor.addMapping(getFetchAttributeMapping());
         descriptor.addMapping(getMappedByAttributeMapping());
+        descriptor.addMapping(getAccessMethodsMapping());
         
         return descriptor;
     }
@@ -1927,6 +1965,7 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         descriptor.addMapping(getFetchAttributeMapping());
         descriptor.addMapping(getOptionalAttributeMapping());
         descriptor.addMapping(getMutableAttributeMapping());
+        descriptor.addMapping(getAccessMethodsMapping());
         
         return descriptor;
     }
@@ -2014,6 +2053,7 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         descriptor.addMapping(getPropertiesMapping());
         descriptor.addMapping(getNameAttributeMapping());
         descriptor.addMapping(getMutableAttributeMapping());
+        descriptor.addMapping(getAccessMethodsMapping());
         
         return descriptor;
     }
@@ -2055,6 +2095,19 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
     	accessMapping.setSetMethodName("setAccess");
     	accessMapping.setXPath("orm:access/text()");
     	return accessMapping;
+    }
+    
+    /**
+     * INTERNAL:
+     */
+    protected XMLCompositeObjectMapping getAccessMethodsMapping() {
+        XMLCompositeObjectMapping columnMapping = new XMLCompositeObjectMapping();
+        columnMapping.setAttributeName("m_accessMethods");
+        columnMapping.setGetMethodName("getAccessMethodsMetadata");
+        columnMapping.setSetMethodName("setAccessMethodsMetadata");
+        columnMapping.setReferenceClass(AccessMethodsMetadata.class);
+        columnMapping.setXPath("orm:access-methods");
+        return columnMapping;
     }
     
     /**

@@ -816,6 +816,18 @@
 
   <!-- **************************************************** -->
 
+  <xsd:complexType name="access-methods">
+    <xsd:annotation>
+      <xsd:documentation>
+
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:attribute name="get-method" type="xsd:string" use="required"/>
+    <xsd:attribute name="set-method" type="xsd:string" use="required"/>
+  </xsd:complexType>
+
+  <!-- **************************************************** -->
+
   <xsd:complexType name="attribute-override">
     <xsd:annotation>
       <xsd:documentation>
@@ -890,6 +902,8 @@
       <xsd:element name="table-generator" type="orm:table-generator" minOccurs="0"/>
       <xsd:element name="sequence-generator" type="orm:sequence-generator" minOccurs="0"/>
       <xsd:element name="property" type="orm:property" minOccurs="0" maxOccurs="unbounded"/>
+      <xsd:element name="access-methods" type="orm:access-methods" 
+                       minOccurs="0" maxOccurs="1"/>
     </xsd:sequence>
     <xsd:attribute name="name" type="xsd:string" use="required"/>
     <xsd:attribute name="mutable" type="xsd:boolean"/>
@@ -910,6 +924,8 @@
       <xsd:element name="attribute-override" type="orm:attribute-override" 
                    minOccurs="0" maxOccurs="unbounded"/>
       <xsd:element name="property" type="orm:property" minOccurs="0" maxOccurs="unbounded"/>
+      <xsd:element name="access-methods" type="orm:access-methods" 
+                       minOccurs="0" maxOccurs="1"/>
     </xsd:sequence>
     <xsd:attribute name="name" type="xsd:string" use="required"/>
   </xsd:complexType>
@@ -944,6 +960,8 @@
       <xsd:element name="temporal" type="orm:temporal" minOccurs="0"/>
       <xsd:element name="convert" type="xsd:string" minOccurs="0"/>
       <xsd:element name="property" type="orm:property" minOccurs="0" maxOccurs="unbounded"/>
+      <xsd:element name="access-methods" type="orm:access-methods" 
+                       minOccurs="0" maxOccurs="1"/>
     </xsd:sequence>
     <xsd:attribute name="name" type="xsd:string" use="required"/>
     <xsd:attribute name="mutable" type="xsd:boolean"/>
@@ -972,6 +990,8 @@
         <xsd:element name="convert" type="xsd:string" minOccurs="0"/>
       </xsd:choice>
       <xsd:element name="property" type="orm:property" minOccurs="0" maxOccurs="unbounded"/>
+      <xsd:element name="access-methods" type="orm:access-methods" 
+                       minOccurs="0" maxOccurs="1"/>
     </xsd:sequence>
     <xsd:attribute name="name" type="xsd:string" use="required"/>
     <xsd:attribute name="fetch" type="orm:fetch-type"/>
@@ -1121,6 +1141,8 @@
       <xsd:element name="write-transformer" type="orm:write-transformer" minOccurs="0" maxOccurs="unbounded"/>
       <xsd:element name="access" type="orm:access-type" minOccurs="0"/>
       <xsd:element name="property" type="orm:property" minOccurs="0" maxOccurs="unbounded"/>
+      <xsd:element name="access-methods" type="orm:access-methods" 
+                       minOccurs="0" maxOccurs="1"/>
     </xsd:sequence>
     <xsd:attribute name="name" type="xsd:string" use="required"/>
     <xsd:attribute name="fetch" type="orm:fetch-type"/>
@@ -1253,6 +1275,8 @@
       <xsd:element name="cascade" type="orm:cascade-type" minOccurs="0"/>
       <xsd:element name="join-fetch" type="orm:join-fetch-type" minOccurs="0"/>
       <xsd:element name="property" type="orm:property" minOccurs="0" maxOccurs="unbounded"/>
+      <xsd:element name="access-methods" type="orm:access-methods" 
+                       minOccurs="0" maxOccurs="1"/>
     </xsd:sequence>
     <xsd:attribute name="name" type="xsd:string" use="required"/>
     <xsd:attribute name="target-entity" type="xsd:string"/>
@@ -1311,6 +1335,8 @@
       <xsd:element name="private-owned" type="orm:emptyType" minOccurs="0"/>
       <xsd:element name="join-fetch" type="orm:join-fetch-type" minOccurs="0"/>
       <xsd:element name="property" type="orm:property" minOccurs="0" maxOccurs="unbounded"/>
+      <xsd:element name="access-methods" type="orm:access-methods" 
+                       minOccurs="0" maxOccurs="1"/>
     </xsd:sequence>
     <xsd:attribute name="name" type="xsd:string" use="required"/>
     <xsd:attribute name="target-entity" type="xsd:string"/>
@@ -1346,6 +1372,8 @@
       <xsd:element name="private-owned" type="orm:emptyType" minOccurs="0"/>
       <xsd:element name="join-fetch" type="orm:join-fetch-type" minOccurs="0"/>
       <xsd:element name="property" type="orm:property" minOccurs="0" maxOccurs="unbounded"/>
+      <xsd:element name="access-methods" type="orm:access-methods" 
+                       minOccurs="0" maxOccurs="1"/>
     </xsd:sequence>
     <xsd:attribute name="name" type="xsd:string" use="required"/>
     <xsd:attribute name="target-entity" type="xsd:string"/>
@@ -1407,6 +1435,8 @@
       <xsd:element name="cascade" type="orm:cascade-type" minOccurs="0"/>
       <xsd:element name="join-fetch" type="orm:join-fetch-type" minOccurs="0"/>
       <xsd:element name="property" type="orm:property" minOccurs="0" maxOccurs="unbounded"/>
+      <xsd:element name="access-methods" type="orm:access-methods" 
+                       minOccurs="0" maxOccurs="1"/>
     </xsd:sequence>
     <xsd:attribute name="name" type="xsd:string" use="required"/>
     <xsd:attribute name="target-entity" type="xsd:string"/>
@@ -1634,6 +1664,8 @@
       <xsd:element name="attribute-override" type="orm:attribute-override" 
                    minOccurs="0" maxOccurs="unbounded"/>
       <xsd:element name="property" type="orm:property" minOccurs="0" maxOccurs="unbounded"/>
+      <xsd:element name="access-methods" type="orm:access-methods" 
+                       minOccurs="0" maxOccurs="1"/>
     </xsd:sequence>
     <xsd:attribute name="name" type="xsd:string" use="required"/>
   </xsd:complexType>
@@ -2138,6 +2170,8 @@
       <xsd:element name="private-owned" type="orm:emptyType" minOccurs="0"/>
       <xsd:element name="join-fetch" type="orm:join-fetch-type" minOccurs="0"/>
       <xsd:element name="property" type="orm:property" minOccurs="0" maxOccurs="unbounded"/>
+      <xsd:element name="access-methods" type="orm:access-methods" 
+                       minOccurs="0" maxOccurs="1"/>
     </xsd:sequence>
     <xsd:attribute name="name" type="xsd:string"/>
     <xsd:attribute name="fetch" type="orm:fetch-type"/>
@@ -2201,6 +2235,8 @@
       <xsd:element name="private-owned" type="orm:emptyType" minOccurs="0"/>
       <xsd:element name="join-fetch" type="orm:join-fetch-type" minOccurs="0"/>
       <xsd:element name="property" type="orm:property" minOccurs="0" maxOccurs="unbounded"/>
+      <xsd:element name="access-methods" type="orm:access-methods" 
+                       minOccurs="0" maxOccurs="1"/>
     </xsd:sequence>
     <xsd:attribute name="name" type="xsd:string"/>
     <xsd:attribute name="fetch" type="orm:fetch-type"/>
@@ -2963,6 +2999,8 @@
                    maxOccurs="unbounded"/>
       <xsd:element name="private-owned" type="orm:emptyType" minOccurs="0"/>
       <xsd:element name="property" type="orm:property" minOccurs="0" maxOccurs="unbounded"/>
+      <xsd:element name="access-methods" type="orm:access-methods" 
+                       minOccurs="0" maxOccurs="1"/>
     </xsd:sequence>
     <xsd:attribute name="name" type="xsd:string" use="required"/>
     <xsd:attribute name="target-interface" type="xsd:string"/>

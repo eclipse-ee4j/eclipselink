@@ -12,7 +12,7 @@
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.accessors.mappings;
 
-import org.eclipse.persistence.internal.jpa.metadata.accessors.MetadataAccessor;
+import org.eclipse.persistence.internal.jpa.metadata.accessors.mappings.MappingAccessor;
 
 /**
  * An transient accessor ... which does nothing ... just a clever way to
@@ -21,7 +21,7 @@ import org.eclipse.persistence.internal.jpa.metadata.accessors.MetadataAccessor;
  * @author Guy Pelletier
  * @since TopLink EJB 3.0 Reference Implementation
  */
-public class TransientAccessor extends MetadataAccessor {
+public class TransientAccessor extends MappingAccessor {
 	/**
      * INTERNAL:
      */

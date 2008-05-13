@@ -14,6 +14,8 @@ package org.eclipse.persistence.internal.jpa.metadata.columns;
 
 import java.lang.annotation.Annotation;
 
+import org.eclipse.persistence.internal.jpa.metadata.accessors.AccessMethodsMetadata;
+
 /**
  * Object to hold onto an attribute override meta data.
  * 
@@ -21,36 +23,53 @@ import java.lang.annotation.Annotation;
  * @since EclipseLink 1.0
  */
 public class AttributeOverrideMetadata extends OverrideMetadata {
-	private ColumnMetadata m_column;
-	
-	/**
-	 * INTERNAL:
-	 */
-	public AttributeOverrideMetadata() {}
-	
-	/**
-	 * INTERNAL:
-	 */
-	public AttributeOverrideMetadata(Annotation attributeOverride, String className) {
-		super(className);
+    private ColumnMetadata m_column;
+    private AccessMethodsMetadata m_accessMethods;
 
-		setName((String) invokeMethod("name", attributeOverride));
-		m_column = new ColumnMetadata((Annotation) invokeMethod("column", attributeOverride), getName());
-	}
-	
-	/**
-	 * INTERNAL:
-	 * Used for OX mapping.
-	 */
-	public ColumnMetadata getColumn() {
-		return m_column;
-	}
-	
-	/**
-	 * INTERNAL:
-	 * Used for OX mapping.
-	 */
-	public void setColumn(ColumnMetadata column) {
-		m_column = column;
-	}
+    /**
+     * INTERNAL:
+     */
+    public AttributeOverrideMetadata() {}
+    
+    /**
+     * INTERNAL:
+     */
+    public AttributeOverrideMetadata(Annotation attributeOverride, String className) {
+        super(className);
+
+        setName((String) invokeMethod("name", attributeOverride));
+        m_column = new ColumnMetadata((Annotation) invokeMethod("column", attributeOverride), getName());
+    }
+
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+    public AccessMethodsMetadata getAccessMethodsMetadata(){
+        return m_accessMethods;
+    }
+    
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+    public ColumnMetadata getColumn() {
+        return m_column;
+    }
+    
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+    public void setAccessMethodsMetadata(AccessMethodsMetadata accessMethodsMetadata){
+        this.m_accessMethods = accessMethodsMetadata;
+    }
+    
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+    public void setColumn(ColumnMetadata column) {
+        m_column = column;
+    }
 }

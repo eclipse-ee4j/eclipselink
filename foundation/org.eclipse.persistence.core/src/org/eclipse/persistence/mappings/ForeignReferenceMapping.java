@@ -727,7 +727,7 @@ public abstract class ForeignReferenceMapping extends DatabaseMapping {
             Class attributeType = getAttributeAccessor().getAttributeClass();
             // Check that not already weaved or coded.
             if (!(ClassConstants.ValueHolderInterface_Class.isAssignableFrom(attributeType))) {
-                boolean usesMethodAccess = getAttributeAccessor() instanceof MethodAttributeAccessor;
+                boolean usesMethodAccess = getAttributeAccessor().isMethodAttributeAccessor();
                 String originalSetMethod = null;
                 if (usesMethodAccess) {
                     originalSetMethod = getSetMethodName();
@@ -1313,7 +1313,7 @@ public abstract class ForeignReferenceMapping extends DatabaseMapping {
         if (getAttributeAccessor() instanceof InstanceVariableAttributeAccessor) {
             Class attributeType = ((InstanceVariableAttributeAccessor)getAttributeAccessor()).getAttributeType();
             getIndirectionPolicy().validateDeclaredAttributeType(attributeType, session.getIntegrityChecker());
-        } else if (getAttributeAccessor() instanceof MethodAttributeAccessor) {
+        } else if (getAttributeAccessor().isMethodAttributeAccessor()) {
             Class returnType = ((MethodAttributeAccessor)getAttributeAccessor()).getGetMethodReturnType();
             getIndirectionPolicy().validateGetMethodReturnType(returnType, session.getIntegrityChecker());
 

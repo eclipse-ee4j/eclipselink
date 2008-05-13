@@ -51,7 +51,7 @@ public class WriteLockManager {
         this.prevailingQueue = new ExposedNodeLinkedList();
     }
 
-    // this will allow us to prevent a readlock thread form looping forever.
+    // this will allow us to prevent a readlock thread from looping forever.
     public static int MAXTRIES = 10000;
 
     /**

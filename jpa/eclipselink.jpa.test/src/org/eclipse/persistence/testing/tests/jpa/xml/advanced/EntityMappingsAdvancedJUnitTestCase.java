@@ -111,6 +111,7 @@ public class EntityMappingsAdvancedJUnitTestCase extends JUnitTestCase {
             suite.addTest(new EntityMappingsAdvancedJUnitTestCase("testClassBasedTransformationMapping", persistenceUnit));
             suite.addTest(new EntityMappingsAdvancedJUnitTestCase("testClassInstanceConverter", persistenceUnit));
             suite.addTest(new EntityMappingsAdvancedJUnitTestCase("testProperty", persistenceUnit));
+            suite.addTest(new EntityMappingsAdvancedJUnitTestCase("testAccessorMethods", persistenceUnit));
         }
         
         return new TestSetup(suite) {
@@ -129,6 +130,38 @@ public class EntityMappingsAdvancedJUnitTestCase extends JUnitTestCase {
                 clearCache(persistenceUnit);
             }
         };
+    }
+    
+    /**
+     * Verifies that access-methods are correctly processed and used.
+     */
+    public void testAccessorMethods() {
+        EntityManager em = createEntityManager(m_persistenceUnit);
+        String testSin = "123456";
+        beginTransaction(em);
+        try {
+            Employee employee = ModelExamples.employeeExample1();
+            employee.enterSIN(testSin);
+            em.persist(employee);
+            Integer employeeId = employee.getId();
+            commitTransaction(em);
+            
+            clearCache(m_persistenceUnit);
+            em.clear();
+           
+            // Re-read the employee and verify the data.
+            Employee emp = em.find(Employee.class, employeeId);
+            
+            assertTrue("The SIN value was not persisted.", testSin.equals( emp.returnSIN() ) );
+            assertTrue("The enterSIN accessor on Employee was not used to set the value", emp.returnSinChangeCounter()==1 );
+        } catch (RuntimeException e) {
+            if (isTransactionActive(em)){
+                rollbackTransaction(em);
+            }
+            closeEntityManager(em);
+            throw e;
+        }
+        
     }
     
     /**

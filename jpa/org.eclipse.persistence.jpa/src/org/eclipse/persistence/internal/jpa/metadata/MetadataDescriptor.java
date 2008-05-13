@@ -32,6 +32,7 @@ import org.eclipse.persistence.internal.jpa.metadata.accessors.mappings.BasicCol
 import org.eclipse.persistence.internal.jpa.metadata.accessors.mappings.RelationshipAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataMethod;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.MetadataAccessor;
+import org.eclipse.persistence.internal.jpa.metadata.accessors.mappings.MappingAccessor;
 
 import org.eclipse.persistence.internal.jpa.metadata.columns.AssociationOverrideMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.columns.AttributeOverrideMetadata;
@@ -88,7 +89,7 @@ public class MetadataDescriptor {
     private List<BasicCollectionAccessor> m_basicCollectionAccessors;
     
     private Map<String, Type> m_pkClassIDs;
-    private Map<String, MetadataAccessor> m_accessors;
+    private Map<String, MappingAccessor> m_accessors;
     private Map<String, String> m_pkJoinColumnAssociations;
     private Map<String, AttributeOverrideMetadata> m_attributeOverrides;
     private Map<String, AssociationOverrideMetadata> m_associationOverrides;
@@ -119,7 +120,7 @@ public class MetadataDescriptor {
         m_basicCollectionAccessors = new ArrayList<BasicCollectionAccessor>();
         
         m_pkClassIDs = new HashMap<String, Type>();
-        m_accessors = new HashMap<String, MetadataAccessor>();
+        m_accessors = new HashMap<String, MappingAccessor>();
         m_pkJoinColumnAssociations = new HashMap<String, String>();
         m_attributeOverrides = new HashMap<String, AttributeOverrideMetadata>();
         m_associationOverrides = new HashMap<String, AssociationOverrideMetadata>();
@@ -145,7 +146,7 @@ public class MetadataDescriptor {
      /**
       * INTERNAL:
       */
-    public void addAccessor(MetadataAccessor accessor) {
+    public void addAccessor(MappingAccessor accessor) {
         m_accessors.put(accessor.getAttributeName(), accessor);
     }
     
@@ -313,8 +314,8 @@ public class MetadataDescriptor {
      * and an inheritance subclass, than it will then look on the root metadata
      * descriptor. Null is returned otherwise.
      */
-    public MetadataAccessor getAccessorFor(String fieldOrPropertyName) {
-    	MetadataAccessor accessor = m_accessors.get(fieldOrPropertyName);
+    public MappingAccessor getAccessorFor(String fieldOrPropertyName) {
+    	MappingAccessor accessor = m_accessors.get(fieldOrPropertyName);
         
         if (accessor == null) {
             // Perhaps we have a property name ...

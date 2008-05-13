@@ -80,6 +80,10 @@ public class Employee implements Serializable {
     this is stored into two different fields in the employee table. */
     private Time[] overtimeHours;
     
+    private String socialInsuranceNumber;
+    //Transient value used to keep track of how many times enterSIN method was called
+    private int sinChangeCounter = 0;
+    
 	public Employee () {
         phoneNumbers = new Vector<PhoneNumber>();
         projects = new Vector<Project>();
@@ -149,6 +153,12 @@ public class Employee implements Serializable {
         sbuff.append("Employee ").append(getId()).append(": ").append(getLastName()).append(", ").append(getFirstName()).append(getSalary());
 
         return sbuff.toString();
+    }
+    
+    //used for test user defined getter and setter methods
+    public void enterSIN(String socialInsuranceNumber){
+        this.sinChangeCounter++;
+        this.socialInsuranceNumber=socialInsuranceNumber;
     }
     
     // Static method should be ignored
@@ -319,6 +329,16 @@ public class Employee implements Serializable {
     
     public void removeResponsibility(String responsibility) {
         getResponsibilities().remove(responsibility);
+    }
+    
+    //used for test user defined getter and setter methods
+    public String returnSIN(){
+        return socialInsuranceNumber;
+    }
+    
+    //used to keep track of how many times enterSIN was called
+    public int returnSinChangeCounter(){
+        return this.sinChangeCounter;
     }
 
     public void setAddress(Address address) {

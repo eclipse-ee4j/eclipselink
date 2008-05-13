@@ -28,7 +28,6 @@ import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataLogger;
 
 import org.eclipse.persistence.internal.jpa.metadata.accessors.classes.ClassAccessor;
-import org.eclipse.persistence.internal.jpa.metadata.accessors.MetadataAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAccessibleObject;
 import org.eclipse.persistence.internal.jpa.metadata.columns.ColumnMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.converters.AbstractConverterMetadata;
@@ -53,7 +52,7 @@ import org.eclipse.persistence.mappings.converters.TypeConversionConverter;
  * @author Guy Pelletier
  * @since TopLink 11g
  */
-public abstract class DirectAccessor extends MetadataAccessor {
+public abstract class DirectAccessor extends MappingAccessor {
     // Reserved converter names
     private static final String CONVERT_NONE = "none";
     private static final String CONVERT_SERIALIZED = "serialized";

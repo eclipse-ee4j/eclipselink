@@ -36,7 +36,6 @@ import org.eclipse.persistence.internal.jpa.metadata.MetadataDescriptor;
 import org.eclipse.persistence.internal.jpa.metadata.columns.JoinColumnMetadata;
 
 import org.eclipse.persistence.internal.jpa.metadata.accessors.classes.ClassAccessor;
-import org.eclipse.persistence.internal.jpa.metadata.accessors.MetadataAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAccessibleObject;
 
 /**
@@ -45,7 +44,7 @@ import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataA
  * @author Guy Pelletier
  * @since TopLink EJB 3.0 Reference Implementation
  */
-public abstract class RelationshipAccessor extends MetadataAccessor {
+public abstract class RelationshipAccessor extends MappingAccessor {
     private boolean m_privateOwned;
     private CascadeTypes m_cascadeTypes;
     protected Class m_referenceClass;
@@ -461,6 +460,7 @@ public abstract class RelationshipAccessor extends MetadataAccessor {
     }
     
     /**
+     * INTERNAL:
      * Return if the accessor should be lazy fetched.
      */
     public boolean isLazy() {        

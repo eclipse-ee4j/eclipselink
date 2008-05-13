@@ -139,7 +139,7 @@ public abstract class ObjectAccessor extends RelationshipAccessor {
         // If the global weave for value holders is true, the use the value
         // from usesIndirection. Otherwise, force it to false.
         boolean usesIndirection = (getProject().isWeavingEnabled()) ? usesIndirection() : false;
-        if (usesIndirection && getDescriptor().usesPropertyAccess()) {
+        if (usesIndirection && usesPropertyAccess(getDescriptor())) {
             mapping.setIndirectionPolicy(new WeavedObjectBasicIndirectionPolicy(getSetMethodName()));
         } else {
             mapping.setUsesIndirection(usesIndirection);

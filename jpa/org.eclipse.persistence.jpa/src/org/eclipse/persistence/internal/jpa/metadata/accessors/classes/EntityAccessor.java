@@ -801,7 +801,7 @@ public class EntityAccessor extends MappedSuperclassAccessor {
             }
                 
             // If this entity has inheritance metadata as well, then the 
-            // inheritance stragety is mixed and we need to process the 
+            // inheritance strategy is mixed and we need to process the 
             // inheritance parent metadata for this entity's subclasses to 
             // process correctly.
             if (hasInheritance()) {

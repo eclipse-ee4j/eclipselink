@@ -86,7 +86,7 @@ public class MethodAttributeAccessor extends AttributeAccessor {
     }
 
     /**
-     * Return the name of theh accessor method for the attribute accessor.
+     * Return the name of the accessor method for the attribute accessor.
      */
     public String getGetMethodName() {
         return getMethodName;

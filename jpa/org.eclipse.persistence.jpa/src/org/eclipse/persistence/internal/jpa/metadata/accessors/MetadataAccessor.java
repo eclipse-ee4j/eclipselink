@@ -448,8 +448,10 @@ public abstract class MetadataAccessor  {
      * Returns the set method name of a method accessor. Note, this method
      * should not be called when processing field access.
      */
+    //TODO bug 217164
     protected String getSetMethodName() {
-        return ((MetadataMethod) m_accessibleObject).getSetMethodName();
+        throw new RuntimeException();
+        //return ((MetadataMethod) m_accessibleObject).getSetMethodName();
     }
     
 	/**

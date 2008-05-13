@@ -32,7 +32,6 @@ import org.eclipse.persistence.internal.helper.DatabaseField;
 
 import org.eclipse.persistence.internal.jpa.metadata.MetadataDescriptor;
 
-import org.eclipse.persistence.internal.jpa.metadata.accessors.MetadataAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.classes.ClassAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.classes.EmbeddableAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAccessibleObject;
@@ -52,7 +51,7 @@ import org.eclipse.persistence.mappings.OneToOneMapping;
  * @author Guy Pelletier
  * @since TopLink EJB 3.0 Reference Implementation
  */
-public class EmbeddedAccessor extends MetadataAccessor {
+public class EmbeddedAccessor extends MappingAccessor {
     public enum AccessType {FIELD, PROPERTY, UNDEFINED, MIXED};
     
     private List<AttributeOverrideMetadata> m_attributeOverrides;

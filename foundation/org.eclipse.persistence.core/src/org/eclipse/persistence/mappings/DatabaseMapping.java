@@ -502,7 +502,7 @@ public abstract class DatabaseMapping implements Cloneable, Serializable {
      * attribute in the object. This method returns the name of the getMethodName or null if not using method access.
      */
     public String getGetMethodName() {
-        if (!(getAttributeAccessor() instanceof MethodAttributeAccessor)) {
+        if (!getAttributeAccessor().isMethodAttributeAccessor()) {
             return null;
         }
         return ((MethodAttributeAccessor)getAttributeAccessor()).getGetMethodName();
@@ -590,7 +590,7 @@ public abstract class DatabaseMapping implements Cloneable, Serializable {
      * attribute in the object. This method returns the name of the setMethodName or null if not using method access.
      */
     public String getSetMethodName() {
-        if (!(getAttributeAccessor() instanceof MethodAttributeAccessor)) {
+        if (!getAttributeAccessor().isMethodAttributeAccessor()) {
             return null;
         }
         return ((MethodAttributeAccessor)getAttributeAccessor()).getSetMethodName();
@@ -627,7 +627,7 @@ public abstract class DatabaseMapping implements Cloneable, Serializable {
      * Return if method access is used.
      */
     public boolean isUsingMethodAccess() {
-        return getAttributeAccessor() instanceof MethodAttributeAccessor;
+        return getAttributeAccessor().isMethodAttributeAccessor();
     }
 
     /**
@@ -1336,7 +1336,7 @@ public abstract class DatabaseMapping implements Cloneable, Serializable {
         }
 
         // This is done because setting attribute name by defaults create InstanceVariableAttributeAccessor		
-        if (!(getAttributeAccessor() instanceof MethodAttributeAccessor)) {
+        if (!getAttributeAccessor().isMethodAttributeAccessor()) {
             String attributeName = this.attributeAccessor.getAttributeName();
             setAttributeAccessor(new MethodAttributeAccessor());
             getAttributeAccessor().setAttributeName(attributeName);

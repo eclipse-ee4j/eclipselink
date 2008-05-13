@@ -210,6 +210,16 @@ public class AdvancedTableCreator extends org.eclipse.persistence.tools.schemafr
         field2.setUnique(false );
         field2.setIsIdentity(false );
         table.addField(field2);
+        
+        org.eclipse.persistence.tools.schemaframework.FieldDefinition sin = new org.eclipse.persistence.tools.schemaframework.FieldDefinition();
+        sin.setName("SIN");
+        sin.setTypeName("VARCHAR");
+        sin.setSize(10);
+        sin.setShouldAllowNull(true );
+        sin.setIsPrimaryKey(false );
+        sin.setUnique(false );
+        sin.setIsIdentity(false );
+        table.addField(sin);
     
         FieldDefinition fieldGender = new FieldDefinition();
         fieldGender.setName("GENDER");

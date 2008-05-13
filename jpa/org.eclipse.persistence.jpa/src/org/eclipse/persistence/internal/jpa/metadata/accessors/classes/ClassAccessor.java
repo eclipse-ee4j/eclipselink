@@ -47,6 +47,7 @@ import org.eclipse.persistence.internal.jpa.metadata.accessors.mappings.OneToOne
 import org.eclipse.persistence.internal.jpa.metadata.accessors.mappings.TransformationAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.mappings.VariableOneToOneAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.mappings.VersionAccessor;
+import org.eclipse.persistence.internal.jpa.metadata.accessors.mappings.MappingAccessor;
 
 import org.eclipse.persistence.internal.jpa.metadata.accessors.MetadataAccessor;
 
@@ -127,8 +128,8 @@ public abstract class ClassAccessor extends MetadataAccessor {
      * or adding, check what the isXyz call does to determine if the accessor
      * is of type xyz.
      */
-    protected MetadataAccessor buildAccessor(MetadataAccessibleObject accessibleObject) {
-        MetadataAccessor accessor = getDescriptor().getAccessorFor(accessibleObject.getAttributeName());
+    protected MappingAccessor buildAccessor(MetadataAccessibleObject accessibleObject) {
+        MappingAccessor accessor = getDescriptor().getAccessorFor(accessibleObject.getAttributeName());
         
         if (accessor == null) {
             if (accessibleObject.isBasicCollection(getDescriptor())) {
@@ -449,7 +450,7 @@ public abstract class ClassAccessor extends MetadataAccessor {
      * Process an accessor method or field. Relationship accessors will be 
      * stored for later processing.
      */
-    protected void processAccessor(MetadataAccessor accessor) {
+    protected void processAccessor(MappingAccessor accessor) {
         if (! accessor.isProcessed()) {
             // Store the accessor for later retrieval.
         	getDescriptor().addAccessor(accessor);
@@ -541,22 +542,33 @@ public abstract class ClassAccessor extends MetadataAccessor {
      */
     protected void processAccessors() {    	
     	if (m_attributes != null) {
-    		for (MetadataAccessor accessor : m_attributes.getAccessors()) {
+    		for (MappingAccessor accessor : m_attributes.getAccessors()) {
     			// Load the accessible object from the class.
-    			MetadataAccessibleObject accessibleObject;
+    			MetadataAccessibleObject accessibleObject = null;
     		
-    			if (getDescriptor().usesPropertyAccess()) {
-    				Method method = getMethodForPropertyName(accessor.getName(), getJavaClass());
-    				
-    				if (method == null) {
-    					throw ValidationException.invalidPropertyForClass(accessor.getName(), getJavaClass());
-    				}
-    				
-    				if (! isValidPersistenceElement(method, method.getModifiers())) {
-    					throw ValidationException.mappingMetadataAppliedToInvalidAttribute(method, getJavaClass());
-    				}
-    				
-    				accessibleObject = getMetadataMethod(method, true);	
+    			if (accessor.usesPropertyAccess(getDescriptor())) {
+    			    if (accessor.getAccessMethodsMetadata()!=null){
+    			        //can't rely on MappingAccessor's getGetMethodName methods as they could 
+    			        //result in NPE if accessibleObject isn't set first
+    			        String getMethodName = accessor.getAccessMethodsMetadata().getGetMethodName();
+    			        Method getMethod = MetadataHelper.getMethod(getMethodName, getJavaClass(), new Class[]{});
+    			        String setMethodName =accessor.getAccessMethodsMetadata().getSetMethodName();
+    			        Method setMethod = MetadataHelper.getMethod(setMethodName, getJavaClass(), new Class[]{getMethod.getReturnType()});
+    			        
+    			        accessibleObject = new MetadataMethod(getMethod, setMethod, accessor.getName());
+    			        
+    			    } else {
+    			        Method method = getMethodForPropertyName(accessor.getName(), getJavaClass());
+        				
+        				if (method == null) {
+        					throw ValidationException.invalidPropertyForClass(accessor.getName(), getJavaClass());
+        				}
+        				
+        				if (! isValidPersistenceElement(method, method.getModifiers())) {
+        					throw ValidationException.mappingMetadataAppliedToInvalidAttribute(method, getJavaClass());
+        				}
+        				accessibleObject = getMetadataMethod(method, true);  
+    			    }
     			} else {
     				Field field = getFieldForName(accessor.getName(), getJavaClass());
                 

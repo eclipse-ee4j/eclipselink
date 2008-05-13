@@ -1276,7 +1276,7 @@ public abstract class AbstractTransformationMapping extends DatabaseMapping {
         if (getAttributeAccessor() instanceof InstanceVariableAttributeAccessor) {
             Class attributeType = ((InstanceVariableAttributeAccessor)getAttributeAccessor()).getAttributeType();
             getIndirectionPolicy().validateDeclaredAttributeType(attributeType, session.getIntegrityChecker());
-        } else if (getAttributeAccessor() instanceof MethodAttributeAccessor) {
+        } else if (getAttributeAccessor().isMethodAttributeAccessor()) {
             Class returnType = ((MethodAttributeAccessor)getAttributeAccessor()).getGetMethodReturnType();
             getIndirectionPolicy().validateGetMethodReturnType(returnType, session.getIntegrityChecker());
  

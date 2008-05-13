@@ -50,6 +50,17 @@ public class MetadataMethod extends MetadataAccessibleObject {
         setRelationType(getMethod.getGenericReturnType());
     }
     
+    public MetadataMethod(Method getMethod, Method setMethod, String attributeName) {
+        super(getMethod);
+        
+        m_getMethod = getMethod;
+        m_setMethod = setMethod;
+        
+        setName(getMethod.getName());
+        setAttributeName(attributeName);
+        setRelationType(getMethod.getGenericReturnType());
+    }
+    
     /**
      * INTERNAL:
      * Method to convert a getXyz or isXyz method name to an xyz attribute name.

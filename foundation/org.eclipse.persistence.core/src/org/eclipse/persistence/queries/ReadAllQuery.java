@@ -617,7 +617,7 @@ public class ReadAllQuery extends ObjectLevelReadQuery {
 
     /**
      * INTERNAL:
-     * The order bys are lazy initialized to conserv space.
+     * The order bys are lazy initialized to conserve space.
      */
     public boolean hasOrderByExpressions() {
         return orderByExpressions != null;

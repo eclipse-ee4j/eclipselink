@@ -89,6 +89,11 @@
                 <property name="TimeStampProperty" value="2008-04-10 13:59:59" value-type="java.sql.Timestamp"/>
                 <property name="DateProperty" value="2008-04-10" value-type="java.sql.Date"/>
             </basic>
+            <basic name="sin">
+                <column name="SIN"/>
+                <access-methods get-method="returnSIN" set-method="enterSIN"/>
+                <property name="attributeName" value="sin"/>
+            </basic>
             <basic name="gender">
                 <column name="GENDER"/>
                 <convert>sex</convert>
@@ -98,7 +103,7 @@
                 <column table="CMP3_XML_SALARY"/>
                 <property name="attributeName" value="salary"/>
             </basic>
-			<basic-collection name="responsibilities">
+            <basic-collection name="responsibilities">
               <value-column name="DESCRIPTION"/>
               <collection-table name="CMP3_XML_RESPONS"/>
               <property name="attributeName" value="responsibilities"/>

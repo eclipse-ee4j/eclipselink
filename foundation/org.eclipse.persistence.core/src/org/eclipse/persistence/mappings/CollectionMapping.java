@@ -1413,7 +1413,7 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
         if (getAttributeAccessor() instanceof InstanceVariableAttributeAccessor) {
             Class attributeType = ((InstanceVariableAttributeAccessor)getAttributeAccessor()).getAttributeType();
             getIndirectionPolicy().validateDeclaredAttributeTypeForCollection(attributeType, session.getIntegrityChecker());
-        } else if (getAttributeAccessor() instanceof MethodAttributeAccessor) {
+        } else if (getAttributeAccessor().isMethodAttributeAccessor()) {
             Class returnType = ((MethodAttributeAccessor)getAttributeAccessor()).getGetMethodReturnType();
             getIndirectionPolicy().validateGetMethodReturnTypeForCollection(returnType, session.getIntegrityChecker());
 

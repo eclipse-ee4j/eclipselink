@@ -73,6 +73,10 @@ public abstract class AttributeAccessor implements Cloneable, Serializable {
             throw DescriptorException.attributeNameNotSpecified();
         }
     }
+    
+    public boolean isMethodAttributeAccessor() {
+        return false;
+    }
 
     /**
      * Return the attribute value from the object.
