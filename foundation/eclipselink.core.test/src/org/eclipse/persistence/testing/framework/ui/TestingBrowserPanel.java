@@ -978,14 +978,14 @@ public class TestingBrowserPanel extends JPanel implements ItemListener, TestEve
             }
         } else if (platform.equals("Local Oracle DB (thin)")) {
             system.useOracleThin("localhost:1521:orcl", "scott", "tiger");
+        } else if (platform.equals("Oracle 11gR1 (thin)")) {
+            system.useOracleThin("tlsvrdb7.ca.oracle.com:1521:toplink", "", "password");
         } else if (platform.equals("Oracle 10gR2 (thin)")) {
             system.useOracleThin("tlsvrdb3.ca.oracle.com:1521:toplink", "", "password");
         } else if (platform.equals("Oracle 10g (thin)")) {
             system.useOracleThin("tlsvrdb5.ca.oracle.com:1521:toplink", "", "password");
         } else if (platform.equals("Oracle 9.2 (thin)")) {
             system.useOracleThin("tlsvrdb1.ca.oracle.com:1521:toplink", "", "password");
-        } else if (platform.equals("Oracle 8.1.7 (thin)")) {
-            system.useOracle8Thin("tlsvrdb4.ca.oracle.com:1521:toplink", "", "password");
         } else if (platform.equals("Oracle (OCI)")) {
             system.useOracleOCI();
         } else if (platform.equals("TimesTen - coredev1")) {
@@ -1133,10 +1133,10 @@ public class TestingBrowserPanel extends JPanel implements ItemListener, TestEve
     public void resetLogin() {
         getLoginChoice().addItem("Last Login Used");
         getLoginChoice().addItem("Local Oracle DB (thin)");
+        getLoginChoice().addItem("Oracle 11gR1 (thin)");
         getLoginChoice().addItem("Oracle 10gR2 (thin)");
         getLoginChoice().addItem("Oracle 10g (thin)");
         getLoginChoice().addItem("Oracle 9.2 (thin)");
-        getLoginChoice().addItem("Oracle 8.1.7 (thin)");
         getLoginChoice().addItem("Oracle (OCI)");
         getLoginChoice().addItem("TimesTen - coredev1");
         getLoginChoice().addItem("TimesTen - coredev2");
