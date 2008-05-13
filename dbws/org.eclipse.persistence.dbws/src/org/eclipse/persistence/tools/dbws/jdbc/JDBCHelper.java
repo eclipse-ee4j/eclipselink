@@ -444,9 +444,10 @@ public class JDBCHelper {
                         // this dbStoredArgument belongs to a 'regular' procedure
                         DbStoredProcedure matchingProc = null;
                         for (int i = 0; i < tmpProcs.size();) {
-                            if (tmpProcs.get(i).matches(actualCatalogName, actualSchemaName,
+                        	DbStoredProcedure tmpProc = tmpProcs.get(i);
+                            if (tmpProc.matches(actualCatalogName, actualSchemaName,
                                 actualProcedureName, isOracle, catalogMatchDontCare)) {
-                                matchingProc = tmpProcs.remove(i);
+                            	matchingProc = tmpProc;
                                 dbStoredProcedures.add(matchingProc);
                                 break;
                             }
@@ -464,8 +465,9 @@ public class JDBCHelper {
                         }
                         if (matchingProc != null) {
                             if (matchingProc.isFunction() &&
-                                dbStoredArgument.getName() == null &&
-                                dbStoredArgument.getSeq() == 1) {
+                               (isOracle ? (dbStoredArgument.getName() == null) :
+                                (dbStoredArgument.getName().equalsIgnoreCase(""))) &&
+                                dbStoredArgument.getSeq() == (isOracle ? 1 : 0)) {
                                 ((DbStoredFunction)matchingProc).setReturnArg(dbStoredArgument);
                             }
                             else {
