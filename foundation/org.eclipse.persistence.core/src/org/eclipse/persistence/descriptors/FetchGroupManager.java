@@ -20,14 +20,12 @@ import org.eclipse.persistence.exceptions.QueryException;
 import org.eclipse.persistence.internal.helper.ClassConstants;
 import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.helper.Helper;
-import org.eclipse.persistence.internal.localization.ExceptionLocalization;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.internal.sessions.UnitOfWorkImpl;
 import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.queries.FetchGroup;
 import org.eclipse.persistence.queries.FetchGroupTracker;
 import org.eclipse.persistence.queries.ObjectLevelReadQuery;
-import org.eclipse.persistence.queries.ReadObjectQuery;
 
 /**
  * <p><b>Purpose</b>: The fetch group manager controls the named fetch groups defined at
