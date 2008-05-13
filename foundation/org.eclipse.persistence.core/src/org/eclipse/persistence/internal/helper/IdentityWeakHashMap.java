@@ -34,9 +34,6 @@ import java.io.*;
 import java.lang.ref.ReferenceQueue;
 import java.lang.ref.WeakReference;
 import java.util.*;
-import java.util.Map.Entry;
-
-import javax.swing.text.AbstractDocument.Content;
 
 import org.eclipse.persistence.internal.localization.ExceptionLocalization;
 

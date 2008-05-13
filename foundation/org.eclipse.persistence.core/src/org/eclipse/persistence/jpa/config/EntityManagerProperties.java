@@ -9,10 +9,6 @@
  ******************************************************************************/  
 package org.eclipse.persistence.jpa.config;
 
-import java.io.File;
-import java.util.Map;
-import java.util.HashMap;
-
 /**
  * The class defines TopLink properties' names.
  * 

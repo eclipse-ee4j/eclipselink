@@ -1,7 +1,6 @@
 package org.eclipse.persistence.internal.identitymaps;
 
 import java.lang.ref.ReferenceQueue;
-import java.util.Iterator;
 import java.util.Vector;
 
 public class WeakUnitOfWorkIdentityMap extends UnitOfWorkIdentityMap {
