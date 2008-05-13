@@ -16,7 +16,6 @@ import java.util.*;
 
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.internal.descriptors.OptimisticLockingPolicy;
-import org.eclipse.persistence.internal.helper.*;
 import org.eclipse.persistence.internal.sessions.*;
 import org.eclipse.persistence.internal.sessions.remote.*;
 import org.eclipse.persistence.queries.*;
