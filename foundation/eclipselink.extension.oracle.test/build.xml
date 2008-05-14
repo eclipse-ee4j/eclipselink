@@ -122,9 +122,8 @@
     <path id="run.classpath">
         <pathelement path="${eclipselink.extension.oracle.test}/${classes.dir}"/>
         <pathelement path="${eclipselink.extension.oracle.test}/${run.dir}"/>
-        <path refid="compile.path"/>
         <pathelement path="${jdbc.driver.jar}"/>
-        <pathelement path="${tools.jar}"/>
+        <path refid="compile.path"/>
     </path>
 
     <!-- Default test target, runs test.class from test.properties (default is OracleTestModel). -->
