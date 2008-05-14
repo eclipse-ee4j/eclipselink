@@ -6,13 +6,20 @@ num_files=10
 
 # leave only the last $num_files (10) builds on the download server
 index=0
-for zipfile in `ls -r /home/data/httpd/download.eclipse.org/technology/eclipselink/nightly/eclipse*.zip ` ; do
+for zipfile in `ls -r /home/data/httpd/download.eclipse.org/technology/eclipselink/nightly/eclipselink-plugins-incubation*.zip ` ; do
 	index=`expr $index + 1`
         if [ $index -gt $num_files ] ; then
            rm $zipfile
 	fi
 done
 
+index=0
+for zipfile in `ls -r /home/data/httpd/download.eclipse.org/technology/eclipselink/nightly/eclipselink-incubation*.zip ` ; do
+	index=`expr $index + 1`
+        if [ $index -gt $num_files ] ; then
+           rm $zipfile
+	fi
+done
 #Test suite results
 for suite in core jpa sdo  ; do
     # Clean SRG Results
