@@ -36,7 +36,8 @@
         <xmltask source="${oc4j.home}/j2ee/home/config/system-jazn-data.xml" dest="${oc4j.home}/j2ee/home/config/system-jazn-data.xml" >
             <replace path="//realm[name='jazn.com']/users/user[name='fmwadmin']" withfile="${system-jazn-data.xml}" />
         </xmltask>
-        <copy file="${eclipselink.jar}" todir="${oc4j.home}/lib/java/shared/oracle.toplink/11.1.1.0.0"/>
+        <delete file="${oc4j.home}/lib/java/shared/oracle.toplink/11.1.1.0.0/eclipselink.jar" failonerror="false"/>
+        <copy file="${eclipselink.jar}" todir="${oc4j.home}/j2ee/home/applib"/>
         <copy file="${junit.lib}" todir="${oc4j.home}/j2ee/home/applib"/>
         <copy file="${jdbc.driver.jar}" todir="${oc4j.home}/j2ee/home/applib"/>
     </target>
