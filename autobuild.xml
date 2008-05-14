@@ -5,7 +5,7 @@
             depends="clean, build, build-test"
     />
     <target name="build-nightly"    description="Trigger the nightly automated build and lrg tests"
-            depends="clean, build, build-test, test-lrg, publish-build, publish-results"
+            depends="clean, build, package.eclipselink.bundles, build-test, test-lrg, publish-build, publish-results"
     />
     <target name="build-continuous" description="Trigger an automated build and run the tests if source changes exist"
             depends="clean, build-no-javadoc, build-test, test-srg"
