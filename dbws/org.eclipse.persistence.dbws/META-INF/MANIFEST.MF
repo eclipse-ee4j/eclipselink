@@ -13,4 +13,6 @@ Export-Package: org.eclipse.persistence.dbws,
  org.eclipse.persistence.tools.dbws.jdbc
 Require-Bundle: org.eclipse.persistence.core,
  javax.xml.soap,
- javax.wsdl
+ javax.wsdl,
+ javax.activation,
+ org.eclipse.persistence.asm
