@@ -5,7 +5,7 @@
             depends="clean, build, build-test"
     />
     <target name="build-nightly"    description="Trigger the nightly automated build and lrg tests"
-            depends="clean, build, package.eclipselink.bundles, build-test, test-lrg, publish-build, publish-results"
+            depends="clean, build, package.bundles, build-test, test-lrg, publish-build, publish-results"
     />
     <target name="build-continuous" description="Trigger an automated build and run the tests if source changes exist"
             depends="clean, build-no-javadoc, build-test, test-srg"
@@ -103,6 +103,10 @@
 
     <target name="build-no-javadoc" depends="get-dependencies">
         <ant antfile="build.xml" dir="${build.root.dir}" target="package.eclipselink.jar"/>
+    </target>
+
+    <target name="package.bundles" depends="get-dependencies">
+        <ant antfile="build.xml" dir="${build.root.dir}" target="package.eclipselink.bundles"/>
     </target>
 
     <target name="build-test" depends="get-dependencies">
