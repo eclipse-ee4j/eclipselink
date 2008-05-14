@@ -99,13 +99,18 @@
     <!-- Updates and copies the manifest file to build dir.  Extracts the oracle extension jar to the build dir -->
     <target name="create.build.dir" depends="build.core" description="create the directory used to build jars from">
         <unjar src="${eclipselink.extension.oracle}/${eclipselink.oracle.depend.jar}" dest="${build.dir}"/>
-        <filter token="VERSION" value="${release.version} ${build_number_string}"/>
-        <copy file="${eclipselink.core}/${resource.dir}/META-INF/MANIFEST.MF" tofile="${build.dir}/META-INF/MANIFEST.MF" filtering="true" overwrite="true"/>
     </target>
     
     <!-- Packages the eclipselink.jar. -->
     <target name="package.eclipselink.jar" depends="create.build.dir" description="build EclipseLink jar">
-        <jar jarfile="${eclipselink.jar}" manifest="${build.dir}/META-INF/MANIFEST.MF">
+        <jar jarfile="${eclipselink.jar}">
+             <manifest>
+                <attribute name="Implementation-Title" value="${implementation.title}"/>
+                <attribute name="Implementation-Version" value="${release.version} ${build_number_string}"/>
+                <attribute name="Implementation-Vendor" value="${implementation.vendor}"/>
+                <attribute name="Release-Designation" value="${release.designation}"/>
+                <attribute name="Premain-Class" value="${premain.class}"/>
+            </manifest>
             <fileset dir="${eclipselink.core}/${classes.dir}">
                 <include name="org/eclipse/persistence/**/*.class"/>
                 <include name="deprecated/**/*.class"/>
