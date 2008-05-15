@@ -12,19 +12,15 @@ public class Activator implements BundleActivator, SynchronousBundleListener {
     private static BundleContext context;
     
     public void bundleChanged(BundleEvent event) {
-//      printEventName(event);          
-//      System.out.println("-" + event.getBundle().getSymbolicName());
-        
         switch (event.getType()) {
         case BundleEvent.STARTING:
-//          System.out.println("Bundle starting: " + event.getBundle());
             registerBundle(event.getBundle());
             break;
-
-        case BundleEvent.STOPPING:
-//          System.out.println("Bundle stopping: " + event.getBundle());
-            deregisterBundle(event.getBundle());
-            break;
+    
+            case BundleEvent.STOPPING:
+              System.out.println("Bundle stopping: " + event.getBundle());
+                deregisterBundle(event.getBundle());
+                break;
         }
     }
 
@@ -68,7 +64,6 @@ public class Activator implements BundleActivator, SynchronousBundleListener {
         Activator.context = context;
         registerBundleListener();
         registerProviderService();
-//      System.out.println("EclipseLink bundle started.");
     }
 
     private void registerBundleListener() {
@@ -85,7 +80,6 @@ public class Activator implements BundleActivator, SynchronousBundleListener {
             try {
                 String[] persistenceUnitNames = getPersistenceUnitNames(bundle);
                 if (persistenceUnitNames != null) {
-//                  System.out.println("Registering JPA Client Bundle: " + bundle);
                     PersistenceProvider.addBundle(bundle, persistenceUnitNames);
                 }
             } catch (Exception e) {
@@ -120,15 +114,11 @@ public class Activator implements BundleActivator, SynchronousBundleListener {
     public static final String ECLIPSELINK_OSGI_PROVIDER = "org.eclipse.persistence.jpa.osgi.PersistenceProviderOSGi";
     
     public void registerProviderService() throws Exception {
-//      System.out.println("EclipseLink registering as a provider service...");
-
         // Create and register ourselves as a JPA persistence provider service
         PersistenceProvider providerService = new PersistenceProvider();
         Hashtable<String, String> props = new Hashtable<String, String>();
         props.put(PERSISTENCE_PROVIDER, ECLIPSELINK_OSGI_PROVIDER);
         getContext().registerService(PERSISTENCE_PROVIDER, providerService, props);
-
-//      System.out.println("EclipseLink registered.");
     }
 }
 

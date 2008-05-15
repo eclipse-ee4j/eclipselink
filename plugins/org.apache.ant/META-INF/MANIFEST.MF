@@ -103,5 +103,4 @@ Export-Package: images,
  org.apache.tools.mail,
  org.apache.tools.tar,
  org.apache.tools.zip
-Require-Bundle: org.eclipse.osgi
 Bundle-RequiredExecutionEnvironment: J2SE-1.2

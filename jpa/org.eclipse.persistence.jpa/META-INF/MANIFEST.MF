@@ -5,7 +5,6 @@ Bundle-SymbolicName: org.eclipse.persistence.jpa
 Bundle-Version: 0.1
 Require-Bundle: org.eclipse.persistence.core;visibility:=reexport,
  system.bundle,
- org.apache.ant,
  javax.persistence;bundle-version="1.99.0";visibility:=reexport,
  javax.transaction
 Export-Package: org.eclipse.persistence.internal.jpa,
@@ -38,3 +37,5 @@ Export-Package: org.eclipse.persistence.internal.jpa,
  org.eclipse.persistence.tools.weaving.jpa
 Bundle-Activator: org.eclipse.persistence.jpa.osgi.Activator
 Bundle-ClassPath: .
+Import-Package: org.apache.tools.ant;resolution:=optional,
+ org.apache.tools.ant.types;resolution:=optional
