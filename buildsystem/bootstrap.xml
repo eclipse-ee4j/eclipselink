@@ -92,29 +92,59 @@
     <target name="no-get-src" if="_Test" depends="properties-init">
         <echo message="Update of local source Skipped."/>
     </target>
-    
+
     <target name="get-src" unless="_Test" depends="no-get-src">
+        <echo message="** Begin of Source Retrieval **"/>
+        <!-- the following arg makes the source retrieval "quiet". We really  -->
+        <!-- should log the files that were updated, so commenting out.       -->
+        <!--    <arg value="-q"/>                                             -->
         <exec executable="${svn.exec}" failonerror="true" logError="true" >
             <arg value="co"/>
-            <arg value="-q"/>
             <arg value="${svn.rw.protocol}${svn.branch.url}"/>
         </exec>
+        <chmod file="${build.root.dir}/buildsystem/bootstrap.sh" perm="ug+x"/>
+        <echo message="**  End of Source Retrieval  **"/>
     </target>
 
     <target name="build" depends="get-src" description="Trigger an automated build without testing or publish">
-        <echo message="Calling 'build-no-publish' target in '${build.root.dir}/${autobld.file}'"/>
+        <echo message="'build' target: Calling 'build-no-publish' target in '${build.root.dir}/${autobld.file}'"/>
         <ant antfile="${autobld.file}" dir="${build.root.dir}" target="build-no-publish"/>
+        <!-- Untested: Possible way to call ant and specify a different logger.
+        <java
+                classname="org.apache.tools.ant.launch.Launcher"
+                fork="true"
+                maxmemory="128m"
+                failonerror="true"
+                dir="${build.root.dir}"
+                timeout="4000000"
+                taskname="startAnt"
+        >
+            <classpath>
+                <pathelement location="${ant.home}/lib/ant-launcher.jar"/>
+            </classpath>
+            <arg value="-buildfile"/>
+            <arg file="${autobld.file}"/>
+            <arg value="-logger"/>
+            <arg value="org.apache.tools.ant.listener.MailLogger"/>
+            <arg value="-DMailLogger.properties.file=${build.root.dir}/buildsystem/maillogger.properties"/>
+            <arg value="-Dbranch.name=${branch.name}"/>
+            <arg value="-Dbasedir=${build.root.dir}"/>
+            <arg value="build-no-publish"/>
+        </java -->
     </target>
 
     <target name="nightly" depends="get-src" description="Trigger the nightly automated build and lrg tests">
-        <echo message="Calling 'build-nightly' target in '${build.root.dir}/${autobld.file}'"/>
+        <echo message="'nightly' target: Calling 'build-nightly' target in '${build.root.dir}/${autobld.file}'"/>
         <ant antfile="${autobld.file}" dir="${build.root.dir}" target="build-nightly"/>
     </target>
 
     <target name="cb" if="_DoBuild" depends="no-cb" description="Trigger an automated 'continuous build' (compile and run short verify)">
-        <move file="${current.svnrev.file}" tofile="${latest.svnrev.file}"/>
+        <echo message="** Begin of Antcall to 'get-src' **"/>
         <antcall target="get-src"/>
-        <echo message="Calling 'build-continuous' target in '${build.root.dir}/${autobld.file}'"/>
+        <echo message="**  End of Antcall to 'get-src'  **"/>
+        <!-- Don't move current to latest until source sucessfully retrieved -->
+        <move file="${current.svnrev.file}" tofile="${latest.svnrev.file}"/>
+        <echo message="'cb' target: Calling 'build-continuous' target in '${build.root.dir}/${autobld.file}'"/>
         <ant antfile="${autobld.file}" dir="${build.root.dir}" target="build-continuous"/>
     </target>
 
