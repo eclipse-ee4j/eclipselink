@@ -18,7 +18,7 @@ cat ./trunk/buildsystem/phphead.txt > $tmp/index.xml
 find /home/data/httpd/download.eclipse.org/technology/eclipselink/nightly -name eclipselink-incubation\*.zip -printf '        <p> <a href="http://www.eclipse.org/downloads/download.php?file=/technology/eclipselink/nightly/%f"> %f </a>    -----    <a href="http://www.eclipse.org/eclipselink/testing/index.php"> Test Results </a></p>\n' | sort -r >> $tmp/index.xml
 echo \<\/description\> >> $tmp/index.xml
 echo \<\/section\> >> $tmp/index.xml
-echo \<section class=\"main\" name=\"1.0 Nightly Builds - OSGi Plugins"\> >> $tmp/index.xml
+echo \<section class=\"main\" name=\"1.0 Nightly Builds - OSGi Plugins\"\> >> $tmp/index.xml
 echo \<description\> >> $tmp/index.xml
 
 find /home/data/httpd/download.eclipse.org/technology/eclipselink/nightly -name eclipselink-plugins-incubation\*.zip -printf '        <p> <a href="http://www.eclipse.org/downloads/download.php?file=/technology/eclipselink/nightly/%f"> %f </a></p>\n' | sort -r >> $tmp/index.xml
