@@ -27,7 +27,7 @@ import org.eclipse.persistence.internal.xr.sxf.SimpleXMLFormat;
  * and if those value(s) will be handled using binary attachements.
  *
  * @author Mike Norman - michael.norman@oracle.com
- * @since Oracle TopLink 11.x.x
+ * @since EclipseLink 1.x
  *
  */
 public class Result {

@@ -25,7 +25,7 @@
  * in {@link SOAPResponseWriter}
  *
  * @author Mike Norman - michael.norman@oracle.com
- * @since Oracle EclipseLink 1.x
+ * @since EclipseLink 1.x
  */
 public class SOAPResponse {
 

@@ -26,7 +26,7 @@ import org.eclipse.persistence.exceptions.DBWSException;
  * <p><b>INTERNAL:</b>Name and type ({@link QName}) for a bound argument.
  *
  * @author Mike Norman - michael.norman@oracle.com
- * @since Oracle TopLink 11.x.x
+ * @since EclipseLink 1.x
  */
 public class Parameter {
 

@@ -16,7 +16,7 @@ import java.util.ArrayList;
 
 // Java extension imports
 
-// TopLink imports
+// EclipseLink imports
 
 public class BindingModel {
 

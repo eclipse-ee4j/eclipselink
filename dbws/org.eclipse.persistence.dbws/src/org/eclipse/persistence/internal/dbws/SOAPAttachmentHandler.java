@@ -25,7 +25,7 @@ import org.eclipse.persistence.internal.oxm.ByteArrayDataSource;
 import org.eclipse.persistence.oxm.attachment.XMLAttachmentMarshaller;
 
 /**
- * <p><b>INTERNAL</b>: implementation of TopLink {@link XMLAttachmentMarshaller} implementation
+ * <p><b>INTERNAL</b>: implementation of EclipseLink {@link XMLAttachmentMarshaller} implementation
  * handles binary attachments
  *
  * @author Mike Norman - michael.norman@oracle.com

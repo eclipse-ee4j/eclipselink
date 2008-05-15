@@ -8,8 +8,8 @@
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
- *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ *   mnorman - May 15/2008 - 1.x - Initial implementation
+ ******************************************************************************/
 package org.eclipse.persistence.internal.xr;
 
 // javase imports

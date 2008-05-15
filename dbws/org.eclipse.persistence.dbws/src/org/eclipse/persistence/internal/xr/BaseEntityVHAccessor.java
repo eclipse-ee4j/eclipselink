@@ -29,7 +29,7 @@ import org.eclipse.persistence.indirection.ValueHolderInterface;
  * contained value.
  *
  * @author Mike Norman - michael.norman@oracle.com
- * @since Oracle TopLink 11.x.x
+ * @since EclipseLink 1.x
  */
 
 @SuppressWarnings("serial")

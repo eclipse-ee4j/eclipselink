@@ -166,6 +166,7 @@ public class WSDLGenerator {
         return def;
     }
 
+    @SuppressWarnings("unused") 
     private void createMethodDefinition(WSDLFactory factory, ExtensionRegistry registry,
         Definition def, Operation operation) throws WSDLException {
         Message requestMessage = def.createMessage();

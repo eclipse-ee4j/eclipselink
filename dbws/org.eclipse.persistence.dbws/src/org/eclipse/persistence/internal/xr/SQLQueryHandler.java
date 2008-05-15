@@ -25,7 +25,7 @@ import org.eclipse.persistence.queries.SQLCall;
  * <p><b>INTERNAL:</b> JPQLQueryHandler sets the JPQL string in the given {@link DatabaseQuery}
  *
  * @author Mike Norman - michael.norman@oracle.com
- * @since Oracle TopLink 11.x.x
+ * @since EclipseLink 1.x
  */
 public class SQLQueryHandler extends QueryHandler {
 

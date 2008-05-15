@@ -72,7 +72,7 @@ import static org.eclipse.persistence.oxm.XMLConstants.UNSIGNED_SHORT_QNAME;
  * a few other misc. features
  *
  * @author Mike Norman - michael.norman@oracle.com
- * @since Oracle TopLink 11.x.x
+ * @since EclipseLink 1.x
  */
 @SuppressWarnings("serial")
 public class Util {
@@ -174,7 +174,7 @@ public class Util {
                     unescapeMode = false;
                     int i;
                     int len;
-                    if ((len = hexString.length()) > 4) {
+                    if (hexString != null && (len = hexString.length()) > 4) {
                         char i1 = (char) (Integer.parseInt(hexString.substring(0, len - 4), 16));
                         char i2 = (char) (Integer.parseInt(hexString.substring(len - 4), 16));
                         sqlName += i1;

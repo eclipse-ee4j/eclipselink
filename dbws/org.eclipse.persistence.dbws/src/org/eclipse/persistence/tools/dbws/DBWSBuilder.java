@@ -324,28 +324,8 @@ public class DBWSBuilder extends DBWSBuilderModel {
         ns.put("xsd", W3C_XML_SCHEMA_NS_URI);
     }
 
-    @SuppressWarnings("unchecked")
     public static void main(String[] args) throws WSDLException {
         DBWSBuilder builder = new DBWSBuilder();
-        String packagerClassname = System.getProperty(BUILDER_PACKAGER_KEY);
-        if (packagerClassname != null) {
-            DBWSPackager dbwsBuilderPackager = null;
-            try {
-                Class<DBWSPackager> packagerClass = null;
-                if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
-                   packagerClass = (Class<DBWSPackager>)AccessController.doPrivileged(
-                        new PrivilegedClassForName(packagerClassname));
-                }
-                else {
-                    packagerClass = PrivilegedAccessHelper.getClassForName(packagerClassname);
-                }
-                dbwsBuilderPackager = packagerClass.newInstance();
-            }
-            catch (Exception e) { /* ignore */ }
-            if (dbwsBuilderPackager != null) {
-                builder.setPackager(dbwsBuilderPackager);
-            }
-        }
         builder.start(args);
     }
 
@@ -1000,68 +980,70 @@ public class DBWSBuilder extends DBWSBuilderModel {
                     break;
                 }
             }
-            String tablename_lc = desc.getAlias();
-            ComplexType complexType = new ComplexType();
-            complexType.setName(tablename_lc + "Type");
-            Sequence sequence = new Sequence();
-            Iterator j = desc.getMappings().iterator();
-            while (j.hasNext()) {
-                DirectToFieldMapping mapping = (DirectToFieldMapping)j.next();
-                Element element = new Element();
-                DatabaseField field = mapping.getField();
-                element.setName(field.getName().toLowerCase());
-                if (desc.getPrimaryKeyFields().contains(field)) {
-                    element.setMinOccurs("1");
-                }
-                else {
-                    element.setMinOccurs("0");
-                }
-                for (DbColumn dbColumn : dbTable.getColumns()) {
-                    if (dbColumn.getName().equals(field.getName())) {
-                        StringBuilder sb = new StringBuilder();
-                        int jdbcType = dbColumn.getJDBCType();
-                        QName qName = getXMLTypeFromJDBCType(jdbcType);
-                        if (qName == BASE_64_BINARY_QNAME) {
-                            Set<Map.Entry<Class, ClassDescriptor>> oxDescriptorSet =
-                                oxProject.getDescriptors().entrySet();
-                            for (Map.Entry<Class, ClassDescriptor> me : oxDescriptorSet) {
-                                ClassDescriptor oxDesc = me.getValue();
-                                if (oxDesc.getAlias().equals(tablename_lc)) {
-                                    DatabaseMapping dm =
-                                        oxDesc.getMappingForAttributeName(mapping.getAttributeName());
-                                    if (dm instanceof XMLBinaryDataMapping) {
-                                        XMLBinaryDataMapping xbdm = (XMLBinaryDataMapping)dm;
-                                        if (xbdm.isSwaRef()) {
-                                            sb.append(WSI_SWAREF_PREFIX + ":" + WSI_SWAREF);
-                                            schema.getNamespaceResolver().put(WSI_SWAREF_PREFIX,
-                                                WSI_SWAREF_URI);
-                                        }
-                                        else {
-                                            sb.append(BASE_64_BINARY_QNAME.toString());
-                                        }
-                                    }
-                                    break;
-                                }
-                            }
-                        }
-                        else {
-                            if (qName.getNamespaceURI().equalsIgnoreCase(W3C_XML_SCHEMA_NS_URI)) {
-                                sb.append("xsd:");
-                            }
-                            sb.append(qName.getLocalPart());
-                        }
-                        element.setType(sb.toString());
-                        sequence.addElement(element);
-                        break;
-                    }
-                }
+            if (desc != null) {
+	            String tablename_lc = desc.getAlias();
+	            ComplexType complexType = new ComplexType();
+	            complexType.setName(tablename_lc + "Type");
+	            Sequence sequence = new Sequence();
+	            Iterator j = desc.getMappings().iterator();
+	            while (j.hasNext()) {
+	                DirectToFieldMapping mapping = (DirectToFieldMapping)j.next();
+	                Element element = new Element();
+	                DatabaseField field = mapping.getField();
+	                element.setName(field.getName().toLowerCase());
+	                if (desc.getPrimaryKeyFields().contains(field)) {
+	                    element.setMinOccurs("1");
+	                }
+	                else {
+	                    element.setMinOccurs("0");
+	                }
+	                for (DbColumn dbColumn : dbTable.getColumns()) {
+	                    if (dbColumn.getName().equals(field.getName())) {
+	                        StringBuilder sb = new StringBuilder();
+	                        int jdbcType = dbColumn.getJDBCType();
+	                        QName qName = getXMLTypeFromJDBCType(jdbcType);
+	                        if (qName == BASE_64_BINARY_QNAME) {
+	                            Set<Map.Entry<Class, ClassDescriptor>> oxDescriptorSet =
+	                                oxProject.getDescriptors().entrySet();
+	                            for (Map.Entry<Class, ClassDescriptor> me : oxDescriptorSet) {
+	                                ClassDescriptor oxDesc = me.getValue();
+	                                if (oxDesc.getAlias().equals(tablename_lc)) {
+	                                    DatabaseMapping dm =
+	                                        oxDesc.getMappingForAttributeName(mapping.getAttributeName());
+	                                    if (dm instanceof XMLBinaryDataMapping) {
+	                                        XMLBinaryDataMapping xbdm = (XMLBinaryDataMapping)dm;
+	                                        if (xbdm.isSwaRef()) {
+	                                            sb.append(WSI_SWAREF_PREFIX + ":" + WSI_SWAREF);
+	                                            schema.getNamespaceResolver().put(WSI_SWAREF_PREFIX,
+	                                                WSI_SWAREF_URI);
+	                                        }
+	                                        else {
+	                                            sb.append(BASE_64_BINARY_QNAME.toString());
+	                                        }
+	                                    }
+	                                    break;
+	                                }
+	                            }
+	                        }
+	                        else {
+	                            if (qName.getNamespaceURI().equalsIgnoreCase(W3C_XML_SCHEMA_NS_URI)) {
+	                                sb.append("xsd:");
+	                            }
+	                            sb.append(qName.getLocalPart());
+	                        }
+	                        element.setType(sb.toString());
+	                        sequence.addElement(element);
+	                        break;
+	                    }
+	                }
+	            }
+	            complexType.setSequence(sequence);
+	            schema.addTopLevelComplexTypes(complexType);
+	            Element wrapperElement = new Element();
+	            wrapperElement.setName(tablename_lc);
+	            wrapperElement.setType(tablename_lc + "Type");
+	            schema.addTopLevelElement(wrapperElement);
             }
-            complexType.setSequence(sequence);
-            schema.addTopLevelComplexTypes(complexType);
-            Element wrapperElement = new Element();
-            wrapperElement.setName(tablename_lc);
-            wrapperElement.setType(tablename_lc + "Type");
-            schema.addTopLevelElement(wrapperElement);
         }
     }
 

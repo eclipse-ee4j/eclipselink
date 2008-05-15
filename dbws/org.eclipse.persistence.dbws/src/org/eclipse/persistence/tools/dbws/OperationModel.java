@@ -101,7 +101,8 @@ public class OperationModel {
     public boolean isProcedureOperation() {
         return false;
     }
-
+    
+    @SuppressWarnings("unused") 
     public void buildOperation(DBWSBuilder builder) {
         return;
     }

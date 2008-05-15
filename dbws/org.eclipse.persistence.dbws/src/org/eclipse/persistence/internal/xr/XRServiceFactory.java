@@ -47,28 +47,27 @@ import static org.eclipse.persistence.internal.xr.Util.TARGET_NAMESPACE_PREFIX;
  * <p><b>INTERNAL</b>: helper class that knows how to build a {@link XRServiceAdapter} (a.k.a DBWS). An
  * <code>XRService</code> requires the following resources:
  * <ul>
- * <li>metadata in the form of a descriptor file called <tt><b>toplink-dbws.xml</b></tt><br>
+ * <li>metadata in the form of a descriptor file called <tt><b>eclipselink-dbws.xml</b></tt><br>
  * </li>
- * <li>an XML Schema Definition (<tt>.xsd</tt>) file called <tt><b>toplink-dbws-schema.xsd</b></tt>
+ * <li>an XML Schema Definition (<tt>.xsd</tt>) file called <tt><b>eclipselink-dbws-schema.xsd</b></tt>
  * </li>
- * <li>a TopLink <tt>sessions.xml</tt> file called <tt><b>toplink-dbws-sessions.xml</b></tt><br>
+ * <li>a TopLink <tt>sessions.xml</tt> file called <tt><b>eclipselink-dbws-sessions.xml</b></tt><br>
  * &nbsp; the naming convention for the <tt>sessions.xml</tt> files can be overriden by the
- * <b>optional</b> <tt>&lt;sessions-file&gt;</tt> entry in the <code>toplink-dbws.xml</code>
+ * <b>optional</b> <tt>&lt;sessions-file&gt;</tt> entry in the <code>eclipselink-dbws.xml</code>
  * descriptor file.
  * </li>
- * <li>TopLink metadata in the form of a TopLink {@link Project} (either deployment XML or Java classes).
+ * <li>EclipseLink metadata in the form of a EclipseLink {@link Project} (either deployment XML or Java classes).
  * <p>A typical <code>XRService</code> requires two projects: one to represent the O-R side, the other to
  * represent the O-X side.<br>
  * The O-R and O-X <code>Projects</code> metadata must have:<br>
  * i) identical case-sensitive <code>Project</code> names:<pre>
  * &lt;?xml version="1.0" encoding="UTF-8"?&gt;
- * &lt;toplink:object-persistence version="Oracle TopLink - 11g Release 1 (11.1.1.0.0) (Build YYMMDD)"
- *   xmlns:opm="http://xmlns.oracle.com/ias/xsds/opm"
+ * &lt;eclipselink:object-persistence version="Eclipse Persistence Services ..."
  *   xmlns:xsd="http://www.w3.org/2001/XMLSchema"
- *   xmlns:toplink="http://xmlns.oracle.com/ias/xsds/toplink"
  *   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+ *   xmlns:eclipselink="http://xmlns.oracle.com/ias/xsds/eclipselink"
  *   &gt;
- *   &lt;opm:name&gt;example&lt;/opm:name&gt;
+ *   &lt;eclipselink:name&gt;example&lt;/eclipselink:name&gt;
  * or
  * ...
  * import org.eclipse.persistence.sessions.Project;
@@ -86,17 +85,17 @@ import static org.eclipse.persistence.internal.xr.Util.TARGET_NAMESPACE_PREFIX;
  * ii) identical case-sensitive aliases for {@link ClassDescriptor Descriptors} that are common
  * between the projects:
  * <pre>
- * &lt;opm:class-mapping-descriptor xsi:type="toplink:relational-class-mapping-descriptor"&gt;
- *   &lt;opm:class&gt;some.package.SomeClass&lt;/opm:class&gt;
- *   &lt;opm:alias&gt;SomeAlias&lt;/opm:alias&gt;
+ * &lt;eclipselink:class-mapping-descriptor xsi:type="eclipselink:relational-class-mapping-descriptor"&gt;
+ *   &lt;eclipselink:class&gt;some.package.SomeClass&lt;/eclipselink:class&gt;
+ *   &lt;eclipselink:alias&gt;SomeAlias&lt;/eclipselink:alias&gt;
  * ...
- * &lt;opm:class-mapping-descriptor xsi:type="toplink:xml-class-mapping-descriptor"&gt;
- *   &lt;opm:class&gt;some.package.SomeClass&lt;/opm:class&gt;
- *   &lt;opm:alias&gt;SomeAlias&lt;/opm:alias&gt;
+ * &lt;eclipselink:class-mapping-descriptor xsi:type="eclipselink:xml-class-mapping-descriptor"&gt;
+ *   &lt;eclipselink:class&gt;some.package.SomeClass&lt;/eclipselink:class&gt;
+ *   &lt;eclipselink:alias&gt;SomeAlias&lt;/eclipselink:alias&gt;
  * </pre>
  * </li>
  * </ul>
- * An example <tt><b>toplink-dbws.xml</b></tt> descriptor file:
+ * An example <tt><b>eclipselink-dbws.xml</b></tt> descriptor file:
  * <pre>
  * &lt;?xml version="1.0" encoding="UTF-8"?>
  * &lt;dbws
@@ -173,7 +172,8 @@ public class XRServiceFactory  {
         validateOperations();
         initializeOperations();
     }
-
+    
+    @SuppressWarnings("unused") 
     public void customizeSession(Session orSession, Session oxSession) {
     }
 

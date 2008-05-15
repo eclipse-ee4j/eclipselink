@@ -26,7 +26,7 @@ import org.eclipse.persistence.internal.oxm.ByteArrayDataSource;
 * the {@link QueryOperation} to handle binary attachments.
 *
 * @author Mike Norman - michael.norman@oracle.com
-* @since Oracle TopLink 11.x.x
+* @since EclipseLink 1.x
 */
 public class AttachmentHelper  {
 

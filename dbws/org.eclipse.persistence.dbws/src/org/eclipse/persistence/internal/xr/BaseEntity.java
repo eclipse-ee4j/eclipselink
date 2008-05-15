@@ -36,7 +36,7 @@ import static org.eclipse.persistence.internal.helper.Helper.getShortClassName;
  * abstract class can be dynamically generated at runtime.
  *
  * @author Mike Norman - michael.norman@oracle.com
- * @since Oracle TopLink 11.x.x
+ * @since EclipseLink 1.x
  */
 @SuppressWarnings("unchecked")
 public class BaseEntity implements PersistenceEntity {

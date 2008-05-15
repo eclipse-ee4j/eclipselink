@@ -32,7 +32,7 @@ import org.eclipse.persistence.queries.ValueReadQuery;
  * use different types of queries (DataRead, ValueRead, etc.)
  *
  * @author Mike Norman - michael.norman@oracle.com
- * @since Oracle TopLink 11.x.x
+ * @since EclipseLink 1.x
  */
 public abstract class QueryHandler {
 
@@ -46,6 +46,7 @@ public abstract class QueryHandler {
         this.databaseQuery = databaseQuery;
     }
 
+    @SuppressWarnings("unused") 
     public void validate(XRServiceAdapter xrService, QueryOperation queryOperation) {
     }
 
@@ -114,6 +115,7 @@ public abstract class QueryHandler {
      * @param queryOperation the given <code>QueryOperation</code>
      * @param databaseQuery the given <code>DatabaseQuery</code>
      */
+    @SuppressWarnings("unused") 
     public void initializeCall(XRServiceAdapter xrService, QueryOperation queryOperation,
         DatabaseQuery databaseQuery) {
     }
@@ -125,6 +127,7 @@ public abstract class QueryHandler {
      * @param queryOperation the given <code>QueryOperation</code>
      * @param databaseQuery the given <code>DatabaseQuery</code>
      */
+    @SuppressWarnings("unused") 
     public void initializeArguments(XRServiceAdapter xrService, QueryOperation queryOperation,
         DatabaseQuery databaseQuery) {
         for (int i = 0; i < queryOperation.getParameters().size(); i++) {

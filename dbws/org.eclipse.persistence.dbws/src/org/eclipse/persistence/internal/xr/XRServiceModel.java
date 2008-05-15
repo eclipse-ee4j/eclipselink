@@ -26,7 +26,7 @@ import java.util.Map;
  * <p><b>INTERNAL</b>: internal DBWS model object allows conformity across APIs
  *
  * @author Mike Norman - michael.norman@oracle.com
- * @since Oracle TopLink 11.x.x
+ * @since EclipseLink 1.x
  */
 public class XRServiceModel {
 

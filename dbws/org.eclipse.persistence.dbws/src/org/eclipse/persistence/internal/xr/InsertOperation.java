@@ -25,7 +25,7 @@ import org.eclipse.persistence.sessions.UnitOfWork;
 * operation on the database.
 *
 * @author Mike Norman - michael.norman@oracle.com
-* @since Oracle TopLink 11.x.x
+* @since EclipseLink 1.x
 */
 public class InsertOperation extends Operation {
 

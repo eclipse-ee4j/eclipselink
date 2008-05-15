@@ -36,10 +36,10 @@ import static org.eclipse.persistence.internal.xr.Util.SCHEMA_2_CLASS;
 
 /**
  * <p>
- * <b>INTERNAL:</b> Static helper methods that reads TopLink project deployment
+ * <b>INTERNAL:</b> Static helper methods that reads EclipseLink project deployment
  * XML without classes.
  * <p>
- * This API only support 10g (or >) format deployment XML
+ * This API only supports EclipseLink 1.x format deployment XML
  */
 
 public class ProjectHelper {

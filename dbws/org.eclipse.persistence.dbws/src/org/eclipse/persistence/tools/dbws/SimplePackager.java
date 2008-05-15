@@ -39,7 +39,7 @@ import static org.eclipse.persistence.tools.dbws.Util.SWAREF_FILENAME;
  * <p>
  *
  * @author Mike Norman - michael.norman@oracle.com
- * @since Oracle EclipseLink 1.x
+ * @since EclipseLink 1.x
  * <pre>
  * \--- <b>stageDir</b> root directory
  *    |   <b>eclipselink-dbws-schema.xsd</b>

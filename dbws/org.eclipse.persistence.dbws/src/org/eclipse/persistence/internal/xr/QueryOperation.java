@@ -67,7 +67,7 @@ import static org.eclipse.persistence.oxm.XMLConstants.TIME_QNAME;
  * operation on the database.
  *
  * @author Mike Norman - michael.norman@oracle.com
- * @since Oracle TopLink 11.x.x
+ * @since EclipseLink 1.x
  */
 @SuppressWarnings("serial")
 public class QueryOperation extends Operation {

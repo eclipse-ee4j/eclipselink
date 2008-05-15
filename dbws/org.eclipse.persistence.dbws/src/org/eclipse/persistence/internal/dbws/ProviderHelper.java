@@ -73,21 +73,22 @@ import static org.eclipse.persistence.tools.dbws.Util.WSDL_DIR;
  * <p>
  *
  * @author Mike Norman - michael.norman@oracle.com
- * @since Oracle TopLink 11.x.x
+ * @since EclipseLink 1.0
  * <pre>
- * packaging required for deployment as an Oracle Web Service
+ * packaging required for deployment as a Web Service
  * \--- root of war file
  *      |
  *      \---web-inf
- *          |   oracle-webservices.xml         -- optional policy settings
+ *          |   webservices.xml
+ *          |   <vendor_specific_files: sun-jaxws.xml, weblogic-webservices.xml>
  *          |   web.xml
  *          |
  *          +---classes
  *          |   +---META-INF
- *          |   |    toplink-dbws.xml
- *          |   |    toplink-dbws-sessions.xml -- name can be overriden by <sessions-file> entry in toplink-dbws.xml
- *          |   |    toplink-dbws-or.xml
- *          |   |    toplink-dbws-ox.xml
+ *          |   |    eclipselink-dbws.xml
+ *          |   |    eclipselink-dbws-sessions.xml -- name can be overriden by <sessions-file> entry in eclipselink-dbws.xml
+ *          |   |    eclipselink-dbws-or.xml
+ *          |   |    eclipselink-dbws-ox.xml
  *          |   |
  *          |   +---_dbws
  *          |   |    DBWSProvider.class        -- code-generated javax.xml.ws.Provider
@@ -99,8 +100,8 @@ import static org.eclipse.persistence.tools.dbws.Util.WSDL_DIR;
  *          |             PhoneNumber.class
  *          \---wsdl
  *                 swaref.xsd                  -- optional to handle attachements
- *                 toplink-dbws.wsdl
- *                 toplink-dbws-schema.xsd
+ *                 eclipselink-dbws.wsdl
+ *                 eclipselink-dbws-schema.xsd
  * </pre>
  */
 public class ProviderHelper extends XRServiceFactory {

@@ -24,7 +24,7 @@ import javax.xml.namespace.QName;
  * <p><b>INTERNAL</b>:
  *
  * @author Merrick Schincarol - merrick.schincariol@oracle.com
- * @since Oracle TopLink 11.x.x
+ * @since EclipseLink 1.x
  */
 public class ProcedureOutputArgument extends ProcedureArgument {
 

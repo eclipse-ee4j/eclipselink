@@ -32,7 +32,7 @@ import org.eclipse.persistence.sessions.Session;
  * <p><b>INTERNAL</b>: runtime implementation of TopLink XR Service
  *
  * @author Mike Norman - michael.norman@oracle.com
- * @since Oracle TopLink 11.x.x
+ * @since EclipseLink 1.x
  */
 public class XRServiceAdapter extends XRServiceModel {
 

@@ -27,7 +27,7 @@ import java.util.List;
  * {@link QueryOperation Query} operations
  *
  * @author Mike Norman - michael.norman@oracle.com
- * @since Oracle TopLink 11.x.x
+ * @since EclipseLink 1.x
  */
 
 public abstract class Operation {
@@ -68,7 +68,8 @@ public abstract class Operation {
             p.validate(xrService, name);
         }
     }
-
+    
+    @SuppressWarnings("unused") 
     public void initialize(XRServiceAdapter xrService) {
     }
 

@@ -30,7 +30,7 @@ import javax.xml.soap.SOAPException;
 import javax.xml.soap.SOAPMessage;
 import static javax.xml.XMLConstants.W3C_XML_SCHEMA_NS_URI;
 
-// TopLink imports
+// EclipseLink imports
 import org.eclipse.persistence.internal.descriptors.Namespace;
 import org.eclipse.persistence.internal.oxm.schema.model.Element;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
@@ -47,7 +47,6 @@ import org.eclipse.persistence.oxm.mappings.XMLBinaryDataMapping;
 import org.eclipse.persistence.oxm.mappings.XMLCompositeCollectionMapping;
 import org.eclipse.persistence.oxm.mappings.XMLCompositeObjectMapping;
 import org.eclipse.persistence.oxm.mappings.XMLDirectMapping;
-
 import static org.eclipse.persistence.internal.dbws.ProviderHelper.SERVICE_NS_PREFIX;
 import static org.eclipse.persistence.oxm.XMLConstants.BASE_64_BINARY;
 

@@ -36,7 +36,7 @@ import static org.eclipse.persistence.internal.xr.Util.SXF_QNAME;
  * and its arguments in the given {@link DatabaseQuery}
  *
  * @author Mike Norman - michael.norman@oracle.com
- * @since Oracle TopLink 11.x.x
+ * @since EclipseLink 1.x
  */
 
 public class StoredProcedureQueryHandler extends QueryHandler {
