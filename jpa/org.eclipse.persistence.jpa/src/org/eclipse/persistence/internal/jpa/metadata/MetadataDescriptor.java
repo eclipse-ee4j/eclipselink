@@ -1326,7 +1326,7 @@ public class MetadataDescriptor {
                     // We still found nothing ... we should throw an exception 
                     // here, but for now, set the access to FIELD. The user 
                     // will eventually get an exception saying there is no 
-                    // primary key set if property access is not actually the
+                    // primary key set if field access is not actually the
                     // case.
                     if (m_usesPropertyAccess == null) {
                         m_usesPropertyAccess = Boolean.FALSE;
