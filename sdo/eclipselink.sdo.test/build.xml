@@ -1,18 +1,40 @@
+<!--/*******************************************************************************
+* This program and the accompanying materials are made available under the terms of
+* the Eclipse Public License v1.0, which accompanies this distribution and is available at
+* http://www.eclipse.org/legal/epl-v10.html.
+*
+*   Ant naming conventions:
+*   - regardless of the actual OS platform,'/' is the directory separator
+*     (Ant will convert as appropriate).
+*   - multi-word properties use periods '.'
+*   - multi-word targets use hyphens '-' 
+*   - multi-word macros use underscores '_'
+*   - multi-word macro attributes are concatinated
+*     e.g. 'runpathref'  
+*   - multi-word tasks (taskdef) names are concatinated
+*     e.g. 'validateconnection'
+*   - OS environment variables are in ALLCAPS and have 'env' as a prefix
+*     e.g. ${env.XXX}.
+*   - Ant properties are lower case.
+*
+* Contributors:
+*     Oracle - initial API and implementation
+#******************************************************************************/-->
 <project name="SDO Testing" default="test" basedir=".">
     <property file="${user.home}/build.properties"/>
     <property file="./build.properties"/>
     <propertyset id="parser.properties">
-	    <propertyref prefix="javax.xml"/>
-	</propertyset>
+        <propertyref prefix="javax.xml"/>
+    </propertyset>
 
-	<!-- Compile/run paths -->
+    <!-- Compile/run paths -->
     <path id="sdo.compile.path">
         <pathelement path="${eclipselink.sdo}/${classes.dir}"/>
         <pathelement path="${eclipselink.core}/${classes.dir}"/>
         <fileset
-            dir="${eclipselink.core.lib}"
+            dir="${eclipselink.plugins}"
             includes="${eclipselink.core.depend}"/>
-		<pathelement path="${junit.lib}"/>
+        <pathelement path="${junit.lib}"/>
         <pathelement path="${commonj.sdo.lib}"/>
     </path>
     <path id="sdo.run.path">
@@ -23,23 +45,23 @@
         <pathelement path="${eclipselink.sdo.test}/${resource.dir}"/>
         <pathelement path="${eclipselink.sdo.test}/${classes.dir}"/>
         <pathelement path="${commonj.sdo.lib}"/>
-        <pathelement path="${eclipselink.core.lib}/eclipselink-asm.jar"/>
+        <pathelement path="${eclipselink.plugins}/org.eclipse.persistence.asm"/>
         <pathelement path="${eclipselink.sdo}/${classes.dir}"/>
         <pathelement path="${eclipselink.core}/${classes.dir}"/>
     </path>
 
-	<!-- The following compile/run paths reference eclipselink.jar for non-test classes and resources -->
+    <!-- The following compile/run paths reference eclipselink.jar for non-test classes and resources -->
     <path id="sdo.compile.path.against.jar">
         <fileset
-            dir="${eclipselink.core.lib}"
+            dir="${eclipselink.plugins}"
             includes="${eclipselink.core.depend}"/>
-		<pathelement path="${junit.lib}"/>
+    <pathelement path="${junit.lib}"/>
         <pathelement path="${commonj.sdo.lib}"/>
         <pathelement path="${eclipselink.jar}"/>
     </path>
     <path id="sdo.run.path.against.jar">
         <fileset
-            dir="${eclipselink.core.lib}"
+            dir="${eclipselink.plugins}"
             includes="${eclipselink.core.depend}"/>
         <pathelement path="${tools.lib}"/>
         <pathelement path="${eclipselink.sdo.test}/${resource.dir}"/>
@@ -48,120 +70,121 @@
         <pathelement path="${eclipselink.jar}"/>
     </path>
 
-	<!-- Clean targets -->
+    <!-- Clean targets -->
     <target name="clean" description="clean the build">
         <delete includeEmptyDirs="true" failonerror="false">
             <fileset dir="${eclipselink.sdo.test}/${classes.dir}"/>
         </delete>
-		<mkdir dir="${eclipselink.sdo.test}/${classes.dir}"/>
+    <mkdir dir="${eclipselink.sdo.test}/${classes.dir}"/>
     </target>
 
-	<!-- Build targets -->
-	<target name="compile.sdo.tests.against.jar" depends="clean" description="build sdo test classes against eclipselink.jar">
-		<compile-sdo-tests compile-path="sdo.compile.path.against.jar"/>
-	</target>
-	<target name="compile.sdo.tests" depends="clean, compile.sdo" description="build sdo test classes">
-		<compile-sdo-tests compile-path="sdo.compile.path"/>
-	</target>
-	<target name="compile.sdo" description="build sdo classes">
-		<ant antfile="${eclipselink.sdo}/build.xml" target="all"/>
-	</target>
+    <!-- Build targets -->
+    <target name="compile-sdo-tests-against-jar" depends="clean" description="build sdo test classes against eclipselink.jar">
+        <compile_sdo_tests compilepathref="sdo.compile.path.against.jar"/>
+    </target>
+    <target name="compile-sdo-tests" depends="clean, compile-sdo" description="build sdo test classes">
+        <compile_sdo_tests compilepathref="sdo.compile.path"/>
+    </target>
+    <target name="compile-sdo" description="build sdo classes">
+        <ant antfile="${eclipselink.sdo}/build.xml" target="all"/>
+    </target>
 
-	<!-- Run targets -->
-	<target name="test" depends="compile.sdo.tests" description="run sdo tests">
-	    <mkdir dir="${eclipselink.sdo.test}/${resource.dir}/${tmp.dir}"/>
-		<run-sdo-tests custom-context="true" run-path="sdo.run.path"/>
-		<!--run-sdo-tests custom-context="false run-path="${sdo.run.path}"/-->
-		<delete dir="${eclipselink.sdo.test}/${resource.dir}/${tmp.dir}"/>
-	</target>
-	<target name="test.against.jar" depends="compile.sdo.tests.against.jar" description="run sdo tests against eclipselink.jar">
-	    <mkdir dir="${eclipselink.sdo.test}/${resource.dir}/${tmp.dir}"/>
-		<run-sdo-tests custom-context="true" run-path="sdo.run.path.against.jar"/>
-		<!--run-sdo-tests custom-context="false" run-path="${sdo.run.path.against.jar}"/-->
-		<delete dir="${eclipselink.sdo.test}/${resource.dir}/${tmp.dir}"/>
-	</target>
+    <!-- Run targets -->
+    <target name="test" depends="compile-sdo-tests" description="run sdo tests">
+        <mkdir dir="${eclipselink.sdo.test}/${resource.dir}/${tmp.dir}"/>
+        <run_sdo_tests customcontext="true" runpathref="sdo.run.path"/>
+        <!--run_sdo_tests customcontext="false runpathref="${sdo.run.path}"/-->
+        <delete dir="${eclipselink.sdo.test}/${resource.dir}/${tmp.dir}"/>
+    </target>
+    <target name="test-against-jar" depends="compile-sdo-tests-against-jar" description="run sdo tests against eclipselink.jar">
+        <mkdir dir="${eclipselink.sdo.test}/${resource.dir}/${tmp.dir}"/>
+        <run_sdo_tests customcontext="true" runpathref="sdo.run.path.against.jar"/>
+        <!--run_sdo_tests customcontext="false" runpathref="${sdo.run.path.against.jar}"/-->
+        <delete dir="${eclipselink.sdo.test}/${resource.dir}/${tmp.dir}"/>
+    </target>
 
-	<!-- Test run macros -->
-    <macrodef name="run-sdo-tests">
-        <attribute name="custom-context"/>
-        <attribute name="run-path"/>
+    <!-- Test run macros -->
+    <macrodef name="run_sdo_tests">
+        <attribute name="customcontext"/>
+        <attribute name="runpathref"/>
         <sequential>
-			<delete dir="${eclipselink.sdo.test}/${report.dir}/@{custom-context}"/>
-			<mkdir dir="${eclipselink.sdo.test}/${report.dir}/@{custom-context}"/>
-			<echo message="customContext=@{custom-context}"/>
-			<junit printsummary="withOutAndErr" fork="yes" dir="${eclipselink.sdo.test}/${resource.dir}" maxmemory="512m" showoutput="yes">
-				<sysproperty key="loggingLevelFinest" value="false"/>
-				<sysproperty key="customContext" value="@{custom-context}"/>
-				<sysproperty key="eclipselink.xml.platform" value="${xml.platform}"/>
-				<sysproperty key="tempFileDir" value="${tmp.dir}"/>
-				<sysproperty key="ignoreCRLF" value="true"/>
-				<sysproperty key="useLogging" value="false"/>
-				<sysproperty key="sdo.classgen.compile.path" value="${sdo.classgen.run.path}"/>
-				<sysproperty key="useSAXParsing" value="true"/>
-				<sysproperty key="useDeploymentXML" value="false"/>
-				<sysproperty key="jaxb.test.contextpath" value="oracle.toplink.testing.ox.jaxb.sax"/>
-				<batchtest todir="${eclipselink.sdo.test}/${report.dir}/@{custom-context}">
-					<fileset dir="${eclipselink.sdo.test}/${src.dir}">
-						<include name="**/*TestSuite.java"/>
-						<exclude name="org/eclipse/persistence/testing/sdo/SDOTestSuite.java"/>
-						<exclude name="org/eclipse/persistence/testing/sdo/helper/SDOHelperTestSuite.java"/>
-						<exclude name="org/eclipse/persistence/testing/sdo/helper/xmlhelper/SDOXMLHelperTestSuite.java"/>
-						<exclude name="org/eclipse/persistence/testing/sdo/helper/typehelper/define/SDOTypeHelperDefineTestSuite.java"/>
-						<exclude name="org/eclipse/persistence/testing/sdo/helper/xsdhelper/define/XSDHelperDefineTestSuite.java"/>
-						<exclude name="org/eclipse/persistence/testing/sdo/model/SDOModelTestSuite.java"/>
-						<exclude name="org/eclipse/persistence/testing/sdo/performance/*TestSuite.java"/>
-					</fileset>
-					<formatter type="xml"/>
-				</batchtest>
-				<classpath refid="@{run-path}"/>
-			</junit>
-			<!-- Create JUnit report -->
-			<mkdir dir="${eclipselink.sdo.test}/${report.dir}/@{custom-context}"/>
-			<junitreport todir="${eclipselink.sdo.test}/${report.dir}/@{custom-context}">
-				<fileset dir="${eclipselink.sdo.test}/${report.dir}/@{custom-context}">
-					<include name="**/*.xml"/>
-				</fileset>
-				<report format="noframes" todir="${eclipselink.sdo.test}/${report.dir}/@{custom-context}"/>
-			</junitreport> 
-			<delete includeEmptyDirs="true" failonerror="false">
-				<fileset dir="${eclipselink.sdo.test}/${report.dir}/@{custom-context}">
-					<include name="**/*.xml"/>
-				</fileset>
-			</delete>
-			<!-- Clean up generated files -->
-			<delete dir="${eclipselink.sdo.test}/${resource.dir}/baseTypes"/>
-			<delete dir="${eclipselink.sdo.test}/${resource.dir}/complextypes"/>
-			<delete dir="${eclipselink.sdo.test}/${resource.dir}/elements"/>
-			<delete dir="${eclipselink.sdo.test}/${resource.dir}/invalidtypename"/>
-			<delete dir="${eclipselink.sdo.test}/${resource.dir}/list"/>
-			<delete dir="${eclipselink.sdo.test}/${resource.dir}/nestedBaseTypes"/>
-			<delete dir="${eclipselink.sdo.test}/${resource.dir}/poJavaDocs"/>
-			<delete dir="${eclipselink.sdo.test}/${resource.dir}/poJavaDocsListener"/>
-			<delete dir="${eclipselink.sdo.test}/${resource.dir}/schemaTypes"/>
-			<delete dir="${eclipselink.sdo.test}/${resource.dir}/srcImports"/>
-			<delete dir="${eclipselink.sdo.test}/${resource.dir}/srcImportsDontProcess"/>
-			<delete dir="${eclipselink.sdo.test}/${resource.dir}/srcPO"/>
-			<delete dir="${eclipselink.sdo.test}/${resource.dir}/srcPOAnnotations"/>
-			<delete dir="${eclipselink.sdo.test}/${resource.dir}/union"/>
-		</sequential>
-	</macrodef>
-
-	<!-- Compile macros -->
-    <macrodef name="compile-sdo-tests">
-        <attribute name="compile-path"/>
-        <sequential>
-	   <javac srcdir="${eclipselink.sdo.test}/${src.dir}"
-              destdir="${eclipselink.sdo.test}/${classes.dir}"
-              debug="${javac.debug}" 
-              optimize="${javac.optimize}"
-              source="1.5" 
-              deprecation="${javac.deprecation}"
-              failonerror="true"
-              includes="org/eclipse/persistence/testing/sdo/**/*.java">
-			  <classpath>
-                  <path refid="@{compile-path}"/>
-              </classpath>
-		</javac>
+            <delete dir="${eclipselink.sdo.test}/${report.dir}/@{customcontext}"/>
+            <mkdir dir="${eclipselink.sdo.test}/${report.dir}/@{customcontext}"/>
+            <echo message="customContext=@{customcontext}"/>
+            <junit printsummary="withOutAndErr" fork="yes" dir="${eclipselink.sdo.test}/${resource.dir}" maxmemory="512m" showoutput="yes">
+                <sysproperty key="loggingLevelFinest" value="false"/>
+                <sysproperty key="customContext" value="@{customcontext}"/>
+                <sysproperty key="eclipselink.xml.platform" value="${xml.platform}"/>
+                <sysproperty key="tempFileDir" value="${tmp.dir}"/>
+                <sysproperty key="ignoreCRLF" value="true"/>
+                <sysproperty key="useLogging" value="false"/>
+                <sysproperty key="sdo.classgen.compile.path" value="${sdo.classgen.run.path}"/>
+                <sysproperty key="useSAXParsing" value="true"/>
+                <sysproperty key="useDeploymentXML" value="false"/>
+                <sysproperty key="jaxb.test.contextpath" value="oracle.toplink.testing.ox.jaxb.sax"/>
+                <batchtest todir="${eclipselink.sdo.test}/${report.dir}/@{customcontext}">
+                    <fileset dir="${eclipselink.sdo.test}/${src.dir}">
+                        <include name="**/*TestSuite.java"/>
+                        <exclude name="org/eclipse/persistence/testing/sdo/SDOTestSuite.java"/>
+                        <exclude name="org/eclipse/persistence/testing/sdo/helper/SDOHelperTestSuite.java"/>
+                        <exclude name="org/eclipse/persistence/testing/sdo/helper/xmlhelper/SDOXMLHelperTestSuite.java"/>
+                        <exclude name="org/eclipse/persistence/testing/sdo/helper/typehelper/define/SDOTypeHelperDefineTestSuite.java"/>
+                        <exclude name="org/eclipse/persistence/testing/sdo/helper/xsdhelper/define/XSDHelperDefineTestSuite.java"/>
+                        <exclude name="org/eclipse/persistence/testing/sdo/model/SDOModelTestSuite.java"/>
+                        <exclude name="org/eclipse/persistence/testing/sdo/performance/*TestSuite.java"/>
+                    </fileset>
+                    <formatter type="xml"/>
+                </batchtest>
+                <classpath refid="@{runpathref}"/>
+            </junit>
+            <!-- Create JUnit report -->
+            <mkdir dir="${eclipselink.sdo.test}/${report.dir}/@{customcontext}"/>
+            <junitreport todir="${eclipselink.sdo.test}/${report.dir}/@{customcontext}">
+                <fileset dir="${eclipselink.sdo.test}/${report.dir}/@{customcontext}">
+                    <include name="**/*.xml"/>
+                </fileset>
+                <report format="noframes" todir="${eclipselink.sdo.test}/${report.dir}/@{customcontext}"/>
+            </junitreport>
+            <delete includeEmptyDirs="true" failonerror="false">
+                <fileset dir="${eclipselink.sdo.test}/${report.dir}/@{customcontext}">
+                    <include name="**/*.xml"/>
+                </fileset>
+            </delete>
+            <!-- Clean up generated files -->
+            <delete dir="${eclipselink.sdo.test}/${resource.dir}/baseTypes"/>
+            <delete dir="${eclipselink.sdo.test}/${resource.dir}/complextypes"/>
+            <delete dir="${eclipselink.sdo.test}/${resource.dir}/elements"/>
+            <delete dir="${eclipselink.sdo.test}/${resource.dir}/invalidtypename"/>
+            <delete dir="${eclipselink.sdo.test}/${resource.dir}/list"/>
+            <delete dir="${eclipselink.sdo.test}/${resource.dir}/nestedBaseTypes"/>
+            <delete dir="${eclipselink.sdo.test}/${resource.dir}/poJavaDocs"/>
+            <delete dir="${eclipselink.sdo.test}/${resource.dir}/poJavaDocsListener"/>
+            <delete dir="${eclipselink.sdo.test}/${resource.dir}/schemaTypes"/>
+            <delete dir="${eclipselink.sdo.test}/${resource.dir}/srcImports"/>
+            <delete dir="${eclipselink.sdo.test}/${resource.dir}/srcImportsDontProcess"/>
+            <delete dir="${eclipselink.sdo.test}/${resource.dir}/srcPO"/>
+            <delete dir="${eclipselink.sdo.test}/${resource.dir}/srcPOAnnotations"/>
+            <delete dir="${eclipselink.sdo.test}/${resource.dir}/union"/>
         </sequential>
-	</macrodef>
+    </macrodef>
+
+    <!-- Compile macros -->
+    <macrodef name="compile_sdo_tests">
+        <attribute name="compilepathref"/>
+        <sequential>
+            <javac
+                srcdir="${eclipselink.sdo.test}/${src.dir}"
+                destdir="${eclipselink.sdo.test}/${classes.dir}"
+                debug="${javac.debug}"
+                optimize="${javac.optimize}"
+                source="1.5"
+                deprecation="${javac.deprecation}"
+                failonerror="true"
+                includes="org/eclipse/persistence/testing/sdo/**/*.java">
+                <classpath>
+                    <path refid="@{compilepathref}"/>
+                </classpath>
+            </javac>
+        </sequential>
+    </macrodef>
 </project>

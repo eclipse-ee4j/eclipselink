@@ -1,18 +1,41 @@
+<!--/*******************************************************************************
+* This program and the accompanying materials are made available under the terms of
+* the Eclipse Public License v1.0, which accompanies this distribution and is available at
+* http://www.eclipse.org/legal/epl-v10.html.
+*
+*   Ant naming conventions:
+*   - regardless of the actual OS platform,'/' is the directory separator
+*     (Ant will convert as appropriate).
+*   - multi-word properties use periods '.'
+*   - multi-word targets use hyphens '-' 
+*   - multi-word macros use underscores '_'
+*   - multi-word macro attributes are concatinated
+*     e.g. 'runpathref'  
+*   - multi-word tasks (taskdef) names are concatinated
+*     e.g. 'validateconnection'
+*   - OS environment variables are in ALLCAPS and have 'env' as a prefix
+*     e.g. ${env.XXX}.
+*   - Ant properties are lower case.
+*
+* Contributors:
+*     Oracle - initial API and implementation
+#******************************************************************************/-->
+
 <!-- This ant project includes the following tasks:
         - all (default) : compiles all JPA tests, packages test jars
         - compile : compiles all JPA tests
         - package : jars JPA persistent units and tests jars
         - test : runs JPA LRG (FullRegressionTestSuite)
-        - test.lrg : runs JPA LRG (FullRegressionTestSuite)
-        - test.no-weave : runs JPA LRG using no weaving (no agent)
-        - test.static-weave : runs JPA LRG using static weaving
+        - test-lrg : runs JPA LRG (FullRegressionTestSuite)
+        - test-no-weave : runs JPA LRG using no weaving (no agent)
+        - test-static-weave : runs JPA LRG using static weaving
 
-        - server.start : starts the JEE server
-        - server.stop : stops the JEE server
-        - server.test : runs the JPA LRG tests in the server
-        - server.test.lrg : runs the JPA LRG tests in the server
-        - server.test.sessionbean : runs the SessionBean tests in the server
-        - server.test.fieldaccess.advanced : runs the test in the server
+        - server-start : starts the JEE server
+        - server-stop : stops the JEE server
+        - server-test : runs the JPA LRG tests in the server
+        - server-test-lrg : runs the JPA LRG tests in the server
+        - server-test-sessionbean : runs the SessionBean tests in the server
+        - server-test-fieldaccess-advanced : runs the test in the server
 
         It requires some configuration of the build.properties and test.properties to run.
     -->
@@ -32,28 +55,28 @@
     <available file="${eclipselink.jpa.test}/${eclipselink.core.trunk}" type="dir" property="is.trunk"/>
 
     <!-- Configures paths for trunk checkout. -->
-    <target name="config.trunk" if="is.trunk">
+    <target name="config-trunk" if="is.trunk">
         <property name="eclipselink.core.dir" value="${eclipselink.jpa.test}/${eclipselink.core.trunk}"/>
         <property name="eclipselink.core.test.dir" value="${eclipselink.jpa.test}/${eclipselink.core.test.trunk}"/>
-        <property name="eclipselink.core.lib.dir" value="${eclipselink.jpa.test}/${eclipselink.core.lib.trunk}"/>
+        <property name="eclipselink.core.lib.dir" value="${eclipselink.jpa.test}/${eclipselink.plugins.trunk}"/>
         <property name="eclipselink.extension.oracle.dir" value="${eclipselink.jpa.test}/${eclipselink.extension.oracle.trunk}"/>
         <property name="eclipselink.extension.oracle.test.dir" value="${eclipselink.jpa.test}/${eclipselink.extension.oracle.test.trunk}"/>
-        <antcall target="config.compile-path" inheritRefs="true"/>
-        <antcall target="config.run-path" inheritRefs="true"/>
+        <antcall target="config-compile-path" inheritRefs="true"/>
+        <antcall target="config-run-path" inheritRefs="true"/>
     </target>
 
     <!-- Configures paths for Eclipse project checkout. -->
-    <target name="config.flat" unless="is.trunk">
+    <target name="config-flat" unless="is.trunk">
         <property name="eclipselink.core.dir" value="${eclipselink.core}"/>
         <property name="eclipselink.core.test.dir" value="${eclipselink.core.test}"/>
-        <property name="eclipselink.core.lib.dir" value="${eclipselink.core.lib}"/>
+        <property name="eclipselink.core.lib.dir" value="${eclipselink.plugins}"/>
         <property name="eclipselink.extension.oracle.dir" value="${eclipselink.extension.oracle}"/>
         <property name="eclipselink.extension.oracle.test.dir" value="${eclipselink.extension.oracle.test}"/>
-        <antcall target="config.compile-path" inheritRefs="true"/>
-        <antcall target="config.run-path" inheritRefs="true"/>
+        <antcall target="config-compile-path" inheritRefs="true"/>
+        <antcall target="config-run-path" inheritRefs="true"/>
     </target>
 
-    <target name="config.compile-path">
+    <target name="config-compile-path">
         <path id="compile.path">
             <pathelement path="${eclipselink.core.dir}/${classes.dir}"/>
             <pathelement path="${eclipselink.jpa}/${classes.dir}"/>
@@ -87,13 +110,13 @@
         <mkdir dir="${eclipselink.jpa.test}/${build.dir}/${jpa-performance}"/>
     </target>
 
-    <!-- Compiles all tests. --> 
-    <target name="compile" depends="init, config.trunk, config.flat" description="compile EclipseLink testing">  
-        <javac srcdir="${eclipselink.jpa.test}/${src.dir}" 
+    <!-- Compiles all tests. -->
+    <target name="compile" depends="init, config-trunk, config-flat" description="compile EclipseLink testing">
+        <javac srcdir="${eclipselink.jpa.test}/${src.dir}"
                destdir="${eclipselink.jpa.test}/${classes.dir}"
-               debug="${javac.debug}" 
+               debug="${javac.debug}"
                optimize="${javac.optimize}"
-               source="1.5" 
+               source="1.5"
                deprecation="${javac.deprecation}"
                failonerror="true">
             <include name="org/eclipse/persistence/testing/**"/>
@@ -104,7 +127,7 @@
     </target>
 
     <!-- Packages JPA persistent unit test jars. -->
-    <target name="package" depends="config.trunk, config.flat, package.annotation, package.ddl, package.xml-only, package.xml-merge, package.xml-extended, package.validation-failed, package.jpa-advanced-field-access, package.jpa-advanced-properties, package.jpa-pu_with_spaces, package.jpa-performance" description="build EclipseLink jar">
+    <target name="package" depends="config-trunk, config-flat, package-annotation, package-ddl, package-xml-only, package-xml-merge, package-xml-extended, package-validation-failed, package-jpa-advanced-field-access, package-jpa-advanced-properties, package-jpa-pu_with_spaces, package-jpa-performance" description="build EclipseLink jar">
         <jar jarfile="${eclipselink.jpa.test}/${eclipselink.tests.jar}">
            <fileset dir="${eclipselink.jpa.test}/${classes.dir}"
                     includes="org/eclipse/persistence/testing/framework/**/*.class,
@@ -112,7 +135,7 @@
         </jar>
     </target>
 
-    <target name="package.annotation" depends="">
+    <target name="package-annotation" depends="">
         <copy todir="${eclipselink.jpa.test}/${build.dir}/${eclipselink-annotation-model}/META-INF">
             <fileset dir="${eclipselink.jpa.test}/resource/${eclipselink-annotation-model}" includes="*.xml"/>
         </copy>
@@ -133,7 +156,7 @@
         </jar>
     </target>
 
-    <target name="package.ddl" depends="">
+    <target name="package-ddl" depends="">
         <copy todir="${eclipselink.jpa.test}/${build.dir}/${eclipselink-ddl-generation-model}/META-INF">
             <fileset dir="${eclipselink.jpa.test}/resource/${eclipselink-ddl-generation-model}" includes="*.xml"/>
         </copy>
@@ -148,7 +171,7 @@
         </jar>
     </target>
 
-    <target name="package.xml-only" depends="">
+    <target name="package-xml-only" depends="">
         <copy todir="${eclipselink.jpa.test}/${build.dir}/${eclipselink-xml-only-model}/META-INF">
             <fileset dir="${eclipselink.jpa.test}/resource/${eclipselink-xml-only-model}" includes="*.xml"/>
         </copy>
@@ -163,15 +186,15 @@
         </jar>
     </target>
 
-    <target name="package.xml-extended" depends="">
+    <target name="package-xml-extended" depends="">
       <copy todir="${eclipselink.jpa.test}/${build.dir}/${eclipselink-xml-extended-model}/META-INF">
           <fileset dir="${eclipselink.jpa.test}/resource/eclipselinkorm/${eclipselink-xml-extended-model}" includes="*.xml"/>
       </copy>
       <copy todir="${eclipselink.jpa.test}/${build.dir}/${eclipselink-xml-extended-model}">
           <fileset dir="${eclipselink.jpa.test}/${classes.dir}"
-                   includes="org/eclipse/persistence/testing/models/jpa/xml/advanced/**, 
-          	                 org/eclipse/persistence/testing/models/jpa/xml/relationships/**, 
-          	                 org/eclipse/persistence/testing/models/jpa/xml/complexaggregate/**"
+                   includes="org/eclipse/persistence/testing/models/jpa/xml/advanced/**,
+                             org/eclipse/persistence/testing/models/jpa/xml/relationships/**,
+                             org/eclipse/persistence/testing/models/jpa/xml/complexaggregate/**"
                    excludes="org/eclipse/persistence/testing/models/jpa/xml/relationships/unidirectional/**"/>
       </copy>
       <jar jarfile="${eclipselink.jpa.test}/${eclipselink-xml-extended-model}.jar">
@@ -180,7 +203,7 @@
       </jar>
     </target>
 
-    <target name="package.xml-merge" depends="">
+    <target name="package-xml-merge" depends="">
         <copy todir="${eclipselink.jpa.test}/${build.dir}/${eclipselink-xml-merge-model}/META-INF">
             <fileset dir="${eclipselink.jpa.test}/resource/${eclipselink-xml-merge-model}" includes="*.xml"/>
         </copy>
@@ -195,7 +218,7 @@
         </jar>
     </target>
 
-    <target name="package.validation-failed" depends="">
+    <target name="package-validation-failed" depends="">
         <copy todir="${eclipselink.jpa.test}/${build.dir}/${eclipselink-validation-failed-model}/META-INF">
             <fileset dir="${eclipselink.jpa.test}/resource/${eclipselink-validation-failed-model}" includes="*.xml"/>
         </copy>
@@ -209,7 +232,7 @@
         </jar>
     </target>
 
-    <target name="package.jpa-advanced-field-access" depends="">
+    <target name="package-jpa-advanced-field-access" depends="">
         <copy todir="${eclipselink.jpa.test}/${build.dir}/${eclipselink-advanced-field-access-model}/META-INF">
             <fileset dir="${eclipselink.jpa.test}/resource/${eclipselink-advanced-field-access-model}" includes="*.xml"/>
         </copy>
@@ -223,7 +246,7 @@
         </jar>
     </target>
 
-    <target name="package.jpa-advanced-properties" depends="">
+    <target name="package-jpa-advanced-properties" depends="">
         <copy todir="${eclipselink.jpa.test}/${build.dir}/${eclipselink-advanced-properties}/META-INF">
             <fileset dir="${eclipselink.jpa.test}/resource/${eclipselink-advanced-properties}" includes="*.xml"/>
         </copy>
@@ -240,7 +263,7 @@
         </jar>
     </target>
 
-    <target name="package.jpa-pu_with_spaces" depends="">
+    <target name="package-jpa-pu_with_spaces" depends="">
         <copy todir="${eclipselink.jpa.test}/${build.dir}/${eclipselink-pu_with_spaces}/META-INF">
             <fileset dir="${eclipselink.jpa.test}/resource/${eclipselink-pu_with_spaces}" includes="*.xml"/>
         </copy>
@@ -250,7 +273,7 @@
         </jar>
     </target>
 
-    <target name="package.jpa-pu_with_multibyte" depends="">
+    <target name="package-jpa-pu_with_multibyte" depends="">
         <!--copy todir="${eclipselink.jpa.test}/${build.dir}/${eclipselink-pu_with_multibyte}/META-INF">
             <fileset dir="${eclipselink.jpa.test}/resource/${eclipselink-pu_with_multibyte}" includes="*.xml"/>
         </copy>
@@ -260,7 +283,7 @@
         </jar-->
     </target>
 
-    <target name="package.jpa-performance" depends="">
+    <target name="package-jpa-performance" depends="">
         <copy todir="${eclipselink.jpa.test}/${build.dir}/${jpa-performance}/META-INF">
             <fileset dir="${eclipselink.jpa.test}/resource/${jpa-performance}/META-INF" includes="*.xml"/>
         </copy>
@@ -296,7 +319,7 @@
     <!-- Testing -->
 
     <!-- Classpath used for running tests. -->
-    <target name="config.run-path">
+    <target name="config-run-path">
         <path id="run.classpath">
             <pathelement path="${eclipselink.jpa.test}/${classes.dir}"/>
             <path refid="compile.path"/>
@@ -324,7 +347,7 @@
 
     <!-- Default test target, run the LRG -->
     <target name="test">
-        <antcall target="run.test" inheritRefs="true">
+        <antcall target="run-test" inheritRefs="true">
             <param name="TEST_CLASS" value="${test.class}"/>
             <param name="TEST_AGENT" value="${test.agent}"/>
             <param name="TEST_WEAVING" value="${test.weaving}"/>
@@ -333,8 +356,8 @@
     </target>
 
     <!-- Runs LRG (FullRegressionTestSuite) with agent. -->
-    <target name="test.lrg">
-        <antcall target="run.test" inheritRefs="true">
+    <target name="test-lrg">
+        <antcall target="run-test" inheritRefs="true">
             <param name="TEST_CLASS" value="org.eclipse.persistence.testing.tests.jpa.FullRegressionTestSuite"/>
             <param name="TEST_AGENT" value="${test.agent}"/>
             <param name="TEST_WEAVING" value="${test.weaving}"/>
@@ -343,8 +366,8 @@
     </target>
 
     <!-- Runs SRG (EntityManagerJUnitTestSuite) with agent. -->
-    <target name="test.srg">
-        <antcall target="run.test" inheritRefs="true">
+    <target name="test-srg">
+        <antcall target="run-test" inheritRefs="true">
             <param name="TEST_CLASS" value="org.eclipse.persistence.testing.tests.jpa.advanced.EntityManagerJUnitTestSuite"/>
             <param name="TEST_AGENT" value="${test.agent}"/>
             <param name="TEST_WEAVING" value="${test.weaving}"/>
@@ -353,8 +376,8 @@
     </target>
 
     <!-- Runs FullRegressionTestSuite with no agent. TEST_NO_WEAVING property informs tests that no weaving was done. -->
-    <target name="test.no-weave">
-        <antcall target="run.test" inheritRefs="true">
+    <target name="test-no-weave">
+        <antcall target="run-test" inheritRefs="true">
             <param name="TEST_CLASS" value="${test.class}"/>
             <param name="TEST_AGENT" value="-Dignore"/>
             <param name="TEST_WEAVING" value="-DTEST_NO_WEAVING=true"/>
@@ -363,7 +386,7 @@
     </target>
 
     <!-- Runs FullRegressionTestSuite with static weaving. -->
-    <target name="test.static-weave" depends="config.trunk, config.flat, run-weaver">
+    <target name="test-static-weave" depends="config-trunk, config-flat, run-weaver">
         <path id="run.classpath.static">
             <pathelement path="${eclipselink.jpa.test}/woven-${eclipselink-annotation-model}.jar"/>
             <pathelement path="${eclipselink.jpa.test}/woven-${eclipselink-ddl-generation-model}.jar"/>
@@ -381,7 +404,7 @@
             <pathelement path="${eclipselink.jpa.test}/${eclipselink.tests.jar}"/>
             <path refid="compile.path"/>
         </path>
-        <antcall target="run.test" inheritRefs="true">
+        <antcall target="run-test" inheritRefs="true">
             <param name="TEST_CLASS" value="${test.class}"/>
             <param name="TEST_AGENT" value="-Dignore"/>
             <param name="TEST_WEAVING" value="-Dignore"/>
@@ -390,8 +413,8 @@
     </target>
 
     <!-- Prompt runner test target, runs test.class from test.properties (default is LRG). -->
-    <target name="test.prompt">
-        <antcall target="run.test.prompt" inheritRefs="true">
+    <target name="test-prompt">
+        <antcall target="run-test-prompt" inheritRefs="true">
             <param name="TEST_CLASS" value="${test.class}"/>
             <param name="RUN_PATH" value="run.classpath"/>
             <param name="TEST_AGENT" value="${test.agent}"/>
@@ -400,8 +423,8 @@
     </target>
 
     <!-- Runs performance tests. -->
-    <target name="test.performance">
-        <antcall target="run.test.prompt" inheritRefs="true">
+    <target name="test-performance">
+        <antcall target="run-test-prompt" inheritRefs="true">
             <param name="TEST_CLASS" value="org.eclipse.persistence.testing.tests.jpa.performance.JPAPerformanceRegressionModel"/>
             <param name="RUN_PATH" value="run.classpath"/>
             <param name="TEST_AGENT" value="${test.agent}"/>
@@ -410,12 +433,12 @@
     </target>
 
     <!-- Runs performance tests comparing with TopLink. -->
-    <target name="test.performance.toplink">
+    <target name="test-performance-toplink">
         <path id="run.classpath.toplink">
             <pathelement path="${toplink.jar}"/>
             <path refid="run.classpath"/>
         </path>
-        <antcall target="run.test.prompt" inheritRefs="true">
+        <antcall target="run-test-prompt" inheritRefs="true">
             <param name="TEST_CLASS" value="org.eclipse.persistence.testing.tests.jpa.performance.TopLinkJPAPerformanceRegressionModel"/>
             <param name="RUN_PATH" value="run.classpath.toplink"/>
             <param name="TEST_AGENT" value="-javaagent:../${toplink.jar}"/>
@@ -424,7 +447,7 @@
     </target>
 
     <!-- Launches the testing browser -->
-    <target name="test.browser" depends="config.trunk, config.flat">
+    <target name="test-browser" depends="config-trunk, config-flat">
         <echo>Running test browser</echo>
         <mkdir dir="${eclipselink.jpa.test}/${run.dir}"/>
         <mkdir dir="${eclipselink.jpa.test}/${report.dir}"/>
@@ -448,7 +471,7 @@
     </target>
 
     <!-- Generic target for running tests. -->
-    <target name="run.test" depends="config.trunk, config.flat">
+    <target name="run-test" depends="config-trunk, config-flat">
         <echo>Running test on ${db.url}</echo>
 
         <condition property="jvmarg.db.platform" value="-Ddb.platform=${db.platform}">
@@ -487,7 +510,7 @@
     </target>
 
     <!-- Runs the test using the PromptTestRunner -->
-    <target name="run.test.prompt" depends="config.trunk, config.flat">
+    <target name="run-test-prompt" depends="config-trunk, config-flat">
         <echo>Running test on ${db.url}</echo>
         <mkdir dir="${eclipselink.jpa.test}/${run.dir}"/>
         <mkdir dir="${eclipselink.jpa.test}/${report.dir}"/>
@@ -592,41 +615,41 @@
 
     <!-- Server Testing -->
 
-    <target name="server.install">
+    <target name="server-install">
         <ant antfile="${eclipselink.jpa.test}/${server.name}.xml" target="${server.name}.install" inheritRefs="true"/>
     </target>
 
-    <target name="server.setup">
+    <target name="server-setup">
         <ant antfile="${eclipselink.jpa.test}/${server.name}.xml" target="${server.name}.setup" inheritRefs="true"/>
     </target>
 
-    <target name="server.reset">
+    <target name="server-reset">
         <ant antfile="${eclipselink.jpa.test}/${server.name}.xml" target="${server.name}.reset" inheritRefs="true"/>
     </target>
 
-    <target name="server.start">
+    <target name="server-start">
         <ant antfile="${eclipselink.jpa.test}/${server.name}.xml" target="${server.name}.start" inheritRefs="true"/>
     </target>
 
-    <target name="server.stop">
+    <target name="server-stop">
         <ant antfile="${eclipselink.jpa.test}/${server.name}.xml" target="${server.name}.stop" inheritRefs="true"/>
     </target>
 
-    <target name="server.deploy">
+    <target name="server-deploy">
         <ant antfile="${eclipselink.jpa.test}/${server.name}.xml" target="${server.name}.deploy" inheritRefs="true">
             <property name="ear.name" value="${ear.name}"/>
             <property name="application.name" value="${application.name}"/>
         </ant>
     </target>
 
-    <target name="server.undeploy">
+    <target name="server-undeploy">
         <ant antfile="${eclipselink.jpa.test}/${server.name}.xml" target="${server.name}.undeploy" inheritRefs="true">
             <property name="application.name" value="${application.name}"/>
         </ant>
     </target>
 
     <!-- Build server test client jar. -->
-    <target name="server.build.client-jar" depends="config.trunk, config.flat">
+    <target name="server-build-client-jar" depends="config-trunk, config-flat">
         <property file="${user.home}/${server.name}.properties"/>
         <property file="${eclipselink.jpa.test}/${server.name}.properties"/>
         <mkdir dir="${eclipselink.jpa.test}/${build.dir}/META-INF"/>
@@ -634,25 +657,25 @@
         <javac
             srcdir="${eclipselink.jpa.test}/${src.dir}"
             destdir="${eclipselink.jpa.test}/stage"
-            debug="${javac.debug}" 
+            debug="${javac.debug}"
             includes="${TEST_DIR}/*.java">
             <classpath refid="compile.path"/>
         </javac>
         <javac
             srcdir="${eclipselink.jpa.test}/${src.dir}"
             destdir="${eclipselink.jpa.test}/stage"
-            debug="${javac.debug}" 
+            debug="${javac.debug}"
             includes="org/eclipse/persistence/testing/framework/**">
             <classpath refid="compile.path"/>
         </javac>
         <javac
             srcdir="${eclipselink.core.test.dir}/${src.dir}"
             destdir="${eclipselink.jpa.test}/stage"
-            debug="${javac.debug}" 
+            debug="${javac.debug}"
             includes="org/eclipse/persistence/testing/framework/junit/**">
             <classpath refid="compile.path"/>
         </javac>
-        <copy file="${eclipselink.jpa.test}/resource/${MODEL_NAME}/server/application-client.xml" todir="stage/META-INF"/>        
+        <copy file="${eclipselink.jpa.test}/resource/${MODEL_NAME}/server/application-client.xml" todir="stage/META-INF"/>
         <filter token="server.user" value="${server.user}"/>
         <filter token="server.pwd" value="${server.pwd}"/>
         <filter token="server.factory" value="${server.factory}"/>
@@ -662,7 +685,7 @@
     </target>
 
     <!-- Build server test ejb jar. -->
-    <target name="server.build.ejb-jar" depends="config.trunk, config.flat">
+    <target name="server-build-ejb-jar" depends="config-trunk, config-flat">
         <property file="${user.home}/${server.name}.properties"/>
         <property file="${eclipselink.jpa.test}/${server.name}.properties"/>
         <mkdir dir="${eclipselink.jpa.test}/stage/META-INF"/>
@@ -670,35 +693,35 @@
         <javac
             srcdir="${eclipselink.jpa.test}/${src.dir}"
             destdir="${eclipselink.jpa.test}/stage"
-            debug="${javac.debug}" 
+            debug="${javac.debug}"
             includes="${TEST_DIR}/*.java">
             <classpath refid="compile.path"/>
         </javac>
         <javac
             srcdir="${eclipselink.jpa.test}/${src.dir}"
             destdir="${eclipselink.jpa.test}/stage"
-            debug="${javac.debug}" 
+            debug="${javac.debug}"
             includes="org/eclipse/persistence/testing/framework/**">
             <classpath refid="compile.path"/>
         </javac>
         <javac
             srcdir="${eclipselink.core.test.dir}/${src.dir}"
             destdir="${eclipselink.jpa.test}/stage"
-            debug="${javac.debug}" 
+            debug="${javac.debug}"
             includes="org/eclipse/persistence/testing/framework/junit/**">
             <classpath refid="compile.path"/>
         </javac>
         <javac
             srcdir="${eclipselink.jpa.test}/${src.dir}"
             destdir="${eclipselink.jpa.test}/stage"
-            debug="${javac.debug}" 
+            debug="${javac.debug}"
             includes="${MODEL_DIR}/*.java">
             <classpath refid="compile.path"/>
         </javac>
         <javac
             srcdir="${eclipselink.jpa.test}/${src.dir}"
             destdir="${eclipselink.jpa.test}/stage"
-            debug="${javac.debug}" 
+            debug="${javac.debug}"
             includes="${MODEL_DIR2}/*.java">
             <classpath refid="compile.path"/>
         </javac>
@@ -723,32 +746,32 @@
     </target>
 
     <!-- Build server test ear. -->
-    <target name="server.build.ear">
+    <target name="server-build-ear">
         <copy overwrite="true" file="./resource/${MODEL_NAME}/server/application.xml" todir="${build.dir}/META-INF"/>
         <ear destfile="${eclipselink.jpa.test}/${build.dir}/${EAR_NAME}.ear" appxml="${build.dir}/META-INF/application.xml">
             <fileset dir="${eclipselink.jpa.test}/${build.dir}" includes ="${MODEL_NAME}_ejb.jar"/>
-        </ear> 
+        </ear>
         <copy file="${eclipselink.jpa.test}/${build.dir}/${EAR_NAME}.ear" todir="."/>
     </target>
 
     <!-- Build the client jar, ejb jar, and ear. -->
-    <target name="server.build" depends="server.build.client-jar,server.build.ejb-jar,server.build.ear"/>
+    <target name="server-build" depends="server-build-client-jar,server-build-ejb-jar,server-build-ear"/>
 
     <!-- Build, deploy and run a test suite on the server. -->
-    <target name="server.run.all">
-        <antcall target="server.build" inheritRefs="true"/>
-        <antcall target="server.deploy" inheritRefs="true">
+    <target name="server-run-all">
+        <antcall target="server-build" inheritRefs="true"/>
+        <antcall target="server-deploy" inheritRefs="true">
             <param name="ear.name" value="${EAR_NAME}.ear"/>
             <param name="application.name" value="${EAR_NAME}"/>
         </antcall>
-        <antcall target="server.run.test" inheritRefs="true"/>
-        <antcall target="server.undeploy" inheritRefs="true">
+        <antcall target="server-run-test" inheritRefs="true"/>
+        <antcall target="server-undeploy" inheritRefs="true">
             <param name="application.name" value="${EAR_NAME}"/>
         </antcall>
     </target>
 
     <!-- Run an ear on the server. -->
-    <target name="server.run.test" depends="config.trunk, config.flat">
+    <target name="server-run-test" depends="config-trunk, config-flat">
         <property file="${user.home}/${server.name}.properties"/>
         <property file="${eclipselink.jpa.test}/${server.name}.properties"/>
         <path id="run.path">
@@ -785,18 +808,18 @@
     <!-- Server Tests -->
 
     <!-- Run the LRG -->
-    <target name="server.test">
-        <antcall target="server.test.lrg" inheritRefs="true"/>
+    <target name="server-test">
+        <antcall target="server-test-lrg" inheritRefs="true"/>
     </target>
 
     <!-- Run all the JPA tests in the server -->
-    <target name="server.test.lrg">
-        <antcall target="server.test.sessionbean" inheritRefs="true"/>
-        <antcall target="server.test.fieldaccess.advanced" inheritRefs="true"/>
+    <target name="server-test-lrg">
+        <antcall target="server-test-sessionbean" inheritRefs="true"/>
+        <antcall target="server-test-fieldaccess.advanced" inheritRefs="true"/>
     </target>
 
-    <target name="server.test.sessionbean">
-        <antcall target="server.run.all" inheritRefs="true">
+    <target name="server-test-sessionbean">
+        <antcall target="server-run-all" inheritRefs="true">
             <param name="MODEL_DIR" value="org/eclipse/persistence/testing/models/jpa/sessionbean"/>
             <param name="MODEL_DIR2" value="org/eclipse/persistence/testing/models/jpa/fieldaccess/advanced"/>
             <param name="MODEL_NAME" value="eclipselink-sessionbean-model"/>
@@ -807,8 +830,8 @@
         </antcall>
     </target>
 
-    <target name="server.test.fieldaccess.advanced">
-        <antcall target="server.run.all" inheritRefs="true">
+    <target name="server-test-fieldaccess-advanced">
+        <antcall target="server-run-all" inheritRefs="true">
             <param name="MODEL_DIR" value="org/eclipse/persistence/testing/models/jpa/fieldaccess/advanced"/>
             <param name="MODEL_NAME" value="eclipselink-advanced-field-access-model"/>
             <param name="TEST_DIR" value="org/eclipse/persistence/testing/tests/jpa/fieldaccess/advanced"/>
@@ -819,8 +842,8 @@
     </target>
 
     <!-- Not working yet. -->
-    <!--target name="server.test.advanced">
-        <antcall target="server.run.all" inheritRefs="true">
+    <!--target name="server-test-advanced">
+        <antcall target="server-run-all" inheritRefs="true">
             <param name="MODEL_DIR" value="org/eclipse/persistence/testing/models/jpa/advanced"/>
             <param name="MODEL_NAME" value="eclipselink-annotation-model"/>
             <param name="TEST_DIR" value="org/eclipse/persistence/testing/tests/jpa/advanced"/>

@@ -1,3 +1,26 @@
+<!--/*******************************************************************************
+* This program and the accompanying materials are made available under the terms of
+* the Eclipse Public License v1.0, which accompanies this distribution and is available at
+* http://www.eclipse.org/legal/epl-v10.html.
+*
+*   Ant naming conventions:
+*   - regardless of the actual OS platform,'/' is the directory separator
+*     (Ant will convert as appropriate).
+*   - multi-word properties use periods '.'
+*   - multi-word targets use hyphens '-' 
+*   - multi-word macros use underscores '_'
+*   - multi-word macro attributes are concatinated
+*     e.g. 'runpathref'  
+*   - multi-word tasks (taskdef) names are concatinated
+*     e.g. 'validateconnection'
+*   - OS environment variables are in ALLCAPS and have 'env' as a prefix
+*     e.g. ${env.XXX}.
+*   - Ant properties are lower case.
+*
+* Contributors:
+*     Oracle - initial API and implementation
+#******************************************************************************/-->
+
 <project name="Eclipse Persistence Services" default="all" basedir=".">
 
     <property file="${user.home}/build.properties"/>
@@ -11,7 +34,7 @@
             <pathelement path="${eclipselink.jpa}/${eclipselink.plugins}/${antlr}"/>
             <pathelement path="${eclipselink.jpa}/${eclipselink.core.trunk}/${classes.dir}"/>
             <fileset
-                dir="${eclipselink.jpa}/${eclipselink.core.lib.trunk}"
+                dir="${eclipselink.jpa}/${eclipselink.plugins}"
                 includes="${eclipselink.core.depend}"/>
         </path>
     </target>
@@ -23,7 +46,7 @@
             <pathelement path="${eclipselink.core}/${classes.dir}"/>
             <pathelement path="${eclipselink.plugins}/osgi.core.zip"/>
             <fileset
-                dir="${eclipselink.core.lib}"
+                dir="${eclipselink.plugins}"
                 includes="${eclipselink.core.depend}"/>
         </path>
     </target>
@@ -31,15 +54,15 @@
     <!-- all -->
     <target name="all" depends="clean, compile" description="build core classes"/>
 
-    <!-- compile --> 
+    <!-- compile -->
     <target name="compile" depends="config-trunk, config-flat" description="compile EclipseLink JPA">
         <mkdir dir="${eclipselink.jpa}/${classes.dir}"/>
-        <javac srcdir="${eclipselink.jpa}/${src.dir}" 
+        <javac srcdir="${eclipselink.jpa}/${src.dir}"
                destdir="${eclipselink.jpa}/${classes.dir}"
                includes="org/eclipse/persistence/**"
-               debug="${javac.debug}" 
+               debug="${javac.debug}"
                optimize="${javac.optimize}"
-               source="1.5" 
+               source="1.5"
                deprecation="${javac.deprecation}"
                failonerror="true">
             <classpath>

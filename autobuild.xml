@@ -1,3 +1,25 @@
+<!--/*******************************************************************************
+* This program and the accompanying materials are made available under the terms of
+* the Eclipse Public License v1.0, which accompanies this distribution and is available at
+* http://www.eclipse.org/legal/epl-v10.html.
+*
+*   Ant naming conventions:
+*   - regardless of the actual OS platform,'/' is the directory separator
+*     (Ant will convert as appropriate).
+*   - multi-word properties use periods '.'
+*   - multi-word targets use hyphens '-' 
+*   - multi-word macros use underscores '_'
+*   - multi-word macro attributes are concatinated
+*     e.g. 'runpathref'  
+*   - multi-word tasks (taskdef) names are concatinated
+*     e.g. 'validateconnection'
+*   - OS environment variables are in ALLCAPS and have 'env' as a prefix
+*     e.g. ${env.XXX}.
+*   - Ant properties are lower case.
+*
+* Contributors:
+*     Oracle - initial API and implementation
+#******************************************************************************/-->
 <project name="EclipseLink Automated Build" basedir="." default="build.nightly">
 <echo message="---- AutoBuild.xml ----"/>
 
@@ -98,15 +120,15 @@
     </target>
 
     <target name="build" depends="get-dependencies">
-        <ant antfile="build.xml" dir="${build.root.dir}" target="build.distribution"/>
+        <ant antfile="build.xml" dir="${build.root.dir}" target="build-distribution"/>
     </target>
 
     <target name="build-no-javadoc" depends="get-dependencies">
-        <ant antfile="build.xml" dir="${build.root.dir}" target="package.eclipselink.jar"/>
+        <ant antfile="build.xml" dir="${build.root.dir}" target="package-eclipselink-jar"/>
     </target>
 
     <target name="package-bundles" depends="get-dependencies">
-        <ant antfile="build.xml" dir="${build.root.dir}" target="package.eclipselink.bundles"/>
+        <ant antfile="build.xml" dir="${build.root.dir}" target="package-eclipselink-bundles"/>
     </target>
 
     <target name="build-test" depends="get-dependencies">
@@ -119,18 +141,18 @@
         <echo message="db.pwd=${db.pwd}${line.separator}"                   file="${coretest.prop.file}" append="true"/>
         <echo message="db.platform=${db.platform}${line.separator}"         file="${coretest.prop.file}" append="true"/>
 
-        <ant antfile="build.xml" dir="${build.root.dir}" target="build.test"/>
+        <ant antfile="build.xml" dir="${build.root.dir}" target="build-test"/>
         <!-- delete file="${coretest.prop.file}"/ -->
     </target>
 
     <target name="test-srg">
-        <ant antfile="build.xml" dir="${build.root.dir}" target="test.srg">
+        <ant antfile="build.xml" dir="${build.root.dir}" target="test-srg">
             <property name="eclipselink.logging.level" value="${test.logging.level}"/>
         </ant>
     </target>
 
     <target name="test-lrg">
-        <ant antfile="build.xml" dir="${build.root.dir}" target="test.lrg">
+        <ant antfile="build.xml" dir="${build.root.dir}" target="test-lrg">
             <property name="eclipselink.logging.level" value="${test.logging.level}"/>
         </ant>
     </target>
@@ -150,7 +172,7 @@
             <arg value="-m ${installer_id}"/>
             <arg value="${build.root.dir}/${eclipselink.jar.name}"/>
         </exec>
-        <ant antfile="uploadToMaven.xml" dir="${build.root.dir}" target="upload.maven.all"/>
+        <ant antfile="uploadToMaven.xml" dir="${build.root.dir}" target="upload-maven-all"/>
     </target>
 
     <target name="fix-permission">

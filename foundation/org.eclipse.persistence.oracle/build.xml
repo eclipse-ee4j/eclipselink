@@ -1,3 +1,26 @@
+<!--/*******************************************************************************
+* This program and the accompanying materials are made available under the terms of
+* the Eclipse Public License v1.0, which accompanies this distribution and is available at
+* http://www.eclipse.org/legal/epl-v10.html.
+*
+*   Ant naming conventions:
+*   - regardless of the actual OS platform,'/' is the directory separator
+*     (Ant will convert as appropriate).
+*   - multi-word properties use periods '.'
+*   - multi-word targets use hyphens '-' 
+*   - multi-word macros use underscores '_'
+*   - multi-word macro attributes are concatinated
+*     e.g. 'runpathref'  
+*   - multi-word tasks (taskdef) names are concatinated
+*     e.g. 'validateconnection'
+*   - OS environment variables are in ALLCAPS and have 'env' as a prefix
+*     e.g. ${env.XXX}.
+*   - Ant properties are lower case.
+*
+* Contributors:
+*     Oracle - initial API and implementation
+#******************************************************************************/-->
+
 <project name="Eclipse Persistence Services" default="all" basedir=".">
 
     <property file="${user.home}/build.properties"/>
@@ -5,7 +28,7 @@
 
     <path id="compile.path">
         <fileset
-            dir="${eclipselink.core.lib}"
+            dir="${eclipselink.plugins}"
             includes="${eclipselink.core.depend}"/>
         <fileset
             dir="${oracle.extensions.depend.dir}"
@@ -14,18 +37,18 @@
     </path>
 
     <!-- all -->
-    <target name="all" depends="clean, compile, build.jar" description="build oracle specific classes"/>
+    <target name="all" depends="clean, compile, build-jar" description="build oracle specific classes"/>
 
-    <!-- compile --> 
-    <target name="compile" depends="" description="Compile EclipseLink's Oracle extensions"> 
-    	<mkdir dir="${classes.dir}"/>
+    <!-- compile -->
+    <target name="compile" depends="" description="Compile EclipseLink's Oracle extensions">
+        <mkdir dir="${classes.dir}"/>
         <mkdir dir="${eclipselink.extension.oracle}/${classes.dir}"/>
-        <javac srcdir="${eclipselink.extension.oracle}/${src.dir}" 
+        <javac srcdir="${eclipselink.extension.oracle}/${src.dir}"
                destdir="${eclipselink.extension.oracle}/${classes.dir}"
                includes="org/eclipse/persistence/**"
-               debug="${javac.debug}" 
+               debug="${javac.debug}"
                optimize="${javac.optimize}"
-               source="1.5" 
+               source="1.5"
                deprecation="${javac.deprecation}"
                failonerror="true">
             <classpath>
@@ -34,12 +57,12 @@
         </javac>
     </target>
 
-    <target name="build.jar" depends="compile" description="build a jar file other projects can use for dependancies if they cannot compile with oracle dependancies">
-      <jar jarfile="${eclipselink.oracle.depend.jar}">
-        <fileset dir="${eclipselink.extension.oracle}/${classes.dir}">
-          <include name="org/eclipse/persistence/**/*.class"/>
-        </fileset>
-      </jar>
+    <target name="build-jar" depends="compile" description="build a jar file other projects can use for dependancies if they cannot compile with oracle dependancies">
+        <jar jarfile="${eclipselink.oracle.depend.jar}">
+            <fileset dir="${eclipselink.extension.oracle}/${classes.dir}">
+                <include name="org/eclipse/persistence/**/*.class"/>
+            </fileset>
+        </jar>
     </target>
 
     <target name="clean" description="Clean the build">

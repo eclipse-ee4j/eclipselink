@@ -3,6 +3,20 @@
 * the Eclipse Public License v1.0, which accompanies this distribution and is available at
 * http://www.eclipse.org/legal/epl-v10.html.
 *
+*   Ant naming conventions:
+*   - regardless of the actual OS platform,'/' is the directory separator
+*     (Ant will convert as appropriate).
+*   - multi-word properties use periods '.'
+*   - multi-word targets use hyphens '-' 
+*   - multi-word macros use underscores '_'
+*   - multi-word macro attributes are concatinated
+*     e.g. 'runpathref'  
+*   - multi-word tasks (taskdef) names are concatinated
+*     e.g. 'validateconnection'
+*   - OS environment variables are in ALLCAPS and have 'env' as a prefix
+*     e.g. ${env.XXX}.
+*   - Ant properties are lower case.
+*
 * Contributors:
 *     Oracle - initial API and implementation
 #******************************************************************************/-->
@@ -11,66 +25,66 @@
     <!-- =================================================================== -->
     <target name="init">
         <tstamp>
-            <format property="BldDate" pattern="yyMMdd"/>
-            <format property="BldTime" pattern="HHmm"/>
+            <format property="build.date" pattern="yyMMdd"/>
+            <format property="build.time" pattern="HHmm"/>
         </tstamp>
         <property environment="env"/>
 
-        <property name="_stop_on_err" value="false"/>
-        <property name="_optimize"    value="off"/>
-        <property name="_deprecation" value="off"/>
-        <property name="_debug"       value="on"/>
-        <property name="_targetjvm"   value="1.5"/>
-        <echo message="BldDate.BldTime='${BldDate}.${BldTime}'"/>
+        <property name="stop.on.error" value="false"/>
+        <property name="optimize.code"    value="off"/>
+        <property name="report.deprecation" value="off"/>
+        <property name="javac.debug"       value="on"/>
+        <property name="target.jvm"   value="1.5"/>
+        <echo message="BuildDate.BuildTime='${build.date}.${build.time}'"/>
         <echo message="java.version='${java.version}'"/>
         <echo message="os.name='${os.name}'"/>
         <echo message="os.arch='${os.arch}'"/>
         <echo message="os.version='${os.version}'"/>
-        <echo message="_stop_on_err='${_stop_on_err}'"/>
-        <echo message="_optimize='${_optimize}'"/>
-        <echo message="_deprecation='${_deprecation}'"/>
-        <echo message="_targetjvm='${_targetjvm}'"/>
+        <echo message="stop.on.error='${stop.on.error}'"/>
+        <echo message="optimize.code='${optimize.code}'"/>
+        <echo message="report.deprecation='${report.deprecation}'"/>
+        <echo message="target.jvm='${target.jvm}'"/>
     </target>
     <!-- =================================================================== -->
     <!-- =================================================================== -->
-    <target name="set.release" unless="_g" depends="init">
-        <property name="debugPostfix" value=""/>
-        <property name="_debuglvl"     value="lines,source"/>
-        <property name="_debugOff"    value="true"/>
-        <echo message="_debuglvl='${_debuglvl}'"/>
-        <echo message="_debugOff='${_debugOff}'"/>
-        <echo message="debugPostfix='${debugPostfix}'"/>
+    <target name="set-release" unless="debug" depends="init">
+        <property name="debug.postfix" value=""/>
+        <property name="debug.level"     value="lines,source"/>
+        <property name="debug.set"    value="true"/>
+        <echo message="debug.level='${debug.level}'"/>
+        <echo message="debug.set='${debug.set}'"/>
+        <echo message="debug.postfix='${debug.postfix}'"/>
     </target>
 
-    <target name="set.debug" if="_g" depends="set.release">
-        <property name="debugPostfix" value="_g"/>
-        <property name="_debuglvl"     value="lines,vars,source"/>
-        <echo message="_debuglvl='${_debuglvl}'"/>
-        <echo message="_debugOff not defined."/>
-        <echo message="debugPostfix='${debugPostfix}'"/>
+    <target name="set-debug" if="debug" depends="set-release">
+        <property name="debug.postfix" value="debug"/>
+        <property name="debug.level"     value="lines,vars,source"/>
+        <echo message="debug.level='${debug.level}'"/>
+        <echo message="debug.set not defined."/>
+        <echo message="debug.postfix='${debug.postfix}'"/>
     </target>
 
     <!-- =================================================================== -->
     <!-- =================================================================== -->
 
-    <target name="build.all" depends="compile.framework, jar.framework"/>
+    <target name="build-all" depends="compile-framework, jar-framework"/>
 
     <!-- =================================================================== -->
     <!--  Properties                                                         -->
     <!-- =================================================================== -->
-    <target name="_properties.init" depends="set.debug">
+    <target name="properties-init" depends="set-debug">
         <property file="build.properties"/>
         <mkdir dir="${_classesDestDir}"/>
         <mkdir dir="${_jarDestDir}"/>
-    	<condition property="junit.classpath.exist" >
-    		<isset property="junit.classpath"/>
-    	</condition>
+        <condition property="junit.classpath.exist" >
+            <isset property="junit.classpath"/>
+        </condition>
     </target>
 
     <!-- =================================================================== -->
     <!--  Clean                                                              -->
     <!-- =================================================================== -->
-    <target name="clean" depends="set.debug">
+    <target name="clean" depends="set-debug">
         <property file="build.properties"/>
 
         <delete dir="${_classesDestDir}" includeEmptyDirs="true" quiet="true"/>
@@ -80,18 +94,18 @@
     <!-- =================================================================== -->
     <!--  Compile                                                            -->
     <!-- =================================================================== -->
-    <target name="compile.framework" depends="_properties.init">
+    <target name="compile-framework" depends="properties-init">
         <mkdir dir="${compile.framework.destdir}"/>
         <javac
             classpath="${compile.framework.classpath}"
             srcdir="${compile.framework.srcdir}"
             destdir="${compile.framework.destdir}"
-            debug="${_debug}"
-            debuglevel="${_debuglvl}"
-            failonerror="${_stop_on_err}"
-            optimize="${_optimize}"
-            deprecation="${_deprecation}"
-            target="${_targetjvm}"
+            debug="${javac.debug}"
+            debuglevel="${debug.level}"
+            failonerror="${stop.on.error}"
+            optimize="${optimize.code}"
+            deprecation="${report.deprecation}"
+            target="${target.jvm}"
             includes="**/*.java"
             excludes="**/*&#35;*/**, **/.ade_path/**"
         />
@@ -100,9 +114,9 @@
     <!-- =================================================================== -->
     <!--  Jar                                                                -->
     <!-- =================================================================== -->
-    <target name="jar.framework" depends="jar.framework.lib, jar.framework.src"/>
+    <target name="jar-framework" depends="jar-framework-lib, jar-framework-src"/>
 
-    <target name="jar.framework.lib" if="_debugOff" depends="_properties.init">
+    <target name="jar-framework-lib" if="debug.set" depends="properties-init">
         <delete file="${_jarDestDir}/${framework.jarfile}"/>
         <jar jarfile="${_jarDestDir}/${framework.jarfile}">
             <manifest>
@@ -110,7 +124,7 @@
                 <attribute name="Specification-Vendor" value="Eclipse Project" />
                 <attribute name="Specification-Version" value="${_VersionStamp}" />
                 <attribute name="Implementation-Title" value="test.org.eclipse.persistence.workbench.framework" />
-                <attribute name="Implementation-Version" value="${_VersionStamp}.${_buildNumber}" /> 
+                <attribute name="Implementation-Version" value="${_VersionStamp}.${_buildNumber}" />
                 <attribute name="Implementation-Vendor" value="Eclipse Project" />
             </manifest>
             <fileset
@@ -119,7 +133,7 @@
             />
         </jar>
     </target>
-    <target name="jar.framework.src" unless="_debugOff" depends="_properties.init">
+    <target name="jar-framework-src" unless="debug.set" depends="properties-init">
         <delete file="${_jarDestDir}/${framework.jarfile}"/>
         <jar jarfile="${_jarDestDir}/${framework.jarfile}">
             <manifest>
@@ -127,7 +141,7 @@
                 <attribute name="Specification-Vendor" value="Eclipse Project" />
                 <attribute name="Specification-Version" value="${_VersionStamp}" />
                 <attribute name="Implementation-Title" value="test.org.eclipse.persistence.workbench.framework" />
-                <attribute name="Implementation-Version" value="${_VersionStamp}.${_buildNumber}" /> 
+                <attribute name="Implementation-Version" value="${_VersionStamp}.${_buildNumber}" />
                 <attribute name="Implementation-Vendor" value="Eclipse Project" />
             </manifest>
             <fileset
@@ -145,18 +159,18 @@
     <!-- =================================================================== -->
     <!--  JUnit tests - run this target from the master build project only.  -->
     <!-- =================================================================== -->
-	
-    <target name="checkClasspath" depends="_properties.init" unless="junit.classpath.exist">
-	    <echo message="Run the test.all target from the master build project only." />
-    	<fail>Run the master build project</fail>
+
+    <target name="checkClasspath" depends="properties-init" unless="junit.classpath.exist">
+        <echo message="Run the test.all target from the master build project only." />
+        <fail>Run the master build project</fail>
     </target>
-	
-    <target name="test.all" depends="checkClasspath">
-    	<junit>
-        	<classpath path="${junit.classpath}" />
+
+    <target name="test-all" depends="checkClasspath">
+        <junit>
+            <classpath path="${junit.classpath}" />
             <formatter type="brief" usefile="false" />
             <test name="test.org.eclipse.persistence.workbench.framework.AllFrameworkTests" />
         </junit>
     </target>
-	
+
 </project>
