@@ -68,9 +68,6 @@
          </ns0:Emp>
       </ns1:Value>
       <ns1:ChangeSummary create="#/tns:processData/ns1:Value[1]/ns0:Emp[7]" delete="#/tns:processData/ns1:ChangeSummary/ns1:Value/ns0:Emp[5]" xmlns:sdo="commonj.sdo">
-         <ns0:Emp sdo:ref="#/tns:processData/ns1:Value[1]/ns0:Emp[2]">
-            <ns0:Sal>3005</ns0:Sal>
-         </ns0:Emp>
          <ns1:Value sdo:ref="#/tns:processData/ns1:Value[1]">
             <ns0:Emp sdo:ref="#/tns:processData/ns1:Value[1]/ns0:Emp[1]"/>
             <ns0:Emp sdo:ref="#/tns:processData/ns1:Value[1]/ns0:Emp[2]"/>
@@ -88,6 +85,9 @@
             <ns0:Emp sdo:ref="#/tns:processData/ns1:Value[1]/ns0:Emp[5]"/>
             <ns0:Emp sdo:ref="#/tns:processData/ns1:Value[1]/ns0:Emp[6]"/>
          </ns1:Value>
+         <ns0:Emp sdo:ref="#/tns:processData/ns1:Value[1]/ns0:Emp[2]">
+            <ns0:Sal>3005</ns0:Sal>
+         </ns0:Emp>
       </ns1:ChangeSummary>
    </tns:processData>
 </tns:processCSDeptElement>

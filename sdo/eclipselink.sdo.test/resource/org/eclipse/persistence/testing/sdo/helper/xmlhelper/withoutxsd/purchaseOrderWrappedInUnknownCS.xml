@@ -29,10 +29,6 @@
          </item>
       </items>
       <theCS delete="#/ns0:purchaseOrder/theCS/ns0:purchaseOrder/foo[1]" xmlns:sdo="commonj.sdo">
-         <phone sdo:ref="#/ns0:purchaseOrder/phone[1]">
-            <number>33333333</number>
-            <ext>444</ext>
-         </phone>
          <ns0:purchaseOrder sdo:ref="#/ns0:purchaseOrder">
             <comment>oldComment</comment>
             <blah>123</blah>
@@ -40,6 +36,10 @@
                <name>someName</name>
             </foo>
          </ns0:purchaseOrder>
+         <phone sdo:ref="#/ns0:purchaseOrder/phone[1]">
+            <number>33333333</number>
+            <ext>444</ext>
+         </phone>
       </theCS>
       <phone>
          <addr country="US" xsi:type="ns0:AddressType">

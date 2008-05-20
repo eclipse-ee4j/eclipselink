@@ -1810,40 +1810,29 @@ public class ChangeSummaryXSDTestCases extends SDOTestCase {
         *  Issue: if we reset the child back the same place (in effect doing our own undo)
         *  do we optimize this and remove the copy - for now a real undoChanges() will do the same
         */
-        shipToDO.set("yard", yardDO);// the entry in deletedMap will be removed but the modifedList entry will remain
+        shipToDO.set("yard", yardDO); // the entry in deletedMap will be removed and isModified == false
         assertFalse(cs.isDeleted(yardDO));
         
-        yardDOSettings = cs.getOldValues(yardDO);
+        yardDOSettings = cs.getOldValues(yardDO);  // will return an empty list since the oldValueStore entry was removed during set()
         List shipToSettings = cs.getOldValues(shipToDO);
         // see cs.getOldValue() does not return null when yardDO is !modified and !deleted (but !created as well) - (re)set
         ChangeSummary.Setting lengthSetting = cs.getOldValue(yardDO, yardDO.getInstanceProperty("length"));
 
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
         // TODO: FIX this ambiguity Jira 225 and 109/125 via a smart local undo
         // 20070501: this test is has been switched to assertTrue to pass until we fix 5882923
         if(1 < 0) {
-        	assertFalse(cs.isModified(shipToDO)); // this should be the correct assertion
+            assertFalse(cs.isModified(shipToDO)); // this should be the correct assertion
             assertEquals(0, cs.getChangedDataObjects().size());//if we add new logic
             // see cs.getOldValues() does not return and empty List when yardDO is !modified and !deleted (but !created as well) - (re)set        
             assertEquals(0, yardDOSettings.size());// was 3 before we implemented undoChanges()
             //assertNotNull(lengthSetting);
             assertNull(lengthSetting);
         } else {
-        	assertTrue(cs.isModified(shipToDO)); // see bug# 5882923 - we should clear the setting here
+            assertTrue(cs.isModified(shipToDO)); // see bug# 5882923 - we should clear the setting here
             assertEquals(1, cs.getChangedDataObjects().size());//if we add new logic
             // see cs.getOldValues() does not return and empty List when yardDO is !modified and !deleted (but !created as well) - (re)set        
-            assertEquals(3, yardDOSettings.size());// was 3 before we implemented undoChanges()
-            assertNotNull(lengthSetting);
+            assertEquals(0, yardDOSettings.size());// was 3 before we implemented undoChanges()
+            assertNull(lengthSetting);
             //assertNull(lengthSetting);
         }
 
@@ -1967,12 +1956,11 @@ public class ChangeSummaryXSDTestCases extends SDOTestCase {
 
         assertFalse(cs.isDeleted(item2ProductPrice1DO));
         //assertUnchanged(cs.isModified(item2ProductDO)); //if we add new logic        
-        assertModified(item2ProductDO, cs);
+        assertFalse(cs.isModified(item2ProductDO));
 
         assertFalse(cs.isModified(item2ProductPrice1DO));
 
-        //assertEquals(0, cs.getChangedDataObjects().size());  //if we add new logic      
-        assertEquals(1, cs.getChangedDataObjects().size());
+        assertEquals(0, cs.getChangedDataObjects().size());
 
         assertEquals(14, ((SDOChangeSummary)cs).getOldContainer().size());
         assertEquals(14, ((SDOChangeSummary)cs).getOldContainmentProperty().size());

@@ -123,7 +123,10 @@ public class ChangeSummaryCreatedModifiedDeletedTests extends ChangeSummaryCreat
         // A: 20070106: Yes we keep oldSettings in the old cs - currently we do not cancel out operations
         // unset + (re)set != no changes
         //assertUnchanged(dataObjectD, changeSummaryA);
-        assertDetachedAndReset(dataObjectD, changeSummaryA, false); // set after a detach will result in a non-null container
+        
+        assertFalse(changeSummaryA.isCreated(dataObjectD));
+        assertFalse(changeSummaryA.isModified(dataObjectD));
+        assertFalse(changeSummaryA.isDeleted(dataObjectD));
 
         // current value (wrong)
         //assertDeleted(dataObjectD, changeSummaryA);

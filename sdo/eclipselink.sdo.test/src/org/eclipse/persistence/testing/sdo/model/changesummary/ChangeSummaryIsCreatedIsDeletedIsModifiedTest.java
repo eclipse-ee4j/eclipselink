@@ -169,12 +169,4 @@ public class ChangeSummaryIsCreatedIsDeletedIsModifiedTest extends ChangeSummary
         changeSummary.endLogging();
         this.assertFalse(changeSummary.isLogging());
     }
-
-    public void testIsModifiedWithNewCreatedDataObjectAfterLogging() {
-        changeSummary.beginLogging();
-        SDODataObject newObj = (SDODataObject)root.createDataObject(rootProperty);
-        assertCreated(newObj, changeSummary);
-        newObj._setModified(true);
-        assertCreated(newObj, changeSummary);
-    }
 }

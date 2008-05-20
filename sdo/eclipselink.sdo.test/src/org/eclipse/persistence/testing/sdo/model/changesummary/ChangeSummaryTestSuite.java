@@ -32,7 +32,7 @@ public class ChangeSummaryTestSuite {
     }
 
     /**
-    *  Inherited suite mthod for generating all test cases.
+    *  Inherited suite method for generating all test cases.
     * @return
     */
     public static Test suite() {
@@ -85,7 +85,7 @@ public class ChangeSummaryTestSuite {
                 suite.addTest(new TestSuite(ChangeSummaryXSDWithCSonRootDetachComplexSingleBelowRootTest.class));
                 suite.addTest(new TestSuite(ChangeSummaryXSDWithCSonRootCreateComplexSingleBelowRootTest.class));
         */
-        
+        suite.addTest(new TestSuite(ChangeSummaryXSDQuoteDataTestCases.class));// to be removed when we have all tests extracted
         return suite;
     }
 }

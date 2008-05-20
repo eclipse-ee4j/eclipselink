@@ -1,0 +1,18 @@
+<xsd:schema elementFormDefault="qualified" attributeFormDefault="unqualified" targetNamespace="www.example.com" xmlns:sdo="commonj.sdo" xmlns:sdoJava="commonj.sdo/java" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+ <xsd:element name="quoteData" type="quoteType"/>
+ <xsd:complexType name="quoteType">
+  <xsd:sequence>
+    <xsd:element name="lineItem" maxOccurs="unbounded" minOccurs="0" type="quoteItem"></xsd:element>
+    <xsd:element name="relatedQuoteItem" maxOccurs="unbounded" minOccurs="0" type="quoteItem"></xsd:element>   
+    <xsd:element name="changeSummary" type="sdo:ChangeSummaryType" sdo:propertyType="sdo:ChangeSummaryType" minOccurs="0"/>            
+  </xsd:sequence>
+ </xsd:complexType>
+ <xsd:complexType name="quoteItem">
+  <xsd:sequence>
+    <xsd:element name="id" minOccurs="0" type="xsd:string"/>
+    <xsd:element name="cost" minOccurs="0" type="xsd:string"/>
+    <xsd:element name="quantity" minOccurs="0" type="xsd:string"/>
+  </xsd:sequence>
+ </xsd:complexType>
+</xsd:schema>
+
