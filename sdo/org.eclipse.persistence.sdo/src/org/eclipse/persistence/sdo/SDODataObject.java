@@ -1412,7 +1412,6 @@ public class SDODataObject implements DataObject, SequencedObject {
      */
     public void _setModified(boolean modified) {
         if (changeSummary != null) {
-            ((SDOChangeSummary)changeSummary).setModified(this, modified);
             if (isLogging()) {
                 updateChangeSummaryWithOriginalValues();
             }
@@ -2237,7 +2236,15 @@ public class SDODataObject implements DataObject, SequencedObject {
 
             // Remove property or old changeSummary
             aDataObject.detach(false, updateSequence);
-            
+
+            // Need to know if the DO was deleted and being re-added later on in this method.
+            // Since getChangeSummary().isDeleted() will be affected before the code in question
+            // is hit, store the value now.
+            boolean isDeleted = false;
+            if (getChangeSummary() != null) {
+                isDeleted = getChangeSummary().isDeleted(aDataObject);
+            }
+
             // Check that the target object is not a changeSummary root - an internal set of an internal changeSummary
             /**
              * The following 2 update functions are kept separate for performance reasons in #6473342..
@@ -2290,6 +2297,62 @@ public class SDODataObject implements DataObject, SequencedObject {
 
             // modify container object
             _setModified(true);
+
+            // In the case of re-adding a previously deleted/detached data object, we may need to update
+            // the change summary's OriginalValueStores list to ensure isModified correctness
+            if (isDeleted) {
+                // May need to remove the corresponding entry in the originalValueStore map.
+                // Compare the value store to the corresponding entry in the originalValueStore map.
+                // Check to see if we're adding into the old parent (undo delete) or into a new parent (move)
+                Map originalValueStores = ((SDOChangeSummary)getChangeSummary()).getOriginalValueStores();
+                ValueStore originalVS = ((ValueStore) originalValueStores.get(aDataObject));
+                if (originalVS.equals(aDataObject._getCurrentValueStore())) {
+                    // Remove the old value store from the change summary
+                    originalValueStores.remove(aDataObject);
+                }
+                
+                DataObject oldParentDO = getChangeSummary().getOldContainer(aDataObject);       
+                if (oldParentDO == this) {
+                    // The data object was deleted and is now being re-added to same parent object.
+                    // May need to remove the corresponding entry in the oldValueStore map.
+                    // Compare the parent value store to the corresponding entry in the oldValueStore map.
+                    ValueStore originalParentVS = ((ValueStore) originalValueStores.get(oldParentDO));
+                    if (originalParentVS.equals(this._getCurrentValueStore())) {
+                        // Value stores are equal, now make sure no ListWrappers have been modified
+                        // For each typePropertyValue that is a ListWrapper in the currentValueStore, check
+                        // the OriginalElements list in the CS to see if that wrapper exists in the list (indicating
+                        // the wrapper's list was modified at some point) and if it does, compare the current list 
+                        // to that original list.  If they are equal, and the value stores are equal, the entries 
+                        // can be removed from the change summary so isModified will work correctly
+                        Object prop;
+                        Object oldList;
+                        Map originalElements = ((SDOChangeSummary)getChangeSummary()).getOriginalElements();       
+                        List oldParentProps = oldParentDO.getInstanceProperties();
+                        for (int i=0; i<oldParentProps.size(); i++) {
+                            prop = originalParentVS.getDeclaredProperty(i);
+                            oldList = originalElements.get(prop);
+                            if (oldList != null) {
+                                List oldElements = (List) oldList;
+                                List currentElements = ((ListWrapper) prop).getCurrentElements();
+                                if (oldElements.size() != currentElements.size()) {
+                                    // A ListWrapper has been modified - don't remove the old value store entry
+                                    return;
+                                }
+                                Iterator elementIt = currentElements.iterator();
+                                Iterator oldelementIt = oldElements.iterator();
+                                while (elementIt.hasNext()) {
+                                    if (elementIt.next() != oldelementIt.next()) {
+                                        // A ListWrapper has been modified - don't remove the old value store entry
+                                        return;
+                                    }
+                                }
+                            }
+                        }
+                        // Remove the old value store from the change summary
+                        originalValueStores.remove(oldParentDO);
+                    }
+                }
+            }
         }
     }
 

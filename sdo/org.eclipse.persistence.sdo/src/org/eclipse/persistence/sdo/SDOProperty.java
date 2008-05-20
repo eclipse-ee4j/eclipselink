@@ -541,9 +541,15 @@ public class SDOProperty implements Property, Serializable {
         aCMapping.setGetMethodName("getChangeSummary");
         aCMapping.setSetMethodName("_setChangeSummary");
         aCMapping.setReferenceClass(SDOChangeSummary.class);
+        // Handle nillable element support via the nullable property
+        if (nullable) {
+            setIsSetNillablePolicyOnMapping(aCMapping, propertyName);
+        } else {
+            // elements or attributes
+            setIsSetOptionalPolicyOnMapping(aCMapping, propertyName);
+        }
         setXmlMapping(aCMapping);
 
-        return;
     }
 
     /**

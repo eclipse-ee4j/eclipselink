@@ -52,7 +52,6 @@ public class SDOChangeSummary implements ChangeSummary {
     private boolean loggingMapping;
     private DataGraph dataGraph;
     private List createdList;
-    private List modifiedList;
     private List deletedList;
     private Map deepCopies;
     private List createdXPaths;//for ox mapping
@@ -94,7 +93,6 @@ public class SDOChangeSummary implements ChangeSummary {
         // TODO: JIRA129 - default to static global context - Do Not use this convience constructor directly outside of JUnit testing
         // HelperContext is set during unmarshalling in SDOUnmarshalListener
         createdList = new ArrayList();
-        modifiedList = new ArrayList();
         deepCopies = new HashMap();
         deletedList = new ArrayList();
         oldSettings = new HashMap();
@@ -142,35 +140,9 @@ public class SDOChangeSummary implements ChangeSummary {
         if (isLogging() && !isCreated(anObject)) {
             if (created) {
                 // remove from other sets
-                modifiedList.remove(anObject);
                 deletedList.remove(anObject);
                 // add to set
                 createdList.add(anObject);
-            }
-        }
-    }
-
-    /**
-     * INTERNAL:
-    * Set flag modified value.
-    * @param modified   flag modified's new value.
-    */
-    public void setModified(DataObject anObject, boolean modified) {
-        // Explicitly clear the flag
-        if (isLogging() && !modified) {
-            modifiedList.remove(anObject);
-        }
-
-        if (!isModified(anObject) && isLogging()) {
-            // only set true if modified and deleted are false
-            // TODO: this logic isnt' correct - 
-            // A has a changesummary and a B and a C 
-            // move D from B to C and we want D to be modified =false, created=false, deleted=false
-            // TODO: Answer for above: deleted = true -> false gets modified by a setDeleted(false)
-            // fix for the spec in the implementor do.undateContainment()            
-            if (!createdList.contains(anObject) && !deletedList.contains(anObject)) {
-                // add to set
-                modifiedList.add(anObject);
             }
         }
     }
@@ -193,8 +165,6 @@ public class SDOChangeSummary implements ChangeSummary {
         if (isLogging() && !this.isDeleted(anObject)) {            
             if (deleted) {            
                 // remove from other sets
-                modifiedList.remove(anObject);
-                
                 if(isCreated(anObject)){
                   createdList.remove(anObject);
                   
@@ -283,9 +253,7 @@ public class SDOChangeSummary implements ChangeSummary {
         // TODO: is order relevant
         // merge all the sets
         ArrayList aList = new ArrayList();
-        if (modifiedList != null) {
-            aList.addAll(modifiedList);
-        }
+        aList.addAll(getModified());
         if (deletedList != null) {
             aList.addAll(deletedList);
         }
@@ -302,8 +270,37 @@ public class SDOChangeSummary implements ChangeSummary {
      * Set
      */
     public List getModified() {
+        ArrayList modifiedList = new ArrayList();
+        getModified(rootDataObject, modifiedList);
         return modifiedList;
     }
+    
+    private void getModified(SDODataObject sdoDataObject, List modifiedList) {
+        if(null == sdoDataObject) {
+            return;
+        }
+        
+        if(isModified(sdoDataObject)) {
+            modifiedList.add(sdoDataObject);
+        }
+        List<Property> properties = (List<Property>) sdoDataObject.getInstanceProperties();
+        for(int x=0; x<properties.size(); x++) {
+            Property property = properties.get(x);
+            if(property.isContainment()) {
+                if(property.isMany()) {
+                    List<SDODataObject> dataObjects = (List<SDODataObject>) sdoDataObject.getList(property);
+                    for(int y=0; y<dataObjects.size(); y++) {
+                        getModified(dataObjects.get(y), modifiedList);
+                    }
+                } else {
+                    if ((property.getType() != null) && !(((SDOType)property.getType()).isChangeSummaryType())) {
+                        getModified((SDODataObject) sdoDataObject.getDataObject(property), modifiedList);
+                    }
+                }
+            }
+        }
+    }
+    
 
     /**
      * INTERNAL:
@@ -360,7 +357,12 @@ public class SDOChangeSummary implements ChangeSummary {
      * @see #getChangedDataObjects
      */
     public boolean isModified(DataObject dataObject) {
-        return (modifiedList != null) && modifiedList.contains(dataObject);
+        // a modified data object is present in the original value 
+        // stores list and has not been deleted
+        if (this.originalValueStores.get(dataObject) == null || isDeleted(dataObject)) {
+            return false;
+        }
+        return true;
     }
 
     /**
@@ -545,7 +547,6 @@ public class SDOChangeSummary implements ChangeSummary {
     private void resetChanges() {
         createdList.clear();
         deletedList.clear();
-        modifiedList.clear();
         // See spec. p.30 "List of changed DataObjects cleared"        
         oldSettings.clear();
         deepCopies.clear();

@@ -120,10 +120,13 @@ public class ListWrapper implements List, Serializable {
     public boolean add(Object item, boolean updateSequence) {
         // update element arrays before we modify original object
         copyElements();
+        
+        boolean result = currentElements.add(item); 
+        
         // update containment    	
         updateContainment(item, updateSequence);
-        // Should updates occur after adding to currentElements?
-        return currentElements.add(item);
+
+        return result;
     }
 
     /**
@@ -153,10 +156,12 @@ public class ListWrapper implements List, Serializable {
 
         // update element arrays before we modify original object
         copyElements();
-        // update containment
-        updateContainment(item, updateSequence);
+
         // delegate to superclass
         currentElements.add(index, item);
+
+        // update containment
+        updateContainment(item, updateSequence);
 
         // TODO: invalid for property to be null - throw exception?         
     }

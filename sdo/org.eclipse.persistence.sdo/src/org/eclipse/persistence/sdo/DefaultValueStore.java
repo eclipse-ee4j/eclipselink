@@ -15,6 +15,7 @@ package org.eclipse.persistence.sdo;
 import commonj.sdo.DataObject;
 import commonj.sdo.Property;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 
 /**
@@ -186,5 +187,73 @@ public class DefaultValueStore implements ValueStore {
         anOriginalValueStore.setOpenContentValues(clonedMap);
 
         return anOriginalValueStore;
+    }
+    
+    /**
+     *  Indicates if a given ValueStore is equal to this.  The following 
+     *  attributes are tested for equality:
+     *      - data object
+     *      - type property values
+     *      - open content property values
+     *      - property isSet values
+     */
+    public boolean equals(Object obj) {
+        DefaultValueStore dvs;
+        try {
+            dvs = (DefaultValueStore) obj;
+        } catch (ClassCastException cce) {
+            return false;
+        }
+        // Compare data object
+        if (dvs.dataObject != this.dataObject) {
+            return false;
+        }
+        // Compare declared properties and isSet status
+        // All lists must be the same length
+        if (dvs.getTypePropertyValues().length != this.getTypePropertyValues().length || 
+                dvs.getTypePropertiesIsSetStatus().length != this.getTypePropertiesIsSetStatus().length) {
+            return false;
+        }
+        for (int i=0; i<dvs.getTypePropertyValues().length; i++) {
+            // isSet values must be equal
+            if (dvs.isSetDeclaredProperty(i) != this.isSetDeclaredProperty(i)) {
+                return false;
+            }
+            Object dvsPropVal  = dvs.getDeclaredProperty(i);
+            Object thisPropVal = this.getDeclaredProperty(i);
+            // Both values need to be null or non-null            
+            if (dvsPropVal == null) {
+                if (thisPropVal != null) {
+                    return false;
+                }
+                // Here both are null so no need to check anything
+            } else {
+                if (!(dvsPropVal.equals(thisPropVal))) {
+                    return false;
+                }
+            }
+        }
+        // Compare open content properties
+        if (dvs.getOpenContentValues().size() != this.getOpenContentValues().size()) {
+            return false;
+        }
+        Iterator<Property> keyIt = dvs.getOpenContentValues().keySet().iterator();
+        while (keyIt.hasNext()) {
+            Property key = keyIt.next();
+            Object dvsOCVal  = dvs.getOpenContentProperty(key);
+            Object thisOCVal = this.getOpenContentProperty(key);
+            // Both values need to be null or non-null            
+            if (dvsOCVal == null) {
+                if (thisOCVal != null) {
+                    return false;
+                }
+                // Here both are null so no need to check anything
+            } else {
+                if (!(dvsOCVal.equals(thisOCVal))) {
+                    return false;
+                }
+            }
+        }
+        return true;
     }
 }

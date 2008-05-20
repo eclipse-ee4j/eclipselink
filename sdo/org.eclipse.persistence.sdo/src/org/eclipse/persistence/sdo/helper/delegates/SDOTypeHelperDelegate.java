@@ -585,7 +585,7 @@ public class SDOTypeHelperDelegate implements SDOTypeHelper {
 
         if (containingType != null) {
             ((SDOType)containingType).addDeclaredProperty(newProperty);
-            if (aHelperContext.getXSDHelper().isElement(newProperty)) {
+            if (aHelperContext.getXSDHelper().isElement(newProperty) || newProperty.getType().isChangeSummaryType()) {
                 newProperty.setNamespaceQualified(true);
             }
             newProperty.buildMapping(containingType.getURI());
