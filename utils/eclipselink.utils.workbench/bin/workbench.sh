@@ -10,7 +10,7 @@ CLASSPATH=`dirname $0`/../jlib/xercesImpl.jar:\
 `dirname $0`/../../jlib/eclipselink.jar:\
 `dirname $0`/../jlib/elmwcore.jar:\
 `dirname $0`/../jlib/eclipselinkmw.jar:\
-`dirname $0`/../../jlib/jpa/persistence.jar:\
+`dirname $0`/../../jlib/jpa/javax.persistence_1.0.0.jar:\
 `dirname $0`/../config:\
 ${DRIVER_CLASSPATH}
 
