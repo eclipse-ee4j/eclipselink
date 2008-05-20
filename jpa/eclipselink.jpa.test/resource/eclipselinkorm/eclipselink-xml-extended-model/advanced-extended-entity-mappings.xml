@@ -1,31 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<entity-mappings xsi:schemaLocation="xsd/eclipselink_orm_1_0.xsd" version="1.0" xmlns="http://www.eclipse.org/xml/ns/persistence/orm" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+<entity-mappings version="1.0" xmlns="http://java.sun.com/xml/ns/persistence/orm" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://java.sun.com/xml/ns/persistence/orm orm_1_0.xsd">
     <description>Advanced Test Model Instance Document</description>
     <package>org.eclipse.persistence.testing.models.jpa.xml.advanced</package>
-    <converter name="ProvinceConverter" class="ProvinceConverter"/>
-    <type-converter name="Long2String" data-type="String" object-type="Long"/>
-    <entity name="XMLEmployee" class="Employee" access="PROPERTY" existence-checking="CHECK_DATABASE">
-        <customizer class="EmployeeCustomizer"/>
-        <change-tracking type="AUTO"/>
+    <entity name="XMLEmployee" class="Employee">
         <table name="CMP3_XML_EMPLOYEE"/>
         <secondary-table name="CMP3_XML_SALARY">
             <primary-key-join-column name="E_ID" referenced-column-name="EMP_ID"/>
         </secondary-table>
-        <optimistic-locking type="VERSION_COLUMN" cascade="true"/>
-        <cache type="SOFT_WEAK" size="730" isolated="false" disable-hits="true" always-refresh="false" coordination-type="INVALIDATE_CHANGED_OBJECTS">
-          <!-- disable-hits is set to true. Do not change it, the employee customizer will set it to false and there is a test to verify that. -->
-          <expiry>1000</expiry>
-        </cache>
-        <object-type-converter name="sex" data-type="String" object-type="Employee$Gender">
-          <conversion-value data-value="F" object-value="Female"/>
-          <conversion-value data-value="M" object-value="Male"/>
-        </object-type-converter>
-        <object-type-converter name="CreditCard">
-          <conversion-value data-value="VI" object-value="Visa"/>
-          <conversion-value data-value="AM" object-value="Amex"/>
-          <conversion-value data-value="MC" object-value="Mastercard"/>
-          <conversion-value data-value="DI" object-value="DinersClub"/>
-        </object-type-converter>
         <table-generator name="XML_EMPLOYEE_TABLE_GENERATOR" table="CMP3_XML_EMPLOYEE_SEQ" pk-column-name="SEQ_NAME" value-column-name="SEQ_COUNT" pk-column-value="XML_EMPLOYEE_SEQ"/>
         <named-query name="findAllXMLEmployeesByFirstName">
             <query>SELECT OBJECT(employee) FROM XMLEmployee employee WHERE employee.firstName = :firstname</query>
@@ -43,110 +24,44 @@
                 <post-load method-name="postLoad"/>
             </entity-listener>
         </entity-listeners>
-        <property name="entityName" value="XMLEmployee"/>
-        <property name="entityIntegerProperty" value="1" value-type="Integer"/>
-        <property name="ToBeOverriddenByXml" value="true" value-type="Boolean"/>
         <attributes>
             <id name="id">
                 <column name="EMP_ID"/>
                 <generated-value strategy="TABLE" generator="XML_EMPLOYEE_TABLE_GENERATOR"/>
-                <property name="attributeName" value="id"/>
             </id>
             <basic name="firstName">
                 <column name="F_NAME"/>
-                <property name="attributeName" value="firstName"/>
             </basic>
             <basic name="lastName">
                 <column name="L_NAME"/>
-                <!-- 
-                    @Property(name="attributeName", value="lastName"),
-                    @Property(name="BooleanProperty", value="true", valueType=Boolean.class),
-                    @Property(name="ByteProperty", value="1", valueType=Byte.class),
-                    @Property(name="CharacterProperty", value="A", valueType=Character.class),
-                    @Property(name="DoubleProperty", value="1", valueType=Double.class),
-                    @Property(name="FloatProperty", value="1", valueType=Float.class),
-                    @Property(name="IntegerProperty", value="1", valueType=Integer.class),
-                    @Property(name="LongProperty", value="1", valueType=Long.class),
-                    @Property(name="ShortProperty", value="1", valueType=Short.class),
-                    @Property(name="BigDecimalProperty", value="1", valueType=java.math.BigDecimal.class),
-                    @Property(name="BigIntegerProperty", value="1", valueType=java.math.BigInteger.class),
-                    @Property(name="TimeProperty", value="13:59:59", valueType=java.sql.Time.class),
-                    @Property(name="TimeStampProperty", value="2008-04-10 13:59:59", valueType=java.sql.Timestamp.class),
-                    @Property(name="DateProperty", value="2008-04-10", valueType=java.sql.Date.class)
-                 -->
-                <property name="attributeName" value="lastName"/>
-                <property name="BooleanProperty" value="true" value-type="java.lang.Boolean"/>
-                <property name="ByteProperty" value="1" value-type="java.lang.Byte"/>
-                <property name="CharacterProperty" value="A"  value-type="java.lang.Character"/>
-                <property name="DoubleProperty" value="1" value-type="java.lang.Double"/>
-                <property name="FloatProperty" value="1" value-type="java.lang.Float"/>
-                <property name="IntegerProperty" value="1" value-type="java.lang.Integer"/>
-                <property name="LongProperty" value="1" value-type="java.lang.Long"/>
-                <property name="ShortProperty" value="1" value-type="java.lang.Short"/>
-                <property name="BigDecimalProperty" value="1" value-type="java.math.BigDecimal"/>
-                <property name="BigIntegerProperty" value="1" value-type="java.math.BigInteger"/>
-                <property name="TimeProperty" value="13:59:59" value-type="java.sql.Time"/>
-                <property name="TimeStampProperty" value="2008-04-10 13:59:59" value-type="java.sql.Timestamp"/>
-                <property name="DateProperty" value="2008-04-10" value-type="java.sql.Date"/>
-            </basic>
-            <basic name="sin">
-                <column name="SIN"/>
-                <access-methods get-method="returnSIN" set-method="enterSIN"/>
-                <property name="attributeName" value="sin"/>
-            </basic>
-            <basic name="gender">
-                <column name="GENDER"/>
-                <convert>sex</convert>
-                <property name="attributeName" value="gender"/>
             </basic>
             <basic name="salary">
                 <column table="CMP3_XML_SALARY"/>
-                <property name="attributeName" value="salary"/>
             </basic>
-            <basic-collection name="responsibilities">
-              <value-column name="DESCRIPTION"/>
-              <collection-table name="CMP3_XML_RESPONS"/>
-              <property name="attributeName" value="responsibilities"/>
-            </basic-collection>
-            <basic-map name="creditCards" fetch="EAGER">
-              <key-column name="CARD"/>
-              <key-converter>CreditCard</key-converter>
-              <value-column name="NUMB"/>
-              <value-converter>Long2String</value-converter>
-              <!-- Let the collection table default in this case (EMPLOYEE_CREDITCARDS) -->
-              <private-owned/>
-              <property name="attributeName" value="creditCards"/>
-            </basic-map>
             <version name="version">
                 <column name="VERSION"/>
-                <property name="attributeName" value="version"/>
             </version>
             <many-to-one name="address" target-entity="Address" fetch="LAZY">
                 <join-column name="ADDR_ID"/>
                 <cascade>
                     <cascade-persist/>
                 </cascade>
-                <join-fetch>OUTER</join-fetch>
-                <property name="attributeName" value="address"/>
             </many-to-one>
             <many-to-one name="manager" target-entity="Employee" fetch="LAZY">
                 <join-column name="MANAGER_EMP_ID" referenced-column-name="EMP_ID"/>
                 <cascade>
                     <cascade-persist/>
                 </cascade>
-                <property name="attributeName" value="manager"/>
             </many-to-one>
             <one-to-many name="phoneNumbers" target-entity="PhoneNumber" mapped-by="owner">
                 <cascade>
                     <cascade-all/>
                 </cascade>
-                <property name="attributeName" value="phoneNumbers"/>
             </one-to-many>
             <one-to-many name="managedEmployees" target-entity="Employee" mapped-by="manager">
                 <cascade>
                     <cascade-all/>
                 </cascade>
-                <property name="attributeName" value="managedEmployees"/>
             </one-to-many>
             <many-to-many name="projects" target-entity="Project">
                 <order-by>name</order-by>
@@ -157,7 +72,6 @@
                 <cascade>
                     <cascade-persist/>
                 </cascade>
-                <property name="attributeName" value="projects"/>
             </many-to-many>
             <embedded name="period">
                 <attribute-override name="startDate">
@@ -166,32 +80,10 @@
                 <attribute-override name="endDate">
                     <column name="END_DATE" nullable="true"/>
                 </attribute-override>
-                <property name="attributeName" value="period"/>
             </embedded>
-            <transformation name="normalHours" mutable="false">
-                <read-transformer method="buildNormalHours"/>
-                <write-transformer method="getStartTime">
-                    <column name="START_TIME"/>
-                </write-transformer>
-                <write-transformer method="getEndTime">
-                    <column name="END_TIME"/>
-                </write-transformer>
-                <property name="attributeName" value="normalHours"/>
-            </transformation>
-            <transformation name="overtimeHours" mutable="false">
-                <read-transformer transformer-class="AdvancedReadTransformer"/>
-                <write-transformer transformer-class="AdvancedWriteTransformer">
-                    <column name="START_OVERTIME"/>
-                </write-transformer>
-                <write-transformer transformer-class="AdvancedWriteTransformer">
-                    <column name="END_OVERTIME"/>
-                </write-transformer>
-                <property name="attributeName" value="overtimeHours"/>
-            </transformation>
         </attributes>
     </entity>
     <entity name="XMLAddress" class="org.eclipse.persistence.testing.models.jpa.xml.advanced.Address" access="PROPERTY">
-        <change-tracking type="DEFERRED"/>
         <table name="CMP3_XML_ADDRESS"/>
         <sequence-generator name="XML_ADDRESS_SEQUENCE_GENERATOR" sequence-name="ADDRESS_SEQ" allocation-size="25"/>
         <named-query name="findAllXMLAddressesByPostalCode">
@@ -200,18 +92,6 @@
         <named-native-query name="findAllXMLAddresses" result-class="org.eclipse.persistence.testing.models.jpa.xml.advanced.Address">
             <query>SELECT * FROM CMP3_XML_ADDRESS</query>
         </named-native-query>
-        <named-stored-procedure-query name="SProcXMLAddress" result-class="Address" procedure-name="SProc_Read_XMLAddress">
-          <procedure-parameter direction="IN_OUT" name="address_id_v" query-parameter="ADDRESS_ID" type="Integer"/>
-          <procedure-parameter direction="OUT" name="street_v" query-parameter="STREET" type="String"/>
-          <procedure-parameter direction="OUT" name="city_v" query-parameter="CITY" type="String"/>
-          <procedure-parameter direction="OUT" name="country_v" query-parameter="COUNTRY" type="String"/>
-          <procedure-parameter direction="OUT" name="province_v" query-parameter="PROVINCE" type="String"/>
-          <procedure-parameter direction="OUT" name="p_code_v" query-parameter="P_CODE" type="String"/> 
-        </named-stored-procedure-query>       
-        <named-stored-procedure-query name="SProcXMLInOut" result-class="Address" procedure-name="SProc_Read_XMLInOut">
-          <procedure-parameter direction="IN_OUT" name="address_id_v" query-parameter="ADDRESS_ID" type="Long"/>
-          <procedure-parameter direction="OUT" name="street_v" query-parameter="STREET" type="String"/> 
-        </named-stored-procedure-query>
         <exclude-default-listeners/>
         <exclude-superclass-listeners/>
         <attributes>
@@ -224,17 +104,11 @@
             </basic>
             <basic name="street"/>
             <basic name="city"/>
-            <basic name="province">
-              <convert>ProvinceConverter</convert>
-            </basic>
+            <basic name="province"/>
             <basic name="country"/>
-            <basic name="type">
-                <convert>class-instance</convert>
-            </basic>
         </attributes>
     </entity>
     <entity name="XMLPhoneNumber" class="org.eclipse.persistence.testing.models.jpa.xml.advanced.PhoneNumber" access="PROPERTY">
-        <change-tracking type="ATTRIBUTE"/>
         <table name="CMP3_XML_PHONENUMBER"/>
         <id-class class="org.eclipse.persistence.testing.models.jpa.xml.advanced.PhoneNumberPK"/>
         <exclude-default-listeners/>
@@ -257,7 +131,7 @@
             </many-to-one>
         </attributes>
     </entity>
-    <entity name="XMLLargeProject" class="org.eclipse.persistence.testing.models.jpa.xml.advanced.LargeProject" access="PROPERTY" existence-checking="ASSUME_NON_EXISTENCE">
+    <entity name="XMLLargeProject" class="org.eclipse.persistence.testing.models.jpa.xml.advanced.LargeProject" access="PROPERTY">
         <table name="CMP3_XML_LPROJECT"/>
         <discriminator-value>L</discriminator-value>
         <named-query name="findXMLWithBudgetLargerThan">
@@ -266,21 +140,17 @@
         <exclude-default-listeners/>
         <exclude-superclass-listeners/>
     </entity>
-    <entity name="XMLSmallProject" class="org.eclipse.persistence.testing.models.jpa.xml.advanced.SmallProject" access="PROPERTY" existence-checking="ASSUME_EXISTENCE">
+    <entity name="XMLSmallProject" class="org.eclipse.persistence.testing.models.jpa.xml.advanced.SmallProject" access="PROPERTY">
         <table name="CMP3_XML_PROJECT"/>
         <discriminator-value>S</discriminator-value>
         <exclude-default-listeners/>
         <exclude-superclass-listeners/>
     </entity>
-    <entity name="XMLProject" class="org.eclipse.persistence.testing.models.jpa.xml.advanced.Project" access="PROPERTY" existence-checking="CHECK_CACHE">
-        <change-tracking type="OBJECT"/>
+    <entity name="XMLProject" class="org.eclipse.persistence.testing.models.jpa.xml.advanced.Project" access="PROPERTY">
         <table name="CMP3_XML_PROJECT"/>
         <inheritance strategy="JOINED"/>
         <discriminator-value>P</discriminator-value>
         <discriminator-column name="PROJ_TYPE"/>
-        <optimistic-locking type="SELECTED_COLUMNS">
-          <selected-column name="VERSION"/>
-        </optimistic-locking>
         <sequence-generator name="XML_PROJECT_SEQUENCE_GENERATOR" sequence-name="PROJECT_SEQ" allocation-size="10"/>
         <named-query name="findXMLProjectByName">
             <query>SELECT OBJECT(project) FROM XMLProject project WHERE project.name = :name</query>
@@ -314,15 +184,7 @@
             <many-to-many name="teamMembers" target-entity="org.eclipse.persistence.testing.models.jpa.xml.advanced.Employee" mapped-by="projects"/>
         </attributes>
     </entity>
-    <entity name="XMLReadOnlyClass" class="ReadOnlyClass" access="PROPERTY" read-only="true">
-        <table name="CMP3_XML_READONLY"/>
-        <attributes>
-            <id name="id"/>
-        </attributes>
-    </entity>
     <embeddable class="org.eclipse.persistence.testing.models.jpa.xml.advanced.EmploymentPeriod" access="PROPERTY">
-        <property name="embeddableClassName" value="EmploymentPeriod"/>
-        <property name="ToBeOverriddenByXml" value="true" value-type="Boolean"/>
         <attributes>
             <basic name="startDate">
                 <column name="S_DATE"/>

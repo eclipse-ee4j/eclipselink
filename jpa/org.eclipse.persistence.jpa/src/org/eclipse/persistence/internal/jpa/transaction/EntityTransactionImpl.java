@@ -15,7 +15,6 @@ package org.eclipse.persistence.internal.jpa.transaction;
 import javax.persistence.RollbackException;
 
 import org.eclipse.persistence.exceptions.TransactionException;
-import org.eclipse.persistence.internal.jpa.RepeatableWriteUnitOfWork;
 import org.eclipse.persistence.internal.jpa.transaction.EntityTransactionWrapper;
 import org.eclipse.persistence.internal.localization.ExceptionLocalization;
 
@@ -42,15 +41,15 @@ public class EntityTransactionImpl implements javax.persistence.EntityTransactio
      * @throws IllegalStateException if isActive() is true.
      */
     public void begin(){
-    	if (isActive()){
-    		throw new IllegalStateException(TransactionException.transactionIsActive().getMessage());
-    	}
-    	
-    	// always extended 
-    	this.wrapper.localUOW = this.wrapper.getEntityManager().getActivePersistenceContext(null);
-    	this.wrapper.localUOW.setShouldTerminateTransaction(false);
-   	
-    	this.active = true;
+        if (isActive()){
+            throw new IllegalStateException(TransactionException.transactionIsActive().getMessage());
+        }
+        
+        // always extended 
+        this.wrapper.localUOW = this.wrapper.getEntityManager().getActivePersistenceContext(null);
+        this.wrapper.localUOW.setShouldTerminateTransaction(false);
+       
+        this.active = true;
     }
 
   /**
@@ -63,7 +62,7 @@ public class EntityTransactionImpl implements javax.persistence.EntityTransactio
     try{
       commitInternal();
     }catch (org.eclipse.persistence.exceptions.EclipseLinkException tlException ) {
-		//put here to avoid EJB3.0 dependencies in TopLink for jdk 1.4 
+        //put here to avoid EJB3.0 dependencies in TopLink for jdk 1.4 
       throw new javax.persistence.RollbackException(tlException);
     }
   } 
@@ -143,11 +142,11 @@ public class EntityTransactionImpl implements javax.persistence.EntityTransactio
    * @throws IllegalStateException if isActive() is false.
    */
   public void setRollbackOnly(){
-	  if (!isActive()){
-		  throw new IllegalStateException(TransactionException.transactionNotActive().getMessage());
-	  }
-	  
-	  this.rollbackOnly = true;
+      if (!isActive()){
+          throw new IllegalStateException(TransactionException.transactionNotActive().getMessage());
+      }
+      
+      this.rollbackOnly = true;
   }
 
 /**
@@ -176,7 +175,7 @@ public boolean getRollbackOnly(){
     return this.rollbackOnly;
 }
 
-	/**
+    /**
    * Check to see if the current transaction is in progress.
    */
   public boolean isActive(){

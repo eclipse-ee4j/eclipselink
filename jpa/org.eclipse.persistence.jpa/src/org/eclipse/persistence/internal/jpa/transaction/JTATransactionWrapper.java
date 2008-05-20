@@ -15,7 +15,6 @@ package org.eclipse.persistence.internal.jpa.transaction;
 import javax.persistence.EntityTransaction;
 import javax.persistence.TransactionRequiredException;
 import org.eclipse.persistence.internal.jpa.EntityManagerImpl;
-import org.eclipse.persistence.internal.jpa.RepeatableWriteUnitOfWork;
 import org.eclipse.persistence.internal.sessions.UnitOfWorkImpl;
 import org.eclipse.persistence.transaction.AbstractTransactionController;
 import org.eclipse.persistence.exceptions.TransactionException;
@@ -30,7 +29,7 @@ import org.eclipse.persistence.exceptions.TransactionException;
  */
 public class JTATransactionWrapper extends TransactionWrapperImpl implements TransactionWrapper {
 
-	 //This is a quick reference for the external Transaction Controller
+     //This is a quick reference for the external Transaction Controller
     protected AbstractTransactionController txnController;
     
     public JTATransactionWrapper(EntityManagerImpl entityManager) {

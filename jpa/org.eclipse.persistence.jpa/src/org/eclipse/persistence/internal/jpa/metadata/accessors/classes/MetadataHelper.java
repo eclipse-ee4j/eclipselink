@@ -9,140 +9,38 @@
  * 
  * Contributors:
  *     Guy Pelletier (Oracle), March 6, 2008 
- *        - New file introduced for bug 221658.  
+ *        - New file introduced for bug 221658.
+ *     05/16/2008-1.0M8 Guy Pelletier 
+ *       - 218084: Implement metadata merging functionality between mapping files  
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.accessors.classes;
 
-import java.lang.annotation.Annotation;
-import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.security.AccessController;
 import java.security.PrivilegedActionException;
-import java.util.ArrayList;
-import java.util.HashSet;
 
 import org.eclipse.persistence.exceptions.EntityManagerSetupException;
-import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.internal.helper.Helper;
-import org.eclipse.persistence.internal.jpa.metadata.MetadataDescriptor;
-import org.eclipse.persistence.internal.jpa.metadata.listeners.EntityListenerMetadata;
+import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataMethod;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
-import org.eclipse.persistence.internal.security.PrivilegedClassForName;
 import org.eclipse.persistence.internal.security.PrivilegedGetDeclaredFields;
 import org.eclipse.persistence.internal.security.PrivilegedGetDeclaredMethods;
+import org.eclipse.persistence.internal.security.PrivilegedGetField;
 import org.eclipse.persistence.internal.security.PrivilegedGetMethod;
-import org.eclipse.persistence.internal.security.PrivilegedGetMethods;
 import org.eclipse.persistence.internal.security.PrivilegedMethodInvoker;
 
 /**
- * Common helper methods for the class metadata processing.
+ * INTERNAL:
+ * Common helper methods for the metadata processing. Security sensitive methods
+ * from this class must remain package accessible only.
  * 
  * @author Guy Pelletier
  * @since EclipseLink 1.0
  */
 public class MetadataHelper {
     public static final String PERSISTENCE_PACKAGE_PREFIX = "javax.persistence";
-    
-    /**
-     * INTERNAL:
-     * Return only the actual methods declared on this entity class.
-     */
-    static Method[] getCandidateCallbackMethodsForEntityClass(Class entityClass) {
-        return getDeclaredMethods(entityClass);
-    }
-    
-    /**
-     * INTERNAL:
-     * Returns a list of methods from the given class, which can have private, 
-     * protected, package and public access, AND will also return public 
-     * methods from superclasses.
-     */
-    static Method[] getCandidateCallbackMethodsForEntityListener(EntityListenerMetadata listener) {
-        HashSet candidateMethods = new HashSet();
-        Class listenerClass = listener.getListenerClass();
-        
-        // Add all the declared methods ...
-        Method[] declaredMethods = getDeclaredMethods(listenerClass);
-        for (int i = 0; i < declaredMethods.length; i++) {
-            candidateMethods.add(declaredMethods[i]);
-        }
-        
-        // Now add any public methods from superclasses ...
-        Method[] methods = getMethods(listenerClass);
-        for (int i = 0; i < methods.length; i++) {
-            if (candidateMethods.contains(methods[i])) {
-                continue;
-            }
-            
-            candidateMethods.add(methods[i]);
-        }
-        
-        return (Method[]) candidateMethods.toArray(new Method[candidateMethods.size()]);
-    }
-    
-    /**
-     * INTERNAL:
-     * Return potential lifecyle callback event methods for a mapped superclass. 
-     * We must 'convert' the method to the entity class context before adding it 
-     * to the listener.
-     */
-    static Method[] getCandidateCallbackMethodsForMappedSuperclass(Class mappedSuperclass, Class entityClass) {
-        ArrayList candidateMethods = new ArrayList();
-        Method[] allMethods = getMethods(entityClass);
-        Method[] declaredMethods = getDeclaredMethods(mappedSuperclass);
-        
-        for (int i = 0; i < declaredMethods.length; i++) {
-            Method method = getMethodForName(allMethods, declaredMethods[i].getName());
-            
-            if (method != null) {
-                candidateMethods.add(method);
-            }
-        }
-        
-        return (Method[]) candidateMethods.toArray(new Method[candidateMethods.size()]);
-    }
-    
-    /**
-     * INTERNAL:
-     * Load a class from a given class name.
-     */
-    static Class getClassForName(String classname, ClassLoader loader) {
-        try {
-            if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
-                try {
-                    return (Class) AccessController.doPrivileged(new PrivilegedClassForName(classname, true, loader));
-                } catch (PrivilegedActionException exception) {
-                    throw ValidationException.unableToLoadClass(classname, exception.getException());
-                }
-            } else {
-                return PrivilegedAccessHelper.getClassForName(classname, true, loader);
-            }
-        } catch (ClassNotFoundException exception) {
-            throw ValidationException.unableToLoadClass(classname, exception);
-        }
-    }
-    
-    /**
-     * INTERNAL:
-     */
-    static int getDeclaredAnnotationsCount(AnnotatedElement annotatedElement, MetadataDescriptor descriptor) {
-        if (descriptor.ignoreAnnotations()) {
-            return 0;
-        } else {
-            // Look for javax.persistence annotations only.
-            int count = 0;
-            
-            for (Annotation annotation : annotatedElement.getDeclaredAnnotations()) {
-                if (annotation.annotationType().getName().startsWith(PERSISTENCE_PACKAGE_PREFIX)) {
-                    count++;
-                }
-            }
-            
-            return count;
-        }
-    }
     
     /**
      * INTERNAL:
@@ -161,6 +59,30 @@ public class MetadataHelper {
         } else {
             return org.eclipse.persistence.internal.security.PrivilegedAccessHelper.getDeclaredMethods(cls);
         }
+    }
+    
+    /**
+     * INTERNAL:
+     * Helper method that will return a given field based on the provided attribute name.
+     */
+    static Field getFieldForName(String fieldName, Class javaClass) {
+        Field field = null;
+        
+        try {
+            if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
+                try {
+                    field = (Field)AccessController.doPrivileged(new PrivilegedGetField(javaClass, fieldName, false));
+                } catch (PrivilegedActionException exception) {
+                    return null;
+                }
+            } else {
+                field = PrivilegedAccessHelper.getField(javaClass, fieldName, false);
+            }
+        } catch (NoSuchFieldException nsfex) {
+            return null;
+        }
+        
+        return field;
     }
     
     /**
@@ -204,36 +126,23 @@ public class MetadataHelper {
     
     /**
      * INTERNAL:
-     * Find the method in the list where method.getName() == methodName.
+     * Method to convert an xyz property name into a getXyz or isXyz method.
      */
-    static Method getMethodForName(Method[] methods, String methodName) {
-        for (int i = 0; i < methods.length; i++) {
-            Method method = methods[i];
+    static Method getMethodForPropertyName(String propertyName, Class cls) {
+        Method method;
         
-            if (method.getName().equals(methodName)) {
-                return method;
-            }
+        String leadingChar = String.valueOf(propertyName.charAt(0)).toUpperCase();
+        String restOfName = propertyName.substring(1);
+        
+        // Look for a getPropertyName() method
+        method = MetadataHelper.getMethod(MetadataMethod.GET_PROPERTY_METHOD_PREFIX.concat(leadingChar).concat(restOfName), cls, new Class[]{});
+        
+        if (method == null) {
+            // Look for an isPropertyName() method
+            method = MetadataHelper.getMethod(MetadataMethod.IS_PROPERTY_METHOD_PREFIX.concat(leadingChar).concat(restOfName), cls, new Class[]{});
         }
         
-        return null;
-    }
-    
-    /**
-     * INTERNAL:
-     * Get the methods from a class using the doPriveleged security access. 
-     * This call returns only public methods from the given class and its 
-     * superclasses.
-     */
-    static Method[] getMethods(Class cls) {
-        if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
-            try {
-                return (Method[])AccessController.doPrivileged(new PrivilegedGetMethods(cls));
-            } catch (PrivilegedActionException exception) {
-                return null;
-            }
-        } else {
-            return PrivilegedAccessHelper.getMethods(cls);
-        }
+        return method;
     }
     
     /** 

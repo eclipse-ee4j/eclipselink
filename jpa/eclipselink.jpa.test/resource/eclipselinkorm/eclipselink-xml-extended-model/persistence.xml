@@ -25,6 +25,7 @@
         <exclude-unlisted-classes>true</exclude-unlisted-classes>
 
         <properties>
+            <property name="eclipselink.exclude-eclipselink-orm" value="true"/>
             <property name="eclipselink.session-name" value="extended-relationship-session"/>
             <property name="eclipselink.jdbc.read-connections.shared" value="true"/>
             <property name="eclipselink.jdbc.write-connections.min" value="3"/>
@@ -46,6 +47,7 @@
         <exclude-unlisted-classes>true</exclude-unlisted-classes>
 
         <properties>
+            <property name="eclipselink.exclude-eclipselink-orm" value="true"/>
             <property name="eclipselink.session-name" value="extended-complexaggregate-session"/>
             <property name="eclipselink.jdbc.read-connections.shared" value="true"/>
             <property name="eclipselink.jdbc.write-connections.min" value="3"/>

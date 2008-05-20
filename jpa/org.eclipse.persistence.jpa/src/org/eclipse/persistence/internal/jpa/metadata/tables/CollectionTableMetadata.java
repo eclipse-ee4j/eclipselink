@@ -9,6 +9,8 @@
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
+ *     05/16/2008-1.0M8 Guy Pelletier 
+ *       - 218084: Implement metadata merging functionality between mapping file
  ******************************************************************************/    
 package org.eclipse.persistence.internal.jpa.metadata.tables;
 
@@ -16,6 +18,7 @@ import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAccessibleObject;
 import org.eclipse.persistence.internal.jpa.metadata.columns.PrimaryKeyJoinColumnMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataLogger;
 
@@ -28,43 +31,40 @@ import org.eclipse.persistence.internal.jpa.metadata.MetadataLogger;
  * @since TopLink 11g
  */
 public class CollectionTableMetadata extends TableMetadata {
-    private List<PrimaryKeyJoinColumnMetadata> m_primaryKeyJoinColumns;
+    private List<PrimaryKeyJoinColumnMetadata> m_primaryKeyJoinColumns = new ArrayList<PrimaryKeyJoinColumnMetadata>();
     
     /**
      * INTERNAL:
      */
-    public CollectionTableMetadata() {}
-    
-    /**
-     * INTERNAL:
-     */
-    public CollectionTableMetadata(String annotatedElementName) {
-        super(annotatedElementName);
+    public CollectionTableMetadata() {
+        super("<collection-table>");
     }
     
     /**
      * INTERNAL:
      */
-    public CollectionTableMetadata(Annotation collectionTable, String annotatedElementName) {
-    	super(annotatedElementName);
-    	
-        setName((String) invokeMethod("name", collectionTable));
-        setSchema((String) invokeMethod("schema", collectionTable));
-        setCatalog((String) invokeMethod("catalog", collectionTable));
-        setUniqueConstraints((Annotation[]) invokeMethod("uniqueConstraints", collectionTable));
-        setPrimaryKeyJoinColumns((Annotation[]) invokeMethod("primaryKeyJoinColumns", collectionTable));
+    public CollectionTableMetadata(Annotation collectionTable, MetadataAccessibleObject accessibleObject) {
+        super(collectionTable, accessibleObject);
+        
+        if (collectionTable != null) {
+            for (Annotation primaryKeyJoinColumn : (Annotation[]) MetadataHelper.invokeMethod("primaryKeyJoinColumns", collectionTable)) {
+                m_primaryKeyJoinColumns.add(new PrimaryKeyJoinColumnMetadata(primaryKeyJoinColumn, accessibleObject));
+            }
+        }
     }
     
     /**
-     * INTERNAL: (Override from MetadataTable)
+     * INTERNAL:
      */
+    @Override
     public String getCatalogContext() {
         return MetadataLogger.COLLECTION_TABLE_CATALOG;
     }
     
     /**
-     * INTERNAL: (Override from MetadataTable)
+     * INTERNAL:
      */
+    @Override
     public String getNameContext() {
         return MetadataLogger.COLLECTION_TABLE_NAME;
     }
@@ -77,8 +77,9 @@ public class CollectionTableMetadata extends TableMetadata {
     }
     
     /**
-     * INTERNAL: (Override from MetadataTable)
+     * INTERNAL:
      */
+    @Override
     public String getSchemaContext() {
         return MetadataLogger.COLLECTION_TABLE_SCHEMA;
     }
@@ -87,17 +88,6 @@ public class CollectionTableMetadata extends TableMetadata {
      * INTERNAL:
      */
     public void setPrimaryKeyJoinColumns(List<PrimaryKeyJoinColumnMetadata> primaryKeyJoinColumns) {
-    	m_primaryKeyJoinColumns = primaryKeyJoinColumns;
-    }
-    
-    /**
-     * INTERNAL:
-     */
-    protected void setPrimaryKeyJoinColumns(Annotation[] primaryKeyJoinColumns) {
-    	m_primaryKeyJoinColumns = new ArrayList<PrimaryKeyJoinColumnMetadata>();
-    	
-    	for (Annotation primaryKeyJoinColumn : primaryKeyJoinColumns) {
-    		m_primaryKeyJoinColumns.add(new PrimaryKeyJoinColumnMetadata(primaryKeyJoinColumn));
-    	}
+        m_primaryKeyJoinColumns = primaryKeyJoinColumns;
     }
 }

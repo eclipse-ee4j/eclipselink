@@ -9,8 +9,12 @@
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
+ *     05/16/2008-1.0M8 Guy Pelletier 
+ *       - 218084: Implement metadata merging functionality between mapping files
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.accessors.mappings;
+
+import java.lang.annotation.Annotation;
 
 import javax.persistence.GeneratedValue;
 import javax.persistence.SequenceGenerator;
@@ -34,20 +38,22 @@ import org.eclipse.persistence.internal.helper.DatabaseField;
  * @since TopLink EJB 3.0 Reference Implementation
  */
 public class IdAccessor extends BasicAccessor {
-	private GeneratedValueMetadata m_generatedValue;
-	private SequenceGeneratorMetadata m_sequenceGenerator;
-	private TableGeneratorMetadata m_tableGenerator;
-	
-    /**
-     * INTERNAL:
-     */
-    public IdAccessor() {}
+    private GeneratedValueMetadata m_generatedValue;
+    private SequenceGeneratorMetadata m_sequenceGenerator;
+    private TableGeneratorMetadata m_tableGenerator;
     
     /**
      * INTERNAL:
      */
-    public IdAccessor(MetadataAccessibleObject accessibleObject, ClassAccessor classAccessor) {
-        super(accessibleObject, classAccessor);
+    public IdAccessor() {
+        super("<id>");
+    }
+    
+    /**
+     * INTERNAL:
+     */
+    public IdAccessor(Annotation id, MetadataAccessibleObject accessibleObject, ClassAccessor classAccessor) {
+        super(id, accessibleObject, classAccessor);
         
         // Set the generated value if one is present.
         if (isAnnotationPresent(GeneratedValue.class)) {
@@ -56,12 +62,12 @@ public class IdAccessor extends BasicAccessor {
         
         // Set the sequence generator if one is present.        
         if (isAnnotationPresent(SequenceGenerator.class)) {
-            m_sequenceGenerator = new SequenceGeneratorMetadata(getAnnotation(SequenceGenerator.class), getJavaClassName());
+            m_sequenceGenerator = new SequenceGeneratorMetadata(getAnnotation(SequenceGenerator.class), accessibleObject);
         }
         
-        // Set the sequence generator if one is present.        
+        // Set the table generator if one is present.        
         if (isAnnotationPresent(TableGenerator.class)) {
-            m_tableGenerator = new TableGeneratorMetadata(getAnnotation(TableGenerator.class), getJavaClassName());
+            m_tableGenerator = new TableGeneratorMetadata(getAnnotation(TableGenerator.class), accessibleObject);
         }
     }
 
@@ -69,10 +75,10 @@ public class IdAccessor extends BasicAccessor {
      * INTERNAL:
      * Used for OX mapping.
      */
-	public GeneratedValueMetadata getGeneratedValue() {
-		return m_generatedValue;
-	}
-	
+    public GeneratedValueMetadata getGeneratedValue() {
+        return m_generatedValue;
+    }
+    
     /**
      * INTERNAL:
      * Used for OX mapping.
@@ -90,37 +96,31 @@ public class IdAccessor extends BasicAccessor {
     }
     
     /**
-     * INTERNAL: (Override from MetadataAccessor)
+     * INTERNAL:
      */
-    public void init(MetadataAccessibleObject accessibleObject, ClassAccessor accessor) {
-        super.init(accessibleObject, accessor);
-        
-        // Initialize the sequence generator with metadata that couldn't be
-        // loaded through OX.
-        if (m_sequenceGenerator != null) {
-            m_sequenceGenerator.setLocation(getJavaClassName());
-        }
-        
-        // Initialize the table generator with metadata that couldn't be
-        // loaded through OX.
-        if (m_tableGenerator != null) {
-            m_tableGenerator.setLocation(getJavaClassName());
-        }
+    @Override
+    public void initXMLObject(MetadataAccessibleObject accessibleObject) {
+        super.initXMLObject(accessibleObject);
+    
+        // Initialize single objects.
+        initXMLObject(m_sequenceGenerator, accessibleObject);
+        initXMLObject(m_tableGenerator, accessibleObject);
     }
     
     /**
      * INTERNAL:
      * Process an id accessor.
      */
+    @Override
     public void process() {
-    	// This will initialize the m_field variable.
-    	super.process();
-    	
-    	String attributeName = getAttributeName();
+        // This will initialize the m_field variable.
+        super.process();
+        
+        String attributeName = getAttributeName();
 
         if (getOwningDescriptor().hasEmbeddedIdAttribute()) {
-        	// We found both an Id and an EmbeddedId, throw an exception.
-        	throw ValidationException.embeddedIdAndIdAnnotationFound(getJavaClass(), getOwningDescriptor().getEmbeddedIdAttributeName(), attributeName);
+            // We found both an Id and an EmbeddedId, throw an exception.
+            throw ValidationException.embeddedIdAndIdAnnotationFound(getJavaClass(), getOwningDescriptor().getEmbeddedIdAttributeName(), attributeName);
         }
 
         // If this entity has a pk class, we need to validate our ids. 
@@ -152,7 +152,7 @@ public class IdAccessor extends BasicAccessor {
      */
     protected void processGeneratedValue() {
         if (m_generatedValue != null) {
-            // Set the sequence number field on the descriptor.		
+            // Set the sequence number field on the descriptor.        
             DatabaseField existingSequenceNumberField = getOwningDescriptor().getSequenceNumberField();
 
             if (existingSequenceNumberField == null) {
@@ -164,14 +164,14 @@ public class IdAccessor extends BasicAccessor {
         }
     }
 
-	/**
+    /**
      * INTERNAL:
      * Used for OX mapping.
      */
-	public void setGeneratedValue(GeneratedValueMetadata value) {
-		m_generatedValue = value;
-	}
-	
+    public void setGeneratedValue(GeneratedValueMetadata value) {
+        m_generatedValue = value;
+    }
+    
     
     /**
      * INTERNAL:

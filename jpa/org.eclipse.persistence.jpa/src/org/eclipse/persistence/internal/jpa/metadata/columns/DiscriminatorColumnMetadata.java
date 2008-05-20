@@ -9,6 +9,8 @@
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
+ *     05/16/2008-1.0M8 Guy Pelletier 
+ *       - 218084: Implement metadata merging functionality between mapping files
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.columns;
 
@@ -18,8 +20,9 @@ import javax.persistence.DiscriminatorType;
 
 import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataDescriptor;
-import org.eclipse.persistence.internal.jpa.metadata.MetadataHelper;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataLogger;
+import org.eclipse.persistence.internal.jpa.metadata.ORMetadata;
+import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAccessibleObject;
 
 /**
  * Object to hold onto discriminator column metadata.
@@ -27,27 +30,31 @@ import org.eclipse.persistence.internal.jpa.metadata.MetadataLogger;
  * @author Guy Pelletier
  * @since TopLink EJB 3.0 Reference Implementation
  */
-public class DiscriminatorColumnMetadata {
-	private Enum m_discriminatorType;
-	private Integer m_length;
-	private String m_columnDefinition;
-	private String m_name;
-	
-    /**
-     * INTERNAL:
-     */
-    public DiscriminatorColumnMetadata() {}
+public class DiscriminatorColumnMetadata extends ORMetadata {
+    private Enum m_discriminatorType;
+    private Integer m_length;
+    private String m_columnDefinition;
+    private String m_name;
     
     /**
      * INTERNAL:
      */
-    public DiscriminatorColumnMetadata(Annotation discriminatorColumn) {    	
-    	if (discriminatorColumn != null) {
-    		m_columnDefinition =  (String) invokeMethod("columnDefinition", discriminatorColumn);
-    		m_discriminatorType = (Enum) invokeMethod("discriminatorType", discriminatorColumn); 
-    		m_length = (Integer) invokeMethod("length", discriminatorColumn);
-    		m_name = (String) invokeMethod("name", discriminatorColumn); 
-    	}
+    public DiscriminatorColumnMetadata() {
+        super("<discriminator-column>");
+    }
+    
+    /**
+     * INTERNAL:
+     */
+    public DiscriminatorColumnMetadata(Annotation discriminatorColumn, MetadataAccessibleObject accessibleObject) {
+        super(discriminatorColumn, accessibleObject);
+        
+        if (discriminatorColumn != null) {
+            m_columnDefinition =  (String) MetadataHelper.invokeMethod("columnDefinition", discriminatorColumn);
+            m_discriminatorType = (Enum) MetadataHelper.invokeMethod("discriminatorType", discriminatorColumn); 
+            m_length = (Integer) MetadataHelper.invokeMethod("length", discriminatorColumn);
+            m_name = (String) MetadataHelper.invokeMethod("name", discriminatorColumn); 
+        }
     }
 
     /**
@@ -55,7 +62,7 @@ public class DiscriminatorColumnMetadata {
      * Used for OX mapping.
      */
     public String getColumnDefinition() {
-    	return m_columnDefinition;
+        return m_columnDefinition;
     }
     
     /**
@@ -63,7 +70,7 @@ public class DiscriminatorColumnMetadata {
      * Used for OX mapping.
      */
     public Enum getDiscriminatorType() {
-    	return m_discriminatorType;
+        return m_discriminatorType;
     }
     
     /**
@@ -71,7 +78,7 @@ public class DiscriminatorColumnMetadata {
      * Used for OX mapping.
      */
     public Integer getLength() {
-    	return m_length;
+        return m_length;
     }
     
     /**
@@ -79,14 +86,7 @@ public class DiscriminatorColumnMetadata {
      * Used for OX mapping.
      */
     public String getName() {
-    	return m_name;
-    }
-    
-    /**
-     * INTERNAL:
-     */
-    protected Object invokeMethod(String methodName, Annotation annotation) {
-        return org.eclipse.persistence.internal.jpa.metadata.columns.MetadataHelper.invokeMethod(methodName, annotation);
+        return m_name;
     }
     
     /**
@@ -130,7 +130,7 @@ public class DiscriminatorColumnMetadata {
      * Used for OX mapping.
      */
     public void setColumnDefinition(String columnDefinition) {
-    	m_columnDefinition = columnDefinition;
+        m_columnDefinition = columnDefinition;
     }
     
     /**
@@ -138,7 +138,7 @@ public class DiscriminatorColumnMetadata {
      * Used for OX mapping.
      */
     public void setDiscriminatorType(Enum descriminatorType) {
-    	m_discriminatorType = descriminatorType;
+        m_discriminatorType = descriminatorType;
     }
     
     /**
@@ -146,7 +146,7 @@ public class DiscriminatorColumnMetadata {
      * Used for OX mapping.
      */
     public void setLength(Integer length) {
-    	m_length = length;
+        m_length = length;
     }
     
     /**
@@ -154,6 +154,6 @@ public class DiscriminatorColumnMetadata {
      * Used for OX mapping.
      */
     public void setName(String name) {
-    	m_name = name;
+        m_name = name;
     }
 }

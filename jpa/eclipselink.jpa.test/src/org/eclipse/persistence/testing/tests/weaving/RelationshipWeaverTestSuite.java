@@ -17,6 +17,8 @@ import java.util.*;
 import java.io.*;
 import java.lang.reflect.*;
 
+import javax.persistence.Entity;
+
 // JUnit imports
 import junit.framework.*;
 
@@ -45,110 +47,110 @@ public class RelationshipWeaverTestSuite extends TestCase {
             m_session = session;
             Collection<String> entityNames = new HashSet<String>(entities.size());
             for (Class entity : entities) {
-                m_project.addEntityAccessor(new EntityAccessor(entity, m_project));
+                m_project.addEntityAccessor(new EntityAccessor(entity.getAnnotation(Entity.class), entity, m_project));
                 entityNames.add(entity.getName());
             }
         }
     }
-	
-	// fixtures
+    
+    // fixtures
     public static SimpleClassLoader setupClassLoader = null;
-	public static SimpleClassLoader simpleClassLoader = null;
-	public static byte[] originalCustomerBytes = null;
-	public static byte[] originalItemBytes = null;
-	public static byte[] originalOrderBytes = null;
-	public static List<Class> entities = null;
-	
-	static {
-		setUpFixtures();
-	}
-	public static void setUpFixtures() {
+    public static SimpleClassLoader simpleClassLoader = null;
+    public static byte[] originalCustomerBytes = null;
+    public static byte[] originalItemBytes = null;
+    public static byte[] originalOrderBytes = null;
+    public static List<Class> entities = null;
+    
+    static {
+        setUpFixtures();
+    }
+    public static void setUpFixtures() {
         setupClassLoader = new SimpleClassLoader();
-		simpleClassLoader = new SimpleClassLoader();
-		InputStream is = simpleClassLoader.getResourceAsStream(
-			Customer.class.getName().replace('.','/') + ".class");
-		originalCustomerBytes =
-			SimpleWeaverTestSuite.readStreamContentsIntoByteArray(is);
-		is = simpleClassLoader.getResourceAsStream(
-			Item.class.getName().replace('.','/') + ".class");
-		originalItemBytes =
-			SimpleWeaverTestSuite.readStreamContentsIntoByteArray(is);
-		is = simpleClassLoader.getResourceAsStream(
-			Order.class.getName().replace('.','/') + ".class");
-		originalOrderBytes =
-				SimpleWeaverTestSuite.readStreamContentsIntoByteArray(is);
-		entities = new ArrayList<Class>();
-		entities.add(Customer.class);
-		entities.add(Item.class);
-		entities.add(Order.class);
-	}
-	public static void tearDownFixtures() {
-		simpleClassLoader = null;
-		originalCustomerBytes = null;
-		originalItemBytes = null;
-		originalOrderBytes = null;
-		entities = null;
-	}
+        simpleClassLoader = new SimpleClassLoader();
+        InputStream is = simpleClassLoader.getResourceAsStream(
+            Customer.class.getName().replace('.','/') + ".class");
+        originalCustomerBytes =
+            SimpleWeaverTestSuite.readStreamContentsIntoByteArray(is);
+        is = simpleClassLoader.getResourceAsStream(
+            Item.class.getName().replace('.','/') + ".class");
+        originalItemBytes =
+            SimpleWeaverTestSuite.readStreamContentsIntoByteArray(is);
+        is = simpleClassLoader.getResourceAsStream(
+            Order.class.getName().replace('.','/') + ".class");
+        originalOrderBytes =
+                SimpleWeaverTestSuite.readStreamContentsIntoByteArray(is);
+        entities = new ArrayList<Class>();
+        entities.add(Customer.class);
+        entities.add(Item.class);
+        entities.add(Order.class);
+    }
+    public static void tearDownFixtures() {
+        simpleClassLoader = null;
+        originalCustomerBytes = null;
+        originalItemBytes = null;
+        originalOrderBytes = null;
+        entities = null;
+    }
 
-	public RelationshipWeaverTestSuite(String testName) {
-		super(testName);
-	}
-	
-	public static Test suite() {
-		TestSuite suite = new TestSuite("RelationshipWeaverTestSuite");
-		suite.addTest(new RelationshipWeaverTestSuite(
-			"test Relationships model with weaving") {
-			public void setUp() {
-			}
-			public void tearDown() {
-			}
-			public void runTest() throws Exception {
-				testRelationshipsModel();
-			}
-		});
-		return suite;
-	}
-	
-	public void testRelationshipsModel() throws Exception {
-		Class newOrderClass = null;
+    public RelationshipWeaverTestSuite(String testName) {
+        super(testName);
+    }
+    
+    public static Test suite() {
+        TestSuite suite = new TestSuite("RelationshipWeaverTestSuite");
+        suite.addTest(new RelationshipWeaverTestSuite(
+            "test Relationships model with weaving") {
+            public void setUp() {
+            }
+            public void tearDown() {
+            }
+            public void runTest() throws Exception {
+                testRelationshipsModel();
+            }
+        });
+        return suite;
+    }
+    
+    public void testRelationshipsModel() throws Exception {
+        Class newOrderClass = null;
         Session session = new Project(new DatabaseLogin()).createServerSession();
         session.setLogLevel(SessionLog.OFF);
         MetadataProcessor eap = new CustomizeMetadataProcessor((AbstractSession) session, setupClassLoader, entities, true);
 
-        eap.processAnnotations();
+        eap.processORMMetadata();
         PersistenceWeaver tw = (PersistenceWeaver)
             TransformerFactory.createTransformerAndModifyProject(session, entities, Thread.currentThread().getContextClassLoader(), true, false, true, true);
         byte[] newOrderBytes = tw.transform(simpleClassLoader, Order.class.getName().replace('.','/'), null, null, originalOrderBytes);
         newOrderClass = simpleClassLoader.define_class(Order.class.getName(), newOrderBytes, 0, newOrderBytes.length);
-		assertNotNull("could not build weaved Order class", newOrderClass);
+        assertNotNull("could not build weaved Order class", newOrderClass);
 
-		Object newOrder = null;
-		try {
+        Object newOrder = null;
+        try {
             // ensure TopLinkWeavedLazy interface has been added
-			newOrder = (PersistenceWeavedLazy)newOrderClass.newInstance();
-		}
-		catch (Exception e) {
-			fail(getName() + " failed: " + e.toString());
-		}
-	
-		// check that Order's 'item' field has a corresponding ValueHOlder
-		Field f = null;
-		try {
-			f = newOrderClass.getDeclaredField("_persistence_item_vh");
-		} catch (Exception e) {
-			fail(getName() + " failed: " + e.toString());
-		}
-		assertNotNull("Weaved Order class does not have '_toplink_item_vh' field", f);
-		assertSame("Weaved Order class' '_toplink_item_vh' field is not a ValueHolder", WeavedAttributeValueHolderInterface.class, f.getType());
-		// check that Order's 'customer' field is a ValueHolder
-		f = null;
-		try {
-			f = newOrderClass.getDeclaredField("_persistence_customer_vh");
-		} catch (Exception e) {
-			fail(getName() + " failed: " + e.toString());
-		}
-		assertNotNull("Weaved Order class does not have '_toplink_customer_vh' field", f);
-		assertSame("Weaved Order class' '_toplink_customer_vh' field is not a ValueHolder", WeavedAttributeValueHolderInterface.class, f.getType());				
-	}
+            newOrder = (PersistenceWeavedLazy)newOrderClass.newInstance();
+        }
+        catch (Exception e) {
+            fail(getName() + " failed: " + e.toString());
+        }
+    
+        // check that Order's 'item' field has a corresponding ValueHOlder
+        Field f = null;
+        try {
+            f = newOrderClass.getDeclaredField("_persistence_item_vh");
+        } catch (Exception e) {
+            fail(getName() + " failed: " + e.toString());
+        }
+        assertNotNull("Weaved Order class does not have '_toplink_item_vh' field", f);
+        assertSame("Weaved Order class' '_toplink_item_vh' field is not a ValueHolder", WeavedAttributeValueHolderInterface.class, f.getType());
+        // check that Order's 'customer' field is a ValueHolder
+        f = null;
+        try {
+            f = newOrderClass.getDeclaredField("_persistence_customer_vh");
+        } catch (Exception e) {
+            fail(getName() + " failed: " + e.toString());
+        }
+        assertNotNull("Weaved Order class does not have '_toplink_customer_vh' field", f);
+        assertSame("Weaved Order class' '_toplink_customer_vh' field is not a ValueHolder", WeavedAttributeValueHolderInterface.class, f.getType());                
+    }
 
 }

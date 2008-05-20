@@ -9,12 +9,12 @@
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
+ *     05/16/2008-1.0M8 Guy Pelletier 
+ *       - 218084: Implement metadata merging functionality between mapping files
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.accessors.mappings;
 
 import java.lang.annotation.Annotation;
-
-import javax.persistence.ManyToOne;
 
 import org.eclipse.persistence.internal.jpa.metadata.MetadataLogger;
 
@@ -24,29 +24,25 @@ import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataA
 import org.eclipse.persistence.mappings.OneToOneMapping;
 
 /**
+ * INTERNAL:
  * A many to one relationship accessor.
  * 
  * @author Guy Pelletier
  * @since TopLink EJB 3.0 Reference Implementation
  */
 public class ManyToOneAccessor extends ObjectAccessor {
-	/**
+    /**
      * INTERNAL:
      */
-    public ManyToOneAccessor() {}
+    public ManyToOneAccessor() {
+        super("<many-to-one>");
+    }
     
     /**
      * INTERNAL:
      */
-    public ManyToOneAccessor(MetadataAccessibleObject accessibleObject, ClassAccessor classAccessor) {
-        super(accessibleObject, classAccessor);
-        
-        Annotation manyToOne = getAnnotation(ManyToOne.class);
-        
-        setTargetEntity((Class) MetadataHelper.invokeMethod("targetEntity", manyToOne));
-        setCascadeTypes((Enum[]) MetadataHelper.invokeMethod("cascade", manyToOne));
-        setFetch((Enum) MetadataHelper.invokeMethod("fetch", manyToOne));
-        setOptional((Boolean) MetadataHelper.invokeMethod("optional", manyToOne));
+    public ManyToOneAccessor(Annotation manyToOne, MetadataAccessibleObject accessibleObject, ClassAccessor classAccessor) {
+        super(manyToOne, accessibleObject, classAccessor);
     }
 
     /**
@@ -58,26 +54,19 @@ public class ManyToOneAccessor extends ObjectAccessor {
     }
     
     /**
-     * INTERNAL: 
-     * Mapped by is not supported on this accessor, this just ensures no 
-     * metadata processing code tries to call it on this accessor.
-     */
-    public String getMappedBy() {
-        throw new RuntimeException("Development exception. A mapped by value is not supported on a many to one.");
-    }
-    
-    /**
      * INTERNAL:
      */
-	public boolean isManyToOne() {
+    @Override
+    public boolean isManyToOne() {
         return true;
     }
     
     /**
-     * INTERNAL: (Override from RelationshipAccessor) 
+     * INTERNAL: 
      * A PrivateOwned setting on a ManyToOne is ignored. A log warning is
      * issued.
      */
+    @Override
     public boolean isPrivateOwned() {
         if (super.isPrivateOwned()) {
             getLogger().logWarningMessage(MetadataLogger.IGNORE_PRIVATE_OWNED_ANNOTATION, this);

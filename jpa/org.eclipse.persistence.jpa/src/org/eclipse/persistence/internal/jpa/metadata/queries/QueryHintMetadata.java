@@ -9,8 +9,15 @@
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
+ *     05/16/2008-1.0M8 Guy Pelletier 
+ *       - 218084: Implement metadata merging functionality between mapping files
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.queries;
+
+import java.lang.annotation.Annotation;
+
+import org.eclipse.persistence.internal.jpa.metadata.ORMetadata;
+import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAccessibleObject;
 
 /**
  * INTERNAL:
@@ -21,21 +28,42 @@ package org.eclipse.persistence.internal.jpa.metadata.queries;
  * @author Guy Pelletier
  * @since TopLink EJB 3.0 Reference Implementation
  */
-public class QueryHintMetadata {
+public class QueryHintMetadata extends ORMetadata {
     private String m_name;
     private String m_value;
     
     /**
      * INTERNAL:
      */
-    public QueryHintMetadata() {}
+    public QueryHintMetadata() {
+        super("<hint>");
+    }
     
     /**
      * INTERNAL:
      */
-    public QueryHintMetadata(String name, String value) {
-        m_name = name;
-        m_value = value;
+    public QueryHintMetadata(Annotation hint, MetadataAccessibleObject accessibleObject) {
+        super(hint, accessibleObject);
+        
+        m_name = (String) MetadataHelper.invokeMethod("name", hint);
+        m_value = (String) MetadataHelper.invokeMethod("value", hint);
+    }
+    
+    /**
+     * INTERNAL:
+     */
+    public boolean equals(Object objectToCompare) {
+        if (objectToCompare instanceof QueryHintMetadata) {
+            QueryHintMetadata hint = (QueryHintMetadata) objectToCompare;
+            
+            if (! valuesMatch(m_name, hint.getName())) {
+                return false;
+            }
+            
+            return valuesMatch(m_value, hint.getValue());
+        }
+        
+        return false;
     }
     
     /**
@@ -59,7 +87,7 @@ public class QueryHintMetadata {
      * Used for OX mapping.
      */
     public void setName(String name) {
-    	m_name = name;
+        m_name = name;
     }
     
     /**

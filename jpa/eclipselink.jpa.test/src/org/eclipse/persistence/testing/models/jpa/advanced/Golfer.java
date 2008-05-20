@@ -14,8 +14,6 @@ package org.eclipse.persistence.testing.models.jpa.advanced;
 
 import javax.persistence.*;
 
-import org.eclipse.persistence.annotations.Convert;
-
 @Entity
 @Table(name="CMP3_GOLFER")
 public class Golfer implements java.io.Serializable {

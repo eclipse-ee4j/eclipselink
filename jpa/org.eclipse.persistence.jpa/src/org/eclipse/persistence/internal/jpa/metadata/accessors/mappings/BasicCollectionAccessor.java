@@ -9,6 +9,8 @@
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
+ *     05/16/2008-1.0M8 Guy Pelletier 
+ *       - 218084: Implement metadata merging functionality between mapping files
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.accessors.mappings;
 
@@ -19,7 +21,6 @@ import java.util.Set;
 
 import javax.persistence.FetchType;
 
-import org.eclipse.persistence.annotations.BasicCollection;
 import org.eclipse.persistence.annotations.CollectionTable;
 import org.eclipse.persistence.annotations.JoinFetch;
 import org.eclipse.persistence.annotations.PrivateOwned;
@@ -42,38 +43,48 @@ import org.eclipse.persistence.mappings.DirectCollectionMapping;
 import org.eclipse.persistence.mappings.converters.Converter;
 
 /**
+ * INTERNAL:
  * A basic collection accessor.
  * 
  * @author Guy Pelletier
  * @since TopLink 11g
  */
 public class BasicCollectionAccessor extends DirectAccessor {
-	private boolean m_privateOwned;
-	private ColumnMetadata m_valueColumn;
+    private boolean m_privateOwned;
+    private ColumnMetadata m_valueColumn;
     private CollectionTableMetadata m_collectionTable;
     private Enum m_joinFetch;
     
     /**
      * INTERNAL:
+     * Used for OX mapping.
      */
-    public BasicCollectionAccessor() {}
+    public BasicCollectionAccessor() {
+        super("<basic-collection>");
+    }
     
     /**
      * INTERNAL:
      */
-    public BasicCollectionAccessor(MetadataAccessibleObject accessibleObject, ClassAccessor classAccessor) {
-        super(accessibleObject, classAccessor);
+    protected BasicCollectionAccessor(String xmlElement) {
+        super(xmlElement);
+    }
+    
+    /**
+     * INTERNAL:
+     */
+    public BasicCollectionAccessor(Annotation basicCollection, MetadataAccessibleObject accessibleObject, ClassAccessor classAccessor) {
+        super(basicCollection, accessibleObject, classAccessor);
 
         // Must check, BasicMapAccessor calls this constructor ...
-        Annotation basicCollection = getAnnotation(BasicCollection.class);
         if (basicCollection != null) {
-            m_valueColumn = new ColumnMetadata((Annotation) MetadataHelper.invokeMethod("valueColumn", basicCollection), getAttributeName());
+            m_valueColumn = new ColumnMetadata((Annotation) MetadataHelper.invokeMethod("valueColumn", basicCollection), accessibleObject, getAttributeName());
             setFetch((Enum) MetadataHelper.invokeMethod("fetch", basicCollection));
         }
         
         // Set the collection table if one is present.
         if (isAnnotationPresent(CollectionTable.class)) {
-            m_collectionTable = new CollectionTableMetadata(getAnnotation(CollectionTable.class), getAnnotatedElementName());
+            m_collectionTable = new CollectionTableMetadata(getAnnotation(CollectionTable.class), accessibleObject);
         }
         
         // Set the join fetch if one is present.
@@ -91,35 +102,36 @@ public class BasicCollectionAccessor extends DirectAccessor {
      * Used for OX mapping.
      */
     protected CollectionTableMetadata getCollectionTable() {
-    	return m_collectionTable;
+        return m_collectionTable;
     }
     
     /**
-     * INTERNAL: (Override from BasicAccessor, Overridden in BasicMapAccessor)
+     * INTERNAL:
      * Method ignores logging context. Can't be anything but the value 
      * column for a BasicCollection annotation. Used with the BasicMap 
      * annotation however.
      */
+    @Override
     protected ColumnMetadata getColumn(String loggingCtx) {
-    	return (m_valueColumn == null) ? new ColumnMetadata(getAttributeName()) : m_valueColumn;  
+        return (m_valueColumn == null) ? new ColumnMetadata(getAccessibleObject(), getAttributeName()) : m_valueColumn;  
     }
     
     /**
-     * INTERNAL: (Overridden in BasicMapAccessor)
+     * INTERNAL:
      */
     protected String getDefaultCollectionTableName() {
-    	if (m_valueColumn != null && m_valueColumn.getTable() != null && !m_valueColumn.getTable().equals("")) {
-    		return m_valueColumn.getTable();
-    	} else {
-    		return getUpperCaseShortJavaClassName() + "_" + getUpperCaseAttributeName(); 
-    	}
+        if (m_valueColumn != null && m_valueColumn.getTable() != null && !m_valueColumn.getTable().equals("")) {
+            return m_valueColumn.getTable();
+        } else {
+            return getUpperCaseShortJavaClassName() + "_" + getUpperCaseAttributeName(); 
+        }
     }
     
     /**
      * INTERNAL:
      */
     public FetchType getDefaultFetchType() {
-    	return FetchType.LAZY; 
+        return FetchType.LAZY; 
     }
     
     /**
@@ -127,7 +139,7 @@ public class BasicCollectionAccessor extends DirectAccessor {
      * Used for OX mapping.
      */
     public Enum getJoinFetch() {
-    	return m_joinFetch;
+        return m_joinFetch;
     }
     
     /**
@@ -135,17 +147,18 @@ public class BasicCollectionAccessor extends DirectAccessor {
      * Used for OX mapping.
      */
     public String getPrivateOwned() {
-    	return null;
+        return null;
     }
     
     /**
-     * INTERNAL: (Override from MetadataAccessor)
+     * INTERNAL:
      * Return the reference class for this accessor. It will try to extract
      * a reference class from a generic specification. If no generics are used,
      * then it will return void.class. This avoids NPE's when processing
      * JPA converters that can default (Enumerated and Temporal) based on the
      * reference class.
      */
+    @Override
     public Class getReferenceClass() {
         Class cls = getReferenceClassFromGeneric();
         return (cls == null) ? void.class : cls;
@@ -160,39 +173,42 @@ public class BasicCollectionAccessor extends DirectAccessor {
     }
     
     /**
-     * INTERNAL: (Override from MetadataAccessor, Overridden in BasicMapAccessor)
+     * INTERNAL:
      */
-    public void init(MetadataAccessibleObject accessibleObject, ClassAccessor accessor) {
-    	super.init(accessibleObject, accessor);
-    	
-    	// Make sure the attribute name is set on the value column if one is
-    	// set through XML.
-    	if (m_valueColumn != null) {
-    		m_valueColumn.setAttributeName(getAttributeName());
-    	}
-    	
-    	// Set the location for this collection table.
-    	if (m_collectionTable != null) {
-    	    m_collectionTable.setLocation(getAnnotatedElementName());
-    	}
+    @Override
+    public void initXMLObject(MetadataAccessibleObject accessibleObject) {
+        super.initXMLObject(accessibleObject);
+    
+        // Initialize single ORMetadata objects.
+        initXMLObject(m_valueColumn, accessibleObject);
+        
+        // Initialize lists of ORMetadata objects.
+        initXMLObject(m_collectionTable, accessibleObject);
+        
+        // Make sure the attribute name is set on the value column if one is
+        // set through XML.
+        if (m_valueColumn != null) {
+            m_valueColumn.setAttributeName(getAttributeName());
+        }
     }
     
     /**
      * INTERNAL:
      * Return true if this accessor represents a basic collection mapping.
      */
+    @Override
     public boolean isBasicCollection() {
         return true;
     }
     
-	/**
-	 * INTERNAL:
-	 * Used for OX mapping.
-	 */
-	public boolean isPrivateOwned() {
-		return m_privateOwned;
-	}
-	
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+    public boolean isPrivateOwned() {
+        return m_privateOwned;
+    }
+    
     /**
      * INTERNAL:
      * Returns true if the given class is a valid basic collection type.
@@ -206,7 +222,7 @@ public class BasicCollectionAccessor extends DirectAccessor {
     }
     
     /**
-     * INTERNAL: (Overridden in BasicMapAccessor)
+     * INTERNAL:
      */
     public void process() {
         if (isValidBasicCollectionType()) {
@@ -235,7 +251,7 @@ public class BasicCollectionAccessor extends DirectAccessor {
             // process properties
             processProperties(mapping);
         } else {
-        	throw ValidationException.invalidTypeForBasicCollectionAttribute(getAttributeName(), getRawClass(), getJavaClass());
+            throw ValidationException.invalidTypeForBasicCollectionAttribute(getAttributeName(), getRawClass(), getJavaClass());
         }
     }
     
@@ -273,7 +289,7 @@ public class BasicCollectionAccessor extends DirectAccessor {
         // Check that we loaded a collection table otherwise default one.        
         if (m_collectionTable == null) {
             // TODO: Log a defaulting message.
-            m_collectionTable = new CollectionTableMetadata(getAnnotatedElementName());
+            m_collectionTable = new CollectionTableMetadata(null, getAccessibleObject());
         }
         
         // Process any table defaults and log warning messages.
@@ -306,11 +322,11 @@ public class BasicCollectionAccessor extends DirectAccessor {
      * Used for OX mapping.
      */
     protected void setCollectionTable(CollectionTableMetadata collectionTable) {
-    	m_collectionTable = collectionTable;
+        m_collectionTable = collectionTable;
     }
     
     /**
-     * INTERNAL: (Overridden in BasicMapAccessor)
+     * INTERNAL:
      */
     public void setConverter(DatabaseMapping mapping, Converter converter) {
         ((DirectCollectionMapping) mapping).setValueConverter(converter);
@@ -324,7 +340,7 @@ public class BasicCollectionAccessor extends DirectAccessor {
     }
     
     /**
-     * INTERNAL: (Overridden in BasicMapAccessor)
+     * INTERNAL:
      */
     public void setFieldClassification(DatabaseMapping mapping, Class classification) {
         ((DirectCollectionMapping) mapping).setDirectFieldClassification(classification);
@@ -335,18 +351,18 @@ public class BasicCollectionAccessor extends DirectAccessor {
      * Used for OX mapping.
      */
     public void setJoinFetch(Enum joinFetch) {
-    	m_joinFetch = joinFetch;
+        m_joinFetch = joinFetch;
     }
     
-	/**
-	 * INTERNAL:
-	 * Used for OX mapping.
-	 */
-	public void setPrivateOwned(String ignore) {
-		m_privateOwned = true;
-	}
-	
-	/**
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+    public void setPrivateOwned(String ignore) {
+        m_privateOwned = true;
+    }
+    
+    /**
      * INTERNAL:
      * Used for OX mapping.
      */

@@ -9,60 +9,96 @@
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
+ *     05/16/2008-1.0M8 Guy Pelletier 
+ *       - 218084: Implement metadata merging functionality between mapping files
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.columns;
 
 import java.lang.annotation.Annotation;
 
 import org.eclipse.persistence.internal.helper.DatabaseField;
+import org.eclipse.persistence.internal.jpa.metadata.ORMetadata;
+import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAccessibleObject;
 
 /**
+ * INTERNAL:
  * Object to hold onto join column metadata in a TopLink database fields.
  * 
  * @author Guy Pelletier
  * @since TopLink EJB 3.0 Reference Implementation
  */
-public class PrimaryKeyJoinColumnMetadata {
-	private String m_name;
+public class PrimaryKeyJoinColumnMetadata extends ORMetadata {
+    private String m_name;
     private String m_columnDefinition;
     private String m_referencedColumnName;
     
     /**
      * INTERNAL:
+     * Used for OX mapping.
      */
-    public PrimaryKeyJoinColumnMetadata() {}
+    public PrimaryKeyJoinColumnMetadata() {
+        super("<primary-key-join-column>");
+    }
     
     /**
      * INTERNAL:
      */
-    public PrimaryKeyJoinColumnMetadata(Annotation primaryKeyJoinColumn) {
-        if (primaryKeyJoinColumn != null) {
-            // Process the primary key field metadata.
-            setReferencedColumnName((String)MetadataHelper.invokeMethod("referencedColumnName", primaryKeyJoinColumn));
+    public PrimaryKeyJoinColumnMetadata(Annotation primaryKeyJoinColumn, MetadataAccessibleObject accessibleObject) {
+        super(primaryKeyJoinColumn, accessibleObject);
         
-            // Process the foreign key field metadata.
-            setName((String)MetadataHelper.invokeMethod("name", primaryKeyJoinColumn));
-            setColumnDefinition((String)MetadataHelper.invokeMethod("columnDefinition", primaryKeyJoinColumn));
+        if (primaryKeyJoinColumn != null) {
+            m_name = ((String) MetadataHelper.invokeMethod("name", primaryKeyJoinColumn));
+            m_columnDefinition = ((String) MetadataHelper.invokeMethod("columnDefinition", primaryKeyJoinColumn));
+            m_referencedColumnName = ((String) MetadataHelper.invokeMethod("referencedColumnName", primaryKeyJoinColumn));
         }
     }
 
     /**
      * INTERNAL:
+     */
+    protected PrimaryKeyJoinColumnMetadata(String xmlElement) {
+        super(xmlElement);
+    }
+    
+    /**
+     * INTERNAL:
+     */
+    @Override
+    public boolean equals(Object objectToCompare) {
+        if (objectToCompare instanceof PrimaryKeyJoinColumnMetadata) {
+            PrimaryKeyJoinColumnMetadata joinColumn = (PrimaryKeyJoinColumnMetadata) objectToCompare;
+            
+            if (! valuesMatch(m_name, joinColumn.getName())) {
+                return false;
+            }
+            
+            if (! valuesMatch(m_columnDefinition, joinColumn.getColumnDefinition())) {
+                return false;
+            }
+
+            return valuesMatch(m_referencedColumnName, joinColumn.getReferencedColumnName());
+        }
+        
+        return false;
+    }
+    
+    /**
+     * INTERNAL:
      * Used for OX mapping.
      */
     public String getColumnDefinition() {
-    	return m_columnDefinition;
+        return m_columnDefinition;
     }
     
     /**
      * INTERNAL:
      */
     public DatabaseField getForeignKeyField() {
-    	DatabaseField fkField = new DatabaseField();
-    	
-    	fkField.setName(m_name == null ? "" : m_name);
-    	fkField.setColumnDefinition(m_columnDefinition == null ? "" : m_columnDefinition);
-    	
+        DatabaseField fkField = new DatabaseField();
+        
+        fkField.setName(m_name == null ? "" : m_name);
+        fkField.setColumnDefinition(m_columnDefinition == null ? "" : m_columnDefinition);
+        
         return fkField;
     }
     
@@ -71,17 +107,17 @@ public class PrimaryKeyJoinColumnMetadata {
      * Used for OX mapping.
      */
     public String getName() {
-    	return m_name;	
+        return m_name;    
     }
     
     /**
      * INTERNAL:
      */
     public DatabaseField getPrimaryKeyField() {
-    	DatabaseField pkField = new DatabaseField();
-    	
-    	pkField.setName(m_referencedColumnName == null ? "" : m_referencedColumnName);
-    	
+        DatabaseField pkField = new DatabaseField();
+        
+        pkField.setName(m_referencedColumnName == null ? "" : m_referencedColumnName);
+        
         return pkField;
     }
     
@@ -90,7 +126,7 @@ public class PrimaryKeyJoinColumnMetadata {
      * Used for OX mapping.
      */
     public String getReferencedColumnName() {
-    	return m_referencedColumnName;
+        return m_referencedColumnName;
     }
     
     /**
@@ -112,7 +148,7 @@ public class PrimaryKeyJoinColumnMetadata {
      * Used for OX mapping.
      */
     public void setColumnDefinition(String columnDefinition) {
-    	m_columnDefinition = columnDefinition;
+        m_columnDefinition = columnDefinition;
     }
     
     /**
@@ -120,7 +156,7 @@ public class PrimaryKeyJoinColumnMetadata {
      * Used for OX mapping.
      */
     public void setName(String name) {
-    	m_name = name;	
+        m_name = name;    
     }
     
     /**
@@ -128,6 +164,6 @@ public class PrimaryKeyJoinColumnMetadata {
      * Used for OX mapping.
      */
     public void setReferencedColumnName(String referencedColumnName) {
-    	m_referencedColumnName = referencedColumnName;
+        m_referencedColumnName = referencedColumnName;
     }
 }

@@ -9,6 +9,8 @@
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
+ *     05/16/2008-1.0M8 Guy Pelletier 
+ *       - 218084: Implement metadata merging functionality between mapping files
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.accessors.objects;
 
@@ -16,16 +18,29 @@ import java.lang.reflect.Method;
 import java.security.AccessController;
 import java.security.PrivilegedActionException;
 
+import javax.persistence.PostLoad;
+import javax.persistence.PostPersist;
+import javax.persistence.PostRemove;
+import javax.persistence.PostUpdate;
+import javax.persistence.PrePersist;
+import javax.persistence.PreRemove;
+import javax.persistence.PreUpdate;
+
+import org.eclipse.persistence.exceptions.ValidationException;
+import org.eclipse.persistence.internal.jpa.metadata.MetadataDescriptor;
+import org.eclipse.persistence.internal.jpa.metadata.MetadataLogger;
+import org.eclipse.persistence.internal.jpa.metadata.xml.XMLEntityMappings;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.internal.security.PrivilegedGetMethod;
 
 /**
+ * INTERNAL:
  * An object to hold onto a valid EJB 3.0 decorated method.
  * 
  * @author Guy Pelletier
  * @since TopLink 10.1.3/EJB 3.0 Preview
  */
-public class MetadataMethod extends MetadataAccessibleObject {
+public class MetadataMethod extends MetadataAnnotatedElement {
     public static final String IS_PROPERTY_METHOD_PREFIX = "is";
     public static final String GET_PROPERTY_METHOD_PREFIX = "get";
     private static final String SET_PROPERTY_METHOD_PREFIX = "set";
@@ -38,20 +53,28 @@ public class MetadataMethod extends MetadataAccessibleObject {
     
     /**
      * INTERNAL:
+     * Called from CMP3Policy ... doesn't need a logger.
      */
-    public MetadataMethod(Method getMethod) {
+    public MetadataMethod(Method getMethod, Class declaringClass) {
         super(getMethod);
         
-        m_getMethod = getMethod;
-        m_setMethod = getSetMethod(getMethod, getMethod.getDeclaringClass());
-        
-        setName(getMethod.getName());
-        setAttributeName(getAttributeNameFromMethodName(getMethod.getName()));
-        setRelationType(getMethod.getGenericReturnType());
+        init(getMethod, declaringClass);
     }
     
-    public MetadataMethod(Method getMethod, Method setMethod, String attributeName) {
-        super(getMethod);
+    /**
+     * INTERNAL:
+     */
+    public MetadataMethod(Method getMethod, MetadataLogger logger) {
+        super(getMethod, logger);
+        
+        init(getMethod, getMethod.getDeclaringClass());
+    }
+    
+    /**
+     * INTERNAL:
+     */
+    public MetadataMethod(Method getMethod, Method setMethod, String attributeName, XMLEntityMappings entityMappings) {
+        super(getMethod, entityMappings);
         
         m_getMethod = getMethod;
         m_setMethod = setMethod;
@@ -59,6 +82,15 @@ public class MetadataMethod extends MetadataAccessibleObject {
         setName(getMethod.getName());
         setAttributeName(attributeName);
         setRelationType(getMethod.getGenericReturnType());
+    }
+    
+    /**
+     * INTERNAL:
+     */
+    public MetadataMethod(Method getMethod, XMLEntityMappings entityMappings) {
+        super(getMethod, entityMappings);
+        
+        init(getMethod, getMethod.getDeclaringClass()); 
     }
     
     /**
@@ -71,7 +103,11 @@ public class MetadataMethod extends MetadataAccessibleObject {
         String leadingChar = "";
         String restOfName = methodName;
         
-        if (methodName.startsWith(GET_PROPERTY_METHOD_PREFIX)) {
+        // We're looking at method named 'get' or 'set', therefore,
+        // there is no attribute name, set it to "" string for now.
+        if (methodName.equals(GET_PROPERTY_METHOD_PREFIX) || methodName.equals(IS_PROPERTY_METHOD_PREFIX)) {
+            return "";
+        } else if (methodName.startsWith(GET_PROPERTY_METHOD_PREFIX)) {
             leadingChar = methodName.substring(POSITION_AFTER_GET_PREFIX, POSITION_AFTER_GET_PREFIX + 1);
             restOfName = methodName.substring(POSITION_AFTER_GET_PREFIX + 1);
         } else if (methodName.startsWith(IS_PROPERTY_METHOD_PREFIX)){
@@ -84,10 +120,26 @@ public class MetadataMethod extends MetadataAccessibleObject {
     
     /**
      * INTERNAL:
+     */
+    protected Method getMethod() {
+        return (Method) getAnnotatedElement();
+    }
+    
+    /**
+     * INTERNAL:
      * Method to convert a getMethod into a setMethod. This method could return 
      * null if the corresponding set method is not found.
      */ 
-    public static Method getSetMethod(Method method, Class cls) {
+    public Method getSetMethod() {
+        return m_setMethod;
+    }
+    
+    /**
+     * INTERNAL:
+     * Method to convert a getMethod into a setMethod. This method could return 
+     * null if the corresponding set method is not found.
+     */ 
+    public Method getSetMethod(Method method, Class cls) {
         String getMethodName = method.getName();
         Class[] params = new Class[] { method.getReturnType() };
             
@@ -110,17 +162,10 @@ public class MetadataMethod extends MetadataAccessibleObject {
     
     /**
      * INTERNAL:
-     */
-    public String getSetMethodName() {
-        return m_setMethod.getName();
-    }
-    
-    /**
-     * INTERNAL:
      * If the methodName passed in is a declared method on cls, then return
      * the methodName. Otherwise return null to indicate it does not exist.
      */
-    static Method getMethod(String methodName, Class cls, Class[] params) {
+    protected Method getMethod(String methodName, Class cls, Class[] params) {
         try {
             if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
                 try {
@@ -134,6 +179,20 @@ public class MetadataMethod extends MetadataAccessibleObject {
         } catch (NoSuchMethodException e1) {
             return null;
         }
+    }
+    
+    /**
+     * INTERNAL:
+     */
+    public String getSetMethodName() {
+        return m_setMethod.getName();
+    }
+    
+    /**
+     * INTERNAL:
+     */
+    public boolean hasAttributeName() {
+        return ! getAttributeName().equals("");
     }
     
     /**
@@ -153,7 +212,82 @@ public class MetadataMethod extends MetadataAccessibleObject {
     /**
      * INTERNAL:
      */
+    protected void init(Method getMethod, Class declaringClass) {
+        m_getMethod = getMethod;
+        m_setMethod = getSetMethod(getMethod, declaringClass);
+        
+        setName(getMethod.getName());
+        setAttributeName(getAttributeNameFromMethodName(getMethod.getName()));
+        setRelationType(getMethod.getGenericReturnType());
+    }
+    
+    /**
+     * INTERNAL:
+     * Return true if it has a valid name (starts with get or is) and has a
+     * property name (getXyz or isXyz) and does not have parameters and has
+     * an associated set method.
+     */
+    protected boolean isALifeCycleCallbackMethod() {
+        return isAnnotationPresent(PostLoad.class) ||
+               isAnnotationPresent(PostPersist.class) ||
+               isAnnotationPresent(PostRemove.class) ||
+               isAnnotationPresent(PostUpdate.class) ||
+               isAnnotationPresent(PrePersist.class) ||
+               isAnnotationPresent(PreRemove.class) ||
+               isAnnotationPresent(PreUpdate.class);
+    }
+    
+    /**
+     * INTERNAL:
+     * Return true if it has a valid name (starts with 'get' or 'is') and has a
+     * property name (get'Xyz' or is'Xyz') and does not have parameters and has
+     * an associated set method.
+     */
+    protected boolean isValidPersistenceMethod() {
+        return isValidPersistenceMethodName() && ! hasParameters() && hasSetMethod();
+    }
+    
+    /**
+     * INTERNAL:
+     * Return true is this method is a valid persistence method. This method
+     * will validate against any declared annotations on the method.
+     */
+    public boolean isValidPersistenceMethod(MetadataDescriptor descriptor) {
+        return ! isALifeCycleCallbackMethod() && isValidPersistenceMethod(descriptor, hasDeclaredAnnotations(descriptor));
+    }
+    
+    /**
+     * INTERNAL:
+     * Return true is this method is a valid persistence method. User decorated
+     * is used to indicate that the method either had persistence annotations
+     * defined on it or that it was specified in XML.
+     */
+    public boolean isValidPersistenceMethod(MetadataDescriptor descriptor, boolean userDecorated) {
+        if (! isValidPersistenceElement(getMethod().getModifiers()) || ! isValidPersistenceMethod()) {
+            // So it's not a valid method, did the user decorate it with
+            // annotations or specify it in XML?
+            if (userDecorated) {
+                // Let's figure out which exception we should throw then ...
+                if (hasParameters()) {
+                    throw ValidationException.mappingMetadataAppliedToMethodWithArguments(getMethod(), descriptor.getJavaClass());
+                } else if (!hasSetMethod()) {
+                    throw ValidationException.noCorrespondingSetterMethodDefined(descriptor.getJavaClass(), getMethod());
+                } else {
+                    // General, catch all remaining exception cases. 
+                    throw ValidationException.mappingMetadataAppliedToInvalidAttribute(getMethod(), descriptor.getJavaClass());
+                }
+            }
+            
+            return false;
+        }
+        
+        return true;
+    }
+    
+    /**
+     * INTERNAL:
+     */
     public boolean isValidPersistenceMethodName() {
-        return getName().startsWith(GET_PROPERTY_METHOD_PREFIX) || getName().startsWith(IS_PROPERTY_METHOD_PREFIX);
+        return (getName().startsWith(GET_PROPERTY_METHOD_PREFIX) || getName().startsWith(IS_PROPERTY_METHOD_PREFIX)) && hasAttributeName();
     }
 }

@@ -9,64 +9,91 @@
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
+ *     05/16/2008-1.0M8 Guy Pelletier 
+ *       - 218084: Implement metadata merging functionality between mapping files
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.converters;
 
 import java.lang.annotation.Annotation;
 
+import org.eclipse.persistence.internal.jpa.metadata.ORMetadata;
+import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAccessibleObject;
+
 /**
- * INTERNAL:
  * Object to hold onto conversion values.
  * 
  * @author Guy Pelletier
  * @since EclipseLink 1.0
  */
-public class ConversionValueMetadata {
-	private String m_dataValue;
-	private String m_objectValue;
-	
-	/**
-	 * INTERNAL:
-	 */
-	public ConversionValueMetadata() {}
-	
-	/**
-	 * INTERNAL:
-	 */
-	public ConversionValueMetadata(Annotation conversionValue) {
-		m_dataValue = (String) MetadataHelper.invokeMethod("dataValue", conversionValue); 
-		m_objectValue = (String) MetadataHelper.invokeMethod("objectValue", conversionValue);  
-	}
-	
-	/**
-	 * INTERNAL:
-	 * Used for OX mapping.
-	 */
-	public String getDataValue() {
-		return m_dataValue;
-	}
-	
-	/**
-	 * INTERNAL:
-	 * Used for OX mapping.
-	 */
-	public String getObjectValue() {
-		return m_objectValue;
-	}
-	
-	/**
-	 * INTERNAL:
-	 * Used for OX mapping.
-	 */
-	public void setDataValue(String dataValue) {
-		m_dataValue = dataValue;
-	}
-	
-	/**
-	 * INTERNAL:
-	 * Used for OX mapping.
-	 */
-	public void setObjectValue(String objectValue) {
-		m_objectValue = objectValue;
-	}
+public class ConversionValueMetadata extends ORMetadata {
+    private String m_dataValue;
+    private String m_objectValue;
+    
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+    public ConversionValueMetadata() {
+        super("<conversion-value");
+    }
+    
+    /**
+     * INTERNAL:
+     */
+    public ConversionValueMetadata(Annotation conversionValue, MetadataAccessibleObject accessibleObject) {
+        super(conversionValue, accessibleObject);
+        
+        m_dataValue = (String) MetadataHelper.invokeMethod("dataValue", conversionValue); 
+        m_objectValue = (String) MetadataHelper.invokeMethod("objectValue", conversionValue);  
+    }
+    
+    /**
+     * INTERNAL:
+     */
+    @Override
+    public boolean equals(Object objectToCompare) {
+        if (objectToCompare instanceof ConversionValueMetadata) {
+            ConversionValueMetadata conversionValue = (ConversionValueMetadata) objectToCompare;
+            
+            if (! valuesMatch(m_dataValue, conversionValue.getDataValue())) {
+                return false;
+            }
+            
+            return valuesMatch(m_objectValue, conversionValue.getObjectValue());
+        }
+        
+        return false;
+    }
+    
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+    public String getDataValue() {
+        return m_dataValue;
+    }
+    
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+    public String getObjectValue() {
+        return m_objectValue;
+    }
+    
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+    public void setDataValue(String dataValue) {
+        m_dataValue = dataValue;
+    }
+    
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+    public void setObjectValue(String objectValue) {
+        m_objectValue = objectValue;
+    }
 }

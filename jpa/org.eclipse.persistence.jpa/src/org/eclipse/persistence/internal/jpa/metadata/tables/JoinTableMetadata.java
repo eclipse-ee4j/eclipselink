@@ -9,6 +9,8 @@
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
+ *     05/16/2008-1.0M8 Guy Pelletier 
+ *       - 218084: Implement metadata merging functionality between mapping file
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.tables;
 
@@ -17,6 +19,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.persistence.internal.jpa.metadata.MetadataLogger;
+import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAccessibleObject;
 import org.eclipse.persistence.internal.jpa.metadata.columns.JoinColumnMetadata;
 
 /**
@@ -27,43 +30,37 @@ import org.eclipse.persistence.internal.jpa.metadata.columns.JoinColumnMetadata;
  * @since TopLink EJB 3.0 Reference Implementation
  */
 public class JoinTableMetadata extends TableMetadata {
-	private List<JoinColumnMetadata> m_joinColumns;
-	private List<JoinColumnMetadata> m_inverseJoinColumns;
+    private List<JoinColumnMetadata> m_joinColumns = new ArrayList<JoinColumnMetadata>();
+    private List<JoinColumnMetadata> m_inverseJoinColumns = new ArrayList<JoinColumnMetadata>();
     
     /**
      * INTERNAL:
      */
-    public JoinTableMetadata() {}
+    public JoinTableMetadata() {
+        super("<join-table>");
+    }
     
     /**
      * INTERNAL:
-     * Constructor used when defaultign a join table. Initialize
-     * the join columns to empty lists.
      */
-    public JoinTableMetadata(String annotatedElementName) {
-        super(annotatedElementName);
+    public JoinTableMetadata(Annotation joinTable, MetadataAccessibleObject accessibleObject) {
+        super(joinTable, accessibleObject);
         
-        m_joinColumns = new ArrayList<JoinColumnMetadata>();
-        m_inverseJoinColumns = new ArrayList<JoinColumnMetadata>();
+        if (joinTable != null) {
+            for (Annotation joinColumn : (Annotation[]) MetadataHelper.invokeMethod("joinColumns", joinTable)) {
+                m_joinColumns.add(new JoinColumnMetadata(joinColumn, accessibleObject));
+            }  
+        
+            for (Annotation inverseJoinColumn : (Annotation[]) MetadataHelper.invokeMethod("inverseJoinColumns", joinTable)) {
+                m_inverseJoinColumns.add(new JoinColumnMetadata(inverseJoinColumn, accessibleObject));
+            }
+        }
     }
     
     /**
      * INTERNAL:
      */
-    public JoinTableMetadata(Annotation joinTable, String annotatedElementName) {
-    	super(annotatedElementName);
-    	
-        setName((String) invokeMethod("name", joinTable));
-        setSchema((String) invokeMethod("schema", joinTable));
-        setCatalog((String) invokeMethod("catalog", joinTable));
-        setUniqueConstraints((Annotation[]) invokeMethod("uniqueConstraints", joinTable));
-        setJoinColumns((Annotation[]) invokeMethod("joinColumns", joinTable));
-    	setInverseJoinColumns((Annotation[]) invokeMethod("inverseJoinColumns", joinTable));
-    }
-    
-    /**
-     * INTERNAL: (Override from MetadataTable)
-     */
+    @Override
     public String getCatalogContext() {
         return MetadataLogger.JOIN_TABLE_CATALOG;
     }
@@ -85,15 +82,17 @@ public class JoinTableMetadata extends TableMetadata {
     }
     
     /**
-     * INTERNAL: (Override from MetadataTable)
+     * INTERNAL:
      */
+    @Override
     public String getNameContext() {
         return MetadataLogger.JOIN_TABLE_NAME;
     }
     
     /**
-     * INTERNAL: (Override from MetadataTable)
+     * INTERNAL:
      */
+    @Override
     public String getSchemaContext() {
         return MetadataLogger.JOIN_TABLE_SCHEMA;
     }
@@ -108,33 +107,9 @@ public class JoinTableMetadata extends TableMetadata {
     
     /**
      * INTERNAL:
-     * Called from annotation population.
-     */
-    protected void setInverseJoinColumns(Annotation[] inverseJoinColumns) {
-    	m_inverseJoinColumns = new ArrayList<JoinColumnMetadata>();
-    	
-    	for (Annotation inverseJoinColumn : inverseJoinColumns) {
-    		m_inverseJoinColumns.add(new JoinColumnMetadata(inverseJoinColumn));
-    	}   
-    }
-    
-    /**
-     * INTERNAL:
      * Used for OX mapping.
      */
     public void setJoinColumns(List<JoinColumnMetadata> joinColumns) {
-    	m_joinColumns = joinColumns;
-    }
-    
-    /**
-     * INTERNAL:
-     * Called from annotation population.
-     */
-    protected void setJoinColumns(Annotation[] joinColumns) {
-    	m_joinColumns = new ArrayList<JoinColumnMetadata>();
-    	
-    	for (Annotation joinColumn : joinColumns) {
-    		m_joinColumns.add(new JoinColumnMetadata(joinColumn));
-    	}   
+        m_joinColumns = joinColumns;
     }
 }

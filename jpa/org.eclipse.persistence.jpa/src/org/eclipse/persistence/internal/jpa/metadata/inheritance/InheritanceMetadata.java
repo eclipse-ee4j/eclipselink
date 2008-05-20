@@ -9,7 +9,9 @@
  *
  * Contributors:
  *     Guy Pelletier (Oracle), February 28, 2007 
- *        - New file introduced for bug 217880.  
+ *        - New file introduced for bug 217880.
+ *     05/16/2008-1.0M8 Guy Pelletier 
+ *       - 218084: Implement metadata merging functionality between mapping files     
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.inheritance;
 
@@ -20,6 +22,8 @@ import javax.persistence.InheritanceType;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataDescriptor;
+import org.eclipse.persistence.internal.jpa.metadata.ORMetadata;
+import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAccessibleObject;
 
 /**
  * Object to represent an inheritance root defined in XML.
@@ -27,23 +31,27 @@ import org.eclipse.persistence.internal.jpa.metadata.MetadataDescriptor;
  * @author Guy Pelletier
  * @since EclipseLink 1.0
  */
-public class InheritanceMetadata {
-	private Enum m_strategy;
-	
-	/**
+public class InheritanceMetadata extends ORMetadata {
+    private Enum m_strategy;
+    
+    /**
      * INTERNAL:
      */
-	public InheritanceMetadata() {}
-	
-	/**
+    public InheritanceMetadata() {
+        super("<inheritance>");
+    }
+    
+    /**
      * INTERNAL:
      */
-    public InheritanceMetadata(Annotation inheritance) {
+    public InheritanceMetadata(Annotation inheritance, MetadataAccessibleObject accessibleObject) {
+        super(inheritance, accessibleObject);
+        
         if (inheritance != null) {
-            setStrategy((Enum)MetadataHelper.invokeMethod("strategy", inheritance));
+            m_strategy = (Enum)MetadataHelper.invokeMethod("strategy", inheritance);
         }
     }
-
+    
     /**
      * INTERNAL:
      * Used for OX mapping.
@@ -55,7 +63,7 @@ public class InheritanceMetadata {
     /**
      * INTERNAL:
      */
-    public void process(MetadataDescriptor descriptor, Class javaClass) {
+    public void process(MetadataDescriptor descriptor) {
         // Process the cache metadata.
         ClassDescriptor classDescriptor = descriptor.getClassDescriptor();
         
@@ -65,7 +73,7 @@ public class InheritanceMetadata {
         } else if (m_strategy.equals(InheritanceType.JOINED)) {
             classDescriptor.getInheritancePolicy().setJoinedStrategy();
         } else if (m_strategy.equals(InheritanceType.TABLE_PER_CLASS)) {
-            throw ValidationException.tablePerClassInheritanceNotSupported(javaClass);
+            throw ValidationException.tablePerClassInheritanceNotSupported(getLocation());
         }        
     }
     
@@ -74,7 +82,7 @@ public class InheritanceMetadata {
      * Used for OX mapping.
      */
     public void setStrategy(Enum strategy) {
-    	m_strategy = strategy;
+        m_strategy = strategy;
     }
 }
     

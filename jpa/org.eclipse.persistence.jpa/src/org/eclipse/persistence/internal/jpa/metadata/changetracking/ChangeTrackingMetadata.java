@@ -9,7 +9,9 @@
  *
  * Contributors:
  *     Guy Pelletier (Oracle), February 28, 2007 
- *        - New file introduced for bug 217880.  
+ *        - New file introduced for bug 217880.
+ *     05/16/2008-1.0M8 Guy Pelletier 
+ *       - 218084: Implement metadata merging functionality between mapping files     
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.changetracking;
 
@@ -24,6 +26,8 @@ import org.eclipse.persistence.descriptors.changetracking.ObjectChangePolicy;
 import org.eclipse.persistence.descriptors.changetracking.ObjectChangeTrackingPolicy;
 
 import org.eclipse.persistence.internal.jpa.metadata.MetadataDescriptor;
+import org.eclipse.persistence.internal.jpa.metadata.ORMetadata;
+import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAccessibleObject;
 
 /**
  * Object to hold onto change tracking metadata.
@@ -31,19 +35,23 @@ import org.eclipse.persistence.internal.jpa.metadata.MetadataDescriptor;
  * @author Guy Pelletier
  * @since EclipseLink 1.0
  */
-public class ChangeTrackingMetadata  {
+public class ChangeTrackingMetadata extends ORMetadata {
     private Enum m_type;    
     
     /**
      * INTERNAL:
      */
-    public ChangeTrackingMetadata() {}
+    public ChangeTrackingMetadata() {
+        super("<change-tracking>");
+    }
     
     /**
      * INTERNAL:
      */
-    public ChangeTrackingMetadata(Annotation changeTracking) {
-        setType((Enum) MetadataHelper.invokeMethod("value", changeTracking));
+    public ChangeTrackingMetadata(Annotation changeTracking, MetadataAccessibleObject accessibleObject) {
+        super(changeTracking, accessibleObject);
+        
+        m_type = (Enum) MetadataHelper.invokeMethod("value", changeTracking);
     }
     
     /**
@@ -86,6 +94,6 @@ public class ChangeTrackingMetadata  {
      * Used for OX mapping.
      */
     public void setType(Enum type) {
-    	m_type = type;
+        m_type = type;
     }
 }

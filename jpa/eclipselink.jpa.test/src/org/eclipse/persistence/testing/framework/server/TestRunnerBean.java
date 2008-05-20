@@ -29,7 +29,6 @@ import javax.persistence.PersistenceUnit;
 import junit.framework.TestCase;
 
 import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
-import org.eclipse.persistence.testing.models.jpa.sessionbean.EmployeeService;
 
 /**
  * Server side JUnit test invocation implemented as a stateless session bean.

@@ -19,6 +19,8 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 
+import javax.persistence.Entity;
+
 import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
@@ -47,7 +49,7 @@ public class ChangeTrackerWeavingTestSuite  extends TestCase {
             m_session = session;
             Collection<String> entityNames = new HashSet<String>(entities.size());
             for (Class entity : entities) {
-                m_project.addEntityAccessor(new EntityAccessor(entity, m_project));
+                m_project.addEntityAccessor(new EntityAccessor(entity.getAnnotation(Entity.class), entity, m_project));
                 entityNames.add(entity.getName());
             }
         }
@@ -104,7 +106,7 @@ public class ChangeTrackerWeavingTestSuite  extends TestCase {
         Session session = new Project(new DatabaseLogin()).createServerSession();
         session.setLogLevel(SessionLog.OFF);
         MetadataProcessor eap = new CustomizeMetadataProcessor((AbstractSession) session, setupClassLoader, entities, true);
-        eap.processAnnotations();
+        eap.processORMMetadata();
         PersistenceWeaver tw = (PersistenceWeaver)TransformerFactory.createTransformerAndModifyProject(session, entities, Thread.currentThread().getContextClassLoader(), true, true, true, true);
         byte[] newOrderBytes = tw.transform(simpleClassLoader, Order.class.getName().replace('.','/'), null, null, originalOrderBytes);
         byte[] newItemBytes = tw.transform(simpleClassLoader, Item.class.getName().replace('.','/'), null, null, originalItemBytes);

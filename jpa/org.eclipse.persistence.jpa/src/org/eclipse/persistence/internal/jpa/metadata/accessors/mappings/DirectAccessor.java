@@ -9,6 +9,8 @@
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
+ *     05/16/2008-1.0M8 Guy Pelletier 
+ *       - 218084: Implement metadata merging functionality between mapping files
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.accessors.mappings;
 
@@ -31,7 +33,6 @@ import org.eclipse.persistence.internal.jpa.metadata.accessors.classes.ClassAcce
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAccessibleObject;
 import org.eclipse.persistence.internal.jpa.metadata.columns.ColumnMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.converters.AbstractConverterMetadata;
-import org.eclipse.persistence.internal.jpa.metadata.converters.StructConverterMetadata;
 
 import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.helper.DatabaseTable;
@@ -58,35 +59,37 @@ public abstract class DirectAccessor extends MappingAccessor {
     private static final String CONVERT_SERIALIZED = "serialized";
     private static final String CONVERT_CLASS_INSTANCE = "class-instance";
     
-	private final static String DEFAULT_MAP_KEY_COLUMN_SUFFIX = "_KEY";
-	
-	private Boolean m_lob;
+    private final static String DEFAULT_MAP_KEY_COLUMN_SUFFIX = "_KEY";
+    
+    private Boolean m_lob;
     private Boolean m_optional;
     
-	private Enum m_fetch;
-	private Enum m_enumerated;
-	private Enum m_temporal;
-	
-	private String m_convert;
-	
-    /**
-     * INTERNAL:
-     */
-    protected DirectAccessor() {}
+    private Enum m_fetch;
+    private Enum m_enumerated;
+    private Enum m_temporal;
+    
+    private String m_convert;
     
     /**
      * INTERNAL:
      */
-    protected DirectAccessor(MetadataAccessibleObject accessibleObject, ClassAccessor classAccessor) {
-    	super(accessibleObject, classAccessor);
-    	
-    	// Set the lob if one is present.
-    	if (isAnnotationPresent(Lob.class)) {
-    	    m_lob = new Boolean(true);
-    	}
-    	
-    	// Set the enumerated if one is present.
-    	Annotation enumerated = getAnnotation(Enumerated.class);
+    protected DirectAccessor(String xmlElement) {
+        super(xmlElement);
+    }
+    
+    /**
+     * INTERNAL:
+     */
+    protected DirectAccessor(Annotation annotation, MetadataAccessibleObject accessibleObject, ClassAccessor classAccessor) {
+        super(annotation, accessibleObject, classAccessor);
+        
+        // Set the lob if one is present.
+        if (isAnnotationPresent(Lob.class)) {
+            m_lob = new Boolean(true);
+        }
+        
+        // Set the enumerated if one is present.
+        Annotation enumerated = getAnnotation(Enumerated.class);
         if (enumerated != null) {
             m_enumerated = (Enum) MetadataHelper.invokeMethod("value", enumerated);
         }
@@ -148,7 +151,7 @@ public abstract class DirectAccessor extends MappingAccessor {
         
         // Make sure there is a table name on the field.
         if (field.getTableName().equals("")) {
-        	field.setTable(defaultTable);
+            field.setTable(defaultTable);
         }
         
         // Set the correct field name, defaulting and logging when necessary.
@@ -174,7 +177,7 @@ public abstract class DirectAccessor extends MappingAccessor {
      * Used for OX mapping.
      */
     public Enum getEnumerated() {
-    	return m_enumerated;
+        return m_enumerated;
     }
      
     /**
@@ -182,7 +185,7 @@ public abstract class DirectAccessor extends MappingAccessor {
      * Used for OX mapping.
      */
     public Enum getFetch() {
-    	return m_fetch;
+        return m_fetch;
     }
     
     /**
@@ -206,7 +209,7 @@ public abstract class DirectAccessor extends MappingAccessor {
      * Used for OX mapping.
      */
     public Boolean getLob() {
-    	return m_lob;
+        return m_lob;
     }
     
     /**
@@ -214,7 +217,7 @@ public abstract class DirectAccessor extends MappingAccessor {
      * Used for OX mapping.
      */
     public Boolean getOptional() {
-    	return m_optional;
+        return m_optional;
     }
     
     /**
@@ -222,14 +225,15 @@ public abstract class DirectAccessor extends MappingAccessor {
      * Used for OX mapping.
      */
     public Enum getTemporal() {
-    	return m_temporal;
+        return m_temporal;
     }
     
     /**
      * INTERNAL:
      */
+    @Override
     protected boolean hasConvert() {
-    	return m_convert != null;
+        return m_convert != null;
     }
     
     /**
@@ -237,18 +241,18 @@ public abstract class DirectAccessor extends MappingAccessor {
      * Return true if this represents an enum type mapping. Will return true
      * if the accessor's reference class is an enum or if a @Enumerated exists.
      */
-    public boolean isEnumerated() {    	
-    	if (hasConvert()) {
-    		// If we have an @Enumerated with a @Convert, the @Convert takes
-    		// precedence and we will ignore the @Enumerated and log a message.
-    		if (m_enumerated != null) {
-    			getLogger().logWarningMessage(MetadataLogger.IGNORE_ENUMERATED, getJavaClass(), getAnnotatedElement());
-    		}
+    public boolean isEnumerated() {        
+        if (hasConvert()) {
+            // If we have an @Enumerated with a @Convert, the @Convert takes
+            // precedence and we will ignore the @Enumerated and log a message.
+            if (m_enumerated != null) {
+                getLogger().logWarningMessage(MetadataLogger.IGNORE_ENUMERATED, getJavaClass(), getAnnotatedElement());
+            }
             
-    		return false;
-    	} else {
-    		return m_enumerated != null || isValidEnumeratedType(getReferenceClass());
-    	}
+            return false;
+        } else {
+            return m_enumerated != null || isValidEnumeratedType(getReferenceClass());
+        }
     }
     
     /**
@@ -256,23 +260,24 @@ public abstract class DirectAccessor extends MappingAccessor {
      * Return true if this accessor represents a BLOB/CLOB mapping.
      */
     public boolean isLob() {
-    	if (hasConvert()) {
-			// If we have a Lob specified with a Convert, the Convert takes 
-    	    // precedence and we will ignore the Lob and log a message.
-    		if (m_lob != null) {
-    			getLogger().logWarningMessage(MetadataLogger.IGNORE_LOB, getJavaClass(), getAnnotatedElement());
-    		}
-    		
-    		return false;
-    	} else {
-    		return m_lob != null;
-    	}
+        if (hasConvert()) {
+            // If we have a Lob specified with a Convert, the Convert takes 
+            // precedence and we will ignore the Lob and log a message.
+            if (m_lob != null) {
+                getLogger().logWarningMessage(MetadataLogger.IGNORE_LOB, getJavaClass(), getAnnotatedElement());
+            }
+            
+            return false;
+        } else {
+            return m_lob != null;
+        }
     }
     
     /** 
      * INTERNAL:
      * Return true if this is DirectAccessor.
      */
+    @Override
     public boolean isDirect() {
         return true;
     }
@@ -281,11 +286,11 @@ public abstract class DirectAccessor extends MappingAccessor {
      * INTERNAL:
      */
     public boolean isOptional() {
-    	if (m_optional == null) {
-    		return true;
-    	} else {
-    		return m_optional.booleanValue();
-    	}
+        if (m_optional == null) {
+            return true;
+        } else {
+            return m_optional.booleanValue();
+        }
     }
     
     /**
@@ -314,34 +319,33 @@ public abstract class DirectAccessor extends MappingAccessor {
      * Return true if this accessor represents a serialized mapping.
      */
     public boolean isSerialized() {
-    	if (hasConvert()) {
-    		getLogger().logWarningMessage(MetadataLogger.IGNORE_SERIALIZED, getJavaClass(), getAnnotatedElement());
-    		return false;
-    	} else {
-    		return isValidSerializedType(getReferenceClass());
-    	}
+        if (hasConvert()) {
+            getLogger().logWarningMessage(MetadataLogger.IGNORE_SERIALIZED, getJavaClass(), getAnnotatedElement());
+            return false;
+        } else {
+            return isValidSerializedType(getReferenceClass());
+        }
     }
     
     /**
      * INTERNAL:
-     * (Overridden in BasicMapAccessor)
      * Return true if this represents a temporal type mapping. Will return true
      * if the accessor's reference class is a temporal type or if a @Temporal 
      * exists.
      */
     public boolean isTemporal() {
-    	if (hasConvert()) {
-    		// If we have a Temporal specification with a Convert specification, 
-    		// the Convert takes precedence and we will ignore the Temporal and 
-    		// log a message.
-    		if (m_temporal != null) {
-    			getLogger().logWarningMessage(MetadataLogger.IGNORE_TEMPORAL, getJavaClass(), getAnnotatedElement());
-    		}
+        if (hasConvert()) {
+            // If we have a Temporal specification with a Convert specification, 
+            // the Convert takes precedence and we will ignore the Temporal and 
+            // log a message.
+            if (m_temporal != null) {
+                getLogger().logWarningMessage(MetadataLogger.IGNORE_TEMPORAL, getJavaClass(), getAnnotatedElement());
+            }
             
-    		return false;
-    	} else {
-    		return m_temporal != null || isValidTemporalType(getReferenceClass());
-    	}
+            return false;
+        } else {
+            return m_temporal != null || isValidTemporalType(getReferenceClass());
+        }
     }
     
     /**
@@ -416,7 +420,6 @@ public abstract class DirectAccessor extends MappingAccessor {
                 cls.equals(java.util.GregorianCalendar.class));
     }
     
-    
     /**
      * INTERNAL:
      * 
@@ -429,7 +432,7 @@ public abstract class DirectAccessor extends MappingAccessor {
     }
     
     /**
-     * INTERNAL: (Overridden in BasicMapAccessor)
+     * INTERNAL:
      * Process a convert value to apply the specified EclipseLink converter 
      * (Converter, TypeConverter, ObjectTypeConverter) to the given mapping.
      * 
@@ -437,7 +440,7 @@ public abstract class DirectAccessor extends MappingAccessor {
      * called on accessors that have a convert value specified.
      */
     public void processConvert() {
-    	processConvert(getDescriptor().getMappingForAttributeName(getAttributeName()), m_convert);
+        processConvert(getDescriptor().getMappingForAttributeName(getAttributeName()), m_convert);
     }
     
     /**
@@ -457,25 +460,20 @@ public abstract class DirectAccessor extends MappingAccessor {
             } else if (converterName.equals(CONVERT_CLASS_INSTANCE)){
                 processClassInstance(mapping);
             } else {
-            	AbstractConverterMetadata converter = getProject().getConverter(converterName);
+                AbstractConverterMetadata converter = getProject().getConverter(converterName);
                 
-            	if (converter == null) {
-                	StructConverterMetadata structConverter = getProject().getStructConverter(converterName);
-                    if (structConverter == null) {
-                    	throw ValidationException.converterNotFound(getJavaClass(), converterName, getAnnotatedElement());
-                    } else {
-                        structConverter.process(mapping, this);
-                    }
+                if (converter == null) {
+                    throw ValidationException.converterNotFound(getJavaClass(), converterName, getAnnotatedElement());
                 } else {
-                	// Process the converter for this mapping.
-                	converter.process(mapping, this);
+                    // Process the converter for this mapping.
+                    converter.process(mapping, this);
                 }
             }
         }
     }
     
     /**
-     * INTERNAL: (Overridden in BasicAccessor and BasicMapAccessor)
+     * INTERNAL:
      * Process an Enumerated annotation. The method may still be called if no 
      * Enumerated annotation has been specified but the accessor's reference 
      * class is a valid enumerated type.
@@ -505,7 +503,7 @@ public abstract class DirectAccessor extends MappingAccessor {
     protected void processJPAConverters(DatabaseMapping mapping) {
         // Check for an enum first since it will fall into a serializable 
         // mapping otherwise (Enums are serialized)
-    	
+        
         if (isEnumerated()) {
             processEnumerated(mapping);
         } else if (isLob()) {
@@ -537,7 +535,7 @@ public abstract class DirectAccessor extends MappingAccessor {
             setConverter(mapping, new SerializedObjectConverter(mapping));
         } else {
             // The referenceClass is neither a valid BLOB or CLOB attribute.   
-        	throw ValidationException.invalidTypeForLOBAttribute(mapping.getAttributeName(), getReferenceClass(), getJavaClass());
+            throw ValidationException.invalidTypeForLOBAttribute(mapping.getAttributeName(), getReferenceClass(), getJavaClass());
         }
     }
  
@@ -547,11 +545,11 @@ public abstract class DirectAccessor extends MappingAccessor {
      * name from a convert specification.
      */
     protected void processMappingConverter(DatabaseMapping mapping) {
-    	if (m_convert == null) {
+        if (m_convert == null) {
             processJPAConverters(mapping);
-    	} else {
-    		processMappingConverter(mapping, m_convert);
-    	}
+        } else {
+            processMappingConverter(mapping, m_convert);
+        }
     }
     
     /**
@@ -598,7 +596,7 @@ public abstract class DirectAccessor extends MappingAccessor {
             SerializedObjectConverter converter = new SerializedObjectConverter(mapping);
             setConverter(mapping, converter);
         } else {
-        	throw ValidationException.invalidTypeForSerializedAttribute(mapping.getAttributeName(), getReferenceClass(), getJavaClass());
+            throw ValidationException.invalidTypeForSerializedAttribute(mapping.getAttributeName(), getReferenceClass(), getJavaClass());
         }
     }
     
@@ -608,9 +606,9 @@ public abstract class DirectAccessor extends MappingAccessor {
      */
     protected void processTemporal(DatabaseMapping mapping) {
         if (m_temporal == null) {
-        	// We have a temporal basic, but the temporal type was not
-        	// specified. Per the JPA spec we must throw an exception.
-        	throw ValidationException.noTemporalTypeSpecified(getAttributeName(), getJavaClass());
+            // We have a temporal basic, but the temporal type was not
+            // specified. Per the JPA spec we must throw an exception.
+            throw ValidationException.noTemporalTypeSpecified(getAttributeName(), getJavaClass());
         } else {
             if (isValidTemporalType(getReferenceClass())) {
                 // Set a TypeConversionConverter on the mapping.
@@ -626,7 +624,7 @@ public abstract class DirectAccessor extends MappingAccessor {
                 
                 setConverter(mapping, new TypeConversionConverter(mapping));
             } else {
-            	throw ValidationException.invalidTypeForTemporalAttribute(getAttributeName(), getReferenceClass(), getJavaClass());
+                throw ValidationException.invalidTypeForTemporalAttribute(getAttributeName(), getReferenceClass(), getJavaClass());
             }    
         }
     }
@@ -654,7 +652,7 @@ public abstract class DirectAccessor extends MappingAccessor {
      * Used for OX mapping.
      */
     public void setEnumerated(Enum enumerated) {
-    	m_enumerated = enumerated;
+        m_enumerated = enumerated;
     }
     
     /**
@@ -662,7 +660,7 @@ public abstract class DirectAccessor extends MappingAccessor {
      * Used for OX mapping.
      */
     public void setFetch(Enum fetch) {
-    	m_fetch = fetch;
+        m_fetch = fetch;
     }
     
     /**
@@ -675,7 +673,7 @@ public abstract class DirectAccessor extends MappingAccessor {
      * Used for OX mapping.
      */
     public void setLob(Boolean lob) {
-    	m_lob = lob;
+        m_lob = lob;
     }
     
     /**
@@ -683,7 +681,7 @@ public abstract class DirectAccessor extends MappingAccessor {
      * Used for OX mapping.
      */
     public void setOptional(Boolean optional) {
-    	m_optional = optional;
+        m_optional = optional;
     }
     
     /**
@@ -691,19 +689,19 @@ public abstract class DirectAccessor extends MappingAccessor {
      * Used for OX mapping.
      */
     public void setTemporal(Enum temporalType) {
-    	m_temporal = temporalType;
+        m_temporal = temporalType;
     }
         
     /**
      * INTERNAL:
      */
     public boolean usesIndirection() {
-    	Enum fetchType = getFetch();
-    	
-    	if (fetchType == null) {
-    		fetchType = getDefaultFetchType();
-    	}
-    	
+        Enum fetchType = getFetch();
+        
+        if (fetchType == null) {
+            fetchType = getDefaultFetchType();
+        }
+        
         return fetchType.equals(FetchType.LAZY);
     }
 }

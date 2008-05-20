@@ -9,12 +9,12 @@
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
+ *     05/16/2008-1.0M8 Guy Pelletier 
+ *       - 218084: Implement metadata merging functionality between mapping files
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.accessors.mappings;
 
 import java.lang.annotation.Annotation;
-
-import javax.persistence.ManyToMany;
 
 import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataLogger;
@@ -25,28 +25,27 @@ import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataA
 import org.eclipse.persistence.mappings.ManyToManyMapping;
 
 /**
+ * INTERNAL:
  * A many to many relationship accessor.
  * 
  * @author Guy Pelletier
  * @since TopLink EJB 3.0 Reference Implementation
  */
 public class ManyToManyAccessor extends CollectionAccessor {
-	/**
+    /**
      * INTERNAL:
+     * Used for OX mapping.
      */
-    public ManyToManyAccessor() {}
+    public ManyToManyAccessor() {
+        super("<many-to-many>");
+    }
     
     /**
      * INTERNAL:
      */
-    public ManyToManyAccessor(MetadataAccessibleObject accessibleObject, ClassAccessor classAccessor) {
-        super(accessibleObject, classAccessor);
+    public ManyToManyAccessor(Annotation manyToMany, MetadataAccessibleObject accessibleObject, ClassAccessor classAccessor) {
+        super(manyToMany, accessibleObject, classAccessor);
         
-        Annotation manyToMany = getAnnotation(ManyToMany.class);
-        
-        setTargetEntity((Class) MetadataHelper.invokeMethod("targetEntity", manyToMany));
-        setCascadeTypes((Enum[]) MetadataHelper.invokeMethod("cascade", manyToMany));
-        setFetch((Enum) MetadataHelper.invokeMethod("fetch", manyToMany));
         setMappedBy((String) MetadataHelper.invokeMethod("mappedBy", manyToMany));
     }
     
@@ -61,15 +60,17 @@ public class ManyToManyAccessor extends CollectionAccessor {
     /**
      * INTERNAL:
      */
-	public boolean isManyToMany() {
+    @Override
+    public boolean isManyToMany() {
         return true;
     }
-	
+    
     /**
-     * INTERNAL: (Override from RelationshipAccessor) 
+     * INTERNAL: 
      * A PrivateOwned setting on a ManyToMany is ignored. A log warning is
      * issued.
      */
+    @Override
     public boolean isPrivateOwned() {
         if (super.isPrivateOwned()) {
             getLogger().logWarningMessage(MetadataLogger.IGNORE_PRIVATE_OWNED_ANNOTATION, this);
@@ -83,14 +84,15 @@ public class ManyToManyAccessor extends CollectionAccessor {
      * Process a many to many metadata accessor into a EclipseLink 
      * ManyToManyMapping.
      */
+    @Override
     public void process() {
-    	super.process();
-    	
+        super.process();
+        
         // Create a M-M mapping and process common collection mapping metadata.
         ManyToManyMapping mapping = new ManyToManyMapping();
         process(mapping);
 
-        if (getMappedBy().equals("")) { 
+        if (getMappedBy() == null || getMappedBy().equals("")) { 
             // Processing the owning side of a M-M that is process a join table.
             processJoinTable(mapping);
         } else {
@@ -100,23 +102,23 @@ public class ManyToManyAccessor extends CollectionAccessor {
             
             // Get the owning mapping from the reference descriptor metadata.
             ManyToManyMapping ownerMapping = null;
-            if (getOwningMapping().isManyToManyMapping()){
-            	ownerMapping = (ManyToManyMapping)getOwningMapping();
+            if (getOwningMapping(getMappedBy()).isManyToManyMapping()){
+                ownerMapping = (ManyToManyMapping)getOwningMapping(getMappedBy());
             } else {
-            	// If improper mapping encountered, throw an exception.
-            	throw ValidationException.invalidMapping(getJavaClass(), getReferenceClass());
+                // If improper mapping encountered, throw an exception.
+                throw ValidationException.invalidMapping(getJavaClass(), getReferenceClass());
             }
 
             // Set the relation table name from the owner.
-	        mapping.setRelationTable(ownerMapping.getRelationTable());
-	             
-	        // Add all the source foreign keys we found on the owner.
-	        mapping.setSourceKeyFields(ownerMapping.getTargetKeyFields());
-	        mapping.setSourceRelationKeyFields(ownerMapping.getTargetRelationKeyFields());
-	            
-	        // Add all the target foreign keys we found on the owner.
-	        mapping.setTargetKeyFields(ownerMapping.getSourceKeyFields());
-	        mapping.setTargetRelationKeyFields(ownerMapping.getSourceRelationKeyFields());
+            mapping.setRelationTable(ownerMapping.getRelationTable());
+                 
+            // Add all the source foreign keys we found on the owner.
+            mapping.setSourceKeyFields(ownerMapping.getTargetKeyFields());
+            mapping.setSourceRelationKeyFields(ownerMapping.getTargetRelationKeyFields());
+                
+            // Add all the target foreign keys we found on the owner.
+            mapping.setTargetKeyFields(ownerMapping.getSourceKeyFields());
+            mapping.setTargetRelationKeyFields(ownerMapping.getSourceRelationKeyFields());
         }
         
         // Process properties

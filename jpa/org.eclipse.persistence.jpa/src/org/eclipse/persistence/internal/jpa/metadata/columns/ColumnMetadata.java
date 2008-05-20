@@ -9,20 +9,25 @@
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
+ *     05/16/2008-1.0M8 Guy Pelletier 
+ *       - 218084: Implement metadata merging functionality between mapping files
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.columns;
 
 import java.lang.annotation.Annotation;
 
 import org.eclipse.persistence.internal.helper.DatabaseField;
+import org.eclipse.persistence.internal.jpa.metadata.ORMetadata;
+import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAccessibleObject;
 
 /**
+ * INTERNAL:
  * Object to hold onto column metadata in a TopLink database field.
  * 
  * @author Guy Pelletier
  * @since TopLink EJB 3.0 Reference Implementation
  */
-public class ColumnMetadata  {
+public class ColumnMetadata extends ORMetadata {
     private Boolean m_unique;
     private Boolean m_nullable;
     private Boolean m_updatable;
@@ -41,28 +46,33 @@ public class ColumnMetadata  {
     
     /**
      * INTERNAL:
+     * Used for OX mapping.
      */
-    public ColumnMetadata() {}
+    public ColumnMetadata() {
+        super("<column>");
+    }
     
     /**
      * INTERNAL:
      */
-    public ColumnMetadata(String attributeName) {
+    public ColumnMetadata(MetadataAccessibleObject accessibleObject, String attributeName) {
+        this(null, accessibleObject, attributeName);
+    }
+    
+    /**
+     * INTERNAL:
+     */
+    public ColumnMetadata(Annotation column, MetadataAccessibleObject accessibleObject) {
+        this(column, accessibleObject, "");
+    }
+    
+    /**
+     * INTERNAL:
+     */
+    public ColumnMetadata(Annotation column, MetadataAccessibleObject accessibleObject, String attributeName) {
+        super(column, accessibleObject);
+        
         m_attributeName = attributeName;
-    }
-    
-    /**
-     * INTERNAL:
-     */
-    public ColumnMetadata(Annotation column) {
-        this(column, "");
-    }
-    
-    /**
-     * INTERNAL:
-     */
-    public ColumnMetadata(Annotation column, String attributeName) {
-        this(attributeName);
         
         if (column != null) {
             // Apply the values from the column annotation.
@@ -84,6 +94,56 @@ public class ColumnMetadata  {
     /**
      * INTERNAL:
      */
+    @Override
+    public boolean equals(Object objectToCompare) {
+        if (objectToCompare instanceof ColumnMetadata) {
+            ColumnMetadata column = (ColumnMetadata) objectToCompare;
+            
+            if (! valuesMatch(m_unique, column.getUnique())) {
+                return false;
+            }
+            
+            if (! valuesMatch(m_nullable, column.getNullable())) {
+                return false;
+            }
+            
+            if (! valuesMatch(m_updatable, column.getUpdatable())) {
+                return false;
+            }
+            
+            if (! valuesMatch(m_insertable, column.getInsertable())) {
+                return false;
+            }
+            
+            if (! valuesMatch(m_scale, column.getScale())) {
+                return false;
+            }
+            
+            if (! valuesMatch(m_length, column.getLength())) {
+                return false;
+            }
+            
+            if (! valuesMatch(m_precision, column.getPrecision())) {
+                return false;
+            }
+            
+            if (! valuesMatch(m_name, column.getName())) {
+                return false;
+            }
+            
+            if (! valuesMatch(m_table, column.getTable())) {
+                return false;
+            }
+            
+            return valuesMatch(m_columnDefinition, column.getColumnDefinition());
+        }
+        
+        return false;
+    }
+    
+    /**
+     * INTERNAL:
+     */
     public String getAttributeName() {
         return m_attributeName;
     }
@@ -93,31 +153,31 @@ public class ColumnMetadata  {
      * Used for OX mapping.
      */
     public String getColumnDefinition() {
-    	return m_columnDefinition;
+        return m_columnDefinition;
     }
     
     /**
      * INTERNAL:
      */
     public DatabaseField getDatabaseField() {
-    	if (m_databaseField == null) {
-        	// Initialize the DatabaseField with values and defaults.
-        	m_databaseField = new DatabaseField();
-        	
-        	m_databaseField.setUnique(m_unique == null ? false : m_unique.booleanValue());
-        	m_databaseField.setNullable(m_nullable == null ? true : m_nullable.booleanValue());
-        	m_databaseField.setUpdatable(m_updatable == null ? true : m_updatable.booleanValue());
-        	m_databaseField.setInsertable(m_insertable == null ? true : m_insertable.booleanValue());
+        if (m_databaseField == null) {
+            // Initialize the DatabaseField with values and defaults.
+            m_databaseField = new DatabaseField();
             
-        	m_databaseField.setScale(m_scale == null ? 0 : m_scale.intValue());
-        	m_databaseField.setLength(m_length == null ? 255 : m_length.intValue());
-        	m_databaseField.setPrecision(m_precision == null ? 0 : m_precision.intValue());
+            m_databaseField.setUnique(m_unique == null ? false : m_unique.booleanValue());
+            m_databaseField.setNullable(m_nullable == null ? true : m_nullable.booleanValue());
+            m_databaseField.setUpdatable(m_updatable == null ? true : m_updatable.booleanValue());
+            m_databaseField.setInsertable(m_insertable == null ? true : m_insertable.booleanValue());
             
-        	m_databaseField.setName(m_name == null ? "" : m_name);
-        	m_databaseField.setTableName(m_table == null ? "" : m_table);
-        	m_databaseField.setColumnDefinition(m_columnDefinition == null ? "" : m_columnDefinition);
-    	}
-    	
+            m_databaseField.setScale(m_scale == null ? 0 : m_scale.intValue());
+            m_databaseField.setLength(m_length == null ? 255 : m_length.intValue());
+            m_databaseField.setPrecision(m_precision == null ? 0 : m_precision.intValue());
+            
+            m_databaseField.setName(m_name == null ? "" : m_name);
+            m_databaseField.setTableName(m_table == null ? "" : m_table);
+            m_databaseField.setColumnDefinition(m_columnDefinition == null ? "" : m_columnDefinition);
+        }
+        
         return m_databaseField;
     }
     
@@ -126,7 +186,7 @@ public class ColumnMetadata  {
      * Used for OX mapping.
      */
     public Boolean getInsertable() {
-    	return m_insertable;
+        return m_insertable;
     }
     
     /**
@@ -134,7 +194,7 @@ public class ColumnMetadata  {
      * Used for OX mapping.
      */
     public Integer getLength() {
-    	return m_length;
+        return m_length;
     }
     
     /**
@@ -142,7 +202,7 @@ public class ColumnMetadata  {
      * Used for OX mapping.
      */
     public String getName() {
-    	return m_name;
+        return m_name;
     }
     
     /**
@@ -150,7 +210,7 @@ public class ColumnMetadata  {
      * Used for OX mapping.
      */
     public Boolean getNullable() {
-    	return m_nullable;
+        return m_nullable;
     }
     
     /**
@@ -158,7 +218,7 @@ public class ColumnMetadata  {
      * Used for OX mapping.
      */
     public Integer getPrecision() {
-    	return m_precision;
+        return m_precision;
     }
     
     /**
@@ -166,7 +226,7 @@ public class ColumnMetadata  {
      * Used for OX mapping.
      */
     public Integer getScale() {
-    	return m_scale;
+        return m_scale;
     }
     
     /**
@@ -174,7 +234,7 @@ public class ColumnMetadata  {
      * Used for OX mapping.
      */
     public String getTable() {
-    	return m_table;
+        return m_table;
     }
     
     /**
@@ -182,7 +242,7 @@ public class ColumnMetadata  {
      * Used for OX mapping.
      */
     public Boolean getUnique() {
-    	return m_unique;
+        return m_unique;
     }
     
     /**
@@ -190,7 +250,7 @@ public class ColumnMetadata  {
      * Used for OX mapping.
      */
     public Boolean getUpdatable() {
-    	return m_updatable;
+        return m_updatable;
     }
     
     /**
@@ -212,7 +272,7 @@ public class ColumnMetadata  {
      * Used for OX mapping.
      */
     public void setColumnDefinition(String columnDefinition) {
-    	m_columnDefinition = columnDefinition;
+        m_columnDefinition = columnDefinition;
     }
     
     /**
@@ -229,7 +289,7 @@ public class ColumnMetadata  {
      * Used for OX mapping.
      */
     public void setInsertable(Boolean insertable) {
-    	m_insertable = insertable;
+        m_insertable = insertable;
     }
     
     /**
@@ -237,7 +297,7 @@ public class ColumnMetadata  {
      * Used for OX mapping.
      */
     public void setLength(Integer length) {
-    	m_length = length;
+        m_length = length;
     }
     
     /**
@@ -245,7 +305,7 @@ public class ColumnMetadata  {
      * Used for OX mapping.
      */
     public void setName(String name) {
-    	m_name = name;
+        m_name = name;
     }
     
     /**
@@ -253,7 +313,7 @@ public class ColumnMetadata  {
      * Used for OX mapping.
      */
     public void setNullable(Boolean nullable) {
-    	m_nullable = nullable;
+        m_nullable = nullable;
     }
     
     /**
@@ -261,7 +321,7 @@ public class ColumnMetadata  {
      * Used for OX mapping.
      */
     public void setPrecision(Integer precision) {
-    	m_precision = precision;
+        m_precision = precision;
     }
     
     /**
@@ -269,7 +329,7 @@ public class ColumnMetadata  {
      * Used for OX mapping.
      */
     public void setScale(Integer scale) {
-    	m_scale = scale;
+        m_scale = scale;
     }
     
     /**
@@ -277,7 +337,7 @@ public class ColumnMetadata  {
      * Used for OX mapping.
      */
     public void setTable(String table) {
-    	m_table = table;
+        m_table = table;
     }
     
     /**
@@ -285,7 +345,7 @@ public class ColumnMetadata  {
      * Used for OX mapping.
      */
     public void setUnique(Boolean unique) {
-    	m_unique = unique;
+        m_unique = unique;
     }
     
     /**
@@ -293,6 +353,6 @@ public class ColumnMetadata  {
      * Used for OX mapping.
      */
     public void setUpdatable(Boolean updatable) {
-    	m_updatable = updatable;
+        m_updatable = updatable;
     }
 }

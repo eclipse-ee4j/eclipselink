@@ -9,17 +9,18 @@
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
+ *     05/16/2008-1.0M8 Guy Pelletier 
+ *       - 218084: Implement metadata merging functionality between mapping files 
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.converters;
 
 import java.lang.annotation.Annotation;
-import java.lang.reflect.AnnotatedElement;
 import java.sql.Types;
 
 import org.eclipse.persistence.exceptions.ValidationException;
 
-import org.eclipse.persistence.internal.jpa.metadata.MetadataHelper;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.mappings.DirectAccessor;
+import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAccessibleObject;
 
 import org.eclipse.persistence.jpa.config.StructConverterType;
 
@@ -38,37 +39,37 @@ public class StructConverterMetadata extends AbstractConverterMetadata {
     
     /**
      * INTERNAL:
+     * Used for OX mapping.
      */
     public StructConverterMetadata() {
-    	setLoadedFromXML();
+        super("<struct-converter>");
     }
     
     /**
      * INTERNAL:
      */
-    public StructConverterMetadata(Annotation converter, AnnotatedElement annotatedElement) {
-    	setLoadedFromAnnotation();
-    	setLocation(annotatedElement);
-    	
-        setName((String) invokeMethod("name", converter));
-        setConverter((String) invokeMethod("converter", converter));
+    public StructConverterMetadata(Annotation structConverter, MetadataAccessibleObject accessibleObject) {
+        super(structConverter, accessibleObject);
+        
+        setConverter((String) MetadataHelper.invokeMethod("converter", structConverter));
     }
     
     /**
      * INTERNAL:
      */
+    @Override
     public boolean equals(Object objectToCompare) {
-    	if (objectToCompare instanceof StructConverterMetadata) {
-    		StructConverterMetadata structConverter = (StructConverterMetadata) objectToCompare;
-    		
-    		if (! MetadataHelper.valuesMatch(getName(), structConverter.getName())) {
-    			return false;
-    		}
-    		
-    		return MetadataHelper.valuesMatch(m_converter, structConverter.getConverter());
-    	}
-    	
-    	return false;
+        if (objectToCompare instanceof StructConverterMetadata) {
+            StructConverterMetadata structConverter = (StructConverterMetadata) objectToCompare;
+            
+            if (! valuesMatch(getName(), structConverter.getName())) {
+                return false;
+            }
+            
+            return valuesMatch(m_converter, structConverter.getConverter());
+        }
+        
+        return false;
     }
     
     /**
@@ -76,7 +77,7 @@ public class StructConverterMetadata extends AbstractConverterMetadata {
      * Used for OX mapping.
      */
     public String getConverter() {
-    	return m_converter;
+        return m_converter;
     }
     
     /**
@@ -91,6 +92,14 @@ public class StructConverterMetadata extends AbstractConverterMetadata {
     }
     
     /**
+     * INTERNAL:
+     */
+    @Override
+    public boolean isStructConverter() {
+        return true;
+    }
+    
+    /**
      * INTERNAL: 
      */
     public void process(DatabaseMapping mapping, DirectAccessor accessor) {
@@ -100,7 +109,7 @@ public class StructConverterMetadata extends AbstractConverterMetadata {
             directMapping.setConverter(null);
             directMapping.setConverterClassName(null);
         } else if (!(mapping.isDirectCollectionMapping() || mapping.isDirectMapMapping())){
-        	throw ValidationException.invalidMappingForStructConverter(getName(), mapping);
+            throw ValidationException.invalidMappingForStructConverter(getName(), mapping);
         }
     }
     
@@ -109,6 +118,6 @@ public class StructConverterMetadata extends AbstractConverterMetadata {
      * Used for OX mapping.
      */
     public void setConverter(String converter) {
-    	m_converter = converter;
+        m_converter = converter;
     }
 }

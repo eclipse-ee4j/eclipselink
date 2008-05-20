@@ -9,18 +9,22 @@
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
+ *     05/16/2008-1.0M8 Guy Pelletier 
+ *       - 218084: Implement metadata merging functionality between mapping files
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata;
 
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Hashtable;
+import java.util.LinkedHashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Set;
-import java.util.LinkedHashSet;
 
 import javax.persistence.GenerationType;
 import javax.persistence.spi.PersistenceUnitInfo;
@@ -43,13 +47,13 @@ import org.eclipse.persistence.internal.jpa.metadata.listeners.EntityListenerMet
 
 import org.eclipse.persistence.internal.jpa.metadata.MetadataLogger;
 
-import org.eclipse.persistence.internal.jpa.metadata.queries.NamedNativeQueryMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.queries.NamedQueryMetadata;
-import org.eclipse.persistence.internal.jpa.metadata.queries.NamedStoredProcedureQueryMetadata;
+import org.eclipse.persistence.internal.jpa.metadata.queries.SQLResultSetMappingMetadata;
 
 import org.eclipse.persistence.internal.jpa.metadata.sequencing.GeneratedValueMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.sequencing.TableGeneratorMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.sequencing.SequenceGeneratorMetadata;
+
 import org.eclipse.persistence.internal.jpa.metadata.tables.TableMetadata;
 
 import org.eclipse.persistence.internal.jpa.metadata.xml.XMLEntityMappings;
@@ -65,6 +69,10 @@ import org.eclipse.persistence.sequencing.NativeSequence;
 import org.eclipse.persistence.sessions.DatasourceLogin;
 
 /**
+ * INTERNAL:
+ * A MetadataProject stores metadata and also helps to facilitate the metadata
+ * processing.
+ * 
  * @author Guy Pelletier
  * @since TopLink EJB 3.0 Reference Implementation
  */
@@ -75,11 +83,14 @@ public class MetadataProject {
     private static final String DEFAULT_SEQUENCE_GENERATOR = "SEQ_GEN_SEQUENCE";
     private static final String DEFAULT_IDENTITY_GENERATOR = "SEQ_GEN_IDENTITY";
     
+    // Boolean to specify if we should weave eager relationships.
+    private boolean m_weaveEager;
+    
+    // Boolean to specify if we should weave for value holders.
+    private boolean m_weavingEnabled;
+    
     // Persistence unit info that is represented by this project.
     private PersistenceUnitInfo m_persistenceUnitInfo;
-    
-    // A list of all the entity mappings (XML file representation)
-    private List<XMLEntityMappings> m_entityMappings;
 
     // The session we are currently processing for.
     private AbstractSession m_session;
@@ -87,15 +98,12 @@ public class MetadataProject {
     // The logger for the project.
     private MetadataLogger m_logger;
 
-    // Boolean to specify if we should weave for value holders.
-    private boolean m_weavingEnabled;
-    
-    // Boolean to specify if we should weave eager relationships.
-    private boolean m_weaveEager;
-
     // Persistence unit metadata for this project.
     private XMLPersistenceUnitMetadata m_persistenceUnitMetadata;
 
+    // A linked map of all the entity mappings (XML file representation)
+    private HashMap<URL, XMLEntityMappings> m_entityMappings;
+    
     // List of mapped-superclasses found in XML for this project/persistence unit.
     private HashMap<String, MappedSuperclassAccessor> m_mappedSuperclasses;
 
@@ -110,36 +118,33 @@ public class MetadataProject {
     
     // The interface accessors for this project
     private HashMap<String, InterfaceAccessor> m_interfaceAccessors;
-
+    
+    // Query metadata.
+    private HashMap<String, NamedQueryMetadata> m_queries;
+    
+    // SQL result set mapping
+    private HashMap<String, SQLResultSetMappingMetadata> m_sqlResultSetMappings;
+    
+    // Sequencing metadata.
+    private HashMap<Class, GeneratedValueMetadata> m_generatedValues;
+    private HashMap<String, TableGeneratorMetadata> m_tableGenerators;
+    private HashMap<String, SequenceGeneratorMetadata> m_sequenceGenerators;
+    
+    // Metadata converters, that is, EclipseLink converters.
+    private HashMap<String, AbstractConverterMetadata> m_converters;
+    
+    // Default listeners that need to be applied to each entity in the
+    // persistence unit (unless they exclude them).
+    private HashSet< EntityListenerMetadata> m_defaultListeners;
+    
     // Class accessors that have relationships.
     private HashSet<ClassAccessor> m_accessorsWithRelationships;
     
     // Class accessors that have a customizer.
     private HashSet<ClassAccessor> m_accessorsWithCustomizer;
-
-    // Query metadata
-    private HashMap<String, NamedQueryMetadata> m_namedQueries;
-    private HashMap<String, NamedNativeQueryMetadata> m_namedNativeQueries;
-    private HashMap<String, NamedStoredProcedureQueryMetadata> m_namedStoredProcedureQueries;
-
-    // Sequencing metadata.
-    private HashMap<Class, GeneratedValueMetadata> m_generatedValues;
-    private HashMap<String, TableGeneratorMetadata> m_tableGenerators;
-    private HashMap<String, SequenceGeneratorMetadata> m_sequenceGenerators;
-
-    // Default listeners that need to be applied to each entity in the
-    // persistence unit (unless they exclude them).
-    private Set<EntityListenerMetadata> m_defaultListeners;
-    
-    // Metadata converters, that is, EclipseLink converters.
-    private HashMap<String, AbstractConverterMetadata> m_converters;
     
     // Accessors that use an EclipseLink converter.
     private HashSet<DirectAccessor> m_convertAccessors;
-
-    // MetadataStructConverters, these are StructConverters that get added to 
-    // the session.
-    private HashMap<String, StructConverterMetadata> m_structConverters;
     
     /**
      * INTERNAL:
@@ -150,18 +155,18 @@ public class MetadataProject {
      * @param weavingEnabled - flag for global dynamic weaving state
      */
     public MetadataProject(PersistenceUnitInfo puInfo, AbstractSession session, boolean weavingEnabled, boolean weaveEager) {
-    	m_persistenceUnitInfo = puInfo;
+        m_persistenceUnitInfo = puInfo;
         m_session = session;
         m_logger = new MetadataLogger(session);
         m_weavingEnabled = weavingEnabled;
         m_weaveEager = weaveEager;
         
-        m_entityMappings = new ArrayList<XMLEntityMappings>();
-        m_defaultListeners = new LinkedHashSet<EntityListenerMetadata>(); // Using a LinkedHashSet as ordering needs to be preserved.
+        // Using linked collections since their ordering needs to be preserved.
+        m_entityMappings = new LinkedHashMap<URL, XMLEntityMappings>();
+        m_defaultListeners = new LinkedHashSet<EntityListenerMetadata>();
 
-        m_namedQueries = new HashMap<String, NamedQueryMetadata>();
-        m_namedNativeQueries = new HashMap<String, NamedNativeQueryMetadata>();
-        m_namedStoredProcedureQueries = new HashMap<String, NamedStoredProcedureQueryMetadata>();
+        m_queries = new HashMap<String, NamedQueryMetadata>();
+        m_sqlResultSetMappings = new HashMap<String, SQLResultSetMappingMetadata>();
 
         m_mappedSuperclasses = new HashMap<String, MappedSuperclassAccessor>();
         m_allAccessors = new HashMap<String, ClassAccessor>();
@@ -178,31 +183,30 @@ public class MetadataProject {
         
         m_converters = new HashMap<String, AbstractConverterMetadata>();
         m_convertAccessors = new HashSet<DirectAccessor>();
-        m_structConverters = new HashMap<String, StructConverterMetadata>();
     }
     
     /**
      * INTERNAL:
      * This method will add the descriptor to the actual EclipseLink project,
      * if it has not already been added. This method if called for entities
-     * and embeddable classes (which are both weavable classes)
+     * and embeddable classes (which are both weavable classes).
      */
     protected void addAccessor(ClassAccessor accessor) {
-    	MetadataDescriptor descriptor = accessor.getDescriptor();
-    	
+        MetadataDescriptor descriptor = accessor.getDescriptor();
+        
         // Set the persistence unit meta data (if there is any) on the descriptor.
         if (m_persistenceUnitMetadata != null) {
-        	descriptor.setIgnoreAnnotations(m_persistenceUnitMetadata.isXMLMappingMetadataComplete());
-        	
-        	// Set the persistence unit defaults (if there are any) on the descriptor.
-        	XMLPersistenceUnitDefaults persistenceUnitDefaults = m_persistenceUnitMetadata.getPersistenceUnitDefaults();
-        	
-        	if (persistenceUnitDefaults != null) {
-        		descriptor.setXMLAccess(persistenceUnitDefaults.getAccess());
-        		descriptor.setXMLSchema(persistenceUnitDefaults.getSchema());
-        		descriptor.setXMLCatalog(persistenceUnitDefaults.getCatalog());
-        		descriptor.setIsCascadePersist(persistenceUnitDefaults.isCascadePersist());
-        	}
+            descriptor.setIgnoreAnnotations(m_persistenceUnitMetadata.isXMLMappingMetadataComplete());
+            
+            // Set the persistence unit defaults (if there are any) on the descriptor.
+            XMLPersistenceUnitDefaults persistenceUnitDefaults = m_persistenceUnitMetadata.getPersistenceUnitDefaults();
+            
+            if (persistenceUnitDefaults != null) {
+                descriptor.setXMLAccess(persistenceUnitDefaults.getAccess());
+                descriptor.setXMLSchema(persistenceUnitDefaults.getSchema());
+                descriptor.setXMLCatalog(persistenceUnitDefaults.getCatalog());
+                descriptor.setIsCascadePersist(persistenceUnitDefaults.isCascadePersist());
+            }
         }
 
         // Add the descriptor to the actual EclipseLink Project.
@@ -239,23 +243,9 @@ public class MetadataProject {
      * isn't done until an accessor referencing the converter is processed. 
      */
     public void addConverter(AbstractConverterMetadata converter) {
-        // Check for a struct converter with the same name.
-        StructConverterMetadata existingStructConverter = m_structConverters.get(converter.getName());
-        if (existingStructConverter != null) {
-            throw ValidationException.multipleConvertersOfTheSameName(converter.getName(), existingStructConverter.getLocation(), converter.getLocation());
-        }
-        
         // Check for another converter with the same name.
-        AbstractConverterMetadata existingConverter = m_converters.get(converter.getName());
-        if (existingConverter == null || existingConverter.loadedFromAnnotation() && converter.loadedFromXML()) {
-            if (existingConverter != null) {
-                // XML -> Annotation override, log a warning.
-                getLogger().logWarningMessage(MetadataLogger.IGNORE_CONVERTER_ANNOTATION, existingConverter.getName(), existingConverter.getLocation(), converter.getLocation());
-            }
-            
+        if (converter.shouldOverride(m_converters.get(converter.getName()))) {
             m_converters.put(converter.getName(), converter);
-        } else if (! existingConverter.equals(converter)) {
-            throw ValidationException.multipleConvertersOfTheSameName(converter.getName(), existingConverter.getLocation(), converter.getLocation());
         }
     }
     
@@ -263,27 +253,50 @@ public class MetadataProject {
      * INTERNAL:
      */
     public void addDefaultListener(EntityListenerMetadata defaultListener) {
-    	m_defaultListeners.add(defaultListener);
+        m_defaultListeners.add(defaultListener);
     }
 
     /**
      * INTERNAL:
-     * Add an embeddable accessor to this project.
+     * Add an embeddable accessor to this project. Assumes the embeddable
+     * needs to be added. That is, does not check if it already exists and
+     * cause a merge. The caller is responsible for that.
      */
     public void addEmbeddableAccessor(EmbeddableAccessor accessor) {
-    	m_embeddableAccessors.put(accessor.getJavaClassName(), accessor);
-    	addAccessor(accessor);
-    	accessor.getDescriptor().setIsEmbeddable();
+        // Add accessor will apply persistence unit defaults.
+        addAccessor(accessor);
+        accessor.getDescriptor().setIsEmbeddable();
+        m_embeddableAccessors.put(accessor.getJavaClassName(), accessor);
     }
     
     /**
      * INTERNAL:
-     * Add a EntityAccessor to this project.
+     * Add an entity accessor to this project. Assumes the entity needs to be 
+     * added. That is, does not check if it already exists and cause a merge. 
+     * The caller is responsible for that.
      */
     public void addEntityAccessor(EntityAccessor accessor) {
-        m_entityAccessors.put(accessor.getJavaClassName(), accessor);
-        
+        // Add accessor will apply persistence unit defaults.
         addAccessor(accessor);
+        m_entityAccessors.put(accessor.getJavaClassName(), accessor);       
+    }
+    
+    /**
+     * INTERNAL:
+     * The avoid processing the same mapping file twice (e.g. user may 
+     * explicitly specify the orm.xml file) we store the list of entity 
+     * mappings in a map keyed on their URL.
+     */
+    public void addEntityMappings(XMLEntityMappings entityMappings) {
+        // Add the new entity mappings file to the list.
+        m_entityMappings.put(entityMappings.getMappingFile(), entityMappings);
+    }
+    
+    /**
+     * INTERNAL:
+     */
+    public void addGeneratedValue(GeneratedValueMetadata generatedvalue, Class entityClass) {
+        m_generatedValues.put(entityClass, generatedvalue);
     }
     
     /**
@@ -300,85 +313,28 @@ public class MetadataProject {
     
     /**
      * INTERNAL:
-     */
-    public void addEntityMappings(XMLEntityMappings entityMappings) {
-    	m_entityMappings.add(entityMappings);
-    }
-    
-    /**
-     * INTERNAL:
-     */
-    public void addGeneratedValue(GeneratedValueMetadata generatedvalue, Class entityClass) {
-        m_generatedValues.put(entityClass, generatedvalue);
-    }
-    
-    /**
-     * INTERNAL:
-     * Add a mapped-superclass to the project. The mapped-superclasses that
-     * are added here are those that are defined in XML only!
+     * Add a mapped superclass accessor to this project. Every consecutive 
+     * mapped superclass accessor to the same class is merged with the first 
+     * one that was added.
+     * 
+     * Note: The mapped-superclasses that are added here are those that are 
+     * defined in XML only!
      */
     public void addMappedSuperclass(String className, MappedSuperclassAccessor mappedSuperclass) {
-        m_mappedSuperclasses.put(className, mappedSuperclass);
-    }
-
-    /**
-     * INTERNAL:
-     * Add a named native query metadata to the project. The actual query 
-     * processing isn't done till addNamedQueriesToSession is called.
-     */
-    public void addNamedNativeQuery(NamedNativeQueryMetadata namedNativeQuery) {
-        NamedNativeQueryMetadata existingNamedNativeQuery = m_namedNativeQueries.get(namedNativeQuery.getName());
-        
-        if (existingNamedNativeQuery == null || existingNamedNativeQuery.loadedFromAnnotation() && namedNativeQuery.loadedFromXML()) {
-            if (existingNamedNativeQuery != null) {
-                // XML -> Annotation override, log a warning.
-                getLogger().logWarningMessage(MetadataLogger.IGNORE_NAMED_NATIVE_QUERY_ANNOTATION, existingNamedNativeQuery.getName(), existingNamedNativeQuery.getLocation(), namedNativeQuery.getLocation());
-            }
-            
-            m_namedNativeQueries.put(namedNativeQuery.getName(), namedNativeQuery);
-        } else if (! existingNamedNativeQuery.equals(namedNativeQuery)) {
-            throw ValidationException.multipleNamedNativeQueriesWithSameName(namedNativeQuery.getName(), namedNativeQuery.getLocation(), existingNamedNativeQuery.getLocation());
-        }
-    }
-
-    /**
-     * INTERNAL:
-     * Add a named query metadata to the project. The actual query processing 
-     * isn't done till addNamedQueriesToSession is called.
-     */
-    public void addNamedQuery(NamedQueryMetadata namedQuery) {
-        NamedQueryMetadata existingNamedQuery = m_namedQueries.get(namedQuery.getName());
-        
-        if (existingNamedQuery == null || existingNamedQuery.loadedFromAnnotation() && namedQuery.loadedFromXML()) {
-            if (existingNamedQuery != null) {
-                // XML -> Annotation override, log a warning.
-                getLogger().logWarningMessage(MetadataLogger.IGNORE_NAMED_QUERY_ANNOTATION, existingNamedQuery.getName(), existingNamedQuery.getLocation(), namedQuery.getLocation());
-            }
-            
-            m_namedQueries.put(namedQuery.getName(), namedQuery);
-        } else if (! existingNamedQuery.equals(namedQuery)) {
-            throw ValidationException.multipleNamedQueriesWithSameName(namedQuery.getName(), namedQuery.getLocation(), existingNamedQuery.getLocation());
+        if (m_mappedSuperclasses.containsKey(className)) {
+            m_mappedSuperclasses.get(className).merge(mappedSuperclass);
+        } else {
+            m_mappedSuperclasses.put(className, mappedSuperclass);
         }
     }
     
     /**
      * INTERNAL:
-     * Add a named stored procedure metadata to the project. The actual query 
-     * processing isn't done till addNamedQueriesToSession is called.
+     * Add a query to the project overriding where necessary.
      */
-    public void addNamedStoredProcedureQuery(NamedStoredProcedureQueryMetadata namedStoredProcedureQuery) {
-        NamedStoredProcedureQueryMetadata existingNamedStoredProcedureQuery = m_namedStoredProcedureQueries.get(namedStoredProcedureQuery.getName());
-        
-        if (existingNamedStoredProcedureQuery == null || existingNamedStoredProcedureQuery.loadedFromAnnotation() && namedStoredProcedureQuery.loadedFromXML()) {
-            if (existingNamedStoredProcedureQuery != null) {
-                // XML -> Annotation override, log a warning.
-                getLogger().logWarningMessage(MetadataLogger.IGNORE_NAMED_STORED_PROCEDURE_QUERY_ANNOTATION, existingNamedStoredProcedureQuery.getName(), existingNamedStoredProcedureQuery.getLocation(), namedStoredProcedureQuery.getLocation());
-            }
-            
-            m_namedStoredProcedureQueries.put(namedStoredProcedureQuery.getName(), namedStoredProcedureQuery);
-        } else {
-            // TODO: Should implement a equals method like the other query processing.
-            throw ValidationException.multipleNamedStoredProcedureQueriesWithSameName(namedStoredProcedureQuery.getName(), namedStoredProcedureQuery.getLocation(), existingNamedStoredProcedureQuery.getLocation());
+    public void addQuery(NamedQueryMetadata query) {
+        if (query.shouldOverride(m_queries.get(query.getName()))) {
+            m_queries.put(query.getName(), query);
         }
     }
     
@@ -388,26 +344,16 @@ public class MetadataProject {
      * isn't done till processSequencing is called.
      */
     public void addSequenceGenerator(SequenceGeneratorMetadata sequenceGenerator) {
-        // Check if the sequence generator name uses a reserved name.
         String name = sequenceGenerator.getName();
         
-         if (name.equals(DEFAULT_TABLE_GENERATOR)) {
+        // Check if the sequence generator name uses a reserved name.
+        if (name.equals(DEFAULT_TABLE_GENERATOR)) {
              throw ValidationException.sequenceGeneratorUsingAReservedName(DEFAULT_TABLE_GENERATOR, sequenceGenerator.getLocation());
         } else if (name.equals(DEFAULT_IDENTITY_GENERATOR)) {
             throw ValidationException.sequenceGeneratorUsingAReservedName(DEFAULT_IDENTITY_GENERATOR, sequenceGenerator.getLocation());
         }
-            
-        // Conflicting means that they do not have all the same values.
-        SequenceGeneratorMetadata otherSequenceGenerator = m_sequenceGenerators.get(name);
-        if (otherSequenceGenerator != null) { 
-            if (sequenceGenerator.loadedFromAnnotations() && otherSequenceGenerator.loadedFromXML()) {
-                // TODO: Log a warning that we are ignoring this table generator.
-                return;
-            } else if (! otherSequenceGenerator.equals(sequenceGenerator)) {
-                throw ValidationException.conflictingSequenceGeneratorsSpecified(name, sequenceGenerator.getLocation(), otherSequenceGenerator.getLocation());
-            }
-        }
-            
+        
+        // Check if the name is used with a table generator.
         TableGeneratorMetadata tableGenerator = m_tableGenerators.get(name);
         if (tableGenerator != null) {
             throw ValidationException.conflictingSequenceAndTableGeneratorsSpecified(name, sequenceGenerator.getLocation(), tableGenerator.getLocation());          
@@ -421,36 +367,24 @@ public class MetadataProject {
                 }
             }
         }
-        
-        m_sequenceGenerators.put(sequenceGenerator.getName(), sequenceGenerator);
-    }
-    
-    /**
-     * INTERNAL:
-     * Add a struct converter metadata to the project. The actual processing 
-     * isn't done until an accessor referencing the converter is processed. 
-     */
-    public void addStructConverter(StructConverterMetadata structConverter) {
-        // Check for a mapping converter with the same name.
-        AbstractConverterMetadata existingConverter = m_converters.get(structConverter.getName());
-        if (existingConverter != null) {
-            throw ValidationException.multipleConvertersOfTheSameName(structConverter.getName(), existingConverter.getLocation(), structConverter.getLocation());
-        }
-        
-        // Check for a struct converter with the same name.
-        StructConverterMetadata existingStructConverter = m_structConverters.get(structConverter.getName());
-        if (existingStructConverter == null || (existingStructConverter.loadedFromAnnotation() && structConverter.loadedFromXML())) {
-            if (existingConverter != null) {
-                // XML -> Annotation override, log a warning.
-                getLogger().logWarningMessage(MetadataLogger.IGNORE_STRUCT_CONVERTER_ANNOTATION, existingConverter.getName(), existingConverter.getLocation(), structConverter.getLocation());
-            }
-            
-            m_structConverters.put(structConverter.getName(), structConverter);
-        } else if (! existingStructConverter.equals(structConverter)) {
-            throw ValidationException.multipleConvertersOfTheSameName(structConverter.getName(), existingStructConverter.getLocation(), structConverter.getLocation());
+
+        // Add the sequence generator if there isn't an existing one or if
+        // we should override an existing one.
+        if (sequenceGenerator.shouldOverride(m_sequenceGenerators.get(name))) {
+            m_sequenceGenerators.put(sequenceGenerator.getName(), sequenceGenerator);
         }
     }
 
+    /**
+     * INTERNAL:
+     * Add an sql results set mapping to the project overriding where necessary.
+     */
+    public void addSQLResultSetMapping(SQLResultSetMappingMetadata sqlResultSetMapping) {
+        if (sqlResultSetMapping.shouldOverride(m_sqlResultSetMappings.get(sqlResultSetMapping.getName()))) {
+            m_sqlResultSetMappings.put(sqlResultSetMapping.getName(), sqlResultSetMapping);
+        }
+    }
+    
     /**
      * INTERNAL:
      * Add a table generator metadata to the project. The actual processing 
@@ -460,26 +394,16 @@ public class MetadataProject {
         // Process the default values.
         processTable(tableGenerator, TableSequence.defaultTableName, defaultCatalog, defaultSchema);
         
-        // Check if the table generator name uses a reserved name.
         String generatorName = tableGenerator.getGeneratorName();
         
+        // Check if the table generator name uses a reserved name.
         if (generatorName.equals(DEFAULT_SEQUENCE_GENERATOR)) {
             throw ValidationException.tableGeneratorUsingAReservedName(DEFAULT_SEQUENCE_GENERATOR, tableGenerator.getLocation());
         } else if (generatorName.equals(DEFAULT_IDENTITY_GENERATOR)) {
             throw ValidationException.tableGeneratorUsingAReservedName(DEFAULT_IDENTITY_GENERATOR, tableGenerator.getLocation());
         }
 
-        TableGeneratorMetadata otherTableGenerator = m_tableGenerators.get(generatorName);
-        if (otherTableGenerator != null && ! otherTableGenerator.equals(tableGenerator)) {
-            if (tableGenerator.loadedFromAnnotations() && otherTableGenerator.loadedFromXML()) {
-                // TODO: Log a warning that we are ignoring this table generator.
-                return;
-            } else {
-                // Two generators found and they do not have all the same values.
-                throw ValidationException.conflictingTableGeneratorsSpecified(generatorName, tableGenerator.getLocation(), otherTableGenerator.getLocation());
-            }           
-        }
-
+        // Check if the generator name is used with a sequence generator.
         SequenceGeneratorMetadata otherSequenceGenerator = m_sequenceGenerators.get(generatorName);
         if (otherSequenceGenerator != null) {
             throw ValidationException.conflictingSequenceAndTableGeneratorsSpecified(generatorName, otherSequenceGenerator.getLocation(), tableGenerator.getLocation());            
@@ -489,38 +413,17 @@ public class MetadataProject {
             if (sequenceGenerator.getSequenceName().equals(tableGenerator.getPkColumnValue())) {
                 // generator name will be used instead of an empty sequence name / pk column name
                 if (sequenceGenerator.getSequenceName().length() > 0) {
-                    throw ValidationException.conflictingSequenceNameAndTablePkColumnValueSpecified(sequenceGenerator.getSequenceName(), sequenceGenerator.getLocation(), tableGenerator.getLocation());
+                    throw ValidationException.conflictingSequenceNameAndTablePkColumnValueSpecified(otherSequenceGenerator.getSequenceName(), otherSequenceGenerator.getLocation(), tableGenerator.getLocation());
                 }
             }
         }
-            
-        // Add the table generator to the descriptor metadata.
-        m_tableGenerators.put(tableGenerator.getGeneratorName(), tableGenerator);    
-    }
-    
-    /**
-     * INTERNAL:
-     * This flag represents dynamic weaving state for 1-1, many-1, fetch groups and change tracking
-     */
-    public boolean isWeavingEnabled() {
-        return m_weavingEnabled;
-    }    
-    
-    /**
-     * Return if the project should use indirection for eager relationships.
-     */
-    public boolean weaveEager() {
-        return m_weaveEager;
-    }
-
-    /**
-     * INTERNAL:
-     * This flag represents dynamic weaving state for 1-1, many-1, fetch groups and change tracking  
-     * @param weavingEnabled (false = weaving disabled)
-     */
-    public void setWeavingEnabled(boolean weavingEnabled) {
-        m_weavingEnabled = weavingEnabled;
-    }
+        
+        // Add the table generator if there isn't an existing one or if we 
+        // should override an existing one.
+        if (tableGenerator.shouldOverride(m_tableGenerators.get(generatorName))) {
+            m_tableGenerators.put(generatorName, tableGenerator);
+        }
+    }  
     
     /**
      * INTERNAL:
@@ -528,7 +431,7 @@ public class MetadataProject {
      * embeddable. Note: It may return null.
      */
     public ClassAccessor getAccessor(String className) {
-    	return m_allAccessors.get(className);
+        return m_allAccessors.get(className);
     }
     
     /**
@@ -555,13 +458,6 @@ public class MetadataProject {
     /**
      * INTERNAL:
      */
-    public Collection<EntityAccessor> getEntityAccessors() {
-        return m_entityAccessors.values();
-    }
-    
-    /**
-     * INTERNAL:
-     */
     public AbstractConverterMetadata getConverter(String name) {
         return m_converters.get(name);
     }
@@ -577,7 +473,7 @@ public class MetadataProject {
      * INTERNAL:
      */
     public EmbeddableAccessor getEmbeddableAccessor(String className) {
-    	return m_embeddableAccessors.get(className);
+        return m_embeddableAccessors.get(className);
     }
     
     /**
@@ -591,8 +487,15 @@ public class MetadataProject {
     /**
      * INTERNAL:
      */
-    public List<XMLEntityMappings> getEntityMappings() {
-    	return m_entityMappings;
+    public Collection<EntityAccessor> getEntityAccessors() {
+        return m_entityAccessors.values();
+    }
+    
+    /**
+     * INTERNAL:
+     */
+    public Collection<XMLEntityMappings> getEntityMappings() {
+        return m_entityMappings.values();
     }
     
     /**
@@ -605,17 +508,17 @@ public class MetadataProject {
     
     /** 
      * INTERNAL:
-	 * Return the logger used by the processor.
-	 */
-	public MetadataLogger getLogger() {
+     * Return the logger used by the processor.
+     */
+    public MetadataLogger getLogger() {
         return m_logger;
     }
-	
+    
     /**
      * INTERNAL:
      */
     public MappedSuperclassAccessor getMappedSuperclass(Class cls) {
-    	return m_mappedSuperclasses.get(cls.getName());
+        return m_mappedSuperclasses.get(cls.getName());
     }
     
     /**
@@ -642,15 +545,16 @@ public class MetadataProject {
     /**
      * INTERNAL:
      */
-    public StructConverterMetadata getStructConverter(String name) {
-        return m_structConverters.get(name);
-    }
-
-    /**
-     * INTERNAL:
-     */
-    public HashMap<String, StructConverterMetadata> getStructConverters(){
-        return m_structConverters;
+    public List<StructConverterMetadata> getStructConverters(){
+        List<StructConverterMetadata> structConverters = new ArrayList<StructConverterMetadata>();
+        
+        for (AbstractConverterMetadata converter : m_converters.values()) {
+            if (converter.isStructConverter()) {
+                structConverters.add((StructConverterMetadata) converter);
+            }
+        }
+        
+        return structConverters;
     }
     
     /**
@@ -673,7 +577,7 @@ public class MetadataProject {
      * INTERNAL:
      */
     public boolean hasEmbeddable(Class cls) {
-    	return m_embeddableAccessors.containsKey(cls.getName());
+        return m_embeddableAccessors.containsKey(cls.getName());
     }
     
     /**
@@ -696,26 +600,25 @@ public class MetadataProject {
     public boolean hasMappedSuperclass(Class cls) {
         return m_mappedSuperclasses.containsKey(cls.getName());
     }
-
+    
     /**
      * INTERNAL:
+     * This flag represents dynamic weaving state for 1-1, many-1, fetch groups 
+     * and change tracking.
      */
-    public boolean hasStructConverter(String name) {
-        return m_structConverters.containsKey(name);
-    }
+    public boolean isWeavingEnabled() {
+        return m_weavingEnabled;
+    }  
     
     /**
      * INTERNAL:
      * Stage 2 processing. That is, it does all the extra processing that 
      * couldn't be completed in the original metadata accessor processing.
-	 */
-	public void process() {
+     */
+    public void process() {
         processConvertAccessors();
-        
         processSequencing();
-        
         processAccessorsWithRelationships();
-        
         processInterfaceAccessors();
     }
     
@@ -743,33 +646,33 @@ public class MetadataProject {
         }
     }
     
+    /** 
+     * INTERNAL:
+     * This method will iterate through all the entities in the PU and check
+     * if we should add them to a variable one to one mapping that was either
+     * defined (incompletely) or defaulted.
+     */
+    protected void processInterfaceAccessors() {
+        for (EntityAccessor accessor : getEntityAccessors()) {
+            for (Class interfaceClass : accessor.getJavaClass().getInterfaces()) {
+                if (m_interfaceAccessors.containsKey(interfaceClass.getName())) {
+                    m_interfaceAccessors.get(interfaceClass.getName()).addEntityAccessor(accessor);
+                }
+            }
+        }
+    }
+    
     /**
      * INTERNAL:
      * Process the named native queries we found and add them to the given
      * session.
      */
-    public void processNamedNativeQueries(ClassLoader loader) {
-        for (NamedNativeQueryMetadata namedNativeQuery : m_namedNativeQueries.values()) {
-            namedNativeQuery.process(m_session, loader);
+    public void processQueries(ClassLoader loader) {
+        for (SQLResultSetMappingMetadata sqlResultSetMapping : m_sqlResultSetMappings.values()) {
+            sqlResultSetMapping.process(m_session, loader);
         }
-    }
-    
-    /**
-     * INTERNAL:
-     * Process the named queries we found and add them to the given session.
-     */
-    public void processNamedQueries() {
-        for (NamedQueryMetadata namedQuery : m_namedQueries.values()) {
-            namedQuery.process(m_session);
-        }
-    }
-    
-    /**
-     * INTERNAL:
-     * Process the named stored procedure queries we found and add them to the given session.
-     */
-    public void processNamedStoredProcedureQueries(ClassLoader loader) {
-        for (NamedStoredProcedureQueryMetadata query : m_namedStoredProcedureQueries.values()) {
+        
+        for (NamedQueryMetadata query : m_queries.values()) {
             query.process(m_session, loader);
         }
     }
@@ -795,17 +698,17 @@ public class MetadataProject {
                 
                 String seqName;
                 if (sequenceGenerator.getSequenceName() != null && (! sequenceGenerator.getSequenceName().equals(""))) {
-                	seqName = sequenceGenerator.getSequenceName();
+                    seqName = sequenceGenerator.getSequenceName();
                 } else {
-                	// TODO: Log a message.
-                	seqName = sequenceGeneratorName;
+                    // TODO: Log a message.
+                    seqName = sequenceGeneratorName;
                 }
                 
                 Integer allocationSize = sequenceGenerator.getAllocationSize();
                 if (allocationSize == null) {
-                	// Default value, same as annotation default.
-                	// TODO: Log a message.
-                	allocationSize = new Integer(50);
+                    // Default value, same as annotation default.
+                    // TODO: Log a message.
+                    allocationSize = new Integer(50);
                 }
                 
                 NativeSequence sequence = new NativeSequence(seqName, allocationSize, false);
@@ -818,8 +721,8 @@ public class MetadataProject {
                 } else if (sequenceGeneratorName.equals(DEFAULT_SEQUENCE_GENERATOR)) {
                     // SequenceGenerator defined with DEFAULT_SEQUENCE_GENERATOR.
                     // All sequences of GeneratorType SEQUENCE referencing 
-                	// non-defined generators will use a clone of the sequence 
-                	// defined by this generator.
+                    // non-defined generators will use a clone of the sequence 
+                    // defined by this generator.
                     defaultObjectNativeSequence = sequence;
                 }
             }
@@ -829,24 +732,24 @@ public class MetadataProject {
                 
                 String seqName;
                 if (tableGenerator.getPkColumnValue() != null && (! tableGenerator.getPkColumnValue().equals(""))) {
-                	seqName = tableGenerator.getPkColumnValue();
+                    seqName = tableGenerator.getPkColumnValue();
                 } else {
-                	// TODO: Log a message.
-                	seqName = tableGeneratorName;
+                    // TODO: Log a message.
+                    seqName = tableGeneratorName;
                 }
                 
                 Integer allocationSize = tableGenerator.getAllocationSize();
                 if (allocationSize == null) {
-                	// Default value, same as annotation default.
-                	// TODO: Log a message.
-                	allocationSize = new Integer(50);
+                    // Default value, same as annotation default.
+                    // TODO: Log a message.
+                    allocationSize = new Integer(50);
                 }
                 
                 Integer initialValue = tableGenerator.getInitialValue();
                 if (initialValue == null) {
-                	// Default value, same as annotation default.
-                	// TODO: Log a message.
-                	initialValue = new Integer(0);
+                    // Default value, same as annotation default.
+                    // TODO: Log a message.
+                    initialValue = new Integer(0);
                 }
                 
                 TableSequence sequence = new TableSequence(seqName, allocationSize, initialValue);
@@ -885,9 +788,9 @@ public class MetadataProject {
                 String generatorName = generatedValue.getGenerator();
                 
                 if (generatorName == null) {
-                	// Value was loaded from XML (and it wasn't specified) so
-                	// assign it the annotation default of ""
-                	generatorName = "";
+                    // Value was loaded from XML (and it wasn't specified) so
+                    // assign it the annotation default of ""
+                    generatorName = "";
                 }
                 
                 Sequence sequence = null;
@@ -896,12 +799,12 @@ public class MetadataProject {
                 }
                 
                 if (sequence == null) {
-                	Enum strategy = generatedValue.getStrategy();
-                	
-                	// A null strategy will default to AUTO.
-                	if (strategy == null || strategy.equals(GenerationType.AUTO)) {
-                		usesAuto = true;
-                	} else if (strategy.equals(GenerationType.TABLE)) {
+                    Enum strategy = generatedValue.getStrategy();
+                    
+                    // A null strategy will default to AUTO.
+                    if (strategy == null || strategy.equals(GenerationType.AUTO)) {
+                        usesAuto = true;
+                    } else if (strategy.equals(GenerationType.TABLE)) {
                         if (generatorName.equals("")) {
                             sequence = defaultTableSequence;
                         } else {
@@ -960,7 +863,7 @@ public class MetadataProject {
      */
     public void processTable(TableMetadata table, String defaultName, String defaultCatalog, String defaultSchema) {
         // Name could be "" or null, need to check against the default name.
-		String name = MetadataHelper.getName(table.getName(), defaultName, table.getNameContext(), m_logger, table.getLocation());
+        String name = MetadataHelper.getName(table.getName(), defaultName, table.getNameContext(), m_logger, table.getLocation());
         
         // Catalog could be "" or null, need to check for an XML default.
         String catalog = MetadataHelper.getName(table.getCatalog(), defaultCatalog, table.getCatalogContext(), m_logger, table.getLocation());
@@ -985,36 +888,34 @@ public class MetadataProject {
         // Process the unique constraints
         table.processUniqueConstraints();
     }
-
-    /** 
-     * INTERNAL:
-     * This method will iterate through all the entities in the PU and check
-     * if we should add them to a variable one to one mapping that was either
-     * defined (incompletely) or defaulted.
-     */
-    protected void processInterfaceAccessors() {
-        for (EntityAccessor accessor : getEntityAccessors()) {
-            for (Class interfaceClass : accessor.getJavaClass().getInterfaces()) {
-                if (m_interfaceAccessors.containsKey(interfaceClass.getName())) {
-                    m_interfaceAccessors.get(interfaceClass.getName()).addEntityAccessor(accessor);
-                }
-            }
-        }
-    }
     
     /** 
      * INTERNAL:
      */
     public void setPersistenceUnitMetadata(XMLPersistenceUnitMetadata persistenceUnitMetadata) {
-        // Future will require some for of merging/overlaying. Right now
-    	// will check for conflicts.
-    	if (m_persistenceUnitMetadata == null) {
-    	    m_persistenceUnitMetadata = persistenceUnitMetadata;
-    	} else { 
-    	    if (! m_persistenceUnitMetadata.equals(persistenceUnitMetadata)) {
-    	        throw ValidationException.persistenceUnitMetadataConflict(m_persistenceUnitMetadata.getConflict());
-    		}
-    	}
+        // Set the persistence unit metadata if null otherwise try to merge.
+        if (m_persistenceUnitMetadata == null) {
+            m_persistenceUnitMetadata = persistenceUnitMetadata;
+        } else {
+            m_persistenceUnitMetadata.merge(persistenceUnitMetadata);
+        }
+    }
+    
+    /**
+     * INTERNAL:
+     * This flag represents dynamic weaving state for 1-1, many-1, fetch groups 
+     * and change tracking.  
+     * @param weavingEnabled (false = weaving disabled)
+     */
+    public void setWeavingEnabled(boolean weavingEnabled) {
+        m_weavingEnabled = weavingEnabled;
+    }
+    
+    /**
+     * Return if the project should use indirection for eager relationships.
+     */
+    public boolean weaveEager() {
+        return m_weaveEager;
     }
 }
 

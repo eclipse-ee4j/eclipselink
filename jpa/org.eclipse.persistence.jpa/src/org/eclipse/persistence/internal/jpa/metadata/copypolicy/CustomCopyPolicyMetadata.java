@@ -9,61 +9,85 @@
  *
  * Contributors:
  *     tware - March 28/2008 - 1.0M7 - Initial implementation
+ *     05/16/2008-1.0M8 Guy Pelletier 
+ *       - 218084: Implement metadata merging functionality between mapping files
  ******************************************************************************/  
-
 package org.eclipse.persistence.internal.jpa.metadata.copypolicy;
 
-/**
- * INTERNAL:
- * 
- * Used to store information about CopyPolicy as it is read from XML or annotations
- * 
- * @see org.eclipse.persistence.annotations.CopyPolicy
- * 
- * @author tware
- */
 import java.lang.annotation.Annotation;
 
-import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.descriptors.copying.CopyPolicy;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataDescriptor;
+import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAccessibleObject;
 
-public class CustomCopyPolicyMetadata extends CopyPolicyMetadata {   
-
+/**
+ * Used to store information about CopyPolicy as it is read from XML or 
+ * annotations
+ * 
+ * @see org.eclipse.persistence.annotations.CopyPolicy
+ * @author tware
+ */
+public class CustomCopyPolicyMetadata extends CopyPolicyMetadata {
     private String copyPolicyClassName;
     private Class copyPolicyClass;
     
-    // used for XML config
-    public CustomCopyPolicyMetadata(){
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+    public CustomCopyPolicyMetadata() {
+        super("<copy-policy");
     }
     
-    public CustomCopyPolicyMetadata(Annotation copyPolicy){
+    /**
+     * INTERNAL:
+     */
+    public CustomCopyPolicyMetadata(Annotation copyPolicy, MetadataAccessibleObject accessibleObject) {
+        super(copyPolicy, accessibleObject);
+        
         copyPolicyClass = (Class) MetadataHelper.invokeMethod("value", copyPolicy);
-        copyPolicyClassName = copyPolicyClass.getName();
     }
     
+    /**
+     * INTERNAL:
+     */
     public CopyPolicy getCopyPolicy(){
         assert(false); // we should never get here
         return null;
     }
     
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
     public String getCopyPolicyClassName(){
         return copyPolicyClassName;
     }
     
+    /**
+     * INTERNAL:
+     */
     @Override
-    public void process(MetadataDescriptor descriptor, Class javaClass){
-        descriptor.setHasCopyPolicy();
-        this.javaClassName = javaClass.getName();
-        ClassDescriptor classDescriptor = descriptor.getClassDescriptor();
-        if (copyPolicyClass == null){
-            classDescriptor.setCopyPolicyClassName(descriptor.getClassAccessor().getEntityMappings().getFullyQualifiedClassName(copyPolicyClassName));
-        } else {
-            classDescriptor.setCopyPolicyClassName(copyPolicyClassName);
-        }
+    public void initXMLObject(MetadataAccessibleObject accessibleObject) {
+        super.initXMLObject(accessibleObject);
+        
+        copyPolicyClass = initXMLClassName(copyPolicyClassName);
     }
     
-    public void setCopyPolicyClassName(String className){
-        this.copyPolicyClassName = className;
+    /**
+     * INTERNAL:
+     */
+    @Override
+    public void process(MetadataDescriptor descriptor) {
+        descriptor.setHasCopyPolicy();
+        descriptor.getClassDescriptor().setCopyPolicyClassName(copyPolicyClass.getName());
+    }
+    
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+    public void setCopyPolicyClassName(String copyPolicyClassName) {
+        this.copyPolicyClassName = copyPolicyClassName;
     }
 }

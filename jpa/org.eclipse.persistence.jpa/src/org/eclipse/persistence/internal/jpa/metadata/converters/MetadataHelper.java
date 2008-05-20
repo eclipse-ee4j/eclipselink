@@ -7,8 +7,10 @@
  * and the Eclipse Distribution License is available at 
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
- * @author Kyle Chen
- * @since Eclipselink 1.0
+ * Contributors:
+ *     Oracle - initial API and implementation from Oracle TopLink
+ *     05/16/2008-1.0M8 Guy Pelletier 
+ *       - 218084: Implement metadata merging functionality between mapping files
  ******************************************************************************/
 package org.eclipse.persistence.internal.jpa.metadata.converters;
 

@@ -9,6 +9,8 @@
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
+ *     05/16/2008-1.0M8 Guy Pelletier 
+ *       - 218084: Implement metadata merging functionality between mapping files
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.accessors.mappings;
 
@@ -17,7 +19,6 @@ import java.util.Map;
 
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinColumns;
-import javax.persistence.OneToMany;
 
 import org.eclipse.persistence.exceptions.ValidationException;
 
@@ -33,6 +34,7 @@ import org.eclipse.persistence.mappings.OneToManyMapping;
 import org.eclipse.persistence.mappings.OneToOneMapping;
 
 /**
+ * INTERNAL:
  * A OneToMany relationship accessor. A OneToMany annotation currently is not
  * required to be on the accessible object, that is, a 1-M can default.
  * 
@@ -40,32 +42,19 @@ import org.eclipse.persistence.mappings.OneToOneMapping;
  * @since TopLink EJB 3.0 Reference Implementation
  */
 public class OneToManyAccessor extends CollectionAccessor {
-	/**
+    /**
      * INTERNAL:
+     * Used for OX mapping.
      */
-    public OneToManyAccessor() {}
+    public OneToManyAccessor() {
+        super("<one-to-many>");
+    }
     
     /**
      * INTERNAL:
      */
-    public OneToManyAccessor(MetadataAccessibleObject accessibleObject, ClassAccessor classAccessor) {
-        super(accessibleObject, classAccessor);
-        
-        Annotation oneToMany = getAnnotation(OneToMany.class);
-        
-        // We must check because OneToMany's can default.
-        if (oneToMany != null) {
-        	setTargetEntity((Class) MetadataHelper.invokeMethod("targetEntity", oneToMany));
-        	setCascadeTypes((Enum[]) MetadataHelper.invokeMethod("cascade", oneToMany));
-        	setFetch((Enum) MetadataHelper.invokeMethod("fetch", oneToMany));
-        	setMappedBy((String) MetadataHelper.invokeMethod("mappedBy", oneToMany));
-        } else {
-        	// Set the annotation defaults.
-        	setTargetEntity(void.class);
-        	setCascadeTypes(new Enum[]{});
-        	setFetch(getDefaultFetchType());
-        	setMappedBy("");
-        }
+    public OneToManyAccessor(Annotation oneToMany, MetadataAccessibleObject accessibleObject, ClassAccessor classAccessor) {
+        super(oneToMany, accessibleObject, classAccessor);
     }
     
     /**
@@ -80,7 +69,8 @@ public class OneToManyAccessor extends CollectionAccessor {
     /**
      * INTERNAL:
      */
-	public boolean isOneToMany() {
+    @Override
+    public boolean isOneToMany() {
         return true;
     }
     
@@ -89,30 +79,21 @@ public class OneToManyAccessor extends CollectionAccessor {
      * Process an OneToMany accessor into an EclipseLink OneToManyMapping. If a 
      * JoinTable is found however, we must create a ManyToManyMapping.
      */
+    @Override
     public void process() {
-    	super.process();
-        String mappedBy = getMappedBy();
+        super.process();
         
         // Should be treated as a uni-directional mapping using a join table.
-        if (mappedBy.equals("")) {
+        if (getMappedBy() == null || getMappedBy().equals("")) {
             // If we find a JoinColumn(s) annotations, then throw an exception.
             if (isAnnotationPresent(JoinColumn.class) || isAnnotationPresent(JoinColumns.class)) {
-            	throw ValidationException.uniDirectionalOneToManyHasJoinColumnAnnotations(getAttributeName(), getJavaClass());
+                throw ValidationException.uniDirectionalOneToManyHasJoinColumnAnnotations(getAttributeName(), getJavaClass());
             }
             
             // Create a M-M mapping and process common collection mapping
             // metadata.
             ManyToManyMapping mapping = new ManyToManyMapping();
             process(mapping);
-            
-            // If we found a @PrivateOwned for this mapping, turn it off and
-            // log a warning to the user that we are ignoring it.
-            if (mapping.isPrivateOwned()) {
-                // Annotation specific message since no private owned in XML yet. 
-                // Will have to change when introduced in XML.
-                getLogger().logWarningMessage(MetadataLogger.IGNORE_PRIVATE_OWNED_ANNOTATION, this);
-                mapping.setIsPrivateOwned(false);
-            }
             
             // Process the JoinTable metadata.
             processJoinTable(mapping);
@@ -129,12 +110,12 @@ public class OneToManyAccessor extends CollectionAccessor {
             process(mapping);
             
             // Non-owning side, process the foreign keys from the owner.
-			OneToOneMapping ownerMapping = null;
-            if (getOwningMapping().isOneToOneMapping()){ 
-            	ownerMapping = (OneToOneMapping) getOwningMapping();
+            OneToOneMapping ownerMapping = null;
+            if (getOwningMapping(getMappedBy()).isOneToOneMapping()){ 
+                ownerMapping = (OneToOneMapping) getOwningMapping(getMappedBy());
             } else {
-				// If improper mapping encountered, throw an exception.
-            	throw ValidationException.invalidMapping(getJavaClass(), getReferenceClass()); 
+                // If improper mapping encountered, throw an exception.
+                throw ValidationException.invalidMapping(getJavaClass(), getReferenceClass()); 
             }
                 
             Map<DatabaseField, DatabaseField> keys = ownerMapping.getSourceToTargetKeyFields();

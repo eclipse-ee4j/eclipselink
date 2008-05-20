@@ -55,7 +55,7 @@ public class Alpine extends Beer  {
     
     // This is here for testing purposes. It is bogus, the access type has
     // been set to FIELD for this class in XML therefore, this method should
-    // not get processed. This processed will cause and error since the 
+    // not get processed. This processed will cause an error since the 
     // Embedded is an int.
     @EmbeddedId
     public int getBogusEmbeddedId() {

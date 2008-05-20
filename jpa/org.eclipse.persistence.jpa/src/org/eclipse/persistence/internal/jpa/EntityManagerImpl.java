@@ -42,7 +42,6 @@ import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.internal.sessions.MergeManager;
 import org.eclipse.persistence.jpa.config.EntityManagerProperties;
 import org.eclipse.persistence.internal.sessions.UnitOfWorkImpl;
-import org.eclipse.persistence.jpa.config.PersistenceUnitProperties;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.descriptors.VersionLockingPolicy;
 
@@ -62,7 +61,7 @@ import org.eclipse.persistence.descriptors.VersionLockingPolicy;
 * @since TopLink 10.1.3 EJB 3.0 Preview
 */
 public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityManager {
-	
+    
     protected TransactionWrapperImpl transaction = null;
     protected boolean isOpen = true;
     protected RepeatableWriteUnitOfWork extendedPersistenceContext;
@@ -139,7 +138,7 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
         processProperties();
         flushMode = FlushModeType.AUTO;
     }
-	
+    
     /**
      * Clear the persistence context, causing all managed
      * entities to become detached. Changes made to entities that
@@ -289,7 +288,7 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
             throw e;
         }
     }
-	
+    
     /**
      * Find by primary key.
      * @param entityClass - the entity class to find.

@@ -9,12 +9,12 @@
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
+ *     05/16/2008-1.0M8 Guy Pelletier 
+ *       - 218084: Implement metadata merging functionality between mapping files
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.accessors.mappings;
 
 import java.lang.annotation.Annotation;
-
-import javax.persistence.OneToOne;
 
 import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataLogger;
@@ -32,35 +32,23 @@ import org.eclipse.persistence.mappings.OneToOneMapping;
  * @since TopLink EJB 3.0 Reference Implementation
  */
 public class OneToOneAccessor extends ObjectAccessor {
-	/**
+    private String m_mappedBy;
+    
+    /**
      * INTERNAL:
      * Used for OX mapping.
      */
-    public OneToOneAccessor() {}
+    public OneToOneAccessor() {
+        super("<one-to-one>");
+    }
     
     /**
      * INTERNAL:
      */
-    public OneToOneAccessor(MetadataAccessibleObject accessibleObject, ClassAccessor classAccessor) {
-        super(accessibleObject, classAccessor);
+    public OneToOneAccessor(Annotation oneToOne, MetadataAccessibleObject accessibleObject, ClassAccessor classAccessor) {
+        super(oneToOne, accessibleObject, classAccessor);
         
-        Annotation oneToOne = getAnnotation(OneToOne.class);
-        
-        // We must check because OneToMany's can default.
-        if (oneToOne != null) {
-        	setTargetEntity((Class) MetadataHelper.invokeMethod("targetEntity", oneToOne));
-        	setCascadeTypes((Enum[]) MetadataHelper.invokeMethod("cascade", oneToOne));
-        	setFetch((Enum) MetadataHelper.invokeMethod("fetch", oneToOne));
-        	setOptional((Boolean) MetadataHelper.invokeMethod("optional", oneToOne));
-        	setMappedBy((String) MetadataHelper.invokeMethod("mappedBy", oneToOne));
-        } else {
-        	// Set the annotation defaults.
-        	setTargetEntity(void.class);
-        	setCascadeTypes(new Enum[]{});
-        	setFetch(getDefaultFetchType());
-        	setOptional(true);
-        	setMappedBy("");
-        }
+        m_mappedBy = (oneToOne == null) ? "" : (String) MetadataHelper.invokeMethod("mappedBy", oneToOne);
     }
     
     /**
@@ -73,8 +61,17 @@ public class OneToOneAccessor extends ObjectAccessor {
     
     /**
      * INTERNAL:
+     * Used for OX mapping.
      */
-	public boolean isOneToOne() {
+    public String getMappedBy() {
+        return m_mappedBy;
+    }
+    
+    /**
+     * INTERNAL:
+     */
+    @Override
+    public boolean isOneToOne() {
         return true;
     }
     
@@ -86,17 +83,17 @@ public class OneToOneAccessor extends ObjectAccessor {
         // Initialize our mapping now with what we found.
         OneToOneMapping mapping = initOneToOneMapping();
         
-        if (getMappedBy().equals("")) {
+        if (m_mappedBy == null || m_mappedBy.equals("")) {
             // Owning side, look for JoinColumns or PrimaryKeyJoinColumns.
             processOwningMappingKeys(mapping);
-        } else {	
+        } else {    
             // Non-owning side, process the foreign keys from the owner.
             OneToOneMapping ownerMapping = null;
-            if (getOwningMapping().isOneToOneMapping()){
-            	ownerMapping = (OneToOneMapping)getOwningMapping();
+            if (getOwningMapping(m_mappedBy).isOneToOneMapping()){
+                ownerMapping = (OneToOneMapping)getOwningMapping(m_mappedBy);
             } else {
-            	// If improper mapping encountered, throw an exception.
-            	throw ValidationException.invalidMapping(getJavaClass(), getReferenceClass());
+                // If improper mapping encountered, throw an exception.
+                throw ValidationException.invalidMapping(getJavaClass(), getReferenceClass());
             }
 
             mapping.setSourceToTargetKeyFields(ownerMapping.getTargetToSourceKeyFields());
@@ -108,5 +105,13 @@ public class OneToOneAccessor extends ObjectAccessor {
 
         // Add the mapping to the descriptor.
         getDescriptor().addMapping(mapping);
+    }
+    
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+    public void setMappedBy(String mappedBy) {
+        m_mappedBy = mappedBy;
     }
 }

@@ -9,15 +9,18 @@
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
+ *     05/16/2008-1.0M8 Guy Pelletier 
+ *       - 218084: Implement metadata merging functionality between mapping files
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.converters;
 
 import java.lang.annotation.Annotation;
-import java.lang.reflect.AnnotatedElement;
 
 import org.eclipse.persistence.mappings.DatabaseMapping;
 
+import org.eclipse.persistence.internal.jpa.metadata.ORMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.mappings.DirectAccessor;
+import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAccessibleObject;
 
 /**
  * INTERNAL:
@@ -26,17 +29,31 @@ import org.eclipse.persistence.internal.jpa.metadata.accessors.mappings.DirectAc
  * @author Guy Pelletier
  * @since TopLink 11g
  */
-public abstract class AbstractConverterMetadata  {
-	private boolean m_loadedFromXML;
-	
-	private String m_location;
-	private String m_name;
-	
+public abstract class AbstractConverterMetadata extends ORMetadata {
+    private String m_name;
+    
     /**
      * INTERNAL:
      */
-    public String getLocation() {
-        return m_location;
+    public AbstractConverterMetadata(String xmlElement) {
+        super(xmlElement);
+    }
+    
+    /**
+     * INTERNAL:
+     */
+    public AbstractConverterMetadata(Annotation converter, MetadataAccessibleObject accessibleObject) {
+        super(converter, accessibleObject);
+        
+        m_name = (String) MetadataHelper.invokeMethod("name", converter);
+    }
+    
+    /**
+     * INTERNAL:
+     */
+    @Override
+    public String getIdentifier() {
+        return m_name;
     }
     
     /**
@@ -44,69 +61,27 @@ public abstract class AbstractConverterMetadata  {
      * Used for OX mapping.
      */
     public String getName() {
-    	return m_name;
+        return m_name;
     }
     
     /**
      * INTERNAL:
      */
-    protected Object invokeMethod(String methodName, Annotation annotation) {
-        return MetadataHelper.invokeMethod(methodName, annotation);
-    }
-    
-    /**
-     * INTERNAL:
-     */
-    public boolean loadedFromAnnotation() {
-        return !m_loadedFromXML;
-    }
-    
-    /**
-     * INTERNAL:
-     */
-    public boolean loadedFromXML() {
-        return m_loadedFromXML;
+    public boolean isStructConverter() {
+        return false;
     }  
     
     /**
      * INTERNAL:
-	 * Every converter needs to be able to process themselves.
+     * Every converter needs to be able to process themselves.
      */
-    public abstract void process(DatabaseMapping mapping, DirectAccessor accessor);
-    
-    /**
-     * INTERNAL:
-     */
-    public void setLoadedFromAnnotation() {
-        m_loadedFromXML = false;
-    } 
-    
-    /**
-     * INTERNAL:
-     */
-    public void setLoadedFromXML() {
-        m_loadedFromXML = true;
-    } 
-    
-    /**
-     * INTERNAL:
-     */
-    public void setLocation(AnnotatedElement annotatedElement) {
-        m_location = annotatedElement.toString();
-    }
-    
-    /**
-     * INTERNAL:
-     */
-    public void setLocation(String location) {
-        m_location = location;
-    }
+    public abstract void process(DatabaseMapping mapping, DirectAccessor accessor); 
     
     /**
      * INTERNAL:
      * Used for OX mapping.
      */
     public void setName(String name) {
-    	m_name = name;
+        m_name = name;
     }
 }

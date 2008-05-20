@@ -9,30 +9,37 @@
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
+ *     05/16/2008-1.0M8 Guy Pelletier 
+ *       - 218084: Implement metadata merging functionality between mapping files
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.accessors.classes;
+
+import java.lang.annotation.Annotation;
 
 import org.eclipse.persistence.annotations.Cache;
 import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataProject;
 
 /**
+ * INTERNAL:
  * An embeddable accessor.
  * 
  * @author Guy Pelletier
  * @since EclipseLink 1.0
  */ 
 public class EmbeddableAccessor extends ClassAccessor {
-	/**
+    /**
      * INTERNAL:
      */
-    public EmbeddableAccessor() {}
+    public EmbeddableAccessor() {
+        super("<embeddable>");
+    }
     
     /**
      * INTERNAL:
      */
-    public EmbeddableAccessor(Class cls, MetadataProject project) {
-        super(cls, project);
+    public EmbeddableAccessor(Annotation annotation, Class cls, MetadataProject project) {
+        super(annotation, cls, project);
     }
     
     /**
@@ -45,7 +52,7 @@ public class EmbeddableAccessor extends ClassAccessor {
             throw ValidationException.cacheNotSupportedWithEmbeddable(getJavaClass());
         } 
         
-    	// This accessor represents an embeddable class
+        // This accessor represents an embeddable class
         // Process @Customizer
         processCustomizer();
         

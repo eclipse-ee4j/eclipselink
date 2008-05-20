@@ -9,6 +9,8 @@
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
+ *     05/16/2008-1.0M8 Guy Pelletier 
+ *       - 218084: Implement metadata merging functionality between mapping files
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.sequencing;
 
@@ -21,8 +23,8 @@ import java.lang.annotation.Annotation;
  * @since TopLink EJB 3.0 Reference Implementation
  */
 public class GeneratedValueMetadata {
-	private Enum m_strategy;
-	private String m_generator;
+    private Enum m_strategy;
+    private String m_generator;
     
     /**
      * INTERNAL:
@@ -34,29 +36,30 @@ public class GeneratedValueMetadata {
      */
     public GeneratedValueMetadata(Annotation generatedValue) {
         m_generator = (String) MetadataHelper.invokeMethod("generator", generatedValue);
-    	m_strategy = (Enum) MetadataHelper.invokeMethod("strategy", generatedValue); 
+        m_strategy = (Enum) MetadataHelper.invokeMethod("strategy", generatedValue); 
     }
     
     /**
      * INTERNAL:
      */
+    @Override
     public boolean equals(Object objectToCompare) {
         if (objectToCompare instanceof GeneratedValueMetadata) {
-        	GeneratedValueMetadata generatedValue = (GeneratedValueMetadata) objectToCompare;
-        	
-        	if (m_generator == null && generatedValue.getGenerator() != null) {
-        		return false;
-        	} else if (! m_generator.equals(generatedValue.getGenerator())) {
-        		return false;
-        	}
-        		
-        	if (m_strategy == null && generatedValue.getStrategy() != null) {
-        		return false;
-        	} else if (! m_strategy.equals(generatedValue.getStrategy())) {
-        		return false;
-        	}
-        	
-        	return true;
+            GeneratedValueMetadata generatedValue = (GeneratedValueMetadata) objectToCompare;
+            
+            if (m_generator == null && generatedValue.getGenerator() != null) {
+                return false;
+            } else if (! m_generator.equals(generatedValue.getGenerator())) {
+                return false;
+            }
+                
+            if (m_strategy == null && generatedValue.getStrategy() != null) {
+                return false;
+            } else if (! m_strategy.equals(generatedValue.getStrategy())) {
+                return false;
+            }
+            
+            return true;
         }
         
         return false;
@@ -83,7 +86,7 @@ public class GeneratedValueMetadata {
      * Used for OX mapping.
      */
     public void setGenerator(String generator) {
-    	m_generator = generator;
+        m_generator = generator;
     }
     
     /**
@@ -91,6 +94,6 @@ public class GeneratedValueMetadata {
      * Used for OX mapping.
      */
     public void setStrategy(Enum strategy) {
-    	m_strategy = strategy;
+        m_strategy = strategy;
     }
 }

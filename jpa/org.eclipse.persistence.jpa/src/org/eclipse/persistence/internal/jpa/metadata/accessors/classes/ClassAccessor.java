@@ -9,30 +9,45 @@
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
+ *     05/16/2008-1.0M8 Guy Pelletier 
+ *       - 218084: Implement metadata merging functionality between mapping files
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.accessors.classes;
 
 import java.lang.annotation.Annotation;
-import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
-import java.lang.reflect.Modifier;
 
-import java.security.AccessController;
-import java.security.PrivilegedActionException;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.persistence.Basic;
+import javax.persistence.Embedded;
+import javax.persistence.EmbeddedId;
+import javax.persistence.Id;
+import javax.persistence.ManyToMany;
+import javax.persistence.ManyToOne;
 import javax.persistence.MappedSuperclass;
+import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
 import javax.persistence.Transient;
+import javax.persistence.Version;
 
+import org.eclipse.persistence.annotations.BasicCollection;
+import org.eclipse.persistence.annotations.BasicMap;
 import org.eclipse.persistence.annotations.ChangeTracking;
 import org.eclipse.persistence.annotations.Customizer;
 import org.eclipse.persistence.annotations.CopyPolicy;
 import org.eclipse.persistence.annotations.InstantiationCopyPolicy;
 import org.eclipse.persistence.annotations.CloneCopyPolicy;
+import org.eclipse.persistence.annotations.Properties;
+import org.eclipse.persistence.annotations.Property;
+import org.eclipse.persistence.annotations.Transformation;
+import org.eclipse.persistence.annotations.VariableOneToOne;
 
 import org.eclipse.persistence.exceptions.ValidationException;
+
+import org.eclipse.persistence.internal.jpa.metadata.accessors.PropertyMetadata;
 
 import org.eclipse.persistence.internal.jpa.metadata.accessors.mappings.EmbeddedIdAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.mappings.ManyToManyAccessor;
@@ -42,16 +57,17 @@ import org.eclipse.persistence.internal.jpa.metadata.accessors.mappings.BasicCol
 import org.eclipse.persistence.internal.jpa.metadata.accessors.mappings.BasicMapAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.mappings.EmbeddedAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.mappings.IdAccessor;
+import org.eclipse.persistence.internal.jpa.metadata.accessors.mappings.MappingAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.mappings.OneToManyAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.mappings.OneToOneAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.mappings.TransformationAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.mappings.VariableOneToOneAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.mappings.VersionAccessor;
-import org.eclipse.persistence.internal.jpa.metadata.accessors.mappings.MappingAccessor;
 
 import org.eclipse.persistence.internal.jpa.metadata.accessors.MetadataAccessor;
 
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAccessibleObject;
+import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAnnotatedElement;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataClass;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataField;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataMethod;
@@ -66,12 +82,10 @@ import org.eclipse.persistence.internal.jpa.metadata.copypolicy.CloneCopyPolicyM
 import org.eclipse.persistence.internal.jpa.metadata.MetadataDescriptor;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataLogger;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataProject;
-
-import org.eclipse.persistence.internal.jpa.metadata.xml.XMLAttributes;
-import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
-import org.eclipse.persistence.internal.security.PrivilegedGetField;
+import org.eclipse.persistence.internal.jpa.metadata.ORMetadata;
 
 /**
+ * INTERNAL:
  * A abstract class accessor. Holds common metadata for entities, embeddables
  * and mapped superclasses.
  * 
@@ -83,33 +97,33 @@ public abstract class ClassAccessor extends MetadataAccessor {
     
     private ChangeTrackingMetadata m_changeTracking;
     private Class m_customizerClass;
-    
-    // various copy policies.  Represented individually to facilitate XML writing
+    // Various copy policies. Represented individually to facilitate XML writing.
+    private CloneCopyPolicyMetadata m_cloneCopyPolicy;
     private CustomCopyPolicyMetadata m_customCopyPolicy;
     private InstantiationCopyPolicyMetadata m_instantiationCopyPolicy;
-    private CloneCopyPolicyMetadata m_cloneCopyPolicy;
     
     private String m_access; // EntityMappings init will process this value.
     private String m_className;
     private String m_customizerClassName;
     private String m_description;
-    private String m_mappingFile;
-	
-	private XMLAttributes m_attributes;
-	
-    /**
-     * INTERNAL:
-     */
-    public ClassAccessor() {}
+    
+    private XMLAttributes m_attributes;
     
     /**
      * INTERNAL:
      */
-    public ClassAccessor(Class cls, MetadataProject project) {
-    	super(new MetadataClass(cls), new MetadataDescriptor(cls), project);
-    	
-    	// Set the class accessor reference on the descriptor.
-    	getDescriptor().setClassAccessor(this);
+    protected ClassAccessor(String xmlElement) {
+        super(xmlElement);
+    }
+    
+    /**
+     * INTERNAL:
+     */
+    public ClassAccessor(Annotation annotation, Class cls, MetadataProject project) {
+        super(annotation, new MetadataClass(cls), new MetadataDescriptor(cls), project);
+        
+        // Set the class accessor reference on the descriptor.
+        getDescriptor().setClassAccessor(this);
     }
     
     /**
@@ -117,8 +131,8 @@ public abstract class ClassAccessor extends MetadataAccessor {
      * Called from MappedSuperclassAccessor. We want to avoid setting the
      * class accessor on the descriptor to be the MappedSuperclassAccessor.
      */
-    protected ClassAccessor(Class cls, MetadataDescriptor descriptor, MetadataProject project) {
-    	super(new MetadataClass(cls), descriptor, project);
+    protected ClassAccessor(Annotation annotation, Class cls, MetadataDescriptor descriptor, MetadataProject project) {
+        super(annotation, new MetadataClass(cls), descriptor, project);
     }
     
     /**
@@ -128,45 +142,45 @@ public abstract class ClassAccessor extends MetadataAccessor {
      * or adding, check what the isXyz call does to determine if the accessor
      * is of type xyz.
      */
-    protected MappingAccessor buildAccessor(MetadataAccessibleObject accessibleObject) {
+    protected MappingAccessor buildAccessor(MetadataAnnotatedElement accessibleObject) {
         MappingAccessor accessor = getDescriptor().getAccessorFor(accessibleObject.getAttributeName());
         
         if (accessor == null) {
             if (accessibleObject.isBasicCollection(getDescriptor())) {
-                return new BasicCollectionAccessor(accessibleObject, this);
+                return new BasicCollectionAccessor(accessibleObject.getAnnotation(BasicCollection.class), accessibleObject, this);
             } else if (accessibleObject.isBasicMap(getDescriptor())) {
-                return new BasicMapAccessor(accessibleObject, this);
+                return new BasicMapAccessor(accessibleObject.getAnnotation(BasicMap.class), accessibleObject, this);
             } else if (accessibleObject.isId(getDescriptor())) {
-            	return new IdAccessor(accessibleObject, this);
+                return new IdAccessor(accessibleObject.getAnnotation(Id.class), accessibleObject, this);
             } else if (accessibleObject.isVersion(getDescriptor())) {
-            	return new VersionAccessor(accessibleObject, this);
+                return new VersionAccessor(accessibleObject.getAnnotation(Version.class), accessibleObject, this);
             } else if (accessibleObject.isBasic(getDescriptor())) {
-                return new BasicAccessor(accessibleObject, this);
+                return new BasicAccessor(accessibleObject.getAnnotation(Basic.class), accessibleObject, this);
             } else if (accessibleObject.isEmbedded(getDescriptor())) {
-                return new EmbeddedAccessor(accessibleObject, this);
+                return new EmbeddedAccessor(accessibleObject.getAnnotation(Embedded.class), accessibleObject, this);
             } else if (accessibleObject.isEmbeddedId(getDescriptor())) {
-                return new EmbeddedIdAccessor(accessibleObject, this);
+                return new EmbeddedIdAccessor(accessibleObject.getAnnotation(EmbeddedId.class), accessibleObject, this);
             } else if (accessibleObject.isTransformation(getDescriptor())) { 
-                return new TransformationAccessor(accessibleObject, this);
+                return new TransformationAccessor(accessibleObject.getAnnotation(Transformation.class), accessibleObject, this);
             } else if (accessibleObject.isManyToMany(getDescriptor())) {
-                return new ManyToManyAccessor(accessibleObject, this);
+                return new ManyToManyAccessor(accessibleObject.getAnnotation(ManyToMany.class), accessibleObject, this);
             } else if (accessibleObject.isManyToOne(getDescriptor())) {
-                return new ManyToOneAccessor(accessibleObject, this);
-            } else if (accessibleObject.isVariableOneToOne(getDescriptor())) {
-                // A VariableOneToOne can default, that is, doesn't require
-                // an annotation to be present.
-                return new VariableOneToOneAccessor(accessibleObject, this);
+                return new ManyToOneAccessor(accessibleObject.getAnnotation(ManyToOne.class), accessibleObject, this);
             } else if (accessibleObject.isOneToMany(getDescriptor())) {
                 // A OneToMany can default, that is, doesn't require an 
                 // annotation to be present.
-                return new OneToManyAccessor(accessibleObject, this);
+                return new OneToManyAccessor(accessibleObject.getAnnotation(OneToMany.class), accessibleObject, this);
             } else if (accessibleObject.isOneToOne(getDescriptor())) {
                 // A OneToOne can default, that is, doesn't require an 
                 // annotation to be present.
-                return new OneToOneAccessor(accessibleObject, this);
+                return new OneToOneAccessor(accessibleObject.getAnnotation(OneToOne.class), accessibleObject, this);
+            } else if (accessibleObject.isVariableOneToOne(getDescriptor())) {
+                // A VariableOneToOne can default, that is, doesn't require
+                // an annotation to be present.
+                return new VariableOneToOneAccessor(accessibleObject.getAnnotation(VariableOneToOne.class), accessibleObject, this);
             } else {
                 // Default case (everything else falls into a Basic)
-                return new BasicAccessor(accessibleObject, this);
+                return new BasicAccessor(accessibleObject.getAnnotation(Basic.class), accessibleObject, this);
             }
         } else {
             return accessor;
@@ -178,7 +192,7 @@ public abstract class ClassAccessor extends MetadataAccessor {
      * Used for OX mapping.
      */
     public String getAccess() {
-    	return m_access;
+        return m_access;
     }
     
     /**
@@ -186,7 +200,7 @@ public abstract class ClassAccessor extends MetadataAccessor {
      * Used for OX mapping.
      */
     public XMLAttributes getAttributes() {
-    	return m_attributes;
+        return m_attributes;
     }
     
     /**
@@ -205,6 +219,9 @@ public abstract class ClassAccessor extends MetadataAccessor {
         return m_className;
     }
     
+    /**
+     * INTERNAL:
+     */
     public CopyPolicyMetadata getCopyPolicy(){
         if (m_cloneCopyPolicy != null){
             return m_cloneCopyPolicy;
@@ -256,26 +273,11 @@ public abstract class ClassAccessor extends MetadataAccessor {
     
     /**
      * INTERNAL:
-     * Helper method that will return a given field based on the provided attribute name.
+     * To satisfy the abstract getIdentifier() method from ORMetadata.
      */
-    protected Field getFieldForName(String fieldName, Class javaClass) {
-        Field field = null;
-        
-        try {
-            if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
-                try {
-                    field = (Field)AccessController.doPrivileged(new PrivilegedGetField(javaClass, fieldName, false));
-                } catch (PrivilegedActionException exception) {
-                    return null;
-                }
-            } else {
-                field = PrivilegedAccessHelper.getField(javaClass, fieldName, false);
-            }
-        } catch (NoSuchFieldException nsfex) {
-            return null;
-        }
-        
-        return field;
+    @Override
+    public String getIdentifier() {
+        return getJavaClassName();
     }
     
     /**
@@ -287,10 +289,11 @@ public abstract class ClassAccessor extends MetadataAccessor {
     }
     
     /**
-     * INTERNAL: (OVERRIDE)
+     * INTERNAL:
      * Return the java class that defines this accessor. It may be an
      * entity, embeddable or mapped superclass.
      */
+    @Override
     public Class getJavaClass() {
         return (Class) getAnnotatedElement();
     }
@@ -300,10 +303,11 @@ public abstract class ClassAccessor extends MetadataAccessor {
      * Return the java class name that defines this accessor. It may be an
      * entity, embeddable or mapped superclass.
      */
+    @Override
     public String getJavaClassName() {
-    	return getJavaClass().getName();
+        return getJavaClass().getName();
     }
-	
+    
     /**
      * INTERNAL:
      * Build a list of classes that are decorated with a MappedSuperclass
@@ -328,11 +332,12 @@ public abstract class ClassAccessor extends MetadataAccessor {
                 // If the mapped superclass was not defined in XML then check 
                 // for a MappedSuperclass annotation.
                 if (accessor == null) {
-                    if (isAnnotationPresent(MappedSuperclass.class, parent)) {
-                        mappedSuperclasses.add(new MappedSuperclassAccessor(parent, getDescriptor(), getProject()));
+                    MetadataClass metadataClass = new MetadataClass(parent);
+                    if (metadataClass.isAnnotationPresent(MappedSuperclass.class)) {
+                        mappedSuperclasses.add(new MappedSuperclassAccessor(metadataClass.getAnnotation(MappedSuperclass.class), parent, getDescriptor(), getProject()));
                     }
                 } else {
-                    mappedSuperclasses.add(accessor.getEntityMappings().reloadMappedSuperclass(accessor, getDescriptor()));
+                    mappedSuperclasses.add(initXMLMappedSuperclass(accessor, getDescriptor()));
                 }
             }
                 
@@ -344,84 +349,37 @@ public abstract class ClassAccessor extends MetadataAccessor {
     
     /**
      * INTERNAL:
-     */
-    public String getMappingFile() {
-    	return m_mappingFile;
-    }
-    
-    /**
-     * INTERNAL:
      * Used for OX mapping.
      */
     public Boolean getMetadataComplete() {
-    	return m_metadataComplete;
-    }
-    
-    /**
-     * INTERNAL:
-     * Check to see if this is a valid method to process for persistence. More
-     * validation is done on the method to ensure it is a valid persistence
-     * method. User specified means we either have annotation on the method
-     * or the method was referenced in XML. Otherwise, we are looking for
-     * defaults (and therefore should avoid throwing exceptions). Callers of
-     * this method must handle a null return.
-     */
-    protected MetadataMethod getMetadataMethod(Method method, boolean userSpecified) {
-    	MetadataMethod metadataMethod = new MetadataMethod(method);
-    	
-    	if (metadataMethod.isValidPersistenceMethodName()) {
-    		// Check if the method has parameters.
-    		if (metadataMethod.hasParameters()) {
-    			if (userSpecified) {
-    				throw ValidationException.mappingMetadataAppliedToMethodWithArguments(method, getJavaClass());
-    			} else {
-    			    // Valid name but has parameters ... ignore it.
-    			}
-    		} else if (metadataMethod.hasSetMethod()) {
-    		   // Has a valid name and equivalent set method, it's a valid 
-    		   // method for persistence so return it.
-    		   return metadataMethod;
-    		} else if (userSpecified) {
-    		    // User decorated a valid persistence getMethod but does not
-    		    // have an equivalent setMethod. Throw an exception.
-    			throw ValidationException.noCorrespondingSetterMethodDefined(getJavaClass(), method);
-    		} else {
-    		    // Valid name, no parameters, but not equivalent set method. 
-    		    // Since it is not tagged to be persistence, ignore it.
-    		}
-    	}
-        
-    	return null;
-    }
-    
-    /**
-     * INTERNAL:
-     * Method to convert an xyz property name into a getXyz or isXyz method.
-     */
-    public Method getMethodForPropertyName(String propertyName, Class cls) {
-        Method method;
-        
-        String leadingChar = String.valueOf(propertyName.charAt(0)).toUpperCase();
-        String restOfName = propertyName.substring(1);
-        
-        // Look for a getPropertyName() method
-        method = MetadataHelper.getMethod(MetadataMethod.GET_PROPERTY_METHOD_PREFIX.concat(leadingChar).concat(restOfName), cls, new Class[]{});
-        
-        if (method == null) {
-            // Look for an isPropertyName() method
-            method = MetadataHelper.getMethod(MetadataMethod.IS_PROPERTY_METHOD_PREFIX.concat(leadingChar).concat(restOfName), cls, new Class[]{});
-        }
-        
-        return method;
+        return m_metadataComplete;
     }
     
     /**
      * INTERNAL:
      */
     public boolean isMetadataComplete() {
-    	return m_metadataComplete != null && m_metadataComplete;
+        return m_metadataComplete != null && m_metadataComplete;
     }
-
+    
+    /**
+     * INTERNAL:
+     */
+    @Override
+    public void initXMLObject(MetadataAccessibleObject accessibleObject) {
+        super.initXMLObject(accessibleObject);
+        
+        // Initialize single objects.
+        initXMLObject(m_changeTracking, accessibleObject);
+        initXMLObject(m_cloneCopyPolicy, accessibleObject);
+        initXMLObject(m_customCopyPolicy, accessibleObject);
+        initXMLObject(m_instantiationCopyPolicy, accessibleObject);
+        initXMLObject(m_attributes, accessibleObject);
+        
+        // Initialize simple class objects.
+        m_customizerClass = initXMLClassName(m_customizerClassName);
+    }
+    
     /** 
      * INTERNAL:
      * Return true if this accessor represents a class.
@@ -432,11 +390,33 @@ public abstract class ClassAccessor extends MetadataAccessor {
     
     /**
      * INTERNAL:
-     * Return true is this annotated element is not transient, static or 
-     * abstract.
+     * Generic class level merging details for entities, mapped superclasses
+     * and embeddables.
      */
-    protected boolean isValidPersistenceElement(AnnotatedElement annotatedElement, int modifiers) {  
-        return ! (Modifier.isTransient(modifiers) || Modifier.isStatic(modifiers) || Modifier.isAbstract(modifiers));
+    @Override
+    public void merge(ORMetadata metadata) {
+        super.merge(metadata);
+        
+        ClassAccessor accessor = (ClassAccessor) metadata;
+        
+        // Simple object merging.
+        m_access = (String) mergeSimpleObjects(m_access, accessor.getAccess(), accessor.getAccessibleObject(), "@access");
+        m_customizerClass = (Class) mergeSimpleObjects(m_customizerClass, accessor.getCustomizerClass(), accessor.getAccessibleObject(), "<customizer>");
+        m_description = (String) mergeSimpleObjects(m_description, accessor.getDescription(), accessor.getAccessibleObject(), "<description>");
+        m_metadataComplete = (Boolean) mergeSimpleObjects(m_metadataComplete, accessor.getMetadataComplete(), accessor.getAccessibleObject(), "@metadata-complete");
+        
+        // ORMetadata object merging.        
+        m_cloneCopyPolicy = (CloneCopyPolicyMetadata) mergeORObjects(m_cloneCopyPolicy, accessor.getCloneCopyPolicy());
+        m_customCopyPolicy = (CustomCopyPolicyMetadata) mergeORObjects(m_customCopyPolicy, accessor.getCustomCopyPolicy());
+        m_instantiationCopyPolicy = (InstantiationCopyPolicyMetadata) mergeORObjects(m_instantiationCopyPolicy, accessor.getInstantiationCopyPolicy());
+        m_changeTracking = (ChangeTrackingMetadata) mergeORObjects(m_changeTracking, accessor.getChangeTracking());
+        
+        // ORObjects that merge further ...
+        if (m_attributes == null) {
+            m_attributes = accessor.getAttributes();
+        } else {
+            m_attributes.merge(accessor.getAttributes());
+        }
     }
     
     /**
@@ -453,14 +433,14 @@ public abstract class ClassAccessor extends MetadataAccessor {
     protected void processAccessor(MappingAccessor accessor) {
         if (! accessor.isProcessed()) {
             // Store the accessor for later retrieval.
-        	getDescriptor().addAccessor(accessor);
-        	
-        	// The actual owning descriptor for this class accessor. In most
-        	// cases this is the same as our descriptor. However in an
-        	// embeddable class accessor, it will be the owning entities
-        	// descriptor. This was introduced to support nesting embeddables
-        	// to the nth level.
-        	accessor.setOwningDescriptor(getOwningDescriptor());
+            getDescriptor().addAccessor(accessor);
+            
+            // The actual owning descriptor for this class accessor. In most
+            // cases this is the same as our descriptor. However in an
+            // embeddable class accessor, it will be the owning entities
+            // descriptor. This was introduced to support nesting embeddables
+            // to the nth level.
+            accessor.setOwningDescriptor(getOwningDescriptor());
         
             // Process any converters on this accessor.
             accessor.processConverters();
@@ -468,12 +448,12 @@ public abstract class ClassAccessor extends MetadataAccessor {
             if (accessor.isBasicCollection()) {
                 // BasicCollection and BasicMaps rely on a primary key
                 // having been processed before hand.
-            	getDescriptor().addBasicCollectionAccessor(accessor);
+                getDescriptor().addBasicCollectionAccessor(accessor);
             } else if (accessor.isRelationship()) {
                 // Store the relationship accessors for later processing.
                 // They get processed in stage 2, that is, MetadataProject
                 // processing.
-            	getDescriptor().addRelationshipAccessor(accessor);
+                getDescriptor().addRelationshipAccessor(accessor);
             } else {
                 accessor.process();
                 accessor.setIsProcessed();
@@ -487,21 +467,16 @@ public abstract class ClassAccessor extends MetadataAccessor {
      */
     protected void processAccessorFields() {
         for (Field field : MetadataHelper.getFields(getJavaClass())) {
-        	if (isAnnotationPresent(Transient.class, field)) {
-                if (MetadataHelper.getDeclaredAnnotationsCount(field, getDescriptor()) > 1) {
-                	throw ValidationException.mappingAnnotationsAppliedToTransientAttribute(field);
+            MetadataField metadataField = new MetadataField(field, getLogger());
+            if (metadataField.isAnnotationPresent(Transient.class)) {
+                if (metadataField.hasMoreThanOneDeclaredAnnotation(getDescriptor())) {
+                    throw ValidationException.mappingAnnotationsAppliedToTransientAttribute(field);
                 }
             } else {
-            	if (isValidPersistenceElement(field, field.getModifiers())) {
-            		processAccessor(buildAccessor(new MetadataField(field)));
-            	} else {
-            		// The field is either marked static, transient or abstract.
-            		if (MetadataHelper.getDeclaredAnnotationsCount(field, getDescriptor()) > 0) {
-            			// The user decorated the field with other annotations,
-            			// throw an exception.
-            			throw ValidationException.mappingMetadataAppliedToInvalidAttribute(field, getJavaClass());
-            		}
-            	}
+                // The is valid check will throw an exception if needed.
+                if (metadataField.isValidPersistenceField(getDescriptor())) {
+                    processAccessor(buildAccessor(metadataField));
+                } 
             }
         }
     }
@@ -512,26 +487,17 @@ public abstract class ClassAccessor extends MetadataAccessor {
      */
     protected void processAccessorMethods() {
         for (Method method : MetadataHelper.getDeclaredMethods(getJavaClass())) {
-        	if (isAnnotationPresent(Transient.class, method)) {
-                if (MetadataHelper.getDeclaredAnnotationsCount(method, getDescriptor()) > 1) {
-                	throw ValidationException.mappingAnnotationsAppliedToTransientAttribute(method);
+            MetadataMethod metadataMethod = new MetadataMethod(method, getLogger());
+            if (metadataMethod.isAnnotationPresent(Transient.class)) {    
+                if (metadataMethod.hasMoreThanOneDeclaredAnnotation(getDescriptor())) {
+                    throw ValidationException.mappingAnnotationsAppliedToTransientAttribute(method);
                 }
             } else {
-            	if (isValidPersistenceElement(method, method.getModifiers())) {
-            		MetadataMethod metadataMethod = getMetadataMethod(method, MetadataHelper.getDeclaredAnnotationsCount(method, getDescriptor()) > 0);
-                	
-                	if (metadataMethod != null) {
-                		// We have a valid metadata method.
-                		processAccessor(buildAccessor(metadataMethod));
-                	}
-            	} else {
-            		// The method is either marked static, transient or abstract.
-            		if (MetadataHelper.getDeclaredAnnotationsCount(method, getDescriptor()) > 0) {
-            			// The user decorated the field with other annotations,
-            			// throw an exception.
-            			throw ValidationException.mappingMetadataAppliedToInvalidAttribute(method, getJavaClass());
-            		}
-            	}
+                // The is valid check will throw an exception if needed.
+                if (metadataMethod.isValidPersistenceMethod(getDescriptor())) {
+                    // We have a valid metadata method.
+                    processAccessor(buildAccessor(metadataMethod));
+                }
             }
         }
     }
@@ -540,55 +506,65 @@ public abstract class ClassAccessor extends MetadataAccessor {
      * INTERNAL:
      * Process the accessors for the given class.
      */
-    protected void processAccessors() {    	
-    	if (m_attributes != null) {
-    		for (MappingAccessor accessor : m_attributes.getAccessors()) {
-    			// Load the accessible object from the class.
-    			MetadataAccessibleObject accessibleObject = null;
-    		
-    			if (accessor.usesPropertyAccess(getDescriptor())) {
-    			    if (accessor.getAccessMethodsMetadata()!=null){
-    			        //can't rely on MappingAccessor's getGetMethodName methods as they could 
-    			        //result in NPE if accessibleObject isn't set first
-    			        String getMethodName = accessor.getAccessMethodsMetadata().getGetMethodName();
-    			        Method getMethod = MetadataHelper.getMethod(getMethodName, getJavaClass(), new Class[]{});
-    			        String setMethodName =accessor.getAccessMethodsMetadata().getSetMethodName();
-    			        Method setMethod = MetadataHelper.getMethod(setMethodName, getJavaClass(), new Class[]{getMethod.getReturnType()});
-    			        
-    			        accessibleObject = new MetadataMethod(getMethod, setMethod, accessor.getName());
-    			        
-    			    } else {
-    			        Method method = getMethodForPropertyName(accessor.getName(), getJavaClass());
-        				
-        				if (method == null) {
-        					throw ValidationException.invalidPropertyForClass(accessor.getName(), getJavaClass());
-        				}
-        				
-        				if (! isValidPersistenceElement(method, method.getModifiers())) {
-        					throw ValidationException.mappingMetadataAppliedToInvalidAttribute(method, getJavaClass());
-        				}
-        				accessibleObject = getMetadataMethod(method, true);  
-    			    }
-    			} else {
-    				Field field = getFieldForName(accessor.getName(), getJavaClass());
+    protected void processAccessors() {        
+        if (m_attributes != null) {
+            for (MappingAccessor accessor : m_attributes.getAccessors()) {
+                // Load the accessible object from the class.
+                MetadataAccessibleObject accessibleObject = null;
+            
+                if (accessor.usesPropertyAccess(getDescriptor())) {
+                    if (accessor.getAccessMethods() != null) {
+                        // Can't rely on MappingAccessor's getGetMethodName methods 
+                        // as they could result in NPE if accessibleObject isn't 
+                        // set first
+                        String getMethodName = accessor.getAccessMethods().getGetMethodName();
+                        Method getMethod = MetadataHelper.getMethod(getMethodName, getJavaClass(), new Class[]{});
+                        String setMethodName = accessor.getAccessMethods().getSetMethodName();
+                        Method setMethod = MetadataHelper.getMethod(setMethodName, getJavaClass(), new Class[]{getMethod.getReturnType()});
+                        
+                        accessibleObject = new MetadataMethod(getMethod, setMethod, accessor.getName(), getEntityMappings());
+                    } else {
+                        Method method = MetadataHelper.getMethodForPropertyName(accessor.getName(), getJavaClass());
+                        
+                        if (method == null) {
+                            throw ValidationException.invalidPropertyForClass(accessor.getName(), getJavaClass());
+                        } else {
+                            MetadataMethod metadataMethod = new MetadataMethod(method, getEntityMappings());
+                            
+                            // True will force an exception to be thrown if it is 
+                            // not a valid method.
+                            if (metadataMethod.isValidPersistenceMethod(getDescriptor(), true)) {
+                                accessibleObject = metadataMethod;
+                            }
+                        }  
+                    }
+                } else {
+                    Field field = MetadataHelper.getFieldForName(accessor.getName(), getJavaClass());
                 
-    				if (field == null) {
-    					throw ValidationException.invalidFieldForClass(accessor.getName(), getJavaClass());
-    				}
-    				
-    				if (! isValidPersistenceElement(field, field.getModifiers())) {
-    					throw ValidationException.mappingMetadataAppliedToInvalidAttribute(field, getJavaClass());
-    				}
+                    if (field == null) {
+                        throw ValidationException.invalidFieldForClass(accessor.getName(), getJavaClass());
+                    } else {
+                        MetadataField metadataField = new MetadataField(field, getEntityMappings());
+                    
+                        // True will force an exception to be thrown if it is 
+                        // not a valid field.
+                        if (metadataField.isValidPersistenceField(getDescriptor(), true)) {
+                            accessibleObject = metadataField;
+                        }
+                    }
+                }
                 
-    				accessibleObject = new MetadataField(field);
-    			}
-    			
-    			accessor.init(accessibleObject, this);
-    			processAccessor(accessor);
-    		}
-    	}
-    	
-    	// Process the fields or methods on the class for annotations.
+                // Re-initialize the accessor with its real accessible object,
+                // that is a field or method since it will currently hold a 
+                // reference to its owning class' accesible object.
+                accessor.initXMLAccessor(accessibleObject, getDescriptor(), getProject());
+                
+                // Now process the accessor ...
+                processAccessor(accessor);
+            }
+        }
+        
+        // Process the fields or methods on the class for annotations.
         if (getDescriptor().usesPropertyAccess()) {
             processAccessorMethods();
         } else {
@@ -614,7 +590,9 @@ public abstract class ClassAccessor extends MetadataAccessor {
      * Process the change tracking setting for this accessor.
      */
     protected void processChangeTracking() {
-        if (m_changeTracking != null || isAnnotationPresent(ChangeTracking.class)) {
+        Annotation changeTracking = getAnnotation(ChangeTracking.class);
+        
+        if (m_changeTracking != null || changeTracking != null) {
             if (getDescriptor().hasChangeTracking()) {    
                 // We must be processing a mapped superclass setting for an
                 // entity that has its own change tracking setting. Ignore it 
@@ -622,10 +600,10 @@ public abstract class ClassAccessor extends MetadataAccessor {
                 getLogger().logWarningMessage(MetadataLogger.IGNORE_MAPPED_SUPERCLASS_CHANGE_TRACKING, getDescriptor().getJavaClass(), getJavaClass());
             } else {
                 if (m_changeTracking == null) {
-                    new ChangeTrackingMetadata(getAnnotation(ChangeTracking.class)).process(getDescriptor());
+                    new ChangeTrackingMetadata(changeTracking, getAccessibleObject()).process(getDescriptor());
                 } else {
-                    if (isAnnotationPresent(ChangeTracking.class)) {
-                        getLogger().logWarningMessage(MetadataLogger.IGNORE_CHANGE_TRACKING_ANNOTATION, getDescriptor().getJavaClass(), getJavaClass());
+                    if (changeTracking != null) {
+                        getLogger().logWarningMessage(MetadataLogger.OVERRIDE_ANNOTATION_WITH_XML, changeTracking, getJavaClassName(), getLocation());
                     }
                     
                     m_changeTracking.process(getDescriptor());
@@ -634,39 +612,57 @@ public abstract class ClassAccessor extends MetadataAccessor {
         }   
     }
     
-    
+    /**
+     * INTERNAL:
+     */
     protected void processCopyPolicy(){
-        if (getCopyPolicy() != null || isAnnotationPresent(CopyPolicy.class) || isAnnotationPresent(InstantiationCopyPolicy.class) || isAnnotationPresent(CloneCopyPolicy.class)) {
+        Annotation copyPolicy = getAnnotation(CopyPolicy.class);
+        Annotation instantiationCopyPolicy = getAnnotation(InstantiationCopyPolicy.class);
+        Annotation cloneCopyPolicy = getAnnotation(CloneCopyPolicy.class);
+
+        if (getCopyPolicy() != null || copyPolicy != null || instantiationCopyPolicy != null || cloneCopyPolicy != null) {
             if (getDescriptor().hasCopyPolicy()){
-                getLogger().logWarningMessage(MetadataLogger.IGNORE_EXISTING_COPY_POLICY, getDescriptor().getJavaClass(), getJavaClass());
+                // We must be processing a mapped superclass ...
+                getLogger().logWarningMessage(MetadataLogger.IGNORE_MAPPED_SUPERCLASS_COPY_POLICY, getDescriptor().getJavaClass(), getJavaClass());
             }
+            
             if (getCopyPolicy() == null) {
-                boolean foundCopyPolicy = false;
-                Annotation copyPolicy = getAnnotation(CopyPolicy.class);
-                if (copyPolicy != null){
-                    foundCopyPolicy = true;
-                    new CustomCopyPolicyMetadata(copyPolicy).process(getDescriptor(), getJavaClass());
-                }
-                copyPolicy = getAnnotation(InstantiationCopyPolicy.class);
-                if (copyPolicy != null){
-                    if (foundCopyPolicy){
-                        throw ValidationException.multipleCopyPolicyAnnotationsOnSameClass(getJavaClass().getName());
+                // Look at the annotations.
+                if (copyPolicy != null) {
+                    if (instantiationCopyPolicy != null || cloneCopyPolicy != null) {
+                        throw ValidationException.multipleCopyPolicyAnnotationsOnSameClass(getJavaClassName());
                     }
-                    foundCopyPolicy = true;
-                    new InstantiationCopyPolicyMetadata(copyPolicy).process(getDescriptor(), getJavaClass());
+
+                    new CustomCopyPolicyMetadata(copyPolicy, getAccessibleObject()).process(getDescriptor());
                 }
-                copyPolicy = getAnnotation(CloneCopyPolicy.class);
-                if (copyPolicy != null){
-                    if (foundCopyPolicy){
-                        throw ValidationException.multipleCopyPolicyAnnotationsOnSameClass(getJavaClass().getName());
+                
+                if (instantiationCopyPolicy != null){
+                    if (cloneCopyPolicy != null) {
+                        throw ValidationException.multipleCopyPolicyAnnotationsOnSameClass(getJavaClassName());
                     }
-                    new CloneCopyPolicyMetadata(copyPolicy).process(getDescriptor(), getJavaClass());
+                    
+                    new InstantiationCopyPolicyMetadata(instantiationCopyPolicy, getAccessibleObject()).process(getDescriptor());
                 }
+                
+                if (cloneCopyPolicy != null){
+                    new CloneCopyPolicyMetadata(cloneCopyPolicy, getAccessibleObject()).process(getDescriptor());
+                }
+                
             } else {
-                if (isAnnotationPresent(CopyPolicy.class) || isAnnotationPresent(InstantiationCopyPolicy.class) || isAnnotationPresent(CloneCopyPolicy.class)){
-                    getLogger().logWarningMessage(MetadataLogger.IGNORE_COPY_POLICY_ANNOTATION, getJavaClass());
+                // We have a copy policy specified in XML.
+                if (copyPolicy != null) {
+                    getLogger().logWarningMessage(MetadataLogger.OVERRIDE_ANNOTATION_WITH_XML, copyPolicy, getJavaClassName(), getLocation());
                 }
-                getCopyPolicy().process(getDescriptor(), getJavaClass());
+                
+                if (instantiationCopyPolicy != null) {
+                    getLogger().logWarningMessage(MetadataLogger.OVERRIDE_ANNOTATION_WITH_XML, instantiationCopyPolicy, getJavaClassName(), getLocation());
+                }
+                
+                if (cloneCopyPolicy != null) {
+                    getLogger().logWarningMessage(MetadataLogger.OVERRIDE_ANNOTATION_WITH_XML, cloneCopyPolicy, getJavaClassName(), getLocation());
+                }
+                
+                getCopyPolicy().process(getDescriptor());
             }
         }
     }
@@ -675,7 +671,9 @@ public abstract class ClassAccessor extends MetadataAccessor {
      * INTERNAL:
      */
     protected void processCustomizer() {
-        if (m_customizerClassName != null || isAnnotationPresent(Customizer.class)) {
+        Annotation customizer = getAnnotation(Customizer.class);
+        
+        if ((m_customizerClass != null && ! m_customizerClass.equals(void.class)) || customizer != null) {
             if (getDescriptor().hasCustomizer()) {
                 // We must be processing a mapped superclass and its subclass
                 // override the customizer class, that is, defined its own. Log 
@@ -683,23 +681,42 @@ public abstract class ClassAccessor extends MetadataAccessor {
                 // mapped superclass for the descriptor's java class.
                 getLogger().logWarningMessage(MetadataLogger.IGNORE_MAPPED_SUPERCLASS_CUSTOMIZER, getDescriptor().getJavaClass(), getJavaClass());
             } else {
-                if (m_customizerClassName == null) { 
-                    // Look for an annotation
-                    Annotation customizer = getAnnotation(Customizer.class);
-                    
-                    if (customizer != null) {
-                        m_customizerClass = (Class) MetadataHelper.invokeMethod("value", customizer);
-                        getProject().addAccessorWithCustomizer(this);
-                    }
+                if (m_customizerClass == null || m_customizerClass.equals(void.class)) { 
+                    // Use the annotation value.
+                    m_customizerClass = (Class) MetadataHelper.invokeMethod("value", customizer);
                 } else {
-                    if (isAnnotationPresent(Customizer.class)) {
-                        getLogger().logWarningMessage(MetadataLogger.IGNORE_CUSTOMIZER_ANNOTATION, getDescriptor().getJavaClass(), getJavaClass());
+                    // Use the xml value and log a message if necessary.
+                    if (customizer != null) {
+                        getLogger().logWarningMessage(MetadataLogger.OVERRIDE_ANNOTATION_WITH_XML, customizer, getJavaClassName(), getLocation());
                     }
-                    
-                    m_customizerClass = getEntityMappings().getClassForName(m_customizerClassName);
-                    getProject().addAccessorWithCustomizer(this);
                 }
+                
+                getProject().addAccessorWithCustomizer(this);
             }
+        }
+    }
+    
+    /**
+     * INTERNAL:
+     * Adds properties to the descriptor.
+     */
+    protected void processProperties() {        
+        // Add the XML properties first.
+        for (PropertyMetadata property : getProperties()) {
+            getDescriptor().addProperty(property);
+        }
+
+        // Now add the properties defined in annotations.
+        Annotation properties = getAnnotation(Properties.class);
+        if (properties != null) {
+            for (Annotation property : (Annotation[]) MetadataHelper.invokeMethod("value", properties)) {
+                getDescriptor().addProperty(new PropertyMetadata(property, getAccessibleObject()));
+            }
+        }
+        
+        Annotation property = getAnnotation(Property.class);
+        if (property != null) {
+            getDescriptor().addProperty(new PropertyMetadata(property, getAccessibleObject()));
         }
     }
     
@@ -708,7 +725,7 @@ public abstract class ClassAccessor extends MetadataAccessor {
      * Used for OX mapping.
      */
     public void setAccess(String access) {
-    	m_access = access;
+        m_access = access;
     } 
     
     /**
@@ -716,7 +733,7 @@ public abstract class ClassAccessor extends MetadataAccessor {
      * Used for OX mapping.
      */
     public void setAttributes(XMLAttributes attributes) {
-    	m_attributes = attributes;
+        m_attributes = attributes;
     }
     
     /**
@@ -777,18 +794,12 @@ public abstract class ClassAccessor extends MetadataAccessor {
     
     /**
      * INTERNAL:
-     * Return the annotated element for this accessor.
+     * Set the java class for this accessor. This is currently called after
+     * the class loader has changed and we are adding entity listeners.
      */
     public void setJavaClass(Class cls) {
-        setAnnotatedElement(cls);
+        getAccessibleObject().setAnnotatedElement(cls);
         getDescriptor().setJavaClass(cls);
-    }
-    
-    /**
-     * INTERNAL:
-     */
-    public void setMappingFile(String mappingFile) {
-    	m_mappingFile = mappingFile;
     }
     
     /**
@@ -796,6 +807,6 @@ public abstract class ClassAccessor extends MetadataAccessor {
      * Used for OX mapping.
      */
     public void setMetadataComplete(Boolean metadataComplete) {
-    	m_metadataComplete = metadataComplete;
+        m_metadataComplete = metadataComplete;
     }
 }

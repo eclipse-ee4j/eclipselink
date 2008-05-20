@@ -23,18 +23,21 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
 /**
  * Annotation for a user defined property.
- * A single Property may be specified directly on a mapped attribute or its get/set method.
- * Multiple Properties should be wrapped into Properties annotation.
+ * A single Property may be specified directly on a mapped attribute or its 
+ * get/set method. Multiple Properties should be wrapped into Properties 
+ * annotation.
  *  
  * Property may be assigned to either a mapped attribute (or its get/set method)
  * within Entity, MappedSuperclass and Embeddable class;
  * or to Entity, MappedSuperclass and Embeddable class.
  * 
- * In case orm xml is used Property an Properties annotations specified on mapped attributes are ignored,
- * specified on a class are merged with the ones specified in orm xml with the latter taking precedence in case of conflicts.
+ * In case orm xml is used Property an Properties annotations specified on 
+ * mapped attributes are ignored, specified on a class are merged with the ones 
+ * specified in orm xml with the latter taking precedence in case of conflicts.
  * 
- * Properties defined in MappedSuperclass are passed to all inheriting Entities and MappedSuperclasses.
- * In case of a conflict property value defined directly on a class always overrides the value passed from class's parent.
+ * Properties defined in MappedSuperclass are passed to all inheriting Entities 
+ * and MappedSuperclasses. In case of a conflict property value defined directly 
+ * on a class always overrides the value passed from class's parent.
  * 
  * @see javax.persistence.Embeddable
  * @see javax.persistence.Entity

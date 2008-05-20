@@ -9,99 +9,112 @@
  * 
  * Contributors:
  *     Andrei Ilitchev (Oracle), March 7, 2008 
- *        - New file introduced for bug 211300.  
+ *        - New file introduced for bug 211300.
+ *     05/16/2008-1.0M8 Guy Pelletier 
+ *       - 218084: Implement metadata merging functionality between mapping files     
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.accessors.mappings;
 
+import java.lang.annotation.Annotation;
+
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
-import javax.persistence.Column;
-
 import org.eclipse.persistence.annotations.ReadTransformer;
-import org.eclipse.persistence.annotations.Transformation;
 import org.eclipse.persistence.annotations.WriteTransformer;
 import org.eclipse.persistence.annotations.WriteTransformers;
 
 import org.eclipse.persistence.internal.jpa.metadata.accessors.classes.ClassAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAccessibleObject;
-import org.eclipse.persistence.internal.jpa.metadata.columns.ColumnMetadata;
+
 import org.eclipse.persistence.internal.jpa.metadata.transformers.ReadTransformerMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.transformers.WriteTransformerMetadata;
 
 import org.eclipse.persistence.mappings.TransformationMapping;
 
 /**
- * TransformationAccessor. Transformation annotation may or may not be present on the
- * accessible object.
+ * INTERNAL:
+ * TransformationAccessor. Transformation annotation may or may not be present 
+ * on the accessible object.
  * 
  * @author Andrei Ilitchev
  * @since EclipseLink 1.0 
  */
 public class TransformationAccessor extends BasicAccessor {
     private ReadTransformerMetadata m_readTransformer;
-    private List<WriteTransformerMetadata> m_writeTransformers = new ArrayList<WriteTransformerMetadata>();
+    private List<WriteTransformerMetadata> m_writeTransformers;
     
     /**
      * INTERNAL:
      */
     public TransformationAccessor() {
-        super();
+        super("<transformation>");
     }
     
     /**
      * INTERNAL:
      */
-    public TransformationAccessor(MetadataAccessibleObject accessibleObject, ClassAccessor classAccessor) {
-        super(accessibleObject, classAccessor);
+    public TransformationAccessor(Annotation transformation, MetadataAccessibleObject accessibleObject, ClassAccessor classAccessor) {
+        super(transformation, accessibleObject, classAccessor);
         
-        Transformation transformation = getAnnotation(Transformation.class);
         if (transformation != null) {
             setFetch((Enum) MetadataHelper.invokeMethod("fetch", transformation));
             setOptional((Boolean) MetadataHelper.invokeMethod("optional", transformation));
         }
-
+        
         ReadTransformer readTransformer = getAnnotation(ReadTransformer.class);
         if (readTransformer != null) {
-            setReadTransformer(readTransformer);
-        }
-
-        WriteTransformer writeTransformer = getAnnotation(WriteTransformer.class);
-        if (writeTransformer != null) {
-            addWriteTransformer(writeTransformer);
+            m_readTransformer = new ReadTransformerMetadata(readTransformer, accessibleObject);
         }
         
+        // Set the write transformers if some are present.
+        m_writeTransformers = new ArrayList<WriteTransformerMetadata>();
+        
+        // Process all the write transformers first.
         WriteTransformers writeTransformers = getAnnotation(WriteTransformers.class);
         if (writeTransformers != null) {
-            WriteTransformer[] writeTransformerArray = writeTransformers.value();
-            for(int i=0; i<writeTransformerArray.length; i++) {
-                addWriteTransformer(writeTransformerArray[i]);
+            for (Annotation transformer : (Annotation[]) MetadataHelper.invokeMethod("value", writeTransformers)) {
+                m_writeTransformers.add(new WriteTransformerMetadata(transformer, accessibleObject));
             }
         }
-
+        
+        // Process the single write transformer second.
+        WriteTransformer writeTransformer = getAnnotation(WriteTransformer.class);
+        if (writeTransformer != null) {
+            m_writeTransformers.add(new WriteTransformerMetadata(writeTransformer, accessibleObject));
+        }
+        
         //TODO: ReturningPolicy
     }
     
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
     public ReadTransformerMetadata getReadTransformer() {
         return m_readTransformer;
     }
     
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
     public List<WriteTransformerMetadata> getWriteTransformers() {
         return m_writeTransformers;
     }
     
     /**
-    * INTERNAL: (Override from MetadataAccessor)
-    */
-    public void init(MetadataAccessibleObject accessibleObject, ClassAccessor accessor) {
-        super.init(accessibleObject, accessor);
-        if (m_readTransformer != null && m_readTransformer.hasClassName()) {
-            m_readTransformer.setTransformerClass(getEntityMappings().getClassForName(m_readTransformer.getTransformerClassName()));
-        }
-        for (WriteTransformerMetadata writeTransformer : m_writeTransformers) {
-            writeTransformer.setTransformerClass(getEntityMappings().getClassForName(writeTransformer.getTransformerClassName()));
-        }
+     * INTERNAL:
+     */
+    @Override
+    public void initXMLObject(MetadataAccessibleObject accessibleObject) {
+        super.initXMLObject(accessibleObject);
+        
+        // Init the ORMetadata objects.
+        initXMLObject(m_readTransformer, accessibleObject);
+        
+        // Init the list of ORMetadata objects.
+        initXMLObjects(m_writeTransformers, accessibleObject);
     }
     
     /**
@@ -109,6 +122,7 @@ public class TransformationAccessor extends BasicAccessor {
      * Process a transformation accessor. Creates a TransformationMapping and 
      * adds it to descriptor.
      */
+    @Override
     public void process() {
         TransformationMapping mapping = new TransformationMapping();
         mapping.setAttributeName(getAttributeName());
@@ -124,51 +138,46 @@ public class TransformationAccessor extends BasicAccessor {
         // Process properties
         processProperties(mapping);
 
-        // Add the mapping to the descriptor early so that
-        // in case of exception the mapped class could be included into exception message.
-        getDescriptor().addMapping(mapping);
-
         if (m_readTransformer != null) {
-            m_readTransformer.process(mapping);
+            m_readTransformer.process(mapping, getAnnotatedElementName());
         }
         
         if (m_writeTransformers.isEmpty()) {
             mapping.setIsReadOnly(true);
         } else {
-            if(m_writeTransformers.size() == 1) {
-                // If only one WriteTransformer specified then if column name is not specified
-                // attribute name will be used as a column name.
-                if(!m_writeTransformers.get(0).hasFieldName()) {
+            if (m_writeTransformers.size() == 1) {
+                // If only one WriteTransformer specified then if column name 
+                // is not specified attribute name will be used as a column 
+                // name.
+                if (! m_writeTransformers.get(0).hasFieldName()) {
                     m_writeTransformers.get(0).setFieldName(getAttributeName());
                 }
             }
-            for(Iterator<WriteTransformerMetadata> it = m_writeTransformers.iterator(); it.hasNext(); ) {
-                it.next().process(mapping);
+            
+            for (WriteTransformerMetadata writeTransformer : m_writeTransformers) {
+                writeTransformer.process(mapping, getAnnotatedElementName());
             }
         }
 
-        //TODO: ReturningPolicy
+        // TODO: ReturningPolicy
+        
+        // Add the mapping to the descriptor.
+        getDescriptor().addMapping(mapping);
     }
-
+    
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
     public void setReadTransformer(ReadTransformerMetadata readTransformer) {
         m_readTransformer = readTransformer;
     }
     
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
     public void setWriteTransformers(List<WriteTransformerMetadata> writeTransformers) {
         m_writeTransformers = writeTransformers;
-    }
-    
-    protected void setReadTransformer(ReadTransformer readTransformer) {
-        m_readTransformer = new ReadTransformerMetadata();        
-        m_readTransformer.setTransformerClass((Class)MetadataHelper.invokeMethod("transformerClass", readTransformer));
-        m_readTransformer.setMethod((String)MetadataHelper.invokeMethod("method", readTransformer));
-    }
-
-    protected void addWriteTransformer(WriteTransformer writeTransformer) {
-        WriteTransformerMetadata writeTransformerMetadata = new WriteTransformerMetadata();        
-        writeTransformerMetadata.setTransformerClass((Class)MetadataHelper.invokeMethod("transformerClass", writeTransformer));
-        writeTransformerMetadata.setMethod((String)MetadataHelper.invokeMethod("method", writeTransformer));
-        writeTransformerMetadata.setColumn(new ColumnMetadata((Column)MetadataHelper.invokeMethod("column", writeTransformer)));
-        m_writeTransformers.add(writeTransformerMetadata);
     }
 }

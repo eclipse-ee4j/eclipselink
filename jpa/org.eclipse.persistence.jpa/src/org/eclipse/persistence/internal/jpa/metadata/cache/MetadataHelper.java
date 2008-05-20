@@ -7,8 +7,9 @@
  * and the Eclipse Distribution License is available at 
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
- * @author Kyle Chen
- * @since Eclipselink 1.0
+ * Contributors:
+ *     05/16/2008-1.0M8 Guy Pelletier 
+ *       - 218084: Implement metadata merging functionality between mapping files
  ******************************************************************************/
 package org.eclipse.persistence.internal.jpa.metadata.cache;
 
@@ -23,8 +24,12 @@ import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.internal.security.PrivilegedMethodInvoker;
 
 /**
- * This class only contains the common helper methods that can be accessed at
- * package-private level.
+ * INTERNAL:
+ * Common helper methods for the metadata processing. Security sensitive methods
+ * from this class must remain package accessible only.
+ * 
+ * @author Guy Pelletier
+ * @since EclisepLink 1.0
  */
 final class MetadataHelper {
     /** 

@@ -9,76 +9,89 @@
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
+ *     05/16/2008-1.0M8 Guy Pelletier 
+ *       - 218084: Implement metadata merging functionality between mapping files
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.listeners;
 
 import java.lang.reflect.Method;
-import org.eclipse.persistence.descriptors.DescriptorEvent;
-import org.eclipse.persistence.exceptions.ValidationException;
+import java.util.ArrayList;
+
 import org.eclipse.persistence.internal.jpa.metadata.accessors.classes.EntityAccessor;
+import org.eclipse.persistence.internal.jpa.metadata.accessors.classes.MappedSuperclassAccessor;
 
 /**
- * A callback listener for those entities that define callback methods. 
- * Callback methods on an entity must be signatureless, hence, this class 
- * overrides behavior from MetadataEntityListener.
+ * A metadata class to facilitate the processing of lifecycle methods on an
+ * entity class (and its mapped superclasses).
  * 
  * @author Guy Pelletier
  * @since TopLink 10.1.3/EJB 3.0 Preview
  */
-public class EntityClassListenerMetadata extends EntityListenerMetadata {	
+public class EntityClassListenerMetadata extends EntityListenerMetadata {
+    private EntityAccessor m_accessor;
+    
     /**
      * INTERNAL: 
      */
-    public EntityClassListenerMetadata(EntityAccessor classAccessor) {
-        super(classAccessor.getJavaClass());
+    public EntityClassListenerMetadata(EntityAccessor accessor) {
+        super(null, null, accessor.getAccessibleObject());
+    
+        m_accessor = accessor;
         
         // Set any XML defined call back method names.
-        setPostLoad(classAccessor.getPostLoad());
-        setPostPersist(classAccessor.getPostPersist());
-        setPostRemove(classAccessor.getPostRemove());
-        setPostUpdate(classAccessor.getPostUpdate());
-        setPrePersist(classAccessor.getPrePersist());
-        setPreRemove(classAccessor.getPreRemove());
-        setPreUpdate(classAccessor.getPreUpdate());
-    }
-    
-    /**
-     * INTERNAL: (Override from MetadataEntityListener)
-     * For entity classes listener methods, they need to override listeners 
-     * from mapped superclasses for the same method. So we need to override 
-     * this method and make the override check instead of it throwing an
-     * exception for multiple lifecycle methods for the same event.
-     */
-    public void addEventMethod(String event, Method method) {
-        if (! hasOverriddenEventMethod(method, event)) {
-            super.addEventMethod(event, method);
-        }
+        setPostLoad(accessor.getPostLoad());
+        setPostPersist(accessor.getPostPersist());
+        setPostRemove(accessor.getPostRemove());
+        setPostUpdate(accessor.getPostUpdate());
+        setPrePersist(accessor.getPrePersist());
+        setPreRemove(accessor.getPreRemove());
+        setPreUpdate(accessor.getPreUpdate());
     }
     
     /**
      * INTERNAL:
+     * Return potential lifecyle callback event methods for a mapped superclass. 
+     * We must 'convert' the method to the entity class context before adding it 
+     * to the listener.
      */
-    public Class getListenerClass() {
-        return getEntityClass();
+    Method[] getCandidateCallbackMethodsForMappedSuperclass(Class mappedSuperclass, Class entityClass) {
+        ArrayList candidateMethods = new ArrayList();
+        Method[] allMethods = getMethods(entityClass);
+        Method[] declaredMethods = getDeclaredMethods(mappedSuperclass);
+        
+        for (int i = 0; i < declaredMethods.length; i++) {
+            Method method = getMethod(declaredMethods[i].getName(), allMethods);
+            
+            if (method != null) {
+                candidateMethods.add(method);
+            }
+        }
+        
+        return (Method[]) candidateMethods.toArray(new Method[candidateMethods.size()]);
     }
-	
+    
     /**
      * INTERNAL: 
      */
-    protected void invokeMethod(String event, DescriptorEvent descriptorEvent) {
-        Object[] objectList = {};
-        invokeMethod(getEventMethod(event), descriptorEvent.getObject(), objectList, descriptorEvent);
-    }
-
-    /**
-     * INTERNAL:
-     */
-    protected void validateMethod(Method method) {
-        if (method.getParameterTypes().length > 0) {
-            throw ValidationException.invalidEntityCallbackMethodArguments(getEntityClass(), method.getName());
-        } else {
-            // So far so good, now check the method modifiers.
-            validateMethodModifiers(method);
+    public void process() {
+        // Create the listener.
+        m_listener = new EntityClassListener(m_accessor.getJavaClass());
+        
+        // Process the callback methods as defined in XML or annotations on the 
+        // entity class first.
+        processCallbackMethods(getDeclaredMethods(m_accessor.getJavaClass()), m_accessor.getLogger());
+        
+        // Process the callback methods as defined in XML or annotations 
+        // on the mapped superclasses if not excluded second. 
+        if (! m_accessor.getDescriptor().excludeSuperclassListeners()) {
+            for (MappedSuperclassAccessor mappedSuperclass : m_accessor.getMappedSuperclasses()) {
+                processCallbackMethods(getCandidateCallbackMethodsForMappedSuperclass(mappedSuperclass.getJavaClass(), m_accessor.getJavaClass()), m_accessor.getLogger());
+            }
+        }
+        
+        // Add the listener only if we actually found callback methods.
+        if (m_listener.hasCallbackMethods()) {
+            m_accessor.getDescriptor().setEntityEventListener(m_listener);
         }
     }
 }

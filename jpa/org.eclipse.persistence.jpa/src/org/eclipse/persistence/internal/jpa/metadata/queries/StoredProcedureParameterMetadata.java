@@ -9,13 +9,18 @@
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
+ *     05/16/2008-1.0M8 Guy Pelletier 
+ *       - 218084: Implement metadata merging functionality between mapping files
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.queries;
 
+import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.persistence.annotations.Direction;
+import org.eclipse.persistence.internal.jpa.metadata.ORMetadata;
+import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAccessibleObject;
 import org.eclipse.persistence.queries.StoredProcedureCall;
 
 /**
@@ -25,7 +30,7 @@ import org.eclipse.persistence.queries.StoredProcedureCall;
  * @author Guy Pelletier
  * @since TopLink 11g
  */
-public class StoredProcedureParameterMetadata {
+public class StoredProcedureParameterMetadata extends ORMetadata {
     private Class m_type;
     private Enum m_direction;
     private Integer m_jdbcType;
@@ -36,19 +41,58 @@ public class StoredProcedureParameterMetadata {
     
     /**
      * INTERNAL:
+     * Used for OX mapping.
      */
-    public StoredProcedureParameterMetadata() {}
+    public StoredProcedureParameterMetadata() {
+        super("<stored-procedure-parameter>");
+    }
     
     /**
      * INTERNAL:
      */
-    public StoredProcedureParameterMetadata(Object storedProcedureParameter) {
+    public StoredProcedureParameterMetadata(Annotation storedProcedureParameter, MetadataAccessibleObject accessibleObject) {
+        super(storedProcedureParameter, accessibleObject);
+        
         m_direction = (Enum) MetadataHelper.invokeMethod("procedureParameterDirection", storedProcedureParameter);
         m_name = (String) MetadataHelper.invokeMethod("name", storedProcedureParameter);
         m_queryParameter = (String) MetadataHelper.invokeMethod("queryParameter", storedProcedureParameter); 
         m_type = (Class) MetadataHelper.invokeMethod("type", storedProcedureParameter);
         m_jdbcType = (Integer) MetadataHelper.invokeMethod("jdbcType", storedProcedureParameter);
         m_jdbcTypeName = (String) MetadataHelper.invokeMethod("jdbcTypeName", storedProcedureParameter);
+    }
+    
+    /**
+     * INTERNAL:
+     */
+    @Override
+    public boolean equals(Object objectToCompare) {
+        if (objectToCompare instanceof StoredProcedureParameterMetadata) {
+            StoredProcedureParameterMetadata parameter = (StoredProcedureParameterMetadata) objectToCompare;
+            
+            if (! valuesMatch(m_type, parameter.getType())) {
+                return false;
+            }
+            
+            if (! valuesMatch(m_direction, parameter.getDirection())) {
+                return false;
+            }
+            
+            if (! valuesMatch(m_jdbcType, parameter.getJdbcType())) {
+                return false;
+            }
+
+            if (! valuesMatch(m_jdbcTypeName, parameter.getJdbcTypeName())) {
+                return false;
+            }
+            
+            if (! valuesMatch(m_name, parameter.getName())) {
+                return false;
+            }
+            
+            return valuesMatch(m_queryParameter, parameter.getQueryParameter());
+        }
+        
+        return false;
     }
     
     /**
@@ -125,6 +169,16 @@ public class StoredProcedureParameterMetadata {
      */
     protected boolean hasType() {
         return m_type != void.class;
+    }
+    
+    /**
+     * INTERNAL:
+     */
+    @Override
+    public void initXMLObject(MetadataAccessibleObject accessibleObject) {
+        super.initXMLObject(accessibleObject);
+    
+        m_type = initXMLClassName(m_typeName);
     }
     
     /**

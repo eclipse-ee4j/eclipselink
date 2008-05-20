@@ -9,14 +9,23 @@
  *
  * Contributors:
  *     tware - March 28/2008 - 1.0M7 - Initial implementation
+ *     05/16/2008-1.0M8 Guy Pelletier 
+ *       - 218084: Implement metadata merging functionality between mapping files
  ******************************************************************************/  
-
 package org.eclipse.persistence.internal.jpa.metadata.copypolicy;
+
+import java.lang.annotation.Annotation;
+
+import org.eclipse.persistence.descriptors.ClassDescriptor;
+import org.eclipse.persistence.internal.jpa.metadata.MetadataDescriptor;
+import org.eclipse.persistence.internal.jpa.metadata.ORMetadata;
+import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAccessibleObject;
+import org.eclipse.persistence.descriptors.copying.CopyPolicy;
 
 /**
  * INTERNAL:
- * 
- * Incapsulates common behavior amount class for all the different types of copy policy metadata
+ * Incapsulates common behavior amount class for all the different types of 
+ * copy policy metadata
  * 
  * @see org.eclipse.persistence.internal.jpa.metadata.copypolicy.CustomCopyPolicy
  * @see org.eclipse.persistence.internal.jpa.metadata.copypolicy.InstantiationCopyPolicy
@@ -24,24 +33,33 @@ package org.eclipse.persistence.internal.jpa.metadata.copypolicy;
  * 
  * @author tware
  */
-import org.eclipse.persistence.descriptors.ClassDescriptor;
-import org.eclipse.persistence.internal.jpa.metadata.MetadataDescriptor;
-import org.eclipse.persistence.descriptors.copying.CopyPolicy;
-
-public abstract class CopyPolicyMetadata {
-   
-    protected String javaClassName;
-    
-    protected CopyPolicyMetadata(){
-        super();
+public abstract class CopyPolicyMetadata extends ORMetadata {   
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+    protected CopyPolicyMetadata(String xmlElement) {
+        super(xmlElement);
     }
     
-    public void process(MetadataDescriptor descriptor, Class javaClass){
+    /**
+     * INTERNAL:
+     */
+    protected CopyPolicyMetadata(Annotation annotation, MetadataAccessibleObject accessibleObject) {
+        super(annotation, accessibleObject);
+    }
+    
+    /**
+     * INTERNAL:
+     */
+    public void process(MetadataDescriptor descriptor) {
         descriptor.setHasCopyPolicy();
-        this.javaClassName = javaClass.getName();
         ClassDescriptor classDescriptor = descriptor.getClassDescriptor();       
         classDescriptor.setCopyPolicy(getCopyPolicy());
     }
     
+    /**
+     * INTERNAL:
+     */
     public abstract CopyPolicy getCopyPolicy();
 }

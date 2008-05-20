@@ -9,12 +9,15 @@
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
+ *     05/16/2008-1.0M8 Guy Pelletier 
+ *       - 218084: Implement metadata merging functionality between mapping files
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.accessors.mappings;
 
 import org.eclipse.persistence.internal.jpa.metadata.accessors.mappings.MappingAccessor;
 
 /**
+ * INTERNAL:
  * An transient accessor ... which does nothing ... just a clever way to
  * make sure we don't process the accessible object for annotations.
  * 
@@ -22,15 +25,17 @@ import org.eclipse.persistence.internal.jpa.metadata.accessors.mappings.MappingA
  * @since TopLink EJB 3.0 Reference Implementation
  */
 public class TransientAccessor extends MappingAccessor {
-	/**
+    /**
      * INTERNAL:
      */
-    public TransientAccessor() {}
+    public TransientAccessor() {
+        super("<transient>");
+    }
     
     /**
      * INTERNAL:
      */
      public void process() {
-    	 // Does nothing ...
+         // Does nothing ...
      }
 }

@@ -10,31 +10,59 @@
  * Contributors:
  *     Chris Delahunt (Oracle) May 13, 2008-1.0M8  
  *       - New file introduced for bug 217164.
+ *     05/16/2008-1.0M8 Guy Pelletier 
+ *       - 218084: Implement metadata merging functionality between mapping files
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.accessors;
 
+import org.eclipse.persistence.internal.jpa.metadata.ORMetadata;
+
 /**
+ * INTERNAL:
  * AccessMethodsMetadata. Metadata for user specified property access methods
  * 
  * @author Chris Delahunt
  * @since EclipseLink 1.0M8
  */
-public class AccessMethodsMetadata {
+public class AccessMethodsMetadata extends ORMetadata {
     String getMethodName;
     String setMethodName;
 
+    /**
+     * INTERNAL:
+     */
+    public AccessMethodsMetadata() {
+        super("<access-methods>");
+    }
+    
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
     public String getGetMethodName(){
         return getMethodName;
     }
     
-    public void setGetMethodName(String getMethodName){
-        this.getMethodName = getMethodName;
-    }
-
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
     public String getSetMethodName(){
         return setMethodName;
     }
 
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+    public void setGetMethodName(String getMethodName){
+        this.getMethodName = getMethodName;
+    }
+    
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
     public void setSetMethodName(String setMethodName){
         this.setMethodName = setMethodName;
     }

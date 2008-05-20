@@ -9,14 +9,20 @@
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
+ *     05/16/2008-1.0M8 Guy Pelletier 
+ *       - 218084: Implement metadata merging functionality between mapping files
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.queries;
 
 import java.lang.annotation.Annotation;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 import org.eclipse.persistence.exceptions.ValidationException;
-import org.eclipse.persistence.internal.jpa.metadata.MetadataHelper;
+import org.eclipse.persistence.internal.jpa.QueryHintsHandler;
+import org.eclipse.persistence.internal.jpa.metadata.ORMetadata;
+import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAccessibleObject;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.queries.EJBQLPlaceHolderQuery;
 
@@ -27,66 +33,142 @@ import org.eclipse.persistence.queries.EJBQLPlaceHolderQuery;
  * @author Guy Pelletier
  * @since TopLink EJB 3.0 Reference Implementation
  */
-public class NamedQueryMetadata extends QueryMetadata {
+public class NamedQueryMetadata extends ORMetadata {
+    private List<QueryHintMetadata> m_hints = new ArrayList<QueryHintMetadata>();
+    private String m_name;
+    private String m_query;
+    
     /**
      * INTERNAL:
+     * Used for OX mapping.
      */
     public NamedQueryMetadata() {
-    	setLoadedFromXML();
+        super("<named-query>");
     }
 
     /**
      * INTERNAL:
      */
-    public NamedQueryMetadata(Annotation namedQuery, String javaClassName) {
-    	setLoadedFromAnnotation();
-        setLocation(javaClassName);
+    protected NamedQueryMetadata(String xmlElement) {
+        super(xmlElement);
+    }
+    
+    /**
+     * INTERNAL:
+     */
+    public NamedQueryMetadata(Annotation namedQuery, MetadataAccessibleObject accessibleObject) {
+        super(namedQuery, accessibleObject);
         
-        setName((String) invokeMethod("name", namedQuery));
-        setQuery((String) invokeMethod("query", namedQuery));
-        setHints((Annotation[]) invokeMethod("hints", namedQuery));     
+        m_name = (String) MetadataHelper.invokeMethod("name", namedQuery);
+        m_query = (String) MetadataHelper.invokeMethod("query", namedQuery);
+
+        for (Annotation hint : (Annotation[]) MetadataHelper.invokeMethod("hints", namedQuery)) {
+            m_hints.add(new QueryHintMetadata(hint, accessibleObject));
+        }
     }
     
     /**
      * INTERNAL:
      */
+    @Override
     public boolean equals(Object objectToCompare) {
-    	if (objectToCompare instanceof NamedQueryMetadata) {
-    		NamedQueryMetadata namedQuery = (NamedQueryMetadata) objectToCompare;
-    		
-    		if (! MetadataHelper.valuesMatch(getName(), namedQuery.getName())) {
-    			return false;
-    		}
-    		
-    		if (! MetadataHelper.valuesMatch(getQuery(), namedQuery.getQuery())) {
-    			return false;
-    		}
-    		
-    		if (getHints().size() != namedQuery.getHints().size()) {
-    			return false;
-        	} else {
-    			for (QueryHintMetadata hint : getHints()) {
-        			if (! namedQuery.hasHint(hint)) {
-        				return false;
-        			}
-        		}
-    		}
-    		
-    		return true;
-    	}
-    	
-    	return false;
+        if (objectToCompare instanceof NamedQueryMetadata) {
+            NamedQueryMetadata query = (NamedQueryMetadata) objectToCompare;
+            
+            if (! valuesMatch(m_name, query.getName())) {
+                return false;
+            }
+            
+            if (! valuesMatch(m_query, query.getQuery())) {
+                return false;
+            }
+            
+            return valuesMatch(m_hints, query.getHints());
+        }
+        
+        return false;
+    }
+    
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+    public List<QueryHintMetadata> getHints() {
+        return m_hints; 
+    }
+    
+    /**
+     * INTERNAL:
+     * To satisfy the abstract getIdentifier() method from ORMetadata.
+     */
+    @Override
+    public String getIdentifier() {
+        return m_name;
+    }
+    
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+    public String getName() {
+        return m_name;
+    }
+    
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+    public String getQuery() {
+        return m_query;
     }
     
     /**
      * INTERNAL:
      */
-    public void process(AbstractSession session) {
+    public void process(AbstractSession session, ClassLoader loader) {
         try {
             HashMap<String, String> hints = processQueryHints(session);
             session.addEjbqlPlaceHolderQuery(new EJBQLPlaceHolderQuery(getName(), getQuery(), hints));
         } catch (Exception exception) {
             throw ValidationException.errorProcessingNamedQuery(getClass(), getName(), exception);
         }
+    }
+    
+    /**
+     * INTERNAL:
+     */ 
+    protected HashMap<String, String> processQueryHints(AbstractSession session) {
+        HashMap<String, String> hints = new HashMap<String, String>();
+        
+        for (QueryHintMetadata hint : m_hints) {
+            QueryHintsHandler.verify(hint.getName(), hint.getValue(), m_name, session);
+            hints.put(hint.getName(), hint.getValue());
+        }
+        
+        return hints;
+    } 
+    
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+    public void setHints(List<QueryHintMetadata> hints) {
+        m_hints = hints;
+    }
+    
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+    public void setName(String name) {
+        m_name = name;
+    }
+    
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+    public void setQuery(String query) {
+        m_query = query;
     }
 }

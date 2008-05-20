@@ -9,12 +9,17 @@
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
+ *     05/16/2008-1.0M8 Guy Pelletier 
+ *       - 218084: Implement metadata merging functionality between mapping files
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.queries;
 
 import java.lang.annotation.Annotation;
 import java.util.List;
 import java.util.ArrayList;
+
+import org.eclipse.persistence.internal.jpa.metadata.ORMetadata;
+import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAccessibleObject;
 
 /**
  * INTERNAL:
@@ -23,25 +28,54 @@ import java.util.ArrayList;
  * @author Guy Pelletier
  * @since TopLink EJB 3.0 Reference Implementation
  */
-public class EntityResultMetadata {
-	private Class m_entityClass; // Required in both XML and annotations.
-	private List<FieldResultMetadata> m_fieldResults;
-	private String m_discriminatorColumn;
-	private String m_entityClassName;
+public class EntityResultMetadata extends ORMetadata {
+    private Class m_entityClass; // Required in both XML and annotations.
+    private List<FieldResultMetadata> m_fieldResults = new ArrayList<FieldResultMetadata>();
+    private String m_discriminatorColumn;
+    private String m_entityClassName;
     
     /**
      * INTERNAL:
+     * Used for OX mapping.
      */
-    public EntityResultMetadata() {}
+    public EntityResultMetadata() {
+        super("<entity-result>");
+    }
 
     /**
      * INTERNAL:
      */
-    public EntityResultMetadata(Annotation entityResult) {
+    public EntityResultMetadata(Annotation entityResult, MetadataAccessibleObject accessibleObject) {
+        super(entityResult, accessibleObject);
+        
         m_entityClass = (Class) MetadataHelper.invokeMethod("entityClass", entityResult); 
         m_discriminatorColumn = (String) MetadataHelper.invokeMethod("discriminatorColumn", entityResult);
         
-        setFieldResults((Annotation[]) MetadataHelper.invokeMethod("fields", entityResult));
+        for (Annotation fieldResult : (Annotation[]) MetadataHelper.invokeMethod("fields", entityResult)) {
+            m_fieldResults.add(new FieldResultMetadata(fieldResult, accessibleObject));
+        }
+    }
+    
+    /**
+     * INTERNAL:
+     */
+    @Override
+    public boolean equals(Object objectToCompare) {
+        if (objectToCompare instanceof EntityResultMetadata) {
+            EntityResultMetadata entityResult = (EntityResultMetadata) objectToCompare;
+            
+            if (! valuesMatch(m_entityClass, entityResult.getEntityClass())) {
+                return false;
+            }
+            
+            if (! valuesMatch(m_fieldResults, entityResult.getFieldResults())) {
+                return false;
+            }
+            
+            return valuesMatch(m_discriminatorColumn, entityResult.getDiscriminatorColumn());
+        }
+        
+        return false;
     }
     
     /**
@@ -49,7 +83,7 @@ public class EntityResultMetadata {
      * Used for OX mapping.
      */
     public String getDiscriminatorColumn() {
-    	return m_discriminatorColumn;
+        return m_discriminatorColumn;
     }
     
     /**
@@ -84,10 +118,23 @@ public class EntityResultMetadata {
     
     /**
      * INTERNAL:
+     */
+    @Override
+    public void initXMLObject(MetadataAccessibleObject accessibleObject) {
+        super.initXMLObject(accessibleObject);
+        
+        // Initialize lists of ORMetadata objects.
+        initXMLObjects(m_fieldResults, accessibleObject);
+        
+        m_entityClass = initXMLClassName(m_entityClassName);
+    }
+    
+    /**
+     * INTERNAL:
      * Used for OX mapping.
      */
     public void setDiscriminatorColumn(String discriminatorColumn) {
-    	m_discriminatorColumn = discriminatorColumn;
+        m_discriminatorColumn = discriminatorColumn;
     }
     
     /**
@@ -107,21 +154,9 @@ public class EntityResultMetadata {
     
     /**
      * INTERNAL:
-     * Used for population from annotations.
-     */
-    protected void setFieldResults(Annotation[] fieldResults) {
-    	m_fieldResults = new ArrayList<FieldResultMetadata>();
-    	
-    	for (Annotation fieldResult : fieldResults) {
-    		m_fieldResults.add(new FieldResultMetadata(fieldResult));
-    	}
-    }
-    
-    /**
-     * INTERNAL:
      * Used for OX mapping.
      */
     public void setFieldResults(List<FieldResultMetadata> fieldResults) {
-    	m_fieldResults = fieldResults; 
+        m_fieldResults = fieldResults; 
     }
 }

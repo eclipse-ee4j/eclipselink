@@ -13,6 +13,7 @@
 package org.eclipse.persistence.exceptions;
 
 import java.util.Vector;
+import java.lang.annotation.Annotation;
 import java.lang.reflect.*;
 import org.eclipse.persistence.mappings.DatabaseMapping;// 78aclt
 import org.eclipse.persistence.internal.queries.*;
@@ -240,13 +241,10 @@ public class ValidationException extends EclipseLinkException {
     public static final int INVALID_ENTITY_MAPPINGS_DOCUMENT = 7201;    
     public static final int INVALID_ATTRIBUTE_OVERRIDE_NAME = 7202;    
     public static final int INVALID_COLLECTION_TYPE_FOR_RELATIONSHIP = 7203;
-    public static final int MULTIPLE_NAMED_QUERIES_WITH_SAME_NAME = 7204;
-    public static final int MULTIPLE_NAMED_NATIVE_QUERIES_WITH_SAME_NAME = 7205;
-    public static final int MULTIPLE_NAMED_STORED_PROCEDURE_QUERIES_WITH_SAME_NAME = 7206;
+    // 7204-7206 deleted
     public static final int INVALID_CLASS_TYPE_FOR_BLOB_ATTRIBUTE = 7207;
     public static final int INVALID_CLASS_TYPE_FOR_CLOB_ATTRIBUTE = 7208;
-    public static final int MULTIPLE_ATTRIBUTE_OVERRIDE_WITH_SAME_NAME = 7209;
-    public static final int MULTIPLE_ASSOCIATION_OVERRIDE_WITH_SAME_NAME = 7210;
+    // 7209-7210 deleted
     public static final int MAPPING_METADATA_APPLIED_TO_INVALID_ATTRIBUTE = 7211;
     public static final int NO_TEMPORAL_TYPE_SPECIFIED = 7212;
     public static final int CIRCULAR_MAPPED_BY_REFERENCES = 7213;
@@ -271,25 +269,23 @@ public class ValidationException extends EclipseLinkException {
     public static final int INVALID_ENTITY_CALLBACK_METHOD_ARGUMENTS = 7228;
     public static final int INVALID_ENTITY_LISTENER_CALLBACK_METHOD_ARGUMENTS = 7229;
 
-    public static final int PERSISTENCE_UNIT_METADATA_CONFLICT = 7230;
+    // 7230 deleted
     public static final int CANNOT_PERSIST_MANAGED_OBJECT = 7231;
     public static final int UNSPECIFIED_COMPOSITE_PK_NOT_SUPPORTED = 7232;
     public static final int MAPPING_METADATA_APPLIED_TO_METHOD_WITH_ARGUMENTS = 7233;
     
     public static final int MISSING_FIELD_TYPE_FOR_DDL_GENERATION_OF_CLASS_TRANSFORMATION_ = 7234;
     public static final int MISSING_TRANSFORMER_METHOD_FOR_DDL_GENERATION_OF_CLASS_TRANSFORMATION = 7235;
-    // 7236 available
+    // 7236 deleted
     public static final int NON_UNIQUE_ENTITY_NAME = 7237;
-    
     public static final int CONFLICTING_SEQUENCE_AND_TABLE_GENERATORS_SPECIFIED = 7238;
-    public static final int CONFLICTING_SEQUENCE_GENERATORS_SPECIFIED = 7239;
+    // 7239 deleted
     public static final int CONFLICTING_SEQUENCE_NAME_AND_TABLE_PK_COLUMN_VALUE_SPECIFIED = 7240;
-    public static final int CONFLICTING_TABLE_GENERATORS_SPECIFIED = 7241;
+    // 7241 deleted
     public static final int INSTANTIATING_VALUEHOLDER_WITH_NULL_SESSION = 7242;
-
     public static final int CLASS_NOT_LISTED_IN_PERSISTENCE_UNIT = 7243;
 
-	public static final int INVALID_MAPPING = 7244;
+    public static final int INVALID_MAPPING = 7244;
     public static final int CONFLICTNG_ACCESS_TYPE_FOR_EMBEDDABLE = 7245;
     public static final int INVALID_EMBEDDED_ATTRIBUTE = 7246;
     public static final int BOTH_FIELDS_AND_PROPERTIES_ANNOTATED = 7247;
@@ -320,7 +316,7 @@ public class ValidationException extends EclipseLinkException {
     //Extended persistence properties validation
     public static final int INVALID_EXCEPTIONHANDLER_CLASS = 7267;
     public static final int INVALID_SESSIONEVENTLISTENER_CLASS = 7268;
-    // 7269 available
+    // 7269 deleted
     public static final int INVALID_CACHESTATEMENTS_SIZE_VALUE = 7270;
     public static final int INVALID_BOOLEAN_VALUE_FOR_SETTING_NATIVESQL = 7271;
     public static final int INVALID_BOOLEAN_VALUE_FOR_ENABLESTATMENTSCACHED = 7272;
@@ -332,8 +328,7 @@ public class ValidationException extends EclipseLinkException {
     public static final int INVALID_BOOLEAN_VALUE_FOR_PROPERTY = 7278;
     
     // Converters
-    public static final int MULTIPLE_CONVERTERS_OF_SAME_NAME = 7279;
-    // 7280-7281 available
+    // 7279-7281 deleted
     public static final int INVALID_MAPPING_FOR_STRUCT_CONVERTER = 7282;
     public static final int TWO_STRUCT_CONVERTERS_ADDED_FOR_SAME_CLASS = 7283;
     
@@ -358,13 +353,13 @@ public class ValidationException extends EclipseLinkException {
     public static final int MULTIPLE_COPY_POLICY_ANNOTATIONS_ON_SAME_CLASS = 7296;   
 
     public static final int REFLECTIVE_EXCEPTION_WHILE_CREATING_CLASS_INSTANCE = 7297;
-    public static final int INVALID_MAPPING_FOR_EMBEDDED_ID = 7298;
+    public static final int INVALID_MAPPING_FOR_EMBEDDED_ID = 7298;    
     
-    // Properties
-    public static final int CLASS_PROPERTY_CONFLICT_IN_XML = 7299;
-    public static final int CLASS_PROPERTY_CONFLICT_IN_ANNOTATIONS = 7300;
-    public static final int ATTRIBUTE_PROPERTY_CONFLICT_IN_XML = 7301;
-    public static final int ATTRIBUTE_PROPERTY_CONFLICT_IN_ANNOTATIONS = 7302;    
+    // Generic conflicting annotations and xml metadata
+    public static final int CONFLICTING_NAMED_ANNOTATIONS = 7299;
+    public static final int CONFLICTING_NAMED_XML_ELEMENTS = 7300;
+    public static final int CONFLICTING_ANNOTATIONS = 7301;
+    public static final int CONFLICTING_XML_ELEMENTS = 7302;
     
     /**
      * INTERNAL:
@@ -1123,14 +1118,14 @@ public class ValidationException extends EclipseLinkException {
     }
     
     public static ValidationException invalidMapping(Class entityClass, Class targetClass) {
-    	Object[] args = { entityClass, targetClass };
+        Object[] args = { entityClass, targetClass };
         ValidationException validationException = new ValidationException(ExceptionMessageGenerator.buildMessage(ValidationException.class, INVALID_MAPPING, args));
         validationException.setErrorCode(INVALID_MAPPING);
         return validationException;
     }
     
     public static ValidationException invalidMappingForConverter(Class entityClass, Object annotatedElement) {
-    	Object[] args = { entityClass, annotatedElement };
+        Object[] args = { entityClass, annotatedElement };
         ValidationException validationException = new ValidationException(ExceptionMessageGenerator.buildMessage(ValidationException.class, INVALID_MAPPING_FOR_CONVERTER, args));
         validationException.setErrorCode(INVALID_MAPPING_FOR_CONVERTER);
         return validationException;
@@ -1369,14 +1364,6 @@ public class ValidationException extends EclipseLinkException {
         return validationException;
     }
 
-    public static ValidationException persistenceUnitMetadataConflict(String tagName) {
-        Object[] args = { tagName };
-
-        ValidationException validationException = new ValidationException(ExceptionMessageGenerator.buildMessage(ValidationException.class, PERSISTENCE_UNIT_METADATA_CONFLICT, args));
-        validationException.setErrorCode(PERSISTENCE_UNIT_METADATA_CONFLICT);
-        return validationException;
-    }
-
     public static ValidationException platformClassNotFound(Exception exception, String className) {
         Object[] args = { className };
 
@@ -1519,7 +1506,7 @@ public class ValidationException extends EclipseLinkException {
         return validationException;
     }
 
-    public static ValidationException tablePerClassInheritanceNotSupported(Class entityClass) {
+    public static ValidationException tablePerClassInheritanceNotSupported(Object entityClass) {
         Object[] args = { entityClass };
 
         ValidationException validationException = new ValidationException(ExceptionMessageGenerator.buildMessage(ValidationException.class, TABLE_PER_CLASS_INHERITANCE_NOT_SUPPORTED, args));
@@ -1896,14 +1883,14 @@ public class ValidationException extends EclipseLinkException {
         return validationException;
     }
 
-    public static ValidationException sequenceGeneratorUsingAReservedName(String reservedName, String location) {
+    public static ValidationException sequenceGeneratorUsingAReservedName(String reservedName, Object location) {
         Object[] args = { reservedName, location };
         ValidationException validationException = new ValidationException(ExceptionMessageGenerator.buildMessage(ValidationException.class, SEQUENCE_GENERATOR_RESERVED_NAME, args));
         validationException.setErrorCode(SEQUENCE_GENERATOR_RESERVED_NAME);
         return validationException;
     }
     
-    public static ValidationException tableGeneratorUsingAReservedName(String reservedName, String location) {
+    public static ValidationException tableGeneratorUsingAReservedName(String reservedName, Object location) {
         Object[] args = { reservedName, location };
         ValidationException validationException = new ValidationException(ExceptionMessageGenerator.buildMessage(ValidationException.class, TABLE_GENERATOR_RESERVED_NAME, args));
         validationException.setErrorCode(TABLE_GENERATOR_RESERVED_NAME);
@@ -2001,31 +1988,46 @@ public class ValidationException extends EclipseLinkException {
         return validationException;
     }
 
-   public static ValidationException conflictingSequenceAndTableGeneratorsSpecified(String name, String sequenceGeneratorLocation, String tableGeneratorLocation) {
+    public static ValidationException conflictingNamedAnnotations(String name, Annotation annotation1, Object location1, Annotation annotation2, Object location2) {
+        Object[] args = { name, annotation1, location1, annotation2, location2 };
+        ValidationException validationException = new ValidationException(ExceptionMessageGenerator.buildMessage(ValidationException.class, CONFLICTING_NAMED_ANNOTATIONS, args));
+        validationException.setErrorCode(CONFLICTING_NAMED_ANNOTATIONS);
+        return validationException;
+    }
+    
+    public static ValidationException conflictingNamedXMLElements(String name, String xmlElement, Object location1, Object location2) {
+        Object[] args = { name, xmlElement, location1, location2 };
+        ValidationException validationException = new ValidationException(ExceptionMessageGenerator.buildMessage(ValidationException.class, CONFLICTING_NAMED_XML_ELEMENTS, args));
+        validationException.setErrorCode(CONFLICTING_NAMED_XML_ELEMENTS);
+        return validationException;
+    }
+    
+    public static ValidationException conflictingAnnotations(Annotation annotation1, Object location1, Annotation annotation2, Object location2) {
+        Object[] args = { annotation1, location1, annotation2, location2 };
+        ValidationException validationException = new ValidationException(ExceptionMessageGenerator.buildMessage(ValidationException.class, CONFLICTING_ANNOTATIONS, args));
+        validationException.setErrorCode(CONFLICTING_ANNOTATIONS);
+        return validationException;
+    }
+    
+    public static ValidationException conflictingXMLElements(String xmlElement, Object element, Object location1, Object location2) {
+        Object[] args = { xmlElement, element, location1, location2 };
+        ValidationException validationException = new ValidationException(ExceptionMessageGenerator.buildMessage(ValidationException.class, CONFLICTING_XML_ELEMENTS, args));
+        validationException.setErrorCode(CONFLICTING_XML_ELEMENTS);
+        return validationException;
+    }    
+    
+    
+    public static ValidationException conflictingSequenceAndTableGeneratorsSpecified(String name, Object sequenceGeneratorLocation, Object tableGeneratorLocation) {
         Object[] args = { name, sequenceGeneratorLocation, tableGeneratorLocation };
         ValidationException validationException = new ValidationException(ExceptionMessageGenerator.buildMessage(ValidationException.class, CONFLICTING_SEQUENCE_AND_TABLE_GENERATORS_SPECIFIED, args));
         validationException.setErrorCode(CONFLICTING_SEQUENCE_AND_TABLE_GENERATORS_SPECIFIED);
         return validationException;
     }
-
-    public static ValidationException conflictingSequenceGeneratorsSpecified(String name, String location1, String location2) {
-        Object[] args = { name, location1, location2 };
-        ValidationException validationException = new ValidationException(ExceptionMessageGenerator.buildMessage(ValidationException.class, CONFLICTING_SEQUENCE_GENERATORS_SPECIFIED, args));
-        validationException.setErrorCode(CONFLICTING_SEQUENCE_GENERATORS_SPECIFIED);
-        return validationException;
-    }
     
-    public static ValidationException conflictingSequenceNameAndTablePkColumnValueSpecified(String name, String sequenceGeneratorLocation, String tableGeneratorLocation) {
+    public static ValidationException conflictingSequenceNameAndTablePkColumnValueSpecified(String name, Object sequenceGeneratorLocation, Object tableGeneratorLocation) {
         Object[] args = { name, sequenceGeneratorLocation, tableGeneratorLocation };
         ValidationException validationException = new ValidationException(ExceptionMessageGenerator.buildMessage(ValidationException.class, CONFLICTING_SEQUENCE_NAME_AND_TABLE_PK_COLUMN_VALUE_SPECIFIED, args));
         validationException.setErrorCode(CONFLICTING_SEQUENCE_NAME_AND_TABLE_PK_COLUMN_VALUE_SPECIFIED);
-        return validationException;
-    }
-    
-    public static ValidationException conflictingTableGeneratorsSpecified(String name, String location1, String location2) {
-        Object[] args = { name, location1, location2 };
-        ValidationException validationException = new ValidationException(ExceptionMessageGenerator.buildMessage(ValidationException.class, CONFLICTING_TABLE_GENERATORS_SPECIFIED, args));
-        validationException.setErrorCode(CONFLICTING_TABLE_GENERATORS_SPECIFIED);
         return validationException;
     }
     
@@ -2107,30 +2109,6 @@ public class ValidationException extends EclipseLinkException {
 
         ValidationException validationException = new ValidationException(ExceptionMessageGenerator.buildMessage(ValidationException.class, MULTIPLE_CALLBACK_METHODS_DEFINED, args));
         validationException.setErrorCode(MULTIPLE_CALLBACK_METHODS_DEFINED);
-        return validationException;
-    }
-    
-    public static ValidationException multipleNamedNativeQueriesWithSameName(String name, String location1, String location2) {
-        Object[] args = { name, location1, location2 };
-
-        ValidationException validationException = new ValidationException(ExceptionMessageGenerator.buildMessage(ValidationException.class, MULTIPLE_NAMED_NATIVE_QUERIES_WITH_SAME_NAME, args));
-        validationException.setErrorCode(MULTIPLE_NAMED_NATIVE_QUERIES_WITH_SAME_NAME);
-        return validationException;
-    }
-    
-    public static ValidationException multipleNamedQueriesWithSameName(String name, String location1, String location2) {
-        Object[] args = { name, location1, location2 };
-
-        ValidationException validationException = new ValidationException(ExceptionMessageGenerator.buildMessage(ValidationException.class, MULTIPLE_NAMED_QUERIES_WITH_SAME_NAME, args));
-        validationException.setErrorCode(MULTIPLE_NAMED_QUERIES_WITH_SAME_NAME);
-        return validationException;
-    }
-    
-    public static ValidationException multipleNamedStoredProcedureQueriesWithSameName(String name, String location1, String location2) {
-        Object[] args = { name, location1, location2 };
-
-        ValidationException validationException = new ValidationException(ExceptionMessageGenerator.buildMessage(ValidationException.class, MULTIPLE_NAMED_STORED_PROCEDURE_QUERIES_WITH_SAME_NAME, args));
-        validationException.setErrorCode(MULTIPLE_NAMED_STORED_PROCEDURE_QUERIES_WITH_SAME_NAME);
         return validationException;
     }
     
@@ -2402,23 +2380,7 @@ public class ValidationException extends EclipseLinkException {
         validationException.setErrorCode(INVALID_LOGGING_FILE);
         return validationException;
     }
-
-    public static ValidationException multipleAssociationOverrideWithSameNameFound(String name, String javaClassName, String location) {
-        Object[] args = {name, javaClassName, location};
-
-        ValidationException validationException = new ValidationException(ExceptionMessageGenerator.buildMessage(ValidationException.class, MULTIPLE_ASSOCIATION_OVERRIDE_WITH_SAME_NAME, args));
-        validationException.setErrorCode(MULTIPLE_ASSOCIATION_OVERRIDE_WITH_SAME_NAME);
-        return validationException;
-    }
-    
-    public static ValidationException multipleAttributeOverrideWithSameNameFound(String name, String javaClassName, String location) {
-        Object[] args = {name, javaClassName, location};
-
-        ValidationException validationException = new ValidationException(ExceptionMessageGenerator.buildMessage(ValidationException.class, MULTIPLE_ATTRIBUTE_OVERRIDE_WITH_SAME_NAME, args));
-        validationException.setErrorCode(MULTIPLE_ATTRIBUTE_OVERRIDE_WITH_SAME_NAME);
-        return validationException;
-    }
-        
+            
     public static ValidationException multipleClassesForTheSameDiscriminator(String discriminator, String attributeName) {
         Object[] args = {discriminator, attributeName};
 
@@ -2426,15 +2388,7 @@ public class ValidationException extends EclipseLinkException {
         validationException.setErrorCode(MULTIPLE_CLASSES_FOR_THE_SAME_DISCRIMINATOR);
         return validationException;
     }
-    
-    public static ValidationException multipleConvertersOfTheSameName(String name, String location1, String location2) {
-        Object[] args = {name, location1, location2};
-
-        ValidationException validationException = new ValidationException(ExceptionMessageGenerator.buildMessage(ValidationException.class, MULTIPLE_CONVERTERS_OF_SAME_NAME, args));
-        validationException.setErrorCode(MULTIPLE_CONVERTERS_OF_SAME_NAME);
-        return validationException;
-    }
-    
+        
     public static ValidationException invalidMappingForStructConverter(String name, DatabaseMapping mapping) {
         Object[] args = {name, mapping};
 
@@ -2502,8 +2456,8 @@ public class ValidationException extends EclipseLinkException {
      * Cause: ReadTransformer for the specified attribute of the specified class
      * doesn't implement the required interface AttributeTransforer. 
      */
-    public static ValidationException readTransformerClassDoesntImplementAttributeTransformer(String attributeName, String className) {
-        Object[] args = { attributeName, className };
+    public static ValidationException readTransformerClassDoesntImplementAttributeTransformer(String annotatedElement) {
+        Object[] args = { annotatedElement };
 
         ValidationException validationException = new ValidationException(ExceptionMessageGenerator.buildMessage(ValidationException.class, READ_TRANSFORMER_CLASS_DOESNT_IMPLEMENT_ATTRIBUTE_TRANSFORMER, args));
         validationException.setErrorCode(READ_TRANSFORMER_CLASS_DOESNT_IMPLEMENT_ATTRIBUTE_TRANSFORMER);
@@ -2515,8 +2469,8 @@ public class ValidationException extends EclipseLinkException {
      * Cause: ReadTransformer for the specified attribute of the specified class
      * specifies both class and method. 
      */
-    public static ValidationException readTransformerHasBothClassAndMethod(String attributeName, String className) {
-        Object[] args = { attributeName, className };
+    public static ValidationException readTransformerHasBothClassAndMethod(String annotatedElement) {
+        Object[] args = { annotatedElement };
 
         ValidationException validationException = new ValidationException(ExceptionMessageGenerator.buildMessage(ValidationException.class, READ_TRANSFORMER_HAS_BOTH_CLASS_AND_METHOD, args));
         validationException.setErrorCode(READ_TRANSFORMER_HAS_BOTH_CLASS_AND_METHOD);
@@ -2528,8 +2482,8 @@ public class ValidationException extends EclipseLinkException {
      * Cause: ReadTransformer for the specified attribute of the specified class
      * specifies neither class nor method. 
      */
-    public static ValidationException readTransformerHasNeitherClassNorMethod(String attributeName, String className) {
-        Object[] args = { attributeName, className };
+    public static ValidationException readTransformerHasNeitherClassNorMethod(String annotatedElement) {
+        Object[] args = { annotatedElement };
 
         ValidationException validationException = new ValidationException(ExceptionMessageGenerator.buildMessage(ValidationException.class, READ_TRANSFORMER_HAS_NEITHER_CLASS_NOR_METHOD, args));
         validationException.setErrorCode(READ_TRANSFORMER_HAS_NEITHER_CLASS_NOR_METHOD);
@@ -2541,8 +2495,8 @@ public class ValidationException extends EclipseLinkException {
      * Cause: WriteTransformer for the specified attribute of the specified class and specified column
      * doesn't implement the required interface FieldTransforer. 
      */
-    public static ValidationException writeTransformerClassDoesntImplementFieldTransformer(String attributeName, String className, String columnName) {
-        Object[] args = { attributeName, className, columnName };
+    public static ValidationException writeTransformerClassDoesntImplementFieldTransformer(String annotatedElement, String columnName) {
+        Object[] args = { annotatedElement, columnName };
 
         ValidationException validationException = new ValidationException(ExceptionMessageGenerator.buildMessage(ValidationException.class, WRITE_TRANSFORMER_CLASS_DOESNT_IMPLEMENT_FIELD_TRANSFORMER, args));
         validationException.setErrorCode(WRITE_TRANSFORMER_CLASS_DOESNT_IMPLEMENT_FIELD_TRANSFORMER);
@@ -2554,8 +2508,8 @@ public class ValidationException extends EclipseLinkException {
      * Cause: WriteTransformer for the specified attribute of the specified class and specified column
      * specifies both class and method. 
      */
-    public static ValidationException writeTransformerHasBothClassAndMethod(String attributeName, String className, String columnName) {
-        Object[] args = { attributeName, className, columnName };
+    public static ValidationException writeTransformerHasBothClassAndMethod(String annotatedElement, String columnName) {
+        Object[] args = { annotatedElement, columnName };
 
         ValidationException validationException = new ValidationException(ExceptionMessageGenerator.buildMessage(ValidationException.class, WRITE_TRANSFORMER_HAS_BOTH_CLASS_AND_METHOD, args));
         validationException.setErrorCode(WRITE_TRANSFORMER_HAS_BOTH_CLASS_AND_METHOD);
@@ -2567,8 +2521,8 @@ public class ValidationException extends EclipseLinkException {
      * Cause: WriteTransformer for the specified attribute of the specified class and specified column
      * specifies neither class nor method. 
      */
-    public static ValidationException writeTransformerHasNeitherClassNorMethod(String attributeName, String className, String columnName) {
-        Object[] args = { attributeName, className, columnName };
+    public static ValidationException writeTransformerHasNeitherClassNorMethod(String annotatedElement, String columnName) {
+        Object[] args = { annotatedElement, columnName };
 
         ValidationException validationException = new ValidationException(ExceptionMessageGenerator.buildMessage(ValidationException.class, WRITE_TRANSFORMER_HAS_NEITHER_CLASS_NOR_METHOD, args));
         validationException.setErrorCode(WRITE_TRANSFORMER_HAS_NEITHER_CLASS_NOR_METHOD);
@@ -2580,8 +2534,8 @@ public class ValidationException extends EclipseLinkException {
      * Cause: WriteTransformer for the specified attribute of the specified class
      * has no column specified, of the specified column doesn't have name.
      */
-    public static ValidationException writeTransformerHasNoColumnName(String attributeName, String className) {
-        Object[] args = { attributeName, className };
+    public static ValidationException writeTransformerHasNoColumnName(String annotatedElement) {
+        Object[] args = { annotatedElement };
 
         ValidationException validationException = new ValidationException(ExceptionMessageGenerator.buildMessage(ValidationException.class, WRITE_TRANSFORMER_HAS_NO_COLUMN_NAME, args));
         validationException.setErrorCode(WRITE_TRANSFORMER_HAS_NO_COLUMN_NAME);
@@ -2593,8 +2547,8 @@ public class ValidationException extends EclipseLinkException {
      * Cause: An annotation or XML document specifies a CloneCopyPolicy, bug does not supply either a method or
      * working copy method
      */
-    public static ValidationException copyPolicyMustSpecifyEitherMethodOrWorkingCopyMethod(String className) {
-        Object[] args = { className };
+    public static ValidationException copyPolicyMustSpecifyEitherMethodOrWorkingCopyMethod(Object location) {
+        Object[] args = { location };
 
         ValidationException validationException = new ValidationException(ExceptionMessageGenerator.buildMessage(ValidationException.class, COPY_POLICY_MUST_SPECIFY_METHOD_OR_WORKING_COPY_METHOD, args));
         validationException.setErrorCode(COPY_POLICY_MUST_SPECIFY_METHOD_OR_WORKING_COPY_METHOD);
@@ -2624,49 +2578,5 @@ public class ValidationException extends EclipseLinkException {
         ValidationException validationException = new ValidationException(ExceptionMessageGenerator.buildMessage(ValidationException.class, REFLECTIVE_EXCEPTION_WHILE_CREATING_CLASS_INSTANCE, args), exception);
         validationException.setErrorCode(REFLECTIVE_EXCEPTION_WHILE_CREATING_CLASS_INSTANCE);
         return validationException;
-    }
-    
-    /**
-     * PUBLIC:
-     * To properties applied to the same class have the same name in orm xml.
-     */
-    public static ValidationException classPropertyConflictInXml(String className, String propertyName, String value1, String value2) {
-        Object[] args = { className, propertyName, value1, value2 };
-        ValidationException validationException = new ValidationException(ExceptionMessageGenerator.buildMessage(ValidationException.class, CLASS_PROPERTY_CONFLICT_IN_XML, args));
-        validationException.setErrorCode(CLASS_PROPERTY_CONFLICT_IN_XML);
-        return validationException;
-    }
-    
-    /**
-     * PUBLIC:
-     * To properties applied to the same class have the same name in annotations.
-     */
-    public static ValidationException classPropertyConflictInAnnotations(String className, String propertyName, String value1, String value2) {
-        Object[] args = { className, propertyName, value1, value2 };
-        ValidationException validationException = new ValidationException(ExceptionMessageGenerator.buildMessage(ValidationException.class, CLASS_PROPERTY_CONFLICT_IN_ANNOTATIONS, args));
-        validationException.setErrorCode(CLASS_PROPERTY_CONFLICT_IN_ANNOTATIONS);
-        return validationException;
-    }
-    
-    /**
-     * PUBLIC:
-     * To properties applied to the same mapping have the same name in orm xml.
-     */
-    public static ValidationException attributePropertyConflictInXml(String attributeName, String className, String propertyName, String value1, String value2) {
-        Object[] args = { attributeName, className, propertyName, value1, value2 };
-        ValidationException validationException = new ValidationException(ExceptionMessageGenerator.buildMessage(ValidationException.class, ATTRIBUTE_PROPERTY_CONFLICT_IN_XML, args));
-        validationException.setErrorCode(ATTRIBUTE_PROPERTY_CONFLICT_IN_XML);
-        return validationException;
-    }
-    
-    /**
-     * PUBLIC:
-     * To properties applied to the same mapping have the same name in annotations.
-     */
-    public static ValidationException attributePropertyConflictInAnnotations(String attributeName, String className, String propertyName, String value1, String value2) {
-        Object[] args = { attributeName, className, propertyName, value1, value2 };
-        ValidationException validationException = new ValidationException(ExceptionMessageGenerator.buildMessage(ValidationException.class, ATTRIBUTE_PROPERTY_CONFLICT_IN_ANNOTATIONS, args));
-        validationException.setErrorCode(ATTRIBUTE_PROPERTY_CONFLICT_IN_ANNOTATIONS);
-        return validationException;
-    }    
+    }   
 }

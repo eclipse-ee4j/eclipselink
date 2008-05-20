@@ -9,11 +9,12 @@
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
+ *     05/16/2008-1.0M8 Guy Pelletier 
+ *       - 218084: Implement metadata merging functionality between mapping files
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.converters;
 
 import java.lang.annotation.Annotation;
-import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Constructor;
 import java.security.AccessController;
 import java.security.PrivilegedActionException;
@@ -25,8 +26,8 @@ import java.util.HashMap;
 
 import org.eclipse.persistence.exceptions.ValidationException;
 
-import org.eclipse.persistence.internal.jpa.metadata.MetadataHelper;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.mappings.DirectAccessor;
+import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAccessibleObject;
 
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.internal.security.PrivilegedGetConstructorFor;
@@ -43,64 +44,58 @@ import org.eclipse.persistence.mappings.converters.EnumTypeConverter;
  * @since TopLink 11g
  */
 public class ObjectTypeConverterMetadata extends TypeConverterMetadata {
-	private List<ConversionValueMetadata> m_conversionValues;
-	private String m_defaultObjectValue;
+    private List<ConversionValueMetadata> m_conversionValues = new ArrayList<ConversionValueMetadata>();
+    private String m_defaultObjectValue;
     
     /**
      * INTERNAL:
+     * Used for OX mapping.
      */
     public ObjectTypeConverterMetadata() {
-    	setLoadedFromXML();
+        super("<object-type-converter>");
     }
     
     /**
      * INTERNAL:
      */
-    public ObjectTypeConverterMetadata(Annotation objectTypeConverter, AnnotatedElement annotatedElement) {
-    	setLoadedFromAnnotation();
-    	setLocation(annotatedElement);
-
-        setName((String) invokeMethod("name", objectTypeConverter));
-        setDataType((Class) invokeMethod("dataType", objectTypeConverter));
-        setObjectType((Class) invokeMethod("objectType", objectTypeConverter));
-        setConversionValues((Annotation[]) invokeMethod("conversionValues", objectTypeConverter));
+    public ObjectTypeConverterMetadata(Annotation objectTypeConverter, MetadataAccessibleObject accessibleObject) {
+        super(objectTypeConverter, accessibleObject);
         
-        m_defaultObjectValue = (String) invokeMethod("defaultObjectValue", objectTypeConverter); 
+        for (Annotation conversionValue: (Annotation[]) MetadataHelper.invokeMethod("conversionValues", objectTypeConverter)) {
+            m_conversionValues.add(new ConversionValueMetadata(conversionValue, accessibleObject));
+           }
+        
+        m_defaultObjectValue = (String) MetadataHelper.invokeMethod("defaultObjectValue", objectTypeConverter); 
     }
     
     /**
      * INTERNAL:
      */
+    @Override
     public boolean equals(Object objectToCompare) {
-    	if (objectToCompare instanceof ObjectTypeConverterMetadata) {
-    		ObjectTypeConverterMetadata objectTypeConverter = (ObjectTypeConverterMetadata) objectToCompare;
-    		
-    		if (! MetadataHelper.valuesMatch(getName(), objectTypeConverter.getName())) {
-    			return false;
-    		}
-    		
-    		if (! MetadataHelper.valuesMatch(getDataType(), objectTypeConverter.getDataType())) {
-    			return false;
-    		}
-    		
-    		if (! MetadataHelper.valuesMatch(getObjectType(), objectTypeConverter.getObjectType())) {
-    			return false;
-    		}
-    		
-    		if (m_conversionValues.size() != objectTypeConverter.getConversionValues().size()) {
-    			return false;
-        	} else {
-    			for (ConversionValueMetadata conversionValue : m_conversionValues) {
-        			if (! objectTypeConverter.hasConversionValue(conversionValue)) {
-        				return false;
-        			}
-    			}
-        	}
-    		
-    		return MetadataHelper.valuesMatch(m_defaultObjectValue, objectTypeConverter.getDefaultObjectValue());
-    	}
-    	
-    	return false;
+        if (objectToCompare instanceof ObjectTypeConverterMetadata) {
+            ObjectTypeConverterMetadata objectTypeConverter = (ObjectTypeConverterMetadata) objectToCompare;
+            
+            if (! valuesMatch(getName(), objectTypeConverter.getName())) {
+                return false;
+            }
+            
+            if (! valuesMatch(getDataType(), objectTypeConverter.getDataType())) {
+                return false;
+            }
+            
+            if (! valuesMatch(getObjectType(), objectTypeConverter.getObjectType())) {
+                return false;
+            }
+            
+            if (! valuesMatch(m_conversionValues, objectTypeConverter.getConversionValues())) {
+                return false;
+            }
+            
+            return valuesMatch(m_defaultObjectValue, objectTypeConverter.getDefaultObjectValue());
+        }
+        
+        return false;
     }
     
     /**
@@ -117,20 +112,6 @@ public class ObjectTypeConverterMetadata extends TypeConverterMetadata {
      */
     public String getDefaultObjectValue() {
         return m_defaultObjectValue;
-    }
-    
-    /**
-     * INTERNAL:
-     */
-    protected boolean hasConversionValue(ConversionValueMetadata conversionValue) {
-    	for (ConversionValueMetadata myConversionValue : m_conversionValues) {
-    		if (MetadataHelper.valuesMatch(myConversionValue.getDataValue(), conversionValue.getDataValue()) && MetadataHelper.valuesMatch(myConversionValue.getObjectValue(), conversionValue.getObjectValue())) {
-    			// Once we find it return true, otherwise keep looking.
-    			return true;
-    		}
-    	}
-
-    	return false;
     }
     
     /**
@@ -166,6 +147,7 @@ public class ObjectTypeConverterMetadata extends TypeConverterMetadata {
     /**
      * INTERNAL:
      */
+    @Override
     public void process(DatabaseMapping mapping, DirectAccessor accessor) {
         org.eclipse.persistence.mappings.converters.ObjectTypeConverter converter;
         Class dataType = getDataType(accessor);
@@ -192,21 +174,21 @@ public class ObjectTypeConverterMetadata extends TypeConverterMetadata {
         Map<String, String> objectToDataValues = new HashMap<String, String>();
    
         if (hasConversionValues()) {
-        	for (ConversionValueMetadata conversionValue: getConversionValues()) {
-        		String dataValue = conversionValue.getDataValue();
-        		String objectValue = conversionValue.getObjectValue();
+            for (ConversionValueMetadata conversionValue: getConversionValues()) {
+                String dataValue = conversionValue.getDataValue();
+                String objectValue = conversionValue.getObjectValue();
             
-        		if (dataToObjectValues.containsKey(dataValue)) {
-        			throw ValidationException.multipleObjectValuesForDataValue(accessor.getJavaClass(), getName(), dataValue);
-        		} else {
-        			dataToObjectValues.put(dataValue, objectValue);
+                if (dataToObjectValues.containsKey(dataValue)) {
+                    throw ValidationException.multipleObjectValuesForDataValue(accessor.getJavaClass(), getName(), dataValue);
+                } else {
+                    dataToObjectValues.put(dataValue, objectValue);
                 
-        			// Only add it if it is a two-way mapping.
-        			if (! objectToDataValues.containsKey(objectValue)) {
-        				objectToDataValues.put(objectValue, dataValue);
-        			}
-        		}
-        	}
+                    // Only add it if it is a two-way mapping.
+                    if (! objectToDataValues.containsKey(objectValue)) {
+                        objectToDataValues.put(objectValue, dataValue);
+                    }
+                }
+            }
         }
         
         // Process the data to object mappings. The object and data values
@@ -228,8 +210,8 @@ public class ObjectTypeConverterMetadata extends TypeConverterMetadata {
         }
         
         // Process the defaultObjectValue if one is specified.
-        if (! getDefaultObjectValue().equals("")) {
-            converter.setDefaultAttributeValue(initObject(objectType, getDefaultObjectValue(), accessor, false));
+        if (m_defaultObjectValue != null && ! m_defaultObjectValue.equals("")) {
+            converter.setDefaultAttributeValue(initObject(objectType, m_defaultObjectValue, accessor, false));
         }
         
         // Set the converter on the mapping.
@@ -248,13 +230,13 @@ public class ObjectTypeConverterMetadata extends TypeConverterMetadata {
      * INTERNAL:
      * Called from annotation population.
      */
-    protected void setConversionValues(Annotation[] conversionValues) {
-    	m_conversionValues = new ArrayList<ConversionValueMetadata>();
-    		
-    	for (Annotation conversionValue: conversionValues) {
-    	    m_conversionValues.add(new ConversionValueMetadata(conversionValue));
-   		}
-    }
+    //protected void setConversionValues(Annotation[] conversionValues) {
+        //m_conversionValues = new ArrayList<ConversionValueMetadata>();
+        //    
+        //for (Annotation conversionValue: conversionValues) {
+          //  m_conversionValues.add(new ConversionValueMetadata(conversionValue, getLocation()));
+           //}
+    //}
     
     /**
      * INTERNAL:
@@ -269,9 +251,9 @@ public class ObjectTypeConverterMetadata extends TypeConverterMetadata {
      */    
     protected void throwInitObjectException(Exception exception, Class type, String value, boolean isData) {
         if (isData) {
-        	throw ValidationException.errorInstantiatingConversionValueData(getName(), value, type, exception);
+            throw ValidationException.errorInstantiatingConversionValueData(getName(), value, type, exception);
         } else {
-        	throw ValidationException.errorInstantiatingConversionValueObject(getName(), value, type, exception);
+            throw ValidationException.errorInstantiatingConversionValueObject(getName(), value, type, exception);
         }
     }
 }

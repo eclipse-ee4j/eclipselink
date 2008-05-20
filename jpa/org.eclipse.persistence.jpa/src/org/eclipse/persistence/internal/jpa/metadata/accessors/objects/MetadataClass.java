@@ -9,20 +9,40 @@
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
+ *     05/16/2008-1.0M8 Guy Pelletier 
+ *       - 218084: Implement metadata merging functionality between mapping files
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.accessors.objects;
 
+import org.eclipse.persistence.internal.jpa.metadata.MetadataLogger;
+import org.eclipse.persistence.internal.jpa.metadata.xml.XMLEntityMappings;
+
 /**
+ * INTERNAL:
  * An object to hold onto a valid EJB 3.0 decorated field.
  * 
  * @author Guy Pelletier
  * @since TopLink 10.1.3/EJB 3.0 Preview
  */
-public class MetadataClass extends MetadataAccessibleObject {    
+public class MetadataClass extends MetadataAnnotatedElement {
     /**
      * INTERNAL:
      */
     public MetadataClass(Class cls) {
         super(cls);
+    }
+    
+    /**
+     * INTERNAL:
+     */
+    public MetadataClass(Class cls, MetadataLogger logger) {
+        super(cls, logger);
+    }
+    
+    /**
+     * INTERNAL:
+     */
+    public MetadataClass(Class cls, XMLEntityMappings entityMappings) {
+        super(cls, entityMappings);
     }
 }

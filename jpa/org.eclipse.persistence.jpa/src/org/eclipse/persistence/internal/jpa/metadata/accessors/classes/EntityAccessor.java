@@ -9,18 +9,19 @@
  *
  * Contributors:
  *     Guy Pelletier - initial API and implementation from Oracle TopLink
+ *     05/16/2008-1.0M8 Guy Pelletier 
+ *       - 218084: Implement metadata merging functionality between mapping files
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.accessors.classes;
 
 import java.lang.annotation.Annotation;
-import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.persistence.DiscriminatorColumn;
 import javax.persistence.DiscriminatorValue;
-import javax.persistence.Entity;
 import javax.persistence.Inheritance;
 import javax.persistence.PrimaryKeyJoinColumn;
 import javax.persistence.PrimaryKeyJoinColumns;
@@ -35,6 +36,7 @@ import org.eclipse.persistence.internal.helper.DatabaseTable;
 import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.helper.Helper;
 
+import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAccessibleObject;
 import org.eclipse.persistence.internal.jpa.metadata.columns.AssociationOverrideMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.columns.AttributeOverrideMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.columns.DiscriminatorColumnMetadata;
@@ -48,6 +50,7 @@ import org.eclipse.persistence.internal.jpa.metadata.listeners.EntityListenerMet
 import org.eclipse.persistence.internal.jpa.metadata.MetadataDescriptor;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataLogger;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataProject;
+import org.eclipse.persistence.internal.jpa.metadata.ORMetadata;
 
 import org.eclipse.persistence.internal.jpa.metadata.queries.NamedNativeQueryMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.queries.NamedQueryMetadata;
@@ -68,17 +71,18 @@ public class EntityAccessor extends MappedSuperclassAccessor {
     private DiscriminatorColumnMetadata m_discriminatorColumn;
     private InheritanceMetadata m_inheritance;
     
-    // Future: Since we allow the annotations of these to be defined on a
+    // TODO: Since we allow the annotations of these to be defined on a
     // mapped superclass, we should change the schema to allow that as well
     // and move these attributes up to MappedSuperclass. And remove their 
     // respective processing methods from this class.
-    private List<AssociationOverrideMetadata> m_associationOverrides;
-    private List<AttributeOverrideMetadata> m_attributeOverrides;
-    private List<NamedQueryMetadata> m_namedQueries;
-    private List<NamedNativeQueryMetadata> m_namedNativeQueries;
-    private List<NamedStoredProcedureQueryMetadata> m_namedStoredProcedureQueries;
-    private List<SQLResultSetMappingMetadata> m_sqlResultSetMappings;
-    private List<SecondaryTableMetadata> m_secondaryTables;
+    private List<AssociationOverrideMetadata> m_associationOverrides = new ArrayList<AssociationOverrideMetadata>();
+    private List<AttributeOverrideMetadata> m_attributeOverrides = new ArrayList<AttributeOverrideMetadata>();
+    private List<NamedQueryMetadata> m_namedQueries = new ArrayList<NamedQueryMetadata>();
+    private List<NamedNativeQueryMetadata> m_namedNativeQueries = new ArrayList<NamedNativeQueryMetadata>();
+    private List<NamedStoredProcedureQueryMetadata> m_namedStoredProcedureQueries = new ArrayList<NamedStoredProcedureQueryMetadata>();
+    private List<SQLResultSetMappingMetadata> m_sqlResultSetMappings = new ArrayList<SQLResultSetMappingMetadata>();
+    private List<SecondaryTableMetadata> m_secondaryTables = new ArrayList<SecondaryTableMetadata>();
+    private List<PrimaryKeyJoinColumnMetadata> m_primaryKeyJoinColumns = new ArrayList<PrimaryKeyJoinColumnMetadata>();
     
     private SequenceGeneratorMetadata m_sequenceGenerator;
  
@@ -91,13 +95,15 @@ public class EntityAccessor extends MappedSuperclassAccessor {
     /**
      * INTERNAL:
      */
-    public EntityAccessor() {}
+    public EntityAccessor() {
+        super("<entity>");
+    }
     
     /**
      * INTERNAL:
      */
-    public EntityAccessor(Class cls, MetadataProject project) {
-        super(cls, project);
+    public EntityAccessor(Annotation annotation, Class cls, MetadataProject project) {
+        super(annotation, cls, project);
     }
     
     /**
@@ -203,6 +209,14 @@ public class EntityAccessor extends MappedSuperclassAccessor {
     /**
      * INTERNAL:
      * Used for OX mapping.
+     */    
+    public List<PrimaryKeyJoinColumnMetadata> getPrimaryKeyJoinColumns() {
+        return m_primaryKeyJoinColumns;
+    }
+    
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
      */
     public List<SecondaryTableMetadata> getSecondaryTables() {
         return m_secondaryTables;
@@ -254,6 +268,31 @@ public class EntityAccessor extends MappedSuperclassAccessor {
     
     /**
      * INTERNAL:
+     */
+    @Override
+    public void initXMLObject(MetadataAccessibleObject accessibleObject) {
+        super.initXMLObject(accessibleObject);
+        
+        // Initialize single objects.
+        initXMLObject(m_inheritance, accessibleObject);
+        initXMLObject(m_discriminatorColumn, accessibleObject);
+        initXMLObject(m_sequenceGenerator, accessibleObject);
+        initXMLObject(m_tableGenerator, accessibleObject);
+        initXMLObject(m_table, accessibleObject);
+        
+        // Initialize lists of objects.
+        initXMLObjects(m_associationOverrides, accessibleObject);
+        initXMLObjects(m_attributeOverrides, accessibleObject);
+        initXMLObjects(m_namedQueries, accessibleObject);
+        initXMLObjects(m_namedNativeQueries, accessibleObject);
+        initXMLObjects(m_namedStoredProcedureQueries, accessibleObject);
+        initXMLObjects(m_sqlResultSetMappings, accessibleObject);
+        initXMLObjects(m_secondaryTables, accessibleObject);
+        initXMLObjects(m_primaryKeyJoinColumns, accessibleObject);
+    }
+    
+    /**
+     * INTERNAL:
      * This method will do a couple things. Most importantly will return 
      * true if this class is an inheritance subclass, but will also set the
      * inheritance parent descriptor (the first parent entity that defines the 
@@ -292,10 +331,43 @@ public class EntityAccessor extends MappedSuperclassAccessor {
     }
     
     /**
-     * INTERNAL: (Override from MappedSuperclassAccessor)
+     * INTERNAL:
+     * Entity level merging details.
+     */
+    @Override
+    public void merge(ORMetadata metadata) {
+        super.merge(metadata);
+        
+        EntityAccessor accessor = (EntityAccessor) metadata;
+        
+        // Simple object merging.
+        m_entityName = (String) mergeSimpleObjects(m_entityName, accessor.getEntityName(), accessor.getAccessibleObject(), "@name");
+        m_discriminatorValue = (String) mergeSimpleObjects(m_discriminatorValue, accessor.getDiscriminatorValue(), accessor.getAccessibleObject(), "<discriminator-value>");
+        
+        // ORMetadata object merging.
+        m_discriminatorColumn = (DiscriminatorColumnMetadata) mergeORObjects(m_discriminatorColumn, accessor.getDiscriminatorColumn());
+        m_inheritance = (InheritanceMetadata) mergeORObjects(m_inheritance, accessor.getInheritance());
+        m_sequenceGenerator = (SequenceGeneratorMetadata) mergeORObjects(m_sequenceGenerator, accessor.getSequenceGenerator());
+        m_tableGenerator = (TableGeneratorMetadata) mergeORObjects(m_tableGenerator, accessor.getTableGenerator());
+        m_table = (TableMetadata) mergeORObjects(m_table, accessor.getTable());
+        
+        // ORMetadata list merging. 
+        m_namedQueries = mergeORObjectLists(m_namedQueries, accessor.getNamedQueries());
+        m_namedNativeQueries = mergeORObjectLists(m_namedNativeQueries, accessor.getNamedNativeQueries());
+        m_namedStoredProcedureQueries = mergeORObjectLists(m_namedStoredProcedureQueries, accessor.getNamedStoredProcedureQueries());
+        m_sqlResultSetMappings = mergeORObjectLists(m_sqlResultSetMappings, accessor.getSqlResultSetMappings());
+        m_associationOverrides = mergeORObjectLists(m_associationOverrides, accessor.getAssociationOverrides());
+        m_attributeOverrides = mergeORObjectLists(m_attributeOverrides, accessor.getAttributeOverrides());
+        m_secondaryTables = mergeORObjectLists(m_secondaryTables, accessor.getSecondaryTables());
+        m_primaryKeyJoinColumns = mergeORObjectLists(m_primaryKeyJoinColumns, accessor.getPrimaryKeyJoinColumns());
+    }
+    
+    /**
+     * INTERNAL:
      * Process the items of interest on an entity class. The order of processing 
      * is important, care must be taken if changes must be made.
      */
+    @Override
     public void process() {
         // Process the Entity metadata.
         processEntity();
@@ -333,24 +405,22 @@ public class EntityAccessor extends MappedSuperclassAccessor {
     }
     
     /**
-     * INTERNAL: (Override from MappesSuperclassAccessor)
+     * INTERNAL:
      * Process the association override metadata specified on an entity or 
      * mapped superclass. Once the association overrides are processed from
      * XML process the association overrides from annotations. This order of
      * processing must be maintained.
      */
+    @Override
     protected void processAssociationOverrides() {
         // Process the XML association override elements first.
-        if (m_associationOverrides != null) {
-            for (AssociationOverrideMetadata associationOverride : m_associationOverrides) {
-                // Set the extra metadata needed for processing that could not
-                // be set during OX loading.
-                associationOverride.setJavaClassName(getJavaClassName());
-                associationOverride.setLocation(getEntityMappings().getMappingFileName());
+        for (AssociationOverrideMetadata associationOverride : m_associationOverrides) {
+            // Set the extra metadata needed for processing that could not
+            // be set during OX loading.
+            associationOverride.setJavaClassName(getJavaClassName());
                 
-                // Process the association override.
-                processAssociationOverride(associationOverride);
-            }
+            // Process the association override.
+            processAssociationOverride(associationOverride);
         }
         
         // Call the super class to look for annotations.
@@ -358,63 +428,26 @@ public class EntityAccessor extends MappedSuperclassAccessor {
     }
     
     /**
-     * INTERNAL: (Override from MappedSuperclassAccessor)
+     * INTERNAL:
      * Process the attribute override metadata specified on an entity or 
      * mapped superclass. Once the attribute overrides are processed from
      * XML process the attribute overrides from annotations. This order of 
      * processing must be maintained.
      */
+    @Override
     protected void processAttributeOverrides() {
         // Process the XML attribute overrides first.
-        if (m_attributeOverrides != null) {
-            for (AttributeOverrideMetadata attributeOverride : m_attributeOverrides) {
-                // Set the extra metadata needed for processing that could not
-                // be set during OX loading.
-                attributeOverride.setLocation(getEntityMappings().getMappingFileName());
-                attributeOverride.setJavaClassName(getJavaClassName());             
-                attributeOverride.getColumn().setAttributeName(attributeOverride.getName());
+        for (AttributeOverrideMetadata attributeOverride : m_attributeOverrides) {
+            // Set the extra metadata needed for processing that could not
+            // be set during OX loading.
+            attributeOverride.setJavaClassName(getJavaClassName());             
+            attributeOverride.getColumn().setAttributeName(attributeOverride.getName());
                 
-                // Process the attribute override.
-                processAttributeOverride(attributeOverride);
-            }
+            // Process the attribute override.
+            processAttributeOverride(attributeOverride);
         }
         
         super.processAttributeOverrides();
-    }
-    
-    /**
-     * INTERNAL:
-     * Process the default listeners defined in XML. This method will process 
-     * the class for additional lifecycle callback methods that are decorated 
-     * with annotations.
-     * 
-     * NOTE: We add the default listeners regardless if the exclude default 
-     * listeners flag is set. This allows the user to change the exclude flag 
-     * at runtime and have the default listeners available to them.
-     */
-    protected void processDefaultListeners() {
-        for (EntityListenerMetadata defaultListener : getProject().getDefaultListeners()) {
-            // We need to clone the default listeners. Can't re-use the 
-            // same one for all the entities in the persistence unit.
-            EntityListenerMetadata listener = (EntityListenerMetadata) defaultListener.clone();
-            
-            // Initialize the listener class
-            listener.setEntityClass(getJavaClass());
-            listener.initializeListenerClass(MetadataHelper.getClassForName(listener.getClassName(), getJavaClass().getClassLoader()));
-                
-            // Process the lifecycle callback events from XML.
-            Method[] candidateMethods = MetadataHelper.getCandidateCallbackMethodsForEntityListener(listener);
-            
-            // Process the callback methods defined in XML
-            processCallbackMethodNames(candidateMethods, listener);
-                
-            // Process the candidate callback methods on this listener for
-            // additional callback methods decorated with annotations.
-            processCallbackMethods(candidateMethods, listener);
-        
-            // Add the listener to the descriptor.
-            getDescriptor().addDefaultEventListener(listener);
-        }
     }
     
     /**
@@ -452,8 +485,7 @@ public class EntityAccessor extends MappedSuperclassAccessor {
         if (getDescriptor().getAlias().equals("")) {
             String alias;
             if (m_entityName == null) {
-                Annotation entity = getAnnotation(Entity.class);
-                alias = (entity == null) ? "" : (String) MetadataHelper.invokeMethod("name", entity);
+                alias = (getAnnotation() == null) ? "" : (String) MetadataHelper.invokeMethod("name", getAnnotation());
             } else {
                 alias = m_entityName;
             }
@@ -477,25 +509,6 @@ public class EntityAccessor extends MappedSuperclassAccessor {
     
     /**
      * INTERNAL:
-     * Process the entity class for lifecycle callback event methods.
-     */
-    public EntityListenerMetadata processEntityEventListener() {
-        EntityClassListenerMetadata listener = new EntityClassListenerMetadata(this);
-        
-        // Build a list of candidate callback methods.
-        Method[] candidateMethods = MetadataHelper.getCandidateCallbackMethodsForEntityClass(getJavaClass());
-        
-        // 1 - Process the callback methods as defined in XML.
-        processCallbackMethodNames(candidateMethods, listener);
-        
-        // 2 - Check the entity class for lifecycle callback annotations.
-        processCallbackMethods(candidateMethods, listener);
-        
-        return listener;
-    }
-    
-    /**
-     * INTERNAL:
      * Process the Inheritance metadata for a parent of an inheritance 
      * hierarchy. One may or may not be specified for the entity class that is 
      * the root of the entity class hierarchy, so we need to default in this 
@@ -505,14 +518,14 @@ public class EntityAccessor extends MappedSuperclassAccessor {
     protected void processInheritance() {
         // Process the inheritance metadata.
         if (m_inheritance == null) {
-            new InheritanceMetadata(getAnnotation(Inheritance.class)).process(getDescriptor(), getJavaClass());
+            new InheritanceMetadata(getAnnotation(Inheritance.class), getAccessibleObject()).process(getDescriptor());
         } else {
-            m_inheritance.process(getDescriptor(), getJavaClass());
+            m_inheritance.process(getDescriptor());
         }
                     
         // Process the discriminator column metadata.
         if (m_discriminatorColumn == null) {
-            getDescriptor().setClassIndicatorField(new DiscriminatorColumnMetadata(getAnnotation(DiscriminatorColumn.class)).process(getDescriptor(), getAnnotatedElementName()));
+            getDescriptor().setClassIndicatorField(new DiscriminatorColumnMetadata(getAnnotation(DiscriminatorColumn.class), getAccessibleObject()).process(getDescriptor(), getAnnotatedElementName()));
         } else {
             // Future log a warning if we are ignoring an annotation.
             getDescriptor().setClassIndicatorField(m_discriminatorColumn.process(getDescriptor(), getAnnotatedElementName()));
@@ -538,15 +551,15 @@ public class EntityAccessor extends MappedSuperclassAccessor {
             // column(s) and add multiple table key fields.
             PrimaryKeyJoinColumnsMetadata pkJoinColumns;
                 
-            if (getPrimaryKeyJoinColumns() == null) {
+            if (m_primaryKeyJoinColumns.isEmpty()) {
                 // Look for annotations.
                 Annotation primaryKeyJoinColumn = getAnnotation(PrimaryKeyJoinColumn.class);
                 Annotation primaryKeyJoinColumns = getAnnotation(PrimaryKeyJoinColumns.class);
                     
-                pkJoinColumns = new PrimaryKeyJoinColumnsMetadata(primaryKeyJoinColumns, primaryKeyJoinColumn);
+                pkJoinColumns = new PrimaryKeyJoinColumnsMetadata(primaryKeyJoinColumns, primaryKeyJoinColumn, getAccessibleObject());
             } else {
                 // Used what is specified in XML.
-                pkJoinColumns = new PrimaryKeyJoinColumnsMetadata(getPrimaryKeyJoinColumns());
+                pkJoinColumns = new PrimaryKeyJoinColumnsMetadata(m_primaryKeyJoinColumns);
             }
             
             addMultipleTableKeyFields(pkJoinColumns, getDescriptor().getPrimaryKeyTable(), getDescriptor().getPrimaryTable(), MetadataLogger.INHERITANCE_PK_COLUMN, MetadataLogger.INHERITANCE_FK_COLUMN);
@@ -567,11 +580,20 @@ public class EntityAccessor extends MappedSuperclassAccessor {
     
     /**
      * INTERNAL:
-     * Process the listeners for this class.
+     * Process the listeners for this entity.
      */
     public void processListeners(ClassLoader loader) {
-        // Step 1 - process the default listeners.
-        processDefaultListeners();
+        // Step 1 - process the default listeners that were defined in XML.
+        // Default listeners process the class for additional lifecycle 
+        // callback methods that are decorated with annotations.
+        // NOTE: We add the default listeners regardless if the exclude default 
+        // listeners flag is set. This allows the user to change the exclude 
+        // flag at runtime and have the default listeners available to them.
+        for (EntityListenerMetadata defaultListener : getProject().getDefaultListeners()) {
+            // We need to clone the default listeners. Can't re-use the 
+            // same one for all the entities in the persistence unit.
+            ((EntityListenerMetadata) defaultListener.clone()).process(getDescriptor(), loader, true);
+        }
 
         // Step 2 - process the entity listeners that are defined on the entity 
         // class and mapped superclasses (taking metadata-complete into 
@@ -582,26 +604,15 @@ public class EntityAccessor extends MappedSuperclassAccessor {
             int mappedSuperclassesSize = mappedSuperclasses.size();
             
             for (int i = mappedSuperclassesSize - 1; i >= 0; i--) {
-                mappedSuperclasses.get(i).processEntityListeners(getJavaClass());
+                mappedSuperclasses.get(i).processEntityListeners(loader);
             }
         }
         
-        processEntityListeners(getJavaClass()); 
+        processEntityListeners(loader); 
         
         // Step 3 - process the entity class for lifecycle callback methods. Go
         // through the mapped superclasses as well.
-        EntityListenerMetadata listener = processEntityEventListener();
-        
-        if (! getDescriptor().excludeSuperclassListeners()) {
-            for (MappedSuperclassAccessor mappedSuperclass : getMappedSuperclasses()) {
-                mappedSuperclass.processEntityEventListener(listener, getJavaClass(), loader);
-            }
-        }
-        
-        // Add the listener only if we actually found callback methods.
-        if (listener.hasCallbackMethods()) {
-            getDescriptor().setEntityEventListener(listener);
-        }
+        new EntityClassListenerMetadata(this).process();
     }
     
     /**
@@ -616,14 +627,15 @@ public class EntityAccessor extends MappedSuperclassAccessor {
     }
     
     /**
-     * INTERNAL: (Override from MappedSuperclassAccessor)
+     * INTERNAL:
      * Process/collect the named native queries on this accessor and add them
      * to the project for later processing.
      */
+    @Override
     protected void processNamedNativeQueries() {
         // Process the XML named native queries first.
-        if (m_namedNativeQueries != null) {
-            getEntityMappings().processNamedNativeQueries(m_namedNativeQueries, getJavaClassName());
+        for (NamedNativeQueryMetadata namedNativeQuery : m_namedNativeQueries) {
+            getProject().addQuery(namedNativeQuery);
         }
         
         // Process the named native query annotations second.
@@ -631,14 +643,15 @@ public class EntityAccessor extends MappedSuperclassAccessor {
     }
     
     /**
-     * INTERNAL: (Override from MappedSuperclassAccessor)
+     * INTERNAL:
      * Process/collect the named queries on this accessor and add them to the 
      * project for later processing.
      */
+    @Override
     protected void processNamedQueries() {
         // Process the XML named queries first.
-        if (m_namedQueries != null) {
-            getEntityMappings().processNamedQueries(m_namedQueries, getJavaClassName());
+        for (NamedQueryMetadata namedQuery : m_namedQueries) {
+            getProject().addQuery(namedQuery);
         }
         
         // Process the named query annotations second.
@@ -646,14 +659,15 @@ public class EntityAccessor extends MappedSuperclassAccessor {
     }
     
     /**
-     * INTERNAL: (Override from MappedSuperclassAccessor)
+     * INTERNAL:
      * Process/collect the named stored procedure queries on this accessor and 
      * add them to the project for later processing.
      */
+    @Override
     protected void processNamedStoredProcedureQueries() {
         // Process the XML named queries first.
-        if (m_namedStoredProcedureQueries != null) {
-            getEntityMappings().processNamedStoredProcedureQueries(m_namedStoredProcedureQueries, getJavaClassName());
+        for (NamedStoredProcedureQueryMetadata namedStoredProcedureQuery : m_namedStoredProcedureQueries) {
+            getProject().addQuery(namedStoredProcedureQuery);
         }
         
         // Process the named stored procedure query annotations second.
@@ -681,30 +695,32 @@ public class EntityAccessor extends MappedSuperclassAccessor {
      * Process secondary-table(s) for a given entity.
      */
     protected void processSecondaryTables() {
-        if (m_secondaryTables == null || m_secondaryTables.isEmpty()) {
+        Annotation secondaryTable = getAnnotation(SecondaryTable.class);
+        Annotation secondaryTables = getAnnotation(SecondaryTables.class);
+        
+        if (m_secondaryTables.isEmpty()) {
             // Look for a SecondaryTables annotation.
-            Annotation secondaryTables = getAnnotation(SecondaryTables.class);
             if (secondaryTables != null) {
-                for (Annotation secondaryTable : (Annotation[]) MetadataHelper.invokeMethod("value", secondaryTables)) { 
-                    processSecondaryTable(new SecondaryTableMetadata(secondaryTable, getJavaClassName()));
+                for (Annotation table : (Annotation[]) MetadataHelper.invokeMethod("value", secondaryTables)) { 
+                    processSecondaryTable(new SecondaryTableMetadata(table, getAccessibleObject()));
                 }
             } else {
                 // Look for a SecondaryTable annotation
-                Annotation secondaryTable = getAnnotation(SecondaryTable.class);
                 if (secondaryTable != null) {    
-                    processSecondaryTable(new SecondaryTableMetadata(secondaryTable, getJavaClassName()));
+                    processSecondaryTable(new SecondaryTableMetadata(secondaryTable, getAccessibleObject()));
                 }
             }
         } else {
-            if (isAnnotationPresent(SecondaryTables.class) || isAnnotationPresent(SecondaryTable.class)) {
-                getLogger().logWarningMessage(MetadataLogger.IGNORE_SECONDARY_TABLE_ANNOTATION, getJavaClass());
+            if (secondaryTable != null) {
+                getLogger().logWarningMessage(MetadataLogger.OVERRIDE_ANNOTATION_WITH_XML, secondaryTable, getJavaClassName(), getLocation());
             }
             
-            for (SecondaryTableMetadata secondaryTable : m_secondaryTables) {
-                // Set the location of this secondary table
-                secondaryTable.setLocation(getJavaClassName());
-                    
-                processSecondaryTable(secondaryTable);
+            if (secondaryTables != null) {
+                getLogger().logWarningMessage(MetadataLogger.OVERRIDE_ANNOTATION_WITH_XML, secondaryTables, getJavaClassName(), getLocation());
+            }
+            
+            for (SecondaryTableMetadata table : m_secondaryTables) {
+                processSecondaryTable(table);
             }
         }
     }
@@ -713,10 +729,11 @@ public class EntityAccessor extends MappedSuperclassAccessor {
      * INTERNAL:
      * Process the sequence generator metadata and add it to the project. 
      */
+    @Override
     protected void processSequenceGenerator() {
         // Process the xml defined sequence generator first.
         if (m_sequenceGenerator != null) {
-            getEntityMappings().processSequenceGenerator(m_sequenceGenerator, getJavaClassName());
+            getProject().addSequenceGenerator(m_sequenceGenerator);
         }
         
         // Process the annotation defined sequence generator second.
@@ -724,14 +741,15 @@ public class EntityAccessor extends MappedSuperclassAccessor {
     }
     
     /**
-     * INTERNAL: (Override from MappedSuperclassAccessor)
+     * INTERNAL:
      * Process the sql result set mappings for the given class which could be 
      * an entity or a mapped superclass.
      */
+    @Override
     protected void processSqlResultSetMappings() {
         // Process the XML sql result set mapping elements first.
-        if (m_sqlResultSetMappings != null) {
-            getEntityMappings().processSqlResultSetMappings(m_sqlResultSetMappings);
+        for (SQLResultSetMappingMetadata sqlResultSetMapping : m_sqlResultSetMappings) {
+            getProject().addSQLResultSetMapping(sqlResultSetMapping);
         }
         
         // Process the sql result set mapping query annotations second.
@@ -743,18 +761,17 @@ public class EntityAccessor extends MappedSuperclassAccessor {
      * Process table information for the given metadata descriptor.
      */
     protected void processTable() {
+        Annotation table = getAnnotation(Table.class);
+        
         if (m_table == null) {
             // Check for a table annotation. If no annotation is defined, the 
             // table will default.
-            Annotation table = getAnnotation(Table.class);
-            processTable(new TableMetadata(table, getJavaClassName()));
+            processTable(new TableMetadata(table, getAccessibleObject()));
         } else {
-            if (isAnnotationPresent(Table.class)) {
-                getLogger().logWarningMessage(MetadataLogger.IGNORE_TABLE_ANNOTATION, getJavaClass());
+            if (table != null) {
+                getLogger().logWarningMessage(MetadataLogger.OVERRIDE_ANNOTATION_WITH_XML, table, getJavaClassName(), getLocation());
             }
-            
-            // Set the location of this table.
-            m_table.setLocation(getJavaClassName());
+
             processTable(m_table);                
         }
     }
@@ -841,10 +858,11 @@ public class EntityAccessor extends MappedSuperclassAccessor {
      * INTERNAL:
      * Process the table generator metadata and add it to the project. 
      */
+    @Override
     protected void processTableGenerator() {
         // Process the xml defined table generator first.
         if (m_tableGenerator != null) {
-            getEntityMappings().processTableGenerator(m_tableGenerator, getDescriptor().getXMLCatalog(), getDescriptor().getXMLSchema(), getJavaClassName());
+            getProject().addTableGenerator(m_tableGenerator, getDescriptor().getXMLCatalog(), getDescriptor().getXMLSchema());
         }
         
         // Process the annotation defined table generator second.
@@ -897,6 +915,14 @@ public class EntityAccessor extends MappedSuperclassAccessor {
      */
     public void setInheritance(InheritanceMetadata inheritance) {
         m_inheritance = inheritance;
+    }
+    
+    /**
+     * INTERNAL: 
+     * Used for OX mapping.
+     */
+    public void setPrimaryKeyJoinColumns(List<PrimaryKeyJoinColumnMetadata> primaryKeyJoinColumns) {
+        m_primaryKeyJoinColumns = primaryKeyJoinColumns;
     }
     
     /**

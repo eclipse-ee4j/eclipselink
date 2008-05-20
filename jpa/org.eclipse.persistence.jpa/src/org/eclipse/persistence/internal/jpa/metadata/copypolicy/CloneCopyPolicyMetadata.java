@@ -9,63 +9,92 @@
  *
  * Contributors:
  *     tware - March 28/2008 - 1.0M7 - Initial implementation
+ *     05/16/2008-1.0M8 Guy Pelletier 
+ *       - 218084: Implement metadata merging functionality between mapping files
  ******************************************************************************/  
-
 package org.eclipse.persistence.internal.jpa.metadata.copypolicy;
 
-/**
- * INTERNAL:
- * 
- * Used to store information about CloneCopyPolicy as it is read from XML or annotations
- * 
- * @see org.eclipse.persistence.annotations.CloneCopyPolicy
- * 
- * @author tware
- */
 import java.lang.annotation.Annotation;
 
 import org.eclipse.persistence.descriptors.copying.CopyPolicy;
 import org.eclipse.persistence.descriptors.copying.CloneCopyPolicy;
 
 import org.eclipse.persistence.exceptions.ValidationException;
+import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAccessibleObject;
 
+/**
+ * INTERNAL:
+ * Used to store information about CloneCopyPolicy as it is read from XML or 
+ * annotations.
+ * 
+ * @see org.eclipse.persistence.annotations.CloneCopyPolicy
+ * @author tware
+ */
 public class CloneCopyPolicyMetadata extends CopyPolicyMetadata {
-    
     private String methodName;
     private String workingCopyMethodName;
     
-    // used for XML config
-    public CloneCopyPolicyMetadata(){
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+    public CloneCopyPolicyMetadata() {
+        super("<clone-copy-policy>");
     }
     
-    public CloneCopyPolicyMetadata(Annotation copyPolicy){
+    /**
+     * INTERNAL:
+     */
+    public CloneCopyPolicyMetadata(Annotation copyPolicy, MetadataAccessibleObject accessibleObject) {
+        super(copyPolicy, accessibleObject);
+        
         methodName = (String) MetadataHelper.invokeMethod("method", copyPolicy);      
         workingCopyMethodName = (String) MetadataHelper.invokeMethod("workingCopyMethod", copyPolicy);
     }
     
-    public CopyPolicy getCopyPolicy(){
+    /**
+     * INTERNAL:
+     */
+    public CopyPolicy getCopyPolicy() {
         if (methodName == null && workingCopyMethodName == null){
-            throw ValidationException.copyPolicyMustSpecifyEitherMethodOrWorkingCopyMethod(javaClassName);
+            throw ValidationException.copyPolicyMustSpecifyEitherMethodOrWorkingCopyMethod(getLocation());
         }
+        
         CloneCopyPolicy copyPolicy = new CloneCopyPolicy();
         copyPolicy.setMethodName(methodName);
         copyPolicy.setWorkingCopyMethodName(workingCopyMethodName);
         return copyPolicy;
     }
     
-    public String getMethodName(){
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+    public String getMethodName() {
         return methodName;
     }
     
-    public String getWorkingCopyMethodName(){
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+    public String getWorkingCopyMethodName() {
         return workingCopyMethodName;
     }
     
-    public void setMethodName(String methodName){
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+    public void setMethodName(String methodName) {
         this.methodName = methodName;
     }
     
-    public void setWorkingCopyMethodName(String workingCopyMethodName){
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+    public void setWorkingCopyMethodName(String workingCopyMethodName) {
         this.workingCopyMethodName = workingCopyMethodName;
     }
 }

@@ -421,7 +421,7 @@ public class CMP3Policy extends CMPPolicy {
             try {
                 if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
                     try {
-                        AccessController.doPrivileged(new PrivilegedMethodInvoker(MetadataMethod.getSetMethod(method, object.getClass()), object, new Object[] {value}));
+                        AccessController.doPrivileged(new PrivilegedMethodInvoker(new MetadataMethod(method, object.getClass()).getSetMethod(), object, new Object[] {value}));
                     } catch (PrivilegedActionException exception) {
                         Exception throwableException = exception.getException();
                         if (throwableException instanceof IllegalAccessException) {
@@ -431,7 +431,7 @@ public class CMP3Policy extends CMPPolicy {
                         }
                     }
                 } else {
-                    PrivilegedAccessHelper.invokeMethod(MetadataMethod.getSetMethod(method, object.getClass()), object, new Object[] {value});
+                    PrivilegedAccessHelper.invokeMethod(new MetadataMethod(method, object.getClass()).getSetMethod(), object, new Object[] {value});
                 }
             } catch (Exception ex) {
                 throw DescriptorException.errorUsingPrimaryKey(object, getDescriptor(), ex);

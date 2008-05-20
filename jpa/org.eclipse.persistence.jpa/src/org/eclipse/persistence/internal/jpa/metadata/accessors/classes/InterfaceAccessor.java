@@ -9,10 +9,13 @@
  *
  * Contributors:
  *     03/26/2008-1.0M6 Guy Pelletier 
- *       - 211302: Add variable 1-1 mapping support to the EclipseLink-ORM.XML Schema  
+ *       - 211302: Add variable 1-1 mapping support to the EclipseLink-ORM.XML Schema
+ *     05/16/2008-1.0M8 Guy Pelletier 
+ *       - 218084: Implement metadata merging functionality between mapping files  
  ******************************************************************************/
 package org.eclipse.persistence.internal.jpa.metadata.accessors.classes;
 
+import java.lang.annotation.Annotation;
 import java.util.HashSet;
 
 import org.eclipse.persistence.internal.jpa.metadata.MetadataProject;
@@ -37,8 +40,8 @@ public class InterfaceAccessor extends ClassAccessor {
     /**
      * INTERNAL:
      */
-    public InterfaceAccessor(Class cls, MetadataProject project) {
-        super(cls, project);
+    public InterfaceAccessor(Annotation annotation, Class cls, MetadataProject project) {
+        super(annotation, cls, project);
         m_variableOneToOneAccessors = new HashSet<VariableOneToOneAccessor>();
     }
 
@@ -77,6 +80,7 @@ public class InterfaceAccessor extends ClassAccessor {
     /**
      * INTERNAL:
      */
+    @Override
     public void process() {
         // TODO: Does nothing at this point ... perhaps it will in the future ...
     }    

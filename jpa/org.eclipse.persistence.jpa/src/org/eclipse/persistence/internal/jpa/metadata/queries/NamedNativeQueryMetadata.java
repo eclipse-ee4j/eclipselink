@@ -9,6 +9,8 @@
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
+ *     05/16/2008-1.0M8 Guy Pelletier 
+ *       - 218084: Implement metadata merging functionality between mapping files
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.queries;
 
@@ -16,6 +18,7 @@ import java.lang.annotation.Annotation;
 import java.util.HashMap;
 
 import org.eclipse.persistence.internal.jpa.EJBQueryImpl;
+import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAccessibleObject;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 
 /**
@@ -25,70 +28,52 @@ import org.eclipse.persistence.internal.sessions.AbstractSession;
  * @author Guy Pelletier
  * @since TopLink EJB 3.0 Reference Implementation
  */
-public class NamedNativeQueryMetadata extends QueryMetadata {
+public class NamedNativeQueryMetadata extends NamedQueryMetadata {
     private Class m_resultClass;
     private String m_resultClassName;
     private String m_resultSetMapping;
     
     /**
      * INTERNAL:
+     * Used for OX mapping.
      */
     public NamedNativeQueryMetadata() {
-    	setLoadedFromXML();
+        super("<named-native-query>");
     }
     
     /**
      * INTERNAL:
      */
-    public NamedNativeQueryMetadata(Annotation namedNativeQuery, String javaClassName) {
-    	setLoadedFromAnnotation();
-        setLocation(javaClassName);
-        
-        setName((String) invokeMethod("name", namedNativeQuery));
-        setQuery((String) invokeMethod("query", namedNativeQuery));
-        setHints((Annotation[]) invokeMethod("hints", namedNativeQuery));
-        
-        m_resultClass = (Class) invokeMethod("resultClass", namedNativeQuery); 
-        m_resultSetMapping = (String) invokeMethod("resultSetMapping", namedNativeQuery);
+    protected NamedNativeQueryMetadata(String javaClassName) {
+        super(javaClassName);
     }
     
     /**
      * INTERNAL:
      */
+    public NamedNativeQueryMetadata(Annotation namedNativeQuery, MetadataAccessibleObject accessibleObject) {
+        super(namedNativeQuery, accessibleObject);
+        
+        m_resultClass = (Class) MetadataHelper.invokeMethod("resultClass", namedNativeQuery); 
+        m_resultSetMapping = (String) MetadataHelper.invokeMethod("resultSetMapping", namedNativeQuery);
+    }
+    
+    /**
+     * INTERNAL:
+     */
+    @Override
     public boolean equals(Object objectToCompare) {
-    	if (objectToCompare instanceof NamedNativeQueryMetadata) {
-    		NamedNativeQueryMetadata namedNativeQuery = (NamedNativeQueryMetadata) objectToCompare;
-    		
-    		if (! org.eclipse.persistence.internal.jpa.metadata.MetadataHelper.valuesMatch(getName(), namedNativeQuery.getName())) {
-    			return false;
-    		}
-    		
-    		if (! org.eclipse.persistence.internal.jpa.metadata.MetadataHelper.valuesMatch(getQuery(), namedNativeQuery.getQuery())) {
-    			return false;
-    		}
-    		
-    		if (! org.eclipse.persistence.internal.jpa.metadata.MetadataHelper.valuesMatch(getResultClass(), namedNativeQuery.getResultClass())) {
-    			return false;
-    		}
-    		
-    		if (! org.eclipse.persistence.internal.jpa.metadata.MetadataHelper.valuesMatch(getResultSetMapping(), namedNativeQuery.getResultSetMapping())) {
-    			return false;
-    		}
-    		
-    		if (getHints().size() != namedNativeQuery.getHints().size()) {
-    			return false;
-        	} else {
-    			for (QueryHintMetadata hint : getHints()) {
-        			if (! namedNativeQuery.hasHint(hint)) {
-        				return false;
-        			}
-    			}
-        	}
-    		
-    		return true;
-    	}
-    	
-    	return false;
+        if (super.equals(objectToCompare) && objectToCompare instanceof NamedNativeQueryMetadata) {
+            NamedNativeQueryMetadata query = (NamedNativeQueryMetadata) objectToCompare;
+            
+            if (! valuesMatch(m_resultClass, query.getResultClass())) {
+                return false;
+            }
+            
+            return valuesMatch(m_resultSetMapping, query.getResultSetMapping());
+        }
+        
+        return false;
     }
     
     /**
@@ -117,6 +102,17 @@ public class NamedNativeQueryMetadata extends QueryMetadata {
     /**
      * INTERNAL:
      */
+    @Override
+    public void initXMLObject(MetadataAccessibleObject accessibleObject) {
+        super.initXMLObject(accessibleObject);
+        
+        m_resultClass = initXMLClassName(m_resultClassName);
+    }
+    
+    /**
+     * INTERNAL:
+     */
+    @Override
     public void process(AbstractSession session, ClassLoader loader) {
         HashMap<String, String> hints = processQueryHints(session);
 

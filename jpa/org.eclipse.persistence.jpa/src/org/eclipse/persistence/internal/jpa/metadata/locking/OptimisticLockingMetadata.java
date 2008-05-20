@@ -9,6 +9,8 @@
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
+ *     05/16/2008-1.0M8 Guy Pelletier 
+ *       - 218084: Implement metadata merging functionality between mapping files
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.locking;
 
@@ -22,6 +24,8 @@ import org.eclipse.persistence.descriptors.ChangedFieldsLockingPolicy;
 import org.eclipse.persistence.descriptors.SelectedFieldsLockingPolicy;
 import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataDescriptor;
+import org.eclipse.persistence.internal.jpa.metadata.ORMetadata;
+import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAccessibleObject;
 import org.eclipse.persistence.internal.jpa.metadata.columns.ColumnMetadata;
 
 /**
@@ -30,23 +34,38 @@ import org.eclipse.persistence.internal.jpa.metadata.columns.ColumnMetadata;
  * @author Guy Pelletier
  * @since TopLink 11g
  */
-public class OptimisticLockingMetadata  {
+public class OptimisticLockingMetadata extends ORMetadata {
     private Boolean m_cascade;
-    private List<ColumnMetadata> m_selectedColumns;
+    private List<ColumnMetadata> m_selectedColumns = new ArrayList<ColumnMetadata>();
     private Enum m_type;
     
     /**
      * INTERNAL:
      */
-    public OptimisticLockingMetadata() {}
+    public OptimisticLockingMetadata() {
+        super("<optimistic-locking>");
+    }
     
     /**
      * INTERNAL:
      */
-    public OptimisticLockingMetadata(Object optimisticLocking) {
-        setType((Enum) MetadataHelper.invokeMethod("type", optimisticLocking));
-        setCascade((Boolean) MetadataHelper.invokeMethod("cascade", optimisticLocking));
-        setSelectedColumns((Annotation[]) MetadataHelper.invokeMethod("selectedColumns", optimisticLocking));   
+    public OptimisticLockingMetadata(Annotation optimisticLocking, MetadataAccessibleObject accessibleObject) {
+        super(optimisticLocking, accessibleObject);
+        
+        m_type = (Enum) MetadataHelper.invokeMethod("type", optimisticLocking);
+        m_cascade = (Boolean) MetadataHelper.invokeMethod("cascade", optimisticLocking);
+        
+        for (Annotation selectedColumn : (Annotation[]) MetadataHelper.invokeMethod("selectedColumns", optimisticLocking)) {
+            m_selectedColumns.add(new ColumnMetadata(selectedColumn, accessibleObject));
+        }
+    }
+    
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+    public Boolean getCascade() {
+        return m_cascade;
     }
     
     /**
@@ -70,14 +89,6 @@ public class OptimisticLockingMetadata  {
      */
     public boolean hasSelectedColumns() {
         return ! m_selectedColumns.isEmpty();
-    }
-    
-    /**
-     * INTERNAL:
-     * Used for OX mapping.
-     */
-    public Boolean getCascade() {
-        return m_cascade;
     }
     
     /**
@@ -115,21 +126,10 @@ public class OptimisticLockingMetadata  {
     
     /**
      * INTERNAL:
+     * Used for OX mapping.
      */
     public void setCascade(Boolean cascade) {
-    	m_cascade = cascade;
-    }
-    
-    /**
-     * INTERNAL:
-     * Called from annotation population.
-     */
-    protected void setSelectedColumns(Annotation[] selectedColumns) {
-        m_selectedColumns = new ArrayList<ColumnMetadata>();
-    		
-        for (Annotation selectedColumn : selectedColumns) {
-            m_selectedColumns.add(new ColumnMetadata(selectedColumn));
-        }
+        m_cascade = cascade;
     }
     
     /**

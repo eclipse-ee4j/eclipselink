@@ -9,17 +9,18 @@
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
+ *     05/16/2008-1.0M8 Guy Pelletier 
+ *       - 218084: Implement metadata merging functionality between mapping files
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.converters;
 
 import java.lang.annotation.Annotation;
-import java.lang.reflect.AnnotatedElement;
 
 import org.eclipse.persistence.exceptions.ValidationException;
 
-import org.eclipse.persistence.internal.jpa.metadata.MetadataHelper;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataLogger;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.mappings.DirectAccessor;
+import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAccessibleObject;
 
 import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.mappings.converters.TypeConversionConverter;
@@ -41,48 +42,53 @@ public class TypeConverterMetadata extends AbstractConverterMetadata {
      * INTERNAL:
      */
     public TypeConverterMetadata() {
-    	setLoadedFromXML();
+        super("<type-converter>");
     }
     
     /**
      * INTERNAL:
      */
-    public TypeConverterMetadata(Annotation typeConverter, AnnotatedElement annotatedElement) {
-    	setLoadedFromAnnotation();
-    	setLocation(annotatedElement.toString());
-    	
-    	setName((String) invokeMethod("name", typeConverter));
-    	
-    	m_dataType = (Class) invokeMethod("dataType", typeConverter); 
-    	m_objectType = (Class) invokeMethod("objectType", typeConverter); 
+    public TypeConverterMetadata(String xmlElement) {
+        super(xmlElement);
     }
     
     /**
      * INTERNAL:
      */
+    public TypeConverterMetadata(Annotation typeConverter, MetadataAccessibleObject accessibleObject) {
+        super(typeConverter, accessibleObject);
+        
+        m_dataType = (Class) MetadataHelper.invokeMethod("dataType", typeConverter); 
+        m_objectType = (Class) MetadataHelper.invokeMethod("objectType", typeConverter); 
+    }
+    
+    /**
+     * INTERNAL:
+     */
+    @Override
     public boolean equals(Object objectToCompare) {
-    	if (objectToCompare instanceof TypeConverterMetadata) {
-    		TypeConverterMetadata typeConverter = (TypeConverterMetadata) objectToCompare;
-    		
-    		if (! MetadataHelper.valuesMatch(getName(), typeConverter.getName())) {
-    			return false;
-    		}
-    		
-    		if (! MetadataHelper.valuesMatch(m_dataType, typeConverter.getDataType())) {
-    			return false;
-    		}
-    		
-    		return MetadataHelper.valuesMatch(m_objectType, typeConverter.getObjectType());
-    	}
-    	
-    	return false;
+        if (objectToCompare instanceof TypeConverterMetadata) {
+            TypeConverterMetadata typeConverter = (TypeConverterMetadata) objectToCompare;
+            
+            if (! valuesMatch(getName(), typeConverter.getName())) {
+                return false;
+            }
+            
+            if (! valuesMatch(m_dataType, typeConverter.getDataType())) {
+                return false;
+            }
+            
+            return valuesMatch(m_objectType, typeConverter.getObjectType());
+        }
+        
+        return false;
     }
     
     /**
      * INTERNAL:
      */
     public Class getDataType() {
-    	return m_dataType;
+        return m_dataType;
     }
     
     /**
@@ -93,7 +99,7 @@ public class TypeConverterMetadata extends AbstractConverterMetadata {
             Class dataType = accessor.getReferenceClass();
             
             if (dataType == null) {
-            	throw ValidationException.noConverterDataTypeSpecified(accessor.getJavaClass(), accessor.getAttributeName(), getName());
+                throw ValidationException.noConverterDataTypeSpecified(accessor.getJavaClass(), accessor.getAttributeName(), getName());
             } else {
                 // Log the defaulting data type.
                 accessor.getLogger().logConfigMessage(MetadataLogger.CONVERTER_DATA_TYPE, accessor, getName(), dataType);
@@ -101,7 +107,7 @@ public class TypeConverterMetadata extends AbstractConverterMetadata {
             
             return dataType;
         } else {
-        	return m_dataType;
+            return m_dataType;
         }
     }
     
@@ -121,7 +127,7 @@ public class TypeConverterMetadata extends AbstractConverterMetadata {
             Class objectType = accessor.getReferenceClass();
             
             if (objectType == null) {
-            	throw ValidationException.noConverterObjectTypeSpecified(accessor.getJavaClass(), accessor.getAttributeName(), getName());
+                throw ValidationException.noConverterObjectTypeSpecified(accessor.getJavaClass(), accessor.getAttributeName(), getName());
             } else {
                 // Log the defaulting object type name.
                 accessor.getLogger().logConfigMessage(MetadataLogger.CONVERTER_OBJECT_TYPE, accessor, getName(), objectType);
@@ -129,7 +135,7 @@ public class TypeConverterMetadata extends AbstractConverterMetadata {
             
             return objectType;
         } else {
-        	return m_objectType;
+            return m_objectType;
         }
     }
     
@@ -149,7 +155,18 @@ public class TypeConverterMetadata extends AbstractConverterMetadata {
     }
     
     /**
-     * INTERNAL: (Overridden in ObjectTypeConverterMetadata)
+     * INTERNAL:
+     */
+    @Override
+    public void initXMLObject(MetadataAccessibleObject accessibleObject) {
+        super.initXMLObject(accessibleObject);
+        
+        m_dataType = initXMLClassName(m_dataTypeName);
+        m_objectType = initXMLClassName(m_objectTypeName);
+    }
+    
+    /**
+     * INTERNAL:
      */
     public void process(DatabaseMapping mapping, DirectAccessor accessor) {
         TypeConversionConverter converter = new TypeConversionConverter(mapping);
@@ -171,7 +188,7 @@ public class TypeConverterMetadata extends AbstractConverterMetadata {
      * INTERNAL:
      */
     public void setDataType(Class dataType) {
-    	m_dataType = dataType;
+        m_dataType = dataType;
     }
     
     /**
@@ -179,7 +196,7 @@ public class TypeConverterMetadata extends AbstractConverterMetadata {
      * Used for OX mapping.
      */
     public void setDataTypeName(String dataTypeName) {
-    	m_dataTypeName = dataTypeName;
+        m_dataTypeName = dataTypeName;
     }
     
     /**

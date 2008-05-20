@@ -9,10 +9,15 @@
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
+ *     05/16/2008-1.0M8 Guy Pelletier 
+ *       - 218084: Implement metadata merging functionality between mapping files
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.queries;
 
 import java.lang.annotation.Annotation;
+
+import org.eclipse.persistence.internal.jpa.metadata.ORMetadata;
+import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAccessibleObject;
 
 /**
  * INTERNAL:
@@ -21,22 +26,46 @@ import java.lang.annotation.Annotation;
  * @author Guy Pelletier
  * @since TopLink EJB 3.0 Reference Implementation
  */
-public class FieldResultMetadata {
-	// Both the name and column are required in XML and annotations.
-	private String m_name;
-	private String m_column;
+public class FieldResultMetadata extends ORMetadata {
+    // Both the name and column are required in XML and annotations.
+    private String m_name;
+    private String m_column;
     
     /**
      * INTERNAL:
+     * Used for OX mapping.
      */
-    public FieldResultMetadata() {}
+    public FieldResultMetadata() {
+        super("<field-result>");
+    }
 
     /**
      * INTERNAL:
      */
-    public FieldResultMetadata(Annotation fieldResult) {
-    	m_name = (String) MetadataHelper.invokeMethod("name", fieldResult);
-    	m_column = (String) MetadataHelper.invokeMethod("column", fieldResult);
+    public FieldResultMetadata(Annotation fieldResult, MetadataAccessibleObject accessibleObject) {
+        super(fieldResult, accessibleObject);
+        
+        m_name = (String) MetadataHelper.invokeMethod("name", fieldResult);
+        m_column = (String) MetadataHelper.invokeMethod("column", fieldResult);
+    }
+    
+    /**
+     * INTERNAL:
+     */
+    @Override
+    public boolean equals(Object objectToCompare) {
+        if (objectToCompare instanceof FieldResultMetadata) {
+            FieldResultMetadata fieldResult = (FieldResultMetadata) objectToCompare;
+            
+            if (! valuesMatch(m_name, fieldResult.getName())) {
+                return false;
+            }
+
+            
+            return valuesMatch(m_column, fieldResult.getColumn());
+        }
+        
+        return false;
     }
     
     /**
@@ -60,7 +89,7 @@ public class FieldResultMetadata {
      * Used for OX mapping.
      */
     public void setColumn(String column) {
-    	m_column = column;
+        m_column = column;
     }
     
     /**
@@ -68,6 +97,6 @@ public class FieldResultMetadata {
      * Used for OX mapping.
      */
     public void setName(String name) {
-    	m_name = name;
+        m_name = name;
     }
 }

@@ -9,6 +9,8 @@
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
+ *     05/16/2008-1.0M8 Guy Pelletier 
+ *       - 218084: Implement metadata merging functionality between mapping files
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.columns;
 
@@ -17,58 +19,56 @@ import java.util.List;
 import java.util.ArrayList;
 
 import org.eclipse.persistence.internal.jpa.metadata.MetadataDescriptor;
+import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAccessibleObject;
 
 /**
+ * INTERNAL:
  * Object to hold onto join column metadata.
  * 
  * @author Guy Pelletier
  * @since TopLink EJB 3.0 Reference Implementation
  */
 public class PrimaryKeyJoinColumnsMetadata {
-    private List<PrimaryKeyJoinColumnMetadata> m_pkJoinColumns;
+    private List<PrimaryKeyJoinColumnMetadata> m_pkJoinColumns = new ArrayList<PrimaryKeyJoinColumnMetadata>();
     
     /**
      * INTERNAL:
      */
     public PrimaryKeyJoinColumnsMetadata(List<PrimaryKeyJoinColumnMetadata> primaryKeyJoinColumns) {
-    	// These primary key join columns could have been loaded from XML, 
-    	// meaning they could be null (eg. we not specified within a secondary
-    	// table), therefore initialize an empty list.
-    	if (primaryKeyJoinColumns == null) {
-    		m_pkJoinColumns = new ArrayList<PrimaryKeyJoinColumnMetadata>();	
-    	} else {
-    		m_pkJoinColumns = primaryKeyJoinColumns;
-    	}
-    }
-    
-    /**
-     * INTERNAL:
-     */
-    public PrimaryKeyJoinColumnsMetadata(Annotation[] primaryKeyJoinColumns) {
-    	m_pkJoinColumns = new ArrayList<PrimaryKeyJoinColumnMetadata>();
-        
-        // Process the primary key join column array.
-        for (Annotation pkJoinColumn : primaryKeyJoinColumns) {
-            m_pkJoinColumns.add(new PrimaryKeyJoinColumnMetadata(pkJoinColumn));
+        // These primary key join columns could have been loaded from XML, 
+        // meaning they could be null (eg. were not specified within a 
+        // secondary table), therefore check against null.
+        if (primaryKeyJoinColumns != null) {
+            for (PrimaryKeyJoinColumnMetadata primaryKeyJoinColumn : primaryKeyJoinColumns) {
+                m_pkJoinColumns.add(primaryKeyJoinColumn);
+            }
         }
     }
     
     /**
      * INTERNAL:
      */
-    public PrimaryKeyJoinColumnsMetadata(Annotation primaryKeyJoinColumns, Annotation primaryKeyJoinColumn) {
-    	m_pkJoinColumns = new ArrayList<PrimaryKeyJoinColumnMetadata>();
-        
+    public PrimaryKeyJoinColumnsMetadata(Annotation[] primaryKeyJoinColumns, MetadataAccessibleObject accessibleObject) {
+        // Process the primary key join column array.
+        for (Annotation pkJoinColumn : primaryKeyJoinColumns) {
+            m_pkJoinColumns.add(new PrimaryKeyJoinColumnMetadata(pkJoinColumn, accessibleObject));
+        }
+    }
+    
+    /**
+     * INTERNAL:
+     */
+    public PrimaryKeyJoinColumnsMetadata(Annotation primaryKeyJoinColumns, Annotation primaryKeyJoinColumn, MetadataAccessibleObject accessibleObject) {        
         // Process all the primary key join columns first.
         if (primaryKeyJoinColumns != null) {
             for (Annotation pkJoinColumn : (Annotation[])MetadataHelper.invokeMethod("value", primaryKeyJoinColumns)) { 
-                m_pkJoinColumns.add(new PrimaryKeyJoinColumnMetadata(pkJoinColumn));
+                m_pkJoinColumns.add(new PrimaryKeyJoinColumnMetadata(pkJoinColumn, accessibleObject));
             }
         }
         
         // Process the single primary key join column second.
         if (primaryKeyJoinColumn != null) {
-            m_pkJoinColumns.add(new PrimaryKeyJoinColumnMetadata(primaryKeyJoinColumn));
+            m_pkJoinColumns.add(new PrimaryKeyJoinColumnMetadata(primaryKeyJoinColumn, accessibleObject));
         }
     }
     
@@ -86,9 +86,9 @@ public class PrimaryKeyJoinColumnsMetadata {
                 // Add a default one for each part of the composite primary
                 // key. Foreign and primary key to have the same name.
                 for (String primaryKeyField : descriptor.getPrimaryKeyFieldNames()) {
-                	PrimaryKeyJoinColumnMetadata primaryKeyJoinColumn = new PrimaryKeyJoinColumnMetadata();
-                	primaryKeyJoinColumn.setReferencedColumnName(primaryKeyField);
-                	primaryKeyJoinColumn.setName(primaryKeyField);
+                    PrimaryKeyJoinColumnMetadata primaryKeyJoinColumn = new PrimaryKeyJoinColumnMetadata();
+                    primaryKeyJoinColumn.setReferencedColumnName(primaryKeyField);
+                    primaryKeyJoinColumn.setName(primaryKeyField);
                     m_pkJoinColumns.add(primaryKeyJoinColumn);
                 }
             } else {

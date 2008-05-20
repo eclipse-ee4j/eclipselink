@@ -9,42 +9,35 @@
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
+ *     05/16/2008-1.0M8 Guy Pelletier 
+ *       - 218084: Implement metadata merging functionality between mapping files
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.accessors;
 
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
 import java.lang.annotation.Annotation;
-import java.lang.Boolean;
-
 import java.lang.reflect.AnnotatedElement;
-import java.lang.reflect.Type;
+import java.lang.Boolean;
 
 import javax.persistence.Column;
 import javax.persistence.FetchType;
-import javax.persistence.PrimaryKeyJoinColumns;
 
 import org.eclipse.persistence.annotations.Convert;
 import org.eclipse.persistence.annotations.Converter;
-import org.eclipse.persistence.annotations.JoinFetchType;
 import org.eclipse.persistence.annotations.ObjectTypeConverter;
-import org.eclipse.persistence.annotations.Properties;
-import org.eclipse.persistence.annotations.Property;
 import org.eclipse.persistence.annotations.ReturnInsert;
 import org.eclipse.persistence.annotations.ReturnUpdate;
 import org.eclipse.persistence.annotations.TypeConverter;
 import org.eclipse.persistence.annotations.StructConverter;
 import org.eclipse.persistence.exceptions.ValidationException;
 
-import org.eclipse.persistence.internal.jpa.metadata.accessors.classes.ClassAccessor;
+import org.eclipse.persistence.internal.helper.DatabaseField;
+import org.eclipse.persistence.internal.helper.Helper;
 
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAccessibleObject;
-import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataMethod;
+import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAnnotatedElement;
 
 import org.eclipse.persistence.internal.jpa.metadata.columns.PrimaryKeyJoinColumnMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.columns.PrimaryKeyJoinColumnsMetadata;
@@ -55,129 +48,59 @@ import org.eclipse.persistence.internal.jpa.metadata.converters.StructConverterM
 import org.eclipse.persistence.internal.jpa.metadata.converters.TypeConverterMetadata;
 
 import org.eclipse.persistence.internal.jpa.metadata.tables.TableMetadata;
-import org.eclipse.persistence.internal.jpa.metadata.xml.XMLEntityMappings;
 
 import org.eclipse.persistence.internal.jpa.metadata.MetadataLogger;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataProject;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataDescriptor;
-
-import org.eclipse.persistence.internal.queries.CollectionContainerPolicy;
-
-import org.eclipse.persistence.internal.helper.ClassConstants;
-import org.eclipse.persistence.internal.helper.DatabaseField;
-import org.eclipse.persistence.internal.helper.Helper;
-
-import org.eclipse.persistence.mappings.CollectionMapping;
-import org.eclipse.persistence.mappings.DatabaseMapping;
-import org.eclipse.persistence.mappings.ForeignReferenceMapping;
+import org.eclipse.persistence.internal.jpa.metadata.ORMetadata;
 
 /**
+ * INTERNAL:
  * Top level metadata accessor.
  * 
  * @author Guy Pelletier
  * @since TopLink EJB 3.0 Reference Implementation
  */
-public abstract class MetadataAccessor  {
-    private boolean m_isProcessed;
+public abstract class MetadataAccessor extends ORMetadata {
+    private boolean m_isProcessed = false;
     private Boolean m_isRelationship;
    
-    private List<ConverterMetadata> m_converters;
-    private List<ObjectTypeConverterMetadata> m_objectTypeConverters;
-    private List<PrimaryKeyJoinColumnMetadata> m_primaryKeyJoinColumns;
-    private List<StructConverterMetadata> m_structConverters;
-    private List<TypeConverterMetadata> m_typeConverters;
+    private List<ConverterMetadata> m_converters = new ArrayList<ConverterMetadata>();
+    private List<ObjectTypeConverterMetadata> m_objectTypeConverters = new ArrayList<ObjectTypeConverterMetadata>();
+    private List<StructConverterMetadata> m_structConverters = new ArrayList<StructConverterMetadata>();
+    private List<TypeConverterMetadata> m_typeConverters = new ArrayList<TypeConverterMetadata>();
+    private List<PropertyMetadata> m_properties = new ArrayList<PropertyMetadata>();
     
-    private MetadataAccessibleObject m_accessibleObject;
     private MetadataDescriptor m_descriptor;
     private MetadataDescriptor m_owningDescriptor;
     private MetadataProject m_project;
    
     private String m_name;
     
-    private XMLEntityMappings m_entityMappings;
-    
-    private List<PropertyMetadata> m_properties;
-    
     /**
      * INTERNAL: 
      * Used for OX mapping.
      */
-    public MetadataAccessor() {}
-    
-    /**
-     * INTERNAL:
-     */
-    public MetadataAccessor(MetadataAccessibleObject accessibleObject, ClassAccessor classAccessor) {
-        init(accessibleObject, classAccessor.getDescriptor(), classAccessor.getProject(), null);
+    public MetadataAccessor(String xmlElement) {
+        super(xmlElement);
     }
     
     /**
      * INTERNAL:
      */
-    public MetadataAccessor(MetadataAccessibleObject accessibleObject, MetadataDescriptor descriptor, MetadataProject project) {
-    	init(accessibleObject, descriptor, project, null);
-    }
-    
-    /**
-     * INTERNAL:
-     * Look for two properties with the same name - throw ValidationException if such pair found.
-     * Precondition: m_properties != null.
-     */
-    protected void checkForPropertiesConflictsInXml() {
-        checkForPropertiesConflicts(true, 0);
-    }
-    
-    /**
-     * INTERNAL:
-     * Look for two properties with the same name - throw ValidationException if such pair found.
-     * Precondition: m_properties != null.
-     */
-    protected void checkForPropertiesConflictsInAnnotations(int startIndex) {
-        checkForPropertiesConflicts(false, startIndex);
-    }
-    
-    /**
-     * INTERNAL:
-     * Look for two properties with the same name - throw ValidationException if such pair found.
-     * Start search at the startIndex specified.
-     * Precondition: m_properties != null.
-     */
-    protected void checkForPropertiesConflicts(boolean isXml, int startIndex) {
-        int size = m_properties.size() - startIndex;
-        // less than two elements - conflict is impossible.
-        if(size <= 1) {
-            return;
-        }
-        Map<String, PropertyMetadata> map = new HashMap<String, PropertyMetadata>(size);
-        for(int i=0; i < size; i++) {
-            PropertyMetadata property = m_properties.get(startIndex + i);
-            PropertyMetadata existingProperty = map.get(property.getName());
-            if(existingProperty == null) {
-                map.put(property.getName(), property);
-            } else if(!existingProperty.getValue().equals(property.getValue())) {
-                if(getAttributeName() == null) {
-                    if(isXml) {
-                        throw ValidationException.classPropertyConflictInXml(getJavaClassName(), property.getName(), existingProperty.getValue(), property.getValue());
-                    } else {
-                        throw ValidationException.classPropertyConflictInAnnotations(getJavaClassName(), property.getName(), existingProperty.getValue(), property.getValue());
-                    }
-                } else {
-                    if(isXml) {
-                        throw ValidationException.attributePropertyConflictInXml(getAttributeName(), getJavaClassName(), property.getName(), existingProperty.getValue(), property.getValue());
-                    } else {
-                        throw ValidationException.attributePropertyConflictInAnnotations(getAttributeName(), getJavaClassName(), property.getName(), existingProperty.getValue(), property.getValue());
-                    }
-                }
-            }
-        }
+    public MetadataAccessor(Annotation annotation, MetadataAccessibleObject accessibleObject, MetadataDescriptor descriptor, MetadataProject project) {
+        super(annotation, accessibleObject);
+        
+        m_project = project;
+        m_descriptor = descriptor;
     }
     
     /**
      * INTERNAL:
      * Returns the accessible object for this accessor.
      */
-    public MetadataAccessibleObject getAccessibleObject() {
-        return m_accessibleObject;
+    public MetadataAnnotatedElement getAccessibleObject() {
+        return (MetadataAnnotatedElement) super.getAccessibleObject();
     }
     
     /**
@@ -186,7 +109,7 @@ public abstract class MetadataAccessor  {
      * return the field name. For a method it will return the method name.
      */
     public String getAccessibleObjectName() {
-        return m_accessibleObject.getName();
+        return getAccessibleObject().getName();
     }
     
     /**
@@ -194,7 +117,7 @@ public abstract class MetadataAccessor  {
      * Return the annotated element for this accessor.
      */
     public AnnotatedElement getAnnotatedElement() {
-        return m_accessibleObject.getAnnotatedElement();
+        return getAccessibleObject().getAnnotatedElement();
     }
     
     /**
@@ -210,7 +133,7 @@ public abstract class MetadataAccessor  {
      * Return the annotated element for this accessor.
      */
     protected <T extends Annotation> T getAnnotation(Class annotation) {
-        return (T) m_accessibleObject.getAnnotation(annotation, m_descriptor);
+        return (T) getAccessibleObject().getAnnotation(annotation, m_descriptor);
     }
     
     /**
@@ -218,22 +141,22 @@ public abstract class MetadataAccessor  {
      * Return the attribute name for this accessor.
      */
     public String getAttributeName() {
-        return m_accessibleObject.getAttributeName();
+        return getAccessibleObject().getAttributeName();
     }
     
-	/**
+    /**
      * INTERNAL:
      * Used for OX mapping.
      */
-	public List<ConverterMetadata> getConverters() {
-		return m_converters;
-	}
+    public List<ConverterMetadata> getConverters() {
+        return m_converters;
+    }
     
     /**
      * INTERNAL:
      */
     public Enum getDefaultFetchType() {
-    	return FetchType.valueOf("EAGER"); 
+        return FetchType.valueOf("EAGER"); 
     }
     
     /**
@@ -246,13 +169,15 @@ public abstract class MetadataAccessor  {
     
     /**
      * INTERNAL:
+     * To satisfy the abstract getIdentifier() method from ORMetadata.
      */
-    public XMLEntityMappings getEntityMappings() {
-    	return m_entityMappings;
+    @Override
+    public String getIdentifier() {
+        return getName();
     }
     
     /**
-     * INTERNAL: (Overridden in ClassAccessor)
+     * INTERNAL:
      * Return the java class associated with this accessor's descriptor.
      */
     public Class getJavaClass() {
@@ -273,29 +198,6 @@ public abstract class MetadataAccessor  {
      */
     public MetadataLogger getLogger() {
         return m_project.getLogger();
-    }
-    
-    /**
-     * INTERNAL:
-     * Return the map key class from a generic Map type. If it is not generic,
-     * then null is returned.
-     */
-    protected Class getMapKeyClass() {
-        return m_accessibleObject.getMapKeyClass();
-    }
-    
-    /**
-     * INTERNAL:
-     * Return the mapping join fetch type.
-     */
-    protected int getMappingJoinFetchType(Enum joinFetchType) {
-        if (joinFetchType == null) {
-            return ForeignReferenceMapping.NONE;
-        } else if (joinFetchType.equals(JoinFetchType.INNER)) {
-            return ForeignReferenceMapping.INNER_JOIN;
-        }
-        
-        return ForeignReferenceMapping.OUTER_JOIN;
     }
     
     /**
@@ -330,17 +232,17 @@ public abstract class MetadataAccessor  {
      * therefore, don't log a message and return name.
      */
     protected String getName(String name, String defaultName, String context) {
-    	return org.eclipse.persistence.internal.jpa.metadata.MetadataHelper.getName(name, defaultName, context, getLogger(), getAnnotatedElement().toString());
+        return org.eclipse.persistence.internal.jpa.metadata.MetadataHelper.getName(name, defaultName, context, getLogger(), getAnnotatedElement().toString());
     }
     
-	/**
+    /**
      * INTERNAL:
      * Used for OX mapping.
      */
-	public List<ObjectTypeConverterMetadata> getObjectTypeConverters() {
-		return m_objectTypeConverters;
-	}
-	
+    public List<ObjectTypeConverterMetadata> getObjectTypeConverters() {
+        return m_objectTypeConverters;
+    }
+    
     /**
      * INTERNAL:
      * In the general case the owning descriptor is the descriptor for this
@@ -355,14 +257,6 @@ public abstract class MetadataAccessor  {
         } else {
             return m_owningDescriptor;
         }
-    }
-    
-    /**
-     * INTERNAL:
-     * Used for OX mapping.
-     */    
-    public List<PrimaryKeyJoinColumnMetadata> getPrimaryKeyJoinColumns() {
-    	return m_primaryKeyJoinColumns;
     }
     
     /**
@@ -383,93 +277,20 @@ public abstract class MetadataAccessor  {
     
     /**
      * INTERNAL:
-     * Return the raw class for this accessor. 
-     * Eg. For an accessor with a type of java.util.Collection<Employee>, this 
-     * method will return java.util.Collection
+     * Used for OX mapping.
      */
-    public Class getRawClass() {
-        return m_accessibleObject.getRawClass();   
+    public List<StructConverterMetadata> getStructConverters() {
+        return m_structConverters;
     }
     
     /**
-     * INTERNAL: (Overridden in CollectionAccessor, ObjectAccessor, 
-     * BasicCollectionAccessor and BasicMapAccessor)
-     * 
-     * Return the reference class for this accessor. By default the reference
-     * class is the raw class. Some accessors may need to override this
-     * method to drill down further. That is, try to extract a reference class
-     * from generics.
-     */
-    public Class getReferenceClass() {
-        return m_accessibleObject.getRawClass();
-    }
-    
-    /**
-     * INTERNAL:
-     * Attempts to return a reference class from a generic specification. Note,
-     * this method may return null.
-     */
-    public Class getReferenceClassFromGeneric() {
-        return m_accessibleObject.getReferenceClassFromGeneric();
-    }
-
-    /**
-     * INTERNAL:
-     * Return the reference class name for this accessor.
-     */
-    public String getReferenceClassName() {
-        return getReferenceClass().getName();
-    }
-    
-    /**
-     * INTERNAL:
-     * Return the reference metadata descriptor for this accessor.
-     */
-    public MetadataDescriptor getReferenceDescriptor() {
-    	ClassAccessor accessor = m_project.getAccessor(getReferenceClassName());
-    	
-        if (accessor == null) {
-        	throw ValidationException.classNotListedInPersistenceUnit(getReferenceClassName());
-        }
-        
-        return accessor.getDescriptor();
-    }
-    
-    /**
-     * INTERNAL:
-     * Return the relation type of this accessor.
-     */
-    protected Type getRelationType() {
-        return m_accessibleObject.getRelationType();
-    }
-    
-    /**
-     * INTERNAL:
-     * Returns the set method name of a method accessor. Note, this method
-     * should not be called when processing field access.
-     */
-    //TODO bug 217164
-    protected String getSetMethodName() {
-        throw new RuntimeException();
-        //return ((MetadataMethod) m_accessibleObject).getSetMethodName();
-    }
-    
-	/**
-	 * INTERNAL:
-	 * Used for OX mapping.
-	 */
-	public List<StructConverterMetadata> getStructConverters() {
-		return m_structConverters;
-	}
-	
-	/**
      * INTERNAL:
      * Used for OX mapping.
      */
-	public List<TypeConverterMetadata> getTypeConverters() {
-		return m_typeConverters;
-	}
-	
+    public List<TypeConverterMetadata> getTypeConverters() {
+        return m_typeConverters;
+    }
+    
     /**
      * INTERNAL:
      * Return the upper cased attribute name for this accessor. Used when
@@ -514,19 +335,11 @@ public abstract class MetadataAccessor  {
     }
     
     /**
-     * INTERNAL: (Overridden in DirectAccessor and BasicMapAccessor)
+     * INTERNAL:
      * Method to check if an annotated element has a convert specified.
      */
     protected boolean hasConvert() {
         return isAnnotationPresent(Convert.class);
-    }
-    
-    /**
-     * INTERNAL:
-     * Method to check if this accessor has @PrimaryKeyJoinColumns.
-     */
-    protected boolean hasPrimaryKeyJoinColumns() {
-        return isAnnotationPresent(PrimaryKeyJoinColumns.class);
     }
     
     /**
@@ -547,104 +360,29 @@ public abstract class MetadataAccessor  {
     
     /**
      * INTERNAL: 
-     * Overridden in those accessor classes that need to initialize any classes 
-     * or other metadata before processing. This init should only be called on 
-     * those accessors that were loaded through OX, that is, specified in XML.
-     * - RelationshipAccessor - target entity name
-     * - BasicAccessor - attribute name on the column
-     * - BasicCollectionAccessor - attribute name on the value column
-     * - BasicMapAccessor - attribute name on the key column
-     * - EmbeddedAccessor
+     * This method should be subclassed in those methods that need to do 
+     * extra initialization.
      */
-    public void init(MetadataAccessibleObject accessibleObject, ClassAccessor accessor) {
-    	init(accessibleObject, accessor.getDescriptor(), accessor.getProject(), accessor.getEntityMappings());
-    }
-    
-    /**
-     * INTERNAL: 
-     */
-    public void init(MetadataAccessibleObject accessibleObject, MetadataDescriptor descriptor, MetadataProject project, XMLEntityMappings entityMappings) {
-    	m_isProcessed = false;
-    	m_project = project;
+    public void initXMLAccessor(MetadataAccessibleObject accessibleObject, MetadataDescriptor descriptor, MetadataProject project) {
+        m_project = project;
         m_descriptor = descriptor;
-        m_entityMappings = entityMappings;
-        m_accessibleObject = accessibleObject;
-        initProperties();
+        
+        initXMLObject(accessibleObject);
     }
 
-    /** 
+    /**
      * INTERNAL:
-     * Setup and validate m_properties.
      */
-    protected void initProperties() {
-        boolean shouldProcessPropertyAnnotations;
-        if(m_entityMappings != null) {
-            // xml is processed
-            if(m_properties != null) {
-                for (PropertyMetadata property : m_properties) {
-                    if(property.getValueTypeName() != null && property.getValueTypeName().length() > 0) {
-                        property.setValueType(m_entityMappings.getClassForName(property.getValueTypeName()));
-                    }
-                }
-                // verify that no two properties defined in xml have the same name.
-                checkForPropertiesConflictsInXml();
-            }
-            // should process property annotations only in case it's a class accessor. xml-defined properties should override annotation-defined ones.
-            shouldProcessPropertyAnnotations = isClassAccessor();
-        } else {
-            // annotations are processed - should process property annotations, too.
-            shouldProcessPropertyAnnotations = true;
-        }
-
-        if(shouldProcessPropertyAnnotations) {
-            // the index of the first annotation-defined property in m_properties (if any).
-            int startIndex;
-            if(m_properties != null) {
-                startIndex = m_properties.size();
-            } else {
-                startIndex = 0;
-            }
-            Property property = getAnnotation(Property.class);
-            if (property != null) {
-                addProperty(property);
-            }
-            Properties properties = getAnnotation(Properties.class);
-            if (properties != null) {
-                Property[] propertyArray = properties.value();
-                for(int i=0; i<propertyArray.length; i++) {
-                    addProperty(propertyArray[i]);
-                }
-            }
-            if(m_properties != null) {
-                // verify that no two properties defined in annotations have the same name.
-                checkForPropertiesConflictsInAnnotations(startIndex);
-            }
-        }
-    }
-    
-    /** 
-     * INTERNAL:
-     * Add property.
-     */
-    protected void addProperty(Property property) {
-        PropertyMetadata propertyMetadata = new PropertyMetadata();
-        propertyMetadata.setName((String)MetadataHelper.invokeMethod("name", property));
-        propertyMetadata.setValue((String)MetadataHelper.invokeMethod("value", property));
-        propertyMetadata.setValueType((Class)MetadataHelper.invokeMethod("valueType", property));
-        if(m_properties == null) {
-            m_properties = new ArrayList<PropertyMetadata>();
-        }
-        m_properties.add(propertyMetadata);
-    }
-    
-    /** 
-     * INTERNAL:
-     * Indicates whether the specified annotation is present on the annotated
-     * element for this accessor. Method checks against the metadata complete
-     * flag.
-     */
-    protected boolean isAnnotationNotPresent(Class<? extends Annotation> annotation, AnnotatedElement annotatedElement) {
-        return m_accessibleObject.isAnnotationNotPresent(annotation, annotatedElement);
+    @Override
+    public void initXMLObject(MetadataAccessibleObject accessibleObject) {
+        super.initXMLObject(accessibleObject);
+        
+        // Initialize lists of objects.
+        initXMLObjects(m_converters, accessibleObject);
+        initXMLObjects(m_objectTypeConverters, accessibleObject);
+        initXMLObjects(m_structConverters, accessibleObject);
+        initXMLObjects(m_typeConverters, accessibleObject);
+        initXMLObjects(m_properties, accessibleObject);
     }
     
     /** 
@@ -654,17 +392,7 @@ public abstract class MetadataAccessor  {
      * flag.
      */
     protected boolean isAnnotationPresent(Class<? extends Annotation> annotation) {
-        return m_accessibleObject.isAnnotationPresent(annotation, getAnnotatedElement(), m_descriptor);
-    }
-    
-    /** 
-     * INTERNAL:
-     * Indicates whether the specified annotation is present on the annotated
-     * element for this accessor. Method checks against the metadata complete
-     * flag.
-     */
-    protected boolean isAnnotationPresent(Class<? extends Annotation> annotation, AnnotatedElement annotatedElement) {
-        return m_accessibleObject.isAnnotationPresent(annotation, annotatedElement, m_descriptor);
+        return getAccessibleObject().isAnnotationPresent(annotation, m_descriptor);
     }
     
     /**
@@ -677,9 +405,9 @@ public abstract class MetadataAccessor  {
     
     /** 
      * INTERNAL:
-     * Return true if this accessor represents a class.
+     * Return true if this accessor represents a collection accessor.
      */
-    public boolean isClassAccessor() {
+    public boolean isCollectionAccessor() {
         return false;
     }
     
@@ -770,6 +498,22 @@ public abstract class MetadataAccessor  {
     
     /**
      * INTERNAL:
+     * We currently limit this merging to the ClassAccessor level.
+     */
+    @Override
+    public void merge(ORMetadata metadata) {
+        MetadataAccessor accessor = (MetadataAccessor) metadata;
+        
+        // ORMetadata list merging.
+        m_converters = mergeORObjectLists(m_converters, accessor.getConverters());
+        m_objectTypeConverters = mergeORObjectLists(m_objectTypeConverters, accessor.getObjectTypeConverters());
+        m_structConverters = mergeORObjectLists(m_structConverters, accessor.getStructConverters());
+        m_typeConverters = mergeORObjectLists(m_typeConverters, accessor.getTypeConverters());
+        m_properties = mergeORObjectLists(m_properties, accessor.getProperties());
+    }
+    
+    /**
+     * INTERNAL:
      * Every accessor knows how to process themselves since they have all the
      * information they need.
      */
@@ -798,15 +542,15 @@ public abstract class MetadataAccessor  {
      * Process the XML defined converters and check for a Converter annotation. 
      */
     protected void processCustomConverters() {
-    	// Check for XML defined converters.
-    	if (m_converters != null) {
-    		getEntityMappings().processConverters(m_converters);
-    	}
-    	
+        // Check for XML defined converters.
+        for (ConverterMetadata converter : m_converters) {
+            m_project.addConverter(converter);
+        }
+        
         // Check for a Converter annotation.
-    	Annotation converter = getAnnotation(Converter.class);
+        Annotation converter = getAnnotation(Converter.class);
         if (converter != null) {
-            m_project.addConverter(new ConverterMetadata(converter, getAnnotatedElement()));
+            m_project.addConverter(new ConverterMetadata(converter, getAccessibleObject()));
         }
     }
     
@@ -816,93 +560,46 @@ public abstract class MetadataAccessor  {
      * ObjectTypeConverter annotation. 
      */
     protected void processObjectTypeConverters() {        
-    	// Check for XML defined object type converters.
-    	if (m_objectTypeConverters != null) {
-    		getEntityMappings().processObjectTypeConverters(m_objectTypeConverters);
-    	}
-    	
+        // Check for XML defined object type converters.
+        for (ObjectTypeConverterMetadata objectTypeConverter : m_objectTypeConverters) {
+            m_project.addConverter(objectTypeConverter);
+        }
+        
         // Check for an ObjectTypeConverter annotation.
-    	Annotation converter = getAnnotation(ObjectTypeConverter.class);
-        if (converter != null) {
-        	m_project.addConverter(new ObjectTypeConverterMetadata(converter, getAnnotatedElement()));
+        Annotation objectTypeConverter = getAnnotation(ObjectTypeConverter.class);
+        if (objectTypeConverter != null) {
+            m_project.addConverter(new ObjectTypeConverterMetadata(objectTypeConverter, getAccessibleObject()));
         }
     }
     
     /**
      * INTERNAL:
      * Process the primary key join columms for this accessors annotated element.
-     */	
+     */    
     protected List<PrimaryKeyJoinColumnMetadata> processPrimaryKeyJoinColumns(PrimaryKeyJoinColumnsMetadata primaryKeyJoinColumns) {
-    	// If the primary key join columns were not specified (that is empty),
-    	// this call will add any defaulted columns as necessary.
-    	 List<PrimaryKeyJoinColumnMetadata> pkJoinColumns = primaryKeyJoinColumns.values(m_descriptor);
+        // If the primary key join columns were not specified (that is empty),
+        // this call will add any defaulted columns as necessary.
+         List<PrimaryKeyJoinColumnMetadata> pkJoinColumns = primaryKeyJoinColumns.values(m_descriptor);
         
         if (m_descriptor.hasCompositePrimaryKey()) {
             // Validate the number of primary key fields defined.
             if (pkJoinColumns.size() != m_descriptor.getPrimaryKeyFields().size()) {
-            	throw ValidationException.incompletePrimaryKeyJoinColumnsSpecified(getAnnotatedElement());
+                throw ValidationException.incompletePrimaryKeyJoinColumnsSpecified(getAnnotatedElement());
             }
             
             // All the primary and foreign key field names should be specified.
             for (PrimaryKeyJoinColumnMetadata pkJoinColumn : pkJoinColumns) {
                 if (pkJoinColumn.isPrimaryKeyFieldNotSpecified() || pkJoinColumn.isForeignKeyFieldNotSpecified()) {
-                	throw ValidationException.incompletePrimaryKeyJoinColumnsSpecified(getAnnotatedElement());
+                    throw ValidationException.incompletePrimaryKeyJoinColumnsSpecified(getAnnotatedElement());
                 }
             }
         } else {
             if (pkJoinColumns.size() > 1) {
-            	throw ValidationException.excessivePrimaryKeyJoinColumnsSpecified(getAnnotatedElement());
+                throw ValidationException.excessivePrimaryKeyJoinColumnsSpecified(getAnnotatedElement());
             }
         }
         
         return pkJoinColumns;
-    }
-    
-    /**
-     * INTERNAL:
-     * Adds properties to the mapping.
-     */
-    protected void processProperties(DatabaseMapping mapping) {
-        if(m_properties != null && !m_properties.isEmpty()) {
-            processProperties(mapping.getProperties(), mapping.getAttributeName());
-        }
-    }
-    
-    /**
-     * INTERNAL:
-     * Adds properties to the descriptor.
-     */
-    protected void processProperties() {
-        if(m_properties != null && !m_properties.isEmpty()) {
-            processProperties(m_descriptor.getClassDescriptor().getProperties(), null);
-        }
-    }
-    
-    /**
-     * INTERNAL:
-     * Adds properties to the passed map.
-     * Note that if the property is already in the map it should not be overridden -
-     * that's because:
-     * 1) Entity processes its properties before MappedSuperclass from
-     * which it's derived, and Entity's properties should not be overridden by
-     * those of the MappedSuperclass;
-     * 2) In case of any ClassAccessor, property defined in xml are inserted into
-     * m_properties List before the ones defined by annotations: xml-defined
-     * properties should override annotation-defined ones.
-     */
-    protected void processProperties(Map map, String attributeName) {
-        for(PropertyMetadata property : m_properties) {
-            Object overridingConvertedValue = map.get(property.getName()); 
-            if(overridingConvertedValue == null) {
-                map.put(property.getName(), property.getConvertedValue());
-            } else {
-                if(attributeName == null) {
-                    getLogger().logWarningMessage(MetadataLogger.IGNORE_PROPERTY_FOR_CLASS, getDescriptor().getJavaClass(), property.getName(), property.getConvertedValue(), overridingConvertedValue);
-                } else {
-                    getLogger().logWarningMessage(MetadataLogger.IGNORE_PROPERTY_FOR_ATTRIBUTE, attributeName, getDescriptor().getJavaClass(), property.getName(), property.getConvertedValue(), overridingConvertedValue);
-                }
-            }
-        }
     }
     
     /**
@@ -940,15 +637,15 @@ public abstract class MetadataAccessor  {
      * annotation. 
      */
     protected void processStructConverter() {
-    	// Check for XML defined struct converters.
-    	if (m_structConverters != null) {
-    		getEntityMappings().processStructConverters(m_structConverters);
-    	}
-    	
+        // Check for XML defined struct converters.
+        for (StructConverterMetadata structConverter : m_structConverters) {
+            m_project.addConverter(structConverter);
+        }
+        
         // Check for a StructConverter annotation.
-    	Annotation converter = getAnnotation(StructConverter.class);
+        Annotation converter = getAnnotation(StructConverter.class);
         if (converter != null) {
-            m_project.addStructConverter(new StructConverterMetadata(converter, getAnnotatedElement()));
+            m_project.addConverter(new StructConverterMetadata(converter, getAccessibleObject()));
         }
     }
     
@@ -958,7 +655,7 @@ public abstract class MetadataAccessor  {
      * collection table.
      */
     protected void processTable(TableMetadata table, String defaultName) {
-    	getProject().processTable(table, defaultName, m_descriptor.getXMLCatalog(), m_descriptor.getXMLSchema());
+        getProject().processTable(table, defaultName, m_descriptor.getXMLCatalog(), m_descriptor.getXMLSchema());
     }
     
     /**
@@ -967,109 +664,40 @@ public abstract class MetadataAccessor  {
      * annotation. 
      */
     protected void processTypeConverters() {
-    	// Check for XML defined type converters.
-    	if (m_typeConverters != null) {
-    		getEntityMappings().processTypeConverters(m_typeConverters);
-    	}
-    	
+        // Check for XML defined type converters.
+        for (TypeConverterMetadata typeConverter : m_typeConverters) {
+            m_project.addConverter(typeConverter);
+        }
+        
         // Check for an TypeConverter annotation.
-    	Annotation converter = getAnnotation(TypeConverter.class);
-        if (converter != null) {
-        	m_project.addConverter(new TypeConverterMetadata(converter, getAnnotatedElement()));
-        }
-    }
-   
-    /**
-     * INTERNAL:
-     * Set the accessible object for this accessor.
-     */
-    public void setAccessibleObject(MetadataAccessibleObject accessibleObject) {
-    	m_accessibleObject = accessibleObject;
-    }
-    
-    /**
-     * INTERNAL:
-     * Set the getter and setter access methods for this accessor.
-     */
-    protected void setAccessorMethods(DatabaseMapping mapping) {
-        if (m_descriptor.usesPropertyAccess()) {
-            mapping.setGetMethodName(getAccessibleObjectName());
-            mapping.setSetMethodName(getSetMethodName());
+        Annotation typeConverter = getAnnotation(TypeConverter.class);
+        if (typeConverter != null) {
+            m_project.addConverter(new TypeConverterMetadata(typeConverter, getAccessibleObject()));
         }
     }
     
     /**
-     * INTERNAL:
-     * Return the annotated element for this accessor.
-     */
-    public void setAnnotatedElement(AnnotatedElement annotatedElement) {
-        m_accessibleObject.setAnnotatedElement(annotatedElement);
-    }
-    
-	/**
      * INTERNAL:
      * Used for OX mapping.
      */
-	public void setConverters(List<ConverterMetadata> converters) {
-		m_converters = converters;
-	}
-	
+    public void setConverters(List<ConverterMetadata> converters) {
+        m_converters = converters;
+    }
+    
     /**
      * INTERNAL: 
      * Set the metadata descriptor for this accessor.
      */
     public void setDescriptor(MetadataDescriptor descriptor) {
-    	m_descriptor = descriptor;
+        m_descriptor = descriptor;
     }
     
-    /**
-     * INTERNAL:
-     */
-    public void setEntityMappings(XMLEntityMappings entityMappings) {
-    	m_entityMappings = entityMappings;
-    }
-    
-    /** 
-     * INTERNAL:
-     * Set the correct indirection policy on a collection mapping. Method
-     * assume that the reference class has been set on the mapping before
-     * calling this method.
-     */
-    public void setIndirectionPolicy(CollectionMapping mapping, String mapKey, boolean usesIndirection) {
-        Class rawClass = getRawClass();
-		
-        if (usesIndirection) {            
-            if (rawClass == Map.class) {
-                mapping.useTransparentMap(mapKey);
-            } else if (rawClass == List.class) {
-                mapping.useTransparentList();
-            } else if (rawClass == Collection.class) {
-                mapping.useTransparentCollection();
-                mapping.setContainerPolicy(new CollectionContainerPolicy(ClassConstants.IndirectList_Class));
-            } else if (rawClass == Set.class) {
-                mapping.useTransparentSet();
-            } else {
-                // Because of validation we should never get this far.
-            }
-        } else {
-            mapping.dontUseIndirection();
-            
-            if (rawClass == Map.class) {
-                mapping.useMapClass(java.util.Hashtable.class, mapKey);
-            } else if (rawClass == Set.class) {
-                mapping.useCollectionClass(java.util.HashSet.class);
-            } else {
-                mapping.useCollectionClass(java.util.Vector.class);
-            }
-        }
-    }
-	
     /**
      * INTERNAL:
      */
     public void setIsProcessed() {
-        m_isProcessed = true;	
-	}
+        m_isProcessed = true;    
+    }
     
     /**
      * INTERNAL:
@@ -1086,7 +714,7 @@ public abstract class MetadataAccessor  {
     public void setObjectTypeConverters(List<ObjectTypeConverterMetadata> objectTypeConverters) {
         m_objectTypeConverters = objectTypeConverters;
     }
-	
+    
     /**
      * INTERNAL:
      */
@@ -1095,11 +723,11 @@ public abstract class MetadataAccessor  {
     }
     
     /**
-     * INTERNAL: 
+     * INTERNAL:
      * Used for OX mapping.
-     */
-    public void setPrimaryKeyJoinColumns(List<PrimaryKeyJoinColumnMetadata> primaryKeyJoinColumns) {
-    	m_primaryKeyJoinColumns = primaryKeyJoinColumns;
+     */    
+    public void setProperties(List<PropertyMetadata> properties) {
+        m_properties = properties;
     }
     
     /**
@@ -1109,15 +737,7 @@ public abstract class MetadataAccessor  {
     public void setStructConverters(List<StructConverterMetadata> structConverters) {
         m_structConverters = structConverters;
     }
-
-    /**
-     * INTERNAL:
-     * Used for OX mapping.
-     */    
-    public void setProperties(List<PropertyMetadata> properties) {
-        m_properties = properties;
-    }
-	
+    
     /**
      * INTERNAL:
      * Used for OX mapping.

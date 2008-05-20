@@ -9,7 +9,9 @@
  *
  * Contributors:
  *     Andrei Ilitchev (Oracle), April 8, 2008 
- *        - New file introduced for bug 217168.  
+ *        - New file introduced for bug 217168.
+ *     05/16/2008-1.0M8 Guy Pelletier 
+ *       - 218084: Implement metadata merging functionality between mapping files
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.accessors;
 
@@ -26,13 +28,14 @@ import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.internal.security.PrivilegedMethodInvoker;
 
 /**
- * Common helper methods for the metadata processing.
+ * INTERNAL:
+ * Common helper methods for the metadata processing. Security sensitive methods
+ * from this class must remain package accessible only.
  * 
  * @author Andrei Ilitchev
  * @since EclipseLink 1.0 
  */
 public class MetadataHelper {
-    
     /** 
      * INTERNAL:
      * Invoke the specified named method on the object, handling the necessary 

@@ -9,16 +9,24 @@
  * 
  * Contributors:
  *     Andrei Ilitchev (Oracle), March 7, 2008 
- *        - New file introduced for bug 211300.  
+ *        - New file introduced for bug 211300.
+ *     05/16/2008-1.0M8 Guy Pelletier 
+ *       - 218084: Implement metadata merging functionality between mapping file  
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.transformers;
 
+import java.lang.annotation.Annotation;
+
+import javax.persistence.Column;
+
 import org.eclipse.persistence.exceptions.ValidationException;
+import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAccessibleObject;
 import org.eclipse.persistence.internal.jpa.metadata.columns.ColumnMetadata;
 import org.eclipse.persistence.mappings.TransformationMapping;
 import org.eclipse.persistence.mappings.transformers.FieldTransformer;
 
 /**
+ * INTERNAL:
  * Matadata for WriteTransformer.
  * 
  * @author Andrei Ilitchev
@@ -31,26 +39,16 @@ public class WriteTransformerMetadata extends ReadTransformerMetadata {
      * INTERNAL:
      */
     public WriteTransformerMetadata() {
-        super();
+        super("<write-transformer>");
     }
 
     /**
      * INTERNAL:
      */
-    protected void applyClass(TransformationMapping mapping) {
-        if (FieldTransformer.class.isAssignableFrom(getTransformerClass())) {
-            // this is called from predeploy with temp classLoader, therefore should set class name, can't set class.
-            mapping.addFieldTransformerClassName(m_column.getDatabaseField(), getTransformerClass().getName());
-        } else {
-            throw ValidationException.writeTransformerClassDoesntImplementFieldTransformer(mapping.getAttributeName(), mapping.getDescriptor().getJavaClassName(), m_column.getName());
-        }
-    }
-    
-    /**
-     * INTERNAL:
-     */
-    protected void applyMethod(TransformationMapping mapping) {
-        mapping.addFieldTransformation(m_column.getDatabaseField(), getMethod());
+    public WriteTransformerMetadata(Annotation writeTransformer, MetadataAccessibleObject accessibleObject) {
+        super(writeTransformer, accessibleObject);
+        
+        m_column = new ColumnMetadata((Column) MetadataHelper.invokeMethod("column", writeTransformer), accessibleObject);
     }
     
     /**
@@ -68,18 +66,31 @@ public class WriteTransformerMetadata extends ReadTransformerMetadata {
     public boolean hasFieldName() {
         return m_column != null && m_column.getName() != null && m_column.getName().length() > 0;   
     }
-
+    
     /**
      * INTERNAL:
-     * The method in the parent class calls the overridden methods
-     *  applyMethod, applyField, 
-     *  throwBothClassAndMethodSpecifiedException, throwNeitherClassNorMethodSpecifiedException
      */
-    public void process(TransformationMapping mapping) {
+    public void process(TransformationMapping mapping, String annotatedElementName) {
         if (hasFieldName()) {
-            super.process(mapping);
+            if (getMethod() == null || getMethod().equals("")) {
+                if (getTransformerClass().equals(void.class)) {
+                    throw ValidationException.writeTransformerHasNeitherClassNorMethod(annotatedElementName, m_column.getName());
+                } else {
+                    if (FieldTransformer.class.isAssignableFrom(getTransformerClass())) {
+                        mapping.addFieldTransformerClassName(m_column.getDatabaseField(), getTransformerClass().getName());
+                    } else {
+                        throw ValidationException.writeTransformerClassDoesntImplementFieldTransformer(annotatedElementName, m_column.getName());
+                    }
+                }
+            } else {
+                if (getTransformerClass().equals(void.class)) {
+                    mapping.addFieldTransformation(m_column.getDatabaseField(), getMethod());
+                } else {
+                    throw ValidationException.writeTransformerHasBothClassAndMethod(annotatedElementName, m_column.getName());
+                }
+            }
         } else {
-            throw ValidationException.writeTransformerHasNoColumnName(mapping.getAttributeName(), mapping.getDescriptor().getJavaClassName());
+            throw ValidationException.writeTransformerHasNoColumnName(annotatedElementName);
         }
     }
     
@@ -102,19 +113,5 @@ public class WriteTransformerMetadata extends ReadTransformerMetadata {
         }
         
         m_column.setName(fieldName);
-    }
-    
-    /**
-     * INTERNAL:
-     */
-    protected void throwBothClassAndMethodSpecifiedException(TransformationMapping mapping) {
-        throw ValidationException.writeTransformerHasBothClassAndMethod(mapping.getAttributeName(), mapping.getDescriptor().getJavaClassName(), m_column.getName());
-    }
-
-    /**
-     * INTERNAL:
-     */
-    protected void throwNeitherClassNorMethodSpecifiedException(TransformationMapping mapping) {
-        throw ValidationException.writeTransformerHasNeitherClassNorMethod(mapping.getAttributeName(), mapping.getDescriptor().getJavaClassName(), m_column.getName());
     }
 }

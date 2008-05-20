@@ -9,37 +9,45 @@
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
+ *     05/16/2008-1.0M8 Guy Pelletier 
+ *       - 218084: Implement metadata merging functionality between mapping files
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.cache;
 
 import java.lang.annotation.Annotation;
 
+import org.eclipse.persistence.internal.jpa.metadata.ORMetadata;
+import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAccessibleObject;
+
 /**
- * Object to hold onto time of day metadata. This class should eventually be 
- * extended by an XMLTimeOfDay.
+ * Object to hold onto time of day metadata.
  * 
  * @author Guy Pelletier
  * @since TopLink 11g
  */
-public class TimeOfDayMetadata  {
-	private Integer m_hour;
-	private Integer m_millisecond;
-	private Integer m_minute;
-	private Integer m_second;
+public class TimeOfDayMetadata extends ORMetadata {
+    private Integer m_hour;
+    private Integer m_millisecond;
+    private Integer m_minute;
+    private Integer m_second;
     
     /**
      * INTERNAL:
      */
-    public TimeOfDayMetadata() {}
+    public TimeOfDayMetadata() {
+        super("<time-of-day>");
+    }
     
     /**
      * INTERNAL:
      */
-    public TimeOfDayMetadata(Annotation timeOfDay) {
-    	setHour((Integer) MetadataHelper.invokeMethod("hour", timeOfDay));
-        setMillisecond((Integer) MetadataHelper.invokeMethod("millisecond", timeOfDay));
-        setMinute((Integer) MetadataHelper.invokeMethod("minute", timeOfDay));
-        setSecond((Integer) MetadataHelper.invokeMethod("second", timeOfDay));
+    public TimeOfDayMetadata(Annotation timeOfDay, MetadataAccessibleObject accessibleObject) {
+        super(timeOfDay, accessibleObject);
+        
+        m_hour = (Integer) MetadataHelper.invokeMethod("hour", timeOfDay);
+        m_millisecond = (Integer) MetadataHelper.invokeMethod("millisecond", timeOfDay);
+        m_minute = (Integer) MetadataHelper.invokeMethod("minute", timeOfDay);
+        m_second = (Integer) MetadataHelper.invokeMethod("second", timeOfDay);
     }
     
     /**
@@ -107,7 +115,7 @@ public class TimeOfDayMetadata  {
      * Used for OX mapping.
      */
     public void setHour(Integer hour) {
-    	m_hour = hour;
+        m_hour = hour;
     }
     
     /**
@@ -115,7 +123,7 @@ public class TimeOfDayMetadata  {
      * Used for OX mapping.
      */
     public void setMillisecond(Integer millisecond) {
-    	m_millisecond = millisecond;
+        m_millisecond = millisecond;
     }
     
     /**
@@ -123,7 +131,7 @@ public class TimeOfDayMetadata  {
      * Used for OX mapping.
      */
     public void setMinute(Integer minute) {
-    	m_minute = minute;
+        m_minute = minute;
     }
     
     /**
@@ -131,6 +139,6 @@ public class TimeOfDayMetadata  {
      * Used for OX mapping.
      */
     public void setSecond(Integer second) {
-    	m_second = second; 
+        m_second = second; 
     }
 }

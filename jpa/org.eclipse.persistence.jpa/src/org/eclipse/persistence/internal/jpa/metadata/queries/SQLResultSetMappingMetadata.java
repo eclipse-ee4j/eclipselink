@@ -9,6 +9,8 @@
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
+ *     05/16/2008-1.0M8 Guy Pelletier 
+ *       - 218084: Implement metadata merging functionality between mapping files
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.queries;
 
@@ -16,7 +18,9 @@ import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.eclipse.persistence.internal.jpa.metadata.MetadataProject;
+import org.eclipse.persistence.internal.jpa.metadata.ORMetadata;
+import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAccessibleObject;
+import org.eclipse.persistence.internal.sessions.AbstractSession;
 
 import org.eclipse.persistence.queries.ColumnResult;
 import org.eclipse.persistence.queries.EntityResult;
@@ -30,23 +34,56 @@ import org.eclipse.persistence.queries.SQLResultSetMapping;
  * @author Guy Pelletier
  * @since TopLink EJB 3.0 Reference Implementation
  */
-public class SQLResultSetMappingMetadata {
-	private List<String> m_columnResults;
-    private List<EntityResultMetadata> m_entityResults;
+public class SQLResultSetMappingMetadata extends ORMetadata {
+    private List<String> m_columnResults = new ArrayList<String>();
+    private List<EntityResultMetadata> m_entityResults = new ArrayList<EntityResultMetadata>();
     private String m_name;
     
     /**
      * INTERNAL:
+     * Used for OX mapping.
      */
-    public SQLResultSetMappingMetadata() {}
+    public SQLResultSetMappingMetadata() {
+        super("<sql-result-set-mapping>");
+    }
 
     /**
      * INTERNAL:
      */
-    public SQLResultSetMappingMetadata(Annotation sqlResultSetMapping) {
-        setName((String) MetadataHelper.invokeMethod("name", sqlResultSetMapping));
-        setEntityResults((Annotation[]) MetadataHelper.invokeMethod("entities", sqlResultSetMapping));
-        setColumnResults((Annotation[]) MetadataHelper.invokeMethod("columns", sqlResultSetMapping));
+    public SQLResultSetMappingMetadata(Annotation sqlResultSetMapping, MetadataAccessibleObject accessibleObject) {
+        super(sqlResultSetMapping, accessibleObject);
+        
+        m_name = (String) MetadataHelper.invokeMethod("name", sqlResultSetMapping);
+        
+        for (Annotation entityResult : (Annotation[]) MetadataHelper.invokeMethod("entities", sqlResultSetMapping)) {
+            m_entityResults.add(new EntityResultMetadata(entityResult, accessibleObject));
+        }
+        
+        for (Object columnResult : (Annotation[]) MetadataHelper.invokeMethod("columns", sqlResultSetMapping)) {
+            m_columnResults.add((String)MetadataHelper.invokeMethod("name", columnResult));
+        }
+    }
+    
+    /**
+     * INTERNAL:
+     */
+    @Override
+    public boolean equals(Object objectToCompare) {
+        if (objectToCompare instanceof SQLResultSetMappingMetadata) {
+            SQLResultSetMappingMetadata sqlResultSetMapping = (SQLResultSetMappingMetadata) objectToCompare;
+            
+            if (! valuesMatch(m_name, sqlResultSetMapping.getName())) {
+                return false;
+            }
+            
+            if (! valuesMatch(m_columnResults, sqlResultSetMapping.getColumnResults())) {
+                return false;
+            }
+            
+            return valuesMatch(m_entityResults, sqlResultSetMapping.getEntityResults());
+        }
+        
+        return false;
     }
     
     /**
@@ -67,6 +104,14 @@ public class SQLResultSetMappingMetadata {
     
     /**
      * INTERNAL:
+     */
+    @Override
+    public String getIdentifier() {
+        return m_name;
+    }
+    
+    /**
+     * INTERNAL:
      * Used for OX mapping.
      */
     public String getName() {
@@ -75,16 +120,26 @@ public class SQLResultSetMappingMetadata {
     
     /**
      * INTERNAL:
+     */
+    @Override
+    public void initXMLObject(MetadataAccessibleObject accessibleObject) {
+        super.initXMLObject(accessibleObject);
+        
+        initXMLObjects(m_entityResults, accessibleObject);
+    }
+    
+    /**
+     * INTERNAL:
      * Process an sql result set mapping metadata into a EclipseLink 
      * SqlResultSetMapping and store it on the session.
      */
-    public void process(MetadataProject project) {        
+    public void process(AbstractSession session, ClassLoader loader) {        
         // Initialize a new SqlResultSetMapping (with the metadata name)
         SQLResultSetMapping mapping = new SQLResultSetMapping(getName());
         
         // Process the entity results.
         for (EntityResultMetadata eResult : m_entityResults) {
-            EntityResult entityResult = new EntityResult(eResult.getEntityClass().getName());
+            EntityResult entityResult = new EntityResult(MetadataHelper.getClassForName(eResult.getEntityClass().getName(), loader));
         
             // Process the field results.
             if (eResult.hasFieldResults()) {
@@ -105,19 +160,7 @@ public class SQLResultSetMappingMetadata {
             mapping.addResult(new ColumnResult(columnResult));
         }
             
-        project.getSession().getProject().addSQLResultSetMapping(mapping);
-    }
-    
-    /**
-     * INTERNAL:
-     * Called from annotation population.
-     */
-    protected void setColumnResults(Object[] columnResults) {
-        m_columnResults = new ArrayList<String>();
-        
-        for (Object columnResult : columnResults) {
-            m_columnResults.add((String)MetadataHelper.invokeMethod("name", columnResult));
-        }
+        session.getProject().addSQLResultSetMapping(mapping);
     }
     
     /**
@@ -125,19 +168,7 @@ public class SQLResultSetMappingMetadata {
      * Used for OX mapping.
      */
     protected void setColumnResults(List<String> columnResults) {            
-    	m_columnResults = columnResults; 
-    }
-    
-    /**
-     * INTERNAL:
-     * Called from annotation population.
-     */
-    public void setEntityResults(Annotation[] entityResults) {
-        m_entityResults = new ArrayList<EntityResultMetadata>();
-        
-        for (Annotation entityResult : entityResults) {
-            m_entityResults.add(new EntityResultMetadata(entityResult));
-        }
+        m_columnResults = columnResults; 
     }
     
     /**
@@ -145,7 +176,7 @@ public class SQLResultSetMappingMetadata {
      * Used for OX mapping.
      */
     public void setEntityResults(List<EntityResultMetadata> entityResults) {
-    	m_entityResults = entityResults;
+        m_entityResults = entityResults;
     }
     
     /**
@@ -153,6 +184,6 @@ public class SQLResultSetMappingMetadata {
      * Used for OX mapping.
      */
     public void setName(String name) {
-    	m_name = name;
+        m_name = name;
     }
 }

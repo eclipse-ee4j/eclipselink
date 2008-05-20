@@ -9,6 +9,8 @@
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
+ *     05/16/2008-1.0M8 Guy Pelletier 
+ *       - 218084: Implement metadata merging functionality between mapping file
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.tables;
 
@@ -16,6 +18,7 @@ import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAccessibleObject;
 import org.eclipse.persistence.internal.jpa.metadata.columns.PrimaryKeyJoinColumnMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataLogger;
 
@@ -26,39 +29,41 @@ import org.eclipse.persistence.internal.jpa.metadata.MetadataLogger;
  * @author Guy Pelletier
  * @since TopLink EJB 3.0 Reference Implementation
  */
-public class SecondaryTableMetadata extends TableMetadata  {
-    private List<PrimaryKeyJoinColumnMetadata> m_primaryKeyJoinColumns;
+public class SecondaryTableMetadata extends TableMetadata {
+    private List<PrimaryKeyJoinColumnMetadata> m_primaryKeyJoinColumns = new ArrayList<PrimaryKeyJoinColumnMetadata>();
     
     /**
      * INTERNAL:
      */
-    public SecondaryTableMetadata() {}
+    public SecondaryTableMetadata() {
+        super("<secondary-table>");
+    }
     
     /**
      * INTERNAL:
      */
-    public SecondaryTableMetadata(Annotation secondaryTable, String entityClassName) {
-    	super(entityClassName);
-	   
+    public SecondaryTableMetadata(Annotation secondaryTable, MetadataAccessibleObject accessibleObject) {
+        super(secondaryTable, accessibleObject);
+       
         if (secondaryTable != null) {
-            setName((String) invokeMethod("name", secondaryTable));
-            setSchema((String) invokeMethod("schema", secondaryTable));
-            setCatalog((String) invokeMethod("catalog", secondaryTable));
-            setUniqueConstraints((Annotation[]) invokeMethod("uniqueConstraints", secondaryTable));
-            setPrimaryKeyJoinColumns((Annotation[]) invokeMethod("pkJoinColumns", secondaryTable));
+            for (Annotation primaryKeyJoinColumn : (Annotation[]) MetadataHelper.invokeMethod("pkJoinColumns", secondaryTable)) {
+                m_primaryKeyJoinColumns.add(new PrimaryKeyJoinColumnMetadata(primaryKeyJoinColumn, accessibleObject));
+            }
         }
     }
     
     /**
-     * INTERNAL: (Override from MetadataTable)
+     * INTERNAL:
      */
+    @Override
     public String getCatalogContext() {
         return MetadataLogger.SECONDARY_TABLE_CATALOG;
     }
     
     /**
-     * INTERNAL: (Override from MetadataTable)
+     * INTERNAL:
      */
+    @Override
     public String getNameContext() {
         return MetadataLogger.SECONDARY_TABLE_NAME;
     }
@@ -72,8 +77,9 @@ public class SecondaryTableMetadata extends TableMetadata  {
     }
     
     /**
-     * INTERNAL: (Override from MetadataTable)
+     * INTERNAL:
      */
+    @Override
     public String getSchemaContext() {
         return MetadataLogger.SECONDARY_TABLE_SCHEMA;
     }
@@ -83,18 +89,6 @@ public class SecondaryTableMetadata extends TableMetadata  {
      * Used for OX mapping.
      */
     public void setPrimaryKeyJoinColumns(List<PrimaryKeyJoinColumnMetadata> primaryKeyJoinColumns) {
-    	m_primaryKeyJoinColumns = primaryKeyJoinColumns;
-    }
-    
-    /**
-     * INTERNAL:
-     * Called from annotation population.
-     */
-    protected void setPrimaryKeyJoinColumns(Annotation[] primaryKeyJoinColumns) {
-    	m_primaryKeyJoinColumns = new ArrayList<PrimaryKeyJoinColumnMetadata>();
-    	
-    	for (Annotation primaryKeyJoinColumn : primaryKeyJoinColumns) {
-    		m_primaryKeyJoinColumns.add(new PrimaryKeyJoinColumnMetadata(primaryKeyJoinColumn));
-    	}
+        m_primaryKeyJoinColumns = primaryKeyJoinColumns;
     }
 }

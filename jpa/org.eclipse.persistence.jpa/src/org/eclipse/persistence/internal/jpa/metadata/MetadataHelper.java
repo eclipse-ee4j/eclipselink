@@ -9,12 +9,11 @@
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
+ *     05/16/2008-1.0M8 Guy Pelletier 
+ *       - 218084: Implement metadata merging functionality between mapping files
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata;
 
-import java.lang.annotation.Annotation;
-
-import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 
@@ -30,13 +29,15 @@ import org.eclipse.persistence.internal.security.PrivilegedGetDeclaredMethods;
 import org.eclipse.persistence.internal.security.PrivilegedNewInstanceFromClass;
 
 /**
+ * INTERNAL:
  * Common helper methods for the metadata processing.
  * 
  * @author Guy Pelletier
  * @since TopLink EJB 3.0 Reference Implementation
  */
 public class MetadataHelper {
-    public static final String PERSISTENCE_PACKAGE_PREFIX = "javax.persistence";
+    public static final String JPA_ORM_FILE = "META-INF/orm.xml";
+    public static final String ECLIPSELINK_ORM_FILE = "META-INF/eclipselink-orm.xml";
     
     /**
      * INTERNAL: XMLEntityMappings calls this one
@@ -90,11 +91,11 @@ public class MetadataHelper {
     
     /**
      * INTERNAL:
-	 * Get the declared methods from a class using the doPriveleged security
+     * Get the declared methods from a class using the doPriveleged security
      * access. This call returns all methods (private, protected, package and
      * public) on the give class ONLY. It does not traverse the superclasses.
      */
-	static Method[] getDeclaredMethods(Class cls) {
+    static Method[] getDeclaredMethods(Class cls) {
         if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
             try {
                 return (Method[])AccessController.doPrivileged(new PrivilegedGetDeclaredMethods(cls));
@@ -105,14 +106,14 @@ public class MetadataHelper {
         } else {
             return org.eclipse.persistence.internal.security.PrivilegedAccessHelper.getDeclaredMethods(cls);
         }
-	}
+    }
 
     /**
      * INTERNAL:
-	 * Get the declared fields from a class using the doPriveleged security
+     * Get the declared fields from a class using the doPriveleged security
      * access.
      */
-	static Field[] getFields(Class cls) {
+    static Field[] getFields(Class cls) {
         if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
             try {
                 return (Field[])AccessController.doPrivileged(new PrivilegedGetDeclaredFields(cls));
@@ -123,8 +124,8 @@ public class MetadataHelper {
         } else {
             return PrivilegedAccessHelper.getDeclaredFields(cls);
         }
-	}  
-	
+    }  
+    
     /**
      * INTERNAL:
      * Helper method to return a field name from a candidate field name and a 
@@ -136,7 +137,7 @@ public class MetadataHelper {
      * In some cases, both the name and defaultName could be "" or null,
      * therefore, don't log a message and return name.
      */
-    public static String getName(String name, String defaultName, String context, MetadataLogger logger, String location) {
+    public static String getName(String name, String defaultName, String context, MetadataLogger logger, Object location) {
         // Check if a candidate was specified otherwise use the default.
         if (name != null && !name.equals("")) {
             return name;
@@ -177,50 +178,5 @@ public class MetadataHelper {
             // TODO: log a defaulting message
             return defaultValue;
         }
-    }
-
-    /**
-     * INTERNAL:
-     */
-    static boolean havePersistenceAnnotationsDefined(AnnotatedElement[] annotatedElements) {
-        for (AnnotatedElement annotatedElement : annotatedElements) {
-            for (Annotation annotation : annotatedElement.getDeclaredAnnotations()) {
-                if (annotation.annotationType().getName().startsWith(PERSISTENCE_PACKAGE_PREFIX)) {
-                    return true;
-                }
-            }
-        }
-        
-        return false;
-    }
-    
-    /** 
-     * INTERNAL:
-     * Indicates whether the specified annotation is present on the specified 
-     * class. NOTE: Calling this method directly does not take any metadata
-     * complete flag into consideration. Look at the other isAnnotationPresent
-     * methods that take a descriptor. 
-     */
-    public static boolean isAnnotationPresent(Class annotation, AnnotatedElement annotatedElement) {
-        for (Object declaredAnnotation : annotatedElement.getDeclaredAnnotations()) {
-            if ((declaredAnnotation.toString().substring(1, declaredAnnotation.toString().indexOf("("))).equalsIgnoreCase(annotation.getName())){
-                return true;
-            }
-        }
-        
-        return false;
-    }
-    
-    /**
-     * INTERNAL:
-     */
-    public static boolean valuesMatch(Object value1, Object value2) {
-    	if ((value1 == null && value2 != null) || (value2 == null && value1 != null)) {
-    		return false;
-    	} else if (value1 == null && value2 == null) {
-    		return true;
-    	} else {
-    		return value1.equals(value2);
-    	}
     }
 }

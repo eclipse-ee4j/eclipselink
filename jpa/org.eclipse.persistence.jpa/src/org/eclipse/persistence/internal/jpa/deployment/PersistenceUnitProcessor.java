@@ -12,6 +12,7 @@
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.deployment;
 
+import java.lang.annotation.Annotation;
 import java.net.URL;
 import java.net.URISyntaxException;
 import java.net.JarURLConnection;
@@ -44,7 +45,7 @@ import org.eclipse.persistence.internal.jpa.metadata.MetadataProcessor;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataProject;
 import org.eclipse.persistence.logging.AbstractSessionLog;
 import org.eclipse.persistence.logging.SessionLog;
-import org.eclipse.persistence.internal.jpa.metadata.MetadataHelper;
+import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataClass;
 
 /**
  * INTERNAL:
@@ -52,7 +53,7 @@ import org.eclipse.persistence.internal.jpa.metadata.MetadataHelper;
  * Provides functions like searching for persistence archives, processing 
  * persistence.xml and searching for Entities in a Persistence archive
  */
-public class PersistenceUnitProcessor  {
+public class PersistenceUnitProcessor {
     // JPA schema specs.
     private static final String SCHEMA_LANGUAGE = "http://java.sun.com/xml/jaxp/properties/schemaLanguage";
     private static final String XML_SCHEMA = "http://www.w3.org/2001/XMLSchema";
@@ -124,7 +125,7 @@ public class PersistenceUnitProcessor  {
         // required uses a session. (At least we hope not)
         MetadataProcessor processor = new MetadataProcessor(info, null, loader, false, false);
         // Read the mapping files.
-        processor.readMappingFiles(false);
+        processor.loadMappingFiles(false);
         // Return the class set.
         return processor.getPersistenceUnitClassSetFromMappingFiles();
     }
@@ -208,7 +209,21 @@ public class PersistenceUnitProcessor  {
     }
     
     /**
-     * Get a list of persistence units from the file or directory at the given 
+     * Return if a given class is annotated with @Embeddable.
+     */
+    public static Annotation getEmbeddableAnnotation(Class candidateClass){
+        return new MetadataClass(candidateClass).getAnnotation(javax.persistence.Embeddable.class);
+    }
+    
+    /**
+     * Return if a given class is annotated with @Entity.
+     */
+    public static Annotation getEntityAnnotation(Class candidateClass){
+        return new MetadataClass(candidateClass).getAnnotation(javax.persistence.Entity.class);
+    }
+    
+    /**
+     * Get a list of persitence units from the file or directory at the given 
      * url. PersistenceUnits are built based on the presence of persistence.xml 
      * in a META-INF directory at the base of the URL.
      * @param archive The url of a jar file or directory to check
@@ -220,15 +235,15 @@ public class PersistenceUnitProcessor  {
     /**
      * Return if a given class is annotated with @Embeddable.
      */
-    public static boolean isEmbeddable(Class candidateClass){
-        return MetadataHelper.isAnnotationPresent(javax.persistence.Embeddable.class, candidateClass);
+    public static boolean isEmbeddable(Class candidateClass) {
+        return new MetadataClass(candidateClass).isAnnotationPresent(javax.persistence.Embeddable.class);
     }
     
     /**
      * Return if a given class is annotated with @Entity.
      */
     public static boolean isEntity(Class candidateClass){
-        return MetadataHelper.isAnnotationPresent(javax.persistence.Entity.class, candidateClass);
+        return new MetadataClass(candidateClass).isAnnotationPresent(javax.persistence.Entity.class);
     }
     
     /**
@@ -246,10 +261,11 @@ public class PersistenceUnitProcessor  {
                 AbstractSessionLog.getLog().log(AbstractSessionLog.WARNING, "persistence_unit_processor_error_loading_class", exc.getClass().getName(), exc.getLocalizedMessage() , className);
             }
         } catch (NullPointerException npe) {
-            // Bug 227630: If any weavable class is not found in the temporary classLoader - disable weaving 
-            AbstractSessionLog.getLog().log(AbstractSessionLog.WARNING, "persistence_unit_processor_error_loading_class_weaving_disabled",//
-                loader, project.getPersistenceUnitInfo().getPersistenceUnitName(), className);
-            // Disable weaving (for 1->1 and many->1)only if the classLoader returns a NPE on loadClass()
+            // Bug 227630: If any weavable class is not found in the temporary 
+            // classLoader - disable weaving 
+            AbstractSessionLog.getLog().log(AbstractSessionLog.WARNING, "persistence_unit_processor_error_loading_class_weaving_disabled", loader, project.getPersistenceUnitInfo().getPersistenceUnitName(), className);
+            // Disable weaving (for 1->1 and many->1)only if the classLoader 
+            // returns a NPE on loadClass()
             project.setWeavingEnabled(false);
         } catch (Exception exception){
             AbstractSessionLog.getLog().log(AbstractSessionLog.WARNING, "persistence_unit_processor_error_loading_class", exception.getClass().getName(), exception.getLocalizedMessage() , className);
@@ -264,22 +280,23 @@ public class PersistenceUnitProcessor  {
     public static void processORMetadata(MetadataProcessor processor, boolean throwExceptionOnFail) {
         // DO NOT CHANGE the order of invocation of various methods.
 
-        // Build the list of mapping files and read them. Need to do this 
-    	// before we start processing entities as the list of entity classes 
-    	// depend on metadata read from mapping files.
-        processor.readMappingFiles(throwExceptionOnFail);
+        // 1 - Load the list of mapping files for the persistence unit. Need to 
+        // do this before we start processing entities as the list of entity 
+        // classes depend on metadata read from mapping files.
+        processor.loadMappingFiles(throwExceptionOnFail);
 
-        // Process each XML entity mappings file.
+        // 2 - Process each XML entity mappings file metadata (except for
+        // the actual classes themselves). This method is also responsible
+        // for handling any XML merging.
         processor.processEntityMappings();
 
-        // Process the actual PU classes metadata from annotations.
-        // Process the remaing persistence unit classes not defined in those 
-        // classes not defined in XML.
-        processor.processAnnotations();        
+        // 3 - Process the persistence unit classes (from XML and annotations)
+        // and their metadata now.
+        processor.processORMMetadata();        
     }
 
     /**
-     * Go through the jar file for this PeristeneUnitProcessor and process any 
+     * Go through the jar file for this PersistenceUnitProcessor and process any 
      * XML provided in it.
      */
     public static List<SEPersistenceUnitInfo> processPersistenceArchive(Archive archive, ClassLoader loader){
@@ -308,28 +325,28 @@ public class PersistenceUnitProcessor  {
         // create a SAX parser
         try {
             sp = spf.newSAXParser();
-	        sp.setProperty(SCHEMA_LANGUAGE, XML_SCHEMA);
-	    } catch (javax.xml.parsers.ParserConfigurationException exc){
-	    	throw XMLParseException.exceptionCreatingSAXParser(baseURL, exc);
-	    } catch (org.xml.sax.SAXException exc){
-	    	throw XMLParseException.exceptionCreatingSAXParser(baseURL, exc);
-	    }
-	        
-	    // create an XMLReader
-	    try {
-            xmlReader = sp.getXMLReader();
-	        xmlReader.setErrorHandler(xmlErrorHandler);
+            sp.setProperty(SCHEMA_LANGUAGE, XML_SCHEMA);
+        } catch (javax.xml.parsers.ParserConfigurationException exc){
+            throw XMLParseException.exceptionCreatingSAXParser(baseURL, exc);
         } catch (org.xml.sax.SAXException exc){
-        	throw XMLParseException.exceptionCreatingXMLReader(baseURL, exc);
+            throw XMLParseException.exceptionCreatingSAXParser(baseURL, exc);
+        }
+            
+        // create an XMLReader
+        try {
+            xmlReader = sp.getXMLReader();
+            xmlReader.setErrorHandler(xmlErrorHandler);
+        } catch (org.xml.sax.SAXException exc){
+            throw XMLParseException.exceptionCreatingXMLReader(baseURL, exc);
         }
        
         // attempt to load the schema from the classpath
         URL schemaURL = loader.getResource(PERSISTENCE_SCHEMA_NAME);
         if (schemaURL != null) {
             try {
-            	sp.setProperty(JAXP_SCHEMA_SOURCE, schemaURL.toString());
+                sp.setProperty(JAXP_SCHEMA_SOURCE, schemaURL.toString());
             } catch (org.xml.sax.SAXException exc){
-            	throw XMLParseException.exceptionSettingSchemaSource(baseURL, schemaURL, exc);
+                throw XMLParseException.exceptionSettingSchemaSource(baseURL, schemaURL, exc);
             }
         }
 
@@ -342,7 +359,7 @@ public class PersistenceUnitProcessor  {
         } catch (IOException exc){
             throw PersistenceUnitLoadingException.exceptionProcessingPersistenceXML(baseURL, exc);
         } catch (org.xml.sax.SAXException exc){
-        	// XMLErrorHandler will handle SAX exceptions
+            // XMLErrorHandler will handle SAX exceptions
         }
         
         // handle any parse exceptions
@@ -360,7 +377,7 @@ public class PersistenceUnitProcessor  {
     }
     
     /**
-     * Build the unique persistence name by concatenating the decoded URL with persistence unit name.
+     * Build the unique persistence name by concatenating the decoded URL wiht persistence unit name.
      * Decoding url is required while persistence on multiple-bytes OS.  
      * @param URL
      * @param puName

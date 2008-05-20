@@ -8,11 +8,10 @@
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
- *     Oracle - initial API and implementation from Oracle TopLink
  *     05/16/2008-1.0M8 Guy Pelletier 
- *       - 218084: Implement metadata merging functionality between mapping files
+ *       - 218084: Implement metadata merging functionality between mapping files  
  ******************************************************************************/
-package org.eclipse.persistence.internal.jpa.metadata.queries;
+package org.eclipse.persistence.internal.jpa.metadata.transformers;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -21,40 +20,18 @@ import java.security.AccessController;
 import java.security.PrivilegedActionException;
 
 import org.eclipse.persistence.exceptions.EntityManagerSetupException;
-import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
-import org.eclipse.persistence.internal.security.PrivilegedClassForName;
 import org.eclipse.persistence.internal.security.PrivilegedMethodInvoker;
 
 /**
  * This class only contains the common helper methods that can be accessed at
  * package-private level.
  * 
- * @author Kyle Chen
- * @since TopLink 11g
+ * @author Guy Pelletier
+ * @since EclipseLink 1.0
  */
 final class MetadataHelper {
-    /**
-     * INTERNAL:
-     * Load a class from a given class name.
-     */
-    static Class getClassForName(String classname, ClassLoader loader) {
-        try {
-            if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
-                try {
-                    return (Class) AccessController.doPrivileged(new PrivilegedClassForName(classname, true, loader));
-                } catch (PrivilegedActionException exception) {
-                    throw ValidationException.unableToLoadClass(classname, exception.getException());
-                }
-            } else {
-                return PrivilegedAccessHelper.getClassForName(classname, true, loader);
-            }
-        } catch (ClassNotFoundException exception) {
-            throw ValidationException.unableToLoadClass(classname, exception);
-        }
-    }
-    
     /** 
      * INTERNAL:
      * Invoke the specified named method on the object, handling the necessary 
@@ -66,8 +43,7 @@ final class MetadataHelper {
         try {
             method = Helper.getDeclaredMethod(target.getClass(), methodName);            
         } catch (NoSuchMethodException e) {
-            // just ignore it then ...
-            //EntityManagerSetupException.methodInvocationFailed(method, target,e);
+            EntityManagerSetupException.methodInvocationFailed(method, target,e);
         }
         
         if (method != null) {

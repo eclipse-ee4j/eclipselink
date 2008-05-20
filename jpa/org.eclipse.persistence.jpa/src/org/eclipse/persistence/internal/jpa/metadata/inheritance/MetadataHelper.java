@@ -9,7 +9,9 @@
  *
  * Contributors:
  *     Guy Pelletier (Oracle), February 28, 2007 
- *        - New file introduced for bug 217880.  
+ *        - New file introduced for bug 217880.
+ *     05/16/2008-1.0M8 Guy Pelletier 
+ *       - 218084: Implement metadata merging functionality between mapping files     
  ******************************************************************************/
 package org.eclipse.persistence.internal.jpa.metadata.inheritance;
 

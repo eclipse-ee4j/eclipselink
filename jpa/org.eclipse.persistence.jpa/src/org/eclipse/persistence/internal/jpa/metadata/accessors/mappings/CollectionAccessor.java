@@ -9,6 +9,8 @@
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
+ *     05/16/2008-1.0M8 Guy Pelletier 
+ *       - 218084: Implement metadata merging functionality between mapping files
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.accessors.mappings;
 
@@ -40,6 +42,7 @@ import org.eclipse.persistence.mappings.CollectionMapping;
 import org.eclipse.persistence.mappings.ManyToManyMapping;
 
 /**
+ * INTERNAL:
  * An annotation defined relational collections accessor.
  * 
  * @author Guy Pelletier
@@ -51,23 +54,29 @@ public abstract class CollectionAccessor extends RelationshipAccessor {
     private static final String DESCENDING = "DESC";
     
     private String m_mapKey;
+    private String m_mappedBy;
     private String m_orderBy;
     private JoinTableMetadata m_joinTable;
-	
+    
     /**
      * INTERNAL:
+     * Used for OX mapping.
      */
-    protected CollectionAccessor() {}
+    protected CollectionAccessor(String xmlElement) {
+        super(xmlElement);
+    }
     
     /**
      * INTERNAL:
      */
-    protected CollectionAccessor(MetadataAccessibleObject accessibleObject, ClassAccessor classAccessor) {
-        super(accessibleObject, classAccessor);
+    protected CollectionAccessor(Annotation annotation, MetadataAccessibleObject accessibleObject, ClassAccessor classAccessor) {
+        super(annotation, accessibleObject, classAccessor);
+        
+        m_mappedBy = (annotation == null) ? "" : (String) MetadataHelper.invokeMethod("mappedBy", annotation);
         
         // Set the join table if one is present.
         if (isAnnotationPresent(JoinTable.class)) {
-            m_joinTable = new JoinTableMetadata(getAnnotation(JoinTable.class), getAnnotatedElementName());
+            m_joinTable = new JoinTableMetadata(getAnnotation(JoinTable.class), accessibleObject);
         }
         
         // Set the order if one is present.
@@ -138,7 +147,7 @@ public abstract class CollectionAccessor extends RelationshipAccessor {
      * Return the default fetch type for a collection mapping.
      */
     public Enum getDefaultFetchType() {
-    	return FetchType.valueOf("LAZY");
+        return FetchType.valueOf("LAZY");
     }
     
     /**
@@ -146,7 +155,7 @@ public abstract class CollectionAccessor extends RelationshipAccessor {
      * Used for OX mapping.
      */
     public JoinTableMetadata getJoinTable() {
-    	return m_joinTable;
+        return m_joinTable;
     }
     
     /**
@@ -154,7 +163,15 @@ public abstract class CollectionAccessor extends RelationshipAccessor {
      * Used for OX mapping.
      */
     public String getMapKey() {
-    	return m_mapKey;
+        return m_mapKey;
+    }
+    
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+    public String getMappedBy() {
+        return m_mappedBy;
     }
     
     /**
@@ -162,14 +179,15 @@ public abstract class CollectionAccessor extends RelationshipAccessor {
      * Used for OX mapping.
      */
     public String getOrderBy() {
-    	return m_orderBy; 
+        return m_orderBy; 
     }
     
     /**
-     * INTERNAL: (Override from MetadataAccessor)
+     * INTERNAL:
      * If a targetEntity is specified in metadata, it will be set as the 
      * reference class, otherwise we will look to extract one from generics.
      */
+    @Override
     public Class getReferenceClass() {
         if (m_referenceClass == null) {
             m_referenceClass = getTargetEntity();
@@ -182,7 +200,7 @@ public abstract class CollectionAccessor extends RelationshipAccessor {
                     // Throw an exception. A relationship accessor must have a 
                     // reference class either through generics or a specified
                     // target entity on the mapping metadata.
-                	throw ValidationException.unableToDetermineTargetEntity(getAttributeName(), getJavaClass());
+                    throw ValidationException.unableToDetermineTargetEntity(getAttributeName(), getJavaClass());
                 } else {
                     // Log the defaulting contextual reference class.
                     getLogger().logConfigMessage(getLoggingContext(), getAnnotatedElement(), m_referenceClass);
@@ -191,6 +209,14 @@ public abstract class CollectionAccessor extends RelationshipAccessor {
         }
         
         return m_referenceClass;
+    }
+    
+    /** 
+     * INTERNAL:
+     * Return true if this accessor represents a collection accessor.
+     */
+    public boolean isCollectionAccessor() {
+        return true;
     }
     
     /**
@@ -202,14 +228,14 @@ public abstract class CollectionAccessor extends RelationshipAccessor {
     }
     
     /**
-     * INTERNAL: (Override from MetadataAccessor)
+     * INTERNAL:
      */
-    public void init(MetadataAccessibleObject accessibleObject, ClassAccessor accessor) {
-        super.init(accessibleObject, accessor);
+    @Override
+    public void initXMLObject(MetadataAccessibleObject accessibleObject) {
+        super.initXMLObject(accessibleObject);
         
-        if (m_joinTable != null) {
-            m_joinTable.setLocation(getAnnotatedElementName());
-        }
+        // Initialize single ORMetadata objects.
+        initXMLObject(m_joinTable, accessibleObject);
     }
     
     /**
@@ -218,10 +244,10 @@ public abstract class CollectionAccessor extends RelationshipAccessor {
      * accessors.
      */
     public void process() {
-    	// Validate the collection type.
-		if (! getAccessibleObject().isSupportedCollectionClass()) {
-			throw ValidationException.invalidCollectionTypeForRelationship(getJavaClass(), getRawClass(), getAttributeName());
-		}
+        // Validate the collection type.
+        if (! getAccessibleObject().isSupportedCollectionClass()) {
+            throw ValidationException.invalidCollectionTypeForRelationship(getJavaClass(), getRawClass(), getAttributeName());
+        }
     }
     
     /**
@@ -229,6 +255,7 @@ public abstract class CollectionAccessor extends RelationshipAccessor {
      */
     protected void process(CollectionMapping mapping) {
         mapping.setIsReadOnly(false);
+        mapping.setIsLazy(isLazy());
         mapping.setIsPrivateOwned(isPrivateOwned());
         mapping.setJoinFetch(getMappingJoinFetchType(getJoinFetch()));
         mapping.setAttributeName(getAttributeName());
@@ -251,8 +278,6 @@ public abstract class CollectionAccessor extends RelationshipAccessor {
         // on the mapping before setting the indirection policy.
         setIndirectionPolicy(mapping, mapKey, usesIndirection());
         
-        mapping.setIsLazy(isLazy());
-        
         // Process a @ReturnInsert and @ReturnUpdate (to log a warning message)
         processReturnInsertAndUpdate();
     }
@@ -265,7 +290,7 @@ public abstract class CollectionAccessor extends RelationshipAccessor {
         // Check that we loaded a join table otherwise default one.
         if (m_joinTable == null) {
             // TODO: Log a defaulting message.
-            m_joinTable = new JoinTableMetadata(getAnnotatedElementName());
+            m_joinTable = new JoinTableMetadata(null, getAccessibleObject());
         }
         
         // Build the default table name
@@ -319,7 +344,7 @@ public abstract class CollectionAccessor extends RelationshipAccessor {
                 MetadataAccessor referenceAccessor = referenceDescriptor.getAccessorFor(fieldOrPropertyName);
         
                 if (referenceAccessor == null) {
-                	throw ValidationException.couldNotFindMapKey(fieldOrPropertyName, referenceDescriptor.getJavaClass(), mapping);
+                    throw ValidationException.couldNotFindMapKey(fieldOrPropertyName, referenceDescriptor.getJavaClass(), mapping);
                 }
         
                 mapKeyMethod = referenceAccessor.getAccessibleObjectName();
@@ -378,7 +403,7 @@ public abstract class CollectionAccessor extends RelationshipAccessor {
                     MetadataAccessor referenceAccessor = referenceDescriptor.getAccessorFor(propertyOrFieldName);
                 
                     if (referenceAccessor == null) {
-                    	throw ValidationException.invalidOrderByValue(propertyOrFieldName, referenceDescriptor.getJavaClass(), getAccessibleObjectName(), getJavaClass());
+                        throw ValidationException.invalidOrderByValue(propertyOrFieldName, referenceDescriptor.getJavaClass(), getAccessibleObjectName(), getJavaClass());
                     }
 
                     String attributeName = referenceAccessor.getAttributeName();                    
@@ -401,7 +426,7 @@ public abstract class CollectionAccessor extends RelationshipAccessor {
      * Used for OX mapping.
      */
     public void setJoinTable(JoinTableMetadata joinTable) {
-    	m_joinTable = joinTable;
+        m_joinTable = joinTable;
     }
     
     /**
@@ -409,7 +434,15 @@ public abstract class CollectionAccessor extends RelationshipAccessor {
      * Used for OX mapping.
      */
     public void setMapKey(String mapKey) {
-    	m_mapKey = mapKey;
+        m_mapKey = mapKey;
+    }
+    
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+    public void setMappedBy(String mappedBy) {
+        m_mappedBy = mappedBy;
     }
     
     /**
@@ -417,6 +450,6 @@ public abstract class CollectionAccessor extends RelationshipAccessor {
      * Used for OX mapping.
      */
     public void setOrderBy(String orderBy) {
-    	m_orderBy = orderBy;
+        m_orderBy = orderBy;
     }
 }

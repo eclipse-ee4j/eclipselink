@@ -9,15 +9,15 @@
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
+ *     05/16/2008-1.0M8 Guy Pelletier 
+ *       - 218084: Implement metadata merging functionality between mapping files
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.converters;
 
 import java.lang.annotation.Annotation;
-import java.lang.reflect.AnnotatedElement;
 
-import org.eclipse.persistence.internal.jpa.metadata.MetadataHelper;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.mappings.DirectAccessor;
-
+import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAccessibleObject;
 import org.eclipse.persistence.mappings.DatabaseMapping;
 
 /**
@@ -32,36 +32,37 @@ public class ConverterMetadata extends AbstractConverterMetadata {
     
     /**
      * INTERNAL:
+     * Used for OX mapping.
      */
     public ConverterMetadata() {
-    	setLoadedFromXML();
+        super("<converter>");
     }
     
     /**
      * INTERNAL:
      */
-    public ConverterMetadata(Annotation converter, AnnotatedElement annotatedElement) {
-    	setLoadedFromAnnotation();
-    	setLocation(annotatedElement);
-    	setName((String) invokeMethod("name", converter));
-    	m_className = ((Class) invokeMethod("converterClass", converter)).getName();        
+    public ConverterMetadata(Annotation converter, MetadataAccessibleObject accessibleObject) {
+        super(converter, accessibleObject);
+
+        m_className = ((Class) MetadataHelper.invokeMethod("converterClass", converter)).getName();        
     }
     
     /**
      * INTERNAL:
      */
+    @Override
     public boolean equals(Object objectToCompare) {
-    	if (objectToCompare instanceof ConverterMetadata) {
-    		ConverterMetadata converter = (ConverterMetadata) objectToCompare;
-    		
-    		if (! MetadataHelper.valuesMatch(getName(), converter.getName())) {
-    			return false;
-    		}
-    		
-    		return MetadataHelper.valuesMatch(m_className, converter.getClassName());
-    	}
-    	
-    	return false;
+        if (objectToCompare instanceof ConverterMetadata) {
+            ConverterMetadata converter = (ConverterMetadata) objectToCompare;
+            
+            if (! valuesMatch(getName(), converter.getName())) {
+                return false;
+            }
+            
+            return valuesMatch(m_className, converter.getClassName());
+        }
+        
+        return false;
     }
     
     /**
@@ -70,6 +71,16 @@ public class ConverterMetadata extends AbstractConverterMetadata {
      */
     public String getClassName() {
         return m_className;
+    }
+    
+    /**
+     * INTERNAL:
+     */
+    @Override
+    public void initXMLObject(MetadataAccessibleObject accessibleObject) {
+        super.initXMLObject(accessibleObject);
+        
+        m_className = initXMLClassName(m_className).getName();
     }
     
     /**

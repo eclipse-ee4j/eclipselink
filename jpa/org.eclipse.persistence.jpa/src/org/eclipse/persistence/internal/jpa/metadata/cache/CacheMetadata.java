@@ -9,6 +9,8 @@
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
+ *     05/16/2008-1.0M8 Guy Pelletier 
+ *       - 218084: Implement metadata merging functionality between mapping files
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.cache;
 
@@ -23,6 +25,8 @@ import org.eclipse.persistence.descriptors.invalidation.TimeToLiveCacheInvalidat
 import org.eclipse.persistence.exceptions.ValidationException;
 
 import org.eclipse.persistence.internal.jpa.metadata.MetadataDescriptor;
+import org.eclipse.persistence.internal.jpa.metadata.ORMetadata;
+import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAccessibleObject;
 
 /**
  * Object to hold onto cache metadata. This class should eventually be 
@@ -31,44 +35,48 @@ import org.eclipse.persistence.internal.jpa.metadata.MetadataDescriptor;
  * @author Guy Pelletier
  * @since TopLink 11g
  */
-public class CacheMetadata  {
-	protected Boolean m_alwaysRefresh;
-	protected Boolean m_disableHits;
-	protected Boolean m_isolated;
-	protected Boolean m_refreshOnlyIfNewer;
-	
-	protected Enum m_coordinationType;
+public class CacheMetadata extends ORMetadata {
+    protected Boolean m_alwaysRefresh;
+    protected Boolean m_disableHits;
+    protected Boolean m_isolated;
+    protected Boolean m_refreshOnlyIfNewer;
+    
+    protected Enum m_coordinationType;
     protected Enum m_type;
     
-	protected Integer m_expiry;
-	protected Integer m_size;
-	
-	protected TimeOfDayMetadata m_expiryTimeOfDay;
+    protected Integer m_expiry;
+    protected Integer m_size;
+    
+    protected TimeOfDayMetadata m_expiryTimeOfDay;
 
     /**
      * INTERNAL:
      */
-    public CacheMetadata() {}
+    public CacheMetadata() {
+        super("<cache>");
+    }
     
     /**
      * INTERNAL:
      */
-    public CacheMetadata(Annotation cache) {
-        setAlwaysRefresh((Boolean) MetadataHelper.invokeMethod("alwaysRefresh", cache));
-        setDisableHits((Boolean) MetadataHelper.invokeMethod("disableHits", cache));
-        setCoordinationType((Enum) MetadataHelper.invokeMethod("coordinationType", cache));
-        setExpiry((Integer) MetadataHelper.invokeMethod("expiry", cache));
+    public CacheMetadata(Annotation cache, MetadataAccessibleObject accessibleObject) {
+        super(cache, accessibleObject);
+        
+        m_alwaysRefresh = (Boolean) MetadataHelper.invokeMethod("alwaysRefresh", cache);
+        m_disableHits = (Boolean) MetadataHelper.invokeMethod("disableHits", cache);
+        m_coordinationType = (Enum) MetadataHelper.invokeMethod("coordinationType", cache);
+        m_expiry = (Integer) MetadataHelper.invokeMethod("expiry", cache);
 
         Annotation expiryTimeOfDay = (Annotation) MetadataHelper.invokeMethod("expiryTimeOfDay", cache);
         
         if ((Boolean) MetadataHelper.invokeMethod("specified", expiryTimeOfDay)) {
-            setExpiryTimeOfDay(new TimeOfDayMetadata(expiryTimeOfDay));
+            m_expiryTimeOfDay = new TimeOfDayMetadata(expiryTimeOfDay, accessibleObject);
         }
         
-        setIsolated((Boolean) MetadataHelper.invokeMethod("isolated", cache));
-        setSize((Integer) MetadataHelper.invokeMethod("size", cache));
-        setType((Enum) MetadataHelper.invokeMethod("type", cache));
-        setRefreshOnlyIfNewer((Boolean) MetadataHelper.invokeMethod("refreshOnlyIfNewer", cache));
+        m_isolated = (Boolean) MetadataHelper.invokeMethod("isolated", cache);
+        m_size = (Integer) MetadataHelper.invokeMethod("size", cache);
+        m_type = (Enum) MetadataHelper.invokeMethod("type", cache);
+        m_refreshOnlyIfNewer = (Boolean) MetadataHelper.invokeMethod("refreshOnlyIfNewer", cache);
     }
     
     /**
@@ -76,7 +84,7 @@ public class CacheMetadata  {
      * Used for OX mapping.
      */
     public Boolean getAlwaysRefresh() {
-    	return m_alwaysRefresh; 
+        return m_alwaysRefresh; 
     }
     
     /**
@@ -84,7 +92,7 @@ public class CacheMetadata  {
      * Used for OX mapping.
      */
     public Enum getCoordinationType() {
-    	return m_coordinationType; 
+        return m_coordinationType; 
     }
     
     /**
@@ -100,7 +108,7 @@ public class CacheMetadata  {
      * Used for OX mapping.
      */
     public Integer getExpiry() {
-    	return m_expiry; 
+        return m_expiry; 
     }
     
     /**
@@ -132,7 +140,7 @@ public class CacheMetadata  {
      * Used for OX mapping.
      */
     public Integer getSize() {
-    	return m_size;
+        return m_size;
     }
     
     /**
@@ -218,7 +226,7 @@ public class CacheMetadata  {
      * Used for OX mapping 
      */
     public void setAlwaysRefresh(Boolean alwaysRefresh) {
-    	m_alwaysRefresh = alwaysRefresh;
+        m_alwaysRefresh = alwaysRefresh;
     }
     
     /**
@@ -234,7 +242,7 @@ public class CacheMetadata  {
      * Used for OX mapping.
      */
     public void setDisableHits(Boolean disableHits) {
-    	m_disableHits = disableHits; 
+        m_disableHits = disableHits; 
     }
 
     /**
@@ -266,7 +274,7 @@ public class CacheMetadata  {
      * Used for OX mapping.
      */
     public void setSize(Integer size) {
-    	m_size = size;
+        m_size = size;
     }
     
     /**
@@ -282,6 +290,6 @@ public class CacheMetadata  {
      * Used for OX mapping.
      */
     public void setRefreshOnlyIfNewer(Boolean refreshOnlyIfNewer) {
-    	m_refreshOnlyIfNewer = refreshOnlyIfNewer;
+        m_refreshOnlyIfNewer = refreshOnlyIfNewer;
     }
 }

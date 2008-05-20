@@ -10,6 +10,8 @@
  * Contributors:
  *     Guy Pelletier (Oracle), March 6, 2008 
  *        - New file introduced for bug 221658.
+ *     05/16/2008-1.0M8 Guy Pelletier 
+ *       - 218084: Implement metadata merging functionality between mapping files
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.accessors.mappings;
 
@@ -31,7 +33,9 @@ import org.eclipse.persistence.internal.security.PrivilegedGetMethods;
 import org.eclipse.persistence.internal.security.PrivilegedMethodInvoker;
 
 /**
- * Common helper methods for the metadata processing.
+ * INTERNAL:
+ * Common helper methods for the metadata processing. Security sensitive methods
+ * from this class must remain package accessible only.
  * 
  * @author Guy Pelletier
  * @since TopLink EJB 3.0 Reference Implementation
@@ -41,10 +45,10 @@ public class MetadataHelper {
     
     /**
      * INTERNAL: 
-	 * Get the declared fields from a class using the doPriveleged security
+     * Get the declared fields from a class using the doPriveleged security
      * access.
      */
-	static Field[] getFields(Class cls) {
+    static Field[] getFields(Class cls) {
         if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
             try {
                 return (Field[])AccessController.doPrivileged(new PrivilegedGetDeclaredFields(cls));
@@ -55,15 +59,15 @@ public class MetadataHelper {
         } else {
             return PrivilegedAccessHelper.getDeclaredFields(cls);
         }
-	}  
+    }  
     
     /**
      * INTERNAL:
-	 * Get the methods from a class using the doPriveleged security access. 
+     * Get the methods from a class using the doPriveleged security access. 
      * This call returns only public methods from the given class and its 
      * superclasses.
      */
-	static Method[] getMethods(Class cls) {
+    static Method[] getMethods(Class cls) {
         if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
             try {
                 return (Method[])AccessController.doPrivileged(new PrivilegedGetMethods(cls));
@@ -73,7 +77,7 @@ public class MetadataHelper {
         } else {
             return PrivilegedAccessHelper.getMethods(cls);
         }
-	}
+    }
 
     /**
      * INTERNAL: 

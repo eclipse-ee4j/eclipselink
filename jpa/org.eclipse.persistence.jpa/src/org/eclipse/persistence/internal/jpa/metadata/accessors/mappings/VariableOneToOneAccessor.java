@@ -9,15 +9,15 @@
  *
  * Contributors:
  *     03/26/2008-1.0M6 Guy Pelletier 
- *       - 211302: Add variable 1-1 mapping support to the EclipseLink-ORM.XML Schema   
+ *       - 211302: Add variable 1-1 mapping support to the EclipseLink-ORM.XML Schema
+ *     05/16/2008-1.0M8 Guy Pelletier 
+ *       - 218084: Implement metadata merging functionality between mapping files     
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.accessors.mappings;
 
 import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.List;
-
-import org.eclipse.persistence.annotations.VariableOneToOne;
 
 import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataDescriptor;
@@ -34,6 +34,7 @@ import org.eclipse.persistence.internal.jpa.metadata.columns.JoinColumnMetadata;
 import org.eclipse.persistence.mappings.VariableOneToOneMapping;
 
 /**
+ * INTERNAL:
  * A variable one to one relationship accessor. A VariableOneToOne annotation 
  * currently is not required to be defined on the accessible object, that is, 
  * a v1-1 can default if the raw class is an interface.
@@ -46,42 +47,33 @@ public class VariableOneToOneAccessor extends ObjectAccessor {
     
     private Integer m_lastDiscriminatorIndex;
     private DiscriminatorColumnMetadata m_discriminatorColumn;
-    private List<DiscriminatorClassMetadata> m_discriminatorClasses;
+    private List<DiscriminatorClassMetadata> m_discriminatorClasses = new ArrayList<DiscriminatorClassMetadata>();
     
     /**
      * INTERNAL:
      * Used for OX mapping.
      */
-    public VariableOneToOneAccessor() {}
+    public VariableOneToOneAccessor() {
+        super("<variable-one-to-one>");
+    }
     
     /**
      * INTERNAL:
      */
-    public VariableOneToOneAccessor(MetadataAccessibleObject accessibleObject, ClassAccessor classAccessor) {
-        super(accessibleObject, classAccessor);
-        
-        m_discriminatorClasses = new ArrayList<DiscriminatorClassMetadata>();
-        
-        Annotation variableOneToOne = getAnnotation(VariableOneToOne.class);
+    public VariableOneToOneAccessor(Annotation variableOneToOne, MetadataAccessibleObject accessibleObject, ClassAccessor classAccessor) {
+        super(variableOneToOne, accessibleObject, classAccessor);
         
         // We must check because VariableOneToOne's can default.
         if (variableOneToOne != null) {
+            // Parent class looks for 'targetEntity' and not 'targetInterface'
+            // Need to set it correctly.
             setTargetEntity((Class) MetadataHelper.invokeMethod("targetInterface", variableOneToOne));
-            setCascadeTypes((Enum[]) MetadataHelper.invokeMethod("cascade", variableOneToOne));
-            setFetch((Enum) MetadataHelper.invokeMethod("fetch", variableOneToOne));
-            setOptional((Boolean) MetadataHelper.invokeMethod("optional", variableOneToOne));
             
-            m_discriminatorColumn = new DiscriminatorColumnMetadata((Annotation) MetadataHelper.invokeMethod("discriminatorColumn", variableOneToOne));
+            m_discriminatorColumn = new DiscriminatorColumnMetadata((Annotation) MetadataHelper.invokeMethod("discriminatorColumn", variableOneToOne), accessibleObject);
             
             for (Annotation discriminatorClass : (Annotation[]) MetadataHelper.invokeMethod("discriminatorClasses", variableOneToOne)) {
-                m_discriminatorClasses.add(new DiscriminatorClassMetadata(discriminatorClass));
+                m_discriminatorClasses.add(new DiscriminatorClassMetadata(discriminatorClass, accessibleObject));
             }
-        } else {
-            // Set the defaults.
-            setTargetEntity(void.class);
-            setCascadeTypes(new Enum[]{});
-            setFetch(getDefaultFetchType());
-            setOptional(true);
         }
     }
     
@@ -151,30 +143,34 @@ public class VariableOneToOneAccessor extends ObjectAccessor {
     }
     
     /**
-     * INTERNAL: (Override from RelationshipAccessor)
+     * INTERNAL:
      * In a variable one to one case, there is no knowledge of a reference
      * descriptor and the join columns should be defaulted based on the owner 
      * of the variable one to one's descriptor.
      */
+    @Override
     public MetadataDescriptor getReferenceDescriptor() {
         return getDescriptor();
-    }
-   
-    /**
-     * INTERNAL: (Override from RelationshipAccessor)
-     */
-    public void init(MetadataAccessibleObject accessibleObject, ClassAccessor accessor) {
-        super.init(accessibleObject, accessor);
-        
-        // Initialize the values on the discriminator classes.
-        for (DiscriminatorClassMetadata discriminatorClass : m_discriminatorClasses) {
-            discriminatorClass.setValue(getEntityMappings().getClassForName(discriminatorClass.getValueName()));
-        }
     }
     
     /**
      * INTERNAL:
      */
+    @Override
+    public void initXMLObject(MetadataAccessibleObject accessibleObject) {
+        super.initXMLObject(accessibleObject);
+    
+        // Init the single ORMetadata objects.
+        initXMLObject(m_discriminatorColumn, accessibleObject);
+        
+        // Init the lists of ORMetadata objects.
+        initXMLObjects(m_discriminatorClasses, accessibleObject);
+    }
+    
+    /**
+     * INTERNAL:
+     */
+    @Override
     public boolean isVariableOneToOne() {
         return true;
     }
@@ -191,7 +187,7 @@ public class VariableOneToOneAccessor extends ObjectAccessor {
         // the same interface class.
         InterfaceAccessor interfaceAccessor = getProject().getInterfaceAccessor(getReferenceClassName());
         if (interfaceAccessor == null) {
-            interfaceAccessor = new InterfaceAccessor(getReferenceClass(), getProject());
+            interfaceAccessor = new InterfaceAccessor(null, getReferenceClass(), getProject());
             interfaceAccessor.process();
             getProject().addInterfaceAccessor(interfaceAccessor);
         }

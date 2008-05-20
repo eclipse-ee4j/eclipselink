@@ -9,10 +9,13 @@
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
+ *     05/16/2008-1.0M8 Guy Pelletier 
+ *       - 218084: Implement metadata merging functionality between mapping files
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.accessors.mappings;
 
 import java.lang.annotation.Annotation;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.persistence.FetchType;
@@ -36,6 +39,7 @@ import org.eclipse.persistence.mappings.ObjectReferenceMapping;
 import org.eclipse.persistence.mappings.OneToOneMapping;
 
 /**
+ * INTERNAL:
  * A single object relationship accessor.
  * 
  * @author Guy Pelletier
@@ -43,17 +47,37 @@ import org.eclipse.persistence.mappings.OneToOneMapping;
  */
 public abstract class ObjectAccessor extends RelationshipAccessor {
     private Boolean m_isOptional;
-	
+    private List<PrimaryKeyJoinColumnMetadata> m_primaryKeyJoinColumns = new ArrayList<PrimaryKeyJoinColumnMetadata>();
+    
     /**
      * INTERNAL:
+     * Used for OX mapping.
      */
-    protected ObjectAccessor() {}
+    protected ObjectAccessor(String xmlElement) {
+        super(xmlElement);
+    }
     
     /**
      * INTERNAL:
      */
-    protected ObjectAccessor(MetadataAccessibleObject accessibleObject, ClassAccessor classAccessor) {
-        super(accessibleObject, classAccessor);
+    protected ObjectAccessor(Annotation annotation, MetadataAccessibleObject accessibleObject, ClassAccessor classAccessor) {
+        super(annotation, accessibleObject, classAccessor);
+        
+        m_isOptional = (annotation == null) ? true : (Boolean) MetadataHelper.invokeMethod("optional", annotation);
+        
+        // Process all the primary key join columns first.
+        Annotation primaryKeyJoinColumns = getAnnotation(PrimaryKeyJoinColumns.class);
+        if (primaryKeyJoinColumns != null) {
+            for (Annotation primaryKeyJoinColumn : (Annotation[]) MetadataHelper.invokeMethod("value", primaryKeyJoinColumns)) { 
+                m_primaryKeyJoinColumns.add(new PrimaryKeyJoinColumnMetadata(primaryKeyJoinColumn, accessibleObject));
+            }
+        }
+        
+        // Process the single primary key join column second.
+        Annotation primaryKeyJoinColumn = getAnnotation(PrimaryKeyJoinColumn.class);
+        if (primaryKeyJoinColumn != null) {
+            m_primaryKeyJoinColumns.add(new PrimaryKeyJoinColumnMetadata(primaryKeyJoinColumn, accessibleObject));
+        }
     }
     
     /**
@@ -61,14 +85,31 @@ public abstract class ObjectAccessor extends RelationshipAccessor {
      * Return the default fetch type for an object mapping.
      */
     public Enum getDefaultFetchType() {
-    	return FetchType.valueOf("EAGER");
+        return FetchType.valueOf("EAGER");
     }
     
     /**
-     * INTERNAL: (Override from MetadataAccessor)
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+    public Boolean getOptional() {
+        return m_isOptional;
+    }
+    
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */    
+    public List<PrimaryKeyJoinColumnMetadata> getPrimaryKeyJoinColumns() {
+        return m_primaryKeyJoinColumns;
+    }
+    
+    /**
+     * INTERNAL:
      * If a target entity is specified in metadata, it will be set as the 
      * reference class, otherwise we will use the raw class.
      */
+    @Override
     public Class getReferenceClass() {
         if (m_referenceClass == null) {
             m_referenceClass = getTargetEntity();
@@ -86,18 +127,10 @@ public abstract class ObjectAccessor extends RelationshipAccessor {
     
     /**
      * INTERNAL:
-     * Used for OX mapping.
-     */
-    public Boolean getOptional() {
-    	return m_isOptional;
-    }
-    
-    /**
-     * INTERNAL:
      * Initialize a OneToOneMapping.
      */
     protected OneToOneMapping initOneToOneMapping() {
-    	OneToOneMapping mapping = new OneToOneMapping();
+        OneToOneMapping mapping = new OneToOneMapping();
         mapping.setIsReadOnly(false);
         mapping.setIsPrivateOwned(isPrivateOwned());
         mapping.setJoinFetch(getMappingJoinFetchType(getJoinFetch()));
@@ -123,12 +156,31 @@ public abstract class ObjectAccessor extends RelationshipAccessor {
     /**
      * INTERNAL:
      */
+    @Override
+    public void initXMLObject(MetadataAccessibleObject accessibleObject) {
+        super.initXMLObject(accessibleObject);
+    
+        // Initialize lists of ORMetadata objects.
+        initXMLObjects(m_primaryKeyJoinColumns, accessibleObject);
+    }
+    
+    /**
+     * INTERNAL:
+     * Return true if this accessor represents a 1-1 primary key relationship.
+     */
+    public boolean isOneToOnePrimaryKeyRelationship() {
+        return isOneToOne() && ! m_primaryKeyJoinColumns.isEmpty();
+    }
+    
+    /**
+     * INTERNAL:
+     */
     public boolean isOptional() {
-    	if (m_isOptional == null) {
-    		return true;
-    	} else {
-    		return m_isOptional.booleanValue();
-    	}
+        if (m_isOptional == null) {
+            return true;
+        } else {
+            return m_isOptional.booleanValue();
+        }
     }
     
     /**
@@ -202,18 +254,7 @@ public abstract class ObjectAccessor extends RelationshipAccessor {
      */
     protected void processOneToOnePrimaryKeyRelationship(OneToOneMapping mapping) {
         MetadataDescriptor referenceDescriptor = getReferenceDescriptor();
-    	List<PrimaryKeyJoinColumnMetadata> pkJoinColumns;
-    	
-    	if (getPrimaryKeyJoinColumns() == null) {
-    		// Look for annotations.
-    	    Annotation primaryKeyJoinColumn = getAnnotation(PrimaryKeyJoinColumn.class);
-    	    Annotation primaryKeyJoinColumns = getAnnotation(PrimaryKeyJoinColumns.class);
-            
-            pkJoinColumns = processPrimaryKeyJoinColumns(new PrimaryKeyJoinColumnsMetadata(primaryKeyJoinColumns, primaryKeyJoinColumn));
-    	} else {
-    		// Used what is specified in XML.
-    		pkJoinColumns = processPrimaryKeyJoinColumns(new PrimaryKeyJoinColumnsMetadata(getPrimaryKeyJoinColumns()));
-    	}
+        List<PrimaryKeyJoinColumnMetadata> pkJoinColumns = processPrimaryKeyJoinColumns(new PrimaryKeyJoinColumnsMetadata(getPrimaryKeyJoinColumns()));
 
         // Add the source foreign key fields to the mapping.
         for (PrimaryKeyJoinColumnMetadata primaryKeyJoinColumn : pkJoinColumns) {
@@ -255,6 +296,14 @@ public abstract class ObjectAccessor extends RelationshipAccessor {
      * Used for OX mapping.
      */
     public void setOptional(Boolean isOptional) {
-    	m_isOptional = isOptional;
+        m_isOptional = isOptional;
+    }
+    
+    /**
+     * INTERNAL: 
+     * Used for OX mapping.
+     */
+    public void setPrimaryKeyJoinColumns(List<PrimaryKeyJoinColumnMetadata> primaryKeyJoinColumns) {
+        m_primaryKeyJoinColumns = primaryKeyJoinColumns;
     }
 }

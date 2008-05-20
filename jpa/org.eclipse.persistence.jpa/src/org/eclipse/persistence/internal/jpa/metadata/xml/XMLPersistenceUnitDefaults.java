@@ -9,12 +9,14 @@
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
+ *     05/16/2008-1.0M8 Guy Pelletier 
+ *       - 218084: Implement metadata merging functionality between mapping file
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.xml;
 
 import java.util.List;
 
-import org.eclipse.persistence.internal.jpa.metadata.MetadataHelper;
+import org.eclipse.persistence.internal.jpa.metadata.ORMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.listeners.EntityListenerMetadata;
 
 /**
@@ -23,151 +25,152 @@ import org.eclipse.persistence.internal.jpa.metadata.listeners.EntityListenerMet
  * @author Guy Pelletier
  * @since EclipseLink 1.0
  */
-public class XMLPersistenceUnitDefaults {
-	private List<EntityListenerMetadata> m_entityListeners;
-	private boolean m_cascadePersist;
-	private String m_access;
-	private String m_catalog;
-	private String m_conflict;
-	private String m_schema;
+public class XMLPersistenceUnitDefaults extends ORMetadata {
+    private List<EntityListenerMetadata> m_entityListeners;
+    private boolean m_cascadePersist;
+    private String m_access;
+    private String m_catalog;
+    private String m_schema;
 
-	/**
-	 * INTERNAL:
-	 */
-	public XMLPersistenceUnitDefaults() {}
-	
-	/**
+    /**
+     * INTERNAL:
+     */
+    public XMLPersistenceUnitDefaults() {
+        super("<persistence-unit-defaults>");
+    }
+    
+    /**
      * INTERNAL:
      * If equals returns false, call getConflict() for a finer grain reason why.
      */
     public boolean equals(Object objectToCompare) {
-    	if (objectToCompare instanceof XMLPersistenceUnitDefaults) {
-    		XMLPersistenceUnitDefaults persistenceUnitDefaults = (XMLPersistenceUnitDefaults) objectToCompare; 
-    		
-    		// Check the access.
-    		if (! MetadataHelper.valuesMatch(persistenceUnitDefaults.getAccess(), getAccess())) {
-    			m_conflict = "access";
-    			return false;
-    		}
+        if (objectToCompare instanceof XMLPersistenceUnitDefaults) {
+            XMLPersistenceUnitDefaults persistenceUnitDefaults = (XMLPersistenceUnitDefaults) objectToCompare; 
+            
+            if (! valuesMatch(persistenceUnitDefaults.getAccess(), getAccess())) {
+                return false;
+            }
 
-    		// Check the catalog.
-    		if (! MetadataHelper.valuesMatch(persistenceUnitDefaults.getCatalog(), getCatalog())) {
-    			m_conflict = "catalog";
-    			return false;
-    		}
+            if (! valuesMatch(persistenceUnitDefaults.getCatalog(), getCatalog())) {
+                return false;
+            }
                 
-    		// Check the schema.
-    		if (! MetadataHelper.valuesMatch(persistenceUnitDefaults.getSchema(), getSchema())) {
-    			m_conflict = "schema";
-    			return false;
-    		}
+            if (! valuesMatch(persistenceUnitDefaults.getSchema(), getSchema())) {
+                return false;
+            }
                 
-    		// Check the cascade persist.
-    		if (! MetadataHelper.valuesMatch(persistenceUnitDefaults.isCascadePersist(), isCascadePersist())) {
-    			m_conflict = "cascade-persist";
-    			return false;
-    		} 
+            if (! valuesMatch(persistenceUnitDefaults.isCascadePersist(), isCascadePersist())) {
+                return false;
+            } 
         
-    		m_conflict = "";
-    		return true;
-    	}
-    	
-    	m_conflict = "Object not an instance of XMLPersistenceUnitDefaults";
-    	return false;
+            return true;
+        }
+        
+        return false;
     }
     
-	/**
-	 * INTERNAL:
-	 * Used for OX mapping.
-	 */
-	public String getAccess() {
-		return m_access;
-	}
-	
-	/**
-	 * INTERNAL:
-	 * Used for OX mapping.
-	 */
-	public String getCascadePersist() {
-		return null;
-	}
-	
-	/**
-	 * INTERNAL:
-	 * Used for OX mapping.
-	 */
-	public String getCatalog() {
-		return m_catalog;
-	}
-	
-	/**
-	 * INTERNAL:
-	 */
-	public String getConflict() {
-		return m_conflict;
-	}
-	
-	/**
-	 * INTERNAL:
-	 * Used for OX mapping.
-	 */
-	public List<EntityListenerMetadata> getEntityListeners() {
-		return m_entityListeners;
-	}
-	
-	/**
-	 * INTERNAL:
-	 * Used for OX mapping.
-	 */
-	public String getSchema() {
-		return m_schema;
-	}
-	
-	/**
-	 * INTERNAL:
-	 * Used for OX mapping.
-	 */
-	public boolean isCascadePersist() {
-		return m_cascadePersist;
-	}
-	
-	/**
-	 * INTERNAL:
-	 * Used for OX mapping.
-	 */
-	public void setAccess(String access) {
-		m_access = access;
-	}
-	
-	/**
-	 * INTERNAL:
-	 * Used for OX mapping.
-	 */
-	public void setCatalog(String catalog) {
-		m_catalog = catalog;
-	}
-	
-	/**
-	 * INTERNAL:
-	 * Used for OX mapping.
-	 */
-	public void setEntityListeners(List<EntityListenerMetadata> entityListeners) {
-		m_entityListeners = entityListeners;
-	}
-	
-	/**
-	 * INTERNAL:
-	 * Used for OX mapping.
-	 */
-	public void setCascadePersist(String ignore) {
-		m_cascadePersist = true;
-	}
-	
-	/**
-	 * INTERNAL:
-	 * Used for OX mapping.
-	 */
-	public void setSchema(String schema) {
-		m_schema = schema;
-	}
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+    public String getAccess() {
+        return m_access;
+    }
+    
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+    public String getCascadePersist() {
+        return null;
+    }
+    
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+    public String getCatalog() {
+        return m_catalog;
+    }
+    
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+    public List<EntityListenerMetadata> getEntityListeners() {
+        return m_entityListeners;
+    }
+    
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+    public String getSchema() {
+        return m_schema;
+    }
+    
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+    public boolean isCascadePersist() {
+        return m_cascadePersist;
+    }
+    
+    /**
+     * INTERNAL:
+     */
+    @Override
+    public void merge(ORMetadata metadata) {
+        XMLPersistenceUnitDefaults persistenceUnitDefaults = (XMLPersistenceUnitDefaults) metadata;
+        if (persistenceUnitDefaults != null) {
+            // Primitive boolean merging.
+            mergePrimitiveBoolean(m_cascadePersist, persistenceUnitDefaults.isCascadePersist(), persistenceUnitDefaults.getAccessibleObject(), "cascade-persist");
+        
+            // Simple object merging.
+            m_access = (String) mergeSimpleObjects(m_access, persistenceUnitDefaults.getAccess(), persistenceUnitDefaults.getAccessibleObject(), "<access>");
+            m_catalog = (String) mergeSimpleObjects(m_catalog, persistenceUnitDefaults.getCatalog(), persistenceUnitDefaults.getAccessibleObject(), "<catalog>");
+            m_schema = (String) mergeSimpleObjects(m_schema, persistenceUnitDefaults.getSchema(),  persistenceUnitDefaults.getAccessibleObject(), "<schema>");
+        }
+    }
+    
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+    public void setAccess(String access) {
+        m_access = access;
+    }
+    
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+    public void setCatalog(String catalog) {
+        m_catalog = catalog;
+    }
+    
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+    public void setEntityListeners(List<EntityListenerMetadata> entityListeners) {
+        m_entityListeners = entityListeners;
+    }
+    
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+    public void setCascadePersist(String ignore) {
+        m_cascadePersist = true;
+    }
+    
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+    public void setSchema(String schema) {
+        m_schema = schema;
+    }
 }

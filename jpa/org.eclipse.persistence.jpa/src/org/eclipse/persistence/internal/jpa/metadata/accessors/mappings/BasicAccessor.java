@@ -9,6 +9,8 @@
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
+ *     05/16/2008-1.0M8 Guy Pelletier 
+ *       - 218084: Implement metadata merging functionality between mapping files
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.accessors.mappings;
 
@@ -36,6 +38,7 @@ import org.eclipse.persistence.mappings.DirectToFieldMapping;
 import org.eclipse.persistence.mappings.converters.Converter;
 
 /**
+ * INTERNAL:
  * A relational accessor. A Basic annotation may or may not be present on the
  * accessible object.
  * 
@@ -43,20 +46,30 @@ import org.eclipse.persistence.mappings.converters.Converter;
  * @since TopLink EJB 3.0 Reference Implementation
  */
 public class BasicAccessor extends DirectAccessor {
-	private Boolean m_mutable;
-	private ColumnMetadata m_column;
-	private DatabaseField m_field;
-	
+    private Boolean m_mutable;
+    private ColumnMetadata m_column;
+    private DatabaseField m_field;
+    
     /**
      * INTERNAL:
+     * Used for OX mapping.
      */
-    public BasicAccessor() {}
+    public BasicAccessor() {
+        super("<basic>");
+    }
     
     /**
      * INTERNAL:
      */
-    public BasicAccessor(MetadataAccessibleObject accessibleObject, ClassAccessor classAccessor) {
-        super(accessibleObject, classAccessor);
+    public BasicAccessor(String xmlElement) {
+        super(xmlElement);
+    }
+    
+    /**
+     * INTERNAL:
+     */
+    public BasicAccessor(Annotation annotation, MetadataAccessibleObject accessibleObject, ClassAccessor classAccessor) {
+        super(annotation, accessibleObject, classAccessor);
         
         // Set the basic metadata if one is present.
         Annotation basic = getAnnotation(Basic.class);
@@ -66,7 +79,7 @@ public class BasicAccessor extends DirectAccessor {
         }
         
         // Set the column metadata if one if present.
-        m_column = new ColumnMetadata(getAnnotation(Column.class), getAttributeName());
+        m_column = new ColumnMetadata(getAnnotation(Column.class), accessibleObject, getAttributeName());
         
         // Set the mutable value if one is present.
         Annotation mutable = getAnnotation(Mutable.class);
@@ -80,7 +93,7 @@ public class BasicAccessor extends DirectAccessor {
      * Used for OX mapping.
      */
     public ColumnMetadata getColumn() {
-    	return m_column;
+        return m_column;
     }
     
     /**
@@ -89,25 +102,25 @@ public class BasicAccessor extends DirectAccessor {
      * annotation.
      */
     protected ColumnMetadata getColumn(String loggingCtx) {
-    	if (m_column == null) {
-            return new ColumnMetadata(getAttributeName());
-    	} else {
-    		return m_column;
-    	}
+        if (m_column == null) {
+            return new ColumnMetadata(getAccessibleObject(), getAttributeName());
+        } else {
+            return m_column;
+        }
     }
 
     /**
      * INTERNAL:
      */
     public FetchType getDefaultFetchType() {
-    	return FetchType.EAGER; 
+        return FetchType.EAGER; 
     }
     
     /**
      * INTERNAL:
      */
     protected DatabaseField getField() {
-    	return m_field;
+        return m_field;
     }
     
     /**
@@ -115,20 +128,26 @@ public class BasicAccessor extends DirectAccessor {
      * Used for OX mapping.
      */
     public Boolean getMutable() {
-    	return m_mutable;
+        return m_mutable;
     }
     
     /**
-     * INTERNAL: (Override from MetadataAccessor)
+     * INTERNAL:
      */
-    public void init(MetadataAccessibleObject accessibleObject, ClassAccessor accessor) {
-    	super.init(accessibleObject, accessor);
-    	
-    	// Make sure the attribute name is set on the column if one is set in
-    	// XML.
-    	if (m_column != null) {
-    		m_column.setAttributeName(getAttributeName());
-    	}
+    @Override
+    public void initXMLObject(MetadataAccessibleObject accessibleObject) {
+        super.initXMLObject(accessibleObject);
+
+        // Default a column if necessary.
+        if (m_column == null) {
+            m_column = new ColumnMetadata(accessibleObject, getAttributeName());
+        } else {
+            // Make sure the attribute name is set on the column.
+            m_column.setAttributeName(getAttributeName());
+
+            // Initialize single objects.
+            initXMLObject(m_column, accessibleObject);
+        }
     }
     
     /**
@@ -194,11 +213,12 @@ public class BasicAccessor extends DirectAccessor {
     }
 
     /**
-     * INTERNAL: (Override from DirectAccessor)
+     * INTERNAL:
      * Process an Enumerated annotation. The method may still be called if no 
      * Enumerated annotation has been specified but the accessor's reference 
      * class is a valid enumerated type.
      */
+    @Override
     protected void processEnumerated(DatabaseMapping mapping) {
         // If the raw class is a collection or map (with generics or not), we 
         // don't want to put a TypeConversionConverter on the mapping. Instead, 
@@ -212,10 +232,11 @@ public class BasicAccessor extends DirectAccessor {
     }
 
     /**
-     * INTERNAL: (Override from DirectAccessor)
+     * INTERNAL:
      * Process a Lob metadata. The lob must be specified to process and 
      * create a lob type mapping.
      */
+    @Override
     protected void processLob(DatabaseMapping mapping) {
         // If the raw class is a collection or map (with generics or not), we 
         // don't want to put a TypeConversionConverter on the mapping. Instead, 
@@ -242,24 +263,24 @@ public class BasicAccessor extends DirectAccessor {
     }
 
     /**
-     * INTERNAL: (Override from MetadataAccessor)
+     * INTERNAL:
      * Process a return insert setting.
      */
     protected void processReturnInsert(DatabaseField field, boolean returnOnly) {
         if (returnOnly) {
-        	getDescriptor().addFieldForInsertReturnOnly(field);
+            getDescriptor().addFieldForInsertReturnOnly(field);
         } else {
-        	getDescriptor().addFieldForInsert(field);
+            getDescriptor().addFieldForInsert(field);
         }
     }
 
     /**
-     * INTERNAL: (Override from MetadataAccessor)
+     * INTERNAL:
      * Process a return update setting.
      */
     protected void processReturnUpdate(DatabaseField field) {
         if (hasReturnUpdate()) {
-        	getDescriptor().addFieldForUpdate(field);
+            getDescriptor().addFieldForUpdate(field);
         }
     }
 
@@ -268,7 +289,7 @@ public class BasicAccessor extends DirectAccessor {
      * Used for OX mapping.
      */
     public void setColumn(ColumnMetadata column) {
-    	m_column = column;
+        m_column = column;
     }
     
     /**
@@ -297,6 +318,6 @@ public class BasicAccessor extends DirectAccessor {
      * Used for OX mapping.
      */
     public void setMutable(Boolean mutable) {
-    	m_mutable = mutable;
+        m_mutable = mutable;
     }
 }

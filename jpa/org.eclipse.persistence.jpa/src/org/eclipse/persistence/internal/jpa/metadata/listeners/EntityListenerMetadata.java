@@ -9,28 +9,40 @@
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
+ *     05/16/2008-1.0M8 Guy Pelletier 
+ *       - 218084: Implement metadata merging functionality between mapping files
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.listeners;
 
-import java.lang.reflect.InvocationTargetException;
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
-import java.lang.reflect.Modifier;
 
 import java.security.AccessController;
 import java.security.PrivilegedActionException;
 
-import java.util.Hashtable;
-import java.util.Vector;
+import java.util.HashSet;
 
-import org.eclipse.persistence.descriptors.DescriptorEvent;
-import org.eclipse.persistence.descriptors.DescriptorEventAdapter;
-import org.eclipse.persistence.descriptors.DescriptorEventManager;
+import javax.persistence.PostLoad;
+import javax.persistence.PostPersist;
+import javax.persistence.PostRemove;
+import javax.persistence.PostUpdate;
+import javax.persistence.PrePersist;
+import javax.persistence.PreRemove;
+import javax.persistence.PreUpdate;
 
 import org.eclipse.persistence.exceptions.ValidationException;
 
+import org.eclipse.persistence.internal.jpa.metadata.MetadataDescriptor;
+import org.eclipse.persistence.internal.jpa.metadata.MetadataLogger;
+import org.eclipse.persistence.internal.jpa.metadata.ORMetadata;
+
+import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAccessibleObject;
+import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataMethod;
+
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
-import org.eclipse.persistence.internal.security.PrivilegedMethodInvoker;
-import org.eclipse.persistence.internal.security.PrivilegedNewInstanceFromClass;
+import org.eclipse.persistence.internal.security.PrivilegedClassForName;
+import org.eclipse.persistence.internal.security.PrivilegedGetDeclaredMethods;
+import org.eclipse.persistence.internal.security.PrivilegedGetMethods;
 
 /**
  * A MetadataEntityListener and is placed on the owning entity's descriptor. 
@@ -40,661 +52,466 @@ import org.eclipse.persistence.internal.security.PrivilegedNewInstanceFromClass;
  * @author Guy Pelletier
  * @since TopLink 10.1.3/EJB 3.0 Preview
  */
-public class EntityListenerMetadata extends DescriptorEventAdapter {
-    public final static String POST_BUILD = "postBuild";
-    public final static String POST_CLONE = "postClone";
-    public final static String POST_DELETE = "postDelete";
-    public final static String POST_INSERT = "postInsert";
-    public final static String POST_REFRESH = "postRefresh";
-    public final static String POST_UPDATE = "postUpdate";
-    public final static String PRE_PERSIST = "prePersist";
-    public final static String PRE_REMOVE = "preRemove";
-    public final static String PRE_UPDATE_WITH_CHANGES = "preUpdateWithChanges";
+public class EntityListenerMetadata extends ORMetadata {
+    private Class m_entityListenerClass;
     
-    private Object m_listener;
-    private Class m_entityClass;
-    private Hashtable<String, Method> m_methods;
-    private Hashtable<Integer, Boolean> m_overriddenEvents;
-    private static Hashtable<Integer, String> m_eventStrings;
-
-    // Names loaded from XML.
+    protected EntityListener m_listener;
+    
     private String m_className;
-	private String m_postLoad;
-	private String m_postPersist;
-	private String m_postRemove;
-	private String m_postUpdate;
-	private String m_prePersist;
-	private String m_preRemove;
-	private String m_preUpdate;
-    
+    private String m_postLoad;
+    private String m_postPersist;
+    private String m_postRemove;
+    private String m_postUpdate;
+    private String m_prePersist;
+    private String m_preRemove;
+    private String m_preUpdate;
+
     /**
-     * INTERNAL: 
-     * The default constructor should not be used.
+     * INTERNAL:
+     * Used for OX mapping.
      */
-    protected EntityListenerMetadata() {
-        m_methods = new Hashtable<String, Method>();
-        
-        // Remember which events are overridden in subclasses.
-        m_overriddenEvents = new Hashtable<Integer, Boolean>();
-        
-        // For quick look up of equivalent event strings from event codes.
-        if (m_eventStrings == null) {
-            m_eventStrings = new Hashtable<Integer, String>();   
-            m_eventStrings.put(new Integer(DescriptorEventManager.PostBuildEvent), POST_BUILD);
-            m_eventStrings.put(new Integer(DescriptorEventManager.PostCloneEvent), POST_CLONE);
-            m_eventStrings.put(new Integer(DescriptorEventManager.PostDeleteEvent), POST_DELETE);
-            m_eventStrings.put(new Integer(DescriptorEventManager.PostInsertEvent), POST_INSERT);
-            m_eventStrings.put(new Integer(DescriptorEventManager.PostRefreshEvent), POST_REFRESH);
-            m_eventStrings.put(new Integer(DescriptorEventManager.PostUpdateEvent), POST_UPDATE);
-            m_eventStrings.put(new Integer(DescriptorEventManager.PrePersistEvent), PRE_PERSIST);
-            m_eventStrings.put(new Integer(DescriptorEventManager.PreRemoveEvent), PRE_REMOVE);
-            m_eventStrings.put(new Integer(DescriptorEventManager.PreUpdateWithChangesEvent), PRE_UPDATE_WITH_CHANGES);
-        }    	
+    public EntityListenerMetadata() {
+        super("<entity-listener>");
     }
 
     /**
-     * INTERNAL: 
+     * INTERNAL:
      */
-    protected EntityListenerMetadata(Class entityClass) {
-    	this();
-        m_entityClass = entityClass;
+    public EntityListenerMetadata(Annotation entityListeners, Class entityListenerClass, MetadataAccessibleObject accessibleObject) {
+        super(entityListeners, accessibleObject);
+        
+        m_entityListenerClass = entityListenerClass;
     }
-    
+
     /**
-     * INTERNAL: 
+     * INTERNAL:
+     * This method should be called when dealing with default listeners.
      */
-    public EntityListenerMetadata(Class listenerClass, Class entityClass) { 
-        this(entityClass);
-        initializeListenerClass(listenerClass);
+    public Object clone() {
+        EntityListenerMetadata listener = new EntityListenerMetadata();
+    
+        listener.setClassName(getClassName());
+        
+        listener.setPostLoad(getPostLoad());
+        listener.setPostPersist(getPostPersist());
+        listener.setPostRemove(getPostRemove());
+        listener.setPostUpdate(getPostUpdate());
+        listener.setPrePersist(getPrePersist());
+        listener.setPreRemove(getPreRemove());
+        listener.setPreUpdate(getPreUpdate());
+        
+        return listener;
     }
     
     /**
      * INTERNAL:
+     * Find the method in the list where method.getName() == methodName.
      */
-    public void addEventMethod(String event, Method method) {
-        if (m_methods.containsKey(event)) {
-        	Method existingMethod = (Method) getMethods().get(event);
-        	
-        	// We have already set the same callback method name from XML,
-        	// so just ignore it if this is the case, otherwise throw an
-        	// exception.
-            if (! existingMethod.getName().equals(method.getName())) {
-            	throw ValidationException.multipleLifecycleCallbackMethodsForSameLifecycleEvent(getListenerClass(), method, getEventMethod(event));            	
+    protected Method getCallbackMethod(String methodName, Method[] methods) {
+        Method method = getMethod(methodName, methods);
+        
+        if (method == null) {
+            throw ValidationException.invalidCallbackMethod(m_listener.getListenerClass(), methodName);
+        }
+        
+        return method;
+    }
+    
+    /**
+     * INTERNAL:
+     * Returns a list of methods from the given class, which can have private, 
+     * protected, package and public access, AND will also return public 
+     * methods from superclasses.
+     */
+    Method[] getCandidateCallbackMethodsForEntityListener() {
+        HashSet candidateMethods = new HashSet();
+        Class listenerClass = m_listener.getListenerClass();
+        
+        // Add all the declared methods ...
+        Method[] declaredMethods = getDeclaredMethods(listenerClass);
+        for (int i = 0; i < declaredMethods.length; i++) {
+            candidateMethods.add(declaredMethods[i]);
+        }
+        
+        // Now add any public methods from superclasses ...
+        Method[] methods = getMethods(listenerClass);
+        for (int i = 0; i < methods.length; i++) {
+            if (candidateMethods.contains(methods[i])) {
+                continue;
             }
-        } else {
-        	validateMethod(method);
-            m_methods.put(event, method);
+            
+            candidateMethods.add(methods[i]);
         }
-    }
-
-	/**
-	 * INTERNAL:
-	 * This method should be called when dealing with default listeners.
-	 */
-	public Object clone() {
-		EntityListenerMetadata listener = new EntityListenerMetadata();
-	
-		listener.setClassName(getClassName());
-		
-		listener.setPostLoad(getPostLoad());
-		listener.setPostPersist(getPostPersist());
-		listener.setPostRemove(getPostRemove());
-		listener.setPostUpdate(getPostUpdate());
-		listener.setPrePersist(getPrePersist());
-		listener.setPreRemove(getPreRemove());
-		listener.setPreUpdate(getPreUpdate());
-		
-		return listener;
-	}
-    
-	/**
-	 * INTERNAL:
-	 * Used for OX mapping.
-	 */
-	public String getClassName() {
-		return m_className;
-	}
-	
-    /**
-     * INTERNAL:
-     */
-    public Class getEntityClass() {
-        return m_entityClass;
-    }
-    
-    /**
-     * INTERNAL:
-     */
-    protected Method getEventMethod(int eventCode) {
-        String eventString = m_eventStrings.get(eventCode);
         
-        if (eventString != null) {
-            return getEventMethod(eventString);
-        } else {
-            return null;
-        }
+        return (Method[]) candidateMethods.toArray(new Method[candidateMethods.size()]);
     }
     
     /**
      * INTERNAL:
+     * Load a class from a given class name.
      */
-    protected Method getEventMethod(String event) {
-        return m_methods.get(event);
-    }
-    
-    /**
-     * INTERNAL:
-     */
-    protected String getEventMethodName(String eventName) {
-        Method method = getEventMethod(eventName);
-        
-        if (method != null) {
-            return method.getName();
-        } else {
-            return null;
-        }
-    }
-    
-    /**
-     * INTERNAL:
-     */
-    public Class getListenerClass() {
-        return m_listener.getClass();    
-    }
-    
-    /**
-     * INTERNAL:
-     */
-    public Hashtable getMethods() {
-        return m_methods;    
-    }
-	
-    /**
-     * INTERNAL:
-     */
-    public String getPostBuildMethodName() {
-        return getEventMethodName(POST_BUILD);
-    }
-    
-    /**
-     * INTERNAL:
-     */
-    public String getPostCloneMethodName() {
-        return getEventMethodName(POST_CLONE);
-    }
-
-    /**
-     * INTERNAL:
-     */
-    public String getPostDeleteMethodName() {
-        return getEventMethodName(POST_DELETE);
-    }
-
-    /**
-     * INTERNAL:
-     */
-    public String getPostInsertMethodName() {
-        return getEventMethodName(POST_INSERT);
-    }
-
-    /**
-	 * INTERNAL:
-	 * Used for OX mapping.
-	 */
-	public String getPostLoad() {
-		return m_postLoad;
-	}
-	
-	/**
-	 * INTERNAL:
-	 * Used for OX mapping. 
-	 */
-	public String getPostPersist() {
-		return m_postPersist;
-	}
-	
-    /**
-     * INTERNAL:
-     */
-    public String getPostRefreshMethodName() {
-        return getEventMethodName(POST_REFRESH);
-    }
-    
-	/**
-	 * INTERNAL:
-	 * Used for OX mapping.
-	 */
-	public String getPostRemove() {
-		return m_postRemove;
-	}
-	
-	/**
-	 * INTERNAL:
-	 * Used for OX mapping
-	 */
-	public String getPostUpdate() {
-		return m_postUpdate;
-	}
-	
-    /**
-     * INTERNAL:
-     */
-    public String getPostUpdateMethodName() {
-        return getEventMethodName(POST_UPDATE);
-    }
-
-    /**
-	 * INTERNAL:
-	 * Used for OX mapping.
-	 */
-	public String getPrePersist() {
-		return m_prePersist;
-	}
-	
-    /**
-     * INTERNAL:
-     */
-    public String getPrePersistMethodName() {
-        return getEventMethodName(PRE_PERSIST);
-    }
-    
-	/**
-	 * INTERNAL:
-	 * Used for OX mapping.
-	 */
-	public String getPreRemove() {
-		return m_preRemove;
-	}
-	
-    /**
-     * INTERNAL:
-     */
-    public String getPreRemoveMethodName() {
-        return getEventMethodName(PRE_REMOVE);
-    }
-    
-	/**
-	 * INTERNAL:
-	 * Used for OX mapping.
-	 */
-	public String getPreUpdate() {
-		return m_preUpdate;
-	}
-	
-    /**
-     * INTERNAL:
-     */
-    public String getPreUpdateWithChangesMethodName() {
-        return getEventMethodName(PRE_UPDATE_WITH_CHANGES);
-    }
-    
-    /**
-     * INTERNAL:
-     */
-    public boolean hasCallbackMethods() {
-        return m_methods.size() > 0;
-    }
-    
-    /**
-     * INTERNAL:
-     */
-    public boolean hasOverriddenEventMethod(Method eventMethod, int eventCode) {
-        return hasOverriddenEventMethod(getEventMethod(eventCode), eventMethod);
-    }
-    
-    /**
-     * INTERNAL:
-     */
-    protected boolean hasOverriddenEventMethod(Method eventMethod1, Method eventMethod2) {
-        return (eventMethod1 != null && eventMethod1.getName().equals(eventMethod2.getName()));
-    }
-    
-    /**
-     * INTERNAL:
-     */
-    public boolean hasOverriddenEventMethod(Method eventMethod, String eventCode) {
-        return hasOverriddenEventMethod(getEventMethod(eventCode), eventMethod);
-    }
-    
-    /**
-     * INTERNAL:
-     */
-    public void initializeListenerClass(Class listenerClass) {
+    Class getClassForName(String classname, ClassLoader loader) {
         try {
             if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
                 try {
-                    m_listener = AccessController.doPrivileged(new PrivilegedNewInstanceFromClass(listenerClass));
+                    return (Class) AccessController.doPrivileged(new PrivilegedClassForName(classname, true, loader));
                 } catch (PrivilegedActionException exception) {
-                    throw ValidationException.errorInstantiatingClass(listenerClass, exception.getException());
+                    throw ValidationException.unableToLoadClass(classname, exception.getException());
                 }
             } else {
-                m_listener = PrivilegedAccessHelper.newInstanceFromClass(listenerClass);
+                return PrivilegedAccessHelper.getClassForName(classname, true, loader);
             }
-        } catch (IllegalAccessException exception) {
-            throw ValidationException.errorInstantiatingClass(listenerClass, exception);
-        } catch (InstantiationException exception) {
-            throw ValidationException.errorInstantiatingClass(listenerClass, exception);
+        } catch (ClassNotFoundException exception) {
+            throw ValidationException.unableToLoadClass(classname, exception);
         }
     }
     
     /**
      * INTERNAL:
+     * Used for OX mapping.
      */
-    protected void invokeMethod(Method method, Object onObject, Object[] objectList, DescriptorEvent event) {
-        //if (method != null && ! isSessionPostBuildEvent(event)) {
-        if (method != null) {
+    public String getClassName() {
+        return m_className;
+    }
+    
+    /**
+     * INTERNAL:
+     * Get the declared methods from a class using the doPriveleged security
+     * access. This call returns all methods (private, protected, package and
+     * public) on the give class ONLY. It does not traverse the superclasses.
+     */
+    Method[] getDeclaredMethods(Class cls) {
+        if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
             try {
-                if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
-                    try {
-                        AccessController.doPrivileged(new PrivilegedMethodInvoker(method, onObject, objectList));
-                    } catch (PrivilegedActionException exception) {
-                        Exception throwableException = exception.getException();
-                        if (throwableException instanceof IllegalAccessException) {
-                            throw ValidationException.invalidCallbackMethod(onObject.getClass(), method.toString());
-                        } else {
-                            Throwable cause = throwableException.getCause();
-                            
-                            if (cause instanceof RuntimeException) {
-                                throw (RuntimeException) cause;    
-                            } else {
-                                throw (Error) cause;
-                            }                         }
-                    }
-                } else {
-                    PrivilegedAccessHelper.invokeMethod(method, onObject, objectList);
-                }
-            } catch (IllegalAccessException exception) {
-                throw ValidationException.invalidCallbackMethod(onObject.getClass(), method.toString());
-            } catch (InvocationTargetException e) {
-                Throwable cause = e.getCause();
-                
-                if (cause instanceof RuntimeException) {
-                    throw (RuntimeException) cause;    
-                } else {
-                    throw (Error) cause;
-                }
+                return (Method[])AccessController.doPrivileged(new PrivilegedGetDeclaredMethods(cls));
+            } catch (PrivilegedActionException exception) {
+                // we will not get here, there are no checked exceptions in this call
+                return null;
             }
-        }
-    }
-    
-    /**
-     * INTERNAL:
-     */
-    protected void invokeMethod(String event, DescriptorEvent descriptorEvent) {
-        Object[] objectList = { descriptorEvent.getSource() };
-        invokeMethod(getEventMethod(event), m_listener, objectList, descriptorEvent);
-    }
-
-    /**
-     * INTERNAL:
-     * Return true is listener has a lifecycle callback method that is 
-     * overridden in a subclass.
-     */
-    public boolean isOverriddenEvent(DescriptorEvent event, Vector eventManagers) {
-        int eventCode = event.getEventCode();
-        if (! m_overriddenEvents.containsKey(eventCode)) {
-            m_overriddenEvents.put(eventCode, false); // default
-            
-            Method eventMethod = getEventMethod(eventCode);
-        
-            if (eventMethod != null) {
-                for (DescriptorEventManager eventManager : (Vector<DescriptorEventManager>) eventManagers) {
-                	EntityListenerMetadata childListener = (EntityListenerMetadata) eventManager.getEntityEventListener();
-                    
-                    // We can't override ourself ...
-                    if (childListener == this) {
-                        break;
-                    } else {
-                        if (childListener.hasOverriddenEventMethod(eventMethod, eventCode)) {
-                            m_overriddenEvents.put(eventCode, true);
-                            break; // stop looking
-                        }
-                    }
-                }
-            }
-        }
-        
-        return m_overriddenEvents.get(eventCode);
-    }
-
-    /**
-     * INTERNAL:
-     */
-    protected boolean isSessionPostBuildEvent(DescriptorEvent event) {
-        if (((String) m_eventStrings.get(event.getEventCode())).equals(POST_BUILD)) {
-            return ! event.getSession().isUnitOfWork();
-        }
-        
-        return false;
-    }
-
-    /**
-     * INTERNAL:
-     */
-    public void postBuild(DescriptorEvent event) {
-        invokeMethod(POST_BUILD, event);
-    }
-    
-    /**
-     * INTERNAL:
-     */
-    public void postClone(DescriptorEvent event) {
-        invokeMethod(POST_CLONE, event);
-    }
-    
-    /**
-     * INTERNAL:
-     */
-    public void postDelete(DescriptorEvent event) {
-        invokeMethod(POST_DELETE, event);
-    }
-    
-    /**
-     * INTERNAL:
-     */
-    public void postInsert(DescriptorEvent event) {
-        invokeMethod(POST_INSERT, event);
-    }
-    
-    /**
-     * INTERNAL:
-     */
-    public void postRefresh(DescriptorEvent event) {
-        invokeMethod(POST_REFRESH, event);
-    }
-
-    /**
-     * INTERNAL:
-     */
-    public void postUpdate(DescriptorEvent event) {
-        invokeMethod(POST_UPDATE, event);
-    }
-
-    /**
-     * INTERNAL:
-     */
-    public void prePersist(DescriptorEvent event) {
-        invokeMethod(PRE_PERSIST, event);
-    }
-    
-    /**
-     * INTERNAL:
-     */
-    public void preRemove(DescriptorEvent event) {
-        invokeMethod(PRE_REMOVE, event);
-    }
-    
-    /**
-     * INTERNAL:
-     */
-    public void preUpdateWithChanges(DescriptorEvent event) {
-        invokeMethod(PRE_UPDATE_WITH_CHANGES, event);
-    }
-
-	/**
-	 * INTERNAL:
-	 * Used for OX mapping.
-	 */
-	public void setClassName(String className) {
-		m_className = className;
-	}
-	
-    /**
-     * INTERNAL:
-     */
-    public void setEntityClass(Class entityClass) {
-        m_entityClass = entityClass;
-    }
-    
-    /**
-     * INTERNAL:
-     */
-    public void setListener(Object listener) {
-        m_listener = listener;
-    }
-
-    /**
-     * INTERNAL:
-     */
-    public void setPostBuildMethod(Method method) {
-    	addEventMethod(POST_BUILD, method);
-    }
-    
-    /**
-     * INTERNAL:
-     */
-    public void setPostCloneMethod(Method method) {
-    	addEventMethod(POST_CLONE, method);
-    }
-
-    /**
-     * INTERNAL:
-     */
-    public void setPostDeleteMethod(Method method) {
-    	addEventMethod(POST_DELETE, method);
-    }
-
-    /**
-     * INTERNAL:
-     */
-    public void setPostInsertMethod(Method method) {
-    	addEventMethod(POST_INSERT, method);
-    }
-
-	/**
-	 * INTERNAL:
-	 * Used for OX mapping.
-	 */
-	public void setPostLoad(String postLoad) {
-		m_postLoad = postLoad;
-	}
-	
-	/**
-	 * INTERNAL:
-	 * Used for OX mapping.
-	 */
-	public void setPostPersist(String postPersist) {
-		m_postPersist = postPersist;
-	}
-	
-    /**
-     * INTERNAL:
-     */
-    public void setPostRefreshMethod(Method method) {
-    	addEventMethod(POST_REFRESH, method);
-    }
-    
-	/**
-	 * INTERNAL:
-	 * Used for OX mapping.
-	 */
-	public void setPostRemove(String postRemove) {
-		m_postRemove = postRemove;
-	}
-	
-	/**
-	 * INTERNAL:
-	 * Used for OX mapping.
-	 */
-	public void setPostUpdate(String postUpdate) {
-		m_postUpdate = postUpdate;
-	}
-	
-    /**
-     * INTERNAL:
-     */
-    public void setPostUpdateMethod(Method method) {
-    	addEventMethod(POST_UPDATE, method);
-    }
-    
-    /**
-	 * INTERNAL:
-	 * Used for OX mapping
-	 */
-	public void setPrePersist(String prePersist) {
-		m_prePersist = prePersist;
-	}
-
-    /**
-     * INTERNAL:
-     */
-    public void setPrePersistMethod(Method method) {
-    	addEventMethod(PRE_PERSIST, method);
-    }
-    
-	/**
-	 * INTERNAL:
-	 * Used for OX mapping.
-	 */
-	public void setPreRemove(String preRemove) {
-		m_preRemove = preRemove;
-	}
-	
-    /**
-     * INTERNAL:
-     */
-    public void setPreRemoveMethod(Method method) {
-    	addEventMethod(PRE_REMOVE, method);
-    }
-    
-	/**
-	 * INTERNAL:
-	 * Used for OX mapping.
-	 */
-	public void setPreUpdate(String preUpdate) {
-		m_preUpdate = preUpdate;
-	}
-	
-    /**
-     * INTERNAL:
-     */
-    public void setPreUpdateWithChangesMethod(Method method) { 
-    	addEventMethod(PRE_UPDATE_WITH_CHANGES, method);
-    }
-    
-    /**
-     * INTERNAL:
-     */
-    protected void validateMethod(Method method) {
-        int numberOfParameters = method.getParameterTypes().length;
-           
-        if (numberOfParameters == 1 && method.getParameterTypes()[0].isAssignableFrom(m_entityClass)) {
-            // So far so good, now check the method modifiers.
-            validateMethodModifiers(method);
         } else {
-            Class parameterClass = (numberOfParameters == 0) ? null : method.getParameterTypes()[0];
-            throw ValidationException.invalidEntityListenerCallbackMethodArguments(m_entityClass, parameterClass, m_listener.getClass(), method.getName());
+            return org.eclipse.persistence.internal.security.PrivilegedAccessHelper.getDeclaredMethods(cls);
+        }
+    }
+
+    /**
+     * INTERNAL:
+     */
+    @Override
+    public String getIdentifier() {
+        return m_className;
+    }
+    
+    /**
+     * INTERNAL:
+     * Find the method in the list where method.getName() == methodName.
+     */
+    Method getMethod(String methodName, Method[] methods) {
+        for (int i = 0; i < methods.length; i++) {
+            Method method = methods[i];
+        
+            if (method.getName().equals(methodName)) {
+                return method;
+            }
+        }
+        
+        return null;
+    }
+    
+    /**
+     * INTERNAL:
+     * Get the methods from a class using the doPriveleged security access. 
+     * This call returns only public methods from the given class and its 
+     * superclasses.
+     */
+    Method[] getMethods(Class cls) {
+        if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
+            try {
+                return (Method[])AccessController.doPrivileged(new PrivilegedGetMethods(cls));
+            } catch (PrivilegedActionException exception) {
+                return null;
+            }
+        } else {
+            return PrivilegedAccessHelper.getMethods(cls);
         }
     }
     
     /**
      * INTERNAL:
+     * Used for OX mapping.
      */
-    protected void validateMethodModifiers(Method method) {
-        int modifiers = method.getModifiers();
-        
-        if (Modifier.isStatic(modifiers) || Modifier.isFinal(modifiers)) {
-            throw ValidationException.invalidCallbackMethodModifier(getListenerClass(), method.getName());
+    public String getPostLoad() {
+        return m_postLoad;
+    }
+    
+    /**
+     * INTERNAL:
+     * Used for OX mapping. 
+     */
+    public String getPostPersist() {
+        return m_postPersist;
+    }
+    
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+    public String getPostRemove() {
+        return m_postRemove;
+    }
+    
+    /**
+     * INTERNAL:
+     * Used for OX mapping
+     */
+    public String getPostUpdate() {
+        return m_postUpdate;
+    }
+
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+    public String getPrePersist() {
+        return m_prePersist;
+    }
+    
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+    public String getPreRemove() {
+        return m_preRemove;
+    }
+    
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+    public String getPreUpdate() {
+        return m_preUpdate;
+    }
+
+    /**
+     * INTERNAL:
+     */
+    @Override
+    public void initXMLObject(MetadataAccessibleObject accessibleObject) {
+        super.initXMLObject(accessibleObject);
+    
+        m_entityListenerClass = initXMLClassName(m_className);
+    }
+    
+    /**
+     * INTERNAL: 
+     */
+    public void process(MetadataDescriptor descriptor, ClassLoader loader, boolean isDefaultListener) {
+        // Make sure the entityListenerClass is initialized (default listeners
+        // are cloned and m_entityListenerClass may be null)
+        if (m_entityListenerClass == null) {
+            m_entityListenerClass = getClassForName(m_className, loader);
         }
+        
+        // Initialize the listener class (reload the listener class)
+        m_listener = new EntityListener(getClassForName(m_entityListenerClass.getName(), loader), descriptor.getJavaClass());
+        
+        // Process the callback methods defined from XML and annotations.
+        processCallbackMethods(getCandidateCallbackMethodsForEntityListener(), descriptor.getLogger());
+    
+        // Add the listener to the descriptor.
+        if (isDefaultListener) {
+            descriptor.addDefaultEventListener(m_listener);
+        } else {
+            descriptor.addEntityListenerEventListener(m_listener);
+        }
+    }
+    
+    /**
+     * INTERNAL:
+     * Process the XML defined call back methods.
+     */
+    protected void processCallbackMethods(Method[] methods, MetadataLogger logger) {
+        // 1 - Set the XML specified methods first.
+        if (m_postLoad != null) {
+            setPostLoad(getCallbackMethod(m_postLoad, methods));
+        }   
+        
+        if (m_postPersist != null) {
+            setPostPersist(getCallbackMethod(m_postPersist, methods));
+        }
+        
+        if (m_postRemove != null) {
+            setPostRemove(getCallbackMethod(m_postRemove, methods));
+        }
+        
+        if (m_postUpdate != null) {
+            setPostUpdate(getCallbackMethod(m_postUpdate, methods));
+        }
+        
+        if (m_prePersist != null) {
+            setPrePersist(getCallbackMethod(m_prePersist, methods));
+        }
+
+        if (m_preRemove != null) {
+            setPreRemove(getCallbackMethod(m_preRemove, methods));
+        }
+        
+        if (m_preUpdate != null) {
+            setPreUpdate(getCallbackMethod(m_preUpdate, methods));
+        }
+        
+        // 2 - Set any annotation defined methods second.
+        for (Method method : methods) {
+            MetadataMethod metadataMethod = new MetadataMethod(method, logger);
+            
+            if (metadataMethod.isAnnotationPresent(PostLoad.class)) {
+                setPostLoad(method);
+            }
+            
+            if (metadataMethod.isAnnotationPresent(PostPersist.class)) {
+                setPostPersist(method);
+            }
+            
+            if (metadataMethod.isAnnotationPresent(PostRemove.class)) {
+                setPostRemove(method);
+            }
+            
+            if (metadataMethod.isAnnotationPresent(PostUpdate.class)) {
+                setPostUpdate(method);
+            }
+            
+            if (metadataMethod.isAnnotationPresent(PrePersist.class)) {
+                setPrePersist(method);
+            }
+            
+            if (metadataMethod.isAnnotationPresent(PreRemove.class)) {
+                setPreRemove(method);
+            }
+            
+            if (metadataMethod.isAnnotationPresent(PreUpdate.class)) {
+                setPreUpdate(method);
+            }
+        }
+    }
+    
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+    public void setClassName(String className) {
+        m_className = className;
+    }
+
+    /**
+     * INTERNAL:
+     * Set the post load event method on the listener.
+     */
+    protected void setPostLoad(Method method) {
+        m_listener.setPostBuildMethod(method);
+        m_listener.setPostCloneMethod(method);
+        m_listener.setPostRefreshMethod(method);
+    }
+    
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+    public void setPostLoad(String postLoad) {
+        m_postLoad = postLoad;
+    }
+    
+    /**
+     * INTERNAL:
+     * Set the post persist event method on the listener.
+     */
+    protected void setPostPersist(Method method) {
+        m_listener.setPostInsertMethod(method); 
+    }
+    
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+    public void setPostPersist(String postPersist) {
+        m_postPersist = postPersist;
+    }
+    
+    /**
+     * INTERNAL:
+     * Set the post remove event method on the listener.
+     */
+    protected void setPostRemove(Method method) {
+        m_listener.setPostDeleteMethod(method);
+    }
+    
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+    public void setPostRemove(String postRemove) {
+        m_postRemove = postRemove;
+    }
+    
+    /**
+     * INTERNAL:
+     * * Set the post update event method on the listener.
+     */
+    protected void setPostUpdate(Method method) {
+        m_listener.setPostUpdateMethod(method);
+    }
+    
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+    public void setPostUpdate(String postUpdate) {
+        m_postUpdate = postUpdate;
+    }
+    
+    /**
+     * INTERNAL:
+     * Set the pre persist event method on the listener.
+     */
+    protected void setPrePersist(Method method) {
+        m_listener.setPrePersistMethod(method);
+    }
+    
+    /**
+     * INTERNAL:
+     * Used for OX mapping
+     */
+    public void setPrePersist(String prePersist) {
+        m_prePersist = prePersist;
+    }
+    
+    /**
+     * INTERNAL:
+     * Set the pre remove event method on the listener.
+     */
+    protected void setPreRemove(Method method) {
+        m_listener.setPreRemoveMethod(method);
+    }
+    
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+    public void setPreRemove(String preRemove) {
+        m_preRemove = preRemove;
+    }
+    
+    /**
+     * INTERNAL:
+     * Set the pre update event method on the listener.
+     */
+    protected void setPreUpdate(Method method) {
+        m_listener.setPreUpdateWithChangesMethod(method);
+    }
+    
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+    public void setPreUpdate(String preUpdate) {
+        m_preUpdate = preUpdate;
     }
 }

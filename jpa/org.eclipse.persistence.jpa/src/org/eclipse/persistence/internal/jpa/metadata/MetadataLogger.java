@@ -9,6 +9,8 @@
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
+ *     05/16/2008-1.0M8 Guy Pelletier 
+ *       - 218084: Implement metadata merging functionality between mapping files
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata;
 
@@ -20,6 +22,7 @@ import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.MetadataAccessor;
 
 /**
+ * INTERNAL:
  * Logger class for the metadata processors. It defines the specific and
  * common log messages used by the metadata processor for the XML and 
  * annotation contexts.
@@ -27,57 +30,40 @@ import org.eclipse.persistence.internal.jpa.metadata.accessors.MetadataAccessor;
  * @author Guy Pelletier
  * @since TopLink EJB 3.0 Reference Implementation
  */
-public class MetadataLogger  {
+public class MetadataLogger {
+    /*************************************************************************/
+    /*           OVERRIDE MESSSAGES FOR ANNOTATIONS AND XML                  */ 
+    /*************************************************************************/
+    public static final String OVERRIDE_ANNOTATION_WITH_XML = "metadata_warning_override_annotation_with_xml";
+    public static final String OVERRIDE_NAMED_ANNOTATION_WITH_XML = "metadata_warning_override_named_annotation_with_xml";
+    
+    public static final String OVERRIDE_XML_WITH_ECLIPSELINK_XML = "metadata_warning_override_xml_with_eclipselink_xml";
+    public static final String OVERRIDE_NAMED_XML_WITH_ECLIPSELINK_XML = "metadata_warning_override_named_xml_with_eclipselink_xml";
+    
     /*************************************************************************/
     /*              ANNOTATION SPECIFIC IGNORE MESSSAGES                     */ 
     /*************************************************************************/
     public static final String IGNORE_ANNOTATION = "annotation_warning_ignore_annotation";
-    
-    public static final String IGNORE_ASSOCIATION_OVERRIDE = "annotation_warning_ignore_association_override";
-    public static final String IGNORE_ASSOCIATION_OVERRIDE_ON_MAPPED_SUPERCLASS = "annotation_warning_ignore_association_override_on_mapped_superclass";
-    public static final String IGNORE_ATTRIBUTE_OVERRIDE = "annotation_warning_ignore_attribute_override";
-    public static final String IGNORE_ATTRIBUTE_OVERRIDE_ON_MAPPED_SUPERCLASS = "annotation_warning_ignore_attribute_override_on_mapped_superclass";
-    
-    public static final String IGNORE_ID_CLASS_ANNOTATION = "annotation_warning_ignore_id_class";
-    public static final String IGNORE_READ_ONLY_ANNOTATION = "annotation_warning_ignore_read_only";
-    public static final String IGNORE_CUSTOMIZER_ANNOTATION = "annotation_warning_ignore_customizer";
-
-    public static final String IGNORE_CONVERTER_ANNOTATION = "annotation_warning_ignore_converter";
-    public static final String IGNORE_STRUCT_CONVERTER_ANNOTATION = "annotation_warning_ignore_struct_converter";
-    
-    public static final String IGNORE_NAMED_NATIVE_QUERY_ANNOTATION = "annotation_warning_ignore_named_native_query";
-    public static final String IGNORE_NAMED_QUERY_ANNOTATION = "annotation_warning_ignore_named_query";
-    public static final String IGNORE_NAMED_STORED_PROCEDURE_QUERY_ANNOTATION = "annotation_warning_ignore_named_stored_procedure_query";
-    
-    public static final String IGNORE_TABLE_ANNOTATION = "annotation_warning_ignore_table";
-    public static final String IGNORE_SECONDARY_TABLE_ANNOTATION = "annotation_warning_ignore_secondary_table";
-    
     public static final String IGNORE_PRIVATE_OWNED_ANNOTATION = "annotation_warning_ignore_private_owned";
 
     public static final String IGNORE_RETURN_INSERT_ANNOTATION = "annotation_warning_ignore_return_insert";
     public static final String IGNORE_RETURN_UPDATE_ANNOTATION = "annotation_warning_ignore_return_update";
-        
-    public static final String IGNORE_CHANGE_TRACKING_ANNOTATION = "annotation_warning_ignore_change_tracking";
-    public static final String IGNORE_OPTIMISTIC_LOCKING_ANNOTATION = "annotation_warning_ignore_optimistic_locking";
-    public static final String IGNORE_COPY_POLICY_ANNOTATION = "annotation_warning_ignore_copy_policy";
-    public static final String IGNORE_EXISTENCE_CHECKING_ANNOTATION = "annotation_warning_ignore_existence_checking";
-        
+    
     /*************************************************************************/
     /*                       GENERIC IGNORE MESSSAGES                        */ 
     /*************************************************************************/
-    public static final String IGNORE_MAPPING = "metadata_warning_ignore_mapping";
-    
-    public static final String IGNORE_EXISTING_COPY_POLICY = "metadata_warning_ignore_existing_copy_policy";
-    public static final String IGNORE_VERSION_LOCKING = "metadata_warning_ignore_version_locking";
-    
-    public static final String IGNORE_INHERITANCE_SUBCLASS_CACHE = "metadata_warning_ignore_inheritance_subclass_cache";
-    public static final String IGNORE_INHERITANCE_SUBCLASS_READ_ONLY = "metadata_warning_ignore_inheritance_read_only";
-    
     public static final String IGNORE_LOB = "metadata_warning_ignore_lob";
     public static final String IGNORE_ENUMERATED = "metadata_warning_ignore_enumerated";
     public static final String IGNORE_SERIALIZED = "metadata_warning_ignore_serialized";
     public static final String IGNORE_TEMPORAL = "metadata_warning_ignore_temporal";
     
+    public static final String IGNORE_VERSION_LOCKING = "metadata_warning_ignore_version_locking";
+    public static final String IGNORE_INHERITANCE_SUBCLASS_CACHE = "metadata_warning_ignore_inheritance_subclass_cache";
+    public static final String IGNORE_INHERITANCE_SUBCLASS_READ_ONLY = "metadata_warning_ignore_inheritance_subclass_read_only";
+    
+    public static final String IGNORE_MAPPED_SUPERCLASS_COPY_POLICY = "metadata_warning_ignore_mapped_superclass_copy_policy";
+    public static final String IGNORE_MAPPED_SUPERCLASS_ASSOCIATION_OVERRIDE = "metadata_warning_ignore_mapped_superclass_association_override";
+    public static final String IGNORE_MAPPED_SUPERCLASS_ATTRIBUTE_OVERRIDE = "metadata_warning_ignore_mapped_superclass_attribute_override";
     public static final String IGNORE_MAPPED_SUPERCLASS_CACHE = "metadata_warning_ignore_mapped_superclass_cache";
     public static final String IGNORE_MAPPED_SUPERCLASS_CHANGE_TRACKING = "metadata_warning_ignore_mapped_superclass_change_tracking";
     public static final String IGNORE_MAPPED_SUPERCLASS_CUSTOMIZER = "metadata_warning_ignore_mapped_superclass_customizer";
@@ -85,8 +71,6 @@ public class MetadataLogger  {
     public static final String IGNORE_MAPPED_SUPERCLASS_OPTIMISTIC_LOCKING = "metadata_warning_ignore_mapped_superclass_optimistic_locking";
     public static final String IGNORE_MAPPED_SUPERCLASS_READ_ONLY = "metadata_warning_ignore_mapped_superclass_read_only";
     
-    public static final String IGNORE_PROPERTY_FOR_CLASS = "metadata_warning_ignore_property_for_class";   
-    public static final String IGNORE_PROPERTY_FOR_ATTRIBUTE = "metadata_warning_ignore_property_for_attribute";   
     /*************************************************************************/
     /*                       GENERIC DEFAULT MESSSAGES                       */ 
     /*************************************************************************/
@@ -154,57 +138,43 @@ public class MetadataLogger  {
         // Initialize the context strings.
         m_ctxStrings = new HashMap();
         
-        // Annotation specific
+        // Generic override messages for XML and annotations.
+        m_ctxStrings.put(OVERRIDE_ANNOTATION_WITH_XML, OVERRIDE_ANNOTATION_WITH_XML);
+        m_ctxStrings.put(OVERRIDE_NAMED_ANNOTATION_WITH_XML, OVERRIDE_NAMED_ANNOTATION_WITH_XML);
+        m_ctxStrings.put(OVERRIDE_XML_WITH_ECLIPSELINK_XML, OVERRIDE_XML_WITH_ECLIPSELINK_XML);
+        m_ctxStrings.put(OVERRIDE_NAMED_XML_WITH_ECLIPSELINK_XML, OVERRIDE_NAMED_XML_WITH_ECLIPSELINK_XML);
+        
+        // Annotation specific ignore messages. These are typically used when
+        // ignoring annotations from an incorrect location on a mapping or 
+        // class. Since we have XML schema validation these do not apply to XML.
         m_ctxStrings.put(IGNORE_ANNOTATION, IGNORE_ANNOTATION);
-        
-        m_ctxStrings.put(IGNORE_ASSOCIATION_OVERRIDE, IGNORE_ASSOCIATION_OVERRIDE);
-        m_ctxStrings.put(IGNORE_ASSOCIATION_OVERRIDE_ON_MAPPED_SUPERCLASS, IGNORE_ASSOCIATION_OVERRIDE_ON_MAPPED_SUPERCLASS);
-        m_ctxStrings.put(IGNORE_ATTRIBUTE_OVERRIDE, IGNORE_ATTRIBUTE_OVERRIDE);
-        m_ctxStrings.put(IGNORE_ATTRIBUTE_OVERRIDE_ON_MAPPED_SUPERCLASS, IGNORE_ATTRIBUTE_OVERRIDE_ON_MAPPED_SUPERCLASS);
-
-        m_ctxStrings.put(IGNORE_NAMED_NATIVE_QUERY_ANNOTATION, IGNORE_NAMED_NATIVE_QUERY_ANNOTATION);
-        m_ctxStrings.put(IGNORE_NAMED_QUERY_ANNOTATION, IGNORE_NAMED_QUERY_ANNOTATION);
-        m_ctxStrings.put(IGNORE_NAMED_STORED_PROCEDURE_QUERY_ANNOTATION, IGNORE_NAMED_STORED_PROCEDURE_QUERY_ANNOTATION);
-
-        m_ctxStrings.put(IGNORE_CONVERTER_ANNOTATION, IGNORE_CONVERTER_ANNOTATION);
-        m_ctxStrings.put(IGNORE_STRUCT_CONVERTER_ANNOTATION, IGNORE_STRUCT_CONVERTER_ANNOTATION);
-        
-        m_ctxStrings.put(IGNORE_ID_CLASS_ANNOTATION, IGNORE_ID_CLASS_ANNOTATION);
-        m_ctxStrings.put(IGNORE_READ_ONLY_ANNOTATION, IGNORE_READ_ONLY_ANNOTATION);
-        m_ctxStrings.put(IGNORE_CUSTOMIZER_ANNOTATION, IGNORE_CUSTOMIZER_ANNOTATION);
-        
-        m_ctxStrings.put(IGNORE_TABLE_ANNOTATION, IGNORE_TABLE_ANNOTATION);
-        m_ctxStrings.put(IGNORE_SECONDARY_TABLE_ANNOTATION, IGNORE_SECONDARY_TABLE_ANNOTATION);
         m_ctxStrings.put(IGNORE_PRIVATE_OWNED_ANNOTATION, IGNORE_PRIVATE_OWNED_ANNOTATION);
-
         m_ctxStrings.put(IGNORE_RETURN_INSERT_ANNOTATION, IGNORE_RETURN_INSERT_ANNOTATION);
         m_ctxStrings.put(IGNORE_RETURN_UPDATE_ANNOTATION, IGNORE_RETURN_UPDATE_ANNOTATION);
-        
-        m_ctxStrings.put(IGNORE_CHANGE_TRACKING_ANNOTATION, IGNORE_CHANGE_TRACKING_ANNOTATION);
-        m_ctxStrings.put(IGNORE_OPTIMISTIC_LOCKING_ANNOTATION, IGNORE_OPTIMISTIC_LOCKING_ANNOTATION);
-        m_ctxStrings.put(IGNORE_COPY_POLICY_ANNOTATION, IGNORE_COPY_POLICY_ANNOTATION);
-        m_ctxStrings.put(IGNORE_EXISTENCE_CHECKING_ANNOTATION, IGNORE_EXISTENCE_CHECKING_ANNOTATION);
-        
-        // Common ignore messages for ORM and annotations.
-        m_ctxStrings.put(IGNORE_MAPPING, IGNORE_MAPPING);
+
+        // Generic ignore messages that could apply to XML and annotation
+        // configurations.
         m_ctxStrings.put(IGNORE_LOB, IGNORE_LOB);
         m_ctxStrings.put(IGNORE_TEMPORAL, IGNORE_TEMPORAL);
         m_ctxStrings.put(IGNORE_ENUMERATED, IGNORE_ENUMERATED);
         m_ctxStrings.put(IGNORE_SERIALIZED, IGNORE_SERIALIZED);
         m_ctxStrings.put(IGNORE_VERSION_LOCKING, IGNORE_VERSION_LOCKING);
+        
+        m_ctxStrings.put(IGNORE_INHERITANCE_SUBCLASS_CACHE, IGNORE_INHERITANCE_SUBCLASS_CACHE);
+        m_ctxStrings.put(IGNORE_INHERITANCE_SUBCLASS_READ_ONLY, IGNORE_INHERITANCE_SUBCLASS_READ_ONLY);
+       
+        m_ctxStrings.put(IGNORE_MAPPED_SUPERCLASS_COPY_POLICY, IGNORE_MAPPED_SUPERCLASS_COPY_POLICY);
+        m_ctxStrings.put(IGNORE_MAPPED_SUPERCLASS_ASSOCIATION_OVERRIDE, IGNORE_MAPPED_SUPERCLASS_ASSOCIATION_OVERRIDE);
+        m_ctxStrings.put(IGNORE_MAPPED_SUPERCLASS_ATTRIBUTE_OVERRIDE, IGNORE_MAPPED_SUPERCLASS_ATTRIBUTE_OVERRIDE);
         m_ctxStrings.put(IGNORE_MAPPED_SUPERCLASS_OPTIMISTIC_LOCKING, IGNORE_MAPPED_SUPERCLASS_OPTIMISTIC_LOCKING);
         m_ctxStrings.put(IGNORE_MAPPED_SUPERCLASS_CACHE, IGNORE_MAPPED_SUPERCLASS_CACHE);
-        m_ctxStrings.put(IGNORE_INHERITANCE_SUBCLASS_CACHE, IGNORE_INHERITANCE_SUBCLASS_CACHE);
         m_ctxStrings.put(IGNORE_MAPPED_SUPERCLASS_CHANGE_TRACKING, IGNORE_MAPPED_SUPERCLASS_CHANGE_TRACKING);
         m_ctxStrings.put(IGNORE_MAPPED_SUPERCLASS_CUSTOMIZER, IGNORE_MAPPED_SUPERCLASS_CUSTOMIZER);
         m_ctxStrings.put(IGNORE_MAPPED_SUPERCLASS_READ_ONLY, IGNORE_MAPPED_SUPERCLASS_READ_ONLY);
-        m_ctxStrings.put(IGNORE_INHERITANCE_SUBCLASS_READ_ONLY, IGNORE_INHERITANCE_SUBCLASS_READ_ONLY);
-        m_ctxStrings.put(IGNORE_EXISTING_COPY_POLICY, IGNORE_EXISTING_COPY_POLICY);
         m_ctxStrings.put(IGNORE_MAPPED_SUPERCLASS_EXISTENCE_CHECKING, IGNORE_MAPPED_SUPERCLASS_EXISTENCE_CHECKING);
-        m_ctxStrings.put(IGNORE_PROPERTY_FOR_CLASS, IGNORE_PROPERTY_FOR_CLASS);
-        m_ctxStrings.put(IGNORE_PROPERTY_FOR_ATTRIBUTE, IGNORE_PROPERTY_FOR_ATTRIBUTE);
         
-        // Common default messages for ORM and annotations.
+        // Generic default messages that could apply to XML and annotation
+        // configurations.
         m_ctxStrings.put(ALIAS, ALIAS);
         m_ctxStrings.put(MAP_KEY_ATTRIBUTE_NAME, MAP_KEY_ATTRIBUTE_NAME);
         
@@ -255,11 +225,11 @@ public class MetadataLogger  {
     
     /**
      * INTERNAL:
-	 * Return the logging context string for the given context.
+     * Return the logging context string for the given context.
      */
-	protected String getLoggingContextString(String context) {
+    protected String getLoggingContextString(String context) {
         return (String) m_ctxStrings.get(context);
-	}  
+    }  
     
     /**
      * INTERNAL:

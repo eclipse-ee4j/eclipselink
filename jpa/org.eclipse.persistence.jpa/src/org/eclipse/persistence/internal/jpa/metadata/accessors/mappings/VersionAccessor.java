@@ -9,18 +9,25 @@
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
+ *     05/16/2008-1.0M8 Guy Pelletier 
+ *       - 218084: Implement metadata merging functionality between mapping files
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.accessors.mappings;
 
+import java.lang.annotation.Annotation;
+
 import org.eclipse.persistence.descriptors.TimestampLockingPolicy;
 import org.eclipse.persistence.descriptors.VersionLockingPolicy;
+
 import org.eclipse.persistence.exceptions.ValidationException;
+
 import org.eclipse.persistence.internal.jpa.metadata.MetadataLogger;
 
 import org.eclipse.persistence.internal.jpa.metadata.accessors.classes.ClassAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAccessibleObject;
 
 /**
+ * INTERNAL:
  * A basic version accessor.
  * 
  * @author Guy Pelletier
@@ -29,14 +36,17 @@ import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataA
 public class VersionAccessor extends BasicAccessor {
     /**
      * INTERNAL:
+     * Used for OX mapping.
      */
-    public VersionAccessor() {}
+    public VersionAccessor() {
+        super("<version>");
+    }
     
     /**
      * INTERNAL:
      */
-    public VersionAccessor(MetadataAccessibleObject accessibleObject, ClassAccessor classAccessor) {
-        super(accessibleObject, classAccessor);
+    public VersionAccessor(Annotation version, MetadataAccessibleObject accessibleObject, ClassAccessor classAccessor) {
+        super(version, accessibleObject, classAccessor);
     }
 
     /**
@@ -64,10 +74,11 @@ public class VersionAccessor extends BasicAccessor {
      * INTERNAL:
      * Process a version accessor.
      */
+    @Override
     public void process() {
         // This will initialize the m_field variable.
         super.process();
-    	
+        
         // Process an @Version or version element if there is one.
         if (getDescriptor().usesOptimisticLocking()) {
             // Ignore the version locking if it is already set.

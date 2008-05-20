@@ -9,11 +9,15 @@
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
+ *     05/16/2008-1.0M8 Guy Pelletier 
+ *       - 218084: Implement metadata merging functionality between mapping files
  ******************************************************************************/  
-package org.eclipse.persistence.internal.jpa.metadata.xml;
+package org.eclipse.persistence.internal.jpa.metadata.accessors.classes;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import org.eclipse.persistence.internal.jpa.metadata.ORMetadata;
 
 import org.eclipse.persistence.internal.jpa.metadata.accessors.mappings.BasicAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.mappings.BasicCollectionAccessor;
@@ -23,14 +27,14 @@ import org.eclipse.persistence.internal.jpa.metadata.accessors.mappings.Embedded
 import org.eclipse.persistence.internal.jpa.metadata.accessors.mappings.IdAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.mappings.ManyToManyAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.mappings.ManyToOneAccessor;
+import org.eclipse.persistence.internal.jpa.metadata.accessors.mappings.MappingAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.mappings.OneToManyAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.mappings.OneToOneAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.mappings.TransformationAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.mappings.TransientAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.mappings.VariableOneToOneAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.mappings.VersionAccessor;
-import org.eclipse.persistence.internal.jpa.metadata.accessors.MetadataAccessor;
-import org.eclipse.persistence.internal.jpa.metadata.accessors.mappings.MappingAccessor;
+import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAccessibleObject;
 
 /**
  * Object to represent all the attributes of an XML defined entity,
@@ -39,7 +43,7 @@ import org.eclipse.persistence.internal.jpa.metadata.accessors.mappings.MappingA
  * @author Guy Pelletier
  * @since EclipseLink 1.0
  */
-public class XMLAttributes {
+public class XMLAttributes extends ORMetadata {
     private EmbeddedIdAccessor m_embeddedId;
     
     private List<BasicAccessor> m_basics;
@@ -60,7 +64,9 @@ public class XMLAttributes {
     /**
      * INTERNAL:
      */
-    public XMLAttributes() {}
+    public XMLAttributes() {
+        super("<attributes>");
+    }
 
     /**
      * INTERNAL:
@@ -130,7 +136,7 @@ public class XMLAttributes {
     public List<EmbeddedAccessor> getEmbeddeds() {
         return m_embeddeds;
     }
-
+    
     /**
      * INTERNAL:
      * Used for OX mapping.
@@ -138,7 +144,7 @@ public class XMLAttributes {
     public List<IdAccessor> getIds() {
         return m_ids;
     }
-
+    
     /**
      * INTERNAL:
      * Used for OX mapping.
@@ -154,7 +160,7 @@ public class XMLAttributes {
     public List<ManyToOneAccessor> getManyToOnes() {
         return m_manyToOnes;
     }
-
+    
     /**
      * INTERNAL:
      * Used for OX mapping.
@@ -205,6 +211,36 @@ public class XMLAttributes {
 
     /**
      * INTERNAL:
+     * This is going to initialize the accessible objects.
+     */
+    @Override
+    public void initXMLObject(MetadataAccessibleObject accessibleObject) {
+        super.initXMLObject(accessibleObject);
+        
+        // For merging purposes we will initialize the accessors with the owning
+        // classes accessible object. The actual accessible object (field or
+        // method) for each accessor will be set during the actual metadata
+        // processing stage.
+        for (MappingAccessor accessor : getAccessors()) {
+            accessor.initXMLObject(accessibleObject);
+        }
+    }
+    
+    /**
+     * INTERNAL:
+     * Since we are controlling the merging and we know we'll be comparing
+     * apples with apples, the casting is safe to assume.
+     */
+    @Override
+    public void merge(ORMetadata metadata) {
+        if (metadata != null) {
+            // ORMetadata list merging.
+            m_allAccessors = mergeORObjectLists(m_allAccessors, ((XMLAttributes) metadata).getAccessors());
+        }
+    }
+    
+    /**
+     * INTERNAL:
      * Used for OX mapping.
      */
     public void setBasicCollections(List<BasicCollectionAccessor> basicCollections) {
@@ -225,8 +261,8 @@ public class XMLAttributes {
      */
     public void setBasics(List<BasicAccessor> basics) {
         m_basics = basics;
-    }
-
+    }    
+    
     /**
      * INTERNAL:
      * Used for OX mapping.

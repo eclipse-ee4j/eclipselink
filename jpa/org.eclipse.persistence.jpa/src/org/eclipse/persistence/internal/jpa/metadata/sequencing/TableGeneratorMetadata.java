@@ -9,14 +9,16 @@
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
+ *     05/16/2008-1.0M8 Guy Pelletier 
+ *       - 218084: Implement metadata merging functionality between mapping file
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.sequencing;
 
 import java.lang.annotation.Annotation;
 
-import org.eclipse.persistence.internal.jpa.metadata.MetadataHelper;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataLogger;
 
+import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAccessibleObject;
 import org.eclipse.persistence.internal.jpa.metadata.tables.TableMetadata;
 
 /**
@@ -25,89 +27,69 @@ import org.eclipse.persistence.internal.jpa.metadata.tables.TableMetadata;
  * @author Guy Pelletier
  * @since EclipseLink 1.0
  */
-public class TableGeneratorMetadata extends TableMetadata {	
-    private boolean m_loadedFromXML;
-    
+public class TableGeneratorMetadata extends TableMetadata {    
     private Integer m_allocationSize;
-	private Integer m_initialValue;
-	
-	private String m_generatorName;
-	private String m_pkColumnValue;
-	private String m_pkColumnName;
-	private String m_valueColumnName;
-	
-	/**
-     * INTERNAL:
-     */
-	protected TableGeneratorMetadata() {
-		m_loadedFromXML = true;
-	}
+    private Integer m_initialValue;
+    
+    private String m_generatorName;
+    private String m_pkColumnValue;
+    private String m_pkColumnName;
+    private String m_valueColumnName;
     
     /**
      * INTERNAL:
      */
-    public TableGeneratorMetadata(Annotation tableGenerator, String entityClassName) {
-    	super(entityClassName);
-    	
-    	m_loadedFromXML = false;
-        
-        m_allocationSize = (Integer) invokeMethod("allocationSize", tableGenerator);
-        m_initialValue = (Integer) invokeMethod("initialValue", tableGenerator);
-        m_generatorName = (String) invokeMethod("name", tableGenerator); 
-        m_pkColumnName = (String) invokeMethod("pkColumnName", tableGenerator); 
-        m_pkColumnValue = (String) invokeMethod("pkColumnValue", tableGenerator);
-        m_valueColumnName = (String) invokeMethod("valueColumnName", tableGenerator);
-        
-        setCatalog((String) invokeMethod("catalog", tableGenerator));
-        setSchema((String) invokeMethod("schema", tableGenerator));
-        setName((String) invokeMethod("table", tableGenerator));
-        setUniqueConstraints((Annotation[]) invokeMethod("uniqueConstraints", tableGenerator));
+    protected TableGeneratorMetadata() {
+        super("<table-generator>");
     }
     
     /**
      * INTERNAL:
      */
+    public TableGeneratorMetadata(Annotation tableGenerator, MetadataAccessibleObject accessibleObject) {
+        super(tableGenerator, accessibleObject);
+        
+        // Table will process 'name', but 'name' here is the generator name and 
+        // the table name is 'table'. Set it correctly.
+        m_allocationSize = (Integer) MetadataHelper.invokeMethod("allocationSize", tableGenerator);
+        m_initialValue = (Integer) MetadataHelper.invokeMethod("initialValue", tableGenerator);
+        m_generatorName = (String) MetadataHelper.invokeMethod("name", tableGenerator); 
+        m_pkColumnName = (String) MetadataHelper.invokeMethod("pkColumnName", tableGenerator); 
+        m_pkColumnValue = (String) MetadataHelper.invokeMethod("pkColumnValue", tableGenerator);
+        m_valueColumnName = (String) MetadataHelper.invokeMethod("valueColumnName", tableGenerator);
+        
+        setName((String) MetadataHelper.invokeMethod("table", tableGenerator));
+    }
+    
+    /**
+     * INTERNAL:
+     */
+    @Override
     public boolean equals(Object objectToCompare) {
-        if (objectToCompare instanceof TableGeneratorMetadata) {
-        	TableGeneratorMetadata generator = (TableGeneratorMetadata) objectToCompare;
+        if (super.equals(objectToCompare) && objectToCompare instanceof TableGeneratorMetadata) {
+            TableGeneratorMetadata generator = (TableGeneratorMetadata) objectToCompare;
             
-            if (! MetadataHelper.valuesMatch(generator.getGeneratorName(), getGeneratorName())) {
-                return false;
-            }
-            
-            if (! MetadataHelper.valuesMatch(generator.getName(), getName())) { 
+            if (! valuesMatch(m_allocationSize, generator.getAllocationSize())) {
                 return false;
             }
             
-            if (! MetadataHelper.valuesMatch(generator.getInitialValue(), getInitialValue())) {
+            if (! valuesMatch(m_initialValue, generator.getInitialValue())) {
                 return false;
             }
             
-            if (! MetadataHelper.valuesMatch(generator.getAllocationSize(), getAllocationSize())) {
+            if (! valuesMatch(m_generatorName, generator.getGeneratorName())) {
                 return false;
             }
             
-            if (! MetadataHelper.valuesMatch(generator.getPkColumnName(), getPkColumnName())) {
+            if (! valuesMatch(m_pkColumnValue, generator.getPkColumnValue())) {
                 return false;
             }
             
-            if (! MetadataHelper.valuesMatch(generator.getValueColumnName(), getValueColumnName())) {
+            if (! valuesMatch(m_pkColumnName, generator.getPkColumnName())) {
                 return false;
             }
             
-            if (! MetadataHelper.valuesMatch(generator.getPkColumnValue(), getPkColumnValue())) {
-                return false;
-            }
-            
-            if (! MetadataHelper.valuesMatch(generator.getName(), getName())) { 
-                return false;
-            }
-                
-            if (! MetadataHelper.valuesMatch(generator.getSchema(), getSchema())) {
-                return false;
-            }
-                
-            return MetadataHelper.valuesMatch(generator.getCatalog(), getCatalog());
+            return valuesMatch(m_valueColumnName, generator.getValueColumnName());
         }
         
         return false;
@@ -122,10 +104,11 @@ public class TableGeneratorMetadata extends TableMetadata {
     }
     
     /**
-     * INTERNAL: (Override from MetadataTable)
+     * INTERNAL:
      */
+    @Override
     public String getCatalogContext() {
-    	return MetadataLogger.TABLE_GENERATOR_CATALOG;
+        return MetadataLogger.TABLE_GENERATOR_CATALOG;
     }
     
     /**
@@ -138,6 +121,15 @@ public class TableGeneratorMetadata extends TableMetadata {
     
     /**
      * INTERNAL:
+     * To satisfy the abstract getIdentifier() method from ORMetadata.
+     */
+    @Override
+    public String getIdentifier() {
+        return m_generatorName;
+    }
+    
+    /**
+     * INTERNAL:
      * Used for OX mapping.
      */
     public Integer getInitialValue() {
@@ -145,10 +137,11 @@ public class TableGeneratorMetadata extends TableMetadata {
     }
     
     /**
-     * INTERNAL: (Override from MetadataTable)
+     * INTERNAL:
      */
+    @Override
     public String getNameContext() {
-    	return MetadataLogger.TABLE_GENERATOR_NAME;	
+        return MetadataLogger.TABLE_GENERATOR_NAME;    
     }
     
     /**
@@ -168,10 +161,11 @@ public class TableGeneratorMetadata extends TableMetadata {
     }
     
     /**
-     * INTERNAL: (Override from MetadataTable)
+     * INTERNAL:
      */
+    @Override
     public String getSchemaContext() {
-    	return MetadataLogger.TABLE_GENERATOR_SCHEMA;
+        return MetadataLogger.TABLE_GENERATOR_SCHEMA;
     }
     
     /**
@@ -184,31 +178,10 @@ public class TableGeneratorMetadata extends TableMetadata {
     
     /**
      * INTERNAL:
-     */
-    protected Object invokeMethod(String methodName, Annotation annotation) {
-        return org.eclipse.persistence.internal.jpa.metadata.sequencing.MetadataHelper.invokeMethod(methodName, annotation);
-    }
-    
-    /**
-     * INTERNAL:
-     */
-    public boolean loadedFromAnnotations() {
-    	return ! loadedFromXML();
-    }
-    
-    /**
-     * INTERNAL:
-     */
-    public boolean loadedFromXML() {
-    	return m_loadedFromXML;
-    }
-    
-    /**
-     * INTERNAL:
      * Used for OX mapping.
      */
     public void setAllocationSize(Integer allocationSize) {
-    	m_allocationSize = allocationSize;
+        m_allocationSize = allocationSize;
     }
     
     /**
@@ -216,7 +189,7 @@ public class TableGeneratorMetadata extends TableMetadata {
      * Used for OX mapping.
      */
     public void setGeneratorName(String generatorName) {
-    	m_generatorName = generatorName;
+        m_generatorName = generatorName;
     }
     
     /**
@@ -232,7 +205,7 @@ public class TableGeneratorMetadata extends TableMetadata {
      * Used for OX mapping.
      */
     public void setPkColumnName(String pkColumnName) {
-    	m_pkColumnName = pkColumnName;
+        m_pkColumnName = pkColumnName;
     }
     
     /**
@@ -240,7 +213,7 @@ public class TableGeneratorMetadata extends TableMetadata {
      * Used for OX mapping.
      */
     public void setPkColumnValue(String pkColumnValue) {
-    	m_pkColumnValue = pkColumnValue;
+        m_pkColumnValue = pkColumnValue;
     }
     
     /**
@@ -248,6 +221,6 @@ public class TableGeneratorMetadata extends TableMetadata {
      * Used for OX mapping.
      */
     public void setValueColumnName(String valueColumnName) {
-    	m_valueColumnName = valueColumnName;
+        m_valueColumnName = valueColumnName;
     }
 }

@@ -9,10 +9,15 @@
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
+ *     05/16/2008-1.0M8 Guy Pelletier 
+ *       - 218084: Implement metadata merging functionality between mapping files
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.sequencing;
 
 import java.lang.annotation.Annotation;
+
+import org.eclipse.persistence.internal.jpa.metadata.ORMetadata;
+import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAccessibleObject;
 
 /**
  * A wrapper class to the MetadataSequenceGenerator that holds onto a 
@@ -21,29 +26,25 @@ import java.lang.annotation.Annotation;
  * @author Guy Pelletier
  * @since TopLink EJB 3.0 Reference Implementation
  */
-public class SequenceGeneratorMetadata {
-    private boolean m_loadedFromXML;
+public class SequenceGeneratorMetadata extends ORMetadata {
+    private Integer m_allocationSize;
+    private Integer m_initialValue;
     
-	private Integer m_allocationSize;
-	private Integer m_initialValue;
-	
-	private String m_location;
-	private String m_name;
-	private String m_sequenceName;
-	
+    private String m_name;
+    private String m_sequenceName;
+    
     /**
      * INTERNAL:
      */
     public SequenceGeneratorMetadata() {
-    	m_loadedFromXML = true;
+        super("<sequence-generator>");
     }
     
     /**
      * INTERNAL:
      */
-    public SequenceGeneratorMetadata(Annotation sequenceGenerator, String entityClassName) {
-        m_loadedFromXML = false;
-        m_location = entityClassName;
+    public SequenceGeneratorMetadata(Annotation sequenceGenerator, MetadataAccessibleObject accessibleObject) {
+        super(sequenceGenerator, accessibleObject);
         
         m_allocationSize = (Integer) MetadataHelper.invokeMethod("allocationSize", sequenceGenerator);
         m_initialValue = (Integer) MetadataHelper.invokeMethod("initialValue", sequenceGenerator); 
@@ -54,23 +55,24 @@ public class SequenceGeneratorMetadata {
     /**
      * INTERNAL:
      */
+    @Override
     public boolean equals(Object objectToCompare) {
         if (objectToCompare instanceof SequenceGeneratorMetadata) {
-        	SequenceGeneratorMetadata generator = (SequenceGeneratorMetadata) objectToCompare;
+            SequenceGeneratorMetadata generator = (SequenceGeneratorMetadata) objectToCompare;
             
-            if (! generator.getName().equals(getName())) { 
+            if (! valuesMatch(m_name, generator.getName())) { 
                 return false;
             }
             
-            if (! generator.getInitialValue().equals(getInitialValue())) {
+            if (! valuesMatch(m_initialValue, generator.getInitialValue())) {
                 return false;
             }
             
-            if (! generator.getAllocationSize().equals(getAllocationSize())) {
+            if (! valuesMatch(m_allocationSize, generator.getAllocationSize())) {
                 return false;
             }
             
-            return generator.getSequenceName().equals(getSequenceName());
+            return valuesMatch(m_sequenceName, generator.getSequenceName());
         }
         
         return false;
@@ -86,17 +88,19 @@ public class SequenceGeneratorMetadata {
     
     /**
      * INTERNAL:
+     * To satisfy the abstract getIdentifier() method from ORMetadata.
+     */
+    @Override
+    public String getIdentifier() {
+        return getName();
+    }
+
+    /**
+     * INTERNAL:
      * Used for OX mapping.
      */
     public Integer getInitialValue() {
         return m_initialValue;
-    }
-    
-    /**
-     * INTERNAL:
-     */
-    public String getLocation() {
-        return m_location;
     }
     
     /**
@@ -113,21 +117,7 @@ public class SequenceGeneratorMetadata {
      */
     public String getSequenceName() {
         return m_sequenceName;
-    }
-    
-    /**
-     * INTERNAL:
-     */
-    public boolean loadedFromAnnotations() {
-       return ! loadedFromXML(); 
-    }
-    
-    /**
-     * INTERNAL:
-     */
-    public boolean loadedFromXML() {
-       return m_loadedFromXML; 
-    }
+    }  
     
     /**
      * INTERNAL:
@@ -142,14 +132,7 @@ public class SequenceGeneratorMetadata {
      * Used for OX mapping.
      */
     public void setInitialValue(Integer initialValue) {
-    	m_initialValue = initialValue;
-    }
-    
-    /**
-     * INTERNAL:
-     */
-    public void setLocation(String location) {
-    	m_location = location;
+        m_initialValue = initialValue;
     }
     
     /**
@@ -157,7 +140,7 @@ public class SequenceGeneratorMetadata {
      * Used for OX mapping.
      */
     public void setName(String name) {
-    	m_name = name;
+        m_name = name;
     }
     
     /**
@@ -165,6 +148,6 @@ public class SequenceGeneratorMetadata {
      * Used for OX mapping.
      */
     public void setSequenceName(String sequenceName) {
-    	m_sequenceName = sequenceName;
+        m_sequenceName = sequenceName;
     }
 }

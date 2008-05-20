@@ -9,9 +9,12 @@
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
+ *     05/16/2008-1.0M8 Guy Pelletier 
+ *       - 218084: Implement metadata merging functionality between mapping files
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.accessors.mappings;
 
+import java.lang.annotation.Annotation;
 import java.util.HashMap;
 
 import org.eclipse.persistence.exceptions.ValidationException;
@@ -41,28 +44,31 @@ public class EmbeddedIdAccessor extends EmbeddedAccessor {
      * INTERNAL:
      * Default constructor.
      */
-    public EmbeddedIdAccessor() {}
+    public EmbeddedIdAccessor() {
+        super("<embedded-id>");
+    }
     
     /**
      * INTERNAL:
      */
-    public EmbeddedIdAccessor(MetadataAccessibleObject accessibleObject, ClassAccessor classAccessor) {
-        super(accessibleObject, classAccessor);
+    public EmbeddedIdAccessor(Annotation embeddedId, MetadataAccessibleObject accessibleObject, ClassAccessor classAccessor) {
+        super(embeddedId, accessibleObject, classAccessor);
     }
     
     /**
-     * INTERNAL: (Override from EmbeddedAccessor)
+     * INTERNAL:
      * Process an EmbeddedId metadata.
      */    
+    @Override
     public void process() {
-    	// Check if we already processed an EmbeddedId for this entity.
+        // Check if we already processed an EmbeddedId for this entity.
         if (getOwningDescriptor().hasEmbeddedIdAttribute()) {
-        	throw ValidationException.multipleEmbeddedIdAnnotationsFound(getJavaClass(), getAttributeName(), getOwningDescriptor().getEmbeddedIdAttributeName());
+            throw ValidationException.multipleEmbeddedIdAnnotationsFound(getJavaClass(), getAttributeName(), getOwningDescriptor().getEmbeddedIdAttributeName());
         } 
-            
+        
         // Check if we already processed an Id or IdClass.
         if (getOwningDescriptor().hasPrimaryKeyFields()) {
-        	throw ValidationException.embeddedIdAndIdAnnotationFound(getJavaClass(), getAttributeName(), getOwningDescriptor().getIdAttributeName());
+            throw ValidationException.embeddedIdAndIdAnnotationFound(getJavaClass(), getAttributeName(), getOwningDescriptor().getIdAttributeName());
         }
         
         // Now process the embeddable and our embedded metadata. This must be
@@ -118,16 +124,17 @@ public class EmbeddedIdAccessor extends EmbeddedAccessor {
     }
     
     /**
-     * INTERNAL: (Override from EmbeddedAccesor)
+     * INTERNAL:
      * Process an attribute override for an embedded object, that is, an 
      * aggregate object mapping in EclipseLink.
-	 */
-	protected void processAttributeOverride(AggregateObjectMapping mapping, AttributeOverrideMetadata attributeOverride) {
+     */
+    @Override
+    protected void processAttributeOverride(AggregateObjectMapping mapping, AttributeOverrideMetadata attributeOverride) {
         super.processAttributeOverride(mapping, attributeOverride);
         
         // Update our primary key field with the attribute override field.
         // The super class will ensure the correct field is on the metadata
         // column.
         m_idFields.put(attributeOverride.getName(), attributeOverride.getColumn().getDatabaseField());
-	}
+    }
 }

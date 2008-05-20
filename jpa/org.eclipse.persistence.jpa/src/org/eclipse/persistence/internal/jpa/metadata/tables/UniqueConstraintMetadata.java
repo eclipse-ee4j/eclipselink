@@ -7,8 +7,10 @@
  * and the Eclipse Distribution License is available at 
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
- * @author Guy Pelletier
- * @since EclipseLink 1.0
+ * Contributors:
+ *     Oracle - initial API and implementation from Oracle TopLink
+ *     05/16/2008-1.0M8 Guy Pelletier 
+ *       - 218084: Implement metadata merging functionality between mapping file
  *******************************************************************************/
 package org.eclipse.persistence.internal.jpa.metadata.tables;
 
@@ -16,41 +18,60 @@ import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.eclipse.persistence.internal.jpa.metadata.ORMetadata;
+import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAccessibleObject;
+
 /**
  * INTERNAL:
  * Object to hold onto a unique constraint metadata.
  */
-public class UniqueConstraintMetadata {
-	private List<String> m_columnNames;
-	
-	/**
+public class UniqueConstraintMetadata extends ORMetadata {
+    private List<String> m_columnNames;
+    
+    /**
      * INTERNAL:
      */
-	public UniqueConstraintMetadata() {}
-	
-	/**
+    public UniqueConstraintMetadata() {
+        super("<unique-constraint>");
+    }
+    
+    /**
      * INTERNAL:
      */
-	public UniqueConstraintMetadata(Annotation uniqueConstraint) {
-		m_columnNames = new ArrayList<String>();
-		
-		for (String columnName : (String[]) MetadataHelper.invokeMethod("columnNames", uniqueConstraint)) { 
-			m_columnNames.add(columnName);
-		}
-	}
-	
-	/**
+    public UniqueConstraintMetadata(Annotation uniqueConstraint, MetadataAccessibleObject accessibleObject) {
+        super(uniqueConstraint, accessibleObject);
+        
+        m_columnNames = new ArrayList<String>();
+        
+        for (String columnName : (String[]) MetadataHelper.invokeMethod("columnNames", uniqueConstraint)) { 
+            m_columnNames.add(columnName);
+        }
+    }
+    
+    /**
      * INTERNAL:
      */
-	public List<String> getColumnNames() {
-		return m_columnNames;
-	}
-	
-	/**
+    @Override
+    public boolean equals(Object objectToCompare) {
+        if (objectToCompare instanceof UniqueConstraintMetadata) {
+            return valuesMatch(m_columnNames, ((UniqueConstraintMetadata) objectToCompare).getColumnNames());
+        }
+        
+        return false;
+    }
+    
+    /**
      * INTERNAL:
      */
-	public void setColumnNames(List<String> columnNames) {
-		m_columnNames = columnNames;
-	}
+    public List<String> getColumnNames() {
+        return m_columnNames;
+    }
+    
+    /**
+     * INTERNAL:
+     */
+    public void setColumnNames(List<String> columnNames) {
+        m_columnNames = columnNames;
+    }
 }
 

@@ -9,14 +9,18 @@
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
+ *     05/16/2008-1.0M8 Guy Pelletier 
+ *       - 218084: Implement metadata merging functionality between mapping files
  ******************************************************************************/
 package org.eclipse.persistence.internal.jpa.metadata.columns;
 
 import java.lang.annotation.Annotation;
 
-import org.eclipse.persistence.internal.jpa.metadata.accessors.AccessMethodsMetadata;
+import org.eclipse.persistence.internal.jpa.metadata.MetadataLogger;
+import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAccessibleObject;
 
 /**
+ * INTERNAL:
  * Object to hold onto an attribute override meta data.
  * 
  * @author Guy Pelletier
@@ -24,29 +28,33 @@ import org.eclipse.persistence.internal.jpa.metadata.accessors.AccessMethodsMeta
  */
 public class AttributeOverrideMetadata extends OverrideMetadata {
     private ColumnMetadata m_column;
-    private AccessMethodsMetadata m_accessMethods;
 
     /**
      * INTERNAL:
      */
-    public AttributeOverrideMetadata() {}
+    public AttributeOverrideMetadata() {
+        super("<attribute-override>");
+    }
     
     /**
      * INTERNAL:
      */
-    public AttributeOverrideMetadata(Annotation attributeOverride, String className) {
-        super(className);
+    public AttributeOverrideMetadata(Annotation attributeOverride, MetadataAccessibleObject accessibleObject) {
+        super(attributeOverride, accessibleObject);
 
-        setName((String) invokeMethod("name", attributeOverride));
-        m_column = new ColumnMetadata((Annotation) invokeMethod("column", attributeOverride), getName());
+        m_column = new ColumnMetadata((Annotation) MetadataHelper.invokeMethod("column", attributeOverride), accessibleObject, getName());
     }
 
     /**
      * INTERNAL:
-     * Used for OX mapping.
      */
-    public AccessMethodsMetadata getAccessMethodsMetadata(){
-        return m_accessMethods;
+    @Override
+    public boolean equals(Object objectToCompare) {
+        if (super.equals(objectToCompare) && objectToCompare instanceof AttributeOverrideMetadata) {
+            return valuesMatch(m_column, ((AttributeOverrideMetadata) objectToCompare).getColumn());
+        }
+        
+        return false;
     }
     
     /**
@@ -56,13 +64,27 @@ public class AttributeOverrideMetadata extends OverrideMetadata {
     public ColumnMetadata getColumn() {
         return m_column;
     }
+
+    /**
+     * INTERNAL:
+     */
+    @Override
+    public String getIgnoreMappedSuperclassContext() {
+        return MetadataLogger.IGNORE_MAPPED_SUPERCLASS_ATTRIBUTE_OVERRIDE;
+    }
     
     /**
      * INTERNAL:
-     * Used for OX mapping.
      */
-    public void setAccessMethodsMetadata(AccessMethodsMetadata accessMethodsMetadata){
-        this.m_accessMethods = accessMethodsMetadata;
+    @Override
+    public void initXMLObject(MetadataAccessibleObject accessibleObject) {
+        super.initXMLObject(accessibleObject);
+
+        // Make sure the attribute name is set on the column.
+        m_column.setAttributeName(getName());
+
+        // Initialize single objects.
+        initXMLObject(m_column, accessibleObject);
     }
     
     /**

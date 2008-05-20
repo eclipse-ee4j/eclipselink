@@ -9,6 +9,8 @@
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
+ *     05/16/2008-1.0M8 Guy Pelletier 
+ *       - 218084: Implement metadata merging functionality between mapping file
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.tables;
 
@@ -17,6 +19,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.persistence.internal.jpa.metadata.MetadataLogger;
+import org.eclipse.persistence.internal.jpa.metadata.ORMetadata;
+import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAccessibleObject;
 import org.eclipse.persistence.internal.helper.DatabaseTable;
 
 /**
@@ -26,11 +30,10 @@ import org.eclipse.persistence.internal.helper.DatabaseTable;
  * @author Guy Pelletier
  * @since TopLink EJB 3.0 Reference Implementation
  */
-public class TableMetadata {	
-	private DatabaseTable m_databaseTable;
-	private List<UniqueConstraintMetadata> m_uniqueConstraints;
-	private String m_location;
-	private String m_name;
+public class TableMetadata extends ORMetadata {    
+    private DatabaseTable m_databaseTable = new DatabaseTable();
+    private List<UniqueConstraintMetadata> m_uniqueConstraints = new ArrayList<UniqueConstraintMetadata>();
+    private String m_name;
     private String m_schema;
     private String m_catalog;
     
@@ -38,29 +41,57 @@ public class TableMetadata {
      * INTERNAL:
      */
     public TableMetadata() {
-    	m_databaseTable = new DatabaseTable();
+        super("<table>");
     }
     
     /**
      * INTERNAL:
      */
-    public TableMetadata(String entityClassName) {
-    	this();
-    	m_location = entityClassName;
+    protected TableMetadata(String xmlElement) {
+        super(xmlElement);
     }
 
     /**
      * INTERNAL:
      */
-    public TableMetadata(Annotation table, String entityClassName) {
-    	this(entityClassName);
-    	
+    public TableMetadata(Annotation table, MetadataAccessibleObject accessibleObject) {
+        super(table, accessibleObject);
+        
         if (table != null) {
-            m_name = (String) invokeMethod("name", table); 
-            m_schema = (String) invokeMethod("schema", table); 
-            m_catalog = (String) invokeMethod("catalog", table); 
-            setUniqueConstraints((Annotation[]) invokeMethod("uniqueConstraints", table));
+            m_name = (String) MetadataHelper.invokeMethod("name", table); 
+            m_schema = (String) MetadataHelper.invokeMethod("schema", table); 
+            m_catalog = (String) MetadataHelper.invokeMethod("catalog", table);
+            
+            for (Annotation uniqueConstraint : (Annotation[]) MetadataHelper.invokeMethod("uniqueConstraints", table)) {
+                m_uniqueConstraints.add(new UniqueConstraintMetadata(uniqueConstraint, accessibleObject));
+            }
         }
+    }
+    
+    /**
+     * INTERNAL:
+     */
+    @Override
+    public boolean equals(Object objectToCompare) {
+        if (objectToCompare instanceof TableMetadata) {
+            TableMetadata table = (TableMetadata) objectToCompare;
+            
+            if (! valuesMatch(m_name, table.getName())) {
+                return false;
+            }
+            
+            if (! valuesMatch(m_schema, table.getSchema())) {
+                return false;
+            }
+            
+            if (! valuesMatch(m_catalog, table.getCatalog())) {
+                return false;
+            }
+            
+            return valuesMatch(m_uniqueConstraints, table.getUniqueConstraints());
+        }
+        
+        return false;
     }
     
     /**
@@ -72,8 +103,7 @@ public class TableMetadata {
     }
     
     /**
-     * INTERNAL: (Overridden in MetadataSecondaryTable, MetadataJoinTable,
-     * MetadataCollectionTable and MetadataTableGenerator)
+     * INTERNAL:
      */
     public String getCatalogContext() {
         return MetadataLogger.TABLE_CATALOG;
@@ -88,13 +118,6 @@ public class TableMetadata {
     
     /**
      * INTERNAL:
-     */
-    public String getLocation() {
-        return m_location;
-    }
-    
-    /**
-     * INTERNAL:
      * Used for OX mapping.
      */
     public String getName() {
@@ -102,8 +125,7 @@ public class TableMetadata {
     }
     
     /**
-     * INTERNAL: (Overridden in MetadataSecondaryTable, MetadataJoinTable,
-     * MetadataCollectionTable and MetadataTableGenerator)
+     * INTERNAL:
      */
     public String getNameContext() {
         return MetadataLogger.TABLE_NAME;
@@ -118,8 +140,7 @@ public class TableMetadata {
     }
     
     /**
-     * INTERNAL: (Overridden in MetadataSecondaryTable, MetadataJoinTable,
-     * MetadataCollectionTable and MetadataTableGenerator)
+     * INTERNAL:
      */
     public String getSchemaContext() {
         return MetadataLogger.TABLE_SCHEMA;
@@ -130,14 +151,7 @@ public class TableMetadata {
      * Used for OX mapping.
      */
     public List<UniqueConstraintMetadata> getUniqueConstraints() {
-    	return m_uniqueConstraints;
-    }
-
-    /**
-     * INTERNAL:
-     */
-    protected Object invokeMethod(String methodName, Annotation annotation) {
-        return MetadataHelper.invokeMethod(methodName, annotation);
+        return m_uniqueConstraints;
     }
     
     /**
@@ -145,11 +159,11 @@ public class TableMetadata {
      * Add the unique constraints to the database table.
      */
     public void processUniqueConstraints() {
-    	if (m_uniqueConstraints != null) {
-    		for (UniqueConstraintMetadata uniqueConstraint : m_uniqueConstraints) {
-    			m_databaseTable.addUniqueConstraints(uniqueConstraint.getColumnNames());
-    		}
-    	}
+        if (m_uniqueConstraints != null) {
+            for (UniqueConstraintMetadata uniqueConstraint : m_uniqueConstraints) {
+                m_databaseTable.addUniqueConstraints(uniqueConstraint.getColumnNames());
+            }
+        }
     }
     
     /**
@@ -176,13 +190,6 @@ public class TableMetadata {
     
     /**
      * INTERNAL:
-     */
-    public void setLocation(String location) {
-        m_location = location;
-    }
-    
-    /**
-     * INTERNAL:
      * Used for OX mapping.
      */
     public void setName(String name) {
@@ -199,21 +206,9 @@ public class TableMetadata {
     
     /**
      * INTERNAL:
-     * Called from annotation population.
-     */
-    protected void setUniqueConstraints(Annotation[] uniqueConstraints) {
-    	m_uniqueConstraints = new ArrayList<UniqueConstraintMetadata>();
-    	
-    	for (Annotation uniqueConstraint : uniqueConstraints) {
-    		m_uniqueConstraints.add(new UniqueConstraintMetadata(uniqueConstraint));
-    	}
-    }
-    
-    /**
-     * INTERNAL:
      * Used for OX mapping.
      */
     public void setUniqueConstraints(List<UniqueConstraintMetadata> uniqueConstraints) {
-    	m_uniqueConstraints = uniqueConstraints;
+        m_uniqueConstraints = uniqueConstraints;
     }
 }

@@ -9,22 +9,27 @@
  *
  * Contributors:
  *     03/26/2008-1.0M6 Guy Pelletier 
- *       - 211302: Add variable 1-1 mapping support to the EclipseLink-ORM.XML Schema   
+ *       - 211302: Add variable 1-1 mapping support to the EclipseLink-ORM.XML Schema
+ *     05/16/2008-1.0M8 Guy Pelletier 
+ *       - 218084: Implement metadata merging functionality between mapping files   
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.columns;
 
 import java.lang.annotation.Annotation;
 
 import org.eclipse.persistence.exceptions.ValidationException;
+import org.eclipse.persistence.internal.jpa.metadata.ORMetadata;
+import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAccessibleObject;
 import org.eclipse.persistence.mappings.VariableOneToOneMapping;
 
 /**
+ * INTERNAL:
  * A discriminator class is used within a variable one to one mapping.
  * 
  * @author Guy Pelletier
  * @since EclipseLink 1.0
  */
-public class DiscriminatorClassMetadata {
+public class DiscriminatorClassMetadata extends ORMetadata {
     private Class m_value;
     private String m_valueName;
     private String m_discriminator;
@@ -33,12 +38,16 @@ public class DiscriminatorClassMetadata {
      * INTERNAL:
      * Used for OX mapping.
      */
-    public DiscriminatorClassMetadata() {}
+    public DiscriminatorClassMetadata() {
+        super("<discriminator-class>");
+    }
     
     /**
      * INTERNAL:
      */
-    public DiscriminatorClassMetadata(Annotation discriminatorClass) {
+    public DiscriminatorClassMetadata(Annotation discriminatorClass, MetadataAccessibleObject accessibleObject) {
+        super(discriminatorClass, accessibleObject);
+        
         setDiscriminator((String) MetadataHelper.invokeMethod("discriminator", discriminatorClass));
         setValue((Class) MetadataHelper.invokeMethod("value", discriminatorClass));
     }
@@ -64,6 +73,16 @@ public class DiscriminatorClassMetadata {
      */
     public String getValueName() {
         return m_valueName;
+    }
+    
+    /**
+     * INTERNAL:
+     */
+    @Override
+    public void initXMLObject(MetadataAccessibleObject accessibleObject) {
+        super.initXMLObject(accessibleObject);
+    
+        m_value = initXMLClassName(m_valueName);
     }
     
     /**

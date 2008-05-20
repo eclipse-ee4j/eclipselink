@@ -7,8 +7,10 @@
  * and the Eclipse Distribution License is available at 
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
- * @author Kyle Chen
- * @since Eclipselink 1.0
+ * Contributors:
+ *     Oracle - initial API and implementation from Oracle TopLink
+ *     05/16/2008-1.0M8 Guy Pelletier 
+ *       - 218084: Implement metadata merging functionality between mapping files
  ******************************************************************************/
 package org.eclipse.persistence.internal.jpa.metadata.columns;
 
@@ -20,6 +22,7 @@ import java.security.PrivilegedActionException;
 
 import org.eclipse.persistence.exceptions.EntityManagerSetupException;
 import org.eclipse.persistence.internal.helper.Helper;
+import org.eclipse.persistence.internal.jpa.metadata.MetadataLogger;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.internal.security.PrivilegedMethodInvoker;
 
@@ -31,6 +34,39 @@ import org.eclipse.persistence.internal.security.PrivilegedMethodInvoker;
  * @since TopLink 11g
  */
 final class MetadataHelper {
+    /**
+     * INTERNAL:
+     * Helper method to return a field name from a candidate field name and a 
+     * default field name.
+     * 
+     * Requires the context from where this method is called to output the 
+     * correct logging message when defaulting the field name.
+     *
+     * In some cases, both the name and defaultName could be "" or null,
+     * therefore, don't log a message and return name.
+     */
+    static String getName(String name, String defaultName, String context, MetadataLogger logger, String location) {
+        return org.eclipse.persistence.internal.jpa.metadata.MetadataHelper.getName(name, defaultName, context, logger, location);
+    }
+    
+    /**
+     * INTERNAL:
+     * Helper method to return a string value if specified, otherwise returns
+     * the default value. 
+     */
+    static Integer getValue(Integer value, Integer defaultValue) {
+        return org.eclipse.persistence.internal.jpa.metadata.MetadataHelper.getValue(value, defaultValue);
+    }
+    
+    /**
+     * INTERNAL:
+     * Helper method to return a string value if specified, otherwise returns
+     * the default value.
+     */
+    static String getValue(String value, String defaultValue) {
+        return org.eclipse.persistence.internal.jpa.metadata.MetadataHelper.getValue(value, defaultValue);
+    }
+    
     /** 
      * INTERNAL:
      * Invoke the specified named method on the object, handling the necessary 

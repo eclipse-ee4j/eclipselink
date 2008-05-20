@@ -9,6 +9,8 @@
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
+ *     05/16/2008-1.0M8 Guy Pelletier 
+ *       - 218084: Implement metadata merging functionality between mapping files
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.queries;
 
@@ -18,6 +20,7 @@ import java.util.HashMap;
 import java.util.List;
 
 import org.eclipse.persistence.internal.jpa.EJBQueryImpl;
+import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAccessibleObject;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.queries.StoredProcedureCall;
 
@@ -28,35 +31,55 @@ import org.eclipse.persistence.queries.StoredProcedureCall;
  * @author Guy Pelletier
  * @since TopLink 11g
  */
-public class NamedStoredProcedureQueryMetadata extends NamedNativeQueryMetadata  {
-	private Boolean m_returnsResultSet;
-	private List<StoredProcedureParameterMetadata> m_procedureParameters;
-	private String m_procedureName;
-	
+public class NamedStoredProcedureQueryMetadata extends NamedNativeQueryMetadata {
+    private Boolean m_returnsResultSet;
+    private List<StoredProcedureParameterMetadata> m_procedureParameters = new ArrayList<StoredProcedureParameterMetadata>();
+    private String m_procedureName;
+    
     /**
      * INTERNAL:
+     * Used for OX mapping.
      */
     public NamedStoredProcedureQueryMetadata() {
-    	setLoadedFromXML();
+        super("<named-stored-procedure_query>");
     }
     
     /**
      * INTERNAL:
      */
-    public NamedStoredProcedureQueryMetadata(Annotation namedStoredProcedureQuery, String javaClassName) {
-    	setLoadedFromAnnotation();
-    	setLocation(javaClassName);
-    	
-        setName((String) invokeMethod("name", namedStoredProcedureQuery));
-        setHints((Annotation[]) invokeMethod("hints", namedStoredProcedureQuery));
-        setResultClass((Class) invokeMethod("resultClass", namedStoredProcedureQuery));
-        setResultSetMapping((String) invokeMethod("resultSetMapping", namedStoredProcedureQuery));
-        setProcedureParameters((Annotation[]) invokeMethod("procedureParameters", namedStoredProcedureQuery));
+    public NamedStoredProcedureQueryMetadata(Annotation namedStoredProcedureQuery, MetadataAccessibleObject accessibleObject) {
+        super(namedStoredProcedureQuery, accessibleObject);
+         
+        for (Annotation storedProcedureParameter : (Annotation[]) MetadataHelper.invokeMethod("procedureParameters", namedStoredProcedureQuery)) {
+           m_procedureParameters.add(new StoredProcedureParameterMetadata(storedProcedureParameter, accessibleObject));
+        }
         
-        m_procedureName = (String) invokeMethod("procedureName", namedStoredProcedureQuery);
-        m_returnsResultSet = (Boolean) invokeMethod("returnsResultSet", namedStoredProcedureQuery);
+        m_procedureName = (String) MetadataHelper.invokeMethod("procedureName", namedStoredProcedureQuery);
+        m_returnsResultSet = (Boolean) MetadataHelper.invokeMethod("returnsResultSet", namedStoredProcedureQuery);
     }
    
+    /**
+     * INTERNAL:
+     */
+    @Override
+    public boolean equals(Object objectToCompare) {
+        if (super.equals(objectToCompare) && objectToCompare instanceof NamedStoredProcedureQueryMetadata) {
+            NamedStoredProcedureQueryMetadata query = (NamedStoredProcedureQueryMetadata) objectToCompare;
+            
+            if (! valuesMatch(m_returnsResultSet, query.getReturnsResultSet())) {
+                return false;
+            }
+            
+            if (! valuesMatch(m_procedureParameters, query.getProcedureParameters())) {
+                return false;
+            }
+            
+            return valuesMatch(m_procedureName, query.getProcedureName());
+        }
+        
+        return false;
+    }
+    
     /**
      * INTERNAL:
      * Used for OX mapping.
@@ -83,6 +106,18 @@ public class NamedStoredProcedureQueryMetadata extends NamedNativeQueryMetadata 
     /**
      * INTERNAL:
      */
+    @Override
+    public void initXMLObject(MetadataAccessibleObject accessibleObject) {
+        super.initXMLObject(accessibleObject);
+        
+        // Initialize parameters ...
+        initXMLObjects(m_procedureParameters, accessibleObject);
+    }
+    
+    /**
+     * INTERNAL:
+     */
+    @Override
     public void process(AbstractSession session, ClassLoader loader) {
         // Build the stored procedure call.
         StoredProcedureCall call = new StoredProcedureCall();
@@ -121,17 +156,6 @@ public class NamedStoredProcedureQueryMetadata extends NamedNativeQueryMetadata 
      */
     public void setProcedureName(String procedureName) {
         m_procedureName = procedureName;
-    }
-    
-    /**
-     * INTERNAL:
-     */
-    public void setProcedureParameters(Annotation[] procedureParameters) {
-        m_procedureParameters = new ArrayList<StoredProcedureParameterMetadata>();
-        
-        for (Annotation storedProcedureParameter : procedureParameters) {
-           m_procedureParameters.add(new StoredProcedureParameterMetadata(storedProcedureParameter));
-        }
     }
     
     /**
