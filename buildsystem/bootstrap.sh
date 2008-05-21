@@ -5,6 +5,7 @@ PROGNAME=`basename ${THIS}`
 CUR_DIR=`dirname ${THIS}`
 umask 0002
 LOCAL_REPOS=false
+MILESTONE=false
 TEST=false
 RHB=false
 TARGET=$1
@@ -30,6 +31,21 @@ then
         TARG_NM=${TARGET}
     else
         TARG_NM="default"
+    fi
+fi
+if [ "$TARGET" = "milestone" ]
+then
+    MILESTONE=true
+    if [ ! "$BRANCH" = "" ]
+    then
+        #temporarily store Name of Milestone in TARGET
+        TARGET=$BRANCH
+        BRANCH=$3
+        TARG_NM=${TARGET}
+    else
+        echo "ERROR: Name of milestone must be specified in ARG2!"
+        echo "USAGE: ./boostrap.sh milestone M9 <branch>"
+        exit
     fi
 fi
 
@@ -158,6 +174,12 @@ fi
 ANT_ARGS=" "
 ANT_OPTS="-Xmx128m"
 ANT_BASEARG="-f \"${BOOTSTRAP_BLDFILE}\" -Dbranch.name=\"${BRANCH}\""
+
+if [ "$MILESTONE= "true" ]
+then
+    ANT_BASEARG="${ANT_BASEARG} -Dbuild_id=${TARGET}"
+    TARGET="nightly"
+fi
 
 if [ "$LOCAL_REPOS" = "true" ]
 then
