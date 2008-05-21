@@ -10,48 +10,48 @@ TEST=false
 RHB=false
 TARGET=$1
 BRANCH=$2
-if [ ! "$TARGET" = "" ]
+if [ ! "${TARGET}" = "" ]
 then
     if [ ! "`echo ${TARGET} | grep '\.test'`" = "" ]
     then
         TARGET=`echo ${TARGET} | cut -d. -f1`
         TEST=true
-    fi   
+    fi
     TARG_NM=${TARGET}
 else
     TARG_NM="default"
 fi
-if [ "$TARGET" = "redhat" ]
+if [ "${TARGET}" = "redhat" ]
 then
     RHB=true
-    if [ ! "$BRANCH" = "" ]
+    if [ ! "${BRANCH}" = "" ]
     then
-        TARGET=$BRANCH
-        BRANCH=""
+        TARGET=${BRANCH}
+        BRANCH=
         TARG_NM=${TARGET}
     else
         TARG_NM="default"
     fi
 fi
-if [ "$TARGET" = "milestone" ]
+if [ "${TARGET}" = "milestone" ]
 then
     MILESTONE=true
-    if [ ! "$BRANCH" = "" ]
+    if [ ! "${BRANCH}" = "" ]
     then
         #temporarily store Name of Milestone in TARGET
-        TARGET=$BRANCH
+        TARGET=${BRANCH}
         BRANCH=$3
         TARG_NM=${TARGET}
     else
         echo "ERROR: Name of milestone must be specified in ARG2!"
-        echo "USAGE: ./boostrap.sh milestone M9 <branch>"
+        echo "USAGE: ./boostrap.sh milestone M9 [branch]"
         exit
     fi
 fi
 
 echo "Target=${TARGET}"
 
-if [ ! "$BRANCH" = "" ]
+if [ ! "${BRANCH}" = "" ]
 then
     BRANCH_NM=${BRANCH}
     BRANCH=branch/${BRANCH}
@@ -118,21 +118,21 @@ CreatePath() {
 if [ ! -d ${JAVA_HOME} ]
 then
     echo "Java not found!"
-    echo "Expecting Java at: $JAVA_HOME"
+    echo "Expecting Java at: ${JAVA_HOME}"
     JAVA_HOME=/shared/common/jdk1.6.0_05
     if [ ! -d ${JAVA_HOME} ]
     then
         echo "Java not found!"
-        echo "Expecting Java at: $JAVA_HOME"
+        echo "Expecting Java at: ${JAVA_HOME}"
         exit
     else
-        echo "Java found at: $JAVA_HOME"              
+        echo "Java found at: ${JAVA_HOME}"
     fi
 fi
 if [ ! -d ${ANT_HOME} ]
 then
     echo "Ant not found!"
-    echo "Expecting Ant at: $ANT_HOME"
+    echo "Expecting Ant at: ${ANT_HOME}"
     exit
 fi
 if [ ! -d ${HOME_DIR} ]
@@ -175,26 +175,26 @@ ANT_ARGS=" "
 ANT_OPTS="-Xmx128m"
 ANT_BASEARG="-f \"${BOOTSTRAP_BLDFILE}\" -Dbranch.name=\"${BRANCH}\""
 
-if [ "$MILESTONE= "true" ]
+if [ "${MILESTONE}" = "true" ]
 then
     ANT_BASEARG="${ANT_BASEARG} -Dbuild_id=${TARGET}"
     TARGET="nightly"
 fi
 
-if [ "$LOCAL_REPOS" = "true" ]
+if [ "${LOCAL_REPOS}" = "true" ]
 then
     ANT_BASEARG="${ANT_BASEARG} -D_LocalRepos=1"
 fi
 
-if [ "$RHB" = "true" ]
+if [ "${RHB}" = "true" ]
 then
     #Only needed for dev behind firewall
-    ANT_OPTS="-Dhttp.proxyHost=www-proxy.us.oracle.com $ANT_OPTS"
+    ANT_OPTS="-Dhttp.proxyHost=www-proxy.us.oracle.com ${ANT_OPTS}"
     ANT_ARGS="-autoproxy"
     ANT_BASEARG="${ANT_BASEARG} -D_RHB=1"
 fi
 
-if [ "$TEST" = "true" ]
+if [ "${TEST}" = "true" ]
 then
     ANT_BASEARG="${ANT_BASEARG} -D_DoNotUpdate=1"
 else
@@ -210,6 +210,6 @@ echo "Results logged to: ${DATED_LOG}"
 touch ${DATED_LOG}
 echo "Build started at: `date`" >> ${DATED_LOG}
 source ~/.ssh-agent >> ${DATED_LOG} 2>&1
-echo "ant ${ANT_BASEARG} $TARGET" >> ${DATED_LOG}
-ant ${ANT_BASEARG} -Ddb.user="$DB_USER" -Ddb.pwd="$DB_PWD" -Ddb.url="$DB_URL" $TARGET >> ${DATED_LOG} 2>&1
+echo "ant ${ANT_BASEARG} ${TARGET}" >> ${DATED_LOG}
+ant ${ANT_BASEARG} -Ddb.user="${DB_USER}" -Ddb.pwd="${DB_PWD}" -Ddb.url="${DB_URL}" ${TARGET} >> ${DATED_LOG} 2>&1
 echo "Build completed at: `date`" >> ${DATED_LOG}
