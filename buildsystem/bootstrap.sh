@@ -4,7 +4,9 @@ THIS=$0
 PROGNAME=`basename ${THIS}`
 CUR_DIR=`dirname ${THIS}`
 umask 0002
+LOCAL_REPOS=false
 TEST=false
+RHB=false
 TARGET=$1
 BRANCH=$2
 if [ ! "$TARGET" = "" ]
@@ -15,10 +17,24 @@ then
         TEST=true
     fi   
     TARG_NM=${TARGET}
-    echo "Target=${TARGET}"
 else
     TARG_NM="default"
 fi
+if [ "$TARGET" = "redhat" ]
+then
+    RHB=true
+    if [ ! "$BRANCH" = "" ]
+    then
+        TARGET=$BRANCH
+        BRANCH=""
+        TARG_NM=${TARGET}
+    else
+        TARG_NM="default"
+    fi
+fi
+
+echo "Target=${TARGET}"
+
 if [ ! "$BRANCH" = "" ]
 then
     BRANCH_NM=${BRANCH}
@@ -44,7 +60,6 @@ fi
 BOOTSTRAP_BLDFILE=bootstrap.xml
 JAVA_HOME=/shared/common/ibm-java2-ppc-50
 ANT_HOME=/shared/common/apache-ant-1.7.0
-#JAVA_HOME=/shared/common/jdk1.6.0_05
 HOME_DIR=/shared/technology/eclipselink
 LOG_DIR=${HOME_DIR}/logs
 BRANCH_PATH=${HOME_DIR}/${BRANCH}trunk
@@ -88,12 +103,20 @@ if [ ! -d ${JAVA_HOME} ]
 then
     echo "Java not found!"
     echo "Expecting Java at: $JAVA_HOME"
-    exit
+    JAVA_HOME=/shared/common/jdk1.6.0_05
+    if [ ! -d ${JAVA_HOME} ]
+    then
+        echo "Java not found!"
+        echo "Expecting Java at: $JAVA_HOME"
+        exit
+    else
+        echo "Java found at: $JAVA_HOME"              
+    fi
 fi
 if [ ! -d ${ANT_HOME} ]
 then
-    echo "Java not found!"
-    echo "Expecting Java at: $ANT_HOME"
+    echo "Ant not found!"
+    echo "Expecting Ant at: $ANT_HOME"
     exit
 fi
 if [ ! -d ${HOME_DIR} ]
@@ -134,20 +157,26 @@ fi
 #Set appropriate max Heap for VM and let Ant inherit JavaVM (OS's) proxy settings
 ANT_ARGS=" "
 ANT_OPTS="-Xmx128m"
-ANT_BASEARG="-f \"${BOOTSTRAP_BLDFILE}\" -Dbranch.name=\"${BRANCH}\" -DMailLogger.properties.file=${BRANCH_PATH}/buildsystem/maillogger.properties -logger org.apache.tools.ant.listener.MailLogger"
+ANT_BASEARG="-f \"${BOOTSTRAP_BLDFILE}\" -Dbranch.name=\"${BRANCH}\""
 
-if [ "$TARGET" = "test" ]
+if [ "$LOCAL_REPOS" = "true" ]
+then
+    ANT_BASEARG="${ANT_BASEARG} -D_LocalRepos=1"
+fi
+
+if [ "$RHB" = "true" ]
 then
     #Only needed for dev behind firewall
     ANT_OPTS="-Dhttp.proxyHost=www-proxy.us.oracle.com $ANT_OPTS"
     ANT_ARGS="-autoproxy"
-    TARGET=build
     ANT_BASEARG="${ANT_BASEARG} -D_RHB=1"
 fi
 
 if [ "$TEST" = "true" ]
 then
-    ANT_BASEARG="${ANT_BASEARG} -D_Test=1"
+    ANT_BASEARG="${ANT_BASEARG} -D_DoNotUpdate=1"
+else
+    ANT_BASEARG="${ANT_BASEARG} -DMailLogger.properties.file=${BRANCH_PATH}/buildsystem/maillogger.properties -logger org.apache.tools.ant.listener.MailLogger"
 fi
 
 export ANT_ARGS ANT_OPTS ANT_HOME BRANCH_PATH HOME_DIR LOG_DIR JAVA_HOME JUNIT_HOME MAVENANT_DIR PATH CLASSPATH

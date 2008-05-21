@@ -20,7 +20,7 @@
 * Contributors:
 *     Oracle - initial API and implementation
 #******************************************************************************/-->
-<project name="EclipseLink Bootstrap Automated Builds" basedir="." default="build">
+<project name="EclipseLink Bootstrap Automated Builds" basedir="." default="help">
 
 <!--                THIS FILE NEEDS TO BE KEPT MINIMAL                    -->
 <!--          ONLY project specific info should be defined here           -->
@@ -70,12 +70,18 @@
 
     <!-- Setup properties needed if testing using a local repos on RedHat     -->
     <!--     (-D_RHB=1 defined on command-line)                              -->
-    <target name="init-test" if="_RHB" depends="init">
+    <target name="init-test" if="_LocalRepos" depends="init">
         <property name="svn.rw.protocol" value="file:"/>
         <property name="svn.base.url"    value="///var/svn/repos/eclipselink"/>
     </target>
 
-    <target name="properties-init" depends="init-win,init-test">
+    <!-- Setup properties needed if testing using a local repos on RedHat     -->
+    <!--     (-D_RHB=1 defined on command-line)                              -->
+    <target name="init-test2" if="_RHB" depends="init-test">
+        <property name="svn.rw.protocol" value="http:"/>
+    </target>
+
+    <target name="properties-init" depends="init-win,init-test2">
         <echo message="svn.exec='${svn.exec}'"/>
 
         <!-- # Build environment definitions                                  -->
@@ -111,11 +117,11 @@
     </target>
 
     <!-- Used for Build testing:  Set if "target" in .sh appended by ".test"  -->
-    <target name="no-get-src" if="_Test" depends="properties-init">
+    <target name="no-get-src" if="_DoNotUpdate" depends="properties-init">
         <echo message="Update of local source Skipped."/>
     </target>
 
-    <target name="get-src" unless="_Test" depends="no-get-src">
+    <target name="get-src" unless="_DoNotUpdate" depends="no-get-src">
         <echo message="** Begin of Source Retrieval **"/>
         <!-- the following arg makes the source retrieval "quiet". We really  -->
         <!-- should log the files that were updated, so commenting out.       -->
@@ -208,6 +214,26 @@
         <exec executable="grep" failonerror="true" logError="true" input="${current.svnrev.file}" output="${current.svnrev.file}">
             <arg value="Last"/>
         </exec>
+    </target>
+
+    <target name="publish-all" depends="properties-init" description="Manually trigger all publish targets">
+        <echo message="'publish' target: Calling 'build-nightly' target in '${build.root.dir}/${autobld.file}'"/>
+        <ant antfile="${autobld.file}" dir="${build.root.dir}" target="publish-all"/>
+    </target>
+
+    <target name="publish-build" depends="properties-init" description="Manually trigger Build publish target">
+        <echo message="'publish' target: Calling 'build-nightly' target in '${build.root.dir}/${autobld.file}'"/>
+        <ant antfile="${autobld.file}" dir="${build.root.dir}" target="publish-build"/>
+    </target>
+    
+    <target name="publish-maven" depends="properties-init" description="Manually trigger just Maven publish">
+        <echo message="'publish' target: Calling 'build-nightly' target in '${build.root.dir}/${autobld.file}'"/>
+        <ant antfile="uploadToMaven.xml" dir="${build.root.dir}" target="upload-maven-all"/>
+    </target>
+
+    <target name="publish-web" depends="properties-init" description="Manually trigger webpublish target">
+        <echo message="'publish' target: Calling 'build-nightly' target in '${build.root.dir}/${autobld.file}'"/>
+        <ant antfile="${autobld.file}" dir="${build.root.dir}" target="publish-results"/>
     </target>
 
 </project>

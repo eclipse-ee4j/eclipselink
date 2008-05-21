@@ -32,6 +32,9 @@
     <target name="build-continuous" description="Trigger an automated build and run the tests if source changes exist"
             depends="clean, build-no-javadoc, build-test, test-srg"
     />
+    <target name="publish-all"    description="Trigger just the publish targets"
+            depends="publish-build, publish-results"
+    />
 
     <target name="init">
         <!-- #  The next properties defines are pulled out of the properties file  -->
