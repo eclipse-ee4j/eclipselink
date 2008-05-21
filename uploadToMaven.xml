@@ -28,7 +28,7 @@
    <!-- The repository where maven artifacts will be uploaded -->
    <artifact:remoteRepository id="eclipselink.repository" url="file:///home/data/httpd/download.eclipse.org/technology/eclipselink/maven.repo" /> 
    
-   <target name = "upload.maven.init">
+   <target name = "upload-maven-init">
           <property file="./build.properties"/> <!-- release.version and build_id are intialized from here -->
           <echo message="release.version ${release.version}"/>
           <echo message="build_id ${build_id}"/>
@@ -44,44 +44,44 @@
     <echo message="subversion.revision ${subversion.revision}"/>
    </target>
    
-   <target name = "upload.maven.all" depends = "upload.maven.init">
+   <target name = "upload-maven-all" depends = "upload-maven-init">
      <!-- call upload for each artifact we want to upload -->
-        <antcall target="upload.artifact">
+        <antcall target="upload-artifact">
             <param name="artifactId" value="org.eclipse.persistence.core"/>
             <param name="artifact" value="${eclipselink.foundation.base}/${plugins.dir}/${eclipselink.core.jar}_${installer_id}.jar"/>
             <param name="artifactName" value="EclipseLink Core"/>
         </antcall>
-        <antcall target="upload.artifact">
+        <antcall target="upload-artifact">
             <param name="artifactId" value="org.eclipse.persistence.jpa"/>
             <param name="artifact" value="${eclipselink.jpa.base}/${plugins.dir}/${eclipselink.jpa.jar}_${installer_id}.jar"/>
             <param name="artifactName" value="EclipseLink JPA"/>
         </antcall>
-        <antcall target="upload.artifact">
+        <antcall target="upload-artifact">
             <param name="artifactId" value="org.eclipse.persistence.moxy"/>
             <param name="artifact" value="${eclipselink.moxy.base}/${plugins.dir}/${eclipselink.moxy.jar}_${installer_id}.jar"/>
             <param name="artifactName" value="EclipseLink Moxy"/>
         </antcall>
-        <antcall target="upload.artifact">
+        <antcall target="upload-artifact">
             <param name="artifactId" value="org.eclipse.persistence.sdo"/>
             <param name="artifact" value="${eclipselink.sdo.base}/${plugins.dir}/${eclipselink.sdo.jar}_${installer_id}.jar"/>
             <param name="artifactName" value="EclipseLink SDO"/>
         </antcall>
-        <antcall target="upload.artifact">
+        <antcall target="upload-artifact">
             <param name="artifactId" value="org.eclipse.persistence.oracle"/>
             <param name="artifact" value="${eclipselink.foundation.base}/${plugins.dir}/${eclipselink.extension.oracle.jar}_${installer_id}.jar"/>
             <param name="artifactName" value="EclipseLink Oracle Extensions"/>
         </antcall>
-        <antcall target="upload.artifact">
+        <antcall target="upload-artifact">
             <param name="artifactId" value="org.eclipse.persistence.antlr"/>
             <param name="artifact" value="${eclipselink.plugins}/${eclipselink.antlr.jar}_${installer_id}.jar"/>
             <param name="artifactName" value="EclipseLink ANTLR"/>
         </antcall>
-        <antcall target="upload.artifact">
+        <antcall target="upload-artifact">
             <param name="artifactId" value="org.eclipse.persistence.asm"/>
             <param name="artifact" value="${eclipselink.plugins}/${eclipselink.asm.jar}_${installer_id}.jar"/>
             <param name="artifactName" value="EclipseLink ASM"/>
         </antcall>
-        <antcall target="upload.artifact">
+        <antcall target="upload-artifact">
             <param name="artifactId" value="eclipselink"/>
             <param name="artifact" value="${eclipselink.jar}"/>
             <param name="artifactName" value="EclipseLink"/>
@@ -89,7 +89,7 @@
    </target>
 
    <!-- Uploads a single artifact to maven repository -->
-   <target name="upload.artifact" >
+   <target name="upload-artifact" >
        <!-- Copy pom.template to pom.xml filtering various properties -->
        <copy file="pom.xml.template" tofile="pom.xml" overwrite="true">
          <filterset>
