@@ -143,9 +143,9 @@ public class DoesExistQuery extends DatabaseQuery {
         }
         ClassDescriptor descriptor = session.getDescriptor(object.getClass());
         if (primaryKey == null) {
-            primaryKey = this.getPrimaryKey();
+            primaryKey = getPrimaryKey();
             if (primaryKey == null) {
-                primaryKey = descriptor.getObjectBuilder().extractPrimaryKeyFromObject(object, session);
+                primaryKey = descriptor.getObjectBuilder().extractPrimaryKeyFromObject(object, session, true);
             }
                 
         }

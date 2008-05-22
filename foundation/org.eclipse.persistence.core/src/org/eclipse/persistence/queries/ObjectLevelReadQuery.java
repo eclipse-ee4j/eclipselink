@@ -904,17 +904,8 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
         if (!shouldMaintainCache() || isReadOnly()) {
             return unitOfWork.getParent().executeQuery(this, translationRow);
         }
-        // code removed that through exception post write changes.  This code removed
-        // as reads no longer load into shared cache once UOW is in transaction.
         
-        Object result = execute(unitOfWork, translationRow);
-
-        // Optimization: If find deleted object on uow by exact primary key
-        // treat this as cache hit but return null.  Bug 2782991.
-        if (result == InvalidObject.instance) {
-            return null;
-        }
-        return result;
+        return execute(unitOfWork, translationRow);
     }
 
     /**

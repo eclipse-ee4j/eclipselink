@@ -14,6 +14,7 @@ package org.eclipse.persistence.testing.tests.unitofwork;
 
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.internal.helper.DatabaseField;
+import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.queries.ReadObjectQuery;
 import org.eclipse.persistence.sessions.Session;
 import org.eclipse.persistence.sessions.UnitOfWork;
@@ -35,6 +36,7 @@ public class RegisterNewObjectInIdentityMapNoSeqTest extends AutoVerifyTestCase 
     }
 
     public void reset() {
+        Helper.isZeroValidPrimaryKey = false;
         ClassDescriptor descriptor = getSession().getClassDescriptor(Weather.class);
         descriptor.setSequenceNumberField(this.sequenceNumberField);
         descriptor.setSequenceNumberName(this.sequenceNumberName);
@@ -43,6 +45,8 @@ public class RegisterNewObjectInIdentityMapNoSeqTest extends AutoVerifyTestCase 
     }
 
     public void setup() {
+        // Allow test to use 0 primary key (now not supported by default).
+        Helper.isZeroValidPrimaryKey = true;
         getAbstractSession().beginTransaction();
         ClassDescriptor descriptor = getSession().getClassDescriptor(Weather.class);
         sequenceNumberField = descriptor.getSequenceNumberField();

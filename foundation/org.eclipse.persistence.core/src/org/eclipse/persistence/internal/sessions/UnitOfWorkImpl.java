@@ -35,6 +35,7 @@ import org.eclipse.persistence.internal.localization.LoggingLocalization;
 import org.eclipse.persistence.jpa.config.PersistenceUnitProperties;
 import org.eclipse.persistence.sessions.SessionProfiler;
 import org.eclipse.persistence.descriptors.changetracking.AttributeChangeTrackingPolicy;
+import org.eclipse.persistence.descriptors.changetracking.ObjectChangePolicy;
 import org.eclipse.persistence.descriptors.invalidation.CacheInvalidationPolicy;
 
 /**
@@ -614,7 +615,10 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
         // Since this just results in an error, assume it exists unless validating.
         if (shouldValidateExistence()) {
             ClassDescriptor descriptor = getDescriptor(object.getClass());
-            Vector primaryKey = descriptor.getObjectBuilder().extractPrimaryKeyFromObject(object, this);
+            Vector primaryKey = descriptor.getObjectBuilder().extractPrimaryKeyFromObject(object, this, true);
+            if (primaryKey == null) {
+                return false;
+            }
             DoesExistQuery existQuery = descriptor.getQueryManager().getDoesExistQuery();
     
             existQuery = (DoesExistQuery)existQuery.clone();

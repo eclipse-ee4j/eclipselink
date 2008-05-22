@@ -2321,13 +2321,13 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         query.setHint(EclipseLinkQueryHints.REFRESH, "");
         assertFalse("Refresh not set.", olrQuery.shouldRefreshIdentityMapResult());
         
-        query.setHint(EclipseLinkQueryHints.RETURN_SHARED, "false");
+        query.setHint(EclipseLinkQueryHints.READ_ONLY, "false");
         assertFalse("Read-only not set.", olrQuery.isReadOnly()); 
         
-        query.setHint(EclipseLinkQueryHints.RETURN_SHARED, Boolean.TRUE);
+        query.setHint(EclipseLinkQueryHints.READ_ONLY, Boolean.TRUE);
         assertTrue("Read-only not set.", olrQuery.isReadOnly());
         
-        query.setHint(EclipseLinkQueryHints.RETURN_SHARED, Boolean.FALSE);
+        query.setHint(EclipseLinkQueryHints.READ_ONLY, Boolean.FALSE);
         assertFalse("Read-only not set.", olrQuery.isReadOnly());
         
         query.setHint(EclipseLinkQueryHints.JDBC_TIMEOUT, new Integer(100));

@@ -650,10 +650,10 @@ public abstract class DatabaseCall extends DatasourceCall {
             statement.setFetchSize(this.resultSetFetchSize);
         } 
 
-        List parameters = getParameters();
-        if (parameters == null) {
+        if (this.parameters == null) {
             return statement;
         }
+        List parameters = getParameters();
         int size = parameters.size();
         for (int index = 0; index < size; index++) {
             session.getPlatform().setParameterValueInDatabaseCall(parameters.get(index), (PreparedStatement)statement, index+1, session);
@@ -864,7 +864,7 @@ public abstract class DatabaseCall extends DatasourceCall {
         if (!isPrepared()) {
             throw ValidationException.cannotTranslateUnpreparedCall(toString());
         }
-        if (usesBinding(session)) {
+        if (usesBinding(session) && (this.parameters != null)) {
             boolean hasParameterizedIN = false;
             Vector parameters = getParameters();
             Vector parameterTypes = getParameterTypes();

@@ -603,7 +603,11 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
         
         // This allows the query to check the cache or return early without doing any work.
         Object earlyReturn = queryToExecute.checkEarlyReturn(session, translationRow);
-        if ((earlyReturn != null) || (isReadObjectQuery() && ((ReadObjectQuery)this).shouldCheckCacheOnly())) {
+        // If know not to exist (checkCacheOnly, deleted, null primary key), return null.
+        if (earlyReturn == InvalidObject.instance) {
+            return null;
+        }
+        if (earlyReturn != null) {
             return earlyReturn;
         }
         

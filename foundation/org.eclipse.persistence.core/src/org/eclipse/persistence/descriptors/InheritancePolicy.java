@@ -82,6 +82,9 @@ public class InheritancePolicy implements Serializable, Cloneable {
     // used by the entity-mappings XML writer to determine inheritance strategy
     protected boolean isJoinedStrategy;
 
+    /** PERF: Cache root descriptor. */
+    protected ClassDescriptor rootParentDescriptor;
+    
     /**
      * INTERNAL:
      * Create a new policy.
@@ -725,7 +728,7 @@ public class InheritancePolicy implements Serializable, Cloneable {
 
     /**
      * INTERNAL:
-     * Return the parent descirptor
+     * Return the parent descriptor.
      */
     public ClassDescriptor getParentDescriptor() {
         return parentDescriptor;
@@ -759,11 +762,14 @@ public class InheritancePolicy implements Serializable, Cloneable {
      * Return the root parent descriptor
      */
     public ClassDescriptor getRootParentDescriptor() {
-        if (isRootParentDescriptor()) {
-            return getDescriptor();
-        } else {
-            return getParentDescriptor().getInheritancePolicy().getRootParentDescriptor();
+        if (this.rootParentDescriptor == null) {
+            if (isRootParentDescriptor()) {
+                this.rootParentDescriptor = getDescriptor();
+            } else {
+                this.rootParentDescriptor = getParentDescriptor().getInheritancePolicy().getRootParentDescriptor();
+            }
         }
+        return rootParentDescriptor;
     }
 
     /**
@@ -1341,7 +1347,7 @@ public class InheritancePolicy implements Serializable, Cloneable {
     /**
      * INTERNAL:
      * Select one row of any concrete subclass,
-     * This must use two selects, the first retreives the type field only.
+     * This must use two selects, the first retrieves the type field only.
      */
     public AbstractRecord selectOneRowUsingMultipleTableSubclassRead(ReadObjectQuery query) throws DatabaseException, QueryException {
         if (hasClassExtractor()) {

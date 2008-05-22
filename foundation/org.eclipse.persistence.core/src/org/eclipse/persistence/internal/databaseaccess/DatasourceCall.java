@@ -622,13 +622,12 @@ public abstract class DatasourceCall implements Call {
      * Allow the call to translate from the translation for predefined calls.
      */
     public void translateQueryString(AbstractRecord translationRow, AbstractRecord modifyRow, AbstractSession session) {
-        if (getQueryString().indexOf(argumentMarker()) == -1) {
-            return;
-        }
-
         //has a '?'
-        if (getParameters().isEmpty()) {
+        if ((this.parameters == null) || getParameters().isEmpty()) {
             //has no parameters
+            return;
+        }        
+        if (getQueryString().indexOf(argumentMarker()) == -1) {
             return;
         }
 
@@ -639,7 +638,8 @@ public abstract class DatasourceCall implements Call {
         try {
             // PERF: This method is heavily optimized do not touch anything unless you know "very well" what your doing.
             // Must translate field parameters and may get new bound parameters for large data.
-            Vector parameterFields = getParameters();
+            List parameterFields = getParameters();
+            List parameterTypes = getParameterTypes();
             setParameters(org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance(parameterFields.size()));
             while (lastIndex != -1) {
                 int tokenIndex = queryString.indexOf(argumentMarker(), lastIndex);
@@ -653,9 +653,9 @@ public abstract class DatasourceCall implements Call {
                 writer.write(token);
                 if (tokenIndex != -1) {
                     // Process next parameter.
-                    Integer parameterType = (Integer)getParameterTypes().elementAt(parameterIndex);
+                    Integer parameterType = (Integer)parameterTypes.get(parameterIndex);
                     if (parameterType == MODIFY) {
-                        DatabaseField field = (DatabaseField)parameterFields.elementAt(parameterIndex);
+                        DatabaseField field = (DatabaseField)parameterFields.get(parameterIndex);
                         Object value = modifyRow.get(field);
                         appendParameter(writer, value, session);
                     } else if (parameterType == CUSTOM_MODIFY) {

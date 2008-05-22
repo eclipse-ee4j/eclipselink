@@ -34,7 +34,7 @@
             <property name="eclipselink.jdbc.read-connections.max" value="3"/>
             <property name="eclipselink.logging.timestamp" value="false"/>
             <property name="eclipselink.orm.throw.exceptions" value="true"/>
-            <property name="eclipselink.logging.level" value="FINEST"/>
+            <!--property name="eclipselink.logging.level" value="FINEST"/-->
             <property name="eclipselink.ddl-generation" value="drop-and-create-tables"/>
             <property name="eclipselink.create-ddl-jdbc-file-name" value="extended-xml-relationship-model-create.jdbc"/>
             <property name="eclipselink.drop-ddl-jdbc-file-name" value="extended-xml-relationship-model-drop.jdbc"/>
@@ -56,7 +56,7 @@
             <property name="eclipselink.jdbc.read-connections.max" value="3"/>
             <property name="eclipselink.logging.timestamp" value="false"/>
             <property name="eclipselink.orm.throw.exceptions" value="true"/>
-            <property name="eclipselink.logging.level" value="FINEST"/>
+            <!--property name="eclipselink.logging.level" value="FINEST"/-->
             <property name="eclipselink.ddl-generation" value="drop-and-create-tables"/>
             <property name="eclipselink.create-ddl-jdbc-file-name" value="extended-xml-complexaggregate-model-create.jdbc"/>
             <property name="eclipselink.drop-ddl-jdbc-file-name" value="extended-xml-complexaggregate-model-drop.jdbc"/>

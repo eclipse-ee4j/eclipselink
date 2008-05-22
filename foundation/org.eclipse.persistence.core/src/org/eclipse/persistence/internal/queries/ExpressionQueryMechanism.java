@@ -716,16 +716,22 @@ public class ExpressionQueryMechanism extends StatementQueryMechanism {
         Object selectionObject = query.getSelectionObject();
         if ((selectionKey != null) || (selectionObject != null)) {
             if ((selectionKey == null) && (selectionObject != null)) {
-                selectionKey = descriptor.getObjectBuilder().extractPrimaryKeyFromObject(selectionObject, session);
+                selectionKey = descriptor.getObjectBuilder().extractPrimaryKeyFromObject(selectionObject, session, true);
+                if (selectionKey == null) {
+                    // Has a null primary key, so must not exist.
+                    return InvalidObject.instance;
+                }
                 // Must be checked separately as the expression and row is not yet set.
                 query.setSelectionKey(selectionKey);
             }
-            if (selectionKey != null) {
-                if (descriptor.shouldAcquireCascadedLocks()) {
-                    cachedObject = session.getIdentityMapAccessorInstance().getFromIdentityMapWithDeferredLock(selectionKey, query.getReferenceClass(), false, descriptor);
-                } else {
-                    cachedObject = session.getIdentityMapAccessorInstance().getFromIdentityMap(selectionKey, query.getReferenceClass(), false, descriptor);
-                }
+            if (descriptor.shouldAcquireCascadedLocks()) {
+                cachedObject = session.getIdentityMapAccessorInstance().getFromIdentityMapWithDeferredLock(selectionKey, query.getReferenceClass(), false, descriptor);
+            } else {
+                cachedObject = session.getIdentityMapAccessorInstance().getFromIdentityMap(selectionKey, query.getReferenceClass(), false, descriptor);
+            }
+            // Also check if key is null, cannot exist.
+            if (selectionKey.contains(null)) {
+                return InvalidObject.instance;
             }
         } else {
             // 2: If selection criteria null, take any instance in cache.
@@ -749,8 +755,12 @@ public class ExpressionQueryMechanism extends StatementQueryMechanism {
                         } else {
                             cachedObject = session.getIdentityMapAccessorInstance().getFromIdentityMap(selectionKey, query.getReferenceClass(), false, descriptor);
                         }
+                        // Because it was exact primary key if the lookup failed then it is not there.
+                        // Also check if key is null, cannot exist.
+                        if (selectionKey.contains(null)) {
+                            return InvalidObject.instance;
+                        }
                     }
-                    // Because it was exact primary key if the lookup failed then it is not there.
                 } else {
                     // 4: If can extract inexact primary key, find one object by primary key and
                     // check if it conforms.  Failure of this object to conform however does not
@@ -840,7 +850,7 @@ public class ExpressionQueryMechanism extends StatementQueryMechanism {
             if (cachedObject != null) {
                 if (uow.isObjectDeleted(cachedObject)) {
                     if (selectionKey != null) {
-                        // In this case return a special value, to notify TopLink 
+                        // In this case return a special value, to notify 
                         // that the object was found but null must be returned.
                         return InvalidObject.instance;
                     } else {
@@ -854,12 +864,16 @@ public class ExpressionQueryMechanism extends StatementQueryMechanism {
             // Fetch group check, ensure object is fetched.
             if (descriptor.hasFetchGroupManager()) {
                 if (descriptor.getFetchGroupManager().isPartialObject(cachedObject)) {
-                    if (!descriptor.getFetchGroupManager().isObjectValidForFetchGroup(cachedObject, getReadObjectQuery().getFetchGroup())) {
-                        //the cached object is patially fetched, and it's fetch group is not a superset of the one in the query, so the cached object is not valid for the query.
+                    if (!descriptor.getFetchGroupManager().isObjectValidForFetchGroup(cachedObject, query.getFetchGroup())) {
+                        //the cached object is partially fetched, and it's fetch group is not a superset of the one in the query, so the cached object is not valid for the query.
                         cachedObject = null;
                     }
                 }
             }
+        }
+        // If only checking the cache, and empty, return invalid.
+        if ((cachedObject == null) && query.shouldCheckCacheOnly()) {
+            return InvalidObject.instance;
         }
 
         return cachedObject;

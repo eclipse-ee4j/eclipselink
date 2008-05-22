@@ -501,7 +501,7 @@ public class QueryHintsHandler {
 
     protected static class ReturnSharedHint extends Hint {
         ReturnSharedHint() {
-            super(EclipseLinkQueryHints.RETURN_SHARED, HintValues.FALSE);
+            super(EclipseLinkQueryHints.READ_ONLY, HintValues.FALSE);
             valueArray = new Object[][] { 
                 {HintValues.FALSE, Boolean.FALSE},
                 {HintValues.TRUE, Boolean.TRUE}

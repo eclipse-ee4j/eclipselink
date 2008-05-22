@@ -63,6 +63,9 @@ public class Helper implements Serializable {
     /** Prime the platform-dependent temporary directory */
     protected static String TEMP_DIRECTORY = null;
 
+    /** Backdoor to allow 0 to be used in primary keys. */
+    public static boolean isZeroValidPrimaryKey = false;
+    
     /**
      * Return if JDBC date access should be optimized.
      */
@@ -1980,4 +1983,15 @@ public class Helper implements Serializable {
     public static void writeHexString(byte[] bytes, Writer writer) throws IOException {
         writer.write(buildHexStringFromBytes(bytes));
     }
+    
+    /**
+     * Check if the value is null, or 0 (int/long) for primitive ids.
+     */
+    public static boolean isEquivalentToNull(Object value) {
+        return (value == null)
+                        || (!isZeroValidPrimaryKey
+                                && (((value.getClass() == ClassConstants.LONG) && (((Long)value).longValue() == 0L))
+                                        || ((value.getClass() == ClassConstants.INTEGER) && (((Integer)value).intValue() == 0))));
+    }
+
 }

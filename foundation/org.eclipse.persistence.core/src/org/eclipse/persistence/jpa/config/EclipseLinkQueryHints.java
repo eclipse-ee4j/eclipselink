@@ -89,7 +89,7 @@ public class EclipseLinkQueryHints {
      * Valid values are:  HintValues.FALSE, HintValues.TRUE,
      * "" could be used instead of default value HintValues.FALSE
      */
-    public static final String RETURN_SHARED = "eclipselink.return-shared";
+    public static final String READ_ONLY = "eclipselink.read-only";
     
     /**
      * Configures the JDBC timeout of the query execution, if the database query exceeds the timeout
