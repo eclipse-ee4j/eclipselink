@@ -39,7 +39,7 @@
     <property file="${eclipselink.extension.oracle.test}/${test.properties}"/>
     <property file="${eclipselink.extension.oracle.test}/test.properties"/>
 
-    <!-- This checks if the trunk was checked out, or just the Eclipse projects. -->
+    <!-- This checks<P> if the trunk was checked out, or just the Eclipse projects. -->
     <available file="${eclipselink.extension.oracle.test}/${eclipselink.jpa.trunk}" type="dir" property="is.trunk"/>
 
     <!-- Configures paths for trunk checkout. -->
