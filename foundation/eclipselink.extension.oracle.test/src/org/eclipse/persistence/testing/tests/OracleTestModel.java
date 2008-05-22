@@ -31,6 +31,7 @@ public class OracleTestModel extends TestModel {
         }
         List tests = new ArrayList();
 
+        tests.add("org.eclipse.persistence.testing.tests.conversion.ConversionManagerOracleTestModel");
         tests.add("org.eclipse.persistence.testing.tests.distributedservers.rcm.jms.JMSRCMDistributedServersModel");
         tests.add("org.eclipse.persistence.testing.tests.dbchangenotification.DbChangeNotificationTestModel");
         tests.add("org.eclipse.persistence.testing.tests.eis.aq.AQTestModel");

@@ -84,7 +84,6 @@ public class ConversionManagerTestModel extends TestModel {
         addTest(getConvertObjectTestSuite());
         addTest(getConvertClassTypeTestSuite());
         addTest(getClassLoaderTestSuite());
-        addTest(getSupportedTypesTestSuite());
     }
 
     public TestSuite getDeleteObjectTestSuite() {
@@ -254,39 +253,6 @@ public class ConversionManagerTestModel extends TestModel {
         suite.setDescription("This test suite tests the getLoader method.");
 
         suite.addTest(new ClassLoaderTest());
-
-        return suite;
-    }
-
-    public TestSuite getSupportedTypesTestSuite() {
-        TestSuite suite = new TestSuite();
-        suite.setName("ConversionManagerSupportedTypesTestSuite");
-        suite.setDescription("This test suite tests the getDataTypesConvertedFrom and getDataTypesConvertedTo method.");
-
-
-        try{
-            Class testCaseClass = Class.forName("org.eclipse.persistence.testing.tests.conversion.DataTypesConvertedFromAClassTest");
-            junit.framework.Test testCase = (junit.framework.Test)testCaseClass.newInstance();
-            suite.addTest(testCase);
-            
-            testCaseClass = Class.forName("org.eclipse.persistence.testing.tests.conversion.DataTypesConvertedToAClassTest");
-            testCase = (junit.framework.Test)testCaseClass.newInstance();
-            suite.addTest(testCase);     
-            
-            testCaseClass = Class.forName("org.eclipse.persistence.testing.tests.conversion.DataTypesConvertedFromAClassForOracle9Test");
-            testCase = (junit.framework.Test)testCaseClass.newInstance();
-            suite.addTest(testCase);
-            
-            testCaseClass = Class.forName("org.eclipse.persistence.testing.tests.conversion.DataTypesConvertedToAClassForOracle9Test");
-            testCase = (junit.framework.Test)testCaseClass.newInstance();
-            suite.addTest(testCase);
-        } catch (Exception e){
-            getSession().logMessage("Unable to load Oracle-specific conversion tests.  This usually occurs when the tests were compiled " +
-                    " on a non-Oracle environment. If you are not running on Oracle, this is not a problem.");
-            if (getSession().getPlatform().isOracle9()){
-                throw new TestProblemException("Could not load: Oracle-specific conversion tests", e);
-            }
-        }
 
         return suite;
     }

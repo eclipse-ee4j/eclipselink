@@ -60,7 +60,7 @@
     <target name="config-compile-path">
         <path id="compile.path">
             <fileset
-                dir="${eclipselink.core.lib}"
+                dir="${eclipselink.plugins}"
                 includes="${eclipselink.core.depend}"/>
             <pathelement path="${eclipselink.core}/${classes.dir}"/>
             <pathelement path="${eclipselink.core.test}/${classes.dir}"/>
@@ -142,7 +142,7 @@
     </target>
 
     <!-- Classpath used for running tests. -->
-    <path id="run-classpath">
+    <path id="run.classpath">
         <pathelement path="${eclipselink.extension.oracle.test}/${classes.dir}"/>
         <pathelement path="${eclipselink.extension.oracle.test}/${run.dir}"/>
         <pathelement path="${jdbc.driver.jar}"/>
