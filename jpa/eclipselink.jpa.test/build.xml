@@ -616,34 +616,34 @@
     <!-- Server Testing -->
 
     <target name="server-install">
-        <ant antfile="${eclipselink.jpa.test}/${server.name}.xml" target="${server.name}.install" inheritRefs="true"/>
+        <ant antfile="${eclipselink.jpa.test}/${server.name}.xml" target="${server.name}-install" inheritRefs="true"/>
     </target>
 
     <target name="server-setup">
-        <ant antfile="${eclipselink.jpa.test}/${server.name}.xml" target="${server.name}.setup" inheritRefs="true"/>
+        <ant antfile="${eclipselink.jpa.test}/${server.name}.xml" target="${server.name}-setup" inheritRefs="true"/>
     </target>
 
     <target name="server-reset">
-        <ant antfile="${eclipselink.jpa.test}/${server.name}.xml" target="${server.name}.reset" inheritRefs="true"/>
+        <ant antfile="${eclipselink.jpa.test}/${server.name}.xml" target="${server.name}-reset" inheritRefs="true"/>
     </target>
 
     <target name="server-start">
-        <ant antfile="${eclipselink.jpa.test}/${server.name}.xml" target="${server.name}.start" inheritRefs="true"/>
+        <ant antfile="${eclipselink.jpa.test}/${server.name}.xml" target="${server.name}-start" inheritRefs="true"/>
     </target>
 
     <target name="server-stop">
-        <ant antfile="${eclipselink.jpa.test}/${server.name}.xml" target="${server.name}.stop" inheritRefs="true"/>
+        <ant antfile="${eclipselink.jpa.test}/${server.name}.xml" target="${server.name}-stop" inheritRefs="true"/>
     </target>
 
     <target name="server-deploy">
-        <ant antfile="${eclipselink.jpa.test}/${server.name}.xml" target="${server.name}.deploy" inheritRefs="true">
+        <ant antfile="${eclipselink.jpa.test}/${server.name}.xml" target="${server.name}-deploy" inheritRefs="true">
             <property name="ear.name" value="${ear.name}"/>
             <property name="application.name" value="${application.name}"/>
         </ant>
     </target>
 
     <target name="server-undeploy">
-        <ant antfile="${eclipselink.jpa.test}/${server.name}.xml" target="${server.name}.undeploy" inheritRefs="true">
+        <ant antfile="${eclipselink.jpa.test}/${server.name}.xml" target="${server.name}-undeploy" inheritRefs="true">
             <property name="application.name" value="${application.name}"/>
         </ant>
     </target>
