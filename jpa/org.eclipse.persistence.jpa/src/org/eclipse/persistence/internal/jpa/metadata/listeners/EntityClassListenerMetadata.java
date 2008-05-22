@@ -14,9 +14,6 @@
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.listeners;
 
-import java.lang.reflect.Method;
-import java.util.ArrayList;
-
 import org.eclipse.persistence.internal.jpa.metadata.accessors.classes.EntityAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.classes.MappedSuperclassAccessor;
 
@@ -49,28 +46,6 @@ public class EntityClassListenerMetadata extends EntityListenerMetadata {
     }
     
     /**
-     * INTERNAL:
-     * Return potential lifecyle callback event methods for a mapped superclass. 
-     * We must 'convert' the method to the entity class context before adding it 
-     * to the listener.
-     */
-    Method[] getCandidateCallbackMethodsForMappedSuperclass(Class mappedSuperclass, Class entityClass) {
-        ArrayList candidateMethods = new ArrayList();
-        Method[] allMethods = getMethods(entityClass);
-        Method[] declaredMethods = getDeclaredMethods(mappedSuperclass);
-        
-        for (int i = 0; i < declaredMethods.length; i++) {
-            Method method = getMethod(declaredMethods[i].getName(), allMethods);
-            
-            if (method != null) {
-                candidateMethods.add(method);
-            }
-        }
-        
-        return (Method[]) candidateMethods.toArray(new Method[candidateMethods.size()]);
-    }
-    
-    /**
      * INTERNAL: 
      */
     public void process() {
@@ -85,7 +60,7 @@ public class EntityClassListenerMetadata extends EntityListenerMetadata {
         // on the mapped superclasses if not excluded second. 
         if (! m_accessor.getDescriptor().excludeSuperclassListeners()) {
             for (MappedSuperclassAccessor mappedSuperclass : m_accessor.getMappedSuperclasses()) {
-                processCallbackMethods(getCandidateCallbackMethodsForMappedSuperclass(mappedSuperclass.getJavaClass(), m_accessor.getJavaClass()), m_accessor.getLogger());
+                processCallbackMethods(getDeclaredMethods(mappedSuperclass.getJavaClass()), m_accessor.getLogger());
             }
         }
         

@@ -20,7 +20,7 @@ public abstract class AbstractBus extends FueledVehicle {
     public static int PRE_PERSIST_COUNT = 0;
 
 	@PrePersist
-	public void prePersist() {
+	private void prePersist() {
         PRE_PERSIST_COUNT++;
 	}
 }

@@ -146,11 +146,7 @@ public class MetadataAnnotatedElement extends MetadataAccessibleObject {
      * INTERNAL:
      */
     protected int getDeclaredAnnotationsCount(MetadataDescriptor descriptor) {
-        if (descriptor.ignoreAnnotations()) {
-            return 0;
-        } else {
-            return m_annotations.size();
-        }
+        return descriptor.ignoreAnnotations() ? 0 : m_annotations.size(); 
     }
     
     /**

@@ -290,7 +290,8 @@ public class EntityListener extends DescriptorEventAdapter {
                                 throw (RuntimeException) cause;    
                             } else {
                                 throw (Error) cause;
-                            }                         }
+                            }                         
+                        }
                     }
                 } else {
                     PrivilegedAccessHelper.invokeMethod(method, onObject, objectList);

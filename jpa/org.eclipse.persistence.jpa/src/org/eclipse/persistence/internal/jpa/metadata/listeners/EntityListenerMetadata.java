@@ -178,7 +178,7 @@ public class EntityListenerMetadata extends ORMetadata {
      * INTERNAL:
      * Get the declared methods from a class using the doPriveleged security
      * access. This call returns all methods (private, protected, package and
-     * public) on the give class ONLY. It does not traverse the superclasses.
+     * public) on the given class ONLY. It does not traverse the superclasses.
      */
     Method[] getDeclaredMethods(Class cls) {
         if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
