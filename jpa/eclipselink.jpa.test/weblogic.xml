@@ -68,11 +68,11 @@
     <target name="weblogic-install">
         <delete dir="${weblogic.domain}"/>
         <mkdir dir="${weblogic.domain}"/>
-        <antcall target="weblogic.start.nosleep" inheritRefs="true"/>
+        <antcall target="weblogic-start-nosleep" inheritRefs="true"/>
         <copy file="${junit.lib}" todir="${weblogic.domain}/lib"/>
         <copy file="${eclipselink.jar}" todir="${weblogic.domain}/lib"/>
         <copy file="${jdbc.driver.jar}" todir="${weblogic.domain}/lib"/>
-        <antcall target="weblogic.stop" inheritRefs="true"/>
+        <antcall target="weblogic-stop" inheritRefs="true"/>
     </target>
 
     <!-- Start the server. -->
@@ -126,7 +126,7 @@
     </target>
 
     <!--
-        This target is to remove the connection pool and managed datasource created by target <weblogic.setup>
+        This target is to remove the connection pool and managed datasource created by target <weblogic-setup>
         Note: WLS server must not be running.
     -->
     <target name="weblogic-reset">
