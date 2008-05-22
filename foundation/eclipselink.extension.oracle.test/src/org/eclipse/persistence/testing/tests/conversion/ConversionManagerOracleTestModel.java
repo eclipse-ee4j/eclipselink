@@ -12,7 +12,7 @@
  ******************************************************************************/  
 package org.eclipse.persistence.testing.tests.conversion;
 
-import org.eclipse.persistence.internal.hel per.*;
+import org.eclipse.persistence.internal.helper.*;
 import org.eclipse.persistence.tools.schemaframework.PopulationManager;
 import org.eclipse.persistence.testing.framework.*;
 import org.eclipse.persistence.testing.models.conversion.ConversionDataObject;
