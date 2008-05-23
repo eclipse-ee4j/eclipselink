@@ -172,6 +172,7 @@
       </eclipselink:class-mapping-descriptor>
    </eclipselink:class-mapping-descriptors>
    <eclipselink:login xsi:type="eclipselink:eis-login">
+      <eclipselink:platform-class>org.eclipse.persistence.eis.adapters.xmlfile.XMLFilePlatform</eclipselink:platform-class>
       <eclipselink:connection-spec-class>org.eclipse.persistence.eis.EISConnectionSpec</eclipselink:connection-spec-class>
    </eclipselink:login>
 </eclipselink:object-persistence>
