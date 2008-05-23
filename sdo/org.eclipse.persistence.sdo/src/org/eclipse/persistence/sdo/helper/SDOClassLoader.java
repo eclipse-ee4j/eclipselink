@@ -39,25 +39,32 @@ public class SDOClassLoader extends ClassLoader {
 
     public Class loadClass(String className) throws ClassNotFoundException {
         Class javaClass = null;
+
+        // To maximize performance, check the generated classes first
+        javaClass = (Class) generatedClasses.get(className);
+        if (javaClass != null) {
+            return javaClass;
+        }
+
+        // Not found, so now check classpath
         try {
             javaClass = delegateLoader.loadClass(className);
         } catch (ClassNotFoundException e) {
-            javaClass = (Class)generatedClasses.get(className);
-            if (javaClass != null) {
-                return javaClass;
-            }
             throw e;
         } catch (NoClassDefFoundError error) {
-            javaClass = (Class)generatedClasses.get(className);
-            if (javaClass == null) {
-                throw error;
-            }
+            throw error;
         }
         return javaClass;
     }
-
+    
     public Class loadClass(String className, SDOType type) throws ClassNotFoundException {
         Class javaClass = null;
+
+        // To maximize performance, check the generated classes first
+        javaClass = (Class) generatedClasses.get(className);
+        if (javaClass != null) {
+            return javaClass;
+        }
 
         try {
             javaClass = delegateLoader.loadClass(className);
@@ -72,7 +79,6 @@ public class SDOClassLoader extends ClassLoader {
                 throw error;
             }
         }
-
         return javaClass;
     }
 
