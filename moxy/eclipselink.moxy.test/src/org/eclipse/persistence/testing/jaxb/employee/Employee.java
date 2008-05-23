@@ -33,6 +33,17 @@ public class Employee
 	@XmlElementWrapper(name="responsibilities")
 	public java.util.Collection responsibilities;
 	
+	public String get() {
+		return null;
+	}
+
+	public boolean is() {
+		return false;
+	}
+
+	public void set() {
+	}
+
   public String toString()
 	{
 		return "EMPLOYEE: " + id +" " + firstName +" " + lastName +" " + birthday;

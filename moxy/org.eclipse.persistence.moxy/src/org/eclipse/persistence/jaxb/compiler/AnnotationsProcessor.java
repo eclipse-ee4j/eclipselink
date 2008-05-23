@@ -473,7 +473,7 @@ public class AnnotationsProcessor {
         // First collect all the getters
         ArrayList<JavaMethod> getMethods = new ArrayList<JavaMethod>();
         for (JavaMethod next : new ArrayList<JavaMethod>(cls.getDeclaredMethods())) {
-            if (next.getName().startsWith("get") || ((areEquals((JavaClass) next.getReturnType(), Boolean.class) || areEquals((JavaClass) next.getReturnType(), boolean.class)) && next.getName().startsWith("is"))) {
+            if ((next.getName().startsWith("get") && next.getName().length() > 3) || ((areEquals((JavaClass) next.getReturnType(), Boolean.class) || areEquals((JavaClass) next.getReturnType(), boolean.class)) && (next.getName().startsWith("is") && next.getName().length() > 2))) {
                 if ((onlyPublic && Modifier.isPublic(next.getModifiers())) || !onlyPublic) {
                     getMethods.add(next);                    
                 }
