@@ -19,6 +19,7 @@ import junit.extensions.TestSetup;
 
 import org.eclipse.persistence.internal.jpa.EJBQueryImpl;
 import org.eclipse.persistence.sessions.DatabaseSession;
+import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.descriptors.copying.CopyPolicy;
 import org.eclipse.persistence.descriptors.copying.CloneCopyPolicy;
 import org.eclipse.persistence.descriptors.copying.InstantiationCopyPolicy;
@@ -82,6 +83,7 @@ public class EntityMappingsRelationshipsJUnitTestCase extends JUnitTestCase {
         suite.addTest(new EntityMappingsRelationshipsJUnitTestCase("testDeleteItem", persistenceUnit));
         
         if (persistenceUnit.equals("extended-relationships")) {
+            suite.addTest(new EntityMappingsRelationshipsJUnitTestCase("testExcludeDefaultMappings", persistenceUnit));
             suite.addTest(new EntityMappingsRelationshipsJUnitTestCase("testCreateExtendedItem", persistenceUnit)); 
             suite.addTest(new EntityMappingsRelationshipsJUnitTestCase("testModifyExtendedItem", persistenceUnit));
             suite.addTest(new EntityMappingsRelationshipsJUnitTestCase("testVerifyExtendedItem", persistenceUnit));
@@ -337,6 +339,14 @@ public class EntityMappingsRelationshipsJUnitTestCase extends JUnitTestCase {
         Customer newCustomer = em.find(Customer.class, customerId);
         assertTrue("Error updating Customer", (newCustomer.getOrders().iterator().next()).getQuantity() == 100);
         closeEntityManager(em);
+    }
+    
+    public void testExcludeDefaultMappings() {
+        ClassDescriptor descriptor = getServerSession(m_persistenceUnit).getDescriptor(Mattel.class);
+        assertNull("The 'ignoredBasic' attribute from the clas Mattel was mapped despite an exclude-default-mappings setting of true.", descriptor.getMappingForAttributeName("ignoredBasic"));
+        assertNull("The 'ignoredOneToOne' attribute from the clas Mattel was mapped despite an exclude-default-mappings setting of true.", descriptor.getMappingForAttributeName("ignoredOneToOne"));
+        assertNull("The 'ignoredVariableOneToOne' attribute from the clas Mattel was mapped despite an exclude-default-mappings setting of true.", descriptor.getMappingForAttributeName("ignoredVariableOneToOne"));
+        assertNull("The 'ignoredOneToMany' attribute from the clas Mattel was mapped despite an exclude-default-mappings setting of true.", descriptor.getMappingForAttributeName("ignoredOneToMany"));
     }
     
     /**

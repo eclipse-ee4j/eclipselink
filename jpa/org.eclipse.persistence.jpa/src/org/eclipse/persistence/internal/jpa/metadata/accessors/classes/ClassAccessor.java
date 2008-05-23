@@ -11,6 +11,8 @@
  *     Oracle - initial API and implementation from Oracle TopLink
  *     05/16/2008-1.0M8 Guy Pelletier 
  *       - 218084: Implement metadata merging functionality between mapping files
+ *     05/23/2008-1.0M8 Guy Pelletier 
+ *       - 211330: Add attributes-complete support to the EclipseLink-ORM.XML Schema
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.accessors.classes;
 
@@ -18,16 +20,12 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import javax.persistence.Basic;
 import javax.persistence.Embedded;
 import javax.persistence.EmbeddedId;
 import javax.persistence.Id;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
-import javax.persistence.MappedSuperclass;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Transient;
@@ -93,16 +91,18 @@ import org.eclipse.persistence.internal.jpa.metadata.ORMetadata;
  * @since TopLink EJB 3.0 Reference Implementation
  */
 public abstract class ClassAccessor extends MetadataAccessor {
-    private Boolean m_metadataComplete; // EntityMappings init will process this value.
+    private Boolean m_excludeDefaultMappings;
+    private Boolean m_metadataComplete;
     
     private ChangeTrackingMetadata m_changeTracking;
     private Class m_customizerClass;
+    
     // Various copy policies. Represented individually to facilitate XML writing.
     private CloneCopyPolicyMetadata m_cloneCopyPolicy;
     private CustomCopyPolicyMetadata m_customCopyPolicy;
     private InstantiationCopyPolicyMetadata m_instantiationCopyPolicy;
     
-    private String m_access; // EntityMappings init will process this value.
+    private String m_access;
     private String m_className;
     private String m_customizerClassName;
     private String m_description;
@@ -178,6 +178,8 @@ public abstract class ClassAccessor extends MetadataAccessor {
                 // A VariableOneToOne can default, that is, doesn't require
                 // an annotation to be present.
                 return new VariableOneToOneAccessor(accessibleObject.getAnnotation(VariableOneToOne.class), accessibleObject, this);
+            } else if (getDescriptor().ignoreDefaultMappings()) {
+                return null;
             } else {
                 // Default case (everything else falls into a Basic)
                 return new BasicAccessor(accessibleObject.getAnnotation(Basic.class), accessibleObject, this);
@@ -185,6 +187,13 @@ public abstract class ClassAccessor extends MetadataAccessor {
         } else {
             return accessor;
         }
+    }
+    
+    /**
+     * INTERNAL:
+     */
+    public boolean excludeDefaultMappings() {
+        return m_excludeDefaultMappings != null && m_excludeDefaultMappings;
     }
     
     /**
@@ -273,6 +282,14 @@ public abstract class ClassAccessor extends MetadataAccessor {
     
     /**
      * INTERNAL:
+     * Used for OX mapping.
+     */
+    public Boolean getExcludeDefaultMappings() {
+        return m_excludeDefaultMappings;
+    }
+    
+    /**
+     * INTERNAL:
      * To satisfy the abstract getIdentifier() method from ORMetadata.
      */
     @Override
@@ -306,45 +323,6 @@ public abstract class ClassAccessor extends MetadataAccessor {
     @Override
     public String getJavaClassName() {
         return getJavaClass().getName();
-    }
-    
-    /**
-     * INTERNAL:
-     * Build a list of classes that are decorated with a MappedSuperclass
-     * annotation or that are tagged as a mapped-superclass in an XML document.
-     */
-    public List<MappedSuperclassAccessor> getMappedSuperclasses() {
-        // The list is currently rebuilt every time this method is called since 
-        // it is potentially called both during pre-deploy and deploy where
-        // where the class loader dependencies change.
-        ArrayList<MappedSuperclassAccessor> mappedSuperclasses = new ArrayList<MappedSuperclassAccessor>();
-        Class parent = getJavaClass().getSuperclass();
-        
-        while (parent != Object.class) {
-            if (getDescriptor().isInheritanceSubclass() && getProject().hasEntity(parent)) {
-                // In an inheritance case we don't want to keep looking
-                // for mapped superclasses if they are not directly above
-                // us before the next entity in the hierarchy.
-                break;
-            } else {
-                MappedSuperclassAccessor accessor = getProject().getMappedSuperclass(parent);
-
-                // If the mapped superclass was not defined in XML then check 
-                // for a MappedSuperclass annotation.
-                if (accessor == null) {
-                    MetadataClass metadataClass = new MetadataClass(parent);
-                    if (metadataClass.isAnnotationPresent(MappedSuperclass.class)) {
-                        mappedSuperclasses.add(new MappedSuperclassAccessor(metadataClass.getAnnotation(MappedSuperclass.class), parent, getDescriptor(), getProject()));
-                    }
-                } else {
-                    mappedSuperclasses.add(initXMLMappedSuperclass(accessor, getDescriptor()));
-                }
-            }
-                
-            parent = parent.getSuperclass();
-        }
-                
-        return mappedSuperclasses;
     }
     
     /**
@@ -404,6 +382,7 @@ public abstract class ClassAccessor extends MetadataAccessor {
         m_customizerClass = (Class) mergeSimpleObjects(m_customizerClass, accessor.getCustomizerClass(), accessor.getAccessibleObject(), "<customizer>");
         m_description = (String) mergeSimpleObjects(m_description, accessor.getDescription(), accessor.getAccessibleObject(), "<description>");
         m_metadataComplete = (Boolean) mergeSimpleObjects(m_metadataComplete, accessor.getMetadataComplete(), accessor.getAccessibleObject(), "@metadata-complete");
+        m_excludeDefaultMappings = (Boolean) mergeSimpleObjects(m_excludeDefaultMappings, accessor.getExcludeDefaultMappings(), accessor.getAccessibleObject(), "@exclude-default-mappings");
         
         // ORMetadata object merging.        
         m_cloneCopyPolicy = (CloneCopyPolicyMetadata) mergeORObjects(m_cloneCopyPolicy, accessor.getCloneCopyPolicy());
@@ -431,7 +410,7 @@ public abstract class ClassAccessor extends MetadataAccessor {
      * stored for later processing.
      */
     protected void processAccessor(MappingAccessor accessor) {
-        if (! accessor.isProcessed()) {
+        if (accessor != null && ! accessor.isProcessed()) {
             // Store the accessor for later retrieval.
             getDescriptor().addAccessor(accessor);
             
@@ -782,6 +761,14 @@ public abstract class ClassAccessor extends MetadataAccessor {
      */
     public void setDescription(String description) {
         m_description = description;
+    }
+    
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+    public void setExcludeDefaultMappings(Boolean excludeDefaultMappings) {
+        m_excludeDefaultMappings = excludeDefaultMappings;
     }
     
     /**

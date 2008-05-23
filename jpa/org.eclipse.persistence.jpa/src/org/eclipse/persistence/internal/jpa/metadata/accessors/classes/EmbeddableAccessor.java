@@ -11,6 +11,8 @@
  *     Oracle - initial API and implementation from Oracle TopLink
  *     05/16/2008-1.0M8 Guy Pelletier 
  *       - 218084: Implement metadata merging functionality between mapping files
+ *     05/23/2008-1.0M8 Guy Pelletier 
+ *       - 211330: Add attributes-complete support to the EclipseLink-ORM.XML Schema
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.accessors.classes;
 
@@ -44,31 +46,56 @@ public class EmbeddableAccessor extends ClassAccessor {
     
     /**
      * INTERNAL:
+     * Process the embeddable metadata.
+     */
+    protected void processEmbeddable() {
+        // Set an access type if specified.
+        if (getAccess() != null) {
+            getDescriptor().setXMLAccess(getAccess());
+        } 
+        
+        // Set a metadata complete flag if specified.
+        if (getMetadataComplete() != null) {
+            getDescriptor().setIgnoreAnnotations(isMetadataComplete());
+        } 
+        
+        // Set an exclude default mappings flag if specified.
+        if (getExcludeDefaultMappings() != null) {
+            getDescriptor().setIgnoreDefaultMappings(excludeDefaultMappings());
+        } 
+    }
+    
+    /**
+     * INTERNAL:
      * Process the items of interest on an embeddable class.
      */
     public void process() {
+        // Process the Embeddable metadata first. Need to ensure we determine 
+        // the access, metadata complete and exclude default mappings before we 
+        // process further.
+        processEmbeddable();
+        
         // If a Cache annotation is present throw an exception.
         if (isAnnotationPresent(Cache.class)) {
             throw ValidationException.cacheNotSupportedWithEmbeddable(getJavaClass());
         } 
-        
-        // This accessor represents an embeddable class
-        // Process @Customizer
+    
+        // Process the customizer metadata.
         processCustomizer();
         
-        // Process the TopLink converters if specified.
+        // Process the converter metadata.
         processConverters();   
         
-        // Process the @ChangeTracking
+        // Process the copy policy metadata.
+        processCopyPolicy();
+        
+        // Process the change tracking metadata.
         processChangeTracking();
         
-        // Process properties
+        // Process the properties metadata.
         processProperties();
 
         // Process the accessors on this embeddable.
         processAccessors();
-        
-        // Process @CopyPolicy
-        processCopyPolicy();
     }
 }

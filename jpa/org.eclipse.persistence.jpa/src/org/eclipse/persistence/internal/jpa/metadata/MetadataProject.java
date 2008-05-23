@@ -11,6 +11,8 @@
  *     Oracle - initial API and implementation from Oracle TopLink
  *     05/16/2008-1.0M8 Guy Pelletier 
  *       - 218084: Implement metadata merging functionality between mapping files
+ *     05/23/2008-1.0M8 Guy Pelletier 
+ *       - 211330: Add attributes-complete support to the EclipseLink-ORM.XML Schema
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata;
 
@@ -29,6 +31,7 @@ import java.util.Set;
 import javax.persistence.GenerationType;
 import javax.persistence.spi.PersistenceUnitInfo;
 
+import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.exceptions.ValidationException;
 
 import org.eclipse.persistence.internal.jpa.metadata.accessors.classes.ClassAccessor;
@@ -197,6 +200,7 @@ public class MetadataProject {
         // Set the persistence unit meta data (if there is any) on the descriptor.
         if (m_persistenceUnitMetadata != null) {
             descriptor.setIgnoreAnnotations(m_persistenceUnitMetadata.isXMLMappingMetadataComplete());
+            descriptor.setIgnoreDefaultMappings(m_persistenceUnitMetadata.excludeDefaultMappings());
             
             // Set the persistence unit defaults (if there are any) on the descriptor.
             XMLPersistenceUnitDefaults persistenceUnitDefaults = m_persistenceUnitMetadata.getPersistenceUnitDefaults();
@@ -210,7 +214,7 @@ public class MetadataProject {
         }
 
         // Add the descriptor to the actual EclipseLink Project.
-        getSession().getProject().addDescriptor(descriptor.getClassDescriptor());
+        m_session.getProject().addDescriptor(descriptor.getClassDescriptor());
 
         // Keep a map of all the accessors that have been added.
         m_allAccessors.put(accessor.getJavaClassName(), accessor);
@@ -230,6 +234,20 @@ public class MetadataProject {
         m_accessorsWithRelationships.add(accessor);
     }
  
+    /**
+     * INTERNAL:
+     */
+    public void addAlias(String alias, MetadataDescriptor descriptor) {
+        ClassDescriptor existingDescriptor = m_session.getProject().getDescriptorForAlias(alias);
+        
+        if (existingDescriptor == null) {
+            descriptor.setAlias(alias);
+            m_session.getProject().addAlias(alias, descriptor.getClassDescriptor());
+        } else {
+            throw ValidationException.nonUniqueEntityName(existingDescriptor.getJavaClassName(), descriptor.getJavaClassName(), alias);
+        }
+    }
+    
     /**
      * INTERNAL:
      */
@@ -308,7 +326,7 @@ public class MetadataProject {
         
         // TODO: Add it directly and avoid the persistence unit defaults and
         // stuff for now.
-        getSession().getProject().addDescriptor(accessor.getDescriptor().getClassDescriptor());
+        m_session.getProject().addDescriptor(accessor.getDescriptor().getClassDescriptor());
     }
     
     /**
@@ -533,13 +551,6 @@ public class MetadataProject {
      */
     public XMLPersistenceUnitMetadata getPersistenceUnitMetadata() {
         return m_persistenceUnitMetadata;
-    }
-    
-    /**
-     * INTERNAL:
-     */
-    public AbstractSession getSession() {
-        return m_session;
     }
         
     /**

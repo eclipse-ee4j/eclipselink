@@ -13,14 +13,41 @@
  ******************************************************************************/
 package org.eclipse.persistence.testing.models.jpa.xml.relationships;
 
+import java.util.List;
+
 public class Mattel implements Manufacturer {
     private Integer id;
     private String name;
+    
+    // These are bogus attributes that normally would cause default mapping 
+    // generation. However the exclude-default-mappings is set to true for this 
+    // class (persistence-unit-metadata setting) in the
+    // relationships-extended-entity-mappings file.
+    private String ignoredBasic;
+    private Item ignoredOneToOne;
+    private Mattel ignoredVariableOneToOne;
+    private List<Customer> ignoredOneToMany;
     
     public Mattel() {}
     
     public Integer getId() { 
         return id; 
+    }
+    
+    public String getIgnoredBasic() {
+        return ignoredBasic;
+    }
+
+    public List<Customer> getIgnoredOneToMany() {
+        return ignoredOneToMany;
+    }
+    
+    public Item getIgnoredOneToOne() {
+        return ignoredOneToOne;
+    }
+    
+    public Mattel getIgnoredVariableOneToOne() {
+        return ignoredVariableOneToOne;
     }
     
     public String getName() {
@@ -30,7 +57,23 @@ public class Mattel implements Manufacturer {
     public void setId(Integer id) { 
         this.id = id;
     }
+    
+    public void setIgnoredBasic(String ignoredBasic) {
+        this.ignoredBasic = ignoredBasic;
+    }
 
+    public void setIgnoredOneToMany(List<Customer> ignoredOneToMany) {
+        this.ignoredOneToMany = ignoredOneToMany;
+    }
+    
+    public void setIgnoredOneToOne(Item ignoredOneToOne) {
+        this.ignoredOneToOne = ignoredOneToOne;
+    }
+
+    public void setIgnoredVariableOneToOne(Mattel ignoredVariableOneToOne) {
+        this.ignoredVariableOneToOne = ignoredVariableOneToOne;
+    }
+    
     public void setName(String name) {
         this.name = name;
     }

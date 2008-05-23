@@ -11,6 +11,8 @@
  *     Oracle - initial API and implementation from Oracle TopLink
  *     05/16/2008-1.0M8 Guy Pelletier 
  *       - 218084: Implement metadata merging functionality between mapping files
+ *     05/23/2008-1.0M8 Guy Pelletier 
+ *       - 211330: Add attributes-complete support to the EclipseLink-ORM.XML Schema
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata;
 
@@ -183,6 +185,9 @@ public class MetadataProcessor {
      * 
      * This method will also gather all the weavable classes for this PU. 
      * Currently, entity and embeddable classes are weavable.
+     * 
+     * NOTE: The order of processing should not be changed as the steps are
+     * dependent on one another.
      */
     protected void initPersistenceUnitClasses() {
         // 1 - Iterate through the classes that are defined in the <mapping>

@@ -11,6 +11,8 @@
  *     Oracle - initial API and implementation from Oracle TopLink
  *     05/16/2008-1.0M8 Guy Pelletier 
  *       - 218084: Implement metadata merging functionality between mapping file
+ *     05/23/2008-1.0M8 Guy Pelletier 
+ *       - 211330: Add attributes-complete support to the EclipseLink-ORM.XML Schema
  *******************************************************************************/
  package org.eclipse.persistence.internal.jpa.metadata.xml;
 
@@ -853,6 +855,7 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         descriptor.addMapping(getClassAttributeMapping());
         descriptor.addMapping(getAccessAttributeMapping());
         descriptor.addMapping(getMetadataCompleteAttributeMapping());
+        descriptor.addMapping(getExcludeDefaultMappingsAttributeMapping());
         
         return descriptor;
     }
@@ -984,6 +987,7 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         descriptor.addMapping(getClassAttributeMapping());
         descriptor.addMapping(getAccessAttributeMapping());
         descriptor.addMapping(getMetadataCompleteAttributeMapping());
+        descriptor.addMapping(getExcludeDefaultMappingsAttributeMapping());
         descriptor.addMapping(getReadOnlyAttributeMapping());
         descriptor.addMapping(getExistenceCheckingAttributeMapping());
         
@@ -1335,6 +1339,7 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         descriptor.addMapping(getClassAttributeMapping());
         descriptor.addMapping(getAccessAttributeMapping());
         descriptor.addMapping(getMetadataCompleteAttributeMapping());
+        descriptor.addMapping(getExcludeDefaultMappingsAttributeMapping());
         descriptor.addMapping(getReadOnlyAttributeMapping());
         
         return descriptor;
@@ -1596,6 +1601,16 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         xmlMappingMetadataCompleteMapping.setNullPolicy(xmlMappingMetadataCompletePolicy);
         xmlMappingMetadataCompleteMapping.setXPath("orm:xml-mapping-metadata-complete");
         descriptor.addMapping(xmlMappingMetadataCompleteMapping);
+        
+        XMLDirectMapping excludeDefaultMappingsMapping = new XMLDirectMapping();
+        excludeDefaultMappingsMapping.setAttributeName("m_excludeDefaultMappings");
+        excludeDefaultMappingsMapping.setGetMethodName("getExcludeDefaultMappings");
+        excludeDefaultMappingsMapping.setSetMethodName("setExcludeDefaultMappings");
+        IsSetNullPolicy excludeDefaultMappingsPolicy = new IsSetNullPolicy("excludeDefaultMappings");
+        excludeDefaultMappingsPolicy.setMarshalNullRepresentation(XMLNullRepresentationType.EMPTY_NODE);
+        excludeDefaultMappingsMapping.setNullPolicy(excludeDefaultMappingsPolicy);
+        excludeDefaultMappingsMapping.setXPath("orm:exclude-default-mappings");
+        descriptor.addMapping(excludeDefaultMappingsMapping);
         
         XMLCompositeObjectMapping persistenceUnitDefaultsMapping = new XMLCompositeObjectMapping();
         persistenceUnitDefaultsMapping.setAttributeName("m_persistenceUnitDefaults");
@@ -2398,7 +2413,7 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         entityListenersMapping.setXPath("orm:entity-listeners/orm:entity-listener");
         return entityListenersMapping;
     }
-    
+
     /**
      * INTERNAL:
      */
@@ -2413,6 +2428,18 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         excludeDefaultListenersMapping.setNullPolicy(new IsSetNullPolicy("excludeDefaultListeners"));
         excludeDefaultListenersMapping.setXPath("orm:exclude-default-listeners");
         return excludeDefaultListenersMapping;
+    }
+    
+    /**
+     * INTERNAL:
+     */
+    protected XMLDirectMapping getExcludeDefaultMappingsAttributeMapping() {
+        XMLDirectMapping excludeDefaultMappingsMapping = new XMLDirectMapping();
+        excludeDefaultMappingsMapping.setAttributeName("m_excludeDefaultMappings");
+        excludeDefaultMappingsMapping.setGetMethodName("getExcludeDefaultMappings");
+        excludeDefaultMappingsMapping.setSetMethodName("setExcludeDefaultMappings");
+        excludeDefaultMappingsMapping.setXPath("@exclude-default-mappings");
+        return excludeDefaultMappingsMapping;
     }
     
     /**

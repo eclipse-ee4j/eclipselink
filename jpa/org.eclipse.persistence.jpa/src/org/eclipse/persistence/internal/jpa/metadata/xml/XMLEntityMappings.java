@@ -11,6 +11,8 @@
  *     Oracle - initial API and implementation from Oracle TopLink
  *     05/16/2008-1.0M8 Guy Pelletier 
  *       - 218084: Implement metadata merging functionality between mapping file
+ *     05/23/2008-1.0M8 Guy Pelletier 
+ *       - 211330: Add attributes-complete support to the EclipseLink-ORM.XML Schema
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.xml;
 
@@ -541,19 +543,16 @@ public class XMLEntityMappings extends ORMetadata {
     
     /**
      * INTERNAL:
+     * Set any entity-mappings defaults if specified. Do not blindly set them
+     * since a global setting from the persistence-unit-metadata/defaults may
+     * have been set and you do not want to risk removing the global value.
      */
     public void processEntityMappingsDefaults(ClassAccessor accessor) {
         MetadataDescriptor descriptor = accessor.getDescriptor();
         
-        // Set the access type if specified. Look for one set on the class
-        // accessor first, else set the entity-mappings access if specified.
-        if (accessor.getAccess() != null) {
-            descriptor.setXMLAccess(accessor.getAccess());
-        } else if (m_access != null) {
+        // Set the entity-mappings access if specified.
+        if (m_access != null) {
             descriptor.setXMLAccess(m_access);
-        } else {
-            // If there is an access specified in the persistence unit
-            // default then it should already be set.
         }
         
         // Set the entity-mappings catalog if specified.                
@@ -564,12 +563,6 @@ public class XMLEntityMappings extends ORMetadata {
         // Set the entity-mappings schema if specified.
         if (m_schema != null) {
             descriptor.setXMLSchema(m_schema);
-        }
-        
-        // Set the metadata-complete value from the accessor if set.
-        // You must do the check as to not undue a global default setting.
-        if (accessor.isMetadataComplete()) {
-            descriptor.setIgnoreAnnotations(true);
         }
     }
 
@@ -625,8 +618,8 @@ public class XMLEntityMappings extends ORMetadata {
             
             // Initialize the newly loaded/built mapped superclass
             MappedSuperclassAccessor mappedSuperclass = entityMappings.getMappedSuperclasses().get(0);
-               Class mappedSuperclassClass = getClassForName(mappedSuperclass.getClassName());
-               mappedSuperclass.initXMLAccessor(new MetadataClass(mappedSuperclassClass, this), descriptor, m_project);
+            Class mappedSuperclassClass = getClassForName(mappedSuperclass.getClassName());
+            mappedSuperclass.initXMLAccessor(new MetadataClass(mappedSuperclassClass, this), descriptor, m_project);
             
             return mappedSuperclass;
         } catch (Exception e) {

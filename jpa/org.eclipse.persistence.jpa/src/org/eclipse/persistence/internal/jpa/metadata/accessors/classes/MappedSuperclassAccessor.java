@@ -11,6 +11,8 @@
  *     Oracle - initial API and implementation from Oracle TopLink
  *     05/16/2008-1.0M8 Guy Pelletier 
  *       - 218084: Implement metadata merging functionality between mapping files
+ *     05/23/2008-1.0M8 Guy Pelletier 
+ *       - 211330: Add attributes-complete support to the EclipseLink-ORM.XML Schema
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.accessors.classes;
 
@@ -467,7 +469,7 @@ public class MappedSuperclassAccessor extends ClassAccessor {
         // Process the exclude superclass listeners metadata.
         processExcludeSuperclassListeners();
         
-        // Process the EclipseLink converter metadata if specified.
+        // Process the converter metadata.
         processConverters();
         
         // Process the optimistic locking policy metadata.
@@ -485,7 +487,7 @@ public class MappedSuperclassAccessor extends ClassAccessor {
         // Process the customizer metadata.
         processCustomizer();
         
-        // Process the EclipseLink copy policy metadata.
+        // Process the copy policy metadata.
         processCopyPolicy();
         
         // Process the existence checking metadata.

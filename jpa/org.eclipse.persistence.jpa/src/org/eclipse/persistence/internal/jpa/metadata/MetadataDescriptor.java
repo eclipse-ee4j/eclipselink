@@ -7,7 +7,9 @@
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
  *     05/16/2008-1.0M8 Guy Pelletier 
- *       - 218084: Implement metadata merging functionality between mapping files  
+ *       - 218084: Implement metadata merging functionality between mapping files
+ *     05/23/2008-1.0M8 Guy Pelletier 
+ *       - 211330: Add attributes-complete support to the EclipseLink-ORM.XML Schema  
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata;
 
@@ -56,7 +58,7 @@ import org.eclipse.persistence.mappings.DatabaseMapping;
 /**
  * INTERNAL:
  * Common metatata descriptor for the annotation and xml processors. This class
- * is a wrap on an actual TopLink descriptor.
+ * is a wrap on an actual EclipseLink descriptor.
  * 
  * @author Guy Pelletier
  * @since TopLink EJB 3.0 Reference Implementation
@@ -78,6 +80,7 @@ public class MetadataDescriptor {
     
     private boolean m_isCascadePersist;
     private boolean m_ignoreAnnotations; // XML metadata complete
+    private boolean m_ignoreDefaultMappings; // XML exclude default mappings
     private boolean m_hasCache;
     private boolean m_hasChangeTracking;
     private boolean m_hasCustomizer;
@@ -122,6 +125,7 @@ public class MetadataDescriptor {
         m_hasReadOnly = false;
         m_isCascadePersist = false;
         m_ignoreAnnotations = false;
+        m_ignoreDefaultMappings = false;
         
         m_idAttributeNames = new ArrayList<String>();
         m_orderByAttributeNames = new ArrayList<String>();
@@ -927,11 +931,21 @@ public class MetadataDescriptor {
  
     /**
      * INTERNAL:
-     * Indicates whether or not annotations should be ignored, i.e. only default 
-     * values processed.
+     * Indicates whether or not annotations should be ignored. However, default 
+     * mappings will still be processed unless an exclude-default-mappings 
+     * setting is specified.
+     * @see ignoreDefaultMappings()
      */
     public boolean ignoreAnnotations() {
         return m_ignoreAnnotations;
+    }
+    
+    /**
+     * INTERNAL:
+     * Indicates whether or not default mappings should be ignored.
+     */
+    public boolean ignoreDefaultMappings() {
+        return m_ignoreDefaultMappings;
     }
     
     /**
@@ -970,14 +984,7 @@ public class MetadataDescriptor {
      * descriptor.
      */
     protected boolean isXmlFieldAccess() {
-        return isXmlFieldAccess(m_xmlAccess);
-    }
-    
-    /**
-     * INTERNAL:
-     */
-    protected boolean isXmlFieldAccess(String access) {
-        return access != null && access.equals(FIELD);
+        return m_xmlAccess != null && m_xmlAccess.equals(FIELD);
     }
     
     /**
@@ -986,14 +993,7 @@ public class MetadataDescriptor {
      * descriptor.
      */
     protected boolean isXmlPropertyAccess() {
-        return isXmlPropertyAccess(m_xmlAccess);
-    }
-    
-    /**
-     * INTERNAL:
-     */
-    protected boolean isXmlPropertyAccess(String access) {
-        return access != null && access.equals(PROPERTY);
+        return m_xmlAccess != null && m_xmlAccess.equals(PROPERTY);
     }
     
     /**
@@ -1104,11 +1104,21 @@ public class MetadataDescriptor {
     
     /**
      * INTERNAL:
-     * Indicates that all annotations should be ignored, and only default values 
-     * set by the annotations processor.
+     * Indicates that all annotations should be ignored. However, default 
+     * mappings will still be processed unless an exclude-default-mappings 
+     * setting is specified.
+     * @see setIgnoreDefaultMappings()
      */
     public void setIgnoreAnnotations(boolean ignoreAnnotations) {
         m_ignoreAnnotations = ignoreAnnotations;
+    }
+    
+    /**
+     * INTERNAL:
+     * Indicates that default mappings should be ignored.
+     */
+    public void setIgnoreDefaultMappings(boolean ignoreDefaultMappings) {
+        m_ignoreDefaultMappings = ignoreDefaultMappings;
     }
     
     /**
@@ -1307,30 +1317,12 @@ public class MetadataDescriptor {
                     // access to PROPERTY.
                     m_usesPropertyAccess = Boolean.TRUE;
                 } else {
-                    for (ClassAccessor mappedSuperclass : getClassAccessor().getMappedSuperclasses()) {
-                        if (havePersistenceAnnotationsDefined(MetadataHelper.getFields(mappedSuperclass.getJavaClass())) || isXmlFieldAccess(mappedSuperclass.getAccess())) {
-                            // We have persistence annotations defined on a 
-                            // field from a mapped superclass, set the access 
-                            // to FIELD.
-                            m_usesPropertyAccess = Boolean.FALSE;
-                            break;
-                        } else if (havePersistenceAnnotationsDefined(MetadataHelper.getDeclaredMethods(mappedSuperclass.getJavaClass())) || isXmlPropertyAccess(mappedSuperclass.getAccess())) {
-                            // We have persistence annotations defined on a 
-                            // method from a mapped superclass, set the access 
-                            // to FIELD.
-                            m_usesPropertyAccess = Boolean.TRUE;
-                            break;
-                        }
-                    }
-                
-                    // We still found nothing ... we should throw an exception 
+                    // We found nothing ... we could throw an exception 
                     // here, but for now, set the access to FIELD. The user 
                     // will eventually get an exception saying there is no 
                     // primary key set if field access is not actually the
                     // case.
-                    if (m_usesPropertyAccess == null) {
-                        m_usesPropertyAccess = Boolean.FALSE;
-                    }
+                    m_usesPropertyAccess = Boolean.FALSE;
                 }
             }
         

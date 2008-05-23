@@ -11,6 +11,8 @@
  *     Guy Pelletier - initial API and implementation from Oracle TopLink
  *     05/16/2008-1.0M8 Guy Pelletier 
  *       - 218084: Implement metadata merging functionality between mapping files
+ *     05/23/2008-1.0M8 Guy Pelletier 
+ *       - 211330: Add attributes-complete support to the EclipseLink-ORM.XML Schema
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.accessors.classes;
 
@@ -22,14 +24,15 @@ import java.util.List;
 
 import javax.persistence.DiscriminatorColumn;
 import javax.persistence.DiscriminatorValue;
+import javax.persistence.Entity;
 import javax.persistence.Inheritance;
+import javax.persistence.MappedSuperclass;
 import javax.persistence.PrimaryKeyJoinColumn;
 import javax.persistence.PrimaryKeyJoinColumns;
 import javax.persistence.SecondaryTable;
 import javax.persistence.SecondaryTables;
 import javax.persistence.Table;
 
-import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.exceptions.ValidationException;
 
 import org.eclipse.persistence.internal.helper.DatabaseTable;
@@ -37,6 +40,7 @@ import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.helper.Helper;
 
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAccessibleObject;
+import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataClass;
 import org.eclipse.persistence.internal.jpa.metadata.columns.AssociationOverrideMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.columns.AttributeOverrideMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.columns.DiscriminatorColumnMetadata;
@@ -184,6 +188,45 @@ public class EntityAccessor extends MappedSuperclassAccessor {
     
     /**
      * INTERNAL:
+     * Build a list of classes that are decorated with a MappedSuperclass
+     * annotation or that are tagged as a mapped-superclass in an XML document.
+     */
+    public List<MappedSuperclassAccessor> getMappedSuperclasses() {
+        // The list is currently rebuilt every time this method is called since 
+        // it is potentially called both during pre-deploy and deploy where
+        // where the class loader dependencies change.
+        ArrayList<MappedSuperclassAccessor> mappedSuperclasses = new ArrayList<MappedSuperclassAccessor>();
+        Class parent = getJavaClass().getSuperclass();
+        
+        while (parent != Object.class) {
+            if (getDescriptor().isInheritanceSubclass() && getProject().hasEntity(parent)) {
+                // In an inheritance case we don't want to keep looking
+                // for mapped superclasses if they are not directly above
+                // us before the next entity in the hierarchy.
+                break;
+            } else {
+                MappedSuperclassAccessor accessor = getProject().getMappedSuperclass(parent);
+
+                // If the mapped superclass was not defined in XML then check 
+                // for a MappedSuperclass annotation.
+                if (accessor == null) {
+                    MetadataClass metadataClass = new MetadataClass(parent);
+                    if (metadataClass.isAnnotationPresent(MappedSuperclass.class)) {
+                        mappedSuperclasses.add(new MappedSuperclassAccessor(metadataClass.getAnnotation(MappedSuperclass.class), parent, getDescriptor(), getProject()));
+                    }
+                } else {
+                    mappedSuperclasses.add(initXMLMappedSuperclass(accessor, getDescriptor()));
+                }
+            }
+                
+            parent = parent.getSuperclass();
+        }
+                
+        return mappedSuperclasses;
+    }
+    
+    /**
+     * INTERNAL:
      * Used for OX mapping.
      */
     public List<NamedNativeQueryMetadata> getNamedNativeQueries() {
@@ -299,7 +342,7 @@ public class EntityAccessor extends MappedSuperclassAccessor {
      * inheritance strategy) on this class accessor's descriptor along
      * with the immediate parent class.
      */
-    public boolean isInheritanceSubclass() {
+    protected boolean isInheritanceSubclass() {
         ClassAccessor lastParent = null;
         Class parent = getJavaClass().getSuperclass();
     
@@ -369,7 +412,9 @@ public class EntityAccessor extends MappedSuperclassAccessor {
      */
     @Override
     public void process() {
-        // Process the Entity metadata.
+        // Process the Entity metadata first. Need to ensure we determine the 
+        // access, metadata complete and exclude default mappings before we 
+        // process further.
         processEntity();
             
         // Process the Table and Inheritance metadata.
@@ -478,33 +523,63 @@ public class EntityAccessor extends MappedSuperclassAccessor {
     
     /**
      * INTERNAL:
-     * Process an entity.
+     * Process the entity metadata.
      */
     protected void processEntity() {
-        // Don't override existing alias.
-        if (getDescriptor().getAlias().equals("")) {
-            String alias;
-            if (m_entityName == null) {
-                alias = (getAnnotation() == null) ? "" : (String) MetadataHelper.invokeMethod("name", getAnnotation());
-            } else {
-                alias = m_entityName;
+        // Get our list of mapped superclasses since we may need to traverse
+        // them for some metadata information.
+        List<MappedSuperclassAccessor> mappedSuperclasses = getMappedSuperclasses();
+        
+        // Set an access type if specified on the entity class or a mapped
+        // superclass.
+        if (getAccess() != null) {
+            getDescriptor().setXMLAccess(getAccess());
+        } else {
+            for (MappedSuperclassAccessor mappedSuperclass : mappedSuperclasses) {
+                if (mappedSuperclass.getAccess() != null) {
+                    getDescriptor().setXMLAccess(mappedSuperclass.getAccess());
+                    break; // stop searching.
+                }
             }
-            
-            if (alias.equals("")) {
-                alias = Helper.getShortClassName(getJavaClassName());
-                getLogger().logConfigMessage(MetadataLogger.ALIAS, getDescriptor(), alias);
-            }
-
-            // Verify that the alias is not a duplicate.
-            ClassDescriptor existingDescriptor = getProject().getSession().getProject().getDescriptorForAlias(alias);
-            if (existingDescriptor != null) {
-                throw ValidationException.nonUniqueEntityName(existingDescriptor.getJavaClassName(), getDescriptor().getJavaClassName(), alias);
-            }
-
-            // Set the alias on the descriptor and add it to the project.
-            getDescriptor().setAlias(alias);
-            getProject().getSession().getProject().addAlias(alias, getDescriptor().getClassDescriptor());
         }
+        
+        // Set a metadata complete flag if specified on the entity class or a 
+        // mapped superclass.
+        if (getMetadataComplete() != null) {
+            getDescriptor().setIgnoreAnnotations(isMetadataComplete());
+        } else {
+            for (MappedSuperclassAccessor mappedSuperclass : mappedSuperclasses) {
+                if (mappedSuperclass.getMetadataComplete() != null) {
+                    getDescriptor().setIgnoreAnnotations(mappedSuperclass.isMetadataComplete());
+                    break; // stop searching.
+                }
+            }
+        }
+        
+        // Set an exclude default mappings flag if specified on the entity class
+        // or a mapped superclass.
+        if (getExcludeDefaultMappings() != null) {
+            getDescriptor().setIgnoreDefaultMappings(excludeDefaultMappings());
+        } else {
+            for (MappedSuperclassAccessor mappedSuperclass : mappedSuperclasses) {
+                if (mappedSuperclass.getExcludeDefaultMappings() != null) {
+                    getDescriptor().setIgnoreDefaultMappings(mappedSuperclass.excludeDefaultMappings());
+                    break; // stop searching.
+                }
+            }
+        }
+        
+        // Process the entity name (alias) and default if necessary.
+        if (m_entityName == null) {
+            m_entityName = (getAnnotation(Entity.class) == null) ? "" : (String) MetadataHelper.invokeMethod("name", getAnnotation(Entity.class));
+        }
+            
+        if (m_entityName.equals("")) {
+            m_entityName = Helper.getShortClassName(getJavaClassName());
+            getLogger().logConfigMessage(MetadataLogger.ALIAS, getDescriptor(), m_entityName);
+        }
+
+        getProject().addAlias(m_entityName, getDescriptor());
     }
     
     /**

@@ -11,6 +11,8 @@
  *     Oracle - initial API and implementation from Oracle TopLink
  *     05/16/2008-1.0M8 Guy Pelletier 
  *       - 218084: Implement metadata merging functionality between mapping file
+ *     05/23/2008-1.0M8 Guy Pelletier 
+ *       - 211330: Add attributes-complete support to the EclipseLink-ORM.XML Schema
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.xml;
 
@@ -30,6 +32,7 @@ import org.eclipse.persistence.internal.jpa.metadata.listeners.EntityListenerMet
  */
 public class XMLPersistenceUnitMetadata extends ORMetadata {
     private boolean m_xmlMappingMetadataComplete;
+    private boolean m_excludeDefaultMappings;
     private XMLPersistenceUnitDefaults m_persistenceUnitDefaults;
     
     /**
@@ -38,7 +41,7 @@ public class XMLPersistenceUnitMetadata extends ORMetadata {
     public XMLPersistenceUnitMetadata() {
         super("<persistence-unit-metadata>");
     }
-
+    
     /**
      * INTERNAL:
      * If equals returns false, call getConflict() for a finer grain reason why.
@@ -47,10 +50,13 @@ public class XMLPersistenceUnitMetadata extends ORMetadata {
         if (objectToCompare instanceof XMLPersistenceUnitMetadata) {
             XMLPersistenceUnitMetadata persistenceUnitMetadata = (XMLPersistenceUnitMetadata) objectToCompare;
             
-            // Check xmlMappingMetadataComplete.
-            if (persistenceUnitMetadata.isXMLMappingMetadataComplete() != isXMLMappingMetadataComplete()) {
+            if (m_xmlMappingMetadataComplete != persistenceUnitMetadata.isXMLMappingMetadataComplete()) {
                 return false;
             } 
+            
+            if (m_excludeDefaultMappings != persistenceUnitMetadata.excludeDefaultMappings()) {
+                return false;
+            }
 
             // Check the persistence unit defaults.
             XMLPersistenceUnitDefaults persistenceUnitDefaults = persistenceUnitMetadata.getPersistenceUnitDefaults();
@@ -71,6 +77,14 @@ public class XMLPersistenceUnitMetadata extends ORMetadata {
     
     /**
      * INTERNAL:
+     * Used for OX mapping.
+     */
+    public boolean excludeDefaultMappings() {
+        return m_excludeDefaultMappings;
+    }
+    
+    /**
+     * INTERNAL:
      */
     public String getCatalog() {
         return (m_persistenceUnitDefaults == null) ? "" : m_persistenceUnitDefaults.getCatalog();
@@ -81,6 +95,14 @@ public class XMLPersistenceUnitMetadata extends ORMetadata {
      */
     public List<EntityListenerMetadata> getDefaultListeners() {
         return (m_persistenceUnitDefaults == null) ? new ArrayList<EntityListenerMetadata>(): m_persistenceUnitDefaults.getEntityListeners(); 
+    }
+    
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+    public String getExcludeDefaultMappings() {
+        return null;
     }
     
     /**
@@ -123,6 +145,7 @@ public class XMLPersistenceUnitMetadata extends ORMetadata {
         
         // Primitive boolean merging.
         mergePrimitiveBoolean(m_xmlMappingMetadataComplete, persistenceUnitMetadata.isXMLMappingMetadataComplete(), persistenceUnitMetadata.getAccessibleObject(), "<xml-mapping-metadata-complete>");
+        mergePrimitiveBoolean(m_excludeDefaultMappings, persistenceUnitMetadata.excludeDefaultMappings(), persistenceUnitMetadata.getAccessibleObject(), "<exclude-default-mappings>");
         
         // Merge the persistence unit defaults.
         m_persistenceUnitDefaults.merge(persistenceUnitMetadata.getPersistenceUnitDefaults());
@@ -130,13 +153,20 @@ public class XMLPersistenceUnitMetadata extends ORMetadata {
     
     /**
      * INTERNAL:
-     * Set the location if one is not already set.
      */
     @Override
     public void initXMLObject(MetadataAccessibleObject accessibleObject) {
         super.initXMLObject(accessibleObject);
         
         initXMLObject(m_persistenceUnitDefaults, accessibleObject);
+    }
+    
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+    public void setExcludeDefaultMappings(String ignore) {
+        m_excludeDefaultMappings = true;
     }
     
     /**

@@ -128,6 +128,8 @@
     <xsd:sequence>
       <xsd:element name="xml-mapping-metadata-complete" type="orm:emptyType"
                    minOccurs="0"/>
+      <xsd:element name="exclude-default-mappings" type="orm:emptyType"
+                   minOccurs="0"/>             
       <xsd:element name="persistence-unit-defaults" 
                    type="orm:persistence-unit-defaults"
                    minOccurs="0"/>
@@ -267,6 +269,7 @@
     <xsd:attribute name="metadata-complete" type="xsd:boolean"/>
     <xsd:attribute name="read-only" type="xsd:boolean"/>
     <xsd:attribute name="existence-checking" type="orm:existence-type"/>
+    <xsd:attribute name="exclude-default-mappings" type="xsd:boolean"/>
   </xsd:complexType>
 
   <!-- **************************************************** -->
@@ -1647,6 +1650,7 @@
     <xsd:attribute name="class" type="xsd:string" use="required"/>
     <xsd:attribute name="access" type="orm:access-type"/>
     <xsd:attribute name="metadata-complete" type="xsd:boolean"/>
+    <xsd:attribute name="exclude-default-mappings" type="xsd:boolean"/>
   </xsd:complexType>
 
   <!-- **************************************************** -->
@@ -1733,6 +1737,7 @@
     <xsd:attribute name="metadata-complete" type="xsd:boolean"/>
     <xsd:attribute name="read-only" type="xsd:boolean"/>
     <xsd:attribute name="existence-checking" type="orm:existence-type"/>
+    <xsd:attribute name="exclude-default-mappings" type="xsd:boolean"/>
   </xsd:complexType>
 
   <!-- **************************************************** -->

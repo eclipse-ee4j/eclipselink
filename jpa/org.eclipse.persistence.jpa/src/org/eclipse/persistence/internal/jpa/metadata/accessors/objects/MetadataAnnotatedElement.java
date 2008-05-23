@@ -9,7 +9,9 @@
  *
  * Contributors:
  *     05/16/2008-1.0M8 Guy Pelletier 
- *       - 218084: Implement metadata merging functionality between mapping files  
+ *       - 218084: Implement metadata merging functionality between mapping files
+ *     05/23/2008-1.0M8 Guy Pelletier 
+ *       - 211330: Add attributes-complete support to the EclipseLink-ORM.XML Schema  
  ******************************************************************************/
 package org.eclipse.persistence.internal.jpa.metadata.accessors.objects;
 
@@ -382,7 +384,7 @@ public class MetadataAnnotatedElement extends MetadataAccessibleObject {
      * Return true if this accessor represents a 1-m relationship.
      */
     public boolean isOneToMany(MetadataDescriptor descriptor) {
-        if (isAnnotationNotPresent(OneToMany.class)) {
+        if (isAnnotationNotPresent(OneToMany.class) && ! descriptor.ignoreDefaultMappings()) {
             if (isGenericCollectionType() && isSupportedCollectionClass() && descriptor.getProject().hasEntity(getReferenceClassFromGeneric())) {
                 getLogger().logConfigMessage(MetadataLogger.ONE_TO_MANY_MAPPING, m_annotatedElement);
                 return true;
@@ -401,7 +403,7 @@ public class MetadataAnnotatedElement extends MetadataAccessibleObject {
      * Return true if this accessor represents a 1-1 relationship.
      */
     public boolean isOneToOne(MetadataDescriptor descriptor) {        
-        if (isAnnotationNotPresent(OneToOne.class)) {    
+        if (isAnnotationNotPresent(OneToOne.class) && ! descriptor.ignoreDefaultMappings()) {    
             if (descriptor.getProject().hasEntity(getRawClass()) && ! isEmbedded(descriptor)) {
                 getLogger().logConfigMessage(MetadataLogger.ONE_TO_ONE_MAPPING, m_annotatedElement);
                 return true;
@@ -453,10 +455,10 @@ public class MetadataAnnotatedElement extends MetadataAccessibleObject {
      * The method will return true if one of the following conditions is met:
      *  - There is a VariableOneToOne annotation present, or
      *  - The raw class is an interface and not a collection or map, nor a 
-     *    ValueHolderInterface.
+     *    ValueHolderInterface (and an exclude default mappings flag is not set)
      */
     public boolean isVariableOneToOne(MetadataDescriptor descriptor) {
-        if (isAnnotationNotPresent(VariableOneToOne.class)) {
+        if (isAnnotationNotPresent(VariableOneToOne.class) && ! descriptor.ignoreDefaultMappings()) {
             if (getRawClass().isInterface() && 
                     ! Map.class.isAssignableFrom(getRawClass()) && 
                     ! Collection.class.isAssignableFrom(getRawClass()) &&
