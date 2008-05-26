@@ -23,7 +23,7 @@ import org.eclipse.persistence.testing.models.employee.domain.Employee;
  * Tests that update all queries rollback properly within a UOW.
  * Assumes UpdateAllQueries will fire in the order they are coded.
  *
- * @auther Guy Pelletier
+ * @author Guy Pelletier
  * @version 1.0 May 18/04
  */
 public class UpdateAllQueryRollbackTest extends TestCase {

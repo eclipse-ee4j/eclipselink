@@ -15,10 +15,10 @@ package org.eclipse.persistence.testing.tests.optimisticlocking.cascaded;
 import org.eclipse.persistence.sessions.UnitOfWork;
 
 /**
- * Tests the cascade optimistic locking on removing from a colleciton mapping
- * that requires multiple node notification/traverals.
+ * Tests the cascade optimistic locking on removing from a collection mapping
+ * that requires multiple node notification/traversals.
  * 
- * @auther Guy Pelletier
+ * @author Guy Pelletier
  * @version 1.0 June 2/05
  */
 public class CascadedMultiLevelCollectionOptimisticLockingTest extends CascadedOptimisticLockingTest {

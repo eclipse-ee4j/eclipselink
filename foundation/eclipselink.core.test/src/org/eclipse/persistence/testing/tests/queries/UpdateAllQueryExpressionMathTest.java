@@ -23,7 +23,7 @@ import org.eclipse.persistence.testing.models.insurance.Claim;
 /**
  * Tests an update all query that uses the ExpressionMath in the set clause
  *
- * @auther Guy Pelletier
+ * @author Guy Pelletier
  * @version 1.0 April 13/04
  */
 public class UpdateAllQueryExpressionMathTest extends AutoVerifyTestCase {

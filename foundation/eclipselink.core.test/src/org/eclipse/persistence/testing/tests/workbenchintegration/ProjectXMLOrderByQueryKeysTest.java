@@ -29,7 +29,7 @@ import org.eclipse.persistence.sessions.factories.XMLProjectWriter;
  * Tests that the order by query keys are properly persisted to the deployment
  * xml.
  * 
- * @auther Guy Pelletier
+ * @author Guy Pelletier
  * @version 1.0 
  * @date March 11, 2005
  */

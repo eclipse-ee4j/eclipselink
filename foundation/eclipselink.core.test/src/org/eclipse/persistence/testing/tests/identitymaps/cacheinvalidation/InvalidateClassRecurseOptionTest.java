@@ -22,7 +22,7 @@ import org.eclipse.persistence.testing.models.employee.domain.*;
  * Tests the recurse option on the invalidateClass from IdentityMapAccessor.
  * Two scenarios: recurse equals true or false. Edwin Tang
  *
- * @auther Guy Pelletier
+ * @author Guy Pelletier
  * @version 2.0 Jan 25/05
  */
 public class InvalidateClassRecurseOptionTest extends AutoVerifyTestCase {

@@ -17,7 +17,7 @@ import org.eclipse.persistence.sessions.UnitOfWork;
 /**
  * Tests the cascade optimistic locking on a 1-1 privately owned mapping.
  * 
- * @auther Guy Pelletier
+ * @author Guy Pelletier
  * @version 1.0 June 2/05
  */
  

@@ -27,7 +27,7 @@ import org.eclipse.persistence.internal.helper.ConversionManager;
  * to ensure the correct class loader is used.
  * BUG# 2813583
  *
- * @auther Guy Pelletier
+ * @author Guy Pelletier
  * @version 1.0 March 25/03
  */
 public class CustomObjectInputStream extends ObjectInputStream {

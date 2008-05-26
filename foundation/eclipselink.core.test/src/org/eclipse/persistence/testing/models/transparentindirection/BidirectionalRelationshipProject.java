@@ -21,7 +21,7 @@ import org.eclipse.persistence.descriptors.RelationalDescriptor;
 import org.eclipse.persistence.sessions.DatabaseSession;
 
 /**
- * @auther Guy Pelletier
+ * @author Guy Pelletier
  * @version 1.0
  * @date March 21, 2005
  */

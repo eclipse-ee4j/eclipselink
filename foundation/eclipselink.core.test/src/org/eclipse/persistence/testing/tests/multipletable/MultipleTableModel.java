@@ -22,7 +22,7 @@ import org.eclipse.persistence.testing.models.multipletable.MultipleTableSystem;
 /**
  * Testing model for multiple table tests
  *
- * @auther Guy Pelletier
+ * @author Guy Pelletier
  * @version 1.0
  * @date May 28, 2007
  */

@@ -23,7 +23,7 @@ import org.eclipse.persistence.testing.models.employee.domain.*;
 /**
  * Tests the invalidate all from IdentityMapAccessor.
  *
- * @auther Guy Pelletier
+ * @author Guy Pelletier
  * @version 1.0 Jul 14/05
  */
 public class InvalidateAllTest extends AutoVerifyTestCase {

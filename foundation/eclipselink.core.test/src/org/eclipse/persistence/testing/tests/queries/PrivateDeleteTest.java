@@ -19,7 +19,7 @@ import org.eclipse.persistence.expressions.*;
 
 /**
  * Tests cascaded delete. cascadePrivateParts is used.
- * @auther Peter O'Blenis
+ * @author Peter O'Blenis
  * @version 1.0 January 18/99
  */
 public class PrivateDeleteTest extends TestCase {

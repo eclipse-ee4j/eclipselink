@@ -16,7 +16,7 @@ import org.eclipse.persistence.sessions.DatabaseSession;
 import org.eclipse.persistence.testing.framework.TestSystem;
 
 /**
- * @auther Guy Pelletier
+ * @author Guy Pelletier
  * @version 1.0
  * @date March 21, 2005
  */

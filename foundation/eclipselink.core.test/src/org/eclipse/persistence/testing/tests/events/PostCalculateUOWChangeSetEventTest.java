@@ -20,7 +20,7 @@ import org.eclipse.persistence.testing.framework.*;
  * Tests the triggering of the post calculate unit of work change set event.
  * BUG# 4138562.
  * 
- * @auther Guy Pelletier
+ * @author Guy Pelletier
  * @version 1.0 July 28/05
  */
 public class PostCalculateUOWChangeSetEventTest extends EventHookTestCase {

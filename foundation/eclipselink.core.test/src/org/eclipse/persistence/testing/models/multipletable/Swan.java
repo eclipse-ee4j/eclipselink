@@ -13,9 +13,9 @@
 package org.eclipse.persistence.testing.models.multipletable;
 
 /**
- * A Swan object uses mutliple table foreign key.
+ * A Swan object uses multiple table foreign key.
  *
- * @auther Guy Pelletier
+ * @author Guy Pelletier
  * @version 1.0
  * @date May 28, 2007
  */

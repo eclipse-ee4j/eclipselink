@@ -21,7 +21,7 @@ import org.eclipse.persistence.sessions.UnitOfWork;
 /**
  * Validation test for UpdateAllQuery's and nested UOW .
  * 
- * @auther Guy Pelletier
+ * @author Guy Pelletier
  * @version 1.0 May 17/04
  */
 public class NestedUOWWithUpdateAllQueryTest extends ExceptionTest {

@@ -19,11 +19,11 @@ import org.eclipse.persistence.testing.framework.TestErrorException;
 import org.eclipse.persistence.testing.models.directmap.DirectMapMappings;
 
 /**
- * Tests that null objects withing a HashMap do not throw a null pointer
+ * Tests that null objects within a HashMap do not throw a null pointer
  * exception.
  * BUG# 4364944
  *
- * @auther Guy Pelletier
+ * @author Guy Pelletier
  * @version 1.0
  * @date July 26, 2005
  */

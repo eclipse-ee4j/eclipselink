@@ -24,7 +24,7 @@ import org.eclipse.persistence.testing.models.employee.domain.Employee;
  * from the database.
  * CR# 4286 ... 2612556
  *
- * @auther Guy Pelletier
+ * @author Guy Pelletier
  * @version 1.0 October 10/02
  *
  * Changed ailitche_ri_delete_all_query_050920

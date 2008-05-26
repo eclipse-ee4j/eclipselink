@@ -18,7 +18,7 @@ import org.eclipse.persistence.testing.framework.TestSystem;
 /**
  * System for the MultipleTableModel
  *
- * @auther Guy Pelletier
+ * @author Guy Pelletier
  * @version 1.0
  * @date June 17, 2005
  */

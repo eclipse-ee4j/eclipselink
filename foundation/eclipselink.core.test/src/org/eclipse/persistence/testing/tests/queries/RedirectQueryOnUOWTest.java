@@ -39,7 +39,7 @@ import org.eclipse.persistence.testing.models.employee.domain.Employee;
  * the query. 
  * BUG# 2692956
  * 
- * @auther Guy Pelletier
+ * @author Guy Pelletier
  * @version 1.0 January 08/03
  */
 public class

@@ -19,7 +19,7 @@ import org.eclipse.persistence.mappings.DirectToFieldMapping;
 /**
  * Project definition for the MultipleTableSystem
  *
- * @auther Guy Pelletier
+ * @author Guy Pelletier
  * @version 1.0
  * @date June 17, 2005
  */

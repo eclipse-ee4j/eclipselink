@@ -17,7 +17,7 @@ import java.util.*;
 /**
  * Object that will hold our mappings.
  *
- * @auther Guy Pelletier
+ * @author Guy Pelletier
  * @version 1.0
  * @date March 04, 2003
  */

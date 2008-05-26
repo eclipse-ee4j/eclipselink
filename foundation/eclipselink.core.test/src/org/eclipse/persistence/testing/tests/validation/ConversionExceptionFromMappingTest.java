@@ -21,7 +21,7 @@ import org.eclipse.persistence.testing.framework.TestErrorException;
 
 
 /**
- * @auther Guy Pelletier
+ * @author Guy Pelletier
  * @version 1.0
  * @date June 25, 2003
  */

@@ -22,7 +22,7 @@ import org.eclipse.persistence.testing.models.directmap.*;
  * Tests the merge change set into a distributed cache with a direct map mapping
  * BUG# 2783391
  *
- * @auther Guy Pelletier
+ * @author Guy Pelletier
  * @version 1.0
  * @date March 04, 2003
  */

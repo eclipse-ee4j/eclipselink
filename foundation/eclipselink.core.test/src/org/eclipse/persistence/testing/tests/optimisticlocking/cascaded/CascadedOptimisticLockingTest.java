@@ -19,7 +19,7 @@ import org.eclipse.persistence.expressions.ExpressionBuilder;
 /**
  * Root test case for the cascaded optimistic locking tests.
  * 
- * @auther Guy Pelletier
+ * @author Guy Pelletier
  * @version 1.0 June 2/05
  */
 public class CascadedOptimisticLockingTest extends AutoVerifyTestCase {

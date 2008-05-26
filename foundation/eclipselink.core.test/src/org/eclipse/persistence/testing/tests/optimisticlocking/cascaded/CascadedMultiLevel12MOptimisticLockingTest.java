@@ -16,9 +16,9 @@ import org.eclipse.persistence.sessions.UnitOfWork;
 
 /**
  * Tests the cascade optimistic locking on a 1-M privately owned mapping that
- * requires multiple node notification/traverals.
+ * requires multiple node notification/traversals.
  * 
- * @auther Guy Pelletier
+ * @author Guy Pelletier
  * @version 1.0 June 2/05
  */
 public class CascadedMultiLevel12MOptimisticLockingTest extends CascadedOptimisticLockingTest {

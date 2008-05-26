@@ -20,7 +20,7 @@ import org.eclipse.persistence.testing.framework.TestErrorException;
 import org.eclipse.persistence.testing.models.directmap.DirectMapMappings;
 
 /**
- * @auther Gordon Yorke
+ * @author Gordon Yorke
  * @date May 11, 2005
  */
 public class DirectMapUnitOfWorkTest extends AutoVerifyTestCase {

@@ -18,7 +18,7 @@ import org.eclipse.persistence.testing.models.insurance.Claim;
 
 /**
  * Tests cascaded delete on 1-many mapping. cascadeAllParts is used.
- * @auther Peter O'Blenis
+ * @author Peter O'Blenis
  * @version 1.0 January 18/99
  */
 public class DeepDeleteTest extends AutoVerifyTestCase {

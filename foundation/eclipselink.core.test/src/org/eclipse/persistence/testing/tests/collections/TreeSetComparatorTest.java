@@ -25,7 +25,7 @@ import org.eclipse.persistence.testing.framework.*;
  * TreeSet.
  * BUG# 3233263
  *
- * @auther Guy Pelletier
+ * @author Guy Pelletier
  * @version 1.0 December 5/03
  */
 public class TreeSetComparatorTest extends AutoVerifyTestCase {

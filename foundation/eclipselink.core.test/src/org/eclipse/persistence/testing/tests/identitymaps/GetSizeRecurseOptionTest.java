@@ -21,7 +21,7 @@ import org.eclipse.persistence.internal.sessions.AbstractSession;
 /**
  * Tests the recurse option on the getSize from IdentityMapAccessor.
  *
- * @auther Guy Pelletier
+ * @author Guy Pelletier
  * @version 1.0 May 20/04
  */
 public class GetSizeRecurseOptionTest extends TestCase {

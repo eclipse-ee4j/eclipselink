@@ -23,7 +23,7 @@ import org.eclipse.persistence.internal.helper.Helper;
  *
  * BUG# 3970215
  *
- * @auther Guy Pelletier
+ * @author Guy Pelletier
  * @version 1.0
  * @date May 28/07
  */

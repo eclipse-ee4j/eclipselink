@@ -14,9 +14,9 @@ package org.eclipse.persistence.testing.models.multipletable;
 
 
 /**
- * A cow object uses mutliple table foreign key.
+ * A cow object uses multiple table foreign key.
  *
- * @auther Guy Pelletier
+ * @author Guy Pelletier
  * @version 1.0
  * @date June 17, 2005
  */

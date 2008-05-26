@@ -14,9 +14,9 @@ package org.eclipse.persistence.testing.models.multipletable;
 
 
 /**
- * A horse object uses mutliple table primary key.
+ * A horse object uses multiple table primary key.
  *
- * @auther Guy Pelletier
+ * @author Guy Pelletier
  * @version 1.0
  * @date June 17, 2005
  */

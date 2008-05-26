@@ -13,9 +13,9 @@
 package org.eclipse.persistence.testing.models.multipletable;
 
 /**
- * A Human object uses mutliple table primary key.
+ * A Human object uses multiple table primary key.
  *
- * @auther Guy Pelletier
+ * @author Guy Pelletier
  * @version 1.0
  * @date May 28, 2007
  */

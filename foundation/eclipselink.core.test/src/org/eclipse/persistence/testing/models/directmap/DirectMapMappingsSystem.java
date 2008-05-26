@@ -18,7 +18,7 @@ import org.eclipse.persistence.testing.framework.TestSystem;
 /**
  * New system that is added to the DirectMapMappingModel
  *
- * @auther Guy Pelletier
+ * @author Guy Pelletier
  * @version 1.0
  * @date March 04, 2003
  */

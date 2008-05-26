@@ -22,7 +22,7 @@ import org.eclipse.persistence.testing.models.transparentindirection.Team;
  * BUG - 4082205 Bi-directional relationship maintenance does not work with
  * transparent maps.
  *
- * @auther Guy Pelletier
+ * @author Guy Pelletier
  * @version 1.0
  * @date March 21, 2005
  */

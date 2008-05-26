@@ -23,7 +23,7 @@ import org.eclipse.persistence.testing.models.directmap.DirectMapMappings;
  * are properly removed.
  * BUG# 2992291
  *
- * @auther Guy Pelletier
+ * @author Guy Pelletier
  * @version 1.0
  * @date June 12, 2003
  */

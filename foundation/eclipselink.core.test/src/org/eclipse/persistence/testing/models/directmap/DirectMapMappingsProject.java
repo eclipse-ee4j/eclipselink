@@ -23,7 +23,7 @@ import org.eclipse.persistence.mappings.converters.*;
 /**
  * Project definition for the DirectMapMappingsSystem
  *
- * @auther Guy Pelletier
+ * @author Guy Pelletier
  * @version 1.0
  * @date March 04, 2003
  */

@@ -24,7 +24,7 @@ import org.eclipse.persistence.testing.models.employee.domain.Employee;
  * Tests that a QueryByExample query in an UOW can pick up a new object created.
  * BUG# 3136413
  * 
- * @auther Guy Pelletier
+ * @author Guy Pelletier
  * @version 1.0 September 12/03
  */
 public class

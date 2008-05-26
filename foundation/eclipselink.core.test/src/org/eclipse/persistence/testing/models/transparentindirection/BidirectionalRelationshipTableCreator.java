@@ -17,7 +17,7 @@ import org.eclipse.persistence.tools.schemaframework.*;
 /**
  * Creates the necessary tables for the BidirectionalRelationshipProject.
  *
- * @auther Guy Pelletier
+ * @author Guy Pelletier
  * @version 1.0
  * @date March 21, 2005
  */

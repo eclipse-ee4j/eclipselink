@@ -22,7 +22,7 @@ import org.eclipse.persistence.testing.models.employee.domain.Employee;
 /**
  * Tests a basic update all query.
  *
- * @auther Guy Pelletier
+ * @author Guy Pelletier
  * @version 1.0 April 13/04
  */
 public class UpdateAllQueryTest extends AutoVerifyTestCase {
