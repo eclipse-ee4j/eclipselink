@@ -106,7 +106,8 @@ public class InvalidateObjectWithMissingReferenceTest extends ConfigurableCacheS
         //uow.commit() is broken into components to allow DB change before cache synch propogates changes
         ((UnitOfWorkImpl)uow).issueSQLbeforeCompletion();
         getAbstractSession().insertObject(this.originalAddress);
-        getSession().executeNonSelectingSQL("UPDATE EMPLOYEE SET ADDR_ID = " + this.originalAddress.getId() + " WHERE (EMP_ID = " + empClone.getId() + ")");
+        
+        getAbstractSession().getSessionForClass(Employee.class).executeNonSelectingSQL("UPDATE EMPLOYEE SET ADDR_ID = " + this.originalAddress.getId() + " WHERE (EMP_ID = " + empClone.getId() + ")");
 
         getAbstractSession().deleteObject(addressClone);
 

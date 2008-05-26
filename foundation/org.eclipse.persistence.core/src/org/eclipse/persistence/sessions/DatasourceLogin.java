@@ -211,6 +211,9 @@ public abstract class DatasourceLogin implements org.eclipse.persistence.session
      * This allows EclipseLink to configure certain advanced features for the datasource desired.
      */
     public Platform getDatasourcePlatform() {
+        if (this.platform == null) {
+            this.platform = new DatasourcePlatform();
+        }
         return platform;
     }
 

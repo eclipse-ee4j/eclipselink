@@ -231,15 +231,18 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
         if (entity == null) {
             throw new IllegalArgumentException(ExceptionLocalization.buildMessage("not_an_entity", new Object[] { entity }));
         }
-        //gf830 - merging a removed entity should throw exception
-        if (getActivePersistenceContext(checkForTransaction(!isExtended())).getDeletedObjects().containsKey(entity)) {
-            throw new IllegalArgumentException(ExceptionLocalization.buildMessage("cannot_merge_removed_entity", new Object[] { entity }));
-        }
+        Object merged = null;
+        UnitOfWorkImpl context = getActivePersistenceContext(checkForTransaction(!isExtended()));
         try {
-            return getActivePersistenceContext(checkForTransaction(!isExtended())).mergeCloneWithReferences(entity, MergeManager.CASCADE_BY_MAPPING, true);
+            merged = context.mergeCloneWithReferences(entity, MergeManager.CASCADE_BY_MAPPING, true);
         } catch (org.eclipse.persistence.exceptions.OptimisticLockException ole) {
             throw new javax.persistence.OptimisticLockException(ole);
         }
+        // gf830 - merging a removed entity should throw exception.
+        if (context.getDeletedObjects().containsKey(merged)) {
+            throw new IllegalArgumentException(ExceptionLocalization.buildMessage("cannot_merge_removed_entity", new Object[] { entity }));
+        }
+        return merged;
     }
 
     /**

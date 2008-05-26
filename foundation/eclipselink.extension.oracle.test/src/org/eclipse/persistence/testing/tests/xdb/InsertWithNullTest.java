@@ -29,7 +29,6 @@ public class InsertWithNullTest extends TestCase {
 
     public void test() {
         Employee_XML emp = new Employee_XML();
-        emp.id = 1024;
         emp.firstName = "Fred";
         emp.lastName = "Flintstone";
         emp.gender = "Male";

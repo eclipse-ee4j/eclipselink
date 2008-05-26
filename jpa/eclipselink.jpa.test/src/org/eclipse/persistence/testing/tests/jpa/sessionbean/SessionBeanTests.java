@@ -110,20 +110,26 @@ public class SessionBeanTests extends JUnitTestCase {
             employee.getFirstName();
             employee.getLastName();
             boolean caughtError = false;
+            Address address = null;
             try {
-                employee.getAddress();
+                address = employee.getAddress();
             } catch (ValidationException exception) {
                 caughtError = true;
                 if (exception.getErrorCode() != ValidationException.INSTANTIATING_VALUEHOLDER_WITH_NULL_SESSION) {
                     throw exception;
                 }
             }
-            if (isOnServer() && !caughtError) {
-                fail("INSTANTIATING_VALUEHOLDER_WITH_NULL_SESSION error not thrown.");
-            } else {
-                warning("Client serialization nulls non-instantiated 1-1s.");
+            // May not serialize on server, so may be ok.
+            if (address == null) {
+                if (isOnServer() && !caughtError) {
+                    fail("INSTANTIATING_VALUEHOLDER_WITH_NULL_SESSION error not thrown.");
+                } else {
+                    warning("Client serialization nulls non-instantiated 1-1s.");
+                }
             }
-            employee.getDepartment();
+            if (employee.getDepartment() == null) {
+                fail("Department is null, failed to serialize eager.");
+            }
             caughtError = false;
             try {
                 employee.getPhoneNumbers().size();
@@ -133,7 +139,7 @@ public class SessionBeanTests extends JUnitTestCase {
                     throw exception;
                 }
             }
-            if (!caughtError) {
+            if (address == null && !caughtError) {
                 fail("INSTANTIATING_VALUEHOLDER_WITH_NULL_SESSION error not thrown.");
             }
         }

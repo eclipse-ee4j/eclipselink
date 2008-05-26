@@ -20,16 +20,23 @@ import org.eclipse.persistence.oxm.mappings.XMLDirectMapping;
 import org.eclipse.persistence.mappings.xdb.DirectToXMLTypeMapping;
 import org.eclipse.persistence.sessions.Project;
 
+/**
+ * Helper class to abstract the XML mapping for DirectToXMLType.
+ * 
+ * @author djclarke
+ * @since EclipseLink 0.1
+ */
 public class OracleDirectToXMLTypeMappingHelper extends DirectToXMLTypeMappingHelper {
 
     /**
-     * 
+     * Add the XMLType mapping indicator to the DatabaseMapping descriptor.
      */
     public void addClassIndicator(XMLDescriptor descriptor) {
+        descriptor.getInheritancePolicy().addClassIndicator(DirectToXMLTypeMapping.class, "eclipselink:direct-xml-type-mapping");
     }
-    
+
     /**
-     * 
+     * Write the Project.class code for the XMLType property.
      */
     public void writeShouldreadWholeDocument(NonreflectiveMethodDefinition method, String mappingName, DatabaseMapping mapping) {
         method.addLine(mappingName + ".setShouldReadWholeDocument(" + ((DirectToXMLTypeMapping)mapping).shouldReadWholeDocument() + ");");
@@ -50,7 +57,7 @@ public class OracleDirectToXMLTypeMappingHelper extends DirectToXMLTypeMappingHe
             directtofieldmapping.setAttributeName("shouldReadWholeDocument");
             directtofieldmapping.setGetMethodName("shouldReadWholeDocument");
             directtofieldmapping.setSetMethodName("setShouldReadWholeDocument");
-            directtofieldmapping.setXPath("toplink:read-whole-document/text()");
+            directtofieldmapping.setXPath("eclipselink:read-whole-document/text()");
             directtofieldmapping.setNullValue(new Boolean(false));
             descriptor.addMapping(directtofieldmapping);
     

@@ -113,8 +113,9 @@ public class EntityMappingsMergeRelationshipsJUnitTestCase extends JUnitTestCase
         ServerSession session = JUnitTestCase.getServerSession();
         ClassDescriptor descriptor = session.getDescriptor(Order.class);
         ForeignReferenceMapping mapping = (ForeignReferenceMapping) descriptor.getMappingForAttributeName("customer");
-        
-        assertTrue("Customer mapping on Order is not set to LAZY loading.", mapping.usesIndirection());
+        if (isWeavingEnabled()) {
+            assertTrue("Customer mapping on Order is not set to LAZY loading.", mapping.usesIndirection());
+        }
     }
     
     /**

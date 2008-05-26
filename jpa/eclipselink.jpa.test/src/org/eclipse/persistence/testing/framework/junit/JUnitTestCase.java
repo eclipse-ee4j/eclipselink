@@ -99,6 +99,13 @@ public abstract class JUnitTestCase extends TestCase {
     }
     
     /**
+     * Return if the tests were run using weaving, agent or static.
+     */
+    public static boolean isWeavingEnabled() {
+        return System.getProperty("TEST_NO_WEAVING") == null;
+    }
+    
+    /**
      * Return if the test is running on a JEE server, or in JSE.
      */
     public static boolean isOnServer() {

@@ -16,6 +16,7 @@ import java.io.*;
 import java.sql.Connection;
 import org.eclipse.persistence.internal.databaseaccess.Accessor;
 import org.eclipse.persistence.internal.databaseaccess.DatabaseAccessor;
+import org.eclipse.persistence.internal.databaseaccess.Platform;
 import org.eclipse.persistence.internal.localization.*;
 import org.eclipse.persistence.platform.database.*;
 import org.eclipse.persistence.platform.database.oracle.OraclePlatform;
@@ -298,6 +299,18 @@ public class DatabaseLogin extends DatasourceLogin {
      */
     public String getDataSourceName() throws ValidationException {
         return getDatabaseURL();
+    }
+    
+    /**
+     * PUBLIC:
+     * Return the datasource platform specific information.
+     * This allows EclipseLink to configure certain advanced features for the datasource desired.
+     */
+    public Platform getDatasourcePlatform() {
+        if (this.platform == null) {
+            this.platform = new DatabasePlatform();
+        }
+        return platform;
     }
 
     /**

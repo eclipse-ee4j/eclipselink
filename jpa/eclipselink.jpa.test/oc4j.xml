@@ -137,8 +137,6 @@
             <arg value="jdbc/EclipseLinkDS"/>
             <arg value="-connectionPoolName"/>
             <arg value="ejbPool"/>
-            <arg value="-txLevel"/>
-            <arg value="local"/>
         </java>
     </target>
 

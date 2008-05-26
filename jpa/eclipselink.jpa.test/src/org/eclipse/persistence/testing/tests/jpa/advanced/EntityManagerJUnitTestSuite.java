@@ -3311,7 +3311,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         }
 
         // Only throw error if weaving was used.
-        if (System.getProperty("TEST_NO_WEAVING") == null) {
+        if (isWeavingEnabled()) {
             assertNotNull("The correct exception was not thrown while traversing an uninstantiated lazy relationship on a serialized object: " + exception, exception);
         }
         beginTransaction(em);

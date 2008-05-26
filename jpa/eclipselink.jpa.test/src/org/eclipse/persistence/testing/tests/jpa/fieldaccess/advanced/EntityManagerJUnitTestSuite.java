@@ -63,7 +63,6 @@ import org.eclipse.persistence.sessions.Session;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.descriptors.changetracking.ChangeTracker;
 import org.eclipse.persistence.internal.descriptors.PersistenceEntity;
-import org.eclipse.persistence.internal.jpa.EntityManagerFactoryImpl;
 import org.eclipse.persistence.internal.weaving.PersistenceWeaved;
 import org.eclipse.persistence.internal.weaving.PersistenceWeavedLazy;
 import org.eclipse.persistence.queries.FetchGroupTracker;
@@ -296,7 +295,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         beginTransaction(em);
         List result = em.createQuery("SELECT OBJECT(e) FROM Employee e").getResultList();
         commitTransaction(em);
-        Object obj = ((EntityManagerFactoryImpl)getEntityManagerFactory("fieldaccess")).getServerSession().getIdentityMapAccessor().getFromIdentityMap(result.get(0));
+        Object obj = getServerSession("fieldaccess").getIdentityMapAccessor().getFromIdentityMap(result.get(0));
         assertTrue("Failed to load the object into the shared cache when there were no changes in the UOW", obj != null);
         try{
             beginTransaction(em);
@@ -2230,6 +2229,10 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
     }
     
     public void testParallelMultipleFactories() {
+        if (isOnServer()) {
+            // Cannot connect locally on server.
+            return;
+        }
         EntityManagerFactory factory1 =  Persistence.createEntityManagerFactory("fieldaccess", JUnitTestCaseHelper.getDatabaseProperties());
         factory1.createEntityManager();
         EntityManagerFactory factory2 =  Persistence.createEntityManagerFactory("fieldaccess", JUnitTestCaseHelper.getDatabaseProperties());
@@ -2531,6 +2534,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         try{
             Query query = em.createQuery("SELECT e FROM Employee e WHERE e.lastName = 'Malone' order by e.firstName");
             query.setHint(EclipseLinkQueryHints.BATCH, "e");
+            query.getResultList();
         } catch (QueryException exc){
             exception = exc;
         }
@@ -2540,6 +2544,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         try{
             Query query = em.createQuery("SELECT e FROM Employee e WHERE e.lastName = 'Malone' order by e.firstName");
             query.setHint(EclipseLinkQueryHints.BATCH, "e.abcdef");
+            query.getResultList();
         } catch (QueryException exc){
             exception = exc;
         }
@@ -2550,6 +2555,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         try{
             Query query = em.createQuery("SELECT e FROM Employee e WHERE e.lastName = 'Malone' order by e.firstName");
             query.setHint(EclipseLinkQueryHints.BATCH, "e.firstName");
+            query.getResultList();
         } catch (QueryException exc){
             exception = exc;
         }
@@ -2560,6 +2566,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         try{
             Query query = em.createQuery("SELECT e FROM Employee e WHERE e.lastName = 'Malone' order by e.firstName");
             query.setHint(EclipseLinkQueryHints.FETCH, "e");
+            query.getResultList();
         } catch (QueryException exc){
             exception = exc;
         }
@@ -2570,6 +2577,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         try{
             Query query = em.createQuery("SELECT e FROM Employee e WHERE e.lastName = 'Malone' order by e.firstName");
             query.setHint(EclipseLinkQueryHints.FETCH, "e.abcdef");
+            query.getResultList();
         } catch (QueryException exc){
             exception = exc;
         }
@@ -2580,6 +2588,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         try{
             Query query = em.createQuery("SELECT e FROM Employee e WHERE e.lastName = 'Malone' order by e.firstName");
             query.setHint(EclipseLinkQueryHints.FETCH, "e.firstName");
+            query.getResultList();
         } catch (QueryException exc){
             exception = exc;
         }
@@ -2677,7 +2686,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         }
 
         // Only throw error if weaving was used.
-        if (System.getProperty("TEST_NO_WEAVING") == null) {
+        if (isWeavingEnabled()) {
             assertNotNull("The correct exception was not thrown while traversing an uninstantiated lazy relationship on a serialized object: " + exception, exception);
         }
         beginTransaction(em);
@@ -2689,7 +2698,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
     //test for bug 5170395: GET THE SEQUENCING EXCEPTION WHEN RUNNING FOR THE FIRST TIME ON A CLEAR SCHEMA
     public void testSequenceObjectDefinition() {
         EntityManager em = createEntityManager("fieldaccess");
-        ServerSession ss = ((EntityManagerFactoryImpl)getEntityManagerFactory("fieldaccess")).getServerSession();
+        ServerSession ss = getServerSession("fieldaccess");
         if(!ss.getLogin().getPlatform().supportsSequenceObjects()) {
             // platform that supports sequence objects is required for this test
             closeEntityManager(em);
@@ -2908,9 +2917,9 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
                 rollbackTransaction(em);
             }
             Throwable persistenceException = exception;
-            if (exception.getCause() instanceof javax.transaction.RollbackException) {
+            while (persistenceException instanceof javax.transaction.RollbackException) {
                 // In the server this is always a rollback exception, need to get nested exception.
-                persistenceException = exception.getCause().getCause();
+                persistenceException = persistenceException.getCause();
             }
             if (!(persistenceException instanceof PersistenceException)) {            
                 AssertionFailedError failure = new AssertionFailedError("Wrong exception type thrown: " + persistenceException.getClass());
@@ -2994,9 +3003,9 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
                 rollbackTransaction(em);
             }
             Throwable persistenceException = exception;
-            if (exception.getCause() instanceof javax.transaction.RollbackException) {
+            while (persistenceException instanceof javax.transaction.RollbackException) {
                 // In the server this is always a rollback exception, need to get nested exception.
-                persistenceException = exception.getCause().getCause();
+                persistenceException = persistenceException.getCause();
             }
             if (!(persistenceException instanceof PersistenceException)) {
                 AssertionFailedError failure = new AssertionFailedError("Wrong exception type thrown: " + persistenceException.getClass());
@@ -4163,16 +4172,16 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
     
     // gf2074: EM.clear throws NPE (JTA case)
     public void testClearEntityManagerWithoutPersistenceContextSimulateJTA() {
-        ServerSession ss = ((EntityManagerFactoryImpl)getEntityManagerFactory("fieldaccess")).getServerSession();
+        ServerSession ss = getServerSession("fieldaccess");
         // in non-JTA case session doesn't have external transaction controller
         boolean hasExternalTransactionController = ss.hasExternalTransactionController();
-        if(!hasExternalTransactionController) {
+        if (!hasExternalTransactionController) {
             // simulate JTA case
             ss.setExternalTransactionController(new DummyExternalTransactionController());
         }
         try {
             testClearEntityManagerWithoutPersistenceContext();
-        }finally {
+        } finally {
             if(!hasExternalTransactionController) {
                 // remove the temporary set TransactionController
                 ss.setExternalTransactionController(null);
@@ -4190,7 +4199,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         query.addArgument("lName", String.class);
         
         EntityManager em = createEntityManager("fieldaccess");
-        Session session = ((EntityManagerFactoryImpl)getEntityManagerFactory("fieldaccess")).getServerSession();
+        Session session = getServerSession("fieldaccess");
         ClassDescriptor descriptor = session.getDescriptor(Employee.class);
         descriptor.getQueryManager().addQuery("findByFNameLName", query);
 
@@ -4231,7 +4240,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
 
         
         EntityManager em = createEntityManager("fieldaccess");
-        Session session = ((EntityManagerFactoryImpl)getEntityManagerFactory("fieldaccess")).getServerSession();
+        Session session = getServerSession("fieldaccess");
         ClassDescriptor descriptor = session.getDescriptor(Employee.class);
         descriptor.getQueryManager().addQuery("findEmployees", query);
         descriptor.getQueryManager().addQuery("findEmployees", query2);
@@ -4294,44 +4303,50 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         EntityManager em = createEntityManager("fieldaccess");
         beginTransaction(em);
         
-        Employee employee = new Employee();
-        employee.setFirstName("Owen");
-        employee.setLastName("Hargreaves");
-        employee.getAddress();
-        Employee clone = employee.clone();
-        
-        Address address = new Address();
-        address.setCity("Munich");
-        clone.setAddress(address);
-        clone.getAddress();
-        em.persist(clone);
-        if (employee.getAddress() == clone.getAddress()) {
-            fail("Changing clone address changed original.");
+        try {
+            Employee employee = new Employee();
+            employee.setFirstName("Owen");
+            employee.setLastName("Hargreaves");
+            employee.getAddress();
+            Employee clone = employee.clone();
+            
+            Address address = new Address();
+            address.setCity("Munich");
+            clone.setAddress(address);
+            clone.getAddress();
+            em.persist(clone);
+            if (employee.getAddress() == clone.getAddress()) {
+                fail("Changing clone address changed original.");
+            }
+            commitTransaction(em);
+            clearCache("fieldaccess");
+            closeEntityManager(em);
+            em = createEntityManager("fieldaccess");
+            beginTransaction(em);
+            employee = em.find(Employee.class, clone.getId());
+            clone = employee.clone();
+            
+            address = new Address();
+            address.setCity("Not Munich");
+            clone.setAddress(address);
+            clone.getAddress();
+            if (employee.getAddress() == clone.getAddress()) {
+                fail("Changing clone address changed original.");
+            }
+            if (employee.getAddress() == null) {
+                fail("Changing clone address reset original to null.");
+            }
+            if (clone.getAddress() != address) {
+                fail("Changing clone did not work.");
+            }
+            em.remove(employee);
+            commitTransaction(em);
+        } finally {
+            if (isTransactionActive(em)) {
+                rollbackTransaction(em);
+            }
+            closeEntityManager(em);            
         }
-        commitTransaction(em);
-        clearCache("fieldaccess");
-        closeEntityManager(em);
-        em = createEntityManager("fieldaccess");
-        beginTransaction(em);
-        employee = em.find(Employee.class, clone.getId());
-        clone = employee.clone();
-        
-        address = new Address();
-        address.setCity("Not Munich");
-        clone.setAddress(address);
-        clone.getAddress();
-        if (employee.getAddress() == clone.getAddress()) {
-            fail("Changing clone address changed original.");
-        }
-        if (employee.getAddress() == null) {
-            fail("Changing clone address reset original to null.");
-        }
-        if (clone.getAddress() != address) {
-            fail("Changing clone did not work.");
-        }
-        em.remove(employee);
-        commitTransaction(em);
-        closeEntityManager(em);
     }
     
     // Test copy methods work with weaving.
@@ -4446,7 +4461,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
      */
     public void testSequencePreallocationUsingCallbackTest() {
         // setup
-        ServerSession ss = ((EntityManagerFactoryImpl)getEntityManagerFactory("fieldaccess")).getServerSession();
+        ServerSession ss = getServerSession("fieldaccess");
         // make sure the sequence has both preallocation and callback
         // (the latter means not using sequencing connection pool, 
         // acquiring values before insert and requiring transaction).

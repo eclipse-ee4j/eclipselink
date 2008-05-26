@@ -715,7 +715,7 @@ public class ExpressionQueryMechanism extends StatementQueryMechanism {
         Vector selectionKey = query.getSelectionKey();
         Object selectionObject = query.getSelectionObject();
         if ((selectionKey != null) || (selectionObject != null)) {
-            if ((selectionKey == null) && (selectionObject != null)) {
+            if (selectionKey == null) {
                 selectionKey = descriptor.getObjectBuilder().extractPrimaryKeyFromObject(selectionObject, session, true);
                 if (selectionKey == null) {
                     // Has a null primary key, so must not exist.
