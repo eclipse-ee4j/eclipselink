@@ -61,7 +61,9 @@ public class Util {
     public enum InOut {
         IN, OUT, INOUT, RETURN
     }
-    
+
+    public static final String CLASSES = 
+        "classes";
     public static final String DEFAULT_WSDL_LOCATION_URI =
         "REPLACE_WITH_ENDPOINT_ADDRESS";
     public static final String WEB_INF_DIR =

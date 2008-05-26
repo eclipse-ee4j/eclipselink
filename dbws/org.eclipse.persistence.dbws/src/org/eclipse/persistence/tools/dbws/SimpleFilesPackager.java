@@ -51,11 +51,21 @@ import static org.eclipse.persistence.tools.dbws.Util.SWAREF_FILENAME;
  *
  * </pre>
  */
-public class SimplePackager extends DBWSBasePackager implements DBWSPackager {
+public class SimpleFilesPackager extends DBWSBasePackager implements DBWSPackager {
 
-    // default constructor
-    public SimplePackager() {
+    public SimpleFilesPackager() {
         super();
+    }
+    public SimpleFilesPackager(boolean useArchiver) {
+        this(useArchiver, null);
+    }
+    public SimpleFilesPackager(boolean useArchiver, String archiveName) {
+        super();
+        setArchiver(useArchiver 
+            ? (archiveName == null 
+                ? new SimpleJarArchiver(this)
+                : new SimpleJarArchiver(this, archiveName)) 
+            : null);
     }
 
     public OutputStream getSchemaStream() throws FileNotFoundException {
@@ -160,9 +170,19 @@ public class SimplePackager extends DBWSBasePackager implements DBWSPackager {
     }
 
 	public String getOrProjectPathPrefix() {
-		return null;
+	    if (archiver == null) {
+	        return null;
+	    }
+	    else {
+	        return ((SimpleJarArchiver)archiver).getOrProjectPathPrefix();
+	    }
 	}
 	public String getOxProjectPathPrefix() {
-		return null;
+        if (archiver == null) {
+            return null;
+        }
+        else {
+            return ((SimpleJarArchiver)archiver).getOxProjectPathPrefix();
+        }
 	}
 }

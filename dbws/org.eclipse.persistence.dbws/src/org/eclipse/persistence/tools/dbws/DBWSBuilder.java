@@ -53,14 +53,8 @@ import org.eclipse.persistence.descriptors.RelationalDescriptor;
 import org.eclipse.persistence.expressions.Expression;
 import org.eclipse.persistence.expressions.ExpressionBuilder;
 import org.eclipse.persistence.internal.databaseaccess.DatabasePlatform;
-import org.eclipse.persistence.internal.dbws.ProviderHelper;
 import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.helper.Helper;
-import org.eclipse.persistence.internal.libraries.asm.ClassWriter;
-import org.eclipse.persistence.internal.libraries.asm.CodeVisitor;
-import org.eclipse.persistence.internal.libraries.asm.attrs.Annotation;
-import org.eclipse.persistence.internal.libraries.asm.attrs.RuntimeVisibleAnnotations;
-import org.eclipse.persistence.internal.libraries.asm.attrs.SignatureAttribute;
 import org.eclipse.persistence.internal.oxm.schema.SchemaModelProject;
 import org.eclipse.persistence.internal.oxm.schema.model.ComplexType;
 import org.eclipse.persistence.internal.oxm.schema.model.Element;
@@ -111,20 +105,6 @@ import org.eclipse.persistence.tools.dbws.jdbc.DbTable;
 import org.eclipse.persistence.tools.dbws.jdbc.JDBCHelper;
 import static org.eclipse.persistence.internal.helper.ClassConstants.ABYTE;
 import static org.eclipse.persistence.internal.helper.ClassConstants.APBYTE;
-import static org.eclipse.persistence.internal.libraries.asm.Constants.ACC_BRIDGE;
-import static org.eclipse.persistence.internal.libraries.asm.Constants.ACC_ENUM;
-import static org.eclipse.persistence.internal.libraries.asm.Constants.ACC_FINAL;
-import static org.eclipse.persistence.internal.libraries.asm.Constants.ACC_PUBLIC;
-import static org.eclipse.persistence.internal.libraries.asm.Constants.ACC_STATIC;
-import static org.eclipse.persistence.internal.libraries.asm.Constants.ACC_SUPER;
-import static org.eclipse.persistence.internal.libraries.asm.Constants.ACC_SYNTHETIC;
-import static org.eclipse.persistence.internal.libraries.asm.Constants.ALOAD;
-import static org.eclipse.persistence.internal.libraries.asm.Constants.ARETURN;
-import static org.eclipse.persistence.internal.libraries.asm.Constants.CHECKCAST;
-import static org.eclipse.persistence.internal.libraries.asm.Constants.INVOKESPECIAL;
-import static org.eclipse.persistence.internal.libraries.asm.Constants.INVOKEVIRTUAL;
-import static org.eclipse.persistence.internal.libraries.asm.Constants.RETURN;
-import static org.eclipse.persistence.internal.libraries.asm.Constants.V1_5;
 import static org.eclipse.persistence.internal.xr.Util.DBWS_OR_LABEL;
 import static org.eclipse.persistence.internal.xr.Util.DBWS_OR_XML;
 import static org.eclipse.persistence.internal.xr.Util.DBWS_OX_LABEL;
@@ -137,10 +117,9 @@ import static org.eclipse.persistence.internal.xr.Util.DEFAULT_ATTACHMENT_MIMETY
 import static org.eclipse.persistence.internal.xr.Util.TARGET_NAMESPACE_PREFIX;
 import static org.eclipse.persistence.internal.xr.Util.getClassFromJDBCType;
 import static org.eclipse.persistence.oxm.XMLConstants.BASE_64_BINARY_QNAME;
+import static org.eclipse.persistence.tools.dbws.DBWSBasePackager.__nullStream;
 import static org.eclipse.persistence.tools.dbws.Util.CREATE_OPERATION_NAME;
 import static org.eclipse.persistence.tools.dbws.Util.DBWS_PROVIDER_CLASS_FILE;
-import static org.eclipse.persistence.tools.dbws.Util.DBWS_PROVIDER_NAME;
-import static org.eclipse.persistence.tools.dbws.Util.DBWS_PROVIDER_PACKAGE;
 import static org.eclipse.persistence.tools.dbws.Util.DBWS_PROVIDER_SOURCE_FILE;
 import static org.eclipse.persistence.tools.dbws.Util.DEFAULT_PLATFORM_CLASSNAME;
 import static org.eclipse.persistence.tools.dbws.Util.DEFAULT_WSDL_LOCATION_URI;
@@ -151,9 +130,7 @@ import static org.eclipse.persistence.tools.dbws.Util.SWAREF_FILENAME;
 import static org.eclipse.persistence.tools.dbws.Util.THE_INSTANCE_NAME;
 import static org.eclipse.persistence.tools.dbws.Util.UPDATE_OPERATION_NAME;
 import static org.eclipse.persistence.tools.dbws.Util.WEBSERVICES_FILENAME;
-import static org.eclipse.persistence.tools.dbws.Util.WEB_INF_DIR;
 import static org.eclipse.persistence.tools.dbws.Util.WEB_XML_FILENAME;
-import static org.eclipse.persistence.tools.dbws.Util.WSDL_DIR;
 import static org.eclipse.persistence.tools.dbws.Util.WSI_SWAREF;
 import static org.eclipse.persistence.tools.dbws.Util.WSI_SWAREF_PREFIX;
 import static org.eclipse.persistence.tools.dbws.Util.WSI_SWAREF_URI;
@@ -163,8 +140,11 @@ import static org.eclipse.persistence.tools.dbws.Util.InOut.OUT;
 
 public class DBWSBuilder extends DBWSBuilderModel {
 
-    public static final String BUILDER_PACKAGER_KEY = "dbws.builder.packager";
-    public static final String BUILDER_FILE_PATH = "-dbws-builder";
+    public static final String BUILDER_FILE_PATH = "-builderFile";
+    public static final String BUILDER_PACKAGING = "-packageAs";
+    public static final String SIMPLEFILES = "simpleFiles";
+    public static final String SIMPLEJAR = "simpleJar";
+    public static final String METRO = "metro";
     public static final String STAGE_DIR = "-stagedir";
     public static final String DRIVER_KEY = "driver";
     public static final String USERNAME_KEY= "username";
@@ -180,30 +160,6 @@ public class DBWSBuilder extends DBWSBuilderModel {
     public static final String WSDL_URI_KEY = "wsdlLocationURI";
     public static final String LOG_LEVEL_KEY = "logLevel";
     public static final String TARGET_NAMESPACE_KEY = "targetNamespace";
-    public static final String WEB_XML_PREAMBLE =
-    "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
-    "<web-app\n" +
-    "  xmlns=\"http://java.sun.com/xml/ns/javaee\"\n" +
-    "  xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"\n" +
-    "  xsi:schemaLocation=\"http://java.sun.com/xml/ns/javaee" +
-    "  http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd\"\n" +
-    "  version=\"2.5\"\n" +
-    "  >\n" +
-    "  <servlet>\n" +
-    "    <servlet-name>DBWSProvider</servlet-name>\n" +
-    "    <display-name>DBWSProvider</display-name>\n" +
-    "    <description>JAX-WS endpoint Provider</description>\n" +
-    "    <servlet-class>_dbws.DBWSProvider</servlet-class>\n" +
-    "    <load-on-startup>1</load-on-startup>\n" +
-    "  </servlet>\n" +
-    "  <servlet-mapping>\n" +
-    "    <servlet-name>DBWSProvider</servlet-name>\n" +
-    "    <url-pattern>";
-    // contextRoot ^^ here
-    public static final String WEB_XML_POSTSCRIPT =
-            "</url-pattern>\n" +
-        "  </servlet-mapping>\n" +
-        "</web-app>\n";
     public static final String WSI_SWAREF_XSD =
         "<?xml version=\"1.0\" encoding=\"UTF-8\"?> \n" +
         "<xsd:schema targetNamespace=\"" + WSI_SWAREF_URI + "\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\"> \n" +
@@ -211,98 +167,6 @@ public class DBWSBuilder extends DBWSBuilderModel {
         "    <xsd:restriction base=\"xsd:anyURI\"/> \n" +
         "  </xsd:simpleType> \n" +
         "</xsd:schema>";
-
-    public static final String WEBSERVICES_PREAMBLE =
-        "<?xml version=\"1.0\" encoding=\"UTF-8\"?> \n" +
-        "<webservices \n" +
-          "  xmlns=\"http://java.sun.com/xml/ns/javaee\" \n" +
-          "  xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" \n" +
-          "  xsi:schemaLocation=\"http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/javaee_web_services_1_2.xsd\" \n" +
-          "  version=\"1.2\" \n" +
-          "  > \n" +
-          "  <webservice-description> \n" +
-            "  <webservice-description-name>";
-                           // serviceName ^^ here
-    public static final String WEBSERVICES_PORT_COMPONENT_NAME =
-                                             "</webservice-description-name> \n" +
-            "    <port-component> \n" +
-            "      <port-component-name>";
- // dotted-format serviceName.portName ^^ here
-    public static final String WEBSERVICES_WSDL_SERVICE =
-                                             "</port-component-name> \n" +
-            "      <wsdl-service xmlns:ns0=\"";
-                          // service URI ^^ here
-
-    public static final String WEBSERVICES_WSDL_PORT =
-                                             "</wsdl-service> \n" +
-            "      <wsdl-port xmlns:ns1=\"";
-
-
-    public static final String WEBSERVICES_SUFFIX =
-                                             "</wsdl-port> \n" +
-            "      <service-impl-bean> \n" +
-            "        <servlet-link>DBWSProvider</servlet-link> \n" +
-            "      </service-impl-bean> \n" +
-            "    </port-component> \n" +
-            "  </webservice-description> \n" +
-            "</webservices>";
-
-    public static final String DBWS_PROVIDER_SOURCE_PREAMBLE =
-        "package _dbws;\n" +
-        "\n" +
-        "import javax.annotation.PostConstruct;\n" +
-        "import javax.annotation.PreDestroy;\n" +
-        "import javax.xml.soap.SOAPMessage;\n" +
-        "import javax.xml.ws.Provider;\n" +
-        "import javax.xml.ws.ServiceMode;\n" +
-        "import javax.xml.ws.WebServiceProvider;\n" +
-        "import static javax.xml.ws.Service.Mode.MESSAGE;\n" +
-        "import " + ProviderHelper.class.getName() + ";\n" +
-        "\n" +
-        "@WebServiceProvider(\n" +
-        "    wsdlLocation = \"" + WEB_INF_DIR + WSDL_DIR + DBWS_WSDL + "\",\n" +
-        "    serviceName = \"";
-    public static final String DBWS_PROVIDER_SOURCE_PORT_NAME =
-        "\",\n    portName = \"";
-    public static final String DBWS_PROVIDER_SOURCE_TARGET_NAMESPACE =
-        "\",\n    targetNamespace = \"";
-    public static final String DBWS_PROVIDER_SOURCE_SUFFIX =
-        "\"\n)\n@ServiceMode(MESSAGE)\n" +
-        "public class DBWSProvider extends ProviderHelper implements Provider<SOAPMessage> {\n" +
-        "    public  DBWSProvider() {\n" +
-        "        super();\n" +
-        "    }\n" +
-        "    @Override\n" +
-        "    @PostConstruct\n" +
-        "    public void init() {\n" +
-        "        super.init();\n" +
-        "    }\n" +
-        "    @Override\n" +
-        "    public SOAPMessage invoke(SOAPMessage request) {\n" +
-        "        return super.invoke(request);\n" +
-        "    }\n" +
-        "    @Override\n" +
-        "    @PreDestroy\n" +
-        "    public void destroy() {\n" +
-        "        super.destroy();\n" +
-        "    }\n" +
-        "};";
-    public static final String ASMIFIED_DBWS_PROVIDER_HELPER =
-    	ProviderHelper.class.getName().replace('.', '/');
-    public static final String ASMIFIED_JAX_WS_PROVIDER =
-        "javax/xml/ws/Provider";
-    public static final String ASMIFIED_JAX_WS_WEB_SERVICE_PROVIDER =
-        "javax/xml/ws/WebServiceProvider";
-    public static final String ASMIFIED_JAX_WS_SERVICE_MODE =
-        "javax/xml/ws/ServiceMode";
-    public static final String ASMIFIED_JSR_250_POSTCONSTRUCT =
-        "javax/annotation/PostConstruct";
-    public static final String ASMIFIED_JSR_250_PREDESTROY =
-        "javax/annotation/PreDestroy";
-    public static final String ASMIFIED_JAX_WS_SERVICE =
-        "javax/xml/ws/Service";
-    public static final String ASMIFIED_SOAP_MESSAGE =
-        "javax/xml/soap/SOAPMessage";
 
     protected DBWSPackager packager;
     protected Logger logger;
@@ -331,44 +195,60 @@ public class DBWSBuilder extends DBWSBuilderModel {
 
     public void start(String[] args) throws WSDLException {
 
-        if (args.length == 4 && BUILDER_FILE_PATH.equalsIgnoreCase(args[0]) &&
-            STAGE_DIR.equalsIgnoreCase(args[2])) {
-            String toolsFile = args[1];
-            String stageDirname = args[3];
-            File dbwsToolsFile = new File(toolsFile);
-            if (dbwsToolsFile.exists() && dbwsToolsFile.isFile()) {
+        if (args.length == 6 && BUILDER_FILE_PATH.equalsIgnoreCase(args[0]) &&
+            BUILDER_PACKAGING.equalsIgnoreCase(args[2])  &&
+            STAGE_DIR.equalsIgnoreCase(args[4])) {
+            String builderFilename = args[1];
+            String packageAs = args[3];
+            String stageDirname = args[5];
+            File builderFile = new File(builderFilename);
+            if (builderFile.exists() && builderFile.isFile()) {
                 File stageDir = new File(stageDirname);
                 if (stageDir.exists() && stageDir.isDirectory()) {
-                    if (packager == null) {
-                        //setPackager(new DBWSBuilderExpandedWARPackager());
-                    	setPackager(new SimpleJarPackager());
-                    }
-                    packager.setStageDir(stageDir);
                     XMLContext context = new XMLContext(new DBWSBuilderModelProject());
                     XMLUnmarshaller unmarshaller = context.createUnmarshaller();
-                    DBWSBuilderModel model = (DBWSBuilderModel)unmarshaller.unmarshal(dbwsToolsFile);
+                    DBWSBuilderModel model = (DBWSBuilderModel)unmarshaller.unmarshal(builderFile);
                     properties = model.properties;
                     operations = model.operations;
                     if (operations.size() == 0) {
                         logMessage(SEVERE, "No operations specified");
                         return;
                     }
+                    if (SIMPLEFILES.equals(packageAs)) {
+                        setPackager(new SimpleFilesPackager(false));
+                    }
+                    else if (SIMPLEJAR.equals(packageAs)) {
+                        setPackager(new SimpleFilesPackager(true, getProjectName()));
+                    }
+                    else if (METRO.equals(packageAs)) {
+                        setPackager(new MetroPackager(true, getProjectName()));
+                    }
+                    else {
+                        logMessage(SEVERE, "unknown " + BUILDER_PACKAGING + 
+                            " option: " + packageAs);
+                        return;
+                    }
+                    packager.setStageDir(stageDir);
+                    packager.setSessionsFileName(getSessionsFileName());
                     start();
                 }
                 else {
-                    logMessage(SEVERE, "DBWSBuilder unable to locate stage directory " + stageDirname);
+                    logMessage(SEVERE, "DBWSBuilder unable to locate stage directory " + 
+                    	stageDirname);
                     return;
                 }
             }
             else {
-                logMessage(SEVERE, "DBWSBuilder unable to locate dbws-builder.xml file " + toolsFile);
+                logMessage(SEVERE, "DBWSBuilder unable to locate dbws-builder.xml file " +
+                	builderFilename);
                 return;
             }
         }
         else {
             logMessage(SEVERE,
-                    "DBWSBuilder requires " + BUILDER_FILE_PATH + " {path_to_dbws-builder.xml_file} " +
-                        STAGE_DIR + " {path_to_stage_directory}.");
+            	"DBWSBuilder requires " + BUILDER_FILE_PATH + " {path_to_dbws-builder.xml_file} " +
+            	BUILDER_PACKAGING + " {how_to_package_output}" +
+            	STAGE_DIR + " {path_to_stage_directory}.");
                 return;
             }
     }
@@ -515,7 +395,6 @@ public class DBWSBuilder extends DBWSBuilderModel {
     }
 
     protected void buildDbArtifacts() {
-
         // do Table operations first
         boolean isOracle = getDatabasePlatform() instanceof OraclePlatform;
         for (OperationModel operation : operations) {
@@ -546,7 +425,6 @@ public class DBWSBuilder extends DBWSBuilderModel {
                 }
             }
         }
-
         // next do StoredProcedure operations
         for (OperationModel operation : operations) {
             if (operation.isProcedureOperation()) {
@@ -670,7 +548,6 @@ public class DBWSBuilder extends DBWSBuilderModel {
         }
         return supportedProcedures;
     }
-
 
     public void addDbStoredProcedure(DbStoredProcedure dbStoredProcedure) {
         dbStoredProcedures.add(dbStoredProcedure);
@@ -831,13 +708,13 @@ public class DBWSBuilder extends DBWSBuilderModel {
     }
 
     protected void writeOROXProjects(OutputStream dbwsOrStream, OutputStream dbwsOxStream) {
-        if (dbTables.size() > 0 && dbwsOrStream != null) {
+        if (dbTables.size() > 0 && !isNullStream(dbwsOrStream)) {
             XMLContext context = new XMLContext(new ObjectPersistenceWorkbenchXMLProject());
             context.getSession(orProject).getEventManager().addListener(new MissingDescriptorListener());
             XMLMarshaller marshaller = context.createMarshaller();
             marshaller.marshal(orProject, new OutputStreamWriter(dbwsOrStream));
         }
-        if (!(oxProject instanceof SimpleXMLFormatProject) && dbwsOxStream != null) {
+        if (!(oxProject instanceof SimpleXMLFormatProject) && !isNullStream(dbwsOxStream)) {
             XMLContext context = new XMLContext(new ObjectPersistenceWorkbenchXMLProject());
             context.getSession(oxProject).getEventManager().addListener(new MissingDescriptorListener());
             XMLMarshaller marshaller = context.createMarshaller();
@@ -847,118 +724,18 @@ public class DBWSBuilder extends DBWSBuilderModel {
         packager.closeOxStream(dbwsOxStream);
     }
 
-    @SuppressWarnings("unchecked")
     protected void writeDBWSProviderClass(OutputStream codeGenProviderStream) {
-        if (codeGenProviderStream != null) {
+        if (!isNullStream(codeGenProviderStream)) {
             logMessage(FINEST, "writing " + DBWS_PROVIDER_CLASS_FILE);
-
-            ClassWriter cw = new ClassWriter(true);
-            CodeVisitor cv;
-
-            cw.visit(V1_5, ACC_PUBLIC + ACC_SUPER, DBWS_PROVIDER_PACKAGE + "/" + DBWS_PROVIDER_NAME,
-                ASMIFIED_DBWS_PROVIDER_HELPER, new String[]{ASMIFIED_JAX_WS_PROVIDER}, null);
-            cw.visitInnerClass(ASMIFIED_JAX_WS_SERVICE + "$Mode", ASMIFIED_JAX_WS_SERVICE,
-                "Mode", ACC_PUBLIC + ACC_FINAL + ACC_STATIC + ACC_ENUM);
-
-            cv = cw.visitMethod(ACC_PUBLIC, "<init>", "()V", null, null);
-            cv.visitVarInsn(ALOAD, 0);
-            cv.visitMethodInsn(INVOKESPECIAL, ASMIFIED_DBWS_PROVIDER_HELPER, "<init>", "()V");
-            cv.visitInsn(RETURN);
-            cv.visitMaxs(0, 0);
-
-            // METHOD ATTRIBUTES
-            RuntimeVisibleAnnotations methodAttrs0 = new RuntimeVisibleAnnotations();
-            Annotation methodAttrs1ann0 = new Annotation("L" + ASMIFIED_JSR_250_POSTCONSTRUCT + ";");
-            methodAttrs0.annotations.add(methodAttrs1ann0);
-
-            cv = cw.visitMethod(ACC_PUBLIC, "init", "()V", null, methodAttrs0);
-            cv.visitVarInsn(ALOAD, 0);
-            cv.visitMethodInsn(INVOKESPECIAL, ASMIFIED_DBWS_PROVIDER_HELPER,
-                "init", "()V");
-            cv.visitInsn(RETURN);
-            cv.visitMaxs(0, 0);
-
-            cv = cw.visitMethod(ACC_PUBLIC, "invoke",
-                "(L" + ASMIFIED_SOAP_MESSAGE + ";)L" + ASMIFIED_SOAP_MESSAGE + ";", null, null);
-            cv.visitVarInsn(ALOAD, 0);
-            cv.visitVarInsn(ALOAD, 1);
-            cv.visitMethodInsn(INVOKESPECIAL, ASMIFIED_DBWS_PROVIDER_HELPER,
-                "invoke", "(L" + ASMIFIED_SOAP_MESSAGE + ";)L" + ASMIFIED_SOAP_MESSAGE + ";");
-            cv.visitInsn(ARETURN);
-            cv.visitMaxs(0, 0);
-
-            // METHOD ATTRIBUTES
-            RuntimeVisibleAnnotations methodAttrs1 = new RuntimeVisibleAnnotations();
-            Annotation methodAttrs1ann1 = new Annotation("L" + ASMIFIED_JSR_250_PREDESTROY + ";");
-            methodAttrs1.annotations.add(methodAttrs1ann1);
-
-            cv = cw.visitMethod(ACC_PUBLIC, "destroy", "()V", null, methodAttrs1);
-            cv.visitVarInsn(ALOAD, 0);
-            cv.visitMethodInsn(INVOKESPECIAL, ASMIFIED_DBWS_PROVIDER_HELPER,
-                "destroy", "()V");
-            cv.visitInsn(RETURN);
-            cv.visitMaxs(0, 0);
-
-            // synthetic
-            cv = cw.visitMethod(ACC_PUBLIC + ACC_BRIDGE + ACC_SYNTHETIC, "invoke",
-                "(Ljava/lang/Object;)Ljava/lang/Object;", null, null);
-            cv.visitVarInsn(ALOAD, 0);
-            cv.visitVarInsn(ALOAD, 1);
-            cv.visitTypeInsn(CHECKCAST, ASMIFIED_SOAP_MESSAGE);
-            cv.visitMethodInsn(INVOKEVIRTUAL, DBWS_PROVIDER_PACKAGE + "/" + DBWS_PROVIDER_NAME,
-                "invoke", "(L" + ASMIFIED_SOAP_MESSAGE + ";)L" + ASMIFIED_SOAP_MESSAGE + ";");
-            cv.visitInsn(ARETURN);
-            cv.visitMaxs(0, 0);
-
-            // CLASS ATRIBUTE
-            SignatureAttribute signatureAttr = new SignatureAttribute(
-                "L" + ASMIFIED_DBWS_PROVIDER_HELPER + ";L" + ASMIFIED_JAX_WS_PROVIDER +
-                "<L" + ASMIFIED_SOAP_MESSAGE + ";>;");
-            cw.visitAttribute(signatureAttr);
-
-            // CLASS ATRIBUTE
-            RuntimeVisibleAnnotations classAttr = new RuntimeVisibleAnnotations();
-            Annotation attrann0 = new Annotation("L" + ASMIFIED_JAX_WS_WEB_SERVICE_PROVIDER + ";");
-            attrann0.add("wsdlLocation", WEB_INF_DIR + WSDL_DIR + DBWS_WSDL);
-            attrann0.add("serviceName", wsdlGenerator.serviceName);
-            attrann0.add("portName", wsdlGenerator.serviceName);
-            attrann0.add("targetNamespace", getTargetNamespace());
-            classAttr.annotations.add(attrann0);
-            Annotation attrann1 = new Annotation("L" + ASMIFIED_JAX_WS_SERVICE_MODE + ";");
-            attrann1.add("value", new Annotation.EnumConstValue(
-                "L" + ASMIFIED_JAX_WS_SERVICE + "$Mode;", "MESSAGE"));
-            classAttr.annotations.add(attrann1);
-            cw.visitAttribute(classAttr);
-            cv.visitMaxs(0, 0);
-
-            cw.visitEnd();
-
-            byte[] bytes = cw.toByteArray();
-            try {
-                codeGenProviderStream.write(bytes, 0, bytes.length);
-            }
-            catch (IOException e) {/* ignore */}
+        	packager.writeDBWSProviderClass(codeGenProviderStream, this);
             packager.closeCodeGenProviderStream(codeGenProviderStream);
         }
     }
 
     public void writeDBWSProviderSource(OutputStream sourceProviderStream) {
-        if (sourceProviderStream != null) {
+        if (!isNullStream(sourceProviderStream)) {
             logMessage(FINEST, "writing " + DBWS_PROVIDER_SOURCE_FILE);
-            StringBuilder sb = new StringBuilder(DBWS_PROVIDER_SOURCE_PREAMBLE);
-            sb.append(wsdlGenerator.serviceName);
-            sb.append(DBWS_PROVIDER_SOURCE_PORT_NAME);
-            sb.append(wsdlGenerator.serviceName);
-            sb.append(DBWS_PROVIDER_SOURCE_TARGET_NAMESPACE);
-            sb.append(getTargetNamespace());
-            sb.append(DBWS_PROVIDER_SOURCE_SUFFIX);
-            OutputStreamWriter osw =
-                new OutputStreamWriter(new BufferedOutputStream(sourceProviderStream));
-            try {
-                osw.write(sb.toString());
-                osw.flush();
-            }
-            catch (IOException e) {/* ignore */}
+            packager.writeDBWSProviderSource(sourceProviderStream, this);
             packager.closeSourceProviderStream(sourceProviderStream);
         }
     }
@@ -1048,7 +825,7 @@ public class DBWSBuilder extends DBWSBuilderModel {
     }
 
     protected void writeSchema(OutputStream dbwsSchemaStream) {
-        if (dbwsSchemaStream != null) {
+        if (!isNullStream(dbwsSchemaStream)) {
             SchemaModelProject schemaProject = new SchemaModelProject();
             boolean hasSwaRef = schema.getNamespaceResolver().resolveNamespacePrefix(WSI_SWAREF_PREFIX) != null;
             if (hasSwaRef) {
@@ -1063,7 +840,7 @@ public class DBWSBuilder extends DBWSBuilderModel {
     }
 
     protected void buildSessionsXML(OutputStream dbwsSessionsStream) {
-        if (dbwsSessionsStream != null) {
+        if (!isNullStream(dbwsSessionsStream)) {
             logMessage(FINEST, "Building " + getSessionsFileName());
         SessionConfigs ts = packager.buildSessionsXML(dbwsSessionsStream, this);
         XMLSessionConfigWriter.write(ts, new OutputStreamWriter(dbwsSessionsStream));
@@ -1074,7 +851,7 @@ public class DBWSBuilder extends DBWSBuilderModel {
     @SuppressWarnings("unchecked")
     protected void buildDBWSModel(OutputStream dbwsServiceStream) {
 
-        if (dbwsServiceStream != null) {
+        if (!isNullStream(dbwsServiceStream)) {
             for (Iterator i = orProject.getOrderedDescriptors().iterator(); i.hasNext();) {
                 ClassDescriptor desc = (ClassDescriptor)i.next();
                 String tablename_lc = desc.getAlias();
@@ -1147,7 +924,7 @@ public class DBWSBuilder extends DBWSBuilderModel {
     }
 
     protected void writeAttachmentSchema(OutputStream swarefStream) {
-        if (swarefStream != null) {
+        if (!isNullStream(swarefStream)) {
             logMessage(FINEST, "writing " + WSI_SWAREF_XSD_FILE);
             OutputStreamWriter osw = new OutputStreamWriter(new BufferedOutputStream(swarefStream));
             try {
@@ -1160,49 +937,23 @@ public class DBWSBuilder extends DBWSBuilderModel {
     }
 
     protected void writeWebXML(OutputStream webXmlStream) {
-        if (webXmlStream != null) {
+        if (!isNullStream(webXmlStream)) {
             logMessage(FINEST, "writing web.xml");
-            StringBuilder sb = new StringBuilder(DBWSBuilder.WEB_XML_PREAMBLE);
-            sb.append(getContextRoot());
-            sb.append(WEB_XML_POSTSCRIPT);
-            OutputStreamWriter osw = new OutputStreamWriter(new BufferedOutputStream(webXmlStream));
-            try {
-                osw.write(sb.toString());
-                osw.flush();
-            }
-            catch (IOException e) {/* ignore */}
+            packager.writeWebXml(webXmlStream, this);
             packager.closeWebXmlStream(webXmlStream);
         }
     }
 
     protected void writeWebservicesXML(OutputStream webservicesXmlStream) {
-        if (webservicesXmlStream != null) {
+        if (!isNullStream(webservicesXmlStream)) {
             logMessage(FINEST, "writing " + WEBSERVICES_FILENAME);
-            StringBuilder sb = new StringBuilder(WEBSERVICES_PREAMBLE);
-            sb.append(wsdlGenerator.serviceName);
-            sb.append(WEBSERVICES_PORT_COMPONENT_NAME);
-            sb.append(wsdlGenerator.serviceName + "." + wsdlGenerator.serviceName);
-            sb.append(WEBSERVICES_WSDL_SERVICE);
-            sb.append(wsdlGenerator.serviceNameSpace);
-            sb.append("\">ns0:");
-            sb.append(wsdlGenerator.serviceName);
-            sb.append(WEBSERVICES_WSDL_PORT);
-            sb.append(wsdlGenerator.serviceNameSpace);
-            sb.append("\">ns1:");
-            sb.append(wsdlGenerator.serviceName);
-            sb.append(WEBSERVICES_SUFFIX);
-            OutputStreamWriter osw = new OutputStreamWriter(new BufferedOutputStream(webservicesXmlStream));
-            try {
-                osw.write(sb.toString());
-                osw.flush();
-            }
-            catch (IOException e) {/* ignore */}
+            packager.writeWebservicesXML(webservicesXmlStream, this);
             packager.closePlatformWebservicesXmlStream(webservicesXmlStream);
         }
     }
 
     protected void writePlatformWebservicesXML(OutputStream platformWebservicesXmlStream) {
-        if (platformWebservicesXmlStream != null) {
+        if (!isNullStream(platformWebservicesXmlStream)) {
             logMessage(FINEST, "writing " + packager.getPlatformWebservicesFilename());
             packager.writePlatformWebservicesXML(platformWebservicesXmlStream, this);
             packager.closePlatformWebservicesXmlStream(platformWebservicesXmlStream);
@@ -1210,10 +961,10 @@ public class DBWSBuilder extends DBWSBuilderModel {
     }
 
     public void buildWSDL(OutputStream wsdlStream) throws WSDLException {
-        if (wsdlStream != null) {
+        if (!isNullStream(wsdlStream)) {
             logMessage(FINEST, "building " + DBWS_WSDL);
             wsdlGenerator = new WSDLGenerator(xrServiceModel, getWsdlLocationURI(),
-              packager.hasAttachments(), getTargetNamespace(), wsdlStream);
+                packager.hasAttachments(), getTargetNamespace(), wsdlStream);
             wsdlGenerator.generateWSDL();
             packager.closeWSDLStream(wsdlStream);
         }
@@ -1441,6 +1192,10 @@ public class DBWSBuilder extends DBWSBuilderModel {
     public void setOXSessionCustomizerClassName(String sessionCustomizerClassName) {
         properties.put(OXSESSION_CUSTOMIZER_KEY, sessionCustomizerClassName);
     }
+    
+    public WSDLGenerator getWSDLGenerator() {
+    	return wsdlGenerator;
+    }
 
     public String getWsdlLocationURI() {
         String wsdlLocationURI = properties.get(WSDL_URI_KEY);
@@ -1494,5 +1249,11 @@ public class DBWSBuilder extends DBWSBuilderModel {
             System.out.println(message);
         }
     }
-
+    
+    protected boolean isNullStream(OutputStream outputStream) {
+        if (outputStream == null | outputStream == __nullStream) {
+            return true;
+        }
+        return false;
+    }
 }

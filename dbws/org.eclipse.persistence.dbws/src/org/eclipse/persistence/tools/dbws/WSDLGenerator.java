@@ -364,4 +364,12 @@ public class WSDLGenerator {
         XMLMarshaller marshaller = context.createMarshaller();
         return marshaller.objectToXML(schema).getDocumentElement();
     }
+
+	public String getServiceName() {
+		return serviceName;
+	}
+
+	public String getServiceNameSpace() {
+		return serviceNameSpace;
+	}
 }

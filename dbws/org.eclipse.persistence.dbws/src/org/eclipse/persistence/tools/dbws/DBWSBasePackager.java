@@ -17,9 +17,12 @@ import java.io.OutputStream;
 
 // EclipseLink imports
 import org.eclipse.persistence.exceptions.DBWSException;
+import org.eclipse.persistence.tools.dbws.DBWSPackager.Archiver;
 
 public class DBWSBasePackager {
 
+	// some packagers don't need to write out some files -
+	// this the do-nothing/go-nowhere stream handles that case 
     protected static class NullOutputStream extends OutputStream {
             public void close(){}
             public void flush(){}
@@ -30,27 +33,26 @@ public class DBWSBasePackager {
     public static NullOutputStream __nullStream = new NullOutputStream();
 
     protected File stageDir;
+    protected String sessionsFileName;
     protected boolean hasAttachments;
+    protected DBWSPackager.Archiver archiver;
 
     public DBWSBasePackager() {
         super();
     }
-
-    // lifecycle methods
-	public void start() {
-        if (stageDir == null) {
-            throw new DBWSException(this.getClass().getSimpleName() + " - stageDir cannot be null");
-        }
-	}
-	public void end() {
-
-	}
 
     public File getStageDir() {
         return this.stageDir;
     }
     public void setStageDir(File stageDir) {
         this.stageDir = stageDir;
+    }
+
+    public String getSessionsFileName() {
+        return sessionsFileName;
+    }
+    public void setSessionsFileName(String sessionsFileName) {
+        this.sessionsFileName = sessionsFileName;
     }
 
     public boolean hasAttachments() {
@@ -60,127 +62,96 @@ public class DBWSBasePackager {
         this.hasAttachments = hasAttachments;
     }
 
-    public void closeSchemaStream(OutputStream schemaStream) {
-        if (nonNullStream(schemaStream)) {
-            try {
-                schemaStream.flush();
-                schemaStream.close();
-            }
-            catch (IOException e) {/* ignore */}
+    public Archiver getArchiver() {
+        return archiver;
+    }
+    public void setArchiver(Archiver archiver) {
+        this.archiver = archiver;
+    }
+
+    // lifecycle methods
+    public void start() {
+        if (stageDir == null) {
+            throw new DBWSException(this.getClass().getSimpleName() + " stageDir cannot be null");
         }
+    }
+    public void end() {
+        if (archiver != null) {
+            archiver.archive();
+        }
+    }
+    
+    public void closeSchemaStream(OutputStream schemaStream) {
+    	closeStream(schemaStream);
     }
 
     public void closeSessionsStream(OutputStream sessionsStream) {
-        if (nonNullStream(sessionsStream)) {
-            try {
-                sessionsStream.flush();
-                sessionsStream.close();
-            }
-            catch (IOException e) {/* ignore */}
-        }
+    	closeStream(sessionsStream);
     }
 
     public void closeServiceStream(OutputStream serviceStream) {
-        if (nonNullStream(serviceStream)) {
-            try {
-                serviceStream.flush();
-                serviceStream.close();
-            }
-            catch (IOException e) {/* ignore */}
-        }
+    	closeStream(serviceStream);
     }
 
     public void closeOrStream(OutputStream orStream) {
-        if (nonNullStream(orStream)) {
-            try {
-                orStream.flush();
-                orStream.close();
-            }
-            catch (IOException e) {/* ignore */}
-        }
+    	closeStream(orStream);
     }
 
     public void closeOxStream(OutputStream oxStream) {
-        if (nonNullStream(oxStream)) {
-            try {
-                oxStream.flush();
-                oxStream.close();
-            }
-            catch (IOException e) {/* ignore */}
-        }
+    	closeStream(oxStream);
     }
 
     public void closeWSDLStream(OutputStream wsdlStream) {
-        if (nonNullStream(wsdlStream)) {
-            try {
-                wsdlStream.flush();
-                wsdlStream.close();
-            }
-            catch (IOException e) {/* ignore */}
-        }
+    	closeStream(wsdlStream);
     }
 
     public void closeSWARefStream(OutputStream swarefStream) {
-        if (nonNullStream(swarefStream)) {
-            try {
-                swarefStream.flush();
-                swarefStream.close();
-            }
-            catch (IOException e) {/* ignore */}
-        }
+    	closeStream(swarefStream);
     }
 
+    @SuppressWarnings("unused")
+    public void writeWebXml(OutputStream webXmlStream, DBWSBuilder dbwsBuilder) {
+    }
+    
     public void closeWebXmlStream(OutputStream webXmlStream) {
-        if (nonNullStream(webXmlStream)) {
-            try {
-                webXmlStream.flush();
-                webXmlStream.close();
-            }
-            catch (IOException e) {/* ignore */}
-        }
+    	closeStream(webXmlStream);
     }
-
+    
+    @SuppressWarnings("unused")
+	public void writeWebservicesXML(OutputStream webservicesXmlStream, DBWSBuilder builder) {
+	}
+	
     public void closeWebservicesXmlStream(OutputStream webservicesXmlStream) {
-        if (nonNullStream(webservicesXmlStream)) {
-            try {
-                webservicesXmlStream.flush();
-                webservicesXmlStream.close();
-            }
-            catch (IOException e) {/* ignore */}
-        }
+    	closeStream(webservicesXmlStream);
     }
 
     public void closePlatformWebservicesXmlStream(OutputStream platformWebservicesXmlStream) {
-        if (nonNullStream(platformWebservicesXmlStream)) {
-            try {
-                platformWebservicesXmlStream.flush();
-                platformWebservicesXmlStream.close();
-            }
-            catch (IOException e) {/* ignore */}
-        }
+    	closeStream(platformWebservicesXmlStream);
     }
 
+    @SuppressWarnings("unused")
+	public void writeDBWSProviderClass(OutputStream codeGenProviderStream, DBWSBuilder builder) {
+	}
+	
     public void closeCodeGenProviderStream(OutputStream codeGenProviderStream) {
-        if (nonNullStream(codeGenProviderStream)) {
-            try {
-                codeGenProviderStream.flush();
-                codeGenProviderStream.close();
-            }
-            catch (IOException e) {/* ignore */}
-        }
+    	closeStream(codeGenProviderStream);
     }
 
+    @SuppressWarnings("unused")
+    public void writeDBWSProviderSource(OutputStream sourceProviderStream, DBWSBuilder builder) {	
+    }
+    
     public void closeSourceProviderStream(OutputStream sourceProviderStream) {
-        if (nonNullStream(sourceProviderStream)) {
+        closeStream(sourceProviderStream);
+    }
+
+    protected void closeStream(OutputStream outputStream) {
+        if (outputStream != null && outputStream != __nullStream) {
             try {
-                sourceProviderStream.flush();
-                sourceProviderStream.close();
+            	outputStream.flush();
+            	outputStream.close();
             }
             catch (IOException e) {/* ignore */}
         }
-    }
-
-    protected boolean nonNullStream(OutputStream outputStream) {
-        return outputStream != null && outputStream != __nullStream;
     }
 }
