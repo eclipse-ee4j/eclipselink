@@ -41,7 +41,7 @@ import org.eclipse.persistence.platform.xml.XMLPlatformFactory;
 import org.eclipse.persistence.tools.dbws.DBWSBuilder;
 import org.eclipse.persistence.tools.dbws.DBWSBuilderModel;
 import org.eclipse.persistence.tools.dbws.DBWSBuilderModelProject;
-import org.eclipse.persistence.tools.dbws.SimpleJarPackager;
+import org.eclipse.persistence.tools.dbws.SimpleFilesPackager;
 import org.eclipse.persistence.dbws.DBWSModelProject;
 import org.eclipse.persistence.exceptions.DBWSException;
 import static org.eclipse.persistence.internal.xr.Util.DBWS_SCHEMA_XML;
@@ -90,9 +90,11 @@ public class TestDBWSFactory extends XRServiceFactory {
     	dbwsBuilder.quiet = true;
     	dbwsBuilder.properties = builderModel.properties;
     	dbwsBuilder.operations = builderModel.operations;
-    	SimpleJarPackager simpleDBWSJarPackager = new SimpleJarPackager("dbws" + jarName + ".jar");
-    	simpleDBWSJarPackager.setStageDir(new File("."));
-    	dbwsBuilder.setPackager(simpleDBWSJarPackager);
+    	SimpleFilesPackager simpleFilesPackager = new SimpleFilesPackager(true,
+    	    "dbws" + jarName + ".jar");
+    	simpleFilesPackager.setStageDir(new File("."));
+    	simpleFilesPackager.setSessionsFileName(dbwsBuilder.getSessionsFileName());
+    	dbwsBuilder.setPackager(simpleFilesPackager);
     	dbwsBuilder.start();
     }
 
