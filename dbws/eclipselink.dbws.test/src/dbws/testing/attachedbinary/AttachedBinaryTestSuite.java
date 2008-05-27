@@ -8,7 +8,7 @@
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
- *     Mike Norman - May 2008, created DBWS tools package
+ *     Mike Norman - May 2008, created DBWS test package
  ******************************************************************************/
 
 package dbws.testing.attachedbinary;
