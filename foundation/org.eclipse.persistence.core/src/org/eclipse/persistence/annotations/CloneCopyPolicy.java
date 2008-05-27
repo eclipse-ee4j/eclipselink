@@ -20,11 +20,17 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 
 /**
- * A CloneCopyPolicy is used to set a org.eclipse.persistence.descriptors.copying.CloneCopyPolicy on an Entity.
- * A CloneCopyPolicy must specify at one or both of the "method" or "workingCopyMethod".  "workingCopyMethod" is used
- * to clone objects that will be returned to the user as they are registered in EclipseLink's transactional mechanism, 
- * the UnitOfWork.  "method" will be used for the clone that is used for comparison in conjunction with EclipseLink's 
- * DeferredChangeDetectionPolicy
+ * A CloneCopyPolicy is used to set an 
+ * org.eclipse.persistence.descriptors.copying.CloneCopyPolicy on an Entity.
+ * A CloneCopyPolicy must specify at one or both of the "method" or 
+ * "workingCopyMethod". 
+ * 
+ * "workingCopyMethod" is used to clone objects that will be returned to the 
+ * user as they are registered in EclipseLink's transactional mechanism, the 
+ * UnitOfWork. 
+ * 
+ * "method" will be used for the clone that is used for comparison in 
+ * conjunction with EclipseLink's DeferredChangeDetectionPolicy
  *  
  * A CloneCopyPolicy should be specified on an Entity or MappedSuperclass.
  * 
@@ -55,19 +61,17 @@ public @interface CloneCopyPolicy {
     /**
      * (Optional)
      * Either method or workingCopyMethod must be specified
-     * this defines a method that will be used to create a clone that will be used for comparison by
-     * EclipseLink's DeferredChangeDetectionPolicy
-     * @return
+     * this defines a method that will be used to create a clone that will be 
+     * used for comparison by EclipseLink's DeferredChangeDetectionPolicy
      */
     String method();
     
     /**
      * (Optional)
      * Either method or workingCopyMethod must be specified
-     * this defines a method that will be used to create a clone that will be used to create the 
-     * object returned when registering an Object in an EclipseLink UnitOfWork
-     * @return
+     * this defines a method that will be used to create a clone that will be 
+     * used to create the object returned when registering an Object in an 
+     * EclipseLink UnitOfWork
      */
     String workingCopyMethod();
-    
 }

@@ -20,8 +20,10 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 
 /**
- * A CopyPolicy is used to set a org.eclipse.persistence.descriptors.copying.CopyPolicy on an Entity.
- * It is required that a class that implements org.eclipse.persistence.descriptors.copying.CopyPolicy
+ * A CopyPolicy is used to set an 
+ * org.eclipse.persistence.descriptors.copying.CopyPolicy on an Entity.
+ * It is required that a class that 
+ * implements org.eclipse.persistence.descriptors.copying.CopyPolicy
  * be specified as the argument.
  * 
  * A CopyPolicy should be specified on an Entity or MappedSuperclass.
@@ -42,8 +44,8 @@ public @interface CopyPolicy {
 
     /**
      * (Required)
-     * This defines the class of the copy policy.  It must specify a class that implements 
-     * org.eclipse.persistence.descriptors.copying.CopyPolicy
+     * This defines the class of the copy policy.  It must specify a class that 
+     * implements org.eclipse.persistence.descriptors.copying.CopyPolicy
      */
     Class value();
 }
