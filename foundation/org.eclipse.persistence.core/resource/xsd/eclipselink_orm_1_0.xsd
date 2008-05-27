@@ -501,7 +501,8 @@
 			/**
 			* Property value type.
 			* The value converted to valueType by ConversionManager.
-			* If specified must be a simple type that could be handled by ConversionManager: 
+			* If specified must be a simple type that could be handled by 
+			* ConversionManager: 
 			* numerical, boolean, temporal.  
 			*/ 
 			Class valueType() default String.class;
@@ -1010,28 +1011,34 @@
 
 		/**
 		 * Annotation for org.eclipse.persistence.mappings.TransformationMapping.
-		 * Unless the TransformationMapping is write-only, it should have a ReadTransformer,
-		 * it defines transformation of database column(s) value(s)into attribute value.
+		 * Unless the TransformationMapping is write-only, it should have a 
+		 * ReadTransformer, it defines transformation of database column(s) 
+		 * value(s)into attribute value.
 		 *  
-		 * Also unless it's a read-only mapping, either WriteTransformer annotation or WriteTransformers annotation
-		 * should be specified. Each WriteTransformer defines transformation of the attribute value to a single
-		 * database column value (column is specified in the WriteTransformer). 
+		 * Also unless it's a read-only mapping, either WriteTransformer 
+		 * annotation or WriteTransformers annotation should be specified. Each 
+		 * WriteTransformer defines transformation of the attribute value to a 
+		 * single database column value (column is specified in the 
+		 * WriteTransformer). 
 		 */ 
 		@Target({METHOD, FIELD})
 		@Retention(RUNTIME)
 		public @interface ReadTransformer {
 		    /**
-		     * User-defined class that must org.eclipse.persistence.mappings.transformers.AttributeTransformer interface.
-		     * The class will be instantiated, its buildAttributeValue will be used to create the value to be assigned
-		     * to the attribute.
+		     * User-defined class that must implement the 
+		     * org.eclipse.persistence.mappings.transformers.AttributeTransformer 
+		     * interface. The class will be instantiated, its 
+		     * buildAttributeValue will be used to create the value to be 
+		     * assigned to the attribute.
 		     * Either transformerClass or method must be specified, but not both.
 		     */ 
 		    Class transformerClass() default void.class;
 		
 		    /**
-		     * The mapped class must have a method with this name which returns a value to be assigned
-		     * to the attribute (not assigns the value to the attribute).
-		     * Either transformerClass or method must be specified, but not both.
+		     * The mapped class must have a method with this name which returns 
+		     * a value to be assigned to the attribute (not assigns the value to 
+		     * the attribute). Either transformerClass or method must be 
+		     * specified, but not both.
 		     */ 
 		    String method() default "";
 		}
@@ -1048,47 +1055,52 @@
 
 		/**
 		 * Annotation for org.eclipse.persistence.mappings.TransformationMapping.
-		 * WriteTransformer defines transformation of the attribute value to a single
-		 * database column value (column is specified in the WriteTransformer).
+		 * WriteTransformer defines transformation of the attribute value to a 
+		 * single database column value (column is specified in the 
+		 * WriteTransformer).
 		 *  
-		 * A single WriteTransformer may be specified directly on the method or attribute.
-		 * Multiple WriteTransformers should be wrapped into WriteTransformers annotation.
-		 * No WriteTransformers specified for read-only mapping.
-		 * Unless the TransformationMapping is write-only, it should have a ReadTransformer,
-		 * it defines transformation of database column(s) value(s)into attribute value.
+		 * A single WriteTransformer may be specified directly on the method or 
+		 * attribute. Multiple WriteTransformers should be wrapped into 
+		 * WriteTransformers annotation. No WriteTransformers specified for 
+		 * read-only mapping. Unless the TransformationMapping is write-only, it 
+		 * should have a ReadTransformer, it defines transformation of database 
+		 * column(s) value(s)into attribute value.
 		 */ 
 		@Target({METHOD, FIELD})
 		@Retention(RUNTIME)
 		public @interface WriteTransformer {
 		    /**
-		     * User-defined class that must implement org.eclipse.persistence.mappings.transformers.FieldTransformer interface.
-		     * The class will be instantiated, its buildFieldValue will be used to create the value to be written into
-		     * the database column.
-		     * Note that for ddl generation and returning to be supported the method buildFieldValue in the class
-		     * should be defined to return the relevant Java type, not just Object as defined in the interface,
-		     * for instance:
+		     * User-defined class that must implement the 
+		     * org.eclipse.persistence.mappings.transformers.FieldTransformer 
+		     * interface. The class will be instantiated, its buildFieldValue 
+		     * will be used to create the value to be written into the database 
+		     * column. Note that for ddl generation and returning to be 
+		     * supported the method buildFieldValue in the class should be 
+		     * defined to return the relevant Java type, not just Object as 
+		     * defined in the interface, for instance:
 		     * public Time buildFieldValue(Object instance, String fieldName, Session session).
 		     * Either transformerClass or method must be specified, but not both.
 		     */ 
 		    Class transformerClass() default void.class;
 		
 		    /**
-		     * The mapped class must have a method with this name which returns a value to be written into
-		     * the database column.
-		     * Note that for ddl generation and returning to be supported the method
-		     * should be defined to return a particular type, not just Object,
-		     * for instance:
+		     * The mapped class must have a method with this name which returns 
+		     * a value to be written into the database column.
+		     * Note that for ddl generation and returning to be supported the 
+		     * method should be defined to return a particular type, not just 
+		     * Object, for instance:
 		     * public Time getStartTime().
-		     * The method may require @Transient annotation to avoid being mapped as @Basic by default.
+		     * The method may require a Transient annotation to avoid being 
+		     * mapped as Basic by default.
 		     * Either transformerClass or method must be specified, but not both.
 		     */ 
 		    String method() default "";
 		
 		    /**
 		     * Specify here the column into which the value should be written.
-		     * The only case when this could be skipped is if a single WriteTransformer
-		     * annotates an attribute - the attribute's name will be
-		     * used as a column name.
+		     * The only case when this could be skipped is if a single 
+		     * WriteTransformer annotates an attribute - the attribute's name 
+		     * will be used as a column name.
 		     */ 
 		    Column column() default @Column;
 		}
@@ -1107,25 +1119,31 @@
       <xsd:documentation>
 
 		/**
-		 * Transformation is an optional annotation for org.eclipse.persistence.mappings.TransformationMapping.
-		 * TransformationMapping allows to map an attribute to one or more database columns.
+		 * Transformation is an optional annotation for 
+		 * org.eclipse.persistence.mappings.TransformationMapping.
+		 * TransformationMapping allows to map an attribute to one or more 
+		 * database columns.
 		 * 
-		 * Transformation annotation is an optional part of TransformationMapping definition.
-		 * Unless the TransformationMapping is write-only, it should have a ReadTransformer,
-		 * it defines transformation of database column(s) value(s)into attribute value.
-		 * Also unless it's a read-only mapping, either WriteTransformer annotation or WriteTransformers annotation
-		 * should be specified. Each WriteTransformer defines transformation of the attribute value to a single
-		 * database column value (column is specified in the WriteTransformer). 
+		 * Transformation annotation is an optional part of 
+		 * TransformationMapping definition. Unless the TransformationMapping is 
+		 * write-only, it should have a ReadTransformer, it defines 
+		 * transformation of database column(s) value(s)into attribute value.
+		 * Also unless it's a read-only mapping, either WriteTransformer 
+		 * annotation or WriteTransformers annotation should be specified. Each 
+		 * WriteTransformer defines transformation of the attribute value to a 
+		 * single database column value (column is specified in the 
+		 * WriteTransformer). 
 		 */ 
 		@Target({METHOD, FIELD})
 		@Retention(RUNTIME)
 		public @interface Transformation {
 		    /**
-		     * (Optional) Defines whether the value of the field or property should
-		     * be lazily loaded or must be eagerly fetched. The EAGER strategy is a 
-		     * requirement on the persistence provider runtime that the value must be 
-		     * eagerly fetched. The LAZY strategy is a hint to the persistence provider 
-		     * runtime. If not specified, defaults to EAGER.
+		     * (Optional) Defines whether the value of the field or property 
+		     * should be lazily loaded or must be eagerly fetched. The EAGER 
+		     * strategy is a requirement on the persistence provider runtime 
+		     * that the value must be eagerly fetched. The LAZY strategy is a 
+		     * hint to the persistence provider runtime. If not specified, 
+		     * defaults to EAGER.
 		     */
 		    FetchType fetch() default EAGER;
 		    
@@ -1978,9 +1996,11 @@
     <xsd:annotation>
       <xsd:documentation>
         /**
-         * A CopyPolicy is used to set a org.eclipse.persistence.descriptors.copying.CopyPolicy on an Entity.
-         * It is required that a class that implements org.eclipse.persistence.descriptors.copying.CopyPolicy
-         * be specified as the argument.
+         * A CopyPolicy is used to set a 
+         * org.eclipse.persistence.descriptors.copying.CopyPolicy on an Entity.
+         * It is required that a class that implements 
+         * org.eclipse.persistence.descriptors.copying.CopyPolicy be specified 
+         * as the argument.
          * 
          * A CopyPolicy should be specified on an Entity or MappedSuperclass.
          * 
@@ -1992,8 +2012,8 @@
 
         /*
         * (Required)
-        * This defines the class of the copy policy.  It must specify a class that implements 
-        * org.eclipse.persistence.descriptors.copying.CopyPolicy
+        * This defines the class of the copy policy. It must specify a class 
+        * that implements org.eclipse.persistence.descriptors.copying.CopyPolicy
         */
         Class value();
         }
@@ -2009,11 +2029,14 @@
     <xsd:annotation>
       <xsd:documentation>
         /**
-         * An InstantiationCopyPolicy is used to set a org.eclipse.persistence.descriptors.copying.InstantiationCopyPolicy on an Entity.
-         * InstantiationCopyPolicy is the default CopyPolicy in EclipseLink and therefore this configuration option is only used to override
-         * other types of copy policies
+         * An InstantiationCopyPolicy is used to set an 
+         * org.eclipse.persistence.descriptors.copying.InstantiationCopyPolicy 
+         * on an Entity. InstantiationCopyPolicy is the default CopyPolicy in 
+         * EclipseLink and therefore this configuration option is only used to 
+         * override other types of copy policies
          * 
-         * An InstantiationCopyPolicy should be specified on an Entity or MappedSuperclass.
+         * An InstantiationCopyPolicy should be specified on an Entity or 
+         * MappedSuperclass.
          * 
          * Example:
          * @Entity
@@ -2031,13 +2054,17 @@
     <xsd:annotation>
       <xsd:documentation>
         /**
-         * A CloneCopyPolicy is used to set a org.eclipse.persistence.descriptors.copying.CloneCopyPolicy on an Entity.
-         * A CloneCopyPolicy must specify at one or both of the "method" or "workingCopyMethod".  "workingCopyMethod" is used
-         * to clone objects that will be returned to the user as they are registered in EclipseLink's transactional mechanism, 
-         * the UnitOfWork.  "method" will be used for the clone that is used for comparison in conjunction with EclipseLink's 
-         * DeferredChangeDetectionPolicy
+         * A CloneCopyPolicy is used to set an 
+         * org.eclipse.persistence.descriptors.copying.CloneCopyPolicy on an 
+         * Entity. A CloneCopyPolicy must specify at one or both of the "method" 
+         * or "workingCopyMethod". "workingCopyMethod" is used to clone objects 
+         * that will be returned to the user as they are registered in 
+         * EclipseLink's transactional mechanism, the UnitOfWork. "method" will 
+         * be used for the clone that is used for comparison in conjunction with 
+         * EclipseLink's DeferredChangeDetectionPolicy
          *  
-         * A CloneCopyPolicy should be specified on an Entity or MappedSuperclass.
+         * A CloneCopyPolicy should be specified on an Entity or 
+         * MappedSuperclass.
          * 
          * Example:
          * @Entity
@@ -2057,19 +2084,19 @@
 
             /**
              * (Optional)
-             * Either method or workingCopyMethod must be specified
-             * this defines a method that will be used to create a clone that will be used for comparison by
+             * Either method or workingCopyMethod must be specified this defines 
+             * a method that will be used to create a clone that will be used 
+             * for comparison by
              * EclipseLink's DeferredChangeDetectionPolicy
-             * @return
              */
             String method();
             
             /**
              * (Optional)
              * Either method or workingCopyMethod must be specified
-             * this defines a method that will be used to create a clone that will be used to create the 
-             * object returned when registering an Object in an EclipseLink UnitOfWork
-             * @return
+             * this defines a method that will be used to create a clone that 
+             * will be used to create the object returned when registering an 
+             * Object in an EclipseLink UnitOfWork
              */
             String workingCopyMethod();
             
