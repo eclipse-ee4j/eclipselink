@@ -22,12 +22,14 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
 /**
  * Annotation for org.eclipse.persistence.mappings.TransformationMapping.
- * Unless the TransformationMapping is write-only, it should have a ReadTransformer,
- * it defines transformation of database column(s) value(s)into attribute value.
+ * Unless the TransformationMapping is write-only, it should have a 
+ * ReadTransformer, it defines transformation of database column(s) value(s) 
+ * into attribute value.
  *  
- * Also unless it's a read-only mapping, either WriteTransformer annotation or WriteTransformers annotation
- * should be specified. Each WriteTransformer defines transformation of the attribute value to a single
- * database column value (column is specified in the WriteTransformer). 
+ * Also unless it's a read-only mapping, either WriteTransformer annotation or 
+ * WriteTransformers annotation should be specified. Each WriteTransformer 
+ * defines transformation of the attribute value to a single database column 
+ * value (column is specified in the WriteTransformer). 
  *
  * @see org.eclipse.persistence.annotations.Transformation
  * @see org.eclipse.persistence.annotations.WriteTransformer
@@ -42,16 +44,17 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 @Retention(RUNTIME)
 public @interface ReadTransformer {
     /**
-     * User-defined class that must org.eclipse.persistence.mappings.transformers.AttributeTransformer interface.
-     * The class will be instantiated, its buildAttributeValue will be used to create the value to be assigned
-     * to the attribute.
+     * User-defined class that must implement the 
+     * org.eclipse.persistence.mappings.transformers.AttributeTransformer 
+     * interface. The class will be instantiated, its buildAttributeValue will 
+     * be used to create the value to be assigned to the attribute.
      * Either transformerClass or method must be specified, but not both.
      */ 
     Class transformerClass() default void.class;
 
     /**
-     * The mapped class must have a method with this name which returns a value to be assigned
-     * to the attribute (not assigns the value to the attribute).
+     * The mapped class must have a method with this name which returns a value 
+     * to be assigned to the attribute (not assigns the value to the attribute).
      * Either transformerClass or method must be specified, but not both.
      */ 
     String method() default "";
