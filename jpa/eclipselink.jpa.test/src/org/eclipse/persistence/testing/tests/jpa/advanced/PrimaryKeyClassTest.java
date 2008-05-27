@@ -58,7 +58,7 @@ public class PrimaryKeyClassTest extends EntityContainerTestBase  {
      * Create an employee with multiple phone numbers.
      */
     private int createTest() {
-        Vector phoneNumbers = new Vector();
+        LinkedList phoneNumbers = new LinkedList();
         Employee employee  = new Employee();
         
         try {
@@ -119,11 +119,11 @@ public class PrimaryKeyClassTest extends EntityContainerTestBase  {
             beginTransaction();
             
             Employee employee = getEntityManager().find(Employee.class, empId);
-            Vector phones = (Vector) employee.getPhoneNumbers();
-            Enumeration e = phones.elements();
+            LinkedList phones = (LinkedList) employee.getPhoneNumbers();
+            Iterator e = phones.listIterator();
             
-            while (e.hasMoreElements()) {
-                PhoneNumber phone = (PhoneNumber) e.nextElement();
+            while (e.hasNext()) {
+                PhoneNumber phone = (PhoneNumber) e.next();
                 phone.setAreaCode("613");
             }
             
@@ -143,7 +143,7 @@ public class PrimaryKeyClassTest extends EntityContainerTestBase  {
         try {
             beginTransaction();
             Employee employee = getEntityManager().find(Employee.class, empId);
-            getEntityManager().remove(((Vector) employee.getPhoneNumbers()).firstElement());
+            //getEntityManager().remove(((LinkedList) employee.getPhoneNumbers()).firstElement());
             commitTransaction();
         } catch (Exception e) {
             rollbackTransaction();

@@ -27,6 +27,7 @@ import org.eclipse.persistence.exceptions.ValidationException;
 
 import org.eclipse.persistence.internal.helper.ClassConstants;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataDescriptor;
+import org.eclipse.persistence.internal.jpa.metadata.MetadataLogger;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.AccessMethodsMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.MetadataAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.PropertyMetadata;
@@ -251,7 +252,8 @@ public abstract class MappingAccessor extends MetadataAccessor {
             } else if (rawClass == Set.class) {
                 mapping.useTransparentSet();
             } else {
-                // Because of validation we should never get this far.
+                //bug221577: This should be supported when a transparent indirection class can be set through eclipseLink_orm.xml, or basic indirection is used
+                this.getLogger().logWarningMessage(MetadataLogger.WARNING_INVALID_COLLECTION_USED_ON_LAZY_RELATION, this.getJavaClass(), this.getAnnotatedElement(), rawClass);
             }
         } else {
             mapping.dontUseIndirection();
@@ -260,8 +262,15 @@ public abstract class MappingAccessor extends MetadataAccessor {
                 mapping.useMapClass(java.util.Hashtable.class, mapKey);
             } else if (rawClass == Set.class) {
                 mapping.useCollectionClass(java.util.HashSet.class);
-            } else {
+            } else if ( (rawClass == List.class) || (rawClass == Collection.class)){
                 mapping.useCollectionClass(java.util.Vector.class);
+            } else {
+                //bug221577: use the supplied collection class type if its not an interface
+                if (mapKey == null || mapKey.equals("")){
+                    mapping.useCollectionClass(rawClass);
+                } else {
+                    mapping.useMapClass(rawClass, mapKey);
+                }
             }
         }
     }

@@ -33,7 +33,7 @@ public class ReturnAndMappingWithTransparentIndirectionMismatchTest extends Exce
     }
 
     protected void setup() {
-        expectedException = DescriptorException.returnAndMappingWithTransparentIndirectionMismatch(new OneToManyMapping(), null);
+        expectedException = DescriptorException.returnAndMappingWithTransparentIndirectionMismatch(new OneToManyMapping(), null, null);
         super.setup();
     }
 

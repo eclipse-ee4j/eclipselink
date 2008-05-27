@@ -33,7 +33,7 @@ public class AttributeAndMappingWithTransparentIndirectionMismatchTest extends E
     }
 
     protected void setup() {
-        expectedException = DescriptorException.attributeAndMappingWithTransparentIndirectionMismatch(new DirectToFieldMapping(), null);
+        expectedException = DescriptorException.attributeAndMappingWithTransparentIndirectionMismatch(new DirectToFieldMapping(), null, null);
         expectedException.setErrorCode(138);
         orgIntegrityChecker = getSession().getIntegrityChecker();
         getSession().setIntegrityChecker(new IntegrityChecker());

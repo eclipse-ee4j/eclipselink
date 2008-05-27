@@ -276,8 +276,8 @@ public class DescriptorException extends ValidationException {
         return exception;
     }
 
-    public static DescriptorException attributeAndMappingWithTransparentIndirectionMismatch(DatabaseMapping mapping, String validTypeName) {
-        Object[] args = { mapping.getAttributeName(), validTypeName };
+    public static DescriptorException attributeAndMappingWithTransparentIndirectionMismatch(DatabaseMapping mapping, Class parameterType, String validTypeName) {
+        Object[] args = { mapping.getAttributeName(), parameterType, validTypeName };
 
         DescriptorException exception = new DescriptorException(ExceptionMessageGenerator.buildMessage(DescriptorException.class, ATTRIBUTE_AND_MAPPING_WITH_TRANSPARENT_INDIRECTION_MISMATCH, args), mapping);
         exception.setErrorCode(ATTRIBUTE_AND_MAPPING_WITH_TRANSPARENT_INDIRECTION_MISMATCH);
@@ -1302,8 +1302,8 @@ public class DescriptorException extends ValidationException {
         return exception;
     }
 
-    public static DescriptorException parameterAndMappingWithTransparentIndirectionMismatch(DatabaseMapping mapping, String validTypeName) {
-        Object[] args = { mapping.getAttributeName(), validTypeName };
+    public static DescriptorException parameterAndMappingWithTransparentIndirectionMismatch(DatabaseMapping mapping, Class parameterType, String validTypeName) {
+        Object[] args = { mapping.getAttributeName(), parameterType, validTypeName };
 
         DescriptorException exception = new DescriptorException(ExceptionMessageGenerator.buildMessage(DescriptorException.class, PARAMETER_AND_MAPPING_WITH_TRANSPARENT_INDIRECTION_MISMATCH, args), mapping);
         exception.setErrorCode(PARAMETER_AND_MAPPING_WITH_TRANSPARENT_INDIRECTION_MISMATCH);
@@ -1412,8 +1412,8 @@ public class DescriptorException extends ValidationException {
         return exception;
     }
 
-    public static DescriptorException returnAndMappingWithTransparentIndirectionMismatch(DatabaseMapping mapping, String validTypeName) {
-        Object[] args = { mapping.getAttributeName(), validTypeName };
+    public static DescriptorException returnAndMappingWithTransparentIndirectionMismatch(DatabaseMapping mapping, Class parameterType, String validTypeName) {
+        Object[] args = { mapping.getAttributeName(), parameterType, validTypeName };
 
         DescriptorException exception = new DescriptorException(ExceptionMessageGenerator.buildMessage(DescriptorException.class, RETURN_AND_MAPPING_WITH_TRANSPARENT_INDIRECTION_MISMATCH, args), mapping);
         exception.setErrorCode(RETURN_AND_MAPPING_WITH_TRANSPARENT_INDIRECTION_MISMATCH);

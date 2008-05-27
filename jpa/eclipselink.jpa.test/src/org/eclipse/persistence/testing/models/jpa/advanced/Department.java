@@ -101,6 +101,7 @@ public class Department implements Serializable {
     
     //To test default 1-M mapping
     @OneToMany(fetch=EAGER, cascade=PERSIST)
+    @PrivateOwned
     public Collection<Employee> getManagers() {
         return managers;
     }

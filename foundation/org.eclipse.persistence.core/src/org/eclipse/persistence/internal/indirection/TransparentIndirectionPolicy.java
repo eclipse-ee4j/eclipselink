@@ -478,7 +478,7 @@ public class TransparentIndirectionPolicy extends IndirectionPolicy {
     public void validateDeclaredAttributeType(Class attributeType, IntegrityChecker checker) throws DescriptorException {
         super.validateDeclaredAttributeType(attributeType, checker);
         if (!this.typeIsValid(attributeType)) {
-            checker.handleError(DescriptorException.attributeAndMappingWithTransparentIndirectionMismatch(this.getMapping(), this.validTypeName()));
+            checker.handleError(DescriptorException.attributeAndMappingWithTransparentIndirectionMismatch(this.getMapping(), attributeType, this.validTypeName()));
         }
     }
 
@@ -493,7 +493,7 @@ public class TransparentIndirectionPolicy extends IndirectionPolicy {
     public void validateGetMethodReturnType(Class returnType, IntegrityChecker checker) throws DescriptorException {
         super.validateGetMethodReturnType(returnType, checker);
         if (!this.typeIsValid(returnType)) {
-            checker.handleError(DescriptorException.returnAndMappingWithTransparentIndirectionMismatch(this.getMapping(), this.validTypeName()));
+            checker.handleError(DescriptorException.returnAndMappingWithTransparentIndirectionMismatch(this.getMapping(), returnType, this.validTypeName()));
         }
     }
 
@@ -508,7 +508,7 @@ public class TransparentIndirectionPolicy extends IndirectionPolicy {
     public void validateSetMethodParameterType(Class parameterType, IntegrityChecker checker) throws DescriptorException {
         super.validateSetMethodParameterType(parameterType, checker);
         if (!this.typeIsValid(parameterType)) {
-            checker.handleError(DescriptorException.parameterAndMappingWithTransparentIndirectionMismatch(this.getMapping(), this.validTypeName()));
+            checker.handleError(DescriptorException.parameterAndMappingWithTransparentIndirectionMismatch(this.getMapping(), parameterType, this.validTypeName()));
         }
     }
 

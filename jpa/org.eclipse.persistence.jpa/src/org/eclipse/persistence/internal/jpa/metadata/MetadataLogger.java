@@ -125,6 +125,11 @@ public class MetadataLogger {
     public static final String MANY_TO_MANY_MAPPING_REFERENCE_CLASS = "metadata_default_many_to_many_reference_class";
     public static final String VARIABLE_ONE_TO_ONE_MAPPING_REFERENCE_CLASS = "metadata_default_variable_one_to_one_reference_class";
     /*************************************************************************/
+    /*                       OTHER WARNING MESSSAGES                         */ 
+    /*************************************************************************/
+    public static final String WARNING_INVALID_COLLECTION_USED_ON_LAZY_RELATION = "non_jpa_allowed_type_used_for_collection_using_lazy_access";
+
+    /*************************************************************************/
     
     protected AbstractSession m_session; 
     protected HashMap m_ctxStrings;
@@ -221,6 +226,8 @@ public class MetadataLogger {
         m_ctxStrings.put(MANY_TO_ONE_MAPPING_REFERENCE_CLASS, MANY_TO_ONE_MAPPING_REFERENCE_CLASS);
         m_ctxStrings.put(MANY_TO_MANY_MAPPING_REFERENCE_CLASS, MANY_TO_MANY_MAPPING_REFERENCE_CLASS);
         m_ctxStrings.put(VARIABLE_ONE_TO_ONE_MAPPING_REFERENCE_CLASS, VARIABLE_ONE_TO_ONE_MAPPING_REFERENCE_CLASS);
+        
+        m_ctxStrings.put(WARNING_INVALID_COLLECTION_USED_ON_LAZY_RELATION, WARNING_INVALID_COLLECTION_USED_ON_LAZY_RELATION);
     }
     
     /**

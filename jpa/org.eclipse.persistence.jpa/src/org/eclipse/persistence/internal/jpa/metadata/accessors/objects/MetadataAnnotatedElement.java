@@ -416,21 +416,23 @@ public class MetadataAnnotatedElement extends MetadataAccessibleObject {
             return isAnnotationPresent(OneToOne.class, descriptor);
         }
     }
-    
+
     /**
      * INTERNAL:
      * Method to return whether a class is a supported Collection. EJB 3.0 spec 
-     * currently only supports Collection, Set, List and Map.
+     * currently only supports Collection, Set, List and Map.  Changed in 221577
+     * to allow types assignable to Collection, Set, List and Map rather than strict
+     * equality.
      */
     public boolean isSupportedCollectionClass() {
         Class rawClass = getRawClass();
         
-        return rawClass.equals(Collection.class) || 
-               rawClass.equals(Set.class) || 
-               rawClass.equals(List.class) || 
-               rawClass.equals(Map.class);
+        return Collection.class.isAssignableFrom(rawClass) || 
+            Set.class.isAssignableFrom(rawClass) || 
+            List.class.isAssignableFrom(rawClass) || 
+            Map.class.isAssignableFrom(rawClass);
     }
-    
+
     /**
      * INTERNAL:
      * Return true if this accessor represents an transformation mapping.

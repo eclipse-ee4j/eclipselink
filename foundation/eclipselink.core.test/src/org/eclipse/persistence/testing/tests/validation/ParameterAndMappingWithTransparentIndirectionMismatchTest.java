@@ -36,7 +36,7 @@ public class ParameterAndMappingWithTransparentIndirectionMismatchTest extends E
     }
 
     protected void setup() {
-        expectedException = DescriptorException.parameterAndMappingWithTransparentIndirectionMismatch(new OneToManyMapping(), null);
+        expectedException = DescriptorException.parameterAndMappingWithTransparentIndirectionMismatch(new OneToManyMapping(), null, null);
         orgIntegrityChecker = getSession().getIntegrityChecker();
         getSession().setIntegrityChecker(new IntegrityChecker());
         getSession().getIntegrityChecker().dontCatchExceptions();
