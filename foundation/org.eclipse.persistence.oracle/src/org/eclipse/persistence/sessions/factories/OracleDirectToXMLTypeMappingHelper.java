@@ -61,6 +61,9 @@ public class OracleDirectToXMLTypeMappingHelper extends DirectToXMLTypeMappingHe
             directtofieldmapping.setNullValue(new Boolean(false));
             descriptor.addMapping(directtofieldmapping);
     
+            // Need to set the namespace resolver.
+            descriptor.setNamespaceResolver(((XMLDescriptor)project.getDescriptors().values().iterator().next()).getNamespaceResolver());
+            
             project.addDescriptor(descriptor);
         }
     }

@@ -24,6 +24,7 @@ import junit.framework.*;
 
 import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
+import org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced.Department;
 import org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced.Employee;
 import org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced.Address;
 import org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced.AdvancedTableCreator;
@@ -69,10 +70,14 @@ public class SessionBeanTests extends JUnitTestCase {
         Employee bob = new Employee();
         bob.setFirstName("Bob");
         bob.setLastName("Jones");
+        bob.setAddress(new Address());
+        bob.setDepartment(new Department());
         getEmployeeService().insert(bob);
         Employee joe = new Employee();
-        bob.setFirstName("Joe");
-        bob.setLastName("Smith");
+        joe.setFirstName("Joe");
+        joe.setLastName("Smith");
+        joe.setAddress(new Address());
+        joe.setDepartment(new Department());
         getEmployeeService().insert(joe);
     }
     

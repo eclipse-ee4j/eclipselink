@@ -2917,12 +2917,16 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
                 rollbackTransaction(em);
             }
             Throwable persistenceException = exception;
+            // Remove runtime exception from commit.
+            if (persistenceException.getClass().equals(RuntimeException.class)) {
+                persistenceException = persistenceException.getCause();
+            }
             while (persistenceException instanceof javax.transaction.RollbackException) {
                 // In the server this is always a rollback exception, need to get nested exception.
                 persistenceException = persistenceException.getCause();
             }
             if (!(persistenceException instanceof PersistenceException)) {            
-                AssertionFailedError failure = new AssertionFailedError("Wrong exception type thrown: " + persistenceException.getClass());
+                AssertionFailedError failure = new AssertionFailedError("Wrong exception type thrown: " + exception.getClass());
                 failure.initCause(exception);
                 throw failure;
             }
@@ -3003,6 +3007,10 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
                 rollbackTransaction(em);
             }
             Throwable persistenceException = exception;
+            // Remove runtime exception from commit.
+            if (persistenceException.getClass().equals(RuntimeException.class)) {
+                persistenceException = persistenceException.getCause();
+            }
             while (persistenceException instanceof javax.transaction.RollbackException) {
                 // In the server this is always a rollback exception, need to get nested exception.
                 persistenceException = persistenceException.getCause();
@@ -4114,9 +4122,9 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
     // gf1732
     public void testMultipleEntityManagerFactories() {
         // TODO: This does not work on the server but should.
-        //if (isOnServer()) {
-        //    return;
-        //}
+        if (isOnServer()) {
+            return;
+        }
         
         // close the original factory
         closeEntityManagerFactory();

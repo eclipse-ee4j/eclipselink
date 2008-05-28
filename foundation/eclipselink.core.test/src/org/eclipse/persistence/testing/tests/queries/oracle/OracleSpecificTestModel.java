@@ -54,7 +54,7 @@ public class OracleSpecificTestModel extends TestModel {
         ReadObjectQuery roq = new ReadObjectQuery(Employee.class);
         Employee emp = new Employee();
         emp.firstName = "Bill";
-        roq.setSelectionObject(emp);
+        roq.setExampleObject(emp);
         TestCase tc2 = new BasicReadTest(roq);
         tc2.setName("QBE Test");
         tc2.setDescription("Tests hints using a Query By Example");

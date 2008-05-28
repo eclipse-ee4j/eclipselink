@@ -117,7 +117,7 @@
                 <set attribute="URL" value="${db.url}"/>
                 <set attribute="Targets" value="${myserver}"/>
             </create>
-            <create type="JDBCDataSource" name="EclipseLinkDS">
+            <create type="JDBCTxDataSource" name="EclipseLinkDS">
                 <set attribute="JNDIName" value="jdbc/EclipseLinkDS"/>
                 <set attribute="PoolName" value="ejbPool"/>
                 <set attribute="Targets" value="${myserver}"/>

@@ -248,7 +248,9 @@ public class XMLInteraction extends MappedInteraction {
      */
     protected XMLRecord createXMLRecord(String rootName) {
         if (getQuery().getDescriptor() instanceof EISDescriptor && (getQuery().getDescriptor() != null)) {
-            return (XMLRecord)((XMLObjectBuilder)this.getQuery().getDescriptor().getObjectBuilder()).createRecord(getInputRootElementName());
+            XMLRecord record = (XMLRecord)((XMLObjectBuilder)this.getQuery().getDescriptor().getObjectBuilder()).createRecord(getInputRootElementName());
+            record.setSession(getQuery().getSession());
+            return record;
         } else {
             return new org.eclipse.persistence.oxm.record.DOMRecord(getInputRootElementName());
         }

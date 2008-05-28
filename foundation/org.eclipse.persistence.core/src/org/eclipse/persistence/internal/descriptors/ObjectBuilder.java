@@ -1771,7 +1771,8 @@ public class ObjectBuilder implements Cloneable, Serializable {
                 for (int index = 0; index < size; index++) {
                     AbstractDirectMapping mapping = (AbstractDirectMapping)mappings.get(index);
                     Object keyValue = mapping.valueFromObject(domainObject, (DatabaseField)primaryKeyFields.get(index), session);
-                    if (Helper.isEquivalentToNull(keyValue)) {
+                    // Only check for 0 for singleton primary keys.
+                    if (keyValue == null || ((size == 1) && Helper.isEquivalentToNull(keyValue))) {
                         if (shouldReturnNullIfNull) {
                             return null;
                         }
@@ -1797,7 +1798,8 @@ public class ObjectBuilder implements Cloneable, Serializable {
                     // the main reason for this is that 1-1 can optimize on vh by getting from the row as the row-type.
                     Class classification = (Class)primaryKeyClassifications.get(index);
                     Object value = databaseRow.get((DatabaseField)primaryKeyFields.get(index));
-                    if (Helper.isEquivalentToNull(value)) {
+                    // Only check for 0 for singleton primary keys.
+                    if (value == null || ((size == 1) && Helper.isEquivalentToNull(value))) {
                         if (shouldReturnNullIfNull) {
                             return null;
                         }
