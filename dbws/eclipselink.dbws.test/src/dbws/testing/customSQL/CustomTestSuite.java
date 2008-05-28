@@ -24,7 +24,6 @@ import org.w3c.dom.Element;
 import javax.wsdl.WSDLException;
 
 // JUnit imports
-import org.junit.BeforeClass;
 import org.junit.Test;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
@@ -32,28 +31,12 @@ import static org.junit.Assert.assertTrue;
 // EclipseLink imports
 import org.eclipse.persistence.internal.xr.Invocation;
 import org.eclipse.persistence.internal.xr.Operation;
-import org.eclipse.persistence.internal.xr.XRServiceAdapter;
 import org.eclipse.persistence.oxm.XMLMarshaller;
 
-import dbws.testing.TestDBWSFactory;
-
 // domain-specific imports
-import static dbws.testing.TestDBWSFactory.buildJar;
-import static dbws.testing.TestDBWSFactory.comparer;
-import static dbws.testing.TestDBWSFactory.DATABASE_DRIVER_KEY;
-import static dbws.testing.TestDBWSFactory.DATABASE_PASSWORD_KEY;
-import static dbws.testing.TestDBWSFactory.DATABASE_PLATFORM_KEY;
-import static dbws.testing.TestDBWSFactory.DATABASE_URL_KEY;
-import static dbws.testing.TestDBWSFactory.DATABASE_USERNAME_KEY;
-import static dbws.testing.TestDBWSFactory.DEFAULT_DATABASE_DRIVER;
-import static dbws.testing.TestDBWSFactory.DEFAULT_DATABASE_PASSWORD;
-import static dbws.testing.TestDBWSFactory.DEFAULT_DATABASE_PLATFORM;
-import static dbws.testing.TestDBWSFactory.DEFAULT_DATABASE_URL;
-import static dbws.testing.TestDBWSFactory.DEFAULT_DATABASE_USERNAME;
-import static dbws.testing.TestDBWSFactory.xmlParser;
-import static dbws.testing.TestDBWSFactory.xmlPlatform;
+import dbws.testing.DBWSTestSuite;
 
-public class CustomTestSuite {
+public class CustomTestSuite extends DBWSTestSuite {
 
     public static final String DBWS_BUILDER_XML_USERNAME =
         "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" +
@@ -97,25 +80,8 @@ public class CustomTestSuite {
         "</dbws-builder>";
 
     public static void main(String[] args) throws IOException, WSDLException {
-        String username = System.getProperty(DATABASE_USERNAME_KEY, DEFAULT_DATABASE_USERNAME);
-        String password = System.getProperty(DATABASE_PASSWORD_KEY, DEFAULT_DATABASE_PASSWORD);
-        String url = System.getProperty(DATABASE_URL_KEY, DEFAULT_DATABASE_URL);
-        String driver = System.getProperty(DATABASE_DRIVER_KEY, DEFAULT_DATABASE_DRIVER);
-        String platform = System.getProperty(DATABASE_PLATFORM_KEY, DEFAULT_DATABASE_PLATFORM);
-
-        String builderString = DBWS_BUILDER_XML_USERNAME + username + DBWS_BUILDER_XML_PASSWORD +
-            password + DBWS_BUILDER_XML_URL + url + DBWS_BUILDER_XML_DRIVER + driver +
-            DBWS_BUILDER_XML_PLATFORM + platform + DBWS_BUILDER_XML_MAIN;
-
-        buildJar(builderString, "Custom");
-    }
-
-	// test fixture(s)
-    static XRServiceAdapter xrService = null;
-    @BeforeClass
-    public static void setUpDBWSService() {
-        TestDBWSFactory serviceFactory = new TestDBWSFactory();
-        xrService = serviceFactory.buildService();
+        buildJar(DBWS_BUILDER_XML_USERNAME, DBWS_BUILDER_XML_PASSWORD, DBWS_BUILDER_XML_URL,
+            DBWS_BUILDER_XML_DRIVER, DBWS_BUILDER_XML_PLATFORM, DBWS_BUILDER_XML_MAIN, args[0]);
     }
 
     @Test
