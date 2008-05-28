@@ -75,7 +75,7 @@ public class MetadataDescriptor {
     private ClassAccessor m_accessor;
     private ClassDescriptor m_descriptor;
     private DatabaseTable m_primaryTable;
-    private ExistenceType m_existenceChecking;
+    private Enum m_existenceChecking;
     
     // This is the parent class that defines the inheritance strategy, and
     // not necessarily the immediate parent class.
@@ -1066,7 +1066,7 @@ public class MetadataDescriptor {
     /**
      * INTERNAL:
      */
-    public void setExistenceChecking(ExistenceType existenceChecking) {
+    public void setExistenceChecking(Enum existenceChecking) {
         m_existenceChecking = existenceChecking;
         
         if (existenceChecking.equals(ExistenceType.CHECK_CACHE)) {

@@ -17,13 +17,10 @@ package org.eclipse.persistence.internal.jpa.metadata.transformers;
 
 import java.lang.annotation.Annotation;
 
-import javax.persistence.Column;
-
 import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAccessibleObject;
 import org.eclipse.persistence.internal.jpa.metadata.columns.ColumnMetadata;
 import org.eclipse.persistence.mappings.TransformationMapping;
-import org.eclipse.persistence.mappings.transformers.FieldTransformer;
 
 /**
  * INTERNAL:
@@ -48,7 +45,7 @@ public class WriteTransformerMetadata extends ReadTransformerMetadata {
     public WriteTransformerMetadata(Annotation writeTransformer, MetadataAccessibleObject accessibleObject) {
         super(writeTransformer, accessibleObject);
         
-        m_column = new ColumnMetadata((Column) MetadataHelper.invokeMethod("column", writeTransformer), accessibleObject);
+        m_column = new ColumnMetadata((Annotation) MetadataHelper.invokeMethod("column", writeTransformer), accessibleObject);
     }
     
     /**
@@ -76,7 +73,10 @@ public class WriteTransformerMetadata extends ReadTransformerMetadata {
                 if (getTransformerClass().equals(void.class)) {
                     throw ValidationException.writeTransformerHasNeitherClassNorMethod(annotatedElementName, m_column.getName());
                 } else {
-                    if (FieldTransformer.class.isAssignableFrom(getTransformerClass())) {
+                    // We can't use isAssignableFrom here. When static weaving is 
+                    // used we will have class loader dependencies that will cause 
+                    // the isAssignableFrom check to always return false.
+                    if (MetadataHelper.classImplementsInterface(getTransformerClass(), "org.eclipse.persistence.mappings.transformers.FieldTransformer")) {
                         mapping.addFieldTransformerClassName(m_column.getDatabaseField(), getTransformerClass().getName());
                     } else {
                         throw ValidationException.writeTransformerClassDoesntImplementFieldTransformer(annotatedElementName, m_column.getName());

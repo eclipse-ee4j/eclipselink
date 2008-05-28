@@ -188,14 +188,14 @@ public abstract class MappingAccessor extends MetadataAccessor {
             }
         } else {
             // Look for annotations.
-            Properties properties = getAnnotation(Properties.class);
+            Annotation properties = getAnnotation(Properties.class);
             if (properties != null) {
                 for (Annotation property : (Annotation[]) MetadataHelper.invokeMethod("value", properties)) {
                     processProperty(mapping, new PropertyMetadata(property, getAccessibleObject()));
                 }
             }
             
-            Property property = getAnnotation(Property.class);
+            Annotation property = getAnnotation(Property.class);
             if (property != null) {
                 processProperty(mapping, new PropertyMetadata(property, getAccessibleObject()));
             }    

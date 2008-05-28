@@ -21,7 +21,6 @@ import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.internal.jpa.metadata.ORMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAccessibleObject;
 import org.eclipse.persistence.mappings.TransformationMapping;
-import org.eclipse.persistence.mappings.transformers.AttributeTransformer;
 
 /**
  * INTERNAL:
@@ -106,7 +105,10 @@ public class ReadTransformerMetadata extends ORMetadata {
             if (m_transformerClass.equals(void.class)) {
                 throw ValidationException.readTransformerHasNeitherClassNorMethod(annotatedElementName);
             } else {
-                if (AttributeTransformer.class.isAssignableFrom(m_transformerClass)) {
+                // We can't use isAssignableFrom here. When static weaving is 
+                // used we will have class loader dependencies that will cause 
+                // the isAssignableFrom check to always return false.
+                if (MetadataHelper.classImplementsInterface(m_transformerClass, "org.eclipse.persistence.mappings.transformers.AttributeTransformer")) {
                     mapping.setAttributeTransformerClassName(m_transformerClass.getName());
                 } else {
                     throw ValidationException.readTransformerClassDoesntImplementAttributeTransformer(annotatedElementName);

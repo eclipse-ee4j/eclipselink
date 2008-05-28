@@ -62,7 +62,7 @@ public class TransformationAccessor extends BasicAccessor {
             setOptional((Boolean) MetadataHelper.invokeMethod("optional", transformation));
         }
         
-        ReadTransformer readTransformer = getAnnotation(ReadTransformer.class);
+        Annotation readTransformer = getAnnotation(ReadTransformer.class);
         if (readTransformer != null) {
             m_readTransformer = new ReadTransformerMetadata(readTransformer, accessibleObject);
         }
@@ -71,7 +71,7 @@ public class TransformationAccessor extends BasicAccessor {
         m_writeTransformers = new ArrayList<WriteTransformerMetadata>();
         
         // Process all the write transformers first.
-        WriteTransformers writeTransformers = getAnnotation(WriteTransformers.class);
+        Annotation writeTransformers = getAnnotation(WriteTransformers.class);
         if (writeTransformers != null) {
             for (Annotation transformer : (Annotation[]) MetadataHelper.invokeMethod("value", writeTransformers)) {
                 m_writeTransformers.add(new WriteTransformerMetadata(transformer, accessibleObject));
@@ -79,7 +79,7 @@ public class TransformationAccessor extends BasicAccessor {
         }
         
         // Process the single write transformer second.
-        WriteTransformer writeTransformer = getAnnotation(WriteTransformer.class);
+        Annotation writeTransformer = getAnnotation(WriteTransformer.class);
         if (writeTransformer != null) {
             m_writeTransformers.add(new WriteTransformerMetadata(writeTransformer, accessibleObject));
         }

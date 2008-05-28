@@ -569,7 +569,7 @@ public class MappedSuperclassAccessor extends ClassAccessor {
                 getLogger().logWarningMessage(MetadataLogger.IGNORE_MAPPED_SUPERCLASS_EXISTENCE_CHECKING, getDescriptor().getJavaClass(), getJavaClass());
             } else {
                 if (m_existenceChecking == null) {
-                    getDescriptor().setExistenceChecking((ExistenceType) MetadataHelper.invokeMethod("value", existenceChecking));
+                    getDescriptor().setExistenceChecking((Enum) MetadataHelper.invokeMethod("value", existenceChecking));
                 } else {
                     if (existenceChecking != null) {
                         getLogger().logWarningMessage(MetadataLogger.OVERRIDE_ANNOTATION_WITH_XML, existenceChecking, getJavaClassName(), getLocation());

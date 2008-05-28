@@ -32,6 +32,42 @@ import org.eclipse.persistence.internal.security.PrivilegedMethodInvoker;
  * @since EclipseLink 1.0
  */
 final class MetadataHelper {
+    /**
+     * INTERNAL:
+     * Return whether a Class implements a specific interface, either directly 
+     * or indirectly (through interface or implementation inheritance).
+     */
+    public static boolean classImplementsInterface(Class cls, String iFaceName) {
+        if (cls.getName().contains(iFaceName)) {
+            return true;
+        }
+
+        Class[] interfaces = cls.getInterfaces();
+
+        // 1 - Loop through the directly declared interfaces.
+        for (Class iFace : interfaces) {
+            if (iFace.getName().contains(iFaceName)) {
+                return true;
+            }
+        }
+
+        // 2 - Recurse through the interfaces from the directly declared 
+        // interfaces
+        for (Class iFace : interfaces) {
+            if (classImplementsInterface(iFace, iFaceName)) {
+                return true;
+            }
+        }
+
+        // 3 - Recurse up through the super classes to Object.
+        Class superClass = cls.getSuperclass();
+        if (cls == null) {
+            return false;
+        }
+        
+        return classImplementsInterface(superClass, iFaceName);
+    } 
+    
     /** 
      * INTERNAL:
      * Invoke the specified named method on the object, handling the necessary 
