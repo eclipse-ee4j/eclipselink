@@ -106,7 +106,7 @@ import static org.eclipse.persistence.annotations.OptimisticLockingType.VERSION_
 )
 @Cache(
     type=SOFT_WEAK,
-    isolated=false,
+    shared=true,
     expiry=100000,
     alwaysRefresh=false, // some test dependencies for this to be false.
     disableHits=true, // Employee customizer should set it back to false.

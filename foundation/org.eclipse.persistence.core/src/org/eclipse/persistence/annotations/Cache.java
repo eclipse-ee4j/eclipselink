@@ -54,7 +54,7 @@ public @interface Cache {
      * (Optional) Cached instances in the shared cache or a client 
      * isolated cache.
      */ 
-    boolean isolated() default false;
+    boolean shared() default true;
 
     /**
      * (Optional) Expire cached instance after a fix period of time (ms). 

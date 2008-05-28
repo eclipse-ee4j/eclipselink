@@ -38,7 +38,7 @@ import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataA
 public class CacheMetadata extends ORMetadata {
     protected Boolean m_alwaysRefresh;
     protected Boolean m_disableHits;
-    protected Boolean m_isolated;
+    protected Boolean m_shared;
     protected Boolean m_refreshOnlyIfNewer;
     
     protected Enum m_coordinationType;
@@ -73,7 +73,7 @@ public class CacheMetadata extends ORMetadata {
             m_expiryTimeOfDay = new TimeOfDayMetadata(expiryTimeOfDay, accessibleObject);
         }
         
-        m_isolated = (Boolean) MetadataHelper.invokeMethod("isolated", cache);
+        m_shared = (Boolean) MetadataHelper.invokeMethod("shared", cache);
         m_size = (Integer) MetadataHelper.invokeMethod("size", cache);
         m_type = (Enum) MetadataHelper.invokeMethod("type", cache);
         m_refreshOnlyIfNewer = (Boolean) MetadataHelper.invokeMethod("refreshOnlyIfNewer", cache);
@@ -123,16 +123,16 @@ public class CacheMetadata extends ORMetadata {
      * INTERNAL:
      * Used for OX mapping.
      */
-    public Boolean getIsolated() {
-       return m_isolated; 
+    public Boolean getRefreshOnlyIfNewer() {
+       return m_refreshOnlyIfNewer; 
     }
     
     /**
      * INTERNAL:
      * Used for OX mapping.
      */
-    public Boolean getRefreshOnlyIfNewer() {
-       return m_refreshOnlyIfNewer; 
+    public Boolean getShared() {
+       return m_shared; 
     }
     
     /**
@@ -181,8 +181,8 @@ public class CacheMetadata extends ORMetadata {
         // Process size.
         classDescriptor.setIdentityMapSize((m_size == null) ? 100 : m_size);
         
-        // Process isolated.
-        classDescriptor.setIsIsolated(m_isolated == null ? false : m_isolated);
+        // Process shared.
+        classDescriptor.setIsIsolated(m_shared == null ? true : ! m_shared);
         
         // Process expiry or expiry time of day.
         if (m_expiryTimeOfDay == null) {
@@ -265,8 +265,16 @@ public class CacheMetadata extends ORMetadata {
      * INTERNAL:
      * Used for OX mapping.
      */
-    public void setIsolated(Boolean isolated) {
-       m_isolated = isolated; 
+    public void setRefreshOnlyIfNewer(Boolean refreshOnlyIfNewer) {
+        m_refreshOnlyIfNewer = refreshOnlyIfNewer;
+    }
+    
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+    public void setShared(Boolean shared) {
+       m_shared = shared; 
     }
     
     /**
@@ -283,13 +291,5 @@ public class CacheMetadata extends ORMetadata {
      */
     public void setType(Enum type) {
        m_type = type;
-    }
-    
-    /**
-     * INTERNAL:
-     * Used for OX mapping.
-     */
-    public void setRefreshOnlyIfNewer(Boolean refreshOnlyIfNewer) {
-        m_refreshOnlyIfNewer = refreshOnlyIfNewer;
     }
 }

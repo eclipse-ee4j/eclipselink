@@ -524,12 +524,12 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         sizeMapping.setXPath("@size");
         descriptor.addMapping(sizeMapping);
         
-        XMLDirectMapping isolatedMapping = new XMLDirectMapping();
-        isolatedMapping.setAttributeName("m_isolated");
-        isolatedMapping.setGetMethodName("getIsolated");
-        isolatedMapping.setSetMethodName("setIsolated");
-        isolatedMapping.setXPath("@isolated");
-        descriptor.addMapping(isolatedMapping);
+        XMLDirectMapping sharedMapping = new XMLDirectMapping();
+        sharedMapping.setAttributeName("m_shared");
+        sharedMapping.setGetMethodName("getShared");
+        sharedMapping.setSetMethodName("setShared");
+        sharedMapping.setXPath("@shared");
+        descriptor.addMapping(sharedMapping);
         
         XMLDirectMapping cacheTypeMapping = new XMLDirectMapping();
         cacheTypeMapping.setAttributeName("m_type");
