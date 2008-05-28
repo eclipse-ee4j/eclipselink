@@ -62,6 +62,7 @@ public class AttachedBinaryTestSuite extends DBWSTestSuite {
            "</property>" +
        "</properties>" +
        "<table " +
+         "schemaPattern=\"%\" " +
          "tableNamePattern=\"attachedbinary\" " +
          ">" +
 	     "<procedure " +

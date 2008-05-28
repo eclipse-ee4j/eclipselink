@@ -57,6 +57,7 @@ public class InlineBinaryTestSuite extends DBWSTestSuite {
            "</property>" +
        "</properties>" +
        "<table " +
+          "schemaPattern=\"%\" " +
          "tableNamePattern=\"inlinebinary\" " +
        "/>" +
      "</dbws-builder>";

@@ -28,7 +28,6 @@ import org.junit.BeforeClass;
 import org.eclipse.persistence.internal.xr.XRServiceAdapter;
 import org.eclipse.persistence.oxm.XMLContext;
 import org.eclipse.persistence.oxm.XMLUnmarshaller;
-import org.eclipse.persistence.platform.database.MySQL4Platform;
 import org.eclipse.persistence.platform.xml.XMLComparer;
 import org.eclipse.persistence.platform.xml.XMLParser;
 import org.eclipse.persistence.platform.xml.XMLPlatform;
@@ -53,7 +52,7 @@ public class DBWSTestSuite {
         DEFAULT_DATABASE_USERNAME;
     public final static String DEFAULT_DATABASE_DRIVER = "com.mysql.jdbc.Driver";
     public final static String DEFAULT_DATABASE_PLATFORM =
-        MySQL4Platform.class.getName();
+        "org.eclipse.persistence.platform.database.MySQL51Platform";
 
     public static XMLComparer comparer = new XMLComparer();
     public static XMLPlatform xmlPlatform = XMLPlatformFactory.getInstance().getXMLPlatform();
