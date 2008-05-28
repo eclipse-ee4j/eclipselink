@@ -56,6 +56,7 @@ import org.eclipse.persistence.internal.security.PrivilegedClassForName;
 import org.eclipse.persistence.internal.security.PrivilegedGetConstructorFor;
 import org.eclipse.persistence.internal.security.PrivilegedInvokeConstructor;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
+import org.eclipse.persistence.jpa.config.PersistenceUnitProperties;
 
 /**
  * <p><b>Purpose:</b>
@@ -704,5 +705,17 @@ public class Oracle9Platform extends Oracle8Platform {
      */
     public boolean isOracle9() {
 	   return true;
+    }
+
+    /**
+     * INTERNAL:
+     */
+    public ConnectionCustomizer createConnectionCustomizer(Accessor accessor, AbstractSession session) {
+        Object proxyTypeValue = session.getProperty(PersistenceUnitProperties.ORACLE_PROXY_TYPE);
+        if (proxyTypeValue == null || ((proxyTypeValue instanceof String) && ((String)proxyTypeValue).length() == 0)) {
+            return null;
+        } else {
+            return new OracleJDBC_10_1_0_2ProxyConnectionCustomizer(accessor, session);
+        }
     }
 }

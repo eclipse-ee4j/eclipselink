@@ -9,6 +9,11 @@
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
+ *     05/28/2008-1.0M8 Andrei Ilitchev 
+ *        - 224964: Provide support for Proxy Authentication through JPA.
+ *        The class was amended to allow it to instantiate ValueHolders after release method has been called
+ *        (internalExecuteQuery method no longer throws exception if the uow is dead).
+ *        Note that release method clears change sets but keeps the cache.
  ******************************************************************************/  
 package org.eclipse.persistence.internal.sessions;
 
@@ -35,7 +40,6 @@ import org.eclipse.persistence.internal.localization.LoggingLocalization;
 import org.eclipse.persistence.jpa.config.PersistenceUnitProperties;
 import org.eclipse.persistence.sessions.SessionProfiler;
 import org.eclipse.persistence.descriptors.changetracking.AttributeChangeTrackingPolicy;
-import org.eclipse.persistence.descriptors.changetracking.ObjectChangePolicy;
 import org.eclipse.persistence.descriptors.invalidation.CacheInvalidationPolicy;
 
 /**
@@ -64,6 +68,7 @@ import org.eclipse.persistence.descriptors.invalidation.CacheInvalidationPolicy;
  * <li> Resolve foreign keys for newly created objects and maintain referential integrity.
  * <li> Allow for the object transaction to use its own object space.
  * </ul>
+ * 
  */
 public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persistence.sessions.UnitOfWork {
 
@@ -2584,9 +2589,6 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
      * the arguments should be a database row with raw data values.
      */
     public Object internalExecuteQuery(DatabaseQuery query, AbstractRecord databaseRow) throws DatabaseException, QueryException {
-        if (!isActive()) {
-            throw QueryException.querySentToInactiveUnitOfWork(query);
-        }
         return query.executeInUnitOfWork(this, databaseRow);
     }
 
@@ -4069,7 +4071,8 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
         }
         setDead();
         if(shouldClearForCloseOnRelease()) {
-            clearForClose(true);
+            //uow still could be used for instantiating of ValueHolders after it's released.
+            clearForClose(false);
         }
         // To be safe clean up as much state as possible.
         setBatchReadObjects(null);

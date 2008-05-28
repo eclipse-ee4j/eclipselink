@@ -9,8 +9,14 @@
  *
  * Contributors:
  *    Gyorke
+ *    
+ *     05/28/2008-1.0M8 Andrei Ilitchev 
+ *        - 224964: Provide support for Proxy Authentication through JPA.
+ *        Now properties' names that could be used both in createEM and createEMF are the same. 
  ******************************************************************************/  
 package org.eclipse.persistence.jpa.config;
+
+import org.eclipse.persistence.jpa.config.PersistenceUnitProperties;
 
 /**
  * The class defines TopLink properties' names.
@@ -24,12 +30,40 @@ package org.eclipse.persistence.jpa.config;
  */
 public class EntityManagerProperties {
 	
-    //for gf3334, this property force persistence context to read through JTA-managed ("write") connection in case there is an active transaction.    
-    public static final String JOIN_EXISTING_TRANSACTION = "eclipselink.transaction.join-existing";
+    /**
+     * Set to "true" this property forces persistence context to read through JTA-managed ("write") connection
+     * in case there is an active transaction.
+     * Valid values are case-insensitive "false" and "true"; "false" is default.
+     * The property could also be set in persistence.xml or passed to createEntityManagerFactory,
+     * in that case it affects all EntityManagers created by the factory. 
+     */
+    public static final String JOIN_EXISTING_TRANSACTION = PersistenceUnitProperties.JOIN_EXISTING_TRANSACTION;
     
-    //specifies, whether there should be used hard or soft references in the Persistence Context.
-    //Default is "HARD".  With soft references entities no longer referenced by the application
-    // may be garbage collected freeing resources.  Any changes that have not been flushed in these
-    // entities will be lost.
-    public static final String PERSISTENCE_CONTEXT_REFERENCE_MODE="eclipselink.persistence-context.reference-mode";
+    /**
+     * Specifies whether there should be hard or soft references used within the Persistence Context.
+     * Default is "HARD".  With soft references entities no longer referenced by the application
+     * may be garbage collected freeing resources.  Any changes that have not been flushed in these
+     * entities will be lost.
+     * The property could also be set in persistence.xml or passed to createEntityManagerFactory,
+     * in that case it affects all EntityManagers created by the factory. 
+     * @see org.eclipse.persistence.sessions.factories.ReferenceMode
+     */
+    public static final String PERSISTENCE_CONTEXT_REFERENCE_MODE= PersistenceUnitProperties.PERSISTENCE_CONTEXT_REFERENCE_MODE;
+
+    /**
+     * This property is used to specify proxy type that should be passed to OarcleConnection.openProxySession method.
+     * Requires Oracle jdbc version 10.1.0.2 or later.
+     * Requires Oracle9Platform or later as a database platform 
+     * (TARGET_DATABASE property value should be TargetDatabase.Oracle9 or later).
+     * The valid values are:
+     * OracleConnection.PROXYTYPE_USER_NAME, OracleConnection.PROXYTYPE_DISTINGUISHED_NAME, OracleConnection.PROXYTYPE_CERTIFICATE.
+     * Property property corresponding to the specified type should be also provided:
+     * OracleConnection.PROXY_USER_NAME, OracleConnection.PROXY_DISTINGUISHED_NAME, OracleConnection.PROXY_CERTIFICATE.
+     * Typically these properties should be set into EntityManager (either through createEntityManager method or
+     * using proprietary setProperties method on EntityManagerImpl) - that causes EntityManager to use proxy connection for
+     * writing and reading inside transaction. 
+     * If proxy-type and the corresponding proxy property set into EntityManagerFactory then all connections
+     * created by the factory will be proxy connections.
+     */
+    public static final String ORACLE_PROXY_TYPE = PersistenceUnitProperties.ORACLE_PROXY_TYPE;
 }

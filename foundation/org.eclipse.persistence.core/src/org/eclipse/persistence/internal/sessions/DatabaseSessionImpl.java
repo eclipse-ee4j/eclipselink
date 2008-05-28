@@ -233,6 +233,7 @@ public class DatabaseSessionImpl extends AbstractSession implements org.eclipse.
      */
     public void connect() throws DatabaseException {
         getAccessor().connect(getDatasourceLogin(), this);
+        getAccessor().createCustomizer(this);
     }
 
     /**
@@ -242,6 +243,7 @@ public class DatabaseSessionImpl extends AbstractSession implements org.eclipse.
     public void disconnect() throws DatabaseException {
         getSequencingHome().onDisconnect();
         getAccessor().disconnect(this);
+        getAccessor().releaseCustomizer();
     }
 
     /**
@@ -285,6 +287,9 @@ public class DatabaseSessionImpl extends AbstractSession implements org.eclipse.
      * @see org.eclipse.persistence.platform.server.ServerPlatformBase
      */
     public void setServerPlatform(ServerPlatform newServerPlatform) {
+        if (this.isLoggedIn) {
+            throw ValidationException.serverPlatformIsReadOnlyAfterLogin(newServerPlatform.getClass().getName());
+        }
         this.serverPlatform = newServerPlatform;
     }
 

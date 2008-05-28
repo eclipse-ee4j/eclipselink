@@ -20,14 +20,31 @@ import org.eclipse.persistence.sessions.*;
 import org.eclipse.persistence.sessions.server.*;
 import org.eclipse.persistence.exceptions.*;
 
+// 05/28/2008-1.0M8 Andrei Ilitchev 
+//   - 224964: Provide support for Proxy Authentication through JPA.
+//      Changed behaviour of ExclusiveIsolatedClientSession - it no longer throws exception
+//      on attempt to instantiate value holder for isolated object when the session is closed,
+//      it rather obtains the connection again and releases connection immediately after the query is done.
 public class ExclusiveConnectionClosedExceptionTest extends AutoVerifyTestCase {
     protected DatabaseLogin login;
     protected ServerSession server;
-    protected VPDIsolatedSessionEventAdaptor eventAdaptor;
+    protected int numAcquireExclusive;
+    protected int numReleaseExclusive;
+    protected String errorMsg = "";
+    class Listener extends SessionEventAdapter {
+        public void postAcquireExclusiveConnection(SessionEvent event) {
+            numAcquireExclusive++;
+        }
+    
+        public void preReleaseExclusiveConnection(SessionEvent event) {
+            numReleaseExclusive++;
+        }
+    }
+    Listener listener = new Listener();
     protected Vector emps;
 
     public ExclusiveConnectionClosedExceptionTest() {
-        setDescription("This test will verify that an exception is thrown when indirection is triggered after the session is released");
+        setDescription("This test will verify that when indirection is triggered after the session is released callbacks are called and connection released. Exception is no longer thrown.");
     }
 
     public void copyDescriptors(Session session) {
@@ -43,6 +60,10 @@ public class ExclusiveConnectionClosedExceptionTest extends AutoVerifyTestCase {
 
     public void reset() {
         try {
+            errorMsg = "";
+            numAcquireExclusive = 0;
+            numReleaseExclusive = 0;
+            this.server.getEventManager().removeListener(listener);
             this.server.logout();
             getDatabaseSession().logout();
             getDatabaseSession().login();
@@ -60,6 +81,7 @@ public class ExclusiveConnectionClosedExceptionTest extends AutoVerifyTestCase {
             this.server.getDefaultConnectionPolicy().setShouldUseExclusiveConnection(true);
             this.server.setSessionLog(getSession().getSessionLog());
             copyDescriptors(getSession());
+            this.server.getEventManager().addListener(listener);
             this.server.login();
         } catch (RuntimeException ex) {
             getSession().logMessage("This test requires that the connected user has privleges to \"Creat any context\", \"Drop any context\" and \"execute Sys.DBMS_RLS package\" and \"execute Sys.DBMS_SESSION package\".");
@@ -69,16 +91,33 @@ public class ExclusiveConnectionClosedExceptionTest extends AutoVerifyTestCase {
 
     public void test() {
         ReadObjectQuery query = new ReadObjectQuery(IsolatedEmployee.class);
-        Session client1 = this.server.acquireClientSession();
+        ClientSession client1 = this.server.acquireClientSession();
         IsolatedEmployee employee = (IsolatedEmployee)client1.executeQuery(query);
+        // executing the query causes exclusive connection to be acquired.
+        if(numAcquireExclusive != 1 || numReleaseExclusive != 0) {
+            errorMsg += "After executing query numAcquireExclusive == " +numAcquireExclusive+" and numReleaseExclusive = "+numReleaseExclusive+"; 1 and 0 were expected.\n";
+        }
         client1.release();
-        try {
-            employee.getPhoneNumbers();
-            throw new TestErrorException("The Isolated Connection was not closed");
-        } catch (ValidationException ex) {
+        // releasing the session causes exclusive connection to be acquired.
+        if(numAcquireExclusive != 1 || numReleaseExclusive != 1) {
+            errorMsg += "After releasing ExclusiveIsolatedClientSession numAcquireExclusive == " +numAcquireExclusive+" and numReleaseExclusive = "+numReleaseExclusive+"; 1 and 1 were expected.\n";
+        }
+        if(client1.getWriteConnection() != null) {
+            errorMsg += "After releasing ExclusiveIsolatedClientSession its writeConnection is not null.\n";
+        }
+        employee.getPhoneNumbers();
+        // instantiating of a ValueHolder on released session causes exclusive connection to be acquired for the query, released as soon as the query is completed.
+        if(numAcquireExclusive != 2 || numReleaseExclusive != 2) {
+            errorMsg += "After instantiating ValueHolder on released ExclusiveIsolatedClientSession numAcquireExclusive == " +numAcquireExclusive+" and numReleaseExclusive = "+numReleaseExclusive+"; 2 and 2 were expected.\n";
+        }
+        if(client1.getWriteConnection() != null) {
+            errorMsg += "After instantiating ValueHolder on released ExclusiveIsolatedClientSession its writeConnection is not null.\n";
         }
     }
 
     public void verify() {
+        if(errorMsg.length() > 0) {
+            throw new TestErrorException(errorMsg);
+        }
     }
 }

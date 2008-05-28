@@ -57,6 +57,17 @@ import org.eclipse.persistence.sessions.factories.ReferenceMode;
  * @see TargetDatabase
  * @see TargetServer
  * 
+ *  05/28/2008-1.0M8 Andrei Ilitchev. 
+ *     - 224964: Provide support for Proxy Authentication through JPA.
+ *     Added support for CONNECTION_EXCLUSIVE. Also added BooleanProp to allow simpler way of creating boolean-valued properties:
+ *     instead of defining a new class for each new Boolean property just add a new instance of BooleanProp with property name and default:
+ *           addProp(new BooleanProp(PersistenceUnitProperties.CONNECTION_EXCLUSIVE, "false"));
+ *     Changed the existing boolean-valued properties to use this approach, also
+ *     applied the same approach to LOGGING_LEVEL and CATEGORY_LOGGING_LEVEL_
+ *     Also introduced a new version of getSessionPropertyValue that takes properties:
+ *         public static String getSessionPropertyValue(String name, Map m, AbstractSession session) {
+ *     it's convenient for use in EntityManagerImpl: first searches the passed properties then (recursively) properties of the session, then System properties.
+ *     
  */
 public class PropertiesHandler {
     
@@ -122,14 +133,18 @@ public class PropertiesHandler {
     
     /**
      * INTERNAL:
-     * Gets property value from AbstractSession.getProperties() map,
+     * Gets the property from the provided Map m first; if none found then
+     * gets property value from AbstractSession.getProperties() map,
      * if none found looks in its parent recursively;
      * if none is found looks in System properties.
      * Use this to get a value for a non-prefixed property.
      * Throws IllegalArgumentException in case the property value is illegal.
      */
-    public static String getSessionPropertyValue(String name, AbstractSession session) {
+    public static String getSessionPropertyValue(String name, Map m, AbstractSession session) {
         String value = null;
+        if(m != null) {
+            value = Prop.getPropertyValueToApply(name, m, null, false);
+        }
         while(value == null && session != null) {
             AbstractSession parent = session.getParent();
             // Don't use System properties as default unless session has no parent.
@@ -140,8 +155,11 @@ public class PropertiesHandler {
         return value;
     }
 
-    public static String getSessionPropertyValueLogDebug(String name, AbstractSession session) {
+    public static String getSessionPropertyValueLogDebug(String name, Map m, AbstractSession session) {
         String value = null;
+        if(m != null) {
+            value = Prop.getPropertyValueToApply(name, m, session, false);
+        }
         while(value == null && session != null) {
             AbstractSession parent = session.getParent();
             // Don't use System properties as default unless session has no parent.
@@ -150,6 +168,14 @@ public class PropertiesHandler {
             session = parent;
         }
         return value;
+    }
+    
+    public static String getSessionPropertyValue(String name, AbstractSession session) {
+        return getSessionPropertyValue(name, null, session);
+    }
+
+    public static String getSessionPropertyValueLogDebug(String name, AbstractSession session) {
+        return getSessionPropertyValueLogDebug(name, null, session);
     }
     
     /**
@@ -173,17 +199,20 @@ public class PropertiesHandler {
         
         static {
             addProp(new LoggerTypeProp());
-            addProp(new LoggingLevelProp());
-            addProp(new CategoryLoggingLevelProp());
+            addProp(new LoggingLevelProp(PersistenceUnitProperties.LOGGING_LEVEL, Level.INFO.getName()));
+            addProp(new LoggingLevelProp(PersistenceUnitProperties.CATEGORY_LOGGING_LEVEL_, Level.INFO.getName()));
             addProp(new TargetDatabaseProp());
             addProp(new TargetServerProp());
             addProp(new CacheSizeProp());
             addProp(new CacheTypeProp());
-            addProp(new CacheSharedProp());
+            addProp(new BooleanProp(PersistenceUnitProperties.CACHE_SHARED_, "false"));
             addProp(new DescriptorCustomizerProp());
             addProp(new BatchWritingProp());
             addProp(new FlushClearCacheProp());
-            addProp(new ValidateExistenceProp());
+            addProp(new ReferenceModeProp());
+            addProp(new BooleanProp(PersistenceUnitProperties.VALIDATE_EXISTENCE, "false"));
+            addProp(new BooleanProp(PersistenceUnitProperties.JOIN_EXISTING_TRANSACTION, "false"));
+            addProp(new BooleanProp(PersistenceUnitProperties.CONNECTION_EXCLUSIVE, "false"));
         }
         
         Prop(String name) {
@@ -270,7 +299,7 @@ public class PropertiesHandler {
                 return new HashMap(0); 
             }
             
-            // mapps suffixes to property values
+            // maps suffixes to property values
             Map mapIn = getPrefixValuesFromMap(prefix, m, useSystemAsDefault);
             if(mapIn.isEmpty()) {
                 return mapIn;
@@ -284,7 +313,7 @@ public class PropertiesHandler {
                 String value = (String)entry.getValue();
                 mapOut.put(suffix, prop.getValueToApply(value, shouldUseDefault(value), suffix, session));
             }
-            // mapps suffixes to valuesToApply
+            // maps suffixes to valuesToApply
             return mapOut;
         }
         
@@ -428,26 +457,8 @@ public class PropertiesHandler {
     }
 
     protected static class LoggingLevelProp extends Prop {
-        LoggingLevelProp() {
-            super(PersistenceUnitProperties.LOGGING_LEVEL, Level.INFO.getName());
-            valueArray = new Object[] { 
-                Level.OFF.getName(),
-                Level.SEVERE.getName(),
-                Level.OFF.getName(),
-                Level.WARNING.getName(),
-                Level.INFO.getName(),
-                Level.CONFIG.getName(),
-                Level.FINE.getName(),
-                Level.FINER.getName(),
-                Level.FINEST.getName(),
-                Level.ALL.getName()
-            };
-        }
-    }
-
-    protected static class CategoryLoggingLevelProp extends Prop {
-        CategoryLoggingLevelProp() {
-            super(PersistenceUnitProperties.CATEGORY_LOGGING_LEVEL_);
+        LoggingLevelProp(String name, String defaultValue) {
+            super(name, defaultValue);
             valueArray = new Object[] { 
                 Level.OFF.getName(),
                 Level.SEVERE.getName(),
@@ -466,17 +477,6 @@ public class PropertiesHandler {
     protected static class ReferenceModeProp extends Prop {
         ReferenceModeProp() {
             super(EntityManagerProperties.PERSISTENCE_CONTEXT_REFERENCE_MODE, ReferenceMode.WEAK.toString());
-            valueArray = new Object[] {
-                ReferenceMode.HARD.toString(),
-                ReferenceMode.WEAK.toString(),
-                ReferenceMode.FORCE_WEAK.toString()
-            };
-        }
-    }
-
-    protected static class DefaultReferenceModeProp extends Prop {
-        DefaultReferenceModeProp() {
-            super(PersistenceUnitProperties.DEFAULT_PERSISTENCE_CONTEXT_REFERENCE_MODE, ReferenceMode.WEAK.toString());
             valueArray = new Object[] {
                 ReferenceMode.HARD.toString(),
                 ReferenceMode.WEAK.toString(),
@@ -560,19 +560,9 @@ public class PropertiesHandler {
         }
     }
 
-    protected static class ValidateExistenceProp extends Prop {
-        ValidateExistenceProp() {
-            super(PersistenceUnitProperties.VALIDATE_EXISTENCE, "false");
-            valueArray = new Object[] {
-                "true",
-                "false"
-            };
-        }  
-    }
-    
-    protected static class CacheSharedProp extends Prop {
-        CacheSharedProp() {
-            super(PersistenceUnitProperties.CACHE_SHARED_, "false");
+    protected static class BooleanProp extends Prop {
+        BooleanProp(String name, String defaultValue) {
+            super(name, defaultValue);
             valueArray = new Object[] { 
                 "true",
                 "false"
@@ -607,15 +597,5 @@ public class PropertiesHandler {
                 FlushClearCache.DropInvalidate
             };
         }
-    }
-    
-    protected static class JoinTransactionProp extends Prop {
-        JoinTransactionProp() {
-            super(EntityManagerProperties.JOIN_EXISTING_TRANSACTION, "false");
-            valueArray = new Object[] { 
-                "true",
-                "false"
-            };
-        }  
     }
 }

@@ -44,6 +44,10 @@ import org.eclipse.persistence.internal.sessions.AbstractSession;
  *  Please refer to that class for a full API.  The public interface should be used.
  * @see Server
  * @see org.eclipse.persistence.sessions.UnitOfWork
+ *  
+ *  05/28/2008-1.0M8 Andrei Ilitchev 
+ *        - 224964: Provide support for Proxy Authentication through JPA.
+ *        Added a new constructor that takes Properties. 
  */
 public class ClientSession extends AbstractSession {
     protected ServerSession parent;
@@ -57,6 +61,10 @@ public class ClientSession extends AbstractSession {
      * Create and return a new client session.
      */
     public ClientSession(ServerSession parent, ConnectionPolicy connectionPolicy) {
+        this(parent, connectionPolicy, null);
+    }
+    
+    public ClientSession(ServerSession parent, ConnectionPolicy connectionPolicy, Map properties) {
         super(parent.getProject());
         if (connectionPolicy.isUserDefinedConnection()) {
             // PERF: project only requires clone if login is different
@@ -76,6 +84,7 @@ public class ClientSession extends AbstractSession {
         this.sessionLog = parent.getSessionLog();
         this.eventManager = parent.getEventManager().clone(this);
         this.exceptionHandler = parent.getExceptionHandler();
+        this.properties = properties;
 
         getEventManager().postAcquireClientSession();
         incrementProfile(SessionProfiler.ClientSessionCreated);
@@ -455,7 +464,6 @@ public class ClientSession extends AbstractSession {
     protected void releaseWriteConnection() {
         if (getConnectionPolicy().isLazy() && hasWriteConnection()) {
             getParent().releaseClientSession(this);
-            setWriteConnection(null);
         }
     }
 
@@ -489,7 +497,17 @@ public class ClientSession extends AbstractSession {
      * Set the connection to be used for database modification.
      */
     public void setWriteConnection(Accessor writeConnection) {
-        this.writeConnection = writeConnection;
+        if(writeConnection != null) {
+            // new writeConnection is set
+            this.writeConnection = writeConnection;
+            this.writeConnection.createCustomizer(this);
+        } else {
+            // existing writeConnection is released; the not null check in case the method called twice.
+            if(this.writeConnection != null) {
+                this.writeConnection.releaseCustomizer(this);
+                this.writeConnection = null;
+            }
+        }
     }
 
     /**
@@ -539,12 +557,7 @@ public class ClientSession extends AbstractSession {
      * Used by the session to rise an appropriate event.
      */
     public void postConnectExternalConnection(Accessor accessor) {
-        if (getConnectionPolicy().isPooled()) {
-            getEventManager().postAcquireConnection(accessor);
-        }
-        if (getConnectionPolicy().shouldUseExclusiveConnection()) {
-            getEventManager().postAcquireExclusiveConnection(this, accessor);
-        }
+        getEventManager().postAcquireConnection(accessor);
     }
 
     /**
@@ -554,21 +567,6 @@ public class ClientSession extends AbstractSession {
      * Used by the session to rise an appropriate event.
      */
     public void preDisconnectExternalConnection(Accessor accessor) {
-        if (getConnectionPolicy().isPooled()) {
-            getEventManager().preReleaseConnection(accessor);
-        }
-        if (getConnectionPolicy().shouldUseExclusiveConnection()) {
-            getEventManager().preReleaseExclusiveConnection(this, accessor);
-        }
-    }
-    
-    /**
-     * INTERNAL:
-     * This method is called in case externalConnectionPooling is used.
-     * If returns true, accessor used by the session keeps its
-     * connection open until released by the session. 
-     */
-    public boolean isExclusiveConnectionRequired() {
-        return getConnectionPolicy().shouldUseExclusiveConnection();
+        getEventManager().preReleaseConnection(accessor);
     }
 }

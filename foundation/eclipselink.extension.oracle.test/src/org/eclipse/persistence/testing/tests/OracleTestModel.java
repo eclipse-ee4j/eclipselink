@@ -39,7 +39,7 @@ public class OracleTestModel extends TestModel {
         tests.add("org.eclipse.persistence.testing.tests.lob.LOBSessionBrokerTestModel");
         tests.add("org.eclipse.persistence.testing.tests.nchar.NcharTestModel");
         tests.add("org.eclipse.persistence.testing.tests.queries.oracle.OracleSpecificTestModel");
-        tests.add("org.eclipse.persistence.testing.tests.proxyauthentication.ProxyAuthenticationTestModel");
+        tests.add("org.eclipse.persistence.testing.tests.proxyauthentication.thin.ProxyAuthenticationCustomizerTestModel");
         tests.add("org.eclipse.persistence.testing.tests.spatial.jgeometry.SimpleJGeometryTestModel");
         tests.add("org.eclipse.persistence.testing.tests.spatial.jgeometry.wrapped.WrappedJGeometryTestModel");
         tests.add("org.eclipse.persistence.testing.tests.types.OracleTIMESTAMPTypeTestModelWithAccessors");

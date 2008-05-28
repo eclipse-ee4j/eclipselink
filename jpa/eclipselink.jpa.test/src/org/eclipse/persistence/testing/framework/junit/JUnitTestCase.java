@@ -48,7 +48,6 @@ import org.eclipse.persistence.testing.framework.server.TestRunner;
  */
 public abstract class JUnitTestCase extends TestCase {
 
-    private static EntityManagerFactory emf = null;
     private static Map emfNamedPersistenceUnits = null;
     
     /** Determine if the test is running on a JEE server, or in JSE. */
@@ -289,30 +288,27 @@ public abstract class JUnitTestCase extends TestCase {
     }
     
     public static EntityManagerFactory getEntityManagerFactory() {
-        if (isOnServer()) {
-            return getServerPlatform().getEntityManagerFactory("default");
-        } else {
-            if (emf == null) {
-                emf = Persistence.createEntityManagerFactory("default", JUnitTestCaseHelper.getDatabaseProperties());
-            }
-            return emf;
-        }
+        return getEntityManagerFactory("default");
+    }
+    
+    public static EntityManagerFactory getEntityManagerFactory(Map properties) {
+        return getEntityManagerFactory("default", properties);
     }
     
     public static boolean doesEntityManagerFactoryExist() {
+        return doesEntityManagerFactoryExist("default");
+    }
+
+    public static boolean doesEntityManagerFactoryExist(String persistenceUnitName) {
+        EntityManagerFactory emf = (EntityManagerFactory)emfNamedPersistenceUnits.get(persistenceUnitName);
         return emf != null && emf.isOpen();
     }
 
     public static void closeEntityManagerFactory() {
-        if(emf != null) {
-            if(emf.isOpen()) {
-                emf.close();
-            }
-            emf = null;
-        }
+        closeEntityManagerFactory("default");
     }
 
-    public static void closeEntityManagerFactoryNamedPersistenceUnit(String persistenceUnitName) {
+    public static void closeEntityManagerFactory(String persistenceUnitName) {
         EntityManagerFactory emfNamedPersistenceUnit = (EntityManagerFactory)emfNamedPersistenceUnits.get(persistenceUnitName);
         if(emfNamedPersistenceUnit != null) {
             if(emfNamedPersistenceUnit.isOpen()) {

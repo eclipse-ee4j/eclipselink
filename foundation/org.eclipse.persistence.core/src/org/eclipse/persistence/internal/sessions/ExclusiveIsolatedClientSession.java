@@ -9,8 +9,21 @@
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
+ *     
+ *      05/28/2008-1.0M8 Andrei Ilitchev. 
+ *      - 224964: Provide support for Proxy Authentication through JPA.
+ *          No longer throws exception in case value holder for isolated class instantiated on the closed session.
+ *          Instead after the session is closed it switches to a mode when it acquires write connection only for the duration of the query execution.
+ *          The idea is all the necessary customization will be applied to the resurrected connection again, and cleared afterwards -
+ *          may be expensive, but works and costs nothing unless actually used. 
+ *          Moved setting of the accessor from getExecutionSession to executeCall because getExecutionSession is called sometimes
+ *          without the need for connection (like createing a row), and that used to cause an unnecessary
+ *          acquiring of the connection on the closed session.
+ *     
  ******************************************************************************/  
 package org.eclipse.persistence.internal.sessions;
+
+import java.util.Map;
 
 import org.eclipse.persistence.sessions.server.*;
 import org.eclipse.persistence.queries.*;
@@ -19,9 +32,12 @@ import org.eclipse.persistence.internal.databaseaccess.Accessor;
 
 public class ExclusiveIsolatedClientSession extends IsolatedClientSession {
     public ExclusiveIsolatedClientSession(ServerSession parent, ConnectionPolicy connectionPolicy) {
-        super(parent, connectionPolicy);
-        //the parents constructor sets an accessor, but we must set it back to null
-        // as we will need our own.
+        this(parent, connectionPolicy, null);
+    }
+
+    public ExclusiveIsolatedClientSession(ServerSession parent, ConnectionPolicy connectionPolicy, Map properties) {
+        super(parent, connectionPolicy, properties);
+        //the parents constructor sets an accessor, but it will be never used.
         this.accessor = null;
     }
 
@@ -31,6 +47,10 @@ public class ExclusiveIsolatedClientSession extends IsolatedClientSession {
      */
     public Object executeCall(Call call, AbstractRecord translationRow, DatabaseQuery query) throws DatabaseException {
         if (query.getAccessor() == null) {
+            //if the connection has not yet been acquired then do it here.
+            if (getAccessor() == null) {
+                this.getParent().acquireClientConnection(this);
+            }
             query.setAccessor(getAccessor());
         }
         try {
@@ -38,57 +58,29 @@ public class ExclusiveIsolatedClientSession extends IsolatedClientSession {
         } finally {
             if (call.isFinished()) {
                 query.setAccessor(null);
+                if(!isActive()) {
+                    // the session has been already released and this query is likely instantiates a ValueHolder - 
+                    // release exclusive connection right away, otherwise it may never be released.
+                    this.releaseWriteConnection();
+                }
             }
         }
     }
 
     /**
      * INTERNAL:
-     * Gets the session which this query will be executed on.
-     * Generally will be called immediately before the call is translated,
-     * which is immediately before session.executeCall.
-     * <p>
-     * Since the execution session also knows the correct datasource platform
-     * to execute on, it is often used in the mappings where the platform is
-     * needed for type conversion, or where calls are translated.
-     * <p>
-     * Is also the session with the accessor.  Will return a ClientSession if
-     * it is in transaction and has a write connection.
-     * @return a session with a live accessor
-     * @param query may store session name or reference class for brokers case
+     * Always use writeConnection.
      */
-    public AbstractSession getExecutionSession(DatabaseQuery query) {
-        AbstractSession executionSession = super.getExecutionSession(query);
-
-        if (executionSession != this) {
-            return executionSession;
-        }
-
-        if (!isActive()) {
-            //client session was released but may exist in an indirection object.
-            throw ValidationException.excusiveConnectionIsNoLongerAvailable(query, this);
-        }
-
-        //if the connection has not yet been acquired then do it here.
-        if (getAccessor() == null) {
-            this.getParent().acquireClientConnection(this);
-        }
-        return this;
-    }
-
     public Accessor getAccessor() {
-        return this.accessor;
+        return this.writeConnection;
     }
 
     /**
      * INTERNAL:
-     * This method is extended from the superclass ClientSession.  This class
-     * uses only one accessor for all connections and as such does not need a
-     * separate write connection.  The accessor will be used for all database
-     * access
+     * Provided for consistency.
      */
-    public Accessor getWriteConnection() {
-        return this.accessor;
+    public void setAccessor(Accessor accessor) {
+        setWriteConnection(accessor);
     }
 
     /**
@@ -99,18 +91,44 @@ public class ExclusiveIsolatedClientSession extends IsolatedClientSession {
      * is called on the client session.
      */
     protected void releaseWriteConnection() {
-        //do not release the connection until 'release()' is called on the
-        //client session
+        if(this.isActive) {
+            //do not release the connection until 'release()' is called on the client session
+        } else {
+            // the session has been released however it may still be used for instantiating ValueHolders - 
+            // don't keep exclusive connection - otherwise it may never be released.
+            super.releaseWriteConnection();
+        }
     }
 
     /**
      * INTERNAL:
-     * This method is extended from the superclass ClientSession.  This class
-     * uses only one accessor for all connections and as such does not need a
-     * separate write connection.  The accessor will be used for all database
-     * access
+     * This method is called in case externalConnectionPooling is used
+     * right after the accessor is connected. 
+     * Used by the session to rise an appropriate event.
      */
-    public void setWriteConnection(Accessor accessor) {
-        this.accessor = accessor;
+    public void postConnectExternalConnection(Accessor accessor) {
+        super.postConnectExternalConnection(accessor);
+        getParent().getEventManager().postAcquireExclusiveConnection(this, accessor);
+    }
+
+    /**
+     * INTERNAL:
+     * This method is called in case externalConnectionPooling is used
+     * right before the accessor is disconnected. 
+     * Used by the session to rise an appropriate event.
+     */
+    public void preDisconnectExternalConnection(Accessor accessor) {
+        super.preDisconnectExternalConnection(accessor);
+        getParent().getEventManager().preReleaseExclusiveConnection(this, accessor);
+    }
+    
+    /**
+     * INTERNAL:
+     * This method is called in case externalConnectionPooling is used.
+     * If returns true, accessor used by the session keeps its
+     * connection open until released by the session. 
+     */
+    public boolean isExclusiveConnectionRequired() {
+        return isActive();
     }
 }

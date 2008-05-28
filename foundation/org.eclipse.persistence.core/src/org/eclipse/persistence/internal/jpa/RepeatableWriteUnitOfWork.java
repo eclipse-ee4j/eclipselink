@@ -40,11 +40,6 @@ public class RepeatableWriteUnitOfWork extends UnitOfWorkImpl {
      */
     protected boolean shouldTerminateTransaction;
     
-    /** Used to determine if UnitOfWork.synchronizeAndResume method should
-     * resume (the normal behavior); or alternatively clear the UnitOfWork.
-     */
-    protected boolean shouldClearForCloseInsteadOfResume = false;
-    
     /** The FlashClearCache mode to be used (see oracle.toplink.config.FlushClearCache).
      * Initialized by setUnitOfWorkChangeSet method in case it's null;
      * commitAndResume sets this attribute back to null.
@@ -380,13 +375,9 @@ public class RepeatableWriteUnitOfWork extends UnitOfWorkImpl {
      * Called after commit and commit and resume.
      */
     public void synchronizeAndResume() {
-        if(this.shouldClearForCloseInsteadOfResume()) {
-            this.clearForClose(false);
-        } else {
-            this.cumulativeUOWChangeSet = null;
-            this.unregisteredDeletedObjectsCloneToBackupAndOriginal = null;
-            super.synchronizeAndResume();
-        }
+        this.cumulativeUOWChangeSet = null;
+        this.unregisteredDeletedObjectsCloneToBackupAndOriginal = null;
+        super.synchronizeAndResume();
     }
     
     /**
@@ -447,14 +438,6 @@ public class RepeatableWriteUnitOfWork extends UnitOfWorkImpl {
         this.shouldTerminateTransaction = shouldTerminateTransaction;
     }
     
-    public void setShouldClearForCloseInsteadOfResume(boolean shouldClearForCloseInsteadOfResume) {
-        this.shouldClearForCloseInsteadOfResume = shouldClearForCloseInsteadOfResume;
-    }
-
-    public boolean shouldClearForCloseInsteadOfResume() {
-        return shouldClearForCloseInsteadOfResume;
-    }
-
     /**
      * INTERNAL:
      * Clears flushClearCache attribute and the related collections.

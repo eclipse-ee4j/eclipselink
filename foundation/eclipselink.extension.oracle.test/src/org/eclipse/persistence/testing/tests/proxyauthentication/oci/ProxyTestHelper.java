@@ -9,8 +9,13 @@
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
+ * Andrei Ilitchev May 28, 2008. Bug 224964: Provide support for Proxy Authentication through JPA.
+ *     Changed the was Proxy Authentication supported in case of thin driver, but support for oci case remains the same.
+ *     That caused re-arranging of the tests: before the fix all the tests were directly in proxiauthentication package;
+ *     now the old tests (minus thin-specific setup) were moved into the new proxyauthentication.oci package,
+ *     and the new tests defined in the new proxyauthentication.thin package.
  ******************************************************************************/  
-package org.eclipse.persistence.testing.tests.proxyauthentication;
+package org.eclipse.persistence.testing.tests.proxyauthentication.oci;
 
 import java.sql.SQLException;
 

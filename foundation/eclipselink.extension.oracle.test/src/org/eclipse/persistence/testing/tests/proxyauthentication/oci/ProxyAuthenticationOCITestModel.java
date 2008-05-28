@@ -9,8 +9,13 @@
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
+ * Andrei Ilitchev May 28, 2008. Bug 224964: Provide support for Proxy Authentication through JPA.
+ *     Changed the was Proxy Authentication supported in case of thin driver, but support for oci case remains the same.
+ *     That caused re-arranging of the tests: before the fix all the tests were directly in proxiauthentication package;
+ *     now the old tests (minus thin-specific setup) were moved into the new proxyauthentication.oci package,
+ *     and the new tests defined in the new proxyauthentication.thin package.
  ******************************************************************************/  
-package org.eclipse.persistence.testing.tests.proxyauthentication;
+package org.eclipse.persistence.testing.tests.proxyauthentication.oci;
 
 import java.util.HashMap;
 import java.util.Properties;
@@ -24,18 +29,17 @@ import org.eclipse.persistence.testing.framework.*;
 /**
  * Test Database change notification using JMS on top of Oracle AQ.
  */
-public class ProxyAuthenticationInternalTestModel extends TestModel {
-    public ProxyAuthenticationInternalTestModel(String proxyTestHelperClassName) {
+public class ProxyAuthenticationOCITestModel extends TestModel {
+    public ProxyAuthenticationOCITestModel() {
         super();
-        this.proxyTestHelperClassName = proxyTestHelperClassName;
-        setName(getName() + proxyTestHelperClassName.substring(proxyTestHelperClassName.lastIndexOf(".")));
+        this.proxyTestHelperClassName = "org.eclipse.persistence.testing.tests.proxyauthentication.oci.OCIProxyTestHelper";
     }
     protected Session oldSession;
     // Proxy Authentication user through which the session will be connected
-    protected static String connUser = "PA_CONN";
-    protected static String connPassword = "PA_CONN";
+    public static String connUser = "PA_CONN";
+    public static String connPassword = "PA_CONN";
     // Proxy Authentication proxy user
-    protected static String proxyUser = "PA_PROXY";
+    public static String proxyUser = "PA_PROXY";
     //    static protected String proxyPassword = "PA_PROXY";
 
     protected static HashMap proxyTestHelperMap = new HashMap();

@@ -325,9 +325,6 @@ public class RemoteUnitOfWork extends UnitOfWorkImpl {
      * the arguments should be a database row with raw data values.
      */
     public Object internalExecuteQuery(DatabaseQuery query, AbstractRecord Record) throws DatabaseException, QueryException {
-        if (!isActive()) {
-            throw QueryException.querySentToInactiveUnitOfWork(query);
-        }
         if (isOnClient()) {
             //assert !getCommitManager().isActive();
             // This will either throw an exception or do a logic only operation

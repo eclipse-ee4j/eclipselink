@@ -63,7 +63,7 @@ public class ValidationTestSuite extends JUnitTestCase {
         
         // Ensure this is done to avoid consecutive tests picking up our
         // very specific isolated persistence unit.
-        this.closeEntityManagerFactoryNamedPersistenceUnit("isolated1053");
+        this.closeEntityManagerFactory("isolated1053");
     }
     
     /**
@@ -79,7 +79,7 @@ public class ValidationTestSuite extends JUnitTestCase {
         
         // Ensure this is done to avoid consecutive tests picking up our
         // very specific isolated persistence unit.
-        this.closeEntityManagerFactoryNamedPersistenceUnit("isolated1053");
+        this.closeEntityManagerFactory("isolated1053");
     }
     
     /**
@@ -107,7 +107,7 @@ public class ValidationTestSuite extends JUnitTestCase {
             }
             // Ensure this is done to avoid consecutive tests picking up our
             // very specific isolated persistence unit.
-            this.closeEntityManagerFactoryNamedPersistenceUnit("ignore");
+            this.closeEntityManagerFactory("ignore");
         } 
         assertTrue("JTA datasource was not set or accessed as expected through map of properties", pass);
     }
@@ -137,7 +137,7 @@ public class ValidationTestSuite extends JUnitTestCase {
             }
             // Ensure this is done to avoid consecutive tests picking up our
             // very specific isolated persistence unit.
-            this.closeEntityManagerFactoryNamedPersistenceUnit("ignore");
+            this.closeEntityManagerFactory("ignore");
         } 
         assertTrue("Non JTA datasource was not set or accessed as expected through map of properties", pass);
     }

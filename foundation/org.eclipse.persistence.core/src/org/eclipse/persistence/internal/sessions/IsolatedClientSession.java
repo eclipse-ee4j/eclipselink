@@ -12,6 +12,8 @@
  ******************************************************************************/  
 package org.eclipse.persistence.internal.sessions;
 
+import java.util.Map;
+
 import org.eclipse.persistence.exceptions.*;
 import org.eclipse.persistence.sessions.server.*;
 import org.eclipse.persistence.internal.identitymaps.IdentityMapManager;
@@ -28,6 +30,10 @@ import org.eclipse.persistence.internal.sessions.AbstractRecord;
 public class IsolatedClientSession extends ClientSession {
     public IsolatedClientSession(ServerSession parent, ConnectionPolicy connectionPolicy) {
         super(parent, connectionPolicy);
+    }
+
+    public IsolatedClientSession(ServerSession parent, ConnectionPolicy connectionPolicy, Map properties) {
+        super(parent, connectionPolicy, properties);
     }
 
     /**

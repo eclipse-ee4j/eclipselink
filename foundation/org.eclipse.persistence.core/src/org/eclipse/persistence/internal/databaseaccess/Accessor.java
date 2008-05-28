@@ -199,4 +199,34 @@ public interface Accessor extends Cloneable {
      * purpose is to ensure that the batched statements have been executed
      */
     public void writesCompleted(AbstractSession session);
+
+    /**
+     * Attempts to create ConnectionCustomizer. If created the customizer is cached by the accessor.
+     * Called by the owner of accessor (DatabaseSession, ServerSession through ConnectionPool) just once, 
+     * typically right after the accessor is created. 
+     * Also called by ClientSession when it acquires write accessor.
+     * If accessor already has a customizer set by ConnectionPool then ClientSession's customizer
+     * compared with the existing one and if they are not equal (don't produce identical customization)
+     * then the new customizer set onto accessor, caching the old customizer so that it could be restored later.
+     */
+    void createCustomizer(AbstractSession session);
+   
+    /**
+     * Clear customizer if it's active and set it to null.
+     * Called by the same object that has created customizer (DatabaseSession, ConnectionPool) when
+     * the latter is no longer required, typically before releasing the accessor.
+     * Ignored if there's no customizer. 
+     */
+    void releaseCustomizer();
+
+    /**
+     * Clear and remove customizer if its session is the same as the passed one;
+     * in case prevCustomizer exists set it as a new customizer.
+     * Called when ClientSession releases write accessor:
+     * if the customizer was created by the ClientSession it's removed, and
+     * the previous customizer (that ConnectionPool had set) is brought back;
+     * otherwise the customizer (created by ConnectionPool) is kept.
+     * Ignored if there's no customizer. 
+     */
+    void releaseCustomizer(AbstractSession session);
 }

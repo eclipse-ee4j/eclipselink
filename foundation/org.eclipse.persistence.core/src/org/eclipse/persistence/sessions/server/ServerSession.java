@@ -251,9 +251,9 @@ public class ServerSession extends DatabaseSessionImpl implements Server {
             ConnectionPool pool = (ConnectionPool)getConnectionPools().get(clientSession.getConnectionPolicy().getPoolName());
             Accessor connection = pool.acquireConnection();
             clientSession.setWriteConnection(connection);
-            //if we are using external connection pooling the event will be thrown when the connection is actually acquired
+            //if connection is using external connection pooling then the event will be risen right after it connects.
             if(!connection.usesExternalConnectionPooling()) {
-                getEventManager().postAcquireConnection(connection);
+                clientSession.getEventManager().postAcquireConnection(connection);
                 if (clientSession.getConnectionPolicy().shouldUseExclusiveConnection()) {
                     getEventManager().postAcquireExclusiveConnection(clientSession, clientSession.getWriteConnection());
                 }
@@ -272,10 +272,11 @@ public class ServerSession extends DatabaseSessionImpl implements Server {
                 }
             }
             clientSession.setWriteConnection(clientSession.getLogin().buildAccessor());
-            clientSession.connect();
-            if (clientSession.getConnectionPolicy().shouldUseExclusiveConnection()) {
-                //if we are using external connection pooling the event will be thrown when the connection is actually acquired
-                if(!clientSession.getWriteConnection().usesExternalConnectionPooling()) {
+            //if connection is using external connection pooling then it will be connected later and the event will be risen right after that.
+            if(!clientSession.getWriteConnection().usesExternalConnectionPooling()) {
+                clientSession.connect();
+                clientSession.getEventManager().postAcquireConnection(clientSession.getWriteConnection());
+                if (clientSession.getConnectionPolicy().shouldUseExclusiveConnection()) {
                     getEventManager().postAcquireExclusiveConnection(clientSession, clientSession.getWriteConnection());
                 }
             }
@@ -298,12 +299,38 @@ public class ServerSession extends DatabaseSessionImpl implements Server {
      * Return a client session for this server session.
      * Each user/client connected to this server session must acquire there own client session
      * to communicate to the server through.
+     * This method allows for a client session to be acquired sharing the same login as the server session.
+     * The properties set into the client session at construction time, before postAcquireClientSession is risen.
+     */
+    public ClientSession acquireClientSession(Map properties) throws DatabaseException {
+        return acquireClientSession(getDefaultConnectionPolicy(), properties);
+    }
+
+    /**
+     * PUBLIC:
+     * Return a client session for this server session.
+     * Each user/client connected to this server session must acquire there own client session
+     * to communicate to the server through.
      * This method allows for a client session to be acquired sharing its connection from a pool
      * of connection allocated on the server session.
      * By default this uses a lazy connection policy.
      */
     public ClientSession acquireClientSession(String poolName) throws DatabaseException {
         return acquireClientSession(new ConnectionPolicy(poolName));
+    }
+
+    /**
+     * PUBLIC:
+     * Return a client session for this server session.
+     * Each user/client connected to this server session must acquire there own client session
+     * to communicate to the server through.
+     * This method allows for a client session to be acquired sharing its connection from a pool
+     * of connection allocated on the server session.
+     * By default this uses a lazy connection policy.
+     * The properties set into the client session at construction time, before postAcquireClientSession is risen.
+     */
+    public ClientSession acquireClientSession(String poolName, Map properties) throws DatabaseException {
+        return acquireClientSession(new ConnectionPolicy(poolName), properties);
     }
 
     /**
@@ -323,9 +350,34 @@ public class ServerSession extends DatabaseSessionImpl implements Server {
     /**
      * PUBLIC:
      * Return a client session for this server session.
+     * Each user/client connected to this server session must acquire there own client session
+     * to communicate to the server through.
+     * The client must provide its own login to use, and the client session returned
+     * will have its own exclusive database connection.  This connection will be used to perform
+     * all database modification for all units of work acquired from the client session.
+     * By default this does not use a lazy connection policy.
+     * The properties set into the client session at construction time, before postAcquireClientSession is risen.
+     */
+    public ClientSession acquireClientSession(Login login, Map properties) throws DatabaseException {
+        return acquireClientSession(new ConnectionPolicy(login), properties);
+    }
+
+    /**
+     * PUBLIC:
+     * Return a client session for this server session.
      * The connection policy specifies how the client session's connection will be acquired.
      */
     public ClientSession acquireClientSession(ConnectionPolicy connectionPolicy) throws DatabaseException, ValidationException {
+        return acquireClientSession(connectionPolicy, null);
+    }
+    
+    /**
+     * PUBLIC:
+     * Return a client session for this server session.
+     * The connection policy specifies how the client session's connection will be acquired.
+     * The properties set into the client session at construction time, before postAcquireClientSession is risen.
+     */
+    public ClientSession acquireClientSession(ConnectionPolicy connectionPolicy, Map properties) throws DatabaseException, ValidationException {
         if (!isConnected()) {
             throw ValidationException.loginBeforeAllocatingClientSessions();
         }
@@ -347,15 +399,15 @@ public class ServerSession extends DatabaseSessionImpl implements Server {
         ClientSession client = null;
         if (getProject().hasIsolatedClasses()) {
             if (connectionPolicy.shouldUseExclusiveConnection()) {
-                client = new ExclusiveIsolatedClientSession(this, connectionPolicy);
+                client = new ExclusiveIsolatedClientSession(this, connectionPolicy, properties);
             } else {
-                client = new IsolatedClientSession(this, connectionPolicy);
+                client = new IsolatedClientSession(this, connectionPolicy, properties);
             }
         } else {
             if (connectionPolicy.shouldUseExclusiveConnection()) {
                 throw ValidationException.clientSessionCanNotUseExclusiveConnection();
             }
-            client = new ClientSession(this, connectionPolicy);
+            client = new ClientSession(this, connectionPolicy, properties);
             if (isFinalizersEnabled()) {
                 client.registerFinalizer();
             }
@@ -427,7 +479,10 @@ public class ServerSession extends DatabaseSessionImpl implements Server {
      */
     public Accessor allocateReadConnection() {
         Accessor connection = getReadConnectionPool().acquireConnection();
-        getEventManager().postAcquireConnection(connection);
+        //if connection is using external connection pooling then the event will be risen right after it connects.
+        if(!connection.usesExternalConnectionPooling()) {
+            getEventManager().postAcquireConnection(connection);
+        }
         return connection;
     }
 
@@ -622,14 +677,34 @@ public class ServerSession extends DatabaseSessionImpl implements Server {
 
     /**
      * INTERNAL:
+     * This method is called in case externalConnectionPooling is used
+     * right after the accessor is connected. 
+     * Used by the session to rise an appropriate event.
+     */
+    public void postConnectExternalConnection(Accessor accessor) {
+        getEventManager().postAcquireConnection(accessor);
+    }
+
+    /**
+     * INTERNAL:
+     * This method is called in case externalConnectionPooling is used
+     * right before the accessor is disconnected. 
+     * Used by the session to rise an appropriate event.
+     */
+    public void preDisconnectExternalConnection(Accessor accessor) {
+        getEventManager().preReleaseConnection(accessor);
+    }
+    
+    /**
+     * INTERNAL:
      * Release the clients connection resource.
      */
     public void releaseClientSession(ClientSession clientSession) throws DatabaseException {
         if (clientSession.getConnectionPolicy().isPooled()) {
             ConnectionPool pool = (ConnectionPool)getConnectionPools().get(clientSession.getConnectionPolicy().getPoolName());
-            //if we are using external connection pooling the event is thrown right before the connection closes.
+            //if connection is using external connection pooling then the event has been risen right before it disconnected.
             if(!clientSession.getWriteConnection().usesExternalConnectionPooling()) {
-                getEventManager().preReleaseConnection(clientSession.getWriteConnection());
+                clientSession.getEventManager().preReleaseConnection(clientSession.getWriteConnection());
                 if (clientSession.getConnectionPolicy().shouldUseExclusiveConnection()) {
                     getEventManager().preReleaseExclusiveConnection(clientSession, clientSession.getWriteConnection());
                 }
@@ -637,13 +712,17 @@ public class ServerSession extends DatabaseSessionImpl implements Server {
             pool.releaseConnection(clientSession.getWriteConnection());
             clientSession.setWriteConnection(null);
         } else {
-            if (clientSession.getConnectionPolicy().shouldUseExclusiveConnection()) {
-                //if we are using external connection pooling the event is thrown right before the connection closes.
-                if(!clientSession.getWriteConnection().usesExternalConnectionPooling()) {
+            //if connection is using external connection pooling then the event has been risen right before it disconnected.
+            if(!clientSession.getWriteConnection().usesExternalConnectionPooling()) {
+                clientSession.getEventManager().preReleaseConnection(clientSession.getWriteConnection());
+                if (clientSession.getConnectionPolicy().shouldUseExclusiveConnection()) {
                     getEventManager().preReleaseExclusiveConnection(clientSession, clientSession.getWriteConnection());
                 }
+                clientSession.disconnect();
+            } else {
+                // should be already closed - but just in case it's still connected (and the event will risen before connection is closed).
+                clientSession.getWriteConnection().closeConnection();
             }
-            clientSession.disconnect();
             clientSession.setWriteConnection(null);
             if (this.maxNumberOfNonPooledConnections != NO_MAX) {
                 synchronized (this) {
@@ -659,7 +738,10 @@ public class ServerSession extends DatabaseSessionImpl implements Server {
      * Release the read connection back into the read pool.
      */
     public void releaseReadConnection(Accessor connection) {
-        getEventManager().preReleaseConnection(connection);
+        //if connection is using external connection pooling then the event has been risen right before it disconnected.
+        if(!connection.usesExternalConnectionPooling()) {
+            getEventManager().preReleaseConnection(connection);
+        }
         getReadConnectionPool().releaseConnection(connection);
     }
 

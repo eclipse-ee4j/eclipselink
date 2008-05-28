@@ -184,6 +184,15 @@ public class FullRegressionTestSuite extends TestSuite{
             System.out.println("WARNING: " + e + " - StructConverterTestSuite not found, most likely because Oracle specific component is not on the classpath.");
         }
 
+        try {
+            Class proxyAuthenticationClass = Class.forName("org.eclipse.persistence.testing.tests.jpa.proxyauthentication.ProxyAuthenticationTestSuite");
+            Test testCase = (Test)(proxyAuthenticationClass.getMethod("suite", (Class[])null).invoke(null, (Object[])null));
+            fullSuite.addTest(testCase);
+        } catch (Exception e){
+            // This will usually happen if the Oracle-specific tests are not on the class-path.
+            System.out.println("WARNING: " + e + " - ProxyAuthenticationTestSuite not found, most likely because Oracle specific component is not on the classpath.");
+        }
+        
         return fullSuite;
     }
 }

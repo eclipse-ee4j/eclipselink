@@ -361,6 +361,10 @@ public class ValidationException extends EclipseLinkException {
     public static final int CONFLICTING_ANNOTATIONS = 7301;
     public static final int CONFLICTING_XML_ELEMENTS = 7302;
     
+    // ProxyConnectionCustomizer
+    public static final int EXPECTED_PROXY_PROPERTY_NOT_FOUND = 7303;
+    public static final int UNKNOWN_PROXY_TYPE = 7304;
+    
     /**
      * INTERNAL:
      * EclipseLink exceptions should only be thrown by EclipseLink.
@@ -2579,4 +2583,26 @@ public class ValidationException extends EclipseLinkException {
         validationException.setErrorCode(REFLECTIVE_EXCEPTION_WHILE_CREATING_CLASS_INSTANCE);
         return validationException;
     }   
+
+    /**
+     * PUBLIC:
+     * Proxy property corresponding to the specified proxy type was not found.
+     */
+    public static ValidationException expectedProxyPropertyNotFound(String proxyType, String proxyPropertyNotFound) {
+        Object[] args = { proxyType, proxyPropertyNotFound };
+        ValidationException validationException = new ValidationException(ExceptionMessageGenerator.buildMessage(ValidationException.class, EXPECTED_PROXY_PROPERTY_NOT_FOUND, args));
+        validationException.setErrorCode(EXPECTED_PROXY_PROPERTY_NOT_FOUND);
+        return validationException;
+    }    
+
+    /**
+     * PUBLIC:
+     * Proxy property corresponding to the specified proxy type was not found.
+     */
+    public static ValidationException unknownProxyType(int unknownProxyType, String knownProxyType1, String knownProxyType2, String knownProxyType3) {
+        Object[] args = { unknownProxyType, knownProxyType1, knownProxyType2, knownProxyType3 };
+        ValidationException validationException = new ValidationException(ExceptionMessageGenerator.buildMessage(ValidationException.class, UNKNOWN_PROXY_TYPE, args));
+        validationException.setErrorCode(UNKNOWN_PROXY_TYPE);
+        return validationException;
+    }    
 }

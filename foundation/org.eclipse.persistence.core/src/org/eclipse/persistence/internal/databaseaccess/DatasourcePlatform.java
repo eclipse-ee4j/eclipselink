@@ -670,4 +670,11 @@ public class DatasourcePlatform implements Platform {
     public String getIdentifierQuoteCharacter() {
         return "";
     }
+    
+    /**
+     * INTERNAL:
+     */
+    public ConnectionCustomizer createConnectionCustomizer(Accessor accessor, AbstractSession session) {
+        return null;
+    }
 }

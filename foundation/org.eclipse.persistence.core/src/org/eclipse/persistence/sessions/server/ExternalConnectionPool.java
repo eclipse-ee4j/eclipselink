@@ -81,6 +81,7 @@ public class ExternalConnectionPool extends ConnectionPool {
      */
     public void releaseConnection(Accessor connection) throws DatabaseException {
         connection.closeConnection();
+        connection.releaseCustomizer();
     }
 
     /**

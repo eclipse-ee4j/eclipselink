@@ -9,6 +9,15 @@
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
+ *     
+ *     05/28/2008-1.0M8 Andrei Ilitchev 
+ *        - 224964: Provide support for Proxy Authentication through JPA. 
+ *        Added setProperties method to be used in case properties couldn't be passed to createEM method.
+ *        The properties now set to the uow's parent - not to the uow itself.
+ *        In case there's no active transaction, close method now releases uow. 
+ *        UowImpl was amended to allow value holders instantiation even after it has been released,
+ *        the parent ClientSession is released, too. 
+ *
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa;
 
@@ -41,6 +50,7 @@ import org.eclipse.persistence.internal.localization.ExceptionLocalization;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.internal.sessions.MergeManager;
 import org.eclipse.persistence.jpa.config.EntityManagerProperties;
+import org.eclipse.persistence.logging.SessionLog;
 import org.eclipse.persistence.internal.sessions.UnitOfWorkImpl;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.descriptors.VersionLockingPolicy;
@@ -622,10 +632,10 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
             return null;
         }
         if(this.properties!=null){
-            propertyValue=PropertiesHandler.getPropertyValue(name, this.properties);
+            propertyValue=this.properties.get(name);
         }
         if(propertyValue==null){
-            propertyValue=PropertiesHandler.getSessionPropertyValue(name, getServerSession());
+            propertyValue=this.factory.getServerSession().getProperty(name);
         }
         return propertyValue;
     }
@@ -752,11 +762,14 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
             if (extendedPersistenceContext != null) {
                 //bug210677, checkForTransactioin returns null in afterCompletion - in this case check for uow being synchronized.
                 if (checkForTransaction(false) == null && !extendedPersistenceContext.isSynchronized()) {
-                    // clear change sets but keep the cache
-                    extendedPersistenceContext.clearForClose(false);
+                    // uow.release clears change sets but keeps the cache.
+                    // uow still could be used for instantiating of ValueHolders after it's released.
+                    extendedPersistenceContext.release();
+                    extendedPersistenceContext.getParent().release();
                 } else {
-                    // when commit will be called, all change sets will be cleared, but the cache will be kept
-                    extendedPersistenceContext.setShouldClearForCloseInsteadOfResume(true);
+                    // when commit will be called uow will be released, all change sets will be cleared, but the cache will be kept.
+                    // uow still could be used for instantiating of ValueHolders after it's released.
+                    extendedPersistenceContext.setResumeUnitOfWorkOnTransactionCompletion(false);
                 }
                 extendedPersistenceContext = null;
             }
@@ -821,11 +834,9 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
     public RepeatableWriteUnitOfWork getActivePersistenceContext(Object txn) {
         // use local uow as it will be local to this EM and not on the txn
         if (this.extendedPersistenceContext == null || !this.extendedPersistenceContext.isActive()) {
-            this.extendedPersistenceContext = new RepeatableWriteUnitOfWork(this.serverSession.acquireClientSession(), this.referenceMode);
+            this.extendedPersistenceContext = new RepeatableWriteUnitOfWork(this.serverSession.acquireClientSession(properties), this.referenceMode);
             this.extendedPersistenceContext.setResumeUnitOfWorkOnTransactionCompletion(true);
             this.extendedPersistenceContext.setShouldCascadeCloneToJoinedRelationship(true);
-            this.extendedPersistenceContext.setProperties(properties);
-
             if (txn != null) {
                 // if there is an active txn we must register with it on creation of PC
                 transaction.registerUnitOfWorkWithTxn(this.extendedPersistenceContext);
@@ -838,6 +849,22 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
         return this.extendedPersistenceContext;
     }
 
+    /**
+     * Use this method to set properties into existing EntityManager
+     * that are normally passed to createEntityManager method.
+     * Note that if the method called when active persistence context already exists
+     * then properties used to create persistence context will be ignored
+     * until the new persistence context is created (that happens either after transaction rolled back
+     * or after clear method was called).
+     */
+    public void setProperties(Map properties) {
+        if(hasActivePersistenceContext()) {
+            this.extendedPersistenceContext.log(SessionLog.WARNING, SessionLog.PROPERTIES, "entity_manager_sets_properties_while_context_is_active");
+        }
+        this.properties = properties; 
+        processProperties();
+    }
+    
     /**
      * This method is used in contains to check if we already have a persistence context.
      * If there is no active persistence context the method returns false
@@ -905,16 +932,26 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
      * Internal method, set begin early transaction if property has been specified.
      */
     private void processProperties(){
-        String beginEarlyTransactionProperty = (String)getProperty(EntityManagerProperties.JOIN_EXISTING_TRANSACTION);
+        String beginEarlyTransactionProperty = getPropertiesHandlerProperty(EntityManagerProperties.JOIN_EXISTING_TRANSACTION);
         if(beginEarlyTransactionProperty!=null){
             this.beginEarlyTransaction="true".equalsIgnoreCase(beginEarlyTransactionProperty);
         }
-        String referenceMode = (String)getProperty(EntityManagerProperties.PERSISTENCE_CONTEXT_REFERENCE_MODE);
+        String referenceMode = getPropertiesHandlerProperty(EntityManagerProperties.PERSISTENCE_CONTEXT_REFERENCE_MODE);
         if (referenceMode != null){
             this.referenceMode = ReferenceMode.valueOf(referenceMode);
         }
     }
     
+    /**
+     * The method search for user defined property passed in from EntityManager that uses PropertiesHandler, if it is not found then
+     * search for it from EntityManagerFactory properties.
+     * @param name
+     * @return
+     */
+    protected String getPropertiesHandlerProperty(String name) {
+        return PropertiesHandler.getSessionPropertyValue(name, properties, getServerSession());
+    }
+
     protected void setEntityTransactionWrapper() {   
         transaction = new EntityTransactionWrapper(this);
     }

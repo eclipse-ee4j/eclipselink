@@ -392,7 +392,7 @@ public abstract class AbstractSession implements org.eclipse.persistence.session
                         try {
                             // Give the failover time to recover.
                             Thread.currentThread().sleep(getLogin().getDelayBetweenConnectionAttempts());
-                            log(SessionLog.INFO, "communication_failure_attempting_query_retry", (Object[])null, null);
+                            log(SessionLog.INFO, "communication_failure_attempting_begintransaction_retry", (Object[])null, null);
                         } catch (InterruptedException intEx) {
                             break;
                         }

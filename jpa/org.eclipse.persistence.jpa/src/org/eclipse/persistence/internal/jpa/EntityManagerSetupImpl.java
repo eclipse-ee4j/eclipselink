@@ -9,6 +9,14 @@
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
+ *     
+ *     05/28/2008-1.0M8 Andrei Ilitchev 
+ *        - 224964: Provide support for Proxy Authentication through JPA.
+ *        Added updateConnectionPolicy method to support EXCLUSIVE_CONNECTION property.
+ *        Some methods, like setSessionEventListener called from deploy still used predeploy properties,
+ *        that meant it was impossible to set listener through createEMF property in SE case with an agent - fixed that.
+ *        Also if creating / closing the same emSetupImpl many times (24 in my case) "java.lang.OutOfMemoryError: PermGen space" resulted:
+ *        partially fixed partially worked around this - see a big comment in predeploy method. 
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa;
 
@@ -39,7 +47,6 @@ import org.eclipse.persistence.sessions.*;
 import org.eclipse.persistence.sessions.server.ReadConnectionPool;
 import org.eclipse.persistence.sessions.server.ServerSession;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataProcessor;
-import org.eclipse.persistence.sessions.factories.ReferenceMode;
 import org.eclipse.persistence.sessions.factories.SessionManager;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.platform.server.CustomServerPlatform;
@@ -626,6 +633,14 @@ public class EntityManagerSetupImpl {
         }
     }
 
+    protected void updateConnectionPolicy(Map m) {
+        String shouldUseExclusiveConnectionString = PropertiesHandler.getPropertyValueLogDebug(PersistenceUnitProperties.CONNECTION_EXCLUSIVE, m, session);
+        if(shouldUseExclusiveConnectionString != null) {
+            boolean shouldUseExclusiveConnection = Boolean.parseBoolean(shouldUseExclusiveConnectionString);
+            session.getDefaultConnectionPolicy().setShouldUseExclusiveConnection(shouldUseExclusiveConnection);
+        }
+    }
+
     /**
      * Perform any steps necessary prior to actual deployment.  This includes any steps in the session
      * creation that do not require the real loaded domain classes.
@@ -681,13 +696,27 @@ public class EntityManagerSetupImpl {
             updateServerPlatform(predeployProperties, realClassLoader);
             // Update loggers and settings for the singleton logger and the session logger.
             updateLoggers(predeployProperties, true, false, realClassLoader);
-            // Get the temporary classLoader based on the platform
-            JPAClassLoaderHolder privateClassLoaderHolder = session.getServerPlatform().getNewTempClassLoader(info);
-            privateClassLoader = privateClassLoaderHolder.getClassLoader();
-            // Bug 229634: If we switched to using the non-temporary classLoader then disable weaving
-            if(!privateClassLoaderHolder.isTempClassLoader()) {
-                // Disable dynamic weaving for the duration of this predeploy()
-                enableWeaving = Boolean.FALSE;
+            
+            // If it's SE case and the pu has been undeployed weaving again here is impossible:
+            // the classes were loaded already. Therefore using temporaryClassLoader is no longer required.
+            // Moreover, it causes problem in case the same factory is opened and closed many times:
+            // eventually it causes "java.lang.OutOfMemoryError: PermGen space".
+            // It seems that tempLoaders are not garbage collected, therefore each predeploy would add new
+            // classes to Permanent Generation heap.
+            // Therefore this doesn't really fix the problem but rather makes it less severe: in case of
+            // the factory opened / closed 20 times only one temp. class loader may be left behind - not 20.
+            // Another workaround would be increasing Permanent Generation Heap size by adding VM argument -XX:MaxPermSize=256m. 
+            if(!this.isInContainerMode && state==STATE_UNDEPLOYED) {
+                privateClassLoader = realClassLoader;
+            } else {
+                // Get the temporary classLoader based on the platform
+                JPAClassLoaderHolder privateClassLoaderHolder = session.getServerPlatform().getNewTempClassLoader(info);
+                privateClassLoader = privateClassLoaderHolder.getClassLoader();
+                // Bug 229634: If we switched to using the non-temporary classLoader then disable weaving
+                if(!privateClassLoaderHolder.isTempClassLoader()) {
+                    // Disable dynamic weaving for the duration of this predeploy()
+                    enableWeaving = Boolean.FALSE;
+                }
             }
             
             //Update performance profiler
@@ -1123,33 +1152,32 @@ public class EntityManagerSetupImpl {
         if (shouldBindString != null) {
             session.getPlatform().setShouldBindAllParameters(Boolean.parseBoolean(shouldBindString));
         }
-        session.setDefaultReferenceMode((ReferenceMode)getConfigPropertyLogDebug(PersistenceUnitProperties.DEFAULT_PERSISTENCE_CONTEXT_REFERENCE_MODE, m, session));
 
         updateLogins(m);
         if (!session.getLogin().shouldUseExternalTransactionController()) {
             session.getServerPlatform().disableJTA();
         }
         
-        setSessionEventListener(loader);
-        setExceptionHandler(loader);
+        setSessionEventListener(m, loader);
+        setExceptionHandler(m, loader);
 
         updatePools(m);
         
         if (!isSessionLoadedFromSessionsXML) {
              updateDescriptorCacheSettings(m, loader);
         }
-        
+        updateConnectionPolicy(m);
         updateBatchWritingSetting(m);
 
-        updateNativeSQLSetting();
-        updateCacheStatementSettings();
-        updateTemporalMutableSetting();
+        updateNativeSQLSetting(m);
+        updateCacheStatementSettings(m);
+        updateTemporalMutableSetting(m);
         
         // Customizers should be processed last
         processDescriptorCustomizers(m, loader);
         processSessionCustomizer(m, loader);
         
-        setDescriptorNamedQueries();        
+        setDescriptorNamedQueries(m);        
     }
 
     /** 
@@ -1326,9 +1354,9 @@ public class EntityManagerSetupImpl {
      * Allow customized session event listener to be added into session.
      * The method needs to be called in deploy stage.
      */
-    protected void setSessionEventListener(ClassLoader loader){
+    protected void setSessionEventListener(Map m, ClassLoader loader){
         //Set event listener if it has been specified.
-        String sessionEventListenerClassName = EntityManagerFactoryProvider.getConfigPropertyAsStringLogDebug(PersistenceUnitProperties.SESSION_EVENT_LISTENER_CLASS, predeployProperties, session);
+        String sessionEventListenerClassName = EntityManagerFactoryProvider.getConfigPropertyAsStringLogDebug(PersistenceUnitProperties.SESSION_EVENT_LISTENER_CLASS, m, session);
         if(sessionEventListenerClassName!=null){
             Class sessionEventListenerClass = findClassForProperty(sessionEventListenerClassName,PersistenceUnitProperties.SESSION_EVENT_LISTENER_CLASS, loader);
             try {
@@ -1352,9 +1380,9 @@ public class EntityManagerSetupImpl {
      * Allow customized exception handler to be added into session.
      * The method needs to be called in deploy and pre-deploy stage.
      */
-    protected void setExceptionHandler(ClassLoader loader){
+    protected void setExceptionHandler(Map m, ClassLoader loader){
         //Set exception handler if it was specified.
-        String exceptionHandlerClassName = EntityManagerFactoryProvider.getConfigPropertyAsStringLogDebug(PersistenceUnitProperties.EXCEPTION_HANDLER_CLASS, predeployProperties, session);
+        String exceptionHandlerClassName = EntityManagerFactoryProvider.getConfigPropertyAsStringLogDebug(PersistenceUnitProperties.EXCEPTION_HANDLER_CLASS, m, session);
         if(exceptionHandlerClassName!=null){
             Class exceptionHandlerClass = findClassForProperty(exceptionHandlerClassName,PersistenceUnitProperties.EXCEPTION_HANDLER_CLASS, loader);
             try {
@@ -1399,9 +1427,9 @@ public class EntityManagerSetupImpl {
      * Enable or disable the capability of Native SQL function.  
      * The method needs to be called in deploy stage.
      */
-    protected void updateNativeSQLSetting(){
+    protected void updateNativeSQLSetting(Map m){
         //Set Native SQL flag if it was specified.
-        String nativeSQLString = EntityManagerFactoryProvider.getConfigPropertyAsStringLogDebug(PersistenceUnitProperties.NATIVE_SQL, predeployProperties, session);
+        String nativeSQLString = EntityManagerFactoryProvider.getConfigPropertyAsStringLogDebug(PersistenceUnitProperties.NATIVE_SQL, m, session);
         if(nativeSQLString!=null){
            if(nativeSQLString.equalsIgnoreCase("true") ){
                  session.getProject().getLogin().useNativeSQL();
@@ -1417,9 +1445,9 @@ public class EntityManagerSetupImpl {
      * Enable or disable statements cached, update statements cache size. 
      * The method needs to be called in deploy stage. 
      */
-    protected void updateCacheStatementSettings(){
+    protected void updateCacheStatementSettings(Map m){
         // Cache statements if flag was specified.
-        String statmentsNeedBeCached = EntityManagerFactoryProvider.getConfigPropertyAsStringLogDebug(PersistenceUnitProperties.CACHE_STATEMENTS, predeployProperties, session);
+        String statmentsNeedBeCached = EntityManagerFactoryProvider.getConfigPropertyAsStringLogDebug(PersistenceUnitProperties.CACHE_STATEMENTS, m, session);
         if (statmentsNeedBeCached!=null) {
             if (statmentsNeedBeCached.equalsIgnoreCase("true")) {
                 if (session.getConnectionPools().size()>0){//And if connection pooling is configured,
@@ -1435,7 +1463,7 @@ public class EntityManagerSetupImpl {
         }
         
         // Set statement cache size if specified.
-        String cacheStatementsSize = EntityManagerFactoryProvider.getConfigPropertyAsStringLogDebug(PersistenceUnitProperties.CACHE_STATEMENTS_SIZE, predeployProperties, session);
+        String cacheStatementsSize = EntityManagerFactoryProvider.getConfigPropertyAsStringLogDebug(PersistenceUnitProperties.CACHE_STATEMENTS_SIZE, m, session);
         if (cacheStatementsSize!=null) {
             try {
                 session.getProject().getLogin().setStatementCacheSize(Integer.parseInt(cacheStatementsSize));
@@ -1449,9 +1477,9 @@ public class EntityManagerSetupImpl {
      * Enable or disable default temporal mutable setting. 
      * The method needs to be called in deploy stage. 
      */
-    protected void updateTemporalMutableSetting() {
+    protected void updateTemporalMutableSetting(Map m) {
         // Cache statements if flag was specified.
-        String temporalMutable = EntityManagerFactoryProvider.getConfigPropertyAsStringLogDebug(PersistenceUnitProperties.TEMPORAL_MUTABLE, predeployProperties, session);
+        String temporalMutable = EntityManagerFactoryProvider.getConfigPropertyAsStringLogDebug(PersistenceUnitProperties.TEMPORAL_MUTABLE, m, session);
         if (temporalMutable != null) {
             if (temporalMutable.equalsIgnoreCase("true")) {
                session.getProject().setDefaultTemporalMutable(true);
@@ -1466,9 +1494,9 @@ public class EntityManagerSetupImpl {
     /**
      * Copy named queries defined in EclipseLink descriptor into the session if it was indicated to do so.
      */
-    protected void setDescriptorNamedQueries() {
+    protected void setDescriptorNamedQueries(Map m) {
         // Copy named queries to session if the flag has been specified.
-        String addNamedQueriesString  = EntityManagerFactoryProvider.getConfigPropertyAsStringLogDebug(PersistenceUnitProperties.INCLUDE_DESCRIPTOR_QUERIES, predeployProperties, session);
+        String addNamedQueriesString  = EntityManagerFactoryProvider.getConfigPropertyAsStringLogDebug(PersistenceUnitProperties.INCLUDE_DESCRIPTOR_QUERIES, m, session);
         if (addNamedQueriesString!=null) {
             if (addNamedQueriesString.equalsIgnoreCase("true")) {
                 session.copyDescriptorNamedQueries(false);

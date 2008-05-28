@@ -174,9 +174,9 @@ public class ValidationExceptionResource extends ListResourceBundle {
                                            { "7176", "The mapping [{0}] does not support cascading version optimistic locking because it has a custom query."},
                                            { "7177", "The aggregate descriptor [{0}] has privately-owned mappings. Aggregate descriptors do not support cascading version optimistic locking."},
                                            { "7178", "OracleOCIProxyConnector requires OracleOCIConnectionPool datasource."},
-                                           { "7179", "OracleJDBC10_1_0_2ProxyConnector requires datasource producing OracleConnections."},
-                                           { "7180", "OracleJDBC10_1_0_2ProxyConnector requires Oracle JDBC version 10.1.0.2 or higher so that OracleConnection declares openProxySession method."},
-                                           { "7181", "OracleJDBC10_1_0_2ProxyConnector requires ''proxytype'' property to be an int converted to String, for instance Integer.toString(OracleConnection.PROXYTYPE_USER_NAME)"},
+                                           { "7179", "OracleJDBC_10_1_0_2ProxyConnectionCustomizer requires datasource producing OracleConnections."},
+                                           { "7180", "OracleJDBC_10_1_0_2ProxyConnectionCustomizer requires Oracle JDBC version 10.1.0.2 or higher so that OracleConnection declares openProxySession method."},
+                                           { "7181", "OracleJDBC_10_1_0_2ProxyConnectionCustomizer requires PersistenceUnitProperties.ORACLE_PROXY_TYPE property value to be either Integer or convertable to Integer: for instance OracleConnection.PROXYTYPE_USER_NAME or Integer.toString(OracleConnection.PROXYTYPE_USER_NAME)"},
                                            { "7182", "EC - Could not find driver class [{0}]"},
                                            { "7183", "Error closing persistence.xml file."},
                                            { "7184", "[{0}] system property not specified. It must be set to a class that defines a ''getContainerConfig()'' method."},
@@ -285,7 +285,8 @@ public class ValidationExceptionResource extends ListResourceBundle {
                                            { "7300", "Conflicting xml elements [{1}] with the same name [{0}] were found. The first was found in the mapping file [{2}] and the second in the mapping file [{3}]. Named xml elements must be unique across the persistence unit." },
                                            { "7301", "Conflicting annotations were found. The first one [{0}] was found within [{1}] and the second [{2}] was found within [{3}]. Please correct this by removing the annotation which does not apply." },
                                            { "7302", "Conflicting xml elements [{0}] were found for the element [{1}]. The first was found in the mapping file [{2}] and the second in the mapping file [{3}]. Please correct this by removing the xml element which does not apply." },
-
+                                           { "7303", "PersistenceUnitProperties.ORACLE_PROXY_TYPE property set to [{0}], required for this proxy type property [{1}] not found." },
+                                           { "7304", "PersistenceUnitProperties.ORACLE_PROXY_TYPE property set to unknown type [{0}], known types are [{1}], [{2}], [{3}]." },
  };
     
     /**

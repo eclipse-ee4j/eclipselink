@@ -120,6 +120,15 @@ public class PersistenceUnitProperties {
      */
     public static final String CACHE_SHARED_DEFAULT = CACHE_SHARED_ + DEFAULT;
 
+    /**
+     * Set this property to "true" to make each EntityManager created by the factory
+     * to use an exclusive connection - for both reads and writes.
+     * Note that this can't be used without also using isolated cache:
+     * CACHE_SHARED property should be set to "true" for at least one entity,
+     * or CACHE_SHARED_DEFAULT - for all.
+     */
+    public static final String CONNECTION_EXCLUSIVE = "eclipselink.connection.exclusive";
+
     // Customizations properties
 
     /** 
@@ -341,8 +350,6 @@ public class PersistenceUnitProperties {
     public static final String DDL_BOTH_GENERATION = "both";
     public static final String DEFAULT_DDL_GENERATION_MODE = DDL_DATABASE_GENERATION;
     
-    public static final String DEFAULT_PERSISTENCE_CONTEXT_REFERENCE_MODE = "eclipselink.persistence-context.reference-mode.default";
-    
     /**
      * Configures if the existence of an object should be verified on persist(),
      * otherwise it will assume to be new if not in the persistence context.
@@ -357,6 +364,45 @@ public class PersistenceUnitProperties {
      * @see ProfilerType
      */
     public static final String PROFILER = "eclipselink.profiler";
+
+    /**
+     * Set to "true" this property forces persistence context to read through JTA-managed ("write") connection
+     * in case there is an active transaction. 
+     * Valid values are case-insensitive "false" and "true"; "false" is default.
+     * The property set in persistence.xml or passed to createEntityManagerFactory affects all EntityManagers
+     * created by the factory. 
+     * Alternatively, to apply the property only to some SessionManagers pass it to createEntityManager method.
+     */
+    public static final String JOIN_EXISTING_TRANSACTION = "eclipselink.transaction.join-existing";
+    
+    /**
+     * Specifies whether there should be hard or soft references used within the Persistence Context.
+     * Default is "HARD".  With soft references entities no longer referenced by the application
+     * may be garbage collected freeing resources.  Any changes that have not been flushed in these
+     * entities will be lost.
+     * The property set in persistence.xml or passed to createEntityManagerFactory affects all EntityManagers
+     * created by the factory. 
+     * Alternatively, to apply the property only to some SessionManagers pass it to createEntityManager method.
+     * @see org.eclipse.persistence.sessions.factories.ReferenceMode
+     */
+    public static final String PERSISTENCE_CONTEXT_REFERENCE_MODE="eclipselink.persistence-context.reference-mode";
+
+    /**
+     * This property is used to specify proxy type that should be passed to OarcleConnection.openProxySession method.
+     * Requires Oracle jdbc version 10.1.0.2 or later.
+     * Requires Oracle9Platform or later as a database platform 
+     * (TARGET_DATABASE property value should be TargetDatabase.Oracle9 or later).
+     * The valid values are:
+     * OracleConnection.PROXYTYPE_USER_NAME, OracleConnection.PROXYTYPE_DISTINGUISHED_NAME, OracleConnection.PROXYTYPE_CERTIFICATE.
+     * Property property corresponding to the specified type should be also provided:
+     * OracleConnection.PROXY_USER_NAME, OracleConnection.PROXY_DISTINGUISHED_NAME, OracleConnection.PROXY_CERTIFICATE.
+     * Typically these properties should be set into EntityManager (either through createEntityManager method or
+     * using proprietary setProperties method on EntityManagerImpl) - that causes EntityManager to use proxy connection for
+     * writing and reading inside transaction. 
+     * If proxy-type and the corresponding proxy property set into EntityManagerFactory then all connections
+     * created by the factory will be proxy connections.
+     */
+    public static final String ORACLE_PROXY_TYPE = "eclipselink.oracle.proxy-type";
 
     /** INTERNAL: The following properties will not be displayed through logging but instead have an alternate value shown in the log. */
     public static final Map<String, String> PROPERTY_LOG_OVERRIDES = new HashMap<String, String>(1);

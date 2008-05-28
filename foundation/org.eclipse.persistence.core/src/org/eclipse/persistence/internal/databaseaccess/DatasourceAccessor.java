@@ -37,6 +37,10 @@ import org.eclipse.persistence.sessions.SessionProfiler;
  *
  * @author James
  * @since OracleAS TopLink 10<i>g</i> (10.0.3)
+ * 
+ * 05/28/2008-1.0M8 Andrei Ilitchev. 
+ *   - 224964: Provide support for Proxy Authentication through JPA.
+ *     Added ConnectionCustomizer, also fixed  postConnect/preDisconnect ExternalConnection calls so that they called in case of reads, too.
  */
 public abstract class DatasourceAccessor implements Accessor {
 
@@ -116,16 +120,6 @@ public abstract class DatasourceAccessor implements Accessor {
     protected transient AbstractSession currentSession;
 
     /**
-     *  Indicates that isInTransaction flag is about to change from false to true.
-     */
-    protected boolean isBeginningTransaction;
-
-    /**
-     *  Indicates that isInTransaction flag is about to change from true to false
-     */
-    protected boolean isCompletingTransaction;
-
-    /**
      * PERF: Cache connection pooling flag.
      */
     protected boolean usesExternalConnectionPooling;
@@ -137,6 +131,11 @@ public abstract class DatasourceAccessor implements Accessor {
      */
     public static boolean shouldCheckConnection = false;
     
+    /**
+     * Allows session-specific connection customization.
+     */
+    protected ConnectionCustomizer customizer;
+
     /**
      *    Default Constructor.
      */
@@ -153,6 +152,9 @@ public abstract class DatasourceAccessor implements Accessor {
     public Object clone() {
         try {
             DatasourceAccessor accessor = (DatasourceAccessor)super.clone();
+            if(accessor.customizer != null) {
+                accessor.customizer.setAccessor(accessor);
+            }
             return accessor;
         } catch (CloneNotSupportedException exception) {
             throw new InternalError("clone not supported");
@@ -228,12 +230,10 @@ public abstract class DatasourceAccessor implements Accessor {
 
         try {
             session.startOperationProfile(SessionProfiler.TRANSACTION);
-            isBeginningTransaction = true;
             incrementCallCount(session);
             basicBeginTransaction(session);
             this.isInTransaction = true;
         } finally {
-            isBeginningTransaction = false;
             decrementCallCount();
             session.endOperationProfile(SessionProfiler.TRANSACTION);
         }
@@ -298,16 +298,8 @@ public abstract class DatasourceAccessor implements Accessor {
                 // If ExternalConnectionPooling is used, the connection can be re-established.
                 if (this.usesExternalConnectionPooling) {
                     reconnect(session);
-                    // either transaction is starting (the method is called from beginTransaction, no externalTransactionController case)
-                    // or the connection is required for the session which is
-                    //   either in transaction already (will happen in externalTransactionController case);
-                    //   or requires exclusive connection.
-                    if (this.isBeginningTransaction || this.isInTransaction || session.isExclusiveConnectionRequired()) {
-                        session.postConnectExternalConnection(this);
-                        currentSession = session;
-                    } else if (isCompletingTransaction) {
-                        currentSession = session;
-                    }
+                    session.postConnectExternalConnection(this);
+                    currentSession = session;
                 } else {
                     throw DatabaseException.databaseAccessorNotConnected();
                 }
@@ -331,6 +323,9 @@ public abstract class DatasourceAccessor implements Accessor {
     protected void connectInternal(Login login, AbstractSession session) throws DatabaseException {
         this.datasourceConnection = login.connectToDatasource(this, session);
         this.isConnected = true;
+        if(this.customizer != null) {
+            customizer.customize();
+        }
     }
 
     /**
@@ -379,7 +374,6 @@ public abstract class DatasourceAccessor implements Accessor {
 
         try {
             session.startOperationProfile(SessionProfiler.TRANSACTION);
-            isCompletingTransaction = true;
             incrementCallCount(session);
             basicCommitTransaction(session);
 
@@ -388,7 +382,6 @@ public abstract class DatasourceAccessor implements Accessor {
             }
             this.isInTransaction = false;
         } finally {
-            isCompletingTransaction = false;
             sequencingCallback = null;
             decrementCallCount();
             session.endOperationProfile(SessionProfiler.TRANSACTION);
@@ -469,6 +462,9 @@ public abstract class DatasourceAccessor implements Accessor {
         }
         session.incrementProfile(SessionProfiler.TlDisconnects);
         session.startOperationProfile(SessionProfiler.CONNECT);
+        if(customizer != null && customizer.isActive()) {
+            customizer.clear();
+        }
         closeDatasourceConnection();
         this.datasourceConnection = null;
         this.isInTransaction = true;
@@ -486,6 +482,9 @@ public abstract class DatasourceAccessor implements Accessor {
                 if (isDatasourceConnected()) {
                     if(currentSession != null) {
                         currentSession.preDisconnectExternalConnection(this);
+                    }
+                    if(customizer != null && customizer.isActive()) {
+                        customizer.clear();
                     }
                     closeDatasourceConnection();
                 }
@@ -530,6 +529,7 @@ public abstract class DatasourceAccessor implements Accessor {
             Object[] args = { getLogin() };
             session.log(SessionLog.CONFIG, SessionLog.CONNECTION, "reconnecting", args, this);
         }
+        reestablishCustomizer();
         reconnect(session);
         this.isInTransaction = false;
         this.isValid = true;
@@ -648,12 +648,10 @@ public abstract class DatasourceAccessor implements Accessor {
 
         try {
             session.startOperationProfile(SessionProfiler.TRANSACTION);
-            isCompletingTransaction = true;
             incrementCallCount(session);
             basicRollbackTransaction(session);
         } finally {
             this.isInTransaction = false;
-            isCompletingTransaction = false;
             sequencingCallback = null;
             decrementCallCount();
             session.endOperationProfile(SessionProfiler.TRANSACTION);
@@ -721,4 +719,140 @@ public abstract class DatasourceAccessor implements Accessor {
         }
         return sequencingCallback;
     }
+
+    /**
+     * Attempts to create ConnectionCustomizer. If created the customizer is cached by the accessor.
+     * Called by the owner of accessor (DatabaseSession, ServerSession through ConnectionPool) just once, 
+     * typically right after the accessor is created. 
+     * Also called by ClientSession when it acquires write accessor.
+     * If accessor already has a customizer set by ConnectionPool then ClientSession's customizer
+     * compared with the existing one and if they are not equal (don't produce identical customization)
+     * then the new customizer set onto accessor, caching the old customizer so that it could be restored later.
+     */
+    public void createCustomizer(AbstractSession session) {
+        // Create a new customizer. The platform may be null if the accessor hasn't yet been connected. 
+        ConnectionCustomizer newCustomizer;
+        if(platform != null) {
+            newCustomizer = platform.createConnectionCustomizer(this, session);
+        } else {
+            newCustomizer = ((DatasourcePlatform)session.getDatasourcePlatform()).createConnectionCustomizer(this, session);
+        }
+        
+        if(customizer == null) {
+            if(newCustomizer == null) {
+                // Neither old nor new exists - nothing to do.
+            } else {
+                // Old customizer doesn't exist - just set the new one.
+                setCustomizer(newCustomizer);
+            }
+        } else {
+            if(newCustomizer == null) {
+                // New customizer doesn't exist - but the old one does.
+                if(customizer.isActive()) {
+                    customizer.clear();
+                }
+                // The only reason for setting empty customizer is to preserve the previous customizer
+                // until releaseCustomizer(session) is called - where session is the one set in empty customizer.
+                // Happens when ServerSession defines customization but ClientSession explicitly demands no customization.
+                newCustomizer = ConnectionCustomizer.createEmptyCustomizer(session);
+                newCustomizer.setPrevCustomizer(customizer);
+                // No need to call customize on Empty customizer - it does nothing.
+                customizer = newCustomizer;
+            } else {
+                // Both old and new customizers exist.
+                if(newCustomizer.equals(customizer)) {
+                    // The equality of customizers means they customize connection in exactly the same way.
+                    // Therefore clearing the old customization followed by application of the new one could be skipped:
+                    // just keep the old customizer.
+                    // Happens when ServerSession and ClientSession define equivalent customizers.
+                } else {
+                    // The old customizer substituted for the new one.
+                    if(customizer.isActive()) {
+                        customizer.clear();
+                    }
+                    // Note that the old one is cached in the new one and will be restored
+                    // when releaseCustomizer(session( is called - where session is the one set in the new customizer.
+                    // Happens when ClientSession customizer overrides ServerSession's customizer.
+                    newCustomizer.setPrevCustomizer(customizer);
+                    setCustomizer(newCustomizer);
+                }
+            }
+        } 
+    }
+    
+    /**
+     * Set customizer, customize the connection if it's available.
+     */
+    protected void setCustomizer(ConnectionCustomizer newCustomizer) {
+        this.customizer = newCustomizer;
+        if(getDatasourceConnection() != null) {
+            customizer.customize();
+        }
+    }
+  
+    /**
+     * Clear customizer if it's active and set it to null.
+     * Called by the same object that has created customizer (DatabaseSession, ConnectionPool) when
+     * the latter is no longer required, typically before releasing the accessor.
+     * Ignored if there's no customizer. 
+     */
+    public void releaseCustomizer() {
+        if(customizer != null) {
+            if(customizer.isActive()) {
+                customizer.clear();
+            }
+            customizer = null;
+        }
+    }
+   
+   /**
+    * Clear and remove customizer if its session is the same as the passed one;
+    * in case prevCustomizer exists set it as a new customizer.
+    * Called when ClientSession releases write accessor:
+    * if the customizer was created by the ClientSession it's removed, and
+    * the previous customizer (that ConnectionPool had set) is brought back;
+    * otherwise the customizer (created by ConnectionPool) is kept.
+    * Ignored if there's no customizer. 
+    */
+   public void releaseCustomizer(AbstractSession session) {
+       if(customizer != null) {
+           if(customizer.getSession() == session) {
+               if(customizer.isActive()) {
+                   customizer.clear();
+               }
+               if(customizer.getPrevCustomizer() == null) {
+                   customizer = null;
+               } else {
+                   setCustomizer(customizer.getPrevCustomizer());
+               }
+           }
+       }
+   }
+  
+   /**
+    * This method is called by reestablishConnection.
+    * Nothing needs to be done in case customize is not active (customization hasn't been applied yet). 
+    * to repair existing customizer after connection became invalid.
+    * However if connection has been customized then
+    * if connection is still there and deemed to be valid - clear customization.
+    * Otherwise (or if clear fails) remove customizer and set its prevCustomizer as a new customizer,
+    * then re-create customizer using the same session as the original one.
+    */
+   protected void reestablishCustomizer() {
+       if(customizer != null && customizer.isActive()) {
+           if(isValid() && getDatasourceConnection() != null) {
+               try {
+                   customizer.clear();
+                   return;
+               } catch (Exception ex) {
+                   // ignore
+               }
+           }
+           AbstractSession customizerSession = (AbstractSession)customizer.getSession();
+           // need this so that the new customizer has the same prevCustomizer as the old one.
+           customizer = customizer.getPrevCustomizer();
+           // customizer recreated - it's the same as the original one, but not active.
+           createCustomizer(customizerSession);
+       }
+   }  
 }
