@@ -37,7 +37,7 @@ import static java.sql.DatabaseMetaData.procedureColumnReturn;
 // EclipseLink imports
 import org.eclipse.persistence.internal.databaseaccess.DatabasePlatform;
 import org.eclipse.persistence.platform.database.DerbyPlatform;
-import org.eclipse.persistence.platform.database.MySQL4Platform;
+import org.eclipse.persistence.platform.database.MySQLPlatform;
 import org.eclipse.persistence.platform.database.PostgreSQLPlatform;
 import org.eclipse.persistence.platform.database.oracle.OraclePlatform;
 import static org.eclipse.persistence.tools.dbws.Util.InOut.INOUT;
@@ -354,7 +354,7 @@ public class JDBCHelper {
 
         List<DbStoredProcedure> dbStoredProcedures = null;
         boolean catalogMatchDontCare = false;
-        if (platform instanceof MySQL4Platform || platform instanceof DerbyPlatform ||
+        if (platform instanceof MySQLPlatform || platform instanceof DerbyPlatform ||
         	platform instanceof PostgreSQLPlatform ) {
         	// TODO - get info on other platforms that also require catalogMatchDontCare = true
         	catalogMatchDontCare = true;
