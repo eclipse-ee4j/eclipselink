@@ -12,7 +12,11 @@
  ******************************************************************************/  
 package org.eclipse.persistence.testing.tests;
 
+import java.lang.reflect.Method;
 import java.util.*;
+
+import junit.framework.Test;
+
 import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.sessions.DatabaseLogin;
 import org.eclipse.persistence.testing.framework.*;
@@ -227,6 +231,7 @@ public class TestRunModel extends TestModel {
     public static TestModel buildOracleTestModel() {
         List tests = new ArrayList();
         tests.add("org.eclipse.persistence.testing.tests.OracleTestModel");
+        tests.add("org.eclipse.persistence.testing.tests.OracleJPATestSuite");
         // Requires specific oracle database/driver (oci).
         tests.add("org.eclipse.persistence.testing.tests.xdb.XDBTestModel");
         tests.add("org.eclipse.persistence.testing.tests.xdb.XDBTestModelMWIntegration");
@@ -234,8 +239,15 @@ public class TestRunModel extends TestModel {
         TestModel model = new TestModel();
         model.setName("Oracle Tests");
         for (int index = 0; index < tests.size(); ++index) {
+            Class cls;
             try {
-                model.addTest((TestModel)Class.forName((String)tests.get(index)).newInstance());
+                cls = Class.forName((String)tests.get(index));
+                if(TestModel.class.isAssignableFrom(cls)) {
+                    model.addTest((TestModel)cls.newInstance());
+                } else {
+                    Method suite = cls.getDeclaredMethod("suite", new Class[]{});
+                    model.addTest((Test)suite.invoke(null, new Object[]{}));
+                }
             } catch (Throwable exception) {
                 System.out.println("Failed to set up " + tests.get(index) + " \n" + exception);
             }

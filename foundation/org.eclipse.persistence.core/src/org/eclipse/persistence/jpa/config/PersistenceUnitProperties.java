@@ -124,8 +124,8 @@ public class PersistenceUnitProperties {
      * Set this property to "true" to make each EntityManager created by the factory
      * to use an exclusive connection - for both reads and writes.
      * Note that this can't be used without also using isolated cache:
-     * CACHE_SHARED property should be set to "true" for at least one entity,
-     * or CACHE_SHARED_DEFAULT - for all.
+     * CACHE_SHARED property should be set to "false" for at least one entity,
+     * or CACHE_SHARED_DEFAULT should be set to "false".
      */
     public static final String CONNECTION_EXCLUSIVE = "eclipselink.connection.exclusive";
 
@@ -371,6 +371,8 @@ public class PersistenceUnitProperties {
      * Valid values are case-insensitive "false" and "true"; "false" is default.
      * The property set in persistence.xml or passed to createEntityManagerFactory affects all EntityManagers
      * created by the factory. 
+     * Note that if the property set to "true" then objects read during transaction won't be placed into the
+     * shared cache unless they have been updated.
      * Alternatively, to apply the property only to some SessionManagers pass it to createEntityManager method.
      */
     public static final String JOIN_EXISTING_TRANSACTION = "eclipselink.transaction.join-existing";

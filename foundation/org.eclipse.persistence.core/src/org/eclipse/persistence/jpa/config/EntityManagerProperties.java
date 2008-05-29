@@ -35,6 +35,8 @@ public class EntityManagerProperties {
      * in case there is an active transaction.
      * Valid values are case-insensitive "false" and "true"; "false" is default.
      * The property could also be set in persistence.xml or passed to createEntityManagerFactory,
+     * Note that if the property set to "true" then objects read during transaction won't be placed into the
+     * shared cache unless they have been updated.
      * in that case it affects all EntityManagers created by the factory. 
      */
     public static final String JOIN_EXISTING_TRANSACTION = PersistenceUnitProperties.JOIN_EXISTING_TRANSACTION;
