@@ -52,7 +52,7 @@ public class DBWSTestSuite {
         DEFAULT_DATABASE_USERNAME;
     public final static String DEFAULT_DATABASE_DRIVER = "com.mysql.jdbc.Driver";
     public final static String DEFAULT_DATABASE_PLATFORM =
-        "org.eclipse.persistence.platform.database.MySQL51Platform";
+        "org.eclipse.persistence.platform.database.MySQLPlatform";
 
     public static XMLComparer comparer = new XMLComparer();
     public static XMLPlatform xmlPlatform = XMLPlatformFactory.getInstance().getXMLPlatform();
