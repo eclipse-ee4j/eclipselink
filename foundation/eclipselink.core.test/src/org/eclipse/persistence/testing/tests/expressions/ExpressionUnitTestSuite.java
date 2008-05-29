@@ -804,7 +804,7 @@ public class ExpressionUnitTestSuite extends ExpressionTestSuite {
         test.addUnsupportedPlatform(DB2Platform.class);
         test.addUnsupportedPlatform(SybasePlatform.class);
         test.addUnsupportedPlatform(SQLServerPlatform.class);
-        test.addUnsupportedPlatform(MySQL4Platform.class);
+        test.addUnsupportedPlatform(MySQLPlatform.class);
         test.addUnsupportedPlatform(TimesTenPlatform.class);
         addTest(test);
     }
@@ -820,7 +820,7 @@ public class ExpressionUnitTestSuite extends ExpressionTestSuite {
         test.addUnsupportedPlatform(DB2Platform.class);
         test.addUnsupportedPlatform(SybasePlatform.class);
         test.addUnsupportedPlatform(SQLServerPlatform.class);
-        test.addUnsupportedPlatform(MySQL4Platform.class);
+        test.addUnsupportedPlatform(MySQLPlatform.class);
         test.addUnsupportedPlatform(TimesTenPlatform.class);
         addTest(test);
     }
@@ -1138,7 +1138,7 @@ public class ExpressionUnitTestSuite extends ExpressionTestSuite {
         test.setName("PostfixSQLTest");
         test.setDescription("Test postfixSQL expression");
         test.addSupportedPlatform(OraclePlatform.class);
-        test.addSupportedPlatform(MySQL4Platform.class);
+        test.addSupportedPlatform(MySQLPlatform.class);
         addTest(test);
     }
 
@@ -1157,7 +1157,7 @@ public class ExpressionUnitTestSuite extends ExpressionTestSuite {
         test.setName("PrefixSQLTest");
         test.setDescription("Test prefixSQL expression");
         test.addSupportedPlatform(OraclePlatform.class);
-        test.addSupportedPlatform(MySQL4Platform.class);
+        test.addSupportedPlatform(MySQLPlatform.class);
         addTest(test);
     }
 
@@ -1175,7 +1175,7 @@ public class ExpressionUnitTestSuite extends ExpressionTestSuite {
         test.addUnsupportedPlatform(DB2Platform.class);
         test.addUnsupportedPlatform(SybasePlatform.class);
         test.addUnsupportedPlatform(SQLServerPlatform.class);
-        test.addUnsupportedPlatform(MySQL4Platform.class);
+        test.addUnsupportedPlatform(MySQLPlatform.class);
         test.addUnsupportedPlatform(TimesTenPlatform.class);
         addTest(test);
     }
@@ -1260,7 +1260,7 @@ public class ExpressionUnitTestSuite extends ExpressionTestSuite {
         test.addUnsupportedPlatform(DB2Platform.class);
         test.addUnsupportedPlatform(SybasePlatform.class);
         test.addUnsupportedPlatform(SQLServerPlatform.class);
-        test.addUnsupportedPlatform(MySQL4Platform.class);
+        test.addUnsupportedPlatform(MySQLPlatform.class);
         test.addUnsupportedPlatform(TimesTenPlatform.class);
         addTest(test);
     }

@@ -39,6 +39,7 @@ public class TargetDatabase {
     public static final String  Informix = "Informix";
     public static final String  JavaDB = "JavaDB";
     public static final String  MySQL4 = "MySQL4";
+    public static final String  MySQL = "MySQL";
     public static final String  PointBase = "PointBase";
     public static final String  PostgreSQL = "PostgreSQL";
     public static final String  SQLAnyWhere = "SQLAnyWhere";

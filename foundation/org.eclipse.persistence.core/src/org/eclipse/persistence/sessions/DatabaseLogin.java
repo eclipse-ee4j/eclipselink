@@ -1450,7 +1450,7 @@ public class DatabaseLogin extends DatasourceLogin {
             return;
         }
 
-        DatabasePlatform newPlatform = new MySQL4Platform();
+        DatabasePlatform newPlatform = new MySQLPlatform();
         getPlatform().copyInto(newPlatform);
         setPlatform(newPlatform);
     }

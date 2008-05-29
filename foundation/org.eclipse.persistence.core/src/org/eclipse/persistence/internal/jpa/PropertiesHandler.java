@@ -507,7 +507,8 @@ public class PropertiesHandler {
                 {TargetDatabase.HSQL, pcg + "HSQLPlatform"},
                 {TargetDatabase.Informix, pcg + "InformixPlatform"},
                 {TargetDatabase.JavaDB, pcg + "JavaDBPlatform"},
-                {TargetDatabase.MySQL4, pcg + "MySQL4Platform"},
+                {TargetDatabase.MySQL, pcg + "MySQLPlatform"},
+                {TargetDatabase.MySQL4, pcg + "MySQLPlatform"}, // 211249: keep backwards compatibility
                 {TargetDatabase.PointBase,  pcg + "PointBasePlatform"},
                 {TargetDatabase.PostgreSQL,  pcg + "PostgreSQLPlatform"},
                 {TargetDatabase.SQLAnyWhere,  pcg + "SQLAnyWherePlatform"},

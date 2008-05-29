@@ -19,6 +19,8 @@ import org.eclipse.persistence.expressions.ExpressionOperator;
 import org.eclipse.persistence.internal.databaseaccess.FieldTypeDefinition;
 import org.eclipse.persistence.internal.expressions.FunctionExpression;
 import org.eclipse.persistence.internal.helper.*;
+import org.eclipse.persistence.internal.sessions.AbstractSession;
+import org.eclipse.persistence.queries.StoredProcedureCall;
 import org.eclipse.persistence.queries.ValueReadQuery;
 
 /**
@@ -33,9 +35,9 @@ import org.eclipse.persistence.queries.ValueReadQuery;
  *
  * @since OracleAS TopLink 10<i>g</i> (10.1.3)
  */
-public class MySQL4Platform extends DatabasePlatform {
+public class MySQLPlatform extends DatabasePlatform {
 
-    public MySQL4Platform(){
+    public MySQLPlatform(){
         super();
         this.pingSQL = "SELECT 1";
     }
@@ -145,11 +147,36 @@ public class MySQL4Platform extends DatabasePlatform {
     }
 
     /**
+     * Return the proc syntax for this platform.
+     */
+    @Override
+    public String buildProcedureCallString(StoredProcedureCall call, AbstractSession session) {
+        return "{ " + super.buildProcedureCallString(call, session);
+    }
+    
+    /**
      * INTERNAL:
      * Used for constraint deletion.
      */
     public String getConstraintDeletionString() {
         return " DROP FOREIGN KEY ";
+    }
+
+    /**
+     * Used for stored function calls.
+     */
+    @Override
+    public String getFunctionCallHeader() {
+        return "? " + getAssignmentString() + getProcedureCallHeader();
+            // different order -  CALL clause ^^^ comes AFTER assignment operator
+    }
+
+    /**
+     * Used for sp calls.
+     */
+    @Override
+    public String getProcedureCallTail() {
+        return " }"; // case-sensitive
     }
     
     /**
@@ -367,6 +394,11 @@ public class MySQL4Platform extends DatabasePlatform {
      * MySQL supports temp tables for update-all, delete-all queries.
      */
     public boolean supportsGlobalTempTables() {
+        return true;
+    }
+
+    @Override
+    public boolean supportsStoredFunctions() {
         return true;
     }
 

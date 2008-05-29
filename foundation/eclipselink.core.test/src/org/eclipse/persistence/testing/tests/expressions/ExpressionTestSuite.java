@@ -798,7 +798,7 @@ public class ExpressionTestSuite extends TestSuite {
         test.addSupportedPlatform(SybasePlatform.class);
         test.addSupportedPlatform(SQLServerPlatform.class);
         test.addSupportedPlatform(DB2Platform.class);
-        test.addSupportedPlatform(MySQL4Platform.class);
+        test.addSupportedPlatform(MySQLPlatform.class);
         addTest(test);
     }
 
@@ -1764,7 +1764,7 @@ public class ExpressionTestSuite extends TestSuite {
         test.setDescription("Test inheritance view with joining only.");
         //CREATE VIEW statement was added in MySQL 5.0.1.  Remove the condition when we support MySQL 5 
         //together with InheritanceSystem
-        test.addUnsupportedPlatform(MySQL4Platform.class);
+        test.addUnsupportedPlatform(MySQLPlatform.class);
         //CREATE MATERIALIZED VIEW is supported in TimesTen, but seems to have trouble with outer join.
         //TT0805: Materialized view with no non-nullable selected column from inner table BUS has not been implemented
         test.addUnsupportedPlatform(org.eclipse.persistence.platform.database.TimesTenPlatform.class);
