@@ -171,13 +171,13 @@ public class Employee implements Serializable, Cloneable {
     
     private Collection<Project> projects;
     private Collection<String> responsibilities;
-    private LinkedList<PhoneNumber> m_phoneNumbers;
+    private Collection<PhoneNumber> m_phoneNumbers;
     private Collection<Employee> managedEmployees;
     
     public Employee () {
         this.normalHours = new Time[2];
         this.overtimeHours = new Time[2];
-        this.m_phoneNumbers = new LinkedList<PhoneNumber>();
+        this.m_phoneNumbers = new Vector<PhoneNumber>();
         this.projects = new Vector<Project>();
         this.managedEmployees = new Vector<Employee>();
         this.responsibilities = new Vector<String>();
@@ -383,10 +383,10 @@ public class Employee implements Serializable, Cloneable {
         return period;
     }
     
-    @OneToMany(fetch=EAGER, cascade=ALL, mappedBy="owner")
+    @OneToMany(cascade=ALL, mappedBy="owner")
     @PrivateOwned
     @Property(name="attributeName", value="phoneNumbers")
-    public LinkedList<PhoneNumber> getPhoneNumbers() { 
+    public Collection<PhoneNumber> getPhoneNumbers() { 
         return m_phoneNumbers; 
     }
 
@@ -612,7 +612,7 @@ public class Employee implements Serializable, Cloneable {
     }
 
     
-    public void setPhoneNumbers(LinkedList<PhoneNumber> phoneNumbers) {
+    public void setPhoneNumbers(Collection<PhoneNumber> phoneNumbers) {
         this.m_phoneNumbers = phoneNumbers;
     }
     

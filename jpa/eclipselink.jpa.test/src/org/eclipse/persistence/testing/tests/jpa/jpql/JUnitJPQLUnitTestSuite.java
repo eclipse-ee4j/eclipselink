@@ -229,7 +229,7 @@ public class JUnitJPQLUnitTestSuite extends JUnitTestCase
         exp = exp.and(employees.get("lastName").equal("Smith"));
         Employee emp = (Employee) em.getActiveSession().readAllObjects(Employee.class, exp).firstElement();
     
-        PhoneNumber phone = (PhoneNumber) ((java.util.LinkedList)emp.getPhoneNumbers()).getFirst();
+        PhoneNumber phone = (PhoneNumber) ((Vector)emp.getPhoneNumbers()).firstElement();
         String areaCode = phone.getAreaCode();
         String firstName = emp.getFirstName();
 
@@ -266,7 +266,7 @@ public class JUnitJPQLUnitTestSuite extends JUnitTestCase
         exp = exp.and(employees.get("lastName").equal("Smith"));
         Employee emp = (Employee) em.getActiveSession().readAllObjects(Employee.class, exp).firstElement();
     
-        PhoneNumber phone = (PhoneNumber) ((java.util.LinkedList)emp.getPhoneNumbers()).getFirst();
+        PhoneNumber phone = (PhoneNumber) ((Vector)emp.getPhoneNumbers()).firstElement();
         String areaCode = phone.getAreaCode();
         String firstName = emp.getFirstName();
         

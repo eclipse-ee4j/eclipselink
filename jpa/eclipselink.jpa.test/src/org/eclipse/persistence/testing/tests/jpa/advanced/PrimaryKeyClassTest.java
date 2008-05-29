@@ -58,7 +58,7 @@ public class PrimaryKeyClassTest extends EntityContainerTestBase  {
      * Create an employee with multiple phone numbers.
      */
     private int createTest() {
-        LinkedList phoneNumbers = new LinkedList();
+        Vector phoneNumbers = new Vector();
         Employee employee  = new Employee();
         
         try {

@@ -635,7 +635,7 @@ public class JUnitJPQLSimpleTestSuite extends JUnitTestCase {
 
         clearCache();
 
-        PhoneNumber phoneNumber = (PhoneNumber)((java.util.LinkedList)expectedResult.getPhoneNumbers()).getFirst();
+        PhoneNumber phoneNumber = (PhoneNumber)((Vector)expectedResult.getPhoneNumbers()).firstElement();
 
         String ejbqlString = "SELECT OBJECT(emp) FROM Employee emp, IN (emp.phoneNumbers) phone " + "WHERE phone = ?1";
 
@@ -693,7 +693,7 @@ public class JUnitJPQLSimpleTestSuite extends JUnitTestCase {
 
         clearCache();
 
-        PhoneNumber empPhoneNumbers = (PhoneNumber)((java.util.LinkedList)expectedResult.getPhoneNumbers()).getFirst();
+        PhoneNumber empPhoneNumbers = (PhoneNumber)((Vector)expectedResult.getPhoneNumbers()).firstElement();
 
         String ejbqlString = "SelecT OBJECT(emp) from Employee emp, in (emp.phoneNumbers) phone " + "Where phone.areaCode = \"" + empPhoneNumbers.getAreaCode() + "\"" + "AND emp.firstName = \"" + expectedResult.getFirstName() + "\"";
         ejbqlString = ejbqlString + "AND emp.lastName = \"" + expectedResult.getLastName() + "\"";
