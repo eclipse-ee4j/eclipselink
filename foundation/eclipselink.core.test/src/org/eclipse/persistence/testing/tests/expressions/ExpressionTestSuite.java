@@ -1,15 +1,15 @@
 /*******************************************************************************
  * Copyright (c) 1998, 2008 Oracle. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.tests.expressions;
 
 import org.eclipse.persistence.testing.models.employee.domain.*;
@@ -368,7 +368,7 @@ public class ExpressionTestSuite extends TestSuite {
         test.addSupportedPlatform(OraclePlatform.class);
         test.addSupportedPlatform(SybasePlatform.class);
         //Uncomment it when we support MySQL 5.  Please refer to the comments in InheritanceSystem
-        //test.addSupportedPlatform(MySQL4Platform.class);
+        //test.addSupportedPlatform(MySQLPlatform.class);
         addTest(test);
     }
 
@@ -487,7 +487,7 @@ public class ExpressionTestSuite extends TestSuite {
         test.setDescription("Test = expression");
         addTest(test);
     }
-    
+
     /*
      * bug 5683148/2380: Reducing unnecessary joins on an equality check between the a statement
      *   and itself
@@ -496,7 +496,7 @@ public class ExpressionTestSuite extends TestSuite {
         Employee employee = (Employee)getManager().getObject(new Employee().getClass(), "0008");
 
         ExpressionBuilder builder = new ExpressionBuilder();
-        Expression expression = builder.get("firstName").equal("Fred").or(builder.get("manager").notEqual(builder.get("manager")));        
+        Expression expression = builder.get("firstName").equal("Fred").or(builder.get("manager").notEqual(builder.get("manager")));
 
         ReadObjectExpressionTest test = new ReadObjectExpressionTest(employee, expression);
         test.setName("EqualUnneccessaryJoinTest");
@@ -594,7 +594,7 @@ public class ExpressionTestSuite extends TestSuite {
         test.setDescription("Test that in converts correctly");
         addTest(test);
     }
-    
+
     /*
      * added for bug 5842913 - tests JPAQL usage of 'in', testing that in takes
      *   a collection containing multiple parameter expressions.
@@ -604,15 +604,15 @@ public class ExpressionTestSuite extends TestSuite {
         Vector vec = new Vector();
         vec.add(ex.getParameter("salary1"));
         vec.add(ex.getParameter("salary2"));
-        vec.add(ex.getParameter("salary3"));        
+        vec.add(ex.getParameter("salary3"));
         Expression exp = ex.get("salary").in(vec);
-        
+
         ReadAllQuery rq = new ReadAllQuery(Employee.class);
         rq.setSelectionCriteria(exp);
         rq.addArgument("salary1");
         rq.addArgument("salary2");
         rq.addArgument("salary3");
-        
+
         Vector vect = new Vector();
         vect.add(87000);
         vect.add(31000);
@@ -620,42 +620,42 @@ public class ExpressionTestSuite extends TestSuite {
 
         ReadAllExpressionTest test = new ReadAllExpressionTest(Employee.class, 3);
         test.setQuery(rq);
-        test.setArguments(vect);        
+        test.setArguments(vect);
         test.setName("InMultipleExpressionParameterTest");
         test.setDescription("Test Expression IN with multiple parameters");
         addTest(test);
     }
-    
+
     /*
-     * added for bug 5842913 - tests backward compatibility of using 'in' with 
+     * added for bug 5842913 - tests backward compatibility of using 'in' with
      *   a parameter representing a collection
      */
     private void addInSingleVectorParameterTest() {
         ExpressionBuilder ex = new ExpressionBuilder();
         Vector vec = new Vector();
-        vec.add(ex.getParameter("salary1"));        
+        vec.add(ex.getParameter("salary1"));
         Expression exp = ex.get("salary").in(ex.getParameter("list"));
-        
+
         ReadAllQuery rq = new ReadAllQuery(Employee.class);
         rq.setSelectionCriteria(exp);
         rq.addArgument("list");
-        
+
         Vector vect1 = new Vector();
         vect1.add(87000);
         vect1.add(31000);
         vect1.add(500001);
-        
+
         Vector vect = new Vector();
         vect.add(vect1);
 
         ReadAllExpressionTest test = new ReadAllExpressionTest(Employee.class, 3);
         test.setQuery(rq);
-        test.setArguments(vect);        
+        test.setArguments(vect);
         test.setName("InSingleVectorParameterTest");
         test.setDescription("Test Expression IN with one list parameter");
         addTest(test);
     }
-    
+
     private void addInTest() {
         Employee employee = (Employee)getManager().getObject(new Employee().getClass(), "0003");
 
@@ -672,7 +672,7 @@ public class ExpressionTestSuite extends TestSuite {
         test.setDescription("Test IN expression");
         addTest(test);
     }
-    
+
     private void addInCollectionTest() {
         Employee employee = (Employee)getManager().getObject(new Employee().getClass(), "0003");
 
@@ -1042,7 +1042,7 @@ public class ExpressionTestSuite extends TestSuite {
     private void addMultipleAndsTest5() {
         ExpressionBuilder builder = new ExpressionBuilder();
 
-        //this is a bug, Ill-formed expression in query, attempting to print an object reference into a 
+        //this is a bug, Ill-formed expression in query, attempting to print an object reference into a
         //SQL statement for Query Key address{DatabaseTable(t1)=DatabaseTable(ADDRESS)}
         //however, it should be ... EMPLOYEE.ADDRESS_ID = 0 (null)...
         Expression expression = builder.get("address").equal(null).and(builder.get("lastName").notEqual("foopoyp"));
@@ -1057,7 +1057,7 @@ public class ExpressionTestSuite extends TestSuite {
     private void addMultipleAndsTest6() {
         ExpressionBuilder builder = new ExpressionBuilder();
 
-        //this is a bug, Ill-formed expression in query, attempting to print an object reference into a 
+        //this is a bug, Ill-formed expression in query, attempting to print an object reference into a
         //SQL statement for Query Key address{DatabaseTable(t1)=DatabaseTable(ADDRESS)}
         //however, it should be ... EMPLOYEE.ADDRESS_ID = 0 (null)...
         Expression expression = builder.get("address").isNull().and(builder.get("lastName").notEqual("foopoyp"));
@@ -1409,7 +1409,7 @@ public class ExpressionTestSuite extends TestSuite {
         test.setDescription("Test querying across a 1:1 mapping using an object as the value.");
         addTest(test);
 
-        //	
+        //
         builder = new ExpressionBuilder();
         expression = builder.get("manager").equal(this.getManager().getObject(Employee.class, "0001"));
 
@@ -1495,17 +1495,17 @@ public class ExpressionTestSuite extends TestSuite {
      * this test added for bug 3252935.  When fixed the workaround should be
      * removed from this test (i.e. query.usedDistinct()).
      *
-    
+
     private void addSameManagerTest()
     {
             ExpressionBuilder emp = new ExpressionBuilder();
             ExpressionBuilder coworker = new ExpressionBuilder(Employee.class);
-    
+
             Expression exp = emp.get("manager").equal(coworker.get("manager")).and(emp.notEqual(coworker));
-    
+
             ReadAllQuery query = new ReadAllQuery(Employee.class, exp);
             query.useDistinct();
-    
+
             ReadAllExpressionTest test = new ReadAllExpressionTest(Employee.class, 6);
             test.setExpression(exp);
             test.setQuery(query);
@@ -1753,7 +1753,7 @@ public class ExpressionTestSuite extends TestSuite {
         test.addSupportedPlatform(OraclePlatform.class);
         test.addSupportedPlatform(SybasePlatform.class);
         //Uncomment it when we support MySQL 5.  Please refer to the comments in InheritanceSystem
-        //test.addSupportedPlatform(MySQL4Platform.class);
+        //test.addSupportedPlatform(MySQLPlatform.class);
         addTest(test);
     }
 
@@ -1762,7 +1762,7 @@ public class ExpressionTestSuite extends TestSuite {
         test.getQuery(true).addJoinedAttribute("owner");
         test.setName("VehicleViewJoinOnlyTest");
         test.setDescription("Test inheritance view with joining only.");
-        //CREATE VIEW statement was added in MySQL 5.0.1.  Remove the condition when we support MySQL 5 
+        //CREATE VIEW statement was added in MySQL 5.0.1.  Remove the condition when we support MySQL 5
         //together with InheritanceSystem
         test.addUnsupportedPlatform(MySQLPlatform.class);
         //CREATE MATERIALIZED VIEW is supported in TimesTen, but seems to have trouble with outer join.

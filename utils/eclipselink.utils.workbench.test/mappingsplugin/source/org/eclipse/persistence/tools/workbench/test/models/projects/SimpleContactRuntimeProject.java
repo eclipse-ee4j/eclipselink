@@ -1,10 +1,10 @@
 /*******************************************************************************
  * Copyright (c) 1998, 2008 Oracle. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
@@ -29,7 +29,7 @@ public class SimpleContactRuntimeProject {
 		this.runtimeProject = new Project();
 		this.runtimeProject.setName("SimpleContact");
 		applyLogin();
-	
+
 		this.runtimeProject.addDescriptor(buildContactDescriptor());
 		this.runtimeProject.addDescriptor(buildEmailAddressDescriptor());
 		this.runtimeProject.addDescriptor(buildPersonImplDescriptor());
@@ -38,12 +38,12 @@ public class SimpleContactRuntimeProject {
 
 	public void applyLogin() {
 		DatabaseLogin login = new DatabaseLogin();
-		login.usePlatform(new org.eclipse.persistence.platform.database.MySQL4Platform());
+		login.usePlatform(new org.eclipse.persistence.platform.database.MySQLPlatform());
 		login.setDriverClassName(TestDatabases.mySQLDriverClassName());
 		login.setConnectionString(TestDatabases.mySQLServerURL());
 		login.setUserName(TestDatabases.userName());
 		login.setPassword(TestDatabases.password());
-		
+
 		// Configuration properties.
 		((TableSequence) login.getDefaultSequence()).setTableName("SEQUENCE");
 		((TableSequence) login.getDefaultSequence()).setNameFieldName("SEQ_NAME");
@@ -71,20 +71,20 @@ public class SimpleContactRuntimeProject {
 		RelationalDescriptor descriptor = new RelationalDescriptor();
 		descriptor.descriptorIsForInterface();
 		descriptor.setJavaClassName(org.eclipse.persistence.tools.workbench.test.models.contact.Contact.class.getName());
-	
+
 		// Interface properties.
-	
+
 		// Descriptor properties.
 		descriptor.setAlias("Contact");
-	
+
 		// Query manager.
 		//Named Queries
-	
+
 		// Event manager.
-	
+
 		// Query keys.
 		descriptor.addAbstractQueryKey("id");
-	
+
 		return descriptor;
 	}
 
@@ -93,24 +93,24 @@ public class SimpleContactRuntimeProject {
 		descriptor.setJavaClassName(org.eclipse.persistence.tools.workbench.test.models.contact.EmailAddress.class.getName());
 		descriptor.addTableName("EMAILADDRESS");
 		descriptor.addPrimaryKeyFieldName("EMAILADDRESS.ID");
-	
+
 		// Interface properties.
 		descriptor.getInterfacePolicy().addParentInterfaceName(org.eclipse.persistence.tools.workbench.test.models.contact.Contact.class.getName());
-	
+
 		// Descriptor properties.
 		descriptor.useSoftCacheWeakIdentityMap();
 		descriptor.setIdentityMapSize(100);
 		descriptor.setAlias("EmailAddress");
-	
-		
+
+
 		// Query manager.
 		descriptor.getDescriptorQueryManager().checkCacheForDoesExist();
 		descriptor.addDirectQueryKey("email", "EMAILADDRESS.ADDRESS");
 
 		//Named Queries
-	
+
 		// Event manager.
-	
+
 		// Mappings.
 		DirectToFieldMapping addressMapping = new DirectToFieldMapping();
 		addressMapping.setAttributeName("address");
@@ -118,14 +118,14 @@ public class SimpleContactRuntimeProject {
 		addressMapping.setSetMethodName("setAddress");
 		addressMapping.setFieldName("EMAILADDRESS.ADDRESS");
 		descriptor.addMapping(addressMapping);
-	
+
 		DirectToFieldMapping idMapping = new DirectToFieldMapping();
 		idMapping.setAttributeName("id");
 		idMapping.setGetMethodName("getId");
 		idMapping.setSetMethodName("setId");
 		idMapping.setFieldName("EMAILADDRESS.ID");
 		descriptor.addMapping(idMapping);
-	
+
 		return descriptor;
 	}
 
@@ -134,24 +134,24 @@ public class SimpleContactRuntimeProject {
 		descriptor.setJavaClassName(org.eclipse.persistence.tools.workbench.test.models.contact.PersonImpl.class.getName());
 		descriptor.addTableName("PERSON");
 		descriptor.addPrimaryKeyFieldName("PERSON.ID");
-	
+
 		// Interface properties.
 		descriptor.getInterfacePolicy().addParentInterfaceName(org.eclipse.persistence.tools.workbench.test.models.contact.Person.class.getName());
-	
+
 		// Descriptor properties.
 		descriptor.useSoftCacheWeakIdentityMap();
 		descriptor.setIdentityMapSize(100);
 		descriptor.setAlias("PersonImpl");
-	
+
 		// Query manager.
 		descriptor.getDescriptorQueryManager().checkCacheForDoesExist();
 
 		//Named Queries
-	
+
 		// Event manager.
-	
+
 		// Mappings.
-	
+
 		VariableOneToOneMapping contactMapping = new VariableOneToOneMapping();
 		contactMapping.setAttributeName("contact");
 		contactMapping.setGetMethodName("getContact");
@@ -163,7 +163,7 @@ public class SimpleContactRuntimeProject {
 		contactMapping.addClassNameIndicator("org.eclipse.persistence.tools.workbench.test.models.contact.PhoneNumber", "P");
 		contactMapping.addClassNameIndicator("org.eclipse.persistence.tools.workbench.test.models.contact.EmailAddress", "E");
 		descriptor.addMapping(contactMapping);
-	
+
 		return descriptor;
 	}
 
@@ -172,21 +172,21 @@ public class SimpleContactRuntimeProject {
 		descriptor.setJavaClassName(org.eclipse.persistence.tools.workbench.test.models.contact.PhoneNumber.class.getName());
 		descriptor.addTableName("PHONENUMBER");
 		descriptor.addPrimaryKeyFieldName("PHONENUMBER.ID");
-	
+
 		// Interface properties.
 		descriptor.getInterfacePolicy().addParentInterfaceName(org.eclipse.persistence.tools.workbench.test.models.contact.Contact.class.getName());
-	
+
 		// Descriptor properties.
 		descriptor.useSoftCacheWeakIdentityMap();
 		descriptor.setIdentityMapSize(100);
 		descriptor.setAlias("PhoneNumber");
-		
+
 		// Query manager.
 		descriptor.getDescriptorQueryManager().checkCacheForDoesExist();
 		//Named Queries
-	
+
 		// Event manager.
-	
+
 		// Mappings.
 		DirectToFieldMapping idMapping = new DirectToFieldMapping();
 		idMapping.setAttributeName("id");
@@ -194,18 +194,18 @@ public class SimpleContactRuntimeProject {
 		idMapping.setSetMethodName("setId");
 		idMapping.setFieldName("PHONENUMBER.ID");
 		descriptor.addMapping(idMapping);
-	
+
 		DirectToFieldMapping numberMapping = new DirectToFieldMapping();
 		numberMapping.setAttributeName("number");
 		numberMapping.setGetMethodName("getNumber");
 		numberMapping.setSetMethodName("setNumber");
 		numberMapping.setFieldName("PHONENUMBER.P_NUM");
 		descriptor.addMapping(numberMapping);
-	
+
 		return descriptor;
 	}
-	
-	
+
+
 	public Project getRuntimeProject() {
 		return this.runtimeProject;
 	}

@@ -1,15 +1,15 @@
 /*******************************************************************************
  * Copyright (c) 1998, 2008 Oracle. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.tools.sessionconsole;
 
 import javax.swing.*;
@@ -102,7 +102,7 @@ public class LoginEditorPanel extends JPanel implements javax.swing.event.CaretL
      * @param layout java.awt.LayoutManager
      * @param isDoubleBuffered boolean
      */
-    public LoginEditorPanel(java.awt.LayoutManager layout, 
+    public LoginEditorPanel(java.awt.LayoutManager layout,
                             boolean isDoubleBuffered) {
         super(layout, isDoubleBuffered);
     }
@@ -320,10 +320,10 @@ public class LoginEditorPanel extends JPanel implements javax.swing.event.CaretL
         /* Set the source from the target */
         try {
             if ((getLoginBean() != null)) {
-                if (getNativeSequencingCheckbox().isSelected() && 
+                if (getNativeSequencingCheckbox().isSelected() &&
                     !getLoginBean().shouldUseNativeSequencing()) {
                     getLoginBean().setDefaultSequence(new NativeSequence());
-                } else if (!getNativeSequencingCheckbox().isSelected() && 
+                } else if (!getNativeSequencingCheckbox().isSelected() &&
                            getLoginBean().shouldUseNativeSequencing()) {
                     getLoginBean().setDefaultSequence(new TableSequence());
                 }
@@ -447,7 +447,7 @@ public class LoginEditorPanel extends JPanel implements javax.swing.event.CaretL
 
     private void connPtoP14SetTarget() {
         try {
-            if ((getLoginBean() != null) && 
+            if ((getLoginBean() != null) &&
                 (!getLoginBean().shouldUseNativeSequencing())) {
                 getSequenceCounterNameText().setText(((TableSequence)getLoginBean().getDefaultSequence()).getCounterFieldName());
             }
@@ -458,7 +458,7 @@ public class LoginEditorPanel extends JPanel implements javax.swing.event.CaretL
 
     private void connPtoP15SetSource() {
         try {
-            if ((getLoginBean() != null) && 
+            if ((getLoginBean() != null) &&
                 (!getLoginBean().shouldUseNativeSequencing())) {
                 ((TableSequence)getLoginBean().getDefaultSequence()).setNameFieldName(getSequenceFieldNameText().getText());
             }
@@ -469,7 +469,7 @@ public class LoginEditorPanel extends JPanel implements javax.swing.event.CaretL
 
     private void connPtoP15SetTarget() {
         try {
-            if ((getLoginBean() != null) && 
+            if ((getLoginBean() != null) &&
                 (!getLoginBean().shouldUseNativeSequencing())) {
                 getSequenceFieldNameText().setText(((TableSequence)getLoginBean().getDefaultSequence()).getNameFieldName());
             }
@@ -480,7 +480,7 @@ public class LoginEditorPanel extends JPanel implements javax.swing.event.CaretL
 
     private void connPtoP16SetSource() {
         try {
-            if ((getLoginBean() != null) && 
+            if ((getLoginBean() != null) &&
                 (!getLoginBean().shouldUseNativeSequencing())) {
                 ((TableSequence)getLoginBean().getDefaultSequence()).setTableName(getSequenceTableNameText().getText());
             }
@@ -491,7 +491,7 @@ public class LoginEditorPanel extends JPanel implements javax.swing.event.CaretL
 
     private void connPtoP16SetTarget() {
         try {
-            if ((getLoginBean() != null) && 
+            if ((getLoginBean() != null) &&
                 (!getLoginBean().shouldUseNativeSequencing())) {
                 getSequenceTableNameText().setText(((TableSequence)getLoginBean().getDefaultSequence()).getTableName());
             }
@@ -878,7 +878,7 @@ public class LoginEditorPanel extends JPanel implements javax.swing.event.CaretL
         /* Set the source from the target */
         try {
             if ((getLoginBean() != null)) {
-                if (getLoginBean().getConnector() instanceof 
+                if (getLoginBean().getConnector() instanceof
                     DefaultConnector) {
                     getLoginBean().setDriverClassName((String)getDriverChoice().getSelectedItem());
                 }
@@ -919,7 +919,7 @@ public class LoginEditorPanel extends JPanel implements javax.swing.event.CaretL
         /* Set the source from the target */
         try {
             if ((getLoginBean() != null)) {
-                if (getLoginBean().getConnector() instanceof 
+                if (getLoginBean().getConnector() instanceof
                     DefaultConnector) {
                     getLoginBean().setDriverURLHeader(getDriverURLText().getText());
                 }
@@ -986,7 +986,7 @@ public class LoginEditorPanel extends JPanel implements javax.swing.event.CaretL
         /* Set the source from the target */
         try {
             if ((getLoginBean() != null)) {
-                if (getLoginBean().getConnector() instanceof 
+                if (getLoginBean().getConnector() instanceof
                     DefaultConnector) {
                     getLoginBean().setDatabaseURL(getDatabaseURLText().getText());
                 }
@@ -1026,7 +1026,7 @@ public class LoginEditorPanel extends JPanel implements javax.swing.event.CaretL
     private void connPtoP6SetSource() {
         /* Set the source from the target */
         try {
-            if ((getLoginBean() != null) && 
+            if ((getLoginBean() != null) &&
                 (getPlatformChoice().getSelectedItem() != null)) {
                 getLoginBean().setPlatformClassName((String)getPlatformChoice().getSelectedItem());
             }
@@ -1206,118 +1206,118 @@ public class LoginEditorPanel extends JPanel implements javax.swing.event.CaretL
                 ivjBindingPage.setLayout(new java.awt.GridBagLayout());
                 ivjBindingPage.setBackground(java.awt.SystemColor.control);
 
-                java.awt.GridBagConstraints constraintsStringBindSizeLable = 
+                java.awt.GridBagConstraints constraintsStringBindSizeLable =
                     new java.awt.GridBagConstraints();
                 constraintsStringBindSizeLable.gridx = 0;
                 constraintsStringBindSizeLable.gridy = 2;
-                constraintsStringBindSizeLable.anchor = 
+                constraintsStringBindSizeLable.anchor =
                         java.awt.GridBagConstraints.WEST;
-                constraintsStringBindSizeLable.insets = 
+                constraintsStringBindSizeLable.insets =
                         new java.awt.Insets(2, 2, 2, 2);
-                getBindingPage().add(getStringBindSizeLable(), 
+                getBindingPage().add(getStringBindSizeLable(),
                                      constraintsStringBindSizeLable);
 
-                java.awt.GridBagConstraints constraintsStringBindingCheckbox = 
+                java.awt.GridBagConstraints constraintsStringBindingCheckbox =
                     new java.awt.GridBagConstraints();
                 constraintsStringBindingCheckbox.gridx = 0;
                 constraintsStringBindingCheckbox.gridy = 1;
-                constraintsStringBindingCheckbox.anchor = 
+                constraintsStringBindingCheckbox.anchor =
                         java.awt.GridBagConstraints.NORTHWEST;
-                constraintsStringBindingCheckbox.insets = 
+                constraintsStringBindingCheckbox.insets =
                         new java.awt.Insets(2, 2, 2, 2);
-                getBindingPage().add(getStringBindingCheckbox(), 
+                getBindingPage().add(getStringBindingCheckbox(),
                                      constraintsStringBindingCheckbox);
 
-                java.awt.GridBagConstraints constraintsBlobBindingCheckbox = 
+                java.awt.GridBagConstraints constraintsBlobBindingCheckbox =
                     new java.awt.GridBagConstraints();
                 constraintsBlobBindingCheckbox.gridx = 0;
                 constraintsBlobBindingCheckbox.gridy = 0;
-                constraintsBlobBindingCheckbox.anchor = 
+                constraintsBlobBindingCheckbox.anchor =
                         java.awt.GridBagConstraints.NORTHWEST;
-                constraintsBlobBindingCheckbox.insets = 
+                constraintsBlobBindingCheckbox.insets =
                         new java.awt.Insets(2, 2, 2, 2);
-                getBindingPage().add(getBlobBindingCheckbox(), 
+                getBindingPage().add(getBlobBindingCheckbox(),
                                      constraintsBlobBindingCheckbox);
 
-                java.awt.GridBagConstraints constraintsBlobStreamBinding = 
+                java.awt.GridBagConstraints constraintsBlobStreamBinding =
                     new java.awt.GridBagConstraints();
                 constraintsBlobStreamBinding.gridx = 1;
                 constraintsBlobStreamBinding.gridy = 0;
-                constraintsBlobStreamBinding.anchor = 
+                constraintsBlobStreamBinding.anchor =
                         java.awt.GridBagConstraints.NORTHWEST;
-                constraintsBlobStreamBinding.insets = 
+                constraintsBlobStreamBinding.insets =
                         new java.awt.Insets(2, 2, 2, 2);
-                getBindingPage().add(getBlobStreamBinding(), 
+                getBindingPage().add(getBlobStreamBinding(),
                                      constraintsBlobStreamBinding);
 
-                java.awt.GridBagConstraints constraintsStringBindSizeText = 
+                java.awt.GridBagConstraints constraintsStringBindSizeText =
                     new java.awt.GridBagConstraints();
                 constraintsStringBindSizeText.gridx = 1;
                 constraintsStringBindSizeText.gridy = 2;
-                constraintsStringBindSizeText.fill = 
+                constraintsStringBindSizeText.fill =
                         java.awt.GridBagConstraints.HORIZONTAL;
                 constraintsStringBindSizeText.weightx = 1.0;
-                constraintsStringBindSizeText.insets = 
+                constraintsStringBindSizeText.insets =
                         new java.awt.Insets(2, 2, 2, 2);
-                getBindingPage().add(getStringBindSizeText(), 
+                getBindingPage().add(getStringBindSizeText(),
                                      constraintsStringBindSizeText);
 
-                java.awt.GridBagConstraints constraintsFillerPanel2 = 
+                java.awt.GridBagConstraints constraintsFillerPanel2 =
                     new java.awt.GridBagConstraints();
                 constraintsFillerPanel2.gridx = 0;
                 constraintsFillerPanel2.gridy = 5;
                 constraintsFillerPanel2.gridwidth = 2;
                 constraintsFillerPanel2.gridheight = 2;
-                constraintsFillerPanel2.fill = 
+                constraintsFillerPanel2.fill =
                         java.awt.GridBagConstraints.BOTH;
                 constraintsFillerPanel2.weightx = 1.0;
                 constraintsFillerPanel2.weighty = 1.0;
-                getBindingPage().add(getFillerPanel2(), 
+                getBindingPage().add(getFillerPanel2(),
                                      constraintsFillerPanel2);
 
-                java.awt.GridBagConstraints constraintsParameterizedSQLCheckbox = 
+                java.awt.GridBagConstraints constraintsParameterizedSQLCheckbox =
                     new java.awt.GridBagConstraints();
                 constraintsParameterizedSQLCheckbox.gridx = 0;
                 constraintsParameterizedSQLCheckbox.gridy = 3;
-                constraintsParameterizedSQLCheckbox.anchor = 
+                constraintsParameterizedSQLCheckbox.anchor =
                         java.awt.GridBagConstraints.NORTHWEST;
-                constraintsParameterizedSQLCheckbox.insets = 
+                constraintsParameterizedSQLCheckbox.insets =
                         new java.awt.Insets(2, 2, 2, 2);
-                getBindingPage().add(getParameterizedSQLCheckbox(), 
+                getBindingPage().add(getParameterizedSQLCheckbox(),
                                      constraintsParameterizedSQLCheckbox);
 
-                java.awt.GridBagConstraints constraintsStatementCacheSizeText = 
+                java.awt.GridBagConstraints constraintsStatementCacheSizeText =
                     new java.awt.GridBagConstraints();
                 constraintsStatementCacheSizeText.gridx = 1;
                 constraintsStatementCacheSizeText.gridy = 4;
-                constraintsStatementCacheSizeText.fill = 
+                constraintsStatementCacheSizeText.fill =
                         java.awt.GridBagConstraints.HORIZONTAL;
                 constraintsStatementCacheSizeText.weightx = 1.0;
-                constraintsStatementCacheSizeText.insets = 
+                constraintsStatementCacheSizeText.insets =
                         new java.awt.Insets(2, 2, 2, 2);
-                getBindingPage().add(getStatementCacheSizeText(), 
+                getBindingPage().add(getStatementCacheSizeText(),
                                      constraintsStatementCacheSizeText);
 
-                java.awt.GridBagConstraints constraintsStatementCacheSizeLabel = 
+                java.awt.GridBagConstraints constraintsStatementCacheSizeLabel =
                     new java.awt.GridBagConstraints();
                 constraintsStatementCacheSizeLabel.gridx = 0;
                 constraintsStatementCacheSizeLabel.gridy = 4;
-                constraintsStatementCacheSizeLabel.anchor = 
+                constraintsStatementCacheSizeLabel.anchor =
                         java.awt.GridBagConstraints.WEST;
-                constraintsStatementCacheSizeLabel.insets = 
+                constraintsStatementCacheSizeLabel.insets =
                         new java.awt.Insets(2, 2, 2, 2);
-                getBindingPage().add(getStatementCacheSizeLabel(), 
+                getBindingPage().add(getStatementCacheSizeLabel(),
                                      constraintsStatementCacheSizeLabel);
 
-                java.awt.GridBagConstraints constraintsCacheStatementsCheckbox = 
+                java.awt.GridBagConstraints constraintsCacheStatementsCheckbox =
                     new java.awt.GridBagConstraints();
                 constraintsCacheStatementsCheckbox.gridx = 1;
                 constraintsCacheStatementsCheckbox.gridy = 3;
-                constraintsCacheStatementsCheckbox.anchor = 
+                constraintsCacheStatementsCheckbox.anchor =
                         java.awt.GridBagConstraints.NORTHWEST;
-                constraintsCacheStatementsCheckbox.insets = 
+                constraintsCacheStatementsCheckbox.insets =
                         new java.awt.Insets(2, 2, 2, 2);
-                getBindingPage().add(getCacheStatementsCheckbox(), 
+                getBindingPage().add(getCacheStatementsCheckbox(),
                                      constraintsCacheStatementsCheckbox);
                 // user code begin {1}
                 // user code end
@@ -1630,159 +1630,159 @@ public class LoginEditorPanel extends JPanel implements javax.swing.event.CaretL
                 ivjDriverPage.setLayout(new java.awt.GridBagLayout());
                 ivjDriverPage.setBackground(java.awt.SystemColor.control);
 
-                java.awt.GridBagConstraints constraintsDriverLabel = 
+                java.awt.GridBagConstraints constraintsDriverLabel =
                     new java.awt.GridBagConstraints();
                 constraintsDriverLabel.gridx = 0;
                 constraintsDriverLabel.gridy = 0;
-                constraintsDriverLabel.anchor = 
+                constraintsDriverLabel.anchor =
                         java.awt.GridBagConstraints.WEST;
-                constraintsDriverLabel.insets = 
+                constraintsDriverLabel.insets =
                         new java.awt.Insets(4, 4, 4, 4);
                 getDriverPage().add(getDriverLabel(), constraintsDriverLabel);
 
-                java.awt.GridBagConstraints constraintsBridgeChoice = 
+                java.awt.GridBagConstraints constraintsBridgeChoice =
                     new java.awt.GridBagConstraints();
                 constraintsBridgeChoice.gridx = 1;
                 constraintsBridgeChoice.gridy = 0;
                 constraintsBridgeChoice.gridwidth = 2;
-                constraintsBridgeChoice.fill = 
+                constraintsBridgeChoice.fill =
                         java.awt.GridBagConstraints.HORIZONTAL;
                 constraintsBridgeChoice.weightx = 1.0;
-                constraintsBridgeChoice.insets = 
+                constraintsBridgeChoice.insets =
                         new java.awt.Insets(4, 4, 4, 4);
-                getDriverPage().add(getBridgeChoice(), 
+                getDriverPage().add(getBridgeChoice(),
                                     constraintsBridgeChoice);
 
-                java.awt.GridBagConstraints constraintsDatabasePlatformLabel = 
+                java.awt.GridBagConstraints constraintsDatabasePlatformLabel =
                     new java.awt.GridBagConstraints();
                 constraintsDatabasePlatformLabel.gridx = 0;
                 constraintsDatabasePlatformLabel.gridy = 1;
-                constraintsDatabasePlatformLabel.anchor = 
+                constraintsDatabasePlatformLabel.anchor =
                         java.awt.GridBagConstraints.WEST;
-                constraintsDatabasePlatformLabel.insets = 
+                constraintsDatabasePlatformLabel.insets =
                         new java.awt.Insets(4, 4, 4, 4);
-                getDriverPage().add(getDatabasePlatformLabel(), 
+                getDriverPage().add(getDatabasePlatformLabel(),
                                     constraintsDatabasePlatformLabel);
 
-                java.awt.GridBagConstraints constraintsPlatformChoice = 
+                java.awt.GridBagConstraints constraintsPlatformChoice =
                     new java.awt.GridBagConstraints();
                 constraintsPlatformChoice.gridx = 1;
                 constraintsPlatformChoice.gridy = 1;
                 constraintsPlatformChoice.gridwidth = 2;
-                constraintsPlatformChoice.fill = 
+                constraintsPlatformChoice.fill =
                         java.awt.GridBagConstraints.HORIZONTAL;
                 constraintsPlatformChoice.weightx = 1.0;
-                constraintsPlatformChoice.insets = 
+                constraintsPlatformChoice.insets =
                         new java.awt.Insets(4, 4, 4, 4);
-                getDriverPage().add(getPlatformChoice(), 
+                getDriverPage().add(getPlatformChoice(),
                                     constraintsPlatformChoice);
 
-                java.awt.GridBagConstraints constraintsDriverClassNameLabel = 
+                java.awt.GridBagConstraints constraintsDriverClassNameLabel =
                     new java.awt.GridBagConstraints();
                 constraintsDriverClassNameLabel.gridx = 0;
                 constraintsDriverClassNameLabel.gridy = 2;
-                constraintsDriverClassNameLabel.anchor = 
+                constraintsDriverClassNameLabel.anchor =
                         java.awt.GridBagConstraints.WEST;
-                constraintsDriverClassNameLabel.insets = 
+                constraintsDriverClassNameLabel.insets =
                         new java.awt.Insets(4, 4, 4, 4);
-                getDriverPage().add(getDriverClassNameLabel(), 
+                getDriverPage().add(getDriverClassNameLabel(),
                                     constraintsDriverClassNameLabel);
 
-                java.awt.GridBagConstraints constraintsDriverChoice = 
+                java.awt.GridBagConstraints constraintsDriverChoice =
                     new java.awt.GridBagConstraints();
                 constraintsDriverChoice.gridx = 1;
                 constraintsDriverChoice.gridy = 2;
                 constraintsDriverChoice.gridwidth = 2;
-                constraintsDriverChoice.fill = 
+                constraintsDriverChoice.fill =
                         java.awt.GridBagConstraints.HORIZONTAL;
                 constraintsDriverChoice.weightx = 1.0;
-                constraintsDriverChoice.insets = 
+                constraintsDriverChoice.insets =
                         new java.awt.Insets(4, 4, 4, 4);
-                getDriverPage().add(getDriverChoice(), 
+                getDriverPage().add(getDriverChoice(),
                                     constraintsDriverChoice);
 
-                java.awt.GridBagConstraints constraintsDatabaseURLLabel = 
+                java.awt.GridBagConstraints constraintsDatabaseURLLabel =
                     new java.awt.GridBagConstraints();
                 constraintsDatabaseURLLabel.gridx = 0;
                 constraintsDatabaseURLLabel.gridy = 3;
-                constraintsDatabaseURLLabel.anchor = 
+                constraintsDatabaseURLLabel.anchor =
                         java.awt.GridBagConstraints.WEST;
-                constraintsDatabaseURLLabel.insets = 
+                constraintsDatabaseURLLabel.insets =
                         new java.awt.Insets(4, 4, 4, 4);
-                getDriverPage().add(getDatabaseURLLabel(), 
+                getDriverPage().add(getDatabaseURLLabel(),
                                     constraintsDatabaseURLLabel);
 
-                java.awt.GridBagConstraints constraintsDriverURLText = 
+                java.awt.GridBagConstraints constraintsDriverURLText =
                     new java.awt.GridBagConstraints();
                 constraintsDriverURLText.gridx = 1;
                 constraintsDriverURLText.gridy = 3;
-                constraintsDriverURLText.fill = 
+                constraintsDriverURLText.fill =
                         java.awt.GridBagConstraints.HORIZONTAL;
                 constraintsDriverURLText.weightx = 1.0;
-                constraintsDriverURLText.insets = 
+                constraintsDriverURLText.insets =
                         new java.awt.Insets(4, 4, 4, 4);
-                getDriverPage().add(getDriverURLText(), 
+                getDriverPage().add(getDriverURLText(),
                                     constraintsDriverURLText);
 
-                java.awt.GridBagConstraints constraintsDatabaseURLText = 
+                java.awt.GridBagConstraints constraintsDatabaseURLText =
                     new java.awt.GridBagConstraints();
                 constraintsDatabaseURLText.gridx = 2;
                 constraintsDatabaseURLText.gridy = 3;
-                constraintsDatabaseURLText.fill = 
+                constraintsDatabaseURLText.fill =
                         java.awt.GridBagConstraints.HORIZONTAL;
                 constraintsDatabaseURLText.weightx = 1.0;
-                constraintsDatabaseURLText.insets = 
+                constraintsDatabaseURLText.insets =
                         new java.awt.Insets(4, 4, 4, 4);
-                getDriverPage().add(getDatabaseURLText(), 
+                getDriverPage().add(getDatabaseURLText(),
                                     constraintsDatabaseURLText);
 
-                java.awt.GridBagConstraints constraintsUserText = 
+                java.awt.GridBagConstraints constraintsUserText =
                     new java.awt.GridBagConstraints();
                 constraintsUserText.gridx = 1;
                 constraintsUserText.gridy = 4;
                 constraintsUserText.gridwidth = 2;
-                constraintsUserText.fill = 
+                constraintsUserText.fill =
                         java.awt.GridBagConstraints.HORIZONTAL;
                 constraintsUserText.weightx = 1.0;
                 constraintsUserText.insets = new java.awt.Insets(4, 4, 4, 4);
                 getDriverPage().add(getUserText(), constraintsUserText);
 
-                java.awt.GridBagConstraints constraintsUserNameLabel = 
+                java.awt.GridBagConstraints constraintsUserNameLabel =
                     new java.awt.GridBagConstraints();
                 constraintsUserNameLabel.gridx = 0;
                 constraintsUserNameLabel.gridy = 4;
-                constraintsUserNameLabel.anchor = 
+                constraintsUserNameLabel.anchor =
                         java.awt.GridBagConstraints.WEST;
-                constraintsUserNameLabel.insets = 
+                constraintsUserNameLabel.insets =
                         new java.awt.Insets(4, 4, 4, 4);
-                getDriverPage().add(getUserNameLabel(), 
+                getDriverPage().add(getUserNameLabel(),
                                     constraintsUserNameLabel);
 
-                java.awt.GridBagConstraints constraintsPasswordText = 
+                java.awt.GridBagConstraints constraintsPasswordText =
                     new java.awt.GridBagConstraints();
                 constraintsPasswordText.gridx = 1;
                 constraintsPasswordText.gridy = 5;
                 constraintsPasswordText.gridwidth = 2;
-                constraintsPasswordText.fill = 
+                constraintsPasswordText.fill =
                         java.awt.GridBagConstraints.HORIZONTAL;
                 constraintsPasswordText.weightx = 1.0;
-                constraintsPasswordText.insets = 
+                constraintsPasswordText.insets =
                         new java.awt.Insets(4, 4, 4, 4);
-                getDriverPage().add(getPasswordText(), 
+                getDriverPage().add(getPasswordText(),
                                     constraintsPasswordText);
 
-                java.awt.GridBagConstraints constraintsPasswordLabel = 
+                java.awt.GridBagConstraints constraintsPasswordLabel =
                     new java.awt.GridBagConstraints();
                 constraintsPasswordLabel.gridx = 0;
                 constraintsPasswordLabel.gridy = 5;
-                constraintsPasswordLabel.anchor = 
+                constraintsPasswordLabel.anchor =
                         java.awt.GridBagConstraints.WEST;
-                constraintsPasswordLabel.insets = 
+                constraintsPasswordLabel.insets =
                         new java.awt.Insets(4, 4, 4, 4);
-                getDriverPage().add(getPasswordLabel(), 
+                getDriverPage().add(getPasswordLabel(),
                                     constraintsPasswordLabel);
 
-                java.awt.GridBagConstraints constraintsFillerPanel = 
+                java.awt.GridBagConstraints constraintsFillerPanel =
                     new java.awt.GridBagConstraints();
                 constraintsFillerPanel.gridx = 0;
                 constraintsFillerPanel.gridy = 7;
@@ -2053,7 +2053,7 @@ public class LoginEditorPanel extends JPanel implements javax.swing.event.CaretL
     javax.swing.JCheckBox getOptimizeDataConversionCheckbox() {
         if (ivjOptimizeDataConversionCheckbox == null) {
             try {
-                ivjOptimizeDataConversionCheckbox = 
+                ivjOptimizeDataConversionCheckbox =
                         new javax.swing.JCheckBox();
                 ivjOptimizeDataConversionCheckbox.setName("OptimizeDataConversionCheckbox");
                 ivjOptimizeDataConversionCheckbox.setText("Optimize Data Conversion");
@@ -2083,125 +2083,125 @@ public class LoginEditorPanel extends JPanel implements javax.swing.event.CaretL
                 ivjOtherPage.setLayout(new java.awt.GridBagLayout());
                 ivjOtherPage.setBackground(java.awt.SystemColor.control);
 
-                java.awt.GridBagConstraints constraintsOptimizeDataConversionCheckbox = 
+                java.awt.GridBagConstraints constraintsOptimizeDataConversionCheckbox =
                     new java.awt.GridBagConstraints();
                 constraintsOptimizeDataConversionCheckbox.gridx = 1;
                 constraintsOptimizeDataConversionCheckbox.gridy = 3;
-                constraintsOptimizeDataConversionCheckbox.anchor = 
+                constraintsOptimizeDataConversionCheckbox.anchor =
                         java.awt.GridBagConstraints.NORTHWEST;
-                constraintsOptimizeDataConversionCheckbox.insets = 
+                constraintsOptimizeDataConversionCheckbox.insets =
                         new java.awt.Insets(2, 2, 2, 2);
-                getOtherPage().add(getOptimizeDataConversionCheckbox(), 
+                getOtherPage().add(getOptimizeDataConversionCheckbox(),
                                    constraintsOptimizeDataConversionCheckbox);
 
-                java.awt.GridBagConstraints constraintsCreatorText = 
+                java.awt.GridBagConstraints constraintsCreatorText =
                     new java.awt.GridBagConstraints();
                 constraintsCreatorText.gridx = 1;
                 constraintsCreatorText.gridy = 2;
-                constraintsCreatorText.fill = 
+                constraintsCreatorText.fill =
                         java.awt.GridBagConstraints.HORIZONTAL;
                 constraintsCreatorText.weightx = 1.0;
-                constraintsCreatorText.insets = 
+                constraintsCreatorText.insets =
                         new java.awt.Insets(2, 2, 2, 2);
                 getOtherPage().add(getCreatorText(), constraintsCreatorText);
 
-                java.awt.GridBagConstraints constraintsCreatorLabel = 
+                java.awt.GridBagConstraints constraintsCreatorLabel =
                     new java.awt.GridBagConstraints();
                 constraintsCreatorLabel.gridx = 0;
                 constraintsCreatorLabel.gridy = 2;
-                constraintsCreatorLabel.anchor = 
+                constraintsCreatorLabel.anchor =
                         java.awt.GridBagConstraints.WEST;
-                constraintsCreatorLabel.insets = 
+                constraintsCreatorLabel.insets =
                         new java.awt.Insets(2, 2, 2, 2);
                 getOtherPage().add(getCreatorLabel(), constraintsCreatorLabel);
 
-                java.awt.GridBagConstraints constraintsFillerPanel11 = 
+                java.awt.GridBagConstraints constraintsFillerPanel11 =
                     new java.awt.GridBagConstraints();
                 constraintsFillerPanel11.gridx = 0;
                 constraintsFillerPanel11.gridy = 5;
                 constraintsFillerPanel11.gridwidth = 2;
                 constraintsFillerPanel11.gridheight = 2;
-                constraintsFillerPanel11.fill = 
+                constraintsFillerPanel11.fill =
                         java.awt.GridBagConstraints.BOTH;
                 constraintsFillerPanel11.weightx = 1.0;
                 constraintsFillerPanel11.weighty = 1.0;
-                getOtherPage().add(getFillerPanel11(), 
+                getOtherPage().add(getFillerPanel11(),
                                    constraintsFillerPanel11);
 
-                java.awt.GridBagConstraints constraintsNativeSQLCheckbox = 
+                java.awt.GridBagConstraints constraintsNativeSQLCheckbox =
                     new java.awt.GridBagConstraints();
                 constraintsNativeSQLCheckbox.gridx = 1;
                 constraintsNativeSQLCheckbox.gridy = 1;
-                constraintsNativeSQLCheckbox.anchor = 
+                constraintsNativeSQLCheckbox.anchor =
                         java.awt.GridBagConstraints.WEST;
-                constraintsNativeSQLCheckbox.insets = 
+                constraintsNativeSQLCheckbox.insets =
                         new java.awt.Insets(2, 2, 2, 2);
-                getOtherPage().add(getNativeSQLCheckbox(), 
+                getOtherPage().add(getNativeSQLCheckbox(),
                                    constraintsNativeSQLCheckbox);
 
-                java.awt.GridBagConstraints constraintsTrimStringsCheckbox = 
+                java.awt.GridBagConstraints constraintsTrimStringsCheckbox =
                     new java.awt.GridBagConstraints();
                 constraintsTrimStringsCheckbox.gridx = 1;
                 constraintsTrimStringsCheckbox.gridy = 4;
-                constraintsTrimStringsCheckbox.anchor = 
+                constraintsTrimStringsCheckbox.anchor =
                         java.awt.GridBagConstraints.WEST;
-                constraintsTrimStringsCheckbox.insets = 
+                constraintsTrimStringsCheckbox.insets =
                         new java.awt.Insets(2, 2, 2, 2);
-                getOtherPage().add(getTrimStringsCheckbox(), 
+                getOtherPage().add(getTrimStringsCheckbox(),
                                    constraintsTrimStringsCheckbox);
 
-                java.awt.GridBagConstraints constraintsBatchWritingCheckBox = 
+                java.awt.GridBagConstraints constraintsBatchWritingCheckBox =
                     new java.awt.GridBagConstraints();
                 constraintsBatchWritingCheckBox.gridx = 0;
                 constraintsBatchWritingCheckBox.gridy = 1;
-                constraintsBatchWritingCheckBox.anchor = 
+                constraintsBatchWritingCheckBox.anchor =
                         java.awt.GridBagConstraints.NORTHWEST;
-                constraintsBatchWritingCheckBox.insets = 
+                constraintsBatchWritingCheckBox.insets =
                         new java.awt.Insets(2, 2, 2, 2);
-                getOtherPage().add(getBatchWritingCheckBox(), 
+                getOtherPage().add(getBatchWritingCheckBox(),
                                    constraintsBatchWritingCheckBox);
 
-                java.awt.GridBagConstraints constraintsDirectConnectCheckBox = 
+                java.awt.GridBagConstraints constraintsDirectConnectCheckBox =
                     new java.awt.GridBagConstraints();
                 constraintsDirectConnectCheckBox.gridx = 0;
                 constraintsDirectConnectCheckBox.gridy = 3;
-                constraintsDirectConnectCheckBox.anchor = 
+                constraintsDirectConnectCheckBox.anchor =
                         java.awt.GridBagConstraints.NORTHWEST;
-                constraintsDirectConnectCheckBox.insets = 
+                constraintsDirectConnectCheckBox.insets =
                         new java.awt.Insets(2, 2, 2, 2);
-                getOtherPage().add(getDirectConnectCheckBox(), 
+                getOtherPage().add(getDirectConnectCheckBox(),
                                    constraintsDirectConnectCheckBox);
 
-                java.awt.GridBagConstraints constraintsForceCaseCheckBox = 
+                java.awt.GridBagConstraints constraintsForceCaseCheckBox =
                     new java.awt.GridBagConstraints();
                 constraintsForceCaseCheckBox.gridx = 0;
                 constraintsForceCaseCheckBox.gridy = 4;
-                constraintsForceCaseCheckBox.anchor = 
+                constraintsForceCaseCheckBox.anchor =
                         java.awt.GridBagConstraints.WEST;
-                constraintsForceCaseCheckBox.insets = 
+                constraintsForceCaseCheckBox.insets =
                         new java.awt.Insets(2, 2, 2, 2);
-                getOtherPage().add(getForceCaseCheckBox(), 
+                getOtherPage().add(getForceCaseCheckBox(),
                                    constraintsForceCaseCheckBox);
 
-                java.awt.GridBagConstraints constraintsJTSCheckBox = 
+                java.awt.GridBagConstraints constraintsJTSCheckBox =
                     new java.awt.GridBagConstraints();
                 constraintsJTSCheckBox.gridx = 0;
                 constraintsJTSCheckBox.gridy = 0;
-                constraintsJTSCheckBox.anchor = 
+                constraintsJTSCheckBox.anchor =
                         java.awt.GridBagConstraints.NORTHWEST;
-                constraintsJTSCheckBox.insets = 
+                constraintsJTSCheckBox.insets =
                         new java.awt.Insets(2, 2, 2, 2);
                 getOtherPage().add(getJTSCheckBox(), constraintsJTSCheckBox);
 
-                java.awt.GridBagConstraints constraintsPoolingCheckBox = 
+                java.awt.GridBagConstraints constraintsPoolingCheckBox =
                     new java.awt.GridBagConstraints();
                 constraintsPoolingCheckBox.gridx = 1;
                 constraintsPoolingCheckBox.gridy = 0;
-                constraintsPoolingCheckBox.anchor = 
+                constraintsPoolingCheckBox.anchor =
                         java.awt.GridBagConstraints.NORTHWEST;
-                constraintsPoolingCheckBox.insets = 
+                constraintsPoolingCheckBox.insets =
                         new java.awt.Insets(2, 2, 2, 2);
-                getOtherPage().add(getPoolingCheckBox(), 
+                getOtherPage().add(getPoolingCheckBox(),
                                    constraintsPoolingCheckBox);
                 // user code begin {1}
                 // user code end
@@ -2372,13 +2372,13 @@ public class LoginEditorPanel extends JPanel implements javax.swing.event.CaretL
                 ivjPropertiesBook.setName("PropertiesBook");
                 ivjPropertiesBook.setTabPlacement(javax.swing.JTabbedPane.RIGHT);
                 ivjPropertiesBook.setBackground(java.awt.SystemColor.control);
-                ivjPropertiesBook.insertTab("Driver", null, getDriverPage(), 
+                ivjPropertiesBook.insertTab("Driver", null, getDriverPage(),
                                             null, 0);
-                ivjPropertiesBook.insertTab("Binding", null, getBindingPage(), 
+                ivjPropertiesBook.insertTab("Binding", null, getBindingPage(),
                                             null, 1);
-                ivjPropertiesBook.insertTab("Sequencing", null, 
+                ivjPropertiesBook.insertTab("Sequencing", null,
                                             getSequencingPage(), null, 2);
-                ivjPropertiesBook.insertTab("Other", null, getOtherPage(), 
+                ivjPropertiesBook.insertTab("Other", null, getOtherPage(),
                                             null, 3);
                 // user code begin {1}
                 // user code end
@@ -2495,7 +2495,7 @@ public class LoginEditorPanel extends JPanel implements javax.swing.event.CaretL
     javax.swing.JTextField getSequencePreallocationSizeText() {
         if (ivjSequencePreallocationSizeText == null) {
             try {
-                ivjSequencePreallocationSizeText = 
+                ivjSequencePreallocationSizeText =
                         new javax.swing.JTextField();
                 ivjSequencePreallocationSizeText.setName("SequencePreallocationSizeText");
                 // user code begin {1}
@@ -2571,120 +2571,120 @@ public class LoginEditorPanel extends JPanel implements javax.swing.event.CaretL
                 ivjSequencingPage.setLayout(new java.awt.GridBagLayout());
                 ivjSequencingPage.setBackground(java.awt.SystemColor.control);
 
-                java.awt.GridBagConstraints constraintsNativeSequencingCheckbox = 
+                java.awt.GridBagConstraints constraintsNativeSequencingCheckbox =
                     new java.awt.GridBagConstraints();
                 constraintsNativeSequencingCheckbox.gridx = 0;
                 constraintsNativeSequencingCheckbox.gridy = 0;
-                constraintsNativeSequencingCheckbox.anchor = 
+                constraintsNativeSequencingCheckbox.anchor =
                         java.awt.GridBagConstraints.NORTHWEST;
-                constraintsNativeSequencingCheckbox.insets = 
+                constraintsNativeSequencingCheckbox.insets =
                         new java.awt.Insets(2, 2, 2, 2);
-                getSequencingPage().add(getNativeSequencingCheckbox(), 
+                getSequencingPage().add(getNativeSequencingCheckbox(),
                                         constraintsNativeSequencingCheckbox);
 
-                java.awt.GridBagConstraints constraintsSequencePreallocationSizeText = 
+                java.awt.GridBagConstraints constraintsSequencePreallocationSizeText =
                     new java.awt.GridBagConstraints();
                 constraintsSequencePreallocationSizeText.gridx = 1;
                 constraintsSequencePreallocationSizeText.gridy = 1;
-                constraintsSequencePreallocationSizeText.fill = 
+                constraintsSequencePreallocationSizeText.fill =
                         java.awt.GridBagConstraints.HORIZONTAL;
                 constraintsSequencePreallocationSizeText.weightx = 1.0;
-                constraintsSequencePreallocationSizeText.insets = 
+                constraintsSequencePreallocationSizeText.insets =
                         new java.awt.Insets(2, 2, 2, 2);
-                getSequencingPage().add(getSequencePreallocationSizeText(), 
+                getSequencingPage().add(getSequencePreallocationSizeText(),
                                         constraintsSequencePreallocationSizeText);
 
-                java.awt.GridBagConstraints constraintsPreallocationSizeLabel = 
+                java.awt.GridBagConstraints constraintsPreallocationSizeLabel =
                     new java.awt.GridBagConstraints();
                 constraintsPreallocationSizeLabel.gridx = 0;
                 constraintsPreallocationSizeLabel.gridy = 1;
-                constraintsPreallocationSizeLabel.anchor = 
+                constraintsPreallocationSizeLabel.anchor =
                         java.awt.GridBagConstraints.WEST;
-                constraintsPreallocationSizeLabel.insets = 
+                constraintsPreallocationSizeLabel.insets =
                         new java.awt.Insets(2, 2, 2, 2);
-                getSequencingPage().add(getPreallocationSizeLabel(), 
+                getSequencingPage().add(getPreallocationSizeLabel(),
                                         constraintsPreallocationSizeLabel);
 
-                java.awt.GridBagConstraints constraintsFillerPanel1 = 
+                java.awt.GridBagConstraints constraintsFillerPanel1 =
                     new java.awt.GridBagConstraints();
                 constraintsFillerPanel1.gridx = 0;
                 constraintsFillerPanel1.gridy = 5;
                 constraintsFillerPanel1.gridwidth = 2;
                 constraintsFillerPanel1.gridheight = 2;
-                constraintsFillerPanel1.fill = 
+                constraintsFillerPanel1.fill =
                         java.awt.GridBagConstraints.BOTH;
                 constraintsFillerPanel1.weightx = 1.0;
                 constraintsFillerPanel1.weighty = 1.0;
-                getSequencingPage().add(getFillerPanel1(), 
+                getSequencingPage().add(getFillerPanel1(),
                                         constraintsFillerPanel1);
 
-                java.awt.GridBagConstraints constraintsSequenceTableNameText = 
+                java.awt.GridBagConstraints constraintsSequenceTableNameText =
                     new java.awt.GridBagConstraints();
                 constraintsSequenceTableNameText.gridx = 1;
                 constraintsSequenceTableNameText.gridy = 2;
-                constraintsSequenceTableNameText.fill = 
+                constraintsSequenceTableNameText.fill =
                         java.awt.GridBagConstraints.HORIZONTAL;
                 constraintsSequenceTableNameText.weightx = 1.0;
-                constraintsSequenceTableNameText.insets = 
+                constraintsSequenceTableNameText.insets =
                         new java.awt.Insets(2, 2, 2, 2);
-                getSequencingPage().add(getSequenceTableNameText(), 
+                getSequencingPage().add(getSequenceTableNameText(),
                                         constraintsSequenceTableNameText);
 
-                java.awt.GridBagConstraints constraintsSequenceTableNameLabel = 
+                java.awt.GridBagConstraints constraintsSequenceTableNameLabel =
                     new java.awt.GridBagConstraints();
                 constraintsSequenceTableNameLabel.gridx = 0;
                 constraintsSequenceTableNameLabel.gridy = 2;
-                constraintsSequenceTableNameLabel.anchor = 
+                constraintsSequenceTableNameLabel.anchor =
                         java.awt.GridBagConstraints.WEST;
-                constraintsSequenceTableNameLabel.insets = 
+                constraintsSequenceTableNameLabel.insets =
                         new java.awt.Insets(2, 2, 2, 2);
-                getSequencingPage().add(getSequenceTableNameLabel(), 
+                getSequencingPage().add(getSequenceTableNameLabel(),
                                         constraintsSequenceTableNameLabel);
 
-                java.awt.GridBagConstraints constraintsSequenceCounterNameText = 
+                java.awt.GridBagConstraints constraintsSequenceCounterNameText =
                     new java.awt.GridBagConstraints();
                 constraintsSequenceCounterNameText.gridx = 1;
                 constraintsSequenceCounterNameText.gridy = 4;
-                constraintsSequenceCounterNameText.fill = 
+                constraintsSequenceCounterNameText.fill =
                         java.awt.GridBagConstraints.HORIZONTAL;
                 constraintsSequenceCounterNameText.weightx = 1.0;
-                constraintsSequenceCounterNameText.insets = 
+                constraintsSequenceCounterNameText.insets =
                         new java.awt.Insets(2, 2, 2, 2);
-                getSequencingPage().add(getSequenceCounterNameText(), 
+                getSequencingPage().add(getSequenceCounterNameText(),
                                         constraintsSequenceCounterNameText);
 
-                java.awt.GridBagConstraints constraintsSequenceFieldNameLabel = 
+                java.awt.GridBagConstraints constraintsSequenceFieldNameLabel =
                     new java.awt.GridBagConstraints();
                 constraintsSequenceFieldNameLabel.gridx = 0;
                 constraintsSequenceFieldNameLabel.gridy = 3;
-                constraintsSequenceFieldNameLabel.anchor = 
+                constraintsSequenceFieldNameLabel.anchor =
                         java.awt.GridBagConstraints.WEST;
-                constraintsSequenceFieldNameLabel.insets = 
+                constraintsSequenceFieldNameLabel.insets =
                         new java.awt.Insets(2, 2, 2, 2);
-                getSequencingPage().add(getSequenceFieldNameLabel(), 
+                getSequencingPage().add(getSequenceFieldNameLabel(),
                                         constraintsSequenceFieldNameLabel);
 
-                java.awt.GridBagConstraints constraintsSequenceCounterNameLabel = 
+                java.awt.GridBagConstraints constraintsSequenceCounterNameLabel =
                     new java.awt.GridBagConstraints();
                 constraintsSequenceCounterNameLabel.gridx = 0;
                 constraintsSequenceCounterNameLabel.gridy = 4;
-                constraintsSequenceCounterNameLabel.anchor = 
+                constraintsSequenceCounterNameLabel.anchor =
                         java.awt.GridBagConstraints.WEST;
-                constraintsSequenceCounterNameLabel.insets = 
+                constraintsSequenceCounterNameLabel.insets =
                         new java.awt.Insets(2, 2, 2, 2);
-                getSequencingPage().add(getSequenceCounterNameLabel(), 
+                getSequencingPage().add(getSequenceCounterNameLabel(),
                                         constraintsSequenceCounterNameLabel);
 
-                java.awt.GridBagConstraints constraintsSequenceFieldNameText = 
+                java.awt.GridBagConstraints constraintsSequenceFieldNameText =
                     new java.awt.GridBagConstraints();
                 constraintsSequenceFieldNameText.gridx = 1;
                 constraintsSequenceFieldNameText.gridy = 3;
-                constraintsSequenceFieldNameText.fill = 
+                constraintsSequenceFieldNameText.fill =
                         java.awt.GridBagConstraints.HORIZONTAL;
                 constraintsSequenceFieldNameText.weightx = 1.0;
-                constraintsSequenceFieldNameText.insets = 
+                constraintsSequenceFieldNameText.insets =
                         new java.awt.Insets(2, 2, 2, 2);
-                getSequencingPage().add(getSequenceFieldNameText(), 
+                getSequencingPage().add(getSequenceFieldNameText(),
                                         constraintsSequenceFieldNameText);
                 // user code begin {1}
                 // user code end
@@ -2977,7 +2977,7 @@ public class LoginEditorPanel extends JPanel implements javax.swing.event.CaretL
             setBackground(java.awt.SystemColor.control);
             setSize(590, 428);
 
-            java.awt.GridBagConstraints constraintsPropertiesBook = 
+            java.awt.GridBagConstraints constraintsPropertiesBook =
                 new java.awt.GridBagConstraints();
             constraintsPropertiesBook.gridx = 0;
             constraintsPropertiesBook.gridy = 0;
@@ -3035,7 +3035,7 @@ public class LoginEditorPanel extends JPanel implements javax.swing.event.CaretL
         getPlatformChoice().addItem("org.eclipse.persistence.platform.database.SybasePlatform");
         getPlatformChoice().addItem("org.eclipse.persistence.platform.database.SQLServerPlatform");
         getPlatformChoice().addItem("org.eclipse.persistence.platform.database.AccessPlatform");
-        getPlatformChoice().addItem("org.eclipse.persistence.platform.database.MySQL4Platform");
+        getPlatformChoice().addItem("org.eclipse.persistence.platform.database.MySQLPlatform");
         getPlatformChoice().addItem("org.eclipse.persistence.platform.database.DatabasePlatform");
 
         getBridgeChoice().removeAllItems();
@@ -3130,69 +3130,69 @@ public class LoginEditorPanel extends JPanel implements javax.swing.event.CaretL
         // user code end
     }
 
-    class IvjEventHandler implements java.awt.event.ActionListener, 
-                                     java.awt.event.ItemListener, 
-                                     java.awt.event.KeyListener, 
-                                     java.beans.PropertyChangeListener, 
+    class IvjEventHandler implements java.awt.event.ActionListener,
+                                     java.awt.event.ItemListener,
+                                     java.awt.event.KeyListener,
+                                     java.beans.PropertyChangeListener,
                                      javax.swing.event.CaretListener {
         public void actionPerformed(java.awt.event.ActionEvent e) {
-            if (e.getSource() == 
+            if (e.getSource() ==
                 LoginEditorPanel.this.getNativeSQLCheckbox()) {
                 connPtoP9SetSource();
             }
-            if (e.getSource() == 
+            if (e.getSource() ==
                 LoginEditorPanel.this.getNativeSequencingCheckbox()) {
                 connPtoP11SetSource();
             }
-            if (e.getSource() == 
+            if (e.getSource() ==
                 LoginEditorPanel.this.getBlobStreamBinding()) {
                 connPtoP8SetSource();
             }
-            if (e.getSource() == 
+            if (e.getSource() ==
                 LoginEditorPanel.this.getBlobBindingCheckbox()) {
                 connPtoP10SetSource();
             }
-            if (e.getSource() == 
+            if (e.getSource() ==
                 LoginEditorPanel.this.getParameterizedSQLCheckbox()) {
                 connPtoP17SetSource();
             }
-            if (e.getSource() == 
+            if (e.getSource() ==
                 LoginEditorPanel.this.getOptimizeDataConversionCheckbox()) {
                 connPtoP13SetSource();
             }
-            if (e.getSource() == 
+            if (e.getSource() ==
                 LoginEditorPanel.this.getCacheStatementsCheckbox()) {
                 connPtoP19SetSource();
             }
-            if (e.getSource() == 
+            if (e.getSource() ==
                 LoginEditorPanel.this.getStringBindingCheckbox()) {
                 connPtoP22SetSource();
             }
-            if (e.getSource() == 
+            if (e.getSource() ==
                 LoginEditorPanel.this.getNativeSequencingCheckbox()) {
                 connEtoC2(e);
             }
-            if (e.getSource() == 
+            if (e.getSource() ==
                 LoginEditorPanel.this.getStringBindingCheckbox()) {
                 connEtoC4(e);
             }
-            if (e.getSource() == 
+            if (e.getSource() ==
                 LoginEditorPanel.this.getTrimStringsCheckbox()) {
                 connPtoP23SetSource();
             }
-            if (e.getSource() == 
+            if (e.getSource() ==
                 LoginEditorPanel.this.getBlobBindingCheckbox()) {
                 connEtoC5(e);
             }
-            if (e.getSource() == 
+            if (e.getSource() ==
                 LoginEditorPanel.this.getBatchWritingCheckBox()) {
                 connPtoP4SetSource();
             }
-            if (e.getSource() == 
+            if (e.getSource() ==
                 LoginEditorPanel.this.getDirectConnectCheckBox()) {
                 connPtoP24SetSource();
             }
-            if (e.getSource() == 
+            if (e.getSource() ==
                 LoginEditorPanel.this.getForceCaseCheckBox()) {
                 connPtoP25SetSource();
             }
@@ -3226,30 +3226,30 @@ public class LoginEditorPanel extends JPanel implements javax.swing.event.CaretL
             if (e.getSource() == LoginEditorPanel.this.getUserText()) {
                 connPtoP7SetSource();
             }
-            if (e.getSource() == 
+            if (e.getSource() ==
                 LoginEditorPanel.this.getSequencePreallocationSizeText()) {
                 connPtoP12SetSource();
             }
-            if (e.getSource() == 
+            if (e.getSource() ==
                 LoginEditorPanel.this.getSequenceCounterNameText()) {
                 connPtoP14SetSource();
             }
-            if (e.getSource() == 
+            if (e.getSource() ==
                 LoginEditorPanel.this.getSequenceFieldNameText()) {
                 connPtoP15SetSource();
             }
-            if (e.getSource() == 
+            if (e.getSource() ==
                 LoginEditorPanel.this.getSequenceTableNameText()) {
                 connPtoP16SetSource();
             }
             if (e.getSource() == LoginEditorPanel.this.getCreatorText()) {
                 connPtoP18SetSource();
             }
-            if (e.getSource() == 
+            if (e.getSource() ==
                 LoginEditorPanel.this.getStringBindSizeText()) {
                 connPtoP21SetSource();
             }
-            if (e.getSource() == 
+            if (e.getSource() ==
                 LoginEditorPanel.this.getStatementCacheSizeText()) {
                 connPtoP20SetSource();
             }
@@ -3265,30 +3265,30 @@ public class LoginEditorPanel extends JPanel implements javax.swing.event.CaretL
             if (e.getSource() == LoginEditorPanel.this.getUserText()) {
                 connPtoP7SetSource();
             }
-            if (e.getSource() == 
+            if (e.getSource() ==
                 LoginEditorPanel.this.getSequencePreallocationSizeText()) {
                 connPtoP12SetSource();
             }
-            if (e.getSource() == 
+            if (e.getSource() ==
                 LoginEditorPanel.this.getSequenceCounterNameText()) {
                 connPtoP14SetSource();
             }
-            if (e.getSource() == 
+            if (e.getSource() ==
                 LoginEditorPanel.this.getSequenceFieldNameText()) {
                 connPtoP15SetSource();
             }
-            if (e.getSource() == 
+            if (e.getSource() ==
                 LoginEditorPanel.this.getSequenceTableNameText()) {
                 connPtoP16SetSource();
             }
             if (e.getSource() == LoginEditorPanel.this.getCreatorText()) {
                 connPtoP18SetSource();
             }
-            if (e.getSource() == 
+            if (e.getSource() ==
                 LoginEditorPanel.this.getStringBindSizeText()) {
                 connPtoP21SetSource();
             }
-            if (e.getSource() == 
+            if (e.getSource() ==
                 LoginEditorPanel.this.getStatementCacheSizeText()) {
                 connPtoP20SetSource();
             }
@@ -3304,37 +3304,37 @@ public class LoginEditorPanel extends JPanel implements javax.swing.event.CaretL
             if (e.getSource() == LoginEditorPanel.this.getUserText()) {
                 connPtoP7SetSource();
             }
-            if (e.getSource() == 
+            if (e.getSource() ==
                 LoginEditorPanel.this.getSequencePreallocationSizeText()) {
                 connPtoP12SetSource();
             }
-            if (e.getSource() == 
+            if (e.getSource() ==
                 LoginEditorPanel.this.getSequenceCounterNameText()) {
                 connPtoP14SetSource();
             }
-            if (e.getSource() == 
+            if (e.getSource() ==
                 LoginEditorPanel.this.getSequenceFieldNameText()) {
                 connPtoP15SetSource();
             }
-            if (e.getSource() == 
+            if (e.getSource() ==
                 LoginEditorPanel.this.getSequenceTableNameText()) {
                 connPtoP16SetSource();
             }
             if (e.getSource() == LoginEditorPanel.this.getCreatorText()) {
                 connPtoP18SetSource();
             }
-            if (e.getSource() == 
+            if (e.getSource() ==
                 LoginEditorPanel.this.getStringBindSizeText()) {
                 connPtoP21SetSource();
             }
-            if (e.getSource() == 
+            if (e.getSource() ==
                 LoginEditorPanel.this.getStatementCacheSizeText()) {
                 connPtoP20SetSource();
             }
         }
 
         public void propertyChange(java.beans.PropertyChangeEvent evt) {
-            if ((evt.getSource() == LoginEditorPanel.this) && 
+            if ((evt.getSource() == LoginEditorPanel.this) &&
                 (evt.getPropertyName().equals("login"))) {
                 connPtoP1SetTarget();
             }

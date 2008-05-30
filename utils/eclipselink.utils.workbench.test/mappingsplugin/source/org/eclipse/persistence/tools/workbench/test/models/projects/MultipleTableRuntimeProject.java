@@ -1,10 +1,10 @@
 /*******************************************************************************
  * Copyright (c) 1998, 2008 Oracle. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
@@ -27,14 +27,14 @@ import org.eclipse.persistence.mappings.DirectToFieldMapping;
  * @date Sep 13, 2007
  */
 public class MultipleTableRuntimeProject {
-    
+
 	private Project runtimeProject;
-	
+
 	public MultipleTableRuntimeProject() {
         this.runtimeProject = new Project();
 		this.runtimeProject.setName("MultipleTable");
 		this.applyLogin();
-		
+
 		this.runtimeProject.addDescriptor(buildCowDescriptor());
 		this.runtimeProject.addDescriptor(buildHorseDescriptor());
 		this.runtimeProject.addDescriptor(buildHumanDescriptor());
@@ -43,12 +43,12 @@ public class MultipleTableRuntimeProject {
 
 	public void applyLogin() {
 		DatabaseLogin login = new DatabaseLogin();
-		login.usePlatform(new org.eclipse.persistence.platform.database.MySQL4Platform());
+		login.usePlatform(new org.eclipse.persistence.platform.database.MySQLPlatform());
 		login.setDriverClassName(TestDatabases.mySQLDriverClassName());
 		login.setConnectionString(TestDatabases.mySQLServerURL());
 		login.setUserName(TestDatabases.userName());
 		login.setPassword(TestDatabases.password());
-		
+
 		// Configuration properties.
 		((TableSequence) login.getDefaultSequence()).setTableName("SEQUENCE");
 		((TableSequence) login.getDefaultSequence()).setNameFieldName("SEQ_NAME");
@@ -112,7 +112,7 @@ public class MultipleTableRuntimeProject {
 
         return descriptor;
     }
-    
+
     public ClassDescriptor buildHorseDescriptor() {
         RelationalDescriptor descriptor = new RelationalDescriptor();
         descriptor.setJavaClassName("org.eclipse.persistence.tools.workbench.test.models.multipletable.Horse");
@@ -120,7 +120,7 @@ public class MultipleTableRuntimeProject {
         descriptor.addTableName("MULTI_FOALS");
         descriptor.addPrimaryKeyFieldName("MULTI_HORSE.ID");
         descriptor.addForeignKeyFieldNameForMultipleTable("MULTI_FOALS.HORSE_ID", "MULTI_HORSE.ID");
-        
+
         // Descriptor Properties.
         descriptor.useSoftCacheWeakIdentityMap();
         descriptor.setIdentityMapSize(100);
@@ -157,7 +157,7 @@ public class MultipleTableRuntimeProject {
         descriptor.addTableName("MULTI_KIDS");
         descriptor.addPrimaryKeyFieldName("MULTI_HUMAN.ID");
         descriptor.addForeignKeyFieldNameForMultipleTable("MULTI_KIDS.ID", "MULTI_HUMAN.ID");
-        
+
         // Descriptor Properties.
         descriptor.useSoftCacheWeakIdentityMap();
         descriptor.setIdentityMapSize(100);
@@ -186,7 +186,7 @@ public class MultipleTableRuntimeProject {
 
         return descriptor;
     }
-    
+
     public ClassDescriptor buildSwanDescriptor() {
         RelationalDescriptor descriptor = new RelationalDescriptor();
         descriptor.setJavaClassName("org.eclipse.persistence.tools.workbench.test.models.multipletable.Swan");
@@ -194,7 +194,7 @@ public class MultipleTableRuntimeProject {
         descriptor.addTableName("MULTI_CYGNETS");
         descriptor.addPrimaryKeyFieldName("MULTI_SWAN.ID");
         descriptor.addForeignKeyFieldNameForMultipleTable("MULTI_SWAN.ID", "MULTI_CYGNETS.SWAN_ID");
-        
+
         // Descriptor Properties.
         descriptor.useSoftCacheWeakIdentityMap();
         descriptor.setIdentityMapSize(100);

@@ -1,10 +1,10 @@
 /*******************************************************************************
  * Copyright (c) 1998, 2008 Oracle. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
@@ -71,7 +71,7 @@ abstract class AbstractModelDatabaseTests extends TestCase {
 	protected void setUp() throws Exception {
 		super.setUp();
 
-		this.databasePlatform = DatabasePlatformRepository.getDefault().platformNamed("MySQL4");
+		this.databasePlatform = DatabasePlatformRepository.getDefault().platformNamed("MySQL");
 		String projectName = ClassTools.shortClassNameForObject(this);
 		this.project = new MWRelationalProject(projectName, MappingsModelTestTools.buildSPIManager(), this.databasePlatform);
 		this.database = this.project.getDatabase();
@@ -90,7 +90,7 @@ abstract class AbstractModelDatabaseTests extends TestCase {
 		this.field_ADDR_ID1_FK = this.table_EMP.addColumn("addr_id1");
 		this.field_ADDR_ID1_FK.setDatabaseType(this.databasePlatform.databaseTypeNamed("integer"));
 		this.field_ADDR_ID1_FK.setSize(0);
-		
+
 		this.field_ADDR_ID2_FK = this.table_EMP.addColumn("addr_id2");
 		this.field_ADDR_ID2_FK.setDatabaseType(this.databasePlatform.databaseTypeNamed("integer"));
 		this.field_ADDR_ID2_FK.setSize(0);
@@ -105,17 +105,17 @@ abstract class AbstractModelDatabaseTests extends TestCase {
 
 		// ADDR
 		this.table_ADDR = this.database.addTable(this.catalogName, this.schemaName, "addr");
-		
+
 		this.field_ADDR_ID1 = this.table_ADDR.addColumn("addr_id1");
 		this.field_ADDR_ID1.setDatabaseType(this.databasePlatform.databaseTypeNamed("integer"));
 		this.field_ADDR_ID1.setSize(0);
 		this.field_ADDR_ID1.setPrimaryKey(true);
-		
+
 		this.field_ADDR_ID2 = this.table_ADDR.addColumn("addr_id2");
 		this.field_ADDR_ID2.setDatabaseType(this.databasePlatform.databaseTypeNamed("integer"));
 		this.field_ADDR_ID2.setSize(0);
 		this.field_ADDR_ID2.setPrimaryKey(true);
-		
+
 		this.field_STREET = this.table_ADDR.addColumn("street");
 		this.field_STREET.setSize(20);
 		this.field_CITY = this.table_ADDR.addColumn("city");
@@ -124,7 +124,7 @@ abstract class AbstractModelDatabaseTests extends TestCase {
 		this.field_STATE_ID1_FK = this.table_ADDR.addColumn("state_id1");
 		this.field_STATE_ID1_FK.setDatabaseType(this.databasePlatform.databaseTypeNamed("integer"));
 		this.field_STATE_ID1_FK.setSize(0);
-		
+
 		this.field_STATE_ID2_FK = this.table_ADDR.addColumn("state_id2");
 		this.field_STATE_ID2_FK.setDatabaseType(this.databasePlatform.databaseTypeNamed("integer"));
 		this.field_STATE_ID2_FK.setSize(0);

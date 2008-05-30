@@ -1,6 +1,6 @@
 <?xml version = '1.0' encoding = 'UTF-8'?>
 <database-platform>
-   <name>MySQL4</name>
+   <name>MySQL</name>
    <runtime-platform-class>org.eclipse.persistence.platform.database.MySQLPlatform</runtime-platform-class>
    <supports-native-sequencing>true</supports-native-sequencing>
    <database-types>
