@@ -12,7 +12,9 @@
  *     05/16/2008-1.0M8 Guy Pelletier 
  *       - 218084: Implement metadata merging functionality between mapping files
  *     05/23/2008-1.0M8 Guy Pelletier 
- *       - 211330: Add attributes-complete support to the EclipseLink-ORM.XML Schema  
+ *       - 211330: Add attributes-complete support to the EclipseLink-ORM.XML Schema
+  *     05/30/2008-1.0M8 Guy Pelletier 
+ *       - 230213: ValidationException when mapping to attribute in MappedSuperClass  
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata;
 
@@ -77,8 +79,10 @@ public class MetadataDescriptor {
     private DatabaseTable m_primaryTable;
     private Enum m_existenceChecking;
     
-    // This is the parent class that defines the inheritance strategy, and
-    // not necessarily the immediate parent class.
+    // This is the root descriptor of the inheritance hierarchy. That is, for 
+    // the entity that defines the inheritance strategy.
+    private MetadataDescriptor m_inheritanceRootDescriptor;
+    // This is our immediate parent's descriptor. Which may also be the root. 
     private MetadataDescriptor m_inheritanceParentDescriptor;
     
     private boolean m_isCascadePersist;
@@ -120,6 +124,7 @@ public class MetadataDescriptor {
         m_xmlSchema = null;
         m_xmlCatalog = null;
         
+        m_inheritanceRootDescriptor = null;
         m_inheritanceParentDescriptor = null;
         
         m_hasCache = false;
@@ -196,7 +201,7 @@ public class MetadataDescriptor {
      */
     public void addClassIndicator(Class entityClass, String value) {
         if (isInheritanceSubclass()) {
-            getInheritanceParentDescriptor().addClassIndicator(entityClass, value);   
+            getInheritanceRootDescriptor().addClassIndicator(entityClass, value);   
         } else {
             m_descriptor.getInheritancePolicy().addClassNameIndicator(entityClass.getName(), value);
         }
@@ -340,9 +345,9 @@ public class MetadataDescriptor {
      * fieldOrPropertyName (that is, assumes it is a field name). If no accessor
      * is found than it assumes fieldOrPropertyName is a property name and 
      * converts it to its corresponding field name and looks for the accessor
-     * again. If still no accessor is found and this descriptor metadata is
-     * and an inheritance subclass, than it will then look on the root metadata
-     * descriptor. Null is returned otherwise.
+     * again. If still no accessor is found and this descriptor represents an
+     * inheritance subclass, then traverse up the chain to look for that
+     * accessor. Null is returned otherwise.
      */
     public MappingAccessor getAccessorFor(String fieldOrPropertyName) {
         MappingAccessor accessor = m_accessors.get(fieldOrPropertyName);
@@ -391,21 +396,6 @@ public class MetadataDescriptor {
     
     /**
      * INTERNAL:
-     */
-    public DatabaseField getClassIndicatorField() {
-        if (isInheritanceSubclass()) {
-            return getInheritanceParentDescriptor().getClassDescriptor().getInheritancePolicy().getClassIndicatorField();
-        } else {
-            if (getClassDescriptor().hasInheritance()) {
-                return getClassDescriptor().getInheritancePolicy().getClassIndicatorField();
-            } else {
-                return null;
-            }
-        }
-    }
-    
-    /**
-     * INTERNAL:
      * The default table name is the descriptor alias, unless this descriptor 
      * metadata is an inheritance subclass with a SINGLE_TABLE strategy. Then 
      * it is the table name of the root descriptor metadata.
@@ -414,8 +404,8 @@ public class MetadataDescriptor {
         String defaultTableName = getAlias().toUpperCase();
         
         if (isInheritanceSubclass()) {    
-            if (getInheritanceParentDescriptor().usesSingleTableInheritanceStrategy()) {
-                defaultTableName = getInheritanceParentDescriptor().getPrimaryTableName();
+            if (getInheritanceRootDescriptor().usesSingleTableInheritanceStrategy()) {
+                defaultTableName = getInheritanceRootDescriptor().getPrimaryTableName();
             }
         }
         
@@ -450,7 +440,7 @@ public class MetadataDescriptor {
     public String getIdAttributeName() {
         if (getIdAttributeNames().isEmpty()) {
             if (isInheritanceSubclass()) {
-                return getInheritanceParentDescriptor().getIdAttributeName();
+                return getInheritanceRootDescriptor().getIdAttributeName();
             } else {
                 return "";
             }
@@ -483,7 +473,7 @@ public class MetadataDescriptor {
             if (m_idAttributeNames.isEmpty()) {
                 if (isInheritanceSubclass()) {  
                     // Get the id attribute names from our root parent.
-                    m_idOrderByAttributeNames = getInheritanceParentDescriptor().getIdAttributeNames();
+                    m_idOrderByAttributeNames = getInheritanceRootDescriptor().getIdAttributeNames();
                 } else {
                     // We must have a composite primary key as a result of an embedded id.
                     m_idOrderByAttributeNames = ((MappingAccessor) getAccessorFor(getEmbeddedIdAttributeName())).getReferenceDescriptor().getOrderByAttributeNames();
@@ -510,7 +500,8 @@ public class MetadataDescriptor {
      * INTERNAL:
      * This will return the attribute names for all the direct to field mappings 
      * on this descriptor metadata. This method will typically be called when an 
-     * @Embedded or @EmbeddedId attribute has been specified in an @OrderBy.
+     * embedded or embedded id attribute has been specified as an order by 
+     * field
      */
     public List<String> getOrderByAttributeNames() {
         if (m_orderByAttributeNames.isEmpty()) {
@@ -547,9 +538,19 @@ public class MetadataDescriptor {
     
     /** 
      * INTERNAL:
+     * Returns the immediate parent's descriptor in the inheritance hierarchy.
      */
     public MetadataDescriptor getInheritanceParentDescriptor() {
         return m_inheritanceParentDescriptor;
+    }
+    
+    /** 
+     * INTERNAL:
+     * Returns the root descriptor of the inheritance hierarchy, that is, the 
+     * one that defines the inheritance strategy.
+     */
+    public MetadataDescriptor getInheritanceRootDescriptor() {
+        return m_inheritanceRootDescriptor;
     }
     
     /**
@@ -566,6 +567,8 @@ public class MetadataDescriptor {
      * references. If the referencingAccessor is null, no check will be made.
      */
     public DatabaseMapping getMappingForAttributeName(String attributeName, MetadataAccessor referencingAccessor) {
+        // Get accessor will traverse the parent descriptors of an inheritance
+        // hierarchy.
         MetadataAccessor accessor = getAccessorFor(attributeName);
         
         if (accessor != null) {
@@ -595,11 +598,14 @@ public class MetadataDescriptor {
                 relationshipAccessor.processRelationship();
             }
             
-            return m_descriptor.getMappingForAttributeName(attributeName);
+            // Return the mapping from the accessors descriptor since it may
+            // be our descriptor or a parent descriptor from an inheritance 
+            // hierarchy.
+            return accessor.getDescriptor().getClassDescriptor().getMappingForAttributeName(attributeName);
         }
         
-        // We didn't find a mapping on this descriptor, check our aggregate 
-        // descriptors now.
+        // We didn't find a mapping on our descriptor (or a parent descriptor), 
+        // check our aggregate descriptors now.
         for (MetadataDescriptor embeddableDescriptor : m_embeddableDescriptors) {
             DatabaseMapping mapping = embeddableDescriptor.getMappingForAttributeName(attributeName, referencingAccessor);
             
@@ -675,7 +681,7 @@ public class MetadataDescriptor {
         List<DatabaseField> primaryKeyFields = m_descriptor.getPrimaryKeyFields();
         
         if (primaryKeyFields.isEmpty() && isInheritanceSubclass()) {
-            primaryKeyFields = getInheritanceParentDescriptor().getPrimaryKeyFields();
+            primaryKeyFields = getInheritanceRootDescriptor().getPrimaryKeyFields();
         }
         
         return primaryKeyFields;
@@ -717,7 +723,7 @@ public class MetadataDescriptor {
      */
     public DatabaseTable getPrimaryTable() {
         if (m_primaryTable == null && isInheritanceSubclass()) {
-            return getInheritanceParentDescriptor().getPrimaryTable();
+            return getInheritanceRootDescriptor().getPrimaryTable();
         } else {
             if (m_descriptor.isAggregateDescriptor()) {
                 // Aggregate descriptors don't have tables, just return a 
@@ -978,7 +984,7 @@ public class MetadataDescriptor {
      * INTERNAL:
      */
     public boolean isInheritanceSubclass() {
-        return m_inheritanceParentDescriptor != null;
+        return m_inheritanceRootDescriptor != null;
     }
     
     /**
@@ -1123,13 +1129,22 @@ public class MetadataDescriptor {
     public void setIgnoreDefaultMappings(boolean ignoreDefaultMappings) {
         m_ignoreDefaultMappings = ignoreDefaultMappings;
     }
-    
+
     /**
      * INTERNAL:
-     * Store the root class of an inheritance hierarchy.
+     * Set the immediate parent's descriptor of the inheritance hierarchy.
      */
     public void setInheritanceParentDescriptor(MetadataDescriptor inheritanceParentDescriptor) {
         m_inheritanceParentDescriptor = inheritanceParentDescriptor;
+    }
+    
+    /**
+     * INTERNAL:
+     * Set the root descriptor of the inheritance hierarchy, that is, the one 
+     * that defines the inheritance strategy.
+     */
+    public void setInheritanceRootDescriptor(MetadataDescriptor inheritanceRootDescriptor) {
+        m_inheritanceRootDescriptor = inheritanceRootDescriptor;
     }
     
     /**
@@ -1306,7 +1321,7 @@ public class MetadataDescriptor {
      */
     public boolean usesPropertyAccess() {
         if (isInheritanceSubclass()) {
-            return getInheritanceParentDescriptor().usesPropertyAccess();
+            return getInheritanceRootDescriptor().usesPropertyAccess();
         } else {
             if (m_usesPropertyAccess == null) {
                 if (havePersistenceAnnotationsDefined(MetadataHelper.getFields(getJavaClass())) || isXmlFieldAccess()) {

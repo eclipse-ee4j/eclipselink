@@ -9,6 +9,8 @@
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
+ *     05/30/2008-1.0M8 Guy Pelletier 
+ *       - 230213: ValidationException when mapping to attribute in MappedSuperClass
  ******************************************************************************/  
 package org.eclipse.persistence.testing.models.jpa.inherited;
 
@@ -19,6 +21,7 @@ import javax.persistence.*;
 
 import org.eclipse.persistence.annotations.ExistenceChecking;
 import org.eclipse.persistence.annotations.Mutable;
+import org.eclipse.persistence.indirection.ValueHolderInterface;
 
 import static javax.persistence.TemporalType.DATE;
 import static org.eclipse.persistence.annotations.ExistenceType.CHECK_DATABASE;
@@ -33,6 +36,8 @@ public class Canadian extends Beer {
     private Flavor flavor;
     private Date bornOnDate;
     private HashMap<String, Serializable> properties;
+    
+    public ValueHolderInterface ignoredObject;
     
     public Canadian() {
         properties = new HashMap<String, Serializable>();
@@ -51,6 +56,13 @@ public class Canadian extends Beer {
         return flavor;
     }
     
+    // Mimicking an accessor that was weaved to have value holders ... the 
+    // metadata processing should ignore this mapping.
+    @OneToOne
+    public ValueHolderInterface getIgnoredObject() {
+        return ignoredObject;
+    }
+    
     @Basic
     public HashMap<String, Serializable> getProperties() {
         return properties;    
@@ -62,6 +74,10 @@ public class Canadian extends Beer {
     
     public void setFlavor(Flavor flavor) {
         this.flavor = flavor;
+    }
+    
+    public void setIgnoredObject(ValueHolderInterface ignoredObject) {
+        this.ignoredObject = ignoredObject;
     }
     
     public void setProperties(HashMap<String, Serializable> properties) {

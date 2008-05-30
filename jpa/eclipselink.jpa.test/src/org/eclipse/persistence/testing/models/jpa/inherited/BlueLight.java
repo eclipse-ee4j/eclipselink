@@ -8,40 +8,22 @@
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
- *     Oracle - initial API and implementation from Oracle TopLink
  *     05/30/2008-1.0M8 Guy Pelletier 
  *       - 230213: ValidationException when mapping to attribute in MappedSuperClass
  ******************************************************************************/  
 package org.eclipse.persistence.testing.models.jpa.inherited;
 
-import javax.persistence.Inheritance;
-import javax.persistence.Table;
 import javax.persistence.Entity;
 
-import static javax.persistence.InheritanceType.SINGLE_TABLE;
-
 @Entity
-@Inheritance(strategy=SINGLE_TABLE)
-@Table(name="CMP3_BLUE")
-public class Blue extends Beer  {
-    private Integer uniqueKey;
-    public Blue() {}
-    
-    // This class is intentionally left with no annotations to test that
-    // it picks us the access type from the mapped superclass.
-    public boolean equals(Object anotherBlue) {
-        if (anotherBlue.getClass() != Blue.class) {
+public class BlueLight extends Blue {
+    public BlueLight() {}
+
+    public boolean equals(Object anotherBlueLight) {
+        if (anotherBlueLight.getClass() != BlueLight.class) {
             return false;
         }
         
-        return (getId().equals(((Blue)anotherBlue).getId()));
-    }
-    
-    public Integer getUniqueKey() {
-        return uniqueKey;
-    }
-    
-    public void setUniqueKey(Integer uniqueKey) {
-        this.uniqueKey = uniqueKey;
+        return (getId().equals(((BlueLight)anotherBlueLight).getId()));
     }
 }

@@ -9,6 +9,8 @@
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
+ *     05/30/2008-1.0M8 Guy Pelletier 
+ *       - 230213: ValidationException when mapping to attribute in MappedSuperClass
  ******************************************************************************/  
 package org.eclipse.persistence.testing.models.jpa.inherited;
 
@@ -234,6 +236,17 @@ public class InheritedTableManager extends TableCreator {
         UNIQUE_KEY_field.setIsIdentity(false);
         UNIQUE_KEY_field.setShouldAllowNull(false);
         table.addField(UNIQUE_KEY_field);
+        
+        FieldDefinition DTYPE_field = new FieldDefinition();
+        DTYPE_field.setName("DTYPE");
+        DTYPE_field.setTypeName("VARCHAR2");
+        DTYPE_field.setSize(20);
+        DTYPE_field.setSubSize(0);
+        DTYPE_field.setIsPrimaryKey(false);
+        DTYPE_field.setIsIdentity(false);
+        DTYPE_field.setUnique(false);
+        DTYPE_field.setShouldAllowNull(true);
+        table.addField(DTYPE_field);
 
         return table;
     }

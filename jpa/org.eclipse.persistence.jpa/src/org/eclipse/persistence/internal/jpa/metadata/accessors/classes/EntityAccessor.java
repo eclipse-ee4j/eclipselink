@@ -13,6 +13,8 @@
  *       - 218084: Implement metadata merging functionality between mapping files
  *     05/23/2008-1.0M8 Guy Pelletier 
  *       - 211330: Add attributes-complete support to the EclipseLink-ORM.XML Schema
+ *     05/30/2008-1.0M8 Guy Pelletier 
+ *       - 230213: ValidationException when mapping to attribute in MappedSuperClass
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.accessors.classes;
 
@@ -338,9 +340,9 @@ public class EntityAccessor extends MappedSuperclassAccessor {
      * INTERNAL:
      * This method will do a couple things. Most importantly will return 
      * true if this class is an inheritance subclass, but will also set the
-     * inheritance parent descriptor (the first parent entity that defines the 
+     * inheritance root descriptor (the first parent entity that defines the 
      * inheritance strategy) on this class accessor's descriptor along
-     * with the immediate parent class.
+     * with the immediate parent class and descriptor.
      */
     protected boolean isInheritanceSubclass() {
         ClassAccessor lastParent = null;
@@ -351,7 +353,9 @@ public class EntityAccessor extends MappedSuperclassAccessor {
             
             if (parentAccessor != null) {
                 if (lastParent == null) {
-                    // Set the immediate parent class on the descriptor.
+                    // Set the immediate parent's descriptor and class on this
+                    // entity's descriptor.
+                    getDescriptor().setInheritanceParentDescriptor(parentAccessor.getDescriptor());
                     getDescriptor().setParentClass(parent);
                 }
                 
@@ -368,7 +372,8 @@ public class EntityAccessor extends MappedSuperclassAccessor {
         if (lastParent == null) {
             return false;
         } else {
-            getDescriptor().setInheritanceParentDescriptor(lastParent.getDescriptor()); 
+            // Set the root descriptor of the inheritance hierarchy.
+            getDescriptor().setInheritanceRootDescriptor(lastParent.getDescriptor()); 
             return true;
         }
     }
@@ -866,58 +871,52 @@ public class EntityAccessor extends MappedSuperclassAccessor {
     
     /**
      * INTERNAL:
-     * 
      * Process any inheritance specifics. This method will fast track any 
      * parent inheritance processing, be it specified or defaulted.
      */
     protected void processTableAndInheritance() {
-        // If we are an inheritance subclass, ensure our parent is processed 
+        // If we are an inheritance subclass, ensure our root is processed 
         // first since it has information its subclasses depend on.
         if (isInheritanceSubclass()) {
-            MetadataDescriptor parentDescriptor = getDescriptor().getInheritanceParentDescriptor();
+            MetadataDescriptor parentDescriptor = getDescriptor().getInheritanceRootDescriptor();
             
-            // Process the parent class accessor if it hasn't already been done.
+            // Process the root class accessor if it hasn't already been done.
             EntityAccessor parentAccessor = (EntityAccessor) parentDescriptor.getClassAccessor();
             if (! parentAccessor.isProcessed()) {
                 parentAccessor.process();
                 parentAccessor.setIsProcessed();
             }
             
-            // A parent, who didn't know they were a parent (a root class of an 
-            // inheritance hierarchy that does not have an  @Inheritance 
-            // annotation or XML tag) must process and default the inheritance 
-            // parent metadata.
-            //if (! parentDescriptor.hasInheritance()) {
+            // An entity who didn't know they were the root of an inheritance 
+            // hierarchy (that is, does not define inheritance metadata) must 
+            // process and default the inheritance metadata.
             if (! parentAccessor.hasInheritance()) {    
                 parentAccessor.processInheritance();
             }
                 
             // If this entity has inheritance metadata as well, then the 
             // inheritance strategy is mixed and we need to process the 
-            // inheritance parent metadata for this entity's subclasses to 
-            // process correctly.
+            // inheritance metadata to ensure this entity's subclasses process 
+            // correctly.
             if (hasInheritance()) {
-                // Process the table metadata if there is one, otherwise default.
+                // Process the table metadata if there is some, otherwise default.
                 processTable();
                 
-                // Process the parent inheritance specifics.
-                processInheritance();
-                
-                // Process the inheritance subclass metadata.
-                processInheritanceSubclass(parentDescriptor);
+                // Process the inheritance metadata.
+                processInheritance();    
             } else {
-                // Process the table information for this descriptor (for a 
-                // joined strategy), if there is one specified. Must be called
-                // before processing the inheritance metadata.
+                // Process the table metadata for this descriptor (for a 
+                // joined strategy), if there is some. Must be called
+                // before processing the inheritance subclass metadata.
                 if (parentDescriptor.usesJoinedInheritanceStrategy()) {
                     processTable();
                 }
-                
-                // Process the inheritance subclass metadata.
-                processInheritanceSubclass(parentDescriptor);
             }
+            
+            // Process the inheritance subclass metadata.
+            processInheritanceSubclass(parentDescriptor);
         } else {
-            // Process the table metadata if there is one, otherwise default.
+            // Process the table metadata if there is some, otherwise default.
             processTable();
             
             // If we have inheritance metadata, then process it now. If we are 

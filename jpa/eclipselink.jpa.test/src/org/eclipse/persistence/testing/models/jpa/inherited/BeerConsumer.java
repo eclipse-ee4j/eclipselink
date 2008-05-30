@@ -9,6 +9,8 @@
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
+  *     05/30/2008-1.0M8 Guy Pelletier 
+ *       - 230213: ValidationException when mapping to attribute in MappedSuperClass
  ******************************************************************************/
 package org.eclipse.persistence.testing.models.jpa.inherited;
 
@@ -36,7 +38,10 @@ public class BeerConsumer {
     private Integer id;
     private Integer version;
     private String name;
+    
     private Collection<Alpine> alpineBeersToConsume;
+    private Collection<BlueLight> blueLightBeersToConsume;
+    
     private Map<Integer, Blue> blueBeersToConsume;
     private Map<Integer, Canadian> canadianBeersToConsume;
     private Map<Integer, Certification> certifications;
@@ -45,6 +50,8 @@ public class BeerConsumer {
     public BeerConsumer() {
         super();
         alpineBeersToConsume = new Vector<Alpine>();
+        blueLightBeersToConsume = new Vector<BlueLight>();
+        
         blueBeersToConsume = new Hashtable<Integer, Blue>();
         canadianBeersToConsume = new Hashtable<Integer, Canadian>();
         certifications = new Hashtable<Integer, Certification>();
@@ -64,6 +71,11 @@ public class BeerConsumer {
     public void addBlueBeerToConsume(Blue blue) {
         blue.setBeerConsumer(this);
         blueBeersToConsume.put(blue.getUniqueKey(), blue);
+    }
+    
+    public void addBlueLightBeerToConsume(BlueLight blueLight) {
+        blueLight.setBeerConsumer(this);
+        ((Vector) blueLightBeersToConsume).add(blueLight);
     }
     
     /**
@@ -91,6 +103,11 @@ public class BeerConsumer {
     @MapKey(name="uniqueKey")
     public Map<Integer, Blue> getBlueBeersToConsume() {
         return blueBeersToConsume;
+    }
+    
+    @OneToMany(mappedBy="beerConsumer", cascade=ALL)
+    public Collection<BlueLight> getBlueLightBeersToConsume() {
+        return blueLightBeersToConsume;
     }
     
     @OneToMany(mappedBy="beerConsumer", cascade=ALL)
@@ -216,6 +233,10 @@ public class BeerConsumer {
     
     public void setBlueBeersToConsume(Map<Integer, Blue> blueBeersToConsume) {
         this.blueBeersToConsume = blueBeersToConsume;
+    }
+    
+    public void setBlueLightBeersToConsume(Collection<BlueLight> blueLightBeersToConsume) {
+        this.blueLightBeersToConsume = blueLightBeersToConsume;
     }
     
     public void setCanadianBeersToConsume(Map<Integer, Canadian> canadianBeersToConsume) {

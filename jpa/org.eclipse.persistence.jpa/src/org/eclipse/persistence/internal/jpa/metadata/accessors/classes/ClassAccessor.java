@@ -13,6 +13,8 @@
  *       - 218084: Implement metadata merging functionality between mapping files
  *     05/23/2008-1.0M8 Guy Pelletier 
  *       - 211330: Add attributes-complete support to the EclipseLink-ORM.XML Schema
+ *     05/30/2008-1.0M8 Guy Pelletier 
+ *       - 230213: ValidationException when mapping to attribute in MappedSuperClass
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.accessors.classes;
 
@@ -143,6 +145,7 @@ public abstract class ClassAccessor extends MetadataAccessor {
      * is of type xyz.
      */
     protected MappingAccessor buildAccessor(MetadataAnnotatedElement accessibleObject) {
+        // Check for an existing accessor (that is, one from XML).
         MappingAccessor accessor = getDescriptor().getAccessorFor(accessibleObject.getAttributeName());
         
         if (accessor == null) {
