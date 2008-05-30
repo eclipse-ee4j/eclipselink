@@ -461,6 +461,10 @@
     <target name="test-jpa-srg" description="run the jpa srg tests">
         <ant antfile="${eclipselink.jpa.test}/build.xml" target="test-srg"/>
     </target>
+    <!-- Run JPA Spring. -->
+    <target name="test-jpa-spring" description="run the jpa Spring tests">
+        <ant dir="${eclipselink.jpa.spring.test}" antfile="build.xml" inheritAll="false" target="test-jpa-spring"/>
+    </target>
     <!-- Run SDO & MOXY tests. -->
     <target name="test-sdo" description="run the sdo tests">
         <ant antfile="${eclipselink.sdo.test}/build.xml" target="test-against-jar"/>
