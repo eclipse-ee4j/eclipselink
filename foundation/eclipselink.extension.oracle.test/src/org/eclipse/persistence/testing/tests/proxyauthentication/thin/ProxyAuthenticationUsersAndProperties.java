@@ -130,31 +130,35 @@ public class ProxyAuthenticationUsersAndProperties {
             errorMsg = createErrorMsgConnectionFailed();
             errorMsg += createErrorMsgProxyFailed(true);
             errorMsg += createErrorMsgProxy2Failed(true);
-            return errorMsg;
         }
 
-        // try to open proxy session using proxyUser
-        try {
-            Properties props = new Properties();
-            props.setProperty(OracleConnection.PROXY_USER_NAME, proxyUser);
-            OracleConnection oracleConnection = (oracle.jdbc.OracleConnection)((org.eclipse.persistence.internal.sessions.AbstractSession)newSession).getAccessor().getConnection(); 
-            oracleConnection.openProxySession(OracleConnection.PROXYTYPE_USER_NAME, props);
-            // close proxy session
-            oracleConnection.close(OracleConnection.PROXY_SESSION);
-        } catch (Exception exception) {
-            errorMsg += createErrorMsgProxyFailed(false);
-        }
-
-        // try to open proxy session using proxyUser2
-        try {
-            Properties props = new Properties();
-            props.setProperty(OracleConnection.PROXY_USER_NAME, proxyUser2);
-            OracleConnection oracleConnection = (oracle.jdbc.OracleConnection)((org.eclipse.persistence.internal.sessions.AbstractSession)newSession).getAccessor().getConnection(); 
-            oracleConnection.openProxySession(OracleConnection.PROXYTYPE_USER_NAME, props);
-            // close proxy session
-            oracleConnection.close(OracleConnection.PROXY_SESSION);
-        } catch (Exception exception) {
-            errorMsg += createErrorMsgProxy2Failed(false);
+        // errorMsg.length() > 0 case:
+        // if couldn't connect to connectionUser directly then there is 
+        // no point in trying to connect proxyUsers through connectionUser.
+        if(errorMsg.length() == 0) {
+            // try to open proxy session using proxyUser
+            try {
+                Properties props = new Properties();
+                props.setProperty(OracleConnection.PROXY_USER_NAME, proxyUser);
+                OracleConnection oracleConnection = (oracle.jdbc.OracleConnection)((org.eclipse.persistence.internal.sessions.AbstractSession)newSession).getAccessor().getConnection(); 
+                oracleConnection.openProxySession(OracleConnection.PROXYTYPE_USER_NAME, props);
+                // close proxy session
+                oracleConnection.close(OracleConnection.PROXY_SESSION);
+            } catch (Exception exception) {
+                errorMsg += createErrorMsgProxyFailed(false);
+            }
+    
+            // try to open proxy session using proxyUser2
+            try {
+                Properties props = new Properties();
+                props.setProperty(OracleConnection.PROXY_USER_NAME, proxyUser2);
+                OracleConnection oracleConnection = (oracle.jdbc.OracleConnection)((org.eclipse.persistence.internal.sessions.AbstractSession)newSession).getAccessor().getConnection(); 
+                oracleConnection.openProxySession(OracleConnection.PROXYTYPE_USER_NAME, props);
+                // close proxy session
+                oracleConnection.close(OracleConnection.PROXY_SESSION);
+            } catch (Exception exception) {
+                errorMsg += createErrorMsgProxy2Failed(false);
+            }
         }
 
         // kill newSession, reconnect the original session.

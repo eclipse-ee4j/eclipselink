@@ -46,7 +46,7 @@ public class ProxyAuthenticationCustomizerTestModel extends TestModel {
         // verifies that all the users correctly setup in the db.
         String errorMsg = ProxyAuthenticationUsersAndProperties.verify((DatabaseSession)getSession());
         if(errorMsg.length() > 0) {
-            throw new TestWarningException(errorMsg);
+            throw new TestProblemException(errorMsg);
         }
     }
     
