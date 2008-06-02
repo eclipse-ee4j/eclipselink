@@ -15,7 +15,7 @@ package org.eclipse.persistence.tools.workbench.test.models.projects;
 import org.eclipse.persistence.tools.workbench.test.models.eis.employee.NormalHoursTransformer;
 
 import org.eclipse.persistence.tools.workbench.mappingsmodel.descriptor.xml.MWEisDescriptor;
-import org.eclipse.persistence.tools.workbench.mappingsmodel.descriptor.xml.MWEisPrimaryKeyPolicy;
+import org.eclipse.persistence.tools.workbench.mappingsmodel.descriptor.xml.MWXmlPrimaryKeyPolicy;
 import org.eclipse.persistence.tools.workbench.mappingsmodel.descriptor.xml.MWEisReturningPolicy;
 import org.eclipse.persistence.tools.workbench.mappingsmodel.descriptor.xml.MWEisTransactionalPolicy;
 import org.eclipse.persistence.tools.workbench.mappingsmodel.descriptor.xml.MWRootEisDescriptor;
@@ -74,7 +74,7 @@ public class ReturningPolicyEisProject extends XmlTestProject{
         MWClass employeeClass = employeeDescriptor.getMWClass();
 		
 		employeeDescriptor.setSchemaContext(employeeElement);
-        MWEisPrimaryKeyPolicy primaryKeyPolicy = ((MWEisTransactionalPolicy) employeeDescriptor.getTransactionalPolicy()).getPrimaryKeyPolicy();
+        MWXmlPrimaryKeyPolicy primaryKeyPolicy = ((MWEisTransactionalPolicy) employeeDescriptor.getTransactionalPolicy()).getPrimaryKeyPolicy();
         primaryKeyPolicy.addPrimaryKey("@id");
 
         MWEisQueryManager queryManager = (MWEisQueryManager) employeeDescriptor.getQueryManager();

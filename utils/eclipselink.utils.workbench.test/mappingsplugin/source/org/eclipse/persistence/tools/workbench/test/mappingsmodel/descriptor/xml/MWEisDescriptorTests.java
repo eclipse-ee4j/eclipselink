@@ -27,7 +27,7 @@ import org.eclipse.persistence.tools.workbench.mappingsmodel.ProblemConstants;
 import org.eclipse.persistence.tools.workbench.mappingsmodel.descriptor.InterfaceDescriptorCreationException;
 import org.eclipse.persistence.tools.workbench.mappingsmodel.descriptor.xml.MWCompositeEisDescriptor;
 import org.eclipse.persistence.tools.workbench.mappingsmodel.descriptor.xml.MWEisDescriptor;
-import org.eclipse.persistence.tools.workbench.mappingsmodel.descriptor.xml.MWEisPrimaryKeyPolicy;
+import org.eclipse.persistence.tools.workbench.mappingsmodel.descriptor.xml.MWXmlPrimaryKeyPolicy;
 import org.eclipse.persistence.tools.workbench.mappingsmodel.descriptor.xml.MWEisTransactionalPolicy;
 import org.eclipse.persistence.tools.workbench.mappingsmodel.descriptor.xml.MWRootEisDescriptor;
 import org.eclipse.persistence.tools.workbench.mappingsmodel.project.xml.MWEisProject;
@@ -67,7 +67,7 @@ public class MWEisDescriptorTests extends ModelProblemsTestCase {
 		checkEisDescriptorsForFalseFailures(errorName);
 		
 		MWRootEisDescriptor employeeDescriptor = (MWRootEisDescriptor) this.getEmployeeEisDescriptor();
-		MWEisPrimaryKeyPolicy pkPolicy = ((MWEisTransactionalPolicy) employeeDescriptor.getTransactionalPolicy()).getPrimaryKeyPolicy();
+		MWXmlPrimaryKeyPolicy pkPolicy = ((MWEisTransactionalPolicy) employeeDescriptor.getTransactionalPolicy()).getPrimaryKeyPolicy();
 		Collection primaryKeyXpaths = new ArrayList();
 		for (Iterator stream = pkPolicy.primaryKeyXpaths(); stream.hasNext(); ) {
 			primaryKeyXpaths.add(stream.next());

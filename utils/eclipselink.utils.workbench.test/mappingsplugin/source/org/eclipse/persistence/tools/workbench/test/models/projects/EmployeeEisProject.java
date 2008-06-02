@@ -20,7 +20,7 @@ import org.eclipse.persistence.tools.workbench.mappingsmodel.descriptor.MWClassI
 import org.eclipse.persistence.tools.workbench.mappingsmodel.descriptor.MWDescriptorInterfaceAliasPolicy;
 import org.eclipse.persistence.tools.workbench.mappingsmodel.descriptor.xml.MWCompositeEisDescriptor;
 import org.eclipse.persistence.tools.workbench.mappingsmodel.descriptor.xml.MWEisDescriptorInheritancePolicy;
-import org.eclipse.persistence.tools.workbench.mappingsmodel.descriptor.xml.MWEisPrimaryKeyPolicy;
+import org.eclipse.persistence.tools.workbench.mappingsmodel.descriptor.xml.MWXmlPrimaryKeyPolicy;
 import org.eclipse.persistence.tools.workbench.mappingsmodel.descriptor.xml.MWEisTransactionalPolicy;
 import org.eclipse.persistence.tools.workbench.mappingsmodel.descriptor.xml.MWRootEisDescriptor;
 import org.eclipse.persistence.tools.workbench.mappingsmodel.descriptor.xml.MWXmlClassIndicatorFieldPolicy;
@@ -219,7 +219,7 @@ public class EmployeeEisProject
 		transactionalPolicy.getRefreshCachePolicy().setDisableCacheHits(true);
 		transactionalPolicy.getRefreshCachePolicy().setAlwaysRefreshCache(true);
 		
-		MWEisPrimaryKeyPolicy primaryKeyPolicy = transactionalPolicy.getPrimaryKeyPolicy();
+		MWXmlPrimaryKeyPolicy primaryKeyPolicy = transactionalPolicy.getPrimaryKeyPolicy();
 		primaryKeyPolicy.addPrimaryKey("@id");
 		
 		MWEisQueryManager queryManager = (MWEisQueryManager) employeeDescriptor.getQueryManager();
@@ -338,7 +338,7 @@ public class EmployeeEisProject
 		transactionalPolicy.getRefreshCachePolicy().setDisableCacheHits(true);
 		transactionalPolicy.getRefreshCachePolicy().setAlwaysRefreshCache(true);
 		
-		MWEisPrimaryKeyPolicy primaryKeyPolicy = transactionalPolicy.getPrimaryKeyPolicy();
+		MWXmlPrimaryKeyPolicy primaryKeyPolicy = transactionalPolicy.getPrimaryKeyPolicy();
 			primaryKeyPolicy.addPrimaryKey("id/text()");
 		
 		MWXmlDirectMapping idMapping = 
