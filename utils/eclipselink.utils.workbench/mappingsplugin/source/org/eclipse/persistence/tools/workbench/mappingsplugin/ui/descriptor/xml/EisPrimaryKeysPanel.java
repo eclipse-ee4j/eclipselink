@@ -22,8 +22,8 @@ import javax.swing.ListCellRenderer;
 import org.eclipse.persistence.tools.workbench.framework.context.WorkbenchContextHolder;
 import org.eclipse.persistence.tools.workbench.framework.ui.view.AbstractSubjectPanel;
 import org.eclipse.persistence.tools.workbench.framework.uitools.AddRemoveListPanel;
-import org.eclipse.persistence.tools.workbench.mappingsmodel.descriptor.xml.MWEisPrimaryKeyPolicy;
-import org.eclipse.persistence.tools.workbench.mappingsmodel.descriptor.xml.MWRootEisDescriptor;
+import org.eclipse.persistence.tools.workbench.mappingsmodel.descriptor.xml.MWXmlDescriptor;
+import org.eclipse.persistence.tools.workbench.mappingsmodel.descriptor.xml.MWXmlPrimaryKeyPolicy;
 import org.eclipse.persistence.tools.workbench.mappingsmodel.xml.MWXmlField;
 import org.eclipse.persistence.tools.workbench.mappingsplugin.ui.xml.XpathChooserDialog;
 import org.eclipse.persistence.tools.workbench.uitools.app.CollectionAspectAdapter;
@@ -94,7 +94,7 @@ final class EisPrimaryKeysPanel
 	}
 	
 	private Object[] addPrimaryKeys() {
-		MWEisPrimaryKeyPolicy primaryKeyPolicy = this.eisDescriptor().primaryKeyPolicy();
+		MWXmlPrimaryKeyPolicy primaryKeyPolicy = this.xmlDescriptor().primaryKeyPolicy();
 		MWXmlField primaryKey = primaryKeyPolicy.buildEmptyPrimaryKey();
 		
 		XpathChooserDialog.promptToSelectXpath(primaryKey, this.getWorkbenchContext());
@@ -110,19 +110,19 @@ final class EisPrimaryKeysPanel
 	
 	private void removePrimaryKeys(Object[] primaryKeys) {
 		for (int i = 0; i < primaryKeys.length; i ++) {
-			this.eisDescriptor().primaryKeyPolicy().removePrimaryKey((MWXmlField) primaryKeys[i]);
+			this.xmlDescriptor().primaryKeyPolicy().removePrimaryKey((MWXmlField) primaryKeys[i]);
 		}
 	}
 	
 	private ListValueModel buildPrimaryKeysHolder() {
 		return new CollectionListValueModelAdapter(
-			new CollectionAspectAdapter(this.buildPrimaryKeyPolicyHolder(), MWEisPrimaryKeyPolicy.PRIMARY_KEYS_COLLECTION) {
+			new CollectionAspectAdapter(this.buildPrimaryKeyPolicyHolder(), MWXmlPrimaryKeyPolicy.PRIMARY_KEYS_COLLECTION) {
 				protected Iterator getValueFromSubject() {
-					return ((MWEisPrimaryKeyPolicy) this.subject).primaryKeys();
+					return ((MWXmlPrimaryKeyPolicy) this.subject).primaryKeys();
 				}
 				
 				protected int sizeFromSubject() {
-					return ((MWEisPrimaryKeyPolicy) this.subject).primaryKeysSize();
+					return ((MWXmlPrimaryKeyPolicy) this.subject).primaryKeysSize();
 				}
 			}
 		);
@@ -131,7 +131,7 @@ final class EisPrimaryKeysPanel
 	private ValueModel buildPrimaryKeyPolicyHolder() {
 		return new PropertyAspectAdapter(this.getSubjectHolder()) {
 			protected Object getValueFromSubject() {
-				return ((MWRootEisDescriptor) this.subject).primaryKeyPolicy();
+				return ((MWXmlDescriptor) this.subject).primaryKeyPolicy();
 			}
 		};
 	}
@@ -147,8 +147,8 @@ final class EisPrimaryKeysPanel
 	
 	// **************** Internal **********************************************
 	
-	private MWRootEisDescriptor eisDescriptor() {
-		return (MWRootEisDescriptor) this.getSubjectHolder().getValue();
+	private MWXmlDescriptor xmlDescriptor() {
+		return (MWXmlDescriptor) this.getSubjectHolder().getValue();
 	}
 	
 	

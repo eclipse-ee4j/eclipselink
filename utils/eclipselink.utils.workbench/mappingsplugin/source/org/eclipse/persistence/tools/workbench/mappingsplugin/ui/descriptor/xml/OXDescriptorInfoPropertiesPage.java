@@ -87,10 +87,24 @@ final class OXDescriptorInfoPropertiesPage
 		constraints.insets     = new Insets(0, 5, 0, borderInsets.right + 5);
 		panel.add(schemaContextChooser, constraints);
 		
+		// primary keys - panel
+		EisPrimaryKeysPanel primaryKeysPanel = this.buildPrimaryKeysPanel();
+		constraints.gridx		= 0;
+		constraints.gridy		= 1;
+		constraints.gridwidth	= 2;
+		constraints.gridheight	= 1;
+		constraints.weightx		= 1;
+		constraints.weighty		= 0;
+		constraints.fill		= GridBagConstraints.HORIZONTAL;
+		constraints.anchor		= GridBagConstraints.CENTER;
+		constraints.insets		= new Insets(5, 0, 0, 0);
+		panel.add(primaryKeysPanel, constraints);
+		addPaneForAlignment(primaryKeysPanel);
+
 		// any type descriptor check box
 		JCheckBox anyTypeDescriptorCheckBox = this.buildAnyTypeDescriptorCheckBox();
 		constraints.gridx      = 0;
-		constraints.gridy      = 1;
+		constraints.gridy      = 2;
 		constraints.gridwidth  = 2;
 		constraints.gridheight = 1;
 		constraints.weightx    = 1;
@@ -103,7 +117,7 @@ final class OXDescriptorInfoPropertiesPage
 		// document root check box - root element panel
 		GroupBox groupBox = new GroupBox(this.buildDocumentRootCheckBox(), this.buildRootElementPanel());
 		constraints.gridx      = 0;
-		constraints.gridy      = 2;
+		constraints.gridy      = 3;
 		constraints.gridwidth  = 2;
 		constraints.gridheight = 1;
 		constraints.weightx    = 1;
@@ -116,7 +130,7 @@ final class OXDescriptorInfoPropertiesPage
 		// preserve document check box
 		JCheckBox preserveDocumentCheckBox = this.buildPreserveDocumentCheckBox();
 		constraints.gridx      = 0;
-		constraints.gridy      = 3;
+		constraints.gridy      = 4;
 		constraints.gridwidth  = 2;
 		constraints.gridheight = 1;
 		constraints.weightx    = 1;
@@ -129,7 +143,7 @@ final class OXDescriptorInfoPropertiesPage
 		// comment text field
 		JComponent commentPanel = SwingComponentFactory.buildCommentPanel(getSelectionHolder(), resourceRepository());
 		constraints.gridx      = 0;
-		constraints.gridy      = 4;
+		constraints.gridy      = 5;
 		constraints.gridwidth  = 2;
 		constraints.gridheight = 1;
 		constraints.weightx    = 1;
@@ -301,4 +315,11 @@ final class OXDescriptorInfoPropertiesPage
 			}
 		};
 	}
+	
+	// **************** Primary keys ******************************************
+	
+	private EisPrimaryKeysPanel buildPrimaryKeysPanel() {
+		return new EisPrimaryKeysPanel(this.getSelectionHolder(), getWorkbenchContextHolder());
+	}
+	
 }

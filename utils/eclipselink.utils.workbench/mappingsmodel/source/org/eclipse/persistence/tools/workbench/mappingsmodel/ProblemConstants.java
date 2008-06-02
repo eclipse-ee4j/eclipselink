@@ -407,6 +407,9 @@ public final class ProblemConstants
 
 	// *** MWMixedXmlContentMapping ***
 	public static final String MAPPING_ATTRIBUTE_NOT_ASSIGNABLE_TO_COLLECTION				= "0625";
+	
+	// *** MWAbstractXmlReferenceMapping ***
+	public static final String MAPPING_TARGET_NOT_PRIMARY_KEY_ON_REFERENCE_DESCRIPTOR		= "0626";
 
 	// ********************************************************************
 	//		tables, fields, references, etc.

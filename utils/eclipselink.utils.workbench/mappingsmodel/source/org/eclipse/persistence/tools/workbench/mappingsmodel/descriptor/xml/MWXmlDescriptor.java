@@ -439,5 +439,7 @@ public abstract class MWXmlDescriptor
 		NodeReferenceScrubber scrubber = this.buildDefaultRootElementScrubber();
 		this.defaultRootElementHandle = ((handle == null) ? new MWNamedSchemaComponentHandle(this, scrubber) : handle.setScrubber(scrubber));
 	}
+	
+	public abstract MWXmlPrimaryKeyPolicy primaryKeyPolicy();
 
 }

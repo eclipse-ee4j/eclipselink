@@ -19,6 +19,7 @@ import java.util.Vector;
 import org.eclipse.persistence.tools.workbench.mappingsmodel.MWDataField;
 import org.eclipse.persistence.tools.workbench.mappingsmodel.MWModel;
 import org.eclipse.persistence.tools.workbench.mappingsmodel.descriptor.MWAbstractTransactionalPolicy;
+import org.eclipse.persistence.tools.workbench.mappingsmodel.descriptor.MWTransactionalPolicy;
 import org.eclipse.persistence.tools.workbench.mappingsmodel.schema.MWSchemaContextComponent;
 import org.eclipse.persistence.tools.workbench.mappingsmodel.xml.MWXmlField;
 import org.eclipse.persistence.tools.workbench.mappingsmodel.xml.MWXmlNode;
@@ -36,7 +37,7 @@ import org.eclipse.persistence.oxm.XMLDescriptor;
 import org.eclipse.persistence.oxm.mappings.XMLCompositeCollectionMapping;
 
 
-public final class MWEisPrimaryKeyPolicy 
+public final class MWXmlPrimaryKeyPolicy 
 	extends MWModel
 	implements MWXmlNode, MWXpathContext
 {
@@ -50,11 +51,11 @@ public final class MWEisPrimaryKeyPolicy
     // **************** Constructors ******************************************
 		
 	/** Default constructor - for TopLink use only. */
-	private MWEisPrimaryKeyPolicy() {
+	private MWXmlPrimaryKeyPolicy() {
 		super();
 	}
 	
-	MWEisPrimaryKeyPolicy(MWAbstractTransactionalPolicy parent) {
+	MWXmlPrimaryKeyPolicy(MWAbstractTransactionalPolicy parent) {
 		super(parent);
 	}
 
@@ -118,7 +119,11 @@ public final class MWEisPrimaryKeyPolicy
 	// **************** MWXpathContext implementation  ************************
 	
 	public MWSchemaContextComponent schemaContext(MWXmlField xmlField) {
-		return this.eisDescriptor().getSchemaContext();
+		return this.xmlDescriptor().getSchemaContext();
+	}
+	
+	private MWXmlDescriptor xmlDescriptor() {
+		return (MWXmlDescriptor)getParent().getParent();
 	}
 	
 	public MWXpathSpec xpathSpec(MWXmlField xmlField) {
@@ -139,19 +144,7 @@ public final class MWEisPrimaryKeyPolicy
 				return true;
 			}
 		};
-	}
-	
-	
-	// **************** Convenience *******************************************
-	
-	private MWEisTransactionalPolicy transactionalPolicy() {
-		return (MWEisTransactionalPolicy) this.getParent();
-	}
-	
-	private MWRootEisDescriptor eisDescriptor() {
-		return this.transactionalPolicy().descriptor();
-	}
-	
+	}	
 	
 	// **************** Model synchronization *********************************
 	
@@ -182,7 +175,7 @@ public final class MWEisPrimaryKeyPolicy
 	
 	public static XMLDescriptor buildDescriptor() {
 		XMLDescriptor descriptor = new XMLDescriptor();
-		descriptor.setJavaClass(MWEisPrimaryKeyPolicy.class);
+		descriptor.setJavaClass(MWXmlPrimaryKeyPolicy.class);
         		
 		XMLCompositeCollectionMapping primaryKeysMapping = new XMLCompositeCollectionMapping();
 		primaryKeysMapping.setReferenceClass(MWXmlField.class);

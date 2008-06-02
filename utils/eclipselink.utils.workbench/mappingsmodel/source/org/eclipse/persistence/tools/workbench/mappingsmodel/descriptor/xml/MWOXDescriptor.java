@@ -12,16 +12,25 @@
 ******************************************************************************/
 package org.eclipse.persistence.tools.workbench.mappingsmodel.descriptor.xml;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Vector;
 
 import javax.xml.namespace.QName;
 
 import org.eclipse.persistence.tools.workbench.mappingsmodel.ProblemConstants;
+import org.eclipse.persistence.tools.workbench.mappingsmodel.descriptor.MWAdvancedPropertyAdditionException;
 import org.eclipse.persistence.tools.workbench.mappingsmodel.descriptor.MWDescriptor;
 import org.eclipse.persistence.tools.workbench.mappingsmodel.descriptor.MWDescriptorInheritancePolicy;
+import org.eclipse.persistence.tools.workbench.mappingsmodel.descriptor.MWDescriptorPolicy;
+import org.eclipse.persistence.tools.workbench.mappingsmodel.descriptor.MWTransactionalDescriptor;
+import org.eclipse.persistence.tools.workbench.mappingsmodel.descriptor.MWTransactionalPolicy;
 import org.eclipse.persistence.tools.workbench.mappingsmodel.handles.MWHandle;
 import org.eclipse.persistence.tools.workbench.mappingsmodel.handles.MWNamedSchemaComponentHandle;
 import org.eclipse.persistence.tools.workbench.mappingsmodel.handles.MWHandle.NodeReferenceScrubber;
+import org.eclipse.persistence.tools.workbench.mappingsmodel.mapping.MWMapping;
 import org.eclipse.persistence.tools.workbench.mappingsmodel.mapping.MWMappingFactory;
 import org.eclipse.persistence.tools.workbench.mappingsmodel.mapping.xml.MWAbstractAnyMapping;
 import org.eclipse.persistence.tools.workbench.mappingsmodel.mapping.xml.MWAnyAttributeMapping;
@@ -38,6 +47,8 @@ import org.eclipse.persistence.tools.workbench.mappingsmodel.project.MWProjectDe
 import org.eclipse.persistence.tools.workbench.mappingsmodel.project.xml.MWOXProject;
 import org.eclipse.persistence.tools.workbench.mappingsmodel.project.xml.MWXmlProject;
 import org.eclipse.persistence.tools.workbench.mappingsmodel.schema.MWComplexTypeDefinition;
+import org.eclipse.persistence.tools.workbench.utility.CollectionTools;
+import org.eclipse.persistence.tools.workbench.utility.iterators.TransformationIterator;
 import org.eclipse.persistence.tools.workbench.utility.node.Node;
 
 import org.eclipse.persistence.descriptors.ClassDescriptor;
@@ -54,7 +65,7 @@ import org.eclipse.persistence.oxm.mappings.XMLDirectMapping;
 import org.eclipse.persistence.oxm.mappings.XMLTransformationMapping;
 
 public final class MWOXDescriptor 
-	extends MWXmlDescriptor 
+	extends MWXmlDescriptor implements MWTransactionalDescriptor
 {
 	private volatile boolean anyTypeDescriptor;
 		public final static String ANY_TYPE_PROPERTY = "anyTypeDescriptor";
@@ -181,6 +192,11 @@ public final class MWOXDescriptor
 		return this.preserveDocument;
 	}
 	
+	//	 **************** Inheritance policy ************************************
+	@Override
+	protected MWTransactionalPolicy buildDefaultTransactionalPolicy() {
+		return new MWOXTransactionalPolicy(this);
+	}
 	
 	// **************** Inheritance policy ************************************
 
@@ -385,4 +401,69 @@ public final class MWOXDescriptor
 		this.defaultRootElementTypeHandle = ((handle == null) ? new MWNamedSchemaComponentHandle(this, scrubber) : handle.setScrubber(scrubber));
 	}
 
+	// **************** Primary key policy ************************************
+	
+	public MWXmlPrimaryKeyPolicy primaryKeyPolicy() {
+		return ((MWOXTransactionalPolicy) this.getTransactionalPolicy()).getPrimaryKeyPolicy();
+	}
+
+	// - returns an iterator on the attributes mapped by all mappings obtained by
+	//   getPrimaryKeyMappings()
+	public Iterator primaryKeyAttributes() {
+		return new TransformationIterator(this.primaryKeyMappings()) {
+			protected Object transform(Object next) {
+				return ((MWMapping) next).getInstanceVariable();
+			}
+		};
+	}		
+		
+		
+	// - returns an iterator on all mappings in this descriptor that map to primary key fields,
+	//   plus all mappings in this descriptor's superdescriptors that do the same
+	public Iterator primaryKeyMappings() {
+		Collection pkMappings = new Vector();
+		
+		for (Iterator stream = primaryKeyPolicy().primaryKeyXpaths(); stream.hasNext(); ) {
+			CollectionTools.addAll(pkMappings, mappingsForXpath((String) stream.next()));
+		}
+		
+        MWDescriptor parentDescriptor = getInheritancePolicy().getParentDescriptor();
+        //TODO remove the instanceof put the primaryKeyMapping() api on MWEisDescriptor and just return an empty collection
+		if (parentDescriptor != null && parentDescriptor instanceof MWRootEisDescriptor) {
+			CollectionTools.addAll(pkMappings, ((MWRootEisDescriptor) parentDescriptor).primaryKeyMappings());
+		}
+		
+		return pkMappings.iterator();			
+	}
+
+	/** - returns an iterator on all mappings that map to the given xpath */
+	private Iterator mappingsForXpath(String xpath) {
+		Collection mappings = new ArrayList();
+		
+		for (Iterator stream = this.mappings(); stream.hasNext(); ) {
+			MWMapping mapping = (MWMapping) stream.next();
+			//TODO addWrittenFieldsTo(Collection) is not fully implemented in the mappings model
+			Collection writtenFields = new ArrayList();
+			mapping.addWrittenFieldsTo(writtenFields);
+			if (writtenFields.contains(xpath)) {
+				mappings.add(mapping);
+			}
+		}
+		
+		return mappings.iterator();
+	}
+	
+	//**************************** Returning Policy ***************************************************
+	
+	public MWDescriptorPolicy getReturningPolicy() {
+		throw new UnsupportedOperationException("Returning Policy not supported on OX descriptor");
+	}
+	
+	public void addReturningPolicy() throws MWAdvancedPropertyAdditionException {
+		throw new UnsupportedOperationException("Returning Policy not supported on OX descriptor");
+	}
+	
+	public void removeReturningPolicy() {
+		throw new UnsupportedOperationException("Returning Policy not supported on OX descriptor");
+	}
 }

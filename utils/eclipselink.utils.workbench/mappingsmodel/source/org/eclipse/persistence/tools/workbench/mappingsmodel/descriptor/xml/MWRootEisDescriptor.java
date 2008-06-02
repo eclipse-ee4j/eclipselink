@@ -18,6 +18,10 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Vector;
 
+import org.eclipse.persistence.descriptors.ClassDescriptor;
+import org.eclipse.persistence.eis.EISDescriptor;
+import org.eclipse.persistence.oxm.XMLDescriptor;
+import org.eclipse.persistence.oxm.mappings.XMLCompositeObjectMapping;
 import org.eclipse.persistence.tools.workbench.mappingsmodel.MWDataField;
 import org.eclipse.persistence.tools.workbench.mappingsmodel.ProblemConstants;
 import org.eclipse.persistence.tools.workbench.mappingsmodel.descriptor.MWAdvancedPropertyAdditionException;
@@ -38,12 +42,6 @@ import org.eclipse.persistence.tools.workbench.mappingsmodel.query.MWQueryManage
 import org.eclipse.persistence.tools.workbench.utility.CollectionTools;
 import org.eclipse.persistence.tools.workbench.utility.iterators.TransformationIterator;
 import org.eclipse.persistence.tools.workbench.utility.node.Node;
-
-import org.eclipse.persistence.descriptors.ClassDescriptor;
-import org.eclipse.persistence.descriptors.DescriptorEvent;
-import org.eclipse.persistence.eis.EISDescriptor;
-import org.eclipse.persistence.oxm.XMLDescriptor;
-import org.eclipse.persistence.oxm.mappings.XMLCompositeObjectMapping;
 
 
 public final class MWRootEisDescriptor extends MWEisDescriptor 
@@ -132,7 +130,7 @@ public final class MWRootEisDescriptor extends MWEisDescriptor
 
 	// **************** Primary key policy ************************************
 	
-	public MWEisPrimaryKeyPolicy primaryKeyPolicy() {
+	public MWXmlPrimaryKeyPolicy primaryKeyPolicy() {
 		return ((MWEisTransactionalPolicy) this.getTransactionalPolicy()).getPrimaryKeyPolicy();
 	}
 

@@ -17,7 +17,9 @@ import java.util.List;
 import org.eclipse.persistence.tools.workbench.mappingsmodel.MWModel;
 import org.eclipse.persistence.tools.workbench.mappingsmodel.descriptor.relational.MWRelationalTransactionalPolicy;
 import org.eclipse.persistence.tools.workbench.mappingsmodel.descriptor.xml.MWEisTransactionalPolicy;
+import org.eclipse.persistence.tools.workbench.mappingsmodel.descriptor.xml.MWOXTransactionalPolicy;
 import org.eclipse.persistence.tools.workbench.mappingsmodel.meta.MWClass;
+import org.eclipse.persistence.tools.workbench.mappingsmodel.query.MWQueryManager;
 import org.eclipse.persistence.tools.workbench.mappingsmodel.query.MWQueryManager;
 import org.eclipse.persistence.tools.workbench.utility.node.Node;
 
@@ -58,6 +60,7 @@ public abstract class MWAbstractTransactionalPolicy extends MWModel
 		ip.setClassIndicatorFieldName("@type");
 		ip.addClassIndicator(MWRelationalTransactionalPolicy.class, "relational");
 		ip.addClassIndicator(MWEisTransactionalPolicy.class, "eis");
+		ip.addClassIndicator(MWOXTransactionalPolicy.class, "ox");
 
         ((XMLDirectMapping) descriptor.addDirectMapping("descriptorAlias", "descriptor-alias/text()")).setNullValue("");
 

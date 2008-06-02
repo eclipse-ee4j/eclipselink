@@ -64,4 +64,9 @@ public final class MWCompositeEisDescriptor
 	public boolean isRootDescriptor() {
 		return false;
 	}
+	
+	@Override
+	public MWXmlPrimaryKeyPolicy primaryKeyPolicy() {
+		throw new UnsupportedOperationException("primary keys not supported on composite descriptors");
+	}
 }

@@ -12,11 +12,10 @@
 ******************************************************************************/
 package org.eclipse.persistence.tools.workbench.mappingsmodel.descriptor;
 
+import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.tools.workbench.mappingsmodel.MWNode;
 import org.eclipse.persistence.tools.workbench.mappingsmodel.query.MWQueryManager;
 import org.eclipse.persistence.tools.workbench.utility.node.NodeModel;
-
-import org.eclipse.persistence.descriptors.ClassDescriptor;
 
 public interface MWTransactionalPolicy 
 	extends MWNode, NodeModel

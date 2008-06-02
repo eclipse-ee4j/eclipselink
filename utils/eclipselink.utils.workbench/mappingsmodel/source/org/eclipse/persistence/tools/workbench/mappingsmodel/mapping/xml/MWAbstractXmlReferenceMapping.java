@@ -21,6 +21,7 @@ import java.util.Vector;
 import org.eclipse.persistence.tools.workbench.mappingsmodel.MWDataField;
 import org.eclipse.persistence.tools.workbench.mappingsmodel.ProblemConstants;
 import org.eclipse.persistence.tools.workbench.mappingsmodel.descriptor.MWDescriptor;
+import org.eclipse.persistence.tools.workbench.mappingsmodel.descriptor.xml.MWOXDescriptor;
 import org.eclipse.persistence.tools.workbench.mappingsmodel.descriptor.xml.MWXmlDescriptor;
 import org.eclipse.persistence.tools.workbench.mappingsmodel.handles.MWDescriptorHandle;
 import org.eclipse.persistence.tools.workbench.mappingsmodel.handles.MWHandle;
@@ -35,6 +36,7 @@ import org.eclipse.persistence.tools.workbench.mappingsmodel.xml.MWXmlNode;
 import org.eclipse.persistence.tools.workbench.mappingsmodel.xml.MWXpathContext;
 import org.eclipse.persistence.tools.workbench.mappingsmodel.xml.MWXpathSpec;
 import org.eclipse.persistence.tools.workbench.mappingsmodel.xml.SchemaChange;
+import org.eclipse.persistence.tools.workbench.utility.CollectionTools;
 import org.eclipse.persistence.tools.workbench.utility.iterators.CloneListIterator;
 import org.eclipse.persistence.tools.workbench.utility.node.Node;
 
@@ -283,5 +285,40 @@ public abstract class MWAbstractXmlReferenceMapping extends MWAbstractReferenceM
 			this.checkReferenceDescriptorCachIsolation(newProblems);
 		}
 	}
+		
+	//********************** Validation ***************************************
+	
+	@Override
+	protected void addProblemsTo(List newProblems) {
+		super.addProblemsTo(newProblems);
+		
+		checkTargetPrimaryKey(newProblems);
+	}
+	
+	@Override
+	protected void checkReferenceDescriptorCachIsolation(List newProblems) {
+		// doesn't apply to OX projects
+	}
 
+	protected void checkTargetPrimaryKey(List newProblems) {
+		Iterator<MWXmlFieldPair> fieldPairs = xmlFieldPairs();
+		 
+		while(fieldPairs.hasNext()) {
+			MWXmlFieldPair pair = fieldPairs.next();
+			MWXmlField targetField = pair.getTargetXmlField();
+			MWOXDescriptor refDesc = (MWOXDescriptor)getReferenceDescriptor();
+			Collection pkFieldNames = new Vector(refDesc.primaryKeyPolicy().primaryKeysSize());
+			Iterator pkFieldIter = refDesc.primaryKeyPolicy().primaryKeys();
+			while (pkFieldIter.hasNext()) {
+				pkFieldNames.add(((MWXmlField)pkFieldIter.next()).fieldName());
+			}
+			
+			if (pkFieldNames.contains(targetField.fieldName())) {
+				continue;
+			} else {
+				newProblems.add(this.buildProblem(ProblemConstants.MAPPING_TARGET_NOT_PRIMARY_KEY_ON_REFERENCE_DESCRIPTOR, targetField.fieldName()));
+			}
+		}
+		
+	}
 }

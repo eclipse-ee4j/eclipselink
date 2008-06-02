@@ -21,6 +21,7 @@ import org.eclipse.persistence.tools.workbench.mappingsmodel.MWModel;
 import org.eclipse.persistence.tools.workbench.mappingsmodel.ProblemConstants;
 import org.eclipse.persistence.tools.workbench.mappingsmodel.descriptor.relational.MWTableDescriptorLockingPolicy;
 import org.eclipse.persistence.tools.workbench.mappingsmodel.descriptor.xml.MWEisDescriptorLockingPolicy;
+import org.eclipse.persistence.tools.workbench.mappingsmodel.descriptor.xml.MWOXDescriptorLockingPolicy;
 import org.eclipse.persistence.tools.workbench.mappingsmodel.mapping.MWMapping;
 import org.eclipse.persistence.tools.workbench.utility.node.Node;
 
@@ -116,6 +117,7 @@ public abstract class MWDescriptorLockingPolicy extends MWModel implements MWLoc
 		ip.setClassIndicatorFieldName("@type");
 		ip.addClassIndicator(MWTableDescriptorLockingPolicy.class, "relational");
 		ip.addClassIndicator(MWEisDescriptorLockingPolicy.class, "eis");
+		ip.addClassIndicator(MWOXDescriptorLockingPolicy.class, "ox");
 	
 		return descriptor;
 	}

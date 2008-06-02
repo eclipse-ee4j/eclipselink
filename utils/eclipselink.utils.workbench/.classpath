@@ -15,6 +15,5 @@
 	<classpathentry kind="lib" path="/eclipselink.utils.workbench.lib/compile/ant.jar"/>
 	<classpathentry kind="lib" path="/eclipselink.utils.workbench.lib/compile/xercesImpl.jar"/>
 	<classpathentry kind="var" path="ECLIPSELINK_JAR" sourcepath="/ECLIPSELINK_SRC_JAR"/>
-	<classpathentry kind="lib" path="/eclipselink.utils.workbench.lib/run/persistence.jar"/>
 	<classpathentry kind="output" path="class"/>
 </classpath>

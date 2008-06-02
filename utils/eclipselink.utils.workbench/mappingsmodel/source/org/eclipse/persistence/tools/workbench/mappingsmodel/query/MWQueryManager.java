@@ -24,6 +24,7 @@ import org.eclipse.persistence.tools.workbench.mappingsmodel.descriptor.MWTransa
 import org.eclipse.persistence.tools.workbench.mappingsmodel.meta.MWClass;
 import org.eclipse.persistence.tools.workbench.mappingsmodel.query.relational.MWRelationalQueryManager;
 import org.eclipse.persistence.tools.workbench.mappingsmodel.query.xml.MWEisQueryManager;
+import org.eclipse.persistence.tools.workbench.mappingsmodel.query.xml.MWOXQueryManager;
 import org.eclipse.persistence.tools.workbench.utility.CollectionTools;
 import org.eclipse.persistence.tools.workbench.utility.iterators.CloneIterator;
 import org.eclipse.persistence.tools.workbench.utility.node.Node;
@@ -136,12 +137,11 @@ public abstract class MWQueryManager extends MWModel {
 		return (MWReadAllQuery) this.addQuery(buildReadAllQuery(queryName));
 	}
 	
+	public abstract boolean supportsReportQueries();
+
 	public abstract MWReadObjectQuery buildReadObjectQuery(String queryName);
 	
 	public abstract MWReadAllQuery buildReadAllQuery(String queryName);
-	
-	
-	public abstract boolean supportsReportQueries();
 
 	protected MWQuery addQuery(MWQuery query) {
 		this.queries.add(query);
@@ -233,6 +233,7 @@ public abstract class MWQueryManager extends MWModel {
 		ip.setClassIndicatorFieldName("@type");
 		ip.addClassIndicator(MWRelationalQueryManager.class, "relational");
 		ip.addClassIndicator(MWEisQueryManager.class, "eis");
+		ip.addClassIndicator(MWOXQueryManager.class, "ox");
 
 
 		// DTFs

@@ -389,6 +389,9 @@ public class ProblemsBundle extends ListResourceBundle
 		
 		// *** MWMixedXmlContentMapping ***
 		{"0625", "The class selected for the container policy must be assigneable to type java.util.Collection"},
+		
+		// *** MWAbstractXmlReferenceMapping ***
+		{"0626", "The selected target field \"{0}\" is not a primary key on the referenced descriptor."},
 
 		// ********************************************************************
 		//		Database, Tables, Fields, etc. 

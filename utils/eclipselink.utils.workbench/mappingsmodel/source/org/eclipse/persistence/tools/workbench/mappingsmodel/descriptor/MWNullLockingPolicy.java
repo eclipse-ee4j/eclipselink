@@ -19,9 +19,9 @@ import org.eclipse.persistence.tools.workbench.mappingsmodel.xml.SchemaChange;
 
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 
-final class MWNullLockingPolicy extends MWModel implements MWLockingPolicy, MWXmlNode {
+final public class MWNullLockingPolicy extends MWModel implements MWLockingPolicy, MWXmlNode {
 
-    MWNullLockingPolicy(MWTransactionalPolicy parent) {
+    public MWNullLockingPolicy(MWTransactionalPolicy parent) {
         super(parent);
     }
     

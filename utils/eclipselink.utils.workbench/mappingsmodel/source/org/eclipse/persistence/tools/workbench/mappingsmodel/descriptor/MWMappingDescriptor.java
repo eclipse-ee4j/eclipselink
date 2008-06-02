@@ -21,8 +21,11 @@ import java.util.List;
 import java.util.TreeSet;
 import java.util.Vector;
 
+import org.eclipse.persistence.descriptors.ClassDescriptor;
+import org.eclipse.persistence.oxm.XMLDescriptor;
+import org.eclipse.persistence.oxm.mappings.XMLCompositeCollectionMapping;
+import org.eclipse.persistence.oxm.mappings.XMLCompositeObjectMapping;
 import org.eclipse.persistence.tools.workbench.mappingsmodel.MWDataField;
-import org.eclipse.persistence.tools.workbench.mappingsmodel.MWModel;
 import org.eclipse.persistence.tools.workbench.mappingsmodel.ProblemConstants;
 import org.eclipse.persistence.tools.workbench.mappingsmodel.descriptor.relational.MWInterfaceDescriptor;
 import org.eclipse.persistence.tools.workbench.mappingsmodel.handles.MWAttributeHandle;
@@ -31,7 +34,6 @@ import org.eclipse.persistence.tools.workbench.mappingsmodel.handles.MWHandle.No
 import org.eclipse.persistence.tools.workbench.mappingsmodel.mapping.MWDirectCollectionMapping;
 import org.eclipse.persistence.tools.workbench.mappingsmodel.mapping.MWDirectMapMapping;
 import org.eclipse.persistence.tools.workbench.mappingsmodel.mapping.MWDirectMapping;
-import org.eclipse.persistence.tools.workbench.mappingsmodel.mapping.MWLegacyUnmappedMapping;
 import org.eclipse.persistence.tools.workbench.mappingsmodel.mapping.MWMapping;
 import org.eclipse.persistence.tools.workbench.mappingsmodel.mapping.MWMappingFactory;
 import org.eclipse.persistence.tools.workbench.mappingsmodel.mapping.MWReferenceMapping;
@@ -51,12 +53,6 @@ import org.eclipse.persistence.tools.workbench.utility.iterators.FilteringIterat
 import org.eclipse.persistence.tools.workbench.utility.iterators.TransformationIterator;
 import org.eclipse.persistence.tools.workbench.utility.node.Node;
 import org.eclipse.persistence.tools.workbench.utility.node.Problem;
-
-import org.eclipse.persistence.descriptors.ClassDescriptor;
-import org.eclipse.persistence.descriptors.DescriptorEvent;
-import org.eclipse.persistence.oxm.XMLDescriptor;
-import org.eclipse.persistence.oxm.mappings.XMLCompositeCollectionMapping;
-import org.eclipse.persistence.oxm.mappings.XMLCompositeObjectMapping;
 
 public abstract class MWMappingDescriptor
 	extends MWDescriptor
