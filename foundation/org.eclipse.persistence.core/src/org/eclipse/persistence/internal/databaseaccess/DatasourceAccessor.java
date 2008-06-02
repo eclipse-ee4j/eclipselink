@@ -402,6 +402,7 @@ public abstract class DatasourceAccessor implements Accessor {
             }
             setLogin(login);
             this.setDatasourcePlatform((DatasourcePlatform)session.getDatasourceLogin().getDatasourcePlatform());
+            createCustomizer(session);
             try {
                 connectInternal(login, session);
                 this.isInTransaction = false;
@@ -462,9 +463,7 @@ public abstract class DatasourceAccessor implements Accessor {
         }
         session.incrementProfile(SessionProfiler.TlDisconnects);
         session.startOperationProfile(SessionProfiler.CONNECT);
-        if(customizer != null && customizer.isActive()) {
-            customizer.clear();
-        }
+        releaseCustomizer();
         closeDatasourceConnection();
         this.datasourceConnection = null;
         this.isInTransaction = true;
@@ -730,15 +729,14 @@ public abstract class DatasourceAccessor implements Accessor {
      * then the new customizer set onto accessor, caching the old customizer so that it could be restored later.
      */
     public void createCustomizer(AbstractSession session) {
-        // Create a new customizer. The platform may be null if the accessor hasn't yet been connected. 
-        ConnectionCustomizer newCustomizer;
-        if(platform != null) {
-            newCustomizer = platform.createConnectionCustomizer(this, session);
-        } else {
-            newCustomizer = ((DatasourcePlatform)session.getDatasourcePlatform()).createConnectionCustomizer(this, session);
-        }
-        
+        ConnectionCustomizer newCustomizer;        
         if(customizer == null) {
+            // Create a new customizer. The platform may be null if the accessor hasn't yet been connected. 
+            if(platform != null) {
+                newCustomizer = platform.createConnectionCustomizer(this, session);
+            } else {
+                newCustomizer = ((DatasourcePlatform)session.getDatasourcePlatform()).createConnectionCustomizer(this, session);
+            }
             if(newCustomizer == null) {
                 // Neither old nor new exists - nothing to do.
             } else {
@@ -746,6 +744,16 @@ public abstract class DatasourceAccessor implements Accessor {
                 setCustomizer(newCustomizer);
             }
         } else {
+            // the passed session has built the old customizer - no need to build the new one.
+            if(customizer.getSession() == session) {
+                return;
+            }
+            // Create a new customizer. The platform may be null if the accessor hasn't yet been connected. 
+            if(platform != null) {
+                newCustomizer = platform.createConnectionCustomizer(this, session);
+            } else {
+                newCustomizer = ((DatasourcePlatform)session.getDatasourcePlatform()).createConnectionCustomizer(this, session);
+            }
             if(newCustomizer == null) {
                 // New customizer doesn't exist - but the old one does.
                 if(customizer.isActive()) {
@@ -840,19 +848,17 @@ public abstract class DatasourceAccessor implements Accessor {
     */
    protected void reestablishCustomizer() {
        if(customizer != null && customizer.isActive()) {
-           if(isValid() && getDatasourceConnection() != null) {
-               try {
-                   customizer.clear();
-                   return;
-               } catch (Exception ex) {
-                   // ignore
-               }
+           if(isValid()) {
+               // the method eats SQLException in case of a failure.   
+               customizer.clear();
+           } else {
+               // It's an invalid connection - don't bother trying to clear customization.
+               AbstractSession customizerSession = (AbstractSession)customizer.getSession();
+               // need this so that the new customizer has the same prevCustomizer as the old one.
+               customizer = customizer.getPrevCustomizer();
+               // customizer recreated - it's the same as the original one, but not active.
+               createCustomizer(customizerSession);
            }
-           AbstractSession customizerSession = (AbstractSession)customizer.getSession();
-           // need this so that the new customizer has the same prevCustomizer as the old one.
-           customizer = customizer.getPrevCustomizer();
-           // customizer recreated - it's the same as the original one, but not active.
-           createCustomizer(customizerSession);
        }
    }  
 }

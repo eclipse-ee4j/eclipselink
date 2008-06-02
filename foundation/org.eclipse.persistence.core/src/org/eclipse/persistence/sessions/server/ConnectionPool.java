@@ -128,7 +128,6 @@ public class ConnectionPool {
         Login localLogin = (Login)getLogin().clone();
         Accessor connection = localLogin.buildAccessor();
         connection.connect(localLogin, getOwner());
-        connection.createCustomizer(getOwner());
 
         return connection;
     }
@@ -241,15 +240,12 @@ public class ConnectionPool {
                 connection.disconnect(getOwner());
             }catch (DatabaseException ex){
                 //this is an invalid connection so expect an exception.
-            }finally{
-                connection.releaseCustomizer();
             }
         }else{
             if ( (this.connectionsUsed.size() + this.connectionsAvailable.size() ) < this.minNumberOfConnections) {
                 this.connectionsAvailable.add(connection);
             } else {
                 connection.disconnect(getOwner());
-                connection.releaseCustomizer();
             }
         }
         if (getOwner().isInProfile()) {

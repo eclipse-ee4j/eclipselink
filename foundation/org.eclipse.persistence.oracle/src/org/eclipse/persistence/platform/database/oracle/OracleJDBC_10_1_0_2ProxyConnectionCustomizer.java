@@ -46,8 +46,11 @@ public class OracleJDBC_10_1_0_2ProxyConnectionCustomizer extends ConnectionCust
     
     /**
      * INTERNAL:
-     * Applies customization to datasource conection.
+     * Applies customization to connection.
      * Called only if connection is not already customized (isActive()==false). 
+     * The method may throw SQLException wrapped into DatabaseException.
+     * isActive method called after this method should return true only in case
+     * the connection was actually customized. 
      */
     public void customize() {
         // Lazily initialize proxy properties - customize method may be never called
@@ -88,8 +91,11 @@ public class OracleJDBC_10_1_0_2ProxyConnectionCustomizer extends ConnectionCust
     
     /**
      * INTERNAL:
-     * Clears customization from datasource connection.
+     * Clears customization from connection.
      * Called only if connection is customized (isActive()==true). 
+     * If the method fails due to SQLException it should "eat" it
+     * (just like DatasourceAccessor.closeConnection method).
+     * isActive method called after this method should always return false.
      */
     public void clear() {
         try {

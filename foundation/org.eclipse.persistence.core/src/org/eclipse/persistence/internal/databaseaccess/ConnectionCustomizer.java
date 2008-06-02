@@ -119,8 +119,11 @@ public abstract class ConnectionCustomizer implements Cloneable {
     
     /**
      * INTERNAL:
-     * Applies customization to datasource conection.
+     * Applies customization to connection.
      * Called only if connection is not already customized (isActive()==false). 
+     * The method may throw SQLException wrapped into DatabaseException.
+     * isActive method called after this method should return true only in case
+     * the connection was actually customized. 
      */
     public abstract void customize();
     
@@ -132,8 +135,11 @@ public abstract class ConnectionCustomizer implements Cloneable {
 
     /**
      * INTERNAL:
-     * Clears customization from datasource connection.
+     * Clears customization from connection.
      * Called only if connection is customized (isActive()==true). 
+     * If the method fails due to SQLException it should "eat" it
+     * (just like DatasourceAccessor.closeConnection method).
+     * isActive method called after this method should always return false.
      */
     public abstract void clear();
 }

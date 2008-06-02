@@ -233,7 +233,6 @@ public class DatabaseSessionImpl extends AbstractSession implements org.eclipse.
      */
     public void connect() throws DatabaseException {
         getAccessor().connect(getDatasourceLogin(), this);
-        getAccessor().createCustomizer(this);
     }
 
     /**
@@ -243,7 +242,6 @@ public class DatabaseSessionImpl extends AbstractSession implements org.eclipse.
     public void disconnect() throws DatabaseException {
         getSequencingHome().onDisconnect();
         getAccessor().disconnect(this);
-        getAccessor().releaseCustomizer();
     }
 
     /**
