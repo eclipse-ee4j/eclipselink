@@ -119,11 +119,12 @@ public class PrimaryKeyClassTest extends EntityContainerTestBase  {
             beginTransaction();
             
             Employee employee = getEntityManager().find(Employee.class, empId);
-            LinkedList phones = (LinkedList) employee.getPhoneNumbers();
-            Iterator e = phones.listIterator();
+            Vector phones = (Vector) employee.getPhoneNumbers(); 
+            Enumeration e = phones.elements(); 
+
             
-            while (e.hasNext()) {
-                PhoneNumber phone = (PhoneNumber) e.next();
+            while (e.hasMoreElements()) {
+                PhoneNumber phone = (PhoneNumber) e.nextElement();
                 phone.setAreaCode("613");
             }
             
@@ -143,7 +144,7 @@ public class PrimaryKeyClassTest extends EntityContainerTestBase  {
         try {
             beginTransaction();
             Employee employee = getEntityManager().find(Employee.class, empId);
-            //getEntityManager().remove(((LinkedList) employee.getPhoneNumbers()).firstElement());
+            getEntityManager().remove(((Vector) employee.getPhoneNumbers()).firstElement());
             commitTransaction();
         } catch (Exception e) {
             rollbackTransaction();
