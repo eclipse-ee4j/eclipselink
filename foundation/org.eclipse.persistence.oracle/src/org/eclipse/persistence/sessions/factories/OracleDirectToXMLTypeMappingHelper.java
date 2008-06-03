@@ -13,12 +13,12 @@
 package org.eclipse.persistence.sessions.factories;
 
 import org.eclipse.persistence.internal.codegen.NonreflectiveMethodDefinition;
+import org.eclipse.persistence.internal.sessions.DatabaseSessionImpl;
 import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.mappings.DirectToFieldMapping;
 import org.eclipse.persistence.oxm.XMLDescriptor;
 import org.eclipse.persistence.oxm.mappings.XMLDirectMapping;
 import org.eclipse.persistence.mappings.xdb.DirectToXMLTypeMapping;
-import org.eclipse.persistence.sessions.Project;
 
 /**
  * Helper class to abstract the XML mapping for DirectToXMLType.
@@ -45,8 +45,8 @@ public class OracleDirectToXMLTypeMappingHelper extends DirectToXMLTypeMappingHe
     /**
      * Invoked from a descriptor is not found.
      */
-    public void addXDBDescriptors(String name, Project project) {
-        if (project.getDescriptorForAlias(name) == null){
+    public void addXDBDescriptors(String name, DatabaseSessionImpl session) {
+        if (session.getDescriptorForAlias(name) == null){
             XMLDescriptor descriptor = new XMLDescriptor();
     
             descriptor.setJavaClass(DirectToXMLTypeMapping.class);
@@ -62,9 +62,9 @@ public class OracleDirectToXMLTypeMappingHelper extends DirectToXMLTypeMappingHe
             descriptor.addMapping(directtofieldmapping);
     
             // Need to set the namespace resolver.
-            descriptor.setNamespaceResolver(((XMLDescriptor)project.getDescriptors().values().iterator().next()).getNamespaceResolver());
+            descriptor.setNamespaceResolver(((XMLDescriptor)session.getDescriptors().values().iterator().next()).getNamespaceResolver());
             
-            project.addDescriptor(descriptor);
+            session.addDescriptor(descriptor);
         }
     }
     

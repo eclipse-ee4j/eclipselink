@@ -36,8 +36,7 @@ public class OXMObjectPersistenceRuntimeXMLProject extends Project {
         NamespaceResolver namespaceResolver = new NamespaceResolver();
         namespaceResolver.put("xsi", "http://www.w3.org/2001/XMLSchema-instance");
         namespaceResolver.put("xsd", "http://www.w3.org/2001/XMLSchema");
-        namespaceResolver.put("opm", "http://xmlns.oracle.com/ias/xsds/opm");
-        namespaceResolver.put("toplink", "http://xmlns.oracle.com/ias/xsds/toplink");
+        namespaceResolver.put("eclipselink", "http://xmlns.oracle.com/ias/xsds/eclipselink");
 
         for (Iterator descriptors = getDescriptors().values().iterator(); descriptors.hasNext();) {
             XMLDescriptor descriptor = (XMLDescriptor)descriptors.next();

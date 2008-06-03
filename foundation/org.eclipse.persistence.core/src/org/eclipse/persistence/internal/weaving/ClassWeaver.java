@@ -560,8 +560,8 @@ public class ClassWeaver extends ClassAdapter implements Constants {
      * Add a variable of type Vector, CacheKey to the class.
      * When this method has been run, the class will contain a variable declarations similar to the following:
      *  
-     *  private Vector _toplink_primaryKey;
-     *  private Vector _toplink_cacheKey;
+     *  private Vector _persistence_primaryKey;
+     *  private Vector _persistence_cacheKey;
      */
     public void addPersistenceEntityVariables() {
         cv.visitField(ACC_PROTECTED + ACC_TRANSIENT, "_persistence_primaryKey", VECTOR_SIGNATURE, null, null);
@@ -613,6 +613,24 @@ public class ClassWeaver extends ClassAdapter implements Constants {
             cv_clone.visitInsn(ACONST_NULL);
             cv_clone.visitFieldInsn(PUTFIELD, classDetails.getClassName(), "_persistence_listener", PCL_SIGNATURE);
         }
+        if (classDetails.shouldWeaveFetchGroups()) {
+            // clone._persistence_fetchGroup = null;
+            // clone._persistence_session = null;
+            cv_clone.visitVarInsn(ALOAD, 2);
+            cv_clone.visitInsn(ACONST_NULL);
+            cv_clone.visitFieldInsn(PUTFIELD, classDetails.getClassName(), "_persistence_fetchGroup", FETCHGROUP_SIGNATURE);
+            cv_clone.visitVarInsn(ALOAD, 2);
+            cv_clone.visitInsn(ACONST_NULL);
+            cv_clone.visitFieldInsn(PUTFIELD, classDetails.getClassName(), "_persistence_session", SESSION_SIGNATURE);
+        }
+        // clone._persistence_primaryKey = null;
+        cv_clone.visitVarInsn(ALOAD, 2);
+        cv_clone.visitInsn(ACONST_NULL);
+        cv_clone.visitFieldInsn(PUTFIELD, classDetails.getClassName(), "_persistence_primaryKey", VECTOR_SIGNATURE);
+        // clone._persistence_cacheKey = null;
+        cv_clone.visitVarInsn(ALOAD, 2);
+        cv_clone.visitInsn(ACONST_NULL);
+        cv_clone.visitFieldInsn(PUTFIELD, classDetails.getClassName(), "_persistence_cacheKey", CACHEKEY_SIGNATURE);
         
         // return clone;
         cv_clone.visitVarInsn(ALOAD, 2);
@@ -690,8 +708,9 @@ public class ClassWeaver extends ClassAdapter implements Constants {
      * Add a variable of type FetchGroup, Session to the class.
      * When this method has been run, the class will contain a variable declarations similar to the following:
      *  
-     *  private FetchGroup _toplink_fetchGroup;
-     *  private Session _toplink_session;
+     *  private FetchGroup _persistence_fetchGroup;
+     *  private boolean _persistence_shouldRefreshFetchGroup;
+     *  private Session _persistence_session;
      */
     public void addFetchGroupVariables() {
         cv.visitField(ACC_PROTECTED + ACC_TRANSIENT, "_persistence_fetchGroup", FETCHGROUP_SIGNATURE, null, null);

@@ -56,6 +56,9 @@ public class EmployeeServiceBean implements EmployeeService {
     
     public int insert(Employee employee) {
         entityManager.persist(employee);
+        if (employee.getDepartment() != null) {
+            entityManager.persist(employee.getDepartment());            
+        }
         entityManager.flush();
         return employee.getId();
     }

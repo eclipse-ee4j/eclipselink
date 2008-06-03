@@ -22,6 +22,7 @@ import org.eclipse.persistence.eis.EISObjectPersistenceXMLProject;
 import org.eclipse.persistence.internal.oxm.OXMObjectPersistenceRuntimeXMLProject;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.internal.security.PrivilegedClassForName;
+import org.eclipse.persistence.internal.sessions.DatabaseSessionImpl;
 
 /**
  * INTERNAL:
@@ -41,8 +42,7 @@ public class MissingDescriptorListener extends SessionEventAdapter {
     public void missingDescriptor(SessionEvent event) {
         String name = ((Class)event.getResult()).getName();
         DatabaseSession session = ((DatabaseSession)event.getSession());
-		
-		DirectToXMLTypeMappingHelper.getInstance().addXDBDescriptors(name, session.getProject());
+	DirectToXMLTypeMappingHelper.getInstance().addXDBDescriptors(name, (DatabaseSessionImpl)session);
 
         if (name.equals(EIS_DESCRIPTOR_CLASS) || name.equals(XML_INTERACTION_CLASS) || name.equals(EIS_LOGIN_CLASS)) {
             try {

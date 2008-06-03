@@ -12,8 +12,6 @@
  ******************************************************************************/  
 package org.eclipse.persistence.mappings.xdb;
 
-import java.io.StringWriter;
-import javax.xml.transform.stream.StreamResult;
 import org.eclipse.persistence.exceptions.ConversionException;
 import org.eclipse.persistence.exceptions.DescriptorException;
 import org.eclipse.persistence.internal.helper.ClassConstants;
@@ -26,7 +24,6 @@ import org.eclipse.persistence.platform.xml.XMLComparer;
 import org.eclipse.persistence.platform.xml.XMLPlatformFactory;
 import org.eclipse.persistence.platform.xml.XMLTransformer;
 import org.eclipse.persistence.platform.xml.XMLParser;
-import org.eclipse.persistence.internal.queries.JoinedAttributeManager;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.queries.ObjectBuildingQuery;
 import org.w3c.dom.Document;

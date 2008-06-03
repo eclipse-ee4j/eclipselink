@@ -248,10 +248,6 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
         } catch (org.eclipse.persistence.exceptions.OptimisticLockException ole) {
             throw new javax.persistence.OptimisticLockException(ole);
         }
-        // gf830 - merging a removed entity should throw exception.
-        if (context.getDeletedObjects().containsKey(merged)) {
-            throw new IllegalArgumentException(ExceptionLocalization.buildMessage("cannot_merge_removed_entity", new Object[] { entity }));
-        }
         return merged;
     }
 

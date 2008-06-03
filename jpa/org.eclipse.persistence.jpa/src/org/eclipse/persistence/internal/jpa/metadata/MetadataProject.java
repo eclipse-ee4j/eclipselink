@@ -431,7 +431,7 @@ public class MetadataProject {
             if (sequenceGenerator.getSequenceName().equals(tableGenerator.getPkColumnValue())) {
                 // generator name will be used instead of an empty sequence name / pk column name
                 if (sequenceGenerator.getSequenceName().length() > 0) {
-                    throw ValidationException.conflictingSequenceNameAndTablePkColumnValueSpecified(otherSequenceGenerator.getSequenceName(), otherSequenceGenerator.getLocation(), tableGenerator.getLocation());
+                    throw ValidationException.conflictingSequenceNameAndTablePkColumnValueSpecified(sequenceGenerator.getSequenceName(), sequenceGenerator.getLocation(), tableGenerator.getLocation());
                 }
             }
         }

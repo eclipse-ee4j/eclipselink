@@ -1289,8 +1289,8 @@ public class ValidationException extends EclipseLinkException {
     }
 
 
-    public static ValidationException nullPrimaryKeyInUnitOfWorkClone() {
-        Object[] args = {  };
+    public static ValidationException nullPrimaryKeyInUnitOfWorkClone(Object clone) {
+        Object[] args = { clone };
         ValidationException validationException = new ValidationException(ExceptionMessageGenerator.buildMessage(ValidationException.class, NULL_PK_IN_UOW_CLONE, args));
         validationException.setErrorCode(NULL_PK_IN_UOW_CLONE);
         return validationException;

@@ -14,10 +14,10 @@ package org.eclipse.persistence.sessions.factories;
 
 import org.eclipse.persistence.internal.security.PrivilegedClassForName;
 import org.eclipse.persistence.internal.security.PrivilegedNewInstanceFromClass;
+import org.eclipse.persistence.internal.sessions.DatabaseSessionImpl;
 import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.oxm.XMLDescriptor;
 import org.eclipse.persistence.internal.codegen.NonreflectiveMethodDefinition;
-import org.eclipse.persistence.sessions.Project;
 
 /**
  * Helper class to abstract the XML mapping for DirectToXMLType.
@@ -67,6 +67,6 @@ public class DirectToXMLTypeMappingHelper {
     /**
      * Invoked from a descriptor add the descriptor for DirectToXMLTypeMapping
      */
-    public void addXDBDescriptors(String name, Project project) {
+    public void addXDBDescriptors(String name, DatabaseSessionImpl session) {
     }
 }

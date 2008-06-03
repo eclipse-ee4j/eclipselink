@@ -25,6 +25,7 @@ import org.eclipse.persistence.sessions.remote.*;
 import org.eclipse.persistence.internal.sessions.remote.*;
 import org.eclipse.persistence.internal.queries.ContainerPolicy;
 import org.eclipse.persistence.internal.identitymaps.*;
+import org.eclipse.persistence.internal.localization.ExceptionLocalization;
 import org.eclipse.persistence.logging.SessionLog;
 import org.eclipse.persistence.sessions.SessionProfiler;
 
@@ -855,15 +856,20 @@ public class MergeManager {
         ClassDescriptor descriptor = unitOfWork.getDescriptor(clone.getClass());
         Vector primaryKey = descriptor.getObjectBuilder().extractPrimaryKeyFromObject(clone, unitOfWork);
 
-        //Must use the java class as this may be a bean that we are merging and it may not have the same class as the
-        // objects in the cache.  As of EJB 2.0
+        // Must use the java class as this may be a bean that we are merging and it may not have the same class as the
+        // objects in the cache.  As of EJB 2.0.
         Object objectFromCache = unitOfWork.getIdentityMapAccessorInstance().getFromIdentityMap(primaryKey, descriptor.getJavaClass(), false, descriptor);
-        if (objectFromCache != null) {
-            return objectFromCache;
+        if (objectFromCache == null) {
+            // Ensure we return the working copy if this has already been registered.
+            objectFromCache = unitOfWork.checkIfAlreadyRegistered(clone, descriptor);
         }
-        //ensure we return the working copy if this has already been registered
-        objectFromCache = unitOfWork.checkIfAlreadyRegistered(clone, descriptor);
         if (objectFromCache != null) {
+            // gf830 - merging a removed entity should throw exception.
+            if (unitOfWork.isObjectDeleted(objectFromCache)) {
+                if (shouldMergeCloneIntoWorkingCopy() || shouldMergeCloneWithReferencesIntoWorkingCopy()) {
+                    throw new IllegalArgumentException(ExceptionLocalization.buildMessage("cannot_merge_removed_entity", new Object[] { clone }));
+                }
+            }
             return objectFromCache;
         }
 
