@@ -355,6 +355,7 @@ public class VeearrayTestSuite {
             @Override
             public void buildSessions() {
                 xrService.setORSession(orProject.createDatabaseSession());
+                xrService.getORSession().dontLogMessages();
                 xrService.setXMLContext(new XMLContext(oxProject));
                 xrService.setOXSession(xrService.getXMLContext().getSession(0));
             }
