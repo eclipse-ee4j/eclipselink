@@ -15,10 +15,12 @@ package org.eclipse.persistence.tools.weaving.jpa;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.io.Writer;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
+import java.net.URLEncoder;
 import java.util.Vector;
 
 import org.eclipse.persistence.exceptions.StaticWeaveException;
@@ -43,12 +45,12 @@ import org.apache.tools.ant.types.Path;
 * target - specify the output location (either a directory or a jar).  
 * persistenceinfo - specify the location containing the persistence.xml. This is optional and should only be specified if the source does not contain the persistence.xml.
 * log - specify a logging file. This is optional
-* loglevel - specify a literal value of toplink logging level(OFF,SEVERE,WARNING,INFO,CONFIG,FINE,FINER,FINEST) The default value is OFF(8). This is optional.
+* loglevel - specify a literal value of eclipselink logging level(OFF,SEVERE,WARNING,INFO,CONFIG,FINE,FINER,FINEST) The default value is OFF(8). This is optional.
 * <li>The weaving will be performed in place if source and target point to the same location. Weaving in place is ONLY applicable for directory-based sources.
 * </ul>
 *<b>Example</b>:
 *<code>
-*&lt;target name="define.task" description="New task definition for toplink static weaving"/&gt;<br>
+*&lt;target name="define.task" description="New task definition for eclipselink static weaving"/&gt;<br>
 *&nbsp;&nbsp;&lt;taskdef name="weave" classname="org.eclipse.persistence.tools.weaving.jpa.StaticWeaveAntTask"/&gt;<br>
 *&lt;/target&gt;<br>
 *&lt;target name="weaving" description="perform weaving." depends="define.task"&gt;<br>
@@ -156,7 +158,10 @@ public class StaticWeaveAntTask extends Task{
         URL[] urls = new URL[pathElements.size()];
         for(int i=0;i<pathElements.size();i++){
            try {
-               urls[i] = (new File((String)pathElements.get(i))).toURI().toURL();
+               // 234413: encode URL (spaces become + chars)
+               urls[i] = (new File(URLEncoder.encode(((String)pathElements.get(i)), "UTF8"))).toURI().toURL();
+           } catch (UnsupportedEncodingException uee) {
+               throw StaticWeaveException.exceptionPerformWeaving(uee);
            } catch (MalformedURLException e) {
                throw StaticWeaveException.exceptionPerformWeaving(e);
            }
