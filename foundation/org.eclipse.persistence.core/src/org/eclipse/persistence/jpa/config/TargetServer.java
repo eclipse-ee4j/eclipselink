@@ -17,15 +17,15 @@ package org.eclipse.persistence.jpa.config;
  *
  * <p>JPA persistence property Usage:
  * 
- * <p><code>properties.add(PersistenceUnitProperties.TargetServer, TargetServer.OC4J_11_1_1);</code>
+ * <p><code>properties.add(PersistenceUnitProperties.TargetServer, TargetServer.OC4J);</code><br>
+ * <p>JPA persistence unit persistence.xml  Usage:
+ * <p><code>&lt;property name="eclipselink.target-server" value="OC4J"/&gt;</code></p>
  * 
  * <p>Property values are case-insensitive
  */
 public class TargetServer {
     public static final String  None = "None";
     public static final String  OC4J = "OC4J";
-    public static final String  OC4J_10_1_3 = "OC4J_10_1_3";
-    public static final String  OC4J_11_1_1 = "OC4J_11_1_1";
     public static final String  SunAS9 = "SunAS9";
     public static final String  WebSphere = "WebSphere";
     public static final String  WebSphere_6_1 = "WebSphere_6_1";

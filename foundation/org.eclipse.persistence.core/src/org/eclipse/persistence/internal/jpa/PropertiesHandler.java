@@ -528,8 +528,6 @@ public class PropertiesHandler {
             valueArray = new Object[][] { 
                 {TargetServer.None, pcg + "NoServerPlatform"},
                 {TargetServer.OC4J, pcg + "oc4j.Oc4jPlatform"},
-                {TargetServer.OC4J_10_1_3, pcg + "oc4j.Oc4j_10_1_3_Platform"},
-                {TargetServer.OC4J_11_1_1, pcg + "oc4j.Oc4j_11_1_1_Platform"},
                 {TargetServer.SunAS9, pcg + "sunas.SunAS9ServerPlatform"},
                 {TargetServer.WebSphere, pcg + "was.WebSpherePlatform"},
                 {TargetServer.WebSphere_6_1, pcg + "was.WebSphere_6_1_Platform"},
