@@ -27,7 +27,7 @@ import static javax.persistence.TemporalType.DATE;
 @Entity
 @Table(name="CMP3_ALPINE")
 public class Alpine extends Beer implements Cloneable {
-    public enum Classification { STRONG, BITTER, SWEET }
+    public enum Classification { STRONG, BITTER, SWEET, NONE }
     
     private Date bestBeforeDate;
     private Classification classification;
@@ -55,6 +55,10 @@ public class Alpine extends Beer implements Cloneable {
     
     @PrePersist
     public void celebrate() {
+        if (classification != null && classification == Classification.NONE) {
+            classification = Classification.STRONG;
+        }
+        
         ALPINE_PRE_PERSIST_COUNT++;
     }
     

@@ -549,12 +549,14 @@ public class MergeManager {
             descriptor.getObjectChangePolicy().dissableEventProcessing(registeredObject);
             
             boolean cascadeOnly = false;
-            if(registeredObject == rmiClone){
+            if (registeredObject == rmiClone || mergedNewObjects.containsKey(registeredObject)) {    
                 // GF#1139 Cascade merge operations to relationship mappings even if already registered
                 cascadeOnly = true;
             }
-            // Merge into the clone from the original, use clone as backup as anything different should be merged.
-            builder.mergeIntoObject(registeredObject, false, rmiClone, this, cascadeOnly);
+            
+            // Merge into the clone from the original and use the clone as 
+            // backup as anything different should be merged.
+            builder.mergeIntoObject(registeredObject, false, rmiClone, this, cascadeOnly);  
         } finally {
             descriptor.getObjectChangePolicy().enableEventProcessing(registeredObject);
         }
@@ -876,7 +878,13 @@ public class MergeManager {
         org.eclipse.persistence.queries.DoesExistQuery existQuery = descriptor.getQueryManager().getDoesExistQuery();
         // Optimize cache option to avoid executing the does exist query.
         if (existQuery.shouldCheckCacheForDoesExist()) {
-            return unitOfWork.internalRegisterObject(clone, descriptor);
+            Object registeredObject = unitOfWork.internalRegisterObject(clone, descriptor);
+            
+            if (unitOfWork.getNewObjectsOriginalToClone().containsKey(clone)) {
+                mergedNewObjects.put(registeredObject, registeredObject);
+            }
+            
+            return registeredObject;
         }
 
         // Check early return to check if it is a new object, i.e. null primary key.
