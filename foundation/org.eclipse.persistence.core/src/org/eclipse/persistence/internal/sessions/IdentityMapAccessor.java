@@ -647,16 +647,19 @@ public class IdentityMapAccessor implements org.eclipse.persistence.sessions.Ide
     public void invalidateClass(Class myClass, boolean recurse) {
         //forward the call to getIdentityMap locally in case subclasses overload
         IdentityMap identityMap = this.getIdentityMap(myClass);
-        synchronized (identityMap) {
-            Enumeration keys = identityMap.keys();
 
-            while (keys.hasMoreElements()) {
-                CacheKey key = (CacheKey)keys.nextElement();
-                Object obj = key.getObject();
+        //bug 227430: Deadlock in IdentityMapAccessor. 
+        //removed synchronization that would result in deadlock
+        //no need to synchronize as changes to identity map will not aversely
+        //affect this code
+        Enumeration keys = identityMap.keys();
 
-                if (recurse || ((obj != null) && obj.getClass().equals(myClass))) {
-                    key.setInvalidationState(CacheKey.CACHE_KEY_INVALID);
-                }
+        while (keys.hasMoreElements()) {
+            CacheKey key = (CacheKey)keys.nextElement();
+            Object obj = key.getObject();
+
+            if (recurse || ((obj != null) && obj.getClass().equals(myClass))) {
+                key.setInvalidationState(CacheKey.CACHE_KEY_INVALID);
             }
         }
     }
