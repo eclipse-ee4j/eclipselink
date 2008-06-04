@@ -26,11 +26,11 @@ public interface CollectionChangeTracker extends ChangeTracker{
      * PUBLIC:
      * Return the Attribute name this collection is mapped under.
      */
-    public String getTopLinkAttributeName();
+    public String getTrackedAttributeName();
 
     /**
      * PUBLIC:
      * Set the Attribute name this collection is mapped under.
      */
-    public void setTopLinkAttributeName(String attributeName);
+    public void setTrackedAttributeName(String attributeName);
 }

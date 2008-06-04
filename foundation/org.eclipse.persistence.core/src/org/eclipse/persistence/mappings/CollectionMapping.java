@@ -143,7 +143,7 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
         if (attributeValue == null) {
             Object container = containerPolicy.containerInstance(1);
             if ((this.getDescriptor().getObjectChangePolicy().isObjectChangeTrackingPolicy()) && ((clone != null) && (((ChangeTracker)clone)._persistence_getPropertyChangeListener() != null)) && (container instanceof CollectionChangeTracker)) {
-                ((CollectionChangeTracker)container).setTopLinkAttributeName(this.getAttributeName());
+                ((CollectionChangeTracker)container).setTrackedAttributeName(this.getAttributeName());
                 ((CollectionChangeTracker)container)._persistence_setPropertyChangeListener(((ChangeTracker)clone)._persistence_getPropertyChangeListener());
             }
             return container;
@@ -164,7 +164,7 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
             containerPolicy.addInto(cloneValue, clonedAttributeValue, unitOfWork);
         }
         if ((this.getDescriptor().getObjectChangePolicy().isObjectChangeTrackingPolicy()) && ((clone != null) && (((ChangeTracker)clone)._persistence_getPropertyChangeListener() != null)) && (clonedAttributeValue instanceof CollectionChangeTracker)) {
-            ((CollectionChangeTracker)clonedAttributeValue).setTopLinkAttributeName(this.getAttributeName());
+            ((CollectionChangeTracker)clonedAttributeValue).setTrackedAttributeName(this.getAttributeName());
             ((CollectionChangeTracker)clonedAttributeValue)._persistence_setPropertyChangeListener(((ChangeTracker)clone)._persistence_getPropertyChangeListener());
         }
         return clonedAttributeValue;
@@ -844,7 +844,7 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
                     ((ObjectChangeListener)listener).internalPropertyChange(new CollectionChangeEvent(target, getAttributeName(), valueOfTarget, containerPolicy.next(iterator, mergeSession), CollectionChangeEvent.REMOVE));// make the remove change event fire.
                 }
                 if (newContainer instanceof ChangeTracker) {
-                    ((CollectionChangeTracker)newContainer).setTopLinkAttributeName(getAttributeName());
+                    ((CollectionChangeTracker)newContainer).setTrackedAttributeName(getAttributeName());
                     ((CollectionChangeTracker)newContainer)._persistence_setPropertyChangeListener(listener);
                 }
                 if (valueOfTarget instanceof ChangeTracker) {
@@ -1198,10 +1198,10 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
                     }
                 }
                 setRealAttributeValueInObject(clone, container);
-                ((CollectionChangeTracker)container).setTopLinkAttributeName(getAttributeName());
+                ((CollectionChangeTracker)container).setTrackedAttributeName(getAttributeName());
                 ((CollectionChangeTracker)container)._persistence_setPropertyChangeListener(listener);
             } else {
-                ((CollectionChangeTracker)attributeValue).setTopLinkAttributeName(getAttributeName());
+                ((CollectionChangeTracker)attributeValue).setTrackedAttributeName(getAttributeName());
                 ((CollectionChangeTracker)attributeValue)._persistence_setPropertyChangeListener(listener);
             }
         }

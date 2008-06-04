@@ -75,7 +75,7 @@ public class Resource {
      * PUBLIC:
      * Return the PropertyChangeListener for the object.
      */
-    public PropertyChangeListener getTopLinkPropertyChangeListener() {
+    public PropertyChangeListener getTrackedPropertyChangeListener() {
         return this.topLinkListener;
     }
 
@@ -83,7 +83,7 @@ public class Resource {
      * PUBLIC:
      * Set the PropertyChangeListener for the object.
      */
-    public void setTopLinkPropertyChangeListener(PropertyChangeListener listener) {
+    public void setTrackedPropertyChangeListener(PropertyChangeListener listener) {
         this.topLinkListener = listener;
     }
 

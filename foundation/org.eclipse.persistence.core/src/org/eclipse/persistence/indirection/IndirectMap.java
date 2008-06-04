@@ -114,7 +114,7 @@ public class IndirectMap extends Hashtable implements CollectionChangeTracker, I
      * @see java.util.Hashtable#clear()
      */
     public synchronized void clear() {
-        if (hasTopLinkPropertyChangeListener()) {
+        if (hasTrackedPropertyChangeListener()) {
             Iterator objects = this.keySet().iterator();
             while (objects.hasNext()) {
                 Object o = objects.next();
@@ -331,7 +331,7 @@ public class IndirectMap extends Hashtable implements CollectionChangeTracker, I
      * INTERNAL:
      * Return the mapping attribute name, used to raise change events.
      */
-     public String getTopLinkAttributeName() {
+     public String getTrackedAttributeName() {
          return attributeName;
      }
      
@@ -370,7 +370,7 @@ public class IndirectMap extends Hashtable implements CollectionChangeTracker, I
      * INTERNAL:
      * Return if the collection has a property change listener for change tracking.
      */
-     public boolean hasTopLinkPropertyChangeListener() {
+     public boolean hasTrackedPropertyChangeListener() {
          return this.changeListener != null;
      }
      
@@ -539,7 +539,7 @@ public class IndirectMap extends Hashtable implements CollectionChangeTracker, I
      */
     public synchronized void putAll(Map t) {
         // Must trigger add events if tracked or uow.
-        if (hasTopLinkPropertyChangeListener()) {
+        if (hasTrackedPropertyChangeListener()) {
             Iterator objects = t.keySet().iterator();
             while (objects.hasNext()) {
                 Object key = objects.next();
@@ -561,8 +561,8 @@ public class IndirectMap extends Hashtable implements CollectionChangeTracker, I
      * Raise the add change event and relationship maintainence.
      */
     protected void raiseAddChangeEvent(Object key, Object value) {
-        if (hasTopLinkPropertyChangeListener()) {
-            _persistence_getPropertyChangeListener().propertyChange(new MapChangeEvent(this, getTopLinkAttributeName(), this, key, value, CollectionChangeEvent.ADD));
+        if (hasTrackedPropertyChangeListener()) {
+            _persistence_getPropertyChangeListener().propertyChange(new MapChangeEvent(this, getTrackedAttributeName(), this, key, value, CollectionChangeEvent.ADD));
         }
         // this is where relationship maintenance would go
     }
@@ -571,8 +571,8 @@ public class IndirectMap extends Hashtable implements CollectionChangeTracker, I
      * Raise the remove change event.
      */
     protected void raiseRemoveChangeEvent(Object key, Object value) {
-        if (hasTopLinkPropertyChangeListener()) {
-            _persistence_getPropertyChangeListener().propertyChange(new MapChangeEvent(this, getTopLinkAttributeName(), this, key, value, CollectionChangeEvent.REMOVE));
+        if (hasTrackedPropertyChangeListener()) {
+            _persistence_getPropertyChangeListener().propertyChange(new MapChangeEvent(this, getTrackedAttributeName(), this, key, value, CollectionChangeEvent.REMOVE));
         }
         // this is where relationship maintenance would go
     }
@@ -593,7 +593,7 @@ public class IndirectMap extends Hashtable implements CollectionChangeTracker, I
      * Set the mapping attribute name, used to raise change events.
      * This is required if the change listener is set.
      */
-     public void setTopLinkAttributeName(String attributeName) {
+     public void setTrackedAttributeName(String attributeName) {
          this.attributeName = attributeName;
      }
 

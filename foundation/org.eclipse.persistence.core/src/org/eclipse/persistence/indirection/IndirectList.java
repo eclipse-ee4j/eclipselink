@@ -122,8 +122,8 @@ public class IndirectList extends Vector implements CollectionChangeTracker, Ind
      * Raise the add change event and relationship maintainence.
      */
     protected void raiseAddChangeEvent(Object element) {
-        if (hasTopLinkPropertyChangeListener()) {
-            _persistence_getPropertyChangeListener().propertyChange(new CollectionChangeEvent(this, getTopLinkAttributeName(), this, element, CollectionChangeEvent.ADD));
+        if (hasTrackedPropertyChangeListener()) {
+            _persistence_getPropertyChangeListener().propertyChange(new CollectionChangeEvent(this, getTrackedAttributeName(), this, element, CollectionChangeEvent.ADD));
         }
         if (hasBeenRegistered()) {
             ((UnitOfWorkQueryValueHolder)getValueHolder()).updateForeignReferenceSet(element, null);
@@ -134,8 +134,8 @@ public class IndirectList extends Vector implements CollectionChangeTracker, Ind
      * Raise the remove change event.
      */
     protected void raiseRemoveChangeEvent(Object element) {
-        if (hasTopLinkPropertyChangeListener()) {
-            _persistence_getPropertyChangeListener().propertyChange(new CollectionChangeEvent(this, getTopLinkAttributeName(), this, element, CollectionChangeEvent.REMOVE));
+        if (hasTrackedPropertyChangeListener()) {
+            _persistence_getPropertyChangeListener().propertyChange(new CollectionChangeEvent(this, getTrackedAttributeName(), this, element, CollectionChangeEvent.REMOVE));
         }
         if (hasBeenRegistered()) {
             ((UnitOfWorkQueryValueHolder)getValueHolder()).updateForeignReferenceRemove(element);
@@ -170,7 +170,7 @@ public class IndirectList extends Vector implements CollectionChangeTracker, Ind
     public synchronized boolean addAll(int index, Collection c) {
         Iterator objects = c.iterator();
         // Must trigger add events if tracked or uow.
-        if (hasBeenRegistered() || hasTopLinkPropertyChangeListener()) {
+        if (hasBeenRegistered() || hasTrackedPropertyChangeListener()) {
             while (objects.hasNext()) {
                 this.add(index, objects.next());
                 index++;
@@ -187,7 +187,7 @@ public class IndirectList extends Vector implements CollectionChangeTracker, Ind
      */
     public synchronized boolean addAll(Collection c) {
         // Must trigger add events if tracked or uow.
-        if (hasBeenRegistered() || hasTopLinkPropertyChangeListener()) {
+        if (hasBeenRegistered() || hasTrackedPropertyChangeListener()) {
             Iterator objects = c.iterator();
             while (objects.hasNext()) {
                 this.add(objects.next());
@@ -250,7 +250,7 @@ public class IndirectList extends Vector implements CollectionChangeTracker, Ind
      * @see java.util.Vector#clear()
      */
     public void clear() {
-        if (hasBeenRegistered() || hasTopLinkPropertyChangeListener()) {
+        if (hasBeenRegistered() || hasTrackedPropertyChangeListener()) {
             Iterator objects = this.iterator();
             while (objects.hasNext()) {
                 Object o = objects.next();
@@ -621,7 +621,7 @@ public class IndirectList extends Vector implements CollectionChangeTracker, Ind
      */
     public synchronized boolean removeAll(Collection c) {
         // Must trigger remove events if tracked or uow.
-        if (hasBeenRegistered() || hasTopLinkPropertyChangeListener()) {
+        if (hasBeenRegistered() || hasTrackedPropertyChangeListener()) {
             Iterator objects = c.iterator();
             while (objects.hasNext()) {
                 this.remove(objects.next());
@@ -636,7 +636,7 @@ public class IndirectList extends Vector implements CollectionChangeTracker, Ind
      */
     public synchronized void removeAllElements() {
         // Must trigger remove events if tracked or uow.
-        if (hasBeenRegistered() || hasTopLinkPropertyChangeListener()) {
+        if (hasBeenRegistered() || hasTrackedPropertyChangeListener()) {
             Iterator objects = this.iterator();
             while (objects.hasNext()) {
                 Object object = objects.next();
@@ -667,7 +667,7 @@ public class IndirectList extends Vector implements CollectionChangeTracker, Ind
      */
     public synchronized boolean retainAll(Collection c) {
         // Must trigger remove events if tracked or uow.
-        if (hasBeenRegistered() || hasTopLinkPropertyChangeListener()) {
+        if (hasBeenRegistered() || hasTrackedPropertyChangeListener()) {
             Iterator objects = getDelegate().iterator();
             while (objects.hasNext()) {
                 Object object = objects.next();
@@ -703,7 +703,7 @@ public class IndirectList extends Vector implements CollectionChangeTracker, Ind
      */
     public synchronized void setSize(int newSize) {
         // Must trigger remove events if tracked or uow.
-        if (hasBeenRegistered() || hasTopLinkPropertyChangeListener()) {
+        if (hasBeenRegistered() || hasTrackedPropertyChangeListener()) {
             if (newSize > this.size()) {
                 for (int index = size(); index > newSize; index--) {
                     this.remove(index - 1);
@@ -787,7 +787,7 @@ public class IndirectList extends Vector implements CollectionChangeTracker, Ind
      * INTERNAL:
      * Return if the collection has a property change listener for change tracking.
      */
-     public boolean hasTopLinkPropertyChangeListener() {
+     public boolean hasTrackedPropertyChangeListener() {
          return this.changeListener != null;
      }
      
@@ -803,7 +803,7 @@ public class IndirectList extends Vector implements CollectionChangeTracker, Ind
      * INTERNAL:
      * Return the mapping attribute name, used to raise change events.
      */
-     public String getTopLinkAttributeName() {
+     public String getTrackedAttributeName() {
          return attributeName;
      }
      
@@ -812,7 +812,7 @@ public class IndirectList extends Vector implements CollectionChangeTracker, Ind
      * Set the mapping attribute name, used to raise change events.
      * This is required if the change listener is set.
      */
-     public void setTopLinkAttributeName(String attributeName) {
+     public void setTrackedAttributeName(String attributeName) {
          this.attributeName = attributeName;
      }
           

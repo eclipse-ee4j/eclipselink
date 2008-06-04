@@ -28,11 +28,11 @@ public class Location {
         super();
     }
 
-    public PropertyChangeListener getTopLinkPropertyChangeListener() {
+    public PropertyChangeListener getTrackedPropertyChangeListener() {
         return listener;
     }
 
-    public void setTopLinkPropertyChangeListener(PropertyChangeListener listener) {
+    public void setTrackedPropertyChangeListener(PropertyChangeListener listener) {
         this.listener = listener;
     }
 
