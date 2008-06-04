@@ -127,7 +127,8 @@ public class PersistenceUnitProperties {
      * CACHE_SHARED property should be set to "false" for at least one entity,
      * or CACHE_SHARED_DEFAULT should be set to "false".
      */
-    public static final String CONNECTION_EXCLUSIVE = "eclipselink.connection.exclusive";
+// Under review, see Bug 235433: Can't customize ConnectionPolicy through JPA.
+//    public static final String CONNECTION_EXCLUSIVE = "eclipselink.connection.exclusive";
 
     // Customizations properties
 

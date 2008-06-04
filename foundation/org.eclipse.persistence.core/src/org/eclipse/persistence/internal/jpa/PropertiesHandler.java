@@ -212,7 +212,8 @@ public class PropertiesHandler {
             addProp(new ReferenceModeProp());
             addProp(new BooleanProp(PersistenceUnitProperties.VALIDATE_EXISTENCE, "false"));
             addProp(new BooleanProp(PersistenceUnitProperties.JOIN_EXISTING_TRANSACTION, "false"));
-            addProp(new BooleanProp(PersistenceUnitProperties.CONNECTION_EXCLUSIVE, "false"));
+// Under review, see Bug 235433: Can't customize ConnectionPolicy through JPA.
+//            addProp(new BooleanProp(PersistenceUnitProperties.CONNECTION_EXCLUSIVE, "false"));
         }
         
         Prop(String name) {

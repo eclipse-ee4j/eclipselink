@@ -634,11 +634,12 @@ public class EntityManagerSetupImpl {
     }
 
     protected void updateConnectionPolicy(Map m) {
-        String shouldUseExclusiveConnectionString = PropertiesHandler.getPropertyValueLogDebug(PersistenceUnitProperties.CONNECTION_EXCLUSIVE, m, session);
+// Under review, see Bug 235433: Can't customize ConnectionPolicy through JPA.
+/*        String shouldUseExclusiveConnectionString = PropertiesHandler.getPropertyValueLogDebug(PersistenceUnitProperties.CONNECTION_EXCLUSIVE, m, session);
         if(shouldUseExclusiveConnectionString != null) {
             boolean shouldUseExclusiveConnection = Boolean.parseBoolean(shouldUseExclusiveConnectionString);
             session.getDefaultConnectionPolicy().setShouldUseExclusiveConnection(shouldUseExclusiveConnection);
-        }
+        }*/
     }
 
     /**
