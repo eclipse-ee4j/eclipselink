@@ -37,8 +37,7 @@ public class MappingsPreferencesNode extends AbstractPreferencesNode {
 	protected void initialize() {
 		super.initialize();
 		this.insert(new ClassPreferencesNode(this.getPreferencesContext()), 0);
-		this.insert(new EjbPreferencesNode(this.getPreferencesContext()), 1);
-		this.insert(new DatabasePreferencesNode(this.getPreferencesContext()), 2);
+		this.insert(new DatabasePreferencesNode(this.getPreferencesContext()), 1);
 	}
 
 	/**
