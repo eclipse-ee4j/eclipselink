@@ -230,7 +230,7 @@ public class LoggingLocalizationResource extends ListResourceBundle {
         { "metadata_warning_override_annotation_with_xml", "Ignoring the annotation [{0}] from [{1}] since an XML element was defined in the mapping file [{2}]." },
         { "metadata_warning_override_named_annotation_with_xml", "Ignoring the annotation [{0}] from [{2}] since an XML element with the same name [{1}] was defined in the mapping file [{3}]" },        
         { "metadata_warning_override_xml_with_eclipselink_xml", "Ignoring the element [{0}] from [{1}] defined in the mapping file [{2}] since this element was defined in the eclipselink-orm mapping file [{3}]" },
-        { "metadata_warning_override_named_xml_with_eclipselink_xml", "The element [{0}] named [{1}] defined in the mapping file [{2}] since an element with the same name was defined in the eclipselink-orm mapping file [{3}]" },
+        { "metadata_warning_override_named_xml_with_eclipselink_xml", "Ignoring the element [{0}] named [{1}] defined in the mapping file [{2}] since an element with the same name was defined in the eclipselink-orm mapping file [{3}]" },
 
         
         { "metadata_warning_ignore_lob", "Ignoring lob specification on element [{1}] within entity class [{0}] since a @Convert is specified." },
