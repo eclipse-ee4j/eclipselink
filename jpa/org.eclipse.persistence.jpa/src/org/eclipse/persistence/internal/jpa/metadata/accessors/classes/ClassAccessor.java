@@ -513,9 +513,11 @@ public abstract class ClassAccessor extends MetadataAccessor {
                         } else {
                             MetadataMethod metadataMethod = new MetadataMethod(method, getEntityMappings());
                             
-                            // True will force an exception to be thrown if it is 
-                            // not a valid method.
-                            if (metadataMethod.isValidPersistenceMethod(getDescriptor(), true)) {
+                            // True will force an exception to be thrown if it 
+                            // is not a valid method. However, if it is a
+                            // transient accessor, don't validate it and just 
+                            // let it through.
+                            if (accessor.isTransient() || metadataMethod.isValidPersistenceMethod(getDescriptor(), true)) {    
                                 accessibleObject = metadataMethod;
                             }
                         }  
@@ -529,8 +531,9 @@ public abstract class ClassAccessor extends MetadataAccessor {
                         MetadataField metadataField = new MetadataField(field, getEntityMappings());
                     
                         // True will force an exception to be thrown if it is 
-                        // not a valid field.
-                        if (metadataField.isValidPersistenceField(getDescriptor(), true)) {
+                        // not a valid field. However, if it is a transient 
+                        // accessor, don't validate it and just let it through.
+                        if (accessor.isTransient() || metadataField.isValidPersistenceField(getDescriptor(), true)) {
                             accessibleObject = metadataField;
                         }
                     }

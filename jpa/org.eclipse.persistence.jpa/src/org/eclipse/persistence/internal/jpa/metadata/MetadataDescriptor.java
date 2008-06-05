@@ -302,7 +302,7 @@ public class MetadataDescriptor {
       * INTERNAL:
       * Store relationship accessors for later processing and quick look up.
       */
-    public void addRelationshipAccessor(MetadataAccessor accessor) {
+    public void addRelationshipAccessor(MappingAccessor accessor) {
         m_relationshipAccessors.add((RelationshipAccessor) accessor);
         
         // Store bidirectional ManyToMany relationships so that we may look at 
@@ -569,7 +569,7 @@ public class MetadataDescriptor {
     public DatabaseMapping getMappingForAttributeName(String attributeName, MetadataAccessor referencingAccessor) {
         // Get accessor will traverse the parent descriptors of an inheritance
         // hierarchy.
-        MetadataAccessor accessor = getAccessorFor(attributeName);
+        MappingAccessor accessor = getAccessorFor(attributeName);
         
         if (accessor != null) {
             // If the accessor is a relationship accessor than it may or may

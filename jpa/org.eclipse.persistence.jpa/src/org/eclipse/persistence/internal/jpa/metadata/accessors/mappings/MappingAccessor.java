@@ -177,6 +177,86 @@ public abstract class MappingAccessor extends MetadataAccessor {
     
     /**
      * INTERNAL:
+     * Return true if this accessor represents a basic collection mapping.
+     */
+    public boolean isBasicCollection() {
+        return false;
+    }
+    
+    /** 
+     * INTERNAL:
+     * Return true if this accessor represents a collection accessor.
+     */
+    public boolean isCollectionAccessor() {
+        return false;
+    }
+    
+    /**
+     * INTERNAL:
+     * Return true if this accessor represents an aggregate mapping.
+     */
+    public boolean isEmbedded() {
+        return false;
+    }
+    
+    /**
+     * INTERNAL:
+     * Return true if this accessor represents a m-m relationship.
+     */
+    public boolean isManyToMany() {
+        return false;
+    }
+    
+    /**
+     * INTERNAL:
+     * Return true if this accessor represents a m-1 relationship.
+     */
+    public boolean isManyToOne() {
+        return false;
+    }
+    
+    /**
+     * INTERNAL:
+     * Return true if this accessor represents a 1-m relationship.
+     */
+    public boolean isOneToMany() {
+        return false;
+    }
+    
+    /**
+     * INTERNAL:
+     * Return true if this accessor represents a 1-1 relationship.
+     */
+    public boolean isOneToOne() {
+        return false;
+    }
+    
+    /**
+     * INTERNAL:
+     * Return true if this accessor method represents a relationship.
+     */
+    public boolean isRelationship() {
+        return isManyToOne() || isManyToMany() || isOneToMany() || isOneToOne() || isVariableOneToOne();
+    }
+    
+    /**
+     * INTERNAL:
+     * Return true if this accessor represents a transient mapping.
+     */
+    public boolean isTransient() {
+        return false;
+    }
+    
+    /**
+     * INTERNAL:
+     * Return true if this accessor represents a variable one to one mapping.
+     */
+    public boolean isVariableOneToOne() {
+        return false;
+    }
+    
+    /**
+     * INTERNAL:
      * Adds properties to the mapping.
      */
     protected void processProperties(DatabaseMapping mapping) {

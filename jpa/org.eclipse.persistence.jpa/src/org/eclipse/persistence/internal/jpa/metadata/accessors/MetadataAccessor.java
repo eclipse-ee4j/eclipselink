@@ -19,7 +19,6 @@ import java.util.List;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedElement;
-import java.lang.Boolean;
 
 import javax.persistence.Column;
 import javax.persistence.FetchType;
@@ -63,7 +62,6 @@ import org.eclipse.persistence.internal.jpa.metadata.ORMetadata;
  */
 public abstract class MetadataAccessor extends ORMetadata {
     private boolean m_isProcessed = false;
-    private Boolean m_isRelationship;
    
     private List<ConverterMetadata> m_converters = new ArrayList<ConverterMetadata>();
     private List<ObjectTypeConverterMetadata> m_objectTypeConverters = new ArrayList<ObjectTypeConverterMetadata>();
@@ -397,103 +395,10 @@ public abstract class MetadataAccessor extends ORMetadata {
     
     /**
      * INTERNAL:
-     * Return true if this accessor represents a basic collection mapping.
-     */
-    public boolean isBasicCollection() {
-        return false;
-    }
-    
-    /** 
-     * INTERNAL:
-     * Return true if this accessor represents a collection accessor.
-     */
-    public boolean isCollectionAccessor() {
-        return false;
-    }
-    
-    /** 
-     * INTERNAL:
-     * Return true if this is DirectAccessor.
-     */
-    public boolean isDirect() {
-        return false;
-    }
-
-    /**
-     * INTERNAL:
-     * Return true if this accessor represents an aggregate mapping.
-     */
-    public boolean isEmbedded() {
-        return false;
-    }
-    
-    /**
-     * INTERNAL:
-     * Return true if this accessor represents a m-m relationship.
-     */
-    public boolean isManyToMany() {
-        return false;
-    }
-    
-    /**
-     * INTERNAL:
-     * Return true if this accessor represents a m-1 relationship.
-     */
-    public boolean isManyToOne() {
-        return false;
-    }
-    
-    /** 
-     * INTERNAL:
-     * Return true if this accessor represents a mapping.
-     */
-    public boolean isMappingAccessor() {
-        return isDirect() ||  isRelationship() || isEmbedded();
-    }
-    
-    /**
-     * INTERNAL:
-     * Return true if this accessor represents a 1-m relationship.
-     */
-    public boolean isOneToMany() {
-        return false;
-    }
-    
-    /**
-     * INTERNAL:
-     * Return true if this accessor represents a 1-1 relationship.
-     */
-    public boolean isOneToOne() {
-        return false;
-    }
-    
-    /**
-     * INTERNAL:
      * Return true if this accessor has been processed.
      */
     public boolean isProcessed() {
         return m_isProcessed;
-    }
-    
-    /**
-     * INTERNAL:
-     * Return true if this accessor method represents a relationship. It will
-     * cache the boolean value to avoid multiple checks and validation.
-     */
-    public boolean isRelationship() {
-        if (m_isRelationship == null) {
-            m_isRelationship = new Boolean(isManyToOne() || isManyToMany() || isOneToMany() || isOneToOne() || isVariableOneToOne());
-        }
-        
-        return m_isRelationship.booleanValue(); 
-    }
-    
-    /**
-     * INTERNAL:
-     * Return true if this accessor represents a variable one to one mapping.
-     */
-    public boolean isVariableOneToOne() {
-        return false;
     }
     
     /**

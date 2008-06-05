@@ -400,7 +400,7 @@ public abstract class CollectionAccessor extends RelationshipAccessor {
                 while (commaTokenizer.hasMoreTokens()) {
                     StringTokenizer spaceTokenizer = new StringTokenizer(commaTokenizer.nextToken());
                     String propertyOrFieldName = spaceTokenizer.nextToken();
-                    MetadataAccessor referenceAccessor = referenceDescriptor.getAccessorFor(propertyOrFieldName);
+                    MappingAccessor referenceAccessor = referenceDescriptor.getAccessorFor(propertyOrFieldName);
                 
                     if (referenceAccessor == null) {
                         throw ValidationException.invalidOrderByValue(propertyOrFieldName, referenceDescriptor.getJavaClass(), getAccessibleObjectName(), getJavaClass());

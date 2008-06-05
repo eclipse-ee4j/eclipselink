@@ -34,8 +34,16 @@ public class TransientAccessor extends MappingAccessor {
     
     /**
      * INTERNAL:
+     * Return true if this accessor represents a transient mapping.
      */
-     public void process() {
-         // Does nothing ...
-     }
+    public boolean isTransient() {
+        return true;
+    }
+    
+    /**
+     * INTERNAL:
+     */
+    public void process() {
+        // Does nothing ...
+    }
 }

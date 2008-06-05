@@ -68,6 +68,13 @@ public class BeerConsumer extends Consumer {
         return certifications;
     }
    
+    // This method is here for testing purposes. Note: there is no
+    // equivalent setMethod defined and the foo attribute has been
+    // marked as a transient in inherited-entity-mappings.xml
+    public int getFoo() {
+        return 0;
+    }
+    
     public Integer getId() {
         return id;
     }

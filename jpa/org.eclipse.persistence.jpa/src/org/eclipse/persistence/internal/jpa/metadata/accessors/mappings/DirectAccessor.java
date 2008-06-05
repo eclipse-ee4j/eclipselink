@@ -273,15 +273,6 @@ public abstract class DirectAccessor extends MappingAccessor {
         }
     }
     
-    /** 
-     * INTERNAL:
-     * Return true if this is DirectAccessor.
-     */
-    @Override
-    public boolean isDirect() {
-        return true;
-    }
-    
     /**
      * INTERNAL:
      */
