@@ -560,7 +560,11 @@ public final class MWNamespace
 		for (int i = typeDefs.getLength() - 1; i >= 0; i --) {
 			XSTypeDefinition typeDef = (XSTypeDefinition)typeDefs.item(i);
 			ExplicitSchemaTypeDefinition type = null;
-			if (!XMLConstants.W3C_XML_SCHEMA_NS_URI.equals(typeDef.getNamespace())) {
+			String ns = typeDef.getNamespace();
+			if (ns == null) {
+				ns = "";
+			}
+			if (!XMLConstants.W3C_XML_SCHEMA_NS_URI.equals(typeDef.getNamespace()) && ns.equals(getNamespaceUrl())) {
 				if (typeDef.getTypeCategory() == XSTypeDefinition.SIMPLE_TYPE) {
 					type = this.reloadSimpleType((XSSimpleTypeDecl)typeDef);
 				} else {
@@ -620,8 +624,15 @@ public final class MWNamespace
 		Collection removedAttributes = new HashBag(this.attributeDeclarations.values());
 		
 		for (int i = attributeDeclarations.getLength() - 1; i >= 0; i --) {
-			ExplicitAttributeDeclaration attribute = this.reloadAttribute((XSAttributeDecl)attributeDeclarations.item(i));
-			removedAttributes.remove(attribute);
+			XSAttributeDecl attrDecl = (XSAttributeDecl)attributeDeclarations.item(i);
+			String ns = attrDecl.getNamespace();
+			if (ns == null) {
+				ns = "";
+			}
+			if (ns.equals(getNamespaceUrl())) {
+				ExplicitAttributeDeclaration attribute = this.reloadAttribute(attrDecl);
+				removedAttributes.remove(attribute);
+			}
 		}
 		
 		for (Iterator stream = removedAttributes.iterator(); stream.hasNext(); ) {
@@ -644,8 +655,15 @@ public final class MWNamespace
 		Collection removedElements = new HashBag(this.elementDeclarations.values());
 		
 		for (int i = elementDeclarations.getLength() - 1; i >= 0; i --) {
-			ExplicitElementDeclaration element = this.reloadElement((XSElementDecl) elementDeclarations.item(i));
-			removedElements.remove(element);
+			XSElementDecl elementDecl = (XSElementDecl) elementDeclarations.item(i);
+			String ns = elementDecl.getNamespace();
+			if (ns == null) {
+				ns = "";
+			}
+			if (ns.equals(this.getNamespaceUrl())) {
+				ExplicitElementDeclaration element = this.reloadElement(elementDecl);
+				removedElements.remove(element);
+			}
 		}
 		
 		for (Iterator stream = removedElements.iterator(); stream.hasNext(); ) {
@@ -668,8 +686,15 @@ public final class MWNamespace
 		Collection removedGroups = new HashBag(this.modelGroupDefinitions.values());
 		
 		for (int i = modelGroupDefs.getLength() - 1; i >= 0; i --) {
-			ModelGroupDefinition group = this.reloadGroup((XSModelGroupDefinition) modelGroupDefs.item(i));
-			removedGroups.remove(group);
+			XSModelGroupDefinition modelGroupDef = (XSModelGroupDefinition) modelGroupDefs.item(i);
+			String ns = modelGroupDef.getNamespace();
+			if (ns == null) {
+				ns = "";
+			}
+			if (ns.equals(getNamespaceUrl())) {
+				ModelGroupDefinition group = this.reloadGroup(modelGroupDef);
+				removedGroups.remove(group);
+			}
 		}
 		
 		for (Iterator stream = removedGroups.iterator(); stream.hasNext(); ) {
