@@ -434,7 +434,7 @@
         <ant antfile="${eclipselink.util.rename.utility}/build.xml" target="all"/>
         <jar jarfile="${eclipselink.util.rename.utility}/${package-rename.jar}">
             <fileset dir="${eclipselink.util.rename.utility}/${classes.dir}">
-                <include name="utilities/*.class"/>
+                <include name="**/*.class"/>
             </fileset>
         </jar>
     </target>

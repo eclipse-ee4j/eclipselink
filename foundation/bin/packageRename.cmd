@@ -23,7 +23,7 @@ set CLASSPATH=%THIS%..\jlib\package-rename.jar
 set JAVA_ARGS=%SRC_DIR% %DEST_DIR% %THIS%..\config\package-rename.properties
 
 @echo on
-%JAVA_HOME%\bin\java %JVM_ARGS% -classpath %CLASSPATH% utilities.MigrateTopLinkToEclipseLink %JAVA_ARGS%
+%JAVA_HOME%\bin\java %JVM_ARGS% -classpath %CLASSPATH% org.eclipse.persistence.utils.rename.MigrateTopLinkToEclipseLink %JAVA_ARGS%
 pause
 @echo off
 @endlocal
