@@ -19,7 +19,6 @@ import java.util.Map;
 import java.util.WeakHashMap;
 import javax.xml.namespace.QName;
 import javax.xml.transform.Source;
-import org.eclipse.persistence.sdo.SDOConstants;
 import org.eclipse.persistence.sdo.helper.SDOXSDHelper;
 import org.eclipse.persistence.sdo.helper.SchemaLocationResolver;
 import org.eclipse.persistence.sdo.helper.SchemaResolver;
@@ -27,7 +26,6 @@ import org.eclipse.persistence.logging.AbstractSessionLog;
 import commonj.sdo.Property;
 import commonj.sdo.Type;
 import commonj.sdo.helper.HelperContext;
-import commonj.sdo.impl.HelperProvider;
 
 /**
  * <p><b>Purpose</b>: Provides access to additional information when the Type or Property is defined by an XML Schema (XSD)..
@@ -38,15 +36,11 @@ import commonj.sdo.impl.HelperProvider;
  * <li> Other Methods return null/false otherwise or if the information is unavailable.
  * </ul>
  */
-public class SDOXSDHelperDelegator implements SDOXSDHelper {
+public class SDOXSDHelperDelegator extends AbstractHelperDelegator implements SDOXSDHelper {
     private Map sdoXSDHelperDelegates;
-
-    // hold the context containing all helpers so that we can preserve inter-helper relationships
-    private HelperContext aHelperContext;
 
     public SDOXSDHelperDelegator() {
         // TODO: JIRA129 - default to static global context - Do Not use this convenience constructor outside of JUnit testing
-        //aHelperContext = HelperProvider.getDefaultContext();
         sdoXSDHelperDelegates = new WeakHashMap();
     }
 
@@ -146,43 +140,6 @@ public class SDOXSDHelperDelegator implements SDOXSDHelper {
     public void addGlobalProperty(QName qname, Property prop, boolean isElement) {
         getSDOXSDHelperDelegate().addGlobalProperty(qname, prop, isElement);
     }
-    
-    /**
-     * INTERNAL: 
-     * This function returns the current or parent ClassLoader.
-     * We return the parent application ClassLoader when running in a J2EE client either in a 
-     * web or ejb container to match a weak reference to a particular helpercontext.
-     */
-    private ClassLoader getContextClassLoader() {
-    	/**
-    	 * Classloader levels: (oc4j specific  
-    	 *  0 - APP.web (servlet/jsp) or APP.wrapper (ejb) or  
-    	 *  1 - APP.root (parent for helperContext) 
-    	 *  2 - default.root 
-    	 *  3 - system.root 
-    	 *  4 - oc4j.10.1.3 (remote EJB) or org.eclipse.persistence:11.1.1.0.0
-    	 *  5 - api:1.4.0
-    	 *  6 - jre.extension:0.0.0
-    	 *  7 - jre.bootstrap:1.5.0_07 (with various J2SE versions)
-    	 *  */     	
-        // Kludge for running in OC4J - from WebServices group
-        ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
-        if ((classLoader.getParent() != null) && (classLoader.toString().indexOf(SDOConstants.CLASSLOADER_EJB_FRAGMENT) != -1)) {
-        	// we are running in a servlet container
-            AbstractSessionLog.getLog().log(AbstractSessionLog.FINEST, "{0} matched classLoader: {1} to parent cl: {2}", //
-            		new Object[] {getClass().getName(), classLoader.toString(), classLoader.getParent().toString()}, false);
-            classLoader = classLoader.getParent();
-            // check if we are running in an ejb container
-        } else if ((classLoader.getParent() != null) && (classLoader.toString().indexOf(SDOConstants.CLASSLOADER_WEB_FRAGMENT) != -1)) {
-        	// we are running in a local ejb container
-            AbstractSessionLog.getLog().log(AbstractSessionLog.FINEST, "{0} matched classLoader: {1} to parent cl: {2}", //
-            		new Object[] {getClass().getName(), classLoader.toString(), classLoader.getParent().toString()}, false);
-            classLoader = classLoader.getParent();
-        } else {
-        	// we are running in a J2SE client (toString() contains a JVM hash) or an unmatched container level
-        }
-        return classLoader;
-    }
 
     /**
      * INTERNAL:
@@ -198,17 +155,6 @@ public class SDOXSDHelperDelegator implements SDOXSDHelper {
             		new Object[] {getClass().getName(), sdoXSDHelperDelegate, contextClassLoader.toString()}, false);
         }
         return sdoXSDHelperDelegate;
-    }
-
-    public HelperContext getHelperContext() {
-        if(null == aHelperContext) {
-            aHelperContext = HelperProvider.getDefaultContext();
-        }
-        return aHelperContext;
-    }
-
-    public void setHelperContext(HelperContext helperContext) {
-        aHelperContext = helperContext;
     }
 
     public void reset() {
