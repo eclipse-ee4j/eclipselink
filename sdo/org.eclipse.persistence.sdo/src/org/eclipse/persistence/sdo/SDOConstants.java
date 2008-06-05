@@ -92,15 +92,6 @@ public class SDOConstants {
     
     public static HelperContext globalHelperContext;
     private static SDOTypeHelper sdoTypeHelper;
-    static {
-        try {
-            globalHelperContext = HelperProvider.getDefaultContext();
-            sdoTypeHelper = (SDOTypeHelper) globalHelperContext.getTypeHelper();
-        } catch(Throwable throwable) {
-            globalHelperContext = null;
-            sdoTypeHelper = null;
-        }
-    }
 
     /** Numeric primitive default instances see p 45 of Java Spec. 4th ed */
     public static final Boolean BOOLEAN_DEFAULT = Boolean.FALSE;
@@ -148,6 +139,16 @@ public class SDOConstants {
     public static final SDOType SDO_LONGOBJECT = new SDODataType(SDOJAVA_URL, LONGOBJECT, ClassConstants.LONG, sdoTypeHelper);
     public static final SDOType SDO_SHORTOBJECT = new SDODataType(SDOJAVA_URL, SHORTOBJECT, ClassConstants.SHORT, sdoTypeHelper);
 
+    static {
+        try {
+            globalHelperContext = HelperProvider.getDefaultContext();
+            sdoTypeHelper = (SDOTypeHelper) globalHelperContext.getTypeHelper();
+        } catch(Throwable throwable) {
+            globalHelperContext = null;
+            sdoTypeHelper = null;
+        }
+    }
+    
     /** XML String names and QName constants missing from org.eclipse.persistence.oxm.XMLConstants  */
     public static final String ANY_TYPE = "anyType";
     public static final String ANY_URI = "anyURI";
