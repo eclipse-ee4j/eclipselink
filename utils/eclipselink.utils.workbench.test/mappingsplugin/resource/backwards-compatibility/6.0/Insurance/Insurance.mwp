@@ -46,7 +46,7 @@
       <ejb-jar-xml-location>C:/DIWDev/Thor/Product/WMWTest/Resource/ejb/test.oracle.models.ejb20.cmp.employee.ejb-jar.xml</ejb-jar-xml-location>
    </ejb-policy>
    <table-repository>
-      <platform-name>MySQL4</platform-name>
+      <platform-name>MySQL</platform-name>
       <login-infos>
          <login-info>
             <name>MySQL</name>

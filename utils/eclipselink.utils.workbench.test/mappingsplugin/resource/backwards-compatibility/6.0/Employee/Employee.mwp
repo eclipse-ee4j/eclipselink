@@ -48,7 +48,7 @@
       <ejb-persistence-type>No EJB</ejb-persistence-type>
    </ejb-policy>
    <table-repository>
-      <platform-name>MySQL4</platform-name>
+      <platform-name>MySQL</platform-name>
       <login-infos>
          <login-info>
             <name>MySQL</name>
