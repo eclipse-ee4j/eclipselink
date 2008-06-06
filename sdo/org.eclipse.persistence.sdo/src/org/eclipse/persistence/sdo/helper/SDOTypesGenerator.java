@@ -24,6 +24,8 @@ import javax.xml.transform.Source;
 import org.eclipse.persistence.sdo.SDOConstants;
 import org.eclipse.persistence.sdo.SDOProperty;
 import org.eclipse.persistence.sdo.SDOType;
+import org.eclipse.persistence.sdo.types.SDOWrapperType;
+import org.eclipse.persistence.sdo.helper.delegates.SDOXMLHelperDelegate;
 import org.eclipse.persistence.sdo.helper.extension.SDOUtil;
 
 import org.eclipse.persistence.exceptions.SDOException;
@@ -33,9 +35,13 @@ import org.eclipse.persistence.internal.oxm.schema.model.*;
 import org.eclipse.persistence.oxm.NamespaceResolver;
 import org.eclipse.persistence.oxm.XMLConstants;
 
+import commonj.sdo.DataObject;
 import commonj.sdo.Property;
 import commonj.sdo.Type;
+import commonj.sdo.helper.DataFactory;
 import commonj.sdo.helper.HelperContext;
+import commonj.sdo.helper.XMLHelper;
+
 import org.eclipse.persistence.oxm.XMLContext;
 import org.eclipse.persistence.oxm.XMLUnmarshaller;
 import org.eclipse.persistence.sessions.Project;
@@ -593,6 +599,34 @@ public class SDOTypesGenerator {
     private void startNewSimpleType(String targetNamespace, String sdoTypeName, String xsdLocalName, SimpleType simpleType) {
         SDOType currentType = createSDOTypeForName(targetNamespace, sdoTypeName, xsdLocalName);
         currentType.setDataType(true);
+
+        // Defining a new simple type from XSD.
+    	// See also: SDOTypeHelperDelegate:define for "types from DataObjects" equivalent        
+        
+    	SDOTypeHelper typeHelper = ((SDOTypeHelper) aHelperContext.getTypeHelper());
+
+    	// If this simple type is a restriction, get the QName for the base type and
+    	// include it when creating the WrapperType.  The QName will be used during 
+    	// conversions (eg. "myBinaryElement" could be a restriction of base64Binary
+    	// or hexBinary.
+    	QName currentTypeQName = null;
+    	if (simpleType.getRestriction() != null) {
+    		String baseType = simpleType.getRestriction().getBaseType();
+    		currentTypeQName = new QName(XMLConstants.SCHEMA_URL, baseType);
+    	}
+    	
+    	// Create the new WrapperType
+        SDOWrapperType wrapperType = new SDOWrapperType(currentType, sdoTypeName, typeHelper, currentTypeQName);
+        
+    	// Register WrapperType with maps on TypeHelper
+    	QName wrapperQName = new QName(SDOConstants.ORACLE_SDO_URL, sdoTypeName);
+        typeHelper.getWrappersHashMap().put(wrapperQName, wrapperType);
+        typeHelper.getTypesHashMap().put(wrapperQName, wrapperType);
+
+        // Add descriptor to XMLHelper
+        ArrayList list = new ArrayList(1);
+        list.add(wrapperType);
+        ((SDOXMLHelper) aHelperContext.getXMLHelper()).addDescriptors(list);
 
         if (simpleType.getAnnotation() != null) {
             currentType.setAppInfoElements(simpleType.getAnnotation().getAppInfo());
@@ -1320,6 +1354,26 @@ public class SDOTypesGenerator {
                 ((SDOType) p.getType()).getXmlDescriptor().addRootElement(prefix + //
                         SDOConstants.SDO_XPATH_NS_SEPARATOR_FRAGMENT + xsdName);
             }
+        } else {
+        	// Types from Schema: isDataType() == true so:
+        	//   - find the SDOWrapperType from TypeHelper's WrappersHashMap
+        	//   - set the root element name on it
+        	//   - add the descriptor to XMLContext's DescriptorsByQName map
+        	
+        	// See also: SDOTypeHelperDelegate:defineOpenContentProperty
+        	
+        	SDOTypeHelper typeHelper = (SDOTypeHelper) aHelperContext.getTypeHelper();
+
+        	QName wrapperTypeQname = new QName(SDOConstants.ORACLE_SDO_URL, p.getType().getName());
+
+        	SDOWrapperType wrapperType = (SDOWrapperType) typeHelper.getWrappersHashMap().get(wrapperTypeQname);
+
+        	if (wrapperType != null && wrapperType.getXmlDescriptor() != null) {
+        		wrapperType.getXmlDescriptor().addRootElement(xsdName);
+
+        		QName descriptorQname = new QName(targetNamespace, xsdName);
+        		((SDOXMLHelper) aHelperContext.getXMLHelper()).getXmlContext().addDescriptorByQName(descriptorQname, wrapperType.getXmlDescriptor());
+        	}
         }
     }
 

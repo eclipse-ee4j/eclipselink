@@ -18,6 +18,7 @@ import commonj.sdo.helper.TypeHelper;
 import java.util.Map;
 import javax.xml.namespace.QName;
 import org.eclipse.persistence.sdo.SDOType;
+import org.eclipse.persistence.sessions.Project;
 import org.eclipse.persistence.oxm.NamespaceResolver;
 
 /**
@@ -85,6 +86,20 @@ public interface SDOTypeHelper extends TypeHelper {
 
     /**
      * INTERNAL:
+     * Return the map of Wrapper objects (SDOWrapperTypes that wrap a primitive document).
+     * @return a HashMap of SDOWrapperTypes, keyed on the XSD type that it wraps.
+     */
+    public Map getWrappersHashMap();
+
+    /**
+     * INTERNAL:
+     * Set the map of Wrapper objects (SDOWrapperTypes that wrap a primitive document).
+     * @param 	aMap		a HashMap of SDOWrapperTypes, keyed on the XSD type that it wraps.
+     */
+    public void setWrappersHashMap(Map aMap);
+    
+    /**
+     * INTERNAL:
      *
      */
     public void reset();
@@ -127,4 +142,7 @@ public interface SDOTypeHelper extends TypeHelper {
     * Return the Map of Open Content Properties
     */
     public Map getOpenContentProperties();
+    
+    public void addWrappersToProject(Project toplinkProject);
+    
 }

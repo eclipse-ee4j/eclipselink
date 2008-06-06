@@ -583,7 +583,7 @@ public class XPathHelper {
 
             SDOProperty prop = dao.getInstanceProperty(propertyName);
             try {
-                SDOXMLHelper sdoXMLHelper = (SDOXMLHelper) prop.getType().getHelperContext().getXMLHelper();
+                SDOXMLHelper sdoXMLHelper = (SDOXMLHelper) dao.getType().getHelperContext().getXMLHelper();
                 queryVal = sdoXMLHelper.getXmlConversionManager().convertObject(queryValue, prop.getType().getInstanceClass());
             } catch (ConversionException e) {
                 // do nothing

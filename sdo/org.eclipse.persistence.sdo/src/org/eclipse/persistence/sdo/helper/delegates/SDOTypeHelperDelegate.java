@@ -26,9 +26,11 @@ import org.eclipse.persistence.sdo.SDOConstants;
 import org.eclipse.persistence.sdo.SDODataObject;
 import org.eclipse.persistence.sdo.SDOProperty;
 import org.eclipse.persistence.sdo.SDOType;
+import org.eclipse.persistence.sdo.types.SDOWrapperType;
 import org.eclipse.persistence.sdo.helper.SDOTypeHelper;
 import org.eclipse.persistence.sdo.helper.SDOXMLHelper;
 import org.eclipse.persistence.sdo.helper.SDOXSDHelper;
+import org.eclipse.persistence.sessions.Project;
 import org.eclipse.persistence.sdo.types.*;
 import org.eclipse.persistence.exceptions.SDOException;
 import org.eclipse.persistence.internal.helper.ClassConstants;
@@ -49,6 +51,9 @@ public class SDOTypeHelperDelegate implements SDOTypeHelper {
     /** Map containing user defined types */
     private Map typesHashMap;
 
+    /** Map containing wrapper types */
+    private Map wrappersHashMap;
+    
     /** Map containing built-in types for primitive and SDO types */
     private final Map commonjHashMap = new HashMap();
 
@@ -71,14 +76,23 @@ public class SDOTypeHelperDelegate implements SDOTypeHelper {
     private HelperContext aHelperContext;
     private NamespaceResolver namespaceResolver;
 
+    private SDOType SDO_FLOAT_WRAPPER;
+    private SDOType SDO_BASE64_BYTE_ARRAY_WRAPPER;
+    private SDOType SDO_HEX_BYTE_ARRAY_WRAPPER;
+    private SDOType SDO_STRING_WRAPPER;
+    private SDOType SDO_INT_WRAPPER;
+    private SDOType SDO_YEARMONTHDAY_WRAPPER;
+    
     // create these maps once to avoid threading issues
     static {
-        initSDOTypeForSimpleJavaTypeMap();        
+        initSDOTypeForSimpleJavaTypeMap();                
     }
 
     public SDOTypeHelperDelegate(HelperContext aContext) {
         // set context before initializing maps
         aHelperContext = aContext;
+        
+        initWrapperTypes();
         initTypesHashMap();
         initCommonjHashMap();
         initCommonjJavaHashMap();
@@ -87,6 +101,24 @@ public class SDOTypeHelperDelegate implements SDOTypeHelper {
         initOpenProps();
     }
 
+    public void initWrapperTypes() {
+        SDO_FLOAT_WRAPPER = new SDOWrapperType(SDOConstants.SDO_FLOAT, SDOConstants.FLOAT, this);
+        SDO_BASE64_BYTE_ARRAY_WRAPPER = new SDOWrapperType(SDOConstants.SDO_BYTES, SDOConstants.BYTES, this, XMLConstants.BASE_64_BINARY_QNAME);
+        SDO_HEX_BYTE_ARRAY_WRAPPER = new SDOWrapperType(SDOConstants.SDO_BYTES, SDOConstants.BYTES, this, XMLConstants.HEX_BINARY_QNAME);
+        SDO_STRING_WRAPPER = new SDOWrapperType(SDOConstants.SDO_STRING, SDOConstants.STRING, this);
+        SDO_INT_WRAPPER = new SDOWrapperType(SDOConstants.SDO_INT, SDOConstants.INT, this);
+        SDO_YEARMONTHDAY_WRAPPER = new SDOWrapperType(SDOConstants.SDO_YEARMONTHDAY, SDOConstants.YEARMONTHDAY, this);
+    }
+    
+    public void addWrappersToProject(Project toplinkProject) {
+    	toplinkProject.addDescriptor(SDO_FLOAT_WRAPPER.getXmlDescriptor());
+    	toplinkProject.addDescriptor(SDO_BASE64_BYTE_ARRAY_WRAPPER.getXmlDescriptor());
+    	toplinkProject.addDescriptor(SDO_HEX_BYTE_ARRAY_WRAPPER.getXmlDescriptor());    	
+    	toplinkProject.addDescriptor(SDO_STRING_WRAPPER.getXmlDescriptor());    	
+    	toplinkProject.addDescriptor(SDO_INT_WRAPPER.getXmlDescriptor());    	
+    	toplinkProject.addDescriptor(SDO_YEARMONTHDAY_WRAPPER.getXmlDescriptor());    	
+    }
+    
     /**
      * initializes built-in HashMap commonjHashMap.
      */
@@ -152,8 +184,46 @@ public class SDOTypeHelperDelegate implements SDOTypeHelper {
 
         SDOType openSequencedType = new SDOOpenSequencedType(this);
         typesHashMap.put(openSequencedType.getQName(), openSequencedType);
+        
+        QName floatTypeQname = new QName(SDO_FLOAT_WRAPPER.getURI(), SDO_FLOAT_WRAPPER.getName());
+        typesHashMap.put(floatTypeQname, SDO_FLOAT_WRAPPER);
+        QName base64TypeQname = new QName(SDO_BASE64_BYTE_ARRAY_WRAPPER.getURI(), SDO_BASE64_BYTE_ARRAY_WRAPPER.getName());
+        typesHashMap.put(base64TypeQname, SDO_BASE64_BYTE_ARRAY_WRAPPER);
+        QName hexTypeQname = new QName(SDO_HEX_BYTE_ARRAY_WRAPPER.getURI(), SDO_HEX_BYTE_ARRAY_WRAPPER.getName());
+        typesHashMap.put(hexTypeQname, SDO_HEX_BYTE_ARRAY_WRAPPER);
+        QName stringTypeQname = new QName(SDO_STRING_WRAPPER.getURI(), SDO_STRING_WRAPPER.getName());
+        typesHashMap.put(stringTypeQname, SDO_STRING_WRAPPER);
+        QName intTypeQname = new QName(SDO_INT_WRAPPER.getURI(), SDO_INT_WRAPPER.getName());
+        typesHashMap.put(intTypeQname, SDO_INT_WRAPPER);
+        QName ymdTypeQname = new QName(SDO_YEARMONTHDAY_WRAPPER.getURI(), SDO_YEARMONTHDAY_WRAPPER.getName());
+        typesHashMap.put(ymdTypeQname, SDO_YEARMONTHDAY_WRAPPER);
     }
 
+    /**
+     * Initializes the wrappersHashMap HashMap.
+     */
+    private void initWrappersHashMap() {
+    	wrappersHashMap = new HashMap();
+
+        QName floatTypeQname = new QName(SDO_FLOAT_WRAPPER.getURI(), SDO_FLOAT_WRAPPER.getName());
+    	wrappersHashMap.put(floatTypeQname, SDO_FLOAT_WRAPPER);
+        
+        QName base64TypeQname = new QName(SDO_BASE64_BYTE_ARRAY_WRAPPER.getURI(), SDO_BASE64_BYTE_ARRAY_WRAPPER.getName());
+        wrappersHashMap.put(base64TypeQname, SDO_BASE64_BYTE_ARRAY_WRAPPER);
+        
+        QName hexTypeQname = new QName(SDO_HEX_BYTE_ARRAY_WRAPPER.getURI(), SDO_HEX_BYTE_ARRAY_WRAPPER.getName());
+        wrappersHashMap.put(hexTypeQname, SDO_HEX_BYTE_ARRAY_WRAPPER);
+        
+        QName stringTypeQname = new QName(SDO_STRING_WRAPPER.getURI(), SDO_STRING_WRAPPER.getName());
+    	wrappersHashMap.put(stringTypeQname, SDO_STRING_WRAPPER);
+    	
+        QName intTypeQname = new QName(SDO_INT_WRAPPER.getURI(), SDO_INT_WRAPPER.getName());
+        wrappersHashMap.put(intTypeQname, SDO_INT_WRAPPER);
+        
+        QName ymdTypeQname = new QName(SDO_YEARMONTHDAY_WRAPPER.getURI(), SDO_YEARMONTHDAY_WRAPPER.getName());
+        wrappersHashMap.put(ymdTypeQname, SDO_YEARMONTHDAY_WRAPPER);
+    }    
+    
     /**
      * initialize the built-in HashMap sdoToXSDTypes
      */
@@ -489,6 +559,34 @@ public class SDOTypeHelperDelegate implements SDOTypeHelper {
         }
         type.setOpen(dataObject.getBoolean("open"));
  
+        if (type.isDataType()) {
+        	// RICK: Defining a new simple type from a DataObject.
+        	// See also: SDOTypesGenerator:startNewSimpleType for "types from XSD" equivalent
+        	
+        	// If this simple type is a restriction, get the QName for the base type and
+        	// include it when creating the WrapperType.  The QName will be used during 
+        	// conversions (eg. "myBinaryElement" could be a restriction of base64Binary
+        	// or hexBinary.
+        	QName currentTypeQName = null;
+	    	if (!type.getBaseTypes().isEmpty()) {
+	    		SDOType baseType = (SDOType) type.getBaseTypes().get(0);
+	    		currentTypeQName = new QName(XMLConstants.SCHEMA_URL, baseType.getName());
+	    	}
+
+	    	// Create the new WrapperType
+	        SDOWrapperType wrapperType = new SDOWrapperType(type, name, this, currentTypeQName);
+	        
+	    	// Register WrapperType with maps on TypeHelper
+	    	QName typeQName = new QName(SDOConstants.ORACLE_SDO_URL, name);
+	        typeHelper.getWrappersHashMap().put(typeQName, wrapperType);
+	        typeHelper.getTypesHashMap().put(typeQName, wrapperType);
+
+	        // Add descriptor to XMLHelper
+	        ArrayList list = new ArrayList(1);
+	        list.add(wrapperType);
+	        ((SDOXMLHelper) aHelperContext.getXMLHelper()).addDescriptors(list);        
+        }
+        
         return type;
     }
 
@@ -639,7 +737,29 @@ public class SDOTypeHelperDelegate implements SDOTypeHelper {
         return typesHashMap;
     }
 
+    /**
+     * INTERNAL:
+     * Return the map of Wrapper objects (SDOWrapperTypes that wrap a primitive document).
+     * @return a HashMap of SDOWrapperTypes, keyed on the XSD type that it wraps.
+     */
+    public Map getWrappersHashMap() {
+        if (wrappersHashMap == null) {
+            initWrappersHashMap();
+        }
+        return wrappersHashMap;
+    }
+
+    /**
+     * INTERNAL:
+     * Set the map of Wrapper objects (SDOWrapperTypes that wrap a primitive document).
+     * @param 	aMap		a HashMap of SDOWrapperTypes, keyed on the XSD type that it wraps.
+     */
+    public void setWrappersHashMap(Map aMap) {
+    	this.wrappersHashMap = aMap;
+    }
+    
     public void reset() {
+        initWrapperTypes();
         initTypesHashMap();
         namespaceResolver = new NamespaceResolver();
         initOpenProps();
@@ -696,7 +816,28 @@ public class SDOTypeHelperDelegate implements SDOTypeHelper {
             
 
             ((SDOProperty)property).setUri(propertyUri);
-            XMLDescriptor aDescriptor = ((SDOType)property.getType()).getXmlDescriptor();
+
+            XMLDescriptor aDescriptor;
+            if (property.getType().isDataType()) {
+            	// RICK: Types from XSD: isDataType() == true so:
+            	//   - find the SDOWrapperType from TypeHelper's WrappersHashMap
+            	//   - add the descriptor to XMLContext's DescriptorsByQName map
+
+            	// See also: SDOTypesGenerator:addRootElementToDescriptor
+            	
+            	SDOTypeHelper typeHelper = (SDOTypeHelper) aHelperContext.getTypeHelper();
+            	
+                QName wrapperTypeQname = new QName(propertyUri, propertyName);
+                SDOWrapperType wrapperType = (SDOWrapperType) typeHelper.getWrappersHashMap().get(wrapperTypeQname);
+
+                if (wrapperType != null) {
+                	((SDOXMLHelper) aHelperContext.getXMLHelper()).getXmlContext().addDescriptorByQName(wrapperTypeQname, wrapperType.getXmlDescriptor());
+                }
+                
+            	return;
+            } else {
+            	aDescriptor = ((SDOType)property.getType()).getXmlDescriptor();
+            }
 
             // synchronized threads that access the NonSynchronizedVector tables in XMLDescriptor 
             if (aDescriptor != null) {

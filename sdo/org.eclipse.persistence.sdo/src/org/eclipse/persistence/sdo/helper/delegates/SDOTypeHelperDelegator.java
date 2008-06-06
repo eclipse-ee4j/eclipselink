@@ -22,6 +22,7 @@ import java.util.WeakHashMap;
 import javax.xml.namespace.QName;
 import org.eclipse.persistence.sdo.SDOType;
 import org.eclipse.persistence.sdo.helper.SDOTypeHelper;
+import org.eclipse.persistence.sessions.Project;
 import org.eclipse.persistence.logging.AbstractSessionLog;
 import org.eclipse.persistence.oxm.NamespaceResolver;
 
@@ -93,6 +94,24 @@ public class SDOTypeHelperDelegator extends AbstractHelperDelegator implements S
         return getSDOTypeHelperDelegate().getTypesHashMap();
     }
 
+    /**
+     * INTERNAL:
+     * Return the map of Wrapper objects (SDOWrapperTypes that wrap a primitive document).
+     * @return a HashMap of SDOWrapperTypes, keyed on the XSD type that it wraps.
+     */
+    public Map getWrappersHashMap() {
+    	return getSDOTypeHelperDelegate().getWrappersHashMap(); 
+    }
+
+    /**
+     * INTERNAL:
+     * Set the map of Wrapper objects (SDOWrapperTypes that wrap a primitive document).
+     * @param 	aMap		a HashMap of SDOWrapperTypes, keyed on the XSD type that it wraps.
+     */
+    public void setWrappersHashMap(Map aMap) {
+    	getSDOTypeHelperDelegate().setWrappersHashMap(aMap);
+    }
+    
     public void reset() {
         getSDOTypeHelperDelegate().reset();
     }
@@ -152,4 +171,9 @@ public class SDOTypeHelperDelegator extends AbstractHelperDelegator implements S
     public Map getOpenContentProperties() {
         return getSDOTypeHelperDelegate().getOpenContentProperties();
     }
+
+    public void addWrappersToProject(Project toplinkProject) {
+    	getSDOTypeHelperDelegate().addWrappersToProject(toplinkProject);
+    }
+
 }

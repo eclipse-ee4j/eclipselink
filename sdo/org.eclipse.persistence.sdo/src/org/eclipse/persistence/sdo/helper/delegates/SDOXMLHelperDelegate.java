@@ -386,6 +386,7 @@ public class SDOXMLHelperDelegate implements SDOXMLHelper {
         anXMLMarshaller.setSchemaLocation(xmlDocument.getSchemaLocation());
         anXMLMarshaller.setNoNamespaceSchemaLocation(xmlDocument.getNoNamespaceSchemaLocation());
         ((SDOMarshalListener)anXMLMarshaller.getMarshalListener()).setMarshalledObject(xmlDocument.getRootObject());
+        
         anXMLMarshaller.marshal(xmlDocument, outputWriter);
     }
 
@@ -522,6 +523,7 @@ public class SDOXMLHelperDelegate implements SDOXMLHelper {
             topLinkProject.addDescriptor(changeSummaryType.getXmlDescriptor());
             SDOType openSequencedType = (SDOType) aHelperContext.getTypeHelper().getType(SDOConstants.ORACLE_SDO_URL, "OpenSequencedType");
             topLinkProject.addDescriptor(openSequencedType.getXmlDescriptor());
+            ((SDOTypeHelper)aHelperContext.getTypeHelper()).addWrappersToProject(topLinkProject);
         }
         return topLinkProject;
     }
