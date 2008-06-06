@@ -21,10 +21,12 @@ import java.util.Vector;
 import javax.xml.namespace.QName;
 
 import org.eclipse.persistence.tools.workbench.mappingsmodel.ProblemConstants;
+import org.eclipse.persistence.tools.workbench.mappingsmodel.descriptor.MWAbstractTransactionalPolicy;
 import org.eclipse.persistence.tools.workbench.mappingsmodel.descriptor.MWAdvancedPropertyAdditionException;
 import org.eclipse.persistence.tools.workbench.mappingsmodel.descriptor.MWDescriptor;
 import org.eclipse.persistence.tools.workbench.mappingsmodel.descriptor.MWDescriptorInheritancePolicy;
 import org.eclipse.persistence.tools.workbench.mappingsmodel.descriptor.MWDescriptorPolicy;
+import org.eclipse.persistence.tools.workbench.mappingsmodel.descriptor.MWNullTransactionalPolicy;
 import org.eclipse.persistence.tools.workbench.mappingsmodel.descriptor.MWTransactionalDescriptor;
 import org.eclipse.persistence.tools.workbench.mappingsmodel.descriptor.MWTransactionalPolicy;
 import org.eclipse.persistence.tools.workbench.mappingsmodel.handles.MWHandle;
@@ -32,6 +34,7 @@ import org.eclipse.persistence.tools.workbench.mappingsmodel.handles.MWNamedSche
 import org.eclipse.persistence.tools.workbench.mappingsmodel.handles.MWHandle.NodeReferenceScrubber;
 import org.eclipse.persistence.tools.workbench.mappingsmodel.mapping.MWMapping;
 import org.eclipse.persistence.tools.workbench.mappingsmodel.mapping.MWMappingFactory;
+import org.eclipse.persistence.tools.workbench.mappingsmodel.mapping.MWNullTransformer;
 import org.eclipse.persistence.tools.workbench.mappingsmodel.mapping.xml.MWAbstractAnyMapping;
 import org.eclipse.persistence.tools.workbench.mappingsmodel.mapping.xml.MWAnyAttributeMapping;
 import org.eclipse.persistence.tools.workbench.mappingsmodel.mapping.xml.MWAnyCollectionMapping;
@@ -98,7 +101,14 @@ public final class MWOXDescriptor
 		this.rootDescriptor = false;
 		this.defaultRootElementTypeHandle = new MWNamedSchemaComponentHandle(this, this.buildDefaultRootElementTypeScrubber());
 	}
-		
+	
+	public void postProjectBuild() {
+		super.postProjectBuild();
+		if (getTransactionalPolicy() instanceof MWNullTransactionalPolicy) {
+			this.transactionalPolicy = new MWOXTransactionalPolicy(this);
+		}
+	}
+	
 	public void applyAdvancedPolicyDefaults(MWProjectDefaultsPolicy defaultsPolicy) {
 		defaultsPolicy.applyAdvancedPolicyDefaults(this);
 	}

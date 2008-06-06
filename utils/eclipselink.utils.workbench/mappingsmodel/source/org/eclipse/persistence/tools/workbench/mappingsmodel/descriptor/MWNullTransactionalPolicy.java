@@ -17,7 +17,7 @@ import org.eclipse.persistence.tools.workbench.mappingsmodel.query.MWQueryManage
 
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 
-final class MWNullTransactionalPolicy extends MWModel 
+public final class MWNullTransactionalPolicy extends MWModel 
 	implements MWTransactionalPolicy 
 {
 

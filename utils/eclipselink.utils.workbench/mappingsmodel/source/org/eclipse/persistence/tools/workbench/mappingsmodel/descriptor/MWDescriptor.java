@@ -70,8 +70,7 @@ public abstract class MWDescriptor extends MWModel
 	private volatile boolean active;
 		public final static String ACTIVE_PROPERTY = "active";
 		
-    //this will never change, built during initialization
-    private MWTransactionalPolicy transactionalPolicy;
+    protected MWTransactionalPolicy transactionalPolicy;
 
 	/** used to store legacy values until they can be used in a postbuild **/
 	protected Map legacyValuesMap;
