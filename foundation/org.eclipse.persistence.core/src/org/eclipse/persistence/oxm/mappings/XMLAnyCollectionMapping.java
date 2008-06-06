@@ -389,6 +389,11 @@ public class XMLAnyCollectionMapping extends DatabaseMapping implements XMLMappi
                             } catch (XMLMarshalException e) {
                                 referenceDescriptor = null;
                             }
+                            // Check if descriptor is for a wrapper, if it is null it out and let continue
+                            XMLDescriptor xmlReferenceDescriptor = (XMLDescriptor) referenceDescriptor;
+                            if (referenceDescriptor != null && xmlReferenceDescriptor.isWrapper()) {
+                            	referenceDescriptor = null;
+                            }
                         }
                         if ((referenceDescriptor != null) && (getKeepAsElementPolicy() != UnmarshalKeepAsElementPolicy.KEEP_ALL_AS_ELEMENT)) {
                             ObjectBuilder builder = referenceDescriptor.getObjectBuilder();

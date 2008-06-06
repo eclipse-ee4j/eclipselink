@@ -52,6 +52,7 @@ public class XMLDescriptor extends ClassDescriptor {
     private boolean shouldPreserveDocument = false;
     private XMLField defaultRootElementField;
     private boolean sequencedObject = false;
+    private boolean isWrapper = false;
 
     /**
      * PUBLIC:
@@ -740,4 +741,12 @@ public class XMLDescriptor extends ClassDescriptor {
         this.sequencedObject = isSequenced;
     }
 
+	public boolean isWrapper() {
+		return isWrapper;
+	}
+
+	public void setIsWrapper(boolean value) {
+		this.isWrapper = value;
+	}
+    
 }

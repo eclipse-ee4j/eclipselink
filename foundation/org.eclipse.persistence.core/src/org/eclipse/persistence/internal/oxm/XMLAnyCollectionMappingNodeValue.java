@@ -114,6 +114,10 @@ public class XMLAnyCollectionMappingNodeValue extends XMLRelationshipMappingNode
             if (xmlDescriptor == null) {
                 QName qname = new QName(xPathFragment.getNamespaceURI(), xPathFragment.getLocalName());
                 xmlDescriptor = xmlContext.getDescriptor(qname);
+                // Check if descriptor is for a wrapper, if it is null it out and let continue
+                if (xmlDescriptor != null && xmlDescriptor.isWrapper()) {
+                	xmlDescriptor = null;
+                }
             }
             workingDescriptor = xmlDescriptor;
             UnmarshalKeepAsElementPolicy policy = xmlAnyCollectionMapping.getKeepAsElementPolicy();

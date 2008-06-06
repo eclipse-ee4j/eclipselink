@@ -414,7 +414,7 @@ public class XMLContext {
      * XML Context, this method will return the first match.
      */
     public AbstractSession getSession(Object object) {
-        if (null == object) {
+    	if (null == object) {
             return null;
         }
         int numberOfSessions = sessions.size();
@@ -530,6 +530,10 @@ public class XMLContext {
         return (XMLDescriptor) descriptorsByQName.get(qName);
     }
 
+    public void addDescriptorByQName(QName qName, XMLDescriptor descriptor) {
+    	descriptorsByQName.put(qName, descriptor);
+    }
+    
     /**
      * INTERNAL: Return the XMLDescriptor mapped to the global type matching the
      * XPathFragment parameter.
