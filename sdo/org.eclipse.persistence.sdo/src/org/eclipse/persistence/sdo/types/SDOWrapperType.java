@@ -19,11 +19,7 @@ import java.util.List;
 
 import javax.xml.namespace.QName;
 
-import org.eclipse.persistence.oxm.NamespaceResolver;
 import org.eclipse.persistence.oxm.XMLField;
-import org.eclipse.persistence.oxm.mappings.UnmarshalKeepAsElementPolicy;
-import org.eclipse.persistence.oxm.mappings.XMLAnyCollectionMapping;
-import org.eclipse.persistence.oxm.mappings.XMLCompositeDirectCollectionMapping;
 import org.eclipse.persistence.oxm.mappings.XMLDirectMapping;
 import org.eclipse.persistence.sdo.SDOConstants;
 import org.eclipse.persistence.sdo.SDOProperty;
@@ -31,10 +27,7 @@ import org.eclipse.persistence.sdo.SDOType;
 import org.eclipse.persistence.sdo.helper.SDOMethodAttributeAccessor;
 import org.eclipse.persistence.sdo.helper.SDOTypeHelper;
 
-import commonj.sdo.ChangeSummary;
-import commonj.sdo.Property;
 import commonj.sdo.Type;
-import commonj.sdo.helper.HelperContext;
 
 /**
  * Wrapper for XML datatypes. 
