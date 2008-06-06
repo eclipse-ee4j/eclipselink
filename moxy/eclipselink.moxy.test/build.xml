@@ -37,6 +37,7 @@
         <fileset
             dir="${eclipselink.plugins}"
             includes="${eclipselink.core.depend}"/>
+        <pathelement path="${junit.lib}"/>
         <pathelement path="${eclipselink.moxy}/${classes.dir}"/>
         <pathelement path="${eclipselink.core}/${classes.dir}"/>
     </path>
@@ -53,6 +54,7 @@
         <fileset
             dir="${eclipselink.plugins}"
             includes="${eclipselink.core.depend}"/>
+        <pathelement path="${junit.lib}"/>
         <pathelement path="${eclipselink.moxy}/${classes.dir}"/>
         <pathelement path="${eclipselink.core}/${classes.dir}"/>
     </path>
