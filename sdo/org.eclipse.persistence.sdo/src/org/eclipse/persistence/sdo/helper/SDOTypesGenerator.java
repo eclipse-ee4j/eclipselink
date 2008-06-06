@@ -21,30 +21,46 @@ import java.util.Map;
 import javax.xml.namespace.QName;
 import javax.xml.transform.Source;
 
-import org.eclipse.persistence.sdo.SDOConstants;
-import org.eclipse.persistence.sdo.SDOProperty;
-import org.eclipse.persistence.sdo.SDOType;
-import org.eclipse.persistence.sdo.types.SDOWrapperType;
-import org.eclipse.persistence.sdo.helper.delegates.SDOXMLHelperDelegate;
-import org.eclipse.persistence.sdo.helper.extension.SDOUtil;
-
 import org.eclipse.persistence.exceptions.SDOException;
 import org.eclipse.persistence.internal.oxm.XMLConversionManager;
 import org.eclipse.persistence.internal.oxm.schema.SchemaModelProject;
-import org.eclipse.persistence.internal.oxm.schema.model.*;
+import org.eclipse.persistence.internal.oxm.schema.model.All;
+import org.eclipse.persistence.internal.oxm.schema.model.Annotation;
+import org.eclipse.persistence.internal.oxm.schema.model.Any;
+import org.eclipse.persistence.internal.oxm.schema.model.Attribute;
+import org.eclipse.persistence.internal.oxm.schema.model.AttributeGroup;
+import org.eclipse.persistence.internal.oxm.schema.model.Choice;
+import org.eclipse.persistence.internal.oxm.schema.model.ComplexContent;
+import org.eclipse.persistence.internal.oxm.schema.model.ComplexType;
+import org.eclipse.persistence.internal.oxm.schema.model.Element;
+import org.eclipse.persistence.internal.oxm.schema.model.Extension;
+import org.eclipse.persistence.internal.oxm.schema.model.Group;
+import org.eclipse.persistence.internal.oxm.schema.model.Import;
+import org.eclipse.persistence.internal.oxm.schema.model.Include;
+import org.eclipse.persistence.internal.oxm.schema.model.List;
+import org.eclipse.persistence.internal.oxm.schema.model.Occurs;
+import org.eclipse.persistence.internal.oxm.schema.model.Restriction;
+import org.eclipse.persistence.internal.oxm.schema.model.Schema;
+import org.eclipse.persistence.internal.oxm.schema.model.Sequence;
+import org.eclipse.persistence.internal.oxm.schema.model.SimpleComponent;
+import org.eclipse.persistence.internal.oxm.schema.model.SimpleContent;
+import org.eclipse.persistence.internal.oxm.schema.model.SimpleType;
+import org.eclipse.persistence.internal.oxm.schema.model.TypeDefParticle;
+import org.eclipse.persistence.internal.oxm.schema.model.Union;
 import org.eclipse.persistence.oxm.NamespaceResolver;
 import org.eclipse.persistence.oxm.XMLConstants;
-
-import commonj.sdo.DataObject;
-import commonj.sdo.Property;
-import commonj.sdo.Type;
-import commonj.sdo.helper.DataFactory;
-import commonj.sdo.helper.HelperContext;
-import commonj.sdo.helper.XMLHelper;
-
 import org.eclipse.persistence.oxm.XMLContext;
 import org.eclipse.persistence.oxm.XMLUnmarshaller;
+import org.eclipse.persistence.sdo.SDOConstants;
+import org.eclipse.persistence.sdo.SDOProperty;
+import org.eclipse.persistence.sdo.SDOType;
+import org.eclipse.persistence.sdo.helper.extension.SDOUtil;
+import org.eclipse.persistence.sdo.types.SDOWrapperType;
 import org.eclipse.persistence.sessions.Project;
+
+import commonj.sdo.Property;
+import commonj.sdo.Type;
+import commonj.sdo.helper.HelperContext;
 
 /**
  * <p><b>Purpose</b>: Called from XSDHelper define methods to generate SDO Types from a Schema
