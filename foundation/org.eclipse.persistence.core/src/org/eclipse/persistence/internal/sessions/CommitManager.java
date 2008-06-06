@@ -187,7 +187,7 @@ public class CommitManager {
             }
 
             if (hasDataModifications()) {
-                // Perform all batched up data modifications, done to avoid dependecies.
+                // Perform all batched up data modifications, done to avoid dependencies.
                 for (Enumeration mappingsEnum = getDataModifications().keys(), mappingEventsEnum = getDataModifications().elements();
                          mappingEventsEnum.hasMoreElements();) {
                     Vector events = (Vector)mappingEventsEnum.nextElement();

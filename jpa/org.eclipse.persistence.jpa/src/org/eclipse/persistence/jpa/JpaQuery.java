@@ -17,8 +17,8 @@ import org.eclipse.persistence.queries.DatabaseQuery;
 
 /**
  * PUBLIC:
- * TopLInk specific EJB 3.0 query interface.  Provides the functionality defined in
- * javax.persistence.Query and adds access to the underlying database query for TopLink specific
+ * EclipseLInk specific EJB 3.0 query interface.  Provides the functionality defined in
+ * javax.persistence.Query and adds access to the underlying database query for EclipseLink specific
  * functionality.
  */
 public interface JpaQuery extends javax.persistence.Query {

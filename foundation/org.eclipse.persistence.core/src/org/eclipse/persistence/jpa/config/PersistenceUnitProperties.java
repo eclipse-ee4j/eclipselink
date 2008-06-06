@@ -251,7 +251,7 @@ public class PersistenceUnitProperties {
      */
     public static final String DESCRIPTOR_CUSTOMIZER_ = "eclipselink.descriptor.customizer.";
     
-    /** Indicate whether enable toplink to generate DB platform specific SQL versus generic SQL. */
+    /** Indicate whether to enable eclipselink to generate DB platform specific SQL versus generic SQL. */
     public static final String NATIVE_SQL = "eclipselink.jdbc.native-sql";
     
     /**
@@ -281,7 +281,7 @@ public class PersistenceUnitProperties {
     /** Specify persistence info to be loaded from a sessions-xml file. */
     public static final String SESSIONS_XML = "eclipselink.sessions-xml";
     
-    /** Specify a file location where the log will be output to intead of standard out. */
+    /** Specify a file location where the log will be output to instead of standard out. */
     public static final String LOGGING_FILE = "eclipselink.logging.file";
     
     /**

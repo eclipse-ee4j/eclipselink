@@ -144,7 +144,7 @@ public class StatementQueryMechanism extends CallQueryMechanism {
 
     /**
      * Normally only a single statement is used, however multiple table may require multiple statements on write.
-     * This is lazy initialied to conserv space.
+     * This is lazy initialized to conserve space.
      */
     public boolean hasMultipleStatements() {
         return (sqlStatements != null) && (!sqlStatements.isEmpty());

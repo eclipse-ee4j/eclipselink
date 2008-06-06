@@ -207,9 +207,9 @@ public class EntityManagerFactoryProvider {
      * @param properties User specified properties for the persistence unit
      */
     protected static void login(ServerSession session, Map properties) {
-        String toplinkPlatform = (String)properties.get(PersistenceUnitProperties.TARGET_DATABASE);
+        String eclipselinkPlatform = (String)properties.get(PersistenceUnitProperties.TARGET_DATABASE);
         if (!session.isConnected()) {
-            if (toplinkPlatform == null || toplinkPlatform.equals(TargetDatabase.Auto)) {
+            if (eclipselinkPlatform == null || eclipselinkPlatform.equals(TargetDatabase.Auto)) {
                 // if user has not specified a database platform, try to detect
                 session.loginAndDetectDatasource();
             } else {

@@ -93,15 +93,15 @@ public class StaticWeaveProcessor {
     }
     
     /**
-     * The method allows user to specify the ouput for the log message.
-     * @param log writer - the lcation where the log message writes to. the default value is standardout
+     * The method allows user to specify the output for the log message.
+     * @param log writer - the location where the log message writes to. the default value is standard out
      */
     public void setLog(Writer logWriter){
         this.logWriter= logWriter;
     }
     
     /**
-     * The method allows user to define nine levels toplink logging.
+     * The method allows user to define nine levels of eclipselink logging.
      * @param level - the integer value of log level. default is OFF.
      */
     public void setLogLevel(int level){
@@ -177,10 +177,10 @@ public class StaticWeaveProcessor {
         
         //Verification target and source, two use cases create warning or exception.
         //1. If source is directory and target is jar - 
-        //   This will lead unkown outcome, user attempt to use this tool to pack outcome into a Jar. 
-        //   Warning message will be logged, this is can be workarounded by other utilities.
+        //   This will lead unknown outcome, user attempt to use this tool to pack outcome into a Jar. 
+        //   Warning message will be logged, this is can be worked around by other utilities.
         //2. Both source and target are specified as a same jar -  
-        //   User was tryint to perform waving in same Jar which is not support, Exception will be thrown.
+        //   User was trying to perform waving in same Jar which is not support, Exception will be thrown.
         if(isDirectory(source) && target.toURI().toString().endsWith(".jar")){
             AbstractSessionLog.getLog().log(SessionLog.WARNING, ToStringLocalization.buildMessage("staticweave_processor_unknown_outcome", new Object[]{null}));
         }
@@ -189,12 +189,12 @@ public class StaticWeaveProcessor {
             throw StaticWeaveException.weaveInplaceForJar(source.toString());
         }
         
-        //pre-create target if it is directory and dose not exsit.
+        //pre-create target if it is directory and dose not exist.
         //Using the method File.isDirectory() is not enough to determine what the type(dir or jar) 
         //of the target(specified by URL)that user want to create. File.isDirectory() will return false in 
         //two possibilities, the location either is not directory or the location dose not exist. 
         //Therefore pre-build of the directory target is required. Pre-build for the file(JAR) target 
-        //is not required since it gets built automically by opening outputstream.  
+        //is not required since it gets built automatically by opening outputstream.  
         if(!(new File(target.toURI())).exists()){
             if(!target.toURI().toString().endsWith(".jar")){
                 (new File(target.toURI())).mkdirs();

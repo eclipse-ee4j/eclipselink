@@ -39,7 +39,7 @@ import org.eclipse.persistence.internal.security.PrivilegedNewInstanceFromClass;
 
 /**
  * <b>Purpose</b>: Maps an attribute to the corresponding database field type.
- * The list of field types that are supported by TopLink's direct to field mapping
+ * The list of field types that are supported by EclipseLink's direct to field mapping
  * is dependent on the relational database being used.
  * A converter can be used to convert between the object and data type if they do not match.
  *
@@ -184,7 +184,7 @@ public abstract class AbstractDirectMapping extends DatabaseMapping {
     /**
      * INTERNAL:
      * In case Query By Example is used, this method builds and returns an expression that
-     * corresponds to a single attribue and it's value for a directToField mapping.
+     * corresponds to a single attribute and it's value for a directToField mapping.
      */
     public Expression buildExpression(Object queryObject, QueryByExamplePolicy policy, Expression expressionBuilder, Map processedObjects, AbstractSession session) {
         String attributeName = this.getAttributeName();
@@ -386,7 +386,7 @@ public abstract class AbstractDirectMapping extends DatabaseMapping {
     /**
      * PUBLIC:
      * Some databases do not properly support all of the base data types. For these databases,
-     * the base data type must be explicitly specified in the mapping to tell TopLink to force
+     * the base data type must be explicitly specified in the mapping to tell EclipseLink to force
      * the instance variable value to that data type
      */
     public Class getAttributeClassification() {
@@ -453,7 +453,7 @@ public abstract class AbstractDirectMapping extends DatabaseMapping {
 
     /**
      * INTERNAL:
-     * Return the classifiction for the field contained in the mapping.
+     * Return the classification for the field contained in the mapping.
      * This is used to convert the row value to a consistent Java value.
      */
     public Class getFieldClassification(DatabaseField fieldToClassify) {
@@ -498,7 +498,7 @@ public abstract class AbstractDirectMapping extends DatabaseMapping {
     /**
      * ADVANCED:
      * Set the JDBC type of the field value.
-     * This can be used if field type does not corespond directly to a Java class type,
+     * This can be used if field type does not correspond directly to a Java class type,
      * such as MONEY.
      * This is used for binding.
      */
@@ -566,6 +566,7 @@ public abstract class AbstractDirectMapping extends DatabaseMapping {
     /**
      * INTERNAL:
      * Initialize the attribute classification.
+     * @Throws DescriptorException when attributeClassification is null
      */
     public void preInitialize(AbstractSession session) throws DescriptorException {
         super.preInitialize(session);
@@ -594,7 +595,7 @@ public abstract class AbstractDirectMapping extends DatabaseMapping {
      * Indicates if the mapping has a converter set on it.
      * 
      * @return true if there is a converter set on the mapping,
-     * null otherwise.
+     * false otherwise.
      */
     public boolean hasConverter() {
         return getConverter() != null;

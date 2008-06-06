@@ -51,7 +51,7 @@ public class SingleInheritanceTest extends TestCase {
     protected void setup() {
 
         /*
-         * For this test, it is neccessary to remove all subclasses of Vehicle.  So,
+         * For this test, it is necessary to remove all subclasses of Vehicle.  So,
          * it is easier to remove all descriptors and re-add the vehicle descriptor - removing
          * its 1:1 mapping and inheritance info pointing to other descriptors.  We also need
          * to remove + restore the log so that printIdentityMaps does not display output

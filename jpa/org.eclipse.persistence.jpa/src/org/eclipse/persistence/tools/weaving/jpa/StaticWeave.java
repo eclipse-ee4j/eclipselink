@@ -39,13 +39,13 @@ import org.eclipse.persistence.logging.SessionLog;
 *&nbsp;&nbsp;-log <br>
 *&nbsp;&nbsp;&nbsp;&nbsp;The path of log file, the standard output will be the default.<br>
 *&nbsp;&nbsp;-loglevel<br>
-*&nbsp;&nbsp;&nbsp;&nbsp;Specify a literal value for toplink log level(OFF,SEVERE,WARNING,INFO,CONFIG,FINE,FINER,FINEST). The default value is OFF.<br>
+*&nbsp;&nbsp;&nbsp;&nbsp;Specify a literal value for eclipselink log level(OFF,SEVERE,WARNING,INFO,CONFIG,FINE,FINER,FINEST). The default value is OFF.<br>
 *&nbsp;&nbsp;-persistenceinfo<br>
 *&nbsp;&nbsp;&nbsp;&nbsp;The path contains META-INF/persistence.xml. This is ONLY required when the source does not include it.
 *&nbsp;The classpath must contain all the classes necessary in oder to perform weaving.<br><br>
 *&nbsp;The weaving will be performed in place if source and target point to the same location. Weaving in place is ONLY applicable for directory-based sources.<br>
 *<b>Example</b>:<br>
-*&nbsp;To weave all entites contained in c:\foo-source.jar with its persistence.xml contained within c:\foo-containing-persistence-xml.jar, and output to c:\\foo-target.jar,<br>
+*&nbsp;To weave all entities contained in c:\foo-source.jar with its persistence.xml contained within c:\foo-containing-persistence-xml.jar, and output to c:\\foo-target.jar,<br>
 *&nbsp;StaticWeave -persistenceinfo c:\foo-containing-persistencexml.jar -classpath c:\classpath1;c:\classpath2 c:\foo-source.jar c:\foo-target.jar
 * 
 **/
@@ -257,7 +257,7 @@ public class StaticWeave {
         }
         
         /*
-         * Convert the specified classpath arrary to URL array where new classloader will build on.
+         * Convert the specified classpath array to URL array where new classloader will build on.
          */
         private ClassLoader getClassLoader() throws MalformedURLException{
             if (classpaths!=null){

@@ -835,7 +835,7 @@ public class ConversionManager implements Serializable, Cloneable {
      * Load the class using the default managers class loader.
      * This is a thread based class loader by default.
      * This should be used to load all classes as Class.forName can only
-     * see classes on the same classpath as the toplink.jar.
+     * see classes on the same classpath as the eclipselink.jar.
      */
     public static Class loadClass(String className) {
         return (Class)getDefaultManager().convertObject(className, ClassConstants.CLASS);

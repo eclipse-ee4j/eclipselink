@@ -20,7 +20,7 @@ import org.eclipse.persistence.sessions.server.ServerSession;
 
 /**
  * <p>
- * <b>Purpose</b>: Defines the Interface for TopLink extensions to the EntityManager
+ * <b>Purpose</b>: Defines the Interface for EclipseLink extensions to the EntityManager
  * <p>
  * @see javax.persistence.EntityManager
  */
@@ -31,7 +31,7 @@ import org.eclipse.persistence.sessions.server.ServerSession;
 public interface JpaEntityManager extends javax.persistence.EntityManager {
 
 	/**
-	 * This method returns the current session to the requestor.  The current session
+	 * This method returns the current session to the requester.  The current session
 	 * will be a the active UnitOfWork within a transaction and will be a 'scrap'
 	 * UnitOfWork outside of a transaction.  The caller is concerned about the results
 	 * then the getSession() or getUnitOfWork() API should be called.
@@ -55,17 +55,17 @@ public interface JpaEntityManager extends javax.persistence.EntityManager {
     public Session getSession();
     
     /**
-     * This method is used to create a query using a Toplink Expression and the return type.
+     * This method is used to create a query using a EclipseLink Expression and the return type.
      */
     public javax.persistence.Query createQuery(Expression expression, Class resultType);
     
     /**
-     * This method will create a query object that wraps a TopLink Named Query.
+     * This method will create a query object that wraps a EclipseLink Named Query.
      */
     public javax.persistence.Query createDescriptorNamedQuery(String queryName, Class descriptorClass);
     
     /**
-     * This method will create a query object that wraps a TopLink Named Query.
+     * This method will create a query object that wraps a EclipseLink Named Query.
      */
     public javax.persistence.Query createDescriptorNamedQuery(String queryName, Class descriptorClass, Vector argumentTypes);
 

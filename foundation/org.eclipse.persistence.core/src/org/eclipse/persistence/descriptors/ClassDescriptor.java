@@ -216,17 +216,25 @@ public class ClassDescriptor implements Cloneable, Serializable {
         queryKey.setName(queryKeyName);
         addQueryKey(queryKey);
     }
-
+    
     /**
      * INTERNAL:
+     * Add the cascade locking policy to all children that have a relationship to this descriptor
+     * either by inheritance or by encapsulation/aggregation.
+     * @param policy - the CascadeLockingPolicy
      */
     public void addCascadeLockingPolicy(CascadeLockingPolicy policy) {
         cascadeLockingPolicies.add(policy);
-
         if (usesOptimisticLocking() && getOptimisticLockingPolicy().isCascaded()) {
-            // Ignore descriptors with a cascaded version optimistic locking
-            // policy. Their children are processed in descriptor initialize.
-            return;
+            // 232608: propagate later version changes up to the locking policy on a parent branch by setting the policy on all children here            
+            if(this.hasInheritance()) {
+                // InOrder traverse the entire [deep] tree, not just the next level
+                Iterator<ClassDescriptor> anIterator = getInheritancePolicy().getAllChildDescriptors().iterator();
+                while(anIterator.hasNext()) {
+                    // Set the same cascade locking policy on all descriptors that inherit from this descriptor.
+                    anIterator.next().addCascadeLockingPolicy(policy);
+                }
+            }           
         } else {
             // Check the mappings only if the descriptor has been initialized.
             // Otherwise, they will be handled in the initialize method.
@@ -1323,7 +1331,7 @@ public class ClassDescriptor implements Cloneable, Serializable {
     /**
      * INTERNAL:
      * Returns the name of a Class that implements CopyPolicy
-     * Will be instantiatied as a copy policy at initialization times
+     * Will be instantiated as a copy policy at initialization times
      * using the no-args constructor
      */
     public String getCopyPolicyClassName(){
@@ -2067,7 +2075,7 @@ public class ClassDescriptor implements Cloneable, Serializable {
             queryKey.initialize(this);
         }
 
-        // If this has inheritance then it needs to be initialized before all fields is set.
+        // If this descriptor has inheritance then it needs to be initialized before all fields is set.
         if (hasInheritance()) {
             getInheritancePolicy().initialize(session);
             if (getInheritancePolicy().isChildDescriptor()) {
@@ -2297,7 +2305,7 @@ public class ClassDescriptor implements Cloneable, Serializable {
                     getPrimaryKeyFields().set(index, primaryKey);
                 }
                 List primaryKeyFields = (List)((ArrayList)getPrimaryKeyFields()).clone();
-                // Remove non-default tble primary key (MW used to set these as pk).
+                // Remove non-default table primary key (MW used to set these as pk).
                 for (int index = 0; index < primaryKeyFields.size(); index++) {
                     DatabaseField primaryKey = (DatabaseField)primaryKeyFields.get(index);
                     if (!primaryKey.getTable().equals(getDefaultTable())) {

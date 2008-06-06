@@ -63,12 +63,12 @@ import org.eclipse.persistence.mappings.converters.TypeConversionConverter;
 
 
 /**
- * DefaultTableGenerator is a utility class used to generate a default table schema for a TopLink project object.
+ * DefaultTableGenerator is a utility class used to generate a default table schema for a EclipseLink project object.
  *
- * The utility can be used in TopLink CMP for OC4J to perform the table auto creation process, which can be triggered
- * at deployment time when TopLink project descriptor is absent (default mapping) or present.
+ * The utility can be used in EclipseLink CMP for OC4J to perform the table auto creation process, which can be triggered
+ * at deployment time when EclipseLink project descriptor is absent (default mapping) or present.
  *
- * The utility can also be used to any TopLink application to perform the table drop/creation at runtime.
+ * The utility can also be used to any EclipseLink application to perform the table drop/creation at runtime.
  *
  * The utility handles all direct/relational mappings, inheritance, multiple tables, interface with/without tables,
  * optimistic version/timestamp lockings, nested relationships, BLOB/CLOB generation.
@@ -80,8 +80,8 @@ import org.eclipse.persistence.mappings.converters.TypeConversionConverter;
  *  1. set "autocreate-tables=true|false, autodelete-tables=true|false" in oc4j application deployment
  *     descriptor files (config/system-application.xml, config/application.xml, or orion-application.xml in an .ear)
  *
- *  2. Default Mapping: the same as CMP, plus system properties setting -Dtoplink.defaultmapping.autocreate-tables='true|false'
- *     and  -Dtoplink.defaultmapping.autodelete-tables='true|false'
+ *  2. Default Mapping: the same as CMP, plus system properties setting -Declipselink.defaultmapping.autocreate-tables='true|false'
+ *     and  -Declipselink.defaultmapping.autodelete-tables='true|false'
  *
  * - Non-CMP:
  *      TODO: sessions.xml support (CR 4355200)
@@ -114,7 +114,7 @@ public class DefaultTableGenerator {
     //DatabaseField pool (synchronized with above 'fieldMap')
     private Map<DatabaseField, DatabaseField> databaseFields;
 
-    //When this flag is 'false' TopLink will not attempt to create fk constraints
+    //When this flag is 'false' EclipseLink will not attempt to create fk constraints
     protected boolean generateFKConstraints = true;
 
     /**
@@ -140,7 +140,7 @@ public class DefaultTableGenerator {
     }
 
     /**
-     * Generate a default TableCreator object from the TopLink project object.
+     * Generate a default TableCreator object from the EclipseLink project object.
      */
     public TableCreator generateDefaultTableCreator() {
         TableCreator tblCreator = new TableCreator();
@@ -181,8 +181,8 @@ public class DefaultTableGenerator {
     }
 
     /**
-     * Generate a default TableCreator object from the TopLink project object,
-     * and porform the table existence check through jdbc table metadata, and filter out
+     * Generate a default TableCreator object from the EclipseLink project object,
+     * and perform the table existence check through jdbc table metadata, and filter out
      * tables which are already in the database.
      */
     public TableCreator generateFilteredDefaultTableCreator(AbstractSession session) throws DatabaseException {
@@ -240,7 +240,7 @@ public class DefaultTableGenerator {
     } 
 
     /**
-     * Build tables/fields information into the table creator object from a TopLink descriptor.
+     * Build tables/fields information into the table creator object from a EclipseLink descriptor.
      * This should handle most of the direct/relational mappings except many-to-many and direct
      * collection/map mappings, witch must be down in postInit method.
      */
@@ -299,9 +299,9 @@ public class DefaultTableGenerator {
     }
 
     /**
-     * Build additional table/field definitions for the dscriptor, like relation table
+     * Build additional table/field definitions for the descriptor, like relation table
      * and direct-collection, direct-map table, as well as reset LOB type for serialized
-     * object mapping and type conversion maping for LOB usage
+     * object mapping and type conversion mapping for LOB usage
      */
     private void postInitTableSchema(ClassDescriptor desc) {
         for (DatabaseMapping mapping : desc.getMappings()) {
@@ -345,7 +345,7 @@ public class DefaultTableGenerator {
     }
 
     /**
-     * Build relation table definitions for all many-to-many relationships in a TopLink desciptor.
+     * Build relation table definitions for all many-to-many relationships in a EclipseLink descriptor.
      */
     private void buildRelationTableDefinition(ManyToManyMapping mapping) {
         //first create relation table
@@ -393,7 +393,7 @@ public class DefaultTableGenerator {
     }
 
     /**
-     * Build direct collection table definitions in a TopLink desciptor
+     * Build direct collection table definitions in a EclipseLink descriptor
      */
     private void buildDirectCollectionTableDefinition(DirectCollectionMapping mapping, ClassDescriptor desc) {
         //first create direct collection table

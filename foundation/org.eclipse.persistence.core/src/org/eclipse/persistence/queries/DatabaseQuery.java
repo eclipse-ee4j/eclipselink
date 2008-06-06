@@ -369,7 +369,7 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
 
     /**
      * INTERNAL:
-     * Used by unit of work, only cascades constraint dependecies.
+     * Used by unit of work, only cascades constraint dependencies.
      */
     public void cascadeOnlyDependentParts() {
         setCascadePolicy(CascadeDependentParts);

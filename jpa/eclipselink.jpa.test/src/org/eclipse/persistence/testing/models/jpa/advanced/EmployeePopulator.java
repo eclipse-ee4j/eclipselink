@@ -919,7 +919,7 @@ public class EmployeePopulator {
     {        
         Vector allObjects = new Vector();        
         UnitOfWork unitOfWork = session.acquireUnitOfWork();
-        // Dissable the read-only classes for model population. Specifically,
+        // Disable the read-only classes for model population. Specifically,
         // in this case we want to be able to create EquipmentCode objects.
         unitOfWork.removeAllReadOnlyClasses();
                 

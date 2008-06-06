@@ -570,7 +570,7 @@ public abstract class AbstractSession implements org.eclipse.persistence.session
      * INTERNAL:
      * Attempts to commit the running internally started external transaction.
      * Returns true only in one case -
-     * extenal transaction has been internally committed during this method call:
+     * external transaction has been internally committed during this method call:
      * wasJTSTransactionInternallyStarted()==true in the beginning of this method and
      * wasJTSTransactionInternallyStarted()==false in the end of this method.
      */
@@ -1137,7 +1137,7 @@ public abstract class AbstractSession implements org.eclipse.persistence.session
         log(SessionLog.FINEST, SessionLog.QUERY, "execute_query", query);
 
         //Make a call to the internal method with a retry count of 0.  This will
-        //initiate a retry call stack if required and supported.  The seperation between the 
+        //initiate a retry call stack if required and supported.  The separation between the 
         //calling stack and the target method is made because the target method may call itself 
         //recursively.
         return this.executeQuery(query, row, 0);

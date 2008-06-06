@@ -27,8 +27,8 @@ import org.eclipse.persistence.sessions.*;
 import org.eclipse.persistence.oxm.*;
 
 /**
- * <p><b>Purpose</b>: Allow for a TopLink Mapping Workbench generated deployment XML project file to be read.
- * This reader returns an instance of Project to be used to initialize a TopLink session.
+ * <p><b>Purpose</b>: Allow for a EclipseLink Mapping Workbench generated deployment XML project file to be read.
+ * This reader returns an instance of Project to be used to initialize a EclipseLink session.
  * This class supports reading the 11g 11.1.1 and 10g 10.1.3.
  *
  * @since TopLink 3.0
@@ -39,7 +39,7 @@ public class XMLProjectReader {
     /** Allow for usage of schema validation to be configurable. */
     protected static boolean shouldUseSchemaValidation = true;
 
-    /** Cache the creation and initialization of the TopLink XML mapping project. */
+    /** Cache the creation and initialization of the EclipseLink XML mapping project. */
     protected static Project project;
     private static final String ECLIPSELINK_SCHEMA = "xsd/eclipse_persistence_map_1_0.xsd";
     private static final String TOPLINK_SCHEMA = "xsd/toplink-object-persistence_11_1_1.xsd";
@@ -68,7 +68,7 @@ public class XMLProjectReader {
 
     /**
      * PUBLIC:
-     * Read the TopLink project deployment XML from the file or resource name.
+     * Read the EclipseLink project deployment XML from the file or resource name.
      * If a resource name is used the default class loader will be used to resolve the resource.
      * Note the default class loader must be able to resolve the domain classes.
      * Note the file must be the deployment XML, not the Mapping Workbench project file.
@@ -80,14 +80,14 @@ public class XMLProjectReader {
 
     /**
      * PUBLIC:
-     * Read the TopLink project deployment XML from the reader on the file.
+     * Read the EclipseLink project deployment XML from the reader on the file.
      * Note the class loader must be able to resolve the domain classes.
      * Note the file must be the deployment XML, not the Mapping Workbench project file.
      * This API supports 10g (10.0.3), 11g (11.1.1) formats.
      */
     public static Project read(Reader reader, ClassLoader classLoader) {
         // Since a reader is pass and it can only be streamed once (mark does not work)
-        // It must be first read into a buffer so multiple readers can be uesed to
+        // It must be first read into a buffer so multiple readers can be used to
         // determine the format.  This does not effect performance severly.
         StringWriter writer;
         Document document;
@@ -116,7 +116,7 @@ public class XMLProjectReader {
                     }
                     parser = createXMLParser(xmlPlatform, true, false, schema);
                     document = parser.parse(new StringReader(writer.toString()));
-                } catch (Exception toplinkParseException){
+                } catch (Exception eclipselinkParseException){
                     // If the parse validation fails, it may be because the format was 904 which is
                     // not support in eclipselink, just not valid, through original exception.
                     throw parseException;
@@ -159,16 +159,16 @@ public class XMLProjectReader {
 
             // Workaround for bug #3503583.
             XMLSchemaResolver xmlSchemaResolver = new XMLSchemaResolver();
-            URL toplinkSchemaURL = xmlSchemaResolver.resolveURL(schema);
+            URL eclipselinkSchemaURL = xmlSchemaResolver.resolveURL(schema);
             parser.setEntityResolver(xmlSchemaResolver);
-            parser.setXMLSchema(toplinkSchemaURL);
+            parser.setXMLSchema(eclipselinkSchemaURL);
         }
         return parser;
     }
     
     /**
      * PUBLIC:
-     * Read the TopLink project deployment XML from the file or resource name.
+     * Read the EclipseLink project deployment XML from the file or resource name.
      * If a resource name is used the class loader will be used to resolve the resource.
      * Note the class loader must be able to resolve the domain classes.
      * Note the file must be the deployment XML, not the Mapping Workbench project file.
@@ -266,7 +266,7 @@ public class XMLProjectReader {
     
     /**
      * PUBLIC:
-     * Read the TopLink project deployment XML from the reader on the file.
+     * Read the EclipseLink project deployment XML from the reader on the file.
      * Note the default class loader must be able to resolve the domain classes.
      * Note the file must be the deployment XML, not the Mapping Workbench project file.
      */
@@ -310,7 +310,7 @@ public class XMLProjectReader {
          * Return the URL for the resource.
          */
         public URL resolveURL(String resource) {
-            // The xsd is always in the toplink.jar, use our class loader.
+            // The xsd is always in the eclipselink.jar, use our class loader.
             return getClass().getClassLoader().getResource(resource);
         }
     }

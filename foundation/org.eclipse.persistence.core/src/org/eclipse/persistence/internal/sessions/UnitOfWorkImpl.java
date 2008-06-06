@@ -46,7 +46,7 @@ import org.eclipse.persistence.descriptors.invalidation.CacheInvalidationPolicy;
  * Implementation of org.eclipse.persistence.sessions.UnitOfWork
  * The public interface should be used.
  * @see org.eclipse.persistence.sessions.UnitOfWork
- *
+ * <p>
  * <b>Purpose</b>: To allow object level transactions.
  * <p>
  * <b>Description</b>: The unit of work is a session that implements all of the normal
@@ -2915,7 +2915,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
             getParent().getIdentityMapAccessorInstance().acquireWriteLock();
             MergeManager manager = getMergeManager();
             if (manager == null) {
-                // no MergeManager created for locks durring commit
+                // no MergeManager created for locks during commit
                 manager = new MergeManager(this);
             }
             try {

@@ -25,7 +25,7 @@ import org.eclipse.persistence.sessions.factories.SessionManager;
 
 /**
  * <p><b>Purpose</b>: Test model is a collection of test suites and/or sub test models. When a
- * test model is executed all the test suites and models registed with it are
+ * test model is executed all the test suites and models registered with it are
  * executed one by one.
  */
 public class TestModel extends TestCollection {
@@ -173,7 +173,7 @@ public class TestModel extends TestCollection {
         for (Enumeration enumtr = systems.elements(); enumtr.hasMoreElements();) {
             TestSystem system = (TestSystem)enumtr.nextElement();
 
-            // To improve test consistentcy always force systems to be reset.
+            // To improve test consistency always force systems to be reset.
             if (shouldResetSystemAfterEachTestModel()) {
                 getExecutor().forceConfigureSystem(system);
             } else {
@@ -223,7 +223,7 @@ public class TestModel extends TestCollection {
     }
 
     /**
-     * Return all the required sytems that need to be configured even if they are already configured.
+     * Return all the required systems that need to be configured even if they are already configured.
      */
     public Vector getForcedRequiredSystems() {
         return forcedRequiredSystems;
@@ -237,7 +237,7 @@ public class TestModel extends TestCollection {
     }
 
     /**
-     * Return all the required sytems that need to be configured if they are not already configured.
+     * Return all the required systems that need to be configured if they are not already configured.
      */
     public Vector getRequiredSystems() {
         return requiredSystems;

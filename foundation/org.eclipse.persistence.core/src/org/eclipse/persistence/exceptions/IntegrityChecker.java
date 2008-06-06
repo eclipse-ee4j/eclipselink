@@ -120,7 +120,7 @@ public class IntegrityChecker implements Serializable {
 
     /**
      * PUBLIC:
-     * This method returns the vecotr which adds all the Descriptors Exceptions.
+     * This method returns the vector which adds all the Descriptors Exceptions.
      */
     public Vector getCaughtExceptions() {
         if (caughtExceptions == null) {
@@ -142,8 +142,8 @@ public class IntegrityChecker implements Serializable {
 
     /**
      * INTERNAL:
-     * This method handle all the Descriptor Exceptions.
-     * This method throw the exception or add the exceptions into a vector depand on the value of shouldCatchExceptions.
+     * This method handles all the Descriptor Exceptions.
+     * This method will throw the exception or add the exceptions into a vector depending on the value of shouldCatchExceptions.
      */
     public void handleError(RuntimeException runtimeException) {
         if (!shouldCatchExceptions()) {
@@ -201,7 +201,7 @@ public class IntegrityChecker implements Serializable {
     /**
      * PUBLIC:
      * This method assigns the value to the variable (shouldCatchExceptions)
-     * that we should catch all Descriptor Exceptions or not.
+     * that defines whether we should catch all Descriptor Exceptions or not.
      */
     public void setShouldCatchExceptions(boolean answer) {
         shouldCatchExceptions = answer;
@@ -210,7 +210,7 @@ public class IntegrityChecker implements Serializable {
     /**
      * PUBLIC:
      * This method assigns the value to the variable (shouldCheckDatabase)
-     * that we should check database or not.
+     * that defines whether we should check the database or not.
      */
     public void setShouldCheckDatabase(boolean answer) {
         shouldCheckDatabase = answer;
@@ -219,7 +219,7 @@ public class IntegrityChecker implements Serializable {
     /**
      * PUBLIC:
      * This method assigns the value to the variable (shouldCheckInstantiationPolicy)
-     * that we should check InstantiationPolicy or not.
+     * that defines whether we should check InstantiationPolicy or not.
      */
     public void setShouldCheckInstantiationPolicy(boolean answer) {
         shouldCheckInstantiationPolicy = answer;
@@ -227,7 +227,7 @@ public class IntegrityChecker implements Serializable {
 
     /**
      * PUBLIC:
-     * This method is used to know that all the Descriptor Exceptions should be thrown or not.
+     * This method signifies whether all Descriptor Exceptions should be thrown individually or queued.
      */
     public boolean shouldCatchExceptions() {
         return shouldCatchExceptions;
@@ -235,7 +235,7 @@ public class IntegrityChecker implements Serializable {
 
     /**
      * PUBLIC:
-     * This method is used to know that database tables and fields should be checked or not.
+     * This method signifies whether database tables and fields should be checked or not.
      */
     public boolean shouldCheckDatabase() {
         return shouldCheckDatabase;
@@ -243,7 +243,7 @@ public class IntegrityChecker implements Serializable {
 
     /**
      * PUBLIC:
-     * This method tells us that we should check InstantiationPolicy or not.
+     * This method tells us whether we should check InstantiationPolicy or not.
      */
     public boolean shouldCheckInstantiationPolicy() {
         return shouldCheckInstantiationPolicy;

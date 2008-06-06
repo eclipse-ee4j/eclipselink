@@ -932,9 +932,9 @@ public class EntityManagerSetupImpl {
             login.setPassword(securableObjectHolder.getSecurableObject().decryptPassword(password));
         }
 
-        String toplinkPlatform = PropertiesHandler.getPropertyValueLogDebug(PersistenceUnitProperties.TARGET_DATABASE, m, session);
-        if (toplinkPlatform != null) {
-            login.setPlatformClassName(toplinkPlatform, persistenceUnitInfo.getClassLoader());
+        String eclipselinkPlatform = PropertiesHandler.getPropertyValueLogDebug(PersistenceUnitProperties.TARGET_DATABASE, m, session);
+        if (eclipselinkPlatform != null) {
+            login.setPlatformClassName(eclipselinkPlatform, persistenceUnitInfo.getClassLoader());
         }
         
         PersistenceUnitTransactionType transactionType = persistenceUnitInfo.getTransactionType();
