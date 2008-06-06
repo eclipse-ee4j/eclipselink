@@ -341,7 +341,6 @@
             <pathelement path="${eclipselink.jpa.test}/${eclipselink.annotation.model}.jar"/>
             <pathelement path="${eclipselink.jpa.test}/${eclipselink.ddl.generation.model}.jar"/>
             <pathelement path="${eclipselink.jpa.test}/${eclipselink.xml.only.model}.jar"/>
-            <pathelement path="${eclipselink.jpa.test}/${eclipselink.xml.extended.model}.jar"/>
             <pathelement path="${eclipselink.jpa.test}/${eclipselink.xml.merge.model}.jar"/>
             <pathelement path="${eclipselink.jpa.test}/${eclipselink.validation.failed.model}.jar"/>
             <pathelement path="${eclipselink.jpa.test}/${eclipselink.advanced.field.access.model}.jar"/>
@@ -352,6 +351,13 @@
             <pathelement path="${eclipselink.extension.oracle.test.dir}/${eclipselink.struct.converter.model}.jar"/>
             <pathelement path="${eclipselink.extension.oracle.test.dir}/${eclipselink.struct.converter.model}-tests.jar"/>
             <pathelement path="${oracle.extensions.depend.dir}/${oracle.spatial.lib}"/>
+        </path>
+        <path id="run.extended.classpath">
+            <pathelement path="${eclipselink.jpa.test}/${classes.dir}"/>
+            <path refid="compile.path"/>
+            <pathelement path="${jdbc.driver.jar}"/>
+            <pathelement path="${eclipselink.jpa.test}/${eclipselink.tests.jar}"/>
+            <pathelement path="${eclipselink.jpa.test}/${eclipselink.xml.extended.model}.jar"/>
         </path>
     </target>
 
@@ -369,7 +375,15 @@
             <param name="TEST_CLASS" value="${test.class}"/>
             <param name="TEST_AGENT" value="${test.agent}"/>
             <param name="TEST_WEAVING" value="${test.weaving}"/>
+        	<param name="ORM_TESTING" value="-Dorm.testing=jpa"/>
             <param name="RUN_PATH" value="run.classpath"/>
+        </antcall>
+        <antcall target="run-test" inheritRefs="true">
+            <param name="TEST_CLASS" value="org.eclipse.persistence.testing.tests.jpa.xml.EntityMappingsJUnitTestSuite"/>
+            <param name="TEST_AGENT" value="${test.agent}"/>
+            <param name="TEST_WEAVING" value="${test.weaving}"/>
+        	<param name="ORM_TESTING" value="-Dorm.testing=eclipselink"/>
+            <param name="RUN_PATH" value="run.extended.classpath"/>
         </antcall>
         <antcall target="generate-report" inheritRefs="true"/>
     </target>
@@ -380,6 +394,7 @@
             <param name="TEST_CLASS" value="org.eclipse.persistence.testing.tests.jpa.FullRegressionTestSuite"/>
             <param name="TEST_AGENT" value="${test.agent}"/>
             <param name="TEST_WEAVING" value="${test.weaving}"/>
+        	<param name="ORM_TESTING" value="-Dorm.testing=jpa"/>
             <param name="RUN_PATH" value="run.classpath"/>
         </antcall>
         <antcall target="test-oracle" inheritRefs="true"/>
@@ -392,6 +407,7 @@
             <param name="TEST_CLASS" value="org.eclipse.persistence.testing.tests.OracleJPATestSuite"/>
             <param name="TEST_AGENT" value="${test.agent}"/>
             <param name="TEST_WEAVING" value="${test.weaving}"/>
+        	<param name="ORM_TESTING" value="-Dorm.testing=jpa"/>
             <param name="RUN_PATH" value="run.classpath"/>
         </antcall>
     </target>
@@ -402,6 +418,7 @@
             <param name="TEST_CLASS" value="org.eclipse.persistence.testing.tests.jpa.advanced.EntityManagerJUnitTestSuite"/>
             <param name="TEST_AGENT" value="${test.agent}"/>
             <param name="TEST_WEAVING" value="${test.weaving}"/>
+        	<param name="ORM_TESTING" value="-Dorm.testing=jpa"/>
             <param name="RUN_PATH" value="run.classpath"/>
         </antcall>
         <antcall target="generate-report" inheritRefs="true"/>
@@ -413,13 +430,14 @@
             <param name="TEST_CLASS" value="${test.class}"/>
             <param name="TEST_AGENT" value="-Dignore"/>
             <param name="TEST_WEAVING" value="-DTEST_NO_WEAVING=true"/>
+        	<param name="ORM_TESTING" value="-Dorm.testing=jpa"/>
             <param name="RUN_PATH" value="run.classpath"/>
         </antcall>
         <antcall target="generate-report" inheritRefs="true"/>
     </target>
 
     <!-- Runs FullRegressionTestSuite with static weaving. -->
-    <target name="test-static-weave" depends="clean-test,config-trunk, config-flat, run-weaver">
+    <target name="test-static-weave" depends="clean-test, config-trunk, config-flat, run-weaver">
         <path id="run.classpath.static">
             <pathelement path="${eclipselink.jpa.test}/woven-${eclipselink.annotation.model}.jar"/>
             <pathelement path="${eclipselink.jpa.test}/woven-${eclipselink.ddl.generation.model}.jar"/>
@@ -437,12 +455,27 @@
             <pathelement path="${eclipselink.jpa.test}/${eclipselink.tests.jar}"/>
             <path refid="compile.path"/>
         </path>
+        <path id="run.extended.classpath.static">
+            <pathelement path="${eclipselink.jpa.test}/woven-${eclipselink.xml.extended.model}.jar"/>
+            <pathelement path="${jdbc.driver.jar}"/>
+            <pathelement path="${eclipselink.jpa.test}/${classes.dir}"/>
+            <pathelement path="${eclipselink.jpa.test}/${eclipselink.tests.jar}"/>
+            <path refid="compile.path"/>
+        </path>
         <antcall target="run-test" inheritRefs="true">
             <param name="TEST_CLASS" value="${test.class}"/>
             <param name="TEST_AGENT" value="-Dignore"/>
             <param name="TEST_WEAVING" value="-Dignore"/>
+        	<param name="ORM_TESTING" value="-Dorm.testing=jpa"/>
             <param name="RUN_PATH" value="run.classpath.static"/>
         </antcall>
+    	<antcall target="run-test" inheritRefs="true">
+    	    <param name="TEST_CLASS" value="${test.class}"/>
+    	    <param name="TEST_AGENT" value="-Dignore"/>
+    	    <param name="TEST_WEAVING" value="-Dignore"/>
+    		<param name="ORM_TESTING" value="-Dorm.testing=eclipselink"/>
+    	    <param name="RUN_PATH" value="run.extended.classpath.static"/>
+    	</antcall>
         <antcall target="generate-report" inheritRefs="true"/>
     </target>
 
@@ -520,6 +553,7 @@
         <junit printsummary="yes" haltonfailure="yes" fork="yes" showoutput="true" maxmemory="512m" dir="${eclipselink.jpa.test}/${run.dir}">
             <jvmarg value="${TEST_AGENT}"/>
             <jvmarg value="${TEST_WEAVING}"/>
+        	<jvmarg value="${ORM_TESTING}"/>
             <jvmarg value="-Declipselink.logging.level=${logging.level}"/>
             <jvmarg value="-Ddb.driver=${db.driver}"/>
             <jvmarg value="-Ddb.url=${db.url}"/>
@@ -590,17 +624,17 @@
                     <path refid="run.classpath"/>
                </classpath>
         </weave>
+    	<weave source= "${eclipselink.jpa.test}/${eclipselink.xml.extended.model}.jar"
+    	       target = "${eclipselink.jpa.test}/woven-${eclipselink.xml.extended.model}.jar">
+    	       <classpath>
+    	            <path refid="run.extended.classpath"/>
+    	       </classpath>
+    	</weave>
         <!--weave source= "${eclipselink.jpa.test}/${eclipselink.xml.only.model}.jar"
                target = "${eclipselink.jpa.test}/woven-${eclipselink.xml.only.model}.jar">
                <classpath>
                     <path refid="run.classpath"/>
                </classpath>
-        </weave>
-        <weave source= "${eclipselink.jpa.test}/${eclipselink.xml.extended.model}.jar"
-             target = "${eclipselink.jpa.test}/woven-${eclipselink.xml.extended.model}.jar">
-             <classpath>
-                  <path refid="run.classpath"/>
-             </classpath>
         </weave>
         <weave source= "${eclipselink.jpa.test}/${eclipselink.xml.merge.model}.jar"
                target = "${eclipselink.jpa.test}/woven-${eclipselink.xml.merge.model}.jar">
