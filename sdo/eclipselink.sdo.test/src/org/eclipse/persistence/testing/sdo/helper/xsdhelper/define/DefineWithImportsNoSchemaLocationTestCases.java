@@ -183,7 +183,6 @@ public class DefineWithImportsNoSchemaLocationTestCases extends XSDHelperDefineT
         }
 
         public Source resolveSchema(Source sourceXSD, String namespace, String schemaLocation) {
-            System.out.println(" **** resolving schema  **** " + namespace);
             try {
                 if (namespace.equals("my.uri3")) {
                     URL schemaUrl = new URI(schemaLocationBase).resolve("Quantity.xsd").toURL();

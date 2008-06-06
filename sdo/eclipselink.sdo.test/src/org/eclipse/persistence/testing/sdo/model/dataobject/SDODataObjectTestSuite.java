@@ -40,7 +40,7 @@ public class SDODataObjectTestSuite {
     * @return
     */
     public static Test suite() {
-        TestSuite suite = new TestSuite("All SDODataHelper Tests");
+        TestSuite suite = new TestSuite("All SDODataObject Tests");
 
         suite.addTest(new TestSuite(SDODataObjectSetGetWithPropertyTest.class));
         suite.addTest(new TestSuite(SDODataObjectSetGetWithIndexTest.class));
@@ -125,15 +125,17 @@ public class SDODataObjectTestSuite {
         // these suites are discovered and not run twice
         //suite.addTest(new SDODataObjectXPathQueryTestSuite().suite());
         //suite.addTest(new SDODataObjectXPathPositionalTestSuite().suite());
-        // TODO: order is significant run getPathTest before ListWrapperTest
+
         suite.addTest(new TestSuite(SDODataObjectGetPathTest.class));
         suite.addTest(new TestSuite(SDODataObjectListWrapperTest.class));
+        
         suite.addTest(new TestSuite(SDODataObjectJIRA81TestCases.class));
         suite.addTest(new TestSuite(SDODataObjectJIRA90ConversionTestCases.class));
 
         suite.addTest(new TestSuite(SDODataObjectJIRA102NillableDirectTestCases.class));
         suite.addTest(new TestSuite(SDODataObjectJIRA102NillableCompositeObjectTestCases.class));
         suite.addTest(new TestSuite(SDODataObjectOpenContentBug6011530TestCases.class));
+        
         return suite;
     }
 }
