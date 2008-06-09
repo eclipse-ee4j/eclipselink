@@ -118,7 +118,7 @@ public class EntityManagerFactoryProvider {
         }
     }
     
-    protected static String getConfigPropertyAsString(String propertyKey, Map overrides){
+    public static String getConfigPropertyAsString(String propertyKey, Map overrides){
         String value = null;
         if (overrides != null){
             value = (String)overrides.get(propertyKey);
@@ -138,7 +138,7 @@ public class EntityManagerFactoryProvider {
      * @param defaultValue 
      * @return 
      */
-    protected static String getConfigPropertyAsString(String propertyKey, Map overrides, String defaultValue){
+    public static String getConfigPropertyAsString(String propertyKey, Map overrides, String defaultValue){
     	String value = getConfigPropertyAsString(propertyKey, overrides);
         if (value == null){
             value = defaultValue;
@@ -225,7 +225,7 @@ public class EntityManagerFactoryProvider {
      * @param source 
      * @return the target object
      */
-    protected static Map mergeMaps(Map target, Map source){
+    public static Map mergeMaps(Map target, Map source){
         Map map = new HashMap();
         if (source != null){
             map.putAll(source);

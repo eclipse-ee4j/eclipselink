@@ -10,7 +10,7 @@
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
  ******************************************************************************/  
-package org.eclipse.persistence.internal.jpa;
+package org.eclipse.persistence.internal.jpa.deployment;
 
 import java.lang.instrument.*;
 import java.lang.reflect.Field;
@@ -21,7 +21,7 @@ import java.lang.reflect.Method;
  * This agent is intended to be run prior to start up on a CMP3 JavaSE application.
  * It gets the globalInstrumentation and makes it available to TopLink's initialization code.
  * There are two kinds of initialization.  Normally, initialization occurs through reflective
- * creation and invokation of TopLink JavaSECMPInitializer.
+ * creation and invocation of TopLink JavaSECMPInitializer.
  * It is possible to run it with the "main" argument to the agent in which case it will simply
  * try to set the globalInstrumentation field on the JavaSECMPInitializer.  This type of initialization
  * is useful when debugging, but imposes some restrictions on the user.  One such restriction is
@@ -40,13 +40,13 @@ public class JavaSECMPInitializerAgent {
     }
     
     public static void initializeFromAgent(Instrumentation instr) throws Exception {
-            Class cls = Class.forName("org.eclipse.persistence.internal.jpa.JavaSECMPInitializer");
+            Class cls = Class.forName("org.eclipse.persistence.internal.jpa.deployment.JavaSECMPInitializer");
             Method method = cls.getDeclaredMethod("initializeFromAgent", new Class[] { Instrumentation.class });
             method.invoke(null, new Object[] { instr });
     }
     
     public static void initializeFromMain(Instrumentation instr) throws Exception {
-            Class cls = Class.forName("org.eclipse.persistence.internal.jpa.JavaSECMPInitializer");
+            Class cls = Class.forName("org.eclipse.persistence.internal.jpa.deployment.JavaSECMPInitializer");
             Field field = cls.getField("globalInstrumentation");
             field.set(null, instr);        
     }

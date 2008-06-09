@@ -9,29 +9,24 @@
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
+ *     tware - 1.0RC1 - refactor for OSGi
  ******************************************************************************/  
-package org.eclipse.persistence.internal.jpa;
+package org.eclipse.persistence.internal.jpa.deployment;
 
 import java.util.*;
-import java.io.FileWriter;
-import java.io.IOException;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.lang.instrument.*;
 import java.security.ProtectionDomain;
 
-import org.eclipse.persistence.internal.jpa.deployment.SEPersistenceUnitInfo;
-
 import org.eclipse.persistence.logging.AbstractSessionLog;
-import org.eclipse.persistence.internal.jpa.EntityManagerSetupImpl;
-import org.eclipse.persistence.internal.jpa.deployment.PersistenceUnitProcessor;
-import org.eclipse.persistence.internal.jpa.deployment.Archive;
+import org.eclipse.persistence.internal.jpa.EntityManagerFactoryProvider;
 import org.eclipse.persistence.exceptions.*;
 import org.eclipse.persistence.logging.SessionLog;
-import org.eclipse.persistence.jpa.PersistenceProvider;
 
 import javax.persistence.PersistenceException;
 import javax.persistence.spi.ClassTransformer;
+import javax.persistence.spi.PersistenceUnitInfo;
 import org.eclipse.persistence.jpa.config.PersistenceUnitProperties;
 
 /**
@@ -44,19 +39,13 @@ import org.eclipse.persistence.jpa.config.PersistenceUnitProperties;
  *
  * @see org.eclipse.persistence.internal.jpa.EntityManagerFactoryProvider
  */
-public class JavaSECMPInitializer implements PersistenceInitializationActivator {
+public class JavaSECMPInitializer extends JPAInitializer {
 
     // Used when byte code enhancing
     public static Instrumentation globalInstrumentation;
 
-    // The internal loader is used by applications that do weaving to pre load classes
-    // When this flag is set to false, we will not be able to weave.
-    protected boolean shouldCreateInternalLoader = true;
-
     // The JavaSECMPInitializer - a singleton
     protected static JavaSECMPInitializer javaSECMPInitializer;
-
-    protected ClassLoader sessionClassLoader = null;
 
     /**
      * Get the singleton entityContainer.
@@ -85,75 +74,24 @@ public class JavaSECMPInitializer implements PersistenceInitializationActivator 
     }
 
     /**
-     * predeploy (with deploy) is one of the two steps required in deployment of entities
-     * This method will prepare to call predeploy, call it and finally register the
-     * transformer returned to be used for weaving.
+     * Check whether weaving is possible and update the properties and variable as appropriate
+     * @param properties The list of properties to check for weaving and update if weaving is not needed
      */
-    protected boolean callPredeploy(SEPersistenceUnitInfo persistenceUnitInfo, Map m, PersistenceInitializationActivator persistenceActivator) {
-        // we will only attempt to deploy when EclipseLink is specified as the provider or the provider is unspecified
-        String providerClassName = persistenceUnitInfo.getPersistenceProviderClassName();
-        if (persistenceActivator.isPersistenceProviderSupported(providerClassName)){
-            // Bug 210280/215865: this decoded URL path + PU name [puName] must be used as the key in the EMSetup map below
-            String puName = PersistenceUnitProcessor.buildPersistenceUnitName(persistenceUnitInfo.getPersistenceUnitRootUrl(),persistenceUnitInfo.getPersistenceUnitName());
-            EntityManagerSetupImpl emSetupImpl = EntityManagerFactoryProvider.getEntityManagerSetupImpl(puName);
-            // if we already have an EntityManagerSetupImpl this PU has already been processed.  Use the existing one
-            if (emSetupImpl != null && !emSetupImpl.isUndeployed()){
-                return false;
+    public void checkWeaving(Map properties){
+        String weaving = EntityManagerFactoryProvider.getConfigPropertyAsString(PersistenceUnitProperties.WEAVING, properties, null);
+        if (globalInstrumentation == null) {
+            if (weaving == null) {
+               properties.put(PersistenceUnitProperties.WEAVING, "false");
+               weaving = "false";
+            } else if (weaving.equalsIgnoreCase("true")) {
+                throw new PersistenceException(EntityManagerSetupException.wrongWeavingPropertyValue());
             }
-            Set tempLoaderSet = PersistenceUnitProcessor.buildClassSet(persistenceUnitInfo, Thread.currentThread().getContextClassLoader());
-            AbstractSessionLog.getLog().log(SessionLog.FINER, "cmp_init_invoke_predeploy", persistenceUnitInfo.getPersistenceUnitName());
-            Map mergedProperties = EntityManagerFactoryProvider.mergeMaps(m, persistenceUnitInfo.getProperties());
-            // Bug#4452468  When globalInstrumentation is null, there is no weaving
-            String weaving = EntityManagerFactoryProvider.getConfigPropertyAsString(PersistenceUnitProperties.WEAVING, mergedProperties, null);
-            if (globalInstrumentation == null) {
-                if (weaving == null) {
-                   mergedProperties.put(PersistenceUnitProperties.WEAVING, "false");
-                   weaving = "false";
-                } else if (weaving.equalsIgnoreCase("true")) {
-                    throw new PersistenceException(EntityManagerSetupException.wrongWeavingPropertyValue());
-                }
-            }
-            if ((weaving != null) && ((weaving.equalsIgnoreCase("false")) || (weaving.equalsIgnoreCase("static")))){
-                shouldCreateInternalLoader=false;
-            }
-
-            // Create the temp loader that will not cache classes for entities in our persistence unit
-            ClassLoader tempLoader = createTempLoader(tempLoaderSet);
-            persistenceUnitInfo.setNewTempClassLoader(tempLoader);
-            if (emSetupImpl == null){
-                emSetupImpl = new EntityManagerSetupImpl();
-                // Bug 210280/215865: use the decoded URL path + PU name as the key in the EMSetup map - to handle paths with spaces
-                EntityManagerFactoryProvider.addEntityManagerSetupImpl(puName, emSetupImpl);
-            }
-           
-            persistenceUnitInfo.setClassLoader(getMainLoader());
-    
-            // A call to predeploy will partially build the session we will use
-            final ClassTransformer transformer = emSetupImpl.predeploy(persistenceUnitInfo, mergedProperties);
-    
-            // If we got a transformer then register it 
-            if ((transformer != null) && (globalInstrumentation != null)) {
-                AbstractSessionLog.getLog().log(SessionLog.FINER, "cmp_init_register_transformer", persistenceUnitInfo.getPersistenceUnitName());
-                globalInstrumentation.addTransformer(new ClassFileTransformer() {
-                    // adapt ClassTransformer to ClassFileTransformer interface
-                    public byte[] transform(
-                            ClassLoader loader, String className,
-                            Class<?> classBeingRedefined,
-                            ProtectionDomain protectionDomain,
-                            byte[] classfileBuffer) throws IllegalClassFormatException {
-                        return transformer.transform(loader, className, classBeingRedefined, protectionDomain, classfileBuffer);
-                    }
-                });
-            } else if (transformer == null) {
-                AbstractSessionLog.getLog().log(SessionLog.FINER, "cmp_init_transformer_is_null");
-            } else if (globalInstrumentation == null) {
-                AbstractSessionLog.getLog().log(SessionLog.FINER, "cmp_init_globalInstrumentation_is_null");
-            }
-            return true;
         }
-        return false;
+        if ((weaving != null) && ((weaving.equalsIgnoreCase("false")) || (weaving.equalsIgnoreCase("static")))){
+            shouldCreateInternalLoader = false;
+        }
     }
-    
+
     /**
      * Create a temporary class loader that can be used to inspect classes and then
      * thrown away.  This allows classes to be introspected prior to loading them
@@ -182,40 +120,15 @@ public class JavaSECMPInitializer implements PersistenceInitializationActivator 
 
         return tempLoader;
     }
-
-    public static ClassLoader getMainLoader() {
-        return Thread.currentThread().getContextClassLoader();
-    }
-
+    
     /**
-     * Initialize one persistence unit.
-     * Initialization is a two phase process.  First the predeploy process builds the metadata
-     * and creates any required transformers.
-     * Second the deploy process creates an EclipseLink session based on that metadata.
+     * Initialize the classloader to be used during persistence unit initialization.  
+     * @param persistenceHelper
      */
-    protected void initPersistenceUnits(Archive archive, Map m, PersistenceInitializationActivator persistenceActivator){
-        Iterator<SEPersistenceUnitInfo> persistenceUnits = PersistenceUnitProcessor.getPersistenceUnits(archive, sessionClassLoader).iterator();
-        while (persistenceUnits.hasNext()) {
-            SEPersistenceUnitInfo persistenceUnitInfo = persistenceUnits.next();
-            callPredeploy(persistenceUnitInfo, m, persistenceActivator);
-        }
+    public void initializeClassLoader(PersistenceInitializationHelper persistenceHelper){
+        initializationClassloader = persistenceHelper.getClassLoader(null, null);
     }
-
-    /**
-     * This method initializes the container.  Essentially, it will try to load the
-     * class that contains the list of entities and reflectively call the method that
-     * contains that list.  It will then initialize the container with that list.
-     * If succeeded return true, false otherwise.
-     */
-    public void initialize(Map m, PersistenceInitializationActivator persistenceActivator) {
-        sessionClassLoader = getMainLoader();
-        final Set<Archive> pars = PersistenceUnitProcessor.findPersistenceArchives();
-        for (Archive archive: pars) {
-            AbstractSessionLog.getLog().log(SessionLog.FINER, "cmp_init_initialize", archive);
-            initPersistenceUnits(archive, m, persistenceActivator);
-        }
-    }
-
+    
     /**
      * INTERNAL:
      * Should be called only by the agent. (when weaving classes)
@@ -229,16 +142,7 @@ public class JavaSECMPInitializer implements PersistenceInitializationActivator 
         // Create JavaSECMPInitializer singleton
         javaSECMPInitializer = new JavaSECMPInitializer();
         // Initialize it
-        javaSECMPInitializer.initialize(new HashMap(), javaSECMPInitializer);
-    }
-
-    /**
-     * Returns whether the given persistence provider class is supported by this implementation
-     * @param providerClassName
-     * @return
-     */
-    public boolean isPersistenceProviderSupported(String providerClassName){
-        return (providerClassName == null) || providerClassName.equals("") || providerClassName.equals(EntityManagerFactoryProvider.class.getName()) || providerClassName.equals(PersistenceProvider.class.getName());
+        javaSECMPInitializer.initialize(new HashMap(), new PersistenceInitializationHelper());
     }
     
     /**
@@ -266,7 +170,7 @@ public class JavaSECMPInitializer implements PersistenceInitializationActivator 
         if (javaSECMPInitializer != null) {
             return;
         }        
-        getJavaSECMPInitializer().initialize(m, javaSECMPInitializer);
+        getJavaSECMPInitializer().initialize(m, new PersistenceInitializationHelper());
     }
 
     /**
@@ -277,39 +181,31 @@ public class JavaSECMPInitializer implements PersistenceInitializationActivator 
     }
 
     /**
-     * Initialize the logging file if it is specified by the system property.
+     * Register a transformer.  In this case, we use the instrumentation to add a transformer for the
+     * JavaSE environemnt
+     * @param transformer
+     * @param persistenceUnitInfo
      */
-    public static void initializeTopLinkLoggingFile() {        
-        String loggingFile = System.getProperty(PersistenceUnitProperties.LOGGING_FILE);
-        try {
-            if (loggingFile != null) {
-                AbstractSessionLog.getLog().setWriter(new FileWriter(loggingFile));
-            }
-        } catch (IOException e) {
-            AbstractSessionLog.getLog().log(SessionLog.WARNING, "cmp_init_default_logging_file_is_invalid",loggingFile,e);
+    public void registerTransformer(final ClassTransformer transformer, PersistenceUnitInfo persistenceUnitInfo){
+        if ((transformer != null) && (globalInstrumentation != null)) {
+            AbstractSessionLog.getLog().log(SessionLog.FINER, "cmp_init_register_transformer", persistenceUnitInfo.getPersistenceUnitName());
+            globalInstrumentation.addTransformer(new ClassFileTransformer() {
+                // adapt ClassTransformer to ClassFileTransformer interface
+                public byte[] transform(
+                        ClassLoader loader, String className,
+                        Class<?> classBeingRedefined,
+                        ProtectionDomain protectionDomain,
+                        byte[] classfileBuffer) throws IllegalClassFormatException {
+                    return transformer.transform(loader, className, classBeingRedefined, protectionDomain, classfileBuffer);
+                }
+            });
+        } else if (transformer == null) {
+            AbstractSessionLog.getLog().log(SessionLog.FINER, "cmp_init_transformer_is_null");
+        } else if (globalInstrumentation == null) {
+            AbstractSessionLog.getLog().log(SessionLog.FINER, "cmp_init_globalInstrumentation_is_null");
         }
     }
     
-    /**
-     * Create a list of java.lang.Class that contains the classes of all the entities
-     * that we will be deploying.
-     */
-    protected Set loadEntityClasses(Collection entityNames, ClassLoader classLoader) {
-        Set entityClasses = new HashSet();
-
-        // Load the classes using the loader passed in
-        AbstractSessionLog.getLog().log(SessionLog.FINER, "cmp_loading_entities_using_loader", classLoader);
-        for (Iterator iter = entityNames.iterator(); iter.hasNext();) {
-            String entityClassName = (String)iter.next();
-            try {
-                entityClasses.add(classLoader.loadClass(entityClassName));
-            } catch (ClassNotFoundException cnfEx) {
-                throw ValidationException.entityClassNotFound(entityClassName, classLoader, cnfEx);
-            }
-        }
-        return entityClasses;
-    }
-
     /*********************************/
     /***** Temporary Classloader *****/
     /*********************************/

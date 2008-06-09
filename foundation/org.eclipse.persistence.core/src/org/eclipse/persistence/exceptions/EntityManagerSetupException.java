@@ -40,7 +40,7 @@ public class EntityManagerSetupException extends EclipseLinkException {
     public static final int METHOD_INVOCATION_FAILED = 28023;
     public static final int CANNOT_ACCESS_METHOD_ON_OBJECT=28024;
     public static final int NO_TEMPORARY_CLASSLOADER_AVAILABLE=28025;    
-
+    public static final int CREATE_CONTAINER_EMF_NOT_SUPPORTED_IN_OSGI=28026;  
 
     /**
      * INTERNAL:
@@ -273,4 +273,16 @@ public class EntityManagerSetupException extends EclipseLinkException {
         return setupException;
     }
     
+    /**
+     * INTERNAL:
+     * Our OSGI persistence provider does not support a JavaEE type deployment
+     * @param PUName
+     * @return
+     */
+    public static EntityManagerSetupException createContainerEntityManagerFactoryNotSupportedInOSGi() {
+        EntityManagerSetupException setupException = new EntityManagerSetupException(ExceptionMessageGenerator.buildMessage(//
+                EntityManagerSetupException.class, CREATE_CONTAINER_EMF_NOT_SUPPORTED_IN_OSGI, null));
+        setupException.setErrorCode(CREATE_CONTAINER_EMF_NOT_SUPPORTED_IN_OSGI);
+        return setupException;
+    }
 }

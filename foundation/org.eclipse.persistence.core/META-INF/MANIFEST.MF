@@ -11,7 +11,6 @@ Require-Bundle: javax.activation;resolution:=optional,
  javax.jms;resolution:=optional,
  javax.resource;resolution:=optional,
  javax.transaction;resolution:=optional,
- javax.xml.stream;resolution:=optional,
  javax.persistence
 Export-Package: org.eclipse.persistence,
  org.eclipse.persistence.annotations,
@@ -149,4 +148,4 @@ Export-Package: org.eclipse.persistence,
  xsd
 Bundle-ClassPath: .
 Import-Package: org.w3c.dom
-Premain-Class: org.eclipse.persistence.internal.jpa.JavaSECMPInitializerAgent
+Premain-Class: org.eclipse.persistence.internal.jpa.deployment.JavaSECMPInitializerAgent

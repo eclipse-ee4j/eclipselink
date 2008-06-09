@@ -9,6 +9,7 @@
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
+ *     tware - 1.0RC1 - OSGI refactor
  ******************************************************************************/  
 package org.eclipse.persistence.jpa;
 
@@ -25,17 +26,27 @@ import org.eclipse.persistence.exceptions.PersistenceUnitLoadingException;
 import org.eclipse.persistence.internal.jpa.EntityManagerFactoryImpl;
 import org.eclipse.persistence.internal.jpa.EntityManagerFactoryProvider;
 import org.eclipse.persistence.internal.jpa.EntityManagerSetupImpl;
-import org.eclipse.persistence.internal.jpa.JavaSECMPInitializer;
-import org.eclipse.persistence.internal.jpa.PersistenceInitializationActivator;
+import org.eclipse.persistence.internal.jpa.deployment.JavaSECMPInitializer;
+import org.eclipse.persistence.internal.jpa.deployment.PersistenceInitializationHelper;
 import org.eclipse.persistence.internal.jpa.deployment.PersistenceUnitProcessor;
 import org.eclipse.persistence.internal.jpa.deployment.SEPersistenceUnitInfo;
-import org.eclipse.persistence.jpa.config.PersistenceUnitProperties;
+import org.eclipse.persistence.internal.jpa.deployment.JPAInitializer;
 
 /**
  * This is the EclipseLink EJB 3.0 provider
+ * 
+ * This provider should be used by JavaEE and JavaSE users.
  */
-public class PersistenceProvider implements javax.persistence.spi.PersistenceProvider, PersistenceInitializationActivator {
+public class PersistenceProvider implements javax.persistence.spi.PersistenceProvider {
 
+    // provides environment-specific initialization for Java EE or OSGI
+    protected PersistenceInitializationHelper initializationHelper = null;    
+    
+    public PersistenceProvider(){
+        // by default, we will work in Java EE (or SE)
+        initializationHelper = new PersistenceInitializationHelper();
+    }
+    
     /**
      * Called by Persistence class when an EntityManagerFactory
      * is to be created.
@@ -50,15 +61,36 @@ public class PersistenceProvider implements javax.persistence.spi.PersistencePro
      * or null if the provider is not the right provider
      */
     public EntityManagerFactory createEntityManagerFactory(String emName, Map properties){
+        ClassLoader classloader = initializationHelper.getClassLoader(emName, properties);
+        return createEntityManagerFactory(emName, properties, classloader);
+    }
+    
+    /**
+     * Called by Persistence class when an EntityManagerFactory
+     * is to be created.
+     *
+     * @param emName The name of the persistence unit
+     * @param map A Map of properties for use by the
+     * persistence provider. These properties may be used to
+     * override the values of the corresponding elements in
+     * the persistence.xml file or specify values for
+     * properties not specified in the persistence.xml.
+     * @param classLoader The classloader to search for persistence
+     * units on
+     * @return EntityManagerFactory for the persistence unit,
+     * or null if the provider is not the right provider
+     */
+    public EntityManagerFactory createEntityManagerFactory(String emName, Map properties, ClassLoader classLoader){
         Map nonNullProperties = (properties == null) ? new HashMap() : properties;
         String name = emName;
         if (name == null){
             name = "";
         }
 
-        JavaSECMPInitializer initializer = JavaSECMPInitializer.getJavaSECMPInitializer();
+        JPAInitializer initializer = initializationHelper.getInitializer(classLoader, properties);
         EntityManagerSetupImpl emSetupImpl = null;
-        ClassLoader currentLoader = getClassLoader(properties);
+        // get a class loader to use with this specific EM
+        ClassLoader currentLoader = initializationHelper.getClassLoader(emName, properties);
 
         try {
             Enumeration<URL> resources = currentLoader.getResources("META-INF/persistence.xml");
@@ -69,11 +101,10 @@ public class PersistenceProvider implements javax.persistence.spi.PersistencePro
                 synchronized (EntityManagerFactoryProvider.emSetupImpls){
                     emSetupImpl = EntityManagerFactoryProvider.getEntityManagerSetupImpl(puName);
                     if (emSetupImpl == null || emSetupImpl.isUndeployed()){
-                        if (!initialized) {
-                            initializer.initialize(nonNullProperties, this);
+                        if (!initialized){                           
+                            initializer.initialize(nonNullProperties, initializationHelper);
                             initialized = true;
                         }
-                            
                         emSetupImpl = EntityManagerFactoryProvider.getEntityManagerSetupImpl(puName);
                     }
                 }
@@ -92,7 +123,7 @@ public class PersistenceProvider implements javax.persistence.spi.PersistencePro
             return null;
         }
             
-        if (!isPersistenceProviderSupported(emSetupImpl.getPersistenceUnitInfo().getPersistenceProviderClassName())){
+        if (!initializer.isPersistenceProviderSupported(emSetupImpl.getPersistenceUnitInfo().getPersistenceProviderClassName())){
             return null;
         }
 
@@ -102,9 +133,9 @@ public class PersistenceProvider implements javax.persistence.spi.PersistencePro
         synchronized(emSetupImpl) {
             if(emSetupImpl.shouldRedeploy()) {
                 SEPersistenceUnitInfo persistenceInfo = (SEPersistenceUnitInfo)emSetupImpl.getPersistenceUnitInfo();
-                persistenceInfo.setClassLoader(JavaSECMPInitializer.getMainLoader());
+                persistenceInfo.setClassLoader(initializationHelper.getClassLoader(emName, properties));
                 if (emSetupImpl.isUndeployed()){
-                    persistenceInfo.setNewTempClassLoader(JavaSECMPInitializer.getMainLoader());
+                    persistenceInfo.setNewTempClassLoader(initializationHelper.getClassLoader(emName, properties));
                 }
             }
             // call predeploy
@@ -177,35 +208,5 @@ public class PersistenceProvider implements javax.persistence.spi.PersistencePro
         }
         return factory;
     }
-
-    /**
-     * Returns whether the given persistence provider class is supported by this implementation
-     * @param providerClassName
-     * @return
-     */
-    public boolean isPersistenceProviderSupported(String providerClassName){
-        return (providerClassName == null) || providerClassName.equals("") || providerClassName.equals(PersistenceProvider.class.getName());
-    }
-
-    /**
-     * Answer the classloader to use to create an EntityManager.
-     * If a classloader is not found in the properties map then 
-     * use the current thread classloader.
-     * 
-     * @param properties
-     * @return ClassLoader
-     */
-    private ClassLoader getClassLoader(Map properties) {
-        ClassLoader classloader = null;
-        if (properties != null) {
-            classloader = (ClassLoader)properties.get(PersistenceUnitProperties.CLASSLOADER);
-        }
-        if (classloader == null) {
-            classloader = Thread.currentThread().getContextClassLoader();
-        }
-        return classloader;
-    }
-
-
 
 }
