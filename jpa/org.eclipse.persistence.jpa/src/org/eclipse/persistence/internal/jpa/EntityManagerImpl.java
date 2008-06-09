@@ -127,7 +127,10 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
         detectTransactionWrapper();
         this.extended = true;
         this.propagatePersistenceContext = false;
-        this.properties=properties;
+        // bug 236249: In JPA session.setProperty() throws UnsupportedOperationException.
+        if(properties != null) {
+            this.properties = new HashMap(properties);
+        }
         processProperties();
         flushMode = FlushModeType.AUTO;
     }
@@ -144,7 +147,10 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
         detectTransactionWrapper();
         this.extended = true;
         this.propagatePersistenceContext = false;
-        this.properties=properties;
+        // bug 236249: In JPA session.setProperty() throws UnsupportedOperationException.
+        if(properties != null) {
+            this.properties = new HashMap(properties);
+        }
         processProperties();
         flushMode = FlushModeType.AUTO;
     }
