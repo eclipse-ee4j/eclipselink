@@ -220,4 +220,7 @@ public class Property {
     	return false;
     }
     
+    public boolean isReference() {
+    	return false;
+    }
 }

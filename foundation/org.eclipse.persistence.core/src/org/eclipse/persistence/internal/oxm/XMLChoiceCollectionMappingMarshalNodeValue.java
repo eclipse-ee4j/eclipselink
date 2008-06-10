@@ -25,6 +25,8 @@ import org.eclipse.persistence.oxm.mappings.XMLCompositeCollectionMapping;
 import org.eclipse.persistence.oxm.mappings.XMLCompositeDirectCollectionMapping;
 import org.eclipse.persistence.oxm.mappings.XMLMapping;
 import org.eclipse.persistence.oxm.record.MarshalRecord;
+import org.eclipse.persistence.oxm.XMLRoot;
+import java.util.Iterator;
 
 public class XMLChoiceCollectionMappingMarshalNodeValue extends NodeValue implements ContainerValue {
     private XMLChoiceCollectionMapping xmlChoiceCollectionMapping;
@@ -70,28 +72,65 @@ public class XMLChoiceCollectionMappingMarshalNodeValue extends NodeValue implem
     }
 
     public void marshalSingleValue(XPathFragment xPathFragment, MarshalRecord marshalRecord, Object object, Object value, AbstractSession session, NamespaceResolver namespaceResolver, MarshalContext marshalContext) {
-        XMLField associatedField = xmlChoiceCollectionMapping.getClassToFieldMappings().get(value.getClass());
-        if(associatedField != null) {
-            NodeValue associatedNodeValue = this.fieldToNodeValues.get(associatedField);
-            if(associatedNodeValue != null) {
-                //Find the correct fragment
-                XPathFragment frag = associatedField.getXPathFragment();
-                while(frag != null) {
-                    if(associatedNodeValue.isOwningNode(frag)) {
-                        ContainerValue nestedNodeValue = (ContainerValue)((XMLChoiceCollectionMappingUnmarshalNodeValue)associatedNodeValue).getChoiceElementNodeValue();
-                        nestedNodeValue.marshalSingleValue(frag, marshalRecord, object, value, session, namespaceResolver, marshalContext);
-                        break;
-                    }
-                    frag = frag.getNextFragment();
-                    //if next frag is null, call node value before the loop breaks
-                     if(frag == null) {
-                        ContainerValue nestedNodeValue = (ContainerValue)((XMLChoiceCollectionMappingUnmarshalNodeValue)associatedNodeValue).getChoiceElementNodeValue();
-                        nestedNodeValue.marshalSingleValue(frag, marshalRecord, object, value, session, namespaceResolver, marshalContext);
-                    }
+    	NodeValue associatedNodeValue = null;
+    	XMLField associatedField = null;
+    	Object fieldValue = value;
+    	if(value instanceof XMLRoot) {
+    		XMLRoot rootValue = (XMLRoot)value;
+    		String localName = rootValue.getLocalName();
+    		String namespaceUri = rootValue.getNamespaceURI();
+    		fieldValue = rootValue.getObject();
+    		associatedField = getFieldForName(localName, namespaceUri);
+    		if(associatedField == null) {
+    			associatedField = xmlChoiceCollectionMapping.getClassToFieldMappings().get(value.getClass());
+    		}
+    	} else {
+    		associatedField = xmlChoiceCollectionMapping.getClassToFieldMappings().get(value.getClass());
+    	}
+
+    	if(associatedField != null) {
+			associatedNodeValue = this.fieldToNodeValues.get(associatedField);
+		}
+    	
+    	if(associatedNodeValue != null) {
+    		//Find the correct fragment
+    		XPathFragment frag = associatedField.getXPathFragment();
+    		while(frag != null) {
+    			if(associatedNodeValue.isOwningNode(frag)) {
+    				ContainerValue nestedNodeValue = (ContainerValue)((XMLChoiceCollectionMappingUnmarshalNodeValue)associatedNodeValue).getChoiceElementNodeValue();
+    				nestedNodeValue.marshalSingleValue(frag, marshalRecord, object, fieldValue, session, namespaceResolver, marshalContext);
+    				break;
+    			}
+                frag = frag.getNextFragment();
+                //if next frag is null, call node value before the loop breaks
+                if(frag == null) {
+                    ContainerValue nestedNodeValue = (ContainerValue)((XMLChoiceCollectionMappingUnmarshalNodeValue)associatedNodeValue).getChoiceElementNodeValue();
+                    nestedNodeValue.marshalSingleValue(frag, marshalRecord, object, fieldValue, session, namespaceResolver, marshalContext);
                 }
             }
-        }             
+        }
     }
+
+    private XMLField getFieldForName(String localName, String namespaceUri) {
+    	Iterator<XMLField> fields = fieldToNodeValues.keySet().iterator(); 
+    	while(fields.hasNext()) {
+    		XMLField nextField = fields.next();
+    		XPathFragment fragment = nextField.getXPathFragment();
+    		while(fragment != null && (!fragment.nameIsText())) {
+    			if(fragment.getNextFragment() == null || fragment.getHasText()) {
+    				if(fragment.getLocalName().equals(localName)) {
+    					String fragUri = fragment.getNamespaceURI();
+    					if((namespaceUri == null && fragUri == null) || (namespaceUri != null && fragUri != null && namespaceUri.equals(fragUri))) {
+    						return nextField;
+    					}
+    				}
+    			}
+    			fragment = fragment.getNextFragment();
+    		}
+    	}
+    	return null;
+    }
+    
     public boolean isMarshalNodeValue() {
         return true;
     }

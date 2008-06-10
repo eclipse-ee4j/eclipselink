@@ -35,9 +35,13 @@ import org.eclipse.persistence.jaxb.JAXBEnumTypeConverter;
 import org.eclipse.persistence.internal.jaxb.JaxbClassLoader;
 import org.eclipse.persistence.internal.jaxb.DomHandlerConverter;
 import org.eclipse.persistence.internal.jaxb.WrappedValue;
+import org.eclipse.persistence.internal.jaxb.JAXBElementAttributeAccessor;
+import org.eclipse.persistence.mappings.AttributeAccessor;
+
 
 import org.eclipse.persistence.oxm.*;
 import org.eclipse.persistence.oxm.mappings.*;
+import org.eclipse.persistence.oxm.mappings.converters.XMLRootConverter;
 import org.eclipse.persistence.internal.jaxb.XMLJavaTypeConverter;
 import org.eclipse.persistence.sessions.Project;
 
@@ -75,6 +79,7 @@ public class MappingsGenerator {
     private HashMap<String, NamespaceInfo> packageToNamespaceMappings;
     private HashMap<String, TypeInfo> typeInfo;
     private HashMap<Class, QName> generatedClassesToQNames;
+    private HashMap<QName, ElementDeclaration> globalElements;
     
     public MappingsGenerator(Helper helper) {
         this.helper = helper;
@@ -83,10 +88,11 @@ public class MappingsGenerator {
         generatedClassesToQNames = new HashMap<Class, QName>();
     }
     
-    public Project generateProject(ArrayList<JavaClass> typeInfoClasses, HashMap<String, TypeInfo> typeInfo, HashMap userDefinedSchemaTypes, HashMap<String, NamespaceInfo> packageToNamespaceMappings, HashMap<QName, String> globalElements) throws Exception {
+    public Project generateProject(ArrayList<JavaClass> typeInfoClasses, HashMap<String, TypeInfo> typeInfo, HashMap userDefinedSchemaTypes, HashMap<String, NamespaceInfo> packageToNamespaceMappings, HashMap<QName, ElementDeclaration> globalElements) throws Exception {
         this.typeInfo = typeInfo;
         this.userDefinedSchemaTypes = userDefinedSchemaTypes;
         this.packageToNamespaceMappings = packageToNamespaceMappings;
+        this.globalElements = globalElements;
         Project project = new Project();
 
         for (JavaClass next : typeInfoClasses) {
@@ -96,7 +102,7 @@ public class MappingsGenerator {
         }
         // now create mappings
         generateMappings();
-        processGlobalElements(globalElements, project);
+        processGlobalElements(project);
         return project;
     }
     
@@ -185,7 +191,13 @@ public class MappingsGenerator {
             }
         } else if(property.isAny()) {
         	generateAnyCollectionMapping(property, descriptor, namespaceInfo);
-        } else if (isMapType(property) && helper.isAnnotationPresent(property.getElement(), XmlAnyAttribute.class)) {
+        } else if(property.isReference()) {
+        	if(this.isCollectionType(property)) {
+        		generateCollectionMappingForReferenceProperty((ReferenceProperty)property, descriptor, namespaceInfo);
+        	} else {
+        		generateMappingForReferenceProperty((ReferenceProperty)property, descriptor, namespaceInfo);
+        	}
+        }else if (isMapType(property) && helper.isAnnotationPresent(property.getElement(), XmlAnyAttribute.class)) {
             generateAnyAttributeMapping(property, descriptor, namespaceInfo);
         } else if (isCollectionType(property)) {
             generateCollectionMapping(property, descriptor, namespaceInfo);
@@ -225,7 +237,7 @@ public class MappingsGenerator {
             Property next = choiceProperties.next();
             JavaClass type = next.getType();
             XMLField xpath = getXPathForField(next, namespace, !(this.typeInfo.containsKey(type.getQualifiedName())));
-            mapping.addChoiceElement(xpath.getName(), type.getQualifiedName());
+            mapping.addChoiceElement(xpath.getName(), type.getQualifiedName(), false);
         }
         descriptor.addMapping(mapping);
         return mapping;
@@ -257,6 +269,63 @@ public class MappingsGenerator {
         return mapping;
     }
     
+    public XMLMapping generateMappingForReferenceProperty(ReferenceProperty property, XMLDescriptor descriptor, NamespaceInfo namespaceInfo) {
+    	XMLChoiceObjectMapping mapping = new XMLChoiceObjectMapping();
+        mapping.setAttributeName(property.getPropertyName());
+        if(property.isMethodProperty()) {
+            mapping.setGetMethodName(property.getGetMethodName());
+            mapping.setSetMethodName(property.getSetMethodName());
+        }
+
+        List<ElementDeclaration> referencedElements = property.getReferencedElements();
+        boolean hasJAXBElements = false;
+        AttributeAccessor mappingAccessor = mapping.getAttributeAccessor();
+    	for(ElementDeclaration element:referencedElements) {
+    		QName elementName = element.getElementName();
+    		XMLField xmlField = this.getXPathForElement("", elementName, namespaceInfo, !(this.typeInfo.containsKey(element.getJavaTypeName())));
+    		mapping.addChoiceElement(xmlField, element.getJavaTypeName());
+            if(!element.isXmlRootElement()) {
+                XMLRootConverter converter = new XMLRootConverter(xmlField);
+                mapping.addConverter(xmlField, converter);
+            }
+    		hasJAXBElements = hasJAXBElements || !element.isXmlRootElement();
+    		if(hasJAXBElements) {
+    			mapping.setAttributeAccessor(new JAXBElementAttributeAccessor(mappingAccessor));
+    		}
+    	}
+    	descriptor.addMapping(mapping);
+    	return mapping;
+    }
+    
+    public XMLMapping generateCollectionMappingForReferenceProperty(ReferenceProperty property, XMLDescriptor descriptor, NamespaceInfo namespaceInfo) {
+    	XMLChoiceCollectionMapping mapping = new XMLChoiceCollectionMapping();
+    	
+        mapping.setAttributeName(property.getPropertyName());
+        if(property.isMethodProperty()) {
+            mapping.setGetMethodName(property.getGetMethodName());
+            mapping.setSetMethodName(property.getSetMethodName());
+        }
+
+        List<ElementDeclaration> referencedElements = property.getReferencedElements();
+        boolean hasJAXBElements = false;
+        AttributeAccessor mappingAccessor = mapping.getAttributeAccessor();
+    	
+        for(ElementDeclaration element:referencedElements) {
+    		QName elementName = element.getElementName();
+    		XMLField xmlField = this.getXPathForElement("", elementName, namespaceInfo, !(this.typeInfo.containsKey(element.getJavaTypeName())));
+    		mapping.addChoiceElement(xmlField, element.getJavaTypeName());
+    		if(!element.isXmlRootElement()) {
+    		    XMLRootConverter converter = new XMLRootConverter(xmlField);
+    		    mapping.addConverter(xmlField, converter);
+    		}
+    		hasJAXBElements = hasJAXBElements || !element.isXmlRootElement();
+    	}
+    	if(hasJAXBElements) {
+    		mapping.setAttributeAccessor(new JAXBElementAttributeAccessor(mappingAccessor, mapping.getContainerPolicy()));
+    	}
+    	descriptor.addMapping(mapping);
+    	return mapping;
+    }
     public XMLAnyCollectionMapping generateAnyCollectionMapping(Property property, XMLDescriptor descriptor, NamespaceInfo namespaceInfo) {
     	AnyProperty prop = (AnyProperty)property;
     	XMLAnyCollectionMapping  mapping = new XMLAnyCollectionMapping();
@@ -647,26 +716,7 @@ public class MappingsGenerator {
             return field;
         } else {
             QName elementName = property.getSchemaName();
-            String namespace = "";
-            if (namespaceInfo.isElementFormQualified()) {
-                namespace = namespaceInfo.getNamespace();
-            }
-            if (!elementName.getNamespaceURI().equals("")) {
-                namespace = elementName.getNamespaceURI();
-            }
-            if (namespace.equals("")) {
-                xPath += elementName.getLocalPart();
-                if (isTextMapping) {
-                    xPath += "/text()";
-                }
-            } else {
-                String prefix = getPrefixForNamespace(namespace, namespaceInfo.getNamespaceResolver());
-                xPath += prefix + ":" + elementName.getLocalPart();
-                if (isTextMapping) {
-                    xPath += "/text()";
-                }
-            }
-            xmlField = new XMLField(xPath);
+            xmlField = getXPathForElement(xPath, elementName, namespaceInfo, isTextMapping);
 
             QName schemaType = (QName) userDefinedSchemaTypes.get(property.getType());
             if (property.getSchemaType() != null) {
@@ -680,6 +730,30 @@ public class MappingsGenerator {
         return xmlField;
     }
 
+    public XMLField getXPathForElement(String path, QName elementName, NamespaceInfo namespaceInfo, boolean isText) {
+    	String namespace = "";
+        if (namespaceInfo.isElementFormQualified()) {
+            namespace = namespaceInfo.getNamespace();
+        }
+        if (!elementName.getNamespaceURI().equals("")) {
+            namespace = elementName.getNamespaceURI();
+        }
+        if (namespace.equals("")) {
+            path += elementName.getLocalPart();
+            if (isText) {
+                path += "/text()";
+            }
+        } else {
+            String prefix = getPrefixForNamespace(namespace, namespaceInfo.getNamespaceResolver());
+            path += prefix + ":" + elementName.getLocalPart();
+            if (isText) {
+                path += "/text()";
+            }
+        }
+        XMLField xmlField = new XMLField(path);
+        return xmlField;
+    }
+    
     public Property getXmlValueFieldForSimpleContent(ArrayList<Property> properties) {
         boolean foundValue = false;
         boolean foundNonAttribute = false;
@@ -862,16 +936,17 @@ public class MappingsGenerator {
         return mapCls.isAssignableFrom(property.getType());
     }
     
-    public void processGlobalElements(HashMap<QName, String> elements, Project project) {
+    public void processGlobalElements(Project project) {
     	//Find any global elements for classes we've generated descriptors for, and add them as possible
     	//root elements.
-    	if(elements == null) {
+    	if(this.globalElements == null) {
     		return;
     	}
-    	Iterator<QName> keys = elements.keySet().iterator();
+    	Iterator<QName> keys = this.globalElements.keySet().iterator();
     	while(keys.hasNext()) {
     		QName next = keys.next();
-    		String nextClassName = elements.get(next);
+    		ElementDeclaration nextElement = this.globalElements.get(next);
+    		String nextClassName = nextElement.getJavaTypeName();
     		TypeInfo type = this.typeInfo.get(nextClassName);
     		if(type != null) {
     			if(next.getNamespaceURI() == null || next.getNamespaceURI().equals("")) {

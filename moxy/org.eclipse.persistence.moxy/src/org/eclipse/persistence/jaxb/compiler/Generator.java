@@ -97,12 +97,12 @@ public class Generator {
     }
     
     public java.util.Collection<Schema> generateSchema() {
-        schemaGenerator.generateSchema(annotationsProcessor.getTypeInfoClasses(), annotationsProcessor.getTypeInfo(), annotationsProcessor.getUserDefinedSchemaTypes(), annotationsProcessor.getPackageToNamespaceMappings(), annotationsProcessor.getGlobalElements());
+        schemaGenerator.generateSchema(annotationsProcessor.getTypeInfoClasses(), annotationsProcessor.getTypeInfo(), annotationsProcessor.getUserDefinedSchemaTypes(), annotationsProcessor.getPackageToNamespaceMappings(), null);
         return schemaGenerator.getAllSchemas();
     }
     
     public HashMap<String, SchemaTypeInfo> generateSchemaFiles(String schemaPath, HashMap<QName, String> additionalElements) throws FileNotFoundException {
-        schemaGenerator.generateSchema(annotationsProcessor.getTypeInfoClasses(), annotationsProcessor.getTypeInfo(), annotationsProcessor.getUserDefinedSchemaTypes(), annotationsProcessor.getPackageToNamespaceMappings(), additionalElements);
+        schemaGenerator.generateSchema(annotationsProcessor.getTypeInfoClasses(), annotationsProcessor.getTypeInfo(), annotationsProcessor.getUserDefinedSchemaTypes(), annotationsProcessor.getPackageToNamespaceMappings(), annotationsProcessor.getGlobalElements());
         Project proj = new SchemaModelProject();
         XMLContext context = new XMLContext(proj);
         XMLMarshaller marshaller = context.createMarshaller();
@@ -122,7 +122,7 @@ public class Generator {
     }
     
     public HashMap<String, SchemaTypeInfo> generateSchemaFiles(SchemaOutputResolver outputResolver, HashMap<QName, String> additonalGlobalElements) {
-        schemaGenerator.generateSchema(annotationsProcessor.getTypeInfoClasses(), annotationsProcessor.getTypeInfo(), annotationsProcessor.getUserDefinedSchemaTypes(), annotationsProcessor.getPackageToNamespaceMappings(), additonalGlobalElements);
+        schemaGenerator.generateSchema(annotationsProcessor.getTypeInfoClasses(), annotationsProcessor.getTypeInfo(), annotationsProcessor.getUserDefinedSchemaTypes(), annotationsProcessor.getPackageToNamespaceMappings(), annotationsProcessor.getGlobalElements());
         Project proj = new SchemaModelProject();
         XMLContext context = new XMLContext(proj);
         XMLMarshaller marshaller = context.createMarshaller();

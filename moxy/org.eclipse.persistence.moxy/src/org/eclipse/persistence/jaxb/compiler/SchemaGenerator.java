@@ -69,7 +69,7 @@ public class SchemaGenerator {
         this.helper = helper;
     }
     
-    public Schema generateSchema(ArrayList<JavaClass> typeInfoClasses, HashMap<String, TypeInfo> typeInfo, HashMap<String, QName> userDefinedSchemaTypes, HashMap<String, NamespaceInfo> packageToNamespaceMappings, HashMap<QName, String> additionalGlobalElements) {
+    public Schema generateSchema(ArrayList<JavaClass> typeInfoClasses, HashMap<String, TypeInfo> typeInfo, HashMap<String, QName> userDefinedSchemaTypes, HashMap<String, NamespaceInfo> packageToNamespaceMappings, HashMap<QName, ElementDeclaration> additionalGlobalElements) {
         this.typeInfo = typeInfo;
         this.userDefinedSchemaTypes = userDefinedSchemaTypes;
         this.packageToNamespaceMappings = packageToNamespaceMappings;
@@ -248,7 +248,15 @@ public class SchemaGenerator {
                 // TODO: needed to hack for TCK - spec requires an 'all' to be
                 // generated in cases where propOrder == 0, however, the TCK 
                 // requires the extension case to use sequences
-                if (extension != null) {
+            	if(info.hasElementRefs()) {
+            		//needs to be a sequence
+            		compositor = new Sequence();
+            		if(extension != null) {
+            			extension.setSequence((Sequence)compositor);
+            		} else {
+            			type.setSequence((Sequence)compositor);
+            		}
+            	} else if (extension != null) {
                     //compositor = new Sequence();
                     //extension.setSequence((Sequence)compositor);
                     compositor = new All();
@@ -423,8 +431,74 @@ public class SchemaGenerator {
                         ((Choice)parentCompositor).addAny(any);
                     }
                 	
+                } else if(next.isReference()) {
+                	ReferenceProperty refProp = (ReferenceProperty)next;
+                	ArrayList<ElementDeclaration> referencedElements = refProp.getReferencedElements();
+                	if(referencedElements.size() == 1) {
+                		//if only a single reference, just add the element.
+                    	Element element = new Element();
+                		ElementDeclaration decl = referencedElements.get(0);
+                		String localName = decl.getElementName().getLocalPart();
+                		Schema referencedSchema = this.getSchemaForNamespace(decl.getElementName().getNamespaceURI());
+                		if(referencedSchema != schema) {
+                			//add import and namespace prefix if requried
+                            if(!importExists(schema, referencedSchema.getName())){                            
+                                Import schemaImport = new Import();
+                                schemaImport.setSchemaLocation(referencedSchema.getName());
+                                schemaImport.setNamespace(referencedSchema.getTargetNamespace());                                
+                                schema.getImports().add(schemaImport);
+                                if (schemaImport.getNamespace() != null) {
+                                    schema.getNamespaceResolver().put(schema.getNamespaceResolver().generatePrefix(), schemaImport.getNamespace());
+                                }
+                            }
+                		}
+                		String prefix = this.getPrefixForNamespace(decl.getElementName().getNamespaceURI(), schema.getNamespaceResolver());
+                		if(prefix == null || prefix.equals("")) {
+                			element.setRef(localName);
+                		} else {
+                			element.setRef(prefix + ":" + localName);
+                		}
+                		if(isCollectionType(next)) {
+                			element.setMaxOccurs("unbounded");
+                		}
+                		parentCompositor.addElement(element);
+                	} else {
+                		// otherwise, add a choice of referenced elements.
+                		Choice choice = new Choice();
+                		if(isCollectionType(next)) {
+                			choice.setMaxOccurs("unbounded");
+                		}
+                		for(ElementDeclaration elementDecl:referencedElements) {
+                			Element element = new Element();
+                    		String localName = elementDecl.getElementName().getLocalPart();
+                    		Schema referencedSchema = this.getSchemaForNamespace(elementDecl.getElementName().getNamespaceURI());
+                    		if(referencedSchema != schema) {
+                    			//add import and namespace prefix if requried
+                                if(!importExists(schema, referencedSchema.getName())){                            
+                                    Import schemaImport = new Import();
+                                    schemaImport.setSchemaLocation(referencedSchema.getName());
+                                    schemaImport.setNamespace(referencedSchema.getTargetNamespace());                                
+                                    schema.getImports().add(schemaImport);
+                                    if (schemaImport.getNamespace() != null) {
+                                        schema.getNamespaceResolver().put(schema.getNamespaceResolver().generatePrefix(), schemaImport.getNamespace());
+                                    }
+                                }
+                    		}
+                    		String prefix = this.getPrefixForNamespace(elementDecl.getElementName().getNamespaceURI(), schema.getNamespaceResolver());
+                    		if(prefix == null || prefix.equals("")) {
+                    			element.setRef(localName);
+                    		} else {
+                    			element.setRef(prefix + ":" + localName);
+                    		}
+                    		choice.addElement(element);
+                		}
+                        if(parentCompositor instanceof Sequence) {
+                            ((Sequence)parentCompositor).addChoice(choice);
+                        } else if(parentCompositor instanceof Choice) {
+                            ((Choice)parentCompositor).addChoice(choice);
+                        }
+                	}
                 } else if (!helper.isAnnotationPresent(next.getElement(), XmlValue.class)) {
-
                     Element element = new Element();
                     // Set minOccurs based on the 'required' flag
                     element.setMinOccurs(next.isRequired() ? "1" : "0");
@@ -687,7 +761,7 @@ public class SchemaGenerator {
         return null;
     }
     
-    public void addGlobalElements(HashMap<QName, String> additionalElements) {
+    public void addGlobalElements(HashMap<QName, ElementDeclaration> additionalElements) {
         for (QName next : additionalElements.keySet()) {
             String namespaceURI = next.getNamespaceURI();
             Schema targetSchema = getSchemaForNamespace(namespaceURI);
@@ -695,7 +769,8 @@ public class SchemaGenerator {
             Element element = new Element();
             element.setName(next.getLocalPart());
 
-            JavaClass javaClass = helper.getJavaClass(additionalElements.get(next));
+            ElementDeclaration nextElement = additionalElements.get(next);
+            JavaClass javaClass = helper.getJavaClass(nextElement.getJavaTypeName());
             
             //First check for built in type
             QName schemaType = (QName) helper.getXMLToJavaTypeMap().get(javaClass.getRawName());
@@ -713,7 +788,7 @@ public class SchemaGenerator {
                     //check namespace of schemaType
                     if (type.getClassNamespace().equals(namespaceURI)) {
                         //no need to prefix here
-                        element.setType(schemaType.getLocalPart());
+                        element.setType(typeName);
                     } else {
                         Schema complexTypeSchema = getSchemaForNamespace(type.getClassNamespace());
                         String complexTypeSchemaNS = complexTypeSchema.getTargetNamespace();
@@ -730,10 +805,24 @@ public class SchemaGenerator {
                                 targetSchema.getNamespaceResolver().put(targetSchema.getNamespaceResolver().generatePrefix(), complexTypeSchemaNS);
                             }
                         }
-                        String prefix = targetSchema.getNamespaceResolver().resolveNamespaceURI(complexTypeSchema.getTargetNamespace());    
-                        element.setType(prefix + ":" + typeName);
+                        String prefix = targetSchema.getNamespaceResolver().resolveNamespaceURI(complexTypeSchema.getTargetNamespace());
+                        if(prefix != null) {
+                        	element.setType(prefix + ":" + typeName);
+                        } else {
+                        	element.setType(typeName);
+                        }
                     }
                 }
+            }
+            if(nextElement.getSubstitutionHead() != null) {
+            	String subLocal = nextElement.getSubstitutionHead().getLocalPart();
+            	String subNamespace = nextElement.getSubstitutionHead().getNamespaceURI();
+            	String prefix = getPrefixForNamespace(subNamespace, targetSchema.getNamespaceResolver());
+            	if(prefix == null || prefix.equals("")) {
+            		element.setSubstitutionGroup(subLocal);
+            	} else {
+            		element.setSubstitutionGroup(prefix + ":" + subLocal);
+            	}
             }
             targetSchema.addTopLevelElement(element);
             SchemaTypeInfo info = this.schemaTypeInfo.get(javaClass.getQualifiedName());

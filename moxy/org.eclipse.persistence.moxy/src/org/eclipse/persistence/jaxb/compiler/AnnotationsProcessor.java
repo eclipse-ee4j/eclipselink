@@ -65,7 +65,7 @@ public class AnnotationsProcessor {
     private HashMap<String, QName> userDefinedSchemaTypes;
     private HashMap<String, TypeInfo> typeInfo;
     private HashMap<String, UnmarshalCallback> unmarshalCallbacks;
-    private HashMap<QName, String> globalElements;
+    private HashMap<QName, ElementDeclaration> globalElements;
     private NamespaceResolver namespaceResolver;
     private Helper helper;
 
@@ -89,6 +89,8 @@ public class AnnotationsProcessor {
         		classesToProcess.add(javaClass);
         	}
         }
+        
+        updateGlobalElements(classesToProcess);
         
         for (JavaClass javaClass : classesToProcess) {
             if (javaClass == null) { continue; }
@@ -140,11 +142,15 @@ public class AnnotationsProcessor {
                 }
             }
             String rootNamespace = rootElemAnnotation.namespace();
+            QName rootElemName = null;
             if (rootNamespace.equals("##default")) {
-                schemaInfo.getGlobalElementDeclarations().add(new QName(namespaceInfo.getNamespace(), rootNamespace));
+            	rootElemName = new QName(namespaceInfo.getNamespace(), elementName);
             } else {
-                schemaInfo.getGlobalElementDeclarations().add(new QName(elementName, rootNamespace));
+            	rootElemName = new QName(rootNamespace, elementName);
             }
+            schemaInfo.getGlobalElementDeclarations().add(rootElemName);
+            ElementDeclaration declaration = new ElementDeclaration(rootElemName, javaClass.getRawName());
+            this.globalElements.put(rootElemName, declaration);
         }
         
         return schemaInfo;
@@ -193,31 +199,18 @@ public class AnnotationsProcessor {
         }
 
         // figure out namespace info
-        NamespaceInfo packageNamespace = packageToNamespaceMappings.get(pack.getQualifiedName());
-        if (packageNamespace == null) {
-            XmlSchema xmlSchema = (XmlSchema) helper.getAnnotation(pack, XmlSchema.class);
-            packageNamespace = processNamespaceInformation(xmlSchema);
+        NamespaceInfo packageNamespace = getNamespaceInfoForPackage(pack);
 
-            // if it's still null, generate based on package name
-            if (packageNamespace.getNamespace() == null) {
-                packageNamespace.setNamespace("");
+        if (helper.isAnnotationPresent(pack, XmlSchemaTypes.class)) {
+            XmlSchemaTypes types = (XmlSchemaTypes) helper.getAnnotation(pack, XmlSchemaTypes.class); 
+            XmlSchemaType[] typeArray = types.value();
+            for (XmlSchemaType next : typeArray) {
+                processSchemaType(next);
             }
-            if (helper.isAnnotationPresent(pack, XmlAccessorType.class)) {
-                XmlAccessorType xmlAccessorType = (XmlAccessorType) helper.getAnnotation(pack, XmlAccessorType.class);
-                packageNamespace.setAccessType(xmlAccessorType.value());
-            }
-            packageToNamespaceMappings.put(pack.getQualifiedName(), packageNamespace);
-
-            if (helper.isAnnotationPresent(pack, XmlSchemaTypes.class)) {
-                XmlSchemaTypes types = (XmlSchemaTypes) helper.getAnnotation(pack, XmlSchemaTypes.class); 
-                XmlSchemaType[] typeArray = types.value();
-                for (XmlSchemaType next : typeArray) {
-                    processSchemaType(next);
-                }
-            } else if (helper.isAnnotationPresent(pack, XmlSchemaType.class)) {
-                processSchemaType((XmlSchemaType) helper.getAnnotation(pack, XmlSchemaType.class));
-            }
+        } else if (helper.isAnnotationPresent(pack, XmlSchemaType.class)) {
+            processSchemaType((XmlSchemaType) helper.getAnnotation(pack, XmlSchemaType.class));
         }
+      
 
         String[] propOrder = new String[0];
         String typeName = "";
@@ -382,6 +375,30 @@ public class AnnotationsProcessor {
                         XmlAnyElement anyElement = (XmlAnyElement)helper.getAnnotation((JavaHasAnnotations)nextField, XmlAnyElement.class);
                         ((AnyProperty)property).setLax(anyElement.lax());
                         ((AnyProperty)property).setDomHandlerClass(anyElement.value());
+                    } else if(helper.isAnnotationPresent((JavaHasAnnotations)nextField, XmlElementRef.class) || helper.isAnnotationPresent((JavaHasAnnotations)nextField, XmlElementRefs.class)) { 
+                    	property = new ReferenceProperty(helper);
+                    	XmlElementRef[] elementRefs;
+                    	XmlElementRef ref = (XmlElementRef)helper.getAnnotation((JavaHasAnnotations)nextField, XmlElementRef.class);
+                    	if(ref != null) {
+                    		elementRefs = new XmlElementRef[]{ref};
+                    	} else {
+                    		XmlElementRefs refs = (XmlElementRefs)helper.getAnnotation((JavaHasAnnotations)nextField, XmlElementRefs.class);
+                    		elementRefs = refs.value();
+                    		info.setHasElementRefs(true);
+                    	}
+                    	for(XmlElementRef nextRef:elementRefs) {
+                    		String name = nextRef.name();
+                    		String namespace = nextRef.namespace();
+                    		if(namespace.equals("##default")) {
+                    			namespace = "";
+                    		}
+                    		QName qname = new QName(namespace, name);
+                    		ElementDeclaration referencedElement = this.globalElements.get(qname);
+                    		if(referencedElement != null) {
+                    			addReferencedElement((ReferenceProperty)property, referencedElement);
+                    			//((ReferenceProperty)property).addReferencedElement(referencedElement);
+                    		}
+                    	}
                     } else {
                     	property = new Property(helper);
                     	property.setElement((JavaHasAnnotations)nextField);
@@ -512,6 +529,8 @@ public class AnnotationsProcessor {
             	property = new ChoiceProperty(helper);
             } else if (helper.isAnnotationPresent(propertyMethod, XmlAnyElement.class)) {
             	property = new AnyProperty(helper);
+            } else if (helper.isAnnotationPresent(propertyMethod, XmlElementRef.class) || helper.isAnnotationPresent(propertyMethod, XmlElementRefs.class)) {
+            	property = new ReferenceProperty(helper);
             } else {
             	property = new Property(helper);
             }
@@ -589,6 +608,29 @@ public class AnnotationsProcessor {
             	((AnyProperty)property).setDomHandlerClass(anyElement.value());
             	((AnyProperty)property).setLax(anyElement.lax());
             	
+            }
+            if(helper.isAnnotationPresent(property.getElement(), XmlElementRef.class) || helper.isAnnotationPresent(property.getElement(), XmlElementRefs.class)) { 
+            	XmlElementRef[] elementRefs;
+            	XmlElementRef ref = (XmlElementRef)helper.getAnnotation(property.getElement(), XmlElementRef.class);
+            	if(ref != null) {
+            		elementRefs = new XmlElementRef[]{ref};
+            	} else {
+            		XmlElementRefs refs = (XmlElementRefs)helper.getAnnotation(property.getElement(), XmlElementRefs.class);
+            		elementRefs = refs.value();
+            		info.setHasElementRefs(true);
+            	}
+            	for(XmlElementRef nextRef:elementRefs) {
+            		String name = nextRef.name();
+            		String namespace = nextRef.namespace();
+            		if(namespace.equals("##default")) {
+            			namespace = "";
+            		}
+            		QName qname = new QName(namespace, name);
+            		ElementDeclaration referencedElement = this.globalElements.get(qname);
+            		if(referencedElement != null) {
+            			((ReferenceProperty)property).addReferencedElement(referencedElement);
+            		}
+            	}
             }
             if (!helper.isAnnotationPresent(property.getElement(), XmlTransient.class)) {
                 properties.add(property);
@@ -836,6 +878,25 @@ public class AnnotationsProcessor {
         return packageToNamespaceMappings;
     }
     
+    public NamespaceInfo getNamespaceInfoForPackage(JavaPackage pack) {
+        NamespaceInfo packageNamespace = packageToNamespaceMappings.get(pack.getQualifiedName());
+        if (packageNamespace == null) {
+            XmlSchema xmlSchema = (XmlSchema) helper.getAnnotation(pack, XmlSchema.class);
+            packageNamespace = processNamespaceInformation(xmlSchema);
+
+            // if it's still null, generate based on package name
+            if (packageNamespace.getNamespace() == null) {
+                packageNamespace.setNamespace("");
+            }
+            if (helper.isAnnotationPresent(pack, XmlAccessorType.class)) {
+                XmlAccessorType xmlAccessorType = (XmlAccessorType) helper.getAnnotation(pack, XmlAccessorType.class);
+                packageNamespace.setAccessType(xmlAccessorType.value());
+            }
+            packageToNamespaceMappings.put(pack.getQualifiedName(), packageNamespace);
+        }
+        return packageNamespace;
+    }
+        
     private void checkForCallbackMethods() {
         for (JavaClass next : typeInfoClasses) {
             if (next == null) { continue; }
@@ -903,6 +964,7 @@ public class AnnotationsProcessor {
     public JavaClass[] processObjectFactory(JavaClass objectFactoryClass, ArrayList<JavaClass> classes) {
     	Collection methods = objectFactoryClass.getMethods();
     	Iterator methodsIter = methods.iterator();
+    	NamespaceInfo namespaceInfo = getNamespaceInfoForPackage(objectFactoryClass.getPackage());
     	while(methodsIter.hasNext()) {
     		JavaMethod next = (JavaMethod)methodsIter.next();
     		if(next.getName().startsWith("create")) {
@@ -913,16 +975,27 @@ public class AnnotationsProcessor {
     					XmlElementDecl elementDecl = (XmlElementDecl)helper.getAnnotation(next, XmlElementDecl.class);
     					String url = elementDecl.namespace();
     					if("##default".equals(url)) {
-    						url = "";
+    						url = namespaceInfo.getNamespace();
     					}
     					String localName = elementDecl.name();
     					QName qname = new QName(url, localName);
     					
     					JavaClass type = (JavaClass)next.getReturnType().getActualTypeArguments().toArray()[0];
     					if(this.globalElements == null) {
-    						globalElements = new HashMap<QName, String>();
+    						globalElements = new HashMap<QName, ElementDeclaration>();
     					}
-    					globalElements.put(qname, type.getQualifiedName());
+    					ElementDeclaration declaration = new ElementDeclaration(qname, type.getQualifiedName());
+    					if(!elementDecl.substitutionHeadName().equals("")) {
+    						String subHeadLocal = elementDecl.substitutionHeadName();
+    						String subHeadNamespace = elementDecl.substitutionHeadNamespace();
+    						if(subHeadNamespace.equals("##default")) {
+    							subHeadNamespace = namespaceInfo.getNamespace();
+    						}
+    						declaration.setSubstitutionHead(new QName(subHeadNamespace, subHeadLocal));
+    					}
+    					
+    					
+    					globalElements.put(qname, declaration);
 
     					if(!helper.isBuiltInJavaType(type) && !classes.contains(type)) {
     						classes.add(type);
@@ -938,7 +1011,73 @@ public class AnnotationsProcessor {
     	}
     }
     
-    public HashMap<QName, String> getGlobalElements() {
+    public HashMap<QName, ElementDeclaration> getGlobalElements() {
     	return globalElements;
+    }
+    
+    public void updateGlobalElements(ArrayList<JavaClass> classesToProcess) {
+    	//Once all the global element declarations have been created, make sure that any ones that have
+    	//a substitution head set are added to the list of substitutable elements on the declaration for that
+    	//head.
+    	
+    	//Look for XmlRootElement declarations
+    	for(JavaClass javaClass:classesToProcess) {
+    		if (helper.isAnnotationPresent(javaClass, XmlRootElement.class)) {
+    			XmlRootElement rootElemAnnotation = (XmlRootElement) helper.getAnnotation(javaClass, XmlRootElement.class);
+    	        NamespaceInfo namespaceInfo;
+    	        JavaPackage pack = javaClass.getPackage();
+    	        namespaceInfo = this.packageToNamespaceMappings.get(pack.getQualifiedName());
+
+    			String elementName = rootElemAnnotation.name();
+    			if (elementName.equals("##default") || elementName.equals("")) {
+    				if (javaClass.getName().indexOf("$") != -1) {
+    					elementName = Introspector.decapitalize(javaClass.getName().substring(javaClass.getName().lastIndexOf('$') + 1));
+    				} else {
+    					elementName = Introspector.decapitalize(javaClass.getName().substring(javaClass.getName().lastIndexOf('.') + 1));                    
+    				}
+    			}
+    			String rootNamespace = rootElemAnnotation.namespace();
+    			QName rootElemName = null;
+    			if (rootNamespace.equals("##default")) {
+    				if(namespaceInfo == null) {
+    					rootElemName = new QName(elementName);
+    				} else {
+    					rootElemName = new QName(namespaceInfo.getNamespace(), elementName);
+    				}
+    			} else {
+    				rootElemName = new QName(rootNamespace, elementName);
+    			}
+    			ElementDeclaration declaration = new ElementDeclaration(rootElemName, javaClass.getRawName());
+    			declaration.setIsXmlRootElement(true);
+    			if(this.globalElements == null) {
+    				globalElements = new HashMap<QName, ElementDeclaration>();
+    			}
+    			this.globalElements.put(rootElemName, declaration);
+    		}
+        }
+    	
+    	if(this.globalElements == null) {
+    		return;
+    	}
+    	
+    	Iterator<QName> elementQnames = this.globalElements.keySet().iterator();
+    	while(elementQnames.hasNext()) {
+    		QName next = elementQnames.next();
+    		ElementDeclaration nextDeclaration = this.globalElements.get(next);
+    		if(nextDeclaration.getSubstitutionHead() != null) {
+    			ElementDeclaration rootDeclaration = this.globalElements.get(nextDeclaration.getSubstitutionHead());
+    			rootDeclaration.addSubstitutableElement(nextDeclaration);
+    		}
+    	}
+    }
+    
+    private void addReferencedElement(ReferenceProperty property, ElementDeclaration referencedElement) {
+    	property.addReferencedElement(referencedElement);
+    	if(referencedElement.getSubstitutableElements() != null && referencedElement.getSubstitutableElements().size() > 0) {
+    		for(ElementDeclaration substitutable:referencedElement.getSubstitutableElements()) {
+    			addReferencedElement(property, substitutable);
+    		}
+    		
+    	}
     }
 }

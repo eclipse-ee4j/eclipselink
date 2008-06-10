@@ -22,6 +22,7 @@ import org.eclipse.persistence.oxm.mappings.XMLMapping;
 import org.eclipse.persistence.oxm.record.MarshalRecord;
 import org.eclipse.persistence.oxm.record.UnmarshalRecord;
 import org.eclipse.persistence.sessions.Session;
+import org.eclipse.persistence.oxm.XMLRoot;
 
 import org.xml.sax.Attributes;
 
@@ -68,8 +69,25 @@ public class XMLChoiceObjectMappingNodeValue extends NodeValue implements NullCa
 
     public boolean marshal(XPathFragment xPathFragment, MarshalRecord marshalRecord, Object object, AbstractSession session, NamespaceResolver namespaceResolver) {
         Object value = xmlChoiceMapping.getAttributeValueFromObject(object);
-        if(value != null && xmlChoiceMapping.getClassToFieldMappings().get(value.getClass()) == this.xmlField) {
-            return this.choiceElementNodeValue.marshal(xPathFragment, marshalRecord, object, session, namespaceResolver);
+        if(value instanceof XMLRoot) {
+        	XMLRoot root = (XMLRoot)value;
+        	XPathFragment fragment = this.xmlField.getXPathFragment();
+        	while(fragment != null && !fragment.nameIsText) {
+        		if(fragment.getNextFragment() == null || fragment.getHasText()) {
+        			if(fragment.getLocalName().equals(root.getLocalName())) {
+    					String fragUri = fragment.getNamespaceURI();
+    					String namespaceUri = root.getNamespaceURI();
+    					if((namespaceUri == null && fragUri == null) || (namespaceUri != null && fragUri != null && namespaceUri.equals(fragUri))) {
+    						return this.choiceElementNodeValue.marshal(xPathFragment, marshalRecord, object, session, namespaceResolver);
+    					}
+        			}
+        		}
+        		fragment = fragment.getNextFragment();
+        	}
+        } else {
+        	if(value != null && xmlChoiceMapping.getClassToFieldMappings().get(value.getClass()) == this.xmlField) {
+        		return this.choiceElementNodeValue.marshal(xPathFragment, marshalRecord, object, session, namespaceResolver);
+        	}
         }
         return false;
     }

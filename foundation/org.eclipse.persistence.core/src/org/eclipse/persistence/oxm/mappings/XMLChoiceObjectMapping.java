@@ -32,6 +32,8 @@ import org.eclipse.persistence.internal.sessions.MergeManager;
 import org.eclipse.persistence.internal.sessions.ObjectChangeSet;
 import org.eclipse.persistence.internal.sessions.UnitOfWorkImpl;
 import org.eclipse.persistence.mappings.DatabaseMapping;
+import org.eclipse.persistence.oxm.mappings.converters.XMLConverter;
+import org.eclipse.persistence.oxm.mappings.converters.XMLRootConverter;
 import org.eclipse.persistence.oxm.record.XMLRecord;
 import org.eclipse.persistence.queries.ObjectBuildingQuery;
 import org.eclipse.persistence.queries.ObjectLevelReadQuery;
@@ -40,6 +42,8 @@ import org.eclipse.persistence.oxm.XMLField;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Iterator;
+
+import javax.xml.namespace.QName;
 
 /**
  * PUBLIC:
@@ -66,14 +70,16 @@ import java.util.Iterator;
 public class XMLChoiceObjectMapping extends DatabaseMapping implements XMLMapping {
     private Map<XMLField, Class> fieldToClassMappings;
     private Map<Class, XMLField> classToFieldMappings;
-    private Map<String, String> fieldToClassNameMappings;
+    private Map<XMLField, String> fieldToClassNameMappings;
     private Map<XMLField, XMLMapping> choiceElementMappings;
+    private Map<XMLField, XMLConverter> fieldsToConverters;
 
     public XMLChoiceObjectMapping() {
         fieldToClassMappings = new HashMap<XMLField, Class>();
-        fieldToClassNameMappings = new HashMap<String, String>();
+        fieldToClassNameMappings = new HashMap<XMLField, String>();
         classToFieldMappings = new HashMap<Class, XMLField>();
         choiceElementMappings = new HashMap<XMLField, XMLMapping>();
+        fieldsToConverters = new HashMap<XMLField, XMLConverter>();
 
     }
 
@@ -198,10 +204,29 @@ public class XMLChoiceObjectMapping extends DatabaseMapping implements XMLMappin
         }
     }
 
+    public void addChoiceElement(String xpath, String elementTypeName, boolean xmlRoot) {
+    	XMLField field = new XMLField(xpath);
+        this.fieldToClassNameMappings.put(field, elementTypeName);
+        if(xmlRoot) {
+        	this.fieldsToConverters.put(field, new XMLRootConverter(field));
+        }
+    }
+    
     public void addChoiceElement(String xpath, String elementTypeName) {
-        this.fieldToClassNameMappings.put(xpath, elementTypeName);
+    	addChoiceElement(xpath, elementTypeName, false);
     }
 
+    public void addChoiceElement(XMLField xmlField, Class elementType) {
+    	getFieldToClassMappings().put(xmlField, elementType);
+        if (classToFieldMappings.get(elementType) == null) {
+            classToFieldMappings.put(elementType, xmlField);
+        }
+    }
+    
+    public void addChoiceElement(XMLField field, String elementTypeName) {
+    	this.fieldToClassNameMappings.put(field, elementTypeName);
+    }
+    
     public Map<XMLField, Class> getFieldToClassMappings() {
         return fieldToClassMappings;
     }
@@ -216,14 +241,26 @@ public class XMLChoiceObjectMapping extends DatabaseMapping implements XMLMappin
         Iterator<XMLField> fields = getFieldToClassMappings().keySet().iterator();
         while (fields.hasNext()) {
             XMLField next = fields.next();
+            XMLConverter converter = null;
+            if(fieldsToConverters != null) {
+            	converter = fieldsToConverters.get(next);
+            }
             if (next.getLastXPathFragment().nameIsText()) {
                 //if it's a simple value, create a Direct Mapping
                 XMLDirectMapping xmlMapping = new XMLDirectMapping();
                 xmlMapping.setAttributeName(this.getAttributeName());
                 xmlMapping.setAttributeAccessor(this.getAttributeAccessor());
                 xmlMapping.setAttributeClassification(getFieldToClassMappings().get(next));
+                XMLConversionManager xmlConversionManager = (XMLConversionManager) session.getDatasourcePlatform().getConversionManager();
+                QName schemaType = (QName)xmlConversionManager.getDefaultJavaTypes().get(xmlMapping.getAttributeClassification());
+                if(schemaType != null) {
+                	next.setSchemaType(schemaType);
+                }
                 xmlMapping.setField(next);
                 xmlMapping.setDescriptor(this.getDescriptor());
+                if(converter != null) {
+                	xmlMapping.setConverter(converter);
+                }
                 this.choiceElementMappings.put(next, xmlMapping);
                 xmlMapping.initialize(session);
             } else {
@@ -233,6 +270,9 @@ public class XMLChoiceObjectMapping extends DatabaseMapping implements XMLMappin
                 xmlMapping.setReferenceClass(getFieldToClassMappings().get(next));
                 xmlMapping.setField(next);
                 xmlMapping.setDescriptor(this.getDescriptor());
+                if(converter != null) {
+                	xmlMapping.setConverter(converter);
+                }
                 this.choiceElementMappings.put(next, xmlMapping);
                 xmlMapping.initialize(session);
             }
@@ -248,10 +288,10 @@ public class XMLChoiceObjectMapping extends DatabaseMapping implements XMLMappin
     }
 
     public void convertClassNamesToClasses(ClassLoader classLoader) {
-        Iterator<String> xpaths = fieldToClassNameMappings.keySet().iterator();
-        while (xpaths.hasNext()) {
-            String xpath = xpaths.next();
-            String className = fieldToClassNameMappings.get(xpath);
+        Iterator<XMLField> fields = fieldToClassNameMappings.keySet().iterator();
+        while (fields.hasNext()) {
+            XMLField next = fields.next();
+            String className = fieldToClassNameMappings.get(next);
             Class elementType = null;
             try {
                 if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) {
@@ -266,7 +306,14 @@ public class XMLChoiceObjectMapping extends DatabaseMapping implements XMLMappin
             } catch (ClassNotFoundException exc) {
                 throw ValidationException.classNotFoundWhileConvertingClassNames(className, exc);
             }
-            addChoiceElement(xpath, elementType);
+            addChoiceElement(next, elementType);
         }
     }
+    
+    public void addConverter(XMLField field, XMLConverter converter) {
+    	if(this.fieldsToConverters == null) {
+    		fieldsToConverters = new HashMap<XMLField, XMLConverter>();
+    	}
+    	fieldsToConverters.put(field, converter);
+    }    	
 }

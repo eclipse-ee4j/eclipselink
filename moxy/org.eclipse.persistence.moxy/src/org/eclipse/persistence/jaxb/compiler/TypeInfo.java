@@ -53,6 +53,7 @@ public class TypeInfo {
     private XMLDescriptor descriptor;
     private ComplexType complexType;
     private boolean hasRootElement;
+    private boolean hasElementRefs;
     private Schema schema;
     private SimpleType simpleType;
     private ArrayList<String> propOrder; //store as a collection so it can be added to if needed
@@ -280,6 +281,14 @@ public class TypeInfo {
     
     public void setHasRootElement(boolean hasRoot) {
         hasRootElement = hasRoot;
+    }
+    
+    public boolean hasElementRefs() {
+    	return hasElementRefs;
+    }
+    
+    public void setHasElementRefs(boolean hasRefs) {
+    	this.hasElementRefs = hasRefs;
     }
 }
         
