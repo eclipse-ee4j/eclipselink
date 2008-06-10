@@ -74,6 +74,7 @@ import org.eclipse.persistence.platform.database.oracle.PLSQLargument;
 import org.eclipse.persistence.platform.database.oracle.PLSQLrecord;
 import org.eclipse.persistence.platform.database.oracle.SimplePLSQLTypeWrapper;
 import org.eclipse.persistence.queries.Call;
+import org.eclipse.persistence.internal.descriptors.Namespace;
 import org.eclipse.persistence.internal.identitymaps.SoftIdentityMap;
 import org.eclipse.persistence.queries.CursoredStreamPolicy;
 import org.eclipse.persistence.queries.ScrollableCursorPolicy;
@@ -1280,6 +1281,28 @@ public class ObjectPersistenceRuntimeXMLProject_11_1_1 extends ObjectPersistence
          return aDescriptor;
      }
 
+    protected ClassDescriptor buildNamespaceResolverDescriptor() {
+        XMLDescriptor descriptor = new XMLDescriptor();
+
+        descriptor.setJavaClass(NamespaceResolver.class);
+
+        XMLDirectMapping defaultNamespaceMapping = new XMLDirectMapping();
+        defaultNamespaceMapping.setXPath("toplink:default-namespace-uri");
+        defaultNamespaceMapping.setAttributeName("defaultNamespaceURI");
+        defaultNamespaceMapping.setGetMethodName("getDefaultNamespaceURI");
+        defaultNamespaceMapping.setSetMethodName("setDefaultNamespaceURI");
+        descriptor.addMapping(defaultNamespaceMapping);
+        
+        XMLCompositeCollectionMapping namespaceMapping = new XMLCompositeCollectionMapping();
+        namespaceMapping.setXPath("toplink:namespaces/toplink:namespace");
+        namespaceMapping.setAttributeName("namespaces");
+        namespaceMapping.setGetMethodName("getNamespaces");
+        namespaceMapping.setSetMethodName("setNamespaces");
+        namespaceMapping.setReferenceClass(Namespace.class);
+        descriptor.addMapping(namespaceMapping);
+
+        return descriptor;
+    }
      protected ClassDescriptor buildNullPolicyDescriptor() {
          XMLDescriptor aDescriptor = new XMLDescriptor();
          aDescriptor.setJavaClass(NullPolicy.class);

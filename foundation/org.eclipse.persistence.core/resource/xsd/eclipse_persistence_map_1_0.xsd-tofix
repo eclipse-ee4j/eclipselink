@@ -5849,6 +5849,7 @@
     </xsd:complexType>
     <xsd:complexType name="namespace-resolver">
         <xsd:sequence>
+	    <xsd:element name="default-namespace-uri" type="xsd:string" minOccurs="0" maxOccurs="1"/>
             <xsd:element name="namespaces" minOccurs="0"
                 maxOccurs="1">
                 <xsd:complexType>

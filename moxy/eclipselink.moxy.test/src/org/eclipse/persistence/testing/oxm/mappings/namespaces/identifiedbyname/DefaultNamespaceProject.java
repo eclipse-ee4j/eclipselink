@@ -29,10 +29,10 @@ public class DefaultNamespaceProject extends Project  {
 	private XMLDescriptor getEmployeeDescriptor() {
 		XMLDescriptor xmlDescriptor = new XMLDescriptor();
 		xmlDescriptor.setJavaClass(Employee.class);
-		xmlDescriptor.setDefaultRootElement("DEFAULT:employee");
+		xmlDescriptor.setDefaultRootElement("employee");
 
 		NamespaceResolver nsResolver = new NamespaceResolver();
-		nsResolver.put("DEFAULT", "http://www.example.com/EMPLOYEE");
+		nsResolver.setDefaultNamespaceURI("http://www.example.com/EMPLOYEE");
 		xmlDescriptor.setNamespaceResolver(nsResolver);
 
 		// Unqualified attributes are in the null namespace
@@ -44,7 +44,7 @@ public class DefaultNamespaceProject extends Project  {
 
 		XMLDirectMapping nameMapping = new XMLDirectMapping();
 		nameMapping.setAttributeName("name");
-		nameMapping.setXPath("DEFAULT:name/text()");
+		nameMapping.setXPath("name/text()");
 		xmlDescriptor.addMapping(nameMapping);
 
 		return xmlDescriptor;

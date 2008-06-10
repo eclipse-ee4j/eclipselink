@@ -23,7 +23,7 @@ public class IdentifiedByNameNamespaceTestSuite extends TestCase {
   public static Test suite() {
     TestSuite suite = new TestSuite("Single Attribute Test Cases");
 		//this is currently not supported, the test case be readded when bug #4243476 is fixed
-    //suite.addTestSuite(DefaultNamespaceTestCases.class);
+    suite.addTestSuite(DefaultNamespaceTestCases.class);
 		suite.addTestSuite(GloballyDefinedNodesTestCases.class);
     suite.addTestSuite(LocallyDefinedNodesTestCases.class);
     suite.addTestSuite(NoNamespacesTestCases.class);

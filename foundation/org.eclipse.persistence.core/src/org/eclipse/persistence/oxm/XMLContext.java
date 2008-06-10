@@ -492,7 +492,11 @@ public class XMLContext {
                     String defaultRootNamespaceURI = xmlDescriptor.getNamespaceResolver().resolveNamespacePrefix(defaultRootPrefix);
                     descriptorQName = new QName(defaultRootNamespaceURI, defaultRootLocalName);
                 } else {
-                    descriptorQName = new QName(defaultRootLocalName);
+                    if(xmlDescriptor.getNamespaceResolver() != null) {
+                        descriptorQName = new QName(xmlDescriptor.getNamespaceResolver().getDefaultNamespaceURI(), defaultRootLocalName);
+                    } else {
+                        descriptorQName = new QName(defaultRootLocalName);
+                    }
                 }
                 if (!xmlDescriptor.hasInheritance() || xmlDescriptor.getInheritancePolicy().isRootParentDescriptor()) {
                     descriptorsByQName.put(descriptorQName, xmlDescriptor);

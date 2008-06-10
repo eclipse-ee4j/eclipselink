@@ -202,17 +202,13 @@ public class UnmarshalXPathEngine {
     private Node selectSingleElement(Node contextNode, XPathFragment xPathFragment, XMLNamespaceResolver xmlNamespaceResolver) {
         Node child = contextNode.getFirstChild();
         while (null != child) {
-            if (xPathFragment.hasNamespace()) {
-                String elementNamespaceURI = xmlNamespaceResolver.resolveNamespacePrefix(xPathFragment.getPrefix());
-                if ((child.getNodeType() == Node.ELEMENT_NODE) && sameName(child, xPathFragment.getLocalName()) && sameNamespaceURI(child, elementNamespaceURI)) {
-                    return child;
-                }
-            } else {
-                if ((child.getNodeType() == Node.ELEMENT_NODE) && sameName(child, xPathFragment.getXPath()) && sameNamespaceURI(child, null)) {
-                    return child;
-                }
+            String elementNamespaceURI = null;
+            if(xmlNamespaceResolver != null) {
+                elementNamespaceURI = xmlNamespaceResolver.resolveNamespacePrefix(xPathFragment.getPrefix());
             }
-
+            if ((child.getNodeType() == Node.ELEMENT_NODE) && sameName(child, xPathFragment.getLocalName()) && sameNamespaceURI(child, elementNamespaceURI)) {
+                return child;
+            }
             child = child.getNextSibling();
         }
         return null;
@@ -223,20 +219,15 @@ public class UnmarshalXPathEngine {
         Node child = contextNode.getFirstChild();
 
         while (null != child) {
-            if (xPathFragment.hasNamespace()) {
-                String elementNamespaceURI = xmlNamespaceResolver.resolveNamespacePrefix(xPathFragment.getPrefix());
-                if ((child.getNodeType() == Node.ELEMENT_NODE) && sameName(child, xPathFragment.getLocalName()) && sameNamespaceURI(child, elementNamespaceURI)) {
-                    xmlNodeList.add(child);
-                }
-            } else {
-                if ((child.getNodeType() == Node.ELEMENT_NODE) && sameName(child, xPathFragment.getXPath()) && sameNamespaceURI(child, null)) {
-                    xmlNodeList.add(child);
-                }
+            String elementNamespaceURI = null;
+            if(xmlNamespaceResolver != null) {
+                elementNamespaceURI = xmlNamespaceResolver.resolveNamespacePrefix(xPathFragment.getPrefix());
             }
-
+            if ((child.getNodeType() == Node.ELEMENT_NODE) && sameName(child, xPathFragment.getLocalName()) && sameNamespaceURI(child, elementNamespaceURI)) {
+                xmlNodeList.add(child);
+            }
             child = child.getNextSibling();
         }
-
         return xmlNodeList;
     }
 
@@ -244,21 +235,15 @@ public class UnmarshalXPathEngine {
         Node child = contextNode.getFirstChild();
 
         while (null != child) {
-            if (xPathFragment.hasNamespace()) {
-                String elementNamespaceURI = xmlNamespaceResolver.resolveNamespacePrefix(xPathFragment.getPrefix());
-                if ((child.getNodeType() == Node.ELEMENT_NODE) && sameName(child, xPathFragment.getShortName()) && sameNamespaceURI(child, elementNamespaceURI)) {
-                    if (0 == --position) {
-                        return child;
-                    }
-                }
-            } else {
-                if ((child.getNodeType() == Node.ELEMENT_NODE) && sameName(child, xPathFragment.getShortName()) && sameNamespaceURI(child, null)) {
-                    if (0 == --position) {
-                        return child;
-                    }
+            String elementNamespaceURI = null;
+            if(xmlNamespaceResolver != null) {
+                elementNamespaceURI = xmlNamespaceResolver.resolveNamespacePrefix(xPathFragment.getPrefix());
+            }
+            if ((child.getNodeType() == Node.ELEMENT_NODE) && sameName(child, xPathFragment.getShortName()) && sameNamespaceURI(child, elementNamespaceURI)) {
+                if (0 == --position) {
+                    return child;
                 }
             }
-
             child = child.getNextSibling();
         }
 

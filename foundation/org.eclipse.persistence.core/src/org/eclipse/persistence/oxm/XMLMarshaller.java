@@ -669,16 +669,22 @@ public class XMLMarshaller {
             String rootName = descriptor.getDefaultRootElement();
             if (null != rootName) {
                 rootFragment = new XPathFragment(rootName);
-                if (null != rootFragment.getPrefix() && null == rootFragment.getNamespaceURI()) {
-                    NamespaceResolver descriptorNamespaceResolver = descriptor.getNamespaceResolver();
-                    if (null == descriptorNamespaceResolver) {
+                NamespaceResolver descriptorNamespaceResolver = descriptor.getNamespaceResolver();
+                if(rootFragment.getPrefix() != null && (rootFragment.getNamespaceURI() == null)) {
+                    String uri = null;
+                    if(null == descriptorNamespaceResolver) {
                         throw XMLMarshalException.namespaceResolverNotSpecified(null);
                     }
-                    String uri = descriptor.getNamespaceResolver().resolveNamespacePrefix(rootFragment.getPrefix());
-                    if (null == uri) {
+                    uri = descriptor.getNamespaceResolver().resolveNamespacePrefix(rootFragment.getPrefix());
+                
+                    if(uri == null) {
                         throw XMLMarshalException.namespaceNotFound(rootFragment.getPrefix());
                     }
                     rootFragment.setNamespaceURI(uri);
+                } else {
+                    if(descriptorNamespaceResolver != null) {
+                        rootFragment.setNamespaceURI(descriptorNamespaceResolver.getDefaultNamespaceURI());
+                    }
                 }
             }
         }
@@ -786,6 +792,7 @@ public class XMLMarshaller {
                 Namespace next = (Namespace) namespaces.get(i);
                 target.put(next.getPrefix(), next.getNamespaceURI());
             }
+            target.setDefaultNamespaceURI(source.getDefaultNamespaceURI());
         }
     }
 

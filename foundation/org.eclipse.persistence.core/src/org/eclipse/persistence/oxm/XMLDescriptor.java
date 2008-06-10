@@ -685,6 +685,8 @@ public class XMLDescriptor extends ClassDescriptor {
             if (idx != -1) {
                 defaultRootNamespaceUri = getNamespaceResolver().resolveNamespacePrefix(defaultRootName.substring(0, idx));
                 defaultRootName = defaultRootName.substring(idx + 1);
+            } else if(getNamespaceResolver() != null) {
+                defaultRootNamespaceUri = getNamespaceResolver().getDefaultNamespaceURI();
             }
 
             // if the DOMRecord element == descriptor's default 

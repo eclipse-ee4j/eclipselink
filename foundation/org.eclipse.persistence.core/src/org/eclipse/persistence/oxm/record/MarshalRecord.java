@@ -143,20 +143,19 @@ public abstract class MarshalRecord extends XMLRecord {
         if (namespaceResolver == null) {
             return;
         }
+        String namespaceURI = namespaceResolver.getDefaultNamespaceURI();
+        if(null != namespaceURI) {
+            attribute(XMLConstants.XMLNS_URL, XMLConstants.XMLNS, XMLConstants.XMLNS, namespaceURI);            
+        }  
 
         Enumeration prefixes = namespaceResolver.getPrefixes();
         String namespacePrefix;
-        String namespaceURI;
+        namespaceURI = null;
         while (prefixes.hasMoreElements()) {
             namespacePrefix = (String)prefixes.nextElement();
             namespaceURI = namespaceResolver.resolveNamespacePrefix(namespacePrefix);
 
-            //handle default/target namespaces
-            if (namespacePrefix.equals("")) {
-                attribute(XMLConstants.XMLNS_URL, XMLConstants.XMLNS, XMLConstants.XMLNS, namespaceURI);
-            } else {
-                attribute(XMLConstants.XMLNS_URL, namespacePrefix, XMLConstants.XMLNS + ":" + namespacePrefix, namespaceURI);
-            }
+            attribute(XMLConstants.XMLNS_URL, namespacePrefix, XMLConstants.XMLNS + ":" + namespacePrefix, namespaceURI);
         }
     }
 

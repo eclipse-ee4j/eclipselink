@@ -875,13 +875,12 @@ public class XPathEngine {
 
     private String resolveNamespacePrefix(XPathFragment fragment, NamespaceResolver namespaceResolver) {
         try {
-            if (!(fragment.hasNamespace())) {
-                return null;
-            }
             if (fragment.getNamespaceURI() != null) {
                 return fragment.getNamespaceURI();
             }
-
+            if(fragment.getPrefix() == null && fragment.isAttribute()) {
+                return null;
+            }
             return namespaceResolver.resolveNamespacePrefix(fragment.getPrefix());
         } catch (Exception e) {
             return null;

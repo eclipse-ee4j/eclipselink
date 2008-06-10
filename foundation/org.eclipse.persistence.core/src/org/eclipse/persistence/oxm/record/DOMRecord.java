@@ -655,7 +655,7 @@ public class DOMRecord extends XMLRecord {
         if (colonIndex < 0) {
             // handle target/default namespace
             if (namespaceResolver != null) {
-                return namespaceResolver.resolveNamespacePrefix("");
+                return namespaceResolver.getDefaultNamespaceURI();
             }
             return null;
         } else {

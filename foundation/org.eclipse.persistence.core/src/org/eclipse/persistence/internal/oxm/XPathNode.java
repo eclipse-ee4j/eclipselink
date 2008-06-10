@@ -166,8 +166,12 @@ public class XPathNode {
     }
 
     public void addChild(XPathFragment anXPathFragment, NodeValue aNodeValue, NamespaceResolver namespaceResolver) {
-        if ((anXPathFragment != null) && anXPathFragment.hasNamespace() && anXPathFragment.getNamespaceURI() == null && (namespaceResolver != null)) {
-            anXPathFragment.setNamespaceURI(namespaceResolver.resolveNamespacePrefix(anXPathFragment.getPrefix()));
+        if (anXPathFragment != null && namespaceResolver != null) {
+            if(!anXPathFragment.isAttribute()) {
+                anXPathFragment.setNamespaceURI(namespaceResolver.resolveNamespacePrefix(anXPathFragment.getPrefix()));
+            } else if(anXPathFragment.hasNamespace()) {
+                anXPathFragment.setNamespaceURI(namespaceResolver.resolveNamespacePrefix(anXPathFragment.getPrefix()));
+            }
         }
 
         XPathNode xPathNode = new XPathNode();

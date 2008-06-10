@@ -369,19 +369,17 @@ public class XMLObjectBuilder extends ObjectBuilder {
         }
 
         Element docElement = document.getDocumentElement();
+        if(namespaceResolver.getDefaultNamespaceURI() != null) {
+            docElement.setAttributeNS(XMLConstants.XMLNS_URL, XMLConstants.XMLNS, namespaceResolver.getDefaultNamespaceURI());
+        }
+
         Enumeration prefixes = namespaceResolver.getPrefixes();
         String prefix;
         String namespace;
         while (prefixes.hasMoreElements()) {
             prefix = (String)prefixes.nextElement();
             namespace = namespaceResolver.resolveNamespacePrefix(prefix);
-
-            // handle default/target namespaces
-            if (prefix.equals("")) {
-                docElement.setAttributeNS(XMLConstants.XMLNS_URL, XMLConstants.XMLNS, namespace);
-            } else {
-                docElement.setAttributeNS(XMLConstants.XMLNS_URL, XMLConstants.XMLNS + ":" + prefix, namespace);
-            }
+            docElement.setAttributeNS(XMLConstants.XMLNS_URL, XMLConstants.XMLNS + ":" + prefix, namespace);
         }
     }
     

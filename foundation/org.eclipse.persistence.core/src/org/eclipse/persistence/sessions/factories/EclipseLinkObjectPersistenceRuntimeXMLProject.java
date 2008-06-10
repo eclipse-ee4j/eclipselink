@@ -6052,6 +6052,13 @@ public class EclipseLinkObjectPersistenceRuntimeXMLProject extends Project {
 
         descriptor.setJavaClass(NamespaceResolver.class);
 
+        XMLDirectMapping defaultNamespaceMapping = new XMLDirectMapping();
+        defaultNamespaceMapping.setXPath("eclipselink:default-namespace-uri");
+        defaultNamespaceMapping.setAttributeName("defaultNamespaceURI");
+        defaultNamespaceMapping.setGetMethodName("getDefaultNamespaceURI");
+        defaultNamespaceMapping.setSetMethodName("setDefaultNamespaceURI");
+        descriptor.addMapping(defaultNamespaceMapping);        
+        
         XMLCompositeCollectionMapping namespaceMapping = new XMLCompositeCollectionMapping();
         namespaceMapping
                 .setXPath("eclipselink:namespaces/eclipselink:namespace");

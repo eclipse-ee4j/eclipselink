@@ -54,6 +54,7 @@ import org.w3c.dom.Node;
 public class NamespaceResolver implements XMLNamespaceResolver {
     private static final String BASE_PREFIX = "ns";
 
+    private String defaultNamespaceURI;
     private Properties namespaces;
     int prefixCounter;
     private Node dom;
@@ -78,7 +79,7 @@ public class NamespaceResolver implements XMLNamespaceResolver {
      */
     public String resolveNamespacePrefix(String prefix) {
         if (null == prefix) {
-            return null;
+            return defaultNamespaceURI;
         }
         String uri = namespaces.getProperty(prefix);
         if ((uri == null) && prefix.equals(XMLConstants.XML_NAMESPACE_PREFIX)) {
@@ -213,5 +214,13 @@ public class NamespaceResolver implements XMLNamespaceResolver {
 
     public void removeNamespace(String prefix) {
         namespaces.remove(prefix);
+    }
+    
+    public void setDefaultNamespaceURI(String namespaceUri) {
+        defaultNamespaceURI = namespaceUri;
+    }
+    
+    public String getDefaultNamespaceURI() {
+        return defaultNamespaceURI;
     }
 }
