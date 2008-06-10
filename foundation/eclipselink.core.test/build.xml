@@ -286,6 +286,15 @@
 
     <!-- Runs the test using the PromptTestRunner -->
     <target name="run-test-prompt">
+        <condition property="jvmarg.performance.baseline.version" value="-Dtoplink.loadbuild.baseline-version=${performance.baseline.version}">
+            <isset property="performance.baseline.version"/>
+        </condition>
+        <condition property="jvmarg.performance.baseline.version" value="-Ddummy=dummy">
+            <not>
+                <isset property="performance.baseline.version"/>
+            </not>
+        </condition>
+
         <echo>Running test on ${db.url}</echo>
         <mkdir dir="${eclipselink.core.test}/${run.dir}"/>
         <mkdir dir="${eclipselink.core.test}/${report.dir}"/>
@@ -294,6 +303,7 @@
              maxmemory="512m"
              failonerror="true"
              dir="${eclipselink.core.test}/${run.dir}">
+            <jvmarg value="${jvmarg.performance.baseline.version}"/>
             <jvmarg value="-Declipselink.logging.level=${logging.level}"/>
             <jvmarg value="-Ddb.driver=${db.driver}"/>
             <jvmarg value="-Ddb.url=${db.url}"/>
@@ -305,7 +315,7 @@
             <jvmarg value="-Djava.naming.factory.initial=com.sun.jndi.cosnaming.CNCtxFactory"/>
             <arg value="testmodel=${TEST_CLASS}" />
             <arg value="regressionlog=../${report.dir}/test.log" />
-            <arg value="saveresults=true" />
+            <arg value="saveresults=${should.save.results}" />
             <classpath>
                 <path refid="run.classpath"/>
             </classpath>

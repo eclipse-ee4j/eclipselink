@@ -588,12 +588,22 @@
 
     <!-- Runs the test using the PromptTestRunner -->
     <target name="run-test-prompt" depends="config-trunk, config-flat">
+        <condition property="jvmarg.performance.baseline.version" value="-Dtoplink.loadbuild.baseline-version=${performance.baseline.version}">
+            <isset property="performance.baseline.version"/>
+        </condition>
+        <condition property="jvmarg.performance.baseline.version" value="-Ddummy=dummy">
+            <not>
+                <isset property="performance.baseline.version"/>
+            </not>
+        </condition>
+
         <echo>Running test on ${db.url}</echo>
         <java classname="org.eclipse.persistence.testing.framework.PromptTestRunner"
              fork="true"
              maxmemory="512m"
              failonerror="true"
              dir="${eclipselink.jpa.test}/${run.dir}">
+            <jvmarg value="${jvmarg.performance.baseline.version}"/>
             <jvmarg value="${TEST_AGENT}"/>
             <jvmarg value="${TEST_WEAVING}"/>
             <jvmarg value="-Declipselink.logging.level=${logging.level}"/>
@@ -604,7 +614,7 @@
             <jvmarg value="-Ddb.platform=${db.platform}"/>
             <arg value="testmodel=${TEST_CLASS}"/>
             <arg value="regressionlog=../${report.dir}/test.log"/>
-            <arg value="saveresults=true"/>
+            <arg value="saveresults=${should.save.results}" />
             <classpath>
                 <path refid="${RUN_PATH}"/>
             </classpath>
