@@ -234,10 +234,9 @@ public class XMLCompositeObjectMappingNodeValue extends XMLRelationshipMappingNo
                 }
             }
             TreeObjectBuilder stob2 = (TreeObjectBuilder)xmlDescriptor.getObjectBuilder();
-            UnmarshalRecord childRecord = (UnmarshalRecord)stob2.createRecord();
+            UnmarshalRecord childRecord = (UnmarshalRecord)stob2.createRecord(unmarshalRecord.getSession());
             childRecord.setSelfRecord(true);
             unmarshalRecord.setChildRecord(childRecord);
-            childRecord.setSession(unmarshalRecord.getSession());
             childRecord.setXMLReader(unmarshalRecord.getXMLReader());
             childRecord.startDocument(this.xmlCompositeObjectMapping);
             xmlCompositeObjectMapping.setAttributeValueInObject(unmarshalRecord.getCurrentObject(), childRecord.getCurrentObject());

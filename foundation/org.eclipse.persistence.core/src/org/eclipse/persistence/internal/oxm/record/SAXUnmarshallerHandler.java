@@ -242,11 +242,10 @@ public class SAXUnmarshallerHandler implements ContentHandler {
                 }
             }
 
-            unmarshalRecord = (UnmarshalRecord)xmlDescriptor.getObjectBuilder().createRecord();
+            unmarshalRecord = (UnmarshalRecord)xmlDescriptor.getObjectBuilder().createRecord(session);
             if (locator != null) {
                 unmarshalRecord.setDocumentLocator(locator);
             }
-            unmarshalRecord.setSession(session);
             unmarshalRecord.setUnmarshaller(this.unmarshaller);
             unmarshalRecord.setXMLReader(this.getXMLReader());
             unmarshalRecord.startDocument();

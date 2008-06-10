@@ -349,32 +349,38 @@ public class TreeObjectBuilder extends XMLObjectBuilder {
      * Create a new row/record for the object builder.
      * This allows subclasses to define different record types.
      */
-    public AbstractRecord createRecord() {
-        return new UnmarshalRecord(this);
+    public AbstractRecord createRecord(AbstractSession session) {
+    	UnmarshalRecord uRec = new UnmarshalRecord(this);
+    	uRec.setSession(session);
+        return uRec;
     }
 
     /**
      * Create a new row/record for the object builder with the given name.
      * This allows subclasses to define different record types.
      */
-    public AbstractRecord createRecord(String rootName) {
-        return new NodeRecord(rootName, getNamespaceResolver());
+    public AbstractRecord createRecord(String rootName, AbstractSession session) {
+        NodeRecord nRec = new NodeRecord(rootName, getNamespaceResolver());
+        nRec.setSession(session);
+    	return nRec;
     }
 
     /**
      * Create a new row/record for the object builder with the given name.
      * This allows subclasses to define different record types.
      */
-    public AbstractRecord createRecord(String rootName, Node parent) {
-        return new NodeRecord(rootName, getNamespaceResolver(), parent);
+    public AbstractRecord createRecord(String rootName, Node parent, AbstractSession session) {
+        NodeRecord nRec = new NodeRecord(rootName, getNamespaceResolver(), parent);
+        nRec.setSession(session);
+    	return nRec;
     }
 
     /**
      * Create a new row/record for the object builder.
      * This allows subclasses to define different record types.
      */
-    public AbstractRecord createRecord(int size) {
-        return createRecord();
+    public AbstractRecord createRecord(int size, AbstractSession session) {
+        return createRecord(session);
     }
         
 }

@@ -453,12 +453,9 @@ public class SDOUnmappedContentHandler implements UnmappedContentHandler {
             }
         }
 
-        unmarshalRecord = (UnmarshalRecord)xmlDescriptor.getObjectBuilder().createRecord();
-
+        unmarshalRecord = (UnmarshalRecord)xmlDescriptor.getObjectBuilder().createRecord(session);
         unmarshalRecord.setParentRecord(parentRecord);
-        unmarshalRecord.setSession(session);
         unmarshalRecord.setUnmarshaller(parentRecord.getUnmarshaller());
-
         unmarshalRecord.setXMLReader(parentRecord.getXMLReader());
         unmarshalRecord.startDocument();
         unmarshalRecord.setNamespaceMap(namespaceMap);

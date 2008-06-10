@@ -648,7 +648,7 @@ public class VersionLockingPolicy implements OptimisticLockingPolicy, Serializab
             // any writable or read-only mappings for the version value.
             // Reuse the method used for returning as has the same requirements.
             ObjectBuilder objectBuilder = this.descriptor.getObjectBuilder();
-            AbstractRecord record = objectBuilder.createRecord(1);
+            AbstractRecord record = objectBuilder.createRecord(1, session);
             record.put(this.writeLockField, lockValue);
             objectBuilder.assignReturnRow(object, session, record);            
             if (objectChangeSet != null) {

@@ -267,8 +267,7 @@ public class SAXUnmarshaller implements PlatformUnmarshaller {
             // try and get a Unit Of Work from the XMLContext
             session = xmlContext.getReadSession(clazz);
             xmlDescriptor = (XMLDescriptor) session.getDescriptor(clazz);
-            unmarshalRecord = (UnmarshalRecord) xmlDescriptor.getObjectBuilder().createRecord();
-            unmarshalRecord.setSession(session);
+            unmarshalRecord = (UnmarshalRecord) xmlDescriptor.getObjectBuilder().createRecord(session);
         }
         try {
             unmarshalRecord.setXMLReader(xmlReader);
@@ -318,8 +317,7 @@ public class SAXUnmarshaller implements PlatformUnmarshaller {
             // try and get a Unit Of Work from the XMLContext
             session = xmlUnmarshaller.getXMLContext().getReadSession(clazz);
             xmlDescriptor = (XMLDescriptor) session.getDescriptor(clazz);
-            unmarshalRecord = (UnmarshalRecord) xmlDescriptor.getObjectBuilder().createRecord();
-            unmarshalRecord.setSession(session);
+            unmarshalRecord = (UnmarshalRecord) xmlDescriptor.getObjectBuilder().createRecord(session);
         }
 
         try {
@@ -395,8 +393,7 @@ public class SAXUnmarshaller implements PlatformUnmarshaller {
             // try and get a Unit Of Work from the XMLContext
             session = xmlUnmarshaller.getXMLContext().getReadSession(clazz);
             xmlDescriptor = (XMLDescriptor) session.getDescriptor(clazz);
-            unmarshalRecord = (UnmarshalRecord) xmlDescriptor.getObjectBuilder().createRecord();
-            unmarshalRecord.setSession(session);
+            unmarshalRecord = (UnmarshalRecord) xmlDescriptor.getObjectBuilder().createRecord(session);
         }
         try {
             unmarshalRecord.setXMLReader(domReader);
@@ -574,8 +571,7 @@ public class SAXUnmarshaller implements PlatformUnmarshaller {
             // try and get a Unit Of Work from the XMLContext
             session = xmlUnmarshaller.getXMLContext().getReadSession(clazz);
             xmlDescriptor = (XMLDescriptor) session.getDescriptor(clazz);
-            unmarshalRecord = (UnmarshalRecord) xmlDescriptor.getObjectBuilder().createRecord();
-            unmarshalRecord.setSession(session);
+            unmarshalRecord = (UnmarshalRecord) xmlDescriptor.getObjectBuilder().createRecord(session);
         }
 
         try {

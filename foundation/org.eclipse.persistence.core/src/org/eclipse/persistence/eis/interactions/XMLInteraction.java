@@ -108,18 +108,21 @@ public class XMLInteraction extends MappedInteraction {
 
     /**
      * Create a DOM input record for this interaction.
-     * Convet the database row or arguments into an XML DOM tree.
+     * Convert the database row or arguments into an XML DOM tree.
      */
     public Record createInputRecord(EISAccessor accessor) {
         Record record = accessor.getEISPlatform().createDOMRecord(getInputRecordName(), accessor);
         Element dom = createInputDOM(accessor);
         accessor.getEISPlatform().setDOMInRecord(dom, record, this, accessor);
+        if (record instanceof XMLRecord) {
+          ((XMLRecord) record).setSession(this.getQuery().getSession());
+        }
         return record;
     }
 
     /**
      * Create a DOM for this interaction.
-     * Convet the database row or arguments into an XML DOM tree.
+     * Convert the database row or arguments into an XML DOM tree.
      */
     public Element createInputDOM(EISAccessor accessor) {
         Element dom = null;
@@ -247,12 +250,13 @@ public class XMLInteraction extends MappedInteraction {
      * Use the createRecord method on ObjectBuilder in case the root element is namespace qualified
      */
     protected XMLRecord createXMLRecord(String rootName) {
-        if (getQuery().getDescriptor() instanceof EISDescriptor && (getQuery().getDescriptor() != null)) {
-            XMLRecord record = (XMLRecord)((XMLObjectBuilder)this.getQuery().getDescriptor().getObjectBuilder()).createRecord(getInputRootElementName());
-            record.setSession(getQuery().getSession());
-            return record;
+    	XMLRecord xmlRec; 
+        if (getQuery().getDescriptor() != null && getQuery().getDescriptor() instanceof EISDescriptor) {
+        	xmlRec = (XMLRecord)((XMLObjectBuilder)this.getQuery().getDescriptor().getObjectBuilder()).createRecord(getInputRootElementName(), getQuery().getSession());
         } else {
-            return new org.eclipse.persistence.oxm.record.DOMRecord(getInputRootElementName());
+        	xmlRec = new org.eclipse.persistence.oxm.record.DOMRecord(getInputRootElementName()); 
+        	xmlRec.setSession(getQuery().getSession());
         }
+    	return xmlRec;
     }
 }

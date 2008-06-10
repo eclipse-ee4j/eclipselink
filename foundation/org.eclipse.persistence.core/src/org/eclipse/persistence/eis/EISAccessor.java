@@ -166,7 +166,7 @@ public class EISAccessor extends DatasourceAccessor {
                 session.log(SessionLog.FINEST, SessionLog.QUERY, "adapter_result", output);
                 if (eisCall.isNothingReturned()) {
                     result = new Integer(1);
-                    // Fire the output paramter row to allow app to handle return value.
+                    // Fire the output parameter row to allow app to handle return value.
                     if (output != null) {
                         AbstractRecord outputRow = getEISPlatform().buildRow(output, eisCall, this);
                         if (outputRow != null) {

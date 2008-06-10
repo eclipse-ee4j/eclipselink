@@ -62,19 +62,22 @@ public class XMLFileInteraction implements Interaction {
         try {
             XMLFileInteractionSpec xmlSpec = (XMLFileInteractionSpec)spec;
             File file = new File(this.connection.getConnectionSpec().getDirectory() + "/" + xmlSpec.getFileName());
-
+            Record recordToReturn = null;
             // Check CRUD type and process acordingly
             if (xmlSpec.getInteractionType() == XMLFileInteractionSpec.READ) {
                 autocommit = false;
-                return executeRead(xmlSpec, file);
+                recordToReturn = executeRead(xmlSpec, file);
             } else if (xmlSpec.getInteractionType() == XMLFileInteractionSpec.INSERT) {
-                return executeInsert(xmlSpec, file, (EISDOMRecord)input);
+            	recordToReturn = executeInsert(xmlSpec, file, (EISDOMRecord)input);
             } else if (xmlSpec.getInteractionType() == XMLFileInteractionSpec.UPDATE) {
-                return executeUpdate(xmlSpec, file, (EISDOMRecord)input);
+            	recordToReturn = executeUpdate(xmlSpec, file, (EISDOMRecord)input);
             } else if (xmlSpec.getInteractionType() == XMLFileInteractionSpec.DELETE) {
-                return executeDelete(xmlSpec, file);
+            	recordToReturn = executeDelete(xmlSpec, file);
             }
-            return null;
+            if (recordToReturn != null) {
+            	((EISDOMRecord) recordToReturn).setSession(((EISDOMRecord)input).getSession());
+            }
+            return recordToReturn;
         } catch (Exception exception) {
             exception.printStackTrace();
             throw new ResourceException(exception.toString());

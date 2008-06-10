@@ -324,7 +324,7 @@ public class DescriptorEvent extends EventObject {
             mapping.setRealAttributeValueInObject(original, originalValue);
         }
         if (getRecord() != null) {
-            AbstractRecord tempRow = getDescriptor().getObjectBuilder().createRecord();
+            AbstractRecord tempRow = getDescriptor().getObjectBuilder().createRecord(getSession());
 
             // pass in temp Row because most mappings use row.add() not row.put() for
             // perf reasons.  We are using writeFromObjectIntoRow in order to support
@@ -391,7 +391,7 @@ public class DescriptorEvent extends EventObject {
             mapping.getContainerPolicy().addInto(mapKey, originalValue, collection, getSession());
         }
         if (getRecord() != null) {
-            AbstractRecord tempRow = getDescriptor().getObjectBuilder().createRecord();
+            AbstractRecord tempRow = getDescriptor().getObjectBuilder().createRecord(getSession());
 
             // pass in temp Row because most mappings use row.add() not row.put() for
             // perf reasons.  We are using writeFromObjectIntoRow in order to support
@@ -455,7 +455,7 @@ public class DescriptorEvent extends EventObject {
             mapping.getContainerPolicy().removeFrom(mapKey, originalValue, collection, getSession());
         }
         if (getRecord() != null) {
-            AbstractRecord tempRow = getDescriptor().getObjectBuilder().createRecord();
+            AbstractRecord tempRow = getDescriptor().getObjectBuilder().createRecord(getSession());
 
             // pass in temp Row because most mappings use row.add() not row.put() for
             // perf reasons.  We are using writeFromObjectIntoRow in order to support

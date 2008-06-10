@@ -253,24 +253,22 @@ public class XMLDescriptor extends ClassDescriptor {
     * The field value should be an XMLRecord or and XMLElement
     */
     public AbstractRecord buildNestedRowFromFieldValue(Object fieldValue) {
-        //----------------------------------------------------------------------------//
         if (fieldValue instanceof XMLRecord) {
             return (XMLRecord) fieldValue;
         }
-
-        //----------------------------------------------------------------------------//
+        
         // BUG#2667762 - If the tag was empty this could be a string of whitespace.
         if (!(fieldValue instanceof Vector)) {
-            return getObjectBuilder().createRecord();
+            return getObjectBuilder().createRecord(null);
         }
 
         Vector nestedRows = (Vector) fieldValue;
         if (nestedRows.isEmpty()) {
-            return getObjectBuilder().createRecord();
+            return getObjectBuilder().createRecord(null);
         } else {
             // BUG#2667762 - If the tag was empty this could be a string of whitespace.
             if (!(nestedRows.firstElement() instanceof AbstractRecord)) {
-                return getObjectBuilder().createRecord();
+                return getObjectBuilder().createRecord(null);
             }
             return (XMLRecord) nestedRows.firstElement();
         }

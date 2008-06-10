@@ -809,7 +809,7 @@ public class XMLMarshaller {
 
         AbstractSession session = xmlContext.getSession(descriptor);
         if ((session != null) && xmlContext.getDocumentPreservationPolicy(session).shouldPreserveDocument()) {
-            XMLRecord xmlRow = (XMLRecord) ((XMLObjectBuilder) descriptor.getObjectBuilder()).createRecord(localRootName, parent);
+            XMLRecord xmlRow = (XMLRecord) ((XMLObjectBuilder) descriptor.getObjectBuilder()).createRecord(localRootName, parent, session);
             xmlRow.setMarshaller(this);
             return objectToXML(object, descriptor, xmlRow, isXMLRoot);
         }

@@ -774,7 +774,7 @@ public abstract class ObjectReferenceMapping extends ForeignReferenceMapping {
      * Extract the reference pk for rvh usage in remote model.
      */
     public AbstractRecord extractPrimaryKeyRowForSourceObject(Object domainObject, AbstractSession session) {
-        AbstractRecord databaseRow = getDescriptor().getObjectBuilder().createRecord();
+        AbstractRecord databaseRow = getDescriptor().getObjectBuilder().createRecord(session);
         writeFromObjectIntoRow(domainObject, databaseRow, session);
         return databaseRow;
     }

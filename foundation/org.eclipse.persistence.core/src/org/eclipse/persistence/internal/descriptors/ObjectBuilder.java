@@ -99,7 +99,7 @@ public class ObjectBuilder implements Cloneable, Serializable {
      * Create a new row/record for the object builder.
      * This allows subclasses to define different record types.
      */
-    public AbstractRecord createRecord() {
+    public AbstractRecord createRecord(AbstractSession session) {
         return new DatabaseRecord();
     }
 
@@ -107,7 +107,7 @@ public class ObjectBuilder implements Cloneable, Serializable {
      * Create a new row/record for the object builder.
      * This allows subclasses to define different record types.
      */
-    public AbstractRecord createRecord(int size) {
+    public AbstractRecord createRecord(int size, AbstractSession session) {
         return new DatabaseRecord(size);
     }
 
@@ -264,7 +264,7 @@ public class ObjectBuilder implements Cloneable, Serializable {
         }
 
         // Now add the value to the object, this gets ugly.
-        AbstractRecord tempRow = createRecord(1);
+        AbstractRecord tempRow = createRecord(1, writeSession);
         tempRow.put(sequenceNumberField, sequenceValue);
 
         // Require a query context to read into an object.
@@ -854,7 +854,7 @@ public class ObjectBuilder implements Cloneable, Serializable {
      * Build the row representation of an object.
      */
     public AbstractRecord buildRow(Object object, AbstractSession session) {
-        return buildRow(createRecord(), object, session);
+        return buildRow(createRecord(session), object, session);
     }
 
     /**
@@ -888,7 +888,7 @@ public class ObjectBuilder implements Cloneable, Serializable {
      * contain entries for uninstantiated attributes.
      */
     public AbstractRecord buildRowForShallowInsert(Object object, AbstractSession session) {
-        return buildRowForShallowInsert(createRecord(), object, session);
+        return buildRowForShallowInsert(createRecord(session), object, session);
     }
 
     /**
@@ -922,7 +922,7 @@ public class ObjectBuilder implements Cloneable, Serializable {
      * Build the row representation of an object.
      */
     public AbstractRecord buildRowWithChangeSet(ObjectChangeSet objectChangeSet, AbstractSession session) {
-        return buildRowWithChangeSet(createRecord(), objectChangeSet, session);
+        return buildRowWithChangeSet(createRecord(session), objectChangeSet, session);
     }
 
     /**
@@ -949,7 +949,7 @@ public class ObjectBuilder implements Cloneable, Serializable {
      * contain entries for uninstantiated attributes.
      */
     public AbstractRecord buildRowForShallowInsertWithChangeSet(ObjectChangeSet objectChangeSet, AbstractSession session) {
-        return buildRowForShallowInsertWithChangeSet(createRecord(), objectChangeSet, session);
+        return buildRowForShallowInsertWithChangeSet(createRecord(session), objectChangeSet, session);
     }
 
     /**
@@ -983,7 +983,7 @@ public class ObjectBuilder implements Cloneable, Serializable {
      * for the expressions in the expression framework.
      */
     public AbstractRecord buildRowForTranslation(Object object, AbstractSession session) {
-        AbstractRecord databaseRow = createRecord();
+        AbstractRecord databaseRow = createRecord(session);
 
         for (Iterator mappings = getPrimaryKeyMappings().iterator(); mappings.hasNext();) {
             DatabaseMapping mapping = (DatabaseMapping)mappings.next();
@@ -1005,7 +1005,7 @@ public class ObjectBuilder implements Cloneable, Serializable {
      * contain entries for uninstantiated attributes.
      */
     public AbstractRecord buildRowForUpdate(WriteObjectQuery query) {
-        AbstractRecord databaseRow = createRecord();
+        AbstractRecord databaseRow = createRecord(query.getSession());
 
         for (Iterator mappings = getNonPrimaryKeyMappings().iterator();
                  mappings.hasNext();) {
@@ -1038,7 +1038,7 @@ public class ObjectBuilder implements Cloneable, Serializable {
      * contain entries for uninstantiated attributes.
      */
     public AbstractRecord buildRowForUpdateWithChangeSet(WriteObjectQuery query) {
-        AbstractRecord databaseRow = createRecord();
+        AbstractRecord databaseRow = createRecord(query.getSession());
         AbstractSession session = query.getSession();
         List changes = query.getObjectChangeSet().getChanges();
         int size = changes.size();
@@ -1055,7 +1055,7 @@ public class ObjectBuilder implements Cloneable, Serializable {
      * Build the row representation of an object.
      */
     public AbstractRecord buildRowForWhereClause(ObjectLevelModifyQuery query) {
-        AbstractRecord databaseRow = createRecord();
+        AbstractRecord databaseRow = createRecord(query.getSession());
 
         for (Iterator mappings = this.descriptor.getMappings().iterator();
                  mappings.hasNext();) {
@@ -1076,7 +1076,7 @@ public class ObjectBuilder implements Cloneable, Serializable {
      * Build the row from the primary key values.
      */
     public AbstractRecord buildRowFromPrimaryKeyValues(Vector key, AbstractSession session) {
-        AbstractRecord databaseRow = createRecord(key.size());
+        AbstractRecord databaseRow = createRecord(key.size(), session);
         int keySize = key.size();
         for (int index = 0; index < keySize; index++) {
             DatabaseField field = this.descriptor.getPrimaryKeyFields().get(index);
@@ -1092,7 +1092,7 @@ public class ObjectBuilder implements Cloneable, Serializable {
      * Build the row of all of the fields used for insertion.
      */
     public AbstractRecord buildTemplateInsertRow(AbstractSession session) {
-        AbstractRecord databaseRow = createRecord();
+        AbstractRecord databaseRow = createRecord(session);
         buildTemplateInsertRow(session, databaseRow);
         return databaseRow;
     }
@@ -1141,7 +1141,7 @@ public class ObjectBuilder implements Cloneable, Serializable {
      * contain entries for uninstantiated attributes.
      */
     public AbstractRecord buildTemplateUpdateRow(AbstractSession session) {
-        AbstractRecord databaseRow = createRecord();
+        AbstractRecord databaseRow = createRecord(session);
 
         for (Iterator mappings = getNonPrimaryKeyMappings().iterator();
                  mappings.hasNext();) {
@@ -1719,7 +1719,7 @@ public class ObjectBuilder implements Cloneable, Serializable {
      * Return the row with primary keys and their values from the given expression.
      */
     public Vector extractPrimaryKeyFromExpression(boolean requiresExactMatch, Expression expression, AbstractRecord translationRow, AbstractSession session) {
-        AbstractRecord primaryKeyRow = createRecord(getPrimaryKeyMappings().size());
+        AbstractRecord primaryKeyRow = createRecord(getPrimaryKeyMappings().size(), session);
 
         expression.getBuilder().setSession(session.getRootSession(null));
         // Get all the field & values from expression.
@@ -1781,7 +1781,7 @@ public class ObjectBuilder implements Cloneable, Serializable {
                     primaryKeyValues.add(keyValue);
                 }
             } else {
-                AbstractRecord databaseRow = createRecord(size);
+                AbstractRecord databaseRow = createRecord(size, session);
                 // PERF: use index not enumeration			
                 for (int index = 0; index < size; index++) {
                     DatabaseMapping mapping = (DatabaseMapping)mappings.get(index);
@@ -1850,7 +1850,7 @@ public class ObjectBuilder implements Cloneable, Serializable {
      * Return the row with primary keys and their values from the given expression.
      */
     public AbstractRecord extractPrimaryKeyRowFromExpression(Expression expression, AbstractRecord translationRow, AbstractSession session) {
-        AbstractRecord primaryKeyRow = createRecord(getPrimaryKeyMappings().size());
+        AbstractRecord primaryKeyRow = createRecord(getPrimaryKeyMappings().size(), session);
 
         expression.getBuilder().setSession(session.getRootSession(null));
         // Get all the field & values from expression	
@@ -1871,7 +1871,7 @@ public class ObjectBuilder implements Cloneable, Serializable {
      * Extract primary key attribute values from the domainObject.
      */
     public AbstractRecord extractPrimaryKeyRowFromObject(Object domainObject, AbstractSession session) {
-        AbstractRecord databaseRow = createRecord(getPrimaryKeyMappings().size());
+        AbstractRecord databaseRow = createRecord(getPrimaryKeyMappings().size(), session);
 
         // PERF: use index not enumeration.
         for (int index = 0; index < getPrimaryKeyMappings().size(); index++) {
@@ -1882,7 +1882,7 @@ public class ObjectBuilder implements Cloneable, Serializable {
         if (this.descriptor.hasSimplePrimaryKey()) {
             return databaseRow;
         }
-        AbstractRecord primaryKeyRow = createRecord(getPrimaryKeyMappings().size());
+        AbstractRecord primaryKeyRow = createRecord(getPrimaryKeyMappings().size(), session);
         List primaryKeyFields = this.descriptor.getPrimaryKeyFields();
         for (int index = 0; index < primaryKeyFields.size(); index++) {
             // Ensure that the type extracted from the object is the same type as in the descriptor,

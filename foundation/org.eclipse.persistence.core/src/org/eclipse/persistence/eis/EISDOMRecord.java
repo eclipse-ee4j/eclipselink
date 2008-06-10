@@ -63,6 +63,9 @@ public class EISDOMRecord extends org.eclipse.persistence.oxm.record.DOMRecord i
         this.record = record;
         this.recordName = record.getRecordName();
         this.recordShortDescription = record.getRecordShortDescription();
+        if (record instanceof XMLRecord) {
+        	this.session = ((XMLRecord)record).getSession();
+        }
     }
 
     /**
@@ -82,6 +85,9 @@ public class EISDOMRecord extends org.eclipse.persistence.oxm.record.DOMRecord i
         this.record = record;
         this.recordName = record.getRecordName();
         this.recordShortDescription = record.getRecordShortDescription();
+        if (record instanceof XMLRecord) {
+        	this.session = ((XMLRecord)record).getSession();
+        }
         if (domMethod == null) {
             try {
                 if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
@@ -138,6 +144,9 @@ public class EISDOMRecord extends org.eclipse.persistence.oxm.record.DOMRecord i
         this.record = record;
         this.recordName = record.getRecordName();
         this.recordShortDescription = record.getRecordShortDescription();
+        if (record instanceof XMLRecord) {
+        	this.session = ((XMLRecord)record).getSession();
+        }
     }
 
     /**

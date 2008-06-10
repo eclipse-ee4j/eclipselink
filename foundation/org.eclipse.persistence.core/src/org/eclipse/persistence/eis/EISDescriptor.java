@@ -234,15 +234,15 @@ public class EISDescriptor extends ClassDescriptor {
 
         // BUG#2667762 if the tag was empty this could be a string of whitespace.
         if (!(fieldValue instanceof Vector)) {
-            return getObjectBuilder().createRecord();
+            return getObjectBuilder().createRecord(null);
         }
         Vector nestedRows = (Vector)fieldValue;
         if (nestedRows.isEmpty()) {
-            return getObjectBuilder().createRecord();
+            return getObjectBuilder().createRecord(null);
         } else {
             // BUG#2667762 if the tag was empty this could be a string of whitespace.
             if (!(nestedRows.firstElement() instanceof XMLRecord)) {
-                return getObjectBuilder().createRecord();
+                return getObjectBuilder().createRecord(null);
             }
             return (XMLRecord)nestedRows.firstElement();
         }

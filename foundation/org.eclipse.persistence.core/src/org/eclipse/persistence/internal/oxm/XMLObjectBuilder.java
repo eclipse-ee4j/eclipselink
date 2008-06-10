@@ -102,20 +102,31 @@ public class XMLObjectBuilder extends ObjectBuilder {
     }
 
     /**
-     * Create a new row/record for the object builder. This allows subclasses to
-     * define different record types.
+     * Create a new row/record for the object builder.
+     * This allows subclasses to define different record types.
      */
-    public AbstractRecord createRecord() {
-        return createRecord(getDescriptor().getTableName());
+    public AbstractRecord createRecord(AbstractSession session) {
+        return createRecord(getDescriptor().getTableName(), session);
+    }
+
+    
+    /**
+     * Create a new row/record for the object builder.
+     * This allows subclasses to define different record types.
+     */
+    public AbstractRecord createRecord(int size, AbstractSession session) {
+        return createRecord(getDescriptor().getTableName(), session);
     }
 
     /**
      * Create a new row/record for the object builder with the given name. This
      * allows subclasses to define different record types.
      */
-    public AbstractRecord createRecord(String rootName) {
+    public AbstractRecord createRecord(String rootName, AbstractSession session) {
         NamespaceResolver namespaceResolver = getNamespaceResolver();
-        return new DOMRecord(rootName, namespaceResolver);
+        XMLRecord xmlRec = new DOMRecord(rootName, namespaceResolver);
+        xmlRec.setSession(session);
+        return xmlRec;
     }
 
     /**
@@ -123,10 +134,23 @@ public class XMLObjectBuilder extends ObjectBuilder {
      * namespace resolver instead of the namespace resolver from the descriptor.
      * This allows subclasses to define different record types.
      */
-    public AbstractRecord createRecord(String rootName, String rootUri) {
-        return new DOMRecord(rootName, rootUri);
+    public AbstractRecord createRecord(String rootName, String rootUri, AbstractSession session) {
+        XMLRecord xmlRec = new DOMRecord(rootName, rootUri);
+        xmlRec.setSession(session);
+    	return xmlRec;
     }
 
+    /**
+     * Create a new row/record for the object builder with the given name. This
+     * allows subclasses to define different record types.
+     */
+    public AbstractRecord createRecord(String rootName, Node parent, AbstractSession session) {
+        NamespaceResolver namespaceResolver = getNamespaceResolver();
+        XMLRecord xmlRec = new DOMRecord(rootName, namespaceResolver, parent);
+        xmlRec.setSession(session);
+        return xmlRec;
+    }
+    
     public AbstractRecord createRecordFor(Object attributeValue, XMLField xmlField, XMLRecord parentRecord, XMLMapping mapping) {
         DocumentPreservationPolicy policy = parentRecord.getDocPresPolicy();
         Element newNode = null;
@@ -180,23 +204,6 @@ public class XMLObjectBuilder extends ObjectBuilder {
         }
         record.setDocPresPolicy(docPresPolicy);
         return record;
-    }
-
-    /**
-     * Create a new row/record for the object builder with the given name. This
-     * allows subclasses to define different record types.
-     */
-    public AbstractRecord createRecord(String rootName, Node parent) {
-        NamespaceResolver namespaceResolver = getNamespaceResolver();
-        return new DOMRecord(rootName, namespaceResolver, parent);
-    }
-
-    /**
-     * Create a new row/record for the object builder. This allows subclasses to
-     * define different record types.
-     */
-    public AbstractRecord createRecord(int size) {
-        return createRecord(getDescriptor().getTableName());
     }
 
     /**
@@ -377,7 +384,7 @@ public class XMLObjectBuilder extends ObjectBuilder {
             }
         }
     }
-
+    
     /**
      * Override method in superclass in order to set the session on the record.
      * Each mapping is recursed to assign values from the Record to the attributes in the domain object.
@@ -392,9 +399,7 @@ public class XMLObjectBuilder extends ObjectBuilder {
      * Return the row with primary keys and their values from the given expression.
      */
     public AbstractRecord extractPrimaryKeyRowFromExpression(Expression expression, AbstractRecord translationRow, AbstractSession session) {
-        AbstractRecord primaryKeyRow = createRecord(getPrimaryKeyMappings().size());
-        ((XMLRecord)primaryKeyRow).setSession(session);
-
+        AbstractRecord primaryKeyRow = createRecord(getPrimaryKeyMappings().size(), session);
         expression.getBuilder().setSession(session.getRootSession(null));
         // Get all the field & values from expression   
         boolean isValid = expression.extractPrimaryKeyValues(true, getDescriptor(), primaryKeyRow, translationRow);
@@ -415,9 +420,7 @@ public class XMLObjectBuilder extends ObjectBuilder {
      * Return the row with primary keys and their values from the given expression.
      */
     public Vector extractPrimaryKeyFromExpression(boolean requiresExactMatch, Expression expression, AbstractRecord translationRow, AbstractSession session) {
-        AbstractRecord primaryKeyRow = createRecord(getPrimaryKeyMappings().size());
-        ((XMLRecord)primaryKeyRow).setSession(session);
-
+        AbstractRecord primaryKeyRow = createRecord(getPrimaryKeyMappings().size(), session);
         expression.getBuilder().setSession(session.getRootSession(null));
         // Get all the field & values from expression.
         boolean isValid = expression.extractPrimaryKeyValues(requiresExactMatch, getDescriptor(), primaryKeyRow, translationRow);
