@@ -33,7 +33,7 @@ import org.eclipse.persistence.queries.StoredProcedureCall;
  */
 public class NamedStoredProcedureQueryMetadata extends NamedNativeQueryMetadata {
     private Boolean m_returnsResultSet;
-    private List<StoredProcedureParameterMetadata> m_procedureParameters = new ArrayList<StoredProcedureParameterMetadata>();
+    private List<StoredProcedureParameterMetadata> m_parameters = new ArrayList<StoredProcedureParameterMetadata>();
     private String m_procedureName;
     
     /**
@@ -50,8 +50,8 @@ public class NamedStoredProcedureQueryMetadata extends NamedNativeQueryMetadata 
     public NamedStoredProcedureQueryMetadata(Annotation namedStoredProcedureQuery, MetadataAccessibleObject accessibleObject) {
         super(namedStoredProcedureQuery, accessibleObject);
          
-        for (Annotation storedProcedureParameter : (Annotation[]) MetadataHelper.invokeMethod("procedureParameters", namedStoredProcedureQuery)) {
-           m_procedureParameters.add(new StoredProcedureParameterMetadata(storedProcedureParameter, accessibleObject));
+        for (Annotation storedProcedureParameter : (Annotation[]) MetadataHelper.invokeMethod("parameters", namedStoredProcedureQuery)) {
+           m_parameters.add(new StoredProcedureParameterMetadata(storedProcedureParameter, accessibleObject));
         }
         
         m_procedureName = (String) MetadataHelper.invokeMethod("procedureName", namedStoredProcedureQuery);
@@ -70,7 +70,7 @@ public class NamedStoredProcedureQueryMetadata extends NamedNativeQueryMetadata 
                 return false;
             }
             
-            if (! valuesMatch(m_procedureParameters, query.getProcedureParameters())) {
+            if (! valuesMatch(m_parameters, query.getParameters())) {
                 return false;
             }
             
@@ -92,8 +92,8 @@ public class NamedStoredProcedureQueryMetadata extends NamedNativeQueryMetadata 
      * INTERNAL:
      * Used for OX mapping.
      */
-    public List<StoredProcedureParameterMetadata> getProcedureParameters() {
-        return m_procedureParameters;
+    public List<StoredProcedureParameterMetadata> getParameters() {
+        return m_parameters;
     }
     
     /**
@@ -111,7 +111,7 @@ public class NamedStoredProcedureQueryMetadata extends NamedNativeQueryMetadata 
         super.initXMLObject(accessibleObject);
         
         // Initialize parameters ...
-        initXMLObjects(m_procedureParameters, accessibleObject);
+        initXMLObjects(m_parameters, accessibleObject);
     }
     
     /**
@@ -124,7 +124,7 @@ public class NamedStoredProcedureQueryMetadata extends NamedNativeQueryMetadata 
         
         // Process the stored procedure parameters.
         List<String> queryArguments = new ArrayList<String>();
-        for (StoredProcedureParameterMetadata parameter : m_procedureParameters) {
+        for (StoredProcedureParameterMetadata parameter : m_parameters) {
             queryArguments.addAll(parameter.process(call));
         }
         
@@ -162,8 +162,8 @@ public class NamedStoredProcedureQueryMetadata extends NamedNativeQueryMetadata 
      * INTERNAL:
      * Used for OX mapping.
      */
-    public void setProcedureParameters(List<StoredProcedureParameterMetadata> procedureParameters) {
-        m_procedureParameters = procedureParameters;
+    public void setParameters(List<StoredProcedureParameterMetadata> parameters) {
+        m_parameters = parameters;
     }
     
     /**

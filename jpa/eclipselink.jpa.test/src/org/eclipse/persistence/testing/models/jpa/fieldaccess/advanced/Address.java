@@ -66,18 +66,18 @@ import static org.eclipse.persistence.annotations.Direction.IN_OUT;
     name="SProcAddress",
     resultClass=org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced.Address.class,
     procedureName="SProc_Read_Address",
-    procedureParameters={@StoredProcedureParameter(procedureParameterDirection=IN_OUT, name="address_id_v", queryParameter="ADDRESS_ID", type=Integer.class),
-                         @StoredProcedureParameter(procedureParameterDirection=OUT, name="street_v", queryParameter="STREET", type=String.class),
-                         @StoredProcedureParameter(procedureParameterDirection=OUT, name="city_v", queryParameter="CITY", type=String.class),
-                         @StoredProcedureParameter(procedureParameterDirection=OUT, name="country_v", queryParameter="COUNTRY", type=String.class),
-                         @StoredProcedureParameter(procedureParameterDirection=OUT, name="province_v", queryParameter="PROVINCE", type=String.class),
-                         @StoredProcedureParameter(procedureParameterDirection=OUT, name="p_code_v", queryParameter="P_CODE", type=String.class)}),
+    parameters={@StoredProcedureParameter(direction=IN_OUT, name="address_id_v", queryParameter="ADDRESS_ID", type=Integer.class),
+                @StoredProcedureParameter(direction=OUT, name="street_v", queryParameter="STREET", type=String.class),
+                @StoredProcedureParameter(direction=OUT, name="city_v", queryParameter="CITY", type=String.class),
+                @StoredProcedureParameter(direction=OUT, name="country_v", queryParameter="COUNTRY", type=String.class),
+                @StoredProcedureParameter(direction=OUT, name="province_v", queryParameter="PROVINCE", type=String.class),
+                @StoredProcedureParameter(direction=OUT, name="p_code_v", queryParameter="P_CODE", type=String.class)}),
     @NamedStoredProcedureQuery(
     name="SProcInOut",
     resultClass=org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced.Address.class,
     procedureName="SProc_Read_InOut",
-    procedureParameters={@StoredProcedureParameter(procedureParameterDirection=IN_OUT, name="address_id_v", queryParameter="ADDRESS_ID", type=Long.class),
-                         @StoredProcedureParameter(procedureParameterDirection=OUT, name="street_v", queryParameter="STREET", type=String.class)})
+    parameters={@StoredProcedureParameter(direction=IN_OUT, name="address_id_v", queryParameter="ADDRESS_ID", type=Long.class),
+                @StoredProcedureParameter(direction=OUT, name="street_v", queryParameter="STREET", type=String.class)})
 })
 public class Address implements Serializable {
     @Id

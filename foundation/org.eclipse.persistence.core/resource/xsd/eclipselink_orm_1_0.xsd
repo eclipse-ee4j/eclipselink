@@ -2830,7 +2830,7 @@
 	        /**
 	         * (Optional) Defines arguments to the stored procedure.
 	         */
-	        StoredProcedureParameter[] procedureParameters() default {};
+	        StoredProcedureParameter[] parameters() default {};
 	      }
 	
 	    </xsd:documentation>
@@ -2838,7 +2838,7 @@
 	    <xsd:sequence>
 	      <xsd:element name="hint" type="orm:query-hint" minOccurs="0" 
 	                   maxOccurs="unbounded"/>
-	      <xsd:element name="procedure-parameter" type="orm:stored-procedure-parameter" 
+	      <xsd:element name="parameter" type="orm:stored-procedure-parameter" 
 	                   minOccurs="0" maxOccurs="unbounded"/>
 	    </xsd:sequence>
 	  <xsd:attribute name="name" type="xsd:string" use="required"/>
@@ -2864,7 +2864,7 @@
 	        /**
 	         * (Optional) The direction of the stored procedure parameter.
 	         */
-	        Direction procedureParameterDirection() default IN;
+	        Direction direction() default IN;
 	
 	        /**
 	         * (Optional) Stored procedure parameter name.

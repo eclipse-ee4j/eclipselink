@@ -69,5 +69,5 @@ public @interface NamedStoredProcedureQuery {
     /**
      * (Optional) Defines arguments to the stored procedure.
      */
-    StoredProcedureParameter[] procedureParameters() default {};
+    StoredProcedureParameter[] parameters() default {};
 }

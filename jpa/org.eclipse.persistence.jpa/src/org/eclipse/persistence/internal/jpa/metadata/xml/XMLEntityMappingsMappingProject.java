@@ -1413,11 +1413,11 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         descriptor.addMapping(getHintMapping());
         
         XMLCompositeCollectionMapping procedureParameterMapping = new XMLCompositeCollectionMapping();
-        procedureParameterMapping.setAttributeName("m_procedureParameters");
-        procedureParameterMapping.setGetMethodName("getProcedureParameters");
-        procedureParameterMapping.setSetMethodName("setProcedureParameters");
+        procedureParameterMapping.setAttributeName("m_parameters");
+        procedureParameterMapping.setGetMethodName("getParameters");
+        procedureParameterMapping.setSetMethodName("setParameters");
         procedureParameterMapping.setReferenceClass(StoredProcedureParameterMetadata.class);
-        procedureParameterMapping.setXPath("orm:procedure-parameter");
+        procedureParameterMapping.setXPath("orm:parameter");
         descriptor.addMapping(procedureParameterMapping);
         
         descriptor.addMapping(getNameAttributeMapping());

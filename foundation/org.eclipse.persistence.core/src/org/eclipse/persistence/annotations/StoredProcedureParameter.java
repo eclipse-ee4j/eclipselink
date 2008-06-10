@@ -33,7 +33,7 @@ public @interface StoredProcedureParameter {
     /**
      * (Optional) The direction of the stored procedure parameter.
      */
-    Direction procedureParameterDirection() default IN;
+    Direction direction() default IN;
 
     /**
      * (Optional) Stored procedure parameter name.

@@ -53,7 +53,7 @@ public class StoredProcedureParameterMetadata extends ORMetadata {
     public StoredProcedureParameterMetadata(Annotation storedProcedureParameter, MetadataAccessibleObject accessibleObject) {
         super(storedProcedureParameter, accessibleObject);
         
-        m_direction = (Enum) MetadataHelper.invokeMethod("procedureParameterDirection", storedProcedureParameter);
+        m_direction = (Enum) MetadataHelper.invokeMethod("direction", storedProcedureParameter);
         m_name = (String) MetadataHelper.invokeMethod("name", storedProcedureParameter);
         m_queryParameter = (String) MetadataHelper.invokeMethod("queryParameter", storedProcedureParameter); 
         m_type = (Class) MetadataHelper.invokeMethod("type", storedProcedureParameter);
