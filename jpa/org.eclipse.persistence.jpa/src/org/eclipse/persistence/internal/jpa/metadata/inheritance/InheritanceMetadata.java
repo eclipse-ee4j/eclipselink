@@ -70,9 +70,9 @@ public class InheritanceMetadata extends ORMetadata {
         if (m_strategy == null || m_strategy.equals(InheritanceType.SINGLE_TABLE)) {
             // TODO: Log a defaulting message if strategy is null.
             classDescriptor.getInheritancePolicy().setSingleTableStrategy();
-        } else if (m_strategy.equals(InheritanceType.JOINED)) {
+        } else if (m_strategy.name().equals(InheritanceType.JOINED.name())) {
             classDescriptor.getInheritancePolicy().setJoinedStrategy();
-        } else if (m_strategy.equals(InheritanceType.TABLE_PER_CLASS)) {
+        } else if (m_strategy.name().equals(InheritanceType.TABLE_PER_CLASS.name())) {
             throw ValidationException.tablePerClassInheritanceNotSupported(getLocation());
         }        
     }

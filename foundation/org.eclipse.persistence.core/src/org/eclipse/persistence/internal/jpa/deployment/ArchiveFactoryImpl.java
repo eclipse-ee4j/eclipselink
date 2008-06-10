@@ -25,6 +25,8 @@ import java.util.jar.JarInputStream;
 import java.util.logging.Logger;
 import java.util.logging.Level;
 
+import org.eclipse.persistence.internal.helper.Helper;
+
 /**
  * This class is written to deal with various URLs that can be returned by
  * {@link javax.persistence.spi.PersistenceUnitInfo#getPersistenceUnitRootUrl()}
@@ -54,21 +56,7 @@ public class ArchiveFactoryImpl {
         logger.logp(Level.FINER, "ArchiveFactoryImpl", "createArchive", "protocol = {0}", protocol);
         
         if ("file".equals(protocol)) {
-            URI uri = null;
-            try {
-                // Attempt to use url.toURI since it will deal with all urls 
-                // without special characters and URISyntaxException allows us 
-                // to catch issues with special characters. This will handle 
-                // URLs that already have special characters replaced such as 
-                // URLS derived from searches for persistence.xml on the Java 
-                // System class loader
-                uri = url.toURI();
-            } catch (URISyntaxException exception) {
-                // Use multi-argument constructor for URI since single-argument 
-                // constructor and URL.toURI() do not deal with special 
-                // characters in path
-                uri = new URI(url.getProtocol(), url.getUserInfo(), url.getHost(), url.getPort(), url.getPath(), url.getQuery(), null);
-            }
+            URI uri = Helper.toURI(url);
             
             File f = new File(uri);
         

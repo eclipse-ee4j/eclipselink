@@ -69,7 +69,7 @@ public class ClassConstants {
     public static final Class MapChangeEvent_Class = org.eclipse.persistence.descriptors.changetracking.MapChangeEvent.class;
     public static final Class ChangeTracker_Class = org.eclipse.persistence.descriptors.changetracking.ChangeTracker.class;
     public static final Class WeavedAttributeValueHolderInterface_Class = org.eclipse.persistence.indirection.WeavedAttributeValueHolderInterface.class;
-    public static final Class PersistenceWeaved_Class = org.eclipse.persistence.internal.weaving.PersistenceWeaved.class;
+    public static final Class PersistenceWeavedLazy_Class = org.eclipse.persistence.internal.weaving.PersistenceWeavedLazy.class;
     
     // Identity map classes
     public static final Class CacheIdentityMap_Class = org.eclipse.persistence.internal.identitymaps.CacheIdentityMap.class;

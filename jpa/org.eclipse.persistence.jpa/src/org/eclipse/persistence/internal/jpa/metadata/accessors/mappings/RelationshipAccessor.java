@@ -238,8 +238,7 @@ public abstract class RelationshipAccessor extends MappingAccessor {
         if (fetchType == null) {
             fetchType = getDefaultFetchType();
         }
-        
-        return fetchType.equals(FetchType.LAZY);
+        return fetchType.name().equals(FetchType.LAZY.name());
     }
     
     /**
@@ -374,15 +373,15 @@ public abstract class RelationshipAccessor extends MappingAccessor {
      * Set the cascade type on a mapping.
      */
     protected void setCascadeType(Enum type, ForeignReferenceMapping mapping) {
-        if(type.equals(CascadeType.ALL)) {
+        if(type.name().equals(CascadeType.ALL.name())) {
             mapping.setCascadeAll(true);
-        }else if(type.equals(CascadeType.MERGE)) {
+        }else if(type.name().equals(CascadeType.MERGE.name())) {
             mapping.setCascadeMerge(true);
-        }else if(type.equals(CascadeType.PERSIST)) {
+        }else if(type.name().equals(CascadeType.PERSIST.name())) {
             mapping.setCascadePersist(true);
-        }else if(type.equals(CascadeType.REFRESH)) {
+        }else if(type.name().equals(CascadeType.REFRESH.name())) {
             mapping.setCascadeRefresh(true);
-        }else if(type.equals(CascadeType.REMOVE)) {
+        }else if(type.name().equals(CascadeType.REMOVE.name())) {
             mapping.setCascadeRemove(true);
         }
     }

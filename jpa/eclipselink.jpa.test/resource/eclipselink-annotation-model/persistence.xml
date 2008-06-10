@@ -58,6 +58,9 @@
             <property name="eclipselink.drop-ddl-jdbc-file-name" value="advanced-model-drop.jdbc"/>
             <property name="eclipselink.ddl-generation.output-mode" value="sql-script"/>
             <property name="eclipselink.validate-existence" value="true"/>
+            <!--Uncomment these to test weaving options >
+            <property name="eclipselink.weaving.eager" value="true"/>
+            <property name="eclipselink.weaving.internal" value="false"/-->
         </properties>
     </persistence-unit>
     <persistence-unit name="default1">
@@ -78,7 +81,7 @@
         <class>org.eclipse.persistence.testing.models.jpa.relationships.Item</class>
         <exclude-unlisted-classes>true</exclude-unlisted-classes>
         <properties>
-            <property name="toplink.session-name" value="isolated-session1053"/>
+            <property name="eclipselink.session-name" value="isolated-session1053"/>
             <property name="eclipselink.cache.shared.default" value="false"/>
         </properties>
     </persistence-unit>

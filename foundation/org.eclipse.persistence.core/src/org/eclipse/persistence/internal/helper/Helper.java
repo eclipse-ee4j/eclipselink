@@ -15,6 +15,8 @@ package org.eclipse.persistence.internal.helper;
 import java.util.*;
 import java.io.*;
 import java.lang.reflect.*;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.security.AccessController;
 import java.security.PrivilegedActionException;
 import java.sql.Timestamp;
@@ -1966,8 +1968,8 @@ public class Helper implements Serializable {
     }
 
     /**
-    * Convert the specified array into a vector.
-    */
+     * Convert the specified array into a vector.
+     */
     public static Vector vectorFromArray(Object[] array) {
         Vector result = new Vector(array.length);
         for (int i = 0; i < array.length; i++) {
@@ -1994,4 +1996,23 @@ public class Helper implements Serializable {
                                         || ((value.getClass() == ClassConstants.INTEGER) && (((Integer)value).intValue() == 0))));
     }
 
+    /**
+     * Convert the URL into a URI allowing for special chars.
+     */
+    public static URI toURI(java.net.URL url) throws URISyntaxException {
+        try {
+            // Attempt to use url.toURI since it will deal with all urls 
+            // without special characters and URISyntaxException allows us 
+            // to catch issues with special characters. This will handle 
+            // URLs that already have special characters replaced such as 
+            // URLS derived from searches for persistence.xml on the Java 
+            // System class loader
+            return url.toURI();
+        } catch (URISyntaxException exception) {
+            // Use multi-argument constructor for URI since single-argument 
+            // constructor and URL.toURI() do not deal with special 
+            // characters in path
+            return new URI(url.getProtocol(), url.getUserInfo(), url.getHost(), url.getPort(), url.getPath(), url.getQuery(), null);
+        }
+    }
 }

@@ -32,6 +32,7 @@ import org.eclipse.persistence.internal.jpa.metadata.columns.PrimaryKeyJoinColum
 import org.eclipse.persistence.internal.jpa.metadata.MetadataDescriptor;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataLogger;
 
+import org.eclipse.persistence.internal.helper.ClassConstants;
 import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.indirection.WeavedObjectBasicIndirectionPolicy;
 
@@ -188,9 +189,12 @@ public abstract class ObjectAccessor extends RelationshipAccessor {
      * Process the indirection (aka fetch type)
      */
     protected void processIndirection(ObjectReferenceMapping mapping) {
-        // If the global weave for value holders is true, the use the value
-        // from usesIndirection. Otherwise, force it to false.
-        boolean usesIndirection = (getProject().isWeavingEnabled()) ? usesIndirection() : false;
+        boolean usesIndirection = usesIndirection();
+        // If weaving was disabled, and the class was not static weaved,
+        // then disable indirection.
+        if (usesIndirection && (!getProject().isWeavingEnabled()) && (!ClassConstants.PersistenceWeavedLazy_Class.isAssignableFrom(getDescriptor().getJavaClass()))) {
+            usesIndirection = false;
+        }
         if (usesIndirection && usesPropertyAccess(getDescriptor())) {
             mapping.setIndirectionPolicy(new WeavedObjectBasicIndirectionPolicy(getSetMethodName()));
         } else {

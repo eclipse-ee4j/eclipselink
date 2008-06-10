@@ -96,15 +96,15 @@ public class OptimisticLockingMetadata extends ORMetadata {
      */
     public void process(MetadataDescriptor descriptor) {
         // Process the type. A null will default to VERSION_COLUMN.
-        if (m_type == null || m_type.equals(OptimisticLockingType.VERSION_COLUMN)) {
+        if (m_type == null || m_type.name().equals(OptimisticLockingType.VERSION_COLUMN.name())) {
             // A version annotation or element should be define and discovered
             // in later processing.
             descriptor.setUsesCascadedOptimisticLocking(m_cascade != null && m_cascade.booleanValue());
-        } else if (m_type.equals(OptimisticLockingType.ALL_COLUMNS)) {
+        } else if (m_type.name().equals(OptimisticLockingType.ALL_COLUMNS.name())) {
             descriptor.setOptimisticLockingPolicy(new AllFieldsLockingPolicy());
-        } else if (m_type.equals(OptimisticLockingType.CHANGED_COLUMNS)) {
+        } else if (m_type.name().equals(OptimisticLockingType.CHANGED_COLUMNS.name())) {
             descriptor.setOptimisticLockingPolicy(new ChangedFieldsLockingPolicy());
-        } else if (m_type.equals(OptimisticLockingType.SELECTED_COLUMNS)) {
+        } else if (m_type.name().equals(OptimisticLockingType.SELECTED_COLUMNS.name())) {
             if (m_selectedColumns.isEmpty()) {
                 throw ValidationException.optimisticLockingSelectedColumnNamesNotSpecified(descriptor.getJavaClass());
             } else {

@@ -193,11 +193,11 @@ public abstract class DirectAccessor extends MappingAccessor {
      * Return the field classification for the given temporal type.
      */
     protected Class getFieldClassification(Enum type) {
-        if (type.equals(TemporalType.DATE)){
+        if (type.name().equals(TemporalType.DATE.name())){
             return java.sql.Date.class;
-        } else if(type.equals(TemporalType.TIME)){
+        } else if(type.name().equals(TemporalType.TIME.name())){
             return java.sql.Time.class;
-        } else if(type.equals(TemporalType.TIMESTAMP)){
+        } else if(type.name().equals(TemporalType.TIMESTAMP.name())){
             return java.sql.Timestamp.class;
         } else {
             return null;
@@ -480,7 +480,7 @@ public abstract class DirectAccessor extends MappingAccessor {
                 // TODO: Log a defaulting message
                 setConverter(mapping, new EnumTypeConverter(mapping, getReferenceClass(), true));
             } else {
-                setConverter(mapping, new EnumTypeConverter(mapping, getReferenceClass(), m_enumerated.equals(EnumType.ORDINAL)));
+                setConverter(mapping, new EnumTypeConverter(mapping, getReferenceClass(), m_enumerated.name().equals(EnumType.ORDINAL.name())));
             }
         }
     }
@@ -603,9 +603,9 @@ public abstract class DirectAccessor extends MappingAccessor {
         } else {
             if (isValidTemporalType(getReferenceClass())) {
                 // Set a TypeConversionConverter on the mapping.
-                if (m_temporal.equals(TemporalType.DATE)) {
+                if (m_temporal.name().equals(TemporalType.DATE.name())) {
                     setFieldClassification(mapping, java.sql.Date.class);
-                } else if(m_temporal.equals(TemporalType.TIME)) {
+                } else if(m_temporal.name().equals(TemporalType.TIME.name())) {
                     setFieldClassification(mapping,java.sql.Time.class);
                 } else {
                     // Through annotation and XML validation, it must be 
@@ -693,6 +693,6 @@ public abstract class DirectAccessor extends MappingAccessor {
             fetchType = getDefaultFetchType();
         }
         
-        return fetchType.equals(FetchType.LAZY);
+        return fetchType.name().equals(FetchType.LAZY.name());
     }
 }

@@ -162,19 +162,19 @@ public class CacheMetadata extends ORMetadata {
         ClassDescriptor classDescriptor = descriptor.getClassDescriptor();
         
         // Process type
-        if (m_type == null ||m_type.equals(CacheType.SOFT_WEAK)) {
+        if (m_type == null ||m_type.name().equals(CacheType.SOFT_WEAK.name())) {
             classDescriptor.useSoftCacheWeakIdentityMap();
-        } else if (m_type.equals(CacheType.FULL)) {
+        } else if (m_type.name().equals(CacheType.FULL.name())) {
             classDescriptor.useFullIdentityMap();
-        } else if (m_type.equals(CacheType.WEAK)) {
+        } else if (m_type.name().equals(CacheType.WEAK.name())) {
             classDescriptor.useWeakIdentityMap();
-        }  else if (m_type.equals(CacheType.SOFT)) {
+        }  else if (m_type.name().equals(CacheType.SOFT.name())) {
             classDescriptor.useSoftIdentityMap();
-        } else if (m_type.equals(CacheType.HARD_WEAK)) {
+        } else if (m_type.name().equals(CacheType.HARD_WEAK.name())) {
             classDescriptor.useHardCacheWeakIdentityMap();
-        } else if (m_type.equals(CacheType.CACHE)) {
+        } else if (m_type.name().equals(CacheType.CACHE.name())) {
             classDescriptor.useCacheIdentityMap();
-        } else if (m_type.equals(CacheType.NONE)) {
+        } else if (m_type.name().equals(CacheType.NONE.name())) {
             classDescriptor.useNoIdentityMap();
         }
         

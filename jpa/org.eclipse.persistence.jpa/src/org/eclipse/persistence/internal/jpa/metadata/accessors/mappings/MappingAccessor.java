@@ -92,7 +92,7 @@ public abstract class MappingAccessor extends MetadataAccessor {
     protected int getMappingJoinFetchType(Enum joinFetchType) {
         if (joinFetchType == null) {
             return ForeignReferenceMapping.NONE;
-        } else if (joinFetchType.equals(JoinFetchType.INNER)) {
+        } else if (joinFetchType.name().equals(JoinFetchType.INNER.name())) {
             return ForeignReferenceMapping.INNER_JOIN;
         }
         

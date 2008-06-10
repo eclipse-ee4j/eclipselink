@@ -285,7 +285,7 @@ public class JPAPerformanceRegressionModel extends TestModel {
     public TestCase buildDateChangeTrackingTest() {
         TestCase test = new TestCase() {
             @SuppressWarnings("deprecation")
-			public void test() throws Exception {                
+            public void test() throws Exception {                
                 EntityManager manager = createEntityManager();
                 manager.getTransaction().begin();
                 Employee employee = (Employee)manager.createQuery("Select e from Employee e").getResultList().get(0);

@@ -1075,13 +1075,13 @@ public class MetadataDescriptor {
     public void setExistenceChecking(Enum existenceChecking) {
         m_existenceChecking = existenceChecking;
         
-        if (existenceChecking.equals(ExistenceType.CHECK_CACHE)) {
+        if (existenceChecking.name().equals(ExistenceType.CHECK_CACHE.name())) {
             m_descriptor.getQueryManager().checkCacheForDoesExist();
-        } else if (existenceChecking.equals(ExistenceType.CHECK_DATABASE)) {
+        } else if (existenceChecking.name().equals(ExistenceType.CHECK_DATABASE.name())) {
             m_descriptor.getQueryManager().checkDatabaseForDoesExist();
-        } else if (existenceChecking.equals(ExistenceType.ASSUME_EXISTENCE)) {
+        } else if (existenceChecking.name().equals(ExistenceType.ASSUME_EXISTENCE.name())) {
             m_descriptor.getQueryManager().assumeExistenceForDoesExist();
-        } else if (existenceChecking.equals(ExistenceType.ASSUME_NON_EXISTENCE)) {
+        } else if (existenceChecking.name().equals(ExistenceType.ASSUME_NON_EXISTENCE.name())) {
             m_descriptor.getQueryManager().assumeNonExistenceForDoesExist();
         }
     }

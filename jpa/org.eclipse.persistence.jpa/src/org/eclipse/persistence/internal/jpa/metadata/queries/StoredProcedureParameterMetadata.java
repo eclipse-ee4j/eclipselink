@@ -193,7 +193,7 @@ public class StoredProcedureParameterMetadata extends ORMetadata {
         String procedureParameterName = m_name.equals("") ? m_queryParameter : m_name;
                         
         // Process the parameter direction
-        if (m_direction == null || m_direction.equals(Direction.IN)) {
+        if (m_direction == null || m_direction.name().equals(Direction.IN.name())) {
             // TODO: Log a defaulting message if m_direction is null.
             if (hasType()) {
                 call.addNamedArgument(procedureParameterName, m_queryParameter, m_type);
@@ -206,7 +206,7 @@ public class StoredProcedureParameterMetadata extends ORMetadata {
             }
                             
             queryArguments.add(m_queryParameter);
-        } else if (m_direction.equals(Direction.OUT)) {
+        } else if (m_direction.name().equals(Direction.OUT.name())) {
             if (hasType()) {
                 call.addNamedOutputArgument(procedureParameterName, m_queryParameter, m_type);
             } else if (hasJdbcType() && hasJdbcTypeName()) {
@@ -216,7 +216,7 @@ public class StoredProcedureParameterMetadata extends ORMetadata {
             } else {
                 call.addNamedOutputArgument(procedureParameterName, m_queryParameter);
             }
-        } else if (m_direction.equals(Direction.IN_OUT)) {
+        } else if (m_direction.name().equals(Direction.IN_OUT.name())) {
             if (hasType()) {
                 call.addNamedInOutputArgument(procedureParameterName, m_queryParameter, m_queryParameter, m_type);
             } else if (hasJdbcType() && hasJdbcTypeName()) {
@@ -228,7 +228,7 @@ public class StoredProcedureParameterMetadata extends ORMetadata {
             }
                             
             queryArguments.add(m_queryParameter);
-        } else if (m_direction.equals(Direction.OUT_CURSOR)) {
+        } else if (m_direction.name().equals(Direction.OUT_CURSOR.name())) {
             call.useNamedCursorOutputAsResultSet(m_queryParameter);
         }
       

@@ -41,16 +41,18 @@ import org.apache.tools.ant.types.Path;
 * <li>Ensure the classpath contains all the classes necessary to load the classes in the source.
 * <li>The lib containing this weaving Ant task must be added into the classpath by using the -lib option on Ant command line instead of using the classpath attribute of the taskdef Ant task.
 * <li>Define weaving Ant task and Ant target by using following attributes:
-* source  - specify source location. In the default configuration StaticWeaveAntTask assumes the source contains the persistence.xml,if this is not the case, the location containing the persistence.xml must be explicitly identified by the attribute 'persistenceinfo'.
-* target - specify the output location (either a directory or a jar).  
-* persistenceinfo - specify the location containing the persistence.xml. This is optional and should only be specified if the source does not contain the persistence.xml.
-* log - specify a logging file. This is optional
-* loglevel - specify a literal value of eclipselink logging level(OFF,SEVERE,WARNING,INFO,CONFIG,FINE,FINER,FINEST) The default value is OFF(8). This is optional.
+* <ul><li>source  - specify source location. In the default configuration StaticWeaveAntTask assumes the source contains the persistence.xml,if this is not the case, the location containing the persistence.xml must be explicitly identified by the attribute 'persistenceinfo'.
+* <li>target - specify the output location (either a directory or a jar).  
+* <li>persistenceinfo - specify the location containing the persistence.xml. This is optional and should only be specified if the source does not contain the persistence.xml.
+* <li>log - specify a logging file. This is optional.
+* <li>loglevel - specify a literal value of EclipseLink logging level(OFF,SEVERE,WARNING,INFO,CONFIG,FINE,FINER,FINEST) The default value is OFF(8). This is optional.
+* </ul>
 * <li>The weaving will be performed in place if source and target point to the same location. Weaving in place is ONLY applicable for directory-based sources.
 * </ul>
 *<b>Example</b>:
+*<br>
 *<code>
-*&lt;target name="define.task" description="New task definition for eclipselink static weaving"/&gt;<br>
+*&lt;target name="define.task" description="New task definition for EclipseLink static weaving"/&gt;<br>
 *&nbsp;&nbsp;&lt;taskdef name="weave" classname="org.eclipse.persistence.tools.weaving.jpa.StaticWeaveAntTask"/&gt;<br>
 *&lt;/target&gt;<br>
 *&lt;target name="weaving" description="perform weaving." depends="define.task"&gt;<br>
@@ -63,36 +65,31 @@ import org.apache.tools.ant.types.Path;
 *</code>
 */
 
-
 public class StaticWeaveAntTask extends Task{
     
     private String source;
     private String persistenceinfo;
     private String target;
     private Vector classPaths = new Vector();
-    private int logLevel=SessionLog.OFF;
-    private Writer logWriter;
-    
+    private int logLevel = SessionLog.OFF;
+    private Writer logWriter;    
     
     /**
      * Set the input archive to be used to weave.
-     * @param inputJarFile
      */
     public void setSource(String source) {
            this.source = source;
     }
 
     /**
-     * Set output archive to be used to weave to
-     * @param outputJarFile
+     * Set output archive to be used to weave to.
      */
     public void setTarget(String target) {
            this.target = target;
     }
    
     /**
-     * Set the archive containing persistence.xml while input archive does not contain it.
-     * @param inputMainJarFile
+     * Set the log file.
      */
     public void setLog(String logFile) throws IOException {
         try{
@@ -112,7 +109,7 @@ public class StaticWeaveAntTask extends Task{
             logLevel.equalsIgnoreCase("FINER") || 
             logLevel.equalsIgnoreCase("FINEST") || 
             logLevel.equalsIgnoreCase("ALL")) {
-            this.logLevel=AbstractSessionLog.translateStringToLoggingLevel(logLevel.toUpperCase());
+            this.logLevel = AbstractSessionLog.translateStringToLoggingLevel(logLevel.toUpperCase());
         } else{
             throw StaticWeaveException.illegalLoggingLevel(logLevel);
         }
@@ -123,14 +120,13 @@ public class StaticWeaveAntTask extends Task{
     }
     
     /**
-     * Add the dependent classpath in order to load classes from the specified input jar.  
-     * @param path
+     * Add the dependent classpath in order to load classes from the specified input jar.
      */
     public void addClasspath(Path path) {
         classPaths.add(path);
     }
     
-    /*
+    /**
      * Parse the class path element and store them into vector.
      */
     private Vector getPathElement(){
@@ -149,7 +145,7 @@ public class StaticWeaveAntTask extends Task{
         return pathElements;
     }
     
-    /*
+    /**
      * Convert the path element into the URL which further pass into
      * the classloader. 
      */
@@ -158,19 +154,16 @@ public class StaticWeaveAntTask extends Task{
         URL[] urls = new URL[pathElements.size()];
         for(int i=0;i<pathElements.size();i++){
            try {
-               // 234413: encode URL (spaces become + chars)
-               urls[i] = (new File(URLEncoder.encode(((String)pathElements.get(i)), "UTF8"))).toURI().toURL();
-           } catch (UnsupportedEncodingException uee) {
-               throw StaticWeaveException.exceptionPerformWeaving(uee);
+               urls[i] = (new File((String)pathElements.get(i))).toURI().toURL();
            } catch (MalformedURLException e) {
-               throw StaticWeaveException.exceptionPerformWeaving(e);
+               throw StaticWeaveException.exceptionPerformWeaving(e, pathElements.get(i));
            }
         }
         return urls;
     }
 
     /**
-     * Execute ant task
+     * Execute ant task.
      */
     public void execute() {
        verifyOptions();
@@ -181,37 +174,38 @@ public class StaticWeaveAntTask extends Task{
      * Verify the value of attributes.
      * @throws BuildException
      */
-    private void verifyOptions() throws BuildException{
-       if(source==null) {
+    private void verifyOptions() throws BuildException {
+       if (source==null) {
            throw StaticWeaveException.missingSource();
        }
        
-       if(target==null) {
+       if (target==null) {
            throw StaticWeaveException.missingTarget();
        }
     }
    
     /**
-     * Invoke weaving process..
+     * Invoke weaving process.
      */
-    private void start(){
-       try{
+    private void start() {
+       try {
            StaticWeaveProcessor weave = new StaticWeaveProcessor(source, target);
            URL[] urls = getURLs();
-           if(urls!=null){
+           if (urls!=null) {
                URLClassLoader classLoader = new URLClassLoader(getURLs(), Thread.currentThread().getContextClassLoader());
                weave.setClassLoader(classLoader);
            }
-           if(persistenceinfo!=null){
+           if (persistenceinfo!=null) {
                weave.setPersistenceInfo(persistenceinfo);
            }
-           if(logWriter!=null){
+           if (logWriter!=null) {
                weave.setLog(logWriter);
            }
            weave.setLogLevel(this.logLevel);
            weave.performWeaving();
-       }catch(Exception e){
-           throw StaticWeaveException.exceptionPerformWeaving(e);
+       } catch (Exception e) {
+           AbstractSessionLog.getLog().logThrowable(AbstractSessionLog.SEVERE, e);
+           throw StaticWeaveException.exceptionPerformWeaving(e, source);
        }
     }
 }

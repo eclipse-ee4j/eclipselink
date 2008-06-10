@@ -569,71 +569,66 @@ public class ClassWeaver extends ClassAdapter implements Constants {
     }
     
     /**
-     * Add an internal clone method.
+     * Add an internal post clone method.
      * This will clone value holders to avoid change original/clone to effect the other.
      * 
-     * public void _persistence_clone() {
-     *     ClassType clone = super.clone();
-     *     clone._attribute_vh = this._attribute_vh.clone();
+     * public Object _persistence_post_clone() {
+     *     this._attribute_vh = this._attribute_vh.clone();
      *     ...
-     *     clone._persistence_listener = null;
-     *     return clone;
+     *     this._persistence_listener = null;
+     *     return this;
      * }
      */
-    public void addPersistenceClone(ClassDetails classDetails) {
-        // create the clone() method
-        CodeVisitor cv_clone = cv.visitMethod(ACC_PUBLIC, "_persistence_clone", "()Ljava/lang/Object;", null, null);
+    public void addPersistencePostClone(ClassDetails classDetails) {
+        // create the _persistence_post_clone() method
+        CodeVisitor cv_clone = cv.visitMethod(ACC_PUBLIC, "_persistence_post_clone", "()Ljava/lang/Object;", null, null);
 
-        // ClassType clone = (ClassType)super.clone();
-        cv_clone.visitVarInsn(ALOAD, 0);
-        cv_clone.visitMethodInsn(INVOKESPECIAL, classDetails.getSuperClassName(), "clone", "()Ljava/lang/Object;");
-        cv_clone.visitTypeInsn(CHECKCAST, classDetails.getClassName());
-        cv_clone.visitVarInsn(ASTORE, 2);
-        
-        for (Iterator iterator = classDetails.getAttributesMap().values().iterator(); iterator.hasNext(); ) {
-            AttributeDetails attributeDetails = (AttributeDetails)iterator.next();
-            if (attributeDetails.weaveValueHolders() && !attributeDetails.isAttributeOnSuperClass()) {
-                // clone._attribute_vh = this._attribute_vh.clone();
-                cv_clone.visitVarInsn(ALOAD, 2);
-                cv_clone.visitFieldInsn(GETFIELD, classDetails.getClassName(), "_persistence_" + attributeDetails.getAttributeName() + "_vh", ClassWeaver.VHI_SIGNATURE);
-                Label label = new Label();
-                cv_clone.visitJumpInsn(IFNULL, label);
-                cv_clone.visitVarInsn(ALOAD, 2);
-                cv_clone.visitVarInsn(ALOAD, 0);
-                cv_clone.visitFieldInsn(GETFIELD, classDetails.getClassName(), "_persistence_" + attributeDetails.getAttributeName() + "_vh", ClassWeaver.VHI_SIGNATURE);
-                cv_clone.visitMethodInsn(INVOKEINTERFACE, ClassWeaver.VHI_SHORT_SIGNATURE, "clone", "()Ljava/lang/Object;");
-                cv_clone.visitTypeInsn(CHECKCAST, ClassWeaver.VHI_SHORT_SIGNATURE);
-                cv_clone.visitFieldInsn(PUTFIELD, classDetails.getClassName(), "_persistence_" + attributeDetails.getAttributeName() + "_vh", ClassWeaver.VHI_SIGNATURE);
-                cv_clone.visitLabel(label);
+        if (classDetails.shouldWeaveValueHolders()) {
+            for (Iterator iterator = classDetails.getAttributesMap().values().iterator(); iterator.hasNext(); ) {
+                AttributeDetails attributeDetails = (AttributeDetails)iterator.next();
+                if (attributeDetails.weaveValueHolders()) { // && !attributeDetails.isAttributeOnSuperClass()) {
+                    // clone._attribute_vh = this._attribute_vh.clone();
+                    cv_clone.visitVarInsn(ALOAD, 0);
+                    cv_clone.visitFieldInsn(GETFIELD, classDetails.getClassName(), "_persistence_" + attributeDetails.getAttributeName() + "_vh", ClassWeaver.VHI_SIGNATURE);
+                    Label label = new Label();
+                    cv_clone.visitJumpInsn(IFNULL, label);
+                    cv_clone.visitVarInsn(ALOAD, 0);
+                    cv_clone.visitVarInsn(ALOAD, 0);
+                    cv_clone.visitFieldInsn(GETFIELD, classDetails.getClassName(), "_persistence_" + attributeDetails.getAttributeName() + "_vh", ClassWeaver.VHI_SIGNATURE);
+                    cv_clone.visitMethodInsn(INVOKEINTERFACE, ClassWeaver.VHI_SHORT_SIGNATURE, "clone", "()Ljava/lang/Object;");
+                    cv_clone.visitTypeInsn(CHECKCAST, ClassWeaver.VHI_SHORT_SIGNATURE);
+                    cv_clone.visitFieldInsn(PUTFIELD, classDetails.getClassName(), "_persistence_" + attributeDetails.getAttributeName() + "_vh", ClassWeaver.VHI_SIGNATURE);
+                    cv_clone.visitLabel(label);
+                }
             }
         }
         if (classDetails.shouldWeaveChangeTracking()) {
             // clone._persistence_listener = null;
-            cv_clone.visitVarInsn(ALOAD, 2);
+            cv_clone.visitVarInsn(ALOAD, 0);
             cv_clone.visitInsn(ACONST_NULL);
             cv_clone.visitFieldInsn(PUTFIELD, classDetails.getClassName(), "_persistence_listener", PCL_SIGNATURE);
         }
         if (classDetails.shouldWeaveFetchGroups()) {
             // clone._persistence_fetchGroup = null;
             // clone._persistence_session = null;
-            cv_clone.visitVarInsn(ALOAD, 2);
+            cv_clone.visitVarInsn(ALOAD, 0);
             cv_clone.visitInsn(ACONST_NULL);
             cv_clone.visitFieldInsn(PUTFIELD, classDetails.getClassName(), "_persistence_fetchGroup", FETCHGROUP_SIGNATURE);
-            cv_clone.visitVarInsn(ALOAD, 2);
+            cv_clone.visitVarInsn(ALOAD, 0);
             cv_clone.visitInsn(ACONST_NULL);
             cv_clone.visitFieldInsn(PUTFIELD, classDetails.getClassName(), "_persistence_session", SESSION_SIGNATURE);
         }
         // clone._persistence_primaryKey = null;
-        cv_clone.visitVarInsn(ALOAD, 2);
+        cv_clone.visitVarInsn(ALOAD, 0);
         cv_clone.visitInsn(ACONST_NULL);
         cv_clone.visitFieldInsn(PUTFIELD, classDetails.getClassName(), "_persistence_primaryKey", VECTOR_SIGNATURE);
         // clone._persistence_cacheKey = null;
-        cv_clone.visitVarInsn(ALOAD, 2);
+        cv_clone.visitVarInsn(ALOAD, 0);
         cv_clone.visitInsn(ACONST_NULL);
         cv_clone.visitFieldInsn(PUTFIELD, classDetails.getClassName(), "_persistence_cacheKey", CACHEKEY_SIGNATURE);
         
         // return clone;
-        cv_clone.visitVarInsn(ALOAD, 2);
+        cv_clone.visitVarInsn(ALOAD, 0);
         cv_clone.visitInsn(ARETURN);
         cv_clone.visitMaxs(0, 0);
     }
@@ -997,9 +992,7 @@ public class ClassWeaver extends ClassAdapter implements Constants {
                 this.cv.visitField(ACC_PUBLIC + ACC_STATIC + ACC_FINAL, "serialVersionUID", LONG_SIGNATURE, suid, null);
             }
             // Add a persistence and shallow clone method.
-            if (this.classDetails.shouldWeaveValueHolders()) {
-                addPersistenceClone(this.classDetails);
-            }
+            addPersistencePostClone(this.classDetails);
             if (this.classDetails.getSuperClassDetails() == null) {
                 addShallowClone(this.classDetails);        
                 if (!this.classDetails.isEmbedable()) {

@@ -21,6 +21,8 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.jar.JarEntry;
 
+import org.eclipse.persistence.internal.helper.Helper;
+
 /**
  * The class provides a set of methods to pack passed-in entries into the sepcified archive file.
  * the class handle directory output.
@@ -76,7 +78,7 @@ public class StaticWeaveDirectoryOutputHandler extends AbstractStaticWeaveOutput
         if(!target.exists()) {
             target.createNewFile();
         }
-        if((new File(this.source.toURI())).isDirectory()){
+        if((new File(Helper.toURI(this.source))).isDirectory()){
             File sourceEntry = new File(this.source.getPath()+entry.getName());
             FileInputStream fis = new FileInputStream(sourceEntry);
             byte[] classBytes = new byte[fis.available()];

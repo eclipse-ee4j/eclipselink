@@ -813,23 +813,23 @@ public class MetadataProject {
                     Enum strategy = generatedValue.getStrategy();
                     
                     // A null strategy will default to AUTO.
-                    if (strategy == null || strategy.equals(GenerationType.AUTO)) {
+                    if (strategy == null || strategy.name().equals(GenerationType.AUTO.name())) {
                         usesAuto = true;
-                    } else if (strategy.equals(GenerationType.TABLE)) {
+                    } else if (strategy.name().equals(GenerationType.TABLE.name())) {
                         if (generatorName.equals("")) {
                             sequence = defaultTableSequence;
                         } else {
                             sequence = (Sequence)defaultTableSequence.clone();
                             sequence.setName(generatorName);
                         }
-                    } else if (strategy.equals(GenerationType.SEQUENCE)) {
+                    } else if (strategy.name().equals(GenerationType.SEQUENCE.name())) {
                         if (generatorName.equals("")) {
                             sequence = defaultObjectNativeSequence;
                         } else {
                             sequence = (Sequence)defaultObjectNativeSequence.clone();
                             sequence.setName(generatorName);
                         }
-                    } else if (strategy.equals(GenerationType.IDENTITY)) {
+                    } else if (strategy.name().equals(GenerationType.IDENTITY.name())) {
                         if (generatorName.equals("")) {
                             sequence = defaultIdentityNativeSequence;
                         } else {

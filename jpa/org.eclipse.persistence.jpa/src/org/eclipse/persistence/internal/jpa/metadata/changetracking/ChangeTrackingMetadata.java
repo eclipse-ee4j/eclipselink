@@ -73,13 +73,13 @@ public class ChangeTrackingMetadata extends ORMetadata {
         ClassDescriptor classDescriptor = descriptor.getClassDescriptor();
         ObjectChangePolicy policy = null;
                    
-        if (m_type.equals(ChangeTrackingType.ATTRIBUTE)) {
+        if (m_type.name().equals(ChangeTrackingType.ATTRIBUTE.name())) {
             policy = new AttributeChangeTrackingPolicy();
-        } else if (m_type.equals(ChangeTrackingType.OBJECT)) {
+        } else if (m_type.name().equals(ChangeTrackingType.OBJECT.name())) {
             policy = new ObjectChangeTrackingPolicy();
-        } else if (m_type.equals(ChangeTrackingType.DEFERRED)) {
+        } else if (m_type.name().equals(ChangeTrackingType.DEFERRED.name())) {
             policy = new DeferredChangeDetectionPolicy();
-        } else if (m_type.equals(ChangeTrackingType.AUTO)) {
+        } else if (m_type.name().equals(ChangeTrackingType.AUTO.name())) {
             // By setting the policy to null, this will unset any global 
             // settings. EclipseLink will then determine the change tracking 
             // policy at runtime.

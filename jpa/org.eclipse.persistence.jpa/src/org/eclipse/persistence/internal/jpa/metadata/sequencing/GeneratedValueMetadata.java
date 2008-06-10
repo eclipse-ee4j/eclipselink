@@ -55,7 +55,7 @@ public class GeneratedValueMetadata {
                 
             if (m_strategy == null && generatedValue.getStrategy() != null) {
                 return false;
-            } else if (! m_strategy.equals(generatedValue.getStrategy())) {
+            } else if (! m_strategy.name().equals(generatedValue.getStrategy().name())) {
                 return false;
             }
             

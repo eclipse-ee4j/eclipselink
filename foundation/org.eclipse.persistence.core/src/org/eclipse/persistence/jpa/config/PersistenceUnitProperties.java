@@ -196,7 +196,17 @@ public class PersistenceUnitProperties {
      */
     public static final String SESSION_NAME = "eclipselink.session-name";
     
-    /** Indicates whether weaving should be performed - "true" by default. */
+    /**
+     * Indicates whether weaving should be performed.
+     * Weaving is requires for lazy OneToOne, ManyToOne, Basic, attribute change tracking, fetch groups,
+     * and other optimizations.
+     * <ul>
+     * <li>"true" by default in JEE (EJB3 compliant).
+     * <li>"true" by default in JSE if an agent is used, (JVM option: "-javaagent:eclipselink.jar").
+     * <li>"false" by default in JSE if an agent is not used.
+     * <li>"static" should be used if the static weaver was run on the persistence unit (must run static weaver ant task).
+     * </ul>
+     */
     public static final String WEAVING = "eclipselink.weaving";
     
     /** Indicates whether internal optimizations should be enabled through weaving - "true" by default. */

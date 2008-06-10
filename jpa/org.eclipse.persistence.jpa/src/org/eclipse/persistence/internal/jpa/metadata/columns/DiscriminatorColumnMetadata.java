@@ -108,9 +108,9 @@ public class DiscriminatorColumnMetadata extends ORMetadata {
         field.setColumnDefinition(MetadataHelper.getValue(m_columnDefinition, ""));
         
         // Process the type.
-        if (m_discriminatorType == null || m_discriminatorType.equals(DiscriminatorType.STRING)) {
+        if (m_discriminatorType == null || m_discriminatorType.name().equals(DiscriminatorType.STRING.name())) {
             field.setType(String.class);
-        } else if (m_discriminatorType.equals(DiscriminatorType.CHAR)) {
+        } else if (m_discriminatorType.name().equals(DiscriminatorType.CHAR.name())) {
             field.setType(Character.class);
         } else {
             // Through annotation and XML validation, it must be 

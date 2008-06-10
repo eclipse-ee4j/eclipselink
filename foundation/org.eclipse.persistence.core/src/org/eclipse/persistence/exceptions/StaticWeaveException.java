@@ -132,8 +132,8 @@ public class StaticWeaveException  extends EclipseLinkException {
     }
     
     
-    public static StaticWeaveException exceptionPerformWeaving(Exception cause) {
-        Object[] args = { };
+    public static StaticWeaveException exceptionPerformWeaving(Exception cause, Object sourceJar) {
+        Object[] args = { sourceJar };
 
         StaticWeaveException loadingException = new StaticWeaveException(ExceptionMessageGenerator.buildMessage(StaticWeaveException.class, EXCEPTION_WEAVING, args), cause);
         loadingException.setResourceName(null);

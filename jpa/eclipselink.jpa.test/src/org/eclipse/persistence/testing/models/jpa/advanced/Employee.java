@@ -190,11 +190,16 @@ public class Employee implements Serializable, Cloneable {
     }
     
     public Employee clone() {
+        Employee clone = null;
         try {
-            return (Employee)super.clone();
+            clone = (Employee)super.clone();
         } catch (CloneNotSupportedException exception) {
             throw new InternalError(exception.toString());
         }
+        clone.projects = new Vector(this.projects);
+        clone.managedEmployees = new Vector(this.managedEmployees);
+        clone.responsibilities = new Vector(this.responsibilities);
+        return clone;
     }
     
     public void addManagedEmployee(Employee emp) {

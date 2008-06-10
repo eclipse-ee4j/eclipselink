@@ -113,7 +113,7 @@ public class DescriptorExceptionResource extends ListResourceBundle {
                                            { "93", "The table [{0}] is not present in this descriptor." },
                                            { "94", "Descriptors must have a table name defined." },
                                            { "96", "The number of target keys does not match the number of source keys." },
-                                           { "97", "Problem cloning the object [{0}].  The clone method [{0}] triggered an exception." },
+                                           { "97", "Problem cloning the object [{0}].  The clone method [{1}] triggered an exception." },
                                            { "98", "The underlying descriptor callback method [{0}], with parameter (DescriptorEvent), triggered an exception." },
                                            { "99", "The method [{0}] on the object [{1}] triggered an exception." },
                                            { "100", "A method has triggered an exception." },

@@ -723,7 +723,7 @@ public abstract class ForeignReferenceMapping extends DatabaseMapping {
     public void preInitialize(AbstractSession session) throws DescriptorException {
         super.preInitialize(session);
         // If weaving was used the mapping must be configured to use the weaved get/set methods.
-        if ((getIndirectionPolicy() instanceof BasicIndirectionPolicy) && ClassConstants.PersistenceWeaved_Class.isAssignableFrom(getDescriptor().getJavaClass())) {
+        if ((getIndirectionPolicy() instanceof BasicIndirectionPolicy) && ClassConstants.PersistenceWeavedLazy_Class.isAssignableFrom(getDescriptor().getJavaClass())) {
             Class attributeType = getAttributeAccessor().getAttributeClass();
             // Check that not already weaved or coded.
             if (!(ClassConstants.ValueHolderInterface_Class.isAssignableFrom(attributeType))) {

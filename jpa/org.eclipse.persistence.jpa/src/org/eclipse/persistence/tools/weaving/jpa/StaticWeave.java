@@ -81,7 +81,7 @@ public class StaticWeave {
                 staticweaver.processCommandLine();
                 staticweaver.start();
             } catch (Exception e) {
-                throw StaticWeaveException.exceptionPerformWeaving(e);
+                throw StaticWeaveException.exceptionPerformWeaving(e, argv);
             }
         }
         
