@@ -953,8 +953,6 @@ public class SDOTypesGenerator {
                 owner.addBaseType(baseType);
             }
         }
-
-        //currentType.setBaseTypes(baseTypes);
         //TODO: need owner currentType.setOpen(true);
     }
 
@@ -1155,9 +1153,8 @@ public class SDOTypesGenerator {
                 addGlobalRef(globalRef);
             }
             return;
-
         } else {
-            //TODO: if global prop already exists don't modify it
+            // TODO: if global prop already exists don't modify it
             if (isGlobal) {
                 SDOProperty lookedUpProp = getExistingGlobalProperty(targetNamespace, element.getName(), true);
                 if (lookedUpProp != null && lookedUpProp.isFinalized()) {
@@ -1172,14 +1169,13 @@ public class SDOTypesGenerator {
             if (element.getType() != null) {
                 typeName = element.getType();
                 p.setName(element.getName());
-                String xsdType = element.getType();
-                QName qname = getQNameForString(defaultNamespace, xsdType);
+                QName qname = getQNameForString(defaultNamespace, typeName);
                 if (isGlobal) {
-                    //if type is found set it other wise process new type                    
-                    processGlobalItem(targetNamespace, defaultNamespace, xsdType);
-
-                    //SDOType theType = (SDOType)aHelperContext.getTypeHelper().getType(qname.getNamespaceURI(), qname.getLocalPart());
-                    //p.setType(theType);
+                	// only process the root schema's global items if qname uri == target namespace
+                	if (qname.getNamespaceURI().equals(targetNamespace)) {
+                        //if type is found set it other wise process new type                    
+                		processGlobalItem(targetNamespace, defaultNamespace, qname.getLocalPart());
+                	}
                 }
                 if ((qname.equals(XMLConstants.BASE_64_BINARY_QNAME)) || (qname.equals(XMLConstants.HEX_BINARY_QNAME)) || (qname.equals(XMLConstants.DATE_QNAME)) || (qname.equals(XMLConstants.TIME_QNAME)) || (qname.equals(XMLConstants.DATE_TIME_QNAME))) {
                     p.setXsdType(qname);
@@ -1194,30 +1190,19 @@ public class SDOTypesGenerator {
                     p.setInstanceProperty(SDOConstants.MIME_TYPE_PROPERTY_PROPERTY, mimeTypePropName);
                 }
 
-                sdoPropertyType = getSDOTypeForName(targetNamespace, defaultNamespace, xsdType);
+                sdoPropertyType = getSDOTypeForName(targetNamespace, defaultNamespace, typeName);
                 if ((p.getXsdType() == null) && (sdoPropertyType.getXsdType() != null)) {
                     p.setXsdType(sdoPropertyType.getXsdType());
                 }
 
-                //TODO: is this right ??????  - 20070208 - I think so - only dataobjects are in the containment tree          
                 if (sdoPropertyType.isDataType()) {
                     p.setContainment(false);
                 }
             } else if (element.getComplexType() != null) {
-                //if ((typeDefParticle != null) && (maxOccursGreaterThanOne(typeDefParticle.getMaxOccurs()))) {
-                //TODO this check is probably wrong                
                 sdoPropertyType = getTypeForName(targetNamespace, defaultNamespace, element.getComplexType().getNameOrOwnerName());
                 typeName = element.getName();
-
-                //sdoPropertyType = getTypeForName(ownerName);
-                //??p.setContainingType(sdoPropertyType);
                 p.setName(element.getComplexType().getNameOrOwnerName());
-
-                //TODO: is this right
-                // }
             } else if (element.getSimpleType() != null) {
-                //String ownerName = typeDefParticle.getOwnerName();
-                //sdoPropertyType = getTypeForName(ownerName);		
                 typeName = element.getName();
                 sdoPropertyType = getTypeForName(targetNamespace, defaultNamespace, element.getName());
                 p.setName(element.getName());
@@ -1225,8 +1210,6 @@ public class SDOTypesGenerator {
                     p.setContainment(false);
                 }
             } else {
-                //TODO: is this right
-                //p.setContainment(false);
                 //we assume the xsd type to be any simple type
                 p.setName(element.getName());
                 sdoPropertyType = ((SDOTypeHelper) aHelperContext.getTypeHelper()).getSDOTypeFromXSDType(SDOConstants.ANY_TYPE_QNAME);
@@ -1235,8 +1218,8 @@ public class SDOTypesGenerator {
         sdoPropertyType = processSimpleComponentAnnotations(owningType, element, p, targetNamespace, defaultNamespace, sdoPropertyType);
 
         p.setType(sdoPropertyType);
-        //TODO:??? anonymous complexType has null name? null or name from containing element
-        //could set complexType.setName earlier	 
+        // TODO: anonymous complexType has null name? null or name from containing element
+        // could set complexType.setName earlier	 
         setDefaultValue(p, element);
 
         p.setMany(isMany);
@@ -1530,25 +1513,16 @@ public class SDOTypesGenerator {
             }
 
             typeName = attribute.getType();
-
-            //TODO: is containment always false for attributes
-            //p.setContainment(true);
             if (typeName != null) {
                 p.setName(attribute.getName());
-                //String xsdType = typeName;
                 QName qname = getQNameForString(defaultNamespace, typeName);
                 if (isGlobal) {
                     //if type is found set it other wise process new type                    
                     processGlobalItem(targetNamespace, defaultNamespace, typeName);
-
-                    // SDOType theType = (SDOType)aHelperContext.getTypeHelper().getType(qname.getNamespaceURI(), qname.getLocalPart());
-                    // p.setType(theType);
                 }
-
                 if ((qname.equals(XMLConstants.BASE_64_BINARY_QNAME)) || (qname.equals(XMLConstants.HEX_BINARY_QNAME)) || (qname.equals(XMLConstants.DATE_QNAME)) || (qname.equals(XMLConstants.TIME_QNAME)) || (qname.equals(XMLConstants.DATE_TIME_QNAME))) {
                     p.setXsdType(qname);
                 }
-
                 sdoPropertyType = getSDOTypeForName(targetNamespace, defaultNamespace, typeName);
                 if ((p.getXsdType() == null) && (sdoPropertyType.getXsdType() != null)) {
                     p.setXsdType(sdoPropertyType.getXsdType());
@@ -1631,7 +1605,7 @@ public class SDOTypesGenerator {
             }
         }
 
-        //propertyType annotation
+        // propertyType annotation
         //TODO: only process if !datatype if(!sdoPropertyType.isDataType()){
         String propertyTypeValue = (String) simpleComponent.getAttributesMap().get(SDOConstants.SDOXML_PROPERTYTYPE_QNAME);
         if (propertyTypeValue != null) {
