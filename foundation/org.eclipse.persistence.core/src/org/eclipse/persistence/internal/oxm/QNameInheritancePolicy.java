@@ -77,7 +77,12 @@ public class QNameInheritancePolicy extends InheritancePolicy {
                         qname = new QName(uri, localPart);
                     } else {
                         // we always want to create/insert QNames into the map
-                        qname = new QName(indicatorValue);
+                        if (namespaceResolver != null) {
+                            qname = new QName(namespaceResolver.getDefaultNamespaceURI(),indicatorValue);
+                        }
+                        else {
+                            qname = new QName(indicatorValue);
+                        }
                     }
                     getClassIndicatorMapping().put(qname, value);
                 }

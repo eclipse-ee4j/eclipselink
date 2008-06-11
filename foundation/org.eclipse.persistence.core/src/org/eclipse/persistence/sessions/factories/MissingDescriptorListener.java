@@ -42,7 +42,21 @@ public class MissingDescriptorListener extends SessionEventAdapter {
     public void missingDescriptor(SessionEvent event) {
         String name = ((Class)event.getResult()).getName();
         DatabaseSession session = ((DatabaseSession)event.getSession());
-	DirectToXMLTypeMappingHelper.getInstance().addXDBDescriptors(name, (DatabaseSessionImpl)session);
+        Project project = session.getProject();
+        String namespaceXPath = "";
+        NamespaceResolverWithPrefixes namespaceResolverWithPrefixes;
+        if (project instanceof NamespaceResolvableProject) {
+            // this should always be true
+            NamespaceResolvableProject nrpProject = (NamespaceResolvableProject)project;
+            namespaceXPath = nrpProject.getPrimaryNamespaceXPath();
+            namespaceResolverWithPrefixes = nrpProject.getNamespaceResolver();
+        }
+        else {
+            // this shouldn't happen - but if it does, build a new (empty) NamespaceResolverWithPrefixes
+            namespaceResolverWithPrefixes = new NamespaceResolverWithPrefixes();
+        }
+	    DirectToXMLTypeMappingHelper.getInstance().addXDBDescriptors(name,
+	        (DatabaseSessionImpl)session, namespaceResolverWithPrefixes);
 
         if (name.equals(EIS_DESCRIPTOR_CLASS) || name.equals(XML_INTERACTION_CLASS) || name.equals(EIS_LOGIN_CLASS)) {
             try {
@@ -59,14 +73,15 @@ public class MissingDescriptorListener extends SessionEventAdapter {
                 }else{
                     javaClass = PrivilegedAccessHelper.getClassForName(XML_INTERACTION_CLASS);
                 }
-                session.getDescriptor(Call.class).getInheritancePolicy().addClassIndicator(javaClass, "eclipselink:xml-interaction");
+                session.getDescriptor(Call.class).getInheritancePolicy().addClassIndicator(javaClass,
+                    namespaceXPath + "xml-interaction" );
             } catch (Exception classLoadFailure) {
                 throw ValidationException.fatalErrorOccurred(classLoadFailure);
             }
-            session.addDescriptors(new EISObjectPersistenceXMLProject());
+            session.addDescriptors(new EISObjectPersistenceXMLProject(namespaceResolverWithPrefixes));
         }
         if(name.equals(XML_BINARY_MAPPING_CLASS)) {
-            session.addDescriptors(new OXMObjectPersistenceRuntimeXMLProject());
+            session.addDescriptors(new OXMObjectPersistenceRuntimeXMLProject(namespaceResolverWithPrefixes));
         }
     }
 }

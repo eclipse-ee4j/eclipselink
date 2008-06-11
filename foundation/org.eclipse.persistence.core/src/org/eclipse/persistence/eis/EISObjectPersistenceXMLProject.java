@@ -12,25 +12,56 @@
  ******************************************************************************/  
 package org.eclipse.persistence.eis;
 
-import java.util.*;
+// javase imports
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Vector;
+
+// Java extension imports
 import javax.xml.namespace.QName;
-import org.eclipse.persistence.descriptors.*;
-import org.eclipse.persistence.eis.mappings.*;
-import org.eclipse.persistence.eis.interactions.*;
-import org.eclipse.persistence.internal.descriptors.*;
-import org.eclipse.persistence.internal.helper.*;
+
+// EclipseLink imports
+import org.eclipse.persistence.descriptors.ClassDescriptor;
+import org.eclipse.persistence.eis.interactions.XMLInteraction;
+import org.eclipse.persistence.eis.mappings.EISCompositeCollectionMapping;
+import org.eclipse.persistence.eis.mappings.EISCompositeDirectCollectionMapping;
+import org.eclipse.persistence.eis.mappings.EISCompositeObjectMapping;
+import org.eclipse.persistence.eis.mappings.EISDirectMapping;
+import org.eclipse.persistence.eis.mappings.EISOneToManyMapping;
+import org.eclipse.persistence.eis.mappings.EISOneToOneMapping;
+import org.eclipse.persistence.eis.mappings.EISTransformationMapping;
+import org.eclipse.persistence.internal.descriptors.InteractionArgument;
+import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.indirection.IndirectionPolicy;
 import org.eclipse.persistence.internal.indirection.NoIndirectionPolicy;
-import org.eclipse.persistence.mappings.*;
-import org.eclipse.persistence.mappings.converters.*;
-import org.eclipse.persistence.mappings.foundation.*;
+import org.eclipse.persistence.internal.queries.ContainerPolicy;
+import org.eclipse.persistence.mappings.Association;
+import org.eclipse.persistence.mappings.AttributeAccessor;
+import org.eclipse.persistence.mappings.CollectionMapping;
+import org.eclipse.persistence.mappings.ForeignReferenceMapping;
+import org.eclipse.persistence.mappings.ObjectReferenceMapping;
+import org.eclipse.persistence.mappings.converters.ClassInstanceConverter;
+import org.eclipse.persistence.mappings.foundation.AbstractCompositeCollectionMapping;
+import org.eclipse.persistence.mappings.foundation.AbstractCompositeDirectCollectionMapping;
+import org.eclipse.persistence.mappings.foundation.AbstractCompositeObjectMapping;
+import org.eclipse.persistence.mappings.foundation.AbstractDirectMapping;
+import org.eclipse.persistence.mappings.foundation.AbstractTransformationMapping;
 import org.eclipse.persistence.oxm.NamespaceResolver;
 import org.eclipse.persistence.oxm.XMLConstants;
 import org.eclipse.persistence.oxm.XMLDescriptor;
-import org.eclipse.persistence.oxm.mappings.*;
 import org.eclipse.persistence.oxm.XMLField;
-import org.eclipse.persistence.queries.*;
-import org.eclipse.persistence.sessions.*;
+import org.eclipse.persistence.oxm.mappings.XMLCompositeCollectionMapping;
+import org.eclipse.persistence.oxm.mappings.XMLCompositeObjectMapping;
+import org.eclipse.persistence.oxm.mappings.XMLDirectMapping;
+import org.eclipse.persistence.queries.Call;
+import org.eclipse.persistence.queries.ModifyQuery;
+import org.eclipse.persistence.queries.ReadQuery;
+import org.eclipse.persistence.sessions.DatasourceLogin;
+import org.eclipse.persistence.sessions.factories.NamespaceResolvableProject;
+import org.eclipse.persistence.sessions.factories.NamespaceResolverWithPrefixes;
 
 /**
  * INTERNAL:
@@ -39,13 +70,22 @@ import org.eclipse.persistence.sessions.*;
  * file.  The EIS meta-data must be defined separately as it has separate jar 
  * dependencies that must not be required if not using EIS.
  */
-public class EISObjectPersistenceXMLProject extends Project {
+public class EISObjectPersistenceXMLProject extends NamespaceResolvableProject {
 
     /**
      * INTERNAL:
      * Return a new descriptor project.
      */
     public EISObjectPersistenceXMLProject() {
+        super();
+    }
+    
+    public EISObjectPersistenceXMLProject(NamespaceResolverWithPrefixes namespaceResolverWithPrefixes) {
+        super(namespaceResolverWithPrefixes);
+    }
+
+    @Override
+    protected void buildDescriptors() {
         addDescriptor(buildEISDescriptorDescriptor());
         addDescriptor(buildXMLInteractionDescriptor());
         addDescriptor(buildEISLoginDescriptor());
@@ -57,17 +97,6 @@ public class EISObjectPersistenceXMLProject extends Project {
         addDescriptor(buildEISCompositeCollectionMappingDescriptor());
         addDescriptor(buildEISOneToOneMappingDescriptor());
         addDescriptor(buildEISOneToManyMappingDescriptor());
-
-        // Set the namespaces on all descriptors.
-        NamespaceResolver namespaceResolver = new NamespaceResolver();
-        namespaceResolver.put("xsi", "http://www.w3.org/2001/XMLSchema-instance");
-        namespaceResolver.put("xsd", "http://www.w3.org/2001/XMLSchema");
-        namespaceResolver.put("eclipselink", "http://xmlns.oracle.com/ias/xsds/eclipselink");
-
-        for (Iterator descriptors = getDescriptors().values().iterator(); descriptors.hasNext();) {
-            XMLDescriptor descriptor = (XMLDescriptor)descriptors.next();
-            descriptor.setNamespaceResolver(namespaceResolver);
-        }
     }
 
     protected ClassDescriptor buildEISDescriptorDescriptor() {
@@ -80,11 +109,11 @@ public class EISObjectPersistenceXMLProject extends Project {
         structureMapping.setAttributeName("dataTypeName");
         structureMapping.setGetMethodName("getDataTypeName");
         structureMapping.setSetMethodName("setDataTypeName");
-        structureMapping.setXPath("eclipselink:datatype/text()");
+        structureMapping.setXPath(getPrimaryNamespaceXPath() + "datatype/text()");
         descriptor.addMapping(structureMapping);
 
         XMLCompositeObjectMapping namespaceResolverMapping = new XMLCompositeObjectMapping();
-        namespaceResolverMapping.setXPath("eclipselink:namespace-resolver");
+        namespaceResolverMapping.setXPath(getPrimaryNamespaceXPath() + "namespace-resolver");
         namespaceResolverMapping.setAttributeName("namespaceResolver");
         namespaceResolverMapping.setGetMethodName("getNamespaceResolver");
         namespaceResolverMapping.setSetMethodName("setNamespaceResolver");
@@ -104,7 +133,7 @@ public class EISObjectPersistenceXMLProject extends Project {
         functionNameMapping.setAttributeName("functionName");
         functionNameMapping.setGetMethodName("getFunctionName");
         functionNameMapping.setSetMethodName("setFunctionName");
-        functionNameMapping.setXPath("eclipselink:function-name/text()");
+        functionNameMapping.setXPath(getPrimaryNamespaceXPath() + "function-name/text()");
         functionNameMapping.setNullValue("");
         descriptor.addMapping(functionNameMapping);
 
@@ -112,7 +141,7 @@ public class EISObjectPersistenceXMLProject extends Project {
         inputRecordNameMapping.setAttributeName("inputRecordName");
         inputRecordNameMapping.setGetMethodName("getInputRecordName");
         inputRecordNameMapping.setSetMethodName("setInputRecordName");
-        inputRecordNameMapping.setXPath("eclipselink:input-record-name/text()");
+        inputRecordNameMapping.setXPath(getPrimaryNamespaceXPath() + "input-record-name/text()");
         inputRecordNameMapping.setNullValue("");
         descriptor.addMapping(inputRecordNameMapping);
 
@@ -120,7 +149,7 @@ public class EISObjectPersistenceXMLProject extends Project {
         inputRootElementNameMapping.setAttributeName("inputRootElementName");
         inputRootElementNameMapping.setGetMethodName("getInputRootElementName");
         inputRootElementNameMapping.setSetMethodName("setInputRootElementName");
-        inputRootElementNameMapping.setXPath("eclipselink:input-root-element-name/text()");
+        inputRootElementNameMapping.setXPath(getPrimaryNamespaceXPath() + "input-root-element-name/text()");
         inputRootElementNameMapping.setNullValue("");
         descriptor.addMapping(inputRootElementNameMapping);
 
@@ -128,7 +157,7 @@ public class EISObjectPersistenceXMLProject extends Project {
         inputResultPathMapping.setAttributeName("inputResultPath");
         inputResultPathMapping.setGetMethodName("getInputResultPath");
         inputResultPathMapping.setSetMethodName("setInputResultPath");
-        inputResultPathMapping.setXPath("eclipselink:input-result-path/text()");
+        inputResultPathMapping.setXPath(getPrimaryNamespaceXPath() + "input-result-path/text()");
         inputResultPathMapping.setNullValue("");
         descriptor.addMapping(inputResultPathMapping);
 
@@ -136,7 +165,7 @@ public class EISObjectPersistenceXMLProject extends Project {
         outputResultPathMapping.setAttributeName("outputResultPath");
         outputResultPathMapping.setGetMethodName("getOutputResultPath");
         outputResultPathMapping.setSetMethodName("setOutputResultPath");
-        outputResultPathMapping.setXPath("eclipselink:output-result-path/text()");
+        outputResultPathMapping.setXPath(getPrimaryNamespaceXPath() + "output-result-path/text()");
         outputResultPathMapping.setNullValue("");
         descriptor.addMapping(outputResultPathMapping);
 
@@ -192,7 +221,7 @@ public class EISObjectPersistenceXMLProject extends Project {
                 }
             });
         argumentsMapping.setAttributeName("arguments");
-        argumentsMapping.setXPath("eclipselink:input-arguments/eclipselink:argument");
+        argumentsMapping.setXPath(getPrimaryNamespaceXPath() + "input-arguments/" + getPrimaryNamespaceXPath() + "argument");
         argumentsMapping.setReferenceClass(InteractionArgument.class);
         descriptor.addMapping(argumentsMapping);
 
@@ -229,7 +258,7 @@ public class EISObjectPersistenceXMLProject extends Project {
                 }
             });
         outputArgumentsMapping.setAttributeName("outputArguments");
-        outputArgumentsMapping.setXPath("eclipselink:output-arguments/eclipselink:argument");
+        outputArgumentsMapping.setXPath(getPrimaryNamespaceXPath() + "output-arguments/" + getPrimaryNamespaceXPath() + "argument");
         outputArgumentsMapping.setReferenceClass(InteractionArgument.class);
         descriptor.addMapping(outputArgumentsMapping);
 
@@ -247,14 +276,14 @@ public class EISObjectPersistenceXMLProject extends Project {
         connectionSpecClassMapping.setGetMethodName("getConnectionSpec");
         connectionSpecClassMapping.setSetMethodName("setConnectionSpec");
         connectionSpecClassMapping.setConverter(new ClassInstanceConverter());
-        connectionSpecClassMapping.setXPath("eclipselink:connection-spec-class/text()");
+        connectionSpecClassMapping.setXPath(getPrimaryNamespaceXPath() + "connection-spec-class/text()");
         descriptor.addMapping(connectionSpecClassMapping);
 
         XMLDirectMapping connectionFactoryURLMapping = new XMLDirectMapping();
         connectionFactoryURLMapping.setAttributeName("connectionFactoryURL");
         connectionFactoryURLMapping.setGetMethodName("getConnectionFactoryURL");
         connectionFactoryURLMapping.setSetMethodName("setConnectionFactoryURL");
-        connectionFactoryURLMapping.setXPath("eclipselink:connection-factory-url/text()");
+        connectionFactoryURLMapping.setXPath(getPrimaryNamespaceXPath() + "connection-factory-url/text()");
         descriptor.addMapping(connectionFactoryURLMapping);
 
         return descriptor;
@@ -283,7 +312,7 @@ public class EISObjectPersistenceXMLProject extends Project {
         valueMapping.setAttributeName("value");
         valueMapping.setGetMethodName("getValue");
         valueMapping.setSetMethodName("setValue");
-        valueMapping.setField(buildTypedField("eclipselink:argument-value/text()"));
+        valueMapping.setField(buildTypedField(getPrimaryNamespaceXPath() + "argument-value/text()"));
         descriptor.addMapping(valueMapping);
 
         return descriptor;
@@ -364,14 +393,14 @@ public class EISObjectPersistenceXMLProject extends Project {
                 }
             });
         sourceToTargetKeyFieldAssociationsMapping.setAttributeName("sourceToTargetKeyFieldAssociations");
-        sourceToTargetKeyFieldAssociationsMapping.setXPath("eclipselink:foreign-key/eclipselink:field-reference");
+        sourceToTargetKeyFieldAssociationsMapping.setXPath(getPrimaryNamespaceXPath() + "foreign-key/" + getPrimaryNamespaceXPath() + "field-reference");
         descriptor.addMapping(sourceToTargetKeyFieldAssociationsMapping);
 
         XMLCompositeCollectionMapping foreignKeyFieldNamesMapping = new XMLCompositeCollectionMapping();
         foreignKeyFieldNamesMapping.setAttributeName("foreignKeyFields");
         foreignKeyFieldNamesMapping.setGetMethodName("getForeignKeyFields");
         foreignKeyFieldNamesMapping.setSetMethodName("setForeignKeyFields");
-        foreignKeyFieldNamesMapping.setXPath("eclipselink:foreign-key-fields/eclipselink:field");
+        foreignKeyFieldNamesMapping.setXPath(getPrimaryNamespaceXPath() + "foreign-key-fields/" + getPrimaryNamespaceXPath() + "field");
         foreignKeyFieldNamesMapping.setReferenceClass(DatabaseField.class);
         descriptor.addMapping(foreignKeyFieldNamesMapping);
 
@@ -379,7 +408,7 @@ public class EISObjectPersistenceXMLProject extends Project {
         relationshipPartnerAttributeNameMapping.setAttributeName("relationshipPartnerAttributeName");
         relationshipPartnerAttributeNameMapping.setGetMethodName("getRelationshipPartnerAttributeName");
         relationshipPartnerAttributeNameMapping.setSetMethodName("setRelationshipPartnerAttributeName");
-        relationshipPartnerAttributeNameMapping.setXPath("eclipselink:bidirectional-target-attribute/text()");
+        relationshipPartnerAttributeNameMapping.setXPath(getPrimaryNamespaceXPath() + "bidirectional-target-attribute/text()");
         descriptor.addMapping(relationshipPartnerAttributeNameMapping);
 
         XMLCompositeObjectMapping indirectionPolicyMapping = new XMLCompositeObjectMapping();
@@ -403,7 +432,7 @@ public class EISObjectPersistenceXMLProject extends Project {
                 }
             });
         indirectionPolicyMapping.setAttributeName("indirectionPolicy");
-        indirectionPolicyMapping.setXPath("eclipselink:indirection");
+        indirectionPolicyMapping.setXPath(getPrimaryNamespaceXPath() + "indirection");
         descriptor.addMapping(indirectionPolicyMapping);
 
         XMLCompositeObjectMapping selectionQueryMapping = new XMLCompositeObjectMapping();
@@ -423,7 +452,7 @@ public class EISObjectPersistenceXMLProject extends Project {
                     }
                 }
             });
-        selectionQueryMapping.setXPath("eclipselink:selection-query");
+        selectionQueryMapping.setXPath(getPrimaryNamespaceXPath() + "selection-query");
         descriptor.addMapping(selectionQueryMapping);
 
         return descriptor;
@@ -438,7 +467,7 @@ public class EISObjectPersistenceXMLProject extends Project {
         foreignKeyFieldNamesMapping.useCollectionClass(java.util.ArrayList.class);
         foreignKeyFieldNamesMapping.setGetMethodName("getSourceForeignKeyFields");
         foreignKeyFieldNamesMapping.setSetMethodName("setSourceForeignKeyFields");
-        foreignKeyFieldNamesMapping.setXPath("eclipselink:source-foreign-key-fields/eclipselink:field");
+        foreignKeyFieldNamesMapping.setXPath(getPrimaryNamespaceXPath() + "source-foreign-key-fields/" + getPrimaryNamespaceXPath() + "field");
         foreignKeyFieldNamesMapping.setReferenceClass(DatabaseField.class);
         descriptor.addMapping(foreignKeyFieldNamesMapping);
 
@@ -447,7 +476,7 @@ public class EISObjectPersistenceXMLProject extends Project {
         targetForeignKeyFieldNamesMapping.useCollectionClass(java.util.ArrayList.class);
         targetForeignKeyFieldNamesMapping.setGetMethodName("getTargetForeignKeyFields");
         targetForeignKeyFieldNamesMapping.setSetMethodName("setTargetForeignKeyFields");
-        targetForeignKeyFieldNamesMapping.setXPath("eclipselink:target-foreign-key-fields/eclipselink:field");
+        targetForeignKeyFieldNamesMapping.setXPath(getPrimaryNamespaceXPath() + "target-foreign-key-fields/" + getPrimaryNamespaceXPath() + "field");
         targetForeignKeyFieldNamesMapping.setReferenceClass(DatabaseField.class);
         descriptor.addMapping(targetForeignKeyFieldNamesMapping);
 
@@ -456,22 +485,22 @@ public class EISObjectPersistenceXMLProject extends Project {
         foreignKeyGroupingElementMapping.setReferenceClass(DatabaseField.class);
         foreignKeyGroupingElementMapping.setGetMethodName("getForeignKeyGroupingElement");
         foreignKeyGroupingElementMapping.setSetMethodName("setForeignKeyGroupingElement");
-        foreignKeyGroupingElementMapping.setXPath("eclipselink:foreign-key-grouping-element");
+        foreignKeyGroupingElementMapping.setXPath(getPrimaryNamespaceXPath() + "foreign-key-grouping-element");
         descriptor.addMapping(foreignKeyGroupingElementMapping);
 
         XMLDirectMapping relationshipPartnerAttributeNameMapping = new XMLDirectMapping();
         relationshipPartnerAttributeNameMapping.setAttributeName("relationshipPartnerAttributeName");
         relationshipPartnerAttributeNameMapping.setGetMethodName("getRelationshipPartnerAttributeName");
         relationshipPartnerAttributeNameMapping.setSetMethodName("setRelationshipPartnerAttributeName");
-        relationshipPartnerAttributeNameMapping.setXPath("eclipselink:bidirectional-target-attribute/text()");
+        relationshipPartnerAttributeNameMapping.setXPath(getPrimaryNamespaceXPath() + "bidirectional-target-attribute/text()");
         descriptor.addMapping(relationshipPartnerAttributeNameMapping);
 
         XMLCompositeObjectMapping containerPolicyMapping = new XMLCompositeObjectMapping();
         containerPolicyMapping.setAttributeName("collectionPolicy");
         containerPolicyMapping.setGetMethodName("getContainerPolicy");
         containerPolicyMapping.setSetMethodName("setContainerPolicy");
-        containerPolicyMapping.setReferenceClass(org.eclipse.persistence.internal.queries.ContainerPolicy.class);
-        containerPolicyMapping.setXPath("eclipselink:container");
+        containerPolicyMapping.setReferenceClass(ContainerPolicy.class);
+        containerPolicyMapping.setXPath(getPrimaryNamespaceXPath() + "container");
         descriptor.addMapping(containerPolicyMapping);
 
         XMLCompositeObjectMapping indirectionPolicyMapping = new XMLCompositeObjectMapping();
@@ -495,7 +524,7 @@ public class EISObjectPersistenceXMLProject extends Project {
                 }
             });
         indirectionPolicyMapping.setAttributeName("indirectionPolicy");
-        indirectionPolicyMapping.setXPath("eclipselink:indirection");
+        indirectionPolicyMapping.setXPath(getPrimaryNamespaceXPath() + "indirection");
         descriptor.addMapping(indirectionPolicyMapping);
 
         XMLCompositeObjectMapping selectionQueryMapping = new XMLCompositeObjectMapping();
@@ -516,7 +545,7 @@ public class EISObjectPersistenceXMLProject extends Project {
                 }
             });
 
-        selectionQueryMapping.setXPath("eclipselink:selection-query");
+        selectionQueryMapping.setXPath(getPrimaryNamespaceXPath() + "selection-query");
         descriptor.addMapping(selectionQueryMapping);
 
         // delete-all query
@@ -539,7 +568,7 @@ public class EISObjectPersistenceXMLProject extends Project {
                     }
                 }
             });
-        deleteAllQueryMapping.setXPath("eclipselink:delete-all-query");
+        deleteAllQueryMapping.setXPath(getPrimaryNamespaceXPath() + "delete-all-query");
         descriptor.addMapping(deleteAllQueryMapping);
 
         descriptor.getInheritancePolicy().setParentClass(CollectionMapping.class);
@@ -552,9 +581,9 @@ public class EISObjectPersistenceXMLProject extends Project {
         field.setIsTypedTextField(true);
         field.addConversion(new QName(XMLConstants.SCHEMA_URL, XMLConstants.TIME), java.sql.Time.class);
         field.addConversion(new QName(XMLConstants.SCHEMA_URL, XMLConstants.DATE), java.sql.Date.class);
-        field.addConversion(new QName("http://xmlns.oracle.com/ias/xsds/eclipselink", "java-character"), Character.class);
-        field.addConversion(new QName("http://xmlns.oracle.com/ias/xsds/eclipselink", "java-util-date"), java.util.Date.class);
-        field.addConversion(new QName("http://xmlns.oracle.com/ias/xsds/eclipselink", "java-timestamp"), java.sql.Timestamp.class);
+        field.addConversion(new QName(getPrimaryNamespace(), "java-character"), Character.class);
+        field.addConversion(new QName(getPrimaryNamespace(), "java-util-date"), java.util.Date.class);
+        field.addConversion(new QName(getPrimaryNamespace(), "java-timestamp"), java.sql.Timestamp.class);
         return field;
     }
 }

@@ -16,6 +16,7 @@ import org.eclipse.persistence.internal.security.PrivilegedClassForName;
 import org.eclipse.persistence.internal.security.PrivilegedNewInstanceFromClass;
 import org.eclipse.persistence.internal.sessions.DatabaseSessionImpl;
 import org.eclipse.persistence.mappings.DatabaseMapping;
+import org.eclipse.persistence.oxm.NamespaceResolver;
 import org.eclipse.persistence.oxm.XMLDescriptor;
 import org.eclipse.persistence.internal.codegen.NonreflectiveMethodDefinition;
 
@@ -42,10 +43,8 @@ public class DirectToXMLTypeMappingHelper {
             try {
                 singleton = (DirectToXMLTypeMappingHelper) new PrivilegedNewInstanceFromClass(helperClass).run();
             } catch (IllegalAccessException e) {
-                // TODO Auto-generated catch block
                 throw new RuntimeException("Helper create failed: " + helperClass);
             } catch (InstantiationException e) {
-                // TODO Auto-generated catch block
                 throw new RuntimeException("Helper create failed: " + helperClass);
             }
         }
@@ -55,7 +54,7 @@ public class DirectToXMLTypeMappingHelper {
     /**
      * Add the XMLType mapping indicator to the DatabaseMapping descriptor.
      */
-    public void addClassIndicator(XMLDescriptor descriptor) {
+    public void addClassIndicator(XMLDescriptor descriptor, String namespaceXPath) {
     }
 
     /**
@@ -66,7 +65,9 @@ public class DirectToXMLTypeMappingHelper {
 
     /**
      * Invoked from a descriptor add the descriptor for DirectToXMLTypeMapping
+     * @param namespacePrefix 
      */
-    public void addXDBDescriptors(String name, DatabaseSessionImpl session) {
+    public void addXDBDescriptors(String name, DatabaseSessionImpl session,
+        NamespaceResolver namespaceResolver) {
     }
 }

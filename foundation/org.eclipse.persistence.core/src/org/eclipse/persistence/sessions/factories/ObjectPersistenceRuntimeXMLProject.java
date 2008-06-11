@@ -9,9 +9,10 @@
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.sessions.factories;
 
+// javase imports
 import java.security.AccessController;
 import java.security.PrivilegedActionException;
 import java.util.ArrayList;
@@ -22,13 +23,20 @@ import java.util.Map;
 import java.util.TreeSet;
 import java.util.Vector;
 
+// Java extension imports
+import javax.xml.namespace.QName;
+
+// EclipseLink imports
 import org.eclipse.persistence.descriptors.AllFieldsLockingPolicy;
 import org.eclipse.persistence.descriptors.CMPPolicy;
 import org.eclipse.persistence.descriptors.ChangedFieldsLockingPolicy;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
+import org.eclipse.persistence.descriptors.DescriptorEvent;
 import org.eclipse.persistence.descriptors.DescriptorEventAdapter;
+import org.eclipse.persistence.descriptors.DescriptorEventManager;
 import org.eclipse.persistence.descriptors.DescriptorQueryManager;
 import org.eclipse.persistence.descriptors.FetchGroupManager;
+import org.eclipse.persistence.descriptors.InheritancePolicy;
 import org.eclipse.persistence.descriptors.InterfacePolicy;
 import org.eclipse.persistence.descriptors.PessimisticLockingPolicy;
 import org.eclipse.persistence.descriptors.RelationalDescriptor;
@@ -64,6 +72,7 @@ import org.eclipse.persistence.expressions.ExpressionOperator;
 import org.eclipse.persistence.history.HistoryPolicy;
 import org.eclipse.persistence.internal.descriptors.FieldTransformation;
 import org.eclipse.persistence.internal.descriptors.FieldTranslation;
+import org.eclipse.persistence.internal.descriptors.InstantiationPolicy;
 import org.eclipse.persistence.internal.descriptors.MethodBasedFieldTransformation;
 import org.eclipse.persistence.internal.descriptors.Namespace;
 import org.eclipse.persistence.internal.descriptors.OptimisticLockingPolicy;
@@ -99,7 +108,9 @@ import org.eclipse.persistence.internal.indirection.TransparentIndirectionPolicy
 import org.eclipse.persistence.internal.oxm.QNameInheritancePolicy;
 import org.eclipse.persistence.internal.oxm.XMLConversionPair;
 import org.eclipse.persistence.internal.queries.CollectionContainerPolicy;
+import org.eclipse.persistence.internal.queries.ContainerPolicy;
 import org.eclipse.persistence.internal.queries.DirectMapContainerPolicy;
+import org.eclipse.persistence.internal.queries.InterfaceContainerPolicy;
 import org.eclipse.persistence.internal.queries.ListContainerPolicy;
 import org.eclipse.persistence.internal.queries.MapContainerPolicy;
 import org.eclipse.persistence.internal.queries.ReportItem;
@@ -136,17 +147,23 @@ import org.eclipse.persistence.mappings.foundation.AbstractCompositeDirectCollec
 import org.eclipse.persistence.mappings.foundation.AbstractCompositeObjectMapping;
 import org.eclipse.persistence.mappings.foundation.AbstractDirectMapping;
 import org.eclipse.persistence.mappings.foundation.AbstractTransformationMapping;
-import org.eclipse.persistence.mappings.transformers.ConstantTransformer;
+import org.eclipse.persistence.mappings.querykeys.DirectQueryKey;
+import org.eclipse.persistence.mappings.querykeys.ForeignReferenceQueryKey;
+import org.eclipse.persistence.mappings.querykeys.OneToManyQueryKey;
+import org.eclipse.persistence.mappings.querykeys.OneToOneQueryKey;
+import org.eclipse.persistence.mappings.querykeys.QueryKey;
 import org.eclipse.persistence.mappings.structures.ArrayMapping;
 import org.eclipse.persistence.mappings.structures.NestedTableMapping;
 import org.eclipse.persistence.mappings.structures.ObjectArrayMapping;
 import org.eclipse.persistence.mappings.structures.ObjectRelationalDataTypeDescriptor;
 import org.eclipse.persistence.mappings.structures.ReferenceMapping;
 import org.eclipse.persistence.mappings.structures.StructureMapping;
+import org.eclipse.persistence.mappings.transformers.ConstantTransformer;
 import org.eclipse.persistence.oxm.NamespaceResolver;
 import org.eclipse.persistence.oxm.XMLConstants;
 import org.eclipse.persistence.oxm.XMLDescriptor;
 import org.eclipse.persistence.oxm.XMLField;
+import org.eclipse.persistence.oxm.XMLLogin;
 import org.eclipse.persistence.oxm.XMLUnionField;
 import org.eclipse.persistence.oxm.mappings.XMLAnyCollectionMapping;
 import org.eclipse.persistence.oxm.mappings.XMLAnyObjectMapping;
@@ -167,10 +184,10 @@ import org.eclipse.persistence.queries.DeleteAllQuery;
 import org.eclipse.persistence.queries.DeleteObjectQuery;
 import org.eclipse.persistence.queries.DirectReadQuery;
 import org.eclipse.persistence.queries.DoesExistQuery;
-import org.eclipse.persistence.queries.JPQLCall;
 import org.eclipse.persistence.queries.FetchGroup;
 import org.eclipse.persistence.queries.InMemoryQueryIndirectionPolicy;
 import org.eclipse.persistence.queries.InsertObjectQuery;
+import org.eclipse.persistence.queries.JPQLCall;
 import org.eclipse.persistence.queries.MethodBaseQueryRedirector;
 import org.eclipse.persistence.queries.ObjectLevelReadQuery;
 import org.eclipse.persistence.queries.QueryResultsCachePolicy;
@@ -181,11 +198,6 @@ import org.eclipse.persistence.queries.ReportQuery;
 import org.eclipse.persistence.queries.SQLCall;
 import org.eclipse.persistence.queries.UpdateObjectQuery;
 import org.eclipse.persistence.queries.ValueReadQuery;
-import org.eclipse.persistence.mappings.querykeys.DirectQueryKey;
-import org.eclipse.persistence.mappings.querykeys.ForeignReferenceQueryKey;
-import org.eclipse.persistence.mappings.querykeys.OneToManyQueryKey;
-import org.eclipse.persistence.mappings.querykeys.OneToOneQueryKey;
-import org.eclipse.persistence.mappings.querykeys.QueryKey;
 import org.eclipse.persistence.sequencing.DefaultSequence;
 import org.eclipse.persistence.sequencing.NativeSequence;
 import org.eclipse.persistence.sequencing.Sequence;
@@ -196,20 +208,20 @@ import org.eclipse.persistence.sessions.DatasourceLogin;
 import org.eclipse.persistence.sessions.Project;
 import org.eclipse.persistence.sessions.Session;
 
-import javax.xml.namespace.QName;
-
 /**
- * INTERNAL:
- * Define the TopLink OX project and descriptor information to read a OracleAS TopLink 10<i>g</i> (10.0.3) project from an XML file.
- * Note any changes must be reflected in the OPM XML schema.
+ * INTERNAL: Define the TopLink OX project and descriptor information to read a OracleAS TopLink 10<i>g</i> (10.0.3) project from an XML file. Note any changes must be reflected in the OPM XML schema.
  */
-public class ObjectPersistenceRuntimeXMLProject extends Project {
+public class ObjectPersistenceRuntimeXMLProject extends NamespaceResolvableProject {
 
     /**
-     * INTERNAL:
-     * Return a new descriptor project.
+     * INTERNAL: Return a new descriptor project.
      */
     public ObjectPersistenceRuntimeXMLProject() {
+        super();
+    }
+
+    @Override
+    protected void buildDescriptors() {
         addDescriptor(buildProjectDescriptor());
         addDescriptor(buildClassDescriptorDescriptor());
         addDescriptor(buildRelationalDescriptorDescriptor());
@@ -288,12 +300,13 @@ public class ObjectPersistenceRuntimeXMLProject extends Project {
         addDescriptor(buildAbstractDirectMappingDescriptor());
         addDescriptor(buildDirectToFieldMappingDescriptor());
         addDescriptor(buildXMLDirectMappingDescriptor());
-		try {
-			Class typesafeenumClass = (Class) new PrivilegedClassForName("org.eclipse.persistence.jaxb.JAXBTypesafeEnumConverter").run();
-			addDescriptor(buildTypesafeEnumConverterDescriptor(typesafeenumClass));
-		} catch (ClassNotFoundException cnfe) {
-			// The JAXB component isn't available, so no need to do anything
-		}
+        try {
+            Class typesafeenumClass = (Class)new PrivilegedClassForName("org.eclipse.persistence.jaxb.JAXBTypesafeEnumConverter").run();
+            addDescriptor(buildTypesafeEnumConverterDescriptor(typesafeenumClass));
+        }
+        catch (ClassNotFoundException cnfe) {
+            // The JAXB component isn't available, so no need to do anything
+        }
         addDescriptor(buildConverterDescriptor());
         addDescriptor(buildObjectTypeConverterDescriptor());
         addDescriptor(buildSerializedObjectConverterDescriptor());
@@ -348,29 +361,29 @@ public class ObjectPersistenceRuntimeXMLProject extends Project {
         addDescriptor(buildXMLConversionPairDescriptor());
         addDescriptor(buildNamespaceResolverDescriptor());
         addDescriptor(buildNamespaceDescriptor());
-        addDescriptor(this.buildXMLSchemaReferenceDescriptor());
-        addDescriptor(this.buildXMLSchemaClassPathReferenceDescriptor());
-        addDescriptor(this.buildXMLSchemaFileReferenceDescriptor());
-        addDescriptor(this.buildXMLSchemaURLReferenceDescriptor());
-        addDescriptor(this.buildXMLLoginDescriptor());
+        addDescriptor(buildXMLSchemaReferenceDescriptor());
+        addDescriptor(buildXMLSchemaClassPathReferenceDescriptor());
+        addDescriptor(buildXMLSchemaFileReferenceDescriptor());
+        addDescriptor(buildXMLSchemaURLReferenceDescriptor());
+        addDescriptor(buildXMLLoginDescriptor());
         addDescriptor(buildQNameInheritancePolicyDescriptor());
 
-        addDescriptor(this.buildCacheInvalidationPolicyDescriptor());
-        addDescriptor(this.buildNoExpiryCacheInvalidationPolicyDescriptor());
-        addDescriptor(this.buildTimeToLiveCacheInvalidationPolicyDescriptor());
-        addDescriptor(this.buildDailyCacheInvalidationPolicyDescriptor());
+        addDescriptor(buildCacheInvalidationPolicyDescriptor());
+        addDescriptor(buildNoExpiryCacheInvalidationPolicyDescriptor());
+        addDescriptor(buildTimeToLiveCacheInvalidationPolicyDescriptor());
+        addDescriptor(buildDailyCacheInvalidationPolicyDescriptor());
 
-        addDescriptor(this.buildHistoryPolicyDescriptor());
-        addDescriptor(this.buildHistoryTableDescriptor());
+        addDescriptor(buildHistoryPolicyDescriptor());
+        addDescriptor(buildHistoryTableDescriptor());
 
-        addDescriptor(this.buildReturningPolicyDescriptor());
-        addDescriptor(this.buildReturningFieldInfoDescriptor());
+        addDescriptor(buildReturningPolicyDescriptor());
+        addDescriptor(buildReturningFieldInfoDescriptor());
 
         // cmp
         addDescriptor(buildCMPPolicyDescriptor());
         addDescriptor(buildPessimisticLockingPolicyDescriptor());
 
-        //fetch group
+        // fetch group
         addDescriptor(buildFetchGroupManagerDescriptor());
         addDescriptor(buildFetchGroupDescriptor());
 
@@ -387,28 +400,31 @@ public class ObjectPersistenceRuntimeXMLProject extends Project {
         addDescriptor(buildObjectChangeTrackingPolicyDescriptor());
         addDescriptor(buildAttributeChangeTrackingPolicyDescriptor());
 
-        // Set the namespaces on all descriptors.
-        NamespaceResolver namespaceResolver = new NamespaceResolver();
-        namespaceResolver.put("xsi", "http://www.w3.org/2001/XMLSchema-instance");
-        namespaceResolver.put("xsd", "http://www.w3.org/2001/XMLSchema");
-        namespaceResolver.put("opm", "http://xmlns.oracle.com/ias/xsds/opm");
-        namespaceResolver.put("toplink", "http://xmlns.oracle.com/ias/xsds/toplink");
-
-        for (Iterator descriptors = getDescriptors().values().iterator(); descriptors.hasNext();) {
-            XMLDescriptor descriptor = (XMLDescriptor)descriptors.next();
-            descriptor.setNamespaceResolver(namespaceResolver);
-        }
-
-        /* support for additional runtime elements:
-          // expressions (query, qk, mapping)
-          // stored proc
-          // properties
-          // attribute accessors
-          // inheritance extractors
-          // converter class
+        /*
+         * support for additional runtime elements: // expressions (query, qk, mapping) // stored proc // properties // attribute accessors // inheritance extractors // converter class
          * 
-         * is being added incrementally through ObjectPersistenceRuntimeXMLProject_11_1_1  
+         * is being added incrementally through ObjectPersistenceRuntimeXMLProject_11_1_1
          */
+    }
+
+    @Override
+    public String getPrimaryNamespacePrefix() {
+        return TOPLINK_PREFIX;
+    }
+
+    @Override
+    public String getPrimaryNamespace() {
+        return TOPLINK_NAMESPACE;
+    }
+
+    @Override
+    public String getSecondaryNamespacePrefix() {
+        return OPM_PREFIX;
+    }
+
+    @Override
+    public String getSecondaryNamespace() {
+        return OPM_NAMESPACE;
     }
 
     protected ClassDescriptor buildAggregateCollectionMappingDescriptor() {
@@ -420,46 +436,46 @@ public class ObjectPersistenceRuntimeXMLProject extends Project {
         sourceToTargetKeyFieldAssociationsMapping.setReferenceClass(Association.class);
         // Handle translation of foreign key associations to hashtables.
         sourceToTargetKeyFieldAssociationsMapping.setAttributeAccessor(new AttributeAccessor() {
-                public Object getAttributeValueFromObject(Object object) {
-                    AggregateCollectionMapping mapping = (AggregateCollectionMapping)object;
-                    List sourceFields = mapping.getSourceKeyFields();
-                    List targetFields = mapping.getTargetForeignKeyFields();
-                    List associations = new ArrayList(sourceFields.size());
-                    for (int index = 0; index < sourceFields.size(); index++) {
-                        associations.add(new Association(targetFields.get(index), sourceFields.get(index)));
-                    }
-                    return associations;
+            public Object getAttributeValueFromObject(Object object) {
+                AggregateCollectionMapping mapping = (AggregateCollectionMapping)object;
+                List sourceFields = mapping.getSourceKeyFields();
+                List targetFields = mapping.getTargetForeignKeyFields();
+                List associations = new ArrayList(sourceFields.size());
+                for (int index = 0; index < sourceFields.size(); index++) {
+                    associations.add(new Association(targetFields.get(index), sourceFields.get(index)));
                 }
+                return associations;
+            }
 
-                public void setAttributeValueInObject(Object object, Object value) {
-                    AggregateCollectionMapping mapping = (AggregateCollectionMapping)object;
-                    List associations = (List)value;
-                    mapping.setSourceKeyFields(org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance(associations.size()));
-                    mapping.setTargetForeignKeyFields(org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance(associations.size()));
-                    Iterator iterator = associations.iterator();
-                    while (iterator.hasNext()) {
-                        Association association = (Association)iterator.next();
-                        mapping.getSourceKeyFields().add((DatabaseField)association.getValue());
-                        mapping.getTargetForeignKeyFields().add((DatabaseField)association.getKey());
-                    }
+            public void setAttributeValueInObject(Object object, Object value) {
+                AggregateCollectionMapping mapping = (AggregateCollectionMapping)object;
+                List associations = (List)value;
+                mapping.setSourceKeyFields(NonSynchronizedVector.newInstance(associations.size()));
+                mapping.setTargetForeignKeyFields(NonSynchronizedVector.newInstance(associations.size()));
+                Iterator iterator = associations.iterator();
+                while (iterator.hasNext()) {
+                    Association association = (Association)iterator.next();
+                    mapping.getSourceKeyFields().add((DatabaseField)association.getValue());
+                    mapping.getTargetForeignKeyFields().add((DatabaseField)association.getKey());
                 }
-            });
+            }
+        });
         sourceToTargetKeyFieldAssociationsMapping.setAttributeName("sourceToTargetKeyFieldAssociations");
-        sourceToTargetKeyFieldAssociationsMapping.setXPath("toplink:target-foreign-key/opm:field-reference");
+        sourceToTargetKeyFieldAssociationsMapping.setXPath(getPrimaryNamespaceXPath() + "target-foreign-key/" + getSecondaryNamespaceXPath() + "field-reference");
         descriptor.addMapping(sourceToTargetKeyFieldAssociationsMapping);
 
         XMLDirectMapping relationshipPartnerAttributeNameMapping = new XMLDirectMapping();
         relationshipPartnerAttributeNameMapping.setAttributeName("relationshipPartnerAttributeName");
         relationshipPartnerAttributeNameMapping.setGetMethodName("getRelationshipPartnerAttributeName");
         relationshipPartnerAttributeNameMapping.setSetMethodName("setRelationshipPartnerAttributeName");
-        relationshipPartnerAttributeNameMapping.setXPath("toplink:bidirectional-target-attribute/text()");
+        relationshipPartnerAttributeNameMapping.setXPath(getPrimaryNamespaceXPath() + "bidirectional-target-attribute/text()");
         descriptor.addMapping(relationshipPartnerAttributeNameMapping);
 
         XMLDirectMapping usesBatchReadingMapping = new XMLDirectMapping();
         usesBatchReadingMapping.setAttributeName("usesBatchReading");
         usesBatchReadingMapping.setGetMethodName("shouldUseBatchReading");
         usesBatchReadingMapping.setSetMethodName("setUsesBatchReading");
-        usesBatchReadingMapping.setXPath("toplink:batch-reading/text()");
+        usesBatchReadingMapping.setXPath(getPrimaryNamespaceXPath() + "batch-reading/text()");
         usesBatchReadingMapping.setNullValue(Boolean.FALSE);
         descriptor.addMapping(usesBatchReadingMapping);
 
@@ -467,32 +483,32 @@ public class ObjectPersistenceRuntimeXMLProject extends Project {
         containerPolicyMapping.setAttributeName("collectionPolicy");
         containerPolicyMapping.setGetMethodName("getContainerPolicy");
         containerPolicyMapping.setSetMethodName("setContainerPolicy");
-        containerPolicyMapping.setReferenceClass(org.eclipse.persistence.internal.queries.ContainerPolicy.class);
-        containerPolicyMapping.setXPath("toplink:container");
+        containerPolicyMapping.setReferenceClass(ContainerPolicy.class);
+        containerPolicyMapping.setXPath(getPrimaryNamespaceXPath() + "container");
         descriptor.addMapping(containerPolicyMapping);
 
         XMLCompositeObjectMapping indirectionPolicyMapping = new XMLCompositeObjectMapping();
         indirectionPolicyMapping.setReferenceClass(IndirectionPolicy.class);
         // Handle translation of NoIndirectionPolicy -> null.
         indirectionPolicyMapping.setAttributeAccessor(new AttributeAccessor() {
-                public Object getAttributeValueFromObject(Object object) {
-                    IndirectionPolicy policy = ((ForeignReferenceMapping)object).getIndirectionPolicy();
-                    if (policy instanceof NoIndirectionPolicy) {
-                        return null;
-                    }
-                    return policy;
+            public Object getAttributeValueFromObject(Object object) {
+                IndirectionPolicy policy = ((ForeignReferenceMapping)object).getIndirectionPolicy();
+                if (policy instanceof NoIndirectionPolicy) {
+                    return null;
                 }
+                return policy;
+            }
 
-                public void setAttributeValueInObject(Object object, Object value) {
-                    IndirectionPolicy policy = (IndirectionPolicy)value;
-                    if (value == null) {
-                        policy = new NoIndirectionPolicy();
-                    }
-                    ((ForeignReferenceMapping)object).setIndirectionPolicy(policy);
+            public void setAttributeValueInObject(Object object, Object value) {
+                IndirectionPolicy policy = (IndirectionPolicy)value;
+                if (value == null) {
+                    policy = new NoIndirectionPolicy();
                 }
-            });
+                ((ForeignReferenceMapping)object).setIndirectionPolicy(policy);
+            }
+        });
         indirectionPolicyMapping.setAttributeName("indirectionPolicy");
-        indirectionPolicyMapping.setXPath("toplink:indirection");
+        indirectionPolicyMapping.setXPath(getPrimaryNamespaceXPath() + "indirection");
         descriptor.addMapping(indirectionPolicyMapping);
 
         XMLCompositeObjectMapping selectionQueryMapping = new XMLCompositeObjectMapping();
@@ -500,7 +516,7 @@ public class ObjectPersistenceRuntimeXMLProject extends Project {
         selectionQueryMapping.setGetMethodName("getSelectionQuery");
         selectionQueryMapping.setSetMethodName("setSelectionQuery");
         selectionQueryMapping.setReferenceClass(ReadQuery.class);
-        selectionQueryMapping.setXPath("toplink:selection-query");
+        selectionQueryMapping.setXPath(getPrimaryNamespaceXPath() + "selection-query");
         descriptor.addMapping(selectionQueryMapping);
 
         // delete-all query
@@ -518,7 +534,7 @@ public class ObjectPersistenceRuntimeXMLProject extends Project {
         referenceClassMapping.setAttributeName("referenceClass");
         referenceClassMapping.setGetMethodName("getReferenceClass");
         referenceClassMapping.setSetMethodName("setReferenceClass");
-        referenceClassMapping.setXPath("toplink:reference-class/text()");
+        referenceClassMapping.setXPath(getPrimaryNamespaceXPath() + "reference-class/text()");
         descriptor.addMapping(referenceClassMapping);
 
         return descriptor;
@@ -534,7 +550,7 @@ public class ObjectPersistenceRuntimeXMLProject extends Project {
         isNullAllowedMapping.setAttributeName("isNullAllowed");
         isNullAllowedMapping.setGetMethodName("isNullAllowed");
         isNullAllowedMapping.setSetMethodName("setIsNullAllowed");
-        isNullAllowedMapping.setXPath("toplink:allow-null/text()");
+        isNullAllowedMapping.setXPath(getPrimaryNamespaceXPath() + "allow-null/text()");
         isNullAllowedMapping.setNullValue(Boolean.TRUE);
         descriptor.addMapping(isNullAllowedMapping);
 
@@ -542,33 +558,33 @@ public class ObjectPersistenceRuntimeXMLProject extends Project {
         aggregateToSourceFieldNameAssociationsMapping.setReferenceClass(FieldTranslation.class);
         // Handle translation of fields associations string to field.
         aggregateToSourceFieldNameAssociationsMapping.setAttributeAccessor(new AttributeAccessor() {
-                public Object getAttributeValueFromObject(Object object) {
-                    AggregateObjectMapping mapping = (AggregateObjectMapping)object;
-                    Vector associations = mapping.getAggregateToSourceFieldNameAssociations();
-                    Vector translations = new Vector(associations.size());
-                    for (int index = 0; index < associations.size(); index++) {
-                        Association association = (Association)associations.get(index);
-                        FieldTranslation translation = new FieldTranslation();
-                        translation.setKey(new DatabaseField((String)association.getKey()));
-                        translation.setValue(new DatabaseField((String)association.getValue()));
-                        translations.add(translation);
-                    }
-                    return translations;
+            public Object getAttributeValueFromObject(Object object) {
+                AggregateObjectMapping mapping = (AggregateObjectMapping)object;
+                Vector associations = mapping.getAggregateToSourceFieldNameAssociations();
+                Vector translations = new Vector(associations.size());
+                for (int index = 0; index < associations.size(); index++) {
+                    Association association = (Association)associations.get(index);
+                    FieldTranslation translation = new FieldTranslation();
+                    translation.setKey(new DatabaseField((String)association.getKey()));
+                    translation.setValue(new DatabaseField((String)association.getValue()));
+                    translations.add(translation);
                 }
+                return translations;
+            }
 
-                public void setAttributeValueInObject(Object object, Object value) {
-                    AggregateObjectMapping mapping = (AggregateObjectMapping)object;
-                    Vector associations = (Vector)value;
-                    for (int index = 0; index < associations.size(); index++) {
-                        Association association = (Association)associations.get(index);
-                        association.setKey(((DatabaseField)association.getKey()).getQualifiedName());
-                        association.setValue(((DatabaseField)association.getValue()).getQualifiedName());
-                    }
-                    mapping.setAggregateToSourceFieldNameAssociations(associations);
+            public void setAttributeValueInObject(Object object, Object value) {
+                AggregateObjectMapping mapping = (AggregateObjectMapping)object;
+                Vector associations = (Vector)value;
+                for (int index = 0; index < associations.size(); index++) {
+                    Association association = (Association)associations.get(index);
+                    association.setKey(((DatabaseField)association.getKey()).getQualifiedName());
+                    association.setValue(((DatabaseField)association.getValue()).getQualifiedName());
                 }
-            });
+                mapping.setAggregateToSourceFieldNameAssociations(associations);
+            }
+        });
         aggregateToSourceFieldNameAssociationsMapping.setAttributeName("aggregateToSourceFieldNameAssociationsMapping");
-        aggregateToSourceFieldNameAssociationsMapping.setXPath("toplink:field-translations/toplink:field-translation");
+        aggregateToSourceFieldNameAssociationsMapping.setXPath(getPrimaryNamespaceXPath() + "field-translations/" + getPrimaryNamespaceXPath() + "field-translation");
         descriptor.addMapping(aggregateToSourceFieldNameAssociationsMapping);
 
         return descriptor;
@@ -576,7 +592,7 @@ public class ObjectPersistenceRuntimeXMLProject extends Project {
 
     protected ClassDescriptor buildArrayMappingDescriptor() {
         XMLDescriptor descriptor = new XMLDescriptor();
-        descriptor.setJavaClass(org.eclipse.persistence.mappings.structures.ArrayMapping.class);
+        descriptor.setJavaClass(ArrayMapping.class);
 
         descriptor.getInheritancePolicy().setParentClass(AbstractCompositeDirectCollectionMapping.class);
 
@@ -584,27 +600,26 @@ public class ObjectPersistenceRuntimeXMLProject extends Project {
         structureMapping.setAttributeName("structureName");
         structureMapping.setGetMethodName("getStructureName");
         structureMapping.setSetMethodName("setStructureName");
-        structureMapping.setXPath("toplink:structure/text()");
+        structureMapping.setXPath(getPrimaryNamespaceXPath() + "structure/text()");
         descriptor.addMapping(structureMapping);
-
 
         return descriptor;
     }
 
     protected ClassDescriptor buildBasicIndirectionPolicyDescriptor() {
         XMLDescriptor descriptor = new XMLDescriptor();
-        descriptor.setJavaClass(org.eclipse.persistence.internal.indirection.BasicIndirectionPolicy.class);
+        descriptor.setJavaClass(BasicIndirectionPolicy.class);
 
-        descriptor.getInheritancePolicy().setParentClass(org.eclipse.persistence.internal.indirection.IndirectionPolicy.class);
+        descriptor.getInheritancePolicy().setParentClass(IndirectionPolicy.class);
 
         return descriptor;
     }
 
     protected ClassDescriptor buildCollectionContainerPolicyDescriptor() {
         XMLDescriptor descriptor = new XMLDescriptor();
-        descriptor.setJavaClass(org.eclipse.persistence.internal.queries.CollectionContainerPolicy.class);
+        descriptor.setJavaClass(CollectionContainerPolicy.class);
 
-        descriptor.getInheritancePolicy().setParentClass(org.eclipse.persistence.internal.queries.InterfaceContainerPolicy.class);
+        descriptor.getInheritancePolicy().setParentClass(InterfaceContainerPolicy.class);
 
         return descriptor;
     }
@@ -620,23 +635,23 @@ public class ObjectPersistenceRuntimeXMLProject extends Project {
 
     protected ClassDescriptor buildContainerIndirectionPolicyDescriptor() {
         XMLDescriptor descriptor = new XMLDescriptor();
-        descriptor.setJavaClass(org.eclipse.persistence.internal.indirection.ContainerIndirectionPolicy.class);
+        descriptor.setJavaClass(ContainerIndirectionPolicy.class);
 
-        descriptor.getInheritancePolicy().setParentClass(org.eclipse.persistence.internal.indirection.IndirectionPolicy.class);
+        descriptor.getInheritancePolicy().setParentClass(IndirectionPolicy.class);
 
         return descriptor;
     }
 
     protected ClassDescriptor buildContainerPolicyDescriptor() {
         XMLDescriptor descriptor = new XMLDescriptor();
-        descriptor.setJavaClass(org.eclipse.persistence.internal.queries.ContainerPolicy.class);
+        descriptor.setJavaClass(ContainerPolicy.class);
         descriptor.setDefaultRootElement("container-policy");
 
         descriptor.getInheritancePolicy().setClassIndicatorField(new XMLField("@xsi:type"));
-        descriptor.getInheritancePolicy().addClassIndicator(CollectionContainerPolicy.class, "toplink:container-policy");
-        descriptor.getInheritancePolicy().addClassIndicator(ListContainerPolicy.class, "toplink:list-container-policy");
-        descriptor.getInheritancePolicy().addClassIndicator(MapContainerPolicy.class, "toplink:map-container-policy");
-        descriptor.getInheritancePolicy().addClassIndicator(DirectMapContainerPolicy.class, "toplink:direct-map-container-policy");
+        descriptor.getInheritancePolicy().addClassIndicator(CollectionContainerPolicy.class, getPrimaryNamespaceXPath() + "container-policy");
+        descriptor.getInheritancePolicy().addClassIndicator(ListContainerPolicy.class, getPrimaryNamespaceXPath() + "list-container-policy");
+        descriptor.getInheritancePolicy().addClassIndicator(MapContainerPolicy.class, getPrimaryNamespaceXPath() + "map-container-policy");
+        descriptor.getInheritancePolicy().addClassIndicator(DirectMapContainerPolicy.class, getPrimaryNamespaceXPath() + "direct-map-container-policy");
 
         return descriptor;
     }
@@ -647,11 +662,12 @@ public class ObjectPersistenceRuntimeXMLProject extends Project {
         descriptor.setJavaClass(AbstractCopyPolicy.class);
         descriptor.setDefaultRootElement("copy-policy");
         descriptor.getInheritancePolicy().setClassIndicatorField(new XMLField("@xsi:type"));
-        descriptor.getInheritancePolicy().addClassIndicator(CloneCopyPolicy.class, "toplink:clone-copy-policy");
-        descriptor.getInheritancePolicy().addClassIndicator(InstantiationCopyPolicy.class, "toplink:instantiation-copy-policy");
+        descriptor.getInheritancePolicy().addClassIndicator(CloneCopyPolicy.class, getPrimaryNamespaceXPath() + "clone-copy-policy");
+        descriptor.getInheritancePolicy().addClassIndicator(InstantiationCopyPolicy.class, getPrimaryNamespaceXPath() + "instantiation-copy-policy");
 
         return descriptor;
     }
+
     protected ClassDescriptor buildCloneCopyPolicyDescriptor() {
         XMLDescriptor descriptor = new XMLDescriptor();
 
@@ -662,11 +678,12 @@ public class ObjectPersistenceRuntimeXMLProject extends Project {
         methodNameMapping.setAttributeName("methodName");
         methodNameMapping.setGetMethodName("getMethodName");
         methodNameMapping.setSetMethodName("setMethodName");
-        methodNameMapping.setXPath("toplink:method/text()");
+        methodNameMapping.setXPath(getPrimaryNamespaceXPath() + "method/text()");
         descriptor.addMapping(methodNameMapping);
 
         return descriptor;
     }
+
     protected ClassDescriptor buildInstantiationCopyPolicyDescriptor() {
         XMLDescriptor descriptor = new XMLDescriptor();
 
@@ -682,45 +699,49 @@ public class ObjectPersistenceRuntimeXMLProject extends Project {
         descriptor.setDefaultRootElement("login");
 
         descriptor.getInheritancePolicy().setClassIndicatorField(new XMLField("@xsi:type"));
-        descriptor.getInheritancePolicy().addClassIndicator(DatabaseLogin.class, "toplink:database-login");
-        descriptor.getInheritancePolicy().addClassIndicator(EISLogin.class, "toplink:eis-login");
-        descriptor.getInheritancePolicy().addClassIndicator(org.eclipse.persistence.oxm.XMLLogin.class, "toplink:xml-login");
+        descriptor.getInheritancePolicy().addClassIndicator(DatabaseLogin.class, getPrimaryNamespaceXPath() + "database-login");
+        descriptor.getInheritancePolicy().addClassIndicator(EISLogin.class, getPrimaryNamespaceXPath() + "eis-login");
+        descriptor.getInheritancePolicy().addClassIndicator(XMLLogin.class, getPrimaryNamespaceXPath() + "xml-login");
 
         XMLDirectMapping platformMapping = new XMLDirectMapping();
         platformMapping.setAttributeName("platform");
         platformMapping.setGetMethodName("getDatasourcePlatform");
         platformMapping.setSetMethodName("usePlatform");
-        platformMapping.setConverter(new Converter(){
+        platformMapping.setConverter(new Converter() {
             protected DatabaseMapping mapping;
             private Map platformList;
-            public Object convertObjectValueToDataValue(Object objectValue, Session session){
+
+            public Object convertObjectValueToDataValue(Object objectValue, Session session) {
                 if (objectValue == null) {
                     return null;
                 }
                 return objectValue.getClass().getName();
             }
 
-            public Object convertDataValueToObjectValue(Object fieldValue, Session session){
+            public Object convertDataValueToObjectValue(Object fieldValue, Session session) {
                 // convert deprecated platforms to new platforms
                 Object result = platformList.get(fieldValue);
-                if (result != null){
+                if (result != null) {
                     fieldValue = result;
                 }
-                
+
                 Object attributeValue = null;
                 if (fieldValue != null) {
                     Class attributeClass = (Class)((AbstractSession)session).getDatasourcePlatform().convertObject(fieldValue, ClassConstants.CLASS);
                     try {
-                        if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
+                        if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) {
                             try {
                                 attributeValue = AccessController.doPrivileged(new PrivilegedNewInstanceFromClass(attributeClass));
-                            } catch (PrivilegedActionException exception) {
+                            }
+                            catch (PrivilegedActionException exception) {
                                 throw ConversionException.couldNotBeConverted(fieldValue, attributeClass, exception.getException());
                             }
-                        } else {
+                        }
+                        else {
                             attributeValue = PrivilegedAccessHelper.newInstanceFromClass(attributeClass);
                         }
-                    } catch (Exception exception) {
+                    }
+                    catch (Exception exception) {
                         throw ConversionException.couldNotBeConverted(fieldValue, attributeClass, exception);
                     }
                 }
@@ -728,11 +749,11 @@ public class ObjectPersistenceRuntimeXMLProject extends Project {
                 return attributeValue;
             }
 
-            public boolean isMutable(){
+            public boolean isMutable() {
                 return false;
             }
 
-            public void initialize(DatabaseMapping mapping, Session session){
+            public void initialize(DatabaseMapping mapping, Session session) {
                 this.platformList = new HashMap();
                 this.platformList.put("org.eclipse.persistence.internal.databaseaccess.AccessPlatform", "org.eclipse.persistence.platform.database.AccessPlatform");
                 this.platformList.put("org.eclipse.persistence.internal.databaseaccess.AttunityPlatform", "org.eclipse.persistence.platform.database.AttunityPlatform");
@@ -761,30 +782,30 @@ public class ObjectPersistenceRuntimeXMLProject extends Project {
                     }
                 }
             }
-            
+
         });
-        platformMapping.setXPath("toplink:platform-class/text()");
+        platformMapping.setXPath(getPrimaryNamespaceXPath() + "platform-class/text()");
         descriptor.addMapping(platformMapping);
 
         XMLDirectMapping userNameMapping = new XMLDirectMapping();
         userNameMapping.setAttributeName("userName");
         userNameMapping.setGetMethodName("getUserName");
         userNameMapping.setSetMethodName("setUserName");
-        userNameMapping.setXPath("toplink:user-name/text()");
+        userNameMapping.setXPath(getPrimaryNamespaceXPath() + "user-name/text()");
         descriptor.addMapping(userNameMapping);
 
         XMLDirectMapping passwordMapping = new XMLDirectMapping();
         passwordMapping.setAttributeName("password");
         passwordMapping.setGetMethodName("getPassword");
         passwordMapping.setSetMethodName("setEncryptedPassword");
-        passwordMapping.setXPath("toplink:password/text()");
+        passwordMapping.setXPath(getPrimaryNamespaceXPath() + "password/text()");
         descriptor.addMapping(passwordMapping);
 
         XMLDirectMapping usesExternalConnectionPoolingMapping = new XMLDirectMapping();
         usesExternalConnectionPoolingMapping.setAttributeName("usesExternalConnectionPooling");
         usesExternalConnectionPoolingMapping.setGetMethodName("shouldUseExternalConnectionPooling");
         usesExternalConnectionPoolingMapping.setSetMethodName("setUsesExternalConnectionPooling");
-        usesExternalConnectionPoolingMapping.setXPath("toplink:external-connection-pooling/text()");
+        usesExternalConnectionPoolingMapping.setXPath(getPrimaryNamespaceXPath() + "external-connection-pooling/text()");
         usesExternalConnectionPoolingMapping.setNullValue(Boolean.FALSE);
         descriptor.addMapping(usesExternalConnectionPoolingMapping);
 
@@ -792,7 +813,7 @@ public class ObjectPersistenceRuntimeXMLProject extends Project {
         usesExternalTransactionControllerMapping.setAttributeName("usesExternalTransactionController");
         usesExternalTransactionControllerMapping.setGetMethodName("shouldUseExternalTransactionController");
         usesExternalTransactionControllerMapping.setSetMethodName("setUsesExternalTransactionController");
-        usesExternalTransactionControllerMapping.setXPath("toplink:external-transaction-controller/text()");
+        usesExternalTransactionControllerMapping.setXPath(getPrimaryNamespaceXPath() + "external-transaction-controller/text()");
         usesExternalTransactionControllerMapping.setNullValue(Boolean.FALSE);
         descriptor.addMapping(usesExternalTransactionControllerMapping);
 
@@ -801,7 +822,7 @@ public class ObjectPersistenceRuntimeXMLProject extends Project {
         defaultSequenceMapping.setSetMethodName("setDefaultSequence");
         defaultSequenceMapping.setGetMethodName("getDefaultSequenceToWrite");
         defaultSequenceMapping.setReferenceClass(Sequence.class);
-        defaultSequenceMapping.setXPath("toplink:sequencing/toplink:default-sequence");
+        defaultSequenceMapping.setXPath(getPrimaryNamespaceXPath() + "sequencing/" + getPrimaryNamespaceXPath() + "default-sequence");
         descriptor.addMapping(defaultSequenceMapping);
 
         XMLCompositeCollectionMapping sequencesMapping = new XMLCompositeCollectionMapping();
@@ -812,7 +833,7 @@ public class ObjectPersistenceRuntimeXMLProject extends Project {
         sequencesMapping.setSetMethodName("setSequences");
         sequencesMapping.setGetMethodName("getSequencesToWrite");
         sequencesMapping.setReferenceClass(Sequence.class);
-        sequencesMapping.setXPath("toplink:sequencing/toplink:sequences/toplink:sequence");
+        sequencesMapping.setXPath(getPrimaryNamespaceXPath() + "sequencing/" + getPrimaryNamespaceXPath() + "sequences/" + getPrimaryNamespaceXPath() + "sequence");
         descriptor.addMapping(sequencesMapping);
 
         return descriptor;
@@ -828,21 +849,21 @@ public class ObjectPersistenceRuntimeXMLProject extends Project {
         driverClassNameMapping.setAttributeName("driverClassName");
         driverClassNameMapping.setGetMethodName("getDriverClassName");
         driverClassNameMapping.setSetMethodName("setDriverClassName");
-        driverClassNameMapping.setXPath("toplink:driver-class/text()");
+        driverClassNameMapping.setXPath(getPrimaryNamespaceXPath() + "driver-class/text()");
         descriptor.addMapping(driverClassNameMapping);
 
         XMLDirectMapping driverURLMapping = new XMLDirectMapping();
         driverURLMapping.setAttributeName("connectionString");
         driverURLMapping.setGetMethodName("getConnectionString");
         driverURLMapping.setSetMethodName("setConnectionString");
-        driverURLMapping.setXPath("toplink:connection-url/text()");
+        driverURLMapping.setXPath(getPrimaryNamespaceXPath() + "connection-url/text()");
         descriptor.addMapping(driverURLMapping);
 
         XMLDirectMapping shouldBindAllParametersMapping = new XMLDirectMapping();
         shouldBindAllParametersMapping.setAttributeName("shouldBindAllParameters");
         shouldBindAllParametersMapping.setGetMethodName("shouldBindAllParameters");
         shouldBindAllParametersMapping.setSetMethodName("setShouldBindAllParameters");
-        shouldBindAllParametersMapping.setXPath("toplink:bind-all-parameters/text()");
+        shouldBindAllParametersMapping.setXPath(getPrimaryNamespaceXPath() + "bind-all-parameters/text()");
         shouldBindAllParametersMapping.setNullValue(Boolean.FALSE);
         descriptor.addMapping(shouldBindAllParametersMapping);
 
@@ -850,7 +871,7 @@ public class ObjectPersistenceRuntimeXMLProject extends Project {
         shouldCacheAllStatementsMapping.setAttributeName("shouldCacheAllStatements");
         shouldCacheAllStatementsMapping.setGetMethodName("shouldCacheAllStatements");
         shouldCacheAllStatementsMapping.setSetMethodName("setShouldCacheAllStatements");
-        shouldCacheAllStatementsMapping.setXPath("toplink:cache-all-statements/text()");
+        shouldCacheAllStatementsMapping.setXPath(getPrimaryNamespaceXPath() + "cache-all-statements/text()");
         shouldCacheAllStatementsMapping.setNullValue(Boolean.FALSE);
         descriptor.addMapping(shouldCacheAllStatementsMapping);
 
@@ -858,7 +879,7 @@ public class ObjectPersistenceRuntimeXMLProject extends Project {
         usesByteArrayBindingMapping.setAttributeName("usesByteArrayBinding");
         usesByteArrayBindingMapping.setGetMethodName("shouldUseByteArrayBinding");
         usesByteArrayBindingMapping.setSetMethodName("setUsesByteArrayBinding");
-        usesByteArrayBindingMapping.setXPath("toplink:byte-array-binding/text()");
+        usesByteArrayBindingMapping.setXPath(getPrimaryNamespaceXPath() + "byte-array-binding/text()");
         usesByteArrayBindingMapping.setNullValue(Boolean.TRUE);
         descriptor.addMapping(usesByteArrayBindingMapping);
 
@@ -866,7 +887,7 @@ public class ObjectPersistenceRuntimeXMLProject extends Project {
         usesStringBindingMapping.setAttributeName("usesStringBinding");
         usesStringBindingMapping.setGetMethodName("shouldUseStringBinding");
         usesStringBindingMapping.setSetMethodName("setUsesStringBinding");
-        usesStringBindingMapping.setXPath("toplink:string-binding/text()");
+        usesStringBindingMapping.setXPath(getPrimaryNamespaceXPath() + "string-binding/text()");
         usesStringBindingMapping.setNullValue(Boolean.FALSE);
         descriptor.addMapping(usesStringBindingMapping);
 
@@ -874,7 +895,7 @@ public class ObjectPersistenceRuntimeXMLProject extends Project {
         stringBindingSizeMapping.setAttributeName("stringBindingSize");
         stringBindingSizeMapping.setGetMethodName("getStringBindingSize");
         stringBindingSizeMapping.setSetMethodName("setStringBindingSize");
-        stringBindingSizeMapping.setXPath("toplink:string-binding-size/text()");
+        stringBindingSizeMapping.setXPath(getPrimaryNamespaceXPath() + "string-binding-size/text()");
         stringBindingSizeMapping.setNullValue(new Integer(255));
         descriptor.addMapping(stringBindingSizeMapping);
 
@@ -882,7 +903,7 @@ public class ObjectPersistenceRuntimeXMLProject extends Project {
         usesStreamsForBindingMapping.setAttributeName("usesStreamsForBinding");
         usesStreamsForBindingMapping.setGetMethodName("shouldUseStreamsForBinding");
         usesStreamsForBindingMapping.setSetMethodName("setUsesStreamsForBinding");
-        usesStreamsForBindingMapping.setXPath("toplink:streams-for-binding/text()");
+        usesStreamsForBindingMapping.setXPath(getPrimaryNamespaceXPath() + "streams-for-binding/text()");
         usesStreamsForBindingMapping.setNullValue(Boolean.FALSE);
         descriptor.addMapping(usesStreamsForBindingMapping);
 
@@ -890,7 +911,7 @@ public class ObjectPersistenceRuntimeXMLProject extends Project {
         shouldForceFieldNamesToUpperCaseMapping.setAttributeName("shouldForceFieldNamesToUpperCase");
         shouldForceFieldNamesToUpperCaseMapping.setGetMethodName("shouldForceFieldNamesToUpperCase");
         shouldForceFieldNamesToUpperCaseMapping.setSetMethodName("setShouldForceFieldNamesToUpperCase");
-        shouldForceFieldNamesToUpperCaseMapping.setXPath("toplink:force-field-names-to-upper-case/text()");
+        shouldForceFieldNamesToUpperCaseMapping.setXPath(getPrimaryNamespaceXPath() + "force-field-names-to-upper-case/text()");
         shouldForceFieldNamesToUpperCaseMapping.setNullValue(Boolean.FALSE);
         descriptor.addMapping(shouldForceFieldNamesToUpperCaseMapping);
 
@@ -898,7 +919,7 @@ public class ObjectPersistenceRuntimeXMLProject extends Project {
         shouldOptimizeDataConversionMapping.setAttributeName("shouldOptimizeDataConversion");
         shouldOptimizeDataConversionMapping.setGetMethodName("shouldOptimizeDataConversion");
         shouldOptimizeDataConversionMapping.setSetMethodName("setShouldOptimizeDataConversion");
-        shouldOptimizeDataConversionMapping.setXPath("toplink:optimize-data-conversion/text()");
+        shouldOptimizeDataConversionMapping.setXPath(getPrimaryNamespaceXPath() + "optimize-data-conversion/text()");
         shouldOptimizeDataConversionMapping.setNullValue(Boolean.TRUE);
         descriptor.addMapping(shouldOptimizeDataConversionMapping);
 
@@ -906,7 +927,7 @@ public class ObjectPersistenceRuntimeXMLProject extends Project {
         shouldTrimStringsMapping.setAttributeName("shouldTrimStrings");
         shouldTrimStringsMapping.setGetMethodName("shouldTrimStrings");
         shouldTrimStringsMapping.setSetMethodName("setShouldTrimStrings");
-        shouldTrimStringsMapping.setXPath("toplink:trim-strings/text()");
+        shouldTrimStringsMapping.setXPath(getPrimaryNamespaceXPath() + "trim-strings/text()");
         shouldTrimStringsMapping.setNullValue(Boolean.TRUE);
         descriptor.addMapping(shouldTrimStringsMapping);
 
@@ -915,14 +936,14 @@ public class ObjectPersistenceRuntimeXMLProject extends Project {
         usesBatchWritingMapping.setGetMethodName("shouldUseBatchWriting");
         usesBatchWritingMapping.setSetMethodName("setUsesBatchWriting");
         usesBatchWritingMapping.setNullValue(Boolean.FALSE);
-        usesBatchWritingMapping.setXPath("toplink:batch-writing/text()");
+        usesBatchWritingMapping.setXPath(getPrimaryNamespaceXPath() + "batch-writing/text()");
         descriptor.addMapping(usesBatchWritingMapping);
 
         XMLDirectMapping usesJDBCBatchWritingMapping = new XMLDirectMapping();
         usesJDBCBatchWritingMapping.setAttributeName("usesJDBCBatchWriting");
         usesJDBCBatchWritingMapping.setGetMethodName("shouldUseJDBCBatchWriting");
         usesJDBCBatchWritingMapping.setSetMethodName("setUsesJDBCBatchWriting");
-        usesJDBCBatchWritingMapping.setXPath("toplink:jdbc-batch-writing/text()");
+        usesJDBCBatchWritingMapping.setXPath(getPrimaryNamespaceXPath() + "jdbc-batch-writing/text()");
         usesJDBCBatchWritingMapping.setNullValue(Boolean.TRUE);
         descriptor.addMapping(usesJDBCBatchWritingMapping);
 
@@ -939,7 +960,7 @@ public class ObjectPersistenceRuntimeXMLProject extends Project {
         expiryMinuteMapping.setAttributeName("expiryTime");
         expiryMinuteMapping.setGetMethodName("getExpiryTime");
         expiryMinuteMapping.setSetMethodName("setExpiryTime");
-        XMLField expiryTimeField = new XMLField("toplink:expiry-time/text()");
+        XMLField expiryTimeField = new XMLField(getPrimaryNamespaceXPath() + "expiry-time/text()");
         expiryTimeField.setIsTypedTextField(true);
         expiryMinuteMapping.setField(expiryTimeField);
         descriptor.addMapping(expiryMinuteMapping);
@@ -947,21 +968,20 @@ public class ObjectPersistenceRuntimeXMLProject extends Project {
         return descriptor;
     }
 
-
     protected ClassDescriptor buildExpressionDescriptor() {
         XMLDescriptor descriptor = new XMLDescriptor();
         descriptor.setJavaClass(Expression.class);
         descriptor.setDefaultRootElement("expression");
 
         descriptor.getInheritancePolicy().setClassIndicatorField(new XMLField("@xsi:type"));
-        descriptor.getInheritancePolicy().addClassIndicator(LogicalExpression.class, "toplink:logic-expression");
-        descriptor.getInheritancePolicy().addClassIndicator(RelationExpression.class, "toplink:relation-expression");
-        descriptor.getInheritancePolicy().addClassIndicator(ConstantExpression.class, "toplink:constant-expression");
-        descriptor.getInheritancePolicy().addClassIndicator(QueryKeyExpression.class, "toplink:query-key-expression");
-        descriptor.getInheritancePolicy().addClassIndicator(ParameterExpression.class, "toplink:parameter-expression");
-        descriptor.getInheritancePolicy().addClassIndicator(FieldExpression.class, "toplink:field-expression");
-        descriptor.getInheritancePolicy().addClassIndicator(FunctionExpression.class, "toplink:function-expression");
-        descriptor.getInheritancePolicy().addClassIndicator(ExpressionBuilder.class, "toplink:base-expression");
+        descriptor.getInheritancePolicy().addClassIndicator(LogicalExpression.class, getPrimaryNamespaceXPath() + "logic-expression");
+        descriptor.getInheritancePolicy().addClassIndicator(RelationExpression.class, getPrimaryNamespaceXPath() + "relation-expression");
+        descriptor.getInheritancePolicy().addClassIndicator(ConstantExpression.class, getPrimaryNamespaceXPath() + "constant-expression");
+        descriptor.getInheritancePolicy().addClassIndicator(QueryKeyExpression.class, getPrimaryNamespaceXPath() + "query-key-expression");
+        descriptor.getInheritancePolicy().addClassIndicator(ParameterExpression.class, getPrimaryNamespaceXPath() + "parameter-expression");
+        descriptor.getInheritancePolicy().addClassIndicator(FieldExpression.class, getPrimaryNamespaceXPath() + "field-expression");
+        descriptor.getInheritancePolicy().addClassIndicator(FunctionExpression.class, getPrimaryNamespaceXPath() + "function-expression");
+        descriptor.getInheritancePolicy().addClassIndicator(ExpressionBuilder.class, getPrimaryNamespaceXPath() + "base-expression");
 
         return descriptor;
     }
@@ -987,7 +1007,7 @@ public class ObjectPersistenceRuntimeXMLProject extends Project {
         leftMapping.setGetMethodName("getFirstChild");
         leftMapping.setSetMethodName("setFirstChild");
         leftMapping.setReferenceClass(Expression.class);
-        leftMapping.setXPath("toplink:left");
+        leftMapping.setXPath(getPrimaryNamespaceXPath() + "left");
         descriptor.addMapping(leftMapping);
 
         XMLCompositeObjectMapping rightMapping = new XMLCompositeObjectMapping();
@@ -995,7 +1015,7 @@ public class ObjectPersistenceRuntimeXMLProject extends Project {
         rightMapping.setGetMethodName("getSecondChild");
         rightMapping.setSetMethodName("setSecondChild");
         rightMapping.setReferenceClass(Expression.class);
-        rightMapping.setXPath("toplink:right");
+        rightMapping.setXPath(getPrimaryNamespaceXPath() + "right");
         descriptor.addMapping(rightMapping);
 
         return descriptor;
@@ -1011,18 +1031,18 @@ public class ObjectPersistenceRuntimeXMLProject extends Project {
         // Child value expressions need their backpointer to their local base set,
         // this is not persisted so must be hooked back up after loading.
         descriptor.getEventManager().addListener(new DescriptorEventAdapter() {
-                public void postBuild(org.eclipse.persistence.descriptors.DescriptorEvent event) {
-                    RelationExpression expression = (RelationExpression)event.getObject();
-                    if ((expression.getFirstChild() != null) && (expression.getSecondChild() != null)) {
-                        if (expression.getSecondChild().isValueExpression()) {
-                            expression.getSecondChild().setLocalBase(expression.getFirstChild());
-                        }
-                        if (expression.getFirstChild().isValueExpression()) {
-                            expression.getFirstChild().setLocalBase(expression.getSecondChild());
-                        }
+            public void postBuild(DescriptorEvent event) {
+                RelationExpression expression = (RelationExpression)event.getObject();
+                if ((expression.getFirstChild() != null) && (expression.getSecondChild() != null)) {
+                    if (expression.getSecondChild().isValueExpression()) {
+                        expression.getSecondChild().setLocalBase(expression.getFirstChild());
+                    }
+                    if (expression.getFirstChild().isValueExpression()) {
+                        expression.getFirstChild().setLocalBase(expression.getSecondChild());
                     }
                 }
-            });
+            }
+        });
 
         XMLDirectMapping operatorMapping = new XMLDirectMapping();
         operatorMapping.setAttributeName("operator");
@@ -1044,7 +1064,7 @@ public class ObjectPersistenceRuntimeXMLProject extends Project {
         leftMapping.setGetMethodName("getFirstChild");
         leftMapping.setSetMethodName("setFirstChild");
         leftMapping.setReferenceClass(Expression.class);
-        leftMapping.setXPath("toplink:left");
+        leftMapping.setXPath(getPrimaryNamespaceXPath() + "left");
         descriptor.addMapping(leftMapping);
 
         XMLCompositeObjectMapping rightMapping = new XMLCompositeObjectMapping();
@@ -1052,7 +1072,7 @@ public class ObjectPersistenceRuntimeXMLProject extends Project {
         rightMapping.setGetMethodName("getSecondChild");
         rightMapping.setSetMethodName("setSecondChild");
         rightMapping.setReferenceClass(Expression.class);
-        rightMapping.setXPath("toplink:right");
+        rightMapping.setXPath(getPrimaryNamespaceXPath() + "right");
         descriptor.addMapping(rightMapping);
 
         return descriptor;
@@ -1077,7 +1097,7 @@ public class ObjectPersistenceRuntimeXMLProject extends Project {
 
         XMLDirectMapping valueMapping = new XMLDirectMapping();
         valueMapping.setAttributeName("value");
-        valueMapping.setField(buildTypedField("toplink:value/text()"));
+        valueMapping.setField(buildTypedField(getPrimaryNamespaceXPath() + "value/text()"));
         descriptor.addMapping(valueMapping);
 
         return descriptor;
@@ -1110,7 +1130,7 @@ public class ObjectPersistenceRuntimeXMLProject extends Project {
         XMLCompositeObjectMapping baseMapping = new XMLCompositeObjectMapping();
         baseMapping.setAttributeName("baseExpression");
         baseMapping.setReferenceClass(Expression.class);
-        baseMapping.setXPath("toplink:base");
+        baseMapping.setXPath(getPrimaryNamespaceXPath() + "base");
         descriptor.addMapping(baseMapping);
 
         return descriptor;
@@ -1126,13 +1146,13 @@ public class ObjectPersistenceRuntimeXMLProject extends Project {
         XMLCompositeObjectMapping parameterMapping = new XMLCompositeObjectMapping();
         parameterMapping.setAttributeName("field");
         parameterMapping.setReferenceClass(DatabaseField.class);
-        parameterMapping.setXPath("toplink:parameter");
+        parameterMapping.setXPath(getPrimaryNamespaceXPath() + "parameter");
         descriptor.addMapping(parameterMapping);
 
         XMLCompositeObjectMapping baseMapping = new XMLCompositeObjectMapping();
         baseMapping.setAttributeName("baseExpression");
         baseMapping.setReferenceClass(Expression.class);
-        baseMapping.setXPath("toplink:base");
+        baseMapping.setXPath(getPrimaryNamespaceXPath() + "base");
         descriptor.addMapping(baseMapping);
 
         return descriptor;
@@ -1148,13 +1168,13 @@ public class ObjectPersistenceRuntimeXMLProject extends Project {
         XMLCompositeObjectMapping parameterMapping = new XMLCompositeObjectMapping();
         parameterMapping.setAttributeName("field");
         parameterMapping.setReferenceClass(DatabaseField.class);
-        parameterMapping.setXPath("toplink:field");
+        parameterMapping.setXPath(getPrimaryNamespaceXPath() + "field");
         descriptor.addMapping(parameterMapping);
 
         XMLCompositeObjectMapping baseMapping = new XMLCompositeObjectMapping();
         baseMapping.setAttributeName("baseExpression");
         baseMapping.setReferenceClass(Expression.class);
-        baseMapping.setXPath("toplink:base");
+        baseMapping.setXPath(getPrimaryNamespaceXPath() + "base");
         descriptor.addMapping(baseMapping);
 
         return descriptor;
@@ -1172,21 +1192,22 @@ public class ObjectPersistenceRuntimeXMLProject extends Project {
         // Child value expressions need their backpointer to their local base set,
         // this is not persisted so must be hooked back up after loading.
         descriptor.getEventManager().addListener(new DescriptorEventAdapter() {
-                public void postBuild(org.eclipse.persistence.descriptors.DescriptorEvent event) {
-                    FunctionExpression expression = (FunctionExpression)event.getObject();
-                    for (int index = 0; index < expression.getChildren().size(); index++) {
-                        Expression child = (Expression)expression.getChildren().get(index);
-                        if (child.isValueExpression()) {
-                            child.setLocalBase(new ExpressionBuilder());
-                        }
-                    }
-                    if (expression.getChildren().size() > 0) {
-                        expression.setBaseExpression((Expression)expression.getChildren().get(0));
-                    } else {
-                        expression.setBaseExpression(new ExpressionBuilder());
+            public void postBuild(DescriptorEvent event) {
+                FunctionExpression expression = (FunctionExpression)event.getObject();
+                for (int index = 0; index < expression.getChildren().size(); index++) {
+                    Expression child = (Expression)expression.getChildren().get(index);
+                    if (child.isValueExpression()) {
+                        child.setLocalBase(new ExpressionBuilder());
                     }
                 }
-            });
+                if (expression.getChildren().size() > 0) {
+                    expression.setBaseExpression((Expression)expression.getChildren().get(0));
+                }
+                else {
+                    expression.setBaseExpression(new ExpressionBuilder());
+                }
+            }
+        });
 
         XMLDirectMapping operatorMapping = new XMLDirectMapping();
         operatorMapping.setAttributeName("operator");
@@ -1197,8 +1218,8 @@ public class ObjectPersistenceRuntimeXMLProject extends Project {
         operatorConverter.addConversionValue("ascending", ExpressionOperator.getOperator(new Integer(ExpressionOperator.Ascending)));
         operatorConverter.addConversionValue("descending", ExpressionOperator.getOperator(new Integer(ExpressionOperator.Descending)));
         // These are platform specific so not on operator.
-        operatorConverter.addConversionValue("upper", new ExpressionOperator(ExpressionOperator.ToUpperCase, org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance(0)));
-        operatorConverter.addConversionValue("lower", new ExpressionOperator(ExpressionOperator.ToLowerCase, org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance(0)));
+        operatorConverter.addConversionValue("upper", new ExpressionOperator(ExpressionOperator.ToUpperCase, NonSynchronizedVector.newInstance(0)));
+        operatorConverter.addConversionValue("lower", new ExpressionOperator(ExpressionOperator.ToLowerCase, NonSynchronizedVector.newInstance(0)));
         // Aggregate functions
         operatorConverter.addConversionValue("count", ExpressionOperator.getOperator(new Integer(ExpressionOperator.Count)));
         operatorConverter.addConversionValue("sum", ExpressionOperator.getOperator(new Integer(ExpressionOperator.Sum)));
@@ -1213,10 +1234,10 @@ public class ObjectPersistenceRuntimeXMLProject extends Project {
         descriptor.addMapping(operatorMapping);
 
         XMLCompositeCollectionMapping childrenMapping = new XMLCompositeCollectionMapping();
-        childrenMapping.useCollectionClass(org.eclipse.persistence.internal.helper.NonSynchronizedVector.class);
+        childrenMapping.useCollectionClass(NonSynchronizedVector.class);
         childrenMapping.setAttributeName("children");
         childrenMapping.setReferenceClass(Expression.class);
-        childrenMapping.setXPath("toplink:arguments/toplink:argument");
+        childrenMapping.setXPath(getPrimaryNamespaceXPath() + "arguments/" + getPrimaryNamespaceXPath() + "argument");
         descriptor.addMapping(childrenMapping);
 
         return descriptor;
@@ -1224,22 +1245,22 @@ public class ObjectPersistenceRuntimeXMLProject extends Project {
 
     protected ClassDescriptor buildDatabaseQueryDescriptor() {
         XMLDescriptor descriptor = new XMLDescriptor();
-        descriptor.setJavaClass(org.eclipse.persistence.queries.DatabaseQuery.class);
+        descriptor.setJavaClass(DatabaseQuery.class);
         descriptor.setDefaultRootElement("query");
 
         descriptor.getInheritancePolicy().setClassIndicatorField(new XMLField("@xsi:type"));
-        descriptor.getInheritancePolicy().addClassIndicator(ReadAllQuery.class, "toplink:read-all-query");
-        descriptor.getInheritancePolicy().addClassIndicator(ReadObjectQuery.class, "toplink:read-object-query");
-        descriptor.getInheritancePolicy().addClassIndicator(DataReadQuery.class, "toplink:data-read-query");
-        descriptor.getInheritancePolicy().addClassIndicator(DataModifyQuery.class, "toplink:data-modify-query");
-        descriptor.getInheritancePolicy().addClassIndicator(DirectReadQuery.class, "toplink:direct-read-query");
-        descriptor.getInheritancePolicy().addClassIndicator(ValueReadQuery.class, "toplink:value-read-query");
-        descriptor.getInheritancePolicy().addClassIndicator(DeleteObjectQuery.class, "toplink:delete-object-query");
-        descriptor.getInheritancePolicy().addClassIndicator(DeleteAllQuery.class, "toplink:delete-all-query");
-        descriptor.getInheritancePolicy().addClassIndicator(InsertObjectQuery.class, "toplink:insert-object-query");
-        descriptor.getInheritancePolicy().addClassIndicator(UpdateObjectQuery.class, "toplink:update-object-query");
-        descriptor.getInheritancePolicy().addClassIndicator(DoesExistQuery.class, "toplink:does-exist-query");
-        descriptor.getInheritancePolicy().addClassIndicator(ReportQuery.class, "toplink:report-query");
+        descriptor.getInheritancePolicy().addClassIndicator(ReadAllQuery.class, getPrimaryNamespaceXPath() + "read-all-query");
+        descriptor.getInheritancePolicy().addClassIndicator(ReadObjectQuery.class, getPrimaryNamespaceXPath() + "read-object-query");
+        descriptor.getInheritancePolicy().addClassIndicator(DataReadQuery.class, getPrimaryNamespaceXPath() + "data-read-query");
+        descriptor.getInheritancePolicy().addClassIndicator(DataModifyQuery.class, getPrimaryNamespaceXPath() + "data-modify-query");
+        descriptor.getInheritancePolicy().addClassIndicator(DirectReadQuery.class, getPrimaryNamespaceXPath() + "direct-read-query");
+        descriptor.getInheritancePolicy().addClassIndicator(ValueReadQuery.class, getPrimaryNamespaceXPath() + "value-read-query");
+        descriptor.getInheritancePolicy().addClassIndicator(DeleteObjectQuery.class, getPrimaryNamespaceXPath() + "delete-object-query");
+        descriptor.getInheritancePolicy().addClassIndicator(DeleteAllQuery.class, getPrimaryNamespaceXPath() + "delete-all-query");
+        descriptor.getInheritancePolicy().addClassIndicator(InsertObjectQuery.class, getPrimaryNamespaceXPath() + "insert-object-query");
+        descriptor.getInheritancePolicy().addClassIndicator(UpdateObjectQuery.class, getPrimaryNamespaceXPath() + "update-object-query");
+        descriptor.getInheritancePolicy().addClassIndicator(DoesExistQuery.class, getPrimaryNamespaceXPath() + "does-exist-query");
+        descriptor.getInheritancePolicy().addClassIndicator(ReportQuery.class, getPrimaryNamespaceXPath() + "report-query");
 
         XMLDirectMapping nameMapping = new XMLDirectMapping();
         nameMapping.setAttributeName("name");
@@ -1253,77 +1274,77 @@ public class ObjectPersistenceRuntimeXMLProject extends Project {
         expressionMapping.setGetMethodName("getSelectionCriteria");
         expressionMapping.setSetMethodName("setSelectionCriteria");
         expressionMapping.setAttributeAccessor(new AttributeAccessor() {
-                public Object getAttributeValueFromObject(Object object) {
-                    return ((DatabaseQuery)object).getSelectionCriteria();
-                }
+            public Object getAttributeValueFromObject(Object object) {
+                return ((DatabaseQuery)object).getSelectionCriteria();
+            }
 
-                public void setAttributeValueInObject(Object object, Object value) {
-                    if (!(object instanceof ObjectLevelReadQuery)) {
-                        return;
-                    }
-                    ObjectLevelReadQuery query = (ObjectLevelReadQuery)object;
-                    Expression expression = (Expression)value;
-                    if (expression != null) {
-                        expression = expression.rebuildOn(query.getExpressionBuilder());
-                    }
-                    query.setSelectionCriteria(expression);
+            public void setAttributeValueInObject(Object object, Object value) {
+                if (!(object instanceof ObjectLevelReadQuery)) {
+                    return;
                 }
-            });
+                ObjectLevelReadQuery query = (ObjectLevelReadQuery)object;
+                Expression expression = (Expression)value;
+                if (expression != null) {
+                    expression = expression.rebuildOn(query.getExpressionBuilder());
+                }
+                query.setSelectionCriteria(expression);
+            }
+        });
         expressionMapping.setReferenceClass(Expression.class);
-        expressionMapping.setXPath("opm:criteria");
+        expressionMapping.setXPath(getSecondaryNamespaceXPath() + "criteria");
         descriptor.addMapping(expressionMapping);
 
         XMLCompositeCollectionMapping argumentsMapping = new XMLCompositeCollectionMapping();
 
         // Handle translation of argument lists to query-arguments.
         argumentsMapping.setAttributeAccessor(new AttributeAccessor() {
-                public Object getAttributeValueFromObject(Object object) {
-                    DatabaseQuery query = (DatabaseQuery)object;
-                    Vector arguments = query.getArguments();
-                    Vector types = query.getArgumentTypeNames();
-                    Vector values = query.getArgumentValues();
-                    Vector queryArguments = new Vector(arguments.size());
-                    for (int index = 0; index < arguments.size(); index++) {
-                        QueryArgument queryArgument = new QueryArgument();
-                        queryArgument.setKey(arguments.get(index));
-                        if (!types.isEmpty()) {
-                            queryArgument.setTypeName((String)types.get(index));
-                        }
-                        if (!values.isEmpty()) {
-                            queryArgument.setValue(values.get(index));
-                        }
-                        queryArguments.add(queryArgument);
-                    }
-                    return queryArguments;
-                }
-
-                public void setAttributeValueInObject(Object object, Object value) {
-                    DatabaseQuery query = (DatabaseQuery)object;
-                    Vector queryArguments = (Vector)value;
-                    Vector arguments = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance(queryArguments.size());
-                    Vector types = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance(queryArguments.size());
-                    Vector values = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance(queryArguments.size());
-                    for (int index = 0; index < queryArguments.size(); index++) {
-                        QueryArgument queryArgument = (QueryArgument)queryArguments.get(index);
-                        arguments.add(queryArgument.getKey());
-                        if (queryArgument.getValue() != null) {
-                            values.add(queryArgument.getValue());
-                        }
-                        if (queryArgument.getType() != null) {
-                            types.add(queryArgument.getType());
-                        }
-                    }
-                    query.setArguments(arguments);
+            public Object getAttributeValueFromObject(Object object) {
+                DatabaseQuery query = (DatabaseQuery)object;
+                Vector arguments = query.getArguments();
+                Vector types = query.getArgumentTypeNames();
+                Vector values = query.getArgumentValues();
+                Vector queryArguments = new Vector(arguments.size());
+                for (int index = 0; index < arguments.size(); index++) {
+                    QueryArgument queryArgument = new QueryArgument();
+                    queryArgument.setKey(arguments.get(index));
                     if (!types.isEmpty()) {
-                        query.setArgumentTypes(types);
+                        queryArgument.setTypeName((String)types.get(index));
                     }
                     if (!values.isEmpty()) {
-                        query.setArgumentValues(values);
+                        queryArgument.setValue(values.get(index));
+                    }
+                    queryArguments.add(queryArgument);
+                }
+                return queryArguments;
+            }
+
+            public void setAttributeValueInObject(Object object, Object value) {
+                DatabaseQuery query = (DatabaseQuery)object;
+                Vector queryArguments = (Vector)value;
+                Vector arguments = NonSynchronizedVector.newInstance(queryArguments.size());
+                Vector types = NonSynchronizedVector.newInstance(queryArguments.size());
+                Vector values = NonSynchronizedVector.newInstance(queryArguments.size());
+                for (int index = 0; index < queryArguments.size(); index++) {
+                    QueryArgument queryArgument = (QueryArgument)queryArguments.get(index);
+                    arguments.add(queryArgument.getKey());
+                    if (queryArgument.getValue() != null) {
+                        values.add(queryArgument.getValue());
+                    }
+                    if (queryArgument.getType() != null) {
+                        types.add(queryArgument.getType());
                     }
                 }
-            });
+                query.setArguments(arguments);
+                if (!types.isEmpty()) {
+                    query.setArgumentTypes(types);
+                }
+                if (!values.isEmpty()) {
+                    query.setArgumentValues(values);
+                }
+            }
+        });
         argumentsMapping.setAttributeName("argumentsMapping");
-        argumentsMapping.setXPath("opm:arguments/opm:argument");
+        argumentsMapping.setXPath(getSecondaryNamespaceXPath() + "arguments/" + getSecondaryNamespaceXPath() + "argument");
         argumentsMapping.setReferenceClass(QueryArgument.class);
         descriptor.addMapping(argumentsMapping);
 
@@ -1331,25 +1352,25 @@ public class ObjectPersistenceRuntimeXMLProject extends Project {
         shouldMaintainCacheMapping.setAttributeName("shouldMaintainCache");
         shouldMaintainCacheMapping.setGetMethodName("shouldMaintainCache");
         shouldMaintainCacheMapping.setSetMethodName("setShouldMaintainCache");
-        shouldMaintainCacheMapping.setXPath("toplink:maintain-cache/text()");
+        shouldMaintainCacheMapping.setXPath(getPrimaryNamespaceXPath() + "maintain-cache/text()");
         shouldMaintainCacheMapping.setNullValue(Boolean.TRUE);
         descriptor.addMapping(shouldMaintainCacheMapping);
 
         XMLDirectMapping shouldBindAllParametersMapping = new XMLDirectMapping();
         shouldBindAllParametersMapping.setAttributeName("shouldBindAllParameters");
-        shouldBindAllParametersMapping.setXPath("toplink:bind-all-parameters/text()");
+        shouldBindAllParametersMapping.setXPath(getPrimaryNamespaceXPath() + "bind-all-parameters/text()");
         descriptor.addMapping(shouldBindAllParametersMapping);
 
         XMLDirectMapping shouldCacheStatementMapping = new XMLDirectMapping();
         shouldCacheStatementMapping.setAttributeName("shouldCacheStatement");
-        shouldCacheStatementMapping.setXPath("toplink:cache-statement/text()");
+        shouldCacheStatementMapping.setXPath(getPrimaryNamespaceXPath() + "cache-statement/text()");
         descriptor.addMapping(shouldCacheStatementMapping);
 
         XMLDirectMapping queryTimeoutMapping = new XMLDirectMapping();
         queryTimeoutMapping.setAttributeName("queryTimeout");
         queryTimeoutMapping.setGetMethodName("getQueryTimeout");
         queryTimeoutMapping.setSetMethodName("setQueryTimeout");
-        queryTimeoutMapping.setXPath("toplink:timeout/text()");
+        queryTimeoutMapping.setXPath(getPrimaryNamespaceXPath() + "timeout/text()");
         queryTimeoutMapping.setNullValue(new Integer(DescriptorQueryManager.DefaultTimeout));
         descriptor.addMapping(queryTimeoutMapping);
 
@@ -1358,7 +1379,7 @@ public class ObjectPersistenceRuntimeXMLProject extends Project {
         shouldPrepareMapping.setAttributeName("shouldPrepare");
         shouldPrepareMapping.setGetMethodName("shouldPrepare");
         shouldPrepareMapping.setSetMethodName("setShouldPrepare");
-        shouldPrepareMapping.setXPath("toplink:prepare/text()");
+        shouldPrepareMapping.setXPath(getPrimaryNamespaceXPath() + "prepare/text()");
         shouldPrepareMapping.setNullValue(Boolean.TRUE);
         descriptor.addMapping(shouldPrepareMapping);
 
@@ -1367,15 +1388,15 @@ public class ObjectPersistenceRuntimeXMLProject extends Project {
         callMapping.setGetMethodName("getDatasourceCall");
         callMapping.setSetMethodName("setDatasourceCall");
         callMapping.setReferenceClass(Call.class);
-        callMapping.setXPath("toplink:call");
+        callMapping.setXPath(getPrimaryNamespaceXPath() + "call");
         descriptor.addMapping(callMapping);
 
         XMLCompositeObjectMapping redirectorMapping = new XMLCompositeObjectMapping();
         redirectorMapping.setAttributeName("redirector");
         redirectorMapping.setGetMethodName("getRedirector");
         redirectorMapping.setSetMethodName("setRedirector");
-        redirectorMapping.setReferenceClass(org.eclipse.persistence.queries.MethodBaseQueryRedirector.class);
-        redirectorMapping.setXPath("toplink:query-redirector");
+        redirectorMapping.setReferenceClass(MethodBaseQueryRedirector.class);
+        redirectorMapping.setXPath(getPrimaryNamespaceXPath() + "query-redirector");
         descriptor.addMapping(redirectorMapping);
 
         return descriptor;
@@ -1388,32 +1409,33 @@ public class ObjectPersistenceRuntimeXMLProject extends Project {
         XMLCompositeObjectMapping invalidationPolicyMapping = new XMLCompositeObjectMapping();
         invalidationPolicyMapping.setAttributeName("invalidationPolicy");
         invalidationPolicyMapping.setReferenceClass(CacheInvalidationPolicy.class);
-        invalidationPolicyMapping.setXPath("toplink:invalidation-policy");
+        invalidationPolicyMapping.setXPath(getPrimaryNamespaceXPath() + "invalidation-policy");
         descriptor.addMapping(invalidationPolicyMapping);
         XMLDirectMapping maximumCachedResultsMapping = new XMLDirectMapping();
         maximumCachedResultsMapping.setAttributeName("maximumCachedResults");
         maximumCachedResultsMapping.setGetMethodName("getMaximumCachedResults");
         maximumCachedResultsMapping.setSetMethodName("setMaximumCachedResults");
-        maximumCachedResultsMapping.setXPath("toplink:maximum-cached-results/text()");
+        maximumCachedResultsMapping.setXPath(getPrimaryNamespaceXPath() + "maximum-cached-results/text()");
         maximumCachedResultsMapping.setNullValue(new Integer(100));
         descriptor.addMapping(maximumCachedResultsMapping);
 
         return descriptor;
     }
+
     protected ClassDescriptor buildCacheInvalidationPolicyDescriptor() {
         XMLDescriptor descriptor = new XMLDescriptor();
         descriptor.setJavaClass(CacheInvalidationPolicy.class);
 
         descriptor.getInheritancePolicy().setClassIndicatorField(new XMLField("@xsi:type"));
-        descriptor.getInheritancePolicy().addClassIndicator(NoExpiryCacheInvalidationPolicy.class, "toplink:no-expiry-cache-invalidation-policy");
-        descriptor.getInheritancePolicy().addClassIndicator(TimeToLiveCacheInvalidationPolicy.class, "toplink:time-to-live-cache-invalidation-policy");
-        descriptor.getInheritancePolicy().addClassIndicator(DailyCacheInvalidationPolicy.class, "toplink:daily-cache-invalidation-policy");
+        descriptor.getInheritancePolicy().addClassIndicator(NoExpiryCacheInvalidationPolicy.class, getPrimaryNamespaceXPath() + "no-expiry-cache-invalidation-policy");
+        descriptor.getInheritancePolicy().addClassIndicator(TimeToLiveCacheInvalidationPolicy.class, getPrimaryNamespaceXPath() + "time-to-live-cache-invalidation-policy");
+        descriptor.getInheritancePolicy().addClassIndicator(DailyCacheInvalidationPolicy.class, getPrimaryNamespaceXPath() + "daily-cache-invalidation-policy");
 
         XMLDirectMapping updateOnReadMapping = new XMLDirectMapping();
         updateOnReadMapping.setAttributeName("shouldUpdateReadTimeOnUpdate");
         updateOnReadMapping.setGetMethodName("shouldUpdateReadTimeOnUpdate");
         updateOnReadMapping.setSetMethodName("setShouldUpdateReadTimeOnUpdate");
-        updateOnReadMapping.setXPath("toplink:update-read-time-on-update/text()");
+        updateOnReadMapping.setXPath(getPrimaryNamespaceXPath() + "update-read-time-on-update/text()");
         updateOnReadMapping.setNullValue(Boolean.FALSE);
         descriptor.addMapping(updateOnReadMapping);
 
@@ -1427,11 +1449,10 @@ public class ObjectPersistenceRuntimeXMLProject extends Project {
         descriptor.descriptorIsAggregate();
 
         descriptor.getInheritancePolicy().setClassIndicatorField(new XMLField("@xsi:type"));
-        descriptor.getInheritancePolicy().addClassIndicator(SQLCall.class, "toplink:sql-call");
-        descriptor.getInheritancePolicy().addClassIndicator(JPQLCall.class, "toplink:ejbql-call");
+        descriptor.getInheritancePolicy().addClassIndicator(SQLCall.class, getPrimaryNamespaceXPath() + "sql-call");
+        descriptor.getInheritancePolicy().addClassIndicator(JPQLCall.class, getPrimaryNamespaceXPath() + "ejbql-call");
         return descriptor;
     }
-
 
     protected ClassDescriptor buildSQLCallDescriptor() {
         XMLDescriptor descriptor = new XMLDescriptor();
@@ -1443,7 +1464,7 @@ public class ObjectPersistenceRuntimeXMLProject extends Project {
         sqlStringMapping.setAttributeName("sqlString");
         sqlStringMapping.setGetMethodName("getSQLString");
         sqlStringMapping.setSetMethodName("setSQLString");
-        sqlStringMapping.setXPath("toplink:sql/text()");
+        sqlStringMapping.setXPath(getPrimaryNamespaceXPath() + "sql/text()");
         descriptor.addMapping(sqlStringMapping);
 
         return descriptor;
@@ -1459,7 +1480,7 @@ public class ObjectPersistenceRuntimeXMLProject extends Project {
         sqlStringMapping.setAttributeName("ejbqlString");
         sqlStringMapping.setGetMethodName("getEjbqlString");
         sqlStringMapping.setSetMethodName("setEjbqlString");
-        sqlStringMapping.setXPath("toplink:ejbql/text()");
+        sqlStringMapping.setXPath(getPrimaryNamespaceXPath() + "ejbql/text()");
         descriptor.addMapping(sqlStringMapping);
 
         return descriptor;
@@ -1475,7 +1496,7 @@ public class ObjectPersistenceRuntimeXMLProject extends Project {
         maxRowsMapping.setAttributeName("maxRows");
         maxRowsMapping.setGetMethodName("getMaxRows");
         maxRowsMapping.setSetMethodName("setMaxRows");
-        maxRowsMapping.setXPath("toplink:max-rows/text()");
+        maxRowsMapping.setXPath(getPrimaryNamespaceXPath() + "max-rows/text()");
         maxRowsMapping.setNullValue(new Integer(0));
         descriptor.addMapping(maxRowsMapping);
 
@@ -1483,43 +1504,43 @@ public class ObjectPersistenceRuntimeXMLProject extends Project {
         firstResultMapping.setAttributeName("firstResult");
         firstResultMapping.setGetMethodName("getFirstResult");
         firstResultMapping.setSetMethodName("setFirstResult");
-        firstResultMapping.setXPath("toplink:first-result/text()");
+        firstResultMapping.setXPath(getPrimaryNamespaceXPath() + "first-result/text()");
         firstResultMapping.setNullValue(new Integer(0));
         descriptor.addMapping(firstResultMapping);
         XMLDirectMapping fetchSizeMapping = new XMLDirectMapping();
         fetchSizeMapping.setAttributeName("fetchSize");
         fetchSizeMapping.setGetMethodName("getFetchSize");
         fetchSizeMapping.setSetMethodName("setFetchSize");
-        fetchSizeMapping.setXPath("toplink:fetch-size/text()");
+        fetchSizeMapping.setXPath(getPrimaryNamespaceXPath() + "fetch-size/text()");
         fetchSizeMapping.setNullValue(new Integer(0));
         descriptor.addMapping(fetchSizeMapping);
 
         XMLCompositeObjectMapping queryResultCachingPolicyMapping = new XMLCompositeObjectMapping();
         queryResultCachingPolicyMapping.setAttributeName("queryResultCachingPolicy");
         queryResultCachingPolicyMapping.setReferenceClass(QueryResultsCachePolicy.class);
-        queryResultCachingPolicyMapping.setXPath("toplink:query-result-cache-policy");
+        queryResultCachingPolicyMapping.setXPath(getPrimaryNamespaceXPath() + "query-result-cache-policy");
         descriptor.addMapping(queryResultCachingPolicyMapping);
         return descriptor;
     }
 
     protected ClassDescriptor buildObjectLevelReadQueryDescriptor() {
         XMLDescriptor descriptor = new XMLDescriptor();
-        descriptor.setJavaClass(org.eclipse.persistence.queries.ObjectLevelReadQuery.class);
+        descriptor.setJavaClass(ObjectLevelReadQuery.class);
 
-        descriptor.getInheritancePolicy().setParentClass(org.eclipse.persistence.queries.ReadQuery.class);
+        descriptor.getInheritancePolicy().setParentClass(ReadQuery.class);
 
         XMLDirectMapping referenceClassMapping = new XMLDirectMapping();
         referenceClassMapping.setAttributeName("referenceClass");
         referenceClassMapping.setGetMethodName("getReferenceClass");
         referenceClassMapping.setSetMethodName("setReferenceClass");
-        referenceClassMapping.setXPath("toplink:reference-class/text()");
+        referenceClassMapping.setXPath(getPrimaryNamespaceXPath() + "reference-class/text()");
         descriptor.addMapping(referenceClassMapping);
 
         XMLDirectMapping refreshIdentityMapping = new XMLDirectMapping();
         refreshIdentityMapping.setAttributeName("shouldRefreshIdentityMapResult");
         refreshIdentityMapping.setGetMethodName("shouldRefreshIdentityMapResult");
         refreshIdentityMapping.setSetMethodName("setShouldRefreshIdentityMapResult");
-        refreshIdentityMapping.setXPath("toplink:refresh/text()");
+        refreshIdentityMapping.setXPath(getPrimaryNamespaceXPath() + "refresh/text()");
         refreshIdentityMapping.setNullValue(Boolean.FALSE);
         descriptor.addMapping(refreshIdentityMapping);
 
@@ -1527,7 +1548,7 @@ public class ObjectPersistenceRuntimeXMLProject extends Project {
         refreshRemoteIdentityMapping.setAttributeName("shouldRefreshRemoteIdentityMapResult");
         refreshRemoteIdentityMapping.setGetMethodName("shouldRefreshRemoteIdentityMapResult");
         refreshRemoteIdentityMapping.setSetMethodName("setShouldRefreshRemoteIdentityMapResult");
-        refreshRemoteIdentityMapping.setXPath("toplink:remote-refresh/text()");
+        refreshRemoteIdentityMapping.setXPath(getPrimaryNamespaceXPath() + "remote-refresh/text()");
         refreshRemoteIdentityMapping.setNullValue(Boolean.FALSE);
         descriptor.addMapping(refreshRemoteIdentityMapping);
 
@@ -1541,14 +1562,14 @@ public class ObjectPersistenceRuntimeXMLProject extends Project {
         cascadePolicyConverter.addConversionValue("private", new Integer(DatabaseQuery.CascadePrivateParts));
         cascadePolicyMapping.setConverter(cascadePolicyConverter);
         cascadePolicyMapping.setNullValue(new Integer(DatabaseQuery.NoCascading));
-        cascadePolicyMapping.setXPath("toplink:cascade-policy/text()");
+        cascadePolicyMapping.setXPath(getPrimaryNamespaceXPath() + "cascade-policy/text()");
         descriptor.addMapping(cascadePolicyMapping);
 
         XMLDirectMapping cacheUsageMapping = new XMLDirectMapping();
         cacheUsageMapping.setAttributeName("cacheUsage");
         cacheUsageMapping.setGetMethodName("getCacheUsage");
         cacheUsageMapping.setSetMethodName("setCacheUsage");
-        cacheUsageMapping.setXPath("toplink:cache-usage/text()");
+        cacheUsageMapping.setXPath(getPrimaryNamespaceXPath() + "cache-usage/text()");
         ObjectTypeConverter cacheUsageConverter = new ObjectTypeConverter();
         cacheUsageConverter.addConversionValue("exact-primary-key", new Integer(ObjectLevelReadQuery.CheckCacheByExactPrimaryKey));
         cacheUsageConverter.addConversionValue("primary-key", new Integer(ObjectLevelReadQuery.CheckCacheByPrimaryKey));
@@ -1565,7 +1586,7 @@ public class ObjectPersistenceRuntimeXMLProject extends Project {
         lockModeMapping.setAttributeName("lockMode");
         lockModeMapping.setGetMethodName("getLockMode");
         lockModeMapping.setSetMethodName("setLockMode");
-        lockModeMapping.setXPath("toplink:lock-mode/text()");
+        lockModeMapping.setXPath(getPrimaryNamespaceXPath() + "lock-mode/text()");
         ObjectTypeConverter lockModeConverter = new ObjectTypeConverter();
         lockModeConverter.addConversionValue("default", new Short(ObjectLevelReadQuery.DEFAULT_LOCK_MODE));
         lockModeConverter.addConversionValue("lock", new Short(ObjectLevelReadQuery.LOCK));
@@ -1579,7 +1600,7 @@ public class ObjectPersistenceRuntimeXMLProject extends Project {
         distinctStateMapping.setAttributeName("distinctState");
         distinctStateMapping.setGetMethodName("getDistinctState");
         distinctStateMapping.setSetMethodName("setDistinctState");
-        distinctStateMapping.setXPath("toplink:distinct-state/text()");
+        distinctStateMapping.setXPath(getPrimaryNamespaceXPath() + "distinct-state/text()");
         ObjectTypeConverter distinctStateConverter = new ObjectTypeConverter();
         distinctStateConverter.addConversionValue("dont-use-distinct", new Short(ObjectLevelReadQuery.DONT_USE_DISTINCT));
         distinctStateConverter.addConversionValue("none", new Short(ObjectLevelReadQuery.UNCOMPUTED_DISTINCT));
@@ -1593,57 +1614,57 @@ public class ObjectPersistenceRuntimeXMLProject extends Project {
         inMemoryQueryIndirectionPolicyMapping.setReferenceClass(InMemoryQueryIndirectionPolicy.class);
         // Handle translation of default to null.
         inMemoryQueryIndirectionPolicyMapping.setAttributeAccessor(new AttributeAccessor() {
-                public Object getAttributeValueFromObject(Object object) {
-                    InMemoryQueryIndirectionPolicy policy = ((ObjectLevelReadQuery)object).getInMemoryQueryIndirectionPolicy();
-                    if (policy.shouldThrowIndirectionException()) {
-                        return null;
-                    }
-                    return policy;
+            public Object getAttributeValueFromObject(Object object) {
+                InMemoryQueryIndirectionPolicy policy = ((ObjectLevelReadQuery)object).getInMemoryQueryIndirectionPolicy();
+                if (policy.shouldThrowIndirectionException()) {
+                    return null;
                 }
+                return policy;
+            }
 
-                public void setAttributeValueInObject(Object object, Object value) {
-                    if (value == null) {
-                        return;
-                    }
-                    InMemoryQueryIndirectionPolicy policy = (InMemoryQueryIndirectionPolicy)value;
-                    ((ObjectLevelReadQuery)object).setInMemoryQueryIndirectionPolicy(policy);
+            public void setAttributeValueInObject(Object object, Object value) {
+                if (value == null) {
+                    return;
                 }
-            });
-        inMemoryQueryIndirectionPolicyMapping.setXPath("toplink:in-memory-querying");
+                InMemoryQueryIndirectionPolicy policy = (InMemoryQueryIndirectionPolicy)value;
+                ((ObjectLevelReadQuery)object).setInMemoryQueryIndirectionPolicy(policy);
+            }
+        });
+        inMemoryQueryIndirectionPolicyMapping.setXPath(getPrimaryNamespaceXPath() + "in-memory-querying");
         descriptor.addMapping(inMemoryQueryIndirectionPolicyMapping);
 
-        //fetch group setting		
+        // fetch group setting
         XMLDirectMapping useDefaultFetchGroupMapping = new XMLDirectMapping();
         useDefaultFetchGroupMapping.setAttributeName("shouldUseDefaultFetchGroup");
-        useDefaultFetchGroupMapping.setXPath("toplink:use-default-fetch-group/text()");
+        useDefaultFetchGroupMapping.setXPath(getPrimaryNamespaceXPath() + "use-default-fetch-group/text()");
         useDefaultFetchGroupMapping.setNullValue(Boolean.TRUE);
         descriptor.addMapping(useDefaultFetchGroupMapping);
 
         XMLCompositeObjectMapping fetchGroupMapping = new XMLCompositeObjectMapping();
         fetchGroupMapping.setAttributeName("fetchGroup");
         fetchGroupMapping.setReferenceClass(FetchGroup.class);
-        fetchGroupMapping.setXPath("toplink:fetch-group");
+        fetchGroupMapping.setXPath(getPrimaryNamespaceXPath() + "fetch-group");
         descriptor.addMapping(fetchGroupMapping);
 
         XMLDirectMapping fetchGroupNameMapping = new XMLDirectMapping();
         fetchGroupNameMapping.setAttributeName("fetchGroupName");
-        fetchGroupNameMapping.setXPath("toplink:fetch-group-name/text()");
+        fetchGroupNameMapping.setXPath(getPrimaryNamespaceXPath() + "fetch-group-name/text()");
         descriptor.addMapping(fetchGroupNameMapping);
 
-        //shouldUseExclusiveConnection setting		
+        // shouldUseExclusiveConnection setting
         XMLDirectMapping useExclusiveConnectionMapping = new XMLDirectMapping();
         useExclusiveConnectionMapping.setAttributeName("shouldUseExclusiveConnection");
-        useExclusiveConnectionMapping.setXPath("toplink:use-exclusive-connection/text()");
+        useExclusiveConnectionMapping.setXPath(getPrimaryNamespaceXPath() + "use-exclusive-connection/text()");
         useExclusiveConnectionMapping.setNullValue(Boolean.FALSE);
         descriptor.addMapping(useExclusiveConnectionMapping);
 
         XMLCompositeCollectionMapping joinedAttributeMapping = new XMLCompositeCollectionMapping();
-        joinedAttributeMapping.useCollectionClass(org.eclipse.persistence.internal.helper.NonSynchronizedVector.class);
+        joinedAttributeMapping.useCollectionClass(NonSynchronizedVector.class);
         joinedAttributeMapping.setAttributeName("joinedAttributeExpressions");
         joinedAttributeMapping.setGetMethodName("getJoinedAttributeExpressions");
         joinedAttributeMapping.setSetMethodName("setJoinedAttributeExpressions");
         joinedAttributeMapping.setReferenceClass(Expression.class);
-        joinedAttributeMapping.setXPath("toplink:joined-attribute-expressions/toplink:expression");
+        joinedAttributeMapping.setXPath(getPrimaryNamespaceXPath() + "joined-attribute-expressions/" + getPrimaryNamespaceXPath() + "expression");
         descriptor.addMapping(joinedAttributeMapping);
 
         return descriptor;
@@ -1651,15 +1672,15 @@ public class ObjectPersistenceRuntimeXMLProject extends Project {
 
     protected ClassDescriptor buildReadObjectQueryDescriptor() {
         XMLDescriptor descriptor = new XMLDescriptor();
-        descriptor.setJavaClass(org.eclipse.persistence.queries.ReadObjectQuery.class);
-        descriptor.getInheritancePolicy().setParentClass(org.eclipse.persistence.queries.ObjectLevelReadQuery.class);
+        descriptor.setJavaClass(ReadObjectQuery.class);
+        descriptor.getInheritancePolicy().setParentClass(ObjectLevelReadQuery.class);
 
         return descriptor;
     }
 
     protected ClassDescriptor buildReadAllObjectQueryDescriptor() {
         XMLDescriptor descriptor = new XMLDescriptor();
-        descriptor.setJavaClass(org.eclipse.persistence.queries.ReadAllQuery.class);
+        descriptor.setJavaClass(ReadAllQuery.class);
 
         descriptor.getInheritancePolicy().setParentClass(ObjectLevelReadQuery.class);
 
@@ -1667,22 +1688,22 @@ public class ObjectPersistenceRuntimeXMLProject extends Project {
         containerPolicyMapping.setAttributeName("collectionPolicy");
         containerPolicyMapping.setGetMethodName("getContainerPolicy");
         containerPolicyMapping.setSetMethodName("setContainerPolicy");
-        containerPolicyMapping.setReferenceClass(org.eclipse.persistence.internal.queries.ContainerPolicy.class);
-        containerPolicyMapping.setXPath("toplink:container");
+        containerPolicyMapping.setReferenceClass(ContainerPolicy.class);
+        containerPolicyMapping.setXPath(getPrimaryNamespaceXPath() + "container");
         descriptor.addMapping(containerPolicyMapping);
 
         XMLCompositeCollectionMapping batchReadMapping = new XMLCompositeCollectionMapping();
-        batchReadMapping.useCollectionClass(org.eclipse.persistence.internal.helper.NonSynchronizedVector.class);
+        batchReadMapping.useCollectionClass(NonSynchronizedVector.class);
         batchReadMapping.setAttributeName("batchReadAttributeExpressions");
         batchReadMapping.setReferenceClass(Expression.class);
-        batchReadMapping.setXPath("toplink:batch-read-attribute-expressions/toplink:expression");
+        batchReadMapping.setXPath(getPrimaryNamespaceXPath() + "batch-read-attribute-expressions/" + getPrimaryNamespaceXPath() + "expression");
         descriptor.addMapping(batchReadMapping);
 
         XMLCompositeCollectionMapping orderByMapping = new XMLCompositeCollectionMapping();
-        orderByMapping.useCollectionClass(org.eclipse.persistence.internal.helper.NonSynchronizedVector.class);
+        orderByMapping.useCollectionClass(NonSynchronizedVector.class);
         orderByMapping.setAttributeName("orderByExpressions");
         orderByMapping.setReferenceClass(Expression.class);
-        orderByMapping.setXPath("toplink:order-by-expressions/toplink:expression");
+        orderByMapping.setXPath(getPrimaryNamespaceXPath() + "order-by-expressions/" + getPrimaryNamespaceXPath() + "expression");
         descriptor.addMapping(orderByMapping);
 
         return descriptor;
@@ -1690,7 +1711,7 @@ public class ObjectPersistenceRuntimeXMLProject extends Project {
 
     protected ClassDescriptor buildDeleteObjectQueryDescriptor() {
         XMLDescriptor descriptor = new XMLDescriptor();
-        descriptor.setJavaClass(org.eclipse.persistence.queries.DeleteObjectQuery.class);
+        descriptor.setJavaClass(DeleteObjectQuery.class);
         descriptor.getInheritancePolicy().setParentClass(DatabaseQuery.class);
 
         return descriptor;
@@ -1721,7 +1742,7 @@ public class ObjectPersistenceRuntimeXMLProject extends Project {
         existenceCheckMapping.setAttributeName("existenceCheck");
         existenceCheckMapping.setGetMethodName("getExistencePolicy");
         existenceCheckMapping.setSetMethodName("setExistencePolicy");
-        existenceCheckMapping.setXPath("toplink:existence-check/text()");
+        existenceCheckMapping.setXPath(getPrimaryNamespaceXPath() + "existence-check/text()");
         ObjectTypeConverter existenceCheckConverter = new ObjectTypeConverter();
         existenceCheckConverter.addConversionValue("check-cache", new Integer(DoesExistQuery.CheckCache));
         existenceCheckConverter.addConversionValue("check-database", new Integer(DoesExistQuery.CheckDatabase));
@@ -1743,8 +1764,8 @@ public class ObjectPersistenceRuntimeXMLProject extends Project {
         containerPolicyMapping.setAttributeName("collectionPolicy");
         containerPolicyMapping.setGetMethodName("getContainerPolicy");
         containerPolicyMapping.setSetMethodName("setContainerPolicy");
-        containerPolicyMapping.setReferenceClass(org.eclipse.persistence.internal.queries.ContainerPolicy.class);
-        containerPolicyMapping.setXPath("toplink:container");
+        containerPolicyMapping.setReferenceClass(ContainerPolicy.class);
+        containerPolicyMapping.setXPath(getPrimaryNamespaceXPath() + "container");
         descriptor.addMapping(containerPolicyMapping);
 
         return descriptor;
@@ -1789,7 +1810,7 @@ public class ObjectPersistenceRuntimeXMLProject extends Project {
 
         XMLDirectMapping returnChoiceMapping = new XMLDirectMapping();
         returnChoiceMapping.setAttributeName("returnChoice");
-        returnChoiceMapping.setXPath("toplink:return-choice/text()");
+        returnChoiceMapping.setXPath(getPrimaryNamespaceXPath() + "return-choice/text()");
         ObjectTypeConverter returnChoiceConverter = new ObjectTypeConverter();
         returnChoiceConverter.addConversionValue("return-single-result", new Integer(ReportQuery.ShouldReturnSingleResult));
         returnChoiceConverter.addConversionValue("return-single-value", new Integer(ReportQuery.ShouldReturnSingleValue));
@@ -1800,7 +1821,7 @@ public class ObjectPersistenceRuntimeXMLProject extends Project {
 
         XMLDirectMapping retrievePrimaryKeysMapping = new XMLDirectMapping();
         retrievePrimaryKeysMapping.setAttributeName("shouldRetrievePrimaryKeys");
-        retrievePrimaryKeysMapping.setXPath("toplink:retrieve-primary-keys/text()");
+        retrievePrimaryKeysMapping.setXPath(getPrimaryNamespaceXPath() + "retrieve-primary-keys/text()");
         ObjectTypeConverter retrievePrimaryKeysConverter = new ObjectTypeConverter();
         retrievePrimaryKeysConverter.addConversionValue("full-primary-key", new Integer(ReportQuery.FULL_PRIMARY_KEY));
         retrievePrimaryKeysConverter.addConversionValue("first-primary-key", new Integer(ReportQuery.FIRST_PRIMARY_KEY));
@@ -1810,17 +1831,17 @@ public class ObjectPersistenceRuntimeXMLProject extends Project {
         descriptor.addMapping(retrievePrimaryKeysMapping);
 
         XMLCompositeCollectionMapping reportItemsMapping = new XMLCompositeCollectionMapping();
-        reportItemsMapping.useCollectionClass(org.eclipse.persistence.internal.helper.NonSynchronizedVector.class);
+        reportItemsMapping.useCollectionClass(NonSynchronizedVector.class);
         reportItemsMapping.setAttributeName("items");
         reportItemsMapping.setReferenceClass(ReportItem.class);
-        reportItemsMapping.setXPath("toplink:report-items/toplink:item");
+        reportItemsMapping.setXPath(getPrimaryNamespaceXPath() + "report-items/" + getPrimaryNamespaceXPath() + "item");
         descriptor.addMapping(reportItemsMapping);
 
         XMLCompositeCollectionMapping groupByMapping = new XMLCompositeCollectionMapping();
-        groupByMapping.useCollectionClass(org.eclipse.persistence.internal.helper.NonSynchronizedVector.class);
+        groupByMapping.useCollectionClass(NonSynchronizedVector.class);
         groupByMapping.setAttributeName("groupByExpressions");
         groupByMapping.setReferenceClass(Expression.class);
-        groupByMapping.setXPath("toplink:group-by-expressions/toplink:expression");
+        groupByMapping.setXPath(getPrimaryNamespaceXPath() + "group-by-expressions/" + getPrimaryNamespaceXPath() + "expression");
         descriptor.addMapping(groupByMapping);
 
         return descriptor;
@@ -1828,18 +1849,18 @@ public class ObjectPersistenceRuntimeXMLProject extends Project {
 
     protected ClassDescriptor buildReportItemDescriptor() {
         XMLDescriptor descriptor = new XMLDescriptor();
-        descriptor.setJavaClass(org.eclipse.persistence.internal.queries.ReportItem.class);
+        descriptor.setJavaClass(ReportItem.class);
         descriptor.setDefaultRootElement("item");
 
         XMLDirectMapping nameMapping = new XMLDirectMapping();
         nameMapping.setAttributeName("name");
-        nameMapping.setXPath("toplink:name/text()");
+        nameMapping.setXPath(getPrimaryNamespaceXPath() + "name/text()");
         descriptor.addMapping(nameMapping);
 
         XMLCompositeObjectMapping attributeExpressionMapping = new XMLCompositeObjectMapping();
         attributeExpressionMapping.setAttributeName("attributeExpression");
-        attributeExpressionMapping.setReferenceClass(org.eclipse.persistence.expressions.Expression.class);
-        attributeExpressionMapping.setXPath("toplink:attribute-expression");
+        attributeExpressionMapping.setReferenceClass(Expression.class);
+        attributeExpressionMapping.setXPath(getPrimaryNamespaceXPath() + "attribute-expression");
         descriptor.addMapping(attributeExpressionMapping);
 
         return descriptor;
@@ -1854,14 +1875,14 @@ public class ObjectPersistenceRuntimeXMLProject extends Project {
         methodNameMapping.setAttributeName("methodName");
         methodNameMapping.setGetMethodName("getMethodName");
         methodNameMapping.setSetMethodName("setMethodName");
-        methodNameMapping.setXPath("toplink:method-name/text()");
+        methodNameMapping.setXPath(getPrimaryNamespaceXPath() + "method-name/text()");
         descriptor.addMapping(methodNameMapping);
 
         XMLDirectMapping methodClassMapping = new XMLDirectMapping();
         methodClassMapping.setAttributeName("methodClass");
         methodClassMapping.setGetMethodName("getMethodClass");
         methodClassMapping.setSetMethodName("setMethodClass");
-        methodClassMapping.setXPath("toplink:method-class/text()");
+        methodClassMapping.setXPath(getPrimaryNamespaceXPath() + "method-class/text()");
         descriptor.addMapping(methodClassMapping);
         return descriptor;
     }
@@ -1875,7 +1896,7 @@ public class ObjectPersistenceRuntimeXMLProject extends Project {
         policyMapping.setAttributeName("policy");
         policyMapping.setGetMethodName("getPolicy");
         policyMapping.setSetMethodName("setPolicy");
-        policyMapping.setXPath("toplink:policy/text()");
+        policyMapping.setXPath(getPrimaryNamespaceXPath() + "policy/text()");
         ObjectTypeConverter policyConverter = new ObjectTypeConverter();
         policyConverter.addConversionValue("ignore-exceptions-return-conformed", new Integer(InMemoryQueryIndirectionPolicy.SHOULD_IGNORE_EXCEPTION_RETURN_CONFORMED));
         policyConverter.addConversionValue("ignore-exceptions-returned-not-conformed", new Integer(InMemoryQueryIndirectionPolicy.SHOULD_IGNORE_EXCEPTION_RETURN_NOT_CONFORMED));
@@ -1893,55 +1914,54 @@ public class ObjectPersistenceRuntimeXMLProject extends Project {
         descriptor.setDefaultRootElement("attribute-mapping");
 
         descriptor.getInheritancePolicy().setClassIndicatorField(new XMLField("@xsi:type"));
-        descriptor.getInheritancePolicy().addClassIndicator(DirectToFieldMapping.class, "toplink:direct-mapping");
-        descriptor.getInheritancePolicy().addClassIndicator(TransformationMapping.class, "toplink:transformation-mapping");
-        descriptor.getInheritancePolicy().addClassIndicator(OneToOneMapping.class, "toplink:one-to-one-mapping");
-        descriptor.getInheritancePolicy().addClassIndicator(VariableOneToOneMapping.class, "toplink:variable-one-to-one-mapping");
-        descriptor.getInheritancePolicy().addClassIndicator(OneToManyMapping.class, "toplink:one-to-many-mapping");
-        descriptor.getInheritancePolicy().addClassIndicator(ManyToManyMapping.class, "toplink:many-to-many-mapping");
-        descriptor.getInheritancePolicy().addClassIndicator(AggregateObjectMapping.class, "toplink:aggregate-object-mapping");
-        descriptor.getInheritancePolicy().addClassIndicator(AggregateCollectionMapping.class, "toplink:aggregate-collection-mapping");
-        descriptor.getInheritancePolicy().addClassIndicator(DirectCollectionMapping.class, "toplink:direct-collection-mapping");
-        descriptor.getInheritancePolicy().addClassIndicator(DirectMapMapping.class, "toplink:direct-map-mapping");
-        descriptor.getInheritancePolicy().addClassIndicator(NestedTableMapping.class, "toplink:nested-table-mapping");
-        descriptor.getInheritancePolicy().addClassIndicator(StructureMapping.class, "toplink:structure-mapping");
-        descriptor.getInheritancePolicy().addClassIndicator(ReferenceMapping.class, "toplink:reference-mapping");
-        descriptor.getInheritancePolicy().addClassIndicator(ArrayMapping.class, "toplink:array-mapping");
-        descriptor.getInheritancePolicy().addClassIndicator(ObjectArrayMapping.class, "toplink:object-array-mapping");
-        DirectToXMLTypeMappingHelper.getInstance().addClassIndicator(descriptor);
-        descriptor.getInheritancePolicy().addClassIndicator(AbstractTransformationMapping.class, "toplink:abstract-transformation-mapping");
-        descriptor.getInheritancePolicy().addClassIndicator(AbstractCompositeDirectCollectionMapping.class, "toplink:abstract-composite-direct-collection-mapping");
-        descriptor.getInheritancePolicy().addClassIndicator(AbstractCompositeObjectMapping.class, "toplink:abstract-composite-object-mapping");
-        descriptor.getInheritancePolicy().addClassIndicator(AbstractCompositeCollectionMapping.class, "toplink:abstract-composite-collection-mapping");
-        descriptor.getInheritancePolicy().addClassIndicator(XMLDirectMapping.class, "toplink:xml-direct-mapping");
-        descriptor.getInheritancePolicy().addClassIndicator(XMLTransformationMapping.class, "toplink:xml-transformation-mapping");
-        descriptor.getInheritancePolicy().addClassIndicator(XMLCompositeDirectCollectionMapping.class, "toplink:xml-composite-direct-collection-mapping");
-        descriptor.getInheritancePolicy().addClassIndicator(XMLCompositeObjectMapping.class, "toplink:xml-composite-object-mapping");
-        descriptor.getInheritancePolicy().addClassIndicator(XMLCompositeCollectionMapping.class, "toplink:xml-composite-collection-mapping");
-        descriptor.getInheritancePolicy().addClassIndicator(XMLAnyCollectionMapping.class, "toplink:xml-any-collection-mapping");
-        descriptor.getInheritancePolicy().addClassIndicator(XMLAnyObjectMapping.class, "toplink:xml-any-object-mapping");
+        descriptor.getInheritancePolicy().addClassIndicator(DirectToFieldMapping.class, getPrimaryNamespaceXPath() + "direct-mapping");
+        descriptor.getInheritancePolicy().addClassIndicator(TransformationMapping.class, getPrimaryNamespaceXPath() + "transformation-mapping");
+        descriptor.getInheritancePolicy().addClassIndicator(OneToOneMapping.class, getPrimaryNamespaceXPath() + "one-to-one-mapping");
+        descriptor.getInheritancePolicy().addClassIndicator(VariableOneToOneMapping.class, getPrimaryNamespaceXPath() + "variable-one-to-one-mapping");
+        descriptor.getInheritancePolicy().addClassIndicator(OneToManyMapping.class, getPrimaryNamespaceXPath() + "one-to-many-mapping");
+        descriptor.getInheritancePolicy().addClassIndicator(ManyToManyMapping.class, getPrimaryNamespaceXPath() + "many-to-many-mapping");
+        descriptor.getInheritancePolicy().addClassIndicator(AggregateObjectMapping.class, getPrimaryNamespaceXPath() + "aggregate-object-mapping");
+        descriptor.getInheritancePolicy().addClassIndicator(AggregateCollectionMapping.class, getPrimaryNamespaceXPath() + "aggregate-collection-mapping");
+        descriptor.getInheritancePolicy().addClassIndicator(DirectCollectionMapping.class, getPrimaryNamespaceXPath() + "direct-collection-mapping");
+        descriptor.getInheritancePolicy().addClassIndicator(DirectMapMapping.class, getPrimaryNamespaceXPath() + "direct-map-mapping");
+        descriptor.getInheritancePolicy().addClassIndicator(NestedTableMapping.class, getPrimaryNamespaceXPath() + "nested-table-mapping");
+        descriptor.getInheritancePolicy().addClassIndicator(StructureMapping.class, getPrimaryNamespaceXPath() + "structure-mapping");
+        descriptor.getInheritancePolicy().addClassIndicator(ReferenceMapping.class, getPrimaryNamespaceXPath() + "reference-mapping");
+        descriptor.getInheritancePolicy().addClassIndicator(ArrayMapping.class, getPrimaryNamespaceXPath() + "array-mapping");
+        descriptor.getInheritancePolicy().addClassIndicator(ObjectArrayMapping.class, getPrimaryNamespaceXPath() + "object-array-mapping");
+        DirectToXMLTypeMappingHelper.getInstance().addClassIndicator(descriptor, getPrimaryNamespaceXPath());
+        descriptor.getInheritancePolicy().addClassIndicator(AbstractTransformationMapping.class, getPrimaryNamespaceXPath() + "abstract-transformation-mapping");
+        descriptor.getInheritancePolicy().addClassIndicator(AbstractCompositeDirectCollectionMapping.class, getPrimaryNamespaceXPath() + "abstract-composite-direct-collection-mapping");
+        descriptor.getInheritancePolicy().addClassIndicator(AbstractCompositeObjectMapping.class, getPrimaryNamespaceXPath() + "abstract-composite-object-mapping");
+        descriptor.getInheritancePolicy().addClassIndicator(AbstractCompositeCollectionMapping.class, getPrimaryNamespaceXPath() + "abstract-composite-collection-mapping");
+        descriptor.getInheritancePolicy().addClassIndicator(XMLDirectMapping.class, getPrimaryNamespaceXPath() + "xml-direct-mapping");
+        descriptor.getInheritancePolicy().addClassIndicator(XMLTransformationMapping.class, getPrimaryNamespaceXPath() + "xml-transformation-mapping");
+        descriptor.getInheritancePolicy().addClassIndicator(XMLCompositeDirectCollectionMapping.class, getPrimaryNamespaceXPath() + "xml-composite-direct-collection-mapping");
+        descriptor.getInheritancePolicy().addClassIndicator(XMLCompositeObjectMapping.class, getPrimaryNamespaceXPath() + "xml-composite-object-mapping");
+        descriptor.getInheritancePolicy().addClassIndicator(XMLCompositeCollectionMapping.class, getPrimaryNamespaceXPath() + "xml-composite-collection-mapping");
+        descriptor.getInheritancePolicy().addClassIndicator(XMLAnyCollectionMapping.class, getPrimaryNamespaceXPath() + "xml-any-collection-mapping");
+        descriptor.getInheritancePolicy().addClassIndicator(XMLAnyObjectMapping.class, getPrimaryNamespaceXPath() + "xml-any-object-mapping");
 
-        descriptor.getInheritancePolicy().addClassIndicator(EISDirectMapping.class, "toplink:eis-direct-mapping");
-        descriptor.getInheritancePolicy().addClassIndicator(EISTransformationMapping.class, "toplink:eis-transformation-mapping");
-        descriptor.getInheritancePolicy().addClassIndicator(EISCompositeDirectCollectionMapping.class, "toplink:eis-composite-direct-collection-mapping");
-        descriptor.getInheritancePolicy().addClassIndicator(EISCompositeObjectMapping.class, "toplink:eis-composite-object-mapping");
-        descriptor.getInheritancePolicy().addClassIndicator(EISCompositeCollectionMapping.class, "toplink:eis-composite-collection-mapping");
-        descriptor.getInheritancePolicy().addClassIndicator(EISOneToOneMapping.class, "toplink:eis-one-to-one-mapping");
-        descriptor.getInheritancePolicy().addClassIndicator(EISOneToManyMapping.class, "toplink:eis-one-to-many-mapping");
+        descriptor.getInheritancePolicy().addClassIndicator(EISDirectMapping.class, getPrimaryNamespaceXPath() + "eis-direct-mapping");
+        descriptor.getInheritancePolicy().addClassIndicator(EISTransformationMapping.class, getPrimaryNamespaceXPath() + "eis-transformation-mapping");
+        descriptor.getInheritancePolicy().addClassIndicator(EISCompositeDirectCollectionMapping.class, getPrimaryNamespaceXPath() + "eis-composite-direct-collection-mapping");
+        descriptor.getInheritancePolicy().addClassIndicator(EISCompositeObjectMapping.class, getPrimaryNamespaceXPath() + "eis-composite-object-mapping");
+        descriptor.getInheritancePolicy().addClassIndicator(EISCompositeCollectionMapping.class, getPrimaryNamespaceXPath() + "eis-composite-collection-mapping");
+        descriptor.getInheritancePolicy().addClassIndicator(EISOneToOneMapping.class, getPrimaryNamespaceXPath() + "eis-one-to-one-mapping");
+        descriptor.getInheritancePolicy().addClassIndicator(EISOneToManyMapping.class, getPrimaryNamespaceXPath() + "eis-one-to-many-mapping");
 
-        
         XMLDirectMapping XMLDirectMapping = new XMLDirectMapping();
         XMLDirectMapping.setAttributeName("attributeName");
         XMLDirectMapping.setGetMethodName("getAttributeName");
         XMLDirectMapping.setSetMethodName("setAttributeName");
-        XMLDirectMapping.setXPath("opm:attribute-name/text()");
+        XMLDirectMapping.setXPath(getSecondaryNamespaceXPath() + "attribute-name/text()");
         descriptor.addMapping(XMLDirectMapping);
 
         XMLDirectMapping readonlyMapping = new XMLDirectMapping();
         readonlyMapping.setAttributeName("isReadOnly");
         readonlyMapping.setGetMethodName("isReadOnly");
         readonlyMapping.setSetMethodName("setIsReadOnly");
-        readonlyMapping.setXPath("opm:read-only/text()");
+        readonlyMapping.setXPath(getSecondaryNamespaceXPath() + "read-only/text()");
         readonlyMapping.setNullValue(Boolean.FALSE);
         descriptor.addMapping(readonlyMapping);
 
@@ -1949,48 +1969,45 @@ public class ObjectPersistenceRuntimeXMLProject extends Project {
         XMLDirectMapping3.setAttributeName("getMethodName");
         XMLDirectMapping3.setGetMethodName("getGetMethodName");
         XMLDirectMapping3.setSetMethodName("setGetMethodName");
-        XMLDirectMapping3.setXPath("opm:get-method/text()");
+        XMLDirectMapping3.setXPath(getSecondaryNamespaceXPath() + "get-method/text()");
         descriptor.addMapping(XMLDirectMapping3);
 
         XMLDirectMapping XMLDirectMapping4 = new XMLDirectMapping();
         XMLDirectMapping4.setAttributeName("setMethodName");
         XMLDirectMapping4.setGetMethodName("getSetMethodName");
         XMLDirectMapping4.setSetMethodName("setSetMethodName");
-        XMLDirectMapping4.setXPath("opm:set-method/text()");
+        XMLDirectMapping4.setXPath(getSecondaryNamespaceXPath() + "set-method/text()");
         descriptor.addMapping(XMLDirectMapping4);
 
-        XMLCompositeCollectionMapping propertiesMapping =
-        	new XMLCompositeCollectionMapping();
+        XMLCompositeCollectionMapping propertiesMapping = new XMLCompositeCollectionMapping();
         propertiesMapping.setAttributeName("properties");
         propertiesMapping.setReferenceClass(PropertyAssociation.class);
         propertiesMapping.setAttributeAccessor(new AttributeAccessor() {
-          public Object getAttributeValueFromObject(Object object) {
-            DatabaseMapping mapping = (DatabaseMapping)object;
-            Vector propertyAssociations = new NonSynchronizedVector();
-            for (Iterator i = mapping.getProperties().entrySet().iterator();
-            	i.hasNext(); ) {
-            	Map.Entry me = (Map.Entry)i.next();
-              PropertyAssociation propertyAssociation = new PropertyAssociation();
-              propertyAssociation.setKey(me.getKey());
-              propertyAssociation.setValue(me.getValue());
-              propertyAssociations.add(propertyAssociation);
+            public Object getAttributeValueFromObject(Object object) {
+                DatabaseMapping mapping = (DatabaseMapping)object;
+                Vector propertyAssociations = new NonSynchronizedVector();
+                for (Iterator i = mapping.getProperties().entrySet().iterator(); i.hasNext();) {
+                    Map.Entry me = (Map.Entry)i.next();
+                    PropertyAssociation propertyAssociation = new PropertyAssociation();
+                    propertyAssociation.setKey(me.getKey());
+                    propertyAssociation.setValue(me.getValue());
+                    propertyAssociations.add(propertyAssociation);
+                }
+                return propertyAssociations;
             }
-            return propertyAssociations;
-          }
-          public void setAttributeValueInObject(Object object, Object value) {
-          	DatabaseMapping mapping = (DatabaseMapping)object;
-            Vector propertyAssociations = (Vector)value;
-            for (int i = 0; i < propertyAssociations.size(); i++) {
-            	PropertyAssociation propertyAssociation =
-            		(PropertyAssociation)propertyAssociations.get(i);
-            	mapping.getProperties().put(propertyAssociation.getKey(),
-            		propertyAssociation.getValue());
+
+            public void setAttributeValueInObject(Object object, Object value) {
+                DatabaseMapping mapping = (DatabaseMapping)object;
+                Vector propertyAssociations = (Vector)value;
+                for (int i = 0; i < propertyAssociations.size(); i++) {
+                    PropertyAssociation propertyAssociation = (PropertyAssociation)propertyAssociations.get(i);
+                    mapping.getProperties().put(propertyAssociation.getKey(), propertyAssociation.getValue());
+                }
             }
-          }
         });
-        propertiesMapping.setXPath("opm:properties/opm:property");
+        propertiesMapping.setXPath(getSecondaryNamespaceXPath() + "properties/" + getSecondaryNamespaceXPath() + "property");
         descriptor.addMapping(propertiesMapping);
-        
+
         return descriptor;
     }
 
@@ -2000,12 +2017,12 @@ public class ObjectPersistenceRuntimeXMLProject extends Project {
         descriptor.setDefaultRootElement("class-mapping-descriptor");
 
         descriptor.getInheritancePolicy().setClassIndicatorField(new XMLField("@xsi:type"));
-        descriptor.getInheritancePolicy().addClassIndicator(ClassDescriptor.class, "toplink:relational-class-mapping-descriptor");
-        descriptor.getInheritancePolicy().addClassIndicator(RelationalDescriptor.class, "toplink:relational-class-mapping-descriptor");
-        descriptor.getInheritancePolicy().addClassIndicator(ObjectRelationalDataTypeDescriptor.class, "toplink:object-relational-class-mapping-descriptor");
-        descriptor.getInheritancePolicy().addClassIndicator(EISDescriptor.class, "toplink:eis-class-mapping-descriptor");
-        descriptor.getInheritancePolicy().addClassIndicator(XMLDescriptor.class, "toplink:xml-class-mapping-descriptor");
-        descriptor.getInheritancePolicy().addClassIndicator(ClassDescriptor.class, "toplink:class-mapping-descriptor");
+        descriptor.getInheritancePolicy().addClassIndicator(ClassDescriptor.class, getPrimaryNamespaceXPath() + "relational-class-mapping-descriptor");
+        descriptor.getInheritancePolicy().addClassIndicator(RelationalDescriptor.class, getPrimaryNamespaceXPath() + "relational-class-mapping-descriptor");
+        descriptor.getInheritancePolicy().addClassIndicator(ObjectRelationalDataTypeDescriptor.class, getPrimaryNamespaceXPath() + "object-relational-class-mapping-descriptor");
+        descriptor.getInheritancePolicy().addClassIndicator(EISDescriptor.class, getPrimaryNamespaceXPath() + "eis-class-mapping-descriptor");
+        descriptor.getInheritancePolicy().addClassIndicator(XMLDescriptor.class, getPrimaryNamespaceXPath() + "xml-class-mapping-descriptor");
+        descriptor.getInheritancePolicy().addClassIndicator(ClassDescriptor.class, getPrimaryNamespaceXPath() + "class-mapping-descriptor");
 
         descriptor.getEventManager().setPostBuildSelector("applyAmendmentMethod");
 
@@ -2013,14 +2030,14 @@ public class ObjectPersistenceRuntimeXMLProject extends Project {
         javaClassMapping.setAttributeName("javaClass");
         javaClassMapping.setGetMethodName("getJavaClass");
         javaClassMapping.setSetMethodName("setJavaClass");
-        javaClassMapping.setXPath("opm:class/text()");
+        javaClassMapping.setXPath(getSecondaryNamespaceXPath() + "class/text()");
         descriptor.addMapping(javaClassMapping);
 
         XMLDirectMapping aliasMapping = new XMLDirectMapping();
         aliasMapping.setAttributeName("alias");
         aliasMapping.setGetMethodName("getAlias");
         aliasMapping.setSetMethodName("setAlias");
-        aliasMapping.setXPath("opm:alias/text()");
+        aliasMapping.setXPath(getSecondaryNamespaceXPath() + "alias/text()");
         descriptor.addMapping(aliasMapping);
 
         XMLCompositeCollectionMapping primaryKeyFieldNamesMapping = new XMLCompositeCollectionMapping();
@@ -2028,7 +2045,7 @@ public class ObjectPersistenceRuntimeXMLProject extends Project {
         primaryKeyFieldNamesMapping.setReferenceClass(DatabaseField.class);
         primaryKeyFieldNamesMapping.setGetMethodName("getPrimaryKeyFields");
         primaryKeyFieldNamesMapping.setSetMethodName("setPrimaryKeyFields");
-        primaryKeyFieldNamesMapping.setXPath("opm:primary-key/opm:field");
+        primaryKeyFieldNamesMapping.setXPath(getSecondaryNamespaceXPath() + "primary-key/" + getSecondaryNamespaceXPath() + "field");
         primaryKeyFieldNamesMapping.useCollectionClass(ArrayList.class);
         descriptor.addMapping(primaryKeyFieldNamesMapping);
 
@@ -2036,7 +2053,7 @@ public class ObjectPersistenceRuntimeXMLProject extends Project {
         descriptorIsReadOnlyMapping.setAttributeName("shouldBeReadOnly");
         descriptorIsReadOnlyMapping.setGetMethodName("shouldBeReadOnly");
         descriptorIsReadOnlyMapping.setSetMethodName("setShouldBeReadOnly");
-        descriptorIsReadOnlyMapping.setXPath("opm:read-only/text()");
+        descriptorIsReadOnlyMapping.setXPath(getSecondaryNamespaceXPath() + "read-only/text()");
         descriptorIsReadOnlyMapping.setNullValue(Boolean.FALSE);
         descriptor.addMapping(descriptorIsReadOnlyMapping);
 
@@ -2044,31 +2061,31 @@ public class ObjectPersistenceRuntimeXMLProject extends Project {
         inheritancePolicyMapping.setAttributeName("inheritancePolicy");
         inheritancePolicyMapping.setGetMethodName("getInheritancePolicyOrNull");
         inheritancePolicyMapping.setSetMethodName("setInheritancePolicy");
-        inheritancePolicyMapping.setReferenceClass(org.eclipse.persistence.descriptors.InheritancePolicy.class);
-        inheritancePolicyMapping.setXPath("opm:inheritance");
+        inheritancePolicyMapping.setReferenceClass(InheritancePolicy.class);
+        inheritancePolicyMapping.setXPath(getSecondaryNamespaceXPath() + "inheritance");
         descriptor.addMapping(inheritancePolicyMapping);
 
         XMLCompositeObjectMapping eventManagerMapping = new XMLCompositeObjectMapping();
         eventManagerMapping.setAttributeName("eventManager");
         eventManagerMapping.setGetMethodName("getEventManager");
         eventManagerMapping.setSetMethodName("setEventManager");
-        eventManagerMapping.setReferenceClass(org.eclipse.persistence.descriptors.DescriptorEventManager.class);
-        eventManagerMapping.setXPath("opm:events");
+        eventManagerMapping.setReferenceClass(DescriptorEventManager.class);
+        eventManagerMapping.setXPath(getSecondaryNamespaceXPath() + "events");
         descriptor.addMapping(eventManagerMapping);
 
         XMLCompositeObjectMapping queryManagerMapping = new XMLCompositeObjectMapping();
         queryManagerMapping.setAttributeName("queryManager");
         queryManagerMapping.setGetMethodName("getQueryManager");
         queryManagerMapping.setSetMethodName("setQueryManager");
-        queryManagerMapping.setReferenceClass(org.eclipse.persistence.descriptors.DescriptorQueryManager.class);
-        queryManagerMapping.setXPath("opm:querying");
+        queryManagerMapping.setReferenceClass(DescriptorQueryManager.class);
+        queryManagerMapping.setXPath(getSecondaryNamespaceXPath() + "querying");
         descriptor.addMapping(queryManagerMapping);
 
         XMLCompositeCollectionMapping aggregateCollectionMapping = new XMLCompositeCollectionMapping();
-        aggregateCollectionMapping.useCollectionClass(org.eclipse.persistence.internal.helper.NonSynchronizedVector.class);
+        aggregateCollectionMapping.useCollectionClass(NonSynchronizedVector.class);
         aggregateCollectionMapping.setAttributeName("mappings");
         aggregateCollectionMapping.setReferenceClass(DatabaseMapping.class);
-        aggregateCollectionMapping.setXPath("opm:attribute-mappings/opm:attribute-mapping");
+        aggregateCollectionMapping.setXPath(getSecondaryNamespaceXPath() + "attribute-mappings/" + getSecondaryNamespaceXPath() + "attribute-mapping");
         aggregateCollectionMapping.setSetMethodName("setMappings");
         aggregateCollectionMapping.setGetMethodName("getMappings");
         descriptor.addMapping(aggregateCollectionMapping);
@@ -2085,7 +2102,7 @@ public class ObjectPersistenceRuntimeXMLProject extends Project {
         descriptorTypeConverter.addConversionValue("interface", "Interface");
         descriptorTypeConverter.addConversionValue("independent", "Normal");
         descriptorTypeMapping.setConverter(descriptorTypeConverter);
-        descriptorTypeMapping.setXPath("toplink:descriptor-type/text()");
+        descriptorTypeMapping.setXPath(getPrimaryNamespaceXPath() + "descriptor-type/text()");
         descriptor.addMapping(descriptorTypeMapping);
 
         XMLCompositeObjectMapping interfacePolicyMapping = new XMLCompositeObjectMapping();
@@ -2093,7 +2110,7 @@ public class ObjectPersistenceRuntimeXMLProject extends Project {
         interfacePolicyMapping.setGetMethodName("getInterfacePolicyOrNull");
         interfacePolicyMapping.setSetMethodName("setInterfacePolicy");
         interfacePolicyMapping.setReferenceClass(InterfacePolicy.class);
-        interfacePolicyMapping.setXPath("toplink:interfaces");
+        interfacePolicyMapping.setXPath(getPrimaryNamespaceXPath() + "interfaces");
         descriptor.addMapping(interfacePolicyMapping);
 
         XMLCompositeObjectMapping lockingPolicyMapping = new XMLCompositeObjectMapping();
@@ -2101,14 +2118,14 @@ public class ObjectPersistenceRuntimeXMLProject extends Project {
         lockingPolicyMapping.setGetMethodName("getOptimisticLockingPolicy");
         lockingPolicyMapping.setSetMethodName("setOptimisticLockingPolicy");
         lockingPolicyMapping.setReferenceClass(VersionLockingPolicy.class);
-        lockingPolicyMapping.setXPath("toplink:locking");
+        lockingPolicyMapping.setXPath(getPrimaryNamespaceXPath() + "locking");
         descriptor.addMapping(lockingPolicyMapping);
 
         XMLDirectMapping sequenceNameMapping = new XMLDirectMapping();
         sequenceNameMapping.setAttributeName("sequenceNumberName");
         sequenceNameMapping.setGetMethodName("getSequenceNumberName");
         sequenceNameMapping.setSetMethodName("setSequenceNumberName");
-        sequenceNameMapping.setXPath("toplink:sequencing/toplink:sequence-name/text()");
+        sequenceNameMapping.setXPath(getPrimaryNamespaceXPath() + "sequencing/" + getPrimaryNamespaceXPath() + "sequence-name/text()");
         descriptor.addMapping(sequenceNameMapping);
 
         XMLCompositeObjectMapping sequenceFieldMapping = new XMLCompositeObjectMapping();
@@ -2116,7 +2133,7 @@ public class ObjectPersistenceRuntimeXMLProject extends Project {
         sequenceFieldMapping.setGetMethodName("getSequenceNumberField");
         sequenceFieldMapping.setSetMethodName("setSequenceNumberField");
         sequenceFieldMapping.setReferenceClass(DatabaseField.class);
-        sequenceFieldMapping.setXPath("toplink:sequencing/toplink:sequence-field");
+        sequenceFieldMapping.setXPath(getPrimaryNamespaceXPath() + "sequencing/" + getPrimaryNamespaceXPath() + "sequence-field");
         descriptor.addMapping(sequenceFieldMapping);
 
         XMLDirectMapping identityMapClassMapping = new XMLDirectMapping();
@@ -2131,7 +2148,7 @@ public class ObjectPersistenceRuntimeXMLProject extends Project {
         identityMapClassConverter.addConversionValue("soft-cache-weak-reference", SoftCacheWeakIdentityMap.class);
         identityMapClassConverter.addConversionValue("hard-cache-weak-reference", HardCacheWeakIdentityMap.class);
         identityMapClassMapping.setConverter(identityMapClassConverter);
-        identityMapClassMapping.setXPath("toplink:caching/toplink:cache-type/text()");
+        identityMapClassMapping.setXPath(getPrimaryNamespaceXPath() + "caching/" + getPrimaryNamespaceXPath() + "cache-type/text()");
         identityMapClassMapping.setNullValue(SoftCacheWeakIdentityMap.class);
         descriptor.addMapping(identityMapClassMapping);
 
@@ -2147,7 +2164,7 @@ public class ObjectPersistenceRuntimeXMLProject extends Project {
         remoteIdentityMapClassConverter.addConversionValue("soft-cache-weak-reference", SoftCacheWeakIdentityMap.class);
         remoteIdentityMapClassConverter.addConversionValue("hard-cache-weak-reference", HardCacheWeakIdentityMap.class);
         remoteIdentityMapClassMapping.setConverter(remoteIdentityMapClassConverter);
-        remoteIdentityMapClassMapping.setXPath("toplink:remote-caching/toplink:cache-type/text()");
+        remoteIdentityMapClassMapping.setXPath(getPrimaryNamespaceXPath() + "remote-caching/" + getPrimaryNamespaceXPath() + "cache-type/text()");
         remoteIdentityMapClassMapping.setNullValue(SoftCacheWeakIdentityMap.class);
         descriptor.addMapping(remoteIdentityMapClassMapping);
 
@@ -2155,7 +2172,7 @@ public class ObjectPersistenceRuntimeXMLProject extends Project {
         identityMapSizeMapping.setAttributeName("identityMapSize");
         identityMapSizeMapping.setGetMethodName("getIdentityMapSize");
         identityMapSizeMapping.setSetMethodName("setIdentityMapSize");
-        identityMapSizeMapping.setXPath("toplink:caching/toplink:cache-size/text()");
+        identityMapSizeMapping.setXPath(getPrimaryNamespaceXPath() + "caching/" + getPrimaryNamespaceXPath() + "cache-size/text()");
         identityMapSizeMapping.setNullValue(new Integer(100));
         descriptor.addMapping(identityMapSizeMapping);
 
@@ -2163,7 +2180,7 @@ public class ObjectPersistenceRuntimeXMLProject extends Project {
         remoteIdentityMapSizeMapping.setAttributeName("remoteIdentityMapSize");
         remoteIdentityMapSizeMapping.setGetMethodName("getRemoteIdentityMapSize");
         remoteIdentityMapSizeMapping.setSetMethodName("setRemoteIdentityMapSize");
-        remoteIdentityMapSizeMapping.setXPath("toplink:remote-caching/toplink:cache-size/text()");
+        remoteIdentityMapSizeMapping.setXPath(getPrimaryNamespaceXPath() + "remote-caching/" + getPrimaryNamespaceXPath() + "cache-size/text()");
         remoteIdentityMapSizeMapping.setNullValue(new Integer(100));
         descriptor.addMapping(remoteIdentityMapSizeMapping);
 
@@ -2171,7 +2188,7 @@ public class ObjectPersistenceRuntimeXMLProject extends Project {
         shouldAlwaysRefreshCacheMapping.setAttributeName("shouldAlwaysRefreshCache");
         shouldAlwaysRefreshCacheMapping.setGetMethodName("shouldAlwaysRefreshCache");
         shouldAlwaysRefreshCacheMapping.setSetMethodName("setShouldAlwaysRefreshCache");
-        shouldAlwaysRefreshCacheMapping.setXPath("toplink:caching/toplink:always-refresh/text()");
+        shouldAlwaysRefreshCacheMapping.setXPath(getPrimaryNamespaceXPath() + "caching/" + getPrimaryNamespaceXPath() + "always-refresh/text()");
         shouldAlwaysRefreshCacheMapping.setNullValue(Boolean.FALSE);
         descriptor.addMapping(shouldAlwaysRefreshCacheMapping);
 
@@ -2179,7 +2196,7 @@ public class ObjectPersistenceRuntimeXMLProject extends Project {
         shouldAlwaysRefreshCacheOnRemoteMapping.setAttributeName("shouldAlwaysRefreshCacheOnRemote");
         shouldAlwaysRefreshCacheOnRemoteMapping.setGetMethodName("shouldAlwaysRefreshCacheOnRemote");
         shouldAlwaysRefreshCacheOnRemoteMapping.setSetMethodName("setShouldAlwaysRefreshCacheOnRemote");
-        shouldAlwaysRefreshCacheOnRemoteMapping.setXPath("toplink:remote-caching/toplink:always-refresh/text()");
+        shouldAlwaysRefreshCacheOnRemoteMapping.setXPath(getPrimaryNamespaceXPath() + "remote-caching/" + getPrimaryNamespaceXPath() + "always-refresh/text()");
         shouldAlwaysRefreshCacheOnRemoteMapping.setNullValue(Boolean.FALSE);
         descriptor.addMapping(shouldAlwaysRefreshCacheOnRemoteMapping);
 
@@ -2187,7 +2204,7 @@ public class ObjectPersistenceRuntimeXMLProject extends Project {
         shouldOnlyRefreshCacheIfNewerVersionMapping.setAttributeName("shouldOnlyRefreshCacheIfNewerVersion");
         shouldOnlyRefreshCacheIfNewerVersionMapping.setGetMethodName("shouldOnlyRefreshCacheIfNewerVersion");
         shouldOnlyRefreshCacheIfNewerVersionMapping.setSetMethodName("setShouldOnlyRefreshCacheIfNewerVersion");
-        shouldOnlyRefreshCacheIfNewerVersionMapping.setXPath("toplink:caching/toplink:only-refresh-cache-if-newer-version/text()");
+        shouldOnlyRefreshCacheIfNewerVersionMapping.setXPath(getPrimaryNamespaceXPath() + "caching/" + getPrimaryNamespaceXPath() + "only-refresh-cache-if-newer-version/text()");
         shouldOnlyRefreshCacheIfNewerVersionMapping.setNullValue(Boolean.FALSE);
         descriptor.addMapping(shouldOnlyRefreshCacheIfNewerVersionMapping);
 
@@ -2195,7 +2212,7 @@ public class ObjectPersistenceRuntimeXMLProject extends Project {
         shouldDisableCacheHitsMapping.setAttributeName("shouldDisableCacheHits");
         shouldDisableCacheHitsMapping.setGetMethodName("shouldDisableCacheHits");
         shouldDisableCacheHitsMapping.setSetMethodName("setShouldDisableCacheHits");
-        shouldDisableCacheHitsMapping.setXPath("toplink:caching/toplink:disable-cache-hits/text()");
+        shouldDisableCacheHitsMapping.setXPath(getPrimaryNamespaceXPath() + "caching/" + getPrimaryNamespaceXPath() + "disable-cache-hits/text()");
         shouldDisableCacheHitsMapping.setNullValue(Boolean.FALSE);
         descriptor.addMapping(shouldDisableCacheHitsMapping);
 
@@ -2203,7 +2220,7 @@ public class ObjectPersistenceRuntimeXMLProject extends Project {
         shouldDisableCacheHitsOnRemoteMapping.setAttributeName("shouldDisableCacheHitsOnRemote");
         shouldDisableCacheHitsOnRemoteMapping.setGetMethodName("shouldDisableCacheHitsOnRemote");
         shouldDisableCacheHitsOnRemoteMapping.setSetMethodName("setShouldDisableCacheHitsOnRemote");
-        shouldDisableCacheHitsOnRemoteMapping.setXPath("toplink:remote-caching/toplink:disable-cache-hits/text()");
+        shouldDisableCacheHitsOnRemoteMapping.setXPath(getPrimaryNamespaceXPath() + "remote-caching/" + getPrimaryNamespaceXPath() + "disable-cache-hits/text()");
         shouldDisableCacheHitsOnRemoteMapping.setNullValue(Boolean.FALSE);
         descriptor.addMapping(shouldDisableCacheHitsOnRemoteMapping);
 
@@ -2211,7 +2228,7 @@ public class ObjectPersistenceRuntimeXMLProject extends Project {
         shouldAlwaysConformResultsInUnitOfWorkMapping.setAttributeName("shouldAlwaysConformResultsInUnitOfWork");
         shouldAlwaysConformResultsInUnitOfWorkMapping.setGetMethodName("shouldAlwaysConformResultsInUnitOfWork");
         shouldAlwaysConformResultsInUnitOfWorkMapping.setSetMethodName("setShouldAlwaysConformResultsInUnitOfWork");
-        shouldAlwaysConformResultsInUnitOfWorkMapping.setXPath("toplink:caching/toplink:always-conform/text()");
+        shouldAlwaysConformResultsInUnitOfWorkMapping.setXPath(getPrimaryNamespaceXPath() + "caching/" + getPrimaryNamespaceXPath() + "always-conform/text()");
         shouldAlwaysConformResultsInUnitOfWorkMapping.setNullValue(Boolean.FALSE);
         descriptor.addMapping(shouldAlwaysConformResultsInUnitOfWorkMapping);
 
@@ -2219,14 +2236,14 @@ public class ObjectPersistenceRuntimeXMLProject extends Project {
         isIsolatedMapping.setAttributeName("isIsolated");
         isIsolatedMapping.setGetMethodName("isIsolated");
         isIsolatedMapping.setSetMethodName("setIsIsolated");
-        isIsolatedMapping.setXPath("toplink:caching/toplink:isolated/text()");
+        isIsolatedMapping.setXPath(getPrimaryNamespaceXPath() + "caching/" + getPrimaryNamespaceXPath() + "isolated/text()");
         isIsolatedMapping.setNullValue(Boolean.FALSE);
         descriptor.addMapping(isIsolatedMapping);
         XMLDirectMapping unitOfWorkCacheIsolationLevelMapping = new XMLDirectMapping();
         unitOfWorkCacheIsolationLevelMapping.setAttributeName("unitOfWorkCacheIsolationLevel");
         unitOfWorkCacheIsolationLevelMapping.setGetMethodName("getUnitOfWorkCacheIsolationLevel");
         unitOfWorkCacheIsolationLevelMapping.setSetMethodName("setUnitOfWorkCacheIsolationLevel");
-        unitOfWorkCacheIsolationLevelMapping.setXPath("toplink:caching/toplink:unitofwork-isolation-level/text()");
+        unitOfWorkCacheIsolationLevelMapping.setXPath(getPrimaryNamespaceXPath() + "caching/" + getPrimaryNamespaceXPath() + "unitofwork-isolation-level/text()");
         ObjectTypeConverter unitOfWorkCacheIsolationLevelConverter = new ObjectTypeConverter();
         unitOfWorkCacheIsolationLevelConverter.addConversionValue("use-session-cache-after-transaction", new Integer(ClassDescriptor.USE_SESSION_CACHE_AFTER_TRANSACTION));
         unitOfWorkCacheIsolationLevelConverter.addConversionValue("isolate-new-data-after-transaction", new Integer(ClassDescriptor.ISOLATE_NEW_DATA_AFTER_TRANSACTION));
@@ -2239,12 +2256,12 @@ public class ObjectPersistenceRuntimeXMLProject extends Project {
         XMLCompositeObjectMapping cacheInvalidationPolicyMapping = new XMLCompositeObjectMapping();
         cacheInvalidationPolicyMapping.setAttributeName("cacheInvalidationPolicy");
         cacheInvalidationPolicyMapping.setReferenceClass(CacheInvalidationPolicy.class);
-        cacheInvalidationPolicyMapping.setXPath("toplink:caching/toplink:cache-invalidation-policy");
+        cacheInvalidationPolicyMapping.setXPath(getPrimaryNamespaceXPath() + "caching/" + getPrimaryNamespaceXPath() + "cache-invalidation-policy");
         descriptor.addMapping(cacheInvalidationPolicyMapping);
 
         XMLDirectMapping cacheSyncTypeMapping = new XMLDirectMapping();
         cacheSyncTypeMapping.setAttributeName("cacheSynchronizationType");
-        cacheSyncTypeMapping.setXPath("toplink:caching/toplink:cache-sync-type/text()");
+        cacheSyncTypeMapping.setXPath(getPrimaryNamespaceXPath() + "caching/" + getPrimaryNamespaceXPath() + "cache-sync-type/text()");
         ObjectTypeConverter cacheSyncTypeConverter = new ObjectTypeConverter();
         cacheSyncTypeConverter.addConversionValue("invalidation", new Integer(ClassDescriptor.INVALIDATE_CHANGED_OBJECTS));
         cacheSyncTypeConverter.addConversionValue("no-changes", new Integer(ClassDescriptor.DO_NOT_SEND_CHANGES));
@@ -2259,7 +2276,7 @@ public class ObjectPersistenceRuntimeXMLProject extends Project {
         historyPolicyMapping.setGetMethodName("getHistoryPolicy");
         historyPolicyMapping.setSetMethodName("setHistoryPolicy");
         historyPolicyMapping.setReferenceClass(HistoryPolicy.class);
-        historyPolicyMapping.setXPath("toplink:history-policy");
+        historyPolicyMapping.setXPath(getPrimaryNamespaceXPath() + "history-policy");
         descriptor.addMapping(historyPolicyMapping);
 
         XMLCompositeObjectMapping returningPolicyMapping = new XMLCompositeObjectMapping();
@@ -2267,29 +2284,29 @@ public class ObjectPersistenceRuntimeXMLProject extends Project {
         returningPolicyMapping.setGetMethodName("getReturningPolicy");
         returningPolicyMapping.setSetMethodName("setReturningPolicy");
         returningPolicyMapping.setReferenceClass(ReturningPolicy.class);
-        returningPolicyMapping.setXPath("toplink:returning-policy");
+        returningPolicyMapping.setXPath(getPrimaryNamespaceXPath() + "returning-policy");
         descriptor.addMapping(returningPolicyMapping);
 
         XMLDirectMapping amendmentClassMapping = new XMLDirectMapping();
         amendmentClassMapping.setAttributeName("amendmentClass");
         amendmentClassMapping.setGetMethodName("getAmendmentClass");
         amendmentClassMapping.setSetMethodName("setAmendmentClass");
-        amendmentClassMapping.setXPath("toplink:amendment/toplink:amendment-class/text()");
+        amendmentClassMapping.setXPath(getPrimaryNamespaceXPath() + "amendment/" + getPrimaryNamespaceXPath() + "amendment-class/text()");
         descriptor.addMapping(amendmentClassMapping);
 
         XMLDirectMapping amendmentMethodNameMapping = new XMLDirectMapping();
         amendmentMethodNameMapping.setAttributeName("amendmentMethodName");
         amendmentMethodNameMapping.setGetMethodName("getAmendmentMethodName");
         amendmentMethodNameMapping.setSetMethodName("setAmendmentMethodName");
-        amendmentMethodNameMapping.setXPath("toplink:amendment/toplink:amendment-method/text()");
+        amendmentMethodNameMapping.setXPath(getPrimaryNamespaceXPath() + "amendment/" + getPrimaryNamespaceXPath() + "amendment-method/text()");
         descriptor.addMapping(amendmentMethodNameMapping);
 
         XMLCompositeObjectMapping instantiationPolicyMapping = new XMLCompositeObjectMapping();
         instantiationPolicyMapping.setAttributeName("instantiationPolicy");
         instantiationPolicyMapping.setGetMethodName("getInstantiationPolicy");
         instantiationPolicyMapping.setSetMethodName("setInstantiationPolicy");
-        instantiationPolicyMapping.setReferenceClass(org.eclipse.persistence.internal.descriptors.InstantiationPolicy.class);
-        instantiationPolicyMapping.setXPath("toplink:instantiation");
+        instantiationPolicyMapping.setReferenceClass(InstantiationPolicy.class);
+        instantiationPolicyMapping.setXPath(getPrimaryNamespaceXPath() + "instantiation");
         descriptor.addMapping(instantiationPolicyMapping);
 
         XMLCompositeObjectMapping copyPolicyMapping = new XMLCompositeObjectMapping();
@@ -2297,13 +2314,13 @@ public class ObjectPersistenceRuntimeXMLProject extends Project {
         copyPolicyMapping.setGetMethodName("getCopyPolicy");
         copyPolicyMapping.setSetMethodName("setCopyPolicy");
         copyPolicyMapping.setReferenceClass(AbstractCopyPolicy.class);
-        copyPolicyMapping.setXPath("toplink:copying");
+        copyPolicyMapping.setXPath(getPrimaryNamespaceXPath() + "copying");
         descriptor.addMapping(copyPolicyMapping);
 
         XMLCompositeCollectionMapping queryKeysMapping = new XMLCompositeCollectionMapping();
         queryKeysMapping.setAttributeName("queryKeys");
-        queryKeysMapping.setReferenceClass(org.eclipse.persistence.mappings.querykeys.QueryKey.class);
-        queryKeysMapping.setXPath("toplink:query-keys/toplink:query-key");
+        queryKeysMapping.setReferenceClass(QueryKey.class);
+        queryKeysMapping.setXPath(getPrimaryNamespaceXPath() + "query-keys/" + getPrimaryNamespaceXPath() + "query-key");
         queryKeysMapping.setSetMethodName("setQueryKeys");
         queryKeysMapping.setGetMethodName("getQueryKeys");
         queryKeysMapping.useMapClass(HashMap.class, "getName");
@@ -2314,7 +2331,7 @@ public class ObjectPersistenceRuntimeXMLProject extends Project {
         cmpPolicyMapping.setGetMethodName("getCMPPolicy");
         cmpPolicyMapping.setSetMethodName("setCMPPolicy");
         cmpPolicyMapping.setReferenceClass(CMPPolicy.class);
-        cmpPolicyMapping.setXPath("toplink:cmp-policy");
+        cmpPolicyMapping.setXPath(getPrimaryNamespaceXPath() + "cmp-policy");
         descriptor.addMapping(cmpPolicyMapping);
 
         XMLCompositeObjectMapping fetchGroupManagerMapping = new XMLCompositeObjectMapping();
@@ -2322,47 +2339,44 @@ public class ObjectPersistenceRuntimeXMLProject extends Project {
         fetchGroupManagerMapping.setGetMethodName("getFetchGroupManager");
         fetchGroupManagerMapping.setSetMethodName("setFetchGroupManager");
         fetchGroupManagerMapping.setReferenceClass(FetchGroupManager.class);
-        fetchGroupManagerMapping.setXPath("toplink:fetch-groups");
+        fetchGroupManagerMapping.setXPath(getPrimaryNamespaceXPath() + "fetch-groups");
         descriptor.addMapping(fetchGroupManagerMapping);
 
         XMLCompositeObjectMapping changePolicyMapping = new XMLCompositeObjectMapping();
         changePolicyMapping.setAttributeName("changePolicy");
         changePolicyMapping.setReferenceClass(ObjectChangePolicy.class);
-        changePolicyMapping.setXPath("toplink:change-policy");
+        changePolicyMapping.setXPath(getPrimaryNamespaceXPath() + "change-policy");
         descriptor.addMapping(changePolicyMapping);
 
-        XMLCompositeCollectionMapping propertiesMapping =
-        	new XMLCompositeCollectionMapping();
+        XMLCompositeCollectionMapping propertiesMapping = new XMLCompositeCollectionMapping();
         propertiesMapping.setAttributeName("properties");
         propertiesMapping.setReferenceClass(PropertyAssociation.class);
         propertiesMapping.setAttributeAccessor(new AttributeAccessor() {
-          public Object getAttributeValueFromObject(Object object) {
-            ClassDescriptor desc = (ClassDescriptor)object;
-            Vector propertyAssociations = new NonSynchronizedVector();
-            for (Iterator i = desc.getProperties().entrySet().iterator();
-            	i.hasNext(); ) {
-            	Map.Entry me = (Map.Entry)i.next();
-              PropertyAssociation propertyAssociation = new PropertyAssociation();
-              propertyAssociation.setKey(me.getKey());
-              propertyAssociation.setValue(me.getValue());
-              propertyAssociations.add(propertyAssociation);
+            public Object getAttributeValueFromObject(Object object) {
+                ClassDescriptor desc = (ClassDescriptor)object;
+                Vector propertyAssociations = new NonSynchronizedVector();
+                for (Iterator i = desc.getProperties().entrySet().iterator(); i.hasNext();) {
+                    Map.Entry me = (Map.Entry)i.next();
+                    PropertyAssociation propertyAssociation = new PropertyAssociation();
+                    propertyAssociation.setKey(me.getKey());
+                    propertyAssociation.setValue(me.getValue());
+                    propertyAssociations.add(propertyAssociation);
+                }
+                return propertyAssociations;
             }
-            return propertyAssociations;
-          }
-          public void setAttributeValueInObject(Object object, Object value) {
-        	  ClassDescriptor desc = (ClassDescriptor)object;
-            Vector propertyAssociations = (Vector)value;
-            for (int i = 0; i < propertyAssociations.size(); i++) {
-            	PropertyAssociation propertyAssociation =
-            		(PropertyAssociation)propertyAssociations.get(i);
-            	desc.getProperties().put(propertyAssociation.getKey(),
-            		propertyAssociation.getValue());
+
+            public void setAttributeValueInObject(Object object, Object value) {
+                ClassDescriptor desc = (ClassDescriptor)object;
+                Vector propertyAssociations = (Vector)value;
+                for (int i = 0; i < propertyAssociations.size(); i++) {
+                    PropertyAssociation propertyAssociation = (PropertyAssociation)propertyAssociations.get(i);
+                    desc.getProperties().put(propertyAssociation.getKey(), propertyAssociation.getValue());
+                }
             }
-          }
         });
-        propertiesMapping.setXPath("opm:properties/opm:property");
+        propertiesMapping.setXPath(getSecondaryNamespaceXPath() + "properties/" + getSecondaryNamespaceXPath() + "property");
         descriptor.addMapping(propertiesMapping);
-        
+
         return descriptor;
     }
 
@@ -2372,69 +2386,69 @@ public class ObjectPersistenceRuntimeXMLProject extends Project {
         descriptor.getInheritancePolicy().setParentClass(ClassDescriptor.class);
 
         XMLCompositeCollectionMapping tablesMapping = new XMLCompositeCollectionMapping();
-        tablesMapping.useCollectionClass(org.eclipse.persistence.internal.helper.NonSynchronizedVector.class);
+        tablesMapping.useCollectionClass(NonSynchronizedVector.class);
         tablesMapping.setAttributeName("tables/table");
         tablesMapping.setGetMethodName("getTables");
         tablesMapping.setSetMethodName("setTables");
-        tablesMapping.setXPath("toplink:tables/toplink:table");
+        tablesMapping.setXPath(getPrimaryNamespaceXPath() + "tables/" + getPrimaryNamespaceXPath() + "table");
         tablesMapping.setReferenceClass(DatabaseTable.class);
         descriptor.addMapping(tablesMapping);
 
         XMLCompositeCollectionMapping multipleTablesPrimaryKey = new XMLCompositeCollectionMapping();
         multipleTablesPrimaryKey.setAttributeAccessor(new AttributeAccessor() {
-                public Object getAttributeValueFromObject(Object object) {
-                    ClassDescriptor mapping = (ClassDescriptor)object;
-                    Vector associations = mapping.getMultipleTablePrimaryKeyAssociations();
-                    for (int index = 0; index < associations.size(); index++) {
-                        Association association = (Association)associations.get(index);
-                        association.setKey(new DatabaseField((String)association.getKey()));
-                        association.setValue(new DatabaseField((String)association.getValue()));
-                    }
-                    return associations;
+            public Object getAttributeValueFromObject(Object object) {
+                ClassDescriptor mapping = (ClassDescriptor)object;
+                Vector associations = mapping.getMultipleTablePrimaryKeyAssociations();
+                for (int index = 0; index < associations.size(); index++) {
+                    Association association = (Association)associations.get(index);
+                    association.setKey(new DatabaseField((String)association.getKey()));
+                    association.setValue(new DatabaseField((String)association.getValue()));
                 }
+                return associations;
+            }
 
-                public void setAttributeValueInObject(Object object, Object value) {
-                    ClassDescriptor mapping = (ClassDescriptor)object;
-                    Vector associations = (Vector)value;
-                    for (int index = 0; index < associations.size(); index++) {
-                        Association association = (Association)associations.get(index);
-                        association.setKey(((DatabaseField)association.getKey()).getQualifiedName());
-                        association.setValue(((DatabaseField)association.getValue()).getQualifiedName());
-                    }
-                    mapping.setForeignKeyFieldNamesForMultipleTable(associations);
+            public void setAttributeValueInObject(Object object, Object value) {
+                ClassDescriptor mapping = (ClassDescriptor)object;
+                Vector associations = (Vector)value;
+                for (int index = 0; index < associations.size(); index++) {
+                    Association association = (Association)associations.get(index);
+                    association.setKey(((DatabaseField)association.getKey()).getQualifiedName());
+                    association.setValue(((DatabaseField)association.getValue()).getQualifiedName());
                 }
-            });
+                mapping.setForeignKeyFieldNamesForMultipleTable(associations);
+            }
+        });
         multipleTablesPrimaryKey.setAttributeName("multipleTablesPrimaryKeys");
         multipleTablesPrimaryKey.setReferenceClass(Association.class);
-        multipleTablesPrimaryKey.setXPath("toplink:multiple-table-primary-keys/opm:field-reference");
+        multipleTablesPrimaryKey.setXPath(getPrimaryNamespaceXPath() + "multiple-table-primary-keys/" + getSecondaryNamespaceXPath() + "field-reference");
         descriptor.addMapping(multipleTablesPrimaryKey);
 
         XMLCompositeCollectionMapping multipleTables = new XMLCompositeCollectionMapping();
         multipleTables.setReferenceClass(Association.class);
-        multipleTables.setXPath("toplink:multiple-table-foreign-keys/opm:field-reference");
+        multipleTables.setXPath(getPrimaryNamespaceXPath() + "multiple-table-foreign-keys/" + getSecondaryNamespaceXPath() + "field-reference");
         multipleTables.setAttributeAccessor(new AttributeAccessor() {
-                public Object getAttributeValueFromObject(Object object) {
-                    ClassDescriptor mapping = (ClassDescriptor)object;
-                    Vector associations = mapping.getMultipleTableForeignKeyAssociations();
-                    for (int index = 0; index < associations.size(); index++) {
-                        Association association = (Association)associations.get(index);
-                        association.setKey(new DatabaseField((String)association.getKey()));
-                        association.setValue(new DatabaseField((String)association.getValue()));
-                    }
-                    return associations;
+            public Object getAttributeValueFromObject(Object object) {
+                ClassDescriptor mapping = (ClassDescriptor)object;
+                Vector associations = mapping.getMultipleTableForeignKeyAssociations();
+                for (int index = 0; index < associations.size(); index++) {
+                    Association association = (Association)associations.get(index);
+                    association.setKey(new DatabaseField((String)association.getKey()));
+                    association.setValue(new DatabaseField((String)association.getValue()));
                 }
+                return associations;
+            }
 
-                public void setAttributeValueInObject(Object object, Object value) {
-                    ClassDescriptor mapping = (ClassDescriptor)object;
-                    Vector associations = (Vector)value;
-                    for (int index = 0; index < associations.size(); index++) {
-                        Association association = (Association)associations.get(index);
-                        association.setKey(((DatabaseField)association.getKey()).getQualifiedName());
-                        association.setValue(((DatabaseField)association.getValue()).getQualifiedName());
-                    }
-                    mapping.setForeignKeyFieldNamesForMultipleTable(associations);
+            public void setAttributeValueInObject(Object object, Object value) {
+                ClassDescriptor mapping = (ClassDescriptor)object;
+                Vector associations = (Vector)value;
+                for (int index = 0; index < associations.size(); index++) {
+                    Association association = (Association)associations.get(index);
+                    association.setKey(((DatabaseField)association.getKey()).getQualifiedName());
+                    association.setValue(((DatabaseField)association.getValue()).getQualifiedName());
                 }
-            });
+                mapping.setForeignKeyFieldNamesForMultipleTable(associations);
+            }
+        });
         multipleTables.setAttributeName("multipleTablesForeignKeys");
         descriptor.addMapping(multipleTables);
 
@@ -2451,7 +2465,7 @@ public class ObjectPersistenceRuntimeXMLProject extends Project {
         usesBatchReadingMapping.setAttributeName("usesBatchReading");
         usesBatchReadingMapping.setGetMethodName("shouldUseBatchReading");
         usesBatchReadingMapping.setSetMethodName("setUsesBatchReading");
-        usesBatchReadingMapping.setXPath("toplink:batch-reading/text()");
+        usesBatchReadingMapping.setXPath(getPrimaryNamespaceXPath() + "batch-reading/text()");
         usesBatchReadingMapping.setNullValue(Boolean.FALSE);
         descriptor.addMapping(usesBatchReadingMapping);
 
@@ -2459,32 +2473,32 @@ public class ObjectPersistenceRuntimeXMLProject extends Project {
         containerPolicyMapping.setAttributeName("containerPolicy");
         containerPolicyMapping.setGetMethodName("getContainerPolicy");
         containerPolicyMapping.setSetMethodName("setContainerPolicy");
-        containerPolicyMapping.setReferenceClass(org.eclipse.persistence.internal.queries.ContainerPolicy.class);
-        containerPolicyMapping.setXPath("toplink:container");
+        containerPolicyMapping.setReferenceClass(ContainerPolicy.class);
+        containerPolicyMapping.setXPath(getPrimaryNamespaceXPath() + "container");
         descriptor.addMapping(containerPolicyMapping);
 
         XMLCompositeObjectMapping indirectionPolicyMapping = new XMLCompositeObjectMapping();
         indirectionPolicyMapping.setReferenceClass(IndirectionPolicy.class);
         // Handle translation of NoIndirectionPolicy -> null.
         indirectionPolicyMapping.setAttributeAccessor(new AttributeAccessor() {
-                public Object getAttributeValueFromObject(Object object) {
-                    IndirectionPolicy policy = ((ForeignReferenceMapping)object).getIndirectionPolicy();
-                    if (policy instanceof NoIndirectionPolicy) {
-                        return null;
-                    }
-                    return policy;
+            public Object getAttributeValueFromObject(Object object) {
+                IndirectionPolicy policy = ((ForeignReferenceMapping)object).getIndirectionPolicy();
+                if (policy instanceof NoIndirectionPolicy) {
+                    return null;
                 }
+                return policy;
+            }
 
-                public void setAttributeValueInObject(Object object, Object value) {
-                    IndirectionPolicy policy = (IndirectionPolicy)value;
-                    if (value == null) {
-                        policy = new NoIndirectionPolicy();
-                    }
-                    ((ForeignReferenceMapping)object).setIndirectionPolicy(policy);
+            public void setAttributeValueInObject(Object object, Object value) {
+                IndirectionPolicy policy = (IndirectionPolicy)value;
+                if (value == null) {
+                    policy = new NoIndirectionPolicy();
                 }
-            });
+                ((ForeignReferenceMapping)object).setIndirectionPolicy(policy);
+            }
+        });
         indirectionPolicyMapping.setAttributeName("indirectionPolicy");
-        indirectionPolicyMapping.setXPath("toplink:indirection");
+        indirectionPolicyMapping.setXPath(getPrimaryNamespaceXPath() + "indirection");
         descriptor.addMapping(indirectionPolicyMapping);
 
         XMLCompositeObjectMapping selectionQueryMapping = new XMLCompositeObjectMapping();
@@ -2492,22 +2506,22 @@ public class ObjectPersistenceRuntimeXMLProject extends Project {
         selectionQueryMapping.setGetMethodName("getSelectionQuery");
         selectionQueryMapping.setSetMethodName("setSelectionQuery");
         selectionQueryMapping.setReferenceClass(ReadQuery.class);
-        selectionQueryMapping.setXPath("toplink:selection-query");
+        selectionQueryMapping.setXPath(getPrimaryNamespaceXPath() + "selection-query");
         descriptor.addMapping(selectionQueryMapping);
 
         XMLDirectMapping referenceTableMapping = new XMLDirectMapping();
         referenceTableMapping.setAttributeName("referenceTableName");
-        //CR#2407  Call getReferenceTableQualifiedName that includes table qualifier.
+        // CR#2407 Call getReferenceTableQualifiedName that includes table qualifier.
         referenceTableMapping.setGetMethodName("getReferenceTableQualifiedName");
         referenceTableMapping.setSetMethodName("setReferenceTableName");
-        referenceTableMapping.setXPath("toplink:reference-table/text()");
+        referenceTableMapping.setXPath(getPrimaryNamespaceXPath() + "reference-table/text()");
         descriptor.addMapping(referenceTableMapping);
 
         XMLCompositeObjectMapping directFieldMapping = new XMLCompositeObjectMapping();
         directFieldMapping.setAttributeName("directField");
         directFieldMapping.setGetMethodName("getDirectField");
         directFieldMapping.setSetMethodName("setDirectField");
-        directFieldMapping.setXPath("toplink:direct-field");
+        directFieldMapping.setXPath(getPrimaryNamespaceXPath() + "direct-field");
         directFieldMapping.setReferenceClass(DatabaseField.class);
         descriptor.addMapping(directFieldMapping);
 
@@ -2515,38 +2529,38 @@ public class ObjectPersistenceRuntimeXMLProject extends Project {
         sourceToReferenceKeyFieldAssociationsMapping.setReferenceClass(Association.class);
         // Handle translation of foreign key associations to hashtables.
         sourceToReferenceKeyFieldAssociationsMapping.setAttributeAccessor(new AttributeAccessor() {
-                public Object getAttributeValueFromObject(Object object) {
-                    List sourceFields = ((DirectCollectionMapping)object).getSourceKeyFields();
-                    List referenceFields = ((DirectCollectionMapping)object).getReferenceKeyFields();
-                    List associations = new ArrayList(sourceFields.size());
-                    for (int index = 0; index < sourceFields.size(); index++) {
-                        associations.add(new Association(referenceFields.get(index), sourceFields.get(index)));
-                    }
-                    return associations;
+            public Object getAttributeValueFromObject(Object object) {
+                List sourceFields = ((DirectCollectionMapping)object).getSourceKeyFields();
+                List referenceFields = ((DirectCollectionMapping)object).getReferenceKeyFields();
+                List associations = new ArrayList(sourceFields.size());
+                for (int index = 0; index < sourceFields.size(); index++) {
+                    associations.add(new Association(referenceFields.get(index), sourceFields.get(index)));
                 }
+                return associations;
+            }
 
-                public void setAttributeValueInObject(Object object, Object value) {
-                    DirectCollectionMapping mapping = (DirectCollectionMapping)object;
-                    List associations = (List)value;
-                    mapping.setSourceKeyFields(org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance(associations.size()));
-                    mapping.setReferenceKeyFields(org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance(associations.size()));
-                    Iterator iterator = associations.iterator();
-                    while (iterator.hasNext()) {
-                        Association association = (Association)iterator.next();
-                        mapping.getSourceKeyFields().add((DatabaseField)association.getValue());
-                        mapping.getReferenceKeyFields().add((DatabaseField)association.getKey());
-                    }
+            public void setAttributeValueInObject(Object object, Object value) {
+                DirectCollectionMapping mapping = (DirectCollectionMapping)object;
+                List associations = (List)value;
+                mapping.setSourceKeyFields(NonSynchronizedVector.newInstance(associations.size()));
+                mapping.setReferenceKeyFields(NonSynchronizedVector.newInstance(associations.size()));
+                Iterator iterator = associations.iterator();
+                while (iterator.hasNext()) {
+                    Association association = (Association)iterator.next();
+                    mapping.getSourceKeyFields().add((DatabaseField)association.getValue());
+                    mapping.getReferenceKeyFields().add((DatabaseField)association.getKey());
                 }
-            });
+            }
+        });
         sourceToReferenceKeyFieldAssociationsMapping.setAttributeName("sourceToReferenceKeyFieldAssociations");
-        sourceToReferenceKeyFieldAssociationsMapping.setXPath("toplink:reference-foreign-key/opm:field-reference");
+        sourceToReferenceKeyFieldAssociationsMapping.setXPath(getPrimaryNamespaceXPath() + "reference-foreign-key/" + getSecondaryNamespaceXPath() + "field-reference");
         descriptor.addMapping(sourceToReferenceKeyFieldAssociationsMapping);
 
         XMLCompositeObjectMapping valueConverterMapping = new XMLCompositeObjectMapping();
         valueConverterMapping.setAttributeName("valueConverter");
         valueConverterMapping.setGetMethodName("getValueConverter");
         valueConverterMapping.setSetMethodName("setValueConverter");
-        valueConverterMapping.setXPath("toplink:value-converter");
+        valueConverterMapping.setXPath(getPrimaryNamespaceXPath() + "value-converter");
         valueConverterMapping.setReferenceClass(Converter.class);
         descriptor.addMapping(valueConverterMapping);
 
@@ -2555,7 +2569,7 @@ public class ObjectPersistenceRuntimeXMLProject extends Project {
         historyPolicyMapping.setGetMethodName("getHistoryPolicy");
         historyPolicyMapping.setSetMethodName("setHistoryPolicy");
         historyPolicyMapping.setReferenceClass(HistoryPolicy.class);
-        historyPolicyMapping.setXPath("toplink:history-policy");
+        historyPolicyMapping.setXPath(getPrimaryNamespaceXPath() + "history-policy");
         descriptor.addMapping(historyPolicyMapping);
 
         return descriptor;
@@ -2571,7 +2585,7 @@ public class ObjectPersistenceRuntimeXMLProject extends Project {
         directKeyFieldMapping.setAttributeName("directKeyField");
         directKeyFieldMapping.setGetMethodName("getDirectKeyField");
         directKeyFieldMapping.setSetMethodName("setDirectKeyField");
-        directKeyFieldMapping.setXPath("toplink:direct-key-field");
+        directKeyFieldMapping.setXPath(getPrimaryNamespaceXPath() + "direct-key-field");
         directKeyFieldMapping.setReferenceClass(DatabaseField.class);
         descriptor.addMapping(directKeyFieldMapping);
 
@@ -2579,7 +2593,7 @@ public class ObjectPersistenceRuntimeXMLProject extends Project {
         keyConverterMapping.setAttributeName("keyConverter");
         keyConverterMapping.setGetMethodName("getKeyConverter");
         keyConverterMapping.setSetMethodName("setKeyConverter");
-        keyConverterMapping.setXPath("toplink:key-converter");
+        keyConverterMapping.setXPath(getPrimaryNamespaceXPath() + "key-converter");
         keyConverterMapping.setReferenceClass(Converter.class);
         descriptor.addMapping(keyConverterMapping);
 
@@ -2588,9 +2602,9 @@ public class ObjectPersistenceRuntimeXMLProject extends Project {
 
     protected ClassDescriptor buildDirectMapContainerPolicyDescriptor() {
         XMLDescriptor descriptor = new XMLDescriptor();
-        descriptor.setJavaClass(org.eclipse.persistence.internal.queries.DirectMapContainerPolicy.class);
+        descriptor.setJavaClass(DirectMapContainerPolicy.class);
 
-        descriptor.getInheritancePolicy().setParentClass(org.eclipse.persistence.internal.queries.InterfaceContainerPolicy.class);
+        descriptor.getInheritancePolicy().setParentClass(InterfaceContainerPolicy.class);
 
         return descriptor;
     }
@@ -2598,16 +2612,16 @@ public class ObjectPersistenceRuntimeXMLProject extends Project {
     protected ClassDescriptor buildDirectQueryKeyDescriptor() {
         XMLDescriptor descriptor = new XMLDescriptor();
 
-        descriptor.setJavaClass(org.eclipse.persistence.mappings.querykeys.DirectQueryKey.class);
+        descriptor.setJavaClass(DirectQueryKey.class);
 
-        descriptor.getInheritancePolicy().setParentClass(org.eclipse.persistence.mappings.querykeys.QueryKey.class);
+        descriptor.getInheritancePolicy().setParentClass(QueryKey.class);
 
         XMLCompositeObjectMapping fieldMapping = new XMLCompositeObjectMapping();
         fieldMapping.setAttributeName("field");
         fieldMapping.setReferenceClass(DatabaseField.class);
         fieldMapping.setGetMethodName("getField");
         fieldMapping.setSetMethodName("setField");
-        fieldMapping.setXPath("toplink:field");
+        fieldMapping.setXPath(getPrimaryNamespaceXPath() + "field");
         descriptor.addMapping(fieldMapping);
 
         return descriptor;
@@ -2625,21 +2639,21 @@ public class ObjectPersistenceRuntimeXMLProject extends Project {
         fieldMapping.setReferenceClass(DatabaseField.class);
         fieldMapping.setGetMethodName("getField");
         fieldMapping.setSetMethodName("setField");
-        fieldMapping.setXPath("opm:field");
+        fieldMapping.setXPath(getSecondaryNamespaceXPath() + "field");
         descriptor.addMapping(fieldMapping);
 
         XMLDirectMapping nullValueMapping = new XMLDirectMapping();
         nullValueMapping.setAttributeName("nullValue");
         nullValueMapping.setGetMethodName("getNullValue");
         nullValueMapping.setSetMethodName("setNullValue");
-        nullValueMapping.setField(buildTypedField("opm:null-value/text()"));
+        nullValueMapping.setField(buildTypedField(getSecondaryNamespaceXPath() + "null-value/text()"));
         descriptor.addMapping(nullValueMapping);
 
         XMLCompositeObjectMapping converterMapping = new XMLCompositeObjectMapping();
         converterMapping.setAttributeName("converter");
         converterMapping.setGetMethodName("getConverter");
         converterMapping.setSetMethodName("setConverter");
-        converterMapping.setXPath("opm:converter");
+        converterMapping.setXPath(getSecondaryNamespaceXPath() + "converter");
         converterMapping.setReferenceClass(Converter.class);
         descriptor.addMapping(converterMapping);
         return descriptor;
@@ -2668,116 +2682,116 @@ public class ObjectPersistenceRuntimeXMLProject extends Project {
     protected ClassDescriptor buildEventManagerDescriptor() {
         XMLDescriptor descriptor = new XMLDescriptor();
 
-        descriptor.setJavaClass(org.eclipse.persistence.descriptors.DescriptorEventManager.class);
+        descriptor.setJavaClass(DescriptorEventManager.class);
         descriptor.setDefaultRootElement("event-policy");
 
         descriptor.getInheritancePolicy().setClassIndicatorField(new XMLField("@xsi:type"));
-        descriptor.getInheritancePolicy().addClassIndicator(org.eclipse.persistence.descriptors.DescriptorEventManager.class, "toplink:event-policy");
+        descriptor.getInheritancePolicy().addClassIndicator(DescriptorEventManager.class, getPrimaryNamespaceXPath() + "event-policy");
 
         XMLCompositeDirectCollectionMapping eventListenersMapping = new XMLCompositeDirectCollectionMapping();
         eventListenersMapping.setAttributeName("eventListeners");
         eventListenersMapping.setGetMethodName("getEventListeners");
         eventListenersMapping.setSetMethodName("setEventListeners");
         eventListenersMapping.setValueConverter(new ClassInstanceConverter());
-        eventListenersMapping.setXPath("opm:event-listeners/opm:event-listener/text()");
+        eventListenersMapping.setXPath(getSecondaryNamespaceXPath() + "event-listeners/" + getSecondaryNamespaceXPath() + "event-listener/text()");
         descriptor.addMapping(eventListenersMapping);
 
         XMLDirectMapping postBuildSelectorMapping = new XMLDirectMapping();
         postBuildSelectorMapping.setAttributeName("getPostBuildSelector");
         postBuildSelectorMapping.setGetMethodName("getPostBuildSelector");
         postBuildSelectorMapping.setSetMethodName("setPostBuildSelector");
-        postBuildSelectorMapping.setXPath("toplink:post-build-method/text()");
+        postBuildSelectorMapping.setXPath(getPrimaryNamespaceXPath() + "post-build-method/text()");
         descriptor.addMapping(postBuildSelectorMapping);
 
         XMLDirectMapping preWriteSelectorMapping = new XMLDirectMapping();
         preWriteSelectorMapping.setAttributeName("preWriteSelector");
         preWriteSelectorMapping.setGetMethodName("getPreWriteSelector");
         preWriteSelectorMapping.setSetMethodName("setPreWriteSelector");
-        preWriteSelectorMapping.setXPath("toplink:pre-write-method/text()");
+        preWriteSelectorMapping.setXPath(getPrimaryNamespaceXPath() + "pre-write-method/text()");
         descriptor.addMapping(preWriteSelectorMapping);
 
         XMLDirectMapping postWriteSelectorMapping = new XMLDirectMapping();
         postWriteSelectorMapping.setAttributeName("postWriteSelector");
         postWriteSelectorMapping.setGetMethodName("getPostWriteSelector");
         postWriteSelectorMapping.setSetMethodName("setPostWriteSelector");
-        postWriteSelectorMapping.setXPath("toplink:post-write-method/text()");
+        postWriteSelectorMapping.setXPath(getPrimaryNamespaceXPath() + "post-write-method/text()");
         descriptor.addMapping(postWriteSelectorMapping);
 
         XMLDirectMapping preInsertSelectorMapping = new XMLDirectMapping();
         preInsertSelectorMapping.setAttributeName("preInsertSelector");
         preInsertSelectorMapping.setGetMethodName("getPreInsertSelector");
         preInsertSelectorMapping.setSetMethodName("setPreInsertSelector");
-        preInsertSelectorMapping.setXPath("toplink:pre-insert-method/text()");
+        preInsertSelectorMapping.setXPath(getPrimaryNamespaceXPath() + "pre-insert-method/text()");
         descriptor.addMapping(preInsertSelectorMapping);
 
         XMLDirectMapping postInsertSelectorMapping = new XMLDirectMapping();
         postInsertSelectorMapping.setAttributeName("postInsertSelector");
         postInsertSelectorMapping.setGetMethodName("getPostInsertSelector");
         postInsertSelectorMapping.setSetMethodName("setPostInsertSelector");
-        postInsertSelectorMapping.setXPath("toplink:post-insert-method/text()");
+        postInsertSelectorMapping.setXPath(getPrimaryNamespaceXPath() + "post-insert-method/text()");
         descriptor.addMapping(postInsertSelectorMapping);
 
         XMLDirectMapping preUpdateSelectorMapping = new XMLDirectMapping();
         preUpdateSelectorMapping.setAttributeName("preUpdateSelector");
         preUpdateSelectorMapping.setGetMethodName("getPreUpdateSelector");
         preUpdateSelectorMapping.setSetMethodName("setPreUpdateSelector");
-        preUpdateSelectorMapping.setXPath("toplink:pre-update-method/text()");
+        preUpdateSelectorMapping.setXPath(getPrimaryNamespaceXPath() + "pre-update-method/text()");
         descriptor.addMapping(preUpdateSelectorMapping);
 
         XMLDirectMapping postUpdateSelectorMapping = new XMLDirectMapping();
         postUpdateSelectorMapping.setAttributeName("postUpdateSelector");
         postUpdateSelectorMapping.setGetMethodName("getPostUpdateSelector");
         postUpdateSelectorMapping.setSetMethodName("setPostUpdateSelector");
-        postUpdateSelectorMapping.setXPath("toplink:post-update-method/text()");
+        postUpdateSelectorMapping.setXPath(getPrimaryNamespaceXPath() + "post-update-method/text()");
         descriptor.addMapping(postUpdateSelectorMapping);
 
         XMLDirectMapping preDeleteSelectorMapping = new XMLDirectMapping();
         preDeleteSelectorMapping.setAttributeName("preDeleteSelector");
         preDeleteSelectorMapping.setGetMethodName("getPreDeleteSelector");
         preDeleteSelectorMapping.setSetMethodName("setPreDeleteSelector");
-        preDeleteSelectorMapping.setXPath("toplink:pre-delete-method/text()");
+        preDeleteSelectorMapping.setXPath(getPrimaryNamespaceXPath() + "pre-delete-method/text()");
         descriptor.addMapping(preDeleteSelectorMapping);
 
         XMLDirectMapping postDeleteSelectorMapping = new XMLDirectMapping();
         postDeleteSelectorMapping.setAttributeName("postDeleteSelector");
         postDeleteSelectorMapping.setGetMethodName("getPostDeleteSelector");
         postDeleteSelectorMapping.setSetMethodName("setPostDeleteSelector");
-        postDeleteSelectorMapping.setXPath("toplink:post-delete-method/text()");
+        postDeleteSelectorMapping.setXPath(getPrimaryNamespaceXPath() + "post-delete-method/text()");
         descriptor.addMapping(postDeleteSelectorMapping);
 
         XMLDirectMapping aboutToInsertSelectorMapping = new XMLDirectMapping();
         aboutToInsertSelectorMapping.setAttributeName("aboutToInsertSelector");
         aboutToInsertSelectorMapping.setGetMethodName("getAboutToInsertSelector");
         aboutToInsertSelectorMapping.setSetMethodName("setAboutToInsertSelector");
-        aboutToInsertSelectorMapping.setXPath("toplink:about-to-insert-method/text()");
+        aboutToInsertSelectorMapping.setXPath(getPrimaryNamespaceXPath() + "about-to-insert-method/text()");
         descriptor.addMapping(aboutToInsertSelectorMapping);
 
         XMLDirectMapping aboutToUpdateSelectorMapping = new XMLDirectMapping();
         aboutToUpdateSelectorMapping.setAttributeName("aboutToUpdateSelector");
         aboutToUpdateSelectorMapping.setGetMethodName("getAboutToUpdateSelector");
         aboutToUpdateSelectorMapping.setSetMethodName("setAboutToUpdateSelector");
-        aboutToUpdateSelectorMapping.setXPath("toplink:about-to-update-method/text()");
+        aboutToUpdateSelectorMapping.setXPath(getPrimaryNamespaceXPath() + "about-to-update-method/text()");
         descriptor.addMapping(aboutToUpdateSelectorMapping);
 
         XMLDirectMapping postCloneSelectorMapping = new XMLDirectMapping();
         postCloneSelectorMapping.setAttributeName("postCloneSelector");
         postCloneSelectorMapping.setGetMethodName("getPostCloneSelector");
         postCloneSelectorMapping.setSetMethodName("setPostCloneSelector");
-        postCloneSelectorMapping.setXPath("toplink:post-clone-method/text()");
+        postCloneSelectorMapping.setXPath(getPrimaryNamespaceXPath() + "post-clone-method/text()");
         descriptor.addMapping(postCloneSelectorMapping);
 
         XMLDirectMapping postMergeSelectorMapping = new XMLDirectMapping();
         postMergeSelectorMapping.setAttributeName("postMergeSelector");
         postMergeSelectorMapping.setGetMethodName("getPostMergeSelector");
         postMergeSelectorMapping.setSetMethodName("setPostMergeSelector");
-        postMergeSelectorMapping.setXPath("toplink:post-merge-method/text()");
+        postMergeSelectorMapping.setXPath(getPrimaryNamespaceXPath() + "post-merge-method/text()");
         descriptor.addMapping(postMergeSelectorMapping);
 
         XMLDirectMapping postRefreshSelectorMapping = new XMLDirectMapping();
         postRefreshSelectorMapping.setAttributeName("getPostRefreshSelector");
         postRefreshSelectorMapping.setGetMethodName("getPostRefreshSelector");
         postRefreshSelectorMapping.setSetMethodName("setPostRefreshSelector");
-        postRefreshSelectorMapping.setXPath("toplink:post-refresh-method/text()");
+        postRefreshSelectorMapping.setXPath(getPrimaryNamespaceXPath() + "post-refresh-method/text()");
         descriptor.addMapping(postRefreshSelectorMapping);
 
         return descriptor;
@@ -2793,14 +2807,14 @@ public class ObjectPersistenceRuntimeXMLProject extends Project {
         referenceClassMapping.setAttributeName("referenceClass");
         referenceClassMapping.setGetMethodName("getReferenceClass");
         referenceClassMapping.setSetMethodName("setReferenceClass");
-        referenceClassMapping.setXPath("opm:reference-class/text()");
+        referenceClassMapping.setXPath(getSecondaryNamespaceXPath() + "reference-class/text()");
         descriptor.addMapping(referenceClassMapping);
 
         XMLDirectMapping isPrivateOwnedMapping = new XMLDirectMapping();
         isPrivateOwnedMapping.setAttributeName("isPrivateOwned");
         isPrivateOwnedMapping.setGetMethodName("isPrivateOwned");
         isPrivateOwnedMapping.setSetMethodName("setIsPrivateOwned");
-        isPrivateOwnedMapping.setXPath("opm:private-owned/text()");
+        isPrivateOwnedMapping.setXPath(getSecondaryNamespaceXPath() + "private-owned/text()");
         isPrivateOwnedMapping.setNullValue(Boolean.FALSE);
         descriptor.addMapping(isPrivateOwnedMapping);
 
@@ -2808,7 +2822,7 @@ public class ObjectPersistenceRuntimeXMLProject extends Project {
         cascadePersistMapping.setAttributeName("cascadePersist");
         cascadePersistMapping.setGetMethodName("isCascadePersist");
         cascadePersistMapping.setSetMethodName("setCascadePersist");
-        cascadePersistMapping.setXPath("opm:cascade-persist/text()");
+        cascadePersistMapping.setXPath(getSecondaryNamespaceXPath() + "cascade-persist/text()");
         cascadePersistMapping.setNullValue(Boolean.FALSE);
         descriptor.addMapping(cascadePersistMapping);
 
@@ -2816,7 +2830,7 @@ public class ObjectPersistenceRuntimeXMLProject extends Project {
         cascadeMergeMapping.setAttributeName("cascadeMerge");
         cascadeMergeMapping.setGetMethodName("isCascadeMerge");
         cascadeMergeMapping.setSetMethodName("setCascadeMerge");
-        cascadeMergeMapping.setXPath("opm:cascade-merge/text()");
+        cascadeMergeMapping.setXPath(getSecondaryNamespaceXPath() + "cascade-merge/text()");
         cascadeMergeMapping.setNullValue(Boolean.FALSE);
         descriptor.addMapping(cascadeMergeMapping);
 
@@ -2824,7 +2838,7 @@ public class ObjectPersistenceRuntimeXMLProject extends Project {
         cascadeRefreshMapping.setAttributeName("cascadeRefresh");
         cascadeRefreshMapping.setGetMethodName("isCascadeRefresh");
         cascadeRefreshMapping.setSetMethodName("setCascadeRefresh");
-        cascadeRefreshMapping.setXPath("opm:cascade-refresh/text()");
+        cascadeRefreshMapping.setXPath(getSecondaryNamespaceXPath() + "cascade-refresh/text()");
         cascadeRefreshMapping.setNullValue(Boolean.FALSE);
         descriptor.addMapping(cascadeRefreshMapping);
 
@@ -2832,7 +2846,7 @@ public class ObjectPersistenceRuntimeXMLProject extends Project {
         cascadeRemoveMapping.setAttributeName("cascadeRemove");
         cascadeRemoveMapping.setGetMethodName("isCascadeRemove");
         cascadeRemoveMapping.setSetMethodName("setCascadeRemove");
-        cascadeRemoveMapping.setXPath("opm:cascade-remove/text()");
+        cascadeRemoveMapping.setXPath(getSecondaryNamespaceXPath() + "cascade-remove/text()");
         cascadeRemoveMapping.setNullValue(Boolean.FALSE);
         descriptor.addMapping(cascadeRemoveMapping);
 
@@ -2845,37 +2859,37 @@ public class ObjectPersistenceRuntimeXMLProject extends Project {
         descriptor.setDefaultRootElement("history-policy");
 
         XMLCompositeCollectionMapping historyTablesMapping = new XMLCompositeCollectionMapping();
-        historyTablesMapping.useCollectionClass(org.eclipse.persistence.internal.helper.NonSynchronizedVector.class);
+        historyTablesMapping.useCollectionClass(NonSynchronizedVector.class);
         historyTablesMapping.setAttributeName("historicalTables");
         historyTablesMapping.setReferenceClass(HistoricalDatabaseTable.class);
         historyTablesMapping.setGetMethodName("getHistoricalTables");
         historyTablesMapping.setSetMethodName("setHistoricalTables");
-        historyTablesMapping.setXPath("toplink:history-tables/toplink:history-table");
+        historyTablesMapping.setXPath(getPrimaryNamespaceXPath() + "history-tables/" + getPrimaryNamespaceXPath() + "history-table");
         descriptor.addMapping(historyTablesMapping);
 
         XMLCompositeCollectionMapping startFieldNamesMapping = new XMLCompositeCollectionMapping();
-        startFieldNamesMapping.useCollectionClass(org.eclipse.persistence.internal.helper.NonSynchronizedVector.class);
+        startFieldNamesMapping.useCollectionClass(NonSynchronizedVector.class);
         startFieldNamesMapping.setAttributeName("startFields");
         startFieldNamesMapping.setReferenceClass(DatabaseField.class);
         startFieldNamesMapping.setGetMethodName("getStartFields");
         startFieldNamesMapping.setSetMethodName("setStartFields");
-        startFieldNamesMapping.setXPath("toplink:start-fields/toplink:start-field");
+        startFieldNamesMapping.setXPath(getPrimaryNamespaceXPath() + "start-fields/" + getPrimaryNamespaceXPath() + "start-field");
         descriptor.addMapping(startFieldNamesMapping);
 
         XMLCompositeCollectionMapping endFieldNamesMapping = new XMLCompositeCollectionMapping();
-        endFieldNamesMapping.useCollectionClass(org.eclipse.persistence.internal.helper.NonSynchronizedVector.class);
+        endFieldNamesMapping.useCollectionClass(NonSynchronizedVector.class);
         endFieldNamesMapping.setAttributeName("endFields");
         endFieldNamesMapping.setReferenceClass(DatabaseField.class);
         endFieldNamesMapping.setGetMethodName("getEndFields");
         endFieldNamesMapping.setSetMethodName("setEndFields");
-        endFieldNamesMapping.setXPath("toplink:end-fields/toplink:end-field");
+        endFieldNamesMapping.setXPath(getPrimaryNamespaceXPath() + "end-fields/" + getPrimaryNamespaceXPath() + "end-field");
         descriptor.addMapping(endFieldNamesMapping);
 
         XMLDirectMapping shouldHandleWritesMapping = new XMLDirectMapping();
         shouldHandleWritesMapping.setAttributeName("shouldHandleWrites");
         shouldHandleWritesMapping.setGetMethodName("shouldHandleWrites");
         shouldHandleWritesMapping.setSetMethodName("setShouldHandleWrites");
-        shouldHandleWritesMapping.setXPath("toplink:handle-writes/text()");
+        shouldHandleWritesMapping.setXPath(getPrimaryNamespaceXPath() + "handle-writes/text()");
         shouldHandleWritesMapping.setNullValue(Boolean.TRUE);
         descriptor.addMapping(shouldHandleWritesMapping);
 
@@ -2883,7 +2897,7 @@ public class ObjectPersistenceRuntimeXMLProject extends Project {
         useDatabaseTimeMapping.setAttributeName("shouldUseLocalTime");
         useDatabaseTimeMapping.setGetMethodName("shouldUseDatabaseTime");
         useDatabaseTimeMapping.setSetMethodName("setShouldUseDatabaseTime");
-        useDatabaseTimeMapping.setXPath("toplink:use-database-time/text()");
+        useDatabaseTimeMapping.setXPath(getPrimaryNamespaceXPath() + "use-database-time/text()");
         useDatabaseTimeMapping.setNullValue(Boolean.FALSE);
         descriptor.addMapping(useDatabaseTimeMapping);
 
@@ -2901,14 +2915,14 @@ public class ObjectPersistenceRuntimeXMLProject extends Project {
         sourceMapping.setAttributeName("name");
         sourceMapping.setGetMethodName("getName");
         sourceMapping.setSetMethodName("setName");
-        sourceMapping.setXPath("toplink:source/text()");
+        sourceMapping.setXPath(getPrimaryNamespaceXPath() + "source/text()");
         descriptor.addMapping(sourceMapping);
 
         XMLDirectMapping historyMapping = new XMLDirectMapping();
         historyMapping.setAttributeName("historicalName");
         historyMapping.setGetMethodName("getQualifiedName");
         historyMapping.setSetMethodName("setHistoricalName");
-        historyMapping.setXPath("toplink:history/text()");
+        historyMapping.setXPath(getPrimaryNamespaceXPath() + "history/text()");
         descriptor.addMapping(historyMapping);
 
         return descriptor;
@@ -2916,54 +2930,54 @@ public class ObjectPersistenceRuntimeXMLProject extends Project {
 
     protected ClassDescriptor buildIndirectionPolicyDescriptor() {
         XMLDescriptor descriptor = new XMLDescriptor();
-        descriptor.setJavaClass(org.eclipse.persistence.internal.indirection.IndirectionPolicy.class);
+        descriptor.setJavaClass(IndirectionPolicy.class);
         descriptor.setDefaultRootElement("indirection-policy");
 
         descriptor.getInheritancePolicy().setClassIndicatorField(new XMLField("@xsi:type"));
-        descriptor.getInheritancePolicy().addClassIndicator(BasicIndirectionPolicy.class, "toplink:value-holder-indirection-policy");
-        descriptor.getInheritancePolicy().addClassIndicator(TransparentIndirectionPolicy.class, "toplink:transparent-collection-indirection-policy");
-        descriptor.getInheritancePolicy().addClassIndicator(ProxyIndirectionPolicy.class, "toplink:proxy-indirection-policy");
-        descriptor.getInheritancePolicy().addClassIndicator(ContainerIndirectionPolicy.class, "toplink:container-indirection-policy");
+        descriptor.getInheritancePolicy().addClassIndicator(BasicIndirectionPolicy.class, getPrimaryNamespaceXPath() + "value-holder-indirection-policy");
+        descriptor.getInheritancePolicy().addClassIndicator(TransparentIndirectionPolicy.class, getPrimaryNamespaceXPath() + "transparent-collection-indirection-policy");
+        descriptor.getInheritancePolicy().addClassIndicator(ProxyIndirectionPolicy.class, getPrimaryNamespaceXPath() + "proxy-indirection-policy");
+        descriptor.getInheritancePolicy().addClassIndicator(ContainerIndirectionPolicy.class, getPrimaryNamespaceXPath() + "container-indirection-policy");
 
         return descriptor;
     }
 
     protected ClassDescriptor buildInheritancePolicyDescriptor() {
         XMLDescriptor descriptor = new XMLDescriptor();
-        descriptor.setJavaClass(org.eclipse.persistence.descriptors.InheritancePolicy.class);
+        descriptor.setJavaClass(InheritancePolicy.class);
         descriptor.setDefaultRootElement("inheritance-policy");
 
         descriptor.getInheritancePolicy().setClassIndicatorField(new XMLField("@xsi:type"));
-        descriptor.getInheritancePolicy().addClassIndicator(org.eclipse.persistence.descriptors.InheritancePolicy.class, "toplink:inheritance-policy");
-        descriptor.getInheritancePolicy().addClassIndicator(QNameInheritancePolicy.class, "toplink:qname-inheritance-policy");
+        descriptor.getInheritancePolicy().addClassIndicator(InheritancePolicy.class, getPrimaryNamespaceXPath() + "inheritance-policy");
+        descriptor.getInheritancePolicy().addClassIndicator(QNameInheritancePolicy.class, getPrimaryNamespaceXPath() + "qname-inheritance-policy");
         descriptor.getInheritancePolicy().addClassIndicator(String.class, "string");
 
         XMLDirectMapping parentClassMapping = new XMLDirectMapping();
         parentClassMapping.setAttributeName("parentClass");
         parentClassMapping.setGetMethodName("getParentClass");
         parentClassMapping.setSetMethodName("setParentClass");
-        parentClassMapping.setXPath("opm:parent-class/text()");
+        parentClassMapping.setXPath(getSecondaryNamespaceXPath() + "parent-class/text()");
         descriptor.addMapping(parentClassMapping);
 
         XMLDirectMapping shouldReadSubclassesMapping = new XMLDirectMapping();
         shouldReadSubclassesMapping.setAttributeName("shouldReadSubclasses");
         shouldReadSubclassesMapping.setGetMethodName("shouldReadSubclassesValue");
         shouldReadSubclassesMapping.setSetMethodName("setShouldReadSubclasses");
-        shouldReadSubclassesMapping.setXPath("toplink:read-subclasses-on-queries/text()");
+        shouldReadSubclassesMapping.setXPath(getPrimaryNamespaceXPath() + "read-subclasses-on-queries/text()");
         descriptor.addMapping(shouldReadSubclassesMapping);
 
         XMLDirectMapping readAllSubclassesViewMapping = new XMLDirectMapping();
         readAllSubclassesViewMapping.setAttributeName("readAllSubclassesView");
         readAllSubclassesViewMapping.setGetMethodName("getReadAllSubclassesViewName");
         readAllSubclassesViewMapping.setSetMethodName("setReadAllSubclassesViewName");
-        readAllSubclassesViewMapping.setXPath("toplink:all-subclasses-view/text()");
+        readAllSubclassesViewMapping.setXPath(getPrimaryNamespaceXPath() + "all-subclasses-view/text()");
         descriptor.addMapping(readAllSubclassesViewMapping);
 
         XMLDirectMapping shouldUseClassNameAsIndicatorMapping = new XMLDirectMapping();
         shouldUseClassNameAsIndicatorMapping.setAttributeName("shouldUseClassNameAsIndicator");
         shouldUseClassNameAsIndicatorMapping.setGetMethodName("shouldUseClassNameAsIndicator");
         shouldUseClassNameAsIndicatorMapping.setSetMethodName("setShouldUseClassNameAsIndicator");
-        shouldUseClassNameAsIndicatorMapping.setXPath("toplink:use-class-name-as-indicator/text()");
+        shouldUseClassNameAsIndicatorMapping.setXPath(getPrimaryNamespaceXPath() + "use-class-name-as-indicator/text()");
         shouldUseClassNameAsIndicatorMapping.setNullValue(Boolean.FALSE);
         descriptor.addMapping(shouldUseClassNameAsIndicatorMapping);
 
@@ -2971,7 +2985,7 @@ public class ObjectPersistenceRuntimeXMLProject extends Project {
         classExtractionMethodMapping.setAttributeName("classExtractionMethod");
         classExtractionMethodMapping.setGetMethodName("getClassExtractionMethodName");
         classExtractionMethodMapping.setSetMethodName("setClassExtractionMethodName");
-        classExtractionMethodMapping.setXPath("toplink:class-extraction-method/text()");
+        classExtractionMethodMapping.setXPath(getPrimaryNamespaceXPath() + "class-extraction-method/text()");
         descriptor.addMapping(classExtractionMethodMapping);
 
         XMLCompositeObjectMapping classIndicatorFieldNameMapping = new XMLCompositeObjectMapping();
@@ -2979,14 +2993,14 @@ public class ObjectPersistenceRuntimeXMLProject extends Project {
         classIndicatorFieldNameMapping.setReferenceClass(DatabaseField.class);
         classIndicatorFieldNameMapping.setGetMethodName("getClassIndicatorField");
         classIndicatorFieldNameMapping.setSetMethodName("setClassIndicatorField");
-        classIndicatorFieldNameMapping.setXPath("toplink:class-indicator-field");
+        classIndicatorFieldNameMapping.setXPath(getPrimaryNamespaceXPath() + "class-indicator-field");
         descriptor.addMapping(classIndicatorFieldNameMapping);
 
         XMLCompositeCollectionMapping classIndicatorsMapping = new XMLCompositeCollectionMapping();
         classIndicatorsMapping.setAttributeName("classIndicatorAssociations");
         classIndicatorsMapping.setGetMethodName("getClassIndicatorAssociations");
         classIndicatorsMapping.setSetMethodName("setClassIndicatorAssociations");
-        classIndicatorsMapping.setXPath("toplink:class-indicator-mappings/toplink:class-indicator-mapping");
+        classIndicatorsMapping.setXPath(getPrimaryNamespaceXPath() + "class-indicator-mappings/" + getPrimaryNamespaceXPath() + "class-indicator-mapping");
         classIndicatorsMapping.setReferenceClass(TypedAssociation.class);
         descriptor.addMapping(classIndicatorsMapping);
 
@@ -2997,7 +3011,7 @@ public class ObjectPersistenceRuntimeXMLProject extends Project {
         XMLDescriptor descriptor = new XMLDescriptor();
         descriptor.setJavaClass(QNameInheritancePolicy.class);
 
-        descriptor.getInheritancePolicy().setParentClass(org.eclipse.persistence.descriptors.InheritancePolicy.class);
+        descriptor.getInheritancePolicy().setParentClass(InheritancePolicy.class);
 
         return descriptor;
     }
@@ -3008,42 +3022,43 @@ public class ObjectPersistenceRuntimeXMLProject extends Project {
 
         descriptor.setDefaultRootElement("converter");
         descriptor.getInheritancePolicy().setClassIndicatorField(new XMLField("@xsi:type"));
-        descriptor.getInheritancePolicy().addClassIndicator(ObjectTypeConverter.class, "toplink:object-type-converter");
-        descriptor.getInheritancePolicy().addClassIndicator(TypeConversionConverter.class, "toplink:type-conversion-converter");
-        descriptor.getInheritancePolicy().addClassIndicator(SerializedObjectConverter.class, "toplink:serialized-object-converter");
-		try {
-			Class typesafeenumClass = (Class) new PrivilegedClassForName("org.eclipse.persistence.jaxb.JAXBTypesafeEnumConverter").run();
-			descriptor.getInheritancePolicy().addClassIndicator(typesafeenumClass, "toplink:typesafe-enumeration-converter");
-		} catch (ClassNotFoundException cnfe) {
-			// The JAXB component isn't available, so no need to do anything
-		}
+        descriptor.getInheritancePolicy().addClassIndicator(ObjectTypeConverter.class, getPrimaryNamespaceXPath() + "object-type-converter");
+        descriptor.getInheritancePolicy().addClassIndicator(TypeConversionConverter.class, getPrimaryNamespaceXPath() + "type-conversion-converter");
+        descriptor.getInheritancePolicy().addClassIndicator(SerializedObjectConverter.class, getPrimaryNamespaceXPath() + "serialized-object-converter");
+        try {
+            Class typesafeenumClass = (Class)new PrivilegedClassForName("org.eclipse.persistence.jaxb.JAXBTypesafeEnumConverter").run();
+            descriptor.getInheritancePolicy().addClassIndicator(typesafeenumClass, getPrimaryNamespaceXPath() + "typesafe-enumeration-converter");
+        }
+        catch (ClassNotFoundException cnfe) {
+            // The JAXB component isn't available, so no need to do anything
+        }
         return descriptor;
     }
 
     protected ClassDescriptor buildInstantiationPolicyDescriptor() {
         XMLDescriptor descriptor = new XMLDescriptor();
-        descriptor.setJavaClass(org.eclipse.persistence.internal.descriptors.InstantiationPolicy.class);
+        descriptor.setJavaClass(InstantiationPolicy.class);
         descriptor.setDefaultRootElement("instantiation-policy");
 
         XMLDirectMapping methodNameMapping = new XMLDirectMapping();
         methodNameMapping.setAttributeName("methodName");
         methodNameMapping.setGetMethodName("getMethodName");
         methodNameMapping.setSetMethodName("setMethodName");
-        methodNameMapping.setXPath("toplink:method/text()");
+        methodNameMapping.setXPath(getPrimaryNamespaceXPath() + "method/text()");
         descriptor.addMapping(methodNameMapping);
 
         XMLDirectMapping factoryClassMapping = new XMLDirectMapping();
         factoryClassMapping.setAttributeName("factoryClass");
         factoryClassMapping.setGetMethodName("getFactoryClass");
         factoryClassMapping.setSetMethodName("setFactoryClass");
-        factoryClassMapping.setXPath("toplink:factory-class/text()");
+        factoryClassMapping.setXPath(getPrimaryNamespaceXPath() + "factory-class/text()");
         descriptor.addMapping(factoryClassMapping);
 
         XMLDirectMapping factoryMethodNameMapping = new XMLDirectMapping();
         factoryMethodNameMapping.setAttributeName("factoryMethod");
         factoryMethodNameMapping.setGetMethodName("getFactoryMethodName");
         factoryMethodNameMapping.setSetMethodName("setFactoryMethodName");
-        factoryMethodNameMapping.setXPath("toplink:factory-method/text()");
+        factoryMethodNameMapping.setXPath(getPrimaryNamespaceXPath() + "factory-method/text()");
         descriptor.addMapping(factoryMethodNameMapping);
 
         return descriptor;
@@ -3051,15 +3066,15 @@ public class ObjectPersistenceRuntimeXMLProject extends Project {
 
     protected ClassDescriptor buildInterfaceContainerPolicyDescriptor() {
         XMLDescriptor descriptor = new XMLDescriptor();
-        descriptor.setJavaClass(org.eclipse.persistence.internal.queries.InterfaceContainerPolicy.class);
+        descriptor.setJavaClass(InterfaceContainerPolicy.class);
 
-        descriptor.getInheritancePolicy().setParentClass(org.eclipse.persistence.internal.queries.ContainerPolicy.class);
+        descriptor.getInheritancePolicy().setParentClass(ContainerPolicy.class);
 
         XMLDirectMapping keyMapping = new XMLDirectMapping();
         keyMapping.setAttributeName("containerClass");
         keyMapping.setGetMethodName("getContainerClass");
         keyMapping.setSetMethodName("setContainerClass");
-        keyMapping.setXPath("toplink:collection-type/text()");
+        keyMapping.setXPath(getPrimaryNamespaceXPath() + "collection-type/text()");
         descriptor.addMapping(keyMapping);
 
         return descriptor;
@@ -3075,14 +3090,14 @@ public class ObjectPersistenceRuntimeXMLProject extends Project {
         parentInterfacesMapping.setAttributeName("parentInterfaces");
         parentInterfacesMapping.setGetMethodName("getParentInterfaces");
         parentInterfacesMapping.setSetMethodName("setParentInterfaces");
-        parentInterfacesMapping.setXPath("toplink:interface/text()");
+        parentInterfacesMapping.setXPath(getPrimaryNamespaceXPath() + "interface/text()");
         descriptor.addMapping(parentInterfacesMapping);
 
         XMLDirectMapping implementorDescriptorMapping = new XMLDirectMapping();
         implementorDescriptorMapping.setAttributeName("implementorDescriptor");
         implementorDescriptorMapping.setGetMethodName("getImplementorDescriptor");
         implementorDescriptorMapping.setSetMethodName("setImplementorDescriptor");
-        implementorDescriptorMapping.setXPath("toplink:implementor-descriptor/text()");
+        implementorDescriptorMapping.setXPath(getPrimaryNamespaceXPath() + "implementor-descriptor/text()");
         descriptor.addMapping(implementorDescriptorMapping);
 
         return descriptor;
@@ -3091,9 +3106,9 @@ public class ObjectPersistenceRuntimeXMLProject extends Project {
     protected ClassDescriptor buildListContainerPolicyDescriptor() {
         XMLDescriptor descriptor = new XMLDescriptor();
 
-        descriptor.setJavaClass(org.eclipse.persistence.internal.queries.ListContainerPolicy.class);
+        descriptor.setJavaClass(ListContainerPolicy.class);
 
-        descriptor.getInheritancePolicy().setParentClass(org.eclipse.persistence.internal.queries.CollectionContainerPolicy.class);
+        descriptor.getInheritancePolicy().setParentClass(CollectionContainerPolicy.class);
 
         return descriptor;
     }
@@ -3106,86 +3121,86 @@ public class ObjectPersistenceRuntimeXMLProject extends Project {
 
         XMLDirectMapping relationTableMapping = new XMLDirectMapping();
         relationTableMapping.setAttributeName("relationTableName");
-        //CR#2407  Call getRelationTableQualifiedName that includes table qualifier.
+        // CR#2407 Call getRelationTableQualifiedName that includes table qualifier.
         relationTableMapping.setGetMethodName("getRelationTableQualifiedName");
         relationTableMapping.setSetMethodName("setRelationTableName");
-        relationTableMapping.setXPath("opm:relation-table/text()");
+        relationTableMapping.setXPath(getSecondaryNamespaceXPath() + "relation-table/text()");
         descriptor.addMapping(relationTableMapping);
 
         XMLCompositeCollectionMapping sourceToRelationKeyFieldAssociationsMapping = new XMLCompositeCollectionMapping();
         sourceToRelationKeyFieldAssociationsMapping.setReferenceClass(Association.class);
         // Handle translation of foreign key associations to hashtables.
         sourceToRelationKeyFieldAssociationsMapping.setAttributeAccessor(new AttributeAccessor() {
-                public Object getAttributeValueFromObject(Object object) {
-                    List sourceFields = ((ManyToManyMapping)object).getSourceKeyFields();
-                    List relationFields = ((ManyToManyMapping)object).getSourceRelationKeyFields();
-                    List associations = new ArrayList(sourceFields.size());
-                    for (int index = 0; index < sourceFields.size(); index++) {
-                        associations.add(new Association(relationFields.get(index), sourceFields.get(index)));
-                    }
-                    return associations;
+            public Object getAttributeValueFromObject(Object object) {
+                List sourceFields = ((ManyToManyMapping)object).getSourceKeyFields();
+                List relationFields = ((ManyToManyMapping)object).getSourceRelationKeyFields();
+                List associations = new ArrayList(sourceFields.size());
+                for (int index = 0; index < sourceFields.size(); index++) {
+                    associations.add(new Association(relationFields.get(index), sourceFields.get(index)));
                 }
+                return associations;
+            }
 
-                public void setAttributeValueInObject(Object object, Object value) {
-                    ManyToManyMapping mapping = (ManyToManyMapping)object;
-                    List associations = (List)value;
-                    mapping.setSourceKeyFields(org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance(associations.size()));
-                    mapping.setSourceRelationKeyFields(org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance(associations.size()));
-                    Iterator iterator = associations.iterator();
-                    while (iterator.hasNext()) {
-                        Association association = (Association)iterator.next();
-                        mapping.getSourceKeyFields().add((DatabaseField)association.getValue());
-                        mapping.getSourceRelationKeyFields().add((DatabaseField)association.getKey());
-                    }
+            public void setAttributeValueInObject(Object object, Object value) {
+                ManyToManyMapping mapping = (ManyToManyMapping)object;
+                List associations = (List)value;
+                mapping.setSourceKeyFields(NonSynchronizedVector.newInstance(associations.size()));
+                mapping.setSourceRelationKeyFields(NonSynchronizedVector.newInstance(associations.size()));
+                Iterator iterator = associations.iterator();
+                while (iterator.hasNext()) {
+                    Association association = (Association)iterator.next();
+                    mapping.getSourceKeyFields().add((DatabaseField)association.getValue());
+                    mapping.getSourceRelationKeyFields().add((DatabaseField)association.getKey());
                 }
-            });
+            }
+        });
         sourceToRelationKeyFieldAssociationsMapping.setAttributeName("sourceToRelationKeyFieldAssociationsMapping");
-        sourceToRelationKeyFieldAssociationsMapping.setXPath("opm:source-relation-foreign-key/opm:field-reference");
+        sourceToRelationKeyFieldAssociationsMapping.setXPath(getSecondaryNamespaceXPath() + "source-relation-foreign-key/" + getSecondaryNamespaceXPath() + "field-reference");
         descriptor.addMapping(sourceToRelationKeyFieldAssociationsMapping);
 
         XMLCompositeCollectionMapping targetToRelationKeyFieldAssociationsMapping = new XMLCompositeCollectionMapping();
         targetToRelationKeyFieldAssociationsMapping.setReferenceClass(Association.class);
         // Handle translation of foreign key associations to hashtables.
         targetToRelationKeyFieldAssociationsMapping.setAttributeAccessor(new AttributeAccessor() {
-                public Object getAttributeValueFromObject(Object object) {
-                    List targetFields = ((ManyToManyMapping)object).getTargetKeyFields();
-                    List relationFields = ((ManyToManyMapping)object).getTargetRelationKeyFields();
-                    List associations = new ArrayList(targetFields.size());
-                    for (int index = 0; index < targetFields.size(); index++) {
-                        associations.add(new Association(relationFields.get(index), targetFields.get(index)));
-                    }
-                    return associations;
+            public Object getAttributeValueFromObject(Object object) {
+                List targetFields = ((ManyToManyMapping)object).getTargetKeyFields();
+                List relationFields = ((ManyToManyMapping)object).getTargetRelationKeyFields();
+                List associations = new ArrayList(targetFields.size());
+                for (int index = 0; index < targetFields.size(); index++) {
+                    associations.add(new Association(relationFields.get(index), targetFields.get(index)));
                 }
+                return associations;
+            }
 
-                public void setAttributeValueInObject(Object object, Object value) {
-                    ManyToManyMapping mapping = (ManyToManyMapping)object;
-                    List associations = (List)value;
-                    mapping.setTargetKeyFields(org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance(associations.size()));
-                    mapping.setTargetRelationKeyFields(org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance(associations.size()));
-                    Iterator iterator = associations.iterator();
-                    while (iterator.hasNext()) {
-                        Association association = (Association)iterator.next();
-                        mapping.getTargetKeyFields().add((DatabaseField)association.getValue());
-                        mapping.getTargetRelationKeyFields().add((DatabaseField)association.getKey());
-                    }
+            public void setAttributeValueInObject(Object object, Object value) {
+                ManyToManyMapping mapping = (ManyToManyMapping)object;
+                List associations = (List)value;
+                mapping.setTargetKeyFields(NonSynchronizedVector.newInstance(associations.size()));
+                mapping.setTargetRelationKeyFields(NonSynchronizedVector.newInstance(associations.size()));
+                Iterator iterator = associations.iterator();
+                while (iterator.hasNext()) {
+                    Association association = (Association)iterator.next();
+                    mapping.getTargetKeyFields().add((DatabaseField)association.getValue());
+                    mapping.getTargetRelationKeyFields().add((DatabaseField)association.getKey());
                 }
-            });
+            }
+        });
         targetToRelationKeyFieldAssociationsMapping.setAttributeName("targetToRelationKeyFieldAssociations");
-        targetToRelationKeyFieldAssociationsMapping.setXPath("opm:target-relation-foreign-key/opm:field-reference");
+        targetToRelationKeyFieldAssociationsMapping.setXPath(getSecondaryNamespaceXPath() + "target-relation-foreign-key/" + getSecondaryNamespaceXPath() + "field-reference");
         descriptor.addMapping(targetToRelationKeyFieldAssociationsMapping);
 
         XMLDirectMapping relationshipPartnerAttributeNameMapping = new XMLDirectMapping();
         relationshipPartnerAttributeNameMapping.setAttributeName("relationshipPartnerAttributeName");
         relationshipPartnerAttributeNameMapping.setGetMethodName("getRelationshipPartnerAttributeName");
         relationshipPartnerAttributeNameMapping.setSetMethodName("setRelationshipPartnerAttributeName");
-        relationshipPartnerAttributeNameMapping.setXPath("toplink:bidirectional-target-attribute/text()");
+        relationshipPartnerAttributeNameMapping.setXPath(getPrimaryNamespaceXPath() + "bidirectional-target-attribute/text()");
         descriptor.addMapping(relationshipPartnerAttributeNameMapping);
 
         XMLDirectMapping usesBatchReadingMapping = new XMLDirectMapping();
         usesBatchReadingMapping.setAttributeName("usesBatchReading");
         usesBatchReadingMapping.setGetMethodName("shouldUseBatchReading");
         usesBatchReadingMapping.setSetMethodName("setUsesBatchReading");
-        usesBatchReadingMapping.setXPath("toplink:batch-reading/text()");
+        usesBatchReadingMapping.setXPath(getPrimaryNamespaceXPath() + "batch-reading/text()");
         usesBatchReadingMapping.setNullValue(Boolean.FALSE);
         descriptor.addMapping(usesBatchReadingMapping);
 
@@ -3193,32 +3208,32 @@ public class ObjectPersistenceRuntimeXMLProject extends Project {
         containerPolicyMapping.setAttributeName("collectionPolicy");
         containerPolicyMapping.setGetMethodName("getContainerPolicy");
         containerPolicyMapping.setSetMethodName("setContainerPolicy");
-        containerPolicyMapping.setReferenceClass(org.eclipse.persistence.internal.queries.ContainerPolicy.class);
-        containerPolicyMapping.setXPath("toplink:container");
+        containerPolicyMapping.setReferenceClass(ContainerPolicy.class);
+        containerPolicyMapping.setXPath(getPrimaryNamespaceXPath() + "container");
         descriptor.addMapping(containerPolicyMapping);
 
         XMLCompositeObjectMapping indirectionPolicyMapping = new XMLCompositeObjectMapping();
         indirectionPolicyMapping.setReferenceClass(IndirectionPolicy.class);
         // Handle translation of NoIndirectionPolicy -> null.
         indirectionPolicyMapping.setAttributeAccessor(new AttributeAccessor() {
-                public Object getAttributeValueFromObject(Object object) {
-                    IndirectionPolicy policy = ((ForeignReferenceMapping)object).getIndirectionPolicy();
-                    if (policy instanceof NoIndirectionPolicy) {
-                        return null;
-                    }
-                    return policy;
+            public Object getAttributeValueFromObject(Object object) {
+                IndirectionPolicy policy = ((ForeignReferenceMapping)object).getIndirectionPolicy();
+                if (policy instanceof NoIndirectionPolicy) {
+                    return null;
                 }
+                return policy;
+            }
 
-                public void setAttributeValueInObject(Object object, Object value) {
-                    IndirectionPolicy policy = (IndirectionPolicy)value;
-                    if (value == null) {
-                        policy = new NoIndirectionPolicy();
-                    }
-                    ((ForeignReferenceMapping)object).setIndirectionPolicy(policy);
+            public void setAttributeValueInObject(Object object, Object value) {
+                IndirectionPolicy policy = (IndirectionPolicy)value;
+                if (value == null) {
+                    policy = new NoIndirectionPolicy();
                 }
-            });
+                ((ForeignReferenceMapping)object).setIndirectionPolicy(policy);
+            }
+        });
         indirectionPolicyMapping.setAttributeName("indirectionPolicy");
-        indirectionPolicyMapping.setXPath("toplink:indirection");
+        indirectionPolicyMapping.setXPath(getPrimaryNamespaceXPath() + "indirection");
         descriptor.addMapping(indirectionPolicyMapping);
 
         XMLCompositeObjectMapping selectionQueryMapping = new XMLCompositeObjectMapping();
@@ -3226,7 +3241,7 @@ public class ObjectPersistenceRuntimeXMLProject extends Project {
         selectionQueryMapping.setGetMethodName("getSelectionQuery");
         selectionQueryMapping.setSetMethodName("setSelectionQuery");
         selectionQueryMapping.setReferenceClass(ReadQuery.class);
-        selectionQueryMapping.setXPath("toplink:selection-query");
+        selectionQueryMapping.setXPath(getPrimaryNamespaceXPath() + "selection-query");
         descriptor.addMapping(selectionQueryMapping);
 
         XMLCompositeObjectMapping insertQueryMapping = new XMLCompositeObjectMapping();
@@ -3234,7 +3249,7 @@ public class ObjectPersistenceRuntimeXMLProject extends Project {
         insertQueryMapping.setGetMethodName("getInsertQuery");
         insertQueryMapping.setSetMethodName("setInsertQuery");
         insertQueryMapping.setReferenceClass(DataModifyQuery.class);
-        insertQueryMapping.setXPath("toplink:insert-query");
+        insertQueryMapping.setXPath(getPrimaryNamespaceXPath() + "insert-query");
         descriptor.addMapping(insertQueryMapping);
 
         XMLCompositeObjectMapping deleteQueryMapping = new XMLCompositeObjectMapping();
@@ -3242,7 +3257,7 @@ public class ObjectPersistenceRuntimeXMLProject extends Project {
         deleteQueryMapping.setGetMethodName("getDeleteQuery");
         deleteQueryMapping.setSetMethodName("setDeleteQuery");
         deleteQueryMapping.setReferenceClass(DataModifyQuery.class);
-        deleteQueryMapping.setXPath("toplink:delete-query");
+        deleteQueryMapping.setXPath(getPrimaryNamespaceXPath() + "delete-query");
         descriptor.addMapping(deleteQueryMapping);
 
         XMLCompositeObjectMapping deleteAllQueryMapping = new XMLCompositeObjectMapping();
@@ -3250,7 +3265,7 @@ public class ObjectPersistenceRuntimeXMLProject extends Project {
         deleteAllQueryMapping.setGetMethodName("getDeleteAllQuery");
         deleteAllQueryMapping.setSetMethodName("setDeleteAllQuery");
         deleteAllQueryMapping.setReferenceClass(DataModifyQuery.class);
-        deleteAllQueryMapping.setXPath("toplink:delete-all-query");
+        deleteAllQueryMapping.setXPath(getPrimaryNamespaceXPath() + "delete-all-query");
         descriptor.addMapping(deleteAllQueryMapping);
 
         XMLCompositeObjectMapping historyPolicyMapping = new XMLCompositeObjectMapping();
@@ -3258,7 +3273,7 @@ public class ObjectPersistenceRuntimeXMLProject extends Project {
         historyPolicyMapping.setGetMethodName("getHistoryPolicy");
         historyPolicyMapping.setSetMethodName("setHistoryPolicy");
         historyPolicyMapping.setReferenceClass(HistoryPolicy.class);
-        historyPolicyMapping.setXPath("toplink:history-policy");
+        historyPolicyMapping.setXPath(getPrimaryNamespaceXPath() + "history-policy");
         descriptor.addMapping(historyPolicyMapping);
 
         return descriptor;
@@ -3266,15 +3281,15 @@ public class ObjectPersistenceRuntimeXMLProject extends Project {
 
     protected ClassDescriptor buildMapContainerPolicyDescriptor() {
         XMLDescriptor descriptor = new XMLDescriptor();
-        descriptor.setJavaClass(org.eclipse.persistence.internal.queries.MapContainerPolicy.class);
+        descriptor.setJavaClass(MapContainerPolicy.class);
 
-        descriptor.getInheritancePolicy().setParentClass(org.eclipse.persistence.internal.queries.InterfaceContainerPolicy.class);
+        descriptor.getInheritancePolicy().setParentClass(InterfaceContainerPolicy.class);
 
         XMLDirectMapping keyMapping = new XMLDirectMapping();
         keyMapping.setAttributeName("keyName");
         keyMapping.setGetMethodName("getKeyName");
         keyMapping.setSetMethodName("setKeyName");
-        keyMapping.setXPath("toplink:map-key-method/text()");
+        keyMapping.setXPath(getPrimaryNamespaceXPath() + "map-key-method/text()");
         descriptor.addMapping(keyMapping);
 
         return descriptor;
@@ -3282,14 +3297,14 @@ public class ObjectPersistenceRuntimeXMLProject extends Project {
 
     protected ClassDescriptor buildNestedTableMappingDescriptor() {
         XMLDescriptor descriptor = new XMLDescriptor();
-        descriptor.setJavaClass(org.eclipse.persistence.mappings.structures.NestedTableMapping.class);
+        descriptor.setJavaClass(NestedTableMapping.class);
 
         descriptor.getInheritancePolicy().setParentClass(CollectionMapping.class);
 
         XMLCompositeObjectMapping fieldMapping = new XMLCompositeObjectMapping();
         fieldMapping.setAttributeName("field");
         fieldMapping.setReferenceClass(DatabaseField.class);
-        fieldMapping.setXPath("toplink:field");
+        fieldMapping.setXPath(getPrimaryNamespaceXPath() + "field");
         fieldMapping.setGetMethodName("getField");
         fieldMapping.setSetMethodName("setField");
         descriptor.addMapping(fieldMapping);
@@ -3298,7 +3313,7 @@ public class ObjectPersistenceRuntimeXMLProject extends Project {
         structureMapping.setAttributeName("structureName");
         structureMapping.setGetMethodName("getStructureName");
         structureMapping.setSetMethodName("setStructureName");
-        structureMapping.setXPath("toplink:structure/text()");
+        structureMapping.setXPath(getPrimaryNamespaceXPath() + "structure/text()");
         descriptor.addMapping(structureMapping);
 
         return descriptor;
@@ -3314,7 +3329,7 @@ public class ObjectPersistenceRuntimeXMLProject extends Project {
 
     protected ClassDescriptor buildObjectArrayMappingDescriptor() {
         XMLDescriptor descriptor = new XMLDescriptor();
-        descriptor.setJavaClass(org.eclipse.persistence.mappings.structures.ObjectArrayMapping.class);
+        descriptor.setJavaClass(ObjectArrayMapping.class);
 
         descriptor.getInheritancePolicy().setParentClass(XMLCompositeCollectionMapping.class);
 
@@ -3322,7 +3337,7 @@ public class ObjectPersistenceRuntimeXMLProject extends Project {
         structureMapping.setAttributeName("structureName");
         structureMapping.setGetMethodName("getStructureName");
         structureMapping.setSetMethodName("setStructureName");
-        structureMapping.setXPath("toplink:structure/text()");
+        structureMapping.setXPath(getPrimaryNamespaceXPath() + "structure/text()");
         descriptor.addMapping(structureMapping);
 
         return descriptor;
@@ -3347,19 +3362,18 @@ public class ObjectPersistenceRuntimeXMLProject extends Project {
         structureMapping.setAttributeName("structureName");
         structureMapping.setGetMethodName("getStructureName");
         structureMapping.setSetMethodName("setStructureName");
-        structureMapping.setXPath("toplink:structure/text()");
+        structureMapping.setXPath(getPrimaryNamespaceXPath() + "structure/text()");
         descriptor.addMapping(structureMapping);
 
         XMLCompositeCollectionMapping orderedFieldsMapping = new XMLCompositeCollectionMapping();
-        orderedFieldsMapping.useCollectionClass(org.eclipse.persistence.internal.helper.NonSynchronizedVector.class);
+        orderedFieldsMapping.useCollectionClass(NonSynchronizedVector.class);
         orderedFieldsMapping.setAttributeName("orderedFields");
-        orderedFieldsMapping.setXPath("toplink:field-order/toplink:field");
+        orderedFieldsMapping.setXPath(getPrimaryNamespaceXPath() + "field-order/" + getPrimaryNamespaceXPath() + "field");
         orderedFieldsMapping.setReferenceClass(DatabaseField.class);
         descriptor.addMapping(orderedFieldsMapping);
 
         return descriptor;
     }
-
 
     protected ClassDescriptor buildObjectTypeConverterDescriptor() {
         XMLDescriptor descriptor = new XMLDescriptor();
@@ -3371,14 +3385,14 @@ public class ObjectPersistenceRuntimeXMLProject extends Project {
         XMLDirectMapping4.setAttributeName("defaultAttributeValue");
         XMLDirectMapping4.setGetMethodName("getDefaultAttributeValue");
         XMLDirectMapping4.setSetMethodName("setDefaultAttributeValue");
-        XMLDirectMapping4.setXPath("toplink:default-value/text()");
+        XMLDirectMapping4.setXPath(getPrimaryNamespaceXPath() + "default-value/text()");
         descriptor.addMapping(XMLDirectMapping4);
 
         XMLCompositeCollectionMapping fieldToAttributeValueAssociationsMapping = new XMLCompositeCollectionMapping();
         fieldToAttributeValueAssociationsMapping.setAttributeName("fieldToAttributeValueAssociations");
         fieldToAttributeValueAssociationsMapping.setGetMethodName("getFieldToAttributeValueAssociations");
         fieldToAttributeValueAssociationsMapping.setSetMethodName("setFieldToAttributeValueAssociations");
-        fieldToAttributeValueAssociationsMapping.setXPath("toplink:type-mappings/toplink:type-mapping");
+        fieldToAttributeValueAssociationsMapping.setXPath(getPrimaryNamespaceXPath() + "type-mappings/" + getPrimaryNamespaceXPath() + "type-mapping");
         fieldToAttributeValueAssociationsMapping.setReferenceClass(TypeMapping.class);
         descriptor.addMapping(fieldToAttributeValueAssociationsMapping);
 
@@ -3395,45 +3409,45 @@ public class ObjectPersistenceRuntimeXMLProject extends Project {
         sourceToTargetKeyFieldAssociationsMapping.setReferenceClass(Association.class);
         // Handle translation of foreign key associations to hashtables.
         sourceToTargetKeyFieldAssociationsMapping.setAttributeAccessor(new AttributeAccessor() {
-                public Object getAttributeValueFromObject(Object object) {
-                    List sourceFields = ((OneToManyMapping)object).getSourceKeyFields();
-                    List targetFields = ((OneToManyMapping)object).getTargetForeignKeyFields();
-                    List associations = new ArrayList(sourceFields.size());
-                    for (int index = 0; index < sourceFields.size(); index++) {
-                        associations.add(new Association(targetFields.get(index), sourceFields.get(index)));
-                    }
-                    return associations;
+            public Object getAttributeValueFromObject(Object object) {
+                List sourceFields = ((OneToManyMapping)object).getSourceKeyFields();
+                List targetFields = ((OneToManyMapping)object).getTargetForeignKeyFields();
+                List associations = new ArrayList(sourceFields.size());
+                for (int index = 0; index < sourceFields.size(); index++) {
+                    associations.add(new Association(targetFields.get(index), sourceFields.get(index)));
                 }
+                return associations;
+            }
 
-                public void setAttributeValueInObject(Object object, Object value) {
-                    OneToManyMapping mapping = (OneToManyMapping)object;
-                    List associations = (List)value;
-                    mapping.setSourceKeyFields(org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance(associations.size()));
-                    mapping.setTargetForeignKeyFields(org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance(associations.size()));
-                    Iterator iterator = associations.iterator();
-                    while (iterator.hasNext()) {
-                        Association association = (Association)iterator.next();
-                        mapping.getSourceKeyFields().add((DatabaseField)association.getValue());
-                        mapping.getTargetForeignKeyFields().add((DatabaseField)association.getKey());
-                    }
+            public void setAttributeValueInObject(Object object, Object value) {
+                OneToManyMapping mapping = (OneToManyMapping)object;
+                List associations = (List)value;
+                mapping.setSourceKeyFields(NonSynchronizedVector.newInstance(associations.size()));
+                mapping.setTargetForeignKeyFields(NonSynchronizedVector.newInstance(associations.size()));
+                Iterator iterator = associations.iterator();
+                while (iterator.hasNext()) {
+                    Association association = (Association)iterator.next();
+                    mapping.getSourceKeyFields().add((DatabaseField)association.getValue());
+                    mapping.getTargetForeignKeyFields().add((DatabaseField)association.getKey());
                 }
-            });
+            }
+        });
         sourceToTargetKeyFieldAssociationsMapping.setAttributeName("sourceToTargetKeyFieldAssociations");
-        sourceToTargetKeyFieldAssociationsMapping.setXPath("opm:target-foreign-key/opm:field-reference");
+        sourceToTargetKeyFieldAssociationsMapping.setXPath(getSecondaryNamespaceXPath() + "target-foreign-key/" + getSecondaryNamespaceXPath() + "field-reference");
         descriptor.addMapping(sourceToTargetKeyFieldAssociationsMapping);
 
         XMLDirectMapping relationshipPartnerAttributeNameMapping = new XMLDirectMapping();
         relationshipPartnerAttributeNameMapping.setAttributeName("relationshipPartnerAttributeName");
         relationshipPartnerAttributeNameMapping.setGetMethodName("getRelationshipPartnerAttributeName");
         relationshipPartnerAttributeNameMapping.setSetMethodName("setRelationshipPartnerAttributeName");
-        relationshipPartnerAttributeNameMapping.setXPath("toplink:bidirectional-target-attribute/text()");
+        relationshipPartnerAttributeNameMapping.setXPath(getPrimaryNamespaceXPath() + "bidirectional-target-attribute/text()");
         descriptor.addMapping(relationshipPartnerAttributeNameMapping);
 
         XMLDirectMapping usesBatchReadingMapping = new XMLDirectMapping();
         usesBatchReadingMapping.setAttributeName("usesBatchReading");
         usesBatchReadingMapping.setGetMethodName("shouldUseBatchReading");
         usesBatchReadingMapping.setSetMethodName("setUsesBatchReading");
-        usesBatchReadingMapping.setXPath("toplink:batch-reading/text()");
+        usesBatchReadingMapping.setXPath(getPrimaryNamespaceXPath() + "batch-reading/text()");
         usesBatchReadingMapping.setNullValue(Boolean.FALSE);
         descriptor.addMapping(usesBatchReadingMapping);
 
@@ -3441,32 +3455,32 @@ public class ObjectPersistenceRuntimeXMLProject extends Project {
         containerPolicyMapping.setAttributeName("collectionPolicy");
         containerPolicyMapping.setGetMethodName("getContainerPolicy");
         containerPolicyMapping.setSetMethodName("setContainerPolicy");
-        containerPolicyMapping.setReferenceClass(org.eclipse.persistence.internal.queries.ContainerPolicy.class);
-        containerPolicyMapping.setXPath("toplink:container");
+        containerPolicyMapping.setReferenceClass(ContainerPolicy.class);
+        containerPolicyMapping.setXPath(getPrimaryNamespaceXPath() + "container");
         descriptor.addMapping(containerPolicyMapping);
 
         XMLCompositeObjectMapping indirectionPolicyMapping = new XMLCompositeObjectMapping();
         indirectionPolicyMapping.setReferenceClass(IndirectionPolicy.class);
         // Handle translation of NoIndirectionPolicy -> null.
         indirectionPolicyMapping.setAttributeAccessor(new AttributeAccessor() {
-                public Object getAttributeValueFromObject(Object object) {
-                    IndirectionPolicy policy = ((ForeignReferenceMapping)object).getIndirectionPolicy();
-                    if (policy instanceof NoIndirectionPolicy) {
-                        return null;
-                    }
-                    return policy;
+            public Object getAttributeValueFromObject(Object object) {
+                IndirectionPolicy policy = ((ForeignReferenceMapping)object).getIndirectionPolicy();
+                if (policy instanceof NoIndirectionPolicy) {
+                    return null;
                 }
+                return policy;
+            }
 
-                public void setAttributeValueInObject(Object object, Object value) {
-                    IndirectionPolicy policy = (IndirectionPolicy)value;
-                    if (value == null) {
-                        policy = new NoIndirectionPolicy();
-                    }
-                    ((ForeignReferenceMapping)object).setIndirectionPolicy(policy);
+            public void setAttributeValueInObject(Object object, Object value) {
+                IndirectionPolicy policy = (IndirectionPolicy)value;
+                if (value == null) {
+                    policy = new NoIndirectionPolicy();
                 }
-            });
+                ((ForeignReferenceMapping)object).setIndirectionPolicy(policy);
+            }
+        });
         indirectionPolicyMapping.setAttributeName("indirectionPolicy");
-        indirectionPolicyMapping.setXPath("toplink:indirection");
+        indirectionPolicyMapping.setXPath(getPrimaryNamespaceXPath() + "indirection");
         descriptor.addMapping(indirectionPolicyMapping);
 
         XMLCompositeObjectMapping selectionQueryMapping = new XMLCompositeObjectMapping();
@@ -3474,7 +3488,7 @@ public class ObjectPersistenceRuntimeXMLProject extends Project {
         selectionQueryMapping.setGetMethodName("getSelectionQuery");
         selectionQueryMapping.setSetMethodName("setSelectionQuery");
         selectionQueryMapping.setReferenceClass(ReadQuery.class);
-        selectionQueryMapping.setXPath("toplink:selection-query");
+        selectionQueryMapping.setXPath(getPrimaryNamespaceXPath() + "selection-query");
         descriptor.addMapping(selectionQueryMapping);
 
         // delete-all query
@@ -3491,40 +3505,40 @@ public class ObjectPersistenceRuntimeXMLProject extends Project {
         sourceToTargetKeyFieldAssociationsMapping.setReferenceClass(Association.class);
         // Handle translation of foreign key associations to hashtables.
         sourceToTargetKeyFieldAssociationsMapping.setAttributeAccessor(new AttributeAccessor() {
-                public Object getAttributeValueFromObject(Object object) {
-                    Map sourceToTargetKeyFields = ((OneToOneMapping)object).getSourceToTargetKeyFields();
-                    List associations = new ArrayList(sourceToTargetKeyFields.size());
-                    Iterator iterator = sourceToTargetKeyFields.entrySet().iterator();
-                    while (iterator.hasNext()) {
-                        Map.Entry entry = (Map.Entry)iterator.next();
-                        associations.add(new Association(entry.getKey(), entry.getValue()));
-                    }
-                    return associations;
+            public Object getAttributeValueFromObject(Object object) {
+                Map sourceToTargetKeyFields = ((OneToOneMapping)object).getSourceToTargetKeyFields();
+                List associations = new ArrayList(sourceToTargetKeyFields.size());
+                Iterator iterator = sourceToTargetKeyFields.entrySet().iterator();
+                while (iterator.hasNext()) {
+                    Map.Entry entry = (Map.Entry)iterator.next();
+                    associations.add(new Association(entry.getKey(), entry.getValue()));
                 }
+                return associations;
+            }
 
-                public void setAttributeValueInObject(Object object, Object value) {
-                    OneToOneMapping mapping = (OneToOneMapping)object;
-                    List associations = (List)value;
-                    mapping.setSourceToTargetKeyFields(new HashMap(associations.size() + 1));
-                    mapping.setTargetToSourceKeyFields(new HashMap(associations.size() + 1));
-                    Iterator iterator = associations.iterator();
-                    while (iterator.hasNext()) {
-                        Association association = (Association)iterator.next();
-                        mapping.getSourceToTargetKeyFields().put((DatabaseField)association.getKey(), (DatabaseField)association.getValue());
-                        mapping.getTargetToSourceKeyFields().put((DatabaseField)association.getValue(), (DatabaseField)association.getKey());
-                    }
+            public void setAttributeValueInObject(Object object, Object value) {
+                OneToOneMapping mapping = (OneToOneMapping)object;
+                List associations = (List)value;
+                mapping.setSourceToTargetKeyFields(new HashMap(associations.size() + 1));
+                mapping.setTargetToSourceKeyFields(new HashMap(associations.size() + 1));
+                Iterator iterator = associations.iterator();
+                while (iterator.hasNext()) {
+                    Association association = (Association)iterator.next();
+                    mapping.getSourceToTargetKeyFields().put((DatabaseField)association.getKey(), (DatabaseField)association.getValue());
+                    mapping.getTargetToSourceKeyFields().put((DatabaseField)association.getValue(), (DatabaseField)association.getKey());
                 }
-            });
+            }
+        });
         sourceToTargetKeyFieldAssociationsMapping.setAttributeName("sourceToTargetKeyFieldAssociations");
-        sourceToTargetKeyFieldAssociationsMapping.setXPath("opm:foreign-key/opm:field-reference");
+        sourceToTargetKeyFieldAssociationsMapping.setXPath(getSecondaryNamespaceXPath() + "foreign-key/" + getSecondaryNamespaceXPath() + "field-reference");
         descriptor.addMapping(sourceToTargetKeyFieldAssociationsMapping);
 
         XMLCompositeCollectionMapping foreignKeyFieldNamesMapping = new XMLCompositeCollectionMapping();
-        foreignKeyFieldNamesMapping.useCollectionClass(org.eclipse.persistence.internal.helper.NonSynchronizedVector.class);
+        foreignKeyFieldNamesMapping.useCollectionClass(NonSynchronizedVector.class);
         foreignKeyFieldNamesMapping.setAttributeName("foreignKeyFields");
         foreignKeyFieldNamesMapping.setGetMethodName("getForeignKeyFields");
         foreignKeyFieldNamesMapping.setSetMethodName("setForeignKeyFields");
-        foreignKeyFieldNamesMapping.setXPath("opm:foreign-key-fields/opm:field");
+        foreignKeyFieldNamesMapping.setXPath(getSecondaryNamespaceXPath() + "foreign-key-fields/" + getSecondaryNamespaceXPath() + "field");
         foreignKeyFieldNamesMapping.setReferenceClass(DatabaseField.class);
         descriptor.addMapping(foreignKeyFieldNamesMapping);
 
@@ -3532,14 +3546,14 @@ public class ObjectPersistenceRuntimeXMLProject extends Project {
         relationshipPartnerAttributeNameMapping.setAttributeName("relationshipPartnerAttributeName");
         relationshipPartnerAttributeNameMapping.setGetMethodName("getRelationshipPartnerAttributeName");
         relationshipPartnerAttributeNameMapping.setSetMethodName("setRelationshipPartnerAttributeName");
-        relationshipPartnerAttributeNameMapping.setXPath("toplink:bidirectional-target-attribute/text()");
+        relationshipPartnerAttributeNameMapping.setXPath(getPrimaryNamespaceXPath() + "bidirectional-target-attribute/text()");
         descriptor.addMapping(relationshipPartnerAttributeNameMapping);
 
         XMLDirectMapping usesBatchReadingMapping = new XMLDirectMapping();
         usesBatchReadingMapping.setAttributeName("usesBatchReading");
         usesBatchReadingMapping.setGetMethodName("shouldUseBatchReading");
         usesBatchReadingMapping.setSetMethodName("setUsesBatchReading");
-        usesBatchReadingMapping.setXPath("toplink:batch-reading/text()");
+        usesBatchReadingMapping.setXPath(getPrimaryNamespaceXPath() + "batch-reading/text()");
         usesBatchReadingMapping.setNullValue(Boolean.FALSE);
         descriptor.addMapping(usesBatchReadingMapping);
 
@@ -3547,7 +3561,7 @@ public class ObjectPersistenceRuntimeXMLProject extends Project {
         usesJoiningMapping.setAttributeName("usesJoiningMapping");
         usesJoiningMapping.setGetMethodName("shouldUseJoining");
         usesJoiningMapping.setSetMethodName("setUsesJoining");
-        usesJoiningMapping.setXPath("toplink:joining/text()");
+        usesJoiningMapping.setXPath(getPrimaryNamespaceXPath() + "joining/text()");
         usesJoiningMapping.setNullValue(Boolean.FALSE);
         descriptor.addMapping(usesJoiningMapping);
 
@@ -3555,24 +3569,24 @@ public class ObjectPersistenceRuntimeXMLProject extends Project {
         indirectionPolicyMapping.setReferenceClass(IndirectionPolicy.class);
         // Handle translation of NoIndirectionPolicy -> null.
         indirectionPolicyMapping.setAttributeAccessor(new AttributeAccessor() {
-                public Object getAttributeValueFromObject(Object object) {
-                    IndirectionPolicy policy = ((ForeignReferenceMapping)object).getIndirectionPolicy();
-                    if (policy instanceof NoIndirectionPolicy) {
-                        return null;
-                    }
-                    return policy;
+            public Object getAttributeValueFromObject(Object object) {
+                IndirectionPolicy policy = ((ForeignReferenceMapping)object).getIndirectionPolicy();
+                if (policy instanceof NoIndirectionPolicy) {
+                    return null;
                 }
+                return policy;
+            }
 
-                public void setAttributeValueInObject(Object object, Object value) {
-                    IndirectionPolicy policy = (IndirectionPolicy)value;
-                    if (value == null) {
-                        policy = new NoIndirectionPolicy();
-                    }
-                    ((ForeignReferenceMapping)object).setIndirectionPolicy(policy);
+            public void setAttributeValueInObject(Object object, Object value) {
+                IndirectionPolicy policy = (IndirectionPolicy)value;
+                if (value == null) {
+                    policy = new NoIndirectionPolicy();
                 }
-            });
+                ((ForeignReferenceMapping)object).setIndirectionPolicy(policy);
+            }
+        });
         indirectionPolicyMapping.setAttributeName("indirectionPolicy");
-        indirectionPolicyMapping.setXPath("toplink:indirection");
+        indirectionPolicyMapping.setXPath(getPrimaryNamespaceXPath() + "indirection");
         descriptor.addMapping(indirectionPolicyMapping);
 
         XMLCompositeObjectMapping selectionQueryMapping = new XMLCompositeObjectMapping();
@@ -3580,7 +3594,7 @@ public class ObjectPersistenceRuntimeXMLProject extends Project {
         selectionQueryMapping.setGetMethodName("getSelectionQuery");
         selectionQueryMapping.setSetMethodName("setSelectionQuery");
         selectionQueryMapping.setReferenceClass(ReadQuery.class);
-        selectionQueryMapping.setXPath("toplink:selection-query");
+        selectionQueryMapping.setXPath(getPrimaryNamespaceXPath() + "selection-query");
         descriptor.addMapping(selectionQueryMapping);
 
         return descriptor;
@@ -3595,7 +3609,7 @@ public class ObjectPersistenceRuntimeXMLProject extends Project {
         keyMapping.setAttributeName("key");
         keyMapping.setGetMethodName("getKey");
         keyMapping.setSetMethodName("setKey");
-        keyMapping.setXPath("opm:source-field");
+        keyMapping.setXPath(getSecondaryNamespaceXPath() + "source-field");
         keyMapping.setReferenceClass(DatabaseField.class);
         descriptor.addMapping(keyMapping);
 
@@ -3603,7 +3617,7 @@ public class ObjectPersistenceRuntimeXMLProject extends Project {
         valueMapping.setAttributeName("value");
         valueMapping.setGetMethodName("getValue");
         valueMapping.setSetMethodName("setValue");
-        valueMapping.setXPath("opm:target-field");
+        valueMapping.setXPath(getSecondaryNamespaceXPath() + "target-field");
         valueMapping.setReferenceClass(DatabaseField.class);
         descriptor.addMapping(valueMapping);
 
@@ -3626,7 +3640,7 @@ public class ObjectPersistenceRuntimeXMLProject extends Project {
         valueMapping.setAttributeName("value");
         valueMapping.setGetMethodName("getValue");
         valueMapping.setSetMethodName("setValue");
-        valueMapping.setXPath("opm:value/text()");
+        valueMapping.setXPath(getSecondaryNamespaceXPath() + "value/text()");
         descriptor.addMapping(valueMapping);
 
         return descriptor;
@@ -3641,7 +3655,7 @@ public class ObjectPersistenceRuntimeXMLProject extends Project {
         keyMapping.setAttributeName("key");
         keyMapping.setGetMethodName("getKey");
         keyMapping.setSetMethodName("setKey");
-        keyMapping.setXPath("toplink:source-field");
+        keyMapping.setXPath(getPrimaryNamespaceXPath() + "source-field");
         keyMapping.setReferenceClass(DatabaseField.class);
         descriptor.addMapping(keyMapping);
 
@@ -3649,7 +3663,7 @@ public class ObjectPersistenceRuntimeXMLProject extends Project {
         valueMapping.setAttributeName("value");
         valueMapping.setGetMethodName("getValue");
         valueMapping.setSetMethodName("setValue");
-        valueMapping.setXPath("toplink:target-field");
+        valueMapping.setXPath(getPrimaryNamespaceXPath() + "target-field");
         valueMapping.setReferenceClass(DatabaseField.class);
         descriptor.addMapping(valueMapping);
 
@@ -3668,14 +3682,14 @@ public class ObjectPersistenceRuntimeXMLProject extends Project {
         keyMapping.setAttributeName("key");
         keyMapping.setGetMethodName("getKey");
         keyMapping.setSetMethodName("setKey");
-        keyMapping.setXPath("toplink:class/text()");
+        keyMapping.setXPath(getPrimaryNamespaceXPath() + "class/text()");
         descriptor.addMapping(keyMapping);
 
         XMLDirectMapping valueMapping = new XMLDirectMapping();
         valueMapping.setAttributeName("value");
         valueMapping.setGetMethodName("getValue");
         valueMapping.setSetMethodName("setValue");
-        valueMapping.setField(buildTypedField("toplink:class-indicator/text()"));
+        valueMapping.setField(buildTypedField(getPrimaryNamespaceXPath() + "class-indicator/text()"));
         descriptor.addMapping(valueMapping);
 
         return descriptor;
@@ -3686,27 +3700,27 @@ public class ObjectPersistenceRuntimeXMLProject extends Project {
         field.setIsTypedTextField(true);
         field.addConversion(new QName(XMLConstants.SCHEMA_URL, XMLConstants.TIME), java.sql.Time.class);
         field.addConversion(new QName(XMLConstants.SCHEMA_URL, XMLConstants.DATE), java.sql.Date.class);
-        field.addConversion(new QName("http://xmlns.oracle.com/ias/xsds/toplink", "java-character"), Character.class);
-        field.addConversion(new QName("http://xmlns.oracle.com/ias/xsds/toplink", "java-util-date"), java.util.Date.class);
-        field.addConversion(new QName("http://xmlns.oracle.com/ias/xsds/toplink", "java-timestamp"), java.sql.Timestamp.class);
+        field.addConversion(new QName(getPrimaryNamespace(), "java-character"), Character.class);
+        field.addConversion(new QName(getPrimaryNamespace(), "java-util-date"), java.util.Date.class);
+        field.addConversion(new QName(getPrimaryNamespace(), "java-timestamp"), java.sql.Timestamp.class);
         return field;
     }
 
     protected ClassDescriptor buildFieldTransformationDescriptor() {
         XMLDescriptor descriptor = new XMLDescriptor();
-        descriptor.setJavaClass(org.eclipse.persistence.internal.descriptors.FieldTransformation.class);
+        descriptor.setJavaClass(FieldTransformation.class);
         descriptor.setDefaultRootElement("field-transformation");
 
         descriptor.getInheritancePolicy().setClassIndicatorField(new XMLField("@xsi:type"));
         descriptor.getInheritancePolicy().setShouldReadSubclasses(true);
-        descriptor.getInheritancePolicy().addClassIndicator(FieldTransformation.class, "toplink:field-transformation");
-        descriptor.getInheritancePolicy().addClassIndicator(MethodBasedFieldTransformation.class, "toplink:method-based-field-transformation");
-        descriptor.getInheritancePolicy().addClassIndicator(TransformerBasedFieldTransformation.class, "toplink:transformer-based-field-transformation");
+        descriptor.getInheritancePolicy().addClassIndicator(FieldTransformation.class, getPrimaryNamespaceXPath() + "field-transformation");
+        descriptor.getInheritancePolicy().addClassIndicator(MethodBasedFieldTransformation.class, getPrimaryNamespaceXPath() + "method-based-field-transformation");
+        descriptor.getInheritancePolicy().addClassIndicator(TransformerBasedFieldTransformation.class, getPrimaryNamespaceXPath() + "transformer-based-field-transformation");
 
         XMLCompositeObjectMapping fieldMapping = new XMLCompositeObjectMapping();
         fieldMapping.setAttributeName("field");
         fieldMapping.setReferenceClass(DatabaseField.class);
-        fieldMapping.setXPath("toplink:field");
+        fieldMapping.setXPath(getPrimaryNamespaceXPath() + "field");
         fieldMapping.setGetMethodName("getField");
         fieldMapping.setSetMethodName("setField");
 
@@ -3722,7 +3736,7 @@ public class ObjectPersistenceRuntimeXMLProject extends Project {
 
         XMLDirectMapping methodNameMapping = new XMLDirectMapping();
         methodNameMapping.setAttributeName("methodName");
-        methodNameMapping.setXPath("toplink:method/text()");
+        methodNameMapping.setXPath(getPrimaryNamespaceXPath() + "method/text()");
         methodNameMapping.setGetMethodName("getMethodName");
         methodNameMapping.setSetMethodName("setMethodName");
 
@@ -3732,12 +3746,12 @@ public class ObjectPersistenceRuntimeXMLProject extends Project {
 
     protected ClassDescriptor buildTransformerBasedFieldTransformationDescriptor() {
         XMLDescriptor descriptor = new XMLDescriptor();
-        descriptor.setJavaClass(org.eclipse.persistence.internal.descriptors.TransformerBasedFieldTransformation.class);
-        descriptor.getInheritancePolicy().setParentClass(org.eclipse.persistence.internal.descriptors.FieldTransformation.class);
+        descriptor.setJavaClass(TransformerBasedFieldTransformation.class);
+        descriptor.getInheritancePolicy().setParentClass(FieldTransformation.class);
 
         XMLDirectMapping methodNameMapping = new XMLDirectMapping();
         methodNameMapping.setAttributeName("transformerClass");
-        methodNameMapping.setXPath("toplink:transformer-class/text()");
+        methodNameMapping.setXPath(getPrimaryNamespaceXPath() + "transformer-class/text()");
         methodNameMapping.setGetMethodName("getTransformerClass");
         methodNameMapping.setSetMethodName("setTransformerClass");
 
@@ -3763,14 +3777,14 @@ public class ObjectPersistenceRuntimeXMLProject extends Project {
         typeMapping.setAttributeName("type");
         typeMapping.setGetMethodName("getType");
         typeMapping.setSetMethodName("setType");
-        typeMapping.setXPath("opm:type/text()");
+        typeMapping.setXPath(getSecondaryNamespaceXPath() + "type/text()");
         descriptor.addMapping(typeMapping);
 
         XMLDirectMapping valueMapping = new XMLDirectMapping();
         valueMapping.setAttributeName("value");
         valueMapping.setGetMethodName("getValue");
         valueMapping.setSetMethodName("setValue");
-        valueMapping.setField(buildTypedField("opm:value/text()"));
+        valueMapping.setField(buildTypedField(getSecondaryNamespaceXPath() + "value/text()"));
         descriptor.addMapping(valueMapping);
 
         return descriptor;
@@ -3787,14 +3801,14 @@ public class ObjectPersistenceRuntimeXMLProject extends Project {
         valueMapping.setAttributeName("value");
         valueMapping.setGetMethodName("getValue");
         valueMapping.setSetMethodName("setValue");
-        valueMapping.setField(buildTypedField("toplink:object-value/text()"));
+        valueMapping.setField(buildTypedField(getPrimaryNamespaceXPath() + "object-value/text()"));
         descriptor.addMapping(valueMapping);
 
         XMLDirectMapping keyMapping = new XMLDirectMapping();
         keyMapping.setAttributeName("key");
         keyMapping.setGetMethodName("getKey");
         keyMapping.setSetMethodName("setKey");
-        keyMapping.setField(buildTypedField("toplink:data-value/text()"));
+        keyMapping.setField(buildTypedField(getPrimaryNamespaceXPath() + "data-value/text()"));
         descriptor.addMapping(keyMapping);
 
         return descriptor;
@@ -3803,7 +3817,7 @@ public class ObjectPersistenceRuntimeXMLProject extends Project {
     protected ClassDescriptor buildProjectDescriptor() {
         XMLDescriptor descriptor = new XMLDescriptor();
         descriptor.setJavaClass(Project.class);
-        descriptor.setDefaultRootElement("toplink:object-persistence");
+        descriptor.setDefaultRootElement(getPrimaryNamespaceXPath() + "object-persistence");
 
         descriptor.setSchemaReference(new XMLSchemaClassPathReference("xsd/toplink-object-persistence_10_1_3.xsd"));
 
@@ -3815,16 +3829,16 @@ public class ObjectPersistenceRuntimeXMLProject extends Project {
         nameMapping.setAttributeName("name");
         nameMapping.setSetMethodName("setName");
         nameMapping.setGetMethodName("getName");
-        nameMapping.setXPath("opm:name/text()");
+        nameMapping.setXPath(getSecondaryNamespaceXPath() + "name/text()");
         descriptor.addMapping(nameMapping);
 
         XMLCompositeCollectionMapping descriptorsMapping = new XMLCompositeCollectionMapping();
-        descriptorsMapping.useCollectionClass(org.eclipse.persistence.internal.helper.NonSynchronizedVector.class);
+        descriptorsMapping.useCollectionClass(NonSynchronizedVector.class);
         descriptorsMapping.setAttributeName("descriptors");
         descriptorsMapping.setSetMethodName("setOrderedDescriptors");
         descriptorsMapping.setGetMethodName("getOrderedDescriptors");
         descriptorsMapping.setReferenceClass(ClassDescriptor.class);
-        descriptorsMapping.setXPath("opm:class-mapping-descriptors/opm:class-mapping-descriptor");
+        descriptorsMapping.setXPath(getSecondaryNamespaceXPath() + "class-mapping-descriptors/" + getSecondaryNamespaceXPath() + "class-mapping-descriptor");
         descriptor.addMapping(descriptorsMapping);
 
         XMLCompositeObjectMapping loginMapping = new XMLCompositeObjectMapping();
@@ -3832,32 +3846,39 @@ public class ObjectPersistenceRuntimeXMLProject extends Project {
         loginMapping.setGetMethodName("getDatasourceLogin");
         loginMapping.setAttributeName("login");
         loginMapping.setReferenceClass(DatasourceLogin.class);
-        loginMapping.setXPath("toplink:login");
+        loginMapping.setXPath(getPrimaryNamespaceXPath() + "login");
         descriptor.addMapping(loginMapping);
 
         return descriptor;
     }
 
+    /**
+     * INTERNAL:
+     */
+    protected ConstantTransformer getConstantTransformerForProjectVersionMapping() {
+        return new ConstantTransformer("Oracle TopLink - 10g Release 1 (10.1.3)");
+    }
+
     protected ClassDescriptor buildProxyIndirectionPolicyDescriptor() {
         XMLDescriptor descriptor = new XMLDescriptor();
 
-        descriptor.setJavaClass(org.eclipse.persistence.internal.indirection.ProxyIndirectionPolicy.class);
+        descriptor.setJavaClass(ProxyIndirectionPolicy.class);
 
-        descriptor.getInheritancePolicy().setParentClass(org.eclipse.persistence.internal.indirection.IndirectionPolicy.class);
+        descriptor.getInheritancePolicy().setParentClass(IndirectionPolicy.class);
 
         return descriptor;
     }
 
     protected ClassDescriptor buildQueryKeyDescriptor() {
         XMLDescriptor descriptor = new XMLDescriptor();
-        descriptor.setJavaClass(org.eclipse.persistence.mappings.querykeys.QueryKey.class);
+        descriptor.setJavaClass(QueryKey.class);
         descriptor.setDefaultRootElement("query-key");
 
         descriptor.getInheritancePolicy().setClassIndicatorField(new XMLField("@xsi:type"));
-        descriptor.getInheritancePolicy().addClassIndicator(QueryKey.class, "toplink:query-key");
-        descriptor.getInheritancePolicy().addClassIndicator(OneToOneQueryKey.class, "toplink:one-to-one-query-key");
-        descriptor.getInheritancePolicy().addClassIndicator(OneToManyQueryKey.class, "toplink:one-to-many-query-key");
-        descriptor.getInheritancePolicy().addClassIndicator(DirectQueryKey.class, "toplink:direct-query-key");
+        descriptor.getInheritancePolicy().addClassIndicator(QueryKey.class, getPrimaryNamespaceXPath() + "query-key");
+        descriptor.getInheritancePolicy().addClassIndicator(OneToOneQueryKey.class, getPrimaryNamespaceXPath() + "one-to-one-query-key");
+        descriptor.getInheritancePolicy().addClassIndicator(OneToManyQueryKey.class, getPrimaryNamespaceXPath() + "one-to-many-query-key");
+        descriptor.getInheritancePolicy().addClassIndicator(DirectQueryKey.class, getPrimaryNamespaceXPath() + "direct-query-key");
 
         XMLDirectMapping nameMapping = new XMLDirectMapping();
         nameMapping.setAttributeName("name");
@@ -3880,7 +3901,7 @@ public class ObjectPersistenceRuntimeXMLProject extends Project {
         referenceClassMapping.setAttributeName("referenceClass");
         referenceClassMapping.setGetMethodName("getReferenceClass");
         referenceClassMapping.setSetMethodName("setReferenceClass");
-        referenceClassMapping.setXPath("toplink:reference-class/text()");
+        referenceClassMapping.setXPath(getPrimaryNamespaceXPath() + "reference-class/text()");
         descriptor.addMapping(referenceClassMapping);
 
         return descriptor;
@@ -3908,11 +3929,11 @@ public class ObjectPersistenceRuntimeXMLProject extends Project {
 
     protected ClassDescriptor buildQueryManagerDescriptor() {
         XMLDescriptor descriptor = new XMLDescriptor();
-        descriptor.setJavaClass(org.eclipse.persistence.descriptors.DescriptorQueryManager.class);
+        descriptor.setJavaClass(DescriptorQueryManager.class);
         descriptor.setDefaultRootElement("query-policy");
 
         descriptor.getInheritancePolicy().setClassIndicatorField(new XMLField("@xsi:type"));
-        descriptor.getInheritancePolicy().addClassIndicator(org.eclipse.persistence.descriptors.DescriptorQueryManager.class, "toplink:query-policy");
+        descriptor.getInheritancePolicy().addClassIndicator(DescriptorQueryManager.class, getPrimaryNamespaceXPath() + "query-policy");
 
         XMLCompositeCollectionMapping namedQueriesMapping = new XMLCompositeCollectionMapping();
         namedQueriesMapping.setReferenceClass(DatabaseQuery.class);
@@ -3920,14 +3941,14 @@ public class ObjectPersistenceRuntimeXMLProject extends Project {
         namedQueriesMapping.setAttributeName("queries");
         namedQueriesMapping.setGetMethodName("getAllQueries");
         namedQueriesMapping.setSetMethodName("setAllQueries");
-        namedQueriesMapping.setXPath("opm:queries/opm:query");
+        namedQueriesMapping.setXPath(getSecondaryNamespaceXPath() + "queries/" + getSecondaryNamespaceXPath() + "query");
         descriptor.addMapping(namedQueriesMapping);
 
         XMLDirectMapping queryTimeoutMapping = new XMLDirectMapping();
         queryTimeoutMapping.setAttributeName("queryTimeout");
         queryTimeoutMapping.setGetMethodName("getQueryTimeout");
         queryTimeoutMapping.setSetMethodName("setQueryTimeout");
-        queryTimeoutMapping.setXPath("toplink:timeout/text()");
+        queryTimeoutMapping.setXPath(getPrimaryNamespaceXPath() + "timeout/text()");
         queryTimeoutMapping.setNullValue(new Integer(DescriptorQueryManager.DefaultTimeout));
         descriptor.addMapping(queryTimeoutMapping);
 
@@ -3935,7 +3956,7 @@ public class ObjectPersistenceRuntimeXMLProject extends Project {
         insertQueryMapping.setAttributeName("insertQuery");
         insertQueryMapping.setGetMethodName("getInsertQuery");
         insertQueryMapping.setSetMethodName("setInsertQuery");
-        insertQueryMapping.setXPath("toplink:insert-query");
+        insertQueryMapping.setXPath(getPrimaryNamespaceXPath() + "insert-query");
         insertQueryMapping.setReferenceClass(InsertObjectQuery.class);
         descriptor.addMapping(insertQueryMapping);
 
@@ -3943,7 +3964,7 @@ public class ObjectPersistenceRuntimeXMLProject extends Project {
         updateQueryMapping.setAttributeName("updateQuery");
         updateQueryMapping.setGetMethodName("getUpdateQuery");
         updateQueryMapping.setSetMethodName("setUpdateQuery");
-        updateQueryMapping.setXPath("toplink:update-query");
+        updateQueryMapping.setXPath(getPrimaryNamespaceXPath() + "update-query");
         updateQueryMapping.setReferenceClass(UpdateObjectQuery.class);
         descriptor.addMapping(updateQueryMapping);
 
@@ -3951,7 +3972,7 @@ public class ObjectPersistenceRuntimeXMLProject extends Project {
         deleteQueryMapping.setAttributeName("deleteQuery");
         deleteQueryMapping.setGetMethodName("getDeleteQuery");
         deleteQueryMapping.setSetMethodName("setDeleteQuery");
-        deleteQueryMapping.setXPath("toplink:delete-query");
+        deleteQueryMapping.setXPath(getPrimaryNamespaceXPath() + "delete-query");
         deleteQueryMapping.setReferenceClass(DeleteObjectQuery.class);
         descriptor.addMapping(deleteQueryMapping);
 
@@ -3959,23 +3980,23 @@ public class ObjectPersistenceRuntimeXMLProject extends Project {
         doesExistQueryMapping.setAttributeName("doesExistQuery");
         // Handle translation of default does-exist to null.
         doesExistQueryMapping.setAttributeAccessor(new AttributeAccessor() {
-                public Object getAttributeValueFromObject(Object object) {
-                    DoesExistQuery query = ((DescriptorQueryManager)object).getDoesExistQuery();
-                    if ((!query.isCallQuery()) && query.shouldCheckCacheForDoesExist()) {
-                        return null;
-                    }
-                    return query;
+            public Object getAttributeValueFromObject(Object object) {
+                DoesExistQuery query = ((DescriptorQueryManager)object).getDoesExistQuery();
+                if ((!query.isCallQuery()) && query.shouldCheckCacheForDoesExist()) {
+                    return null;
                 }
+                return query;
+            }
 
-                public void setAttributeValueInObject(Object object, Object value) {
-                    DoesExistQuery query = (DoesExistQuery)value;
-                    if (value == null) {
-                        return;
-                    }
-                    ((DescriptorQueryManager)object).setDoesExistQuery(query);
+            public void setAttributeValueInObject(Object object, Object value) {
+                DoesExistQuery query = (DoesExistQuery)value;
+                if (value == null) {
+                    return;
                 }
-            });
-        doesExistQueryMapping.setXPath("toplink:does-exist-query");
+                ((DescriptorQueryManager)object).setDoesExistQuery(query);
+            }
+        });
+        doesExistQueryMapping.setXPath(getPrimaryNamespaceXPath() + "does-exist-query");
         doesExistQueryMapping.setReferenceClass(DoesExistQuery.class);
         descriptor.addMapping(doesExistQueryMapping);
 
@@ -3983,7 +4004,7 @@ public class ObjectPersistenceRuntimeXMLProject extends Project {
         readObjectQueryMapping.setAttributeName("readObjectQuery");
         readObjectQueryMapping.setGetMethodName("getReadObjectQuery");
         readObjectQueryMapping.setSetMethodName("setReadObjectQuery");
-        readObjectQueryMapping.setXPath("toplink:read-object-query");
+        readObjectQueryMapping.setXPath(getPrimaryNamespaceXPath() + "read-object-query");
         readObjectQueryMapping.setReferenceClass(ReadObjectQuery.class);
         descriptor.addMapping(readObjectQueryMapping);
 
@@ -3991,7 +4012,7 @@ public class ObjectPersistenceRuntimeXMLProject extends Project {
         readAllQueryMapping.setAttributeName("readAllQuery");
         readAllQueryMapping.setGetMethodName("getReadAllQuery");
         readAllQueryMapping.setSetMethodName("setReadAllQuery");
-        readAllQueryMapping.setXPath("toplink:read-all-query");
+        readAllQueryMapping.setXPath(getPrimaryNamespaceXPath() + "read-all-query");
         readAllQueryMapping.setReferenceClass(ReadAllQuery.class);
         descriptor.addMapping(readAllQueryMapping);
 
@@ -4009,7 +4030,7 @@ public class ObjectPersistenceRuntimeXMLProject extends Project {
         fieldMapping.setReferenceClass(DatabaseField.class);
         fieldMapping.setGetMethodName("getField");
         fieldMapping.setSetMethodName("setField");
-        fieldMapping.setXPath("toplink:field");
+        fieldMapping.setXPath(getPrimaryNamespaceXPath() + "field");
         descriptor.addMapping(fieldMapping);
 
         return descriptor;
@@ -4021,12 +4042,12 @@ public class ObjectPersistenceRuntimeXMLProject extends Project {
         descriptor.setDefaultRootElement("returning-policy");
 
         XMLCompositeCollectionMapping returningFieldInfoMapping = new XMLCompositeCollectionMapping();
-        returningFieldInfoMapping.useCollectionClass(org.eclipse.persistence.internal.helper.NonSynchronizedVector.class);
+        returningFieldInfoMapping.useCollectionClass(NonSynchronizedVector.class);
         returningFieldInfoMapping.setAttributeName("infos");
         returningFieldInfoMapping.setReferenceClass(ReturningPolicy.Info.class);
         returningFieldInfoMapping.setGetMethodName("getFieldInfos");
         returningFieldInfoMapping.setSetMethodName("setFieldInfos");
-        returningFieldInfoMapping.setXPath("toplink:returning-field-infos/toplink:returning-field-info");
+        returningFieldInfoMapping.setXPath(getPrimaryNamespaceXPath() + "returning-field-infos/" + getPrimaryNamespaceXPath() + "returning-field-info");
         descriptor.addMapping(returningFieldInfoMapping);
 
         return descriptor;
@@ -4041,7 +4062,7 @@ public class ObjectPersistenceRuntimeXMLProject extends Project {
         referenceClassMapping.setAttributeName("referenceClass");
         referenceClassMapping.setGetMethodName("getReferenceClass");
         referenceClassMapping.setSetMethodName("setReferenceClass");
-        referenceClassMapping.setXPath("toplink:reference-class/text()");
+        referenceClassMapping.setXPath(getPrimaryNamespaceXPath() + "reference-class/text()");
         descriptor.addMapping(referenceClassMapping);
 
         XMLCompositeObjectMapping fieldMapping = new XMLCompositeObjectMapping();
@@ -4049,33 +4070,32 @@ public class ObjectPersistenceRuntimeXMLProject extends Project {
         fieldMapping.setReferenceClass(DatabaseField.class);
         fieldMapping.setGetMethodName("getField");
         fieldMapping.setSetMethodName("setField");
-        fieldMapping.setXPath("toplink:field");
+        fieldMapping.setXPath(getPrimaryNamespaceXPath() + "field");
         descriptor.addMapping(fieldMapping);
 
         XMLDirectMapping sourceMapping1 = new XMLDirectMapping();
         sourceMapping1.setAttributeName("isInsert");
         sourceMapping1.setGetMethodName("isInsert");
         sourceMapping1.setSetMethodName("setIsInsert");
-        sourceMapping1.setXPath("toplink:insert/text()");
+        sourceMapping1.setXPath(getPrimaryNamespaceXPath() + "insert/text()");
         descriptor.addMapping(sourceMapping1);
 
         XMLDirectMapping sourceMapping2 = new XMLDirectMapping();
         sourceMapping2.setAttributeName("isInsertModeReturnOnly");
         sourceMapping2.setGetMethodName("isInsertModeReturnOnly");
         sourceMapping2.setSetMethodName("setIsInsertModeReturnOnly");
-        sourceMapping2.setXPath("toplink:insert-mode-return-only/text()");
+        sourceMapping2.setXPath(getPrimaryNamespaceXPath() + "insert-mode-return-only/text()");
         descriptor.addMapping(sourceMapping2);
 
         XMLDirectMapping sourceMapping3 = new XMLDirectMapping();
         sourceMapping3.setAttributeName("isUpdate");
         sourceMapping3.setGetMethodName("isUpdate");
         sourceMapping3.setSetMethodName("setIsUpdate");
-        sourceMapping3.setXPath("toplink:update/text()");
+        sourceMapping3.setXPath(getPrimaryNamespaceXPath() + "update/text()");
         descriptor.addMapping(sourceMapping3);
 
         return descriptor;
     }
-
 
     protected ClassDescriptor buildAbstractCompositeCollectionMappingDescriptor() {
         XMLDescriptor descriptor = new XMLDescriptor();
@@ -4088,15 +4108,15 @@ public class ObjectPersistenceRuntimeXMLProject extends Project {
         fieldMapping.setReferenceClass(DatabaseField.class);
         fieldMapping.setGetMethodName("getField");
         fieldMapping.setSetMethodName("setField");
-        fieldMapping.setXPath("toplink:field");
+        fieldMapping.setXPath(getPrimaryNamespaceXPath() + "field");
         descriptor.addMapping(fieldMapping);
 
         XMLCompositeObjectMapping containerPolicyMapping = new XMLCompositeObjectMapping();
         containerPolicyMapping.setAttributeName("collectionPolicy");
         containerPolicyMapping.setGetMethodName("getContainerPolicy");
         containerPolicyMapping.setSetMethodName("setContainerPolicy");
-        containerPolicyMapping.setReferenceClass(org.eclipse.persistence.internal.queries.ContainerPolicy.class);
-        containerPolicyMapping.setXPath("toplink:container");
+        containerPolicyMapping.setReferenceClass(ContainerPolicy.class);
+        containerPolicyMapping.setXPath(getPrimaryNamespaceXPath() + "container");
         descriptor.addMapping(containerPolicyMapping);
 
         return descriptor;
@@ -4122,20 +4142,19 @@ public class ObjectPersistenceRuntimeXMLProject extends Project {
         fieldMapping.setReferenceClass(DatabaseField.class);
         fieldMapping.setGetMethodName("getField");
         fieldMapping.setSetMethodName("setField");
-        fieldMapping.setXPath("toplink:field");
+        fieldMapping.setXPath(getPrimaryNamespaceXPath() + "field");
         descriptor.addMapping(fieldMapping);
 
         XMLCompositeObjectMapping containerPolicyMapping = new XMLCompositeObjectMapping();
         containerPolicyMapping.setAttributeName("collectionPolicy");
         containerPolicyMapping.setGetMethodName("getContainerPolicy");
         containerPolicyMapping.setSetMethodName("setContainerPolicy");
-        containerPolicyMapping.setReferenceClass(org.eclipse.persistence.internal.queries.ContainerPolicy.class);
-        containerPolicyMapping.setXPath("toplink:container");
+        containerPolicyMapping.setReferenceClass(ContainerPolicy.class);
+        containerPolicyMapping.setXPath(getPrimaryNamespaceXPath() + "container");
         descriptor.addMapping(containerPolicyMapping);
-        
+
         return descriptor;
     }
-
 
     protected ClassDescriptor buildAbstractCompositeObjectMappingDescriptor() {
         XMLDescriptor descriptor = new XMLDescriptor();
@@ -4147,7 +4166,7 @@ public class ObjectPersistenceRuntimeXMLProject extends Project {
         fieldMapping.setReferenceClass(DatabaseField.class);
         fieldMapping.setGetMethodName("getField");
         fieldMapping.setSetMethodName("setField");
-        fieldMapping.setXPath("toplink:field");
+        fieldMapping.setXPath(getPrimaryNamespaceXPath() + "field");
         descriptor.addMapping(fieldMapping);
 
         return descriptor;
@@ -4163,7 +4182,7 @@ public class ObjectPersistenceRuntimeXMLProject extends Project {
         fieldMapping.setReferenceClass(DatabaseField.class);
         fieldMapping.setGetMethodName("getField");
         fieldMapping.setSetMethodName("setField");
-        fieldMapping.setXPath("toplink:field");
+        fieldMapping.setXPath(getPrimaryNamespaceXPath() + "field");
         descriptor.addMapping(fieldMapping);
 
         return descriptor;
@@ -4199,9 +4218,9 @@ public class ObjectPersistenceRuntimeXMLProject extends Project {
         descriptor.setDefaultRootElement("field");
 
         descriptor.getInheritancePolicy().setClassIndicatorField(new XMLField("@xsi:type"));
-        descriptor.getInheritancePolicy().addClassIndicator(DatabaseField.class, "opm:column");
-        descriptor.getInheritancePolicy().addClassIndicator(XMLField.class, "toplink:node");
-        descriptor.getInheritancePolicy().addClassIndicator(XMLUnionField.class, "toplink:union-node");
+        descriptor.getInheritancePolicy().addClassIndicator(DatabaseField.class, getSecondaryNamespaceXPath() + "column");
+        descriptor.getInheritancePolicy().addClassIndicator(XMLField.class, getPrimaryNamespaceXPath() + "node");
+        descriptor.getInheritancePolicy().addClassIndicator(XMLUnionField.class, getPrimaryNamespaceXPath() + "union-node");
 
         XMLDirectMapping tableMapping = new XMLDirectMapping();
         tableMapping.setAttributeName("table");
@@ -4232,14 +4251,14 @@ public class ObjectPersistenceRuntimeXMLProject extends Project {
         fieldMapping.setReferenceClass(DatabaseField.class);
         fieldMapping.setGetMethodName("getField");
         fieldMapping.setSetMethodName("setField");
-        fieldMapping.setXPath("toplink:field");
+        fieldMapping.setXPath(getPrimaryNamespaceXPath() + "field");
         descriptor.addMapping(fieldMapping);
 
         XMLCompositeObjectMapping valueConverterMapping = new XMLCompositeObjectMapping();
         valueConverterMapping.setAttributeName("valueConverter");
         valueConverterMapping.setGetMethodName("getValueConverter");
         valueConverterMapping.setSetMethodName("setValueConverter");
-        valueConverterMapping.setXPath("toplink:value-converter");
+        valueConverterMapping.setXPath(getPrimaryNamespaceXPath() + "value-converter");
         valueConverterMapping.setReferenceClass(Converter.class);
         descriptor.addMapping(valueConverterMapping);
 
@@ -4247,8 +4266,8 @@ public class ObjectPersistenceRuntimeXMLProject extends Project {
         containerPolicyMapping.setAttributeName("collectionPolicy");
         containerPolicyMapping.setGetMethodName("getContainerPolicy");
         containerPolicyMapping.setSetMethodName("setContainerPolicy");
-        containerPolicyMapping.setReferenceClass(org.eclipse.persistence.internal.queries.ContainerPolicy.class);
-        containerPolicyMapping.setXPath("toplink:container");
+        containerPolicyMapping.setReferenceClass(ContainerPolicy.class);
+        containerPolicyMapping.setXPath(getPrimaryNamespaceXPath() + "container");
         descriptor.addMapping(containerPolicyMapping);
 
         return descriptor;
@@ -4262,7 +4281,6 @@ public class ObjectPersistenceRuntimeXMLProject extends Project {
         return descriptor;
     }
 
-
     protected ClassDescriptor buildSerializedObjectConverterDescriptor() {
         XMLDescriptor descriptor = new XMLDescriptor();
         descriptor.setJavaClass(SerializedObjectConverter.class);
@@ -4274,7 +4292,7 @@ public class ObjectPersistenceRuntimeXMLProject extends Project {
 
     protected ClassDescriptor buildStructureMappingDescriptor() {
         XMLDescriptor descriptor = new XMLDescriptor();
-        descriptor.setJavaClass(org.eclipse.persistence.mappings.structures.StructureMapping.class);
+        descriptor.setJavaClass(StructureMapping.class);
 
         descriptor.getInheritancePolicy().setParentClass(AbstractCompositeObjectMapping.class);
 
@@ -4291,7 +4309,7 @@ public class ObjectPersistenceRuntimeXMLProject extends Project {
         usesServerTimeMapping.setAttributeName("usesServerTime");
         usesServerTimeMapping.setGetMethodName("usesServerTime");
         usesServerTimeMapping.setSetMethodName("setUsesServerTime");
-        usesServerTimeMapping.setXPath("toplink:server-time/text()");
+        usesServerTimeMapping.setXPath(getPrimaryNamespaceXPath() + "server-time/text()");
         usesServerTimeMapping.setNullValue(Boolean.FALSE);
         descriptor.addMapping(usesServerTimeMapping);
 
@@ -4305,7 +4323,7 @@ public class ObjectPersistenceRuntimeXMLProject extends Project {
 
         XMLDirectMapping timeToLiveMapping = new XMLDirectMapping();
         timeToLiveMapping.setAttributeName("timeToLive");
-        timeToLiveMapping.setXPath("toplink:time-to-live/text()");
+        timeToLiveMapping.setXPath(getPrimaryNamespaceXPath() + "time-to-live/text()");
         descriptor.addMapping(timeToLiveMapping);
 
         return descriptor;
@@ -4321,14 +4339,14 @@ public class ObjectPersistenceRuntimeXMLProject extends Project {
         attributeMethodNameMapping.setAttributeName("attributeMethodName");
         attributeMethodNameMapping.setGetMethodName("getAttributeMethodName");
         attributeMethodNameMapping.setSetMethodName("setAttributeTransformation");
-        attributeMethodNameMapping.setXPath("toplink:attribute-method/text()");
+        attributeMethodNameMapping.setXPath(getPrimaryNamespaceXPath() + "attribute-method/text()");
         descriptor.addMapping(attributeMethodNameMapping);
 
         XMLDirectMapping attributeTransformerClassMapping = new XMLDirectMapping();
         attributeTransformerClassMapping.setAttributeName("attributeTransformerClass");
         attributeTransformerClassMapping.setGetMethodName("getAttributeTransformerClass");
         attributeTransformerClassMapping.setSetMethodName("setAttributeTransformerClass");
-        attributeTransformerClassMapping.setXPath("toplink:attribute-transformer/text()");
+        attributeTransformerClassMapping.setXPath(getPrimaryNamespaceXPath() + "attribute-transformer/text()");
         descriptor.addMapping(attributeTransformerClassMapping);
 
         XMLDirectMapping isMutableMapping = new XMLDirectMapping();
@@ -4336,31 +4354,31 @@ public class ObjectPersistenceRuntimeXMLProject extends Project {
         isMutableMapping.setGetMethodName("isMutable");
         isMutableMapping.setSetMethodName("setIsMutable");
         isMutableMapping.setNullValue(Boolean.TRUE);
-        isMutableMapping.setXPath("toplink:mutable/text()");
+        isMutableMapping.setXPath(getPrimaryNamespaceXPath() + "mutable/text()");
         descriptor.addMapping(isMutableMapping);
 
         XMLCompositeObjectMapping indirectionPolicyMapping = new XMLCompositeObjectMapping();
         indirectionPolicyMapping.setReferenceClass(IndirectionPolicy.class);
         // Handle translation of NoIndirectionPolicy -> null.
         indirectionPolicyMapping.setAttributeAccessor(new AttributeAccessor() {
-                public Object getAttributeValueFromObject(Object object) {
-                    IndirectionPolicy policy = ((AbstractTransformationMapping)object).getIndirectionPolicy();
-                    if (policy instanceof NoIndirectionPolicy) {
-                        return null;
-                    }
-                    return policy;
+            public Object getAttributeValueFromObject(Object object) {
+                IndirectionPolicy policy = ((AbstractTransformationMapping)object).getIndirectionPolicy();
+                if (policy instanceof NoIndirectionPolicy) {
+                    return null;
                 }
+                return policy;
+            }
 
-                public void setAttributeValueInObject(Object object, Object value) {
-                    IndirectionPolicy policy = (IndirectionPolicy)value;
-                    if (value == null) {
-                        policy = new NoIndirectionPolicy();
-                    }
-                    ((AbstractTransformationMapping)object).setIndirectionPolicy(policy);
+            public void setAttributeValueInObject(Object object, Object value) {
+                IndirectionPolicy policy = (IndirectionPolicy)value;
+                if (value == null) {
+                    policy = new NoIndirectionPolicy();
                 }
-            });
+                ((AbstractTransformationMapping)object).setIndirectionPolicy(policy);
+            }
+        });
         indirectionPolicyMapping.setAttributeName("indirectionPolicy");
-        indirectionPolicyMapping.setXPath("toplink:indirection");
+        indirectionPolicyMapping.setXPath(getPrimaryNamespaceXPath() + "indirection");
         descriptor.addMapping(indirectionPolicyMapping);
 
         XMLCompositeCollectionMapping fieldTransformationsMapping = new XMLCompositeCollectionMapping();
@@ -4369,7 +4387,7 @@ public class ObjectPersistenceRuntimeXMLProject extends Project {
         fieldTransformationsMapping.setAttributeName("fieldTransformations");
         fieldTransformationsMapping.setGetMethodName("getFieldTransformations");
         fieldTransformationsMapping.setSetMethodName("setFieldTransformations");
-        fieldTransformationsMapping.setXPath("toplink:field-transformations/toplink:field-transformation");
+        fieldTransformationsMapping.setXPath(getPrimaryNamespaceXPath() + "field-transformations/" + getPrimaryNamespaceXPath() + "field-transformation");
         fieldTransformationsMapping.setReferenceClass(FieldTransformation.class);
         descriptor.addMapping(fieldTransformationsMapping);
 
@@ -4396,13 +4414,12 @@ public class ObjectPersistenceRuntimeXMLProject extends Project {
 
     protected ClassDescriptor buildTransparentIndirectionPolicyDescriptor() {
         XMLDescriptor descriptor = new XMLDescriptor();
-        descriptor.setJavaClass(org.eclipse.persistence.internal.indirection.TransparentIndirectionPolicy.class);
+        descriptor.setJavaClass(TransparentIndirectionPolicy.class);
 
-        descriptor.getInheritancePolicy().setParentClass(org.eclipse.persistence.internal.indirection.IndirectionPolicy.class);
+        descriptor.getInheritancePolicy().setParentClass(IndirectionPolicy.class);
 
         return descriptor;
     }
-
 
     protected ClassDescriptor buildTypesafeEnumConverterDescriptor(Class jaxbTypesafeEnumConverter) {
         XMLDescriptor descriptor = new XMLDescriptor();
@@ -4422,14 +4439,14 @@ public class ObjectPersistenceRuntimeXMLProject extends Project {
         objectClassMapping.setAttributeName("objectClass");
         objectClassMapping.setGetMethodName("getObjectClass");
         objectClassMapping.setSetMethodName("setObjectClass");
-        objectClassMapping.setXPath("toplink:object-class/text()");
+        objectClassMapping.setXPath(getPrimaryNamespaceXPath() + "object-class/text()");
         descriptor.addMapping(objectClassMapping);
 
         XMLDirectMapping dataClassMapping = new XMLDirectMapping();
         dataClassMapping.setAttributeName("dataClass");
         dataClassMapping.setGetMethodName("getDataClass");
         dataClassMapping.setSetMethodName("setDataClass");
-        dataClassMapping.setXPath("toplink:data-class/text()");
+        dataClassMapping.setXPath(getPrimaryNamespaceXPath() + "data-class/text()");
         descriptor.addMapping(dataClassMapping);
 
         return descriptor;
@@ -4445,14 +4462,14 @@ public class ObjectPersistenceRuntimeXMLProject extends Project {
         relationshipPartnerAttributeNameMapping.setAttributeName("relationshipPartnerAttributeName");
         relationshipPartnerAttributeNameMapping.setGetMethodName("getRelationshipPartnerAttributeName");
         relationshipPartnerAttributeNameMapping.setSetMethodName("setRelationshipPartnerAttributeName");
-        relationshipPartnerAttributeNameMapping.setXPath("toplink:bidirectional-target-attribute/text()");
+        relationshipPartnerAttributeNameMapping.setXPath(getPrimaryNamespaceXPath() + "bidirectional-target-attribute/text()");
         descriptor.addMapping(relationshipPartnerAttributeNameMapping);
 
         XMLDirectMapping usesBatchReadingMapping = new XMLDirectMapping();
         usesBatchReadingMapping.setAttributeName("usesBatchReading");
         usesBatchReadingMapping.setGetMethodName("shouldUseBatchReading");
         usesBatchReadingMapping.setSetMethodName("setUsesBatchReading");
-        usesBatchReadingMapping.setXPath("toplink:batch-reading/text()");
+        usesBatchReadingMapping.setXPath(getPrimaryNamespaceXPath() + "batch-reading/text()");
         usesBatchReadingMapping.setNullValue(Boolean.FALSE);
         descriptor.addMapping(usesBatchReadingMapping);
 
@@ -4460,24 +4477,24 @@ public class ObjectPersistenceRuntimeXMLProject extends Project {
         indirectionPolicyMapping.setReferenceClass(IndirectionPolicy.class);
         // Handle translation of NoIndirectionPolicy -> null.
         indirectionPolicyMapping.setAttributeAccessor(new AttributeAccessor() {
-                public Object getAttributeValueFromObject(Object object) {
-                    IndirectionPolicy policy = ((ForeignReferenceMapping)object).getIndirectionPolicy();
-                    if (policy instanceof NoIndirectionPolicy) {
-                        return null;
-                    }
-                    return policy;
+            public Object getAttributeValueFromObject(Object object) {
+                IndirectionPolicy policy = ((ForeignReferenceMapping)object).getIndirectionPolicy();
+                if (policy instanceof NoIndirectionPolicy) {
+                    return null;
                 }
+                return policy;
+            }
 
-                public void setAttributeValueInObject(Object object, Object value) {
-                    IndirectionPolicy policy = (IndirectionPolicy)value;
-                    if (value == null) {
-                        policy = new NoIndirectionPolicy();
-                    }
-                    ((ForeignReferenceMapping)object).setIndirectionPolicy(policy);
+            public void setAttributeValueInObject(Object object, Object value) {
+                IndirectionPolicy policy = (IndirectionPolicy)value;
+                if (value == null) {
+                    policy = new NoIndirectionPolicy();
                 }
-            });
+                ((ForeignReferenceMapping)object).setIndirectionPolicy(policy);
+            }
+        });
         indirectionPolicyMapping.setAttributeName("indirectionPolicy");
-        indirectionPolicyMapping.setXPath("toplink:indirection");
+        indirectionPolicyMapping.setXPath(getPrimaryNamespaceXPath() + "indirection");
         descriptor.addMapping(indirectionPolicyMapping);
 
         XMLCompositeObjectMapping selectionQueryMapping = new XMLCompositeObjectMapping();
@@ -4485,7 +4502,7 @@ public class ObjectPersistenceRuntimeXMLProject extends Project {
         selectionQueryMapping.setGetMethodName("getSelectionQuery");
         selectionQueryMapping.setSetMethodName("setSelectionQuery");
         selectionQueryMapping.setReferenceClass(ReadQuery.class);
-        selectionQueryMapping.setXPath("toplink:selection-query");
+        selectionQueryMapping.setXPath(getPrimaryNamespaceXPath() + "selection-query");
         descriptor.addMapping(selectionQueryMapping);
 
         XMLCompositeObjectMapping typeFieldMapping = new XMLCompositeObjectMapping();
@@ -4493,49 +4510,49 @@ public class ObjectPersistenceRuntimeXMLProject extends Project {
         typeFieldMapping.setGetMethodName("getTypeField");
         typeFieldMapping.setSetMethodName("setTypeField");
         typeFieldMapping.setReferenceClass(DatabaseField.class);
-        typeFieldMapping.setXPath("toplink:type-field");
+        typeFieldMapping.setXPath(getPrimaryNamespaceXPath() + "type-field");
         descriptor.addMapping(typeFieldMapping);
 
         XMLCompositeCollectionMapping foreignKeyFieldsMapping = new XMLCompositeCollectionMapping();
-        foreignKeyFieldsMapping.useCollectionClass(org.eclipse.persistence.internal.helper.NonSynchronizedVector.class);
+        foreignKeyFieldsMapping.useCollectionClass(NonSynchronizedVector.class);
         foreignKeyFieldsMapping.setAttributeName("foreignKeyFields");
         foreignKeyFieldsMapping.setGetMethodName("getForeignKeyFields");
         foreignKeyFieldsMapping.setSetMethodName("setForeignKeyFields");
-        foreignKeyFieldsMapping.setXPath("toplink:foreign-key-fields/toplink:field");
+        foreignKeyFieldsMapping.setXPath(getPrimaryNamespaceXPath() + "foreign-key-fields/" + getPrimaryNamespaceXPath() + "field");
         foreignKeyFieldsMapping.setReferenceClass(DatabaseField.class);
         descriptor.addMapping(foreignKeyFieldsMapping);
 
         XMLCompositeCollectionMapping sourceFieldToTargetQueryKeyMapping = new XMLCompositeCollectionMapping();
         sourceFieldToTargetQueryKeyMapping.setAttributeName("sourceToTargetQueryKeyNames");
-        sourceFieldToTargetQueryKeyMapping.setXPath("toplink:foreign-key-to-query-key/toplink:query-key-reference");
+        sourceFieldToTargetQueryKeyMapping.setXPath(getPrimaryNamespaceXPath() + "foreign-key-to-query-key/" + getPrimaryNamespaceXPath() + "query-key-reference");
         sourceFieldToTargetQueryKeyMapping.setGetMethodName("getSourceToTargetQueryKeyFieldAssociations");
         sourceFieldToTargetQueryKeyMapping.setSetMethodName("setSourceToTargetQueryKeyFieldAssociations");
         // Handle translation of query key associations string to field.
         sourceFieldToTargetQueryKeyMapping.setAttributeAccessor(new AttributeAccessor() {
-                public Object getAttributeValueFromObject(Object object) {
-                    VariableOneToOneMapping mapping = (VariableOneToOneMapping)object;
-                    Vector associations = mapping.getSourceToTargetQueryKeyFieldAssociations();
-                    Vector queryKeyReferences = new Vector(associations.size());
-                    for (int index = 0; index < associations.size(); index++) {
-                        Association association = (Association)associations.get(index);
-                        QueryKeyReference reference = new QueryKeyReference();
-                        reference.setKey(new DatabaseField((String)association.getKey()));
-                        reference.setValue(association.getValue());
-                        queryKeyReferences.add(reference);
-                    }
-                    return queryKeyReferences;
+            public Object getAttributeValueFromObject(Object object) {
+                VariableOneToOneMapping mapping = (VariableOneToOneMapping)object;
+                Vector associations = mapping.getSourceToTargetQueryKeyFieldAssociations();
+                Vector queryKeyReferences = new Vector(associations.size());
+                for (int index = 0; index < associations.size(); index++) {
+                    Association association = (Association)associations.get(index);
+                    QueryKeyReference reference = new QueryKeyReference();
+                    reference.setKey(new DatabaseField((String)association.getKey()));
+                    reference.setValue(association.getValue());
+                    queryKeyReferences.add(reference);
                 }
+                return queryKeyReferences;
+            }
 
-                public void setAttributeValueInObject(Object object, Object value) {
-                    VariableOneToOneMapping mapping = (VariableOneToOneMapping)object;
-                    Vector associations = (Vector)value;
-                    for (int index = 0; index < associations.size(); index++) {
-                        Association association = (Association)associations.get(index);
-                        association.setKey(((DatabaseField)association.getKey()).getQualifiedName());
-                    }
-                    mapping.setSourceToTargetQueryKeyFieldAssociations(associations);
+            public void setAttributeValueInObject(Object object, Object value) {
+                VariableOneToOneMapping mapping = (VariableOneToOneMapping)object;
+                Vector associations = (Vector)value;
+                for (int index = 0; index < associations.size(); index++) {
+                    Association association = (Association)associations.get(index);
+                    association.setKey(((DatabaseField)association.getKey()).getQualifiedName());
                 }
-            });
+                mapping.setSourceToTargetQueryKeyFieldAssociations(associations);
+            }
+        });
         sourceFieldToTargetQueryKeyMapping.setReferenceClass(QueryKeyReference.class);
         descriptor.addMapping(sourceFieldToTargetQueryKeyMapping);
 
@@ -4543,7 +4560,7 @@ public class ObjectPersistenceRuntimeXMLProject extends Project {
         classIndicatorsMapping.setAttributeName("classIndicatorAssociations");
         classIndicatorsMapping.setGetMethodName("getClassIndicatorAssociations");
         classIndicatorsMapping.setSetMethodName("setClassIndicatorAssociations");
-        classIndicatorsMapping.setXPath("toplink:class-indicator-mappings/toplink:class-indicator-mapping");
+        classIndicatorsMapping.setXPath(getPrimaryNamespaceXPath() + "class-indicator-mappings/" + getPrimaryNamespaceXPath() + "class-indicator-mapping");
         classIndicatorsMapping.setReferenceClass(TypedAssociation.class);
         descriptor.addMapping(classIndicatorsMapping);
 
@@ -4560,14 +4577,14 @@ public class ObjectPersistenceRuntimeXMLProject extends Project {
         keyMapping.setGetMethodName("getKey");
         keyMapping.setSetMethodName("setKey");
         keyMapping.setReferenceClass(DatabaseField.class);
-        keyMapping.setXPath("toplink:source-field");
+        keyMapping.setXPath(getPrimaryNamespaceXPath() + "source-field");
         descriptor.addMapping(keyMapping);
 
         XMLDirectMapping valueMapping = new XMLDirectMapping();
         valueMapping.setAttributeName("value");
         valueMapping.setGetMethodName("getValue");
         valueMapping.setSetMethodName("setValue");
-        valueMapping.setXPath("toplink:target-query-key/text()");
+        valueMapping.setXPath(getPrimaryNamespaceXPath() + "target-query-key/text()");
         descriptor.addMapping(valueMapping);
 
         return descriptor;
@@ -4579,11 +4596,11 @@ public class ObjectPersistenceRuntimeXMLProject extends Project {
         descriptor.setDefaultRootElement("locking-policy");
 
         descriptor.getInheritancePolicy().setClassIndicatorField(new XMLField("@xsi:type"));
-        descriptor.getInheritancePolicy().addClassIndicator(VersionLockingPolicy.class, "toplink:version-locking-policy");
-        descriptor.getInheritancePolicy().addClassIndicator(TimestampLockingPolicy.class, "toplink:timestamp-locking-policy");
-        descriptor.getInheritancePolicy().addClassIndicator(SelectedFieldsLockingPolicy.class, "toplink:selected-fields-locking-policy");
-        descriptor.getInheritancePolicy().addClassIndicator(ChangedFieldsLockingPolicy.class, "toplink:changed-fields-locking-policy");
-        descriptor.getInheritancePolicy().addClassIndicator(AllFieldsLockingPolicy.class, "toplink:all-fields-locking-policy");
+        descriptor.getInheritancePolicy().addClassIndicator(VersionLockingPolicy.class, getPrimaryNamespaceXPath() + "version-locking-policy");
+        descriptor.getInheritancePolicy().addClassIndicator(TimestampLockingPolicy.class, getPrimaryNamespaceXPath() + "timestamp-locking-policy");
+        descriptor.getInheritancePolicy().addClassIndicator(SelectedFieldsLockingPolicy.class, getPrimaryNamespaceXPath() + "selected-fields-locking-policy");
+        descriptor.getInheritancePolicy().addClassIndicator(ChangedFieldsLockingPolicy.class, getPrimaryNamespaceXPath() + "changed-fields-locking-policy");
+        descriptor.getInheritancePolicy().addClassIndicator(AllFieldsLockingPolicy.class, getPrimaryNamespaceXPath() + "all-fields-locking-policy");
 
         return descriptor;
     }
@@ -4598,7 +4615,7 @@ public class ObjectPersistenceRuntimeXMLProject extends Project {
         versionFieldMapping.setAttributeName("writeLockField");
         versionFieldMapping.setGetMethodName("getWriteLockField");
         versionFieldMapping.setSetMethodName("setWriteLockField");
-        versionFieldMapping.setXPath("toplink:version-field");
+        versionFieldMapping.setXPath(getPrimaryNamespaceXPath() + "version-field");
         versionFieldMapping.setReferenceClass(DatabaseField.class);
         descriptor.addMapping(versionFieldMapping);
 
@@ -4606,7 +4623,7 @@ public class ObjectPersistenceRuntimeXMLProject extends Project {
         shouldStoreInCacheMapping.setAttributeName("isStoredInCache");
         shouldStoreInCacheMapping.setGetMethodName("isStoredInCache");
         shouldStoreInCacheMapping.setSetMethodName("setIsStoredInCache");
-        shouldStoreInCacheMapping.setXPath("toplink:store-version-in-cache/text()");
+        shouldStoreInCacheMapping.setXPath(getPrimaryNamespaceXPath() + "store-version-in-cache/text()");
         shouldStoreInCacheMapping.setNullValue(Boolean.TRUE);
         descriptor.addMapping(shouldStoreInCacheMapping);
 
@@ -4620,9 +4637,9 @@ public class ObjectPersistenceRuntimeXMLProject extends Project {
         descriptor.getInheritancePolicy().setParentClass(OptimisticLockingPolicy.class);
 
         XMLCompositeCollectionMapping fieldsMapping = new XMLCompositeCollectionMapping();
-        fieldsMapping.useCollectionClass(org.eclipse.persistence.internal.helper.NonSynchronizedVector.class);
+        fieldsMapping.useCollectionClass(NonSynchronizedVector.class);
         fieldsMapping.setAttributeName("lockFields");
-        fieldsMapping.setXPath("toplink:fields/toplink:field");
+        fieldsMapping.setXPath(getPrimaryNamespaceXPath() + "fields/" + getPrimaryNamespaceXPath() + "field");
         fieldsMapping.setReferenceClass(DatabaseField.class);
         descriptor.addMapping(fieldsMapping);
 
@@ -4687,7 +4704,7 @@ public class ObjectPersistenceRuntimeXMLProject extends Project {
         defaultRootElementMapping.setAttributeName("defaultRootElement");
         defaultRootElementMapping.setGetMethodName("getTableNames");
         defaultRootElementMapping.setSetMethodName("setTableNames");
-        defaultRootElementMapping.setXPath("toplink:default-root-element/text()");
+        defaultRootElementMapping.setXPath(getPrimaryNamespaceXPath() + "default-root-element/text()");
         descriptor.addMapping(defaultRootElementMapping);
 
         XMLDirectMapping shouldPreserveDocument = new XMLDirectMapping();
@@ -4695,11 +4712,11 @@ public class ObjectPersistenceRuntimeXMLProject extends Project {
         shouldPreserveDocument.setGetMethodName("shouldPreserveDocument");
         shouldPreserveDocument.setSetMethodName("setShouldPreserveDocument");
         shouldPreserveDocument.setNullValue(Boolean.FALSE);
-        shouldPreserveDocument.setXPath("toplink:should-preserve-document/text()");
+        shouldPreserveDocument.setXPath(getPrimaryNamespaceXPath() + "should-preserve-document/text()");
         descriptor.addMapping(shouldPreserveDocument);
 
         XMLCompositeObjectMapping namespaceResolverMapping = new XMLCompositeObjectMapping();
-        namespaceResolverMapping.setXPath("toplink:namespace-resolver");
+        namespaceResolverMapping.setXPath(getPrimaryNamespaceXPath() + "namespace-resolver");
         namespaceResolverMapping.setAttributeName("namespaceResolver");
         namespaceResolverMapping.setGetMethodName("getNamespaceResolver");
         namespaceResolverMapping.setSetMethodName("setNamespaceResolver");
@@ -4708,7 +4725,7 @@ public class ObjectPersistenceRuntimeXMLProject extends Project {
 
         XMLCompositeObjectMapping schemaReferenceMapping = new XMLCompositeObjectMapping();
         schemaReferenceMapping.setAttributeName("schemaReference");
-        schemaReferenceMapping.setXPath("toplink:schema");
+        schemaReferenceMapping.setXPath(getPrimaryNamespaceXPath() + "schema");
         schemaReferenceMapping.setReferenceClass(XMLSchemaReference.class);
         descriptor.addMapping(schemaReferenceMapping);
 
@@ -4722,24 +4739,24 @@ public class ObjectPersistenceRuntimeXMLProject extends Project {
         descriptor.descriptorIsAggregate();
         descriptor.setDefaultRootElement("schema-reference");
         descriptor.getInheritancePolicy().setClassIndicatorField(new XMLField("@xsi:type"));
-        descriptor.getInheritancePolicy().addClassIndicator(XMLSchemaReference.class, "toplink:schema-reference");
-        descriptor.getInheritancePolicy().addClassIndicator(XMLSchemaClassPathReference.class, "toplink:schema-class-path-reference");
-        descriptor.getInheritancePolicy().addClassIndicator(XMLSchemaFileReference.class, "toplink:schema-file-reference");
-        descriptor.getInheritancePolicy().addClassIndicator(XMLSchemaURLReference.class, "toplink:schema-url-reference");
+        descriptor.getInheritancePolicy().addClassIndicator(XMLSchemaReference.class, getPrimaryNamespaceXPath() + "schema-reference");
+        descriptor.getInheritancePolicy().addClassIndicator(XMLSchemaClassPathReference.class, getPrimaryNamespaceXPath() + "schema-class-path-reference");
+        descriptor.getInheritancePolicy().addClassIndicator(XMLSchemaFileReference.class, getPrimaryNamespaceXPath() + "schema-file-reference");
+        descriptor.getInheritancePolicy().addClassIndicator(XMLSchemaURLReference.class, getPrimaryNamespaceXPath() + "schema-url-reference");
 
         XMLDirectMapping resourceMapping = new XMLDirectMapping();
         resourceMapping.setAttributeName("resource");
-        resourceMapping.setXPath("toplink:resource/text()");
+        resourceMapping.setXPath(getPrimaryNamespaceXPath() + "resource/text()");
         descriptor.addMapping(resourceMapping);
 
         XMLDirectMapping contextMapping = new XMLDirectMapping();
         contextMapping.setAttributeName("schemaContext");
-        contextMapping.setXPath("toplink:schema-context/text()");
+        contextMapping.setXPath(getPrimaryNamespaceXPath() + "schema-context/text()");
         descriptor.addMapping(contextMapping);
 
         XMLDirectMapping nodeTypeMapping = new XMLDirectMapping();
         nodeTypeMapping.setAttributeName("type");
-        nodeTypeMapping.setXPath("toplink:node-type/text()");
+        nodeTypeMapping.setXPath(getPrimaryNamespaceXPath() + "node-type/text()");
 
         ObjectTypeConverter nodeTypeConverter = new ObjectTypeConverter();
         nodeTypeConverter.addConversionValue("element", new Integer(XMLSchemaReference.ELEMENT));
@@ -4763,7 +4780,7 @@ public class ObjectPersistenceRuntimeXMLProject extends Project {
         typedFieldMapping.setAttributeName("isTypedTextField");
         typedFieldMapping.setGetMethodName("isTypedTextField");
         typedFieldMapping.setSetMethodName("setIsTypedTextField");
-        typedFieldMapping.setXPath("toplink:typed-text-field/text()");
+        typedFieldMapping.setXPath(getPrimaryNamespaceXPath() + "typed-text-field/text()");
         typedFieldMapping.setNullValue(Boolean.FALSE);
         descriptor.addMapping(typedFieldMapping);
 
@@ -4771,7 +4788,7 @@ public class ObjectPersistenceRuntimeXMLProject extends Project {
         singleNodeMapping.setAttributeName("usesSingleNode");
         singleNodeMapping.setGetMethodName("usesSingleNode");
         singleNodeMapping.setSetMethodName("setUsesSingleNode");
-        singleNodeMapping.setXPath("toplink:single-node/text()");
+        singleNodeMapping.setXPath(getPrimaryNamespaceXPath() + "single-node/text()");
         singleNodeMapping.setNullValue(Boolean.FALSE);
         descriptor.addMapping(singleNodeMapping);
 
@@ -4779,11 +4796,11 @@ public class ObjectPersistenceRuntimeXMLProject extends Project {
         schemaTypeMapping.setAttributeName("schemaType");
         schemaTypeMapping.setGetMethodName("getSchemaType");
         schemaTypeMapping.setSetMethodName("setSchemaType");
-        schemaTypeMapping.setXPath("toplink:schema-type/text()");
+        schemaTypeMapping.setXPath(getPrimaryNamespaceXPath() + "schema-type/text()");
         descriptor.addMapping(schemaTypeMapping);
 
         XMLCompositeCollectionMapping xmlToJavaPairsMapping = new XMLCompositeCollectionMapping();
-        xmlToJavaPairsMapping.setXPath("toplink:xml-to-java-conversion-pair");
+        xmlToJavaPairsMapping.setXPath(getPrimaryNamespaceXPath() + "xml-to-java-conversion-pair");
         xmlToJavaPairsMapping.useCollectionClass(ArrayList.class);
         xmlToJavaPairsMapping.setReferenceClass(XMLConversionPair.class);
         xmlToJavaPairsMapping.setAttributeName("userXMLTypes");
@@ -4793,7 +4810,7 @@ public class ObjectPersistenceRuntimeXMLProject extends Project {
 
         XMLCompositeCollectionMapping javaToXMLPairsMapping = new XMLCompositeCollectionMapping();
         javaToXMLPairsMapping.useCollectionClass(ArrayList.class);
-        javaToXMLPairsMapping.setXPath("toplink:java-to-xml-conversion-pair");
+        javaToXMLPairsMapping.setXPath(getPrimaryNamespaceXPath() + "java-to-xml-conversion-pair");
         javaToXMLPairsMapping.setReferenceClass(XMLConversionPair.class);
         javaToXMLPairsMapping.setAttributeName("userJavaTypes");
         javaToXMLPairsMapping.setGetMethodName("getUserJavaTypesForDeploymentXML");
@@ -4812,7 +4829,7 @@ public class ObjectPersistenceRuntimeXMLProject extends Project {
         typedFieldMapping.setAttributeName("isTypedTextField");
         typedFieldMapping.setGetMethodName("isTypedTextField");
         typedFieldMapping.setSetMethodName("setIsTypedTextField");
-        typedFieldMapping.setXPath("toplink:typed-text-field/text()");
+        typedFieldMapping.setXPath(getPrimaryNamespaceXPath() + "typed-text-field/text()");
         typedFieldMapping.setNullValue(Boolean.FALSE);
         descriptor.addMapping(typedFieldMapping);
 
@@ -4820,7 +4837,7 @@ public class ObjectPersistenceRuntimeXMLProject extends Project {
         singleNodeMapping.setAttributeName("usesSingleNode");
         singleNodeMapping.setGetMethodName("usesSingleNode");
         singleNodeMapping.setSetMethodName("setUsesSingleNode");
-        singleNodeMapping.setXPath("toplink:single-node/text()");
+        singleNodeMapping.setXPath(getPrimaryNamespaceXPath() + "single-node/text()");
         singleNodeMapping.setNullValue(Boolean.FALSE);
         descriptor.addMapping(singleNodeMapping);
 
@@ -4830,11 +4847,11 @@ public class ObjectPersistenceRuntimeXMLProject extends Project {
         schemaTypeMapping.setSetMethodName("setSchemaTypes");
         schemaTypeMapping.useCollectionClass(ArrayList.class);
         schemaTypeMapping.setAttributeElementClass(QName.class);
-        schemaTypeMapping.setXPath("toplink:schema-type/text()");
+        schemaTypeMapping.setXPath(getPrimaryNamespaceXPath() + "schema-type/text()");
         descriptor.addMapping(schemaTypeMapping);
 
         XMLCompositeCollectionMapping xmlToJavaPairsMapping = new XMLCompositeCollectionMapping();
-        xmlToJavaPairsMapping.setXPath("toplink:xml-to-java-conversion-pair");
+        xmlToJavaPairsMapping.setXPath(getPrimaryNamespaceXPath() + "xml-to-java-conversion-pair");
         xmlToJavaPairsMapping.setReferenceClass(XMLConversionPair.class);
         xmlToJavaPairsMapping.useCollectionClass(ArrayList.class);
         xmlToJavaPairsMapping.setAttributeName("userXMLTypes");
@@ -4843,7 +4860,7 @@ public class ObjectPersistenceRuntimeXMLProject extends Project {
         descriptor.addMapping(xmlToJavaPairsMapping);
 
         XMLCompositeCollectionMapping javaToXMLPairsMapping = new XMLCompositeCollectionMapping();
-        javaToXMLPairsMapping.setXPath("toplink:java-to-xml-conversion-pair");
+        javaToXMLPairsMapping.setXPath(getPrimaryNamespaceXPath() + "java-to-xml-conversion-pair");
         javaToXMLPairsMapping.useCollectionClass(ArrayList.class);
         javaToXMLPairsMapping.setReferenceClass(XMLConversionPair.class);
         javaToXMLPairsMapping.setAttributeName("userJavaTypes");
@@ -4858,14 +4875,14 @@ public class ObjectPersistenceRuntimeXMLProject extends Project {
         descriptor.setJavaClass(XMLConversionPair.class);
 
         XMLDirectMapping xmlTypeMapping = new XMLDirectMapping();
-        xmlTypeMapping.setXPath("toplink:qname/text()");
+        xmlTypeMapping.setXPath(getPrimaryNamespaceXPath() + "qname/text()");
         xmlTypeMapping.setAttributeName("xmlType");
         xmlTypeMapping.setGetMethodName("getXmlType");
         xmlTypeMapping.setSetMethodName("setXmlType");
         descriptor.addMapping(xmlTypeMapping);
 
         XMLDirectMapping javaTypeMapping = new XMLDirectMapping();
-        javaTypeMapping.setXPath("toplink:class-name/text()");
+        javaTypeMapping.setXPath(getPrimaryNamespaceXPath() + "class-name/text()");
         javaTypeMapping.setAttributeName("javaType");
         javaTypeMapping.setGetMethodName("getJavaType");
         javaTypeMapping.setSetMethodName("setJavaType");
@@ -4877,7 +4894,7 @@ public class ObjectPersistenceRuntimeXMLProject extends Project {
     protected ClassDescriptor buildXMLLoginDescriptor() {
         XMLDescriptor descriptor = new XMLDescriptor();
 
-        descriptor.setJavaClass(org.eclipse.persistence.oxm.XMLLogin.class);
+        descriptor.setJavaClass(XMLLogin.class);
         descriptor.getInheritancePolicy().setParentClass(DatasourceLogin.class);
 
         return descriptor;
@@ -4889,7 +4906,7 @@ public class ObjectPersistenceRuntimeXMLProject extends Project {
         descriptor.setJavaClass(NamespaceResolver.class);
 
         XMLCompositeCollectionMapping namespaceMapping = new XMLCompositeCollectionMapping();
-        namespaceMapping.setXPath("toplink:namespaces/toplink:namespace");
+        namespaceMapping.setXPath(getPrimaryNamespaceXPath() + "namespaces/" + getPrimaryNamespaceXPath() + "namespace");
         namespaceMapping.setAttributeName("namespaces");
         namespaceMapping.setGetMethodName("getNamespaces");
         namespaceMapping.setSetMethodName("setNamespaces");
@@ -4904,14 +4921,14 @@ public class ObjectPersistenceRuntimeXMLProject extends Project {
         descriptor.setJavaClass(Namespace.class);
 
         XMLDirectMapping prefixMapping = new XMLDirectMapping();
-        prefixMapping.setXPath("toplink:prefix/text()");
+        prefixMapping.setXPath(getPrimaryNamespaceXPath() + "prefix/text()");
         prefixMapping.setAttributeName("prefix");
         prefixMapping.setGetMethodName("getPrefix");
         prefixMapping.setSetMethodName("setPrefix");
         descriptor.addMapping(prefixMapping);
 
         XMLDirectMapping uriMapping = new XMLDirectMapping();
-        uriMapping.setXPath("toplink:namespace-uri/text()");
+        uriMapping.setXPath(getPrimaryNamespaceXPath() + "namespace-uri/text()");
         uriMapping.setAttributeName("namespaceURI");
         uriMapping.setGetMethodName("getNamespaceURI");
         uriMapping.setSetMethodName("setNamespaceURI");
@@ -4964,7 +4981,7 @@ public class ObjectPersistenceRuntimeXMLProject extends Project {
         modificationDeferralLevelConverter.addConversionValue("update-modifications", new Integer(CMPPolicy.UPDATE_MODIFICATIONS));
         modificationDeferralLevelConverter.addConversionValue("none", new Integer(CMPPolicy.NONE));
         modificationDeferralLevelMapping.setConverter(modificationDeferralLevelConverter);
-        modificationDeferralLevelMapping.setXPath("toplink:defer-until-commit/text()");
+        modificationDeferralLevelMapping.setXPath(getPrimaryNamespaceXPath() + "defer-until-commit/text()");
         modificationDeferralLevelMapping.setNullValue(new Integer(CMPPolicy.ALL_MODIFICATIONS));
         descriptor.addMapping(modificationDeferralLevelMapping);
 
@@ -4977,7 +4994,7 @@ public class ObjectPersistenceRuntimeXMLProject extends Project {
         nonDeferredCreateTimeConverter.addConversionValue("after-ejbpostcreate", new Integer(CMPPolicy.AFTER_EJBPOSTCREATE));
         nonDeferredCreateTimeConverter.addConversionValue("undefined", new Integer(CMPPolicy.UNDEFINED));
         nonDeferredCreateTimeMapping.setConverter(nonDeferredCreateTimeConverter);
-        nonDeferredCreateTimeMapping.setXPath("toplink:non-deferred-create-time/text()");
+        nonDeferredCreateTimeMapping.setXPath(getPrimaryNamespaceXPath() + "non-deferred-create-time/text()");
         nonDeferredCreateTimeMapping.setNullValue(new Integer(CMPPolicy.UNDEFINED));
         descriptor.addMapping(nonDeferredCreateTimeMapping);
 
@@ -4986,7 +5003,7 @@ public class ObjectPersistenceRuntimeXMLProject extends Project {
         pessimisticLockingPolicyMapping.setGetMethodName("getPessimisticLockingPolicy");
         pessimisticLockingPolicyMapping.setSetMethodName("setPessimisticLockingPolicy");
         pessimisticLockingPolicyMapping.setReferenceClass(PessimisticLockingPolicy.class);
-        pessimisticLockingPolicyMapping.setXPath("toplink:pessimistic-locking");
+        pessimisticLockingPolicyMapping.setXPath(getPrimaryNamespaceXPath() + "pessimistic-locking");
         descriptor.addMapping(pessimisticLockingPolicyMapping);
 
         return descriptor;
@@ -4998,7 +5015,7 @@ public class ObjectPersistenceRuntimeXMLProject extends Project {
         descriptor.setDefaultRootElement("pessimistic-locking-policy");
 
         XMLDirectMapping lockingModeMapping = new XMLDirectMapping();
-        lockingModeMapping.setXPath("toplink:locking-mode/text()");
+        lockingModeMapping.setXPath(getPrimaryNamespaceXPath() + "locking-mode/text()");
         lockingModeMapping.setAttributeName("lockingMode");
         lockingModeMapping.setGetMethodName("getLockingMode");
         lockingModeMapping.setSetMethodName("setLockingMode");
@@ -5017,17 +5034,17 @@ public class ObjectPersistenceRuntimeXMLProject extends Project {
         descriptor.setDefaultRootElement("sequence");
 
         descriptor.getInheritancePolicy().setClassIndicatorField(new XMLField("@xsi:type"));
-        descriptor.getInheritancePolicy().addClassIndicator(DefaultSequence.class, "toplink:default-sequence");
-        descriptor.getInheritancePolicy().addClassIndicator(NativeSequence.class, "toplink:native-sequence");
-        descriptor.getInheritancePolicy().addClassIndicator(TableSequence.class, "toplink:table-sequence");
-        descriptor.getInheritancePolicy().addClassIndicator(UnaryTableSequence.class, "toplink:unary-table-sequence");
-        descriptor.getInheritancePolicy().addClassIndicator(XMLFileSequence.class, "toplink:xmlfile-sequence");
+        descriptor.getInheritancePolicy().addClassIndicator(DefaultSequence.class, getPrimaryNamespaceXPath() + "default-sequence");
+        descriptor.getInheritancePolicy().addClassIndicator(NativeSequence.class, getPrimaryNamespaceXPath() + "native-sequence");
+        descriptor.getInheritancePolicy().addClassIndicator(TableSequence.class, getPrimaryNamespaceXPath() + "table-sequence");
+        descriptor.getInheritancePolicy().addClassIndicator(UnaryTableSequence.class, getPrimaryNamespaceXPath() + "unary-table-sequence");
+        descriptor.getInheritancePolicy().addClassIndicator(XMLFileSequence.class, getPrimaryNamespaceXPath() + "xmlfile-sequence");
 
         XMLDirectMapping nameMapping = new XMLDirectMapping();
         nameMapping.setAttributeName("name");
         nameMapping.setGetMethodName("getName");
         nameMapping.setSetMethodName("setName");
-        nameMapping.setXPath("toplink:name/text()");
+        nameMapping.setXPath(getPrimaryNamespaceXPath() + "name/text()");
         nameMapping.setNullValue("");
         descriptor.addMapping(nameMapping);
 
@@ -5035,7 +5052,7 @@ public class ObjectPersistenceRuntimeXMLProject extends Project {
         preallocationSizeMapping.setAttributeName("preallocationSize");
         preallocationSizeMapping.setGetMethodName("getPreallocationSize");
         preallocationSizeMapping.setSetMethodName("setPreallocationSize");
-        preallocationSizeMapping.setXPath("toplink:preallocation-size/text()");
+        preallocationSizeMapping.setXPath(getPrimaryNamespaceXPath() + "preallocation-size/text()");
         preallocationSizeMapping.setNullValue(new Integer(50));
         descriptor.addMapping(preallocationSizeMapping);
 
@@ -5068,11 +5085,11 @@ public class ObjectPersistenceRuntimeXMLProject extends Project {
 
         XMLDirectMapping tableNameMapping = new XMLDirectMapping();
         tableNameMapping.setAttributeName("tableName");
-        //CR#2407  Call getQualifiedSequenceTableName that includes table qualifier.
-        //		tableNameMapping.setGetMethodName("getQualifiedSequenceTableName");
+        // CR#2407 Call getQualifiedSequenceTableName that includes table qualifier.
+        // tableNameMapping.setGetMethodName("getQualifiedSequenceTableName");
         tableNameMapping.setGetMethodName("getTableName");
         tableNameMapping.setSetMethodName("setTableName");
-        tableNameMapping.setXPath("toplink:table/text()");
+        tableNameMapping.setXPath(getPrimaryNamespaceXPath() + "table/text()");
         tableNameMapping.setNullValue("SEQUENCE");
         descriptor.addMapping(tableNameMapping);
 
@@ -5080,7 +5097,7 @@ public class ObjectPersistenceRuntimeXMLProject extends Project {
         nameFieldNameMapping.setAttributeName("nameFieldName");
         nameFieldNameMapping.setGetMethodName("getNameFieldName");
         nameFieldNameMapping.setSetMethodName("setNameFieldName");
-        nameFieldNameMapping.setXPath("toplink:name-field/text()");
+        nameFieldNameMapping.setXPath(getPrimaryNamespaceXPath() + "name-field/text()");
         nameFieldNameMapping.setNullValue("SEQ_NAME");
         descriptor.addMapping(nameFieldNameMapping);
 
@@ -5088,7 +5105,7 @@ public class ObjectPersistenceRuntimeXMLProject extends Project {
         counterFieldNameMapping.setAttributeName("counterFieldName");
         counterFieldNameMapping.setGetMethodName("getCounterFieldName");
         counterFieldNameMapping.setSetMethodName("setCounterFieldName");
-        counterFieldNameMapping.setXPath("toplink:counter-field/text()");
+        counterFieldNameMapping.setXPath(getPrimaryNamespaceXPath() + "counter-field/text()");
         counterFieldNameMapping.setNullValue("SEQ_COUNT");
         descriptor.addMapping(counterFieldNameMapping);
 
@@ -5105,7 +5122,7 @@ public class ObjectPersistenceRuntimeXMLProject extends Project {
         counterFieldNameMapping.setAttributeName("counterFieldName");
         counterFieldNameMapping.setGetMethodName("getCounterFieldName");
         counterFieldNameMapping.setSetMethodName("setCounterFieldName");
-        counterFieldNameMapping.setXPath("toplink:counter-field/text()");
+        counterFieldNameMapping.setXPath(getPrimaryNamespaceXPath() + "counter-field/text()");
         counterFieldNameMapping.setNullValue("SEQ_COUNT");
         descriptor.addMapping(counterFieldNameMapping);
 
@@ -5121,7 +5138,6 @@ public class ObjectPersistenceRuntimeXMLProject extends Project {
         return descriptor;
     }
 
-
     protected ClassDescriptor buildFetchGroupManagerDescriptor() {
         XMLDescriptor descriptor = new XMLDescriptor();
         descriptor.setJavaClass(FetchGroupManager.class);
@@ -5129,14 +5145,14 @@ public class ObjectPersistenceRuntimeXMLProject extends Project {
         XMLCompositeObjectMapping defaultFetchGroupMapping = new XMLCompositeObjectMapping();
         defaultFetchGroupMapping.setAttributeName("defaultFetchGroup");
         defaultFetchGroupMapping.setReferenceClass(FetchGroup.class);
-        defaultFetchGroupMapping.setXPath("toplink:default-fetch-group");
+        defaultFetchGroupMapping.setXPath(getPrimaryNamespaceXPath() + "default-fetch-group");
         descriptor.addMapping(defaultFetchGroupMapping);
 
         XMLCompositeCollectionMapping fetchGroupManagerMapping = new XMLCompositeCollectionMapping();
         fetchGroupManagerMapping.setAttributeName("fetchGroups");
         fetchGroupManagerMapping.setReferenceClass(FetchGroup.class);
         fetchGroupManagerMapping.useMapClass(HashMap.class, "getName");
-        fetchGroupManagerMapping.setXPath("toplink:fetch-group");
+        fetchGroupManagerMapping.setXPath(getPrimaryNamespaceXPath() + "fetch-group");
         descriptor.addMapping(fetchGroupManagerMapping);
 
         return descriptor;
@@ -5149,14 +5165,14 @@ public class ObjectPersistenceRuntimeXMLProject extends Project {
 
         XMLDirectMapping fetchGroupNameMapping = new XMLDirectMapping();
         fetchGroupNameMapping.setAttributeName("name");
-        fetchGroupNameMapping.setXPath("toplink:name");
+        fetchGroupNameMapping.setXPath(getPrimaryNamespaceXPath() + "name");
         descriptor.addMapping(fetchGroupNameMapping);
 
         XMLCompositeDirectCollectionMapping fetchGroupAttributeMapping = new XMLCompositeDirectCollectionMapping();
         CollectionContainerPolicy containerPolicy = new CollectionContainerPolicy(TreeSet.class);
         fetchGroupAttributeMapping.setContainerPolicy(containerPolicy);
         fetchGroupAttributeMapping.setAttributeName("attributes");
-        fetchGroupAttributeMapping.setXPath("toplink:fetch-group-attributes/toplink:fetch-group-attribute/text()");
+        fetchGroupAttributeMapping.setXPath(getPrimaryNamespaceXPath() + "fetch-group-attributes/" + getPrimaryNamespaceXPath() + "fetch-group-attribute/text()");
         descriptor.addMapping(fetchGroupAttributeMapping);
 
         return descriptor;
@@ -5167,9 +5183,9 @@ public class ObjectPersistenceRuntimeXMLProject extends Project {
         descriptor.setJavaClass(ObjectChangePolicy.class);
         descriptor.setDefaultRootElement("change-policy");
         descriptor.getInheritancePolicy().setClassIndicatorField(new XMLField("@xsi:type"));
-        descriptor.getInheritancePolicy().addClassIndicator(DeferredChangeDetectionPolicy.class, "toplink:deferred-detection-change-policy");
-        descriptor.getInheritancePolicy().addClassIndicator(ObjectChangeTrackingPolicy.class, "toplink:object-level-change-policy");
-        descriptor.getInheritancePolicy().addClassIndicator(AttributeChangeTrackingPolicy.class, "toplink:attribute-level-change-policy");
+        descriptor.getInheritancePolicy().addClassIndicator(DeferredChangeDetectionPolicy.class, getPrimaryNamespaceXPath() + "deferred-detection-change-policy");
+        descriptor.getInheritancePolicy().addClassIndicator(ObjectChangeTrackingPolicy.class, getPrimaryNamespaceXPath() + "object-level-change-policy");
+        descriptor.getInheritancePolicy().addClassIndicator(AttributeChangeTrackingPolicy.class, getPrimaryNamespaceXPath() + "attribute-level-change-policy");
 
         return descriptor;
     }
@@ -5196,12 +5212,5 @@ public class ObjectPersistenceRuntimeXMLProject extends Project {
         descriptor.setDefaultRootElement("change-policy");
         descriptor.getInheritancePolicy().setParentClass(ObjectChangePolicy.class);
         return descriptor;
-    }
-
-    /**
-     * INTERNAL:
-     */
-    protected ConstantTransformer getConstantTransformerForProjectVersionMapping() {
-    	return new ConstantTransformer("Oracle TopLink - 10g Release 1 (10.1.3)");
     }
 }

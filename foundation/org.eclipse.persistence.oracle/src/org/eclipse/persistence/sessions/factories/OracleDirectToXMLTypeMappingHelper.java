@@ -16,6 +16,7 @@ import org.eclipse.persistence.internal.codegen.NonreflectiveMethodDefinition;
 import org.eclipse.persistence.internal.sessions.DatabaseSessionImpl;
 import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.mappings.DirectToFieldMapping;
+import org.eclipse.persistence.oxm.NamespaceResolver;
 import org.eclipse.persistence.oxm.XMLDescriptor;
 import org.eclipse.persistence.oxm.mappings.XMLDirectMapping;
 import org.eclipse.persistence.mappings.xdb.DirectToXMLTypeMapping;
@@ -28,11 +29,15 @@ import org.eclipse.persistence.mappings.xdb.DirectToXMLTypeMapping;
  */
 public class OracleDirectToXMLTypeMappingHelper extends DirectToXMLTypeMappingHelper {
 
+    protected String namespaceXPath;
     /**
      * Add the XMLType mapping indicator to the DatabaseMapping descriptor.
      */
-    public void addClassIndicator(XMLDescriptor descriptor) {
-        descriptor.getInheritancePolicy().addClassIndicator(DirectToXMLTypeMapping.class, "eclipselink:direct-xml-type-mapping");
+    @Override
+    public void addClassIndicator(XMLDescriptor descriptor, String namespaceXPath) {
+        this.namespaceXPath = namespaceXPath;
+        descriptor.getInheritancePolicy().addClassIndicator(DirectToXMLTypeMapping.class,
+            namespaceXPath + "direct-xml-type-mapping");
     }
 
     /**
@@ -45,7 +50,10 @@ public class OracleDirectToXMLTypeMappingHelper extends DirectToXMLTypeMappingHe
     /**
      * Invoked from a descriptor is not found.
      */
-    public void addXDBDescriptors(String name, DatabaseSessionImpl session) {
+    @Override
+    public void addXDBDescriptors(String name, DatabaseSessionImpl session,
+        NamespaceResolver namespaceResolver) {
+        
         if (session.getDescriptorForAlias(name) == null){
             XMLDescriptor descriptor = new XMLDescriptor();
     
@@ -57,12 +65,12 @@ public class OracleDirectToXMLTypeMappingHelper extends DirectToXMLTypeMappingHe
             directtofieldmapping.setAttributeName("shouldReadWholeDocument");
             directtofieldmapping.setGetMethodName("shouldReadWholeDocument");
             directtofieldmapping.setSetMethodName("setShouldReadWholeDocument");
-            directtofieldmapping.setXPath("eclipselink:read-whole-document/text()");
+            directtofieldmapping.setXPath(namespaceXPath + "read-whole-document/text()");
             directtofieldmapping.setNullValue(new Boolean(false));
             descriptor.addMapping(directtofieldmapping);
     
             // Need to set the namespace resolver.
-            descriptor.setNamespaceResolver(((XMLDescriptor)session.getDescriptors().values().iterator().next()).getNamespaceResolver());
+            descriptor.setNamespaceResolver(namespaceResolver);
             
             session.addDescriptor(descriptor);
         }
