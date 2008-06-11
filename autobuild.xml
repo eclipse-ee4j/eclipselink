@@ -10,10 +10,10 @@
 *   - regardless of the actual OS platform,'/' is the directory separator
 *     (Ant will convert as appropriate).
 *   - multi-word properties use periods '.'
-*   - multi-word targets use hyphens '-' 
+*   - multi-word targets use hyphens '-'
 *   - multi-word macros use underscores '_'
 *   - multi-word macro attributes are concatinated
-*     e.g. 'runpathref'  
+*     e.g. 'runpathref'
 *   - multi-word tasks (taskdef) names are concatinated
 *     e.g. 'validateconnection'
 *   - OS environment variables are in ALLCAPS and have 'env' as a prefix
@@ -54,7 +54,7 @@
         <!-- temporary need build_id in upload to maven.  This code should is duplicated from build.xml -->
         <!-- ${build_id} will be given by the build system. Manual build is SNAPSHOT. -->
         <tstamp>
-           <format property="build_date" pattern="yyyyMMdd"/>
+            <format property="build_date" pattern="yyyyMMdd"/>
         </tstamp>
         <condition property="build_number" value="${build_id}">
             <isset property="build_id"/>
@@ -90,10 +90,10 @@
     </target>
 
     <target name="clean" depends="init">
-        <!-- Removed because build-clean should take care of old build artifacts,
-             and "svn co" should update source (including updating revision numbers,
-             and cleaning up renamed and deleted files). -->
-        <!-- delete dir="${build.root.dir}"/ -->
+        <!-- Removed full delete of source tree because build-clean should take care
+             of old build artifacts, and "svn co" should update source (including
+             updating revision numbers, and cleaning up files that were renamed or
+             deleted in the repos). -->
         <delete dir="${junit.dir}"/>
         <delete dir="${build.deps.dir}/mail"/>
         <delete dir="${build.deps.dir}/mavenant"/>
@@ -164,19 +164,18 @@
     </target>
 
     <target name="publish-build">
-        <!-- Futute Note: Could avoid these copies by redefining the html output directly...         -->
-        <!--              Would need to ensure that an erroniuos run didn't get partially published. -->
-        <copy file="${build.root.dir}/${eclipselink.zip.name}${eclipselink.zip.extension}" tofile="${download.path}/${eclipselink.zip.name}-${installer_id}${eclipselink.zip.extension}"/>
-        <copy file="${build.root.dir}/${eclipselink.plugins.zip.name}${eclipselink.zip.extension}" tofile="${download.path}/${eclipselink.plugins.zip.name}-${installer_id}${eclipselink.zip.extension}"/>
+        <copy file="${build.root.dir}/${eclipselink.zip.name}${eclipselink.zip.extension}"          tofile="${download.path}/${eclipselink.zip.name}-${installer_id}${eclipselink.zip.extension}"/>
+        <copy file="${build.root.dir}/${eclipselink.plugins.zip.name}${eclipselink.zip.extension}"  tofile="${download.path}/${eclipselink.plugins.zip.name}-${installer_id}${eclipselink.zip.extension}"/>
         <copy file="${build.root.dir}/foundation/eclipselink.core.test/reports/junit-noframes.html" tofile="${download.path}/test-results/core/eclipselink-srg-${installer_id}.html"/>
-        <copy file="${build.root.dir}/jpa/eclipselink.jpa.test/reports/junit-noframes.html" tofile="${download.path}/test-results/jpa/eclipselink-jpa-lrg-${installer_id}.html"/>
-        <copy file="${build.root.dir}/moxy/eclipselink.moxy.test/reports/jaxb/junit-noframes.html" tofile="${download.path}/test-results/moxy/eclipselink-jaxb-lrg-${installer_id}.html"/>
-        <copy file="${build.root.dir}/moxy/eclipselink.moxy.test/reports/oxm/junit-noframes.html" tofile="${download.path}/test-results/moxy/eclipselink-oxm-lrg-${installer_id}.html"/>
-        <copy file="${build.root.dir}/sdo/eclipselink.sdo.test/reports/true/junit-noframes.html" tofile="${download.path}/test-results/sdo/eclipselink-sdo-lrg-${installer_id}.html"/>
+        <copy file="${build.root.dir}/jpa/eclipselink.jpa.test/reports/junit-noframes.html"         tofile="${download.path}/test-results/jpa/eclipselink-jpa-lrg-${installer_id}.html"/>
+        <copy file="${build.root.dir}/moxy/eclipselink.moxy.test/reports/jaxb/junit-noframes.html"  tofile="${download.path}/test-results/moxy/eclipselink-jaxb-lrg-${installer_id}.html"/>
+        <copy file="${build.root.dir}/moxy/eclipselink.moxy.test/reports/oxm/junit-noframes.html"   tofile="${download.path}/test-results/moxy/eclipselink-oxm-lrg-${installer_id}.html"/>
+        <copy file="${build.root.dir}/sdo/eclipselink.sdo.test/reports/true/junit-noframes.html"    tofile="${download.path}/test-results/sdo/eclipselink-sdo-lrg-${installer_id}.html"/>
         <exec executable="${svn.exec}" failonerror="true" logError="true">
             <arg value="commit"/>
             <arg value="-m ${installer_id}"/>
             <arg value="${build.root.dir}/${eclipselink.jar.name}"/>
+            <arg value="${build.root.dir}/${eclipselink-src.zip}"/>
         </exec>
         <ant antfile="uploadToMaven.xml" dir="${build.root.dir}" target="upload-maven-all"/>
     </target>
