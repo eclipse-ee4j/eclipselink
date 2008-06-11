@@ -19,11 +19,17 @@ package org.eclipse.persistence.indirection;
  * @see ValueHolder
  * @see org.eclipse.persistence.internal.indirection.DatabaseValueHolder
  */
-public interface ValueHolderInterface {
+public interface ValueHolderInterface extends Cloneable {
 
     /** Can be used to have transparent indirection toString instantiate the objects. */
     public static boolean shouldToStringInstantiate = false;
 
+    /**
+     * PUBLIC:
+     * Copy the value holder (but not its' reference, shallow).
+     */
+    public Object clone();
+    
     /**
      * PUBLIC:
      * Return the value.

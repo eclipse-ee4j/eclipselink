@@ -12,8 +12,10 @@
  ******************************************************************************/  
 package org.eclipse.persistence.testing.tests.unitofwork;
 
-import org.eclipse.persistence.testing.framework.TestSuite;
-import org.eclipse.persistence.testing.models.employee.domain.Employee;
+import java.util.*;
+
+import org.eclipse.persistence.testing.framework.*;
+import org.eclipse.persistence.testing.models.employee.domain.*;
 import org.eclipse.persistence.testing.models.ownership.ObjectA;
 import org.eclipse.persistence.testing.tests.writing.BidirectionalInsertTest;
 import org.eclipse.persistence.testing.tests.writing.ComplexUpdateTest;
@@ -22,6 +24,7 @@ import org.eclipse.persistence.testing.tests.writing.UpdateChangeObjectTest;
 import org.eclipse.persistence.testing.tests.writing.UpdateChangeValueTest;
 import org.eclipse.persistence.testing.tests.writing.UpdateDeepOwnershipTest;
 import org.eclipse.persistence.testing.tests.writing.UpdateToNullTest;
+import org.eclipse.persistence.sessions.*;
 import org.eclipse.persistence.tools.schemaframework.PopulationManager;
 
 
@@ -55,6 +58,8 @@ public class UnitOfWorkTestSuite extends TestSuite {
         addTest(new RegisterationUnitOfWorkTest(PopulationManager.getDefaultManager().getObject(Employee.class, 
                                                                                                 "0001")));
         //addTest(new UnitOfWorkConformExceptionTest()); - Test removed as conforming exceptions moved to query level setting and no longer supported correctly.
+        addTest(buildRefreshDeletedObjectTest());
+
         addTest(new UnregisterUnitOfWorkTest());
 
         addSRGTests();
@@ -187,5 +192,38 @@ public class UnitOfWorkTestSuite extends TestSuite {
 
         //bug 4736360    
         addTest(new NestedUOWWithNewObjectRegisteredTwiceTest());
+    }
+    
+    /**
+     * Test issue of loss of identity causing loop in cloning with invalidation.
+     */
+    public TransactionalTestCase buildRefreshDeletedObjectTest() {
+        TransactionalTestCase test = new TransactionalTestCase() {
+            public void test() {
+                List employees = getSession().readAllObjects(Employee.class);
+                Employee employee = null;
+                // Find an employee with a phone.
+                for (Iterator iterator = employees.iterator(); iterator.hasNext(); ) {
+                    employee = (Employee) iterator.next();
+                    if (employee.getPhoneNumbers().size() > 0) {
+                        break;
+                    }
+                }
+                UnitOfWork uow = getSession().acquireUnitOfWork();
+                // Delete the phone but do not remove the employee reference.
+                uow.deleteObject(employee.getPhoneNumbers().get(0));
+                uow.commit();
+                // Invalidate the phone numbers to cause them to be refreshed.
+                getSession().getIdentityMapAccessor().invalidateClass(PhoneNumber.class);
+                uow = getSession().acquireUnitOfWork();
+                employee = (Employee)uow.readObject(employee);
+                // Trigger register of dead phone number, this cause a loop and error.
+                employee.getPhoneNumbers().get(0);
+                uow.commit();
+            }
+        };
+        test.setName("RefreshDeletedObjectTest");
+        test.setDescription("Test issue of loss of identity causing loop in cloning with invalidation.");
+        return test;
     }
 }

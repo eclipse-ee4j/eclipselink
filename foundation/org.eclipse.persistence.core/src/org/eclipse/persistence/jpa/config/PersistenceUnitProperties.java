@@ -17,7 +17,7 @@ import java.util.Map;
 import java.util.HashMap;
 
 /**
- * The class defines TopLink properties' names.
+ * The class defines EclipseLink properties' names.
  * 
  * JPA persistence properties could be specified either in PersistenceUnit or 
  * passes to createEntityManagerFactory / createContainerEntityManagerFactory
@@ -48,28 +48,28 @@ public class PersistenceUnitProperties {
     public static final String JDBC_PASSWORD = "eclipselink.jdbc.password";
 
     /**
-     * TopLink JDBC (internal) connection pools properties. Ignored in case external connection pools are used.
+     * EclipseLink JDBC (internal) connection pools properties. Ignored in case external connection pools are used.
      * Maximum number of connections in TopLink write connection pool by default is 10.
      */
     public static final String JDBC_WRITE_CONNECTIONS_MAX = "eclipselink.jdbc.write-connections.max";
     /**
-     * TopLink JDBC (internal) connection pools properties. Ignored in case external connection pools are used.
+     * EclipseLink JDBC (internal) connection pools properties. Ignored in case external connection pools are used.
      * Minimum number of connections in TopLink write connection pool by default is 5.
      */
     public static final String JDBC_WRITE_CONNECTIONS_MIN = "eclipselink.jdbc.write-connections.min";
     /**
-     * TopLink JDBC (internal) connection pools properties. Ignored in case external connection pools are used.
+     * EclipseLink JDBC (internal) connection pools properties. Ignored in case external connection pools are used.
      * Maximum number of connections in TopLink read connection pool by default is 2.
      */
     public static final String JDBC_READ_CONNECTIONS_MAX = "eclipselink.jdbc.read-connections.max";
     /**
-     * TopLink JDBC (internal) connection pools properties. Ignored in case external connection pools are used.
+     * EclipseLink JDBC (internal) connection pools properties. Ignored in case external connection pools are used.
      * Minimum number of connections in TopLink read connection pool by default is 2.
      */
     public static final String JDBC_READ_CONNECTIONS_MIN = "eclipselink.jdbc.read-connections.min";
     /**
-     * TopLink JDBC (internal) connection pools properties. Ignored in case external connection pools are used.
-     * Indicates wheather connections in TopLink read connection pool should be shared.
+     * EclipseLink JDBC (internal) connection pools properties. Ignored in case external connection pools are used.
+     * Indicates whether connections in TopLink read connection pool should be shared.
      * Valid values are case-insensitive "false" and "true"; "false" is default.
      */
     public static final String JDBC_READ_CONNECTIONS_SHARED = "eclipselink.jdbc.read-connections.shared";
@@ -87,11 +87,13 @@ public class PersistenceUnitProperties {
      * CACHE_SIZE_ properties default value is 1000.
      */
     public static final String CACHE_SIZE_ = "eclipselink.cache.size.";
+    
     /**
      * All valid values for CACHE_TYPE_ properties are declared in CacheType class.
      * @see CacheType
      */
     public static final String CACHE_TYPE_ = "eclipselink.cache.type.";
+    
     /**
      * Indicates whether entity's cache should be shared (non-isolated).
      * Valid values are case-insensitive "false" and "true"; "true" is default.
@@ -108,12 +110,14 @@ public class PersistenceUnitProperties {
      * Default caching properties - apply to all entities. 
      * May be overridden by individual entity property with the same prefix.
      */
-    public static final String CACHE_SIZE_DEFAULT = CACHE_SIZE_ + DEFAULT; 
+    public static final String CACHE_SIZE_DEFAULT = CACHE_SIZE_ + DEFAULT;
+    
     /**
      * Default caching properties - apply to all entities. 
      * May be overridden by individual entity property with the same prefix.
      */
-    public static final String CACHE_TYPE_DEFAULT = CACHE_TYPE_ + DEFAULT; 
+    public static final String CACHE_TYPE_DEFAULT = CACHE_TYPE_ + DEFAULT;
+    
     /**
      * Default caching properties - apply to all entities. 
      * May be overridden by individual entity property with the same prefix.
@@ -139,6 +143,7 @@ public class PersistenceUnitProperties {
      * @see LoggerType
      */
     public static final String LOGGING_LOGGER = "eclipselink.logging.logger";
+    
     /**
      * Valid values are names of levels defined in java.util.logging.Level,
      * default value is INFO.
@@ -158,16 +163,19 @@ public class PersistenceUnitProperties {
      * This can be turned off ("false").
      */
     public static final String  LOGGING_TIMESTAMP = "eclipselink.logging.timestamp";
+    
     /**
      * By default ("true") the thread is logged at FINE or less level.
      * This can be turned off ("false") or on ("true").
      */
     public static final String  LOGGING_THREAD = "eclipselink.logging.thread";
+    
     /**
      * By default ("true") the Session is always printed whenever available.
      * This can be turned off ("false").
      */
     public static final String  LOGGING_SESSION = "eclipselink.logging.session";
+    
     /**
      * By default ("true") stack trace is logged for SEVERE all the time and at FINER level for WARNING or less.
      * This can be turned off ("false") or on ("true").
@@ -177,20 +185,20 @@ public class PersistenceUnitProperties {
     /**
      * Valid values are defined in TargetDatabase class - they correspond to database platforms currently supported by TopLink.
      * Also a custom database platform may be specified by supplying a full class name.
-     * Default value is TargetDatabase.Auto which means TopLink will try to automatically determine
+     * Default value is TargetDatabase.Auto which means EclipseLink will try to automatically determine
      * the correct database platform type.
      * @see TargetDatabase
      */
     public static final String TARGET_DATABASE = "eclipselink.target-database";
     
     /**
-     * A persistence unit may opt to exclude an eclipselink orm file for a
+     * A persistence unit may opt to exclude an EclipseLink orm file for a
      * specific persistence unit. 
      */ 
     public static final String EXCLUDE_ECLIPSELINK_ORM_FILE = "eclipselink.exclude-eclipselink-orm";
     
     /**
-     * By default a unique session name is generated by TopLink, but the user
+     * By default a unique session name is generated by EclipseLink, but the user
      * can provide a customary session name - and make sure it's unique.
      * If a sessions-xml file is used this must be the name of the session in the sessions-xml file.
      */
@@ -227,14 +235,14 @@ public class PersistenceUnitProperties {
     /**
      * Indicates whether FetchGroup support should be enabled through weaving - "true" by default.
      * When this is enabled, lazy direct mappings will be supported as well as descriptor and query level FetchGroups.
-     * FetchGroups allow partial objects to be read and written, access to unfetch attributes will cause the object to be refreshed/fully-fetched.
+     * FetchGroups allow partial objects to be read and written, access to unfetched attributes will cause the object to be refreshed/fully-fetched.
      * @see org.eclipse.persistence.descriptors.FetchGroupManager
      * @see org.eclipse.persistence.queries.FetchGroup
      */
     public static final String WEAVING_FETCHGROUPS = "eclipselink.weaving.fetchgroups";
     
     /**
-     * Valid values are defined in TargetServer class - they correspond to server platforms currently supported by TopLink.
+     * Valid values are defined in TargetServer class - they correspond to server platforms currently supported by EclipseLink.
      * Also a custom server platform may be specified by supplying a full class name.
      * Specifying a name of the class implementing ExternalTransactionController sets
      * CustomServerPlatform with this controller.
@@ -261,7 +269,7 @@ public class PersistenceUnitProperties {
      */
     public static final String DESCRIPTOR_CUSTOMIZER_ = "eclipselink.descriptor.customizer.";
     
-    /** Indicate whether to enable eclipselink to generate DB platform specific SQL versus generic SQL. */
+    /** Indicate whether to enable EclipseLink to generate DB platform specific SQL versus generic SQL. */
     public static final String NATIVE_SQL = "eclipselink.jdbc.native-sql";
     
     /**

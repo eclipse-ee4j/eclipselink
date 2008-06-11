@@ -211,6 +211,9 @@ public class IndirectList extends Vector implements CollectionChangeTracker, Ind
      */
     protected Vector buildDelegate() {
         Vector delegate = (Vector)getValueHolder().getValue();
+        if (delegate == null) {
+            delegate = new Vector(this.initialCapacity, this.capacityIncrement);
+        }
         // This can either be another indirect list or a Vector.
         // It can be another indirect list because the mapping's query uses the same container policy.
         // Unwrap any redundent indirection layers, which can cause issues and impact performance.
