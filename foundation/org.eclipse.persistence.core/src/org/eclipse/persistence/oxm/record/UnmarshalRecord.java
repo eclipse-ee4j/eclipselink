@@ -496,6 +496,15 @@ public class UnmarshalRecord extends XMLRecord implements ContentHandler, Lexica
     }
 
     public void startElement(String namespaceURI, String localName, String qName, Attributes atts) throws SAXException {
+        if(null != xPathNode.getXPathFragment() && xPathNode.getXPathFragment().nameIsText()) {
+            if (null != xPathNode.getUnmarshalNodeValue()) {
+                xPathNode.getUnmarshalNodeValue().endElement(xPathFragment, this);
+                if (xPathNode.getParent() != null) {
+                    xPathNode = xPathNode.getParent();
+                }
+            }
+        }
+
         // set the root element's local name and namespace prefix and look for
         // schema locations etc.
         if (rootElementName == null) {

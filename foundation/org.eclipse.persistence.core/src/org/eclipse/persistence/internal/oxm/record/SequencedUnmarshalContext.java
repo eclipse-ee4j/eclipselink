@@ -1,15 +1,4 @@
-/*******************************************************************************
- * Copyright (c) 1998, 2008 Oracle. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
- * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
- * http://www.eclipse.org/org/documents/edl-v10.php.
- *
- * Contributors:
- *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+// Copyright (c) 1998, 2007, Oracle. All rights reserved. 
 package org.eclipse.persistence.internal.oxm.record;
 
 import org.eclipse.persistence.internal.oxm.ContainerValue;
@@ -20,18 +9,21 @@ import org.eclipse.persistence.oxm.record.UnmarshalRecord;
 import org.eclipse.persistence.oxm.sequenced.SequencedObject;
 import org.eclipse.persistence.oxm.sequenced.Setting;
 
-/**
- * An implementation of UnmarshalContext for handling sequenced objects that
- * are mapped to XML. 
- */
 public class SequencedUnmarshalContext implements UnmarshalContext {
-
-    private static final String TEXT_XPATH = "text()";
-
-    private Setting currentSetting;
     
+    private static final String TEXT_XPATH = "text()";
+    
+    private Setting currentSetting;
+        
     public void startElement(UnmarshalRecord unmarshalRecord) {
-        Setting parentSetting = currentSetting;
+        Setting parentSetting;
+        if(null == currentSetting) {
+            parentSetting = null;
+        } else if(TEXT_XPATH.equals(currentSetting.getName())) {
+            parentSetting = null;
+        } else {
+            parentSetting = currentSetting;
+        }
         XPathFragment xPathFragment = unmarshalRecord.getXPathNode().getXPathFragment();
         if(null != xPathFragment) {
             currentSetting = new Setting(xPathFragment.getNamespaceURI(), xPathFragment.getLocalName());
@@ -48,7 +40,10 @@ public class SequencedUnmarshalContext implements UnmarshalContext {
     }
 
     public void characters(UnmarshalRecord unmarshalRecord) {
-        if(!TEXT_XPATH.equals(currentSetting.getName())) {
+        if(null == currentSetting || null == currentSetting.getName()) {
+            currentSetting = new Setting(null, TEXT_XPATH);
+            ((SequencedObject) unmarshalRecord.getCurrentObject()).getSettings().add(currentSetting);
+        }else if(!TEXT_XPATH.equals(currentSetting.getName())) {
             Setting parentSetting = currentSetting;
             currentSetting = new Setting(null, TEXT_XPATH);
             if(null != parentSetting) {
@@ -62,7 +57,11 @@ public class SequencedUnmarshalContext implements UnmarshalContext {
             return;
         }
         if(TEXT_XPATH.equals(currentSetting.getName())) {
-            currentSetting = currentSetting.getParent().getParent();
+            if(null == currentSetting.getParent()) {
+                currentSetting = null;
+            } else {
+                currentSetting = currentSetting.getParent().getParent();
+            }
         } else {
             currentSetting = currentSetting.getParent();
         }

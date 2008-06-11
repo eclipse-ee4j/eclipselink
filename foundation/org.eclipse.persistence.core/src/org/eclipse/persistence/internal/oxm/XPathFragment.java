@@ -100,6 +100,8 @@ public class XPathFragment {
             nameIsText = true;
             shortName = xpathString;
             return;
+        } else {
+            nameIsText = false;
         }
 
         // handle "self" xpath

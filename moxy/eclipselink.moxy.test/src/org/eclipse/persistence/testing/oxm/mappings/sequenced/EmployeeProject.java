@@ -33,6 +33,7 @@ public class EmployeeProject extends Project {
 		this.addDescriptor(getEmployeeDescriptor());
 		this.addDescriptor(getAddressDescriptor());
 		this.addDescriptor(getDependentDescriptor());
+		this.addDescriptor(getPhoneNumberDescriptor());
 	}
 	
 	public XMLDescriptor getEmployeeDescriptor() {
@@ -150,12 +151,23 @@ public class EmployeeProject extends Project {
         if(null == phoneNumberDescriptor) {
             phoneNumberDescriptor = new XMLDescriptor();
             phoneNumberDescriptor.setJavaClass(PhoneNumber.class);
-            phoneNumberDescriptor.setDefaultRootElement("PHONE-NUMBER-ROOT");
+            phoneNumberDescriptor.setDefaultRootElement("phone-number");
+            phoneNumberDescriptor.setSequencedObject(true);
+
+            XMLDirectMapping areaCodeMapping = new XMLDirectMapping();
+            areaCodeMapping.setAttributeName("areaCode");
+            areaCodeMapping.setXPath("area-code/text()");
+            phoneNumberDescriptor.addMapping(areaCodeMapping);
 
             XMLDirectMapping numberMapping = new XMLDirectMapping();
             numberMapping.setAttributeName("number");
-            numberMapping.setXPath("first-name/text()");
+            numberMapping.setXPath("text()");
             phoneNumberDescriptor.addMapping(numberMapping);
+
+            XMLDirectMapping extensionMapping = new XMLDirectMapping();
+            extensionMapping.setAttributeName("extension");
+            extensionMapping.setXPath("extension/text()");
+            phoneNumberDescriptor.addMapping(extensionMapping);
         }
         return phoneNumberDescriptor;
     }

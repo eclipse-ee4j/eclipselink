@@ -23,7 +23,10 @@ public class SequencedMappingTestSuite  extends TestCase {
         suite.addTestSuite(GroupingElementSharedTestCases.class);
         suite.addTestSuite(SimpleAnyTestCases.class);
         suite.addTestSuite(AttributeTestCases.class);
-				
+        suite.addTestSuite(MixedTextFirstTestCases.class);
+        suite.addTestSuite(MixedTextMiddleTestCases.class);
+        suite.addTestSuite(MixedTextLastTestCases.class);
+
         return suite;
     }
 
