@@ -384,6 +384,10 @@
             <zipfileset dir="${eclipselink.sdo.bin}" includes="${sdo-compiler-scripts}" prefix="eclipselink/bin"/>
             <!-- package-rename.properties -->
             <zipfileset dir="./${eclipselink.util.rename.utility.resource}" includes="${package-rename.properties}" fullpath="eclipselink/config/package-rename.properties"/>
+            <!-- core XSD files -->
+            <zipfileset dir="./${eclipselink.core.xsds}" includes="*.xsd" prefix="eclipselink/xsds"/>
+            <!-- jpa XSD files -->
+            <zipfileset dir="./${eclipselink.jpa.xsds}" includes="*.xsd" prefix="eclipselink/xsds"/>
             <!-- core jar's and zips -->
             <zipfileset dir="." prefix="eclipselink/jlib">
                 <include name="${eclipselink.jar}"/>
