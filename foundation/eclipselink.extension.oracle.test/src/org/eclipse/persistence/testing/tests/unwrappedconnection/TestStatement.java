@@ -174,4 +174,23 @@ public class TestStatement implements Statement{
         statement.setQueryTimeout(seconds);
     }
 
+    public boolean isClosed()  throws SQLException {
+        return false;       
+    }
+
+    public boolean isPoolable()  throws SQLException {
+        return false;       
+    }
+
+    public void setPoolable(boolean poolable)  throws SQLException {
+    }
+
+    public boolean isWrapperFor(Class<?> iFace) throws SQLException{
+        return false;
+    }
+
+    public <T>T unwrap(Class<T> iFace)  throws SQLException {
+        return iFace.cast(this);
+    }
+    
 }

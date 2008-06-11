@@ -125,7 +125,7 @@
                destdir="${eclipselink.jpa.test}/${classes.dir}"
                debug="${javac.debug}"
                optimize="${javac.optimize}"
-               source="1.5"
+               source="${javac.version}"
                deprecation="${javac.deprecation}"
                failonerror="true">
             <include name="org/eclipse/persistence/testing/**"/>

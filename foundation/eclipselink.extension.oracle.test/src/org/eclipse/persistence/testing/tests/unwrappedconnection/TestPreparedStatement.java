@@ -21,8 +21,8 @@ import java.util.Calendar;
 
 
 /**
- * This class provid wrapper around preparedStatement to allow toplink
- * unwrap functionality being tested.
+ * This class provides a wrapper around preparedStatement to allow eclipselink
+ * unwrap functionality to be tested.
  */
 
 public class TestPreparedStatement implements PreparedStatement{
@@ -328,4 +328,132 @@ public class TestPreparedStatement implements PreparedStatement{
         prepareStatement.setQueryTimeout(seconds);
     }
 
+    // 236070: Methods introduced in JDK 1.6
+    
+    public void setAsciiStream(int columnIndex, InputStream stream, long length)  throws SQLException {       
+    }
+
+    public void setAsciiStream(int columnIndex, InputStream stream)  throws SQLException {       
+    }
+
+    public void setAsciiStream(String columnLabel, InputStream stream, long length)  throws SQLException {       
+    }
+
+    public void setAsciiStream(String columnLabel, InputStream stream)  throws SQLException {       
+    }
+
+    public void setBlob(int columnIndex, InputStream stream, long length)  throws SQLException {       
+    }
+
+    public void setBlob(int columnIndex, InputStream stream)  throws SQLException {       
+    }
+
+    public void setBlob(String columnLabel, InputStream stream, long length)  throws SQLException {       
+    }
+
+    public void setBlob(String columnLabel, InputStream stream)  throws SQLException {       
+    }
+
+    public void setBinaryStream(int columnIndex, InputStream stream, long length)  throws SQLException {       
+    }
+
+    public void setBinaryStream(int columnIndex, InputStream stream)  throws SQLException {       
+    }
+
+    public void setBinaryStream(String columnLabel, InputStream stream, long length)  throws SQLException {       
+    }
+
+    public void setBinaryStream(String columnLabel, InputStream stream)  throws SQLException {       
+    }
+    
+    public void setCharacterStream(int columnIndex, Reader reader, long length)  throws SQLException {       
+    }
+
+    public void setCharacterStream(int columnIndex, Reader reader)  throws SQLException {       
+    }
+
+    public void setCharacterStream(String columnLabel, Reader reader, long length)  throws SQLException {       
+    }
+
+    public void setCharacterStream(String columnLabel, Reader reader)  throws SQLException {       
+    }
+    
+    public void setClob(int columnIndex, Reader reader, long length)  throws SQLException {       
+    }
+
+    public void setClob(int columnIndex, Reader reader)  throws SQLException {       
+    }
+
+    public void setClob(String columnLabel, Reader reader, long length)  throws SQLException {       
+    }
+
+    public void setClob(String columnLabel, Reader reader)  throws SQLException {       
+    }
+    
+    public void setNCharacterStream(int columnIndex, Reader reader, long length)  throws SQLException {       
+    }
+
+    public void setNCharacterStream(int columnIndex, Reader reader)  throws SQLException {       
+    }
+
+    public void setNCharacterStream(String columnLabel, Reader reader, long length)  throws SQLException {       
+    }
+
+    public void setNCharacterStream(String columnLabel, Reader reader)  throws SQLException {       
+    }
+
+    public void setNClob(int columnIndex, Reader reader, long length)  throws SQLException {       
+    }
+
+    public void setNClob(int columnIndex, Reader reader)  throws SQLException {       
+    }
+
+    public void setNClob(String columnLabel, Reader reader, long length)  throws SQLException {       
+    }
+
+    public void setNClob(String columnLabel, Reader reader)  throws SQLException {       
+    }
+   
+    public void setNClob(int columnIndex, NClob nclob)  throws SQLException {       
+    }
+
+    public void setNClob(String columnLabel, NClob nclob)  throws SQLException {       
+    }
+       
+    public void setNString(int columnIndex, String nString)  throws SQLException {       
+    }
+
+    public void setNString(String columnLabel, String nString)  throws SQLException {       
+    }
+
+    public void setSQLXML(String columnLabel, SQLXML sqlxml)  throws SQLException {      
+    }
+
+    public void setSQLXML(int columnIndex, SQLXML sqlxml)  throws SQLException {       
+    }
+    
+    public void setRowId(int columnIndex, RowId rowid)  throws SQLException {       
+    }
+    
+    public void setRowId(String columnLabel, RowId rowid)  throws SQLException {       
+    }
+          
+    public boolean isClosed()  throws SQLException {
+        return false;       
+    }
+
+    public boolean isPoolable()  throws SQLException {
+        return false;       
+    }
+
+    public void setPoolable(boolean poolable)  throws SQLException {
+    }
+
+    public boolean isWrapperFor(Class<?> iFace) throws SQLException{
+        return false;
+    }
+
+    public <T>T unwrap(Class<T> iFace)  throws SQLException {
+        return iFace.cast(this);
+    }    
 }

@@ -44,7 +44,7 @@
             destdir="${eclipselink.moxy}/${classes.dir}"
             debug="${javac.debug}"
             optimize="${javac.optimize}"
-            source="1.5"
+            source="${javac.version}"
             deprecation="${javac.deprecation}"
             failonerror="true"
             includes="org/eclipse/persistence/**/*.java">

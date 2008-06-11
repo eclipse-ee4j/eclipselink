@@ -18,7 +18,7 @@ import java.util.*;
 /**
  * Emulated database connection.
  * This connection performs operations in-memory, simulating a database.
- * This is used in performance testing to isolated TopLink's performance and
+ * This is used in performance testing to isolated EclipseLink's performance and
  * minimize the database overhead and in-consistency.
  */
 public class EmulatedConnection implements Connection {
@@ -29,7 +29,7 @@ public class EmulatedConnection implements Connection {
     }
 
     /**
-     * Return the rwos for the sql.
+     * Return the rows for the sql.
      */
     public Vector getRows(String sql) {
         Vector rows = (Vector)this.rows.get(sql);
@@ -40,7 +40,7 @@ public class EmulatedConnection implements Connection {
     }
 
     /**
-     * Return the rwos for the sql.
+     * Return the rows for the sql.
      */
     public void putRows(String sql, Vector rows) {
         this.rows.put(sql, rows);
@@ -857,4 +857,56 @@ public class EmulatedConnection implements Connection {
     public PreparedStatement prepareStatement(String sql, String[] columnNames) {
         return new EmulatedStatement(sql, this);
     }
+    
+    // 236070: Methods introduced in JDK 1.6
+    public Array createArrayOf(String typeName, Object[] elements)  throws SQLException {
+        return null;
+    }
+
+    public Blob createBlob()  throws SQLException {
+        return null;
+    }
+
+    public Clob createClob()  throws SQLException {
+        return null;
+    }
+
+    public NClob createNClob()  throws SQLException {
+        return null;
+    }
+
+    public SQLXML createSQLXML()  throws SQLException {
+        return null;
+    }
+
+    public Struct createStruct(String typeName, Object[] attributes)  throws SQLException {
+        return null;
+    }
+
+    public Properties getClientInfo()  throws SQLException {
+        return null;
+    }
+
+    public String getClientInfo(String name)  throws SQLException {
+        return null;
+    }
+    
+    public boolean isValid(int timeout)  throws SQLException {
+        return true;
+    }
+
+    public void setClientInfo(String name, String value) {
+    }
+
+    public void setClientInfo(Properties properties) {
+    }
+
+    public boolean isWrapperFor(Class<?> iFace) throws SQLException{
+        return false;
+    }
+
+    public <T>T unwrap(Class<T> iFace)  throws SQLException {
+        return iFace.cast(this);
+    }
+        
 }

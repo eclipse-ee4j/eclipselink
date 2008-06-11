@@ -66,4 +66,14 @@ public class TestOracleDataSource implements DataSource {
 
     public void setLogWriter(PrintWriter arg1) throws SQLException {
     }
+
+    // From java.sql.Wrapper
+    public boolean isWrapperFor(Class<?> iFace) throws SQLException{
+        return false;
+    }
+
+    public <T>T unwrap(Class<T> iFace)  throws SQLException {
+        return iFace.cast(this);
+    }    
+    
 }

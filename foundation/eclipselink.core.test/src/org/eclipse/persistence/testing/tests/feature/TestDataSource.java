@@ -15,6 +15,7 @@ package org.eclipse.persistence.testing.tests.feature;
 import java.util.*;
 import java.io.*;
 import java.sql.*;
+
 import javax.sql.*;
 
 /**
@@ -60,4 +61,13 @@ public class TestDataSource implements DataSource {
 
     public void setLogWriter(PrintWriter arg1) throws SQLException {
     }
+    
+
+    public boolean isWrapperFor(Class<?> iFace) throws SQLException{
+        return false;
+    }
+
+    public <T>T unwrap(Class<T> iFace)  throws SQLException {
+        return iFace.cast(this);
+    }    
 }

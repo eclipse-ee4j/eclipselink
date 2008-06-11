@@ -67,10 +67,10 @@
         <mkdir dir="${eclipselink.core.test}/${classes.dir}"/>
         <javac srcdir="${eclipselink.core.test}/${src.dir}"
                destdir="${eclipselink.core.test}/${classes.dir}"
-               includes="org/eclipse/persistence/**, deprecated/**"
+               includes="org/eclipse/persistence/**, deprecated/**, java/sql/**"
                debug="${javac.debug}"
                optimize="${javac.optimize}"
-               source="1.5"
+               source="${javac.version}"
                deprecation="${javac.deprecation}"
                failonerror="true"
                memoryMaximumSize="512m"

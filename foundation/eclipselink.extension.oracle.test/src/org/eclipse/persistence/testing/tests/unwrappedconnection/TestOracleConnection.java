@@ -12,23 +12,31 @@
  ******************************************************************************/  
 package org.eclipse.persistence.testing.tests.unwrappedconnection;
 
+import java.sql.Array;
+import java.sql.Blob;
 import java.sql.CallableStatement;
+import java.sql.Clob;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
+import java.sql.NClob;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.SQLWarning;
+import java.sql.SQLXML;
 import java.sql.Savepoint;
 import java.sql.Statement;
+import java.sql.Struct;
 import java.util.Map;
+import java.util.Properties;
+
 import oracle.jdbc.OracleConnection;
 
 /**
- * This class provid wrapper around real Oracle Connection to allow toplink
- * unwrap functionality being tested.
+ * This class provides a wrapper around a  real Oracle Connection to allow eclipselink
+ * unwrap functionality to be tested.
  */
 
-public class TestOracleConnection implements java.sql.Connection{
+public class TestOracleConnection implements Connection{
     
     OracleConnection conn;
     public TestOracleConnection(OracleConnection connection){
@@ -152,5 +160,57 @@ public class TestOracleConnection implements java.sql.Connection{
     public Connection getPhysicalConnection(){
         return conn;
     }
+    
+    // 236070: Methods introduced in JDK 1.6
+    public Array createArrayOf(String typeName, Object[] elements) {
+        return null;
+    }
+
+    public Blob createBlob() {
+        return null;
+    }
+
+    public Clob createClob() {
+        return null;
+    }
+
+    public NClob createNClob() {
+        return null;
+    }
+
+    public SQLXML createSQLXML() {
+        return null;
+    }
+
+    public Struct createStruct(String typeName, Object[] attributes) {
+        return null;
+    }
+
+    public Properties getClientInfo() {
+        return null;
+    }
+
+    public String getClientInfo(String name) {
+        return null;
+    }
+    
+    public boolean isValid(int timeout) {
+        return false;
+    }
+
+    public void setClientInfo(String name, String value) {
+    }
+
+    public void setClientInfo(Properties properties) {
+    }
+    
+    // From java.sql.Wrapper
+    public boolean isWrapperFor(Class<?> iFace) throws SQLException{
+        return false;
+    }
+
+    public <T>T unwrap(Class<T> iFace)  throws SQLException {
+        return iFace.cast(this);
+    }    
     
 }

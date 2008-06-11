@@ -37,7 +37,7 @@
         <property name="optimize.code"    value="off"/>
         <property name="report.deprecation" value="off"/>
         <property name="javac.debug"       value="off"/>
-        <property name="target.jvm"   value="1.5"/>
+        <property name="target.jvm"   value="${javac.version}"/>
         <echo message="BuildDate.BuildTime='${build.date}.${build.time}'"/>
         <echo message="java.version='${java.version}'"/>
         <echo message="os.name='${os.name}'"/>

@@ -120,4 +120,13 @@ public class EmulatedResultSetMetaData implements ResultSetMetaData {
     public String getColumnClassName(int column) {
         return "";
     }
+
+    public boolean isWrapperFor(Class<?> iFace) throws SQLException{
+        return false;
+    }
+
+    public <T>T unwrap(Class<T> iFace)  throws SQLException {
+        return iFace.cast(this);
+    }
+    
 }

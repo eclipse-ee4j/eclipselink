@@ -85,10 +85,10 @@
         <mkdir dir="${eclipselink.extension.oracle.test}/${classes.dir}"/>
         <javac srcdir="${eclipselink.extension.oracle.test}/${src.dir}"
                destdir="${eclipselink.extension.oracle.test}/${classes.dir}"
-               includes="org/eclipse/persistence/**"
+               includes="org/eclipse/persistence/**, java/sql/**"
                debug="${javac.debug}"
                optimize="${javac.optimize}"
-               source="1.5"
+               source="${javac.version}"
                deprecation="${javac.deprecation}"
                failonerror="true"
                memoryMaximumSize="512m"
