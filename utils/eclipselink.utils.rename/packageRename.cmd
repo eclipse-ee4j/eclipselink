@@ -1,6 +1,6 @@
 @echo off
 @setlocal
-call "%~dp0setenv.cmd"
+call "%~dp0../../../bin/setenv.cmd"
 
 @REM User may increase Java memory setting(s) if desired:
 set JVM_ARGS=-Xmx256M
@@ -19,8 +19,8 @@ set _FIXPATH=
 call :fixpath "%3"
 set LOG_DIR=%_FIXPATH:~1%
 
-set CLASSPATH=%THIS%..\jlib\package-rename.jar
-set JAVA_ARGS=%SRC_DIR% %DEST_DIR% %THIS%..\config\package-rename.properties
+set CLASSPATH=%THIS%package-rename.jar
+set JAVA_ARGS=%SRC_DIR% %DEST_DIR% %THIS%package-rename.properties
 
 @echo on
 %JAVA_HOME%\bin\java %JVM_ARGS% -classpath %CLASSPATH% org.eclipse.persistence.utils.rename.MigrateTopLinkToEclipseLink %JAVA_ARGS%

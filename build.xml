@@ -364,7 +364,7 @@
     </target>
 
     <!-- Packages the installer zip. -->
-    <target name="package-installer-zip" description="build EclipseLink installer zip">
+    <target name="package-installer-zip" description="build EclipseLink installer zip - includes utils and javadocs">
         <zip destfile="${eclipselink-installer.prefix}${eclipselink-installer.suffix}">
             <!-- miscellaneous files -->
             <zipfileset dir="." prefix="eclipselink">
@@ -376,14 +376,17 @@
             <!-- setenv and package-rename scripts -->
             <zipfileset dir="${eclipselink.core.bin}" prefix="eclipselink/bin">
                 <include name="${setenv-scripts}"/>
+            </zipfileset>
+            <zipfileset dir="${eclipselink.util.rename.utility}" prefix="eclipselink/utils/rename">
                 <include name="${package-rename-scripts}"/>
             </zipfileset>
+
             <!-- jaxb-compiler scripts -->
             <zipfileset dir="${eclipselink.moxy.bin}" includes="${jaxb-compiler-scripts}" prefix="eclipselink/bin"/>
             <!-- sdo-compiler scripts -->
             <zipfileset dir="${eclipselink.sdo.bin}" includes="${sdo-compiler-scripts}" prefix="eclipselink/bin"/>
             <!-- package-rename.properties -->
-            <zipfileset dir="./${eclipselink.util.rename.utility.resource}" includes="${package-rename.properties}" fullpath="eclipselink/config/package-rename.properties"/>
+            <zipfileset dir="./${eclipselink.util.rename.utility.resource}" includes="${package-rename.properties}" fullpath="eclipselink/utils/rename/package-rename.properties"/>
             <!-- core XSD files -->
             <zipfileset dir="./${eclipselink.core.xsds}" includes="*.xsd" prefix="eclipselink/xsds"/>
             <!-- jpa XSD files -->
@@ -393,8 +396,9 @@
                 <include name="${eclipselink.jar}"/>
                 <include name="${eclipselink-src.zip}"/>
             </zipfileset>
-            <zipfileset dir="./${eclipselink.util.rename.utility}" prefix="eclipselink/jlib">
+            <zipfileset dir="./${eclipselink.util.rename.utility}" prefix="eclipselink/utils/rename">
                 <include name="${package-rename.jar}"/>
+				<include name="readme.html"/>
             </zipfileset>
             <!-- jpa persistence jar -->
             <zipfileset dir="${eclipselink.plugins}/" includes="${persistence.jar}" prefix="eclipselink/jlib/jpa"/>
@@ -415,13 +419,14 @@
             <!-- grab the sdo jar -->
             <zipfileset dir="${eclipselink.sdo.base}/${plugins.dir}/" includes="${commonj-sdo.jar}" prefix="eclipselink/jlib/sdo"/>
             <!-- workbench jars -->
-            <zipfileset dir="utils/eclipselink.utils.workbench.lib/mw/" includes="elmwcore.jar" prefix="eclipselink/workbench/jlib"/>
-            <zipfileset dir="utils/eclipselink.utils.workbench.lib/mw/" includes="eclipselinkmw.jar" prefix="eclipselink/workbench/jlib"/>
-            <zipfileset dir="utils/eclipselink.utils.workbench.lib/compile/" includes="xercesImpl.jar" prefix="eclipselink/workbench/jlib"/>
-            <zipfileset dir="utils/eclipselink.utils.workbench.lib/run/" includes="connector.jar" prefix="eclipselink/workbench/jlib"/>
-            <zipfileset dir="utils/eclipselink.utils.workbench/config/" includes="*" prefix="eclipselink/workbench/config"/>
-            <zipfileset dir="utils/eclipselink.utils.workbench/config/platforms/" includes="*" prefix="eclipselink/workbench/config/platforms"/>
-            <zipfileset dir="utils/eclipselink.utils.workbench/bin/" includes="*" prefix="eclipselink/workbench/bin"/>
+            <zipfileset dir="utils/eclipselink.utils.workbench.lib/mw/" includes="elmwcore.jar" prefix="eclipselink/utils/workbench/jlib"/>
+            <zipfileset dir="utils/eclipselink.utils.workbench.lib/mw/" includes="eclipselinkmw.jar" prefix="eclipselink/utils/workbench/jlib"/>
+            <zipfileset dir="utils/eclipselink.utils.workbench.lib/compile/" includes="xercesImpl.jar" prefix="eclipselink/utils/workbench/jlib"/>
+            <zipfileset dir="utils/eclipselink.utils.workbench.lib/run/" includes="connector.jar" prefix="eclipselink/utils/workbench/jlib"/>
+            <zipfileset dir="utils/eclipselink.utils.workbench/config/" includes="*" prefix="eclipselink/utils/workbench/config"/>
+            <zipfileset dir="utils/eclipselink.utils.workbench/config/platforms/" includes="*" prefix="eclipselink/utils/workbench/config/platforms"/>
+            <zipfileset dir="utils/eclipselink.utils.workbench/" includes="readme.html" prefix="eclipselink/utils/workbench"/>
+            <zipfileset dir="utils/eclipselink.utils.workbench/bin/" includes="*" prefix="eclipselink/utils/workbench/bin"/>
         </zip>
     </target>
 
