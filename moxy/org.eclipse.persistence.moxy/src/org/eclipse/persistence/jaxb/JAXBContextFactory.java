@@ -28,6 +28,7 @@ import org.eclipse.persistence.jaxb.compiler.*;
 import org.eclipse.persistence.jaxb.javamodel.reflection.JavaModelImpl;
 import org.eclipse.persistence.jaxb.javamodel.reflection.JavaModelInputImpl;
 import org.eclipse.persistence.internal.jaxb.JaxbClassLoader;
+import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.sessions.Project;
 
 
@@ -94,7 +95,13 @@ public class JAXBContextFactory {
         try {
             XMLContext xmlContext = new XMLContext(contextPath, classLoader);
             return new org.eclipse.persistence.jaxb.JAXBContext(xmlContext);
+        } catch (ValidationException vex) {
+            if(vex.getErrorCode() != 7095) {
+                //If something went wrong other than not finding a sessions.xml re-throw the exception
+                throw new JAXBException(vex);
+            }
         } catch (Exception ex) {
+            throw new JAXBException(ex);
         }
         ArrayList classes = new ArrayList();
         StringTokenizer tokenizer = new StringTokenizer(contextPath, ":");
@@ -129,6 +136,9 @@ public class JAXBContextFactory {
                 } catch (Exception ex) {
                 }
             }
+        }
+        if(classes.size() == 0) {
+            throw new JAXBException(org.eclipse.persistence.exceptions.JAXBException.noObjectFactoryOrJaxbIndexInPath(contextPath));
         }
         Class[] classArray = new Class[classes.size()];
         for (int i = 0; i < classes.size(); i++) {
