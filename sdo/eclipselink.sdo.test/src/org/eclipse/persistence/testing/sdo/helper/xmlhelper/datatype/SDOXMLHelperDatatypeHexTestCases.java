@@ -133,7 +133,6 @@ public class SDOXMLHelperDatatypeHexTestCases extends SDOTestCase {
             return null;
         }
     }
-    
 
     protected String getUnrelatedSchemaName() {
         return "./org/eclipse/persistence/testing/sdo/helper/xmlhelper/PurchaseOrder.xsd";
@@ -161,9 +160,6 @@ public class SDOXMLHelperDatatypeHexTestCases extends SDOTestCase {
 
         StreamResult result = new StreamResult(outstream);
         ((SDOXMLHelper) xmlHelper).save(document, result, null);
-        
-        ((SDOXMLHelper) xmlHelper).save(document, System.out, null);
-        System.out.println(new String(document.getRootObject().getBytes("value")));
         
         compareXML(getControlWriteFileName(), result.getOutputStream().toString());
     }

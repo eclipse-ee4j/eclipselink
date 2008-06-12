@@ -133,7 +133,6 @@ public class SDOXMLHelperDatatypeFloatTestCases extends SDOTestCase {
             return null;
         }
     }
-    
 
     protected String getUnrelatedSchemaName() {
         return "./org/eclipse/persistence/testing/sdo/helper/xmlhelper/PurchaseOrder.xsd";
@@ -162,9 +161,6 @@ public class SDOXMLHelperDatatypeFloatTestCases extends SDOTestCase {
         StreamResult result = new StreamResult(outstream);
         ((SDOXMLHelper) xmlHelper).save(document, result, null);
         
-        ((SDOXMLHelper) xmlHelper).save(document, System.out, null);
-        System.out.println(document.getRootObject().getFloat("value"));
-
         compareXML(getControlWriteFileName(), result.getOutputStream().toString());
     }
 
