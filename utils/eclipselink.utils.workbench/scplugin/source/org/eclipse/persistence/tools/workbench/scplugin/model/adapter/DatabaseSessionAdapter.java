@@ -209,6 +209,8 @@ public class DatabaseSessionAdapter extends SessionAdapter implements LoginHandl
 	        ds = buildDefaultRdbmsDataSource();
 	    else if( this.login.platformIsEis())
 	        ds = buildDefaultEisDataSource();
+	    else if (this.login.platformIsXml())
+	    	ds = buildDefaultXmlDataSource();
 	    else
 	        throw new IllegalStateException();
 	    
