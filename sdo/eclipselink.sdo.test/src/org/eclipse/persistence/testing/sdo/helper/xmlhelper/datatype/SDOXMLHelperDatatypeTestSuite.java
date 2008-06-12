@@ -32,7 +32,6 @@ public class SDOXMLHelperDatatypeTestSuite {
         suite.addTest(new TestSuite(SDOXMLHelperDatatypeBase64TestCases.class));
         suite.addTest(new TestSuite(SDOXMLHelperDatatypeHexTestCases.class));        
         suite.addTest(new TestSuite(SDOXMLHelperDatatypeFloatTestCases.class));
-        suite.addTest(new TestSuite(SDOXMLHelperDatatypeUnionTestCases.class));
 
         return suite;
     }
