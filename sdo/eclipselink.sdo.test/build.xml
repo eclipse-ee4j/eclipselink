@@ -60,7 +60,7 @@
             includes="${eclipselink.core.depend}"/>
     <pathelement path="${junit.lib}"/>
         <pathelement path="${commonj.sdo.lib}"/>
-        <pathelement path="${eclipselink.jar}"/>
+        <pathelement path="${eclipselink.jar.name}"/>
     </path>
     <path id="sdo.run.path.against.jar">
         <fileset
@@ -70,7 +70,7 @@
         <pathelement path="${eclipselink.sdo.test}/${resource.dir}"/>
         <pathelement path="${eclipselink.sdo.test}/${classes.dir}"/>
         <pathelement path="${commonj.sdo.lib}"/>
-        <pathelement path="${eclipselink.jar}"/>
+        <pathelement path="${eclipselink.jar.name}"/>
     </path>
 
     <!-- Clean targets -->

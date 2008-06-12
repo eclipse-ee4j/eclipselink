@@ -40,6 +40,10 @@
     />
 
     <target name="init">
+        <tstamp>
+            <format property="build_date" pattern="yyyyMMdd"/>
+            <format property="build_time" pattern="HHmm"/>
+        </tstamp>
         <!-- #  The next properties defines are pulled out of the properties file  -->
         <!-- #       to highlight them.                                            -->
         <!-- # test.properties.run - defines which file to use to connect to the   -->
@@ -50,12 +54,10 @@
         <property name="test.properties.run" value="${coretest.prop.file}"/>
 
         <property file="${basedir}/autobuild.properties"/>
+        <property file="${basedir}/build.properties"/>
 
         <!-- temporary need build_id in upload to maven.  This code should is duplicated from build.xml -->
         <!-- ${build_id} will be given by the build system. Manual build is SNAPSHOT. -->
-        <tstamp>
-            <format property="build_date" pattern="yyyyMMdd"/>
-        </tstamp>
         <condition property="build_number" value="${build_id}">
             <isset property="build_id"/>
         </condition>
@@ -164,18 +166,19 @@
     </target>
 
     <target name="publish-build">
-        <copy file="${build.root.dir}/${eclipselink.zip.name}${eclipselink.zip.extension}"          tofile="${download.path}/${eclipselink.zip.name}-${installer_id}${eclipselink.zip.extension}"/>
-        <copy file="${build.root.dir}/${eclipselink.plugins.zip.name}${eclipselink.zip.extension}"  tofile="${download.path}/${eclipselink.plugins.zip.name}-${installer_id}${eclipselink.zip.extension}"/>
-        <copy file="${build.root.dir}/foundation/eclipselink.core.test/reports/junit-noframes.html" tofile="${download.path}/test-results/core/eclipselink-srg-${installer_id}.html"/>
-        <copy file="${build.root.dir}/jpa/eclipselink.jpa.test/reports/junit-noframes.html"         tofile="${download.path}/test-results/jpa/eclipselink-jpa-lrg-${installer_id}.html"/>
-        <copy file="${build.root.dir}/moxy/eclipselink.moxy.test/reports/jaxb/junit-noframes.html"  tofile="${download.path}/test-results/moxy/eclipselink-jaxb-lrg-${installer_id}.html"/>
-        <copy file="${build.root.dir}/moxy/eclipselink.moxy.test/reports/oxm/junit-noframes.html"   tofile="${download.path}/test-results/moxy/eclipselink-oxm-lrg-${installer_id}.html"/>
-        <copy file="${build.root.dir}/sdo/eclipselink.sdo.test/reports/true/junit-noframes.html"    tofile="${download.path}/test-results/sdo/eclipselink-sdo-lrg-${installer_id}.html"/>
+        <copy file="${build.root.dir}/${eclipselink.install.prefix}${eclipselink.zip.suffix}"         tofile="${download.path}/${eclipselink.install.prefix}-${installer_id}${eclipselink.zip.suffix}"/>
+        <copy file="${build.root.dir}/${eclipselink.src.install.prefix}${eclipselink.zip.suffix}"     tofile="${download.path}/${eclipselink.src.install.prefix}-${installer_id}${eclipselink.zip.suffix}"/>
+        <copy file="${build.root.dir}/${eclipselink.plugins.install.prefix}${eclipselink.zip.suffix}" tofile="${download.path}/${eclipselink.plugins.install.prefix}-${installer_id}${eclipselink.zip.suffix}"/>
+        <copy file="${build.root.dir}/foundation/eclipselink.core.test/reports/junit-noframes.html"   tofile="${download.path}/test-results/core/eclipselink-srg-${installer_id}.html"/>
+        <copy file="${build.root.dir}/jpa/eclipselink.jpa.test/reports/junit-noframes.html"           tofile="${download.path}/test-results/jpa/eclipselink-jpa-lrg-${installer_id}.html"/>
+        <copy file="${build.root.dir}/moxy/eclipselink.moxy.test/reports/jaxb/junit-noframes.html"    tofile="${download.path}/test-results/moxy/eclipselink-jaxb-lrg-${installer_id}.html"/>
+        <copy file="${build.root.dir}/moxy/eclipselink.moxy.test/reports/oxm/junit-noframes.html"     tofile="${download.path}/test-results/moxy/eclipselink-oxm-lrg-${installer_id}.html"/>
+        <copy file="${build.root.dir}/sdo/eclipselink.sdo.test/reports/true/junit-noframes.html"      tofile="${download.path}/test-results/sdo/eclipselink-sdo-lrg-${installer_id}.html"/>
         <exec executable="${svn.exec}" failonerror="true" logError="true">
             <arg value="commit"/>
             <arg value="-m ${installer_id}"/>
             <arg value="${build.root.dir}/${eclipselink.jar.name}"/>
-            <arg value="${build.root.dir}/${eclipselink-src.zip}"/>
+            <arg value="${build.root.dir}/${eclipselink.src.install.prefix}${eclipselink.zip.suffix}"/>
         </exec>
         <ant antfile="uploadToMaven.xml" dir="${build.root.dir}" target="upload-maven-all"/>
     </target>

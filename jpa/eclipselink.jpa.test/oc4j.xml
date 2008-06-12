@@ -53,7 +53,7 @@
     <!-- This target is to install OC4J server at ${oc4j.home}. Before calling this target, you need to
         1) Obtain Oracle 11g OC4J standalone zip - oc4j.extended.zip and put it at ${extension.oracle.lib.external}
         2) Download open source ANT extension - XmlTask from http://www.oopsconsultancy.com/software/xmltask/
-        3) Have ${eclipselink.jar} available via executing 'ant package.eclipselink.jar' from trunk
+        3) Have ${eclipselink.jar.name} available via executing 'ant package.eclipselink.jar' from trunk
     -->
     <target name="oc4j-install">
         <delete dir="${oc4j.home}"/>
@@ -63,7 +63,7 @@
             <replace path="//realm[name='jazn.com']/users/user[name='fmwadmin']" withfile="${system-jazn-data.xml}" />
         </xmltask>
         <delete file="${oc4j.home}/lib/java/shared/oracle.toplink/11.1.1.0.0/eclipselink.jar" failonerror="false"/>
-        <copy file="${eclipselink.jar}" todir="${oc4j.home}/j2ee/home/applib"/>
+        <copy file="${eclipselink.jar.name}" todir="${oc4j.home}/j2ee/home/applib"/>
         <copy file="${junit.lib}" todir="${oc4j.home}/j2ee/home/applib"/>
         <copy file="${jdbc.driver.jar}" todir="${oc4j.home}/j2ee/home/applib"/>
     </target>

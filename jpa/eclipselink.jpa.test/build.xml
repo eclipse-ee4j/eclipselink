@@ -93,7 +93,7 @@
             <fileset
                 dir="${eclipselink.core.lib.dir}"
                 includes="${eclipselink.core.depend}"/>
-            <pathelement path="${eclipselink.jar}"/>
+            <pathelement path="${eclipselink.jar.name}"/>
             <pathelement path="${junit.lib}"/>
             <pathelement path="${eclipselink.plugins}/${antlr}"/>
             <pathelement path="${eclipselink.plugins}/${asm}"/>

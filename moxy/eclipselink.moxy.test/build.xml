@@ -75,19 +75,19 @@
         <fileset
             dir="${eclipselink.plugins}"
             includes="${eclipselink.core.depend}"/>
-        <pathelement path="${eclipselink.jar}"/>
+        <pathelement path="${eclipselink.jar.name}"/>
     </path>
     <path id="jaxb.run.path.against.jar">
         <pathelement path="${jaxb-api.lib}"/>
         <pathelement path="${eclipselink.moxy.test}/${classes.dir}"/>
         <pathelement path="${eclipselink.moxy.test}/${resource.dir}"/>
-        <pathelement path="${eclipselink.jar}"/>
+        <pathelement path="${eclipselink.jar.name}"/>
     </path>
     <path id="oxm.compile.path.against.jar">
         <fileset
             dir="${eclipselink.plugins}"
             includes="${eclipselink.core.depend}"/>
-        <pathelement path="${eclipselink.jar}"/>
+        <pathelement path="${eclipselink.jar.name}"/>
     </path>
     <path id="oxm.run.path.against.jar">
         <fileset
@@ -95,7 +95,7 @@
             includes="${eclipselink.core.depend}"/>
         <pathelement path="${eclipselink.moxy.test}/${classes.dir}"/>
         <pathelement path="${eclipselink.moxy.test}/${resource.dir}"/>
-        <pathelement path="${eclipselink.jar}"/>
+        <pathelement path="${eclipselink.jar.name}"/>
     </path>
 
     <!-- Test targets -->

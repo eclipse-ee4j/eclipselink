@@ -56,7 +56,7 @@
             dir="${eclipselink.plugins}"
             includes="${eclipselink.core.depend}"/>
         <pathelement path="${eclipselink.core}/${classes.dir}"/>
-        <pathelement path="${eclipselink.jar}"/>
+        <pathelement path="${eclipselink.jar.name}"/>
     </path>
 
     <!-- Default ant target, compiles and translates resources, does not run tests. -->
@@ -127,7 +127,7 @@
         <pathelement path="${eclipselink.core.test}/${run.dir}"/>
         <path refid="compile.path"/>
         <pathelement path="${eclipselink.core}/${resource.dir}"/>
-        <pathelement path="${eclipselink.jar}"/>
+        <pathelement path="${eclipselink.jar.name}"/>
         <pathelement path="${eclipselink.core.test}/${eclipselink.tests.jar}"/>
         <pathelement path="${jdbc.driver.jar}"/>
         <pathelement path="${tools.lib}"/>
@@ -347,7 +347,7 @@
             <arg value="saveresults=true" />
             <classpath>
                 <fileset dir="${eclipselink.plugins}" includes="${eclipselink.core.depend.without.connector.jar}"/>
-                <pathelement path="${eclipselink.jar}"/>
+                <pathelement path="${eclipselink.jar.name}"/>
                 <pathelement path="${eclipselink.core.test}/${eclipselink.tests.jar}"/>
                 <pathelement path="${junit.lib}"/>
                 <pathelement path="${jdbc.driver.jar}"/>

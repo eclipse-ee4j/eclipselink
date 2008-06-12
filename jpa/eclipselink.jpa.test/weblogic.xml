@@ -73,7 +73,7 @@
         <mkdir dir="${weblogic.domain}"/>
         <antcall target="weblogic-start-nosleep" inheritRefs="true"/>
         <copy file="${junit.lib}" todir="${weblogic.domain}/lib"/>
-        <copy file="${eclipselink.jar}" todir="${weblogic.domain}/lib"/>
+        <copy file="${eclipselink.jar.name}" todir="${weblogic.domain}/lib"/>
         <copy file="${jdbc.driver.jar}" todir="${weblogic.domain}/lib"/>
         <antcall target="weblogic-stop" inheritRefs="true"/>
     </target>

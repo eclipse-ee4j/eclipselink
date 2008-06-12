@@ -74,8 +74,8 @@
     <!-- Setup properties needed if testing using a local repos on RedHat     -->
     <!--     (-D_RHB=1 defined on command-line)                              -->
     <target name="init-test" if="_LocalRepos" depends="init">
-        <property name="svn.rw.protocol" value="file:"/>
-        <property name="svn.base.url"    value="///var/svn/repos/eclipselink"/>
+        <property name="svn.rw.protocol"   value="file:"/>
+        <property name="svn.base.urlpath"  value="///var/svn/repos/eclipselink"/>
     </target>
 
     <!-- Setup properties needed if testing using a local repos on RedHat     -->
@@ -111,7 +111,8 @@
         <property name="svn.ro.protocol"     value="http:"/>
         <property name="svn.protocol"        value="svn:"/>
         <property name="svn.rw.protocol"     value="svn+ssh:"/>
-        <property name="svn.base.url"        value="//dev.eclipse.org/svnroot/technology/org.eclipse.persistence"/>
+        <property name="svn.base.urlpath"    value="//dev.eclipse.org/svnroot/technology/org.eclipse.persistence"/>
+        <property name="svn.base.url"        value="${svn.rw.protocol}${svn.base.urlpath}"/>
         <property name="svn.branch.url"      value="${svn.base.url}/${branch.dir}"/>
         <property name="svn.build.url"       value="${svn.branch.url}/buildsystem"/>
         <property name="current.svnrev.file" value="${log.dir}/.current_svn_rev"/>
@@ -131,7 +132,7 @@
         <!--    <arg value="-q"/>                                             -->
         <exec executable="${svn.exec}" failonerror="true" logError="true" >
             <arg value="co"/>
-            <arg value="${svn.rw.protocol}${svn.branch.url}"/>
+            <arg value="${svn.branch.url}"/>
         </exec>
         <chmod file="${build.root.dir}/buildsystem/bootstrap.sh" perm="ug+x"/>
         <echo message="**  End of Source Retrieval  **"/>
@@ -212,7 +213,7 @@
             <arg value="info"/>
             <arg value="--revision"/>
             <arg value="HEAD"/>
-            <arg value="${svn.protocol}${svn.branch.url}"/>
+            <arg value="${svn.branch.url}"/>
         </exec>
         <exec executable="grep" failonerror="true" logError="true" input="${current.svnrev.file}" output="${current.svnrev.file}">
             <arg value="Last"/>

@@ -71,7 +71,7 @@
     <property name="installer_id" value="${build_date}"/>
 
     <path id="javadoc.path">
-        <pathelement path="${eclipselink.jar}"/>
+        <pathelement path="${eclipselink.jar.name}"/>
         <pathelement path="${commonj.sdo.lib}"/>
         <pathelement path="${eclipselink.plugins}/${antlr}"/>
         <pathelement path="${eclipselink.plugins}/${asm}"/>
@@ -130,7 +130,7 @@
 
     <!-- Packages the eclipselink.jar. -->
     <target name="package-eclipselink-jar" depends="create-build-dir" description="build EclipseLink jar">
-        <jar jarfile="${eclipselink.jar}">
+        <jar jarfile="${eclipselink.jar.name}">
              <manifest>
                 <attribute name="Implementation-Title" value="${implementation.title}"/>
                 <attribute name="Implementation-Version" value="${release.version} ${build_number_string}"/>
@@ -248,7 +248,7 @@
     </target>
 
     <target name="package-eclipselink-bundles" depends="build-eclipselink-bundles">
-        <zip destfile="${eclipselink-plugins.prefix}${eclipselink-installer.suffix}">
+        <zip destfile="${eclipselink.plugins.install.prefix}${eclipselink.zip.suffix}">
             <zipfileset dir="${eclipselink.plugins}" prefix="plugins">
                 <include name="**.jar"/>
             </zipfileset>
@@ -276,7 +276,7 @@
 
     <!-- Packages the eclipselink source jar. -->
     <target name="package-src-jar" description="build EclipseLink source jar">
-        <zip zipfile="${eclipselink-src.zip}">
+        <zip zipfile="${eclipselink.src.install.prefix}${eclipselink.zip.suffix}">
             <fileset dir="${eclipselink.core}/${src.dir}">
                 <include name="org/eclipse/persistence/**/*.java"/>
             </fileset>
@@ -360,18 +360,19 @@
         <ant antfile="${eclipselink.moxy.test}/build.xml" target="clean"/>
         <ant antfile="${eclipselink.sdo.test}/build.xml" target="clean"/>
         <delete dir="${build.dir}"/>
-        <delete file="${eclipselink.jar}"/>
+        <delete file="${eclipselink.jar.name}"/>
+        <delete file="${eclipselink.src.install.prefix}${eclipselink.zip.suffix}"/>
     </target>
 
     <!-- Packages the installer zip. -->
     <target name="package-installer-zip" description="build EclipseLink installer zip - includes utils and javadocs">
-        <zip destfile="${eclipselink-installer.prefix}${eclipselink-installer.suffix}">
+        <zip destfile="${eclipselink.install.prefix}${eclipselink.zip.suffix}">
             <!-- miscellaneous files -->
             <zipfileset dir="." prefix="eclipselink">
                 <include name="${about-file}"/>
                 <include name="${readme-file}"/>
                 <include name="${license-files}"/>
-                <include name="${eclipselink-javadoc-installer.prefix}${eclipselink-javadoc-installer.suffix}"/>
+                <include name="${eclipselink.javadoc.install.prefix}${eclipselink.zip.suffix}"/>
             </zipfileset>
             <!-- setenv and package-rename scripts -->
             <zipfileset dir="${eclipselink.core.bin}" prefix="eclipselink/bin">
@@ -393,8 +394,8 @@
             <zipfileset dir="./${eclipselink.jpa.xsds}" includes="*.xsd" prefix="eclipselink/xsds"/>
             <!-- core jar's and zips -->
             <zipfileset dir="." prefix="eclipselink/jlib">
-                <include name="${eclipselink.jar}"/>
-                <include name="${eclipselink-src.zip}"/>
+                <include name="${eclipselink.jar.name}"/>
+                <include name="${eclipselink.src.install.prefix}${eclipselink.zip.suffix}"/>
             </zipfileset>
             <zipfileset dir="./${eclipselink.util.rename.utility}" prefix="eclipselink/utils/rename">
                 <include name="${package-rename.jar}"/>
@@ -432,7 +433,7 @@
 
     <!-- Packages javadoc into a zip. -->
     <target name="package-javadoc-zip" description="build EclipseLink javadoc zip">
-        <zip destfile="${eclipselink-javadoc-installer.prefix}${eclipselink-javadoc-installer.suffix}">
+        <zip destfile="${eclipselink.javadoc.install.prefix}${eclipselink.zip.suffix}">
             <!-- miscellaneous files -->
             <zipfileset dir="${eclipselink.javadocs}/" prefix="eclipselink/javadocs"/>
         </zip>

@@ -86,7 +86,7 @@
         </antcall>
         <antcall target="upload-artifact">
             <param name="artifactId" value="eclipselink"/>
-            <param name="artifact" value="${eclipselink.jar}"/>
+            <param name="artifact" value="${eclipselink.jar.name}"/>
             <param name="artifactName" value="EclipseLink"/>
        </antcall>
    </target>
@@ -109,7 +109,7 @@
        <artifact:deploy file="${artifact}">
          <remoteRepository refid="eclipselink.repository"/>
          <pom refid="maven.project"/>
-         <artifact:attach file="eclipselink-src.zip" classifier="sources"/>
+         <artifact:attach file="${eclipselink.src.install.prefix}${eclipselink.zip.suffix}" classifier="sources"/>
        </artifact:deploy>
        
        <!-- cleanup -->
