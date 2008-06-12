@@ -54,7 +54,6 @@
         <property name="test.properties.run" value="${coretest.prop.file}"/>
 
         <property file="${basedir}/autobuild.properties"/>
-        <property file="${basedir}/build.properties"/>
 
         <!-- temporary need build_id in upload to maven.  This code should is duplicated from build.xml -->
         <!-- ${build_id} will be given by the build system. Manual build is SNAPSHOT. -->
@@ -74,6 +73,10 @@
         <property name="download.path" value="${eclipse.download.path}"/>
         <!-- HACK: to fix workbench buildnumber stamping until workbench build files can be fixed -->
         <property name="_buildNumber" value="${installer_id}"/>
+
+        <!-- Now that all our overrides are complete, pull in the rest of the build properties -->
+        <property file="${basedir}/build.properties"/>
+
         <echo message="ANT_ARGS='${env.ANT_ARGS}'"/>
         <echo message="ANT_OPTS='${env.ANT_OPTS}'"/>
         <echo message=" "/>
