@@ -126,7 +126,10 @@ public abstract class SCAdapter extends SCModel {
 		return (( SCAdapter)this.getParent()).getConfigFileVersion();
 	}
 	/**
-	 * Returns true if sessions.xml version is previous to 10g.
+	 * Returns true if sessions.xml version is previous to 10g.  
+	 * For EL added the version > 3 clause since the version number has reset.  
+	 * When EL Workbench surpasses 3.0 this will need to be revisited, but perhaps we 
+	 * won't be supporting opening older TL sessions files and this method can be removed.
 	 */
 	protected final boolean configVersionIsPre10g() {
 		String versionString = this.getConfigFileVersion();
@@ -139,7 +142,7 @@ public abstract class SCAdapter extends SCModel {
 		        break;
 		    version += Character.digit( c, 10);
 		}
-		return ( version < 10);
+		return ( version > 3 && version < 10);
 	}
 	/**
 	 * Returns True when this config is clean and is not a mandated element in the schema.
