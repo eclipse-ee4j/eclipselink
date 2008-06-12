@@ -377,7 +377,7 @@
             <param name="TEST_CLASS" value="${test.class}"/>
             <param name="TEST_AGENT" value="${test.agent}"/>
             <param name="TEST_WEAVING" value="${test.weaving}"/>
-        	<param name="ORM_TESTING" value="-Dorm.testing=jpa"/>
+            <param name="ORM_TESTING" value="-Dorm.testing=jpa"/>
             <param name="RUN_PATH" value="run.classpath"/>
         </antcall>
         <antcall target="generate-report" inheritRefs="true"/>
@@ -389,14 +389,14 @@
             <param name="TEST_CLASS" value="org.eclipse.persistence.testing.tests.jpa.FullRegressionTestSuite"/>
             <param name="TEST_AGENT" value="${test.agent}"/>
             <param name="TEST_WEAVING" value="${test.weaving}"/>
-        	<param name="ORM_TESTING" value="-Dorm.testing=jpa"/>
+            <param name="ORM_TESTING" value="-Dorm.testing=jpa"/>
             <param name="RUN_PATH" value="run.classpath"/>
         </antcall>
         <antcall target="run-test" inheritRefs="true">
             <param name="TEST_CLASS" value="org.eclipse.persistence.testing.tests.jpa.xml.EntityMappingsJUnitTestSuite"/>
             <param name="TEST_AGENT" value="${test.agent}"/>
             <param name="TEST_WEAVING" value="${test.weaving}"/>
-        	<param name="ORM_TESTING" value="-Dorm.testing=eclipselink"/>
+            <param name="ORM_TESTING" value="-Dorm.testing=eclipselink"/>
             <param name="RUN_PATH" value="run.extended.classpath"/>
         </antcall>
         <antcall target="test-oracle" inheritRefs="true"/>
@@ -409,7 +409,7 @@
             <param name="TEST_CLASS" value="org.eclipse.persistence.testing.tests.OracleJPATestSuite"/>
             <param name="TEST_AGENT" value="${test.agent}"/>
             <param name="TEST_WEAVING" value="${test.weaving}"/>
-        	<param name="ORM_TESTING" value="-Dorm.testing=jpa"/>
+            <param name="ORM_TESTING" value="-Dorm.testing=jpa"/>
             <param name="RUN_PATH" value="run.classpath"/>
         </antcall>
     </target>
@@ -420,7 +420,7 @@
             <param name="TEST_CLASS" value="org.eclipse.persistence.testing.tests.jpa.advanced.EntityManagerJUnitTestSuite"/>
             <param name="TEST_AGENT" value="${test.agent}"/>
             <param name="TEST_WEAVING" value="${test.weaving}"/>
-        	<param name="ORM_TESTING" value="-Dorm.testing=jpa"/>
+            <param name="ORM_TESTING" value="-Dorm.testing=jpa"/>
             <param name="RUN_PATH" value="run.classpath"/>
         </antcall>
         <antcall target="generate-report" inheritRefs="true"/>
@@ -432,15 +432,8 @@
             <param name="TEST_CLASS" value="${test.class}"/>
             <param name="TEST_AGENT" value="-Dignore"/>
             <param name="TEST_WEAVING" value="-DTEST_NO_WEAVING=true"/>
-        	<param name="ORM_TESTING" value="-Dorm.testing=jpa"/>
+            <param name="ORM_TESTING" value="-Dorm.testing=jpa"/>
             <param name="RUN_PATH" value="run.classpath"/>
-        </antcall>
-        <antcall target="run-test" inheritRefs="true">
-            <param name="TEST_CLASS" value="org.eclipse.persistence.testing.tests.jpa.xml.EntityMappingsJUnitTestSuite"/>
-            <param name="TEST_AGENT" value="-Dignore"/>
-            <param name="TEST_WEAVING" value="-DTEST_NO_WEAVING=true"/>
-        	<param name="ORM_TESTING" value="-Dorm.testing=eclipselink"/>
-            <param name="RUN_PATH" value="run.extended.classpath"/>
         </antcall>
         <antcall target="generate-report" inheritRefs="true"/>
     </target>
