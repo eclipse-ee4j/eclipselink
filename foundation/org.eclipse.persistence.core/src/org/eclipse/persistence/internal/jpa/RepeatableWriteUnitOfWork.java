@@ -323,7 +323,7 @@ public class RepeatableWriteUnitOfWork extends UnitOfWorkImpl {
             }
             // Clean up, new objects are now existing.
             setUnitOfWorkChangeSet(new UnitOfWorkChangeSet());
-            this.changeTrackedHardList = new ArrayList();
+            this.changeTrackedHardList = null;
         }
 
     /**

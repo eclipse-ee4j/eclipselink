@@ -243,6 +243,14 @@ public abstract class AbstractSession implements org.eclipse.persistence.session
      * INTERNAL:
      * Return a unit of work for this session not registered with the JTS transaction.
      */
+    public UnitOfWorkImpl acquireNonSynchronizedUnitOfWork() {
+    	return acquireNonSynchronizedUnitOfWork(null);
+    }
+    
+    /**
+     * INTERNAL:
+     * Return a unit of work for this session not registered with the JTS transaction.
+     */
     public UnitOfWorkImpl acquireNonSynchronizedUnitOfWork(ReferenceMode referenceMode) {
         setNumberOfActiveUnitsOfWork(getNumberOfActiveUnitsOfWork() + 1);
         UnitOfWorkImpl unitOfWork = new UnitOfWorkImpl(this, referenceMode);

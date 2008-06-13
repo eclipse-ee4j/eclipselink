@@ -477,7 +477,7 @@ public class PropertiesHandler {
 
     protected static class ReferenceModeProp extends Prop {
         ReferenceModeProp() {
-            super(EntityManagerProperties.PERSISTENCE_CONTEXT_REFERENCE_MODE, ReferenceMode.WEAK.toString());
+            super(EntityManagerProperties.PERSISTENCE_CONTEXT_REFERENCE_MODE, ReferenceMode.HARD.toString());
             valueArray = new Object[] {
                 ReferenceMode.HARD.toString(),
                 ReferenceMode.WEAK.toString(),

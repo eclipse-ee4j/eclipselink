@@ -32,6 +32,7 @@ import javax.persistence.spi.PersistenceUnitInfo;
 import javax.persistence.spi.ClassTransformer;
 import javax.persistence.PersistenceException;
 
+import org.eclipse.persistence.jpa.config.EntityManagerProperties;
 import org.eclipse.persistence.jpa.config.PersistenceUnitProperties;
 import org.eclipse.persistence.jpa.config.BatchWriting;
 import org.eclipse.persistence.internal.databaseaccess.DatasourcePlatform;
@@ -47,6 +48,7 @@ import org.eclipse.persistence.sessions.*;
 import org.eclipse.persistence.sessions.server.ReadConnectionPool;
 import org.eclipse.persistence.sessions.server.ServerSession;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataProcessor;
+import org.eclipse.persistence.sessions.factories.ReferenceMode;
 import org.eclipse.persistence.sessions.factories.SessionManager;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.platform.server.CustomServerPlatform;

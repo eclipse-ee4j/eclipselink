@@ -247,7 +247,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
     
     // This is list is used during change tracking to keep hard references
     // to changed objects that may otherwise have been garbage collected.
-    protected ArrayList changeTrackedHardList;
+    protected IdentityHashSet changeTrackedHardList;
 
     /**
      * INTERNAL:
@@ -1177,7 +1177,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
         commitToDatabaseWithChangeSet(true);
         // Merge after commit	
         mergeChangesIntoParent();
-        this.changeTrackedHardList = new ArrayList();
+        this.changeTrackedHardList = new IdentityHashSet();
 
     }
 
@@ -5062,6 +5062,12 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
         return pessimisticLockedObjects;
     }
 
+    public void addToChangeTrackedHardList(Object obj){
+    	if (this.referenceMode != ReferenceMode.HARD){
+    		this.getChangeTrackedHardList().add(obj);
+    	}
+    }
+    
     /**
      * INTERNAL:
      */
@@ -5199,8 +5205,8 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
         return referenceMode;
     }
 
-    public ArrayList getChangeTrackedHardList() {
-        if (changeTrackedHardList == null) changeTrackedHardList = new ArrayList();
+    public IdentityHashSet getChangeTrackedHardList() {
+        if (changeTrackedHardList == null) changeTrackedHardList = new IdentityHashSet();
         return changeTrackedHardList;
     }
     

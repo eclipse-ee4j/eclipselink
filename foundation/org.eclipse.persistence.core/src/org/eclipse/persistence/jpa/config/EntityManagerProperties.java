@@ -19,7 +19,7 @@ package org.eclipse.persistence.jpa.config;
 import org.eclipse.persistence.jpa.config.PersistenceUnitProperties;
 
 /**
- * The class defines TopLink properties' names.
+ * The class defines EclipseLink properties' names for use at the EntityManager level.
  * 
  * This properties are specific to an EnityManger and should be 
  * passed to createEntityManager methods of EntityManagerFactory.

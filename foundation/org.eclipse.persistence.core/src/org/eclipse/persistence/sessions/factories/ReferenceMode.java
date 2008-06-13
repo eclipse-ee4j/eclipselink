@@ -1,5 +1,26 @@
+/*******************************************************************************
+ * Copyright (c) 1998, 2008 Oracle. All rights reserved.
+ * This program and the accompanying materials are made available under the 
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
+ * which accompanies this distribution. 
+ * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
+ * and the Eclipse Distribution License is available at 
+ * http://www.eclipse.org/org/documents/edl-v10.php.
+ *
+ * Contributors:
+ *     Gordon Yorke - ER 214661 - VM Managed Entity Detachment
+ ******************************************************************************/  
 package org.eclipse.persistence.sessions.factories;
 
+/**
+ * <b>Purpose:</b> This class is a configuration property used to specify
+ * What type of Referenes EclipseLink will use when referencing Entities
+ * within the Persistence Context / UnitOfWork.  Depending on the configured
+ * ReferenceMode some Entities may be garbage collected.
+ * 
+ * @author Gordon
+ *
+ */
 public enum ReferenceMode {
     /**
      * References to Objects will be through hard references.  These objects will not be available for

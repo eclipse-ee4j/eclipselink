@@ -139,6 +139,9 @@ public class AttributeChangeListener extends ObjectChangeListener {
             uow.setUnitOfWorkChangeSet(new UnitOfWorkChangeSet());
         }
         if (objectChangeSet == null) {//only null if new or if in a new UOW
+            //add to tracker list to prevent GC of clone if using weak references
+        	//put it in here so that it only occurs on the 1st change for a particular UOW
+            uow.addToChangeTrackedHardList(owner);
             objectChangeSet = getDescriptor().getObjectBuilder().createObjectChangeSet(owner, (UnitOfWorkChangeSet) uow.getUnitOfWorkChangeSet(), false, uow);
         }
 
@@ -165,8 +168,6 @@ public class AttributeChangeListener extends ObjectChangeListener {
         } else {
             throw ValidationException.wrongChangeEvent(evt.getClass());
         }
-        //add to tracker list to prevent GC of clone if using weak references
-        uow.getChangeTrackedHardList().add(owner);
     }
     
     /**
