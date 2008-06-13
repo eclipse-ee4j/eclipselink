@@ -5,6 +5,7 @@ cd /shared/technology/eclipselink
 num_files=10
 
 # leave only the last $num_files (10) builds on the download server
+# OSGi plugin install
 index=0
 for zipfile in `ls -r /home/data/httpd/download.eclipse.org/technology/eclipselink/nightly/eclipselink-plugins-incubation*.zip ` ; do
 	index=`expr $index + 1`
@@ -13,8 +14,17 @@ for zipfile in `ls -r /home/data/httpd/download.eclipse.org/technology/eclipseli
 	fi
 done
 
+# SRC install
 index=0
-for zipfile in `ls -r /home/data/httpd/download.eclipse.org/technology/eclipselink/nightly/eclipselink-incubation*.zip ` ; do
+for zipfile in `ls -r /home/data/httpd/download.eclipse.org/technology/eclipselink/nightly/eclipselink-incubation-src*.zip ` ; do
+	index=`expr $index + 1`
+        if [ $index -gt $num_files ] ; then
+           rm $zipfile
+	fi
+done
+# EL install
+index=0
+for zipfile in `ls -r /home/data/httpd/download.eclipse.org/technology/eclipselink/nightly/eclipselink-incubation-[0-9]*.zip ` ; do
 	index=`expr $index + 1`
         if [ $index -gt $num_files ] ; then
            rm $zipfile
