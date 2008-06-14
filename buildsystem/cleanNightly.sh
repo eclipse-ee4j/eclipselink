@@ -1,7 +1,7 @@
 # !/bin/sh
 set -x
 
-cd /shared/technology/eclipselink
+cd /shared/rt/eclipselink
 num_files=10
 
 # leave only the last $num_files (10) builds on the download server

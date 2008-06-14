@@ -76,7 +76,7 @@ fi
 BOOTSTRAP_BLDFILE=bootstrap.xml
 JAVA_HOME=/shared/common/ibm-java2-ppc-50
 ANT_HOME=/shared/common/apache-ant-1.7.0
-HOME_DIR=/shared/technology/eclipselink
+HOME_DIR=/shared/rt/eclipselink
 LOG_DIR=${HOME_DIR}/logs
 BRANCH_PATH=${HOME_DIR}/${BRANCH}trunk
 BLD_DEPS_DIR=${HOME_DIR}/bld_deps/${BRANCH_NM}
