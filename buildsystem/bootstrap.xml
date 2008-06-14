@@ -111,7 +111,7 @@
         <property name="svn.ro.protocol"     value="http:"/>
         <property name="svn.protocol"        value="svn:"/>
         <property name="svn.rw.protocol"     value="svn+ssh:"/>
-        <property name="svn.base.urlpath"    value="//dev.eclipse.org/svnroot/technology/org.eclipse.persistence"/>
+        <property name="svn.base.urlpath"    value="//dev.eclipse.org/svnroot/rt/org.eclipse.persistence"/>
         <property name="svn.base.url"        value="${svn.rw.protocol}${svn.base.urlpath}"/>
         <property name="svn.branch.url"      value="${svn.base.url}/${branch.dir}"/>
         <property name="svn.build.url"       value="${svn.branch.url}/buildsystem"/>
