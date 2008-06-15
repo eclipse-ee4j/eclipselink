@@ -29,7 +29,7 @@
            classpathref="maven-ant-tasks.classpath" />
 
    <!-- The repository where maven artifacts will be uploaded -->
-   <artifact:remoteRepository id="eclipselink.repository" url="file:///home/data/httpd/download.eclipse.org/technology/eclipselink/maven.repo" /> 
+   <artifact:remoteRepository id="eclipselink.repository" url="file:///home/data/httpd/download.eclipse.org/rt/eclipselink/maven.repo" /> 
    
    <target name = "upload-maven-init">
           <property file="./build.properties"/> <!-- release.version and build_id are intialized from here -->
