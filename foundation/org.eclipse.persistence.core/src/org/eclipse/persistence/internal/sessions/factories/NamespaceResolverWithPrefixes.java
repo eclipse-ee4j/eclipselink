@@ -1,4 +1,4 @@
-package org.eclipse.persistence.sessions.factories;
+package org.eclipse.persistence.internal.sessions.factories;
 
 import org.eclipse.persistence.oxm.NamespaceResolver;
 

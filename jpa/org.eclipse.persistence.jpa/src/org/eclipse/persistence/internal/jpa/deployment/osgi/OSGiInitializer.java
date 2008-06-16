@@ -18,8 +18,8 @@ import java.util.Map;
 import javax.persistence.spi.ClassTransformer;
 import javax.persistence.spi.PersistenceUnitInfo;
 
+import org.eclipse.persistence.config.PersistenceUnitProperties;
 import org.eclipse.persistence.internal.jpa.deployment.JPAInitializer;
-import org.eclipse.persistence.jpa.config.PersistenceUnitProperties;
 
 /**
  * INTERNAL:

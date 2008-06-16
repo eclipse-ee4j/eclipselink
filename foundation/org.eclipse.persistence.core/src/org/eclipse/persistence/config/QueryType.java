@@ -10,28 +10,29 @@
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
  ******************************************************************************/  
-package org.eclipse.persistence.jpa.config;
+package org.eclipse.persistence.config;
 
 /**
- * PessimisticLock hint values.
+ * Query type hint values.
  * 
- * The class contains all the valid values for EclipseLinkQueryHints.PESSIMISTIC_LOCK query hint.
+ * The class contains all the valid values for QueryHints.QUERY_TYPE query hint.
  * 
- * <p>JPA Query Hint Usage:
+ * JPA Query Hint Usage:
  * 
- * <p><code>query.setHint(EclipseLinkQueryHints.PESSIMISTIC_LOCK, PessimisticLock.Lock);</code>
+ * <p><code>query.setHint(QueryHints.QueryType, QueryType.ReadObject);</code>
  * <p>or 
- * <p><code>@QueryHint(name=EclipseLinkQueryHints.PESSIMISTIC_LOCK, value=PessimisticLock.Lock)</code>
+ * <p><code>@QueryHint(name=QueryHints.QueryType, value=QueryType.ReadObject)</code>
  * 
  * <p>Hint values are case-insensitive.
- * "" could be used instead of default value PessimisticLock.DEFAULT.
+ * "" could be used instead of default value CacheUsage.DEFAULT.
  * 
- * @see EclipseLinkQueryHints
+ * @see QueryHints
  */
-public class PessimisticLock {
-    public static final String  NoLock = "NoLock";
-    public static final String  Lock = "Lock";
-    public static final String  LockNoWait = "LockNoWait";
+public class QueryType {
+    public static final String  Auto = "Auto";
+    public static final String  ReadObject = "ReadObject";
+    public static final String  ReadAll = "ReadAll";
+    public static final String  Report = "Report";
  
-    public static final String DEFAULT = NoLock;
+    public static final String DEFAULT = Auto;
 }

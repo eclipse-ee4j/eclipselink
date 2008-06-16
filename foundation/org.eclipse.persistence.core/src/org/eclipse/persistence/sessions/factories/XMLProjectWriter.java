@@ -14,6 +14,8 @@ package org.eclipse.persistence.sessions.factories;
 
 import java.io.*;
 import org.eclipse.persistence.exceptions.*;
+import org.eclipse.persistence.internal.sessions.factories.MissingDescriptorListener;
+import org.eclipse.persistence.internal.sessions.factories.ObjectPersistenceWorkbenchXMLProject;
 import org.eclipse.persistence.oxm.*;
 import org.eclipse.persistence.sessions.*;
 

@@ -16,7 +16,7 @@ import java.util.Map;
 import java.util.HashMap;
 import java.util.Collections;
 
-import org.eclipse.persistence.jpa.config.PersistenceUnitProperties;
+import org.eclipse.persistence.config.PersistenceUnitProperties;
 import org.eclipse.persistence.internal.jpa.deployment.JPAInitializer;
 import org.eclipse.persistence.internal.jpa.deployment.PersistenceInitializationHelper;
 

@@ -13,11 +13,11 @@
 package org.eclipse.persistence.internal.oxm;
 
 import org.eclipse.persistence.descriptors.ClassDescriptor;
+import org.eclipse.persistence.internal.sessions.factories.NamespaceResolvableProject;
+import org.eclipse.persistence.internal.sessions.factories.NamespaceResolverWithPrefixes;
 import org.eclipse.persistence.oxm.XMLDescriptor;
 import org.eclipse.persistence.oxm.mappings.XMLBinaryDataMapping;
 import org.eclipse.persistence.oxm.mappings.XMLDirectMapping;
-import org.eclipse.persistence.sessions.factories.NamespaceResolvableProject;
-import org.eclipse.persistence.sessions.factories.NamespaceResolverWithPrefixes;
 
 /**
  *  INTERNAL:

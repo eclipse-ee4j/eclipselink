@@ -14,9 +14,9 @@
  *        - 224964: Provide support for Proxy Authentication through JPA.
  *        Now properties' names that could be used both in createEM and createEMF are the same. 
  ******************************************************************************/  
-package org.eclipse.persistence.jpa.config;
+package org.eclipse.persistence.config;
 
-import org.eclipse.persistence.jpa.config.PersistenceUnitProperties;
+import org.eclipse.persistence.config.PersistenceUnitProperties;
 
 /**
  * The class defines EclipseLink properties' names for use at the EntityManager level.

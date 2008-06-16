@@ -21,6 +21,7 @@ import java.util.*;
 import java.io.*;
 
 import org.eclipse.persistence.internal.helper.*;
+import org.eclipse.persistence.config.PersistenceUnitProperties;
 import org.eclipse.persistence.descriptors.*;
 import org.eclipse.persistence.internal.descriptors.*;
 import org.eclipse.persistence.internal.localization.ExceptionLocalization;
@@ -37,7 +38,6 @@ import org.eclipse.persistence.sessions.factories.ReferenceMode;
 import org.eclipse.persistence.logging.SessionLog;
 import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.internal.localization.LoggingLocalization;
-import org.eclipse.persistence.jpa.config.PersistenceUnitProperties;
 import org.eclipse.persistence.sessions.SessionProfiler;
 import org.eclipse.persistence.descriptors.changetracking.AttributeChangeTrackingPolicy;
 import org.eclipse.persistence.descriptors.invalidation.CacheInvalidationPolicy;

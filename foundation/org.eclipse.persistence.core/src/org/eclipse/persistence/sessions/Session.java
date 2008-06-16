@@ -130,11 +130,11 @@ public interface Session {
     
     /**
      * ADVANCED:
-     * Add a pre-defined not yet parsed EJBQL String/query to the session to be parsed 
+     * Add a pre-defined not yet parsed JPQL String/query to the session to be parsed 
      * after descriptors are initialized.
      * @see #getAllQueries()
      */
-    public void addEjbqlPlaceHolderQuery(DatabaseQuery query);
+    public void addJPAQuery(DatabaseQuery query);
 
     /**
      * PUBLIC:
@@ -430,7 +430,7 @@ public interface Session {
      * Return all pre-defined not yet parsed EJBQL queries.
      * @see #getAllQueries()
      */
-    public List getEjbqlPlaceHolderQueries();
+    public List getJPAQueries();
     
     /**
      * PUBLIC:

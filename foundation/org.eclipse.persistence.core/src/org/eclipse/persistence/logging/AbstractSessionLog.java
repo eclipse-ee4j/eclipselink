@@ -16,12 +16,12 @@ import java.util.Date;
 import java.text.DateFormat;
 import java.io.*;
 
-import org.eclipse.persistence.jpa.config.PersistenceUnitProperties;
 import org.eclipse.persistence.sessions.Session;
 import org.eclipse.persistence.internal.databaseaccess.Accessor;
 import org.eclipse.persistence.internal.helper.DateFormatThreadLocal;
 import org.eclipse.persistence.internal.localization.LoggingLocalization;
 import org.eclipse.persistence.internal.localization.TraceLocalization;
+import org.eclipse.persistence.config.PersistenceUnitProperties;
 import org.eclipse.persistence.exceptions.ValidationException;
 
 /**

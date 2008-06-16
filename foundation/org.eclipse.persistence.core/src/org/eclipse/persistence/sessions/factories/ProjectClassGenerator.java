@@ -26,6 +26,7 @@ import org.eclipse.persistence.internal.history.*;
 import org.eclipse.persistence.internal.indirection.*;
 import org.eclipse.persistence.internal.expressions.ExpressionJavaPrinter;
 import org.eclipse.persistence.internal.queries.ReportItem;
+import org.eclipse.persistence.internal.sessions.factories.DirectToXMLTypeMappingHelper;
 import org.eclipse.persistence.mappings.*;
 import org.eclipse.persistence.mappings.foundation.*;
 import org.eclipse.persistence.mappings.converters.*;
@@ -37,7 +38,6 @@ import org.eclipse.persistence.descriptors.invalidation.*;
 import org.eclipse.persistence.eis.*;
 import org.eclipse.persistence.eis.interactions.*;
 import org.eclipse.persistence.sequencing.*;
-import org.eclipse.persistence.sessions.factories.DirectToXMLTypeMappingHelper;
 import org.eclipse.persistence.indirection.IndirectMap;
 
 /**

@@ -104,8 +104,8 @@ public abstract class AbstractSession implements org.eclipse.persistence.session
     /** Stores predefine reusable queries.*/
     transient protected Map queries;
     
-    /** Stores predefined not yet parsed EJBQL queries.*/
-    transient protected List ejbqlPlaceHolderQueries;
+    /** Stores predefined not yet parsed JPQL queries.*/
+    transient protected List jpaQueries;
 
     /** Resolves referential integrity on commits. */
     transient protected CommitManager commitManager;
@@ -334,8 +334,8 @@ public abstract class AbstractSession implements org.eclipse.persistence.session
      * Return all pre-defined not yet parsed EJBQL queries.
      * @see #getAllQueries()
      */
-    public void addEjbqlPlaceHolderQuery(DatabaseQuery query) {
-        getEjbqlPlaceHolderQueries().add(query);
+    public void addJPAQuery(DatabaseQuery query) {
+        getJPAQueries().add(query);
     }
 
     /**
@@ -1648,12 +1648,12 @@ public abstract class AbstractSession implements org.eclipse.persistence.session
      * Return all pre-defined not yet parsed EJBQL queries.
      * @see #getAllQueries()
      */
-    public List getEjbqlPlaceHolderQueries() {
+    public List getJPAQueries() {
         // PERF: lazy init, not normally required.
-        if (ejbqlPlaceHolderQueries == null) {
-            ejbqlPlaceHolderQueries = new Vector();
+        if (jpaQueries == null) {
+            jpaQueries = new Vector();
         }
-        return ejbqlPlaceHolderQueries;
+        return jpaQueries;
     }
 
     /**

@@ -10,7 +10,7 @@
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
  ******************************************************************************/  
-package org.eclipse.persistence.jpa.config;
+package org.eclipse.persistence.config;
 
 /**
  * Target server persistence property values.

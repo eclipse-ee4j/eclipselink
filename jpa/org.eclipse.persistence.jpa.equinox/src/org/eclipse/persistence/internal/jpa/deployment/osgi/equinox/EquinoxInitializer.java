@@ -29,7 +29,7 @@ import org.eclipse.osgi.framework.adaptor.ClassLoaderDelegate;
 import org.eclipse.osgi.internal.baseadaptor.DefaultClassLoader;
 import org.eclipse.persistence.internal.jpa.EntityManagerFactoryProvider;
 import org.eclipse.persistence.internal.jpa.deployment.PersistenceInitializationHelper;
-import org.eclipse.persistence.jpa.config.PersistenceUnitProperties;
+import org.eclipse.persistence.config.PersistenceUnitProperties;
 import org.eclipse.persistence.jpa.equinox.weaving.IWeaver;
 import org.eclipse.persistence.jpa.osgi.Activator;
 import org.eclipse.persistence.logging.AbstractSessionLog;

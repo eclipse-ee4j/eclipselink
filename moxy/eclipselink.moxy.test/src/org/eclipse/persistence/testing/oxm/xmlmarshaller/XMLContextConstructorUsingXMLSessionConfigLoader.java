@@ -21,7 +21,7 @@ import org.eclipse.persistence.oxm.XMLContext;
 import org.eclipse.persistence.oxm.XMLMarshaller;
 import org.eclipse.persistence.platform.xml.XMLPlatformException;
 import org.eclipse.persistence.testing.oxm.OXTestCase;
-import org.eclipse.persistence.internal.sessions.factories.XMLSessionConfigLoader;
+import org.eclipse.persistence.sessions.factories.XMLSessionConfigLoader;
 import org.eclipse.persistence.sessions.factories.SessionManager;
 import org.w3c.dom.Document;
 

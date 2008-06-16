@@ -16,6 +16,8 @@ import java.security.AccessController;
 import java.security.PrivilegedActionException;
 import java.util.*;
 import java.lang.reflect.Constructor;
+
+import org.eclipse.persistence.config.SessionCustomizer;
 import org.eclipse.persistence.eis.*;
 import org.eclipse.persistence.eis.adapters.xmlfile.XMLFileSequence;
 import org.eclipse.persistence.internal.helper.ConversionManager;

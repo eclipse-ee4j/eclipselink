@@ -19,7 +19,6 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.StringTokenizer;
 
-import org.eclipse.persistence.jpa.config.*;
 import org.eclipse.persistence.exceptions.QueryException;
 
 
@@ -27,6 +26,7 @@ import org.eclipse.persistence.queries.DatabaseQuery;
 import org.eclipse.persistence.queries.ObjectLevelReadQuery;
 import org.eclipse.persistence.queries.ReadAllQuery;
 import org.eclipse.persistence.expressions.Expression;
+import org.eclipse.persistence.config.*;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.internal.localization.ExceptionLocalization;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
@@ -43,10 +43,10 @@ import org.eclipse.persistence.queries.ReportQuery;
 /**
  * The class processes query hints.
  * 
- * TopLink query hints and their values defined in org.eclipse.persistence.jpa.config package.
+ * EclipseLink query hints and their values defined in org.eclipse.persistence.config package.
  * 
  * To add a new query hint:
- *   Define a new hint in EclipseLinkQueryHints;
+ *   Define a new hint in QueryHints;
  *   Add a class containing hint's values if required to config package (like CacheUsage);
  *      Alternatively values defined in HintValues may be used - Refresh and BindParameters hints do that.
  *   Add an inner class to this class extending Hint corresponding to the new hint (like CacheUsageHint);
@@ -56,7 +56,7 @@ import org.eclipse.persistence.queries.ReportQuery;
  *              in case translation is not required provide a single-dimension array (no such examples yet).
  *   In inner class Hint static initializer addHint an instance of the new hint class (like addHint(new CacheUsageHint())).
  * 
- * @see EclipseLinkQueryHints
+ * @see QueryHints
  * @see HintValues
  * @see CacheUsage
  * @see PessimisticLock
@@ -268,7 +268,7 @@ public class QueryHintsHandler {
 
     protected static class BindParametersHint extends Hint {
         BindParametersHint() {
-            super(EclipseLinkQueryHints.BIND_PARAMETERS, HintValues.PERSISTENCE_UNIT_DEFAULT);
+            super(QueryHints.BIND_PARAMETERS, HintValues.PERSISTENCE_UNIT_DEFAULT);
             valueArray = new Object[][] { 
                 {HintValues.PERSISTENCE_UNIT_DEFAULT, null},
                 {HintValues.TRUE, Boolean.TRUE},
@@ -292,7 +292,7 @@ public class QueryHintsHandler {
      */
     protected static class CacheUsageHint extends Hint {
         CacheUsageHint() {
-            super(EclipseLinkQueryHints.CACHE_USAGE, CacheUsage.DEFAULT);
+            super(QueryHints.CACHE_USAGE, CacheUsage.DEFAULT);
             valueArray = new Object[][] {
                 {CacheUsage.UseEntityDefault, ObjectLevelReadQuery.UseDescriptorSetting},
                 {CacheUsage.DoNotCheckCache, ObjectLevelReadQuery.DoNotCheckCache},
@@ -322,7 +322,7 @@ public class QueryHintsHandler {
 
     protected static class CascadePolicyHint extends Hint {
         CascadePolicyHint() {
-            super(EclipseLinkQueryHints.REFRESH_CASCADE, CascadePolicy.DEFAULT);
+            super(QueryHints.REFRESH_CASCADE, CascadePolicy.DEFAULT);
             valueArray = new Object[][] {
                 {CascadePolicy.NoCascading, DatabaseQuery.NoCascading},
                 {CascadePolicy.CascadePrivateParts, DatabaseQuery.CascadePrivateParts},
@@ -347,7 +347,7 @@ public class QueryHintsHandler {
      */
     protected static class QueryTypeHint extends Hint {
         QueryTypeHint() {
-            super(EclipseLinkQueryHints.QUERY_TYPE, QueryType.DEFAULT);
+            super(QueryHints.QUERY_TYPE, QueryType.DEFAULT);
             valueArray = new Object[][] {
                 {QueryType.Auto, QueryType.Auto},
                 {QueryType.ReadAll, QueryType.ReadAll},
@@ -378,7 +378,7 @@ public class QueryHintsHandler {
     
     protected static class PessimisticLockHint extends Hint {
         PessimisticLockHint() {
-            super(EclipseLinkQueryHints.PESSIMISTIC_LOCK, PessimisticLock.DEFAULT);
+            super(QueryHints.PESSIMISTIC_LOCK, PessimisticLock.DEFAULT);
             valueArray = new Object[][] {
                 {PessimisticLock.NoLock, ObjectLevelReadQuery.NO_LOCK},
                 {PessimisticLock.Lock, ObjectLevelReadQuery.LOCK},
@@ -396,7 +396,7 @@ public class QueryHintsHandler {
 
     protected static class RefreshHint extends Hint {
         RefreshHint() {
-            super(EclipseLinkQueryHints.REFRESH, HintValues.FALSE);
+            super(QueryHints.REFRESH, HintValues.FALSE);
             valueArray = new Object[][] { 
                 {HintValues.FALSE, Boolean.FALSE},
                 {HintValues.TRUE, Boolean.TRUE}
@@ -413,7 +413,7 @@ public class QueryHintsHandler {
     
     protected static class BatchHint extends Hint {
         BatchHint() {
-            super(EclipseLinkQueryHints.BATCH, "");
+            super(QueryHints.BATCH, "");
         }
     
         DatabaseQuery applyToDatabaseQuery(Object valueToApply, DatabaseQuery query) {
@@ -421,7 +421,7 @@ public class QueryHintsHandler {
                 ReadAllQuery raq = (ReadAllQuery)query;
                 StringTokenizer tokenizer = new StringTokenizer((String)valueToApply, ".");
                 if (tokenizer.countTokens() < 2){
-                    throw QueryException.queryHintDidNotContainEnoughTokens(query, EclipseLinkQueryHints.FETCH, valueToApply);
+                    throw QueryException.queryHintDidNotContainEnoughTokens(query, QueryHints.FETCH, valueToApply);
                 }
                 // ignore the first token since we are assuming read all query
                 // e.g. In e.phoneNumbers we will assume "e" refers to the base of the query
@@ -433,9 +433,9 @@ public class QueryHintsHandler {
                     ForeignReferenceMapping frMapping = null;
                     DatabaseMapping mapping = descriptor.getMappingForAttributeName(token);
                     if (mapping == null){
-                        throw QueryException.queryHintNavigatedNonExistantRelationship(query, EclipseLinkQueryHints.BATCH, valueToApply, previousToken + "." + token);
+                        throw QueryException.queryHintNavigatedNonExistantRelationship(query, QueryHints.BATCH, valueToApply, previousToken + "." + token);
                     } else if (!mapping.isForeignReferenceMapping()){
-                        throw QueryException.queryHintNavigatedIllegalRelationship(query, EclipseLinkQueryHints.BATCH, valueToApply, previousToken + "." + token);
+                        throw QueryException.queryHintNavigatedIllegalRelationship(query, QueryHints.BATCH, valueToApply, previousToken + "." + token);
                     } else {
                         frMapping = (ForeignReferenceMapping)mapping;
                     }
@@ -457,7 +457,7 @@ public class QueryHintsHandler {
     
     protected static class FetchHint extends Hint {
         FetchHint() {
-            super(EclipseLinkQueryHints.FETCH, "");
+            super(QueryHints.FETCH, "");
         }
     
         DatabaseQuery applyToDatabaseQuery(Object valueToApply, DatabaseQuery query) {
@@ -465,7 +465,7 @@ public class QueryHintsHandler {
                 ObjectLevelReadQuery olrq = (ObjectLevelReadQuery)query;
                 StringTokenizer tokenizer = new StringTokenizer((String)valueToApply, ".");
                 if (tokenizer.countTokens() < 2){
-                    throw QueryException.queryHintDidNotContainEnoughTokens(query, EclipseLinkQueryHints.BATCH, valueToApply);
+                    throw QueryException.queryHintDidNotContainEnoughTokens(query, QueryHints.BATCH, valueToApply);
                 }
                 // ignore the first token since we are assuming read all query
                 // e.g. In e.phoneNumbers we will assume "e" refers to the base of the query
@@ -477,9 +477,9 @@ public class QueryHintsHandler {
                     ForeignReferenceMapping frMapping = null;
                     DatabaseMapping mapping = descriptor.getMappingForAttributeName(token);
                     if (mapping == null){
-                        throw QueryException.queryHintNavigatedNonExistantRelationship(query, EclipseLinkQueryHints.BATCH, valueToApply, previousToken + "." + token);
+                        throw QueryException.queryHintNavigatedNonExistantRelationship(query, QueryHints.BATCH, valueToApply, previousToken + "." + token);
                     } else if (!mapping.isForeignReferenceMapping()){
-                        throw QueryException.queryHintNavigatedIllegalRelationship(query, EclipseLinkQueryHints.BATCH, valueToApply, previousToken + "." + token);
+                        throw QueryException.queryHintNavigatedIllegalRelationship(query, QueryHints.BATCH, valueToApply, previousToken + "." + token);
                     } else {
                         frMapping = (ForeignReferenceMapping)mapping;
                     }
@@ -501,7 +501,7 @@ public class QueryHintsHandler {
 
     protected static class ReturnSharedHint extends Hint {
         ReturnSharedHint() {
-            super(EclipseLinkQueryHints.READ_ONLY, HintValues.FALSE);
+            super(QueryHints.READ_ONLY, HintValues.FALSE);
             valueArray = new Object[][] { 
                 {HintValues.FALSE, Boolean.FALSE},
                 {HintValues.TRUE, Boolean.TRUE}
@@ -520,14 +520,14 @@ public class QueryHintsHandler {
     
     protected static class JDBCTimeoutHint extends Hint {
         JDBCTimeoutHint() {
-            super(EclipseLinkQueryHints.JDBC_TIMEOUT, "");
+            super(QueryHints.JDBC_TIMEOUT, "");
         }
     
         DatabaseQuery applyToDatabaseQuery(Object valueToApply, DatabaseQuery query) {
             try {
                 query.setQueryTimeout(Integer.parseInt(valueToApply.toString()));
             } catch (NumberFormatException e) {
-                throw QueryException.queryHintContainedInvalidIntegerValue(EclipseLinkQueryHints.JDBC_TIMEOUT,valueToApply,e);
+                throw QueryException.queryHintContainedInvalidIntegerValue(QueryHints.JDBC_TIMEOUT,valueToApply,e);
             }
             return query;
         }
@@ -535,7 +535,7 @@ public class QueryHintsHandler {
     
     protected static class JDBCFetchSizeHint extends Hint {
         JDBCFetchSizeHint() {
-            super(EclipseLinkQueryHints.JDBC_FETCH_SIZE, "");
+            super(QueryHints.JDBC_FETCH_SIZE, "");
         }
     
         DatabaseQuery applyToDatabaseQuery(Object valueToApply, DatabaseQuery query) {
@@ -543,7 +543,7 @@ public class QueryHintsHandler {
                 try {
                     ((ReadQuery)query).setFetchSize(Integer.parseInt(valueToApply.toString()));
                 } catch (NumberFormatException e) {
-                    throw QueryException.queryHintContainedInvalidIntegerValue(EclipseLinkQueryHints.JDBC_FETCH_SIZE,valueToApply,e);
+                    throw QueryException.queryHintContainedInvalidIntegerValue(QueryHints.JDBC_FETCH_SIZE,valueToApply,e);
                 }
             } else {
                 throw new IllegalArgumentException(ExceptionLocalization.buildMessage("ejb30-wrong-type-for-query-hint",new Object[]{getQueryId(query), name, getPrintValue(valueToApply)}));
@@ -554,7 +554,7 @@ public class QueryHintsHandler {
     
     protected static class JDBCMaxRowsHint extends Hint {
         JDBCMaxRowsHint() {
-            super(EclipseLinkQueryHints.JDBC_MAX_ROWS, "");
+            super(QueryHints.JDBC_MAX_ROWS, "");
         }
     
         DatabaseQuery applyToDatabaseQuery(Object valueToApply, DatabaseQuery query) {
@@ -562,7 +562,7 @@ public class QueryHintsHandler {
                 try {
                     ((ReadQuery)query).setMaxRows(Integer.parseInt(valueToApply.toString()));
                 } catch (NumberFormatException e) {
-                    throw QueryException.queryHintContainedInvalidIntegerValue(EclipseLinkQueryHints.JDBC_MAX_ROWS,valueToApply,e);
+                    throw QueryException.queryHintContainedInvalidIntegerValue(QueryHints.JDBC_MAX_ROWS,valueToApply,e);
                 }
             } else {
                 throw new IllegalArgumentException(ExceptionLocalization.buildMessage("ejb30-wrong-type-for-query-hint",new Object[]{getQueryId(query), name, getPrintValue(valueToApply)}));
@@ -573,7 +573,7 @@ public class QueryHintsHandler {
     
     protected static class ResultCollectionTypeHint extends Hint {
         ResultCollectionTypeHint() {
-            super(EclipseLinkQueryHints.RESULT_COLLECTION_TYPE, "");
+            super(QueryHints.RESULT_COLLECTION_TYPE, "");
         }
     
         DatabaseQuery applyToDatabaseQuery(Object valueToApply, DatabaseQuery query) {

@@ -36,7 +36,7 @@ public class SimplePojoSessionsXMLClientTest extends TestCase {
         System.out.println(System.getProperty("line.separator") + System.getProperty("line.separator") + "Now running Simple POJO test using Sessions XML file...");
 
         try {
-            org.eclipse.persistence.internal.sessions.factories.XMLSessionConfigLoader xmlLoader = new org.eclipse.persistence.internal.sessions.factories.XMLSessionConfigLoader("SimplePojoClientSessions.xml");
+            org.eclipse.persistence.sessions.factories.XMLSessionConfigLoader xmlLoader = new org.eclipse.persistence.sessions.factories.XMLSessionConfigLoader("SimplePojoClientSessions.xml");
             sessionManager = org.eclipse.persistence.sessions.factories.SessionManager.getManager();
             session = (DatabaseSession)sessionManager.getSession(xmlLoader, "Session", simplePojoSessionsXMLClient.getClass().getClassLoader());
         } catch (Exception e) {

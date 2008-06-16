@@ -21,8 +21,8 @@ import oracle.jdbc.OracleConnection;
 import org.eclipse.persistence.sessions.*;
 import org.eclipse.persistence.sessions.server.ClientSession;
 import org.eclipse.persistence.sessions.server.ServerSession;
+import org.eclipse.persistence.config.PersistenceUnitProperties;
 import org.eclipse.persistence.internal.sessions.ExclusiveIsolatedClientSession;
-import org.eclipse.persistence.jpa.config.PersistenceUnitProperties;
 import org.eclipse.persistence.queries.DataModifyQuery;
 import org.eclipse.persistence.queries.ValueReadQuery;
 

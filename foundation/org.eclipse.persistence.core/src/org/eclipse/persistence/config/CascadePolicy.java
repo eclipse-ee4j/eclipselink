@@ -10,23 +10,23 @@
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
  ******************************************************************************/  
-package org.eclipse.persistence.jpa.config;
+package org.eclipse.persistence.config;
 
 /**
  * Cascade policy hint values.
  * 
- * The class contains all the valid values for EclipseLinkQueryHints.REFRESH_CASCADE query hint.
+ * The class contains all the valid values for QueryHints.REFRESH_CASCADE query hint.
  * 
  * JPA Query Hint Usage:
  * 
- * query.setHint(EclipseLinkQueryHints.REFRESH_CASCADE, CascadePolicy.CascadeAllParts);
+ * query.setHint(QueryHints.REFRESH_CASCADE, CascadePolicy.CascadeAllParts);
  * or 
- * @QueryHint(name=EclipseLinkQueryHints.REFRESH_CASCADE, value=CascadePolicy.CascadeAllParts)
+ * @QueryHint(name=QueryHints.REFRESH_CASCADE, value=CascadePolicy.CascadeAllParts)
  * 
  * Hint values are case-insensitive.
  * "" could be used instead of default value CascadePolicy.DEFAULT.
  * 
- * @see EclipseLinkQueryHints
+ * @see QueryHints
  */
 public class CascadePolicy {
     public static final String NoCascading = "NoCascading";

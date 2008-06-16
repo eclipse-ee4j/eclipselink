@@ -35,6 +35,8 @@ import org.eclipse.persistence.internal.jpa.deployment.Archive;
 import org.eclipse.persistence.internal.jpa.deployment.ArchiveFactoryImpl;
 import org.eclipse.persistence.internal.jpa.deployment.PersistenceUnitProcessor;
 
+import org.eclipse.persistence.config.DescriptorCustomizer;
+import org.eclipse.persistence.config.PersistenceUnitProperties;
 import org.eclipse.persistence.exceptions.PersistenceUnitLoadingException;
 import org.eclipse.persistence.exceptions.ValidationException;
 
@@ -54,8 +56,6 @@ import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.logging.AbstractSessionLog;
 import org.eclipse.persistence.logging.SessionLog;
 
-import org.eclipse.persistence.internal.sessions.factories.DescriptorCustomizer;
-import org.eclipse.persistence.jpa.config.PersistenceUnitProperties;
 import org.eclipse.persistence.platform.database.converters.StructConverter;
 
 /**
@@ -349,7 +349,7 @@ public class MetadataProcessor {
             }
         }
     }
-    
+
     /**
      * INTERNAL:
      * Log an untranslated message to the EclipseLink log at FINER level.
@@ -360,6 +360,19 @@ public class MetadataProcessor {
             AbstractSessionLog.getLog().log(SessionLog.FINER, message);
         } else {
             m_session.logMessage(message);
+        }
+    }
+    
+    /**
+     * INTERNAL:
+     * Log an untranslated message to the EclipseLink log at FINER level.
+     * The message should not contain a bundle key.
+     */
+    protected void logThrowable(Throwable exception) {
+        if (m_session == null) {
+            AbstractSessionLog.getLog().logThrowable(SessionLog.FINER, exception);
+        } else {
+            m_session.getSessionLog().logThrowable(SessionLog.FINER, exception);
         }
     }
     
@@ -376,7 +389,7 @@ public class MetadataProcessor {
             try {
                 customizer.customize(classAccessor.getDescriptor().getClassDescriptor());
             } catch (Exception e) {
-                // fail silently ...
+                logThrowable(e);
             }
         }
     }

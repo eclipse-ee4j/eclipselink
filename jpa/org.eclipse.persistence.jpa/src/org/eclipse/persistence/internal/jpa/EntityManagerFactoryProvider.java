@@ -16,8 +16,8 @@ import java.io.File;
 import java.util.Map;
 import java.util.HashMap;
 
-import org.eclipse.persistence.jpa.config.TargetDatabase;
-import org.eclipse.persistence.jpa.config.PersistenceUnitProperties;
+import org.eclipse.persistence.config.PersistenceUnitProperties;
+import org.eclipse.persistence.config.TargetDatabase;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.logging.SessionLog;
 import org.eclipse.persistence.sessions.server.ServerSession;

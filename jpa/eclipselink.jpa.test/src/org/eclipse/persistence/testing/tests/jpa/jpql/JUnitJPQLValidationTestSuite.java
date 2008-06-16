@@ -26,6 +26,7 @@ import junit.framework.Assert;
 import junit.framework.Test;
 import junit.framework.TestSuite;
 
+import org.eclipse.persistence.config.QueryHints;
 import org.eclipse.persistence.exceptions.*;
 import org.eclipse.persistence.internal.jpa.EntityManagerImpl;
 import org.eclipse.persistence.mappings.DirectToFieldMapping;
@@ -34,7 +35,6 @@ import org.eclipse.persistence.testing.models.jpa.advanced.EmployeePopulator;
 import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
 import org.eclipse.persistence.testing.framework.junit.JUnitTestCaseHelper;
 
-import org.eclipse.persistence.jpa.config.EclipseLinkQueryHints;
 import org.eclipse.persistence.sessions.DatabaseSession;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.testing.models.jpa.advanced.AdvancedTableCreator;
@@ -754,7 +754,7 @@ public class JUnitJPQLValidationTestSuite extends JUnitTestCase
         try {
             String jpql = "SELECT e.phoneNumbers.type FROM Employee e";
             Query query = em.createQuery(jpql);
-            query.setHint(EclipseLinkQueryHints.BATCH, "e.phoneNumbers");
+            query.setHint(QueryHints.BATCH, "e.phoneNumbers");
             query.getResultList();
             fail("Failed to throw expected IllegalArgumentException for invalid query hint.");
         } catch (IllegalArgumentException ex) {
@@ -763,7 +763,7 @@ public class JUnitJPQLValidationTestSuite extends JUnitTestCase
         try {
             String jpql = "SELECT e FROM Employee e";
             Query query = em.createQuery(jpql);
-            query.setHint(EclipseLinkQueryHints.BATCH, "e.phoneNumbers.areaCode");
+            query.setHint(QueryHints.BATCH, "e.phoneNumbers.areaCode");
             query.getResultList();
             fail("Failed to throw expected IllegalArgumentException for invalid query hint.");
         } catch (QueryException ex) {
@@ -772,7 +772,7 @@ public class JUnitJPQLValidationTestSuite extends JUnitTestCase
         try {
             String jpql = "SELECT e FROM Employee e";
             Query query = em.createQuery(jpql);
-            query.setHint(EclipseLinkQueryHints.CACHE_USAGE, "foobar");
+            query.setHint(QueryHints.CACHE_USAGE, "foobar");
             query.getResultList();
             fail("Failed to throw expected IllegalArgumentException for invalid query hint.");
         } catch (IllegalArgumentException ex) {

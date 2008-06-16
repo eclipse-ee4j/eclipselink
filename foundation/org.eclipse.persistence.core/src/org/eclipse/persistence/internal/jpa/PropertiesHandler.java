@@ -20,7 +20,8 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
-import org.eclipse.persistence.jpa.config.*;
+
+import org.eclipse.persistence.config.*;
 import org.eclipse.persistence.internal.localization.ExceptionLocalization;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.logging.SessionLog;
@@ -37,9 +38,9 @@ import org.eclipse.persistence.sessions.factories.ReferenceMode;
  *      2. Property is really a prefix from which the property obtained by 
  *      appending entity or class name (like DescriptorCustomizerProp -
  *      it corresponds to "eclipselink.descriptor.customizer." prefix that allows to
- *      define propereties like "eclipselink.descriptor.customizer.myPackage.MyClass"). 
+ *      define properties like "eclipselink.descriptor.customizer.myPackage.MyClass"). 
  * 
- * EclipseLink properties and their values defined in org.eclipse.persistence.jpa.config package.
+ * EclipseLink properties and their values defined in org.eclipse.persistence.config package.
  * 
  * To add a new property:
  *   Define a new property in PersistenceUnitProperties;

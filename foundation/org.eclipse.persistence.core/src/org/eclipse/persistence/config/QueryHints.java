@@ -10,18 +10,18 @@
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
  ******************************************************************************/  
-package org.eclipse.persistence.jpa.config;
+package org.eclipse.persistence.config;
 
 /**
- * The class defines TopLink query hints' names.
+ * The class defines EclipseLink query hints.
  * These query hints allow a JPA Query to be customized or optimized beyond
  * what is available in the JPA specification.
  * 
  * <p>JPA Query Hint Usage:
  * 
- * <p><code>query.setHint(EclipseLinkQueryHints.CACHE_USAGE, CacheUsage.CheckCacheOnly);</code>
+ * <p><code>query.setHint(QueryHints.CACHE_USAGE, CacheUsage.CheckCacheOnly);</code>
  * <p>or 
- * <p><code>@QueryHint(name=EclipseLinkQueryHints.CACHE_USAGE, value=CacheUsage.CheckCacheOnly)</code>
+ * <p><code>@QueryHint(name=QueryHints.CACHE_USAGE, value=CacheUsage.CheckCacheOnly)</code>
  * 
  * <p>Hint values are case-insensitive; "" could be used instead of default value.
  * 
@@ -30,7 +30,7 @@ package org.eclipse.persistence.jpa.config;
  * @see PessimisticLock
  * @see QueryType
  */
-public class EclipseLinkQueryHints {
+public class QueryHints {
    /**
     * Configures parameter binding to be disabled or enabled just for this query (overrides persistent unit setting, which default to true).
     * Valid values are:  HintValues.PERSISTENCE_UNIT_DEFAULT, HintValues.TRUE, HintValues.FALSE,

@@ -12,8 +12,8 @@
  ******************************************************************************/  
 package org.eclipse.persistence.testing.models.jpa.advanced;
 
+import org.eclipse.persistence.config.DescriptorCustomizer;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
-import org.eclipse.persistence.internal.sessions.factories.DescriptorCustomizer;
 
 public class EmployeeCustomizer implements DescriptorCustomizer {
 	public EmployeeCustomizer() {}

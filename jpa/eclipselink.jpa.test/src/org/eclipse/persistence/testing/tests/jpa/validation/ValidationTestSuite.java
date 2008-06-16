@@ -21,8 +21,8 @@ import javax.persistence.*;
 import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.SQLException;
-import org.eclipse.persistence.jpa.config.PersistenceUnitProperties;
 
+import org.eclipse.persistence.config.PersistenceUnitProperties;
 import org.eclipse.persistence.internal.jpa.EntityManagerImpl;
 import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
 import org.eclipse.persistence.testing.framework.junit.JUnitTestCaseHelper;

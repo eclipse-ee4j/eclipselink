@@ -10,7 +10,7 @@
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
  ******************************************************************************/  
-package org.eclipse.persistence.internal.sessions.factories;
+package org.eclipse.persistence.sessions.factories;
 
 import java.util.Vector;
 import java.io.File;
@@ -28,10 +28,13 @@ import org.eclipse.persistence.platform.xml.XMLPlatformFactory;
 import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.exceptions.SessionLoaderException;
 import org.eclipse.persistence.internal.helper.ConversionManager;
-import org.eclipse.persistence.sessions.factories.SessionManager;
 import org.eclipse.persistence.internal.localization.ExceptionLocalization;
 import org.eclipse.persistence.sessions.Project;
 import org.eclipse.persistence.sessions.Session;
+import org.eclipse.persistence.internal.sessions.factories.PersistenceEntityResolver;
+import org.eclipse.persistence.internal.sessions.factories.SessionsFactory;
+import org.eclipse.persistence.internal.sessions.factories.XMLSessionConfigProject_11_1_1;
+import org.eclipse.persistence.internal.sessions.factories.XMLSessionConfigToplinkProject;
 import org.eclipse.persistence.internal.sessions.factories.model.SessionConfigs;
 
 /**
@@ -40,7 +43,7 @@ import org.eclipse.persistence.internal.sessions.factories.model.SessionConfigs;
  * The sessions XML file is typically deployed in the applications jar (ejb-jar) and named sessions.xml in the /META-INF directory.
  * Several loading options are provided,
  * <ul>
- * <li> resourceName : The reasource path and file name to the sessions XML file,
+ * <li> resourceName : The resource path and file name to the sessions XML file,
  * default is /sessions.xml or /META-INF/sessions.xml. (ensure "/" is used, not "\").
  * A file path can also be provided, although a resource is typically used.
  * <li> shouldLogin : Define if the loaded session should be connected, default true.

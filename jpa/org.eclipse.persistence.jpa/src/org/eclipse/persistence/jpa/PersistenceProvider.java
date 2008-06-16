@@ -26,7 +26,6 @@ import org.eclipse.persistence.exceptions.PersistenceUnitLoadingException;
 import org.eclipse.persistence.internal.jpa.EntityManagerFactoryImpl;
 import org.eclipse.persistence.internal.jpa.EntityManagerFactoryProvider;
 import org.eclipse.persistence.internal.jpa.EntityManagerSetupImpl;
-import org.eclipse.persistence.internal.jpa.deployment.JavaSECMPInitializer;
 import org.eclipse.persistence.internal.jpa.deployment.PersistenceInitializationHelper;
 import org.eclipse.persistence.internal.jpa.deployment.PersistenceUnitProcessor;
 import org.eclipse.persistence.internal.jpa.deployment.SEPersistenceUnitInfo;

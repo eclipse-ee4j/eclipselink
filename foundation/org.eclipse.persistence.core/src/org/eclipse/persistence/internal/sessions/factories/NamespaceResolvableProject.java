@@ -11,7 +11,7 @@
  *     minorman - May 2008: helpful superclass that handles Namespaces for project-Project's
  ******************************************************************************/
 
-package org.eclipse.persistence.sessions.factories;
+package org.eclipse.persistence.internal.sessions.factories;
 
 // javase imports
 import java.util.Iterator;

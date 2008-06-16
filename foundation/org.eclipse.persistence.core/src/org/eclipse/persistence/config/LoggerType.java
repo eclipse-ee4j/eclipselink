@@ -10,23 +10,22 @@
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
  ******************************************************************************/  
-package org.eclipse.persistence.jpa.config;
+package org.eclipse.persistence.config;
 
 /**
- * Specify the use of batch writing to optimize transactions with multiple writes,
- * by default batch writing is not used.
+ * Logger type persistence property values.
  * 
  * <p>JPA persistence property Usage:
  * 
- * <p><code>properties.add(PersistenceUnitProperties.BATCH_WRITING, BatchWriting.JDBC);</code>
+ * <p><code>properties.add(PersistenceUnitProperties.LoggerType, LoggerType.JavaLogger);</code>
+ * <p>Property values are case-insensitive.
  * 
- * <p>Property values are case-insensitive
+ * @author Wonseok Kim
  */
-public class BatchWriting {
-    public static final String  None = "None";
-    public static final String  JDBC = "JDBC";
-    public static final String  Buffered = "Buffered";
-    public static final String  OracleJDBC = "Oracle-JDBC";
- 
-    public static final String DEFAULT = None;
+public class LoggerType {
+    public static final String DefaultLogger = "DefaultLogger";
+    public static final String JavaLogger = "JavaLogger";
+    public static final String ServerLogger = "ServerLogger";
+
+    public static final String DEFAULT = DefaultLogger;
 }

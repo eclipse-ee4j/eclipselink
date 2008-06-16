@@ -10,6 +10,7 @@ import static org.junit.Assert.fail;
 // EclipseLink imports
 import org.eclipse.persistence.descriptors.RelationalDescriptor;
 import org.eclipse.persistence.internal.descriptors.TransformerBasedFieldTransformation;
+import org.eclipse.persistence.internal.sessions.factories.ObjectPersistenceWorkbenchXMLProject;
 import org.eclipse.persistence.mappings.DirectToFieldMapping;
 import org.eclipse.persistence.mappings.transformers.ConstantTransformer;
 import org.eclipse.persistence.oxm.mappings.XMLTransformationMapping;
@@ -19,7 +20,6 @@ import org.eclipse.persistence.platform.xml.XMLParser;
 import org.eclipse.persistence.platform.xml.XMLPlatformFactory;
 import org.eclipse.persistence.sessions.DatabaseLogin;
 import org.eclipse.persistence.sessions.Project;
-import org.eclipse.persistence.sessions.factories.ObjectPersistenceWorkbenchXMLProject;
 
 public class NonJDBCTestHelper {
 

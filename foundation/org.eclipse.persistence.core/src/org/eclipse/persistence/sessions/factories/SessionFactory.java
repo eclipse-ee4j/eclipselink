@@ -16,7 +16,6 @@ import java.util.Collection;
 import org.eclipse.persistence.sessions.broker.SessionBroker;
 import org.eclipse.persistence.sessions.*;
 import org.eclipse.persistence.sessions.server.Server;
-import org.eclipse.persistence.internal.sessions.factories.XMLSessionConfigLoader;
 import org.eclipse.persistence.sessions.factories.SessionManager;
 
 

@@ -16,8 +16,8 @@ import org.eclipse.persistence.platform.database.TimesTenPlatform;
 import org.eclipse.persistence.sessions.DatabaseSession;
 import org.eclipse.persistence.sessions.Session;
 import org.eclipse.persistence.tools.schemaframework.PopulationManager;
-import org.eclipse.persistence.internal.sessions.factories.XMLSessionConfigLoader;
 import org.eclipse.persistence.sessions.factories.SessionManager;
+import org.eclipse.persistence.sessions.factories.XMLSessionConfigLoader;
 
 import org.eclipse.persistence.testing.framework.InsertObjectTest;
 import org.eclipse.persistence.testing.framework.ReadAllTest;

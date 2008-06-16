@@ -15,7 +15,6 @@ package org.eclipse.persistence.sessions.factories;
 import java.security.AccessController;
 import java.security.PrivilegedActionException;
 import java.util.*;
-import org.eclipse.persistence.internal.sessions.factories.*;
 import org.eclipse.persistence.internal.sessions.factories.model.SessionConfigs;
 import org.eclipse.persistence.logging.*;
 import org.eclipse.persistence.sessions.*;

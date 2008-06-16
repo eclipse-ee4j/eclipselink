@@ -16,8 +16,8 @@ import org.eclipse.persistence.testing.models.employee.domain.Employee;
 import org.eclipse.persistence.testing.framework.AutoVerifyTestCase;
 import org.eclipse.persistence.testing.framework.TestErrorException;
 import org.eclipse.persistence.sessions.server.ServerSession;
-import org.eclipse.persistence.internal.sessions.factories.XMLSessionConfigLoader;
 import org.eclipse.persistence.sessions.factories.SessionManager;
+import org.eclipse.persistence.sessions.factories.XMLSessionConfigLoader;
 
 
 /**

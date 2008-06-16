@@ -9,23 +9,28 @@
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
-package org.eclipse.persistence.jpa.config;
+ ******************************************************************************/
+ 
+ package org.eclipse.persistence.config;
+
 
 /**
- * Logger type persistence property values.
+ * Profiler type persistence property values.
  * 
  * <p>JPA persistence property Usage:
  * 
- * <p><code>properties.add(PersistenceUnitProperties.LoggerType, LoggerType.JavaLogger);</code>
+ * <p><code>properties.add(PersistenceUnitProperties.ProfilerType, ProfilerType.PerformanceProfiler);</code>
  * <p>Property values are case-insensitive.
  * 
- * @author Wonseok Kim
+ * @see QueryMonitor
+ * @see PerformanceProfiler
  */
-public class LoggerType {
-    public static final String DefaultLogger = "DefaultLogger";
-    public static final String JavaLogger = "JavaLogger";
-    public static final String ServerLogger = "ServerLogger";
+public class ProfilerType {
+    //A tool used to provide high level performance profiling information
+    public static final String PerformanceProfiler = "PerformanceProfiler";
+    public static final String QueryMonitor = "QueryMonitor";
+    public static final String NoProfiler = "NoProfiler";
 
-    public static final String DEFAULT = DefaultLogger;
+    public static final String DEFAULT = NoProfiler;
 }
+

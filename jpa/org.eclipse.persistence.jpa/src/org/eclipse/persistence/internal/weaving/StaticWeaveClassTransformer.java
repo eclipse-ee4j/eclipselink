@@ -26,11 +26,11 @@ import java.util.zip.ZipException;
 import javax.persistence.spi.ClassTransformer;
 import javax.persistence.spi.PersistenceUnitInfo;
 
-import org.eclipse.persistence.jpa.config.PersistenceUnitProperties;
 import org.eclipse.persistence.internal.jpa.deployment.Archive;
 import org.eclipse.persistence.internal.jpa.deployment.ArchiveFactoryImpl;
 import org.eclipse.persistence.internal.jpa.deployment.PersistenceUnitProcessor;
 import org.eclipse.persistence.internal.jpa.deployment.SEPersistenceUnitInfo;
+import org.eclipse.persistence.config.PersistenceUnitProperties;
 import org.eclipse.persistence.exceptions.PersistenceUnitLoadingException;
 import org.eclipse.persistence.exceptions.StaticWeaveException;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataProcessor;

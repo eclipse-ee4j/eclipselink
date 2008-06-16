@@ -19,10 +19,10 @@ import org.eclipse.persistence.testing.framework.AutoVerifyTestCase;
 import org.eclipse.persistence.testing.framework.TestErrorException;
 import org.eclipse.persistence.sessions.server.ConnectionPool;
 import org.eclipse.persistence.sessions.server.ServerSession;
-import org.eclipse.persistence.internal.sessions.factories.XMLSessionConfigLoader;
 import org.eclipse.persistence.internal.sessions.factories.XMLSessionConfigProject;
 import org.eclipse.persistence.internal.sessions.factories.XMLSessionConfigProject_11_1_1;
 import org.eclipse.persistence.sessions.factories.SessionManager;
+import org.eclipse.persistence.sessions.factories.XMLSessionConfigLoader;
 
 
 /**

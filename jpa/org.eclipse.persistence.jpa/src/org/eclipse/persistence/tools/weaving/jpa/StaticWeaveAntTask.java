@@ -15,12 +15,10 @@ package org.eclipse.persistence.tools.weaving.jpa;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.io.Writer;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
-import java.net.URLEncoder;
 import java.util.Vector;
 
 import org.eclipse.persistence.exceptions.StaticWeaveException;

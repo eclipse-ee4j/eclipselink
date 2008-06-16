@@ -17,12 +17,12 @@ package org.eclipse.persistence.internal.jpa.metadata.converters;
 import java.lang.annotation.Annotation;
 import java.sql.Types;
 
+import org.eclipse.persistence.config.StructConverterType;
 import org.eclipse.persistence.exceptions.ValidationException;
 
 import org.eclipse.persistence.internal.jpa.metadata.accessors.mappings.DirectAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAccessibleObject;
 
-import org.eclipse.persistence.jpa.config.StructConverterType;
 
 import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.mappings.foundation.AbstractDirectMapping;

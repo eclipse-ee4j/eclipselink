@@ -18,8 +18,8 @@ import java.io.LineNumberReader;
 import org.eclipse.persistence.sessions.DatabaseSession;
 import org.eclipse.persistence.testing.framework.AutoVerifyTestCase;
 import org.eclipse.persistence.testing.framework.TestErrorException;
-import org.eclipse.persistence.internal.sessions.factories.XMLSessionConfigLoader;
 import org.eclipse.persistence.sessions.factories.SessionManager;
+import org.eclipse.persistence.sessions.factories.XMLSessionConfigLoader;
 
 
 //Bug#4157545  Added logging options back.  Test if sessions.xml is read correctly and messages are logged correctly

@@ -14,8 +14,8 @@ package org.eclipse.persistence.testing.tests.sessionsxml;
 
 import org.eclipse.persistence.testing.tests.sessionsxml.SessionsXMLValidationTest;
 import org.eclipse.persistence.testing.framework.TestErrorException;
-import org.eclipse.persistence.internal.sessions.factories.XMLSessionConfigLoader;
 import org.eclipse.persistence.sessions.factories.SessionManager;
+import org.eclipse.persistence.sessions.factories.XMLSessionConfigLoader;
 
 
 // TopLink imports

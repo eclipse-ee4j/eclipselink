@@ -40,11 +40,6 @@ import javax.persistence.RollbackException;
 
 import junit.framework.*;
 
-import org.eclipse.persistence.jpa.config.CacheUsage;
-import org.eclipse.persistence.jpa.config.CascadePolicy;
-import org.eclipse.persistence.jpa.config.PessimisticLock;
-import org.eclipse.persistence.jpa.config.PersistenceUnitProperties;
-import org.eclipse.persistence.jpa.config.EclipseLinkQueryHints;
 import org.eclipse.persistence.jpa.JpaQuery;
 import org.eclipse.persistence.jpa.JpaEntityManager;
 import org.eclipse.persistence.queries.DatabaseQuery;
@@ -60,6 +55,11 @@ import org.eclipse.persistence.exceptions.QueryException;
 import org.eclipse.persistence.expressions.Expression;
 import org.eclipse.persistence.expressions.ExpressionBuilder;
 import org.eclipse.persistence.sessions.Session;
+import org.eclipse.persistence.config.CacheUsage;
+import org.eclipse.persistence.config.CascadePolicy;
+import org.eclipse.persistence.config.QueryHints;
+import org.eclipse.persistence.config.PersistenceUnitProperties;
+import org.eclipse.persistence.config.PessimisticLock;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.descriptors.changetracking.ChangeTracker;
 import org.eclipse.persistence.internal.descriptors.PersistenceEntity;
@@ -2271,95 +2271,95 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         // original state = default state
         assertTrue(olrQuery.shouldIgnoreBindAllParameters());
         // set boolean true
-        query.setHint(EclipseLinkQueryHints.BIND_PARAMETERS, true);
+        query.setHint(QueryHints.BIND_PARAMETERS, true);
         // Parse cached query may be cloned when hint set, so re-get.
         olrQuery = (ObjectLevelReadQuery)((EJBQueryImpl)query).getDatabaseQuery();
         assertTrue("Binding not set.", olrQuery.shouldBindAllParameters());
         // reset to original state
-        query.setHint(EclipseLinkQueryHints.BIND_PARAMETERS, "");
+        query.setHint(QueryHints.BIND_PARAMETERS, "");
         assertTrue("Binding not set.", olrQuery.shouldIgnoreBindAllParameters());
         // set "false"
-        query.setHint(EclipseLinkQueryHints.BIND_PARAMETERS, "false");
+        query.setHint(QueryHints.BIND_PARAMETERS, "false");
         assertFalse("Binding not set.", olrQuery.shouldBindAllParameters());
         // reset to the original state
-        query.setHint(EclipseLinkQueryHints.BIND_PARAMETERS, "");
+        query.setHint(QueryHints.BIND_PARAMETERS, "");
         assertTrue("Binding not set.", olrQuery.shouldIgnoreBindAllParameters());
         
         // cache usage
-        query.setHint(EclipseLinkQueryHints.CACHE_USAGE, CacheUsage.DoNotCheckCache);
+        query.setHint(QueryHints.CACHE_USAGE, CacheUsage.DoNotCheckCache);
         assertTrue("Cache usage not set.", olrQuery.getCacheUsage()==ObjectLevelReadQuery.DoNotCheckCache);
-        query.setHint(EclipseLinkQueryHints.CACHE_USAGE, CacheUsage.CheckCacheOnly);
+        query.setHint(QueryHints.CACHE_USAGE, CacheUsage.CheckCacheOnly);
         assertTrue("Cache usage not set.", olrQuery.shouldCheckCacheOnly());
-        query.setHint(EclipseLinkQueryHints.CACHE_USAGE, CacheUsage.ConformResultsInUnitOfWork);
+        query.setHint(QueryHints.CACHE_USAGE, CacheUsage.ConformResultsInUnitOfWork);
         assertTrue("Cache usage not set.", olrQuery.shouldConformResultsInUnitOfWork());
         // reset to the original state
-        query.setHint(EclipseLinkQueryHints.CACHE_USAGE, "");
+        query.setHint(QueryHints.CACHE_USAGE, "");
         assertTrue("Cache usage not set.", olrQuery.shouldCheckDescriptorForCacheUsage());
         
         // pessimistic lock
-        query.setHint(EclipseLinkQueryHints.PESSIMISTIC_LOCK, PessimisticLock.Lock);
+        query.setHint(QueryHints.PESSIMISTIC_LOCK, PessimisticLock.Lock);
         assertTrue("Lock not set.", olrQuery.getLockMode()==ObjectLevelReadQuery.LOCK);
-        query.setHint(EclipseLinkQueryHints.PESSIMISTIC_LOCK, PessimisticLock.NoLock);
+        query.setHint(QueryHints.PESSIMISTIC_LOCK, PessimisticLock.NoLock);
         assertTrue("Lock not set.", olrQuery.getLockMode()==ObjectLevelReadQuery.NO_LOCK);
-        query.setHint(EclipseLinkQueryHints.PESSIMISTIC_LOCK, PessimisticLock.LockNoWait);
+        query.setHint(QueryHints.PESSIMISTIC_LOCK, PessimisticLock.LockNoWait);
         assertTrue("Lock not set.", olrQuery.getLockMode()==ObjectLevelReadQuery.LOCK_NOWAIT);
         // default state
-        query.setHint(EclipseLinkQueryHints.PESSIMISTIC_LOCK, "");
+        query.setHint(QueryHints.PESSIMISTIC_LOCK, "");
         assertTrue("Lock not set.", olrQuery.getLockMode()==ObjectLevelReadQuery.NO_LOCK);
         
         //refresh
         // set to original state - don't refresh.
         // the previously run LOCK and LOCK_NOWAIT have swithed it to true
-        query.setHint(EclipseLinkQueryHints.REFRESH, false);
+        query.setHint(QueryHints.REFRESH, false);
         assertFalse("Refresh not set.", olrQuery.shouldRefreshIdentityMapResult());
         // set boolean true
-        query.setHint(EclipseLinkQueryHints.REFRESH, true);
+        query.setHint(QueryHints.REFRESH, true);
         assertTrue("Refresh not set.", olrQuery.shouldRefreshIdentityMapResult());
         assertTrue("CascadeByMapping not set.", olrQuery.shouldCascadeByMapping()); // check if cascade refresh is enabled 
         // set "false"
-        query.setHint(EclipseLinkQueryHints.REFRESH, "false");
+        query.setHint(QueryHints.REFRESH, "false");
         assertFalse("Refresh not set.", olrQuery.shouldRefreshIdentityMapResult());
         // set Boolean.TRUE
-        query.setHint(EclipseLinkQueryHints.REFRESH, Boolean.TRUE);
+        query.setHint(QueryHints.REFRESH, Boolean.TRUE);
         assertTrue("Refresh not set.", olrQuery.shouldRefreshIdentityMapResult());
         assertTrue("CascadeByMapping not set.", olrQuery.shouldCascadeByMapping()); // check if cascade refresh is enabled 
         // reset to original state
-        query.setHint(EclipseLinkQueryHints.REFRESH, "");
+        query.setHint(QueryHints.REFRESH, "");
         assertFalse("Refresh not set.", olrQuery.shouldRefreshIdentityMapResult());
         
-        query.setHint(EclipseLinkQueryHints.READ_ONLY, "false");
+        query.setHint(QueryHints.READ_ONLY, "false");
         assertFalse("Read-only not set.", olrQuery.isReadOnly()); 
         
-        query.setHint(EclipseLinkQueryHints.READ_ONLY, Boolean.TRUE);
+        query.setHint(QueryHints.READ_ONLY, Boolean.TRUE);
         assertTrue("Read-only not set.", olrQuery.isReadOnly());
         
-        query.setHint(EclipseLinkQueryHints.READ_ONLY, Boolean.FALSE);
+        query.setHint(QueryHints.READ_ONLY, Boolean.FALSE);
         assertFalse("Read-only not set.", olrQuery.isReadOnly());
         
-        query.setHint(EclipseLinkQueryHints.JDBC_TIMEOUT, new Integer(100));
+        query.setHint(QueryHints.JDBC_TIMEOUT, new Integer(100));
         assertTrue("Timeout not set.", olrQuery.getQueryTimeout() == 100);
         
-        query.setHint(EclipseLinkQueryHints.JDBC_FETCH_SIZE, new Integer(101));
+        query.setHint(QueryHints.JDBC_FETCH_SIZE, new Integer(101));
         assertTrue("Fetch-size not set.", olrQuery.getFetchSize() == 101);
         
-        query.setHint(EclipseLinkQueryHints.JDBC_MAX_ROWS, new Integer(103));
+        query.setHint(QueryHints.JDBC_MAX_ROWS, new Integer(103));
         assertTrue("Max-rows not set.", olrQuery.getMaxRows() == 103); 
-        query.setHint(EclipseLinkQueryHints.REFRESH_CASCADE, CascadePolicy.NoCascading);
+        query.setHint(QueryHints.REFRESH_CASCADE, CascadePolicy.NoCascading);
         assertTrue(olrQuery.getCascadePolicy()==DatabaseQuery.NoCascading);
-        query.setHint(EclipseLinkQueryHints.REFRESH_CASCADE, CascadePolicy.CascadeByMapping);
+        query.setHint(QueryHints.REFRESH_CASCADE, CascadePolicy.CascadeByMapping);
         assertTrue(olrQuery.getCascadePolicy()==DatabaseQuery.CascadeByMapping);
-        query.setHint(EclipseLinkQueryHints.REFRESH_CASCADE, CascadePolicy.CascadeAllParts);
+        query.setHint(QueryHints.REFRESH_CASCADE, CascadePolicy.CascadeAllParts);
         assertTrue(olrQuery.getCascadePolicy()==DatabaseQuery.CascadeAllParts);
-        query.setHint(EclipseLinkQueryHints.REFRESH_CASCADE, CascadePolicy.CascadePrivateParts);
+        query.setHint(QueryHints.REFRESH_CASCADE, CascadePolicy.CascadePrivateParts);
         assertTrue(olrQuery.getCascadePolicy()==DatabaseQuery.CascadePrivateParts);
         // reset to the original state
-        query.setHint(EclipseLinkQueryHints.REFRESH_CASCADE, "");
+        query.setHint(QueryHints.REFRESH_CASCADE, "");
         assertTrue(olrQuery.getCascadePolicy()==DatabaseQuery.CascadeByMapping);
         
-        query.setHint(EclipseLinkQueryHints.RESULT_COLLECTION_TYPE, java.util.ArrayList.class);
+        query.setHint(QueryHints.RESULT_COLLECTION_TYPE, java.util.ArrayList.class);
         assertTrue("ArrayList not set.", ((ReadAllQuery)olrQuery).getContainerPolicy().getContainerClassName().equals(java.util.ArrayList.class.getName())); 
 
-        query.setHint(EclipseLinkQueryHints.RESULT_COLLECTION_TYPE, "java.util.Vector");
+        query.setHint(QueryHints.RESULT_COLLECTION_TYPE, "java.util.Vector");
         assertTrue("Vector not set.", ((ReadAllQuery)olrQuery).getContainerPolicy().getContainerClassName().equals(java.util.Vector.class.getName())); 
 
         closeEntityManager(em);
@@ -2416,8 +2416,8 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         em.clear();
 
         JpaQuery query = (JpaQuery)getEntityManagerFactory("fieldaccess").createEntityManager().createQuery("SELECT e FROM Employee e WHERE e.lastName = 'Malone' order by e.firstName");
-        query.setHint(EclipseLinkQueryHints.BATCH, "e.phoneNumbers");
-        query.setHint(EclipseLinkQueryHints.BATCH, "e.manager.phoneNumbers");
+        query.setHint(QueryHints.BATCH, "e.phoneNumbers");
+        query.setHint(QueryHints.BATCH, "e.manager.phoneNumbers");
         
         ReadAllQuery raq = (ReadAllQuery)query.getDatabaseQuery();
         List expressions = raq.getBatchReadAttributeExpressions();
@@ -2502,13 +2502,13 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         em.clear();
 
         JpaQuery query = (JpaQuery)getEntityManagerFactory("fieldaccess").createEntityManager().createQuery("SELECT e FROM Employee e WHERE e.lastName = 'Malone' order by e.firstName");
-        query.setHint(EclipseLinkQueryHints.FETCH, "e.manager");
+        query.setHint(QueryHints.FETCH, "e.manager");
         ReadAllQuery raq = (ReadAllQuery)query.getDatabaseQuery();
         List expressions = raq.getJoinedAttributeExpressions();
         assertTrue(expressions.size() == 1);
         Expression exp = (Expression)expressions.get(0);
         assertTrue(exp.getName().equals("manager"));       
-        query.setHint(EclipseLinkQueryHints.FETCH, "e.manager.phoneNumbers");
+        query.setHint(QueryHints.FETCH, "e.manager.phoneNumbers");
         assertTrue(expressions.size() == 2);
 
         List resultList = query.getResultList();
@@ -2536,7 +2536,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         QueryException exception = null;
         try{
             Query query = em.createQuery("SELECT e FROM Employee e WHERE e.lastName = 'Malone' order by e.firstName");
-            query.setHint(EclipseLinkQueryHints.BATCH, "e");
+            query.setHint(QueryHints.BATCH, "e");
             query.getResultList();
         } catch (QueryException exc){
             exception = exc;
@@ -2546,7 +2546,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         exception = null;
         try{
             Query query = em.createQuery("SELECT e FROM Employee e WHERE e.lastName = 'Malone' order by e.firstName");
-            query.setHint(EclipseLinkQueryHints.BATCH, "e.abcdef");
+            query.setHint(QueryHints.BATCH, "e.abcdef");
             query.getResultList();
         } catch (QueryException exc){
             exception = exc;
@@ -2557,7 +2557,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         exception = null;
         try{
             Query query = em.createQuery("SELECT e FROM Employee e WHERE e.lastName = 'Malone' order by e.firstName");
-            query.setHint(EclipseLinkQueryHints.BATCH, "e.firstName");
+            query.setHint(QueryHints.BATCH, "e.firstName");
             query.getResultList();
         } catch (QueryException exc){
             exception = exc;
@@ -2568,7 +2568,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         exception = null;
         try{
             Query query = em.createQuery("SELECT e FROM Employee e WHERE e.lastName = 'Malone' order by e.firstName");
-            query.setHint(EclipseLinkQueryHints.FETCH, "e");
+            query.setHint(QueryHints.FETCH, "e");
             query.getResultList();
         } catch (QueryException exc){
             exception = exc;
@@ -2579,7 +2579,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         exception = null;
         try{
             Query query = em.createQuery("SELECT e FROM Employee e WHERE e.lastName = 'Malone' order by e.firstName");
-            query.setHint(EclipseLinkQueryHints.FETCH, "e.abcdef");
+            query.setHint(QueryHints.FETCH, "e.abcdef");
             query.getResultList();
         } catch (QueryException exc){
             exception = exc;
@@ -2590,7 +2590,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         exception = null;
         try{
             Query query = em.createQuery("SELECT e FROM Employee e WHERE e.lastName = 'Malone' order by e.firstName");
-            query.setHint(EclipseLinkQueryHints.FETCH, "e.firstName");
+            query.setHint(QueryHints.FETCH, "e.firstName");
             query.getResultList();
         } catch (QueryException exc){
             exception = exc;

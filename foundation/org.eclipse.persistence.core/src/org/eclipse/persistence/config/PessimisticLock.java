@@ -10,25 +10,28 @@
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
  ******************************************************************************/  
-package org.eclipse.persistence.jpa.config;
+package org.eclipse.persistence.config;
 
 /**
- * Hint values.
+ * PessimisticLock hint values.
  * 
- * The class defines boolean values used by some TopLink query hint.
+ * The class contains all the valid values for QueryHints.PESSIMISTIC_LOCK query hint.
  * 
  * <p>JPA Query Hint Usage:
  * 
- * <p><code>query.setHint(EclipseLinkQueryHints.REFRESH, HintValues.TRUE);</code>
+ * <p><code>query.setHint(QueryHints.PESSIMISTIC_LOCK, PessimisticLock.Lock);</code>
  * <p>or 
- * <p><code>@QueryHint(name=EclipseLinkQueryHints.REFRESH, value=HintValues.TRUE)</code>
+ * <p><code>@QueryHint(name=QueryHints.PESSIMISTIC_LOCK, value=PessimisticLock.Lock)</code>
  * 
  * <p>Hint values are case-insensitive.
+ * "" could be used instead of default value PessimisticLock.DEFAULT.
  * 
- * @see EclipseLinkQueryHints
+ * @see QueryHints
  */
-public class HintValues {
-    public static final String TRUE = "True";
-    public static final String FALSE = "False";
-    public static final String PERSISTENCE_UNIT_DEFAULT = "PersistenceUnitDefault";
+public class PessimisticLock {
+    public static final String  NoLock = "NoLock";
+    public static final String  Lock = "Lock";
+    public static final String  LockNoWait = "LockNoWait";
+ 
+    public static final String DEFAULT = NoLock;
 }

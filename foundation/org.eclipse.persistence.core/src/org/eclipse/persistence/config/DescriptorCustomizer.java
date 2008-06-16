@@ -8,18 +8,16 @@
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
- *     Guy Pelletier (Oracle), February 28, 2007 
- *        - New test file introduced for bug 217880.  
+ *     Oracle - initial API and implementation from Oracle TopLink
  ******************************************************************************/  
-package org.eclipse.persistence.testing.models.jpa.xml.advanced;
+package org.eclipse.persistence.config;
 
-import org.eclipse.persistence.config.DescriptorCustomizer;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 
-public class EmployeeCustomizer implements DescriptorCustomizer {
-    public EmployeeCustomizer() {}
-    
-    public void customize(ClassDescriptor descriptor) {
-        descriptor.setShouldDisableCacheHits(false);
-    }
+/**
+ * PUBLIC:
+ * This interface is to allow extra customization on a EclipseLink Session
+ */
+public interface DescriptorCustomizer {
+    public void customize(ClassDescriptor Descriptor) throws Exception;
 }

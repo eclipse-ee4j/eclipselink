@@ -19,7 +19,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 
-import org.eclipse.persistence.jpa.config.PersistenceUnitProperties;
+import org.eclipse.persistence.config.PersistenceUnitProperties;
 
 public class JUnitTestCaseHelper {
 

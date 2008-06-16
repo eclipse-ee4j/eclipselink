@@ -8,18 +8,17 @@
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
- *     Guy Pelletier (Oracle), February 28, 2007 
- *        - New test file introduced for bug 217880.  
+ *  06/12/2008-1.0M9 James Sutherland
  ******************************************************************************/  
-package org.eclipse.persistence.testing.models.jpa.xml.advanced;
+package org.eclipse.persistence.sessions.factories;
 
-import org.eclipse.persistence.config.DescriptorCustomizer;
-import org.eclipse.persistence.descriptors.ClassDescriptor;
+/**
+ * This class handles migration from TopLink when broad imports were used.
+ * This class was moved to config.
+ * @author James Sutherland
+ * @Deprecated replaced by org.eclipse.persistence.config.DescriptorCustomizer
+ */
+@Deprecated
+public interface DescriptorCustomizer extends org.eclipse.persistence.config.DescriptorCustomizer {
 
-public class EmployeeCustomizer implements DescriptorCustomizer {
-    public EmployeeCustomizer() {}
-    
-    public void customize(ClassDescriptor descriptor) {
-        descriptor.setShouldDisableCacheHits(false);
-    }
 }

@@ -38,6 +38,8 @@ import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.indirection.IndirectionPolicy;
 import org.eclipse.persistence.internal.indirection.NoIndirectionPolicy;
 import org.eclipse.persistence.internal.queries.ContainerPolicy;
+import org.eclipse.persistence.internal.sessions.factories.NamespaceResolvableProject;
+import org.eclipse.persistence.internal.sessions.factories.NamespaceResolverWithPrefixes;
 import org.eclipse.persistence.mappings.Association;
 import org.eclipse.persistence.mappings.AttributeAccessor;
 import org.eclipse.persistence.mappings.CollectionMapping;
@@ -60,8 +62,6 @@ import org.eclipse.persistence.queries.Call;
 import org.eclipse.persistence.queries.ModifyQuery;
 import org.eclipse.persistence.queries.ReadQuery;
 import org.eclipse.persistence.sessions.DatasourceLogin;
-import org.eclipse.persistence.sessions.factories.NamespaceResolvableProject;
-import org.eclipse.persistence.sessions.factories.NamespaceResolverWithPrefixes;
 
 /**
  * INTERNAL:

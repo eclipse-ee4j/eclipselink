@@ -22,11 +22,11 @@ import junit.framework.Test;
 import junit.framework.TestSuite;
 import junit.extensions.TestSetup;
 
+import org.eclipse.persistence.config.CacheUsage;
+import org.eclipse.persistence.config.QueryHints;
+import org.eclipse.persistence.config.QueryType;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.sessions.DatabaseSession;
-import org.eclipse.persistence.jpa.config.CacheUsage;
-import org.eclipse.persistence.jpa.config.QueryType;
-import org.eclipse.persistence.jpa.config.EclipseLinkQueryHints;
 
 import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
 import org.eclipse.persistence.testing.framework.QuerySQLTracker;
@@ -120,7 +120,7 @@ public class AdvancedQueryTestSuite extends JUnitTestCase {
             counter = new QuerySQLTracker(getServerSession());
             // Query by primary key.
             query = em.createQuery("Select employee from Employee employee where employee.id = :id and employee.firstName = :firstName");
-            query.setHint(EclipseLinkQueryHints.CACHE_USAGE, CacheUsage.CheckCacheByPrimaryKey);
+            query.setHint(QueryHints.CACHE_USAGE, CacheUsage.CheckCacheByPrimaryKey);
             query.setParameter("id", employee.getId());
             query.setParameter("firstName", employee.getFirstName());
             Employee queryResult = (Employee)query.getSingleResult();
@@ -155,7 +155,7 @@ public class AdvancedQueryTestSuite extends JUnitTestCase {
             counter = new QuerySQLTracker(getServerSession());
             // Query by primary key.
             query = em.createQuery("Select employee from Employee employee where employee.id = :id and employee.firstName = :firstName");
-            query.setHint(EclipseLinkQueryHints.QUERY_TYPE, QueryType.ReadObject);
+            query.setHint(QueryHints.QUERY_TYPE, QueryType.ReadObject);
             query.setParameter("id", employee.getId());
             query.setParameter("firstName", employee.getFirstName());
             Employee queryResult = (Employee)query.getSingleResult();
@@ -190,7 +190,7 @@ public class AdvancedQueryTestSuite extends JUnitTestCase {
             counter = new QuerySQLTracker(getServerSession());
             // Query by primary key.
             query = em.createQuery("Select employee from Employee employee where employee.id = :id");
-            query.setHint(EclipseLinkQueryHints.CACHE_USAGE, CacheUsage.CheckCacheByExactPrimaryKey);
+            query.setHint(QueryHints.CACHE_USAGE, CacheUsage.CheckCacheByExactPrimaryKey);
             query.setParameter("id", employee.getId());
             Employee queryResult = (Employee)query.getSingleResult();
             if (queryResult != employee) {
@@ -224,7 +224,7 @@ public class AdvancedQueryTestSuite extends JUnitTestCase {
             counter = new QuerySQLTracker(getServerSession());
             // Query by primary key.
             query = em.createQuery("Select employee from Employee employee where employee.firstName = :firstName");
-            query.setHint(EclipseLinkQueryHints.CACHE_USAGE, CacheUsage.CheckCacheThenDatabase);
+            query.setHint(QueryHints.CACHE_USAGE, CacheUsage.CheckCacheThenDatabase);
             query.setParameter("firstName", employee.getFirstName());
             Employee queryResult = (Employee)query.getSingleResult();
             if (!queryResult.getFirstName().equals(employee.getFirstName())) {
@@ -258,7 +258,7 @@ public class AdvancedQueryTestSuite extends JUnitTestCase {
             counter = new QuerySQLTracker(getServerSession());
             // Query by primary key.
             query = em.createQuery("Select employee from Employee employee where employee.firstName = :firstName");
-            query.setHint(EclipseLinkQueryHints.CACHE_USAGE, CacheUsage.CheckCacheOnly);
+            query.setHint(QueryHints.CACHE_USAGE, CacheUsage.CheckCacheOnly);
             query.setParameter("firstName", employee.getFirstName());
             // Test that list works as well.
             query.getResultList();

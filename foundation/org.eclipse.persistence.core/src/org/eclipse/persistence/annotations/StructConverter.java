@@ -35,7 +35,7 @@ public @interface StructConverter {
      * interface.
      * 
      * You may also alternatively specify a pre-defined EclipseLink 
-     * org.eclipse.persistence.jpa.config.StructConverterType 
+     * org.eclipse.persistence.config.StructConverterType 
      */
     String converter(); 
 }

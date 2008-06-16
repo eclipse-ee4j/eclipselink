@@ -10,7 +10,7 @@
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
  ******************************************************************************/  
-package org.eclipse.persistence.jpa.config;
+package org.eclipse.persistence.config;
 
 /**
  * Cache usage hint values.
@@ -19,18 +19,18 @@ package org.eclipse.persistence.jpa.config;
  * but is used after accessing the database to avoid re-building the objects and avoid
  * accessing the database for relationships.
  * 
- * The class contains all the valid values for EclipseLinkQueryHints.CACHE_USAGE query hint.
+ * The class contains all the valid values for QueryHints.CACHE_USAGE query hint.
  * 
  * <p>JPA Query Hint Usage:
  * 
- * <p><code>query.setHint(EclipseLinkQueryHints.CACHE_USAGE, CacheUsage.CheckCacheOnly);</code>
+ * <p><code>query.setHint(QueryHints.CACHE_USAGE, CacheUsage.CheckCacheOnly);</code>
  * <p>or 
- * <p><code>@QueryHint(name=EclipseLinkQueryHints.CACHE_USAGE, value=CacheUsage.CheckCacheOnly)</code>
+ * <p><code>@QueryHint(name=QueryHints.CACHE_USAGE, value=CacheUsage.CheckCacheOnly)</code>
  * 
  * <p>Hint values are case-insensitive.
  * "" could be used instead of default value CacheUsage.DEFAULT.
  * 
- * @see EclipseLinkQueryHints
+ * @see QueryHints
  */
 public class CacheUsage {
     /**

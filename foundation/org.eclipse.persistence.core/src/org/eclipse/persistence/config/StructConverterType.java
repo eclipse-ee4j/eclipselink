@@ -8,18 +8,21 @@
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
- *     Guy Pelletier (Oracle), February 28, 2007 
- *        - New test file introduced for bug 217880.  
+ *     Oracle - initial API and implementation from Oracle TopLink
  ******************************************************************************/  
-package org.eclipse.persistence.testing.models.jpa.xml.advanced;
+package org.eclipse.persistence.config;
 
-import org.eclipse.persistence.config.DescriptorCustomizer;
-import org.eclipse.persistence.descriptors.ClassDescriptor;
+/**
+ * This class contains predefined StructConverter types.
+ * 
+ * Users can use these types to define what StructConverter to use. For instance:
+ * 
+ * @StructConverter(name="JGeom", converter="JGEOMETRY")
+ *
+ * @author tware
+ *
+ */
+public class StructConverterType {
 
-public class EmployeeCustomizer implements DescriptorCustomizer {
-    public EmployeeCustomizer() {}
-    
-    public void customize(ClassDescriptor descriptor) {
-        descriptor.setShouldDisableCacheHits(false);
-    }
+    public static final String JGeometry = "JGEOMETRY";
 }

@@ -10,19 +10,23 @@
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
  ******************************************************************************/  
-package org.eclipse.persistence.jpa.config;
+package org.eclipse.persistence.config;
 
 /**
- * This class contains predefined StructConverter types.
+ * Specify the use of batch writing to optimize transactions with multiple writes,
+ * by default batch writing is not used.
  * 
- * Users can use these types to define what StructConverter to use. For instance:
+ * <p>JPA persistence property Usage:
  * 
- * @StructConverter(name="JGeom", converter="JGEOMETRY")
- *
- * @author tware
- *
+ * <p><code>properties.add(PersistenceUnitProperties.BATCH_WRITING, BatchWriting.JDBC);</code>
+ * 
+ * <p>Property values are case-insensitive
  */
-public class StructConverterType {
-
-    public static final String JGeometry = "JGEOMETRY";
+public class BatchWriting {
+    public static final String  None = "None";
+    public static final String  JDBC = "JDBC";
+    public static final String  Buffered = "Buffered";
+    public static final String  OracleJDBC = "Oracle-JDBC";
+ 
+    public static final String DEFAULT = None;
 }

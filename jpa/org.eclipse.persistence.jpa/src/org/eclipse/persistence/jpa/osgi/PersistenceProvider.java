@@ -12,8 +12,6 @@
  ******************************************************************************/  
 package org.eclipse.persistence.jpa.osgi;
 
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.Map;
 
 import javax.persistence.EntityManagerFactory;
@@ -21,8 +19,6 @@ import javax.persistence.spi.PersistenceUnitInfo;
 
 import org.eclipse.persistence.internal.jpa.deployment.osgi.OSGiPersistenceInitializationHelper;
 import org.eclipse.persistence.exceptions.EntityManagerSetupException;
-
-import org.osgi.framework.Bundle;
 
 /**
  * EclipseLink JPA provider for use in OSGI Environments

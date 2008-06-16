@@ -14,7 +14,7 @@ package org.eclipse.persistence.internal.jpa.deployment;
 
 import java.util.Map;
 
-import org.eclipse.persistence.jpa.config.PersistenceUnitProperties;
+import org.eclipse.persistence.config.PersistenceUnitProperties;
 
 /**
  * Provides some JPA initialization behavior in a manner that can be overridden

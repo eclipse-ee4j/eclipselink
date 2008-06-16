@@ -25,9 +25,9 @@ import org.eclipse.persistence.testing.models.jpa.performance.Employee;
 import org.eclipse.persistence.testing.models.jpa.performance.EmployeeTableCreator;
 import org.eclipse.persistence.testing.models.jpa.performance.EmploymentPeriod;
 import org.eclipse.persistence.testing.models.jpa.performance.PhoneNumber;
+import org.eclipse.persistence.config.CacheUsage;
 import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.jpa.JpaEntityManager;
-import org.eclipse.persistence.jpa.config.CacheUsage;
 import org.eclipse.persistence.testing.framework.*;
 
 /**

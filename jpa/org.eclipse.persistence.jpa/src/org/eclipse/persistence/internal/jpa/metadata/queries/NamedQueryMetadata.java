@@ -24,7 +24,7 @@ import org.eclipse.persistence.internal.jpa.QueryHintsHandler;
 import org.eclipse.persistence.internal.jpa.metadata.ORMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAccessibleObject;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
-import org.eclipse.persistence.queries.EJBQLPlaceHolderQuery;
+import org.eclipse.persistence.queries.JPAQuery;
 
 /**
  * INTERNAL:
@@ -128,7 +128,7 @@ public class NamedQueryMetadata extends ORMetadata {
     public void process(AbstractSession session, ClassLoader loader) {
         try {
             HashMap<String, String> hints = processQueryHints(session);
-            session.addEjbqlPlaceHolderQuery(new EJBQLPlaceHolderQuery(getName(), getQuery(), hints));
+            session.addJPAQuery(new JPAQuery(getName(), getQuery(), hints));
         } catch (Exception exception) {
             throw ValidationException.errorProcessingNamedQuery(getClass(), getName(), exception);
         }

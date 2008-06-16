@@ -15,10 +15,10 @@ package org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.eclipse.persistence.config.DescriptorCustomizer;
+import org.eclipse.persistence.config.SessionCustomizer;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.sessions.Session;
-import org.eclipse.persistence.internal.sessions.factories.DescriptorCustomizer;
-import org.eclipse.persistence.internal.sessions.factories.SessionCustomizer;
 
 /**
  * Session and descriptor customizer.

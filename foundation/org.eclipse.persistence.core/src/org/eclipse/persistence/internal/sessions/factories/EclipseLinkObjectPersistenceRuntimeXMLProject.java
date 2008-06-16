@@ -10,7 +10,7 @@
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
  ******************************************************************************/
-package org.eclipse.persistence.sessions.factories;
+package org.eclipse.persistence.internal.sessions.factories;
 
 // EclipseLink imports
 import org.eclipse.persistence.descriptors.ClassDescriptor;

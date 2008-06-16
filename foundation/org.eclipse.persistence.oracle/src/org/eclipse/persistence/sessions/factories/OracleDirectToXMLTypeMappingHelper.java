@@ -14,6 +14,7 @@ package org.eclipse.persistence.sessions.factories;
 
 import org.eclipse.persistence.internal.codegen.NonreflectiveMethodDefinition;
 import org.eclipse.persistence.internal.sessions.DatabaseSessionImpl;
+import org.eclipse.persistence.internal.sessions.factories.DirectToXMLTypeMappingHelper;
 import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.mappings.DirectToFieldMapping;
 import org.eclipse.persistence.oxm.NamespaceResolver;

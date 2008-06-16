@@ -476,7 +476,7 @@ public class MetadataDescriptor {
                     m_idOrderByAttributeNames = getInheritanceRootDescriptor().getIdAttributeNames();
                 } else {
                     // We must have a composite primary key as a result of an embedded id.
-                    m_idOrderByAttributeNames = ((MappingAccessor) getAccessorFor(getEmbeddedIdAttributeName())).getReferenceDescriptor().getOrderByAttributeNames();
+                    m_idOrderByAttributeNames = (getAccessorFor(getEmbeddedIdAttributeName())).getReferenceDescriptor().getOrderByAttributeNames();
                 } 
             } else {
                 m_idOrderByAttributeNames = m_idAttributeNames;

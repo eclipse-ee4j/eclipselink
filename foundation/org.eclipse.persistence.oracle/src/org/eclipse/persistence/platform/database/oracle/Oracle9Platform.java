@@ -32,6 +32,7 @@ import oracle.jdbc.OracleConnection;
 import oracle.jdbc.OraclePreparedStatement;
 import oracle.jdbc.OracleTypes;
 
+import org.eclipse.persistence.config.PersistenceUnitProperties;
 import org.eclipse.persistence.expressions.ExpressionOperator;
 import org.eclipse.persistence.internal.expressions.SpatialExpressionOperators;
 import oracle.sql.OPAQUE;
@@ -56,7 +57,6 @@ import org.eclipse.persistence.internal.security.PrivilegedClassForName;
 import org.eclipse.persistence.internal.security.PrivilegedGetConstructorFor;
 import org.eclipse.persistence.internal.security.PrivilegedInvokeConstructor;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
-import org.eclipse.persistence.jpa.config.PersistenceUnitProperties;
 
 /**
  * <p><b>Purpose:</b>

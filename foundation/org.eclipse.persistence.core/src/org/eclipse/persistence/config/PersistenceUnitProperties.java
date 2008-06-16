@@ -10,7 +10,7 @@
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
  ******************************************************************************/  
-package org.eclipse.persistence.jpa.config;
+package org.eclipse.persistence.config;
 
 import java.io.File;
 import java.util.Map;
@@ -254,7 +254,7 @@ public class PersistenceUnitProperties {
     /**
      * Allows session customization. The value is a full name for a class which implements SessionCustomizer.
      * Session customizer called after all other properties have been processed.
-     * @see org.eclipse.persistence.internal.sessions.factories.SessionCustomizer
+     * @see org.eclipse.persistence.config.SessionCustomizer
      */
     public static final String SESSION_CUSTOMIZER = "eclipselink.session.customizer";
     
@@ -331,10 +331,10 @@ public class PersistenceUnitProperties {
      * or if all exceptions should be caught and summary thrown at end of deployment attempt.
      * "true" by default.
      */
-    public static final String TOPLINK_ORM_THROW_EXCEPTIONS = "eclipselink.orm.throw.exceptions";
+    public static final String THROW_EXCEPTIONS = "eclipselink.orm.throw.exceptions";
     
     /** Validate deployment, but do not connect. */
-    public static final String TOPLINK_VALIDATION_ONLY_PROPERTY = "eclipselink.validation-only";
+    public static final String VALIDATION_ONLY_PROPERTY = "eclipselink.validation-only";
 
     /**
      * Allows the database schema to be generated on deployment.

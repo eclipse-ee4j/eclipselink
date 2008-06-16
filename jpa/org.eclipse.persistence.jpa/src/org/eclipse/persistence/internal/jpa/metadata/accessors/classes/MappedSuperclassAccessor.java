@@ -365,7 +365,7 @@ public class MappedSuperclassAccessor extends ClassAccessor {
         // Look for an @AssociationOverride.
         Annotation associationOverride = getAnnotation(AssociationOverride.class);
         if (associationOverride != null) {
-            processAssociationOverride(new AssociationOverrideMetadata((Annotation) associationOverride, getAccessibleObject()));
+            processAssociationOverride(new AssociationOverrideMetadata(associationOverride, getAccessibleObject()));
         }
     }
     

@@ -10,7 +10,7 @@
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
  ******************************************************************************/
-package org.eclipse.persistence.sessions.factories;
+package org.eclipse.persistence.internal.sessions.factories;
 
 import org.eclipse.persistence.internal.security.PrivilegedClassForName;
 import org.eclipse.persistence.internal.security.PrivilegedNewInstanceFromClass;
@@ -36,7 +36,7 @@ public class DirectToXMLTypeMappingHelper {
             Class helperClass = null;
 
             try {
-                helperClass = (Class) new PrivilegedClassForName("org.eclipse.persistence.sessions.factories.OracleDirectToXMLTypeMappingHelper").run();
+                helperClass = (Class) new PrivilegedClassForName("org.eclipse.persistence.internal.sessions.factories.OracleDirectToXMLTypeMappingHelper").run();
             } catch (ClassNotFoundException cnfe) {
                 helperClass = DirectToXMLTypeMappingHelper.class;
             }

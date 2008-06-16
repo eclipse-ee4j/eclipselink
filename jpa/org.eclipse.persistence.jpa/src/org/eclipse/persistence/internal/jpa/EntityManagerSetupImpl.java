@@ -32,9 +32,6 @@ import javax.persistence.spi.PersistenceUnitInfo;
 import javax.persistence.spi.ClassTransformer;
 import javax.persistence.PersistenceException;
 
-import org.eclipse.persistence.jpa.config.EntityManagerProperties;
-import org.eclipse.persistence.jpa.config.PersistenceUnitProperties;
-import org.eclipse.persistence.jpa.config.BatchWriting;
 import org.eclipse.persistence.internal.databaseaccess.DatasourcePlatform;
 import org.eclipse.persistence.internal.weaving.TransformerFactory;
 import org.eclipse.persistence.sessions.JNDIConnector;
@@ -48,8 +45,14 @@ import org.eclipse.persistence.sessions.*;
 import org.eclipse.persistence.sessions.server.ReadConnectionPool;
 import org.eclipse.persistence.sessions.server.ServerSession;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataProcessor;
-import org.eclipse.persistence.sessions.factories.ReferenceMode;
 import org.eclipse.persistence.sessions.factories.SessionManager;
+import org.eclipse.persistence.sessions.factories.XMLSessionConfigLoader;
+import org.eclipse.persistence.config.BatchWriting;
+import org.eclipse.persistence.config.DescriptorCustomizer;
+import org.eclipse.persistence.config.LoggerType;
+import org.eclipse.persistence.config.PersistenceUnitProperties;
+import org.eclipse.persistence.config.ProfilerType;
+import org.eclipse.persistence.config.SessionCustomizer;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.platform.server.CustomServerPlatform;
 import org.eclipse.persistence.platform.server.ServerPlatform;
@@ -60,17 +63,12 @@ import javax.persistence.spi.PersistenceUnitTransactionType;
 import org.eclipse.persistence.internal.jpa.deployment.PersistenceUnitProcessor;
 import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.internal.security.PrivilegedNewInstanceFromClass;
-import org.eclipse.persistence.internal.sessions.factories.XMLSessionConfigLoader;
-import org.eclipse.persistence.jpa.config.LoggerType;
 import org.eclipse.persistence.internal.jpa.jdbc.DataSourceImpl;
-import org.eclipse.persistence.internal.sessions.factories.DescriptorCustomizer;
-import org.eclipse.persistence.internal.sessions.factories.SessionCustomizer;
 import org.eclipse.persistence.internal.security.SecurableObjectHolder;
-import org.eclipse.persistence.queries.EJBQLPlaceHolderQuery;
+import org.eclipse.persistence.queries.JPAQuery;
 import org.eclipse.persistence.queries.DatabaseQuery;
 import org.eclipse.persistence.platform.database.converters.StructConverter;
 import org.eclipse.persistence.platform.server.ServerPlatformBase;
-import org.eclipse.persistence.jpa.config.ProfilerType;
 import org.eclipse.persistence.tools.profiler.QueryMonitor;
 
 
@@ -252,10 +250,10 @@ public class EntityManagerSetupImpl {
                         }
                     }
                 }
-            List queries = session.getEjbqlPlaceHolderQueries();
+            List queries = session.getJPAQueries();
             for (Iterator iterator = queries.iterator(); iterator.hasNext();) {
-                EJBQLPlaceHolderQuery existingQuery = (EJBQLPlaceHolderQuery)iterator.next();
-                DatabaseQuery databaseQuery = existingQuery.processEjbQLQuery(session);
+                JPAQuery existingQuery = (JPAQuery)iterator.next();
+                DatabaseQuery databaseQuery = existingQuery.processJPQLQuery(session);
                 session.addQuery(databaseQuery.getName(), databaseQuery);
             }
             queries.clear();
@@ -789,7 +787,7 @@ public class EntityManagerSetupImpl {
             }
             
             boolean throwExceptionOnFail = "true".equalsIgnoreCase(
-                    EntityManagerFactoryProvider.getConfigPropertyAsStringLogDebug(PersistenceUnitProperties.TOPLINK_ORM_THROW_EXCEPTIONS, predeployProperties, "true", session));                
+                    EntityManagerFactoryProvider.getConfigPropertyAsStringLogDebug(PersistenceUnitProperties.THROW_EXCEPTIONS, predeployProperties, "true", session));                
     
             ClassTransformer transformer = null;
             
@@ -887,7 +885,7 @@ public class EntityManagerSetupImpl {
         if (shouldMergeMap) {
             m = mergeWithExistingMap(m);
         }
-        String validationOnlyString = getConfigPropertyAsStringLogDebug(PersistenceUnitProperties.TOPLINK_VALIDATION_ONLY_PROPERTY, m, session);
+        String validationOnlyString = getConfigPropertyAsStringLogDebug(PersistenceUnitProperties.VALIDATION_ONLY_PROPERTY, m, session);
         if (validationOnlyString != null) {
             return Boolean.parseBoolean(validationOnlyString);
         } else {

@@ -15,8 +15,8 @@ package org.eclipse.persistence.internal.jpa;
 
 import java.util.*;
 
-import org.eclipse.persistence.jpa.config.PersistenceUnitProperties;
-import org.eclipse.persistence.jpa.config.FlushClearCache;
+import org.eclipse.persistence.config.FlushClearCache;
+import org.eclipse.persistence.config.PersistenceUnitProperties;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.internal.sessions.UnitOfWorkImpl;
 import org.eclipse.persistence.exceptions.DatabaseException;

@@ -49,9 +49,9 @@ import org.eclipse.persistence.internal.jpa.transaction.*;
 import org.eclipse.persistence.internal.localization.ExceptionLocalization;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.internal.sessions.MergeManager;
-import org.eclipse.persistence.jpa.config.EntityManagerProperties;
 import org.eclipse.persistence.logging.SessionLog;
 import org.eclipse.persistence.internal.sessions.UnitOfWorkImpl;
+import org.eclipse.persistence.config.EntityManagerProperties;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.descriptors.VersionLockingPolicy;
 

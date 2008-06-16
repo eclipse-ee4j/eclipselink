@@ -28,9 +28,9 @@ import junit.framework.TestSuite;
 import oracle.jdbc.OracleConnection;
 import oracle.jdbc.pool.OracleDataSource;
 
+import org.eclipse.persistence.config.PersistenceUnitProperties;
 import org.eclipse.persistence.internal.sessions.ExclusiveIsolatedClientSession;
 import org.eclipse.persistence.internal.sessions.UnitOfWorkImpl;
-import org.eclipse.persistence.jpa.config.PersistenceUnitProperties;
 
 import org.eclipse.persistence.platform.database.oracle.Oracle9Platform;
 import org.eclipse.persistence.sessions.SessionEvent;

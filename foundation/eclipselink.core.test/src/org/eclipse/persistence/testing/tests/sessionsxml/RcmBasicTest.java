@@ -14,8 +14,8 @@ package org.eclipse.persistence.testing.tests.sessionsxml;
 
 import org.eclipse.persistence.sessions.DatabaseSession;
 import org.eclipse.persistence.testing.framework.TestCase;
-import org.eclipse.persistence.internal.sessions.factories.XMLSessionConfigLoader;
 import org.eclipse.persistence.sessions.factories.SessionManager;
+import org.eclipse.persistence.sessions.factories.XMLSessionConfigLoader;
 
 
 /**

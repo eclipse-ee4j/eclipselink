@@ -10,7 +10,7 @@
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
  ******************************************************************************/
-package org.eclipse.persistence.sessions.factories;
+package org.eclipse.persistence.internal.sessions.factories;
 
 // javase imports
 import java.util.ArrayList;

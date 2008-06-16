@@ -8,16 +8,17 @@
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
- *     Oracle - initial API and implementation from Oracle TopLink
+ *  06/12/2008-1.0M9 James Sutherland
  ******************************************************************************/  
-package org.eclipse.persistence.internal.sessions.factories;
-
-import org.eclipse.persistence.descriptors.ClassDescriptor;
+package org.eclipse.persistence.sessions.factories;
 
 /**
- * PUBLIC:
- * This interface is to allow extra customization on a EclipseLink Session
+ * This class handles migration from TopLink when broad imports were used.
+ * This class was moved to config.
+ * @author James Sutherland
+ * @Deprecated replaced by org.eclipse.persistence.config.SessionCustomizer
  */
-public interface DescriptorCustomizer {
-    public void customize(ClassDescriptor Descriptor) throws Exception;
+@Deprecated
+public interface SessionCustomizer extends org.eclipse.persistence.config.SessionCustomizer {
+
 }

@@ -35,8 +35,8 @@ import org.eclipse.persistence.oxm.schema.XMLSchemaReference;
 import org.eclipse.persistence.sessions.DatabaseSession;
 import org.eclipse.persistence.sessions.Project;
 import org.eclipse.persistence.sessions.SessionEventListener;
-import org.eclipse.persistence.internal.sessions.factories.XMLSessionConfigLoader;
 import org.eclipse.persistence.sessions.factories.SessionManager;
+import org.eclipse.persistence.sessions.factories.XMLSessionConfigLoader;
 
 /**
  * <p>
