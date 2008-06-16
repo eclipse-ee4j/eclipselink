@@ -1,9 +1,15 @@
 # !/bin/sh
+#set -x
 
 export JAVA_HOME=/shared/common/ibm-java2-ppc-50
 export PATH=${JAVA_HOME}/bin:/usr/bin:/usr/local/bin:${PATH}
 
-cd /shared/rt/eclipselink
+BaseDownloadURL="http://www.eclipse.org/downloads/download.php?file=/rt/eclipselink/nightly"
+BaseDisplayURL="http://download.eclipse.org/rt/eclipselink/nightly"
+BaseDownloadNFSDir="/home/data/httpd/download.eclipse.org/rt/eclipselink"
+curdir=`pwd`
+buildir=/shared/rt/eclipselink
+cd ${buildir}
 
 echo "generating webpage"
 
@@ -14,31 +20,92 @@ tmp=$tmp/somedir.$RANDOM.$RANDOM.$RANDOM.$$
   echo "Could not create temporary directory! Exiting." 1>&2 
   exit 1
 }
-cat ./trunk/buildsystem/phphead.txt > $tmp/index.xml
-find /home/data/httpd/download.eclipse.org/rt/eclipselink/nightly -name eclipselink-incubation-[1-9]\*.zip -printf '%h        <p> <a href="http://www.eclipse.org/downloads/download.php?file=/rt/eclipselink/nightly/%f"> %f </a>    -----    <a href="http://www.eclipse.org/eclipselink/testing/index.php"> Test Results </a></p>\n' | grep -v '/2008' | cut -d' ' -f2- | sort -r >> $tmp/index.xml
-echo \<\/description\> >> $tmp/index.xml
-echo \<\/section\> >> $tmp/index.xml
-echo \<section class=\"main\" name=\"1.0 Nightly Builds - OSGi Plugins\"\> >> $tmp/index.xml
-echo \<description\> >> $tmp/index.xml
 
-find /home/data/httpd/download.eclipse.org/rt/eclipselink/nightly -name eclipselink-plugins-incubation\*.zip -printf '%h        <p> <a href="http://www.eclipse.org/downloads/download.php?file=/rt/eclipselink/nightly/%f"> %f </a></p>\n' | grep -v '/2008' | cut -d' ' -f2- | sort -r >> $tmp/index.xml
-cat ./trunk/buildsystem/phptail.txt >> $tmp/index.xml
+# Generate the nightly build table
+#    Dump out the table header html
+echo "<?xml version=\"1.0\" encoding=\"UTF-8\"?>                                   " >> $tmp/index.xml
+echo "<sections title=\"Eclipse Persistence Services Project (EclipseLink) : Nightly Builds\">" >> $tmp/index.xml
+echo "    <description>                                                            " >> $tmp/index.xml
+echo "      <p> Automated builds and the corresponding Javadocs are created every Sunday - Thursday and are made available for download.  The process is kicked off shortly after midnight Eastern Time.</p>" >> $tmp/index.xml
+echo "    </description>                                                           " >> $tmp/index.xml
+echo "  <section class=\"main\" name="1.0 Nightly Builds \(Incubation\)">          " >> $tmp/index.xml
+echo "    <description>                                                            " >> $tmp/index.xml
+echo "      <p>                                                                    " >> $tmp/index.xml
+echo "        <table border=\"1\">                                                 " >> $tmp/index.xml
+echo "          <tr>                                                               " >> $tmp/index.xml
+echo "            <th align=\"center\"> Build ID </th>                             " >> $tmp/index.xml
+echo "            <th align=\"center\"> Archives </th>                             " >> $tmp/index.xml
+echo "            <th align=\"center\"> </th>                                      " >> $tmp/index.xml
+echo "            <th colspan=\"5\" align=\"center\"> Nightly Testing Results </th>" >> $tmp/index.xml
+echo "          </tr>                                                              " >> $tmp/index.xml
 
-cat ./trunk/buildsystem/testinghead.txt > $tmp/testing.xml
-#core test results
+#    Generate each table row depending upon available content
+cd ${BaseDownloadNFSDir}/nightly
+for contentdir in `ls -dr [0-9]*` ; do
+    echo "          <tr>"  >> $tmp/index.xml
+    echo "            <td align=\"center\"> ${contentdir} </td>" >> $tmp/index.xml
+    echo "            <td align=\"center\">" >> $tmp/index.xml
+    if [ -f ${contentdir}/eclipselink-incubation-${contentdir}.zip ] ; then
+        echo "              <a href=\"${BaseDownloadURL}/${contentdir}/eclipselink-incubation-${contentdir}.zip\"> Install Archive </a> <br>" >> $tmp/index.xml
+    else
+        echo "              Install archive not available <br>" >> $tmp/index.xml
+    fi
+    if [ -f ${contentdir}/eclipselink-incubation-src-${contentdir}.zip ] ; then
+        echo "              <a href=\"${BaseDownloadURL}/${contentdir}/eclipselink-incubation-src-${contentdir}.zip\"> Source Archive </a> <br>" >> $tmp/index.xml
+    else
+        echo "              Source archive not available <br>" >> $tmp/index.xml
+    fi
+    if [ -f ${contentdir}/eclipselink-plugins-incubation-${contentdir}.zip ] ; then
+        echo "              <a href=\"${BaseDownloadURL}/${contentdir}/eclipselink-plugins-incubation-${contentdir}.zip\"> OSGi Plugins Archive </a> <br>" >> $tmp/index.xml
+    else
+        echo "              OSGi Plugins archive not available <br>" >> $tmp/index.xml
+    fi
+    echo "            </td>" >> $tmp/index.xml
+    echo "            <td align=\"center\"> </td>" >> $tmp/index.xml
+    if [ -f ${contentdir}/eclipselink-core-lrg-${contentdir}.html ] ; then
+        echo "            <td align=\"center\"> <a href=\"${BaseDisplayURL}/${contentdir}/eclipselink-core-lrg-${contentdir}.html\"> CoreLRG </a> </td>" >> $tmp/index.xml
+    else
+        if [ -f ${contentdir}/eclipselink-core-srg-${contentdir}.html ] ; then
+            echo "            <td align=\"center\"> <a href=\"${BaseDisplayURL}/${contentdir}/eclipselink-core-srg-${contentdir}.html\"> CoreSRG </a> </td>" >> $tmp/index.xml
+        else
+            echo "            <td align=\"center\"> Core </td>" >> $tmp/index.xml
+        fi
+    fi
+    if [ -f ${contentdir}/eclipselink-jpa-lrg-${contentdir}.html ] ; then
+        echo "            <td align=\"center\"> <a href=\"${BaseDisplayURL}/${contentdir}/eclipselink-jpa-lrg-${contentdir}.html\"> JPA </a> </td>" >> $tmp/index.xml
+    else
+        echo "            <td align=\"center\"> JPA </td>" >> $tmp/index.xml
+    fi
+    if [ -f ${contentdir}/eclipselink-jaxb-lrg-${contentdir}.html ] ; then
+        echo "            <td align=\"center\"> <a href=\"${BaseDisplayURL}/${contentdir}/eclipselink-jaxb-lrg-${contentdir}.html\"> Moxy (JAXB) </a> </td>" >> $tmp/index.xml
+    else
+        echo "            <td align=\"center\"> Moxy (JAXB) </td>" >> $tmp/index.xml
+    fi
+    if [ -f ${contentdir}/eclipselink-oxm-lrg-${contentdir}.html ] ; then
+        echo "            <td align=\"center\"> <a href=\"${BaseDisplayURL}/${contentdir}/eclipselink-oxm-lrg-${contentdir}.html\"> Moxy (OXM) </a> </td>" >> $tmp/index.xml
+    else
+        echo "            <td align=\"center\"> Moxy (OXM) </td>" >> $tmp/index.xml
+    fi
+    if [ -f ${contentdir}/eclipselink-sdo-lrg-${contentdir}.html ] ; then
+        echo "            <td align=\"center\"> <a href=\"${BaseDisplayURL}/${contentdir}/eclipselink-sdo-lrg-${contentdir}.html\"> SDO </a> </td>" >> $tmp/index.xml
+    else
+        echo "            <td align=\"center\"> SDO </td>" >> $tmp/index.xml
+    fi
+    echo "          </tr>" >> $tmp/index.xml
+done
 
-find /home/data/httpd/download.eclipse.org/rt/eclipselink/nightly/test-results/core -name \*.html -printf '        <p> <a href="http://download.eclipse.org/rt/eclipselink/nightly/test-results/core/%f"> %f </a></p>\n' | sort -r >> $tmp/testing.xml
+# Dump the static footer into place
+echo "        </table>                                                                          " >> $tmp/index.xml
+echo "      </p>                                                                                " >> $tmp/index.xml
+echo "      <script src=\"http://www.google-analytics.com/urchin.js\" type=\"text/javascript\"/>" >> $tmp/index.xml
+echo "      <script type=\"text/javascript\">                                                   " >> $tmp/index.xml
+echo "        _uacct = \"UA-1608008-2\";                                                        " >> $tmp/index.xml
+echo "        urchinTracker();                                                                  " >> $tmp/index.xml
+echo "      </script>                                                                           " >> $tmp/index.xml
+echo "    </description>                                                                        " >> $tmp/index.xml
+echo "  </section>                                                                              " >> $tmp/index.xml
+echo "</sections>                                                                               " >> $tmp/index.xml
 
-find /home/data/httpd/download.eclipse.org/rt/eclipselink/nightly/test-results/jpa -name \*.html -printf '        <p> <a href="http://download.eclipse.org/rt/eclipselink/nightly/test-results/jpa/%f"> %f </a></p>\n' | sort -r >> $tmp/testing.xml
-
-find /home/data/httpd/download.eclipse.org/rt/eclipselink/nightly/test-results/moxy -name \*.html -printf '        <p> <a href="http://download.eclipse.org/rt/eclipselink/nightly/test-results/moxy/%f"> %f </a></p>\n' | sort -r >> $tmp/testing.xml
-
-find /home/data/httpd/download.eclipse.org/rt/eclipselink/nightly/test-results/sdo -name \*.html -printf '        <p> <a href="http://download.eclipse.org/rt/eclipselink/nightly/test-results/sdo/%f"> %f </a></p>\n' | sort -r >> $tmp/testing.xml
-
-cat ./trunk/buildsystem/testingtail.txt >> $tmp/testing.xml
-
-mv -f $tmp/index.xml  /home/data/httpd/download.eclipse.org/rt/eclipselink/downloads.xml
-mv -f $tmp/testing.xml  /home/data/httpd/download.eclipse.org/rt/eclipselink/testing.xml
+# Copy the completed file to the server, and cleanup
+mv -f $tmp/index.xml  ${BaseDownloadNFSDir}/downloads-new.xml
 rm -rf $tmp
-
-
