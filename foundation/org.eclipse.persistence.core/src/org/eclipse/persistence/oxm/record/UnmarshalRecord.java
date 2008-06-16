@@ -19,6 +19,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Vector;
+import java.util.Stack;
 import javax.xml.namespace.QName;
 import org.eclipse.persistence.exceptions.EclipseLinkException;
 import org.eclipse.persistence.exceptions.XMLMarshalException;
@@ -480,19 +481,35 @@ public class UnmarshalRecord extends XMLRecord implements ContentHandler, Lexica
         if (uriToPrefixMap == null) {
             uriToPrefixMap = new HashMap();
         }
-        namespaceMap.put(prefix, uri);
-        uriToPrefixMap.put(uri, prefix);
+        Stack uriStack = (Stack)namespaceMap.get(prefix);
+        if(uriStack == null) {
+            uriStack = new Stack();
+            namespaceMap.put(prefix, uriStack);
+        }
+        uriStack.push(uri);
+        Stack prefixStack = (Stack)uriToPrefixMap.get(uri);
+        if(prefixStack == null) {
+            prefixStack = new Stack();
+            uriToPrefixMap.put(uri, prefixStack);
+        }            
+        prefixStack.push(prefix);
     }
 
     public void endPrefixMapping(String prefix) throws SAXException {
         if (null == namespaceMap) {
             return;
         }
-        if (uriToPrefixMap != null) {
-            String uri = (String)namespaceMap.get(prefix);
-            uriToPrefixMap.remove(uri);
+        Stack uriStack = (Stack)namespaceMap.get(prefix);
+        String uri = null;
+        if(uriStack != null && uriStack.size() > 0) {
+            uri = (String)uriStack.pop();
         }
-        namespaceMap.remove(prefix);
+        if(uri != null && uriToPrefixMap != null) {
+            Stack prefixStack = (Stack)uriToPrefixMap.get(uri);
+            if(prefixStack != null && prefixStack.size() > 0) {
+                prefixStack.pop();
+            }
+        }
     }
 
     public void startElement(String namespaceURI, String localName, String qName, Attributes atts) throws SAXException {
@@ -794,9 +811,16 @@ public class UnmarshalRecord extends XMLRecord implements ContentHandler, Lexica
 
     public String resolveNamespacePrefix(String prefix) {
         String namespaceURI = null;
+        if(prefix == null) {
+            prefix = "";
+        } 
         if (null != namespaceMap) {
-            namespaceURI = (String)namespaceMap.get(prefix);
+            Stack uriStack = (Stack)namespaceMap.get(prefix);
+            if(uriStack != null && uriStack.size() > 0) {
+                namespaceURI = (String)uriStack.peek();
+            }
         }
+        
         if (null == namespaceURI) {
             if (null != getParentRecord()) {
                 namespaceURI = getParentRecord().resolveNamespacePrefix(prefix);
@@ -808,7 +832,10 @@ public class UnmarshalRecord extends XMLRecord implements ContentHandler, Lexica
     public String resolveNamespaceUri(String uri) {
         String prefix = null;
         if (null != uriToPrefixMap) {
-            prefix = (String)uriToPrefixMap.get(uri);
+            Stack prefixStack = (Stack)uriToPrefixMap.get(uri);
+            if(prefixStack != null && prefixStack.size() > 0) {
+                prefix = (String)prefixStack.peek();
+            }
         }
         if (null == prefix) {
             if (null != getParentRecord()) {

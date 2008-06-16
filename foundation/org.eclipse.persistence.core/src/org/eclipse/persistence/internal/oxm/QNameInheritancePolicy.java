@@ -132,7 +132,13 @@ public class QNameInheritancePolicy extends InheritancePolicy {
             String indicatorValue = (String)classFieldValue;
             int index = indicatorValue.indexOf(":");
             if (index == -1) {
-                concreteClass = (Class)this.classIndicatorMapping.get(classFieldValue);
+                String uri = ((XMLRecord)rowFromDatabase).resolveNamespacePrefix(null);
+                if(uri == null) {
+                    concreteClass = (Class)this.classIndicatorMapping.get(classFieldValue);
+                } else {
+                    QName qname = new QName(uri, indicatorValue);
+                    concreteClass = (Class)this.classIndicatorMapping.get(qname);
+                }
             } else {
                 String prefix = indicatorValue.substring(0, index);
                 String localPart = indicatorValue.substring(index + 1);

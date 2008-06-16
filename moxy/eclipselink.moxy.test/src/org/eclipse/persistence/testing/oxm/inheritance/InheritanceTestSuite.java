@@ -39,6 +39,7 @@ public class InheritanceTestSuite extends TestCase {
         suite.addTestSuite(InheritanceMissingDescriptorTestCases.class);
         suite.addTestSuite(InheritanceCarTestCases.class);
         suite.addTestSuite(InheritanceCarDiffPrefixTestCases.class);
+        suite.addTestSuite(InheritanceCarNoPrefixTestCases.class);
         suite.addTestSuite(InheritanceVehicleTestCases.class);
         suite.addTestSuite(InheritanceVehicleDiffPrefixTestCases.class);
         suite.addTestSuite(InheritanceDiffPrefixNonRootTestCases.class);

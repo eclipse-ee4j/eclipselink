@@ -15,6 +15,7 @@ package org.eclipse.persistence.internal.oxm.record;
 import java.lang.reflect.Modifier;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Stack;
 import javax.xml.namespace.QName;
 import org.eclipse.persistence.exceptions.DescriptorException;
 import org.eclipse.persistence.exceptions.EclipseLinkException;
@@ -100,23 +101,38 @@ public class SAXUnmarshallerHandler implements ContentHandler {
         if (null == namespaceMap) {
             namespaceMap = new HashMap();
         }
-        namespaceMap.put(prefix, uri);
-
         if (uriToPrefixMap == null) {
             uriToPrefixMap = new HashMap();
         }
-        uriToPrefixMap.put(uri, prefix);
+        Stack uriStack = (Stack)namespaceMap.get(prefix);
+        if(uriStack == null) {
+            uriStack = new Stack();
+            namespaceMap.put(prefix, uriStack);
+        }
+        uriStack.push(uri);
+        Stack prefixStack = (Stack)uriToPrefixMap.get(uri);
+        if(prefixStack == null) {
+            prefixStack = new Stack();
+            uriToPrefixMap.put(uri, prefixStack);
+        }            
+        prefixStack.push(prefix);
     }
 
     public void endPrefixMapping(String prefix) throws SAXException {
         if (null == namespaceMap) {
             return;
         }
-        if (uriToPrefixMap != null) {
-            String uri = (String)namespaceMap.get(prefix);
-            uriToPrefixMap.remove(uri);
+        Stack uriStack = (Stack)namespaceMap.get(prefix);
+        String uri = null;
+        if(uriStack.size() > 0) {
+            uri = (String)uriStack.pop();
         }
-        namespaceMap.remove(prefix);
+        if(uri != null && uriToPrefixMap != null) {
+            Stack prefixStack = (Stack)uriToPrefixMap.get(uri);
+            if(prefixStack != null && prefixStack.size() > 0) {
+                prefixStack.pop();
+            }
+        }
     }
 
     /**
@@ -145,7 +161,6 @@ public class SAXUnmarshallerHandler implements ContentHandler {
             }
 
             XMLDescriptor xmlDescriptor = xmlContext.getDescriptor(rootQName);
-
             // if there is no descriptor for the root element, we may be able to
             // locate one if an xsi:type attribute is set:
             if (null == xmlDescriptor) {
@@ -156,11 +171,15 @@ public class SAXUnmarshallerHandler implements ContentHandler {
 
                     // set the prefix using a reverse key lookup by uri value on namespaceMap 
                     if (null != namespaceMap) {
+                        Stack namespaceStack = null;
                         if (null == typeFragment.getPrefix()) {
                             // an empty_string key references the default namespace
-                            typeFragment.setNamespaceURI((String)namespaceMap.get(EMPTY_STRING));
+                            namespaceStack = (Stack)namespaceMap.get(EMPTY_STRING);
                         } else {
-                            typeFragment.setNamespaceURI((String)namespaceMap.get(typeFragment.getPrefix()));
+                            namespaceStack = (Stack)namespaceMap.get(typeFragment.getPrefix());
+                        }
+                        if(namespaceStack != null && namespaceStack.size() > 0) {
+                            typeFragment.setNamespaceURI((String)namespaceStack.peek());
                         }
                     }
                     xmlDescriptor = xmlContext.getDescriptorByGlobalType(typeFragment);

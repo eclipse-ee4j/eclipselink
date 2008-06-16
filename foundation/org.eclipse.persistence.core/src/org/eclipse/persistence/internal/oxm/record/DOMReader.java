@@ -148,6 +148,14 @@ public class DOMReader extends XMLReader {
                 getContentHandler().startPrefixMapping(next.getLocalName(), next.getValue());
                 // Handle XMLNS prefixed attributes
                 handleXMLNSPrefixedAttribute(elem, next);
+            } else if(attrPrefix == null) {
+                String name = next.getLocalName();
+                if(name == null) {
+                    name = next.getNodeName();
+                }
+                if(name != null && name.equals("xmlns")) {
+                    getContentHandler().startPrefixMapping("", next.getValue());
+                }
             }
             attributes.addAttribute(next);
         }
@@ -161,6 +169,14 @@ public class DOMReader extends XMLReader {
             String attrPrefix = next.getPrefix();
             if (attrPrefix != null && attrPrefix.equals(XMLConstants.XMLNS)) {
                 getContentHandler().endPrefixMapping(next.getLocalName());
+            } else if(attrPrefix == null) {
+                String name = next.getLocalName();
+                if(name == null) {
+                    name = next.getNodeName();
+                }
+                if(name != null) {
+                    getContentHandler().endPrefixMapping("");
+                }
             }
         }
     }

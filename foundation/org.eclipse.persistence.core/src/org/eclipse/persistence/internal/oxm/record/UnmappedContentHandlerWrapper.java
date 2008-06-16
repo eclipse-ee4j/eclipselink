@@ -68,6 +68,9 @@ public class UnmappedContentHandlerWrapper extends UnmarshalRecord {
     }
 
     public void endPrefixMapping(String prefix) throws SAXException {
+        if(getParentRecord() != null) {
+            getParentRecord().endPrefixMapping(prefix);
+        }
         this.unmappedContentHandler.endPrefixMapping(prefix);
     }
 

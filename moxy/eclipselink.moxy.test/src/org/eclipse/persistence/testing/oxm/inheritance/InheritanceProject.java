@@ -42,7 +42,7 @@ public class InheritanceProject extends Project {
     public XMLDescriptor getVehicleDescriptor() {
         XMLDescriptor descriptor = new XMLDescriptor();
         descriptor.setJavaClass(org.eclipse.persistence.testing.oxm.inheritance.Vehicle.class);
-        descriptor.setDefaultRootElement("vehicle");
+        descriptor.setDefaultRootElement("prefix:vehicle");
         descriptor.setNamespaceResolver(namespaceResolver);
 
         XMLField classIndicatorField = new XMLField("@xsi:type");
@@ -55,17 +55,17 @@ public class InheritanceProject extends Project {
 
         XMLDirectMapping modelMapping = new XMLDirectMapping();
         modelMapping.setAttributeName("model");
-        modelMapping.setXPath("model/text()");
+        modelMapping.setXPath("prefix:model/text()");
         descriptor.addMapping(modelMapping);
 
         XMLDirectMapping manufacturerMapping = new XMLDirectMapping();
         manufacturerMapping.setAttributeName("manufacturer");
-        manufacturerMapping.setXPath("manufacturer/text()");
+        manufacturerMapping.setXPath("prefix:manufacturer/text()");
         descriptor.addMapping(manufacturerMapping);
 
         XMLDirectMapping speedMapping = new XMLDirectMapping();
         speedMapping.setAttributeName("topSpeed");
-        speedMapping.setXPath("top-speed/text()");
+        speedMapping.setXPath("prefix:top-speed/text()");
         descriptor.addMapping(speedMapping);
 
         return descriptor;
@@ -75,17 +75,17 @@ public class InheritanceProject extends Project {
         XMLDescriptor descriptor = new XMLDescriptor();
         descriptor.setJavaClass(org.eclipse.persistence.testing.oxm.inheritance.Car.class);
         descriptor.setNamespaceResolver(namespaceResolver);
-        descriptor.setDefaultRootElement("vehicle");
+        descriptor.setDefaultRootElement("prefix:vehicle");
         descriptor.getInheritancePolicy().setParentClass(org.eclipse.persistence.testing.oxm.inheritance.Vehicle.class);
 
         XMLDirectMapping doorsMapping = new XMLDirectMapping();
         doorsMapping.setAttributeName("numberOfDoors");
-        doorsMapping.setXPath("number-of-doors/text()");
+        doorsMapping.setXPath("prefix:number-of-doors/text()");
         descriptor.addMapping(doorsMapping);
 
         XMLDirectMapping fuelMapping = new XMLDirectMapping();
         fuelMapping.setAttributeName("milesPerGallon");
-        fuelMapping.setXPath("miles-per-gallon/text()");
+        fuelMapping.setXPath("prefix:miles-per-gallon/text()");
         descriptor.addMapping(fuelMapping);
 
         return descriptor;
@@ -95,12 +95,12 @@ public class InheritanceProject extends Project {
         XMLDescriptor descriptor = new XMLDescriptor();
         descriptor.setJavaClass(org.eclipse.persistence.testing.oxm.inheritance.ParkingLot.class);
         descriptor.setNamespaceResolver(namespaceResolver);
-        descriptor.setDefaultRootElement("parking-lot");
+        descriptor.setDefaultRootElement("prefix:parking-lot");
 
         XMLCompositeCollectionMapping vehiclesMapping = new XMLCompositeCollectionMapping();
         vehiclesMapping.setAttributeName("vehicles");
         vehiclesMapping.setReferenceClass(Vehicle.class);
-        vehiclesMapping.setXPath("vehicles/vehicle");
+        vehiclesMapping.setXPath("prefix:vehicles/prefix:vehicle");
         descriptor.addMapping(vehiclesMapping);
 
         return descriptor;

@@ -51,7 +51,7 @@ public class InheritanceTestCases extends OXTestCase {
         car.topSpeed = 220;
 
         Document carDocument = marshaller.objectToXML(car);
-        Element root = (Element)carDocument.getElementsByTagName("vehicle").item(0);
+        Element root = (Element)carDocument.getElementsByTagNameNS("mynamespaceuri", "vehicle").item(0);
         Attr elem = root.getAttributeNodeNS("http://www.w3.org/2001/XMLSchema-instance", "type");
         String carType = elem.getNodeValue();
         assertTrue("The type field was written incorrectly for the subclass", carType.equals("prefix:car-type"));
@@ -62,7 +62,7 @@ public class InheritanceTestCases extends OXTestCase {
         vehicle.topSpeed = 10000;
 
         Document vehicleDocument = marshaller.objectToXML(vehicle);
-        root = (Element)vehicleDocument.getElementsByTagName("vehicle").item(0);
+        root = (Element)vehicleDocument.getElementsByTagNameNS("mynamespaceuri", "vehicle").item(0);
         elem = root.getAttributeNodeNS("http://www.w3.org/2001/XMLSchema-instance", "type");
         String vehicleType = elem.getNodeValue();
         assertTrue("The type field was written incorrectly for the superclass", vehicleType.equals("prefix:vehicle-type"));

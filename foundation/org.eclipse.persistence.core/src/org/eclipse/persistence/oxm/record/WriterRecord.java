@@ -379,8 +379,10 @@ public class WriterRecord extends MarshalRecord {
                         String prefix = keys.next();
                         getWriter().write(' ');
                         getWriter().write(XMLConstants.XMLNS);
-                        getWriter().write(":");
-                        getWriter().write(prefix);
+                        if(!prefix.equals("")) {
+                            getWriter().write(":");
+                            getWriter().write(prefix);
+                        }
                         getWriter().write('=');
                         getWriter().write('"');
                         getWriter().write(prefixMappings.get(prefix));
@@ -395,7 +397,7 @@ public class WriterRecord extends MarshalRecord {
         
         protected void handleAttributes(Attributes atts) {
             for (int i=0; i<atts.getLength(); i++) {
-                if((atts.getQName(i) != null && atts.getQName(i).startsWith(XMLConstants.XMLNS + ":"))) {
+                if((atts.getQName(i) != null && (atts.getQName(i).startsWith(XMLConstants.XMLNS + ":") || atts.getQName(i).equals(XMLConstants.XMLNS)))) {
                     continue;
                 }
                 attribute(atts.getURI(i), atts.getLocalName(i), atts.getQName(i), atts.getValue(i));

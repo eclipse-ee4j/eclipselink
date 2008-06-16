@@ -1,16 +1,19 @@
-<parking-lot xmlns:different="mynamespaceuri" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-      <vehicles>
-		<vehicle xsi:type="different:car-type" >
-		   <model>Grand Am</model>
-		   <manufacturer>Pontiac</manufacturer>
-		   <top-speed>220</top-speed>
-		   <number-of-doors>2</number-of-doors>
-		   <miles-per-gallon>30</miles-per-gallon>
-		</vehicle>
-		<vehicle xsi:type="different:vehicle-type">
-		   <model>Blah Blah</model>
-		   <manufacturer>Some Place</manufacturer>
-		   <top-speed>10000</top-speed>
-		 </vehicle>
-    </vehicles>
-</parking-lot>
+<different:parking-lot xmlns:different="mynamespaceuri" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+      <different:unmapped xmlns:different="othernamepsaceuri">
+	      <different:nested>text</different:nested>
+	  </different:unmapped>
+	  <different:vehicles>
+		<different:vehicle xsi:type="different:car-type" >
+		   <different:model>Grand Am</different:model>
+		   <different:manufacturer>Pontiac</different:manufacturer>
+		   <different:top-speed>220</different:top-speed>
+		   <different:number-of-doors>2</different:number-of-doors>
+		   <different:miles-per-gallon>30</different:miles-per-gallon>
+		</different:vehicle>
+		<different:vehicle xsi:type="different:vehicle-type">
+		   <different:model>Blah Blah</different:model>
+		   <different:manufacturer>Some Place</different:manufacturer>
+		   <different:top-speed>10000</different:top-speed>
+		 </different:vehicle>
+    </different:vehicles>
+</different:parking-lot>

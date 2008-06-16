@@ -86,23 +86,38 @@ public class SDOUnmappedContentHandler implements UnmappedContentHandler {
         if (null == namespaceMap) {
             namespaceMap = new HashMap();
         }
-        namespaceMap.put(prefix, uri);
-
         if (uriToPrefixMap == null) {
             uriToPrefixMap = new HashMap();
         }
-        uriToPrefixMap.put(uri, prefix);
+        Stack uriStack = (Stack)namespaceMap.get(prefix);
+        if(uriStack == null) {
+            uriStack = new Stack();
+            namespaceMap.put(prefix, uriStack);
+        }
+        uriStack.push(uri);
+        Stack prefixStack = (Stack)uriToPrefixMap.get(uri);
+        if(prefixStack == null) {
+            prefixStack = new Stack();
+            uriToPrefixMap.put(uri, prefixStack);
+        }            
+        prefixStack.push(prefix);
     }
 
     public void endPrefixMapping(String prefix) throws SAXException {
         if (null == namespaceMap) {
             return;
         }
-        if (uriToPrefixMap != null) {
-            String uri = (String)namespaceMap.get(prefix);
-            uriToPrefixMap.remove(uri);
+        Stack uriStack = (Stack)namespaceMap.get(prefix);
+        String uri = null;
+        if(uriStack != null && uriStack.size() > 0) {
+            uri = (String)uriStack.pop();
         }
-        namespaceMap.remove(prefix);
+        if(uri != null && uriToPrefixMap != null) {
+            Stack prefixStack = (Stack)uriToPrefixMap.get(uri);
+            if(prefixStack != null && prefixStack.size() > 0) {
+                prefixStack.pop();
+            }
+        }
     }
 
     public void startElement(String namespaceURI, String localName, String qName, Attributes atts) throws SAXException {
@@ -129,7 +144,11 @@ public class SDOUnmappedContentHandler implements UnmappedContentHandler {
             if (XMLConstants.SCHEMA_INSTANCE_URL.equals(uri) && XMLConstants.SCHEMA_TYPE_ATTRIBUTE.equals(attrName)) {
                 int colonIndex = stringValue.indexOf(':');
                 String localPrefix = stringValue.substring(0, colonIndex);
-                String localURI = (String)getNamespaceMap().get(localPrefix);
+                String localURI = null;
+                Stack uriStack = (Stack)getNamespaceMap().get(localPrefix);
+                if(uriStack != null && uriStack.size() > 0) {
+                    localURI = (String)uriStack.peek();
+                }
 
                 if (localURI != null) {
                     String localName = stringValue.substring(colonIndex + 1, stringValue.length());
@@ -357,10 +376,13 @@ public class SDOUnmappedContentHandler implements UnmappedContentHandler {
                 String typeName = typeQName.getLocalPart();
                 String typeUri = null;
                 String prefix = typeQName.getPrefix();
-                if ((prefix == null) || prefix.equals("")) {
+                if (prefix == null) {
                     typeUri = null;
                 } else {
-                    typeUri = (String)getNamespaceMap().get(prefix);
+                    Stack uriStack = (Stack)getNamespaceMap().get(prefix);
+                    if(uriStack != null && uriStack.size() > 0) {
+                        typeUri = (String)uriStack.peek();
+                    }
                 }
             rootObjectType = typeHelper.getType(typeUri, typeName);
             }            
