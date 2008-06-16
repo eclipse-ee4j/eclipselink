@@ -59,7 +59,10 @@ public class XMLTransformationRecord extends DOMRecord {
                 java.util.Iterator prefixes = next.getNamespaceMap().keySet().iterator();
                 while(prefixes.hasNext()) {
                     String prefix = (String)prefixes.next();
-                    this.resolver.put(prefix, (String)next.getNamespaceMap().get(prefix));
+                    Stack uriStack = (Stack)next.getNamespaceMap().get(prefix);
+                    if(uriStack.size() > 0) {
+                        this.resolver.put(prefix, (String)uriStack.peek());
+                    }
                 }
             }
         }
