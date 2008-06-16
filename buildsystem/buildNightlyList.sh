@@ -107,5 +107,5 @@ echo "  </section>                                                              
 echo "</sections>                                                                               " >> $tmp/index.xml
 
 # Copy the completed file to the server, and cleanup
-mv -f $tmp/index.xml  ${BaseDownloadNFSDir}/downloads-new.xml
+mv -f $tmp/index.xml  ${BaseDownloadNFSDir}/downloads.xml
 rm -rf $tmp
