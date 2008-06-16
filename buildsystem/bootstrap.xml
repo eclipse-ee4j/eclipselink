@@ -23,7 +23,7 @@
 * Contributors:
 *     eric.gwin - initial API and implementation (checked in by tware)
 #******************************************************************************/-->
-<project name="EclipseLink Bootstrap Automated Builds" basedir="." default="help">
+<project name="EclipseLink Bootstrap Automated Builds" basedir="." default="nightly">
 
 <!--                THIS FILE NEEDS TO BE KEPT MINIMAL                    -->
 <!--          ONLY project specific info should be defined here           -->
