@@ -21,6 +21,9 @@ import java.util.Map;
 import java.util.Vector;
 import java.util.Stack;
 import javax.xml.namespace.QName;
+
+import org.eclipse.persistence.descriptors.DescriptorEvent;
+import org.eclipse.persistence.descriptors.DescriptorEventManager;
 import org.eclipse.persistence.exceptions.EclipseLinkException;
 import org.eclipse.persistence.exceptions.XMLMarshalException;
 import org.eclipse.persistence.internal.helper.DatabaseField;
@@ -451,6 +454,16 @@ public class UnmarshalRecord extends XMLRecord implements ContentHandler, Lexica
                 } else {
                     unmarshaller.getUnmarshalListener().afterUnmarshal(object, null);
                 }
+            }
+            
+            // HANDLE POST BUILD EVENTS
+            XMLDescriptor xmlDescriptor = (XMLDescriptor) session.getDescriptor(object);
+            if ((xmlDescriptor != null) && (xmlDescriptor.getEventManager().hasAnyEventListeners())) {
+                DescriptorEvent event = new DescriptorEvent(object);
+                event.setSession(session);
+                event.setRecord(this);
+                event.setEventCode(DescriptorEventManager.PostBuildEvent);
+                xmlDescriptor.getEventManager().executeEvent(event);
             }
         } catch (EclipseLinkException e) {
             if (null == xmlReader.getErrorHandler()) {

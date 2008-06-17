@@ -12,6 +12,8 @@
  ******************************************************************************/  
 package org.eclipse.persistence.testing.oxm.events;
 
+import org.eclipse.persistence.testing.oxm.events.descriptor.PostBuildEventTestCases;
+
 import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
@@ -35,6 +37,7 @@ public class OXEventCallbackTestSuite extends TestCase {
         suite.addTestSuite(RootWithCompositeCollectionTestCases.class);
         suite.addTestSuite(RootWithAnyObjectTestCases.class);
         suite.addTestSuite(RootWithAnyCollectionTestCases.class);
+        suite.addTestSuite(PostBuildEventTestCases.class);
         return suite;
     }
 }
