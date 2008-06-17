@@ -13,16 +13,14 @@
 package org.eclipse.persistence.tools.workbench.ant;
 
 import java.io.PrintStream;
-import java.security.AccessController;
 
 import org.apache.tools.ant.BuildException;
 
 import org.eclipse.persistence.exceptions.DatabaseException;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
-//import org.eclipse.persistence.internal.security.PrivilegedAccessController;
+import org.eclipse.persistence.internal.sessions.factories.XMLSessionConfigLoader;
 import org.eclipse.persistence.sessions.DatabaseLogin;
 import org.eclipse.persistence.sessions.DatabaseSession;
-import org.eclipse.persistence.sessions.factories.XMLSessionConfigLoader;
 import org.eclipse.persistence.sessions.factories.SessionManager;
 
 public class SessionValidator extends ProjectRunner implements SessionValidatorInterface {
