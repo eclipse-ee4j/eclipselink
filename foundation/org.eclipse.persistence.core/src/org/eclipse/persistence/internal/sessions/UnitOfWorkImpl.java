@@ -617,31 +617,27 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
      * or a new object (that has not be persisted).
      */
     public boolean checkForUnregisteredExistingObject(Object object) {
-        // Since this just results in an error, assume it exists unless validating.
-        if (shouldValidateExistence()) {
-            ClassDescriptor descriptor = getDescriptor(object.getClass());
-            Vector primaryKey = descriptor.getObjectBuilder().extractPrimaryKeyFromObject(object, this, true);
-            if (primaryKey == null) {
-                return false;
-            }
-            DoesExistQuery existQuery = descriptor.getQueryManager().getDoesExistQuery();
-    
-            existQuery = (DoesExistQuery)existQuery.clone();
-            existQuery.setObject(object);
-            existQuery.setPrimaryKey(primaryKey);
-            existQuery.setDescriptor(descriptor);
-            existQuery.setIsExecutionClone(true);
-            
-            return ((Boolean)executeQuery(existQuery)).booleanValue();
-        } else {
-            return true;
+
+        ClassDescriptor descriptor = getDescriptor(object.getClass());
+        Vector primaryKey = descriptor.getObjectBuilder().extractPrimaryKeyFromObject(object, this, true);
+        if (primaryKey == null) {
+            return false;
         }
+        DoesExistQuery existQuery = descriptor.getQueryManager().getDoesExistQuery();
+
+        existQuery = (DoesExistQuery) existQuery.clone();
+        existQuery.setObject(object);
+        existQuery.setPrimaryKey(primaryKey);
+        existQuery.setDescriptor(descriptor);
+        existQuery.setIsExecutionClone(true);
+
+        return ((Boolean) executeQuery(existQuery)).booleanValue();
     }
 
     /**
-     * INTERNAL:
-     * Register the object and return the clone if it is existing otherwise return null if it is new.
-     * The unit of work determines existence during registration, not during the commit.
+     * INTERNAL: Register the object and return the clone if it is existing
+     * otherwise return null if it is new. The unit of work determines existence
+     * during registration, not during the commit.
      */
     public Object checkExistence(Object object) {
         ClassDescriptor descriptor = getDescriptor(object.getClass());
@@ -1547,7 +1543,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
                 if (isSmartMerge() && isOriginalNewObject(object)) {
                     return;
                 } else if (!isObjectRegistered(object)) {// Don't need to check for aggregates, as iterator does not iterate on them by default.
-                    if ((shouldPerformNoValidation()) && (checkForUnregisteredExistingObject(object))) {
+                    if ((shouldPerformNoValidation()) && (shouldValidateExistence() && checkForUnregisteredExistingObject(object))) {
                         // If no validation is performed and the object exists we need
                         // To keep a record of this object to ignore it, also I need to
                         // Stop iterating over it.

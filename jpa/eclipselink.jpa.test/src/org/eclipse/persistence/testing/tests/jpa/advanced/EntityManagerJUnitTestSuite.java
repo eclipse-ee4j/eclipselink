@@ -228,6 +228,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         suite.addTest(new EntityManagerJUnitTestSuite("test210280EntityManagerFromPUwithSpaceInNameButNotInPath"));
         suite.addTest(new EntityManagerJUnitTestSuite("test210280EntityManagerFromPUwithSpaceInPathButNotInName"));
         suite.addTest(new EntityManagerJUnitTestSuite("test210280EntityManagerFromPUwithSpaceInNameAndPath"));
+        suite.addTest(new EntityManagerJUnitTestSuite("testNewObjectNotCascadePersist"));
         return suite;
     }
 
@@ -691,6 +692,24 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         }
 
         assertFalse("employees.isEmpty()==true ", employees.isEmpty());
+    }
+    
+    public void testNewObjectNotCascadePersist(){
+        EntityManager em = createEntityManager();
+        beginTransaction(em);
+        Golfer g = new Golfer();
+        WorldRank wr = new WorldRank();
+        g.setWorldRank(wr);
+        em.persist(g);
+        try{
+            em.flush();
+        }catch (PersistenceException ex){
+            assertTrue("Failed to throw IllegalStateException see bug: 237279 ", ex.getCause() instanceof IllegalStateException);
+        }finally{
+            rollbackTransaction(em);
+            closeEntityManager(em);
+        }
+        
     }
     
     public void testDatabaseSyncNewObject() {

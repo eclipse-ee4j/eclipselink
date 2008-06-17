@@ -362,15 +362,16 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
      */
     public void flush() {
         try {
+            // Based on spec definition 3 possible exceptions are thrown
+            //IllegalState by verifyOpen,
+            //TransactionRequired by check for transaction
+            //PersistenceException for all others.
             verifyOpen();
-
+            Object txn = checkForTransaction(true);
             try {
-                getActivePersistenceContext(checkForTransaction(true)).writeChanges();
+                getActivePersistenceContext(txn).writeChanges();
             } catch (RuntimeException e) {
-                if (EclipseLinkException.class.isAssignableFrom(e.getClass())) {
-                    throw new PersistenceException(e);
-                }
-                throw e;
+                throw new PersistenceException(e);
             }
         } catch (RuntimeException e) {
             setRollbackOnly();
