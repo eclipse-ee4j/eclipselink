@@ -167,6 +167,7 @@ public class XMLSessionConfigProject extends org.eclipse.persistence.sessions.Pr
         addDescriptor(buildServerPlatformConfigDescriptorFor(Oc4j_9_0_4_PlatformConfig.class));
         addDescriptor(buildServerPlatformConfigDescriptorFor(Oc4j_10_1_2_PlatformConfig.class));
         addDescriptor(buildServerPlatformConfigDescriptorFor(Oc4j_10_1_3_PlatformConfig.class));
+        addDescriptor(buildServerPlatformConfigDescriptorFor(Oc4jPlatformConfig.class));
         addDescriptor(buildServerPlatformConfigDescriptorFor(WebLogic_6_1_PlatformConfig.class));
         addDescriptor(buildServerPlatformConfigDescriptorFor(WebLogic_7_0_PlatformConfig.class));
         addDescriptor(buildServerPlatformConfigDescriptorFor(WebLogic_8_1_PlatformConfig.class));
@@ -1118,6 +1119,7 @@ public class XMLSessionConfigProject extends org.eclipse.persistence.sessions.Pr
         descriptor.getInheritancePolicy().addClassIndicator(Oc4j_9_0_4_PlatformConfig.class, "oc4j-904-platform");
         descriptor.getInheritancePolicy().addClassIndicator(Oc4j_10_1_2_PlatformConfig.class, "oc4j-1012-platform");
         descriptor.getInheritancePolicy().addClassIndicator(Oc4j_10_1_3_PlatformConfig.class, "oc4j-1013-platform");
+        descriptor.getInheritancePolicy().addClassIndicator(Oc4jPlatformConfig.class, "oc4j-platform");
         descriptor.getInheritancePolicy().addClassIndicator(WebLogic_6_1_PlatformConfig.class, "weblogic-61-platform");
         descriptor.getInheritancePolicy().addClassIndicator(WebLogic_7_0_PlatformConfig.class, "weblogic-70-platform");
         descriptor.getInheritancePolicy().addClassIndicator(WebLogic_8_1_PlatformConfig.class, "weblogic-81-platform");

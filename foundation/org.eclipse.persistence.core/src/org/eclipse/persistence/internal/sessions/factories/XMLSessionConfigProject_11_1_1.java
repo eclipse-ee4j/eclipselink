@@ -16,11 +16,12 @@ import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.oxm.XMLDescriptor;
 import org.eclipse.persistence.oxm.mappings.XMLDirectMapping;
 import org.eclipse.persistence.oxm.mappings.nullpolicy.NullPolicy;
-import org.eclipse.persistence.internal.sessions.factories.model.platform.oc4j.Oc4j_11_1_1_PlatformConfig;
+import org.eclipse.persistence.internal.sessions.factories.model.platform.Oc4jPlatformConfig;
 import org.eclipse.persistence.internal.sessions.factories.model.platform.SunAS9PlatformConfig;
 import org.eclipse.persistence.internal.sessions.factories.model.platform.WebLogic_10_PlatformConfig;
 import org.eclipse.persistence.internal.sessions.factories.model.platform.WebLogic_9_PlatformConfig;
 import org.eclipse.persistence.internal.sessions.factories.model.platform.WebSphere_6_1_PlatformConfig;
+import org.eclipse.persistence.internal.sessions.factories.model.platform.oc4j.Oc4j_11_1_1_PlatformConfig;
 import org.eclipse.persistence.internal.sessions.factories.model.transport.Oc4jJGroupsTransportManagerConfig;
 import org.eclipse.persistence.internal.sessions.factories.model.transport.TransportManagerConfig;
 
@@ -38,6 +39,7 @@ public class XMLSessionConfigProject_11_1_1 extends XMLSessionConfigProject {
         super();
         addDescriptor(buildOc4jJGroupsTransportManagerConfigDescriptor());
         addDescriptor(buildServerPlatformConfigDescriptorFor(Oc4j_11_1_1_PlatformConfig.class));
+        addDescriptor(buildServerPlatformConfigDescriptorFor(Oc4jPlatformConfig.class));        
     	addDescriptor(buildServerPlatformConfigDescriptorFor(SunAS9PlatformConfig.class));
         addDescriptor(buildServerPlatformConfigDescriptorFor(WebLogic_9_PlatformConfig.class));
         addDescriptor(buildServerPlatformConfigDescriptorFor(WebLogic_10_PlatformConfig.class));
@@ -125,6 +127,7 @@ public class XMLSessionConfigProject_11_1_1 extends XMLSessionConfigProject {
     public ClassDescriptor buildServerPlatformConfigDescriptor() {
         XMLDescriptor descriptor =(XMLDescriptor)super.buildServerPlatformConfigDescriptor();
         descriptor.getInheritancePolicy().addClassIndicator(Oc4j_11_1_1_PlatformConfig.class, "oc4j-1111-platform");
+        descriptor.getInheritancePolicy().addClassIndicator(Oc4jPlatformConfig.class, "oc4j-platform");        
         descriptor.getInheritancePolicy().addClassIndicator(SunAS9PlatformConfig.class, "sunas-9-platform");
         descriptor.getInheritancePolicy().addClassIndicator(WebLogic_9_PlatformConfig.class, "weblogic-9-platform");
         descriptor.getInheritancePolicy().addClassIndicator(WebLogic_10_PlatformConfig.class, "weblogic-10-platform");
