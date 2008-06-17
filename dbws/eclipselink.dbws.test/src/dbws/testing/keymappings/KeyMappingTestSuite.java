@@ -35,6 +35,7 @@ import org.eclipse.persistence.dbws.DBWSModel;
 import org.eclipse.persistence.dbws.DBWSModelProject;
 import org.eclipse.persistence.internal.databaseaccess.Platform;
 import org.eclipse.persistence.internal.helper.ConversionManager;
+import org.eclipse.persistence.internal.sessions.factories.EclipseLinkObjectPersistenceRuntimeXMLProject;
 import org.eclipse.persistence.internal.xr.BaseEntity;
 import org.eclipse.persistence.internal.xr.BaseEntityClassLoader;
 import org.eclipse.persistence.internal.xr.Invocation;
@@ -54,7 +55,6 @@ import org.eclipse.persistence.platform.xml.XMLPlatformFactory;
 import org.eclipse.persistence.sessions.DatabaseLogin;
 import org.eclipse.persistence.sessions.DatasourceLogin;
 import org.eclipse.persistence.sessions.Project;
-import org.eclipse.persistence.sessions.factories.EclipseLinkObjectPersistenceRuntimeXMLProject;
 
 // domain-specific (testing) imports
 import dbws.testing.RootHelper;

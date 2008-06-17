@@ -33,16 +33,15 @@ import static org.junit.Assert.fail;
 import org.eclipse.persistence.dbws.DBWSModel;
 import org.eclipse.persistence.dbws.DBWSModelProject;
 import org.eclipse.persistence.internal.databaseaccess.Platform;
+import org.eclipse.persistence.internal.sessions.factories.EclipseLinkObjectPersistenceRuntimeXMLProject;
 import org.eclipse.persistence.internal.xr.Invocation;
 import org.eclipse.persistence.internal.xr.Operation;
 import org.eclipse.persistence.internal.xr.XRServiceAdapter;
 import org.eclipse.persistence.internal.xr.XRServiceFactory;
 import org.eclipse.persistence.internal.xr.XRServiceModel;
 import org.eclipse.persistence.oxm.XMLContext;
-import org.eclipse.persistence.oxm.XMLLogin;
 import org.eclipse.persistence.oxm.XMLMarshaller;
 import org.eclipse.persistence.oxm.XMLUnmarshaller;
-import org.eclipse.persistence.oxm.platform.DOMPlatform;
 import org.eclipse.persistence.platform.database.oracle.OraclePlatform;
 import org.eclipse.persistence.platform.xml.XMLComparer;
 import org.eclipse.persistence.platform.xml.XMLParser;
@@ -51,8 +50,6 @@ import org.eclipse.persistence.platform.xml.XMLPlatformFactory;
 import org.eclipse.persistence.sessions.DatabaseLogin;
 import org.eclipse.persistence.sessions.DatasourceLogin;
 import org.eclipse.persistence.sessions.Project;
-import org.eclipse.persistence.sessions.factories.EclipseLinkObjectPersistenceRuntimeXMLProject;
-import org.eclipse.persistence.sessions.factories.MissingDescriptorListener;
 
 // domain-specific (testing) imports
 import static dbws.testing.DBWSTestSuite.DATABASE_DRIVER_KEY;
@@ -597,18 +594,11 @@ public class RelationshipsTestSuite {
             }
             @Override
             public void buildSessions() {
-                Project elProject = new EclipseLinkObjectPersistenceRuntimeXMLProject();
-                XMLLogin xmlLogin = new XMLLogin();
-                xmlLogin.setDatasourcePlatform(new DOMPlatform());
-                elProject.setDatasourceLogin(xmlLogin);
-                elProject.getDatasourceLogin().getDatasourcePlatform().getConversionManager().
-                    setLoader(parentClassLoader);
-                XMLContext context = new XMLContext(elProject);
-                context.getSession(Project.class).getEventManager().addListener(
-                    new MissingDescriptorListener());
+                XMLContext context = new XMLContext(
+                    new EclipseLinkObjectPersistenceRuntimeXMLProject());
                 XMLUnmarshaller unmarshaller = context.createUnmarshaller();
                 Project orProject = (Project)unmarshaller.unmarshal(
-                    new StringReader(RELATIONSHIPS_OR_PROJECT));
+                        new StringReader(RELATIONSHIPS_OR_PROJECT));
                 DatasourceLogin login = new DatabaseLogin();
                 login.setUserName(username);
                 login.setPassword(password);
