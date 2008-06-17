@@ -81,11 +81,19 @@ public class PropertiesHandler {
      * Throws IllegalArgumentException in case the property value is illegal.
      */
     public static String getPropertyValue(String name, Map m) {
-        return Prop.getPropertyValueToApply(name, m, null, true);
+        return getPropertyValue(name, m, true);
     }
 
     public static String getPropertyValueLogDebug(String name, Map m, AbstractSession session) {
-        return Prop.getPropertyValueToApply(name, m, session, true);
+        return getPropertyValueLogDebug(name, m, session, true);
+    }
+    
+    public static String getPropertyValue(String name, Map m, boolean useSystemAsDefault) {
+        return Prop.getPropertyValueToApply(name, m, null, useSystemAsDefault);
+    }
+
+    public static String getPropertyValueLogDebug(String name, Map m, AbstractSession session, boolean useSystemAsDefault) {
+        return Prop.getPropertyValueToApply(name, m, session, useSystemAsDefault);
     }
     
     /**
@@ -213,8 +221,8 @@ public class PropertiesHandler {
             addProp(new ReferenceModeProp());
             addProp(new BooleanProp(PersistenceUnitProperties.VALIDATE_EXISTENCE, "false"));
             addProp(new BooleanProp(PersistenceUnitProperties.JOIN_EXISTING_TRANSACTION, "false"));
-// Under review, see Bug 235433: Can't customize ConnectionPolicy through JPA.
-//            addProp(new BooleanProp(PersistenceUnitProperties.CONNECTION_EXCLUSIVE, "false"));
+            addProp(new ExclusiveConnectionModeProp());
+            addProp(new BooleanProp(PersistenceUnitProperties.EXCLUSIVE_CONNECTION_IS_LAZY, "true"));
         }
         
         Prop(String name) {
@@ -596,6 +604,17 @@ public class PropertiesHandler {
                 FlushClearCache.Merge,
                 FlushClearCache.Drop,
                 FlushClearCache.DropInvalidate
+            };
+        }
+    }
+
+    protected static class ExclusiveConnectionModeProp extends Prop {
+        ExclusiveConnectionModeProp() {
+            super(PersistenceUnitProperties.EXCLUSIVE_CONNECTION_MODE, ExclusiveConnectionMode.DEFAULT);
+            valueArray = new Object[] { 
+                ExclusiveConnectionMode.Transactional,
+                ExclusiveConnectionMode.Isolated,
+                ExclusiveConnectionMode.Always
             };
         }
     }

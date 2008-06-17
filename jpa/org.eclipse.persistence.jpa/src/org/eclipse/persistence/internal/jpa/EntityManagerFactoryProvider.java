@@ -146,21 +146,12 @@ public class EntityManagerFactoryProvider {
         return value;
     }
 
-    protected static String getConfigPropertyAsStringLogDebug(String propertyKey, Map overrides, AbstractSession session){
-        String value = null;
-        if (overrides != null){
-            value = (String)overrides.get(propertyKey);
-        }
-        if (value == null){
-            value = System.getProperty(propertyKey);
-        }
-        if(value != null && session !=  null) {
-            String overrideValue = PersistenceUnitProperties.getOverriddenLogStringForProperty(propertyKey);;           
-            String logValue = (overrideValue == null) ? value : overrideValue;
-            session.log(SessionLog.FINEST, SessionLog.PROPERTIES, "property_value_specified", new Object[]{propertyKey, logValue});
-        }
-        
-        return value;
+    protected static String getConfigPropertyAsStringLogDebug(String propertyKey, Map overrides, AbstractSession session) {
+        return (String)getConfigPropertyLogDebug(propertyKey, overrides, session);
+    }
+    
+    protected static String getConfigPropertyAsStringLogDebug(String propertyKey, Map overrides, AbstractSession session, boolean useSystemAsDefault) {
+        return (String)getConfigPropertyLogDebug(propertyKey, overrides, session, useSystemAsDefault);
     }
     
     protected static String getConfigPropertyAsStringLogDebug(String propertyKey, Map overrides, String defaultValue, AbstractSession session){
@@ -173,11 +164,15 @@ public class EntityManagerFactoryProvider {
     }
     
     protected static Object getConfigPropertyLogDebug(String propertyKey, Map overrides, AbstractSession session){
+        return getConfigPropertyLogDebug(propertyKey, overrides, session, true);
+    }
+    
+    protected static Object getConfigPropertyLogDebug(String propertyKey, Map overrides, AbstractSession session, boolean useSystemAsDefault){
         Object value = null;
         if (overrides != null){
             value = overrides.get(propertyKey);
         }
-        if (value == null){
+        if (value == null && useSystemAsDefault){
             value = System.getProperty(propertyKey);
         }
         if(value != null && session !=  null) {

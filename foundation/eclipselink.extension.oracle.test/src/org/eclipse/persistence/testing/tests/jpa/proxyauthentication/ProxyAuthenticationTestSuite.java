@@ -29,6 +29,7 @@ import oracle.jdbc.OracleConnection;
 import oracle.jdbc.pool.OracleDataSource;
 
 import org.eclipse.persistence.config.PersistenceUnitProperties;
+import org.eclipse.persistence.config.ExclusiveConnectionMode;
 import org.eclipse.persistence.internal.sessions.ExclusiveIsolatedClientSession;
 import org.eclipse.persistence.internal.sessions.UnitOfWorkImpl;
 
@@ -273,11 +274,9 @@ public class ProxyAuthenticationTestSuite extends JUnitTestCase {
             factoryProperties.put(PersistenceUnitProperties.NON_JTA_DATASOURCE, dataSource);
         }
         
-// Under review, see Bug 235433: Can't customize ConnectionPolicy through JPA.
-/*        if(shoulUseExclusiveIsolatedSession) {
-            // This requires at least one isolated descriptor!
-            factoryProperties.put(PersistenceUnitProperties.CONNECTION_EXCLUSIVE, "true");
-        }*/
+        if(shoulUseExclusiveIsolatedSession) {
+            factoryProperties.put(PersistenceUnitProperties.EXCLUSIVE_CONNECTION_MODE, ExclusiveConnectionMode.Isolated);
+        }
         
         // EMFactory uses proxyProperties
         if(serverSessionProxyProperties != null) {

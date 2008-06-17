@@ -31,6 +31,8 @@ import org.eclipse.persistence.exceptions.*;
 import org.eclipse.persistence.internal.databaseaccess.Accessor;
 
 public class ExclusiveIsolatedClientSession extends IsolatedClientSession {
+    protected boolean shouldAlwaysUseExclusiveConnection;
+    
     public ExclusiveIsolatedClientSession(ServerSession parent, ConnectionPolicy connectionPolicy) {
         this(parent, connectionPolicy, null);
     }
@@ -39,6 +41,7 @@ public class ExclusiveIsolatedClientSession extends IsolatedClientSession {
         super(parent, connectionPolicy, properties);
         //the parents constructor sets an accessor, but it will be never used.
         this.accessor = null;
+        this.shouldAlwaysUseExclusiveConnection = connectionPolicy.getExclusiveMode().equals(ConnectionPolicy.ExclusiveMode.Always);
     }
 
     /**
@@ -58,11 +61,11 @@ public class ExclusiveIsolatedClientSession extends IsolatedClientSession {
         } finally {
             if (call.isFinished()) {
                 query.setAccessor(null);
-                if(!isActive()) {
-                    // the session has been already released and this query is likely instantiates a ValueHolder - 
-                    // release exclusive connection right away, otherwise it may never be released.
-                    this.releaseWriteConnection();
-                }
+            }
+            if(!isActive() && getAccessor()!=null) {
+                // the session has been already released and this query is likely instantiates a ValueHolder - 
+                // release exclusive connection right away, otherwise it may never be released.
+                getParent().releaseClientSession(this);
             }
         }
     }
@@ -91,13 +94,7 @@ public class ExclusiveIsolatedClientSession extends IsolatedClientSession {
      * is called on the client session.
      */
     protected void releaseWriteConnection() {
-        if(this.isActive) {
-            //do not release the connection until 'release()' is called on the client session
-        } else {
-            // the session has been released however it may still be used for instantiating ValueHolders - 
-            // don't keep exclusive connection - otherwise it may never be released.
-            super.releaseWriteConnection();
-        }
+        //do not release the connection until 'release()' is called on the client session
     }
 
     /**
@@ -131,4 +128,25 @@ public class ExclusiveIsolatedClientSession extends IsolatedClientSession {
     public boolean isExclusiveConnectionRequired() {
         return isActive();
     }
+
+    /**
+     * PUBLIC:
+     * Return if this session is an exclusive isolated client session.
+     */
+    public boolean isExclusiveIsolatedClientSession() {
+        return true;
+    }
+
+    /**
+     * INTERNAL:
+     * Helper method to calculate whether to execute this query locally or send
+     * it to the server session.
+     */
+     protected boolean shouldExecuteLocally(DatabaseQuery query) {
+         if(shouldAlwaysUseExclusiveConnection) {
+             return true;
+         } else {
+             return super.shouldExecuteLocally(query);
+         }
+     }
 }

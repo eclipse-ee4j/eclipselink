@@ -133,4 +133,12 @@ public class IsolatedClientSession extends ClientSession {
         }
         return getParent().executeCall(call, translationRow, query);
     }
+
+    /**
+     * PUBLIC:
+     * Return if this session is an isolated client session.
+     */
+    public boolean isIsolatedClientSession() {
+        return true;
+    }    
 }

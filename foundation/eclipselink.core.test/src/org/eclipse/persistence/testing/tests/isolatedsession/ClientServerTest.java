@@ -17,17 +17,30 @@ import java.util.*;
 import org.eclipse.persistence.testing.framework.*;
 import org.eclipse.persistence.sessions.*;
 import org.eclipse.persistence.sessions.server.*;
+import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.exceptions.*;
+import org.eclipse.persistence.config.ExclusiveConnectionMode;
 
 public class ClientServerTest extends AutoVerifyTestCase {
     protected DatabaseLogin login;
     protected ArrayList clients;
     protected ServerSession server;
-    protected boolean isExclusive = false;
+    protected String exclusiveConnectionMode;
+    protected boolean isIsolated = true;
+    protected Map isolatedDescriptors;
 
     public ClientServerTest(boolean isExclusive) {
+        this((isExclusive ? ExclusiveConnectionMode.Isolated : ExclusiveConnectionMode.Transactional), true);
+    }
+
+    public ClientServerTest(String exclusiveConnectionMode, boolean isIsolated) {
         clients = new ArrayList();
-        this.isExclusive = isExclusive;
+        isolatedDescriptors = new HashMap();
+        this.exclusiveConnectionMode = exclusiveConnectionMode;
+        this.isIsolated = isIsolated;
+        if(exclusiveConnectionMode.equals(ExclusiveConnectionMode.Isolated) && !isIsolated) {
+            throw new TestProblemException("ExclusiveConnectionMode.Isolated requires isIsolated==true");
+        }
         setDescription("This test acts as a template for tests using the client server framework");
     }
 
@@ -35,7 +48,19 @@ public class ClientServerTest extends AutoVerifyTestCase {
         Vector descriptors = new Vector();
 
         for (Iterator iterator = session.getDescriptors().values().iterator(); iterator.hasNext(); ) {
-            descriptors.addElement(iterator.next());
+            ClassDescriptor desc = (ClassDescriptor)iterator.next();
+            descriptors.addElement(desc);
+            // it's an isolated descriptor, but the test requires no isolation.
+            // switch isolation off, cache the descriptor to restore isolation after the test is complete.
+            if(!isIsolated && desc.isIsolated()) {
+                // uowCacheIsolationLevel seems to be the only attribute affected by isolation,
+                // cache the original one in the map.
+                isolatedDescriptors.put(desc, desc.getUnitOfWorkCacheIsolationLevel());
+                // un-isolate descriptor
+                desc.setIsIsolated(false);
+                // the value assigned by default during initialization for non-isolated descriptor.  
+                desc.setUnitOfWorkCacheIsolationLevel(ClassDescriptor.ISOLATE_NEW_DATA_AFTER_TRANSACTION);
+            }
         }
         this.server.addDescriptors(descriptors);
         // Since the descriptors are already initialized, must also set the session to isolated.
@@ -49,6 +74,19 @@ public class ClientServerTest extends AutoVerifyTestCase {
                 this.clients.remove(0);
             }
             this.server.logout();
+
+            // restore descriptors' isolation removed in setup
+            if(!isIsolated) {
+                Iterator it = isolatedDescriptors.entrySet().iterator();
+                while(it.hasNext()) {
+                    Map.Entry entry = (Map.Entry)it.next();
+                    ClassDescriptor desc = (ClassDescriptor)entry.getKey();
+                    desc.setIsIsolated(true);
+                    desc.setUnitOfWorkCacheIsolationLevel((Integer)entry.getValue());
+                }
+                isolatedDescriptors.clear();
+            }
+            
             getDatabaseSession().logout();
             getDatabaseSession().login();
 
@@ -67,11 +105,16 @@ public class ClientServerTest extends AutoVerifyTestCase {
             copyDescriptors(getSession());
             this.server.login();
             ConnectionPolicy connectionPolicy = this.server.getDefaultConnectionPolicy();
-            if (this.isExclusive) {
-                connectionPolicy = new ConnectionPolicy();
-                connectionPolicy.setShouldUseExclusiveConnection(true);
-                connectionPolicy.setProperty("isExclusive", new Boolean(true));
+            if (this.exclusiveConnectionMode.equals(ExclusiveConnectionMode.Isolated)) {
+                connectionPolicy.setExclusiveMode(ConnectionPolicy.ExclusiveMode.Isolated);
+            } else if (this.exclusiveConnectionMode.equals(ExclusiveConnectionMode.Always)) {
+                connectionPolicy.setExclusiveMode(ConnectionPolicy.ExclusiveMode.Always);
             }
+            String propertyName = exclusiveConnectionMode;
+            if(isIsolated) {
+                propertyName += "_Isolated";
+            }
+            connectionPolicy.setProperty(propertyName, "true");
             this.clients.add(this.server.acquireClientSession(connectionPolicy));
             this.clients.add(this.server.acquireClientSession(connectionPolicy));
             this.clients.add(this.server.acquireClientSession(connectionPolicy));

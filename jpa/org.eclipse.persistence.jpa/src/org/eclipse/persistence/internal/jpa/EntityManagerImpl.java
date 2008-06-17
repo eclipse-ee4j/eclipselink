@@ -30,6 +30,8 @@ import javax.persistence.LockModeType;
 import javax.persistence.PersistenceException;
 import javax.persistence.Query;
 
+import javax.sql.DataSource;
+
 import org.eclipse.persistence.exceptions.EclipseLinkException;
 import org.eclipse.persistence.exceptions.JPQLException;
 import org.eclipse.persistence.exceptions.ValidationException;
@@ -39,10 +41,14 @@ import org.eclipse.persistence.queries.ObjectBuildingQuery;
 import org.eclipse.persistence.queries.ReadAllQuery;
 import org.eclipse.persistence.queries.ReadObjectQuery;
 import org.eclipse.persistence.queries.ResultSetMappingQuery;
+import org.eclipse.persistence.sessions.DatasourceLogin;
+import org.eclipse.persistence.sessions.DefaultConnector;
+import org.eclipse.persistence.sessions.JNDIConnector;
 import org.eclipse.persistence.sessions.Session;
 import org.eclipse.persistence.sessions.UnitOfWork;
 import org.eclipse.persistence.sessions.factories.ReferenceMode;
 import org.eclipse.persistence.sessions.factories.SessionManager;
+import org.eclipse.persistence.sessions.server.ConnectionPolicy;
 import org.eclipse.persistence.sessions.server.ServerSession;
 import org.eclipse.persistence.internal.descriptors.OptimisticLockingPolicy;
 import org.eclipse.persistence.internal.jpa.transaction.*;
@@ -96,6 +102,9 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
     
     //Stores the reference mode for the UOW options WEAK or HARD
     protected ReferenceMode referenceMode;
+    
+    //Connection policy used to create the uow's parent ClientSession.
+    protected ConnectionPolicy connectionPolicy;
     
     /**
      * Constructor returns an EntityManager assigned to the a particular ServerSession.
@@ -837,7 +846,7 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
     public RepeatableWriteUnitOfWork getActivePersistenceContext(Object txn) {
         // use local uow as it will be local to this EM and not on the txn
         if (this.extendedPersistenceContext == null || !this.extendedPersistenceContext.isActive()) {
-            this.extendedPersistenceContext = new RepeatableWriteUnitOfWork(this.serverSession.acquireClientSession(properties), this.referenceMode);
+            this.extendedPersistenceContext = new RepeatableWriteUnitOfWork(this.serverSession.acquireClientSession(connectionPolicy, properties), this.referenceMode);
             this.extendedPersistenceContext.setResumeUnitOfWorkOnTransactionCompletion(true);
             this.extendedPersistenceContext.setShouldCascadeCloneToJoinedRelationship(true);
             if (txn != null) {
@@ -943,6 +952,7 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
         if (referenceMode != null){
             this.referenceMode = ReferenceMode.valueOf(referenceMode);
         }
+        connectionPolicy = processConnectionPolicyProperties();
     }
     
     /**
@@ -976,5 +986,287 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
     
     protected void setJTATransactionWrapper() {
         transaction = new JTATransactionWrapper(this);
+    }
+    
+    /**
+     * Process properties that define connection policy.
+     */
+    protected ConnectionPolicy processConnectionPolicyProperties() {
+        ConnectionPolicy policy = serverSession.getDefaultConnectionPolicy();
+        
+        if(properties == null || properties.isEmpty()) {
+            return policy;
+        }
+        
+        // Search only the properties map - serverSession's properties have been already processed.
+        ConnectionPolicy policyFromProperties = (ConnectionPolicy)properties.get(EntityManagerProperties.CONNECTION_POLICY);
+        if(policyFromProperties != null) {
+            policy = policyFromProperties;
+        }
+        
+        // Note that serverSession passed into the methods below only because it carries the SessionLog into which the debug info should be written.
+        // The property is search for in the passed properties map only (not in serverSession, not in System.properties).        
+        ConnectionPolicy newPolicy = null;
+        String isLazyString = EntityManagerFactoryProvider.getConfigPropertyAsStringLogDebug(EntityManagerProperties.EXCLUSIVE_CONNECTION_IS_LAZY, properties, serverSession, false);
+        if(isLazyString != null) {
+            boolean isLazy = Boolean.parseBoolean(isLazyString);
+            if(policy.isLazy() != isLazy) {
+                if(newPolicy == null) {
+                    newPolicy = (ConnectionPolicy)policy.clone();
+                }
+                newPolicy.setIsLazy(isLazy);
+            }
+        }
+        ConnectionPolicy.ExclusiveMode exclusiveMode = EntityManagerSetupImpl.getConnectionPolicyExclusiveModeFromProperties(properties, serverSession, false);
+        if(exclusiveMode != null) {
+            if(!exclusiveMode.equals(policy.getExclusiveMode())) {
+                if(newPolicy == null) {
+                    newPolicy = (ConnectionPolicy)policy.clone();
+                }
+                newPolicy.setExclusiveMode(exclusiveMode);
+            }
+        }
+
+        String user = EntityManagerFactoryProvider.getConfigPropertyAsStringLogDebug(EntityManagerProperties.JDBC_USER, properties, serverSession, false);
+        String password = EntityManagerFactoryProvider.getConfigPropertyAsStringLogDebug(EntityManagerProperties.JDBC_PASSWORD, properties, serverSession, false);
+        String driver = EntityManagerFactoryProvider.getConfigPropertyAsStringLogDebug(EntityManagerProperties.JDBC_DRIVER, properties, serverSession, false);
+        String connectionString = EntityManagerFactoryProvider.getConfigPropertyAsStringLogDebug(EntityManagerProperties.JDBC_URL, properties, serverSession, false);
+
+        //find the jta datasource
+        Object jtaDataSourceObj = EntityManagerFactoryProvider.getConfigPropertyLogDebug(EntityManagerProperties.JTA_DATASOURCE, properties, serverSession, false);
+        DataSource jtaDataSource = null;
+        String jtaDataSourceName = null;
+        if(jtaDataSourceObj != null) {
+            if(jtaDataSourceObj instanceof DataSource) {
+                jtaDataSource = (DataSource)jtaDataSourceObj;
+            } else if(jtaDataSourceObj instanceof String) {
+                jtaDataSourceName = (String)jtaDataSourceObj;
+            }
+        }
+
+        //find the non jta datasource  
+        Object nonjtaDataSourceObj = EntityManagerFactoryProvider.getConfigPropertyLogDebug(EntityManagerProperties.NON_JTA_DATASOURCE, properties, serverSession, false);
+        DataSource nonjtaDataSource = null;
+        String nonjtaDataSourceName = null;
+        if(nonjtaDataSourceObj != null) {
+            if(nonjtaDataSourceObj instanceof DataSource) {
+                nonjtaDataSource = (DataSource)nonjtaDataSourceObj;
+            } else if(nonjtaDataSourceObj instanceof String) {
+                nonjtaDataSourceName = (String)nonjtaDataSourceObj;
+            }
+        }
+
+        if(user!=null || password!=null || driver!=null || connectionString!= null || jtaDataSourceObj!=null || nonjtaDataSourceObj!=null) {        
+            // Validation: Can't specify jdbcDriver, connectionString with a DataSource
+            boolean isDefaultConnectorRequired = isPropertyToBeAdded(driver) || isPropertyToBeAdded(connectionString); 
+            boolean isJNDIConnectorRequired = isPropertyToBeAdded(jtaDataSource, jtaDataSourceName) || isPropertyToBeAdded(nonjtaDataSource, nonjtaDataSourceName); 
+            if(isDefaultConnectorRequired && isJNDIConnectorRequired) {
+                throw new IllegalArgumentException(ExceptionLocalization.buildMessage("entity_manager_properties_conflict_default_connector_vs_jndi_connector", new Object[] {}));
+            }
+            
+            DatasourceLogin login = (DatasourceLogin)policy.getLogin();
+            if(login == null) {
+                if(policy.getPoolName() != null) {
+                    login = (DatasourceLogin)serverSession.getConnectionPool(policy.getPoolName()).getLogin();
+                } else {
+                    login = (DatasourceLogin)serverSession.getDatasourceLogin();
+                }
+            }
+            
+            // Validation: Can't specify jdbcDriver, connectionString if externalTransactionController is used - this requires externalConnectionPooling
+            if(login.shouldUseExternalTransactionController() && isDefaultConnectorRequired) {
+                throw new IllegalArgumentException(ExceptionLocalization.buildMessage("entity_manager_properties_conflict_default_connector_vs_external_transaction_controller", new Object[] {}));
+            }
+            
+            javax.sql.DataSource dataSource = null;
+            String dataSourceName = null;
+            if(isJNDIConnectorRequired) {
+                if(login.shouldUseExternalTransactionController()) {
+                    if(isPropertyToBeAdded(jtaDataSource, jtaDataSourceName)) {
+                        dataSource = jtaDataSource;                
+                        dataSourceName = jtaDataSourceName;                
+                    }
+                    // validation: Can't change externalTransactionController state - will ignore data source that doesn't match the flag.
+                    if(isPropertyToBeAdded(nonjtaDataSource, nonjtaDataSourceName)) {
+                        serverSession.log(SessionLog.WARNING, SessionLog.PROPERTIES, "entity_manager_ignores_nonjta_data_source");
+                    }
+                } else {
+                    if(isPropertyToBeAdded(nonjtaDataSource, nonjtaDataSourceName)) {
+                        dataSource = nonjtaDataSource;                
+                        dataSourceName = nonjtaDataSourceName;                
+                    }
+                    // validation: Can't change externalTransactionController state - will ignore data source that doesn't match the flag.
+                    if(isPropertyToBeAdded(jtaDataSource, jtaDataSourceName)) {
+                        serverSession.log(SessionLog.WARNING, SessionLog.PROPERTIES, "entity_manager_ignores_jta_data_source");
+                    }
+                }
+            }
+            
+            // isNew...Required == null means no change required; TRUE - newValue substitute oldValue by newValue; FALSE - remove oldValue. 
+            Boolean isNewUserRequired = isPropertyValueToBeUpdated(login.getUserName(), user);
+            Boolean isNewPasswordRequired;
+            // if user name should be removed from properties then password should be removed, too.
+            if(isNewUserRequired != null && !isNewUserRequired) {
+                isNewPasswordRequired = Boolean.FALSE;
+            } else {
+                isNewPasswordRequired = isPropertyValueToBeUpdated(login.getPassword(), password);
+            }
+            DefaultConnector oldDefaultConnector = null;
+            if(login.getConnector() instanceof DefaultConnector) {
+                oldDefaultConnector = (DefaultConnector)login.getConnector();
+            }
+            boolean isNewDefaultConnectorRequired = oldDefaultConnector==null && isDefaultConnectorRequired;
+            JNDIConnector oldJNDIConnector = null;
+            if(login.getConnector() instanceof JNDIConnector) {
+                oldJNDIConnector = (JNDIConnector)login.getConnector();
+            }
+            boolean isNewJNDIConnectorRequired = oldJNDIConnector==null && isJNDIConnectorRequired;
+            Boolean isNewDriverRequired = null;
+            Boolean isNewConnectionStringRequired = null;
+            if(isNewDefaultConnectorRequired) {
+                isNewDriverRequired = isPropertyValueToBeUpdated(null, driver);
+                isNewConnectionStringRequired = isPropertyValueToBeUpdated(null, connectionString);
+            } else {
+                if(oldDefaultConnector != null) {
+                    isNewDriverRequired = isPropertyValueToBeUpdated(oldDefaultConnector.getDriverClassName(), driver);
+                    isNewConnectionStringRequired = isPropertyValueToBeUpdated(oldDefaultConnector.getConnectionString(), connectionString);
+                }
+            }
+            Boolean isNewDataSourceRequired = null;
+            if(isNewJNDIConnectorRequired) {
+                isNewDataSourceRequired = Boolean.TRUE;
+            } else {
+                if(oldJNDIConnector != null) {
+                    if(dataSource != null) {
+                        if(!dataSource.equals(oldJNDIConnector.getDataSource())) {
+                            isNewDataSourceRequired = Boolean.TRUE;
+                        } 
+                    } else if(dataSourceName != null) {
+                        if(!dataSourceName.equals(oldJNDIConnector.getName())) {
+                            isNewDataSourceRequired = Boolean.TRUE;
+                        }
+                    }
+                }
+            }
+            
+            if(isNewUserRequired!=null || isNewPasswordRequired!=null || isNewDriverRequired!=null || isNewConnectionStringRequired!=null || isNewDataSourceRequired) {
+                // a new login required - so a new policy required, too.
+                if(newPolicy == null) {
+                    newPolicy = (ConnectionPolicy)policy.clone();
+                }
+                // the new policy must have a new login - not to override the existing one in the original ConnectionPolicy that is likely shared.
+                DatasourceLogin newLogin = (DatasourceLogin)newPolicy.getLogin();
+                // sometimes ConnectionPolicy.clone clones the login , too - sometimes it doesn't.
+                if(newPolicy.getLogin() == null || newPolicy.getLogin() == policy.getLogin()) {
+                    newLogin = (DatasourceLogin)login.clone();
+                    newPolicy.setLogin(newLogin);
+                }
+                // because it uses a new login the connection policy should not be pooled.
+                newPolicy.setPoolName(null);
+                
+                if(isNewUserRequired!=null) {
+                    if(isNewUserRequired) {
+                        newLogin.setProperty("user", user);
+                    } else {
+                        newLogin.getProperties().remove("user");
+                    }
+                }
+                if(isNewPasswordRequired!=null) {
+                    if(isNewPasswordRequired) {
+                        newLogin.setProperty("password", password);
+                    } else {
+                        newLogin.getProperties().remove("password");
+                    }
+                }
+                if(isNewDefaultConnectorRequired) {
+                    newLogin.setConnector(new DefaultConnector());
+                    newLogin.setUsesExternalConnectionPooling(false);
+                } else if(isNewJNDIConnectorRequired) {
+                    newLogin.setConnector(new JNDIConnector());
+                    newLogin.setUsesExternalConnectionPooling(true);
+                }
+                if(isDefaultConnectorRequired) {
+                    DefaultConnector defaultConnector = (DefaultConnector)newLogin.getConnector();
+                    if(isNewDriverRequired!=null) {
+                        if(isNewDriverRequired) {
+                            defaultConnector.setDriverClassName(driver);
+                        } else {
+                            defaultConnector.setDriverClassName(null);
+                        }
+                    }
+                    if(isNewConnectionStringRequired!=null) {
+                        if(isNewConnectionStringRequired) {
+                            defaultConnector.setDatabaseURL(connectionString);
+                        } else {
+                            defaultConnector.setDatabaseURL(null);
+                        }
+                    }
+                } else if(isNewDataSourceRequired != null) {
+                    JNDIConnector jndiConnector = (JNDIConnector)newLogin.getConnector();
+                    if(isNewDataSourceRequired) {
+                        if(dataSource != null) {
+                            jndiConnector.setDataSource(dataSource);
+                        } else {
+                            // dataSourceName != null
+                            jndiConnector.setName(dataSourceName);
+                        }
+                    }
+                }
+            }
+        }
+        
+        if(newPolicy != null) {
+            return newPolicy;
+        } else {
+            return policy;
+        }
+    }
+    
+    /**
+     * Property value is to be added if it's non null and not an empty string.
+     */
+    protected static boolean isPropertyToBeAdded(String value) {
+        return value != null && value.length() > 0;
+    }
+    protected static boolean isPropertyToBeAdded(DataSource ds, String dsName) {
+        return ds!=null || (dsName != null && dsName.length()>0);
+    }
+    /**
+     * Property value of an empty string indicates that the existing property should be removed.
+     */
+    protected static boolean isPropertyToBeRemoved(String value) {
+        return value != null && value.length() == 0;
+    }
+    /**
+     * @return null: no change; TRUE: substitute oldValue by newValue; FALSE: remove oldValue 
+     */
+    protected Boolean isPropertyValueToBeUpdated(String oldValue, String newValue) {
+        if(newValue == null) {
+            // no new value - no change
+            return null;
+        } else {
+            // new value is a non empty string
+            if(newValue.length() > 0) {
+                if(oldValue != null) {
+                    if(newValue.equals(oldValue)) {
+                        // new and old values are equal - no change.
+                        return null;
+                    } else {
+                        // new and old values are different - change old value for new value.
+                        return Boolean.TRUE;
+                    }
+                } else {
+                    // no old value - change for new value.
+                    return Boolean.TRUE;
+                }
+            } else {
+                // new value is an empty string - if old value exists it should be substituted with new value..
+                if(oldValue != null) {
+                    return Boolean.FALSE;
+                } else {
+                    return null;
+                }
+            }
+        }
     }
 }

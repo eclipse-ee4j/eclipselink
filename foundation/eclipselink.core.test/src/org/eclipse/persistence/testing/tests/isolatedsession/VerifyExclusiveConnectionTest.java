@@ -24,6 +24,16 @@ public class VerifyExclusiveConnectionTest extends ClientServerTest {
         setDescription("This test verifies that an exclusive connection is created for the client. and the appropriate events are thrown.");
     }
 
+    public VerifyExclusiveConnectionTest(String exclusiveConnectionMode, boolean isIsolated) {
+        super(exclusiveConnectionMode, isIsolated);
+        String str = exclusiveConnectionMode;
+        if(isIsolated) {
+            str += "_Isolated";
+        }
+        setDescription("This test verifies that an exclusive connection is created for the client and the appropriate events are thrown. " + str);
+        setName(getName() + " " + str);
+    }
+
     public void test() {
         this.server.getEventManager().addListener(new IsolatedSessionEventAdaptor(this));
         ((Session)this.clients.get(0)).readObject(IsolatedEmployee.class);

@@ -125,14 +125,16 @@ public class PersistenceUnitProperties {
     public static final String CACHE_SHARED_DEFAULT = CACHE_SHARED_ + DEFAULT;
 
     /**
-     * Set this property to "true" to make each EntityManager created by the factory
-     * to use an exclusive connection - for both reads and writes.
-     * Note that this can't be used without also using isolated cache:
-     * CACHE_SHARED property should be set to "false" for at least one entity,
-     * or CACHE_SHARED_DEFAULT should be set to "false".
+     * Determines when reads are performed through the write connection.
+     * @see ExclusiveConnectionMode
      */
-// Under review, see Bug 235433: Can't customize ConnectionPolicy through JPA.
-//    public static final String CONNECTION_EXCLUSIVE = "eclipselink.connection.exclusive";
+    public static final String EXCLUSIVE_CONNECTION_MODE = "eclipselink.jdbc.exclusive-connection.mode";
+
+    /**
+     * Determines when write connection is acquired lazily.
+     * Valid values are case-insensitive "false" and "true"; "true" is default.
+     */
+    public static final String EXCLUSIVE_CONNECTION_IS_LAZY = "eclipselink.jdbc.exclusive-connection.is-lazy";
 
     // Customizations properties
 

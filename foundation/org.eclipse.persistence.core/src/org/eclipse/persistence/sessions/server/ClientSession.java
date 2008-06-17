@@ -569,4 +569,14 @@ public class ClientSession extends AbstractSession {
     public void preDisconnectExternalConnection(Accessor accessor) {
         getEventManager().preReleaseConnection(accessor);
     }
+
+    /**
+     * INTERNAL:
+     * This method is called in case externalConnectionPooling is used.
+     * If returns true, accessor used by the session keeps its
+     * connection open until released by the session. 
+     */
+    public boolean isExclusiveConnectionRequired() {
+        return !getConnectionPolicy().isLazy && isActive();
+    }
 }

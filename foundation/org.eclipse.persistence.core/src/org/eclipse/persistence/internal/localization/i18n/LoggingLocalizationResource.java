@@ -328,6 +328,8 @@ public class LoggingLocalizationResource extends ListResourceBundle {
         { "entity_manager_sets_properties_while_context_is_active", "setProperties method called on EntityManager when active persistence context already exists therefore properties used to create persistence context will be ignored. "},
         { "osgi_initializer_failed", "Construction of environment specific OSGi initializer, [{0}] failed with message: [{2}]."},
         { "osgi_initializer", "Using OSGi initializer: [{0}]."},
+        { "entity_manager_ignores_nonjta_data_source", "Persistence unit uses JTA, therefore entity manager ignores non jta data source. "},        
+        { "entity_manager_ignores_jta_data_source", "Persistence unit doesn't use JTA, therefore entity manager ignores jta data source. "},        
 
         
         
@@ -565,7 +567,9 @@ public class LoggingLocalizationResource extends ListResourceBundle {
         { "persistence_unit_processor_error_in_class_forname_weaving_disabled.MSGID", "TOP-50209"},
         { "entity_manager_sets_properties_while_context_is_active.MSGID", "TOP-50210"},
         { "osgi_initializer_failed.MSGID", "TOP-50211"},
-        { "osgi_initializer", "TOP-50212"}
+        { "osgi_initializer", "TOP-50212"},
+        { "entity_manager_ignores_nonjta_data_source.MSGID", "TOP-50213"},        
+        { "entity_manager_ignores_jta_data_source.MSGID", "TOP-50214"}        
     }; 
      
     /**

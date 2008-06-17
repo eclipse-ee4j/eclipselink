@@ -2246,6 +2246,22 @@ public abstract class AbstractSession implements org.eclipse.persistence.session
 
     /**
      * PUBLIC:
+     * Return if this session is an isolated client session.
+     */
+    public boolean isIsolatedClientSession() {
+        return false;
+    }
+
+    /**
+     * PUBLIC:
+     * Return if this session is an exclusive isolated client session.
+     */
+    public boolean isExclusiveIsolatedClientSession() {
+        return false;
+    }
+
+    /**
+     * PUBLIC:
      * Return if this session is connected to the database.
      */
     public boolean isConnected() {

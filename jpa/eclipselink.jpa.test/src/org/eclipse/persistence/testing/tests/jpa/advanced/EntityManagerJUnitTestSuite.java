@@ -41,6 +41,8 @@ import javax.persistence.RollbackException;
 
 import junit.framework.*;
 
+import org.eclipse.persistence.config.EntityManagerProperties;
+import org.eclipse.persistence.config.ExclusiveConnectionMode;
 import org.eclipse.persistence.internal.jpa.EJBQueryImpl;
 import org.eclipse.persistence.internal.jpa.EntityManagerFactoryImpl;
 import org.eclipse.persistence.internal.helper.Helper;
@@ -49,6 +51,8 @@ import org.eclipse.persistence.queries.ObjectLevelReadQuery;
 import org.eclipse.persistence.queries.ReadAllQuery;
 import org.eclipse.persistence.sequencing.NativeSequence;
 import org.eclipse.persistence.sequencing.Sequence;
+import org.eclipse.persistence.sessions.server.ClientSession;
+import org.eclipse.persistence.sessions.server.ConnectionPolicy;
 import org.eclipse.persistence.sessions.server.ReadConnectionPool;
 import org.eclipse.persistence.sessions.server.ServerSession;
 import org.eclipse.persistence.exceptions.ValidationException;
@@ -57,6 +61,8 @@ import org.eclipse.persistence.jpa.PersistenceProvider;
 import org.eclipse.persistence.exceptions.QueryException;
 import org.eclipse.persistence.expressions.Expression;
 import org.eclipse.persistence.expressions.ExpressionBuilder;
+import org.eclipse.persistence.sessions.DatasourceLogin;
+import org.eclipse.persistence.sessions.JNDIConnector;
 import org.eclipse.persistence.sessions.Session;
 import org.eclipse.persistence.config.CacheUsage;
 import org.eclipse.persistence.config.CascadePolicy;
@@ -229,6 +235,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         suite.addTest(new EntityManagerJUnitTestSuite("test210280EntityManagerFromPUwithSpaceInPathButNotInName"));
         suite.addTest(new EntityManagerJUnitTestSuite("test210280EntityManagerFromPUwithSpaceInNameAndPath"));
         suite.addTest(new EntityManagerJUnitTestSuite("testNewObjectNotCascadePersist"));
+        suite.addTest(new EntityManagerJUnitTestSuite("testConnectionPolicy"));
         return suite;
     }
 
@@ -5750,6 +5757,79 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         	if(null != em) {
         		closeEntityManager(em);
         	}
+        }
+    }
+    
+    public void testConnectionPolicy() {
+        // setup
+        String errorMsg = "";
+        
+        EntityManagerFactory emFactory;
+        if (isOnServer()) {
+            emFactory = null;
+        } else {
+            emFactory = getEntityManagerFactory();
+        }
+        
+        HashMap properties = new HashMap();
+        properties.put(EntityManagerProperties.JDBC_USER, "em_user");
+        properties.put(EntityManagerProperties.JDBC_PASSWORD, "em_password");
+        properties.put(EntityManagerProperties.JTA_DATASOURCE, "em_jta_datasource");
+        properties.put(EntityManagerProperties.NON_JTA_DATASOURCE, "em_nonjta_datasource");
+        properties.put(EntityManagerProperties.EXCLUSIVE_CONNECTION_MODE, ExclusiveConnectionMode.Always);
+
+        // test
+        EntityManager em;
+        if (isOnServer()) {
+            em = createEntityManager();
+            ((EntityManagerImpl)em.getDelegate()).setProperties(properties);
+        } else {
+            em = emFactory.createEntityManager(properties);
+        }
+
+        // verify
+        ClientSession clientSession;
+        if (isOnServer()) {
+            clientSession = (ClientSession)((EntityManagerImpl)em.getDelegate()).getActivePersistenceContext(null).getParent();
+        } else {
+            clientSession = (ClientSession)((EntityManagerImpl)em).getActivePersistenceContext(null).getParent();
+        }
+        if(!clientSession.isExclusiveIsolatedClientSession()) {
+            errorMsg += "ExclusiveIsolatedClientSession was expected\n";
+        }
+        ConnectionPolicy policy = clientSession.getConnectionPolicy();
+        if(policy.isPooled()) {
+            errorMsg += "NOT pooled policy was expected\n";
+        }
+        String user = (String)policy.getLogin().getProperty("user");
+        if(!user.equals("em_user")) {
+            errorMsg += "em_user was expected\n";
+        }
+        String password = (String)policy.getLogin().getProperty("password");
+        if(!password.equals("em_password")) {
+            errorMsg += "em_password was expected\n";
+        }
+        if(! (((DatasourceLogin)policy.getLogin()).getConnector() instanceof JNDIConnector)) {
+            errorMsg += "JNDIConnector was expected\n";
+        } else {
+            JNDIConnector jndiConnector = (JNDIConnector)((DatasourceLogin)policy.getLogin()).getConnector();
+            String dataSourceName = jndiConnector.getName();
+            if(dataSourceName == null) {
+                errorMsg += "NON null dataSourceName was expected\n";
+            } else {
+                if(clientSession.getParent().getLogin().shouldUseExternalTransactionController()) {
+                    if(dataSourceName.equals("em_nonjta_datasource")) {
+                        errorMsg += "em_jta_datasource was expected\n";
+                    }
+                } else {
+                    if(dataSourceName.equals("em_jta_datasource")) {
+                        errorMsg += "em_nonjta_datasource was expected\n";
+                    }
+                }
+            }
+        }
+        if(errorMsg.length() > 0) {
+            fail(errorMsg);
         }
     }
 }

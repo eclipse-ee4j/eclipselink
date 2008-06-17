@@ -12,6 +12,7 @@
  ******************************************************************************/  
 package org.eclipse.persistence.testing.tests.isolatedsession;
 
+import org.eclipse.persistence.config.ExclusiveConnectionMode;
 import org.eclipse.persistence.platform.database.oracle.OraclePlatform;
 import org.eclipse.persistence.testing.framework.*;
 
@@ -33,8 +34,12 @@ public class IsolatedSessionTestModel extends TestModel {
     }
 
     public void addTests() {
-        addTest(new VerifyIsolationTest(false));
-        addTest(new VerifyExclusiveConnectionTest());
+        addTest(new VerifyIsolationTest(ExclusiveConnectionMode.Transactional));
+        addTest(new VerifyIsolationTest(ExclusiveConnectionMode.Isolated));
+        addTest(new VerifyIsolationTest(ExclusiveConnectionMode.Always));
+        addTest(new VerifyExclusiveConnectionTest(ExclusiveConnectionMode.Always, false));
+        addTest(new VerifyExclusiveConnectionTest(ExclusiveConnectionMode.Always, true));
+        addTest(new VerifyExclusiveConnectionTest(ExclusiveConnectionMode.Isolated, true));
         addTest(new ExceptionOnIsolatedReference());
         addTest(new VPDSupportTest());
         addTest(new IsolatedQueryTest());

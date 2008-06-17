@@ -21,7 +21,13 @@ public class VerifyIsolationTest extends ClientServerTest {
 
     public VerifyIsolationTest(boolean isExclusive) {
         super(isExclusive);
-        setDescription("This test verifies that certain data is only available to the client");
+        setDescription("This test verifies that certain data is only available to the client with exclusiveConnectionMode");
+    }
+
+    public VerifyIsolationTest(String exclusiveConnectionMode) {
+        super(exclusiveConnectionMode, true);
+        setDescription("This test verifies that certain data is only available to the client with exclusiveConnectionMode "+ this.exclusiveConnectionMode);
+        setName(getName() + " " + this.exclusiveConnectionMode);
     }
 
     public void test() {

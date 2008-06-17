@@ -68,4 +68,77 @@ public class EntityManagerProperties {
      * created by the factory will be proxy connections.
      */
     public static final String ORACLE_PROXY_TYPE = PersistenceUnitProperties.ORACLE_PROXY_TYPE;
+    
+    /**
+     * Determines when reads are performed through the write connection.
+     * This property alters ConnectionPolicy.
+     * @see ExclusiveConnectionMode
+     */
+    public static final String EXCLUSIVE_CONNECTION_MODE = PersistenceUnitProperties.EXCLUSIVE_CONNECTION_MODE;
+    
+    /**
+     * Determines when write connection is acquired lazily.
+     * Valid values are case-insensitive "false" and "true"; "true" is default.
+     * This property alters ConnectionPolicy.
+     */
+    public static final String EXCLUSIVE_CONNECTION_IS_LAZY = PersistenceUnitProperties.EXCLUSIVE_CONNECTION_IS_LAZY;
+    
+    /**
+     * JTA DataSource.
+     * The value may be either data source or its name.
+     * Note that this property will be ignore in case persistence unit was setup to NOT use JTA:
+     * persistence.xml or createEntityManagerFactory had property "javax.persistence.transactionType" with RESOURCE_LOCAL value.
+     * To avoid a conflict resulting in exception don't specify this property together with either JDBC_DRIVER or JDBC_URL;
+     * however this property may override JDBC_DRIVER or JDBC_URL specified in persistence.xml or in createEntityManagerFactory method.
+     * This property alters ConnectionPolicy.
+     */
+    public static final String JTA_DATASOURCE = PersistenceUnitProperties.JTA_DATASOURCE;
+
+    /**
+     * NON JTA DataSource.
+     * The value may be either data source or its name.
+     * Note that this property will be ignore in case persistence unit was setup to use JTA:
+     * persistence.xml or createEntityManagerFactory had property "javax.persistence.transactionType" with JTA value. 
+     * To avoid a conflict resulting in exception don't specify this property together with either JDBC_DRIVER or JDBC_URL;
+     * however this property may override JDBC_DRIVER or JDBC_URL specified in persistence.xml or in createEntityManagerFactory method.
+     * This property alters ConnectionPolicy.
+     */
+    public static final String NON_JTA_DATASOURCE = PersistenceUnitProperties.NON_JTA_DATASOURCE;
+    
+    /** JDBC Driver class name. 
+     * To avoid a conflict resulting in exception don't specify this property together with either JTA_DATASOURCE or JTA_DATASOURCE;
+     * however this property may override JTA_DATASOURCE or JTA_DATASOURCE specified in persistence.xml or in createEntityManagerFactory method.
+     * This property alters ConnectionPolicy.
+     */
+    public static final String JDBC_DRIVER = PersistenceUnitProperties.JDBC_DRIVER;
+
+    /** JDBC Connection String. 
+     * To avoid a conflict resulting in exception don't specify this property together with either JTA_DATASOURCE or JTA_DATASOURCE;
+     * however this property may override JTA_DATASOURCE or JTA_DATASOURCE specified in persistence.xml or in createEntityManagerFactory method.
+     * This property alters ConnectionPolicy.
+     */
+    public static final String JDBC_URL = PersistenceUnitProperties.JDBC_URL;
+
+    /** DataSource or JDBC DriverManager user name. 
+     * Non-empty value overrides the value assigned in persistence.xml or in createEntityManagerFactory;
+     * empty string value causes removal this property and JDBC_PASSWORD property 
+     * specified in persistence.xml or in createEntityManagerFactory method.
+     * This property alters ConnectionPolicy.
+     */
+    public static final String JDBC_USER = PersistenceUnitProperties.JDBC_USER;
+
+    /** DataSource or JDBC DriverManager password. 
+     * Non-empty value overrides the value assigned in persistence.xml or in createEntityManagerFactory;
+     * empty string value causes removal this property 
+     * specified in persistence.xml or in createEntityManagerFactory method.
+     * This property alters ConnectionPolicy.
+     */
+    public static final String JDBC_PASSWORD = PersistenceUnitProperties.JDBC_PASSWORD;
+
+    /** ConnectionPolicy 
+     * Allows to specify an entire ConnectionPolicy.
+     * Note that in case any other ConnectionPolicy-altering properties are present
+     * they will be applied to this ConnectionPolicy. 
+     */
+    public static final String CONNECTION_POLICY = "eclipselink.jdbc.connection-policy";
 }

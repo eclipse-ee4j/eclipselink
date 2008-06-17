@@ -42,6 +42,7 @@ import org.eclipse.persistence.internal.security.PrivilegedClassForName;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.sequencing.Sequence;
 import org.eclipse.persistence.sessions.*;
+import org.eclipse.persistence.sessions.server.ConnectionPolicy;
 import org.eclipse.persistence.sessions.server.ReadConnectionPool;
 import org.eclipse.persistence.sessions.server.ServerSession;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataProcessor;
@@ -49,6 +50,7 @@ import org.eclipse.persistence.sessions.factories.SessionManager;
 import org.eclipse.persistence.sessions.factories.XMLSessionConfigLoader;
 import org.eclipse.persistence.config.BatchWriting;
 import org.eclipse.persistence.config.DescriptorCustomizer;
+import org.eclipse.persistence.config.ExclusiveConnectionMode;
 import org.eclipse.persistence.config.LoggerType;
 import org.eclipse.persistence.config.PersistenceUnitProperties;
 import org.eclipse.persistence.config.ProfilerType;
@@ -634,12 +636,29 @@ public class EntityManagerSetupImpl {
     }
 
     protected void updateConnectionPolicy(Map m) {
-// Under review, see Bug 235433: Can't customize ConnectionPolicy through JPA.
-/*        String shouldUseExclusiveConnectionString = PropertiesHandler.getPropertyValueLogDebug(PersistenceUnitProperties.CONNECTION_EXCLUSIVE, m, session);
-        if(shouldUseExclusiveConnectionString != null) {
-            boolean shouldUseExclusiveConnection = Boolean.parseBoolean(shouldUseExclusiveConnectionString);
-            session.getDefaultConnectionPolicy().setShouldUseExclusiveConnection(shouldUseExclusiveConnection);
-        }*/
+        String isLazyString = getConfigPropertyAsStringLogDebug(PersistenceUnitProperties.EXCLUSIVE_CONNECTION_IS_LAZY, m, session);
+        if(isLazyString != null) {
+            session.getDefaultConnectionPolicy().setIsLazy(Boolean.parseBoolean(isLazyString));
+        }
+        ConnectionPolicy.ExclusiveMode exclusiveMode = getConnectionPolicyExclusiveModeFromProperties(m, session, true);
+        if(exclusiveMode != null) {
+            session.getDefaultConnectionPolicy().setExclusiveMode(exclusiveMode);
+        }
+    }
+
+    public static ConnectionPolicy.ExclusiveMode getConnectionPolicyExclusiveModeFromProperties(Map m, AbstractSession abstractSession, boolean useSystemAsDefault) {
+        String exclusiveConnectionModeString = PropertiesHandler.getPropertyValueLogDebug(PersistenceUnitProperties.EXCLUSIVE_CONNECTION_MODE, m, abstractSession, useSystemAsDefault);
+        if(exclusiveConnectionModeString != null) {
+            if(exclusiveConnectionModeString == ExclusiveConnectionMode.Isolated) {
+                return ConnectionPolicy.ExclusiveMode.Isolated;
+            } else if(exclusiveConnectionModeString == ExclusiveConnectionMode.Always) {
+                return ConnectionPolicy.ExclusiveMode.Always;
+            } else {
+                return ConnectionPolicy.ExclusiveMode.Transactional;
+            }
+        } else {
+            return null;
+        }
     }
 
     /**

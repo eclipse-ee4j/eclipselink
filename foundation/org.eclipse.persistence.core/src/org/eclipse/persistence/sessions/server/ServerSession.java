@@ -254,7 +254,7 @@ public class ServerSession extends DatabaseSessionImpl implements Server {
             //if connection is using external connection pooling then the event will be risen right after it connects.
             if(!connection.usesExternalConnectionPooling()) {
                 clientSession.getEventManager().postAcquireConnection(connection);
-                if (clientSession.getConnectionPolicy().shouldUseExclusiveConnection()) {
+                if (clientSession.isExclusiveIsolatedClientSession()) {
                     getEventManager().postAcquireExclusiveConnection(clientSession, clientSession.getWriteConnection());
                 }
             }
@@ -276,7 +276,7 @@ public class ServerSession extends DatabaseSessionImpl implements Server {
             if(!clientSession.getWriteConnection().usesExternalConnectionPooling()) {
                 clientSession.connect();
                 clientSession.getEventManager().postAcquireConnection(clientSession.getWriteConnection());
-                if (clientSession.getConnectionPolicy().shouldUseExclusiveConnection()) {
+                if (clientSession.isExclusiveIsolatedClientSession()) {
                     getEventManager().postAcquireExclusiveConnection(clientSession, clientSession.getWriteConnection());
                 }
             }
@@ -398,19 +398,22 @@ public class ServerSession extends DatabaseSessionImpl implements Server {
         }
         ClientSession client = null;
         if (getProject().hasIsolatedClasses()) {
-            if (connectionPolicy.shouldUseExclusiveConnection()) {
+            if (connectionPolicy.getExclusiveMode().equals(ConnectionPolicy.ExclusiveMode.Isolated) || connectionPolicy.getExclusiveMode().equals(ConnectionPolicy.ExclusiveMode.Always)) {
                 client = new ExclusiveIsolatedClientSession(this, connectionPolicy, properties);
             } else {
                 client = new IsolatedClientSession(this, connectionPolicy, properties);
             }
         } else {
-            if (connectionPolicy.shouldUseExclusiveConnection()) {
+            if (connectionPolicy.getExclusiveMode().equals(ConnectionPolicy.ExclusiveMode.Isolated)) {
                 throw ValidationException.clientSessionCanNotUseExclusiveConnection();
+            } else if(connectionPolicy.getExclusiveMode().equals(ConnectionPolicy.ExclusiveMode.Always)) {
+                client = new ExclusiveIsolatedClientSession(this, connectionPolicy, properties);
+            } else {
+                client = new ClientSession(this, connectionPolicy, properties);
             }
-            client = new ClientSession(this, connectionPolicy, properties);
-            if (isFinalizersEnabled()) {
-                client.registerFinalizer();
-            }
+        }
+        if (isFinalizersEnabled()) {
+            client.registerFinalizer();
         }
         if (!connectionPolicy.isLazy()) {
             acquireClientConnection(client);
@@ -705,7 +708,7 @@ public class ServerSession extends DatabaseSessionImpl implements Server {
             //if connection is using external connection pooling then the event has been risen right before it disconnected.
             if(!clientSession.getWriteConnection().usesExternalConnectionPooling()) {
                 clientSession.getEventManager().preReleaseConnection(clientSession.getWriteConnection());
-                if (clientSession.getConnectionPolicy().shouldUseExclusiveConnection()) {
+                if (clientSession.isExclusiveIsolatedClientSession()) {
                     getEventManager().preReleaseExclusiveConnection(clientSession, clientSession.getWriteConnection());
                 }
             }
@@ -715,7 +718,7 @@ public class ServerSession extends DatabaseSessionImpl implements Server {
             //if connection is using external connection pooling then the event has been risen right before it disconnected.
             if(!clientSession.getWriteConnection().usesExternalConnectionPooling()) {
                 clientSession.getEventManager().preReleaseConnection(clientSession.getWriteConnection());
-                if (clientSession.getConnectionPolicy().shouldUseExclusiveConnection()) {
+                if (clientSession.isExclusiveIsolatedClientSession()) {
                     getEventManager().preReleaseExclusiveConnection(clientSession, clientSession.getWriteConnection());
                 }
                 clientSession.disconnect();
