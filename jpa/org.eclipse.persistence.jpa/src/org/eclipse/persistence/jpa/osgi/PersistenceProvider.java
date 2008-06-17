@@ -26,10 +26,10 @@ import org.eclipse.persistence.exceptions.EntityManagerSetupException;
 public class PersistenceProvider extends org.eclipse.persistence.jpa.PersistenceProvider{
     
    
-    public PersistenceProvider(){
+    public PersistenceProvider(String initializerClassName){
         // here we override the initialization helper used by super so that we get
         // OSGi specific behavior
-        initializationHelper = new OSGiPersistenceInitializationHelper();
+        initializationHelper = new OSGiPersistenceInitializationHelper(initializerClassName);
     }
     
     @Override

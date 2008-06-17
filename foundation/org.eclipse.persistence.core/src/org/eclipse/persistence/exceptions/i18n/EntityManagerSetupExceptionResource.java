@@ -47,7 +47,8 @@ public class EntityManagerSetupExceptionResource extends ListResourceBundle {
                                            { "28023", "The method invocation of the method [{0}] on the object [{1}], of class [{2}], triggered an exception." },
                                            { "28024", "Cannot reflectively access the method [{0}] for object [{1}], of class [{2}]." },
                                            { "28025", "The persistence unit with name [{0}] has returned a [null] temporary classLoader - weaving has been disabled for this session.  You may use static weaving is an optional workaround." },
-                                           { "28026", "org.eclipse.persistence.jpa.osgi.PersistenceProvider does not support container deployment (createContainerEntityManagerFactory).  Use org.eclipse.persistence.jpa.PersistenceProvider instead." }
+                                           { "28026", "org.eclipse.persistence.jpa.osgi.PersistenceProvider does not support container deployment (createContainerEntityManagerFactory).  Use org.eclipse.persistence.jpa.PersistenceProvider instead." },
+                                           { "28027", "An attempt has been made to use PersistenceUnit [{0}], but no bundle is available that defines that persistence unit." }
    };
 
     /**

@@ -14,11 +14,16 @@ package org.eclipse.persistence.jpa.osgi;
 
 import java.util.Hashtable;
 
+import org.eclipse.persistence.internal.localization.LoggingLocalization;
+import org.eclipse.persistence.logging.AbstractSessionLog;
+import org.eclipse.persistence.logging.SessionLog;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.BundleEvent;
+import org.osgi.framework.ServiceReference;
 import org.osgi.framework.SynchronousBundleListener;
+import org.osgi.service.packageadmin.PackageAdmin;
 
 /**
  * Activator for JPA OSGi service.
@@ -48,9 +53,23 @@ public class Activator implements BundleActivator, SynchronousBundleListener {
      * We register a listener for bundles and we start our JPA server
      */
     public void start(BundleContext context) throws Exception {
-        Activator.context = context;    
+        Activator.context = context;
+        String initializer = null;
+        ServiceReference packageAdminRef = context.getServiceReference("org.osgi.service.packageadmin.PackageAdmin");
+        PackageAdmin packageAdmin = (PackageAdmin)context.getService(packageAdminRef);
+        Bundle[] fragments = packageAdmin.getFragments(context.getBundle());
+        if (fragments != null){
+	        for (int i=0;i<fragments.length;i++){
+	            Bundle fragment = fragments[i];
+	            initializer = (String)fragment.getHeaders().get("JPA-Initializer");
+	            if (initializer != null){
+	                AbstractSessionLog.getLog().log(SessionLog.CONFIG, LoggingLocalization.buildMessage("osgi_initializer", new Object[]{initializer}));
+	                break;
+	            }
+	        }
+        }
         registerBundleListener();
-        registerProviderService();
+        registerProviderService(initializer);
     }
 
     /**
@@ -78,8 +97,7 @@ public class Activator implements BundleActivator, SynchronousBundleListener {
                     org.eclipse.persistence.internal.jpa.deployment.osgi.OSGiPersistenceInitializationHelper.addBundle(bundle, persistenceUnitNames);
                 }
             } catch (Exception e) {
-                // TODO: Log this properly
-                e.printStackTrace();
+                AbstractSessionLog.getLog().logThrowable(SessionLog.WARNING, e);
             }
         }
     }
@@ -113,9 +131,9 @@ public class Activator implements BundleActivator, SynchronousBundleListener {
      * In this method, we register as a provider of that service
      * @throws Exception
      */
-    public void registerProviderService() throws Exception {
+    public void registerProviderService(String initializer) throws Exception {
         // Create and register ourselves as a JPA persistence provider service
-        PersistenceProvider providerService = new PersistenceProvider();
+        PersistenceProvider providerService = new PersistenceProvider(initializer);
         Hashtable<String, String> props = new Hashtable<String, String>();
         props.put(PERSISTENCE_PROVIDER, ECLIPSELINK_OSGI_PROVIDER);
         getContext().registerService(PERSISTENCE_PROVIDER, providerService, props);

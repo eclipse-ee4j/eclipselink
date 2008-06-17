@@ -8,3 +8,5 @@ Export-Package: javax.persistence,
  javax.persistence.spi,
  xsd
 Bundle-Activator: javax.persistence.osgi.Activator
+Bundle-ClassPath: classes/,
+ .

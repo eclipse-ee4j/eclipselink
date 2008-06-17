@@ -41,7 +41,8 @@ public class EntityManagerSetupException extends EclipseLinkException {
     public static final int CANNOT_ACCESS_METHOD_ON_OBJECT=28024;
     public static final int NO_TEMPORARY_CLASSLOADER_AVAILABLE=28025;    
     public static final int CREATE_CONTAINER_EMF_NOT_SUPPORTED_IN_OSGI=28026;  
-
+    public static final int COULD_NOT_FIND_PERSISTENCE_UNIT_BUNDLE=28027;  
+    
     /**
      * INTERNAL:
      * EclipseLink exceptions should only be thrown by EclipseLink.
@@ -275,7 +276,7 @@ public class EntityManagerSetupException extends EclipseLinkException {
     
     /**
      * INTERNAL:
-     * Our OSGI persistence provider does not support a JavaEE type deployment
+     * Our OSGI persistence provider does not support a JavaEE-type deployment
      * @param PUName
      * @return
      */
@@ -285,4 +286,20 @@ public class EntityManagerSetupException extends EclipseLinkException {
         setupException.setErrorCode(CREATE_CONTAINER_EMF_NOT_SUPPORTED_IN_OSGI);
         return setupException;
     }
+    
+    /**
+     * INTERNAL:
+     * An OSGi application is trying to instantiate a persistence unit for which a bundle does nto exist
+     * @param PUName
+     * @return
+     */
+    public static EntityManagerSetupException couldNotFindPersistenceUnitBundle(String persistenceUnitName) {
+        Object[] args = { persistenceUnitName };
+        EntityManagerSetupException setupException = new EntityManagerSetupException(ExceptionMessageGenerator.buildMessage(//
+                EntityManagerSetupException.class, COULD_NOT_FIND_PERSISTENCE_UNIT_BUNDLE, args));
+        setupException.setErrorCode(COULD_NOT_FIND_PERSISTENCE_UNIT_BUNDLE);
+        return setupException;
+    }
+
 }
+

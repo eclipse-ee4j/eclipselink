@@ -325,7 +325,9 @@ public class LoggingLocalizationResource extends ListResourceBundle {
         { "persistence_unit_processor_npe_temp_classloader", "The classLoader [{0}] for PersistenceLoadProcessor [{1}] is causing a NPE on loadClass. Switching classLoader to [{2}].  Weaving has been disabled for this session. EclipseLink may be unable to get a spec mandated temporary class loader from the server, you may be able to use static weaving as an optional workaround. "},
         { "persistence_unit_processor_jboss_temp_classloader_bypassed", "The temporary classLoader for PersistenceLoadProcessor [{0}] is not available.  Switching classLoader to [{1}].  Weaving has been disabled for this session. EclipseLink may be unable to get a spec mandated temporary class loader from the server, you may be able to use static weaving as an optional workaround. "},        
         { "persistence_unit_processor_error_in_class_forname_weaving_disabled", "The classLoader [{0}]: failed to load class [{1}]. Weaving has been disabled for this session. EclipseLink may be unable to get a spec mandated temporary class loader from the server, you may be able to use static weaving as an optional workaround. "},        
-        { "entity_manager_sets_properties_while_context_is_active", "setProperties method called on EntityManager when active persistence context already exists therefore properties used to create persistence context will be ignored. "},        
+        { "entity_manager_sets_properties_while_context_is_active", "setProperties method called on EntityManager when active persistence context already exists therefore properties used to create persistence context will be ignored. "},
+        { "osgi_initializer_failed", "Construction of environment specific OSGi initializer, [{0}] failed with message: [{2}]."},
+        { "osgi_initializer", "Using OSGi initializer: [{0}]."},
 
         
         
@@ -561,7 +563,9 @@ public class LoggingLocalizationResource extends ListResourceBundle {
         { "persistence_unit_processor_npe_temp_classloader.MSGID", "TOP-50207"},
         { "persistence_unit_processor_jboss_temp_classloader_bypassed.MSGID", "TOP-50208"},
         { "persistence_unit_processor_error_in_class_forname_weaving_disabled.MSGID", "TOP-50209"},
-        { "entity_manager_sets_properties_while_context_is_active.MSGID", "TOP-50210"}
+        { "entity_manager_sets_properties_while_context_is_active.MSGID", "TOP-50210"},
+        { "osgi_initializer_failed.MSGID", "TOP-50211"},
+        { "osgi_initializer", "TOP-50212"}
     }; 
      
     /**

@@ -17,8 +17,12 @@ import java.util.HashMap;
 import java.util.Collections;
 
 import org.eclipse.persistence.config.PersistenceUnitProperties;
+import org.eclipse.persistence.logging.AbstractSessionLog;
+import org.eclipse.persistence.logging.SessionLog;
 import org.eclipse.persistence.internal.jpa.deployment.JPAInitializer;
 import org.eclipse.persistence.internal.jpa.deployment.PersistenceInitializationHelper;
+import org.eclipse.persistence.internal.localization.LoggingLocalization;
+import org.eclipse.persistence.exceptions.EntityManagerSetupException;
 
 import org.osgi.framework.Bundle;
 
@@ -33,6 +37,8 @@ import org.osgi.framework.Bundle;
  */
 public class OSGiPersistenceInitializationHelper extends PersistenceInitializationHelper {
 
+    private String initializerClassName = null;
+    
     public static final String EQUINOX_INITIALIZER_NAME = "org.eclipse.persistence.internal.jpa.deployment.osgi.equinox.EquinoxInitializer";
     
     // these maps are used to retrieve the classloader used for different bundles
@@ -68,22 +74,9 @@ public class OSGiPersistenceInitializationHelper extends PersistenceInitializati
         }
     }
 
-    public static ClassLoader getBundleClassLoader(Bundle bundle)  {
-        Class loadClass = null;
-        try {
-            String activatorClassName = (String) bundle.getHeaders().get("Bundle-Activator");
-            if (activatorClassName == null) {
-                throw new RuntimeException("Bundle Activator Class not specified!");
-            } else {
-                loadClass = bundle.loadClass(activatorClassName);
-            }
-        } catch (Exception e) {
-            throw new RuntimeException("Cannot obtain class loader from bundle");
-        }
-        ClassLoader classLoader = loadClass.getClassLoader();
-        return classLoader;
+    public OSGiPersistenceInitializationHelper(String initializerClassName){
+        this.initializerClassName = initializerClassName;
     }
-
     /**
      * Answer the classloader to use to create an EntityManager.
      * If a classloader is not found in the properties map then 
@@ -101,12 +94,9 @@ public class OSGiPersistenceInitializationHelper extends PersistenceInitializati
         if (bundleClassLoader == null) {
             Bundle bundle = puToBundle.get(emName);
             if (bundle == null) {
-                //TODO replace with EclipseLink Exception
-                throw new RuntimeException(
-                        "Bundle providing Persistence Unit '" + emName
-                                + "' not found.");
+                throw EntityManagerSetupException.couldNotFindPersistenceUnitBundle(emName);
             }
-            bundleClassLoader = getBundleClassLoader(bundle);
+            bundleClassLoader = new BundleProxyClassLoader(bundle);
         }
         return bundleClassLoader;
     }
@@ -118,16 +108,19 @@ public class OSGiPersistenceInitializationHelper extends PersistenceInitializati
      * 
      */
     public JPAInitializer getInitializer(ClassLoader classLoader, Map m){
-        // TODO: Find a cleaner way to use fragments
-        try{
-            // try to build the Equinox initializer.  If it is available, we will build it otherwise
-            // we will assume generic OSGI
-            Class initializerClass = Class.forName(OSGiPersistenceInitializationHelper.EQUINOX_INITIALIZER_NAME);
-            Class[] argTypes = new Class[]{ClassLoader.class, Map.class, PersistenceInitializationHelper.class};
-            Object[] args = new Object[]{classLoader, m, this};
-            JPAInitializer initializer = (JPAInitializer)initializerClass.getConstructor(argTypes).newInstance(args);
-            return initializer;
-        } catch (Exception e){};
+        if (initializerClassName != null){
+            try{
+                // try to build the passed-in initializer.  If it is available, we will build it otherwise
+                // we will assume generic OSGI
+                Class initializerClass = Class.forName(initializerClassName);
+                Class[] argTypes = new Class[]{ClassLoader.class, Map.class, PersistenceInitializationHelper.class};
+                Object[] args = new Object[]{classLoader, m, this};
+                JPAInitializer initializer = (JPAInitializer)initializerClass.getConstructor(argTypes).newInstance(args);
+                return initializer;
+            } catch (Exception e){
+                AbstractSessionLog.getLog().log(SessionLog.FINEST, LoggingLocalization.buildMessage("osgi_initializer_failed", new Object[]{initializerClassName, e}));
+            };
+        }
         return new OSGiInitializer(classLoader);
     }
 

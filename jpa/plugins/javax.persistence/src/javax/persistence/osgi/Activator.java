@@ -52,7 +52,7 @@ public class Activator implements BundleActivator, ProviderResolver {
 	//-------------------------------------------------------------
 	public void stop(BundleContext context) throws Exception {
 		log("Persistence bundle stopping...");
-		
+
 		// Close the service tracker
 		serviceTracker.close();
 		serviceTracker = null;
@@ -68,7 +68,7 @@ public class Activator implements BundleActivator, ProviderResolver {
 	// (Implementation method for the ProviderResolver interface.)
 	//-------------------------------------------------------------
 	public Collection<PersistenceProvider> findAllProviders() throws IOException {
-		log("OSGi - Find all providers.");
+	    log("OSGi - Find all providers.");
 
 		Collection<PersistenceProvider> providers = new HashSet<PersistenceProvider>();
 		
@@ -79,9 +79,10 @@ public class Activator implements BundleActivator, ProviderResolver {
 		ServiceReference[] refs = null;
 		try { refs = ctx.getServiceReferences(PERSISTENCE_PROVIDER, null); }
 		catch (InvalidSyntaxException invEx) {} // Can't happen since filter is null
-		
-		for (ServiceReference ref : refs) {
-			providers.add((PersistenceProvider)ctx.getService(ref));
+		if (refs != null){
+    		for (ServiceReference ref : refs) {
+    			providers.add((PersistenceProvider)ctx.getService(ref));
+    		}
 		}
 
 		// Newly started providers should dynamically add themselves to the 
