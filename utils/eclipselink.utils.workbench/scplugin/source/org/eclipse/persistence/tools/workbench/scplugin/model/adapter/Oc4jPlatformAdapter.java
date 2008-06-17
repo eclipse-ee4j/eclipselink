@@ -12,49 +12,51 @@
 ******************************************************************************/
 package org.eclipse.persistence.tools.workbench.scplugin.model.adapter;
 
-import org.eclipse.persistence.internal.sessions.factories.model.platform.oc4j.Oc4j_10_1_3_PlatformConfig;
+import org.eclipse.persistence.internal.sessions.factories.model.platform.Oc4jPlatformConfig;
 
 /**
  * Session Configuration model adapter class for the 
- * TopLink Foudation Library class Oc4j_10_1_3_PlatformConfig
+ * EclipseLink Foundation Library class Oc4jPlatformConfig
  * 
- * @see Oc4j_10_1_3_PlatformConfig
+ * @see Oc4jPlatformConfig
  * 
- * @author Tran Le
+ * @author Les Davis
  */
-public class Oc4j_10_1_3_PlatformAdapter extends ServerPlatformAdapter {
+public final class Oc4jPlatformAdapter extends ServerPlatformAdapter {
 
 	/**
 	 * Default constructor
-	 */
-    Oc4j_10_1_3_PlatformAdapter() {
+	*/
+	Oc4jPlatformAdapter() {
 		super();
 	}
+	
 	/**
-	 * Creates a new Platform for the specified model object.
-	 */
-    Oc4j_10_1_3_PlatformAdapter( SCAdapter parent, Oc4j_10_1_3_PlatformConfig scConfig) {
-		
+	* Creates a new Platform for the specified model object.
+	*/
+	Oc4jPlatformAdapter( SCAdapter parent, Oc4jPlatformConfig scConfig) {
 		super( parent, scConfig);
 	}
-	/**
-	 * Creates a new Platform.
-	 */
-	protected Oc4j_10_1_3_PlatformAdapter( SCAdapter parent) {
 		
+	/**
+	* Creates a new Platform.
+	*/
+	protected Oc4jPlatformAdapter( SCAdapter parent) {
 		super( parent);
 	}
+	
 	/**
-	 * Returns this Config Model Object.
-	 */
-	private final Oc4j_10_1_3_PlatformConfig platformConfig() {
-		
-		return ( Oc4j_10_1_3_PlatformConfig)this.getModel();
+	* Returns this Config Model Object.
+	*/
+	private final Oc4jPlatformConfig platformConfig() {
+		return ( Oc4jPlatformConfig)this.getModel();
 	}
+	
 	/**
-	 * Factory method for building this model.
-	 */
+	* Factory method for building this model.
+	*/
 	protected Object buildModel() {
-		return new Oc4j_10_1_3_PlatformConfig();
+		return new Oc4jPlatformConfig();
 	}
+
 }

@@ -74,7 +74,7 @@ public final class SCPlugin implements Plugin {
 
 	public static final String DATABASE_PLATFORM_PREFERENCE_DEFAULT = "Oracle10g";
 	public static final String EIS_PLATFORM_PREFERENCE_DEFAULT      = "AQPlatform";
-	public static final String SERVER_PLATFORM_PREFERENCE_DEFAULT   = "Oc4j_11_1_1_Platform";
+	public static final String SERVER_PLATFORM_PREFERENCE_DEFAULT   = "Oc4jPlatform";
 
 	public static final String DATA_SOURCE_TYPE_PREFERENCE_EIS_CHOICE = "eis";
 	public static final String DATA_SOURCE_TYPE_PREFERENCE_RELATIONAL_CHOICE = "relational";

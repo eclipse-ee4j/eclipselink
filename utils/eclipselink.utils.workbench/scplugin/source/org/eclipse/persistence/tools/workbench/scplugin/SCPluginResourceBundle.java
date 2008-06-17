@@ -285,6 +285,7 @@ public final class SCPluginResourceBundle extends ListResourceBundle {
 		// ui.project.SessionCreationDialog
 		{ "CustomServerPlatform",   "Custom" },
 		{ "NoServerPlatform",       ""}, // Needs to be empty
+		{ "Oc4jPlatform",			"OC4J" },
 		{ "Oc4j_11_1_1_Platform",	"OC4J 11.1.1" },
 		{ "Oc4j_10_1_2_Platform",   "OC4J 10.1.2" },
 		{ "Oc4j_10_1_3_Platform",   "OC4J 10.1.3" },

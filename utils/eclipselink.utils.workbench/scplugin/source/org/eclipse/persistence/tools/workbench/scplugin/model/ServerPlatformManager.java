@@ -25,6 +25,7 @@ public class ServerPlatformManager extends SCPlatformManager {
 	private Map configs;
 
 	public static final String NO_SERVER_ID = "NoServerPlatform";
+	public static final String OC4J__ID = "Oc4jPlatform";
     public static final String OC4J_11_1_1_ID = "Oc4j_11_1_1_Platform";
     public static final String OC4J_10_1_3_ID = "Oc4j_10_1_3_Platform";
     public static final String OC4J_10_1_2_ID = "Oc4j_10_1_2_Platform";
@@ -74,18 +75,9 @@ public class ServerPlatformManager extends SCPlatformManager {
 	protected void buidPlatforms() {
 	    
 	    this.addPlatform( NO_SERVER_ID, "org.eclipse.persistence.platform.server.NoServerPlatform");
-	    this.addPlatform( OC4J_11_1_1_ID, "org.eclipse.persistence.platform.server.oc4j.Oc4j_11_1_1_Platform");
-	    this.addPlatform( OC4J_10_1_3_ID, "org.eclipse.persistence.platform.server.oc4j.Oc4j_10_1_3_Platform");
-// as per bug #6194397 these platforms are no longer supported
-//	    this.addPlatform( OC4J_10_1_2_ID, "org.eclipse.persistence.platform.server.oc4j.Oc4j_10_1_2_Platform");
-//	    this.addPlatform( OC4J_9_0_4_ID, "org.eclipse.persistence.platform.server.oc4j.Oc4j_9_0_4_Platform");
-//	    this.addPlatform( OC4J_9_0_3_ID, "org.eclipse.persistence.platform.server.oc4j.Oc4j_9_0_3_Platform");
-//	    this.addPlatform( WEBLOGIC_8_1_ID, "org.eclipse.persistence.platform.server.wls.WebLogic_8_1_Platform");
-//	    this.addPlatform( WEBLOGIC_7_0_ID, "org.eclipse.persistence.platform.server.wls.WebLogic_7_0_Platform");
-//	    this.addPlatform( WEBLOGIC_6_1_ID, "org.eclipse.persistence.platform.server.wls.WebLogic_6_1_Platform");
-//	    this.addPlatform( WEBSPHERE_6_0_ID, "org.eclipse.persistence.platform.server.was.WebSphere_6_0_Platform");
-//	    this.addPlatform( WEBSPHERE_5_1_ID, "org.eclipse.persistence.platform.server.was.WebSphere_5_1_Platform");
-//	    this.addPlatform( WEBSPHERE_5_0_ID, "org.eclipse.persistence.platform.server.was.WebSphere_5_0_Platform");
+	    this.addPlatform( OC4J_11_1_1_ID, "org.eclipse.persistence.platform.server.oc4j.Oc4jPlatform");
+	    this.addPlatform( OC4J_10_1_3_ID, "org.eclipse.persistence.platform.server.oc4j.Oc4jPlatform");
+	    this.addPlatform( OC4J__ID, "org.eclipse.persistence.platform.server.oc4j.Oc4jPlatform");
 	    this.addPlatform( WEBLOGIC_9_ID, "org.eclipse.persistence.platform.server.wls.WebLogic_9_Platform");
 	    this.addPlatform( WEBLOGIC_10_ID, "org.eclipse.persistence.platform.server.wls.WebLogic_10_Platform");
 	    this.addPlatform( WEBSPHERE_6_1_ID, "org.eclipse.persistence.platform.server.was.WebSphere_6_1_Platform");
@@ -97,18 +89,9 @@ public class ServerPlatformManager extends SCPlatformManager {
 	protected void buildConfigs() {
 	    
 	    this.addConfig( NO_SERVER_ID, "null");
-	    this.addConfig( OC4J_11_1_1_ID, "org.eclipse.persistence.internal.sessions.factories.model.platform.oc4j.Oc4j_11_1_1_PlatformConfig");
-	    this.addConfig( OC4J_10_1_3_ID, "org.eclipse.persistence.internal.sessions.factories.model.platform.oc4j.Oc4j_10_1_3_PlatformConfig");
-//	  as per bug #6194397 these platforms are no longer supported
-//	    this.addConfig( OC4J_10_1_2_ID, "org.eclipse.persistence.internal.sessions.factories.model.platform.oc4j.Oc4j_10_1_2_PlatformConfig");
-//	    this.addConfig( OC4J_9_0_4_ID, "org.eclipse.persistence.internal.sessions.factories.model.platform.oc4j.Oc4j_9_0_4_PlatformConfig");
-//	    this.addConfig( OC4J_9_0_3_ID, "org.eclipse.persistence.internal.sessions.factories.model.platform.oc4j.Oc4j_9_0_3_PlatformConfig");
-//	    this.addConfig( WEBLOGIC_8_1_ID, "org.eclipse.persistence.internal.sessions.factories.model.platform.WebLogic_8_1_PlatformConfig");
-//	    this.addConfig( WEBLOGIC_7_0_ID, "org.eclipse.persistence.internal.sessions.factories.model.platform.WebLogic_7_0_PlatformConfig");
-//	    this.addConfig( WEBLOGIC_6_1_ID, "org.eclipse.persistence.internal.sessions.factories.model.platform.WebLogic_6_1_PlatformConfig");
-//	    this.addConfig( WEBSPHERE_6_0_ID, "org.eclipse.persistence.internal.sessions.factories.model.platform.WebSphere_6_0_PlatformConfig");
-//	    this.addConfig( WEBSPHERE_5_1_ID, "org.eclipse.persistence.internal.sessions.factories.model.platform.WebSphere_5_1_PlatformConfig");
-//	    this.addConfig( WEBSPHERE_5_0_ID, "org.eclipse.persistence.internal.sessions.factories.model.platform.WebSphere_5_0_PlatformConfig");
+	    this.addConfig(OC4J__ID, "org.eclipse.persistence.internal.sessions.factories.model.platform.Oc4jPlatformConfig");
+	    this.addConfig( OC4J_11_1_1_ID, "org.eclipse.persistence.internal.sessions.factories.model.platform.Oc4jPlatformConfig");
+	    this.addConfig( OC4J_10_1_3_ID, "org.eclipse.persistence.internal.sessions.factories.model.platform.Oc4jPlatformConfig");
 	    this.addConfig( WEBLOGIC_9_ID, "org.eclipse.persistence.internal.sessions.factories.model.platform.WebLogic_9_PlatformConfig");
 	    this.addConfig( WEBLOGIC_10_ID, "org.eclipse.persistence.internal.sessions.factories.model.platform.WebLogic_10_PlatformConfig");
 	    this.addConfig( WEBSPHERE_6_1_ID, "org.eclipse.persistence.internal.sessions.factories.model.platform.WebSphere_6_1_PlatformConfig");
