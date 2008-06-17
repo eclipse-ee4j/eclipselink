@@ -947,8 +947,18 @@ public abstract class MWMapping extends MWModel implements MWQueryable {
 		this.checkSetMethod(currentProblems);	
 		this.checkMethods(currentProblems);	
 		this.checkWriteLockField(currentProblems);
+		this.checkMappableAttribute(currentProblems);
 	}
 
+	private void checkMappableAttribute(List currentProblems) {
+		if (this.getInstanceVariable() == null) {
+			return;
+		}
+		if (!this.getInstanceVariable().isMappable()) {
+			currentProblems.add(this.buildProblem(ProblemConstants.MAPPING_ATTRIBUTE_NO_LONGER_MAPPABLE));
+		}
+	}
+	
 	private void checkGetMethod(List currentProblems) {
 		if (this.getGetMethod() == null){
 			return;

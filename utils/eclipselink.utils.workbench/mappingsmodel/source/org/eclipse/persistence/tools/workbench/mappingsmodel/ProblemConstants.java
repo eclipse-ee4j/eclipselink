@@ -248,6 +248,7 @@ public final class ProblemConstants
 	public static final String MAPPING_INVALID_SET_METHOD									= "0402";
 	public static final String MAPPING_EJB_CMP_FIELD_USES_METHOD_ACCESSING					= "0403";
 	public static final String MAPPING_REFERENCE_WRITE_LOCK_FIELD_NOT_READ_ONLY				= "0404";
+	public static final String MAPPING_ATTRIBUTE_NO_LONGER_MAPPABLE							= "0405";
 	
 	// *** MWRelationalDirectContainerMapping ***
 	/** for common errors, see also

@@ -46,9 +46,6 @@ public final class UnmappedMappingNode
 	public UnmappedMappingNode(MWClassAttribute classAttribute, ApplicationContext context, SelectionActionsPolicy mappingNodeTypePolicy, MappingDescriptorNode parent) {
 		// no model!
 		super(null, context, mappingNodeTypePolicy, parent);
-		if (!classAttribute.isMappable()) {
-			throw new IllegalArgumentException("Cannot map static or final attributes");
-		}
 		this.classAttribute = classAttribute;
 	}
 

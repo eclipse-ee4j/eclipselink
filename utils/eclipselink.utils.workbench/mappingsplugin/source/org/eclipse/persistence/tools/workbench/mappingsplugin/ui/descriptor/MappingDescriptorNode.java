@@ -304,9 +304,7 @@ public abstract class MappingDescriptorNode
 	}
 
 	private void addUnmappedMappingNodeFor(MWClassAttribute attribute) {
-		if (attribute.isMappable()) {
-			this.unmappedMappingNodesHolder.addItem(this.buildUnmappedMappingNode(attribute));
-		}
+		this.unmappedMappingNodesHolder.addItem(this.buildUnmappedMappingNode(attribute));
 	}
 
 	/**
