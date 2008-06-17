@@ -18,13 +18,13 @@ import java.util.Map;
 import org.w3c.dom.Document;
 
 // EclipseLink imports
-import org.eclipse.persistence.internal.sessions.factories.XMLSessionConfigLoader;
 import org.eclipse.persistence.internal.sessions.factories.XMLSessionConfigProject_11_1_1;
 import org.eclipse.persistence.internal.sessions.factories.model.SessionConfigs;
 import org.eclipse.persistence.oxm.XMLContext;
 import org.eclipse.persistence.oxm.XMLUnmarshaller;
 import org.eclipse.persistence.sessions.Session;
 import org.eclipse.persistence.sessions.factories.SessionManager;
+import org.eclipse.persistence.sessions.factories.XMLSessionConfigLoader;
 
 public class XRSessionConfigLoader extends XMLSessionConfigLoader {
 
