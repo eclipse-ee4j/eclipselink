@@ -90,6 +90,10 @@ public class CollectionsTestModel extends TestModel {
         //	suite.addTest(new DirectCollectionUnitOfWorkTest());
         suite.addTest(new OTMHashtableObjectUpdateTest());
 
+        // TRANSPARENTMAPPING OF VECTOR IS NOT MAINTAINED IF UOW.SETSHOULDPERFORMDELETESFIRST
+        suite.addTest(new PerformDeletesFirstCollectionObjectRemovalTest(false));
+        suite.addTest(new PerformDeletesFirstCollectionObjectRemovalTest(true));
+        
         return suite;
     }
 
