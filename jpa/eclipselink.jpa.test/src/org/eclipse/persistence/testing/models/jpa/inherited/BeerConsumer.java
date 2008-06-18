@@ -9,23 +9,30 @@
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
-  *     05/30/2008-1.0M8 Guy Pelletier 
+ *     05/30/2008-1.0M8 Guy Pelletier 
  *       - 230213: ValidationException when mapping to attribute in MappedSuperClass
+ *     06/20/2008-1.0 Guy Pelletier 
+ *       - 232975: Failure when attribute type is generic
  ******************************************************************************/
 package org.eclipse.persistence.testing.models.jpa.inherited;
 
+import java.math.BigInteger;
 import java.util.Map;
 import java.util.Vector;
 import java.util.Hashtable;
 import java.util.Collection;
 import java.util.Enumeration;
 import javax.persistence.*;
+
 import static javax.persistence.FetchType.*;
 import static javax.persistence.CascadeType.*;
 import static javax.persistence.GenerationType.*;
+import static javax.persistence.InheritanceType.*;
 
 @Entity
 @Table(name="CMP3_CONSUMER")
+@Inheritance(strategy=JOINED)
+@DiscriminatorValue(value="BC")
 public class BeerConsumer {
     public int post_load_count = 0;
     public int post_persist_count = 0;
@@ -42,7 +49,7 @@ public class BeerConsumer {
     private Collection<Alpine> alpineBeersToConsume;
     private Collection<BlueLight> blueLightBeersToConsume;
     
-    private Map<Integer, Blue> blueBeersToConsume;
+    private Map<BigInteger, Blue> blueBeersToConsume;
     private Map<Integer, Canadian> canadianBeersToConsume;
     private Map<Integer, Certification> certifications;
     private Map<TelephoneNumberPK, TelephoneNumber> telephoneNumbers;
@@ -52,7 +59,7 @@ public class BeerConsumer {
         alpineBeersToConsume = new Vector<Alpine>();
         blueLightBeersToConsume = new Vector<BlueLight>();
         
-        blueBeersToConsume = new Hashtable<Integer, Blue>();
+        blueBeersToConsume = new Hashtable<BigInteger, Blue>();
         canadianBeersToConsume = new Hashtable<Integer, Canadian>();
         certifications = new Hashtable<Integer, Certification>();
         telephoneNumbers = new Hashtable<TelephoneNumberPK, TelephoneNumber>();
@@ -101,7 +108,7 @@ public class BeerConsumer {
     
     @OneToMany(mappedBy="beerConsumer", cascade=ALL)
     @MapKey(name="uniqueKey")
-    public Map<Integer, Blue> getBlueBeersToConsume() {
+    public Map<BigInteger, Blue> getBlueBeersToConsume() {
         return blueBeersToConsume;
     }
     
@@ -226,12 +233,12 @@ public class BeerConsumer {
             }
         }
     }
-    
+
     public void setAlpineBeersToConsume(Collection<Alpine> alpineBeersToConsume) {
         this.alpineBeersToConsume = alpineBeersToConsume;
     }
     
-    public void setBlueBeersToConsume(Map<Integer, Blue> blueBeersToConsume) {
+    public void setBlueBeersToConsume(Map<BigInteger, Blue> blueBeersToConsume) {
         this.blueBeersToConsume = blueBeersToConsume;
     }
     

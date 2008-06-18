@@ -9,6 +9,8 @@
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
+ *     06/20/2008-1.0 Guy Pelletier 
+ *       - 232975: Failure when attribute type is generic
  ******************************************************************************/  
 package org.eclipse.persistence.testing.models.jpa.inherited;
 
@@ -29,9 +31,9 @@ import java.sql.Timestamp;
 
 @MappedSuperclass
 @ExistenceChecking(CHECK_CACHE)
-public class Beer extends Beverage {
+public class Beer<G, H> extends Beverage<G> {
     private Timestamp version;
-    private double alcoholContent;
+    private H alcoholContent;
     private BeerConsumer beerConsumer;
     
     public static int BEER_PRE_PERSIST_COUNT = 0;
@@ -49,7 +51,7 @@ public class Beer extends Beverage {
     
     @Basic
     @Column(name="ALCOHOL_CONTENT")
-    public double getAlcoholContent() {
+    public H getAlcoholContent() {
         return alcoholContent;
     }
     
@@ -64,7 +66,7 @@ public class Beer extends Beverage {
         return version;
     }
     
-    public void setAlcoholContent(double alcoholContent) {
+    public void setAlcoholContent(H alcoholContent) {
         this.alcoholContent = alcoholContent;
     }
     

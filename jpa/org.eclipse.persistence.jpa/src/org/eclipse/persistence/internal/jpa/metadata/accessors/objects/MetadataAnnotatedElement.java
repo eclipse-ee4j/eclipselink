@@ -11,7 +11,9 @@
  *     05/16/2008-1.0M8 Guy Pelletier 
  *       - 218084: Implement metadata merging functionality between mapping files
  *     05/23/2008-1.0M8 Guy Pelletier 
- *       - 211330: Add attributes-complete support to the EclipseLink-ORM.XML Schema  
+ *       - 211330: Add attributes-complete support to the EclipseLink-ORM.XML Schema
+ *     06/20/2008-1.0 Guy Pelletier 
+ *       - 232975: Failure when attribute type is generic  
  ******************************************************************************/
 package org.eclipse.persistence.internal.jpa.metadata.accessors.objects;
 
@@ -20,6 +22,7 @@ import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
+import java.lang.reflect.TypeVariable;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
@@ -164,12 +167,18 @@ public class MetadataAnnotatedElement extends MetadataAccessibleObject {
      * This should only be called for accessor's of type Map. It will return
      * the Map key type if generics are used, null otherwise.
      */
-    public Class getMapKeyClass() {
+    public Class getMapKeyClass(MetadataDescriptor descriptor) {
         if (isGenericCollectionType()) {
             // By default, the reference class is equal to the relation
             // class. But if the relation class is a generic we need to 
-            // extract and set the actual reference class from the generic. 
-            return (Class) ((ParameterizedType) m_relationType).getActualTypeArguments()[0];
+            // extract and return the actual reference class from the generic. 
+            Type referenceType = ((ParameterizedType) m_relationType).getActualTypeArguments()[0];
+            
+            if (referenceType instanceof Class) {
+                return (Class) referenceType;
+            } else {
+                return (Class) descriptor.getGenericType(((TypeVariable) referenceType).getName());
+            }
         } else {
             return null;
         }
@@ -189,7 +198,7 @@ public class MetadataAnnotatedElement extends MetadataAccessibleObject {
      * method will return java.util.Collection. 
      * @See getReferenceClassFromGeneric() to get Employee.class back.
      */
-    public Class getRawClass() {
+    public Class getRawClass(MetadataDescriptor descriptor) {
         if (m_rawClass == null) {
             if (isGenericCollectionType()) {
                 // By default, the raw class is equal to the relation
@@ -197,7 +206,11 @@ public class MetadataAnnotatedElement extends MetadataAccessibleObject {
                 // extract and set the actual raw class from the generic. 
                 return (Class)(((ParameterizedType) m_relationType).getRawType());
             } else {
-                m_rawClass = (Class) m_relationType;
+                if (m_relationType instanceof Class) {
+                    return (Class) m_relationType;
+                } else {
+                    m_rawClass = (Class) descriptor.getGenericType(((TypeVariable) m_relationType).getName());
+                }
             }
         }
         
@@ -216,15 +229,22 @@ public class MetadataAnnotatedElement extends MetadataAccessibleObject {
      * 4 - public Collection getTasks() => null
      * 5 - public Map getTasks() => null
      */
-    public Class getReferenceClassFromGeneric() {
+    public Class getReferenceClassFromGeneric(MetadataDescriptor descriptor) {
         if (isGenericCollectionType()) {
             ParameterizedType pType = (ParameterizedType) m_relationType;
             
+            Type referenceType;
             if (java.util.Map.class.isAssignableFrom((Class) pType.getRawType())) {
-                return (Class) pType.getActualTypeArguments()[1];
+                referenceType = pType.getActualTypeArguments()[1];
+            } else {
+                referenceType = pType.getActualTypeArguments()[0]; 
             }
             
-            return (Class) pType.getActualTypeArguments()[0];
+            if (referenceType instanceof Class) {
+                return (Class) referenceType;
+            } else {
+                return (Class) descriptor.getGenericType(((TypeVariable) referenceType).getName());
+            }
         } else {
             return null;
         }
@@ -329,7 +349,7 @@ public class MetadataAnnotatedElement extends MetadataAccessibleObject {
      */
     public boolean isEmbedded(MetadataDescriptor descriptor) {
         if (isAnnotationNotPresent(Embedded.class) && isAnnotationNotPresent(EmbeddedId.class)) {
-            Class rawClass = getRawClass();
+            Class rawClass = getRawClass(descriptor);
             MetadataClass metadataClass = new MetadataClass(rawClass);
             return (metadataClass.isAnnotationPresent(Embeddable.class) || descriptor.getProject().hasEmbeddable(rawClass));
         } else {
@@ -353,6 +373,14 @@ public class MetadataAnnotatedElement extends MetadataAccessibleObject {
      */
     public boolean isGenericCollectionType() {
         return m_relationType instanceof ParameterizedType;
+    }
+    
+    /**
+     * INTERNAL:
+     * Method to return whether a type is a generic.
+     */
+    public boolean isGenericType() {
+        return m_relationType instanceof TypeVariable;
     }
     
     /**
@@ -385,7 +413,7 @@ public class MetadataAnnotatedElement extends MetadataAccessibleObject {
      */
     public boolean isOneToMany(MetadataDescriptor descriptor) {
         if (isAnnotationNotPresent(OneToMany.class) && ! descriptor.ignoreDefaultMappings()) {
-            if (isGenericCollectionType() && isSupportedCollectionClass() && descriptor.getProject().hasEntity(getReferenceClassFromGeneric())) {
+            if (isGenericCollectionType() && isSupportedCollectionClass(descriptor) && descriptor.getProject().hasEntity(getReferenceClassFromGeneric(descriptor))) {
                 getLogger().logConfigMessage(MetadataLogger.ONE_TO_MANY_MAPPING, m_annotatedElement);
                 return true;
             }
@@ -404,7 +432,7 @@ public class MetadataAnnotatedElement extends MetadataAccessibleObject {
      */
     public boolean isOneToOne(MetadataDescriptor descriptor) {        
         if (isAnnotationNotPresent(OneToOne.class) && ! descriptor.ignoreDefaultMappings()) {    
-            if (descriptor.getProject().hasEntity(getRawClass()) && ! isEmbedded(descriptor)) {
+            if (descriptor.getProject().hasEntity(getRawClass(descriptor)) && ! isEmbedded(descriptor)) {
                 getLogger().logConfigMessage(MetadataLogger.ONE_TO_ONE_MAPPING, m_annotatedElement);
                 return true;
             } else {
@@ -424,8 +452,8 @@ public class MetadataAnnotatedElement extends MetadataAccessibleObject {
      * to allow types assignable to Collection, Set, List and Map rather than strict
      * equality.
      */
-    public boolean isSupportedCollectionClass() {
-        Class rawClass = getRawClass();
+    public boolean isSupportedCollectionClass(MetadataDescriptor descriptor) {
+        Class rawClass = getRawClass(descriptor);
         
         return Collection.class.isAssignableFrom(rawClass) || 
             Set.class.isAssignableFrom(rawClass) || 
@@ -461,10 +489,10 @@ public class MetadataAnnotatedElement extends MetadataAccessibleObject {
      */
     public boolean isVariableOneToOne(MetadataDescriptor descriptor) {
         if (isAnnotationNotPresent(VariableOneToOne.class) && ! descriptor.ignoreDefaultMappings()) {
-            if (getRawClass().isInterface() && 
-                    ! Map.class.isAssignableFrom(getRawClass()) && 
-                    ! Collection.class.isAssignableFrom(getRawClass()) &&
-                    ! getRawClass().equals(ValueHolderInterface.class)) {
+            if (getRawClass(descriptor).isInterface() && 
+                    ! Map.class.isAssignableFrom(getRawClass(descriptor)) && 
+                    ! Collection.class.isAssignableFrom(getRawClass(descriptor)) &&
+                    ! getRawClass(descriptor).equals(ValueHolderInterface.class)) {
                 getLogger().logConfigMessage(MetadataLogger.VARIABLE_ONE_TO_ONE_MAPPING, m_annotatedElement);
                 return true;
             }

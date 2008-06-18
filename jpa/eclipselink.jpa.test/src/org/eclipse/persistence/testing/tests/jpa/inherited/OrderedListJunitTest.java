@@ -9,9 +9,9 @@
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
+ *     06/20/2008-1.0 Guy Pelletier 
+ *       - 232975: Failure when attribute type is generic
  ******************************************************************************/  
-
-
 package org.eclipse.persistence.testing.tests.jpa.inherited;
 
 import java.util.Date;
@@ -84,7 +84,7 @@ public class OrderedListJunitTest extends JUnitTestCase {
             Alpine alpine1 = new Alpine(serialNumber1);
             em.persist(alpine1);
             alpine1.setBestBeforeDate(new Date(2005, 8, 17));
-            alpine1.setAlcoholContent(5);
+            alpine1.setAlcoholContent(5.0);
             alpine1.setClassification(Alpine.Classification.STRONG);
             beerConsumer.addAlpineBeerToConsume(alpine1);
             
@@ -93,7 +93,7 @@ public class OrderedListJunitTest extends JUnitTestCase {
             Alpine alpine2 = new Alpine(serialNumber2);
             em.persist(alpine2);
             alpine2.setBestBeforeDate(new Date(2005, 8, 19));
-            alpine2.setAlcoholContent(4);
+            alpine2.setAlcoholContent(4.0);
             alpine2.setClassification(Alpine.Classification.STRONG);
             beerConsumer.addAlpineBeerToConsume(alpine2);
             
@@ -102,7 +102,7 @@ public class OrderedListJunitTest extends JUnitTestCase {
             Alpine alpine3 = new Alpine(serialNumber3);
             em.persist(alpine3);
             alpine3.setBestBeforeDate(new Date(2005, 8, 21));
-            alpine3.setAlcoholContent(3);
+            alpine3.setAlcoholContent(3.0);
             alpine3.setClassification(Alpine.Classification.STRONG);
             beerConsumer.addAlpineBeerToConsume(alpine3);
             
@@ -111,7 +111,7 @@ public class OrderedListJunitTest extends JUnitTestCase {
             Alpine alpine4 = new Alpine(serialNumber4);
             em.persist(alpine4);
             alpine4.setBestBeforeDate(new Date(2005, 8, 23));
-            alpine4.setAlcoholContent(2);
+            alpine4.setAlcoholContent(2.0);
             alpine4.setClassification(Alpine.Classification.BITTER);
             beerConsumer.addAlpineBeerToConsume(alpine4);
 
@@ -120,7 +120,7 @@ public class OrderedListJunitTest extends JUnitTestCase {
             Alpine alpine5 = new Alpine(serialNumber5);
             em.persist(alpine5);
             alpine5.setBestBeforeDate(new Date(2005, 8, 25));
-            alpine5.setAlcoholContent(1);
+            alpine5.setAlcoholContent(1.0);
             alpine5.setClassification(Alpine.Classification.SWEET);
             beerConsumer.addAlpineBeerToConsume(alpine5);
             
@@ -227,7 +227,7 @@ public class OrderedListJunitTest extends JUnitTestCase {
             alpine4 = new Alpine(serialNumber);
             em.persist(alpine4);
             alpine4.setBestBeforeDate(new Date(2005, 8, 29));
-            alpine4.setAlcoholContent(7);
+            alpine4.setAlcoholContent(7.0);
             alpine4.setClassification(Alpine.Classification.SWEET);
             beerConsumer.addAlpineBeerToConsume(alpine4, 3);
                 

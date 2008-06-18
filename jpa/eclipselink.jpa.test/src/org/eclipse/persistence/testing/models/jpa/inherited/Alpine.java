@@ -9,6 +9,8 @@
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
+ *     06/20/2008-1.0 Guy Pelletier 
+ *       - 232975: Failure when attribute type is generic
  ******************************************************************************/  
 package org.eclipse.persistence.testing.models.jpa.inherited;
 
@@ -26,7 +28,7 @@ import static javax.persistence.TemporalType.DATE;
 
 @Entity
 @Table(name="CMP3_ALPINE")
-public class Alpine extends Beer implements Cloneable {
+public class Alpine extends Beer<Integer, Double> implements Cloneable {
     public enum Classification { STRONG, BITTER, SWEET, NONE }
     
     private Date bestBeforeDate;

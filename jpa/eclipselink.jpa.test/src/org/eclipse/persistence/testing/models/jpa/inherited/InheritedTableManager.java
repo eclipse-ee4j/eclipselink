@@ -11,6 +11,8 @@
  *     Oracle - initial API and implementation from Oracle TopLink
  *     05/30/2008-1.0M8 Guy Pelletier 
  *       - 230213: ValidationException when mapping to attribute in MappedSuperClass
+ *     06/20/2008-1.0 Guy Pelletier 
+ *       - 232975: Failure when attribute type is generic
  ******************************************************************************/  
 package org.eclipse.persistence.testing.models.jpa.inherited;
 
@@ -26,11 +28,20 @@ public class InheritedTableManager extends TableCreator {
     public InheritedTableManager() {
         setName("EJB3BeerProject");
 
-        addTableDefinition(build_ALPINE_Table());
         addTableDefinition(build_BEER_CONSUMER_Table());
-        //addTableDefinition(build_BEVERAGE_SEQUENCE_Table());
+        
+        addTableDefinition(build_EXPERT_BEER_CONSUMER_Table());
+        addTableDefinition(build_EXPERT_BEER_CONSUMER_AWARDS_Table());
+        addTableDefinition(build_EXPERT_BEER_CONSUMER_ACCLAIMS_Table());
+        
+        addTableDefinition(build_NOVICE_BEER_CONSUMER_Table());
+        addTableDefinition(build_NOVICE_BEER_CONSUMER_AWARDS_Table());
+        addTableDefinition(build_NOVICE_BEER_CONSUMER_ACCLAIMS_Table());
+        
+        addTableDefinition(build_ALPINE_Table());
         addTableDefinition(build_BLUE_Table());
         addTableDefinition(build_CANADIAN_Table());
+        
         addTableDefinition(build_CERTIFICATION_Table());
         addTableDefinition(build_SERIALNUMBER_Table());
         addTableDefinition(build_TELEPHONE_NUMBER_Table());
@@ -149,35 +160,17 @@ public class InheritedTableManager extends TableCreator {
         VERSION_field.setUnique(false);
         VERSION_field.setIsIdentity(false);
         table.addField(VERSION_field);
-
-        return table;
-    }
-    
-    public static TableDefinition build_BEVERAGE_SEQUENCE_Table() {
-        TableDefinition table = new TableDefinition();
-        table.setName("CMP3_BEVERAGE_SEQ");
-
-        FieldDefinition SEQ_COUNT_field = new FieldDefinition();
-        SEQ_COUNT_field.setName("SEQ_COUNT");
-        SEQ_COUNT_field.setTypeName("NUMERIC");
-        SEQ_COUNT_field.setSize(15);
-        SEQ_COUNT_field.setSubSize(0);
-        SEQ_COUNT_field.setIsPrimaryKey(false);
-        SEQ_COUNT_field.setIsIdentity(false);
-        SEQ_COUNT_field.setUnique(false);
-        SEQ_COUNT_field.setShouldAllowNull(false);
-        table.addField(SEQ_COUNT_field);
-
-        FieldDefinition SEQ_NAME_field = new FieldDefinition();
-        SEQ_NAME_field.setName("SEQ_NAME");
-        SEQ_NAME_field.setTypeName("VARCHAR");
-        SEQ_NAME_field.setSize(80);
-        SEQ_NAME_field.setSubSize(0);
-        SEQ_NAME_field.setIsPrimaryKey(true);
-        SEQ_NAME_field.setIsIdentity(false);
-        SEQ_NAME_field.setUnique(false);
-        SEQ_NAME_field.setShouldAllowNull(false);
-        table.addField(SEQ_NAME_field);
+        
+        FieldDefinition DTYPE_field = new FieldDefinition();
+        DTYPE_field.setName("DTYPE");
+        DTYPE_field.setTypeName("VARCHAR2");
+        DTYPE_field.setSize(3);
+        DTYPE_field.setSubSize(0);
+        DTYPE_field.setIsPrimaryKey(false);
+        DTYPE_field.setIsIdentity(false);
+        DTYPE_field.setUnique(false);
+        DTYPE_field.setShouldAllowNull(true);
+        table.addField(DTYPE_field);
 
         return table;
     }
@@ -365,6 +358,174 @@ public class InheritedTableManager extends TableCreator {
         BEER_CONSUMER_ID_field.setForeignKeyFieldName("CMP3_CONSUMER.ID");
         table.addField(BEER_CONSUMER_ID_field);
 
+        return table;
+    }
+    
+    public static TableDefinition build_EXPERT_BEER_CONSUMER_Table() {
+        TableDefinition table = new TableDefinition();
+        table.setName("EXPERT_CONSUMER");
+    
+        FieldDefinition ID_field = new FieldDefinition();
+        ID_field.setName("ID");
+        ID_field.setTypeName("NUMERIC");
+        ID_field.setSize(15);
+        ID_field.setIsPrimaryKey(true);
+        ID_field.setUnique(false);
+        ID_field.setIsIdentity(false);
+        ID_field.setShouldAllowNull(false);
+        ID_field.setForeignKeyFieldName("CMP3_CONSUMER.ID");
+        table.addField(ID_field);
+        
+        return table;
+    }
+    
+    public static TableDefinition build_EXPERT_BEER_CONSUMER_ACCLAIMS_Table() {
+        TableDefinition table = new TableDefinition();
+        table.setName("EXPERTBEERCONSUMER_ACCLAIMS");
+    
+        FieldDefinition fieldID = new FieldDefinition();
+        fieldID.setName("ID");
+        fieldID.setTypeName("NUMERIC");
+        fieldID.setSize(15);
+        fieldID.setShouldAllowNull(false);
+        fieldID.setIsPrimaryKey(false);
+        fieldID.setUnique(false);
+        fieldID.setIsIdentity(false);
+        fieldID.setForeignKeyFieldName("EXPERT_CONSUMER.ID");
+        table.addField(fieldID);
+    
+        FieldDefinition field1 = new FieldDefinition();
+        field1.setName("ACCLAIM");
+        field1.setTypeName("VARCHAR");
+        field1.setSize(20);
+        field1.setShouldAllowNull(false);
+        field1.setIsPrimaryKey(false);
+        field1.setUnique(false);
+        field1.setIsIdentity(false);
+        table.addField(field1);
+    
+        return table;
+    }
+    
+    public static TableDefinition build_EXPERT_BEER_CONSUMER_AWARDS_Table() {
+        TableDefinition table = new TableDefinition();
+        table.setName("EXPERTBEERCONSUMER_AWARDS");
+    
+        FieldDefinition fieldID = new FieldDefinition();
+        fieldID.setName("ID");
+        fieldID.setTypeName("NUMERIC");
+        fieldID.setSize(15);
+        fieldID.setShouldAllowNull(false);
+        fieldID.setIsPrimaryKey(false);
+        fieldID.setUnique(false);
+        fieldID.setIsIdentity(false);
+        fieldID.setForeignKeyFieldName("EXPERT_CONSUMER.ID");
+        table.addField(fieldID);
+    
+        FieldDefinition fieldAWARD_KEY = new FieldDefinition();
+        fieldAWARD_KEY.setName("AWARD_KEY");
+        fieldAWARD_KEY.setTypeName("VARCHAR");
+        fieldAWARD_KEY.setSize(20);
+        fieldAWARD_KEY.setShouldAllowNull(false);
+        fieldAWARD_KEY.setIsPrimaryKey(false);
+        fieldAWARD_KEY.setUnique(true);
+        fieldAWARD_KEY.setIsIdentity(false);
+        table.addField(fieldAWARD_KEY);
+        
+        FieldDefinition fieldAWARD_CODE = new FieldDefinition();
+        fieldAWARD_CODE.setName("AWARD_CODE");
+        fieldAWARD_CODE.setTypeName("VARCHAR");
+        fieldAWARD_CODE.setSize(20);
+        fieldAWARD_CODE.setShouldAllowNull(false);
+        fieldAWARD_CODE.setIsPrimaryKey(false);
+        fieldAWARD_CODE.setUnique(false);
+        fieldAWARD_CODE.setIsIdentity(false);
+        table.addField(fieldAWARD_CODE);
+    
+        return table;
+    }
+    
+    public static TableDefinition build_NOVICE_BEER_CONSUMER_Table() {
+        TableDefinition table = new TableDefinition();
+        table.setName("NOVICE_CONSUMER");
+    
+        FieldDefinition ID_field = new FieldDefinition();
+        ID_field.setName("ID");
+        ID_field.setTypeName("NUMERIC");
+        ID_field.setSize(15);
+        ID_field.setIsPrimaryKey(true);
+        ID_field.setUnique(false);
+        ID_field.setIsIdentity(false);
+        ID_field.setShouldAllowNull(false);
+        ID_field.setForeignKeyFieldName("CMP3_CONSUMER.ID");
+        table.addField(ID_field);
+        
+        return table;
+    }
+    
+    public static TableDefinition build_NOVICE_BEER_CONSUMER_ACCLAIMS_Table() {
+        TableDefinition table = new TableDefinition();
+        table.setName("NOVICEBEERCONSUMER_ACCLAIMS");
+    
+        FieldDefinition fieldID = new FieldDefinition();
+        fieldID.setName("ID");
+        fieldID.setTypeName("NUMERIC");
+        fieldID.setSize(15);
+        fieldID.setShouldAllowNull(false);
+        fieldID.setIsPrimaryKey(false);
+        fieldID.setUnique(false);
+        fieldID.setIsIdentity(false);
+        fieldID.setForeignKeyFieldName("NOVICE_CONSUMER.ID");
+        table.addField(fieldID);
+    
+        FieldDefinition field1 = new FieldDefinition();
+        field1.setName("ACCLAIM");
+        field1.setTypeName("NUMERIC");
+        field1.setSize(10);
+        field1.setShouldAllowNull(false);
+        field1.setIsPrimaryKey(false);
+        field1.setUnique(false);
+        field1.setIsIdentity(false);
+        table.addField(field1);
+    
+        return table;
+    }
+    
+    public static TableDefinition build_NOVICE_BEER_CONSUMER_AWARDS_Table() {
+        TableDefinition table = new TableDefinition();
+        table.setName("NOVICEBEERCONSUMER_AWARDS");
+    
+        FieldDefinition fieldID = new FieldDefinition();
+        fieldID.setName("ID");
+        fieldID.setTypeName("NUMERIC");
+        fieldID.setSize(15);
+        fieldID.setShouldAllowNull(false);
+        fieldID.setIsPrimaryKey(false);
+        fieldID.setUnique(false);
+        fieldID.setIsIdentity(false);
+        fieldID.setForeignKeyFieldName("NOVICE_CONSUMER.ID");
+        table.addField(fieldID);
+    
+        FieldDefinition fieldAWARD_KEY = new FieldDefinition();
+        fieldAWARD_KEY.setName("AWARD_KEY");
+        fieldAWARD_KEY.setTypeName("NUMERIC");
+        fieldAWARD_KEY.setSize(10);
+        fieldAWARD_KEY.setShouldAllowNull(false);
+        fieldAWARD_KEY.setIsPrimaryKey(false);
+        fieldAWARD_KEY.setUnique(true);
+        fieldAWARD_KEY.setIsIdentity(false);
+        table.addField(fieldAWARD_KEY);
+        
+        FieldDefinition fieldAWARD_CODE = new FieldDefinition();
+        fieldAWARD_CODE.setName("AWARD_CODE");
+        fieldAWARD_CODE.setTypeName("NUMERIC");
+        fieldAWARD_CODE.setSize(10);
+        fieldAWARD_CODE.setShouldAllowNull(false);
+        fieldAWARD_CODE.setIsPrimaryKey(false);
+        fieldAWARD_CODE.setUnique(false);
+        fieldAWARD_CODE.setIsIdentity(false);
+        table.addField(fieldAWARD_CODE);
+    
         return table;
     }
     

@@ -11,6 +11,8 @@
  *     Oracle - initial API and implementation from Oracle TopLink
  *     05/16/2008-1.0M8 Guy Pelletier 
  *       - 218084: Implement metadata merging functionality between mapping files
+ *     06/20/2008-1.0 Guy Pelletier 
+ *       - 232975: Failure when attribute type is generic
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.accessors.mappings;
 
@@ -126,9 +128,9 @@ public abstract class DirectAccessor extends MappingAccessor {
     
     /**
      * INTERNAL:
-     * Process column details from an @Column or column element into a 
-     * ColumnMetadata and return it. This will set correct metadata and log 
-     * defaulting messages to the user. It also looks for attribute overrides.
+     * Process column metadata details into a database field. This will set 
+     * correct metadata and log defaulting messages to the user. It also looks 
+     * for an attribute override.
      * 
      * This method will call getColumn() which assumes the subclasses will
      * return the appropriate ColumnMetadata to process based on the context

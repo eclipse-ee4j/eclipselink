@@ -11,10 +11,16 @@
  *     Oracle - initial API and implementation from Oracle TopLink
  *     05/30/2008-1.0M8 Guy Pelletier 
  *       - 230213: ValidationException when mapping to attribute in MappedSuperClass
+ *     06/20/2008-1.0 Guy Pelletier 
+ *       - 232975: Failure when attribute type is generic
  ******************************************************************************/  
 package org.eclipse.persistence.testing.models.jpa.inherited;
 
+import java.math.BigDecimal;
+import java.math.BigInteger;
+
 import javax.persistence.Inheritance;
+
 import javax.persistence.Table;
 import javax.persistence.Entity;
 
@@ -23,12 +29,13 @@ import static javax.persistence.InheritanceType.SINGLE_TABLE;
 @Entity
 @Inheritance(strategy=SINGLE_TABLE)
 @Table(name="CMP3_BLUE")
-public class Blue extends Beer  {
-    private Integer uniqueKey;
+public class Blue extends Beer<BigDecimal, Float>  {
+    private BigInteger uniqueKey;
     public Blue() {}
     
     // This class is intentionally left with no annotations to test that
     // it picks us the access type from the mapped superclass.
+    
     public boolean equals(Object anotherBlue) {
         if (anotherBlue.getClass() != Blue.class) {
             return false;
@@ -37,11 +44,11 @@ public class Blue extends Beer  {
         return (getId().equals(((Blue)anotherBlue).getId()));
     }
     
-    public Integer getUniqueKey() {
+    public BigInteger getUniqueKey() {
         return uniqueKey;
     }
     
-    public void setUniqueKey(Integer uniqueKey) {
+    public void setUniqueKey(BigInteger uniqueKey) {
         this.uniqueKey = uniqueKey;
     }
 }

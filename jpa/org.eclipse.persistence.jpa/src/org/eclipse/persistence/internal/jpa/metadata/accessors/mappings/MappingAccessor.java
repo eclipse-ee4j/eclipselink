@@ -9,7 +9,9 @@
  *
  * Contributors:
  *     05/16/2008-1.0M8 Guy Pelletier 
- *       - 218084: Implement metadata merging functionality between mapping files  
+ *       - 218084: Implement metadata merging functionality between mapping files
+ *     06/20/2008-1.0 Guy Pelletier 
+ *       - 232975: Failure when attribute type is generic  
  ******************************************************************************/
 package org.eclipse.persistence.internal.jpa.metadata.accessors.mappings;
 
@@ -106,7 +108,7 @@ public abstract class MappingAccessor extends MetadataAccessor {
      * method will return java.util.Collection
      */
     public Class getRawClass() {
-        return getAccessibleObject().getRawClass();   
+        return getAccessibleObject().getRawClass(getDescriptor());   
     }
     
     /**
@@ -117,7 +119,7 @@ public abstract class MappingAccessor extends MetadataAccessor {
      * from generics.
      */
     public Class getReferenceClass() {
-        return getAccessibleObject().getRawClass();
+        return getAccessibleObject().getRawClass(getDescriptor());
     }
     
     /**
@@ -126,7 +128,7 @@ public abstract class MappingAccessor extends MetadataAccessor {
      * this method may return null.
      */
     public Class getReferenceClassFromGeneric() {
-        return getAccessibleObject().getReferenceClassFromGeneric();
+        return getAccessibleObject().getReferenceClassFromGeneric(getDescriptor());
     }
 
     /**

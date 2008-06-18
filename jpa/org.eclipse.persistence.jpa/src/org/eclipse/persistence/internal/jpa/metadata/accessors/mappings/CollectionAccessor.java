@@ -11,6 +11,8 @@
  *     Oracle - initial API and implementation from Oracle TopLink
  *     05/16/2008-1.0M8 Guy Pelletier 
  *       - 218084: Implement metadata merging functionality between mapping files
+ *     06/20/2008-1.0 Guy Pelletier 
+ *       - 232975: Failure when attribute type is generic
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.accessors.mappings;
 
@@ -245,7 +247,7 @@ public abstract class CollectionAccessor extends RelationshipAccessor {
      */
     public void process() {
         // Validate the collection type.
-        if (! getAccessibleObject().isSupportedCollectionClass()) {
+        if (! getAccessibleObject().isSupportedCollectionClass(getDescriptor())) {
             throw ValidationException.invalidCollectionTypeForRelationship(getJavaClass(), getRawClass(), getAttributeName());
         }
     }

@@ -11,6 +11,8 @@
  *     Oracle - initial API and implementation from Oracle TopLink
  *     05/16/2008-1.0M8 Guy Pelletier 
  *       - 218084: Implement metadata merging functionality between mapping files
+ *     06/20/2008-1.0 Guy Pelletier 
+ *       - 232975: Failure when attribute type is generic
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.accessors.mappings;
 
@@ -26,6 +28,7 @@ import org.eclipse.persistence.annotations.Mutable;
 import org.eclipse.persistence.annotations.ReturnInsert;
 
 import org.eclipse.persistence.internal.helper.DatabaseField;
+import org.eclipse.persistence.internal.helper.DatabaseTable;
 
 import org.eclipse.persistence.internal.jpa.metadata.MetadataLogger;
 
@@ -111,6 +114,24 @@ public class BasicAccessor extends DirectAccessor {
 
     /**
      * INTERNAL:
+     * Process column metadata details and resolve any generic specifications.
+     */
+    @Override
+    protected DatabaseField getDatabaseField(DatabaseTable defaultTable, String loggingCtx) {
+        // Get the actual database field and apply any defaults.
+        DatabaseField field = super.getDatabaseField(defaultTable, loggingCtx);
+        
+        // To correctly resolve the generics at runtime, we need to set the 
+        // field type.
+        if (getAccessibleObject().isGenericType()) {
+            field.setType(getReferenceClass());
+        }
+                    
+        return field;
+    }
+    
+    /**
+     * INTERNAL:
      */
     public FetchType getDefaultFetchType() {
         return FetchType.EAGER; 
@@ -178,6 +199,13 @@ public class BasicAccessor extends DirectAccessor {
         
         // Process the @Column or column element if there is one.
         m_field = getDatabaseField(getDescriptor().getPrimaryTable(), MetadataLogger.COLUMN);
+        
+        // To resolve any generic types we need to set the attribute
+        // classification on the mapping to ensure we do the right 
+        // conversions.
+        if (getAccessibleObject().isGenericType()) {
+            mapping.setAttributeClassification(getReferenceClass());
+        }
         
         mapping.setField(m_field);
         mapping.setIsReadOnly(m_field.isReadOnly());

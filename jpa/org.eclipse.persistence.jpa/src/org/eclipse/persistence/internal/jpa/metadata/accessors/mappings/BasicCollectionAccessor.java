@@ -11,6 +11,8 @@
  *     Oracle - initial API and implementation from Oracle TopLink
  *     05/16/2008-1.0M8 Guy Pelletier 
  *       - 218084: Implement metadata merging functionality between mapping files
+ *     06/20/2008-1.0 Guy Pelletier 
+ *       - 232975: Failure when attribute type is generic
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.accessors.mappings;
 
@@ -27,6 +29,7 @@ import org.eclipse.persistence.annotations.PrivateOwned;
 import org.eclipse.persistence.exceptions.ValidationException;
 
 import org.eclipse.persistence.internal.helper.DatabaseField;
+import org.eclipse.persistence.internal.helper.DatabaseTable;
 
 import org.eclipse.persistence.internal.jpa.metadata.MetadataLogger;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.classes.ClassAccessor;
@@ -114,6 +117,23 @@ public class BasicCollectionAccessor extends DirectAccessor {
     @Override
     protected ColumnMetadata getColumn(String loggingCtx) {
         return (m_valueColumn == null) ? new ColumnMetadata(getAccessibleObject(), getAttributeName()) : m_valueColumn;  
+    }
+    
+    /**
+     * INTERNAL:
+     * Process column metadata details and resolve any generic specifications.
+     */
+    @Override
+    protected DatabaseField getDatabaseField(DatabaseTable defaultTable, String loggingCtx) {
+        DatabaseField field = super.getDatabaseField(defaultTable, loggingCtx);
+        
+        // To correctly resolve the generics at runtime, we need to set the 
+        // field type.
+        if (getAccessibleObject().isGenericCollectionType()) {
+            field.setType(getReferenceClass());
+        }
+                    
+        return field;
     }
     
     /**
@@ -248,7 +268,7 @@ public class BasicCollectionAccessor extends DirectAccessor {
             // a serialized mapping if no converter whatsoever is found.
             processMappingConverter(mapping);
             
-            // process properties
+            // Process properties.
             processProperties(mapping);
         } else {
             throw ValidationException.invalidTypeForBasicCollectionAttribute(getAttributeName(), getRawClass(), getJavaClass());

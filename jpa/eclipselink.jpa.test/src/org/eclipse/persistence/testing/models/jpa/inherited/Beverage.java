@@ -9,9 +9,9 @@
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
+ *     06/20/2008-1.0 Guy Pelletier 
+ *       - 232975: Failure when attribute type is generic
  ******************************************************************************/  
-
-
 package org.eclipse.persistence.testing.models.jpa.inherited;
 
 import javax.persistence.Id;
@@ -21,8 +21,8 @@ import javax.persistence.MappedSuperclass;
 import static javax.persistence.GenerationType.*;
 
 @MappedSuperclass
-public class Beverage {
-    private Integer id;
+public class Beverage<T> {
+    private T id;
     
     public Beverage() {}
     
@@ -34,11 +34,11 @@ public class Beverage {
         pkColumnName="SEQ_NAME", 
         valueColumnName="SEQ_COUNT",
         pkColumnValue="BEVERAGE_SEQ")
-    public Integer getId() {
+    public T getId() {
         return id;
     }
     
-    public void setId(Integer id) {
+    public void setId(T id) {
         this.id = id;
     }
 }

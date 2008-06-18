@@ -13,8 +13,10 @@
  *       - 218084: Implement metadata merging functionality between mapping files
  *     05/23/2008-1.0M8 Guy Pelletier 
  *       - 211330: Add attributes-complete support to the EclipseLink-ORM.XML Schema
-  *     05/30/2008-1.0M8 Guy Pelletier 
- *       - 230213: ValidationException when mapping to attribute in MappedSuperClass  
+ *     05/30/2008-1.0M8 Guy Pelletier 
+ *       - 230213: ValidationException when mapping to attribute in MappedSuperClass
+ *     06/20/2008-1.0 Guy Pelletier 
+ *       - 232975: Failure when attribute type is generic
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata;
 
@@ -109,6 +111,7 @@ public class MetadataDescriptor {
     private List<BasicCollectionAccessor> m_basicCollectionAccessors;
     
     private Map<String, Type> m_pkClassIDs;
+    private Map<String, Type> m_genericTypes;
     private Map<String, MappingAccessor> m_accessors;
     private Map<String, PropertyMetadata> m_properties;
     private Map<String, String> m_pkJoinColumnAssociations;
@@ -143,6 +146,7 @@ public class MetadataDescriptor {
         m_basicCollectionAccessors = new ArrayList<BasicCollectionAccessor>();
         
         m_pkClassIDs = new HashMap<String, Type>();
+        m_genericTypes = new HashMap<String, Type>();
         m_accessors = new HashMap<String, MappingAccessor>();
         m_properties = new HashMap<String, PropertyMetadata>();
         m_pkJoinColumnAssociations = new HashMap<String, String>();
@@ -166,10 +170,10 @@ public class MetadataDescriptor {
         this(javaClass);
         setClassAccessor(classAccessor);
     }
-     
-     /**
-      * INTERNAL:
-      */
+    
+    /**
+     * INTERNAL:
+     */
     public void addAccessor(MappingAccessor accessor) {
         m_accessors.put(accessor.getAttributeName(), accessor);
     }
@@ -269,6 +273,14 @@ public class MetadataDescriptor {
     public void addForeignKeyFieldForMultipleTable(DatabaseField fkField, DatabaseField pkField) {
         m_descriptor.addForeignKeyFieldForMultipleTable(fkField, pkField);
         m_pkJoinColumnAssociations.put(fkField.getName(), pkField.getName());
+    }
+    
+    /**
+     * INTERNAL:
+     * Add a generic type for this descriptor.
+     */
+    public void addGenericType(String genericName, Type type) {
+        m_genericTypes.put(genericName, type);
     }
     
     /**
@@ -431,6 +443,14 @@ public class MetadataDescriptor {
      */
     public String getEmbeddedIdAttributeName() {
         return m_embeddedIdAttributeName;
+    }
+    
+    /**
+     * INTERNAL:
+     * Return the type from the generic name.
+     */
+    public Type getGenericType(String genericName) {
+       return m_genericTypes.get(genericName); 
     }
     
     /**

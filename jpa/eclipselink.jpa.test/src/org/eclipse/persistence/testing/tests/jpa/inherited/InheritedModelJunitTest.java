@@ -9,9 +9,12 @@
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
+ *     06/20/2008-1.0 Guy Pelletier 
+ *       - 232975: Failure when attribute type is generic
  ******************************************************************************/  
 package org.eclipse.persistence.testing.tests.jpa.inherited;
 
+import java.math.BigDecimal;
 import java.util.Date;
 
 import javax.persistence.EntityManager;
@@ -25,12 +28,16 @@ import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
 import org.eclipse.persistence.testing.models.jpa.inherited.BeerConsumer;
 import org.eclipse.persistence.testing.models.jpa.inherited.Blue;
 import org.eclipse.persistence.testing.models.jpa.inherited.Alpine;
+import org.eclipse.persistence.testing.models.jpa.inherited.ExpertBeerConsumer;
 import org.eclipse.persistence.testing.models.jpa.inherited.InheritedTableManager;
+import org.eclipse.persistence.testing.models.jpa.inherited.NoviceBeerConsumer;
 import org.eclipse.persistence.testing.models.jpa.inherited.SerialNumber;
  
 public class InheritedModelJunitTest extends JUnitTestCase {
-    private static Integer m_blueId;
+    private static BigDecimal m_blueId;
     private static Integer m_beerConsumerId;
+    private static Integer m_noviceBeerConsumerId;
+    private static Integer m_expertBeerConsumerId;
     
     public InheritedModelJunitTest() {
         super();
@@ -48,12 +55,17 @@ public class InheritedModelJunitTest extends JUnitTestCase {
     public static Test suite() {
         TestSuite suite = new TestSuite();
         suite.setName("InheritedModelJunitTest");
+        
         suite.addTest(new InheritedModelJunitTest("testCreateBlue"));
         suite.addTest(new InheritedModelJunitTest("testReadBlue"));
         suite.addTest(new InheritedModelJunitTest("testCreateBeerConsumer"));
+        suite.addTest(new InheritedModelJunitTest("testCreateNoviceBeerConsumer"));
+        suite.addTest(new InheritedModelJunitTest("testCreateExpertBeerConsumer"));
+        suite.addTest(new InheritedModelJunitTest("testReadNoviceBeerConsumer"));
+        suite.addTest(new InheritedModelJunitTest("testReadExpertBeerConsumer"));
         suite.addTest(new InheritedModelJunitTest("testUpdateBeerConsumer"));
         suite.addTest(new InheritedModelJunitTest("testInheritedClone"));
-
+        
         return new TestSetup(suite) {
         
             protected void setUp() {               
@@ -74,10 +86,10 @@ public class InheritedModelJunitTest extends JUnitTestCase {
         
         try {
             Blue blue = new Blue();
-            blue.setAlcoholContent(5.3);
+            blue.setAlcoholContent(new Float(5.3));
             em.persist(blue);
             m_blueId = blue.getId();
-            blue.setUniqueKey(m_blueId);
+            blue.setUniqueKey(m_blueId.toBigInteger());
             commitTransaction(em);    
         } catch (RuntimeException e) {
             if (isTransactionActive(em)){
@@ -117,6 +129,116 @@ public class InheritedModelJunitTest extends JUnitTestCase {
         }
         
         closeEntityManager(em);
+    }
+    
+    public void testCreateNoviceBeerConsumer() {
+        EntityManager em = createEntityManager();
+        beginTransaction(em);
+        
+        try {    
+            NoviceBeerConsumer beerConsumer = new NoviceBeerConsumer();
+            beerConsumer.setName("Novice Beer Consumer");
+            
+            beerConsumer.getAcclaims().add(1);
+            beerConsumer.getAcclaims().add(2);
+            beerConsumer.getAcclaims().add(3);
+            
+            beerConsumer.getAwards().put(1, 1);
+            beerConsumer.getAwards().put(2, 2);
+            beerConsumer.getAwards().put(3, 3);
+            
+            em.persist(beerConsumer);
+            m_noviceBeerConsumerId = beerConsumer.getId();
+            commitTransaction(em);    
+        } catch (RuntimeException e) {
+            if (isTransactionActive(em)){
+                rollbackTransaction(em);
+            }
+            
+            closeEntityManager(em);
+            fail("An exception was caught during create operation for a novice beer consumer: [" + e.getMessage() + "]");
+        }
+        
+        closeEntityManager(em);
+    }
+    
+    public void testCreateExpertBeerConsumer() {
+        EntityManager em = createEntityManager();
+        beginTransaction(em);
+        
+        try {    
+            ExpertBeerConsumer beerConsumer = new ExpertBeerConsumer();
+            beerConsumer.setName("Expert Beer Consumer");
+            
+            beerConsumer.getAcclaims().add("A");
+            beerConsumer.getAcclaims().add("B");
+            beerConsumer.getAcclaims().add("C");
+            
+            beerConsumer.getAwards().put("A", "A");
+            beerConsumer.getAwards().put("B", "B");
+            beerConsumer.getAwards().put("C", "C");
+            
+            em.persist(beerConsumer);
+            m_expertBeerConsumerId = beerConsumer.getId();
+            commitTransaction(em);    
+        } catch (RuntimeException e) {
+            if (isTransactionActive(em)){
+                rollbackTransaction(em);
+            }
+            
+            closeEntityManager(em);
+            fail("An exception was caught during create operation for an expert beer consumer: [" + e.getMessage() + "]");
+        }
+        
+        closeEntityManager(em);
+    }
+    
+    public void testReadNoviceBeerConsumer() {
+        NoviceBeerConsumer consumer = createEntityManager().find(NoviceBeerConsumer.class, m_noviceBeerConsumerId);
+        
+        assertTrue("Error on reading back a NoviceBeerConsumer", consumer != null);
+        
+        assertTrue("", consumer.getAcclaims().size() == 3);
+        assertTrue("Missing acclaim - 1", consumer.getAcclaims().contains(1));
+        assertTrue("Missing acclaim - 2", consumer.getAcclaims().contains(2));
+        assertTrue("Missing acclaim - 3", consumer.getAcclaims().contains(3));
+        
+        assertTrue("", consumer.getAwards().size() == 3);
+        Integer awardCode = consumer.getAwards().get(1);
+        assertFalse("Missing award code - 1", awardCode == null);
+        assertTrue("Award code 1 is incorrect", awardCode.equals(1));
+        
+        awardCode = consumer.getAwards().get(2);
+        assertFalse("Missing award code - 2", awardCode == null);
+        assertTrue("Award code 2 is incorrect", awardCode.equals(2));
+        
+        awardCode = consumer.getAwards().get(3);
+        assertFalse("Missing award code - 3", awardCode == null);
+        assertTrue("Award code 3 is incorrect", awardCode.equals(3));        
+    }
+    
+    public void testReadExpertBeerConsumer() {
+        ExpertBeerConsumer consumer = createEntityManager().find(ExpertBeerConsumer.class, m_expertBeerConsumerId);
+        
+        assertTrue("Error on reading back an ExpertBeerConsumer", consumer != null);
+        
+        assertTrue("", consumer.getAcclaims().size() == 3);
+        assertTrue("Missing acclaim - A", consumer.getAcclaims().contains("A"));
+        assertTrue("Missing acclaim - B", consumer.getAcclaims().contains("B"));
+        assertTrue("Missing acclaim - C", consumer.getAcclaims().contains("C"));
+        
+        assertTrue("", consumer.getAwards().size() == 3);
+        String awardCode = consumer.getAwards().get("A");
+        assertFalse("Missing award code - A", awardCode == null);
+        assertTrue("Award code A is incorrect", awardCode.equals("A"));
+        
+        awardCode = consumer.getAwards().get("B");
+        assertFalse("Missing award code - B", awardCode == null);
+        assertTrue("Award code B is incorrect", awardCode.equals("B"));
+        
+        awardCode = consumer.getAwards().get("C");
+        assertFalse("Missing award code - C", awardCode == null);
+        assertTrue("Award code C is incorrect", awardCode.equals("C"));
     }
     
     public void testUpdateBeerConsumer() {

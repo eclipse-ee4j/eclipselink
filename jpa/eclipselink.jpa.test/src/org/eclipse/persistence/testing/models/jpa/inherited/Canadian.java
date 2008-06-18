@@ -11,6 +11,8 @@
  *     Oracle - initial API and implementation from Oracle TopLink
  *     05/30/2008-1.0M8 Guy Pelletier 
  *       - 230213: ValidationException when mapping to attribute in MappedSuperClass
+ *     06/20/2008-1.0 Guy Pelletier 
+ *       - 232975: Failure when attribute type is generic
  ******************************************************************************/  
 package org.eclipse.persistence.testing.models.jpa.inherited;
 
@@ -30,7 +32,7 @@ import static org.eclipse.persistence.annotations.ExistenceType.CHECK_DATABASE;
 @Table(name="CMP3_CANADIAN")
 @AssociationOverride(name="beerConsumer", joinColumns=@JoinColumn(name="CONSUMER_ID"))
 @ExistenceChecking(CHECK_DATABASE)
-public class Canadian extends Beer {
+public class Canadian extends Beer<Integer, Double> {
     public enum Flavor { LAGER, LIGHT, ICE, DRY }
 
     private Flavor flavor;

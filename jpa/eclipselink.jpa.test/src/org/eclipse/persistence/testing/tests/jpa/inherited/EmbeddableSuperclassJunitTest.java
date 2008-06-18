@@ -9,6 +9,8 @@
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
+ *     06/20/2008-1.0 Guy Pelletier 
+ *       - 232975: Failure when attribute type is generic
  ******************************************************************************/  
 package org.eclipse.persistence.testing.tests.jpa.inherited;
 
@@ -566,7 +568,7 @@ public class EmbeddableSuperclassJunitTest extends JUnitTestCase {
             BeerConsumer beerConsumer2 = em.find(BeerConsumer.class, m_beerConsumerId2);
             beerConsumer2TelephoneCountStart = beerConsumer2.getTelephoneNumbers().size();
             
-            TelephoneNumber phone = beerConsumer1.getTelephoneNumbers().values().iterator().next();
+            TelephoneNumber phone = (TelephoneNumber) beerConsumer1.getTelephoneNumbers().values().iterator().next();
             phone.setBeerConsumer(beerConsumer2);
             
             commitTransaction(em);
@@ -619,7 +621,7 @@ public class EmbeddableSuperclassJunitTest extends JUnitTestCase {
         try {
         
             BeerConsumer beerConsumer = em.find(BeerConsumer.class, m_beerConsumerId2);
-            Alpine alpine = beerConsumer.getAlpineBeersToConsume().iterator().next();
+            Alpine alpine = (Alpine) beerConsumer.getAlpineBeersToConsume().iterator().next();
             alpine.setBestBeforeDate(Helper.dateFromYearMonthDate(2005, 9, 19));
             id = alpine.getId();
             
@@ -691,7 +693,7 @@ public class EmbeddableSuperclassJunitTest extends JUnitTestCase {
         try {
         
             BeerConsumer beerConsumer = em.find(BeerConsumer.class, m_beerConsumerId1);
-            Canadian canadian = beerConsumer.getCanadianBeersToConsume().values().iterator().next();
+            Canadian canadian = (Canadian) beerConsumer.getCanadianBeersToConsume().values().iterator().next();
             canadian.setBornOnDate(Helper.dateFromYearMonthDate(2005, 9, 19));
             id = canadian.getId();
             
@@ -717,7 +719,7 @@ public class EmbeddableSuperclassJunitTest extends JUnitTestCase {
         
             BeerConsumer beerConsumer = em.find(BeerConsumer.class, m_beerConsumerId1);
             
-            oldPhone = beerConsumer.getTelephoneNumbers().values().iterator().next();
+            oldPhone = (TelephoneNumber) beerConsumer.getTelephoneNumbers().values().iterator().next();
             beerConsumer.removePhoneNumber(oldPhone);
             em.remove(oldPhone);
             

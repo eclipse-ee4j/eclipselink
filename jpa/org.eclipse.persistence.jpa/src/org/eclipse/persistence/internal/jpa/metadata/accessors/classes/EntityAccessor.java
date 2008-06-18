@@ -15,11 +15,16 @@
  *       - 211330: Add attributes-complete support to the EclipseLink-ORM.XML Schema
  *     05/30/2008-1.0M8 Guy Pelletier 
  *       - 230213: ValidationException when mapping to attribute in MappedSuperClass
+ *     06/20/2008-1.0 Guy Pelletier 
+ *       - 232975: Failure when attribute type is generic
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.accessors.classes;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Modifier;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
+import java.lang.reflect.TypeVariable;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -192,13 +197,18 @@ public class EntityAccessor extends MappedSuperclassAccessor {
      * INTERNAL:
      * Build a list of classes that are decorated with a MappedSuperclass
      * annotation or that are tagged as a mapped-superclass in an XML document.
+     * 
+     * This method will also build a map of generic types specified and will
+     * be used to resolve actual class types for mappings.
+     * 
+     * Note: The list is rebuilt every time this method is called since
+     * it is called both during pre-deploy and deploy where the class loader
+     * dependencies change.
      */
-    public List<MappedSuperclassAccessor> getMappedSuperclasses() {
-        // The list is currently rebuilt every time this method is called since 
-        // it is potentially called both during pre-deploy and deploy where
-        // where the class loader dependencies change.
+    protected List<MappedSuperclassAccessor> getMappedSuperclasses() {
         ArrayList<MappedSuperclassAccessor> mappedSuperclasses = new ArrayList<MappedSuperclassAccessor>();
         Class parent = getJavaClass().getSuperclass();
+        Type genericParent = getJavaClass().getGenericSuperclass();
         
         while (parent != Object.class) {
             if (getDescriptor().isInheritanceSubclass() && getProject().hasEntity(parent)) {
@@ -207,6 +217,28 @@ public class EntityAccessor extends MappedSuperclassAccessor {
                 // us before the next entity in the hierarchy.
                 break;
             } else {
+                // If we have a generic parent we need to grab our generic types
+                // that may be used (and therefore need to be resolved) to map
+                // accessors correctly.
+                if (genericParent instanceof ParameterizedType) {
+                    Type[] actualTypeArguments = ((ParameterizedType) genericParent).getActualTypeArguments();
+                    TypeVariable[] typeVariables = ((Class) ((ParameterizedType) genericParent).getRawType()).getTypeParameters();
+                    
+                    for (int i = 0; i < actualTypeArguments.length; i++) {
+                        Type actualTypeArgument = actualTypeArguments[i];
+                        TypeVariable variable = typeVariables[i];
+                        
+                        // We are building bottom up and need to link up
+                        // any TypeVariables with the actual class from the
+                        // originating entity.
+                        if (actualTypeArgument instanceof TypeVariable) {
+                            getDescriptor().addGenericType(variable.getName(), getDescriptor().getGenericType(((TypeVariable) actualTypeArgument).getName())); 
+                        } else {
+                            getDescriptor().addGenericType(variable.getName(), actualTypeArgument);
+                        }
+                    }
+                }
+                
                 MappedSuperclassAccessor accessor = getProject().getMappedSuperclass(parent);
 
                 // If the mapped superclass was not defined in XML then check 
@@ -220,7 +252,8 @@ public class EntityAccessor extends MappedSuperclassAccessor {
                     mappedSuperclasses.add(initXMLMappedSuperclass(accessor, getDescriptor()));
                 }
             }
-                
+            
+            genericParent = parent.getGenericSuperclass();
             parent = parent.getSuperclass();
         }
                 
@@ -417,24 +450,32 @@ public class EntityAccessor extends MappedSuperclassAccessor {
      */
     @Override
     public void process() {
+        // Build our list of mapped superclasses and pass them around to
+        // those methods that depend on them. Avoids rebuilding the list
+        // multiple times.
+        List<MappedSuperclassAccessor> mappedSuperclasses = getMappedSuperclasses();
+        
         // Process the Entity metadata first. Need to ensure we determine the 
         // access, metadata complete and exclude default mappings before we 
         // process further.
-        processEntity();
+        processEntity(mappedSuperclasses);
             
         // Process the Table and Inheritance metadata.
         processTableAndInheritance();
             
-        // Process the common class level attributes that an entity or
-        // mapped superclass may define. This should be done before the
-        // processMappedSuperclasses call since it will call this method 
-        // also. We want to be able to grab the metadata off the actual 
-        // entity class first because it needs to override any settings 
-        // from the mapped superclass and may need to log a warning.
+        // Process the common class level attributes that an entity or mapped 
+        // superclass may define. This should be done before processing the
+        // mapped superclasses call since it will call this method also. We 
+        // want to be able to grab the metadata off the actual entity class 
+        // first because it needs to override any settings from the mapped 
+        // superclass and may need to log a warning.
         processClassMetadata();
         
-        // Process the MappedSuperclass(es) metadata.
-        processMappedSuperclasses();
+        // Process the MappedSuperclass(es) metadata now. There may be
+        // several MappedSuperclasses for any given Entity.
+        for (MappedSuperclassAccessor mappedSuperclass : mappedSuperclasses) {
+            mappedSuperclass.process();
+        }
         
         // Process the accessors on this entity.
         processAccessors();
@@ -530,11 +571,7 @@ public class EntityAccessor extends MappedSuperclassAccessor {
      * INTERNAL:
      * Process the entity metadata.
      */
-    protected void processEntity() {
-        // Get our list of mapped superclasses since we may need to traverse
-        // them for some metadata information.
-        List<MappedSuperclassAccessor> mappedSuperclasses = getMappedSuperclasses();
-        
+    protected void processEntity(List<MappedSuperclassAccessor> mappedSuperclasses) {
         // Set an access type if specified on the entity class or a mapped
         // superclass.
         if (getAccess() != null) {
@@ -678,9 +715,9 @@ public class EntityAccessor extends MappedSuperclassAccessor {
         // Step 2 - process the entity listeners that are defined on the entity 
         // class and mapped superclasses (taking metadata-complete into 
         // consideration). Go through the mapped superclasses first, top->down 
-        // only if the exclude superclass listeners flag is not set.    
+        // only if the exclude superclass listeners flag is not set.
+        List<MappedSuperclassAccessor> mappedSuperclasses = getMappedSuperclasses();
         if (! getDescriptor().excludeSuperclassListeners()) {
-            List<MappedSuperclassAccessor> mappedSuperclasses = getMappedSuperclasses();
             int mappedSuperclassesSize = mappedSuperclasses.size();
             
             for (int i = mappedSuperclassesSize - 1; i >= 0; i--) {
@@ -692,18 +729,7 @@ public class EntityAccessor extends MappedSuperclassAccessor {
         
         // Step 3 - process the entity class for lifecycle callback methods. Go
         // through the mapped superclasses as well.
-        new EntityClassListenerMetadata(this).process();
-    }
-    
-    /**
-     * INTERNAL:
-     * Process the MappedSuperclass(es) if there are any. There may be
-     * several MappedSuperclasses for any given Entity.
-     */
-    protected void processMappedSuperclasses() {
-        for (MappedSuperclassAccessor mappedSuperclass : getMappedSuperclasses()) {
-            mappedSuperclass.process();
-        }
+        new EntityClassListenerMetadata(this).process(mappedSuperclasses);
     }
     
     /**

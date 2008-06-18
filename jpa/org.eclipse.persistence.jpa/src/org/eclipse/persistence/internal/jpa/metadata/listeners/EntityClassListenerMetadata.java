@@ -11,8 +11,12 @@
  *     Oracle - initial API and implementation from Oracle TopLink
  *     05/16/2008-1.0M8 Guy Pelletier 
  *       - 218084: Implement metadata merging functionality between mapping files
+ *     06/20/2008-1.0 Guy Pelletier 
+ *       - 232975: Failure when attribute type is generic
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.listeners;
+
+import java.util.List;
 
 import org.eclipse.persistence.internal.jpa.metadata.accessors.classes.EntityAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.classes.MappedSuperclassAccessor;
@@ -48,7 +52,7 @@ public class EntityClassListenerMetadata extends EntityListenerMetadata {
     /**
      * INTERNAL: 
      */
-    public void process() {
+    public void process(List<MappedSuperclassAccessor> mappedSuperclasses) {
         // Create the listener.
         m_listener = new EntityClassListener(m_accessor.getJavaClass());
         
@@ -59,7 +63,7 @@ public class EntityClassListenerMetadata extends EntityListenerMetadata {
         // Process the callback methods as defined in XML or annotations 
         // on the mapped superclasses if not excluded second. 
         if (! m_accessor.getDescriptor().excludeSuperclassListeners()) {
-            for (MappedSuperclassAccessor mappedSuperclass : m_accessor.getMappedSuperclasses()) {
+            for (MappedSuperclassAccessor mappedSuperclass : mappedSuperclasses) {
                 processCallbackMethods(getDeclaredMethods(mappedSuperclass.getJavaClass()), m_accessor.getLogger());
             }
         }

@@ -28,8 +28,6 @@ package org.eclipse.persistence.testing.models.jpa.xml.advanced;
 
 import java.io.Serializable;
 
-import org.eclipse.persistence.testing.models.jpa.advanced.AddressType;
-
 import javax.persistence.Transient;
 
 
