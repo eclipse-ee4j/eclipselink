@@ -24,11 +24,11 @@ tmp=$tmp/somedir.$RANDOM.$RANDOM.$RANDOM.$$
 # Generate the nightly build table
 #    Dump out the table header html
 echo "<?xml version=\"1.0\" encoding=\"UTF-8\"?>                                   " >> $tmp/index.xml
-echo "<sections title=\"Eclipse Persistence Services Project (EclipseLink) : Nightly Builds\">" >> $tmp/index.xml
+echo "<sections title=\"Eclipse Persistence Services Project \(EclipseLink\) : Nightly Builds\">" >> $tmp/index.xml
 echo "    <description>                                                            " >> $tmp/index.xml
 echo "      <p> Automated builds and the corresponding Javadocs are created every Sunday - Thursday and are made available for download.  The process is kicked off shortly after midnight Eastern Time.</p>" >> $tmp/index.xml
 echo "    </description>                                                           " >> $tmp/index.xml
-echo "  <section class=\"main\" name="1.0 Nightly Builds \(Incubation\)">          " >> $tmp/index.xml
+echo "  <section class=\"main\" name=\"1.0 Nightly Builds \(Incubation\)\">          " >> $tmp/index.xml
 echo "    <description>                                                            " >> $tmp/index.xml
 echo "      <p>                                                                    " >> $tmp/index.xml
 echo "        <table border=\"1\">                                                 " >> $tmp/index.xml
