@@ -36,7 +36,7 @@ public class DirectToXMLTypeMappingHelper {
             Class helperClass = null;
 
             try {
-                helperClass = (Class) new PrivilegedClassForName("org.eclipse.persistence.internal.sessions.factories.OracleDirectToXMLTypeMappingHelper").run();
+                helperClass = (Class) new PrivilegedClassForName("org.eclipse.persistence.sessions.factories.OracleDirectToXMLTypeMappingHelper").run();
             } catch (ClassNotFoundException cnfe) {
                 helperClass = DirectToXMLTypeMappingHelper.class;
             }
