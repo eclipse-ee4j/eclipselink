@@ -21,7 +21,6 @@ import org.eclipse.persistence.internal.sessions.factories.model.platform.SunAS9
 import org.eclipse.persistence.internal.sessions.factories.model.platform.WebLogic_10_PlatformConfig;
 import org.eclipse.persistence.internal.sessions.factories.model.platform.WebLogic_9_PlatformConfig;
 import org.eclipse.persistence.internal.sessions.factories.model.platform.WebSphere_6_1_PlatformConfig;
-import org.eclipse.persistence.internal.sessions.factories.model.platform.oc4j.Oc4j_11_1_1_PlatformConfig;
 import org.eclipse.persistence.internal.sessions.factories.model.transport.Oc4jJGroupsTransportManagerConfig;
 import org.eclipse.persistence.internal.sessions.factories.model.transport.TransportManagerConfig;
 
@@ -38,7 +37,6 @@ public class XMLSessionConfigProject_11_1_1 extends XMLSessionConfigProject {
     public XMLSessionConfigProject_11_1_1() {
         super();
         addDescriptor(buildOc4jJGroupsTransportManagerConfigDescriptor());
-        addDescriptor(buildServerPlatformConfigDescriptorFor(Oc4j_11_1_1_PlatformConfig.class));
         addDescriptor(buildServerPlatformConfigDescriptorFor(Oc4jPlatformConfig.class));        
     	addDescriptor(buildServerPlatformConfigDescriptorFor(SunAS9PlatformConfig.class));
         addDescriptor(buildServerPlatformConfigDescriptorFor(WebLogic_9_PlatformConfig.class));
@@ -126,7 +124,6 @@ public class XMLSessionConfigProject_11_1_1 extends XMLSessionConfigProject {
     
     public ClassDescriptor buildServerPlatformConfigDescriptor() {
         XMLDescriptor descriptor =(XMLDescriptor)super.buildServerPlatformConfigDescriptor();
-        descriptor.getInheritancePolicy().addClassIndicator(Oc4j_11_1_1_PlatformConfig.class, "oc4j-1111-platform");
         descriptor.getInheritancePolicy().addClassIndicator(Oc4jPlatformConfig.class, "oc4j-platform");        
         descriptor.getInheritancePolicy().addClassIndicator(SunAS9PlatformConfig.class, "sunas-9-platform");
         descriptor.getInheritancePolicy().addClassIndicator(WebLogic_9_PlatformConfig.class, "weblogic-9-platform");
