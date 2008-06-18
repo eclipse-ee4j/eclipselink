@@ -1543,7 +1543,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
                 if (isSmartMerge() && isOriginalNewObject(object)) {
                     return;
                 } else if (!isObjectRegistered(object)) {// Don't need to check for aggregates, as iterator does not iterate on them by default.
-                    if ((shouldPerformNoValidation()) && (shouldValidateExistence() && checkForUnregisteredExistingObject(object))) {
+                    if ((shouldPerformNoValidation()) && (!shouldValidateExistence() || checkForUnregisteredExistingObject(object))) {
                         // If no validation is performed and the object exists we need
                         // To keep a record of this object to ignore it, also I need to
                         // Stop iterating over it.

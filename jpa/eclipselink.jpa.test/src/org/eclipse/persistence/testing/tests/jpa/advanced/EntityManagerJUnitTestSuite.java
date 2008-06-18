@@ -731,8 +731,9 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
             project.setTeamLeader(new Employee());
             project.getTeamLeader().addProject(project);
             em.flush();
-        }catch (IllegalStateException ex){
+        }catch (PersistenceException ex){
             rollbackTransaction(em);
+            if (ex.getCause() instanceof IllegalStateException)
             return;
         }
         
@@ -922,7 +923,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
             try{
                 em.flush();
             } catch (PersistenceException exception) {
-                if (exception instanceof OptimisticLockException){
+                if (exception.getCause() instanceof OptimisticLockException){
                     optimisticLockException = exception;
                 }else{
                     throw exception;

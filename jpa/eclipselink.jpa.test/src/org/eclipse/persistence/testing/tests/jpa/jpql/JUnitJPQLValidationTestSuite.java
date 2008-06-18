@@ -17,6 +17,7 @@ import java.util.List;
 
 import javax.persistence.NoResultException;
 import javax.persistence.Persistence;
+import javax.persistence.PersistenceException;
 import javax.persistence.RollbackException;
 import javax.persistence.TransactionRequiredException;
 import javax.persistence.Query;
@@ -851,7 +852,7 @@ public class JUnitJPQLValidationTestSuite extends JUnitTestCase
             }
             secondEm.flush();
             fail("javax.persistence.OptimisticLockException must be thrown during flush");
-        } catch (RuntimeException e) {            
+        } catch (PersistenceException e) {            
             if (secondEm.getTransaction().isActive()){
                 secondEm.getTransaction().rollback();
             }
@@ -859,10 +860,10 @@ public class JUnitJPQLValidationTestSuite extends JUnitTestCase
             undoEmployeeChanges();
             System.out.println("*** flushOptimisticLockExceptionTest Diagnosis message - Got Exception: ");
             e.printStackTrace();
-            if (isKnownMySQLIssue(e)) {
+            if (isKnownMySQLIssue(e.getCause())) {
                 warning("EOFException found on MySQL db.  This is a known problem with the MySQL Database");
             } else {         
-                Assert.assertTrue(e instanceof javax.persistence.OptimisticLockException);
+                Assert.assertTrue(e.getCause() instanceof javax.persistence.OptimisticLockException);
             }
         }                        
     }
