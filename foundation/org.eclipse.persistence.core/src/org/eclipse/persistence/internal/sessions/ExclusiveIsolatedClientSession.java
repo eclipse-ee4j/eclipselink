@@ -31,6 +31,9 @@ import org.eclipse.persistence.exceptions.*;
 import org.eclipse.persistence.internal.databaseaccess.Accessor;
 
 public class ExclusiveIsolatedClientSession extends IsolatedClientSession {
+    /**
+     * If true all classes are read through the exclusive connection, otherwise only the isolated ones.
+     */
     protected boolean shouldAlwaysUseExclusiveConnection;
     
     public ExclusiveIsolatedClientSession(ServerSession parent, ConnectionPolicy connectionPolicy) {
@@ -41,7 +44,7 @@ public class ExclusiveIsolatedClientSession extends IsolatedClientSession {
         super(parent, connectionPolicy, properties);
         //the parents constructor sets an accessor, but it will be never used.
         this.accessor = null;
-        this.shouldAlwaysUseExclusiveConnection = connectionPolicy.getExclusiveMode().equals(ConnectionPolicy.ExclusiveMode.Always);
+        this.shouldAlwaysUseExclusiveConnection = connectionPolicy.isExclusiveAlways();
     }
 
     /**

@@ -398,15 +398,15 @@ public class ServerSession extends DatabaseSessionImpl implements Server {
         }
         ClientSession client = null;
         if (getProject().hasIsolatedClasses()) {
-            if (connectionPolicy.getExclusiveMode().equals(ConnectionPolicy.ExclusiveMode.Isolated) || connectionPolicy.getExclusiveMode().equals(ConnectionPolicy.ExclusiveMode.Always)) {
+            if (connectionPolicy.isExclusive()) {
                 client = new ExclusiveIsolatedClientSession(this, connectionPolicy, properties);
             } else {
                 client = new IsolatedClientSession(this, connectionPolicy, properties);
             }
         } else {
-            if (connectionPolicy.getExclusiveMode().equals(ConnectionPolicy.ExclusiveMode.Isolated)) {
+            if (connectionPolicy.isExclusiveIsolated()) {
                 throw ValidationException.clientSessionCanNotUseExclusiveConnection();
-            } else if(connectionPolicy.getExclusiveMode().equals(ConnectionPolicy.ExclusiveMode.Always)) {
+            } else if(connectionPolicy.isExclusiveAlways()) {
                 client = new ExclusiveIsolatedClientSession(this, connectionPolicy, properties);
             } else {
                 client = new ClientSession(this, connectionPolicy, properties);

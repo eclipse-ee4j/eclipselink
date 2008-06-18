@@ -36,6 +36,7 @@ import org.eclipse.persistence.internal.sessions.UnitOfWorkImpl;
 import org.eclipse.persistence.platform.database.oracle.Oracle9Platform;
 import org.eclipse.persistence.sessions.SessionEvent;
 import org.eclipse.persistence.sessions.SessionEventAdapter;
+import org.eclipse.persistence.sessions.server.ConnectionPolicy;
 import org.eclipse.persistence.sessions.server.ServerSession;
 import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
 import org.eclipse.persistence.testing.framework.junit.JUnitTestCaseHelper;
@@ -285,10 +286,8 @@ public class ProxyAuthenticationTestSuite extends JUnitTestCase {
         EntityManagerFactory factory = this.getEntityManagerFactory(factoryProperties);
         ServerSession ss = ((org.eclipse.persistence.internal.jpa.EntityManagerFactoryImpl)factory).getServerSession();
         
-        // Under review, see Bug 235433: Can't customize ConnectionPolicy through JPA.
         if(shoulUseExclusiveIsolatedSession) {
-            // This requires at least one isolated descriptor!
-            ss.getDefaultConnectionPolicy().setShouldUseExclusiveConnection(true);
+            ss.getDefaultConnectionPolicy().setExclusiveMode(ConnectionPolicy.ExclusiveMode.Always);
         }
         
         String expectedMainSessionUser = ProxyAuthenticationUsersAndProperties.connectionUser;

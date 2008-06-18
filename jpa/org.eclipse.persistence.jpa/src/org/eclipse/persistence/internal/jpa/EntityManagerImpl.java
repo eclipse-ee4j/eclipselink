@@ -32,7 +32,6 @@ import javax.persistence.Query;
 
 import javax.sql.DataSource;
 
-import org.eclipse.persistence.exceptions.EclipseLinkException;
 import org.eclipse.persistence.exceptions.JPQLException;
 import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.expressions.Expression;

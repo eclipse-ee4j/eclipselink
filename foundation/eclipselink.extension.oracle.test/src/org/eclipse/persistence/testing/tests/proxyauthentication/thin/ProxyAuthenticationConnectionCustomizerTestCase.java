@@ -20,6 +20,7 @@ import oracle.jdbc.OracleConnection;
 
 import org.eclipse.persistence.sessions.*;
 import org.eclipse.persistence.sessions.server.ClientSession;
+import org.eclipse.persistence.sessions.server.ConnectionPolicy;
 import org.eclipse.persistence.sessions.server.ServerSession;
 import org.eclipse.persistence.config.PersistenceUnitProperties;
 import org.eclipse.persistence.internal.sessions.ExclusiveIsolatedClientSession;
@@ -150,8 +151,8 @@ public class ProxyAuthenticationConnectionCustomizerTestCase extends TestCase {
         getSession().getEventManager().addListener(listener);
         if(!shouldUseDatabaseSession) {
             if(shoulUseExclusiveIsolatedSession) {
-                getSession().getProject().setHasIsolatedClasses(true);
-                ((ServerSession)getSession()).getDefaultConnectionPolicy().setShouldUseExclusiveConnection(true);
+                ((ServerSession)getSession()).getDefaultConnectionPolicy().setExclusiveMode(ConnectionPolicy.ExclusiveMode.Always);
+
             }
         }
     }

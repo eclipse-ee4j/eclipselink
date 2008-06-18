@@ -736,7 +736,11 @@ public class SessionsFactory {
     protected void processConnectionPolicyConfig(ConnectionPolicyConfig connectionPolicyConfig, ServerSession serverSession) {
         if (connectionPolicyConfig != null) {
             ConnectionPolicy connectionPolicy = serverSession.getDefaultConnectionPolicy();
-            connectionPolicy.setShouldUseExclusiveConnection(connectionPolicyConfig.getUseExclusiveConnection());
+            if(connectionPolicyConfig.getUseExclusiveConnection()) {
+                connectionPolicy.setExclusiveMode(ConnectionPolicy.ExclusiveMode.Isolated);
+            } else {
+                connectionPolicy.setExclusiveMode(ConnectionPolicy.ExclusiveMode.Transactional);
+            }
             connectionPolicy.setIsLazy(connectionPolicyConfig.getLazy());
         }
     }

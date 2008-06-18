@@ -78,7 +78,7 @@ public class ExclusiveConnectionClosedExceptionTest extends AutoVerifyTestCase {
             String schemaName = getSession().getLogin().getUserName();
             this.login = (DatabaseLogin)getSession().getLogin().clone();
             this.server = new ServerSession(this.login, 2, 5);
-            this.server.getDefaultConnectionPolicy().setShouldUseExclusiveConnection(true);
+            this.server.getDefaultConnectionPolicy().setExclusiveMode(ConnectionPolicy.ExclusiveMode.Isolated);
             this.server.setSessionLog(getSession().getSessionLog());
             copyDescriptors(getSession());
             this.server.getEventManager().addListener(listener);

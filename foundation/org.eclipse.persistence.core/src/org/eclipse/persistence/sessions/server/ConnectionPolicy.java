@@ -36,52 +36,58 @@ import org.eclipse.persistence.internal.localization.*;
  * @see ClientSession#getConnectionPolicy()
  */
 public class ConnectionPolicy implements Cloneable, Serializable {
-	/**
-	 * The login information used to create a JDBC connection or acquire one
-	 * from an external pool/data-source. Typically this is constant within a
-	 * single persistence unit but in some advanced usages users can customize
-	 * connections for each client session.
-	 */
+    /**
+     * The login information used to create a JDBC connection or acquire one
+     * from an external pool/data-source. Typically this is constant within a
+     * single persistence unit but in some advanced usages users can customize
+     * connections for each client session.
+     */
     protected Login login;
     
-	/**
-	 * Name of the pool to be used.
-	 * If neither pool name nor login provided then default pool will be used.
-	 * If no pool name is provided but there's a login then the login is used to
-	 * create connection which the ClientSession will use.
-	 */
+    /**
+     * Name of the pool to be used.
+     * If neither pool name nor login provided then default pool will be used.
+     * If no pool name is provided but there's a login then the login is used to
+     * create connection which the ClientSession will use.
+     */
     protected String poolName;
-	/**
-	 * Determines if the write/exclusive connection is acquired only when first
-	 * requested (lazy, this is the default) or immediately when the client
-	 * session is acquired. Once the write/exclusive-read connection is acquired
-	 * it is held until the client session is released or in the case of JTA
-	 * connections the transaction is committed/rolled-back.
-	 */
+    
+    /**
+     * Determines if the write/exclusive connection is acquired only when first
+     * requested (lazy, this is the default) or immediately when the client
+     * session is acquired.
+     * After write/exclusive connection is acquired
+     * if isLazy is true and exclusiveMode is Transactional
+     * then it's held until transaction is committed or rolled back,
+     * otherwise until the client session is released.
+     */
     protected boolean isLazy;
 
-	/**
-	 * This attribute is used by the ServerSession to determine if a client
-	 * session with an exclusive connection should be built and how the exclusive
-	 * connection should be used.
-	 * Default value Transactional causes creation of ClientSession,
-	 * the other two values - ExclusiveIsolatedClientSession.
-	 * ExclusiveMode values correspond to ExclusiveConnectionMode values,
-	 * the latter class has extensive comments explaining the differences between
-	 * the values.
+    /**
+     * Default value Transactional causes creation of ClientSession,
+     * the other two values - ExclusiveIsolatedClientSession.
+     * ExclusiveMode values correspond to ExclusiveConnectionMode values,
+     * the latter class has extensive comments explaining the differences between
+     * the values.
      * @see ExclusiveConnectionMode
-	 */
+     */
     public enum ExclusiveMode {
         Transactional,
         Isolated,
         Always
     }
+
+    /**
+     * This attribute is used by the ServerSession to determine if a client
+     * session with an exclusive connection should be built and how the exclusive
+     * connection should be used.
+     */
     protected ExclusiveMode exclusiveMode;
 
-	/**
-	 * This attribute will provide a mechanism by which customers will be able
-	 * to pass connection information to events to enable further customization.
-	 * */
+    /**
+     * This attribute will provide a mechanism by which customers will be able
+     * to pass connection information to events to enable further customization.
+     */
     protected Map properties;
 
     /**
@@ -90,6 +96,7 @@ public class ConnectionPolicy implements Cloneable, Serializable {
      */
     public ConnectionPolicy() {
         this.isLazy = true;
+        this.exclusiveMode = ExclusiveMode.Transactional;
     }
 
     /**
@@ -196,6 +203,30 @@ public class ConnectionPolicy implements Cloneable, Serializable {
 
     /**
      * PUBLIC:
+     * Indicates whether exclusiveMode is Isolated.
+     */
+    public boolean isExclusiveIsolated() {
+        return this.exclusiveMode == ExclusiveMode.Isolated;
+    }
+
+    /**
+     * PUBLIC:
+     * Indicates whether exclusiveMode is Always.
+     */
+    public boolean isExclusiveAlways() {
+        return this.exclusiveMode == ExclusiveMode.Always;
+    }
+
+    /**
+     * PUBLIC:
+     * Indicates whether ExclusiveIsolatedClientSession should be created.
+     */
+    public boolean isExclusive() {
+        return isExclusiveIsolated() || isExclusiveAlways();
+    }
+
+    /**
+     * PUBLIC:
      * Return if a lazy connection should be used, a lazy connection only acquire a physical connection
      * when a transaction is started and releases the connection when the transaction completes.
      */
@@ -294,9 +325,11 @@ public class ConnectionPolicy implements Cloneable, Serializable {
      * If set to true the acquired client session should acquire an exclusive connection
      * for all database interaction.  Currently this is only supported with Isolated
      * data, but required for Oracle VPD support.
+     * 
      * This method has been replaced with setExclusiveMode method:
      * true corresponds to ExclusiveMode.Isolated,
      * false - to ExclusiveMode.Transactional.
+     * @deprecated
      */
     public void setShouldUseExclusiveConnection(boolean useExclusiveConnection) {
         if(useExclusiveConnection) {
@@ -311,10 +344,12 @@ public class ConnectionPolicy implements Cloneable, Serializable {
      * Returns true if the acquired client session should acquire an exclusive connection
      * for all database interaction.  Currently this is only supported with Isolated
      * data, but required for Oracle VPD support.
-     * This method has been replaced with getExclusiveMode method.
+     * 
+     * This method has been replaced with isExclusiveIsolated method.
+     * @deprecated
      */
     public boolean shouldUseExclusiveConnection() {
-        return this.exclusiveMode == ExclusiveMode.Isolated;
+        return isExclusiveIsolated();
     }
 
     /**

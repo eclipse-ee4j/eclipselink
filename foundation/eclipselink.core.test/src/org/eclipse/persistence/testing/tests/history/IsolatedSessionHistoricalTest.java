@@ -95,7 +95,7 @@ public class IsolatedSessionHistoricalTest extends AutoVerifyTestCase {
                                                              ((Employee)emps.get(1)).getId() + ", 2)"));
             this.login = (DatabaseLogin)getSession().getLogin().clone();
             this.server = new ServerSession(this.login, 2, 5);
-            this.server.getDefaultConnectionPolicy().setShouldUseExclusiveConnection(true);
+            this.server.getDefaultConnectionPolicy().setExclusiveMode(ConnectionPolicy.ExclusiveMode.Isolated);
             this.server.setSessionLog(getSession().getSessionLog());
             copyDescriptors(getSession());
             this.server.addDescriptors(new IsolatedEmployeeProject());
