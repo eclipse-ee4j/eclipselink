@@ -24,11 +24,11 @@ tmp=$tmp/somedir.$RANDOM.$RANDOM.$RANDOM.$$
 # Generate the nightly build table
 #    Dump out the table header html
 echo "<?xml version=\"1.0\" encoding=\"UTF-8\"?>                                   " >> $tmp/index.xml
-echo "<sections title=\"Eclipse Persistence Services Project \(EclipseLink\) : Nightly Builds\">" >> $tmp/index.xml
+echo "<sections title=\"Eclipse Persistence Services Project (EclipseLink) : Nightly Builds\">" >> $tmp/index.xml
 echo "    <description>                                                            " >> $tmp/index.xml
 echo "      <p> Automated builds and the corresponding Javadocs are created every Sunday - Thursday and are made available for download.  The process is kicked off shortly after midnight Eastern Time.</p>" >> $tmp/index.xml
 echo "    </description>                                                           " >> $tmp/index.xml
-echo "  <section class=\"main\" name=\"1.0 Nightly Builds \(Incubation\)\">          " >> $tmp/index.xml
+echo "  <section class=\"main\" name=\"1.0 Nightly Builds (Incubation)\">          " >> $tmp/index.xml
 echo "    <description>                                                            " >> $tmp/index.xml
 echo "      <p>                                                                    " >> $tmp/index.xml
 echo "        <table border=\"1\">                                                 " >> $tmp/index.xml
@@ -46,19 +46,19 @@ for contentdir in `ls -dr [0-9]*` ; do
     echo "            <td align=\"center\"> ${contentdir} </td>" >> $tmp/index.xml
     echo "            <td align=\"center\">" >> $tmp/index.xml
     if [ -f ${contentdir}/eclipselink-incubation-${contentdir}.zip ] ; then
-        echo "              <a href=\"${BaseDownloadURL}/${contentdir}/eclipselink-incubation-${contentdir}.zip\"> Install Archive </a> <br>" >> $tmp/index.xml
+        echo "              <a href=\"${BaseDownloadURL}/${contentdir}/eclipselink-incubation-${contentdir}.zip\"> Install Archive </a> <br/>" >> $tmp/index.xml
     else
-        echo "              Install archive not available <br>" >> $tmp/index.xml
+        echo "              Install archive not available <br/>" >> $tmp/index.xml
     fi
     if [ -f ${contentdir}/eclipselink-incubation-src-${contentdir}.zip ] ; then
-        echo "              <a href=\"${BaseDownloadURL}/${contentdir}/eclipselink-incubation-src-${contentdir}.zip\"> Source Archive </a> <br>" >> $tmp/index.xml
+        echo "              <a href=\"${BaseDownloadURL}/${contentdir}/eclipselink-incubation-src-${contentdir}.zip\"> Source Archive </a> <br/>" >> $tmp/index.xml
     else
-        echo "              Source archive not available <br>" >> $tmp/index.xml
+        echo "              Source archive not available <br/>" >> $tmp/index.xml
     fi
     if [ -f ${contentdir}/eclipselink-plugins-incubation-${contentdir}.zip ] ; then
-        echo "              <a href=\"${BaseDownloadURL}/${contentdir}/eclipselink-plugins-incubation-${contentdir}.zip\"> OSGi Plugins Archive </a> <br>" >> $tmp/index.xml
+        echo "              <a href=\"${BaseDownloadURL}/${contentdir}/eclipselink-plugins-incubation-${contentdir}.zip\"> OSGi Plugins Archive </a> <br/>" >> $tmp/index.xml
     else
-        echo "              OSGi Plugins archive not available <br>" >> $tmp/index.xml
+        echo "              OSGi Plugins archive not available <br/>" >> $tmp/index.xml
     fi
     echo "            </td>" >> $tmp/index.xml
     echo "            <td align=\"center\"> </td>" >> $tmp/index.xml
