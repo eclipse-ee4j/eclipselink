@@ -310,7 +310,7 @@ public class SchemaManager {
      * ignore exceptions.  If create is false, it will drop the tables ignoring any exceptions, then create it.  
      * @param tableDefinitions - HashMap of Sequence table definitions
      * @param create - true if tables should be created, false if they should be replaced (dropped then created)
-     * @throws TopLinkException
+     * @throws EclipseLinkException
      */
     private void processTableDefinitions(final HashMap tableDefinitions, final boolean create) throws EclipseLinkException {
 
@@ -332,7 +332,7 @@ public class SchemaManager {
      * exceptions.  If create is false, it will drop the sequence ignoring any exceptions, then create it.  
      * @param sequenceDefinitions - HashSet of Sequence object definitions
      * @param create - true if sequenceDefinitions should be created, false if they should be replaced (dropped then created)
-     * @throws TopLinkException
+     * @throws EclipseLinkException
      */
     private void processSequenceDefinitions(final HashSet sequenceDefinitions, final boolean create) throws EclipseLinkException {
         
@@ -353,7 +353,7 @@ public class SchemaManager {
      * exceptions.  If create is false, it will drop the object ignoring any exceptions, then create it.  
      * @param definition -the object definition
      * @param create - true if the definition should be created, false if it should be replaced (dropped then created)
-     * @throws TopLinkException
+     * @throws EclipseLinkException
      */
     private void processDatabaseObjectDefinition(DatabaseObjectDefinition definition, final boolean create, final boolean shouldLogExceptionStackTrace) throws EclipseLinkException {
         if (shouldLogExceptionStackTrace) {
