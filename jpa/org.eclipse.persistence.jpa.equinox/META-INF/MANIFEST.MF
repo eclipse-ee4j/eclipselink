@@ -1,9 +1,15 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
-Bundle-Name: Equinox Fragment
+Bundle-Name: EclipseLink Dynamix Weaving Fragment for Equinox
 Bundle-SymbolicName: org.eclipse.persistence.jpa.equinox
-Bundle-Version: 1.0.0
+Bundle-Version: 0.1
 Fragment-Host: org.eclipse.persistence.jpa;bundle-version="0.1.0"
 Bundle-RequiredExecutionEnvironment: J2SE-1.5
-Import-Package: org.eclipse.persistence.jpa.equinox.weaving
+Import-Package: org.eclipse.osgi.baseadaptor;resolution:=optional,
+ org.eclipse.osgi.baseadaptor.bundlefile;resolution:=optional,
+ org.eclipse.osgi.baseadaptor.loader;resolution:=optional,
+ org.eclipse.osgi.framework.adaptor;resolution:=optional,
+ org.eclipse.osgi.internal.baseadaptor;resolution:=optional,
+ org.eclipse.persistence.jpa.equinox.weaving;resolution:=optional
+HK2-Bundle-Name: org.eclipse.persistence:org.eclipse.persistence.jpa.equinox
 JPA-Initializer: org.eclipse.persistence.internal.jpa.deployment.osgi.equinox.EquinoxInitializer

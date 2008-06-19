@@ -1,6 +1,6 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
-Bundle-Name: Moxy
+Bundle-Name: EclipseLink MOXy
 Bundle-SymbolicName: org.eclipse.persistence.moxy
 Bundle-Version: 0.1
 Export-Package: org.eclipse.persistence.internal.jaxb,
@@ -10,10 +10,18 @@ Export-Package: org.eclipse.persistence.internal.jaxb,
  org.eclipse.persistence.jaxb.javamodel,
  org.eclipse.persistence.jaxb.javamodel.reflection
 Require-Bundle: org.eclipse.persistence.core;visibility:=reexport,
- javax.xml.bind,
- javax.activation,
- javax.mail,
- javax.xml.soap,
- javax.xml.stream,
  org.eclipse.persistence.asm
 Bundle-ClassPath: .
+Import-Package: javax.activation;version="[1.1.0,1.2.0)";resolution:=optional,
+ javax.mail;version="[1.4.0,1.5.0)";resolution:=optional,
+ javax.xml.bind;version="[2.0.0,2.1.0)";resolution:=optional,
+ javax.xml.bind.annotation;version="[2.0.0,2.1.0)";resolution:=optional,
+ javax.xml.bind.annotation.adapters;version="[2.0.0,2.1.0)";resolution:=optional,
+ javax.xml.bind.attachment;version="[2.0.0,2.1.0)";resolution:=optional,
+ javax.xml.bind.helpers;version="[2.0.0,2.1.0)";resolution:=optional,
+ javax.xml.bind.util;version="[2.0.0,2.1.0)";resolution:=optional,
+ javax.xml.soap;version="[1.3.0,1.4.0)";resolution:=optional,
+ javax.xml.stream;version="[1.0.0,1.1.0)";resolution:=optional,
+ javax.xml.stream.events;version="[1.0.0,1.1.0)";resolution:=optional,
+ javax.xml.stream.util;version="[1.0.0,1.1.0)";resolution:=optional
+HK2-Bundle-Name: org.eclipse.persistence:org.eclipse.persistence.moxy

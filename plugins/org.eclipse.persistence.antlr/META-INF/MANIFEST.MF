@@ -1,8 +1,9 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
-Bundle-Name: Anltr Plug-in
+Bundle-Name: EclipseLink ANTLR
 Bundle-SymbolicName: org.eclipse.persistence.antlr
 Bundle-Version: 0.1
 Export-Package: org.eclipse.persistence.internal.libraries.antlr.runtime,
  org.eclipse.persistence.internal.libraries.antlr.runtime.tree
 Bundle-ClassPath: .
+HK2-Bundle-Name: org.eclipse.persistence:org.eclipse.persistence.antlr

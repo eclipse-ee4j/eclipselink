@@ -12,3 +12,4 @@ Export-Package: org.eclipse.persistence.internal.libraries.asm,
  org.eclipse.persistence.internal.libraries.asm.util.attrs,
  org.eclipse.persistence.internal.libraries.asm.xml
 Bundle-ClassPath: .
+HK2-Bundle-Name: org.eclipse.persistence:org.eclipse.persistence.asm

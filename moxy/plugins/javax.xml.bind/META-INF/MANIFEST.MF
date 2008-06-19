@@ -1,11 +1,11 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
-Bundle-Name: Bind Plug-in
+Bundle-Name: JAXB
 Bundle-SymbolicName: javax.xml.bind
 Bundle-Version: 2.0.0
-Export-Package: javax.xml.bind,
- javax.xml.bind.annotation,
- javax.xml.bind.annotation.adapters,
- javax.xml.bind.attachment,
- javax.xml.bind.helpers,
- javax.xml.bind.util
+Export-Package: javax.xml.bind;version="2.0.0",
+ javax.xml.bind.annotation;version="2.0.0",
+ javax.xml.bind.annotation.adapters;version="2.0.0",
+ javax.xml.bind.attachment;version="2.0.0",
+ javax.xml.bind.helpers;version="2.0.0",
+ javax.xml.bind.util;version="2.0.0"

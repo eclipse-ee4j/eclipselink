@@ -86,10 +86,10 @@ public class PersistenceProvider implements javax.persistence.spi.PersistencePro
             name = "";
         }
 
-        JPAInitializer initializer = initializationHelper.getInitializer(classLoader, properties);
+        JPAInitializer initializer = initializationHelper.getInitializer(classLoader, nonNullProperties);
         EntityManagerSetupImpl emSetupImpl = null;
         // get a class loader to use with this specific EM
-        ClassLoader currentLoader = initializationHelper.getClassLoader(emName, properties);
+        ClassLoader currentLoader = initializationHelper.getClassLoader(emName, nonNullProperties);
 
         try {
             Enumeration<URL> resources = currentLoader.getResources("META-INF/persistence.xml");
