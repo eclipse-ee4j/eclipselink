@@ -1589,10 +1589,20 @@ public class ExpressionQueryMechanism extends StatementQueryMechanism {
         Vector updateCalls = getDescriptor().getQueryManager().getCachedUpdateCalls(getModifyRow().getFields());
         // If the calls were cached then don't need to prepare.
         if (updateCalls != null) {
-            if (updateCalls.size() == 1) {
-                setCall((DatasourceCall)updateCalls.get(0));
+            int updateCallsSize = updateCalls.size();
+            if (updateCallsSize == 1) {
+                // clone call, to be able to set query on clone
+                DatasourceCall existingCall = (DatasourceCall)updateCalls.get(0);
+                DatasourceCall clonedCall = (DatasourceCall)existingCall.clone();
+                setCall(clonedCall);
             } else {
-                setCalls(updateCalls);                
+                // clone calls
+                Vector clonedCalls = new Vector(updateCallsSize);
+                for (int i = 0; i < updateCallsSize; i++) {
+                    DatasourceCall existingCall = (DatasourceCall)updateCalls.get(i);
+                    clonedCalls.add(existingCall.clone());
+                }
+                setCalls(clonedCalls);                
             }
             return;
         }
@@ -1616,7 +1626,9 @@ public class ExpressionQueryMechanism extends StatementQueryMechanism {
             updateCalls = getCalls();
         } else {
             updateCalls = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance(1);
-            updateCalls.add(getCall());
+            if (getCall() != null) {
+                updateCalls.add(getCall());
+            }
         }
         getDescriptor().getQueryManager().putCachedUpdateCalls(getModifyRow().getFields(), updateCalls);
     }

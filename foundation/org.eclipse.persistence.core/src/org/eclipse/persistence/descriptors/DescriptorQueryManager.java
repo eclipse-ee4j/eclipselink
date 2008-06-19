@@ -22,6 +22,7 @@ import org.eclipse.persistence.internal.descriptors.ObjectBuilder;
 import org.eclipse.persistence.internal.helper.*;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.exceptions.*;
+import org.eclipse.persistence.internal.databaseaccess.DatasourceCall;
 import org.eclipse.persistence.internal.sessions.ChangeRecord;
 import org.eclipse.persistence.internal.sessions.ObjectChangeSet;
 
@@ -1618,12 +1619,25 @@ public class DescriptorQueryManager implements Cloneable, Serializable {
     
     /**
      * INTERNAL:
-     * Put the cached update SQL call based on the updated fields.
-     * If the max size of 10 is reach, do not cache the call.
+     * Cache a clone of the update SQL calls based on the updated fields.
+     * If the max size is reached, do not cache the call.
+     * The call's query must be dereferenced in order to allow the GC of a related session.
      * PERF: Allow caching of the update SQL call to avoid regeneration.
      */
     public void putCachedUpdateCalls(Vector updateFields, Vector updateCalls) {
-        this.cachedUpdateCalls.put(updateFields, updateCalls);
+        Vector vectorToCache = updateCalls;
+        if (!updateCalls.isEmpty()) {
+            int updateCallsSize = updateCalls.size();
+            vectorToCache = new Vector(updateCallsSize);
+            for (int i = 0; i < updateCallsSize; i++) {
+                DatasourceCall updateCall = (DatasourceCall)updateCalls.get(i);
+                // clone call and dereference query for DatasourceCall and EJBQLCall
+                DatasourceCall clonedUpdateCall = (DatasourceCall) updateCall.clone();
+                clonedUpdateCall.setQuery(null);
+                vectorToCache.add(clonedUpdateCall);
+            }
+        }
+        this.cachedUpdateCalls.put(updateFields, vectorToCache);
     }
     
     /**

@@ -47,6 +47,8 @@ public class QueryFrameworkTestSuite extends TestSuite {
         addTest(buildRecordTest());
         // Bug 6450867 - TOPLINK-6069 ON READOBJECTQUERY ON ENTITY USING MULTIPLE TABLE MAPPING
         addTest(new ConformResultsWithMultitableAndJoiningTest());
+        // EL Bug 235484 - EclipseLink is holding onto old unit of work
+        addTest(new CachedUpdateCallsQueryClearTest());
     }
 
     //SRG test set is maintained by QA only, do NOT add any new test cases into it.
