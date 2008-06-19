@@ -321,7 +321,17 @@ public class IdentityHashSet extends AbstractCollection implements Set, Cloneabl
         }
 
         protected Object clone() {
-            return new Entry(hash, value, ((next == null) ? null : (Entry)next.clone()));
+            Entry currentNode = this;
+            Entry rootNode = new Entry(hash, value, null);
+            Entry currentNodeClone = rootNode;
+
+            while (currentNode.next != null) {
+                currentNodeClone.next = new Entry(currentNode.next.hash, currentNode.next.value, null);
+                currentNode = currentNode.next;
+                currentNodeClone = currentNodeClone.next;
+            }
+            
+            return rootNode;
         }
     }
 
