@@ -18,7 +18,7 @@ import org.eclipse.persistence.internal.platform.database.oracle.Oracle9Specific
 
 /**
  * This class can be used to define the dataType with an ObjectTypeConverter
- * to have TopLink bind the object string value as an NCHAR Oracle type.
+ * to have EclipseLink bind the object string value as an NCHAR Oracle type.
  */
 public class NCharacter implements NoConversion, Oracle9Specific {
 }

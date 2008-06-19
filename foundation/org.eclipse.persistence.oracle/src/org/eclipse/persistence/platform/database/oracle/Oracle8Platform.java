@@ -151,7 +151,8 @@ public class Oracle8Platform extends OraclePlatform {
      * INTERNAL:
      * Write LOB value - only on Oracle8 and up
      */
-    public void writeLOB(DatabaseField field, Object value, ResultSet resultSet, AbstractSession session) throws SQLException {
+    @SuppressWarnings("deprecation")
+	public void writeLOB(DatabaseField field, Object value, ResultSet resultSet, AbstractSession session) throws SQLException {
         if (isBlob(field.getType())) {
             oracle.sql.BLOB blob = (oracle.sql.BLOB)resultSet.getObject(field.getName());
 
