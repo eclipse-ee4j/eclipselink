@@ -157,6 +157,22 @@ public class SDOTestCase extends junit.framework.TestCase {
     }
         
     public void assertXMLIdentical(Document control, Document test) {
+    	/*
+        org.eclipse.persistence.platform.xml.XMLTransformer t = 
+        	org.eclipse.persistence.platform.xml.XMLPlatformFactory.getInstance().getXMLPlatform().newXMLTransformer();
+        java.io.StringWriter controlString = new java.io.StringWriter();
+        t.transform(control, controlString);
+        
+        t = org.eclipse.persistence.platform.xml.XMLPlatformFactory.getInstance().getXMLPlatform().newXMLTransformer();
+        java.io.StringWriter testString = new java.io.StringWriter();
+        t.transform(test, testString);
+    	
+        System.err.println("CONTROL:");
+        System.err.println(controlString);
+        System.err.println("TEST:");
+        System.err.println(testString);
+        */
+        
         assertTrue("Node " + control + " is not equal to node " + test, xmlComparer.isNodeEqual(control, test));
     }
     
