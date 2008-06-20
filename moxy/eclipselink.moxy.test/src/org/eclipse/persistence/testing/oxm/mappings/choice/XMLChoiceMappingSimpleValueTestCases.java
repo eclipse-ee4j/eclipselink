@@ -12,6 +12,8 @@
  ******************************************************************************/  
 package org.eclipse.persistence.testing.oxm.mappings.choice;
 
+import org.eclipse.persistence.oxm.platform.SAXPlatform;
+import org.eclipse.persistence.sessions.Project;
 import org.eclipse.persistence.testing.oxm.mappings.XMLMappingTestCases;
 
 public class XMLChoiceMappingSimpleValueTestCases extends XMLMappingTestCases {
@@ -36,6 +38,14 @@ public class XMLChoiceMappingSimpleValueTestCases extends XMLMappingTestCases {
     return employee;
 
   }
+  
+  public Project getNewProject(Project originalProject, ClassLoader classLoader) {
+      Project project = super.getNewProject(originalProject, classLoader);
+      project.getDatasourceLogin().setPlatform(new SAXPlatform());
+      
+      return project;
+  }  
+  
 
 }
 

@@ -178,15 +178,14 @@ public class MappingTestProject extends Project {
         // 1- binary and choice are supported with SAX and Java project
         // 2- neither is supported with deployment XML
         // 3- binary is supported with DOM 
-        if (platform == OXTestCase.Platform.SAX && metadata == OXTestCase.Metadata.JAVA) {
-            descriptor.addMapping(photoMapping);
-            descriptor.addMapping(photosMapping);
-            descriptor.addMapping(choiceMapping);
-            descriptor.addMapping(choiceColMapping);
-        } else if (metadata == OXTestCase.Metadata.JAVA) {
+        if (metadata == OXTestCase.Metadata.JAVA) {
             descriptor.addMapping(photoMapping);
             descriptor.addMapping(photosMapping);
         }
+        if (platform == OXTestCase.Platform.SAX) {
+            descriptor.addMapping(choiceMapping);
+            descriptor.addMapping(choiceColMapping);
+        } 
         
         // object reference mapping
         XMLObjectReferenceMapping orMapping = new XMLObjectReferenceMapping();

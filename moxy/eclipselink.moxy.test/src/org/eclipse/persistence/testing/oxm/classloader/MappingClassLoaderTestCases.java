@@ -31,7 +31,8 @@ public class MappingClassLoaderTestCases extends OXTestCase {
     private static final String MAPPING_TEST_RESOURCE_ALL = "org/eclipse/persistence/testing/oxm/classloader/maptest-all.xml";
     private static final String MAPPING_TEST_RESOURCE_NO_CHOICE = "org/eclipse/persistence/testing/oxm/classloader/maptest-no-choice.xml";
     private static final String MAPPING_TEST_RESOURCE_NO_CHOICE_OR_BINARY = "org/eclipse/persistence/testing/oxm/classloader/maptest-no-choice-or-binary.xml";
-
+    private static final String MAPPING_TEST_RESOURCE_NO_BINARY = "org/eclipse/persistence/testing/oxm/classloader/maptest-no-binary.xml";
+    
     private ClassLoader classLoader;
     private XMLContext xmlContext;
     private XMLUnmarshaller unmarshaller;
@@ -93,7 +94,11 @@ public class MappingClassLoaderTestCases extends OXTestCase {
                     unmarshalDoc = parse(MAPPING_TEST_RESOURCE_NO_CHOICE);
                 }
             } else {
-                unmarshalDoc = parse(MAPPING_TEST_RESOURCE_NO_CHOICE_OR_BINARY);
+                if(platform == OXTestCase.platform.SAX) {
+                    unmarshalDoc = parse(MAPPING_TEST_RESOURCE_NO_BINARY);
+                } else {
+                    unmarshalDoc = parse(MAPPING_TEST_RESOURCE_NO_CHOICE_OR_BINARY);
+                }
             }
             Object rootObject = unmarshaller.unmarshal(unmarshalDoc);
             marshalDoc = DocumentBuilderFactory.newInstance().newDocumentBuilder().newDocument();

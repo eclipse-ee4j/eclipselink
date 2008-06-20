@@ -21,6 +21,7 @@ import org.eclipse.persistence.exceptions.DescriptorException;
 import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.internal.descriptors.DescriptorIterator;
 import org.eclipse.persistence.internal.helper.DatabaseField;
+import org.eclipse.persistence.internal.oxm.XMLChoiceFieldToClassAssociation;
 import org.eclipse.persistence.internal.oxm.XMLConversionManager;
 import org.eclipse.persistence.internal.queries.JoinedAttributeManager;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
@@ -32,13 +33,15 @@ import org.eclipse.persistence.internal.sessions.MergeManager;
 import org.eclipse.persistence.internal.sessions.ObjectChangeSet;
 import org.eclipse.persistence.internal.sessions.UnitOfWorkImpl;
 import org.eclipse.persistence.mappings.DatabaseMapping;
-import org.eclipse.persistence.oxm.mappings.converters.XMLConverter;
+import org.eclipse.persistence.mappings.converters.Converter;
 import org.eclipse.persistence.oxm.mappings.converters.XMLRootConverter;
 import org.eclipse.persistence.oxm.record.XMLRecord;
 import org.eclipse.persistence.queries.ObjectBuildingQuery;
 import org.eclipse.persistence.queries.ObjectLevelReadQuery;
 import org.eclipse.persistence.sessions.remote.RemoteSession;
 import org.eclipse.persistence.oxm.XMLField;
+
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Iterator;
@@ -72,14 +75,14 @@ public class XMLChoiceObjectMapping extends DatabaseMapping implements XMLMappin
     private Map<Class, XMLField> classToFieldMappings;
     private Map<XMLField, String> fieldToClassNameMappings;
     private Map<XMLField, XMLMapping> choiceElementMappings;
-    private Map<XMLField, XMLConverter> fieldsToConverters;
+    private Map<XMLField, Converter> fieldsToConverters;
 
     public XMLChoiceObjectMapping() {
         fieldToClassMappings = new HashMap<XMLField, Class>();
         fieldToClassNameMappings = new HashMap<XMLField, String>();
         classToFieldMappings = new HashMap<Class, XMLField>();
         choiceElementMappings = new HashMap<XMLField, XMLMapping>();
-        fieldsToConverters = new HashMap<XMLField, XMLConverter>();
+        fieldsToConverters = new HashMap<XMLField, Converter>();
 
     }
 
@@ -198,10 +201,7 @@ public class XMLChoiceObjectMapping extends DatabaseMapping implements XMLMappin
 
     public void addChoiceElement(String xpath, Class elementType) {
         XMLField field = new XMLField(xpath);
-        getFieldToClassMappings().put(field, elementType);
-        if (classToFieldMappings.get(elementType) == null) {
-            classToFieldMappings.put(elementType, field);
-        }
+        addChoiceElement(field, elementType);
     }
 
     public void addChoiceElement(String xpath, String elementTypeName, boolean xmlRoot) {
@@ -218,6 +218,7 @@ public class XMLChoiceObjectMapping extends DatabaseMapping implements XMLMappin
 
     public void addChoiceElement(XMLField xmlField, Class elementType) {
     	getFieldToClassMappings().put(xmlField, elementType);
+    	this.fieldToClassNameMappings.put(xmlField, elementType.getName());    	
         if (classToFieldMappings.get(elementType) == null) {
             classToFieldMappings.put(elementType, xmlField);
         }
@@ -241,7 +242,7 @@ public class XMLChoiceObjectMapping extends DatabaseMapping implements XMLMappin
         Iterator<XMLField> fields = getFieldToClassMappings().keySet().iterator();
         while (fields.hasNext()) {
             XMLField next = fields.next();
-            XMLConverter converter = null;
+            Converter converter = null;
             if(fieldsToConverters != null) {
             	converter = fieldsToConverters.get(next);
             }
@@ -310,10 +311,37 @@ public class XMLChoiceObjectMapping extends DatabaseMapping implements XMLMappin
         }
     }
     
-    public void addConverter(XMLField field, XMLConverter converter) {
+    public void addConverter(XMLField field, Converter converter) {
     	if(this.fieldsToConverters == null) {
-    		fieldsToConverters = new HashMap<XMLField, XMLConverter>();
+    		fieldsToConverters = new HashMap<XMLField, Converter>();
     	}
     	fieldsToConverters.put(field, converter);
-    }    	
+    }
+
+    public ArrayList getChoiceFieldToClassAssociations() {
+        ArrayList associations = new ArrayList();
+        if(this.fieldToClassNameMappings.size() > 0) {
+            for(XMLField xmlField:this.fieldToClassNameMappings.keySet()) {
+                String className = this.fieldToClassNameMappings.get(xmlField);
+                XMLChoiceFieldToClassAssociation association = new XMLChoiceFieldToClassAssociation(xmlField, className);
+                associations.add(association);
+            }
+        }
+        return associations;
+    }
+    
+
+    public void setChoiceFieldToClassAssociations(ArrayList associations) {
+        if(associations.size() > 0) {
+            for(Object next:associations) {
+                XMLChoiceFieldToClassAssociation association = (XMLChoiceFieldToClassAssociation)next;
+                this.addChoiceElement(association.getXmlField(), association.getClassName());
+                if(association.getConverter() != null) {
+                    if(association.getConverter() instanceof Converter) {
+                        this.addConverter(association.getXmlField(), (Converter)association.getConverter());
+                    }
+                }
+            }
+        }
+    }     
 }

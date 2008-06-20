@@ -5737,6 +5737,38 @@
             </xsd:extension>
         </xsd:complexContent>
     </xsd:complexType>
+    <xsd:complexType name="xml-choice-collection-mapping">
+      <xsd:annotation>
+         <xsd:documentation>Defines a mapping of a collection to a choice structure in an xml document</xsd:documentation>
+      </xsd:annotation>
+      <xsd:complexContent>
+        <xsd:extension base="attribute-mapping">
+          <xsd:sequence>
+            <xsd:element name="container-policy" type="toplink:container-policy"/>
+            <xsd:element name="field-to-class-association" type="xml-choice-field-to-class-association" maxOccurs="unbounded"/>
+          </xsd:sequence>
+        </xsd:extension>
+      </xsd:complexContent>
+    </xsd:complexType>
+    <xsd:complexType name="xml-choice-object-mapping">
+      <xsd:annotation>
+         <xsd:documentation>Defines a mapping of a collection to a choice structure in an xml document</xsd:documentation>
+      </xsd:annotation>
+      <xsd:complexContent>
+        <xsd:extension base="attribute-mapping">
+          <xsd:sequence>
+            <xsd:element name="field-to-class-association" type="xml-choice-field-to-class-association" maxOccurs="unbounded"/>
+          </xsd:sequence>
+        </xsd:extension>
+      </xsd:complexContent>
+    </xsd:complexType>
+    <xsd:complexType name="xml-choice-field-to-class-association">
+       <xsd:sequence>
+          <xsd:element name="xml-field" type="node"/>
+          <xsd:element name="class-name" type="xsd:string"/>
+	  <xsd:element name="value-converter" type="converter"/>
+      </xsd:sequence>
+    </xsd:complexType>
     <xsd:complexType name="xml-conversion-pair">
         <xsd:sequence>
             <xsd:element name="qname" type="xsd:string" />

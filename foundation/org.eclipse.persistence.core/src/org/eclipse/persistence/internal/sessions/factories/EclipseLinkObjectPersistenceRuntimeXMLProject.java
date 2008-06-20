@@ -14,8 +14,10 @@ package org.eclipse.persistence.internal.sessions.factories;
 
 // EclipseLink imports
 import org.eclipse.persistence.descriptors.ClassDescriptor;
+import org.eclipse.persistence.mappings.converters.Converter;
 import org.eclipse.persistence.mappings.transformers.ConstantTransformer;
 import org.eclipse.persistence.oxm.XMLDescriptor;
+import org.eclipse.persistence.oxm.mappings.XMLCompositeObjectMapping;
 import org.eclipse.persistence.oxm.schema.XMLSchemaClassPathReference;
 import org.eclipse.persistence.sessions.DatabaseLogin;
 
@@ -79,6 +81,20 @@ public class EclipseLinkObjectPersistenceRuntimeXMLProject extends ObjectPersist
     @Override
     protected ConstantTransformer getConstantTransformerForProjectVersionMapping() {
         return new ConstantTransformer(DatabaseLogin.getVersion());
-    } 
+    }
+    
+    protected ClassDescriptor buildXMLChoiceFieldToClassAssociationDescriptor() {
+        ClassDescriptor descriptor = super.buildXMLChoiceFieldToClassAssociationDescriptor();
+        
+        XMLCompositeObjectMapping converterMapping = new XMLCompositeObjectMapping();
+        converterMapping.setAttributeName("converter");
+        converterMapping.setXPath(getPrimaryNamespacePrefix() + "value-converter");
+        converterMapping.setReferenceClass(Converter.class);
+        
+        descriptor.addMapping(converterMapping);
+        
+        return descriptor;
+    }
+    
 
 }

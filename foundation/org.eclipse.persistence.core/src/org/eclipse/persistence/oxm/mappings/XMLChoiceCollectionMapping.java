@@ -18,6 +18,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Iterator;
 import java.util.Vector;
+import java.util.ArrayList;
 import javax.xml.namespace.QName;
 
 import org.eclipse.persistence.exceptions.DatabaseException;
@@ -39,8 +40,8 @@ import org.eclipse.persistence.internal.sessions.ObjectChangeSet;
 import org.eclipse.persistence.internal.sessions.UnitOfWorkImpl;
 import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.oxm.XMLField;
-import org.eclipse.persistence.oxm.mappings.converters.XMLConverter;
-import org.eclipse.persistence.oxm.mappings.converters.XMLRootConverter;
+import org.eclipse.persistence.mappings.converters.Converter;
+import org.eclipse.persistence.internal.oxm.XMLChoiceFieldToClassAssociation;
 import org.eclipse.persistence.oxm.record.XMLRecord;
 import org.eclipse.persistence.queries.ObjectBuildingQuery;
 import org.eclipse.persistence.queries.ObjectLevelReadQuery;
@@ -75,7 +76,7 @@ public class XMLChoiceCollectionMapping extends DatabaseMapping implements XMLMa
     private Map<Class, XMLField> classToFieldMappings;
     private Map<XMLField, XMLMapping> choiceElementMappings;
     private Map<XMLField, String> fieldToClassNameMappings;
-    private Map<XMLField, XMLConverter> fieldsToConverters;
+    private Map<XMLField, Converter> fieldsToConverters;
     private ContainerPolicy containerPolicy;
 
     public XMLChoiceCollectionMapping() {
@@ -83,7 +84,7 @@ public class XMLChoiceCollectionMapping extends DatabaseMapping implements XMLMa
         fieldToClassNameMappings = new HashMap<XMLField, String>();
         classToFieldMappings = new HashMap<Class, XMLField>();
         choiceElementMappings = new HashMap<XMLField, XMLMapping>();
-        fieldsToConverters = new HashMap<XMLField, XMLConverter>();
+        fieldsToConverters = new HashMap<XMLField, Converter>();
         this.containerPolicy = ContainerPolicy.buildPolicyFor(ClassConstants.Vector_class);
     }
 
@@ -202,10 +203,7 @@ public class XMLChoiceCollectionMapping extends DatabaseMapping implements XMLMa
 
     public void addChoiceElement(String xpath, Class elementType) {
         XMLField field = new XMLField(xpath);
-        getFieldToClassMappings().put(field, elementType);
-        if (classToFieldMappings.get(elementType) == null) {
-            classToFieldMappings.put(elementType, field);
-        }
+        addChoiceElement(field, elementType);
     }
     
     public void addChoiceElement(String xpath, String elementTypeName) {
@@ -216,6 +214,9 @@ public class XMLChoiceCollectionMapping extends DatabaseMapping implements XMLMa
     
     public void addChoiceElement(XMLField xmlField, Class elementType) {
     	getFieldToClassMappings().put(xmlField, elementType);
+    	if(!(this.fieldToClassNameMappings.containsKey(xmlField))) {
+    	    this.fieldToClassNameMappings.put(xmlField, elementType.getName());
+    	}
         if (classToFieldMappings.get(elementType) == null) {
             classToFieldMappings.put(elementType, xmlField);
         }
@@ -240,7 +241,7 @@ public class XMLChoiceCollectionMapping extends DatabaseMapping implements XMLMa
         Iterator<XMLField> fields = getFieldToClassMappings().keySet().iterator();
         while (fields.hasNext()) {
             XMLField next = fields.next();
-            XMLConverter converter = null;
+            Converter converter = null;
             if(fieldsToConverters != null) {
             	converter = fieldsToConverters.get(next);
             }
@@ -327,10 +328,35 @@ public class XMLChoiceCollectionMapping extends DatabaseMapping implements XMLMa
         }
     }
     
-    public void addConverter(XMLField field, XMLConverter converter) {
+    public void addConverter(XMLField field, Converter converter) {
         if(this.fieldsToConverters == null) {
-            fieldsToConverters = new HashMap<XMLField, XMLConverter>();
+            fieldsToConverters = new HashMap<XMLField, Converter>();
         }
         fieldsToConverters.put(field, converter);
+    }
+
+    public ArrayList getChoiceFieldToClassAssociations() {
+        ArrayList associations = new ArrayList();
+        if(this.fieldToClassNameMappings.size() > 0) {
+            for(XMLField xmlField:this.fieldToClassNameMappings.keySet()) {
+                String className = this.fieldToClassNameMappings.get(xmlField);
+                XMLChoiceFieldToClassAssociation association = new XMLChoiceFieldToClassAssociation(xmlField, className);
+                associations.add(association);
+            }
+        }
+        return associations;
+    }
+    
+
+    public void setChoiceFieldToClassAssociations(ArrayList associations) {
+        if(associations.size() > 0) {
+            for(Object next:associations) {
+                XMLChoiceFieldToClassAssociation association = (XMLChoiceFieldToClassAssociation)next;
+                this.addChoiceElement(association.getXmlField(), association.getClassName());
+                if(association.getConverter() != null) {
+                    this.addConverter(association.getXmlField(), (Converter)association.getConverter());
+                }
+            }
+        }
     }      
 }

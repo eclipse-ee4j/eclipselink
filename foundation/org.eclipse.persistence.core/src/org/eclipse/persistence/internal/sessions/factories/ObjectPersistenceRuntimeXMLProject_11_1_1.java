@@ -60,6 +60,9 @@ import org.eclipse.persistence.oxm.mappings.XMLFragmentCollectionMapping;
 import org.eclipse.persistence.oxm.mappings.XMLFragmentMapping;
 import org.eclipse.persistence.oxm.mappings.XMLNillableMapping;
 import org.eclipse.persistence.oxm.mappings.XMLObjectReferenceMapping;
+import org.eclipse.persistence.oxm.mappings.XMLChoiceCollectionMapping;
+import org.eclipse.persistence.oxm.mappings.XMLChoiceObjectMapping;
+import org.eclipse.persistence.internal.oxm.XMLChoiceFieldToClassAssociation;
 import org.eclipse.persistence.oxm.mappings.nullpolicy.AbstractNullPolicy;
 import org.eclipse.persistence.oxm.mappings.nullpolicy.IsSetNullPolicy;
 import org.eclipse.persistence.oxm.mappings.nullpolicy.NullPolicy;
@@ -121,6 +124,9 @@ public class ObjectPersistenceRuntimeXMLProject_11_1_1 extends ObjectPersistence
         addDescriptor(buildXMLObjectReferenceMappingDescriptor());
         addDescriptor(buildXMLFragmentMappingDescriptor());
         addDescriptor(buildXMLFragmentCollectionMappingDescriptor());
+        addDescriptor(buildXMLChoiceCollectionMappingDescriptor());
+        addDescriptor(buildXMLChoiceFieldToClassAssociationDescriptor());
+        addDescriptor(buildXMLChoiceObjectMappingDescriptor());
 
         // Add Null Policy Mappings
         addDescriptor(buildAbstractNullPolicyDescriptor());
@@ -185,6 +191,8 @@ public class ObjectPersistenceRuntimeXMLProject_11_1_1 extends ObjectPersistence
         descriptor.getInheritancePolicy().addClassIndicator(XMLCollectionReferenceMapping.class, getPrimaryNamespaceXPath() + "xml-collection-reference-mapping");
         descriptor.getInheritancePolicy().addClassIndicator(XMLObjectReferenceMapping.class, getPrimaryNamespaceXPath() + "xml-object-reference-mapping");
         descriptor.getInheritancePolicy().addClassIndicator(XMLAnyAttributeMapping.class, getPrimaryNamespaceXPath() + "xml-any-attribute-mapping");
+        descriptor.getInheritancePolicy().addClassIndicator(XMLChoiceObjectMapping.class, getPrimaryNamespaceXPath() + "xml-choice-object-mapping");
+        descriptor.getInheritancePolicy().addClassIndicator(XMLChoiceCollectionMapping.class, getPrimaryNamespaceXPath() + "xml-choice-collection-mapping");
 
         return descriptor;
     }
@@ -1534,5 +1542,68 @@ public class ObjectPersistenceRuntimeXMLProject_11_1_1 extends ObjectPersistence
 
          return descriptor;
      }
+     
+     protected ClassDescriptor buildXMLChoiceFieldToClassAssociationDescriptor() {
+         XMLDescriptor descriptor = new XMLDescriptor();
+         descriptor.setJavaClass(XMLChoiceFieldToClassAssociation.class);
+         
+         XMLCompositeObjectMapping fieldMapping = new XMLCompositeObjectMapping();
+         fieldMapping.setAttributeName("xmlField");
+         fieldMapping.setGetMethodName("getXmlField");
+         fieldMapping.setSetMethodName("setXmlField");
+         fieldMapping.setXPath(getPrimaryNamespaceXPath() + "xml-field");
+         fieldMapping.setReferenceClass(XMLField.class);
+         descriptor.addMapping(fieldMapping);
+         
+         XMLDirectMapping classNameMapping = new XMLDirectMapping();
+         classNameMapping.setAttributeName("className");
+         classNameMapping.setGetMethodName("getClassName");
+         classNameMapping.setSetMethodName("setClassName");
+         classNameMapping.setXPath(getPrimaryNamespaceXPath() + "class-name/text()");
+         descriptor.addMapping(classNameMapping);
+         
+         return descriptor;
+     }
+     
+     protected ClassDescriptor buildXMLChoiceCollectionMappingDescriptor() {
+         XMLDescriptor descriptor = new XMLDescriptor();
+         descriptor.setJavaClass(XMLChoiceCollectionMapping.class);
+         descriptor.getInheritancePolicy().setParentClass(DatabaseMapping.class);
+         
+         XMLCompositeObjectMapping containerPolicyMapping = new XMLCompositeObjectMapping();
+         containerPolicyMapping.setAttributeName("containerPolicy");
+         containerPolicyMapping.setReferenceClass(ContainerPolicy.class);
+         containerPolicyMapping.setXPath(getPrimaryNamespaceXPath() + "container-policy");
+         descriptor.addMapping(containerPolicyMapping);
+         
+         XMLCompositeCollectionMapping fieldToClassNameMapping = new XMLCompositeCollectionMapping();
+         fieldToClassNameMapping.setAttributeName("fieldToClassAssociations");
+         fieldToClassNameMapping.setGetMethodName("getChoiceFieldToClassAssociations");
+         fieldToClassNameMapping.setSetMethodName("setChoiceFieldToClassAssociations");
+         fieldToClassNameMapping.setReferenceClass(XMLChoiceFieldToClassAssociation.class);
+         fieldToClassNameMapping.useCollectionClass(ArrayList.class);
+         fieldToClassNameMapping.setXPath(getPrimaryNamespacePrefix() + "field-to-class-association");
+         descriptor.addMapping(fieldToClassNameMapping);
+         
+         return descriptor;
+     }
+     
+     protected ClassDescriptor buildXMLChoiceObjectMappingDescriptor() {
+         XMLDescriptor descriptor = new XMLDescriptor();
+         descriptor.setJavaClass(XMLChoiceObjectMapping.class);
+         descriptor.getInheritancePolicy().setParentClass(DatabaseMapping.class);
+         
+         XMLCompositeCollectionMapping fieldToClassNameMapping = new XMLCompositeCollectionMapping();
+         fieldToClassNameMapping.setAttributeName("fieldToClassAssociations");
+         fieldToClassNameMapping.setGetMethodName("getChoiceFieldToClassAssociations");
+         fieldToClassNameMapping.setSetMethodName("setChoiceFieldToClassAssociations");
+         fieldToClassNameMapping.setReferenceClass(XMLChoiceFieldToClassAssociation.class);
+         fieldToClassNameMapping.useCollectionClass(ArrayList.class);
+         fieldToClassNameMapping.setXPath(getPrimaryNamespaceXPath() + "field-to-class-association");
+         descriptor.addMapping(fieldToClassNameMapping);
+         
+         return descriptor;
+     }     
+     
 
 }
