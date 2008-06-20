@@ -18,9 +18,12 @@ import java.util.*;
 import org.eclipse.persistence.config.FlushClearCache;
 import org.eclipse.persistence.config.PersistenceUnitProperties;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
+import org.eclipse.persistence.descriptors.changetracking.AttributeChangeTrackingPolicy;
+import org.eclipse.persistence.internal.descriptors.ObjectBuilder;
 import org.eclipse.persistence.internal.sessions.UnitOfWorkImpl;
 import org.eclipse.persistence.exceptions.DatabaseException;
 import org.eclipse.persistence.exceptions.OptimisticLockException;
+import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.internal.sessions.MergeManager;
 import org.eclipse.persistence.internal.sessions.UnitOfWorkChangeSet;
 import org.eclipse.persistence.internal.sessions.ObjectChangeSet;
@@ -386,6 +389,47 @@ public class RepeatableWriteUnitOfWork extends UnitOfWorkImpl {
      */
     public boolean wasDeleted(Object original) {
         return getUnregisteredDeletedCloneForOriginal(original) != null;
+    }
+    
+    /**
+     * INTERNAL:
+     * To avoid putting the original object into the shared cache, and
+     * therefore, impede the 'detaching' of the original after commit, a clone 
+     * of the original should be registered not the actual original object. 
+     * This is a JPA override to traditional Eclipselink behavior.
+     */
+    @Override
+    protected Object cloneAndRegisterNewObject(Object original) {
+        ClassDescriptor descriptor = getDescriptor(original);
+        //Nested unit of work is not supported for attribute change tracking
+        if (isNestedUnitOfWork() && (descriptor.getObjectChangePolicy() instanceof AttributeChangeTrackingPolicy)) {
+            throw ValidationException.nestedUOWNotSupportedForAttributeTracking();
+        }
+        ObjectBuilder builder = descriptor.getObjectBuilder();
+
+        // bug 2612602 create the working copy object.
+        Object clone = builder.instantiateWorkingCopyClone(original, this);
+        
+        // This is the only difference from my superclass. I am building a new
+        // original to put in the shared cache.
+        Object newOriginal = builder.buildNewInstance();
+            
+        // Must put in the detached original to clone to resolve circular refs.
+        getNewObjectsOriginalToClone().put(original, clone);
+        
+        // Must put in clone mapping.
+        getCloneMapping().put(clone, clone);
+
+        builder.populateAttributesForClone(original, clone, this);
+        // Must reregister in both new objects.
+        registerNewObjectClone(clone, newOriginal, descriptor);
+
+        //Build backup clone for DeferredChangeDetectionPolicy or ObjectChangeTrackingPolicy,
+        //but not for AttributeChangeTrackingPolicy
+        Object backupClone = descriptor.getObjectChangePolicy().buildBackupClone(clone, builder, this);
+        getCloneMapping().put(clone, backupClone);// The backup clone must be updated.
+
+        return clone;
     }
     
     /**

@@ -108,6 +108,8 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
         suite.addTest(new AdvancedJPAJunitTest("testClassBasedTransformationMapping"));
 
         suite.addTest(new AdvancedJPAJunitTest("testProperty"));
+        
+        suite.addTest(new AdvancedJPAJunitTest("testBackpointerOnMerge"));
                 
         return new TestSetup(suite) {
             protected void setUp() { 
@@ -612,6 +614,48 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
         }
         
         closeEntityManager(em);
+    }
+    
+    /**
+     * Tests that backpointers are not changed after a merge operation.
+     */
+    public void testBackpointerOnMerge() {
+        EntityManager em = createEntityManager();
+
+        try {            
+            beginTransaction(em);
+            
+            // create a new department
+            Department department = new Department();
+            department.setName("Football");
+            // persist the department
+            em.persist(department);
+            commitTransaction(em);
+            closeEntityManager(em);
+            
+            // add equipment to the department
+            em = createEntityManager();
+            beginTransaction(em);
+            Equipment equipment = new Equipment();
+            equipment.setDescription("Shields & Dummies");
+            department.addEquipment(equipment);
+            em.merge(department);
+            commitTransaction(em);
+            closeEntityManager(em);
+
+            assertTrue(department.getEquipment().get(0) == equipment);
+            assertEquals(System.identityHashCode(department.getEquipment().get(0)), System.identityHashCode(equipment));
+            assertEquals(department.getId(), equipment.getDepartment().getId());
+            assertTrue("The department instance (backpointer) from equipment was modified after merge.", department == equipment.getDepartment());
+            assertEquals("The department instance (backpointer) from equipment was modified after merge.", System.identityHashCode(department), System.identityHashCode(equipment.getDepartment()));
+        } catch (RuntimeException e) {
+            if (isTransactionActive(em)){
+                rollbackTransaction(em);
+            }
+            
+            closeEntityManager(em);
+            throw e;
+        }
     }
     
     /**
