@@ -39,7 +39,10 @@ public class ConnectToHostCommand extends RCMCommand {
      */
     public void executeWithRCM(RemoteCommandManager rcm) {
         RemoteConnection connection = rcm.getTransportManager().createConnection(this.getServiceId());
-        rcm.getTransportManager().getConnectionsToExternalServices().put(connection.getServiceId().getId(), connection);
+        // null is returned from createConnection if connection cannot be created 
+        if (connection != null) {
+            rcm.getTransportManager().getConnectionsToExternalServices().put(connection.getServiceId().getId(), connection);
+        }
     }
 
     public void executeWithSession(AbstractSession session) {

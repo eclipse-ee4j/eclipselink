@@ -84,7 +84,12 @@ public class RMITransportManager extends TransportManager {
                 return new RMIRemoteConnection((RMIRemoteCommandConnection)context.lookup(remoteObjectIdentifier));
             }
         } catch (Exception e) {
-            rcm.handleException(RemoteCommandManagerException.errorLookingUpRemoteConnection(remoteObjectIdentifier, hostURL, e));
+            try {
+                rcm.handleException(RemoteCommandManagerException.errorLookingUpRemoteConnection(remoteObjectIdentifier, hostURL, e));
+            } catch (Exception ex2) {
+                 // Must catch this exception and log a debug message
+                rcm.logDebug("unable_to_look_up_remote_conn_in_jndi", args);
+            }
         }
         return null;
     }
@@ -100,7 +105,12 @@ public class RMITransportManager extends TransportManager {
         try {
             return new RMIRemoteConnection((RMIRemoteCommandConnection)Naming.lookup(formattedUrl));
         } catch (Exception e) {
-            rcm.handleException(RemoteCommandManagerException.errorLookingUpRemoteConnection(remoteObjectIdentifier, hostURL, e));
+            try {
+                rcm.handleException(RemoteCommandManagerException.errorLookingUpRemoteConnection(remoteObjectIdentifier, hostURL, e));
+            } catch (Exception ex2) {
+                // Must catch this exception and log a debug message
+                rcm.logDebug("unable_to_look_up_remote_conn_in_registry", args);
+            }
         }
         return null;
     }

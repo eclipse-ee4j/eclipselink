@@ -150,6 +150,8 @@ public class TraceLocalizationResource extends ListResourceBundle {
                                            { "context_props_for_remote_lookup", "Remote context properties: {0}" },
                                            { "looking_up_remote_conn_in_jndi", "Looking up remote connection in JNDI under name {0} at URL {1}" },
                                            { "looking_up_remote_conn_in_registry", "Looking up remote connection in RMIRegistry at {0}" },
+                                           { "unable_to_look_up_remote_conn_in_jndi", "Unable to look up remote connection in JNDI under name {0} at URL {1}" },
+                                           { "unable_to_look_up_remote_conn_in_registry", "Unable to look up remote connection in RMIRegistry under name {0}" },
                                            { "received_connection_from", "Received remote connection from {0}" },
                                            { "converting_to_toplink_command", "Converting {0} to TopLink Command format" },
                                            { "converting_to_user_command", "Converting {0} from TopLink Command format to user format" },
