@@ -49,7 +49,7 @@ public abstract class BroadcastRemoteConnection extends RemoteConnection {
     // Array containing a single element - displayString. Used for warnings and debug logging.
     protected Object[] info;
     // Array containing a two elements - displayString and an empty String.
-    // Used for debug loggings thet require messageId in case messageId is null
+    // Used for debug logging which require messageId in case messageId is null
     // (so that a new array is not created each time).
     protected Object[] infoExt;
         
@@ -73,7 +73,7 @@ public abstract class BroadcastRemoteConnection extends RemoteConnection {
                 // org.eclipse.persistence.internal.sessions.coordination.CommandPropagator.propagateCommand.
                 // This method catches CommunicationException and processes it in handleCommunicationException method.
                 // The latter method, in case shouldRemoveConnectionOnError==true, removes the connection;
-                // otherwise ir wraps the CommunicationException into RemoteCommandManagerException
+                // otherwise it wraps the CommunicationException into RemoteCommandManagerException
                 // (with erroCode RemoteCommandManagerException.ERROR_PROPAGATING_COMMAND)
                 // and gives the use a chance to handle it - this is an opportunity for the user to
                 // stop remote command processing.
@@ -116,13 +116,13 @@ public abstract class BroadcastRemoteConnection extends RemoteConnection {
      * Only call this method in case logDebugBeforePublish returned non-null
      * this is indication that debug logging is enabled.
      * Pass to this method debugInfo returned by logDebugBeforePublish.
-     * Need to pass messageId only in case it has changed sinse logDebugBeforePublish:
+     * Need to pass messageId only in case it has changed since logDebugBeforePublish:
      * some broadcasting protocols (JMS) don't generate messageId until the message is published.
      */
     protected void logDebugAfterPublish(Object[] debugInfo, String messageId) {
         if(messageId != null) {
             if(debugInfo == getInfoExt()) {
-                // need to createa a new debugInfo object - the original is the cached info.
+                // need to create a new debugInfo object - the original is the cached info.
                 debugInfo = new Object[] {toString(), messageId};
             } else {
                 // need only update messageId on existing debugInfo
@@ -161,6 +161,12 @@ public abstract class BroadcastRemoteConnection extends RemoteConnection {
         if (object instanceof Command) {
             remoteCommand = (Command)object;
             try {
+                // prevent the processing of messages sent with the same serviceId
+                if (shouldCheckServiceId()) {
+                    if (remoteCommand.getServiceId().getId().equals(this.serviceId.getId())) {
+                        return;
+                    }
+                }
                 if (remoteCommand.getServiceId().getChannel().equals(this.serviceId.getChannel())) {
                     if(rcm.shouldLogDebugMessage()) {
                         Object[] args = { toString(), messageId, remoteCommand.getServiceId().toString(), Helper.getShortClassName(remoteCommand) };
@@ -269,7 +275,7 @@ public abstract class BroadcastRemoteConnection extends RemoteConnection {
 
     /**
      * INTERNAL:
-     * Connection is closed - all resorces were freed.
+     * Connection is closed - all resources were freed.
      */
     public boolean isClosed() {
         return state == STATE_CLOSED;
@@ -315,7 +321,7 @@ public abstract class BroadcastRemoteConnection extends RemoteConnection {
      * INTERNAL:
      * Indicates whether all the resources used by connection are freed after close method returns.
      * Usually that's the case. However in case of local (listening) JMSTopicRemoteConnection
-     * close merely indicates to the listening thread that it shoud free TopicConnection and exit.
+     * close merely indicates to the listening thread that it should free TopicConnection and exit.
      * Note that it may take a while: the listening thread waits until subscriber.receive method either
      * returns a message or throws an exception.
      */
@@ -339,4 +345,15 @@ public abstract class BroadcastRemoteConnection extends RemoteConnection {
     protected void createDisplayString() {
         this.displayString = Helper.getShortClassName(this) + "[" + serviceId.toString() + ", topic " + topicName +"]";
     }
+
+    /**
+     * INTERNAL:
+     * Return whether a BroadcastConnection should check a ServiceId against its
+     * own ServiceId to avoid the processing of Commands with the same ServiceId.
+     * @return boolean
+     */
+    protected boolean shouldCheckServiceId() {
+        return false;
+    }
+    
 }

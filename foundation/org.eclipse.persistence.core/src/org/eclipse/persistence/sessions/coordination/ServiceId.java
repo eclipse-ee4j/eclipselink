@@ -9,10 +9,12 @@
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
+ *     dminsky - changed id to use a String UUID instead of String hashcode()
  ******************************************************************************/  
 package org.eclipse.persistence.sessions.coordination;
 
 import java.io.Serializable;
+import java.util.UUID;
 
 /**
  * <p>
@@ -51,7 +53,8 @@ public class ServiceId implements Serializable {
 
     public ServiceId() {
         super();
-        id = String.valueOf(System.identityHashCode(this));
+        // Use UUID value instead of hashcode value for id
+        id = String.valueOf(UUID.randomUUID());
     }
 
     public ServiceId(String channel, String id, String url) {

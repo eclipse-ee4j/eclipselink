@@ -237,11 +237,6 @@ public class RemoteCommandManager implements org.eclipse.persistence.sessions.co
             getCommandProcessor().processCommand(new ProfileMessageReceiveCommand());
         }
 
-        // Only process commands from other services
-        if (serviceId.getId() == command.getServiceId().getId()) {
-            return;
-        }
-
         // If the command is internal then execute it on this RCM
         if (command.isInternalCommand() || command instanceof RCMCommand) {
             logDebug("processing_internal_command", args);

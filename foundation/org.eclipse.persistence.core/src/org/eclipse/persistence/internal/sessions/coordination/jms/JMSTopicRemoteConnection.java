@@ -326,6 +326,17 @@ public class JMSTopicRemoteConnection extends BroadcastRemoteConnection implemen
         displayString = (isLocal() ? "Local " : "External ") + displayString;
     }
 
+    /**
+     * INTERNAL:
+     * Return whether a BroadcastConnection should check a ServiceId against its
+     * own ServiceId to avoid the processing of Commands with the same ServiceId.
+     * This should take place (return true) for a JMSTopicRemoteConnection.
+     * @return boolean
+     */
+    protected boolean shouldCheckServiceId() {
+        return true;
+    }    
+    
     class JMSOnMessageHelper implements Runnable {
         Message message = null;
 
