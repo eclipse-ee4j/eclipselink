@@ -1319,7 +1319,7 @@ public class DatabaseAccessor extends DatasourceAccessor {
             // This needs to be done in some cases before the statement is created to ensure the statement
             // and result set are not wrapped.
             if (unwrapConnection || call.isNativeConnectionRequired()) {
-                nativeConnection = getPlatform().getConnection(session, getConnection());
+                nativeConnection = getPlatform().getConnection(session, nativeConnection);
             }
             if (call.isCallableStatementRequired()) {
                 // Callable statements are used for StoredProcedures and PLSQL blocks.

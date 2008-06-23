@@ -35,6 +35,7 @@ import org.eclipse.persistence.expressions.*;
 import org.eclipse.persistence.internal.databaseaccess.*;
 import org.eclipse.persistence.exceptions.*;
 import org.eclipse.persistence.sessions.remote.*;
+import org.eclipse.persistence.annotations.IdValidation;
 import org.eclipse.persistence.descriptors.copying.*;
 import org.eclipse.persistence.descriptors.changetracking.*;
 import org.eclipse.persistence.descriptors.invalidation.*;
@@ -168,6 +169,9 @@ public class ClassDescriptor implements Cloneable, Serializable {
 
     /** Allow connection unwrapping to be configured. */
     protected boolean isNativeConnectionRequired;
+
+    /** Allow zero primary key validation to be configured. */
+    protected IdValidation idValidation;
     
     /**
      * PUBLIC:
@@ -2193,6 +2197,15 @@ public class ClassDescriptor implements Cloneable, Serializable {
                 setUnitOfWorkCacheIsolationLevel(ISOLATE_CACHE_ALWAYS);
             } else {
                 setUnitOfWorkCacheIsolationLevel(ISOLATE_NEW_DATA_AFTER_TRANSACTION);
+            }
+        }
+        
+        // Set id validation, zero is allowed for composite primary keys.
+        if (getIdValidation() == null) {
+            if (getPrimaryKeyFields().size() > 1) {
+                setIdValidation(IdValidation.NULL);
+            } else {
+                setIdValidation(IdValidation.ZERO);
             }
         }
     }
@@ -4616,5 +4629,21 @@ public class ClassDescriptor implements Cloneable, Serializable {
      */
     public boolean isNativeConnectionRequired() {
         return isNativeConnectionRequired;
+    }
+
+    /**
+     * ADVANCED:
+     * Set what types are allowed as a primary key (id).
+     */
+    public void setIdValidation(IdValidation idValidation) {
+        this.idValidation = idValidation;
+    }
+
+    /**
+     * ADVANCED:
+     * Return what types are allowed as a primary key (id).
+     */
+    public IdValidation getIdValidation() {
+        return idValidation;
     }
 }

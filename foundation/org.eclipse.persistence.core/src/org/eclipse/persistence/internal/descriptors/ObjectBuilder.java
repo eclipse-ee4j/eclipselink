@@ -17,6 +17,7 @@ import java.util.*;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 
+import org.eclipse.persistence.annotations.IdValidation;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.descriptors.DescriptorEvent;
 import org.eclipse.persistence.descriptors.DescriptorEventManager;
@@ -1760,6 +1761,7 @@ public class ObjectBuilder implements Cloneable, Serializable {
         if (descriptor.hasInheritance() && (domainObject.getClass() != descriptor.getJavaClass()) && (!domainObject.getClass().getSuperclass().equals(descriptor.getJavaClass()))) {
             return session.getDescriptor(domainObject).getObjectBuilder().extractPrimaryKeyFromObject(domainObject, session, shouldReturnNullIfNull);
         } else {
+            IdValidation idValidation = descriptor.getIdValidation();
             List primaryKeyFields = descriptor.getPrimaryKeyFields();
             Vector primaryKeyValues = new NonSynchronizedVector(primaryKeyFields.size());
 
@@ -1772,7 +1774,8 @@ public class ObjectBuilder implements Cloneable, Serializable {
                     AbstractDirectMapping mapping = (AbstractDirectMapping)mappings.get(index);
                     Object keyValue = mapping.valueFromObject(domainObject, (DatabaseField)primaryKeyFields.get(index), session);
                     // Only check for 0 for singleton primary keys.
-                    if (keyValue == null || ((size == 1) && Helper.isEquivalentToNull(keyValue))) {
+                    if ((idValidation != IdValidation.NONE) && ((keyValue == null)
+                                || ((idValidation == IdValidation.ZERO) && Helper.isEquivalentToNull(keyValue)))) {
                         if (shouldReturnNullIfNull) {
                             return null;
                         }
@@ -1799,7 +1802,8 @@ public class ObjectBuilder implements Cloneable, Serializable {
                     Class classification = (Class)primaryKeyClassifications.get(index);
                     Object value = databaseRow.get((DatabaseField)primaryKeyFields.get(index));
                     // Only check for 0 for singleton primary keys.
-                    if (value == null || ((size == 1) && Helper.isEquivalentToNull(value))) {
+                    if ((idValidation != IdValidation.NONE) && ((value == null)
+                            || ((idValidation == IdValidation.ZERO) && Helper.isEquivalentToNull(value)))) {
                         if (shouldReturnNullIfNull) {
                             return null;
                         }
