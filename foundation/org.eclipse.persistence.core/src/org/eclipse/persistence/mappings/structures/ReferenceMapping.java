@@ -96,6 +96,9 @@ public class ReferenceMapping extends ObjectReferenceMapping {
 
         setField(getDescriptor().buildField(getField()));
         setFields(collectFields());
+        
+        // Ref mapping requires native connection in WLS as the Ref is wrapped.
+        getDescriptor().setIsNativeConnectionRequired(true);
     }
 
     /**

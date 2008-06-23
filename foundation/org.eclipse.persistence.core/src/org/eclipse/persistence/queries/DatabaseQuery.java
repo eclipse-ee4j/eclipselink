@@ -186,6 +186,9 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
     /** PERF: Store if the query if from the JPQL parse cache, to avoid corruption of the cache query. */
     protected boolean isFromParseCache = false;
 
+    /** Allow connection unwrapping to be configured. */
+    protected boolean isNativeConnectionRequired;
+    
     /**
      * PUBLIC:
      * Initialize the state of the query
@@ -2138,5 +2141,23 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
             sensorNames.put(operationName, sensorName);
         }
         return (String)sensorName;
+    }
+
+    /**
+     * ADVANCED:
+     * Set if the descriptor requires usage of a native (unwrapped) JDBC connection.
+     * This may be required for some Oracle JDBC support when a wrapping DataSource is used.
+     */
+    public void setIsNativeConnectionRequired(boolean isNativeConnectionRequired) {
+        this.isNativeConnectionRequired = isNativeConnectionRequired;
+    }
+
+    /**
+     * ADVANCED:
+     * Return if the descriptor requires usage of a native (unwrapped) JDBC connection.
+     * This may be required for some Oracle JDBC support when a wrapping DataSource is used.
+     */
+    public boolean isNativeConnectionRequired() {
+        return isNativeConnectionRequired;
     }
 }

@@ -406,6 +406,9 @@ public class ObjectRelationalDataTypeDescriptor extends RelationalDescriptor {
 
         ValueReadQuery valueQuery = new ValueReadQuery();
         valueQuery.setSQLStatement(statement);
+        valueQuery.prepareCall(session, new DatabaseRecord());
+        // Must return unwrapped Ref on WLS.
+        valueQuery.getCall().setIsNativeConnectionRequired(true);
 
         Ref ref = (Ref)session.executeQuery(valueQuery);
 

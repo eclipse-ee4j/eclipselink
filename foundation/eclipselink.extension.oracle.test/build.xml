@@ -187,6 +187,10 @@ CREATE OR REPLACE TYPE MY_GEOMETRY AS OBJECT (id NUMBER, geom MDSYS.SDO_GEOMETRY
             <param name="TEST_CLASS" value="org.eclipse.persistence.testing.tests.xdb.XDBTestModelMWIntegration"/>
             <param name="DB_URL" value="${db.oci.url}"/>
         </antcall>
+        <antcall target="run-test" inheritRefs="true">
+            <param name="TEST_CLASS" value="org.eclipse.persistence.testing.tests.unwrappedconnection.UnwrapConnectionXDBTestModel"/>
+            <param name="DB_URL" value="${db.oci.url}"/>
+        </antcall>
         <antcall target="generate-report" inheritRefs="true"/>
     </target>
 

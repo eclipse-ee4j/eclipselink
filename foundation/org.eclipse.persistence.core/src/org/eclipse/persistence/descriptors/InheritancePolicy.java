@@ -913,6 +913,11 @@ public class InheritancePolicy implements Serializable, Cloneable {
                     cmpPolicy.internalSetUpdateAllFields(parentCMPPolicy.internalGetUpdateAllFields());
                 }
             }
+            
+            // Inherit the native connection requirement.
+            if (getParentDescriptor().isNativeConnectionRequired()) {
+                getDescriptor().setIsNativeConnectionRequired(true);
+            }
         }
 
         initializeOnlyInstancesExpression();

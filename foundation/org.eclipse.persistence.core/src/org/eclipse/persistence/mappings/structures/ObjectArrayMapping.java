@@ -67,6 +67,9 @@ public class ObjectArrayMapping extends AbstractCompositeCollectionMapping  impl
         ObjectRelationalDatabaseField field = (ObjectRelationalDatabaseField)getField();
         field.setSqlType(java.sql.Types.ARRAY);
         field.setSqlTypeName(getStructureName());
+
+        // May require native connection in WLS to avoid wrapping wrapped.
+        getDescriptor().setIsNativeConnectionRequired(true);
     }
 
     public void setFieldName(String fieldName) {

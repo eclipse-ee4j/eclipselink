@@ -81,6 +81,9 @@ public class CallQueryMechanism extends DatasourceCallQueryMechanism {
                     call.setShouldCacheStatement(query.shouldCacheStatement());
                 }
                 call.setQueryTimeout(query.getQueryTimeout());
+                if (query.isNativeConnectionRequired()) {
+                    call.setIsNativeConnectionRequired(true);
+                }
                 if (query.isReadQuery()) {
                     ReadQuery readQuery = (ReadQuery)query;
                     if (!call.shouldIgnoreFirstRowMaxResultsSettings()){
@@ -97,7 +100,7 @@ public class CallQueryMechanism extends DatasourceCallQueryMechanism {
                 call.prepare(executionSession);
             }
         } else if (getCall() != null) {
-            if(getQuery().shouldCloneCall()){
+            if (getQuery().shouldCloneCall()){
                 //For glassFish bug2689, the call needs to be cloned when query asks to do so. 
                 call = (DatabaseCall)getDatabaseCall().clone();
                 setCall(call);
@@ -110,6 +113,9 @@ public class CallQueryMechanism extends DatasourceCallQueryMechanism {
                 call.setShouldCacheStatement(query.shouldCacheStatement());
             }
             call.setQueryTimeout(query.getQueryTimeout());
+            if (query.isNativeConnectionRequired()) {
+                call.setIsNativeConnectionRequired(true);
+            }
             if (query.isReadQuery()) {
                 ReadQuery readQuery = (ReadQuery)query;
                 if (!call.shouldIgnoreFirstRowMaxResultsSettings()){

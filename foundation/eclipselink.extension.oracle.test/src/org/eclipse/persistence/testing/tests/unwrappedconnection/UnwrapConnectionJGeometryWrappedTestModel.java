@@ -8,29 +8,26 @@
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
- *     Oracle - initial API and implementation from Oracle TopLink
+ *     James Sutherland - Testing unwrapping
  ******************************************************************************/  
 package org.eclipse.persistence.testing.tests.unwrappedconnection;
 
-import org.eclipse.persistence.testing.tests.xdb.XDBTestModel;
+import org.eclipse.persistence.sessions.factories.SessionManager;
 
-
-public class UnwrapConnectionXDBTestModel extends UnwrapConnectionBaseTestModel{
+public class UnwrapConnectionJGeometryWrappedTestModel extends UnwrapConnectionBaseTestModel {
     
-    public UnwrapConnectionXDBTestModel() {
-        setDescription("This model tests XML Type using unwrapped connection.");
+    public UnwrapConnectionJGeometryWrappedTestModel() {
+        setDescription("This model tests JGeometry type etc. using unwrapped connection.");
     }
     
-    public void addTests(){
-        addTest(new org.eclipse.persistence.testing.tests.xdb.XDBTestModel());
+    public void addTests() {
+        addTest(new org.eclipse.persistence.testing.tests.spatial.jgeometry.wrapped.WrappedJGeometryTestModel());
     }
-    
-    /**
-     * Return the JUnit suite to allow JUnit runner to find it.
-     */
-    public static junit.framework.TestSuite suite() {
-        UnwrapConnectionXDBTestModel model = new UnwrapConnectionXDBTestModel();
-        model.addTests();
-        return model;
+
+    public void setup() {
+        super.setup();
+        
+        // Must clear SessionManager as tests are JUnit tests.
+        SessionManager.getManager().destroyAllSessions();
     }
 }

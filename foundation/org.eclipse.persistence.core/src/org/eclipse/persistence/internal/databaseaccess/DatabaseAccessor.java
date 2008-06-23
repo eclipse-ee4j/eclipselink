@@ -28,6 +28,7 @@ import java.sql.Statement;
 import java.sql.Types;
 import java.util.Enumeration;
 import java.util.Hashtable;
+import java.util.Map;
 import java.util.Vector;
 
 // EclipseLink imports
@@ -152,12 +153,12 @@ public class DatabaseAccessor extends DatasourceAccessor {
      * Either return the cached dynamic statement, or a new statement.
      * This statement must be released after execution.
      */
-    public synchronized Statement allocateDynamicStatement() throws SQLException {
+    public synchronized Statement allocateDynamicStatement(Connection connection) throws SQLException {
         if (dynamicStatement == null) {
-            dynamicStatement = getConnection().createStatement();
+            dynamicStatement = connection.createStatement();
         }
         if (isDynamicStatementInUse()) {
-            return getConnection().createStatement();
+            return connection.createStatement();
         }
         setIsDynamicStatementInUse(true);
         return dynamicStatement;
@@ -1295,48 +1296,48 @@ public class DatabaseAccessor extends DatasourceAccessor {
     /**
      * Prepare the SQL statement for the call.
      * First check if the statement is cached before building a new one.
-     * Currently the SQL string is used as the cache key, this may have to be switched if it becomes a performance problem.
      * @param unwrapConnection boolean flag set to true to unwrap the connection before preparing the statement in the 
      *  case of a parameterized call.  
      */
     public Statement prepareStatement(DatabaseCall call, AbstractSession session, boolean unwrapConnection) throws SQLException {
         Statement statement = null;
         if (call.usesBinding(session) && call.shouldCacheStatement(session)) {
-            // Check the cache by sql string, must syncronize check and removal.
-            synchronized (getStatementCache()) {
-                statement = (PreparedStatement)getStatementCache().get(call.getSQLString());
+            // Check the cache by sql string, must synchronize check and removal.
+            Map statementCache = getStatementCache();
+            synchronized (statementCache) {
+                statement = (PreparedStatement)statementCache.get(call.getSQLString());
                 if (statement != null) {
                     // Need to remove to allow concurrent statement execution.
-                    getStatementCache().remove(call.getSQLString());
+                    statementCache.remove(call.getSQLString());
                 }
             }
         }
 
         if (statement == null) {
+            Connection nativeConnection = getConnection();
+            // Unwrap the connection if required.
+            // This needs to be done in some cases before the statement is created to ensure the statement
+            // and result set are not wrapped.
+            if (unwrapConnection || call.isNativeConnectionRequired()) {
+                nativeConnection = getPlatform().getConnection(session, getConnection());
+            }
             if (call.isCallableStatementRequired()) {
                 // Callable statements are used for StoredProcedures and PLSQL blocks.
                 if (call.isResultSetScrollable()) {
-                    statement = getConnection().prepareCall(call.getSQLString(), call.getResultSetType(), call.getResultSetConcurrency());
+                    statement = nativeConnection.prepareCall(call.getSQLString(), call.getResultSetType(), call.getResultSetConcurrency());
                     statement.setFetchSize(call.getResultSetFetchSize());
                 } else {
-                    statement = getConnection().prepareCall(call.getSQLString());
+                    statement = nativeConnection.prepareCall(call.getSQLString());
                 }
             } else if (call.isResultSetScrollable()) {
                 // Scrollable statements are used for ScrollableCursors.
-                statement = getConnection().prepareStatement(call.getSQLString(), call.getResultSetType(), call.getResultSetConcurrency());
+                statement = nativeConnection.prepareStatement(call.getSQLString(), call.getResultSetType(), call.getResultSetConcurrency());
                 statement.setFetchSize(call.getResultSetFetchSize());
             } else if (call.isDynamicCall(session)) {
                 // PERF: Dynamic statements are used for dynamic SQL.
-                statement = allocateDynamicStatement();
+                statement = allocateDynamicStatement(nativeConnection);
             } else {
-                // Prepared statements are used if binding is used, or dynamic statements are turned off.
-                //Performance, it is better to not always unwrap the connection for driver statement caching etc.
-                if (unwrapConnection){
-                    //bug 4241441 - returns the unwrapped connection if neccessary. Might want to check the call as well
-                    statement = this.getPlatform().getConnection(session, getConnection()).prepareStatement(call.getSQLString());
-                }else {
-                    statement = getConnection().prepareStatement(call.getSQLString());
-                }
+                statement = nativeConnection.prepareStatement(call.getSQLString());
             }
         }
 

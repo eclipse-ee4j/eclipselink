@@ -282,8 +282,8 @@ public abstract class TIMESTAMPTester extends TypeTester {
     protected void test(WriteTypeObjectTest testCase) {
         try {
             changeTimeZone((DatabaseSession)testCase.getSession(), "America/Los_Angeles");
-        } catch (Exception e) {
-
+        } catch (Exception exception) {
+            throw new TestProblemException("Error setting timezone on connection.", exception);
         }
         super.test(testCase);
     }

@@ -55,6 +55,7 @@ public abstract class SimpleSpatialTestCase extends TestCase {
                 Session configSession = SimpleJGeometryTestModel.getConfigSession();
                 project.setLogin((DatabaseLogin)configSession.getLogin().clone());
                 spatialSession = new org.eclipse.persistence.internal.sessions.DatabaseSessionImpl(project);
+                spatialSession.setServerPlatform(configSession.getServerPlatform());
                 spatialSession.getPlatform().addStructConverter(new JGeometryConverter());
                 // make the MyGeometryConverter type point at a user defined type for the current user
                 //Bug5837254, in case test running on the server, the user name should extract from the metadata

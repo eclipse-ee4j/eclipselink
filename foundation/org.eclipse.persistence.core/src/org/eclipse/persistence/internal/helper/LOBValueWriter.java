@@ -125,7 +125,9 @@ public class LOBValueWriter {
     */
     private DatabaseCall buildCallFromSelectStatementForLocator(SQLSelectStatement selectStatement, WriteObjectQuery writeQuery, DatabaseCall dbCall, AbstractSession session) {
         DatabaseCall call = selectStatement.buildCall(session);
-
+        // Locator LOB must not be wrapped (WLS wraps LOBs).
+        call.setIsNativeConnectionRequired(true);
+        
         //the LOB context must be passed into the new call object
         call.setContexts(dbCall.getContexts());
         //need to explicitly define one row return, otherwise, EL assumes multiple rows return and confuses the accessor

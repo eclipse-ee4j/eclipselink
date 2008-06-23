@@ -12,9 +12,13 @@
  ******************************************************************************/  
 package org.eclipse.persistence.platform.server.was;
 
+import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
+import org.eclipse.persistence.logging.SessionLog;
 import org.eclipse.persistence.platform.server.ServerPlatformBase;
 import org.eclipse.persistence.sessions.DatabaseSession;
 
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.sql.Connection;
 import org.eclipse.persistence.transaction.was.WebSphereTransactionController;
 
@@ -24,11 +28,28 @@ import org.eclipse.persistence.transaction.was.WebSphereTransactionController;
  * This is the concrete subclass responsible for representing WebSphere-specific server behavior.
  *
  * This platform has:
- * - No JMX MBean runtime services
- * - transaction controller classes overridden in its subclasses
+ * <ul>
+ * <li> WebSphereTransactionController (JTA integration).
+ * <li> DataSource connection unwrapping (Oracle JDBC API support)
+ * </ul>
  */
 public class WebSpherePlatform extends ServerPlatformBase {
 
+    /**
+     * Cached WAS connection class used to reflectively check connections and unwrap them.
+     */
+    protected Class websphereConnectionClass;
+
+    /**
+     * Cached WAS util class used to reflectively check connections and unwrap them.
+     */
+    protected Class websphereUtilClass;
+    
+    /**
+     * Cached WAS util method used for unwrapping connections.
+     */
+    protected Method vendorConnectionMethod;
+    
     /**
      * INTERNAL:
      * Default Constructor: All behavior for the default constructor is inherited
@@ -37,17 +58,6 @@ public class WebSpherePlatform extends ServerPlatformBase {
         super(newDatabaseSession);
         this.disableRuntimeServices();
     }
-	
-	public Connection unwrapOracleConnection(Connection connection) {
-		// TODO: do reflectively
-		throw new RuntimeException("TODO: DO Reflectively");
-		/*
-		 * if (connection instanceof
-		 * com.ibm.ws.rsadapter.jdbc.WSJdbcConnection){ return
-		 * (Connection)com.ibm.ws.rsadapter.jdbc.WSJdbcUtil.getNativeConnection((com.ibm.ws.rsadapter.jdbc.WSJdbcConnection)
-		 * connection); } return connection;
-		 */
-	}
     
     /**
      * INTERNAL: getExternalTransactionControllerClass(): Answer the class of 
@@ -67,4 +77,71 @@ public class WebSpherePlatform extends ServerPlatformBase {
     	}
         return externalTransactionControllerClass;
     }
+
+
+    /**
+     * Return the class (interface) for the WebSphere JDBC connection wrapper.
+     */
+    protected Class getWebsphereUtilClass() {
+        if (this.websphereUtilClass == null) {
+            try {
+                this.websphereUtilClass = (Class) getDatabaseSession().getPlatform().convertObject("com.ibm.ws.rsadapter.jdbc.WSJdbcUtil", Class.class);
+            } catch (Throwable exception) {
+                getDatabaseSession().getSessionLog().logThrowable(SessionLog.WARNING, exception);
+                this.websphereUtilClass = void.class;
+            }
+        }
+        return this.websphereUtilClass;
+    }
+    
+    /**
+     * Return the class (interface) for the WebSphere JDBC connection wrapper.
+     */
+    protected Class getWebsphereConnectionClass() {
+        if (this.websphereConnectionClass == null) {
+            try {
+                this.websphereConnectionClass = (Class) getDatabaseSession().getPlatform().convertObject("com.ibm.ws.rsadapter.jdbc.WSJdbcConnection", Class.class);
+            } catch (Throwable exception) {
+                getDatabaseSession().getSessionLog().logThrowable(SessionLog.WARNING, exception);
+                this.websphereConnectionClass = void.class;
+            }
+        }
+        return this.websphereConnectionClass;
+    }
+    
+    /**
+     * Return the method for the WebSphere JDBC connection wrapper vendorConnection.
+     */
+    protected Method getVendorConnectionMethod() {
+        if ((this.vendorConnectionMethod == null) && (!getWebsphereUtilClass().equals(void.class))) {
+            try {
+                Class args[] = new Class[1];
+                args[0] = getWebsphereConnectionClass();
+                this.vendorConnectionMethod = PrivilegedAccessHelper.getDeclaredMethod(getWebsphereUtilClass(), "getNativeConnection", new Class[0]);
+            } catch (NoSuchMethodException exception) {
+                getDatabaseSession().getSessionLog().logThrowable(SessionLog.WARNING, exception);
+            }
+        }
+
+        return this.vendorConnectionMethod;
+    }
+
+    /**
+     * Unwraps the WebSphere JDBC connection wrapping using the WebLogic API reflectively.
+     */
+    @Override
+    public Connection unwrapConnection(Connection connection) {
+        if (getWebsphereConnectionClass().isInstance(connection) && getVendorConnectionMethod() != null) {
+            try {
+                return (Connection) PrivilegedAccessHelper.invokeMethod(getVendorConnectionMethod(), connection);
+            } catch (IllegalAccessException exception) {
+                getDatabaseSession().getSessionLog().logThrowable(SessionLog.WARNING, exception);
+            } catch (InvocationTargetException exception) {
+                getDatabaseSession().getSessionLog().logThrowable(SessionLog.WARNING, exception);
+            }
+        }
+
+        return super.unwrapConnection(connection);
+    }
+    
 }

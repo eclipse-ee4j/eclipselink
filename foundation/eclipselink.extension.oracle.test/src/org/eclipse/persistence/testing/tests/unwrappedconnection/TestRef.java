@@ -8,17 +8,36 @@
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
- *     Oracle - initial API and implementation from Oracle TopLink
+ *     James Sutherland - Adding wrapping
  ******************************************************************************/  
 package org.eclipse.persistence.testing.tests.unwrappedconnection;
 
-public class UnwrapConnectionSimpleJGeometryTestModel extends UnwrapConnectionBaseTestModel {
+import java.sql.Ref;
+import java.sql.SQLException;
+import java.util.Map;
+
+public class TestRef implements Ref {
+
+    private Ref ref;
     
-    public UnwrapConnectionSimpleJGeometryTestModel() {
-        setDescription("This model tests JGemetry type with database using unwrapped connection.");
+    public TestRef(Ref ref){
+        this.ref = ref;
     }
-    
-    public void addTests(){
-        addTest(new org.eclipse.persistence.testing.tests.spatial.jgeometry.SimpleJGeometryTestModel());
+
+    public String getBaseTypeName() throws SQLException {
+        return ref.getBaseTypeName();
     }
+
+    public Object getObject() throws SQLException {
+        return ref.getObject();
+    }
+
+    public Object getObject(Map<String, Class<?>> map) throws SQLException {
+        return ref.getObject(map);
+    }
+
+    public void setObject(Object value) throws SQLException {
+        ref.setObject(value);
+    }
+        
 }

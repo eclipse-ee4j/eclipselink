@@ -14,6 +14,8 @@ package org.eclipse.persistence.testing.tests.spatial.jgeometry;
 
 import java.util.*;
 import oracle.spatial.geometry.JGeometry;
+
+import org.eclipse.persistence.queries.DataReadQuery;
 import org.eclipse.persistence.sessions.Session;
 import org.eclipse.persistence.testing.models.spatial.jgeometry.SimpleSpatial;
 import org.eclipse.persistence.testing.models.spatial.jgeometry.wrapped.Spatial;
@@ -37,7 +39,9 @@ public class SQLReader {
     }
 
     private void readResults(Session session) {
-        List<Map> rawResults = session.executeSQL(getSql());
+        DataReadQuery query = new DataReadQuery(getSql());
+        query.setIsNativeConnectionRequired(true);
+        List<Map> rawResults = (List)session.executeQuery(query);
         this.results = new ArrayList<Spatial>(rawResults.size());
 
         for (Map rawResult: rawResults) {

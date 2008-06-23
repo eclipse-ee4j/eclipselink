@@ -8,29 +8,33 @@
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
- *     Oracle - initial API and implementation from Oracle TopLink
+ *     James Sutherland - Adding wrapping
  ******************************************************************************/  
 package org.eclipse.persistence.testing.tests.unwrappedconnection;
 
-import org.eclipse.persistence.testing.tests.xdb.XDBTestModel;
+import java.sql.Struct;
+import java.sql.SQLException;
+import java.util.Map;
 
+public class TestStruct implements Struct {
 
-public class UnwrapConnectionXDBTestModel extends UnwrapConnectionBaseTestModel{
+    private Struct struct;
     
-    public UnwrapConnectionXDBTestModel() {
-        setDescription("This model tests XML Type using unwrapped connection.");
+    public TestStruct(Struct struct){
+        this.struct = struct;
     }
-    
-    public void addTests(){
-        addTest(new org.eclipse.persistence.testing.tests.xdb.XDBTestModel());
+
+    public Object[] getAttributes() throws SQLException {
+        return struct.getAttributes();
     }
-    
-    /**
-     * Return the JUnit suite to allow JUnit runner to find it.
-     */
-    public static junit.framework.TestSuite suite() {
-        UnwrapConnectionXDBTestModel model = new UnwrapConnectionXDBTestModel();
-        model.addTests();
-        return model;
+
+    public Object[] getAttributes(Map<String, Class<?>> map) throws SQLException {
+        return struct.getAttributes(map);
     }
+
+    public String getSQLTypeName() throws SQLException {
+        return struct.getSQLTypeName();
+    }
+
+        
 }

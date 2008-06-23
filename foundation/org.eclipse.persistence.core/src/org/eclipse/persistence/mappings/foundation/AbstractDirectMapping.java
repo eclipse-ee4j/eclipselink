@@ -619,6 +619,11 @@ public abstract class AbstractDirectMapping extends DatabaseMapping {
         if (getConverter() != null) {
             getConverter().initialize(this, session);
         }
+        
+        // Must unwrap Struct types on WLS.
+        if (getField().getSqlType() == java.sql.Types.STRUCT) {
+            getDescriptor().setIsNativeConnectionRequired(true);
+        }
     }
 
     /**

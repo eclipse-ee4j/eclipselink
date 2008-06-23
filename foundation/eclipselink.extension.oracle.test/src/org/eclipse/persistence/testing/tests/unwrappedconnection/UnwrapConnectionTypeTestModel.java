@@ -19,7 +19,7 @@ public class UnwrapConnectionTypeTestModel extends UnwrapConnectionBaseTestModel
     }
     
     public void addTests(){
-        addTest(new org.eclipse.persistence.testing.tests.types.TypeTestModel());
+        addTest(new org.eclipse.persistence.testing.tests.types.OracleTIMESTAMPTypeTestModelWithAccessors());
     }
 
 }

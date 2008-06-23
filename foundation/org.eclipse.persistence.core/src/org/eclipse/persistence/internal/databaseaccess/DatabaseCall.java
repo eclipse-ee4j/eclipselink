@@ -34,17 +34,18 @@ import org.eclipse.persistence.mappings.structures.ObjectRelationalDataTypeDescr
  */
 public abstract class DatabaseCall extends DatasourceCall {
     /**
-     * Indicates if the FirstRow and MaxResults values in this
-     * call object are to be ignored.  If true, it should mean they have been
-     * built into the SQL statement directly ex: using Oracle Rownum support
-     */
-    protected boolean ignoreFirstRowMaxResultsSettings = false;
-    /**
      * Following fields are used to bind MaxResults and FirstRow settings into 
      * the query instead of using the values stored in the call.
      */
     public static DatabaseField MAXROW_FIELD = new DatabaseField("TopLink-MaxResults");
     public static DatabaseField FIRSTRESULT_FIELD = new DatabaseField("TopLink-FirstRow");
+    
+    /**
+     * Indicates if the FirstRow and MaxResults values in this
+     * call object are to be ignored.  If true, it should mean they have been
+     * built into the SQL statement directly ex: using Oracle Rownum support
+     */
+    protected boolean ignoreFirstRowMaxResultsSettings;
 
     // The result and statement are cached for cursor selects.
     transient protected Statement statement;
@@ -85,8 +86,10 @@ public abstract class DatabaseCall extends DatasourceCall {
     protected int firstResult;
 
     //contain field - value pairs for LOB fields used to the
-    //steaming operation during the writing (to the table)
-    private transient AbstractRecord contexts = null;
+    //streaming operation during the writing (to the table)
+    private transient AbstractRecord contexts;
+    
+    /** Allow for a single cursored output parameter. */
     protected boolean isCursorOutputProcedure;
 
     // This parameter is here to determine if we should expect a ResultSet back from the call
@@ -98,7 +101,12 @@ public abstract class DatabaseCall extends DatasourceCall {
 
     // Callable statement is required if there is an output parameter
     protected boolean isCallableStatementRequired;
+    
+    /** The SQL string to execute. */
     protected String sqlString;
+    
+    /** Allow connection unwrapping to be configured. */
+    protected boolean isNativeConnectionRequired;
 
     public DatabaseCall() {
         super.shouldProcessTokenInQuotes=false;
@@ -1067,5 +1075,21 @@ public abstract class DatabaseCall extends DatasourceCall {
      */
     public void useUnnamedCursorOutputAsResultSet() {
         setIsCursorOutputProcedure(true);
+    }
+
+    /**
+     * Set if the call requires usage of a native (unwrapped) JDBC connection.
+     * This may be required for some Oracle JDBC support when a wrapping DataSource is used.
+     */
+    public void setIsNativeConnectionRequired(boolean isNativeConnectionRequired) {
+        this.isNativeConnectionRequired = isNativeConnectionRequired;
+    }
+
+    /**
+     * Return if the call requires usage of a native (unwrapped) JDBC connection.
+     * This may be required for some Oracle JDBC support when a wrapping DataSource is used.
+     */
+    public boolean isNativeConnectionRequired() {
+        return isNativeConnectionRequired;
     }
 }

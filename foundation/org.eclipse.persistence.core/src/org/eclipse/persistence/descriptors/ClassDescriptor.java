@@ -165,6 +165,9 @@ public class ClassDescriptor implements Cloneable, Serializable {
     public static final int ISOLATE_NEW_DATA_AFTER_TRANSACTION = 1;
     public static final int ISOLATE_CACHE_AFTER_TRANSACTION = 2;
     public static final int ISOLATE_CACHE_ALWAYS = 3;
+
+    /** Allow connection unwrapping to be configured. */
+    protected boolean isNativeConnectionRequired;
     
     /**
      * PUBLIC:
@@ -575,7 +578,11 @@ public class ClassDescriptor implements Cloneable, Serializable {
      * if the statement is not appropriate.
      */
     public DatabaseCall buildCallFromStatement(SQLStatement statement, AbstractSession session) {
-        return statement.buildCall(session);
+        DatabaseCall call = statement.buildCall(session);
+        if (isNativeConnectionRequired()) {
+            call.setIsNativeConnectionRequired(true);
+        }
+        return call;
     }
 
     /**
@@ -4591,5 +4598,23 @@ public class ClassDescriptor implements Cloneable, Serializable {
      */
     public boolean isReturnTypeRequiredForReturningPolicy() {
         return true;
+    }
+
+    /**
+     * ADVANCED:
+     * Set if the descriptor requires usage of a native (unwrapped) JDBC connection.
+     * This may be required for some Oracle JDBC support when a wrapping DataSource is used.
+     */
+    public void setIsNativeConnectionRequired(boolean isNativeConnectionRequired) {
+        this.isNativeConnectionRequired = isNativeConnectionRequired;
+    }
+
+    /**
+     * ADVANCED:
+     * Return if the descriptor requires usage of a native (unwrapped) JDBC connection.
+     * This may be required for some Oracle JDBC support when a wrapping DataSource is used.
+     */
+    public boolean isNativeConnectionRequired() {
+        return isNativeConnectionRequired;
     }
 }

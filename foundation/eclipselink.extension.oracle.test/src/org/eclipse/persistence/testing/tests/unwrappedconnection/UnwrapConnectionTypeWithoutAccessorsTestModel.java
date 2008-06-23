@@ -12,25 +12,14 @@
  ******************************************************************************/  
 package org.eclipse.persistence.testing.tests.unwrappedconnection;
 
-import org.eclipse.persistence.testing.tests.xdb.XDBTestModel;
-
-
-public class UnwrapConnectionXDBTestModel extends UnwrapConnectionBaseTestModel{
+public class UnwrapConnectionTypeWithoutAccessorsTestModel extends UnwrapConnectionBaseTestModel {
     
-    public UnwrapConnectionXDBTestModel() {
-        setDescription("This model tests XML Type using unwrapped connection.");
+    public UnwrapConnectionTypeWithoutAccessorsTestModel() {
+        setDescription("This model tests TIMESTAMPZ type etc. using unwrapped connection.");
     }
     
     public void addTests(){
-        addTest(new org.eclipse.persistence.testing.tests.xdb.XDBTestModel());
+        addTest(new org.eclipse.persistence.testing.tests.types.OracleTIMESTAMPTypeTestModelWithOutAccessors());
     }
-    
-    /**
-     * Return the JUnit suite to allow JUnit runner to find it.
-     */
-    public static junit.framework.TestSuite suite() {
-        UnwrapConnectionXDBTestModel model = new UnwrapConnectionXDBTestModel();
-        model.addTests();
-        return model;
-    }
+
 }
