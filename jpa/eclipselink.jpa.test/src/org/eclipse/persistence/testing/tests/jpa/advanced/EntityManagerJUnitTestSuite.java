@@ -236,6 +236,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         suite.addTest(new EntityManagerJUnitTestSuite("test210280EntityManagerFromPUwithSpaceInNameAndPath"));
         suite.addTest(new EntityManagerJUnitTestSuite("testNewObjectNotCascadePersist"));
         suite.addTest(new EntityManagerJUnitTestSuite("testConnectionPolicy"));
+        suite.addTest(new EntityManagerJUnitTestSuite("testConverterIn"));
         return suite;
     }
 
@@ -5832,5 +5833,18 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         if(errorMsg.length() > 0) {
             fail(errorMsg);
         }
+    }
+    
+    /*
+     * Added for bug 235340 - parameters in named query are not  transformed when IN is used.
+     * Before the fix this used to throw exception.
+     */
+    public void testConverterIn() {
+        EntityManager em = createEntityManager();
+        List<Employee> emps = em.createQuery("SELECT e FROM Employee e WHERE e.gender IN (:GENDER1, :GENDER2)").
+                        setParameter("GENDER1", Employee.Gender.Male).
+                        setParameter("GENDER2", Employee.Gender.Female).
+                        getResultList();
+        em.close();
     }
 }

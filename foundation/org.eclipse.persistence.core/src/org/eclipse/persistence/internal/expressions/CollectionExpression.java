@@ -15,6 +15,7 @@ package org.eclipse.persistence.internal.expressions;
 import java.util.Collection;
 
 import java.util.Iterator;
+import java.util.Map;
 import java.util.Vector;
 
 import org.eclipse.persistence.expressions.Expression;
@@ -58,5 +59,39 @@ public class CollectionExpression extends ConstantExpression {
         }
         
         return getLocalBase().getFieldValue(getValue(), session);
+    }
+
+    public void setLocalBase(Expression e) {
+        super.setLocalBase(e);
+        if (value instanceof Collection) {
+            Collection values = (Collection)value;
+            for (Iterator iterator = values.iterator(); iterator.hasNext();) {
+                Object val = iterator.next();
+                if (val instanceof Expression){
+                    ((Expression)val).setLocalBase(e); 
+                }
+            }
+        }
+    }
+
+    /**
+     * INTERNAL:
+     * Used for cloning.
+     */
+    protected void postCopyIn(Map alreadyDone) {        
+        super.postCopyIn(alreadyDone);
+        if (value instanceof Collection) {
+            Collection values = (Collection)value;
+            Vector newValues = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance(values.size());
+            for (Iterator iterator = values.iterator(); iterator.hasNext();) {
+                Object val = iterator.next();
+                if (val instanceof Expression){
+                    newValues.add(((Expression)val).copiedVersionFrom(alreadyDone)); 
+                } else {
+                    newValues.add(val);
+                }
+            }
+            value = newValues;
+        }
     }
 }

@@ -988,7 +988,7 @@ public abstract class DatabaseCall extends DatasourceCall {
                     Object parameter = parameters.get(parameterIndex);
                     // Parameter expressions are used for nesting and correct mapping conversion of the value.
                     if (parameter instanceof Collection) {
-                        Vector values = (Vector)parameter;
+                        Collection values = (Collection)parameter;
                         parametersValues.addAll(values);
                         int size = values.size();
                         writer.write("(");

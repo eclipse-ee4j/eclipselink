@@ -627,6 +627,34 @@ public class ExpressionTestSuite extends TestSuite {
     }
 
     /*
+     * added for bug 235340 - parameters in named query are not  transformed when IN is used
+     */
+    private void addInMultipleExpressionWithConvertionParameterTest() {
+
+        ExpressionBuilder ex = new ExpressionBuilder();
+        Vector vec = new Vector();
+        vec.add(ex.getParameter("gender1"));
+        vec.add(ex.getParameter("gender2"));
+        Expression exp = ex.get("gender").in(vec);
+
+        ReadAllQuery rq = new ReadAllQuery(Employee.class);
+        rq.setSelectionCriteria(exp);
+        rq.addArgument("gender1");
+        rq.addArgument("gender2");
+
+        Vector vect = new Vector();
+        vect.add("Male");
+        vect.add("Female");
+
+        ReadAllExpressionTest test = new ReadAllExpressionTest(Employee.class, 12);
+        test.setQuery(rq);
+        test.setArguments(vect);
+        test.setName("InMultipleExpressionWithConversionParameterTest");
+        test.setDescription("Test Expression IN with multiple parameters that require convertion");
+        addTest(test);
+    }
+
+    /*
      * added for bug 5842913 - tests backward compatibility of using 'in' with
      *   a parameter representing a collection
      */
@@ -1614,6 +1642,7 @@ public class ExpressionTestSuite extends TestSuite {
         addIsNotNullTest();
         addIsNotNullWithJoinTest();
         addInTest();
+        addInMultipleExpressionWithConvertionParameterTest();
         addInSingleVectorParameterTest();
         addInMultipleExpressionParameterTest();
         addNotInTest();
