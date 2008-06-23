@@ -14,6 +14,7 @@ package org.eclipse.persistence.testing.tests.unitofwork.transactionisolation;
 
 import org.eclipse.persistence.testing.framework.TestSuite;
 import org.eclipse.persistence.testing.models.employee.relational.EmployeeSystem;
+import org.eclipse.persistence.testing.models.insurance.*;
 import org.eclipse.persistence.testing.tests.unitofwork.UnitOfWorkClientSessionTestModel;
 import org.eclipse.persistence.sessions.server.Server;
 
@@ -27,7 +28,7 @@ import org.eclipse.persistence.sessions.server.Server;
  * <p>
  * UnitOfWork needed to be able to execute queries directly, and to build
  * working copy clones directly from a database row, as opposed to from an
- * orginal already placed in the shared cache.
+ * original already placed in the shared cache.
  * <p>
  * This series of tests is on a ClientSession, and all UnitOfWorks begin
  * transaction early.  Tests verify that no objects are placed in the UnitOfWork
@@ -38,6 +39,7 @@ import org.eclipse.persistence.sessions.server.Server;
 public class UnitOfWorkTransactionIsolationTestModel extends UnitOfWorkClientSessionTestModel {
     public void addRequiredSystems() {
         addRequiredSystem(new EmployeeSystem());
+        addRequiredSystem(new InsuranceSystem());
     }
 
     public void addTests() {
@@ -61,11 +63,12 @@ public class UnitOfWorkTransactionIsolationTestModel extends UnitOfWorkClientSes
         suite.addTest(new TransactionIsolationNoOriginalsIndirectionTest());
         suite.addTest(new TransactionIsolationNoOriginalsTest());
         suite.addTest(new TransactionIsolationRefreshTest());
+        suite.addTest(new TransactionIsolationBuildObjectCacheHitTest());
         return suite;
     }
 
     public Server buildServerSession() {
-        // possibly overide to use more than one write connection.
+        // possibly override to use more than one write connection.
         Server server = 
             ((org.eclipse.persistence.sessions.Project)getSession().getProject().clone()).createServerSession(1, 1);
         server.useReadConnectionPool(1, 1);

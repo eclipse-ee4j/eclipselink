@@ -9,6 +9,7 @@
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
+ *     dminsky - added countOccurrencesOf(Object, List) API
  ******************************************************************************/  
 package org.eclipse.persistence.internal.helper;
 
@@ -1996,6 +1997,25 @@ public class Helper implements Serializable {
                                         || ((value.getClass() == ClassConstants.INTEGER) && (((Integer)value).intValue() == 0))));
     }
 
+    /**
+     * Return an integer representing the number of occurrences (using equals()) of the
+     * specified object in the specified list.
+     * If the list is null or empty (or both the object and the list is null), 0 is returned.
+     */
+    public static int countOccurrencesOf(Object comparisonObject, List list) {
+        int instances = 0;
+        boolean comparisonObjectIsNull = comparisonObject == null;
+        if (list != null) {
+            for (int i = 0; i < list.size(); i++) {
+                Object listObject = list.get(i);
+                if ((comparisonObjectIsNull & listObject == null) || (!comparisonObjectIsNull && comparisonObject.equals(listObject))) {
+                    instances++;
+                }
+            }
+        }
+        return instances;
+    }
+    
     /**
      * Convert the URL into a URI allowing for special chars.
      */

@@ -49,6 +49,8 @@ public class QueryFrameworkTestSuite extends TestSuite {
         addTest(new ConformResultsWithMultitableAndJoiningTest());
         // EL Bug 235484 - EclipseLink is holding onto old unit of work
         addTest(new CachedUpdateCallsQueryClearTest());
+        addTest(new ZeroPrimaryKeyExistenceCheckTest(true));
+        addTest(new ZeroPrimaryKeyExistenceCheckTest(false));
     }
 
     //SRG test set is maintained by QA only, do NOT add any new test cases into it.

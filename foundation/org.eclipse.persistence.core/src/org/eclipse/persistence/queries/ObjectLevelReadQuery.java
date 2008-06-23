@@ -574,11 +574,9 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
         // The cache check must happen on the UnitOfWork in these cases either
         // to access transient state or for pessimistic locking, as only the 
         // UOW knows which objects it has locked.
-        if (shouldCheckCacheOnly() || shouldConformResultsInUnitOfWork() || getDescriptor().shouldAlwaysConformResultsInUnitOfWork() || (getLockMode() != ObjectBuildingQuery.NO_LOCK)) {
-            Object result = checkEarlyReturnImpl(unitOfWork, translationRow);
-            if (result != null) {
-                return result;
-            }
+        Object result = checkEarlyReturnImpl(unitOfWork, translationRow);
+        if (result != null) {
+            return result;
         }
 
         // don't bother trying to get a cache hit on the parent session
@@ -593,7 +591,7 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
         AbstractSession parentSession = unitOfWork.getParentIdentityMapSession(this);
 
         // assert parentSession != unitOfWork;
-        Object result = checkEarlyReturn(parentSession, translationRow);
+        result = checkEarlyReturn(parentSession, translationRow);
 
         if (result != null) {
             // Optimization: If find deleted object by exact primary key
