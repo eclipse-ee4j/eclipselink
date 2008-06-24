@@ -12,9 +12,6 @@
  ******************************************************************************/  
 package org.eclipse.persistence.testing.tests.unwrappedconnection;
 
-import org.eclipse.persistence.testing.tests.xdb.XDBTestModel;
-
-
 public class UnwrapConnectionXDBTestModel extends UnwrapConnectionBaseTestModel{
     
     public UnwrapConnectionXDBTestModel() {

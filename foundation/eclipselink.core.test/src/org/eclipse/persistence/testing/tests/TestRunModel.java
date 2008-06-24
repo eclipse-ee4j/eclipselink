@@ -235,7 +235,8 @@ public class TestRunModel extends TestModel {
         // Requires specific oracle database/driver (oci).
         tests.add("org.eclipse.persistence.testing.tests.xdb.XDBTestModel");
         tests.add("org.eclipse.persistence.testing.tests.xdb.XDBTestModelMWIntegration");
-                    
+        tests.add("org.eclipse.persistence.testing.tests.unwrappedconnection.UnwrapConnectionXDBTestModel");
+        
         TestModel model = new TestModel();
         model.setName("Oracle Tests");
         for (int index = 0; index < tests.size(); ++index) {
