@@ -79,7 +79,7 @@ public class PersistenceProvider implements javax.persistence.spi.PersistencePro
      * @return EntityManagerFactory for the persistence unit,
      * or null if the provider is not the right provider
      */
-    public EntityManagerFactory createEntityManagerFactory(String emName, Map properties, ClassLoader classLoader){
+    protected EntityManagerFactory createEntityManagerFactory(String emName, Map properties, ClassLoader classLoader){
         Map nonNullProperties = (properties == null) ? new HashMap() : properties;
         String name = emName;
         if (name == null){

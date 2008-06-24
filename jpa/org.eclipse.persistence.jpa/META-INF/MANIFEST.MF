@@ -4,14 +4,13 @@ Bundle-Name: EclipseLink JPA
 Bundle-SymbolicName: org.eclipse.persistence.jpa
 Bundle-Version: 0.1
 Require-Bundle: org.eclipse.persistence.core;visibility:=reexport
-Export-Package: org.eclipse.persistence.internal.jpa;
-  uses:="javax.persistence.spi,javax.sql,javax.persistence,javax.transaction",
- org.eclipse.persistence.internal.jpa.deployment;uses:="javax.persistence.spi,javax.sql",
- org.eclipse.persistence.internal.jpa.deployment.xml.parser;uses:="org.xml.sax,org.w3c.dom",
- org.eclipse.persistence.internal.jpa.jdbc;uses:="javax.sql",
- org.eclipse.persistence.internal.jpa.metadata;uses:="javax.persistence.spi",
+Export-Package: org.eclipse.persistence.internal.jpa,
+ org.eclipse.persistence.internal.jpa.deployment,
+ org.eclipse.persistence.internal.jpa.deployment.xml.parser,
+ org.eclipse.persistence.internal.jpa.jdbc,
+ org.eclipse.persistence.internal.jpa.metadata,
  org.eclipse.persistence.internal.jpa.metadata.accessors,
- org.eclipse.persistence.internal.jpa.metadata.accessors.mappings;uses:="javax.persistence",
+ org.eclipse.persistence.internal.jpa.metadata.accessors.mappings,
  org.eclipse.persistence.internal.jpa.metadata.accessors.objects,
  org.eclipse.persistence.internal.jpa.metadata.cache,
  org.eclipse.persistence.internal.jpa.metadata.changetracking,
@@ -26,12 +25,12 @@ Export-Package: org.eclipse.persistence.internal.jpa;
  org.eclipse.persistence.internal.jpa.metadata.tables,
  org.eclipse.persistence.internal.jpa.metadata.transformers,
  org.eclipse.persistence.internal.jpa.metadata.xml,
- org.eclipse.persistence.internal.jpa.transaction;uses:="javax.persistence,javax.transaction.xa,javax.transaction",
+ org.eclipse.persistence.internal.jpa.transaction,
  org.eclipse.persistence.internal.weaving,
- org.eclipse.persistence.jpa;uses:="javax.persistence.spi,javax.persistence",
- org.eclipse.persistence.jpa.osgi;uses:="javax.persistence.spi,org.osgi.framework,javax.persistence",
+ org.eclipse.persistence.jpa,
+ org.eclipse.persistence.jpa.osgi,
  org.eclipse.persistence.queries,
- org.eclipse.persistence.tools.weaving.jpa;uses:="org.apache.tools.ant.types,org.apache.tools.ant"
+ org.eclipse.persistence.tools.weaving.jpa
 Bundle-Activator: org.eclipse.persistence.jpa.osgi.Activator
 Bundle-ClassPath: .
 Import-Package: javax.persistence;version="[1.0.0,2.0.0)",
