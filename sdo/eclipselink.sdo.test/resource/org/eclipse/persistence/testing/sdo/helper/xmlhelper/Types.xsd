@@ -1,0 +1,12 @@
+<xsd:schema elementFormDefault="qualified" targetNamespace="http://www.example.org/types" xmlns:sdoJava="commonj.sdo/java" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+    <xsd:import namespace="http://www.example.org/emp" schemaLocation="Emp_Types.xsd"/>
+    <xsd:simpleType name="dateTime-Timestamp" sdoJava:instanceClass="java.sql.Timestamp">
+        <xsd:restriction base="xsd:dateTime"/>
+    </xsd:simpleType>
+    <xsd:simpleType name="time-Time" sdoJava:instanceClass="java.sql.Time">
+        <xsd:restriction base="xsd:time"/>
+    </xsd:simpleType>
+    <xsd:simpleType name="date-Date" sdoJava:instanceClass="java.sql.Date">
+        <xsd:restriction base="xsd:date"/>
+    </xsd:simpleType>
+</xsd:schema>

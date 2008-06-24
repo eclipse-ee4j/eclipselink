@@ -770,7 +770,7 @@ public class SDOType implements Type, Serializable {
         for (int i = 0; i < getNonFinalizedReferencingProps().size(); i++) {
             SDOProperty nextProp = (SDOProperty)getNonFinalizedReferencingProps().get(i);
             String nextURI = (String)getNonFinalizedMappingURIs().get(i);
-            nextProp.buildMapping(nextURI);
+            nextProp.buildMapping(nextURI, nextProp.getIndexInType());
         }
         // set @sdoRef attribute mapping for complex types that are not involved in inheritance
         if (!isDataType() && getBaseTypes().size() == 0 && getSubTypes().size() == 0) {

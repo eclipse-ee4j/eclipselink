@@ -46,6 +46,7 @@ public class SDOXMLHelperLoadAndSaveTestSuite {
         suite.addTest(new TestSuite(LoadAndSaveImportsDefaultNamespaceTestCases.class));
         // one expected failure 
         suite.addTest(new TestSuite(LoadAndSaveWithImportsTestCases.class));
+        suite.addTest(new TestSuite(LoadAndSaveImportsElementOrderTestCases.class));
         suite.addTest(new TestSuite(LoadAndSaveIDRefTestCases.class));
         suite.addTest(new TestSuite(LoadAndSavePurchaseOrderComplexTestCases.class));
         suite.addTest(new TestSuite(LoadAndSavePurchaseOrderComplexDefaultNSTestCases.class));
