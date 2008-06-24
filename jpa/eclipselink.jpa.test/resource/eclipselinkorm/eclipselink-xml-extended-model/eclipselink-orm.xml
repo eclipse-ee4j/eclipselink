@@ -70,8 +70,8 @@
             </basic>
             <basic name="sin">
                 <column name="SIN"/>
-                <access-methods get-method="returnSIN" set-method="enterSIN"/>
                 <property name="attributeName" value="sin"/>
+                <access-methods get-method="returnSIN" set-method="enterSIN"/>
             </basic>
             <basic name="gender">
                 <column name="GENDER"/>
