@@ -1,496 +1,496 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<eclipselink:object-persistence version="Eclipse Persistence Services - SNAPSHOT (Build 20071113)" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:eclipselink="http://xmlns.oracle.com/ias/xsds/eclipselink">
-   <eclipselink:name>Employee</eclipselink:name>
-   <eclipselink:class-mapping-descriptors>
-      <eclipselink:class-mapping-descriptor xsi:type="eclipselink:relational-class-mapping-descriptor">
-         <eclipselink:class>org.eclipse.persistence.testing.models.employee.domain.Address</eclipselink:class>
-         <eclipselink:alias>Address</eclipselink:alias>
-         <eclipselink:primary-key>
-            <eclipselink:field table="ADDRESS" name="ADDRESS_ID" xsi:type="eclipselink:column"/>
-         </eclipselink:primary-key>
-         <eclipselink:events xsi:type="eclipselink:event-policy"/>
-         <eclipselink:querying xsi:type="eclipselink:query-policy"/>
-         <eclipselink:attribute-mappings>
-            <eclipselink:attribute-mapping xsi:type="eclipselink:direct-mapping">
-               <eclipselink:attribute-name>city</eclipselink:attribute-name>
-               <eclipselink:field table="ADDRESS" name="CITY" xsi:type="eclipselink:column"/>
-            </eclipselink:attribute-mapping>
-            <eclipselink:attribute-mapping xsi:type="eclipselink:direct-mapping">
-               <eclipselink:attribute-name>country</eclipselink:attribute-name>
-               <eclipselink:field table="ADDRESS" name="COUNTRY" xsi:type="eclipselink:column"/>
-            </eclipselink:attribute-mapping>
-            <eclipselink:attribute-mapping xsi:type="eclipselink:direct-mapping">
-               <eclipselink:attribute-name>id</eclipselink:attribute-name>
-               <eclipselink:field table="ADDRESS" name="ADDRESS_ID" xsi:type="eclipselink:column"/>
-            </eclipselink:attribute-mapping>
-            <eclipselink:attribute-mapping xsi:type="eclipselink:direct-mapping">
-               <eclipselink:attribute-name>postalCode</eclipselink:attribute-name>
-               <eclipselink:field table="ADDRESS" name="P_CODE" xsi:type="eclipselink:column"/>
-            </eclipselink:attribute-mapping>
-            <eclipselink:attribute-mapping xsi:type="eclipselink:direct-mapping">
-               <eclipselink:attribute-name>province</eclipselink:attribute-name>
-               <eclipselink:field table="ADDRESS" name="PROVINCE" xsi:type="eclipselink:column"/>
-            </eclipselink:attribute-mapping>
-            <eclipselink:attribute-mapping xsi:type="eclipselink:direct-mapping">
-               <eclipselink:attribute-name>street</eclipselink:attribute-name>
-               <eclipselink:field table="ADDRESS" name="STREET" xsi:type="eclipselink:column"/>
-            </eclipselink:attribute-mapping>
-         </eclipselink:attribute-mappings>
-         <eclipselink:descriptor-type>independent</eclipselink:descriptor-type>
-         <eclipselink:sequencing>
-            <eclipselink:sequence-name>ADDRESS_SEQ</eclipselink:sequence-name>
-            <eclipselink:sequence-field table="ADDRESS" name="ADDRESS_ID" xsi:type="eclipselink:column"/>
-         </eclipselink:sequencing>
-         <eclipselink:instantiation/>
-         <eclipselink:copying xsi:type="eclipselink:instantiation-copy-policy"/>
-         <eclipselink:tables>
-            <eclipselink:table name="ADDRESS"/>
-         </eclipselink:tables>
-      </eclipselink:class-mapping-descriptor>
-      <eclipselink:class-mapping-descriptor xsi:type="eclipselink:relational-class-mapping-descriptor">
-         <eclipselink:class>org.eclipse.persistence.testing.models.employee.domain.Employee</eclipselink:class>
-         <eclipselink:alias>Employee</eclipselink:alias>
-         <eclipselink:primary-key>
-            <eclipselink:field table="EMPLOYEE" name="EMP_ID" xsi:type="eclipselink:column"/>
-         </eclipselink:primary-key>
-         <eclipselink:events xsi:type="eclipselink:event-policy"/>
-         <eclipselink:querying xsi:type="eclipselink:query-policy"/>
-         <eclipselink:attribute-mappings>
-            <eclipselink:attribute-mapping xsi:type="eclipselink:direct-mapping">
-               <eclipselink:attribute-name>firstName</eclipselink:attribute-name>
-               <eclipselink:field table="EMPLOYEE" name="F_NAME" xsi:type="eclipselink:column"/>
-               <eclipselink:null-value xsi:type="xsd:string"></eclipselink:null-value>
-            </eclipselink:attribute-mapping>
-            <eclipselink:attribute-mapping xsi:type="eclipselink:direct-mapping">
-               <eclipselink:attribute-name>id</eclipselink:attribute-name>
-               <eclipselink:field table="EMPLOYEE" name="EMP_ID" xsi:type="eclipselink:column"/>
-            </eclipselink:attribute-mapping>
-            <eclipselink:attribute-mapping xsi:type="eclipselink:direct-mapping">
-               <eclipselink:attribute-name>lastName</eclipselink:attribute-name>
-               <eclipselink:field table="EMPLOYEE" name="L_NAME" xsi:type="eclipselink:column"/>
-               <eclipselink:null-value xsi:type="xsd:string"></eclipselink:null-value>
-            </eclipselink:attribute-mapping>
-            <eclipselink:attribute-mapping xsi:type="eclipselink:direct-mapping">
-               <eclipselink:attribute-name>salary</eclipselink:attribute-name>
-               <eclipselink:field table="SALARY" name="SALARY" xsi:type="eclipselink:column"/>
-            </eclipselink:attribute-mapping>
-            <eclipselink:attribute-mapping xsi:type="eclipselink:direct-mapping">
-               <eclipselink:attribute-name>gender</eclipselink:attribute-name>
-               <eclipselink:field table="EMPLOYEE" name="GENDER" xsi:type="eclipselink:column"/>
-               <eclipselink:converter xsi:type="eclipselink:object-type-converter">
-                  <eclipselink:type-mappings>
-                     <eclipselink:type-mapping>
-                        <eclipselink:object-value xsi:type="xsd:string">Male</eclipselink:object-value>
-                        <eclipselink:data-value xsi:type="xsd:string">M</eclipselink:data-value>
-                     </eclipselink:type-mapping>
-                     <eclipselink:type-mapping>
-                        <eclipselink:object-value xsi:type="xsd:string">Female</eclipselink:object-value>
-                        <eclipselink:data-value xsi:type="xsd:string">F</eclipselink:data-value>
-                     </eclipselink:type-mapping>
-                  </eclipselink:type-mappings>
-               </eclipselink:converter>
-            </eclipselink:attribute-mapping>
-            <eclipselink:attribute-mapping xsi:type="eclipselink:transformation-mapping">
-               <eclipselink:attribute-name>normalHours</eclipselink:attribute-name>
-               <eclipselink:attribute-method>buildNormalHours</eclipselink:attribute-method>
-               <eclipselink:field-transformations>
-                  <eclipselink:field-transformation xsi:type="eclipselink:method-based-field-transformation">
-                     <eclipselink:field table="EMPLOYEE" name="START_TIME" xsi:type="eclipselink:column"/>
-                     <eclipselink:method>getStartTime</eclipselink:method>
-                  </eclipselink:field-transformation>
-                  <eclipselink:field-transformation xsi:type="eclipselink:method-based-field-transformation">
-                     <eclipselink:field table="EMPLOYEE" name="END_TIME" xsi:type="eclipselink:column"/>
-                     <eclipselink:method>getEndTime</eclipselink:method>
-                  </eclipselink:field-transformation>
-               </eclipselink:field-transformations>
-            </eclipselink:attribute-mapping>
-            <eclipselink:attribute-mapping xsi:type="eclipselink:aggregate-object-mapping">
-               <eclipselink:attribute-name>period</eclipselink:attribute-name>
-               <eclipselink:reference-class>org.eclipse.persistence.testing.models.employee.domain.EmploymentPeriod</eclipselink:reference-class>
-               <eclipselink:field-translations>
-                  <eclipselink:field-translation>
-                     <eclipselink:source-field name="startDate->DIRECT" xsi:type="eclipselink:column"/>
-                     <eclipselink:target-field table="EMPLOYEE" name="START_DATE" xsi:type="eclipselink:column"/>
-                  </eclipselink:field-translation>
-                  <eclipselink:field-translation>
-                     <eclipselink:source-field name="endDate->DIRECT" xsi:type="eclipselink:column"/>
-                     <eclipselink:target-field table="EMPLOYEE" name="END_DATE" xsi:type="eclipselink:column"/>
-                  </eclipselink:field-translation>
-               </eclipselink:field-translations>
-            </eclipselink:attribute-mapping>
-            <eclipselink:attribute-mapping xsi:type="eclipselink:direct-collection-mapping">
-               <eclipselink:attribute-name>responsibilitiesList</eclipselink:attribute-name>
-               <eclipselink:container xsi:type="eclipselink:list-container-policy">
-                  <eclipselink:collection-type>java.util.Vector</eclipselink:collection-type>
-               </eclipselink:container>
-               <eclipselink:indirection xsi:type="eclipselink:value-holder-indirection-policy"/>
-               <eclipselink:selection-query xsi:type="eclipselink:direct-read-query">
-                  <eclipselink:maintain-cache>false</eclipselink:maintain-cache>
-                  <eclipselink:container xsi:type="eclipselink:list-container-policy">
-                     <eclipselink:collection-type>java.util.Vector</eclipselink:collection-type>
-                  </eclipselink:container>
-               </eclipselink:selection-query>
-               <eclipselink:reference-table>RESPONS</eclipselink:reference-table>
-               <eclipselink:direct-field table="RESPONS" name="DESCRIP" xsi:type="eclipselink:column"/>
-               <eclipselink:reference-foreign-key>
-                  <eclipselink:field-reference>
-                     <eclipselink:source-field table="RESPONS" name="EMP_ID" xsi:type="eclipselink:column"/>
-                     <eclipselink:target-field table="EMPLOYEE" name="EMP_ID" xsi:type="eclipselink:column"/>
-                  </eclipselink:field-reference>
-               </eclipselink:reference-foreign-key>
-            </eclipselink:attribute-mapping>
-            <eclipselink:attribute-mapping xsi:type="eclipselink:one-to-one-mapping">
-               <eclipselink:attribute-name>address</eclipselink:attribute-name>
-               <eclipselink:reference-class>org.eclipse.persistence.testing.models.employee.domain.Address</eclipselink:reference-class>
-               <eclipselink:private-owned>true</eclipselink:private-owned>
-               <eclipselink:foreign-key>
-                  <eclipselink:field-reference>
-                     <eclipselink:source-field table="EMPLOYEE" name="ADDR_ID" xsi:type="eclipselink:column"/>
-                     <eclipselink:target-field table="ADDRESS" name="ADDRESS_ID" xsi:type="eclipselink:column"/>
-                  </eclipselink:field-reference>
-               </eclipselink:foreign-key>
-               <eclipselink:foreign-key-fields>
-                  <eclipselink:field table="EMPLOYEE" name="ADDR_ID" xsi:type="eclipselink:column"/>
-               </eclipselink:foreign-key-fields>
-               <eclipselink:indirection xsi:type="eclipselink:value-holder-indirection-policy"/>
-               <eclipselink:selection-query xsi:type="eclipselink:read-object-query">
-                  <eclipselink:reference-class>org.eclipse.persistence.testing.models.employee.domain.Address</eclipselink:reference-class>
-               </eclipselink:selection-query>
-            </eclipselink:attribute-mapping>
-            <eclipselink:attribute-mapping xsi:type="eclipselink:one-to-one-mapping">
-               <eclipselink:attribute-name>manager</eclipselink:attribute-name>
-               <eclipselink:reference-class>org.eclipse.persistence.testing.models.employee.domain.Employee</eclipselink:reference-class>
-               <eclipselink:foreign-key>
-                  <eclipselink:field-reference>
-                     <eclipselink:source-field table="EMPLOYEE" name="MANAGER_ID" xsi:type="eclipselink:column"/>
-                     <eclipselink:target-field table="EMPLOYEE" name="EMP_ID" xsi:type="eclipselink:column"/>
-                  </eclipselink:field-reference>
-               </eclipselink:foreign-key>
-               <eclipselink:foreign-key-fields>
-                  <eclipselink:field table="EMPLOYEE" name="MANAGER_ID" xsi:type="eclipselink:column"/>
-               </eclipselink:foreign-key-fields>
-               <eclipselink:indirection xsi:type="eclipselink:value-holder-indirection-policy"/>
-               <eclipselink:selection-query xsi:type="eclipselink:read-object-query">
-                  <eclipselink:reference-class>org.eclipse.persistence.testing.models.employee.domain.Employee</eclipselink:reference-class>
-               </eclipselink:selection-query>
-            </eclipselink:attribute-mapping>
-            <eclipselink:attribute-mapping xsi:type="eclipselink:one-to-many-mapping">
-               <eclipselink:attribute-name>managedEmployees</eclipselink:attribute-name>
-               <eclipselink:reference-class>org.eclipse.persistence.testing.models.employee.domain.Employee</eclipselink:reference-class>
-               <eclipselink:target-foreign-key>
-                  <eclipselink:field-reference>
-                     <eclipselink:source-field table="EMPLOYEE" name="MANAGER_ID" xsi:type="eclipselink:column"/>
-                     <eclipselink:target-field table="EMPLOYEE" name="EMP_ID" xsi:type="eclipselink:column"/>
-                  </eclipselink:field-reference>
-               </eclipselink:target-foreign-key>
-               <eclipselink:container xsi:type="eclipselink:list-container-policy">
-                  <eclipselink:collection-type>java.util.Vector</eclipselink:collection-type>
-               </eclipselink:container>
-               <eclipselink:indirection xsi:type="eclipselink:value-holder-indirection-policy"/>
-               <eclipselink:selection-query xsi:type="eclipselink:read-all-query">
-                  <eclipselink:reference-class>org.eclipse.persistence.testing.models.employee.domain.Employee</eclipselink:reference-class>
-                  <eclipselink:container xsi:type="eclipselink:list-container-policy">
-                     <eclipselink:collection-type>java.util.Vector</eclipselink:collection-type>
-                  </eclipselink:container>
-               </eclipselink:selection-query>
-            </eclipselink:attribute-mapping>
-            <eclipselink:attribute-mapping xsi:type="eclipselink:one-to-many-mapping">
-               <eclipselink:attribute-name>phoneNumbers</eclipselink:attribute-name>
-               <eclipselink:reference-class>org.eclipse.persistence.testing.models.employee.domain.PhoneNumber</eclipselink:reference-class>
-               <eclipselink:private-owned>true</eclipselink:private-owned>
-               <eclipselink:target-foreign-key>
-                  <eclipselink:field-reference>
-                     <eclipselink:source-field table="PHONE" name="EMP_ID" xsi:type="eclipselink:column"/>
-                     <eclipselink:target-field table="EMPLOYEE" name="EMP_ID" xsi:type="eclipselink:column"/>
-                  </eclipselink:field-reference>
-               </eclipselink:target-foreign-key>
-               <eclipselink:container xsi:type="eclipselink:list-container-policy">
-                  <eclipselink:collection-type>java.util.Vector</eclipselink:collection-type>
-               </eclipselink:container>
-               <eclipselink:indirection xsi:type="eclipselink:value-holder-indirection-policy"/>
-               <eclipselink:selection-query xsi:type="eclipselink:read-all-query">
-                  <eclipselink:reference-class>org.eclipse.persistence.testing.models.employee.domain.PhoneNumber</eclipselink:reference-class>
-                  <eclipselink:container xsi:type="eclipselink:list-container-policy">
-                     <eclipselink:collection-type>java.util.Vector</eclipselink:collection-type>
-                  </eclipselink:container>
-               </eclipselink:selection-query>
-            </eclipselink:attribute-mapping>
-            <eclipselink:attribute-mapping xsi:type="eclipselink:many-to-many-mapping">
-               <eclipselink:attribute-name>projects</eclipselink:attribute-name>
-               <eclipselink:reference-class>org.eclipse.persistence.testing.models.employee.domain.Project</eclipselink:reference-class>
-               <eclipselink:relation-table>PROJ_EMP</eclipselink:relation-table>
-               <eclipselink:source-relation-foreign-key>
-                  <eclipselink:field-reference>
-                     <eclipselink:source-field table="PROJ_EMP" name="EMP_ID" xsi:type="eclipselink:column"/>
-                     <eclipselink:target-field table="EMPLOYEE" name="EMP_ID" xsi:type="eclipselink:column"/>
-                  </eclipselink:field-reference>
-               </eclipselink:source-relation-foreign-key>
-               <eclipselink:target-relation-foreign-key>
-                  <eclipselink:field-reference>
-                     <eclipselink:source-field table="PROJ_EMP" name="PROJ_ID" xsi:type="eclipselink:column"/>
-                     <eclipselink:target-field table="PROJECT" name="PROJ_ID" xsi:type="eclipselink:column"/>
-                  </eclipselink:field-reference>
-               </eclipselink:target-relation-foreign-key>
-               <eclipselink:container xsi:type="eclipselink:list-container-policy">
-                  <eclipselink:collection-type>java.util.Vector</eclipselink:collection-type>
-               </eclipselink:container>
-               <eclipselink:indirection xsi:type="eclipselink:value-holder-indirection-policy"/>
-               <eclipselink:selection-query xsi:type="eclipselink:read-all-query">
-                  <eclipselink:reference-class>org.eclipse.persistence.testing.models.employee.domain.Project</eclipselink:reference-class>
-                  <eclipselink:container xsi:type="eclipselink:list-container-policy">
-                     <eclipselink:collection-type>java.util.Vector</eclipselink:collection-type>
-                  </eclipselink:container>
-               </eclipselink:selection-query>
-               <eclipselink:insert-query xsi:type="eclipselink:data-modify-query"/>
-               <eclipselink:delete-query xsi:type="eclipselink:data-modify-query"/>
-               <eclipselink:delete-all-query xsi:type="eclipselink:data-modify-query"/>
-            </eclipselink:attribute-mapping>
-         </eclipselink:attribute-mappings>
-         <eclipselink:descriptor-type>independent</eclipselink:descriptor-type>
-         <eclipselink:interfaces>
-            <eclipselink:interface>org.eclipse.persistence.testing.models.employee.interfaces.Employee</eclipselink:interface>
-         </eclipselink:interfaces>
-         <eclipselink:locking xsi:type="eclipselink:version-locking-policy">
-            <eclipselink:version-field table="EMPLOYEE" name="VERSION" xsi:type="eclipselink:column"/>
-         </eclipselink:locking>
-         <eclipselink:sequencing>
-            <eclipselink:sequence-name>EMP_SEQ</eclipselink:sequence-name>
-            <eclipselink:sequence-field table="EMPLOYEE" name="EMP_ID" xsi:type="eclipselink:column"/>
-         </eclipselink:sequencing>
-         <eclipselink:instantiation/>
-         <eclipselink:copying xsi:type="eclipselink:instantiation-copy-policy"/>
-         <eclipselink:tables>
-            <eclipselink:table name="EMPLOYEE"/>
-            <eclipselink:table name="SALARY"/>
-         </eclipselink:tables>
-      </eclipselink:class-mapping-descriptor>
-      <eclipselink:class-mapping-descriptor xsi:type="eclipselink:relational-class-mapping-descriptor">
-         <eclipselink:class>org.eclipse.persistence.testing.models.employee.domain.EmploymentPeriod</eclipselink:class>
-         <eclipselink:alias>EmploymentPeriod</eclipselink:alias>
-         <eclipselink:events xsi:type="eclipselink:event-policy"/>
-         <eclipselink:querying xsi:type="eclipselink:query-policy"/>
-         <eclipselink:attribute-mappings>
-            <eclipselink:attribute-mapping xsi:type="eclipselink:direct-mapping">
-               <eclipselink:attribute-name>endDate</eclipselink:attribute-name>
-               <eclipselink:field name="endDate->DIRECT" xsi:type="eclipselink:column"/>
-            </eclipselink:attribute-mapping>
-            <eclipselink:attribute-mapping xsi:type="eclipselink:direct-mapping">
-               <eclipselink:attribute-name>startDate</eclipselink:attribute-name>
-               <eclipselink:field name="startDate->DIRECT" xsi:type="eclipselink:column"/>
-            </eclipselink:attribute-mapping>
-         </eclipselink:attribute-mappings>
-         <eclipselink:descriptor-type>aggregate</eclipselink:descriptor-type>
-         <eclipselink:instantiation/>
-         <eclipselink:copying xsi:type="eclipselink:instantiation-copy-policy"/>
-      </eclipselink:class-mapping-descriptor>
-      <eclipselink:class-mapping-descriptor xsi:type="eclipselink:relational-class-mapping-descriptor">
-         <eclipselink:class>org.eclipse.persistence.testing.models.employee.domain.LargeProject</eclipselink:class>
-         <eclipselink:alias>LargeProject</eclipselink:alias>
-         <eclipselink:inheritance xsi:type="eclipselink:inheritance-policy">
-            <eclipselink:parent-class>org.eclipse.persistence.testing.models.employee.domain.Project</eclipselink:parent-class>
-            <eclipselink:read-subclasses-on-queries>false</eclipselink:read-subclasses-on-queries>
-         </eclipselink:inheritance>
-         <eclipselink:events xsi:type="eclipselink:event-policy"/>
-         <eclipselink:querying xsi:type="eclipselink:query-policy"/>
-         <eclipselink:attribute-mappings>
-            <eclipselink:attribute-mapping xsi:type="eclipselink:direct-mapping">
-               <eclipselink:attribute-name>budget</eclipselink:attribute-name>
-               <eclipselink:field table="LPROJECT" name="BUDGET" xsi:type="eclipselink:column"/>
-            </eclipselink:attribute-mapping>
-            <eclipselink:attribute-mapping xsi:type="eclipselink:direct-mapping">
-               <eclipselink:attribute-name>milestoneVersion</eclipselink:attribute-name>
-               <eclipselink:field table="LPROJECT" name="MILESTONE" xsi:type="eclipselink:column"/>
-            </eclipselink:attribute-mapping>
-         </eclipselink:attribute-mappings>
-         <eclipselink:descriptor-type>independent</eclipselink:descriptor-type>
-         <eclipselink:interfaces>
-            <eclipselink:interface>org.eclipse.persistence.testing.models.employee.interfaces.LargeProject</eclipselink:interface>
-         </eclipselink:interfaces>
-         <eclipselink:instantiation/>
-         <eclipselink:copying xsi:type="eclipselink:instantiation-copy-policy"/>
-         <eclipselink:tables>
-            <eclipselink:table name="LPROJECT"/>
-         </eclipselink:tables>
-      </eclipselink:class-mapping-descriptor>
-      <eclipselink:class-mapping-descriptor xsi:type="eclipselink:relational-class-mapping-descriptor">
-         <eclipselink:class>org.eclipse.persistence.testing.models.employee.domain.PhoneNumber</eclipselink:class>
-         <eclipselink:alias>PhoneNumber</eclipselink:alias>
-         <eclipselink:primary-key>
-            <eclipselink:field table="PHONE" name="EMP_ID" xsi:type="eclipselink:column"/>
-            <eclipselink:field table="PHONE" name="TYPE" xsi:type="eclipselink:column"/>
-         </eclipselink:primary-key>
-         <eclipselink:events xsi:type="eclipselink:event-policy"/>
-         <eclipselink:querying xsi:type="eclipselink:query-policy">
-            <eclipselink:queries>
-               <eclipselink:query name="localNumbers" xsi:type="eclipselink:read-object-query">
-                  <eclipselink:criteria operator="and" xsi:type="eclipselink:logic-expression">
-                     <eclipselink:left operator="equal" xsi:type="eclipselink:relation-expression">
-                        <eclipselink:left name="id" xsi:type="eclipselink:query-key-expression">
-                           <eclipselink:base xsi:type="eclipselink:base-expression"/>
-                        </eclipselink:left>
-                        <eclipselink:right xsi:type="eclipselink:parameter-expression">
-                           <eclipselink:parameter name="ID" xsi:type="eclipselink:column"/>
-                        </eclipselink:right>
-                     </eclipselink:left>
-                     <eclipselink:right operator="equal" xsi:type="eclipselink:relation-expression">
-                        <eclipselink:left name="areaCode" xsi:type="eclipselink:query-key-expression">
-                           <eclipselink:base xsi:type="eclipselink:base-expression"/>
-                        </eclipselink:left>
-                        <eclipselink:right xsi:type="eclipselink:constant-expression">
-                           <eclipselink:value xsi:type="xsd:string">613</eclipselink:value>
-                        </eclipselink:right>
-                     </eclipselink:right>
-                  </eclipselink:criteria>
-                  <eclipselink:arguments>
-                     <eclipselink:argument name="ID">
-                        <eclipselink:type>java.lang.Number</eclipselink:type>
-                     </eclipselink:argument>
-                  </eclipselink:arguments>
-                  <eclipselink:reference-class>org.eclipse.persistence.testing.models.employee.domain.PhoneNumber</eclipselink:reference-class>
-                  <eclipselink:cache-usage>primary-key</eclipselink:cache-usage>
-                  <eclipselink:lock-mode>none</eclipselink:lock-mode>
-               </eclipselink:query>
-            </eclipselink:queries>
-         </eclipselink:querying>
-         <eclipselink:attribute-mappings>
-            <eclipselink:attribute-mapping xsi:type="eclipselink:direct-mapping">
-               <eclipselink:attribute-name>areaCode</eclipselink:attribute-name>
-               <eclipselink:field table="PHONE" name="AREA_CODE" xsi:type="eclipselink:column"/>
-            </eclipselink:attribute-mapping>
-            <eclipselink:attribute-mapping xsi:type="eclipselink:direct-mapping">
-               <eclipselink:attribute-name>number</eclipselink:attribute-name>
-               <eclipselink:field table="PHONE" name="P_NUMBER" xsi:type="eclipselink:column"/>
-            </eclipselink:attribute-mapping>
-            <eclipselink:attribute-mapping xsi:type="eclipselink:direct-mapping">
-               <eclipselink:attribute-name>type</eclipselink:attribute-name>
-               <eclipselink:field table="PHONE" name="TYPE" xsi:type="eclipselink:column"/>
-            </eclipselink:attribute-mapping>
-            <eclipselink:attribute-mapping xsi:type="eclipselink:one-to-one-mapping">
-               <eclipselink:attribute-name>owner</eclipselink:attribute-name>
-               <eclipselink:reference-class>org.eclipse.persistence.testing.models.employee.domain.Employee</eclipselink:reference-class>
-               <eclipselink:foreign-key>
-                  <eclipselink:field-reference>
-                     <eclipselink:source-field table="PHONE" name="EMP_ID" xsi:type="eclipselink:column"/>
-                     <eclipselink:target-field table="EMPLOYEE" name="EMP_ID" xsi:type="eclipselink:column"/>
-                  </eclipselink:field-reference>
-               </eclipselink:foreign-key>
-               <eclipselink:foreign-key-fields>
-                  <eclipselink:field table="PHONE" name="EMP_ID" xsi:type="eclipselink:column"/>
-               </eclipselink:foreign-key-fields>
-               <eclipselink:indirection xsi:type="eclipselink:value-holder-indirection-policy"/>
-               <eclipselink:selection-query xsi:type="eclipselink:read-object-query">
-                  <eclipselink:reference-class>org.eclipse.persistence.testing.models.employee.domain.Employee</eclipselink:reference-class>
-               </eclipselink:selection-query>
-            </eclipselink:attribute-mapping>
-         </eclipselink:attribute-mappings>
-         <eclipselink:descriptor-type>independent</eclipselink:descriptor-type>
-         <eclipselink:instantiation/>
-         <eclipselink:copying xsi:type="eclipselink:instantiation-copy-policy"/>
-         <eclipselink:query-keys>
-            <eclipselink:query-key name="id" xsi:type="eclipselink:direct-query-key">
-               <eclipselink:field table="PHONE" name="EMP_ID" xsi:type="eclipselink:column"/>
-            </eclipselink:query-key>
-         </eclipselink:query-keys>
-         <eclipselink:tables>
-            <eclipselink:table name="PHONE"/>
-         </eclipselink:tables>
-      </eclipselink:class-mapping-descriptor>
-      <eclipselink:class-mapping-descriptor xsi:type="eclipselink:relational-class-mapping-descriptor">
-         <eclipselink:class>org.eclipse.persistence.testing.models.employee.domain.Project</eclipselink:class>
-         <eclipselink:alias>Project</eclipselink:alias>
-         <eclipselink:primary-key>
-            <eclipselink:field table="PROJECT" name="PROJ_ID" xsi:type="eclipselink:column"/>
-         </eclipselink:primary-key>
-         <eclipselink:inheritance xsi:type="eclipselink:inheritance-policy">
-            <eclipselink:class-indicator-field table="PROJECT" name="PROJ_TYPE" xsi:type="eclipselink:column"/>
-            <eclipselink:class-indicator-mappings>
-               <eclipselink:class-indicator-mapping>
-                  <eclipselink:class>org.eclipse.persistence.testing.models.employee.domain.SmallProject</eclipselink:class>
-                  <eclipselink:class-indicator xsi:type="xsd:string">S</eclipselink:class-indicator>
-               </eclipselink:class-indicator-mapping>
-               <eclipselink:class-indicator-mapping>
-                  <eclipselink:class>org.eclipse.persistence.testing.models.employee.domain.LargeProject</eclipselink:class>
-                  <eclipselink:class-indicator xsi:type="xsd:string">L</eclipselink:class-indicator>
-               </eclipselink:class-indicator-mapping>
-            </eclipselink:class-indicator-mappings>
-         </eclipselink:inheritance>
-         <eclipselink:events xsi:type="eclipselink:event-policy"/>
-         <eclipselink:querying xsi:type="eclipselink:query-policy"/>
-         <eclipselink:attribute-mappings>
-            <eclipselink:attribute-mapping xsi:type="eclipselink:direct-mapping">
-               <eclipselink:attribute-name>description</eclipselink:attribute-name>
-               <eclipselink:field table="PROJECT" name="DESCRIP" xsi:type="eclipselink:column"/>
-               <eclipselink:null-value xsi:type="xsd:string"></eclipselink:null-value>
-            </eclipselink:attribute-mapping>
-            <eclipselink:attribute-mapping xsi:type="eclipselink:direct-mapping">
-               <eclipselink:attribute-name>id</eclipselink:attribute-name>
-               <eclipselink:field table="PROJECT" name="PROJ_ID" xsi:type="eclipselink:column"/>
-            </eclipselink:attribute-mapping>
-            <eclipselink:attribute-mapping xsi:type="eclipselink:direct-mapping">
-               <eclipselink:attribute-name>name</eclipselink:attribute-name>
-               <eclipselink:field table="PROJECT" name="PROJ_NAME" xsi:type="eclipselink:column"/>
-               <eclipselink:null-value xsi:type="xsd:string"></eclipselink:null-value>
-            </eclipselink:attribute-mapping>
-            <eclipselink:attribute-mapping xsi:type="eclipselink:one-to-one-mapping">
-               <eclipselink:attribute-name>teamLeader</eclipselink:attribute-name>
-               <eclipselink:reference-class>org.eclipse.persistence.testing.models.employee.domain.Employee</eclipselink:reference-class>
-               <eclipselink:foreign-key>
-                  <eclipselink:field-reference>
-                     <eclipselink:source-field table="PROJECT" name="LEADER_ID" xsi:type="eclipselink:column"/>
-                     <eclipselink:target-field table="EMPLOYEE" name="EMP_ID" xsi:type="eclipselink:column"/>
-                  </eclipselink:field-reference>
-               </eclipselink:foreign-key>
-               <eclipselink:foreign-key-fields>
-                  <eclipselink:field table="PROJECT" name="LEADER_ID" xsi:type="eclipselink:column"/>
-               </eclipselink:foreign-key-fields>
-               <eclipselink:indirection xsi:type="eclipselink:value-holder-indirection-policy"/>
-               <eclipselink:selection-query xsi:type="eclipselink:read-object-query">
-                  <eclipselink:reference-class>org.eclipse.persistence.testing.models.employee.domain.Employee</eclipselink:reference-class>
-               </eclipselink:selection-query>
-            </eclipselink:attribute-mapping>
-         </eclipselink:attribute-mappings>
-         <eclipselink:descriptor-type>independent</eclipselink:descriptor-type>
-         <eclipselink:interfaces>
-            <eclipselink:interface>org.eclipse.persistence.testing.models.employee.interfaces.Project</eclipselink:interface>
-         </eclipselink:interfaces>
-         <eclipselink:locking xsi:type="eclipselink:version-locking-policy">
-            <eclipselink:version-field table="PROJECT" name="VERSION" xsi:type="eclipselink:column"/>
-         </eclipselink:locking>
-         <eclipselink:sequencing>
-            <eclipselink:sequence-name>PROJ_SEQ</eclipselink:sequence-name>
-            <eclipselink:sequence-field table="PROJECT" name="PROJ_ID" xsi:type="eclipselink:column"/>
-         </eclipselink:sequencing>
-         <eclipselink:instantiation/>
-         <eclipselink:copying xsi:type="eclipselink:instantiation-copy-policy"/>
-         <eclipselink:tables>
-            <eclipselink:table name="PROJECT"/>
-         </eclipselink:tables>
-      </eclipselink:class-mapping-descriptor>
-      <eclipselink:class-mapping-descriptor xsi:type="eclipselink:relational-class-mapping-descriptor">
-         <eclipselink:class>org.eclipse.persistence.testing.models.employee.domain.SmallProject</eclipselink:class>
-         <eclipselink:alias>SmallProject</eclipselink:alias>
-         <eclipselink:inheritance xsi:type="eclipselink:inheritance-policy">
-            <eclipselink:parent-class>org.eclipse.persistence.testing.models.employee.domain.Project</eclipselink:parent-class>
-            <eclipselink:read-subclasses-on-queries>false</eclipselink:read-subclasses-on-queries>
-         </eclipselink:inheritance>
-         <eclipselink:events xsi:type="eclipselink:event-policy"/>
-         <eclipselink:querying xsi:type="eclipselink:query-policy"/>
-         <eclipselink:descriptor-type>independent</eclipselink:descriptor-type>
-         <eclipselink:interfaces>
-            <eclipselink:interface>org.eclipse.persistence.testing.models.employee.interfaces.SmallProject</eclipselink:interface>
-         </eclipselink:interfaces>
-         <eclipselink:instantiation/>
-         <eclipselink:copying xsi:type="eclipselink:instantiation-copy-policy"/>
-         <eclipselink:tables>
-            <eclipselink:table name="PROJECT"/>
-         </eclipselink:tables>
-      </eclipselink:class-mapping-descriptor>
-   </eclipselink:class-mapping-descriptors>
-   <eclipselink:login xsi:type="eclipselink:database-login">
-      <eclipselink:platform-class>org.eclipse.persistence.platform.database.oracle.OraclePlatform</eclipselink:platform-class>
-      <eclipselink:user-name>@dbUser@</eclipselink:user-name>
-      <eclipselink:password>3E20F8982C53F4ABA825E30206EC8ADE</eclipselink:password>
-      <eclipselink:driver-class>@driverClass@</eclipselink:driver-class>
-      <eclipselink:connection-url>@dbURL@</eclipselink:connection-url>
-   </eclipselink:login>
-</eclipselink:object-persistence>
+<object-persistence version="Eclipse Persistence Services - SNAPSHOT (Build 20071113)" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.eclipse.org/eclipselink/xsds/persistence">
+   <name>Employee</name>
+   <class-mapping-descriptors>
+      <class-mapping-descriptor xsi:type="relational-class-mapping-descriptor">
+         <class>org.eclipse.persistence.testing.models.employee.domain.Address</class>
+         <alias>Address</alias>
+         <primary-key>
+            <field table="ADDRESS" name="ADDRESS_ID" xsi:type="column"/>
+         </primary-key>
+         <events xsi:type="event-policy"/>
+         <querying xsi:type="query-policy"/>
+         <attribute-mappings>
+            <attribute-mapping xsi:type="direct-mapping">
+               <attribute-name>city</attribute-name>
+               <field table="ADDRESS" name="CITY" xsi:type="column"/>
+            </attribute-mapping>
+            <attribute-mapping xsi:type="direct-mapping">
+               <attribute-name>country</attribute-name>
+               <field table="ADDRESS" name="COUNTRY" xsi:type="column"/>
+            </attribute-mapping>
+            <attribute-mapping xsi:type="direct-mapping">
+               <attribute-name>id</attribute-name>
+               <field table="ADDRESS" name="ADDRESS_ID" xsi:type="column"/>
+            </attribute-mapping>
+            <attribute-mapping xsi:type="direct-mapping">
+               <attribute-name>postalCode</attribute-name>
+               <field table="ADDRESS" name="P_CODE" xsi:type="column"/>
+            </attribute-mapping>
+            <attribute-mapping xsi:type="direct-mapping">
+               <attribute-name>province</attribute-name>
+               <field table="ADDRESS" name="PROVINCE" xsi:type="column"/>
+            </attribute-mapping>
+            <attribute-mapping xsi:type="direct-mapping">
+               <attribute-name>street</attribute-name>
+               <field table="ADDRESS" name="STREET" xsi:type="column"/>
+            </attribute-mapping>
+         </attribute-mappings>
+         <descriptor-type>independent</descriptor-type>
+         <sequencing>
+            <sequence-name>ADDRESS_SEQ</sequence-name>
+            <sequence-field table="ADDRESS" name="ADDRESS_ID" xsi:type="column"/>
+         </sequencing>
+         <instantiation/>
+         <copying xsi:type="instantiation-copy-policy"/>
+         <tables>
+            <table name="ADDRESS"/>
+         </tables>
+      </class-mapping-descriptor>
+      <class-mapping-descriptor xsi:type="relational-class-mapping-descriptor">
+         <class>org.eclipse.persistence.testing.models.employee.domain.Employee</class>
+         <alias>Employee</alias>
+         <primary-key>
+            <field table="EMPLOYEE" name="EMP_ID" xsi:type="column"/>
+         </primary-key>
+         <events xsi:type="event-policy"/>
+         <querying xsi:type="query-policy"/>
+         <attribute-mappings>
+            <attribute-mapping xsi:type="direct-mapping">
+               <attribute-name>firstName</attribute-name>
+               <field table="EMPLOYEE" name="F_NAME" xsi:type="column"/>
+               <null-value xsi:type="xsd:string"></null-value>
+            </attribute-mapping>
+            <attribute-mapping xsi:type="direct-mapping">
+               <attribute-name>id</attribute-name>
+               <field table="EMPLOYEE" name="EMP_ID" xsi:type="column"/>
+            </attribute-mapping>
+            <attribute-mapping xsi:type="direct-mapping">
+               <attribute-name>lastName</attribute-name>
+               <field table="EMPLOYEE" name="L_NAME" xsi:type="column"/>
+               <null-value xsi:type="xsd:string"></null-value>
+            </attribute-mapping>
+            <attribute-mapping xsi:type="direct-mapping">
+               <attribute-name>salary</attribute-name>
+               <field table="SALARY" name="SALARY" xsi:type="column"/>
+            </attribute-mapping>
+            <attribute-mapping xsi:type="direct-mapping">
+               <attribute-name>gender</attribute-name>
+               <field table="EMPLOYEE" name="GENDER" xsi:type="column"/>
+               <converter xsi:type="object-type-converter">
+                  <type-mappings>
+                     <type-mapping>
+                        <object-value xsi:type="xsd:string">Male</object-value>
+                        <data-value xsi:type="xsd:string">M</data-value>
+                     </type-mapping>
+                     <type-mapping>
+                        <object-value xsi:type="xsd:string">Female</object-value>
+                        <data-value xsi:type="xsd:string">F</data-value>
+                     </type-mapping>
+                  </type-mappings>
+               </converter>
+            </attribute-mapping>
+            <attribute-mapping xsi:type="transformation-mapping">
+               <attribute-name>normalHours</attribute-name>
+               <attribute-method>buildNormalHours</attribute-method>
+               <field-transformations>
+                  <field-transformation xsi:type="method-based-field-transformation">
+                     <field table="EMPLOYEE" name="START_TIME" xsi:type="column"/>
+                     <method>getStartTime</method>
+                  </field-transformation>
+                  <field-transformation xsi:type="method-based-field-transformation">
+                     <field table="EMPLOYEE" name="END_TIME" xsi:type="column"/>
+                     <method>getEndTime</method>
+                  </field-transformation>
+               </field-transformations>
+            </attribute-mapping>
+            <attribute-mapping xsi:type="aggregate-object-mapping">
+               <attribute-name>period</attribute-name>
+               <reference-class>org.eclipse.persistence.testing.models.employee.domain.EmploymentPeriod</reference-class>
+               <field-translations>
+                  <field-translation>
+                     <source-field name="startDate->DIRECT" xsi:type="column"/>
+                     <target-field table="EMPLOYEE" name="START_DATE" xsi:type="column"/>
+                  </field-translation>
+                  <field-translation>
+                     <source-field name="endDate->DIRECT" xsi:type="column"/>
+                     <target-field table="EMPLOYEE" name="END_DATE" xsi:type="column"/>
+                  </field-translation>
+               </field-translations>
+            </attribute-mapping>
+            <attribute-mapping xsi:type="direct-collection-mapping">
+               <attribute-name>responsibilitiesList</attribute-name>
+               <container xsi:type="list-container-policy">
+                  <collection-type>java.util.Vector</collection-type>
+               </container>
+               <indirection xsi:type="value-holder-indirection-policy"/>
+               <selection-query xsi:type="direct-read-query">
+                  <maintain-cache>false</maintain-cache>
+                  <container xsi:type="list-container-policy">
+                     <collection-type>java.util.Vector</collection-type>
+                  </container>
+               </selection-query>
+               <reference-table>RESPONS</reference-table>
+               <direct-field table="RESPONS" name="DESCRIP" xsi:type="column"/>
+               <reference-foreign-key>
+                  <field-reference>
+                     <source-field table="RESPONS" name="EMP_ID" xsi:type="column"/>
+                     <target-field table="EMPLOYEE" name="EMP_ID" xsi:type="column"/>
+                  </field-reference>
+               </reference-foreign-key>
+            </attribute-mapping>
+            <attribute-mapping xsi:type="one-to-one-mapping">
+               <attribute-name>address</attribute-name>
+               <reference-class>org.eclipse.persistence.testing.models.employee.domain.Address</reference-class>
+               <private-owned>true</private-owned>
+               <foreign-key>
+                  <field-reference>
+                     <source-field table="EMPLOYEE" name="ADDR_ID" xsi:type="column"/>
+                     <target-field table="ADDRESS" name="ADDRESS_ID" xsi:type="column"/>
+                  </field-reference>
+               </foreign-key>
+               <foreign-key-fields>
+                  <field table="EMPLOYEE" name="ADDR_ID" xsi:type="column"/>
+               </foreign-key-fields>
+               <indirection xsi:type="value-holder-indirection-policy"/>
+               <selection-query xsi:type="read-object-query">
+                  <reference-class>org.eclipse.persistence.testing.models.employee.domain.Address</reference-class>
+               </selection-query>
+            </attribute-mapping>
+            <attribute-mapping xsi:type="one-to-one-mapping">
+               <attribute-name>manager</attribute-name>
+               <reference-class>org.eclipse.persistence.testing.models.employee.domain.Employee</reference-class>
+               <foreign-key>
+                  <field-reference>
+                     <source-field table="EMPLOYEE" name="MANAGER_ID" xsi:type="column"/>
+                     <target-field table="EMPLOYEE" name="EMP_ID" xsi:type="column"/>
+                  </field-reference>
+               </foreign-key>
+               <foreign-key-fields>
+                  <field table="EMPLOYEE" name="MANAGER_ID" xsi:type="column"/>
+               </foreign-key-fields>
+               <indirection xsi:type="value-holder-indirection-policy"/>
+               <selection-query xsi:type="read-object-query">
+                  <reference-class>org.eclipse.persistence.testing.models.employee.domain.Employee</reference-class>
+               </selection-query>
+            </attribute-mapping>
+            <attribute-mapping xsi:type="one-to-many-mapping">
+               <attribute-name>managedEmployees</attribute-name>
+               <reference-class>org.eclipse.persistence.testing.models.employee.domain.Employee</reference-class>
+               <target-foreign-key>
+                  <field-reference>
+                     <source-field table="EMPLOYEE" name="MANAGER_ID" xsi:type="column"/>
+                     <target-field table="EMPLOYEE" name="EMP_ID" xsi:type="column"/>
+                  </field-reference>
+               </target-foreign-key>
+               <container xsi:type="list-container-policy">
+                  <collection-type>java.util.Vector</collection-type>
+               </container>
+               <indirection xsi:type="value-holder-indirection-policy"/>
+               <selection-query xsi:type="read-all-query">
+                  <reference-class>org.eclipse.persistence.testing.models.employee.domain.Employee</reference-class>
+                  <container xsi:type="list-container-policy">
+                     <collection-type>java.util.Vector</collection-type>
+                  </container>
+               </selection-query>
+            </attribute-mapping>
+            <attribute-mapping xsi:type="one-to-many-mapping">
+               <attribute-name>phoneNumbers</attribute-name>
+               <reference-class>org.eclipse.persistence.testing.models.employee.domain.PhoneNumber</reference-class>
+               <private-owned>true</private-owned>
+               <target-foreign-key>
+                  <field-reference>
+                     <source-field table="PHONE" name="EMP_ID" xsi:type="column"/>
+                     <target-field table="EMPLOYEE" name="EMP_ID" xsi:type="column"/>
+                  </field-reference>
+               </target-foreign-key>
+               <container xsi:type="list-container-policy">
+                  <collection-type>java.util.Vector</collection-type>
+               </container>
+               <indirection xsi:type="value-holder-indirection-policy"/>
+               <selection-query xsi:type="read-all-query">
+                  <reference-class>org.eclipse.persistence.testing.models.employee.domain.PhoneNumber</reference-class>
+                  <container xsi:type="list-container-policy">
+                     <collection-type>java.util.Vector</collection-type>
+                  </container>
+               </selection-query>
+            </attribute-mapping>
+            <attribute-mapping xsi:type="many-to-many-mapping">
+               <attribute-name>projects</attribute-name>
+               <reference-class>org.eclipse.persistence.testing.models.employee.domain.Project</reference-class>
+               <relation-table>PROJ_EMP</relation-table>
+               <source-relation-foreign-key>
+                  <field-reference>
+                     <source-field table="PROJ_EMP" name="EMP_ID" xsi:type="column"/>
+                     <target-field table="EMPLOYEE" name="EMP_ID" xsi:type="column"/>
+                  </field-reference>
+               </source-relation-foreign-key>
+               <target-relation-foreign-key>
+                  <field-reference>
+                     <source-field table="PROJ_EMP" name="PROJ_ID" xsi:type="column"/>
+                     <target-field table="PROJECT" name="PROJ_ID" xsi:type="column"/>
+                  </field-reference>
+               </target-relation-foreign-key>
+               <container xsi:type="list-container-policy">
+                  <collection-type>java.util.Vector</collection-type>
+               </container>
+               <indirection xsi:type="value-holder-indirection-policy"/>
+               <selection-query xsi:type="read-all-query">
+                  <reference-class>org.eclipse.persistence.testing.models.employee.domain.Project</reference-class>
+                  <container xsi:type="list-container-policy">
+                     <collection-type>java.util.Vector</collection-type>
+                  </container>
+               </selection-query>
+               <insert-query xsi:type="data-modify-query"/>
+               <delete-query xsi:type="data-modify-query"/>
+               <delete-all-query xsi:type="data-modify-query"/>
+            </attribute-mapping>
+         </attribute-mappings>
+         <descriptor-type>independent</descriptor-type>
+         <interfaces>
+            <interface>org.eclipse.persistence.testing.models.employee.interfaces.Employee</interface>
+         </interfaces>
+         <locking xsi:type="version-locking-policy">
+            <version-field table="EMPLOYEE" name="VERSION" xsi:type="column"/>
+         </locking>
+         <sequencing>
+            <sequence-name>EMP_SEQ</sequence-name>
+            <sequence-field table="EMPLOYEE" name="EMP_ID" xsi:type="column"/>
+         </sequencing>
+         <instantiation/>
+         <copying xsi:type="instantiation-copy-policy"/>
+         <tables>
+            <table name="EMPLOYEE"/>
+            <table name="SALARY"/>
+         </tables>
+      </class-mapping-descriptor>
+      <class-mapping-descriptor xsi:type="relational-class-mapping-descriptor">
+         <class>org.eclipse.persistence.testing.models.employee.domain.EmploymentPeriod</class>
+         <alias>EmploymentPeriod</alias>
+         <events xsi:type="event-policy"/>
+         <querying xsi:type="query-policy"/>
+         <attribute-mappings>
+            <attribute-mapping xsi:type="direct-mapping">
+               <attribute-name>endDate</attribute-name>
+               <field name="endDate->DIRECT" xsi:type="column"/>
+            </attribute-mapping>
+            <attribute-mapping xsi:type="direct-mapping">
+               <attribute-name>startDate</attribute-name>
+               <field name="startDate->DIRECT" xsi:type="column"/>
+            </attribute-mapping>
+         </attribute-mappings>
+         <descriptor-type>aggregate</descriptor-type>
+         <instantiation/>
+         <copying xsi:type="instantiation-copy-policy"/>
+      </class-mapping-descriptor>
+      <class-mapping-descriptor xsi:type="relational-class-mapping-descriptor">
+         <class>org.eclipse.persistence.testing.models.employee.domain.LargeProject</class>
+         <alias>LargeProject</alias>
+         <inheritance xsi:type="inheritance-policy">
+            <parent-class>org.eclipse.persistence.testing.models.employee.domain.Project</parent-class>
+            <read-subclasses-on-queries>false</read-subclasses-on-queries>
+         </inheritance>
+         <events xsi:type="event-policy"/>
+         <querying xsi:type="query-policy"/>
+         <attribute-mappings>
+            <attribute-mapping xsi:type="direct-mapping">
+               <attribute-name>budget</attribute-name>
+               <field table="LPROJECT" name="BUDGET" xsi:type="column"/>
+            </attribute-mapping>
+            <attribute-mapping xsi:type="direct-mapping">
+               <attribute-name>milestoneVersion</attribute-name>
+               <field table="LPROJECT" name="MILESTONE" xsi:type="column"/>
+            </attribute-mapping>
+         </attribute-mappings>
+         <descriptor-type>independent</descriptor-type>
+         <interfaces>
+            <interface>org.eclipse.persistence.testing.models.employee.interfaces.LargeProject</interface>
+         </interfaces>
+         <instantiation/>
+         <copying xsi:type="instantiation-copy-policy"/>
+         <tables>
+            <table name="LPROJECT"/>
+         </tables>
+      </class-mapping-descriptor>
+      <class-mapping-descriptor xsi:type="relational-class-mapping-descriptor">
+         <class>org.eclipse.persistence.testing.models.employee.domain.PhoneNumber</class>
+         <alias>PhoneNumber</alias>
+         <primary-key>
+            <field table="PHONE" name="EMP_ID" xsi:type="column"/>
+            <field table="PHONE" name="TYPE" xsi:type="column"/>
+         </primary-key>
+         <events xsi:type="event-policy"/>
+         <querying xsi:type="query-policy">
+            <queries>
+               <query name="localNumbers" xsi:type="read-object-query">
+                  <criteria operator="and" xsi:type="logic-expression">
+                     <left operator="equal" xsi:type="relation-expression">
+                        <left name="id" xsi:type="query-key-expression">
+                           <base xsi:type="base-expression"/>
+                        </left>
+                        <right xsi:type="parameter-expression">
+                           <parameter name="ID" xsi:type="column"/>
+                        </right>
+                     </left>
+                     <right operator="equal" xsi:type="relation-expression">
+                        <left name="areaCode" xsi:type="query-key-expression">
+                           <base xsi:type="base-expression"/>
+                        </left>
+                        <right xsi:type="constant-expression">
+                           <value xsi:type="xsd:string">613</value>
+                        </right>
+                     </right>
+                  </criteria>
+                  <arguments>
+                     <argument name="ID">
+                        <type>java.lang.Number</type>
+                     </argument>
+                  </arguments>
+                  <reference-class>org.eclipse.persistence.testing.models.employee.domain.PhoneNumber</reference-class>
+                  <cache-usage>primary-key</cache-usage>
+                  <lock-mode>none</lock-mode>
+               </query>
+            </queries>
+         </querying>
+         <attribute-mappings>
+            <attribute-mapping xsi:type="direct-mapping">
+               <attribute-name>areaCode</attribute-name>
+               <field table="PHONE" name="AREA_CODE" xsi:type="column"/>
+            </attribute-mapping>
+            <attribute-mapping xsi:type="direct-mapping">
+               <attribute-name>number</attribute-name>
+               <field table="PHONE" name="P_NUMBER" xsi:type="column"/>
+            </attribute-mapping>
+            <attribute-mapping xsi:type="direct-mapping">
+               <attribute-name>type</attribute-name>
+               <field table="PHONE" name="TYPE" xsi:type="column"/>
+            </attribute-mapping>
+            <attribute-mapping xsi:type="one-to-one-mapping">
+               <attribute-name>owner</attribute-name>
+               <reference-class>org.eclipse.persistence.testing.models.employee.domain.Employee</reference-class>
+               <foreign-key>
+                  <field-reference>
+                     <source-field table="PHONE" name="EMP_ID" xsi:type="column"/>
+                     <target-field table="EMPLOYEE" name="EMP_ID" xsi:type="column"/>
+                  </field-reference>
+               </foreign-key>
+               <foreign-key-fields>
+                  <field table="PHONE" name="EMP_ID" xsi:type="column"/>
+               </foreign-key-fields>
+               <indirection xsi:type="value-holder-indirection-policy"/>
+               <selection-query xsi:type="read-object-query">
+                  <reference-class>org.eclipse.persistence.testing.models.employee.domain.Employee</reference-class>
+               </selection-query>
+            </attribute-mapping>
+         </attribute-mappings>
+         <descriptor-type>independent</descriptor-type>
+         <instantiation/>
+         <copying xsi:type="instantiation-copy-policy"/>
+         <query-keys>
+            <query-key name="id" xsi:type="direct-query-key">
+               <field table="PHONE" name="EMP_ID" xsi:type="column"/>
+            </query-key>
+         </query-keys>
+         <tables>
+            <table name="PHONE"/>
+         </tables>
+      </class-mapping-descriptor>
+      <class-mapping-descriptor xsi:type="relational-class-mapping-descriptor">
+         <class>org.eclipse.persistence.testing.models.employee.domain.Project</class>
+         <alias>Project</alias>
+         <primary-key>
+            <field table="PROJECT" name="PROJ_ID" xsi:type="column"/>
+         </primary-key>
+         <inheritance xsi:type="inheritance-policy">
+            <class-indicator-field table="PROJECT" name="PROJ_TYPE" xsi:type="column"/>
+            <class-indicator-mappings>
+               <class-indicator-mapping>
+                  <class>org.eclipse.persistence.testing.models.employee.domain.SmallProject</class>
+                  <class-indicator xsi:type="xsd:string">S</class-indicator>
+               </class-indicator-mapping>
+               <class-indicator-mapping>
+                  <class>org.eclipse.persistence.testing.models.employee.domain.LargeProject</class>
+                  <class-indicator xsi:type="xsd:string">L</class-indicator>
+               </class-indicator-mapping>
+            </class-indicator-mappings>
+         </inheritance>
+         <events xsi:type="event-policy"/>
+         <querying xsi:type="query-policy"/>
+         <attribute-mappings>
+            <attribute-mapping xsi:type="direct-mapping">
+               <attribute-name>description</attribute-name>
+               <field table="PROJECT" name="DESCRIP" xsi:type="column"/>
+               <null-value xsi:type="xsd:string"></null-value>
+            </attribute-mapping>
+            <attribute-mapping xsi:type="direct-mapping">
+               <attribute-name>id</attribute-name>
+               <field table="PROJECT" name="PROJ_ID" xsi:type="column"/>
+            </attribute-mapping>
+            <attribute-mapping xsi:type="direct-mapping">
+               <attribute-name>name</attribute-name>
+               <field table="PROJECT" name="PROJ_NAME" xsi:type="column"/>
+               <null-value xsi:type="xsd:string"></null-value>
+            </attribute-mapping>
+            <attribute-mapping xsi:type="one-to-one-mapping">
+               <attribute-name>teamLeader</attribute-name>
+               <reference-class>org.eclipse.persistence.testing.models.employee.domain.Employee</reference-class>
+               <foreign-key>
+                  <field-reference>
+                     <source-field table="PROJECT" name="LEADER_ID" xsi:type="column"/>
+                     <target-field table="EMPLOYEE" name="EMP_ID" xsi:type="column"/>
+                  </field-reference>
+               </foreign-key>
+               <foreign-key-fields>
+                  <field table="PROJECT" name="LEADER_ID" xsi:type="column"/>
+               </foreign-key-fields>
+               <indirection xsi:type="value-holder-indirection-policy"/>
+               <selection-query xsi:type="read-object-query">
+                  <reference-class>org.eclipse.persistence.testing.models.employee.domain.Employee</reference-class>
+               </selection-query>
+            </attribute-mapping>
+         </attribute-mappings>
+         <descriptor-type>independent</descriptor-type>
+         <interfaces>
+            <interface>org.eclipse.persistence.testing.models.employee.interfaces.Project</interface>
+         </interfaces>
+         <locking xsi:type="version-locking-policy">
+            <version-field table="PROJECT" name="VERSION" xsi:type="column"/>
+         </locking>
+         <sequencing>
+            <sequence-name>PROJ_SEQ</sequence-name>
+            <sequence-field table="PROJECT" name="PROJ_ID" xsi:type="column"/>
+         </sequencing>
+         <instantiation/>
+         <copying xsi:type="instantiation-copy-policy"/>
+         <tables>
+            <table name="PROJECT"/>
+         </tables>
+      </class-mapping-descriptor>
+      <class-mapping-descriptor xsi:type="relational-class-mapping-descriptor">
+         <class>org.eclipse.persistence.testing.models.employee.domain.SmallProject</class>
+         <alias>SmallProject</alias>
+         <inheritance xsi:type="inheritance-policy">
+            <parent-class>org.eclipse.persistence.testing.models.employee.domain.Project</parent-class>
+            <read-subclasses-on-queries>false</read-subclasses-on-queries>
+         </inheritance>
+         <events xsi:type="event-policy"/>
+         <querying xsi:type="query-policy"/>
+         <descriptor-type>independent</descriptor-type>
+         <interfaces>
+            <interface>org.eclipse.persistence.testing.models.employee.interfaces.SmallProject</interface>
+         </interfaces>
+         <instantiation/>
+         <copying xsi:type="instantiation-copy-policy"/>
+         <tables>
+            <table name="PROJECT"/>
+         </tables>
+      </class-mapping-descriptor>
+   </class-mapping-descriptors>
+   <login xsi:type="database-login">
+      <platform-class>org.eclipse.persistence.platform.database.oracle.OraclePlatform</platform-class>
+      <user-name>@dbUser@</user-name>
+      <password>3E20F8982C53F4ABA825E30206EC8ADE</password>
+      <driver-class>@driverClass@</driver-class>
+      <connection-url>@dbURL@</connection-url>
+   </login>
+</object-persistence>

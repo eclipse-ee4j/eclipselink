@@ -86,6 +86,8 @@ import static org.eclipse.persistence.internal.databaseaccess.DatasourceCall.INO
 import static org.eclipse.persistence.internal.databaseaccess.DatasourceCall.OUT;
 import static org.eclipse.persistence.internal.databaseaccess.DatasourceCall.OUT_CURSOR;
 import static org.eclipse.persistence.internal.helper.DatabaseField.NULL_SQL_TYPE;
+import static org.eclipse.persistence.sessions.factories.XMLProjectReader.SCHEMA_DIR;
+import static org.eclipse.persistence.sessions.factories.XMLProjectReader.TOPLINK_11_SCHEMA;
 
 /**
  * INTERNAL:
@@ -149,7 +151,7 @@ public class ObjectPersistenceRuntimeXMLProject_11_1_1 extends ObjectPersistence
     @Override
     protected ClassDescriptor buildProjectDescriptor() {
         XMLDescriptor descriptor = (XMLDescriptor)super.buildProjectDescriptor();
-        descriptor.setSchemaReference(new XMLSchemaClassPathReference("xsd/toplink-object-persistence_11_1_1.xsd"));
+        descriptor.setSchemaReference(new XMLSchemaClassPathReference(SCHEMA_DIR + TOPLINK_11_SCHEMA));
 
         XMLDirectMapping defaultTemporalMutableMapping = new XMLDirectMapping();
         defaultTemporalMutableMapping.setAttributeName("defaultTemporalMutable");

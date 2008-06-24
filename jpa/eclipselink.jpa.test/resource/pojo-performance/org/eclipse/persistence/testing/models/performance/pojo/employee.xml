@@ -141,13 +141,13 @@
                   </field-reference>
                </target-foreign-key>
                <container xsi:type="container-policy">
-                  <collection-type>oracle.toplink.indirection.IndirectSet</collection-type>
+                  <collection-type>org.eclipse.persistence.indirection.IndirectSet</collection-type>
                </container>
                <indirection xsi:type="transparent-collection-indirection-policy"/>
                <selection-query xsi:type="read-all-query">
                   <reference-class>org.eclipse.persistence.testing.models.performance.Employee</reference-class>
                   <container xsi:type="container-policy">
-                     <collection-type>oracle.toplink.indirection.IndirectSet</collection-type>
+                     <collection-type>org.eclipse.persistence.indirection.IndirectSet</collection-type>
                   </container>
                </selection-query>
             </attribute-mapping>
@@ -162,13 +162,13 @@
                   </field-reference>
                </target-foreign-key>
                <container xsi:type="container-policy">
-                  <collection-type>oracle.toplink.indirection.IndirectSet</collection-type>
+                  <collection-type>org.eclipse.persistence.indirection.IndirectSet</collection-type>
                </container>
                <indirection xsi:type="transparent-collection-indirection-policy"/>
                <selection-query xsi:type="read-all-query">
                   <reference-class>org.eclipse.persistence.testing.models.performance.PhoneNumber</reference-class>
                   <container xsi:type="container-policy">
-                     <collection-type>oracle.toplink.indirection.IndirectSet</collection-type>
+                     <collection-type>org.eclipse.persistence.indirection.IndirectSet</collection-type>
                   </container>
                </selection-query>
             </attribute-mapping>
@@ -189,13 +189,13 @@
                   </field-reference>
                </target-relation-foreign-key>
                <container xsi:type="container-policy">
-                  <collection-type>oracle.toplink.indirection.IndirectSet</collection-type>
+                  <collection-type>org.eclipse.persistence.indirection.IndirectSet</collection-type>
                </container>
                <indirection xsi:type="transparent-collection-indirection-policy"/>
                <selection-query xsi:type="read-all-query">
                   <reference-class>org.eclipse.persistence.testing.models.performance.Project</reference-class>
                   <container xsi:type="container-policy">
-                     <collection-type>oracle.toplink.indirection.IndirectSet</collection-type>
+                     <collection-type>org.eclipse.persistence.indirection.IndirectSet</collection-type>
                   </container>
                </selection-query>
                <insert-query xsi:type="data-modify-query"/>

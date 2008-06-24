@@ -129,420 +129,420 @@ public class KeyMappingTestSuite {
         "</dbws>\n";
     static final String KEYMAPPINGS_OR_PROJECT = 
         "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
-        "<eclipselink:object-persistence version=\"Eclipse Persistence Services - @VERSION@ (Build @BUILD_NUMBER@)\"\n" +
+        "<object-persistence version=\"Eclipse Persistence Services - @VERSION@ (Build @BUILD_NUMBER@)\"\n" +
         "   xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"\n" +
-        "   xmlns:eclipselink=\"http://xmlns.oracle.com/ias/xsds/eclipselink\"\n" +
+        "   xmlns=\"http://www.eclipse.org/eclipselink/xsds/persistence\"\n" +
         "   >\n" +
-        "   <eclipselink:name>keymappings</eclipselink:name>\n" +
-        "   <eclipselink:class-mapping-descriptors>\n" +
-        "      <eclipselink:class-mapping-descriptor xsi:type=\"eclipselink:relational-class-mapping-descriptor\">\n" +
-        "         <eclipselink:class>dbws.testing.keymappings.Address</eclipselink:class>\n" +
-        "         <eclipselink:alias>address</eclipselink:alias>\n" +
-        "         <eclipselink:primary-key>\n" +
-        "            <eclipselink:field table=\"XR_KEYMAP_ADDRESS\" name=\"ADDRESS_ID\" xsi:type=\"eclipselink:column\"/>\n" +
-        "         </eclipselink:primary-key>\n" +
-        "         <eclipselink:events xsi:type=\"eclipselink:event-policy\"/>\n" +
-        "         <eclipselink:querying xsi:type=\"eclipselink:query-policy\"/>\n" +
-        "         <eclipselink:attribute-mappings>\n" +
-        "            <eclipselink:attribute-mapping xsi:type=\"eclipselink:direct-mapping\">\n" +
-        "               <eclipselink:attribute-name>addressId</eclipselink:attribute-name>\n" +
-        "               <eclipselink:field table=\"XR_KEYMAP_ADDRESS\" name=\"ADDRESS_ID\" xsi:type=\"eclipselink:column\"/>\n" +
-        "            </eclipselink:attribute-mapping>\n" +
-        "            <eclipselink:attribute-mapping xsi:type=\"eclipselink:direct-mapping\">\n" +
-        "               <eclipselink:attribute-name>street</eclipselink:attribute-name>\n" +
-        "               <eclipselink:field table=\"XR_KEYMAP_ADDRESS\" name=\"STREET\" xsi:type=\"eclipselink:column\"/>\n" +
-        "            </eclipselink:attribute-mapping>\n" +
-        "            <eclipselink:attribute-mapping xsi:type=\"eclipselink:direct-mapping\">\n" +
-        "               <eclipselink:attribute-name>city</eclipselink:attribute-name>\n" +
-        "               <eclipselink:field table=\"XR_KEYMAP_ADDRESS\" name=\"CITY\" xsi:type=\"eclipselink:column\"/>\n" +
-        "            </eclipselink:attribute-mapping>\n" +
-        "            <eclipselink:attribute-mapping xsi:type=\"eclipselink:direct-mapping\">\n" +
-        "               <eclipselink:attribute-name>province</eclipselink:attribute-name>\n" +
-        "               <eclipselink:field table=\"XR_KEYMAP_ADDRESS\" name=\"PROVINCE\" xsi:type=\"eclipselink:column\"/>\n" +
-        "            </eclipselink:attribute-mapping>\n" +
-        "         </eclipselink:attribute-mappings>\n" +
-        "         <eclipselink:descriptor-type>independent</eclipselink:descriptor-type>\n" +
-        "         <eclipselink:instantiation/>\n" +
-        "         <eclipselink:copying xsi:type=\"eclipselink:instantiation-copy-policy\"/>\n" +
-        "         <eclipselink:change-policy xsi:type=\"eclipselink:deferred-detection-change-policy\"/>\n" +
-        "         <eclipselink:tables>\n" +
-        "            <eclipselink:table name=\"XR_KEYMAP_ADDRESS\"/>\n" +
-        "         </eclipselink:tables>\n" +
-        "      </eclipselink:class-mapping-descriptor>\n" +
-        "      <eclipselink:class-mapping-descriptor xsi:type=\"eclipselink:relational-class-mapping-descriptor\">\n" +
-        "         <eclipselink:class>dbws.testing.keymappings.Employee</eclipselink:class>\n" +
-        "         <eclipselink:alias>employee</eclipselink:alias>\n" +
-        "         <eclipselink:primary-key>\n" +
-        "            <eclipselink:field table=\"XR_KEYMAP_EMPLOYEE\" name=\"EMP_ID\" xsi:type=\"eclipselink:column\"/>\n" +
-        "         </eclipselink:primary-key>\n" +
-        "         <eclipselink:events xsi:type=\"eclipselink:event-policy\"/>\n" +
-        "         <eclipselink:querying xsi:type=\"eclipselink:query-policy\">\n" +
-        "         </eclipselink:querying>\n" +
-        "         <eclipselink:attribute-mappings>\n" +
-        "            <eclipselink:attribute-mapping xsi:type=\"eclipselink:one-to-one-mapping\">\n" +
-        "               <eclipselink:attribute-name>address</eclipselink:attribute-name>\n" +
-        "               <eclipselink:reference-class>dbws.testing.keymappings.Address</eclipselink:reference-class>\n" +
-        "               <eclipselink:foreign-key>\n" +
-        "                  <eclipselink:field-reference>\n" +
-        "                     <eclipselink:source-field table=\"XR_KEYMAP_EMPLOYEE\" name=\"ADDR_ID\" xsi:type=\"eclipselink:column\"/>\n" +
-        "                     <eclipselink:target-field table=\"XR_KEYMAP_ADDRESS\" name=\"ADDRESS_ID\" xsi:type=\"eclipselink:column\"/>\n" +
-        "                  </eclipselink:field-reference>\n" +
-        "               </eclipselink:foreign-key>\n" +
-        "               <eclipselink:foreign-key-fields>\n" +
-        "                  <eclipselink:field table=\"XR_KEYMAP_EMPLOYEE\" name=\"ADDR_ID\" xsi:type=\"eclipselink:column\"/>\n" +
-        "               </eclipselink:foreign-key-fields>\n" +
-        "               <eclipselink:selection-query xsi:type=\"eclipselink:read-object-query\"/>\n" +
-        "               <eclipselink:join-fetch>inner-join</eclipselink:join-fetch>\n" +
-        "            </eclipselink:attribute-mapping>\n" +
-        "            <eclipselink:attribute-mapping xsi:type=\"eclipselink:direct-mapping\">\n" +
-        "               <eclipselink:attribute-name>employeeId</eclipselink:attribute-name>\n" +
-        "               <eclipselink:field table=\"XR_KEYMAP_EMPLOYEE\" name=\"EMP_ID\" xsi:type=\"eclipselink:column\"/>\n" +
-        "            </eclipselink:attribute-mapping>\n" +
-        "            <eclipselink:attribute-mapping xsi:type=\"eclipselink:direct-mapping\">\n" +
-        "               <eclipselink:attribute-name>firstName</eclipselink:attribute-name>\n" +
-        "               <eclipselink:field table=\"XR_KEYMAP_EMPLOYEE\" name=\"F_NAME\" xsi:type=\"eclipselink:column\"/>\n" +
-        "            </eclipselink:attribute-mapping>\n" +
-        "            <eclipselink:attribute-mapping xsi:type=\"eclipselink:direct-mapping\">\n" +
-        "               <eclipselink:attribute-name>lastName</eclipselink:attribute-name>\n" +
-        "               <eclipselink:field table=\"XR_KEYMAP_EMPLOYEE\" name=\"L_NAME\" xsi:type=\"eclipselink:column\"/>\n" +
-        "            </eclipselink:attribute-mapping>\n" +
-        "            <eclipselink:attribute-mapping xsi:type=\"eclipselink:one-to-many-mapping\">\n" +
-        "               <eclipselink:attribute-name>phones</eclipselink:attribute-name>\n" +
-        "               <eclipselink:reference-class>dbws.testing.keymappings.Phone</eclipselink:reference-class>\n" +
-        "               <eclipselink:target-foreign-key>\n" +
-        "                  <eclipselink:field-reference>\n" +
-        "                     <eclipselink:source-field table=\"XR_KEYMAP_PHONE\" name=\"OWNER_ID\" xsi:type=\"eclipselink:column\"/>\n" +
-        "                     <eclipselink:target-field table=\"XR_KEYMAP_EMPLOYEE\" name=\"EMP_ID\" xsi:type=\"eclipselink:column\"/>\n" +
-        "                  </eclipselink:field-reference>\n" +
-        "               </eclipselink:target-foreign-key>\n" +
-        "               <eclipselink:container xsi:type=\"eclipselink:list-container-policy\">\n" +
-        "                  <eclipselink:collection-type>org.eclipse.persistence.indirection.IndirectList</eclipselink:collection-type>\n" +
-        "               </eclipselink:container>\n" +
-        "               <eclipselink:indirection xsi:type=\"eclipselink:transparent-collection-indirection-policy\"/>\n" +
-        "               <eclipselink:selection-query xsi:type=\"eclipselink:read-all-query\">\n" +
-        "                  <eclipselink:container xsi:type=\"eclipselink:list-container-policy\">\n" +
-        "                     <eclipselink:collection-type>org.eclipse.persistence.indirection.IndirectList</eclipselink:collection-type>\n" +
-        "                  </eclipselink:container>\n" +
-        "               </eclipselink:selection-query>\n" +
-        "            </eclipselink:attribute-mapping>\n" +
-        "         </eclipselink:attribute-mappings>\n" +
-        "         <eclipselink:descriptor-type>independent</eclipselink:descriptor-type>\n" +
-        "         <eclipselink:instantiation/>\n" +
-        "         <eclipselink:copying xsi:type=\"eclipselink:instantiation-copy-policy\"/>\n" +
-        "         <eclipselink:change-policy xsi:type=\"eclipselink:deferred-detection-change-policy\"/>\n" +
-        "         <eclipselink:tables>\n" +
-        "            <eclipselink:table name=\"XR_KEYMAP_EMPLOYEE\"/>\n" +
-        "         </eclipselink:tables>\n" +
-        "      </eclipselink:class-mapping-descriptor>\n" +
-        "      <eclipselink:class-mapping-descriptor xsi:type=\"eclipselink:relational-class-mapping-descriptor\">\n" +
-        "         <eclipselink:class>dbws.testing.keymappings.Phone</eclipselink:class>\n" +
-        "         <eclipselink:alias>phone</eclipselink:alias>\n" +
-        "         <eclipselink:primary-key>\n" +
-        "            <eclipselink:field table=\"XR_KEYMAP_PHONE\" name=\"PHONE_ID\" xsi:type=\"eclipselink:column\"/>\n" +
-        "         </eclipselink:primary-key>\n" +
-        "         <eclipselink:events xsi:type=\"eclipselink:event-policy\"/>\n" +
-        "         <eclipselink:querying xsi:type=\"eclipselink:query-policy\"/>\n" +
-        "         <eclipselink:attribute-mappings>\n" +
-        "            <eclipselink:attribute-mapping xsi:type=\"eclipselink:direct-mapping\">\n" +
-        "               <eclipselink:attribute-name>phoneId</eclipselink:attribute-name>\n" +
-        "               <eclipselink:field table=\"XR_KEYMAP_PHONE\" name=\"PHONE_ID\" xsi:type=\"eclipselink:column\"/>\n" +
-        "            </eclipselink:attribute-mapping>\n" +
-        "            <eclipselink:attribute-mapping xsi:type=\"eclipselink:direct-mapping\">\n" +
-        "               <eclipselink:attribute-name>areaCode</eclipselink:attribute-name>\n" +
-        "               <eclipselink:field table=\"XR_KEYMAP_PHONE\" name=\"AREA_CODE\" xsi:type=\"eclipselink:column\"/>\n" +
-        "            </eclipselink:attribute-mapping>\n" +
-        "            <eclipselink:attribute-mapping xsi:type=\"eclipselink:direct-mapping\">\n" +
-        "               <eclipselink:attribute-name>phonenumber</eclipselink:attribute-name>\n" +
-        "               <eclipselink:field table=\"XR_KEYMAP_PHONE\" name=\"P_NUMBER\" xsi:type=\"eclipselink:column\"/>\n" +
-        "            </eclipselink:attribute-mapping>\n" +
-        "            <eclipselink:attribute-mapping xsi:type=\"eclipselink:direct-mapping\">\n" +
-        "               <eclipselink:attribute-name>type</eclipselink:attribute-name>\n" +
-        "               <eclipselink:field table=\"XR_KEYMAP_PHONE\" name=\"TYPE\" xsi:type=\"eclipselink:column\"/>\n" +
-        "            </eclipselink:attribute-mapping>\n" +
-        "            <eclipselink:attribute-mapping xsi:type=\"eclipselink:one-to-one-mapping\">\n" +
-        "               <eclipselink:attribute-name>owner</eclipselink:attribute-name>\n" +
-        "               <eclipselink:reference-class>dbws.testing.keymappings.Employee</eclipselink:reference-class>\n" +
-        "               <eclipselink:private-owned>false</eclipselink:private-owned>\n" +
-        "               <eclipselink:foreign-key>\n" +
-        "                  <eclipselink:field-reference>\n" +
-        "                     <eclipselink:source-field table=\"XR_KEYMAP_PHONE\" name=\"OWNER_ID\" xsi:type=\"eclipselink:column\"/>\n" +
-        "                     <eclipselink:target-field table=\"XR_KEYMAP_EMPLOYEE\" name=\"EMP_ID\" xsi:type=\"eclipselink:column\"/>\n" +
-        "                  </eclipselink:field-reference>\n" +
-        "               </eclipselink:foreign-key>\n" +
-        "               <eclipselink:foreign-key-fields>\n" +
-        "                  <eclipselink:field table=\"XR_KEYMAP_PHONE\" name=\"OWNER_ID\" xsi:type=\"eclipselink:column\"/>\n" +
-        "               </eclipselink:foreign-key-fields>\n" +
-        "               <eclipselink:batch-reading>true</eclipselink:batch-reading>\n" +
-        "               <eclipselink:selection-query xsi:type=\"eclipselink:read-object-query\"/>\n" +
-        "            </eclipselink:attribute-mapping>\n" +
-        "         </eclipselink:attribute-mappings>\n" +
-        "         <eclipselink:descriptor-type>independent</eclipselink:descriptor-type>\n" +
-        "         <eclipselink:instantiation/>\n" +
-        "         <eclipselink:copying xsi:type=\"eclipselink:instantiation-copy-policy\"/>\n" +
-        "         <eclipselink:change-policy xsi:type=\"eclipselink:deferred-detection-change-policy\"/>\n" +
-        "         <eclipselink:tables>\n" +
-        "            <eclipselink:table name=\"XR_KEYMAP_PHONE\"/>\n" +
-        "         </eclipselink:tables>\n" +
-        "      </eclipselink:class-mapping-descriptor>\n" +
-        "   </eclipselink:class-mapping-descriptors>\n" +
-        "   <eclipselink:login xsi:type=\"eclipselink:database-login\">\n" +
-        "      <eclipselink:bind-all-parameters>true</eclipselink:bind-all-parameters>\n" +
-        "   </eclipselink:login>\n" +
-        "</eclipselink:object-persistence>";
+        "   <name>keymappings</name>\n" +
+        "   <class-mapping-descriptors>\n" +
+        "      <class-mapping-descriptor xsi:type=\"relational-class-mapping-descriptor\">\n" +
+        "         <class>dbws.testing.keymappings.Address</class>\n" +
+        "         <alias>address</alias>\n" +
+        "         <primary-key>\n" +
+        "            <field table=\"XR_KEYMAP_ADDRESS\" name=\"ADDRESS_ID\" xsi:type=\"column\"/>\n" +
+        "         </primary-key>\n" +
+        "         <events xsi:type=\"event-policy\"/>\n" +
+        "         <querying xsi:type=\"query-policy\"/>\n" +
+        "         <attribute-mappings>\n" +
+        "            <attribute-mapping xsi:type=\"direct-mapping\">\n" +
+        "               <attribute-name>addressId</attribute-name>\n" +
+        "               <field table=\"XR_KEYMAP_ADDRESS\" name=\"ADDRESS_ID\" xsi:type=\"column\"/>\n" +
+        "            </attribute-mapping>\n" +
+        "            <attribute-mapping xsi:type=\"direct-mapping\">\n" +
+        "               <attribute-name>street</attribute-name>\n" +
+        "               <field table=\"XR_KEYMAP_ADDRESS\" name=\"STREET\" xsi:type=\"column\"/>\n" +
+        "            </attribute-mapping>\n" +
+        "            <attribute-mapping xsi:type=\"direct-mapping\">\n" +
+        "               <attribute-name>city</attribute-name>\n" +
+        "               <field table=\"XR_KEYMAP_ADDRESS\" name=\"CITY\" xsi:type=\"column\"/>\n" +
+        "            </attribute-mapping>\n" +
+        "            <attribute-mapping xsi:type=\"direct-mapping\">\n" +
+        "               <attribute-name>province</attribute-name>\n" +
+        "               <field table=\"XR_KEYMAP_ADDRESS\" name=\"PROVINCE\" xsi:type=\"column\"/>\n" +
+        "            </attribute-mapping>\n" +
+        "         </attribute-mappings>\n" +
+        "         <descriptor-type>independent</descriptor-type>\n" +
+        "         <instantiation/>\n" +
+        "         <copying xsi:type=\"instantiation-copy-policy\"/>\n" +
+        "         <change-policy xsi:type=\"deferred-detection-change-policy\"/>\n" +
+        "         <tables>\n" +
+        "            <table name=\"XR_KEYMAP_ADDRESS\"/>\n" +
+        "         </tables>\n" +
+        "      </class-mapping-descriptor>\n" +
+        "      <class-mapping-descriptor xsi:type=\"relational-class-mapping-descriptor\">\n" +
+        "         <class>dbws.testing.keymappings.Employee</class>\n" +
+        "         <alias>employee</alias>\n" +
+        "         <primary-key>\n" +
+        "            <field table=\"XR_KEYMAP_EMPLOYEE\" name=\"EMP_ID\" xsi:type=\"column\"/>\n" +
+        "         </primary-key>\n" +
+        "         <events xsi:type=\"event-policy\"/>\n" +
+        "         <querying xsi:type=\"query-policy\">\n" +
+        "         </querying>\n" +
+        "         <attribute-mappings>\n" +
+        "            <attribute-mapping xsi:type=\"one-to-one-mapping\">\n" +
+        "               <attribute-name>address</attribute-name>\n" +
+        "               <reference-class>dbws.testing.keymappings.Address</reference-class>\n" +
+        "               <foreign-key>\n" +
+        "                  <field-reference>\n" +
+        "                     <source-field table=\"XR_KEYMAP_EMPLOYEE\" name=\"ADDR_ID\" xsi:type=\"column\"/>\n" +
+        "                     <target-field table=\"XR_KEYMAP_ADDRESS\" name=\"ADDRESS_ID\" xsi:type=\"column\"/>\n" +
+        "                  </field-reference>\n" +
+        "               </foreign-key>\n" +
+        "               <foreign-key-fields>\n" +
+        "                  <field table=\"XR_KEYMAP_EMPLOYEE\" name=\"ADDR_ID\" xsi:type=\"column\"/>\n" +
+        "               </foreign-key-fields>\n" +
+        "               <selection-query xsi:type=\"read-object-query\"/>\n" +
+        "               <join-fetch>inner-join</join-fetch>\n" +
+        "            </attribute-mapping>\n" +
+        "            <attribute-mapping xsi:type=\"direct-mapping\">\n" +
+        "               <attribute-name>employeeId</attribute-name>\n" +
+        "               <field table=\"XR_KEYMAP_EMPLOYEE\" name=\"EMP_ID\" xsi:type=\"column\"/>\n" +
+        "            </attribute-mapping>\n" +
+        "            <attribute-mapping xsi:type=\"direct-mapping\">\n" +
+        "               <attribute-name>firstName</attribute-name>\n" +
+        "               <field table=\"XR_KEYMAP_EMPLOYEE\" name=\"F_NAME\" xsi:type=\"column\"/>\n" +
+        "            </attribute-mapping>\n" +
+        "            <attribute-mapping xsi:type=\"direct-mapping\">\n" +
+        "               <attribute-name>lastName</attribute-name>\n" +
+        "               <field table=\"XR_KEYMAP_EMPLOYEE\" name=\"L_NAME\" xsi:type=\"column\"/>\n" +
+        "            </attribute-mapping>\n" +
+        "            <attribute-mapping xsi:type=\"one-to-many-mapping\">\n" +
+        "               <attribute-name>phones</attribute-name>\n" +
+        "               <reference-class>dbws.testing.keymappings.Phone</reference-class>\n" +
+        "               <target-foreign-key>\n" +
+        "                  <field-reference>\n" +
+        "                     <source-field table=\"XR_KEYMAP_PHONE\" name=\"OWNER_ID\" xsi:type=\"column\"/>\n" +
+        "                     <target-field table=\"XR_KEYMAP_EMPLOYEE\" name=\"EMP_ID\" xsi:type=\"column\"/>\n" +
+        "                  </field-reference>\n" +
+        "               </target-foreign-key>\n" +
+        "               <container xsi:type=\"list-container-policy\">\n" +
+        "                  <collection-type>org.eclipse.persistence.indirection.IndirectList</collection-type>\n" +
+        "               </container>\n" +
+        "               <indirection xsi:type=\"transparent-collection-indirection-policy\"/>\n" +
+        "               <selection-query xsi:type=\"read-all-query\">\n" +
+        "                  <container xsi:type=\"list-container-policy\">\n" +
+        "                     <collection-type>org.eclipse.persistence.indirection.IndirectList</collection-type>\n" +
+        "                  </container>\n" +
+        "               </selection-query>\n" +
+        "            </attribute-mapping>\n" +
+        "         </attribute-mappings>\n" +
+        "         <descriptor-type>independent</descriptor-type>\n" +
+        "         <instantiation/>\n" +
+        "         <copying xsi:type=\"instantiation-copy-policy\"/>\n" +
+        "         <change-policy xsi:type=\"deferred-detection-change-policy\"/>\n" +
+        "         <tables>\n" +
+        "            <table name=\"XR_KEYMAP_EMPLOYEE\"/>\n" +
+        "         </tables>\n" +
+        "      </class-mapping-descriptor>\n" +
+        "      <class-mapping-descriptor xsi:type=\"relational-class-mapping-descriptor\">\n" +
+        "         <class>dbws.testing.keymappings.Phone</class>\n" +
+        "         <alias>phone</alias>\n" +
+        "         <primary-key>\n" +
+        "            <field table=\"XR_KEYMAP_PHONE\" name=\"PHONE_ID\" xsi:type=\"column\"/>\n" +
+        "         </primary-key>\n" +
+        "         <events xsi:type=\"event-policy\"/>\n" +
+        "         <querying xsi:type=\"query-policy\"/>\n" +
+        "         <attribute-mappings>\n" +
+        "            <attribute-mapping xsi:type=\"direct-mapping\">\n" +
+        "               <attribute-name>phoneId</attribute-name>\n" +
+        "               <field table=\"XR_KEYMAP_PHONE\" name=\"PHONE_ID\" xsi:type=\"column\"/>\n" +
+        "            </attribute-mapping>\n" +
+        "            <attribute-mapping xsi:type=\"direct-mapping\">\n" +
+        "               <attribute-name>areaCode</attribute-name>\n" +
+        "               <field table=\"XR_KEYMAP_PHONE\" name=\"AREA_CODE\" xsi:type=\"column\"/>\n" +
+        "            </attribute-mapping>\n" +
+        "            <attribute-mapping xsi:type=\"direct-mapping\">\n" +
+        "               <attribute-name>phonenumber</attribute-name>\n" +
+        "               <field table=\"XR_KEYMAP_PHONE\" name=\"P_NUMBER\" xsi:type=\"column\"/>\n" +
+        "            </attribute-mapping>\n" +
+        "            <attribute-mapping xsi:type=\"direct-mapping\">\n" +
+        "               <attribute-name>type</attribute-name>\n" +
+        "               <field table=\"XR_KEYMAP_PHONE\" name=\"TYPE\" xsi:type=\"column\"/>\n" +
+        "            </attribute-mapping>\n" +
+        "            <attribute-mapping xsi:type=\"one-to-one-mapping\">\n" +
+        "               <attribute-name>owner</attribute-name>\n" +
+        "               <reference-class>dbws.testing.keymappings.Employee</reference-class>\n" +
+        "               <private-owned>false</private-owned>\n" +
+        "               <foreign-key>\n" +
+        "                  <field-reference>\n" +
+        "                     <source-field table=\"XR_KEYMAP_PHONE\" name=\"OWNER_ID\" xsi:type=\"column\"/>\n" +
+        "                     <target-field table=\"XR_KEYMAP_EMPLOYEE\" name=\"EMP_ID\" xsi:type=\"column\"/>\n" +
+        "                  </field-reference>\n" +
+        "               </foreign-key>\n" +
+        "               <foreign-key-fields>\n" +
+        "                  <field table=\"XR_KEYMAP_PHONE\" name=\"OWNER_ID\" xsi:type=\"column\"/>\n" +
+        "               </foreign-key-fields>\n" +
+        "               <batch-reading>true</batch-reading>\n" +
+        "               <selection-query xsi:type=\"read-object-query\"/>\n" +
+        "            </attribute-mapping>\n" +
+        "         </attribute-mappings>\n" +
+        "         <descriptor-type>independent</descriptor-type>\n" +
+        "         <instantiation/>\n" +
+        "         <copying xsi:type=\"instantiation-copy-policy\"/>\n" +
+        "         <change-policy xsi:type=\"deferred-detection-change-policy\"/>\n" +
+        "         <tables>\n" +
+        "            <table name=\"XR_KEYMAP_PHONE\"/>\n" +
+        "         </tables>\n" +
+        "      </class-mapping-descriptor>\n" +
+        "   </class-mapping-descriptors>\n" +
+        "   <login xsi:type=\"database-login\">\n" +
+        "      <bind-all-parameters>true</bind-all-parameters>\n" +
+        "   </login>\n" +
+        "</object-persistence>";
     static final String KEYMAPPINGS_OX_PROJECT = 
         "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
-        "<eclipselink:object-persistence version=\"Eclipse Persistence Services - @VERSION@ (Build @BUILD_NUMBER@)\"\n" +
+        "<object-persistence version=\"Eclipse Persistence Services - @VERSION@ (Build @BUILD_NUMBER@)\"\n" +
         "   xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"\n" +
-        "   xmlns:eclipselink=\"http://xmlns.oracle.com/ias/xsds/eclipselink\"\n" +
+        "   xmlns=\"http://www.eclipse.org/eclipselink/xsds/persistence\"\n" +
         "   >\n" +
-        "   <eclipselink:name>keymappings</eclipselink:name>\n" +
-        "   <eclipselink:class-mapping-descriptors>\n" +
-        "      <eclipselink:class-mapping-descriptor xsi:type=\"eclipselink:xml-class-mapping-descriptor\">\n" +
-        "         <eclipselink:class>dbws.testing.keymappings.Phone</eclipselink:class>\n" +
-        "         <eclipselink:alias>phone</eclipselink:alias>\n" +
-        "         <eclipselink:primary-key>\n" +
-        "            <eclipselink:field name=\"@phone-id\" xsi:type=\"eclipselink:column\"/>\n" +
-        "         </eclipselink:primary-key>\n" +
-        "         <eclipselink:events xsi:type=\"eclipselink:event-policy\"/>\n" +
-        "         <eclipselink:querying xsi:type=\"eclipselink:query-policy\"/>\n" +
-        "         <eclipselink:attribute-mappings>\n" +
-        "            <eclipselink:attribute-mapping xsi:type=\"eclipselink:xml-direct-mapping\">\n" +
-        "               <eclipselink:attribute-name>phoneId</eclipselink:attribute-name>\n" +
-        "               <eclipselink:field name=\"@phone-id\" xsi:type=\"eclipselink:node\">\n" +
-        "               </eclipselink:field>\n" +
-        "               <eclipselink:converter xsi:type=\"eclipselink:type-conversion-converter\">\n" +
-        "                  <eclipselink:object-class>java.lang.Integer</eclipselink:object-class>\n" +
-        "                  <eclipselink:data-class>java.lang.String</eclipselink:data-class>\n" +
-        "               </eclipselink:converter>\n" +
-        "            </eclipselink:attribute-mapping>\n" +
-        "            <eclipselink:attribute-mapping xsi:type=\"eclipselink:xml-direct-mapping\">\n" +
-        "               <eclipselink:attribute-name>areaCode</eclipselink:attribute-name>\n" +
-        "               <eclipselink:field name=\"ns1:area-code/text()\" xsi:type=\"eclipselink:node\">\n" +
-        "                  <eclipselink:schema-type>{http://www.w3.org/2001/XMLSchema}string</eclipselink:schema-type>\n" +
-        "               </eclipselink:field>\n" +
-        "            </eclipselink:attribute-mapping>\n" +
-        "            <eclipselink:attribute-mapping xsi:type=\"eclipselink:xml-direct-mapping\">\n" +
-        "               <eclipselink:attribute-name>phonenumber</eclipselink:attribute-name>\n" +
-        "               <eclipselink:field name=\"ns1:phone-number/text()\" xsi:type=\"eclipselink:node\"/>\n" +
-        "            </eclipselink:attribute-mapping>\n" +
-        "            <eclipselink:attribute-mapping xsi:type=\"eclipselink:xml-direct-mapping\">\n" +
-        "               <eclipselink:attribute-name>type</eclipselink:attribute-name>\n" +
-        "               <eclipselink:field name=\"ns1:type/text()\" xsi:type=\"eclipselink:node\"/>\n" +
-        "            </eclipselink:attribute-mapping>\n" +
-        "            <eclipselink:attribute-mapping xsi:type=\"eclipselink:xml-object-reference-mapping\">\n" +
-        "               <eclipselink:attribute-name>owner</eclipselink:attribute-name>\n" +
-        "               <eclipselink:reference-class>dbws.testing.keymappings.Employee</eclipselink:reference-class>\n" +
-        "               <eclipselink:source-to-target-key-field-association>\n" +
-        "                  <eclipselink:field-reference>\n" +
-        "                     <eclipselink:source-field name=\"@owner-ref-id\" xsi:type=\"eclipselink:node\"/>\n" +
-        "                     <eclipselink:target-field name=\"@employee-id\" xsi:type=\"eclipselink:node\"/>\n" +
-        "                  </eclipselink:field-reference>\n" +
-        "               </eclipselink:source-to-target-key-field-association>\n" +
-        "               <eclipselink:source-to-target-key-fields>\n" +
-        "                  <eclipselink:field name=\"@owner-ref-id\" xsi:type=\"eclipselink:node\"/>\n" +
-        "               </eclipselink:source-to-target-key-fields>\n" +
-        "            </eclipselink:attribute-mapping>\n" +
-        "         </eclipselink:attribute-mappings>\n" +
-        "         <eclipselink:descriptor-type>aggregate</eclipselink:descriptor-type>\n" +
-        "         <eclipselink:default-root-element>ns1:phone</eclipselink:default-root-element>\n" +
-        "         <eclipselink:default-root-element-field name=\"ns1:phone\" xsi:type=\"eclipselink:node\"/>\n" +
-        "         <eclipselink:namespace-resolver>\n" +
-        "            <eclipselink:namespaces>\n" +
-        "               <eclipselink:namespace>\n" +
-        "                  <eclipselink:prefix>xsd</eclipselink:prefix>\n" +
-        "                  <eclipselink:namespace-uri>http://www.w3.org/2001/XMLSchema</eclipselink:namespace-uri>\n" +
-        "               </eclipselink:namespace>\n" +
-        "               <eclipselink:namespace>\n" +
-        "                  <eclipselink:prefix>ns1</eclipselink:prefix>\n" +
-        "                  <eclipselink:namespace-uri>urn:keymappings</eclipselink:namespace-uri>\n" +
-        "               </eclipselink:namespace>\n" +
-        "               <eclipselink:namespace>\n" +
-        "                  <eclipselink:prefix>xsi</eclipselink:prefix>\n" +
-        "                  <eclipselink:namespace-uri>http://www.w3.org/2001/XMLSchema-instance</eclipselink:namespace-uri>\n" +
-        "               </eclipselink:namespace>\n" +
-        "            </eclipselink:namespaces>\n" +
-        "         </eclipselink:namespace-resolver>\n" +
-        "      </eclipselink:class-mapping-descriptor>\n" +
-        "      <eclipselink:class-mapping-descriptor xsi:type=\"eclipselink:xml-class-mapping-descriptor\">\n" +
-        "         <eclipselink:class>dbws.testing.keymappings.Address</eclipselink:class>\n" +
-        "         <eclipselink:alias>address</eclipselink:alias>\n" +
-        "         <eclipselink:primary-key>\n" +
-        "            <eclipselink:field name=\"@address-id\" xsi:type=\"eclipselink:column\"/>\n" +
-        "         </eclipselink:primary-key>\n" +
-        "         <eclipselink:events xsi:type=\"eclipselink:event-policy\"/>\n" +
-        "         <eclipselink:querying xsi:type=\"eclipselink:query-policy\"/>\n" +
-        "         <eclipselink:attribute-mappings>\n" +
-        "            <eclipselink:attribute-mapping xsi:type=\"eclipselink:xml-direct-mapping\">\n" +
-        "               <eclipselink:attribute-name>addressId</eclipselink:attribute-name>\n" +
-        "               <eclipselink:field name=\"@address-id\" xsi:type=\"eclipselink:node\">\n" +
-        "               </eclipselink:field>\n" +
-        "               <eclipselink:converter xsi:type=\"eclipselink:type-conversion-converter\">\n" +
-        "                  <eclipselink:object-class>java.lang.Integer</eclipselink:object-class>\n" +
-        "                  <eclipselink:data-class>java.lang.String</eclipselink:data-class>\n" +
-        "               </eclipselink:converter>\n" +
-        "            </eclipselink:attribute-mapping>\n" +
-        "            <eclipselink:attribute-mapping xsi:type=\"eclipselink:xml-direct-mapping\">\n" +
-        "               <eclipselink:attribute-name>street</eclipselink:attribute-name>\n" +
-        "               <eclipselink:field name=\"ns1:street/text()\" xsi:type=\"eclipselink:node\">\n" +
-        "                  <eclipselink:schema-type>{http://www.w3.org/2001/XMLSchema}string</eclipselink:schema-type>\n" +
-        "               </eclipselink:field>\n" +
-        "            </eclipselink:attribute-mapping>\n" +
-        "            <eclipselink:attribute-mapping xsi:type=\"eclipselink:xml-direct-mapping\">\n" +
-        "               <eclipselink:attribute-name>city</eclipselink:attribute-name>\n" +
-        "               <eclipselink:field name=\"ns1:city/text()\" xsi:type=\"eclipselink:node\">\n" +
-        "                  <eclipselink:schema-type>{http://www.w3.org/2001/XMLSchema}string</eclipselink:schema-type>\n" +
-        "               </eclipselink:field>\n" +
-        "            </eclipselink:attribute-mapping>\n" +
-        "            <eclipselink:attribute-mapping xsi:type=\"eclipselink:xml-direct-mapping\">\n" +
-        "               <eclipselink:attribute-name>province</eclipselink:attribute-name>\n" +
-        "               <eclipselink:field name=\"ns1:province/text()\" xsi:type=\"eclipselink:node\">\n" +
-        "                  <eclipselink:schema-type>{http://www.w3.org/2001/XMLSchema}string</eclipselink:schema-type>\n" +
-        "               </eclipselink:field>\n" +
-        "            </eclipselink:attribute-mapping>\n" +
-        "         </eclipselink:attribute-mappings>\n" +
-        "         <eclipselink:descriptor-type>aggregate</eclipselink:descriptor-type>\n" +
-        "         <eclipselink:default-root-element>ns1:address</eclipselink:default-root-element>\n" +
-        "         <eclipselink:default-root-element-field name=\"ns1:address\" xsi:type=\"eclipselink:node\"/>\n" +
-        "         <eclipselink:namespace-resolver>\n" +
-        "            <eclipselink:namespaces>\n" +
-        "               <eclipselink:namespace>\n" +
-        "                  <eclipselink:prefix>xsd</eclipselink:prefix>\n" +
-        "                  <eclipselink:namespace-uri>http://www.w3.org/2001/XMLSchema</eclipselink:namespace-uri>\n" +
-        "               </eclipselink:namespace>\n" +
-        "               <eclipselink:namespace>\n" +
-        "                  <eclipselink:prefix>ns1</eclipselink:prefix>\n" +
-        "                  <eclipselink:namespace-uri>urn:keymappings</eclipselink:namespace-uri>\n" +
-        "               </eclipselink:namespace>\n" +
-        "               <eclipselink:namespace>\n" +
-        "                  <eclipselink:prefix>xsi</eclipselink:prefix>\n" +
-        "                  <eclipselink:namespace-uri>http://www.w3.org/2001/XMLSchema-instance</eclipselink:namespace-uri>\n" +
-        "               </eclipselink:namespace>\n" +
-        "            </eclipselink:namespaces>\n" +
-        "         </eclipselink:namespace-resolver>\n" +
-        "      </eclipselink:class-mapping-descriptor>\n" +
-        "      <eclipselink:class-mapping-descriptor xsi:type=\"eclipselink:xml-class-mapping-descriptor\">\n" +
-        "         <eclipselink:class>dbws.testing.keymappings.Employee</eclipselink:class>\n" +
-        "         <eclipselink:alias>employee</eclipselink:alias>\n" +
-        "         <eclipselink:primary-key>\n" +
-        "            <eclipselink:field name=\"@employee-id\" xsi:type=\"eclipselink:column\"/>\n" +
-        "         </eclipselink:primary-key>\n" +
-        "         <eclipselink:events xsi:type=\"eclipselink:event-policy\"/>\n" +
-        "         <eclipselink:querying xsi:type=\"eclipselink:query-policy\"/>\n" +
-        "         <eclipselink:attribute-mappings>\n" +
-        "            <eclipselink:attribute-mapping xsi:type=\"eclipselink:xml-direct-mapping\">\n" +
-        "               <eclipselink:attribute-name>employeeId</eclipselink:attribute-name>\n" +
-        "               <eclipselink:field name=\"@employee-id\" xsi:type=\"eclipselink:node\">\n" +
-        "               </eclipselink:field>\n" +
-        "               <eclipselink:converter xsi:type=\"eclipselink:type-conversion-converter\">\n" +
-        "                  <eclipselink:object-class>java.lang.Integer</eclipselink:object-class>\n" +
-        "                  <eclipselink:data-class>java.lang.String</eclipselink:data-class>\n" +
-        "               </eclipselink:converter>\n" +
-        "            </eclipselink:attribute-mapping>\n" +
-        "            <eclipselink:attribute-mapping xsi:type=\"eclipselink:xml-direct-mapping\">\n" +
-        "               <eclipselink:attribute-name>firstName</eclipselink:attribute-name>\n" +
-        "               <eclipselink:field name=\"ns1:first-name/text()\" xsi:type=\"eclipselink:node\">\n" +
-        "                  <eclipselink:schema-type>{http://www.w3.org/2001/XMLSchema}string</eclipselink:schema-type>\n" +
-        "               </eclipselink:field>\n" +
-        "            </eclipselink:attribute-mapping>\n" +
-        "            <eclipselink:attribute-mapping xsi:type=\"eclipselink:xml-direct-mapping\">\n" +
-        "               <eclipselink:attribute-name>lastName</eclipselink:attribute-name>\n" +
-        "               <eclipselink:field name=\"ns1:last-name/text()\" xsi:type=\"eclipselink:node\">\n" +
-        "                  <eclipselink:schema-type>{http://www.w3.org/2001/XMLSchema}string</eclipselink:schema-type>\n" +
-        "               </eclipselink:field>\n" +
-        "            </eclipselink:attribute-mapping>\n" +
-        "            <eclipselink:attribute-mapping xsi:type=\"eclipselink:xml-object-reference-mapping\">\n" +
-        "               <eclipselink:attribute-name>address</eclipselink:attribute-name>\n" +
-        "               <eclipselink:reference-class>dbws.testing.keymappings.Address</eclipselink:reference-class>\n" +
-        "               <eclipselink:source-to-target-key-field-association>\n" +
-        "                  <eclipselink:field-reference>\n" +
-        "                     <eclipselink:source-field name=\"@address-ref-id\" xsi:type=\"eclipselink:node\"/>\n" +
-        "                     <eclipselink:target-field name=\"@address-id\" xsi:type=\"eclipselink:node\"/>\n" +
-        "                  </eclipselink:field-reference>\n" +
-        "               </eclipselink:source-to-target-key-field-association>\n" +
-        "               <eclipselink:source-to-target-key-fields>\n" +
-        "                  <eclipselink:field name=\"@address-ref-id\" xsi:type=\"eclipselink:node\"/>\n" +
-        "               </eclipselink:source-to-target-key-fields>\n" +
-        "            </eclipselink:attribute-mapping>\n" +
-        "            <eclipselink:attribute-mapping xsi:type=\"eclipselink:xml-collection-reference-mapping\">\n" +
-        "               <eclipselink:attribute-name>phones</eclipselink:attribute-name>\n" +
-        "               <eclipselink:reference-class>dbws.testing.keymappings.Phone</eclipselink:reference-class>\n" +
-        "               <eclipselink:source-to-target-key-field-association>\n" +
-        "                  <eclipselink:field-reference>\n" +
-        "                     <eclipselink:source-field name=\"ns1:phones/ns1:phone-ref/@phone-id\" xsi:type=\"eclipselink:node\"/>\n" +
-        "                     <eclipselink:target-field name=\"@phone-id\" xsi:type=\"eclipselink:node\"/>\n" +
-        "                  </eclipselink:field-reference>\n" +
-        "               </eclipselink:source-to-target-key-field-association>\n" +
-        "               <eclipselink:source-to-target-key-fields>\n" +
-        "                  <eclipselink:field name=\"ns1:phones/ns1:phone-ref/@phone-id\" xsi:type=\"eclipselink:node\"/>\n" +
-        "               </eclipselink:source-to-target-key-fields>\n" +
-        "               <eclipselink:containerpolicy xsi:type=\"eclipselink:list-container-policy\">\n" +
-        "                  <eclipselink:collection-type>java.util.Vector</eclipselink:collection-type>\n" +
-        "               </eclipselink:containerpolicy>\n" +
-        "               <eclipselink:uses-single-node>false</eclipselink:uses-single-node>\n" +
-        "            </eclipselink:attribute-mapping>\n" +
-        "         </eclipselink:attribute-mappings>\n" +
-        "         <eclipselink:descriptor-type>aggregate</eclipselink:descriptor-type>\n" +
-        "         <eclipselink:default-root-element>ns1:employee</eclipselink:default-root-element>\n" +
-        "         <eclipselink:default-root-element-field name=\"ns1:employee\" xsi:type=\"eclipselink:node\"/>\n" +
-        "         <eclipselink:namespace-resolver>\n" +
-        "            <eclipselink:namespaces>\n" +
-        "               <eclipselink:namespace>\n" +
-        "                  <eclipselink:prefix>xsd</eclipselink:prefix>\n" +
-        "                  <eclipselink:namespace-uri>http://www.w3.org/2001/XMLSchema</eclipselink:namespace-uri>\n" +
-        "               </eclipselink:namespace>\n" +
-        "               <eclipselink:namespace>\n" +
-        "                  <eclipselink:prefix>ns1</eclipselink:prefix>\n" +
-        "                  <eclipselink:namespace-uri>urn:keymappings</eclipselink:namespace-uri>\n" +
-        "               </eclipselink:namespace>\n" +
-        "               <eclipselink:namespace>\n" +
-        "                  <eclipselink:prefix>xsi</eclipselink:prefix>\n" +
-        "                  <eclipselink:namespace-uri>http://www.w3.org/2001/XMLSchema-instance</eclipselink:namespace-uri>\n" +
-        "               </eclipselink:namespace>\n" +
-        "            </eclipselink:namespaces>\n" +
-        "         </eclipselink:namespace-resolver>\n" +
-        "      </eclipselink:class-mapping-descriptor>\n" +
-        "      <eclipselink:class-mapping-descriptor xsi:type=\"eclipselink:xml-class-mapping-descriptor\">\n" +
-        "         <eclipselink:class>dbws.testing.RootHelper</eclipselink:class>\n" +
-        "         <eclipselink:alias>RootHelper</eclipselink:alias>\n" +
-        "         <eclipselink:events xsi:type=\"eclipselink:event-policy\"/>\n" +
-        "         <eclipselink:querying xsi:type=\"eclipselink:query-policy\"/>\n" +
-        "         <eclipselink:attribute-mappings>\n" +
-        "            <eclipselink:attribute-mapping xsi:type=\"eclipselink:xml-any-collection-mapping\">\n" +
-        "               <eclipselink:attribute-name>roots</eclipselink:attribute-name>\n" +
-        "               <eclipselink:container xsi:type=\"eclipselink:list-container-policy\">\n" +
-        "                  <eclipselink:collection-type>java.util.Vector</eclipselink:collection-type>\n" +
-        "               </eclipselink:container>\n" +
-        "               <eclipselink:keep-as-element-policy>KEEP_NONE_AS_ELEMENT</eclipselink:keep-as-element-policy>\n" +
-        "            </eclipselink:attribute-mapping>\n" +
-        "         </eclipselink:attribute-mappings>\n" +
-        "         <eclipselink:descriptor-type>aggregate</eclipselink:descriptor-type>\n" +
-        "         <eclipselink:instantiation/>\n" +
-        "         <eclipselink:copying xsi:type=\"eclipselink:instantiation-copy-policy\"/>\n" +
-        "         <eclipselink:change-policy xsi:type=\"eclipselink:deferred-detection-change-policy\"/>\n" +
-        "         <eclipselink:default-root-element>ns1:employee-address-phone-system</eclipselink:default-root-element>\n" +
-        "         <eclipselink:default-root-element-field name=\"ns1:employee-address-phone-system\" xsi:type=\"eclipselink:node\"/>\n" +
-        "         <eclipselink:namespace-resolver>\n" +
-        "            <eclipselink:namespaces>\n" +
-        "               <eclipselink:namespace>\n" +
-        "                  <eclipselink:prefix>xsd</eclipselink:prefix>\n" +
-        "                  <eclipselink:namespace-uri>http://www.w3.org/2001/XMLSchema</eclipselink:namespace-uri>\n" +
-        "               </eclipselink:namespace>\n" +
-        "               <eclipselink:namespace>\n" +
-        "                  <eclipselink:prefix>ns1</eclipselink:prefix>\n" +
-        "                  <eclipselink:namespace-uri>urn:keymappings</eclipselink:namespace-uri>\n" +
-        "               </eclipselink:namespace>\n" +
-        "               <eclipselink:namespace>\n" +
-        "                  <eclipselink:prefix>xsi</eclipselink:prefix>\n" +
-        "                  <eclipselink:namespace-uri>http://www.w3.org/2001/XMLSchema-instance</eclipselink:namespace-uri>\n" +
-        "               </eclipselink:namespace>\n" +
-        "            </eclipselink:namespaces>\n" +
-        "         </eclipselink:namespace-resolver>\n" +
-        "      </eclipselink:class-mapping-descriptor>\n" +
-        "   </eclipselink:class-mapping-descriptors>\n" +
-        "   <eclipselink:login xsi:type=\"eclipselink:xml-login\">\n" +
-        "      <eclipselink:platform-class>org.eclipse.persistence.oxm.platform.SAXPlatform</eclipselink:platform-class>\n" +
-        "   </eclipselink:login>\n" +
-        "</eclipselink:object-persistence>";
+        "   <name>keymappings</name>\n" +
+        "   <class-mapping-descriptors>\n" +
+        "      <class-mapping-descriptor xsi:type=\"xml-class-mapping-descriptor\">\n" +
+        "         <class>dbws.testing.keymappings.Phone</class>\n" +
+        "         <alias>phone</alias>\n" +
+        "         <primary-key>\n" +
+        "            <field name=\"@phone-id\" xsi:type=\"column\"/>\n" +
+        "         </primary-key>\n" +
+        "         <events xsi:type=\"event-policy\"/>\n" +
+        "         <querying xsi:type=\"query-policy\"/>\n" +
+        "         <attribute-mappings>\n" +
+        "            <attribute-mapping xsi:type=\"xml-direct-mapping\">\n" +
+        "               <attribute-name>phoneId</attribute-name>\n" +
+        "               <field name=\"@phone-id\" xsi:type=\"node\">\n" +
+        "               </field>\n" +
+        "               <converter xsi:type=\"type-conversion-converter\">\n" +
+        "                  <object-class>java.lang.Integer</object-class>\n" +
+        "                  <data-class>java.lang.String</data-class>\n" +
+        "               </converter>\n" +
+        "            </attribute-mapping>\n" +
+        "            <attribute-mapping xsi:type=\"xml-direct-mapping\">\n" +
+        "               <attribute-name>areaCode</attribute-name>\n" +
+        "               <field name=\"ns1:area-code/text()\" xsi:type=\"node\">\n" +
+        "                  <schema-type>{http://www.w3.org/2001/XMLSchema}string</schema-type>\n" +
+        "               </field>\n" +
+        "            </attribute-mapping>\n" +
+        "            <attribute-mapping xsi:type=\"xml-direct-mapping\">\n" +
+        "               <attribute-name>phonenumber</attribute-name>\n" +
+        "               <field name=\"ns1:phone-number/text()\" xsi:type=\"node\"/>\n" +
+        "            </attribute-mapping>\n" +
+        "            <attribute-mapping xsi:type=\"xml-direct-mapping\">\n" +
+        "               <attribute-name>type</attribute-name>\n" +
+        "               <field name=\"ns1:type/text()\" xsi:type=\"node\"/>\n" +
+        "            </attribute-mapping>\n" +
+        "            <attribute-mapping xsi:type=\"xml-object-reference-mapping\">\n" +
+        "               <attribute-name>owner</attribute-name>\n" +
+        "               <reference-class>dbws.testing.keymappings.Employee</reference-class>\n" +
+        "               <source-to-target-key-field-association>\n" +
+        "                  <field-reference>\n" +
+        "                     <source-field name=\"@owner-ref-id\" xsi:type=\"node\"/>\n" +
+        "                     <target-field name=\"@employee-id\" xsi:type=\"node\"/>\n" +
+        "                  </field-reference>\n" +
+        "               </source-to-target-key-field-association>\n" +
+        "               <source-to-target-key-fields>\n" +
+        "                  <field name=\"@owner-ref-id\" xsi:type=\"node\"/>\n" +
+        "               </source-to-target-key-fields>\n" +
+        "            </attribute-mapping>\n" +
+        "         </attribute-mappings>\n" +
+        "         <descriptor-type>aggregate</descriptor-type>\n" +
+        "         <default-root-element>ns1:phone</default-root-element>\n" +
+        "         <default-root-element-field name=\"ns1:phone\" xsi:type=\"node\"/>\n" +
+        "         <namespace-resolver>\n" +
+        "            <namespaces>\n" +
+        "               <namespace>\n" +
+        "                  <prefix>xsd</prefix>\n" +
+        "                  <namespace-uri>http://www.w3.org/2001/XMLSchema</namespace-uri>\n" +
+        "               </namespace>\n" +
+        "               <namespace>\n" +
+        "                  <prefix>ns1</prefix>\n" +
+        "                  <namespace-uri>urn:keymappings</namespace-uri>\n" +
+        "               </namespace>\n" +
+        "               <namespace>\n" +
+        "                  <prefix>xsi</prefix>\n" +
+        "                  <namespace-uri>http://www.w3.org/2001/XMLSchema-instance</namespace-uri>\n" +
+        "               </namespace>\n" +
+        "            </namespaces>\n" +
+        "         </namespace-resolver>\n" +
+        "      </class-mapping-descriptor>\n" +
+        "      <class-mapping-descriptor xsi:type=\"xml-class-mapping-descriptor\">\n" +
+        "         <class>dbws.testing.keymappings.Address</class>\n" +
+        "         <alias>address</alias>\n" +
+        "         <primary-key>\n" +
+        "            <field name=\"@address-id\" xsi:type=\"column\"/>\n" +
+        "         </primary-key>\n" +
+        "         <events xsi:type=\"event-policy\"/>\n" +
+        "         <querying xsi:type=\"query-policy\"/>\n" +
+        "         <attribute-mappings>\n" +
+        "            <attribute-mapping xsi:type=\"xml-direct-mapping\">\n" +
+        "               <attribute-name>addressId</attribute-name>\n" +
+        "               <field name=\"@address-id\" xsi:type=\"node\">\n" +
+        "               </field>\n" +
+        "               <converter xsi:type=\"type-conversion-converter\">\n" +
+        "                  <object-class>java.lang.Integer</object-class>\n" +
+        "                  <data-class>java.lang.String</data-class>\n" +
+        "               </converter>\n" +
+        "            </attribute-mapping>\n" +
+        "            <attribute-mapping xsi:type=\"xml-direct-mapping\">\n" +
+        "               <attribute-name>street</attribute-name>\n" +
+        "               <field name=\"ns1:street/text()\" xsi:type=\"node\">\n" +
+        "                  <schema-type>{http://www.w3.org/2001/XMLSchema}string</schema-type>\n" +
+        "               </field>\n" +
+        "            </attribute-mapping>\n" +
+        "            <attribute-mapping xsi:type=\"xml-direct-mapping\">\n" +
+        "               <attribute-name>city</attribute-name>\n" +
+        "               <field name=\"ns1:city/text()\" xsi:type=\"node\">\n" +
+        "                  <schema-type>{http://www.w3.org/2001/XMLSchema}string</schema-type>\n" +
+        "               </field>\n" +
+        "            </attribute-mapping>\n" +
+        "            <attribute-mapping xsi:type=\"xml-direct-mapping\">\n" +
+        "               <attribute-name>province</attribute-name>\n" +
+        "               <field name=\"ns1:province/text()\" xsi:type=\"node\">\n" +
+        "                  <schema-type>{http://www.w3.org/2001/XMLSchema}string</schema-type>\n" +
+        "               </field>\n" +
+        "            </attribute-mapping>\n" +
+        "         </attribute-mappings>\n" +
+        "         <descriptor-type>aggregate</descriptor-type>\n" +
+        "         <default-root-element>ns1:address</default-root-element>\n" +
+        "         <default-root-element-field name=\"ns1:address\" xsi:type=\"node\"/>\n" +
+        "         <namespace-resolver>\n" +
+        "            <namespaces>\n" +
+        "               <namespace>\n" +
+        "                  <prefix>xsd</prefix>\n" +
+        "                  <namespace-uri>http://www.w3.org/2001/XMLSchema</namespace-uri>\n" +
+        "               </namespace>\n" +
+        "               <namespace>\n" +
+        "                  <prefix>ns1</prefix>\n" +
+        "                  <namespace-uri>urn:keymappings</namespace-uri>\n" +
+        "               </namespace>\n" +
+        "               <namespace>\n" +
+        "                  <prefix>xsi</prefix>\n" +
+        "                  <namespace-uri>http://www.w3.org/2001/XMLSchema-instance</namespace-uri>\n" +
+        "               </namespace>\n" +
+        "            </namespaces>\n" +
+        "         </namespace-resolver>\n" +
+        "      </class-mapping-descriptor>\n" +
+        "      <class-mapping-descriptor xsi:type=\"xml-class-mapping-descriptor\">\n" +
+        "         <class>dbws.testing.keymappings.Employee</class>\n" +
+        "         <alias>employee</alias>\n" +
+        "         <primary-key>\n" +
+        "            <field name=\"@employee-id\" xsi:type=\"column\"/>\n" +
+        "         </primary-key>\n" +
+        "         <events xsi:type=\"event-policy\"/>\n" +
+        "         <querying xsi:type=\"query-policy\"/>\n" +
+        "         <attribute-mappings>\n" +
+        "            <attribute-mapping xsi:type=\"xml-direct-mapping\">\n" +
+        "               <attribute-name>employeeId</attribute-name>\n" +
+        "               <field name=\"@employee-id\" xsi:type=\"node\">\n" +
+        "               </field>\n" +
+        "               <converter xsi:type=\"type-conversion-converter\">\n" +
+        "                  <object-class>java.lang.Integer</object-class>\n" +
+        "                  <data-class>java.lang.String</data-class>\n" +
+        "               </converter>\n" +
+        "            </attribute-mapping>\n" +
+        "            <attribute-mapping xsi:type=\"xml-direct-mapping\">\n" +
+        "               <attribute-name>firstName</attribute-name>\n" +
+        "               <field name=\"ns1:first-name/text()\" xsi:type=\"node\">\n" +
+        "                  <schema-type>{http://www.w3.org/2001/XMLSchema}string</schema-type>\n" +
+        "               </field>\n" +
+        "            </attribute-mapping>\n" +
+        "            <attribute-mapping xsi:type=\"xml-direct-mapping\">\n" +
+        "               <attribute-name>lastName</attribute-name>\n" +
+        "               <field name=\"ns1:last-name/text()\" xsi:type=\"node\">\n" +
+        "                  <schema-type>{http://www.w3.org/2001/XMLSchema}string</schema-type>\n" +
+        "               </field>\n" +
+        "            </attribute-mapping>\n" +
+        "            <attribute-mapping xsi:type=\"xml-object-reference-mapping\">\n" +
+        "               <attribute-name>address</attribute-name>\n" +
+        "               <reference-class>dbws.testing.keymappings.Address</reference-class>\n" +
+        "               <source-to-target-key-field-association>\n" +
+        "                  <field-reference>\n" +
+        "                     <source-field name=\"@address-ref-id\" xsi:type=\"node\"/>\n" +
+        "                     <target-field name=\"@address-id\" xsi:type=\"node\"/>\n" +
+        "                  </field-reference>\n" +
+        "               </source-to-target-key-field-association>\n" +
+        "               <source-to-target-key-fields>\n" +
+        "                  <field name=\"@address-ref-id\" xsi:type=\"node\"/>\n" +
+        "               </source-to-target-key-fields>\n" +
+        "            </attribute-mapping>\n" +
+        "            <attribute-mapping xsi:type=\"xml-collection-reference-mapping\">\n" +
+        "               <attribute-name>phones</attribute-name>\n" +
+        "               <reference-class>dbws.testing.keymappings.Phone</reference-class>\n" +
+        "               <source-to-target-key-field-association>\n" +
+        "                  <field-reference>\n" +
+        "                     <source-field name=\"ns1:phones/ns1:phone-ref/@phone-id\" xsi:type=\"node\"/>\n" +
+        "                     <target-field name=\"@phone-id\" xsi:type=\"node\"/>\n" +
+        "                  </field-reference>\n" +
+        "               </source-to-target-key-field-association>\n" +
+        "               <source-to-target-key-fields>\n" +
+        "                  <field name=\"ns1:phones/ns1:phone-ref/@phone-id\" xsi:type=\"node\"/>\n" +
+        "               </source-to-target-key-fields>\n" +
+        "               <containerpolicy xsi:type=\"list-container-policy\">\n" +
+        "                  <collection-type>java.util.Vector</collection-type>\n" +
+        "               </containerpolicy>\n" +
+        "               <uses-single-node>false</uses-single-node>\n" +
+        "            </attribute-mapping>\n" +
+        "         </attribute-mappings>\n" +
+        "         <descriptor-type>aggregate</descriptor-type>\n" +
+        "         <default-root-element>ns1:employee</default-root-element>\n" +
+        "         <default-root-element-field name=\"ns1:employee\" xsi:type=\"node\"/>\n" +
+        "         <namespace-resolver>\n" +
+        "            <namespaces>\n" +
+        "               <namespace>\n" +
+        "                  <prefix>xsd</prefix>\n" +
+        "                  <namespace-uri>http://www.w3.org/2001/XMLSchema</namespace-uri>\n" +
+        "               </namespace>\n" +
+        "               <namespace>\n" +
+        "                  <prefix>ns1</prefix>\n" +
+        "                  <namespace-uri>urn:keymappings</namespace-uri>\n" +
+        "               </namespace>\n" +
+        "               <namespace>\n" +
+        "                  <prefix>xsi</prefix>\n" +
+        "                  <namespace-uri>http://www.w3.org/2001/XMLSchema-instance</namespace-uri>\n" +
+        "               </namespace>\n" +
+        "            </namespaces>\n" +
+        "         </namespace-resolver>\n" +
+        "      </class-mapping-descriptor>\n" +
+        "      <class-mapping-descriptor xsi:type=\"xml-class-mapping-descriptor\">\n" +
+        "         <class>dbws.testing.RootHelper</class>\n" +
+        "         <alias>RootHelper</alias>\n" +
+        "         <events xsi:type=\"event-policy\"/>\n" +
+        "         <querying xsi:type=\"query-policy\"/>\n" +
+        "         <attribute-mappings>\n" +
+        "            <attribute-mapping xsi:type=\"xml-any-collection-mapping\">\n" +
+        "               <attribute-name>roots</attribute-name>\n" +
+        "               <container xsi:type=\"list-container-policy\">\n" +
+        "                  <collection-type>java.util.Vector</collection-type>\n" +
+        "               </container>\n" +
+        "               <keep-as-element-policy>KEEP_NONE_AS_ELEMENT</keep-as-element-policy>\n" +
+        "            </attribute-mapping>\n" +
+        "         </attribute-mappings>\n" +
+        "         <descriptor-type>aggregate</descriptor-type>\n" +
+        "         <instantiation/>\n" +
+        "         <copying xsi:type=\"instantiation-copy-policy\"/>\n" +
+        "         <change-policy xsi:type=\"deferred-detection-change-policy\"/>\n" +
+        "         <default-root-element>ns1:employee-address-phone-system</default-root-element>\n" +
+        "         <default-root-element-field name=\"ns1:employee-address-phone-system\" xsi:type=\"node\"/>\n" +
+        "         <namespace-resolver>\n" +
+        "            <namespaces>\n" +
+        "               <namespace>\n" +
+        "                  <prefix>xsd</prefix>\n" +
+        "                  <namespace-uri>http://www.w3.org/2001/XMLSchema</namespace-uri>\n" +
+        "               </namespace>\n" +
+        "               <namespace>\n" +
+        "                  <prefix>ns1</prefix>\n" +
+        "                  <namespace-uri>urn:keymappings</namespace-uri>\n" +
+        "               </namespace>\n" +
+        "               <namespace>\n" +
+        "                  <prefix>xsi</prefix>\n" +
+        "                  <namespace-uri>http://www.w3.org/2001/XMLSchema-instance</namespace-uri>\n" +
+        "               </namespace>\n" +
+        "            </namespaces>\n" +
+        "         </namespace-resolver>\n" +
+        "      </class-mapping-descriptor>\n" +
+        "   </class-mapping-descriptors>\n" +
+        "   <login xsi:type=\"xml-login\">\n" +
+        "      <platform-class>org.eclipse.persistence.oxm.platform.SAXPlatform</platform-class>\n" +
+        "   </login>\n" +
+        "</object-persistence>";
 
     // test fixtures
     public static XMLComparer comparer = new XMLComparer();

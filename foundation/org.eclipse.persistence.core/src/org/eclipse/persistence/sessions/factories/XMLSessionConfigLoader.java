@@ -1,15 +1,15 @@
 /*******************************************************************************
  * Copyright (c) 1998, 2008 Oracle. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.sessions.factories;
 
 import java.util.Vector;
@@ -50,7 +50,7 @@ import org.eclipse.persistence.internal.sessions.factories.model.SessionConfigs;
  * <li> shouldRefresh : Define if the loaded session should be refreshed from the file,
  * (this old session will be disconnected) default false.
  * <li> classLoader : Define the class loader that should be used to find the resource.
- * This loader will also be used as the loaded session's class loader.  This should be the application's class loader. 
+ * This loader will also be used as the loaded session's class loader.  This should be the application's class loader.
  * Default is the ConversionManager loader, which is thread-based.
  * <li> shouldCheckClassLoader : Defines if the session will be refreshed from the file if the class loader requesting the load,
  * is different than the loaded session's class loader.  This can be used to handle re-deployment.
@@ -61,7 +61,7 @@ import org.eclipse.persistence.internal.sessions.factories.model.SessionConfigs;
  */
 public class XMLSessionConfigLoader {
     protected String resourceName;
-    
+
     /** Stores the resource path to provide a better error message if the load fails. */
     protected String resourcePath = DEFAULT_RESOURCE_NAME;
     /** Stores the name of the Session in the sessions XML file desired to be loaded. */
@@ -77,10 +77,11 @@ public class XMLSessionConfigLoader {
     /** Stores any exceptions that occurred to provide all the exceptions up front if the load fails. */
     protected Vector exceptionStore;
     /** Used to store the entity resolver to validate the XML schema when parsing. */
-    protected PersistenceEntityResolver entityResolver;    
-    
+    protected PersistenceEntityResolver entityResolver;
+
+    public static final String ECLIPSELINK_SESSIONS_SCHEMA = "xsd/eclipselink_sessions_1.0.xsd";
     protected static final String DEFAULT_RESOURCE_NAME = "sessions.xml";
-    protected static final String DEFAULT_RESOURCE_NAME_IN_META_INF = "META-INF/sessions.xml";    
+    protected static final String DEFAULT_RESOURCE_NAME_IN_META_INF = "META-INF/sessions.xml";
 
     /** Cache the creation and initialization of the Session XML mapping project. */
     protected static Project project = new XMLSessionConfigProject_11_1_1();
@@ -89,7 +90,7 @@ public class XMLSessionConfigLoader {
     protected static Project getProject() {
         return project;
     }
-    
+
     /**
      * PUBLIC:
      * This constructor is used when the file resource named 'sessions.xml' will
@@ -141,7 +142,7 @@ public class XMLSessionConfigLoader {
     public void setResourceName(String resourceName) {
         this.resourceName = resourceName;
     }
-    
+
     /**
      * PUBLIC:
      * Returns the name of the Session in the sessions XML file desired to be loaded.
@@ -157,7 +158,7 @@ public class XMLSessionConfigLoader {
     public void setSessionName(String sessionName) {
         this.sessionName = sessionName;
     }
-    
+
     /**
      * PUBLIC:
      * Return if the loaded session should be connected.
@@ -165,7 +166,7 @@ public class XMLSessionConfigLoader {
     public boolean shouldLogin() {
         return shouldLogin;
     }
-    
+
     /**
      * PUBLIC:
      * Set if the loaded session should be connected.
@@ -173,7 +174,7 @@ public class XMLSessionConfigLoader {
     public void setShouldLogin(boolean shouldLogin) {
         this.shouldLogin = shouldLogin;
     }
-    
+
     /**
      * PUBLIC:
      * Return if the loaded session should be refreshed from the file.
@@ -181,7 +182,7 @@ public class XMLSessionConfigLoader {
     public boolean shouldRefresh() {
         return shouldRefresh;
     }
-    
+
     /**
      * PUBLIC:
      * Set if the loaded session should be refreshed from the file.
@@ -189,7 +190,7 @@ public class XMLSessionConfigLoader {
     public void setShouldRefresh(boolean shouldRefresh) {
         this.shouldRefresh = shouldRefresh;
     }
-    
+
     /**
      * PUBLIC:
      * Return if the session will be refreshed from the file if the class loader requesting the load is different than the loaded session's class loader.
@@ -197,7 +198,7 @@ public class XMLSessionConfigLoader {
     public boolean shouldCheckClassLoader() {
         return shouldCheckClassLoader;
     }
-    
+
     /**
      * PUBLIC:
      * Set if the session will be refreshed from the file if the class loader requesting the load is different than the loaded session's class loader.
@@ -205,7 +206,7 @@ public class XMLSessionConfigLoader {
     public void setShouldCheckClassLoader(boolean shouldCheckClassLoader) {
         this.shouldCheckClassLoader = shouldCheckClassLoader;
     }
-    
+
     /**
      * PUBLIC:
      * Return the class loader that should be used to find the resource.
@@ -213,7 +214,7 @@ public class XMLSessionConfigLoader {
     public ClassLoader getClassLoader() {
         return classLoader;
     }
-    
+
     /**
      * PUBLIC:
      * Set the class loader that should be used to find the resource.
@@ -221,7 +222,7 @@ public class XMLSessionConfigLoader {
     public void setClassLoader(ClassLoader classLoader) {
         this.classLoader = classLoader;
     }
-    
+
     /**
      * INTERNAL:
      * This method instantiates the parser and builds the document based on the
@@ -231,7 +232,7 @@ public class XMLSessionConfigLoader {
      */
     public boolean load(SessionManager sessionManager, ClassLoader loader) {
         Document document = loadDocument(loader);
-        
+
         if(getExceptionStore().isEmpty()){
             if (document.getDocumentElement().getTagName().equals("sessions")) {
                 return buildSessionConfigs(sessionManager,loader,document,getProject());
@@ -248,9 +249,9 @@ public class XMLSessionConfigLoader {
         // 9.0.4 session.xml, return false to indicate we should load with the XMLLoader
         return false;
     }
-    
+
     private boolean buildSessionConfigs(SessionManager sessionManager, ClassLoader loader,Document document, Project project){
-        // No errors occurred, unmasrshal the document which will return a 
+        // No errors occurred, unmasrshal the document which will return a
         // SessionConfigs containing 0 or more SessionConfigs and send
         // them through the factory to create actual Sessions
         XMLContext context = new XMLContext(project);
@@ -287,7 +288,7 @@ public class XMLSessionConfigLoader {
 
         if (getExceptionStore().isEmpty()) {
             if (document.getDocumentElement().getTagName().equals("sessions")) {
-                // No errors occurred, unmarshal the document which will return a 
+                // No errors occurred, unmarshal the document which will return a
                 // SessionConfigs containing 0 or more SessionConfigs
                 XMLContext context = new XMLContext(getProject());
                 XMLUnmarshaller unmarshaller = context.createUnmarshaller();
@@ -298,7 +299,7 @@ public class XMLSessionConfigLoader {
             }
         } else {
             if (document.getDocumentElement().getTagName().equals("toplink-sessions")) {
-                // No errors occurred, unmarshal the document which will return a 
+                // No errors occurred, unmarshal the document which will return a
                 // SessionConfigs containing 0 or more SessionConfigs
                 XMLContext context = new XMLContext(new XMLSessionConfigToplinkProject());
                 XMLUnmarshaller unmarshaller = context.createUnmarshaller();
@@ -335,12 +336,12 @@ public class XMLSessionConfigLoader {
             if (this.resourceName.equals(DEFAULT_RESOURCE_NAME)) {
                 inURL = loader.getResource(DEFAULT_RESOURCE_NAME_IN_META_INF);
             }
-            
+
             if ((inURL == null) && (!inFile.exists())) {
-                throw ValidationException.noSessionsXMLFound(this.resourceName);    
+                throw ValidationException.noSessionsXMLFound(this.resourceName);
             }
         }
-        
+
         if (inURL == null) {
             this.resourcePath = inFile.getAbsolutePath();
         } else {
@@ -358,7 +359,7 @@ public class XMLSessionConfigLoader {
         }
 
         parser.setWhitespacePreserving(false);
-        parser.setXMLSchema(loader.getResource("xsd/eclipse_persistence_sessions_1_0.xsd"));
+        parser.setXMLSchema(loader.getResource(ECLIPSELINK_SESSIONS_SCHEMA));
         parser.setEntityResolver(this.entityResolver);
         parser.setErrorHandler(new XMLSessionConfigLoaderErrorHandler());
 

@@ -12,6 +12,10 @@
  ******************************************************************************/
 package org.eclipse.persistence.internal.sessions.factories;
 
+// javase imports
+import static javax.xml.XMLConstants.W3C_XML_SCHEMA_INSTANCE_NS_URI;
+import static javax.xml.XMLConstants.W3C_XML_SCHEMA_NS_URI;
+
 // EclipseLink imports
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.mappings.converters.Converter;
@@ -20,6 +24,8 @@ import org.eclipse.persistence.oxm.XMLDescriptor;
 import org.eclipse.persistence.oxm.mappings.XMLCompositeObjectMapping;
 import org.eclipse.persistence.oxm.schema.XMLSchemaClassPathReference;
 import org.eclipse.persistence.sessions.DatabaseLogin;
+import static org.eclipse.persistence.sessions.factories.XMLProjectReader.ECLIPSELINK_SCHEMA;
+import static org.eclipse.persistence.sessions.factories.XMLProjectReader.SCHEMA_DIR;
 
 /**
  * INTERNAL: Define the EclipseLInk OX project and descriptor information to read an EclipseLink
@@ -37,8 +43,8 @@ public class EclipseLinkObjectPersistenceRuntimeXMLProject extends ObjectPersist
     @Override
     protected void buildNamespaceResolver() {
         ns = new NamespaceResolverWithPrefixes();
-        ns.put("xsi", "http://www.w3.org/2001/XMLSchema-instance");
-        ns.put("xsd", "http://www.w3.org/2001/XMLSchema");
+        ns.put("xsi", W3C_XML_SCHEMA_INSTANCE_NS_URI);
+        ns.put("xsd", W3C_XML_SCHEMA_NS_URI); 
         ns.put(ECLIPSELINK_PREFIX, getPrimaryNamespace());
         ns.setDefaultNamespaceURI(getPrimaryNamespace());
     }
@@ -73,7 +79,7 @@ public class EclipseLinkObjectPersistenceRuntimeXMLProject extends ObjectPersist
     @Override
     protected ClassDescriptor buildProjectDescriptor() {
         XMLDescriptor descriptor = (XMLDescriptor)super.buildProjectDescriptor();        
-        descriptor.setSchemaReference(new XMLSchemaClassPathReference("xsd/eclipse_persistence_map_1_0.xml"));
+        descriptor.setSchemaReference(new XMLSchemaClassPathReference(SCHEMA_DIR + ECLIPSELINK_SCHEMA));
 
         return descriptor;
     }

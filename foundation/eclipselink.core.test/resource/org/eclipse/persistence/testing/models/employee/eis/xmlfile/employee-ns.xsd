@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <!-- Employee schema -->
-<xsd:schema targetNamespace="http://xmlns.oracle.com/ias/xsds/employee" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:myns="http://xmlns.oracle.com/ias/xsds/employee" elementFormDefault="qualified" attributeFormDefault="unqualified">
+<xsd:schema targetNamespace="urn://examples.org/employee" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:myns="urn://examples.org/employee" elementFormDefault="qualified" attributeFormDefault="unqualified">
 	<xsd:element name="EMPLOYEE" type="myns:EMPLOYEE"/>
 	<xsd:element name="PROJECT" type="myns:PROJECT"/>
 	<xsd:complexType name="EMPLOYEE">

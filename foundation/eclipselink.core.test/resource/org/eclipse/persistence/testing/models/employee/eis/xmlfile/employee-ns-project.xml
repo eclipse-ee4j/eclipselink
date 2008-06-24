@@ -1,397 +1,397 @@
 <?xml version = '1.0' encoding = 'UTF-8'?>
-<eclipselink:object-persistence version="Eclipse Persistence Services - 0.1-incubation" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:eclipselink="http://xmlns.oracle.com/ias/xsds/eclipselink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-   <eclipselink:name>Employee</eclipselink:name>
-   <eclipselink:class-mapping-descriptors>
-      <eclipselink:class-mapping-descriptor xsi:type="eclipselink:eis-class-mapping-descriptor">
-         <eclipselink:class>org.eclipse.persistence.testing.models.employee.domain.Address</eclipselink:class>
-         <eclipselink:alias>Address</eclipselink:alias>
-         <eclipselink:events xsi:type="eclipselink:event-policy"/>
-         <eclipselink:querying xsi:type="eclipselink:query-policy"/>
-         <eclipselink:attribute-mappings>
-            <eclipselink:attribute-mapping xsi:type="eclipselink:eis-direct-mapping">
-               <eclipselink:attribute-name>id</eclipselink:attribute-name>
-               <eclipselink:field name="myns:ADDRESS_ID/text()" xsi:type="eclipselink:node"/>
-            </eclipselink:attribute-mapping>
-            <eclipselink:attribute-mapping xsi:type="eclipselink:eis-direct-mapping">
-               <eclipselink:attribute-name>street</eclipselink:attribute-name>
-               <eclipselink:field name="myns:STREET/text()" xsi:type="eclipselink:node"/>
-            </eclipselink:attribute-mapping>
-            <eclipselink:attribute-mapping xsi:type="eclipselink:eis-direct-mapping">
-               <eclipselink:attribute-name>city</eclipselink:attribute-name>
-               <eclipselink:field name="myns:CITY/text()" xsi:type="eclipselink:node"/>
-            </eclipselink:attribute-mapping>
-            <eclipselink:attribute-mapping xsi:type="eclipselink:eis-direct-mapping">
-               <eclipselink:attribute-name>province</eclipselink:attribute-name>
-               <eclipselink:field name="myns:PROVINCE/text()" xsi:type="eclipselink:node"/>
-            </eclipselink:attribute-mapping>
-            <eclipselink:attribute-mapping xsi:type="eclipselink:eis-direct-mapping">
-               <eclipselink:attribute-name>country</eclipselink:attribute-name>
-               <eclipselink:field name="myns:COUNTRY/text()" xsi:type="eclipselink:node"/>
-            </eclipselink:attribute-mapping>
-            <eclipselink:attribute-mapping xsi:type="eclipselink:eis-direct-mapping">
-               <eclipselink:attribute-name>postalCode</eclipselink:attribute-name>
-               <eclipselink:field name="myns:P_CODE/text()" xsi:type="eclipselink:node"/>
-            </eclipselink:attribute-mapping>
-         </eclipselink:attribute-mappings>
-         <eclipselink:descriptor-type>aggregate</eclipselink:descriptor-type>
-         <eclipselink:instantiation/>
-         <eclipselink:copying xsi:type="eclipselink:instantiation-copy-policy"/>
-         <eclipselink:change-policy xsi:type="eclipselink:deferred-detection-change-policy"/>
-         <eclipselink:datatype>myns:ADDRESS</eclipselink:datatype>
-         <eclipselink:namespace-resolver>
-            <eclipselink:namespaces>
-               <eclipselink:namespace>
-                  <eclipselink:prefix>myns</eclipselink:prefix>
-                  <eclipselink:namespace-uri>http://xmlns.oracle.com/ias/xsds/employee</eclipselink:namespace-uri>
-               </eclipselink:namespace>
-            </eclipselink:namespaces>
-         </eclipselink:namespace-resolver>
-      </eclipselink:class-mapping-descriptor>
-      <eclipselink:class-mapping-descriptor xsi:type="eclipselink:eis-class-mapping-descriptor">
-         <eclipselink:class>org.eclipse.persistence.testing.models.employee.domain.Employee</eclipselink:class>
-         <eclipselink:alias></eclipselink:alias>
-         <eclipselink:primary-key>
-            <eclipselink:field name="myns:EMP_ID/text()" xsi:type="eclipselink:node"/>
-         </eclipselink:primary-key>
-         <eclipselink:events xsi:type="eclipselink:event-policy"/>
-         <eclipselink:querying xsi:type="eclipselink:query-policy"/>
-         <eclipselink:attribute-mappings>
-            <eclipselink:attribute-mapping xsi:type="eclipselink:eis-direct-mapping">
-               <eclipselink:attribute-name>id</eclipselink:attribute-name>
-               <eclipselink:field name="myns:EMP_ID/text()" xsi:type="eclipselink:node"/>
-            </eclipselink:attribute-mapping>
-            <eclipselink:attribute-mapping xsi:type="eclipselink:eis-direct-mapping">
-               <eclipselink:attribute-name>firstName</eclipselink:attribute-name>
-               <eclipselink:field name="myns:F_NAME/text()" xsi:type="eclipselink:node"/>
-            </eclipselink:attribute-mapping>
-            <eclipselink:attribute-mapping xsi:type="eclipselink:eis-direct-mapping">
-               <eclipselink:attribute-name>lastName</eclipselink:attribute-name>
-               <eclipselink:field name="myns:L_NAME/text()" xsi:type="eclipselink:node"/>
-            </eclipselink:attribute-mapping>
-            <eclipselink:attribute-mapping xsi:type="eclipselink:eis-direct-mapping">
-               <eclipselink:attribute-name>gender</eclipselink:attribute-name>
-               <eclipselink:field name="myns:GENDER/text()" xsi:type="eclipselink:node"/>
-               <eclipselink:converter xsi:type="eclipselink:object-type-converter">
-                  <eclipselink:type-mappings>
-                     <eclipselink:type-mapping>
-                        <eclipselink:object-value xsi:type="xsd:string" xmlns:xsd="http://www.w3.org/2001/XMLSchema">Male</eclipselink:object-value>
-                        <eclipselink:data-value xsi:type="xsd:string" xmlns:xsd="http://www.w3.org/2001/XMLSchema">M</eclipselink:data-value>
-                     </eclipselink:type-mapping>
-                     <eclipselink:type-mapping>
-                        <eclipselink:object-value xsi:type="xsd:string" xmlns:xsd="http://www.w3.org/2001/XMLSchema">Female</eclipselink:object-value>
-                        <eclipselink:data-value xsi:type="xsd:string" xmlns:xsd="http://www.w3.org/2001/XMLSchema">F</eclipselink:data-value>
-                     </eclipselink:type-mapping>
-                  </eclipselink:type-mappings>
-               </eclipselink:converter>
-            </eclipselink:attribute-mapping>
-            <eclipselink:attribute-mapping xsi:type="eclipselink:eis-composite-object-mapping">
-               <eclipselink:attribute-name>address</eclipselink:attribute-name>
-               <eclipselink:get-method>getAddress</eclipselink:get-method>
-               <eclipselink:set-method>setAddress</eclipselink:set-method>
-               <eclipselink:reference-class>org.eclipse.persistence.testing.models.employee.domain.Address</eclipselink:reference-class>
-               <eclipselink:field name="myns:ADDRESS" xsi:type="eclipselink:node"/>
-            </eclipselink:attribute-mapping>
-            <eclipselink:attribute-mapping xsi:type="eclipselink:eis-one-to-many-mapping">
-               <eclipselink:attribute-name>managedEmployees</eclipselink:attribute-name>
-               <eclipselink:reference-class>org.eclipse.persistence.testing.models.employee.domain.Employee</eclipselink:reference-class>
-               <eclipselink:container xsi:type="eclipselink:list-container-policy">
-                  <eclipselink:collection-type>java.util.Vector</eclipselink:collection-type>
-               </eclipselink:container>
-               <eclipselink:indirection xsi:type="eclipselink:value-holder-indirection-policy"/>
-            </eclipselink:attribute-mapping>
-            <eclipselink:attribute-mapping xsi:type="eclipselink:eis-direct-mapping">
-               <eclipselink:attribute-name>salary</eclipselink:attribute-name>
-               <eclipselink:field name="myns:SALARY/text()" xsi:type="eclipselink:node"/>
-            </eclipselink:attribute-mapping>
-            <eclipselink:attribute-mapping xsi:type="eclipselink:eis-transformation-mapping">
-               <eclipselink:attribute-name>normalHours</eclipselink:attribute-name>
-               <eclipselink:attribute-transformer>org.eclipse.persistence.testing.models.employee.eis.xmlfile.NormalHoursNSTransformer</eclipselink:attribute-transformer>
-               <eclipselink:field-transformations>
-                  <eclipselink:field-transformation xsi:type="eclipselink:transformer-based-field-transformation">
-                     <eclipselink:field name="myns:END_TIME/text()" xsi:type="eclipselink:node">
-                        <eclipselink:schema-type>{http://www.w3.org/2001/XMLSchema}time</eclipselink:schema-type>
-                     </eclipselink:field>
-                     <eclipselink:transformer-class>org.eclipse.persistence.testing.models.employee.eis.xmlfile.NormalHoursNSTransformer</eclipselink:transformer-class>
-                  </eclipselink:field-transformation>
-                  <eclipselink:field-transformation xsi:type="eclipselink:transformer-based-field-transformation">
-                     <eclipselink:field name="myns:START_TIME/text()" xsi:type="eclipselink:node">
-                        <eclipselink:schema-type>{http://www.w3.org/2001/XMLSchema}time</eclipselink:schema-type>
-                     </eclipselink:field>
-                     <eclipselink:transformer-class>org.eclipse.persistence.testing.models.employee.eis.xmlfile.NormalHoursNSTransformer</eclipselink:transformer-class>
-                  </eclipselink:field-transformation>
-               </eclipselink:field-transformations>
-            </eclipselink:attribute-mapping>
-            <eclipselink:attribute-mapping xsi:type="eclipselink:eis-composite-object-mapping">
-               <eclipselink:attribute-name>period</eclipselink:attribute-name>
-               <eclipselink:reference-class>org.eclipse.persistence.testing.models.employee.domain.EmploymentPeriod</eclipselink:reference-class>
-               <eclipselink:field name="myns:PERIOD" xsi:type="eclipselink:node"/>
-            </eclipselink:attribute-mapping>
-            <eclipselink:attribute-mapping xsi:type="eclipselink:eis-composite-direct-collection-mapping">
-               <eclipselink:attribute-name>responsibilitiesList</eclipselink:attribute-name>
-               <eclipselink:get-method>getResponsibilitiesList</eclipselink:get-method>
-               <eclipselink:set-method>setResponsibilitiesList</eclipselink:set-method>
-               <eclipselink:field name="myns:RESPONS/text()" xsi:type="eclipselink:node"/>
-               <eclipselink:container xsi:type="eclipselink:list-container-policy">
-                  <eclipselink:collection-type>java.util.Vector</eclipselink:collection-type>
-               </eclipselink:container>
-            </eclipselink:attribute-mapping>
-            <eclipselink:attribute-mapping xsi:type="eclipselink:eis-one-to-one-mapping">
-               <eclipselink:attribute-name>manager</eclipselink:attribute-name>
-               <eclipselink:reference-class>org.eclipse.persistence.testing.models.employee.domain.Employee</eclipselink:reference-class>
-               <eclipselink:foreign-key>
-                  <eclipselink:field-reference>
-                     <eclipselink:source-field name="myns:MANAGER_ID/text()" xsi:type="eclipselink:node"/>
-                     <eclipselink:target-field name="myns:EMP_ID/text()" xsi:type="eclipselink:node"/>
-                  </eclipselink:field-reference>
-               </eclipselink:foreign-key>
-               <eclipselink:foreign-key-fields>
-                  <eclipselink:field name="myns:MANAGER_ID/text()" xsi:type="eclipselink:node"/>
-               </eclipselink:foreign-key-fields>
-               <eclipselink:indirection xsi:type="eclipselink:value-holder-indirection-policy"/>
-            </eclipselink:attribute-mapping>
-            <eclipselink:attribute-mapping xsi:type="eclipselink:eis-composite-collection-mapping">
-               <eclipselink:attribute-name>phoneNumbers</eclipselink:attribute-name>
-               <eclipselink:get-method>getPhoneNumbers</eclipselink:get-method>
-               <eclipselink:set-method>setPhoneNumbers</eclipselink:set-method>
-               <eclipselink:reference-class>org.eclipse.persistence.testing.models.employee.domain.PhoneNumber</eclipselink:reference-class>
-               <eclipselink:field name="myns:PHONES/myns:PHONE" xsi:type="eclipselink:node"/>
-               <eclipselink:container xsi:type="eclipselink:list-container-policy">
-                  <eclipselink:collection-type>java.util.Vector</eclipselink:collection-type>
-               </eclipselink:container>
-            </eclipselink:attribute-mapping>
-            <eclipselink:attribute-mapping xsi:type="eclipselink:eis-one-to-many-mapping">
-               <eclipselink:attribute-name>projects</eclipselink:attribute-name>
-               <eclipselink:reference-class>org.eclipse.persistence.testing.models.employee.domain.Project</eclipselink:reference-class>
-               <eclipselink:source-foreign-key-fields>
-                  <eclipselink:field name="text()" xsi:type="eclipselink:node"/>
-               </eclipselink:source-foreign-key-fields>
-               <eclipselink:target-foreign-key-fields>
-                  <eclipselink:field name="myns:PROJ_ID/text()" xsi:type="eclipselink:node"/>
-               </eclipselink:target-foreign-key-fields>
-               <eclipselink:foreign-key-grouping-element name="myns:PROJECTS/myns:PROJ_ID" xsi:type="eclipselink:node"/>
-               <eclipselink:container xsi:type="eclipselink:list-container-policy">
-                  <eclipselink:collection-type>java.util.Vector</eclipselink:collection-type>
-               </eclipselink:container>
-               <eclipselink:indirection xsi:type="eclipselink:value-holder-indirection-policy"/>
-            </eclipselink:attribute-mapping>
-         </eclipselink:attribute-mappings>
-         <eclipselink:descriptor-type>independent</eclipselink:descriptor-type>
-         <eclipselink:amendment>
-            <eclipselink:amendment-class>org.eclipse.persistence.testing.models.employee.eis.xmlfile.EmployeeNSAmendments</eclipselink:amendment-class>
-            <eclipselink:amendment-method>addToEmployeeDescriptor</eclipselink:amendment-method>
-         </eclipselink:amendment>
-         <eclipselink:instantiation/>
-         <eclipselink:copying xsi:type="eclipselink:instantiation-copy-policy"/>
-         <eclipselink:change-policy xsi:type="eclipselink:deferred-detection-change-policy"/>
-         <eclipselink:datatype>myns:EMPLOYEE</eclipselink:datatype>
-         <eclipselink:namespace-resolver>
-            <eclipselink:namespaces>
-               <eclipselink:namespace>
-                  <eclipselink:prefix>myns</eclipselink:prefix>
-                  <eclipselink:namespace-uri>http://xmlns.oracle.com/ias/xsds/employee</eclipselink:namespace-uri>
-               </eclipselink:namespace>
-            </eclipselink:namespaces>
-         </eclipselink:namespace-resolver>
-      </eclipselink:class-mapping-descriptor>
-      <eclipselink:class-mapping-descriptor xsi:type="eclipselink:eis-class-mapping-descriptor">
-         <eclipselink:class>org.eclipse.persistence.testing.models.employee.domain.EmploymentPeriod</eclipselink:class>
-         <eclipselink:alias>EmploymentPeriod</eclipselink:alias>
-         <eclipselink:events xsi:type="eclipselink:event-policy"/>
-         <eclipselink:querying xsi:type="eclipselink:query-policy"/>
-         <eclipselink:attribute-mappings>
-            <eclipselink:attribute-mapping xsi:type="eclipselink:eis-direct-mapping">
-               <eclipselink:attribute-name>endDate</eclipselink:attribute-name>
-               <eclipselink:field name="myns:END_DATE/text()" xsi:type="eclipselink:node">
-                  <eclipselink:schema-type>{http://www.w3.org/2001/XMLSchema}date</eclipselink:schema-type>
-               </eclipselink:field>
-            </eclipselink:attribute-mapping>
-            <eclipselink:attribute-mapping xsi:type="eclipselink:eis-direct-mapping">
-               <eclipselink:attribute-name>startDate</eclipselink:attribute-name>
-               <eclipselink:field name="myns:START_DATE/text()" xsi:type="eclipselink:node">
-                  <eclipselink:schema-type>{http://www.w3.org/2001/XMLSchema}date</eclipselink:schema-type>
-               </eclipselink:field>
-            </eclipselink:attribute-mapping>
-         </eclipselink:attribute-mappings>
-         <eclipselink:descriptor-type>aggregate</eclipselink:descriptor-type>
-         <eclipselink:instantiation/>
-         <eclipselink:copying xsi:type="eclipselink:instantiation-copy-policy"/>
-         <eclipselink:change-policy xsi:type="eclipselink:deferred-detection-change-policy"/>
-         <eclipselink:datatype>myns:PERIOD</eclipselink:datatype>
-         <eclipselink:namespace-resolver>
-            <eclipselink:namespaces>
-               <eclipselink:namespace>
-                  <eclipselink:prefix>myns</eclipselink:prefix>
-                  <eclipselink:namespace-uri>http://xmlns.oracle.com/ias/xsds/employee</eclipselink:namespace-uri>
-               </eclipselink:namespace>
-            </eclipselink:namespaces>
-         </eclipselink:namespace-resolver>
-      </eclipselink:class-mapping-descriptor>
-      <eclipselink:class-mapping-descriptor xsi:type="eclipselink:eis-class-mapping-descriptor">
-         <eclipselink:class>org.eclipse.persistence.testing.models.employee.domain.LargeProject</eclipselink:class>
-         <eclipselink:alias></eclipselink:alias>
-         <eclipselink:inheritance xsi:type="eclipselink:qname-inheritance-policy">
-            <eclipselink:parent-class>org.eclipse.persistence.testing.models.employee.domain.Project</eclipselink:parent-class>
-         </eclipselink:inheritance>
-         <eclipselink:events xsi:type="eclipselink:event-policy"/>
-         <eclipselink:querying xsi:type="eclipselink:query-policy"/>
-         <eclipselink:attribute-mappings>
-            <eclipselink:attribute-mapping xsi:type="eclipselink:eis-direct-mapping">
-               <eclipselink:attribute-name>budget</eclipselink:attribute-name>
-               <eclipselink:field name="myns:BUDGET/text()" xsi:type="eclipselink:node"/>
-            </eclipselink:attribute-mapping>
-            <eclipselink:attribute-mapping xsi:type="eclipselink:eis-direct-mapping">
-               <eclipselink:attribute-name>milestoneVersion</eclipselink:attribute-name>
-               <eclipselink:field name="myns:MILESTONE/text()" xsi:type="eclipselink:node">
-                  <eclipselink:schema-type>{http://www.w3.org/2001/XMLSchema}dateTime</eclipselink:schema-type>
-               </eclipselink:field>
-            </eclipselink:attribute-mapping>
-         </eclipselink:attribute-mappings>
-         <eclipselink:descriptor-type>independent</eclipselink:descriptor-type>
-         <eclipselink:amendment>
-            <eclipselink:amendment-class>org.eclipse.persistence.testing.models.employee.eis.xmlfile.EmployeeNSAmendments</eclipselink:amendment-class>
-            <eclipselink:amendment-method>addToLargeProjectDescriptor</eclipselink:amendment-method>
-         </eclipselink:amendment>
-         <eclipselink:instantiation/>
-         <eclipselink:copying xsi:type="eclipselink:instantiation-copy-policy"/>
-         <eclipselink:change-policy xsi:type="eclipselink:deferred-detection-change-policy"/>
-         <eclipselink:datatype>myns:PROJECT</eclipselink:datatype>
-         <eclipselink:namespace-resolver>
-            <eclipselink:namespaces>
-               <eclipselink:namespace>
-                  <eclipselink:prefix>myns</eclipselink:prefix>
-                  <eclipselink:namespace-uri>http://xmlns.oracle.com/ias/xsds/employee</eclipselink:namespace-uri>
-               </eclipselink:namespace>
-            </eclipselink:namespaces>
-         </eclipselink:namespace-resolver>
-      </eclipselink:class-mapping-descriptor>
-      <eclipselink:class-mapping-descriptor xsi:type="eclipselink:eis-class-mapping-descriptor">
-         <eclipselink:class>org.eclipse.persistence.testing.models.employee.domain.PhoneNumber</eclipselink:class>
-         <eclipselink:alias>PhoneNumber</eclipselink:alias>
-         <eclipselink:events xsi:type="eclipselink:event-policy"/>
-         <eclipselink:querying xsi:type="eclipselink:query-policy"/>
-         <eclipselink:attribute-mappings>
-            <eclipselink:attribute-mapping xsi:type="eclipselink:eis-direct-mapping">
-               <eclipselink:attribute-name>type</eclipselink:attribute-name>
-               <eclipselink:field name="@TYPE" xsi:type="eclipselink:node"/>
-            </eclipselink:attribute-mapping>
-            <eclipselink:attribute-mapping xsi:type="eclipselink:eis-direct-mapping">
-               <eclipselink:attribute-name>areaCode</eclipselink:attribute-name>
-               <eclipselink:field name="myns:AREA_CODE/text()" xsi:type="eclipselink:node"/>
-            </eclipselink:attribute-mapping>
-            <eclipselink:attribute-mapping xsi:type="eclipselink:eis-direct-mapping">
-               <eclipselink:attribute-name>number</eclipselink:attribute-name>
-               <eclipselink:field name="myns:P_NUMBER/text()" xsi:type="eclipselink:node"/>
-            </eclipselink:attribute-mapping>
-         </eclipselink:attribute-mappings>
-         <eclipselink:descriptor-type>aggregate</eclipselink:descriptor-type>
-         <eclipselink:instantiation/>
-         <eclipselink:copying xsi:type="eclipselink:instantiation-copy-policy"/>
-         <eclipselink:change-policy xsi:type="eclipselink:deferred-detection-change-policy"/>
-         <eclipselink:datatype>myns:PHONE</eclipselink:datatype>
-         <eclipselink:namespace-resolver>
-            <eclipselink:namespaces>
-               <eclipselink:namespace>
-                  <eclipselink:prefix>myns</eclipselink:prefix>
-                  <eclipselink:namespace-uri>http://xmlns.oracle.com/ias/xsds/employee</eclipselink:namespace-uri>
-               </eclipselink:namespace>
-            </eclipselink:namespaces>
-         </eclipselink:namespace-resolver>
-      </eclipselink:class-mapping-descriptor>
-      <eclipselink:class-mapping-descriptor xsi:type="eclipselink:eis-class-mapping-descriptor">
-         <eclipselink:class>org.eclipse.persistence.testing.models.employee.domain.Project</eclipselink:class>
-         <eclipselink:alias></eclipselink:alias>
-         <eclipselink:primary-key>
-            <eclipselink:field name="myns:PROJ_ID/text()" xsi:type="eclipselink:node"/>
-         </eclipselink:primary-key>
-         <eclipselink:inheritance xsi:type="eclipselink:qname-inheritance-policy">
-            <eclipselink:class-indicator-field name="@TYPE" xsi:type="eclipselink:column"/>
-            <eclipselink:class-indicator-mappings>
-               <eclipselink:class-indicator-mapping>
-                  <eclipselink:class>org.eclipse.persistence.testing.models.employee.domain.SmallProject</eclipselink:class>
-                  <eclipselink:class-indicator xsi:type="xsd:string" xmlns:xsd="http://www.w3.org/2001/XMLSchema">S</eclipselink:class-indicator>
-               </eclipselink:class-indicator-mapping>
-               <eclipselink:class-indicator-mapping>
-                  <eclipselink:class>org.eclipse.persistence.testing.models.employee.domain.LargeProject</eclipselink:class>
-                  <eclipselink:class-indicator xsi:type="xsd:string" xmlns:xsd="http://www.w3.org/2001/XMLSchema">L</eclipselink:class-indicator>
-               </eclipselink:class-indicator-mapping>
-            </eclipselink:class-indicator-mappings>
-         </eclipselink:inheritance>
-         <eclipselink:events xsi:type="eclipselink:event-policy"/>
-         <eclipselink:querying xsi:type="eclipselink:query-policy"/>
-         <eclipselink:attribute-mappings>
-            <eclipselink:attribute-mapping xsi:type="eclipselink:eis-direct-mapping">
-               <eclipselink:attribute-name>id</eclipselink:attribute-name>
-               <eclipselink:field name="myns:PROJ_ID/text()" xsi:type="eclipselink:node"/>
-            </eclipselink:attribute-mapping>
-            <eclipselink:attribute-mapping xsi:type="eclipselink:eis-direct-mapping">
-               <eclipselink:attribute-name>name</eclipselink:attribute-name>
-               <eclipselink:field name="myns:PROJ_NAME/text()" xsi:type="eclipselink:node"/>
-            </eclipselink:attribute-mapping>
-            <eclipselink:attribute-mapping xsi:type="eclipselink:eis-direct-mapping">
-               <eclipselink:attribute-name>description</eclipselink:attribute-name>
-               <eclipselink:field name="myns:DESCRIP/text()" xsi:type="eclipselink:node"/>
-            </eclipselink:attribute-mapping>
-            <eclipselink:attribute-mapping xsi:type="eclipselink:eis-one-to-one-mapping">
-               <eclipselink:attribute-name>teamLeader</eclipselink:attribute-name>
-               <eclipselink:reference-class>org.eclipse.persistence.testing.models.employee.domain.Employee</eclipselink:reference-class>
-               <eclipselink:foreign-key>
-                  <eclipselink:field-reference>
-                     <eclipselink:source-field name="myns:LEADER_ID/text()" xsi:type="eclipselink:node"/>
-                     <eclipselink:target-field name="myns:EMP_ID/text()" xsi:type="eclipselink:node"/>
-                  </eclipselink:field-reference>
-               </eclipselink:foreign-key>
-               <eclipselink:foreign-key-fields>
-                  <eclipselink:field name="myns:LEADER_ID/text()" xsi:type="eclipselink:node"/>
-               </eclipselink:foreign-key-fields>
-               <eclipselink:indirection xsi:type="eclipselink:value-holder-indirection-policy"/>
-            </eclipselink:attribute-mapping>
-         </eclipselink:attribute-mappings>
-         <eclipselink:descriptor-type>independent</eclipselink:descriptor-type>
-         <eclipselink:amendment>
-            <eclipselink:amendment-class>org.eclipse.persistence.testing.models.employee.eis.xmlfile.EmployeeNSAmendments</eclipselink:amendment-class>
-            <eclipselink:amendment-method>addToProjectDescriptor</eclipselink:amendment-method>
-         </eclipselink:amendment>
-         <eclipselink:instantiation/>
-         <eclipselink:copying xsi:type="eclipselink:instantiation-copy-policy"/>
-         <eclipselink:change-policy xsi:type="eclipselink:deferred-detection-change-policy"/>
-         <eclipselink:datatype>myns:PROJECT</eclipselink:datatype>
-         <eclipselink:namespace-resolver>
-            <eclipselink:namespaces>
-               <eclipselink:namespace>
-                  <eclipselink:prefix>myns</eclipselink:prefix>
-                  <eclipselink:namespace-uri>http://xmlns.oracle.com/ias/xsds/employee</eclipselink:namespace-uri>
-               </eclipselink:namespace>
-            </eclipselink:namespaces>
-         </eclipselink:namespace-resolver>
-      </eclipselink:class-mapping-descriptor>
-      <eclipselink:class-mapping-descriptor xsi:type="eclipselink:eis-class-mapping-descriptor">
-         <eclipselink:class>org.eclipse.persistence.testing.models.employee.domain.SmallProject</eclipselink:class>
-         <eclipselink:alias></eclipselink:alias>
-         <eclipselink:inheritance xsi:type="eclipselink:qname-inheritance-policy">
-            <eclipselink:parent-class>org.eclipse.persistence.testing.models.employee.domain.Project</eclipselink:parent-class>
-         </eclipselink:inheritance>
-         <eclipselink:events xsi:type="eclipselink:event-policy"/>
-         <eclipselink:querying xsi:type="eclipselink:query-policy"/>
-         <eclipselink:descriptor-type>independent</eclipselink:descriptor-type>
-         <eclipselink:amendment>
-            <eclipselink:amendment-class>org.eclipse.persistence.testing.models.employee.eis.xmlfile.EmployeeNSAmendments</eclipselink:amendment-class>
-            <eclipselink:amendment-method>addToSmallProjectDescriptor</eclipselink:amendment-method>
-         </eclipselink:amendment>
-         <eclipselink:instantiation/>
-         <eclipselink:copying xsi:type="eclipselink:instantiation-copy-policy"/>
-         <eclipselink:change-policy xsi:type="eclipselink:deferred-detection-change-policy"/>
-         <eclipselink:datatype>myns:PROJECT</eclipselink:datatype>
-         <eclipselink:namespace-resolver>
-            <eclipselink:namespaces>
-               <eclipselink:namespace>
-                  <eclipselink:prefix>myns</eclipselink:prefix>
-                  <eclipselink:namespace-uri>http://xmlns.oracle.com/ias/xsds/employee</eclipselink:namespace-uri>
-               </eclipselink:namespace>
-            </eclipselink:namespaces>
-         </eclipselink:namespace-resolver>
-      </eclipselink:class-mapping-descriptor>
-   </eclipselink:class-mapping-descriptors>
-   <eclipselink:login xsi:type="eclipselink:eis-login">
-      <eclipselink:connection-spec-class>org.eclipse.persistence.eis.EISConnectionSpec</eclipselink:connection-spec-class>
-   </eclipselink:login>
-</eclipselink:object-persistence>
+<object-persistence version="Eclipse Persistence Services - 0.1-incubation" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns="http://www.eclipse.org/eclipselink/xsds/persistence" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+   <name>Employee</name>
+   <class-mapping-descriptors>
+      <class-mapping-descriptor xsi:type="eis-class-mapping-descriptor">
+         <class>org.eclipse.persistence.testing.models.employee.domain.Address</class>
+         <alias>Address</alias>
+         <events xsi:type="event-policy"/>
+         <querying xsi:type="query-policy"/>
+         <attribute-mappings>
+            <attribute-mapping xsi:type="eis-direct-mapping">
+               <attribute-name>id</attribute-name>
+               <field name="myns:ADDRESS_ID/text()" xsi:type="node"/>
+            </attribute-mapping>
+            <attribute-mapping xsi:type="eis-direct-mapping">
+               <attribute-name>street</attribute-name>
+               <field name="myns:STREET/text()" xsi:type="node"/>
+            </attribute-mapping>
+            <attribute-mapping xsi:type="eis-direct-mapping">
+               <attribute-name>city</attribute-name>
+               <field name="myns:CITY/text()" xsi:type="node"/>
+            </attribute-mapping>
+            <attribute-mapping xsi:type="eis-direct-mapping">
+               <attribute-name>province</attribute-name>
+               <field name="myns:PROVINCE/text()" xsi:type="node"/>
+            </attribute-mapping>
+            <attribute-mapping xsi:type="eis-direct-mapping">
+               <attribute-name>country</attribute-name>
+               <field name="myns:COUNTRY/text()" xsi:type="node"/>
+            </attribute-mapping>
+            <attribute-mapping xsi:type="eis-direct-mapping">
+               <attribute-name>postalCode</attribute-name>
+               <field name="myns:P_CODE/text()" xsi:type="node"/>
+            </attribute-mapping>
+         </attribute-mappings>
+         <descriptor-type>aggregate</descriptor-type>
+         <instantiation/>
+         <copying xsi:type="instantiation-copy-policy"/>
+         <change-policy xsi:type="deferred-detection-change-policy"/>
+         <datatype>myns:ADDRESS</datatype>
+         <namespace-resolver>
+            <namespaces>
+               <namespace>
+                  <prefix>myns</prefix>
+                  <namespace-uri>http://xmlns.oracle.com/ias/xsds/employee</namespace-uri>
+               </namespace>
+            </namespaces>
+         </namespace-resolver>
+      </class-mapping-descriptor>
+      <class-mapping-descriptor xsi:type="eis-class-mapping-descriptor">
+         <class>org.eclipse.persistence.testing.models.employee.domain.Employee</class>
+         <alias></alias>
+         <primary-key>
+            <field name="myns:EMP_ID/text()" xsi:type="node"/>
+         </primary-key>
+         <events xsi:type="event-policy"/>
+         <querying xsi:type="query-policy"/>
+         <attribute-mappings>
+            <attribute-mapping xsi:type="eis-direct-mapping">
+               <attribute-name>id</attribute-name>
+               <field name="myns:EMP_ID/text()" xsi:type="node"/>
+            </attribute-mapping>
+            <attribute-mapping xsi:type="eis-direct-mapping">
+               <attribute-name>firstName</attribute-name>
+               <field name="myns:F_NAME/text()" xsi:type="node"/>
+            </attribute-mapping>
+            <attribute-mapping xsi:type="eis-direct-mapping">
+               <attribute-name>lastName</attribute-name>
+               <field name="myns:L_NAME/text()" xsi:type="node"/>
+            </attribute-mapping>
+            <attribute-mapping xsi:type="eis-direct-mapping">
+               <attribute-name>gender</attribute-name>
+               <field name="myns:GENDER/text()" xsi:type="node"/>
+               <converter xsi:type="object-type-converter">
+                  <type-mappings>
+                     <type-mapping>
+                        <object-value xsi:type="xsd:string" xmlns:xsd="http://www.w3.org/2001/XMLSchema">Male</object-value>
+                        <data-value xsi:type="xsd:string" xmlns:xsd="http://www.w3.org/2001/XMLSchema">M</data-value>
+                     </type-mapping>
+                     <type-mapping>
+                        <object-value xsi:type="xsd:string" xmlns:xsd="http://www.w3.org/2001/XMLSchema">Female</object-value>
+                        <data-value xsi:type="xsd:string" xmlns:xsd="http://www.w3.org/2001/XMLSchema">F</data-value>
+                     </type-mapping>
+                  </type-mappings>
+               </converter>
+            </attribute-mapping>
+            <attribute-mapping xsi:type="eis-composite-object-mapping">
+               <attribute-name>address</attribute-name>
+               <get-method>getAddress</get-method>
+               <set-method>setAddress</set-method>
+               <reference-class>org.eclipse.persistence.testing.models.employee.domain.Address</reference-class>
+               <field name="myns:ADDRESS" xsi:type="node"/>
+            </attribute-mapping>
+            <attribute-mapping xsi:type="eis-one-to-many-mapping">
+               <attribute-name>managedEmployees</attribute-name>
+               <reference-class>org.eclipse.persistence.testing.models.employee.domain.Employee</reference-class>
+               <container xsi:type="list-container-policy">
+                  <collection-type>java.util.Vector</collection-type>
+               </container>
+               <indirection xsi:type="value-holder-indirection-policy"/>
+            </attribute-mapping>
+            <attribute-mapping xsi:type="eis-direct-mapping">
+               <attribute-name>salary</attribute-name>
+               <field name="myns:SALARY/text()" xsi:type="node"/>
+            </attribute-mapping>
+            <attribute-mapping xsi:type="eis-transformation-mapping">
+               <attribute-name>normalHours</attribute-name>
+               <attribute-transformer>org.eclipse.persistence.testing.models.employee.eis.xmlfile.NormalHoursNSTransformer</attribute-transformer>
+               <field-transformations>
+                  <field-transformation xsi:type="transformer-based-field-transformation">
+                     <field name="myns:END_TIME/text()" xsi:type="node">
+                        <schema-type>{http://www.w3.org/2001/XMLSchema}time</schema-type>
+                     </field>
+                     <transformer-class>org.eclipse.persistence.testing.models.employee.eis.xmlfile.NormalHoursNSTransformer</transformer-class>
+                  </field-transformation>
+                  <field-transformation xsi:type="transformer-based-field-transformation">
+                     <field name="myns:START_TIME/text()" xsi:type="node">
+                        <schema-type>{http://www.w3.org/2001/XMLSchema}time</schema-type>
+                     </field>
+                     <transformer-class>org.eclipse.persistence.testing.models.employee.eis.xmlfile.NormalHoursNSTransformer</transformer-class>
+                  </field-transformation>
+               </field-transformations>
+            </attribute-mapping>
+            <attribute-mapping xsi:type="eis-composite-object-mapping">
+               <attribute-name>period</attribute-name>
+               <reference-class>org.eclipse.persistence.testing.models.employee.domain.EmploymentPeriod</reference-class>
+               <field name="myns:PERIOD" xsi:type="node"/>
+            </attribute-mapping>
+            <attribute-mapping xsi:type="eis-composite-direct-collection-mapping">
+               <attribute-name>responsibilitiesList</attribute-name>
+               <get-method>getResponsibilitiesList</get-method>
+               <set-method>setResponsibilitiesList</set-method>
+               <field name="myns:RESPONS/text()" xsi:type="node"/>
+               <container xsi:type="list-container-policy">
+                  <collection-type>java.util.Vector</collection-type>
+               </container>
+            </attribute-mapping>
+            <attribute-mapping xsi:type="eis-one-to-one-mapping">
+               <attribute-name>manager</attribute-name>
+               <reference-class>org.eclipse.persistence.testing.models.employee.domain.Employee</reference-class>
+               <foreign-key>
+                  <field-reference>
+                     <source-field name="myns:MANAGER_ID/text()" xsi:type="node"/>
+                     <target-field name="myns:EMP_ID/text()" xsi:type="node"/>
+                  </field-reference>
+               </foreign-key>
+               <foreign-key-fields>
+                  <field name="myns:MANAGER_ID/text()" xsi:type="node"/>
+               </foreign-key-fields>
+               <indirection xsi:type="value-holder-indirection-policy"/>
+            </attribute-mapping>
+            <attribute-mapping xsi:type="eis-composite-collection-mapping">
+               <attribute-name>phoneNumbers</attribute-name>
+               <get-method>getPhoneNumbers</get-method>
+               <set-method>setPhoneNumbers</set-method>
+               <reference-class>org.eclipse.persistence.testing.models.employee.domain.PhoneNumber</reference-class>
+               <field name="myns:PHONES/myns:PHONE" xsi:type="node"/>
+               <container xsi:type="list-container-policy">
+                  <collection-type>java.util.Vector</collection-type>
+               </container>
+            </attribute-mapping>
+            <attribute-mapping xsi:type="eis-one-to-many-mapping">
+               <attribute-name>projects</attribute-name>
+               <reference-class>org.eclipse.persistence.testing.models.employee.domain.Project</reference-class>
+               <source-foreign-key-fields>
+                  <field name="text()" xsi:type="node"/>
+               </source-foreign-key-fields>
+               <target-foreign-key-fields>
+                  <field name="myns:PROJ_ID/text()" xsi:type="node"/>
+               </target-foreign-key-fields>
+               <foreign-key-grouping-element name="myns:PROJECTS/myns:PROJ_ID" xsi:type="node"/>
+               <container xsi:type="list-container-policy">
+                  <collection-type>java.util.Vector</collection-type>
+               </container>
+               <indirection xsi:type="value-holder-indirection-policy"/>
+            </attribute-mapping>
+         </attribute-mappings>
+         <descriptor-type>independent</descriptor-type>
+         <amendment>
+            <amendment-class>org.eclipse.persistence.testing.models.employee.eis.xmlfile.EmployeeNSAmendments</amendment-class>
+            <amendment-method>addToEmployeeDescriptor</amendment-method>
+         </amendment>
+         <instantiation/>
+         <copying xsi:type="instantiation-copy-policy"/>
+         <change-policy xsi:type="deferred-detection-change-policy"/>
+         <datatype>myns:EMPLOYEE</datatype>
+         <namespace-resolver>
+            <namespaces>
+               <namespace>
+                  <prefix>myns</prefix>
+                  <namespace-uri>http://xmlns.oracle.com/ias/xsds/employee</namespace-uri>
+               </namespace>
+            </namespaces>
+         </namespace-resolver>
+      </class-mapping-descriptor>
+      <class-mapping-descriptor xsi:type="eis-class-mapping-descriptor">
+         <class>org.eclipse.persistence.testing.models.employee.domain.EmploymentPeriod</class>
+         <alias>EmploymentPeriod</alias>
+         <events xsi:type="event-policy"/>
+         <querying xsi:type="query-policy"/>
+         <attribute-mappings>
+            <attribute-mapping xsi:type="eis-direct-mapping">
+               <attribute-name>endDate</attribute-name>
+               <field name="myns:END_DATE/text()" xsi:type="node">
+                  <schema-type>{http://www.w3.org/2001/XMLSchema}date</schema-type>
+               </field>
+            </attribute-mapping>
+            <attribute-mapping xsi:type="eis-direct-mapping">
+               <attribute-name>startDate</attribute-name>
+               <field name="myns:START_DATE/text()" xsi:type="node">
+                  <schema-type>{http://www.w3.org/2001/XMLSchema}date</schema-type>
+               </field>
+            </attribute-mapping>
+         </attribute-mappings>
+         <descriptor-type>aggregate</descriptor-type>
+         <instantiation/>
+         <copying xsi:type="instantiation-copy-policy"/>
+         <change-policy xsi:type="deferred-detection-change-policy"/>
+         <datatype>myns:PERIOD</datatype>
+         <namespace-resolver>
+            <namespaces>
+               <namespace>
+                  <prefix>myns</prefix>
+                  <namespace-uri>http://xmlns.oracle.com/ias/xsds/employee</namespace-uri>
+               </namespace>
+            </namespaces>
+         </namespace-resolver>
+      </class-mapping-descriptor>
+      <class-mapping-descriptor xsi:type="eis-class-mapping-descriptor">
+         <class>org.eclipse.persistence.testing.models.employee.domain.LargeProject</class>
+         <alias></alias>
+         <inheritance xsi:type="qname-inheritance-policy">
+            <parent-class>org.eclipse.persistence.testing.models.employee.domain.Project</parent-class>
+         </inheritance>
+         <events xsi:type="event-policy"/>
+         <querying xsi:type="query-policy"/>
+         <attribute-mappings>
+            <attribute-mapping xsi:type="eis-direct-mapping">
+               <attribute-name>budget</attribute-name>
+               <field name="myns:BUDGET/text()" xsi:type="node"/>
+            </attribute-mapping>
+            <attribute-mapping xsi:type="eis-direct-mapping">
+               <attribute-name>milestoneVersion</attribute-name>
+               <field name="myns:MILESTONE/text()" xsi:type="node">
+                  <schema-type>{http://www.w3.org/2001/XMLSchema}dateTime</schema-type>
+               </field>
+            </attribute-mapping>
+         </attribute-mappings>
+         <descriptor-type>independent</descriptor-type>
+         <amendment>
+            <amendment-class>org.eclipse.persistence.testing.models.employee.eis.xmlfile.EmployeeNSAmendments</amendment-class>
+            <amendment-method>addToLargeProjectDescriptor</amendment-method>
+         </amendment>
+         <instantiation/>
+         <copying xsi:type="instantiation-copy-policy"/>
+         <change-policy xsi:type="deferred-detection-change-policy"/>
+         <datatype>myns:PROJECT</datatype>
+         <namespace-resolver>
+            <namespaces>
+               <namespace>
+                  <prefix>myns</prefix>
+                  <namespace-uri>http://xmlns.oracle.com/ias/xsds/employee</namespace-uri>
+               </namespace>
+            </namespaces>
+         </namespace-resolver>
+      </class-mapping-descriptor>
+      <class-mapping-descriptor xsi:type="eis-class-mapping-descriptor">
+         <class>org.eclipse.persistence.testing.models.employee.domain.PhoneNumber</class>
+         <alias>PhoneNumber</alias>
+         <events xsi:type="event-policy"/>
+         <querying xsi:type="query-policy"/>
+         <attribute-mappings>
+            <attribute-mapping xsi:type="eis-direct-mapping">
+               <attribute-name>type</attribute-name>
+               <field name="@TYPE" xsi:type="node"/>
+            </attribute-mapping>
+            <attribute-mapping xsi:type="eis-direct-mapping">
+               <attribute-name>areaCode</attribute-name>
+               <field name="myns:AREA_CODE/text()" xsi:type="node"/>
+            </attribute-mapping>
+            <attribute-mapping xsi:type="eis-direct-mapping">
+               <attribute-name>number</attribute-name>
+               <field name="myns:P_NUMBER/text()" xsi:type="node"/>
+            </attribute-mapping>
+         </attribute-mappings>
+         <descriptor-type>aggregate</descriptor-type>
+         <instantiation/>
+         <copying xsi:type="instantiation-copy-policy"/>
+         <change-policy xsi:type="deferred-detection-change-policy"/>
+         <datatype>myns:PHONE</datatype>
+         <namespace-resolver>
+            <namespaces>
+               <namespace>
+                  <prefix>myns</prefix>
+                  <namespace-uri>http://xmlns.oracle.com/ias/xsds/employee</namespace-uri>
+               </namespace>
+            </namespaces>
+         </namespace-resolver>
+      </class-mapping-descriptor>
+      <class-mapping-descriptor xsi:type="eis-class-mapping-descriptor">
+         <class>org.eclipse.persistence.testing.models.employee.domain.Project</class>
+         <alias></alias>
+         <primary-key>
+            <field name="myns:PROJ_ID/text()" xsi:type="node"/>
+         </primary-key>
+         <inheritance xsi:type="qname-inheritance-policy">
+            <class-indicator-field name="@TYPE" xsi:type="column"/>
+            <class-indicator-mappings>
+               <class-indicator-mapping>
+                  <class>org.eclipse.persistence.testing.models.employee.domain.SmallProject</class>
+                  <class-indicator xsi:type="xsd:string" xmlns:xsd="http://www.w3.org/2001/XMLSchema">S</class-indicator>
+               </class-indicator-mapping>
+               <class-indicator-mapping>
+                  <class>org.eclipse.persistence.testing.models.employee.domain.LargeProject</class>
+                  <class-indicator xsi:type="xsd:string" xmlns:xsd="http://www.w3.org/2001/XMLSchema">L</class-indicator>
+               </class-indicator-mapping>
+            </class-indicator-mappings>
+         </inheritance>
+         <events xsi:type="event-policy"/>
+         <querying xsi:type="query-policy"/>
+         <attribute-mappings>
+            <attribute-mapping xsi:type="eis-direct-mapping">
+               <attribute-name>id</attribute-name>
+               <field name="myns:PROJ_ID/text()" xsi:type="node"/>
+            </attribute-mapping>
+            <attribute-mapping xsi:type="eis-direct-mapping">
+               <attribute-name>name</attribute-name>
+               <field name="myns:PROJ_NAME/text()" xsi:type="node"/>
+            </attribute-mapping>
+            <attribute-mapping xsi:type="eis-direct-mapping">
+               <attribute-name>description</attribute-name>
+               <field name="myns:DESCRIP/text()" xsi:type="node"/>
+            </attribute-mapping>
+            <attribute-mapping xsi:type="eis-one-to-one-mapping">
+               <attribute-name>teamLeader</attribute-name>
+               <reference-class>org.eclipse.persistence.testing.models.employee.domain.Employee</reference-class>
+               <foreign-key>
+                  <field-reference>
+                     <source-field name="myns:LEADER_ID/text()" xsi:type="node"/>
+                     <target-field name="myns:EMP_ID/text()" xsi:type="node"/>
+                  </field-reference>
+               </foreign-key>
+               <foreign-key-fields>
+                  <field name="myns:LEADER_ID/text()" xsi:type="node"/>
+               </foreign-key-fields>
+               <indirection xsi:type="value-holder-indirection-policy"/>
+            </attribute-mapping>
+         </attribute-mappings>
+         <descriptor-type>independent</descriptor-type>
+         <amendment>
+            <amendment-class>org.eclipse.persistence.testing.models.employee.eis.xmlfile.EmployeeNSAmendments</amendment-class>
+            <amendment-method>addToProjectDescriptor</amendment-method>
+         </amendment>
+         <instantiation/>
+         <copying xsi:type="instantiation-copy-policy"/>
+         <change-policy xsi:type="deferred-detection-change-policy"/>
+         <datatype>myns:PROJECT</datatype>
+         <namespace-resolver>
+            <namespaces>
+               <namespace>
+                  <prefix>myns</prefix>
+                  <namespace-uri>http://xmlns.oracle.com/ias/xsds/employee</namespace-uri>
+               </namespace>
+            </namespaces>
+         </namespace-resolver>
+      </class-mapping-descriptor>
+      <class-mapping-descriptor xsi:type="eis-class-mapping-descriptor">
+         <class>org.eclipse.persistence.testing.models.employee.domain.SmallProject</class>
+         <alias></alias>
+         <inheritance xsi:type="qname-inheritance-policy">
+            <parent-class>org.eclipse.persistence.testing.models.employee.domain.Project</parent-class>
+         </inheritance>
+         <events xsi:type="event-policy"/>
+         <querying xsi:type="query-policy"/>
+         <descriptor-type>independent</descriptor-type>
+         <amendment>
+            <amendment-class>org.eclipse.persistence.testing.models.employee.eis.xmlfile.EmployeeNSAmendments</amendment-class>
+            <amendment-method>addToSmallProjectDescriptor</amendment-method>
+         </amendment>
+         <instantiation/>
+         <copying xsi:type="instantiation-copy-policy"/>
+         <change-policy xsi:type="deferred-detection-change-policy"/>
+         <datatype>myns:PROJECT</datatype>
+         <namespace-resolver>
+            <namespaces>
+               <namespace>
+                  <prefix>myns</prefix>
+                  <namespace-uri>http://xmlns.oracle.com/ias/xsds/employee</namespace-uri>
+               </namespace>
+            </namespaces>
+         </namespace-resolver>
+      </class-mapping-descriptor>
+   </class-mapping-descriptors>
+   <login xsi:type="eis-login">
+      <connection-spec-class>org.eclipse.persistence.eis.EISConnectionSpec</connection-spec-class>
+   </login>
+</object-persistence>

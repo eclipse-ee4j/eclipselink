@@ -12,23 +12,38 @@
  ******************************************************************************/  
 package org.eclipse.persistence.sessions.factories;
 
-import java.io.*;
+// javase imports
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
+import java.io.StringReader;
+import java.io.StringWriter;
+import java.io.UnsupportedEncodingException;
 import java.net.URL;
 import org.w3c.dom.Document;
 import org.xml.sax.EntityResolver;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
-import org.eclipse.persistence.exceptions.*;
+
+// EclipseLink imports
+import org.eclipse.persistence.exceptions.ValidationException;
+import org.eclipse.persistence.exceptions.XMLMarshalException;
 import org.eclipse.persistence.internal.helper.ConversionManager;
 import org.eclipse.persistence.internal.sessions.factories.EclipseLinkObjectPersistenceRuntimeXMLProject;
 import org.eclipse.persistence.internal.sessions.factories.MissingDescriptorListener;
 import org.eclipse.persistence.internal.sessions.factories.ObjectPersistenceRuntimeXMLProject;
 import org.eclipse.persistence.internal.sessions.factories.ObjectPersistenceRuntimeXMLProject_11_1_1;
+import org.eclipse.persistence.oxm.XMLContext;
+import org.eclipse.persistence.oxm.XMLLogin;
+import org.eclipse.persistence.oxm.XMLUnmarshaller;
 import org.eclipse.persistence.platform.xml.XMLParser;
 import org.eclipse.persistence.platform.xml.XMLPlatform;
 import org.eclipse.persistence.platform.xml.XMLPlatformFactory;
-import org.eclipse.persistence.sessions.*;
-import org.eclipse.persistence.oxm.*;
+import org.eclipse.persistence.sessions.Project;
 
 /**
  * <p><b>Purpose</b>: Allow for a EclipseLink Mapping Workbench generated deployment XML project file to be read.
@@ -41,12 +56,15 @@ import org.eclipse.persistence.oxm.*;
 public class XMLProjectReader {
 
     /** Allow for usage of schema validation to be configurable. */
-    protected static boolean shouldUseSchemaValidation = true;
+    protected static boolean shouldUseSchemaValidation = false; // TODO - switch back for 1.0
 
     /** Cache the creation and initialization of the EclipseLink XML mapping project. */
     protected static Project project;
-    private static final String ECLIPSELINK_SCHEMA = "xsd/eclipse_persistence_map_1_0.xsd";
-    private static final String TOPLINK_SCHEMA = "xsd/toplink-object-persistence_11_1_1.xsd";
+    public static final String SCHEMA_DIR = "xsd/";
+    public static final String OPM_SCHEMA = "object-persistence_1_0.xsd";
+    public static final String ECLIPSELINK_SCHEMA = "eclipselink_persistence_map_1.0.xsd";
+    public static final String TOPLINK_11_SCHEMA = "toplink-object-persistence_11_1_1.xsd";
+    public static final String TOPLINK_10_SCHEMA = "toplink-object-persistence_10_1_3.xsd";
 
     /**
      * PUBLIC:
@@ -104,7 +122,7 @@ public class XMLProjectReader {
             }
             String schema = null;
             if (shouldUseSchemaValidation()) {
-            	schema = ECLIPSELINK_SCHEMA;
+            	schema = SCHEMA_DIR + ECLIPSELINK_SCHEMA;
             }
             // Assume the format is OPM parse the document with OPM validation on.
             XMLPlatform xmlPlatform = XMLPlatformFactory.getInstance().getXMLPlatform();
@@ -116,7 +134,7 @@ public class XMLProjectReader {
                 // If the parse fails, it may be because the format was 11.1.1
                 try{
                     if (shouldUseSchemaValidation()) {
-                        schema = TOPLINK_SCHEMA;
+                        schema = SCHEMA_DIR + TOPLINK_11_SCHEMA;
                     }
                     parser = createXMLParser(xmlPlatform, true, false, schema);
                     document = parser.parse(new StringReader(writer.toString()));
@@ -158,9 +176,6 @@ public class XMLProjectReader {
         parser.setWhitespacePreserving(whitespacePreserving);
         if (schema != null) {
             parser.setValidationMode(XMLParser.SCHEMA_VALIDATION);
-            // TODO: remove this completely.  Not sure why this is here.
-           //   XMLDescriptor projectDescriptor = (XMLDescriptor)project.getDescriptors().get(Project.class);
-
             // Workaround for bug #3503583.
             XMLSchemaResolver xmlSchemaResolver = new XMLSchemaResolver();
             URL eclipselinkSchemaURL = xmlSchemaResolver.resolveURL(schema);
@@ -284,8 +299,6 @@ public class XMLProjectReader {
      * This works around a bug in the xdk in resolving relative jar based xsd references in oc4j.
      */
     private static class XMLSchemaResolver implements EntityResolver {
-        private static final String SCHEMA_DIR = "xsd/";
-        private static final String OPM_SCHEMA = "object-persistence_1_0.xsd";
 
         /**
          * INTERNAL:

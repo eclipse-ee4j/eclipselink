@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- Java Persistence API object-relational mapping file schema -->
-<xsd:schema targetNamespace="http://www.eclipse.org/xml/ns/persistence/orm" 
-  xmlns:orm="http://www.eclipse.org/xml/ns/persistence/orm" 
+<xsd:schema targetNamespace="http://www.eclipse.org/eclipselink/xsds/persistence/orm" 
+  xmlns:orm="http://www.eclipse.org/eclipselink/xsds/persistence/orm" 
   xmlns:xsd="http://www.w3.org/2001/XMLSchema" 
   elementFormDefault="qualified" 
   attributeFormDefault="unqualified" 

@@ -13,8 +13,10 @@
 
 package org.eclipse.persistence.internal.sessions.factories;
 
-// javase imports
+//javase imports
 import java.util.Iterator;
+import static javax.xml.XMLConstants.W3C_XML_SCHEMA_INSTANCE_NS_URI;
+import static javax.xml.XMLConstants.W3C_XML_SCHEMA_NS_URI;
 
 // EclipseLink imports
 import org.eclipse.persistence.oxm.XMLDescriptor;
@@ -25,7 +27,7 @@ public abstract class NamespaceResolvableProject extends Project {
     public static final String ECLIPSELINK_PREFIX = 
         "eclipselink";
     public static final String ECLIPSELINK_NAMESPACE = 
-        "http://xmlns.oracle.com/ias/xsds/eclipselink";
+        "http://www.eclipse.org/eclipselink/xsds/persistence";
     public static final String TOPLINK_PREFIX = 
         "toplink";
     public static final String TOPLINK_NAMESPACE = 
@@ -55,8 +57,8 @@ public abstract class NamespaceResolvableProject extends Project {
     }
     protected void buildNamespaceResolver() {
         ns = new NamespaceResolverWithPrefixes();
-        ns.put("xsi", "http://www.w3.org/2001/XMLSchema-instance");
-        ns.put("xsd", "http://www.w3.org/2001/XMLSchema");
+        ns.put("xsi", W3C_XML_SCHEMA_INSTANCE_NS_URI);
+        ns.put("xsd", W3C_XML_SCHEMA_NS_URI);
         String ns1 = getPrimaryNamespacePrefix();
         if (ns1 != null && ns1.length() > 0) {
             ns.putPrimary(ns1, getPrimaryNamespace());

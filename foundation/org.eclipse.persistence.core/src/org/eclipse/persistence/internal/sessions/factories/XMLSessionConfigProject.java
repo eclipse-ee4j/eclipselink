@@ -12,41 +12,85 @@
  ******************************************************************************/  
 package org.eclipse.persistence.internal.sessions.factories;
 
+// javase imports
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import static javax.xml.XMLConstants.W3C_XML_SCHEMA_INSTANCE_NS_URI;
+import static javax.xml.XMLConstants.W3C_XML_SCHEMA_NS_URI;
 
+// EclipseLink imports
 import org.eclipse.persistence.descriptors.ClassDescriptor;
-import org.eclipse.persistence.sessions.JNDIConnector;
+import org.eclipse.persistence.internal.sessions.factories.model.SessionConfigs;
+import org.eclipse.persistence.internal.sessions.factories.model.event.SessionEventManagerConfig;
+import org.eclipse.persistence.internal.sessions.factories.model.log.DefaultSessionLogConfig;
+import org.eclipse.persistence.internal.sessions.factories.model.log.JavaLogConfig;
+import org.eclipse.persistence.internal.sessions.factories.model.log.LogConfig;
+import org.eclipse.persistence.internal.sessions.factories.model.log.LoggingOptionsConfig;
+import org.eclipse.persistence.internal.sessions.factories.model.log.ServerLogConfig;
+import org.eclipse.persistence.internal.sessions.factories.model.login.DatabaseLoginConfig;
+import org.eclipse.persistence.internal.sessions.factories.model.login.EISLoginConfig;
+import org.eclipse.persistence.internal.sessions.factories.model.login.LoginConfig;
+import org.eclipse.persistence.internal.sessions.factories.model.login.StructConverterConfig;
+import org.eclipse.persistence.internal.sessions.factories.model.login.XMLLoginConfig;
+import org.eclipse.persistence.internal.sessions.factories.model.platform.CustomServerPlatformConfig;
+import org.eclipse.persistence.internal.sessions.factories.model.platform.JBossPlatformConfig;
+import org.eclipse.persistence.internal.sessions.factories.model.platform.Oc4jPlatformConfig;
+import org.eclipse.persistence.internal.sessions.factories.model.platform.ServerPlatformConfig;
+import org.eclipse.persistence.internal.sessions.factories.model.platform.WebLogic_6_1_PlatformConfig;
+import org.eclipse.persistence.internal.sessions.factories.model.platform.WebLogic_7_0_PlatformConfig;
+import org.eclipse.persistence.internal.sessions.factories.model.platform.WebLogic_8_1_PlatformConfig;
+import org.eclipse.persistence.internal.sessions.factories.model.platform.WebSphere_4_0_PlatformConfig;
+import org.eclipse.persistence.internal.sessions.factories.model.platform.WebSphere_5_0_PlatformConfig;
+import org.eclipse.persistence.internal.sessions.factories.model.platform.WebSphere_5_1_PlatformConfig;
+import org.eclipse.persistence.internal.sessions.factories.model.platform.WebSphere_6_0_PlatformConfig;
+import org.eclipse.persistence.internal.sessions.factories.model.pool.ConnectionPolicyConfig;
+import org.eclipse.persistence.internal.sessions.factories.model.pool.ConnectionPoolConfig;
+import org.eclipse.persistence.internal.sessions.factories.model.pool.PoolsConfig;
+import org.eclipse.persistence.internal.sessions.factories.model.pool.ReadConnectionPoolConfig;
+import org.eclipse.persistence.internal.sessions.factories.model.pool.WriteConnectionPoolConfig;
+import org.eclipse.persistence.internal.sessions.factories.model.project.ProjectClassConfig;
+import org.eclipse.persistence.internal.sessions.factories.model.project.ProjectConfig;
+import org.eclipse.persistence.internal.sessions.factories.model.project.ProjectXMLConfig;
+import org.eclipse.persistence.internal.sessions.factories.model.property.PropertyConfig;
+import org.eclipse.persistence.internal.sessions.factories.model.rcm.RemoteCommandManagerConfig;
+import org.eclipse.persistence.internal.sessions.factories.model.rcm.command.CommandsConfig;
+import org.eclipse.persistence.internal.sessions.factories.model.sequencing.DefaultSequenceConfig;
+import org.eclipse.persistence.internal.sessions.factories.model.sequencing.NativeSequenceConfig;
+import org.eclipse.persistence.internal.sessions.factories.model.sequencing.SequenceConfig;
+import org.eclipse.persistence.internal.sessions.factories.model.sequencing.SequencingConfig;
+import org.eclipse.persistence.internal.sessions.factories.model.sequencing.TableSequenceConfig;
+import org.eclipse.persistence.internal.sessions.factories.model.sequencing.UnaryTableSequenceConfig;
+import org.eclipse.persistence.internal.sessions.factories.model.sequencing.XMLFileSequenceConfig;
+import org.eclipse.persistence.internal.sessions.factories.model.session.DatabaseSessionConfig;
+import org.eclipse.persistence.internal.sessions.factories.model.session.ServerSessionConfig;
+import org.eclipse.persistence.internal.sessions.factories.model.session.SessionBrokerConfig;
+import org.eclipse.persistence.internal.sessions.factories.model.session.SessionConfig;
+import org.eclipse.persistence.internal.sessions.factories.model.transport.JMSTopicTransportManagerConfig;
+import org.eclipse.persistence.internal.sessions.factories.model.transport.RMIIIOPTransportManagerConfig;
+import org.eclipse.persistence.internal.sessions.factories.model.transport.RMITransportManagerConfig;
+import org.eclipse.persistence.internal.sessions.factories.model.transport.SunCORBATransportManagerConfig;
+import org.eclipse.persistence.internal.sessions.factories.model.transport.TransportManagerConfig;
+import org.eclipse.persistence.internal.sessions.factories.model.transport.UserDefinedTransportManagerConfig;
+import org.eclipse.persistence.internal.sessions.factories.model.transport.discovery.DiscoveryConfig;
+import org.eclipse.persistence.internal.sessions.factories.model.transport.naming.JNDINamingServiceConfig;
+import org.eclipse.persistence.internal.sessions.factories.model.transport.naming.RMIRegistryNamingServiceConfig;
 import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.mappings.converters.Converter;
 import org.eclipse.persistence.mappings.converters.ObjectTypeConverter;
-import org.eclipse.persistence.oxm.XMLDescriptor;
 import org.eclipse.persistence.oxm.NamespaceResolver;
-import org.eclipse.persistence.oxm.mappings.XMLDirectMapping;
-import org.eclipse.persistence.oxm.mappings.XMLCompositeDirectCollectionMapping;
-import org.eclipse.persistence.oxm.mappings.XMLCompositeObjectMapping;
-import org.eclipse.persistence.oxm.mappings.XMLCompositeCollectionMapping;
-import org.eclipse.persistence.oxm.schema.XMLSchemaClassPathReference;
+import org.eclipse.persistence.oxm.XMLDescriptor;
 import org.eclipse.persistence.oxm.XMLField;
 import org.eclipse.persistence.oxm.XMLLogin;
+import org.eclipse.persistence.oxm.mappings.XMLCompositeCollectionMapping;
+import org.eclipse.persistence.oxm.mappings.XMLCompositeDirectCollectionMapping;
+import org.eclipse.persistence.oxm.mappings.XMLCompositeObjectMapping;
+import org.eclipse.persistence.oxm.mappings.XMLDirectMapping;
 import org.eclipse.persistence.oxm.platform.DOMPlatform;
+import org.eclipse.persistence.oxm.schema.XMLSchemaClassPathReference;
+import org.eclipse.persistence.sessions.JNDIConnector;
 import org.eclipse.persistence.sessions.Session;
-import org.eclipse.persistence.internal.sessions.factories.model.*;
-import org.eclipse.persistence.internal.sessions.factories.model.rcm.*;
-import org.eclipse.persistence.internal.sessions.factories.model.rcm.command.*;
-import org.eclipse.persistence.internal.sessions.factories.model.log.*;
-import org.eclipse.persistence.internal.sessions.factories.model.pool.*;
-import org.eclipse.persistence.internal.sessions.factories.model.login.*;
-import org.eclipse.persistence.internal.sessions.factories.model.event.*;
-import org.eclipse.persistence.internal.sessions.factories.model.project.*;
-import org.eclipse.persistence.internal.sessions.factories.model.sequencing.*;
-import org.eclipse.persistence.internal.sessions.factories.model.session.*;
-import org.eclipse.persistence.internal.sessions.factories.model.platform.*;
-import org.eclipse.persistence.internal.sessions.factories.model.property.*;
-import org.eclipse.persistence.internal.sessions.factories.model.transport.*;
-import org.eclipse.persistence.internal.sessions.factories.model.transport.discovery.*;
-import org.eclipse.persistence.internal.sessions.factories.model.transport.naming.*;
+import static org.eclipse.persistence.sessions.factories.XMLSessionConfigLoader.ECLIPSELINK_SESSIONS_SCHEMA;
 
 /**
  * INTERNAL:
@@ -174,8 +218,8 @@ public class XMLSessionConfigProject extends org.eclipse.persistence.sessions.Pr
 
         // Set the namespaces on all descriptors.
         NamespaceResolver namespaceResolver = new NamespaceResolver();
-        namespaceResolver.put("xsi", "http://www.w3.org/2001/XMLSchema-instance");
-        namespaceResolver.put("xsd", "http://www.w3.org/2001/XMLSchema");
+        namespaceResolver.put("xsi", W3C_XML_SCHEMA_INSTANCE_NS_URI);
+        namespaceResolver.put("xsd", W3C_XML_SCHEMA_NS_URI);
 
         for (Iterator descriptors = getDescriptors().values().iterator(); descriptors.hasNext();) {
             XMLDescriptor descriptor = (XMLDescriptor)descriptors.next();
@@ -1284,7 +1328,7 @@ public class XMLSessionConfigProject extends org.eclipse.persistence.sessions.Pr
         XMLDescriptor descriptor = new XMLDescriptor();
         descriptor.setDefaultRootElement("sessions");
         descriptor.setJavaClass(SessionConfigs.class);
-        descriptor.setSchemaReference(new XMLSchemaClassPathReference("xsd/eclipse_persistence_sessions_1_0.xsd"));
+        descriptor.setSchemaReference(new XMLSchemaClassPathReference(ECLIPSELINK_SESSIONS_SCHEMA));
 
         XMLDirectMapping versionMapping = new XMLDirectMapping();
         versionMapping.setAttributeName("m_version");

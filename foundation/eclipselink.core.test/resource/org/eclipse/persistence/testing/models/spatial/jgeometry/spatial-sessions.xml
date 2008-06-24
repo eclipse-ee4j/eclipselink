@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="US-ASCII"?>
 <!-- This sessions xml can be used with SimpleJGeometryTestSuite and WrapppedJGeometryTestSuite when running them in JUnit. It is also used by the sessions.xml test model -->
-<sessions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="file://xsd/eclipse_persistence_sessions_1_0.xsd" version="1.0">
+<sessions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="file://xsd/eclipselink_sessions_1.0.xsd" version="1.0">
    <session xsi:type="database-session">
       <name>spatial-session</name>
           <logging xsi:type="eclipselink-log">

@@ -207,6 +207,8 @@ import org.eclipse.persistence.sessions.DatabaseLogin;
 import org.eclipse.persistence.sessions.DatasourceLogin;
 import org.eclipse.persistence.sessions.Project;
 import org.eclipse.persistence.sessions.Session;
+import static org.eclipse.persistence.sessions.factories.XMLProjectReader.SCHEMA_DIR;
+import static org.eclipse.persistence.sessions.factories.XMLProjectReader.TOPLINK_10_SCHEMA;
 
 /**
  * INTERNAL: Define the TopLink OX project and descriptor information to read a OracleAS TopLink 10<i>g</i> (10.0.3) project from an XML file. Note any changes must be reflected in the OPM XML schema.
@@ -3819,7 +3821,7 @@ public class ObjectPersistenceRuntimeXMLProject extends NamespaceResolvableProje
         descriptor.setJavaClass(Project.class);
         descriptor.setDefaultRootElement(getPrimaryNamespaceXPath() + "object-persistence");
 
-        descriptor.setSchemaReference(new XMLSchemaClassPathReference("xsd/toplink-object-persistence_10_1_3.xsd"));
+        descriptor.setSchemaReference(new XMLSchemaClassPathReference(SCHEMA_DIR + TOPLINK_10_SCHEMA));
 
         XMLTransformationMapping versionMapping = new XMLTransformationMapping();
         versionMapping.addFieldTransformer("@version", getConstantTransformerForProjectVersionMapping());
