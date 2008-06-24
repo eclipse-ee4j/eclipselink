@@ -31,6 +31,7 @@ then
         TARG_NM=${TARGET}
     else
         TARG_NM="default"
+        TARGET=
     fi
 fi
 if [ "${TARGET}" = "milestone" ]
@@ -175,6 +176,7 @@ ANT_ARGS=" "
 ANT_OPTS="-Xmx128m"
 ANT_BASEARG="-f \"${BOOTSTRAP_BLDFILE}\" -Dbranch.name=\"${BRANCH}\""
 
+# May need to add "milestone flag to alert build
 if [ "${MILESTONE}" = "true" ]
 then
     ANT_BASEARG="${ANT_BASEARG} -Dbuild_id=${TARGET}"
