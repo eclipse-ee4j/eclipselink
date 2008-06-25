@@ -23,7 +23,7 @@
 * Contributors:
 *     eric.gwin - initial API and implementation (checked in by Tware)
 #******************************************************************************/-->
-<project name="EclipseLink Automated Build" basedir="." default="build.nightly">
+<project name="EclipseLink Automated Build" basedir="." default="build-nightly">
 <echo message="---- AutoBuild.xml ----"/>
 
     <target name="build-no-publish"  description="Trigger an automated build without testing or publish"
