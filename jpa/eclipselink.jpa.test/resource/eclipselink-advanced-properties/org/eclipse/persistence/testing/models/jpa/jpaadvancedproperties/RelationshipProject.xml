@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<object-persistence version="Eclipse Persistence Services - 0.1-incubation" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:eclipselink="http://www.eclipse.org/eclipselink/xsds/persistence" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+<object-persistence version="Eclipse Persistence Services - 0.1-incubation" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns="http://www.eclipse.org/eclipselink/xsds/persistence" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
    <name></name>
    <class-mapping-descriptors>
       <class-mapping-descriptor xsi:type="relational-class-mapping-descriptor">
