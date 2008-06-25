@@ -27,6 +27,11 @@ public final class ReferencedElementDeclaration
 	
 	private volatile ExplicitElementDeclaration element;
 	
+	/** The minimum number of times the element occurs in a document */
+	private volatile int minOccurs;
+	
+	/** The maximum number of times the element occurs in a document */
+	private volatile int maxOccurs;
 	
 	// **************** Constructors ******************************************
 	
@@ -81,11 +86,11 @@ public final class ReferencedElementDeclaration
 	// **************** MWParticle contract ***********************************
 	
 	public int getMinOccurs() {
-		return this.element.getMinOccurs();
+		return this.minOccurs;
 	}
 	
 	public int getMaxOccurs() {
-		return this.element.getMaxOccurs();
+		return this.maxOccurs;
 	}
 	
 	public boolean isDescriptorContextComponent() {
@@ -95,8 +100,9 @@ public final class ReferencedElementDeclaration
 	@Override
 	protected void reloadInternal(XSObject schemaObject) {
 		super.reloadInternal(schemaObject);
-		if (this.element != null) {
-			this.element.reloadInternal(schemaObject);
+		if (schemaObject instanceof XSParticleDecl) {
+			this.minOccurs = ((XSParticleDecl)schemaObject).getMinOccurs();
+			this.maxOccurs = ((XSParticleDecl)schemaObject).getMaxOccurs();
 		}
 	}
 	
