@@ -15,6 +15,7 @@ package org.eclipse.persistence.tools.workbench.mappingsmodel.schema;
 import java.util.Iterator;
 
 import org.apache.xerces.impl.xs.XSParticleDecl;
+import org.apache.xerces.xs.XSObject;
 import org.eclipse.persistence.oxm.XMLDescriptor;
 import org.eclipse.persistence.tools.workbench.mappingsmodel.handles.QName;
 
@@ -89,6 +90,14 @@ public final class ReferencedElementDeclaration
 	
 	public boolean isDescriptorContextComponent() {
 		return false;
+	}
+	
+	@Override
+	protected void reloadInternal(XSObject schemaObject) {
+		super.reloadInternal(schemaObject);
+		if (this.element != null) {
+			this.element.reloadInternal(schemaObject);
+		}
 	}
 	
 	public boolean isEquivalentTo(XSParticleDecl xsParticle) {
