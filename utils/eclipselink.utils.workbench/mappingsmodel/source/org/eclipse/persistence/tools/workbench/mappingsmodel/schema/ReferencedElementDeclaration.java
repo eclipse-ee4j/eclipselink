@@ -17,6 +17,7 @@ import java.util.Iterator;
 import org.apache.xerces.impl.xs.XSParticleDecl;
 import org.apache.xerces.xs.XSObject;
 import org.eclipse.persistence.oxm.XMLDescriptor;
+import org.eclipse.persistence.oxm.mappings.XMLDirectMapping;
 import org.eclipse.persistence.tools.workbench.mappingsmodel.handles.QName;
 
 public final class ReferencedElementDeclaration 
@@ -157,7 +158,11 @@ public final class ReferencedElementDeclaration
 	public static XMLDescriptor buildDescriptor() {
 		XMLDescriptor descriptor = new XMLDescriptor();
 		descriptor.setJavaClass(ReferencedElementDeclaration.class);
-		descriptor.getInheritancePolicy().setParentClass(SchemaComponentReference.class);	
+		descriptor.getInheritancePolicy().setParentClass(SchemaComponentReference.class);
+		
+		((XMLDirectMapping) descriptor.addDirectMapping("minOccurs", "min-occurs/text()")).setNullValue(new Integer(1));
+		((XMLDirectMapping) descriptor.addDirectMapping("maxOccurs", "max-occurs/text()")).setNullValue(new Integer(1));
+
 		return descriptor;
 	}
 }
