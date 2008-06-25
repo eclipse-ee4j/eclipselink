@@ -28,6 +28,7 @@ import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
 import org.eclipse.persistence.testing.models.jpa.inherited.BeerConsumer;
 import org.eclipse.persistence.testing.models.jpa.inherited.Blue;
 import org.eclipse.persistence.testing.models.jpa.inherited.Alpine;
+import org.eclipse.persistence.testing.models.jpa.inherited.BlueLight;
 import org.eclipse.persistence.testing.models.jpa.inherited.ExpertBeerConsumer;
 import org.eclipse.persistence.testing.models.jpa.inherited.InheritedTableManager;
 import org.eclipse.persistence.testing.models.jpa.inherited.NoviceBeerConsumer;
@@ -65,6 +66,7 @@ public class InheritedModelJunitTest extends JUnitTestCase {
         suite.addTest(new InheritedModelJunitTest("testReadExpertBeerConsumer"));
         suite.addTest(new InheritedModelJunitTest("testUpdateBeerConsumer"));
         suite.addTest(new InheritedModelJunitTest("testInheritedClone"));
+        suite.addTest(new InheritedModelJunitTest("testCascadeRemove"));
         
         return new TestSetup(suite) {
         
@@ -338,4 +340,65 @@ public class InheritedModelJunitTest extends JUnitTestCase {
         closeEntityManager(em);
     }
     
+    // BUG 227345
+    public void testCascadeRemove() {
+        BeerConsumer beerConsumer = null;
+        BlueLight blueLightPersisted = null;
+        BlueLight blueLightDetached = null;
+        EntityManager em = createEntityManager();
+
+        // Create and persist the beerConsumer
+        beginTransaction(em);
+        beerConsumer = new BeerConsumer();
+        beerConsumer.setName("Beer Man");
+
+        blueLightPersisted = new BlueLight();
+        beerConsumer.getBlueLightBeersToConsume().add(blueLightPersisted);
+        blueLightPersisted.setBeerConsumer(beerConsumer);
+
+        em.persist(beerConsumer);
+
+        // Unique key must be set before commit.
+        blueLightPersisted.setUniqueKey(blueLightPersisted.getId().toBigInteger());
+
+        commitTransaction(em);
+
+        // They should be known by the EM
+        assertTrue(em.contains(beerConsumer));
+        assertTrue(em.contains(blueLightPersisted));
+
+        // Create BlueLightDetached and manage the relations
+        beginTransaction(em);
+        blueLightDetached = new BlueLight();
+        blueLightDetached.setUniqueKey(new BigDecimal(blueLightPersisted.getUniqueKey().intValue() + 1).toBigInteger());
+
+        // Set the pointers
+        beerConsumer.getBlueLightBeersToConsume().add(blueLightDetached);
+        blueLightDetached.setBeerConsumer(beerConsumer);
+
+        // And now remove the beer consumer. The remove-operation should cascade
+        em.remove(beerConsumer);
+
+        // It's o.k. should be detached
+        assertFalse(em.contains(blueLightDetached));
+
+        try {
+            commitTransaction(em);
+        } catch (RuntimeException e) {
+            if (isTransactionActive(em)) {
+                rollbackTransaction(em);
+            }
+
+            closeEntityManager(em);
+            fail("An exception was caught during the remove of the BeerConsumer: [" + e.getMessage() + "]");
+        }
+
+        // Ensure neither the beer consumer nor the blue light
+        // persisted/detached are available.
+        assertFalse("The beer consumer was not removed", em.contains(beerConsumer));
+        assertFalse("The blue light persisted was not removed even though the its owning beer comsumer was removed", em.contains(blueLightPersisted));
+        assertFalse("The blue light detached was persisted even though the its owning beer comsumer was removed", em.contains(blueLightDetached));
+
+        closeEntityManager(em);
+    }
 }

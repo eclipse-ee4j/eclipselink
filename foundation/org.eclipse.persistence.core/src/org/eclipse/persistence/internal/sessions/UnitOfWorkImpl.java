@@ -3753,15 +3753,23 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
         if (object == null) {
             return;
         }
+        
         if (cascadePersist && isObjectDeleted(object)) {
             // It is deleted but reference by a cascade persist mapping, spec seems to state it should be undeleted, but seems wrong.
             // TODO: Reconsider this.
             undeleteObject(object);
         }
+        
         if (visitedObjects.containsKey(object)) {
             return;
         }
         visitedObjects.put(object, object);
+        
+        // If this object is deleted, avoid any discovery and return.
+        if (isObjectDeleted(object)) {
+            return;
+        }
+        
         ClassDescriptor descriptor = getDescriptor(object);        
         // If the object is read-only or deleted then do not continue the traversal.
         if (isClassReadOnly(object.getClass(), descriptor)) {

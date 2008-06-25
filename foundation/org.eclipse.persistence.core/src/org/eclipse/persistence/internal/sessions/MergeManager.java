@@ -611,6 +611,12 @@ public class MergeManager {
     protected Object mergeChangesOfWorkingCopyIntoOriginal(Object clone, ObjectChangeSet objectChangeSet) {
         UnitOfWorkImpl unitOfWork = (UnitOfWorkImpl)getSession();
         AbstractSession parent = unitOfWork.getParent();
+        
+        // If the clone is deleted, avoid this merge and simply return the clone.
+        if (unitOfWork.isObjectDeleted(clone)) {
+            return clone;
+        }
+        
         // Determine if the object needs to be registered in the parent's clone mapping,
         // This is required for registered new objects in a nested unit of work.
         boolean requiresToRegisterInParent = false;
