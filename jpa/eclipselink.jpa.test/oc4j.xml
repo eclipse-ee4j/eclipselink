@@ -37,25 +37,37 @@
     -->
 <project name="Eclipse Persistence Services JPA OC4J Testing" basedir=".">
 
-    <property name="jdbc.driver.jar" value="../../../extension.oracle.lib.external/ojdbc5_11.jar"/>
-    <property file="./test.properties"/>
     <!-- Allows a user to overide certain user specific properties. -->
     <property file="${user.home}/oc4j.properties"/>
     <property file="./oc4j.properties"/>
 
-    <!-- XML task used to modify config XML files. -->
+    <!--If server.version is not already set yet, set it to default value 11 -->
+    <property name="server.version" value="11"/>
+    <condition property="server.user" value="${server.user.11}">
+        <contains string="${server.version}" substring="11"/>
+    </condition>
+    <condition property="server.user" value="${server.user.10}">
+        <contains string="${server.version}" substring="10"/>
+    </condition>
+
+    <!-- 
+        XmlTask, as an open source ANT extension, is used to modify config XML files here, can be downloaded from http://www.oopsconsultancy.com/software/xmltask/
+    -->
     <taskdef name="xmltask" classname="com.oopsconsultancy.xmltask.ant.XmlTask">
         <classpath>
             <pathelement path="${xmltask.lib}"/>
         </classpath>
     </taskdef>
 
-    <!-- This target is to install OC4J server at ${oc4j.home}. Before calling this target, you need to
-        1) Obtain Oracle 11g OC4J standalone zip - oc4j.extended.zip and put it at ${extension.oracle.lib.external}
-        2) Download open source ANT extension - XmlTask from http://www.oopsconsultancy.com/software/xmltask/
-        3) Have ${eclipselink.jar.name} available via executing 'ant package.eclipselink.jar' from trunk
+    <!--
+        This target is to install OC4J server at ${oc4j.home}. 
+        Before calling this target, you need to obtain Oracle OC4J standalone zip - oc4j.extended.zip and put it at ${extension.oracle.lib.external}
     -->
     <target name="oc4j-install">
+        <antcall target="oc4j-install-${server.version}" inheritRefs="true"/>
+    </target>
+
+    <target name="oc4j-install-11">
         <delete dir="${oc4j.home}"/>
         <mkdir dir="${oc4j.home}"/>
         <unzip src="${oc4j.extended.zip}" dest="${oc4j.home}"/>
@@ -63,6 +75,24 @@
             <replace path="//realm[name='jazn.com']/users/user[name='fmwadmin']" withfile="${system-jazn-data.xml}" />
         </xmltask>
         <delete file="${oc4j.home}/lib/java/shared/oracle.toplink/11.1.1.0.0/eclipselink.jar" failonerror="false"/>
+        <copy file="${eclipselink.jar.name}" todir="${oc4j.home}/j2ee/home/applib"/>
+        <copy file="${junit.lib}" todir="${oc4j.home}/j2ee/home/applib"/>
+        <copy file="${jdbc.driver.jar}" todir="${oc4j.home}/j2ee/home/applib"/>
+    </target>
+
+    <target name="oc4j-install-10">
+        <delete dir="${oc4j.home}"/>
+        <mkdir dir="${oc4j.home}"/>
+        <unzip src="${oc4j.extended.zip}" dest="${oc4j.home}"/>
+		<!--Change password for admin-->
+		<java classname="oracle.security.jazn.util.JAZNInstallHelper" fork="true" dir="${oc4j.home}/j2ee/home">
+			<classpath>
+				<pathelement location="${oc4j.home}/j2ee/home/jazncore.jar" />
+				<pathelement location="${oc4j.home}/j2ee/home/jazn.jar" />
+	        </classpath>
+		    <arg line="-oh ${oc4j.home} -realm jazn.com -user ${server.user} -oldpwd welcome -newpwd ${server.pwd} -clearpwd true"/>
+	    </java>
+
         <copy file="${eclipselink.jar.name}" todir="${oc4j.home}/j2ee/home/applib"/>
         <copy file="${junit.lib}" todir="${oc4j.home}/j2ee/home/applib"/>
         <copy file="${jdbc.driver.jar}" todir="${oc4j.home}/j2ee/home/applib"/>
@@ -96,8 +126,8 @@
         Note: OC4J server must be up while calling this target
     -->
     <target name="oc4j-setup">
-        <antcall target="create-connection-pool" inheritRefs="true"/>
-        <antcall target="create-managed-datasource" inheritRefs="true"/>
+        <antcall target="create-connection-pool-${server.version}" inheritRefs="true"/>
+        <antcall target="create-managed-datasource-${server.version}" inheritRefs="true"/>
     </target>
 
     <!--
@@ -105,11 +135,11 @@
         Note: OC4J server must be up while calling this target
     -->
     <target name="oc4j-reset">
-        <antcall target="remove-datasource" inheritRefs="true"/>
+        <antcall target="remove-datasource-${server.version}" inheritRefs="true"/>
         <antcall target="remove-connection-pool" inheritRefs="true"/>
     </target>
 
-    <target name="create-connection-pool">
+    <target name="create-connection-pool-11">
         <java jar="${oc4j.home}/j2ee/home/admin_client.jar" fork="true">
             <arg value="deployer:oc4j:${oc4j.httphost}:${oc4j.rmiport}"/>
             <arg value="${server.user}"/>
@@ -128,7 +158,26 @@
         </java>
     </target>
 
-    <target name="create-managed-datasource">
+    <target name="create-connection-pool-10">
+        <java jar="${oc4j.home}/j2ee/home/admin_client.jar" fork="true">
+            <arg value="deployer:oc4j:${oc4j.httphost}:${oc4j.rmiport}"/>
+            <arg value="${server.user}"/>
+            <arg value="${server.pwd}"/>
+            <arg value="-addDataSourceConnectionPool"/>
+            <arg value="-name"/>
+            <arg value="ejbPool"/>
+            <arg value="-factoryClass"/>
+            <arg value="oracle.jdbc.pool.OracleDataSource"/>
+            <arg value="-dbUser"/>
+            <arg value="${db.user}"/>
+            <arg value="-dbPassword"/>
+            <arg value="${db.pwd}"/>
+            <arg value="-url"/>
+            <arg value="${db.url}"/>
+        </java>
+    </target>
+
+    <target name="create-managed-datasource-11">
         <java jar="${oc4j.home}/j2ee/home/admin_client.jar" fork="true">
             <arg value="deployer:oc4j:${oc4j.httphost}:${oc4j.rmiport}"/>
             <arg value="${server.user}"/>
@@ -143,13 +192,39 @@
         </java>
     </target>
 
-    <target name="remove-datasource">
+    <target name="create-managed-datasource-10">
+        <java jar="${oc4j.home}/j2ee/home/admin_client.jar" fork="true">
+            <arg value="deployer:oc4j:${oc4j.httphost}:${oc4j.rmiport}"/>
+            <arg value="${server.user}"/>
+            <arg value="${server.pwd}"/>
+            <arg value="-addManagedDataSource"/>
+            <arg value="-name"/>
+            <arg value="EclipseLinkDS"/>
+            <arg value="-jndiLocation"/>
+            <arg value="jdbc/EclipseLinkDS"/>
+            <arg value="-connectionPoolName"/>
+            <arg value="ejbPool"/>
+        </java>
+    </target>
+
+    <target name="remove-datasource-11">
         <java jar="${oc4j.home}/j2ee/home/admin_client.jar" fork="true">
             <arg value="deployer:oc4j:${oc4j.httphost}:${oc4j.rmiport}"/>
             <arg value="${server.user}"/>
             <arg value="${server.pwd}"/>
             <arg value="-removeManagedDatasource"/>
             <arg value="-dataSourceName"/>
+            <arg value="EclipseLinkDS"/>
+        </java>
+    </target>
+
+    <target name="remove-datasource-10">
+        <java jar="${oc4j.home}/j2ee/home/admin_client.jar" fork="true">
+            <arg value="deployer:oc4j:${oc4j.httphost}:${oc4j.rmiport}"/>
+            <arg value="${server.user}"/>
+            <arg value="${server.pwd}"/>
+            <arg value="-removeManagedDatasource"/>
+            <arg value="-name"/>
             <arg value="EclipseLinkDS"/>
         </java>
     </target>
