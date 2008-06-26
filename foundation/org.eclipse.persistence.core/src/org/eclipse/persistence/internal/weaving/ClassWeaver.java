@@ -137,7 +137,7 @@ public class ClassWeaver extends ClassAdapter implements Constants {
         if (attributeDetails.getGetterMethodName() == null || attributeDetails.getGetterMethodName().equals("")){
             annotations = getTransientAnnotation();
         }
-        cv.visitField(ACC_PRIVATE, "_persistence_" + attribute + "_vh", VHI_SIGNATURE, null, annotations);
+        cv.visitField(ACC_PROTECTED, "_persistence_" + attribute + "_vh", VHI_SIGNATURE, null, annotations);
     }
     
     /**
