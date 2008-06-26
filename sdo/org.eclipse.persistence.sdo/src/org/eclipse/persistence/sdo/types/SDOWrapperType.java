@@ -26,6 +26,7 @@ import org.eclipse.persistence.sdo.SDOProperty;
 import org.eclipse.persistence.sdo.SDOType;
 import org.eclipse.persistence.sdo.helper.SDOMethodAttributeAccessor;
 import org.eclipse.persistence.sdo.helper.SDOTypeHelper;
+import org.eclipse.persistence.sdo.helper.extension.SDOUtil;
 
 import commonj.sdo.Type;
 
@@ -71,9 +72,10 @@ public class SDOWrapperType extends SDOType implements Type {
         xmlDescriptor.addMapping(mapping);
         
         xmlDescriptor.setIsWrapper(true);
-        
-        setInstanceClassName("org.eclipse.persistence.sdo." + aTypeName + "Wrapper");
-        setImplClassName("org.eclipse.persistence.sdo." + aTypeName + "WrapperImpl");
+
+        String mangledTypeName = SDOUtil.className(aTypeName, true);
+        setInstanceClassName("org.eclipse.persistence.sdo." + mangledTypeName + "Wrapper");
+        setImplClassName("org.eclipse.persistence.sdo." + mangledTypeName + "WrapperImpl");
 
         getInstanceClass();
         getImplClass();
