@@ -38,7 +38,7 @@ for version in `ls -dr [0-9]*` ; do
     cd ${version}
     echo "        <table border=\"1\">                                                 " >> $tmp/index.xml
     echo "          <tr>                                                               " >> $tmp/index.xml
-    echo "            <th colspan=\"8\" align=\"center\"> ${version} Nightly Build Results </th>" >> $tmp/index.xml
+    echo "            <th colspan=\"9\" align=\"center\"> ${version} Nightly Build Results </th>" >> $tmp/index.xml
     echo "          </tr>                                                              " >> $tmp/index.xml
     echo "          <tr>                                                               " >> $tmp/index.xml
     echo "            <th align=\"center\"> Build ID </th>                             " >> $tmp/index.xml
@@ -101,8 +101,8 @@ for version in `ls -dr [0-9]*` ; do
         echo "          </tr>" >> $tmp/index.xml
     done
     echo "        </table>                                                                          " >> $tmp/index.xml
-    echo "      </p>
-    cd ${curdir}                                                                                " >> $tmp/index.xml
+    echo "      </p>                                                                                " >> $tmp/index.xml
+    cd ${curdir}
 done
 
 # Dump the static footer into place
