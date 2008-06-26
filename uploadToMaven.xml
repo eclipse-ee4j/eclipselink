@@ -32,19 +32,19 @@
    <artifact:remoteRepository id="eclipselink.repository" url="file:///home/data/httpd/download.eclipse.org/rt/eclipselink/maven.repo" /> 
    
    <target name = "upload-maven-init">
-          <property file="./build.properties"/> <!-- release.version and build_id are intialized from here -->
-          <echo message="release.version ${release.version}"/>
-          <echo message="build_id ${build_id}"/>
-          
-          <!-- ensure installer_id is set - in general, installer id will be set by previous scripts when this script is called-->
-          <property name="installer_id" value="${build_date}"/>
+       <property file="./build.properties"/> <!-- release.version and build_id are intialized from here -->
+       <echo message="release.version ${release.version}"/>
+       <echo message="build_id ${build_id}"/>
+       
+       <!-- ensure installer_id is set - in general, installer id will be set by previous scripts when this script is called-->
+       <property name="installer_id" value="${build_date}"/>
 
-          <!-- Get the subversion version for current working copy -->
-          <!-- A freshly checked out copy of workspace is guaranteed to not have mixed revisions -->
-    <exec outputproperty="subversion.revision" failonerror="true" executable="svnversion">
-      <arg line="."/>
-    </exec>
-    <echo message="subversion.revision ${subversion.revision}"/>
+       <!-- Get the subversion version for current working copy -->
+       <!-- A freshly checked out copy of workspace is guaranteed to not have mixed revisions -->
+       <exec outputproperty="subversion.revision" failonerror="true" executable="svnversion">
+         <arg line="."/>
+       </exec>
+       <echo message="subversion.revision ${subversion.revision}"/>
    </target>
    
    <target name = "upload-maven-all" depends = "upload-maven-init">
