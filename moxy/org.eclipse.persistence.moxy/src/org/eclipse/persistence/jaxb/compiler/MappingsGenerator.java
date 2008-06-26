@@ -70,6 +70,9 @@ import org.eclipse.persistence.internal.libraries.asm.Type;
  *
  */
 public class MappingsGenerator {
+    private static String WRAPPER_CLASS = "org.eclipse.persistence.jaxb.generated";
+    private static int wrapperCounter = 0;
+
     String outputDir = ".";
     private int nextNamespaceNumber = 0;
     private HashMap userDefinedSchemaTypes;
@@ -968,16 +971,11 @@ public class MappingsGenerator {
     			if(namespaceUri == null || namespaceUri.equals("##default")) {
     				namespaceUri = "";
     			}
-    			String packageName = getPackageNameForURI(namespaceUri);
-    			if(packageName == null) {
-    				packageName = "default";
-    			}
-    			String className = packageName + "." + next.getLocalPart() + "ProxyImpl";
-    			Class generatedClass = this.generateWrapperClass(className, nextClassName);
+    			Class generatedClass = this.generateWrapperClass(WRAPPER_CLASS + wrapperCounter++, nextClassName);
     			this.generatedClassesToQNames.put(generatedClass, next);
     			
     			XMLDescriptor desc = new XMLDescriptor();
-    			desc.setJavaClassName(className);
+    			desc.setJavaClass(generatedClass);
     			
     			XMLDirectMapping mapping = new XMLDirectMapping();
     			mapping.setAttributeName("value");
