@@ -4123,6 +4123,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         Address initialAddress = em.find(Address.class, new Integer(addressId));
         Employee initialManager = em.find(Employee.class, new Integer(managerId));
         employee.setAddress((Address)null);
+        employee.setManager((Employee)null);
         em.remove(address);
         em.remove(employee);
         em.remove(manager);
@@ -4198,7 +4199,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         Address initialAddress = em.find(Address.class, new Integer(addressId));
         Employee initialManager = em.find(Employee.class, new Integer(managerId));
         employee.setAddress((Address)null);
-        employee.setManager((Employee) null);
+        employee.setManager((Employee)null);
         em.remove(address);
         em.remove(employee);
         em.remove(manager);
