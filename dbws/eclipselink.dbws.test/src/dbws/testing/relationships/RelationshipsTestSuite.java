@@ -52,10 +52,10 @@ import org.eclipse.persistence.sessions.DatasourceLogin;
 import org.eclipse.persistence.sessions.Project;
 
 // domain-specific (testing) imports
-import static dbws.testing.DBWSTestSuite.DATABASE_DRIVER_KEY;
-import static dbws.testing.DBWSTestSuite.DATABASE_PASSWORD_KEY;
-import static dbws.testing.DBWSTestSuite.DATABASE_URL_KEY;
-import static dbws.testing.DBWSTestSuite.DATABASE_USERNAME_KEY;
+import static dbws.testing.DBWSTestHelper.DATABASE_DRIVER_KEY;
+import static dbws.testing.DBWSTestHelper.DATABASE_PASSWORD_KEY;
+import static dbws.testing.DBWSTestHelper.DATABASE_URL_KEY;
+import static dbws.testing.DBWSTestHelper.DATABASE_USERNAME_KEY;
 
 public class RelationshipsTestSuite {
 
@@ -560,7 +560,7 @@ public class RelationshipsTestSuite {
         "      <platform-class>org.eclipse.persistence.oxm.platform.SAXPlatform</platform-class>\n" +
         "   </login>\n" +
         "</object-persistence>";
-    
+
     // test fixtures
     public static XMLComparer comparer = new XMLComparer();
     public static XMLPlatform xmlPlatform = XMLPlatformFactory.getInstance().getXMLPlatform();
@@ -621,7 +621,7 @@ public class RelationshipsTestSuite {
         DBWSModel model = (DBWSModel)unmarshaller.unmarshal(new StringReader(RELATIONSHIPS_DBWS));
         xrService = factory.buildService(model);
     }
-    
+
     @SuppressWarnings("unchecked")
     @Test
     public void getAllEmployees() {

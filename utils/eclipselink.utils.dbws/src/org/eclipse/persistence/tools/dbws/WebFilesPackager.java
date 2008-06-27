@@ -1,16 +1,16 @@
 /*******************************************************************************
  * Copyright (c) 1998, 2008 Oracle. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Mike Norman - May 26 2008, creating packager for JAX-WS RI
  ******************************************************************************/
- 
+
  package org.eclipse.persistence.tools.dbws;
 
 // javase imports
@@ -47,14 +47,14 @@ import static org.eclipse.persistence.internal.libraries.asm.Constants.INVOKEVIR
 import static org.eclipse.persistence.internal.libraries.asm.Constants.RETURN;
 import static org.eclipse.persistence.internal.libraries.asm.Constants.V1_5;
 import static org.eclipse.persistence.internal.xr.Util.DBWS_WSDL;
+import static org.eclipse.persistence.internal.xr.Util.WEB_INF_DIR;
+import static org.eclipse.persistence.internal.xr.Util.WSDL_DIR;
 import static org.eclipse.persistence.tools.dbws.Util.DBWS_PROVIDER_NAME;
 import static org.eclipse.persistence.tools.dbws.Util.DBWS_PROVIDER_CLASS_FILE;
 import static org.eclipse.persistence.tools.dbws.Util.DBWS_PROVIDER_PACKAGE;
 import static org.eclipse.persistence.tools.dbws.Util.DBWS_PROVIDER_SOURCE_FILE;
-import static org.eclipse.persistence.tools.dbws.Util.WEB_INF_DIR;
 import static org.eclipse.persistence.tools.dbws.Util.WEB_XML_FILENAME;
 import static org.eclipse.persistence.tools.dbws.Util.WEBSERVICES_FILENAME;
-import static org.eclipse.persistence.tools.dbws.Util.WSDL_DIR;
 
 /**
  * <p>
@@ -78,11 +78,11 @@ import static org.eclipse.persistence.tools.dbws.Util.WSDL_DIR;
  *    |   <u>DBWSProvider.class</u>
  *    |   <u>DBWSProvider.java</u>    -- code-generated javax.xml.ws.Provider
  *    |   <b>eclipselink-dbws.wsdl</b>
- *    
+ *
  * </pre>
  */
 public class WebFilesPackager extends SimpleFilesPackager {
-	
+
     public static final String WEBSERVICES_PREAMBLE =
         "<?xml version=\"1.0\" encoding=\"UTF-8\"?> \n" +
         "<webservices \n" +
@@ -170,7 +170,7 @@ public class WebFilesPackager extends SimpleFilesPackager {
         "javax/xml/ws/Service";
     public static final String ASMIFIED_SOAP_MESSAGE =
         "javax/xml/soap/SOAPMessage";
-    
+
 	public WebFilesPackager() {
         super();
     }
@@ -179,10 +179,10 @@ public class WebFilesPackager extends SimpleFilesPackager {
     }
     public WebFilesPackager(boolean useArchiver, String warName) {
         super();
-        setArchiver(useArchiver 
-            ? (warName == null 
+        setArchiver(useArchiver
+            ? (warName == null
                 ? new WarArchiver(this)
-                : new WarArchiver(this, warName)) 
+                : new WarArchiver(this, warName))
             : null);
     }
 
@@ -224,11 +224,12 @@ public class WebFilesPackager extends SimpleFilesPackager {
 		}
 		catch (IOException e) {/* ignore */}
 	}
-	
+
     @Override
     public OutputStream getCodeGenProviderStream() throws FileNotFoundException {
         return new FileOutputStream(new File(stageDir, DBWS_PROVIDER_CLASS_FILE));
     }
+    @Override
     @SuppressWarnings("unchecked")
     public void writeDBWSProviderClass(OutputStream codeGenProviderStream, DBWSBuilder builder) {
     	String serviceName = builder.getWSDLGenerator().getServiceName();
@@ -323,6 +324,7 @@ public class WebFilesPackager extends SimpleFilesPackager {
     public OutputStream getSourceProviderStream() throws FileNotFoundException {
         return new FileOutputStream(new File(stageDir, DBWS_PROVIDER_SOURCE_FILE));
     }
+    @Override
     public void writeDBWSProviderSource(OutputStream sourceProviderStream, DBWSBuilder builder) {
         StringBuilder sb = new StringBuilder(DBWS_PROVIDER_SOURCE_PREAMBLE);
         String serviceName = builder.getWSDLGenerator().getServiceName();

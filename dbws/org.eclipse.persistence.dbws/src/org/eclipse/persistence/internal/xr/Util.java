@@ -208,7 +208,7 @@ public class Util {
 
     public static String hexEscape(char c) {
         String outPutString;
-        outPutString = Integer.toHexString((int) c);
+        outPutString = Integer.toHexString(c);
         switch (outPutString.length()) {
         case 1:
             outPutString = "_x000" + outPutString.toUpperCase(Locale.US) + "_";
@@ -228,7 +228,7 @@ public class Util {
 
     public static String hexEscape(int c) {
         String outPutString;
-        outPutString = Integer.toHexString((int) c);
+        outPutString = Integer.toHexString(c);
         switch (outPutString.length()) {
         case 1:
         case 5:
@@ -448,6 +448,10 @@ public class Util {
     public static Document TEMP_DOC = XML_PLATFORM.createDocument();
     public static final String DEFAULT_ATTACHMENT_MIMETYPE =
         "application/octet-stream";
+    public static final String WEB_INF_DIR =
+        "WEB-INF/";
+    public static final String WSDL_DIR =
+        "wsdl/";
     public static final String[] META_INF_PATHS =
         {"META-INF/", "/META-INF/"};
     public static final String DBWS_SERVICE_XML =

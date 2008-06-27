@@ -58,10 +58,10 @@ import org.eclipse.persistence.sessions.Project;
 
 // domain-specific (testing) imports
 import dbws.testing.RootHelper;
-import static dbws.testing.DBWSTestSuite.DATABASE_DRIVER_KEY;
-import static dbws.testing.DBWSTestSuite.DATABASE_PASSWORD_KEY;
-import static dbws.testing.DBWSTestSuite.DATABASE_URL_KEY;
-import static dbws.testing.DBWSTestSuite.DATABASE_USERNAME_KEY;
+import static dbws.testing.DBWSTestHelper.DATABASE_DRIVER_KEY;
+import static dbws.testing.DBWSTestHelper.DATABASE_PASSWORD_KEY;
+import static dbws.testing.DBWSTestHelper.DATABASE_URL_KEY;
+import static dbws.testing.DBWSTestHelper.DATABASE_USERNAME_KEY;
 
 public class KeyMappingTestSuite {
 
@@ -127,7 +127,7 @@ public class KeyMappingTestSuite {
         "    <sql><![CDATA[select * from XR_KEYMAP_EMPLOYEE]]></sql>\n" +
         "  </query>\n" +
         "</dbws>\n";
-    static final String KEYMAPPINGS_OR_PROJECT = 
+    static final String KEYMAPPINGS_OR_PROJECT =
         "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
         "<object-persistence version=\"Eclipse Persistence Services - @VERSION@ (Build @BUILD_NUMBER@)\"\n" +
         "   xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"\n" +
@@ -289,7 +289,7 @@ public class KeyMappingTestSuite {
         "      <bind-all-parameters>true</bind-all-parameters>\n" +
         "   </login>\n" +
         "</object-persistence>";
-    static final String KEYMAPPINGS_OX_PROJECT = 
+    static final String KEYMAPPINGS_OX_PROJECT =
         "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
         "<object-persistence version=\"Eclipse Persistence Services - @VERSION@ (Build @BUILD_NUMBER@)\"\n" +
         "   xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"\n" +
@@ -643,7 +643,7 @@ public class KeyMappingTestSuite {
         XMLMarshaller marshaller = xrService.getXMLContext().createMarshaller();
         marshaller.marshal(rootHelper, doc);
         Document controlDoc = xmlParser.parse(new StringReader(EMPLOYEE_COLLECTION_XML));
-        assertTrue("control document not same as XRService instance document", 
+        assertTrue("control document not same as XRService instance document",
             comparer.isNodeEqual(controlDoc, doc));
     }
 

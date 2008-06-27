@@ -25,15 +25,15 @@ import static org.eclipse.persistence.internal.xr.Util.DBWS_OX_XML;
 import static org.eclipse.persistence.internal.xr.Util.DBWS_SCHEMA_XML;
 import static org.eclipse.persistence.internal.xr.Util.DBWS_SERVICE_XML;
 import static org.eclipse.persistence.internal.xr.Util.META_INF_PATHS;
+import static org.eclipse.persistence.internal.xr.Util.WEB_INF_DIR;
+import static org.eclipse.persistence.internal.xr.Util.WSDL_DIR;
 import static org.eclipse.persistence.tools.dbws.Util.CLASSES;
 import static org.eclipse.persistence.tools.dbws.Util.DBWS_PROVIDER_CLASS_FILE;
 import static org.eclipse.persistence.tools.dbws.Util.DBWS_PROVIDER_SOURCE_FILE;
 import static org.eclipse.persistence.tools.dbws.Util.SWAREF_FILENAME;
 import static org.eclipse.persistence.tools.dbws.Util.UNDER_DBWS;
-import static org.eclipse.persistence.tools.dbws.Util.WEB_INF_DIR;
 import static org.eclipse.persistence.tools.dbws.Util.WEB_XML_FILENAME;
 import static org.eclipse.persistence.tools.dbws.Util.WEBSERVICES_FILENAME;
-import static org.eclipse.persistence.tools.dbws.Util.WSDL_DIR;
 
 
 public class WarArchiver extends SimpleJarArchiver {
@@ -42,7 +42,7 @@ public class WarArchiver extends SimpleJarArchiver {
     static final String DEFAULT_MANIFEST =
         MANIFEST_VERSION.toString() + ": 1.0\n" +
         "Created-by: DBWSBuilder WarArchiver 1.0\n\n";
-    
+
     public WarArchiver(DBWSPackager packager) {
         this(packager, DEFAULT_WAR_FILENAME);
     }
@@ -61,33 +61,33 @@ public class WarArchiver extends SimpleJarArchiver {
         }
         return manifest;
     }
-    
+
     @Override
     protected JarEntry getOrJarEntry() {
         return new JarEntry(WEB_INF_DIR + CLASSES + META_INF_PATHS[1] + DBWS_OR_XML);
     }
-    
+
     @Override
     protected JarEntry getOxJarEntry() {
         return new JarEntry(WEB_INF_DIR + CLASSES + META_INF_PATHS[1] + DBWS_OX_XML);
     }
-    
+
     @Override
     protected JarEntry getSchemaJarEntry() {
         return new JarEntry(WEB_INF_DIR + WSDL_DIR + DBWS_SCHEMA_XML);
     }
-    
+
     @Override
     protected JarEntry getServiceJarEntry() {
         return new JarEntry(WEB_INF_DIR + CLASSES + META_INF_PATHS[1] + DBWS_SERVICE_XML);
     }
-    
+
     @Override
     protected JarEntry getSessionsJarEntry() {
-        return new JarEntry(WEB_INF_DIR + CLASSES + META_INF_PATHS[1] + 
+        return new JarEntry(WEB_INF_DIR + CLASSES + META_INF_PATHS[1] +
             packager.getSessionsFileName());
     }
-    
+
     @Override
     protected JarEntry getSWARefJarEntry() {
         return new JarEntry(WEB_INF_DIR + WSDL_DIR + SWAREF_FILENAME);
@@ -106,23 +106,23 @@ public class WarArchiver extends SimpleJarArchiver {
     protected ZipEntry getWebXmlJarEntry() {
         return new JarEntry(WEB_INF_DIR + WEB_XML_FILENAME);
     }
-    
+
     protected ZipEntry getWebservicesJarEntry() {
         return new JarEntry(WEB_INF_DIR + WEBSERVICES_FILENAME);
     }
-    
+
     protected ZipEntry getDBWSProviderClassJarEntry() {
         return new JarEntry(WEB_INF_DIR + CLASSES + UNDER_DBWS + DBWS_PROVIDER_CLASS_FILE);
     }
-    
+
     protected ZipEntry getDBWSProviderSourceJarEntry() {
         return new JarEntry(WEB_INF_DIR + CLASSES + UNDER_DBWS + DBWS_PROVIDER_SOURCE_FILE);
     }
-    
+
     @Override
     protected void addFilesToJarOutputStream(JarOutputStream jarOutputStream) {
         super.addFilesToJarOutputStream(jarOutputStream);
-        
+
         /* and more ...
          * web.xml
          * webservices.xml

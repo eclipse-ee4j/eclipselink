@@ -63,9 +63,10 @@ import static org.eclipse.persistence.internal.xr.Util.DBWS_SERVICE_XML;
 import static org.eclipse.persistence.internal.xr.Util.DBWS_WSDL;
 import static org.eclipse.persistence.internal.xr.Util.META_INF_PATHS;
 import static org.eclipse.persistence.internal.xr.Util.SCHEMA_2_CLASS;
+import static org.eclipse.persistence.internal.xr.Util.WEB_INF_DIR;
+import static org.eclipse.persistence.internal.xr.Util.WSDL_DIR;
 import static org.eclipse.persistence.oxm.mappings.UnmarshalKeepAsElementPolicy.KEEP_UNKNOWN_AS_ELEMENT;
-import static org.eclipse.persistence.tools.dbws.Util.WEB_INF_DIR;
-import static org.eclipse.persistence.tools.dbws.Util.WSDL_DIR;
+
 
 /**
  * <p>
@@ -218,9 +219,11 @@ public class ProviderHelper extends XRServiceFactory {
         parametersMapping.setAttributeName("parameters");
         parametersMapping.setAttributeAccessor(new AttributeAccessor() {
             Project oxProject;
+            @Override
             public Object getAttributeValueFromObject(Object object) {
               return ((Invocation)object).getParameters();
             }
+            @Override
             public void setAttributeValueInObject(Object object, Object value) {
                 Invocation invocation = (Invocation)object;
                 Vector values = (Vector)value;
@@ -373,6 +376,7 @@ public class ProviderHelper extends XRServiceFactory {
         xrService = null;
     }
 
+    @Override
     public XRServiceAdapter buildService(XRServiceModel xrServiceModel) {
         xrService = new DBWSAdapter(); // use subclass to hold extended WSDL schema
         DBWSAdapter dbws = (DBWSAdapter)xrService;

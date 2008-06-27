@@ -1,10 +1,10 @@
 /*******************************************************************************
  * Copyright (c) 1998, 2008 Oracle. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
@@ -62,35 +62,31 @@ public class Util {
         IN, OUT, INOUT, RETURN
     }
 
-    public static final String CLASSES = 
+    public static final String CLASSES =
         "classes";
     public static final String DEFAULT_WSDL_LOCATION_URI =
         "REPLACE_WITH_ENDPOINT_ADDRESS";
-    public static final String WEB_INF_DIR =
-        "WEB-INF/";
     public static final String SWAREF_FILENAME =
         "swaref.xsd";
     public static final String WEB_XML_FILENAME =
         "web.xml";
-    public static final String DEFAULT_PLATFORM_CLASSNAME = 
+    public static final String DEFAULT_PLATFORM_CLASSNAME =
         "org.eclipse.persistence.platform.database.oracle.OraclePlatform";
     public static final String WEBSERVICES_FILENAME =
         "webservices.xml";
     public static final String UNDER_DBWS =
         "_dbws";
-    public static final String WSDL_DIR =
-        "wsdl/";
     public static final String WSI_SWAREF =
         "swaref";
     public static final String WSI_SWAREF_PREFIX =
         "ref";
     public static final String WSI_SWAREF_URI =
         "http://ws-i.org/profiles/basic/1.1/xsd";
-    public static final String WSI_SWAREF_XSD_FILE = 
+    public static final String WSI_SWAREF_XSD_FILE =
         WSI_SWAREF + ".xsd";
     public static final String PK_QUERYNAME =
         "findByPrimaryKey";
-    public static final String THE_INSTANCE_NAME = 
+    public static final String THE_INSTANCE_NAME =
         "theInstance";
     public static final String FINDALL_QUERYNAME =
         "findAll";

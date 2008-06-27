@@ -8,9 +8,7 @@ Export-Package: org.eclipse.persistence.dbws,
  org.eclipse.persistence.exceptions.i18n,
  org.eclipse.persistence.internal.dbws,
  org.eclipse.persistence.internal.xr,
- org.eclipse.persistence.internal.xr.sxf,
- org.eclipse.persistence.tools.dbws,
- org.eclipse.persistence.tools.dbws.jdbc
+ org.eclipse.persistence.internal.xr.sxf
 Require-Bundle: org.eclipse.persistence.core,
  javax.xml.soap,
  javax.wsdl,

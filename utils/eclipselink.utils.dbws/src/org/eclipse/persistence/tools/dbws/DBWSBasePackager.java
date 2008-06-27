@@ -1,10 +1,10 @@
 /*******************************************************************************
  * Copyright (c) 1998, 2008 Oracle. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
@@ -25,12 +25,17 @@ import org.eclipse.persistence.tools.dbws.DBWSPackager.Archiver;
 public class DBWSBasePackager {
 
 	// some packagers don't need to write out some files -
-	// this the do-nothing/go-nowhere stream handles that case 
+	// this the do-nothing/go-nowhere stream handles that case
     protected static class NullOutputStream extends OutputStream {
+            @Override
             public void close(){}
+            @Override
             public void flush(){}
+            @Override
             public void write(byte[]b){}
+            @Override
             public void write(byte[]b,int i,int l){}
+            @Override
             public void write(int b){}
         }
     public static NullOutputStream __nullStream = new NullOutputStream();
@@ -83,7 +88,7 @@ public class DBWSBasePackager {
             archiver.archive();
         }
     }
-    
+
     public void closeSchemaStream(OutputStream schemaStream) {
     	closeStream(schemaStream);
     }
@@ -112,18 +117,16 @@ public class DBWSBasePackager {
     	closeStream(swarefStream);
     }
 
-    @SuppressWarnings("unused")
     public void writeWebXml(OutputStream webXmlStream, DBWSBuilder dbwsBuilder) {
     }
-    
+
     public void closeWebXmlStream(OutputStream webXmlStream) {
     	closeStream(webXmlStream);
     }
-    
-    @SuppressWarnings("unused")
+
 	public void writeWebservicesXML(OutputStream webservicesXmlStream, DBWSBuilder builder) {
 	}
-	
+
     public void closeWebservicesXmlStream(OutputStream webservicesXmlStream) {
     	closeStream(webservicesXmlStream);
     }
@@ -132,18 +135,16 @@ public class DBWSBasePackager {
     	closeStream(platformWebservicesXmlStream);
     }
 
-    @SuppressWarnings("unused")
 	public void writeDBWSProviderClass(OutputStream codeGenProviderStream, DBWSBuilder builder) {
 	}
-	
+
     public void closeCodeGenProviderStream(OutputStream codeGenProviderStream) {
     	closeStream(codeGenProviderStream);
     }
 
-    @SuppressWarnings("unused")
-    public void writeDBWSProviderSource(OutputStream sourceProviderStream, DBWSBuilder builder) {	
+    public void writeDBWSProviderSource(OutputStream sourceProviderStream, DBWSBuilder builder) {
     }
-    
+
     public void closeSourceProviderStream(OutputStream sourceProviderStream) {
         closeStream(sourceProviderStream);
     }
