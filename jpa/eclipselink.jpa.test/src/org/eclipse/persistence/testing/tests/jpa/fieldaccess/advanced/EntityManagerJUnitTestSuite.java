@@ -3301,6 +3301,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         } finally {    
             Address initialAddress = em.find(Address.class, new Integer(addressId));
             employee.setAddress(null);
+            employee.setManager((Employee)null);
             em.remove(address);
             em.remove(employee);
             em.remove(initialAddress);
@@ -3361,6 +3362,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         } finally {
             Address initialAddress = em.find(Address.class, new Integer(addressId));
             employee.setAddress(null);
+            employee.setManager((Employee)null);
             em.remove(address);
             em.remove(employee);
             em.remove(initialAddress);
@@ -3423,6 +3425,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         } finally {
             Address initialAddress = em.find(Address.class, new Integer(addressId));
             employee.setAddress(null);
+            employee.setManager((Employee)null);
             em.remove(address);
             em.remove(employee);
             em.remove(initialAddress);

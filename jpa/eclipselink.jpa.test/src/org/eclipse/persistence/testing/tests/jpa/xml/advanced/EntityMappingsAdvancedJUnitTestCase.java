@@ -92,7 +92,7 @@ public class EntityMappingsAdvancedJUnitTestCase extends JUnitTestCase {
         suite.addTest(new EntityMappingsAdvancedJUnitTestCase("testRefreshRemovedEmployee", persistenceUnit));
         suite.addTest(new EntityMappingsAdvancedJUnitTestCase("testDeleteEmployee", persistenceUnit));
         
-        if (persistenceUnit.equals("extended-advanced")) {
+        if (persistenceUnit.equals("extended-advanced")) {            
             suite.addTest(new EntityMappingsAdvancedJUnitTestCase("testExistenceCheckingSetting", persistenceUnit));
             suite.addTest(new EntityMappingsAdvancedJUnitTestCase("testReadOnlyClassSetting", persistenceUnit));
             suite.addTest(new EntityMappingsAdvancedJUnitTestCase("testEmployeeChangeTrackingPolicy", persistenceUnit));
@@ -112,6 +112,7 @@ public class EntityMappingsAdvancedJUnitTestCase extends JUnitTestCase {
             suite.addTest(new EntityMappingsAdvancedJUnitTestCase("testClassInstanceConverter", persistenceUnit));
             suite.addTest(new EntityMappingsAdvancedJUnitTestCase("testProperty", persistenceUnit));
             suite.addTest(new EntityMappingsAdvancedJUnitTestCase("testAccessorMethods", persistenceUnit));
+            suite.addTest(new EntityMappingsAdvancedJUnitTestCase("testIfMultipleBasicCollectionMappingsExistForEmployeeResponsibilites", persistenceUnit));
         }
         
         return new TestSetup(suite) {
@@ -181,6 +182,27 @@ public class EntityMappingsAdvancedJUnitTestCase extends JUnitTestCase {
         
         ClassDescriptor largeProjectDescriptor = session.getDescriptor(LargeProject.class);
         assertTrue("LargeProject existence checking was incorrect", largeProjectDescriptor.getQueryManager().getDoesExistQuery().getExistencePolicy() == DoesExistQuery.AssumeNonExistence);
+    }
+    
+    /**
+     * Verifies that a basic collection is not added to the employee descriptor
+     * twice.
+     */
+    public void testIfMultipleBasicCollectionMappingsExistForEmployeeResponsibilites() {
+        ServerSession session = JUnitTestCase.getServerSession(m_persistenceUnit);
+        
+        ClassDescriptor employeeDescriptor = session.getDescriptor(Employee.class);
+        
+        int foundCount = 0;
+        for (DatabaseMapping mapping : employeeDescriptor.getMappings()) {
+            if (mapping.isDirectCollectionMapping()) {
+                if (mapping.getAttributeName().equals("responsibilities")) {
+                    foundCount++;
+                }
+            }
+        }
+        
+        assertFalse("We found multiple mappings for Employee responsibilities", foundCount == 2);
     }
     
     /**

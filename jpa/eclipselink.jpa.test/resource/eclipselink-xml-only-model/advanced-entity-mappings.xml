@@ -80,6 +80,7 @@
                     <column name="END_DATE" nullable="true"/>
                 </attribute-override>
             </embedded>
+            <transient name="responsibilities"/>
         </attributes>
     </entity>
     <entity name="XMLAddress" class="org.eclipse.persistence.testing.models.jpa.xml.advanced.Address" access="PROPERTY">

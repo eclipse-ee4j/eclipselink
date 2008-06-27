@@ -198,25 +198,52 @@ public class EntityAccessor extends MappedSuperclassAccessor {
      * Build a list of classes that are decorated with a MappedSuperclass
      * annotation or that are tagged as a mapped-superclass in an XML document.
      * 
-     * This method will also build a map of generic types specified and will
-     * be used to resolve actual class types for mappings.
+     * This method will also do a couple other things as well since we are
+     * traversing the parent classes:
+     *  - Build a map of generic types specified and will be used to resolve 
+     *    actual class types for mappings.
+     *  - Will discover and set the inheritance parent and root descriptors
+     *    if this entity is part of an inheritance hierarchy.
      * 
      * Note: The list is rebuilt every time this method is called since
      * it is called both during pre-deploy and deploy where the class loader
      * dependencies change.
      */
     protected List<MappedSuperclassAccessor> getMappedSuperclasses() {
-        ArrayList<MappedSuperclassAccessor> mappedSuperclasses = new ArrayList<MappedSuperclassAccessor>();
         Class parent = getJavaClass().getSuperclass();
+        ClassAccessor lastParent = null;
         Type genericParent = getJavaClass().getGenericSuperclass();
+        ArrayList<MappedSuperclassAccessor> mappedSuperclasses = new ArrayList<MappedSuperclassAccessor>();
+        
+        // Null out the inheritance parent and root descriptor before we start
+        // since they will be recalculated and used to determine when to stop
+        // looking for mapped superclasses.
+        getDescriptor().setInheritanceParentDescriptor(null);
+        getDescriptor().setInheritanceRootDescriptor(null);
         
         while (parent != Object.class) {
-            if (getDescriptor().isInheritanceSubclass() && getProject().hasEntity(parent)) {
-                // In an inheritance case we don't want to keep looking
-                // for mapped superclasses if they are not directly above
-                // us before the next entity in the hierarchy.
-                break;
-            } else {
+            EntityAccessor parentAccessor = getProject().getEntityAccessor(parent.getName());
+            
+            // We found a parent entity.
+            if (parentAccessor != null) {
+                if (lastParent == null) {
+                    // Set the immediate parent's descriptor and class on this
+                    // entity's descriptor.
+                    getDescriptor().setInheritanceParentDescriptor(parentAccessor.getDescriptor());
+                    getDescriptor().setParentClass(parent);
+                }
+                
+                lastParent = parentAccessor;
+                
+                if (parentAccessor.hasInheritance()) {
+                    break; // stop traversing the inheritance hierarchy.
+                }
+            }
+            
+            // In an inheritance case we don't want to look at mapped 
+            // superclasses if they are not directly above us before the next 
+            // entity in the hierarchy.
+            if (! getDescriptor().isInheritanceSubclass()) {
                 // If we have a generic parent we need to grab our generic types
                 // that may be used (and therefore need to be resolved) to map
                 // accessors correctly.
@@ -256,7 +283,12 @@ public class EntityAccessor extends MappedSuperclassAccessor {
             genericParent = parent.getGenericSuperclass();
             parent = parent.getSuperclass();
         }
-                
+
+        // Set our root descriptor of the inheritance hierarchy.
+        if (lastParent != null) {
+            getDescriptor().setInheritanceRootDescriptor(lastParent.getDescriptor()); 
+        }
+        
         return mappedSuperclasses;
     }
     
@@ -367,48 +399,6 @@ public class EntityAccessor extends MappedSuperclassAccessor {
         initXMLObjects(m_sqlResultSetMappings, accessibleObject);
         initXMLObjects(m_secondaryTables, accessibleObject);
         initXMLObjects(m_primaryKeyJoinColumns, accessibleObject);
-    }
-    
-    /**
-     * INTERNAL:
-     * This method will do a couple things. Most importantly will return 
-     * true if this class is an inheritance subclass, but will also set the
-     * inheritance root descriptor (the first parent entity that defines the 
-     * inheritance strategy) on this class accessor's descriptor along
-     * with the immediate parent class and descriptor.
-     */
-    protected boolean isInheritanceSubclass() {
-        ClassAccessor lastParent = null;
-        Class parent = getJavaClass().getSuperclass();
-    
-        while (parent != Object.class) {
-           EntityAccessor parentAccessor = getProject().getEntityAccessor(parent.getName());
-            
-            if (parentAccessor != null) {
-                if (lastParent == null) {
-                    // Set the immediate parent's descriptor and class on this
-                    // entity's descriptor.
-                    getDescriptor().setInheritanceParentDescriptor(parentAccessor.getDescriptor());
-                    getDescriptor().setParentClass(parent);
-                }
-                
-                lastParent = parentAccessor;
-                
-                if (parentAccessor.hasInheritance()) {
-                    break; // stop looking.
-                }
-            } 
-            
-            parent = parent.getSuperclass();
-        }
-    
-        if (lastParent == null) {
-            return false;
-        } else {
-            // Set the root descriptor of the inheritance hierarchy.
-            getDescriptor().setInheritanceRootDescriptor(lastParent.getDescriptor()); 
-            return true;
-        }
     }
     
     /**
@@ -903,7 +893,7 @@ public class EntityAccessor extends MappedSuperclassAccessor {
     protected void processTableAndInheritance() {
         // If we are an inheritance subclass, ensure our root is processed 
         // first since it has information its subclasses depend on.
-        if (isInheritanceSubclass()) {
+        if (getDescriptor().isInheritanceSubclass()) {
             MetadataDescriptor parentDescriptor = getDescriptor().getInheritanceRootDescriptor();
             
             // Process the root class accessor if it hasn't already been done.

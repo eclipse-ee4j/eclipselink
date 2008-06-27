@@ -369,7 +369,7 @@ public class MetadataDescriptor {
             accessor = m_accessors.get(MetadataMethod.getAttributeNameFromMethodName(fieldOrPropertyName));
            
             // If still no accessor and we are an inheritance subclass, check 
-            // the root descriptor now.
+            // our parent descriptor.
             if (accessor == null && isInheritanceSubclass()) {
                 accessor = getInheritanceParentDescriptor().getAccessorFor(fieldOrPropertyName);
             }
@@ -817,6 +817,15 @@ public class MetadataDescriptor {
     
     /**
      * INTERNAL:
+     * Returns true if we already have (processed) and accessor for the given
+     * attribute name.
+     */
+    public boolean hasAccessorFor(String attributeName) {
+        return getAccessorFor(attributeName) != null;
+    }
+    
+    /**
+     * INTERNAL:
      */
     public boolean hasAssociationOverrideFor(String attributeName) {
         return m_associationOverrides.containsKey(attributeName);
@@ -1004,7 +1013,7 @@ public class MetadataDescriptor {
      * INTERNAL:
      */
     public boolean isInheritanceSubclass() {
-        return m_inheritanceRootDescriptor != null;
+        return m_inheritanceParentDescriptor != null;
     }
     
     /**

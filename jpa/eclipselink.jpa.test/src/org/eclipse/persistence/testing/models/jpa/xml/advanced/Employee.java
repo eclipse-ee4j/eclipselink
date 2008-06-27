@@ -244,8 +244,6 @@ public class Employee implements Serializable {
         return projects; 
     }
     
-    // EclipseLink feature, mark it transient so JPA ORM doesn't process it.
-    @Transient
     public Collection getResponsibilities() {
         return responsibilities;
     }

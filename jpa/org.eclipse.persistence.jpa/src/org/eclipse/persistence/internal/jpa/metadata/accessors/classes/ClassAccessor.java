@@ -145,50 +145,43 @@ public abstract class ClassAccessor extends MetadataAccessor {
      * is of type xyz.
      */
     protected MappingAccessor buildAccessor(MetadataAnnotatedElement accessibleObject) {
-        // Check for an existing accessor (that is, one from XML).
-        MappingAccessor accessor = getDescriptor().getAccessorFor(accessibleObject.getAttributeName());
-        
-        if (accessor == null) {
-            if (accessibleObject.isBasicCollection(getDescriptor())) {
-                return new BasicCollectionAccessor(accessibleObject.getAnnotation(BasicCollection.class), accessibleObject, this);
-            } else if (accessibleObject.isBasicMap(getDescriptor())) {
-                return new BasicMapAccessor(accessibleObject.getAnnotation(BasicMap.class), accessibleObject, this);
-            } else if (accessibleObject.isId(getDescriptor())) {
-                return new IdAccessor(accessibleObject.getAnnotation(Id.class), accessibleObject, this);
-            } else if (accessibleObject.isVersion(getDescriptor())) {
-                return new VersionAccessor(accessibleObject.getAnnotation(Version.class), accessibleObject, this);
-            } else if (accessibleObject.isBasic(getDescriptor())) {
-                return new BasicAccessor(accessibleObject.getAnnotation(Basic.class), accessibleObject, this);
-            } else if (accessibleObject.isEmbedded(getDescriptor())) {
-                return new EmbeddedAccessor(accessibleObject.getAnnotation(Embedded.class), accessibleObject, this);
-            } else if (accessibleObject.isEmbeddedId(getDescriptor())) {
-                return new EmbeddedIdAccessor(accessibleObject.getAnnotation(EmbeddedId.class), accessibleObject, this);
-            } else if (accessibleObject.isTransformation(getDescriptor())) { 
-                return new TransformationAccessor(accessibleObject.getAnnotation(Transformation.class), accessibleObject, this);
-            } else if (accessibleObject.isManyToMany(getDescriptor())) {
-                return new ManyToManyAccessor(accessibleObject.getAnnotation(ManyToMany.class), accessibleObject, this);
-            } else if (accessibleObject.isManyToOne(getDescriptor())) {
-                return new ManyToOneAccessor(accessibleObject.getAnnotation(ManyToOne.class), accessibleObject, this);
-            } else if (accessibleObject.isOneToMany(getDescriptor())) {
-                // A OneToMany can default, that is, doesn't require an 
-                // annotation to be present.
-                return new OneToManyAccessor(accessibleObject.getAnnotation(OneToMany.class), accessibleObject, this);
-            } else if (accessibleObject.isOneToOne(getDescriptor())) {
-                // A OneToOne can default, that is, doesn't require an 
-                // annotation to be present.
-                return new OneToOneAccessor(accessibleObject.getAnnotation(OneToOne.class), accessibleObject, this);
-            } else if (accessibleObject.isVariableOneToOne(getDescriptor())) {
-                // A VariableOneToOne can default, that is, doesn't require
-                // an annotation to be present.
-                return new VariableOneToOneAccessor(accessibleObject.getAnnotation(VariableOneToOne.class), accessibleObject, this);
-            } else if (getDescriptor().ignoreDefaultMappings()) {
-                return null;
-            } else {
-                // Default case (everything else falls into a Basic)
-                return new BasicAccessor(accessibleObject.getAnnotation(Basic.class), accessibleObject, this);
-            }
+        if (accessibleObject.isBasicCollection(getDescriptor())) {
+            return new BasicCollectionAccessor(accessibleObject.getAnnotation(BasicCollection.class), accessibleObject, this);
+        } else if (accessibleObject.isBasicMap(getDescriptor())) {
+            return new BasicMapAccessor(accessibleObject.getAnnotation(BasicMap.class), accessibleObject, this);
+        } else if (accessibleObject.isId(getDescriptor())) {
+            return new IdAccessor(accessibleObject.getAnnotation(Id.class), accessibleObject, this);
+        } else if (accessibleObject.isVersion(getDescriptor())) {
+            return new VersionAccessor(accessibleObject.getAnnotation(Version.class), accessibleObject, this);
+        } else if (accessibleObject.isBasic(getDescriptor())) {
+            return new BasicAccessor(accessibleObject.getAnnotation(Basic.class), accessibleObject, this);
+        } else if (accessibleObject.isEmbedded(getDescriptor())) {
+            return new EmbeddedAccessor(accessibleObject.getAnnotation(Embedded.class), accessibleObject, this);
+        } else if (accessibleObject.isEmbeddedId(getDescriptor())) {
+            return new EmbeddedIdAccessor(accessibleObject.getAnnotation(EmbeddedId.class), accessibleObject, this);
+        } else if (accessibleObject.isTransformation(getDescriptor())) { 
+            return new TransformationAccessor(accessibleObject.getAnnotation(Transformation.class), accessibleObject, this);
+        } else if (accessibleObject.isManyToMany(getDescriptor())) {
+            return new ManyToManyAccessor(accessibleObject.getAnnotation(ManyToMany.class), accessibleObject, this);
+        } else if (accessibleObject.isManyToOne(getDescriptor())) {
+            return new ManyToOneAccessor(accessibleObject.getAnnotation(ManyToOne.class), accessibleObject, this);
+        } else if (accessibleObject.isOneToMany(getDescriptor())) {
+            // A OneToMany can default, that is, doesn't require an 
+            // annotation to be present.
+            return new OneToManyAccessor(accessibleObject.getAnnotation(OneToMany.class), accessibleObject, this);
+        } else if (accessibleObject.isOneToOne(getDescriptor())) {
+            // A OneToOne can default, that is, doesn't require an 
+            // annotation to be present.
+            return new OneToOneAccessor(accessibleObject.getAnnotation(OneToOne.class), accessibleObject, this);
+        } else if (accessibleObject.isVariableOneToOne(getDescriptor())) {
+            // A VariableOneToOne can default, that is, doesn't require
+            // an annotation to be present.
+            return new VariableOneToOneAccessor(accessibleObject.getAnnotation(VariableOneToOne.class), accessibleObject, this);
+        } else if (getDescriptor().ignoreDefaultMappings()) {
+            return null;
         } else {
-            return accessor;
+            // Default case (everything else falls into a Basic)
+            return new BasicAccessor(accessibleObject.getAnnotation(Basic.class), accessibleObject, this);
         }
     }
     
@@ -455,8 +448,10 @@ public abstract class ClassAccessor extends MetadataAccessor {
                     throw ValidationException.mappingAnnotationsAppliedToTransientAttribute(field);
                 }
             } else {
-                // The is valid check will throw an exception if needed.
-                if (metadataField.isValidPersistenceField(getDescriptor())) {
+                // The is valid check will throw an exception if needed. If
+                // we already have an accessor then we loaded one from XML
+                // and we shouldn't re-process the accessor.
+                if (metadataField.isValidPersistenceField(getDescriptor()) && ! getDescriptor().hasAccessorFor(metadataField.getAttributeName())) {
                     processAccessor(buildAccessor(metadataField));
                 } 
             }
@@ -475,9 +470,10 @@ public abstract class ClassAccessor extends MetadataAccessor {
                     throw ValidationException.mappingAnnotationsAppliedToTransientAttribute(method);
                 }
             } else {
-                // The is valid check will throw an exception if needed.
-                if (metadataMethod.isValidPersistenceMethod(getDescriptor())) {
-                    // We have a valid metadata method.
+                // The is valid check will throw an exception if needed.  If
+                // we already have an accessor then we loaded one from XML
+                // and we shouldn't re-process the accessor.
+                if (metadataMethod.isValidPersistenceMethod(getDescriptor()) && ! getDescriptor().hasAccessorFor(metadataMethod.getAttributeName())) {
                     processAccessor(buildAccessor(metadataMethod));
                 }
             }
