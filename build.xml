@@ -22,8 +22,8 @@
 *
 * Contributors:
 *     tware - initial API and implementation
-*	  pkrogh - javadocs 
-*	  eric.gwin - rework to follow ant conventions.
+*     pkrogh - javadocs 
+*     eric.gwin - rework to follow ant conventions.
 #******************************************************************************/-->
 <!-- This ant project includes the following tasks:
         - all (default) : compiles all components and tests (excluding Oracle extensions)
