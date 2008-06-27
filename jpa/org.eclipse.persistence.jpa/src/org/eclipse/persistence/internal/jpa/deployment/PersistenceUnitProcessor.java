@@ -17,7 +17,6 @@ import java.net.URL;
 import java.net.URISyntaxException;
 import java.net.JarURLConnection;
 import java.util.Enumeration;
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -130,11 +129,17 @@ public class PersistenceUnitProcessor {
         return processor.getPersistenceUnitClassSetFromMappingFiles();
     }
 
+    /**
+     * Determine the URL path to the persistence unit 
+     * @param pxmlURL - Encoded URL containing the pu
+     * @return
+     * @throws IOException
+     */
     public static URL computePURootURL(URL pxmlURL) throws IOException {
         String protocol = pxmlURL.getProtocol();
         if("file".equals(protocol)) { // NOI18N
             // e.g. file:/tmp/META-INF/persistence.xml
-            assert(new File(pxmlURL.getFile()).isFile());
+            // 210280: any file url will be assumed to always reference a file (not a directory)
             return new URL(pxmlURL, ".."); // NOI18N
         } else if("jar".equals(protocol)) { // NOI18N
             // e.g. jar:file:/tmp/a_ear/b.jar!/META-INF/persistence.xml
@@ -223,7 +228,7 @@ public class PersistenceUnitProcessor {
     }
     
     /**
-     * Get a list of persitence units from the file or directory at the given 
+     * Get a list of persistence units from the file or directory at the given 
      * url. PersistenceUnits are built based on the presence of persistence.xml 
      * in a META-INF directory at the base of the URL.
      * @param archive The url of a jar file or directory to check
@@ -377,8 +382,8 @@ public class PersistenceUnitProcessor {
     }
     
     /**
-     * Build the unique persistence name by concatenating the decoded URL wiht persistence unit name.
-     * Decoding url is required while persistence on multiple-bytes OS.  
+     * Build the unique persistence name by concatenating the decoded URL with the persistence unit name.
+     * A decoded URL is required while persisting on a multi-bytes OS.  
      * @param URL
      * @param puName
      * @return String
@@ -386,6 +391,7 @@ public class PersistenceUnitProcessor {
    public static String buildPersistenceUnitName(URL url, String puName){
        String fullPuName = null;
        try {
+           // append the persistence unit name to the decoded URL
            fullPuName = URLDecoder.decode(url.toString(), "UTF8")+puName;
        } catch (UnsupportedEncodingException e) {
            throw PersistenceUnitLoadingException.couldNotBuildPersistenceUntiName(e,url.toString(),puName);
