@@ -55,17 +55,29 @@ for version in `ls -dr [0-9]*` ; do
         if [ -f ${contentdir}/eclipselink-incubation-${contentdir}.zip ] ; then
             echo "              <a href=\"${BaseDownloadURL}/${version}/${contentdir}/eclipselink-incubation-${contentdir}.zip\"> Install Archive </a> <br/>" >> $tmp/index.xml
         else
-            echo "              Install archive not available <br/>" >> $tmp/index.xml
+            if [ -f ${contentdir}/eclipselink-${contentdir}.zip ] ; then
+                echo "              <a href=\"${BaseDownloadURL}/${version}/${contentdir}/eclipselink-${contentdir}.zip\"> Install Archive </a> <br/>" >> $tmp/index.xml
+            else
+                echo "              Install archive not available <br/>" >> $tmp/index.xml
+            fi
         fi
         if [ -f ${contentdir}/eclipselink-incubation-src-${contentdir}.zip ] ; then
             echo "              <a href=\"${BaseDownloadURL}/${version}/${contentdir}/eclipselink-incubation-src-${contentdir}.zip\"> Source Archive </a> <br/>" >> $tmp/index.xml
         else
-            echo "              Source archive not available <br/>" >> $tmp/index.xml
+            if [ -f ${contentdir}/eclipselink-src-${contentdir}.zip ] ; then
+                echo "              <a href=\"${BaseDownloadURL}/${version}/${contentdir}/eclipselink-src-${contentdir}.zip\"> Source Archive </a> <br/>" >> $tmp/index.xml
+            else
+                echo "              Source archive not available <br/>" >> $tmp/index.xml
+            fi
         fi
         if [ -f ${contentdir}/eclipselink-plugins-incubation-${contentdir}.zip ] ; then
             echo "              <a href=\"${BaseDownloadURL}/${version}/${contentdir}/eclipselink-plugins-incubation-${contentdir}.zip\"> OSGi Plugins Archive </a> <br/>" >> $tmp/index.xml
         else
-            echo "              OSGi Plugins archive not available <br/>" >> $tmp/index.xml
+            if [ -f ${contentdir}/eclipselink-plugins-${contentdir}.zip ] ; then
+                echo "              <a href=\"${BaseDownloadURL}/${version}/${contentdir}/eclipselink-plugins-${contentdir}.zip\"> OSGi Plugins Archive </a> <br/>" >> $tmp/index.xml
+            else
+                echo "              OSGi Plugins archive not available <br/>" >> $tmp/index.xml
+            fi
         fi
         echo "            </td>" >> $tmp/index.xml
         echo "            <td align=\"center\"> </td>" >> $tmp/index.xml
