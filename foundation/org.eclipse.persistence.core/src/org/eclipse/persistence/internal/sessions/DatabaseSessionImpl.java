@@ -704,14 +704,15 @@ public class DatabaseSessionImpl extends AbstractSession implements org.eclipse.
         if (getCommandManager() != null) {
             getCommandManager().shutdown();
         }
+
+        // Unregister the JMX MBean before logout to avoid a javax.naming.NameNotFoundException
+        getServerPlatform().unregisterMBean();
         
         disconnect();
         getIdentityMapAccessor().initializeIdentityMaps();
         isLoggedIn = false;
         log(SessionLog.INFO, null, "logout_successful", this.getName());
 	   
-        //unregister the MBean
-        getServerPlatform().unregisterMBean();
     }
 
     /**

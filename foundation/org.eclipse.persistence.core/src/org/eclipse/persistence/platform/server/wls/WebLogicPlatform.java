@@ -57,7 +57,6 @@ public class WebLogicPlatform extends ServerPlatformBase {
      */
     public WebLogicPlatform(DatabaseSession newDatabaseSession) {
         super(newDatabaseSession);
-        this.disableRuntimeServices();
     }
 
     /**

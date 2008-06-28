@@ -329,8 +329,11 @@ public class LoggingLocalizationResource extends ListResourceBundle {
         { "osgi_initializer_failed", "Construction of environment specific OSGi initializer, [{0}] failed with message: [{2}]."},
         { "osgi_initializer", "Using OSGi initializer: [{0}]."},
         { "entity_manager_ignores_nonjta_data_source", "Persistence unit uses JTA, therefore entity manager ignores non jta data source. "},        
-        { "entity_manager_ignores_jta_data_source", "Persistence unit doesn't use JTA, therefore entity manager ignores jta data source. "},        
-
+        { "entity_manager_ignores_jta_data_source", "Persistence unit doesn't use JTA, therefore entity manager ignores jta data source. "},
+        { "problem_registering_mbean", "Problem while registering MBean: {0}" },
+        { "problem_unregistering_mbean", "Problem while unregistering MBean: {0}" },
+        { "session_key_for_mbean_name_is_null", "Session used for the MBean name is null." },       
+                
         
         
         
@@ -569,7 +572,11 @@ public class LoggingLocalizationResource extends ListResourceBundle {
         { "osgi_initializer_failed.MSGID", "TOP-50211"},
         { "osgi_initializer", "TOP-50212"},
         { "entity_manager_ignores_nonjta_data_source.MSGID", "TOP-50213"},        
-        { "entity_manager_ignores_jta_data_source.MSGID", "TOP-50214"}        
+        { "entity_manager_ignores_jta_data_source.MSGID", "TOP-50214"},
+        { "problem_registering_mbean.MSGID", "TOP-50215}" },
+        { "problem_unregistering_mbean.MSGID", "TOP-50216" },
+        { "session_key_for_mbean_name_is_null.MSGID", "TOP-50217" }        
+
     }; 
      
     /**

@@ -62,11 +62,11 @@ import org.eclipse.persistence.sessions.factories.SessionManager;
  * <b>Detachment</b>: The detach helper methods are provided to assist with the
  * construction of applications. This helper class was designed for use within
  * session beans (SB) and in the case of local SBs the objects returned are not
- * serialized. Since TopLink's default behavior is to return the shared instance
+ * serialized. Since EclipseLink's default behavior is to return the shared instance
  * from the cache and rely on developers to only modify instances within a
  * UnitOfWork this may be an issue. The client to the local session bean may
  * try to modify the instance and thus corrupt the cache. By detaching the object
- * the client to the session bean gets its own isoalted copy that it can freely
+ * the client to the session bean gets its own isolated copy that it can freely
  * modify. This provides the same functionality as with a remote session bean
  * and allows the developer the choice in how/when objects are detached.
  * <i>Note</i>: The above code example shows how a detached instance can have
@@ -79,14 +79,14 @@ import org.eclipse.persistence.sessions.factories.SessionManager;
 public class SessionFactory {
     /**
      * Location for the sessions.xml file. The default here is the most common.
-     * If none is provided then TopLink's default locations of 'sessions.xml'
+     * If none is provided then EclipseLink's default locations of 'sessions.xml'
      * and 'META-INF/sessions.xml' will be tried.
      */
     private String sessionXMLPath;
     private String sessionName;
 
     /**
-     * Constructor for creating a new TopLinkSessionHelper instance.
+     * Constructor for creating a new EclipseLinkSessionHelper instance.
      *
      * @param sessionsXMLPath - resource path of the sessions configuration xml.
      * @param sessionName - name of the session to use.
@@ -110,8 +110,8 @@ public class SessionFactory {
     
     /**
      * The class-loader returned form this call will be used when loading the
-     * TopLink configuration. By default this is the current thread's loader.
-     * If this is not the case users can subclass this sesison factory and 
+     * EclipseLink configuration. By default this is the current thread's loader.
+     * If this is not the case users can subclass this session factory and 
      * override this method to provide a different loader.
      */
     protected ClassLoader getClassLoader() {
@@ -119,7 +119,7 @@ public class SessionFactory {
     }
 
     /**
-     * Helper method that looksup the singleton session and ensure that
+     * Helper method that looks up the singleton session and ensure that
      * if the application has been hot-deployed it gets a fresh version of the
      * server.
      */
@@ -128,8 +128,8 @@ public class SessionFactory {
     }
 
     /**
-     * Used in place of getSharedSession() when the calling appliction needs 
-     * access to the sesison prior to login or it wishes to force the session 
+     * Used in place of getSharedSession() when the calling application needs 
+     * access to the session prior to login or it wishes to force the session 
      * configuration to be re-loaded an applied. This also makes use of the 
      * current class-loader return from getClassLoader() and a SessionManager 
      * class-loader check to see if the application was loaded by another 
@@ -154,7 +154,7 @@ public class SessionFactory {
     }
 
     /**
-     * Returns the Session active for this specified helper. If the TopLink
+     * Returns the Session active for this specified helper. If the EclipseLink
      * session does not have an external transaction controller or there is
      * not an active JTA transaction then a newly acquire client session is
      * returned on each call.

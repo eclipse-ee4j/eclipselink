@@ -19,7 +19,7 @@ import org.eclipse.persistence.logging.DefaultSessionLog;
  *
  * PUBLIC:
  *
- * This platform is used when TopLink is not within any server (Oc4j, WebLogic, ...)
+ * This platform is used when EclipseLink is not within any server (Oc4j, WebLogic, ...)
  * This is also the default platform for all newly created DatabaseSessions.
  *
  * This platform has:

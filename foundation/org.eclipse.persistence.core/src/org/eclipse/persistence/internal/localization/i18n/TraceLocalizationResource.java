@@ -179,8 +179,8 @@ public class TraceLocalizationResource extends ListResourceBundle {
                                            { "EJB_store", "Store EJB ({0})" },
                                            { "error_in_preInvoke", "Error in preInvoke." },
                                            { "unable_to_load_generated_subclass", "Unable to load generated subclass: {0}" },
-                                           { "ProjectDeployment_registeringMBeans_enter", "ProjectDeployment.registeringMBeans enter" },
-                                           { "ProjectDeployment_registeringMBeans_return", "ProjectDeployment.registeringMBeans return" },
+                                           { "WebLogic_10_Platform_serverSpecificRegisterMBeans_enter", "WebLogic_10_Platform.serverSpecificRegisterMBeans enter" },
+                                           { "WebLogic_10_Platform_serverSpecificRegisterMBeans_return", "WebLogic_10_Platform.serverSpecificRegisterMBeans return" },
                                            { "executeFinder_query", "executeFinder query: {0}, {1}" },
                                            { "executeFinder_finder_execution_results", "executeFinder - finder execution results: {0}" },
                                            { "PM_initialize_enter", "PersistenceManager.initialize enter for {0}" },
@@ -302,7 +302,12 @@ public class TraceLocalizationResource extends ListResourceBundle {
                                             { "sdo_type_generation_processing_type", "{0}: Generating Type  [{1}]."},        
                                             { "sdo_type_generation_processing_type_as", "{0}: Generating Type  [{1}] as [{2}]."},
                                             { "sdo_type_generation_modified_class_naming_format_to", "{0}: Generated Type   [{1}] java class name capitalized to [{2}] to follow class naming conventions."},
-                                            { "sdo_type_generation_modified_function_naming_format_to", "{0}: Generated Type   [{1}] java get/set method name capitalized to [{2}] to follow class naming conventions."}                                            
+                                            { "sdo_type_generation_modified_function_naming_format_to", "{0}: Generated Type   [{1}] java get/set method name capitalized to [{2}] to follow class naming conventions."},
+                                            { "problem_registering_mbean", "Problem while registering MBean: {0}" },
+                                            { "problem_unregistering_mbean", "Problem while unregistering MBean: {0}" },
+                                            { "registered_mbean", "Registered MBean: {0}" },
+                                            { "unregistering_mbean", "Unregistering MBean: {0}" },
+                                            { "session_key_for_mbean_name_is_null", "Session used during {0} for MBean name is null." }                                            
     };
 
     /**
