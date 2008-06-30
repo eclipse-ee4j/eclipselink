@@ -569,12 +569,11 @@ public class XMLEntityMappings extends ORMetadata {
     /**
      * INTERNAL:
      * Process the persistence metadata if specified. Any conflicts in elements 
-     * defined in multiple documents will cause an exception to be thrown. The 
-     * first instance encountered wins, i.e. any conflicts between PU metadata 
-     * definitions in multiple instance documents will cause an exception to be 
-     * thrown. The one exception to this rule is default listeners: all default 
-     * listeners found will be added to a list in the order that they are read 
-     * from the instance document(s). 
+     * defined in multiple documents will cause an exception to be thrown 
+     * (unless an override needs to occur from an eclipselink-orm.xml file). The 
+     * one exception to this rule is default listeners: all default listeners 
+     * found will be added to a list in the order that they are read from the 
+     * instance document(s). 
      */
     public void processPersistenceUnitMetadata() {
         m_file = new MetadataFile(this);
