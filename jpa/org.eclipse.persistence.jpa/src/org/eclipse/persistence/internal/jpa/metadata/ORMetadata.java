@@ -269,7 +269,7 @@ public abstract class ORMetadata {
      * INTERNAL:
      * Convenience method to merge two objects that were loaded from XML. The 
      * merge is complete. If value2 is specified it will override value1, 
-     * otherwise, value1 does not
+     * otherwise, value1 does not change.
      */
     protected ORMetadata mergeORObjects(ORMetadata obj1, ORMetadata obj2) {
         if (obj2 != null) { 
