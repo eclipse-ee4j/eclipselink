@@ -85,6 +85,8 @@ public class InheritancePolicy implements Serializable, Cloneable {
     /** PERF: Cache root descriptor. */
     protected ClassDescriptor rootParentDescriptor;
     
+    protected boolean describesNonPersistentSubclasses = false;
+    
     /**
      * INTERNAL:
      * Create a new policy.
@@ -699,6 +701,20 @@ public class InheritancePolicy implements Serializable, Cloneable {
         return descriptor;
     }
 
+    /**
+     * ADVANCED:
+     * Determines whether the descriptors using this inheritance policy
+     * should be used as descriptors for subclasses of the classes they
+     * describe if those subclasses do not have their own descriptor
+     * 
+     * e.g. If Employee.class has a descriptor and EmployeeSubClass does
+     * not have a descriptor, if describesNonPersistenceSubclasses is true
+     * Employee's descriptor will be used as the descriptor for Employee
+     */
+    public boolean getDescribesNonPersistentSubclasses(){
+    	return describesNonPersistentSubclasses;
+    }
+    
     /**
      * ADVANCED:
      * Return the 'only instances expression'.
@@ -1469,6 +1485,22 @@ public class InheritancePolicy implements Serializable, Cloneable {
         this.descriptor = descriptor;
     }
 
+    /**
+     * ADVANCED:
+     * Determines whether the descriptors using this inheritance policy
+     * should be used as descriptors for subclasses of the classes they
+     * describe if those subclasses do not have their own descriptor
+     * 
+     * e.g. If Employee.class has a descriptor and EmployeeSubClass does
+     * not have a descriptor, if describesNonPersistenceSubclasses is true
+     * Employee's descriptor will be used as the descriptor for Employee
+     * 
+     * @param describesNonPersistenceSubclasses
+     */
+    public void setDescribesNonPersistentSubclasses(boolean describesNonPersistentSubclasses){
+    	this.describesNonPersistentSubclasses = describesNonPersistentSubclasses;
+    }
+    
     /**
      * INTERNAL:
      * Used to indicate a JOINED inheritance strategy.

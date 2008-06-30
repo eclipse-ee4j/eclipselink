@@ -40,6 +40,7 @@ import javax.persistence.RollbackException;
 
 import junit.framework.*;
 
+import org.eclipse.persistence.jpa.JpaHelper;
 import org.eclipse.persistence.jpa.JpaQuery;
 import org.eclipse.persistence.jpa.JpaEntityManager;
 import org.eclipse.persistence.queries.DatabaseQuery;
@@ -61,6 +62,7 @@ import org.eclipse.persistence.config.QueryHints;
 import org.eclipse.persistence.config.PersistenceUnitProperties;
 import org.eclipse.persistence.config.PessimisticLock;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
+import org.eclipse.persistence.descriptors.InheritancePolicy;
 import org.eclipse.persistence.descriptors.changetracking.ChangeTracker;
 import org.eclipse.persistence.internal.descriptors.PersistenceEntity;
 import org.eclipse.persistence.internal.weaving.PersistenceWeaved;
@@ -3179,6 +3181,12 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
     //Glassfish bug 1021 - allow cascading persist operation to non-entities
     public void testCascadePersistToNonEntitySubclass() {
         EntityManager em = createEntityManager("fieldaccess");
+        // added new setting for bug 237281
+        JpaEntityManager eclipseLinkEm = JpaHelper.getEntityManager(em);
+        InheritancePolicy ip = eclipseLinkEm.getServerSession().getDescriptor(Project.class).getInheritancePolicy();
+        boolean describesNonPersistentSubclasses = ip.getDescribesNonPersistentSubclasses();
+        ip.setDescribesNonPersistentSubclasses(true);
+
         beginTransaction(em);
 
         Employee emp = new Employee();
@@ -3199,6 +3207,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
             }
             fail("Persist operation was not cascaded to related non-entity, thrown: " + e);
         } finally {
+        	ip.setDescribesNonPersistentSubclasses(describesNonPersistentSubclasses);
             closeEntityManager(em);
         }
     }
@@ -4417,7 +4426,6 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
             internalTestWeaving(new GolferPK(), true, false);
             internalTestWeaving(new SmallProject(), true, false);
             internalTestWeaving(new LargeProject(), true, false);
-            internalTestWeaving(new SuperLargeProject(), true, false);
             internalTestWeaving(new Man(), true, false);
             internalTestWeaving(new Woman(), true, false);
             internalTestWeaving(new Vegetable(), false, false);  // serialized

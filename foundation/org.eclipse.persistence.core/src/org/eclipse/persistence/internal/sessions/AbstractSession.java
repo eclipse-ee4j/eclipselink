@@ -537,6 +537,17 @@ public abstract class AbstractSession implements org.eclipse.persistence.session
         }
     }
 
+    
+    /**
+     * Check to see if the descriptor of a superclass can be used to describe this class
+     * 
+     * @param Class
+     * @return ClassDescriptor
+     */
+    protected ClassDescriptor checkHierarchyForDescriptor(Class theClass){
+	    return getDescriptor(theClass.getSuperclass());
+    }
+    
     /**
      * PUBLIC:
      * clear the integrityChecker. IntegrityChecker holds all the ClassDescriptor Exceptions.
@@ -1599,8 +1610,8 @@ public abstract class AbstractSession implements org.eclipse.persistence.session
                         break;
                     }
                 }
-                if (descriptor == null) {
-                    descriptor = getDescriptor(theClass.getSuperclass());
+                if (descriptor == null ) {
+                	descriptor = checkHierarchyForDescriptor(theClass);
                 }
             }
         }

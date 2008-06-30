@@ -57,6 +57,8 @@ import org.eclipse.persistence.sessions.server.ReadConnectionPool;
 import org.eclipse.persistence.sessions.server.ServerSession;
 import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.tools.schemaframework.SequenceObjectDefinition;
+import org.eclipse.persistence.jpa.JpaEntityManager;
+import org.eclipse.persistence.jpa.JpaHelper;
 import org.eclipse.persistence.jpa.PersistenceProvider;
 import org.eclipse.persistence.exceptions.QueryException;
 import org.eclipse.persistence.expressions.Expression;
@@ -70,6 +72,7 @@ import org.eclipse.persistence.config.QueryHints;
 import org.eclipse.persistence.config.PersistenceUnitProperties;
 import org.eclipse.persistence.config.PessimisticLock;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
+import org.eclipse.persistence.descriptors.InheritancePolicy;
 import org.eclipse.persistence.descriptors.changetracking.ChangeTracker;
 import org.eclipse.persistence.internal.descriptors.PersistenceEntity;
 import org.eclipse.persistence.internal.jpa.EntityManagerImpl;
@@ -100,7 +103,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
     public static Test suite() {
         TestSuite suite = new TestSuite();
         suite.setName("EntityManagerJUnitTestSuite");
-        
+
         suite.addTest(new EntityManagerJUnitTestSuite("testSetup"));
         suite.addTest(new EntityManagerJUnitTestSuite("testWeaving"));
         suite.addTest(new EntityManagerJUnitTestSuite("testClearEntityManagerWithoutPersistenceContext"));
@@ -237,13 +240,15 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         suite.addTest(new EntityManagerJUnitTestSuite("testNewObjectNotCascadePersist"));
         suite.addTest(new EntityManagerJUnitTestSuite("testConnectionPolicy"));
         suite.addTest(new EntityManagerJUnitTestSuite("testConverterIn"));
+        suite.addTest(new EntityManagerJUnitTestSuite("testExceptionForPersistNonEntitySubclass"));
+        suite.addTest(new EntityManagerJUnitTestSuite("testEnabledPersistNonEntitySubclass"));
         return suite;
     }
 
     public void testSetup() {
         new AdvancedTableCreator().replaceTables(JUnitTestCase.getServerSession());
     }
-    
+   
     /**
      * Bug# 219097
      * This test would normally pass, but we purposely invoke an SQLException on the firstName field
@@ -3987,6 +3992,12 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
     //Glassfish bug 1021 - allow cascading persist operation to non-entities
     public void testCascadePersistToNonEntitySubclass() {
         EntityManager em = createEntityManager();
+        // added new setting for bug 237281
+        JpaEntityManager eclipseLinkEm = JpaHelper.getEntityManager(em);
+        InheritancePolicy ip = eclipseLinkEm.getServerSession().getDescriptor(Project.class).getInheritancePolicy();
+        boolean describesNonPersistentSubclasses = ip.getDescribesNonPersistentSubclasses();
+        ip.setDescribesNonPersistentSubclasses(true);
+
         beginTransaction(em);
 
         Employee emp = new Employee();
@@ -4007,10 +4018,11 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
             }
             fail("Persist operation was not cascaded to related non-entity, thrown: " + e);
         } finally {
+            ip.setDescribesNonPersistentSubclasses(describesNonPersistentSubclasses);
             closeEntityManager(em);
         }
     }
-
+       
     /**
      * Bug 801
      * Test to ensure when property access is used and the underlying variable is changed the change
@@ -5184,7 +5196,6 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
             internalTestWeaving(new GolferPK(), true, false);
             internalTestWeaving(new SmallProject(), true, false);
             internalTestWeaving(new LargeProject(), true, false);
-            internalTestWeaving(new SuperLargeProject(), true, false);
             internalTestWeaving(new Man(), true, false);
             internalTestWeaving(new Woman(), true, false);
             internalTestWeaving(new Vegetable(), false, false);  // serialized
@@ -5849,5 +5860,50 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
                         setParameter("GENDER2", Employee.Gender.Female).
                         getResultList();
         em.close();
+    }
+    
+    
+    // Bug 237281 - ensure we throw the correct exception when trying to persist a non-entity subclass of an entity
+    public void testExceptionForPersistNonEntitySubclass(){
+        EntityManager em = createEntityManager();
+        Exception caughtException = null;
+        try{
+	        beginTransaction(em);
+	        em.persist(new SuperLargeProject());
+        } catch (IllegalArgumentException e){
+        	caughtException = e;
+        } finally {
+        	rollbackTransaction(em);
+        	closeEntityManager(em);
+        }
+        if (caughtException == null){
+        	fail("Caught an incorrect exception when persisting a non entity.");
+        }
+    }
+    
+    // bug 237281 - ensure seeting InheritancePolicy to allow non-entity subclasses to be persisted as their
+    // superclass works
+    public void testEnabledPersistNonEntitySubclass() {
+        EntityManager em = createEntityManager();
+        // added new setting for bug 237281
+        JpaEntityManager eclipseLinkEm = JpaHelper.getEntityManager(em);
+        InheritancePolicy ip = eclipseLinkEm.getServerSession().getDescriptor(Project.class).getInheritancePolicy();
+        boolean describesNonPersistentSubclasses = ip.getDescribesNonPersistentSubclasses();
+        ip.setDescribesNonPersistentSubclasses(true);
+
+        beginTransaction(em);
+        SuperLargeProject s1 = new SuperLargeProject("Super 1");
+        try {
+	        em.persist(s1);
+        } catch (Exception e) {
+            if (isTransactionActive(em)){
+                rollbackTransaction(em);
+            }
+            fail("Persist operation was not cascaded to related non-entity, thrown: " + e);
+        } finally {
+        	rollbackTransaction(em);
+            ip.setDescribesNonPersistentSubclasses(describesNonPersistentSubclasses);
+            closeEntityManager(em);
+        }
     }
 }

@@ -136,7 +136,25 @@ public class RepeatableWriteUnitOfWork extends UnitOfWorkImpl {
     public boolean shouldClearForCloseOnRelease() {
         return true;
     }
-    
+
+    /**
+     * Check to see if the descriptor of a superclass can be used to describe this class
+     * 
+     * By default, in JPA, classes must have specific descriptors to be considered entities
+     * In this implementation, we check whether the inheritance policy has been configured to allow
+     * superclass descriptors to describe subclasses that do not have a descriptor themselves
+     * 
+     * @param Class
+     * @return ClassDescriptor
+     */
+    protected ClassDescriptor checkHierarchyForDescriptor(Class theClass){
+	    ClassDescriptor descriptor = getDescriptor(theClass.getSuperclass());
+	    if (descriptor != null && descriptor.getInheritancePolicy().getDescribesNonPersistentSubclasses()){
+	    	return descriptor;
+	    }
+	    return null;
+    }
+
     /**
      * INTERNAL:
      * Commit the changes to any objects to the parent.
