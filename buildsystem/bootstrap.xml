@@ -127,10 +127,13 @@
 
     <target name="get-src" unless="_DoNotUpdate" depends="no-get-src">
         <echo message="** Begin of Source Retrieval **"/>
+        <echo message="** From: ${svn.branch.url}"/>
+        <echo message="** Root: ${build.root.dir}"/>
+        <mkdir dir="${build.root.dir}"/>
         <!-- the following arg makes the source retrieval "quiet". We really  -->
         <!-- should log the files that were updated, so commenting out.       -->
         <!--    <arg value="-q"/>                                             -->
-        <exec executable="${svn.exec}" failonerror="true" logError="true" >
+        <exec executable="${svn.exec}" dir="${build.root.dir}/.." failonerror="true" logError="true" >
             <arg value="co"/>
             <arg value="${svn.branch.url}"/>
         </exec>
