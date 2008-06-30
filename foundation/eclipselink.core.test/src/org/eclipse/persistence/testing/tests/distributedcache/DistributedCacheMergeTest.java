@@ -13,12 +13,10 @@
 package org.eclipse.persistence.testing.tests.distributedcache;
 
 import java.rmi.registry.LocateRegistry;
-import java.rmi.registry.Registry;
 import org.eclipse.persistence.testing.models.employee.domain.Employee;
 import org.eclipse.persistence.testing.models.employee.relational.EmployeeProject;
 import org.eclipse.persistence.internal.descriptors.OptimisticLockingPolicy;
 import org.eclipse.persistence.internal.helper.ConcurrencyManager;
-import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.sessions.Session;
 import org.eclipse.persistence.queries.ReadObjectQuery;
@@ -123,19 +121,10 @@ public abstract class DistributedCacheMergeTest extends TestCase {
         enableOptimisticLocking(cluster1Session, policy1);
         enableOptimisticLocking(cluster2Session, policy2);
         
-        ((AbstractSession)cluster1Session).getCommandManager().shutdown();
-        ((AbstractSession)cluster1Session).setCommandManager(null);
-
-        ((AbstractSession)cluster2Session).getCommandManager().shutdown();
-        ((AbstractSession)cluster2Session).setCommandManager(null);
-
-        if (cluster1Session != null) {
-            cluster1Session = null;
-        }
-
-        if (cluster2Session != null) {
-            cluster2Session = null;
-        }
+        cluster1Session.logout();
+        cluster1Session = null;
+        cluster2Session.logout();
+        cluster2Session = null;
     }
 
     private OptimisticLockingPolicy disableOptimisticLocking(Server server) {

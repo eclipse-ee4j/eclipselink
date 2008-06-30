@@ -79,4 +79,16 @@ import org.eclipse.persistence.testing.tests.failover.emulateddriver.EmulatedDri
             throw new TestErrorException("Should have reconnected an not thrown exception.");
         }
     }
+    
+    public void reset()
+    {
+        if(session != null) {
+            try {
+                session.logout();
+            } finally {
+                session = null;
+            }
+            
+        }
+    }
 }

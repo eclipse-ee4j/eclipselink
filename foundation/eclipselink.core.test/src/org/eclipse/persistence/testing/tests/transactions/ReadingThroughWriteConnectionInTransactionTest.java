@@ -295,7 +295,25 @@ public class ReadingThroughWriteConnectionInTransactionTest extends org.eclipse.
             //((DatabaseSession) getSession()).logout();
             //((DatabaseSession) getSession()).login();
         } catch (Exception e) {
+            // The likely reason logout failed is because 
+            // corruptServerReadConnection was used by the test:
+            // restoreServerReadConnections restores available connections only,
+            // but doesn't restore corrupt used connection (getUsedConnections is a protected method on ConnectionPool).
+            // Corrupt used connection is there in Test2 and Test4.
+            // Therefore when readConnectionPool.shutdown is called it fails with NPE,
+            // as the result the write connection pool is not shutdown and the connections are leaked.
+            // Let's close these connections here.
+            try {
+                for (Iterator poolsEnum = ((ServerSession)getServerSession()).getConnectionPools().values().iterator(); poolsEnum.hasNext();) {
+                    ((ConnectionPool)poolsEnum.next()).shutDown();
+                }
+            } catch (Exception ex) {
+                // ignore
+            }
+            
             throw new TestErrorException("Failed in reset.", e);
+        } finally {
+            setServerSession(null);
         }
     }
 

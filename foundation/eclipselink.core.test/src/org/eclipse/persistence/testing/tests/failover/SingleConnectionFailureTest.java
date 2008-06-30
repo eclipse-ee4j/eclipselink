@@ -63,4 +63,12 @@ public class SingleConnectionFailureTest extends TestCase {
         }
     }
 
+    public void reset() {
+        if(this.databaseSession != null) {
+            if(this.databaseSession.isConnected()) {
+                this.databaseSession.logout();
+            }
+            this.databaseSession = null;
+        }
+    }
 }

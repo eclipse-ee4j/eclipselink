@@ -71,4 +71,16 @@ import org.eclipse.persistence.testing.tests.failover.emulateddriver.EmulatedDri
         }
         throw new TestErrorException("Should have thrown exception as database connection is unavailable.");
     }
+    
+    public void reset()
+    {
+        if(session != null) {
+            try {
+                session.logout();
+            } finally {
+                session = null;
+            }
+            
+        }
+    }
 }

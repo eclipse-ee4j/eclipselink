@@ -376,5 +376,11 @@ public class SessionsXMLBasicTestModel extends TestModel {
 
     public void reset() {
         getExecutor().setSession(originalSession);
+        if(newXMLSession != null) {
+            if(newXMLSession.isConnected()) {
+                ((DatabaseSession)newXMLSession).logout();
+            }
+            newXMLSession = null;
+        }
     }
 }

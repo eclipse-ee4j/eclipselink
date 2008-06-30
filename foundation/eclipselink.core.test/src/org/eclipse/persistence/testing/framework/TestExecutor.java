@@ -425,8 +425,13 @@ public class TestExecutor {
      * This allows a test or model to customize the session it uses.
      */
     public void resetSession() {
-        setSession(getOriginalSession());
-        setOriginalSession(null);
+        if(getOriginalSession() != null) {
+            if(getDatabaseSession().isConnected()) {
+                getDatabaseSession().logout();
+            }
+            setSession(getOriginalSession());
+            setOriginalSession(null);
+        }
     }
 
     /**

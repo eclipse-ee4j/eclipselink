@@ -37,6 +37,8 @@ public class InstantiationPolicyTest extends AutoVerifyTestCase {
         aSession.readObject(PhoneNumber.class);
 
         InstantiationPolicyTest factory = (InstantiationPolicyTest)phoneDescriptor.getInstantiationPolicy().getFactory();
+        // the session is no longer used - disconnect it.
+        aSession.logout();
         if (!factory.invokedFactoryPhoneNumberMethod) {
             throw new TestErrorException("useFactoryInstantiationPolicy(Class, String) does not work.");
         }
@@ -48,6 +50,8 @@ public class InstantiationPolicyTest extends AutoVerifyTestCase {
         aSession.readObject(PhoneNumber.class);
 
         factory = (InstantiationPolicyTest)phoneDescriptor.getInstantiationPolicy().getFactory();
+        // the session is no longer used - disconnect it.
+        aSession.logout();
         if (!factory.invokedFactoryPhoneNumberMethod || !InstantiationPolicyTest.invokedFactoryStaticMethod) {
             throw new TestErrorException("useFactoryInstantiationPolicy(Class, String, String) does not work.");
         }
@@ -59,6 +63,8 @@ public class InstantiationPolicyTest extends AutoVerifyTestCase {
         aSession.readObject(PhoneNumber.class);
 
         factory = (InstantiationPolicyTest)phoneDescriptor.getInstantiationPolicy().getFactory();
+        // the session is no longer used - disconnect it.
+        aSession.logout();
         if (!factory.invokedFactoryPhoneNumberMethod || !InstantiationPolicyTest.invokedFactoryStaticMethod) {
             throw new TestErrorException("useFactoryInstantiationPolicy(Object, String) does not work.");
         }
