@@ -55,7 +55,7 @@ echo "Target=${TARGET}"
 if [ ! "${BRANCH}" = "" ]
 then
     BRANCH_NM=${BRANCH}
-    BRANCH=branch/${BRANCH}
+    BRANCH=branches/${BRANCH}/
     echo "Branch=${BRANCH}"
 else
     BRANCH_NM="trunk"
