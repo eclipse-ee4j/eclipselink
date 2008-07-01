@@ -127,6 +127,8 @@
         <echo message="branch.dir= '${branch.dir}'"/>
         <echo message="autobld.file= '${autobld.file}'"/>
         <echo message=""/>
+        <echo message="env.CLASSPATH= '${env.CLASSPATH}'"/>
+        <echo message=""/>
         <echo message="svn.ro.protocol= '${svn.ro.protocol}'"/>
         <echo message="svn.protocol= '${svn.protocol}'"/>
         <echo message="svn.rw.protocol= '${svn.rw.protocol}'"/>
