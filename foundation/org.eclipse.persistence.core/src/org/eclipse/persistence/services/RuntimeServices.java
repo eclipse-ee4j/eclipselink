@@ -388,6 +388,18 @@ public class RuntimeServices {
     }
 
     /**
+     * Return the DMS sensor weight
+     * @return
+     */
+    public int getProfileWeight() {
+        if (getSession().isInProfile()) {
+            return getSession().getProfiler().getProfileWeight();
+        } else {
+            return 0;
+        }
+    }
+    
+    /**
      *    This method is used to change DMS sensor weight.
      */
     public void setProfileWeight(int weight) {

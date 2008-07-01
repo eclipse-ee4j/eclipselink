@@ -145,4 +145,16 @@ public interface MBeanRuntimeServicesMBean {
      * If ClassNotFoundException is thrown then the IdenityMap for that class name could not be found
      */
     public Integer getNumberOfObjectsInIdentityMapSubCache(String className) throws ClassNotFoundException;
+    
+    /**
+     * Return the DMS sensor weight
+     * @return
+     */
+    public int getProfileWeight();
+
+    /**
+     * Set the DMS sensor weight
+     */
+    public void setProfileWeight(int size);
+
 }
