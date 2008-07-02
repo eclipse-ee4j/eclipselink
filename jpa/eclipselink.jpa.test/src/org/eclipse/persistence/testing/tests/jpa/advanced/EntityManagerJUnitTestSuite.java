@@ -3994,7 +3994,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         EntityManager em = createEntityManager();
         // added new setting for bug 237281
         JpaEntityManager eclipseLinkEm = JpaHelper.getEntityManager(em);
-        InheritancePolicy ip = eclipseLinkEm.getServerSession().getDescriptor(Project.class).getInheritancePolicy();
+        InheritancePolicy ip = getServerSession().getDescriptor(Project.class).getInheritancePolicy();
         boolean describesNonPersistentSubclasses = ip.getDescribesNonPersistentSubclasses();
         ip.setDescribesNonPersistentSubclasses(true);
 
@@ -5887,7 +5887,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         EntityManager em = createEntityManager();
         // added new setting for bug 237281
         JpaEntityManager eclipseLinkEm = JpaHelper.getEntityManager(em);
-        InheritancePolicy ip = eclipseLinkEm.getServerSession().getDescriptor(Project.class).getInheritancePolicy();
+        InheritancePolicy ip = getServerSession().getDescriptor(Project.class).getInheritancePolicy();
         boolean describesNonPersistentSubclasses = ip.getDescribesNonPersistentSubclasses();
         ip.setDescribesNonPersistentSubclasses(true);
 
@@ -5906,4 +5906,5 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
             closeEntityManager(em);
         }
     }
+
 }
