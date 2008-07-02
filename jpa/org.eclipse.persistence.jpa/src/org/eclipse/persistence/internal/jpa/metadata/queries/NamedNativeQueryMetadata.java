@@ -1,0 +1,153 @@
+/*******************************************************************************
+ * Copyright (c) 1998, 2008 Oracle. All rights reserved.
+ * This program and the accompanying materials are made available under the 
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
+ * which accompanies this distribution. 
+ * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
+ * and the Eclipse Distribution License is available at 
+ * http://www.eclipse.org/org/documents/edl-v10.php.
+ *
+ * Contributors:
+ *     Oracle - initial API and implementation from Oracle TopLink
+ *     05/16/2008-1.0M8 Guy Pelletier 
+ *       - 218084: Implement metadata merging functionality between mapping files
+ ******************************************************************************/  
+package org.eclipse.persistence.internal.jpa.metadata.queries;
+
+import java.lang.annotation.Annotation;
+import java.util.HashMap;
+
+import org.eclipse.persistence.internal.jpa.EJBQueryImpl;
+import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAccessibleObject;
+import org.eclipse.persistence.internal.sessions.AbstractSession;
+
+/**
+ * INTERNAL:
+ * Object to hold onto named native query metadata.
+ * 
+ * @author Guy Pelletier
+ * @since TopLink EJB 3.0 Reference Implementation
+ */
+public class NamedNativeQueryMetadata extends NamedQueryMetadata {
+    private Class m_resultClass;
+    private String m_resultClassName;
+    private String m_resultSetMapping;
+    
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+    public NamedNativeQueryMetadata() {
+        super("<named-native-query>");
+    }
+    
+    /**
+     * INTERNAL:
+     */
+    protected NamedNativeQueryMetadata(String javaClassName) {
+        super(javaClassName);
+    }
+    
+    /**
+     * INTERNAL:
+     */
+    public NamedNativeQueryMetadata(Annotation namedNativeQuery, MetadataAccessibleObject accessibleObject) {
+        super(namedNativeQuery, accessibleObject);
+        
+        m_resultClass = (Class) MetadataHelper.invokeMethod("resultClass", namedNativeQuery); 
+        m_resultSetMapping = (String) MetadataHelper.invokeMethod("resultSetMapping", namedNativeQuery);
+    }
+    
+    /**
+     * INTERNAL:
+     */
+    @Override
+    public boolean equals(Object objectToCompare) {
+        if (super.equals(objectToCompare) && objectToCompare instanceof NamedNativeQueryMetadata) {
+            NamedNativeQueryMetadata query = (NamedNativeQueryMetadata) objectToCompare;
+            
+            if (! valuesMatch(m_resultClass, query.getResultClass())) {
+                return false;
+            }
+            
+            return valuesMatch(m_resultSetMapping, query.getResultSetMapping());
+        }
+        
+        return false;
+    }
+    
+    /**
+     * INTERNAL:
+     */
+    public Class getResultClass() {
+        return m_resultClass;
+    }
+    
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+    public String getResultClassName() {
+        return m_resultClassName;
+    }
+    
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+    public String getResultSetMapping() {
+        return m_resultSetMapping;
+    }
+    
+    /**
+     * INTERNAL:
+     */
+    @Override
+    public void initXMLObject(MetadataAccessibleObject accessibleObject) {
+        super.initXMLObject(accessibleObject);
+        
+        m_resultClass = initXMLClassName(m_resultClassName);
+    }
+    
+    /**
+     * INTERNAL:
+     */
+    @Override
+    public void process(AbstractSession session, ClassLoader loader) {
+        HashMap<String, String> hints = processQueryHints(session);
+
+        if (m_resultClass == void.class) {
+            if (m_resultSetMapping.equals("")) {
+                // Neither a resultClass or resultSetMapping is specified so place in a temp query on the session
+                session.addQuery(getName(), EJBQueryImpl.buildSQLDatabaseQuery(getQuery(), hints));
+            } else {
+                session.addQuery(getName(), EJBQueryImpl.buildSQLDatabaseQuery(m_resultSetMapping, getQuery(), hints));
+            }
+        } else { 
+            session.addQuery(getName(), EJBQueryImpl.buildSQLDatabaseQuery(MetadataHelper.getClassForName(m_resultClass.getName(), loader), getQuery(), hints));
+        }
+    }
+    
+    /**
+     * INTERNAL:
+     */
+    public void setResultClass(Class resultClass) {
+        m_resultClass = resultClass;
+    }
+    
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+    public void setResultClassName(String resultClassName) {
+        m_resultClassName = resultClassName;
+    }
+    
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+    protected void setResultSetMapping(String resultSetMapping) {
+        m_resultSetMapping = resultSetMapping;
+    }
+}

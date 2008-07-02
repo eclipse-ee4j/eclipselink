@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified">
+	<xs:element name="address">
+		<xs:complexType mixed="true">
+			<xs:sequence>
+				<xs:element name="street" type="xs:string" minOccurs="2" maxOccurs="2"/>
+				<xs:element name="city" type="xs:string"/>
+				<xs:element name="province" type="xs:string"/>
+				<xs:element name="postal-code" type="xs:string"/>
+				<xs:element name="unused-field" type="xs:string"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:attributeGroup name="name-group">
+		<xs:attribute name="first-name" type="xs:string"/>
+		<xs:attribute name="last-name" type="xs:string"/>
+	</xs:attributeGroup>
+	<xs:element name="employee">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="personal-information">
+					<xs:complexType>
+						<xs:attributeGroup ref="name-group"/>
+						<xs:attribute name="gender" type="gender-type"/>
+					</xs:complexType>
+				</xs:element>
+				<xs:element name="contact-information">
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element ref="address"/>
+							<xs:element name="phone" type="phone-type" maxOccurs="unbounded"/>
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+				<xs:element name="dependent-information">
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="dependent" maxOccurs="3">
+								<xs:complexType>
+									<xs:sequence>
+										<xs:element ref="address"/>
+										<xs:element name="phone-no" type="phone-type"/>
+									</xs:sequence>
+									<xs:attributeGroup ref="name-group"/>
+								</xs:complexType>
+							</xs:element>
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+				<xs:element name="responsibility" type="xs:string" maxOccurs="unbounded"/>
+				<xs:element name="working-hours">
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="start-time" type="xs:dateTime"/>
+							<xs:element name="end-time" type="xs:dateTime"/>
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+				<xs:element name="manager">
+					<xs:complexType>
+						<xs:attributeGroup ref="name-group"/>
+					</xs:complexType>
+				</xs:element>
+				<xs:element name="projects">
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="project-id" type="xs:int" maxOccurs="unbounded"/>
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+			</xs:sequence>
+			<xs:attribute name="id" type="xs:long"/>
+		</xs:complexType>
+	</xs:element>
+	<xs:simpleType name="gender-type">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="F"/>
+			<xs:enumeration value="M"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:complexType name="phone-type">
+		<xs:sequence>
+			<xs:element name="area-code" type="xs:anySimpleType"/>
+			<xs:element name="number" type="xs:anySimpleType"/>
+		</xs:sequence>
+		<xs:attribute name="type" type="xs:string" use="required"/>
+	</xs:complexType>
+	<xs:element name="phone-number" type="phone-type"/>
+</xs:schema>

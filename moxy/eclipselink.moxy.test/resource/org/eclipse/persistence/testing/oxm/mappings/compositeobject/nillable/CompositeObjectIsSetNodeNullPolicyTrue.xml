@@ -1,0 +1,6 @@
+<?xml version="1.0"?>
+<team xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<id>123</id>
+	<manager xsi:nil="true"/>
+	<name>Eng</name>
+</team>

@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project type="relational">
+   <name>Employee</name>
+   <product-version>10.1.3.1.0</product-version>
+   <schema-version>6.0</schema-version>
+   <class-repository>
+      <user-type-names>
+         <name>test.oracle.models.employee.Address</name>
+         <name>test.oracle.models.employee.Employee</name>
+         <name>test.oracle.models.employee.EmployeeInterface</name>
+         <name>test.oracle.models.employee.EmploymentPeriod</name>
+         <name>test.oracle.models.employee.LargeProject</name>
+         <name>test.oracle.models.employee.LargeProjectInterface</name>
+         <name>test.oracle.models.employee.PhoneNumber</name>
+         <name>test.oracle.models.employee.Project</name>
+         <name>test.oracle.models.employee.ProjectInterface</name>
+         <name>test.oracle.models.employee.SmallProject</name>
+         <name>test.oracle.models.employee.SmallProjectInterface</name>
+      </user-type-names>
+   </class-repository>
+   <descriptor-names>
+      <descriptor-name>test.oracle.models.employee.Address</descriptor-name>
+      <descriptor-name>test.oracle.models.employee.Employee</descriptor-name>
+      <descriptor-name>test.oracle.models.employee.EmploymentPeriod</descriptor-name>
+      <descriptor-name>test.oracle.models.employee.LargeProject</descriptor-name>
+      <descriptor-name>test.oracle.models.employee.PhoneNumber</descriptor-name>
+      <descriptor-name>test.oracle.models.employee.Project</descriptor-name>
+      <descriptor-name>test.oracle.models.employee.SmallProject</descriptor-name>
+   </descriptor-names>
+   <defaults-policy type="relational">
+      <use-method-accessing>false</use-method-accessing>
+      <default-descriptor-policies>
+         <policy-type>Copy Policy</policy-type>
+         <policy-type>After Load</policy-type>
+         <policy-type>Events</policy-type>
+         <policy-type>Inheritance</policy-type>
+         <policy-type>Instantiation</policy-type>
+         <policy-type>Interface Alias</policy-type>
+         <policy-type>Multi-Table Info</policy-type>
+      </default-descriptor-policies>
+      <caching-policy>
+         <cache-expiry/>
+      </caching-policy>
+      <cache-all-statements>false</cache-all-statements>
+      <bind-all-parameters>true</bind-all-parameters>
+   </defaults-policy>
+   <ejb-policy>
+      <ejb-persistence-type>No EJB</ejb-persistence-type>
+   </ejb-policy>
+   <table-repository>
+      <platform-name>MySQL</platform-name>
+      <login-infos>
+         <login-info>
+            <name>MySQL</name>
+            <driver-class>com.mysql.jdbc.Driver</driver-class>
+            <url>jdbc:mysql://tlsvrdb4.ca.oracle.com/COREDEV1</url>
+            <user-name>mwdev1</user-name>
+            <password>BB742416276274A46959A54867978929</password>
+            <save-password>true</save-password>
+         </login-info>
+      </login-infos>
+      <deployment-login-spec-handle>
+         <login-spec-name>MySQL</login-spec-name>
+      </deployment-login-spec-handle>
+      <development-login-spec-handle>
+         <login-spec-name>MySQL</login-spec-name>
+      </development-login-spec-handle>
+      <table-names>
+         <name>ADDRESS</name>
+         <name>EMPLOYEE</name>
+         <name>LPROJECT</name>
+         <name>PHONE</name>
+         <name>PROJ_EMP</name>
+         <name>PROJECT</name>
+         <name>RESPONS</name>
+         <name>SALARY</name>
+         <name>SEQUENCE</name>
+      </table-names>
+   </table-repository>
+   <sequencing>
+      <preallocation-size>50</preallocation-size>
+      <sequencing-type>Use sequencing table</sequencing-type>
+      <name-column-handle>
+         <column-table-name>SEQUENCE</column-table-name>
+         <column-name>SEQ_NAME</column-name>
+      </name-column-handle>
+      <counter-column-handle>
+         <column-table-name>SEQUENCE</column-table-name>
+         <column-name>SEQ_COUNT</column-name>
+      </counter-column-handle>
+      <table-handle>
+         <table-name>SEQUENCE</table-name>
+      </table-handle>
+   </sequencing>
+   <table-generation>
+      <default-primary-key-name>id</default-primary-key-name>
+      <primary-key-search-pattern>*id</primary-key-search-pattern>
+   </table-generation>
+   <generate-deprecated-direct-mappings>true</generate-deprecated-direct-mappings>
+</project>

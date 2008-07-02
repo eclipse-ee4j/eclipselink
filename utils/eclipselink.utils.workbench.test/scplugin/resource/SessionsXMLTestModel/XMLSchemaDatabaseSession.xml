@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="US-ASCII"?>
+<sessions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="file://xsd/sessions_10_0_3.xsd" version="0">
+	<session xsi:type="database-session">
+		<name>EmployeeSession</name>
+		<logging xsi:type="eclipselink-log">
+			<log-level>info</log-level>
+			<file-name>guyBlah</file-name>
+		</logging>
+		<primary-project xsi:type="class">org.eclipse.persistence.demos.employee.relational.EmployeeProject</primary-project>
+		<additional-project xsi:type="class">org.eclipse.persistence.demos.insurance.relational.InsuranceProject</additional-project>
+		<additional-project xsi:type="xml">testDeployment.xml</additional-project>
+		<login xsi:type="database-login">
+			<user-name>qa7</user-name>
+			<password>password</password>
+			<driver-class>oracle.jdbc.driver.OracleDriver</driver-class>
+			<connection-url>jdbc:oracle:thin:@144.23.214.118:1521:toplink</connection-url>
+		</login>
+	</session>
+</sessions>

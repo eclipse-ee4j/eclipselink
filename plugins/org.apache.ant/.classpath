@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry exported="true" kind="lib" path="lib/ant.jar" sourcepath="lib/antsrc.zip"/>
+	<classpathentry exported="true" kind="lib" path="lib/ant-antlr.jar" sourcepath="lib/ant-antlrsrc.zip"/>
+	<classpathentry exported="true" kind="lib" path="lib/ant-apache-bcel.jar" sourcepath="lib/ant-apache-bcelsrc.zip"/>
+	<classpathentry exported="true" kind="lib" path="lib/ant-apache-bsf.jar" sourcepath="lib/ant-apache-bsfsrc.zip"/>
+	<classpathentry exported="true" kind="lib" path="lib/ant-apache-log4j.jar" sourcepath="lib/ant-apache-log4jsrc.zip"/>
+	<classpathentry exported="true" kind="lib" path="lib/ant-apache-oro.jar" sourcepath="lib/ant-apache-orosrc.zip"/>
+	<classpathentry exported="true" kind="lib" path="lib/ant-apache-regexp.jar" sourcepath="lib/ant-apache-regexpsrc.zip"/>
+	<classpathentry exported="true" kind="lib" path="lib/ant-apache-resolver.jar" sourcepath="lib/ant-apache-resolversrc.zip"/>
+	<classpathentry exported="true" kind="lib" path="lib/ant-commons-logging.jar" sourcepath="lib/ant-commons-loggingsrc.zip"/>
+	<classpathentry exported="true" kind="lib" path="lib/ant-commons-net.jar" sourcepath="lib/ant-commons-netsrc.zip"/>
+	<classpathentry exported="true" kind="lib" path="lib/ant-jai.jar" sourcepath="lib/ant-jaisrc.zip"/>
+	<classpathentry exported="true" kind="lib" path="lib/ant-javamail.jar" sourcepath="lib/ant-javamailsrc.zip"/>
+	<classpathentry exported="true" kind="lib" path="lib/ant-jdepend.jar" sourcepath="lib/ant-jdependsrc.zip"/>
+	<classpathentry exported="true" kind="lib" path="lib/ant-jmf.jar" sourcepath="lib/ant-jmfsrc.zip"/>
+	<classpathentry exported="true" kind="lib" path="lib/ant-jsch.jar" sourcepath="lib/ant-jschsrc.zip"/>
+	<classpathentry exported="true" kind="lib" path="lib/ant-junit.jar" sourcepath="lib/ant-junitsrc.zip"/>
+	<classpathentry exported="true" kind="lib" path="lib/ant-launcher.jar" sourcepath="lib/ant-launchersrc.zip"/>
+	<classpathentry exported="true" kind="lib" path="lib/ant-netrexx.jar" sourcepath="lib/ant-netrexxsrc.zip"/>
+	<classpathentry exported="true" kind="lib" path="lib/ant-nodeps.jar" sourcepath="lib/ant-nodepssrc.zip"/>
+	<classpathentry exported="true" kind="lib" path="lib/ant-starteam.jar" sourcepath="lib/ant-starteamsrc.zip"/>
+	<classpathentry exported="true" kind="lib" path="lib/ant-stylebook.jar" sourcepath="lib/ant-stylebooksrc.zip"/>
+	<classpathentry exported="true" kind="lib" path="lib/ant-swing.jar" sourcepath="lib/ant-swingsrc.zip"/>
+	<classpathentry exported="true" kind="lib" path="lib/ant-trax.jar" sourcepath="lib/ant-traxsrc.zip"/>
+	<classpathentry exported="true" kind="lib" path="lib/ant-weblogic.jar" sourcepath="lib/ant-weblogicsrc.zip"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/J2SE-1.2"/>
+	<classpathentry kind="con" path="org.eclipse.pde.core.requiredPlugins"/>
+	<classpathentry kind="output" path="javaBin"/>
+</classpath>

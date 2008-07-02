@@ -1,0 +1,73 @@
+/*******************************************************************************
+* Copyright (c) 1998, 2008 Oracle. All rights reserved.
+* This program and the accompanying materials are made available under the
+* terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+* which accompanies this distribution.
+* The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
+* and the Eclipse Distribution License is available at
+* http://www.eclipse.org/org/documents/edl-v10.php.
+*
+* Contributors:
+* mmacivor - June 05/2008 - 1.0 - Initial implementation
+******************************************************************************/
+package org.eclipse.persistence.oxm.mappings.converters;
+
+import org.eclipse.persistence.mappings.DatabaseMapping;
+import org.eclipse.persistence.oxm.XMLMarshaller;
+import org.eclipse.persistence.oxm.XMLUnmarshaller;
+import org.eclipse.persistence.oxm.XMLRoot;
+import org.eclipse.persistence.oxm.XMLField;
+import org.eclipse.persistence.internal.oxm.XPathFragment;
+import org.eclipse.persistence.sessions.Session;
+
+public class XMLRootConverter implements XMLConverter {
+	private XPathFragment rootFragment;
+	private XMLField associatedField;
+	
+	public XMLRootConverter(XMLField associatedField) {
+		this.associatedField = associatedField;
+	}
+	
+	public Object convertDataValueToObjectValue(Object dataValue,
+			Session session, XMLUnmarshaller unmarshaller) {
+		return convertDataValueToObjectValue(dataValue, session);
+	}
+
+	public Object convertObjectValueToDataValue(Object objectValue,
+			Session session, XMLMarshaller marshaller) {
+		return convertObjectValueToDataValue(objectValue, session);
+	}
+
+	public Object convertDataValueToObjectValue(Object dataValue,
+			Session session) {
+		XMLRoot root = new XMLRoot();
+		root.setLocalName(this.rootFragment.getLocalName());
+		root.setNamespaceURI(this.rootFragment.getNamespaceURI());
+		root.setObject(dataValue);
+		
+		return root;
+	}
+
+	public Object convertObjectValueToDataValue(Object objectValue,
+			Session session) {
+		if(objectValue instanceof XMLRoot) {
+			return ((XMLRoot)objectValue).getObject();
+		} else {
+			return objectValue;
+		}
+	}
+
+	public void initialize(DatabaseMapping mapping, Session session) {
+		XPathFragment fragment = associatedField.getXPathFragment();
+		while(fragment.getNextFragment() != null && !(fragment.getNextFragment().nameIsText())) {
+			fragment = fragment.getNextFragment();
+		}
+		this.rootFragment = fragment;
+	}
+
+	public boolean isMutable() {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+}

@@ -1,0 +1,3 @@
+<myns:wrapper xmlns:myns="www.example.com/some-dir/some.xsd" xmlns:ns0="www.example.com/test.xsd">
+   <myns:root ns0:first-name="Matt" ns0:last-name="MacIvor"/>
+</myns:wrapper>

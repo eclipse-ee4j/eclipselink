@@ -1,0 +1,4 @@
+<employee xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<name>Jane Doh</name>
+    <phone-no xsi:type="xsd:int">4441234</phone-no>
+</employee>

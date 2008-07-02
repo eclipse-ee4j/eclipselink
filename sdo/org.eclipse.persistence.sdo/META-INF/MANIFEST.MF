@@ -1,0 +1,19 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: EclipseLink SDO
+Bundle-SymbolicName: org.eclipse.persistence.sdo
+Bundle-Version: 0.1
+Require-Bundle: org.eclipse.persistence.core;visibility:=reexport,
+ org.eclipse.persistence.asm
+Export-Package: commonj.sdo.impl,
+ org.eclipse.persistence.sdo,
+ org.eclipse.persistence.sdo.helper,
+ org.eclipse.persistence.sdo.helper.delegates,
+ org.eclipse.persistence.sdo.helper.extension,
+ org.eclipse.persistence.sdo.types
+Bundle-ClassPath: .
+Import-Package: commonj.sdo;version="[2.1.0,2.2.0)";resolution:=optional,
+ commonj.sdo.helper;version="[2.1.0,2.2.0)";resolution:=optional,
+ commonj.sdo.impl;version="[2.1.0,2.2.0)";resolution:=optional,
+ org.osgi.util.tracker;resolution:=optional
+HK2-Bundle-Name: org.eclipse.persistence:org.eclipse.persistence.sdo

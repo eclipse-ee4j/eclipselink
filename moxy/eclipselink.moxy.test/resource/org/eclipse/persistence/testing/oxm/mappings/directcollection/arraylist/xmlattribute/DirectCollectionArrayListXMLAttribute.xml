@@ -1,0 +1,8 @@
+<?xml version="1.0"?>
+<employee id="123">
+	<responsibilities>	
+		<list responsibility="make the coffee"/>
+		<list responsibility="do the dishes"/>
+		<list responsibility="take out the garbage"/>	
+	</responsibilities>
+</employee>

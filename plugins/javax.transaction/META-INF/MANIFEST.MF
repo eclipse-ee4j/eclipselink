@@ -1,0 +1,7 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: JTA
+Bundle-SymbolicName: javax.transaction
+Bundle-Version: 1.1.0
+Export-Package: javax.transaction;version="1.1.0",
+ javax.transaction.xa;version="1.1.0"

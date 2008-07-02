@@ -1,0 +1,23 @@
+<?xml version="1.0"?>
+<schema xmlns="http://www.w3.org/2001/XMLSchema" xmlns:nist="myHexBinary-NS" targetNamespace="myHexBinary-NS">
+
+  <element name="myHexBinary" type="nist:myHexBinary-Type"/>
+
+  <simpleType name="myHexBinary-Type">
+    <restriction base="hexBinary">
+          <enumeration value="6c6379646569"/>
+          <enumeration value="70"/>
+          <enumeration value="67766969766a6b6a68"/>
+          <enumeration value="696372786c63706f6668627776677171"/>
+          <enumeration value="70687362626670647279657672796f62"/>
+          <enumeration value="61637461646b676e706c77636e6b66746e787879666f79726c6578646766646974696f656464697677726c756a676e6a7675"/>
+          <enumeration value="686e6c6c6f677072636f6e6d7763756e7271766d6f6c6a7971787062"/>
+          <enumeration value="6a6f727566696b647469716b646c676b6f736171716279736a70796f706c6e636a627479"/>
+          <enumeration value="6e627564626a76786c6e65766c76656e6671767563636363626b726279676b6a647469646e776464726263776a6c6f75637066736c69646d6e"/>
+          <enumeration value="6678756573666d6f6879667675766d6c6578727577647661616461726d6f67646761726173766a6c6576776f6176796a"/>
+          <enumeration value="6e6b666d696c6d636b6f61676662616871746d7169756a706163707276666a"/>
+          <enumeration value="73787761637367737773786d67716a70696b696f637562767575687573666b74766c626f6c637874746866"/>
+    </restriction>
+  </simpleType>
+
+</schema>

@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" 
+	xmlns:ns1="urn:customer-example"
+	targetNamespace="urn:customer-example"
+	elementFormDefault="unqualified"
+	attributeFormDefault="unqualified">
+
+    <xs:element name="customer" type="ns1:customer-type"/>
+    <xs:complexType name="customer-type">
+        <xs:sequence> 
+		<xs:element name="object-method" type="xs:anyType" minOccurs="1" maxOccurs="1"/>
+        <xs:element name="contact-method" type="xs:anyType"/>		
+ 		
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:element name="address">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="address_content" type="xs:string"/>
+		</xs:sequence>
+        </xs:complexType>
+    </xs:element>
+     <xs:element name="phone">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="phone_content" type="xs:string"/>
+		</xs:sequence>
+        </xs:complexType>
+    </xs:element>
+  </xs:schema>

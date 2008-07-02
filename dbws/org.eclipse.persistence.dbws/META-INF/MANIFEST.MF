@@ -1,0 +1,16 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Dbws
+Bundle-SymbolicName: org.eclipse.persistence.dbws
+Bundle-Version: 0.1
+Export-Package: org.eclipse.persistence.dbws,
+ org.eclipse.persistence.exceptions,
+ org.eclipse.persistence.exceptions.i18n,
+ org.eclipse.persistence.internal.dbws,
+ org.eclipse.persistence.internal.xr,
+ org.eclipse.persistence.internal.xr.sxf
+Require-Bundle: org.eclipse.persistence.core,
+ javax.xml.soap,
+ javax.wsdl,
+ javax.activation,
+ org.eclipse.persistence.asm

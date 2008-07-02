@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ns0:companyType xmlns:ns0="http://www.example.org" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+   <ns0:myCS/>
+   <ns0:order>
+      <ns0:address xsi:type="ns0:usAddressType">
+         <ns0:name>Alice Smith</ns0:name>
+         <ns0:street>123 Maple Street</ns0:street>
+         <ns0:city>Mill Valley</ns0:city>
+         <ns0:state>CA</ns0:state>
+      </ns0:address>
+      <ns0:address xsi:type="ns0:cdnAddressMailingType">
+         <ns0:name>Robert Smith</ns0:name>
+         <ns0:street>8 Oak Avenue</ns0:street>
+         <ns0:city>Mill Valley</ns0:city>
+         <ns0:province>Ontario</ns0:province>
+         <ns0:postalcode>B3L 4J3</ns0:postalcode>
+         <ns0:deliveryInfo>usual</ns0:deliveryInfo>
+      </ns0:address>
+      <ns0:comment>Hurry, my lawn is going wild!</ns0:comment>
+      <ns0:items>
+         <ns0:item>
+            <ns0:productName>Lawnmower</ns0:productName>
+            <ns0:price>148.95</ns0:price>
+            <ns0:comment>Confirm this is electric</ns0:comment>
+         </ns0:item>
+         <ns0:item>
+            <ns0:productName>Baby Monitor</ns0:productName>
+            <ns0:price>39.98</ns0:price>
+         </ns0:item>
+      </ns0:items>
+   </ns0:order>
+</ns0:companyType>

@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ns0:employeeType xmlns:ns0="http://www.example.org" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+   <ns0:id>1</ns0:id>
+   <ns0:name>Employee1</ns0:name>
+   <ns0:photo>
+      <xop:Include href="c_id0" xmlns:xop="http://www.w3.org/2004/08/xop/include"/>
+   </ns0:photo>
+   <ns0:photo>
+      <xop:Include href="c_id0" xmlns:xop="http://www.w3.org/2004/08/xop/include"/>
+   </ns0:photo>
+   <ns0:photoMimeType>image</ns0:photoMimeType>
+</ns0:employeeType>

@@ -1,0 +1,11 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: JCA
+Bundle-SymbolicName: javax.resource
+Bundle-Version: 1.5.0
+Export-Package: javax.resource;version="1.5.0",
+ javax.resource.cci;version="1.5.0",
+ javax.resource.spi;version="1.5.0",
+ javax.resource.spi.endpoint;version="1.5.0",
+ javax.resource.spi.security;version="1.5.0",
+ javax.resource.spi.work;version="1.5.0"

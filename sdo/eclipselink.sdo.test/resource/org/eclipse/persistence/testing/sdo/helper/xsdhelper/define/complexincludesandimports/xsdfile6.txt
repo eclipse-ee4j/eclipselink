@@ -1,0 +1,4 @@
+<schema targetNamespace="http://example.com/hr/" xmlns="http://www.w3.org/2001/XMLSchema">
+   <include schemaLocation="Dept.xsd"/>
+   <include schemaLocation="Emp.xsd"/>
+</schema>

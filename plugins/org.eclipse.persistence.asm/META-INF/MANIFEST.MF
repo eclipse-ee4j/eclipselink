@@ -1,0 +1,15 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: EclipseLink ASM
+Bundle-SymbolicName: org.eclipse.persistence.asm
+Bundle-Version: 0.1
+Export-Package: org.eclipse.persistence.internal.libraries.asm,
+ org.eclipse.persistence.internal.libraries.asm.attrs,
+ org.eclipse.persistence.internal.libraries.asm.commons,
+ org.eclipse.persistence.internal.libraries.asm.tree,
+ org.eclipse.persistence.internal.libraries.asm.tree.analysis,
+ org.eclipse.persistence.internal.libraries.asm.util,
+ org.eclipse.persistence.internal.libraries.asm.util.attrs,
+ org.eclipse.persistence.internal.libraries.asm.xml
+Bundle-ClassPath: .
+HK2-Bundle-Name: org.eclipse.persistence:org.eclipse.persistence.asm

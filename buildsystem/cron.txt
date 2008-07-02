@@ -1,0 +1,5 @@
+05 2 * * 1,2,3,4,5  /shared/rt/eclipselink/bootstrap.sh nightly > /shared/rt/eclipselink/logs/nightly.log 2>&1
+0,30 6,7,8,9,10,11,12,13,14,15,16,17,18,19,20 * * * /shared/rt/eclipselink/bootstrap.sh cb > /shared/rt/eclipselink/logs/cb.log 2>&1
+
+
+

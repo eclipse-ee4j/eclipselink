@@ -1,0 +1,6 @@
+<?xml version = '1.0' encoding = 'UTF-8'?>
+<!DOCTYPE Car PUBLIC "test" "org/eclipse/persistence/testing/oxm/xmlmarshaller/Car.dtd">
+<Car>
+   <license-number>123456</license-number>
+   <invalidtag>invalid</invalidtag>
+</Car>

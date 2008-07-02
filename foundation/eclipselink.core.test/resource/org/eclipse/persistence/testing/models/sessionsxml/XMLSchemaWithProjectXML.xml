@@ -1,0 +1,20 @@
+<?xml version = '1.0' encoding = 'UTF-8'?>
+<sessions version="10g Developer Preview 3 (10.1.3.0 )" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+   <session xsi:type="database-session">
+      <name>EmployeeSession</name>
+      <event-listener-classes/>
+      <primary-project xsi:type="xml">EmployeeProject.xml</primary-project>
+      <login xsi:type="database-login">
+         <platform-class>@dbPlatform@</platform-class>
+         <user-name>@dbUser@</user-name>
+         <password>@dbPassword@</password>
+         <sequencing>
+            <default-sequence xsi:type="table-sequence">
+               <name>Default</name>
+            </default-sequence>
+         </sequencing>
+         <driver-class>@driverClass@</driver-class>
+         <connection-url>@dbURL@</connection-url>
+      </login>
+   </session>
+</sessions>

@@ -1,0 +1,6 @@
+<?xml version = '1.0' encoding = 'UTF-8'?>
+<different:vehicle xsi:type="different:vehicle-type" xmlns:different="mynamespaceuri" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" >
+   <different:model>Blah Blah</different:model>
+   <different:manufacturer>Some Place</different:manufacturer>
+   <different:top-speed>10000</different:top-speed>
+</different:vehicle>

@@ -1,0 +1,9 @@
+<employee xmlns:email="www.example.com/some-dir/email.xsd" xmlns:mailing="www.example.com/some-dir/mailing.xsd">
+    <id>123</id>
+    <mailing:address xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="email:blah">
+      <mailing:street>1 Any Street</mailing:street>
+      <mailing:city>Ottawa</mailing:city>
+      <mailing:province>Ontario</mailing:province>
+      <mailing:postal-code>A1B 2C3</mailing:postal-code>
+    </mailing:address>
+</employee>

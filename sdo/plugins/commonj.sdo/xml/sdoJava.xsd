@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+/**
+ * <copyright>
+ *
+ * Service Data Objects
+ * Version 2.1.0
+ * Licensed Materials
+ *
+ * (c) Copyright BEA Systems, Inc., International Business Machines Corporation, 
+ * Oracle Corporation, Primeton Technologies Ltd., Rogue Wave Software, SAP AG., 
+ * Software AG., Sun Microsystems, Sybase Inc., Xcalia, Zend Technologies, 
+ * 2005, 2006. All rights reserved.
+ *
+ * </copyright>
+ * 
+ */
+-->
+
+<xsd:schema
+  targetNamespace="commonj.sdo/java"
+  xmlns:sdoJava="commonj.sdo/java"
+  xmlns:sdo="commonj.sdo"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+  xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+
+<xsd:import namespace="commonj.sdo" schemaLocation="sdoModel.xsd"/>
+
+<!--
+   These attributes are used to customize the Java mapping of 
+   XSD to SDO Types and Properties.
+-->
+
+<xsd:attribute name="package" type="xsd:string" />
+<xsd:attribute name="instanceClass" type="xsd:string" />
+<xsd:attribute name="extendedInstanceClass" type="xsd:string" />
+<xsd:attribute name="nestedInterfaces" type="xsd:boolean" />
+
+<!--
+   Global properties used in open content for 
+   the Java binding of SDO Types and Properties.
+-->
+
+<xsd:attribute name="javaClass" type="sdo:String"/>
+
+<!-- JavaInfo deprecated in 2.1.0 -->
+<xsd:complexType name="JavaInfo">
+  <xsd:attribute name="javaClass" type="sdo:String"/>
+</xsd:complexType>
+
+<!--
+   The Java object data types.
+-->
+
+<xsd:simpleType name="BooleanObject" sdoJava:instanceClass="java.lang.Boolean">
+  <xsd:restriction base="xsd:boolean"/>
+</xsd:simpleType>
+
+<xsd:simpleType name="ByteObject" sdoJava:instanceClass="java.lang.Byte">
+  <xsd:restriction base="xsd:byte"/>
+</xsd:simpleType>
+
+<xsd:simpleType name="CharacterObject" sdoJava:instanceClass="java.lang.Character">
+  <xsd:restriction base="xsd:string"/>
+</xsd:simpleType>
+
+<xsd:simpleType name="DoubleObject" sdoJava:instanceClass="java.lang.Double">
+  <xsd:restriction base="xsd:double"/>
+</xsd:simpleType>
+
+<xsd:simpleType name="FloatObject" sdoJava:instanceClass="java.lang.Float">
+  <xsd:restriction base="xsd:float"/>
+</xsd:simpleType>
+
+<xsd:simpleType name="IntObject" sdoJava:instanceClass="java.lang.Integer">
+  <xsd:restriction base="xsd:int"/>
+</xsd:simpleType>
+
+<xsd:simpleType name="LongObject" sdoJava:instanceClass="java.lang.Long">
+  <xsd:restriction base="xsd:long"/>
+</xsd:simpleType>
+
+<xsd:simpleType name="ShortObject" sdoJava:instanceClass="java.lang.Short">
+  <xsd:restriction base="xsd:short"/>
+</xsd:simpleType>
+
+</xsd:schema>

@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<oxm:blah xsi:type="oxm:person" xmlns:oxm="test" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+   <name>Joe Smith</name>
+</oxm:blah>

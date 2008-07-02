@@ -1,0 +1,5 @@
+<root>
+  <simple-element>123</simple-element>
+  <complex-element><child>value</child></complex-element>
+  <address><street>222 Fake Street</street><city>Toronto</city><country>Canada</country></address>
+</root>

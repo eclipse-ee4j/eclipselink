@@ -1,0 +1,8 @@
+<employee  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+ <id>123</id>
+ <home-address xsi:type="address-type">
+  <street>613 Cedar Lane</street>
+  <city>Bangor</city>
+  <state>Maine</state>
+ </home-address>
+</employee>

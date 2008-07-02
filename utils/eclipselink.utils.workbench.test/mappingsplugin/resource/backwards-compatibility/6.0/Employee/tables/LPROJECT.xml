@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<table>
+   <short-name>LPROJECT</short-name>
+   <columns>
+      <column>
+         <name>BUDGET</name>
+         <type>NUMBER</type>
+         <allows-null>true</allows-null>
+      </column>
+      <column>
+         <name>MILESTONE</name>
+         <type>DATE</type>
+         <allows-null>true</allows-null>
+      </column>
+      <column>
+         <name>PROJ_ID</name>
+         <type>NUMBER</type>
+         <unique>true</unique>
+         <primary-key>true</primary-key>
+      </column>
+   </columns>
+</table>

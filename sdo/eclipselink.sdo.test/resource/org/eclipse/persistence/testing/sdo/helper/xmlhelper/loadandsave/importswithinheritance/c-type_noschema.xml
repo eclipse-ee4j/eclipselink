@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ns2:childType xsi:type="ns2:ChildType" xmlns:ns2="SchemaCNamespace" xmlns:ns1="SchemaBNamespace" xmlns:ns0="SchemaANamespace" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+   <ns0:someElement>This is a new root value.</ns0:someElement>
+   <ns1:someMiddleElement>This is a new middle value.</ns1:someMiddleElement>
+   <ns2:someChildElement>This is a new child value.</ns2:someChildElement>
+</ns2:childType>

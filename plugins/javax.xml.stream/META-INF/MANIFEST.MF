@@ -1,0 +1,8 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: STAX
+Bundle-SymbolicName: javax.xml.stream
+Bundle-Version: 1.0.0
+Export-Package: javax.xml.stream;version="1.0.0",
+ javax.xml.stream.events;version="1.0.0",
+ javax.xml.stream.util;version="1.0.0"

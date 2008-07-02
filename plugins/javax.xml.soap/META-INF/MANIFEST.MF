@@ -1,0 +1,6 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: SAAJ
+Bundle-SymbolicName: javax.xml.soap
+Bundle-Version: 1.3.0
+Export-Package: javax.xml.soap;version="1.3.0"

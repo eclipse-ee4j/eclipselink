@@ -1,0 +1,13 @@
+<employee>
+    <id>123</id>
+    <address>
+      <user-id>jane.doe</user-id>
+      <domain>example.com</domain>
+    </address>
+    <address>
+      <street>1 Any Street</street>
+      <city>Ottawa</city>
+      <province>Ontario</province>
+      <postal-code>A1B 2C3</postal-code>
+    </address>
+</employee>

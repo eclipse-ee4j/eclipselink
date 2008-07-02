@@ -1,0 +1,89 @@
+<!--/*******************************************************************************
+* This program and the accompanying materials are made available under the 
+* terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
+* which accompanies this distribution. 
+* The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
+* and the Eclipse Distribution License is available at 
+* http://www.eclipse.org/org/documents/edl-v10.php.
+*
+*   Ant naming conventions:
+*   - regardless of the actual OS platform,'/' is the directory separator
+*     (Ant will convert as appropriate).
+*   - multi-word properties use periods '.'
+*   - multi-word targets use hyphens '-' 
+*   - multi-word macros use underscores '_'
+*   - multi-word macro attributes are concatinated
+*     e.g. 'runpathref'  
+*   - multi-word tasks (taskdef) names are concatinated
+*     e.g. 'validateconnection'
+*   - OS environment variables are in ALLCAPS and have 'env' as a prefix
+*     e.g. ${env.XXX}.
+*   - Ant properties are lower case.
+*
+* Contributors:
+*     tware - initial API and implementation
+#******************************************************************************/-->
+<project name="Eclipse Persistence Services" default="all" basedir=".">
+
+    <property file="${user.home}/build.properties"/>
+    <property file="./build.properties"/>
+    <tstamp>
+        <format property="build.date" pattern="yyyyMMdd"/>
+    </tstamp>
+    <property name="build_number_string" value="SNAPSHOT - ${build.date}"/>
+
+    <path id="compile.path">
+        <pathelement path="${eclipselink.plugins}/${antlr}"/>
+        <pathelement path="${eclipselink.plugins}/${asm}"/>
+        <fileset
+            dir="${eclipselink.plugins}"
+            includes="${eclipselink.core.depend}"/>
+    </path>
+
+    <!-- all -->
+    <target name="all" depends="clean, compile" description="build EclipseLink jar"/>
+    <!-- compile -->
+    <target name="compile" description="compile EclipseLink">
+        <mkdir dir="${eclipselink.core}/${classes.dir}"/>
+        <filter token="VERSION" value="${release.version}"/>
+        <filter token="BUILD_NUMBER" value="${build_number_string}"/>
+        <copy file="${eclipselink.core}/${src.dir}/org/eclipse/persistence/Version.java" tofile="${eclipselink.core}/${classes.dir}/org/eclipse/persistence/Version.java" filtering="true"/>
+        <javac srcdir="${eclipselink.core}/${classes.dir}"
+               destdir="${eclipselink.core}/${classes.dir}"
+               includes="org/eclipse/persistence/Version.java"
+               debug="${javac.debug}"
+               optimize="${javac.optimize}"
+               source="${javac.version}"
+               deprecation="${javac.deprecation}"
+               failonerror="true"
+               memoryMaximumSize="512m"
+               fork="true">
+            <classpath>
+                <path refid="compile.path"/>
+            </classpath>
+        </javac>
+        <delete file="${eclipselink.core}/${classes.dir}/org/eclipse/persistence/Version.java"/>
+        <javac srcdir="${eclipselink.core}/${src.dir}"
+               destdir="${eclipselink.core}/${classes.dir}"
+               includes="org/eclipse/persistence/**, deprecated/**"
+               excludes="org/eclipse/persistence/Version.java"
+               debug="${javac.debug}"
+               optimize="${javac.optimize}"
+               source="${javac.version}"
+               deprecation="${javac.deprecation}"
+               failonerror="true"
+               memoryMaximumSize="512m"
+               fork="true">
+            <classpath>
+                <path refid="compile.path"/>
+            </classpath>
+        </javac>
+    </target>
+
+    <target name="clean" description="Clean the build">
+        <delete includeEmptyDirs="true" failonerror="false">
+            <fileset dir="${eclipselink.core}/${classes.dir}/org"/>
+        </delete>
+    </target>
+
+</project>

@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema targetNamespace="my.uri" xmlns="my.uri" xmlns:sdoXML="commonj.sdo/xml" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <xsd:complexType name="phoneType">
+      <xsd:sequence>
+         <xsd:element name="areaCode" type="xsd:string"/>
+         <xsd:element name="number" type="xsd:string"/>
+         <xsd:element name="number" type="xsd:string"/>
+      </xsd:sequence>
+   </xsd:complexType>
+   <xsd:complexType name="personType">
+      <xsd:sequence>
+         <xsd:element name="name" type="xsd:string"/>>
+         <xsd:element name="age" type="xsd:string"/>
+      </xsd:sequence>
+      <xsd:attribute name="name" type="xsd:string"/>
+   </xsd:complexType>
+   <xsd:complexType name="jobType">
+      <xsd:sequence>
+         <xsd:element name="title" type="xsd:string"/>
+         <xsd:element name="descrip" sdoXML:name="title" type="xsd:string"/>
+      </xsd:sequence>
+   </xsd:complexType>
+   <xsd:complexType name="contactType">
+      <xsd:sequence>
+         <xsd:element name="street" type="xsd:string"/>
+      </xsd:sequence>
+   </xsd:complexType>
+   <xsd:complexType name="addressType">
+      <xsd:complexContent>
+         <xsd:extension base="contactType">
+            <xsd:sequence>
+               <xsd:element name="street" type="xsd:string"/>
+               <xsd:element name="city" type="xsd:string"/>
+            </xsd:sequence>
+         </xsd:extension>
+      </xsd:complexContent>
+   </xsd:complexType>
+   <xsd:complexType name="cdnAddressType">
+      <xsd:complexContent>
+         <xsd:extension base="addressType">
+            <xsd:sequence>
+               <xsd:element name="postalCode" type="xsd:string"/>
+	       <xsd:element name="street" type="xsd:string"/>
+            </xsd:sequence>     
+         </xsd:extension>
+      </xsd:complexContent>
+      <xsd:attribute name="street" type="xsd:string"/>
+   </xsd:complexType>
+   <xsd:element name="contactType" type="contactType"/>
+   <xsd:element name="addressType" type="addressType"/>
+   <xsd:element name="cdnAddressType" type="cdnAddressType"/>
+   <xsd:element name="personType" type="personType"/>
+   <xsd:element name="jobType" type="jobType"/>
+   <xsd:element name="phoneType" type="phoneType"/>
+</xsd:schema>

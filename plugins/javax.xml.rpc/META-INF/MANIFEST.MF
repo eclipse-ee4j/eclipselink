@@ -1,0 +1,23 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: JAX RPC
+Created-By: 1.4.2_08-b03 (Sun Microsystems Inc.)
+ Name: javax/xml/rpc
+Specification-Title: JAX-RPC
+Specification-Version: 1.1
+Specification-Vendor: JCP
+Bundle-SymbolicName: javax.xml.rpc
+Bundle-Version: 1.1.0
+Bundle-Localization: plugin
+Bundle-RequiredExecutionEnvironment: J2SE-1.4
+Bundle-ClassPath: lib/jaxrpc.jar
+Export-Package: javax.xml.messaging,
+ javax.xml.rpc,
+ javax.xml.rpc.encoding,
+ javax.xml.rpc.handler,
+ javax.xml.rpc.handler.soap,
+ javax.xml.rpc.holders,
+ javax.xml.rpc.server,
+ javax.xml.rpc.soap
+Require-Bundle: org.apache.xerces;bundle-version="[2.8.0,3.0.0)";resolution:=optional,
+ javax.xml.soap

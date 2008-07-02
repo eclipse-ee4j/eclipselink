@@ -1,0 +1,8 @@
+Manifest-Version: 1.0
+Bundle-Name: %pluginName
+Bundle-Vendor: %providerName
+Bundle-ManifestVersion: 2
+Bundle-Localization: plugin
+Bundle-SymbolicName: org.apache.ant.source;singleton:=true
+Bundle-Version: 1.7.0.qualifier
+

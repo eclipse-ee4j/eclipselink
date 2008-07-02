@@ -1,0 +1,67 @@
+<!--/*******************************************************************************
+* This program and the accompanying materials are made available under the 
+* terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
+* which accompanies this distribution. 
+* The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
+* and the Eclipse Distribution License is available at 
+* http://www.eclipse.org/org/documents/edl-v10.php.
+*
+*   Ant naming conventions:
+*   - regardless of the actual OS platform,'/' is the directory separator
+*     (Ant will convert as appropriate).
+*   - multi-word properties use periods '.'
+*   - multi-word targets use hyphens '-' 
+*   - multi-word macros use underscores '_'
+*   - multi-word macro attributes are concatinated
+*     e.g. 'runpathref'  
+*   - multi-word tasks (taskdef) names are concatinated
+*     e.g. 'validateconnection'
+*   - OS environment variables are in ALLCAPS and have 'env' as a prefix
+*     e.g. ${env.XXX}.
+*   - Ant properties are lower case.
+*
+* Contributors:
+*     bdoughan - initial API and implementation
+#******************************************************************************/-->
+
+<project name="EclipseLink MOXy Build" default="all">
+    <property file="${user.home}/build.properties"/>
+    <property file="./build.properties"/>
+    <propertyset id="parser.properties">
+        <propertyref prefix="javax.xml"/>
+    </propertyset>
+    <path id="moxy.compile.path">
+        <pathelement path="${jaxb-api.lib}"/>
+        <fileset
+            dir="${eclipselink.plugins}"
+            includes="${eclipselink.core.depend}"/>
+        <pathelement path="${eclipselink.core}/${classes.dir}"/>
+        <pathelement path="${eclipselink.plugins}/${asm}"/>
+    </path>
+
+    <target name="all" depends="clean, compile-core" description="build moxy classes">
+        <javac srcdir="${eclipselink.moxy}/${src.dir}"
+            destdir="${eclipselink.moxy}/${classes.dir}"
+            debug="${javac.debug}"
+            optimize="${javac.optimize}"
+            source="${javac.version}"
+            deprecation="${javac.deprecation}"
+            failonerror="true"
+            includes="org/eclipse/persistence/**/*.java">
+            <classpath>
+                <path refid="moxy.compile.path"/>
+            </classpath>
+        </javac>
+    </target>
+
+    <target name="compile-core" description="build core classes">
+        <ant antfile="${eclipselink.core}/build.xml" target="compile"/>
+    </target>
+
+    <target name="clean" description="clean the build">
+        <delete includeEmptyDirs="true" failonerror="false">
+            <fileset dir="${eclipselink.moxy}/${classes.dir}"/>
+        </delete>
+        <mkdir dir="${eclipselink.moxy}/${classes.dir}"/>
+    </target>
+</project>

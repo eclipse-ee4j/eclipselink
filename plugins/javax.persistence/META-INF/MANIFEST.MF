@@ -1,0 +1,7 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: JPA
+Bundle-SymbolicName: javax.persistence
+Bundle-Version: 1.0.0
+Export-Package: javax.persistence;version="1.0.0",
+ javax.persistence.spi;version="1.0.0"

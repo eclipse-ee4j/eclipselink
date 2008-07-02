@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+<schema xmlns="http://www.w3.org/2001/XMLSchema" xmlns:nist="myBase64Binary-NS" targetNamespace="myBase64Binary-NS">
+
+  <element name="myBase64Binary" type="nist:myBase64Binary-Type"/>
+
+  <simpleType name="myBase64Binary-Type">
+    <restriction base="base64Binary">
+          <enumeration value="YW13aHRyYXdocGh0eG11aGt2dGluZGt2Z2hjZ21jam5qZnRwZW12cWl1YmVydGRwZQ=="/>
+          <enumeration value="cmhlYmd0aG9uZnFraXluZWJraGdyYXlsZmI="/>
+          <enumeration value="bHlsY2JmaXFjaW9ubmg="/>
+          <enumeration value="eXl0dWRlY2NjcW9tcGxhb2lsc2JwcGNnb3R4cWlsZnRsb3ZqaGF3dWJxdmNqZ2dpZ3Jrcw=="/>
+          <enumeration value="Z2t1dHJtb3lqZmtzZ2d4cWVob29mdnhybWVvdmJ4c3dhZHF0cXZoZWh1ZmJic2RhZ3ljYmVuZXljanJobm5uZHlocw=="/>
+          <enumeration value="ZmxvZA=="/>
+    </restriction>
+  </simpleType>
+
+</schema>

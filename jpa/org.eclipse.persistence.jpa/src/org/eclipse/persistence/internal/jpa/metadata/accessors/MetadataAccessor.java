@@ -1,0 +1,653 @@
+/*******************************************************************************
+ * Copyright (c) 1998, 2008 Oracle. All rights reserved.
+ * This program and the accompanying materials are made available under the 
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
+ * which accompanies this distribution. 
+ * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
+ * and the Eclipse Distribution License is available at 
+ * http://www.eclipse.org/org/documents/edl-v10.php.
+ *
+ * Contributors:
+ *     Oracle - initial API and implementation from Oracle TopLink
+ *     05/16/2008-1.0M8 Guy Pelletier 
+ *       - 218084: Implement metadata merging functionality between mapping files
+ ******************************************************************************/  
+package org.eclipse.persistence.internal.jpa.metadata.accessors;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import java.lang.annotation.Annotation;
+import java.lang.reflect.AnnotatedElement;
+
+import javax.persistence.Column;
+import javax.persistence.FetchType;
+
+import org.eclipse.persistence.annotations.Convert;
+import org.eclipse.persistence.annotations.Converter;
+import org.eclipse.persistence.annotations.ObjectTypeConverter;
+import org.eclipse.persistence.annotations.ReturnInsert;
+import org.eclipse.persistence.annotations.ReturnUpdate;
+import org.eclipse.persistence.annotations.TypeConverter;
+import org.eclipse.persistence.annotations.StructConverter;
+import org.eclipse.persistence.exceptions.ValidationException;
+
+import org.eclipse.persistence.internal.helper.DatabaseField;
+import org.eclipse.persistence.internal.helper.Helper;
+
+import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAccessibleObject;
+import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAnnotatedElement;
+
+import org.eclipse.persistence.internal.jpa.metadata.columns.PrimaryKeyJoinColumnMetadata;
+import org.eclipse.persistence.internal.jpa.metadata.columns.PrimaryKeyJoinColumnsMetadata;
+
+import org.eclipse.persistence.internal.jpa.metadata.converters.ConverterMetadata;
+import org.eclipse.persistence.internal.jpa.metadata.converters.ObjectTypeConverterMetadata;
+import org.eclipse.persistence.internal.jpa.metadata.converters.StructConverterMetadata;
+import org.eclipse.persistence.internal.jpa.metadata.converters.TypeConverterMetadata;
+
+import org.eclipse.persistence.internal.jpa.metadata.tables.TableMetadata;
+
+import org.eclipse.persistence.internal.jpa.metadata.MetadataLogger;
+import org.eclipse.persistence.internal.jpa.metadata.MetadataProject;
+import org.eclipse.persistence.internal.jpa.metadata.MetadataDescriptor;
+import org.eclipse.persistence.internal.jpa.metadata.ORMetadata;
+
+/**
+ * INTERNAL:
+ * Top level metadata accessor.
+ * 
+ * @author Guy Pelletier
+ * @since TopLink EJB 3.0 Reference Implementation
+ */
+public abstract class MetadataAccessor extends ORMetadata {
+    private boolean m_isProcessed = false;
+   
+    private List<ConverterMetadata> m_converters = new ArrayList<ConverterMetadata>();
+    private List<ObjectTypeConverterMetadata> m_objectTypeConverters = new ArrayList<ObjectTypeConverterMetadata>();
+    private List<StructConverterMetadata> m_structConverters = new ArrayList<StructConverterMetadata>();
+    private List<TypeConverterMetadata> m_typeConverters = new ArrayList<TypeConverterMetadata>();
+    private List<PropertyMetadata> m_properties = new ArrayList<PropertyMetadata>();
+    
+    private MetadataDescriptor m_descriptor;
+    private MetadataDescriptor m_owningDescriptor;
+    private MetadataProject m_project;
+   
+    private String m_name;
+    
+    /**
+     * INTERNAL: 
+     * Used for OX mapping.
+     */
+    public MetadataAccessor(String xmlElement) {
+        super(xmlElement);
+    }
+    
+    /**
+     * INTERNAL:
+     */
+    public MetadataAccessor(Annotation annotation, MetadataAccessibleObject accessibleObject, MetadataDescriptor descriptor, MetadataProject project) {
+        super(annotation, accessibleObject);
+        
+        m_project = project;
+        m_descriptor = descriptor;
+    }
+    
+    /**
+     * INTERNAL:
+     * Returns the accessible object for this accessor.
+     */
+    public MetadataAnnotatedElement getAccessibleObject() {
+        return (MetadataAnnotatedElement) super.getAccessibleObject();
+    }
+    
+    /**
+     * INTERNAL:
+     * Returns the name of the accessible object. If it is a field, it will 
+     * return the field name. For a method it will return the method name.
+     */
+    public String getAccessibleObjectName() {
+        return getAccessibleObject().getName();
+    }
+    
+    /**
+     * INTERNAL:
+     * Return the annotated element for this accessor.
+     */
+    public AnnotatedElement getAnnotatedElement() {
+        return getAccessibleObject().getAnnotatedElement();
+    }
+    
+    /**
+     * INTERNAL:
+     * Return the annotated element name for this accessor.
+     */
+    public String getAnnotatedElementName() {
+        return getAnnotatedElement().toString();
+    }
+    
+    /**
+     * INTERNAL:
+     * Return the annotated element for this accessor.
+     */
+    protected <T extends Annotation> T getAnnotation(Class annotation) {
+        return (T) getAccessibleObject().getAnnotation(annotation, m_descriptor);
+    }
+    
+    /**
+     * INTERNAL:
+     * Return the attribute name for this accessor.
+     */
+    public String getAttributeName() {
+        return getAccessibleObject().getAttributeName();
+    }
+    
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+    public List<ConverterMetadata> getConverters() {
+        return m_converters;
+    }
+    
+    /**
+     * INTERNAL:
+     */
+    public Enum getDefaultFetchType() {
+        return FetchType.valueOf("EAGER"); 
+    }
+    
+    /**
+     * INTERNAL:
+     * Return the MetadataDescriptor for this accessor.
+     */
+    public MetadataDescriptor getDescriptor() {
+        return m_descriptor;
+    }
+    
+    /**
+     * INTERNAL:
+     * To satisfy the abstract getIdentifier() method from ORMetadata.
+     */
+    @Override
+    public String getIdentifier() {
+        return getName();
+    }
+    
+    /**
+     * INTERNAL:
+     * Return the java class associated with this accessor's descriptor.
+     */
+    public Class getJavaClass() {
+        return m_descriptor.getJavaClass();
+    }
+    
+    /**
+     * INTERNAL:
+     * Return the java class that defines this accessor.
+     */
+    protected String getJavaClassName() {
+        return getJavaClass().getName();
+    }
+    
+    /**
+     * INTERNAL:
+     * Return the metadata logger.
+     */
+    public MetadataLogger getLogger() {
+        return m_project.getLogger();
+    }
+    
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+    public String getName() {
+        return m_name;
+    }
+    
+    /**
+     * INTERNAL:
+     * Helper method to return a field name from a candidate field name and a 
+     * default field name.
+     * 
+     * Requires the context from where this method is called to output the 
+     * correct logging message when defaulting the field name.
+     */
+    protected String getName(DatabaseField field, String defaultName, String context) {
+        return getName(field.getName(), defaultName, context);
+    }
+    
+    /**
+     * INTERNAL:
+     * Helper method to return a field name from a candidate field name and a 
+     * default field name.
+     * 
+     * Requires the context from where this method is called to output the 
+     * correct logging message when defaulting the field name.
+     *
+     * In some cases, both the name and defaultName could be "" or null,
+     * therefore, don't log a message and return name.
+     */
+    protected String getName(String name, String defaultName, String context) {
+        return org.eclipse.persistence.internal.jpa.metadata.MetadataHelper.getName(name, defaultName, context, getLogger(), getAnnotatedElement().toString());
+    }
+    
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+    public List<ObjectTypeConverterMetadata> getObjectTypeConverters() {
+        return m_objectTypeConverters;
+    }
+    
+    /**
+     * INTERNAL:
+     * In the general case the owning descriptor is the descriptor for this
+     * accessor. However, in an Embeddable (and nested embeddables) the owning
+     * descriptor is the original entities descriptor where the first embedded
+     * was found. The owning descriptor will be copied down the embeddedable
+     * chain. It should not be set otherwise.
+     */
+    public MetadataDescriptor getOwningDescriptor() {
+        if (m_owningDescriptor == null) {
+            return getDescriptor();
+        } else {
+            return m_owningDescriptor;
+        }
+    }
+    
+    /**
+     * INTERNAL:
+     * Return the MetadataProject.
+     */
+    public MetadataProject getProject() {
+        return m_project;
+    }
+
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */    
+    public List<PropertyMetadata> getProperties() {
+        return m_properties;
+    }
+    
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+    public List<StructConverterMetadata> getStructConverters() {
+        return m_structConverters;
+    }
+    
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+    public List<TypeConverterMetadata> getTypeConverters() {
+        return m_typeConverters;
+    }
+    
+    /**
+     * INTERNAL:
+     * Return the upper cased attribute name for this accessor. Used when
+     * defaulting.
+     */
+    protected String getUpperCaseAttributeName() {
+        return getAttributeName().toUpperCase();
+    }
+    
+    /**
+     * INTERNAL:
+     * Return the upper case java class that defines this accessor.
+     */
+    protected String getUpperCaseShortJavaClassName() {
+        return Helper.getShortClassName(getJavaClassName()).toUpperCase();
+    }
+    
+    /**
+     * INTERNAL:
+     * Helper method to return a string value if specified, otherwise returns
+     * the default value. 
+     */
+    protected Integer getValue(Integer value, Integer defaultValue) {
+        return org.eclipse.persistence.internal.jpa.metadata.MetadataHelper.getValue(value, defaultValue);
+    }
+    
+    /**
+     * INTERNAL:
+     * Helper method to return a string value if specified, otherwise returns
+     * the default value.
+     */
+    protected String getValue(String value, String defaultValue) {
+        return org.eclipse.persistence.internal.jpa.metadata.MetadataHelper.getValue(value, defaultValue);
+    }
+
+    /**
+     * INTERNAL:
+     * Method to check if an annotated element has a Column annotation.
+     */
+    protected boolean hasColumn() {
+        return isAnnotationPresent(Column.class);
+    }
+    
+    /**
+     * INTERNAL:
+     * Method to check if an annotated element has a convert specified.
+     */
+    protected boolean hasConvert() {
+        return isAnnotationPresent(Convert.class);
+    }
+    
+    /**
+     * INTERNAL:
+     * Method to check if this accesosr has a ReturnInsert annotation.
+     */
+    protected boolean hasReturnInsert() {
+        return isAnnotationPresent(ReturnInsert.class);
+    }
+    
+    /**
+     * INTERNAL:
+     * Method to check if this accesosr has a ReturnUpdate annotation.
+     */
+    protected boolean hasReturnUpdate() {
+        return isAnnotationPresent(ReturnUpdate.class);
+    }
+    
+    /**
+     * INTERNAL: 
+     * This method should be subclassed in those methods that need to do 
+     * extra initialization.
+     */
+    public void initXMLAccessor(MetadataAccessibleObject accessibleObject, MetadataDescriptor descriptor, MetadataProject project) {
+        m_project = project;
+        m_descriptor = descriptor;
+        
+        initXMLObject(accessibleObject);
+    }
+
+    /**
+     * INTERNAL:
+     */
+    @Override
+    public void initXMLObject(MetadataAccessibleObject accessibleObject) {
+        super.initXMLObject(accessibleObject);
+        
+        // Initialize lists of objects.
+        initXMLObjects(m_converters, accessibleObject);
+        initXMLObjects(m_objectTypeConverters, accessibleObject);
+        initXMLObjects(m_structConverters, accessibleObject);
+        initXMLObjects(m_typeConverters, accessibleObject);
+        initXMLObjects(m_properties, accessibleObject);
+    }
+    
+    /** 
+     * INTERNAL:
+     * Indicates whether the specified annotation is present on the annotated
+     * element for this accessor. Method checks against the metadata complete
+     * flag.
+     */
+    protected boolean isAnnotationPresent(Class<? extends Annotation> annotation) {
+        return getAccessibleObject().isAnnotationPresent(annotation, m_descriptor);
+    }
+    
+    /**
+     * INTERNAL:
+     * Return true if this accessor has been processed.
+     */
+    public boolean isProcessed() {
+        return m_isProcessed;
+    }
+    
+    /**
+     * INTERNAL:
+     * We currently limit this merging to the ClassAccessor level.
+     */
+    @Override
+    public void merge(ORMetadata metadata) {
+        MetadataAccessor accessor = (MetadataAccessor) metadata;
+        
+        // ORMetadata list merging.
+        m_converters = mergeORObjectLists(m_converters, accessor.getConverters());
+        m_objectTypeConverters = mergeORObjectLists(m_objectTypeConverters, accessor.getObjectTypeConverters());
+        m_structConverters = mergeORObjectLists(m_structConverters, accessor.getStructConverters());
+        m_typeConverters = mergeORObjectLists(m_typeConverters, accessor.getTypeConverters());
+        m_properties = mergeORObjectLists(m_properties, accessor.getProperties());
+    }
+    
+    /**
+     * INTERNAL:
+     * Every accessor knows how to process themselves since they have all the
+     * information they need.
+     */
+    public abstract void process();
+    
+    /**
+     * INTERNAL:
+     * Process the globally defined converters.
+     */
+    public void processConverters() {
+        // Process the custom converters if defined.
+        processCustomConverters();
+        
+        // Process the object type converters if defined.
+        processObjectTypeConverters();
+        
+        // Process the type converters if defined.
+        processTypeConverters();
+        
+        // Process the struct converters if defined
+        processStructConverter();
+    }
+    
+    /**
+     * INTERNAL:
+     * Process the XML defined converters and check for a Converter annotation. 
+     */
+    protected void processCustomConverters() {
+        // Check for XML defined converters.
+        for (ConverterMetadata converter : m_converters) {
+            m_project.addConverter(converter);
+        }
+        
+        // Check for a Converter annotation.
+        Annotation converter = getAnnotation(Converter.class);
+        if (converter != null) {
+            m_project.addConverter(new ConverterMetadata(converter, getAccessibleObject()));
+        }
+    }
+    
+    /**
+     * INTERNAL:
+     * Process the XML defined object type converters and check for an 
+     * ObjectTypeConverter annotation. 
+     */
+    protected void processObjectTypeConverters() {        
+        // Check for XML defined object type converters.
+        for (ObjectTypeConverterMetadata objectTypeConverter : m_objectTypeConverters) {
+            m_project.addConverter(objectTypeConverter);
+        }
+        
+        // Check for an ObjectTypeConverter annotation.
+        Annotation objectTypeConverter = getAnnotation(ObjectTypeConverter.class);
+        if (objectTypeConverter != null) {
+            m_project.addConverter(new ObjectTypeConverterMetadata(objectTypeConverter, getAccessibleObject()));
+        }
+    }
+    
+    /**
+     * INTERNAL:
+     * Process the primary key join columms for this accessors annotated element.
+     */    
+    protected List<PrimaryKeyJoinColumnMetadata> processPrimaryKeyJoinColumns(PrimaryKeyJoinColumnsMetadata primaryKeyJoinColumns) {
+        // If the primary key join columns were not specified (that is empty),
+        // this call will add any defaulted columns as necessary.
+         List<PrimaryKeyJoinColumnMetadata> pkJoinColumns = primaryKeyJoinColumns.values(m_descriptor);
+        
+        if (m_descriptor.hasCompositePrimaryKey()) {
+            // Validate the number of primary key fields defined.
+            if (pkJoinColumns.size() != m_descriptor.getPrimaryKeyFields().size()) {
+                throw ValidationException.incompletePrimaryKeyJoinColumnsSpecified(getAnnotatedElement());
+            }
+            
+            // All the primary and foreign key field names should be specified.
+            for (PrimaryKeyJoinColumnMetadata pkJoinColumn : pkJoinColumns) {
+                if (pkJoinColumn.isPrimaryKeyFieldNotSpecified() || pkJoinColumn.isForeignKeyFieldNotSpecified()) {
+                    throw ValidationException.incompletePrimaryKeyJoinColumnsSpecified(getAnnotatedElement());
+                }
+            }
+        } else {
+            if (pkJoinColumns.size() > 1) {
+                throw ValidationException.excessivePrimaryKeyJoinColumnsSpecified(getAnnotatedElement());
+            }
+        }
+        
+        return pkJoinColumns;
+    }
+    
+    /**
+     * INTERNAL:
+     * Subclasses should call this method if they want the warning message.
+     */
+    protected void processReturnInsert() {
+        if (hasReturnInsert()) {
+            getLogger().logWarningMessage(MetadataLogger.IGNORE_RETURN_INSERT_ANNOTATION, getAnnotatedElement());
+        }
+    }
+    
+    /**
+     * INTERNAL:
+     * Subclasses should call this method if they want the warning message.
+     */
+    protected void processReturnInsertAndUpdate() {
+        processReturnInsert();
+        processReturnUpdate();
+    }
+    
+    /**
+     * INTERNAL:
+     * Subclasses should call this method if they want the warning message.
+     */
+    protected void processReturnUpdate() {
+        if (hasReturnUpdate()) {
+            getLogger().logWarningMessage(MetadataLogger.IGNORE_RETURN_UPDATE_ANNOTATION, getAnnotatedElement());
+        }
+    }
+      
+    /**
+     * INTERNAL:
+     * Process the XML defined struct converters and check for a StructConverter 
+     * annotation. 
+     */
+    protected void processStructConverter() {
+        // Check for XML defined struct converters.
+        for (StructConverterMetadata structConverter : m_structConverters) {
+            m_project.addConverter(structConverter);
+        }
+        
+        // Check for a StructConverter annotation.
+        Annotation converter = getAnnotation(StructConverter.class);
+        if (converter != null) {
+            m_project.addConverter(new StructConverterMetadata(converter, getAccessibleObject()));
+        }
+    }
+    
+    /**
+     * INTERNAL:
+     * Common table processing for table, secondary table, join table and
+     * collection table.
+     */
+    protected void processTable(TableMetadata table, String defaultName) {
+        getProject().processTable(table, defaultName, m_descriptor.getXMLCatalog(), m_descriptor.getXMLSchema());
+    }
+    
+    /**
+     * INTERNAL:
+     * Process a the XML defined type converters and check for a TypeConverter 
+     * annotation. 
+     */
+    protected void processTypeConverters() {
+        // Check for XML defined type converters.
+        for (TypeConverterMetadata typeConverter : m_typeConverters) {
+            m_project.addConverter(typeConverter);
+        }
+        
+        // Check for an TypeConverter annotation.
+        Annotation typeConverter = getAnnotation(TypeConverter.class);
+        if (typeConverter != null) {
+            m_project.addConverter(new TypeConverterMetadata(typeConverter, getAccessibleObject()));
+        }
+    }
+    
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+    public void setConverters(List<ConverterMetadata> converters) {
+        m_converters = converters;
+    }
+    
+    /**
+     * INTERNAL: 
+     * Set the metadata descriptor for this accessor.
+     */
+    public void setDescriptor(MetadataDescriptor descriptor) {
+        m_descriptor = descriptor;
+    }
+    
+    /**
+     * INTERNAL:
+     */
+    public void setIsProcessed() {
+        m_isProcessed = true;    
+    }
+    
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+    public void setName(String name) {
+        m_name = name;
+    }
+    
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+    public void setObjectTypeConverters(List<ObjectTypeConverterMetadata> objectTypeConverters) {
+        m_objectTypeConverters = objectTypeConverters;
+    }
+    
+    /**
+     * INTERNAL:
+     */
+    public void setOwningDescriptor(MetadataDescriptor owningDescriptor) {
+        m_owningDescriptor = owningDescriptor;
+    }
+    
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */    
+    public void setProperties(List<PropertyMetadata> properties) {
+        m_properties = properties;
+    }
+    
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+    public void setStructConverters(List<StructConverterMetadata> structConverters) {
+        m_structConverters = structConverters;
+    }
+    
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+    public void setTypeConverters(List<TypeConverterMetadata> typeConverters) {
+        m_typeConverters = typeConverters;
+    }
+}

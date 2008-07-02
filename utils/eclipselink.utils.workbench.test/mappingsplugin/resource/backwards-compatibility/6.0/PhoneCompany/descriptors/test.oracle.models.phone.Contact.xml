@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<descriptor type="interface">
+   <name>test.oracle.models.phone.Contact</name>
+   <class-handle>
+      <type-name>test.oracle.models.phone.Contact</type-name>
+   </class-handle>
+   <implementor-handles>
+      <descriptor-handle>
+         <descriptor-name>test.oracle.models.phone.EmailAddress</descriptor-name>
+      </descriptor-handle>
+      <descriptor-handle>
+         <descriptor-name>test.oracle.models.phone.PhoneNumber</descriptor-name>
+      </descriptor-handle>
+   </implementor-handles>
+</descriptor>

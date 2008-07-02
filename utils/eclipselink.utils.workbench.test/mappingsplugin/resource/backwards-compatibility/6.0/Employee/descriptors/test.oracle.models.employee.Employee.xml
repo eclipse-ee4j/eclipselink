@@ -1,0 +1,337 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<descriptor type="relational">
+   <name>test.oracle.models.employee.Employee</name>
+   <class-handle>
+      <type-name>test.oracle.models.employee.Employee</type-name>
+   </class-handle>
+   <transactional-policy type="relational">
+      <descriptor-alias>Employee</descriptor-alias>
+      <refresh-cache-policy>
+         <always-refresh-cache>true</always-refresh-cache>
+         <disable-cache-hits>true</disable-cache-hits>
+      </refresh-cache-policy>
+      <caching-policy>
+         <cache-size>100</cache-size>
+         <cache-type>Full</cache-type>
+      </caching-policy>
+      <query-manager type="relational"/>
+      <locking-policy type="relational">
+         <locking-type>Optimistic Locking</locking-type>
+         <version-locking-type>Version Locking</version-locking-type>
+         <version-locking-column-handle>
+            <column-table-name>EMPLOYEE</column-table-name>
+            <column-name>VERSION</column-name>
+         </version-locking-column-handle>
+         <optimistic-locking-type>Version Locking</optimistic-locking-type>
+      </locking-policy>
+      <primary-key-policy>
+         <primary-key-handles>
+            <column-handle>
+               <column-table-name>EMPLOYEE</column-table-name>
+               <column-name>EMP_ID</column-name>
+            </column-handle>
+         </primary-key-handles>
+      </primary-key-policy>
+   </transactional-policy>
+   <mappings>
+      <mapping type="one-to-one">
+         <name>address</name>
+         <attribute-handle>
+            <attribute-declaring-type-name>test.oracle.models.employee.Employee</attribute-declaring-type-name>
+            <attribute-name>address</attribute-name>
+         </attribute-handle>
+         <reference-descriptor-handle>
+            <descriptor-name>test.oracle.models.employee.Address</descriptor-name>
+         </reference-descriptor-handle>
+         <indirection-type>value-holder-indirection</indirection-type>
+         <private-owned>true</private-owned>
+         <reference-handle>
+            <reference-table-name>EMPLOYEE</reference-table-name>
+            <reference-name>EMPLOYEE_ADDRESS</reference-name>
+         </reference-handle>
+      </mapping>
+      <mapping type="direct-to-field">
+         <name>firstName</name>
+         <attribute-handle>
+            <attribute-declaring-type-name>test.oracle.models.employee.Employee</attribute-declaring-type-name>
+            <attribute-name>firstName</attribute-name>
+         </attribute-handle>
+         <column-handle>
+            <column-table-name>EMPLOYEE</column-table-name>
+            <column-name>F_NAME</column-name>
+         </column-handle>
+      </mapping>
+      <mapping type="direct-to-field">
+         <name>gender</name>
+         <attribute-handle>
+            <attribute-declaring-type-name>test.oracle.models.employee.Employee</attribute-declaring-type-name>
+            <attribute-name>gender</attribute-name>
+         </attribute-handle>
+         <converter type="object-type">
+            <data-type>
+               <type-handle>
+                  <type-name>java.lang.String</type-name>
+               </type-handle>
+            </data-type>
+            <attribute-type>
+               <type-handle>
+                  <type-name>java.lang.String</type-name>
+               </type-handle>
+            </attribute-type>
+            <value-pairs>
+               <value-pair>
+                  <data-value>F</data-value>
+                  <attribute-value>Female</attribute-value>
+               </value-pair>
+               <value-pair>
+                  <data-value>M</data-value>
+                  <attribute-value>Male</attribute-value>
+               </value-pair>
+            </value-pairs>
+         </converter>
+         <column-handle>
+            <column-table-name>EMPLOYEE</column-table-name>
+            <column-name>GENDER</column-name>
+         </column-handle>
+      </mapping>
+      <mapping type="direct-to-field">
+         <name>id</name>
+         <attribute-handle>
+            <attribute-declaring-type-name>test.oracle.models.employee.Employee</attribute-declaring-type-name>
+            <attribute-name>id</attribute-name>
+         </attribute-handle>
+         <column-handle>
+            <column-table-name>EMPLOYEE</column-table-name>
+            <column-name>EMP_ID</column-name>
+         </column-handle>
+      </mapping>
+      <mapping type="direct-to-field">
+         <name>lastName</name>
+         <attribute-handle>
+            <attribute-declaring-type-name>test.oracle.models.employee.Employee</attribute-declaring-type-name>
+            <attribute-name>lastName</attribute-name>
+         </attribute-handle>
+         <column-handle>
+            <column-table-name>EMPLOYEE</column-table-name>
+            <column-name>L_NAME</column-name>
+         </column-handle>
+      </mapping>
+      <mapping type="one-to-many">
+         <name>managedEmployees</name>
+         <read-only>true</read-only>
+         <attribute-handle>
+            <attribute-declaring-type-name>test.oracle.models.employee.Employee</attribute-declaring-type-name>
+            <attribute-name>managedEmployees</attribute-name>
+         </attribute-handle>
+         <reference-descriptor-handle>
+            <descriptor-name>test.oracle.models.employee.Employee</descriptor-name>
+         </reference-descriptor-handle>
+         <indirection-type>value-holder-indirection</indirection-type>
+         <reference-handle>
+            <reference-table-name>EMPLOYEE</reference-table-name>
+            <reference-name>EMPLOYEE_EMPLOYEE</reference-name>
+         </reference-handle>
+         <container-policy type="list">
+            <container-class>
+               <uses-default-container-class>true</uses-default-container-class>
+            </container-class>
+         </container-policy>
+      </mapping>
+      <mapping type="one-to-one">
+         <name>manager</name>
+         <attribute-handle>
+            <attribute-declaring-type-name>test.oracle.models.employee.Employee</attribute-declaring-type-name>
+            <attribute-name>manager</attribute-name>
+         </attribute-handle>
+         <reference-descriptor-handle>
+            <descriptor-name>test.oracle.models.employee.Employee</descriptor-name>
+         </reference-descriptor-handle>
+         <indirection-type>value-holder-indirection</indirection-type>
+         <reference-handle>
+            <reference-table-name>EMPLOYEE</reference-table-name>
+            <reference-name>EMPLOYEE_EMPLOYEE</reference-name>
+         </reference-handle>
+      </mapping>
+      <mapping type="relational-transformation">
+         <name>normalHours</name>
+         <attribute-handle>
+            <attribute-declaring-type-name>test.oracle.models.employee.Employee</attribute-declaring-type-name>
+            <attribute-name>normalHours</attribute-name>
+         </attribute-handle>
+         <attribute-transformer type="method-based">
+            <method-handle>
+               <method-declaring-type-name>test.oracle.models.employee.Employee</method-declaring-type-name>
+               <method-signature>buildNormalHours(org.eclipse.persistence.publicinterface.DatabaseRow, org.eclipse.persistence.publicinterface.Session)</method-signature>
+            </method-handle>
+         </attribute-transformer>
+         <field-transformer-associations type="relational">
+            <field-transformer type="method-based">
+               <method-handle>
+                  <method-declaring-type-name>test.oracle.models.employee.Employee</method-declaring-type-name>
+                  <method-signature>getStartTime()</method-signature>
+               </method-handle>
+            </field-transformer>
+            <column-handle>
+               <column-table-name>EMPLOYEE</column-table-name>
+               <column-name>START_TIME</column-name>
+            </column-handle>
+         </field-transformer-associations>
+         <field-transformer-associations type="relational">
+            <field-transformer type="method-based">
+               <method-handle>
+                  <method-declaring-type-name>test.oracle.models.employee.Employee</method-declaring-type-name>
+                  <method-signature>getEndTime()</method-signature>
+               </method-handle>
+            </field-transformer>
+            <column-handle>
+               <column-table-name>EMPLOYEE</column-table-name>
+               <column-name>END_TIME</column-name>
+            </column-handle>
+         </field-transformer-associations>
+         <mutable>true</mutable>
+      </mapping>
+      <mapping type="aggregate">
+         <name>period</name>
+         <attribute-handle>
+            <attribute-declaring-type-name>test.oracle.models.employee.Employee</attribute-declaring-type-name>
+            <attribute-name>period</attribute-name>
+         </attribute-handle>
+         <reference-descriptor-handle>
+            <descriptor-name>test.oracle.models.employee.EmploymentPeriod</descriptor-name>
+         </reference-descriptor-handle>
+         <paths-to-fields>
+            <aggregate-path-to-field>
+               <field-description>DIRECT</field-description>
+               <column-handle>
+                  <column-table-name>EMPLOYEE</column-table-name>
+                  <column-name>END_DATE</column-name>
+               </column-handle>
+               <mapping-handles>
+                  <mapping-handle>
+                     <mapping-descriptor-name>test.oracle.models.employee.EmploymentPeriod</mapping-descriptor-name>
+                     <mapping-name>endDate</mapping-name>
+                  </mapping-handle>
+               </mapping-handles>
+            </aggregate-path-to-field>
+            <aggregate-path-to-field>
+               <field-description>DIRECT</field-description>
+               <column-handle>
+                  <column-table-name>EMPLOYEE</column-table-name>
+                  <column-name>START_DATE</column-name>
+               </column-handle>
+               <mapping-handles>
+                  <mapping-handle>
+                     <mapping-descriptor-name>test.oracle.models.employee.EmploymentPeriod</mapping-descriptor-name>
+                     <mapping-name>startDate</mapping-name>
+                  </mapping-handle>
+               </mapping-handles>
+            </aggregate-path-to-field>
+         </paths-to-fields>
+      </mapping>
+      <mapping type="one-to-many">
+         <name>phoneNumbers</name>
+         <attribute-handle>
+            <attribute-declaring-type-name>test.oracle.models.employee.Employee</attribute-declaring-type-name>
+            <attribute-name>phoneNumbers</attribute-name>
+         </attribute-handle>
+         <reference-descriptor-handle>
+            <descriptor-name>test.oracle.models.employee.PhoneNumber</descriptor-name>
+         </reference-descriptor-handle>
+         <indirection-type>value-holder-indirection</indirection-type>
+         <private-owned>true</private-owned>
+         <reference-handle>
+            <reference-table-name>PHONE</reference-table-name>
+            <reference-name>PHONE_EMPLOYEE</reference-name>
+         </reference-handle>
+         <container-policy type="list">
+            <container-class>
+               <uses-default-container-class>true</uses-default-container-class>
+            </container-class>
+         </container-policy>
+      </mapping>
+      <mapping type="many-to-many">
+         <name>projects</name>
+         <attribute-handle>
+            <attribute-declaring-type-name>test.oracle.models.employee.Employee</attribute-declaring-type-name>
+            <attribute-name>projects</attribute-name>
+         </attribute-handle>
+         <reference-descriptor-handle>
+            <descriptor-name>test.oracle.models.employee.Project</descriptor-name>
+         </reference-descriptor-handle>
+         <indirection-type>value-holder-indirection</indirection-type>
+         <reference-handle>
+            <reference-table-name>PROJ_EMP</reference-table-name>
+            <reference-name>PROJ_EMP_EMPLOYEE</reference-name>
+         </reference-handle>
+         <container-policy type="list">
+            <container-class>
+               <uses-default-container-class>true</uses-default-container-class>
+            </container-class>
+         </container-policy>
+         <relation-table-handle>
+            <table-name>PROJ_EMP</table-name>
+         </relation-table-handle>
+         <target-reference-handle>
+            <reference-table-name>PROJ_EMP</reference-table-name>
+            <reference-name>PROJ_EMP_PROJECT</reference-name>
+         </target-reference-handle>
+      </mapping>
+      <mapping type="relational-direct-collection">
+         <name>responsibilitiesList</name>
+         <attribute-handle>
+            <attribute-declaring-type-name>test.oracle.models.employee.Employee</attribute-declaring-type-name>
+            <attribute-name>responsibilitiesList</attribute-name>
+         </attribute-handle>
+         <target-table-handle>
+            <table-name>RESPONS</table-name>
+         </target-table-handle>
+         <direct-value-column-handle>
+            <column-table-name>RESPONS</column-table-name>
+            <column-name>DESCRIP</column-name>
+         </direct-value-column-handle>
+         <reference-handle>
+            <reference-table-name>RESPONS</reference-table-name>
+            <reference-name>RESPONS_EMPLOYEE</reference-name>
+         </reference-handle>
+         <indirection-type>value-holder-indirection</indirection-type>
+         <container-policy type="list">
+            <container-class>
+               <uses-default-container-class>true</uses-default-container-class>
+            </container-class>
+         </container-policy>
+      </mapping>
+      <mapping type="direct-to-field">
+         <name>salary</name>
+         <attribute-handle>
+            <attribute-declaring-type-name>test.oracle.models.employee.Employee</attribute-declaring-type-name>
+            <attribute-name>salary</attribute-name>
+         </attribute-handle>
+         <column-handle>
+            <column-table-name>SALARY</column-table-name>
+            <column-name>SALARY</column-name>
+         </column-handle>
+      </mapping>
+   </mappings>
+   <primary-table-handle>
+      <table-name>EMPLOYEE</table-name>
+   </primary-table-handle>
+   <uses-sequencing>true</uses-sequencing>
+   <sequence-number-name>EMP_SEQ</sequence-number-name>
+   <sequence-number-table-handle>
+      <table-name>EMPLOYEE</table-name>
+   </sequence-number-table-handle>
+   <sequence-number-column-handle>
+      <column-table-name>EMPLOYEE</column-table-name>
+      <column-name>EMP_ID</column-name>
+   </sequence-number-column-handle>
+   <multi-table-info-policy>
+      <secondary-table-holders>
+         <table-holder>
+            <table-handle>
+               <table-name>SALARY</table-name>
+            </table-handle>
+            <primary-keys-have-same-name>true</primary-keys-have-same-name>
+         </table-holder>
+      </secondary-table-holders>
+   </multi-table-info-policy>
+</descriptor>
