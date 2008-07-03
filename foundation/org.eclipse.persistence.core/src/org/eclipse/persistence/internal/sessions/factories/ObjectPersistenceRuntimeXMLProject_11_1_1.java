@@ -330,7 +330,7 @@ public class ObjectPersistenceRuntimeXMLProject_11_1_1 extends ObjectPersistence
     @Override
     protected ClassDescriptor buildOneToOneMappingDescriptor() {
         XMLDescriptor descriptor = (XMLDescriptor)super.buildOneToOneMappingDescriptor();
-        descriptor.removeMappingForAttributeName("usesJoiningMapping");
+        descriptor.removeMappingForAttributeName("joinFetch");
 
         XMLDirectMapping joinFetchMapping = new XMLDirectMapping();
         joinFetchMapping.setAttributeName("joinFetch");

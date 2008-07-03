@@ -3559,13 +3559,15 @@ public class ObjectPersistenceRuntimeXMLProject extends NamespaceResolvableProje
         usesBatchReadingMapping.setNullValue(Boolean.FALSE);
         descriptor.addMapping(usesBatchReadingMapping);
 
-        XMLDirectMapping usesJoiningMapping = new XMLDirectMapping();
-        usesJoiningMapping.setAttributeName("usesJoiningMapping");
-        usesJoiningMapping.setGetMethodName("shouldUseJoining");
-        usesJoiningMapping.setSetMethodName("setUsesJoining");
-        usesJoiningMapping.setXPath(getPrimaryNamespaceXPath() + "joining/text()");
-        usesJoiningMapping.setNullValue(Boolean.FALSE);
-        descriptor.addMapping(usesJoiningMapping);
+        XMLDirectMapping joinFetchMapping = new XMLDirectMapping();
+        joinFetchMapping.setAttributeName("joinFetch");
+        joinFetchMapping.setXPath(getPrimaryNamespaceXPath() + "join-fetch/text()");
+        ObjectTypeConverter joinFetchConverter = new ObjectTypeConverter();
+        joinFetchConverter.addConversionValue("true", new Integer(ForeignReferenceMapping.INNER_JOIN));
+        joinFetchConverter.addConversionValue("false", new Integer(ForeignReferenceMapping.NONE));
+        joinFetchMapping.setConverter(joinFetchConverter);
+        joinFetchMapping.setNullValue(ForeignReferenceMapping.NONE);
+        descriptor.addMapping(joinFetchMapping);        
 
         XMLCompositeObjectMapping indirectionPolicyMapping = new XMLCompositeObjectMapping();
         indirectionPolicyMapping.setReferenceClass(IndirectionPolicy.class);
