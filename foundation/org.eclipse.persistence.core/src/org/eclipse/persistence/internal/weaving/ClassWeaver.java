@@ -618,14 +618,17 @@ public class ClassWeaver extends ClassAdapter implements Constants {
             cv_clone.visitInsn(ACONST_NULL);
             cv_clone.visitFieldInsn(PUTFIELD, classDetails.getClassName(), "_persistence_session", SESSION_SIGNATURE);
         }
-        // clone._persistence_primaryKey = null;
-        cv_clone.visitVarInsn(ALOAD, 0);
-        cv_clone.visitInsn(ACONST_NULL);
-        cv_clone.visitFieldInsn(PUTFIELD, classDetails.getClassName(), "_persistence_primaryKey", VECTOR_SIGNATURE);
-        // clone._persistence_cacheKey = null;
-        cv_clone.visitVarInsn(ALOAD, 0);
-        cv_clone.visitInsn(ACONST_NULL);
-        cv_clone.visitFieldInsn(PUTFIELD, classDetails.getClassName(), "_persistence_cacheKey", CACHEKEY_SIGNATURE);
+        
+        if (!classDetails.isEmbedable()){
+	        // clone._persistence_primaryKey = null;
+	        cv_clone.visitVarInsn(ALOAD, 0);
+	        cv_clone.visitInsn(ACONST_NULL);
+	        cv_clone.visitFieldInsn(PUTFIELD, classDetails.getClassName(), "_persistence_primaryKey", VECTOR_SIGNATURE);
+	        // clone._persistence_cacheKey = null;
+	        cv_clone.visitVarInsn(ALOAD, 0);
+	        cv_clone.visitInsn(ACONST_NULL);
+	        cv_clone.visitFieldInsn(PUTFIELD, classDetails.getClassName(), "_persistence_cacheKey", CACHEKEY_SIGNATURE);
+        }
         
         // return clone;
         cv_clone.visitVarInsn(ALOAD, 0);

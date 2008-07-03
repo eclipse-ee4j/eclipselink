@@ -104,6 +104,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         TestSuite suite = new TestSuite();
         suite.setName("EntityManagerJUnitTestSuite");
 
+        suite.addTest(new EntityManagerJUnitTestSuite("testCloneEmbeddable"));        
         suite.addTest(new EntityManagerJUnitTestSuite("testSetup"));
         suite.addTest(new EntityManagerJUnitTestSuite("testWeaving"));
         suite.addTest(new EntityManagerJUnitTestSuite("testClearEntityManagerWithoutPersistenceContext"));
@@ -5905,6 +5906,18 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
             ip.setDescribesNonPersistentSubclasses(describesNonPersistentSubclasses);
             closeEntityManager(em);
         }
+    }
+    
+    // bug 239505 - Ensure our Embeddables succeed a call to clone
+    public void testCloneEmbeddable(){
+    	EmployeePopulator populator = new EmployeePopulator();
+    	EmploymentPeriod period = populator.employmentPeriodExample1();
+
+    	try {
+    		period.clone();
+    	} catch (Exception e){
+    		fail("Exception thrown when trying to clone an Embeddable: " + e.toString());
+    	}
     }
 
 }
