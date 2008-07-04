@@ -597,7 +597,6 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
      */
     public Object execute(AbstractSession session, AbstractRecord translationRow) throws DatabaseException, OptimisticLockException {
         DatabaseQuery queryToExecute = this;
-// TODO        checkDescriptor(session);
 
         QueryRedirector localRedirector = getRedirector();
         // refactored redirection for bug 3241138
@@ -638,6 +637,7 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
         // In some case the query is known to be a one off, or cloned elsewhere
         // so the query keeps track if it has been cloned already.
         queryToExecute = session.prepareDatabaseQuery(queryToExecute);
+
         if (queryToExecute.shouldPrepare()) {
             queryToExecute.checkPrepare(session, translationRow);
         }

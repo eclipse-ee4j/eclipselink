@@ -10,12 +10,24 @@
  * Contributors:
  *     Gordon Yorke - Interceptor feature https://bugs.eclipse.org/bugs/show_bug.cgi?id=219683
  ******************************************************************************/  
-package org.eclipse.persistence.internal.identitymaps;
+package org.eclipse.persistence.sessions.interceptors;
 
 import java.util.Vector;
 
 import org.eclipse.persistence.internal.helper.ConcurrencyManager;
+import org.eclipse.persistence.internal.identitymaps.AbstractIdentityMap;
+import org.eclipse.persistence.internal.identitymaps.CacheKey;
+import org.eclipse.persistence.internal.identitymaps.IdentityMap;
 import org.eclipse.persistence.sessions.Record;
+
+/**
+ * The CacheKeyInterceptor allows a Cache Interceptor implementation to wrap the EclipseLink CacheKey.
+ * The CacheKey is an object that wraps the object and maintains cached based information about the object
+ * like primary key, write lock value and locking.  The EclipseLink runtime will access the CacheKey and directly
+ * when releasing locks.
+ * @author Gordon Yorke
+ *
+ */
 
 public class CacheKeyInterceptor extends CacheKey{
         protected CacheKey wrappedKey;
