@@ -14,6 +14,8 @@ package org.eclipse.persistence.internal.identitymaps;
 
 import java.util.*;
 
+import org.eclipse.persistence.descriptors.ClassDescriptor;
+
 /**
  * <p><b>Purpose</b>: A SoftIdentityMap holds all objects referenced by the application.
  * The soft identity map is similar to the weak identity map except for the fact that it allows
@@ -27,8 +29,8 @@ import java.util.*;
  */
 public class SoftIdentityMap extends WeakIdentityMap {
 
-    public SoftIdentityMap(int size) {
-        super(size);
+    public SoftIdentityMap(int size, ClassDescriptor descriptor) {
+        super(size, descriptor);
         this.cleanupCount = 0;
         this.cleanupSize = size;
     }

@@ -74,6 +74,14 @@ public abstract class AttributeAccessor implements Cloneable, Serializable {
         }
     }
     
+    /**
+     * Returns true if this attribute accessor has been initialized and now stores a reference to the
+     * class's attribute.  An attribute accessor can become uninitialized on serialization.
+     */
+    public boolean isInitialized(){
+        return true;
+    }
+
     public boolean isMethodAttributeAccessor() {
         return false;
     }

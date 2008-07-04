@@ -124,6 +124,15 @@ public class WriteObjectQuery extends ObjectLevelModifyQuery {
     }
 
     /**
+     * INTERNAL:
+     * Returns the specific default redirector for this query type.  There are numerous default query redirectors.
+     * See ClassDescriptor for their types.
+     */
+    protected QueryRedirector getDefaultRedirector(){
+        return descriptor.getDefaultQueryRedirector();
+    }
+
+    /**
      * PUBLIC:
      * Return if this is a write object query.
      */

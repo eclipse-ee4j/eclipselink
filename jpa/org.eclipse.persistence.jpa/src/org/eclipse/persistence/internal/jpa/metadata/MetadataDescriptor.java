@@ -91,6 +91,8 @@ public class MetadataDescriptor {
     private boolean m_ignoreAnnotations; // XML metadata complete
     private boolean m_ignoreDefaultMappings; // XML exclude default mappings
     private boolean m_hasCache;
+    private boolean m_hasCacheInterceptor;
+    private boolean m_hasDefaultRedirectors;
     private boolean m_hasChangeTracking;
     private boolean m_hasCustomizer;
     private boolean m_hasReadOnly;
@@ -131,6 +133,8 @@ public class MetadataDescriptor {
         m_inheritanceParentDescriptor = null;
         
         m_hasCache = false;
+        m_hasCacheInterceptor = false;
+        m_hasDefaultRedirectors = false;
         m_hasChangeTracking = false;
         m_hasCustomizer = false;
         m_hasReadOnly = false;
@@ -888,6 +892,24 @@ public class MetadataDescriptor {
     
     /**
      * INTERNAL:
+     * Indicates that a CacheInterceptor annotation or cacheInterceptor element has already been 
+     * processed for this descriptor.
+     */
+    public boolean hasCacheInterceptor() {
+        return m_hasCacheInterceptor;
+    }
+    
+    /**
+     * INTERNAL:
+     * Indicates that a DefaultRedirectors annotation or default-redirectors element has already been 
+     * processed for this descriptor.
+     */
+    public boolean hasDefaultRedirectors() {
+        return m_hasDefaultRedirectors;
+    }
+    
+    /**
+     * INTERNAL:
      * Indicates that a Change tracking annotation or change tracking element 
      * has already been processed for this descriptor.
      */
@@ -1121,6 +1143,22 @@ public class MetadataDescriptor {
      */
     public void setHasCache() {
         m_hasCache = true;
+    }
+    
+    /**
+     * INTERNAL:
+     * Indicates that we have processed a cache annotation or cache xml element.
+     */
+    public void setHasCacheInterceptor() {
+        m_hasCacheInterceptor = true;
+    }
+    
+    /**
+     * INTERNAL:
+     * Indicates that we have processed a cache annotation or cache xml element.
+     */
+    public void setHasDefaultRedirectors() {
+        m_hasDefaultRedirectors = true;
     }
     
     /**

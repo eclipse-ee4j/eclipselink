@@ -62,8 +62,10 @@ public class InsertObjectQuery extends WriteObjectQuery {
      */
     public void executeCommit() throws DatabaseException {
         // Check for redirection.
-        if (getRedirector() != null) {
-            redirectQuery(this, session, translationRow);
+        QueryRedirector localRedirector = getRedirector();
+        // refactored redirection for bug 3241138
+        if ( localRedirector!= null) {
+            redirectQuery(localRedirector, this, session, translationRow);
             return;
         }
         
@@ -86,6 +88,15 @@ public class InsertObjectQuery extends WriteObjectQuery {
     public void executeCommitWithChangeSet() throws DatabaseException {
         // The same commit is used for changeset or not for inserts.
         executeCommit();
+    }
+
+    /**
+     * INTERNAL:
+     * Returns the specific default redirector for this query type.  There are numerous default query redirectors.
+     * See ClassDescriptor for their types.
+     */
+    protected QueryRedirector getDefaultRedirector(){
+        return descriptor.getDefaultInsertObjectQueryRedirector();
     }
 
     /**

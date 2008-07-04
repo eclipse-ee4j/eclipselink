@@ -59,12 +59,16 @@ public class MetadataLogger {
     
     public static final String IGNORE_VERSION_LOCKING = "metadata_warning_ignore_version_locking";
     public static final String IGNORE_INHERITANCE_SUBCLASS_CACHE = "metadata_warning_ignore_inheritance_subclass_cache";
+    public static final String IGNORE_INHERITANCE_SUBCLASS_CACHE_INTERCEPTOR = "metadata_warning_ignore_inheritance_subclass_cache_interceptor";
+    public static final String IGNORE_INHERITANCE_SUBCLASS_DEFAULT_REDIRECTORS = "metadata_warning_ignore_inheritance_subclass_default_redirectors";
     public static final String IGNORE_INHERITANCE_SUBCLASS_READ_ONLY = "metadata_warning_ignore_inheritance_subclass_read_only";
     
     public static final String IGNORE_MAPPED_SUPERCLASS_COPY_POLICY = "metadata_warning_ignore_mapped_superclass_copy_policy";
     public static final String IGNORE_MAPPED_SUPERCLASS_ASSOCIATION_OVERRIDE = "metadata_warning_ignore_mapped_superclass_association_override";
     public static final String IGNORE_MAPPED_SUPERCLASS_ATTRIBUTE_OVERRIDE = "metadata_warning_ignore_mapped_superclass_attribute_override";
     public static final String IGNORE_MAPPED_SUPERCLASS_CACHE = "metadata_warning_ignore_mapped_superclass_cache";
+    public static final String IGNORE_MAPPED_SUPERCLASS_CACHE_INTERCEPTOR = "metadata_warning_ignore_mapped_superclass_cache_interceptor";
+    public static final String IGNORE_MAPPED_SUPERCLASS_DEFAULT_REDIRECTORS = "metadata_warning_ignore_mapped_superclass_default_redirectors";
     public static final String IGNORE_MAPPED_SUPERCLASS_CHANGE_TRACKING = "metadata_warning_ignore_mapped_superclass_change_tracking";
     public static final String IGNORE_MAPPED_SUPERCLASS_CUSTOMIZER = "metadata_warning_ignore_mapped_superclass_customizer";
     public static final String IGNORE_MAPPED_SUPERCLASS_EXISTENCE_CHECKING = "metadata_warning_ignore_mapped_superclass_existence_checking";
@@ -166,6 +170,7 @@ public class MetadataLogger {
         m_ctxStrings.put(IGNORE_VERSION_LOCKING, IGNORE_VERSION_LOCKING);
         
         m_ctxStrings.put(IGNORE_INHERITANCE_SUBCLASS_CACHE, IGNORE_INHERITANCE_SUBCLASS_CACHE);
+        m_ctxStrings.put(IGNORE_INHERITANCE_SUBCLASS_CACHE_INTERCEPTOR, IGNORE_INHERITANCE_SUBCLASS_CACHE_INTERCEPTOR);
         m_ctxStrings.put(IGNORE_INHERITANCE_SUBCLASS_READ_ONLY, IGNORE_INHERITANCE_SUBCLASS_READ_ONLY);
        
         m_ctxStrings.put(IGNORE_MAPPED_SUPERCLASS_COPY_POLICY, IGNORE_MAPPED_SUPERCLASS_COPY_POLICY);
@@ -173,6 +178,7 @@ public class MetadataLogger {
         m_ctxStrings.put(IGNORE_MAPPED_SUPERCLASS_ATTRIBUTE_OVERRIDE, IGNORE_MAPPED_SUPERCLASS_ATTRIBUTE_OVERRIDE);
         m_ctxStrings.put(IGNORE_MAPPED_SUPERCLASS_OPTIMISTIC_LOCKING, IGNORE_MAPPED_SUPERCLASS_OPTIMISTIC_LOCKING);
         m_ctxStrings.put(IGNORE_MAPPED_SUPERCLASS_CACHE, IGNORE_MAPPED_SUPERCLASS_CACHE);
+        m_ctxStrings.put(IGNORE_MAPPED_SUPERCLASS_CACHE_INTERCEPTOR, IGNORE_MAPPED_SUPERCLASS_CACHE_INTERCEPTOR);
         m_ctxStrings.put(IGNORE_MAPPED_SUPERCLASS_CHANGE_TRACKING, IGNORE_MAPPED_SUPERCLASS_CHANGE_TRACKING);
         m_ctxStrings.put(IGNORE_MAPPED_SUPERCLASS_CUSTOMIZER, IGNORE_MAPPED_SUPERCLASS_CUSTOMIZER);
         m_ctxStrings.put(IGNORE_MAPPED_SUPERCLASS_READ_ONLY, IGNORE_MAPPED_SUPERCLASS_READ_ONLY);

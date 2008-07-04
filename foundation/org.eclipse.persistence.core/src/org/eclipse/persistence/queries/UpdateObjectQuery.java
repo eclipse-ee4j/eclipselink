@@ -60,8 +60,10 @@ public class UpdateObjectQuery extends WriteObjectQuery {
      */
     public void executeCommit() throws DatabaseException, OptimisticLockException {
         // Check for redirection.
-        if (getRedirector() != null) {
-            redirectQuery(this, session, translationRow);
+        QueryRedirector localRedirector = getRedirector();
+        // refactored redirection for bug 3241138
+        if ( localRedirector!= null) {
+            redirectQuery(localRedirector, this, session, translationRow);
             return;
         }
         getQueryMechanism().updateObjectForWrite();
@@ -73,8 +75,10 @@ public class UpdateObjectQuery extends WriteObjectQuery {
      */
     public void executeCommitWithChangeSet() throws DatabaseException, OptimisticLockException {
         // Check for redirection.
-        if (getRedirector() != null) {
-            redirectQuery(this, session, translationRow);
+        QueryRedirector localRedirector = getRedirector();
+        // refactored redirection for bug 3241138
+        if ( localRedirector!= null) {
+            redirectQuery(localRedirector, this, session, translationRow);
             return;
         }
         getQueryMechanism().updateObjectForWriteWithChangeSet();
@@ -121,6 +125,15 @@ public class UpdateObjectQuery extends WriteObjectQuery {
         customUpdateQuery.setCascadePolicy(getCascadePolicy());
         customUpdateQuery.setShouldMaintainCache(shouldMaintainCache());
         customUpdateQuery.setModifyRow(null);
+    }
+
+    /**
+     * INTERNAL:
+     * Returns the specific default redirector for this query type.  There are numerous default query redirectors.
+     * See ClassDescriptor for their types.
+     */
+    protected QueryRedirector getDefaultRedirector(){
+        return descriptor.getDefaultUpdateObjectQueryRedirector();
     }
 
     /**

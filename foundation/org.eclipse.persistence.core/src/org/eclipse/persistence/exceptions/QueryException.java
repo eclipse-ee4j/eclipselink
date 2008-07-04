@@ -161,6 +161,7 @@ public class QueryException extends ValidationException {
     public final static int ADD_ARGS_NOT_SUPPORTED = 6148;
     public final static int UNNAMED_ARG_NOT_SUPPORTED = 6149;
     public final static int MAP_KEY_IS_NULL = 6150;
+    public final static int UNABLE_TO_SET_REDIRECTOR_FROM_HINT = 6151;
 
     /**
      * INTERNAL:
@@ -938,6 +939,15 @@ public class QueryException extends ValidationException {
 
         QueryException queryException = new QueryException(ExceptionMessageGenerator.buildMessage(QueryException.class, REDIRECTION_CLASS_OR_METHOD_NOT_SET, args), query);
         queryException.setErrorCode(REDIRECTION_CLASS_OR_METHOD_NOT_SET);
+        return queryException;
+    }
+
+    public static QueryException unableToSetRedirectorOnQueryFromHint(DatabaseQuery query, String hint, String redirectorClass, Exception ex) {
+        Object[] args = {hint, redirectorClass  };
+
+        QueryException queryException = new QueryException(ExceptionMessageGenerator.buildMessage(QueryException.class, UNABLE_TO_SET_REDIRECTOR_FROM_HINT, args), query);
+        queryException.setInternalException(ex);
+        queryException.setErrorCode(UNABLE_TO_SET_REDIRECTOR_FROM_HINT);
         return queryException;
     }
 

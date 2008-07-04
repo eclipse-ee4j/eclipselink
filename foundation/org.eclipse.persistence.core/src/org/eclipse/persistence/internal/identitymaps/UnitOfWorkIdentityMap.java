@@ -14,6 +14,8 @@ package org.eclipse.persistence.internal.identitymaps;
 
 import java.util.*;
 
+import org.eclipse.persistence.descriptors.ClassDescriptor;
+
 /**
  * Unit of work specific identity map which avoid additional overhead not required in unit of work,
  * such as locking and synchronization.
@@ -22,11 +24,12 @@ import java.util.*;
  */
 public class UnitOfWorkIdentityMap extends FullIdentityMap {
 
-    public UnitOfWorkIdentityMap(int size) {
+    public UnitOfWorkIdentityMap(int size, ClassDescriptor descriptor) {
         super();
         this.maxSize = size;
         // PERF: Use a HashMap as more efficient than a ConcurrentMap and single threaded.
         this.cacheKeys = new HashMap(size);
+        this.descriptor = descriptor;
     }
     
     public CacheKey createCacheKey(Vector primaryKey, Object object, Object writeLockValue, long readTime) {

@@ -3,6 +3,8 @@ package org.eclipse.persistence.internal.identitymaps;
 import java.lang.ref.ReferenceQueue;
 import java.util.Vector;
 
+import org.eclipse.persistence.descriptors.ClassDescriptor;
+
 public class WeakUnitOfWorkIdentityMap extends UnitOfWorkIdentityMap {
 
     protected ReferenceQueue referenceQueue;
@@ -12,8 +14,8 @@ public class WeakUnitOfWorkIdentityMap extends UnitOfWorkIdentityMap {
     /** PERF: Keep track of a cleanup size to avoid cleanup bottleneck for large caches. */
     protected volatile int cleanupSize;
 
-    public WeakUnitOfWorkIdentityMap(int size) {
-        super(size);
+    public WeakUnitOfWorkIdentityMap(int size, ClassDescriptor descriptor) {
+        super(size, descriptor);
         this.cleanupCount = 0;
         this.cleanupSize = size;
     }

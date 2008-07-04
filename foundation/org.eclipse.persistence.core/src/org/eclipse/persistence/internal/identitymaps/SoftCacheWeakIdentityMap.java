@@ -14,6 +14,8 @@ package org.eclipse.persistence.internal.identitymaps;
 
 import java.lang.ref.*;
 
+import org.eclipse.persistence.descriptors.ClassDescriptor;
+
 /**
  * <p><b>Purpose</b>: A SoftCacheWeakIdentityMap is identical to the WeakIdentityMap, however the weak reference
  * can be a performance problem for some types of apps because it can cause too much garbage collection
@@ -28,8 +30,8 @@ import java.lang.ref.*;
  * @since TOPLink/Java 1.2
  */
 public class SoftCacheWeakIdentityMap extends HardCacheWeakIdentityMap {
-    public SoftCacheWeakIdentityMap(int size) {
-        super(size);
+    public SoftCacheWeakIdentityMap(int size, ClassDescriptor descriptor) {
+        super(size, descriptor);
     }
 
     /**

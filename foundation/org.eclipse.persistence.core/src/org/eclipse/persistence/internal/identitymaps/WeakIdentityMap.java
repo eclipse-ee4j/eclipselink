@@ -14,6 +14,8 @@ package org.eclipse.persistence.internal.identitymaps;
 
 import java.util.*;
 
+import org.eclipse.persistence.descriptors.ClassDescriptor;
+
 /**
  * <p><b>Purpose</b>: A WeakIdentityMap holds all objects referenced by the application only.
  * The weak identity map is similar to the full identity map except for the fact that it allows
@@ -32,8 +34,8 @@ public class WeakIdentityMap extends FullIdentityMap {
     /** PERF: Keep track of a cleanup size to avoid cleanup bottleneck for large caches. */
     protected volatile int cleanupSize;
 
-    public WeakIdentityMap(int size) {
-        super(size);
+    public WeakIdentityMap(int size, ClassDescriptor descriptor) {
+        super(size, descriptor);
         this.cleanupCount = 0;
         this.cleanupSize = size;
     }

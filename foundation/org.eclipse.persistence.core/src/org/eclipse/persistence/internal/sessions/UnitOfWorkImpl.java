@@ -3018,7 +3018,11 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
                 if (!isNestedUnitOfWork() && !manager.getAcquiredLocks().isEmpty()) {
                     // if the locks have not already been released (!acquiredLocks.empty)
                     // then there must have been an error, release all of the locks.
-                    getParent().getIdentityMapAccessorInstance().getWriteLockManager().releaseAllAcquiredLocks(manager);
+                    try{
+                        getParent().getIdentityMapAccessorInstance().getWriteLockManager().releaseAllAcquiredLocks(manager);
+                    }catch(Exception ex){
+                        //something has gone wrong twice so lets make sure the original exception is raised
+                    }
                     setMergeManager(null);
                 }
                 getParent().getIdentityMapAccessorInstance().releaseWriteLock();

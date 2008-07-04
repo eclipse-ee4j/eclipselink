@@ -14,6 +14,7 @@ package org.eclipse.persistence.internal.identitymaps;
 
 import java.util.*;
 
+import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.internal.helper.linkedlist.*;
 
 /**
@@ -34,8 +35,8 @@ public class HardCacheWeakIdentityMap extends WeakIdentityMap {
     /** A subset of cache entries have hard references maintained in this list to reduce garbage collection frequency */
     protected ExposedNodeLinkedList referenceCache;
 
-    public HardCacheWeakIdentityMap(int size) {
-        super(size);
+    public HardCacheWeakIdentityMap(int size, ClassDescriptor descriptor) {
+        super(size, descriptor);
         this.referenceCache = new ExposedNodeLinkedList();
     }
 

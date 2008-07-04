@@ -420,8 +420,8 @@ public class WriteLockManager {
         Iterator locks = mergeManager.getAcquiredLocks().iterator();
         while (locks.hasNext()) {
             CacheKey cacheKeyToRemove = (CacheKey)locks.next();
-            if (cacheKeyToRemove.getObject() == null && cacheKeyToRemove.getOwningMap() != null){
-                cacheKeyToRemove.getOwningMap().remove(cacheKeyToRemove);
+            if (cacheKeyToRemove.getObject() == null ){
+                cacheKeyToRemove.removeFromOwningMap();
             }
             cacheKeyToRemove.release();
             locks.remove();

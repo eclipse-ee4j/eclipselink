@@ -253,6 +253,7 @@ public class CommitManager {
                     // will always be a unitOfWork so we need to cascade dependent parts
                     getSession().executeQuery(commitQuery);
                 }
+                uowChangeSet.putNewObjectInChangesList(changeSetToWrite, session);
                 ((UnitOfWorkImpl)getSession()).updateChangeTrackersIfRequired(objectToWrite, changeSetToWrite, (UnitOfWorkImpl)getSession(), descriptor);
 
                 //after the query has executed lets clear the change detection policies

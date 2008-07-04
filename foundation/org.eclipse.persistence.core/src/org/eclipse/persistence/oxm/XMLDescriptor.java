@@ -27,6 +27,7 @@ import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.helper.DatabaseTable;
 import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.internal.helper.NonSynchronizedVector;
+import org.eclipse.persistence.internal.identitymaps.AbstractIdentityMap;
 import org.eclipse.persistence.internal.identitymaps.IdentityMap;
 import org.eclipse.persistence.internal.oxm.TreeObjectBuilder;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
@@ -74,7 +75,7 @@ public class XMLDescriptor extends ClassDescriptor {
         this.shouldDisableCacheHits = false;
         this.identityMapSize = 100;
         this.remoteIdentityMapSize = -1;
-        this.identityMapClass = IdentityMap.getDefaultIdentityMapClass();
+        this.identityMapClass = AbstractIdentityMap.getDefaultIdentityMapClass();
         this.remoteIdentityMapClass = null;
         this.descriptorType = NORMAL;
         this.shouldAlwaysRefreshCacheOnRemote = false;

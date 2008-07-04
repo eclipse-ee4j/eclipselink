@@ -466,11 +466,6 @@ public abstract class DatabaseQueryMechanism implements Cloneable, Serializable 
 
             // register the object before post insert to resolve possible cycles
             registerObjectInIdentityMap();
-            if (changeSet != null) {
-                //make sure that we put this new changeset in the changes list of the 
-                //uow changeset for serialization, or customer usage.
-                ((UnitOfWorkChangeSet)changeSet.getUOWChangeSet()).putNewObjectInChangesList(changeSet, session);
-            }
         }
 
         commitManager.markPostModifyCommitInProgress(object);
