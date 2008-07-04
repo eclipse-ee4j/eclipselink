@@ -521,7 +521,7 @@ public class PropertiesHandler {
                 {TargetDatabase.MySQL4, pcg + "MySQLPlatform"}, // 211249: keep backwards compatibility
                 {TargetDatabase.PointBase,  pcg + "PointBasePlatform"},
                 {TargetDatabase.PostgreSQL,  pcg + "PostgreSQLPlatform"},
-                {TargetDatabase.SQLAnyWhere,  pcg + "SQLAnyWherePlatform"},
+                {TargetDatabase.SQLAnywhere,  pcg + "SQLAnywherePlatform"},
                 {TargetDatabase.SQLServer,  pcg + "SQLServerPlatform"},
                 {TargetDatabase.Sybase,  pcg + "SybasePlatform"},
                 {TargetDatabase.TimesTen,  pcg + "TimesTenPlatform"}

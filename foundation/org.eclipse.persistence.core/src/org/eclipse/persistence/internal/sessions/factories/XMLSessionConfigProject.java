@@ -811,6 +811,8 @@ public class XMLSessionConfigProject extends org.eclipse.persistence.sessions.Pr
         platformClassMapping.setXPath("platform-class/text()");
         platformClassMapping.setConverter(new Converter(){
             private Map platformList;
+            private String oldPrefix = "oracle.toplink.";
+            private String newPrefix = "org.eclipse.persistence.";
             public Object convertObjectValueToDataValue(Object objectValue, Session session){
                 //if this code is writin out, write out the converted value
                 return objectValue;
@@ -818,6 +820,9 @@ public class XMLSessionConfigProject extends org.eclipse.persistence.sessions.Pr
 
             public Object convertDataValueToObjectValue(Object dataValue, Session session){
                 // convert deprecated platforms to new platforms
+                if(((String)dataValue).startsWith(oldPrefix)) {
+                    dataValue = ((String)dataValue).replaceFirst(oldPrefix, newPrefix);
+                }
                 Object result = platformList.get(dataValue);
                 if (result == null){
                     return dataValue;
@@ -843,11 +848,12 @@ public class XMLSessionConfigProject extends org.eclipse.persistence.sessions.Pr
                 this.platformList.put("org.eclipse.persistence.internal.databaseaccess.InformixPlatform", "org.eclipse.persistence.platform.database.InformixPlatform");
                 this.platformList.put("org.eclipse.persistence.internal.databaseaccess.OraclePlatform", "org.eclipse.persistence.platform.database.oracle.OraclePlatform");
                 this.platformList.put("org.eclipse.persistence.internal.databaseaccess.PointBasePlatform", "org.eclipse.persistence.platform.database.PointBasePlatform");
-                this.platformList.put("org.eclipse.persistence.internal.databaseaccess.SQLAnyWherePlatform", "org.eclipse.persistence.platform.database.SQLAnyWherePlatform");
+                this.platformList.put("org.eclipse.persistence.internal.databaseaccess.SQLAnyWherePlatform", "org.eclipse.persistence.platform.database.SQLAnywherePlatform");
                 this.platformList.put("org.eclipse.persistence.internal.databaseaccess.SQLServerPlatform", "org.eclipse.persistence.platform.database.SQLServerPlatform");
                 this.platformList.put("org.eclipse.persistence.internal.databaseaccess.SybasePlatform", "org.eclipse.persistence.platform.database.SybasePlatform");
                 this.platformList.put("org.eclipse.persistence.oraclespecific.Oracle8Platform", "org.eclipse.persistence.platform.database.oracle.Oracle8Platform");
                 this.platformList.put("org.eclipse.persistence.oraclespecific.Oracle9Platform", "org.eclipse.persistence.platform.database.oracle.Oracle9Platform");
+                this.platformList.put("org.eclipse.persistence.platform.database.SQLAnyWherePlatform", "org.eclipse.persistence.platform.database.SQLAnywherePlatform");
             }
             
         });

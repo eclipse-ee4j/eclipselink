@@ -712,6 +712,8 @@ public class ObjectPersistenceRuntimeXMLProject extends NamespaceResolvableProje
         platformMapping.setConverter(new Converter() {
             protected DatabaseMapping mapping;
             private Map platformList;
+            private String oldPrefix = "oracle.toplink.";
+            private String newPrefix = "org.eclipse.persistence.";
 
             public Object convertObjectValueToDataValue(Object objectValue, Session session) {
                 if (objectValue == null) {
@@ -721,6 +723,9 @@ public class ObjectPersistenceRuntimeXMLProject extends NamespaceResolvableProje
             }
 
             public Object convertDataValueToObjectValue(Object fieldValue, Session session) {
+                if(((String)fieldValue).startsWith(oldPrefix)) {
+                    fieldValue = ((String)fieldValue).replaceFirst(oldPrefix, newPrefix);
+                }
                 // convert deprecated platforms to new platforms
                 Object result = platformList.get(fieldValue);
                 if (result != null) {
@@ -768,11 +773,12 @@ public class ObjectPersistenceRuntimeXMLProject extends NamespaceResolvableProje
                 this.platformList.put("org.eclipse.persistence.internal.databaseaccess.InformixPlatform", "org.eclipse.persistence.platform.database.InformixPlatform");
                 this.platformList.put("org.eclipse.persistence.internal.databaseaccess.OraclePlatform", "org.eclipse.persistence.platform.database.oracle.OraclePlatform");
                 this.platformList.put("org.eclipse.persistence.internal.databaseaccess.PointBasePlatform", "org.eclipse.persistence.platform.database.PointBasePlatform");
-                this.platformList.put("org.eclipse.persistence.internal.databaseaccess.SQLAnyWherePlatform", "org.eclipse.persistence.platform.database.SQLAnyWherePlatform");
+                this.platformList.put("org.eclipse.persistence.internal.databaseaccess.SQLAnyWherePlatform", "org.eclipse.persistence.platform.database.SQLAnywherePlatform");
                 this.platformList.put("org.eclipse.persistence.internal.databaseaccess.SQLServerPlatform", "org.eclipse.persistence.platform.database.SQLServerPlatform");
                 this.platformList.put("org.eclipse.persistence.internal.databaseaccess.SybasePlatform", "org.eclipse.persistence.platform.database.SybasePlatform");
                 this.platformList.put("org.eclipse.persistence.oraclespecific.Oracle8Platform", "org.eclipse.persistence.platform.database.oracle.Oracle8Platform");
                 this.platformList.put("org.eclipse.persistence.oraclespecific.Oracle9Platform", "org.eclipse.persistence.platform.database.oracle.Oracle9Platform");
+                this.platformList.put("org.eclipse.persistence.platform.database.SQLAnyWherePlatform", "org.eclipse.persistence.platform.database.SQLAnywherePlatform");
                 this.mapping = mapping;
                 // CR#... Mapping must also have the field classification.
                 if (this.mapping.isDirectToFieldMapping()) {
@@ -3568,7 +3574,7 @@ public class ObjectPersistenceRuntimeXMLProject extends NamespaceResolvableProje
         joinFetchMapping.setConverter(joinFetchConverter);
         joinFetchMapping.setNullValue(ForeignReferenceMapping.NONE);
         descriptor.addMapping(joinFetchMapping);        
-
+        
         XMLCompositeObjectMapping indirectionPolicyMapping = new XMLCompositeObjectMapping();
         indirectionPolicyMapping.setReferenceClass(IndirectionPolicy.class);
         // Handle translation of NoIndirectionPolicy -> null.

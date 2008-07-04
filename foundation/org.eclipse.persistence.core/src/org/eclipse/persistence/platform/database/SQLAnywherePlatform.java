@@ -19,7 +19,7 @@ package org.eclipse.persistence.platform.database;
  *
  * @since TOPLink/Java 2.1
  */
-public class SQLAnyWherePlatform extends SybasePlatform {
+public class SQLAnywherePlatform extends SybasePlatform {
     public boolean isSQLAnywhere() {
         return true;
     }
