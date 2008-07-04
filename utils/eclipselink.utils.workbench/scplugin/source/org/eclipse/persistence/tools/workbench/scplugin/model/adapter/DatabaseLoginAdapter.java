@@ -326,9 +326,10 @@ public final class DatabaseLoginAdapter extends LoginAdapter {
 		oldClasses.put("org.eclipse.persistence.oraclespecific.Oracle9Platform",              "org.eclipse.persistence.platform.database.oracle.Oracle9Platform");
 		oldClasses.put("org.eclipse.persistence.internal.databaseaccess.DatabasePlatform",    "org.eclipse.persistence.platform.database.DatabasePlatform");
 		oldClasses.put("org.eclipse.persistence.internal.databaseaccess.PointBasePlatform",   "org.eclipse.persistence.platform.database.PointBasePlatform");
-		oldClasses.put("org.eclipse.persistence.internal.databaseaccess.SQLAnyWherePlatform", "org.eclipse.persistence.platform.database.SQLAnyWherePlatform");
+		oldClasses.put("org.eclipse.persistence.internal.databaseaccess.SQLAnyWherePlatform", "org.eclipse.persistence.platform.database.SQLAnywherePlatform");
 		oldClasses.put("org.eclipse.persistence.internal.databaseaccess.SQLServerPlatform",   "org.eclipse.persistence.platform.database.SQLServerPlatform");
 		oldClasses.put("org.eclipse.persistence.internal.databaseaccess.SybasePlatform",      "org.eclipse.persistence.platform.database.SybasePlatform");
+		oldClasses.put("org.eclipse.persistence.platform.database.SQLAnyWherePlatform", "org.eclipse.persistence.platform.database.SQLAnywherePlatform");
 
 		return oldClasses;
 	}

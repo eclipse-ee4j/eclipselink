@@ -42,7 +42,7 @@ public class TargetDatabase {
     public static final String  MySQL = "MySQL";
     public static final String  PointBase = "PointBase";
     public static final String  PostgreSQL = "PostgreSQL";
-    public static final String  SQLAnyWhere = "SQLAnyWhere";
+    public static final String  SQLAnywhere = "SQLAnywhere";
     public static final String  SQLServer = "SQLServer";
     public static final String  Sybase = "Sybase";
     public static final String  TimesTen = "TimesTen";
