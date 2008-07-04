@@ -723,6 +723,9 @@ public class ObjectPersistenceRuntimeXMLProject extends NamespaceResolvableProje
             }
 
             public Object convertDataValueToObjectValue(Object fieldValue, Session session) {
+                if(fieldValue == null) {
+                    return null;
+                }
                 if(((String)fieldValue).startsWith(oldPrefix)) {
                     fieldValue = ((String)fieldValue).replaceFirst(oldPrefix, newPrefix);
                 }
@@ -732,25 +735,23 @@ public class ObjectPersistenceRuntimeXMLProject extends NamespaceResolvableProje
                     fieldValue = result;
                 }
 
-                Object attributeValue = null;
-                if (fieldValue != null) {
-                    Class attributeClass = (Class)((AbstractSession)session).getDatasourcePlatform().convertObject(fieldValue, ClassConstants.CLASS);
-                    try {
-                        if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) {
-                            try {
-                                attributeValue = AccessController.doPrivileged(new PrivilegedNewInstanceFromClass(attributeClass));
-                            }
-                            catch (PrivilegedActionException exception) {
-                                throw ConversionException.couldNotBeConverted(fieldValue, attributeClass, exception.getException());
-                            }
+                Object attributeValue;
+                Class attributeClass = (Class)((AbstractSession)session).getDatasourcePlatform().convertObject(fieldValue, ClassConstants.CLASS);
+                try {
+                    if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) {
+                        try {
+                            attributeValue = AccessController.doPrivileged(new PrivilegedNewInstanceFromClass(attributeClass));
                         }
-                        else {
-                            attributeValue = PrivilegedAccessHelper.newInstanceFromClass(attributeClass);
+                        catch (PrivilegedActionException exception) {
+                            throw ConversionException.couldNotBeConverted(fieldValue, attributeClass, exception.getException());
                         }
                     }
-                    catch (Exception exception) {
-                        throw ConversionException.couldNotBeConverted(fieldValue, attributeClass, exception);
+                    else {
+                        attributeValue = PrivilegedAccessHelper.newInstanceFromClass(attributeClass);
                     }
+                }
+                catch (Exception exception) {
+                    throw ConversionException.couldNotBeConverted(fieldValue, attributeClass, exception);
                 }
 
                 return attributeValue;

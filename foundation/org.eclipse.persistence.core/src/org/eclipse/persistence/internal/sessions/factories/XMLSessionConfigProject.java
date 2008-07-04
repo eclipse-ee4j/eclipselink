@@ -819,6 +819,9 @@ public class XMLSessionConfigProject extends org.eclipse.persistence.sessions.Pr
             }
 
             public Object convertDataValueToObjectValue(Object dataValue, Session session){
+                if(dataValue == null) {
+                    return null;
+                }
                 // convert deprecated platforms to new platforms
                 if(((String)dataValue).startsWith(oldPrefix)) {
                     dataValue = ((String)dataValue).replaceFirst(oldPrefix, newPrefix);
