@@ -103,8 +103,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
     public static Test suite() {
         TestSuite suite = new TestSuite();
         suite.setName("EntityManagerJUnitTestSuite");
-
-        suite.addTest(new EntityManagerJUnitTestSuite("testCloneEmbeddable"));        
+        
         suite.addTest(new EntityManagerJUnitTestSuite("testSetup"));
         suite.addTest(new EntityManagerJUnitTestSuite("testWeaving"));
         suite.addTest(new EntityManagerJUnitTestSuite("testClearEntityManagerWithoutPersistenceContext"));
@@ -243,6 +242,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         suite.addTest(new EntityManagerJUnitTestSuite("testConverterIn"));
         suite.addTest(new EntityManagerJUnitTestSuite("testExceptionForPersistNonEntitySubclass"));
         suite.addTest(new EntityManagerJUnitTestSuite("testEnabledPersistNonEntitySubclass"));
+        suite.addTest(new EntityManagerJUnitTestSuite("testCloneEmbeddable"));    
         return suite;
     }
 
