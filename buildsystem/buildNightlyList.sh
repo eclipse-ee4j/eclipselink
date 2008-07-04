@@ -31,11 +31,11 @@ echo "      <p> Automated builds and the corresponding Javadocs are created ever
 echo "    </description>                                                           " >> $tmp/index.xml
 echo "  <section class=\"main\" name=\"Nightly Builds\">                           " >> $tmp/index.xml
 echo "    <description>                                                            " >> $tmp/index.xml
-echo "      <p>                                                                    " >> $tmp/index.xml
 
 curdir=`pwd`
 for version in `ls -dr [0-9]*` ; do
     cd ${version}
+    echo "      <p>                                                                    " >> $tmp/index.xml
     echo "        <table border=\"1\">                                                 " >> $tmp/index.xml
     echo "          <tr>                                                               " >> $tmp/index.xml
     echo "            <th colspan=\"9\" align=\"center\"> ${version} Nightly Build Results </th>" >> $tmp/index.xml
