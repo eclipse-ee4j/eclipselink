@@ -73,6 +73,12 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
 
     /** A redirector allows for a queries execution to be the execution of a piece of code. */
     protected QueryRedirector redirector;
+    
+    /**
+     * Can be set to true in the case there is a redirector or a default redirector but
+     * the user does not want the query redirected.
+     */
+    protected boolean doNotRedirect = false;
 
     /** Flag used for a query to bypass the identitymap and unit of work. */
 
@@ -592,9 +598,10 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
     public Object execute(AbstractSession session, AbstractRecord translationRow) throws DatabaseException, OptimisticLockException {
         DatabaseQuery queryToExecute = this;
 
+        QueryRedirector localRedirector = getRedirector();
         // refactored redirection for bug 3241138
-        if (getRedirector() != null) {
-            return redirectQuery(queryToExecute, session, translationRow);
+        if ( localRedirector!= null) {
+            return redirectQuery(localRedirector, queryToExecute, session, translationRow);
         }
 
         // Bug 5529564 - If this is a user defined selection query (custom SQL), 
@@ -622,12 +629,6 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
                 hasCustomQuery = true;
                 // The custom query will be used not the original.
                 queryToExecute = customQuery;
-
-                // Check for redirection.
-                // bug 3241138 - ensure all of the redirector aflow executes on the customQuery
-                if (queryToExecute.getRedirector() != null) {                
-                    return redirectQuery(queryToExecute, session, translationRow);
-                }
             }
         }
 
@@ -653,6 +654,11 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
         queryToExecute.setSession(session);
         if (hasCustomQuery) {
             prepareCustomQuery(queryToExecute);
+            localRedirector = queryToExecute.getRedirector();
+            // refactored redirection for bug 3241138
+            if ( localRedirector!= null) {
+                return redirectQuery(localRedirector, queryToExecute, session, translationRow);
+            }
         }
         queryToExecute.prepareForExecution();
 
@@ -914,6 +920,15 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
     }
 
     /**
+     * INTERNAL:
+     * Returns the specific default redirector for this query type.  There are numerous default query redirectors.
+     * See ClassDescriptor for their types.
+     */
+    protected QueryRedirector getDefaultRedirector(){
+        return descriptor.getDefaultQueryRedirector();
+    }
+    
+    /**
      * PUBLIC:
      * Return the query redirector.
      * A redirector can be used in a query to replace its execution with the execution of code.
@@ -921,7 +936,18 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
      * @see QueryRedirector
      */
     public QueryRedirector getRedirector() {
-        return redirector;
+        if (doNotRedirect){
+            return null;
+        }
+        if (redirector != null){
+            return redirector;
+        }
+        if (descriptor != null){
+            redirector = getDefaultRedirector();
+            if (redirector == null) doNotRedirect = true; // PERF - short circuit no default redirector
+            return redirector;
+        }
+        return null;
     }
 
     /**
@@ -1531,8 +1557,8 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
      * Added for bug 3241138
      *
      */
-    public Object redirectQuery(DatabaseQuery queryToRedirect, AbstractSession session, AbstractRecord translationRow) {
-        if (queryToRedirect.getRedirector() == null) {
+    public Object redirectQuery(QueryRedirector redirector, DatabaseQuery queryToRedirect, AbstractSession session, AbstractRecord translationRow) {
+        if (redirector == null ) {
             return null;
         }
         DatabaseQuery queryToExecute = (DatabaseQuery)queryToRedirect.clone();
@@ -1542,7 +1568,7 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
         // get set on the clone, but not on the original object. So before returning 
         // the results, set the descriptor from the clone onto this object (original
         // query) - GJPP, BUG# 2692956
-        Object toReturn = queryToRedirect.getRedirector().invokeQuery(queryToExecute, translationRow, session);
+        Object toReturn = redirector.invokeQuery(queryToExecute, translationRow, session);
         setDescriptor(queryToExecute.getDescriptor());
         return toReturn;
     }
@@ -1826,6 +1852,7 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
      */
     public void setRedirector(QueryRedirector redirector) {
         this.redirector = redirector;
+        this.doNotRedirect = false;
     }
 
     /**
@@ -2159,5 +2186,25 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
      */
     public boolean isNativeConnectionRequired() {
         return isNativeConnectionRequired;
+    }
+
+    /**
+     * This method is used in combination with redirected queries.  If a redirector is set on the
+     * query or there is a default redirector on the Descriptor setting this value to true
+     * will force EclipseLink to ignore the redirector during execution.  This setting will be
+     * used most often when reexecuting the query within a redirector.
+     */
+    public boolean getDoNotRedirect() {
+        return doNotRedirect;
+    }
+
+    /**
+     * This method is used in combination with redirected queries.  If a redirector is set on the
+     * query or there is a default redirector on the Descriptor setting this value to true
+     * will force EclipseLink to ignore the redirector during execution.  This setting will be
+     * used most often when reexecuting the query within a redirector.
+     */
+    public void setDoNotRedirect(boolean doNotRedirect) {
+        this.doNotRedirect = doNotRedirect;
     }
 }

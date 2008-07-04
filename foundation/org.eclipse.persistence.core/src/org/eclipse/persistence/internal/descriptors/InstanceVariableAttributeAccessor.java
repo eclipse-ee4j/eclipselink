@@ -105,6 +105,14 @@ public class InstanceVariableAttributeAccessor extends AttributeAccessor {
     }
 
     /**
+     * Returns true if this attribute accessor has been initialized and now stores a reference to the
+     * class's attribute.  An attribute accessor can become uninitialized on serialization.
+     */
+    public boolean isInitialized(){
+        return this.attributeField !=  null;
+    }
+    
+    /**
      * Sets the value of the attributeField.
      */
     protected void setAttributeField(Field field) {

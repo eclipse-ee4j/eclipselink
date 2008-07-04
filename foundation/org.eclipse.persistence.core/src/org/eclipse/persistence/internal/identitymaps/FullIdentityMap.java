@@ -15,6 +15,8 @@ package org.eclipse.persistence.internal.identitymaps;
 import java.util.*;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.ConcurrentHashMap;
+
+import org.eclipse.persistence.descriptors.ClassDescriptor;
 /**
  * <p><b>Purpose</b>: A FullIdentityMap holds all objects stored within it for the life of the application.
  * <p><b>Responsibilities</b>:<ul>
@@ -23,7 +25,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * </ul>
  * @since TOPLink/Java 1.0
  */
-public class FullIdentityMap extends IdentityMap {
+public class FullIdentityMap extends AbstractIdentityMap {
 
     /** Hashtable of CacheKeys stored using their key. */
     protected Map<CacheKey, CacheKey> cacheKeys;
@@ -32,6 +34,11 @@ public class FullIdentityMap extends IdentityMap {
     
     public FullIdentityMap(int size) {
         super(size);
+        cacheKeys = new ConcurrentHashMap(size);
+    }
+
+    public FullIdentityMap(int size, ClassDescriptor descriptor) {
+        super(size, descriptor);
         cacheKeys = new ConcurrentHashMap(size);
     }
 

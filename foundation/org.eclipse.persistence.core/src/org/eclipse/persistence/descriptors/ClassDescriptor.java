@@ -30,10 +30,12 @@ import org.eclipse.persistence.internal.indirection.ProxyIndirectionPolicy;
 import org.eclipse.persistence.mappings.*;
 import org.eclipse.persistence.mappings.foundation.AbstractDirectMapping;
 import org.eclipse.persistence.queries.FetchGroup;
+import org.eclipse.persistence.queries.QueryRedirector;
 import org.eclipse.persistence.mappings.querykeys.*;
 import org.eclipse.persistence.expressions.*;
 import org.eclipse.persistence.internal.databaseaccess.*;
 import org.eclipse.persistence.exceptions.*;
+import org.eclipse.persistence.sessions.interceptors.CacheInterceptor;
 import org.eclipse.persistence.sessions.remote.*;
 import org.eclipse.persistence.annotations.IdValidation;
 import org.eclipse.persistence.descriptors.copying.*;
@@ -173,6 +175,29 @@ public class ClassDescriptor implements Cloneable, Serializable {
     /** Allow zero primary key validation to be configured. */
     protected IdValidation idValidation;
     
+    //Added for interceptor support.
+    protected Class cacheInterceptorClass;
+    //Added for interceptor support.
+    protected String cacheInterceptorClassName;
+    
+    //Added for default Redirectors
+    protected QueryRedirector defaultQueryRedirector;
+    protected QueryRedirector defaultReadAllQueryRedirector;
+    protected QueryRedirector defaultReadObjectQueryRedirector;
+    protected QueryRedirector defaultReportQueryRedirector;
+    protected QueryRedirector defaultUpdateObjectQueryRedirector;
+    protected QueryRedirector defaultInsertObjectQueryRedirector;
+    protected QueryRedirector defaultDeleteObjectQueryRedirector;
+    
+    //Added for default Redirectors
+    protected String defaultQueryRedirectorClassName;
+    protected String defaultReadAllQueryRedirectorClassName;
+    protected String defaultReadObjectQueryRedirectorClassName;
+    protected String defaultReportQueryRedirectorClassName;
+    protected String defaultUpdateObjectQueryRedirectorClassName;
+    protected String defaultInsertObjectQueryRedirectorClassName;
+    protected String defaultDeleteObjectQueryRedirectorClassName;
+    
     /**
      * PUBLIC:
      * Return a new descriptor.
@@ -194,7 +219,7 @@ public class ClassDescriptor implements Cloneable, Serializable {
         this.shouldDisableCacheHits = false;
         this.identityMapSize = 100;
         this.remoteIdentityMapSize = -1;
-        this.identityMapClass = IdentityMap.getDefaultIdentityMapClass();
+        this.identityMapClass = AbstractIdentityMap.getDefaultIdentityMapClass();
         this.remoteIdentityMapClass = null;
         this.descriptorType = NORMAL;
         this.shouldAlwaysRefreshCacheOnRemote = false;
@@ -918,6 +943,7 @@ public class ClassDescriptor implements Cloneable, Serializable {
     public void convertClassNamesToClasses(ClassLoader classLoader){
         Class descriptorClass = null;
         Class amendmentClass = null;
+        Class redirectorClass = null;
         CopyPolicy newCopyPolicy = null;
         try{
             if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
@@ -984,6 +1010,190 @@ public class ClassDescriptor implements Cloneable, Serializable {
         }
         if (newCopyPolicy != null){
             setCopyPolicy(newCopyPolicy);
+        }
+        try{
+            if (cacheInterceptorClass == null && cacheInterceptorClassName != null){
+                if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
+                    try {
+                        cacheInterceptorClass = (Class)AccessController.doPrivileged(new PrivilegedClassForName(cacheInterceptorClassName, true, classLoader));
+                    } catch (PrivilegedActionException exception) {
+                        throw ValidationException.classNotFoundWhileConvertingClassNames(cacheInterceptorClassName, exception.getException());
+                   }
+                } else {
+                    cacheInterceptorClass = org.eclipse.persistence.internal.security.PrivilegedAccessHelper.getClassForName(cacheInterceptorClassName, true, classLoader);
+                }
+            }
+        } catch (ClassNotFoundException exc){
+            throw ValidationException.classNotFoundWhileConvertingClassNames(cacheInterceptorClassName, exc);
+        }
+        if (this.defaultQueryRedirectorClassName != null){
+            try{
+                if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
+                    try {
+                        redirectorClass = (Class)AccessController.doPrivileged(new PrivilegedClassForName(defaultQueryRedirectorClassName, true, classLoader));
+                    } catch (PrivilegedActionException exception) {
+                        throw ValidationException.classNotFoundWhileConvertingClassNames(defaultQueryRedirectorClassName, exception.getException());
+                    }
+                    try {
+                        setDefaultQueryRedirector((QueryRedirector) AccessController.doPrivileged(new PrivilegedNewInstanceFromClass(redirectorClass)));
+                    } catch (PrivilegedActionException exception) {
+                        throw ValidationException.classNotFoundWhileConvertingClassNames(defaultQueryRedirectorClassName, exception.getException());
+                    }
+                } else {
+                    redirectorClass = org.eclipse.persistence.internal.security.PrivilegedAccessHelper.getClassForName(defaultQueryRedirectorClassName, true, classLoader);
+                    setDefaultQueryRedirector((QueryRedirector) org.eclipse.persistence.internal.security.PrivilegedAccessHelper.newInstanceFromClass(redirectorClass));
+                }
+            } catch (ClassNotFoundException exc) {
+                throw ValidationException.classNotFoundWhileConvertingClassNames(defaultQueryRedirectorClassName, exc);
+            } catch (Exception e) {
+                // Catches IllegalAccessException and InstantiationException
+                throw ValidationException.classNotFoundWhileConvertingClassNames(defaultQueryRedirectorClassName, e);
+            }
+        }
+
+        if (this.defaultReadObjectQueryRedirectorClassName != null){
+            try{
+                if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
+                    try {
+                        redirectorClass = (Class)AccessController.doPrivileged(new PrivilegedClassForName(defaultReadObjectQueryRedirectorClassName, true, classLoader));
+                    } catch (PrivilegedActionException exception) {
+                        throw ValidationException.classNotFoundWhileConvertingClassNames(defaultReadObjectQueryRedirectorClassName, exception.getException());
+                    }
+                    try {
+                        setDefaultReadObjectQueryRedirector((QueryRedirector) AccessController.doPrivileged(new PrivilegedNewInstanceFromClass(redirectorClass)));
+                    } catch (PrivilegedActionException exception) {
+                        throw ValidationException.classNotFoundWhileConvertingClassNames(defaultReadObjectQueryRedirectorClassName, exception.getException());
+                    }
+                } else {
+                    redirectorClass = org.eclipse.persistence.internal.security.PrivilegedAccessHelper.getClassForName(defaultReadObjectQueryRedirectorClassName, true, classLoader);
+                    setDefaultReadObjectQueryRedirector((QueryRedirector) org.eclipse.persistence.internal.security.PrivilegedAccessHelper.newInstanceFromClass(redirectorClass));
+                }
+            } catch (ClassNotFoundException exc) {
+                throw ValidationException.classNotFoundWhileConvertingClassNames(defaultReadObjectQueryRedirectorClassName, exc);
+            } catch (Exception e) {
+                // Catches IllegalAccessException and InstantiationException
+                throw ValidationException.classNotFoundWhileConvertingClassNames(defaultReadObjectQueryRedirectorClassName, e);
+            }
+        }
+        if (this.defaultReadAllQueryRedirectorClassName != null){
+            try{
+                if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
+                    try {
+                        redirectorClass = (Class)AccessController.doPrivileged(new PrivilegedClassForName(defaultReadAllQueryRedirectorClassName, true, classLoader));
+                    } catch (PrivilegedActionException exception) {
+                        throw ValidationException.classNotFoundWhileConvertingClassNames(defaultReadAllQueryRedirectorClassName, exception.getException());
+                    }
+                    try {
+                        setDefaultReadAllQueryRedirector((QueryRedirector) AccessController.doPrivileged(new PrivilegedNewInstanceFromClass(redirectorClass)));
+                    } catch (PrivilegedActionException exception) {
+                        throw ValidationException.classNotFoundWhileConvertingClassNames(defaultReadAllQueryRedirectorClassName, exception.getException());
+                    }
+                } else {
+                    redirectorClass = org.eclipse.persistence.internal.security.PrivilegedAccessHelper.getClassForName(defaultReadAllQueryRedirectorClassName, true, classLoader);
+                    setDefaultReadAllQueryRedirector((QueryRedirector) org.eclipse.persistence.internal.security.PrivilegedAccessHelper.newInstanceFromClass(redirectorClass));
+                }
+            } catch (ClassNotFoundException exc) {
+                throw ValidationException.classNotFoundWhileConvertingClassNames(defaultReadAllQueryRedirectorClassName, exc);
+            } catch (Exception e) {
+                // Catches IllegalAccessException and InstantiationException
+                throw ValidationException.classNotFoundWhileConvertingClassNames(defaultReadAllQueryRedirectorClassName, e);
+            }
+        }
+        if (this.defaultReportQueryRedirectorClassName != null){
+            try{
+                if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
+                    try {
+                        redirectorClass = (Class)AccessController.doPrivileged(new PrivilegedClassForName(defaultReportQueryRedirectorClassName, true, classLoader));
+                    } catch (PrivilegedActionException exception) {
+                        throw ValidationException.classNotFoundWhileConvertingClassNames(defaultReportQueryRedirectorClassName, exception.getException());
+                    }
+                    try {
+                        setDefaultReportQueryRedirector((QueryRedirector) AccessController.doPrivileged(new PrivilegedNewInstanceFromClass(redirectorClass)));
+                    } catch (PrivilegedActionException exception) {
+                        throw ValidationException.classNotFoundWhileConvertingClassNames(defaultReportQueryRedirectorClassName, exception.getException());
+                    }
+                } else {
+                    redirectorClass = org.eclipse.persistence.internal.security.PrivilegedAccessHelper.getClassForName(defaultReportQueryRedirectorClassName, true, classLoader);
+                    setDefaultReportQueryRedirector((QueryRedirector) org.eclipse.persistence.internal.security.PrivilegedAccessHelper.newInstanceFromClass(redirectorClass));
+                }
+            } catch (ClassNotFoundException exc) {
+                throw ValidationException.classNotFoundWhileConvertingClassNames(defaultReportQueryRedirectorClassName, exc);
+            } catch (Exception e) {
+                // Catches IllegalAccessException and InstantiationException
+                throw ValidationException.classNotFoundWhileConvertingClassNames(defaultReportQueryRedirectorClassName, e);
+            }
+        }
+        if (this.defaultInsertObjectQueryRedirectorClassName != null){
+            try{
+                if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
+                    try {
+                        redirectorClass = (Class)AccessController.doPrivileged(new PrivilegedClassForName(defaultInsertObjectQueryRedirectorClassName, true, classLoader));
+                    } catch (PrivilegedActionException exception) {
+                        throw ValidationException.classNotFoundWhileConvertingClassNames(defaultInsertObjectQueryRedirectorClassName, exception.getException());
+                    }
+                    try {
+                        setDefaultInsertObjectQueryRedirector((QueryRedirector) AccessController.doPrivileged(new PrivilegedNewInstanceFromClass(redirectorClass)));
+                    } catch (PrivilegedActionException exception) {
+                        throw ValidationException.classNotFoundWhileConvertingClassNames(defaultInsertObjectQueryRedirectorClassName, exception.getException());
+                    }
+                } else {
+                    redirectorClass = org.eclipse.persistence.internal.security.PrivilegedAccessHelper.getClassForName(defaultInsertObjectQueryRedirectorClassName, true, classLoader);
+                    setDefaultInsertObjectQueryRedirector((QueryRedirector) org.eclipse.persistence.internal.security.PrivilegedAccessHelper.newInstanceFromClass(redirectorClass));
+                }
+            } catch (ClassNotFoundException exc) {
+                throw ValidationException.classNotFoundWhileConvertingClassNames(defaultInsertObjectQueryRedirectorClassName, exc);
+            } catch (Exception e) {
+                // Catches IllegalAccessException and InstantiationException
+                throw ValidationException.classNotFoundWhileConvertingClassNames(defaultInsertObjectQueryRedirectorClassName, e);
+            }
+        }
+        if (this.defaultUpdateObjectQueryRedirectorClassName != null){
+            try{
+                if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
+                    try {
+                        redirectorClass = (Class)AccessController.doPrivileged(new PrivilegedClassForName(defaultUpdateObjectQueryRedirectorClassName, true, classLoader));
+                    } catch (PrivilegedActionException exception) {
+                        throw ValidationException.classNotFoundWhileConvertingClassNames(defaultUpdateObjectQueryRedirectorClassName, exception.getException());
+                    }
+                    try {
+                        setDefaultUpdateObjectQueryRedirector((QueryRedirector) AccessController.doPrivileged(new PrivilegedNewInstanceFromClass(redirectorClass)));
+                    } catch (PrivilegedActionException exception) {
+                        throw ValidationException.classNotFoundWhileConvertingClassNames(defaultUpdateObjectQueryRedirectorClassName, exception.getException());
+                    }
+                } else {
+                    redirectorClass = org.eclipse.persistence.internal.security.PrivilegedAccessHelper.getClassForName(defaultUpdateObjectQueryRedirectorClassName, true, classLoader);
+                    setDefaultUpdateObjectQueryRedirector((QueryRedirector) org.eclipse.persistence.internal.security.PrivilegedAccessHelper.newInstanceFromClass(redirectorClass));
+                }
+            } catch (ClassNotFoundException exc) {
+                throw ValidationException.classNotFoundWhileConvertingClassNames(defaultUpdateObjectQueryRedirectorClassName, exc);
+            } catch (Exception e) {
+                // Catches IllegalAccessException and InstantiationException
+                throw ValidationException.classNotFoundWhileConvertingClassNames(defaultUpdateObjectQueryRedirectorClassName, e);
+            }
+        }
+        if (this.defaultDeleteObjectQueryRedirectorClassName != null){
+            try{
+                if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
+                    try {
+                        redirectorClass = (Class)AccessController.doPrivileged(new PrivilegedClassForName(defaultDeleteObjectQueryRedirectorClassName, true, classLoader));
+                    } catch (PrivilegedActionException exception) {
+                        throw ValidationException.classNotFoundWhileConvertingClassNames(defaultDeleteObjectQueryRedirectorClassName, exception.getException());
+                    }
+                    try {
+                        setDefaultDeleteObjectQueryRedirector((QueryRedirector) AccessController.doPrivileged(new PrivilegedNewInstanceFromClass(redirectorClass)));
+                    } catch (PrivilegedActionException exception) {
+                        throw ValidationException.classNotFoundWhileConvertingClassNames(defaultDeleteObjectQueryRedirectorClassName, exception.getException());
+                    }
+                } else {
+                    redirectorClass = org.eclipse.persistence.internal.security.PrivilegedAccessHelper.getClassForName(defaultDeleteObjectQueryRedirectorClassName, true, classLoader);
+                    setDefaultDeleteObjectQueryRedirector((QueryRedirector) org.eclipse.persistence.internal.security.PrivilegedAccessHelper.newInstanceFromClass(redirectorClass));
+                }
+            } catch (ClassNotFoundException exc) {
+                throw ValidationException.classNotFoundWhileConvertingClassNames(defaultDeleteObjectQueryRedirectorClassName, exc);
+            } catch (Exception e) {
+                // Catches IllegalAccessException and InstantiationException
+                throw ValidationException.classNotFoundWhileConvertingClassNames(defaultDeleteObjectQueryRedirectorClassName, e);
+            }
         }
         Iterator mappings = getMappings().iterator();
         while (mappings.hasNext()){
@@ -1280,6 +1490,34 @@ public class ClassDescriptor implements Cloneable, Serializable {
         return historyPolicy;
     }
 
+    /**
+     * A CacheInterceptor is an adaptor that when overridden and assigned to a Descriptor all interaction
+     * between EclipseLink and the internal cache for that class will pass through the Interceptor.
+     * Advanced users could use this interceptor to audit, profile or log cache access.  This Interceptor
+     * could also be used to redirect or augment the TopLink cache with an alternate cache mechanism.
+     * EclipseLink's configurated IdentityMaps will be passed to the Interceptor constructor.
+     * 
+     * As with IdentityMaps an entire class inheritance heirachy will share the same interceptor.
+     * @see org.eclipse.persistence.sessions.interceptors.CacheInterceptor
+     */
+    public Class getCacheInterceptorClass(){
+        return this.cacheInterceptorClass;
+    }
+    
+    /**
+     * A CacheInterceptor is an adaptor that when overridden and assigned to a Descriptor all interaction
+     * between EclipseLink and the internal cache for that class will pass through the Interceptor.
+     * Advanced users could use this interceptor to audit, profile or log cache access.  This Interceptor
+     * could also be used to redirect or augment the TopLink cache with an alternate cache mechanism.
+     * EclipseLink's configurated IdentityMaps will be passed to the Interceptor constructor.
+     * 
+     * As with IdentityMaps an entire class inheritance heirachy will share the same interceptor.
+     * @see org.eclipse.persistence.sessions.interceptors.CacheInterceptor
+     */
+    public String getCacheInterceptorClassName(){
+        return this.cacheInterceptorClassName;
+    }
+    
     /**
      * PUBLIC:
      * Return the CacheInvalidationPolicy for this descriptor
@@ -1746,6 +1984,18 @@ public class ClassDescriptor implements Cloneable, Serializable {
 
         return remoteIdentityMapClass;
     }
+    
+    /**
+     * PUBLIC:
+     * This method returns the root descriptor for for this descriptor's class heirarchy.
+     * If the user is not using inheritance then the root class will be this class.
+     */
+    public ClassDescriptor getRootDescriptor(){
+        if (this.hasInheritance()){
+            return this.getInheritancePolicy().getRootParentDescriptor();
+        }
+        return this;
+    }
 
     /**
      * PUBLIC:
@@ -2207,6 +2457,24 @@ public class ClassDescriptor implements Cloneable, Serializable {
             } else {
                 setIdValidation(IdValidation.ZERO);
             }
+        }
+        //setup default redirectors.  Any redirector that is not set will get assigned the
+        // default redirector.
+        if (this.defaultReadAllQueryRedirector == null){
+            this.defaultReadAllQueryRedirector = this.defaultQueryRedirector;
+        }
+        if (this.defaultReadObjectQueryRedirector == null){
+            this.defaultReadObjectQueryRedirector = this.defaultQueryRedirector;
+        }
+        if (this.defaultReportQueryRedirector == null){
+            this.defaultReportQueryRedirector = this.defaultQueryRedirector;
+        }
+        if (this.defaultInsertObjectQueryRedirector == null){
+            this.defaultInsertObjectQueryRedirector = this.defaultQueryRedirector;
+        }
+
+        if (this.defaultUpdateObjectQueryRedirector == null){
+            this.defaultUpdateObjectQueryRedirector = this.defaultQueryRedirector;
         }
     }
 
@@ -2990,6 +3258,36 @@ public class ClassDescriptor implements Cloneable, Serializable {
         }
     }
 
+    /**
+     * PUBLIC:
+     * A CacheInterceptor is an adaptor that when overridden and assigned to a Descriptor all interaction
+     * between EclipseLink and the internal cache for that class will pass through the Interceptor.
+     * Advanced users could use this interceptor to audit, profile or log cache access.  This Interceptor
+     * could also be used to redirect or augment the TopLink cache with an alternate cache mechanism.
+     * EclipseLink's configurated IdentityMaps will be passed to the Interceptor constructor.
+
+     * As with IdentityMaps an entire class inheritance heirachy will share the same interceptor.
+     * @see org.eclipse.persistence.sessions.interceptors.CacheInterceptor
+     */
+    public void setCacheInterceptorClass(Class cacheInterceptorClass){
+        this.cacheInterceptorClass = cacheInterceptorClass;
+    }
+
+    /**
+     * PUBLIC:
+     * A CacheInterceptor is an adaptor that when overridden and assigned to a Descriptor all interaction
+     * between EclipseLink and the internal cache for that class will pass through the Interceptor.
+     * Advanced users could use this interceptor to audit, profile or log cache access.  This Interceptor
+     * could also be used to redirect or augment the TopLink cache with an alternate cache mechanism.
+     * EclipseLink's configurated IdentityMaps will be passed to the Interceptor constructor.
+
+     * As with IdentityMaps an entire class inheritance heirachy will share the same interceptor.
+     * @see org.eclipse.persistence.sessions.interceptors.CacheInterceptor
+     */
+    public void setCacheInterceptorClassName(String cacheInterceptorClassName){
+        this.cacheInterceptorClassName = cacheInterceptorClassName;
+    }
+    
     /**
      * PUBLIC:
      * Set the Cache Invalidation Policy for this descriptor.
@@ -4645,5 +4943,268 @@ public class ClassDescriptor implements Cloneable, Serializable {
      */
     public IdValidation getIdValidation() {
         return idValidation;
+    }
+
+    /**
+     * A Default Query Redirector will be applied to any executing object query
+     * that does not have a more precise default (like the default
+     * ReadObjectQuery Redirector) or a redirector set directly on the query.
+     * Query redirectors allow the user to intercept query execution preventing
+     * it or alternately performing some side effect like auditing.
+     * 
+     * @see org.eclipse.persistence.queryframework.QueryRedirector
+     */
+    public QueryRedirector getDefaultQueryRedirector() {
+        return defaultQueryRedirector;
+    }
+
+    /**
+     * A Default Query Redirector will be applied to any executing object query
+     * that does not have a more precise default (like the default
+     * ReadObjectQuery Redirector) or a redirector set directly on the query.
+     * Query redirectors allow the user to intercept query execution preventing
+     * it or alternately performing some side effect like auditing.
+     * 
+     * @see org.eclipse.persistence.queryframework.QueryRedirector
+     */
+    public void setDefaultQueryRedirector(QueryRedirector defaultRedirector) {
+        this.defaultQueryRedirector = defaultRedirector;
+    }
+
+    /**
+     * A Default ReadAllQuery Redirector will be applied to any executing
+     * ReadAllQuery that does not have a redirector set directly on the query.
+     * Query redirectors allow the user to intercept query execution preventing
+     * it or alternately performing some side effect like auditing.
+     * 
+     * @see org.eclipse.persistence.queryframework.QueryRedirector
+     */
+    public QueryRedirector getDefaultReadAllQueryRedirector() {
+        return defaultReadAllQueryRedirector;
+    }
+
+    /**
+     * A Default ReadAllQuery Redirector will be applied to any executing
+     * ReadAllQuery that does not have a redirector set directly on the query.
+     * Query redirectors allow the user to intercept query execution preventing
+     * it or alternately performing some side effect like auditing.
+     * 
+     * @see org.eclipse.persistence.queryframework.QueryRedirector
+     */
+    public void setDefaultReadAllQueryRedirector(
+            QueryRedirector defaultReadAllQueryRedirector) {
+        this.defaultReadAllQueryRedirector = defaultReadAllQueryRedirector;
+    }
+
+    /**
+     * A Default ReadObjectQuery Redirector will be applied to any executing
+     * ReadObjectQuery that does not have a redirector set directly on the query.
+     * Query redirectors allow the user to intercept query execution preventing
+     * it or alternately performing some side effect like auditing.
+     * 
+     * @see org.eclipse.persistence.queryframework.QueryRedirector
+     */
+    public QueryRedirector getDefaultReadObjectQueryRedirector() {
+        return defaultReadObjectQueryRedirector;
+    }
+
+    /**
+     * A Default ReadObjectQuery Redirector will be applied to any executing
+     * ReadObjectQuery that does not have a redirector set directly on the query.
+     * Query redirectors allow the user to intercept query execution preventing
+     * it or alternately performing some side effect like auditing.
+     * 
+     * @see org.eclipse.persistence.queryframework.QueryRedirector
+     */
+    public void setDefaultReadObjectQueryRedirector(
+            QueryRedirector defaultReadObjectQueryRedirector) {
+        this.defaultReadObjectQueryRedirector = defaultReadObjectQueryRedirector;
+    }
+
+    /**
+     * A Default ReportQuery Redirector will be applied to any executing
+     * ReportQuery that does not have a redirector set directly on the query.
+     * Query redirectors allow the user to intercept query execution preventing
+     * it or alternately performing some side effect like auditing.
+     * 
+     * @see org.eclipse.persistence.queryframework.QueryRedirector
+     */
+    public QueryRedirector getDefaultReportQueryRedirector() {
+        return defaultReportQueryRedirector;
+    }
+
+    /**
+     * A Default ReportQuery Redirector will be applied to any executing
+     * ReportQuery that does not have a redirector set directly on the query.
+     * Query redirectors allow the user to intercept query execution preventing
+     * it or alternately performing some side effect like auditing.
+     * 
+     * @see org.eclipse.persistence.queryframework.QueryRedirector
+     */
+    public void setDefaultReportQueryRedirector(
+            QueryRedirector defaultReportQueryRedirector) {
+        this.defaultReportQueryRedirector = defaultReportQueryRedirector;
+    }
+
+    /**
+     * A Default UpdateObjectQuery Redirector will be applied to any executing
+     * UpdateObjectQuery or UpdateAllQuery that does not have a redirector set directly on the query.
+     * Query redirectors allow the user to intercept query execution preventing
+     * it or alternately performing some side effect like auditing.
+     * 
+     * @see org.eclipse.persistence.queryframework.QueryRedirector
+     */
+    public QueryRedirector getDefaultUpdateObjectQueryRedirector() {
+        return defaultUpdateObjectQueryRedirector;
+    }
+
+    /**
+     * A Default UpdateObjectQuery Redirector will be applied to any executing
+     * UpdateObjectQuery or UpdateAllQuery that does not have a redirector set directly on the query.
+     * Query redirectors allow the user to intercept query execution preventing
+     * it or alternately performing some side effect like auditing.
+     * 
+     * @see org.eclipse.persistence.queryframework.QueryRedirector
+     */
+    public void setDefaultUpdateObjectQueryRedirector(QueryRedirector defaultUpdateQueryRedirector) {
+        this.defaultUpdateObjectQueryRedirector = defaultUpdateQueryRedirector;
+    }
+
+    /**
+     * A Default InsertObjectQuery Redirector will be applied to any executing
+     * InsertObjectQuery that does not have a redirector set directly on the query.
+     * Query redirectors allow the user to intercept query execution preventing
+     * it or alternately performing some side effect like auditing.
+     * 
+     * @see org.eclipse.persistence.queryframework.QueryRedirector
+     */
+    public QueryRedirector getDefaultInsertObjectQueryRedirector() {
+        return defaultInsertObjectQueryRedirector;
+    }
+
+    /**
+     * A Default InsertObjectQuery Redirector will be applied to any executing
+     * InsertObjectQuery that does not have a redirector set directly on the query.
+     * Query redirectors allow the user to intercept query execution preventing
+     * it or alternately performing some side effect like auditing.
+     * 
+     * @see org.eclipse.persistence.queryframework.QueryRedirector
+     */
+    public void setDefaultInsertObjectQueryRedirector(QueryRedirector defaultInsertQueryRedirector) {
+        this.defaultInsertObjectQueryRedirector = defaultInsertQueryRedirector;
+    }
+
+    /**
+     * A Default DeleteObjectQuery Redirector will be applied to any executing
+     * DeleteObjectQuery or DeleteAllQuery that does not have a redirector set directly on the query.
+     * Query redirectors allow the user to intercept query execution preventing
+     * it or alternately performing some side effect like auditing.
+     * 
+     * @see org.eclipse.persistence.queryframework.QueryRedirector
+     */
+    public QueryRedirector getDefaultDeleteObjectQueryRedirector() {
+        return defaultDeleteObjectQueryRedirector;
+    }
+
+    /**
+     * A Default DeleteObjectQuery Redirector will be applied to any executing
+     * DeleteObjectQuery or DeleteAllQuery that does not have a redirector set directly on the query.
+     * Query redirectors allow the user to intercept query execution preventing
+     * it or alternately performing some side effect like auditing.
+     * 
+     * @see org.eclipse.persistence.queryframework.QueryRedirector
+     */
+    public void setDefaultDeleteObjectQueryRedirector(QueryRedirector defaultDeleteObjectQueryRedirector) {
+        this.defaultDeleteObjectQueryRedirector = defaultDeleteObjectQueryRedirector;
+    }
+
+    /**
+     * A Default Query Redirector will be applied to any executing object query
+     * that does not have a more precise default (like the default
+     * ReadObjectQuery Redirector) or a redirector set directly on the query.
+     * Query redirectors allow the user to intercept query execution preventing
+     * it or alternately performing some side effect like auditing.
+     * 
+     * @see org.eclipse.persistence.queryframework.QueryRedirector
+     */
+    public void setDefaultQueryRedirectorClassName(String defaultQueryRedirectorClassName) {
+        this.defaultQueryRedirectorClassName = defaultQueryRedirectorClassName;
+    }
+
+    /**
+     * A Default ReadAllQuery Redirector will be applied to any executing
+     * ReadAllQuery that does not have a redirector set directly on the query.
+     * Query redirectors allow the user to intercept query exection preventing
+     * it or alternately performing some side effect like auditing.
+     * 
+     * @see org.eclipse.persistence.queryframework.QueryRedirector
+     */
+    public void setDefaultReadAllQueryRedirectorClassName(String defaultReadAllQueryRedirectorClassName) {
+        this.defaultReadAllQueryRedirectorClassName = defaultReadAllQueryRedirectorClassName;
+    }
+
+    /**
+     * A Default ReadObjectQuery Redirector will be applied to any executing
+     * ReadObjectQuery that does not have a redirector set directly on the query.
+     * Query redirectors allow the user to intercept query execution preventing
+     * it or alternately performing some side effect like auditing.
+     * 
+     * @see org.eclipse.persistence.queryframework.QueryRedirector
+     */
+    public void setDefaultReadObjectQueryRedirectorClassName(
+            String defaultReadObjectQueryRedirectorClassName) {
+        this.defaultReadObjectQueryRedirectorClassName = defaultReadObjectQueryRedirectorClassName;
+    }
+
+    /**
+     * A Default ReportQuery Redirector will be applied to any executing
+     * ReportQuery that does not have a redirector set directly on the query.
+     * Query redirectors allow the user to intercept query execution preventing
+     * it or alternately performing some side effect like auditing.
+     * 
+     * @see org.eclipse.persistence.queryframework.QueryRedirector
+     */
+   public void setDefaultReportQueryRedirectorClassName(
+            String defaultReportQueryRedirectorClassName) {
+        this.defaultReportQueryRedirectorClassName = defaultReportQueryRedirectorClassName;
+    }
+
+   /**
+    * A Default UpdateObjectQuery Redirector will be applied to any executing
+    * UpdateObjectQuery or UpdateAllQuery that does not have a redirector set directly on the query.
+    * Query redirectors allow the user to intercept query execution preventing
+    * it or alternately performing some side effect like auditing.
+    * 
+    * @see org.eclipse.persistence.queryframework.QueryRedirector
+    */
+    public void setDefaultUpdateObjectQueryRedirectorClassName(
+            String defaultUpdateObjectQueryRedirectorClassName) {
+        this.defaultUpdateObjectQueryRedirectorClassName = defaultUpdateObjectQueryRedirectorClassName;
+    }
+
+    /**
+     * A Default InsertObjectQuery Redirector will be applied to any executing
+     * InsertObjectQuery that does not have a redirector set directly on the query.
+     * Query redirectors allow the user to intercept query exection preventing
+     * it or alternately performing some side effect like auditing.
+     * 
+     * @see org.eclipse.persistence.queryframework.QueryRedirector
+     */
+    public void setDefaultInsertObjectQueryRedirectorClassName(
+            String defaultInsertObjectQueryRedirectorClassName) {
+        this.defaultInsertObjectQueryRedirectorClassName = defaultInsertObjectQueryRedirectorClassName;
+    }
+
+    /**
+     * A Default DeleteObjectQuery Redirector will be applied to any executing
+     * DeleteObjectQuery or DeleteAllQuery that does not have a redirector set directly on the query.
+     * Query redirectors allow the user to intercept query exection preventing
+     * it or alternately performing some side effect like auditing.
+     * 
+     * @see org.eclipse.persistence.queryframework.QueryRedirector
+     */
+    public void setDefaultDeleteObjectQueryRedirectorClassName(
+            String defaultDeleteObjectQueryRedirectorClassName) {
+        this.defaultDeleteObjectQueryRedirectorClassName = defaultDeleteObjectQueryRedirectorClassName;
     }
 }

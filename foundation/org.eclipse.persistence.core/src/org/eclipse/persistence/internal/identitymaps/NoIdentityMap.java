@@ -14,6 +14,8 @@ package org.eclipse.persistence.internal.identitymaps;
 
 import java.util.*;
 
+import org.eclipse.persistence.descriptors.ClassDescriptor;
+
 /**
  * <p><b>Purpose</b>: Provide the capability to not cache objects at all.
  * <p><b>Responsibilities</b>:<ul>
@@ -21,9 +23,13 @@ import java.util.*;
  * </ul>
  * @since TOPLink/Java 1.0
  */
-public class NoIdentityMap extends IdentityMap {
+public class NoIdentityMap extends AbstractIdentityMap {
     public NoIdentityMap(int size) {
         super(size);
+    }
+
+    public NoIdentityMap(int size, ClassDescriptor descriptor) {
+        super(size, descriptor);
     }
 
     /**

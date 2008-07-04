@@ -195,6 +195,16 @@ public class DeleteAllQuery extends ModifyAllQuery {
     }
 
     /**
+     * INTERNAL:
+     * Returns the specific default redirector for this query type.  There are numerous default query redirectors.
+     * See ClassDescriptor for their types.
+     */
+    protected QueryRedirector getDefaultRedirector(){
+        return descriptor.getDefaultDeleteObjectQueryRedirector();
+    }
+
+
+    /**
      * PUBLIC:
      * Return the objects that are to be deleted
      */

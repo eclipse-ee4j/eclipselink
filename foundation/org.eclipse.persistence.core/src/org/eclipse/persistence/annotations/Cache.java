@@ -30,7 +30,7 @@ import static org.eclipse.persistence.annotations.CacheCoordinationType.SEND_OBJ
  * 
  * @see org.eclipse.persistence.annotations.CacheType
  * 
- * A Cache anotation may be defined on an Entity or MappedSuperclass. In the 
+ * A Cache annotation may be defined on an Entity or MappedSuperclass. In the 
  * case of inheritance, a Cache annotation should only be defined on the root 
  * of the inheritance hierarchy.
  * 

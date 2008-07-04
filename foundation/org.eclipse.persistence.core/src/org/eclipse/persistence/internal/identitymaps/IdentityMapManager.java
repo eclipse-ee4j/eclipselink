@@ -250,11 +250,11 @@ public class IdentityMapManager implements Serializable, Cloneable {
     public IdentityMap buildNewIdentityMap(ClassDescriptor descriptor) throws ValidationException, DescriptorException {
         if (getSession().isUnitOfWork()) {
             if (((UnitOfWorkImpl)getSession()).getReferenceMode() == ReferenceMode.FORCE_WEAK){
-                return new WeakUnitOfWorkIdentityMap(32);
+                return new WeakUnitOfWorkIdentityMap(32, descriptor);
             }else if (((UnitOfWorkImpl)getSession()).getReferenceMode() == ReferenceMode.WEAK && descriptor.getObjectChangePolicy().isAttributeChangeTrackingPolicy()){
-                return new WeakUnitOfWorkIdentityMap(32);        
+                return new WeakUnitOfWorkIdentityMap(32, descriptor);        
             }else {
-                return new UnitOfWorkIdentityMap(32);
+                return new UnitOfWorkIdentityMap(32, descriptor);
             }
         }
 
@@ -264,27 +264,51 @@ public class IdentityMapManager implements Serializable, Cloneable {
 	        Constructor constructor = null;
 	        if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
 	            try {
-	                constructor = (Constructor)AccessController.doPrivileged(new PrivilegedGetConstructorFor(descriptor.getRemoteIdentityMapClass(), new Class[] { ClassConstants.PINT }, false));
-	                return (IdentityMap)AccessController.doPrivileged(new PrivilegedInvokeConstructor(constructor, new Object[] { new Integer(descriptor.getRemoteIdentityMapSize())}));
+                            constructor = (Constructor)AccessController.doPrivileged(new PrivilegedGetConstructorFor(descriptor.getRemoteIdentityMapClass(), new Class[] { ClassConstants.PINT, ClassDescriptor.class }, false));
+                            IdentityMap map = (IdentityMap)AccessController.doPrivileged(new PrivilegedInvokeConstructor(constructor, new Object[] { new Integer(descriptor.getRemoteIdentityMapSize()), descriptor}));
+                            if (descriptor.getCacheInterceptorClass() != null){
+                                constructor = (Constructor)AccessController.doPrivileged(new PrivilegedGetConstructorFor(descriptor.getCacheInterceptorClass(), new Class[] { IdentityMap.class, AbstractSession.class }, false));
+                                Object params[] = new Object[]{map, getSession()};
+                                map = (IdentityMap)AccessController.doPrivileged(new PrivilegedInvokeConstructor(constructor, params));
+                            }
+                            return map;
 	            } catch (PrivilegedActionException exception) {
 	                throw DescriptorException.invalidIdentityMap(descriptor, exception.getException());
 	                }
 	        } else {
-	            constructor = PrivilegedAccessHelper.getConstructorFor(descriptor.getRemoteIdentityMapClass(), new Class[] { ClassConstants.PINT }, false);
-	            return (IdentityMap)PrivilegedAccessHelper.invokeConstructor(constructor, new Object[] { new Integer(descriptor.getRemoteIdentityMapSize())});
+	            constructor = PrivilegedAccessHelper.getConstructorFor(descriptor.getRemoteIdentityMapClass(), new Class[] { ClassConstants.PINT, ClassDescriptor.class }, false);
+	            IdentityMap map = (IdentityMap)PrivilegedAccessHelper.invokeConstructor(constructor, new Object[] { new Integer(descriptor.getRemoteIdentityMapSize()), descriptor});
+                    if (descriptor.getCacheInterceptorClass() != null){
+                        constructor = PrivilegedAccessHelper.getConstructorFor(descriptor.getCacheInterceptorClass(), new Class[] { IdentityMap.class, AbstractSession.class }, false);
+                        Object params[] = new Object[]{map, getSession()};
+                        map = (IdentityMap)PrivilegedAccessHelper.invokeConstructor(constructor, params);
+                    }
+                    return map;
                 }
             } else {
                 Constructor constructor = null;
                 if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
                     try {
-                        constructor = (Constructor)AccessController.doPrivileged(new PrivilegedGetConstructorFor(descriptor.getIdentityMapClass(), new Class[] { ClassConstants.PINT }, false));
-                        return (IdentityMap)AccessController.doPrivileged(new PrivilegedInvokeConstructor(constructor, new Object[] { new Integer(descriptor.getIdentityMapSize())}));
+                        constructor = (Constructor)AccessController.doPrivileged(new PrivilegedGetConstructorFor(descriptor.getIdentityMapClass(), new Class[] { ClassConstants.PINT, ClassDescriptor.class }, false));
+                        IdentityMap map = (IdentityMap)AccessController.doPrivileged(new PrivilegedInvokeConstructor(constructor, new Object[] { new Integer(descriptor.getIdentityMapSize()),descriptor}));
+                        if (descriptor.getCacheInterceptorClass() != null){
+                            constructor = (Constructor)AccessController.doPrivileged(new PrivilegedGetConstructorFor(descriptor.getCacheInterceptorClass(), new Class[] { IdentityMap.class, AbstractSession.class }, false));
+                            Object params[] = new Object[]{map, getSession()};
+                            map = (IdentityMap)AccessController.doPrivileged(new PrivilegedInvokeConstructor(constructor, params));
+                        }
+                        return map;
                     } catch (PrivilegedActionException exception) {
                         throw DescriptorException.invalidIdentityMap(descriptor, exception.getException());
                     }
                 } else {
-                    constructor = PrivilegedAccessHelper.getConstructorFor(descriptor.getIdentityMapClass(), new Class[] { ClassConstants.PINT }, false);
-                    return (IdentityMap)PrivilegedAccessHelper.invokeConstructor(constructor, new Object[] { new Integer(descriptor.getIdentityMapSize())});
+                    constructor = PrivilegedAccessHelper.getConstructorFor(descriptor.getIdentityMapClass(), new Class[] { ClassConstants.PINT, ClassDescriptor.class }, false);
+                    IdentityMap map = (IdentityMap)PrivilegedAccessHelper.invokeConstructor(constructor, new Object[] { new Integer(descriptor.getIdentityMapSize()), descriptor});
+                    if (descriptor.getCacheInterceptorClass() != null){
+                        constructor = PrivilegedAccessHelper.getConstructorFor(descriptor.getCacheInterceptorClass(), new Class[] { IdentityMap.class, AbstractSession.class }, false);
+                        Object params[] = new Object[]{map, getSession()};
+                        map = (IdentityMap)PrivilegedAccessHelper.invokeConstructor(constructor, params);
+                    }
+                    return map;
                 }
             }
         } catch (Exception exception) {

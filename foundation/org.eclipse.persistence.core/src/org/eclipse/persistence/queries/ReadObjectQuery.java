@@ -514,6 +514,15 @@ public class ReadObjectQuery extends ObjectLevelReadQuery {
     }
 
     /**
+     * INTERNAL:
+     * Returns the specific default redirector for this query type.  There are numerous default query redirectors.
+     * See ClassDescriptor for their types.
+     */
+    protected QueryRedirector getDefaultRedirector(){
+        return descriptor.getDefaultReadObjectQueryRedirector();
+    }
+
+    /**
      * PUBLIC:
      * The primary key can be specified if used instead of an expression or selection object.
      * If composite the primary must be in the same order as defined in the descriptor.

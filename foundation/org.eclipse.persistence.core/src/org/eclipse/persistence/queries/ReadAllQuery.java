@@ -580,6 +580,15 @@ public class ReadAllQuery extends ObjectLevelReadQuery {
     }
 
     /**
+     * INTERNAL:
+     * Returns the specific default redirector for this query type.  There are numerous default query redirectors.
+     * See ClassDescriptor for their types.
+     */
+    protected QueryRedirector getDefaultRedirector(){
+        return descriptor.getDefaultReadAllQueryRedirector();
+    }
+
+    /**
      * PUBLIC:
      * @return Expression - the start with expression used to generated the hierarchical query clause in
      * Oracle

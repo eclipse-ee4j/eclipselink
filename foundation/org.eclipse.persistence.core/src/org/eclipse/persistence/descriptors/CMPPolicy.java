@@ -12,6 +12,7 @@
  ******************************************************************************/  
 package org.eclipse.persistence.descriptors;
 
+import java.io.Serializable;
 import java.util.Vector;
 
 import org.eclipse.persistence.exceptions.DescriptorException;
@@ -338,6 +339,25 @@ public class CMPPolicy implements java.io.Serializable {
      * INTERNAL:
      * Create an instance of the composite primary key class for the key object.
      */
+    public Object createPrimaryKeyInstance(Vector key) {
+        Object keyInstance = getPKClassInstance();
+        ObjectBuilder builder = getDescriptor().getObjectBuilder();
+        KeyElementAccessor[] pkElementArray = this.getKeyClassFields(getPKClass());
+                
+        for (int index = 0; index < pkElementArray.length; index++) {
+            KeyElementAccessor accessor = pkElementArray[index];
+            Object fieldValue = key.get(index);
+            accessor.setValue(keyInstance, fieldValue);
+        }
+        
+        return keyInstance;
+    }
+    
+
+    /**
+     * INTERNAL:
+     * Create an instance of the composite primary key class for the key object.
+     */
     public Object createPrimaryKeyInstance(Object key, AbstractSession session) {
         Object keyInstance = getPKClassInstance();
         ObjectBuilder builder = getDescriptor().getObjectBuilder();
@@ -446,7 +466,7 @@ public class CMPPolicy implements java.io.Serializable {
      * INTERNAL:
      * This class will be used when the keyClass is a primitive
      */
-    protected class KeyIsElementAccessor implements KeyElementAccessor {
+    protected class KeyIsElementAccessor implements KeyElementAccessor, Serializable {
         protected String attributeName;
         protected DatabaseField databaseField;
 

@@ -157,6 +157,15 @@ public class UpdateAllQuery extends ModifyAllQuery {
 
     /**
      * INTERNAL:
+     * Returns the specific default redirector for this query type.  There are numerous default query redirectors.
+     * See ClassDescriptor for their types.
+     */
+    protected QueryRedirector getDefaultRedirector(){
+        return descriptor.getDefaultUpdateObjectQueryRedirector();
+    }
+
+    /**
+     * INTERNAL:
      * Return the updates stored for an update all query
      */
     public HashMap getUpdateClauses() {

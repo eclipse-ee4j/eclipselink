@@ -44,7 +44,12 @@ public class QueryHints {
     */
     public static final String CACHE_USAGE = "eclipselink.cache-usage";
     
-   /**
+    /**
+     * Used to provide a Query Redirector to the executing query.
+     */
+    public static final String QUERY_REDIRECTOR = "eclipselink.query.redirector";
+
+    /**
     * Configures the TopLink query type to use for the query.
     * By default TopLink ReportQuery or ReadAllQuery are used for most JPQL queries, this allows other query types to be used,
     * such as ReadObjectQuery which can be used for queries that are know to return a single object, and has different caching semantics.

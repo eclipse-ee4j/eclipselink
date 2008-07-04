@@ -68,7 +68,21 @@ public class CacheKey implements Serializable, Cloneable {
     /** The read time stores the millisecond value of the last time the object help by
     this cache key was confirmed as up to date. */
     protected long readTime = 0;
-
+    
+    /**
+     * Stores if this CacheKey instance is a wrapper for the underlying CacheKey.  CacheKey wrappers
+     * may be used with cache interceptors.
+     */
+    protected boolean isWrapper = false;
+    
+    /**
+     * Internal:
+     * Only used by subclasses that may want to wrap the cache key.  Could be replaced
+     * by switching to an interface.
+     */
+    protected CacheKey(){
+    }
+    
     public CacheKey(Vector primaryKey) {
         this.key = primaryKey;
         this.hash = computeHash(primaryKey);
@@ -339,6 +353,14 @@ public class CacheKey implements Serializable, Cloneable {
     public Object getWrapper() {
         return wrapper;
     }
+    
+    /**
+     * If a Wrapper subclasses this CacheKey this method will be used to unwrap the cache key.
+     * @return
+     */
+    public CacheKey getWrappedCacheKey(){
+        return this;
+    }
 
     public Object getWriteLockValue() {
         return writeLockValue;
@@ -358,6 +380,14 @@ public class CacheKey implements Serializable, Cloneable {
         return getMutex().isAcquired();
     }
 
+    /**
+     * Returns true if this Instance of CacheKey is a wrapper and should be unwrapped before passing
+     * to IdentityMap APIs.  Wrapped CacheKeys may be used in the Cache Interceptors.
+     */
+    public boolean isWrapper(){
+        return this.isWrapper;
+    }
+    
     /**
      * INTERNAL:
      * Return the value of the invalidationState Variable
@@ -390,6 +420,16 @@ public class CacheKey implements Serializable, Cloneable {
         getMutex().releaseReadLock();
     }
 
+    /**
+     * Removes this cacheKey from the owning map
+     */
+    public Object removeFromOwningMap(){
+        if (getOwningMap() != null){
+            return getOwningMap().remove(this);
+        }
+        return null;
+    }
+    
     /**
      * INTERNAL:
      * Set the value of the invalidationState Variable
@@ -468,5 +508,9 @@ public class CacheKey implements Serializable, Cloneable {
      */
     public void updateAccess() {
         // Nothing required by default.
+    }
+
+    public void setIsWrapper(boolean isWrapper) {
+        this.isWrapper = isWrapper;
     }
 }

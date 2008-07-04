@@ -875,6 +875,15 @@ public class ReportQuery extends ReadAllQuery {
 
     /**
      * INTERNAL:
+     * Returns the specific default redirector for this query type.  There are numerous default query redirectors.
+     * See ClassDescriptor for their types.
+     */
+    protected QueryRedirector getDefaultRedirector(){
+        return descriptor.getDefaultReportQueryRedirector();
+    }
+
+    /**
+     * INTERNAL:
      * return a collection of expressions from the items. Ignore the null (place holders).
      */
     public Vector getItemExpressions() {

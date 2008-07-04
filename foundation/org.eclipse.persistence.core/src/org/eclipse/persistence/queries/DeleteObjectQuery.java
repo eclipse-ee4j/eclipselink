@@ -115,6 +115,15 @@ public class DeleteObjectQuery extends ObjectLevelModifyQuery {
 
     /**
      * INTERNAL:
+     * Returns the specific default redirector for this query type.  There are numerous default query redirectors.
+     * See ClassDescriptor for their types.
+     */
+    protected QueryRedirector getDefaultRedirector(){
+        return descriptor.getDefaultDeleteObjectQueryRedirector();
+    }
+
+    /**
+     * INTERNAL:
      * Perform the work to delete an object.
      * @return object - the object being deleted.
      */

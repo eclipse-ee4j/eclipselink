@@ -14,6 +14,7 @@ package org.eclipse.persistence.internal.identitymaps;
 
 import java.util.*;
 
+import org.eclipse.persistence.descriptors.ClassDescriptor;
 
 /**
  * <p><b>Purpose</b>: A fixed size LRU cache<p>
@@ -44,6 +45,14 @@ public class CacheIdentityMap extends FullIdentityMap {
         this.last = new LinkedCacheKey(new Vector(0), null, null, 0);
         this.first.setNext(this.last);
         this.last.setPrevious(this.first);
+    };
+
+    public CacheIdentityMap(int size, ClassDescriptor descriptor) {
+        super(size, descriptor);
+        this.first = new LinkedCacheKey(new Vector(0), null, null, 0);
+        this.last = new LinkedCacheKey(new Vector(0), null, null, 0);
+        this.first.setNext(this.last);
+        this.last.setPrevious(this.first);
     }
 
     public CacheKey createCacheKey(Vector primaryKey, Object object, Object writeLockValue, long readTime) {
@@ -70,7 +79,7 @@ public class CacheIdentityMap extends FullIdentityMap {
      * @param primaryKeys is the primary key for the object to search for.
      * @return the LinkedCacheKey or null if none found for primaryKey
      */
-    protected CacheKey getCacheKey(Vector primaryKeys) {
+    public CacheKey getCacheKey(Vector primaryKeys) {
         LinkedCacheKey cacheKey = (LinkedCacheKey)super.getCacheKey(primaryKeys);
         if (cacheKey != null) {
             synchronized (this.first) {

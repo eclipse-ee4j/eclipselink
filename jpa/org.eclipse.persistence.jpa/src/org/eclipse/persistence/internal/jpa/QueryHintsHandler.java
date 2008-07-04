@@ -36,6 +36,7 @@ import org.eclipse.persistence.logging.SessionLog;
 import org.eclipse.persistence.mappings.ForeignReferenceMapping;
 import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.queries.ObjectBuildingQuery;
+import org.eclipse.persistence.queries.QueryRedirector;
 import org.eclipse.persistence.queries.ReadObjectQuery;
 import org.eclipse.persistence.queries.ReadQuery;
 import org.eclipse.persistence.queries.ReportQuery;
@@ -156,6 +157,7 @@ public class QueryHintsHandler {
             addHint(new JDBCFetchSizeHint());
             addHint(new JDBCMaxRowsHint());
             addHint(new ResultCollectionTypeHint());
+            addHint(new RedirectorHint());
         }
         
         Hint(String name, String defaultValue) {
@@ -600,6 +602,21 @@ public class QueryHintsHandler {
                 ((ReadAllQuery)query).useCollectionClass(collectionClass);
             } else {
                 throw new IllegalArgumentException(ExceptionLocalization.buildMessage("ejb30-wrong-type-for-query-hint",new Object[]{getQueryId(query), name, getPrintValue(valueToApply)}));
+            }
+            return query;
+        }
+    }
+    
+    protected static class RedirectorHint extends Hint {
+        RedirectorHint() {
+            super(QueryHints.QUERY_REDIRECTOR, "");
+        }
+    
+        DatabaseQuery applyToDatabaseQuery(Object valueToApply, DatabaseQuery query) {
+            try{
+                query.setRedirector((QueryRedirector)valueToApply);
+            }catch(ClassCastException ex){
+                throw QueryException.unableToSetRedirectorOnQueryFromHint(query,QueryHints.QUERY_REDIRECTOR, valueToApply.getClass().getName(), ex);
             }
             return query;
         }
