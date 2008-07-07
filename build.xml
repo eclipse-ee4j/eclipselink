@@ -306,7 +306,7 @@
 
     <!-- Generates the Javadocs for all public EclipseLink classes. -->
     <target name="build-javadocs">
-        <property name="javadoc.title" value="${javadoc.prefixTitle}${release.version} ${build_number_string} ${javadoc.postfixTitle} - Incubation"/>
+        <property name="javadoc.title" value="${javadoc.prefixTitle}${release.version} ${build_number_string} ${javadoc.postfixTitle}"/>
         <javadoc
             maxmemory="384m"
             Verbose="false"
