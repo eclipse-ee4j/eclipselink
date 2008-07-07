@@ -356,9 +356,11 @@ public class DOMReader extends XMLReader {
             Attr item;
             for (int i=0; i<attrs.size(); i++) {
                 item = attrs.get(i);
-                if (item.getNamespaceURI().equals(uri) && item.getLocalName().equals(localName)) {
-                    return i;
-                }
+                try {
+                    if (item.getNamespaceURI().equals(uri) && item.getLocalName().equals(localName)) {
+                        return i;
+                    }
+                } catch (Exception x) {}
             }
             return -1;
         }

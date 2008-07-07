@@ -35,6 +35,8 @@ import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.mappings.foundation.AbstractCompositeCollectionMapping;
 import org.eclipse.persistence.oxm.XMLDescriptor;
 import org.eclipse.persistence.oxm.mappings.converters.XMLConverter;
+import org.eclipse.persistence.oxm.mappings.nullpolicy.AbstractNullPolicy;
+import org.eclipse.persistence.oxm.mappings.nullpolicy.NullPolicy;
 import org.eclipse.persistence.oxm.record.DOMRecord;
 import org.eclipse.persistence.oxm.record.XMLRecord;
 import org.eclipse.persistence.oxm.schema.XMLSchemaReference;
@@ -136,10 +138,13 @@ import org.eclipse.persistence.queries.ObjectBuildingQuery;
  *
  * @since Oracle TopLink 10<i>g</i> Release 2 (10.1.3)
  */
-public class XMLCompositeCollectionMapping extends AbstractCompositeCollectionMapping implements XMLMapping {
+public class XMLCompositeCollectionMapping extends AbstractCompositeCollectionMapping implements XMLMapping, XMLNillableMapping {
+    AbstractNullPolicy nullPolicy;
 
     public XMLCompositeCollectionMapping() {
         super();
+        // The default policy is NullPolicy
+        nullPolicy = new NullPolicy();
     }
 
     /**
@@ -411,5 +416,25 @@ public class XMLCompositeCollectionMapping extends AbstractCompositeCollectionMa
         }
         XMLRecord nestedRow = (XMLRecord) buildCompositeRow(element, session, record);
         record.add(getField(), nestedRow);
+    }
+    
+    /**
+     * Set the AbstractNullPolicy on the mapping<br>
+     * The default policy is NullPolicy.<br>
+     *
+     * @param aNullPolicy
+     */
+    public void setNullPolicy(AbstractNullPolicy aNullPolicy) {
+        nullPolicy = aNullPolicy;
+    }
+
+    /**
+     * INTERNAL:
+     * Get the AbstractNullPolicy from the Mapping.<br>
+     * The default policy is NullPolicy.<br>
+     * @return
+     */
+    public AbstractNullPolicy getNullPolicy() {
+        return nullPolicy;
     }
 }

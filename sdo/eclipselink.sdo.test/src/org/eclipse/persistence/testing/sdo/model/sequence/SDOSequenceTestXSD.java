@@ -3836,27 +3836,19 @@ public class SDOSequenceTestXSD extends SDOSequenceTestCases {
     	
     }
 
-    public void test_setValue_manyComplex_toNull_DoesNotThrowIllegalArgumentException() {
+    public void test_setValue_manyComplex_toNull_ThrowsUnsupportedOperationException() {
     	defineAndLoadRoot(false, false);
         SDOSequence aSequence = getSequence(root, PO_SEQUENCE_PATH, PO_SEQUENCE_SIZE);
-    	DataObject po = (DataObject)root.get(PO_SEQUENCE_PATH);
-    	int treeSizeBeforeAdd = preOrderTraversalDataObjectList(po).size();
-
     	int indexToPlaceAtEnd = aSequence.size() - 1;
+    	boolean exceptionOccurred = false;
 
-    	// null value does not throw exception
-    	aSequence.setValue(indexToPlaceAtEnd, null);
-    	
-    	// get back modified Setting value
-    	ListWrapper item2Value = (ListWrapper)aSequence.getValue(indexToPlaceAtEnd);
-    	assertNull(item2Value);
-    	assertNotNull(aSequence.getProperty(indexToPlaceAtEnd));
-    	// check no increase in size of sequence
-    	assertEquals(PO_SEQUENCE_SIZE, aSequence.size());
-    	
-    	// verify that DataObject list has been reduced by 1 list element
-    	int treeSizeAfterAdd = preOrderTraversalDataObjectList(po).size();
-    	assertEquals(treeSizeBeforeAdd - 1, treeSizeAfterAdd);
+    	// null value on non-nillable many property will throw exception
+    	try {
+    	    aSequence.setValue(indexToPlaceAtEnd, null);
+    	} catch (UnsupportedOperationException iex) {
+            exceptionOccurred = true;
+    	}
+    	assertTrue("An UnsupportedOperationException did not occur as expected", exceptionOccurred);
     }
 
     public void test_setValue_manyComplex_invalidIndexThrowsException() {

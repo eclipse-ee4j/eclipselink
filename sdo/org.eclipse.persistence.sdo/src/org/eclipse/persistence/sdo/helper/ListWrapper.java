@@ -118,6 +118,11 @@ public class ListWrapper implements List, Serializable {
      * @return
      */
     public boolean add(Object item, boolean updateSequence) {
+        // Not allowed to add null if the property is non-nullable
+        if (item == null && (property != null && !property.isNullable())) {
+            throw new UnsupportedOperationException("Property [" + property.getName() + "] is non-nullable");
+        }
+        
         // update element arrays before we modify original object
         copyElements();
         
@@ -146,6 +151,11 @@ public class ListWrapper implements List, Serializable {
      * @param updateSequence
      */
     public void add(int index, Object item, boolean updateSequence) {
+        // Not allowed to add null if the property is non-nullable
+        if (item == null && (property != null && !property.isNullable())) {
+            throw new UnsupportedOperationException("Property [" + property.getName() + "] is non-nullable");
+        }
+        
         // see testLitWrapperAddMaintainsContainment()
         // fail-fast range checking
         if ((index < 0) || (index > size())) {
@@ -369,6 +379,11 @@ public class ListWrapper implements List, Serializable {
      * @return
      */
     public boolean addAll(Collection items, boolean updateSequence) {
+        // Not allowed to add null if the property is non-nullable
+        if (items.contains(null) && (property != null && !property.isNullable())) {
+            throw new UnsupportedOperationException("Property [" + property.getName() + "] is non-nullable");
+        }
+        
         // update element arrays before we modify original object
         copyElements();
 
@@ -428,6 +443,11 @@ public class ListWrapper implements List, Serializable {
         if ((items == null) || (items.size() == 0)) {
             //TODO: throw new IllegalArgumentException();
             return false;
+        }
+
+        // Not allowed to add null if the property is non-nullable
+        if (items.contains(null) && (property != null && !property.isNullable())) {
+            throw new UnsupportedOperationException("Property [" + property.getName() + "] is non-nullable");
         }
 
         // delegate to superclass

@@ -113,6 +113,9 @@ public class SDOXMLHelperLoadAndSaveTestSuite {
         
         //read-only
         suite.addTest(new TestSuite(org.eclipse.persistence.testing.sdo.helper.xmlhelper.loadandsave.LoadAndSaveWithReadOnlyTestCases.class));
+
+        // nillable
+        suite.addTest(new TestSuite(org.eclipse.persistence.testing.sdo.helper.xmlhelper.loadandsave.nillable.ListPropertyNillableElementTestCases.class));
         return suite;
     }
 }
