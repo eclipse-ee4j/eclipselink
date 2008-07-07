@@ -40,6 +40,10 @@ public class DatabaseSessionLogoutThenLoginTest extends AutoVerifyTestCase {
             newSession.login();
         } catch (org.eclipse.persistence.exceptions.EclipseLinkException e) {
             this.caughtException = e;
+        } finally {
+            if(newSession.isConnected()) {
+                newSession.logout();
+            }
         }
     }
 

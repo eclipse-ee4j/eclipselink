@@ -39,4 +39,11 @@ public class ClientSessionConstructorValidationTest extends org.eclipse.persiste
             throw new TestErrorException("ExternalTransactionController not copied from parent session to client session");
         }
     }
+    
+    public void reset() {
+        if(this.server != null) {
+            this.server.logout();
+            this.server = null;
+        }
+    }
 }

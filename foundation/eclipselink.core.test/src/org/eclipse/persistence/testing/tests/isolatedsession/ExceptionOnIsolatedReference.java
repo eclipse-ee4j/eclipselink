@@ -52,6 +52,11 @@ public class ExceptionOnIsolatedReference extends TestCase {
                     return;
                 }
             }
+        } finally {
+            if(this.server.isConnected()) {
+                this.server.logout();
+            }
+            this.server = null;
         }
         throw new TestErrorException("Validation Exception error not thrown.  Non-isolated data was allowed to reference isolated Data");
     }
