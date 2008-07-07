@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: EclipseLink Oracle Extensions
 Bundle-SymbolicName: org.eclipse.persistence.oracle
-Bundle-Version: 0.1
+Bundle-Version: 1.0
 Export-Package: org.eclipse.persistence.eis.adapters.aq,
  org.eclipse.persistence.internal.eis.adapters.aq,
  org.eclipse.persistence.internal.platform.database.oracle,

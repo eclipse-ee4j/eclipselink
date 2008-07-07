@@ -1,7 +1,6 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
-Bundle-Name: %bundleName
-Bundle-Vendor: %providerName
+Bundle-Name: Dynamix Weaving Fragment for Equinox
 Bundle-SymbolicName: org.eclipse.persistence.jpa.equinox.weaving
 Bundle-Version: 1.0.0
 Fragment-Host: org.eclipse.osgi;extension:=framework;bundle-version="3.4.0"

@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: EclipseLink MOXy
 Bundle-SymbolicName: org.eclipse.persistence.moxy
-Bundle-Version: 0.1
+Bundle-Version: 1.0
 Export-Package: org.eclipse.persistence.internal.jaxb,
  org.eclipse.persistence.jaxb,
  org.eclipse.persistence.jaxb.attachment,

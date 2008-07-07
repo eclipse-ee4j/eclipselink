@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: EclipseLink Core
 Bundle-SymbolicName: org.eclipse.persistence.core
-Bundle-Version: 0.1
+Bundle-Version: 1.0
 Require-Bundle: org.eclipse.persistence.antlr;resolution:=optional,
  org.eclipse.persistence.asm;resolution:=optional
 Export-Package: org.eclipse.persistence,
