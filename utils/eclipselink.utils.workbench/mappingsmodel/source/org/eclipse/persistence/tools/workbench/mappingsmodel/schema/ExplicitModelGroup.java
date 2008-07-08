@@ -238,8 +238,7 @@ public final class ExplicitModelGroup
 			if (particle instanceof MWElementDeclaration) {
 				element = (MWElementDeclaration) particle;
 				
-				if (StringTools.stringsAreEqual(namespaceUrl, element.getNamespaceUrl())
-					&& elementName.equals(element.getName())) {
+				if (elementName.equals(element.getName())) {
 							return element;
 				}
 			}
