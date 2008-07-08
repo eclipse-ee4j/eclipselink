@@ -46,6 +46,7 @@ public final class UiSchemaResourceBundle
 		
 		{"SCHEMA_DOCUMENT_INFO_PANEL_TAB", "Schema Document Info"},
 		{"SCHEMA_STRUCTURE_PANEL_TAB", "Schema Structure"},
+		{"DEFAULT_NAMESPACE_CHECK_BOX", "Use &Default Schema Url:"},
 		
 		
 		// *** For SchemaDialogUtilities ***

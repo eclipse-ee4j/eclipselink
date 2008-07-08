@@ -139,7 +139,9 @@ final class MWXpathStep
 	}
 	
 	private String namespacePrefix() {
-		if (this.namespace != null && ! "".equals(this.namespace.getNamespacePrefix())) {
+		if (this.namespace != null 
+				&& ! "".equals(this.namespace.getNamespacePrefix()) 
+				&& !this.namespace.getSchema().getDefaultNamespaceUrl().equals(this.namespace.getNamespaceUrl())) {
 			return this.namespace.getNamespacePrefix() + ":";
 		}
 		else {

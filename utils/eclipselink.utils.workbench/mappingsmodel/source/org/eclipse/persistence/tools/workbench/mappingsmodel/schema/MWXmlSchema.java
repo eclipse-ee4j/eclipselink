@@ -65,6 +65,12 @@ public final class MWXmlSchema extends MWModel
 {
 	
 	public static final int INFINITY = 2147483640;
+
+	private boolean shouldUseDefaultNamespace;
+		public static final String SHOULD_USE_DEFAULT_NAMESPACE = "shouldUseDefaultNamespace";
+	
+	private String defaultNamespaceUrl;
+		public static final String DEFAULT_NAMESPACE_URL = "defaultNamespaceUrl";
 	
 	// **************** MW-specific info **************************************
 	
@@ -147,6 +153,8 @@ public final class MWXmlSchema extends MWModel
 	protected void initialize(Node parent) {
 		super.initialize(parent);
 		this.targetNamespaceUrl = "";
+		this.defaultNamespaceUrl = "";
+		this.shouldUseDefaultNamespace = false;
 		this.declaredNamespaces = new HashBag();
 	}
 	
@@ -221,6 +229,9 @@ public final class MWXmlSchema extends MWModel
 	
 	public void setTargetNamespaceUrl(String newTargetNamespaceUrl) {
 		this.targetNamespaceUrl = newTargetNamespaceUrl;
+		if ("".equals(this.defaultNamespaceUrl)) {
+			this.defaultNamespaceUrl = this.targetNamespaceUrl;
+		}
 	}
 	
 	/** Returns an Iterator of declared Namespace objects only */
@@ -653,7 +664,7 @@ public final class MWXmlSchema extends MWModel
 		for (Iterator stream = this.namespaces(); stream.hasNext(); ) {
 			MWNamespace namespace = (MWNamespace) stream.next();
 			
-			if (! "".equals(namespace.getNamespaceUrl()) && "".equals(namespace.getNamespacePrefix())) {
+			if (! "".equals(namespace.getNamespaceUrl()) && "".equals(namespace.getNamespacePrefix()) && !namespace.getNamespaceUrl().equals(this.defaultNamespaceUrl)) {
 				currentProblems.add(this.buildProblem(ProblemConstants.SCHEMA_NAMESPACE_PREFIX_NOT_SPECIFIED, namespace.getNamespaceUrlForDisplay()));
 			}
 		}
@@ -708,6 +719,10 @@ public final class MWXmlSchema extends MWModel
 			}
 		}
 		
+		if (this.shouldUseDefaultNamespace() && !"".equals(this.getDefaultNamespaceUrl())) {
+			namespaceResolver.setDefaultNamespaceURI(this.getDefaultNamespaceUrl());
+		}
+		
 		return namespaceResolver;
 	}
 	
@@ -727,6 +742,18 @@ public final class MWXmlSchema extends MWModel
 		targetNamespaceMapping.setXPath("target-namespace-url/text()");
 		targetNamespaceMapping.setNullValue("");
 		descriptor.addMapping(targetNamespaceMapping);
+		
+		XMLDirectMapping defaultNamespaceMapping = new XMLDirectMapping();
+		defaultNamespaceMapping.setAttributeName("defaultNamespaceUrl");
+		defaultNamespaceMapping.setXPath("default-namespace-url/text()");
+		defaultNamespaceMapping.setNullValue("");
+		descriptor.addMapping(defaultNamespaceMapping);
+
+		XMLDirectMapping shouldDefaultNamespaceMapping = new XMLDirectMapping();
+		shouldDefaultNamespaceMapping.setAttributeName("shouldUseDefaultNamespace");
+		shouldDefaultNamespaceMapping.setXPath("should-default-namespace-url/text()");
+		shouldDefaultNamespaceMapping.setNullValue(false);
+		descriptor.addMapping(shouldDefaultNamespaceMapping);
 
 		XMLCompositeObjectMapping schemaLocationMapping = new XMLCompositeObjectMapping();
 		schemaLocationMapping.setAttributeName("schemaSource");
@@ -819,5 +846,26 @@ public final class MWXmlSchema extends MWModel
 		private BuiltInNamespace() {
 			super();
 		}
+	}
+
+
+	public String getDefaultNamespaceUrl() {
+		return defaultNamespaceUrl;
+	}
+
+	public void setDefaultNamespaceUrl(String newDefaultNamespaceUrl) {
+		String oldUrl = this.defaultNamespaceUrl;
+		this.defaultNamespaceUrl = newDefaultNamespaceUrl;
+		firePropertyChanged(DEFAULT_NAMESPACE_URL, oldUrl, newDefaultNamespaceUrl); 
+	}
+
+	public boolean shouldUseDefaultNamespace() {
+		return shouldUseDefaultNamespace;
+	}
+
+	public void setShouldUseDefaultNamespace(boolean newValue) {
+		boolean oldValue = this.shouldUseDefaultNamespace;
+		this.shouldUseDefaultNamespace = newValue;
+		firePropertyChanged(SHOULD_USE_DEFAULT_NAMESPACE, oldValue, newValue);
 	}
 }
