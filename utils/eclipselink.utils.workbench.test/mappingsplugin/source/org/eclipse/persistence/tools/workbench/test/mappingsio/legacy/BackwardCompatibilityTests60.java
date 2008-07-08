@@ -13,11 +13,13 @@
 package org.eclipse.persistence.tools.workbench.test.mappingsio.legacy;
 
 import org.eclipse.persistence.tools.workbench.test.models.projects.ComplexAggregateProject;
+import org.eclipse.persistence.tools.workbench.test.models.projects.LegacyEmployeeOXProject;
 
 import junit.framework.Test;
 import junit.framework.TestSuite;
 import junit.swingui.TestRunner;
 import org.eclipse.persistence.tools.workbench.mappingsmodel.project.relational.MWRelationalProject;
+import org.eclipse.persistence.tools.workbench.mappingsmodel.project.xml.MWXmlProject;
 
 public class BackwardCompatibilityTests60 extends
 		BackwardCompatibilityInternalTestCase {
@@ -49,6 +51,14 @@ public class BackwardCompatibilityTests60 extends
 	
 	public BackwardCompatibilityTests60(String name) {
 		super(name);
+	}
+
+	public void testXmlEmployee() throws Exception {
+		this.compareToOldProject(this.buildLegacyEmployeeXmlProject());
+	}
+
+	protected MWXmlProject buildLegacyEmployeeXmlProject() throws Exception {
+		return new LegacyEmployeeOXProject().getProject();
 	}
 
 	@Override

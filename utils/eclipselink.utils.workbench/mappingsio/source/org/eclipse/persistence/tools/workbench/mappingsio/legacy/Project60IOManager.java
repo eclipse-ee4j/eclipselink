@@ -17,7 +17,6 @@ import java.util.prefs.Preferences;
 
 import org.eclipse.persistence.tools.workbench.mappingsio.FileNotFoundEvent;
 import org.eclipse.persistence.tools.workbench.mappingsio.FileNotFoundListener;
-import org.eclipse.persistence.tools.workbench.mappingsio.LegacyProjectReadCallback;
 import org.eclipse.persistence.tools.workbench.mappingsmodel.project.MWProject;
 import org.eclipse.persistence.tools.workbench.utility.ClassTools;
 
@@ -301,7 +300,8 @@ public class Project60IOManager {
 		topLinkProject.addDescriptor(org.eclipse.persistence.tools.workbench.mappingsmodel.mapping.relational.MWRelationalTypeConversionConverter.buildDescriptor());
 
 		topLinkProject.addDescriptor(org.eclipse.persistence.tools.workbench.mappingsmodel.mapping.xml.MWXmlDirectMapping.legacy60BuildDescriptor());
-		topLinkProject.addDescriptor(org.eclipse.persistence.tools.workbench.mappingsmodel.mapping.xml.MWXmlDirectCollectionMapping.buildDescriptor());
+		topLinkProject.addDescriptor(org.eclipse.persistence.tools.workbench.mappingsmodel.mapping.xml.MWAbstractXmlDirectCollectionMapping.buildDescriptor());
+		topLinkProject.addDescriptor(org.eclipse.persistence.tools.workbench.mappingsmodel.mapping.xml.MWXmlDirectCollectionMapping.legacy60BuildDescriptor());
 		topLinkProject.addDescriptor(org.eclipse.persistence.tools.workbench.mappingsmodel.mapping.xml.MWAbstractAnyMapping.buildDescriptor());
 		topLinkProject.addDescriptor(org.eclipse.persistence.tools.workbench.mappingsmodel.mapping.xml.MWAnyObjectMapping.buildDescriptor());
 		topLinkProject.addDescriptor(org.eclipse.persistence.tools.workbench.mappingsmodel.mapping.xml.MWAnyCollectionMapping.buildDescriptor());

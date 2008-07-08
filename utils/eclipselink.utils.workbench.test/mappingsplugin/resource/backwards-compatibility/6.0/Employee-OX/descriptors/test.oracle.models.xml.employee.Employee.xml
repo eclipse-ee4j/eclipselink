@@ -1,0 +1,160 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<descriptor type="o-x">
+   <name>test.oracle.models.xml.employee.Employee</name>
+   <class-handle>
+      <type-name>test.oracle.models.xml.employee.Employee</type-name>
+   </class-handle>
+   <mappings>
+      <mapping type="composite-object">
+         <name>address</name>
+         <attribute-handle>
+            <attribute-declaring-type-name>test.oracle.models.xml.employee.Employee</attribute-declaring-type-name>
+            <attribute-name>address</attribute-name>
+         </attribute-handle>
+         <reference-descriptor-handle>
+            <descriptor-name>test.oracle.models.xml.employee.Address</descriptor-name>
+         </reference-descriptor-handle>
+         <xpath>contact-information/address</xpath>
+      </mapping>
+      <mapping type="composite-collection">
+         <name>dependents</name>
+         <attribute-handle>
+            <attribute-declaring-type-name>test.oracle.models.xml.employee.Employee</attribute-declaring-type-name>
+            <attribute-name>dependents</attribute-name>
+         </attribute-handle>
+         <reference-descriptor-handle>
+            <descriptor-name>test.oracle.models.xml.employee.Dependent</descriptor-name>
+         </reference-descriptor-handle>
+         <xpath>dependent-information/dependent</xpath>
+         <container-policy type="collection">
+            <container-class>
+               <uses-default-container-class>true</uses-default-container-class>
+            </container-class>
+         </container-policy>
+      </mapping>
+      <mapping type="xml-direct">
+         <name>firstName</name>
+         <attribute-handle>
+            <attribute-declaring-type-name>test.oracle.models.xml.employee.Employee</attribute-declaring-type-name>
+            <attribute-name>firstName</attribute-name>
+         </attribute-handle>
+         <xml-field>personal-information/@first-name</xml-field>
+      </mapping>
+      <mapping type="xml-direct">
+         <name>gender</name>
+         <attribute-handle>
+            <attribute-declaring-type-name>test.oracle.models.xml.employee.Employee</attribute-declaring-type-name>
+            <attribute-name>gender</attribute-name>
+         </attribute-handle>
+         <converter type="object-type">
+            <data-type>
+               <type-handle>
+                  <type-name>java.lang.String</type-name>
+               </type-handle>
+            </data-type>
+            <attribute-type>
+               <type-handle>
+                  <type-name>java.lang.String</type-name>
+               </type-handle>
+            </attribute-type>
+            <value-pairs>
+               <value-pair>
+                  <data-value>F</data-value>
+                  <attribute-value>female</attribute-value>
+               </value-pair>
+               <value-pair>
+                  <data-value>M</data-value>
+                  <attribute-value>male</attribute-value>
+               </value-pair>
+            </value-pairs>
+            <default-attribute-value>male</default-attribute-value>
+         </converter>
+         <xml-field>personal-information/@gender</xml-field>
+      </mapping>
+      <mapping type="xml-direct">
+         <name>lastName</name>
+         <attribute-handle>
+            <attribute-declaring-type-name>test.oracle.models.xml.employee.Employee</attribute-declaring-type-name>
+            <attribute-name>lastName</attribute-name>
+         </attribute-handle>
+         <xml-field>personal-information/@last-name</xml-field>
+      </mapping>
+      <mapping type="xml-transformation">
+         <name>normalHours</name>
+         <attribute-handle>
+            <attribute-declaring-type-name>test.oracle.models.xml.employee.Employee</attribute-declaring-type-name>
+            <attribute-name>normalHours</attribute-name>
+         </attribute-handle>
+         <attribute-transformer type="class-based">
+            <transformer-class-handle>
+               <type-name>test.oracle.models.xml.employee.NormalHoursTransformer</type-name>
+            </transformer-class-handle>
+         </attribute-transformer>
+         <field-transformer-associations type="xml">
+            <field-transformer type="class-based">
+               <transformer-class-handle>
+                  <type-name>test.oracle.models.xml.employee.NormalHoursTransformer</type-name>
+               </transformer-class-handle>
+            </field-transformer>
+            <xml-field>working-hours/start-time/text()</xml-field>
+         </field-transformer-associations>
+         <field-transformer-associations type="xml">
+            <field-transformer type="class-based">
+               <transformer-class-handle>
+                  <type-name>test.oracle.models.xml.employee.NormalHoursTransformer</type-name>
+               </transformer-class-handle>
+            </field-transformer>
+            <xml-field>working-hours/end-time/text()</xml-field>
+         </field-transformer-associations>
+         <mutable>true</mutable>
+      </mapping>
+      <mapping type="composite-collection">
+         <name>phoneNumbers</name>
+         <attribute-handle>
+            <attribute-declaring-type-name>test.oracle.models.xml.employee.Employee</attribute-declaring-type-name>
+            <attribute-name>phoneNumbers</attribute-name>
+         </attribute-handle>
+         <reference-descriptor-handle>
+            <descriptor-name>test.oracle.models.xml.employee.PhoneNumber</descriptor-name>
+         </reference-descriptor-handle>
+         <xpath>contact-information/phone</xpath>
+         <container-policy type="map">
+            <key-method-handle>
+               <method-declaring-type-name>test.oracle.models.xml.employee.PhoneNumber</method-declaring-type-name>
+               <method-signature>getType()</method-signature>
+            </key-method-handle>
+            <container-class>
+               <uses-default-container-class>true</uses-default-container-class>
+            </container-class>
+         </container-policy>
+      </mapping>
+      <mapping type="xml-direct-collection">
+         <name>responsibilities</name>
+         <attribute-handle>
+            <attribute-declaring-type-name>test.oracle.models.xml.employee.Employee</attribute-declaring-type-name>
+            <attribute-name>responsibilities</attribute-name>
+         </attribute-handle>
+         <xpath>responsibility/text()</xpath>
+         <container-policy type="collection">
+            <container-class>
+               <container-class-handle>
+                  <type-name>java.util.ArrayList</type-name>
+               </container-class-handle>
+            </container-class>
+         </container-policy>
+      </mapping>
+   </mappings>
+   <schema-context-handle>
+      <schema>employee.xsd</schema>
+      <qname-path>
+         <qname component-type="element" namespace-uri="" local-name="employee"/>
+      </qname-path>
+   </schema-context-handle>
+   <default-root-element-handle>
+      <schema>employee.xsd</schema>
+      <qname-path>
+         <qname component-type="element" namespace-uri="" local-name="employee"/>
+      </qname-path>
+   </default-root-element-handle>
+   <root-descriptor>true</root-descriptor>
+</descriptor>
