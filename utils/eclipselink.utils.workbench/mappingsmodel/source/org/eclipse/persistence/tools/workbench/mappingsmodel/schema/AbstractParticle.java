@@ -97,6 +97,9 @@ public abstract class AbstractParticle
 		if (schemaObject != null) {
 			this.minOccurs = ((XSParticleDecl)schemaObject).getMinOccurs();
 			this.maxOccurs = ((XSParticleDecl)schemaObject).getMaxOccurs();
+			if (((XSParticleDecl)schemaObject).getMaxOccursUnbounded()) {
+				this.maxOccurs = MWXmlSchema.INFINITY;
+			}
 		}
 		else {
 			this.minOccurs = 0;

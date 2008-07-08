@@ -104,6 +104,9 @@ public final class ReferencedElementDeclaration
 		if (schemaObject instanceof XSParticleDecl) {
 			this.minOccurs = ((XSParticleDecl)schemaObject).getMinOccurs();
 			this.maxOccurs = ((XSParticleDecl)schemaObject).getMaxOccurs();
+			if (((XSParticleDecl)schemaObject).getMaxOccursUnbounded()) {
+				this.maxOccurs = MWXmlSchema.INFINITY;
+			}
 		}
 	}
 	

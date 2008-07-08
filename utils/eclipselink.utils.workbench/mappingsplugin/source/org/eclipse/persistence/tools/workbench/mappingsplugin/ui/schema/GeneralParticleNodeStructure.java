@@ -19,6 +19,7 @@ import java.util.ListIterator;
 import org.eclipse.persistence.tools.workbench.mappingsmodel.schema.MWElementDeclaration;
 import org.eclipse.persistence.tools.workbench.mappingsmodel.schema.MWModelGroup;
 import org.eclipse.persistence.tools.workbench.mappingsmodel.schema.MWParticle;
+import org.eclipse.persistence.tools.workbench.mappingsmodel.schema.MWXmlSchema;
 import org.eclipse.persistence.tools.workbench.mappingsmodel.schema.NullParticle;
 import org.eclipse.persistence.tools.workbench.mappingsmodel.schema.Wildcard;
 import org.eclipse.persistence.tools.workbench.uitools.Displayable;
@@ -113,7 +114,7 @@ final class GeneralParticleNodeStructure
 			
 			protected String getValueFromComponent() {
 				int maxOccurs = ((MWParticle) this.component).getMaxOccurs();
-				return (maxOccurs == -1) ? "unbounded" : String.valueOf(maxOccurs);
+				return (maxOccurs == MWXmlSchema.INFINITY) ? "unbounded" : String.valueOf(maxOccurs);
 			}
 		};
 	}

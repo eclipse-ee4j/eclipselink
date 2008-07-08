@@ -293,6 +293,9 @@ public final class ExplicitElementDeclaration
 		if (xsObject instanceof XSParticleDecl) {
 			this.minOccurs = ((XSParticleDecl)xsObject).getMinOccurs();
 			this.maxOccurs = ((XSParticleDecl)xsObject).getMaxOccurs();
+			if (((XSParticleDecl)xsObject).getMaxOccursUnbounded()) {
+				this.maxOccurs = MWXmlSchema.INFINITY;
+			}
 		}
 		
 		this.reloadSubstitutionGroup(elemenDecl);

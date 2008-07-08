@@ -63,6 +63,9 @@ import org.w3c.dom.NamedNodeMap;
 public final class MWXmlSchema extends MWModel
 	implements MWNominative
 {
+	
+	public static final int INFINITY = 2147483640;
+	
 	// **************** MW-specific info **************************************
 	
 	/** Used by user to uniquely identify a schema */
