@@ -19,10 +19,13 @@ import org.eclipse.persistence.expressions.Expression;
 import org.eclipse.persistence.expressions.ExpressionBuilder;
 import org.eclipse.persistence.logging.SessionLog;
 import org.eclipse.persistence.sessions.Session;
+import org.eclipse.persistence.sessions.SessionEventListener;
 import org.eclipse.persistence.sessions.UnitOfWork;
+import org.eclipse.persistence.sessions.server.ServerSession;
 import org.eclipse.persistence.testing.tests.remote.RemoteModel;
 import org.eclipse.persistence.testing.framework.AutoVerifyTestCase;
 import org.eclipse.persistence.testing.framework.TestErrorException;
+import org.eclipse.persistence.testing.framework.TestWarningException;
 import org.eclipse.persistence.testing.models.employee.domain.Employee;
 
 
@@ -37,12 +40,27 @@ public class UnitOfWorkComplexRefreshTest extends AutoVerifyTestCase {
     protected Writer oldLog;
     protected int oldLogLevel;
     protected StringWriter tempWriter;
+    // On some platforms (Sybase) if conn1 updates a row but hasn't yet committed transaction then
+    // reading the row through conn2 may hang.
+    // To avoid this problem the listener would decrement transaction isolation level,
+    // then reading through conn2 no longer hangs, however may result (results on Sybase)
+    // in reading of uncommitted data.
+    SessionEventListener listener;
 
     public UnitOfWorkComplexRefreshTest() {
         setDescription("Test that a refreshed object in unit of work does not generate sql on commit.");
     }
 
     public void setup() {
+        if(getSession().getPlatform().isSybase() && getSession().isClientSession()) {
+            if(SybaseTransactionIsolationListener.isDatabaseVersionSupported((ServerSession)getAbstractSession().getParent())) {
+                listener = new SybaseTransactionIsolationListener();
+                getAbstractSession().getParent().getEventManager().addListener(listener);
+            } else {
+                throw new TestWarningException("The test requires Sybase version "+SybaseTransactionIsolationListener.requiredVersion+" or higher");
+            }
+        }
+        
         getAbstractSession().beginTransaction();
         uow1 = getSession().acquireUnitOfWork();
         uow2 = getSession().acquireUnitOfWork();
@@ -54,8 +72,14 @@ public class UnitOfWorkComplexRefreshTest extends AutoVerifyTestCase {
     }
 
     public void reset() {
-        getAbstractSession().rollbackTransaction();
+        if(getAbstractSession().isInTransaction()) {
+            getAbstractSession().rollbackTransaction();
+        }
         getSession().getIdentityMapAccessor().initializeAllIdentityMaps();
+        if(listener != null) {
+            getAbstractSession().getParent().getEventManager().removeListener(listener);
+            listener = null;
+        }
     }
 
     public void switchLog(Session aSession) {

@@ -12,7 +12,9 @@
  ******************************************************************************/  
 package org.eclipse.persistence.testing.tests.unitofwork;
 
+import org.eclipse.persistence.sessions.SessionEventListener;
 import org.eclipse.persistence.sessions.UnitOfWork;
+import org.eclipse.persistence.sessions.server.ServerSession;
 import org.eclipse.persistence.testing.framework.TestErrorException;
 import org.eclipse.persistence.testing.framework.TestWarningException;
 import org.eclipse.persistence.testing.framework.TransactionalTestCase;
@@ -22,12 +24,30 @@ import org.eclipse.persistence.testing.models.employee.domain.Employee;
 public class NoValidationWithInitIdentityMaps extends TransactionalTestCase {
     protected String existenceCheck;
     protected Employee objectToBeWritten;
+    // On some platforms (Sybase) if conn1 updates a row but hasn't yet committed transaction then
+    // reading the row through conn2 may hang.
+    // To avoid this problem the listener would decrement transaction isolation level,
+    // then reading through conn2 no longer hangs, however may result (results on Sybase)
+    // in reading of uncommitted data.
+    SessionEventListener listener;
 
     public NoValidationWithInitIdentityMaps() {
         setDescription("Test using no validation.");
     }
 
     public void setup() {
+        if(getSession().getPlatform().isSybase() && getSession().isClientSession()) {
+            if(SybaseTransactionIsolationListener.isDatabaseVersionSupported((ServerSession)getAbstractSession().getParent())) {
+                listener = new SybaseTransactionIsolationListener();
+                getAbstractSession().getParent().getEventManager().addListener(listener);
+            } else {
+                // so that reset works correctly
+                existenceCheck = getSession().getDescriptor(Employee.class).getQueryManager().getExistenceCheck();
+                
+                throw new TestWarningException("The test requires Sybase version "+SybaseTransactionIsolationListener.requiredVersion+" or higher");
+            }
+        }
+
         super.setup();
         existenceCheck = getSession().getDescriptor(Employee.class).getQueryManager().getExistenceCheck();
         if (getSession() instanceof org.eclipse.persistence.sessions.remote.RemoteSession) {
@@ -38,6 +58,10 @@ public class NoValidationWithInitIdentityMaps extends TransactionalTestCase {
     public void reset() {
         super.reset();
         getSession().getDescriptor(Employee.class).setExistenceChecking(this.existenceCheck);
+        if(listener != null) {
+            getAbstractSession().getParent().getEventManager().removeListener(listener);
+            listener = null;
+        }
     }
 
     public void test() {
