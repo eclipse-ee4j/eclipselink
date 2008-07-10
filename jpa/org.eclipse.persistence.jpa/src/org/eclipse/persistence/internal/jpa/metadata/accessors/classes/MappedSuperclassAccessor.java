@@ -41,6 +41,8 @@ import javax.persistence.SqlResultSetMappings;
 import javax.persistence.TableGenerator;
 
 import org.eclipse.persistence.annotations.Cache;
+import org.eclipse.persistence.annotations.CacheInterceptor;
+import org.eclipse.persistence.annotations.QueryRedirectors;
 import org.eclipse.persistence.annotations.ExistenceChecking;
 import org.eclipse.persistence.annotations.ExistenceType;
 import org.eclipse.persistence.annotations.NamedStoredProcedureQueries;
@@ -51,6 +53,7 @@ import org.eclipse.persistence.annotations.ReadOnly;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAccessibleObject;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataField;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataMethod;
+import org.eclipse.persistence.internal.jpa.metadata.cache.CacheInterceptorMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.cache.CacheMetadata;
 
 import org.eclipse.persistence.internal.jpa.metadata.columns.AssociationOverrideMetadata;
@@ -65,6 +68,7 @@ import org.eclipse.persistence.internal.jpa.metadata.MetadataLogger;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataProject;
 import org.eclipse.persistence.internal.jpa.metadata.ORMetadata;
 
+import org.eclipse.persistence.internal.jpa.metadata.queries.DefaultRedirectorsMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.queries.NamedNativeQueryMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.queries.NamedQueryMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.queries.NamedStoredProcedureQueryMetadata;
@@ -86,6 +90,8 @@ public class MappedSuperclassAccessor extends ClassAccessor {
     private Boolean m_readOnly;
     private Class m_idClass;
     private CacheMetadata m_cache;
+    private CacheInterceptorMetadata m_cacheInterceptor;
+    private DefaultRedirectorsMetadata m_defaultRedirectors;
     private ExistenceType m_existenceChecking;
     private List<EntityListenerMetadata> m_entityListeners = new ArrayList<EntityListenerMetadata>();
     private OptimisticLockingMetadata m_optimisticLocking;
@@ -153,6 +159,23 @@ public class MappedSuperclassAccessor extends ClassAccessor {
         return m_cache;
     }
     
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+    public CacheInterceptorMetadata getCacheInterceptor() {
+        return m_cacheInterceptor;
+    }
+    
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+    public DefaultRedirectorsMetadata getDefaultRedirectors() {
+        return m_defaultRedirectors;
+    }
+    
+
     /**
      * INTERNAL:
      * Used for OX mapping.
@@ -311,6 +334,8 @@ public class MappedSuperclassAccessor extends ClassAccessor {
         
         // ORMetadata object merging.
         m_cache = (CacheMetadata) mergeORObjects(m_cache, accessor.getCache());
+        m_cacheInterceptor = (CacheInterceptorMetadata)mergeORObjects(m_cacheInterceptor, accessor.getCacheInterceptor());
+        m_defaultRedirectors = (DefaultRedirectorsMetadata)mergeORObjects(m_defaultRedirectors, accessor.getDefaultRedirectors());
         m_optimisticLocking = (OptimisticLockingMetadata) mergeORObjects(m_optimisticLocking, accessor.getOptimisticLocking());
         
         // ORMetadata list merging. 
@@ -433,6 +458,52 @@ public class MappedSuperclassAccessor extends ClassAccessor {
     
     /**
      * INTERNAL:
+     * Process a cache interceptor metadata. 
+     */
+    protected void processCacheInterceptor() {
+        if (m_cacheInterceptor != null || isAnnotationPresent(CacheInterceptor.class)) {
+            if (getDescriptor().isInheritanceSubclass()) {
+                // Ignore cache if specified on an inheritance subclass.
+                getLogger().logWarningMessage(MetadataLogger.IGNORE_INHERITANCE_SUBCLASS_CACHE_INTERCEPTOR, getJavaClass());
+            } else if (getDescriptor().hasCacheInterceptor()) {
+                // Ignore cache on mapped superclass if cache is already 
+                // defined on the entity.
+                getLogger().logWarningMessage(MetadataLogger.IGNORE_MAPPED_SUPERCLASS_CACHE_INTERCEPTOR, getDescriptor().getJavaClass(), getJavaClass());
+            } else {
+                if (m_cacheInterceptor == null) {
+                    new CacheInterceptorMetadata(getAnnotation(CacheInterceptor.class), getAccessibleObject()).process(getDescriptor(), getJavaClass());
+                } else {
+                    m_cacheInterceptor.process(getDescriptor(), getJavaClass());
+                }
+            }
+        }        
+    }
+    
+    /**
+     * INTERNAL:
+     * Process a default redirector metadata. 
+     */
+    protected void processDefaultRedirectors() {
+        if (m_defaultRedirectors != null || isAnnotationPresent(QueryRedirectors.class)) {
+            if (getDescriptor().isInheritanceSubclass()) {
+                // Ignore cache if specified on an inheritance subclass.
+                getLogger().logWarningMessage(MetadataLogger.IGNORE_INHERITANCE_SUBCLASS_DEFAULT_REDIRECTORS, getJavaClass());
+            } else if (getDescriptor().hasDefaultRedirectors()) {
+                // Ignore cache on mapped superclass if cache is already 
+                // defined on the entity.
+                getLogger().logWarningMessage(MetadataLogger.IGNORE_MAPPED_SUPERCLASS_DEFAULT_REDIRECTORS, getDescriptor().getJavaClass(), getJavaClass());
+            } else {
+                if (m_defaultRedirectors == null) {
+                    new DefaultRedirectorsMetadata(getAnnotation(QueryRedirectors.class), getAccessibleObject()).process(getDescriptor(), getJavaClass());
+                } else {
+                    m_defaultRedirectors.process(getDescriptor(), getJavaClass());
+                }
+            }
+        }        
+    }
+    
+    /**
+     * INTERNAL:
      * Process the items of interest on an entity or mapped superclass class. 
      */
     protected void processClassMetadata() {
@@ -477,6 +548,12 @@ public class MappedSuperclassAccessor extends ClassAccessor {
         
         // Process the cache metadata.
         processCache();
+        
+        // Process the cache interceptors
+        processCacheInterceptor();
+        
+        // Process the Default Redirectos
+        processDefaultRedirectors();
             
         // Process the change tracking metadata.
         processChangeTracking();
@@ -810,6 +887,22 @@ public class MappedSuperclassAccessor extends ClassAccessor {
      */
     public void setCache(CacheMetadata cache) {
         m_cache = cache;
+    }
+    
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+    public void setCacheInterceptor(CacheInterceptorMetadata cacheInterceptor) {
+        m_cacheInterceptor = cacheInterceptor;
+    }
+    
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+    public void setDefaultRedirectors(DefaultRedirectorsMetadata redirectors) {
+        m_defaultRedirectors = redirectors;
     }
     
     /**
