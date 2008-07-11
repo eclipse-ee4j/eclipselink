@@ -402,7 +402,6 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         descriptor.addMapping(getValueColumnMapping());
         descriptor.addMapping(getConvertMapping());
         descriptor.addMapping(getCollectionTableMapping());
-        descriptor.addMapping(getPrivateOwnedMapping());
         descriptor.addMapping(getJoinFetchMapping());
         descriptor.addMapping(getPropertiesMapping());
         descriptor.addMapping(getNameAttributeMapping());
@@ -483,7 +482,6 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         descriptor.addMapping(valueConverterMapping);
         
         descriptor.addMapping(getCollectionTableMapping());
-        descriptor.addMapping(getPrivateOwnedMapping());  
         descriptor.addMapping(getJoinFetchMapping());
         descriptor.addMapping(getPropertiesMapping());
         
@@ -1357,7 +1355,6 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         descriptor.addMapping(getMapKeyMapping());
         descriptor.addMapping(getJoinTableMapping());
         descriptor.addMapping(getCascadeMapping());
-        descriptor.addMapping(getPrivateOwnedMapping());
         descriptor.addMapping(getJoinFetchMapping());
         descriptor.addMapping(getPropertiesMapping());
         

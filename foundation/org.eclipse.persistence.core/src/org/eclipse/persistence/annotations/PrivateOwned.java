@@ -28,8 +28,9 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
  * locking (when cascaded). It also ensures that private objects removed from 
  * collections are deleted and object added are inserted.
  * 
- * A PrivateOwned annotation can be used in conjunction with a BasicCollection, 
- * BasicMap, OneToOne, and OneToMany annotation.
+ * A PrivateOwned annotation can be used in conjunction with a OneToOne, 
+ * OneToMany and VariableOneToOne annotation. Private ownership is implied 
+ * with the BasicCollection and BasicMap annotation.
  * 
  * @author Guy Pelletier
  * @since Oracle TopLink 11.1.1.0.0 

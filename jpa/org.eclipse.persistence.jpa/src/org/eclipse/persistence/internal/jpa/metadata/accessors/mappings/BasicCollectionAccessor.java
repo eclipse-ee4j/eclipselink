@@ -25,7 +25,6 @@ import javax.persistence.FetchType;
 
 import org.eclipse.persistence.annotations.CollectionTable;
 import org.eclipse.persistence.annotations.JoinFetch;
-import org.eclipse.persistence.annotations.PrivateOwned;
 import org.eclipse.persistence.exceptions.ValidationException;
 
 import org.eclipse.persistence.internal.helper.DatabaseField;
@@ -53,7 +52,6 @@ import org.eclipse.persistence.mappings.converters.Converter;
  * @since TopLink 11g
  */
 public class BasicCollectionAccessor extends DirectAccessor {
-    private boolean m_privateOwned;
     private ColumnMetadata m_valueColumn;
     private CollectionTableMetadata m_collectionTable;
     private Enum m_joinFetch;
@@ -95,9 +93,6 @@ public class BasicCollectionAccessor extends DirectAccessor {
         if (joinFetch != null) {
             m_joinFetch = (Enum) MetadataHelper.invokeMethod("value", joinFetch);
         }
-        
-        // Set the private owned if one is present.
-        m_privateOwned = isAnnotationPresent(PrivateOwned.class);
     }
     
     /**
@@ -223,14 +218,6 @@ public class BasicCollectionAccessor extends DirectAccessor {
     
     /**
      * INTERNAL:
-     * Used for OX mapping.
-     */
-    public boolean isPrivateOwned() {
-        return m_privateOwned;
-    }
-    
-    /**
-     * INTERNAL:
      * Returns true if the given class is a valid basic collection type.
      */ 
     protected boolean isValidBasicCollectionType() {
@@ -284,9 +271,6 @@ public class BasicCollectionAccessor extends DirectAccessor {
         
         // Will check for PROPERTY access
         setAccessorMethods(mapping);
-        
-        // Process private owned.
-        mapping.setIsPrivateOwned(m_privateOwned);
         
         // Process join fetch type.
         mapping.setJoinFetch(getMappingJoinFetchType(m_joinFetch));
@@ -372,14 +356,6 @@ public class BasicCollectionAccessor extends DirectAccessor {
      */
     public void setJoinFetch(Enum joinFetch) {
         m_joinFetch = joinFetch;
-    }
-    
-    /**
-     * INTERNAL:
-     * Used for OX mapping.
-     */
-    public void setPrivateOwned(String ignore) {
-        m_privateOwned = true;
     }
     
     /**
