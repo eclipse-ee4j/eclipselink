@@ -235,7 +235,7 @@
     </target>
 
     <!-- Launches the testing browser -->
-    <target name="test-browser">
+    <target name="test-browser" depends="process-resource">
         <echo>Running test browser</echo>
         <mkdir dir="${eclipselink.core.test}/${run.dir}"/>
         <mkdir dir="${eclipselink.core.test}/${report.dir}"/>
@@ -255,7 +255,7 @@
     </target>
 
     <!-- Generic target for running tests. -->
-    <target name="run-test">
+    <target name="run-test" depends="process-resource">
         <echo>Running test on ${db.url}</echo>
         <mkdir dir="${eclipselink.core.test}/${run.dir}"/>
         <mkdir dir="${eclipselink.core.test}/${report.dir}"/>
@@ -285,7 +285,7 @@
     </target>
 
     <!-- Runs the test using the PromptTestRunner -->
-    <target name="run-test-prompt">
+    <target name="run-test-prompt" depends="process-resource">
         <condition property="jvmarg.performance.baseline.version" value="-Dtoplink.loadbuild.baseline-version=${performance.baseline.version}">
             <isset property="performance.baseline.version"/>
         </condition>
