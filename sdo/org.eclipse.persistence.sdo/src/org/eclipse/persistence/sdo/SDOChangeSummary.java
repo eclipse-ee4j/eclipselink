@@ -111,6 +111,12 @@ public class SDOChangeSummary implements ChangeSummary {
         rootDataObject = dataObject;
     }
 
+    public SDOChangeSummary(SDODataGraph dataGraph, HelperContext aContext) {
+        this();
+        aHelperContext = aContext;// TODO: aContext should not be null;
+        this.dataGraph = dataGraph;
+    }
+
     /**
      * Indicates whether change logging is on (<code>true</code>) or off (<code>false</code>).
      * @return <code>true</code> if change logging is on.

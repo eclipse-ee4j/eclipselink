@@ -28,7 +28,7 @@ import commonj.sdo.impl.HelperProvider;
 public class SDODataGraph implements DataGraph {
     private HelperContext helperContext;
     private SDODataObject rootObject;
-    private ChangeSummary changeSummary;
+    private SDOChangeSummary changeSummary;
 
     public SDODataGraph(HelperContext helperContext) {
         super();
@@ -37,7 +37,7 @@ public class SDODataGraph implements DataGraph {
         } else {
             this.helperContext = helperContext;
         }
-        this.changeSummary = new SDOChangeSummary();
+        this.changeSummary = new SDOChangeSummary(this, helperContext);
     }
 
     /**
@@ -81,9 +81,13 @@ public class SDODataGraph implements DataGraph {
      * @see #getType(String, String)
      */
     public DataObject createRootObject(String namespaceURI, String typeName) {
+        if(null != rootObject) {
+            throw new IllegalStateException();
+        }
         rootObject = (SDODataObject) helperContext.getDataFactory().create(namespaceURI, typeName);
         rootObject.setDataGraph(this);
         rootObject._setChangeSummary(changeSummary);
+        changeSummary.setRootDataObject(rootObject);
         return rootObject;
     }
 
@@ -96,9 +100,13 @@ public class SDODataGraph implements DataGraph {
      * @see #createRootObject(String, String)
      */
     public DataObject createRootObject(Type type) {
+        if(null != rootObject) {
+            throw new IllegalStateException();
+        }
         rootObject = (SDODataObject) helperContext.getDataFactory().create(type);
         rootObject.setDataGraph(this);
         rootObject._setChangeSummary(changeSummary);
+        changeSummary.setRootDataObject(rootObject);
         return rootObject;
     }
 }
