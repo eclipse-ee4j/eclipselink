@@ -74,10 +74,12 @@ public class XMLConstants {
     public static final String UNSIGNED_INT = "unsignedInt";
     public static final String UNSIGNED_SHORT = "unsignedShort";
     public static final String ANY_SIMPLE_TYPE = "anySimpleType";
+    public static final String ANY_URI = "anyURI";
     public static final String SWA_REF = "swaRef";
 
     // Schema Type QNames
     public static final QName ANY_SIMPLE_TYPE_QNAME = new QName(SCHEMA_URL, ANY_SIMPLE_TYPE);
+    public static final QName ANY_URI_QNAME = new QName(SCHEMA_URL, ANY_URI);
     public static final QName BASE_64_BINARY_QNAME = new QName(SCHEMA_URL, BASE_64_BINARY);
     public static final QName HEX_BINARY_QNAME = new QName(SCHEMA_URL, HEX_BINARY);
     public static final QName DATE_QNAME = new QName(SCHEMA_URL, DATE);
