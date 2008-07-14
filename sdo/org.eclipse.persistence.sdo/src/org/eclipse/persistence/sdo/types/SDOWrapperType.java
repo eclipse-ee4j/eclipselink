@@ -3,83 +3,162 @@
 * This program and the accompanying materials are made available under the terms
 * of the Eclipse Public License v1.0 and Eclipse Distribution License v1.0
 * which accompanies this distribution.
-* 
+*
 * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
 * and the Eclipse Distribution License is available at
 * http://www.eclipse.org/org/documents/edl-v10.php.
 *
 * Contributors:
 * rbarkhouse - May 26 2008 - 1.0M8 - Initial implementation
+* rbarkhouse - July 14 2008 - 1.1 - Modified to enable wrappers to have multiple associated QNames
 ******************************************************************************/
 
 package org.eclipse.persistence.sdo.types;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import javax.xml.namespace.QName;
 
+import org.eclipse.persistence.exceptions.SDOException;
+import org.eclipse.persistence.internal.oxm.XMLConversionManager;
+import org.eclipse.persistence.oxm.XMLDescriptor;
 import org.eclipse.persistence.oxm.XMLField;
 import org.eclipse.persistence.oxm.mappings.XMLDirectMapping;
 import org.eclipse.persistence.sdo.SDOConstants;
 import org.eclipse.persistence.sdo.SDOProperty;
 import org.eclipse.persistence.sdo.SDOType;
+import org.eclipse.persistence.sdo.helper.SDOClassLoader;
 import org.eclipse.persistence.sdo.helper.SDOMethodAttributeAccessor;
 import org.eclipse.persistence.sdo.helper.SDOTypeHelper;
+import org.eclipse.persistence.sdo.helper.SDOXMLHelper;
+import org.eclipse.persistence.sdo.helper.delegates.SDOTypeHelperDelegate;
+import org.eclipse.persistence.sdo.helper.delegates.SDOTypeHelperDelegator;
 import org.eclipse.persistence.sdo.helper.extension.SDOUtil;
+import org.eclipse.persistence.sessions.Project;
 
 import commonj.sdo.Type;
 
 /**
- * Wrapper for XML datatypes. 
+ * Wrapper for XML datatypes.
  * @author rbarkhou
  */
 public class SDOWrapperType extends SDOType implements Type {
 
-	private static final List EMPTY_LIST = new ArrayList(0);
+    private static final List EMPTY_LIST = new ArrayList(0);
 
-	private String typeName;
+    private String typeName;
+    private Map<QName, XMLDescriptor> descriptorsMap;
 
-	public SDOWrapperType(Type aPropertyType, String aTypeName, SDOTypeHelper aSDOTypeHelper) {
-		this(aPropertyType, aTypeName, aSDOTypeHelper, null);
-	}	
-	
-	public SDOWrapperType(Type aPropertyType, String aTypeName, SDOTypeHelper aSDOTypeHelper, QName aSchemaType) {
-		super(aSDOTypeHelper);
-		
-		xmlDescriptor.setNamespaceResolver(null);
-		
-		typeName = aTypeName;
-		
+    public SDOWrapperType(Type aPropertyType, String aTypeName, SDOTypeHelper aSDOTypeHelper) {
+        this(aPropertyType, aTypeName, aSDOTypeHelper, (QName) null);
+    }
+
+    public SDOWrapperType(Type aPropertyType, String aTypeName, SDOTypeHelper aSDOTypeHelper, QName aSchemaType) {
+        this(aPropertyType, aTypeName, aSDOTypeHelper, new QName[] { aSchemaType });
+    }
+
+    public SDOWrapperType(Type aPropertyType, String aTypeName, SDOTypeHelper aSDOTypeHelper, QName[] schemaTypes) {
+        super(SDOConstants.ORACLE_SDO_URL, aTypeName, aSDOTypeHelper);
+
+        typeName = aTypeName;
+
+        descriptorsMap = new HashMap<QName, XMLDescriptor>();
+
         SDOProperty valueProperty = new SDOProperty(aHelperContext);
         valueProperty.setName("value");
         valueProperty.setType(aPropertyType);
-        valueProperty.setXsdType(aSchemaType);
+        valueProperty.setXsdType(schemaTypes[0]);
         addDeclaredProperty(valueProperty);
-        
-        XMLDirectMapping mapping = new XMLDirectMapping();
-        mapping.setAttributeName("value");
-        mapping.setAttributeClassification(aPropertyType.getInstanceClass());
-        mapping.setXPath("text()");
-        ((XMLField) mapping.getField()).setSchemaType(aSchemaType);
 
-        SDOMethodAttributeAccessor accessor = null;
-        accessor = new SDOMethodAttributeAccessor(valueProperty);
-        mapping.setAttributeAccessor(accessor);        
-        
-        valueProperty.setXmlMapping(mapping);
-
-        xmlDescriptor.addMapping(mapping);
-        
-        xmlDescriptor.setIsWrapper(true);
-
-        String mangledTypeName = SDOUtil.className(aTypeName, true);
-        setInstanceClassName("org.eclipse.persistence.sdo." + mangledTypeName + "Wrapper");
-        setImplClassName("org.eclipse.persistence.sdo." + mangledTypeName + "WrapperImpl");
+        // Remove any special characters from the type name to create the class name:
+        String normalizedTypeName = SDOUtil.className(aTypeName, true, true, false);
+        String instanceClassName = "org.eclipse.persistence.sdo." + normalizedTypeName + "Wrapper";
+        setInstanceClassName(instanceClassName);
+        String implClassName = "org.eclipse.persistence.sdo." + normalizedTypeName + "WrapperImpl" ;
+        setImplClassName(implClassName);
 
         getInstanceClass();
         getImplClass();
-	}
+
+        xmlDescriptor.getInterfacePolicy().addParentInterface(getInstanceClass());
+
+        // Add a new map to typehelperdelegate
+        // interface --> sdotype
+        // add (this) into map during constructor i.e. here
+        // change getType(Class) on typehelperdelegate to check map first
+
+        initializeDescriptor(xmlDescriptor, schemaTypes[0], aPropertyType, valueProperty);
+        descriptorsMap.put(schemaTypes[0], xmlDescriptor);
+
+        if (schemaTypes.length > 1) {
+            for (int i = 1; i < schemaTypes.length; i++) {
+                XMLDescriptor d = new XMLDescriptor();
+                QName schemaType = schemaTypes[i];
+                String className = "org.eclipse.persistence.sdo." + normalizedTypeName + "_" + schemaType.getLocalPart() + "Wrapper";
+
+                // Now generate the class in memory
+                try {
+                    SDOClassLoader loader = ((SDOXMLHelper)aHelperContext.getXMLHelper()).getLoader();
+                    d.setJavaClass(loader.loadClass(className + "Impl", this));
+                    d.getInterfacePolicy().addParentInterface(loader.loadClass(className, this));
+                } catch (ClassNotFoundException e) {
+                    throw SDOException.classNotFound(e, getURI(), getName());
+                } catch (SecurityException e) {
+                    throw SDOException.classNotFound(e, getURI(), getName());
+                }
+
+                initializeDescriptor(d, schemaType, aPropertyType, valueProperty);
+
+                descriptorsMap.put(schemaTypes[i], d);
+            }
+        }
+    }
+
+    private void initializeDescriptor(XMLDescriptor aDescriptor, QName aQName, Type aPropertyType, SDOProperty aValueProperty) {
+        aDescriptor.setNamespaceResolver(null);
+
+        XMLDirectMapping mapping = new XMLDirectMapping();
+        mapping.setAttributeName("value");
+        mapping.setXPath("text()");
+
+        mapping.setAttributeClassification(aPropertyType.getInstanceClass());
+
+        ((XMLField) mapping.getField()).setSchemaType(aQName);
+
+        SDOMethodAttributeAccessor accessor = null;
+        accessor = new SDOMethodAttributeAccessor(aValueProperty);
+        mapping.setAttributeAccessor(accessor);
+
+        aDescriptor.addMapping(mapping);
+
+        aDescriptor.setIsWrapper(true);
+    }
+
+    public XMLDescriptor getXmlDescriptor(QName aQName) {
+        XMLDescriptor d = descriptorsMap.get(aQName);
+
+        if (d == null) {
+            // Return the default
+            return xmlDescriptor;
+        }
+
+        return d;
+    }
+
+    public Map getDescriptorsMap() {
+        return descriptorsMap;
+    }
+
+    public void addDescriptorToProject(Project project) {
+        Iterator<XMLDescriptor> it = descriptorsMap.values().iterator();
+        while (it.hasNext()) {
+            project.addDescriptor(it.next());
+        }
+    }
 
     public List getAliasNames() {
         return EMPTY_LIST;
@@ -112,20 +191,20 @@ public class SDOWrapperType extends SDOType implements Type {
     public boolean isSequenced() {
         return false;
     }
-    
+
     public boolean isFinalized() {
-    	return true;
+        return true;
     }
-    
+
     public String toString() {
-    	StringBuffer str = new StringBuffer();
-    	str.append(getClass().getSimpleName() + "@" + Integer.toHexString(hashCode()));
-    	str.append("{uri=");
-    	str.append(getURI());
-    	str.append(" name=");
-    	str.append(getName());
-    	str.append("}");
-    	
-    	return str.toString();
+        StringBuffer str = new StringBuffer();
+        str.append(getClass().getSimpleName() + "@" + Integer.toHexString(hashCode()));
+        str.append("{uri=");
+        str.append(getURI());
+        str.append(" name=");
+        str.append(getName());
+        str.append("}");
+
+        return str.toString();
     }
 }
