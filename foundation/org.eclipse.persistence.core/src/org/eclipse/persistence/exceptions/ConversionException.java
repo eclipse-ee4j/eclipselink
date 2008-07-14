@@ -121,12 +121,16 @@ public class ConversionException extends EclipseLinkException {
         return conversionException;
     }
 
-    public static ConversionException incorrectDateTimeFormat(String dateTimeString) {
+    public static ConversionException incorrectDateTimeFormat(String dateTimeString, Class classBeingConvertedTo) {
         Object[] args = { dateTimeString };
         String message = ExceptionMessageGenerator.buildMessage(ConversionException.class, INCORRECT_DATE_TIME_FORMAT, args);
-        ConversionException conversionException = new ConversionException(message, dateTimeString, Calendar.class, null);
+        ConversionException conversionException = new ConversionException(message, dateTimeString, classBeingConvertedTo, null);
         conversionException.setErrorCode(INCORRECT_DATE_TIME_FORMAT);
         return conversionException;
+    }
+
+    public static ConversionException incorrectDateTimeFormat(String dateTimeString) {
+        return incorrectDateTimeFormat(dateTimeString, Calendar.class);
     }
 
     /**
