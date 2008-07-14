@@ -159,7 +159,7 @@
                 <include name="org/eclipse/persistence/internal/helper/VendorNameToPlatformMapping.properties"/>
             </fileset>
              <fileset dir="${eclipselink.jpa}/${resource.dir}">
-                <include name="xsd/*.xsd"/>
+                <include name="javax/persistence/*.xsd"/>
                 <include name="META-INF/services/javax.persistence.spi.PersistenceProvider"/>
             </fileset>
             <fileset dir="${eclipselink.moxy}/${classes.dir}">
@@ -215,7 +215,7 @@
                 <include name="org/eclipse/persistence/**/*.class"/>
             </fileset>
              <fileset dir="${eclipselink.jpa}/${resource.dir}">
-                <include name="xsd/*.xsd"/>
+                <include name="javax/persistence/*.xsd"/>
                 <include name="META-INF/services/javax.persistence.spi.PersistenceProvider"/>
             </fileset>
         </jar>

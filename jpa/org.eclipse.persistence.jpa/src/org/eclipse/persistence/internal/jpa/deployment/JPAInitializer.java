@@ -95,7 +95,7 @@ public abstract class JPAInitializer {
                 EntityManagerFactoryProvider.addEntityManagerSetupImpl(puName, emSetupImpl);
             }
            
-            persistenceUnitInfo.setClassLoader(persistenceHelper.getClassLoader(puName, m));
+            persistenceUnitInfo.setClassLoader(persistenceHelper.getClassLoader(persistenceUnitInfo.getPersistenceUnitName(), m));
     
             // A call to predeploy will partially build the session we will use
             final ClassTransformer transformer = emSetupImpl.predeploy(persistenceUnitInfo, mergedProperties);

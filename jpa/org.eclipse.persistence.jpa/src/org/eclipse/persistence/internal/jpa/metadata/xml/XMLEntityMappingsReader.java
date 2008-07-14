@@ -32,7 +32,7 @@ import org.eclipse.persistence.oxm.XMLUnmarshaller;
  * @since EclipseLink 1.0
  */
 public class XMLEntityMappingsReader {
-    public static final String ORM_XSD = "xsd/orm_1_0.xsd";
+    public static final String ORM_XSD = "javax/persistence/orm_1_0.xsd";
     public static final String ORM_NAMESPACE = "http://java.sun.com/xml/ns/persistence/orm";
     public static final String ECLIPSELINK_ORM_XSD = "xsd/eclipselink_orm_1_0.xsd";
     public static final String ECLIPSELINK_ORM_NAMESPACE = "http://www.eclipse.org/eclipselink/xsds/persistence/orm";
