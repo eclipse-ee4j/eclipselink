@@ -19,43 +19,43 @@ import org.eclipse.persistence.sdo.SDOType;
 
 import junit.textui.TestRunner;
 
-public class SDOXMLHelperDatatypeFloatTestCases extends SDOXMLHelperDatatypeTestCase {
+public class SDOXMLHelperDatatypeMonthDayTestCases extends SDOXMLHelperDatatypeTestCase {
     
-	public SDOXMLHelperDatatypeFloatTestCases(String name) {
+	public SDOXMLHelperDatatypeMonthDayTestCases(String name) {
         super(name);
     }
 	
     public static void main(String[] args) {
-        String[] arguments = { "-c", "org.eclipse.persistence.testing.sdo.helper.xmlhelper.datatype.SDOXMLHelperDatatypeFloatTestCases" };
+        String[] arguments = { "-c", "org.eclipse.persistence.testing.sdo.helper.xmlhelper.datatype.SDOXMLHelperDatatypeMonthDayTestCases" };
         TestRunner.main(arguments);
     }
 
     protected Class getDatatypeJavaClass() {
-    	return Float.class;
+    	return String.class;
     }    
     
     protected SDOType getValueType() {
-    	return SDOConstants.SDO_FLOAT;
+    	return SDOConstants.SDO_MONTHDAY;
     }
-
+    
     protected String getControlFileName() {
-        return ("./org/eclipse/persistence/testing/sdo/helper/xmlhelper/datatype/myFloat-1.xml");
+        return ("./org/eclipse/persistence/testing/sdo/helper/xmlhelper/datatype/myMonthDay-1.xml");
     }
 
     protected String getControlRootURI() {
-        return "myFloat-NS";
+        return "myMonthDay-NS";
     }
 
     protected String getControlRootName() {
-        return "myFloat";
+        return "myMonthDay";
     }
 
     protected String getSchemaNameForUserDefinedType() {
-        return getSchemaLocation() + "myFloat.xsd";
+        return getSchemaLocation() + "myMonthDay.xsd";
     }
 
     protected String getSchemaNameForBuiltinType() {
-        return getSchemaLocation() + "myFloat-builtin.xsd";
+        return getSchemaLocation() + "myMonthDay-builtin.xsd";
     }
 
 }

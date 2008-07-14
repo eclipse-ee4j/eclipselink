@@ -1,0 +1,10 @@
+<?xml version="1.0"?>
+<schema xmlns="http://www.w3.org/2001/XMLSchema" xmlns:nist="myBoolean-NS" targetNamespace="myBoolean-NS">
+
+	<element name="myBoolean" type="nist:myBoolean-Type"/>
+
+	<simpleType name="myBoolean-Type">
+		<restriction base="boolean"/>
+	</simpleType>
+
+</schema>

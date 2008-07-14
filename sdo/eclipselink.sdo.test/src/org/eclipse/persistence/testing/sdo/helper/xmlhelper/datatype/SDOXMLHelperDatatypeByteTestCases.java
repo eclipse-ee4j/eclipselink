@@ -19,43 +19,43 @@ import org.eclipse.persistence.sdo.SDOType;
 
 import junit.textui.TestRunner;
 
-public class SDOXMLHelperDatatypeFloatTestCases extends SDOXMLHelperDatatypeTestCase {
+public class SDOXMLHelperDatatypeByteTestCases extends SDOXMLHelperDatatypeTestCase {
     
-	public SDOXMLHelperDatatypeFloatTestCases(String name) {
+	public SDOXMLHelperDatatypeByteTestCases(String name) {
         super(name);
     }
 	
     public static void main(String[] args) {
-        String[] arguments = { "-c", "org.eclipse.persistence.testing.sdo.helper.xmlhelper.datatype.SDOXMLHelperDatatypeFloatTestCases" };
+        String[] arguments = { "-c", "org.eclipse.persistence.testing.sdo.helper.xmlhelper.datatype.SDOXMLHelperDatatypeByteTestCases" };
         TestRunner.main(arguments);
     }
 
     protected Class getDatatypeJavaClass() {
-    	return Float.class;
+    	return Byte.class;
     }    
     
     protected SDOType getValueType() {
-    	return SDOConstants.SDO_FLOAT;
+    	return SDOConstants.SDO_BYTE;
     }
 
     protected String getControlFileName() {
-        return ("./org/eclipse/persistence/testing/sdo/helper/xmlhelper/datatype/myFloat-1.xml");
+        return ("./org/eclipse/persistence/testing/sdo/helper/xmlhelper/datatype/myByte-1.xml");
     }
 
     protected String getControlRootURI() {
-        return "myFloat-NS";
+        return "myByte-NS";
     }
 
     protected String getControlRootName() {
-        return "myFloat";
+        return "myByte";
     }
 
     protected String getSchemaNameForUserDefinedType() {
-        return getSchemaLocation() + "myFloat.xsd";
+        return getSchemaLocation() + "myByte.xsd";
     }
 
     protected String getSchemaNameForBuiltinType() {
-        return getSchemaLocation() + "myFloat-builtin.xsd";
+        return getSchemaLocation() + "myByte-builtin.xsd";
     }
 
 }
