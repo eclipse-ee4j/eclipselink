@@ -322,6 +322,9 @@ public abstract class DatasourceLogin implements org.eclipse.persistence.session
                     passwordString = (String)passwordObject;
                 }
                 result.put("password", getSecurableObjectHolder().getSecurableObject().decryptPassword(passwordString));
+            } else if (passwordObject.equals("") || (passwordObject instanceof char[] && ((char[])passwordObject).length == 0)){
+                // Bug 236726 - deal with empty string for passwords
+                result.put("password", "");
             }
         }
 
