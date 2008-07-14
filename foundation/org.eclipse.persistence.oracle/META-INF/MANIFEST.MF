@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: EclipseLink Oracle Extensions
 Bundle-SymbolicName: org.eclipse.persistence.oracle
-Bundle-Version: 1.0
+Bundle-Version: 1.0.1
 Export-Package: org.eclipse.persistence.eis.adapters.aq,
  org.eclipse.persistence.internal.eis.adapters.aq,
  org.eclipse.persistence.internal.platform.database.oracle,
@@ -12,8 +12,8 @@ Export-Package: org.eclipse.persistence.eis.adapters.aq,
  org.eclipse.persistence.platform.database.oracle.converters,
  org.eclipse.persistence.platform.xml.xdk,
  org.eclipse.persistence.sessions.factories
-Require-Bundle: org.eclipse.persistence.core;visibility:=reexport
+Require-Bundle: org.eclipse.persistence.core;bundle-version="[1.0.0,2.0.0)";visibility:=reexport
 Bundle-ClassPath: .
-Import-Package: javax.resource;version="[1.5.0,1.6.0)";resolution:=optional,
- javax.resource.cci;version="[1.5.0,1.6.0)"
+Import-Package: javax.resource;version="1.5.0";resolution:=optional,
+ javax.resource.cci;version="1.5.0"
 HK2-Bundle-Name: org.eclipse.persistence:org.eclipse.persistence.oracle

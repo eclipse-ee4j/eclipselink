@@ -56,7 +56,7 @@ public class PersistenceUnitProcessor {
     // JPA schema specs.
     private static final String SCHEMA_LANGUAGE = "http://java.sun.com/xml/jaxp/properties/schemaLanguage";
     private static final String XML_SCHEMA = "http://www.w3.org/2001/XMLSchema";
-    private static final String PERSISTENCE_SCHEMA_NAME = "xsd/persistence_1_0.xsd";
+    private static final String PERSISTENCE_SCHEMA_NAME = "javax/persistence/persistence_1_0.xsd";
     private static final String JAXP_SCHEMA_SOURCE = "http://java.sun.com/xml/jaxp/properties/schemaSource";
     
     /**
