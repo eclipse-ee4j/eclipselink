@@ -1,15 +1,15 @@
 /*******************************************************************************
  * Copyright (c) 1998, 2008 Oracle. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.sdo.helper;
 
 import commonj.sdo.Type;
@@ -45,7 +45,7 @@ public interface SDOTypeHelper extends TypeHelper {
      * @return
      */
     public Type getTypeForSimpleJavaType(Class implClass);
-    
+
     /**
      * INTERNAL:
      *
@@ -94,10 +94,10 @@ public interface SDOTypeHelper extends TypeHelper {
     /**
      * INTERNAL:
      * Set the map of Wrapper objects (SDOWrapperTypes that wrap a primitive document).
-     * @param 	aMap		a HashMap of SDOWrapperTypes, keyed on the XSD type that it wraps.
+     * @param   aMap        a HashMap of SDOWrapperTypes, keyed on the XSD type that it wraps.
      */
     public void setWrappersHashMap(Map aMap);
-    
+
     /**
      * INTERNAL:
      *
@@ -142,7 +142,9 @@ public interface SDOTypeHelper extends TypeHelper {
     * Return the Map of Open Content Properties
     */
     public Map getOpenContentProperties();
-    
+
     public void addWrappersToProject(Project toplinkProject);
-    
+
+    public Map getInterfacesToSDOTypeHashMap();
+
 }

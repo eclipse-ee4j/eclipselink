@@ -1,15 +1,15 @@
 /*******************************************************************************
  * Copyright (c) 1998, 2008 Oracle. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.sdo.helper.delegates;
 
 import commonj.sdo.DataObject;
@@ -27,6 +27,7 @@ import org.eclipse.persistence.sdo.SDODataObject;
 import org.eclipse.persistence.sdo.SDOProperty;
 import org.eclipse.persistence.sdo.SDOType;
 import org.eclipse.persistence.sdo.types.SDOWrapperType;
+import org.eclipse.persistence.sdo.types.SDOXMLHelperLoadOptionsType;
 import org.eclipse.persistence.sdo.helper.SDOTypeHelper;
 import org.eclipse.persistence.sdo.helper.SDOXMLHelper;
 import org.eclipse.persistence.sdo.helper.SDOXSDHelper;
@@ -52,8 +53,11 @@ public class SDOTypeHelperDelegate implements SDOTypeHelper {
     private Map typesHashMap;
 
     /** Map containing wrapper types */
-    private Map wrappersHashMap;
-    
+    private Map<QName, SDOType> wrappersHashMap;
+
+    /** Map of interfaces -> SDOType */
+    private Map<Class, SDOType> interfacesToSDOTypeHashMap = new HashMap<Class, SDOType>();
+
     /** Map containing built-in types for primitive and SDO types */
     private final Map commonjHashMap = new HashMap();
 
@@ -71,27 +75,47 @@ public class SDOTypeHelperDelegate implements SDOTypeHelper {
 
     /** a HashMap keyed on Qname of defined open content properties */
     private Map openContentProperties;
-    
+
     // hold the context containing all helpers so that we can preserve inter-helper relationships
     private HelperContext aHelperContext;
     private NamespaceResolver namespaceResolver;
 
-    private SDOType SDO_FLOAT_WRAPPER;
-    private SDOType SDO_BASE64_BYTE_ARRAY_WRAPPER;
-    private SDOType SDO_HEX_BYTE_ARRAY_WRAPPER;
-    private SDOType SDO_STRING_WRAPPER;
-    private SDOType SDO_INT_WRAPPER;
-    private SDOType SDO_YEARMONTHDAY_WRAPPER;
-    
+    // SDO Data Types
+    private SDOWrapperType SDO_BOOLEAN_WRAPPER;
+    private SDOWrapperType SDO_BYTE_WRAPPER;
+    private SDOWrapperType SDO_BYTES_WRAPPER;
+    private SDOWrapperType SDO_CHARACTER_WRAPPER;
+    private SDOWrapperType SDO_DATE_WRAPPER;
+    private SDOWrapperType SDO_DATETIME_WRAPPER;
+    private SDOWrapperType SDO_DAY_WRAPPER;
+    private SDOWrapperType SDO_DECIMAL_WRAPPER;
+    private SDOWrapperType SDO_DOUBLE_WRAPPER;
+    private SDOWrapperType SDO_DURATION_WRAPPER;
+    private SDOWrapperType SDO_FLOAT_WRAPPER;
+    private SDOWrapperType SDO_INT_WRAPPER;
+    private SDOWrapperType SDO_INTEGER_WRAPPER;
+    private SDOWrapperType SDO_LONG_WRAPPER;
+    private SDOWrapperType SDO_MONTH_WRAPPER;
+    private SDOWrapperType SDO_MONTHDAY_WRAPPER;
+    private SDOWrapperType SDO_OBJECT_WRAPPER;
+    private SDOWrapperType SDO_SHORT_WRAPPER;
+    private SDOWrapperType SDO_STRING_WRAPPER;
+    private SDOWrapperType SDO_STRINGS_WRAPPER;
+    private SDOWrapperType SDO_TIME_WRAPPER;
+    private SDOWrapperType SDO_URI_WRAPPER;
+    private SDOWrapperType SDO_YEAR_WRAPPER;
+    private SDOWrapperType SDO_YEARMONTH_WRAPPER;
+    private SDOWrapperType SDO_YEARMONTHDAY_WRAPPER;
+
     // create these maps once to avoid threading issues
     static {
-        initSDOTypeForSimpleJavaTypeMap();                
+        initSDOTypeForSimpleJavaTypeMap();
     }
 
     public SDOTypeHelperDelegate(HelperContext aContext) {
         // set context before initializing maps
         aHelperContext = aContext;
-        
+
         initWrapperTypes();
         initTypesHashMap();
         initCommonjHashMap();
@@ -102,23 +126,63 @@ public class SDOTypeHelperDelegate implements SDOTypeHelper {
     }
 
     public void initWrapperTypes() {
-        SDO_FLOAT_WRAPPER = new SDOWrapperType(SDOConstants.SDO_FLOAT, SDOConstants.FLOAT, this);
-        SDO_BASE64_BYTE_ARRAY_WRAPPER = new SDOWrapperType(SDOConstants.SDO_BYTES, SDOConstants.BYTES, this, XMLConstants.BASE_64_BINARY_QNAME);
-        SDO_HEX_BYTE_ARRAY_WRAPPER = new SDOWrapperType(SDOConstants.SDO_BYTES, SDOConstants.BYTES, this, XMLConstants.HEX_BINARY_QNAME);
-        SDO_STRING_WRAPPER = new SDOWrapperType(SDOConstants.SDO_STRING, SDOConstants.STRING, this);
-        SDO_INT_WRAPPER = new SDOWrapperType(SDOConstants.SDO_INT, SDOConstants.INT, this);
-        SDO_YEARMONTHDAY_WRAPPER = new SDOWrapperType(SDOConstants.SDO_YEARMONTHDAY, SDOConstants.YEARMONTHDAY, this);
+        // List of SDO Types and mappings to XSD Types taken from:
+        // http://www.osoa.org/download/attachments/36/Java-SDO-Spec-v2.1.0-FINAL.pdf?version=1
+        SDO_BOOLEAN_WRAPPER = new SDOWrapperType(SDOConstants.SDO_BOOLEAN, SDOConstants.BOOLEAN, this, XMLConstants.BOOLEAN_QNAME);
+        SDO_BYTE_WRAPPER = new SDOWrapperType(SDOConstants.SDO_BYTE, SDOConstants.BYTE, this, XMLConstants.BYTE_QNAME);
+        SDO_BYTES_WRAPPER = new SDOWrapperType(SDOConstants.SDO_BYTES, SDOConstants.BYTES, this, new QName[] { XMLConstants.BASE_64_BINARY_QNAME, XMLConstants.HEX_BINARY_QNAME });
+        SDO_CHARACTER_WRAPPER = new SDOWrapperType(SDOConstants.SDO_CHARACTER, SDOConstants.CHARACTER, this, XMLConstants.STRING_QNAME);
+        SDO_DATE_WRAPPER = new SDOWrapperType(SDOConstants.SDO_DATE, SDOConstants.DATE, this, XMLConstants.DATE_QNAME);
+        SDO_DATETIME_WRAPPER = new SDOWrapperType(SDOConstants.SDO_DATETIME, SDOConstants.DATETIME, this, XMLConstants.DATE_TIME_QNAME);
+        SDO_DAY_WRAPPER = new SDOWrapperType(SDOConstants.SDO_DAY, SDOConstants.DAY, this, XMLConstants.G_DAY_QNAME);
+        SDO_DECIMAL_WRAPPER = new SDOWrapperType(SDOConstants.SDO_DECIMAL, SDOConstants.DECIMAL, this, XMLConstants.DECIMAL_QNAME);
+        SDO_DOUBLE_WRAPPER = new SDOWrapperType(SDOConstants.SDO_DOUBLE, SDOConstants.DOUBLE, this, XMLConstants.DOUBLE_QNAME);
+        SDO_DURATION_WRAPPER = new SDOWrapperType(SDOConstants.SDO_DURATION, SDOConstants.DURATION, this, XMLConstants.DURATION_QNAME);
+        SDO_FLOAT_WRAPPER = new SDOWrapperType(SDOConstants.SDO_FLOAT, SDOConstants.FLOAT, this, XMLConstants.FLOAT_QNAME);
+        SDO_INT_WRAPPER = new SDOWrapperType(SDOConstants.SDO_INT, SDOConstants.INT, this, XMLConstants.INT_QNAME);
+        SDO_INTEGER_WRAPPER = new SDOWrapperType(SDOConstants.SDO_INTEGER, SDOConstants.INTEGER, this, XMLConstants.INTEGER_QNAME);
+        SDO_LONG_WRAPPER = new SDOWrapperType(SDOConstants.SDO_LONG, SDOConstants.LONG, this, XMLConstants.LONG_QNAME);
+        SDO_MONTH_WRAPPER = new SDOWrapperType(SDOConstants.SDO_MONTH, SDOConstants.MONTH, this, XMLConstants.G_MONTH_QNAME);
+        SDO_MONTHDAY_WRAPPER = new SDOWrapperType(SDOConstants.SDO_MONTHDAY, SDOConstants.MONTHDAY, this, XMLConstants.G_MONTH_DAY_QNAME);
+        SDO_OBJECT_WRAPPER = new SDOWrapperType(SDOConstants.SDO_OBJECT, SDOConstants.OBJECT, this, XMLConstants.ANY_SIMPLE_TYPE_QNAME);
+        SDO_SHORT_WRAPPER = new SDOWrapperType(SDOConstants.SDO_SHORT, SDOConstants.SHORT, this, XMLConstants.SHORT_QNAME);
+        SDO_STRING_WRAPPER = new SDOWrapperType(SDOConstants.SDO_STRING, SDOConstants.STRING, this, XMLConstants.STRING_QNAME);
+        SDO_STRINGS_WRAPPER = new SDOWrapperType(SDOConstants.SDO_STRINGS, SDOConstants.STRINGS, this, XMLConstants.STRING_QNAME);
+        SDO_TIME_WRAPPER = new SDOWrapperType(SDOConstants.SDO_TIME, SDOConstants.TIME, this, XMLConstants.TIME_QNAME);
+        SDO_URI_WRAPPER = new SDOWrapperType(SDOConstants.SDO_URI, SDOConstants.URI, this, XMLConstants.ANY_URI_QNAME);
+        SDO_YEAR_WRAPPER = new SDOWrapperType(SDOConstants.SDO_YEAR, SDOConstants.YEAR, this, XMLConstants.G_YEAR_QNAME);
+        SDO_YEARMONTH_WRAPPER = new SDOWrapperType(SDOConstants.SDO_YEARMONTH, SDOConstants.YEARMONTH, this, XMLConstants.G_YEAR_MONTH_QNAME);
+        SDO_YEARMONTHDAY_WRAPPER = new SDOWrapperType(SDOConstants.SDO_YEARMONTHDAY, SDOConstants.YEARMONTHDAY, this, XMLConstants.DATE_QNAME);
     }
-    
-    public void addWrappersToProject(Project toplinkProject) {
-    	toplinkProject.addDescriptor(SDO_FLOAT_WRAPPER.getXmlDescriptor());
-    	toplinkProject.addDescriptor(SDO_BASE64_BYTE_ARRAY_WRAPPER.getXmlDescriptor());
-    	toplinkProject.addDescriptor(SDO_HEX_BYTE_ARRAY_WRAPPER.getXmlDescriptor());    	
-    	toplinkProject.addDescriptor(SDO_STRING_WRAPPER.getXmlDescriptor());    	
-    	toplinkProject.addDescriptor(SDO_INT_WRAPPER.getXmlDescriptor());    	
-    	toplinkProject.addDescriptor(SDO_YEARMONTHDAY_WRAPPER.getXmlDescriptor());    	
+
+    public void addWrappersToProject(Project project) {
+        SDO_BOOLEAN_WRAPPER.addDescriptorToProject(project);
+        SDO_BYTE_WRAPPER.addDescriptorToProject(project);
+        SDO_BYTES_WRAPPER.addDescriptorToProject(project);
+        SDO_CHARACTER_WRAPPER.addDescriptorToProject(project);
+        SDO_DATE_WRAPPER.addDescriptorToProject(project);
+        SDO_DATETIME_WRAPPER.addDescriptorToProject(project);
+        SDO_DAY_WRAPPER.addDescriptorToProject(project);
+        SDO_DECIMAL_WRAPPER.addDescriptorToProject(project);
+        SDO_DOUBLE_WRAPPER.addDescriptorToProject(project);
+        SDO_DURATION_WRAPPER.addDescriptorToProject(project);
+        SDO_FLOAT_WRAPPER.addDescriptorToProject(project);
+        SDO_INT_WRAPPER.addDescriptorToProject(project);
+        SDO_INTEGER_WRAPPER.addDescriptorToProject(project);
+        SDO_LONG_WRAPPER.addDescriptorToProject(project);
+        SDO_MONTH_WRAPPER.addDescriptorToProject(project);
+        SDO_MONTHDAY_WRAPPER.addDescriptorToProject(project);
+        SDO_OBJECT_WRAPPER.addDescriptorToProject(project);
+        SDO_SHORT_WRAPPER.addDescriptorToProject(project);
+        SDO_STRING_WRAPPER.addDescriptorToProject(project);
+        SDO_STRINGS_WRAPPER.addDescriptorToProject(project);
+        SDO_TIME_WRAPPER.addDescriptorToProject(project);
+        SDO_URI_WRAPPER.addDescriptorToProject(project);
+        SDO_YEAR_WRAPPER.addDescriptorToProject(project);
+        SDO_YEARMONTH_WRAPPER.addDescriptorToProject(project);
+        SDO_YEARMONTHDAY_WRAPPER.addDescriptorToProject(project);
     }
-    
+
     /**
      * initializes built-in HashMap commonjHashMap.
      */
@@ -127,10 +191,10 @@ public class SDOTypeHelperDelegate implements SDOTypeHelper {
         commonjHashMap.put(SDOConstants.BYTE, SDOConstants.SDO_BYTE);
         commonjHashMap.put(SDOConstants.BYTES, SDOConstants.SDO_BYTES);
         commonjHashMap.put(SDOConstants.CHARACTER, SDOConstants.SDO_CHARACTER);
-        
-        SDOType dataObjectType = new SDODataObjectType(this);    
+
+        SDOType dataObjectType = new SDODataObjectType(this);
         commonjHashMap.put(dataObjectType.getName(), dataObjectType);
-        
+
         commonjHashMap.put(SDOConstants.DATE, SDOConstants.SDO_DATE);
         commonjHashMap.put(SDOConstants.DATETIME, SDOConstants.SDO_DATETIME);
         commonjHashMap.put(SDOConstants.DAY, SDOConstants.SDO_DAY);
@@ -156,7 +220,7 @@ public class SDOTypeHelperDelegate implements SDOTypeHelper {
         SDOType changeSummaryType = new SDOChangeSummaryType(this);
         commonjHashMap.put(changeSummaryType.getName(), changeSummaryType);
 
-        SDOType typeType = new SDOTypeType(this);    
+        SDOType typeType = new SDOTypeType(this);
         commonjHashMap.put(typeType.getName(), typeType);
     }
 
@@ -184,46 +248,78 @@ public class SDOTypeHelperDelegate implements SDOTypeHelper {
 
         SDOType openSequencedType = new SDOOpenSequencedType(this);
         typesHashMap.put(openSequencedType.getQName(), openSequencedType);
-        
-        QName floatTypeQname = new QName(SDO_FLOAT_WRAPPER.getURI(), SDO_FLOAT_WRAPPER.getName());
-        typesHashMap.put(floatTypeQname, SDO_FLOAT_WRAPPER);
-        QName base64TypeQname = new QName(SDO_BASE64_BYTE_ARRAY_WRAPPER.getURI(), SDO_BASE64_BYTE_ARRAY_WRAPPER.getName());
-        typesHashMap.put(base64TypeQname, SDO_BASE64_BYTE_ARRAY_WRAPPER);
-        QName hexTypeQname = new QName(SDO_HEX_BYTE_ARRAY_WRAPPER.getURI(), SDO_HEX_BYTE_ARRAY_WRAPPER.getName());
-        typesHashMap.put(hexTypeQname, SDO_HEX_BYTE_ARRAY_WRAPPER);
-        QName stringTypeQname = new QName(SDO_STRING_WRAPPER.getURI(), SDO_STRING_WRAPPER.getName());
-        typesHashMap.put(stringTypeQname, SDO_STRING_WRAPPER);
-        QName intTypeQname = new QName(SDO_INT_WRAPPER.getURI(), SDO_INT_WRAPPER.getName());
-        typesHashMap.put(intTypeQname, SDO_INT_WRAPPER);
-        QName ymdTypeQname = new QName(SDO_YEARMONTHDAY_WRAPPER.getURI(), SDO_YEARMONTHDAY_WRAPPER.getName());
-        typesHashMap.put(ymdTypeQname, SDO_YEARMONTHDAY_WRAPPER);
+
+        typesHashMap.put(SDO_BOOLEAN_WRAPPER.getQName(), SDO_BOOLEAN_WRAPPER);
+        typesHashMap.put(SDO_BYTE_WRAPPER.getQName(), SDO_BYTE_WRAPPER);
+        typesHashMap.put(SDO_BYTES_WRAPPER.getQName(), SDO_BYTES_WRAPPER);
+        typesHashMap.put(SDO_CHARACTER_WRAPPER.getQName(), SDO_CHARACTER_WRAPPER);
+        typesHashMap.put(SDO_DATE_WRAPPER.getQName(), SDO_DATE_WRAPPER);
+        typesHashMap.put(SDO_DATETIME_WRAPPER.getQName(), SDO_DATETIME_WRAPPER);
+        typesHashMap.put(SDO_DAY_WRAPPER.getQName(), SDO_DAY_WRAPPER);
+        typesHashMap.put(SDO_DECIMAL_WRAPPER.getQName(), SDO_DECIMAL_WRAPPER);
+        typesHashMap.put(SDO_DOUBLE_WRAPPER.getQName(), SDO_DOUBLE_WRAPPER);
+        typesHashMap.put(SDO_DURATION_WRAPPER.getQName(), SDO_DURATION_WRAPPER);
+        typesHashMap.put(SDO_FLOAT_WRAPPER.getQName(), SDO_FLOAT_WRAPPER);
+        typesHashMap.put(SDO_INT_WRAPPER.getQName(), SDO_INT_WRAPPER);
+        typesHashMap.put(SDO_INTEGER_WRAPPER.getQName(), SDO_INTEGER_WRAPPER);
+        typesHashMap.put(SDO_LONG_WRAPPER.getQName(), SDO_LONG_WRAPPER);
+        typesHashMap.put(SDO_MONTH_WRAPPER.getQName(), SDO_MONTH_WRAPPER);
+        typesHashMap.put(SDO_MONTHDAY_WRAPPER.getQName(), SDO_MONTHDAY_WRAPPER);
+        typesHashMap.put(SDO_OBJECT_WRAPPER.getQName(), SDO_OBJECT_WRAPPER);
+        typesHashMap.put(SDO_SHORT_WRAPPER.getQName(), SDO_SHORT_WRAPPER);
+        typesHashMap.put(SDO_STRING_WRAPPER.getQName(), SDO_STRING_WRAPPER);
+        typesHashMap.put(SDO_STRINGS_WRAPPER.getQName(), SDO_STRINGS_WRAPPER);
+        typesHashMap.put(SDO_TIME_WRAPPER.getQName(), SDO_TIME_WRAPPER);
+        typesHashMap.put(SDO_URI_WRAPPER.getQName(), SDO_URI_WRAPPER);
+        typesHashMap.put(SDO_YEAR_WRAPPER.getQName(), SDO_YEAR_WRAPPER);
+        typesHashMap.put(SDO_YEARMONTH_WRAPPER.getQName(), SDO_YEARMONTH_WRAPPER);
+        typesHashMap.put(SDO_YEARMONTHDAY_WRAPPER.getQName(), SDO_YEARMONTHDAY_WRAPPER);
     }
 
     /**
      * Initializes the wrappersHashMap HashMap.
      */
     private void initWrappersHashMap() {
-    	wrappersHashMap = new HashMap();
+        wrappersHashMap = new HashMap<QName, SDOType>();
 
-        QName floatTypeQname = new QName(SDO_FLOAT_WRAPPER.getURI(), SDO_FLOAT_WRAPPER.getName());
-    	wrappersHashMap.put(floatTypeQname, SDO_FLOAT_WRAPPER);
-        
-        QName base64TypeQname = new QName(SDO_BASE64_BYTE_ARRAY_WRAPPER.getURI(), SDO_BASE64_BYTE_ARRAY_WRAPPER.getName());
-        wrappersHashMap.put(base64TypeQname, SDO_BASE64_BYTE_ARRAY_WRAPPER);
-        
-        QName hexTypeQname = new QName(SDO_HEX_BYTE_ARRAY_WRAPPER.getURI(), SDO_HEX_BYTE_ARRAY_WRAPPER.getName());
-        wrappersHashMap.put(hexTypeQname, SDO_HEX_BYTE_ARRAY_WRAPPER);
-        
-        QName stringTypeQname = new QName(SDO_STRING_WRAPPER.getURI(), SDO_STRING_WRAPPER.getName());
-    	wrappersHashMap.put(stringTypeQname, SDO_STRING_WRAPPER);
-    	
-        QName intTypeQname = new QName(SDO_INT_WRAPPER.getURI(), SDO_INT_WRAPPER.getName());
-        wrappersHashMap.put(intTypeQname, SDO_INT_WRAPPER);
-        
-        QName ymdTypeQname = new QName(SDO_YEARMONTHDAY_WRAPPER.getURI(), SDO_YEARMONTHDAY_WRAPPER.getName());
-        wrappersHashMap.put(ymdTypeQname, SDO_YEARMONTHDAY_WRAPPER);
-    }    
-    
+        wrappersHashMap.put(SDOConstants.SDO_BOOLEAN.getQName(), SDO_BOOLEAN_WRAPPER);
+        wrappersHashMap.put(SDOConstants.SDO_BYTE.getQName(), SDO_BYTE_WRAPPER);
+        wrappersHashMap.put(SDOConstants.SDO_BYTES.getQName(), SDO_BYTES_WRAPPER);
+        wrappersHashMap.put(SDOConstants.SDO_CHARACTER.getQName(), SDO_CHARACTER_WRAPPER);
+        wrappersHashMap.put(SDOConstants.SDO_DATE.getQName(), SDO_DATE_WRAPPER);
+        wrappersHashMap.put(SDOConstants.SDO_DATETIME.getQName(), SDO_DATETIME_WRAPPER);
+        wrappersHashMap.put(SDOConstants.SDO_DAY.getQName(), SDO_DAY_WRAPPER);
+        wrappersHashMap.put(SDOConstants.SDO_DECIMAL.getQName(), SDO_DECIMAL_WRAPPER);
+        wrappersHashMap.put(SDOConstants.SDO_DOUBLE.getQName(), SDO_DOUBLE_WRAPPER);
+        wrappersHashMap.put(SDOConstants.SDO_DURATION.getQName(), SDO_DURATION_WRAPPER);
+        wrappersHashMap.put(SDOConstants.SDO_FLOAT.getQName(), SDO_FLOAT_WRAPPER);
+        wrappersHashMap.put(SDOConstants.SDO_INT.getQName(), SDO_INT_WRAPPER);
+        wrappersHashMap.put(SDOConstants.SDO_INTEGER.getQName(), SDO_INTEGER_WRAPPER);
+        wrappersHashMap.put(SDOConstants.SDO_LONG.getQName(), SDO_LONG_WRAPPER);
+        wrappersHashMap.put(SDOConstants.SDO_MONTH.getQName(), SDO_MONTH_WRAPPER);
+        wrappersHashMap.put(SDOConstants.SDO_MONTHDAY.getQName(), SDO_MONTHDAY_WRAPPER);
+        wrappersHashMap.put(SDOConstants.SDO_OBJECT.getQName(), SDO_OBJECT_WRAPPER);
+        wrappersHashMap.put(SDOConstants.SDO_SHORT.getQName(), SDO_SHORT_WRAPPER);
+        wrappersHashMap.put(SDOConstants.SDO_STRING.getQName(), SDO_STRING_WRAPPER);
+        wrappersHashMap.put(SDOConstants.SDO_STRINGS.getQName(), SDO_STRINGS_WRAPPER);
+        wrappersHashMap.put(SDOConstants.SDO_TIME.getQName(), SDO_TIME_WRAPPER);
+        wrappersHashMap.put(SDOConstants.SDO_URI.getQName(), SDO_URI_WRAPPER);
+        wrappersHashMap.put(SDOConstants.SDO_YEAR.getQName(), SDO_YEAR_WRAPPER);
+        wrappersHashMap.put(SDOConstants.SDO_YEARMONTH.getQName(), SDO_YEARMONTH_WRAPPER);
+        wrappersHashMap.put(SDOConstants.SDO_YEARMONTHDAY.getQName(), SDO_YEARMONTHDAY_WRAPPER);
+
+        // Now add these into the interface-to-type Map
+        Iterator wrappers = wrappersHashMap.values().iterator();
+        while (wrappers.hasNext()) {
+            SDOWrapperType wrapper = (SDOWrapperType) wrappers.next();
+            Iterator descriptors = wrapper.getDescriptorsMap().values().iterator();
+            while (descriptors.hasNext()) {
+                XMLDescriptor d = (XMLDescriptor) descriptors.next();
+                interfacesToSDOTypeHashMap.put((Class) d.getInterfacePolicy().getParentInterfaces().firstElement(), wrapper);
+            }
+        }
+    }
+
     /**
      * initialize the built-in HashMap sdoToXSDTypes
      */
@@ -402,7 +498,7 @@ public class SDOTypeHelperDelegate implements SDOTypeHelper {
     }
 
     public void addType(SDOType newType) {
-    	if(SDOConstants.SDO_URL.equals(newType.getURI())) {
+        if(SDOConstants.SDO_URL.equals(newType.getURI())) {
             commonjHashMap.put(newType.getName(), newType);
         } else if (SDOConstants.SDOJAVA_URL.equals(newType.getURI())) {
             commonjJavaHashMap.put(newType.getName(), newType);
@@ -418,13 +514,19 @@ public class SDOTypeHelperDelegate implements SDOTypeHelper {
      * @return the Type for this interfaceClass or null if not found.
      */
     public SDOType getType(Class interfaceClass) {
-        //TODO: possibly have a separate Map
-        //TODO: what is uri for qname if package is null or targetnamespace        
-        //types keyed on qname				        
+        // Check interfaces-to-types map first:
+        SDOType type = (SDOType) getInterfacesToSDOTypeHashMap().get(interfaceClass);
+        if (type != null) {
+            return type;
+        }
+
+        //TODO: what is uri for qname if package is null or targetnamespace
+        //types keyed on qname
         Iterator iter = getTypesHashMap().keySet().iterator();
         while (iter.hasNext()) {
             QName key = (QName)iter.next();
-            SDOType value = (SDOType)getTypesHashMap().get(key);
+            SDOType value = (SDOType) getTypesHashMap().get(key);
+
             if (value.getInstanceClass() == interfaceClass) {
                 return value;
             }
@@ -448,7 +550,7 @@ public class SDOTypeHelperDelegate implements SDOTypeHelper {
         return rootType;
 
     }
-    
+
     private void initializeTypes(List types){
         List descriptorsToAdd = new ArrayList(types);
         for (int i = 0; i < types.size(); i++) {
@@ -554,39 +656,46 @@ public class SDOTypeHelperDelegate implements SDOTypeHelper {
             Object nextValue = properties.get(i);
 
             if (nextValue instanceof DataObject) {
-                buildPropertyFromDataObject((DataObject)nextValue, type, types);                
+                buildPropertyFromDataObject((DataObject)nextValue, type, types);
             }
         }
         type.setOpen(dataObject.getBoolean("open"));
- 
+
         if (type.isDataType()) {
-        	// RICK: Defining a new simple type from a DataObject.
-        	// See also: SDOTypesGenerator:startNewSimpleType for "types from XSD" equivalent
-        	
-        	// If this simple type is a restriction, get the QName for the base type and
-        	// include it when creating the WrapperType.  The QName will be used during 
-        	// conversions (eg. "myBinaryElement" could be a restriction of base64Binary
-        	// or hexBinary.
-        	QName currentTypeQName = null;
-	    	if (!type.getBaseTypes().isEmpty()) {
-	    		SDOType baseType = (SDOType) type.getBaseTypes().get(0);
-	    		currentTypeQName = new QName(XMLConstants.SCHEMA_URL, baseType.getName());
-	    	}
+            QName typeQName = new QName(XMLConstants.SCHEMA_URL, name);
+            if (typeHelper.getWrappersHashMap().get(typeQName) != null) {
+                // In the case of a non-user-defined simple type, we already have built-in
+                // wrappers created, so do not continue on building a new WrapperType.
+                return type;
+            }
 
-	    	// Create the new WrapperType
-	        SDOWrapperType wrapperType = new SDOWrapperType(type, name, this, currentTypeQName);
-	        
-	    	// Register WrapperType with maps on TypeHelper
-	    	QName typeQName = new QName(SDOConstants.ORACLE_SDO_URL, name);
-	        typeHelper.getWrappersHashMap().put(typeQName, wrapperType);
-	        typeHelper.getTypesHashMap().put(typeQName, wrapperType);
+            // Defining a new simple type from a DataObject.
+            // See also: SDOTypesGenerator:startNewSimpleType for "types from XSD" equivalent
 
-	        // Add descriptor to XMLHelper
-	        ArrayList list = new ArrayList(1);
-	        list.add(wrapperType);
-	        ((SDOXMLHelper) aHelperContext.getXMLHelper()).addDescriptors(list);        
+            // If this simple type is a restriction, get the QName for the base type and
+            // include it when creating the WrapperType.  The QName will be used during
+            // conversions (eg. "myBinaryElement" could be a restriction of base64Binary
+            // or hexBinary.
+            QName currentTypeQName = null;
+            if (!type.getBaseTypes().isEmpty()) {
+                SDOType baseType = (SDOType) type.getBaseTypes().get(0);
+                currentTypeQName = new QName(XMLConstants.SCHEMA_URL, baseType.getName());
+            }
+
+            // Create the new WrapperType
+            SDOWrapperType wrapperType = new SDOWrapperType(type, name, this, currentTypeQName);
+
+            // Register WrapperType with maps on TypeHelper
+            typeHelper.getWrappersHashMap().put(typeQName, wrapperType);
+            typeHelper.getTypesHashMap().put(typeQName, wrapperType);
+            typeHelper.getInterfacesToSDOTypeHashMap().put(wrapperType.getXmlDescriptor().getInterfacePolicy().getParentInterfaces().firstElement(), wrapperType);
+
+            // Add descriptor to XMLHelper
+            ArrayList list = new ArrayList(1);
+            list.add(wrapperType);
+            ((SDOXMLHelper) aHelperContext.getXMLHelper()).addDescriptors(list);
         }
-        
+
         return type;
     }
 
@@ -752,21 +861,25 @@ public class SDOTypeHelperDelegate implements SDOTypeHelper {
     /**
      * INTERNAL:
      * Set the map of Wrapper objects (SDOWrapperTypes that wrap a primitive document).
-     * @param 	aMap		a HashMap of SDOWrapperTypes, keyed on the XSD type that it wraps.
+     * @param   aMap        a HashMap of SDOWrapperTypes, keyed on the XSD type that it wraps.
      */
     public void setWrappersHashMap(Map aMap) {
-    	this.wrappersHashMap = aMap;
+        this.wrappersHashMap = aMap;
     }
-    
+
     public void reset() {
+        interfacesToSDOTypeHashMap = new HashMap<Class, SDOType>();
+
         initWrapperTypes();
+        initWrappersHashMap();
         initTypesHashMap();
+
         namespaceResolver = new NamespaceResolver();
         initOpenProps();
 
         SDOType openSequencedType = (SDOType) typesHashMap.get(new QName(SDOConstants.ORACLE_SDO_URL, "OpenSequencedType"));
         openSequencedType.getXmlDescriptor().setNamespaceResolver(null);
-        
+
         initSdoToXSDType();
         initXsdToSDOType();
     }
@@ -810,36 +923,36 @@ public class SDOTypeHelperDelegate implements SDOTypeHelper {
         if (propertyUri != null) {
             QName propertyQName = new QName(propertyUri, propertyName);
             openContentProperties.put(propertyQName, property);
-            
+
             boolean isElement = aHelperContext.getXSDHelper().isElement(property);
             ((SDOXSDHelper)aHelperContext.getXSDHelper()).addGlobalProperty(propertyQName, property, isElement);
-            
+
 
             ((SDOProperty)property).setUri(propertyUri);
 
             XMLDescriptor aDescriptor;
             if (property.getType().isDataType()) {
-            	// RICK: Types from XSD: isDataType() == true so:
-            	//   - find the SDOWrapperType from TypeHelper's WrappersHashMap
-            	//   - add the descriptor to XMLContext's DescriptorsByQName map
+                // RICK: Types from DataObjects: isDataType() == true so:
+                //   - find the SDOWrapperType from TypeHelper's WrappersHashMap
+                //   - add the descriptor to XMLContext's DescriptorsByQName map
 
-            	// See also: SDOTypesGenerator:addRootElementToDescriptor
-            	
-            	SDOTypeHelper typeHelper = (SDOTypeHelper) aHelperContext.getTypeHelper();
-            	
-                QName wrapperTypeQname = new QName(propertyUri, propertyName);
-                SDOWrapperType wrapperType = (SDOWrapperType) typeHelper.getWrappersHashMap().get(wrapperTypeQname);
+                // See also: SDOTypesGenerator:addRootElementToDescriptor
+
+                SDOTypeHelper typeHelper = (SDOTypeHelper) aHelperContext.getTypeHelper();
+
+                SDOWrapperType wrapperType = (SDOWrapperType) typeHelper.getWrappersHashMap().get(((SDOProperty)property).getType().getQName());
 
                 if (wrapperType != null) {
-                	((SDOXMLHelper) aHelperContext.getXMLHelper()).getXmlContext().addDescriptorByQName(wrapperTypeQname, wrapperType.getXmlDescriptor());
+                    QName descriptorQname = new QName(propertyUri, propertyName);
+                    ((SDOXMLHelper) aHelperContext.getXMLHelper()).getXmlContext().addDescriptorByQName(descriptorQname, wrapperType.getXmlDescriptor(((SDOProperty)property).getXsdType()));
                 }
-                
-            	return;
+
+                return;
             } else {
-            	aDescriptor = ((SDOType)property.getType()).getXmlDescriptor();
+                aDescriptor = ((SDOType)property.getType()).getXmlDescriptor();
             }
 
-            // synchronized threads that access the NonSynchronizedVector tables in XMLDescriptor 
+            // synchronized threads that access the NonSynchronizedVector tables in XMLDescriptor
             if (aDescriptor != null) {
                 synchronized (aDescriptor) {
                     String rootName = propertyName;
@@ -908,7 +1021,7 @@ public class SDOTypeHelperDelegate implements SDOTypeHelper {
         NamespaceResolver nr = getNamespaceResolver();
         String existingPrefixForUri = nr.resolveNamespaceURI(uri);
         if ((existingPrefixForUri == null) || existingPrefixForUri.equals("")) {
-            //doesn't exist so generate one          
+            //doesn't exist so generate one
             //String newPrefix = nr.generatePrefix();
             String newPrefix = generatePrefix(uri);
             nr.put(newPrefix, uri);
@@ -946,11 +1059,11 @@ public class SDOTypeHelperDelegate implements SDOTypeHelper {
         }
         String existingUriForPrefix = nr.resolveNamespacePrefix(prefix);
         if (existingUriForPrefix == null) {
-            //prefix is not already used and uri doesnt have a prefix so use the prefix passed in 
+            //prefix is not already used and uri doesnt have a prefix so use the prefix passed in
             nr.put(prefix, uri);
             return prefix;
         } else {
-            //this prefix is already used for a different uri so generate a new one               
+            //this prefix is already used for a different uri so generate a new one
             prefix = generatePrefix(uri);
             nr.put(prefix, uri);
             return prefix;
@@ -967,7 +1080,7 @@ public class SDOTypeHelperDelegate implements SDOTypeHelper {
         }
         return namespaceResolver;
     }
-    
+
    /**
     * INTERNAL:
     * Return the Map of Open Content Properties
@@ -975,7 +1088,7 @@ public class SDOTypeHelperDelegate implements SDOTypeHelper {
     public Map getOpenContentProperties(){
       return openContentProperties;
     }
-    
+
     private void initOpenProps() {
         SDOType typeType = this.getType(SDOConstants.SDO_URL, SDOConstants.TYPE);
 
@@ -985,8 +1098,13 @@ public class SDOTypeHelperDelegate implements SDOTypeHelper {
         openContentProperties.put(SDOConstants.SCHEMA_TYPE_QNAME, new SDOProperty(aHelperContext, SDOConstants.ORACLE_SDO_URL, SDOConstants.XML_SCHEMA_TYPE_NAME, typeType));
         openContentProperties.put(SDOConstants.JAVA_CLASS_QNAME, SDOConstants.JAVA_CLASS_PROPERTY);
         openContentProperties.put(SDOConstants.XML_ELEMENT_QNAME, SDOConstants.XMLELEMENT_PROPERTY);
-        openContentProperties.put(SDOConstants.XML_DATATYPE_QNAME, new SDOProperty(aHelperContext, SDOConstants.ORACLE_SDO_URL, SDOConstants.SDOXML_DATATYPE, typeType));
+        openContentProperties.put(SDOConstants.XML_DATATYPE_QNAME, new SDOProperty(aHelperContext, SDOConstants.SDOXML_URL, SDOConstants.SDOXML_DATATYPE, typeType));
         openContentProperties.put(SDOConstants.XML_ID_PROPERTY_QNAME, SDOConstants.ID_PROPERTY);
         openContentProperties.put(SDOConstants.DOCUMENTATION_PROPERTY_QNAME, SDOConstants.DOCUMENTATION_PROPERTY);
     }
+
+    public Map getInterfacesToSDOTypeHashMap() {
+        return interfacesToSDOTypeHashMap;
+    }
+
 }

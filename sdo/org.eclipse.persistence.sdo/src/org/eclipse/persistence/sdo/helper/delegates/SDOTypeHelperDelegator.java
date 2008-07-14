@@ -1,15 +1,15 @@
 /*******************************************************************************
  * Copyright (c) 1998, 2008 Oracle. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.sdo.helper.delegates;
 
 import commonj.sdo.DataObject;
@@ -61,7 +61,7 @@ public class SDOTypeHelperDelegator extends AbstractHelperDelegator implements S
     public Type getTypeForSimpleJavaType(Class implClass) {
         return getSDOTypeHelperDelegate().getTypeForSimpleJavaType(implClass);
     }
-    
+
     public void addType(SDOType newType) {
         getSDOTypeHelperDelegate().addType(newType);
     }
@@ -100,18 +100,18 @@ public class SDOTypeHelperDelegator extends AbstractHelperDelegator implements S
      * @return a HashMap of SDOWrapperTypes, keyed on the XSD type that it wraps.
      */
     public Map getWrappersHashMap() {
-    	return getSDOTypeHelperDelegate().getWrappersHashMap(); 
+        return getSDOTypeHelperDelegate().getWrappersHashMap();
     }
 
     /**
      * INTERNAL:
      * Set the map of Wrapper objects (SDOWrapperTypes that wrap a primitive document).
-     * @param 	aMap		a HashMap of SDOWrapperTypes, keyed on the XSD type that it wraps.
+     * @param   aMap        a HashMap of SDOWrapperTypes, keyed on the XSD type that it wraps.
      */
     public void setWrappersHashMap(Map aMap) {
-    	getSDOTypeHelperDelegate().setWrappersHashMap(aMap);
+        getSDOTypeHelperDelegate().setWrappersHashMap(aMap);
     }
-    
+
     public void reset() {
         getSDOTypeHelperDelegate().reset();
     }
@@ -123,7 +123,7 @@ public class SDOTypeHelperDelegator extends AbstractHelperDelegator implements S
     public Property getOpenContentProperty(String uri, String propertyName) {
         return getSDOTypeHelperDelegate().getOpenContentProperty(uri, propertyName);
     }
-    
+
     /**
      * INTERNAL:
      * @return
@@ -173,7 +173,11 @@ public class SDOTypeHelperDelegator extends AbstractHelperDelegator implements S
     }
 
     public void addWrappersToProject(Project toplinkProject) {
-    	getSDOTypeHelperDelegate().addWrappersToProject(toplinkProject);
+        getSDOTypeHelperDelegate().addWrappersToProject(toplinkProject);
+    }
+
+    public Map getInterfacesToSDOTypeHashMap() {
+        return getSDOTypeHelperDelegate().getInterfacesToSDOTypeHashMap();
     }
 
 }

@@ -1,15 +1,15 @@
 /*******************************************************************************
  * Copyright (c) 1998, 2008 Oracle. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/ 
+ ******************************************************************************/
 package org.eclipse.persistence.sdo;
 
 import javax.xml.namespace.QName;
@@ -89,7 +89,7 @@ public class SDOConstants {
 
     public static final String XMLHELPER_LOAD_OPTIONS ="LoadOptions";
     public static final String TYPE_LOAD_OPTION = "type";
-    
+
     public static HelperContext globalHelperContext;
     private static SDOTypeHelper sdoTypeHelper;
 
@@ -148,7 +148,7 @@ public class SDOConstants {
             sdoTypeHelper = null;
         }
     }
-    
+
     /** XML String names and QName constants missing from org.eclipse.persistence.oxm.XMLConstants  */
     public static final String ANY_TYPE = "anyType";
     public static final String ANY_URI = "anyURI";
@@ -228,7 +228,7 @@ public class SDOConstants {
     public static final QName SDOXML_DATATYPE_QNAME = new QName(SDOXML_URL, SDOXML_DATATYPE);
     public static final QName SDOXML_STRING_QNAME = new QName(SDOXML_URL, SDOXML_STRING_NAME);
     public static final QName SDOXML_PROPERTYTYPE_QNAME = new QName(SDOXML_URL, SDOXML_PROPERTYTYPE);
-    public static final QName SDOXML_OPPOSITEPROPERTY_QNAME = new QName(SDOXML_URL, SDOXML_OPPOSITEPROPERTY);    
+    public static final QName SDOXML_OPPOSITEPROPERTY_QNAME = new QName(SDOXML_URL, SDOXML_OPPOSITEPROPERTY);
     public static final QName XML_ELEMENT_QNAME = new QName(SDOXML_URL, SDOConstants.XMLELEMENT_PROPERTY_NAME);
     public static final SDOProperty XMLELEMENT_PROPERTY = new SDOProperty(globalHelperContext, XMLELEMENT_PROPERTY_NAME, SDO_BOOLEAN);
 
@@ -248,7 +248,7 @@ public class SDOConstants {
     public static final SDOProperty DOCUMENTATION_PROPERTY = new SDOProperty(globalHelperContext, DOCUMENTATION, SDOConstants.SDO_STRING);
     public static final String JAVACLASS_PROPERTY_NAME = "javaClass";
 
-    public static final SDOProperty JAVA_CLASS_PROPERTY = new SDOProperty(globalHelperContext, JAVACLASS_PROPERTY_NAME, SDOConstants.SDO_STRING);    
+    public static final SDOProperty JAVA_CLASS_PROPERTY = new SDOProperty(globalHelperContext, JAVACLASS_PROPERTY_NAME, SDOConstants.SDO_STRING);
 
     /** open content property to be set when defining a Type via a DataObject for reference relationships */
     public static final SDOProperty ID_PROPERTY = new SDOProperty(globalHelperContext, ID_PROPERTY_NAME, SDOConstants.SDO_STRING);
@@ -257,8 +257,8 @@ public class SDOConstants {
     public static final QName MIME_TYPE_QNAME = new QName(ORACLE_SDO_URL, MIME_TYPE_PROPERTY.getName());
     public static final QName MIME_TYPE_PROPERTY_QNAME = new QName(ORACLE_SDO_URL, MIME_TYPE_PROPERTY_PROPERTY.getName());
     public static final QName SCHEMA_TYPE_QNAME = new QName(ORACLE_SDO_URL, XML_SCHEMA_TYPE_NAME);
-    public static final QName JAVA_CLASS_QNAME = new QName(ORACLE_SDO_URL, JAVA_CLASS_PROPERTY.getName());   
-    public static final QName XML_DATATYPE_QNAME = new QName(ORACLE_SDO_URL, SDOXML_DATATYPE);
+    public static final QName JAVA_CLASS_QNAME = new QName(ORACLE_SDO_URL, JAVA_CLASS_PROPERTY.getName());
+    public static final QName XML_DATATYPE_QNAME = new QName(SDOXML_URL, SDOXML_DATATYPE);
     public static final QName XML_ID_PROPERTY_QNAME = new QName(ORACLE_SDO_URL, ID_PROPERTY.getName());
     public static final QName DOCUMENTATION_PROPERTY_QNAME = new QName(ORACLE_SDO_URL, DOCUMENTATION);
 
@@ -328,7 +328,7 @@ public class SDOConstants {
 
     /** A classloader toString containing (oc4j:) means we are running from an 4 levels up from an ejb container */
     public static final String CLASSLOADER_OC4J_FRAGMENT = "oc4j:";
-    
+
     /** XPath related constants*/
     /** XPath ns separator ":" */
     public static final String SDO_XPATH_NS_SEPARATOR_FRAGMENT = ":";
