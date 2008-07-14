@@ -679,22 +679,22 @@ public class ChangeSummaryXSDWithCSonRootUndoWSeqTestCases extends ChangeSummary
         assertEquals(openSequenceContent, openDOContent);
     }
 
-    public void testAddOpenContentAttributePropertyViaDataObjectFails() {
+    public void testAddOnTheFlyOpenContentPropertyViaDataObject() {
         SDOSequence aSequence = (SDOSequence)rootObject.getSequence();
         int sequenceSizeBefore = aSequence.size();
         assertNotNull(aSequence);
         cs.beginLogging();
-        
+
         // perform open content op
         rootObject.set("openContentString", "openContentValue");
         // sequence should be modified
-        assertEquals(aSequence.size(), sequenceSizeBefore);
-        
+        assertEquals(aSequence.size(), sequenceSizeBefore + 1);
+
         // get dataObject side
         Object openDOContent = rootObject.get("openContentString");
-        assertNotNull(openDOContent);        
+        assertNotNull(openDOContent);
     }
-    
+
     public void testAddOpenContentElementByIndexPropertyViaSequence() {
         SDOSequence aSequence = (SDOSequence)rootObject.getSequence();
         int sequenceSizeBefore = aSequence.size();

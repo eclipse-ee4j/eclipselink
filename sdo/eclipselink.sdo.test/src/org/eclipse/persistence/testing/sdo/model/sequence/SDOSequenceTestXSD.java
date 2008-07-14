@@ -344,7 +344,7 @@ public class SDOSequenceTestXSD extends SDOSequenceTestCases {
         DataObject custEmailProperty = addProperty(customerType, emailPropName, stringType);
         DataObject custPhoneProperty = addProperty(customerType, phonePropName, stringType);
         
-        DataObject custidProperty = addProperty(customerType, "poID", stringType);
+        DataObject custidProperty = addProperty(customerType, "custID", stringType);
 //        DataObject poProp = addProperty(customerType, "purchaseOrder", purchaseOrderType, false, false);
         // post define processing
         String containingPropertyName = "purchaseOrder";
@@ -515,23 +515,23 @@ public class SDOSequenceTestXSD extends SDOSequenceTestCases {
         assertEquals(openSequenceContent, openDOContent);
     }
 
-    public void testAddOpenContentAttributePropertyViaDataObjectFails() {
-    	// make a source object
-    	defineAndLoadRoot(false, false);
+    public void testAddOnTheFlyOpenContentPropertyViaDataObject() {
+        // make a source object
+        defineAndLoadRoot(false, false);
         SDOSequence aSequence = (SDOSequence)root.getSequence();
         int sequenceSizeBefore = aSequence.size();
         assertNotNull(aSequence);
-        
+
         // perform open content op
         root.set("openContentString", "openContentValue");
         // sequence should be modified
-        assertEquals(aSequence.size(), sequenceSizeBefore);
-        
+        assertEquals(aSequence.size(), sequenceSizeBefore + 1);
+
         // get dataObject side
         Object openDOContent = root.get("openContentString");
-        assertNotNull(openDOContent);        
+        assertNotNull(openDOContent);
     }
-    
+
     public void testAddOpenContentElementByIndexPropertyViaSequence() {
     	// make a source object
     	defineAndLoadRoot(false, false);

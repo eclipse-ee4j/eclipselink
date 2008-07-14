@@ -32,6 +32,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import javax.xml.namespace.QName;
+import org.eclipse.persistence.sdo.SDOConstants;
 import org.eclipse.persistence.sdo.helper.ListWrapper;
 import org.eclipse.persistence.sdo.helper.SDODataHelper;
 import org.eclipse.persistence.sdo.helper.SDOTypeHelper;
@@ -598,6 +599,8 @@ public class SDODataObject implements DataObject, SequencedObject {
             }
             sdotype = ((DataObject)value).getType();
         } else {
+            Property xmlElementProperty = aHelperContext.getTypeHelper().getOpenContentProperty(SDOConstants.SDOXML_URL, SDOConstants.XMLELEMENT_PROPERTY_NAME);
+            propertyDO.set(xmlElementProperty, Boolean.TRUE);
             sdotype = ((SDOTypeHelper)aHelperContext.getTypeHelper()).getTypeForSimpleJavaType(valueClass);
         }
         propertyDO.set("type", sdotype);
@@ -1374,6 +1377,14 @@ public class SDODataObject implements DataObject, SequencedObject {
             }
         }
         return property;
+    }
+
+    SDOProperty getInstanceProperty(String propertyName, Object value) {
+        SDOProperty sdoProperty = getInstanceProperty(propertyName);
+        if(null == sdoProperty) {
+            sdoProperty = (SDOProperty) defineOpenContentProperty(propertyName, value);
+        }
+        return sdoProperty;
     }
 
     /**

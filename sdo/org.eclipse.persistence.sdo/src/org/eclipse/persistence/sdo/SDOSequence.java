@@ -146,7 +146,7 @@ public class SDOSequence implements Sequence {
     }
 
     public void add(int index, String propertyName, Object value) {
-        Property property = dataObject.getInstanceProperty(propertyName);
+        Property property = dataObject.getInstanceProperty(propertyName, value);
         add(index, property, value);
     }
 
@@ -174,7 +174,7 @@ public class SDOSequence implements Sequence {
     }
 
     public boolean add(String propertyName, Object value) {
-        Property property = dataObject.getInstanceProperty(propertyName);
+        Property property = dataObject.getInstanceProperty(propertyName, value);
         return add(property, value);
     }
 
