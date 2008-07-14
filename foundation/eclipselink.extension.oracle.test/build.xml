@@ -70,6 +70,7 @@
             <pathelement path="${eclipselink.jpa.dir}/${classes.dir}"/>
             <pathelement path="${eclipselink.jpa.test.dir}/${classes.dir}"/>
             <pathelement path="${eclipselink.extension.oracle}/${classes.dir}"/>
+            <pathelement path="${eclipselink.jar.name}"/>
             <fileset
                 dir="${oracle.extensions.depend.dir}"
                 includes="${oracle.extensions.depend.jars}"/>
@@ -146,8 +147,8 @@
 
     <!-- Classpath used for running tests. -->
     <path id="run.classpath">
-        <pathelement path="${eclipselink.extension.oracle.test}/${classes.dir}"/>
         <pathelement path="${eclipselink.extension.oracle.test}/${run.dir}"/>
+        <pathelement path="${eclipselink.extension.oracle.test}/${eclipselink.oracle.depend.test.jar}"/>
         <pathelement path="${jdbc.driver.jar}"/>
         <path refid="compile.path"/>
     </path>
@@ -203,7 +204,7 @@ CREATE OR REPLACE TYPE MY_GEOMETRY AS OBJECT (id NUMBER, geom MDSYS.SDO_GEOMETRY
     </target>
 
     <!-- Launches the testing browser -->
-    <target name="test-browser">
+    <target name="test-browser" depends="config-trunk, config-flat">
         <echo>Running test browser</echo>
         <mkdir dir="${eclipselink.extension.oracle.test}/${run.dir}"/>
         <mkdir dir="${eclipselink.extension.oracle.test}/${report.dir}"/>
@@ -228,7 +229,7 @@ CREATE OR REPLACE TYPE MY_GEOMETRY AS OBJECT (id NUMBER, geom MDSYS.SDO_GEOMETRY
     </target>
 
     <!-- Generic target for running tests. -->
-    <target name="run-test">
+    <target name="run-test" depends="config-trunk, config-flat">
         <echo>Running test on ${DB_URL}</echo>
         <mkdir dir="${eclipselink.extension.oracle.test}/${run.dir}"/>
         <mkdir dir="${eclipselink.extension.oracle.test}/${report.dir}"/>
@@ -260,7 +261,7 @@ CREATE OR REPLACE TYPE MY_GEOMETRY AS OBJECT (id NUMBER, geom MDSYS.SDO_GEOMETRY
     </target>
 
     <!-- Runs the test using the PromptTestRunner -->
-    <target name="run-test-prompt">
+    <target name="run-test-prompt" depends="config-trunk, config-flat">
         <echo>Running test on ${DB_URL}</echo>
         <mkdir dir="${eclipselink.extension.oracle.test}/${run.dir}"/>
         <mkdir dir="${eclipselink.extension.oracle.test}/${report.dir}"/>
