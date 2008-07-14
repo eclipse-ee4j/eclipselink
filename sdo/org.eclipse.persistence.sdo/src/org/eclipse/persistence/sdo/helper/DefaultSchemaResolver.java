@@ -48,11 +48,28 @@ public class DefaultSchemaResolver implements SchemaResolver {
     public Source resolveSchema(Source sourceXSD, String namespace, String schemaLocation) {
         try {
             URL schemaUrl = null;
-            if (getBaseSchemaLocation() != null) {
-                // Attempt to resolve the schema location against the base location
-                schemaUrl = new URI(getBaseSchemaLocation()).resolve(schemaLocation).toURL();
+            String baseLoc = getBaseSchemaLocation();
+            if (baseLoc == null) {
+                // No base location, use schema location
+                schemaUrl = new URI(schemaLocation).toURL();
             } else {
-                schemaUrl = new URL(schemaLocation);
+                // May need to resolve against the base location
+                URI schemaUri = new URI(schemaLocation);
+                // If the schema location is absolute, ignore base location
+                if (schemaUri.isAbsolute()) {
+                    schemaUrl = schemaUri.toURL();
+                } else {
+                    // Attempt to resolve the schema location against the base location
+                    URI baseUri = new URI(baseLoc);
+                    // Handle 'jar:' case - we will need to try and create the schema URL manually
+                    if (baseUri.isOpaque() && baseUri.getScheme().equals("jar")) {
+                        // Example - jar:file:/C:/schema.jar!/my.xsd
+                        // Strip off anything after the last '/' character (base location could represent a file)
+                        schemaUrl = new URI(baseLoc.substring(0, baseLoc.lastIndexOf("/") + 1) + schemaLocation).toURL();
+                    } else {
+                        schemaUrl = new URI(baseLoc).resolve(schemaUri).toURL();
+                    }
+                }                
             }
             return new StreamSource(schemaUrl.toExternalForm());
         } catch (Exception e) {
