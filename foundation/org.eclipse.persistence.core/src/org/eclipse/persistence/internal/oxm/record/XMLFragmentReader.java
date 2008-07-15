@@ -183,4 +183,16 @@ public class XMLFragmentReader extends DOMReader {
         }
         return uri;
     }  
+    /**
+     * Process namespace declarations on parent elements if not the root.
+     * For each parent node from current to root place puch each onto a 
+     * stack, then pop each off, calling startPrefixMapping for each 
+     * XMLNS attribute.  Using a stack ensures that the parent nodes are
+     * processed top down.
+     * 
+     * @param element
+     */
+    protected void processParentNamespaces(Element element) throws SAXException {
+        // DO NOTHING FOR FRAGMENTS
+    }
 }

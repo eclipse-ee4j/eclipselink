@@ -43,6 +43,7 @@ public class XMLMarshallerTestSuite extends TestCase {
         suite.addTestSuite(XMLMarshallerNoDefaultRootTestCases.class);
         suite.addTestSuite(XMLContextConstructorUsingXMLSessionConfigLoader.class);
         suite.addTestSuite(XMLContextStoreXMLDescriptorSimpleType.class);
+        suite.addTestSuite(UnmarshalChildElementNSTestCases.class);
         return suite;
     }
 
