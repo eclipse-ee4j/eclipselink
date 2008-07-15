@@ -14,6 +14,8 @@ package org.eclipse.persistence.internal.oxm.record;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.Stack;
 
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
@@ -57,7 +59,7 @@ public class DOMReader extends XMLReader {
     LexicalHandler lexicalHandler;
     private Node currentNode;
     private DocumentPreservationPolicy docPresPolicy;
-    
+
     public boolean getFeature (String name) throws SAXNotRecognizedException, SAXNotSupportedException {
         return false;
     }
@@ -113,10 +115,47 @@ public class DOMReader extends XMLReader {
         }  else {
             rootNode = (Element)node;
         }
+        processParentNamespaces(rootNode);
         startDocument();
         setupLocator(rootNode.getOwnerDocument());
         reportElementEvents(rootNode);
         endDocument();
+    }
+
+    /**
+     * Process namespace declarations on parent elements if not the root.
+     * For each parent node from current to root push each onto a stack, 
+     * then pop each off, calling startPrefixMapping for each XMLNS 
+     * attribute.  Using a stack ensures that the parent nodes are 
+     * processed top down.
+     * 
+     * @param element
+     */
+    protected void processParentNamespaces(Element element) throws SAXException {
+        Node parent = element.getParentNode();
+        // If we're already at the root, do nothing
+        if (parent != null && parent.getNodeType() == Node.DOCUMENT_NODE) {
+            return;
+        }
+        // Add each parent node up to root to the stack
+        Stack<Node> parentElements = new Stack();
+        while (parent != null && parent.getNodeType() != Node.DOCUMENT_NODE) {
+            parentElements.push(parent);
+            parent = parent.getParentNode();
+        }        
+        // Pop off each node and call startPrefixMapping for each XMLNS attribute
+        for (Iterator stackIt = parentElements.iterator(); stackIt.hasNext(); ) {
+            NamedNodeMap attrs = parentElements.pop().getAttributes();
+            if (attrs != null) {
+                for (int i=0; i<attrs.getLength(); i++) {
+                    Attr next = (Attr)attrs.item(i);
+                    String attrPrefix = next.getPrefix();
+                    if (attrPrefix != null && attrPrefix.equals(XMLConstants.XMLNS)) {
+                        getContentHandler().startPrefixMapping(next.getLocalName(), next.getValue());
+                    }
+                }
+            }
+        }
     }
     
     protected void reportElementEvents(Element elem) throws SAXException {
@@ -356,9 +395,11 @@ public class DOMReader extends XMLReader {
             Attr item;
             for (int i=0; i<attrs.size(); i++) {
                 item = attrs.get(i);
-                if (item.getNamespaceURI().equals(uri) && item.getLocalName().equals(localName)) {
-                    return i;
-                }
+                try {
+                    if (item.getNamespaceURI().equals(uri) && item.getLocalName().equals(localName)) {
+                        return i;
+                    }
+                } catch (Exception x) {}
             }
             return -1;
         }
