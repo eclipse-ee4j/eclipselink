@@ -33,6 +33,9 @@ public class ScrollableCursorBackwardReadingTest extends TestCase {
     Vector readWithNext = null;
     Vector readWithPrevious = null;
 
+    protected boolean TYPE_SCROLL_INSENSITIVE_isSupported;
+    protected boolean CONCUR_UPDATABLE_isSupported;
+
     public ScrollableCursorBackwardReadingTest() {
         setDescription("This test verifies that the number of objects read in from the end of a scrollable cursor to the start" + 
                        " matches the number of object read in using a normal query");
@@ -52,6 +55,15 @@ public class ScrollableCursorBackwardReadingTest extends TestCase {
             getSession().getPlatform().isTimesTen()) {
             throw new TestWarningException("ScrollableCursor is not supported on this platform");
         }
+        TYPE_SCROLL_INSENSITIVE_isSupported = true;
+        CONCUR_UPDATABLE_isSupported = true;
+        if(getSession().getPlatform().isSQLServer()) {
+            // In case either TYPE_SCROLL_INSENSITIVE or CONCUR_UPDATABLE used  
+            // MS SQL Server  Version: 9.00.2050;  MS SQL Server 2005 JDBC Driver  Version: 1.2.2828.100 throws exception:
+            // com.microsoft.sqlserver.jdbc.SQLServerException: The cursor type/concurrency combination is not supported.
+            TYPE_SCROLL_INSENSITIVE_isSupported = false;
+            CONCUR_UPDATABLE_isSupported = false;
+        }
         readWithNext = new Vector();
         readWithPrevious = new Vector();
         getSession().getIdentityMapAccessor().initializeAllIdentityMaps();
@@ -69,7 +81,19 @@ public class ScrollableCursorBackwardReadingTest extends TestCase {
 
         try {
             query.setReferenceClass(Employee.class);
-            query.useScrollableCursor(2);
+            if(TYPE_SCROLL_INSENSITIVE_isSupported && CONCUR_UPDATABLE_isSupported) {
+                query.useScrollableCursor(2);
+            } else {
+                ScrollableCursorPolicy policy = new ScrollableCursorPolicy();
+                if(!TYPE_SCROLL_INSENSITIVE_isSupported) {
+                    policy.setResultSetType(ScrollableCursorPolicy.TYPE_SCROLL_SENSITIVE);
+                }
+                if(!CONCUR_UPDATABLE_isSupported) {
+                    policy.setResultSetConcurrency(ScrollableCursorPolicy.CONCUR_READ_ONLY);
+                }
+                policy.setPageSize(2);
+                query.useScrollableCursor(policy);
+            }
             //
             if (configuration != null) {
                 ExpressionBuilder builder = new ExpressionBuilder();

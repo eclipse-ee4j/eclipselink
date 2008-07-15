@@ -29,7 +29,7 @@ public class ReadObjectNotInSessionCacheTest extends TestCase {
     }
 
     protected void setup() {
-        if(getSession().getPlatform().isMySQL() || getSession().getPlatform().isSybase() || getSession().getPlatform().isSQLServer() || getSession().getPlatform().isDB2()) {
+        if(getSession().getPlatform().isMySQL() || getSession().getPlatform().isSybase() || getSession().getPlatform().isDB2()) {
           throw new TestWarningException("This database does not support \"FOR UPDATE NOWAIT\"") ;
         }
 

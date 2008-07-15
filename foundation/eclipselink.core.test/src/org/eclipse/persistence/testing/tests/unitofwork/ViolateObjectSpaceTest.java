@@ -45,12 +45,16 @@ public class ViolateObjectSpaceTest extends TransactionalTestCase {
     }
     
     protected void setup() {
-        if(getSession().getPlatform().isSybase() && getSession().isClientSession()) {
-            if(SybaseTransactionIsolationListener.isDatabaseVersionSupported((ServerSession)getAbstractSession().getParent())) {
-                listener = new SybaseTransactionIsolationListener();
-                getAbstractSession().getParent().getEventManager().addListener(listener);
-            } else {
-                throw new TestWarningException("The test requires Sybase version "+SybaseTransactionIsolationListener.requiredVersion+" or higher");
+        if(getSession().isClientSession()) {
+            if(getSession().getPlatform().isSybase()) {
+                if(SybaseTransactionIsolationListener.isDatabaseVersionSupported((ServerSession)getAbstractSession().getParent())) {
+                    listener = new SybaseTransactionIsolationListener();
+                    getAbstractSession().getParent().getEventManager().addListener(listener);
+                } else {
+                    throw new TestWarningException("The test requires Sybase version "+SybaseTransactionIsolationListener.requiredVersion+" or higher");
+                }
+            } else if(getSession().getPlatform().isSQLServer()) {
+                throw new TestWarningException("This test requires transaction isolation setup on SQLServer database which is currently not set in tlsvrdb6");
             }
         }
         super.setup();

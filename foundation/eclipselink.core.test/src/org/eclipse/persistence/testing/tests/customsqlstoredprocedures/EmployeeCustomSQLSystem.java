@@ -252,11 +252,10 @@ public class EmployeeCustomSQLSystem extends EmployeeSystem {
         proc.addArgument("L_NAME", String.class, 40);
         proc.addArgument("GENDER", String.class, 1);
         proc.addArgument("ADDR_ID", Long.class);
-        proc.addArgument("VERSION", Long.class);
         proc.addArgument("START_TIME", java.sql.Time.class);
         proc.addArgument("END_TIME", java.sql.Time.class);
         proc.addStatement("Update SALARY set SALARY = @SALARY WHERE (EMP_ID = @EMP_ID)");
-        proc.addStatement("Update EMPLOYEE set END_DATE = @END_DATE, MANAGER_ID = @MANAGER_ID, " + "START_DATE = @START_DATE, F_NAME = @F_NAME, L_NAME = @L_NAME, GENDER = @GENDER, ADDR_ID = @ADDR_ID, " + "VERSION = @VERSION + 1 WHERE ((EMP_ID = @EMP_ID) AND (VERSION = @VERSION))");
+        proc.addStatement("Update EMPLOYEE set END_DATE = @END_DATE, MANAGER_ID = @MANAGER_ID, " + "START_DATE = @START_DATE, F_NAME = @F_NAME, L_NAME = @L_NAME, GENDER = @GENDER, ADDR_ID = @ADDR_ID WHERE (EMP_ID = @EMP_ID)");
         return proc;
     }
 
@@ -605,14 +604,13 @@ public class EmployeeCustomSQLSystem extends EmployeeSystem {
         call.addNamedArgument("L_NAME");
         call.addNamedArgument("GENDER");
         call.addNamedArgument("ADDR_ID");
-        call.addNamedArgument("VERSION");
         call.addNamedArgument("START_TIME");
         call.addNamedArgument("END_TIME");
         updateQuery.setCall(call);
         empDescriptor.getQueryManager().setUpdateQuery(updateQuery);
 
         ManyToManyMapping manyToMany = (ManyToManyMapping)empDescriptor.getMappingForAttributeName("projects");
-        manyToMany.setSelectionSQLString("select P.*, L.* FROM LPROJECT L, PROJECT P, PROJ_EMP PE WHERE ((P.PROJ_ID *= L.PROJ_ID) AND (PE.EMP_ID = #EMP_ID) AND (P.PROJ_ID = PE.PROJ_ID))");
+        manyToMany.setSelectionSQLString("select P.*, L.* FROM PROJ_EMP PE, PROJECT P LEFT OUTER JOIN LPROJECT L ON (L.PROJ_ID = P.PROJ_ID) WHERE ((PE.EMP_ID = #EMP_ID) AND (P.PROJ_ID = PE.PROJ_ID))");
     }
 
     protected void setSybaseSQL(Session session) {
@@ -681,6 +679,6 @@ public class EmployeeCustomSQLSystem extends EmployeeSystem {
         empDescriptor.getQueryManager().setUpdateQuery(updateQuery);
 
         ManyToManyMapping manyToMany = (ManyToManyMapping)empDescriptor.getMappingForAttributeName("projects");
-        manyToMany.setSelectionSQLString("select P.*, L.* FROM LPROJECT L, PROJECT P, PROJ_EMP PE WHERE ((P.PROJ_ID *= L.PROJ_ID) AND (PE.EMP_ID = #EMP_ID) AND (P.PROJ_ID = PE.PROJ_ID))");
+        manyToMany.setSelectionSQLString("select P.*, L.* FROM PROJ_EMP PE, PROJECT P LEFT OUTER JOIN LPROJECT L ON (L.PROJ_ID = P.PROJ_ID) WHERE ((PE.EMP_ID = #EMP_ID) AND (P.PROJ_ID = PE.PROJ_ID))");
     }
 }

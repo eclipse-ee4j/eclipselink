@@ -86,8 +86,9 @@ public class ReportQueryFunctionTypeTestCase extends AutoVerifyTestCase {
             Object value;
         
             //To fix bug 6217517, AVG(t1.SALARY) returns an Integer value with DB2
+            // The Integer also returned by SyBase (JConnect 6.05) and SQLServer 2005 (SQL Server  Version: 9.00.2050; Driver: Microsoft SQL Server 2005 JDBC Driver  Version: 1.2.2828.100) 
             value = result.get("salary-ave");
-            if (value instanceof Integer && !(getSession().getDatasourcePlatform().isDB2())) {
+            if (value instanceof Integer && !(getSession().getDatasourcePlatform().isDB2() || getSession().getDatasourcePlatform().isSybase() || getSession().getDatasourcePlatform().isSQLServer())) {
                 throw new TestErrorException("Incorrect result type for average function of report query.");
             }
         

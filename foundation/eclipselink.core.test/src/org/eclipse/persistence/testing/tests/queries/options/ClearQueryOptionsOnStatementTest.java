@@ -35,6 +35,8 @@ import java.lang.reflect.*;
 public class ClearQueryOptionsOnStatementTest extends AutoVerifyTestCase {
 
     private List employeesCreated;
+    protected boolean TYPE_SCROLL_INSENSITIVE_isSupported;
+    protected boolean CONCUR_UPDATABLE_isSupported;
 
     public ClearQueryOptionsOnStatementTest() {
         super();
@@ -42,6 +44,15 @@ public class ClearQueryOptionsOnStatementTest extends AutoVerifyTestCase {
     }
     
     public void setup() {
+        TYPE_SCROLL_INSENSITIVE_isSupported = true;
+        CONCUR_UPDATABLE_isSupported = true;
+        if(getSession().getPlatform().isSQLServer()) {
+            // In case either TYPE_SCROLL_INSENSITIVE or CONCUR_UPDATABLE used  
+            // MS SQL Server  Version: 9.00.2050;  MS SQL Server 2005 JDBC Driver  Version: 1.2.2828.100 throws exception:
+            // com.microsoft.sqlserver.jdbc.SQLServerException: The cursor type/concurrency combination is not supported.
+            TYPE_SCROLL_INSENSITIVE_isSupported = false;
+            CONCUR_UPDATABLE_isSupported = false;
+        }
         // must enable statement caching
         getDatabaseSession().getLogin().cacheAllStatements();
         getDatabaseSession().getIdentityMapAccessor().initializeAllIdentityMaps();
@@ -93,7 +104,19 @@ public class ClearQueryOptionsOnStatementTest extends AutoVerifyTestCase {
     public void testResultSetFetchSizeReset(Session session) {
         // Resultset fetch size
         ReadAllQuery query = new ReadAllQuery(QueryOptionEmployee.class);
-        query.useScrollableCursor();
+        if(TYPE_SCROLL_INSENSITIVE_isSupported && CONCUR_UPDATABLE_isSupported) {
+            query.useScrollableCursor(2);
+        } else {
+            ScrollableCursorPolicy policy = new ScrollableCursorPolicy();
+            if(!TYPE_SCROLL_INSENSITIVE_isSupported) {
+                policy.setResultSetType(ScrollableCursorPolicy.TYPE_SCROLL_SENSITIVE);
+            }
+            if(!CONCUR_UPDATABLE_isSupported) {
+                policy.setResultSetConcurrency(ScrollableCursorPolicy.CONCUR_READ_ONLY);
+            }
+            policy.setPageSize(10);
+            query.useScrollableCursor(policy);
+        }
         
         String sql = "SELECT ID, NAME, HISTORY_ID FROM QUERY_OPTION_EMPLOYEE";
         int fetchSize = 100;
@@ -158,7 +181,7 @@ public class ClearQueryOptionsOnStatementTest extends AutoVerifyTestCase {
         if(getSession().getLogin().getDatasourcePlatform().isDB2() || getSession().getLogin().getDatasourcePlatform().isMySQL())
         {
           sql = "SELECT SUM(e.EMP_ID) from EMPLOYEE e , EMPLOYEE b, EMPLOYEE c,EMPLOYEE d";
-        } else if (getSession().getLogin().getDatasourcePlatform().isSybase())
+        } else if (getSession().getLogin().getDatasourcePlatform().isSybase() || getSession().getLogin().getDatasourcePlatform().isSQLServer())
         {
           sql = "SELECT SUM(e.EMP_ID) from EMPLOYEE a , EMPLOYEE b, EMPLOYEE c, EMPLOYEE d, EMPLOYEE e, EMPLOYEE f, EMPLOYEE g";
         } else

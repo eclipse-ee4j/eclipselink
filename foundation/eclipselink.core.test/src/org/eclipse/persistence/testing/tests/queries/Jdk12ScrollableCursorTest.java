@@ -25,6 +25,8 @@ import org.eclipse.persistence.internal.helper.*;
  */
 public class Jdk12ScrollableCursorTest extends TestCase {
     protected Vector cursoredQueryObjects;
+    protected boolean TYPE_SCROLL_INSENSITIVE_isSupported;
+    protected boolean CONCUR_UPDATABLE_isSupported;
 
     public Jdk12ScrollableCursorTest() {
 
@@ -39,6 +41,15 @@ public class Jdk12ScrollableCursorTest extends TestCase {
             throw new TestWarningException("java.sql.SQLException: [IBM][JDBC Driver] CLI0626E" + Helper.cr() + 
                                            "Updatable result set is not supported in this version of DB2 JDBC 2.0 driver.");
         }
+        TYPE_SCROLL_INSENSITIVE_isSupported = true;
+        CONCUR_UPDATABLE_isSupported = true;
+        if(getSession().getPlatform().isSQLServer()) {
+            // In case either TYPE_SCROLL_INSENSITIVE or CONCUR_UPDATABLE used  
+            // MS SQL Server  Version: 9.00.2050;  MS SQL Server 2005 JDBC Driver  Version: 1.2.2828.100 throws exception:
+            // com.microsoft.sqlserver.jdbc.SQLServerException: The cursor type/concurrency combination is not supported.
+            TYPE_SCROLL_INSENSITIVE_isSupported = false;
+            CONCUR_UPDATABLE_isSupported = false;
+        }
 
         this.cursoredQueryObjects = new Vector();
         getSession().getIdentityMapAccessor().initializeAllIdentityMaps();
@@ -49,7 +60,19 @@ public class Jdk12ScrollableCursorTest extends TestCase {
         ReadAllQuery query = new ReadAllQuery();
 
         query.setReferenceClass(Employee.class);
-        query.useScrollableCursor();
+        if(TYPE_SCROLL_INSENSITIVE_isSupported && CONCUR_UPDATABLE_isSupported) {
+            query.useScrollableCursor();
+        } else {
+            ScrollableCursorPolicy policy = new ScrollableCursorPolicy();
+            if(!TYPE_SCROLL_INSENSITIVE_isSupported) {
+                policy.setResultSetType(ScrollableCursorPolicy.TYPE_SCROLL_SENSITIVE);
+            }
+            if(!CONCUR_UPDATABLE_isSupported) {
+                policy.setResultSetConcurrency(ScrollableCursorPolicy.CONCUR_READ_ONLY);
+            }
+            policy.setPageSize(10);
+            query.useScrollableCursor(policy);
+        }
         ScrollableCursor cursor = (ScrollableCursor)getSession().executeQuery(query);
 
         while (cursor.hasMoreElements()) {

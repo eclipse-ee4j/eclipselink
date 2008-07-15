@@ -36,15 +36,19 @@ public class NoValidationWithInitIdentityMaps extends TransactionalTestCase {
     }
 
     public void setup() {
-        if(getSession().getPlatform().isSybase() && getSession().isClientSession()) {
-            if(SybaseTransactionIsolationListener.isDatabaseVersionSupported((ServerSession)getAbstractSession().getParent())) {
-                listener = new SybaseTransactionIsolationListener();
-                getAbstractSession().getParent().getEventManager().addListener(listener);
-            } else {
-                // so that reset works correctly
-                existenceCheck = getSession().getDescriptor(Employee.class).getQueryManager().getExistenceCheck();
-                
-                throw new TestWarningException("The test requires Sybase version "+SybaseTransactionIsolationListener.requiredVersion+" or higher");
+        if(getSession().isClientSession()) {
+            if(getSession().getPlatform().isSybase()) {
+                if(SybaseTransactionIsolationListener.isDatabaseVersionSupported((ServerSession)getAbstractSession().getParent())) {
+                    listener = new SybaseTransactionIsolationListener();
+                    getAbstractSession().getParent().getEventManager().addListener(listener);
+                } else {
+                    // so that reset works correctly
+                    existenceCheck = getSession().getDescriptor(Employee.class).getQueryManager().getExistenceCheck();
+                    
+                    throw new TestWarningException("The test requires Sybase version "+SybaseTransactionIsolationListener.requiredVersion+" or higher");
+                }
+            } else if(getSession().getPlatform().isSQLServer()) {
+                throw new TestWarningException("This test requires transaction isolation setup on SQLServer database which is currently not set in tlsvrdb6");
             }
         }
 

@@ -23,6 +23,8 @@ import org.eclipse.persistence.testing.models.employee.domain.*;
  */
 public class ScrollableCursorAPITest extends TestCase {
     protected ScrollableCursor employeeStream;
+    protected boolean TYPE_SCROLL_INSENSITIVE_isSupported;
+    protected boolean CONCUR_UPDATABLE_isSupported;
 
     public ScrollableCursorAPITest() {
         setDescription("Test the scrollable cursor APIs like hasNext(), hasPrevious() when no result will be returned from the query");
@@ -33,6 +35,15 @@ public class ScrollableCursorAPITest extends TestCase {
             getSession().getPlatform().isTimesTen()) {
             throw new TestWarningException("ScrollableCursor is not supported on this platform");
         }
+        TYPE_SCROLL_INSENSITIVE_isSupported = true;
+        CONCUR_UPDATABLE_isSupported = true;
+        if(getSession().getPlatform().isSQLServer()) {
+            // In case either TYPE_SCROLL_INSENSITIVE or CONCUR_UPDATABLE used  
+            // MS SQL Server  Version: 9.00.2050;  MS SQL Server 2005 JDBC Driver  Version: 1.2.2828.100 throws exception:
+            // com.microsoft.sqlserver.jdbc.SQLServerException: The cursor type/concurrency combination is not supported.
+            TYPE_SCROLL_INSENSITIVE_isSupported = false;
+            CONCUR_UPDATABLE_isSupported = false;
+        }
     }
 
     public void test() {
@@ -41,7 +52,19 @@ public class ScrollableCursorAPITest extends TestCase {
         ExpressionBuilder builder = new ExpressionBuilder();
         Expression exp = builder.get("lastName").like("%blablablabla%"); //no data should be found
         query.setSelectionCriteria(exp);
-        query.useScrollableCursor();
+        if(TYPE_SCROLL_INSENSITIVE_isSupported && CONCUR_UPDATABLE_isSupported) {
+            query.useScrollableCursor();
+        } else {
+            ScrollableCursorPolicy policy = new ScrollableCursorPolicy();
+            if(!TYPE_SCROLL_INSENSITIVE_isSupported) {
+                policy.setResultSetType(ScrollableCursorPolicy.TYPE_SCROLL_SENSITIVE);
+            }
+            if(!CONCUR_UPDATABLE_isSupported) {
+                policy.setResultSetConcurrency(ScrollableCursorPolicy.CONCUR_READ_ONLY);
+            }
+            policy.setPageSize(10);
+            query.useScrollableCursor(policy);
+        }
         employeeStream = (ScrollableCursor)getSession().executeQuery(query);
     }
 

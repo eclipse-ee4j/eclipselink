@@ -29,6 +29,9 @@ public class ScrollableCursorNavigationAPITest extends TestCase {
     protected String navigationError = null;
     protected Exception caughtException = null;
 
+    protected boolean TYPE_SCROLL_INSENSITIVE_isSupported;
+    protected boolean CONCUR_UPDATABLE_isSupported;
+    
     public ScrollableCursorNavigationAPITest() {
         setDescription("This test tests various API which is used to navigate scrollable cursors.");
 
@@ -52,6 +55,15 @@ public class ScrollableCursorNavigationAPITest extends TestCase {
         if (getSession().getPlatform().isMySQL()) {
             throw new TestWarningException("Not supported in MySQL");
         }
+        TYPE_SCROLL_INSENSITIVE_isSupported = true;
+        CONCUR_UPDATABLE_isSupported = true;
+        if(getSession().getPlatform().isSQLServer()) {
+            // In case either TYPE_SCROLL_INSENSITIVE or CONCUR_UPDATABLE used  
+            // MS SQL Server  Version: 9.00.2050;  MS SQL Server 2005 JDBC Driver  Version: 1.2.2828.100 throws exception:
+            // com.microsoft.sqlserver.jdbc.SQLServerException: The cursor type/concurrency combination is not supported.
+            TYPE_SCROLL_INSENSITIVE_isSupported = false;
+            CONCUR_UPDATABLE_isSupported = false;
+        }
         getSession().getIdentityMapAccessor().initializeAllIdentityMaps();
 
         if (configuration != null) {
@@ -74,7 +86,19 @@ public class ScrollableCursorNavigationAPITest extends TestCase {
 
         try {
             query.setReferenceClass(Employee.class);
-            query.useScrollableCursor(2);
+            if(TYPE_SCROLL_INSENSITIVE_isSupported && CONCUR_UPDATABLE_isSupported) {
+                query.useScrollableCursor(2);
+            } else {
+                ScrollableCursorPolicy policy = new ScrollableCursorPolicy();
+                if(!TYPE_SCROLL_INSENSITIVE_isSupported) {
+                    policy.setResultSetType(ScrollableCursorPolicy.TYPE_SCROLL_SENSITIVE);
+                }
+                if(!CONCUR_UPDATABLE_isSupported) {
+                    policy.setResultSetConcurrency(ScrollableCursorPolicy.CONCUR_READ_ONLY);
+                }
+                policy.setPageSize(2);
+                query.useScrollableCursor(policy);
+            }
             cursor = (ScrollableCursor)getSession().executeQuery(query);
 
             try {
