@@ -630,6 +630,13 @@ public class SDOTypesGenerator {
         QName baseTypeQName = null;
         if (simpleType.getRestriction() != null) {
             String baseType = simpleType.getRestriction().getBaseType();
+
+            int colonIndex = baseType.indexOf(":"); 
+            if (colonIndex != -1) {
+            	// There is a prefix in the base type string, remove it
+            	baseType = baseType.substring(colonIndex + 1, baseType.length());
+            }
+            
             baseTypeQName = new QName(XMLConstants.SCHEMA_URL, baseType);
 
             SDOType baseSDOType = typeHelper.getSDOTypeFromXSDType(baseTypeQName);
