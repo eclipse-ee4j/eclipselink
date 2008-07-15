@@ -91,7 +91,8 @@ MAVENANT_DIR=${BLD_DEPS_DIR}/mavenant
 MAILLIB_DIR=${BRANCH_PATH}/foundation/eclipselink.core.lib
 
 PATH=${JAVA_HOME}/bin:${ANT_HOME}/bin:/usr/bin:/usr/local/bin:${PATH}
-CLASSPATH=${CLASSPATH}:${JUNIT_HOME}/junit.jar:${ANT_HOME}/lib/ant-junit.jar:${MAILLIB_DIR}/mail.jar:${MAILLIB_DIR}/activation.jar:${MAVENANT_DIR}/maven-ant-tasks-2.0.8.jar
+OLD_CLASSPATH=${CLASSPATH}
+CLASSPATH=${JUNIT_HOME}/junit.jar:${ANT_HOME}/lib/ant-junit.jar:${MAILLIB_DIR}/mail.jar:${MAILLIB_DIR}/activation.jar:${MAVENANT_DIR}/maven-ant-tasks-2.0.8.jar
 
 #------- Subroutines -------#
 CreatePath() {
@@ -204,7 +205,7 @@ else
 fi
 
 export ANT_ARGS ANT_OPTS ANT_HOME BRANCH_PATH HOME_DIR LOG_DIR JAVA_HOME JUNIT_HOME MAVENANT_DIR PATH CLASSPATH
-export SVN_EXEC BLD_DEPS_DIR JUNIT_HOME
+export SVN_EXEC BLD_DEPS_DIR JUNIT_HOME TARGET
 
 cd ${HOME_DIR}
 echo "Results logged to: ${DATED_LOG}"
@@ -215,3 +216,5 @@ source ~/.ssh-agent >> ${DATED_LOG} 2>&1
 echo "ant ${ANT_BASEARG} ${TARGET}" >> ${DATED_LOG}
 ant ${ANT_BASEARG} -Ddb.user="${DB_USER}" -Ddb.pwd="${DB_PWD}" -Ddb.url="${DB_URL}" ${TARGET} >> ${DATED_LOG} 2>&1
 echo "Build completed at: `date`" >> ${DATED_LOG}
+
+CLASSPATH=${OLD_CLASSPATH}

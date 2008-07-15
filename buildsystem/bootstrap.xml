@@ -54,12 +54,18 @@
         <echo message="ANT_OPTS='${env.ANT_OPTS}'"/>
         <echo message=" "/>
         <echo message="build_date.build_time='${build_date}.${build_time}'"/>
-        <echo message="java.version  ='${java.version}'"/>
-        <echo message="os.name       ='${os.name}'"/>
-        <echo message="os.arch       ='${os.arch}'"/>
-        <echo message="os.version    ='${os.version}'"/>
+        <echo message="java.version    = '${java.version}'"/>
+        <echo message="os.name         = '${os.name}'"/>
+        <echo message="os.arch         = '${os.arch}'"/>
+        <echo message="os.version      = '${os.version}'"/>
         <echo message=" "/>
-        <echo message="basedir       ='${basedir}'"/>
+        <echo message="ant.file        = '${ant.file}'"/>       
+        <echo message="ant.version     = '${ant.version}'"/>    
+        <echo message="ant.project.name= '${ant.project.name}'"/>
+        <echo message="ant.java.version= '${ant.java.version}'"/>
+        <echo message="ant.home        = '${ant.home}'"/>     
+        <echo message=" "/>
+        <echo message="basedir         = '${basedir}'"/>
     </target>
 
     <!-- Set svn.exec to os appropriate value                                 -->
@@ -85,7 +91,7 @@
     </target>
 
     <target name="properties-init" depends="init-win,init-test2">
-        <echo message="svn.exec='${svn.exec}'"/>
+        <echo message="svn.exec        ='${svn.exec}'"/>
 
         <!-- # Build environment definitions                                  -->
         <!-- #  build.root.dir is the directory the branch's build            -->
@@ -118,26 +124,35 @@
         <property name="current.svnrev.file" value="${log.dir}/.current_svn_rev"/>
         <property name="latest.svnrev.file"  value="${log.dir}/.latest_svn_rev"/>
         <!-- available file="${latest.svnrev.file}" property="latest.svnrev.file.present"/ -->
-        <echo message="branch.name= '${branch.name}'"/>
-        <echo message="build.root.dir= '${build.root.dir}'"/>
-        <echo message="build.deps.dir= '${build.deps.dir}'"/>
-        <echo message="log.dir= '${log.dir}'"/>
-        <echo message="junit.dir= '${junit.dir}'"/>
-        <echo message="junit.lib= '${junit.lib}'"/>
-        <echo message="branch.dir= '${branch.dir}'"/>
-        <echo message="autobld.file= '${autobld.file}'"/>
+        <echo message="env.HOME_DIR    = '${env.HOME_DIR}'"/>
+        <echo message="env.JAVA_HOME   = '${env.JAVA_HOME}'"/>
+        <echo message="env.JUNIT_HOME  = '${env.JUNIT_HOME}'"/>
+        <echo message="env.MAVENANT_DIR= '${env.MAVENANT_DIR}'"/>
+        <echo message="env.PATH        = '${env.PATH}'"/>
+        <echo message="env.CLASSPATH   = '${env.CLASSPATH}'"/>   
+        <echo message="env.SVN_EXEC    = '${env.SVN_EXEC}'"/>
+        <echo message="env.TARGET      = '${env.TARGET}'"/>
+        <echo message=""/>          
+        <echo message="branch.name     = '${branch.name}'"/>
+        <echo message="build.root.dir  = '${build.root.dir}'"/>
+        <echo message="build.deps.dir  = '${build.deps.dir}'"/>
+        <echo message="log.dir         = '${log.dir}'"/>
+        <echo message="junit.dir       = '${junit.dir}'"/>
+        <echo message="junit.lib       = '${junit.lib}'"/>
+        <echo message="branch.dir      = '${branch.dir}'"/>
+        <echo message="autobld.file    = '${autobld.file}'"/>
         <echo message=""/>
-        <echo message="env.CLASSPATH= '${env.CLASSPATH}'"/>
+        <echo message="env.CLASSPATH   = '${env.CLASSPATH}'"/>
         <echo message=""/>
-        <echo message="svn.ro.protocol= '${svn.ro.protocol}'"/>
-        <echo message="svn.protocol= '${svn.protocol}'"/>
-        <echo message="svn.rw.protocol= '${svn.rw.protocol}'"/>
+        <echo message="svn.ro.protocol = '${svn.ro.protocol}'"/>
+        <echo message="svn.protocol    = '${svn.protocol}'"/>
+        <echo message="svn.rw.protocol = '${svn.rw.protocol}'"/>
         <echo message="svn.base.urlpath= '${svn.base.urlpath}'"/>
-        <echo message="svn.base.url= '${svn.base.url}'"/>
-        <echo message="svn.branch.url= '${svn.branch.url}'"/>
-        <echo message="svn.build.url= '${svn.build.url}'"/>
+        <echo message="svn.base.url    = '${svn.base.url}'"/>
+        <echo message="svn.branch.url  = '${svn.branch.url}'"/>
+        <echo message="svn.build.url   = '${svn.build.url}'"/>
         <echo message="current.svnrev.file= '${current.svnrev.file}'"/>
-        <echo message="latest.svnrev.file= '${latest.svnrev.file}'"/>
+        <echo message="latest.svnrev.file = '${latest.svnrev.file}'"/>
     </target>
 
     <!-- Used for Build testing:  Set if "target" in .sh appended by ".test"  -->
