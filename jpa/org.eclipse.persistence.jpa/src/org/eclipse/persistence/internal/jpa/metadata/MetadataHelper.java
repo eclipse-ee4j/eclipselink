@@ -11,11 +11,10 @@
  *     Oracle - initial API and implementation from Oracle TopLink
  *     05/16/2008-1.0M8 Guy Pelletier 
  *       - 218084: Implement metadata merging functionality between mapping files
+ *     07/15/2008-1.0.1 Guy Pelletier 
+ *       - 240679: MappedSuperclass Id not picked when on get() method accessor
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata;
-
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
 
 import java.security.AccessController;
 import java.security.PrivilegedActionException;
@@ -24,8 +23,6 @@ import org.eclipse.persistence.exceptions.ValidationException;
 
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.internal.security.PrivilegedClassForName;
-import org.eclipse.persistence.internal.security.PrivilegedGetDeclaredFields;
-import org.eclipse.persistence.internal.security.PrivilegedGetDeclaredMethods;
 import org.eclipse.persistence.internal.security.PrivilegedNewInstanceFromClass;
 
 /**
@@ -88,43 +85,6 @@ public class MetadataHelper {
     static Object getClassInstance(String className, ClassLoader loader) {
         return getClassInstance(getClassForName(className, loader));
     }
-    
-    /**
-     * INTERNAL:
-     * Get the declared methods from a class using the doPriveleged security
-     * access. This call returns all methods (private, protected, package and
-     * public) on the give class ONLY. It does not traverse the superclasses.
-     */
-    static Method[] getDeclaredMethods(Class cls) {
-        if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
-            try {
-                return (Method[])AccessController.doPrivileged(new PrivilegedGetDeclaredMethods(cls));
-            } catch (PrivilegedActionException exception) {
-                // we will not get here, there are no checked exceptions in this call
-                return null;
-            }
-        } else {
-            return org.eclipse.persistence.internal.security.PrivilegedAccessHelper.getDeclaredMethods(cls);
-        }
-    }
-
-    /**
-     * INTERNAL:
-     * Get the declared fields from a class using the doPriveleged security
-     * access.
-     */
-    static Field[] getFields(Class cls) {
-        if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
-            try {
-                return (Field[])AccessController.doPrivileged(new PrivilegedGetDeclaredFields(cls));
-            } catch (PrivilegedActionException exception) {
-                // no checked exceptions are thrown, so we should not get here
-                return null;
-            }
-        } else {
-            return PrivilegedAccessHelper.getDeclaredFields(cls);
-        }
-    }  
     
     /**
      * INTERNAL:

@@ -78,6 +78,9 @@ public class MetadataLogger {
     /*************************************************************************/
     /*                       GENERIC DEFAULT MESSSAGES                       */ 
     /*************************************************************************/
+    public static final String FIELD_ACCESS_TYPE = "metadata_field_access_type";
+    public static final String PROPERTY_ACCESS_TYPE = "metadata_property_access_type";
+    
     public static final String ALIAS = "metadata_default_alias";
     public static final String MAP_KEY_ATTRIBUTE_NAME = "metadata_default_map_key_attribute_name";
     
@@ -128,6 +131,7 @@ public class MetadataLogger {
     public static final String MANY_TO_ONE_MAPPING_REFERENCE_CLASS = "metadata_default_many_to_one_reference_class";
     public static final String MANY_TO_MANY_MAPPING_REFERENCE_CLASS = "metadata_default_many_to_many_reference_class";
     public static final String VARIABLE_ONE_TO_ONE_MAPPING_REFERENCE_CLASS = "metadata_default_variable_one_to_one_reference_class";
+    
     /*************************************************************************/
     /*                       OTHER WARNING MESSSAGES                         */ 
     /*************************************************************************/
@@ -188,6 +192,9 @@ public class MetadataLogger {
         
         // Generic default messages that could apply to XML and annotation
         // configurations.
+        m_ctxStrings.put(FIELD_ACCESS_TYPE, FIELD_ACCESS_TYPE);
+        m_ctxStrings.put(PROPERTY_ACCESS_TYPE, PROPERTY_ACCESS_TYPE);
+        
         m_ctxStrings.put(ALIAS, ALIAS);
         m_ctxStrings.put(MAP_KEY_ATTRIBUTE_NAME, MAP_KEY_ATTRIBUTE_NAME);
         

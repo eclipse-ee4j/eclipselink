@@ -15,8 +15,10 @@
  *       - 211330: Add attributes-complete support to the EclipseLink-ORM.XML Schema
  *     05/30/2008-1.0M8 Guy Pelletier 
  *       - 230213: ValidationException when mapping to attribute in MappedSuperClass
- *     06/20/2008-1.0 Guy Pelletier 
+ *     06/20/2008-1.0M9 Guy Pelletier 
  *       - 232975: Failure when attribute type is generic
+ *     07/15/2008-1.0.1 Guy Pelletier 
+ *       - 240679: MappedSuperclass Id not picked when on get() method accessor
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.accessors.classes;
 
@@ -209,7 +211,7 @@ public class EntityAccessor extends MappedSuperclassAccessor {
      * it is called both during pre-deploy and deploy where the class loader
      * dependencies change.
      */
-    protected List<MappedSuperclassAccessor> getMappedSuperclasses() {
+    protected List<MappedSuperclassAccessor> getMappedSuperclassesAndDiscoverInheritanceParents() {
         Class parent = getJavaClass().getSuperclass();
         ClassAccessor lastParent = null;
         Type genericParent = getJavaClass().getGenericSuperclass();
@@ -443,7 +445,17 @@ public class EntityAccessor extends MappedSuperclassAccessor {
         // Build our list of mapped superclasses and pass them around to
         // those methods that depend on them. Avoids rebuilding the list
         // multiple times.
-        List<MappedSuperclassAccessor> mappedSuperclasses = getMappedSuperclasses();
+        List<MappedSuperclassAccessor> mappedSuperclasses = getMappedSuperclassesAndDiscoverInheritanceParents();
+        
+        // If we are an inheritance subclass process out root first.
+        if (getDescriptor().isInheritanceSubclass()) {
+            // Process the root class accessor if it hasn't already been done.
+            EntityAccessor parentAccessor = (EntityAccessor) getDescriptor().getInheritanceRootDescriptor().getClassAccessor();
+            if (! parentAccessor.isProcessed()) {
+                parentAccessor.process();
+                parentAccessor.setIsProcessed();
+            }
+        }
         
         // Process the Entity metadata first. Need to ensure we determine the 
         // access, metadata complete and exclude default mappings before we 
@@ -452,7 +464,7 @@ public class EntityAccessor extends MappedSuperclassAccessor {
             
         // Process the Table and Inheritance metadata.
         processTableAndInheritance();
-            
+        
         // Process the common class level attributes that an entity or mapped 
         // superclass may define. This should be done before processing the
         // mapped superclasses call since it will call this method also. We 
@@ -559,6 +571,60 @@ public class EntityAccessor extends MappedSuperclassAccessor {
     
     /**
      * INTERNAL:
+     * Figure out the access type for this entity and log a message to the user
+     * stating which type we will be using to process this entity.
+     */
+    protected void processAccessType(List<MappedSuperclassAccessor> mappedSuperclasses) {
+        if (getDescriptor().isInheritanceSubclass()) {
+            getDescriptor().setUsesPropertyAccess(getDescriptor().getInheritanceRootDescriptor().usesPropertyAccess());
+        } else {
+            if (havePersistenceAnnotationsDefined(MetadataHelper.getFields(getJavaClass())) || getDescriptor().isXmlFieldAccess()) {
+                // We have persistence annotations defined on a field from 
+                // the entity or field access has been set via XML, set the 
+                // access to FIELD.
+                getDescriptor().setUsesPropertyAccess(false);
+            } else if (havePersistenceAnnotationsDefined(MetadataHelper.getDeclaredMethods(getJavaClass())) || getDescriptor().isXmlPropertyAccess()) {
+                // We have persistence annotations defined on a method from 
+                // the entity or method access has been set via XML, set the 
+                // access to PROPERTY.
+                getDescriptor().setUsesPropertyAccess(true);
+            } else {
+                // The java class for this entity has no access type 
+                // specified. Check for a  mapped superclass access.
+                for (MappedSuperclassAccessor mappedSuperclass : mappedSuperclasses) {
+                    if (havePersistenceAnnotationsDefined(MetadataHelper.getFields(mappedSuperclass.getJavaClass()))) {
+                        // We have persistence annotations defined on a field from 
+                        // the entity or field access has been set via XML, set the 
+                        // access to FIELD.
+                        getDescriptor().setUsesPropertyAccess(false);
+                        break; // stop looking
+                    } else if (havePersistenceAnnotationsDefined(MetadataHelper.getDeclaredMethods(mappedSuperclass.getJavaClass()))) {
+                        // We have persistence annotations defined on a method from 
+                        // the entity or method access has been set via XML, set the 
+                        // access to PROPERTY.
+                        getDescriptor().setUsesPropertyAccess(true);
+                        break; // stop looking.
+                    }
+                }
+                        
+                // We still found nothing ... we could throw an exception 
+                // here, but for now, the access automatically defaults to
+                // field. The user will eventually get an exception saying 
+                // there is no primary key set if field access is not actually 
+                // the case.
+            }
+        }
+        
+        // Log the access type. Will help with future debugging.
+        if (getDescriptor().usesPropertyAccess()) {
+            getLogger().logConfigMessage(MetadataLogger.FIELD_ACCESS_TYPE, getJavaClass());
+        } else {
+            getLogger().logConfigMessage(MetadataLogger.PROPERTY_ACCESS_TYPE, getJavaClass());
+        }
+    }
+    
+    /**
+     * INTERNAL:
      * Process the entity metadata.
      */
     protected void processEntity(List<MappedSuperclassAccessor> mappedSuperclasses) {
@@ -574,6 +640,9 @@ public class EntityAccessor extends MappedSuperclassAccessor {
                 }
             }
         }
+        
+        // Now process and set the access type ...
+        processAccessType(mappedSuperclasses);
         
         // Set a metadata complete flag if specified on the entity class or a 
         // mapped superclass.
@@ -706,7 +775,7 @@ public class EntityAccessor extends MappedSuperclassAccessor {
         // class and mapped superclasses (taking metadata-complete into 
         // consideration). Go through the mapped superclasses first, top->down 
         // only if the exclude superclass listeners flag is not set.
-        List<MappedSuperclassAccessor> mappedSuperclasses = getMappedSuperclasses();
+        List<MappedSuperclassAccessor> mappedSuperclasses = getMappedSuperclassesAndDiscoverInheritanceParents();
         if (! getDescriptor().excludeSuperclassListeners()) {
             int mappedSuperclassesSize = mappedSuperclasses.size();
             
@@ -895,13 +964,7 @@ public class EntityAccessor extends MappedSuperclassAccessor {
         // first since it has information its subclasses depend on.
         if (getDescriptor().isInheritanceSubclass()) {
             MetadataDescriptor parentDescriptor = getDescriptor().getInheritanceRootDescriptor();
-            
-            // Process the root class accessor if it hasn't already been done.
             EntityAccessor parentAccessor = (EntityAccessor) parentDescriptor.getClassAccessor();
-            if (! parentAccessor.isProcessed()) {
-                parentAccessor.process();
-                parentAccessor.setIsProcessed();
-            }
             
             // An entity who didn't know they were the root of an inheritance 
             // hierarchy (that is, does not define inheritance metadata) must 

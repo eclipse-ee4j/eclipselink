@@ -13,6 +13,8 @@
  *       - 218084: Implement metadata merging functionality between mapping files
  *     05/23/2008-1.0M8 Guy Pelletier 
  *       - 211330: Add attributes-complete support to the EclipseLink-ORM.XML Schema
+ *     07/15/2008-1.0.1 Guy Pelletier 
+ *       - 240679: MappedSuperclass Id not picked when on get() method accessor
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.accessors.classes;
 
@@ -20,6 +22,7 @@ import java.lang.annotation.Annotation;
 
 import org.eclipse.persistence.annotations.Cache;
 import org.eclipse.persistence.exceptions.ValidationException;
+import org.eclipse.persistence.internal.jpa.metadata.MetadataLogger;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataProject;
 
 /**
@@ -46,39 +49,18 @@ public class EmbeddableAccessor extends ClassAccessor {
     
     /**
      * INTERNAL:
-     * Process the embeddable metadata.
-     */
-    protected void processEmbeddable() {
-        // Set an access type if specified.
-        if (getAccess() != null) {
-            getDescriptor().setXMLAccess(getAccess());
-        } 
-        
-        // Set a metadata complete flag if specified.
-        if (getMetadataComplete() != null) {
-            getDescriptor().setIgnoreAnnotations(isMetadataComplete());
-        } 
-        
-        // Set an exclude default mappings flag if specified.
-        if (getExcludeDefaultMappings() != null) {
-            getDescriptor().setIgnoreDefaultMappings(excludeDefaultMappings());
-        } 
-    }
-    
-    /**
-     * INTERNAL:
      * Process the items of interest on an embeddable class.
      */
     public void process() {
-        // Process the Embeddable metadata first. Need to ensure we determine 
-        // the access, metadata complete and exclude default mappings before we 
-        // process further.
-        processEmbeddable();
-        
         // If a Cache annotation is present throw an exception.
         if (isAnnotationPresent(Cache.class)) {
             throw ValidationException.cacheNotSupportedWithEmbeddable(getJavaClass());
         } 
+        
+        // Process the Embeddable metadata first. Need to ensure we determine 
+        // the access, metadata complete and exclude default mappings before we 
+        // process further.
+        processEmbeddable();
     
         // Process the customizer metadata.
         processCustomizer();
@@ -97,5 +79,59 @@ public class EmbeddableAccessor extends ClassAccessor {
 
         // Process the accessors on this embeddable.
         processAccessors();
+    }
+    
+    /**
+     * INTERNAL:
+     * Process the access type of this embeddable.
+     */
+    public void processAccessType() {
+        if (havePersistenceAnnotationsDefined(MetadataHelper.getFields(getJavaClass())) || getDescriptor().isXmlFieldAccess()) {
+            // We have persistence annotations defined on a field from 
+            // the entity or field access has been set via XML, set the 
+            // access to FIELD.
+            getDescriptor().setUsesPropertyAccess(false);
+        } else if (havePersistenceAnnotationsDefined(MetadataHelper.getDeclaredMethods(getJavaClass())) || getDescriptor().isXmlPropertyAccess()) {
+            // We have persistence annotations defined on a method from 
+            // the entity or method access has been set via XML, set the 
+            // access to PROPERTY.
+            getDescriptor().setUsesPropertyAccess(true);
+        } else {
+            // We found nothing ... we could throw an exception here, but for 
+            // now, the access automatically defaults to field. The user will 
+            // eventually get an exception saying invalid access type if its
+            // owning entity is not of the same type.
+        }
+        
+        // Log the access type. Will help with future debugging.
+        if (getDescriptor().usesPropertyAccess()) {
+            getLogger().logConfigMessage(MetadataLogger.FIELD_ACCESS_TYPE, getJavaClass());
+        } else {
+            getLogger().logConfigMessage(MetadataLogger.PROPERTY_ACCESS_TYPE, getJavaClass());
+        }
+    }
+    
+    /**
+     * INTERNAL:
+     * Process the embeddable metadata.
+     */
+    protected void processEmbeddable() {
+        // Set an access type if specified (this will override a global setting)
+        if (getAccess() != null) {
+            getDescriptor().setXMLAccess(getAccess());
+        } 
+     
+        // Guy - process the access type now.
+        processAccessType();
+        
+        // Set a metadata complete flag if specified.
+        if (getMetadataComplete() != null) {
+            getDescriptor().setIgnoreAnnotations(isMetadataComplete());
+        } 
+        
+        // Set an exclude default mappings flag if specified.
+        if (getExcludeDefaultMappings() != null) {
+            getDescriptor().setIgnoreDefaultMappings(excludeDefaultMappings());
+        } 
     }
 }

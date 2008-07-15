@@ -15,13 +15,13 @@
  *       - 211330: Add attributes-complete support to the EclipseLink-ORM.XML Schema
  *     05/30/2008-1.0M8 Guy Pelletier 
  *       - 230213: ValidationException when mapping to attribute in MappedSuperClass
- *     06/20/2008-1.0 Guy Pelletier 
+ *     06/20/2008-1.0M9 Guy Pelletier 
  *       - 232975: Failure when attribute type is generic
+ *     07/15/2008-1.0.1 Guy Pelletier 
+ *       - 240679: MappedSuperclass Id not picked when on get() method accessor
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata;
 
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
 import java.lang.reflect.Type;
 
 import java.util.ArrayList;
@@ -47,7 +47,6 @@ import org.eclipse.persistence.internal.jpa.metadata.accessors.mappings.ManyToMa
 import org.eclipse.persistence.internal.jpa.metadata.accessors.mappings.MappingAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.mappings.OneToOneAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.mappings.RelationshipAccessor;
-import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataField;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataMethod;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.MetadataAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.PropertyMetadata;
@@ -97,7 +96,7 @@ public class MetadataDescriptor {
     private boolean m_hasCustomizer;
     private boolean m_hasReadOnly;
     private boolean m_hasCopyPolicy;
-    private Boolean m_usesPropertyAccess;
+    private boolean m_usesPropertyAccess;
     private Boolean m_usesCascadedOptimisticLocking;
     
     private String m_xmlAccess;
@@ -138,9 +137,11 @@ public class MetadataDescriptor {
         m_hasChangeTracking = false;
         m_hasCustomizer = false;
         m_hasReadOnly = false;
+        m_hasCopyPolicy = false;
         m_isCascadePersist = false;
         m_ignoreAnnotations = false;
         m_ignoreDefaultMappings = false;
+        m_usesPropertyAccess = false;
         
         m_idAttributeNames = new ArrayList<String>();
         m_orderByAttributeNames = new ArrayList<String>();
@@ -947,36 +948,6 @@ public class MetadataDescriptor {
     /**
      * INTERNAL:
      */
-    protected boolean havePersistenceAnnotationsDefined(Field[] fields) {
-        for (Field field : fields) {
-            MetadataField metadataField = new MetadataField(field, getLogger());
-            
-            if (metadataField.hasDeclaredAnnotations(this)) {
-                return true;
-            }
-        }
-        
-        return false;
-    }
-    
-    /**
-     * INTERNAL:
-     */
-    protected boolean havePersistenceAnnotationsDefined(Method[] methods) {
-        for (Method method : methods) {
-            MetadataMethod metadataMethod = new MetadataMethod(method, getLogger());
-            
-            if (metadataMethod.hasDeclaredAnnotations(this)) {
-                return true;
-            }
-        }
-        
-        return false;
-    }
-    
-    /**
-     * INTERNAL:
-     */
     public boolean hasMappingForAttributeName(String attributeName) {
         return m_descriptor.getMappingForAttributeName(attributeName) != null;
     }
@@ -1043,7 +1014,7 @@ public class MetadataDescriptor {
      * Indicates that we found an XML field access type for this metadata
      * descriptor.
      */
-    protected boolean isXmlFieldAccess() {
+    public boolean isXmlFieldAccess() {
         return m_xmlAccess != null && m_xmlAccess.equals(FIELD);
     }
     
@@ -1052,7 +1023,7 @@ public class MetadataDescriptor {
      * Indicates that we found an XML property access type for this metadata
      * descriptor.
      */
-    protected boolean isXmlPropertyAccess() {
+    public boolean isXmlPropertyAccess() {
         return m_xmlAccess != null && m_xmlAccess.equals(PROPERTY);
     }
     
@@ -1327,11 +1298,10 @@ public class MetadataDescriptor {
     
     /**
      * INTERNAL:
-     * 
      * Set the access-type while processing a class like Embeddable as it 
      * inherits the access-type from the referencing entity.
      */
-    public void setUsesPropertyAccess(Boolean usesPropertyAccess) {
+    public void setUsesPropertyAccess(boolean usesPropertyAccess) {
         m_usesPropertyAccess = usesPropertyAccess;
     }
     
@@ -1381,38 +1351,10 @@ public class MetadataDescriptor {
     
     /**
      * INTERNAL:
-     * Returns true if this class uses property access. In an inheritance 
-     * hierarchy, the subclasses inherit their access type from the parent.
-     * The metadata helper method caches the class access types for 
-     * efficiency.
+     * Returns true if this class uses property access.
      */
     public boolean usesPropertyAccess() {
-        if (isInheritanceSubclass()) {
-            return getInheritanceRootDescriptor().usesPropertyAccess();
-        } else {
-            if (m_usesPropertyAccess == null) {
-                if (havePersistenceAnnotationsDefined(MetadataHelper.getFields(getJavaClass())) || isXmlFieldAccess()) {
-                    // We have persistence annotations defined on a field from 
-                    // the entity or field access has been set via XML, set the 
-                    // access to FIELD.
-                    m_usesPropertyAccess = Boolean.FALSE;
-                } else if (havePersistenceAnnotationsDefined(MetadataHelper.getDeclaredMethods(getJavaClass())) || isXmlPropertyAccess()) {
-                    // We have persistence annotations defined on a method from 
-                    // the entity or method access has been set via XML, set the 
-                    // access to PROPERTY.
-                    m_usesPropertyAccess = Boolean.TRUE;
-                } else {
-                    // We found nothing ... we could throw an exception 
-                    // here, but for now, set the access to FIELD. The user 
-                    // will eventually get an exception saying there is no 
-                    // primary key set if field access is not actually the
-                    // case.
-                    m_usesPropertyAccess = Boolean.FALSE;
-                }
-            }
-        
-            return m_usesPropertyAccess;
-        }
+        return m_usesPropertyAccess;
     }
     
     /**
