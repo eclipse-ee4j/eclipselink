@@ -60,7 +60,7 @@
 
     <!-- This checks if the tests are run on Oracle database -->
     <condition property="is.oracle">
-        <contains string="${db.url}" substring="oracle"/>
+        <contains string="${db.driver}" substring="oracle"/>
     </condition>
 
     <!-- Configures paths for trunk checkout. -->
