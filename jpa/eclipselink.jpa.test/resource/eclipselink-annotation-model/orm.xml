@@ -3,12 +3,7 @@
     <description>Mapping Document containing persistence unit metadata.
                  Do not provide any class specific mapping information here.</description>
     <persistence-unit-metadata>
-        <!--xml-mapping-metadata-complete/-->
         <persistence-unit-defaults>
-            <!--schema>XML_SCHEMA</schema>
-            <catalog>XML_CATALOG</catalog-->
-            <access>PROPERTY</access>
-            <!--cascade-persist/-->
             <entity-listeners>
                 <entity-listener class="org.eclipse.persistence.testing.models.jpa.xml.inheritance.listeners.DefaultListener">
                     <pre-persist method-name="prePersist"/>

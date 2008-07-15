@@ -15,6 +15,8 @@
  *       - 211330: Add attributes-complete support to the EclipseLink-ORM.XML Schema
  *     05/30/2008-1.0M8 Guy Pelletier 
  *       - 230213: ValidationException when mapping to attribute in MappedSuperClass
+ *     07/15/2008-1.0.1 Guy Pelletier 
+ *       - 240679: MappedSuperclass Id not picked when on get() method accessor
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.accessors.classes;
 
@@ -334,6 +336,36 @@ public abstract class ClassAccessor extends MetadataAccessor {
      */
     public boolean isMetadataComplete() {
         return m_metadataComplete != null && m_metadataComplete;
+    }
+    
+    /**
+     * INTERNAL:
+     */
+    protected boolean havePersistenceAnnotationsDefined(Field[] fields) {
+        for (Field field : fields) {
+            MetadataField metadataField = new MetadataField(field, getLogger());
+            
+            if (metadataField.hasDeclaredAnnotations(getDescriptor())) {
+                return true;
+            }
+        }
+        
+        return false;
+    }
+    
+    /**
+     * INTERNAL:
+     */
+    protected boolean havePersistenceAnnotationsDefined(Method[] methods) {
+        for (Method method : methods) {
+            MetadataMethod metadataMethod = new MetadataMethod(method, getLogger());
+            
+            if (metadataMethod.hasDeclaredAnnotations(getDescriptor())) {
+                return true;
+            }
+        }
+        
+        return false;
     }
     
     /**

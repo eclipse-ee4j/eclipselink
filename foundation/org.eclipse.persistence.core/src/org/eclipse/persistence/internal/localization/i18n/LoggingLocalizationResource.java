@@ -180,6 +180,9 @@ public class LoggingLocalizationResource extends ListResourceBundle {
         { "jta_cannot_be_disabled_in_cmp", "When using Container Managed Persistence (CMP), JTA cannot be disabled. EclipseLink will act as if JTA is enabled." },
         { "descriptor_named_query_cannot_be_added", "Cannot add a descriptor named query whose name conflict with an existing query. Query To Be Added: [{0}] is named: [{1}] with arguments [{2}]." },
 
+        { "metadata_field_access_type", "The access type for the persistent class [{0}] is set to FIELD." },
+        { "metadata_property_access_type", "The access type for the persistent class [{0}] is set to PROPERTY." },
+        
         { "metadata_default_alias", "The alias name for the entity class [{0}] is being defaulted to: {1}." },
         { "metadata_default_map_key_attribute_name", "The map key attribute name for the mapping element [{0}] is being defaulted to: {1}." },
         { "metadata_default_table_name", "The table name for entity [{0}] is being defaulted to: {1}." },
@@ -232,7 +235,6 @@ public class LoggingLocalizationResource extends ListResourceBundle {
         { "metadata_warning_override_xml_with_eclipselink_xml", "Ignoring the element [{0}] from [{1}] defined in the mapping file [{2}] since this element was defined in the eclipselink-orm mapping file [{3}]" },
         { "metadata_warning_override_named_xml_with_eclipselink_xml", "Ignoring the element [{0}] named [{1}] defined in the mapping file [{2}] since an element with the same name was defined in the eclipselink-orm mapping file [{3}]" },
 
-        
         { "metadata_warning_ignore_lob", "Ignoring lob specification on element [{1}] within entity class [{0}] since a @Convert is specified." },
         { "metadata_warning_ignore_temporal", "Ignoring temporal specification on element [{1}] within entity class [{0}] since a @Convert is specified." },
         { "metadata_warning_ignore_serialized", "Ignoring default serialization on element [{1}] within entity class [{0}] since a @Convert is specified." },
