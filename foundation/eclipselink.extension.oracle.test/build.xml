@@ -126,7 +126,7 @@
 
     <!-- Build tests jar. -->
     <target name="build-jar" depends="compile" description="build a jar file other projects can use for dependancies if they cannot compile with oracle dependancies">
-      <jar jarfile="${eclipselink.oracle.depend.test.jar}">
+      <jar jarfile="${eclipselink.extension.oracle.test}/${eclipselink.oracle.depend.test.jar}">
           <fileset dir="${eclipselink.extension.oracle.test}/${classes.dir}">
             <include name="org/eclipse/persistence/**/*.class"/>
           </fileset>
