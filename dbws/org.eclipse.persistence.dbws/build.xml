@@ -32,7 +32,6 @@
     <path id="compile.path">
         <pathelement path="${eclipselink.plugins}/${asm}"/>
         <pathelement path="${eclipselink.core}/${classes.dir}"/>
-        <!-- pathelement path="${wsdl.lib}"/ -->
 
         <fileset
             dir="${eclipselink.plugins}"
@@ -46,6 +45,7 @@
     </target>
     
     <target name="compile" depends="compile-core" description="build dbws classes">
+        <mkdir dir="${eclipselink.dbws}/${classes.dir}"/>
         <javac srcdir="${eclipselink.dbws}/${src.dir}"
                destdir="${eclipselink.dbws}/${classes.dir}"
                debug="${javac.debug}"
@@ -66,6 +66,5 @@
         <delete includeEmptyDirs="true" failonerror="false">
             <fileset dir="${eclipselink.dbws}/${classes.dir}"/>
         </delete>
-        <mkdir dir="${eclipselink.dbws}/${classes.dir}"/>
     </target>
 </project>
