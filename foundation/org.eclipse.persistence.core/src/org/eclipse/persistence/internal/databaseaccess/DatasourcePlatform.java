@@ -346,6 +346,8 @@ public class DatasourcePlatform implements Platform {
         addOperator(ExpressionOperator.trunc());
         addOperator(ExpressionOperator.greatest());
         addOperator(ExpressionOperator.least());
+        
+        addOperator(ExpressionOperator.standardDeviation());
 
         // Object-relational
         addOperator(ExpressionOperator.deref());
