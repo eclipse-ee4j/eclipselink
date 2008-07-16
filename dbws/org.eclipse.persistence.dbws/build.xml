@@ -1,18 +1,71 @@
 <?xml version="1.0"?>
-<!--
-  Ant naming conventions:
-    - regardless of the actual OS platform,'/' is the directory separator
-    (Ant will convert as appropriate).
-  - properties have periods '.', task-names have hyphens '-'.
-  - OS environment variables are in ALLCAPS and have 'env' as a prefix
-    e.g. ${env.XXX}.
-  - Ant properties are lower case.
-  - xxx.home = root of a product or component's installation.
-  - xxx.dir = root of a directory structure.
-  - xxx.jlib.dir = a directory that contains jars (a.k.a. "java libraries".)
-  - xxx.jlib = comma-separated list of jars.
--->
-<project
-  name="org.eclipse.persistence.dbws"
-  >
+<!--/*******************************************************************************
+* This program and the accompanying materials are made available under the 
+* terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
+* which accompanies this distribution. 
+* The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
+* and the Eclipse Distribution License is available at 
+* http://www.eclipse.org/org/documents/edl-v10.php.
+*
+*   Ant naming conventions:
+*   - regardless of the actual OS platform,'/' is the directory separator
+*     (Ant will convert as appropriate).
+*   - multi-word properties use periods '.'
+*   - multi-word targets use hyphens '-' 
+*   - multi-word macros use underscores '_'
+*   - multi-word macro attributes are concatinated
+*     e.g. 'runpathref'  
+*   - multi-word tasks (taskdef) names are concatinated
+*     e.g. 'validateconnection'
+*   - OS environment variables are in ALLCAPS and have 'env' as a prefix
+*     e.g. ${env.XXX}.
+*   - Ant properties are lower case.
+*
+* Contributors:
+*     tware - initial API and implementation
+#******************************************************************************/-->
+<project name="org.eclipse.persistence.dbws" default="all" basedir=".">
+
+    <property file="${user.home}/build.properties"/>
+    <property file="./build.properties"/>
+
+    <path id="compile.path">
+        <pathelement path="${eclipselink.plugins}/${asm}"/>
+        <pathelement path="${eclipselink.core}/${classes.dir}"/>
+        <!-- pathelement path="${wsdl.lib}"/ -->
+
+        <fileset
+            dir="${eclipselink.plugins}"
+            includes="${eclipselink.core.depend}"/>
+    </path>
+
+    <target name="all" depends="clean, compile" description="build EclipseLink jar"/>
+
+    <target name="compile-core" description="build core classes">
+        <ant antfile="${eclipselink.core}/build.xml" target="compile"/>
+    </target>
+    
+    <target name="compile" depends="compile-core" description="build dbws classes">
+        <javac srcdir="${eclipselink.dbws}/${src.dir}"
+               destdir="${eclipselink.dbws}/${classes.dir}"
+               debug="${javac.debug}"
+               optimize="${javac.optimize}"
+               source="${javac.version}"
+               deprecation="${javac.deprecation}"
+               failonerror="true"
+               includes="**/*.java"
+               memoryMaximumSize="512m"
+               fork="true">
+            <classpath>
+                <path refid="compile.path"/>
+            </classpath>
+        </javac>
+    </target>
+
+    <target name="clean" description="clean the build">
+        <delete includeEmptyDirs="true" failonerror="false">
+            <fileset dir="${eclipselink.dbws}/${classes.dir}"/>
+        </delete>
+        <mkdir dir="${eclipselink.dbws}/${classes.dir}"/>
+    </target>
 </project>
