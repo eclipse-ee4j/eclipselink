@@ -21,28 +21,39 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
-
 // EclipseLink imports
 import org.eclipse.persistence.internal.dbws.ProviderHelper;
 import org.eclipse.persistence.internal.libraries.asm.ClassWriter;
 import org.eclipse.persistence.internal.libraries.asm.CodeVisitor;
+import org.eclipse.persistence.internal.libraries.asm.Label;
+import org.eclipse.persistence.internal.libraries.asm.Type;
 import org.eclipse.persistence.internal.libraries.asm.attrs.Annotation;
 import org.eclipse.persistence.internal.libraries.asm.attrs.RuntimeVisibleAnnotations;
 import org.eclipse.persistence.internal.libraries.asm.attrs.SignatureAttribute;
 import org.eclipse.persistence.tools.dbws.DBWSBuilder;
 import org.eclipse.persistence.tools.dbws.DBWSPackager;
 import org.eclipse.persistence.tools.dbws.SimpleFilesPackager;
+import static org.eclipse.persistence.internal.libraries.asm.Constants.AASTORE;
 import static org.eclipse.persistence.internal.libraries.asm.Constants.ACC_BRIDGE;
 import static org.eclipse.persistence.internal.libraries.asm.Constants.ACC_ENUM;
 import static org.eclipse.persistence.internal.libraries.asm.Constants.ACC_FINAL;
+import static org.eclipse.persistence.internal.libraries.asm.Constants.ACC_PRIVATE;
 import static org.eclipse.persistence.internal.libraries.asm.Constants.ACC_PUBLIC;
 import static org.eclipse.persistence.internal.libraries.asm.Constants.ACC_STATIC;
 import static org.eclipse.persistence.internal.libraries.asm.Constants.ACC_SUPER;
 import static org.eclipse.persistence.internal.libraries.asm.Constants.ACC_SYNTHETIC;
+import static org.eclipse.persistence.internal.libraries.asm.Constants.ACONST_NULL;
 import static org.eclipse.persistence.internal.libraries.asm.Constants.ALOAD;
+import static org.eclipse.persistence.internal.libraries.asm.Constants.ANEWARRAY;
 import static org.eclipse.persistence.internal.libraries.asm.Constants.ARETURN;
+import static org.eclipse.persistence.internal.libraries.asm.Constants.ASTORE;
 import static org.eclipse.persistence.internal.libraries.asm.Constants.CHECKCAST;
+import static org.eclipse.persistence.internal.libraries.asm.Constants.DUP;
+import static org.eclipse.persistence.internal.libraries.asm.Constants.GOTO;
+import static org.eclipse.persistence.internal.libraries.asm.Constants.ICONST_0;
+import static org.eclipse.persistence.internal.libraries.asm.Constants.ICONST_1;
 import static org.eclipse.persistence.internal.libraries.asm.Constants.INVOKESPECIAL;
+import static org.eclipse.persistence.internal.libraries.asm.Constants.INVOKESTATIC;
 import static org.eclipse.persistence.internal.libraries.asm.Constants.INVOKEVIRTUAL;
 import static org.eclipse.persistence.internal.libraries.asm.Constants.RETURN;
 import static org.eclipse.persistence.internal.libraries.asm.Constants.V1_5;
@@ -119,6 +130,7 @@ public class WebFilesPackager extends SimpleFilesPackager {
         "\n" +
         "import javax.annotation.PostConstruct;\n" +
         "import javax.annotation.PreDestroy;\n" +
+        "import javax.servlet.ServletContext;\n" +
         "import javax.xml.soap.SOAPMessage;\n" +
         "import javax.xml.ws.Provider;\n" +
         "import javax.xml.ws.ServiceMode;\n" +
@@ -139,10 +151,29 @@ public class WebFilesPackager extends SimpleFilesPackager {
         "    public  DBWSProvider() {\n" +
         "        super();\n" +
         "    }\n" +
-        "    @Override\n" +
+        "    private static final String CONTAINER_RESOLVER_CLASSNAME =\n" +
+        "        \"com.sun.xml.ws.api.server.ContainerResolver\";\n" +
         "    @PostConstruct\n" +
         "    public void init() {\n" +
-        "        super.init();\n" +
+        "        ClassLoader parentClassLoader = Thread.currentThread().getContextClassLoader();\n" +
+        "        ServletContext sc = null;\n" +
+        "        //ServletContext sc = ContainerResolver.getInstance().getContainer().getSPI(ServletContext.class);\n" +
+        "        try {\n" +
+        "            Class<?> containerResolverClass = parentClassLoader.loadClass(\n" +
+        "                CONTAINER_RESOLVER_CLASSNAME);\n" +
+        "            Method getInstanceMethod = containerResolverClass.getMethod(\"getInstance\");\n" +
+        "            Object containerResolver = getInstanceMethod.invoke(null);\n" +
+        "            Method getContainerMethod = containerResolver.getClass().getMethod(\"getContainer\");\n" +
+        "            getContainerMethod.setAccessible(true);\n" +
+        "            Object container = getContainerMethod.invoke(containerResolver);\n" +
+        "            Method getSPIMethod = container.getClass().getMethod(\"getSPI\", Class.class);\n" +
+        "            getSPIMethod.setAccessible(true);\n" +
+        "            sc = (ServletContext)getSPIMethod.invoke(container, ServletContext.class);\n" +
+        "            super.init(parentClassLoader, sc);\n" +
+        "        }\n" +
+        "        catch (Exception e) {\n" +
+        "            // e.printStackTrace();\n" +
+        "        }\n" +
         "    }\n" +
         "    @Override\n" +
         "    public SOAPMessage invoke(SOAPMessage request) {\n" +
@@ -177,12 +208,12 @@ public class WebFilesPackager extends SimpleFilesPackager {
     public WebFilesPackager(boolean useArchiver) {
         super(useArchiver);
     }
-    public WebFilesPackager(boolean useArchiver, String warName) {
+    public WebFilesPackager(boolean useArchiver, String name) {
         super();
         setArchiver(useArchiver
-            ? (warName == null
+            ? (name == null
                 ? new WarArchiver(this)
-                : new WarArchiver(this, warName))
+                : new WarArchiver(this, name + ".war"))
             : null);
     }
 
@@ -238,6 +269,8 @@ public class WebFilesPackager extends SimpleFilesPackager {
 
         cw.visit(V1_5, ACC_PUBLIC + ACC_SUPER, DBWS_PROVIDER_PACKAGE + "/" + DBWS_PROVIDER_NAME,
             ASMIFIED_DBWS_PROVIDER_HELPER, new String[]{ASMIFIED_JAX_WS_PROVIDER}, null);
+        cw.visitField(ACC_PRIVATE + ACC_FINAL + ACC_STATIC, "CONTAINER_RESOLVER_CLASSNAME",
+            "Ljava/lang/String;", "com.sun.xml.ws.api.server.ContainerResolver", null);
         cw.visitInnerClass(ASMIFIED_JAX_WS_SERVICE + "$Mode", ASMIFIED_JAX_WS_SERVICE,
             "Mode", ACC_PUBLIC + ACC_FINAL + ACC_STATIC + ACC_ENUM);
 
@@ -253,10 +286,96 @@ public class WebFilesPackager extends SimpleFilesPackager {
         methodAttrs0.annotations.add(methodAttrs1ann0);
 
         cv = cw.visitMethod(ACC_PUBLIC, "init", "()V", null, methodAttrs0);
+        cv.visitMethodInsn(INVOKESTATIC, "java/lang/Thread", "currentThread",
+            "()Ljava/lang/Thread;");
+        cv.visitMethodInsn(INVOKEVIRTUAL, "java/lang/Thread", "getContextClassLoader",
+            "()Ljava/lang/ClassLoader;");
+        cv.visitVarInsn(ASTORE, 1);
+        cv.visitInsn(ACONST_NULL);
+        cv.visitVarInsn(ASTORE, 2);
+        Label l0 = new Label();
+        cv.visitLabel(l0);
+        cv.visitVarInsn(ALOAD, 1);
+        cv.visitLdcInsn("com.sun.xml.ws.api.server.ContainerResolver");
+        cv.visitMethodInsn(INVOKEVIRTUAL, "java/lang/ClassLoader", "loadClass",
+            "(Ljava/lang/String;)Ljava/lang/Class;");
+        cv.visitVarInsn(ASTORE, 3);
+        Label l1 = new Label();
+        cv.visitLabel(l1);
+        cv.visitVarInsn(ALOAD, 3);
+        cv.visitLdcInsn("getInstance");
+        cv.visitInsn(ICONST_0);
+        cv.visitTypeInsn(ANEWARRAY, "java/lang/Class");
+        cv.visitMethodInsn(INVOKEVIRTUAL, "java/lang/Class", "getMethod",
+            "(Ljava/lang/String;[Ljava/lang/Class;)Ljava/lang/reflect/Method;");
+        cv.visitVarInsn(ASTORE, 4);
+        cv.visitVarInsn(ALOAD, 4);
+        cv.visitInsn(ACONST_NULL);
+        cv.visitInsn(ICONST_0);
+        cv.visitTypeInsn(ANEWARRAY, "java/lang/Object");
+        cv.visitMethodInsn(INVOKEVIRTUAL, "java/lang/reflect/Method", "invoke",
+            "(Ljava/lang/Object;[Ljava/lang/Object;)Ljava/lang/Object;");
+        cv.visitVarInsn(ASTORE, 5);
+        cv.visitVarInsn(ALOAD, 5);
+        cv.visitMethodInsn(INVOKEVIRTUAL, "java/lang/Object", "getClass", "()Ljava/lang/Class;");
+        cv.visitLdcInsn("getContainer");
+        cv.visitInsn(ICONST_0);
+        cv.visitTypeInsn(ANEWARRAY, "java/lang/Class");
+        cv.visitMethodInsn(INVOKEVIRTUAL, "java/lang/Class", "getMethod",
+            "(Ljava/lang/String;[Ljava/lang/Class;)Ljava/lang/reflect/Method;");
+        cv.visitVarInsn(ASTORE, 6);
+        cv.visitVarInsn(ALOAD, 6);
+        cv.visitInsn(ICONST_1);
+        cv.visitMethodInsn(INVOKEVIRTUAL, "java/lang/reflect/Method", "setAccessible", "(Z)V");
+        cv.visitVarInsn(ALOAD, 6);
+        cv.visitVarInsn(ALOAD, 5);
+        cv.visitInsn(ICONST_0);
+        cv.visitTypeInsn(ANEWARRAY, "java/lang/Object");
+        cv.visitMethodInsn(INVOKEVIRTUAL, "java/lang/reflect/Method", "invoke",
+            "(Ljava/lang/Object;[Ljava/lang/Object;)Ljava/lang/Object;");
+        cv.visitVarInsn(ASTORE, 7);
+        cv.visitVarInsn(ALOAD, 7);
+        cv.visitMethodInsn(INVOKEVIRTUAL, "java/lang/Object", "getClass", "()Ljava/lang/Class;");
+        cv.visitLdcInsn("getSPI");
+        cv.visitInsn(ICONST_1);
+        cv.visitTypeInsn(ANEWARRAY, "java/lang/Class");
+        cv.visitInsn(DUP);
+        cv.visitInsn(ICONST_0);
+        cv.visitLdcInsn(Type.getType("Ljava/lang/Class;"));
+        cv.visitInsn(AASTORE);
+        cv.visitMethodInsn(INVOKEVIRTUAL, "java/lang/Class", "getMethod",
+            "(Ljava/lang/String;[Ljava/lang/Class;)Ljava/lang/reflect/Method;");
+        cv.visitVarInsn(ASTORE, 8);
+        cv.visitVarInsn(ALOAD, 8);
+        cv.visitInsn(ICONST_1);
+        cv.visitMethodInsn(INVOKEVIRTUAL, "java/lang/reflect/Method", "setAccessible", "(Z)V");
+        cv.visitVarInsn(ALOAD, 8);
+        cv.visitVarInsn(ALOAD, 7);
+        cv.visitInsn(ICONST_1);
+        cv.visitTypeInsn(ANEWARRAY, "java/lang/Object");
+        cv.visitInsn(DUP);
+        cv.visitInsn(ICONST_0);
+        cv.visitLdcInsn(Type.getType("Ljavax/servlet/ServletContext;"));
+        cv.visitInsn(AASTORE);
+        cv.visitMethodInsn(INVOKEVIRTUAL, "java/lang/reflect/Method", "invoke",
+            "(Ljava/lang/Object;[Ljava/lang/Object;)Ljava/lang/Object;");
+        cv.visitTypeInsn(CHECKCAST, "javax/servlet/ServletContext");
+        cv.visitVarInsn(ASTORE, 2);
         cv.visitVarInsn(ALOAD, 0);
+        cv.visitVarInsn(ALOAD, 1);
+        cv.visitVarInsn(ALOAD, 2);
         cv.visitMethodInsn(INVOKESPECIAL, ASMIFIED_DBWS_PROVIDER_HELPER,
-            "init", "()V");
+            "init", "(Ljava/lang/ClassLoader;Ljavax/servlet/ServletContext;)V");
+        Label l2 = new Label();
+        cv.visitLabel(l2);
+        Label l3 = new Label();
+        cv.visitJumpInsn(GOTO, l3);
+        Label l4 = new Label();
+        cv.visitLabel(l4);
+        cv.visitVarInsn(ASTORE, 3);
+        cv.visitLabel(l3);
         cv.visitInsn(RETURN);
+        cv.visitTryCatchBlock(l0, l2, l4, "java/lang/Exception");
         cv.visitMaxs(0, 0);
 
         cv = cw.visitMethod(ACC_PUBLIC, "invoke",
@@ -302,8 +421,8 @@ public class WebFilesPackager extends SimpleFilesPackager {
         Annotation attrann0 = new Annotation("L" + ASMIFIED_JAX_WS_WEB_SERVICE_PROVIDER + ";");
         attrann0.add("wsdlLocation", WEB_INF_DIR + WSDL_DIR + DBWS_WSDL);
         attrann0.add("serviceName", serviceName);
-        attrann0.add("portName", serviceName);
-        attrann0.add("targetNamespace", builder.getTargetNamespace());
+        attrann0.add("portName", serviceName + "Port");
+        attrann0.add("targetNamespace", builder.getWSDLGenerator().getServiceNameSpace());
         classAttr.annotations.add(attrann0);
         Annotation attrann1 = new Annotation("L" + ASMIFIED_JAX_WS_SERVICE_MODE + ";");
         attrann1.add("value", new Annotation.EnumConstValue(
@@ -330,9 +449,9 @@ public class WebFilesPackager extends SimpleFilesPackager {
         String serviceName = builder.getWSDLGenerator().getServiceName();
         sb.append(serviceName);
         sb.append(DBWS_PROVIDER_SOURCE_PORT_NAME);
-        sb.append(serviceName);
+        sb.append(serviceName + "Port");
         sb.append(DBWS_PROVIDER_SOURCE_TARGET_NAMESPACE);
-        sb.append(builder.getTargetNamespace());
+        sb.append(builder.getWSDLGenerator().getServiceNameSpace());
         sb.append(DBWS_PROVIDER_SOURCE_SUFFIX);
         OutputStreamWriter osw =
             new OutputStreamWriter(new BufferedOutputStream(sourceProviderStream));

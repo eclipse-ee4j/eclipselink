@@ -24,9 +24,11 @@ import static org.eclipse.persistence.internal.xr.Util.DBWS_OR_XML;
 import static org.eclipse.persistence.internal.xr.Util.DBWS_OX_XML;
 import static org.eclipse.persistence.internal.xr.Util.DBWS_SCHEMA_XML;
 import static org.eclipse.persistence.internal.xr.Util.DBWS_SERVICE_XML;
+import static org.eclipse.persistence.internal.xr.Util.DBWS_WSDL;
 import static org.eclipse.persistence.internal.xr.Util.META_INF_PATHS;
 import static org.eclipse.persistence.internal.xr.Util.WEB_INF_DIR;
 import static org.eclipse.persistence.internal.xr.Util.WSDL_DIR;
+import static org.eclipse.persistence.tools.dbws.DBWSBasePackager.__nullStream;
 import static org.eclipse.persistence.tools.dbws.Util.CLASSES;
 import static org.eclipse.persistence.tools.dbws.Util.DBWS_PROVIDER_CLASS_FILE;
 import static org.eclipse.persistence.tools.dbws.Util.DBWS_PROVIDER_SOURCE_FILE;
@@ -34,7 +36,6 @@ import static org.eclipse.persistence.tools.dbws.Util.SWAREF_FILENAME;
 import static org.eclipse.persistence.tools.dbws.Util.UNDER_DBWS;
 import static org.eclipse.persistence.tools.dbws.Util.WEB_XML_FILENAME;
 import static org.eclipse.persistence.tools.dbws.Util.WEBSERVICES_FILENAME;
-
 
 public class WarArchiver extends SimpleJarArchiver {
 
@@ -112,11 +113,15 @@ public class WarArchiver extends SimpleJarArchiver {
     }
 
     protected ZipEntry getDBWSProviderClassJarEntry() {
-        return new JarEntry(WEB_INF_DIR + CLASSES + UNDER_DBWS + DBWS_PROVIDER_CLASS_FILE);
+        return new JarEntry(WEB_INF_DIR + CLASSES + "/" + UNDER_DBWS + "/" + DBWS_PROVIDER_CLASS_FILE);
     }
 
     protected ZipEntry getDBWSProviderSourceJarEntry() {
-        return new JarEntry(WEB_INF_DIR + CLASSES + UNDER_DBWS + DBWS_PROVIDER_SOURCE_FILE);
+        return new JarEntry(WEB_INF_DIR + CLASSES + "/" + UNDER_DBWS + "/" + DBWS_PROVIDER_SOURCE_FILE);
+    }
+
+    protected ZipEntry getWSDLJarEntry() {
+        return new JarEntry(WEB_INF_DIR + WSDL_DIR + DBWS_WSDL);
     }
 
     @Override
@@ -140,14 +145,16 @@ public class WarArchiver extends SimpleJarArchiver {
             fis.close();
             f.deleteOnExit();
 
-            jarOutputStream.putNextEntry(getWebservicesJarEntry());
-            f = new File(packager.getStageDir(), WEBSERVICES_FILENAME);
-            fis = new FileInputStream(f);
-            for (int read = 0; read != -1; read = fis.read(buffer)) {
-                jarOutputStream.write(buffer, 0, read);
+            if (packager.getWebservicesXmlStream() != __nullStream) {
+                jarOutputStream.putNextEntry(getWebservicesJarEntry());
+                f = new File(packager.getStageDir(), WEBSERVICES_FILENAME);
+                fis = new FileInputStream(f);
+                for (int read = 0; read != -1; read = fis.read(buffer)) {
+                    jarOutputStream.write(buffer, 0, read);
+                }
+                fis.close();
+                f.deleteOnExit();
             }
-            fis.close();
-            f.deleteOnExit();
 
             jarOutputStream.putNextEntry(getDBWSProviderClassJarEntry());
             f = new File(packager.getStageDir(), DBWS_PROVIDER_CLASS_FILE);
@@ -160,6 +167,15 @@ public class WarArchiver extends SimpleJarArchiver {
 
             jarOutputStream.putNextEntry(getDBWSProviderSourceJarEntry());
             f = new File(packager.getStageDir(), DBWS_PROVIDER_SOURCE_FILE);
+            fis = new FileInputStream(f);
+            for (int read = 0; read != -1; read = fis.read(buffer)) {
+                jarOutputStream.write(buffer, 0, read);
+            }
+            fis.close();
+            f.deleteOnExit();
+
+            jarOutputStream.putNextEntry(getWSDLJarEntry());
+            f = new File(packager.getStageDir(), DBWS_WSDL);
             fis = new FileInputStream(f);
             for (int read = 0; read != -1; read = fis.read(buffer)) {
                 jarOutputStream.write(buffer, 0, read);

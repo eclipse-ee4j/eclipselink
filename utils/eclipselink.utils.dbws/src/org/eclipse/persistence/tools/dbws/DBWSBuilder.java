@@ -1,10 +1,10 @@
 /*******************************************************************************
  * Copyright (c) 1998, 2008 Oracle. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
@@ -148,6 +148,7 @@ public class DBWSBuilder extends DBWSBuilderModel {
     public static final String SIMPLEFILES = "simpleFiles";
     public static final String SIMPLEJAR = "simpleJar";
     public static final String METRO = "metro";
+    public static final String WLS103 = "wls103";
     public static final String STAGE_DIR = "-stagedir";
     public static final String DRIVER_KEY = "driver";
     public static final String USERNAME_KEY= "username";
@@ -223,11 +224,14 @@ public class DBWSBuilder extends DBWSBuilderModel {
                     else if (SIMPLEJAR.equals(packageAs)) {
                         setPackager(new SimpleFilesPackager(true, getProjectName()));
                     }
+                    else if (WLS103.equals(packageAs)) {
+                        setPackager(new WeblogicPackager(true, getProjectName()));
+                    }
                     else if (METRO.equals(packageAs)) {
                         setPackager(new MetroPackager(true, getProjectName()));
                     }
                     else {
-                        logMessage(SEVERE, "unknown " + BUILDER_PACKAGING + 
+                        logMessage(SEVERE, "unknown " + BUILDER_PACKAGING +
                             " option: " + packageAs);
                         return;
                     }
@@ -236,7 +240,7 @@ public class DBWSBuilder extends DBWSBuilderModel {
                     start();
                 }
                 else {
-                    logMessage(SEVERE, "DBWSBuilder unable to locate stage directory " + 
+                    logMessage(SEVERE, "DBWSBuilder unable to locate stage directory " +
                     	stageDirname);
                     return;
                 }
@@ -250,8 +254,8 @@ public class DBWSBuilder extends DBWSBuilderModel {
         else {
             logMessage(SEVERE,
             	"DBWSBuilder requires " + BUILDER_FILE_PATH + " {path_to_dbws-builder.xml_file} " +
-            	BUILDER_PACKAGING + " {how_to_package_output}" +
-            	STAGE_DIR + " {path_to_stage_directory}.");
+            	BUILDER_PACKAGING + " {how_to_package_output} " +
+            	STAGE_DIR + " {path_to_stage_directory}");
                 return;
             }
     }
@@ -386,8 +390,8 @@ public class DBWSBuilder extends DBWSBuilderModel {
         buildSessionsXML(dbwsSessionsStream);
         buildDBWSModel(dbwsServiceStream);
         writeAttachmentSchema(swarefStream);
-        writeWebXML(webXmlStream);
         buildWSDL(wsdlStream);
+        writeWebXML(webXmlStream);
         writeWebservicesXML(webservicesXmlStream);
         writePlatformWebservicesXML(oracleWebservicesXmlStream);
         writeDBWSProviderClass(codeGenProviderStream);
@@ -1195,7 +1199,7 @@ public class DBWSBuilder extends DBWSBuilderModel {
     public void setOXSessionCustomizerClassName(String sessionCustomizerClassName) {
         properties.put(OXSESSION_CUSTOMIZER_KEY, sessionCustomizerClassName);
     }
-    
+
     public WSDLGenerator getWSDLGenerator() {
     	return wsdlGenerator;
     }
@@ -1252,7 +1256,7 @@ public class DBWSBuilder extends DBWSBuilderModel {
             System.out.println(message);
         }
     }
-    
+
     protected boolean isNullStream(OutputStream outputStream) {
         if (outputStream == null | outputStream == __nullStream) {
             return true;

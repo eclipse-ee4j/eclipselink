@@ -145,7 +145,7 @@ public class WSDLGenerator {
         Service ws = def.createService();
         ws.setQName(new QName(serviceNameSpace, serviceName));
         Port port = def.createPort();
-        port.setName(serviceName);
+        port.setName(serviceName + "Port");
         port.setBinding(binding);
         SOAPAddress sa =
             (SOAPAddress) registry.createExtension(Port.class, new QName(NS_WSDL_SOAP,
