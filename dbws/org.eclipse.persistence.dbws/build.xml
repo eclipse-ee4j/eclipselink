@@ -35,16 +35,16 @@
 
         <fileset
             dir="${eclipselink.plugins}"
-            includes="${eclipselink.core.depend}"/>
+            includes="${eclipselink.dbws.core.depend}"/>
     </path>
 
     <target name="all" depends="clean, compile" description="build EclipseLink jar"/>
 
     <target name="compile-core" description="build core classes">
-        <ant antfile="${eclipselink.core}/build.xml" target="compile"/>
+        <ant antfile="${eclipselink.core}/build.xml" dir="${eclipselink.core}" target="compile"/>
     </target>
     
-    <target name="compile" depends="compile-core" description="build dbws classes">
+    <target name="compile" description="build dbws classes">
         <mkdir dir="${eclipselink.dbws}/${classes.dir}"/>
         <javac srcdir="${eclipselink.dbws}/${src.dir}"
                destdir="${eclipselink.dbws}/${classes.dir}"
@@ -63,8 +63,6 @@
     </target>
 
     <target name="clean" description="clean the build">
-        <delete includeEmptyDirs="true" failonerror="false">
-            <fileset dir="${eclipselink.dbws}/${classes.dir}"/>
-        </delete>
+        <delete dir="${eclipselink.dbws}/${classes.dir}" includeEmptyDirs="true" failonerror="false"/>
     </target>
 </project>

@@ -51,7 +51,7 @@
      <!-- call upload for each artifact we want to upload -->
         <antcall target="upload-artifact">
             <param name="artifactId" value="org.eclipse.persistence.core"/>
-            <param name="artifact" value="${eclipselink.foundation.base}/${plugins.dir}/${eclipselink.core.jar}_${installer_id}.jar"/>
+            <param name="artifact" value="${eclipselink.core.base}/${plugins.dir}/${eclipselink.core.jar}_${installer_id}.jar"/>
             <param name="artifactName" value="EclipseLink Core"/>
         </antcall>
         <antcall target="upload-artifact">
@@ -71,7 +71,7 @@
         </antcall>
         <antcall target="upload-artifact">
             <param name="artifactId" value="org.eclipse.persistence.oracle"/>
-            <param name="artifact" value="${eclipselink.foundation.base}/${plugins.dir}/${eclipselink.extension.oracle.jar}_${installer_id}.jar"/>
+            <param name="artifact" value="${eclipselink.core.base}/${plugins.dir}/${eclipselink.extension.oracle.jar}_${installer_id}.jar"/>
             <param name="artifactName" value="EclipseLink Oracle Extensions"/>
         </antcall>
         <antcall target="upload-artifact">
