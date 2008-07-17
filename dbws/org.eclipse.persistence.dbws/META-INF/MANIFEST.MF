@@ -10,7 +10,7 @@ Export-Package: org.eclipse.persistence.dbws,
  org.eclipse.persistence.internal.xr,
  org.eclipse.persistence.internal.xr.sxf
 Require-Bundle: org.eclipse.persistence.core,
- javax.xml.soap,
- javax.wsdl,
- javax.activation,
  org.eclipse.persistence.asm
+Import-Package: javax.activation;version="1.1.0",
+ javax.servlet;version="2.4.0",
+ javax.xml.soap;version="1.3.0"
