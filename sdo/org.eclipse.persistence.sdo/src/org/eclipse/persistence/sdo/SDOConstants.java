@@ -258,7 +258,7 @@ public class SDOConstants {
     public static final QName MIME_TYPE_PROPERTY_QNAME = new QName(ORACLE_SDO_URL, MIME_TYPE_PROPERTY_PROPERTY.getName());
     public static final QName SCHEMA_TYPE_QNAME = new QName(ORACLE_SDO_URL, XML_SCHEMA_TYPE_NAME);
     public static final QName JAVA_CLASS_QNAME = new QName(ORACLE_SDO_URL, JAVA_CLASS_PROPERTY.getName());
-    public static final QName XML_DATATYPE_QNAME = new QName(SDOXML_URL, SDOXML_DATATYPE);
+    public static final QName XML_DATATYPE_QNAME = new QName(ORACLE_SDO_URL, SDOXML_DATATYPE);
     public static final QName XML_ID_PROPERTY_QNAME = new QName(ORACLE_SDO_URL, ID_PROPERTY.getName());
     public static final QName DOCUMENTATION_PROPERTY_QNAME = new QName(ORACLE_SDO_URL, DOCUMENTATION);
 
