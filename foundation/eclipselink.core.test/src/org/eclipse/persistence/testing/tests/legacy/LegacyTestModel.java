@@ -33,7 +33,7 @@ public class LegacyTestModel extends TestModel {
 
     public void addRequiredSystems() {
         //this part is added to help test for possibility of having a # in a field name:
-        if (getSession().getLogin().getPlatform().isOracle() || getSession().getLogin().getPlatform().isSybase()) {
+        if (getSession().getLogin().getPlatform().isOracle() || getSession().getLogin().getPlatform().isSybase()  || getSession().getLogin().getPlatform().isSQLAnywhere()) {
             LegacyTables.computerDescriptionFieldName = "DESCRIP#";
         } else {
             LegacyTables.computerDescriptionFieldName = "DESCRIP";

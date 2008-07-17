@@ -110,6 +110,8 @@ public class MultipleUnitOfWorkTest extends org.eclipse.persistence.testing.fram
                 }
             } else if(getSession().getPlatform().isSQLServer()) {
                 throw new TestWarningException("This test requires transaction isolation setup on SQLServer database which is currently not set in tlsvrdb6");
+            } else if(getSession().getPlatform().isSQLAnywhere()) {
+                throw new TestWarningException("This test requires transaction isolation setup on SQLAnywhere database which is currently not set");
             }
         }
 

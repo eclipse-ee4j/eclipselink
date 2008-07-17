@@ -95,7 +95,7 @@ public class ConformResultsWithPrimaryKeyExpressionTest extends ConformResultsIn
         conformedQuery = new ReadObjectQuery(Employee.class);
         ExpressionBuilder emp = new ExpressionBuilder();
         Expression exactPrimaryKeyExpression = null;
-        if (getSession().getPlatform().isDB2() || getSession().getPlatform().isSybase() || getSession().getPlatform().isTimesTen()) {
+        if (getSession().getPlatform().isDB2() || getSession().getPlatform().isSybase() || getSession().getPlatform().isSQLAnywhere() || getSession().getPlatform().isTimesTen()) {
             exactPrimaryKeyExpression = emp.get("id").equal(selectionObject.getId());
         } else {
             exactPrimaryKeyExpression = emp.get("id").equal("" + selectionObject.getId());

@@ -23,8 +23,8 @@ public class StoredProcedureNoParametersTest extends TestCase {
 
     public void setup() {
         //right now only the stored procedure is set up in SQLServer
-        if (!getSession().getPlatform().isSybase()) {
-            throw new TestWarningException("This test intended for Sybase");
+        if (!getSession().getPlatform().isSybase() && !getSession().getPlatform().isSQLAnywhere()) {
+            throw new TestWarningException("This test intended for Sybase and SQLAnywhere");
         }
         getAbstractSession().beginTransaction();
     }

@@ -177,6 +177,7 @@ public class ExpressionTestSuite extends TestSuite {
         test.setName("AdvancedSybaseExpressionFunctionTest");
         test.setDescription("advanced sybase expression function test");
         test.addSupportedPlatform(SybasePlatform.class);
+        test.addSupportedPlatform(SQLAnywherePlatform.class);
         test.addSupportedPlatform(SQLServerPlatform.class);
         addTest(test);
     }
@@ -367,6 +368,7 @@ public class ExpressionTestSuite extends TestSuite {
         test.setDescription("Test query using cursors with inheritance, supported if using views.  For bug 2718118.");
         test.addSupportedPlatform(OraclePlatform.class);
         test.addSupportedPlatform(SybasePlatform.class);
+        test.addSupportedPlatform(SQLAnywherePlatform.class);
         //Uncomment it when we support MySQL 5.  Please refer to the comments in InheritanceSystem
         //test.addSupportedPlatform(MySQLPlatform.class);
         addTest(test);
@@ -824,6 +826,7 @@ public class ExpressionTestSuite extends TestSuite {
         test.setDescription("Test LIKE ESCAPE expression");
         test.addSupportedPlatform(OraclePlatform.class);
         test.addSupportedPlatform(SybasePlatform.class);
+        test.addSupportedPlatform(SQLAnywherePlatform.class);
         test.addSupportedPlatform(SQLServerPlatform.class);
         test.addSupportedPlatform(DB2Platform.class);
         test.addSupportedPlatform(MySQLPlatform.class);
@@ -1500,6 +1503,7 @@ public class ExpressionTestSuite extends TestSuite {
         test.setName("ParameterIsNullTest");
         test.setDescription("For bug 3107049 tests parameterExp.isNull.");
         test.addUnsupportedPlatform(SybasePlatform.class);
+        test.addSupportedPlatform(SQLAnywherePlatform.class);
         // ET. The test doesn't work with DB2 jcc driver(Bug 4563813)
         test.addUnsupportedPlatform(org.eclipse.persistence.platform.database.DB2Platform.class);
         test.addUnsupportedPlatform(org.eclipse.persistence.platform.database.TimesTenPlatform.class);
@@ -1781,6 +1785,7 @@ public class ExpressionTestSuite extends TestSuite {
         test.setDescription("Test cursors with inheritance, supported if using views.  For bug 2718118.");
         test.addSupportedPlatform(OraclePlatform.class);
         test.addSupportedPlatform(SybasePlatform.class);
+        test.addSupportedPlatform(SQLAnywherePlatform.class);
         //Uncomment it when we support MySQL 5.  Please refer to the comments in InheritanceSystem
         //test.addSupportedPlatform(MySQLPlatform.class);
         addTest(test);

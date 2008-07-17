@@ -85,7 +85,7 @@ public class InsertUpdateStoredProcedureAdapter implements ProjectAndDatabaseAda
                 throw new TestWarningException("InsertUpdateStoredProcedureAdapter can't handle native sequencing on this platform. Use table sequencing instead");
             }
         }
-        if (platform.isSybase() && platform.supportsAutoCommit()) {
+        if ((platform.isSybase() || platform.isSQLAnywhere()) && platform.supportsAutoCommit()) {
             // stored procedures won't work unless
             // the flag set to false (at least with JConnect).
             // see DatabaseLogin.handleTransactionsManuallyForSybaseJConnect()

@@ -46,7 +46,7 @@ public class NativeModeCreatorTestModel extends TestModel {
         defaultSequence = getSession().getLogin().getDefaultSequence();
         shouldBindAllParameters = Boolean.valueOf(platform.shouldBindAllParameters());
 
-        if (platform.isSybase() || platform.isOracle() || platform.isSQLServer() || platform.isInformix() || 
+        if (platform.isSybase() || platform.isSQLAnywhere() || platform.isOracle() || platform.isSQLServer() || platform.isInformix() || 
             platform.isMySQL() || platform.isDB2() || platform.isTimesTen()) {
             
             platform.setUsesNativeSQL(true);
@@ -138,7 +138,7 @@ public class NativeModeCreatorTestModel extends TestModel {
 
         DatabasePlatform platform = getSession().getPlatform();
 
-        if (platform.isSybase() || platform.isOracle() || platform.isSQLServer() || platform.isInformix() || 
+        if (platform.isSybase() || platform.isSQLAnywhere() || platform.isOracle() || platform.isSQLServer() || platform.isInformix() || 
             platform.isMySQL() || platform.isDB2() || platform.isTimesTen()) {
             
             if (usesNativeSQL != null) {

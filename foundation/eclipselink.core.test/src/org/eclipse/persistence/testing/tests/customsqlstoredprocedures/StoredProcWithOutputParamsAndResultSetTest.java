@@ -45,8 +45,8 @@ public class StoredProcWithOutputParamsAndResultSetTest extends TestCase {
     public void setup() {
         shouldBindAllParametersOriginal = getSession().getLogin().getShouldBindAllParameters();
         //right now only the stored procedure is set up in SQLServer
-        if (!(getSession().getPlatform().isSQLServer() || getSession().getPlatform().isSybase())) {
-            throw new TestWarningException("This test can only be run in SQLServer. Or Sybase");
+        if (!(getSession().getPlatform().isSQLServer() || getSession().getPlatform().isSybase() || getSession().getPlatform().isSQLAnywhere())) {
+            throw new TestWarningException("This test can only be run in SQLServer. Or Sybase or SQLAnywhere");
         }
         getSession().getLogin().setShouldBindAllParameters(shouldBindAllParameters);
     }
@@ -58,7 +58,7 @@ public class StoredProcWithOutputParamsAndResultSetTest extends TestCase {
         StoredProcedureCall spCall;
 
         // sybase can not do out params only
-        boolean useInOut = getSession().getPlatform().isSybase();
+        boolean useInOut = getSession().getPlatform().isSybase() || getSession().getPlatform().isSQLAnywhere();
         if (useCustomSQL) {
             String prefix;
             if (useInOut) {

@@ -181,7 +181,7 @@ public class ClearQueryOptionsOnStatementTest extends AutoVerifyTestCase {
         if(getSession().getLogin().getDatasourcePlatform().isDB2() || getSession().getLogin().getDatasourcePlatform().isMySQL())
         {
           sql = "SELECT SUM(e.EMP_ID) from EMPLOYEE e , EMPLOYEE b, EMPLOYEE c,EMPLOYEE d";
-        } else if (getSession().getLogin().getDatasourcePlatform().isSybase() || getSession().getLogin().getDatasourcePlatform().isSQLServer())
+        } else if (getSession().getLogin().getDatasourcePlatform().isSybase() || getSession().getLogin().getDatasourcePlatform().isSQLServer() ||  getSession().getLogin().getDatasourcePlatform().isSQLAnywhere())
         {
           sql = "SELECT SUM(e.EMP_ID) from EMPLOYEE a , EMPLOYEE b, EMPLOYEE c, EMPLOYEE d, EMPLOYEE e, EMPLOYEE f, EMPLOYEE g";
         } else

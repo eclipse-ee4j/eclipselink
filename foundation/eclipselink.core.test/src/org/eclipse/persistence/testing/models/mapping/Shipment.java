@@ -113,7 +113,7 @@ public class Shipment implements Serializable, Cloneable {
             this.creationTimestamp = new Timestamp(System.currentTimeMillis());
         }
         lastCreationTimestamp = (Timestamp)this.creationTimestamp.clone();
-        if (session.getLogin().getPlatform().isDB2() || session.getLogin().getPlatform().isAccess() || session.getLogin().getPlatform().isSQLServer() || session.getLogin().getPlatform().isOracle() || session.getLogin().getPlatform().isSybase() || session.getLogin().getPlatform().isMySQL()) {
+        if (session.getLogin().getPlatform().isDB2() || session.getLogin().getPlatform().isAccess() || session.getLogin().getPlatform().isSQLServer() || session.getLogin().getPlatform().isOracle() || session.getLogin().getPlatform().isSybase() || session.getLogin().getPlatform().isSQLAnywhere() || session.getLogin().getPlatform().isMySQL()) {
             // Oracle does not support millis, Sybase stores them only within 1-2 millis...
             //MySQL does not support millis as of 5.0
             this.creationTimestampMillis = creationTimestamp.getNanos();

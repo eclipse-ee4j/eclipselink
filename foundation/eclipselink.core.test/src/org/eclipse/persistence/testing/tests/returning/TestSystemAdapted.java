@@ -99,7 +99,7 @@ public class TestSystemAdapted extends TestSystem {
         if (aTestSystem instanceof InheritanceSystem) {
             // For using read all subclasses views.
             org.eclipse.persistence.internal.databaseaccess.DatabasePlatform platform = session.getLogin().getPlatform();
-            if (platform.isOracle() || platform.isSybase()) {
+            if (platform.isOracle() || platform.isSybase() || platform.isSQLAnywhere()) {
                 ClassDescriptor computerDescriptor = session.getClassDescriptor(Computer.class);
                 ClassDescriptor vehicleDescriptor = session.getClassDescriptor(Vehicle.class);
                 if (computerDescriptor.getInheritancePolicy().requiresMultipleTableSubclassRead()) {

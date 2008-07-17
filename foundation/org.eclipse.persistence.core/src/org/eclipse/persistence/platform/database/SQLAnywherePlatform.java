@@ -134,9 +134,10 @@ public class SQLAnywherePlatform extends SybasePlatform {
         this.addOperator(createConcatOperator());
         this.addOperator(createLocateOperator());
         this.addOperator(createLocate2Operator());
-        this.addOperator(createCurrentDateOperator());
-        this.addOperator(createCurrentTimeOperator());
+//        this.addOperator(createCurrentDateOperator());
+//        this.addOperator(createCurrentTimeOperator());
         this.addOperator(ExpressionOperator.charLength());
+        this.addOperator(ExpressionOperator.mod());
     }
 
     public boolean isSQLAnywhere() {
@@ -179,5 +180,13 @@ public class SQLAnywherePlatform extends SybasePlatform {
     @Override
     public boolean supportsStoredFunctions() {
         return true;
+    }
+
+    /**
+     * INTERNAL
+     * Allows platform to choose whether to bind literals in DatabaseCalls or not.
+     */
+    public boolean shouldBindLiterals() {
+        return false;
     }
 }
