@@ -268,7 +268,7 @@ public class EmployeeCustomSQLSystem extends EmployeeSystem {
         return proc;
     }
 
-    public StoredProcedureDefinition buildSybaseInsertProcedure() {
+    public StoredProcedureDefinition buildSybaseInsertProcedure(boolean isSybase) {
         // Assume no identity.
         StoredProcedureDefinition proc = new StoredProcedureDefinition();
         proc.setName("Insert_Employee");
@@ -285,11 +285,19 @@ public class EmployeeCustomSQLSystem extends EmployeeSystem {
         proc.addArgument("START_TIME", java.sql.Time.class);
         proc.addArgument("END_TIME", java.sql.Time.class);
         proc.addArgument("VERSION", Long.class);
-        proc.addOutputArgument("OUT_VERSION", Long.class);
+        // Currently without this condition CustimSQLTestModel fails to setup on SQLAnywhere.
+        // The condition will be removed when we figure out how to make SQLAnywhere to return out parameters.
+        if(isSybase) {
+            proc.addOutputArgument("OUT_VERSION", Long.class);
+        }
 
         proc.addStatement("Insert INTO EMPLOYEE (EMP_ID, END_DATE, MANAGER_ID, START_DATE, F_NAME, L_NAME, GENDER, ADDR_ID, VERSION, START_TIME, END_TIME) " + "VALUES (@EMP_ID, @END_DATE, @MANAGER_ID, @START_DATE, @F_NAME, @L_NAME, @GENDER, @ADDR_ID, @VERSION, @START_TIME, @END_TIME)");
         proc.addStatement("Insert INTO SALARY (SALARY, EMP_ID) VALUES (@SALARY, @EMP_ID)");
-        proc.addStatement("Select @OUT_VERSION = 952");
+        // Currently without this condition CustimSQLTestModel fails to setup on SQLAnywhere.
+        // The condition will be removed when we figure out how to make SQLAnywhere to return out parameters.
+        if(isSybase) {
+            proc.addStatement("Select @OUT_VERSION = 952");
+        }
         return proc;
     }
 
@@ -377,12 +385,12 @@ public class EmployeeCustomSQLSystem extends EmployeeSystem {
             schema.replaceObject(buildSQLServerSelectWithOutputProcedure());
             schema.replaceObject(buildSQLServerSelectWithOutputAndResultSetProcedure());
         }
-        if (platform.isSybase()) {
+        if (platform.isSybase() || platform.isSQLAnywhere()) {
             session.getLogin().handleTransactionsManuallyForSybaseJConnect();
             schema.replaceObject(buildSybaseDeleteProcedure());
             schema.replaceObject(buildSybaseReadAllProcedure());
             schema.replaceObject(buildSybaseReadObjectProcedure());
-            schema.replaceObject(buildSybaseInsertProcedure());
+            schema.replaceObject(buildSybaseInsertProcedure(platform.isSybase()));
             schema.replaceObject(buildSybaseUpdateProcedure());
             schema.replaceObject(buildSybaseSelectWithOutputAndResultSetProcedure());
             schema.replaceObject(buildSybaseWithoutParametersProcedure());
@@ -446,7 +454,7 @@ public class EmployeeCustomSQLSystem extends EmployeeSystem {
 
     protected void setCustomSQL(Session session) {
         setCommonSQL(session);
-        if (session.getLogin().getPlatform().isSybase()) {
+        if (session.getLogin().getPlatform().isSybase() || session.getLogin().getPlatform().isSQLAnywhere()) {
             setSybaseSQL(session);
         } else if (session.getLogin().getPlatform().isSQLServer()) {
             setSQLServerSQL(session);
@@ -656,7 +664,11 @@ public class EmployeeCustomSQLSystem extends EmployeeSystem {
         call.addNamedArgument("VERSION");
         call.addNamedArgument("START_TIME");
         call.addNamedArgument("END_TIME");
-        call.addNamedInOutputArgumentValue("OUT_VERSION", new Long(0), "EMPLOYEE.VERSION", Long.class);
+        // Currently without this condition CustimSQLTestModel fails to setup on SQLAnywhere.
+        // The condition will be removed when we figure out how to make SQLAnywhere to return out parameters.
+        if(session.getPlatform().isSybase()) {
+            call.addNamedInOutputArgumentValue("OUT_VERSION", new Long(0), "EMPLOYEE.VERSION", Long.class);
+        }
         insertQuery.setCall(call);
         empDescriptor.getQueryManager().setInsertQuery(insertQuery);
 
