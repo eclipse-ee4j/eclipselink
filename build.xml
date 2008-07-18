@@ -92,7 +92,7 @@
     <!-- Compiles all components and tests (excluding workbench). -->
     <target name="build-core-all" depends="build-core, build-core-test, build-extension"/>
 
-    <!-- Compiles all components (excluding tests, Oracle extensions). -->
+    <!-- Compiles all components (excluding Tests, Oracle extensions). -->
     <target name="build-core">
         <ant antfile="${eclipselink.core}/build.xml" target="all"/>
         <ant antfile="${eclipselink.dbws}/build.xml" target="all"/>
@@ -114,7 +114,7 @@
     <!-- Compiles tests (excluding workbench, and Oracle extensions). -->
     <target name="build-core-test">
         <ant antfile="${eclipselink.core.test}/build.xml" target="all"/>
-        <ant antfile="${eclipselink.dbws.test}/build.xml" target="all"/>
+        <!-- ant antfile="${eclipselink.dbws.test}/build.xml" target="all"/ -->
         <ant antfile="${eclipselink.jpa.test}/build.xml"  target="all"/>
         <ant antfile="${eclipselink.moxy.test}/build.xml" target="compile-tests"/>
         <ant antfile="${eclipselink.sdo.test}/build.xml"  target="compile-sdo-tests"/>
