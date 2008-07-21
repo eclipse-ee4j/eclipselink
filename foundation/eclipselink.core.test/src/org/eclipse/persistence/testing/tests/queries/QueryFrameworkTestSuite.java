@@ -337,7 +337,28 @@ public class QueryFrameworkTestSuite extends TestSuite {
             public void test() {
                 UnitOfWork uow = getSession().acquireUnitOfWork();
                 ReadAllQuery query = new ReadAllQuery(Project.class);
-                query.useScrollableCursor();
+                boolean TYPE_SCROLL_INSENSITIVE_isSupported = true;
+                boolean CONCUR_UPDATABLE_isSupported = true;
+                if(getSession().getPlatform().isSQLServer()) {
+                    // In case either TYPE_SCROLL_INSENSITIVE or CONCUR_UPDATABLE used  
+                    // MS SQL Server  Version: 9.00.2050;  MS SQL Server 2005 JDBC Driver  Version: 1.2.2828.100 throws exception:
+                    // com.microsoft.sqlserver.jdbc.SQLServerException: The cursor type/concurrency combination is not supported.
+                    TYPE_SCROLL_INSENSITIVE_isSupported = false;
+                    CONCUR_UPDATABLE_isSupported = false;
+                }
+                if(TYPE_SCROLL_INSENSITIVE_isSupported && CONCUR_UPDATABLE_isSupported) {
+                    query.useScrollableCursor();
+                } else {
+                    ScrollableCursorPolicy policy = new ScrollableCursorPolicy();
+                    if(!TYPE_SCROLL_INSENSITIVE_isSupported) {
+                        policy.setResultSetType(ScrollableCursorPolicy.TYPE_SCROLL_SENSITIVE);
+                    }
+                    if(!CONCUR_UPDATABLE_isSupported) {
+                        policy.setResultSetConcurrency(ScrollableCursorPolicy.CONCUR_READ_ONLY);
+                    }
+                    policy.setPageSize(10);
+                    query.useScrollableCursor(policy);
+                }
                 query.setShouldOuterJoinSubclasses(true);
                 Cursor result = (Cursor) uow.executeQuery(query);
                 result.nextElement();

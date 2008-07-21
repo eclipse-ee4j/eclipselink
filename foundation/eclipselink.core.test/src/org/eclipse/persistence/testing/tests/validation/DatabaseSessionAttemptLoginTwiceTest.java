@@ -38,6 +38,8 @@ public class DatabaseSessionAttemptLoginTwiceTest extends ExceptionTest {
             newSession.login();
         } catch (org.eclipse.persistence.exceptions.EclipseLinkException e) {
             this.caughtException = e;
+        } finally {
+            newSession.logout();
         }
     }
 }

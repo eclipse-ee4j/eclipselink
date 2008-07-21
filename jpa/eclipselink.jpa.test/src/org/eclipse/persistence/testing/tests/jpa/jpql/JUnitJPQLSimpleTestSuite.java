@@ -1391,7 +1391,7 @@ public class JUnitJPQLSimpleTestSuite extends JUnitTestCase {
     public void simpleModTest() {
         org.eclipse.persistence.jpa.JpaEntityManager em = (org.eclipse.persistence.jpa.JpaEntityManager)createEntityManager();
 
-        Assert.assertFalse("Warning SQL/Sybase doesnot support MOD function", (JUnitTestCase.getServerSession()).getPlatform().isSQLServer() || (JUnitTestCase.getServerSession()).getPlatform().isSybase());
+        Assert.assertFalse("Warning SQL/Sybase doesnot support MOD function", (JUnitTestCase.getServerSession()).getPlatform().isSQLServer() || (JUnitTestCase.getServerSession()).getPlatform().isSybase() || (JUnitTestCase.getServerSession()).getPlatform().isSQLAnywhere());
 
         ReadAllQuery raq = new ReadAllQuery();
 

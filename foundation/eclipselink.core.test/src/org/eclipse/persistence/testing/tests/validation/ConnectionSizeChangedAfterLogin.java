@@ -39,7 +39,7 @@ public class ConnectionSizeChangedAfterLogin extends ExceptionTest {
         } catch (EclipseLinkException exception) {
             caughtException = exception;
         } finally {
-            //		server.logout();
+            server.logout();
         }
     }
 }

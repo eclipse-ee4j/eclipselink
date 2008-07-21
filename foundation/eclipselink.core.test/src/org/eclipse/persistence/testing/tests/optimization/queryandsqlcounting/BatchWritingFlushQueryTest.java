@@ -54,7 +54,7 @@ public class BatchWritingFlushQueryTest extends TestCase {
         usesBatchWriting = platform.usesBatchWriting();
         usesJDBCBatchWriting = platform.usesJDBCBatchWriting();
 
-        if (platform.isSybase() || platform.isOracle() || platform.isSQLServer() || platform.isAttunity()) {
+        if (platform.isSybase() || platform.isSQLAnywhere() || platform.isOracle() || platform.isSQLServer() || platform.isAttunity()) {
             platform.setUsesBatchWriting(true);
             //Test TopLink batch Writing
             platform.setUsesJDBCBatchWriting(false);
@@ -73,7 +73,7 @@ public class BatchWritingFlushQueryTest extends TestCase {
     public void reset() {
         DatabaseSession session = (DatabaseSession)getSession();
         DatabasePlatform platform = getSession().getPlatform();
-        if (platform.isSybase() || platform.isOracle() || platform.isSQLServer() || platform.isAttunity()) {
+        if (platform.isSybase() || platform.isSQLAnywhere() || platform.isOracle() || platform.isSQLServer() || platform.isAttunity()) {
             platform.setUsesBatchWriting(usesBatchWriting);
             platform.setUsesJDBCBatchWriting(usesJDBCBatchWriting);
         }

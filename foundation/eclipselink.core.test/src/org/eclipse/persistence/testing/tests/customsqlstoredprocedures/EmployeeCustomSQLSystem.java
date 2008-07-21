@@ -252,11 +252,10 @@ public class EmployeeCustomSQLSystem extends EmployeeSystem {
         proc.addArgument("L_NAME", String.class, 40);
         proc.addArgument("GENDER", String.class, 1);
         proc.addArgument("ADDR_ID", Long.class);
-        proc.addArgument("VERSION", Long.class);
         proc.addArgument("START_TIME", java.sql.Time.class);
         proc.addArgument("END_TIME", java.sql.Time.class);
         proc.addStatement("Update SALARY set SALARY = @SALARY WHERE (EMP_ID = @EMP_ID)");
-        proc.addStatement("Update EMPLOYEE set END_DATE = @END_DATE, MANAGER_ID = @MANAGER_ID, " + "START_DATE = @START_DATE, F_NAME = @F_NAME, L_NAME = @L_NAME, GENDER = @GENDER, ADDR_ID = @ADDR_ID, " + "VERSION = @VERSION + 1 WHERE ((EMP_ID = @EMP_ID) AND (VERSION = @VERSION))");
+        proc.addStatement("Update EMPLOYEE set END_DATE = @END_DATE, MANAGER_ID = @MANAGER_ID, " + "START_DATE = @START_DATE, F_NAME = @F_NAME, L_NAME = @L_NAME, GENDER = @GENDER, ADDR_ID = @ADDR_ID WHERE (EMP_ID = @EMP_ID)");
         return proc;
     }
 
@@ -269,7 +268,7 @@ public class EmployeeCustomSQLSystem extends EmployeeSystem {
         return proc;
     }
 
-    public StoredProcedureDefinition buildSybaseInsertProcedure() {
+    public StoredProcedureDefinition buildSybaseInsertProcedure(boolean isSybase) {
         // Assume no identity.
         StoredProcedureDefinition proc = new StoredProcedureDefinition();
         proc.setName("Insert_Employee");
@@ -286,11 +285,19 @@ public class EmployeeCustomSQLSystem extends EmployeeSystem {
         proc.addArgument("START_TIME", java.sql.Time.class);
         proc.addArgument("END_TIME", java.sql.Time.class);
         proc.addArgument("VERSION", Long.class);
-        proc.addOutputArgument("OUT_VERSION", Long.class);
+        // Currently without this condition CustimSQLTestModel fails to setup on SQLAnywhere.
+        // The condition will be removed when we figure out how to make SQLAnywhere to return out parameters.
+        if(isSybase) {
+            proc.addOutputArgument("OUT_VERSION", Long.class);
+        }
 
         proc.addStatement("Insert INTO EMPLOYEE (EMP_ID, END_DATE, MANAGER_ID, START_DATE, F_NAME, L_NAME, GENDER, ADDR_ID, VERSION, START_TIME, END_TIME) " + "VALUES (@EMP_ID, @END_DATE, @MANAGER_ID, @START_DATE, @F_NAME, @L_NAME, @GENDER, @ADDR_ID, @VERSION, @START_TIME, @END_TIME)");
         proc.addStatement("Insert INTO SALARY (SALARY, EMP_ID) VALUES (@SALARY, @EMP_ID)");
-        proc.addStatement("Select @OUT_VERSION = 952");
+        // Currently without this condition CustimSQLTestModel fails to setup on SQLAnywhere.
+        // The condition will be removed when we figure out how to make SQLAnywhere to return out parameters.
+        if(isSybase) {
+            proc.addStatement("Select @OUT_VERSION = 952");
+        }
         return proc;
     }
 
@@ -378,12 +385,12 @@ public class EmployeeCustomSQLSystem extends EmployeeSystem {
             schema.replaceObject(buildSQLServerSelectWithOutputProcedure());
             schema.replaceObject(buildSQLServerSelectWithOutputAndResultSetProcedure());
         }
-        if (platform.isSybase()) {
+        if (platform.isSybase() || platform.isSQLAnywhere()) {
             session.getLogin().handleTransactionsManuallyForSybaseJConnect();
             schema.replaceObject(buildSybaseDeleteProcedure());
             schema.replaceObject(buildSybaseReadAllProcedure());
             schema.replaceObject(buildSybaseReadObjectProcedure());
-            schema.replaceObject(buildSybaseInsertProcedure());
+            schema.replaceObject(buildSybaseInsertProcedure(platform.isSybase()));
             schema.replaceObject(buildSybaseUpdateProcedure());
             schema.replaceObject(buildSybaseSelectWithOutputAndResultSetProcedure());
             schema.replaceObject(buildSybaseWithoutParametersProcedure());
@@ -447,7 +454,7 @@ public class EmployeeCustomSQLSystem extends EmployeeSystem {
 
     protected void setCustomSQL(Session session) {
         setCommonSQL(session);
-        if (session.getLogin().getPlatform().isSybase()) {
+        if (session.getLogin().getPlatform().isSybase() || session.getLogin().getPlatform().isSQLAnywhere()) {
             setSybaseSQL(session);
         } else if (session.getLogin().getPlatform().isSQLServer()) {
             setSQLServerSQL(session);
@@ -605,14 +612,13 @@ public class EmployeeCustomSQLSystem extends EmployeeSystem {
         call.addNamedArgument("L_NAME");
         call.addNamedArgument("GENDER");
         call.addNamedArgument("ADDR_ID");
-        call.addNamedArgument("VERSION");
         call.addNamedArgument("START_TIME");
         call.addNamedArgument("END_TIME");
         updateQuery.setCall(call);
         empDescriptor.getQueryManager().setUpdateQuery(updateQuery);
 
         ManyToManyMapping manyToMany = (ManyToManyMapping)empDescriptor.getMappingForAttributeName("projects");
-        manyToMany.setSelectionSQLString("select P.*, L.* FROM LPROJECT L, PROJECT P, PROJ_EMP PE WHERE ((P.PROJ_ID *= L.PROJ_ID) AND (PE.EMP_ID = #EMP_ID) AND (P.PROJ_ID = PE.PROJ_ID))");
+        manyToMany.setSelectionSQLString("select P.*, L.* FROM PROJ_EMP PE, PROJECT P LEFT OUTER JOIN LPROJECT L ON (L.PROJ_ID = P.PROJ_ID) WHERE ((PE.EMP_ID = #EMP_ID) AND (P.PROJ_ID = PE.PROJ_ID))");
     }
 
     protected void setSybaseSQL(Session session) {
@@ -658,7 +664,11 @@ public class EmployeeCustomSQLSystem extends EmployeeSystem {
         call.addNamedArgument("VERSION");
         call.addNamedArgument("START_TIME");
         call.addNamedArgument("END_TIME");
-        call.addNamedInOutputArgumentValue("OUT_VERSION", new Long(0), "EMPLOYEE.VERSION", Long.class);
+        // Currently without this condition CustimSQLTestModel fails to setup on SQLAnywhere.
+        // The condition will be removed when we figure out how to make SQLAnywhere to return out parameters.
+        if(session.getPlatform().isSybase()) {
+            call.addNamedInOutputArgumentValue("OUT_VERSION", new Long(0), "EMPLOYEE.VERSION", Long.class);
+        }
         insertQuery.setCall(call);
         empDescriptor.getQueryManager().setInsertQuery(insertQuery);
 
@@ -681,6 +691,6 @@ public class EmployeeCustomSQLSystem extends EmployeeSystem {
         empDescriptor.getQueryManager().setUpdateQuery(updateQuery);
 
         ManyToManyMapping manyToMany = (ManyToManyMapping)empDescriptor.getMappingForAttributeName("projects");
-        manyToMany.setSelectionSQLString("select P.*, L.* FROM LPROJECT L, PROJECT P, PROJ_EMP PE WHERE ((P.PROJ_ID *= L.PROJ_ID) AND (PE.EMP_ID = #EMP_ID) AND (P.PROJ_ID = PE.PROJ_ID))");
+        manyToMany.setSelectionSQLString("select P.*, L.* FROM PROJ_EMP PE, PROJECT P LEFT OUTER JOIN LPROJECT L ON (L.PROJ_ID = P.PROJ_ID) WHERE ((PE.EMP_ID = #EMP_ID) AND (P.PROJ_ID = PE.PROJ_ID))");
     }
 }

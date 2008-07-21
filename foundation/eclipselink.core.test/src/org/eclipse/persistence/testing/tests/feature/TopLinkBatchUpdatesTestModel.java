@@ -38,7 +38,7 @@ public class TopLinkBatchUpdatesTestModel extends TestModel {
         } catch (java.io.IOException e) {
         }
 
-        if (platform.isSybase() || platform.isOracle() || platform.isSQLServer() || platform.isAttunity()) {
+        if (platform.isSybase() || platform.isSQLAnywhere() || platform.isOracle() || platform.isSQLServer() || platform.isAttunity()) {
             platform.setUsesBatchWriting(true);
             //Test TopLink batch Writing
             platform.setUsesJDBCBatchWriting(false);

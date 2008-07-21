@@ -1135,7 +1135,6 @@ public class ExpressionOperator implements Serializable {
         addOperator(minimum());
         addOperator(maximum());
         addOperator(variance());
-        addOperator(standardDeviation());
         addOperator(distinct());
     }
 

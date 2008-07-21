@@ -29,6 +29,8 @@ public class ScrollableCursorStatementCachingReadTest extends TestCase {
 
     protected boolean origionalBindingState;
     protected boolean origionalStatementCachingState;
+    protected boolean TYPE_SCROLL_INSENSITIVE_isSupported;
+    protected boolean CONCUR_UPDATABLE_isSupported;
 
     public ScrollableCursorStatementCachingReadTest() {
         setDescription("This test verifies that useScrollableCursor together with shouldCacheStatement on a query returns correct results");
@@ -40,6 +42,15 @@ public class ScrollableCursorStatementCachingReadTest extends TestCase {
         if (getSession().getPlatform().isDB2() || getSession().getPlatform().isAccess() || 
             getSession().getPlatform().isTimesTen()) {
             throw new TestWarningException("ScrollableCursor is not supported on this platform");
+        }
+        TYPE_SCROLL_INSENSITIVE_isSupported = true;
+        CONCUR_UPDATABLE_isSupported = true;
+        if(getSession().getPlatform().isSQLServer()) {
+            // In case either TYPE_SCROLL_INSENSITIVE or CONCUR_UPDATABLE used  
+            // MS SQL Server  Version: 9.00.2050;  MS SQL Server 2005 JDBC Driver  Version: 1.2.2828.100 throws exception:
+            // com.microsoft.sqlserver.jdbc.SQLServerException: The cursor type/concurrency combination is not supported.
+            TYPE_SCROLL_INSENSITIVE_isSupported = false;
+            CONCUR_UPDATABLE_isSupported = false;
         }
 
         this.origionalStatementCachingState = this.getSession().getPlatform().shouldCacheAllStatements();
@@ -55,7 +66,19 @@ public class ScrollableCursorStatementCachingReadTest extends TestCase {
 
         ReadAllQuery query2 = new ReadAllQuery();
         query2.setReferenceClass(Employee.class);
-        query2.useScrollableCursor();
+        if(TYPE_SCROLL_INSENSITIVE_isSupported && CONCUR_UPDATABLE_isSupported) {
+            query2.useScrollableCursor();
+        } else {
+            ScrollableCursorPolicy policy = new ScrollableCursorPolicy();
+            if(!TYPE_SCROLL_INSENSITIVE_isSupported) {
+                policy.setResultSetType(ScrollableCursorPolicy.TYPE_SCROLL_SENSITIVE);
+            }
+            if(!CONCUR_UPDATABLE_isSupported) {
+                policy.setResultSetConcurrency(ScrollableCursorPolicy.CONCUR_READ_ONLY);
+            }
+            policy.setPageSize(10);
+            query2.useScrollableCursor(policy);
+        }
 
         ScrollableCursor cursor = null;
 

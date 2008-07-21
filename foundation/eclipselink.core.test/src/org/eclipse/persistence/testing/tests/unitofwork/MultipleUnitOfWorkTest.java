@@ -16,8 +16,11 @@ import java.util.Vector;
 
 import org.eclipse.persistence.exceptions.OptimisticLockException;
 import org.eclipse.persistence.internal.helper.Helper;
+import org.eclipse.persistence.sessions.SessionEventListener;
 import org.eclipse.persistence.sessions.UnitOfWork;
+import org.eclipse.persistence.sessions.server.ServerSession;
 import org.eclipse.persistence.testing.framework.TestErrorException;
+import org.eclipse.persistence.testing.framework.TestWarningException;
 import org.eclipse.persistence.testing.models.employee.domain.Employee;
 import org.eclipse.persistence.testing.models.employee.domain.LargeProject;
 import org.eclipse.persistence.testing.models.employee.domain.SmallProject;
@@ -28,6 +31,12 @@ public class MultipleUnitOfWorkTest extends org.eclipse.persistence.testing.fram
     public UnitOfWork firstUnitOfWork;
     public Object secondUnitOfWorkWorkingCopy;
     public UnitOfWork secondUnitOfWork;
+    // On some platforms (Sybase) if conn1 updates a row but hasn't yet committed transaction then
+    // reading the row through conn2 may hang.
+    // To avoid this problem the listener would decrement transaction isolation level,
+    // then reading through conn2 no longer hangs, however may result (results on Sybase)
+    // in reading of uncommitted data.
+    SessionEventListener listener;
 
     /**
      * MultipleUnitOfWorkTest constructor comment.
@@ -82,7 +91,30 @@ public class MultipleUnitOfWorkTest extends org.eclipse.persistence.testing.fram
         employee.setManager((Employee)this.secondUnitOfWork.readObject(Employee.class));
     }
 
+    public void reset() {
+        super.reset();
+        if(listener != null) {
+            getAbstractSession().getParent().getEventManager().removeListener(listener);
+            listener = null;
+        }
+    }
+
     protected void setup() {
+        if(getSession().isClientSession()) {
+            if(getSession().getPlatform().isSybase()) {
+                if(SybaseTransactionIsolationListener.isDatabaseVersionSupported((ServerSession)getAbstractSession().getParent())) {
+                    listener = new SybaseTransactionIsolationListener();
+                    getAbstractSession().getParent().getEventManager().addListener(listener);
+                } else {
+                    throw new TestWarningException("The test requires Sybase version "+SybaseTransactionIsolationListener.requiredVersion+" or higher");
+                }
+            } else if(getSession().getPlatform().isSQLServer()) {
+                throw new TestWarningException("This test requires transaction isolation setup on SQLServer database which is currently not set in tlsvrdb6");
+            } else if(getSession().getPlatform().isSQLAnywhere()) {
+                throw new TestWarningException("This test requires transaction isolation setup on SQLAnywhere database which is currently not set");
+            }
+        }
+
         super.setup();
 
         // Acquire first unit of work

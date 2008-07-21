@@ -49,8 +49,8 @@ public class SequenceStringExistingPKTest extends org.eclipse.persistence.testin
             throw new TestWarningException("DB2 does not support inserting a numeric value into a String column.");
         }
 
-        if (getSession().getPlatform().isSybase()) {
-            throw new TestWarningException("Sybase does not support inserting a numeric value into a String column.");
+        if (getSession().getPlatform().isSybase() || getSession().getPlatform().isSQLAnywhere()) {
+            throw new TestWarningException("Sybase and SQLAnyWhere do not support inserting a numeric value into a String column.");
         }
 
         storedException = null;

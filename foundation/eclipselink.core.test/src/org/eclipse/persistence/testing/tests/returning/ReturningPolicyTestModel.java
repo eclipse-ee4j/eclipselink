@@ -138,7 +138,7 @@ public class ReturningPolicyTestModel extends TestModel {
     }
 
     public void setup() {
-        if (getSession().getPlatform().isSybase()) {
+        if (getSession().getPlatform().isSybase() || getSession().getPlatform().isSQLAnywhere()) {
             supportsAutoCommitOriginal = getSession().getPlatform().supportsAutoCommit();
             getSession().getPlatform().setSupportsAutoCommit(false);
         }
@@ -147,7 +147,7 @@ public class ReturningPolicyTestModel extends TestModel {
 
     public void reset() {
         super.reset();
-        if (getSession().getPlatform().isSybase()) {
+        if (getSession().getPlatform().isSybase()  || getSession().getPlatform().isSQLAnywhere()) {
             getSession().getPlatform().setSupportsAutoCommit(supportsAutoCommitOriginal);
         }
     }

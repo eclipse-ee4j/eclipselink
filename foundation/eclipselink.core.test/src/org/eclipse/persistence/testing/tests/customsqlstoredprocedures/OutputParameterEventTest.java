@@ -40,7 +40,7 @@ public class OutputParameterEventTest extends TestCase {
 
     public void setup() {
         // right now only the stored procedure is set up in SQLServer
-        if (!(getSession().getPlatform().isSQLServer() || getSession().getPlatform().isSybase())) {
+        if (!(getSession().getPlatform().isSQLServer() || getSession().getPlatform().isSybase() || getSession().getPlatform().isSQLAnywhere())) {
             throw new TestWarningException("This test can only be run in SQLServer until EmployeeCustomeSQLSystem is modified");
         }
         getAbstractSession().beginTransaction();

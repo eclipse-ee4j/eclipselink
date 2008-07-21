@@ -212,6 +212,7 @@ public class ExpressionUnitTestSuite extends ExpressionTestSuite {
         test.setName("DifferenceTest");
         test.setDescription("Test Difference expression");
         test.addSupportedPlatform(SybasePlatform.class);
+        test.addSupportedPlatform(SQLAnywherePlatform.class);
         addTest(test);
     }
 
@@ -274,6 +275,7 @@ public class ExpressionUnitTestSuite extends ExpressionTestSuite {
         test.setDescription("Test Equal (float) expression");
         test.addUnsupportedPlatform(DB2Platform.class);
         test.addUnsupportedPlatform(SybasePlatform.class);
+        test.addUnsupportedPlatform(SQLAnywherePlatform.class);
         test.addUnsupportedPlatform(SQLServerPlatform.class);
         test.addUnsupportedPlatform(org.eclipse.persistence.platform.database.TimesTenPlatform.class);
         addTest(test);
@@ -336,6 +338,7 @@ public class ExpressionUnitTestSuite extends ExpressionTestSuite {
         ReadAllExpressionTest test = new ReadAllExpressionTest(Employee.class, 1);
         test.setExpression(expression);
         test.addUnsupportedPlatform(SybasePlatform.class);
+        test.addUnsupportedPlatform(SQLAnywherePlatform.class);
         test.addUnsupportedPlatform(SQLServerPlatform.class);
         test.setName("GetFunctionWithArgumentsTest");
         test.setDescription("Test GetFunctionWithArguments expression");
@@ -803,6 +806,7 @@ public class ExpressionUnitTestSuite extends ExpressionTestSuite {
         test.setDescription("Test monthsBetween expression");
         test.addUnsupportedPlatform(DB2Platform.class);
         test.addUnsupportedPlatform(SybasePlatform.class);
+        test.addUnsupportedPlatform(SQLAnywherePlatform.class);
         test.addUnsupportedPlatform(SQLServerPlatform.class);
         test.addUnsupportedPlatform(MySQLPlatform.class);
         test.addUnsupportedPlatform(TimesTenPlatform.class);
@@ -819,6 +823,7 @@ public class ExpressionUnitTestSuite extends ExpressionTestSuite {
         test.setDescription("Test nextDay expression");
         test.addUnsupportedPlatform(DB2Platform.class);
         test.addUnsupportedPlatform(SybasePlatform.class);
+        test.addUnsupportedPlatform(SQLAnywherePlatform.class);
         test.addUnsupportedPlatform(SQLServerPlatform.class);
         test.addUnsupportedPlatform(MySQLPlatform.class);
         test.addUnsupportedPlatform(TimesTenPlatform.class);
@@ -1174,6 +1179,7 @@ public class ExpressionUnitTestSuite extends ExpressionTestSuite {
         test.setDescription("Test RightTrim(String) expression");
         test.addUnsupportedPlatform(DB2Platform.class);
         test.addUnsupportedPlatform(SybasePlatform.class);
+        test.addUnsupportedPlatform(SQLAnywherePlatform.class);
         test.addUnsupportedPlatform(SQLServerPlatform.class);
         test.addUnsupportedPlatform(MySQLPlatform.class);
         test.addUnsupportedPlatform(TimesTenPlatform.class);
@@ -1232,6 +1238,7 @@ public class ExpressionUnitTestSuite extends ExpressionTestSuite {
 
         ReadAllExpressionTest test = new ReadAllExpressionTest(Employee.class, 1);
         test.addUnsupportedPlatform(SybasePlatform.class);
+        test.addUnsupportedPlatform(SQLAnywherePlatform.class);
         test.addUnsupportedPlatform(TimesTenPlatform.class);
         test.setExpression(expression);
         test.setName("StandardDeviationTest");
@@ -1259,6 +1266,7 @@ public class ExpressionUnitTestSuite extends ExpressionTestSuite {
         test.setDescription("Test toUpperCasedWords expression");
         test.addUnsupportedPlatform(DB2Platform.class);
         test.addUnsupportedPlatform(SybasePlatform.class);
+        test.addUnsupportedPlatform(SQLAnywherePlatform.class);
         test.addUnsupportedPlatform(SQLServerPlatform.class);
         test.addUnsupportedPlatform(MySQLPlatform.class);
         test.addUnsupportedPlatform(TimesTenPlatform.class);
@@ -1360,6 +1368,7 @@ public class ExpressionUnitTestSuite extends ExpressionTestSuite {
 
         ReadAllExpressionTest test = new ReadAllExpressionTest(Employee.class, 2);
         test.addUnsupportedPlatform(SybasePlatform.class);
+        test.addUnsupportedPlatform(SQLAnywherePlatform.class);
         test.addUnsupportedPlatform(SQLServerPlatform.class);
         test.addUnsupportedPlatform(org.eclipse.persistence.platform.database.TimesTenPlatform.class);
         test.setExpression(expression);

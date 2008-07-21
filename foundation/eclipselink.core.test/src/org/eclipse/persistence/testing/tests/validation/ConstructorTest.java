@@ -34,19 +34,24 @@ public class ConstructorTest extends ExceptionTest {
     }
 
     public void test() {
-        DatabaseSession session = (DatabaseSession)getSession();
+        org.eclipse.persistence.sessions.DatabaseSession testSession = null;
         try {
             Project project = new ConstructorProject();
             project.setLogin(getSession().getLogin());
-            org.eclipse.persistence.sessions.DatabaseSession testSession = project.createDatabaseSession();
+            testSession = project.createDatabaseSession();
             testSession.dontLogMessages();
             testSession.login();
-            testSession.logout();
         } catch (org.eclipse.persistence.exceptions.EclipseLinkException exception) {
             caughtException = exception;
 
         } catch (Exception e) {
             throw new org.eclipse.persistence.testing.framework.TestWarningException("A non-TopLink exception is caught.");
+        } finally {
+            if(testSession != null) {
+                if(testSession.isConnected()) {
+                    testSession.logout();
+                }
+            }
         }
     }
 

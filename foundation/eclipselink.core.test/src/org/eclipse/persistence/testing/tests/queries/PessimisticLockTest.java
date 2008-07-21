@@ -41,7 +41,7 @@ public class PessimisticLockTest extends RefreshTest {
     }
 
     public void test() throws Exception {
-        if (getSession().getPlatform().isDB2() || getSession().getPlatform().isAccess() || getSession().getPlatform().isSybase() /*|| getSession().getPlatform().isSQLServer()*/) {
+        if (getSession().getPlatform().isDB2() || getSession().getPlatform().isAccess() || getSession().getPlatform().isSybase() || getSession().getPlatform().isSQLAnywhere() /*|| getSession().getPlatform().isSQLServer()*/) {
             throw new TestWarningException("This database does not support for update");
         }
 
@@ -76,11 +76,11 @@ public class PessimisticLockTest extends RefreshTest {
         DatabaseSession session2 = null;
         UnitOfWork uow2 = null;
         try {
-		if (getSession() instanceof org.eclipse.persistence.sessions.remote.RemoteSession) {
-			session2 = org.eclipse.persistence.testing.tests.remote.RemoteModel.getServerSession().getProject().createDatabaseSession();
-		} else {
-			session2 = getSession().getProject().createDatabaseSession();
-		}
+            if (getSession() instanceof org.eclipse.persistence.sessions.remote.RemoteSession) {
+                session2 = org.eclipse.persistence.testing.tests.remote.RemoteModel.getServerSession().getProject().createDatabaseSession();
+            } else {
+                session2 = getSession().getProject().createDatabaseSession();
+            }
             session2.setSessionLog(getSession().getSessionLog());
             session2.login();
             uow2 = session2.acquireUnitOfWork();
@@ -98,15 +98,13 @@ public class PessimisticLockTest extends RefreshTest {
             if (!isLocked) {
                 throw new TestWarningException("Select for update does not acquire a lock");
             }
-        } catch (RuntimeException e) {
+        } finally {
             if (uow2 != null) {
                 uow2.release();
             }
             if (session2 != null) {
                 session2.logout();
             }
-
-            throw e;
         }
     }
 }

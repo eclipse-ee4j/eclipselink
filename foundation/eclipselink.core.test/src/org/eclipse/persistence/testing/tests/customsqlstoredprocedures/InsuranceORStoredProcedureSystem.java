@@ -114,7 +114,7 @@ public class InsuranceORStoredProcedureSystem extends org.eclipse.persistence.te
             if (platform.isSQLServer()) {
 
             }
-            if (platform.isSybase()) {
+            if (platform.isSybase() || platform.isSQLAnywhere()) {
             }
             if (platform.isOracle()) {
                 

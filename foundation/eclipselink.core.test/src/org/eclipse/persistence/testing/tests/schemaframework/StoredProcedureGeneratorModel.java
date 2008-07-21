@@ -33,7 +33,7 @@ public class StoredProcedureGeneratorModel extends TestModel {
     }
 
     public void addRequiredSystems() {
-        if (!(getSession().getPlatform().isOracle() || getSession().getPlatform().isSybase() || getSession().getPlatform().isSQLServer() || getSession().getPlatform().isMySQL())) {
+        if (!(getSession().getPlatform().isOracle() || getSession().getPlatform().isSybase() || getSession().getPlatform().isSQLAnywhere() || getSession().getPlatform().isSQLServer() || getSession().getPlatform().isMySQL())) {
             throw new TestWarningException("Store procedure generation is only supported on Oracle, Sybase, MySQL and SQL Server.");
         }
 

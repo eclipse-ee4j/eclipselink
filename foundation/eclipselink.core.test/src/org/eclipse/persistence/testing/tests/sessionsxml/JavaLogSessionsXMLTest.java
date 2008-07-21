@@ -39,7 +39,7 @@ public class JavaLogSessionsXMLTest extends SessionsXMLValidationTest {
     }
 
     public void verify() {
-        if (!(new SessionManager().getSession(new XMLSessionConfigLoader(getSessionXmlFileName()), getSessionName(), this.getClass().getClassLoader()).getSessionLog() instanceof org.eclipse.persistence.logging.JavaLog)) {
+        if (!(new SessionManager().getSession(new XMLSessionConfigLoader(getSessionXmlFileName()), getSessionName(), this.getClass().getClassLoader(), false, false).getSessionLog() instanceof org.eclipse.persistence.logging.JavaLog)) {
             throw new TestErrorException("Failed to create TopLink Session Log");
         }
     }
