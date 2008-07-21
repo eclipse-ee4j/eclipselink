@@ -467,16 +467,16 @@
             <param name="TEST_CLASS" value="${test.class}"/>
             <param name="TEST_AGENT" value="-Dignore"/>
             <param name="TEST_WEAVING" value="-Dignore"/>
-        	<param name="ORM_TESTING" value="-Dorm.testing=jpa"/>
+            <param name="ORM_TESTING" value="-Dorm.testing=jpa"/>
             <param name="RUN_PATH" value="run.classpath.static"/>
         </antcall>
-    	<antcall target="run-test" inheritRefs="true">
+        <antcall target="run-test" inheritRefs="true">
             <param name="TEST_CLASS" value="org.eclipse.persistence.testing.tests.jpa.xml.EntityMappingsJUnitTestSuite"/>
-    	    <param name="TEST_AGENT" value="-Dignore"/>
-    	    <param name="TEST_WEAVING" value="-Dignore"/>
-    		<param name="ORM_TESTING" value="-Dorm.testing=eclipselink"/>
-    	    <param name="RUN_PATH" value="run.extended.classpath.static"/>
-    	</antcall>
+            <param name="TEST_AGENT" value="-Dignore"/>
+            <param name="TEST_WEAVING" value="-Dignore"/>
+            <param name="ORM_TESTING" value="-Dorm.testing=eclipselink"/>
+            <param name="RUN_PATH" value="run.extended.classpath.static"/>
+        </antcall>
         <antcall target="generate-report" inheritRefs="true"/>
     </target>
 
@@ -554,7 +554,7 @@
         <junit printsummary="yes" haltonfailure="yes" fork="yes" showoutput="true" maxmemory="512m" dir="${eclipselink.jpa.test}/${run.dir}">
             <jvmarg value="${TEST_AGENT}"/>
             <jvmarg value="${TEST_WEAVING}"/>
-        	<jvmarg value="${ORM_TESTING}"/>
+            <jvmarg value="${ORM_TESTING}"/>
             <jvmarg value="-Declipselink.logging.level=${logging.level}"/>
             <jvmarg value="-Ddb.driver=${db.driver}"/>
             <jvmarg value="-Ddb.url=${db.url}"/>
@@ -650,7 +650,7 @@
                target="${eclipselink.jpa.test}/woven-${eclipselink.xml.extended.model}.jar"
                loglevel="${logging.level}">
                <classpath>
-    	            <path refid="run.extended.classpath"/>
+                    <path refid="run.extended.classpath"/>
                </classpath>
         </weave>
         <weave source="${eclipselink.jpa.test}/${eclipselink.xml.merge.model}.jar"
@@ -819,11 +819,23 @@
             <classpath refid="compile.path"/>
         </javac>
         <!-- Copy and replace platform in persistence.xml. -->
+        <!-- JBoss has its own persistence.xml -->
+        <condition property="SERVER_NAME" value="server/${server.name}">
+            <contains string="${server.name}" substring="jboss"/>
+        </condition>
+
+        <condition property="SERVER_NAME" value="server">
+            <not>
+                <contains string="${server.name}" substring="jboss"/>
+            </not>
+        </condition>
+
         <copy todir="${eclipselink.jpa.test}/stage/META-INF">
-            <fileset dir="${eclipselink.jpa.test}/resource/${MODEL_NAME}/server/">
+            <fileset dir="${eclipselink.jpa.test}/resource/${MODEL_NAME}/${SERVER_NAME}">
                 <include name="persistence.xml"/>
             </fileset>
         </copy>
+
         <chmod file="${eclipselink.jpa.test}/stage/META-INF/*.xml" perm="ugo+w"/>
         <replace dir="${eclipselink.jpa.test}/stage/META-INF" token='%%server-platform%%' value="${server.platform}">
             <include name="*.xml"/>
