@@ -30,59 +30,39 @@ import org.xml.sax.SAXException;
 
 /**
  * INTERNAL:
+ * <p><b>Purpose:</b>This class is a content handler that specifically handles the "Include" element in an mtom style
+ * attachment. 
  * @author  mmacivor
  */
 
-public class XMLBinaryAttachmentHandler implements ContentHandler {
+public class XMLBinaryAttachmentHandler extends UnmarshalRecord {
     UnmarshalRecord record;
     DatabaseMapping mapping;
     String c_id = null;
     Converter converter;
     NodeValue nodeValue;
     boolean isCollection = false;
+    
+    private static final String INCLUDE_ELEMENT_NAME = "Include";
+    private static final String HREF_ATTRIBUTE_NAME = "href";
 
-    public XMLBinaryAttachmentHandler(UnmarshalRecord unmarshalRecord, NodeValue nodeValue, XMLBinaryDataMapping mapping) {
+    public XMLBinaryAttachmentHandler(UnmarshalRecord unmarshalRecord, NodeValue nodeValue, DatabaseMapping mapping, Converter converter, boolean isCollection) {
+        super(null);
         record = unmarshalRecord;
         this.mapping = mapping;
         this.nodeValue = nodeValue;
-        converter = mapping.getConverter();
+        this.converter = converter;
+        this.isCollection = isCollection;
     }
-
-    public XMLBinaryAttachmentHandler(UnmarshalRecord unmarshalRecord, NodeValue nodeValue, XMLBinaryDataCollectionMapping mapping) {
-        record = unmarshalRecord;
-        this.mapping = mapping;
-        converter = mapping.getValueConverter();
-        this.nodeValue = nodeValue;
-        isCollection = true;
+    
+    @Override
+    public void characters(char[] ch, int offset, int length) throws SAXException {
+        //we don't care about characters here. Probably a whitespace
     }
-
-    public void startPrefixMapping(String prefix, String URI) {
-    }
-
-    public void ignorableWhitespace(char[] chars, int offset, int length) {
-    }
-
-    public void characters(char[] characters, int offset, int length) {
-    }
-
-    public void endDocument() {
-    }
-
-    public void startDocument() {
-    }
-
-    public void skippedEntity(String entity) {
-    }
-
-    public void setDocumentLocator(Locator locator) {
-    }
-
-    public void endPrefixMapping(String prefix) {
-    }
-
+    @Override
     public void startElement(String namespaceURI, String localName, String qName, Attributes atts) throws SAXException {
-        if (namespaceURI.equals(XMLConstants.XOP_URL) && (localName.equals("Include") || qName.equals("Include"))) {
-            this.c_id = atts.getValue("", "href");
+        if(XMLConstants.XOP_URL.equals(namespaceURI) && (INCLUDE_ELEMENT_NAME.equals(localName) || INCLUDE_ELEMENT_NAME.equals(qName))) {
+            this.c_id = atts.getValue("", HREF_ATTRIBUTE_NAME);
         } else {
             //Return control to the UnmarshalRecord
             record.getXMLReader().setContentHandler(record);
@@ -90,8 +70,9 @@ public class XMLBinaryAttachmentHandler implements ContentHandler {
         }
     }
 
+    @Override
     public void endElement(String namespaceURI, String localName, String qName) throws SAXException {
-        if (namespaceURI.equals(XMLConstants.XOP_URL) && (localName.equals("Include") || qName.equals("Include"))) {
+        if(XMLConstants.XOP_URL.equals(namespaceURI) && (INCLUDE_ELEMENT_NAME.equals(localName) || INCLUDE_ELEMENT_NAME.equals(qName))) {
             //Get the attachment and set it in the object.
             XMLAttachmentUnmarshaller attachmentUnmarshaller = record.getUnmarshaller().getAttachmentUnmarshaller();
             Object data = attachmentUnmarshaller.getAttachmentAsByteArray(this.c_id);
@@ -106,10 +87,11 @@ public class XMLBinaryAttachmentHandler implements ContentHandler {
             data = XMLBinaryDataHelper.getXMLBinaryDataHelper().convertObject(data, mapping.getAttributeClassification(), record.getSession());
             //check for collection case
             if (isCollection) {
-                Object container = record.getContainerInstance((XMLBinaryDataCollectionMappingNodeValue) nodeValue);
-                ((XMLBinaryDataCollectionMapping) mapping).getContainerPolicy().addInto(data, container, record.getSession());
+                if(data != null) {
+                    record.addAttributeValue((ContainerValue)nodeValue, data);
+                }
             } else {
-                mapping.setAttributeValueInObject(record.getCurrentObject(), data);
+                record.setAttributeValue(data, mapping);
             }
             //Return control to the UnmarshalRecord
             record.getXMLReader().setContentHandler(record);

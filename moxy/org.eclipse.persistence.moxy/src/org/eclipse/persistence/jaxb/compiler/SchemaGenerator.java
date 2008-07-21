@@ -433,7 +433,7 @@ public class SchemaGenerator {
                 	
                 } else if(next.isReference()) {
                 	ReferenceProperty refProp = (ReferenceProperty)next;
-                	ArrayList<ElementDeclaration> referencedElements = refProp.getReferencedElements();
+                	java.util.List<ElementDeclaration> referencedElements = refProp.getReferencedElements();
                 	if(referencedElements.size() == 1) {
                 		//if only a single reference, just add the element.
                     	Element element = new Element();
