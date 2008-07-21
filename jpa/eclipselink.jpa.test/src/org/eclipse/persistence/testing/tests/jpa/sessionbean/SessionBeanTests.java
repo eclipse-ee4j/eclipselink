@@ -100,7 +100,12 @@ public class SessionBeanTests extends JUnitTestCase {
                         // WLS likes this one.
                         service = (EmployeeService) PortableRemoteObject.narrow(context.lookup("EmployeeService#org.eclipse.persistence.testing.models.jpa.sessionbean.EmployeeService"), EmployeeService.class);
                     } catch (NameNotFoundException notFoundException3) {
-                        throw new Error("All lookups failed.", notFoundException);
+                        try {
+                             //jboss likes this one
+                             service = (EmployeeService) PortableRemoteObject.narrow(context.lookup("EmployeeService/remote"), EmployeeService.class);
+                        } catch (NameNotFoundException notFoundException4) {
+                             throw new Error("All lookups failed.", notFoundException);
+                        }
                     }
                 }
             }
