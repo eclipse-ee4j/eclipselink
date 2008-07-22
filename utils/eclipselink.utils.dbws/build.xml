@@ -26,24 +26,33 @@
 #******************************************************************************/-->
 <project name="eclipselink.utils.dbws" default="all" basedir=".">
 
-    <property file="${user.home}/build.properties"/>
-    <property file="./build.properties"/>
+    <target name="init">
+        <property file="${user.home}/build.properties"/>
+        <property file="${basedir}/build.properties"/>
 
-    <path id="compile.path">
-        <pathelement path="${eclipselink.plugins}/${asm}"/>
-        <pathelement path="${eclipselink.core}/${classes.dir}"/>
-        <pathelement path="${eclipselink.dbws}/${classes.dir}"/>
-        <pathelement path="${wsdl.lib}"/>
-    </path>
-
-    <target name="all" depends="clean, compile" description="build EclipseLink jar"/>
-
-    <target name="compile-dbws" description="build core classes">
-        <ant antfile="${eclipselink.dbws}/build.xml" dir="${eclipselink.dbws}" target="compile"/>
+        <path id="compile.path">
+            <pathelement path="${eclipselink.plugins}/${asm}"/>
+            <pathelement path="${eclipselink.core}/${classes.dir}"/>
+            <pathelement path="${eclipselink.dbws}/${classes.dir}"/>
+            <pathelement path="${wsdl.lib}"/>
+        </path>
     </target>
 
-    <!-- target name="compile" depends="compile-dbws" description="build dbws util classes" -->
-    <target name="compile" description="build dbws util classes">
+    <target name="all" depends="clean, create-jar" description="build EclipseLink jar"/>
+
+    <target name="verify-dependencies" depends="init" description="verify core classes were compiled">
+        <available file="${eclipselink.core}/${classes.dir}/org/eclipse/persistence/Version.class"        property="core.classes.exist"/>
+        <available file="${eclipselink.dbws}/${classes.dir}/org/eclipse/persistence/dbws/DBWSModel.class" property="dbws.classes.exist"/>
+        <available file="${eclipselink.plugins}/${asm}"                                    type="dir"     property="asm.exist"/>
+        <available file="${wsdl.lib}"                                                                     property="wsdl.exist"/>
+        <fail unless="core.classes.exist" message="Core Classes cannot be found (check they compiled). Exiting..."/>
+        <fail unless="dbws.classes.exist" message="DBWS Classes cannot be found (check they compiled). Exiting..."/>
+        <fail unless="asm.exist"          message="ASM Bundle cannot be found. Exiting..."/>
+        <fail unless="wsdl.exist"         message="WSDL Library cannot be found. Exiting..."/>
+    </target>
+
+    <!-- target name="compile" description="build dbws-util classes" -->
+    <target name="compile" depends="verify-dependencies" description="build dbws util classes">
         <mkdir dir="${eclipselink.util.dbws}/${classes.dir}"/>
         <javac srcdir="${eclipselink.util.dbws}/${src.dir}"
                destdir="${eclipselink.util.dbws}/${classes.dir}"
@@ -61,9 +70,17 @@
         </javac>
     </target>
 
-    <target name="clean" description="clean the build">
-        <delete includeEmptyDirs="true" failonerror="false">
-            <fileset dir="${eclipselink.util.dbws}/${classes.dir}"/>
-        </delete>
+    <!-- Packages util-dbws jar. -->
+    <target name="create-jar" depends="compile" description="build DBWS util jar">
+        <delete file="${eclipselink.util.dbws}/${dbws-util.jar.name}"/>
+        <jar jarfile="${eclipselink.util.dbws}/${dbws-util.jar.name}">
+            <fileset dir="${eclipselink.util.dbws}/${classes.dir}">
+                <include name="**/*.class"/>
+            </fileset>
+        </jar>
+    </target>
+
+    <target name="clean" depends="init" description="clean the build">
+        <delete dir="${eclipselink.util.dbws}/${classes.dir}" includeEmptyDirs="true" failonerror="false"/>
     </target>
 </project>
