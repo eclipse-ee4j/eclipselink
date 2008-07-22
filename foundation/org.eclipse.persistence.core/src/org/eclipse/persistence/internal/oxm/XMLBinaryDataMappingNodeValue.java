@@ -15,10 +15,13 @@ package org.eclipse.persistence.internal.oxm;
 import javax.activation.DataHandler;
 import javax.xml.namespace.QName;
 import org.xml.sax.Attributes;
+import org.xml.sax.SAXException;
+import org.eclipse.persistence.exceptions.XMLMarshalException;
 import org.eclipse.persistence.internal.helper.ClassConstants;
 import org.eclipse.persistence.internal.oxm.XMLBinaryDataHelper;
 import org.eclipse.persistence.internal.oxm.record.MarshalContext;
 import org.eclipse.persistence.internal.oxm.record.ObjectMarshalContext;
+import org.eclipse.persistence.internal.oxm.record.deferred.BinaryMappingContentHandler;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.mappings.converters.Converter;
 import org.eclipse.persistence.oxm.NamespaceResolver;
@@ -153,16 +156,19 @@ public class XMLBinaryDataMappingNodeValue extends NodeValue implements NullCapa
     }
 
     public boolean startElement(XPathFragment xPathFragment, UnmarshalRecord unmarshalRecord, Attributes atts) {
+        try {
         unmarshalRecord.removeNullCapableValue(this);
         XMLField xmlField = (XMLField) xmlBinaryDataMapping.getField();
         XPathFragment lastFragment = xmlField.getLastXPathFragment();
-        if (!xmlBinaryDataMapping.isSwaRef() && !xmlBinaryDataMapping.shouldInlineBinaryData() && !lastFragment.isAttribute()) {
-            //check to see if this is an attachment
-            if ((unmarshalRecord.getUnmarshaller().getAttachmentUnmarshaller() != null) && unmarshalRecord.getUnmarshaller().getAttachmentUnmarshaller().isXOPPackage()) {
+            if (!lastFragment.isAttribute()) {
                 //set a new content handler to deal with the Include element's event.
-                XMLBinaryAttachmentHandler handler = new XMLBinaryAttachmentHandler(unmarshalRecord, this, this.xmlBinaryDataMapping);
-                unmarshalRecord.getXMLReader().setContentHandler(handler);
-            }
+                 BinaryMappingContentHandler handler = new BinaryMappingContentHandler(unmarshalRecord, this, this.xmlBinaryDataMapping);
+                 String qnameString = xPathFragment.getLocalName();
+                 if (xPathFragment.getPrefix() != null) {
+                     qnameString = xPathFragment.getPrefix() + ":" + qnameString;
+                 }
+                 handler.startElement(xPathFragment.getNamespaceURI(), xPathFragment.getLocalName(), qnameString, atts);
+                 unmarshalRecord.getXMLReader().setContentHandler(handler);
         } else if (lastFragment.isAttribute()) {
             //handle swaRef and inline attribute cases here:
             String value = atts.getValue(lastFragment.getNamespaceURI(), lastFragment.getLocalName());
@@ -182,47 +188,14 @@ public class XMLBinaryDataMappingNodeValue extends NodeValue implements NullCapa
                 xmlBinaryDataMapping.setAttributeValueInObject(unmarshalRecord.getCurrentObject(), XMLBinaryDataHelper.getXMLBinaryDataHelper().convertObject(fieldValue, xmlBinaryDataMapping.getAttributeClassification(), unmarshalRecord.getSession()));
             }
         }
-        return true;
+            return true;
+        } catch(SAXException ex) {
+            throw XMLMarshalException.unmarshalException(ex);
+        }
     }
 
     public void endElement(XPathFragment xPathFragment, UnmarshalRecord unmarshalRecord) {
-        if (!xmlBinaryDataMapping.shouldInlineBinaryData() && !xmlBinaryDataMapping.isSwaRef() && (unmarshalRecord.getUnmarshaller().getAttachmentUnmarshaller() != null) && unmarshalRecord.getUnmarshaller().getAttachmentUnmarshaller().isXOPPackage()) {
-            //handled in start element
-            unmarshalRecord.resetStringBuffer();
-            return;
-        }
-        unmarshalRecord.removeNullCapableValue(this);
-        Object value = unmarshalRecord.getStringBuffer().toString();
-        unmarshalRecord.resetStringBuffer();
-
-        if (xmlBinaryDataMapping.isSwaRef() && (unmarshalRecord.getUnmarshaller().getAttachmentUnmarshaller() != null)) {
-            if (xmlBinaryDataMapping.getAttributeClassification() == XMLBinaryDataHelper.getXMLBinaryDataHelper().DATA_HANDLER) {
-                value = unmarshalRecord.getUnmarshaller().getAttachmentUnmarshaller().getAttachmentAsDataHandler((String) value);
-            } else {
-                value = unmarshalRecord.getUnmarshaller().getAttachmentUnmarshaller().getAttachmentAsByteArray((String) value);
-            }
-            if (xmlBinaryDataMapping.getConverter() != null) {
-                Converter converter = xmlBinaryDataMapping.getConverter();
-                if (converter instanceof XMLConverter) {
-                    value = ((XMLConverter) converter).convertDataValueToObjectValue(value, unmarshalRecord.getSession(), unmarshalRecord.getUnmarshaller());
-                } else {
-                    value = converter.convertDataValueToObjectValue(value, unmarshalRecord.getSession());
-                }
-            }
-        } else {
-            value = ((XMLConversionManager) unmarshalRecord.getSession().getDatasourcePlatform().getConversionManager()).convertSchemaBase64ToByteArray(value);
-            if (xmlBinaryDataMapping.getConverter() != null) {
-                Converter converter = xmlBinaryDataMapping.getConverter();
-                if (converter instanceof XMLConverter) {
-                    value = ((XMLConverter) converter).convertDataValueToObjectValue(value, unmarshalRecord.getSession(), unmarshalRecord.getUnmarshaller());
-                } else {
-                    value = converter.convertDataValueToObjectValue(value, unmarshalRecord.getSession());
-                }
-            }
-        }
-        value = XMLBinaryDataHelper.getXMLBinaryDataHelper().convertObject(value, xmlBinaryDataMapping.getAttributeClassification(), unmarshalRecord.getSession());
-
-        unmarshalRecord.setAttributeValue(value, xmlBinaryDataMapping);
+        unmarshalRecord.getStringBuffer().reset();
     }
 
     public void setNullValue(Object object, Session session) {

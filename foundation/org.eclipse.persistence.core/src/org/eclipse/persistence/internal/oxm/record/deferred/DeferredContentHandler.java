@@ -229,7 +229,10 @@ public abstract class DeferredContentHandler implements ContentHandler, LexicalH
            	 String nextLocalName = localNames[i];
            	 if(nextLocalName != null && localName!= null && localName.equals(nextLocalName)){           		 
                String uriAtIndex = uris[i];
-           		 if(namespaceUri != null && uriAtIndex != null && namespaceUri.equals(uriAtIndex)){               
+               if(uriAtIndex == null) {
+                   uriAtIndex="";
+               }
+               if(uriAtIndex.equals(namespaceUri)){
                   return types[i];           			 
            		 }
            	 }        	 
@@ -256,7 +259,10 @@ public abstract class DeferredContentHandler implements ContentHandler, LexicalH
             	 String nextLocalName = localNames[i];
             	 if(nextLocalName != null && localName!= null && localName.equals(nextLocalName)){
             		 String uriAtIndex = uris[i];
-            		 if(uri != null && uriAtIndex != null && uri.equals(uriAtIndex)){
+            		 if(uriAtIndex == null) {
+            		     uriAtIndex="";
+            		 }
+            		 if(uriAtIndex.equals(uri)){
             			 return i;
             		 }
             	 }        	 
@@ -289,7 +295,11 @@ public abstract class DeferredContentHandler implements ContentHandler, LexicalH
         	 String nextLocalName = localNames[i];
         	 if(nextLocalName != null && localName!= null && localName.equals(nextLocalName)){
         		 String uriAtIndex = uris[i];
-        		 if(uri != null && uriAtIndex != null && uri.equals(uriAtIndex)){
+        		 //handle null/empty namespace case
+                 if(uriAtIndex == null) {
+                     uriAtIndex="";
+                 }
+                 if(uriAtIndex.equals(uri)){
         			 return values[i];
         		 }
         	 }        	 
