@@ -4,9 +4,6 @@
     <package>org.eclipse.persistence.testing.models.jpa.xml.advanced</package>
     <type-converter name="String2String" data-type="String" object-type="String"/>
     <entity class="Employee" existence-checking="CHECK_DATABASE">
-        <secondary-table name="CMP3_XML_SALARY">
-            <primary-key-join-column name="E_ID" referenced-column-name="EMP_ID"/>
-        </secondary-table>
         <customizer class="EmployeeCustomizer"/>
         <change-tracking type="AUTO"/>
         <optimistic-locking type="VERSION_COLUMN" cascade="true"/>
@@ -25,7 +22,7 @@
             <id name="id">
                 <column name="EMP_ID"/>
                 <generated-value strategy="TABLE" generator="XML_EMPLOYEE_TABLE_GENERATOR"/>
-                <convert name="String2String"/>
+                <convert>String2String</convert>
                 <property name="attributeName" value="id"/>
             </id>
             <basic name="firstName">
@@ -65,7 +62,7 @@
             </basic>
             <basic-collection name="responsibilities">
                 <value-column name="DESCRIPTION"/>
-                <convert name="String2String"/>
+                <convert>String2String</convert>
                 <collection-table name="CMP3_XML_RESPONS"/>
                 <property name="attributeName" value="responsibilities"/>
             </basic-collection>
