@@ -13,6 +13,8 @@
  *       - 218084: Implement metadata merging functionality between mapping file
  *     05/23/2008-1.0M8 Guy Pelletier 
  *       - 211330: Add attributes-complete support to the EclipseLink-ORM.XML Schema
+ *     07/22/2008-1.1 Guy Pelletier 
+ *       - 237315: Support converters on attribute mappings in the eclipselink orm.xml schema
  *******************************************************************************/
  package org.eclipse.persistence.internal.jpa.metadata.xml;
 
@@ -401,6 +403,10 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         
         descriptor.addMapping(getValueColumnMapping());
         descriptor.addMapping(getConvertMapping());
+        descriptor.addMapping(getConverterMapping());
+        descriptor.addMapping(getTypeConverterMapping());
+        descriptor.addMapping(getObjectTypeConverterMapping());
+        descriptor.addMapping(getStructConverterMapping());
         descriptor.addMapping(getCollectionTableMapping());
         descriptor.addMapping(getJoinFetchMapping());
         descriptor.addMapping(getPropertiesMapping());
@@ -439,6 +445,10 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         descriptor.addMapping(enumeratedMapping);
         
         descriptor.addMapping(getConvertMapping());
+        descriptor.addMapping(getConverterMapping());
+        descriptor.addMapping(getTypeConverterMapping());
+        descriptor.addMapping(getObjectTypeConverterMapping());
+        descriptor.addMapping(getStructConverterMapping());
         descriptor.addMapping(getPropertiesMapping());
         descriptor.addMapping(getNameAttributeMapping());
         descriptor.addMapping(getFetchAttributeMapping());
@@ -481,6 +491,10 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         valueConverterMapping.setXPath("orm:value-converter/text()");
         descriptor.addMapping(valueConverterMapping);
         
+        descriptor.addMapping(getConverterMapping());
+        descriptor.addMapping(getTypeConverterMapping());
+        descriptor.addMapping(getObjectTypeConverterMapping());
+        descriptor.addMapping(getStructConverterMapping());
         descriptor.addMapping(getCollectionTableMapping());
         descriptor.addMapping(getJoinFetchMapping());
         descriptor.addMapping(getPropertiesMapping());
@@ -1196,6 +1210,10 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         
         descriptor.addMapping(getTemporalMapping());
         descriptor.addMapping(getConvertMapping());
+        descriptor.addMapping(getConverterMapping());
+        descriptor.addMapping(getTypeConverterMapping());
+        descriptor.addMapping(getObjectTypeConverterMapping());
+        descriptor.addMapping(getStructConverterMapping());
         descriptor.addMapping(getTableGeneratorMapping());
         descriptor.addMapping(getSequenceGeneratorMapping());
         descriptor.addMapping(getPropertiesMapping());
@@ -2062,6 +2080,10 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         descriptor.addMapping(getColumnMapping());
         descriptor.addMapping(getTemporalMapping());
         descriptor.addMapping(getConvertMapping());
+        descriptor.addMapping(getConverterMapping());
+        descriptor.addMapping(getTypeConverterMapping());
+        descriptor.addMapping(getObjectTypeConverterMapping());
+        descriptor.addMapping(getStructConverterMapping());
         descriptor.addMapping(getPropertiesMapping());
         descriptor.addMapping(getNameAttributeMapping());
         descriptor.addMapping(getMutableAttributeMapping());

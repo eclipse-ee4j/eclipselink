@@ -2,9 +2,11 @@
 <entity-mappings version="1.0" xmlns="http://www.eclipse.org/eclipselink/xsds/persistence/orm" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.eclipse.org/eclipselink/xsds/persistence/orm xsd/eclipselink_orm_1_0.xsd">
     <description>Advanced Extended Test Model Instance Document</description>
     <package>org.eclipse.persistence.testing.models.jpa.xml.advanced</package>
-    <converter name="ProvinceConverter" class="ProvinceConverter"/>
-    <type-converter name="Long2String" data-type="String" object-type="Long"/>
+    <type-converter name="String2String" data-type="String" object-type="String"/>
     <entity class="Employee" existence-checking="CHECK_DATABASE">
+        <secondary-table name="CMP3_XML_SALARY">
+            <primary-key-join-column name="E_ID" referenced-column-name="EMP_ID"/>
+        </secondary-table>
         <customizer class="EmployeeCustomizer"/>
         <change-tracking type="AUTO"/>
         <optimistic-locking type="VERSION_COLUMN" cascade="true"/>
@@ -16,12 +18,6 @@
             <conversion-value data-value="F" object-value="Female"/>
             <conversion-value data-value="M" object-value="Male"/>
         </object-type-converter>
-        <object-type-converter name="CreditCard">
-            <conversion-value data-value="VI" object-value="Visa"/>
-            <conversion-value data-value="AM" object-value="Amex"/>
-            <conversion-value data-value="MC" object-value="Mastercard"/>
-            <conversion-value data-value="DI" object-value="DinersClub"/>
-        </object-type-converter>
         <property name="entityName" value="XMLEmployee"/>
         <property name="entityIntegerProperty" value="1" value-type="Integer"/>
         <property name="ToBeOverriddenByXml" value="true" value-type="Boolean"/>
@@ -29,6 +25,7 @@
             <id name="id">
                 <column name="EMP_ID"/>
                 <generated-value strategy="TABLE" generator="XML_EMPLOYEE_TABLE_GENERATOR"/>
+                <convert name="String2String"/>
                 <property name="attributeName" value="id"/>
             </id>
             <basic name="firstName">
@@ -37,22 +34,6 @@
             </basic>
             <basic name="lastName">
                 <column name="L_NAME"/>
-                <!-- 
-                    @Property(name="attributeName", value="lastName"),
-                    @Property(name="BooleanProperty", value="true", valueType=Boolean.class),
-                    @Property(name="ByteProperty", value="1", valueType=Byte.class),
-                    @Property(name="CharacterProperty", value="A", valueType=Character.class),
-                    @Property(name="DoubleProperty", value="1", valueType=Double.class),
-                    @Property(name="FloatProperty", value="1", valueType=Float.class),
-                    @Property(name="IntegerProperty", value="1", valueType=Integer.class),
-                    @Property(name="LongProperty", value="1", valueType=Long.class),
-                    @Property(name="ShortProperty", value="1", valueType=Short.class),
-                    @Property(name="BigDecimalProperty", value="1", valueType=java.math.BigDecimal.class),
-                    @Property(name="BigIntegerProperty", value="1", valueType=java.math.BigInteger.class),
-                    @Property(name="TimeProperty", value="13:59:59", valueType=java.sql.Time.class),
-                    @Property(name="TimeStampProperty", value="2008-04-10 13:59:59", valueType=java.sql.Timestamp.class),
-                    @Property(name="DateProperty", value="2008-04-10", valueType=java.sql.Date.class)
-                -->
                 <property name="attributeName" value="lastName"/>
                 <property name="BooleanProperty" value="true" value-type="java.lang.Boolean"/>
                 <property name="ByteProperty" value="1" value-type="java.lang.Byte"/>
@@ -84,6 +65,7 @@
             </basic>
             <basic-collection name="responsibilities">
                 <value-column name="DESCRIPTION"/>
+                <convert name="String2String"/>
                 <collection-table name="CMP3_XML_RESPONS"/>
                 <property name="attributeName" value="responsibilities"/>
             </basic-collection>
@@ -92,6 +74,13 @@
                 <key-converter>CreditCard</key-converter>
                 <value-column name="NUMB"/>
                 <value-converter>Long2String</value-converter>
+                <object-type-converter name="CreditCard">
+                    <conversion-value data-value="VI" object-value="Visa"/>
+                    <conversion-value data-value="AM" object-value="Amex"/>
+                    <conversion-value data-value="MC" object-value="Mastercard"/>
+                    <conversion-value data-value="DI" object-value="DinersClub"/>
+                </object-type-converter>
+                <type-converter name="Long2String" data-type="String" object-type="Long"/>
                 <!-- Let the collection table default in this case (EMPLOYEE_CREDITCARDS) -->
                 <private-owned/>
                 <property name="attributeName" value="creditCards"/>
@@ -186,6 +175,7 @@
         <attributes>
             <basic name="province">
                 <convert>ProvinceConverter</convert>
+                <converter name="ProvinceConverter" class="ProvinceConverter"/>
             </basic>
             <basic name="type">
                 <convert>class-instance</convert>
