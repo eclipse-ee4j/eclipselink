@@ -47,7 +47,7 @@ public class DeferredvsWriteLockTest extends PerformanceComparisonTestCase {
             }
         };
         test.setName("LockTest");
-        test.setAllowableDecrease(90);
+        test.setAllowableDecrease(20);
         addTest(test);
     }
 }

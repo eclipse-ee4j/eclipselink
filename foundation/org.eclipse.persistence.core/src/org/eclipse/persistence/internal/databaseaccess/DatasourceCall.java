@@ -52,8 +52,9 @@ public abstract class DatasourceCall implements Call {
 
     // Store if the call has been prepared.
     protected boolean isPrepared;
-    //Bug5200836 Used to indicate whether or not the connection needs to be unwrapped.
-    protected boolean shouldUnwrapConnection = false; 
+
+    /** Allow connection unwrapping to be configured. */
+    protected boolean isNativeConnectionRequired;
     
     //Eclipselink Bug 217745 indicates whether or not the token(#,?) needs to be processed if they are in the quotes.
     protected boolean shouldProcessTokenInQuotes; 
@@ -665,7 +666,7 @@ public abstract class DatasourceCall implements Call {
                             value = session.getDatasourcePlatform().getCustomModifyValueForCall(this, value, field, false);
                             //Bug#5200826 needs use unwrapped connection.
                             if ((value instanceof BindCallCustomParameter) && ((BindCallCustomParameter)value).shouldUseUnwrappedConnection()){
-                                this.shouldUnwrapConnection=true;
+                                this.isNativeConnectionRequired=true;
                             }
                         }
                         appendParameter(writer, value, session);
@@ -826,4 +827,19 @@ public abstract class DatasourceCall implements Call {
         }while(true);
     }
 
+    /**
+     * Set if the call requires usage of a native (unwrapped) JDBC connection.
+     * This may be required for some Oracle JDBC support when a wrapping DataSource is used.
+     */
+    public void setIsNativeConnectionRequired(boolean isNativeConnectionRequired) {
+        this.isNativeConnectionRequired = isNativeConnectionRequired;
+    }
+
+    /**
+     * Return if the call requires usage of a native (unwrapped) JDBC connection.
+     * This may be required for some Oracle JDBC support when a wrapping DataSource is used.
+     */
+    public boolean isNativeConnectionRequired() {
+        return isNativeConnectionRequired;
+    }
 }

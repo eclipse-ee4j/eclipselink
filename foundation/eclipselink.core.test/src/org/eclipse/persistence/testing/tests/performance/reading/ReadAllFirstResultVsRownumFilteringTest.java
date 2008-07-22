@@ -82,7 +82,6 @@ public class ReadAllFirstResultVsRownumFilteringTest extends PerformanceComparis
                         
         };
         test.setName("FirstResultTest");
-        test.setAllowableDecrease(5);
         addTest(test);
     }
 }

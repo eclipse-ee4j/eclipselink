@@ -90,6 +90,7 @@
             <pathelement path="${eclipselink.core.dir}/${classes.dir}"/>
             <pathelement path="${eclipselink.jpa}/${classes.dir}"/>
             <pathelement path="${eclipselink.core.test.dir}/${classes.dir}"/>
+            <pathelement path="${eclipselink.core.test.dir}/${eclipselink.tests.jar}"/>
             <fileset
                 dir="${eclipselink.core.lib.dir}"
                 includes="${eclipselink.core.depend}"/>
@@ -500,6 +501,16 @@
         </antcall>
     </target>
 
+    <!-- Runs performance tests. -->
+    <target name="test-performance-nocache" depends="clean-test,config-trunk, config-flat">
+        <antcall target="run-test-prompt" inheritRefs="true">
+            <param name="TEST_CLASS" value="org.eclipse.persistence.testing.tests.jpa.performance.JPAIsolatedPerformanceRegressionModel"/>
+            <param name="RUN_PATH" value="run.classpath"/>
+            <param name="TEST_AGENT" value="${test.agent}"/>
+            <param name="TEST_WEAVING" value="${test.weaving}"/>
+        </antcall>
+    </target>
+	
     <!-- Runs performance tests comparing with TopLink. -->
     <target name="test-performance-toplink" depends="clean-test,config-trunk, config-flat">
         <path id="run.classpath.toplink">
@@ -514,6 +525,36 @@
         </antcall>
     </target>
 
+    <!-- Runs performance tests comparing with TopLink Essentials. -->
+    <target name="test-performance-essentials" depends="clean-test,config-trunk, config-flat">
+        <path id="run.classpath.essentials">
+            <pathelement path="${toplink-essentials.jar}"/>
+            <path refid="run.classpath"/>
+        </path>
+        <antcall target="run-test-prompt" inheritRefs="true">
+            <param name="TEST_CLASS" value="org.eclipse.persistence.testing.tests.jpa.performance.EssentialsJPAPerformanceRegressionModel"/>
+            <param name="RUN_PATH" value="run.classpath.essentials"/>
+            <param name="TEST_AGENT" value="-javaagent:../${toplink-essentials-agent.jar}"/>
+            <param name="TEST_WEAVING" value="-Dignore"/>
+        </antcall>
+    </target>
+	
+    <!-- Runs performance tests comparing with Hibernate. -->
+    <target name="test-performance-hibernate" depends="clean-test,config-trunk, config-flat">
+        <path id="run.classpath.hibernate">
+            <fileset dir="${hibernate.dir}">
+                <include name="*.jar"/>
+            </fileset>
+            <path refid="run.classpath"/>
+        </path>
+        <antcall target="run-test-prompt" inheritRefs="true">
+            <param name="TEST_CLASS" value="org.eclipse.persistence.testing.tests.jpa.performance.HibernateJPAPerformanceRegressionModel"/>
+            <param name="RUN_PATH" value="run.classpath.hibernate"/>
+            <param name="TEST_AGENT" value="-Dignore"/>
+            <param name="TEST_WEAVING" value="-Dignore"/>
+        </antcall>
+    </target>
+	
     <!-- Launches the testing browser -->
     <target name="test-browser" depends="config-trunk, config-flat">
         <echo>Running test browser</echo>
@@ -554,7 +595,7 @@
         <junit printsummary="yes" haltonfailure="yes" fork="yes" showoutput="true" maxmemory="512m" dir="${eclipselink.jpa.test}/${run.dir}">
             <jvmarg value="${TEST_AGENT}"/>
             <jvmarg value="${TEST_WEAVING}"/>
-            <jvmarg value="${ORM_TESTING}"/>
+        	<jvmarg value="${ORM_TESTING}"/>
             <jvmarg value="-Declipselink.logging.level=${logging.level}"/>
             <jvmarg value="-Ddb.driver=${db.driver}"/>
             <jvmarg value="-Ddb.url=${db.url}"/>
@@ -650,7 +691,7 @@
                target="${eclipselink.jpa.test}/woven-${eclipselink.xml.extended.model}.jar"
                loglevel="${logging.level}">
                <classpath>
-                    <path refid="run.extended.classpath"/>
+    	            <path refid="run.extended.classpath"/>
                </classpath>
         </weave>
         <weave source="${eclipselink.jpa.test}/${eclipselink.xml.merge.model}.jar"
@@ -835,7 +876,6 @@
                 <include name="persistence.xml"/>
             </fileset>
         </copy>
-
         <chmod file="${eclipselink.jpa.test}/stage/META-INF/*.xml" perm="ugo+w"/>
         <replace dir="${eclipselink.jpa.test}/stage/META-INF" token='%%server-platform%%' value="${server.platform}">
             <include name="*.xml"/>

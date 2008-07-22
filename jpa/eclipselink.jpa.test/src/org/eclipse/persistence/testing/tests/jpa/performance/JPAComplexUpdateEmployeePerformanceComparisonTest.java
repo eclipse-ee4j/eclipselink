@@ -34,7 +34,7 @@ public class JPAComplexUpdateEmployeePerformanceComparisonTest extends Performan
     public void setup() {
         EntityManager manager = createEntityManager();
         this.originalEmployee = (Employee)manager.createQuery("Select e from Employee e").getResultList().get(0);
-        this.originalEmployee.getAddress();
+        this.originalEmployee.getAddress().getCity();
         this.originalEmployee.getPhoneNumbers().size();
         this.count = 0;
         manager.close();

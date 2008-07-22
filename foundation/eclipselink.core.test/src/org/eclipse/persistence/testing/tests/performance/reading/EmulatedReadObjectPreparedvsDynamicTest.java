@@ -66,7 +66,7 @@ public class EmulatedReadObjectPreparedvsDynamicTest extends ReadObjectPreparedv
 
     public PerformanceComparisonTestCase buildDynamicNoParseCacheEJBQLTest() {
         PerformanceComparisonTestCase test = super.buildDynamicNoParseCacheEJBQLTest();
-        test.setAllowableDecrease(-180);
+        test.setAllowableDecrease(-200);
         return test;
     }
 

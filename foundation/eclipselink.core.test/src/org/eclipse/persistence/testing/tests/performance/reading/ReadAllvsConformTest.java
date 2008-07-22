@@ -66,7 +66,7 @@ public class ReadAllvsConformTest extends PerformanceComparisonTestCase {
             }
         };
         test.setName("ReadAllConformTest");
-        test.setAllowableDecrease(-10);
+        test.setAllowableDecrease(-120);
         addTest(test);
     }
 }

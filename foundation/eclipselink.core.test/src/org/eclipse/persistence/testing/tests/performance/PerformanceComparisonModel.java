@@ -63,8 +63,8 @@ public class PerformanceComparisonModel extends TestModel {
         suite.addTest(new ReadAllMaxRowsVsRownumFilteringTest());
         suite.addTest(new ReadAllFirstResultVsRownumFilteringTest());
         suite.addTest(new ReadAllStreamvsCursorSizeTest());
-        suite.addTest(new ReadAllvsReadAllFromResultSet());
-        suite.addTest(new EmulatedReadAllvsReadAllFromResultSet());
+        //suite.addTest(new ReadAllvsReadAllFromResultSet());
+        //suite.addTest(new EmulatedReadAllvsReadAllFromResultSet());
         suite.addTest(new ReadObjectPreparedvsDynamicTest());
         suite.addTest(new EmulatedReadObjectPreparedvsDynamicTest());
 

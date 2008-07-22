@@ -35,7 +35,7 @@ public class JPAReadAllEmployeeCompletelyPerformanceComparisonTest extends JPARe
         manager.getTransaction().begin();
         Query query = manager.createQuery("Select e from Employee e");
         query.setHint("org.hibernate.readOnly", new Boolean(isReadOnly()));
-        query.setHint("eclipselink.return-shared", new Boolean(isReadOnly()));
+        query.setHint("eclipselink.read-only", new Boolean(isReadOnly()));
         query.setHint("toplink.return-shared", new Boolean(isReadOnly()));
         List result = query.getResultList();
         for (Iterator iterator = result.iterator(); iterator.hasNext();) {

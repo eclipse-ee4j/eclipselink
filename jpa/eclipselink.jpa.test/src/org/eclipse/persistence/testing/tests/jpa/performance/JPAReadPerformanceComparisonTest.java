@@ -43,7 +43,7 @@ public class JPAReadPerformanceComparisonTest extends PerformanceRegressionTestC
         } else {
             session.getTransaction().begin();
             query.setHint("org.hibernate.readOnly", Boolean.TRUE);
-            query.setHint("eclipselink.return-shared", Boolean.TRUE);
+            query.setHint("eclipselink.read-only", Boolean.TRUE);
             query.setHint("toplink.return-shared", Boolean.TRUE);
             result = query.getResultList();
             session.getTransaction().commit();

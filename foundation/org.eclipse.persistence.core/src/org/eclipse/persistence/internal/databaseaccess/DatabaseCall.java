@@ -105,9 +105,6 @@ public abstract class DatabaseCall extends DatasourceCall {
     /** The SQL string to execute. */
     protected String sqlString;
     
-    /** Allow connection unwrapping to be configured. */
-    protected boolean isNativeConnectionRequired;
-
     public DatabaseCall() {
         super.shouldProcessTokenInQuotes=false;
         this.usesBinding = null;
@@ -645,7 +642,7 @@ public abstract class DatabaseCall extends DatasourceCall {
      */
     public Statement prepareStatement(DatabaseAccessor accessor, AbstractRecord translationRow, AbstractSession session) throws SQLException {
         //#Bug5200836 pass shouldUnwrapConnection flag to indicate whether or not using unwrapped connection.
-        Statement statement = accessor.prepareStatement(this, session,shouldUnwrapConnection);
+        Statement statement = accessor.prepareStatement(this, session);
 
         // Setup the max rows returned and query timeout limit.
         if (this.queryTimeout > 0) { 
@@ -900,7 +897,7 @@ public abstract class DatabaseCall extends DatasourceCall {
                     value = session.getPlatform().getCustomModifyValueForCall(this, value, field, true);
                     //Bug#8200836 needs use unwrapped connection
                     if ((value!=null) && (value instanceof BindCallCustomParameter) &&  (((BindCallCustomParameter)value).shouldUseUnwrappedConnection())){
-                        shouldUnwrapConnection=true;
+                        this.isNativeConnectionRequired=true;
                     }
 
                     // If the value is null, the field is passed as the value so the type can be obtained from the field.
@@ -1075,21 +1072,5 @@ public abstract class DatabaseCall extends DatasourceCall {
      */
     public void useUnnamedCursorOutputAsResultSet() {
         setIsCursorOutputProcedure(true);
-    }
-
-    /**
-     * Set if the call requires usage of a native (unwrapped) JDBC connection.
-     * This may be required for some Oracle JDBC support when a wrapping DataSource is used.
-     */
-    public void setIsNativeConnectionRequired(boolean isNativeConnectionRequired) {
-        this.isNativeConnectionRequired = isNativeConnectionRequired;
-    }
-
-    /**
-     * Return if the call requires usage of a native (unwrapped) JDBC connection.
-     * This may be required for some Oracle JDBC support when a wrapping DataSource is used.
-     */
-    public boolean isNativeConnectionRequired() {
-        return isNativeConnectionRequired;
     }
 }

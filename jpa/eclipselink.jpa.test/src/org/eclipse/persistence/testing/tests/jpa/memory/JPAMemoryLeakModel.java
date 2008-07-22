@@ -143,7 +143,7 @@ public class JPAMemoryLeakModel extends TestModel {
                 }
                 manager.getTransaction().commit();
                 Query query = manager.createQuery("Select e from Employee e");
-                query.setHint("eclipselink.return-shared", true);
+                query.setHint("eclipselink.read-only", true);
                 query.setHint("eclipselink.cache-usage", CacheUsage.CheckCacheOnly);
                 addWeakReferences(query.getResultList());
                 addWeakReference(manager);
