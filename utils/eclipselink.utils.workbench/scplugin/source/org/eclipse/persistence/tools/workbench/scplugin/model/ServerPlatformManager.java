@@ -89,7 +89,7 @@ public class ServerPlatformManager extends SCPlatformManager {
 	protected void buildConfigs() {
 	    
 	    this.addConfig( NO_SERVER_ID, "null");
-	    this.addConfig(OC4J__ID, "org.eclipse.persistence.internal.sessions.factories.model.platform.Oc4jPlatformConfig");
+	    this.addConfig( OC4J__ID, "org.eclipse.persistence.internal.sessions.factories.model.platform.Oc4jPlatformConfig");
 	    this.addConfig( OC4J_11_1_1_ID, "org.eclipse.persistence.internal.sessions.factories.model.platform.Oc4jPlatformConfig");
 	    this.addConfig( OC4J_10_1_3_ID, "org.eclipse.persistence.internal.sessions.factories.model.platform.Oc4jPlatformConfig");
 	    this.addConfig( WEBLOGIC_9_ID, "org.eclipse.persistence.internal.sessions.factories.model.platform.WebLogic_9_PlatformConfig");
