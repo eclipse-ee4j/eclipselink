@@ -3154,15 +3154,19 @@ public class ClassDescriptor implements Cloneable, Serializable {
 
         if (targetTableAdditionalPKFields != null) {
             Iterator e = targetTableAdditionalPKFields.keySet().iterator();
-
+            List sourceFields = new ArrayList();
             while (e.hasNext()) {
                 DatabaseField sourceField = (DatabaseField)e.next();
                 DatabaseField targetField = (DatabaseField)targetTableAdditionalPKFields.get(sourceField);
-
-                setAdditionalTablePrimaryKeyFields(sourceTable, targetField, sourceField);
+                if (sourceField.getTable().equals(sourceTable)){
+                    setAdditionalTablePrimaryKeyFields(sourceTable, targetField, sourceField);
+                    sourceFields.add(sourceField);
+                }
             }
-
-            targetTableAdditionalPKFields.clear();
+            Iterator sourceFieldIterator = sourceFields.iterator();
+            while (sourceFieldIterator.hasNext()){
+                targetTableAdditionalPKFields.remove(sourceFieldIterator.next());
+            }
         }
     }
 
