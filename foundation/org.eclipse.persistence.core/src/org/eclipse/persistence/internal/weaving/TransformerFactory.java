@@ -418,9 +418,7 @@ public class TransformerFactory {
             Class typeClass = getAttributeTypeFromClass(clz, attribute, mapping, false);
             if (typeClass == null) {
                 attributeDetails.setAttributeOnSuperClass(true);
-                if (mapping.isForeignReferenceMapping()) {
-                    unMappedAttributes.add(mapping);
-                }
+                unMappedAttributes.add(mapping);
             }
             
             // Set the getter and setter method names if the mapping uses property access.
