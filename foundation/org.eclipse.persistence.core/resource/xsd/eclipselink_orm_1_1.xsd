@@ -2287,9 +2287,9 @@
     </xsd:annotation>
     <xsd:sequence>
       <xsd:element name="key-column" type="orm:column" minOccurs="0"/>
-      <xsd:element name="key-converter" type="xsd:string"/>    
+      <xsd:element name="key-converter" type="xsd:string" minOccurs="0"/>    
       <xsd:element name="value-column" type="orm:column" minOccurs="0"/>
-      <xsd:element name="value-converter" type="xsd:string"/>
+      <xsd:element name="value-converter" type="xsd:string" minOccurs="0"/>
       <xsd:choice minOccurs="0" maxOccurs="2">
         <xsd:element name="converter" type="orm:converter"/>
         <xsd:element name="type-converter" type="orm:type-converter"/>
