@@ -67,8 +67,8 @@ public class SDOHelperContext implements HelperContext {
     }
 
     public void reset() {
-        ((SDOTypeHelper)getTypeHelper()).reset();
         ((SDOXMLHelper)getXMLHelper()).reset();
+        ((SDOTypeHelper)getTypeHelper()).reset();
         ((SDOXSDHelper)getXSDHelper()).reset();
     }
 

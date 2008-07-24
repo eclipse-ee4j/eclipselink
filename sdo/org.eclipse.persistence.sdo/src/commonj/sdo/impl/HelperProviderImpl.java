@@ -33,9 +33,9 @@ import commonj.sdo.helper.XSDHelper;
 
 public class HelperProviderImpl extends HelperProvider {
 
-	private static final SDOTypeHelper typeHelper = new SDOTypeHelperDelegator();
-    private static final SDOXSDHelper xsdHelper = new SDOXSDHelperDelegator();
     private static final SDOXMLHelper xmlHelper = new SDOXMLHelperDelegator();
+    private static final SDOTypeHelper typeHelper = new SDOTypeHelperDelegator();
+    private static final SDOXSDHelper xsdHelper = new SDOXSDHelperDelegator();
     private static final SDODataFactory dataFactory = new SDODataFactory();
     private static final SDODataHelper dataHelper = new SDODataHelper();
     private static final SDOCopyHelper copyHelper = new SDOCopyHelper();
