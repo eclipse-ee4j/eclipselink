@@ -21,6 +21,7 @@ import org.eclipse.persistence.testing.models.jpa.inheritance.Engineer;
 import org.eclipse.persistence.testing.models.jpa.inheritance.ComputerPK;
 import org.eclipse.persistence.testing.models.jpa.inheritance.Desktop;
 import org.eclipse.persistence.testing.models.jpa.inheritance.Laptop;
+import org.eclipse.persistence.testing.models.jpa.inheritance.TireInfo;
 import org.eclipse.persistence.sessions.DatabaseSession;
 import junit.framework.Test;
 import junit.framework.TestSuite;
@@ -118,5 +119,25 @@ public class EntityManagerJUnitTestCase extends JUnitTestCase {
         } finally {
             closeEntityManager(em);
         }
+    }
+    
+    // https://bugs.eclipse.org/bugs/show_bug.cgi?id=241979
+    public void testUpateTireInfo(){
+        EntityManager em = createEntityManager();
+        beginTransaction(em);
+        TireInfo tireInfo = new TireInfo();
+        tireInfo.setPressure(35);
+        em.persist(tireInfo);
+        commitTransaction(em);
+
+        beginTransaction(em);
+        TireInfo localTire = em.find(TireInfo.class, tireInfo.getId());
+        assertTrue("TireInfo was not persisted with the proper pressure", localTire.getPressure().equals(35));
+        localTire.setPressure(40);
+        commitTransaction(em);
+        em.clear();
+
+        localTire = em.find(TireInfo.class, tireInfo.getId());
+        assertTrue("TireInfo was not updated", localTire.getPressure().equals(40));
     }
 }
