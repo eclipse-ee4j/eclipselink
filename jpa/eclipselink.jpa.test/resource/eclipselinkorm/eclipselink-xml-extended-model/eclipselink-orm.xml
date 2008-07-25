@@ -6,6 +6,13 @@
     <entity class="Employee" existence-checking="CHECK_DATABASE">
         <customizer class="EmployeeCustomizer"/>
         <change-tracking type="AUTO"/>
+        <!-- This secondary table is identical to the one specified in the
+             advanced-extended-entity-mappings.xml. It is here on purpose
+             and used to test bug 240063. Do not remove it or change its
+             contents. -->
+        <secondary-table name="CMP3_XML_SALARY">
+            <primary-key-join-column name="E_ID" referenced-column-name="EMP_ID"/>
+        </secondary-table>
         <optimistic-locking type="VERSION_COLUMN" cascade="true"/>
         <cache type="SOFT_WEAK" size="730" shared="true" disable-hits="true" always-refresh="false" coordination-type="INVALIDATE_CHANGED_OBJECTS">
             <!-- disable-hits is set to true. Do not change it, the employee customizer will set it to false and there is a test to verify that. -->

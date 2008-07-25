@@ -233,6 +233,8 @@ public abstract class ORMetadata {
                 if (obj2.getIdentifier().equals(obj1.getIdentifier())) {
                     if (obj2.shouldOverride(obj1)) {
                         newList.add(obj2);
+                    } else {
+                        newList.add(obj1);
                     }
                     
                     found = true;
