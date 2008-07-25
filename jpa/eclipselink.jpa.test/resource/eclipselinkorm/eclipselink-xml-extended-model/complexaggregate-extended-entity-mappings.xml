@@ -8,9 +8,7 @@
 			<access>FIELD</access>
 		</persistence-unit-defaults>
 	</persistence-unit-metadata>
-	<package>
-		org.eclipse.persistence.testing.models.jpa.xml.complexaggregate
-	</package>
+	<package>org.eclipse.persistence.testing.models.jpa.xml.complexaggregate</package>
 	<entity name="XMLExtendedHockeyPlayer" class="HockeyPlayer">
 		<table name="XML_HOCKEY_PLAYER" />
 		<table-generator name="XML_HOCKEY_PLAYER_TABLE_GENERATOR"
