@@ -450,7 +450,7 @@
     <target name="package-javadoc-zip" depends="build-javadocs" description="build EclipseLink javadoc zip">
         <zip destfile="${eclipselink.javadoc.install.prefix}${eclipselink.zip.suffix}">
             <!-- miscellaneous files -->
-            <zipfileset dir="${eclipselink.javadocs}/" prefix="eclipselink/javadocs"/>
+            <zipfileset dir="${eclipselink.javadocs}/"/>
         </zip>
     </target>
 
