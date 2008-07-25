@@ -326,7 +326,6 @@ public abstract class DatasourceLogin implements org.eclipse.persistence.session
                 // Bug 236726 - deal with empty string for passwords
                 result.put("password", "");
             }
-
         }
 
         return result;
@@ -479,17 +478,19 @@ public abstract class DatasourceLogin implements org.eclipse.persistence.session
         try {
             //First try loading with the Login's class loader
             platformClass = this.getClass().getClassLoader().loadClass(platformClassName);
-            Platform platform = null;
+            DatasourcePlatform platform = null;
             if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
                 try {
-                    platform = (Platform)AccessController.doPrivileged(new PrivilegedNewInstanceFromClass(platformClass));
+                    platform = (DatasourcePlatform)AccessController.doPrivileged(new PrivilegedNewInstanceFromClass(platformClass));
                 } catch (PrivilegedActionException exception) {
                     throw exception.getException();
                 }
             } else {
-                platform = (Platform)PrivilegedAccessHelper.newInstanceFromClass(platformClass);
+                platform = (DatasourcePlatform)PrivilegedAccessHelper.newInstanceFromClass(platformClass);
             }
             usePlatform(platform);
+            // EclipseLink 23869 - Initialize plaformOperators eagerly to avoid concurrancy issuese.
+            platform.getPlatformOperators();
         } catch(Exception cne) {
             //next try using ConversionManager
             try {
