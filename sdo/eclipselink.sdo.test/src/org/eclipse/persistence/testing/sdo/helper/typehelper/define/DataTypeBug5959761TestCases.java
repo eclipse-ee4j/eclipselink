@@ -68,7 +68,7 @@ public class DataTypeBug5959761TestCases extends SDOTestCase {
         
         Object value = root.get("hireDate");
         assertNotNull(value);
-        assertTrue(value instanceof Timestamp);
+        assertEquals(java.sql.Timestamp.class, value.getClass());
     }
     
     private String getXmlFileNameToLoad(){
