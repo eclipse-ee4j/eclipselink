@@ -44,7 +44,7 @@ public class CustomSequencingPolicyTest extends AutoVerifyTestCase {
         UnitOfWork uow = getSession().acquireUnitOfWork();
         uow.registerObject(obj1);
         SeqTestClass2 clone2 = (SeqTestClass2)uow.registerObject(obj2);
-        clone2.setPkey("");
+        clone2.setPkey(null);
         clone2.setTest1("");
         SeqTestClass2 clone3 = (SeqTestClass2)uow.registerObject(obj3);
         clone3.setPkey("a1");
@@ -63,7 +63,7 @@ public class CustomSequencingPolicyTest extends AutoVerifyTestCase {
             throw (new TestErrorException("Has not overridden an empty string"));
         }
         if (obj3.getPkey().equals("1")) {
-            throw (new TestErrorException("Has not overridden an empty string"));
+            throw (new TestErrorException("Has overridden a valid PK"));
         }
         if (!obj4.getPkey().equals("zzzzzzzzzz")) {
             throw (new TestErrorException("Has overridden a valid PK"));
@@ -84,4 +84,4 @@ public class CustomSequencingPolicyTest extends AutoVerifyTestCase {
         getSession().getPlatform().setDefaultSequence(originalSequence);
         ((DatabaseSession)getSession()).getSequencingControl().resetSequencing();
     }
-}// end test case
+}

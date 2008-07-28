@@ -86,90 +86,77 @@ public class DefaultSequence extends Sequence {
     }
 
     /**
-    * INTERNAL:
-    * Indicates whether sequencing value should be acquired after INSERT.
-    * Note that preallocation could be used only in case sequencing values
-    * should be acquired before insert (this method returns false).
-    * In default implementation, it is true for table sequencing and native
-    * sequencing on Oracle platform, false for native sequencing on other platforms.
-    */
+     * INTERNAL:
+     * Indicates whether sequencing value should be acquired after INSERT.
+     * Note that preallocation could be used only in case sequencing values
+     * should be acquired before insert (this method returns false).
+     * In default implementation, it is true for table sequencing and native
+     * sequencing on Oracle platform, false for native sequencing on other platforms.
+     */
     public boolean shouldAcquireValueAfterInsert() {
         return getDefaultSequence().shouldAcquireValueAfterInsert();
     }
 
     /**
-    * INTERNAL:
-    * Indicates whether EclipseLink should internally call beginTransaction() before
-    * getGeneratedValue/Vector, and commitTransaction after.
-    * In default implementation, it is true for table sequencing and
-    * false for native sequencing.
-    */
+     * INTERNAL:
+     * Indicates whether EclipseLink should internally call beginTransaction() before
+     * getGeneratedValue/Vector, and commitTransaction after.
+     * In default implementation, it is true for table sequencing and
+     * false for native sequencing.
+     */
     public boolean shouldUseTransaction() {
         return getDefaultSequence().shouldUseTransaction();
     }
 
     /**
-    * INTERNAL:
-    * Indicates whether existing attribute value should be overridden.
-    * This method is called in case an attribute mapped to PK of sequencing-using
-    * descriptor contains non-null value.
-    * @param seqName String is sequencing number field name
-    * @param existingValue Object is a non-null value of PK-mapped attribute.
-    */
-    public boolean shouldOverrideExistingValue(String seqName, Object existingValue) {
-        return getDefaultSequence().shouldOverrideExistingValue(seqName, existingValue);
-    }
-
-    /**
-    * INTERNAL:
-    * Return the newly-generated sequencing value.
-    * Used only in case preallocation is not used (shouldUsePreallocation()==false).
-    * Accessor may be non-null only in case shouldUseSeparateConnection()==true.
-    * Even in this case accessor could be null - if SequencingControl().shouldUseSeparateConnection()==false;
-    * Therefore in case shouldUseSeparateConnection()==true, implementation should handle
-    * both cases: use a separate connection if provided (accessor != null), or get by
-    * without it (accessor == null).
-    * @param accessor Accessor is a separate sequencing accessor (may be null);
-    * @param writeSession Session is a Session used for writing (either ClientSession or DatabaseSession);
-    * @param seqName String is sequencing number field name
-    */
+     * INTERNAL:
+     * Return the newly-generated sequencing value.
+     * Used only in case preallocation is not used (shouldUsePreallocation()==false).
+     * Accessor may be non-null only in case shouldUseSeparateConnection()==true.
+     * Even in this case accessor could be null - if SequencingControl().shouldUseSeparateConnection()==false;
+     * Therefore in case shouldUseSeparateConnection()==true, implementation should handle
+     * both cases: use a separate connection if provided (accessor != null), or get by
+     * without it (accessor == null).
+     * @param accessor Accessor is a separate sequencing accessor (may be null);
+     * @param writeSession Session is a Session used for writing (either ClientSession or DatabaseSession);
+     * @param seqName String is sequencing number field name
+     */
     public Object getGeneratedValue(Accessor accessor, AbstractSession writeSession, String seqName) {
         return getDefaultSequence().getGeneratedValue(accessor, writeSession, seqName);
     }
 
     /**
-    * INTERNAL:
-    * Return a Vector of newly-generated sequencing values.
-    * Used only in case preallocation is used (shouldUsePreallocation()==true).
-    * Accessor may be non-null only in case shouldUseSeparateConnection()==true.
-    * Even in this case accessor could be null - if SequencingControl().shouldUseSeparateConnection()==false;
-    * Therefore in case shouldUseSeparateConnection()==true, implementation should handle
-    * both cases: use a separate connection if provided (accessor != null), or get by
-    * without it (accessor == null).
-    * @param accessor Accessor is a separate sequencing accessor (may be null);
-    * @param writeSession Session is a Session used for writing (either ClientSession or DatabaseSession);
-    * @param seqName String is sequencing number field name
-    * @param size int number of values to preallocate (output Vector size).
-    */
-    public Vector getGeneratedVector(Accessor accessor, AbstractSession writeSession, String name, int size) {
-        return getDefaultSequence().getGeneratedVector(accessor, writeSession, name, size);
+     * INTERNAL:
+     * Return a Vector of newly-generated sequencing values.
+     * Used only in case preallocation is used (shouldUsePreallocation()==true).
+     * Accessor may be non-null only in case shouldUseSeparateConnection()==true.
+     * Even in this case accessor could be null - if SequencingControl().shouldUseSeparateConnection()==false;
+     * Therefore in case shouldUseSeparateConnection()==true, implementation should handle
+     * both cases: use a separate connection if provided (accessor != null), or get by
+     * without it (accessor == null).
+     * @param accessor Accessor is a separate sequencing accessor (may be null);
+     * @param writeSession Session is a Session used for writing (either ClientSession or DatabaseSession);
+     * @param seqName String is sequencing number field name
+     * @param size int number of values to preallocate (output Vector size).
+     */
+    public Vector getGeneratedVector(Accessor accessor, AbstractSession writeSession, String seqName, int size) {
+        return getDefaultSequence().getGeneratedVector(accessor, writeSession, seqName, size);
     }
 
     /**
-    * INTERNAL:
-    * This method is called when Sequencing object is created.
-    * It's a chance to do initialization.
-    * @param ownerSession DatabaseSession
-    */
+     * INTERNAL:
+     * This method is called when Sequencing object is created.
+     * It's a chance to do initialization.
+     */
     protected void onConnect() {
         // nothing to do
     }
 
     /**
-    * INTERNAL:
-    * This method is called when Sequencing object is destroyed..
-    * It's a chance to do deinitialization.
-    */
+     * INTERNAL:
+     * This method is called when Sequencing object is destroyed..
+     * It's a chance to do deinitialization.
+     */
     public void onDisconnect() {
         // nothing to do
     }

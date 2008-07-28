@@ -288,7 +288,6 @@ public class FeatureTestModel extends TestModel {
         suite.addTest(new SequenceStringExistingPKTest());
         suite.addTest(new CustomSequencingPolicyTest());
         suite.addTest(new InitializeDescriptorsBeforeLoginTest());
-        suite.addTest(new SequenceOverrideExistingValueTest());
         suite.addTest(new SequencingTableQualifierTest(SequencingTableQualifierTest.TABLE_SEQUENCE));
         suite.addTest(new SequencingTableQualifierTest(SequencingTableQualifierTest.UNARY_TABLE_SEQUENCE));
         suite.addTest(new SequenceFieldRemovalForAcquireValueAfterInsertTest());

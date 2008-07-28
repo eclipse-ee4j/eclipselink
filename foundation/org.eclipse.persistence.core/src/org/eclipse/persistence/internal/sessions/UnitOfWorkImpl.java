@@ -389,7 +389,9 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
      * Normally all ids are assigned during the commit automatically.
      */
     public void assignSequenceNumber(Object object) throws DatabaseException {
-        assignSequenceNumber(object, getDescriptor(object));
+        ClassDescriptor descriptor = getDescriptor(object);
+        Object implementation = descriptor.getObjectBuilder().unwrapObject(object, this);
+        assignSequenceNumber(implementation, descriptor);
     }
     
     /**
@@ -398,12 +400,11 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
      */
     public void assignSequenceNumber(Object object, ClassDescriptor descriptor) throws DatabaseException {
         // This is done outside of a transaction to ensure optimal concurrency and deadlock avoidance in the sequence table.
-        if (descriptor.usesSequenceNumbers() && !getSequencing().shouldAcquireValueAfterInsert(object.getClass())) {
+        if (descriptor.usesSequenceNumbers() && !descriptor.getSequence().shouldAcquireValueAfterInsert()) {
             startOperationProfile(SessionProfiler.AssignSequence);
             ObjectBuilder builder = descriptor.getObjectBuilder();
             try {
-                Object implementation = builder.unwrapObject(object, this);
-                builder.assignSequenceNumber(implementation, this);
+                builder.assignSequenceNumber(object, this);
             } catch (RuntimeException exception) {
                 handleException(exception);
             } finally {
@@ -458,7 +459,8 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
         while (newObjects.hasNext()) {
             Object object = newObjects.next();
             ClassDescriptor descriptor = getDescriptor(object);
-            if (descriptor.usesSequenceNumbers() && ((!isObjectRegistered(object)) || isCloneNewObject(object)) && (shouldAcquireValueBeforeInsertForAll || !sequencing.shouldAcquireValueAfterInsert(object.getClass()))) {
+            if (descriptor.usesSequenceNumbers()
+                    && (shouldAcquireValueBeforeInsertForAll || !descriptor.getSequence().shouldAcquireValueAfterInsert())) {
                 descriptor.getObjectBuilder().assignSequenceNumber(object, this);
             }
         }
@@ -3912,28 +3914,11 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
      */
     protected void registerNewObjectInIdentityMap(Object clone, Object original, ClassDescriptor descriptor) {
         if (shouldNewObjectsBeCached()) {
-            // CR 2728 Added check for sequencing to allow zero primitives for id's if the client
-            //is not using sequencing.
-            Class cls = clone.getClass();
-            boolean usesSequences = descriptor.usesSequenceNumbers();
-        
-            // Also put it in the cache if it has a valid primary key, this allows for double new object merges
-            Vector key = keyFromObject(clone, descriptor);
-            boolean containsNull = false;
-
-            // begin CR#2041 Unit Of Work incorrectly put new objects with a primitive primary key in its cache
-            Object pkElement;
-            for (int index = 0; index < key.size(); index++) {
-                pkElement = key.elementAt(index);
-                if (pkElement == null) {
-                    containsNull = true;
-                } else if (usesSequences) {
-                    containsNull = containsNull || getSequencing().shouldOverrideExistingValue(cls, pkElement);
-                }
-            }
-
-            // end cr #2041
-            if (!containsNull) {
+            // Put new objects in the cache if it has a valid primary key, this allows for double new object merges,
+            // and cache hits on pk queries.
+            // PERF: Only need to extract key using object builder, it will now return null if the key is not valid.
+            Vector key = descriptor.getObjectBuilder().extractPrimaryKeyFromObject(clone, this, true);
+            if (key != null) {
                 getIdentityMapAccessorInstance().putInIdentityMap(clone, key, null, 0, descriptor);
             }
         }

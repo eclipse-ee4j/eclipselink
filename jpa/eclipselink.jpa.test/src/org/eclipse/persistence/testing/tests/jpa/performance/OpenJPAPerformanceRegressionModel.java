@@ -21,18 +21,18 @@ import org.eclipse.persistence.testing.framework.TestProblemException;
 /**
  * Performance tests that compare JPA performance.
  */
-public class HibernateJPAPerformanceRegressionModel extends JPAPerformanceRegressionModel {
+public class OpenJPAPerformanceRegressionModel extends JPAPerformanceRegressionModel {
 
-    public HibernateJPAPerformanceRegressionModel() {
-        setDescription("Performance tests that compares Hibernate JPA performance.");
+    public OpenJPAPerformanceRegressionModel() {
+        setDescription("Performance tests that compares OpenJPA JPA performance.");
     }
 
     /**
      * Setup the JPA provider.
      */
     public void setupProvider() {
-        // Configure provider to be Hibernate.
-        String providerClass = "org.hibernate.ejb.HibernatePersistence";
+        // Configure provider to be OpenJPA.
+        String providerClass = "org.apache.openjpa.persistence.PersistenceProviderImpl";
         PersistenceProvider provider = null;
         try {
             provider = (PersistenceProvider)Class.forName(providerClass).newInstance();
@@ -40,15 +40,12 @@ public class HibernateJPAPerformanceRegressionModel extends JPAPerformanceRegres
             throw new TestProblemException("Failed to create persistence provider.", error);
         }
         Map properties = new HashMap();
-        properties.put("hibernate.dialect", "org.hibernate.dialect.Oracle9Dialect");
-        properties.put("hibernate.connection.driver_class", getSession().getLogin().getDriverClassName());
-        properties.put("hibernate.connection.url", getSession().getLogin().getConnectionString());
-        properties.put("hibernate.connection.username", getSession().getLogin().getUserName());
-        properties.put("hibernate.connection.password", getSession().getLogin().getPassword());
-        properties.put("hibernate.connection.pool_size", "10");
-        properties.put("hibernate.cache.provider_class", "org.hibernate.cache.EhCacheProvider");
+        properties.put("openjpa.ConnectionDriverName", getSession().getLogin().getDriverClassName());
+        properties.put("openjpa.ConnectionURL", getSession().getLogin().getConnectionString());
+        properties.put("openjpa.ConnectionUserName", getSession().getLogin().getUserName());
+        properties.put("openjpa.ConnectionPassword", getSession().getLogin().getPassword());
         if (getSession().shouldLogMessages()) {
-            properties.put("hibernate.show_sql", "true");
+            properties.put("openjpa.Log", "DefaultLevel=WARN,SQL=TRACE");
         }
         getExecutor().setEntityManagerFactory(provider.createEntityManagerFactory("performance", properties));
     }

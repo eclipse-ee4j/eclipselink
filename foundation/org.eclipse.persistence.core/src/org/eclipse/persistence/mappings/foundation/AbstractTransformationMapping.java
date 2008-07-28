@@ -985,7 +985,7 @@ public abstract class AbstractTransformationMapping extends DatabaseMapping {
             }
             transformationRow.add(field, value);
         }
-        Object attributeValue = readFromRowIntoObject(transformationRow, null, object, query);
+        Object attributeValue = readFromRowIntoObject(transformationRow, null, object, query, query.getSession());
         if (handledMappings != null) {
             handledMappings.add(this);
         }

@@ -54,7 +54,7 @@ public class EmployeeTableCreator extends TableCreator {
         TableDefinition tabledefinition = new TableDefinition();
 
         // SECTION: TABLE
-        tabledefinition.setName("ADDRESS");
+        tabledefinition.setName("P_ADDRESS");
 
         // SECTION: FIELD
         FieldDefinition field = new FieldDefinition();
@@ -133,7 +133,7 @@ public class EmployeeTableCreator extends TableCreator {
         TableDefinition tabledefinition = new TableDefinition();
 
         // SECTION: TABLE
-        tabledefinition.setName("EMPLOYEE");
+        tabledefinition.setName("P_EMPLOYEE");
 
         // SECTION: FIELD
         FieldDefinition field = new FieldDefinition();
@@ -221,7 +221,7 @@ public class EmployeeTableCreator extends TableCreator {
         field8.setIsPrimaryKey(false);
         field8.setUnique(false);
         field8.setIsIdentity(false);
-        field8.setForeignKeyFieldName("ADDRESS.ADDRESS_ID");
+        field8.setForeignKeyFieldName("P_ADDRESS.ADDRESS_ID");
         tabledefinition.addField(field8);
 
         // SECTION: FIELD
@@ -233,7 +233,7 @@ public class EmployeeTableCreator extends TableCreator {
         field9.setIsPrimaryKey(false);
         field9.setUnique(false);
         field9.setIsIdentity(false);
-        field9.setForeignKeyFieldName("EMPLOYEE.EMP_ID");
+        field9.setForeignKeyFieldName("P_EMPLOYEE.EMP_ID");
         tabledefinition.addField(field9);
 
         // SECTION: FIELD
@@ -258,7 +258,7 @@ public class EmployeeTableCreator extends TableCreator {
         TableDefinition tabledefinition = new TableDefinition();
 
         // SECTION: TABLE
-        tabledefinition.setName("LPROJECT");
+        tabledefinition.setName("P_LPROJECT");
 
         // SECTION: FIELD
         FieldDefinition field = new FieldDefinition();
@@ -269,7 +269,7 @@ public class EmployeeTableCreator extends TableCreator {
         field.setIsPrimaryKey(true);
         field.setUnique(false);
         field.setIsIdentity(false);
-        field.setForeignKeyFieldName("PROJECT.PROJ_ID");
+        field.setForeignKeyFieldName("P_PROJECT.PROJ_ID");
         tabledefinition.addField(field);
 
         // SECTION: FIELD
@@ -305,7 +305,7 @@ public class EmployeeTableCreator extends TableCreator {
         TableDefinition tabledefinition = new TableDefinition();
 
         // SECTION: TABLE
-        tabledefinition.setName("SPROJECT");
+        tabledefinition.setName("P_SPROJECT");
 
         // SECTION: FIELD
         FieldDefinition field = new FieldDefinition();
@@ -316,7 +316,7 @@ public class EmployeeTableCreator extends TableCreator {
         field.setIsPrimaryKey(true);
         field.setUnique(false);
         field.setIsIdentity(false);
-        field.setForeignKeyFieldName("PROJECT.PROJ_ID");
+        field.setForeignKeyFieldName("P_PROJECT.PROJ_ID");
         tabledefinition.addField(field);
         addTableDefinition(tabledefinition);
     }
@@ -330,7 +330,7 @@ public class EmployeeTableCreator extends TableCreator {
         TableDefinition tabledefinition = new TableDefinition();
 
         // SECTION: TABLE
-        tabledefinition.setName("PHONE");
+        tabledefinition.setName("P_PHONE");
 
         // SECTION: FIELD
         FieldDefinition field0 = new FieldDefinition();
@@ -352,7 +352,7 @@ public class EmployeeTableCreator extends TableCreator {
         field.setIsPrimaryKey(false);
         field.setUnique(false);
         field.setIsIdentity(false);
-        field.setForeignKeyFieldName("EMPLOYEE.EMP_ID");
+        field.setForeignKeyFieldName("P_EMPLOYEE.EMP_ID");
         tabledefinition.addField(field);
 
         // SECTION: FIELD
@@ -399,7 +399,7 @@ public class EmployeeTableCreator extends TableCreator {
         TableDefinition tabledefinition = new TableDefinition();
 
         // SECTION: TABLE
-        tabledefinition.setName("PROJ_EMP");
+        tabledefinition.setName("P_PROJ_EMP");
 
         // SECTION: FIELD
         FieldDefinition field = new FieldDefinition();
@@ -410,7 +410,7 @@ public class EmployeeTableCreator extends TableCreator {
         field.setIsPrimaryKey(true);
         field.setUnique(false);
         field.setIsIdentity(false);
-        field.setForeignKeyFieldName("EMPLOYEE.EMP_ID");
+        field.setForeignKeyFieldName("P_EMPLOYEE.EMP_ID");
         tabledefinition.addField(field);
 
         // SECTION: FIELD
@@ -422,7 +422,7 @@ public class EmployeeTableCreator extends TableCreator {
         field1.setIsPrimaryKey(true);
         field1.setUnique(false);
         field1.setIsIdentity(false);
-        field1.setForeignKeyFieldName("PROJECT.PROJ_ID");
+        field1.setForeignKeyFieldName("P_PROJECT.PROJ_ID");
         tabledefinition.addField(field1);
         addTableDefinition(tabledefinition);
     }
@@ -436,7 +436,7 @@ public class EmployeeTableCreator extends TableCreator {
         TableDefinition tabledefinition = new TableDefinition();
 
         // SECTION: TABLE
-        tabledefinition.setName("PROJECT");
+        tabledefinition.setName("P_PROJECT");
 
         // SECTION: FIELD
         FieldDefinition field = new FieldDefinition();
@@ -491,7 +491,7 @@ public class EmployeeTableCreator extends TableCreator {
         field4.setIsPrimaryKey(false);
         field4.setUnique(false);
         field4.setIsIdentity(false);
-        field4.setForeignKeyFieldName("EMPLOYEE.EMP_ID");
+        field4.setForeignKeyFieldName("P_EMPLOYEE.EMP_ID");
         tabledefinition.addField(field4);
 
         // SECTION: FIELD

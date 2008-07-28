@@ -14,6 +14,8 @@ package org.eclipse.persistence.internal.queries;
 
 import java.util.*;
 import java.io.*;
+
+import org.eclipse.persistence.internal.descriptors.ObjectBuilder;
 import org.eclipse.persistence.internal.descriptors.OptimisticLockingPolicy;
 import org.eclipse.persistence.descriptors.VersionLockingPolicy;
 import org.eclipse.persistence.descriptors.DescriptorEvent;
@@ -397,7 +399,7 @@ public abstract class DatabaseQueryMechanism implements Cloneable, Serializable 
             return;
         }
         Object object = writeQuery.getObject();
-        AbstractSession session = getSession();
+        AbstractSession session = writeQuery.getSession();
         ObjectChangeSet changeSet = writeQuery.getObjectChangeSet();
         CommitManager commitManager = session.getCommitManager();
         DescriptorEventManager eventManager = descriptor.getEventManager();
@@ -465,7 +467,7 @@ public abstract class DatabaseQueryMechanism implements Cloneable, Serializable 
             insertObject(modifyRowSize != modifyRow.size());
 
             // register the object before post insert to resolve possible cycles
-            registerObjectInIdentityMap();
+            registerObjectInIdentityMap(object, descriptor, session);
         }
 
         commitManager.markPostModifyCommitInProgress(object);
@@ -650,16 +652,14 @@ public abstract class DatabaseQueryMechanism implements Cloneable, Serializable 
     /**
      * Store the query object in the identity map.
      */
-    protected void registerObjectInIdentityMap() {
-        WriteObjectQuery writeQuery = getWriteObjectQuery();
-        Object object = writeQuery.getObject();
-
-        if (writeQuery.shouldMaintainCache()) {
-            if (getDescriptor().usesOptimisticLocking()) {
-                Object optimisticLockValue = getDescriptor().getOptimisticLockingPolicy().getValueToPutInCache(writeQuery.getModifyRow(), getSession());
-                getSession().getIdentityMapAccessorInstance().putInIdentityMap(object, writeQuery.getPrimaryKey(), optimisticLockValue, System.currentTimeMillis(), getDescriptor());
+    protected void registerObjectInIdentityMap(Object object, ClassDescriptor descriptor, AbstractSession session) {
+        WriteObjectQuery query = getWriteObjectQuery();
+        if (query.shouldMaintainCache()) {
+            if (descriptor.usesOptimisticLocking()) {
+                Object optimisticLockValue = descriptor.getOptimisticLockingPolicy().getValueToPutInCache(query.getModifyRow(), session);
+                session.getIdentityMapAccessorInstance().putInIdentityMap(object, query.getPrimaryKey(), optimisticLockValue, System.currentTimeMillis(), descriptor);
             } else {
-                getSession().getIdentityMapAccessorInstance().putInIdentityMap(object, writeQuery.getPrimaryKey(), null, System.currentTimeMillis(), getDescriptor());
+                session.getIdentityMapAccessorInstance().putInIdentityMap(object, query.getPrimaryKey(), null, System.currentTimeMillis(), descriptor);
             }
         }
     }
@@ -921,27 +921,29 @@ public abstract class DatabaseQueryMechanism implements Cloneable, Serializable 
     protected void updateObjectAndRowWithSequenceNumber() throws DatabaseException {
         WriteObjectQuery writeQuery = getWriteObjectQuery();
         Object object = writeQuery.getObject();
-
-        Object sequenceValue = getDescriptor().getObjectBuilder().assignSequenceNumber(object, getSession());
+        ClassDescriptor descriptor = writeQuery.getDescriptor();
+        ObjectBuilder objectBuilder = descriptor.getObjectBuilder();
+        AbstractSession session = writeQuery.getSession();
+        Object sequenceValue = objectBuilder.assignSequenceNumber(object, session);
         if (sequenceValue == null) {
             return;
         }
-        Vector primaryKeys = getDescriptor().getObjectBuilder().extractPrimaryKeyFromObject(object, getSession());
-        writeQuery.setPrimaryKey(primaryKeys);
-        DatabaseField sequenceNumberField = getDescriptor().getSequenceNumberField();
-
-        // Now I need to update the row
-        getModifyRow().put(sequenceNumberField, sequenceValue);
-        getDescriptor().getObjectBuilder().addPrimaryKeyForNonDefaultTable(getModifyRow());
-        // update the changeSet if there is one
-        if (getSession().isUnitOfWork()) {
+        Vector primaryKey = objectBuilder.extractPrimaryKeyFromObject(object, getSession());
+        writeQuery.setPrimaryKey(primaryKey);
+        DatabaseField sequenceNumberField = descriptor.getSequenceNumberField();
+        AbstractRecord modifyRow = getModifyRow();
+        // Update the row.
+        modifyRow.put(sequenceNumberField, sequenceValue);
+        objectBuilder.addPrimaryKeyForNonDefaultTable(modifyRow);
+        // Update the changeSet if there is one.
+        if (session.isUnitOfWork()) {
             ObjectChangeSet objectChangeSet = writeQuery.getObjectChangeSet();
-            if ((objectChangeSet == null) && (((UnitOfWorkImpl)getSession()).getUnitOfWorkChangeSet() != null)) {
-                objectChangeSet = (ObjectChangeSet)((UnitOfWorkImpl)getSession()).getUnitOfWorkChangeSet().getObjectChangeSetForClone(object);
+            if ((objectChangeSet == null) && (((UnitOfWorkImpl)session).getUnitOfWorkChangeSet() != null)) {
+                objectChangeSet = (ObjectChangeSet)((UnitOfWorkImpl)session).getUnitOfWorkChangeSet().getObjectChangeSetForClone(object);
             }
             if (objectChangeSet != null) {
-                updateChangeSet(getDescriptor(), objectChangeSet, sequenceNumberField, object);
-                objectChangeSet.setCacheKey(new CacheKey(primaryKeys));
+                updateChangeSet(descriptor, objectChangeSet, sequenceNumberField, object);
+                objectChangeSet.setCacheKey(new CacheKey(primaryKey));
             }
         }
     }

@@ -19,6 +19,7 @@ import java.io.*;
  * <p><b>Description</b>: Held in a private 1:1 relationship from Employee
  * @see Employee
  */
+//@org.hibernate.annotations.Cache(usage=org.hibernate.annotations.CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
 public class Address implements Serializable {
     protected long id;
     protected String street;

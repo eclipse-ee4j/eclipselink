@@ -21,6 +21,7 @@ import java.sql.Timestamp;
  * information (budget, & milestoneVersion) are mapped from the LPROJECT table.
  * @see Project
  */
+//@org.hibernate.annotations.Cache(usage=org.hibernate.annotations.CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
 public class LargeProject extends Project {
     protected double budget;
     protected Timestamp milestoneVersion;

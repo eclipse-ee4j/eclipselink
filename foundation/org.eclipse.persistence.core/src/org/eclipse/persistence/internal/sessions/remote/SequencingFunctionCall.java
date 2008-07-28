@@ -34,32 +34,6 @@ public class SequencingFunctionCall {
         }
     }
 
-    public static class ShouldAcquireValueAfterInsert extends SimpleFunctionCall {
-        public ShouldAcquireValueAfterInsert(Class cls) {
-            this.cls = cls;
-        }
-
-        protected Class cls;
-
-        protected Object execute(AbstractSession session) {
-            return new Boolean(session.getSequencing().shouldAcquireValueAfterInsert(cls));
-        }
-    }
-
-    public static class ShouldOverrideExistingValue extends SimpleFunctionCall {
-        public ShouldOverrideExistingValue(Class cls, Object existingValue) {
-            this.cls = cls;
-            this.existingValue = existingValue;
-        }
-
-        protected Class cls;
-        protected Object existingValue;
-
-        protected Object execute(AbstractSession session) {
-            return new Boolean(session.getSequencing().shouldOverrideExistingValue(cls, existingValue));
-        }
-    }
-
     public static class GetNextValue extends SimpleFunctionCall {
         public GetNextValue(Class cls) {
             this.cls = cls;

@@ -23,6 +23,7 @@ import java.io.*;
  * @see LargeProject
  * @see SmallProject
  */
+//@org.hibernate.annotations.Cache(usage=org.hibernate.annotations.CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
 public abstract class Project implements Serializable {
     protected long id;
     protected long version;

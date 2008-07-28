@@ -743,15 +743,26 @@ class SequencingManager implements SequencingHome, SequencingServer, SequencingC
         Iterator descriptors = getOwnerSession().getDescriptors().values().iterator();
         while (descriptors.hasNext()) {
             ClassDescriptor descriptor = (ClassDescriptor)descriptors.next();
-            if (!descriptor.usesSequenceNumbers()) {
+            // Find root sequence, because inheritance needs to be resolved here.
+            // TODO: The way we initialize sequencing needs to be in line with descriptor init.
+            ClassDescriptor parentDescriptor = descriptor;
+            while ((parentDescriptor != null) && !parentDescriptor.usesSequenceNumbers() && parentDescriptor.isChildDescriptor()) {
+                parentDescriptor = getOwnerSession().getDescriptor(parentDescriptor.getInheritancePolicy().getParentClass());
+            }
+            if (parentDescriptor == null) {
+                parentDescriptor = descriptor;
+            }
+            if (!parentDescriptor.usesSequenceNumbers()) {
                 continue;
             }
-            String seqName = descriptor.getSequenceNumberName();
+            String seqName = parentDescriptor.getSequenceNumberName();
             Sequence sequence = getSequence(seqName);
             if (sequence == null) {
                 sequence = new DefaultSequence(seqName);
                 getOwnerSession().getDatasourcePlatform().addSequence(sequence);
             }
+            // PERF: Initialize the sequence, this avoid having to look it up every time.
+            descriptor.setSequence(sequence);
             if (connectedSequences.contains(sequence)) {
                 continue;
             }
@@ -883,7 +894,7 @@ class SequencingManager implements SequencingHome, SequencingServer, SequencingC
         State state = getState(sequence.shouldUsePreallocation(), sequence.shouldUseTransaction());
         return state.getNextValue(sequence, writeSession);
     }
-
+    
     protected void logDebugSequencingConnected() {
         Vector[] sequenceVectors = new Vector[NUMBER_OF_STATES];
         Iterator itConnectedSequences = connectedSequences.iterator();
@@ -917,14 +928,6 @@ class SequencingManager implements SequencingHome, SequencingServer, SequencingC
 
     public int getInitialValue() {
         return getDefaultSequence().getInitialValue();
-    }
-
-    public boolean shouldAcquireValueAfterInsert(Class cls) {
-        return getSequence(cls).shouldAcquireValueAfterInsert();
-    }
-
-    public boolean shouldOverrideExistingValue(Class cls, Object existingValue) {
-        return getSequence(cls).shouldOverrideExistingValue(existingValue);
     }
 
     public int whenShouldAcquireValueForAll() {

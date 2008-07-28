@@ -1100,21 +1100,6 @@ public abstract class DatabaseMapping implements Cloneable, Serializable {
      * return value as this value will have been converted to the appropriate type for
      * the object.
      */
-    public Object readFromRowIntoObject(AbstractRecord databaseRow, JoinedAttributeManager joinManager, Object targetObject, ObjectBuildingQuery sourceQuery) throws DatabaseException {
-        // This version can be called directly for reading a sequence number
-        // field, a write lock value, or a return row into an object, and hence
-        // the query is just a placeholder.  Getting the correct execution
-        // session will generate an exception, so just pass in any session.
-        // In general call this version only if no field conversion needed.
-        return readFromRowIntoObject(databaseRow, joinManager, targetObject, sourceQuery, sourceQuery.getSession());
-    }
-
-    /**
-     * INTERNAL:
-     * Extract value from the row and set the attribute to this value in the object.
-     * return value as this value will have been converted to the appropriate type for
-     * the object.
-     */
     public Object readFromRowIntoObject(AbstractRecord databaseRow, JoinedAttributeManager joinManager, Object targetObject, ObjectBuildingQuery sourceQuery, AbstractSession executionSession) throws DatabaseException {
         Object attributeValue = valueFromRow(databaseRow, joinManager, sourceQuery, executionSession);
         setAttributeValueInObject(targetObject, attributeValue);

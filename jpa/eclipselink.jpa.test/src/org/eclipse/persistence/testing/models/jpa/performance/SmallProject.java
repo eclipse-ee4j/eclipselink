@@ -17,6 +17,7 @@ package org.eclipse.persistence.testing.models.jpa.performance;
  * <p><b>Description</b>: When the PROJ_TYPE is set to 'S' in the PROJECT table a SmallProject is instantiated.
  * No table definition is required and the descriptor is very simple.
  */
+//@org.hibernate.annotations.Cache(usage=org.hibernate.annotations.CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
 public class SmallProject extends Project {
 
     /**

@@ -19,6 +19,7 @@ import java.io.*;
  * <p><b>Description</b>: Used in a 1:M relationship from an employee. Since many people have various numbers
  * they can be contacted at the type describes where the phone number could reach the Employee.
  */
+//@org.hibernate.annotations.Cache(usage=org.hibernate.annotations.CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
 public class PhoneNumber implements Serializable {
 
     /** Sequence id, added for Hibernate as it has issues with composite ids and caching. */

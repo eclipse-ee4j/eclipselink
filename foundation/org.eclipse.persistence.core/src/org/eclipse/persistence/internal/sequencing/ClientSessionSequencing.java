@@ -55,24 +55,8 @@ class ClientSessionSequencing implements Sequencing {
     * INTERNAL:
     * Simply calls the same method on SequencingServer
     */
-    public boolean shouldAcquireValueAfterInsert(Class cls) {
-        return sequencingServer.shouldAcquireValueAfterInsert(cls);
-    }
-
-    /**
-    * INTERNAL:
-    * Simply calls the same method on SequencingServer
-    */
     public int whenShouldAcquireValueForAll() {
         return sequencingServer.whenShouldAcquireValueForAll();
-    }
-
-    /**
-    * INTERNAL:
-    * Simply calls the same method on SequencingServer
-    */
-    public boolean shouldOverrideExistingValue(Class cls, Object existingValue) {
-        return sequencingServer.shouldOverrideExistingValue(cls, existingValue);
     }
 
     /**

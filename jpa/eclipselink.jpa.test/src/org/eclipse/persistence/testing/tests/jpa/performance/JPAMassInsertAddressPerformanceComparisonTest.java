@@ -54,7 +54,7 @@ public class JPAMassInsertAddressPerformanceComparisonTest extends PerformanceRe
 
         manager = createEntityManager();
         manager.getTransaction().begin();
-        manager.createNativeQuery("Delete from ADDRESS where STREET = 'Hastings Perf'").executeUpdate();
+        manager.createQuery("Delete from Address where street = 'Hasting Perf'").executeUpdate();
         manager.getTransaction().commit();
         manager.close();
     }

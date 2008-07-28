@@ -14,6 +14,9 @@
 
 import javax.persistence.*;
 
+import org.eclipse.persistence.config.CacheUsage;
+import org.eclipse.persistence.config.QueryHints;
+import org.eclipse.persistence.config.QueryType;
 import org.eclipse.persistence.testing.models.jpa.performance.*;
 import org.eclipse.persistence.testing.framework.*;
 
@@ -43,7 +46,8 @@ public class JPAReadObjectAddressPerformanceComparisonTest extends PerformanceRe
         EntityManager manager = createEntityManager();
         manager.getTransaction().begin();
         Query query = manager.createQuery("Select a from Address a where a.id = :id");
-        query.setHint("eclipselink.cache-usage", "CheckCacheByPrimaryKey"); 
+        query.setHint(QueryHints.QUERY_TYPE, QueryType.ReadObject);
+        query.setHint(QueryHints.CACHE_USAGE, CacheUsage.CheckCacheByExactPrimaryKey);
         query.setParameter("id", new Long(this.addressId));
         Address address = (Address)query.getSingleResult();
         address.toString();

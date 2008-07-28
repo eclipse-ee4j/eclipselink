@@ -805,7 +805,7 @@ public class AggregateObjectMapping extends AggregateMapping implements Relation
     public Object readFromReturnRowIntoObject(AbstractRecord row, Object targetObject, ReadObjectQuery query, Collection handledMappings) throws DatabaseException {
         Object aggregate = getAttributeValueFromObject(targetObject);
         if (aggregate == null) {
-            aggregate = readFromRowIntoObject(row, null, targetObject, query);
+            aggregate = readFromRowIntoObject(row, null, targetObject, query, query.getSession());
             if (handledMappings != null) {
                 handledMappings.add(this);
             }

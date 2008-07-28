@@ -35,8 +35,8 @@ public class EMCascadingPersistAndFlushTest extends EntityContainerTestBase  {
     
     public void setup() {
         super.setup();
-        if(CMP3TestModel.getServerSession().getSequencing().shouldAcquireValueAfterInsert(Employee.class) || 
-            CMP3TestModel.getServerSession().getSequencing().shouldAcquireValueAfterInsert(Project.class)) {
+        if (CMP3TestModel.getServerSession().getDescriptor(Employee.class).getSequence().shouldAcquireValueAfterInsert() || 
+                CMP3TestModel.getServerSession().getDescriptor(Project.class).getSequence().shouldAcquireValueAfterInsert()) {
             throw new TestWarningException("Can't run this test with Sybase-type native sequencing for Employee or/and Project");
         }
     }

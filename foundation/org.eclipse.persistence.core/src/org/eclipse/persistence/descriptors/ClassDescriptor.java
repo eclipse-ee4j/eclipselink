@@ -20,6 +20,7 @@ import java.lang.reflect.*;
 
 import org.eclipse.persistence.internal.descriptors.*;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
+import org.eclipse.persistence.sequencing.Sequence;
 import org.eclipse.persistence.sessions.Project;
 import org.eclipse.persistence.internal.expressions.SQLSelectStatement;
 import org.eclipse.persistence.internal.expressions.SQLStatement;
@@ -35,7 +36,6 @@ import org.eclipse.persistence.mappings.querykeys.*;
 import org.eclipse.persistence.expressions.*;
 import org.eclipse.persistence.internal.databaseaccess.*;
 import org.eclipse.persistence.exceptions.*;
-import org.eclipse.persistence.sessions.interceptors.CacheInterceptor;
 import org.eclipse.persistence.sessions.remote.*;
 import org.eclipse.persistence.annotations.IdValidation;
 import org.eclipse.persistence.descriptors.copying.*;
@@ -197,6 +197,9 @@ public class ClassDescriptor implements Cloneable, Serializable {
     protected String defaultUpdateObjectQueryRedirectorClassName;
     protected String defaultInsertObjectQueryRedirectorClassName;
     protected String defaultDeleteObjectQueryRedirectorClassName;
+    
+    /** Store the Sequence used for the descriptor. */
+    protected Sequence sequence; 
     
     /**
      * PUBLIC:
@@ -2269,7 +2272,7 @@ public class ClassDescriptor implements Cloneable, Serializable {
         }
 
         setInitializationStage(INITIALIZED);
-
+        
         // make sure that parent mappings are initialized?
         if (isChildDescriptor()) {
             getInheritancePolicy().getParentDescriptor().initialize(session);
@@ -2458,7 +2461,7 @@ public class ClassDescriptor implements Cloneable, Serializable {
                 setIdValidation(IdValidation.ZERO);
             }
         }
-        //setup default redirectors.  Any redirector that is not set will get assigned the
+        // Setup default redirectors.  Any redirector that is not set will get assigned the
         // default redirector.
         if (this.defaultReadAllQueryRedirector == null){
             this.defaultReadAllQueryRedirector = this.defaultQueryRedirector;
@@ -2760,7 +2763,7 @@ public class ClassDescriptor implements Cloneable, Serializable {
      * Shouldn't be called before ClassDescriptor has been initialized.
      */
     public boolean isPrimaryKeySetAfterInsert(AbstractSession session) {
-        return (usesSequenceNumbers() && session.getSequencing().shouldAcquireValueAfterInsert(getJavaClass())) || (hasReturningPolicy() && getReturningPolicy().isUsedToSetPrimaryKey());
+        return (usesSequenceNumbers() && getSequence().shouldAcquireValueAfterInsert()) || (hasReturningPolicy() && getReturningPolicy().isUsedToSetPrimaryKey());
     }
 
     /**
@@ -2777,7 +2780,7 @@ public class ClassDescriptor implements Cloneable, Serializable {
      * <P>
      *
      * However, if a query hits the cache, data is not refreshed regardless of how this setting is configured. For example, by default,
-     * when a query for a single object based on its primary key is executed, OracleAS TopLink will first look in the cache for the object.
+     * when a query for a single object based on its primary key is executed, EclipseLink will first look in the cache for the object.
      * If the object is in the cache, the cached object is returned and data is not refreshed. To avoid cache hits, use
      * the {@link #disableCacheHits} method.<P>
      *
@@ -4691,7 +4694,7 @@ public class ClassDescriptor implements Cloneable, Serializable {
      * Return true if the receiver uses sequence numbers.
      */
     public boolean usesSequenceNumbers() {
-        return ((getSequenceNumberField() != null) && (getSequenceNumberName() != null));
+        return this.sequenceNumberField != null;
     }
 
     /**
@@ -5210,5 +5213,21 @@ public class ClassDescriptor implements Cloneable, Serializable {
     public void setDefaultDeleteObjectQueryRedirectorClassName(
             String defaultDeleteObjectQueryRedirectorClassName) {
         this.defaultDeleteObjectQueryRedirectorClassName = defaultDeleteObjectQueryRedirectorClassName;
+    }
+    
+    /**
+     * Return the descriptor's sequence.
+     * This is normally set when the descriptor is initialized.
+     */
+    public Sequence getSequence() {
+        return sequence;
+    }
+    
+    /**
+     * Set the descriptor's sequence.
+     * This is normally set when the descriptor is initialized.
+     */
+    public void setSequence(Sequence sequence) {
+        this.sequence = sequence;
     }
 }

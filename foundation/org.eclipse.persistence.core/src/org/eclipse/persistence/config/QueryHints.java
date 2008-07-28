@@ -39,8 +39,9 @@ public class QueryHints {
     public static final String BIND_PARAMETERS = "eclipselink.jdbc.bind-parameters";
 
    /**
-    * Configures the query to utilize the TopLink cache, by default the cache is not checked on queries before accessing the database.
+    * Configures the query to utilize the EclipseLink cache, by default the cache is not checked on queries before accessing the database.
     * Valid values are all declared in CacheUsage class.
+    * For primary key cache hits the QUERY_TYPE hint must also be set to QueryType.ReadObject.
     */
     public static final String CACHE_USAGE = "eclipselink.cache-usage";
     
@@ -50,15 +51,15 @@ public class QueryHints {
     public static final String QUERY_REDIRECTOR = "eclipselink.query.redirector";
 
     /**
-    * Configures the TopLink query type to use for the query.
-    * By default TopLink ReportQuery or ReadAllQuery are used for most JPQL queries, this allows other query types to be used,
+    * Configures the EclipseLink query type to use for the query.
+    * By default EclipseLink ReportQuery or ReadAllQuery are used for most JPQL queries, this allows other query types to be used,
     * such as ReadObjectQuery which can be used for queries that are know to return a single object, and has different caching semantics.
     * Valid values are all declared in QueryType class.
     */
     public static final String QUERY_TYPE = "eclipselink.query-type";
     
    /**
-    * Configures  the query to acquire a pessimisitc lock (write-lock) on the resulting rows in the database.
+    * Configures  the query to acquire a pessimistic lock (write-lock) on the resulting rows in the database.
     * Valid values are all declared in PessimisticLock class.
     */
     public static final String PESSIMISTIC_LOCK = "eclipselink.pessimistic-lock";
@@ -120,8 +121,8 @@ public class QueryHints {
     /**
      * Configures the collection class implementation for the queries result.
      * The fully qualified class name must be used, without the .class.     * 
-     * Valid values are a Class representing a collection type or a String representing the classname 
-     * the colleciton type.
+     * Valid values are a Class representing a collection type or a String representing the class' name 
+     * of the collection type.
      * <p>e.g. java.util.ArrayList
      */
     public static final String RESULT_COLLECTION_TYPE = "eclipselink.result-collection-type";

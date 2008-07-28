@@ -19,9 +19,9 @@ package org.eclipse.persistence.config;
  * 
  * JPA Query Hint Usage:
  * 
- * <p><code>query.setHint(QueryHints.QueryType, QueryType.ReadObject);</code>
+ * <p><code>query.setHint(QueryHints.QUERY_TYPE, QueryType.ReadObject);</code>
  * <p>or 
- * <p><code>@QueryHint(name=QueryHints.QueryType, value=QueryType.ReadObject)</code>
+ * <p><code>@QueryHint(name=QueryHints.QUERY_TYPE, value=QueryType.ReadObject)</code>
  * 
  * <p>Hint values are case-insensitive.
  * "" could be used instead of default value CacheUsage.DEFAULT.

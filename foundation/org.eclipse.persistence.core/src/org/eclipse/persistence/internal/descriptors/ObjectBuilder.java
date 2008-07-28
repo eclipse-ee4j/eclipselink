@@ -82,6 +82,8 @@ public class ObjectBuilder implements Cloneable, Serializable {
     protected boolean isSimple;
     /** PERF: Cache if has a wrapper policy. */
     protected boolean hasWrapperPolicy;
+    /** PERF: Cache sequence mappings. */
+    protected AbstractDirectMapping sequenceMapping;
 
     public ObjectBuilder(ClassDescriptor descriptor) {
         this.mappingsByField = new HashMap(20);
@@ -230,7 +232,7 @@ public class ObjectBuilder implements Cloneable, Serializable {
             return;
         }
         if (mapping.isDirectToFieldMapping()) {
-            mapping.readFromRowIntoObject(row, null, object, query);
+            mapping.readFromRowIntoObject(row, null, object, query, query.getSession());
         } else if (mapping.isAggregateObjectMapping()) {
             ((AggregateObjectMapping)mapping).readFromReturnRowIntoObject(row, object, query, handledMappings);
         } else if (mapping.isTransformationMapping()) {
@@ -250,32 +252,38 @@ public class ObjectBuilder implements Cloneable, Serializable {
     public Object assignSequenceNumber(Object object, AbstractSession writeSession) throws DatabaseException {
         DatabaseField sequenceNumberField = this.descriptor.getSequenceNumberField();
         Object existingValue = getBaseValueForField(sequenceNumberField, object);
-        if (existingValue != null) {
-            if (!writeSession.getSequencing().shouldOverrideExistingValue(object.getClass(), existingValue)) {
-                return null;
-            }
+        // If the value is null or zero (int/long) return.
+        // PERF: The (internal) support for letting the sequence decide this was removed,
+        // as anything other than primitive should allow null and default as such.
+        if (existingValue != null && !Helper.isEquivalentToNull(existingValue)) {
+            return null;
         }
-        Object sequenceValue = writeSession.getSequencing().getNextValue(object.getClass());
-
-        writeSession.log(SessionLog.FINEST, SessionLog.SEQUENCING, "assign_sequence", sequenceValue, object);
+        Object sequenceValue = writeSession.getSequencing().getNextValue(this.descriptor.getJavaClass());
 
         // Check that the value is not null, this occurs on any databases using IDENTITY type sequencing.
         if (sequenceValue == null) {
             return null;
         }
-
-        // Now add the value to the object, this gets ugly.
-        AbstractRecord tempRow = createRecord(1, writeSession);
-        tempRow.put(sequenceNumberField, sequenceValue);
-
-        // Require a query context to read into an object.
-        ReadObjectQuery query = new ReadObjectQuery();
-        query.setSession(writeSession);
-        DatabaseMapping mapping = getBaseMappingForField(sequenceNumberField);
-        Object sequenceIntoObject = getParentObjectForField(sequenceNumberField, object);
-
-        // The following method will return the converted value for the sequence.
-        Object convertedSequenceValue = mapping.readFromRowIntoObject(tempRow, null, sequenceIntoObject, query);
+        
+        writeSession.log(SessionLog.FINEST, SessionLog.SEQUENCING, "assign_sequence", sequenceValue, object);
+        Object convertedSequenceValue = null;
+        if (this.sequenceMapping != null) {
+            convertedSequenceValue = this.sequenceMapping.getAttributeValue(sequenceValue, writeSession);
+            this.sequenceMapping.setAttributeValueInObject(object, convertedSequenceValue);
+        } else {
+            // Now add the value to the object, this gets ugly.
+            AbstractRecord tempRow = createRecord(1, writeSession);
+            tempRow.put(sequenceNumberField, sequenceValue);
+    
+            // Require a query context to read into an object.
+            ReadObjectQuery query = new ReadObjectQuery();
+            query.setSession(writeSession);
+            DatabaseMapping mapping = getBaseMappingForField(sequenceNumberField);
+            Object sequenceIntoObject = getParentObjectForField(sequenceNumberField, object);
+    
+            // The following method will return the converted value for the sequence.
+            convertedSequenceValue = mapping.readFromRowIntoObject(tempRow, null, sequenceIntoObject, query, writeSession);
+        }
         
         // PERF: If PersistenceEntity is caching the primary key this must be cleared as the primary key has changed.
         clearPrimaryKey(object);
@@ -1129,11 +1137,12 @@ public class ObjectBuilder implements Cloneable, Serializable {
      * Remove a potential sequence number field and invoke the ReturningPolicy trimModifyRowsForInsert method
      */
     public void trimFieldsForInsert(AbstractSession session, AbstractRecord databaseRow) {
-        if (this.descriptor.usesSequenceNumbers() && session.getSequencing().shouldAcquireValueAfterInsert(this.descriptor.getJavaClass())) {
-            databaseRow.remove(this.descriptor.getSequenceNumberField());
+        ClassDescriptor descriptor = this.descriptor;
+        if (descriptor.usesSequenceNumbers() && descriptor.getSequence().shouldAcquireValueAfterInsert()) {
+            databaseRow.remove(descriptor.getSequenceNumberField());
         }
-        if (this.descriptor.hasReturningPolicy()) {
-            this.descriptor.getReturningPolicy().trimModifyRowForInsert(databaseRow);
+        if (descriptor.hasReturningPolicy()) {
+            descriptor.getReturningPolicy().trimModifyRowForInsert(databaseRow);
         }
     }
 
@@ -2067,6 +2076,22 @@ public class ObjectBuilder implements Cloneable, Serializable {
     }
 
     /**
+     * PERF:
+     * Return the sequence mapping.
+     */
+    public AbstractDirectMapping getSequenceMapping() {
+        return sequenceMapping;
+    }
+
+    /**
+     * PERF:
+     * Set the sequence mapping.
+     */
+    public void setSequenceMapping(AbstractDirectMapping sequenceMapping) {
+        this.sequenceMapping = sequenceMapping;
+    }
+    
+    /**
      * INTERNAL:
      * Answers if any attributes are to be joined / returned in the same select
      * statement.
@@ -2277,6 +2302,13 @@ public class ObjectBuilder implements Cloneable, Serializable {
 
         initializePrimaryKey(session);
         initializeJoinedAttributes();
+        
+        if (getDescriptor().usesSequenceNumbers()) {
+            DatabaseMapping sequenceMapping = getMappingForField(getDescriptor().getSequenceNumberField());
+            if (sequenceMapping.isDirectToFieldMapping()) {
+                setSequenceMapping((AbstractDirectMapping)sequenceMapping);
+            }
+        }
     }
     
     /**

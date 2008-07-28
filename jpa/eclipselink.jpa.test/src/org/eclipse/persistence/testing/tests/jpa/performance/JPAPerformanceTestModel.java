@@ -26,5 +26,6 @@ public class JPAPerformanceTestModel extends TestModel {
         addTest(new HibernateJPAPerformanceRegressionModel());
         addTest(new TopLinkJPAPerformanceRegressionModel());
         addTest(new EssentialsJPAPerformanceRegressionModel());
+        addTest(new OpenJPAPerformanceRegressionModel());
     }
 }

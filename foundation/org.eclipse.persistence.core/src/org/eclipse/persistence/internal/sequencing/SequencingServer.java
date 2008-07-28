@@ -30,5 +30,5 @@ import org.eclipse.persistence.internal.sessions.AbstractSession;
  * @see ClientSessionSequencing
  */
 public interface SequencingServer extends Sequencing {
-    public Object getNextValue(AbstractSession writeSession, Class cls);
+    Object getNextValue(AbstractSession writeSession, Class cls);
 }

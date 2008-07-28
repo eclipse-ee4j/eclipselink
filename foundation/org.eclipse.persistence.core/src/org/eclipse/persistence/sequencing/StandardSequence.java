@@ -80,46 +80,11 @@ public abstract class StandardSequence extends Sequence {
     }
 
     /**
-    * INTERNAL:
-    * Indicates whether existing attribute value should be overridden.
-    * This method is called in case an attribute mapped to PK of sequencing-using
-    * descriptor contains non-null value.
-    * Default implementation is: Always override for "after insert" sequencing,
-    * override non-positive Numbers for "before insert" sequencing.
-    * @param seqName String is sequencing number field name
-    * @param existingValue Object is a non-null value of PK-mapped attribute.
-    */
-    public boolean shouldOverrideExistingValue(String seqName, Object existingValue) {
-        if (shouldAcquireValueAfterInsert()) {
-            return true;
-        } else {
-            // Check if the stored number is greater than zero (a valid sequence number)
-            if (existingValue instanceof BigDecimal) {
-                if (((BigDecimal)existingValue).signum() <= 0) {
-                    return true;
-                }
-            } else if (existingValue instanceof BigInteger) {
-                if (((BigInteger)existingValue).signum() <= 0) {
-                    return true;
-                }
-            }
-            //CR#2645: Fix for String ClassCastException.  Now we don't assume
-            //anything which is not a BigDecimal to be a Number.
-            else if (existingValue instanceof Number && (((Number)existingValue).longValue() <= 0)) {
-                return true;
-            }
-
-            return false;
-        }
-    }
-
-    /**
-    * INTERNAL:
-    * given sequence = 10, size = 5 will create Vector (6,7,8,9,10)
-    * @param seqName String is sequencing number field name
-    * @param existingValue Object is a non-null value of PK-mapped attribute.
-    * @param size int size of Vector to create.
-    */
+     * INTERNAL:
+     * given sequence = 10, size = 5 will create Vector (6,7,8,9,10)
+     * @param seqName String is sequencing number field name
+     * @param size int size of Vector to create.
+     */
     protected Vector createVector(Number sequence, String seqName, int size) {
         BigDecimal nextSequence;
         BigDecimal increment = new BigDecimal(1);

@@ -61,23 +61,8 @@ class SessionBrokerSequencing implements Sequencing {
         return broker.getSessionForClass(cls).getSequencing();
     }
 
-    // Sequencing
-    public boolean shouldAcquireValueAfterInsert(Class cls) {
-        if (whenShouldAcquireValueForAll == BEFORE_INSERT) {
-            return false;
-        } else if (whenShouldAcquireValueForAll == AFTER_INSERT) {
-            return true;
-        } else {
-            return get(cls).shouldAcquireValueAfterInsert(cls);
-        }
-    }
-
     public int whenShouldAcquireValueForAll() {
         return whenShouldAcquireValueForAll;
-    }
-
-    public boolean shouldOverrideExistingValue(Class cls, Object existingValue) {
-        return get(cls).shouldOverrideExistingValue(cls, existingValue);
     }
 
     public Object getNextValue(Class cls) {

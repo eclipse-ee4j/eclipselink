@@ -261,12 +261,15 @@ public class RepeatableWriteUnitOfWork extends UnitOfWorkImpl {
         Object mergedObject = super.mergeCloneWithReferences(rmiClone, manager);
         
         //iterate over new objects, assign sequences and put in the identitymap
-        Iterator iterator = manager.getMergedNewObjects().values().iterator();
-        while (iterator.hasNext()) {
-            Object newObjectClone = iterator.next();
-            ClassDescriptor descriptor = getDescriptor(newObjectClone);
-            assignSequenceNumber(newObjectClone, descriptor);
-            registerNewObjectInIdentityMap(newObjectClone, null, descriptor);
+        Map  newObjects = manager.getMergedNewObjects();
+        if (! newObjects.isEmpty()) {
+            Iterator iterator = newObjects.values().iterator();
+            while (iterator.hasNext()) {
+                Object newObjectClone = iterator.next();
+                ClassDescriptor descriptor = getDescriptor(newObjectClone);
+                assignSequenceNumber(newObjectClone, descriptor);
+                registerNewObjectInIdentityMap(newObjectClone, null, descriptor);
+            }
         }
         
         return mergedObject;

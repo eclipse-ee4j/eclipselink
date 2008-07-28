@@ -12,7 +12,6 @@
  ******************************************************************************/  
 package org.eclipse.persistence.internal.sequencing;
 
-
 /**
  * <p>
  * <b>Purpose</b>: Define interface to use sequencing.
@@ -37,38 +36,22 @@ public interface Sequencing {
     public static final int AFTER_INSERT = 1;
 
     /**
-    * INTERNAL:
-    * Indicates when sequencing value should be acquired for all classes.
-    * There are just three possible return values:
-    * BEFORE_INSERT, UNDEFINED, AFTER_INSERT.
-    * Used as a shortcut to avoid individual checks for each class:
-    * shouldAcquireValueAfterInsert(Class cls).
-    * Currently UNDEFINED only happens in a case of a SessionBroker:
-    * session1 - BEFORE_INSERT, session2 - AFTER_INSERT
-    */
-    public int whenShouldAcquireValueForAll();
+     * INTERNAL:
+     * Indicates when sequencing value should be acquired for all classes.
+     * There are just three possible return values:
+     * BEFORE_INSERT, UNDEFINED, AFTER_INSERT.
+     * Used as a shortcut to avoid individual checks for each class:
+     * shouldAcquireValueAfterInsert(Class cls).
+     * Currently UNDEFINED only happens in a case of a SessionBroker:
+     * session1 - BEFORE_INSERT, session2 - AFTER_INSERT
+     */
+    int whenShouldAcquireValueForAll();
 
     /**
-    * INTERNAL:
-    * Indicates whether sequencing value should be acquired
-    * before or after INSERT
-    */
-    public boolean shouldAcquireValueAfterInsert(Class cls);
+     * INTERNAL:
+     * Return the newly-generated sequencing value.
+     * @param cls Class for which the sequencing value is generated.
+     */
+    Object getNextValue(Class cls);
 
-    /**
-    * INTERNAL:
-    * Indicates whether existing attribute value should be overridden.
-    * This method is called in case an attribute mapped to PK of sequencing-using
-    * descriptor contains non-null value.
-    * @param seqName String is sequencing number field name
-    * @param existingValue Object is a non-null value of PK-mapped attribute.
-    */
-    public boolean shouldOverrideExistingValue(Class cls, Object existingValue);
-
-    /**
-    * INTERNAL:
-    * Return the newly-generated sequencing value.
-    * @param cls Class for which the sequencing value is generated.
-    */
-    public Object getNextValue(Class cls);
 }

@@ -48,26 +48,6 @@ class RemoteConnectionSequencing implements Sequencing {
         return whenShouldAcquireValueForAll;
     }
 
-    public boolean shouldAcquireValueAfterInsert(Class cls) {
-        if (whenShouldAcquireValueForAll == BEFORE_INSERT) {
-            return false;
-        } else if (whenShouldAcquireValueForAll == AFTER_INSERT) {
-            return true;
-        } else {
-            Boolean after = (Boolean)classToShouldAcquireValueAfterInsert.get(cls);
-            if (after == null) {
-                after = (Boolean)processFunctionCall(new SequencingFunctionCall.ShouldAcquireValueAfterInsert(cls));
-                classToShouldAcquireValueAfterInsert.put(cls, after);
-            }
-            return after.booleanValue();
-        }
-    }
-
-    public boolean shouldOverrideExistingValue(Class cls, Object existingValue) {
-        Boolean shouldOverride = (Boolean)processFunctionCall(new SequencingFunctionCall.ShouldOverrideExistingValue(cls, existingValue));
-        return shouldOverride.booleanValue();
-    }
-
     public Object getNextValue(Class cls) {
         return processFunctionCall(new SequencingFunctionCall.GetNextValue(cls));
     }

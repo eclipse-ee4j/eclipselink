@@ -20,6 +20,7 @@ import java.io.*;
  * <p><b>Description</b>: An Employee is a root object in the Employee Demo.
  * It maintains relationships to all of the other objects in the system.
  */
+//@org.hibernate.annotations.Cache(usage=org.hibernate.annotations.CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
 public class Employee implements Serializable {
 
     protected long id;    
@@ -86,6 +87,7 @@ public class Employee implements Serializable {
         return lastName;
     }
 
+    //@org.hibernate.annotations.Cache(usage=org.hibernate.annotations.CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
     public Collection getManagedEmployees() {
         return managedEmployees;
     }
@@ -98,10 +100,12 @@ public class Employee implements Serializable {
         return period;
     }
 
+    //@org.hibernate.annotations.Cache(usage=org.hibernate.annotations.CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
     public Collection getPhoneNumbers() {
         return phoneNumbers;
     }
 
+    //@org.hibernate.annotations.Cache(usage=org.hibernate.annotations.CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
     public Collection getProjects() {
         return projects;
     }

@@ -31,24 +31,6 @@ public class SampleStringSequencingPolicy extends TableSequence {
         super(name, size);
     }
 
-    // existingValue should be of type String, not empty, contain only 'a'..'z'
-    public boolean shouldOverrideExistingValue(String seqName, Object existingValue) {
-        String str;
-        try {
-            str = (String)existingValue;
-        } catch (ClassCastException ex) {
-            return true;
-        }
-        if (str.length() == 0) {
-            return true;
-        }
-        boolean override = false;
-        for (int i = 0; (i < str.length()) && !override; i++) {
-            override = (min > str.charAt(i)) || (str.charAt(i) > max);
-        }
-        return override;
-    }
-
     protected Vector createVector(Number sequence, String seqName, int size) {
         long last = sequence.longValue();
         long first = last - size + 1;

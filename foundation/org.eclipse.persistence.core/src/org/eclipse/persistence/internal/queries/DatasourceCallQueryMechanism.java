@@ -16,6 +16,7 @@ import java.util.*;
 import org.eclipse.persistence.internal.helper.*;
 import org.eclipse.persistence.internal.databaseaccess.DatasourceCall;
 import org.eclipse.persistence.internal.databaseaccess.DatabaseCall;
+import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.exceptions.*;
 import org.eclipse.persistence.queries.*;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
@@ -289,30 +290,34 @@ public class DatasourceCallQueryMechanism extends DatabaseQueryMechanism {
     }
 
     /**
-     * Insert the object.  Assume the call is correct
+     * Insert the object.  Assume the call is correct.
      * @exception  DatabaseException - an error has occurred on the database
      */
     public void insertObject() throws DatabaseException {
-        Class cls = (getQuery()).getReferenceClass();
-        boolean usesSequencing = getDescriptor().usesSequenceNumbers();
+        ClassDescriptor descriptor = getDescriptor();
+        boolean usesSequencing = descriptor.usesSequenceNumbers();
         boolean shouldAcquireValueAfterInsert = false;
         if (usesSequencing) {
-            shouldAcquireValueAfterInsert = getSession().getSequencing().shouldAcquireValueAfterInsert(cls);
+            shouldAcquireValueAfterInsert = descriptor.getSequence().shouldAcquireValueAfterInsert();
         }
         Collection returnFields = null;
-        if (getDescriptor().hasReturningPolicy()) {
-            returnFields = getDescriptor().getReturningPolicy().getFieldsToMergeInsert();
+        if (descriptor.hasReturningPolicy()) {
+            returnFields = descriptor.getReturningPolicy().getFieldsToMergeInsert();
         }
 
         // Check to see if sequence number should be retrieved after insert
         if (usesSequencing && !shouldAcquireValueAfterInsert) {
-            // This is the normal case.  Update object with sequence number before insert.
-            updateObjectAndRowWithSequenceNumber();
+            // PERF: Unit of work always assigns sequence, so only need to check it here for non unit of work/change set query.
+            if (getWriteObjectQuery().getObjectChangeSet() == null) {
+                // This is the normal case.  Update object with sequence number before insert.
+                updateObjectAndRowWithSequenceNumber();
+            }
         }
 
         if (hasMultipleCalls()) {
-            for (int index = 0; index < getCalls().size(); index++) {
-                DatasourceCall databseCall = (DatasourceCall)getCalls().elementAt(index);
+            int size = getCalls().size();
+            for (int index = 0; index < size; index++) {
+                DatasourceCall databseCall = (DatasourceCall)getCalls().get(index);
                 executeCall(databseCall);
                 if (returnFields != null) {
                     updateObjectAndRowWithReturnRow(returnFields, index == 0);

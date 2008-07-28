@@ -120,7 +120,7 @@ public abstract class AdapterWithReturnObjectControl implements ProjectAndDataba
         query.setSession((AbstractSession)session);
         for (Enumeration mappings = desc.getMappings().elements(); mappings.hasMoreElements(); ) {
             DatabaseMapping mapping = (DatabaseMapping)mappings.nextElement();
-            mapping.readFromRowIntoObject((DatabaseRecord)row, query.getJoinedAttributeManager(), object, query);
+            mapping.readFromRowIntoObject((DatabaseRecord)row, query.getJoinedAttributeManager(), object, query, query.getSession());
         }
         return object;
     }

@@ -22,6 +22,7 @@ import org.eclipse.persistence.sessions.server.Server;
 import org.eclipse.persistence.sessions.Login;
 
 import org.eclipse.persistence.testing.framework.TestCase;
+import org.eclipse.persistence.testing.models.employee.domain.Employee;
 
 /**
  * This testcase test the thread-safeness of TopLink's sequencing. The type of sequencing specified in the login
@@ -161,11 +162,8 @@ public class SequencingConcurrencyTest extends TestCase implements Comparator {
             };
     }
 
-    /**
-     *
-     */
     public void setup() {
-        if (getAbstractSession().getSequencing().shouldAcquireValueAfterInsert(org.eclipse.persistence.testing.models.employee.domain.Employee.class)) {
+        if (getAbstractSession().getDescriptor(Employee.class).getSequence().shouldAcquireValueAfterInsert()) {
             throw new org.eclipse.persistence.testing.framework.TestWarningException("Not a valid test against databases where the native sequencing is done entirely in the database.");
         }
 

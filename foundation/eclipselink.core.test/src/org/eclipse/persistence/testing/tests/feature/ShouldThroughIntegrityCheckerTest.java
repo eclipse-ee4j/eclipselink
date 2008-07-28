@@ -34,7 +34,7 @@ public class ShouldThroughIntegrityCheckerTest extends org.eclipse.persistence.t
             session.login();
             session.addDescriptors(project);
         } catch (IntegrityException integrityException) {
-		if (integrityException.getIntegrityChecker().getCaughtExceptions().size() != 15) {
+		if (integrityException.getIntegrityChecker().getCaughtExceptions().size() != 16) {
 			throw new TestErrorException("" + integrityException.getIntegrityChecker().getCaughtExceptions().size() + "  Not equal to the Number of Exceptions to the excepted one.");
             }
             caughtError = true;
