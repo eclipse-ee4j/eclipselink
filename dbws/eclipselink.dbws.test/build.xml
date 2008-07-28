@@ -1,0 +1,144 @@
+<?xml version="1.0"?>
+<!--/*******************************************************************************
+* This program and the accompanying materials are made available under the
+* terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+* which accompanies this distribution.
+* The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
+* and the Eclipse Distribution License is available at
+* http://www.eclipse.org/org/documents/edl-v10.php.
+*
+*   Ant naming conventions:
+*   - regardless of the actual OS platform,'/' is the directory separator
+*     (Ant will convert as appropriate).
+*   - multi-word properties use periods '.'
+*   - multi-word targets use hyphens '-'
+*   - multi-word macros use underscores '_'
+*   - multi-word macro attributes are concatinated
+*     e.g. 'runpathref'
+*   - multi-word tasks (taskdef) names are concatinated
+*     e.g. 'validateconnection'
+*   - OS environment variables are in ALLCAPS and have 'env' as a prefix
+*     e.g. ${env.XXX}.
+*   - Ant properties are lower case.
+*
+* Contributors:
+*     egwin - initial API and implementation
+#******************************************************************************/-->
+<project name="org.eclipse.persistence.dbws.test" default="all" basedir=".">
+
+    <target name="all" depends="clean, package" description="build EclipseLink jar"/>
+    <target name="run" depends="clean, db-cleanup" description="run tests"/>
+
+    <target name="init">
+        <property file="${user.home}/build.properties"/>
+        <property file="${basedir}/build.properties"/>
+        <property name="eclipselink.dbws.test" value="."/>
+        <property file="${eclipselink.dbws.test}/build.properties"/>
+        <property file="${eclipselink.dbws.test}/${test.properties}"/>
+        <property file="${eclipselink.dbws.test}/test.properties"/>
+
+        <!-- Classpath used for compiling tests, also used in running tests. -->
+        <path id="compile.path">
+            <pathelement path="${eclipselink.plugins}/${asm}"/>
+            <pathelement path="${eclipselink.jar.name}"/>
+            <pathelement path="${junit.lib}"/>
+            <fileset
+                dir="${eclipselink.plugins}"
+                includes="${eclipselink.dbws.test.core.depend}"/>
+        </path>
+
+        <!-- Classpath used for running tests. -->
+        <path id="run.classpath">
+            <path refid="compile.path"/>
+            <pathelement path="${jdbc.driver.jar}"/>
+            <pathelement path="${eclipselink.dbws.test}/${eclipselink.dbws.tests.jar}"/>
+        </path>
+    </target>
+
+    <target name="clean" depends="init" description="Clean all generated content">
+        <delete dir="${eclipselink.dbws.test}/${classes.dir}" includeEmptyDirs="true" failonerror="false"/>
+        <delete dir="${eclipselink.dbws.test}/${run.dir}" includeEmptyDirs="true" failonerror="false"/>
+    </target>
+
+    <target name="verify-dependencies" depends="init" description="verify core classes were compiled">
+        <available file="${eclipselink.jar.name}"             property="core.lib.exist"/>
+        <available file="${junit.lib}"                        property="junit.lib.exist"/>
+        <available file="${jdbc.driver.jar}"                  property="jdbc.lib.exist"/>
+        <available file="${eclipselink.plugins}/${asm}"       type="dir"  property="asm.exist"/>
+        <fail unless="core.lib.exist"   message="Eclipselink Library cannot be found (check compile). Exiting..."/>
+        <fail unless="junit.lib.exist"  message="JUnit Library cannot be found (check specified path). Exiting..."/>
+        <fail unless="jdbc.lib.exist"   message="JDBC Driver cannot be found (check specified path). Exiting..."/>
+        <fail unless="asm.exist"        message="ASM Bundle cannot be found. Exiting..."/>
+    </target>
+
+    <!-- Compiles all tests. -->
+    <target name="compile" depends="verify-dependencies" description="build dbws classes">
+        <mkdir dir="${eclipselink.dbws.test}/${classes.dir}"/>
+        <javac srcdir="${eclipselink.dbws.test}/${src.dir}"
+               destdir="${eclipselink.dbws.test}/${classes.dir}"
+               debug="${javac.debug}"
+               optimize="${javac.optimize}"
+               source="${javac.version}"
+               deprecation="${javac.deprecation}"
+               failonerror="true"
+               includes="**/*.java"
+               memoryMaximumSize="512m"
+               fork="true">
+            <classpath>
+                <path refid="compile.path"/>
+            </classpath>
+        </javac>
+    </target>
+
+    <!-- target name="package" depends="compile, process-resource" description="Package tests jar" -->
+    <target name="package" depends="compile" description="Package tests jar">
+        <delete file="${eclipselink.dbws.test}/${eclipselink.dbws.tests.jar}" failonerror="false"/>
+        <jar jarfile="${eclipselink.dbws.test}/${eclipselink.dbws.tests.jar}">
+            <fileset dir="${eclipselink.dbws.test}/${classes.dir}">
+                <include name="**/*.class"/>
+            </fileset>
+        </jar>
+    </target>
+
+    <!-- Testing -->
+
+    <target name="create-db-artifacts" depends="package">
+        <sql driver="${db.driver}"
+             url="${db.url}"
+             userid="${db.user}"
+             password="${db.pwd}"
+             src="${eclipselink.dbws.dbsetup}"
+             classpathref="run.classpath"/>
+    </target>
+
+    <!-- Execute this target on non-Oracle database platforms only, because a test requires no Oracle JDBC jar in the classpath-->
+    <target name="test-runDBWSSuites" depends="create-db-artifacts">
+        <echo>Running test on ${db.url}</echo>
+        <mkdir dir="${eclipselink.dbws.test}/${report.dir}"/>
+        <java classname="org.junit.runner.JUnitCore"
+             fork="true"
+             maxmemory="512m"
+             failonerror="true"
+             dir="${eclipselink.dbws.test}/${report.dir}"
+             output="${eclipselink.dbws.test}/${report.dir}/report-plain.txt"
+             classpathref="run.classpath">
+            <sysproperty key="eclipselink.logging.level" value="${logging.level}"/>
+            <sysproperty key="db.driver" value="${db.driver}"/>
+            <sysproperty key="db.url" value="${db.url}"/>
+            <sysproperty key="db.user" value="${db.user}"/>
+            <sysproperty key="db.pwd" value="${db.pwd}"/>
+            <sysproperty key="db.platform" value="${db.platform}"/>
+            <arg value="dbws.testing.keymappings.KeyMappingTestSuite" />
+            <arg value="dbws.testing.relationships.RelationshipsTestSuite" />
+        </java>
+    </target>
+    
+    <target name="db-cleanup"  depends="test-runDBWSSuites">
+        <sql driver="${db.driver}"
+             url="${db.url}"
+             userid="${db.user}"
+             password="${db.pwd}"
+             src="${eclipselink.dbws.dbteardown}"
+             classpathref="run.classpath"/>
+    </target>
+</project>
