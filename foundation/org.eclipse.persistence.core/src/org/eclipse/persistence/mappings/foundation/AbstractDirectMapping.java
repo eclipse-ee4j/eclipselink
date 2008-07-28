@@ -527,13 +527,14 @@ public abstract class AbstractDirectMapping extends DatabaseMapping {
             return null;
         }
 
-        // Allow for user defined conversion to the object value.		
+        // Allow for user defined conversion to the object value.
         if (this.converter != null) {
             fieldValue = this.converter.convertObjectValueToDataValue(fieldValue, session);
         }
         Class fieldClassification = getFieldClassification(this.field);
         // PERF: Avoid conversion if not required.
-        if ((fieldValue != null) && (fieldClassification != fieldValue.getClass())) {
+        // EclipseLink bug 240407 - nulls not translated when writing to database
+        if ((fieldValue == null) || (fieldClassification != fieldValue.getClass())) {
             try {
                 fieldValue = session.getPlatform(descriptor.getJavaClass()).convertObject(fieldValue, fieldClassification);
             } catch (ConversionException exception) {

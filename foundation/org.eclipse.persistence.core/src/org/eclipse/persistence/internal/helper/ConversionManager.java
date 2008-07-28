@@ -56,7 +56,6 @@ public class ConversionManager implements Serializable, Cloneable {
     protected Hashtable dataTypesConvertedToAClass;
 
     public ConversionManager() {
-        this.defaultNullValues = new HashMap(5);
         this.dataTypesConvertedFromAClass = new Hashtable();
         this.dataTypesConvertedToAClass = new Hashtable();
     }
@@ -84,7 +83,7 @@ public class ConversionManager implements Serializable, Cloneable {
         if (sourceObject == null) {
             // Check for default null conversion.
             // i.e. allow for null to be defaulted to "", or 0 etc.
-            if (javaClass != null) {
+            if (javaClass != null ) {
                 return getDefaultNullValue(javaClass);
             } else {
                 return null;
@@ -782,6 +781,7 @@ public class ConversionManager implements Serializable, Cloneable {
      * Any nulls read from the database to be converted to the class will be given the specified null value.
      */
     public Object getDefaultNullValue(Class theClass) {
+        if (this.defaultNullValues == null) return null;
         return getDefaultNullValues().get(theClass);
     }
 
@@ -830,6 +830,13 @@ public class ConversionManager implements Serializable, Cloneable {
         return loader;
     }
 
+    /**
+     * INTERNAL
+     */
+    public boolean hasDefaultNullValues(){
+        return this.defaultNullValues != null;
+    }
+    
     /**
      * INTERNAL:
      * Load the class using the default managers class loader.
@@ -929,6 +936,9 @@ public class ConversionManager implements Serializable, Cloneable {
      * Primitive null values should be set to the wrapper class.
      */
     public void setDefaultNullValue(Class theClass, Object theValue) {
+        if (this.defaultNullValues == null){
+            this.defaultNullValues = new HashMap(5); 
+        }
         getDefaultNullValues().put(theClass, theValue);
     }
 

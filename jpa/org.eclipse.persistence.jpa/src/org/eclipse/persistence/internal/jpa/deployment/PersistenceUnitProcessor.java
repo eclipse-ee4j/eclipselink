@@ -274,6 +274,9 @@ public class PersistenceUnitProcessor {
             project.setWeavingEnabled(false);
         } catch (Exception exception){
             AbstractSessionLog.getLog().log(AbstractSessionLog.WARNING, "persistence_unit_processor_error_loading_class", exception.getClass().getName(), exception.getLocalizedMessage() , className);
+        } catch (Error error){
+            AbstractSessionLog.getLog().log(AbstractSessionLog.WARNING, "persistence_unit_processor_error_loading_class", error.getClass().getName(), error.getLocalizedMessage() , className);
+            throw error;
         }
         
         return candidateClass;
