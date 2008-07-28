@@ -58,10 +58,46 @@
     <!-- This checks if the trunk was checked out, or just the Eclipse projects. -->
     <available file="${eclipselink.jpa.test}/${eclipselink.core.trunk}" type="dir" property="is.trunk"/>
 
+    <!-- Allows we run websphere tests from Windows & Linux both. -->
+    <target name="detect-os">
+        <condition property="is.windows" value="true">
+            <os family="windows"/>
+        </condition>
+        <condition property="is.unix" value="true">
+            <os family="unix"/>
+        </condition>
+        <condition property="suffix" value="bat">
+            <isset property="is.windows"/>
+        </condition>
+        <condition property="suffix" value="sh">
+            <isset property="is.unix"/>
+        </condition>
+    </target>
+
     <!-- This checks if the tests are run on Oracle database -->
     <condition property="is.oracle">
         <contains string="${db.driver}" substring="oracle"/>
     </condition>
+    <!-- This checks if the tests are run on WebSphere -->
+    <condition property="is.websphere">
+        <contains string="${server.name}" substring="websphere"/>
+    </condition>
+
+    <!-- We can't append application name after ${server.url} for WebSphere jndi lookup, so need to differenciate with other servers -->
+    <target name="set-app-name">
+        <condition property="APP_NAME" value="">
+            <contains string="${server.name}" substring="websphere"/>
+        </condition>
+        <condition property="APP_NAME" value="${MODEL_NAME}">
+            <contains string="${server.name}" substring="weblogic"/>
+        </condition>
+        <condition property="APP_NAME" value="${MODEL_NAME}">
+            <contains string="${server.name}" substring="jboss"/>
+        </condition>
+        <condition property="APP_NAME" value="${MODEL_NAME}">
+            <contains string="${server.name}" substring="oc4j"/>
+        </condition>
+    </target>
 
     <!-- Configures paths for trunk checkout. -->
     <target name="config-trunk" if="is.trunk">
@@ -712,7 +748,7 @@
         <ant antfile="${eclipselink.jpa.test}/${server.name}.xml" target="${server.name}-install" inheritRefs="true"/>
     </target>
 
-    <target name="server-setup">
+    <target name="server-setup" depends="detect-os">
         <ant antfile="${eclipselink.jpa.test}/${server.name}.xml" target="${server.name}-setup" inheritRefs="true"/>
     </target>
 
@@ -720,11 +756,11 @@
         <ant antfile="${eclipselink.jpa.test}/${server.name}.xml" target="${server.name}-reset" inheritRefs="true"/>
     </target>
 
-    <target name="server-start">
+    <target name="server-start" depends="detect-os">
         <ant antfile="${eclipselink.jpa.test}/${server.name}.xml" target="${server.name}-start" inheritRefs="true"/>
     </target>
 
-    <target name="server-stop">
+    <target name="server-stop" depends="detect-os">
         <ant antfile="${eclipselink.jpa.test}/${server.name}.xml" target="${server.name}-stop" inheritRefs="true"/>
     </target>
 
@@ -847,7 +883,14 @@
         </copy>
         <!-- Create ejb jar. -->
         <jar destfile="${eclipselink.jpa.test}/${build.dir}/${MODEL_NAME}_ejb.jar" basedir="stage"/>
+        <antcall target="create-ejb-stubs" inheritRefs="true"/>
         <delete dir="stage"/>
+    </target>
+
+    <target name="create-ejb-stubs" depends="detect-os" if="is.websphere">
+        <exec executable="${was.home}/bin/createEJBStubs.${suffix}">
+            <arg line="${eclipselink.jpa.test}/${build.dir}/${MODEL_NAME}_ejb.jar"/>
+        </exec>
     </target>
 
     <!-- Build server test ear. -->
@@ -863,7 +906,7 @@
     <target name="server-build" depends="server-build-client-jar,server-build-ejb-jar,server-build-ear"/>
 
     <!-- Build, deploy and run a test suite on the server. -->
-    <target name="server-run-all">
+    <target name="server-run-all" depends="detect-os">
         <antcall target="server-build" inheritRefs="true"/>
         <antcall target="server-deploy" inheritRefs="true">
             <param name="ear.name" value="${EAR_NAME}.ear"/>
@@ -876,7 +919,7 @@
     </target>
 
     <!-- Run an ear on the server. -->
-    <target name="server-run-test" depends="config-trunk, config-flat">
+    <target name="server-run-test" depends="config-trunk, config-flat, set-app-name">
         <property file="${user.home}/${server.name}.properties"/>
         <property file="${eclipselink.jpa.test}/${server.name}.properties"/>
         <path id="run.path">
@@ -891,14 +934,14 @@
             <sysproperty key="server.platform" value="${server.platform}"/>
             <sysproperty key="server.user" value="${server.user}"/>
             <sysproperty key="server.password" value="${server.pwd}"/>
-            <sysproperty key="server.url" value="${server.url}${MODEL_NAME}"/>
+            <sysproperty key="server.url" value="${server.url}${APP_NAME}"/>
             <sysproperty key="server.testrunner" value="${server.testrunner}"/>
             <sysproperty key="server.run" value="TRUE"/>
             <classpath refid="run.path"/>
             <formatter type="xml"/>
             <test name="${TEST_SUITE}" haltonfailure="no" outfile="${report.dir}/test-results"/>
         </junit>
-        <copy todir="${env.JAVA_HOME}/jre/lib" file="${eclipselink.jpa.test}/resource/weblogic/jaxp.properties" failonerror="false"/>
+        <copy todir="${env.JAVA_HOME}/jre/lib" file="${eclipselink.jpa.test}/resource/${server.name}/jaxp.properties" failonerror="false"/>
         <junitreport todir="${eclipselink.jpa.test}/${report.dir}">
             <fileset dir="${eclipselink.jpa.test}/${report.dir}">
                 <include name="test-results.xml"/>
