@@ -253,7 +253,7 @@ public abstract class Sequence implements Serializable, Cloneable {
      */
     public void onConnect(Platform platform) {
         if (isConnected()) {
-            verifyPlatform(platform);
+            //verifyPlatform(platform);
         } else {
             setDatasourcePlatform(platform);
             onConnect();
@@ -277,8 +277,8 @@ public abstract class Sequence implements Serializable, Cloneable {
         if (isConnected()) {
             depth--;
             if (depth == 0) {
-                onDisconnect();
-                setDatasourcePlatform(null);
+                //onDisconnect();
+                //setDatasourcePlatform(null);
             }
         }
     }

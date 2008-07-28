@@ -59,6 +59,7 @@ public class UOWCommitAndResumeWithPreCalcChangeSet extends TransactionalTestCas
         }
 
         UnitOfWorkChangeSet changeSet = (UnitOfWorkChangeSet)this.unitOfWork.getCurrentChanges();
+        this.unitOfWork.assignSequenceNumbers();
 
         this.unitOfWork.revertAndResume();
 
