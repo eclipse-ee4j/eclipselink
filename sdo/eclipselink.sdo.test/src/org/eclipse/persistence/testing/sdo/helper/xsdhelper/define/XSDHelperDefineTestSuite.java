@@ -34,7 +34,8 @@ public class XSDHelperDefineTestSuite {
         suite.addTest(new SDOComplexTypeXSDTestSuite().suite());
         suite.addTest(new SDOAttributeXSDTestSuite().suite());
         suite.addTest(new SDOElementXSDTestSuite().suite());
-        suite.addTest(new ComplexDefineTestSuite().suite());        
+        suite.addTest(new ComplexDefineTestSuite().suite());
+        suite.addTestSuite(ImportTypeWithSameNameAsElementTestSuite.class);
         return suite;
     }
 }

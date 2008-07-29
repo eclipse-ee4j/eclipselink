@@ -1845,7 +1845,9 @@ public class SDOTypesGenerator {
     private SDOType findSdoType(String targetNamespace, String defaultNamespace, String qualifiedName, String localName, String theURI) {
         //need to also check imports
         SDOType type = getExisitingType(theURI, localName);
-        if (null == type) {
+
+        // Do not execute the following if theURI isn't the target namespace
+        if (type == null && ((theURI != null && theURI.equals(targetNamespace)) || (theURI == null && targetNamespace == null))) {
             processGlobalItem(targetNamespace, defaultNamespace, qualifiedName);
             String sdoName = (String) itemNameToSDOName.get(localName);
             if (sdoName != null) {
