@@ -814,6 +814,7 @@ public class ReportQuery extends ReadAllQuery {
         if (getQueryId() == 0) {
             setQueryId(getSession().getNextQueryId());
         }
+        setExecutionTime(System.currentTimeMillis());
         if (getDescriptor().isDescriptorForInterface()) {
             return getDescriptor().getInterfacePolicy().selectAllObjectsUsingMultipleTableSubclassRead(this);
         }

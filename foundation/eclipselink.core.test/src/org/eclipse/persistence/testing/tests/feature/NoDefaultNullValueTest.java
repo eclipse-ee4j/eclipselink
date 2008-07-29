@@ -35,7 +35,7 @@ public class NoDefaultNullValueTest extends AutoVerifyTestCase {
 
     protected void setup() {
         // save current null values for later restoration
-        saveDefaultNullValues = new HashMap(getSession().getLogin().getPlatform().getConversionManager().getDefaultNullValues());
+        saveDefaultNullValues = getSession().getLogin().getPlatform().getConversionManager().getDefaultNullValues();
         getSession().getLogin().getPlatform().getConversionManager().setDefaultNullValues(new Hashtable());
         beginTransaction();
 

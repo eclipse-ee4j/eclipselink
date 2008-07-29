@@ -42,8 +42,10 @@ public class JPAConversionManager extends ConversionManager {
      * INTERNAL:
      */
     public Object getDefaultNullValue(Class theClass) {
-        Object defaultNullValue = getDefaultNullValues().get(theClass);
-        
+        Object defaultNullValue = null;
+        if (this.defaultNullValues != null){
+            defaultNullValue = getDefaultNullValues().get(theClass);
+        }
         if (defaultNullValue == null && theClass.isPrimitive()) {
             return 0;
         } else {
