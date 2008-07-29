@@ -26,7 +26,6 @@ import junit.textui.TestRunner;
 
 import org.eclipse.persistence.sdo.helper.DefaultSchemaResolver;
 import org.eclipse.persistence.sdo.helper.SDOXSDHelper;
-import org.junit.Test;
 
 import commonj.sdo.helper.XSDHelper;
 import commonj.sdo.impl.HelperProvider;
@@ -36,7 +35,6 @@ public class ImportTypeWithSameNameAsElementTestSuite extends XSDHelperDefineTes
         super(name);
     }
 
-    @Test
     public void testDefine() {
         try {
             Source xsdSource = new StreamSource(getSchemaToDefine());
