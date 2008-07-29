@@ -13,6 +13,15 @@
 
 package dbws.testing;
 
+import java.io.StringWriter;
+
+import org.w3c.dom.Document;
+
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
+
 public class DBWSTestHelper {
 
     public final static String DATABASE_USERNAME_KEY = "db.user";
@@ -28,4 +37,18 @@ public class DBWSTestHelper {
     public final static String DEFAULT_DATABASE_PLATFORM =
         "org.eclipse.persistence.platform.database.MySQLPlatform";
 
+    public static String documentToString(Document doc) {
+        DOMSource domSource = new DOMSource(doc);
+        StringWriter stringWriter = new StringWriter();
+        StreamResult result = new StreamResult(stringWriter);
+        try {
+            Transformer transformer = TransformerFactory.newInstance().newTransformer();
+            transformer.setOutputProperty("indent", "yes");
+            transformer.transform(domSource, result);
+            return stringWriter.toString();
+        } catch (Exception e) {
+            // e.printStackTrace();
+            return "<empty/>";
+        }
+    }
 }

@@ -20,7 +20,6 @@ import java.io.StringReader;
 import java.util.Vector;
 import org.w3c.dom.Document;
 import org.xml.sax.InputSource;
-
 // Java extension imports
 
 // JUnit imports

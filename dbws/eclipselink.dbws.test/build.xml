@@ -26,8 +26,8 @@
 #******************************************************************************/-->
 <project name="org.eclipse.persistence.dbws.test" default="all" basedir=".">
 
-    <target name="all" depends="clean, package" description="build EclipseLink jar"/>
-    <target name="run" depends="clean, db-cleanup" description="run tests"/>
+    <target name="all" depends="clean, package" description="clean, build and package DBWS tests"/>
+    <target name="run" depends="clean, db-cleanup" description="clean, build, package and run DBWS tests"/>
 
     <target name="init">
         <property file="${user.home}/build.properties"/>
@@ -90,7 +90,6 @@
         </javac>
     </target>
 
-    <!-- target name="package" depends="compile, process-resource" description="Package tests jar" -->
     <target name="package" depends="compile" description="Package tests jar">
         <delete file="${eclipselink.dbws.test}/${eclipselink.dbws.tests.jar}" failonerror="false"/>
         <jar jarfile="${eclipselink.dbws.test}/${eclipselink.dbws.tests.jar}">
@@ -103,22 +102,23 @@
     <!-- Testing -->
 
     <target name="create-db-artifacts" depends="package">
-        <sql driver="${db.driver}"
+        <sql onerror="continue"
+             driver="${db.driver}"
              url="${db.url}"
              userid="${db.user}"
              password="${db.pwd}"
+             classpathref="run.classpath"
              src="${eclipselink.dbws.dbsetup}"
-             classpathref="run.classpath"/>
+         />
     </target>
 
-    <!-- Execute this target on non-Oracle database platforms only, because a test requires no Oracle JDBC jar in the classpath-->
     <target name="test-runDBWSSuites" depends="create-db-artifacts">
         <echo>Running test on ${db.url}</echo>
         <mkdir dir="${eclipselink.dbws.test}/${report.dir}"/>
         <java classname="org.junit.runner.JUnitCore"
              fork="true"
              maxmemory="512m"
-             failonerror="true"
+             failonerror="false"
              dir="${eclipselink.dbws.test}/${report.dir}"
              output="${eclipselink.dbws.test}/${report.dir}/report-plain.txt"
              classpathref="run.classpath">
@@ -132,13 +132,15 @@
             <arg value="dbws.testing.relationships.RelationshipsTestSuite" />
         </java>
     </target>
-    
+
     <target name="db-cleanup"  depends="test-runDBWSSuites">
-        <sql driver="${db.driver}"
+        <sql onerror="continue"
+             driver="${db.driver}"
              url="${db.url}"
              userid="${db.user}"
              password="${db.pwd}"
+             classpathref="run.classpath"
              src="${eclipselink.dbws.dbteardown}"
-             classpathref="run.classpath"/>
+         />
     </target>
 </project>
