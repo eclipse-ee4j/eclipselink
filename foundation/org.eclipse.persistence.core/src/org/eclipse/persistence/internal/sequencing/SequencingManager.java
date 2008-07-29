@@ -746,11 +746,13 @@ class SequencingManager implements SequencingHome, SequencingServer, SequencingC
             // Find root sequence, because inheritance needs to be resolved here.
             // TODO: The way we initialize sequencing needs to be in line with descriptor init.
             ClassDescriptor parentDescriptor = descriptor;
-            while ((parentDescriptor != null) && !parentDescriptor.usesSequenceNumbers() && parentDescriptor.isChildDescriptor()) {
-                parentDescriptor = getOwnerSession().getDescriptor(parentDescriptor.getInheritancePolicy().getParentClass());
-            }
-            if (parentDescriptor == null) {
-                parentDescriptor = descriptor;
+            while (!parentDescriptor.usesSequenceNumbers() && parentDescriptor.isChildDescriptor()) {
+                ClassDescriptor newDescriptor = getOwnerSession().getDescriptor(parentDescriptor.getInheritancePolicy().getParentClass());
+                // Avoid issue with error cases of self parent, or null parent.
+                if ((newDescriptor == null) || (newDescriptor == parentDescriptor)) {
+                    break;
+                }
+                parentDescriptor = newDescriptor;
             }
             if (!parentDescriptor.usesSequenceNumbers()) {
                 continue;

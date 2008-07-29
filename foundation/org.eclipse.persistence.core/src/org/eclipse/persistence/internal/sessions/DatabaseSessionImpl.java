@@ -365,6 +365,7 @@ public class DatabaseSessionImpl extends AbstractSession implements org.eclipse.
         if (isConnected() && (descriptor.requiresInitialization())) {
             try {
                 try {
+                    initializeSequencing();
                     descriptor.preInitialize(this);
                     descriptor.initialize(this);
                     descriptor.postInitialize(this);
