@@ -222,28 +222,6 @@ public class XPathEngineSimpleTestCases extends SDOTestCase {
             SDODataFactory factory = new SDODataFactory(getHelperContext());
             SDODataObject po = (SDODataObject) factory.create("http://www.example.org", "PurchaseOrderType");
             po.createDataObject("items");
-            po.set("items/item[0]/productName", "Gizmo");
-        } catch (SDOException sdoe) {
-            if (sdoe.getErrorCode() == SDOException.CANNOT_PERFORM_OPERATION_ON_PROPERTY) {
-                expectedEx = true;
-            } else {
-                unexpectedEx = true;
-            }
-        } catch (Exception x) {
-            unexpectedEx = true;
-        }
-        assertTrue("SDOException 'CANNOT_PERFORM_OPERATION_ON_PROPERTY' was not thrown as expceted.", expectedEx);
-        assertFalse("An unexpected exception occurred.", unexpectedEx);
-    }
-
-    public void testSetPropertyListWrapperPastLastIndex() {
-        boolean expectedEx = false;
-        boolean unexpectedEx = false;
-        
-        try {
-            SDODataFactory factory = new SDODataFactory(getHelperContext());
-            SDODataObject po = (SDODataObject) factory.create("http://www.example.org", "PurchaseOrderType");
-            po.createDataObject("items");
             po.set("items/item[1]/productName", "Gizmo");
         } catch (IndexOutOfBoundsException iobe) {
             expectedEx = true;
@@ -253,5 +231,4 @@ public class XPathEngineSimpleTestCases extends SDOTestCase {
         assertTrue("An IndexOutOfBoundsException was not thrown as expceted.", expectedEx);
         assertFalse("An unexpected exception occurred.", unexpectedEx);
     }
-    
 }
