@@ -161,10 +161,14 @@ public class XPathEngine {
         String lastPropertyName = getPropertyNameInFrag(frag, numInLastProperty, indexOfDot, indexOfOpenBracket);// get last property name on path for case 1
         DataObject lastDataObject;
         if (-1 < lastSlashIndex) {
-            lastDataObject = (SDODataObject)get(path.substring(0, lastSlashIndex), caller);// get last dataobject on path
-            if (lastDataObject == null) {
+            Object lastObject = get(path.substring(0, lastSlashIndex), caller);// get last dataobject on path
+            // If trying to access a list element from a null list, this object will be
+            // an instance of ListWrapper, not DataObject, but the error message is the same
+            // as if it was a null DataObject
+            if (lastObject == null || lastObject instanceof ListWrapper) {
                 throw SDOException.cannotPerformOperationOnProperty(lastPropertyName, path);
             }
+            lastDataObject = (SDODataObject) lastObject;
         } else {
             lastDataObject = caller;
         }
