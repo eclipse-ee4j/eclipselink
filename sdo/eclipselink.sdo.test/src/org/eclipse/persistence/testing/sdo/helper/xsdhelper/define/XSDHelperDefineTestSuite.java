@@ -19,6 +19,7 @@ import org.eclipse.persistence.testing.sdo.helper.xsdhelper.define.complextypes.
 import org.eclipse.persistence.testing.sdo.helper.xsdhelper.define.elements.SDOElementXSDTestSuite;
 import org.eclipse.persistence.testing.sdo.helper.xsdhelper.define.simpletypes.SDOSimpleTypeXSDTestSuite;
 
+
 public class XSDHelperDefineTestSuite {
     public XSDHelperDefineTestSuite() {
     }
@@ -36,6 +37,7 @@ public class XSDHelperDefineTestSuite {
         suite.addTest(new SDOElementXSDTestSuite().suite());
         suite.addTest(new ComplexDefineTestSuite().suite());
         suite.addTestSuite(ImportTypeWithSameNameAsElementTestSuite.class);
+        suite.addTestSuite(ExtendTypeWithSimpleContentTest.class);
         return suite;
     }
 }

@@ -53,7 +53,18 @@ import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 
 /**
- * @since Oracle TopLink 11<i>g</i>
+ * <p><b>Purpose</b>:The XMLAnyAttributeMapping is used to map to an attribute in an object to any xml attributes contained
+ * on a specific element in the XML Document. The attribute in the object will contain a map of attribute values keyed 
+ * on QName. In the case that one or more of the attributes found on the specified element is already mapped to another
+ * attribute in the object, that attribute will be ignored during the unmarshal operation.  
+ * 
+ * <p><b>Setting the XPath</b>: TopLink XML mappings make use of XPath statements to find the relevant
+ * data in an XML document.  The XPath statement is relative to the context node specified in the descriptor.
+ * The XPath may contain node type, path, and positional information.  The XPath is specified on the
+ * mapping using the <code>setXPath</code> method.  Note that for XML Any Attribute Mappings the XPath
+ * is optional. Not setting the xpath, will cause the mapping to look for any attribute children directly owned by the 
+ * current Element.
+ * 
  */
 public class XMLAnyAttributeMapping extends DatabaseMapping implements XMLMapping {
     private XMLField field;
