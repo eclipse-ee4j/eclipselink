@@ -15,23 +15,17 @@ package org.eclipse.persistence.tools.workbench.test.utility.io;
 import java.io.IOException;
 import java.io.InputStream;
 
-import org.eclipse.persistence.tools.workbench.test.utility.TestTools;
-
 import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
-import junit.swingui.TestRunner;
 
+import org.eclipse.persistence.tools.workbench.test.utility.TestTools;
 import org.eclipse.persistence.tools.workbench.utility.io.InvalidInputStream;
 
 
 public class InvalidInputStreamTests extends TestCase {
 	private InputStream invalidInputStream;
 
-	public static void main(String[] args) {
-		TestRunner.main(new String[] {"-c", InvalidInputStreamTests.class.getName()});
-	}
-	
 	public static Test suite() {
 		return new TestSuite(InvalidInputStreamTests.class);
 	}

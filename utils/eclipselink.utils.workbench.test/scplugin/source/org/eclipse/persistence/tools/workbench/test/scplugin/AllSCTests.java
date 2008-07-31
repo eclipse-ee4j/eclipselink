@@ -17,19 +17,17 @@ import java.io.File;
 import java.net.URL;
 import java.util.prefs.Preferences;
 
+import junit.framework.Test;
+import junit.framework.TestSuite;
+
+import org.eclipse.persistence.tools.workbench.scplugin.model.adapter.TopLinkSessionsAdapter;
+import org.eclipse.persistence.tools.workbench.scplugin.model.meta.SCSessionsProperties;
+import org.eclipse.persistence.tools.workbench.scplugin.model.meta.SCSessionsPropertiesManager;
 import org.eclipse.persistence.tools.workbench.test.scplugin.model.adapter.AllSCAdapterTests;
 import org.eclipse.persistence.tools.workbench.test.scplugin.model.meta.SCSessionsPropertiesIOTest;
 import org.eclipse.persistence.tools.workbench.test.scplugin.model.read.AllSCReadTests;
 import org.eclipse.persistence.tools.workbench.test.scplugin.ui.AllSCUITests;
 import org.eclipse.persistence.tools.workbench.test.scplugin.ui.tools.AllSCUIToolsTests;
-
-import junit.framework.Test;
-import junit.framework.TestSuite;
-import junit.swingui.TestRunner;
-
-import org.eclipse.persistence.tools.workbench.scplugin.model.adapter.TopLinkSessionsAdapter;
-import org.eclipse.persistence.tools.workbench.scplugin.model.meta.SCSessionsProperties;
-import org.eclipse.persistence.tools.workbench.scplugin.model.meta.SCSessionsPropertiesManager;
 import org.eclipse.persistence.tools.workbench.utility.ClassTools;
 import org.eclipse.persistence.tools.workbench.utility.io.FileTools;
 
@@ -77,11 +75,6 @@ public class AllSCTests
 	public static TopLinkSessionsAdapter loadSessions(URL location) throws Exception
 	{
 		return loadSessions(FileTools.buildFile(location));
-	}
-
-	public static void main(String[] args)
-	{
-		TestRunner.main(new String[] { "-c", AllSCTests.class.getName() });
 	}
 
 	public static Test suite()

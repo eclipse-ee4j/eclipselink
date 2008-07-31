@@ -15,24 +15,21 @@ package org.eclipse.persistence.tools.workbench.test.mappingsmodel.schema;
 import java.io.File;
 import java.net.URISyntaxException;
 
-import org.eclipse.persistence.tools.workbench.test.mappingsmodel.MappingsModelTestTools;
-
 import junit.framework.Test;
 import junit.framework.TestSuite;
+
 import org.eclipse.persistence.tools.workbench.mappingsmodel.project.xml.MWOXProject;
 import org.eclipse.persistence.tools.workbench.mappingsmodel.resource.ResourceException;
 import org.eclipse.persistence.tools.workbench.mappingsmodel.schema.MWAttributeDeclaration;
 import org.eclipse.persistence.tools.workbench.mappingsmodel.schema.MWComplexTypeDefinition;
 import org.eclipse.persistence.tools.workbench.mappingsmodel.schema.MWXmlSchema;
 import org.eclipse.persistence.tools.workbench.mappingsmodel.schema.MWXmlSchemaRepository;
+import org.eclipse.persistence.tools.workbench.test.mappingsmodel.MappingsModelTestTools;
 import org.eclipse.persistence.tools.workbench.utility.io.FileTools;
 
 public class SingleSchemaTests 
 	extends SchemaTests 
 {
-	public static void main(String[] args) {
-		junit.swingui.TestRunner.main(new String[] {"-c", SingleSchemaTests.class.getName()});
-	}
 	
 	public static Test suite() {
 		return new TestSuite(SingleSchemaTests.class);

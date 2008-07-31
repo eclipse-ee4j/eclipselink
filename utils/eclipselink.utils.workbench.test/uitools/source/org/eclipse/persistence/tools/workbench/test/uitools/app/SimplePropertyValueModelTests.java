@@ -15,13 +15,11 @@ package org.eclipse.persistence.tools.workbench.test.uitools.app;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 
-import org.eclipse.persistence.tools.workbench.test.utility.TestTools;
-
 import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
-import junit.swingui.TestRunner;
 
+import org.eclipse.persistence.tools.workbench.test.utility.TestTools;
 import org.eclipse.persistence.tools.workbench.uitools.app.PropertyValueModel;
 import org.eclipse.persistence.tools.workbench.uitools.app.SimplePropertyValueModel;
 import org.eclipse.persistence.tools.workbench.uitools.app.ValueModel;
@@ -31,10 +29,6 @@ public class SimplePropertyValueModelTests extends TestCase {
 	private PropertyValueModel objectHolder;
 	PropertyChangeEvent event;
 
-	public static void main(String[] args) {
-		TestRunner.main(new String[] {"-c", SimplePropertyValueModelTests.class.getName()});
-	}
-	
 	public static Test suite() {
 		return new TestSuite(SimplePropertyValueModelTests.class);
 	}

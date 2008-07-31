@@ -12,21 +12,18 @@
 ******************************************************************************/
 package org.eclipse.persistence.tools.workbench.test.mappingsmodel.mapping;
 
-import org.eclipse.persistence.tools.workbench.test.mappingsmodel.ModelProblemsTestCase;
-import org.eclipse.persistence.tools.workbench.test.models.xml.employee.Employee;
-
 import junit.framework.Test;
 import junit.framework.TestSuite;
+
 import org.eclipse.persistence.tools.workbench.mappingsmodel.ProblemConstants;
 import org.eclipse.persistence.tools.workbench.mappingsmodel.descriptor.MWDescriptor;
 import org.eclipse.persistence.tools.workbench.mappingsmodel.mapping.xml.MWCompositeObjectMapping;
+import org.eclipse.persistence.tools.workbench.test.mappingsmodel.ModelProblemsTestCase;
+import org.eclipse.persistence.tools.workbench.test.models.xml.employee.Employee;
 
 public class MWCompositeObjectMappingTests 
 	extends ModelProblemsTestCase
 {
-	public static void main(String[] args) {
-		junit.swingui.TestRunner.main(new String[] {"-c", MWCompositeObjectMappingTests.class.getName()});
-	}
 	
 	public static Test suite() {
 		return new TestSuite(MWCompositeObjectMappingTests.class);

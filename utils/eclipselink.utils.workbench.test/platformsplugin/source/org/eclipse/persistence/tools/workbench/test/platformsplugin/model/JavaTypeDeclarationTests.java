@@ -21,13 +21,9 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.sql.Types;
 
-import org.eclipse.persistence.tools.workbench.test.platformsplugin.TestDatabasePlatformRepositoryFactory;
-import org.eclipse.persistence.tools.workbench.test.utility.TestTools;
-
 import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
-import junit.swingui.TestRunner;
 
 import org.eclipse.persistence.tools.workbench.platformsmodel.CorruptXMLException;
 import org.eclipse.persistence.tools.workbench.platformsmodel.DatabasePlatformRepository;
@@ -35,6 +31,8 @@ import org.eclipse.persistence.tools.workbench.platformsmodel.JDBCType;
 import org.eclipse.persistence.tools.workbench.platformsmodel.JDBCTypeRepository;
 import org.eclipse.persistence.tools.workbench.platformsmodel.JavaTypeDeclaration;
 import org.eclipse.persistence.tools.workbench.platformsmodel.JavaTypeDeclarationToJDBCTypeMapping;
+import org.eclipse.persistence.tools.workbench.test.platformsplugin.TestDatabasePlatformRepositoryFactory;
+import org.eclipse.persistence.tools.workbench.test.utility.TestTools;
 import org.eclipse.persistence.tools.workbench.utility.ClassTools;
 import org.eclipse.persistence.tools.workbench.utility.io.FileTools;
 
@@ -43,10 +41,6 @@ public class JavaTypeDeclarationTests extends TestCase {
 	private JDBCTypeRepository repository;
 	private JDBCType jdbcType;
 
-	public static void main(String[] args) {
-		TestRunner.main(new String[] {"-c", JavaTypeDeclarationTests.class.getName()});
-	}
-	
 	public static Test suite() {
 		return new TestSuite(JavaTypeDeclarationTests.class);
 	}

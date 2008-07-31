@@ -12,6 +12,9 @@
 ******************************************************************************/
 package org.eclipse.persistence.tools.workbench.test.utility;
 
+import junit.framework.Test;
+import junit.framework.TestSuite;
+
 import org.eclipse.persistence.tools.workbench.test.utility.classfile.AllClassFileTests;
 import org.eclipse.persistence.tools.workbench.test.utility.diff.AllDiffTests;
 import org.eclipse.persistence.tools.workbench.test.utility.events.AllEventsTests;
@@ -20,11 +23,6 @@ import org.eclipse.persistence.tools.workbench.test.utility.io.AllIOTests;
 import org.eclipse.persistence.tools.workbench.test.utility.iterators.AllIteratorTests;
 import org.eclipse.persistence.tools.workbench.test.utility.node.AllNodeTests;
 import org.eclipse.persistence.tools.workbench.test.utility.string.AllStringTests;
-
-import junit.framework.Test;
-import junit.framework.TestSuite;
-import junit.swingui.TestRunner;
-
 import org.eclipse.persistence.tools.workbench.utility.ClassTools;
 
 
@@ -32,10 +30,6 @@ import org.eclipse.persistence.tools.workbench.utility.ClassTools;
  * decentralize test creation code
  */
 public class AllUtilityTests {
-	
-	public static void main(String[] args) {
-		TestRunner.main(new String[] {"-c", AllUtilityTests.class.getName()});
-	}
 
 	public static Test suite() {
 		return suite(true);

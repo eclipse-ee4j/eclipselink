@@ -19,16 +19,11 @@ import java.util.Map;
 
 import junit.framework.Test;
 import junit.framework.TestSuite;
-import junit.swingui.TestRunner;
 
 /**
  * Oracle9i adds various timestamp datatypes and an XML datatype
  */
 public class Oracle9iTests extends Oracle8iTests {
-
-	public static void main(String[] args) {
-		TestRunner.main(new String[] {"-c", Oracle9iTests.class.getName()});
-	}
 
 	public static Test suite() {
 		return new TestSuite(Oracle9iTests.class);

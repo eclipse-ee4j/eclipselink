@@ -18,15 +18,10 @@ import java.util.NoSuchElementException;
 import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
-import junit.swingui.TestRunner;
 
 import org.eclipse.persistence.tools.workbench.utility.iterators.ArrayIterator;
 
 public class ArrayIteratorTests extends TestCase {
-	
-	public static void main(String[] args) {
-		TestRunner.main(new String[] {"-c", ArrayIteratorTests.class.getName()});
-	}
 	
 	public static Test suite() {
 		return new TestSuite(ArrayIteratorTests.class);

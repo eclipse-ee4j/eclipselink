@@ -17,13 +17,11 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
-import org.eclipse.persistence.tools.workbench.test.utility.TestTools;
-
 import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
-import junit.swingui.TestRunner;
 
+import org.eclipse.persistence.tools.workbench.test.utility.TestTools;
 import org.eclipse.persistence.tools.workbench.utility.CollectionTools;
 import org.eclipse.persistence.tools.workbench.utility.HashBag;
 import org.eclipse.persistence.tools.workbench.utility.Range;
@@ -35,10 +33,6 @@ import org.eclipse.persistence.tools.workbench.utility.node.Problem;
 
 public class AbstractNodeModelTests extends TestCase {
 	private TestWorkbenchModel root;
-
-	public static void main(String[] args) {
-		TestRunner.main(new String[] {"-c", AbstractNodeModelTests.class.getName()});
-	}
 
 	public static Test suite() {
 		return new TestSuite(AbstractNodeModelTests.class);

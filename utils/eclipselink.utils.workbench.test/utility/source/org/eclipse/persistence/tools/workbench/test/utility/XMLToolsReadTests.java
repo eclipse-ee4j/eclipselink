@@ -14,23 +14,17 @@ package org.eclipse.persistence.tools.workbench.test.utility;
 
 import java.io.StringReader;
 
-import org.w3c.dom.Document;
-import org.w3c.dom.Node;
-
 import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
-import junit.swingui.TestRunner;
 
 import org.eclipse.persistence.tools.workbench.utility.XMLTools;
+import org.w3c.dom.Document;
+import org.w3c.dom.Node;
 
 public class XMLToolsReadTests extends TestCase {
 	private Document testDocument;
 	private Node rootNode;
-
-	public static void main(String[] args) {
-		TestRunner.main(new String[] {"-c", XMLToolsReadTests.class.getName()});
-	}
 
 	public static Test suite() {
 		return new TestSuite(XMLToolsReadTests.class);

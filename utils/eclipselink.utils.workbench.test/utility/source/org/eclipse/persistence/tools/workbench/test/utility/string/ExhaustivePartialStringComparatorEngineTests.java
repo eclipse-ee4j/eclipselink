@@ -17,22 +17,16 @@ import java.util.Arrays;
 import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
-import junit.swingui.TestRunner;
 
+import org.eclipse.persistence.tools.workbench.utility.string.ExhaustivePartialStringComparatorEngine;
 import org.eclipse.persistence.tools.workbench.utility.string.LowerCasePartialStringComparator;
 import org.eclipse.persistence.tools.workbench.utility.string.PartialStringComparator;
 import org.eclipse.persistence.tools.workbench.utility.string.PartialStringComparatorEngine;
-import org.eclipse.persistence.tools.workbench.utility.string.ExhaustivePartialStringComparatorEngine;
-import org.eclipse.persistence.tools.workbench.utility.string.SimplePartialStringComparator;
 import org.eclipse.persistence.tools.workbench.utility.string.SimpleStringHolder;
 import org.eclipse.persistence.tools.workbench.utility.string.StringHolder;
 import org.eclipse.persistence.tools.workbench.utility.string.PartialStringComparatorEngine.StringHolderPair;
 
 public class ExhaustivePartialStringComparatorEngineTests extends TestCase {
-	
-	public static void main(String[] args) {
-		TestRunner.main(new String[] {"-c", ExhaustivePartialStringComparatorEngineTests.class.getName()});
-	}
 	
 	public static Test suite() {
 		return new TestSuite(ExhaustivePartialStringComparatorEngineTests.class);

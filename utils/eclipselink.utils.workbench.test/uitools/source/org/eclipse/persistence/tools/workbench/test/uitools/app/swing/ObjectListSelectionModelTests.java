@@ -17,13 +17,11 @@ import javax.swing.ListModel;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
-import org.eclipse.persistence.tools.workbench.test.utility.TestTools;
-
 import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
-import junit.swingui.TestRunner;
 
+import org.eclipse.persistence.tools.workbench.test.utility.TestTools;
 import org.eclipse.persistence.tools.workbench.uitools.app.swing.ObjectListSelectionModel;
 import org.eclipse.persistence.tools.workbench.utility.CollectionTools;
 
@@ -32,10 +30,6 @@ public class ObjectListSelectionModelTests extends TestCase {
 	private DefaultListModel listModel;
 	private ObjectListSelectionModel selectionModel;
 
-	public static void main(String[] args) {
-		TestRunner.main(new String[] {"-c", ObjectListSelectionModelTests.class.getName()});
-	}
-	
 	public static Test suite() {
 		return new TestSuite(ObjectListSelectionModelTests.class);
 	}

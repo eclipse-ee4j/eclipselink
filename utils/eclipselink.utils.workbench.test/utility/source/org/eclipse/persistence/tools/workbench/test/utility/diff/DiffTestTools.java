@@ -17,7 +17,6 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
-
 import org.eclipse.persistence.tools.workbench.utility.CollectionTools;
 import org.eclipse.persistence.tools.workbench.utility.diff.CompositeDiff;
 import org.eclipse.persistence.tools.workbench.utility.diff.ContainerDiff;

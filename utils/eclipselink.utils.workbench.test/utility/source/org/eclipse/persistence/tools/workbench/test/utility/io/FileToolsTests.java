@@ -30,7 +30,6 @@ import java.util.Iterator;
 import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
-import junit.swingui.TestRunner;
 
 import org.eclipse.persistence.tools.workbench.utility.ClassTools;
 import org.eclipse.persistence.tools.workbench.utility.CollectionTools;
@@ -38,10 +37,6 @@ import org.eclipse.persistence.tools.workbench.utility.io.FileTools;
 
 public class FileToolsTests extends TestCase {
 	private File tempDir;
-	
-	public static void main(String[] args) {
-		TestRunner.main(new String[] {"-c", FileToolsTests.class.getName()});
-	}
 	
 	public static Test suite() {
 		return new TestSuite(FileToolsTests.class);

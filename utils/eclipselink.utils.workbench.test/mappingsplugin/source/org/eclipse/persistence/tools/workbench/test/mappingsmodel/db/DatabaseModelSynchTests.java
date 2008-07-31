@@ -16,7 +16,6 @@ import java.util.Iterator;
 
 import junit.framework.Test;
 import junit.framework.TestSuite;
-import junit.swingui.TestRunner;
 
 import org.eclipse.persistence.tools.workbench.mappingsmodel.db.MWColumnPair;
 
@@ -26,10 +25,6 @@ import org.eclipse.persistence.tools.workbench.mappingsmodel.db.MWColumnPair;
 public class DatabaseModelSynchTests
 	extends AbstractModelDatabaseTests
 {
-
-	public static void main(String[] args) {
-		TestRunner.main(new String[] {"-c", DatabaseModelSynchTests.class.getName()});
-	}
 
 	public static Test suite() {
 		return new TestSuite(DatabaseModelSynchTests.class);

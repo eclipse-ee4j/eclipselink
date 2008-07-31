@@ -14,13 +14,11 @@ package org.eclipse.persistence.tools.workbench.test.utility.classfile;
 
 import java.util.Arrays;
 
-import org.eclipse.persistence.tools.workbench.test.utility.TestTools;
-
 import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
-import junit.swingui.TestRunner;
 
+import org.eclipse.persistence.tools.workbench.test.utility.TestTools;
 import org.eclipse.persistence.tools.workbench.utility.CollectionTools;
 import org.eclipse.persistence.tools.workbench.utility.classfile.ClassFile;
 
@@ -28,10 +26,6 @@ import org.eclipse.persistence.tools.workbench.utility.classfile.ClassFile;
 
 public class ClassDependencyTests extends TestCase {
 	private ClassFile classFile;
-
-	public static void main(String[] args) {
-		TestRunner.main(new String[] {"-c", ClassDependencyTests.class.getName()});
-	}
 
 	public static Test suite() {
 		return new TestSuite(ClassDependencyTests.class);

@@ -12,13 +12,12 @@
 ******************************************************************************/
 package org.eclipse.persistence.tools.workbench.test.mappingsmodel.descriptor;
 
-import org.eclipse.persistence.tools.workbench.test.mappingsmodel.descriptor.xml.MWEisDescriptorTests;
-import org.eclipse.persistence.tools.workbench.test.mappingsmodel.descriptor.xml.MWOXDescriptorTests;
-import org.eclipse.persistence.tools.workbench.test.mappingsmodel.descriptor.xml.MWXmlDescriptorTests;
-
 import junit.framework.Test;
 import junit.framework.TestSuite;
 
+import org.eclipse.persistence.tools.workbench.test.mappingsmodel.descriptor.xml.MWEisDescriptorTests;
+import org.eclipse.persistence.tools.workbench.test.mappingsmodel.descriptor.xml.MWOXDescriptorTests;
+import org.eclipse.persistence.tools.workbench.test.mappingsmodel.descriptor.xml.MWXmlDescriptorTests;
 import org.eclipse.persistence.tools.workbench.utility.ClassTools;
 
 
@@ -26,10 +25,6 @@ import org.eclipse.persistence.tools.workbench.utility.ClassTools;
  * decentralize test creation code
  */
 public class AllModelDescriptorTests {
-
-	public static void main(String[] args) {
-		junit.swingui.TestRunner.main(new String[] {"-c", AllModelDescriptorTests.class.getName()});
-	}
 	
 	public static Test suite() {
 		TestSuite suite = new TestSuite(ClassTools.packageNameFor(AllModelDescriptorTests.class));

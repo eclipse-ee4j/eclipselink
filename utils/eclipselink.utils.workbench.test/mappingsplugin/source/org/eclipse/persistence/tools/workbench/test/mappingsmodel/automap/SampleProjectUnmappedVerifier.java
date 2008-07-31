@@ -15,7 +15,6 @@ package org.eclipse.persistence.tools.workbench.test.mappingsmodel.automap;
 // JDK
 import java.util.Hashtable;
 
-// Mapping Workbench
 import org.eclipse.persistence.tools.workbench.mappingsmodel.descriptor.MWDescriptor;
 import org.eclipse.persistence.tools.workbench.mappingsmodel.project.MWProject;
 

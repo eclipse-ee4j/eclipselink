@@ -14,13 +14,9 @@ package org.eclipse.persistence.tools.workbench.test.mappingsmodel.descriptor;
 
 import java.util.Iterator;
 
-import org.eclipse.persistence.tools.workbench.test.mappingsmodel.ModelProblemsTestCase;
-import org.eclipse.persistence.tools.workbench.test.models.projects.ComplexInheritanceProject;
-import org.eclipse.persistence.tools.workbench.test.models.projects.CrimeSceneProject;
-
 import junit.framework.Test;
 import junit.framework.TestSuite;
-import junit.swingui.TestRunner;
+
 import org.eclipse.persistence.tools.workbench.mappingsmodel.ProblemConstants;
 import org.eclipse.persistence.tools.workbench.mappingsmodel.descriptor.InterfaceDescriptorCreationException;
 import org.eclipse.persistence.tools.workbench.mappingsmodel.descriptor.MWClassIndicatorFieldPolicy;
@@ -42,12 +38,11 @@ import org.eclipse.persistence.tools.workbench.mappingsmodel.meta.MWMethod;
 import org.eclipse.persistence.tools.workbench.mappingsmodel.project.MWProject;
 import org.eclipse.persistence.tools.workbench.mappingsmodel.project.MWTransactionalProjectDefaultsPolicy;
 import org.eclipse.persistence.tools.workbench.mappingsmodel.project.relational.MWRelationalProjectDefaultsPolicy;
+import org.eclipse.persistence.tools.workbench.test.mappingsmodel.ModelProblemsTestCase;
+import org.eclipse.persistence.tools.workbench.test.models.projects.ComplexInheritanceProject;
+import org.eclipse.persistence.tools.workbench.test.models.projects.CrimeSceneProject;
 
 public class MWMappingDescriptorTests extends ModelProblemsTestCase {
-
-	public static void main(String[] args) {
-		TestRunner.main(new String[] {"-c", MWMappingDescriptorTests.class.getName()});
-	}
 	
 	public static Test suite() {
 		return new TestSuite(MWMappingDescriptorTests.class);

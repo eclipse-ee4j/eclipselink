@@ -15,7 +15,6 @@ package org.eclipse.persistence.tools.workbench.test.platformsplugin.model;
 import junit.extensions.ActiveTestSuite;
 import junit.framework.Test;
 import junit.framework.TestSuite;
-import junit.swingui.TestRunner;
 
 import org.eclipse.persistence.tools.workbench.utility.ClassTools;
 
@@ -23,10 +22,6 @@ import org.eclipse.persistence.tools.workbench.utility.ClassTools;
  * decentralize test creation code
  */
 public class AllModelTests {
-
-	public static void main(String[] args) {
-		TestRunner.main(new String[] {"-c", AllModelTests.class.getName()});
-	}
 
 	public static Test suite() {
 		// *************************************************************************

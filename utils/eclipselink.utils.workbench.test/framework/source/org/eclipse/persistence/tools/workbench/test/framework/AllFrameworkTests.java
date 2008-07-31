@@ -12,22 +12,16 @@
 ******************************************************************************/
 package org.eclipse.persistence.tools.workbench.test.framework;
 
-import org.eclipse.persistence.tools.workbench.test.framework.resources.AllFrameworkResourcesTests;
-import org.eclipse.persistence.tools.workbench.test.framework.ui.tools.AllFrameworkUIToolsTests;
-
 import junit.framework.Test;
 import junit.framework.TestSuite;
-import junit.swingui.TestRunner;
 
+import org.eclipse.persistence.tools.workbench.test.framework.resources.AllFrameworkResourcesTests;
+import org.eclipse.persistence.tools.workbench.test.framework.ui.tools.AllFrameworkUIToolsTests;
 import org.eclipse.persistence.tools.workbench.utility.ClassTools;
 
 
 public class AllFrameworkTests {
 
-	public static void main(String[] args) {
-		TestRunner.main(new String[] {"-c", AllFrameworkTests.class.getName()});
-	}
-	
 	public static Test suite() {
 		return suite(true);
 	}

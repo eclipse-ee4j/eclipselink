@@ -19,16 +19,11 @@ import java.util.List;
 import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
-import junit.swingui.TestRunner;
 
 import org.eclipse.persistence.tools.workbench.utility.CollectionTools;
 import org.eclipse.persistence.tools.workbench.utility.NameTools;
 
 public class NameToolsTests extends TestCase {
-
-	public static void main(String[] args) {
-		TestRunner.main(new String[] {"-c", NameToolsTests.class.getName()});
-	}
 
 	public static Test suite() {
 		return new TestSuite(NameToolsTests.class);

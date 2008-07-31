@@ -13,7 +13,6 @@
 package org.eclipse.persistence.tools.workbench.test.uitools.app.swing;
 
 import org.eclipse.persistence.tools.workbench.test.uitools.app.swing.TableModelAdapterTests.PersonColumnAdapter;
-
 import org.eclipse.persistence.tools.workbench.uitools.app.swing.ColumnAdapter;
 
 

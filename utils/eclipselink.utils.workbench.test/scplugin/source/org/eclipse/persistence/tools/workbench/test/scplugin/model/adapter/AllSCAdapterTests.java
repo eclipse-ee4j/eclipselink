@@ -14,18 +14,12 @@ package org.eclipse.persistence.tools.workbench.test.scplugin.model.adapter;
 
 import junit.framework.Test;
 import junit.framework.TestSuite;
-import junit.swingui.TestRunner;
 
 public class AllSCAdapterTests
 {
 	private AllSCAdapterTests()
 	{
 		super();
-	}
-
-	public static void main(String[] args)
-	{
-		TestRunner.main(new String[] { "-c", AllSCAdapterTests.class.getName() });
 	}
 
 	public static Test suite()

@@ -17,16 +17,11 @@ import java.util.Map;
 
 import junit.framework.Test;
 import junit.framework.TestSuite;
-import junit.swingui.TestRunner;
 
 /**
  * Oracle10g adds a couple of "binary" number datatypes
  */
 public class Oracle10gTests extends Oracle9iTests {
-
-	public static void main(String[] args) {
-		TestRunner.main(new String[] {"-c", Oracle10gTests.class.getName()});
-	}
 
 	public static Test suite() {
 		return new TestSuite(Oracle10gTests.class);

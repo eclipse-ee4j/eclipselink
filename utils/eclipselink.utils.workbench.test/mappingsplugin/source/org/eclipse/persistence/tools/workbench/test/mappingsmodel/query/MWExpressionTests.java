@@ -51,11 +51,6 @@ public class MWExpressionTests extends TestCase
 	
 	private MWProject employeeProject;
 
-	public static void main(String[] args) 
-	{
-		junit.swingui.TestRunner.main(new String[] {"-c", MWExpressionTests.class.getName()});
-	}
-	
 	public static Test suite() 
 	{
 		return new TestSuite(MWExpressionTests.class);

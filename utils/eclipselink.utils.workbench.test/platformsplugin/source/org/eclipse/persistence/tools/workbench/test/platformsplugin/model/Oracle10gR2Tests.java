@@ -14,16 +14,11 @@ package org.eclipse.persistence.tools.workbench.test.platformsplugin.model;
 
 import junit.framework.Test;
 import junit.framework.TestSuite;
-import junit.swingui.TestRunner;
 
 /**
  * no new datatypes in R2
  */
 public class Oracle10gR2Tests extends Oracle10gTests {
-
-	public static void main(String[] args) {
-		TestRunner.main(new String[] {"-c", Oracle10gR2Tests.class.getName()});
-	}
 
 	public static Test suite() {
 		return new TestSuite(Oracle10gR2Tests.class);

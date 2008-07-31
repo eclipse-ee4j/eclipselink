@@ -35,6 +35,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Vector;
+
 import javax.swing.AbstractButton;
 import javax.swing.ComboBoxModel;
 import javax.swing.JButton;
@@ -57,13 +58,11 @@ import javax.swing.UIManager;
 import javax.swing.plaf.basic.ComboPopup;
 import javax.swing.text.JTextComponent;
 
-// Mapping Workbench
-import org.eclipse.persistence.tools.workbench.framework.resources.ResourceRepository;
-import org.eclipse.persistence.tools.workbench.utility.string.StringTools;
-
-// JUnit
 import junit.framework.Test;
 import junit.framework.TestCase;
+
+import org.eclipse.persistence.tools.workbench.framework.resources.ResourceRepository;
+import org.eclipse.persistence.tools.workbench.utility.string.StringTools;
 
 /**
  * @version 10.1.3

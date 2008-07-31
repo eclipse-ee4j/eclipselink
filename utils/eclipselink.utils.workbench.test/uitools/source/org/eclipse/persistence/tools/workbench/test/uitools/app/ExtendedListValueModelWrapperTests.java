@@ -18,13 +18,11 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
 
-import org.eclipse.persistence.tools.workbench.test.utility.TestTools;
-
 import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
-import junit.swingui.TestRunner;
 
+import org.eclipse.persistence.tools.workbench.test.utility.TestTools;
 import org.eclipse.persistence.tools.workbench.uitools.app.ExtendedListValueModelWrapper;
 import org.eclipse.persistence.tools.workbench.uitools.app.ListValueModel;
 import org.eclipse.persistence.tools.workbench.uitools.app.SimpleListValueModel;
@@ -46,10 +44,6 @@ public class ExtendedListValueModelWrapperTests extends TestCase {
 	private static final String REPLACE = "replace";
 	private static final String CHANGE = "change";
 
-	public static void main(String[] args) {
-		TestRunner.main(new String[] {"-c", ExtendedListValueModelWrapperTests.class.getName()});
-	}
-	
 	public static Test suite() {
 		return new TestSuite(ExtendedListValueModelWrapperTests.class);
 	}

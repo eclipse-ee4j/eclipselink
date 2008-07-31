@@ -16,11 +16,9 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-import org.eclipse.persistence.tools.workbench.test.utility.TestTools;
-
 import junit.framework.TestCase;
 
-
+import org.eclipse.persistence.tools.workbench.test.utility.TestTools;
 import org.eclipse.persistence.tools.workbench.utility.diff.CompositeDiff;
 import org.eclipse.persistence.tools.workbench.utility.diff.Diff;
 import org.eclipse.persistence.tools.workbench.utility.diff.Diffable;

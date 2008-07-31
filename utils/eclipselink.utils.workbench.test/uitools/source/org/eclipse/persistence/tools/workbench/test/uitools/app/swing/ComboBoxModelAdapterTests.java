@@ -22,13 +22,11 @@ import java.util.ListIterator;
 import javax.swing.ComboBoxModel;
 import javax.swing.ListModel;
 
-import org.eclipse.persistence.tools.workbench.test.uitools.app.SynchronizedList;
-
 import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
-import junit.swingui.TestRunner;
 
+import org.eclipse.persistence.tools.workbench.test.uitools.app.SynchronizedList;
 import org.eclipse.persistence.tools.workbench.uitools.SimpleDisplayable;
 import org.eclipse.persistence.tools.workbench.uitools.app.SimpleListValueModel;
 import org.eclipse.persistence.tools.workbench.uitools.app.SimplePropertyValueModel;
@@ -38,10 +36,6 @@ import org.eclipse.persistence.tools.workbench.utility.ClassTools;
 
 public class ComboBoxModelAdapterTests extends TestCase {
 
-	public static void main(String[] args) {
-		TestRunner.main(new String[] {"-c", ComboBoxModelAdapterTests.class.getName()});
-	}
-	
 	public static Test suite() {
 		return new TestSuite(ComboBoxModelAdapterTests.class);
 	}

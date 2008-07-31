@@ -14,21 +14,18 @@ package org.eclipse.persistence.tools.workbench.test.scplugin.model.read;
 
 import java.io.File;
 
-import org.eclipse.persistence.tools.workbench.test.scplugin.AllSCTests;
-import org.eclipse.persistence.tools.workbench.test.utility.TestTools;
-
 import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
-import junit.swingui.TestRunner;
 
 import org.eclipse.persistence.tools.workbench.scplugin.model.adapter.DatabaseLoginAdapter;
 import org.eclipse.persistence.tools.workbench.scplugin.model.adapter.DatabaseSessionAdapter;
 import org.eclipse.persistence.tools.workbench.scplugin.model.adapter.DefaultSessionLogAdapter;
-import org.eclipse.persistence.tools.workbench.scplugin.model.adapter.JavaLogAdapter;
 import org.eclipse.persistence.tools.workbench.scplugin.model.adapter.LogAdapter;
 import org.eclipse.persistence.tools.workbench.scplugin.model.adapter.LoginAdapter;
 import org.eclipse.persistence.tools.workbench.scplugin.model.adapter.TopLinkSessionsAdapter;
+import org.eclipse.persistence.tools.workbench.test.scplugin.AllSCTests;
+import org.eclipse.persistence.tools.workbench.test.utility.TestTools;
 import org.eclipse.persistence.tools.workbench.utility.io.FileTools;
 
 
@@ -104,9 +101,6 @@ public class DatabaseSessionTests extends TestCase {
 
 		return ( DatabaseSessionAdapter)topLinkSessions.sessionNamed( name);
 		
-	}
-	public static void main( String[] args) {
-		TestRunner.main( new String[] { "-c", DatabaseSessionTests.class.getName()});
 	}
 	
 	public static Test suite() {

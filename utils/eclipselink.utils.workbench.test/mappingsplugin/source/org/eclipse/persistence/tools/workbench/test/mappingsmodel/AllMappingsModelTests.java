@@ -12,6 +12,9 @@
 ******************************************************************************/
 package org.eclipse.persistence.tools.workbench.test.mappingsmodel;
 
+import junit.framework.Test;
+import junit.framework.TestSuite;
+
 import org.eclipse.persistence.tools.workbench.test.mappingsmodel.automap.AllModelAutomapTests;
 import org.eclipse.persistence.tools.workbench.test.mappingsmodel.db.AllModelDatabaseTests;
 import org.eclipse.persistence.tools.workbench.test.mappingsmodel.descriptor.AllModelDescriptorTests;
@@ -20,11 +23,6 @@ import org.eclipse.persistence.tools.workbench.test.mappingsmodel.meta.AllModelM
 import org.eclipse.persistence.tools.workbench.test.mappingsmodel.query.AllModelQueryTests;
 import org.eclipse.persistence.tools.workbench.test.mappingsmodel.schema.AllModelSchemaTests;
 import org.eclipse.persistence.tools.workbench.test.mappingsmodel.spi.meta.AllModelSPIMetaTests;
-
-import junit.framework.Test;
-import junit.framework.TestSuite;
-import junit.swingui.TestRunner;
-
 import org.eclipse.persistence.tools.workbench.utility.ClassTools;
 
 
@@ -32,10 +30,6 @@ import org.eclipse.persistence.tools.workbench.utility.ClassTools;
  * decentralize test creation code
  */
 public class AllMappingsModelTests {
-
-	public static void main(String[] args) {
-		TestRunner.main(new String[] {"-c", AllMappingsModelTests.class.getName()});
-	}
 
 	public static Test suite() {
 		return suite(true);

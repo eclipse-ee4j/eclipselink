@@ -17,13 +17,11 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
 
-import org.eclipse.persistence.tools.workbench.test.utility.TestTools;
-
 import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
-import junit.swingui.TestRunner;
 
+import org.eclipse.persistence.tools.workbench.test.utility.TestTools;
 import org.eclipse.persistence.tools.workbench.uitools.app.ListCurator;
 import org.eclipse.persistence.tools.workbench.uitools.app.PropertyValueModel;
 import org.eclipse.persistence.tools.workbench.uitools.app.SimplePropertyValueModel;
@@ -47,10 +45,6 @@ public final class ListCuratorTests
 	
 	private TestSubject subject2;
 
-	public static void main(String[] args) {
-		TestRunner.main(new String[] {"-c", ListCuratorTests.class.getName()});
-	}
-	
 	public static Test suite() {
 		return new TestSuite(ListCuratorTests.class);
 	}

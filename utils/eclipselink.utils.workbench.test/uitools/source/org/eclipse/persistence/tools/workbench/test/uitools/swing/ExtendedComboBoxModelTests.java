@@ -15,17 +15,17 @@ package org.eclipse.persistence.tools.workbench.test.uitools.swing;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+
 import javax.swing.ComboBoxModel;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.event.ListDataEvent;
 import javax.swing.event.ListDataListener;
 
-import org.eclipse.persistence.tools.workbench.test.utility.TestTools;
-
 import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
-import junit.swingui.TestRunner;
+
+import org.eclipse.persistence.tools.workbench.test.utility.TestTools;
 import org.eclipse.persistence.tools.workbench.uitools.swing.ExtendedComboBoxModel;
 
 
@@ -40,10 +40,6 @@ public class ExtendedComboBoxModelTests
 	private static final String ADD = "add";
 	private static final String REMOVE = "remove";
 	private static final String CHANGE = "change";
-	
-	public static void main(String[] args) {
-		TestRunner.main(new String[] {"-c", ExtendedComboBoxModelTests.class.getName()});
-	}
 	
 	public static Test suite() {
 		return new TestSuite(ExtendedComboBoxModelTests.class);

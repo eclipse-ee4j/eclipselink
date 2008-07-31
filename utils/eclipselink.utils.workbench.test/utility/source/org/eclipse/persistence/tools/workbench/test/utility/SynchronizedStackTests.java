@@ -16,7 +16,6 @@ import java.util.EmptyStackException;
 
 import junit.framework.Test;
 import junit.framework.TestSuite;
-import junit.swingui.TestRunner;
 
 import org.eclipse.persistence.tools.workbench.utility.SimpleStack;
 import org.eclipse.persistence.tools.workbench.utility.Stack;
@@ -32,10 +31,6 @@ public class SynchronizedStackTests extends SimpleStackTests {
 
 	static final Object ITEM_1 = new Object();
 	static final Object ITEM_2 = new Object();
-
-	public static void main(String[] args) {
-		TestRunner.main(new String[] {"-c", SynchronizedStackTests.class.getName()});
-	}
 
 	public static Test suite() {
 		return new TestSuite(SynchronizedStackTests.class);

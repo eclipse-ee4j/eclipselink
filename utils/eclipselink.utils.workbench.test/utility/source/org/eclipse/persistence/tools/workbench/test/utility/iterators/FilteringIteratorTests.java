@@ -20,7 +20,6 @@ import java.util.NoSuchElementException;
 import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
-import junit.swingui.TestRunner;
 
 import org.eclipse.persistence.tools.workbench.utility.filters.Filter;
 import org.eclipse.persistence.tools.workbench.utility.filters.SimpleFilter;
@@ -30,10 +29,6 @@ public class FilteringIteratorTests extends TestCase {
 
 	private static final String PREFIX = "prefix";
 
-	public static void main(String[] args) {
-		TestRunner.main(new String[] {"-c", FilteringIteratorTests.class.getName()});
-	}
-	
 	public static Test suite() {
 		return new TestSuite(FilteringIteratorTests.class);
 	}

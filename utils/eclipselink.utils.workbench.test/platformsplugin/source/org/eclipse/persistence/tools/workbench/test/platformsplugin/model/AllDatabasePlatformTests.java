@@ -1,12 +1,10 @@
 package org.eclipse.persistence.tools.workbench.test.platformsplugin.model;
 
-import org.eclipse.persistence.tools.workbench.test.platformsplugin.AllPlatformsPluginTests;
-import org.eclipse.persistence.tools.workbench.utility.ClassTools;
-
 import junit.extensions.ActiveTestSuite;
 import junit.framework.Test;
 import junit.framework.TestSuite;
-import junit.swingui.TestRunner;
+
+import org.eclipse.persistence.tools.workbench.utility.ClassTools;
 
 /**
  * Note these tests are not included in the main suite as they are platform specific.  
@@ -15,13 +13,6 @@ import junit.swingui.TestRunner;
  *
  */
 public class AllDatabasePlatformTests {
-
-	/**
-	 * @param args
-	 */
-	public static void main(String[] args) {
-		TestRunner.main(new String[] {"-c", AllDatabasePlatformTests.class.getName()});
-	}
 
 	public static Test suite() {
 		TestSuite suite = new ActiveTestSuite(ClassTools.packageNameFor(AllModelTests.class));

@@ -12,13 +12,11 @@
 ******************************************************************************/
 package org.eclipse.persistence.tools.workbench.test.utility.diff;
 
-import org.eclipse.persistence.tools.workbench.test.utility.TestTools;
-
 import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
-import junit.swingui.TestRunner;
 
+import org.eclipse.persistence.tools.workbench.test.utility.TestTools;
 import org.eclipse.persistence.tools.workbench.utility.diff.Diff;
 import org.eclipse.persistence.tools.workbench.utility.diff.Differentiator;
 import org.eclipse.persistence.tools.workbench.utility.diff.NullDifferentiator;
@@ -27,10 +25,6 @@ import org.eclipse.persistence.tools.workbench.utility.diff.NullDifferentiator;
 
 public class NullDiffTests extends TestCase {
 	private Differentiator differentiator;
-	
-	public static void main(String[] args) {
-		TestRunner.main(new String[] {"-c", NullDiffTests.class.getName()});
-	}
 	
 	public static Test suite() {
 		return new TestSuite(NullDiffTests.class);

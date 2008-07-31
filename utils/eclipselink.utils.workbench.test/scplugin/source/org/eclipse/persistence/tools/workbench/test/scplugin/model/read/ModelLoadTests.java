@@ -14,18 +14,17 @@ package org.eclipse.persistence.tools.workbench.test.scplugin.model.read;
 
 import java.io.File;
 
-import org.eclipse.persistence.tools.workbench.test.scplugin.adapter.TopLinkSessionsAdapter;
-import org.eclipse.persistence.tools.workbench.test.utility.TestTools;
-
 import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
-import junit.swingui.TestRunner;
+
 import org.eclipse.persistence.internal.sessions.factories.model.log.DefaultSessionLogConfig;
 import org.eclipse.persistence.internal.sessions.factories.model.log.LogConfig;
 import org.eclipse.persistence.internal.sessions.factories.model.login.DatabaseLoginConfig;
 import org.eclipse.persistence.internal.sessions.factories.model.login.LoginConfig;
 import org.eclipse.persistence.internal.sessions.factories.model.session.DatabaseSessionConfig;
+import org.eclipse.persistence.tools.workbench.test.scplugin.adapter.TopLinkSessionsAdapter;
+import org.eclipse.persistence.tools.workbench.test.utility.TestTools;
 import org.eclipse.persistence.tools.workbench.utility.io.FileTools;
 
 
@@ -92,10 +91,6 @@ public class ModelLoadTests extends TestCase {
 		LoginConfig login = session.getLoginConfig();
 		String driverName = (( DatabaseLoginConfig)login).getDriverClass();
 		assertEquals( "oracle.jdbc.driver.OracleDriver", driverName);
-	}
-	
-	public static void main( String[] args) {
-		TestRunner.main( new String[] { "-c", ModelLoadTests.class.getName()});
 	}
 	
 	public static Test suite() {

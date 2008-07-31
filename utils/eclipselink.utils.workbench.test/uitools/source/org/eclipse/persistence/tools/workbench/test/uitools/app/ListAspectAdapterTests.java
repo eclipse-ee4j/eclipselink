@@ -17,13 +17,11 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
 
-import org.eclipse.persistence.tools.workbench.test.utility.TestTools;
-
 import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
-import junit.swingui.TestRunner;
 
+import org.eclipse.persistence.tools.workbench.test.utility.TestTools;
 import org.eclipse.persistence.tools.workbench.uitools.app.ListAspectAdapter;
 import org.eclipse.persistence.tools.workbench.uitools.app.PropertyValueModel;
 import org.eclipse.persistence.tools.workbench.uitools.app.SimplePropertyValueModel;
@@ -44,10 +42,6 @@ public class ListAspectAdapterTests extends TestCase {
 
 	private TestSubject subject2;
 
-	public static void main(String[] args) {
-		TestRunner.main(new String[] {"-c", ListAspectAdapterTests.class.getName()});
-	}
-	
 	public static Test suite() {
 		return new TestSuite(ListAspectAdapterTests.class);
 	}

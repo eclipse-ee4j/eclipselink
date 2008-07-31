@@ -15,7 +15,6 @@ package org.eclipse.persistence.tools.workbench.test.utility;
 import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
-import junit.swingui.TestRunner;
 
 import org.eclipse.persistence.tools.workbench.utility.Association;
 import org.eclipse.persistence.tools.workbench.utility.SimpleAssociation;
@@ -23,10 +22,6 @@ import org.eclipse.persistence.tools.workbench.utility.SimpleAssociation;
 public class SimpleAssociationTests extends TestCase {
 	private SimpleAssociation assoc;
 
-	public static void main(String[] args) {
-		TestRunner.main(new String[] {"-c", SimpleAssociationTests.class.getName()});
-	}
-	
 	public static Test suite() {
 		return new TestSuite(SimpleAssociationTests.class);
 	}

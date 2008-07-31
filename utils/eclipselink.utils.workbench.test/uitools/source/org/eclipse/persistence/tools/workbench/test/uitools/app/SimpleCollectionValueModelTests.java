@@ -17,13 +17,11 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 
-import org.eclipse.persistence.tools.workbench.test.utility.TestTools;
-
 import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
-import junit.swingui.TestRunner;
 
+import org.eclipse.persistence.tools.workbench.test.utility.TestTools;
 import org.eclipse.persistence.tools.workbench.uitools.app.CollectionValueModel;
 import org.eclipse.persistence.tools.workbench.uitools.app.SimpleCollectionValueModel;
 import org.eclipse.persistence.tools.workbench.uitools.app.ValueModel;
@@ -47,10 +45,6 @@ public class SimpleCollectionValueModelTests extends TestCase {
 	private static final String REMOVE = "remove";
 	private static final String CHANGE = "change";
 
-	public static void main(String[] args) {
-		TestRunner.main(new String[] {"-c", SimpleCollectionValueModelTests.class.getName()});
-	}
-	
 	public static Test suite() {
 		return new TestSuite(SimpleCollectionValueModelTests.class);
 	}

@@ -18,13 +18,11 @@ import java.util.List;
 import java.util.ListIterator;
 import java.util.NoSuchElementException;
 
-import org.eclipse.persistence.tools.workbench.test.utility.TestTools;
-
 import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
-import junit.swingui.TestRunner;
 
+import org.eclipse.persistence.tools.workbench.test.utility.TestTools;
 import org.eclipse.persistence.tools.workbench.utility.iterators.CloneListIterator;
 
 
@@ -34,11 +32,6 @@ public class CloneListIteratorTests extends TestCase {
 	private boolean concurrentProblem;
 	private List concurrentList;
 
-
-	public static void main(String[] args) {
-		TestRunner.main(new String[] {"-c", CloneListIteratorTests.class.getName()});
-	}
-	
 	public static Test suite() {
 		return new TestSuite(CloneListIteratorTests.class);
 	}

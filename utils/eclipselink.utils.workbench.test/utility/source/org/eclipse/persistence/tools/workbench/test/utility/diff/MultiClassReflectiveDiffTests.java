@@ -16,6 +16,9 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import junit.framework.Test;
+import junit.framework.TestSuite;
+
 import org.eclipse.persistence.tools.workbench.test.utility.diff.model.Address;
 import org.eclipse.persistence.tools.workbench.test.utility.diff.model.Car;
 import org.eclipse.persistence.tools.workbench.test.utility.diff.model.Dependent;
@@ -23,12 +26,6 @@ import org.eclipse.persistence.tools.workbench.test.utility.diff.model.Employee;
 import org.eclipse.persistence.tools.workbench.test.utility.diff.model.MultiClassEmployee;
 import org.eclipse.persistence.tools.workbench.test.utility.diff.model.PhoneNumber;
 import org.eclipse.persistence.tools.workbench.test.utility.diff.model.State;
-
-import junit.framework.Test;
-import junit.framework.TestSuite;
-import junit.swingui.TestRunner;
-
-
 import org.eclipse.persistence.tools.workbench.utility.ClassTools;
 import org.eclipse.persistence.tools.workbench.utility.CollectionTools;
 import org.eclipse.persistence.tools.workbench.utility.diff.CompositeDiff;
@@ -44,10 +41,6 @@ import org.eclipse.persistence.tools.workbench.utility.diff.ReflectiveFieldDiff;
 
 public class MultiClassReflectiveDiffTests extends AbstractReflectiveDiffTests {
 
-
-	public static void main(String[] args) {
-		TestRunner.main(new String[] {"-c", MultiClassReflectiveDiffTests.class.getName()});
-	}
 
 	public static Test suite() {
 		return new TestSuite(MultiClassReflectiveDiffTests.class);

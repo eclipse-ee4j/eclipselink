@@ -15,25 +15,19 @@ package org.eclipse.persistence.tools.workbench.test.mappingsmodel.spi.meta.clas
 import java.io.File;
 import java.util.Map;
 
-import org.eclipse.persistence.tools.workbench.test.mappingsmodel.spi.meta.ExternalClassRepositoryTests;
-
 import junit.framework.Test;
 import junit.framework.TestSuite;
-import junit.swingui.TestRunner;
 
 import org.eclipse.persistence.tools.workbench.mappingsmodel.spi.meta.ExternalClassRepository;
 import org.eclipse.persistence.tools.workbench.mappingsmodel.spi.meta.ExternalClassRepositoryFactory;
 import org.eclipse.persistence.tools.workbench.mappingsmodel.spi.meta.classloader.CLExternalClassRepositoryFactory;
+import org.eclipse.persistence.tools.workbench.test.mappingsmodel.spi.meta.ExternalClassRepositoryTests;
 import org.eclipse.persistence.tools.workbench.utility.ClassTools;
 
 
 public class CLExternalClassRepositoryTests
 	extends ExternalClassRepositoryTests
 {
-
-	public static void main(String[] args) {
-		TestRunner.main(new String[] {"-c", CLExternalClassRepositoryTests.class.getName()});
-	}
 
 	public static Test suite() {
 		return new TestSuite(CLExternalClassRepositoryTests.class);

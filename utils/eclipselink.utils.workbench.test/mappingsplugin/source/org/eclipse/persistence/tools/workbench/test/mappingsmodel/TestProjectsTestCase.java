@@ -16,15 +16,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 
-import org.eclipse.persistence.tools.workbench.test.models.eis.employee.LargeProject;
-import org.eclipse.persistence.tools.workbench.test.models.eis.employee.Project;
-import org.eclipse.persistence.tools.workbench.test.models.projects.CrimeSceneProject;
-import org.eclipse.persistence.tools.workbench.test.models.projects.EmployeeEisProject;
-import org.eclipse.persistence.tools.workbench.test.models.projects.EmployeeOXProject;
-import org.eclipse.persistence.tools.workbench.test.models.projects.QueryProject;
-import org.eclipse.persistence.tools.workbench.test.models.projects.SimpleContactProject;
-import org.eclipse.persistence.tools.workbench.test.utility.TestTools;
-
 import junit.framework.TestCase;
 
 import org.eclipse.persistence.tools.workbench.mappingsmodel.db.MWDatabase;
@@ -50,6 +41,14 @@ import org.eclipse.persistence.tools.workbench.mappingsmodel.project.MWProject;
 import org.eclipse.persistence.tools.workbench.mappingsmodel.project.relational.MWRelationalProject;
 import org.eclipse.persistence.tools.workbench.mappingsmodel.project.xml.MWEisProject;
 import org.eclipse.persistence.tools.workbench.mappingsmodel.project.xml.MWOXProject;
+import org.eclipse.persistence.tools.workbench.test.models.eis.employee.LargeProject;
+import org.eclipse.persistence.tools.workbench.test.models.eis.employee.Project;
+import org.eclipse.persistence.tools.workbench.test.models.projects.CrimeSceneProject;
+import org.eclipse.persistence.tools.workbench.test.models.projects.EmployeeEisProject;
+import org.eclipse.persistence.tools.workbench.test.models.projects.EmployeeOXProject;
+import org.eclipse.persistence.tools.workbench.test.models.projects.QueryProject;
+import org.eclipse.persistence.tools.workbench.test.models.projects.SimpleContactProject;
+import org.eclipse.persistence.tools.workbench.test.utility.TestTools;
 
 public abstract class TestProjectsTestCase extends TestCase {
 	private MWRelationalProject crimeSceneProject;

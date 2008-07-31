@@ -12,13 +12,11 @@
 ******************************************************************************/
 package org.eclipse.persistence.tools.workbench.test.utility.diff;
 
-import org.eclipse.persistence.tools.workbench.test.utility.TestTools;
-
 import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
-import junit.swingui.TestRunner;
 
+import org.eclipse.persistence.tools.workbench.test.utility.TestTools;
 import org.eclipse.persistence.tools.workbench.utility.diff.Diff;
 import org.eclipse.persistence.tools.workbench.utility.diff.Differentiator;
 import org.eclipse.persistence.tools.workbench.utility.diff.IdentityDifferentiator;
@@ -27,10 +25,6 @@ import org.eclipse.persistence.tools.workbench.utility.diff.IdentityDifferentiat
 
 public class IdentityDiffTests extends TestCase {
 	private Differentiator differentiator;
-	
-	public static void main(String[] args) {
-		TestRunner.main(new String[] {"-c", IdentityDiffTests.class.getName()});
-	}
 	
 	public static Test suite() {
 		return new TestSuite(IdentityDiffTests.class);

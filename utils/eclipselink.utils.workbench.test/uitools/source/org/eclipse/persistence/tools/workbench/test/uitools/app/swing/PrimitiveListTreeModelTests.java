@@ -22,13 +22,11 @@ import javax.swing.event.TreeModelListener;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreeModel;
 
-import org.eclipse.persistence.tools.workbench.test.utility.TestTools;
-
 import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
-import junit.swingui.TestRunner;
 
+import org.eclipse.persistence.tools.workbench.test.utility.TestTools;
 import org.eclipse.persistence.tools.workbench.uitools.app.ListAspectAdapter;
 import org.eclipse.persistence.tools.workbench.uitools.app.ListValueModel;
 import org.eclipse.persistence.tools.workbench.uitools.app.swing.PrimitiveListTreeModel;
@@ -40,10 +38,6 @@ public class PrimitiveListTreeModelTests extends TestCase {
 	TestModel testModel;
 	private TreeModel treeModel;
 
-	public static void main(String[] args) {
-		TestRunner.main(new String[] {"-c", PrimitiveListTreeModelTests.class.getName()});
-	}
-	
 	public static Test suite() {
 		return new TestSuite(PrimitiveListTreeModelTests.class);
 	}

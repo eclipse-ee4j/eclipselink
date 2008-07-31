@@ -12,6 +12,13 @@
 ******************************************************************************/
 package org.eclipse.persistence.tools.workbench.test.mappingsio;
 
+import junit.framework.Test;
+import junit.framework.TestCase;
+import junit.framework.TestSuite;
+
+import org.eclipse.persistence.tools.workbench.mappingsio.ProjectIOManager;
+import org.eclipse.persistence.tools.workbench.mappingsmodel.meta.MWMethod;
+import org.eclipse.persistence.tools.workbench.mappingsmodel.project.MWProject;
 import org.eclipse.persistence.tools.workbench.test.mappingsmodel.MappingsModelTestTools;
 import org.eclipse.persistence.tools.workbench.test.models.projects.ComplexAggregateProject;
 import org.eclipse.persistence.tools.workbench.test.models.projects.ComplexInheritanceProject;
@@ -30,14 +37,6 @@ import org.eclipse.persistence.tools.workbench.test.models.projects.ReturningPol
 import org.eclipse.persistence.tools.workbench.test.models.projects.ReturningPolicyProject;
 import org.eclipse.persistence.tools.workbench.test.models.projects.SimpleContactProject;
 import org.eclipse.persistence.tools.workbench.test.utility.TestTools;
-
-import junit.framework.Test;
-import junit.framework.TestCase;
-import junit.framework.TestSuite;
-
-import org.eclipse.persistence.tools.workbench.mappingsio.ProjectIOManager;
-import org.eclipse.persistence.tools.workbench.mappingsmodel.meta.MWMethod;
-import org.eclipse.persistence.tools.workbench.mappingsmodel.project.MWProject;
 import org.eclipse.persistence.tools.workbench.utility.ClassTools;
 import org.eclipse.persistence.tools.workbench.utility.NullPreferences;
 import org.eclipse.persistence.tools.workbench.utility.diff.Diff;

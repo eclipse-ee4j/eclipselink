@@ -44,11 +44,6 @@ import org.eclipse.persistence.tools.workbench.utility.TriStateBoolean;
 public class MWQueryTests extends ModelProblemsTestCase
 {
 
-	public static void main(String[] args) 
-	{
-		junit.swingui.TestRunner.main(new String[] {"-c", MWQueryTests.class.getName()});
-	}
-	
 	public static Test suite() 
 	{
 		return new TestSuite(MWQueryTests.class);

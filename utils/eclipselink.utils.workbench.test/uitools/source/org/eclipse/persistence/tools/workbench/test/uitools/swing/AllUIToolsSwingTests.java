@@ -14,14 +14,11 @@ package org.eclipse.persistence.tools.workbench.test.uitools.swing;
 
 import junit.framework.Test;
 import junit.framework.TestSuite;
-import junit.swingui.TestRunner;
+
 import org.eclipse.persistence.tools.workbench.utility.ClassTools;
 
 public class AllUIToolsSwingTests
 {
-	public static void main(String[] args) {
-		TestRunner.main(new String[] {"-c", AllUIToolsSwingTests.class.getName()});
-	}
 	
 	public static Test suite() {
 		TestSuite suite = new TestSuite(ClassTools.packageNameFor(AllUIToolsSwingTests.class));

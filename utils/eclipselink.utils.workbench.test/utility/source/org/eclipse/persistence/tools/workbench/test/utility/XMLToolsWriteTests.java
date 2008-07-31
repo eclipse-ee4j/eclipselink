@@ -15,15 +15,13 @@ package org.eclipse.persistence.tools.workbench.test.utility;
 import java.io.ByteArrayOutputStream;
 import java.io.OutputStream;
 
-import org.w3c.dom.Document;
-import org.w3c.dom.Node;
-
 import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
-import junit.swingui.TestRunner;
 
 import org.eclipse.persistence.tools.workbench.utility.XMLTools;
+import org.w3c.dom.Document;
+import org.w3c.dom.Node;
 
 /**
  * these tests assume the XML will be formatted with appropriate
@@ -33,10 +31,6 @@ public class XMLToolsWriteTests extends TestCase {
 	private Document testDocument;
 	private Node rootNode;
 	private static final String CR = System.getProperty("line.separator");
-
-	public static void main(String[] args) {
-		TestRunner.main(new String[] {"-c", XMLToolsWriteTests.class.getName()});
-	}
 
 	public static Test suite() {
 		return new TestSuite(XMLToolsWriteTests.class);

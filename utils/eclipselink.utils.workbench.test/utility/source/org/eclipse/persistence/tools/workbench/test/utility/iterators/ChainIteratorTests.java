@@ -21,7 +21,6 @@ import java.util.Vector;
 import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
-import junit.swingui.TestRunner;
 
 import org.eclipse.persistence.tools.workbench.utility.iterators.ChainIterator;
 
@@ -29,10 +28,6 @@ public class ChainIteratorTests extends TestCase {
 	private final static Class[] VECTOR_HIERARCHY =
 		{Vector.class, AbstractList.class, AbstractCollection.class, Object.class};
 
-	public static void main(String[] args) {
-		TestRunner.main(new String[] {"-c", ChainIteratorTests.class.getName()});
-	}
-	
 	public static Test suite() {
 		return new TestSuite(ChainIteratorTests.class);
 	}

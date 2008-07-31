@@ -25,10 +25,6 @@ import junit.framework.TestSuite;
 
 public class MWUserDefinedQueryKeyTests extends ModelProblemsTestCase {
 
-	public static void main(String[] args) {
-		junit.swingui.TestRunner.main(new String[] {"-c", MWUserDefinedQueryKeyTests.class.getName()});
-	}
-	
 	public static Test suite() {
 		return new TestSuite(MWUserDefinedQueryKeyTests.class);
 	}

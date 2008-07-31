@@ -12,20 +12,19 @@
 ******************************************************************************/
 package org.eclipse.persistence.tools.workbench.test.mappingsmodel.db;
 
-import org.eclipse.persistence.tools.workbench.test.mappingsmodel.MappingsModelTestTools;
-import org.eclipse.persistence.tools.workbench.test.models.projects.TestDatabases;
-import org.eclipse.persistence.tools.workbench.test.utility.TestTools;
-
 import junit.framework.TestCase;
 
-import org.eclipse.persistence.tools.workbench.mappingsmodel.db.MWDatabase;
 import org.eclipse.persistence.tools.workbench.mappingsmodel.db.MWColumn;
+import org.eclipse.persistence.tools.workbench.mappingsmodel.db.MWDatabase;
 import org.eclipse.persistence.tools.workbench.mappingsmodel.db.MWLoginSpec;
 import org.eclipse.persistence.tools.workbench.mappingsmodel.db.MWReference;
 import org.eclipse.persistence.tools.workbench.mappingsmodel.db.MWTable;
 import org.eclipse.persistence.tools.workbench.mappingsmodel.project.relational.MWRelationalProject;
 import org.eclipse.persistence.tools.workbench.platformsmodel.DatabasePlatform;
 import org.eclipse.persistence.tools.workbench.platformsmodel.DatabasePlatformRepository;
+import org.eclipse.persistence.tools.workbench.test.mappingsmodel.MappingsModelTestTools;
+import org.eclipse.persistence.tools.workbench.test.models.projects.TestDatabases;
+import org.eclipse.persistence.tools.workbench.test.utility.TestTools;
 import org.eclipse.persistence.tools.workbench.utility.ClassTools;
 
 

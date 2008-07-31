@@ -16,13 +16,10 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Vector;
 
-import org.eclipse.persistence.tools.workbench.test.scplugin.adapter.TopLinkSessionsAdapter;
-import org.eclipse.persistence.tools.workbench.test.utility.TestTools;
-
 import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
-import junit.swingui.TestRunner;
+
 import org.eclipse.persistence.internal.sessions.factories.model.log.DefaultSessionLogConfig;
 import org.eclipse.persistence.internal.sessions.factories.model.login.DatabaseLoginConfig;
 import org.eclipse.persistence.internal.sessions.factories.model.login.EISLoginConfig;
@@ -33,6 +30,8 @@ import org.eclipse.persistence.internal.sessions.factories.model.session.ServerS
 import org.eclipse.persistence.internal.sessions.factories.model.session.SessionConfig;
 import org.eclipse.persistence.internal.sessions.factories.model.transport.JMSTopicTransportManagerConfig;
 import org.eclipse.persistence.internal.sessions.factories.model.transport.naming.JNDINamingServiceConfig;
+import org.eclipse.persistence.tools.workbench.test.scplugin.adapter.TopLinkSessionsAdapter;
+import org.eclipse.persistence.tools.workbench.test.utility.TestTools;
 
 public class DatabaseSessionWriteTest extends TestCase {
 
@@ -268,10 +267,6 @@ public class DatabaseSessionWriteTest extends TestCase {
 		return new File( path + name + ".xml");
 	}	
 
-	public static void main(String[] args) throws Exception {
-		TestRunner.main( new String[] { "-c", DatabaseSessionWriteTest.class.getName()});
-	}
-	
 	public static Test suite() {
 		return new TestSuite( DatabaseSessionWriteTest.class);
 	}

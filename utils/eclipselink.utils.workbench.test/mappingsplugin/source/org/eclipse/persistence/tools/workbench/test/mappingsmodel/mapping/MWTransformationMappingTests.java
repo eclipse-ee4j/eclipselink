@@ -15,25 +15,22 @@ package org.eclipse.persistence.tools.workbench.test.mappingsmodel.mapping;
 import java.util.Iterator;
 import java.util.Vector;
 
-import org.eclipse.persistence.tools.workbench.test.mappingsmodel.ModelProblemsTestCase;
-import org.eclipse.persistence.tools.workbench.test.models.projects.CrimeSceneProject;
-
 import junit.framework.Test;
 import junit.framework.TestSuite;
-import junit.swingui.TestRunner;
+
 import org.eclipse.persistence.indirection.ValueHolderInterface;
 import org.eclipse.persistence.mappings.transformers.AttributeTransformerAdapter;
 import org.eclipse.persistence.mappings.transformers.FieldTransformerAdapter;
 import org.eclipse.persistence.tools.workbench.mappingsmodel.ProblemConstants;
 import org.eclipse.persistence.tools.workbench.mappingsmodel.db.MWColumn;
-import org.eclipse.persistence.tools.workbench.mappingsmodel.mapping.MWMapping;
 import org.eclipse.persistence.tools.workbench.mappingsmodel.mapping.MWMethodBasedTransformer;
-import org.eclipse.persistence.tools.workbench.mappingsmodel.mapping.MWTransformationMapping;
 import org.eclipse.persistence.tools.workbench.mappingsmodel.mapping.relational.MWRelationalFieldTransformerAssociation;
 import org.eclipse.persistence.tools.workbench.mappingsmodel.mapping.relational.MWRelationalTransformationMapping;
 import org.eclipse.persistence.tools.workbench.mappingsmodel.meta.MWClass;
 import org.eclipse.persistence.tools.workbench.mappingsmodel.meta.MWMethod;
 import org.eclipse.persistence.tools.workbench.mappingsmodel.meta.MWMethodParameter;
+import org.eclipse.persistence.tools.workbench.test.mappingsmodel.ModelProblemsTestCase;
+import org.eclipse.persistence.tools.workbench.test.models.projects.CrimeSceneProject;
 
 public class MWTransformationMappingTests 
 	extends ModelProblemsTestCase 
@@ -41,11 +38,7 @@ public class MWTransformationMappingTests
 	public MWTransformationMappingTests(String name) {
 		super(name);
 	}
-	
-	public static void main(String[] args) {
-		TestRunner.main(new String[] {"-c", MWTransformationMappingTests.class.getName()});
-	}
-		
+			
 	public static Test suite() {
 		return new TestSuite(MWTransformationMappingTests.class);
 	}

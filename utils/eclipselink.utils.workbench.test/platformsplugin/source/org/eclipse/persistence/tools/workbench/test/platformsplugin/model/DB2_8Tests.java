@@ -18,13 +18,8 @@ import java.util.Map;
 
 import junit.framework.Test;
 import junit.framework.TestSuite;
-import junit.swingui.TestRunner;
 
 public class DB2_8Tests extends DB2_7Tests {
-
-	public static void main(String[] args) {
-		TestRunner.main(new String[] {"-c", DB2_8Tests.class.getName()});
-	}
 
 	public static Test suite() {
 		return new TestSuite(DB2_8Tests.class);

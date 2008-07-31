@@ -16,11 +16,8 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
-import org.eclipse.persistence.tools.workbench.test.mappingsmodel.ModelProblemsTestCase;
-
 import junit.framework.Test;
 import junit.framework.TestSuite;
-import junit.swingui.TestRunner;
 
 import org.eclipse.persistence.tools.workbench.mappingsio.ProjectIOManager;
 import org.eclipse.persistence.tools.workbench.mappingsmodel.ProblemConstants;
@@ -41,6 +38,7 @@ import org.eclipse.persistence.tools.workbench.mappingsmodel.mapping.relational.
 import org.eclipse.persistence.tools.workbench.mappingsmodel.mapping.relational.MWRelationalDirectCollectionMapping;
 import org.eclipse.persistence.tools.workbench.mappingsmodel.mapping.relational.MWRelationalTransformationMapping;
 import org.eclipse.persistence.tools.workbench.mappingsmodel.project.relational.MWRelationalProject;
+import org.eclipse.persistence.tools.workbench.test.mappingsmodel.ModelProblemsTestCase;
 import org.eclipse.persistence.tools.workbench.utility.ClassTools;
 import org.eclipse.persistence.tools.workbench.utility.CollectionTools;
 import org.eclipse.persistence.tools.workbench.utility.NullPreferences;
@@ -49,10 +47,6 @@ import org.eclipse.persistence.tools.workbench.utility.io.FileTools;
 
 
 public class MWTableTests extends ModelProblemsTestCase {
-
-	public static void main(String[] args) {
-		TestRunner.main(new String[] {"-c", MWTableTests.class.getName()});
-	}
 
 	public MWTableTests(String name) {
 		super(name);

@@ -18,16 +18,11 @@ import java.util.NoSuchElementException;
 
 import junit.framework.Test;
 import junit.framework.TestSuite;
-import junit.swingui.TestRunner;
 
 import org.eclipse.persistence.tools.workbench.utility.iterators.ArrayListIterator;
 
 public class ArrayListIteratorTests extends ArrayIteratorTests {
 
-	public static void main(String[] args) {
-		TestRunner.main(new String[] {"-c", ArrayListIteratorTests.class.getName()});
-	}
-	
 	public static Test suite() {
 		return new TestSuite(ArrayListIteratorTests.class);
 	}

@@ -16,13 +16,9 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Vector;
 
-import org.eclipse.persistence.tools.workbench.test.scplugin.adapter.TopLinkSessionsAdapter;
-import org.eclipse.persistence.tools.workbench.test.utility.TestTools;
-
 import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
-import junit.swingui.TestRunner;
 
 import org.eclipse.persistence.internal.sessions.factories.model.property.PropertyConfig;
 import org.eclipse.persistence.internal.sessions.factories.model.rcm.RemoteCommandManagerConfig;
@@ -32,6 +28,8 @@ import org.eclipse.persistence.internal.sessions.factories.model.transport.JMSTo
 import org.eclipse.persistence.internal.sessions.factories.model.transport.naming.JNDINamingServiceConfig;
 import org.eclipse.persistence.tools.workbench.scplugin.model.adapter.DatabaseSessionAdapter;
 import org.eclipse.persistence.tools.workbench.scplugin.model.adapter.RemoteCommandManagerAdapter;
+import org.eclipse.persistence.tools.workbench.test.scplugin.adapter.TopLinkSessionsAdapter;
+import org.eclipse.persistence.tools.workbench.test.utility.TestTools;
 
 /**
  * Read XMLSchemaSessions.xml, add properties, and write out resulting xml.
@@ -117,10 +115,6 @@ public class SessionsXMLSchemaWriteTest extends TestCase {
 //			rcm.setRemoveConnectionOnError( true);
 
 		}
-	
-	public static void main(String[] args) throws Exception {
-		TestRunner.main( new String[] { "-c", SessionsXMLSchemaWriteTest.class.getName()});
-	}
 	
 	public static Test suite() {
 		return new TestSuite( SessionsXMLSchemaWriteTest.class);

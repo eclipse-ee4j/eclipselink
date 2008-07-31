@@ -21,19 +21,17 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.sql.Types;
 
-import org.eclipse.persistence.tools.workbench.test.platformsplugin.TestDatabasePlatformRepositoryFactory;
-import org.eclipse.persistence.tools.workbench.test.utility.TestTools;
-
 import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
-import junit.swingui.TestRunner;
 
 import org.eclipse.persistence.tools.workbench.platformsmodel.CorruptXMLException;
 import org.eclipse.persistence.tools.workbench.platformsmodel.DatabasePlatform;
 import org.eclipse.persistence.tools.workbench.platformsmodel.DatabasePlatformRepository;
 import org.eclipse.persistence.tools.workbench.platformsmodel.DatabaseType;
 import org.eclipse.persistence.tools.workbench.platformsmodel.JDBCType;
+import org.eclipse.persistence.tools.workbench.test.platformsplugin.TestDatabasePlatformRepositoryFactory;
+import org.eclipse.persistence.tools.workbench.test.utility.TestTools;
 import org.eclipse.persistence.tools.workbench.utility.ClassTools;
 import org.eclipse.persistence.tools.workbench.utility.io.FileTools;
 
@@ -43,10 +41,6 @@ public class DatabaseTypeTests extends TestCase {
 	private DatabasePlatform barPlatform;
 	private DatabasePlatformRepository repository;
 
-	public static void main(String[] args) {
-		TestRunner.main(new String[] {"-c", DatabaseTypeTests.class.getName()});
-	}
-	
 	public static Test suite() {
 		return new TestSuite(DatabaseTypeTests.class);
 	}

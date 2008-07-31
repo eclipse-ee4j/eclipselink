@@ -23,17 +23,12 @@ import java.util.jar.JarFile;
 import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
-import junit.swingui.TestRunner;
 
 import org.eclipse.persistence.tools.workbench.utility.Classpath;
 import org.eclipse.persistence.tools.workbench.utility.CollectionTools;
 
 public class ClasspathTests extends TestCase {
 	private static final String JAVA_HOME = System.getProperty("java.home");
-	
-	public static void main(String[] args) {
-		TestRunner.main(new String[] {"-c", ClasspathTests.class.getName()});
-	}
 	
 	public static Test suite() {
 		return new TestSuite(ClasspathTests.class);

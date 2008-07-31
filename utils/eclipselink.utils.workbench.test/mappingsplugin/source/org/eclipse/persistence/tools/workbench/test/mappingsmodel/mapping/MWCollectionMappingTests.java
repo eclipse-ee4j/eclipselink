@@ -14,25 +14,21 @@ package org.eclipse.persistence.tools.workbench.test.mappingsmodel.mapping;
 
 import java.util.Collection;
 
-import org.eclipse.persistence.tools.workbench.test.mappingsmodel.ModelProblemsTestCase;
-import org.eclipse.persistence.tools.workbench.test.models.crimescene.Victim;
-import org.eclipse.persistence.tools.workbench.test.models.projects.CrimeSceneProject;
-
 import junit.framework.Test;
 import junit.framework.TestSuite;
+
 import org.eclipse.persistence.tools.workbench.mappingsmodel.ProblemConstants;
 import org.eclipse.persistence.tools.workbench.mappingsmodel.mapping.MWMapContainerPolicy;
 import org.eclipse.persistence.tools.workbench.mappingsmodel.mapping.relational.MWCollectionMapping;
 import org.eclipse.persistence.tools.workbench.mappingsmodel.mapping.relational.MWOneToManyMapping;
 import org.eclipse.persistence.tools.workbench.mappingsmodel.mapping.relational.MWRelationalDirectCollectionMapping;
 import org.eclipse.persistence.tools.workbench.mappingsmodel.meta.MWMethod;
+import org.eclipse.persistence.tools.workbench.test.mappingsmodel.ModelProblemsTestCase;
+import org.eclipse.persistence.tools.workbench.test.models.crimescene.Victim;
+import org.eclipse.persistence.tools.workbench.test.models.projects.CrimeSceneProject;
 
 public class MWCollectionMappingTests extends ModelProblemsTestCase {
 
-	public static void main(String[] args) {
-		junit.swingui.TestRunner.main(new String[] {"-c", MWCollectionMappingTests.class.getName()});
-	}
-	
 	public static Test suite() {
 		return new TestSuite(MWCollectionMappingTests.class);
 	}

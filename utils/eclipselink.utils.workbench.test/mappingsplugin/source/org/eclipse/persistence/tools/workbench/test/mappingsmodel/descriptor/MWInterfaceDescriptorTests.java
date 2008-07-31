@@ -12,12 +12,8 @@
 ******************************************************************************/
 package org.eclipse.persistence.tools.workbench.test.mappingsmodel.descriptor;
 
-import org.eclipse.persistence.tools.workbench.test.mappingsmodel.ModelProblemsTestCase;
-import org.eclipse.persistence.tools.workbench.test.models.projects.SimpleContactProject;
-
 import junit.framework.Test;
 import junit.framework.TestSuite;
-import junit.swingui.TestRunner;
 
 import org.eclipse.persistence.tools.workbench.mappingsmodel.ProblemConstants;
 import org.eclipse.persistence.tools.workbench.mappingsmodel.descriptor.MWDescriptor;
@@ -25,14 +21,12 @@ import org.eclipse.persistence.tools.workbench.mappingsmodel.descriptor.relation
 import org.eclipse.persistence.tools.workbench.mappingsmodel.descriptor.relational.MWTableDescriptor;
 import org.eclipse.persistence.tools.workbench.mappingsmodel.meta.MWClass;
 import org.eclipse.persistence.tools.workbench.mappingsmodel.project.relational.MWRelationalProject;
+import org.eclipse.persistence.tools.workbench.test.mappingsmodel.ModelProblemsTestCase;
+import org.eclipse.persistence.tools.workbench.test.models.projects.SimpleContactProject;
 
 
 
 public class MWInterfaceDescriptorTests extends ModelProblemsTestCase {
-
-	public static void main(String[] args) {
-		TestRunner.main(new String[] {"-c", MWInterfaceDescriptorTests.class.getName()});
-	}
 	
 	public static Test suite() {
 		return new TestSuite(MWInterfaceDescriptorTests.class);

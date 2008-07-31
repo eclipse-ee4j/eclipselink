@@ -16,8 +16,6 @@ import java.io.File;
 import java.util.Iterator;
 import java.util.Map;
 
-import org.eclipse.persistence.tools.workbench.test.utility.TestTools;
-
 import junit.framework.TestCase;
 
 import org.eclipse.persistence.tools.workbench.mappingsmodel.spi.meta.ExternalClass;
@@ -26,6 +24,7 @@ import org.eclipse.persistence.tools.workbench.mappingsmodel.spi.meta.ExternalCl
 import org.eclipse.persistence.tools.workbench.mappingsmodel.spi.meta.ExternalClassRepositoryFactory;
 import org.eclipse.persistence.tools.workbench.mappingsmodel.spi.meta.ExternalField;
 import org.eclipse.persistence.tools.workbench.mappingsmodel.spi.meta.ExternalMethod;
+import org.eclipse.persistence.tools.workbench.test.utility.TestTools;
 import org.eclipse.persistence.tools.workbench.utility.ClassTools;
 import org.eclipse.persistence.tools.workbench.utility.CollectionTools;
 import org.eclipse.persistence.tools.workbench.utility.io.IndentingPrintWriter;

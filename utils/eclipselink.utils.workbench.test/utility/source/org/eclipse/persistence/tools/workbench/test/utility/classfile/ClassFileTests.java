@@ -15,18 +15,16 @@ package org.eclipse.persistence.tools.workbench.test.utility.classfile;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Modifier;
 
-import org.eclipse.persistence.tools.workbench.test.utility.ClassToolsTests;
-
 import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
-import junit.swingui.TestRunner;
 
+import org.eclipse.persistence.tools.workbench.test.utility.ClassToolsTests;
 import org.eclipse.persistence.tools.workbench.utility.Bag;
 import org.eclipse.persistence.tools.workbench.utility.ClassTools;
 import org.eclipse.persistence.tools.workbench.utility.CollectionTools;
-import org.eclipse.persistence.tools.workbench.utility.classfile.ClassFile;
 import org.eclipse.persistence.tools.workbench.utility.classfile.ClassDeclaration;
+import org.eclipse.persistence.tools.workbench.utility.classfile.ClassFile;
 import org.eclipse.persistence.tools.workbench.utility.classfile.Field;
 import org.eclipse.persistence.tools.workbench.utility.classfile.FieldPool;
 import org.eclipse.persistence.tools.workbench.utility.classfile.InnerClass;
@@ -63,10 +61,6 @@ public class ClassFileTests extends TestCase {
 
 	private static String munge(String className) {
 		return ClassToolsTests.compilerDependentClassNameFor(className);
-	}
-
-	public static void main(String[] args) {
-		TestRunner.main(new String[] {"-c", ClassFileTests.class.getName()});
 	}
 
 	public static Test suite() {

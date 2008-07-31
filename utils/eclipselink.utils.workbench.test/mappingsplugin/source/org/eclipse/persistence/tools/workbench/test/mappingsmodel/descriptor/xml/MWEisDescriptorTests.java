@@ -16,27 +16,22 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 
-import org.eclipse.persistence.tools.workbench.test.mappingsmodel.ModelProblemsTestCase;
-import org.eclipse.persistence.tools.workbench.test.models.eis.employee.Address;
-import org.eclipse.persistence.tools.workbench.test.models.projects.EmployeeEisProject;
-
 import junit.framework.Test;
 import junit.framework.TestSuite;
-import junit.swingui.TestRunner;
+
 import org.eclipse.persistence.tools.workbench.mappingsmodel.ProblemConstants;
 import org.eclipse.persistence.tools.workbench.mappingsmodel.descriptor.InterfaceDescriptorCreationException;
 import org.eclipse.persistence.tools.workbench.mappingsmodel.descriptor.xml.MWCompositeEisDescriptor;
 import org.eclipse.persistence.tools.workbench.mappingsmodel.descriptor.xml.MWEisDescriptor;
-import org.eclipse.persistence.tools.workbench.mappingsmodel.descriptor.xml.MWXmlPrimaryKeyPolicy;
 import org.eclipse.persistence.tools.workbench.mappingsmodel.descriptor.xml.MWEisTransactionalPolicy;
 import org.eclipse.persistence.tools.workbench.mappingsmodel.descriptor.xml.MWRootEisDescriptor;
+import org.eclipse.persistence.tools.workbench.mappingsmodel.descriptor.xml.MWXmlPrimaryKeyPolicy;
 import org.eclipse.persistence.tools.workbench.mappingsmodel.project.xml.MWEisProject;
+import org.eclipse.persistence.tools.workbench.test.mappingsmodel.ModelProblemsTestCase;
+import org.eclipse.persistence.tools.workbench.test.models.eis.employee.Address;
+import org.eclipse.persistence.tools.workbench.test.models.projects.EmployeeEisProject;
 
 public class MWEisDescriptorTests extends ModelProblemsTestCase {
-
-	public static void main(String[] args) {
-		TestRunner.main(new String[] {"-c", MWEisDescriptorTests.class.getName()});
-	}
 
 	public static Test suite() {
 		return new TestSuite(MWEisDescriptorTests.class);

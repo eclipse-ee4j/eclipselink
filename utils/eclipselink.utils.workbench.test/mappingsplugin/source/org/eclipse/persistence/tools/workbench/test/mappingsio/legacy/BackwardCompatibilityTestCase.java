@@ -15,10 +15,6 @@ package org.eclipse.persistence.tools.workbench.test.mappingsio.legacy;
 import java.io.File;
 import java.net.URISyntaxException;
 
-import org.eclipse.persistence.tools.workbench.test.mappingsmodel.MappingsModelTestTools;
-import org.eclipse.persistence.tools.workbench.test.mappingsmodel.MappingsModelTestTools.ClassRepositoryTypesFieldDifferentiator;
-import org.eclipse.persistence.tools.workbench.test.utility.TestTools;
-
 import junit.framework.TestCase;
 
 import org.eclipse.persistence.tools.PackageRenamer;
@@ -31,7 +27,9 @@ import org.eclipse.persistence.tools.workbench.mappingsmodel.meta.MWClassReposit
 import org.eclipse.persistence.tools.workbench.mappingsmodel.meta.MWMethod;
 import org.eclipse.persistence.tools.workbench.mappingsmodel.project.relational.MWRelationalProject;
 import org.eclipse.persistence.tools.workbench.mappingsmodel.query.relational.MWAbstractRelationalReadQuery;
-import org.eclipse.persistence.tools.workbench.mappingsmodel.schema.MWXmlSchema;
+import org.eclipse.persistence.tools.workbench.test.mappingsmodel.MappingsModelTestTools;
+import org.eclipse.persistence.tools.workbench.test.mappingsmodel.MappingsModelTestTools.ClassRepositoryTypesFieldDifferentiator;
+import org.eclipse.persistence.tools.workbench.test.utility.TestTools;
 import org.eclipse.persistence.tools.workbench.utility.ClassTools;
 import org.eclipse.persistence.tools.workbench.utility.diff.CompositeDiff;
 import org.eclipse.persistence.tools.workbench.utility.diff.Diff;
@@ -113,12 +111,6 @@ public abstract class BackwardCompatibilityTestCase
 			//this is only used on reading of a legacy project and gets to a default null value of True
 			rd.ignoreFieldNamed("legacyIsFullyQualified");
 			
-		rd = (ReflectiveDifferentiator) de.getUserDifferentiator(MWXmlSchema.class);
-			//being that the parsers are now different, much of the content differs slightly now.
-			rd.ignoreFieldNamed("schemaSource");
-			rd.ignoreFieldNamed("builtInNamespaces");
-			rd.ignoreFieldNamed("declaredNamespaces");
-
 		return de;
 	}
 

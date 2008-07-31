@@ -14,17 +14,15 @@ package org.eclipse.persistence.tools.workbench.test.framework.resources;
 
 import java.util.ListResourceBundle;
 
-import org.eclipse.persistence.tools.workbench.test.utility.TestTools;
-
 import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
-import junit.swingui.TestRunner;
 
 import org.eclipse.persistence.tools.workbench.framework.resources.DefaultStringRepository;
 import org.eclipse.persistence.tools.workbench.framework.resources.MissingStringException;
 import org.eclipse.persistence.tools.workbench.framework.resources.ResourceBundleStringRepository;
 import org.eclipse.persistence.tools.workbench.framework.resources.StringRepository;
+import org.eclipse.persistence.tools.workbench.test.utility.TestTools;
 
 
 
@@ -32,10 +30,6 @@ public class StringRepositoryTests extends TestCase {
 	private StringRepository simpleRepos;
 	private StringRepository defaultRepos;
 
-	public static void main(String[] args) {
-		TestRunner.main(new String[] {"-c", StringRepositoryTests.class.getName()});
-	}
-	
 	public static Test suite() {
 		return new TestSuite(StringRepositoryTests.class);
 	}

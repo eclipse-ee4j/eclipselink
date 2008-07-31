@@ -44,7 +44,6 @@ import org.eclipse.persistence.tools.workbench.test.uitools.app.swing.TreeModelA
 import org.eclipse.persistence.tools.workbench.test.uitools.app.swing.TreeModelAdapterTests.TestModel;
 import org.eclipse.persistence.tools.workbench.test.uitools.app.swing.TreeModelAdapterTests.TestNode;
 import org.eclipse.persistence.tools.workbench.test.uitools.app.swing.TreeModelAdapterTests.UnsortedTestNode;
-
 import org.eclipse.persistence.tools.workbench.uitools.Displayable;
 import org.eclipse.persistence.tools.workbench.uitools.app.PropertyValueModel;
 import org.eclipse.persistence.tools.workbench.uitools.app.SimplePropertyValueModel;

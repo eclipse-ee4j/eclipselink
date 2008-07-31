@@ -18,7 +18,6 @@ import java.util.Map;
 
 import junit.framework.Test;
 import junit.framework.TestSuite;
-import junit.swingui.TestRunner;
 
 /**
  * currently, these tests are not run because we can only use one
@@ -26,10 +25,6 @@ import junit.swingui.TestRunner;
  * if you change your classpath to point at the 7.2.5 driver
  */
 public class DB2_7Tests extends PlatformTests {
-
-	public static void main(String[] args) {
-		TestRunner.main(new String[] {"-c", DB2_7Tests.class.getName()});
-	}
 
 	public static Test suite() {
 		return new TestSuite(DB2_7Tests.class);

@@ -20,16 +20,11 @@ import java.util.NoSuchElementException;
 import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
-import junit.swingui.TestRunner;
 
 import org.eclipse.persistence.tools.workbench.utility.iterators.PeekableIterator;
 
 public class PeekableIteratorTests extends TestCase {
 
-	public static void main(String[] args) {
-		TestRunner.main(new String[] {"-c", PeekableIteratorTests.class.getName()});
-	}
-	
 	public static Test suite() {
 		return new TestSuite(PeekableIteratorTests.class);
 	}

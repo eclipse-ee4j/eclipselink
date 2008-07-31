@@ -13,16 +13,11 @@
 package org.eclipse.persistence.tools.workbench.test.mappingsio.legacy;
 
 import junit.framework.Test;
-import junit.swingui.TestRunner;
 
 /**
  * decentralize test creation code
  */
 public class MostMappingsIOLegacyTests {
-
-	public static void main(String[] args) {
-		TestRunner.main(new String[] {"-c", MostMappingsIOLegacyTests.class.getName()});
-	}
 
 	public static Test suite() {
 		return AllMappingsIOLegacyTests.suite(false);

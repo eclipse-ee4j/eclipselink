@@ -18,18 +18,13 @@ import java.util.Collection;
 import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
-import junit.swingui.TestRunner;
 
-import org.eclipse.persistence.tools.workbench.utility.string.PartialStringComparatorEngine;
 import org.eclipse.persistence.tools.workbench.utility.string.AffixStrippingPartialStringComparatorEngine;
+import org.eclipse.persistence.tools.workbench.utility.string.PartialStringComparatorEngine;
 import org.eclipse.persistence.tools.workbench.utility.string.SimpleStringHolder;
 import org.eclipse.persistence.tools.workbench.utility.string.StringHolder;
 
 public class SuffixStrippingPartialStringComparatorEngineTests extends TestCase {
-	
-	public static void main(String[] args) {
-		TestRunner.main(new String[] {"-c", SuffixStrippingPartialStringComparatorEngineTests.class.getName()});
-	}
 	
 	public static Test suite() {
 		return new TestSuite(SuffixStrippingPartialStringComparatorEngineTests.class);

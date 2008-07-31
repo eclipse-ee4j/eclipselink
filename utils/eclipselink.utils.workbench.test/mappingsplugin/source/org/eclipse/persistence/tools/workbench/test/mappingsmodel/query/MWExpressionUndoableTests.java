@@ -45,11 +45,6 @@ public class MWExpressionUndoableTests extends TestCase
 
 	private MWProject employeeProject;
 
-	public static void main(String[] args) 
-	{
-		junit.swingui.TestRunner.main(new String[] {"-c", MWExpressionUndoableTests.class.getName()});
-	}
-	
 	public static Test suite() 
 	{
 		return new TestSuite(MWExpressionUndoableTests.class);

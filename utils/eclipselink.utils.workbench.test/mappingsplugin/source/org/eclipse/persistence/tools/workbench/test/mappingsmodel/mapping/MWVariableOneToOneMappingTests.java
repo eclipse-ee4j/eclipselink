@@ -15,12 +15,9 @@ package org.eclipse.persistence.tools.workbench.test.mappingsmodel.mapping;
 import java.util.Collection;
 import java.util.Iterator;
 
-import org.eclipse.persistence.tools.workbench.test.mappingsmodel.ModelProblemsTestCase;
-import org.eclipse.persistence.tools.workbench.test.models.projects.SimpleContactProject;
-
 import junit.framework.Test;
 import junit.framework.TestSuite;
-import junit.swingui.TestRunner;
+
 import org.eclipse.persistence.indirection.ValueHolderInterface;
 import org.eclipse.persistence.tools.workbench.mappingsmodel.ProblemConstants;
 import org.eclipse.persistence.tools.workbench.mappingsmodel.descriptor.MWClassIndicatorFieldPolicy;
@@ -28,17 +25,15 @@ import org.eclipse.persistence.tools.workbench.mappingsmodel.descriptor.MWClassI
 import org.eclipse.persistence.tools.workbench.mappingsmodel.descriptor.MWMappingDescriptor;
 import org.eclipse.persistence.tools.workbench.mappingsmodel.descriptor.relational.MWRelationalClassIndicatorFieldPolicy;
 import org.eclipse.persistence.tools.workbench.mappingsmodel.descriptor.relational.MWTableDescriptor;
-import org.eclipse.persistence.tools.workbench.mappingsmodel.mapping.relational.MWDirectToFieldMapping;
 import org.eclipse.persistence.tools.workbench.mappingsmodel.mapping.relational.MWColumnQueryKeyPair;
+import org.eclipse.persistence.tools.workbench.mappingsmodel.mapping.relational.MWDirectToFieldMapping;
 import org.eclipse.persistence.tools.workbench.mappingsmodel.mapping.relational.MWVariableOneToOneMapping;
+import org.eclipse.persistence.tools.workbench.test.mappingsmodel.ModelProblemsTestCase;
+import org.eclipse.persistence.tools.workbench.test.models.projects.SimpleContactProject;
 import org.eclipse.persistence.tools.workbench.utility.ClassTools;
 import org.eclipse.persistence.tools.workbench.utility.CollectionTools;
 
 public class MWVariableOneToOneMappingTests extends ModelProblemsTestCase {
-
-	public static void main(String[] args) {
-		TestRunner.main(new String[] {"-c", MWVariableOneToOneMappingTests.class.getName()});
-	}
 
 	public static Test suite() {
 		return new TestSuite(MWVariableOneToOneMappingTests.class);

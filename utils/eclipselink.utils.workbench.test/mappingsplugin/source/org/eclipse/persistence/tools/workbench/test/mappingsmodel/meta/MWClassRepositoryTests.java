@@ -52,11 +52,6 @@ public class MWClassRepositoryTests extends TestCase {
 	private MWClassRepository repository;
 	String eventType;
 
-
-	public static void main(String[] args) {
-		junit.swingui.TestRunner.main(new String[] {"-c", MWClassRepositoryTests.class.getName()});
-	}
-	
 	public static Test suite() {
 		return new TestSuite(MWClassRepositoryTests.class);
 	}

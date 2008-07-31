@@ -21,9 +21,24 @@ import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 import java.util.ArrayList;
 import java.util.List;
-import javax.swing.*;
 
-import org.eclipse.persistence.tools.workbench.uitools.app.*;
+import javax.swing.AbstractAction;
+import javax.swing.Action;
+import javax.swing.ComboBoxModel;
+import javax.swing.JButton;
+import javax.swing.JComboBox;
+import javax.swing.JFrame;
+import javax.swing.JPanel;
+import javax.swing.ListCellRenderer;
+import javax.swing.UIManager;
+import javax.swing.WindowConstants;
+
+import org.eclipse.persistence.tools.workbench.uitools.app.ListValueModel;
+import org.eclipse.persistence.tools.workbench.uitools.app.PropertyAspectAdapter;
+import org.eclipse.persistence.tools.workbench.uitools.app.PropertyValueModel;
+import org.eclipse.persistence.tools.workbench.uitools.app.SimpleListValueModel;
+import org.eclipse.persistence.tools.workbench.uitools.app.SimplePropertyValueModel;
+import org.eclipse.persistence.tools.workbench.uitools.app.ValueModel;
 import org.eclipse.persistence.tools.workbench.uitools.app.swing.ComboBoxModelAdapter;
 import org.eclipse.persistence.tools.workbench.uitools.cell.SimpleListCellRenderer;
 import org.eclipse.persistence.tools.workbench.uitools.chooser.FilteringListBrowser;

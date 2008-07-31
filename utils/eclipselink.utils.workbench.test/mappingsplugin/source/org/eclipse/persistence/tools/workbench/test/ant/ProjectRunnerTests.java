@@ -15,7 +15,9 @@ package org.eclipse.persistence.tools.workbench.test.ant;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.PrintStream;
+
 import junit.framework.TestCase;
+
 import org.eclipse.persistence.tools.workbench.mappingsio.ProjectIOManager;
 import org.eclipse.persistence.tools.workbench.mappingsmodel.project.MWProject;
 import org.eclipse.persistence.tools.workbench.utility.io.FileTools;

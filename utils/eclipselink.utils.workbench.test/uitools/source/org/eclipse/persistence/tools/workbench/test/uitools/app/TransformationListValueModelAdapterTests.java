@@ -19,13 +19,11 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
 
-import org.eclipse.persistence.tools.workbench.test.utility.TestTools;
-
 import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
-import junit.swingui.TestRunner;
 
+import org.eclipse.persistence.tools.workbench.test.utility.TestTools;
 import org.eclipse.persistence.tools.workbench.uitools.app.ListValueModel;
 import org.eclipse.persistence.tools.workbench.uitools.app.SimpleListValueModel;
 import org.eclipse.persistence.tools.workbench.uitools.app.TransformationListValueModelAdapter;
@@ -47,10 +45,6 @@ public class TransformationListValueModelAdapterTests extends TestCase {
 	private static final String REMOVE = "remove";
 	private static final String REPLACE = "replace";
 	private static final String CHANGE = "change";
-
-	public static void main(String[] args) {
-		TestRunner.main(new String[] {"-c", TransformationListValueModelAdapterTests.class.getName()});
-	}
 	
 	public static Test suite() {
 		TestSuite suite = new TestSuite(TransformationListValueModelAdapterTests.class);

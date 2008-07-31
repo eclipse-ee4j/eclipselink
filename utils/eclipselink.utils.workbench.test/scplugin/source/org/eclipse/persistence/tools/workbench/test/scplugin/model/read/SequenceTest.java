@@ -12,17 +12,15 @@
 ******************************************************************************/
 package org.eclipse.persistence.tools.workbench.test.scplugin.model.read;
 
-import org.eclipse.persistence.tools.workbench.test.scplugin.AllSCTests;
-
 import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
 
 import org.eclipse.persistence.internal.sessions.factories.XMLSessionConfigProject;
-
 import org.eclipse.persistence.tools.workbench.scplugin.model.adapter.DatabaseSessionAdapter;
 import org.eclipse.persistence.tools.workbench.scplugin.model.adapter.LoginAdapter;
 import org.eclipse.persistence.tools.workbench.scplugin.model.adapter.TopLinkSessionsAdapter;
+import org.eclipse.persistence.tools.workbench.test.scplugin.AllSCTests;
 
 
 public class SequenceTest extends TestCase

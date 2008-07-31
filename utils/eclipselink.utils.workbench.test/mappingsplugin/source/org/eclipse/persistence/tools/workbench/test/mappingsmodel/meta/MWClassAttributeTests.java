@@ -67,12 +67,6 @@ public class MWClassAttributeTests extends TestCase {
 	private MWClassAttribute addressAttribute;
 	private MWClassAttribute phoneNumbersAttribute;
 	
-	
-	public static void main(String[] args) 
-	{
-		junit.swingui.TestRunner.main(new String[] {"-c", MWClassAttributeTests.class.getName()});
-	}
-	
 	public static Test suite() 
 	{
 		return new TestSuite(MWClassAttributeTests.class);

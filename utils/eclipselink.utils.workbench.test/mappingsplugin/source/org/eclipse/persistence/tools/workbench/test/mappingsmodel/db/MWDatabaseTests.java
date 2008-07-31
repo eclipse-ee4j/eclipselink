@@ -18,16 +18,15 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 
-import org.eclipse.persistence.tools.workbench.test.models.projects.TestDatabases;
-import org.eclipse.persistence.tools.workbench.test.utility.TestTools;
-
 import junit.framework.Test;
 import junit.framework.TestSuite;
-import junit.swingui.TestRunner;
+import junit.textui.TestRunner;
 
 import org.eclipse.persistence.tools.workbench.mappingsmodel.db.MWDatabase;
 import org.eclipse.persistence.tools.workbench.mappingsmodel.db.MWTable;
 import org.eclipse.persistence.tools.workbench.mappingsmodel.spi.db.ExternalTableDescription;
+import org.eclipse.persistence.tools.workbench.test.models.projects.TestDatabases;
+import org.eclipse.persistence.tools.workbench.test.utility.TestTools;
 import org.eclipse.persistence.tools.workbench.utility.CollectionTools;
 
 

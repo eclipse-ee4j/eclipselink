@@ -20,7 +20,6 @@ import javax.swing.Icon;
 import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
-import junit.swingui.TestRunner;
 
 import org.eclipse.persistence.tools.workbench.uitools.Displayable;
 import org.eclipse.persistence.tools.workbench.uitools.SimpleDisplayable;
@@ -29,10 +28,6 @@ import org.eclipse.persistence.tools.workbench.uitools.swing.EmptyIcon;
 public class SimpleDisplayableTests extends TestCase {
 	boolean isNotified = false;
 
-	public static void main(String[] args) {
-		TestRunner.main(new String[] {"-c", SimpleDisplayableTests.class.getName()});
-	}
-	
 	public static Test suite() {
 		return new TestSuite(SimpleDisplayableTests.class);
 	}

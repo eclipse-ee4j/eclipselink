@@ -20,12 +20,12 @@ import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
-import org.eclipse.persistence.tools.workbench.framework.uitools.ComponentAligner;
-import org.eclipse.persistence.tools.workbench.utility.ClassTools;
-
 import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
+
+import org.eclipse.persistence.tools.workbench.framework.uitools.ComponentAligner;
+import org.eclipse.persistence.tools.workbench.utility.ClassTools;
 
 public class ComponentAlignerTest extends TestCase
 {

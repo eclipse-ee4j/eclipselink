@@ -14,18 +14,12 @@ package org.eclipse.persistence.tools.workbench.test.scplugin.ui.tools;
 
 import junit.framework.Test;
 import junit.framework.TestSuite;
-import junit.swingui.TestRunner;
 
 public class AllSCUIToolsTests
 {
 	private AllSCUIToolsTests()
 	{
 		super();
-	}
-
-	public static void main(String[] args)
-	{
-		TestRunner.main(new String[] { "-c", AllSCUIToolsTests.class.getName() });
 	}
 
 	public static Test suite()

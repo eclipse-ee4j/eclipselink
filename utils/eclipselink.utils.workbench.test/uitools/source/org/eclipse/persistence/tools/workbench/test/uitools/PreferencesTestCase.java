@@ -16,10 +16,9 @@ import java.util.List;
 import java.util.prefs.AbstractPreferences;
 import java.util.prefs.Preferences;
 
-import org.eclipse.persistence.tools.workbench.test.utility.TestTools;
-
 import junit.framework.TestCase;
 
+import org.eclipse.persistence.tools.workbench.test.utility.TestTools;
 import org.eclipse.persistence.tools.workbench.utility.ClassTools;
 
 

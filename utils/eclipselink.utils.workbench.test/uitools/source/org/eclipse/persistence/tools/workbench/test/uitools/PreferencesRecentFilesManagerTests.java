@@ -17,7 +17,6 @@ import java.util.prefs.Preferences;
 
 import junit.framework.Test;
 import junit.framework.TestSuite;
-import junit.swingui.TestRunner;
 
 import org.eclipse.persistence.tools.workbench.uitools.PreferencesRecentFilesManager;
 import org.eclipse.persistence.tools.workbench.uitools.RecentFilesManager;
@@ -29,10 +28,6 @@ public class PreferencesRecentFilesManagerTests extends PreferencesTestCase {
 	private StateChangeListener listener;
 	private static final String MAX_SIZE_KEY = "max size";
 
-	public static void main(String[] args) {
-		TestRunner.main(new String[] {"-c", PreferencesRecentFilesManagerTests.class.getName()});
-	}
-	
 	public static Test suite() {
 		return new TestSuite(PreferencesRecentFilesManagerTests.class);
 	}

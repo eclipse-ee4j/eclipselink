@@ -16,11 +16,10 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
-import org.eclipse.persistence.tools.workbench.test.utility.TestTools;
-import org.eclipse.persistence.tools.workbench.test.utility.diff.model.Employee;
-
 import junit.framework.TestCase;
 
+import org.eclipse.persistence.tools.workbench.test.utility.TestTools;
+import org.eclipse.persistence.tools.workbench.test.utility.diff.model.Employee;
 import org.eclipse.persistence.tools.workbench.utility.diff.CompositeDiff;
 import org.eclipse.persistence.tools.workbench.utility.diff.Diff;
 import org.eclipse.persistence.tools.workbench.utility.diff.Differentiator;

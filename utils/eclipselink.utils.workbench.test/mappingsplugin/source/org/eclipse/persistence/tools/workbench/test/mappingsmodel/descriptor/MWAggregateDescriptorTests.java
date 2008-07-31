@@ -13,19 +13,14 @@
 package org.eclipse.persistence.tools.workbench.test.mappingsmodel.descriptor;
 
 
-import org.eclipse.persistence.tools.workbench.test.mappingsmodel.ModelProblemsTestCase;
-import org.eclipse.persistence.tools.workbench.test.models.projects.ComplexAggregateProject;
-import org.eclipse.persistence.tools.workbench.test.models.projects.CrimeSceneProject;
-import org.eclipse.persistence.tools.workbench.test.models.projects.EmployeeProject;
-import org.eclipse.persistence.tools.workbench.test.models.projects.PhoneCompanyProject;
-
 import junit.framework.Test;
 import junit.framework.TestSuite;
+
 import org.eclipse.persistence.tools.workbench.mappingsmodel.ProblemConstants;
 import org.eclipse.persistence.tools.workbench.mappingsmodel.descriptor.MWDescriptor;
 import org.eclipse.persistence.tools.workbench.mappingsmodel.descriptor.MWMappingDescriptor;
-import org.eclipse.persistence.tools.workbench.mappingsmodel.descriptor.relational.MWRelationalClassDescriptor;
 import org.eclipse.persistence.tools.workbench.mappingsmodel.descriptor.relational.MWAggregateDescriptor;
+import org.eclipse.persistence.tools.workbench.mappingsmodel.descriptor.relational.MWRelationalClassDescriptor;
 import org.eclipse.persistence.tools.workbench.mappingsmodel.descriptor.relational.MWRelationalClassIndicatorFieldPolicy;
 import org.eclipse.persistence.tools.workbench.mappingsmodel.descriptor.relational.MWRelationalDescriptor;
 import org.eclipse.persistence.tools.workbench.mappingsmodel.descriptor.relational.MWTableDescriptor;
@@ -35,14 +30,15 @@ import org.eclipse.persistence.tools.workbench.mappingsmodel.mapping.relational.
 import org.eclipse.persistence.tools.workbench.mappingsmodel.mapping.relational.MWDirectToFieldMapping;
 import org.eclipse.persistence.tools.workbench.mappingsmodel.mapping.relational.MWOneToOneMapping;
 import org.eclipse.persistence.tools.workbench.mappingsmodel.meta.MWClassAttribute;
+import org.eclipse.persistence.tools.workbench.test.mappingsmodel.ModelProblemsTestCase;
+import org.eclipse.persistence.tools.workbench.test.models.projects.ComplexAggregateProject;
+import org.eclipse.persistence.tools.workbench.test.models.projects.CrimeSceneProject;
+import org.eclipse.persistence.tools.workbench.test.models.projects.EmployeeProject;
+import org.eclipse.persistence.tools.workbench.test.models.projects.PhoneCompanyProject;
 import org.eclipse.persistence.tools.workbench.utility.ClassTools;
 
 public class MWAggregateDescriptorTests extends ModelProblemsTestCase {
 
-	public static void main(String[] args) {
-		junit.swingui.TestRunner.main(new String[] {"-c", MWAggregateDescriptorTests.class.getName()});
-	}
-	
 	public static Test suite() {
 		return new TestSuite(MWAggregateDescriptorTests.class);
 	}

@@ -12,21 +12,22 @@
 ******************************************************************************/
 package org.eclipse.persistence.tools.workbench.test.utility;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.ConcurrentModificationException;
+import java.util.Iterator;
+import java.util.NoSuchElementException;
+
 import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
-import junit.swingui.TestRunner;
+
 import org.eclipse.persistence.tools.workbench.utility.Bag;
 import org.eclipse.persistence.tools.workbench.utility.CollectionTools;
 import org.eclipse.persistence.tools.workbench.utility.HashBag;
 
 public class HashBagTests extends TestCase {
 	private HashBag bag;
-	
-	public static void main(String[] args) {
-		TestRunner.main(new String[] {"-c", HashBagTests.class.getName()});
-	}
 	
 	public static Test suite() {
 		return new TestSuite(HashBagTests.class);

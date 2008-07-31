@@ -23,13 +23,11 @@ import java.util.List;
 import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
 
-import org.eclipse.persistence.tools.workbench.test.utility.TestTools;
-
 import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
-import junit.swingui.TestRunner;
 
+import org.eclipse.persistence.tools.workbench.test.utility.TestTools;
 import org.eclipse.persistence.tools.workbench.uitools.app.CollectionAspectAdapter;
 import org.eclipse.persistence.tools.workbench.uitools.app.CollectionValueModel;
 import org.eclipse.persistence.tools.workbench.uitools.app.ListValueModel;
@@ -53,10 +51,6 @@ public class TableModelAdapterTests extends TestCase {
 	TableModelEvent event;
 
 
-	public static void main(String[] args) {
-		TestRunner.main(new String[] {"-c", TableModelAdapterTests.class.getName()});
-	}
-	
 	public static Test suite() {
 		return new TestSuite(TableModelAdapterTests.class);
 	}

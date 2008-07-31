@@ -12,21 +12,18 @@
 ******************************************************************************/
 package org.eclipse.persistence.tools.workbench.test.mappingsmodel.mapping;
 
+import junit.framework.Test;
+import junit.framework.TestSuite;
+
+import org.eclipse.persistence.tools.workbench.mappingsmodel.ProblemConstants;
+import org.eclipse.persistence.tools.workbench.mappingsmodel.mapping.xml.MWXmlDirectMapping;
 import org.eclipse.persistence.tools.workbench.test.mappingsmodel.ModelProblemsTestCase;
 import org.eclipse.persistence.tools.workbench.test.models.xml.employee.Address;
 import org.eclipse.persistence.tools.workbench.test.models.xml.employee.Dependent;
 
-import junit.framework.Test;
-import junit.framework.TestSuite;
-import org.eclipse.persistence.tools.workbench.mappingsmodel.ProblemConstants;
-import org.eclipse.persistence.tools.workbench.mappingsmodel.mapping.xml.MWXmlDirectMapping;
-
 public class MWXmlDirectMappingTests 
 	extends ModelProblemsTestCase
 {
-	public static void main(String[] args) {
-		junit.swingui.TestRunner.main(new String[] {"-c", MWXmlDirectMappingTests.class.getName()});
-	}
 	
 	public static Test suite() {
 		return new TestSuite(MWXmlDirectMappingTests.class);

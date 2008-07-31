@@ -15,11 +15,9 @@ package org.eclipse.persistence.tools.workbench.test.mappingsmodel.mapping;
 import java.util.Collection;
 import java.util.Iterator;
 
-import org.eclipse.persistence.tools.workbench.test.mappingsmodel.ModelProblemsTestCase;
-import org.eclipse.persistence.tools.workbench.test.models.projects.CrimeSceneProject;
-
 import junit.framework.Test;
 import junit.framework.TestSuite;
+
 import org.eclipse.persistence.tools.workbench.mappingsmodel.ProblemConstants;
 import org.eclipse.persistence.tools.workbench.mappingsmodel.descriptor.InterfaceDescriptorCreationException;
 import org.eclipse.persistence.tools.workbench.mappingsmodel.descriptor.relational.MWRelationalDescriptor;
@@ -27,15 +25,13 @@ import org.eclipse.persistence.tools.workbench.mappingsmodel.descriptor.relation
 import org.eclipse.persistence.tools.workbench.mappingsmodel.mapping.relational.MWAggregateMapping;
 import org.eclipse.persistence.tools.workbench.mappingsmodel.mapping.relational.MWAggregatePathToColumn;
 import org.eclipse.persistence.tools.workbench.mappingsmodel.project.MWProject;
+import org.eclipse.persistence.tools.workbench.test.mappingsmodel.ModelProblemsTestCase;
+import org.eclipse.persistence.tools.workbench.test.models.projects.CrimeSceneProject;
 import org.eclipse.persistence.tools.workbench.utility.ClassTools;
 import org.eclipse.persistence.tools.workbench.utility.CollectionTools;
 
 public class MWAggregateMappingTests extends ModelProblemsTestCase {
 
-	public static void main(String[] args) {
-		junit.swingui.TestRunner.main(new String[] {"-c", MWAggregateMappingTests.class.getName()});
-	}
-	
 	public static Test suite() {
 		return new TestSuite(MWAggregateMappingTests.class);
 	}

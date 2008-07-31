@@ -22,10 +22,6 @@ import junit.framework.*;
  */
 public class AllModelQueryTests {
 
-public static void main(String[] args) {
-	junit.swingui.TestRunner.main(new String[] {"-c", AllModelQueryTests.class.getName()});
-}
-
 public static Test suite() {
 	TestSuite suite = new TestSuite("test.org.eclipse.persistence.tools.workbench.mappingsmodel.query");
 

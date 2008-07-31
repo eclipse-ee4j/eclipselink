@@ -22,10 +22,6 @@ import org.eclipse.persistence.tools.workbench.utility.ClassTools;
  */
 public class AllModelMetaTests {
 
-	public static void main(String[] args) {
-		junit.swingui.TestRunner.main(new String[] {"-c", AllModelMetaTests.class.getName()});
-	}
-
 	public static Test suite() {
 		TestSuite suite = new TestSuite(ClassTools.packageNameFor(AllModelMetaTests.class));
 

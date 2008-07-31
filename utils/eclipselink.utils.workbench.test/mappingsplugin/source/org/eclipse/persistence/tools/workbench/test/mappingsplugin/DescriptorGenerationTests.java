@@ -16,25 +16,23 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.Vector;
 
-import org.eclipse.persistence.tools.workbench.test.mappingsmodel.MappingsModelTestTools;
-import org.eclipse.persistence.tools.workbench.test.models.projects.TestDatabases;
-import org.eclipse.persistence.tools.workbench.test.utility.TestTools;
-
 import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
 
-import org.eclipse.persistence.tools.workbench.mappingsmodel.db.MWDatabase;
 import org.eclipse.persistence.tools.workbench.mappingsmodel.db.MWColumn;
+import org.eclipse.persistence.tools.workbench.mappingsmodel.db.MWDatabase;
 import org.eclipse.persistence.tools.workbench.mappingsmodel.db.MWReference;
 import org.eclipse.persistence.tools.workbench.mappingsmodel.db.MWTable;
 import org.eclipse.persistence.tools.workbench.mappingsmodel.descriptor.MWMappingDescriptor;
-import org.eclipse.persistence.tools.workbench.mappingsmodel.descriptor.MWTransactionalDescriptor;
 import org.eclipse.persistence.tools.workbench.mappingsmodel.generation.MWDescriptorGenerator;
 import org.eclipse.persistence.tools.workbench.mappingsmodel.generation.MWRelationshipHolder;
 import org.eclipse.persistence.tools.workbench.mappingsmodel.project.relational.MWRelationalProject;
 import org.eclipse.persistence.tools.workbench.platformsmodel.DatabasePlatform;
 import org.eclipse.persistence.tools.workbench.platformsmodel.DatabasePlatformRepository;
+import org.eclipse.persistence.tools.workbench.test.mappingsmodel.MappingsModelTestTools;
+import org.eclipse.persistence.tools.workbench.test.models.projects.TestDatabases;
+import org.eclipse.persistence.tools.workbench.test.utility.TestTools;
 import org.eclipse.persistence.tools.workbench.utility.ClassTools;
 import org.eclipse.persistence.tools.workbench.utility.CollectionTools;
 

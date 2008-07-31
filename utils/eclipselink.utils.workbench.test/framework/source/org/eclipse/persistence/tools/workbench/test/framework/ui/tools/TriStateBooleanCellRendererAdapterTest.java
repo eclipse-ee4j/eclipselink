@@ -12,9 +12,6 @@
 ******************************************************************************/
 package org.eclipse.persistence.tools.workbench.test.framework.ui.tools;
 
-import org.eclipse.persistence.tools.workbench.test.framework.resources.TestResourceBundle;
-import org.eclipse.persistence.tools.workbench.test.utility.TestTools;
-
 import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
@@ -22,6 +19,8 @@ import junit.framework.TestSuite;
 import org.eclipse.persistence.tools.workbench.framework.resources.ResourceBundleStringRepository;
 import org.eclipse.persistence.tools.workbench.framework.resources.StringRepository;
 import org.eclipse.persistence.tools.workbench.framework.uitools.TriStateBooleanCellRendererAdapter;
+import org.eclipse.persistence.tools.workbench.test.framework.resources.TestResourceBundle;
+import org.eclipse.persistence.tools.workbench.test.utility.TestTools;
 import org.eclipse.persistence.tools.workbench.utility.TriStateBoolean;
 
 public class TriStateBooleanCellRendererAdapterTest extends TestCase

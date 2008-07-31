@@ -20,13 +20,8 @@ import java.util.Map;
 
 import junit.framework.Test;
 import junit.framework.TestSuite;
-import junit.swingui.TestRunner;
 
 public class MSAccessTests extends PlatformTests {
-
-	public static void main(String[] args) {
-		TestRunner.main(new String[] {"-c", MSAccessTests.class.getName()});
-	}
 
 	public static Test suite() {
 		return new TestSuite(MSAccessTests.class);

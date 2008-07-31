@@ -12,6 +12,9 @@
 ******************************************************************************/
 package org.eclipse.persistence.tools.workbench.test.scplugin.ui;
 
+import junit.framework.Test;
+import junit.framework.TestSuite;
+
 import org.eclipse.persistence.tools.workbench.test.scplugin.ui.broker.SessionBrokerGeneralPropertiesPageTest;
 import org.eclipse.persistence.tools.workbench.test.scplugin.ui.pool.basic.EisPoolLoginPropertiesPageTest;
 import org.eclipse.persistence.tools.workbench.test.scplugin.ui.pool.basic.EisReadPoolLoginPropertiesPageTest;
@@ -25,17 +28,9 @@ import org.eclipse.persistence.tools.workbench.test.scplugin.ui.session.login.Rd
 import org.eclipse.persistence.tools.workbench.test.scplugin.ui.session.login.RdbmsOptionsPropertiesPageTest;
 import org.eclipse.persistence.tools.workbench.test.scplugin.ui.session.login.RdbmsSequencingPropertiesPageTest;
 
-import junit.framework.Test;
-import junit.framework.TestSuite;
-import junit.swingui.TestRunner;
-
 
 public final class AllSCUITests
 {
-	public static void main(String[] args)
-	{
-		TestRunner.main(new String[] { "-c", AllSCUITests.class.getName() });
-	}
 
 	public static Test suite()
 	{

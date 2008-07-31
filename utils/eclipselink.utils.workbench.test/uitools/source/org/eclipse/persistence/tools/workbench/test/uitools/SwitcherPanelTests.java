@@ -21,7 +21,6 @@ import javax.swing.WindowConstants;
 import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
-import junit.swingui.TestRunner;
 
 import org.eclipse.persistence.tools.workbench.uitools.SwitcherPanel;
 import org.eclipse.persistence.tools.workbench.uitools.app.PropertyAspectAdapter;
@@ -34,9 +33,6 @@ import org.eclipse.persistence.tools.workbench.utility.AbstractModel;
  */
 public class SwitcherPanelTests extends TestCase
 {
-	public static void main(String[] args) {
-		TestRunner.main(new String[] {"-c", SwitcherPanelTests.class.getName()});
-	}
 	
 	public static Test suite() {
 		return new TestSuite(SwitcherPanelTests.class);

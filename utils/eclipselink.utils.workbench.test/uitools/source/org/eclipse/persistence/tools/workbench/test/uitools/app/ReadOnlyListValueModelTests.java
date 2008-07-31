@@ -17,15 +17,13 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
 
-import org.eclipse.persistence.tools.workbench.test.utility.TestTools;
-
 import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
-import junit.swingui.TestRunner;
 
-import org.eclipse.persistence.tools.workbench.uitools.app.ListValueModel;
+import org.eclipse.persistence.tools.workbench.test.utility.TestTools;
 import org.eclipse.persistence.tools.workbench.uitools.app.AbstractReadOnlyListValueModel;
+import org.eclipse.persistence.tools.workbench.uitools.app.ListValueModel;
 import org.eclipse.persistence.tools.workbench.utility.CollectionTools;
 
 
@@ -33,11 +31,6 @@ public class ReadOnlyListValueModelTests extends TestCase {
 	private ListValueModel listHolder;
 	private static List list;
 
-
-	public static void main(String[] args) {
-		TestRunner.main(new String[] {"-c", ReadOnlyListValueModelTests.class.getName()});
-	}
-	
 	public static Test suite() {
 		return new TestSuite(ReadOnlyListValueModelTests.class);
 	}

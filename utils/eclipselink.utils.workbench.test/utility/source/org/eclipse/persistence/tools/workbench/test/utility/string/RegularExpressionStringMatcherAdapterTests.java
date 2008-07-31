@@ -17,16 +17,11 @@ import java.util.regex.Pattern;
 import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
-import junit.swingui.TestRunner;
 
 import org.eclipse.persistence.tools.workbench.utility.string.RegExStringMatcherAdapter;
 import org.eclipse.persistence.tools.workbench.utility.string.StringMatcher;
 
 public class RegularExpressionStringMatcherAdapterTests extends TestCase {
-
-	public static void main(String[] args) {
-		TestRunner.main(new String[] {"-c", RegularExpressionStringMatcherAdapterTests.class.getName()});
-	}
 
 	public static Test suite() {
 		return new TestSuite(RegularExpressionStringMatcherAdapterTests.class);

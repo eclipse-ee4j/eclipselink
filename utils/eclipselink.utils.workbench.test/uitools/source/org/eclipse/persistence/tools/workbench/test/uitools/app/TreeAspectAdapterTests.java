@@ -15,13 +15,11 @@ package org.eclipse.persistence.tools.workbench.test.uitools.app;
 import java.util.Collection;
 import java.util.Iterator;
 
-import org.eclipse.persistence.tools.workbench.test.utility.TestTools;
-
 import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
-import junit.swingui.TestRunner;
 
+import org.eclipse.persistence.tools.workbench.test.utility.TestTools;
 import org.eclipse.persistence.tools.workbench.uitools.app.PropertyValueModel;
 import org.eclipse.persistence.tools.workbench.uitools.app.SimplePropertyValueModel;
 import org.eclipse.persistence.tools.workbench.uitools.app.TreeAspectAdapter;
@@ -46,10 +44,6 @@ public class TreeAspectAdapterTests extends TestCase {
 
 	private TestSubject subject2;
 
-	public static void main(String[] args) {
-		TestRunner.main(new String[] {"-c", TreeAspectAdapterTests.class.getName()});
-	}
-	
 	public static Test suite() {
 		return new TestSuite(TreeAspectAdapterTests.class);
 	}

@@ -22,9 +22,6 @@ import junit.framework.TestSuite;
 public class SchemaAPITests 
 	extends TestCase
 {
-	public static void main(String[] args) {
-		junit.swingui.TestRunner.main(new String[] {"-c", SchemaAPITests.class.getName()});
-	}
 	
 	public static Test suite() {
 		return new TestSuite(SchemaAPITests.class);

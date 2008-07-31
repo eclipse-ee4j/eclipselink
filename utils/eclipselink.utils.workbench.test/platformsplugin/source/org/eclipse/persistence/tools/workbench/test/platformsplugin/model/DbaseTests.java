@@ -18,13 +18,8 @@ import java.util.Map;
 
 import junit.framework.Test;
 import junit.framework.TestSuite;
-import junit.swingui.TestRunner;
 
 public class DbaseTests extends PlatformTests {
-
-	public static void main(String[] args) {
-		TestRunner.main(new String[] {"-c", DbaseTests.class.getName()});
-	}
 
 	public static Test suite() {
 		return new TestSuite(DbaseTests.class);

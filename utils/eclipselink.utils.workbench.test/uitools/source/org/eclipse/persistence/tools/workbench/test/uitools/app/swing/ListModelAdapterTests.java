@@ -22,13 +22,11 @@ import java.util.TreeSet;
 
 import javax.swing.ListModel;
 
-import org.eclipse.persistence.tools.workbench.test.uitools.app.*;
-
 import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
-import junit.swingui.TestRunner;
 
+import org.eclipse.persistence.tools.workbench.test.uitools.app.SynchronizedList;
 import org.eclipse.persistence.tools.workbench.uitools.app.CollectionValueModel;
 import org.eclipse.persistence.tools.workbench.uitools.app.ListValueModel;
 import org.eclipse.persistence.tools.workbench.uitools.app.SimpleCollectionValueModel;
@@ -42,10 +40,6 @@ import org.eclipse.persistence.tools.workbench.utility.HashBag;
 
 public class ListModelAdapterTests extends TestCase {
 
-	public static void main(String[] args) {
-		TestRunner.main(new String[] {"-c", ListModelAdapterTests.class.getName()});
-	}
-	
 	public static Test suite() {
 		return new TestSuite(ListModelAdapterTests.class);
 	}

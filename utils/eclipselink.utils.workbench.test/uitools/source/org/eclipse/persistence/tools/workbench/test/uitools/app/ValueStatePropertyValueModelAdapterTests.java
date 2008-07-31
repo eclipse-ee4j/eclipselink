@@ -15,13 +15,11 @@ package org.eclipse.persistence.tools.workbench.test.uitools.app;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 
-import org.eclipse.persistence.tools.workbench.test.utility.TestTools;
-
 import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
-import junit.swingui.TestRunner;
 
+import org.eclipse.persistence.tools.workbench.test.utility.TestTools;
 import org.eclipse.persistence.tools.workbench.uitools.app.SimplePropertyValueModel;
 import org.eclipse.persistence.tools.workbench.uitools.app.ValueModel;
 import org.eclipse.persistence.tools.workbench.uitools.app.ValueStatePropertyValueModelAdapter;
@@ -33,11 +31,6 @@ public class ValueStatePropertyValueModelAdapterTests extends TestCase {
 	private SimplePropertyValueModel junkHolder;
 	private ValueStatePropertyValueModelAdapter junkHolder2;
 
-
-	public static void main(String[] args) {
-		TestRunner.main(new String[] {"-c", ValueStatePropertyValueModelAdapterTests.class.getName()});
-	}
-	
 	public static Test suite() {
 		return new TestSuite(ValueStatePropertyValueModelAdapterTests.class);
 	}

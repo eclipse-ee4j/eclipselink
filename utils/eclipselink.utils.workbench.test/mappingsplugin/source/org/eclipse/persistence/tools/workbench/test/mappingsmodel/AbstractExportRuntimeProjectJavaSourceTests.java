@@ -18,9 +18,6 @@ import java.net.URLClassLoader;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.eclipse.persistence.tools.workbench.test.models.employee.Employee;
-import org.eclipse.persistence.tools.workbench.test.utility.JavaTools;
-
 import junit.framework.TestCase;
 
 import org.eclipse.persistence.sessions.DatabaseSession;
@@ -28,6 +25,8 @@ import org.eclipse.persistence.sessions.DatasourceLogin;
 import org.eclipse.persistence.sessions.Project;
 import org.eclipse.persistence.tools.workbench.mappingsmodel.db.MWDatabase;
 import org.eclipse.persistence.tools.workbench.mappingsmodel.project.relational.MWRelationalProject;
+import org.eclipse.persistence.tools.workbench.test.models.employee.Employee;
+import org.eclipse.persistence.tools.workbench.test.utility.JavaTools;
 import org.eclipse.persistence.tools.workbench.utility.ClassTools;
 import org.eclipse.persistence.tools.workbench.utility.Classpath;
 import org.eclipse.persistence.tools.workbench.utility.io.FileTools;

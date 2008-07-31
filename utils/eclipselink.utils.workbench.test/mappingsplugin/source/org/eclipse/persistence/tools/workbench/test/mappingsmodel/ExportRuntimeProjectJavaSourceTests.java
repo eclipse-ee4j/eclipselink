@@ -12,24 +12,17 @@
 ******************************************************************************/
 package org.eclipse.persistence.tools.workbench.test.mappingsmodel;
 
+import junit.framework.Test;
+import junit.framework.TestSuite;
+
+import org.eclipse.persistence.tools.workbench.mappingsmodel.project.relational.MWRelationalProject;
 import org.eclipse.persistence.tools.workbench.test.models.projects.CrimeSceneProject;
 import org.eclipse.persistence.tools.workbench.test.models.projects.EmployeeProject;
 import org.eclipse.persistence.tools.workbench.test.models.projects.QueryProject;
-import org.eclipse.persistence.tools.workbench.test.models.projects.ReturningPolicyProject;
 import org.eclipse.persistence.tools.workbench.test.utility.TestTools;
-
-import junit.framework.Test;
-import junit.framework.TestSuite;
-import junit.swingui.TestRunner;
-
-import org.eclipse.persistence.tools.workbench.mappingsmodel.project.relational.MWRelationalProject;
 
 
 public class ExportRuntimeProjectJavaSourceTests extends AbstractExportRuntimeProjectJavaSourceTests {
-
-	public static void main(String[] args) {
-		TestRunner.main(new String[] {"-c", ExportRuntimeProjectJavaSourceTests.class.getName()});
-	}
 
 	public static Test suite() {
 		TestTools.setUpJUnitThreadContextClassLoader();

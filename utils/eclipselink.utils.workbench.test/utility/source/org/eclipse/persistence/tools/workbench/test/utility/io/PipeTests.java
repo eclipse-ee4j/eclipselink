@@ -16,13 +16,11 @@ import java.io.InputStream;
 import java.io.InterruptedIOException;
 import java.io.OutputStream;
 
-import org.eclipse.persistence.tools.workbench.test.utility.TestTools;
-
 import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
-import junit.swingui.TestRunner;
 
+import org.eclipse.persistence.tools.workbench.test.utility.TestTools;
 import org.eclipse.persistence.tools.workbench.utility.io.Pipe;
 
 
@@ -32,11 +30,6 @@ public class PipeTests extends TestCase {
 	volatile int position;
 	volatile String string;
 	volatile boolean exCaught;
-
-
-	public static void main(String[] args) {
-		TestRunner.main(new String[] {"-c", PipeTests.class.getName()});
-	}
 
 	public static Test suite() {
 		return new TestSuite(PipeTests.class);

@@ -14,16 +14,11 @@ package org.eclipse.persistence.tools.workbench.test.utility.string;
 
 import junit.framework.Test;
 import junit.framework.TestSuite;
-import junit.swingui.TestRunner;
 
 public class BestFirstPartialStringComparatorEngineTests
 	extends ExhaustivePartialStringComparatorEngineTests
 {
 
-	public static void main(String[] args) {
-		TestRunner.main(new String[] {"-c", BestFirstPartialStringComparatorEngineTests.class.getName()});
-	}
-	
 	public static Test suite() {
 		return new TestSuite(BestFirstPartialStringComparatorEngineTests.class);
 	}

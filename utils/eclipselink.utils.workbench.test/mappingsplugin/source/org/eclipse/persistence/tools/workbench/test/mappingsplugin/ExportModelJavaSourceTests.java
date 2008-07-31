@@ -20,15 +20,9 @@ import java.util.List;
 import java.util.Vector;
 import java.util.prefs.Preferences;
 
-import org.eclipse.persistence.tools.workbench.test.mappingsmodel.MappingsModelTestTools;
-import org.eclipse.persistence.tools.workbench.test.models.projects.TestDatabases;
-import org.eclipse.persistence.tools.workbench.test.utility.JavaTools;
-import org.eclipse.persistence.tools.workbench.test.utility.TestTools;
-
 import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
-import junit.swingui.TestRunner;
 
 import org.eclipse.persistence.indirection.ValueHolderInterface;
 import org.eclipse.persistence.sessions.Project;
@@ -50,6 +44,10 @@ import org.eclipse.persistence.tools.workbench.mappingsmodel.project.relational.
 import org.eclipse.persistence.tools.workbench.mappingsplugin.MappingsPluginResourceBundle;
 import org.eclipse.persistence.tools.workbench.mappingsplugin.sourcegen.SourceCodeGenerator;
 import org.eclipse.persistence.tools.workbench.platformsmodel.DatabasePlatform;
+import org.eclipse.persistence.tools.workbench.test.mappingsmodel.MappingsModelTestTools;
+import org.eclipse.persistence.tools.workbench.test.models.projects.TestDatabases;
+import org.eclipse.persistence.tools.workbench.test.utility.JavaTools;
+import org.eclipse.persistence.tools.workbench.test.utility.TestTools;
 import org.eclipse.persistence.tools.workbench.uitools.CancelException;
 import org.eclipse.persistence.tools.workbench.utility.ClassTools;
 import org.eclipse.persistence.tools.workbench.utility.Classpath;
@@ -63,11 +61,6 @@ public class ExportModelJavaSourceTests
 	private MWRelationalProject project;
 	private File tempDirectory;
 	private String clientClassShortName;
-
-
-	public static void main(String[] args) {
-		TestRunner.main(new String[] {"-c", ExportModelJavaSourceTests.class.getName()});
-	}
 
 	public static Test suite() {
 		TestTools.setUpJUnitThreadContextClassLoader();

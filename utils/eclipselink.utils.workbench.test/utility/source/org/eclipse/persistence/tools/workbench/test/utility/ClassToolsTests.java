@@ -24,7 +24,6 @@ import java.util.Map.Entry;
 import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
-import junit.swingui.TestRunner;
 
 import org.eclipse.persistence.tools.workbench.utility.ClassTools;
 import org.eclipse.persistence.tools.workbench.utility.CollectionTools;
@@ -33,11 +32,7 @@ import org.eclipse.persistence.tools.workbench.utility.iterators.TransformationI
 public class ClassToolsTests extends TestCase {
 
 	private static String testStaticField;
-	
-	public static void main(String[] args) {
-		TestRunner.main(new String[] {"-c", ClassToolsTests.class.getName()});
-	}
-	
+		
 	public static Test suite() {
 		return new TestSuite(ClassToolsTests.class);
 	}

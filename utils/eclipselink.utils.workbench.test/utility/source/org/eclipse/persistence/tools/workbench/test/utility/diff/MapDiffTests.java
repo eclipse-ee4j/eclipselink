@@ -15,13 +15,11 @@ package org.eclipse.persistence.tools.workbench.test.utility.diff;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.eclipse.persistence.tools.workbench.test.utility.TestTools;
-
 import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
-import junit.swingui.TestRunner;
 
+import org.eclipse.persistence.tools.workbench.test.utility.TestTools;
 import org.eclipse.persistence.tools.workbench.utility.diff.ContainerDiff;
 import org.eclipse.persistence.tools.workbench.utility.diff.ContainerDifferentiator;
 import org.eclipse.persistence.tools.workbench.utility.diff.Diff;
@@ -33,10 +31,6 @@ public class MapDiffTests extends TestCase {
 	private Map map1;
 	private Map map2;
 
-	public static void main(String[] args) {
-		TestRunner.main(new String[] {"-c", MapDiffTests.class.getName()});
-	}
-	
 	public static Test suite() {
 		return new TestSuite(MapDiffTests.class);
 	}

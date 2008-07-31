@@ -16,7 +16,6 @@ import java.io.File;
 
 import junit.framework.Test;
 import junit.framework.TestSuite;
-import junit.swingui.TestRunner;
 
 import org.eclipse.persistence.tools.workbench.utility.ClassTools;
 import org.eclipse.persistence.tools.workbench.utility.Classpath;
@@ -25,10 +24,6 @@ import org.eclipse.persistence.tools.workbench.utility.Classpath;
  * decentralize test creation code
  */
 public class AllModelSPIMetaClassFileTests {
-
-	public static void main(String[] args) {
-		TestRunner.main(new String[] {"-c", AllModelSPIMetaClassFileTests.class.getName()});
-	}
 
 	public static Test suite() {
 		TestSuite suite = new TestSuite(ClassTools.packageNameFor(AllModelSPIMetaClassFileTests.class));

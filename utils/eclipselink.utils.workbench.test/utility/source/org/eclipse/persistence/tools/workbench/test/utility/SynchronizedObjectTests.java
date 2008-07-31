@@ -15,7 +15,6 @@ package org.eclipse.persistence.tools.workbench.test.utility;
 import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
-import junit.swingui.TestRunner;
 
 import org.eclipse.persistence.tools.workbench.utility.SynchronizedObject;
 
@@ -28,10 +27,6 @@ public class SynchronizedObjectTests extends TestCase {
 	private volatile long endTime;
 	private volatile Object soValue;
 
-
-	public static void main(String[] args) {
-		TestRunner.main(new String[] {"-c", SynchronizedObjectTests.class.getName()});
-	}
 
 	public static Test suite() {
 		return new TestSuite(SynchronizedObjectTests.class);

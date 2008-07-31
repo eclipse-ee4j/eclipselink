@@ -12,17 +12,16 @@
 ******************************************************************************/
 package org.eclipse.persistence.tools.workbench.test.mappingsmodel.mapping;
 
-import org.eclipse.persistence.tools.workbench.test.mappingsmodel.ModelProblemsTestCase;
-
 import junit.framework.Test;
 import junit.framework.TestSuite;
-import junit.swingui.TestRunner;
+
 import org.eclipse.persistence.platform.database.oracle.NClob;
 import org.eclipse.persistence.tools.workbench.mappingsmodel.ProblemConstants;
 import org.eclipse.persistence.tools.workbench.mappingsmodel.mapping.MWTypeConversionConverter;
 import org.eclipse.persistence.tools.workbench.mappingsmodel.mapping.relational.MWDirectToFieldMapping;
 import org.eclipse.persistence.tools.workbench.mappingsmodel.meta.MWTypeDeclaration;
 import org.eclipse.persistence.tools.workbench.platformsmodel.DatabasePlatformRepository;
+import org.eclipse.persistence.tools.workbench.test.mappingsmodel.ModelProblemsTestCase;
 
 
 public class MWTypeConversionConverterTests 
@@ -32,10 +31,6 @@ public class MWTypeConversionConverterTests
 		super(name);
 	}
 	
-	public static void main(String[] args) {
-		TestRunner.main(new String[] {"-c", MWTypeConversionConverterTests.class.getName()});
-	}
-		
 	public static Test suite() {
 		return new TestSuite(MWTypeConversionConverterTests.class);
 	}

@@ -15,17 +15,12 @@ package org.eclipse.persistence.tools.workbench.test.utility.string;
 import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
-import junit.swingui.TestRunner;
 
 import org.eclipse.persistence.tools.workbench.utility.string.CaseInsensitivePartialStringComparator;
 import org.eclipse.persistence.tools.workbench.utility.string.InversePartialStringComparator;
 import org.eclipse.persistence.tools.workbench.utility.string.PartialStringComparator;
 
 public class InversePartialStringComparatorTests extends TestCase {
-	
-	public static void main(String[] args) {
-		TestRunner.main(new String[] {"-c", InversePartialStringComparatorTests.class.getName()});
-	}
 	
 	public static Test suite() {
 		return new TestSuite(InversePartialStringComparatorTests.class);

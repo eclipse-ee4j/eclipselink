@@ -52,7 +52,6 @@ import javax.swing.text.Document;
 import org.eclipse.persistence.tools.workbench.test.uitools.app.swing.TableModelAdapterTests.Crowd;
 import org.eclipse.persistence.tools.workbench.test.uitools.app.swing.TableModelAdapterTests.Person;
 import org.eclipse.persistence.tools.workbench.test.uitools.app.swing.TableModelAdapterTests.PersonColumnAdapter;
-
 import org.eclipse.persistence.tools.workbench.uitools.app.CollectionAspectAdapter;
 import org.eclipse.persistence.tools.workbench.uitools.app.CollectionValueModel;
 import org.eclipse.persistence.tools.workbench.uitools.app.ItemPropertyListValueModelAdapter;

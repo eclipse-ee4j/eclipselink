@@ -15,6 +15,7 @@ package org.eclipse.persistence.tools.workbench.test.mappingsmodel.automap;
 import java.util.Iterator;
 
 import junit.framework.TestCase;
+
 import org.eclipse.persistence.tools.workbench.mappingsmodel.descriptor.MWDescriptor;
 import org.eclipse.persistence.tools.workbench.mappingsmodel.descriptor.relational.MWTableDescriptor;
 import org.eclipse.persistence.tools.workbench.mappingsmodel.mapping.MWMapping;

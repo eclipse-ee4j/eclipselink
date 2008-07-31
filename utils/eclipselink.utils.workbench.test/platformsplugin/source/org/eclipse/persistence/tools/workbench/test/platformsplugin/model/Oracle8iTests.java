@@ -14,16 +14,11 @@ package org.eclipse.persistence.tools.workbench.test.platformsplugin.model;
 
 import junit.framework.Test;
 import junit.framework.TestSuite;
-import junit.swingui.TestRunner;
 
 /**
  * 
  */
 public class Oracle8iTests extends OracleTests {
-
-	public static void main(String[] args) {
-		TestRunner.main(new String[] {"-c", Oracle8iTests.class.getName()});
-	}
 
 	public static Test suite() {
 		return new TestSuite(Oracle8iTests.class);

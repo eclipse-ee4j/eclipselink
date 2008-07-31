@@ -18,7 +18,6 @@ import java.lang.reflect.Method;
 import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
-import junit.swingui.TestRunner;
 
 import org.eclipse.persistence.tools.workbench.utility.AbstractModel;
 import org.eclipse.persistence.tools.workbench.utility.ClassTools;
@@ -27,10 +26,6 @@ import org.eclipse.persistence.tools.workbench.utility.events.StateChangeEvent;
 import org.eclipse.persistence.tools.workbench.utility.events.StateChangeListener;
 
 public class ReflectiveStateChangeListenerTests extends TestCase {
-	
-	public static void main(String[] args) {
-		TestRunner.main(new String[] {"-c", ReflectiveStateChangeListenerTests.class.getName()});
-	}
 	
 	public static Test suite() {
 		return new TestSuite(ReflectiveStateChangeListenerTests.class);

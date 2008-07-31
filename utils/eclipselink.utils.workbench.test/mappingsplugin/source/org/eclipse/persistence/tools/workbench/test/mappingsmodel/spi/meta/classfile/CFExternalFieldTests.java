@@ -12,22 +12,16 @@
 ******************************************************************************/
 package org.eclipse.persistence.tools.workbench.test.mappingsmodel.spi.meta.classfile;
 
-import org.eclipse.persistence.tools.workbench.test.mappingsmodel.spi.meta.ExternalFieldTests;
-
 import junit.framework.Test;
 import junit.framework.TestSuite;
-import junit.swingui.TestRunner;
 
 import org.eclipse.persistence.tools.workbench.mappingsmodel.spi.meta.ExternalClassRepository;
 import org.eclipse.persistence.tools.workbench.mappingsmodel.spi.meta.classfile.CFExternalClassRepositoryFactory;
+import org.eclipse.persistence.tools.workbench.test.mappingsmodel.spi.meta.ExternalFieldTests;
 
 
 public class CFExternalFieldTests extends ExternalFieldTests {
 
-	public static void main(String[] args) {
-		TestRunner.main(new String[] {"-c", CFExternalFieldTests.class.getName()});
-	}
-	
 	public static Test suite() {
 		return new TestSuite(CFExternalFieldTests.class);
 	}

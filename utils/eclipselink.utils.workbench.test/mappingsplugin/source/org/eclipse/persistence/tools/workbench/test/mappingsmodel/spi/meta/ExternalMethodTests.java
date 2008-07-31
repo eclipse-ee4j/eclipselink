@@ -14,14 +14,13 @@ package org.eclipse.persistence.tools.workbench.test.mappingsmodel.spi.meta;
 
 import java.lang.reflect.Method;
 
-import org.eclipse.persistence.tools.workbench.test.utility.TestTools;
-
 import junit.framework.TestCase;
 
 import org.eclipse.persistence.tools.workbench.mappingsmodel.spi.meta.ExternalClass;
+import org.eclipse.persistence.tools.workbench.mappingsmodel.spi.meta.ExternalClassDescription;
 import org.eclipse.persistence.tools.workbench.mappingsmodel.spi.meta.ExternalClassRepository;
 import org.eclipse.persistence.tools.workbench.mappingsmodel.spi.meta.ExternalMethod;
-import org.eclipse.persistence.tools.workbench.mappingsmodel.spi.meta.ExternalClassDescription;
+import org.eclipse.persistence.tools.workbench.test.utility.TestTools;
 
 
 

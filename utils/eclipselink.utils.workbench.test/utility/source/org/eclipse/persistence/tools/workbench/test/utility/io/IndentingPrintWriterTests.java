@@ -14,12 +14,11 @@ package org.eclipse.persistence.tools.workbench.test.utility.io;
 
 import java.io.StringWriter;
 
-import org.eclipse.persistence.tools.workbench.test.utility.TestTools;
-
 import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
 
+import org.eclipse.persistence.tools.workbench.test.utility.TestTools;
 import org.eclipse.persistence.tools.workbench.utility.io.IndentingPrintWriter;
 
 
@@ -31,10 +30,6 @@ public class IndentingPrintWriterTests extends TestCase {
 
 	static final String CR = System.getProperty("line.separator");
 
-	public static void main(String[] args) {
-		junit.swingui.TestRunner.main(new String[] {"-c", IndentingPrintWriterTests.class.getName()});
-	}
-	
 	public static Test suite() {
 		return new TestSuite(IndentingPrintWriterTests.class);
 	}

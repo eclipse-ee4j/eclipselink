@@ -12,16 +12,41 @@
 ******************************************************************************/
 package org.eclipse.persistence.tools.workbench.test.mappingsmodel;
 
-import org.eclipse.persistence.tools.workbench.test.models.projects.*;
-import org.eclipse.persistence.tools.workbench.test.utility.TestTools;
-
 import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
-import junit.swingui.TestRunner;
 
 import org.eclipse.persistence.sessions.Project;
 import org.eclipse.persistence.tools.workbench.mappingsmodel.project.MWProject;
+import org.eclipse.persistence.tools.workbench.test.models.projects.ComplexAggregateProject;
+import org.eclipse.persistence.tools.workbench.test.models.projects.ComplexAggregateRuntimeProject;
+import org.eclipse.persistence.tools.workbench.test.models.projects.CrimeSceneProject;
+import org.eclipse.persistence.tools.workbench.test.models.projects.CrimeSceneRuntimeProject;
+import org.eclipse.persistence.tools.workbench.test.models.projects.CurrencyProject;
+import org.eclipse.persistence.tools.workbench.test.models.projects.CurrencyRuntimeProject;
+import org.eclipse.persistence.tools.workbench.test.models.projects.EmployeeEisProject;
+import org.eclipse.persistence.tools.workbench.test.models.projects.EmployeeEisRuntimeProject;
+import org.eclipse.persistence.tools.workbench.test.models.projects.EmployeeJAXBProject;
+import org.eclipse.persistence.tools.workbench.test.models.projects.EmployeeJAXBRuntimeProject;
+import org.eclipse.persistence.tools.workbench.test.models.projects.EmployeeOXProject;
+import org.eclipse.persistence.tools.workbench.test.models.projects.EmployeeOXRuntimeProject;
+import org.eclipse.persistence.tools.workbench.test.models.projects.IdentityPolicyProject;
+import org.eclipse.persistence.tools.workbench.test.models.projects.IdentityPolicyRuntimeProject;
+import org.eclipse.persistence.tools.workbench.test.models.projects.InsuranceProject;
+import org.eclipse.persistence.tools.workbench.test.models.projects.InsuranceRuntimeProject;
+import org.eclipse.persistence.tools.workbench.test.models.projects.LockingPolicyProject;
+import org.eclipse.persistence.tools.workbench.test.models.projects.LockingPolicyRuntimeProject;
+import org.eclipse.persistence.tools.workbench.test.models.projects.MultipleTableProject;
+import org.eclipse.persistence.tools.workbench.test.models.projects.MultipleTableRuntimeProject;
+import org.eclipse.persistence.tools.workbench.test.models.projects.PhoneCompanyProject;
+import org.eclipse.persistence.tools.workbench.test.models.projects.PhoneCompanyRuntimeProject;
+import org.eclipse.persistence.tools.workbench.test.models.projects.QueryProject;
+import org.eclipse.persistence.tools.workbench.test.models.projects.QueryRuntimeProject;
+import org.eclipse.persistence.tools.workbench.test.models.projects.SimpleAggregateProject;
+import org.eclipse.persistence.tools.workbench.test.models.projects.SimpleAggregateRuntimeProject;
+import org.eclipse.persistence.tools.workbench.test.models.projects.SimpleContactProject;
+import org.eclipse.persistence.tools.workbench.test.models.projects.SimpleContactRuntimeProject;
+import org.eclipse.persistence.tools.workbench.test.utility.TestTools;
 import org.eclipse.persistence.tools.workbench.utility.diff.Diff;
 import org.eclipse.persistence.tools.workbench.utility.diff.DiffEngine;
 
@@ -33,11 +58,6 @@ public class ProjectConverterTests
 	extends TestCase 
 {
 	
-	public static void main(String[] args) {
-		TestRunner.main(new String[] {"-c", ProjectConverterTests.class.getName()});
-//		System.out.println(TestTools.execute(new ProjectConverterTests("testEmployeeEisProjectConversion")));
-	}
-
 	public static Test suite() {
 		TestTools.setUpJUnitThreadContextClassLoader();
 		return new TestSuite(ProjectConverterTests.class);

@@ -14,22 +14,16 @@ package org.eclipse.persistence.tools.workbench.test.mappingsmodel.spi.meta.clas
 
 import java.io.File;
 
-import org.eclipse.persistence.tools.workbench.test.mappingsmodel.spi.meta.ExternalClassTests;
-
 import junit.framework.Test;
 import junit.framework.TestSuite;
-import junit.swingui.TestRunner;
 
 import org.eclipse.persistence.tools.workbench.mappingsmodel.spi.meta.ExternalClassRepository;
 import org.eclipse.persistence.tools.workbench.mappingsmodel.spi.meta.classloader.CLExternalClassRepositoryFactory;
+import org.eclipse.persistence.tools.workbench.test.mappingsmodel.spi.meta.ExternalClassTests;
 
 
 public class CLExternalClassTests extends ExternalClassTests {
 
-	public static void main(String[] args) {
-		TestRunner.main(new String[] {"-c", CLExternalClassTests.class.getName()});
-	}
-	
 	public static Test suite() {
 		return new TestSuite(CLExternalClassTests.class);
 	}

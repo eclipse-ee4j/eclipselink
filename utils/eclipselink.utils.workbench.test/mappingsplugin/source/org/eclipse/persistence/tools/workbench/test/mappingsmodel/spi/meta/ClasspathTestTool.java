@@ -18,7 +18,6 @@ import java.io.IOException;
 import java.io.StringWriter;
 
 import org.eclipse.persistence.tools.workbench.test.utility.JavaTools;
-
 import org.eclipse.persistence.tools.workbench.utility.ClassTools;
 import org.eclipse.persistence.tools.workbench.utility.io.FileTools;
 import org.eclipse.persistence.tools.workbench.utility.io.IndentingPrintWriter;

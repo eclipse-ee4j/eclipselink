@@ -17,17 +17,12 @@ import javax.swing.Icon;
 import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
-import junit.swingui.TestRunner;
 
 import org.eclipse.persistence.tools.workbench.uitools.Displayable;
 import org.eclipse.persistence.tools.workbench.utility.AbstractModel;
 
 public class DisplayableTests extends TestCase {
 
-	public static void main(String[] args) {
-		TestRunner.main(new String[] {"-c", DisplayableTests.class.getName()});
-	}
-	
 	public static Test suite() {
 		return new TestSuite(DisplayableTests.class);
 	}

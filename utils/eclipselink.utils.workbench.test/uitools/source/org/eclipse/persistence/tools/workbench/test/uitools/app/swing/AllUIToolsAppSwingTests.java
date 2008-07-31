@@ -14,7 +14,6 @@ package org.eclipse.persistence.tools.workbench.test.uitools.app.swing;
 
 import junit.framework.Test;
 import junit.framework.TestSuite;
-import junit.swingui.TestRunner;
 
 import org.eclipse.persistence.tools.workbench.utility.ClassTools;
 
@@ -22,10 +21,6 @@ import org.eclipse.persistence.tools.workbench.utility.ClassTools;
  * 
  */
 public class AllUIToolsAppSwingTests {
-	
-	public static void main(String[] args) {
-		TestRunner.main(new String[] {"-c", AllUIToolsAppSwingTests.class.getName()});
-	}
 	
 	public static Test suite() {
 		TestSuite suite = new TestSuite(ClassTools.packageNameFor(AllUIToolsAppSwingTests.class));

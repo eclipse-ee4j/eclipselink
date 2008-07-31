@@ -12,38 +12,14 @@
 ******************************************************************************/
 package org.eclipse.persistence.tools.workbench.test.mappingsio.legacy;
 
-import org.eclipse.persistence.tools.workbench.test.models.projects.ComplexAggregateProject;
-import org.eclipse.persistence.tools.workbench.test.models.projects.LegacyEmployeeOXProject;
-
 import junit.framework.Test;
 import junit.framework.TestSuite;
-import junit.swingui.TestRunner;
+
 import org.eclipse.persistence.tools.workbench.mappingsmodel.project.relational.MWRelationalProject;
-import org.eclipse.persistence.tools.workbench.mappingsmodel.project.xml.MWXmlProject;
+import org.eclipse.persistence.tools.workbench.test.models.projects.ComplexAggregateProject;
 
 public class BackwardCompatibilityTests60 extends
 		BackwardCompatibilityInternalTestCase {
-
-	public static void main(String[] args) {
-		TestRunner.main(new String[] {"-c", BackwardCompatibilityTests60.class.getName()});
-	
-	//	to run a single test, comment out the line of code above
-	//	and uncomment the following line of code:
-//		System.out.println(TestTools.execute(new BackwardCompatibilityTests50("testComplexAggregate")));
-
-	//	current tests:
-	//		testComplexAggregate
-	//		testComplexInheritance
-	//		testComplexMapping
-	//		testEjb20Employee
-	//		testEmployee
-	//		testInsurance
-	//		testPhoneCompany
-	//		testReadOnly
-	//		testSimpleAggregate
-	//		testSimpleContact
-    //      testCorruptArrayProject
-	}
 
 	public static Test suite() {
 		return new TestSuite(BackwardCompatibilityTests60.class);
@@ -51,14 +27,6 @@ public class BackwardCompatibilityTests60 extends
 	
 	public BackwardCompatibilityTests60(String name) {
 		super(name);
-	}
-
-	public void testXmlEmployee() throws Exception {
-		this.compareToOldProject(this.buildLegacyEmployeeXmlProject());
-	}
-
-	protected MWXmlProject buildLegacyEmployeeXmlProject() throws Exception {
-		return new LegacyEmployeeOXProject().getProject();
 	}
 
 	@Override

@@ -15,29 +15,23 @@ package org.eclipse.persistence.tools.workbench.test.mappings;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.xerces.xni.parser.XMLParserConfiguration;
-import org.eclipse.persistence.tools.workbench.test.mappingsmodel.AbstractExportRuntimeProjectJavaSourceTests;
-import org.eclipse.persistence.tools.workbench.test.models.projects.LegacyEmployeeProject;
-import org.eclipse.persistence.tools.workbench.test.utility.JavaTools;
-import org.eclipse.persistence.tools.workbench.test.utility.TestTools;
-
 import junit.framework.Test;
 import junit.framework.TestSuite;
-import junit.swingui.TestRunner;
 
+import org.apache.xerces.xni.parser.XMLParserConfiguration;
 import org.eclipse.persistence.indirection.ValueHolderInterface;
 import org.eclipse.persistence.tools.workbench.mappings.JavaSourceGenerator;
 import org.eclipse.persistence.tools.workbench.mappingsio.ProjectIOManager;
 import org.eclipse.persistence.tools.workbench.mappingsmodel.project.MWProject;
 import org.eclipse.persistence.tools.workbench.mappingsmodel.project.relational.MWRelationalProject;
+import org.eclipse.persistence.tools.workbench.test.mappingsmodel.AbstractExportRuntimeProjectJavaSourceTests;
+import org.eclipse.persistence.tools.workbench.test.models.projects.LegacyEmployeeProject;
+import org.eclipse.persistence.tools.workbench.test.utility.JavaTools;
+import org.eclipse.persistence.tools.workbench.test.utility.TestTools;
 import org.eclipse.persistence.tools.workbench.utility.Classpath;
 import org.eclipse.persistence.tools.workbench.utility.io.FileTools;
 
 public class ExportRuntimeProjectJavaSourceCommandLineTests extends AbstractExportRuntimeProjectJavaSourceTests {
-
-	public static void main(String[] args) {
-		TestRunner.main(new String[] {"-c", ExportRuntimeProjectJavaSourceCommandLineTests.class.getName()});
-	}
 
 	public static Test suite() {
 		TestTools.setUpJUnitThreadContextClassLoader();

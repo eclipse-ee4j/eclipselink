@@ -29,13 +29,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
-import org.eclipse.persistence.tools.workbench.test.utility.TestTools;
-
 import junit.framework.TestCase;
 
 import org.eclipse.persistence.tools.workbench.platformsmodel.DatabasePlatform;
 import org.eclipse.persistence.tools.workbench.platformsmodel.DatabasePlatformRepository;
 import org.eclipse.persistence.tools.workbench.platformsmodel.DatabaseType;
+import org.eclipse.persistence.tools.workbench.test.utility.TestTools;
 import org.eclipse.persistence.tools.workbench.utility.io.FileTools;
 
 

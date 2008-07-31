@@ -16,13 +16,11 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.Date;
 
-import org.eclipse.persistence.tools.workbench.test.utility.TestTools;
-
 import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
-import junit.swingui.TestRunner;
 
+import org.eclipse.persistence.tools.workbench.test.utility.TestTools;
 import org.eclipse.persistence.tools.workbench.uitools.app.BufferedPropertyValueModel;
 import org.eclipse.persistence.tools.workbench.uitools.app.PropertyAspectAdapter;
 import org.eclipse.persistence.tools.workbench.uitools.app.PropertyValueModel;
@@ -47,10 +45,6 @@ public class BufferedPropertyValueModelTests extends TestCase {
 	private PropertyValueModel bufferedHireDateHolder;
 	PropertyChangeEvent bufferedEvent;
 
-	public static void main(String[] args) {
-		TestRunner.main(new String[] {"-c", BufferedPropertyValueModelTests.class.getName()});
-	}
-	
 	public static Test suite() {
 		return new TestSuite(BufferedPropertyValueModelTests.class);
 	}

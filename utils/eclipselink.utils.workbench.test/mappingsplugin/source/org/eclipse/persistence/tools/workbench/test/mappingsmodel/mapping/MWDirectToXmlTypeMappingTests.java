@@ -12,10 +12,6 @@
 ******************************************************************************/
 package org.eclipse.persistence.tools.workbench.test.mappingsmodel.mapping;
 
-import org.eclipse.persistence.tools.workbench.test.mappingsmodel.ModelProblemsTestCase;
-import org.eclipse.persistence.tools.workbench.test.models.projects.CrimeSceneProject;
-import org.eclipse.persistence.tools.workbench.test.models.projects.EmployeeProject;
-
 import junit.framework.Test;
 import junit.framework.TestSuite;
 
@@ -23,14 +19,13 @@ import org.eclipse.persistence.tools.workbench.mappingsmodel.ProblemConstants;
 import org.eclipse.persistence.tools.workbench.mappingsmodel.mapping.relational.MWDirectToFieldMapping;
 import org.eclipse.persistence.tools.workbench.mappingsmodel.mapping.relational.MWDirectToXmlTypeMapping;
 import org.eclipse.persistence.tools.workbench.platformsmodel.DatabasePlatformRepository;
+import org.eclipse.persistence.tools.workbench.test.mappingsmodel.ModelProblemsTestCase;
+import org.eclipse.persistence.tools.workbench.test.models.projects.CrimeSceneProject;
+import org.eclipse.persistence.tools.workbench.test.models.projects.EmployeeProject;
 
 
 public class MWDirectToXmlTypeMappingTests extends ModelProblemsTestCase {
 
-	public static void main(String[] args) {
-		junit.swingui.TestRunner.main(new String[] {"-c", MWDirectToXmlTypeMappingTests.class.getName()});
-	}
-	
 	public static Test suite() {
 		return new TestSuite(MWDirectToXmlTypeMappingTests.class);
 	}

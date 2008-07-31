@@ -14,11 +14,11 @@ package org.eclipse.persistence.tools.workbench.test.framework.ui.tools;
 
 import java.awt.Dimension;
 
-import org.eclipse.persistence.tools.workbench.framework.uitools.Spacer;
-
 import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
+
+import org.eclipse.persistence.tools.workbench.framework.uitools.Spacer;
 
 public class SpacerTest extends TestCase
 {

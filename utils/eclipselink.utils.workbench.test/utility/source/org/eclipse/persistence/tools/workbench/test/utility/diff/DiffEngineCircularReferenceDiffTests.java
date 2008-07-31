@@ -16,7 +16,6 @@ import java.util.List;
 
 import junit.framework.Test;
 import junit.framework.TestSuite;
-import junit.swingui.TestRunner;
 
 import org.eclipse.persistence.tools.workbench.utility.diff.CompositeDiff;
 import org.eclipse.persistence.tools.workbench.utility.diff.Diff;
@@ -30,10 +29,6 @@ import org.eclipse.persistence.tools.workbench.utility.diff.SimpleDiff;
 
 public class DiffEngineCircularReferenceDiffTests extends AbstractCircularReferenceDiffTests {
 
-	public static void main(String[] args) {
-		TestRunner.main(new String[] {"-c", DiffEngineCircularReferenceDiffTests.class.getName()});
-	}
-	
 	public static Test suite() {
 		return new TestSuite(DiffEngineCircularReferenceDiffTests.class);
 	}

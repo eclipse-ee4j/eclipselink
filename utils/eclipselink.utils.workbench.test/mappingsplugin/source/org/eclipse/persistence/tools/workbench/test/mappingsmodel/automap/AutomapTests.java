@@ -12,10 +12,10 @@
 ******************************************************************************/
 package org.eclipse.persistence.tools.workbench.test.mappingsmodel.automap;
 
-import org.eclipse.persistence.tools.workbench.test.models.projects.EmployeeProject;
+import junit.framework.TestCase;
 
 import org.eclipse.persistence.tools.workbench.mappingsmodel.project.MWProject;
-import junit.framework.TestCase;
+import org.eclipse.persistence.tools.workbench.test.models.projects.EmployeeProject;
 
 public class AutomapTests extends TestCase
 {

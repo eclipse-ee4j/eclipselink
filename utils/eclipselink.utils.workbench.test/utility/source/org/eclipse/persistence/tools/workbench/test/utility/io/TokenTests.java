@@ -17,13 +17,10 @@ import java.io.IOException;
 import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
+
 import org.eclipse.persistence.tools.workbench.utility.io.TokenWriter;
 
 public class TokenTests extends TestCase {
-	
-	public static void main(String[] args) {
-		junit.swingui.TestRunner.main(new String[] {"-c", TokenTests.class.getName()});
-	}
 	
 	public static Test suite() {
 		return new TestSuite(TokenTests.class);

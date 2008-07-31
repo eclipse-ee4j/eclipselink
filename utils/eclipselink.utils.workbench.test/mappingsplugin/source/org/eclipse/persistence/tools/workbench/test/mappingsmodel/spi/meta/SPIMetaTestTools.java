@@ -19,11 +19,11 @@ import java.lang.reflect.Method;
 import java.util.Iterator;
 
 import org.eclipse.persistence.tools.workbench.mappingsmodel.spi.meta.ExternalClass;
+import org.eclipse.persistence.tools.workbench.mappingsmodel.spi.meta.ExternalClassDescription;
 import org.eclipse.persistence.tools.workbench.mappingsmodel.spi.meta.ExternalConstructor;
 import org.eclipse.persistence.tools.workbench.mappingsmodel.spi.meta.ExternalField;
 import org.eclipse.persistence.tools.workbench.mappingsmodel.spi.meta.ExternalMember;
 import org.eclipse.persistence.tools.workbench.mappingsmodel.spi.meta.ExternalMethod;
-import org.eclipse.persistence.tools.workbench.mappingsmodel.spi.meta.ExternalClassDescription;
 import org.eclipse.persistence.tools.workbench.utility.CollectionTools;
 import org.eclipse.persistence.tools.workbench.utility.iterators.ArrayIterator;
 import org.eclipse.persistence.tools.workbench.utility.iterators.TransformationIterator;

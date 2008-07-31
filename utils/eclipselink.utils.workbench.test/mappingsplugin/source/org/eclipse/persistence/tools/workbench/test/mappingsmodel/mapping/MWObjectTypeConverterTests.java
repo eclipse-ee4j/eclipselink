@@ -12,22 +12,18 @@
 ******************************************************************************/
 package org.eclipse.persistence.tools.workbench.test.mappingsmodel.mapping;
 
-import org.eclipse.persistence.tools.workbench.test.mappingsmodel.ModelProblemsTestCase;
-import org.eclipse.persistence.tools.workbench.test.models.projects.CrimeSceneProject;
-
 import junit.framework.Test;
 import junit.framework.TestSuite;
+
 import org.eclipse.persistence.tools.workbench.mappingsmodel.ProblemConstants;
 import org.eclipse.persistence.tools.workbench.mappingsmodel.mapping.MWObjectTypeConverter;
 import org.eclipse.persistence.tools.workbench.mappingsmodel.mapping.relational.MWDirectToFieldMapping;
+import org.eclipse.persistence.tools.workbench.test.mappingsmodel.ModelProblemsTestCase;
+import org.eclipse.persistence.tools.workbench.test.models.projects.CrimeSceneProject;
 
 
 
 public class MWObjectTypeConverterTests extends ModelProblemsTestCase {
-
-	public static void main(String[] args) {
-		junit.swingui.TestRunner.main(new String[] {"-c", MWObjectTypeConverterTests.class.getName()});
-	}
 
 	public MWObjectTypeConverterTests(String name) {
 		super(name);

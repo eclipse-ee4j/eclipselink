@@ -14,26 +14,20 @@ package org.eclipse.persistence.tools.workbench.test.framework.resources;
 
 import javax.swing.Icon;
 
-import org.eclipse.persistence.tools.workbench.test.utility.TestTools;
-
 import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
-import junit.swingui.TestRunner;
 
+import org.eclipse.persistence.tools.workbench.framework.resources.AbstractIconResourceFileNameMap;
 import org.eclipse.persistence.tools.workbench.framework.resources.DefaultIconRepository;
 import org.eclipse.persistence.tools.workbench.framework.resources.IconRepository;
-import org.eclipse.persistence.tools.workbench.framework.resources.MissingIconException;
-import org.eclipse.persistence.tools.workbench.framework.resources.AbstractIconResourceFileNameMap;
 import org.eclipse.persistence.tools.workbench.framework.resources.IconResourceFileNameMap;
+import org.eclipse.persistence.tools.workbench.framework.resources.MissingIconException;
+import org.eclipse.persistence.tools.workbench.test.utility.TestTools;
 
 
 public class IconRepositoryTests extends TestCase {
 	private IconRepository iconRepository;
-	
-	public static void main(String[] args) {
-		TestRunner.main(new String[] {"-c", IconRepositoryTests.class.getName()});
-	}
 	
 	public static Test suite() {
 		return new TestSuite(IconRepositoryTests.class);

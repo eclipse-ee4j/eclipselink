@@ -12,23 +12,17 @@
 ******************************************************************************/
 package org.eclipse.persistence.tools.workbench.test.mappingsmodel.mapping;
 
-import org.eclipse.persistence.tools.workbench.test.models.projects.CrimeSceneProject;
-
 import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
-import junit.swingui.TestRunner;
 
 import org.eclipse.persistence.tools.workbench.mappingsmodel.descriptor.MWDescriptor;
 import org.eclipse.persistence.tools.workbench.mappingsmodel.mapping.relational.MWOneToManyMapping;
+import org.eclipse.persistence.tools.workbench.test.models.projects.CrimeSceneProject;
 
 
 public class MWOneToManyMappingTests extends TestCase {
 
-	public static void main(String[] args) {
-		TestRunner.main(new String[] {"-c", MWOneToManyMappingTests.class.getName()});
-	}
-	
 	public static Test suite() {
 		return new TestSuite(MWOneToManyMappingTests.class);
 	}

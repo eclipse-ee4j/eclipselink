@@ -19,13 +19,11 @@ import java.util.List;
 import java.util.ListIterator;
 import java.util.TreeSet;
 
-import org.eclipse.persistence.tools.workbench.test.utility.TestTools;
-
 import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
-import junit.swingui.TestRunner;
 
+import org.eclipse.persistence.tools.workbench.test.utility.TestTools;
 import org.eclipse.persistence.tools.workbench.uitools.app.CollectionValueModel;
 import org.eclipse.persistence.tools.workbench.uitools.app.ListValueModel;
 import org.eclipse.persistence.tools.workbench.uitools.app.SimpleCollectionValueModel;
@@ -45,10 +43,6 @@ public class SortedListValueModelAdapterTests extends TestCase {
 	private CollectionValueModel wrappedCollectionHolder;
 	private Collection wrappedCollection;
 
-	public static void main(String[] args) {
-		TestRunner.main(new String[] {"-c", SortedListValueModelAdapterTests.class.getName()});
-	}
-	
 	public static Test suite() {
 		return new TestSuite(SortedListValueModelAdapterTests.class);
 	}

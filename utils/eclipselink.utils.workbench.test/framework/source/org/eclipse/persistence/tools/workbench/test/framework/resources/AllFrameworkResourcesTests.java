@@ -14,7 +14,6 @@ package org.eclipse.persistence.tools.workbench.test.framework.resources;
 
 import junit.framework.Test;
 import junit.framework.TestSuite;
-import junit.swingui.TestRunner;
 
 import org.eclipse.persistence.tools.workbench.utility.ClassTools;
 
@@ -22,10 +21,6 @@ import org.eclipse.persistence.tools.workbench.utility.ClassTools;
  * de-centralize test organization
  */
 public class AllFrameworkResourcesTests {
-
-	public static void main(String[] args) {
-		TestRunner.main(new String[] {"-c", AllFrameworkResourcesTests.class.getName()});
-	}
 	
 	public static Test suite() {
 		TestSuite suite = new TestSuite(ClassTools.packageNameFor(AllFrameworkResourcesTests.class));

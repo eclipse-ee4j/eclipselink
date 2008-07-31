@@ -14,26 +14,22 @@ package org.eclipse.persistence.tools.workbench.test.mappingsmodel.mapping;
 
 import java.util.Collection;
 
-import org.eclipse.persistence.tools.workbench.test.mappingsmodel.ModelProblemsTestCase;
-import org.eclipse.persistence.tools.workbench.test.models.projects.ComplexMappingProject;
-import org.eclipse.persistence.tools.workbench.test.models.projects.CrimeSceneProject;
-
 import junit.framework.Test;
 import junit.framework.TestSuite;
+
 import org.eclipse.persistence.tools.workbench.mappingsmodel.ProblemConstants;
 import org.eclipse.persistence.tools.workbench.mappingsmodel.db.MWReference;
 import org.eclipse.persistence.tools.workbench.mappingsmodel.db.MWTable;
 import org.eclipse.persistence.tools.workbench.mappingsmodel.mapping.relational.MWManyToManyMapping;
+import org.eclipse.persistence.tools.workbench.test.mappingsmodel.ModelProblemsTestCase;
+import org.eclipse.persistence.tools.workbench.test.models.projects.ComplexMappingProject;
+import org.eclipse.persistence.tools.workbench.test.models.projects.CrimeSceneProject;
 import org.eclipse.persistence.tools.workbench.utility.CollectionTools;
 
 
 public class MWManyToManyMappingTests 
 	extends ModelProblemsTestCase 
 {
-	public static void main(String[] args) {
-		junit.swingui.TestRunner.main(new String[] {"-c", MWManyToManyMappingTests.class.getName()});
-	}
-	
 	public static Test suite() {
 		return new TestSuite(MWManyToManyMappingTests.class);
 	}

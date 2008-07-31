@@ -17,15 +17,9 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Vector;
 
-import org.eclipse.persistence.tools.workbench.test.mappingsmodel.ModelProblemsTestCase;
-import org.eclipse.persistence.tools.workbench.test.models.projects.CrimeSceneProject;
-import org.eclipse.persistence.tools.workbench.test.models.projects.EmployeeProject;
-import org.eclipse.persistence.tools.workbench.test.models.projects.LockingPolicyProject;
-import org.eclipse.persistence.tools.workbench.test.models.projects.QueryProject;
-
 import junit.framework.Test;
 import junit.framework.TestSuite;
-import junit.swingui.TestRunner;
+
 import org.eclipse.persistence.tools.workbench.mappingsmodel.ProblemConstants;
 import org.eclipse.persistence.tools.workbench.mappingsmodel.db.MWColumn;
 import org.eclipse.persistence.tools.workbench.mappingsmodel.db.MWDatabase;
@@ -48,14 +42,15 @@ import org.eclipse.persistence.tools.workbench.mappingsmodel.query.MWQueryManage
 import org.eclipse.persistence.tools.workbench.mappingsmodel.query.relational.MWBasicExpression;
 import org.eclipse.persistence.tools.workbench.mappingsmodel.query.relational.MWRelationalQuery;
 import org.eclipse.persistence.tools.workbench.mappingsmodel.query.relational.MWRelationalReadQuery;
+import org.eclipse.persistence.tools.workbench.test.mappingsmodel.ModelProblemsTestCase;
+import org.eclipse.persistence.tools.workbench.test.models.projects.CrimeSceneProject;
+import org.eclipse.persistence.tools.workbench.test.models.projects.EmployeeProject;
+import org.eclipse.persistence.tools.workbench.test.models.projects.LockingPolicyProject;
+import org.eclipse.persistence.tools.workbench.test.models.projects.QueryProject;
 import org.eclipse.persistence.tools.workbench.utility.CollectionTools;
 import org.eclipse.persistence.tools.workbench.utility.TriStateBoolean;
 
 public class MWTableDescriptorTests extends ModelProblemsTestCase {
-	
-	public static void main(String[] args) {
-		TestRunner.main(new String[] {"-c", MWTableDescriptorTests.class.getName()});
-	}
 	
 	public static Test suite() {
 		return new TestSuite(MWTableDescriptorTests.class);

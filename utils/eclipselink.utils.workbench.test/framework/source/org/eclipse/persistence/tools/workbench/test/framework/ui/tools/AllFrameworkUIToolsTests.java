@@ -14,7 +14,6 @@ package org.eclipse.persistence.tools.workbench.test.framework.ui.tools;
 
 import junit.framework.Test;
 import junit.framework.TestSuite;
-import junit.swingui.TestRunner;
 
 import org.eclipse.persistence.tools.workbench.utility.ClassTools;
 
@@ -23,11 +22,6 @@ public class AllFrameworkUIToolsTests
 	private AllFrameworkUIToolsTests()
 	{
 		super();
-	}
-
-	public static void main(String[] args)
-	{
-		TestRunner.main(new String[] { "-c", AllFrameworkUIToolsTests.class.getName() });
 	}
 
 	public static Test suite()

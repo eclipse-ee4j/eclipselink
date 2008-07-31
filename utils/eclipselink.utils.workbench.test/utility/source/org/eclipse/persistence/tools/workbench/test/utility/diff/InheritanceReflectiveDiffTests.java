@@ -14,6 +14,9 @@ package org.eclipse.persistence.tools.workbench.test.utility.diff;
 
 import java.util.List;
 
+import junit.framework.Test;
+import junit.framework.TestSuite;
+
 import org.eclipse.persistence.tools.workbench.test.utility.diff.model.Address;
 import org.eclipse.persistence.tools.workbench.test.utility.diff.model.Car;
 import org.eclipse.persistence.tools.workbench.test.utility.diff.model.Dependent;
@@ -22,11 +25,6 @@ import org.eclipse.persistence.tools.workbench.test.utility.diff.model.Inheritan
 import org.eclipse.persistence.tools.workbench.test.utility.diff.model.PhoneNumber;
 import org.eclipse.persistence.tools.workbench.test.utility.diff.model.SimpleEmployee;
 import org.eclipse.persistence.tools.workbench.test.utility.diff.model.State;
-
-import junit.framework.Test;
-import junit.framework.TestSuite;
-import junit.swingui.TestRunner;
-
 import org.eclipse.persistence.tools.workbench.utility.diff.CompositeDiff;
 import org.eclipse.persistence.tools.workbench.utility.diff.Diff;
 import org.eclipse.persistence.tools.workbench.utility.diff.DiffEngine;
@@ -36,10 +34,6 @@ import org.eclipse.persistence.tools.workbench.utility.diff.ReflectiveDifferenti
 
 
 public class InheritanceReflectiveDiffTests extends MultiClassReflectiveDiffTests {
-
-	public static void main(String[] args) {
-		TestRunner.main(new String[] {"-c", InheritanceReflectiveDiffTests.class.getName()});
-	}
 
 	public static Test suite() {
 		return new TestSuite(InheritanceReflectiveDiffTests.class);

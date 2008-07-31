@@ -15,7 +15,6 @@ package org.eclipse.persistence.tools.workbench.test.utility;
 import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
-import junit.swingui.TestRunner;
 
 import org.eclipse.persistence.tools.workbench.utility.CollectionTools;
 import org.eclipse.persistence.tools.workbench.utility.ExceptionListener;
@@ -27,10 +26,6 @@ public class SimpleExceptionBroadcasterTests extends TestCase {
 	private int localListenerCount;
 	private ExceptionListener[] localListeners;
 	private boolean[] localListenersNotified;
-
-	public static void main(String[] args) {
-		TestRunner.main(new String[] {"-c", SimpleExceptionBroadcasterTests.class.getName()});
-	}
 
 	public static Test suite() {
 		return new TestSuite(SimpleExceptionBroadcasterTests.class);

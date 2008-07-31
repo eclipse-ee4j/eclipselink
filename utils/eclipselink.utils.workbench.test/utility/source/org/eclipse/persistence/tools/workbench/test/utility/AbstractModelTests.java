@@ -75,10 +75,6 @@ public class AbstractModelTests
 	private static final String TREE_NAME = "treeName";
 	static final Object[] OBJECT_ARRAY_PATH = {new Object(), new Object(), new String()};
 
-	public static void main(String[] args) {
-		junit.swingui.TestRunner.main(new String[] {"-c", AbstractModelTests.class.getName()});
-	}
-	
 	public static Test suite() {
 		return new TestSuite(AbstractModelTests.class);
 	}

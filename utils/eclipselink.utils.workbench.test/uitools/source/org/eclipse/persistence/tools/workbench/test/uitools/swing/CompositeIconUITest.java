@@ -39,7 +39,6 @@ import javax.swing.event.ListDataListener;
 
 import org.eclipse.persistence.tools.workbench.test.uitools.BorderIcon;
 import org.eclipse.persistence.tools.workbench.test.uitools.QuadrantIcon;
-
 import org.eclipse.persistence.tools.workbench.uitools.cell.SimpleListCellRenderer;
 import org.eclipse.persistence.tools.workbench.uitools.swing.CompositeIcon;
 import org.eclipse.persistence.tools.workbench.utility.ClassTools;

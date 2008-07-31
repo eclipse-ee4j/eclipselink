@@ -33,8 +33,6 @@ import javax.swing.event.TreeModelListener;
 import javax.swing.event.TreeSelectionListener;
 import javax.swing.tree.TreePath;
 
-import org.eclipse.persistence.tools.workbench.test.scplugin.AllSCTests;
-
 import org.eclipse.persistence.tools.workbench.framework.Application;
 import org.eclipse.persistence.tools.workbench.framework.NodeManager;
 import org.eclipse.persistence.tools.workbench.framework.Plugin;
@@ -59,6 +57,7 @@ import org.eclipse.persistence.tools.workbench.scplugin.SCPluginResourceBundle;
 import org.eclipse.persistence.tools.workbench.scplugin.model.adapter.SCAdapter;
 import org.eclipse.persistence.tools.workbench.scplugin.model.adapter.TopLinkSessionsAdapter;
 import org.eclipse.persistence.tools.workbench.scplugin.ui.project.ProjectNode;
+import org.eclipse.persistence.tools.workbench.test.scplugin.AllSCTests;
 import org.eclipse.persistence.tools.workbench.uitools.app.PropertyValueModel;
 import org.eclipse.persistence.tools.workbench.uitools.app.SimplePropertyValueModel;
 import org.eclipse.persistence.tools.workbench.uitools.app.TreeNodeValueModel;

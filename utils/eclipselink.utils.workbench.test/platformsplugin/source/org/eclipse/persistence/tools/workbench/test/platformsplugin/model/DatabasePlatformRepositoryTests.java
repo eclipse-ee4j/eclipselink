@@ -22,13 +22,9 @@ import java.io.OutputStream;
 import java.util.Iterator;
 import java.util.SortedSet;
 
-import org.eclipse.persistence.tools.workbench.test.platformsplugin.TestDatabasePlatformRepositoryFactory;
-import org.eclipse.persistence.tools.workbench.test.utility.TestTools;
-
 import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
-import junit.swingui.TestRunner;
 
 import org.eclipse.persistence.tools.workbench.platformsmodel.CorruptXMLException;
 import org.eclipse.persistence.tools.workbench.platformsmodel.DatabasePlatform;
@@ -40,6 +36,8 @@ import org.eclipse.persistence.tools.workbench.platformsmodel.JDBCTypeToDatabase
 import org.eclipse.persistence.tools.workbench.platformsmodel.JDBCTypeToJavaTypeDeclarationMapping;
 import org.eclipse.persistence.tools.workbench.platformsmodel.JavaTypeDeclaration;
 import org.eclipse.persistence.tools.workbench.platformsmodel.JavaTypeDeclarationToJDBCTypeMapping;
+import org.eclipse.persistence.tools.workbench.test.platformsplugin.TestDatabasePlatformRepositoryFactory;
+import org.eclipse.persistence.tools.workbench.test.utility.TestTools;
 import org.eclipse.persistence.tools.workbench.utility.AbstractModel;
 import org.eclipse.persistence.tools.workbench.utility.ClassTools;
 import org.eclipse.persistence.tools.workbench.utility.CollectionTools;
@@ -53,10 +51,6 @@ import org.eclipse.persistence.tools.workbench.utility.node.AbstractNodeModel;
 
 public class DatabasePlatformRepositoryTests extends TestCase {
 	private DatabasePlatformRepository repository;
-
-	public static void main(String[] args) {
-		TestRunner.main(new String[] {"-c", DatabasePlatformRepositoryTests.class.getName()});
-	}
 
 	public static Test suite() {
 		return new TestSuite(DatabasePlatformRepositoryTests.class);

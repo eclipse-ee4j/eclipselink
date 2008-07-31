@@ -12,21 +12,16 @@
 ******************************************************************************/
 package org.eclipse.persistence.tools.workbench.test.mappingsio;
 
-import org.eclipse.persistence.tools.workbench.test.mappingsio.legacy.AllMappingsIOLegacyTests;
-
 import junit.framework.Test;
 import junit.framework.TestSuite;
-import junit.swingui.TestRunner;
+
+import org.eclipse.persistence.tools.workbench.test.mappingsio.legacy.AllMappingsIOLegacyTests;
 import org.eclipse.persistence.tools.workbench.utility.ClassTools;
 
 /**
  * decentralize test creation code
  */
 public class AllMappingsIOTests {
-
-	public static void main(String[] args) {
-		TestRunner.main(new String[] {"-c", AllMappingsIOTests.class.getName()});
-	}
 
 	public static Test suite() {
 		return suite(true);

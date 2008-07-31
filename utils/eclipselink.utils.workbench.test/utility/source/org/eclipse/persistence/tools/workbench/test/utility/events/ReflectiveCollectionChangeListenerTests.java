@@ -20,7 +20,6 @@ import java.util.Iterator;
 import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
-import junit.swingui.TestRunner;
 
 import org.eclipse.persistence.tools.workbench.utility.AbstractModel;
 import org.eclipse.persistence.tools.workbench.utility.ClassTools;
@@ -32,10 +31,6 @@ import org.eclipse.persistence.tools.workbench.utility.events.ReflectiveChangeLi
 import org.eclipse.persistence.tools.workbench.utility.iterators.CloneIterator;
 
 public class ReflectiveCollectionChangeListenerTests extends TestCase {
-	
-	public static void main(String[] args) {
-		TestRunner.main(new String[] {"-c", ReflectiveCollectionChangeListenerTests.class.getName()});
-	}
 	
 	public static Test suite() {
 		return new TestSuite(ReflectiveCollectionChangeListenerTests.class);

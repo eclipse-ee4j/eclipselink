@@ -20,7 +20,6 @@ import java.util.List;
 import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
-import junit.swingui.TestRunner;
 
 import org.eclipse.persistence.tools.workbench.utility.ReverseComparator;
 
@@ -28,10 +27,6 @@ public class ReverseComparatorTests extends TestCase {
 	private Comparator naturalReverseComparator;
 	private Comparator customComparator;
 	private Comparator customReverseComparator;
-
-	public static void main(String[] args) {
-		TestRunner.main(new String[] {"-c", ReverseComparatorTests.class.getName()});
-	}
 
 	public static Test suite() {
 		return new TestSuite(ReverseComparatorTests.class);

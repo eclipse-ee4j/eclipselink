@@ -21,7 +21,6 @@ import java.util.NoSuchElementException;
 import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
-import junit.swingui.TestRunner;
 
 import org.eclipse.persistence.tools.workbench.utility.CollectionTools;
 import org.eclipse.persistence.tools.workbench.utility.IdentityHashBag;
@@ -34,10 +33,6 @@ public class IdentityHashBagTests extends TestCase {
 	private String four = "four";
 	private String foo = "foo";
 	private String bar = "bar";
-
-	public static void main(String[] args) {
-		TestRunner.main(new String[] {"-c", IdentityHashBagTests.class.getName()});
-	}
 
 	public static Test suite() {
 		return new TestSuite(IdentityHashBagTests.class);

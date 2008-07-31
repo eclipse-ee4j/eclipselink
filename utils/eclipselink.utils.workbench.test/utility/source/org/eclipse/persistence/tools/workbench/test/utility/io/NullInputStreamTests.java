@@ -16,23 +16,17 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Arrays;
 
-import org.eclipse.persistence.tools.workbench.test.utility.TestTools;
-
 import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
-import junit.swingui.TestRunner;
 
+import org.eclipse.persistence.tools.workbench.test.utility.TestTools;
 import org.eclipse.persistence.tools.workbench.utility.io.NullInputStream;
 
 
 public class NullInputStreamTests extends TestCase {
 	private InputStream nullInputStream;
 
-	public static void main(String[] args) {
-		TestRunner.main(new String[] {"-c", NullInputStreamTests.class.getName()});
-	}
-	
 	public static Test suite() {
 		return new TestSuite(NullInputStreamTests.class);
 	}

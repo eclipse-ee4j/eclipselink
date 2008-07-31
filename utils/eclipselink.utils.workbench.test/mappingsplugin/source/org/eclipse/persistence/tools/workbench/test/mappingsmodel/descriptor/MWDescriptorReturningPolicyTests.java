@@ -14,24 +14,19 @@ package org.eclipse.persistence.tools.workbench.test.mappingsmodel.descriptor;
 
 import java.util.Iterator;
 
-import org.eclipse.persistence.tools.workbench.test.mappingsmodel.ModelProblemsTestCase;
-
 import junit.framework.Test;
 import junit.framework.TestSuite;
-import junit.swingui.TestRunner;
+
 import org.eclipse.persistence.tools.workbench.mappingsmodel.ProblemConstants;
 import org.eclipse.persistence.tools.workbench.mappingsmodel.db.MWColumn;
 import org.eclipse.persistence.tools.workbench.mappingsmodel.descriptor.MWReturningPolicyInsertFieldReturnOnlyFlag;
 import org.eclipse.persistence.tools.workbench.mappingsmodel.descriptor.relational.MWRelationalClassIndicatorFieldPolicy;
 import org.eclipse.persistence.tools.workbench.mappingsmodel.descriptor.relational.MWRelationalReturningPolicy;
 import org.eclipse.persistence.tools.workbench.mappingsmodel.descriptor.relational.MWTableDescriptorLockingPolicy;
+import org.eclipse.persistence.tools.workbench.test.mappingsmodel.ModelProblemsTestCase;
 
 public class MWDescriptorReturningPolicyTests extends ModelProblemsTestCase {
 
-	public static void main(String[] args) {
-		TestRunner.main(new String[] {"-c", MWDescriptorReturningPolicyTests.class.getName()});
-	}
-	
 	public static Test suite() {
 		return new TestSuite(MWDescriptorReturningPolicyTests.class);
 	}

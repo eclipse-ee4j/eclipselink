@@ -23,10 +23,6 @@ import org.eclipse.persistence.tools.workbench.utility.CollectionTools;
 
 public class MWAggregatePathToColumnTests extends TestCase {
 
-	public static void main(String[] args) {
-		junit.swingui.TestRunner.main(new String[] {"-c", MWAggregatePathToColumnTests.class.getName()});
-	}
-	
 	public static Test suite() {
 		return new TestSuite(MWAggregatePathToColumnTests.class);
 	}

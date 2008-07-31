@@ -15,21 +15,15 @@ package org.eclipse.persistence.tools.workbench.test.ant;
 import java.io.File;
 import java.util.Vector;
 
-import org.eclipse.persistence.tools.workbench.test.models.projects.EmployeeOXProject;
-
 import junit.framework.Test;
 import junit.framework.TestSuite;
-import junit.swingui.TestRunner;
+
 import org.eclipse.persistence.tools.workbench.ant.ProjectValidator;
 import org.eclipse.persistence.tools.workbench.mappingsmodel.project.MWProject;
+import org.eclipse.persistence.tools.workbench.test.models.projects.EmployeeOXProject;
 
 public class OXProjectValidatorTests extends XmlProjectRunnerTests {
     
-	public static void main( String[] args) {
-	    
-		TestRunner.main( new String[] { "-c", OXProjectValidatorTests.class.getName()});
-	}
-
 	public static Test suite() {
 		return new TestSuite( OXProjectValidatorTests.class);
 	}

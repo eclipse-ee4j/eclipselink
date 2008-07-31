@@ -12,19 +12,18 @@
 ******************************************************************************/
 package org.eclipse.persistence.tools.workbench.test.mappingsmodel.mapping;
 
-import org.eclipse.persistence.tools.workbench.test.mappingsmodel.ModelProblemsTestCase;
-import org.eclipse.persistence.tools.workbench.test.models.projects.CrimeSceneProject;
-import org.eclipse.persistence.tools.workbench.test.models.projects.EmployeeProject;
-
 import junit.framework.Test;
 import junit.framework.TestSuite;
-import junit.swingui.TestRunner;
+
 import org.eclipse.persistence.indirection.ValueHolderInterface;
 import org.eclipse.persistence.tools.workbench.mappingsmodel.ProblemConstants;
 import org.eclipse.persistence.tools.workbench.mappingsmodel.db.MWColumn;
 import org.eclipse.persistence.tools.workbench.mappingsmodel.mapping.relational.MWManyToManyMapping;
 import org.eclipse.persistence.tools.workbench.mappingsmodel.mapping.relational.MWRelationalDirectCollectionMapping;
 import org.eclipse.persistence.tools.workbench.mappingsmodel.mapping.relational.MWRelationalDirectMapMapping;
+import org.eclipse.persistence.tools.workbench.test.mappingsmodel.ModelProblemsTestCase;
+import org.eclipse.persistence.tools.workbench.test.models.projects.CrimeSceneProject;
+import org.eclipse.persistence.tools.workbench.test.models.projects.EmployeeProject;
 
 
 public class MWRelationalDirectCollectionMappingTests extends ModelProblemsTestCase {
@@ -32,11 +31,7 @@ public class MWRelationalDirectCollectionMappingTests extends ModelProblemsTestC
 	public MWRelationalDirectCollectionMappingTests(String name) {
 		super(name);
 	}
-	public static void main(String[] args) {
-		TestRunner.main(new String[] {"-c", MWRelationalDirectCollectionMappingTests.class.getName()});
-	}
 	
-
 	public void testMWRelationalDirectCollectionMappingMapping() {
 		CrimeSceneProject crimeSceneProject = new CrimeSceneProject();
 		MWRelationalDirectCollectionMapping original = crimeSceneProject.getKeywordsMappingInCrimeScene();

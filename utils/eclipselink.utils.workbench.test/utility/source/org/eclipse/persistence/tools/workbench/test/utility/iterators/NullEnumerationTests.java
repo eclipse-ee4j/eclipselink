@@ -18,15 +18,10 @@ import java.util.NoSuchElementException;
 import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
-import junit.swingui.TestRunner;
 
 import org.eclipse.persistence.tools.workbench.utility.iterators.NullEnumeration;
 
 public class NullEnumerationTests extends TestCase {
-	
-	public static void main(String[] args) {
-		TestRunner.main(new String[] {"-c", NullEnumerationTests.class.getName()});
-	}
 	
 	public static Test suite() {
 		return new TestSuite(NullEnumerationTests.class);

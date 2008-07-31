@@ -16,13 +16,11 @@ import javax.swing.SpinnerModel;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
-import org.eclipse.persistence.tools.workbench.test.utility.TestTools;
-
 import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
-import junit.swingui.TestRunner;
 
+import org.eclipse.persistence.tools.workbench.test.utility.TestTools;
 import org.eclipse.persistence.tools.workbench.uitools.app.PropertyValueModel;
 import org.eclipse.persistence.tools.workbench.uitools.app.SimplePropertyValueModel;
 import org.eclipse.persistence.tools.workbench.uitools.app.ValueModel;
@@ -36,10 +34,6 @@ public class ListSpinnerModelAdapterTests extends TestCase {
 	private static final String[] VALUE_LIST = {"red", "green", "blue"};
 	private static final String DEFAULT_VALUE = VALUE_LIST[0];
 
-	public static void main(String[] args) {
-		TestRunner.main(new String[] {"-c", ListSpinnerModelAdapterTests.class.getName()});
-	}
-	
 	public static Test suite() {
 		return new TestSuite(ListSpinnerModelAdapterTests.class);
 	}

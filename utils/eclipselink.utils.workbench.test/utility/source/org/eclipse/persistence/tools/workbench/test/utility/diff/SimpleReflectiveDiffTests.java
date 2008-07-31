@@ -12,24 +12,17 @@
 ******************************************************************************/
 package org.eclipse.persistence.tools.workbench.test.utility.diff;
 
-import org.eclipse.persistence.tools.workbench.test.utility.diff.model.Employee;
-import org.eclipse.persistence.tools.workbench.test.utility.diff.model.SimpleEmployee;
-
 import junit.framework.Test;
 import junit.framework.TestSuite;
-import junit.swingui.TestRunner;
 
+import org.eclipse.persistence.tools.workbench.test.utility.diff.model.Employee;
+import org.eclipse.persistence.tools.workbench.test.utility.diff.model.SimpleEmployee;
 import org.eclipse.persistence.tools.workbench.utility.diff.Differentiator;
 import org.eclipse.persistence.tools.workbench.utility.diff.ReflectiveDifferentiator;
 
 
 
 public class SimpleReflectiveDiffTests extends AbstractReflectiveDiffTests {
-
-
-	public static void main(String[] args) {
-		TestRunner.main(new String[] {"-c", SimpleReflectiveDiffTests.class.getName()});
-	}
 
 	public static Test suite() {
 		return new TestSuite(SimpleReflectiveDiffTests.class);

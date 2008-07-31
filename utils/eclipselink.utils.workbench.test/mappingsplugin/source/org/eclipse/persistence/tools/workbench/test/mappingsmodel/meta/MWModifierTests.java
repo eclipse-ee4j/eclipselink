@@ -41,10 +41,6 @@ public class MWModifierTests extends TestCase {
 		return System.getProperty("java.version").indexOf(version) != -1;
 	}
 
-	public static void main(String[] args) {
-		junit.swingui.TestRunner.main(new String[] {"-c", MWModifierTests.class.getName()});
-	}
-	
 	public static Test suite() {
 		return new TestSuite(MWModifierTests.class);
 	}

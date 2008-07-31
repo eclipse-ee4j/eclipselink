@@ -15,21 +15,15 @@ package org.eclipse.persistence.tools.workbench.test.ant;
 import java.io.File;
 import java.util.Vector;
 
+import junit.framework.Test;
+import junit.framework.TestSuite;
+
+import org.eclipse.persistence.tools.workbench.ant.ProjectExporter;
+import org.eclipse.persistence.tools.workbench.mappingsmodel.project.MWProject;
 import org.eclipse.persistence.tools.workbench.test.models.projects.EmployeeOXProject;
 import org.eclipse.persistence.tools.workbench.test.utility.TestTools;
 
-import junit.framework.Test;
-import junit.framework.TestSuite;
-import junit.swingui.TestRunner;
-import org.eclipse.persistence.tools.workbench.ant.ProjectExporter;
-import org.eclipse.persistence.tools.workbench.mappingsmodel.project.MWProject;
-
 public class OXProjectExporterTests extends XmlProjectRunnerTests {
-
-	public static void main( String[] args) {
-	    
-		TestRunner.main( new String[] { "-c", OXProjectExporterTests.class.getName()});
-	}
 
 	public static Test suite() {
 		TestTools.setUpJUnitThreadContextClassLoader();

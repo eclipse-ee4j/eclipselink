@@ -21,13 +21,11 @@ import javax.swing.ListModel;
 import javax.swing.event.ListDataEvent;
 import javax.swing.event.ListDataListener;
 
-import org.eclipse.persistence.tools.workbench.test.utility.TestTools;
-
 import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
-import junit.swingui.TestRunner;
 
+import org.eclipse.persistence.tools.workbench.test.utility.TestTools;
 import org.eclipse.persistence.tools.workbench.uitools.swing.ExtendedListModel;
 
 
@@ -42,10 +40,6 @@ public class ExtendedListModelTests
 	private static final String ADD = "add";
 	private static final String REMOVE = "remove";
 	private static final String CHANGE = "change";
-	
-	public static void main(String[] args) {
-		TestRunner.main(new String[] {"-c", ExtendedListModelTests.class.getName()});
-	}
 	
 	public static Test suite() {
 		return new TestSuite(ExtendedListModelTests.class);

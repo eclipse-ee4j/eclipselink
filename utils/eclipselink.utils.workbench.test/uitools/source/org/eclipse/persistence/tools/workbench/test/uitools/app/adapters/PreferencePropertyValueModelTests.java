@@ -20,12 +20,10 @@ import java.util.prefs.PreferenceChangeEvent;
 import java.util.prefs.PreferenceChangeListener;
 import java.util.prefs.Preferences;
 
-import org.eclipse.persistence.tools.workbench.test.uitools.PreferencesTestCase;
-
 import junit.framework.Test;
 import junit.framework.TestSuite;
-import junit.swingui.TestRunner;
 
+import org.eclipse.persistence.tools.workbench.test.uitools.PreferencesTestCase;
 import org.eclipse.persistence.tools.workbench.uitools.app.PropertyValueModel;
 import org.eclipse.persistence.tools.workbench.uitools.app.SimplePropertyValueModel;
 import org.eclipse.persistence.tools.workbench.uitools.app.ValueModel;
@@ -44,10 +42,6 @@ public class PreferencePropertyValueModelTests extends PreferencesTestCase {
 	private static final String KEY_NAME = "foo";
 	private static final String STRING_VALUE = "original string value";
 
-	public static void main(String[] args) {
-		TestRunner.main(new String[] {"-c", PreferencePropertyValueModelTests.class.getName()});
-	}
-	
 	public static Test suite() {
 		return new TestSuite(PreferencePropertyValueModelTests.class);
 	}

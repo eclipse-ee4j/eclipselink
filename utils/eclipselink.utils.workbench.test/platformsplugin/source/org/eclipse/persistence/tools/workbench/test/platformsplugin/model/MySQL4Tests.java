@@ -18,13 +18,8 @@ import java.util.Map;
 
 import junit.framework.Test;
 import junit.framework.TestSuite;
-import junit.swingui.TestRunner;
 
 public class MySQL4Tests extends PlatformTests {
-
-	public static void main(String[] args) {
-		TestRunner.main(new String[] {"-c", MySQL4Tests.class.getName()});
-	}
 
 	public static Test suite() {
 		return new TestSuite(MySQL4Tests.class);

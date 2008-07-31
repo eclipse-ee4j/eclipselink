@@ -16,13 +16,11 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.Vector;
 
-import org.eclipse.persistence.tools.workbench.test.utility.TestTools;
-
 import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
-import junit.swingui.TestRunner;
 
+import org.eclipse.persistence.tools.workbench.test.utility.TestTools;
 import org.eclipse.persistence.tools.workbench.uitools.app.CollectionValueModel;
 import org.eclipse.persistence.tools.workbench.uitools.app.FilteringCollectionValueModel;
 import org.eclipse.persistence.tools.workbench.uitools.app.SimpleCollectionValueModel;
@@ -44,10 +42,6 @@ public class FilteringCollectionValueModelTests extends TestCase {
 	CollectionChangeEvent filteredAddEvent;
 	CollectionChangeEvent filteredRemoveEvent;
 	CollectionChangeEvent filteredCollectionChangedEvent;
-
-	public static void main(String[] args) {
-		TestRunner.main(new String[] {"-c", FilteringCollectionValueModelTests.class.getName()});
-	}
 
 	public static Test suite() {
 		return new TestSuite(FilteringCollectionValueModelTests.class);

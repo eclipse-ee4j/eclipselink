@@ -22,13 +22,11 @@ import java.util.TreeSet;
 
 import javax.swing.Icon;
 
-import org.eclipse.persistence.tools.workbench.test.utility.TestTools;
-
 import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
-import junit.swingui.TestRunner;
 
+import org.eclipse.persistence.tools.workbench.test.utility.TestTools;
 import org.eclipse.persistence.tools.workbench.uitools.Displayable;
 import org.eclipse.persistence.tools.workbench.uitools.app.ItemPropertyListValueModelAdapter;
 import org.eclipse.persistence.tools.workbench.uitools.app.ListValueModel;
@@ -53,10 +51,6 @@ public class ItemPropertyListValueModelAdapterTests extends TestCase {
 	private Junk dick;
 	private Junk harry;
 
-	public static void main(String[] args) {
-		TestRunner.main(new String[] {"-c", ItemPropertyListValueModelAdapterTests.class.getName()});
-	}
-	
 	public static Test suite() {
 		return new TestSuite(ItemPropertyListValueModelAdapterTests.class);
 	}

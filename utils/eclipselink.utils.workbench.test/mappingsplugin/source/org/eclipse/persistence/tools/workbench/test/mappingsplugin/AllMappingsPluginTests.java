@@ -12,6 +12,9 @@
 ******************************************************************************/
 package org.eclipse.persistence.tools.workbench.test.mappingsplugin;
 
+import junit.framework.Test;
+import junit.framework.TestSuite;
+
 import org.eclipse.persistence.tools.workbench.test.ant.EisProjectExporterTests;
 import org.eclipse.persistence.tools.workbench.test.ant.EisProjectValidatorTests;
 import org.eclipse.persistence.tools.workbench.test.ant.OXProjectExporterTests;
@@ -19,19 +22,10 @@ import org.eclipse.persistence.tools.workbench.test.ant.OXProjectValidatorTests;
 import org.eclipse.persistence.tools.workbench.test.ant.ProjectExporterTests;
 import org.eclipse.persistence.tools.workbench.test.ant.ProjectValidatorTests;
 import org.eclipse.persistence.tools.workbench.test.mappings.ExportRuntimeProjectJavaSourceCommandLineTests;
-
-import junit.framework.Test;
-import junit.framework.TestSuite;
-import junit.swingui.TestRunner;
-
 import org.eclipse.persistence.tools.workbench.utility.ClassTools;
 
 
 public class AllMappingsPluginTests {
-
-	public static void main(String[] args) {
-		TestRunner.main(new String[] {"-c", AllMappingsPluginTests.class.getName()});
-	}
 
 	public static Test suite() {
 		return suite(true);

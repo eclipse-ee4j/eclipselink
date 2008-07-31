@@ -15,24 +15,20 @@ package org.eclipse.persistence.tools.workbench.test.mappingsmodel;
 import java.util.Collection;
 import java.util.Iterator;
 
-import org.eclipse.persistence.tools.workbench.test.models.projects.CrimeSceneProject;
-import org.eclipse.persistence.tools.workbench.test.models.projects.SimpleContactProject;
-
 import junit.framework.Test;
 import junit.framework.TestSuite;
+
 import org.eclipse.persistence.tools.workbench.mappingsmodel.ProblemConstants;
 import org.eclipse.persistence.tools.workbench.mappingsmodel.descriptor.MWDescriptor;
 import org.eclipse.persistence.tools.workbench.mappingsmodel.descriptor.relational.MWInterfaceDescriptor;
 import org.eclipse.persistence.tools.workbench.mappingsmodel.project.MWProject;
 import org.eclipse.persistence.tools.workbench.mappingsmodel.project.relational.MWRelationalProject;
 import org.eclipse.persistence.tools.workbench.mappingsmodel.project.relational.MWRelationalProjectDefaultsPolicy;
+import org.eclipse.persistence.tools.workbench.test.models.projects.CrimeSceneProject;
+import org.eclipse.persistence.tools.workbench.test.models.projects.SimpleContactProject;
 import org.eclipse.persistence.tools.workbench.utility.CollectionTools;
 
 public class MWProjectTests extends ModelProblemsTestCase {
-
-	public static void main(String[] args) {
-		junit.swingui.TestRunner.main(new String[] {"-c", MWProjectTests.class.getName()});
-	}
 	
 	public static Test suite() {
 		return new TestSuite(MWProjectTests.class);

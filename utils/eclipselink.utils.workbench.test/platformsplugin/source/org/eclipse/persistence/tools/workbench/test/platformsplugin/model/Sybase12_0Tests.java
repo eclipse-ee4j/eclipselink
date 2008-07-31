@@ -18,13 +18,8 @@ import java.util.Map;
 
 import junit.framework.Test;
 import junit.framework.TestSuite;
-import junit.swingui.TestRunner;
 
 public class Sybase12_0Tests extends PlatformTests {
-
-	public static void main(String[] args) {
-		TestRunner.main(new String[] {"-c", Sybase12_0Tests.class.getName()});
-	}
 
 	public static Test suite() {
 		return new TestSuite(Sybase12_0Tests.class);

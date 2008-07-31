@@ -12,22 +12,17 @@
 ******************************************************************************/
 package org.eclipse.persistence.tools.workbench.test.uitools;
 
-import org.eclipse.persistence.tools.workbench.test.uitools.app.AllUIToolsAppTests;
-import org.eclipse.persistence.tools.workbench.test.uitools.swing.AllUIToolsSwingTests;
-
 import junit.framework.Test;
 import junit.framework.TestSuite;
-import junit.swingui.TestRunner;
+
+import org.eclipse.persistence.tools.workbench.test.uitools.app.AllUIToolsAppTests;
+import org.eclipse.persistence.tools.workbench.test.uitools.swing.AllUIToolsSwingTests;
 import org.eclipse.persistence.tools.workbench.utility.ClassTools;
 
 /**
  * decentralize test creation code
  */
 public class AllUIToolsTests {
-	
-	public static void main(String[] args) {
-		TestRunner.main(new String[] {"-c", AllUIToolsTests.class.getName()});
-	}
 	
 	public static Test suite() {
 		return suite(true);

@@ -12,13 +12,13 @@
 ******************************************************************************/
 package org.eclipse.persistence.tools.workbench.test.mappingsmodel.schema;
 
-import org.eclipse.persistence.tools.workbench.test.mappingsmodel.MappingsModelTestTools;
-
 import junit.framework.TestCase;
+
 import org.eclipse.persistence.tools.workbench.mappingsmodel.project.xml.MWOXProject;
 import org.eclipse.persistence.tools.workbench.mappingsmodel.resource.ResourceException;
 import org.eclipse.persistence.tools.workbench.mappingsmodel.schema.MWXmlSchema;
 import org.eclipse.persistence.tools.workbench.mappingsmodel.schema.MWXmlSchemaRepository;
+import org.eclipse.persistence.tools.workbench.test.mappingsmodel.MappingsModelTestTools;
 import org.eclipse.persistence.tools.workbench.utility.ClassTools;
 
 public abstract class SchemaTests 

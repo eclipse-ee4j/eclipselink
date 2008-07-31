@@ -38,10 +38,6 @@ public class MWTypeDeclarationTests extends TestCase {
 	private MWClass fooType;
 	private MWClass vhiType;
 	
-	public static void main(String[] args) {
-		junit.swingui.TestRunner.main(new String[] {"-c", org.eclipse.persistence.tools.workbench.test.mappingsmodel.meta.MWTypeDeclarationTests.class.getName()});
-	}
-	
 	public static Test suite() {
 		return new TestSuite(MWTypeDeclarationTests.class);
 	}

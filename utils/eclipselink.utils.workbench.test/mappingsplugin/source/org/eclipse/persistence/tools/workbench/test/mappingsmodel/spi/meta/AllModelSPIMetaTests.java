@@ -12,13 +12,11 @@
 ******************************************************************************/
 package org.eclipse.persistence.tools.workbench.test.mappingsmodel.spi.meta;
 
-import org.eclipse.persistence.tools.workbench.test.mappingsmodel.spi.meta.classfile.AllModelSPIMetaClassFileTests;
-import org.eclipse.persistence.tools.workbench.test.mappingsmodel.spi.meta.classloader.AllModelSPIMetaClassLoaderTests;
-
 import junit.framework.Test;
 import junit.framework.TestSuite;
-import junit.swingui.TestRunner;
 
+import org.eclipse.persistence.tools.workbench.test.mappingsmodel.spi.meta.classfile.AllModelSPIMetaClassFileTests;
+import org.eclipse.persistence.tools.workbench.test.mappingsmodel.spi.meta.classloader.AllModelSPIMetaClassLoaderTests;
 import org.eclipse.persistence.tools.workbench.utility.ClassTools;
 
 
@@ -26,10 +24,6 @@ import org.eclipse.persistence.tools.workbench.utility.ClassTools;
  * decentralize test creation code
  */
 public class AllModelSPIMetaTests {
-
-	public static void main(String[] args) {
-		TestRunner.main(new String[] {"-c", AllModelSPIMetaTests.class.getName()});
-	}
 
 	public static Test suite() {
 		TestSuite suite = new TestSuite(ClassTools.packageNameFor(AllModelSPIMetaTests.class));

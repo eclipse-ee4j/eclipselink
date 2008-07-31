@@ -19,17 +19,12 @@ import java.io.InputStream;
 import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
-import junit.swingui.TestRunner;
 
 /**
  * some stand-alone tests that make sure the CheckEOL code actually
  * works as expected
  */
 public class CheckEOLTests extends TestCase {
-	
-	public static void main(String[] args) {
-		TestRunner.main(new String[] {"-c", CheckEOLTests.class.getName()});
-	}
 	
 	public static Test suite() {
 		return new TestSuite(CheckEOLTests.class);

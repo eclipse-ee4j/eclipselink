@@ -15,13 +15,11 @@ package org.eclipse.persistence.tools.workbench.test.utility.io;
 import java.io.CharArrayWriter;
 import java.io.Writer;
 
-import org.eclipse.persistence.tools.workbench.test.utility.TestTools;
-
 import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
-import junit.swingui.TestRunner;
 
+import org.eclipse.persistence.tools.workbench.test.utility.TestTools;
 import org.eclipse.persistence.tools.workbench.utility.io.TeeWriter;
 
 
@@ -29,10 +27,6 @@ public class TeeWriterTests extends TestCase {
 	private Writer writer1;
 	private Writer writer2;
 	private Writer tee;
-
-	public static void main(String[] args) {
-		TestRunner.main(new String[] {"-c", TeeWriterTests.class.getName()});
-	}
 
 	public static Test suite() {
 		return new TestSuite(TeeWriterTests.class);

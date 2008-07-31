@@ -18,12 +18,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import org.eclipse.persistence.tools.workbench.test.mappingsmodel.spi.meta.ExternalClassRepositoryTests;
-import org.eclipse.persistence.tools.workbench.test.utility.JavaTools;
-
 import junit.framework.Test;
 import junit.framework.TestSuite;
-import junit.swingui.TestRunner;
 
 import org.eclipse.persistence.tools.workbench.mappingsmodel.spi.meta.ExternalClass;
 import org.eclipse.persistence.tools.workbench.mappingsmodel.spi.meta.ExternalClassDescription;
@@ -31,6 +27,8 @@ import org.eclipse.persistence.tools.workbench.mappingsmodel.spi.meta.ExternalCl
 import org.eclipse.persistence.tools.workbench.mappingsmodel.spi.meta.ExternalClassRepositoryFactory;
 import org.eclipse.persistence.tools.workbench.mappingsmodel.spi.meta.ExternalField;
 import org.eclipse.persistence.tools.workbench.mappingsmodel.spi.meta.classfile.CFExternalClassRepositoryFactory;
+import org.eclipse.persistence.tools.workbench.test.mappingsmodel.spi.meta.ExternalClassRepositoryTests;
+import org.eclipse.persistence.tools.workbench.test.utility.JavaTools;
 import org.eclipse.persistence.tools.workbench.utility.ClassTools;
 import org.eclipse.persistence.tools.workbench.utility.Classpath;
 import org.eclipse.persistence.tools.workbench.utility.io.FileTools;
@@ -40,10 +38,6 @@ import org.eclipse.persistence.tools.workbench.utility.io.IndentingPrintWriter;
 public class CFExternalClassRepositoryTests
 	extends ExternalClassRepositoryTests
 {
-
-	public static void main(String[] args) {
-		TestRunner.main(new String[] {"-c", CFExternalClassRepositoryTests.class.getName()});
-	}
 
 	public static Test suite() {
 		return new TestSuite(CFExternalClassRepositoryTests.class);

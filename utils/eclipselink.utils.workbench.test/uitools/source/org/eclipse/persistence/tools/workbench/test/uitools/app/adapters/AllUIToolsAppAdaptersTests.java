@@ -14,7 +14,6 @@ package org.eclipse.persistence.tools.workbench.test.uitools.app.adapters;
 
 import junit.framework.Test;
 import junit.framework.TestSuite;
-import junit.swingui.TestRunner;
 
 import org.eclipse.persistence.tools.workbench.utility.ClassTools;
 
@@ -22,10 +21,6 @@ import org.eclipse.persistence.tools.workbench.utility.ClassTools;
  * 
  */
 public class AllUIToolsAppAdaptersTests {
-	
-	public static void main(String[] args) {
-		TestRunner.main(new String[] {"-c", AllUIToolsAppAdaptersTests.class.getName()});
-	}
 	
 	public static Test suite() {
 		TestSuite suite = new TestSuite(ClassTools.packageNameFor(AllUIToolsAppAdaptersTests.class));

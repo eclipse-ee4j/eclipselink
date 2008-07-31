@@ -15,15 +15,13 @@ package org.eclipse.persistence.tools.workbench.test.uitools.app;
 import java.util.Collection;
 import java.util.Iterator;
 
-import org.eclipse.persistence.tools.workbench.test.utility.TestTools;
-
 import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
-import junit.swingui.TestRunner;
 
-import org.eclipse.persistence.tools.workbench.uitools.app.CollectionValueModel;
+import org.eclipse.persistence.tools.workbench.test.utility.TestTools;
 import org.eclipse.persistence.tools.workbench.uitools.app.AbstractReadOnlyCollectionValueModel;
+import org.eclipse.persistence.tools.workbench.uitools.app.CollectionValueModel;
 import org.eclipse.persistence.tools.workbench.utility.CollectionTools;
 import org.eclipse.persistence.tools.workbench.utility.HashBag;
 
@@ -32,11 +30,6 @@ public class ReadOnlyCollectionValueModelTests extends TestCase {
 	private CollectionValueModel collectionHolder;
 	private static Collection collection;
 
-
-	public static void main(String[] args) {
-		TestRunner.main(new String[] {"-c", ReadOnlyCollectionValueModelTests.class.getName()});
-	}
-	
 	public static Test suite() {
 		return new TestSuite(ReadOnlyCollectionValueModelTests.class);
 	}

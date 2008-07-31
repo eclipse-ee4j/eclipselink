@@ -43,10 +43,6 @@ public class MWMethodTests extends TestCase {
 	private MWClass charType;
 	private MWClass fooType;
 
-	public static void main(String[] args) {
-		junit.swingui.TestRunner.main(new String[] {"-c", MWMethodTests.class.getName()});
-	}
-	
 	public static Test suite() {
 		return new TestSuite(MWMethodTests.class);
 	}

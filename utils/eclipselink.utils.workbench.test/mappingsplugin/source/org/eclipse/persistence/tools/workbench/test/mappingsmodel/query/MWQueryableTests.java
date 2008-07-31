@@ -39,11 +39,6 @@ public class MWQueryableTests extends TestCase
 {
 	
 	private MWProject employeeProject;
-
-	public static void main(String[] args) 
-	{
-		junit.swingui.TestRunner.main(new String[] {"-c", MWQueryableTests.class.getName()});
-	}
 	
 	public static Test suite() 
 	{
