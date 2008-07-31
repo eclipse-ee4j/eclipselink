@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+    targetNamespace="mynsC"
+    xmlns="mynsC"
+    xmlns:ns1="mynsD"
+    elementFormDefault="qualified"
+    attributeFormDefault="unqualified"
+    version="2.0">
+
+  <xsd:import namespace="mynsD" schemaLocation="SchemaD.xsd"/>
+
+   <xsd:element name="MyCode" type="MyCodeType"/>
+
+  <xsd:complexType name="MyCodeType">
+    <xsd:simpleContent>
+      <xsd:extension base="ns1:CodeType"/>
+    </xsd:simpleContent>
+  </xsd:complexType>
+
+</xsd:schema>

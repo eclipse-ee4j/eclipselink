@@ -271,6 +271,8 @@ public class SDOTypesGenerator {
         if (theImportOrInclude.getSchema() != null) {
             SDOTypesGenerator generator = new SDOTypesGenerator(aHelperContext);
             generator.setGeneratedTypes(getGeneratedTypes());
+            generator.setGeneratedGlobalElements(getGeneratedGlobalElements());
+            generator.setGeneratedGlobalAttributes(getGeneratedGlobalAttributes());
             // Both imports and includes are treated the same when checking for a mid-schema tree walk state
             generator.setIsImportProcessor(true);
             // May throw an IAE if a global type: local part cannot be null when creating a QName
@@ -1870,7 +1872,14 @@ public class SDOTypesGenerator {
     public void setGeneratedTypes(Map<QName, Type> generatedTypes) {
         this.generatedTypes = generatedTypes;
     }
+    
+    public void setGeneratedGlobalElements(Map<QName, Property> generatedElements) {
+        this.generatedGlobalElements = generatedElements;
+    }
 
+    public void setGeneratedGlobalAttributes(Map<QName, Property> generatedAttributes) {
+        this.generatedGlobalAttributes = generatedAttributes;
+    }
     public Map<QName, Type> getGeneratedTypes() {
         if (null == generatedTypes) {
             generatedTypes = new HashMap<QName, Type>();
