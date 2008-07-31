@@ -34,8 +34,9 @@
     <target name="config-trunk" if="is.trunk">
         <path id="compile.path">
             <pathelement path="${eclipselink.jpa}/${eclipselink.plugins}/${antlr}"/>
-            <pathelement path="${eclipselink.jpa}/${eclipselink.plugins}/${antlr}"/>
+            <pathelement path="${eclipselink.jpa}/${eclipselink.plugins}/${asm}"/>
             <pathelement path="${eclipselink.jpa}/${eclipselink.core.trunk}/${classes.dir}"/>
+            <pathelement path="${eclipselink.jpa}/${eclipselink.plugins}/osgi.core.zip"/>
             <fileset
                 dir="${eclipselink.jpa}/${eclipselink.plugins}"
                 includes="${eclipselink.core.depend}"/>
