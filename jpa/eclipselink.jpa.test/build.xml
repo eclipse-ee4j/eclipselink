@@ -39,7 +39,9 @@
         - server-test : runs the JPA LRG tests in the server
         - server-test-lrg : runs the JPA LRG tests in the server
         - server-test-sessionbean : runs the SessionBean tests in the server
-        - server-test-fieldaccess-advanced : runs the test in the server
+        - server-test-fieldaccess-advanced : runs the Fieldaccess tests in the server
+        - server-test-datatypes : runs the Datatypes tests in the server
+        - server-test-datetime : runs the Datetime tests in the server
 
         It requires some configuration of the build.properties and test.properties to run.
     -->
@@ -126,6 +128,7 @@
             <pathelement path="${eclipselink.core.dir}/${classes.dir}"/>
             <pathelement path="${eclipselink.jpa}/${classes.dir}"/>
             <pathelement path="${eclipselink.core.test.dir}/${classes.dir}"/>
+            <pathelement path="${eclipselink.core.test.dir}/${eclipselink.tests.jar}"/>
             <fileset
                 dir="${eclipselink.core.lib.dir}"
                 includes="${eclipselink.core.depend}"/>
@@ -607,12 +610,14 @@
     </target>
 
     <target name="generate-report">
+        <copy todir="${env.JAVA_HOME}/jre/lib" file="${eclipselink.jpa.test}/resource/${server.name}/jaxp.properties" failonerror="false"/>
         <junitreport todir="${eclipselink.jpa.test}/${report.dir}">
             <fileset dir="${eclipselink.jpa.test}/${report.dir}">
                 <include name="*test-results.xml"/>
             </fileset>
             <report format="noframes" todir="${eclipselink.jpa.test}/${report.dir}"/>
         </junitreport>
+        <delete file="${env.JAVA_HOME}/jre/lib/jaxp.properties" failonerror="false"/>
     </target>
 
     <!-- Runs the test using the PromptTestRunner -->
@@ -804,7 +809,7 @@
             includes="org/eclipse/persistence/testing/framework/junit/**">
             <classpath refid="compile.path"/>
         </javac>
-        <copy file="${eclipselink.jpa.test}/resource/${MODEL_NAME}/server/application-client.xml" todir="stage/META-INF"/>
+        <copy file="${eclipselink.jpa.test}/resource/server/application-client.xml" todir="stage/META-INF"/>
         <filter token="server.user" value="${server.user}"/>
         <filter token="server.pwd" value="${server.pwd}"/>
         <filter token="server.factory" value="${server.factory}"/>
@@ -837,7 +842,13 @@
             srcdir="${eclipselink.core.test.dir}/${src.dir}"
             destdir="${eclipselink.jpa.test}/stage"
             debug="${javac.debug}"
-            includes="org/eclipse/persistence/testing/framework/junit/**">
+            includes="org/eclipse/persistence/testing/framework/junit/**,
+                org/eclipse/persistence/testing/framework/AutoVerifyTestCase.java,
+                org/eclipse/persistence/testing/framework/TestCase.java,
+                org/eclipse/persistence/testing/framework/TestEntity.java,
+                org/eclipse/persistence/testing/framework/TestModel.java,
+                org/eclipse/persistence/testing/framework/*TestHelper.java,
+                org/eclipse/persistence/testing/framework/TestCollection.java">
             <classpath refid="compile.path"/>
         </javac>
         <javac
@@ -856,7 +867,7 @@
         </javac>
         <!-- Copy and replace platform in persistence.xml. -->
         <!-- JBoss has its own persistence.xml -->
-        <condition property="SERVER_NAME" value="server/${server.name}">
+        <condition property="SERVER_NAME" value="${server.name}">
             <contains string="${server.name}" substring="jboss"/>
         </condition>
 
@@ -867,20 +878,27 @@
         </condition>
 
         <copy todir="${eclipselink.jpa.test}/stage/META-INF">
-            <fileset dir="${eclipselink.jpa.test}/resource/${MODEL_NAME}/${SERVER_NAME}">
+            <fileset dir="${eclipselink.jpa.test}/resource/${SERVER_NAME}">
                 <include name="persistence.xml"/>
             </fileset>
         </copy>
-
-        <chmod file="${eclipselink.jpa.test}/stage/META-INF/*.xml" perm="ugo+w"/>
-        <replace dir="${eclipselink.jpa.test}/stage/META-INF" token='%%server-platform%%' value="${server.platform}">
-            <include name="*.xml"/>
-        </replace>
         <copy todir="${eclipselink.jpa.test}/stage/META-INF">
+            <fileset dir="${eclipselink.jpa.test}/resource/server/">
+                <include name="ejb-jar.xml"/>
+            </fileset>
+        </copy>
+        <!--SessionBean Test need it's own ejb-jar.xml, which including ejb-def for the sessionbean -->
+        <copy todir="${eclipselink.jpa.test}/stage/META-INF" overwrite="true" failonerror="false">
             <fileset dir="${eclipselink.jpa.test}/resource/${MODEL_NAME}/server/">
                 <include name="ejb-jar.xml"/>
             </fileset>
         </copy>
+        <replace dir="${eclipselink.jpa.test}/stage/META-INF" token='%%server-platform%%' value="${server.platform}">
+            <include name="*.xml"/>
+        </replace>
+        <replace dir="${eclipselink.jpa.test}/stage/META-INF" token='%%default%%' value="${PERSISTENCE_UNIT_NAME}">
+            <include name="*.xml"/>
+        </replace>
         <!-- Create ejb jar. -->
         <jar destfile="${eclipselink.jpa.test}/${build.dir}/${MODEL_NAME}_ejb.jar" basedir="stage"/>
         <antcall target="create-ejb-stubs" inheritRefs="true"/>
@@ -895,7 +913,10 @@
 
     <!-- Build server test ear. -->
     <target name="server-build-ear">
-        <copy overwrite="true" file="./resource/${MODEL_NAME}/server/application.xml" todir="${build.dir}/META-INF"/>
+        <copy overwrite="true" file="./resource/server/application.xml" todir="${build.dir}/META-INF"/>
+        <replace dir="${build.dir}/META-INF" token='%%modelname%%' value="${MODEL_NAME}">
+            <include name="*.xml"/>
+        </replace>
         <ear destfile="${eclipselink.jpa.test}/${build.dir}/${EAR_NAME}.ear" appxml="${build.dir}/META-INF/application.xml">
             <fileset dir="${eclipselink.jpa.test}/${build.dir}" includes ="${MODEL_NAME}_ejb.jar"/>
         </ear>
@@ -939,18 +960,8 @@
             <sysproperty key="server.run" value="TRUE"/>
             <classpath refid="run.path"/>
             <formatter type="xml"/>
-            <test name="${TEST_SUITE}" haltonfailure="no" outfile="${report.dir}/test-results"/>
+            <test name="${TEST_SUITE}" haltonfailure="no" outfile="${report.dir}/${TEST_SUITE}-test-results"/>
         </junit>
-        <copy todir="${env.JAVA_HOME}/jre/lib" file="${eclipselink.jpa.test}/resource/${server.name}/jaxp.properties" failonerror="false"/>
-        <junitreport todir="${eclipselink.jpa.test}/${report.dir}">
-            <fileset dir="${eclipselink.jpa.test}/${report.dir}">
-                <include name="test-results.xml"/>
-            </fileset>
-            <report format="noframes" todir="${eclipselink.jpa.test}/${report.dir}"/>
-        </junitreport>
-        <delete file="${env.JAVA_HOME}/jre/lib/jaxp.properties" failonerror="false"/>
-        <!-- fail is not used as undeploy must be called. -->
-        <!--fail message="Some of the junit tests failed.  See the ${report.dir}/junit-noframes.html file for details." if="junit.failed"/-->
     </target>
 
     <!-- Server Tests -->
@@ -963,11 +974,15 @@
     <!-- Run all the JPA tests in the server -->
     <target name="server-test-lrg">
         <antcall target="server-test-sessionbean" inheritRefs="true"/>
-        <antcall target="server-test-fieldaccess.advanced" inheritRefs="true"/>
+        <antcall target="server-test-fieldaccess-advanced" inheritRefs="true"/>
+        <antcall target="server-test-datatypes" inheritRefs="true"/>
+        <antcall target="server-test-datetime" inheritRefs="true"/>
+        <antcall target="generate-report" inheritRefs="true"/>
     </target>
 
     <target name="server-test-sessionbean">
         <antcall target="server-run-all" inheritRefs="true">
+            <param name="PERSISTENCE_UNIT_NAME" value="sessionbean"/>
             <param name="MODEL_DIR" value="org/eclipse/persistence/testing/models/jpa/sessionbean"/>
             <param name="MODEL_DIR2" value="org/eclipse/persistence/testing/models/jpa/fieldaccess/advanced"/>
             <param name="MODEL_NAME" value="eclipselink-sessionbean-model"/>
@@ -980,6 +995,7 @@
 
     <target name="server-test-fieldaccess-advanced">
         <antcall target="server-run-all" inheritRefs="true">
+            <param name="PERSISTENCE_UNIT_NAME" value="fieldaccess"/>
             <param name="MODEL_DIR" value="org/eclipse/persistence/testing/models/jpa/fieldaccess/advanced"/>
             <param name="MODEL_NAME" value="eclipselink-advanced-field-access-model"/>
             <param name="TEST_DIR" value="org/eclipse/persistence/testing/tests/jpa/fieldaccess/advanced"/>
@@ -992,6 +1008,7 @@
     <!-- Not working yet. -->
     <!--target name="server-test-advanced">
         <antcall target="server-run-all" inheritRefs="true">
+            <param name="PERSISTENCE_UNIT_NAME" value="default"/>
             <param name="MODEL_DIR" value="org/eclipse/persistence/testing/models/jpa/advanced"/>
             <param name="MODEL_NAME" value="eclipselink-annotation-model"/>
             <param name="TEST_DIR" value="org/eclipse/persistence/testing/tests/jpa/advanced"/>
@@ -1000,4 +1017,28 @@
             <param name="TEST_SUITE" value="org.eclipse.persistence.testing.tests.jpa.advanced.AdvancedTestSuite"/>
         </antcall>
     </target-->
+    <target name="server-test-datatypes">
+        <antcall target="server-run-all" inheritRefs="true">
+            <param name="PERSISTENCE_UNIT_NAME" value="default"/>
+            <param name="MODEL_DIR" value="org/eclipse/persistence/testing/models/jpa/datatypes"/>
+            <param name="MODEL_NAME" value="eclipselink-datatypes-model"/>
+            <param name="TEST_DIR" value="org/eclipse/persistence/testing/tests/jpa/datatypes"/>
+            <param name="TEST_NAME" value="eclipselink-datatypes-model"/>
+            <param name="EAR_NAME" value="eclipselink-datatypes-model"/>
+            <param name="TEST_SUITE" value="org.eclipse.persistence.testing.tests.jpa.datatypes.NullBindingJUnitTestCase"/>
+        </antcall>
+    </target>
+
+    <target name="server-test-datetime">
+        <antcall target="server-run-all" inheritRefs="true">
+            <param name="PERSISTENCE_UNIT_NAME" value="default"/>
+            <param name="MODEL_DIR" value="org/eclipse/persistence/testing/models/jpa/datetime"/>
+            <param name="MODEL_NAME" value="eclipselink-datetime-model"/>
+            <param name="TEST_DIR" value="org/eclipse/persistence/testing/tests/jpa/datetime"/>
+            <param name="TEST_NAME" value="eclipselink-datetime-model"/>
+            <param name="EAR_NAME" value="eclipselink-datetime-model"/>
+            <param name="TEST_SUITE" value="org.eclipse.persistence.testing.tests.jpa.datetime.NullBindingJUnitTestCase"/>
+        </antcall>
+    </target>
+
 </project>

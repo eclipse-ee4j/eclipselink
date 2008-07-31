@@ -56,6 +56,7 @@ public class NullBindingJUnitTestCase extends JUnitTestCase {
 
     public static Test suite() {
         TestSuite suite = new TestSuite("Null Binding DataTypes");
+        suite.addTest(new NullBindingJUnitTestCase("testSetup"));
         suite.addTest(new NullBindingJUnitTestCase("testCreateWrapperTypes"));
         suite.addTest(new NullBindingJUnitTestCase("testNullifyBigDecimal"));
         suite.addTest(new NullBindingJUnitTestCase("testNullifyBigInteger"));
@@ -73,17 +74,15 @@ public class NullBindingJUnitTestCase extends JUnitTestCase {
         suite.addTest(new NullBindingJUnitTestCase("testCreateCharacterArrayType"));
         suite.addTest(new NullBindingJUnitTestCase("testCreateCharArrayType"));
 
-        return new TestSetup(suite) {
-
-            protected void setUp(){
-                DatabaseSession session = JUnitTestCase.getServerSession();
-                new DataTypesTableCreator().replaceTables(session);
-            }
-
-            protected void tearDown() {
-                clearCache();
-            }
-        };
+        return suite;
+    }
+    
+    /**
+     * The setup is done as a test, both to record its failure, and to allow execution in the server.
+     */
+    public void testSetup() {
+        new DataTypesTableCreator().replaceTables(JUnitTestCase.getServerSession());
+        clearCache();
     }
 
     /**

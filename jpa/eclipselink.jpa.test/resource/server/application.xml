@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE application PUBLIC "-//Sun Microsystems, Inc.//DTD J2EE Application 1.3//EN" "http://java.sun.com/dtd/application_1_3.dtd">
 <application>
-    <display-name>field-access</display-name>
-    <description>field-access</description>
+    <display-name>servertest</display-name>
+    <description>servertest</description>
     <module>
-        <ejb>eclipselink-advanced-field-access-model_ejb.jar</ejb>
+        <ejb>%%modelname%%_ejb.jar</ejb>
     </module>
 </application>

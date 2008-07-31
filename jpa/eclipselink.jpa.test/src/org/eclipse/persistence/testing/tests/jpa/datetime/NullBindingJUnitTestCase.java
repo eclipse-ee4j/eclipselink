@@ -51,6 +51,7 @@ public class NullBindingJUnitTestCase extends JUnitTestCase {
 
     public static Test suite() {
         TestSuite suite = new TestSuite("Null Binding DateTime");
+        suite.addTest(new NullBindingJUnitTestCase("testSetup"));
         suite.addTest(new NullBindingJUnitTestCase("testCreateDateTime"));
         suite.addTest(new NullBindingJUnitTestCase("testNullifySqlDate"));
         suite.addTest(new NullBindingJUnitTestCase("testNullifyTime"));
@@ -58,17 +59,15 @@ public class NullBindingJUnitTestCase extends JUnitTestCase {
         suite.addTest(new NullBindingJUnitTestCase("testNullifyUtilDate"));
         suite.addTest(new NullBindingJUnitTestCase("testNullifyCalendar"));
 
-        return new TestSetup(suite) {
-
-            protected void setUp(){
-                DatabaseSession session = JUnitTestCase.getServerSession();
-                new DateTimeTableCreator().replaceTables(session);
-            }
-
-            protected void tearDown() {
-                clearCache();
-            }
-        };
+        return suite;
+    }
+    
+    /**
+     * The setup is done as a test, both to record its failure, and to allow execution in the server.
+     */
+    public void testSetup() {
+        new DateTimeTableCreator().replaceTables(JUnitTestCase.getServerSession());
+        clearCache();
     }
 
     /**
