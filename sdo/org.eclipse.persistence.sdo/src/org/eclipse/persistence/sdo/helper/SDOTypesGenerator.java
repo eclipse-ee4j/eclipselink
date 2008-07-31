@@ -915,7 +915,7 @@ public class SDOTypesGenerator {
         }
         SDOType baseType = getSDOTypeForName(targetNamespace, defaultNamespace, qualifiedName);
 
-        if (simpleContentExtension) {
+        if (simpleContentExtension && baseType.isDataType()) {
             Type ownerType = getTypeForName(targetNamespace, defaultNamespace, ownerName);
             if (ownerType != null) {
                 SDOProperty prop = new SDOProperty(aHelperContext);

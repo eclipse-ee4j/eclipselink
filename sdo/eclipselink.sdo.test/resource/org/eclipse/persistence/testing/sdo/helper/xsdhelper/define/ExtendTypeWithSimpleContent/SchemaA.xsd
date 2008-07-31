@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+    targetNamespace="http://example.org/cbc"
+    xmlns="http://example.org/cbc"
+    xmlns:udt="http://example.org"
+    elementFormDefault="qualified"
+    attributeFormDefault="unqualified"
+    version="2.0">
+
+  <xsd:complexType name="MyCodeType">
+    <xsd:simpleContent>
+      <xsd:extension base="CodeType"/>
+    </xsd:simpleContent>
+  </xsd:complexType>
+
+   <xsd:complexType name="CodeType">
+      <xsd:simpleContent>
+         <xsd:extension base="xsd:normalizedString">
+            <xsd:attribute name="listID" type="xsd:normalizedString" use="optional"/>
+            <xsd:attribute name="listAgencyID" type="xsd:normalizedString" use="optional"/>
+            <xsd:attribute name="listAgencyName" type="xsd:string" use="optional"/>
+            <xsd:attribute name="listName" type="xsd:string" use="optional"/>
+            <xsd:attribute name="listVersionID" type="xsd:normalizedString" use="optional"/>
+            <xsd:attribute name="name" type="xsd:string" use="optional"/>
+            <xsd:attribute name="languageID" type="xsd:language" use="optional"/>
+            <xsd:attribute name="listURI" type="xsd:anyURI" use="optional"/>
+            <xsd:attribute name="listSchemeURI" type="xsd:anyURI" use="optional"/>
+         </xsd:extension>
+      </xsd:simpleContent>
+   </xsd:complexType>
+
+</xsd:schema>
