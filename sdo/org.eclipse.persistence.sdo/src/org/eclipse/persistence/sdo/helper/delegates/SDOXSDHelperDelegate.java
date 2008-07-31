@@ -363,7 +363,7 @@ public class SDOXSDHelperDelegate implements SDOXSDHelper {
         getGlobalAttributes().put(SDOConstants.JAVA_CLASS_QNAME, SDOConstants.JAVA_CLASS_PROPERTY);
         getGlobalAttributes().put(SDOConstants.XML_ELEMENT_QNAME, SDOConstants.XMLELEMENT_PROPERTY);
 
-        Property xmlDataTypeProperty = aHelperContext.getTypeHelper().getOpenContentProperty(SDOConstants.ORACLE_SDO_URL, SDOConstants.SDOXML_DATATYPE);
+        Property xmlDataTypeProperty = aHelperContext.getTypeHelper().getOpenContentProperty(SDOConstants.SDOXML_URL, SDOConstants.SDOXML_DATATYPE);
         getGlobalAttributes().put(SDOConstants.XML_DATATYPE_QNAME, xmlDataTypeProperty);
 
         getGlobalAttributes().put(SDOConstants.XML_ID_PROPERTY_QNAME, SDOConstants.ID_PROPERTY);

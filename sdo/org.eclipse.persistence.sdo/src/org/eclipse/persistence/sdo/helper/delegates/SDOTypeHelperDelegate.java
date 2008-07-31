@@ -985,7 +985,7 @@ public class SDOTypeHelperDelegate implements SDOTypeHelper {
         openContentProperties.put(SDOConstants.SCHEMA_TYPE_QNAME, new SDOProperty(aHelperContext, SDOConstants.ORACLE_SDO_URL, SDOConstants.XML_SCHEMA_TYPE_NAME, typeType));
         openContentProperties.put(SDOConstants.JAVA_CLASS_QNAME, SDOConstants.JAVA_CLASS_PROPERTY);
         openContentProperties.put(SDOConstants.XML_ELEMENT_QNAME, SDOConstants.XMLELEMENT_PROPERTY);
-        openContentProperties.put(SDOConstants.XML_DATATYPE_QNAME, new SDOProperty(aHelperContext, SDOConstants.ORACLE_SDO_URL, SDOConstants.SDOXML_DATATYPE, typeType));
+        openContentProperties.put(SDOConstants.XML_DATATYPE_QNAME, new SDOProperty(aHelperContext, SDOConstants.SDOXML_URL, SDOConstants.SDOXML_DATATYPE, typeType));
         openContentProperties.put(SDOConstants.XML_ID_PROPERTY_QNAME, SDOConstants.ID_PROPERTY);
         openContentProperties.put(SDOConstants.DOCUMENTATION_PROPERTY_QNAME, SDOConstants.DOCUMENTATION_PROPERTY);
     }

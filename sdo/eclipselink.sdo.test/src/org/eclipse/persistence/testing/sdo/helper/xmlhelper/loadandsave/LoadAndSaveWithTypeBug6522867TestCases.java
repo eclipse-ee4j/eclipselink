@@ -70,7 +70,7 @@ public class LoadAndSaveWithTypeBug6522867TestCases extends LoadAndSaveWithOptio
     protected Object getOptions() {   
         Type theType = typeHelper.getType("http://www.example.org", "Items");
         
-        DataObject optionsDataObject = dataFactory.create(SDOConstants.ORACLE_SDO_URL, SDOConstants.XMLHELPER_LOAD_OPTIONS);              
+        DataObject optionsDataObject = dataFactory.create(SDOConstants.ORACLE_SDO_URL, SDOConstants.XMLHELPER_LOAD_OPTIONS);
         optionsDataObject.set(SDOConstants.TYPE_LOAD_OPTION ,theType);
         return optionsDataObject;
     }

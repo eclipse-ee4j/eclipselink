@@ -56,7 +56,7 @@ public abstract class XSDHelperDefineAndGenerateTestCases extends XSDHelperTestC
     protected void compareGeneratedTypes(List controlTypes, List types) {
         assertEquals(controlTypes.size(), types.size());
 
-        SDOProperty xmlDataTypeProperty = (SDOProperty) typeHelper.getOpenContentProperty(SDOConstants.ORACLE_SDO_URL, SDOConstants.SDOXML_DATATYPE);
+        SDOProperty xmlDataTypeProperty = (SDOProperty) typeHelper.getOpenContentProperty(SDOConstants.SDOXML_URL, SDOConstants.SDOXML_DATATYPE);
         SDOProperty xmlSchemaTypeProperty = (SDOProperty) typeHelper.getOpenContentProperty(SDOConstants.ORACLE_SDO_URL, SDOConstants. XML_SCHEMA_TYPE_NAME);
 
         for (int i = 0; i < types.size(); i++) {

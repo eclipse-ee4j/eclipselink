@@ -951,7 +951,7 @@ public class SDOProperty implements Property, Serializable {
 
     public void setInstanceProperty(Property property, Object value) {
         getPropertyValues().put(property, value);
-        if(SDOConstants.ORACLE_SDO_URL.equals(((SDOProperty) property).getUri()) && SDOConstants.SDOXML_DATATYPE.equals(property.getName()) && value instanceof Type) {
+        if(SDOConstants.SDOXML_URL.equals(((SDOProperty) property).getUri()) && SDOConstants.SDOXML_DATATYPE.equals(property.getName()) && value instanceof Type) {
             setType((Type)value);
         }
         if(SDOConstants.ORACLE_SDO_URL.equals(((SDOProperty) property).getUri()) && SDOConstants.XML_SCHEMA_TYPE_NAME.equals(property.getName()) && value instanceof Type) {

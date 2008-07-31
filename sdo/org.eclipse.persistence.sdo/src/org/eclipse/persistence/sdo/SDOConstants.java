@@ -248,7 +248,7 @@ public class SDOConstants {
     public static final SDOProperty DOCUMENTATION_PROPERTY = new SDOProperty(globalHelperContext, DOCUMENTATION, SDOConstants.SDO_STRING);
     public static final String JAVACLASS_PROPERTY_NAME = "javaClass";
 
-    public static final SDOProperty JAVA_CLASS_PROPERTY = new SDOProperty(globalHelperContext, JAVACLASS_PROPERTY_NAME, SDOConstants.SDO_STRING);    
+    public static final SDOProperty JAVA_CLASS_PROPERTY = new SDOProperty(globalHelperContext, SDOJAVA_URL, JAVACLASS_PROPERTY_NAME, SDOConstants.SDO_STRING);
 
     /** open content property to be set when defining a Type via a DataObject for reference relationships */
     public static final SDOProperty ID_PROPERTY = new SDOProperty(globalHelperContext, ID_PROPERTY_NAME, SDOConstants.SDO_STRING);
@@ -257,8 +257,8 @@ public class SDOConstants {
     public static final QName MIME_TYPE_QNAME = new QName(ORACLE_SDO_URL, MIME_TYPE_PROPERTY.getName());
     public static final QName MIME_TYPE_PROPERTY_QNAME = new QName(ORACLE_SDO_URL, MIME_TYPE_PROPERTY_PROPERTY.getName());
     public static final QName SCHEMA_TYPE_QNAME = new QName(ORACLE_SDO_URL, XML_SCHEMA_TYPE_NAME);
-    public static final QName JAVA_CLASS_QNAME = new QName(ORACLE_SDO_URL, JAVA_CLASS_PROPERTY.getName());   
-    public static final QName XML_DATATYPE_QNAME = new QName(ORACLE_SDO_URL, SDOXML_DATATYPE);
+    public static final QName JAVA_CLASS_QNAME = new QName(SDOJAVA_URL, JAVA_CLASS_PROPERTY.getName());
+    public static final QName XML_DATATYPE_QNAME = new QName(SDOXML_URL, SDOXML_DATATYPE);
     public static final QName XML_ID_PROPERTY_QNAME = new QName(ORACLE_SDO_URL, ID_PROPERTY.getName());
     public static final QName DOCUMENTATION_PROPERTY_QNAME = new QName(ORACLE_SDO_URL, DOCUMENTATION);
 
@@ -328,7 +328,7 @@ public class SDOConstants {
 
     /** A classloader toString containing (oc4j:) means we are running from an 4 levels up from an ejb container */
     public static final String CLASSLOADER_OC4J_FRAGMENT = "oc4j:";
-    
+
     /** XPath related constants*/
     /** XPath ns separator ":" */
     public static final String SDO_XPATH_NS_SEPARATOR_FRAGMENT = ":";

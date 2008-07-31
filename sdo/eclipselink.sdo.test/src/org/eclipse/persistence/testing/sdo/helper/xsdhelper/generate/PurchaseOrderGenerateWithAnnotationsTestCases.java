@@ -47,7 +47,7 @@ public class PurchaseOrderGenerateWithAnnotationsTestCases extends XSDHelperGene
 
     public List getTypesToGenerateFrom() {
         SDOType dataObjectType = (SDOType) typeHelper.getType(SDOConstants.SDO_URL, SDOConstants.DATAOBJECT);
-        SDOProperty xmlDataTypeProperty = (SDOProperty) typeHelper.getOpenContentProperty(SDOConstants.ORACLE_SDO_URL, SDOConstants.SDOXML_DATATYPE);
+        SDOProperty xmlDataTypeProperty = (SDOProperty) typeHelper.getOpenContentProperty(SDOConstants.SDOXML_URL, SDOConstants.SDOXML_DATATYPE);
 
         List types = new ArrayList();
         String uri = getControlUri();
