@@ -43,7 +43,7 @@ public class DefineAndGenerateWithSDOImportsTestCases extends XSDHelperDefineAnd
 
         String uri = "my.uri";
         Type stringType = typeHelper.getType("commonj.sdo", "String");
-        SDOProperty xmlDataTypeProperty = (SDOProperty) typeHelper.getOpenContentProperty(SDOConstants.ORACLE_SDO_URL, SDOConstants.SDOXML_DATATYPE);
+        SDOProperty xmlDataTypeProperty = (SDOProperty) typeHelper.getOpenContentProperty(SDOConstants.SDOXML_URL, SDOConstants.SDOXML_DATATYPE);
 
         /****Customer TYPE*****/
 

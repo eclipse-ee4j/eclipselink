@@ -1590,7 +1590,7 @@ public class SDOTypesGenerator {
             p.setXsdType(xsdQName);
             SDOType sdoType = getSDOTypeForName(targetNamespace, defaultNamespace, dataTypeValue);
             sdoPropertyType = sdoType;
-            Property xmlDataTypeProperty = aHelperContext.getTypeHelper().getOpenContentProperty(SDOConstants.ORACLE_SDO_URL, SDOConstants.SDOXML_DATATYPE);
+            Property xmlDataTypeProperty = aHelperContext.getTypeHelper().getOpenContentProperty(SDOConstants.SDOXML_URL, SDOConstants.SDOXML_DATATYPE);
             p.setInstanceProperty(xmlDataTypeProperty, sdoType);
         }
 

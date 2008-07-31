@@ -52,7 +52,7 @@ public class DataTypeBug5959761TestCases extends SDOTestCase {
         rootPropDO.set("name", "hireDate");
         rootPropDO.set("type", SDOConstants.SDO_DATETIME);
 
-        Property xmlDataTypeProperty = typeHelper.getOpenContentProperty(SDOConstants.ORACLE_SDO_URL, SDOConstants.SDOXML_DATATYPE);
+        Property xmlDataTypeProperty = typeHelper.getOpenContentProperty(SDOConstants.SDOXML_URL, SDOConstants.SDOXML_DATATYPE);
         rootPropDO.set(xmlDataTypeProperty, timeStampType);
         rootPropDO.set(SDOConstants.XMLELEMENT_PROPERTY, true);
         Type rootType = typeHelper.define(rootTypeDO);

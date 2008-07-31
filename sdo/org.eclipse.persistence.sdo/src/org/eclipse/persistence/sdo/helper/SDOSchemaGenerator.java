@@ -498,7 +498,7 @@ public class SDOSchemaGenerator {
             sc.getAttributesMap().put(qname, value);
         }
 
-        Property xmlDataTypeProperty = aHelperContext.getTypeHelper().getOpenContentProperty(SDOConstants.ORACLE_SDO_URL, SDOConstants.SDOXML_DATATYPE);
+        Property xmlDataTypeProperty = aHelperContext.getTypeHelper().getOpenContentProperty(SDOConstants.SDOXML_URL, SDOConstants.SDOXML_DATATYPE);
         Type dataType = (Type)property.get(xmlDataTypeProperty);
         if (dataType == null) {
             dataType = getAutomaticDataTypeForType(property.getType());
