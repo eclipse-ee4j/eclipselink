@@ -117,7 +117,8 @@ public class MetadataLogger {
     public static final String SOURCE_FK_COLUMN = "metadata_default_source_fk_column";
     public static final String TARGET_PK_COLUMN = "metadata_default_target_pk_column";
     public static final String TARGET_FK_COLUMN = "metadata_default_target_fk_column";
-    public static final String DISCRIMINATOR_COLUMN = "metadata_default_discriminator_column";
+    public static final String VARIABLE_ONE_TO_ONE_DISCRIMINATOR_COLUMN = "metadata_default_variable_one_to_one_discriminator_column";
+    public static final String INHERITANCE_DISCRIMINATOR_COLUMN = "metadata_default_inheritance_discriminator_column";
     public static final String INHERITANCE_PK_COLUMN = "metadata_default_inheritance_pk_column";
     public static final String INHERITANCE_FK_COLUMN = "metadata_default_inheritance_fk_column";
     public static final String SECONDARY_TABLE_PK_COLUMN = "metadata_default_secondary_table_pk_column";
@@ -227,7 +228,8 @@ public class MetadataLogger {
         m_ctxStrings.put(SOURCE_FK_COLUMN, SOURCE_FK_COLUMN);
         m_ctxStrings.put(TARGET_PK_COLUMN, TARGET_PK_COLUMN);
         m_ctxStrings.put(TARGET_FK_COLUMN, TARGET_FK_COLUMN);
-        m_ctxStrings.put(DISCRIMINATOR_COLUMN, DISCRIMINATOR_COLUMN);
+        m_ctxStrings.put(VARIABLE_ONE_TO_ONE_DISCRIMINATOR_COLUMN, VARIABLE_ONE_TO_ONE_DISCRIMINATOR_COLUMN); 
+        m_ctxStrings.put(INHERITANCE_DISCRIMINATOR_COLUMN, INHERITANCE_DISCRIMINATOR_COLUMN);
         m_ctxStrings.put(INHERITANCE_PK_COLUMN, INHERITANCE_PK_COLUMN);
         m_ctxStrings.put(INHERITANCE_FK_COLUMN, INHERITANCE_FK_COLUMN);
         m_ctxStrings.put(SECONDARY_TABLE_PK_COLUMN, SECONDARY_TABLE_PK_COLUMN);
