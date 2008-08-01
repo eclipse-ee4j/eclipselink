@@ -422,15 +422,15 @@ public class InheritedTableManager extends TableCreator {
         fieldID.setForeignKeyFieldName("EXPERT_CONSUMER.ID");
         table.addField(fieldID);
     
-        FieldDefinition fieldAWARD_KEY = new FieldDefinition();
-        fieldAWARD_KEY.setName("AWARD_KEY");
-        fieldAWARD_KEY.setTypeName("VARCHAR");
-        fieldAWARD_KEY.setSize(20);
-        fieldAWARD_KEY.setShouldAllowNull(false);
-        fieldAWARD_KEY.setIsPrimaryKey(false);
-        fieldAWARD_KEY.setUnique(true);
-        fieldAWARD_KEY.setIsIdentity(false);
-        table.addField(fieldAWARD_KEY);
+        FieldDefinition fieldAWARDS_KEY = new FieldDefinition();
+        fieldAWARDS_KEY.setName("AWARDS_KEY");
+        fieldAWARDS_KEY.setTypeName("VARCHAR");
+        fieldAWARDS_KEY.setSize(20);
+        fieldAWARDS_KEY.setShouldAllowNull(false);
+        fieldAWARDS_KEY.setIsPrimaryKey(false);
+        fieldAWARDS_KEY.setUnique(true);
+        fieldAWARDS_KEY.setIsIdentity(false);
+        table.addField(fieldAWARDS_KEY);
         
         FieldDefinition fieldAWARD_CODE = new FieldDefinition();
         fieldAWARD_CODE.setName("AWARD_CODE");
@@ -506,15 +506,15 @@ public class InheritedTableManager extends TableCreator {
         fieldID.setForeignKeyFieldName("NOVICE_CONSUMER.ID");
         table.addField(fieldID);
     
-        FieldDefinition fieldAWARD_KEY = new FieldDefinition();
-        fieldAWARD_KEY.setName("AWARD_KEY");
-        fieldAWARD_KEY.setTypeName("NUMERIC");
-        fieldAWARD_KEY.setSize(10);
-        fieldAWARD_KEY.setShouldAllowNull(false);
-        fieldAWARD_KEY.setIsPrimaryKey(false);
-        fieldAWARD_KEY.setUnique(true);
-        fieldAWARD_KEY.setIsIdentity(false);
-        table.addField(fieldAWARD_KEY);
+        FieldDefinition fieldAWARDS_KEY = new FieldDefinition();
+        fieldAWARDS_KEY.setName("AWARDS_KEY");
+        fieldAWARDS_KEY.setTypeName("NUMERIC");
+        fieldAWARDS_KEY.setSize(10);
+        fieldAWARDS_KEY.setShouldAllowNull(false);
+        fieldAWARDS_KEY.setIsPrimaryKey(false);
+        fieldAWARDS_KEY.setUnique(true);
+        fieldAWARDS_KEY.setIsIdentity(false);
+        table.addField(fieldAWARDS_KEY);
         
         FieldDefinition fieldAWARD_CODE = new FieldDefinition();
         fieldAWARD_CODE.setName("AWARD_CODE");

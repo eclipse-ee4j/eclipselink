@@ -59,9 +59,11 @@ public @interface BasicMap {
     FetchType fetch() default LAZY;
 
     /**
-     * (Optional) The name of the data column that holds the direct map key.
+     * (Optional) The name of the data column that holds the direct map 
+     * key. If the name on te key column is "", the name will default to:
+     * the name of the property or field; "_KEY".
      */
-    Column keyColumn();
+    Column keyColumn() default @Column;
 
     /**
      * (Optional) Specify the key converter. Default is equivalent to specifying
