@@ -23,8 +23,10 @@ import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
 
 import org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced.AdvancedTableCreator;
 import org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced.Address;
+import org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced.Child;
 import org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced.Employee;
 import org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced.Man;
+import org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced.Parent;
 import org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced.Woman;
 import org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced.Golfer;
 import org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced.GolferPK;
@@ -218,4 +220,48 @@ public class AdvancedJunitTest extends JUnitTestCase {
         }
     }
 
+    public void testBUG241388() {
+        Integer id = null;
+        int childCount;
+        
+        //// PART 1 ////
+        EntityManager em1 = createEntityManager("fieldaccess");
+        beginTransaction(em1);
+        
+        try {
+            Parent p0 = new Parent(false);
+            em1.persist(p0);
+            id = p0.getId();
+            em1.flush();
+
+            Parent p1 = em1.find(Parent.class, id);
+            p1.setSerialNumber("12345678");
+
+            Child cs_1_1 = new Child();
+            p1.addChild(cs_1_1);
+            em1.flush();
+
+            Child cs_1_2 = new Child();
+            p1.addChild(cs_1_2);
+            em1.flush();
+
+            Parent chassis2 = em1.find(Parent.class, id);
+            Child cs_2_1 = new Child();
+            chassis2.addChild(cs_2_1);
+            em1.flush();
+            
+            commitTransaction(em1);
+        } catch (Exception e) {
+            e.printStackTrace();
+            rollbackTransaction(em1);
+        } finally {
+            Parent pa = em1.find(Parent.class, id);
+            childCount = pa.getChildren().size();
+            closeEntityManager(em1);
+        }
+        
+        //// PART 2 ////
+        Parent chassis = createEntityManager("fieldaccess").find(Parent.class, id);
+        assertTrue("The same number of children where not returned from the cache", childCount == chassis.getChildren().size());
+    }    
 }

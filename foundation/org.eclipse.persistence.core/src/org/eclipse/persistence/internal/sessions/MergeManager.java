@@ -657,16 +657,21 @@ public class MergeManager {
                 // If we have no change set then we must merge the entire object.
                 objectBuilder.mergeIntoObject(original, false, clone, this);
             } else {
-                // Not null and we have a valid changeSet then merge the changes.
-                if (!objectChangeSet.isNew()) {
-                    if (objectChangeSet.shouldInvalidateObject(original, parent)) {
-                        parent.getIdentityMapAccessor().invalidateObject(original);
-                        return clone;
-                    }
-                } else {                    
+                // Invalidate any object that was marked invalid during the change calculation, even if it was new as multiple flushes 
+                // and custom SQL could still produce invalid new objects.
+                if (objectChangeSet.shouldInvalidateObject(original, parent)) {
+                    parent.getIdentityMapAccessor().invalidateObject(original);
+                }
+                
+                if (objectChangeSet.isNew()) {
                     // PERF: If PersistenceEntity is caching the primary key this must be cleared as the primary key may have changed in new objects.
                     objectBuilder.clearPrimaryKey(original);
                 }
+                
+                // Regardless if the object is new, old, valid or invalid, merging will ensure there is a stub of an object in the 
+                // shared cache for filling in foreign reference relationships. If merge did not occur in some cases (new  objects, garbage 
+                // collection objects, object read in a transaction) then no object would be in the shared cache and foreign reference 
+                // mappings would be set to null when they should be set to an object.
                 objectBuilder.mergeChangesIntoObject(original, objectChangeSet, clone, this);
             }
         } catch (QueryException exception) {

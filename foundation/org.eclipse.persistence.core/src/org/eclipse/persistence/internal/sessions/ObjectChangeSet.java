@@ -550,22 +550,31 @@ public class ObjectChangeSet implements Serializable, org.eclipse.persistence.se
                 if(writeLockValueToCompare == null) {
                     writeLockValueToCompare = this.initialWriteLockValue;
                 }
-                // In this merge initialWriteLockValue of this changeSet differes from 
+                // In this merge initialWriteLockValue of this changeSet differs from 
                 // writeLockValue of the changeSetToMergeFrom into which the merge was performed.
                 // Example:
                 // Original registered with version 1, the clone changed to version 2, uow.writeChanges is called:
                 // the corresponding "this" changeSet has initialWriteLockValue = 1 and writeLockValue = 2;
                 // custom update performed next changing the version of the object in the db to 3;
-                // the clone is refreshed in the uow - not it's version is 3;
+                // the clone is refreshed in the uow - now it's version is 3;
                 // the cloned is changed to version 4, uow.commit is called:
                 // the corresponding changeSetToMergeFrom has initialWriteLockValue = 3 and writeLockValue = 4.
                 // This change set should be invalidated - the custom update would not be reflected after merge,
-                // therefore nor merge into cache should be performed but rather the object in the cache should be invalidated.
+                // therefore no merge into cache should be performed but rather the object in the cache should be invalidated.
                 if(this.optimisticLockingPolicy.compareWriteLockValues(writeLockValueToCompare, changeSetToMergeFrom.initialWriteLockValue) != 0) {
                     this.isInvalid = true;
                     return;
                 }
-                this.writeLockValue = changeSetToMergeFrom.writeLockValue;
+                
+                // Don't blindly overrite a write lock value with null. A
+                // consecutive change set may not have caused a version change,
+                // therefore the write lock value will be null in this case. 
+                // E.g. Attribute change tracking does not discover a change 
+                // across a relational mapping (unless a cascaded optimistic 
+                // locking policy is used).
+                if (changeSetToMergeFrom.writeLockValue != null) {
+                    this.writeLockValue = changeSetToMergeFrom.writeLockValue;
+                }
             }
         }
         List changesToMerge = changeSetToMergeFrom.getChanges();
@@ -1024,7 +1033,8 @@ public class ObjectChangeSet implements Serializable, org.eclipse.persistence.se
                 return false;  // don't invalidate as we are not merging anything anyway
             }
         }
-        if (optimisticLockingPolicy.compareWriteLockValues(initialWriteLockValue, originalWriteLockValue) != 0) {
+        
+        if (originalWriteLockValue != null && optimisticLockingPolicy.compareWriteLockValues(initialWriteLockValue, originalWriteLockValue) != 0) {    
             return true;
         } else {
             return false;
