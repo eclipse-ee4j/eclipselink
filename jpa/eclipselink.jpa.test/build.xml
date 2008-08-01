@@ -972,7 +972,7 @@
     </target>
 
     <!-- Run all the JPA tests in the server -->
-    <target name="server-test-lrg">
+    <target name="server-test-lrg" depends="clean-test">
         <antcall target="server-test-sessionbean" inheritRefs="true"/>
         <antcall target="server-test-fieldaccess-advanced" inheritRefs="true"/>
         <antcall target="server-test-datatypes" inheritRefs="true"/>
