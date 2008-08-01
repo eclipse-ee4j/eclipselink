@@ -22,9 +22,11 @@
 *   - Ant properties are lower case.
 *
 * Contributors:
-*     tware - initial API and implementation
+*     egwin - initial API and implementation
 #******************************************************************************/-->
 <project name="eclipselink.utils.dbws" default="all" basedir=".">
+
+    <target name="all" depends="clean, create-jar" description="build EclipseLink jar"/>
 
     <target name="init">
         <property file="${user.home}/build.properties"/>
@@ -38,8 +40,10 @@
         </path>
     </target>
 
-    <target name="all" depends="clean, create-jar" description="build EclipseLink jar"/>
-
+    <target name="clean" depends="init" description="clean the build">
+        <delete dir="${eclipselink.util.dbws}/${classes.dir}" includeEmptyDirs="true" failonerror="false"/>
+    </target>
+    
     <target name="verify-dependencies" depends="init" description="verify core classes were compiled">
         <available file="${eclipselink.core}/${classes.dir}/org/eclipse/persistence/Version.class"        property="core.classes.exist"/>
         <available file="${eclipselink.dbws}/${classes.dir}/org/eclipse/persistence/dbws/DBWSModel.class" property="dbws.classes.exist"/>
@@ -80,7 +84,4 @@
         </jar>
     </target>
 
-    <target name="clean" depends="init" description="clean the build">
-        <delete dir="${eclipselink.util.dbws}/${classes.dir}" includeEmptyDirs="true" failonerror="false"/>
-    </target>
 </project>

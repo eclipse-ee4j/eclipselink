@@ -22,7 +22,7 @@
 *   - Ant properties are lower case.
 *
 * Contributors:
-*     tware - initial API and implementation
+*     egwin - initial API and implementation
 #******************************************************************************/-->
 <project name="org.eclipse.persistence.dbws" default="all" basedir=".">
 
@@ -41,6 +41,10 @@
         </path>
     </target>
 
+    <target name="clean" depends="init" description="Clean all generated content">
+        <delete dir="${eclipselink.dbws}/${classes.dir}" includeEmptyDirs="true" failonerror="false"/>
+    </target>
+
     <target name="verify-dependencies" depends="init" description="verify core classes were compiled">
         <available file="${eclipselink.core}/${classes.dir}/org/eclipse/persistence/Version.class"  property="core.classes.exist"/>
         <available file="${eclipselink.plugins}/${asm}"                                 type="dir"  property="asm.exist"/>
@@ -48,7 +52,6 @@
         <fail unless="asm.exist"          message="ASM Bundle cannot be found. Exiting..."/>
     </target>
 
-    <!-- target name="compile" description="build dbws classes" -->
     <target name="compile" depends="verify-dependencies" description="build dbws classes">
         <mkdir dir="${eclipselink.dbws}/${classes.dir}"/>
         <javac srcdir="${eclipselink.dbws}/${src.dir}"
@@ -83,7 +86,4 @@
         </jar>
     </target>
 
-    <target name="clean" depends="init" description="clean the build">
-        <delete dir="${eclipselink.dbws}/${classes.dir}" includeEmptyDirs="true" failonerror="false"/>
-    </target>
 </project>
