@@ -809,6 +809,11 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
         }
         if (mergeManager.shouldMergeOriginalIntoWorkingCopy()) {
             if (!isAttributeValueInstantiated(target)) {
+                // We must clone and set the value holder from the source to the target.
+                Object attributeValue = getAttributeValueFromObject(source);
+                Object clonedAttributeValue = getIndirectionPolicy().cloneAttribute(attributeValue, source, target, (UnitOfWorkImpl) mergeManager.getSession(), false); // building clone from an original not a row. 
+                setAttributeValueInObject(target, clonedAttributeValue);
+                
                 // This will occur when the clone's value has not been instantiated yet and we do not need
                 // the refresh that attribute
                 return;

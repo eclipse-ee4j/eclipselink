@@ -41,6 +41,9 @@ public class AdvancedTableCreator extends TableCreator {
         addTableDefinition(buildWOMANTable());
 		addTableDefinition(buildWORKWEEKTable());
         addTableDefinition(buildWORLDRANKTable());
+        addTableDefinition(buildPARENTTable());
+        addTableDefinition(buildCHILDTable());
+        
         //addTableDefinition(buildEMPLOYEE_SEQTable());
     }
     
@@ -199,8 +202,57 @@ public class AdvancedTableCreator extends TableCreator {
         table.addField(fieldBUYINGDAYS);
 
         return table;
-    }
+     }
     
+     public static TableDefinition buildCHILDTable() {
+         TableDefinition table = new TableDefinition();
+         table.setName("FIELD_CHILD");
+
+         FieldDefinition fieldID = new FieldDefinition();
+         fieldID.setName("ID");
+         fieldID.setTypeName("NUMERIC");
+         fieldID.setSize(15);
+         fieldID.setSubSize(0);
+         fieldID.setIsPrimaryKey(true);
+         fieldID.setIsIdentity(true);
+         fieldID.setUnique(false);
+         fieldID.setShouldAllowNull(false);
+         table.addField(fieldID);
+
+         FieldDefinition fieldVERSION = new FieldDefinition();
+         fieldVERSION.setName("VERSION");
+         fieldVERSION.setTypeName("NUMERIC");
+         fieldVERSION.setSize(15);
+         fieldVERSION.setShouldAllowNull(true);
+         fieldVERSION.setIsPrimaryKey(false);
+         fieldVERSION.setUnique(false);
+         fieldVERSION.setIsIdentity(false);
+         table.addField(fieldVERSION);
+         
+         FieldDefinition fieldCREATEDON = new FieldDefinition();
+         fieldCREATEDON.setName("CREATEDON");
+         fieldCREATEDON.setTypeName("DATETIME");
+         fieldCREATEDON.setSize(23);
+         fieldCREATEDON.setIsPrimaryKey(false);
+         fieldCREATEDON.setUnique(false);
+         fieldCREATEDON.setIsIdentity(false);
+         fieldCREATEDON.setShouldAllowNull(true);
+         table.addField(fieldCREATEDON);
+         
+         FieldDefinition fieldPARENTID = new FieldDefinition();
+         fieldPARENTID.setName("PARENT_ID");
+         fieldPARENTID.setTypeName("NUMERIC");
+         fieldPARENTID.setSize(15);
+         fieldPARENTID.setShouldAllowNull(false);
+         fieldPARENTID.setIsPrimaryKey(false);
+         fieldPARENTID.setUnique(false);
+         fieldPARENTID.setIsIdentity(false);
+         fieldPARENTID.setForeignKeyFieldName("FIELD_PARENT.ID");
+         table.addField(fieldPARENTID);
+         
+         return table;
+     }
+     
      public static TableDefinition buildCREDITCARDSTable() {
         TableDefinition table = new TableDefinition();
         table.setName("BUYER_CREDITCARDS");
@@ -678,6 +730,45 @@ public class AdvancedTableCreator extends TableCreator {
         fieldNAME.setShouldAllowNull(true);
         table.addField(fieldNAME);
         
+        return table;
+    }
+    
+    public static TableDefinition buildPARENTTable() {
+        TableDefinition table = new TableDefinition();
+        table.setName("FIELD_PARENT");
+
+        FieldDefinition fieldID = new FieldDefinition();
+        fieldID.setName("ID");
+        fieldID.setTypeName("NUMERIC");
+        fieldID.setSize(15);
+        fieldID.setSubSize(0);
+        fieldID.setIsPrimaryKey(true);
+        fieldID.setIsIdentity(true);
+        fieldID.setUnique(false);
+        fieldID.setShouldAllowNull(false);
+        table.addField(fieldID);
+        
+        FieldDefinition fieldVERSION = new FieldDefinition();
+        fieldVERSION.setName("VERSION");
+        fieldVERSION.setTypeName("NUMERIC");
+        fieldVERSION.setSize(15);
+        fieldVERSION.setShouldAllowNull(true);
+        fieldVERSION.setIsPrimaryKey(false);
+        fieldVERSION.setUnique(false);
+        fieldVERSION.setIsIdentity(false);
+        table.addField(fieldVERSION);
+
+        FieldDefinition fieldSTREET = new FieldDefinition();
+        fieldSTREET.setName("SERIALNUMBER");
+        fieldSTREET.setTypeName("VARCHAR2");
+        fieldSTREET.setSize(60);
+        fieldSTREET.setSubSize(0);
+        fieldSTREET.setIsPrimaryKey(false);
+        fieldSTREET.setIsIdentity(false);
+        fieldSTREET.setUnique(false);
+        fieldSTREET.setShouldAllowNull(true);
+        table.addField(fieldSTREET);
+
         return table;
     }
     
