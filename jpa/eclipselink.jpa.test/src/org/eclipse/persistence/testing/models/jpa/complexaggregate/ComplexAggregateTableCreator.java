@@ -77,7 +77,7 @@ public class ComplexAggregateTableCreator extends org.eclipse.persistence.tools.
         FieldDefinition fieldWORLDID = new FieldDefinition();
         fieldWORLDID.setName("WORLD_ID");
         fieldWORLDID.setTypeName("NUMBER");
-        fieldWORLDID.setSize(10);
+        fieldWORLDID.setSize(19);
         fieldWORLDID.setSubSize(0);
         fieldWORLDID.setIsPrimaryKey(false);
         fieldWORLDID.setIsIdentity(false);
@@ -140,7 +140,7 @@ public class ComplexAggregateTableCreator extends org.eclipse.persistence.tools.
         FieldDefinition fieldWORLDID = new FieldDefinition();
         fieldWORLDID.setName("WORLD_ID");
         fieldWORLDID.setTypeName("NUMBER");
-        fieldWORLDID.setSize(10);
+        fieldWORLDID.setSize(19);
         fieldWORLDID.setSubSize(0);
         fieldWORLDID.setIsPrimaryKey(false);
         fieldWORLDID.setIsIdentity(false);
