@@ -40,7 +40,9 @@ public abstract class RatedBeerConsumer<X, Y, Z> extends BeerConsumer {
         return acclaims;
     }
     
-    @BasicMap(keyColumn=@Column(name="AWARD_KEY"), valueColumn=@Column(name="AWARD_CODE"))
+    // Let the key column default. Should default to AWARDS_KEY
+    // A keyColumn specification is tested in org.eclipse.persistence.testing.models.jpa.advanced.Buyer
+    @BasicMap(valueColumn=@Column(name="AWARD_CODE"))
     public Map<Y, Z> getAwards() {
         return awards;
     }
