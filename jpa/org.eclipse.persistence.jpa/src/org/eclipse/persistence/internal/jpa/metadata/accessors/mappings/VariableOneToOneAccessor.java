@@ -215,9 +215,9 @@ public class VariableOneToOneAccessor extends ObjectAccessor {
 
         // Process the discriminator column.
         if (m_discriminatorColumn == null) {
-            mapping.setTypeField(new DiscriminatorColumnMetadata().process(getDescriptor(), getAnnotatedElementName()));
+            mapping.setTypeField(new DiscriminatorColumnMetadata().process(getDescriptor(), getAnnotatedElementName(), MetadataLogger.VARIABLE_ONE_TO_ONE_DISCRIMINATOR_COLUMN));
         } else {
-            mapping.setTypeField(m_discriminatorColumn.process(getDescriptor(), getAnnotatedElementName()));
+            mapping.setTypeField(m_discriminatorColumn.process(getDescriptor(), getAnnotatedElementName(), MetadataLogger.VARIABLE_ONE_TO_ONE_DISCRIMINATOR_COLUMN));
         }
         
         // Process the discriminator classes.

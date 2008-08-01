@@ -20,7 +20,6 @@ import javax.persistence.DiscriminatorType;
 
 import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataDescriptor;
-import org.eclipse.persistence.internal.jpa.metadata.MetadataLogger;
 import org.eclipse.persistence.internal.jpa.metadata.ORMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAccessibleObject;
 
@@ -95,11 +94,11 @@ public class DiscriminatorColumnMetadata extends ORMetadata {
      * DatabaseField. What is done with that field is up to the caller 
      * of this method.
      */
-    public DatabaseField process(MetadataDescriptor descriptor, String annotatedElementName) {     
+    public DatabaseField process(MetadataDescriptor descriptor, String annotatedElementName, String loggingCtx) {     
         DatabaseField field = new DatabaseField();
 
         // Process the name
-        field.setName(MetadataHelper.getName(m_name, "DTYPE", MetadataLogger.DISCRIMINATOR_COLUMN, descriptor.getLogger(), annotatedElementName));
+        field.setName(MetadataHelper.getName(m_name, "DTYPE", loggingCtx, descriptor.getLogger(), annotatedElementName));
         
         // Process the length.
         field.setLength(MetadataHelper.getValue(m_length, 31));
