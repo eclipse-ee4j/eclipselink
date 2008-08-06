@@ -134,7 +134,7 @@ public abstract class LoadAndSaveTestCases extends LoadAndSaveWithOptionsTestCas
         Object[] fileArray = allFilesInAllPackages.toArray();
 
         int returnVal = CompileUtil.instance().compile(getClassPathForCompile(), fileArray);
-        assertEquals(0, returnVal);
+        assertEquals("CompileUtil returned a non-zero exit value.", 0, returnVal);
     }
 
     public void tearDown() throws Exception {
