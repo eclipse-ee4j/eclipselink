@@ -32,6 +32,7 @@ import javax.persistence.Query;
 
 import javax.sql.DataSource;
 
+import org.eclipse.persistence.exceptions.EclipseLinkException;
 import org.eclipse.persistence.exceptions.JPQLException;
 import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.expressions.Expression;
@@ -374,12 +375,16 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
             //IllegalState by verifyOpen,
             //TransactionRequired by check for transaction
             //PersistenceException for all others.
+            // but there is a tck test that checks for illegal state exception and the 
+            // official statement is that the spec 'intended' for IllegalStateException to be raised.
             verifyOpen();
-            Object txn = checkForTransaction(true);
             try {
-                getActivePersistenceContext(txn).writeChanges();
+                getActivePersistenceContext(checkForTransaction(true)).writeChanges();
             } catch (RuntimeException e) {
-                throw new PersistenceException(e);
+                if (EclipseLinkException.class.isAssignableFrom(e.getClass())) {
+                    throw new PersistenceException(e);
+                }
+                throw e;
             }
         } catch (RuntimeException e) {
             setRollbackOnly();
