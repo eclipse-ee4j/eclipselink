@@ -709,6 +709,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
     }
     
     public void testNewObjectNotCascadePersist(){
+        IllegalStateException exception = null;
         EntityManager em = createEntityManager();
         beginTransaction(em);
         Golfer g = new Golfer();
@@ -717,12 +718,13 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         em.persist(g);
         try{
             em.flush();
-        }catch (PersistenceException ex){
-            assertTrue("Failed to throw IllegalStateException see bug: 237279 ", ex.getCause() instanceof IllegalStateException);
+        }catch (IllegalStateException ex){
+            exception = ex;
         }finally{
             rollbackTransaction(em);
             closeEntityManager(em);
         }
+        assertNotNull("Failed to throw IllegalStateException see bug: 237279 ", exception);
         
     }
     
@@ -738,9 +740,9 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
             project.setTeamLeader(new Employee());
             project.getTeamLeader().addProject(project);
             em.flush();
-        }catch (PersistenceException ex){
+        }catch (RuntimeException ex){
             rollbackTransaction(em);
-            if (ex.getCause() instanceof IllegalStateException)
+            if (ex instanceof IllegalStateException)
             return;
         }
         
@@ -930,7 +932,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
             try{
                 em.flush();
             } catch (PersistenceException exception) {
-                if (exception.getCause() instanceof OptimisticLockException){
+                if (exception instanceof OptimisticLockException){
                     optimisticLockException = exception;
                 }else{
                     throw exception;
