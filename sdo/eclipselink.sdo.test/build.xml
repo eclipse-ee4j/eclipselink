@@ -115,6 +115,7 @@
             <mkdir dir="${eclipselink.sdo.test}/${report.dir}/@{customcontext}"/>
             <echo message="customContext=@{customcontext}"/>
             <junit printsummary="withOutAndErr" fork="yes" dir="${eclipselink.sdo.test}/${resource.dir}" maxmemory="512m" showoutput="yes">
+                <jvmarg value="-XX:MaxPermSize=256m"/>
                 <sysproperty key="loggingLevelFinest" value="false"/>
                 <sysproperty key="customContext" value="@{customcontext}"/>
                 <sysproperty key="eclipselink.xml.platform" value="${xml.platform}"/>
