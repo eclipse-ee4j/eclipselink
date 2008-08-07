@@ -81,10 +81,15 @@ public class SDODataFactory implements DataFactory {
      *    cannot be instantiated by this factory.
      */
     public DataObject create(Type type) {
-        if (type.isAbstract() || type.isDataType()) {
+        if (type.isAbstract()) {
             //throw illegal arg exception 
             //spec page 40                        
             throw new IllegalArgumentException(SDOException.errorCreatingDataObjectForType(type.getURI(), type.getName()));
+        }
+
+        if(type.isDataType()) {
+            SDOTypeHelper sth = (SDOTypeHelper) aHelperContext.getTypeHelper();
+            type = (SDOType) sth.getWrappersHashMap().get(((SDOType)type).getQName());
         }
 
         Class typedDataObjectClass = ((SDOType)type).getInstanceClass();

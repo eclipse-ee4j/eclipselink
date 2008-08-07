@@ -31,7 +31,7 @@ public class SDOExceptionResource extends ListResourceBundle {
                                            { "45008", "An IOException occurred." }, 
                                            { "45009", "Type not found with uri [{0}] and name [{1}]" },                                          
                                            { "45010", "Type not found for interface [{0}]" },
-                                           { "45011", "Could not create a DataObject for type with uri [{0}] and name [{1}] because type.isDataType() or is type.isAbstract() returns true." },                                           
+                                           { "45011", "Could not create a DataObject for type with uri [{0}] and name [{1}] because type.isAbstract() returns true." },                                           
                                            { "45012", "Could not create a DataObject for interface [{0}], trying to create a DataObject for type with uri [{1}] and name [{2}] " },                                           
                                            { "45013", "Cannot look up app info for null argument." },                                                                                   
                                            { "45014", "Could not define type.  Types can only be defined for DataObjects with Type set to commonj.sdo.Type" },                                                                                   

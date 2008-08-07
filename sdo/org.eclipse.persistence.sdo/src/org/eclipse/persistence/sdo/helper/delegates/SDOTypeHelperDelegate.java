@@ -107,6 +107,15 @@ public class SDOTypeHelperDelegate implements SDOTypeHelper {
     private SDOWrapperType SDO_YEARMONTH_WRAPPER;
     private SDOWrapperType SDO_YEARMONTHDAY_WRAPPER;
 
+    private SDOWrapperType SDO_BOOLEANOBJECT_WRAPPER;
+    private SDOWrapperType SDO_BYTEOBJECT_WRAPPER;
+    private SDOWrapperType SDO_CHARACTEROBJECT_WRAPPER;
+    private SDOWrapperType SDO_DOUBLEOBJECT_WRAPPER;
+    private SDOWrapperType SDO_FLOATOBJECT_WRAPPER;
+    private SDOWrapperType SDO_INTOBJECT_WRAPPER;
+    private SDOWrapperType SDO_LONGOBJECT_WRAPPER;
+    private SDOWrapperType SDO_SHORTOBJECT_WRAPPER;
+
     // create these maps once to avoid threading issues
     static {
         initSDOTypeForSimpleJavaTypeMap();
@@ -153,6 +162,15 @@ public class SDOTypeHelperDelegate implements SDOTypeHelper {
         SDO_YEAR_WRAPPER = new SDOWrapperType(SDOConstants.SDO_YEAR, SDOConstants.YEAR, this, XMLConstants.G_YEAR_QNAME);
         SDO_YEARMONTH_WRAPPER = new SDOWrapperType(SDOConstants.SDO_YEARMONTH, SDOConstants.YEARMONTH, this, XMLConstants.G_YEAR_MONTH_QNAME);
         SDO_YEARMONTHDAY_WRAPPER = new SDOWrapperType(SDOConstants.SDO_YEARMONTHDAY, SDOConstants.YEARMONTHDAY, this, XMLConstants.DATE_QNAME);
+
+        SDO_BOOLEANOBJECT_WRAPPER = new SDOWrapperType(SDOConstants.SDO_BOOLEANOBJECT, SDOConstants.BOOLEANOBJECT, this, XMLConstants.BOOLEAN_QNAME);
+        SDO_BYTEOBJECT_WRAPPER = new SDOWrapperType(SDOConstants.SDO_BYTEOBJECT, SDOConstants.BYTEOBJECT, this, XMLConstants.BYTE_QNAME);
+        SDO_CHARACTEROBJECT_WRAPPER = new SDOWrapperType(SDOConstants.SDO_CHARACTEROBJECT, SDOConstants.CHARACTEROBJECT, this, XMLConstants.STRING_QNAME);
+        SDO_DOUBLEOBJECT_WRAPPER = new SDOWrapperType(SDOConstants.SDO_DOUBLEOBJECT, SDOConstants.DOUBLEOBJECT, this, XMLConstants.DOUBLE_QNAME);
+        SDO_FLOATOBJECT_WRAPPER = new SDOWrapperType(SDOConstants.SDO_FLOATOBJECT, SDOConstants.FLOATOBJECT, this, XMLConstants.FLOAT_QNAME);
+        SDO_INTOBJECT_WRAPPER = new SDOWrapperType(SDOConstants.SDO_INTOBJECT, SDOConstants.INTOBJECT, this, XMLConstants.INT_QNAME);
+        SDO_LONGOBJECT_WRAPPER = new SDOWrapperType(SDOConstants.SDO_LONGOBJECT, SDOConstants.LONGOBJECT, this, XMLConstants.LONG_QNAME);
+        SDO_SHORTOBJECT_WRAPPER = new SDOWrapperType(SDOConstants.SDO_SHORTOBJECT, SDOConstants.SHORTOBJECT, this, XMLConstants.SHORT_QNAME);
     }
 
     public void addWrappersToProject(Project project) {
@@ -181,6 +199,15 @@ public class SDOTypeHelperDelegate implements SDOTypeHelper {
         SDO_YEAR_WRAPPER.addDescriptorToProject(project);
         SDO_YEARMONTH_WRAPPER.addDescriptorToProject(project);
         SDO_YEARMONTHDAY_WRAPPER.addDescriptorToProject(project);
+
+        SDO_BOOLEANOBJECT_WRAPPER.addDescriptorToProject(project);
+        SDO_BYTEOBJECT_WRAPPER.addDescriptorToProject(project);
+        SDO_CHARACTEROBJECT_WRAPPER.addDescriptorToProject(project);
+        SDO_DOUBLEOBJECT_WRAPPER.addDescriptorToProject(project);
+        SDO_FLOATOBJECT_WRAPPER.addDescriptorToProject(project);
+        SDO_INTOBJECT_WRAPPER.addDescriptorToProject(project);
+        SDO_LONGOBJECT_WRAPPER.addDescriptorToProject(project);
+        SDO_SHORTOBJECT_WRAPPER.addDescriptorToProject(project);
     }
 
     /**
@@ -274,6 +301,15 @@ public class SDOTypeHelperDelegate implements SDOTypeHelper {
         typesHashMap.put(SDO_YEAR_WRAPPER.getQName(), SDO_YEAR_WRAPPER);
         typesHashMap.put(SDO_YEARMONTH_WRAPPER.getQName(), SDO_YEARMONTH_WRAPPER);
         typesHashMap.put(SDO_YEARMONTHDAY_WRAPPER.getQName(), SDO_YEARMONTHDAY_WRAPPER);
+
+        typesHashMap.put(SDO_BOOLEANOBJECT_WRAPPER.getQName(), SDO_BOOLEANOBJECT_WRAPPER);
+        typesHashMap.put(SDO_BYTEOBJECT_WRAPPER.getQName(), SDO_BYTEOBJECT_WRAPPER);
+        typesHashMap.put(SDO_CHARACTEROBJECT_WRAPPER.getQName(), SDO_CHARACTEROBJECT_WRAPPER);
+        typesHashMap.put(SDO_DOUBLEOBJECT_WRAPPER.getQName(), SDO_DOUBLEOBJECT_WRAPPER);
+        typesHashMap.put(SDO_FLOATOBJECT_WRAPPER.getQName(), SDO_FLOATOBJECT_WRAPPER);
+        typesHashMap.put(SDO_INTOBJECT_WRAPPER.getQName(), SDO_INTOBJECT_WRAPPER);
+        typesHashMap.put(SDO_LONGOBJECT_WRAPPER.getQName(), SDO_LONGOBJECT_WRAPPER);
+        typesHashMap.put(SDO_SHORTOBJECT_WRAPPER.getQName(), SDO_SHORTOBJECT_WRAPPER);
     }
 
     /**
@@ -307,6 +343,15 @@ public class SDOTypeHelperDelegate implements SDOTypeHelper {
         wrappersHashMap.put(SDOConstants.SDO_YEAR.getQName(), SDO_YEAR_WRAPPER);
         wrappersHashMap.put(SDOConstants.SDO_YEARMONTH.getQName(), SDO_YEARMONTH_WRAPPER);
         wrappersHashMap.put(SDOConstants.SDO_YEARMONTHDAY.getQName(), SDO_YEARMONTHDAY_WRAPPER);
+
+        wrappersHashMap.put(SDOConstants.SDO_BOOLEANOBJECT.getQName(), SDO_BOOLEANOBJECT_WRAPPER);
+        wrappersHashMap.put(SDOConstants.SDO_BYTEOBJECT.getQName(), SDO_BYTEOBJECT_WRAPPER);
+        wrappersHashMap.put(SDOConstants.SDO_CHARACTEROBJECT.getQName(), SDO_CHARACTEROBJECT_WRAPPER);
+        wrappersHashMap.put(SDOConstants.SDO_DOUBLEOBJECT.getQName(), SDO_DOUBLEOBJECT_WRAPPER);
+        wrappersHashMap.put(SDOConstants.SDO_FLOATOBJECT.getQName(), SDO_FLOATOBJECT_WRAPPER);
+        wrappersHashMap.put(SDOConstants.SDO_INTOBJECT.getQName(), SDO_INTOBJECT_WRAPPER);
+        wrappersHashMap.put(SDOConstants.SDO_LONGOBJECT.getQName(), SDO_LONGOBJECT_WRAPPER);
+        wrappersHashMap.put(SDOConstants.SDO_SHORTOBJECT.getQName(), SDO_SHORTOBJECT_WRAPPER);
 
         // Now add these into the interface-to-type Map
         Iterator wrappers = wrappersHashMap.values().iterator();
@@ -532,7 +577,7 @@ public class SDOTypeHelperDelegate implements SDOTypeHelper {
             }
         }
 
-        return null;
+        return getTypeForSimpleJavaType(interfaceClass);
     }
 
     /**
