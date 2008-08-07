@@ -18,6 +18,7 @@ public class WeakUnitOfWorkIdentityMap extends UnitOfWorkIdentityMap {
         super(size, descriptor);
         this.cleanupCount = 0;
         this.cleanupSize = size;
+        this.referenceQueue = new ReferenceQueue<QueueableWeakCacheKey.CacheKeyReference>();
     }
 
     /**
