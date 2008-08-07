@@ -33,6 +33,7 @@
         - build-core : compiles all components, excluding tests, workbench, and Oracle extensions
         - build-extension : compiles Oracle extensions and tests
         - build-test : compiles all tests, excluding Oracle extensions
+	  - build-workbench-test : compiles the workbench tests
         - package-eclipselink-jar : packages eclipselink.jar
         - package-src-jar : packages source jar
         - build-javadocs : generates Javadocs
@@ -125,6 +126,11 @@
         <ant antfile="build.xml" dir="${eclipselink.workbench.test}" target="all"/>
     </target>
 
+    <!-- Compiles all tests (excluding Oracle extensions). -->
+    <target name="build-workbench-test">
+        <ant antfile="build.xml" dir="${eclipselink.workbench.test}" target="all"/>
+    </target>
+
     <!-- Updates and copies the manifest file to build dir.  Extracts the oracle extension jar to the build dir -->
     <target name="create-build-dir" depends="build-core" description="create the directory used to build jars from">
         <unjar src="${eclipselink.extension.oracle}/${eclipselink.oracle.depend.jar}" dest="${build.dir}"/>
@@ -190,11 +196,13 @@
         <ant antfile="${eclipselink.util.rename}/build.xml"      target="clean"/>
         <ant antfile="${eclipselink.moxy}/build.xml"             target="clean"/>
         <ant antfile="${eclipselink.sdo}/build.xml"              target="clean"/>
+        <ant antfile="build.xml" dir="${eclipselink.workbench}" target="clean"/>
         <ant antfile="${eclipselink.core.test}/build.xml"        target="clean"/>
         <!-- ant antfile="${eclipselink.dbws.test}/build.xml"        target="clean"/ -->
         <ant antfile="${eclipselink.jpa.test}/build.xml"         target="clean"/>
         <ant antfile="${eclipselink.moxy.test}/build.xml"        target="clean"/>
         <ant antfile="${eclipselink.sdo.test}/build.xml"         target="clean"/>
+        <ant antfile="build.xml" dir="${eclipselink.workbench.test}" target="clean"/>
         <delete dir="${build.dir}"/>
         <delete file="${eclipselink.jar.name}"/>
         <delete file="${eclipselink.src.install.prefix}${eclipselink.zip.suffix}"/>

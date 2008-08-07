@@ -32,37 +32,37 @@
 
     <target name="all"    depends="clean, build"/>
 
-    <target name="clean"  depends="clean-utility,
-                                   clean-uitools,
-                                   clean-framework,
-                                   clean-platformsplugin,
-                                   clean-scplugin,
-                                   clean-mappingsplugin,
-                                   clean-workbench"/>
+    <target name="clean"  depends="clean-utility-debug,
+                                   clean-uitools-debug,
+                                   clean-framework-debug,
+                                   clean-platformsplugin-debug,
+                                   clean-scplugin-debug,
+                                   clean-mappingsplugin-debug,
+                                   clean-workbench-debug"/>
 
-    <target name="clean-utility"         depends="clean-utility-nondebug, clean-utility-debug"/>
-    <target name="clean-uitools"         depends="clean-uitools-nondebug, clean-uitools-debug"/>
-    <target name="clean-framework"       depends="clean-framework-nondebug, clean-framework-debug"/>
-    <target name="clean-platformsplugin" depends="clean-platformsplugin-nondebug, clean-platformsplugin-debug"/>
-    <target name="clean-scplugin"        depends="clean-scplugin-nondebug, clean-scplugin-debug"/>
-    <target name="clean-mappingsplugin"  depends="clean-mappingsplugin-nondebug, clean-mappingsplugin-debug"/>
-    <target name="clean-workbench"       depends="clean-workbench-nondebug, clean-workbench-debug"/>
+    <target name="build"  depends="build-utility-debug,
+                                   build-uitools-debug,
+                                   build-framework-debug,
+                                   build-platformsplugin-debug,
+                                   build-scplugin-debug,
+                                   build-mappingsplugin-debug,
+                                   build-workbench-debug"/>
 
-    <target name="build"  depends="build-utility,
-                                   build-uitools,
-                                   build-framework,
-                                   build-platformsplugin,
-                                   build-scplugin,
-                                   build-mappingsplugin,
-                                   build-workbench"/>
+    <target name="clean-nondebug"  depends="clean-utility-nondebug,
+                                   clean-uitools-nondebug,
+                                   clean-framework-nondebug,
+                                   clean-platformsplugin-nondebug,
+                                   clean-scplugin-nondebug,
+                                   clean-mappingsplugin-nondebug,
+                                   clean-workbench-nondebug"/>
 
-    <target name="build-utility"         depends="build-utility-nondebug, build-utility-debug"/>
-    <target name="build-uitools"         depends="build-uitools-nondebug, build-uitools-debug"/>
-    <target name="build-framework"       depends="build-framework-nondebug, build-framework-debug"/>
-    <target name="build-platformsplugin" depends="build-platformsplugin-nondebug, build-platformsplugin-debug"/>
-    <target name="build-scplugin"        depends="build-scplugin-nondebug, build-scplugin-debug"/>
-    <target name="build-mappingsplugin"  depends="build-mappingsplugin-nondebug, build-mappingsplugin-debug"/>
-    <target name="build-workbench"       depends="build-workbench-nondebug, build-workbench-debug"/>
+    <target name="build-nondebug"  depends="build-utility-nondebug,
+                                   build-uitools-nondebug,
+                                   build-framework-nondebug,
+                                   build-platformsplugin-nondebug,
+                                   build-scplugin-nondebug,
+                                   build-mappingsplugin-nondebug,
+                                   build-workbench-nondebug"/>
 
 
     <!-- =================================================================== -->
