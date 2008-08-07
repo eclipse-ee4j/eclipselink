@@ -24,8 +24,346 @@
 * Contributors:
 *     egwin - initial API and implementation
 #******************************************************************************/-->
-<project name="org.eclipse.persistence.dbws.test" default="all" basedir=".">
+<project
+  name="eclipselink.dbws.test"
+  default="test"
+  basedir="."
+  >
+  <condition property="is.java.version.16">
+      <equals arg1="${ant.java.version}" arg2="1.6"/>
+  </condition>
+  <fail
+    message="eclipselink.dbws.test requires Java version 1.6 or higher. You are currently using Java version ${ant.java.version}."
+    unless="is.java.version.16"
+  />
+  <!-- OS environment variables have 'env' as a prefix -->
+  <property
+    environment="env"
+  />
+  <!-- local property overrides -->
+  <property
+    file="${user.home}/build.properties"
+  />
+  <property
+    file="${user.home}/test.properties"
+  />
+  <!-- find out where this build.xml file is -->
+  <dirname
+    property="eclipselink.dbws.test"
+    file="${ant.file.eclipselink.dbws.test}"
+  />
+  <property
+    file="${eclipselink.dbws.test}/build.properties"
+  />
+  <property
+    file="${eclipselink.dbws.test}/test.properties"
+  />
+  <!-- Classpath used for compiling tests. -->
+  <path
+    id="compile.path"
+    >
+    <pathelement
+      path="${junit.lib}"
+    />
+    <pathelement
+      path="${eclipselink.jar.name}"
+    />
+    <pathelement
+      path="${eclipselink.plugins}/${asm}"
+    />
+    <fileset
+      dir="${eclipselink.plugins}"
+      includes="${eclipselink.dbws.depend}"
+    />
+  </path>
+  <presetdef name="javac">
+    <javac
+      debug="${javac.debug}"
+      optimize="${javac.optimize}"
+      source="${javac.version}"
+      deprecation="${javac.deprecation}"
+      failonerror="true"
+      memoryMaximumSize="512m"
+      fork="true"
+    />
+  </presetdef>
+  <presetdef
+    name="DeleteDirQuietly"
+    >
+    <delete
+      dir="_tmp_"
+      quiet="true"
+      failonerror="false"
+    />
+  </presetdef>
+  <presetdef
+    name="DeleteFileQuietly"
+    >
+    <delete
+      file="_tmp_"
+      quiet="true"
+      failonerror="false"
+    />
+  </presetdef>
+  <scriptdef
+    name="toLower"
+    language="javascript"
+    manager="javax"
+    >
+    <attribute name="input"/>
+    <attribute name="property"/>
+    <![CDATA[
+      // getting the value
+      input = attributes.get("input");
+      property = attributes.get("property");
+      if (input == null || property == null) {
+         self.fail("both 'input' and 'property' attributes must be set.");
+      }
+      lowercaseInput = input.toLowerCase();
+      // put result into property - NB overwrites previous value! Not safe for <parallel> tasks
+      project.setProperty(attributes.get("property"), lowercaseInput);
+    ]]>
+  </scriptdef>
+  <!-- slightly complex way to do if-then-else in Ant without additional macros -->
+  <target
+    name="should-compile-common"
+    depends="compile-common,dont-compile-common"
+  />
+  <target
+    name="compile-common"
+    unless="eclipselink.dbws.common.available"
+    depends="test-common-available"
+    >
+    <javac
+      srcdir="${src.dir}"
+      destdir="${classes.dir}"
+      includes="dbws/testing/*.java"
+      >
+      <classpath>
+        <path refid="compile.path"/>
+      </classpath>
+    </javac>
+    <jar
+      destfile="${eclipselink.dbws.test}/${eclipselink.dbws.test.common.jlib}"
+      >
+			<fileset
+        dir="${classes.dir}"
+        includes="dbws/testing/*.class"
+			/>
+    </jar>
+  </target>
+  <target
+    name="dont-compile-common"
+    if="eclipselink.dbws.common.available"
+    depends="test-common-available"
+    >
+  </target>
+  <target
+    name="test-common-available"
+    >
+    <available
+      file="${eclipselink.dbws.test}/${eclipselink.dbws.test.common.jlib}"
+      type="file"
+      property="eclipselink.dbws.common.available"
+    />
+  </target>
+  <target
+      name="init"
+      depends="should-compile-common"
+      >
+      <path
+        id="run.path"
+        >
+        <path
+          refid="compile.path"
+        />
+        <pathelement
+          path="${jdbc.driver.jar}"
+        />
+        <pathelement
+          path="${eclipselink.dbws.test}/${eclipselink.dbws.test.common.jlib}"
+        />
+      </path>
+      <DeleteDirQuietly dir="${report.dir}"/>
+      <mkdir dir="${report.dir}"/>
+  </target>
+  <macrodef
+    name="SetupDatabase"
+    >
+    <attribute name="testsuite-name"/>
+    <sequential>
+      <sql
+        onerror="continue"
+        keepformat="true"
+        driver="${db.driver}"
+        url="${db.url}"
+        userid="${db.user}"
+        password="${db.pwd}"
+        classpathref="run.path"
+        delimiter="|"
+        >
+        <fileset
+          dir="${etc.dir}"
+          >
+         <include name="dbsetup_@{testsuite-name}.sql"/>
+        </fileset>
+      </sql>
+    </sequential>
+  </macrodef>
+  <macrodef
+    name="CompileTestsuite"
+    >
+    <attribute name="testsuite-name"/>
+    <attribute name="package-name"/>
+    <sequential>
+      <javac
+        srcdir="${src.dir}"
+        destdir="${classes.dir}"
+        includes="dbws/testing/@{package-name}/*.java"
+        classpathref="run.path"
+      />
+    </sequential>
+  </macrodef>
+  <macrodef
+    name="RunTestsuite"
+    >
+    <attribute name="testsuite-name"/>
+    <attribute name="package-name"/>
+    <sequential>
+      <junit
+        printsummary="withOutAndErr"
+        fork="yes"
+        forkmode="once"
+        maxmemory="512m"
+        >
+        <formatter
+          type="xml"
+        />
+        <classpath>
+          <path
+            refid="run.path"
+          />
+          <pathelement
+            path="${classes.dir}"
+          />
+        </classpath>
+        <sysproperty
+          key="eclipselink.logging.level"
+          value="${logging.level}"
+        />
+        <sysproperty
+          key="db.driver"
+          value="${db.driver}"
+        />
+        <sysproperty
+          key="db.url"
+          value="${db.url}"
+        />
+        <sysproperty
+          key="db.user"
+          value="${db.user}"
+        />
+        <sysproperty
+          key="db.pwd"
+          value="${db.pwd}"
+        />
+        <sysproperty
+          key="db.platform"
+          value="${db.platform}"
+        />
+        <test
+          name="dbws.testing.@{package-name}.@{testsuite-name}TestSuite"
+        />
+      </junit>
+      <junitreport
+        todir="${report.dir}"
+        >
+        <fileset
+          dir="."
+          >
+          <include
+            name="TEST-*TestSuite.xml"
+          />
+        </fileset>
+        <report
+          format="noframes"
+          todir="${report.dir}"
+        />
+      </junitreport>
+    </sequential>
+  </macrodef>
+  <macrodef
+    name="TeardownDatabase"
+    >
+    <attribute name="testsuite-name"/>
+    <sequential>
+      <sql
+        onerror="continue"
+        keepformat="true"
+        driver="${db.driver}"
+        url="${db.url}"
+        userid="${db.user}"
+        password="${db.pwd}"
+        classpathref="run.path"
+        delimiter="|"
+        >
+        <fileset
+          dir="${etc.dir}"
+          >
+         <include name="dbteardown_@{testsuite-name}.sql"/>
+        </fileset>
+      </sql>
+    </sequential>
+  </macrodef>
+  <macrodef
+    name="SetupCompileRunTeardown"
+    >
+    <attribute name="testsuite-name"/>
+    <sequential>
+      <toLower
+        input="@{testsuite-name}"
+        property="package-name"
+      />
+      <SetupDatabase
+        testsuite-name="${package-name}"
+      />
+      <CompileTestsuite
+        testsuite-name="@{testsuite-name}"
+        package-name="${package-name}"
+      />
+      <RunTestsuite
+        testsuite-name="@{testsuite-name}"
+        package-name="${package-name}"
+      />
+      <TeardownDatabase
+        testsuite-name="${package-name}"
+      />
+    </sequential>
+  </macrodef>
+  <target
+    name="test"
+    depends="init"
+    description="setup, compile, and run dbws util testsuites"
+    >
+    <SetupCompileRunTeardown testsuite-name="KeyMappings"/>
+    <SetupCompileRunTeardown testsuite-name="Relationships"/>
+    <!-- clean up -->
+    <DeleteFileQuietly>
+      <fileset
+        dir="${basedir}"
+        >
+        <include
+          name="**/TEST*.xml"
+        />
+        <include
+          name="*.jar"
+        />
+      </fileset>
+    </DeleteFileQuietly>
+  </target>
+</project>
 
+<!--
     <target name="all" depends="clean, package" description="clean, build and package DBWS tests"/>
     <target name="run" depends="clean, db-cleanup" description="clean, build, package and run DBWS tests"/>
 
@@ -37,7 +375,6 @@
         <property file="${eclipselink.dbws.test}/${test.properties}"/>
         <property file="${eclipselink.dbws.test}/test.properties"/>
 
-        <!-- Classpath used for compiling tests, also used in running tests. -->
         <path id="compile.path">
             <pathelement path="${eclipselink.plugins}/${asm}"/>
             <pathelement path="${eclipselink.jar.name}"/>
@@ -47,7 +384,6 @@
                 includes="${eclipselink.dbws.test.core.depend}"/>
         </path>
 
-        <!-- Classpath used for running tests. -->
         <path id="run.classpath">
             <path refid="compile.path"/>
             <pathelement path="${jdbc.driver.jar}"/>
@@ -70,8 +406,6 @@
         <fail unless="jdbc.lib.exist"   message="JDBC Driver cannot be found (check specified path). Exiting..."/>
         <fail unless="asm.exist"        message="ASM Bundle cannot be found. Exiting..."/>
     </target>
-
-    <!-- Compiles all tests. -->
     <target name="compile" depends="verify-dependencies" description="build dbws classes">
         <mkdir dir="${eclipselink.dbws.test}/${classes.dir}"/>
         <javac srcdir="${eclipselink.dbws.test}/${src.dir}"
@@ -98,8 +432,6 @@
             </fileset>
         </jar>
     </target>
-
-    <!-- Testing -->
 
     <target name="create-db-artifacts" depends="package">
         <sql onerror="continue"
@@ -144,3 +476,4 @@
          />
     </target>
 </project>
+-->

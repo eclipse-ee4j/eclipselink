@@ -62,7 +62,7 @@ import static dbws.testing.DBWSTestHelper.DATABASE_PASSWORD_KEY;
 import static dbws.testing.DBWSTestHelper.DATABASE_URL_KEY;
 import static dbws.testing.DBWSTestHelper.DATABASE_USERNAME_KEY;
 
-public class KeyMappingTestSuite {
+public class KeyMappingsTestSuite {
 
     static final String KEYMAPPINGS_SCHEMA =
         "<?xml version='1.0' encoding='UTF-8'?>" +
