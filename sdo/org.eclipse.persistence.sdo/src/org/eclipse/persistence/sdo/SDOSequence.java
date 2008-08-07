@@ -146,7 +146,12 @@ public class SDOSequence implements Sequence {
     }
 
     public void add(int index, String propertyName, Object value) {
-        Property property = dataObject.getInstanceProperty(propertyName, value);
+        Property property = dataObject.getInstanceProperty(propertyName);
+        if (property == null) {
+            // Property with given name does not exist - create an open content property
+            property = dataObject.defineOpenContentProperty(propertyName, value);
+            ((SDOProperty) property).setMany(true);
+        }
         add(index, property, value);
     }
 
@@ -174,7 +179,12 @@ public class SDOSequence implements Sequence {
     }
 
     public boolean add(String propertyName, Object value) {
-        Property property = dataObject.getInstanceProperty(propertyName, value);
+        Property property = dataObject.getInstanceProperty(propertyName);
+        if (property == null) {
+            // Property with given name does not exist - create an open content property
+            property = dataObject.defineOpenContentProperty(propertyName, value);
+            ((SDOProperty) property).setMany(true);
+        }
         return add(property, value);
     }
 
