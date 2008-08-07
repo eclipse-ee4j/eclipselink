@@ -10,7 +10,7 @@ public class AddressTypeImpl extends SDODataObject implements AddressType {
 
    public AddressTypeImpl() {}
 
-   public boolean getPermanent() {
+   public boolean isPermanent() {
       return getBoolean(START_PROPERTY_INDEX + 0);
    }
 

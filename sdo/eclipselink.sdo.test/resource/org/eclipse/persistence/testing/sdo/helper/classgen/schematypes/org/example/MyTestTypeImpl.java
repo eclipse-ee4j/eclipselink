@@ -74,7 +74,7 @@ public class MyTestTypeImpl extends SDODataObject implements MyTestType {
       set(START_PROPERTY_INDEX + 7 , value);
    }
 
-   public boolean getMyBooleanTest() {
+   public boolean isMyBooleanTest() {
       return getBoolean(START_PROPERTY_INDEX + 8);
    }
 

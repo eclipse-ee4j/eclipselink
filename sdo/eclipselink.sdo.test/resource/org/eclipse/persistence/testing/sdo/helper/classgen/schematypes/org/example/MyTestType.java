@@ -34,7 +34,7 @@ public interface MyTestType {
 
    public void setMyBase64BinaryTest(byte[] value);
 
-   public boolean getMyBooleanTest();
+   public boolean isMyBooleanTest();
 
    public void setMyBooleanTest(boolean value);
 

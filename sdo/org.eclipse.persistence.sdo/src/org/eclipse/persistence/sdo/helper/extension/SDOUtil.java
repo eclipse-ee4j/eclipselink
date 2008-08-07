@@ -18,6 +18,7 @@ import java.util.ArrayList;
 import java.util.StringTokenizer;
 
 import org.eclipse.persistence.sdo.SDOConstants;
+import org.eclipse.persistence.internal.helper.ClassConstants;
 import org.eclipse.persistence.logging.AbstractSessionLog;
 
 /**
@@ -35,6 +36,10 @@ public class SDOUtil {
 	private static final String HEXADECIMAL_DIGITS = "0123456789abcdefABCDEF";
 	/** Warning string to signify that the input to the package generator may not be a valid URI */
 	private static final String INVALID_URI_WARNING = "SDOUtil: The URI [{0}] used for java package name generation is invalid - generating [{1}].";
+
+	private static final String IS = "is";
+    private static final String GET = "get";
+    private static final String SET = "set";
 	
 	/**
 	 * INTERNAL: 
@@ -456,7 +461,7 @@ public class SDOUtil {
      */
     public static String setMethodName(String s) {
         StringBuffer stringbuffer = new StringBuffer();
-        stringbuffer.append("set").append(methodName(s));
+        stringbuffer.append(SET).append(methodName(s));
         return stringbuffer.toString();
     }
 
@@ -469,8 +474,28 @@ public class SDOUtil {
     public static String getMethodName(String s) {
         StringBuffer stringbuffer = new StringBuffer();
         // only log the setMethodName call so we do not get double logs
-        stringbuffer.append("get").append(className(s, true, false, false));
+        stringbuffer.append(GET).append(className(s, true, false, false));
         return stringbuffer.toString();
+    }
+
+    /**
+     * INTERNAL:
+     * Return a valid Java get method name for a given string. This method will check
+     * the returnType to see if it is a boolean/Boolean:  if so, 'is' will be used in
+     * the method name instead of 'get'.
+     *   
+     * @param s
+     * @param returnType
+     * @return
+     */
+    public static String getMethodName(String s, String returnType) {
+        if (returnType.equals(ClassConstants.PBOOLEAN.getName()) || returnType.equals(ClassConstants.BOOLEAN.getName())) {
+            StringBuffer stringbuffer = new StringBuffer();
+            // only log the setMethodName call so we do not get double logs
+            stringbuffer.append(IS).append(SDOUtil.className(s, true, false, false));
+            return stringbuffer.toString();
+        }
+        return getMethodName(s);
     }
 
     /**

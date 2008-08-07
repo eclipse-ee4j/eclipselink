@@ -2,7 +2,7 @@ package org.example;
 
 public interface AddressType {
 
-   public boolean getPermanent();
+   public boolean isPermanent();
 
    public void setPermanent(boolean value);
 

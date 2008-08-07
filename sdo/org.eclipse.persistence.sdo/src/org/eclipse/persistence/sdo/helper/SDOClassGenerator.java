@@ -469,8 +469,7 @@ public class SDOClassGenerator {
      */
     private void buildGetMethodBuffer(ClassBuffer classBuffer, SDOProperty property, java.util.List documentation) {
         String returnType = getJavaTypeForProperty(property);
-
-        String methodName = SDOUtil.getMethodName(property.getName());
+        String methodName = SDOUtil.getMethodName(property.getName(), returnType);
 
         if (!(property.getType().isChangeSummaryType() && methodName.equals("getChangeSummary"))) {
             if ((documentation != null) && (documentation.size() > 0)) {
