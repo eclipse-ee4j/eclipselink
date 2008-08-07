@@ -223,12 +223,12 @@ public class XPathEngineSimpleTestCases extends SDOTestCase {
             SDODataObject po = (SDODataObject) factory.create("http://www.example.org", "PurchaseOrderType");
             po.createDataObject("items");
             po.set("items/item[1]/productName", "Gizmo");
-        } catch (IndexOutOfBoundsException iobe) {
+        } catch (SDOException sdoe) {
             expectedEx = true;
         } catch (Exception x) {
             unexpectedEx = true;
         }
-        assertTrue("An IndexOutOfBoundsException was not thrown as expceted.", expectedEx);
+        assertTrue("An SDOException was not thrown as expceted.", expectedEx);
         assertFalse("An unexpected exception occurred.", unexpectedEx);
     }
 }

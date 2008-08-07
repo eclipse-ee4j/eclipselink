@@ -68,9 +68,9 @@ public class SDODataObjectGetByPositionalPathTest extends SDODataObjectGetByPosi
         //this.assertNull(dataObject_a.get("PName-a/PName-b.1/PName-c"));
         try {
             Object value = dataObject_a.get("PName-a/PName-b.1/PName-c");
-            fail("An IndexOutOfBoundsException was expected but didn't occur");
         } catch (IndexOutOfBoundsException e) {
-            //pass
+        	// get() should not throw exception (SDO 2.1 Spec)
+            fail("An IndexOutOfBoundsException occurred but was not expected.");
         }
     }
 

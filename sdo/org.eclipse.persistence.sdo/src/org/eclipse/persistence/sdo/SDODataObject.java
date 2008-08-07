@@ -142,7 +142,12 @@ public class SDODataObject implements DataObject, SequencedObject {
     }
 
     public Object get(String path) {// path like "a/b/c"
-        return XPathEngine.getInstance().get(path, this);
+    	try {
+    		return XPathEngine.getInstance().get(path, this);
+    	} catch (Exception e) {
+    		// Swallow exception and return null, as per SDO 2.1 spec
+    		return null;
+    	}
     }
 
     public void set(String path, Object value) throws ClassCastException, UnsupportedOperationException, IllegalArgumentException {

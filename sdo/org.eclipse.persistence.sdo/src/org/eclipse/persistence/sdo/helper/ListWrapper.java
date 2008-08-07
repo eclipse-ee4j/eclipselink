@@ -587,9 +587,8 @@ public class ListWrapper implements List, Serializable {
     public Object set(int index, Object item) {
         // fail-fast range checking
         if ((index < 0) || (index > size())) {
-            // TODO: throw IndexOutOfBoundsException
-            //throw new IndexOutOfBoundsException("index " + index + " is out of bounds.");
-            return null;
+            throw new IndexOutOfBoundsException("index " + index + " is out of bounds.");
+
         }
 
         // TODO: perf: containment updating is done twice when delegating
@@ -756,12 +755,12 @@ public class ListWrapper implements List, Serializable {
     }
 
     public Object get(int position) {
-        if (currentElements.size() == 0) {
-            // TODO: throw OutOfBoundsException
-            return null;
-        } else {
-            return currentElements.get(position);
-        }
+    	try {
+    		return currentElements.get(position);
+        } catch (Exception e) {
+        	// Return null in case of exception, as per SDO 2.1 Spec
+        	return null;
+        }    		    		
     }
 
     /**

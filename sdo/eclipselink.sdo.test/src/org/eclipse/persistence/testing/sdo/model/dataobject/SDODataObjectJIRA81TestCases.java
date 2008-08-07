@@ -57,15 +57,15 @@ public class SDODataObjectJIRA81TestCases extends SDOTestCase {
         assertEquals(3, empDataObject.get("myList[2]"));
         try {
             empDataObject.get("myList[3]");
-            //returns null should throw exception per 81          
-            fail("Expected exception");
         } catch (IndexOutOfBoundsException e) {
-            //pass
+        	// get() should not throw exceptions (SDO 2.1 Spec)
+        	fail("An IndexOutOfBoundsException occurred but was not expected.");
         }
         try {
             empDataObject.getList("myList").get(3);
         } catch (IndexOutOfBoundsException e) {
-            //pass
+        	// get() should not throw exceptions (SDO 2.1 Spec)
+        	fail("An IndexOutOfBoundsException occurred but was not expected.");
         }
     }
 
@@ -81,9 +81,9 @@ public class SDODataObjectJIRA81TestCases extends SDOTestCase {
 
         try {
             empDataObject.getList("myList").get(3);
-            fail("Expected exception");
         } catch (IndexOutOfBoundsException e) {
-            //pass
+        	// get() should not throw exceptions (SDO 2.1 Spec)
+        	fail("An IndexOutOfBoundsException occurred but was not expected.");
         }
     }
 }

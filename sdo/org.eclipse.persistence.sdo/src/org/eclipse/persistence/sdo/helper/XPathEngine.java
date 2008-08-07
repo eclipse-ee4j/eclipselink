@@ -111,8 +111,9 @@ public class XPathEngine {
                     DataObject currentDataObject = (DataObject)value;
                     return get(path.substring(index + 1, path.length()), currentDataObject);
                 } else {
-                    // TODO: throw exception "ChangeSummary not found using xpath or xpath invalid"
-                    return null;
+                	// TODO: Throw a better exception here.
+                    // TODO: throw exception "ChangeSummary not found using xpath or xpath invalid" ?
+                	throw new RuntimeException("Expected DataObject");
                 }
             }
         }
@@ -161,10 +162,14 @@ public class XPathEngine {
         String lastPropertyName = getPropertyNameInFrag(frag, numInLastProperty, indexOfDot, indexOfOpenBracket);// get last property name on path for case 1
         DataObject lastDataObject;
         if (-1 < lastSlashIndex) {
-            lastDataObject = (SDODataObject)get(path.substring(0, lastSlashIndex), caller);// get last dataobject on path
-            if (lastDataObject == null) {
+            Object lastObject = get(path.substring(0, lastSlashIndex), caller);// get last dataobject on path
+            // If trying to access a list element from a null list, this object will be
+            // an instance of ListWrapper, not DataObject, but the error message is the same
+            // as if it was a null DataObject
+            if (lastObject == null || lastObject instanceof ListWrapper) {
                 throw SDOException.cannotPerformOperationOnProperty(lastPropertyName, path);
             }
+            lastDataObject = (SDODataObject) lastObject;
         } else {
             lastDataObject = caller;
         }
@@ -244,46 +249,10 @@ public class XPathEngine {
         } else {// case like set("a/b.1", List) will cause a list be added into a existed list
             List objects = lastDataObject.getList(lastProperty);
 
-            /*ToDo: if(equalSignIndex != -1){
-                         int j=0;
-                         while(iterObjects.hasNext()){
-                             DataObject cur = (DataObject)iterObjects.next();
-                             Property p = cur.getProperty(propertyNameOfQryDataObject);
-                             if(!p.isMany()){
-                                 if(cur.getString(p).equals(value)){
-                                     iterObjects.remove();
-                                     objects.add(j, value);
-                                     return;
-                                 }
-                             }else{ // case p is many type
-                                 List values = cur.getList(p);
-                                 Iterator iterValues = values.iterator();
-                                 int i=0;
-                                 while(iterValues.hasNext()){
-                                     Object v = iterValues.next();
-                                     String s = cur.getString(propertyNameOfQryDataObject+"."+i);
-                                     if(s.equals(value)){
-                                         iterObjects.remove();
-                                         objects.add(j, value);
-                                         return cur;
-                                     }
-                                     i++;
-                                 }
-                             }
-                             j++;
-                         }
-                    }*/
-
-            //TODO: else{
-            if (numInLastProperty <= objects.size()) {
-                if(convertValue){
-                  value =  DataHelper.INSTANCE.convert(lastProperty.getType(), value);
-                }
-                objects.set(numInLastProperty, value);
-                //objects.add(numInLastProperty, value);
+            if (convertValue) {
+            	value =  DataHelper.INSTANCE.convert(lastProperty.getType(), value);
             }
-
-            // otherwise, throw IllegalArguement exception? not mentioned in Spec.
+            objects.set(numInLastProperty, value);
         }
     }
 
@@ -455,21 +424,14 @@ public class XPathEngine {
      */
     private Object getObjectByFragment(String propertyName, int position, DataObject caller) {
         Property prop = caller.getInstanceProperty(propertyName);
-        if(prop == null){
+        if (prop == null){
           return null;
         }
-        try {
-            if (position != -1) {
-                List dataObjects = caller.getList(prop);
-                if (position < dataObjects.size()) {
-                    return dataObjects.get(position);// get DataObject
-                } else {// out of boundary                    
-                    throw new IndexOutOfBoundsException();
-                }
-            }
-            return caller.get(prop);
-        } catch (IllegalArgumentException e) {
-            return null;
+        
+        if (prop.isMany() && position > -1) {
+            return caller.getList(prop).get(position);
+        } else {
+            return caller.get(prop);        	
         }
     }
 

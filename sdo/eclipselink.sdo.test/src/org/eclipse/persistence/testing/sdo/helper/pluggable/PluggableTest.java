@@ -301,11 +301,9 @@ public class PluggableTest extends PluggableTestCases {
         try {
             Object anUnsetAddress = anEmployee.get("phones[2]");
         } catch (IndexOutOfBoundsException e) {
-            //pass
-            return;
+            // get() should not throw exceptions (SDO 2.1 Spec)
+            fail("An IndexOutOfBoundsException occurred but was not expected.");
         }
-        fail("An IndexOutOfBoundsException was expected but didn't occurr");
-        //assertNull(anUnsetAddress);
     }
 
     public void testPOJOValueStoreUnSetPreviouslyUnSet() {

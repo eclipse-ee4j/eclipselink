@@ -679,9 +679,9 @@ public class SDODataObjectListWrapperTest extends SDOTestCase {
         List aList1 = (List)aRoot5.getList("items/item");
         try {
             SDODataObject anItem = (SDODataObject)aRoot.get("items/item[4]");
-            fail("An IndexOutOfBoundsException was expected but didn't occur");
         } catch (IndexOutOfBoundsException e) {
-            //pass
+        	// get() should not throw exception (SDO 2.1 Spec)
+            fail("An IndexOutOfBoundsException occured but was expected.");
         }
 
         //Changed test since out of bounds now throws an exception SDO Jira 81
@@ -1048,10 +1048,16 @@ public class SDODataObjectListWrapperTest extends SDOTestCase {
 
         // Test step: (reset past the end of the current list)
         int originalSize = aList.size();
-        SDODataObject aPreviousObject = (SDODataObject)aList.set(originalSize + 2, anItem);
 
-        // check previous object is null
-        assertNull(aPreviousObject);
+        try {
+        	SDODataObject aPreviousObject = (SDODataObject)aList.set(originalSize + 2, anItem);
+        } catch (IndexOutOfBoundsException ioobe) {
+        	// Expected, continue
+        } catch (Exception e) {
+        	// Unexpected, fail
+        	fail("An unexpected exception occurred.");
+        }
+
         // size is unchanged
         assertTrue(originalSize == aList.size());
     }
