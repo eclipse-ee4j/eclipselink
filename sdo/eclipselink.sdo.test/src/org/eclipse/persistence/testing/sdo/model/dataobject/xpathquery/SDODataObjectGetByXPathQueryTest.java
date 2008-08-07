@@ -15,6 +15,9 @@ package org.eclipse.persistence.testing.sdo.model.dataobject.xpathquery;
 import commonj.sdo.DataObject;
 import java.util.ArrayList;
 import java.util.List;
+
+import junit.textui.TestRunner;
+
 import org.eclipse.persistence.sdo.SDOConstants;
 import org.eclipse.persistence.sdo.SDODataObject;
 import org.eclipse.persistence.sdo.SDOProperty;
@@ -25,6 +28,11 @@ public class SDODataObjectGetByXPathQueryTest extends SDODataObjectGetByXPathQue
         super(name);
     }
 
+    public static void main(String[] args) {
+        String[] arguments = { "-c", "org.eclipse.persistence.testing.sdo.model.dataobject.xpathquery.SDODataObjectGetByXPathQueryTest" };
+        TestRunner.main(arguments);
+    }
+    
     //case:a/b.0/c[number="123"] where number is a many type property, and no objects meets requirement
     public void testMultipleCaseOueryD1Colon() {
         dataObject_d1.set(property_d_number, "123");
