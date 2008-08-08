@@ -9,10 +9,14 @@
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
+ *     07/25/2008-1.0   Michael OBrien 
+ *       - 242120: Let the DB exception in alterOnDatabase() propagate so as not to
+ *                         cause an infinite loop when ddl generation updates fail on a JTA DS
  ******************************************************************************/
 package org.eclipse.persistence.tools.schemaframework;
 
 import java.io.*;
+import org.eclipse.persistence.queries.SQLCall;
 import org.eclipse.persistence.exceptions.*;
 import org.eclipse.persistence.sequencing.Sequence;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
@@ -43,7 +47,7 @@ public class SequenceObjectDefinition extends SequenceDefinition {
         try {
             // startWith value calculated using the initial value and increment.
             // The first time TopLink calls select nextval, the value equal to startWith is returned.
-            // The first sequence value TopLink may assign is startWith - getIncrement() + 1.
+            // The first sequence value EclipseLink may assign is startWith - getIncrement() + 1.
             int startWith = sequence.getInitialValue() + sequence.getPreallocationSize() - 1;
             session.getPlatform().buildSequenceObjectCreationWriter(writer, getFullName(), sequence.getPreallocationSize(), startWith);
         } catch (IOException ioException) {
@@ -127,11 +131,9 @@ public class SequenceObjectDefinition extends SequenceDefinition {
      * Assume that the sequence exists.
      */
     public void alterOnDatabase(AbstractSession session) throws EclipseLinkException {
-        try {
-            session.executeNonSelectingCall(new org.eclipse.persistence.queries.SQLCall(buildAlterIncrementWriter(session, new StringWriter()).toString()));
-        } catch (DatabaseException exception) {
-            createOnDatabase(session);
-        }
+        // Bug# 242120: Let the DatabaseException propagate and do not call 
+        // createOnDatabase(session) which would cause an infinite loop on a JTA connection
+        session.executeNonSelectingCall(new SQLCall(buildAlterIncrementWriter(session, new StringWriter()).toString()));
     }
 
     /**
