@@ -67,7 +67,7 @@ public class JAXPPlatform implements XMLPlatform {
 
     public SchemaFactory getSchemaFactory() {
     	if(null == schemaFactory) {
-    		schemaFactory = SchemaFactory.newInstance(javax.xml.XMLConstants.W3C_XML_SCHEMA_NS_URI);
+    		schemaFactory = SchemaFactory.newInstance(XMLConstants.SCHEMA_URL);
     	}
     	return schemaFactory;
     }
