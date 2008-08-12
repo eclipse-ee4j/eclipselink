@@ -24,7 +24,6 @@ import java.util.Map;
 import javax.xml.namespace.QName;
 
 import org.eclipse.persistence.exceptions.SDOException;
-import org.eclipse.persistence.internal.oxm.XMLConversionManager;
 import org.eclipse.persistence.oxm.XMLDescriptor;
 import org.eclipse.persistence.oxm.XMLField;
 import org.eclipse.persistence.oxm.mappings.XMLDirectMapping;
@@ -35,8 +34,6 @@ import org.eclipse.persistence.sdo.helper.SDOClassLoader;
 import org.eclipse.persistence.sdo.helper.SDOMethodAttributeAccessor;
 import org.eclipse.persistence.sdo.helper.SDOTypeHelper;
 import org.eclipse.persistence.sdo.helper.SDOXMLHelper;
-import org.eclipse.persistence.sdo.helper.delegates.SDOTypeHelperDelegate;
-import org.eclipse.persistence.sdo.helper.delegates.SDOTypeHelperDelegator;
 import org.eclipse.persistence.sdo.helper.extension.SDOUtil;
 import org.eclipse.persistence.sessions.Project;
 
