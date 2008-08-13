@@ -30,6 +30,7 @@ import org.eclipse.persistence.tools.workbench.framework.context.WorkbenchContex
 import org.eclipse.persistence.tools.workbench.framework.resources.ResourceRepository;
 import org.eclipse.persistence.tools.workbench.framework.ui.view.ScrollablePropertiesPage;
 import org.eclipse.persistence.tools.workbench.framework.uitools.SwingTools;
+import org.eclipse.persistence.tools.workbench.framework.uitools.TriStateBooleanCellRendererAdapter;
 import org.eclipse.persistence.tools.workbench.scplugin.model.adapter.RemoteCommandManagerAdapter;
 import org.eclipse.persistence.tools.workbench.scplugin.model.adapter.SessionAdapter;
 import org.eclipse.persistence.tools.workbench.scplugin.ui.session.SessionNode;
@@ -46,8 +47,8 @@ import org.eclipse.persistence.tools.workbench.uitools.app.swing.ComboBoxModelAd
 import org.eclipse.persistence.tools.workbench.uitools.cell.AdaptableListCellRenderer;
 import org.eclipse.persistence.tools.workbench.uitools.cell.CellRendererAdapter;
 import org.eclipse.persistence.tools.workbench.utility.Transformer;
+import org.eclipse.persistence.tools.workbench.utility.TriStateBoolean;
 import org.eclipse.persistence.tools.workbench.utility.iterators.ArrayIterator;
-
 
 /**
  * This page shows the Clustering combo box with three possible selections.
@@ -93,74 +94,6 @@ public final class SessionClusteringPropertiesPage extends ScrollablePropertiesP
 	}
 
 	/**
-	 * Creates the <code>ButtonModel</code> responsible to handle enabled state
-	 * of Use Clustering Service check box.
-	 * 
-	 * @return A new <code>CheckBoxModelAdapter</code>
-	 */
-	private ButtonModel buildClusteringCheckBoxAdapter()
-	{
-		return new CheckBoxModelAdapter(buildClusteringCheckBoxHolder(), false)
-		{
-			protected void booleanChanged(PropertyChangeEvent e)
-			{
-				// Transform the values to Boolean values since the model passed a
-				// Clustering type (RemoteCommandManager or CacheSynchronization)
-				SessionAdapter adapter = (SessionAdapter) selection();
-
-				if (adapter != null)
-				{
-					Boolean newValue = Boolean.valueOf(!adapter.hasNoClusteringService());
-					Boolean oldValue = Boolean.valueOf(!newValue.booleanValue());
-					e = new PropertyChangeEvent(e.getSource(), e.getPropertyName(), oldValue, newValue);
-				}
-
-				super.booleanChanged(e);
-			}
-		};
-	}
-
-	/**
-	 * Creates the <code>PropertyValueModel</code> responsible to handle the
-	 * Use Clustering Service property. The value desired by the
-	 * <code>ButtonModel</code> is a <code>Boolean</code> and the model simply
-	 * needs to be updated to use a Clustering service or not.
-	 *
-	 * @return A new <code>PropertyValueModel</code>
-	 */
-	private PropertyValueModel buildClusteringCheckBoxHolder()
-	{
-		String[] propertyNames = new String[]
-		{
-			SessionAdapter.REMOTE_COMMAND_MANAGER_CONFIG_PROPERTY,
-		};
-
-		return new PropertyAspectAdapter(getSelectionHolder(), propertyNames)
-		{
-			protected Object getValueFromSubject()
-			{
-				SessionAdapter adapter = (SessionAdapter) subject;
-				return Boolean.valueOf(!adapter.hasNoClusteringService());
-			}
-
-			protected void setValueOnSubject(Object value)
-			{
-				SessionAdapter adapter = (SessionAdapter) subject;
-				boolean boolValue = Boolean.TRUE.equals(value);
-
-				if (boolValue && adapter.hasNoClusteringService())
-				{
-					adapter.setClusteringToRemoteCommandManager();
-				}
-				else if (!boolValue)
-				{
-					adapter.setClusteringToNothing();
-				}
-			}
-		};
-	}
-
-	/**
 	 * Creates the <code>CollectionValueModel</code> containing the actual items
 	 * to be shown in the Clustering combo box.
 	 *
@@ -172,7 +105,7 @@ public final class SessionClusteringPropertiesPage extends ScrollablePropertiesP
 		{
 			protected Iterator getValueFromSubject()
 			{
-				return new ArrayIterator(new Object[] { Boolean.TRUE, Boolean.FALSE });
+				return new ArrayIterator(new Object[] { TriStateBoolean.UNDEFINED, TriStateBoolean.TRUE, TriStateBoolean.FALSE});
 			}
 		};
 	}
@@ -200,8 +133,20 @@ public final class SessionClusteringPropertiesPage extends ScrollablePropertiesP
 	{
 		ResourceRepository resourceRepository = resourceRepository();
 
-		return new BooleanCellRendererAdapter(resourceRepository.getString("REMOTE_COMMAND"),
-													resourceRepository.getString("CACHE_SYNCHRONIZATION"));
+		return new TriStateBooleanCellRendererAdapter(resourceRepository){
+			@Override
+			protected String trueResourceKey() {
+				return "REMOTE_COMMAND";
+			}
+			@Override
+			protected String falseResourceKey() {
+				return "CACHE_SYNCHRONIZATION";
+			}
+			@Override
+			protected String undefinedResourceKey() {			
+				return "DEFAULT_CLUSTERING_TYPE";
+			}
+		};
 	}
 
 	/**
@@ -213,19 +158,6 @@ public final class SessionClusteringPropertiesPage extends ScrollablePropertiesP
 	{
 		return new SwitcherPanel(buildClusteringTypeHolder(),
 										 buildClusteringTypeTransformer());
-	}
-
-	/**
-	 * Creates a new <code>ComponentVisibilityEnabler</code> that is responsible
-	 * to keep the visible state of the <code>Component</code> in sync with the
-	 * type of clustering used.
-	 *
-	 * @param clusteringTypeWidgets The widgets used to change the Clustering Type
-	 * @return A new <code>ComponentVisibilityEnabler</code>
-	 */
-	private ComponentVisibilityEnabler buildClusteringTypeComponentVisibilityUpdater(Component clusteringTypeWidgets)
-	{
-		return new ComponentVisibilityEnabler(buildClusteringTypeVisibilityHolder(), Collections.singleton(clusteringTypeWidgets));
 	}
 
 	/**
@@ -276,20 +208,20 @@ public final class SessionClusteringPropertiesPage extends ScrollablePropertiesP
 				SessionAdapter adapter = (SessionAdapter) subject;
 
 				if (adapter.hasNoClusteringService())
-					return null;
+					return TriStateBoolean.UNDEFINED;
 
-				return Boolean.valueOf(adapter.hasRemoteCommandManager());
+				return TriStateBoolean.valueOf(adapter.hasRemoteCommandManager());
 			}
 
 			protected void setValueOnSubject(Object value)
 			{
 				SessionAdapter adapter = (SessionAdapter) subject;
 
-				if (Boolean.TRUE.equals(value))
+				if (TriStateBoolean.TRUE.equals(value))
 				{
 					adapter.setClusteringToRemoteCommandManager();
 				}
-				else if (Boolean.FALSE.equals(value))
+				else if (TriStateBoolean.FALSE.equals(value) || TriStateBoolean.UNDEFINED.equals(value))
 				{
 					adapter.setClusteringToNothing();
 				}
@@ -328,58 +260,6 @@ public final class SessionClusteringPropertiesPage extends ScrollablePropertiesP
 	}
 
 	/**
-	 * Creates the <code>PropertyValueModel</code> responsible to handle the
-	 * boolean holder used by the <code>ComponentVisibilityEnabler</code>.
-	 *
-	 * @return A new <code>PropertyValueModel</code>
-	 */
-	private PropertyValueModel buildClusteringTypeVisibilityHolder()
-	{
-		String[] propertyNames = new String[]
-		{
-			SessionAdapter.REMOTE_COMMAND_MANAGER_CONFIG_PROPERTY,
-		};
-
-		PropertyAspectAdapter adapter = new PropertyAspectAdapter(getSelectionHolder(), propertyNames)
-		{
-			protected Object getValueFromSubject()
-			{
-				SessionAdapter session = (SessionAdapter) subject;
-
-				if (session.hasRemoteCommandManager())
-					return session.getRemoteCommandManager();
-
-				return null;
-			}
-		};
-
-		return new TransformationPropertyValueModel(adapter)
-		{
-			protected void valueChanged(PropertyChangeEvent e)
-			{
-				Boolean newValue = (Boolean) this.transform(e.getNewValue());
-				Object oldValue = Boolean.valueOf(!newValue.booleanValue());
-				this.firePropertyChanged(VALUE, oldValue, newValue);
-			}
-
-			protected Object transform(Object value)
-			{
-				SessionAdapter session = (SessionAdapter) selection();
-
-				if ((session == null) ||
-					 !session.hasCacheSynchronizationManager() &&
-					 !session.hasRemoteCommandManager())
-				{
-					return Boolean.FALSE;
-				}
-
-				Boolean alwaysShown = Boolean.valueOf(System.getProperty("csm", "false"));
-				return Boolean.valueOf(session.isCacheSynchronizationManagerAllowed() || alwaysShown.booleanValue());
-			}
-		};
-	}
-
-	/**
 	 * Initializes the layout of the Clustering sub-panel.
 	 *
 	 * @return The container with all its widgets
@@ -411,7 +291,6 @@ public final class SessionClusteringPropertiesPage extends ScrollablePropertiesP
 		constraints.insets      = new Insets(0, 0, 0, 0);
 
 		panel.add(clusteringWidgets, constraints);
-		buildClusteringTypeComponentVisibilityUpdater(clusteringWidgets);
 		addHelpTopicId(clusteringWidgets, "session.clustering");
 
 		// Create the sub-panel container
@@ -447,23 +326,6 @@ public final class SessionClusteringPropertiesPage extends ScrollablePropertiesP
 		JPanel panel = new JPanel(new GridBagLayout());
 		panel.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
 
-		// Use Clustering Service check box
-		JCheckBox clusteringCheckBox = buildCheckBox("CLUSTERING_CLUSTERING_CHECK_BOX",
-																	buildClusteringCheckBoxAdapter());
-
-		constraints.gridx       = 0;
-		constraints.gridy       = 0;
-		constraints.gridwidth   = 1;
-		constraints.gridheight  = 1;
-		constraints.weightx     = 0;
-		constraints.weighty     = 0;
-		constraints.fill        = GridBagConstraints.NONE;
-		constraints.anchor      = GridBagConstraints.LINE_START;
-		constraints.insets      = new Insets(0, 0, 5, 0);
-
-		panel.add(clusteringCheckBox, constraints);
-		addHelpTopicId(clusteringCheckBox, "session.clustering");
-
 		// Create internal pane
 		JPanel internalPane = buildInternalPage();
 
@@ -474,7 +336,7 @@ public final class SessionClusteringPropertiesPage extends ScrollablePropertiesP
 		constraints.weightx     = 1;
 		constraints.weighty     = 1;
 		constraints.fill        = GridBagConstraints.BOTH;
-		constraints.anchor      = GridBagConstraints.CENTER;
+		constraints.anchor      = GridBagConstraints.LINE_START;
 		constraints.insets      = new Insets(0, offset, 0, 0);
 
 		panel.add(internalPane, constraints);

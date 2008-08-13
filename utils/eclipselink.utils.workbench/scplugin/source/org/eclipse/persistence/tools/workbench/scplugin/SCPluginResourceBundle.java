@@ -420,6 +420,7 @@ public final class SCPluginResourceBundle extends ListResourceBundle {
 		// ui.session.clustering.SessionClusteringPropertiesPage - Clustering choices
 		{ "CACHE_SYNCHRONIZATION", "Cache Synchronization" },
 		{ "REMOTE_COMMAND",        "Remote Command" },
+		{ "DEFAULT_CLUSTERING_TYPE", "Default(RMI)"},
 
 		// ui.session.general.EventListenersPane
 		{ "OPTIONS_EVENT_LISTENERS_ADD_BUTTON",    "&Add..." },
