@@ -12,7 +12,6 @@
  ******************************************************************************/  
 package org.eclipse.persistence.descriptors;
 
-import java.math.*;
 import java.io.*;
 import java.util.*;
 import org.eclipse.persistence.mappings.*;
@@ -184,18 +183,11 @@ public class VersionLockingPolicy implements OptimisticLockingPolicy, Serializab
      *  ClassCastException if the passed value is of a wrong type.
      */
     public int compareWriteLockValues(Object value1, Object value2) {
-        BigDecimal bigDecimalValue1, bigDecimalValue2;
-        if(value1 instanceof BigDecimal) {
-            bigDecimalValue1 = (BigDecimal)value1;
-        } else {
-            bigDecimalValue1 = new BigDecimal(((Number)value1).longValue());
-        }
-        if(value2 instanceof BigDecimal) {
-            bigDecimalValue2 = (BigDecimal)value2;
-        } else {
-            bigDecimalValue2 = new BigDecimal(((Number)value2).longValue());
-        }
-        return bigDecimalValue1.compareTo(bigDecimalValue2);
+        long longValue1 = ((Number)value1).longValue();
+        long longValue2 = ((Number)value2).longValue();
+        if ( longValue1 < longValue2 ) return -1;
+        if ( longValue1 == longValue2 ) return 0;
+        return 1;
     }
 
     /**
@@ -205,7 +197,7 @@ public class VersionLockingPolicy implements OptimisticLockingPolicy, Serializab
 
      */
     protected Class getDefaultLockingFieldType() {
-        return ClassConstants.BIGDECIMAL;
+        return ClassConstants.LONG;
 
     }
 
@@ -215,7 +207,7 @@ public class VersionLockingPolicy implements OptimisticLockingPolicy, Serializab
      * null in some situations.
      */
     public Object getBaseValue() {
-        return new BigDecimal(0);
+        return new Long(0);
     }
 
     /**
@@ -230,7 +222,7 @@ public class VersionLockingPolicy implements OptimisticLockingPolicy, Serializab
      * returns the initial locking value
      */
     protected Object getInitialWriteValue(AbstractSession session) {
-        return new BigDecimal(1);
+        return new Long(1);
     }
 
     /**
@@ -238,7 +230,7 @@ public class VersionLockingPolicy implements OptimisticLockingPolicy, Serializab
      * This method gets the write lock value from either the cache or
      * the object stored in the query.  It then returns the new incremented value.
      */
-    protected Object getNewLockValue(ModifyQuery query) {
+    public Object getNewLockValue(ModifyQuery query) {
         Class objectClass = query.getDescriptor().getJavaClass();
         Number value;
         Number newWriteLockValue = null;
@@ -307,24 +299,7 @@ public class VersionLockingPolicy implements OptimisticLockingPolicy, Serializab
             writeLockFieldValue = (Number)lockValueFromObject(domainObject);
         }
         // PERF: Allow long and BigDecimal.
-        if (newWriteLockFieldValue instanceof Long) {
-            long writeLockFieldValueLong = 0L;
-            if (writeLockFieldValue != null) {
-                writeLockFieldValueLong = writeLockFieldValue.longValue();
-            }
-            return (int)(newWriteLockFieldValue.longValue() - writeLockFieldValueLong);
-        } else {
-            if (writeLockFieldValue == null) {
-                writeLockFieldValue = new BigDecimal(0);// the object is not in the cache so assume this is a new object
-            }
-            if (!(writeLockFieldValue instanceof BigDecimal)) {
-                writeLockFieldValue = new BigDecimal(writeLockFieldValue.longValue());
-            }
-            if (!(newWriteLockFieldValue instanceof BigDecimal)) {
-                newWriteLockFieldValue = new BigDecimal(newWriteLockFieldValue.longValue());
-            }
-            return ((BigDecimal)newWriteLockFieldValue).subtract((BigDecimal)writeLockFieldValue).intValue();
-        }
+        return (int)(newWriteLockFieldValue.longValue() - writeLockFieldValue.longValue());
     }
 
     /**
@@ -370,18 +345,7 @@ public class VersionLockingPolicy implements OptimisticLockingPolicy, Serializab
      * Adds 1 to the value passed in.
      */
     protected Number incrementWriteLockValue(Number numberValue) {
-        // PERF: Support long and BigDecimal.
-        if (numberValue instanceof Long) {
-            return new Long(numberValue.longValue() + 1);
-        } else {
-            BigDecimal writeLockValue;
-            if (numberValue instanceof BigDecimal) {
-                writeLockValue = (BigDecimal)numberValue;
-            } else {
-                writeLockValue = new BigDecimal(numberValue.longValue());
-            }    
-            return writeLockValue.add(new BigDecimal(1));
-        }
+        return new Long(numberValue.longValue() + 1);
     }
 
     /**
@@ -449,14 +413,8 @@ public class VersionLockingPolicy implements OptimisticLockingPolicy, Serializab
             // we can check this by ensuring our value is greater than our parent's.
             Number writeLockValue = (Number)changeSet.getWriteLockValue();
             Number parentValue = (Number)session.getIdentityMapAccessorInstance().getWriteLockValue(primaryKey, original, getDescriptor());
-            if ((parentValue != null) && (!(parentValue instanceof BigDecimal))) {
-                parentValue = new BigDecimal(parentValue.longValue());
-            }
-            if ((writeLockValue != null) && (!(writeLockValue instanceof BigDecimal))) {
-                writeLockValue = new BigDecimal(writeLockValue.longValue());
-            }
             if (writeLockValue != null) {// This occurs if the object was deleted
-                if ((parentValue == null) || (((BigDecimal)parentValue).compareTo((BigDecimal)writeLockValue) == -1)) {
+                if ((parentValue == null) || (parentValue.longValue() < writeLockValue.longValue()) ) {
                     return true;
                 }
             }
@@ -486,13 +444,7 @@ public class VersionLockingPolicy implements OptimisticLockingPolicy, Serializab
         if (newWriteLockFieldValue == null) {
             return true;
         }
-        if (!(writeLockFieldValue instanceof BigDecimal)) {
-            writeLockFieldValue = new BigDecimal(writeLockFieldValue.longValue());
-        }
-        if (!(newWriteLockFieldValue instanceof BigDecimal)) {
-            newWriteLockFieldValue = new BigDecimal(newWriteLockFieldValue.longValue());
-        }
-        if (((BigDecimal)newWriteLockFieldValue).compareTo((BigDecimal)writeLockFieldValue) != 1) {
+        if (newWriteLockFieldValue.longValue() <= writeLockFieldValue.longValue()){
             return false;
         }
         return true;
@@ -519,13 +471,7 @@ public class VersionLockingPolicy implements OptimisticLockingPolicy, Serializab
         if (newWriteLockFieldValue == null) {
             return true;
         }
-        if (!(writeLockFieldValue instanceof BigDecimal)) {
-            writeLockFieldValue = new BigDecimal(writeLockFieldValue.longValue());
-        }
-        if (!(newWriteLockFieldValue instanceof BigDecimal)) {
-            newWriteLockFieldValue = new BigDecimal(newWriteLockFieldValue.longValue());
-        }
-        if (((BigDecimal)newWriteLockFieldValue).compareTo((BigDecimal)writeLockFieldValue) != 1) {
+        if (newWriteLockFieldValue.longValue() <= writeLockFieldValue.longValue()){
             return false;
         }
         return true;
@@ -557,6 +503,19 @@ public class VersionLockingPolicy implements OptimisticLockingPolicy, Serializab
             return this.lockMapping.getAttributeValueFromObject(domainObject);
         } else {
             return this.descriptor.getObjectBuilder().getBaseValueForField(this.writeLockField, domainObject);
+        }
+    }
+    
+    /**
+     * INTERNAL:
+     * Returns the mapping that will be used to access the version value from an object.
+     */
+    
+    public AbstractDirectMapping getVersionMapping(){
+        if (this.lockMapping != null){
+            return this.lockMapping;
+        }else{
+            return (AbstractDirectMapping)this.descriptor.getObjectBuilder().getBaseMappingForField(this.writeLockField);
         }
     }
 
@@ -624,7 +583,10 @@ public class VersionLockingPolicy implements OptimisticLockingPolicy, Serializab
     protected void updateWriteLockValueForWrite(ObjectLevelModifyQuery query, Object lockValue) {
         // PERF: direct-access.
         query.getModifyRow().put(this.writeLockField, lockValue);
-
+        updateObjectWithWriteValue(query, lockValue);
+    }
+    
+    public void updateObjectWithWriteValue(ObjectLevelModifyQuery query, Object lockValue){
         AbstractSession session = query.getSession();
         Object object = query.getObject();
         ObjectChangeSet objectChangeSet = query.getObjectChangeSet();

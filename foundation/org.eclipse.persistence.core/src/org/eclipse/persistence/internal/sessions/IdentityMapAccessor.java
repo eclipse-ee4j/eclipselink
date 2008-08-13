@@ -833,7 +833,8 @@ public class IdentityMapAccessor implements org.eclipse.persistence.sessions.Ide
      * The application should only call this is it knows that no references to the object exist.
      */
     public Object removeFromIdentityMap(Object object) {
-        return removeFromIdentityMap(getSession().keyFromObject(object), object.getClass());
+        Class theClass = object.getClass();
+        return removeFromIdentityMap(getSession().keyFromObject(object), theClass, getSession().getDescriptor(theClass), object);
     }
 
     /**
@@ -842,15 +843,15 @@ public class IdentityMapAccessor implements org.eclipse.persistence.sessions.Ide
      */
     public Object removeFromIdentityMap(Vector key, Class theClass) {
         ClassDescriptor descriptor = getSession().getDescriptor(theClass);
-        return removeFromIdentityMap(key, theClass, descriptor);
+        return removeFromIdentityMap(key, theClass, descriptor, null);
     }
     
     /**
      * INTERNAL:
      * Remove the object from the object cache.
      */
-    public Object removeFromIdentityMap(Vector key, Class theClass, ClassDescriptor descriptor) {
-        return getIdentityMapManager().removeFromIdentityMap(key, theClass, descriptor);
+    public Object removeFromIdentityMap(Vector key, Class theClass, ClassDescriptor descriptor, Object object) {
+        return getIdentityMapManager().removeFromIdentityMap(key, theClass, descriptor, object);
     }
 
     /**

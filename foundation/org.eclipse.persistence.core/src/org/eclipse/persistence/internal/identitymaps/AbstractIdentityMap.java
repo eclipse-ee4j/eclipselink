@@ -343,7 +343,7 @@ public abstract class AbstractIdentityMap implements IdentityMap, Serializable, 
      * This is used by DeleteObjectQuery and merge.
      * This is also an advanced (very) user API.
      */
-    public Object remove(Vector primaryKey) {
+    public Object remove(Vector primaryKey, Object object) {
         CacheKey key = getCacheKey(primaryKey);
         return remove(key);
     }

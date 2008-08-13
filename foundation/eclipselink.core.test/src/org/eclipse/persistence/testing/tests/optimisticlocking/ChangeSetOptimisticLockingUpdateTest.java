@@ -58,11 +58,14 @@ public class ChangeSetOptimisticLockingUpdateTest extends TestCase {
             getSession().getDescriptor(domainClass).getOptimisticLockingPolicy().getWriteLockValue(originalObject, 
                                                                                                    changeSet.getPrimaryKeys(), 
                                                                                                    (AbstractSession)getSession());
-        if (changeSet.getWriteLockValue() instanceof BigDecimal) {
-            lockValue = new BigDecimal(((Number)lockValue).intValue());
-        }
-        if (!changeSet.getWriteLockValue().equals(lockValue)) {
+        if (lockValue instanceof Number){
+            if (((Number)changeSet.getWriteLockValue()).longValue() !=((Number)lockValue).longValue()) {
+                throw new TestErrorException("The Write Lock Value was not updated within the Object Change Set");
+            }
+        }else if (! changeSet.getWriteLockValue().equals(lockValue)) {
             throw new TestErrorException("The Write Lock Value was not updated within the Object Change Set");
         }
+
+        
     }
 }

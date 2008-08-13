@@ -32,45 +32,13 @@ public class NullPointerWhileGettingValueThruMethodAccessorTest extends Exceptio
 
     protected void setup() {
         expectedException = DescriptorException.nullPointerWhileGettingValueThruMethodAccessor("getName", "Person", null);
-        getAbstractSession().beginTransaction();
-        orgDescriptor = getAbstractSession().getDescriptor(org.eclipse.persistence.testing.tests.validation.PersonMethodAccess.class);
-        orgIntegrityChecker = getSession().getIntegrityChecker();
     }
-    ClassDescriptor orgDescriptor;
-    IntegrityChecker orgIntegrityChecker;
-
-    public void reset() {
-        getAbstractSession().getDescriptors().remove(org.eclipse.persistence.testing.tests.validation.PersonMethodAccess.class);
-        if (orgDescriptor != null)
-            getDatabaseSession().addDescriptor(orgDescriptor);
-        if (orgIntegrityChecker != null)
-            getSession().setIntegrityChecker(orgIntegrityChecker);
-        getAbstractSession().rollbackTransaction();
-        getSession().getIdentityMapAccessor().initializeAllIdentityMaps();
-    }
-
 
     public void test() {
-        PersonMethodAccess person = new PersonMethodAccess();
-        person.setName("Person");
         try {
-            getSession().setIntegrityChecker(new IntegrityChecker());
-            getSession().getIntegrityChecker().dontCatchExceptions();
-            getDatabaseSession().addDescriptor(descriptor());
-            //    ((DatabaseSession) getSession()).login();
-            UnitOfWork uow = getAbstractSession().acquireUnitOfWork();
-            uow.registerObject(person);
-            uow.commit();
             DatabaseMapping dMapping = descriptor().getMappingForAttributeName("p_name");
             String attributeName = dMapping.getAttributeName();
-            dMapping.getAttributeValueFromObject(attributeName);
-
-            ExpressionBuilder builder = new ExpressionBuilder();
-            Expression expression = builder.get("p_name").equal("Person");
-            PersonMethodAccess personRead = (PersonMethodAccess)getAbstractSession().readObject(PersonMethodAccess.class, expression);
-            // System.out.println("\n\t Person's name is: " + personRead.p_name);
-
-            //    ((DatabaseSession) getSession()).logout();
+            dMapping.getAttributeAccessor().getAttributeValueFromObject(attributeName);
         } catch (EclipseLinkException exception) {
             caughtException = exception;
         }

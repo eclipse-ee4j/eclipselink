@@ -167,7 +167,7 @@ public interface IdentityMap extends Cloneable{
      * This is used by DeleteObjectQuery and merge.
      * This is also an advanced (very) user API.
      */
-    public Object remove(Vector primaryKey);
+    public Object remove(Vector primaryKey, Object object);
 
     /**
      * Remove the CacheKey from the map.

@@ -113,7 +113,7 @@ public class NoIdentityMap extends AbstractIdentityMap {
      * Do Nothing.
      * Return null, since no objects are cached.
      */
-    public Object remove(Vector primaryKey) {
+    public Object remove(Vector primaryKey, Object object) {
         return null;
     }
 
