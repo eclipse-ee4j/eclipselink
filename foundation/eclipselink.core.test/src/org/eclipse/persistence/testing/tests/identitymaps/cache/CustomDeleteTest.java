@@ -59,7 +59,7 @@ public class CustomDeleteTest extends org.eclipse.persistence.testing.framework.
         try {
             Vector primaryKeys = new Vector();
             primaryKeys.addElement(new java.math.BigDecimal(5678));
-            cache.remove(primaryKeys);
+            cache.remove(primaryKeys, null);
         } catch (NullPointerException e) {
             throw new TestErrorException("Error deleteing from cache when size is 2");
         }

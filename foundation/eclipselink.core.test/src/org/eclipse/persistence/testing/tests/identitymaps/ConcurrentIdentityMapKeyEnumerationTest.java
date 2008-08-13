@@ -71,7 +71,7 @@ public class ConcurrentIdentityMapKeyEnumerationTest extends TestCase {
                             storedObject.notifyAll();
                         }
                     }
-                    identityMap.remove(pk);
+                    identityMap.remove(pk, null);
                 }
             }
         };

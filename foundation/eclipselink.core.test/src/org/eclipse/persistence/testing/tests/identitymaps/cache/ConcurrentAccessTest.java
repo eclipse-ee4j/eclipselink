@@ -91,7 +91,7 @@ public class ConcurrentAccessTest extends AutoVerifyTestCase {
             try {
                 for (int count = 0; count < 10000; ++count) {
                     cache.put(primaryKeys, object, null, 0);
-                    cache.remove(primaryKeys);
+                    cache.remove(primaryKeys, null);
                 }
             } catch (NullPointerException ex) {
                 this.experienceError = true;

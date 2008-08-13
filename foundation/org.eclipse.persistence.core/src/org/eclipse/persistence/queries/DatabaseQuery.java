@@ -657,7 +657,7 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
             localRedirector = queryToExecute.getRedirector();
             // refactored redirection for bug 3241138
             if ( localRedirector!= null) {
-                return redirectQuery(localRedirector, queryToExecute, session, translationRow);
+                return redirectQuery(localRedirector, queryToExecute, session, queryToExecute.getTranslationRow());
             }
         }
         queryToExecute.prepareForExecution();

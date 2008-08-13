@@ -623,10 +623,6 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
      * attributes declared on the descriptor.
      */
     protected void checkPrePrepare(AbstractSession session) {
-        if (getRedirector() != null) {
-            return;
-        }
-        
         // This query is first prepared for global common state, this must be synced.
         if (!isPrePrepared()) {// Avoid the monitor is already prePrepare, must check again for concurrency.      
             synchronized (this) {

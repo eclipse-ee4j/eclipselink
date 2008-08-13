@@ -431,11 +431,11 @@ public class IsolatedClientSessionIdentityMapAccessor extends org.eclipse.persis
      * ADVANCED:
      * Remove the object from the object cache.
      */
-    public Object removeFromIdentityMap(Vector key, Class theClass, ClassDescriptor descriptor) {
+    public Object removeFromIdentityMap(Vector key, Class theClass, ClassDescriptor descriptor, Object object) {
         if (descriptor.isIsolated()) {
-            return getIdentityMapManager().removeFromIdentityMap(key, theClass, descriptor);
+            return getIdentityMapManager().removeFromIdentityMap(key, theClass, descriptor, object);
         } else {
-            return ((IsolatedClientSession)session).getParent().getIdentityMapAccessorInstance().removeFromIdentityMap(key, theClass, descriptor);
+            return ((IsolatedClientSession)session).getParent().getIdentityMapAccessorInstance().removeFromIdentityMap(key, theClass, descriptor, object);
         }
     }
 

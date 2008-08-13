@@ -55,7 +55,7 @@ public class MultipleDeleteFromIdentityMapTest extends TestCase {
         deletedObjects = new Vector();
         for (int index = 0; index < deletionKeys.size(); index++) {
             Vector key = (Vector)deletionKeys.elementAt(index);
-            deletedObjects.addElement(map.remove(key));
+            deletedObjects.addElement(map.remove(key, null));
         }
 
         retrievedObjects = new Vector();

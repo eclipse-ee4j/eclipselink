@@ -3345,7 +3345,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
                 ClassDescriptor descriptor = getDescriptor(removedObjectChangeSet.getClassType(this));
                 // PERF: Do not remove is uow is isolated.
                 if (!descriptor.shouldIsolateObjectsInUnitOfWork()) {
-                    getParent().getIdentityMapAccessorInstance().removeFromIdentityMap(primaryKeys, descriptor.getJavaClass(), descriptor);
+                    getParent().getIdentityMapAccessorInstance().removeFromIdentityMap(primaryKeys, descriptor.getJavaClass(), descriptor, removedObjectChangeSet.getUnitOfWorkClone());
                 }
             }
         }
@@ -4852,7 +4852,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
                 Vector primaryKey = getCurrentDescriptor().getObjectBuilder().extractPrimaryKeyFromObject(object, UnitOfWorkImpl.this);
 
                 // If object exists in IM remove it from the IM and also from clone mapping.
-                getIdentityMapAccessorInstance().removeFromIdentityMap(primaryKey, object.getClass(), getCurrentDescriptor());
+                getIdentityMapAccessorInstance().removeFromIdentityMap(primaryKey, object.getClass(), getCurrentDescriptor(), object);
                 getCloneMapping().remove(object);
 
                 // Remove object from the new object cache				

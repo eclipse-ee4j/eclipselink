@@ -1066,7 +1066,7 @@ public class IdentityMapManager implements Serializable, Cloneable {
     /**
      * Remove the object from the object cache.
      */
-    public Object removeFromIdentityMap(Vector key, Class domainClass, ClassDescriptor descriptor) {
+    public Object removeFromIdentityMap(Vector key, Class domainClass, ClassDescriptor descriptor, Object objectToRemove) {
         IdentityMap map = getIdentityMap(descriptor);
         Object value;
 
@@ -1075,13 +1075,13 @@ public class IdentityMapManager implements Serializable, Cloneable {
             // This is atomic so considered a read lock.
             acquireReadLock();
             try {
-                value = map.remove(key);
+                value = map.remove(key, objectToRemove);
             } finally {
                 releaseReadLock();
             }
             getSession().endOperationProfile(SessionProfiler.CACHE);
         } else {
-            value = map.remove(key);
+            value = map.remove(key, objectToRemove);
         }
         return value;
     }

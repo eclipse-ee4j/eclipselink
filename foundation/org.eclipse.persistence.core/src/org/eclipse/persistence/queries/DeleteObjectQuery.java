@@ -201,7 +201,7 @@ public class DeleteObjectQuery extends ObjectLevelModifyQuery {
                 if (isUnitOfWork) {
                     ((UnitOfWorkImpl)session).addObjectDeletedDuringCommit(object, descriptor);
                 } else {
-                    session.getIdentityMapAccessorInstance().removeFromIdentityMap(getPrimaryKey(), descriptor.getJavaClass(), descriptor);
+                    session.getIdentityMapAccessorInstance().removeFromIdentityMap(getPrimaryKey(), descriptor.getJavaClass(), descriptor, object);
                 }
             }
             return object;

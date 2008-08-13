@@ -241,8 +241,8 @@ public abstract class CacheInterceptor implements IdentityMap{
      * This is used by DeleteObjectQuery and merge.
      * This is also an advanced (very) user API.
      */
-    public Object remove(Vector primaryKey){
-        return this.targetIdentityMap.remove(primaryKey);
+    public Object remove(Vector primaryKey, Object object){
+        return this.targetIdentityMap.remove(primaryKey, object);
     }
 
     /**

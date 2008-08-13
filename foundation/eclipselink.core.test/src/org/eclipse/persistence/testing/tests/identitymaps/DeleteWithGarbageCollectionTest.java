@@ -60,7 +60,7 @@ public class DeleteWithGarbageCollectionTest extends TestCase {
         Iterator iterator = getPrimaryKeys().iterator();
         while (iterator.hasNext()) {
             pk = (Vector)iterator.next();
-            getCacheIdentityMap().remove(pk);
+            getCacheIdentityMap().remove(pk, null);
         }
     }
 
