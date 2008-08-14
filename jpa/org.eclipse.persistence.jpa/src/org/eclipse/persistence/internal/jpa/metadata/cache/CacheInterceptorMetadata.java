@@ -16,13 +16,7 @@ package org.eclipse.persistence.internal.jpa.metadata.cache;
 
 import java.lang.annotation.Annotation;
 
-import org.eclipse.persistence.annotations.CacheType;
-import org.eclipse.persistence.annotations.CacheCoordinationType;
-
 import org.eclipse.persistence.descriptors.ClassDescriptor;
-import org.eclipse.persistence.descriptors.invalidation.DailyCacheInvalidationPolicy;
-import org.eclipse.persistence.descriptors.invalidation.TimeToLiveCacheInvalidationPolicy;
-import org.eclipse.persistence.exceptions.ValidationException;
 
 import org.eclipse.persistence.internal.jpa.metadata.MetadataDescriptor;
 import org.eclipse.persistence.internal.jpa.metadata.ORMetadata;
