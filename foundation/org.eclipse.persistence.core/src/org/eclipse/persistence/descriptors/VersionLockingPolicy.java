@@ -298,7 +298,9 @@ public class VersionLockingPolicy implements OptimisticLockingPolicy, Serializab
         } else {
             writeLockFieldValue = (Number)lockValueFromObject(domainObject);
         }
-        // PERF: Allow long and BigDecimal.
+        if (writeLockFieldValue == null){
+            writeLockFieldValue = new Long(0);
+        }
         return (int)(newWriteLockFieldValue.longValue() - writeLockFieldValue.longValue());
     }
 

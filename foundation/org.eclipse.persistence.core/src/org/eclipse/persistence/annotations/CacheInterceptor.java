@@ -35,5 +35,5 @@ public @interface CacheInterceptor {
     /**
      * The Class that will be used to intercept EclipseLink's cache access.
      */ 
-    Class interceptorClass();
+    Class value();
 }
