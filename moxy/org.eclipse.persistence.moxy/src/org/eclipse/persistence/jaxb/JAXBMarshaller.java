@@ -155,7 +155,7 @@ public class JAXBMarshaller implements javax.xml.bind.Marshaller {
 	public Schema getSchema() {
 		try {
             //TODO: Need to generate a proper schema and convert to Sun Schema model
-			return SchemaFactory.newInstance(javax.xml.XMLConstants.W3C_XML_SCHEMA_NS_URI).newSchema();
+			return SchemaFactory.newInstance(XMLConstants.SCHEMA_URL).newSchema();
 		} catch (org.xml.sax.SAXException ex) {
 		}
 		return null;

@@ -22,7 +22,7 @@ import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
 import javax.xml.validation.Validator;
 import junit.framework.TestCase;
-import static javax.xml.XMLConstants.W3C_XML_SCHEMA_NS_URI;
+import org.eclipse.persistence.oxm.XMLConstants;
 
 /**
  * Schema generation tests - based on the JAXB 2.0 TCK: 
@@ -43,7 +43,7 @@ public class SchemaGenEmployeeTestCases extends TestCase {
             Class[] jClasses = new Class[] { Address.class, Employee.class, PhoneNumber.class, Department.class };
             Generator gen = new Generator(new JavaModelInputImpl(jClasses, new JavaModelImpl(Thread.currentThread().getContextClassLoader())));
             gen.generateSchemaFiles(tmpdir, null);
-            SchemaFactory sFact = SchemaFactory.newInstance(W3C_XML_SCHEMA_NS_URI);
+            SchemaFactory sFact = SchemaFactory.newInstance(XMLConstants.SCHEMA_URL);
             Schema theSchema = sFact.newSchema(new File(tmpdir + "/schema0.xsd"));
             Validator validator = theSchema.newValidator();
             StreamSource ss = new StreamSource(new File(src)); 
@@ -73,7 +73,7 @@ public class SchemaGenEmployeeTestCases extends TestCase {
             Class[] jClasses = new Class[] { Address.class, Employee.class, PhoneNumber.class, Department.class };
             Generator gen = new Generator(new JavaModelInputImpl(jClasses, new JavaModelImpl(Thread.currentThread().getContextClassLoader())));
             gen.generateSchemaFiles(tmpdir, null);
-            SchemaFactory sFact = SchemaFactory.newInstance(W3C_XML_SCHEMA_NS_URI);
+            SchemaFactory sFact = SchemaFactory.newInstance(XMLConstants.SCHEMA_URL);
             Schema theSchema = sFact.newSchema(new File(tmpdir + "/schema0.xsd"));
             Validator validator = theSchema.newValidator();
             StreamSource ss = new StreamSource(new File(src)); 
