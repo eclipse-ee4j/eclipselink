@@ -327,6 +327,7 @@ public final class SessionClusteringPropertiesPage extends ScrollablePropertiesP
 		panel.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
 
 		// Create internal pane
+		
 		JPanel internalPane = buildInternalPage();
 
 		constraints.gridx       = 0;

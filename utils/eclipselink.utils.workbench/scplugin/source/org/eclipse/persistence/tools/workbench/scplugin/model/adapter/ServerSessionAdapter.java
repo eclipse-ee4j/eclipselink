@@ -101,6 +101,13 @@ public final class ServerSessionAdapter extends DatabaseSessionAdapter {
 		firePropertyChanged(WRITE_CONNECTION_POOL_PROPERTY, null, writePool);
 		return writePool;
 	}
+	public ConnectionPoolAdapter addReadConnectionPool() {
+		ConnectionPoolAdapter readPool = this.pools.addReadConnectionPool();
+		this.fireItemAdded( POOLS_CONFIG_COLLECTION, readPool);
+
+		firePropertyChanged(READ_CONNECTION_POOL_PROPERTY, null, readPool);
+		return readPool;
+	}
 	/**
 	 * Factory method for adding a sequence pool.
 	 */
@@ -119,7 +126,7 @@ public final class ServerSessionAdapter extends DatabaseSessionAdapter {
 		
 		super.setExternalConnectionPooling( value);
 		
-		if( value) {
+		if( value && this.pools.getReadConnectionPool() != null) {
 		    this.pools.getReadConnectionPool().setExclusive( false);
 		}
 	}
@@ -131,13 +138,6 @@ public final class ServerSessionAdapter extends DatabaseSessionAdapter {
 		else
 			this.pools = ( PoolsAdapter)this.adapt( this.getPoolConfigs());
 		
-		ReadConnectionPoolAdapter pool = this.pools.getReadConnectionPool();
-		if(  !this.platformIsXml() && pool == null) {	// Legacy sessions.xml may not have a read conn. pool
-		    pool = this.pools.addReadConnectionPool();
-		}
-		if( this.usesExternalConnectionPooling() && pool.isExclusive()) {
-		    pool.setExclusive( false);
-		}
 	}
 	/**
 	 * Initializes the pools of this new model, after that the platform is set.
@@ -199,7 +199,7 @@ public final class ServerSessionAdapter extends DatabaseSessionAdapter {
 	/**
 	 * Returns an iterator on pool names.
 	 */
-	public Iterator poolNames() {
+	public Iterator<String> poolNames() {
 
 		return getPools().getPoolNames().iterator();
 	}
@@ -219,9 +219,23 @@ public final class ServerSessionAdapter extends DatabaseSessionAdapter {
 		return this.pools.getSequenceConnectionPool();
 	}
 
+	public boolean hasReadPool() {
+		
+		return this.pools.getReadConnectionPool() != null;
+	}
+
 	public boolean hasWritePool() {
 		
 		return this.pools.getWriteConnectionPool() != null;
+	}
+	
+	public boolean hasAnyConnectionPool() {
+		return hasReadPool() || hasWritePool() || hasSequencePool() || poolsSize() > 0;
+	}
+	
+	@Override
+	public boolean isServer() {
+		return true;
 	}
 
 	public boolean hasSequencePool() {
@@ -256,7 +270,7 @@ public final class ServerSessionAdapter extends DatabaseSessionAdapter {
 			this.fireItemRemoved( POOLS_CONFIG_COLLECTION, namedPool);
 	}
 	/**
-	 * Remove the pool with the given name.
+	 * Remove the write pool.
 	 */
 	public void removeWriteConnectionPool() {
 		
@@ -266,6 +280,32 @@ public final class ServerSessionAdapter extends DatabaseSessionAdapter {
 			this.fireItemRemoved( POOLS_CONFIG_COLLECTION, writePool);
 		}
 	}
+	/**
+	 * Remove the read pool.
+	 */
+	public void removeReadConnectionPool() {
+		
+		ConnectionPoolAdapter readPool = this.pools.removeReadConnectionPool();
+		
+		if( readPool != null) {
+			this.fireItemRemoved( POOLS_CONFIG_COLLECTION, readPool);
+		}
+	}
+	
+	/**
+	 * Remove all pools
+	 */
+	public void removeAllConnectionPools() {
+		removeReadConnectionPool();
+		removeWriteConnectionPool();
+		removeSequenceConnectionPool();
+		
+		Iterator<String> poolNamesIter = poolNames();
+		while (poolNamesIter.hasNext()) {
+			removeConnectionPoolNamed(poolNamesIter.next());
+		}
+	}
+
 	/**
 	 * Remove the pool with the given name.
 	 */

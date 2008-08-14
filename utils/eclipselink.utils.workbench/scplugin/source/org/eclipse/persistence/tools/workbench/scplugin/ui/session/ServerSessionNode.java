@@ -31,6 +31,7 @@ import org.eclipse.persistence.tools.workbench.scplugin.model.adapter.ReadConnec
 import org.eclipse.persistence.tools.workbench.scplugin.model.adapter.ServerSessionAdapter;
 import org.eclipse.persistence.tools.workbench.scplugin.model.adapter.WriteConnectionPoolAdapter;
 import org.eclipse.persistence.tools.workbench.scplugin.ui.pool.AddNewNamedPoolAction;
+import org.eclipse.persistence.tools.workbench.scplugin.ui.pool.AddReadPoolAction;
 import org.eclipse.persistence.tools.workbench.scplugin.ui.pool.AddSequencePoolAction;
 import org.eclipse.persistence.tools.workbench.scplugin.ui.pool.AddWritePoolAction;
 import org.eclipse.persistence.tools.workbench.scplugin.ui.pool.PoolNode;
@@ -82,6 +83,7 @@ public class ServerSessionNode extends DatabaseSessionNode {
 			poolGroup.add(getAddNamedPoolAction(wrappedContext));
 			poolGroup.add(getAddSequencePoolAction(wrappedContext));
 			poolGroup.add(getAddWritePoolAction(wrappedContext));
+			poolGroup.add(getAddReadPoolAction(wrappedContext));
 			
 			newMenuDesc.add(poolGroup);
 			MenuGroupDescription poolMainMenuGroup = new MenuGroupDescription();
@@ -110,6 +112,7 @@ public class ServerSessionNode extends DatabaseSessionNode {
 			poolGroup.add(getAddNamedPoolAction(wrappedContext));
 			poolGroup.add(getAddSequencePoolAction(wrappedContext));
 			poolGroup.add(getAddWritePoolAction(wrappedContext));
+			poolGroup.add(getAddReadPoolAction(wrappedContext));
 			
 			desc.add(poolGroup);
 		}
@@ -160,7 +163,8 @@ public class ServerSessionNode extends DatabaseSessionNode {
 					return NullIterator.instance();
 				}
 				Collection collection = CollectionTools.collection((( ServerSessionAdapter)subject).pools());
-				collection.add( session.getReadConnectionPool());
+				if (session.hasReadPool()) 
+					collection.add( session.getReadConnectionPool());
 				if( session.hasWritePool())
 					collection.add( session.getWriteConnectionPool());
 				if( session.hasSequencePool())
@@ -168,10 +172,10 @@ public class ServerSessionNode extends DatabaseSessionNode {
 				return collection.iterator();
 			}
 			protected int sizeFromSubject() {
-				int specialPools = 1;
+				int readPool = (((( ServerSessionAdapter)subject).hasReadPool()) ? 1 : 0);
 				int writePool = (((( ServerSessionAdapter)subject).hasWritePool()) ? 1 : 0);
 				int sequencePool = (((( ServerSessionAdapter)subject).hasSequencePool()) ? 1 : 0);
-				return (( ServerSessionAdapter)subject).poolsSize() + specialPools + writePool + sequencePool;
+				return (( ServerSessionAdapter)subject).poolsSize() + readPool + writePool + sequencePool;
 			}
 		};
 	}
@@ -196,6 +200,10 @@ public class ServerSessionNode extends DatabaseSessionNode {
 
 	private FrameworkAction getAddWritePoolAction(WorkbenchContext workbenchContext) {
 		return new AddWritePoolAction(workbenchContext);
+	}
+
+	private FrameworkAction getAddReadPoolAction(WorkbenchContext workbenchContext) {
+		return new AddReadPoolAction(workbenchContext);
 	}
 
 	protected List buildDisplayStringPropertyNamesList() {

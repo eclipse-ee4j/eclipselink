@@ -158,6 +158,16 @@ final class PoolsAdapter extends SCAdapter {
 		return writePool;
 	}
 	
+	ConnectionPoolAdapter removeReadConnectionPool() {
+		ConnectionPoolAdapter readPool = this.readConnectionPool;
+		
+		// remove config
+		this.config().setReadConnectionPoolConfig( null);
+		// remove adapter
+		this.readConnectionPool = null;
+		return readPool;
+	}
+	
 	ConnectionPoolAdapter removeSequenceConnectionPool() {	
 		ConnectionPoolAdapter sequencePool = this.sequenceConnectionPool;
 		
@@ -167,6 +177,7 @@ final class PoolsAdapter extends SCAdapter {
 		this.sequenceConnectionPool = null;
 		return sequencePool;
 	}
+	
 	/**
 	 * Adds the given pool.
 	 */
@@ -252,7 +263,7 @@ final class PoolsAdapter extends SCAdapter {
 	/**
 	 * Returns a collection of session names.
 	 */
-	Collection getPoolNames() {
+	Collection<String> getPoolNames() {
 
 		return CollectionTools.collection(new TransformationIterator(pools())
 		{

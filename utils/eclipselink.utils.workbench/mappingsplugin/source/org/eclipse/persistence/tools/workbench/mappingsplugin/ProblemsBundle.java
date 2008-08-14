@@ -244,7 +244,7 @@ public class ProblemsBundle extends ListResourceBundle
 		{"0402", "The \"set\" method specified for this mapping's method accessing field is no longer visible to this descriptor."},
 		{"0403", "Mappings for EJB 2.0 CMP fields should not use method accessing."},
 		{"0404", "Mapping references write lock field stored in cache, but is not read-only."},
-		{"0405", "The class attribute associated with this mapping is no longer a valid mappable attribute and should be unmapped.  Most likely it is static for final."},
+		{"0405", "The class attribute associated with this mapping is no longer a valid mappable attribute and should be unmapped.  Most likely it is static or final."},
 		
 		// *** MWRelationalDirectContainerMapping ***
 		{"0410", "No direct value field is specified."},

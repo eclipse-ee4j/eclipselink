@@ -267,13 +267,13 @@ public class RdbmsConnectionPropertiesPage extends AbstractLoginPropertiesPage
 		 * of the components contained in the given collection in sync with the
 		 * boolean value calculated by the enabled state holder.
 		 *
-		 * @param checBox The External Connection Pooling check box
+		 * @param checkBox The External Connection Pooling check box
 		 * @return A new <code>ComponentEnabler</code>
 		 */
-		private ComponentEnabler buildExternalConnectionPoolingEnabler(JCheckBox checBox)
+		private ComponentEnabler buildExternalConnectionPoolingEnabler(JCheckBox checkBox)
 		{
 			return new ComponentEnabler(buildExternalConnectionPoolingEnableStateHolder(),
-												 Collections.singleton(checBox));
+												 Collections.singleton(checkBox));
 		}
 
 		/**

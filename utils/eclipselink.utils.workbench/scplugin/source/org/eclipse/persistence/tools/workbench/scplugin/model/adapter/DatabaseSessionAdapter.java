@@ -407,6 +407,9 @@ public class DatabaseSessionAdapter extends SessionAdapter implements LoginHandl
 
 		return ( this.primaryProject instanceof ProjectClassAdapter);
 	}
+	public boolean isServer() {
+		return false;
+	}
 	/**
 	* Returns this logLevel.
 	*/

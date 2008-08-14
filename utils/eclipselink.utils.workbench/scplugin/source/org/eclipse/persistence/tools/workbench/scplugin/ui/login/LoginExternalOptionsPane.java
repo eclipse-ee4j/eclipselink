@@ -16,11 +16,13 @@ package org.eclipse.persistence.tools.workbench.scplugin.ui.login;
 import java.awt.GridLayout;
 import javax.swing.ButtonModel;
 import javax.swing.JCheckBox;
+import javax.swing.JOptionPane;
 
 import org.eclipse.persistence.tools.workbench.framework.context.ApplicationContext;
 import org.eclipse.persistence.tools.workbench.framework.ui.view.AbstractSubjectPanel;
 import org.eclipse.persistence.tools.workbench.scplugin.model.adapter.DatabaseSessionAdapter;
 import org.eclipse.persistence.tools.workbench.scplugin.model.adapter.LoginAdapter;
+import org.eclipse.persistence.tools.workbench.scplugin.model.adapter.ServerSessionAdapter;
 import org.eclipse.persistence.tools.workbench.uitools.app.PropertyAspectAdapter;
 import org.eclipse.persistence.tools.workbench.uitools.app.PropertyValueModel;
 import org.eclipse.persistence.tools.workbench.uitools.app.swing.CheckBoxModelAdapter;
@@ -103,18 +105,43 @@ public class LoginExternalOptionsPane extends AbstractSubjectPanel
 
 		return new PropertyAspectAdapter(subjectHolder, DatabaseSessionAdapter.EXTERNAL_CONNECTION_POOLING_PROPERTY)
 		{
-			protected Object getValueFromSubject()
-			{
+			protected Object getValueFromSubject() {
 				DatabaseSessionAdapter session = (DatabaseSessionAdapter) subject;
 				return Boolean.valueOf(session.usesExternalConnectionPooling());
 			}
 
-			protected void setValueOnSubject(Object value)
-			{
+			protected void setValueOnSubject(Object value) {
 				DatabaseSessionAdapter session = (DatabaseSessionAdapter) subject;
+				boolean removeConnectionPool = false;
+
+				if ((Boolean)value && session.isServer()) {
+					ServerSessionAdapter serverSession = (ServerSessionAdapter) session;
+
+					if (serverSession.hasAnyConnectionPool())
+					{
+						removeConnectionPool = promptUserToDeleteConnectionPools();
+					}
+				}
+				
 				session.setExternalConnectionPooling(Boolean.TRUE.equals(value));
+				
+				if (removeConnectionPool) {
+					ServerSessionAdapter serverSession = (ServerSessionAdapter) session;
+					serverSession.removeAllConnectionPools();
+				}
 			}
 		};
+	}
+	
+	private boolean promptUserToDeleteConnectionPools()
+	{
+		
+		int remove = JOptionPane.showConfirmDialog(this, 
+				resourceRepository().getString("CONNECTION_PANE_PROMPT_TO_REMOVE_CONNECTION_POOLS_MESSAGE"), 
+				resourceRepository().getString("CONNECTION_PANE_PROMPT_TO_REMOVE_CONNECTION_POOLS_TITLE"), 
+				JOptionPane.YES_NO_OPTION);
+	
+		return remove == JOptionPane.YES_OPTION;
 	}
 
 	/**

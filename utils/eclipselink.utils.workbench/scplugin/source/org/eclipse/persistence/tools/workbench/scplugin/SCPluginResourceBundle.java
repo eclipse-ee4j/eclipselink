@@ -79,6 +79,8 @@ public final class SCPluginResourceBundle extends ListResourceBundle {
 		{ "ADD_SESSION.TOOL_TIP",                  "Create a New Database or Server Session" },
 		{ "ADD_WRITE_CONNECTION_POOL",             "&Write Connection Pool"},
 		{ "ADD_WRITE_CONNECTION_POOL.TOOL_TIP",    "Add the Write Connection Pool"},
+		{ "ADD_READ_CONNECTION_POOL",             "&Read Connection Pool"},
+		{ "ADD_READ_CONNECTION_POOL.TOOL_TIP",    "Add the Read Connection Pool"},
 		{ "DELETE_BROKER_TITLE",                   "Remove Broker"},
 		{ "DELETE_BROKER_MESSAGE",                 "Only empty session broker can be deleted. Remove all managed sessions from ''{0}'' prior to delete."},
 		{ "DELETE_BROKERS_MESSAGE",                "The selection contains session brokers with managed sessions. Remove all managed sessions from them prior to delete."},
@@ -249,6 +251,8 @@ public final class SCPluginResourceBundle extends ListResourceBundle {
 
 		// ui.session.login.RdbmsConnectionPropertiesPage
 		{ "UNKNOWN_PLATFORM_CLASS", "<unkown platform: {0}>" },
+		{ "CONNECTION_PANE_PROMPT_TO_REMOVE_CONNECTION_POOLS_MESSAGE", "Connection pools are only for usage with internal connection pooling and should not be used if using external connection pooling. Do you want to remove all the connection pools?" },
+		{ "CONNECTION_PANE_PROMPT_TO_REMOVE_CONNECTION_POOLS_TITLE", "Connection Pools" },
 
 		// RdbmsOptionsPropertiesPage - Batch Writing choice
 		{ "LOGIN_BATCH_WRITING_NONE_CHOICE",     "None" },
