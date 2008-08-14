@@ -87,7 +87,7 @@
     <target name="build-all" depends="build-core, build-workbench, build-test, build-extension"/>
 
     <!-- Builds and packages all jars, javadoc, and builds installer. -->
-    <target name="build-distribution" depends="package-eclipselink-jar, build-eclipselink-bundles, build-workbench, package-src-jar, package-packagerenamer-jar, build-javadocs, package-javadoc-zip, package-installer-zip"/>
+    <target name="build-distribution" depends="package-eclipselink-jar, build-eclipselink-bundles, build-workbench, package-src-jar, package-jpa-tst-src-jar, package-packagerenamer-jar, build-javadocs, package-javadoc-zip, package-installer-zip"/>
 
     <!-- Compiles all components and tests (excluding workbench). -->
     <target name="build-core-all" depends="build-core, build-core-test, build-extension"/>
@@ -300,6 +300,30 @@
             </fileset>
             <fileset dir="${eclipselink.extension.oracle}/${src.dir}">
                 <include name="org/eclipse/persistence/**/*.java"/>
+            </fileset>
+        </zip>
+    </target>
+
+    <!-- Packages the eclipselink JPA testing source jar. -->
+    <target name="package-jpa-tst-src-jar" description="build EclipseLink JPA testing source jar">
+        <zip zipfile="${eclipselink.jpa.tst.src.install.prefix}${eclipselink.zip.suffix}">
+            <fileset dir="${eclipselink.core.test}/${src.dir}">
+                <include name="org\eclipse\persistence\testing\framework\**\*.java"/>
+            </fileset>
+            <fileset dir="${eclipselink.core.test}/${src.dir}">
+                <include name="org\eclipse\persistence\testing\tests\TestRunModel.java"/>
+            </fileset>
+            <fileset dir="${eclipselink.core.test}/${src.dir}">
+                <include name="org\eclipse\persistence\tools\**\*.java"/>
+            </fileset>
+            <fileset dir="${eclipselink.core.test}/${src.dir}">
+                <include name="org\eclipse\persistence\testing\tests\performance\**\*.java"/>
+            </fileset>
+            <fileset dir="${eclipselink.jpa.test}/${src.dir}">
+                <include name="**/*.java"/>
+            </fileset>
+            <fileset dir="${eclipselink.jpa.test}/${resource.dir}">
+                <include name="**/**"/>
             </fileset>
         </zip>
     </target>
