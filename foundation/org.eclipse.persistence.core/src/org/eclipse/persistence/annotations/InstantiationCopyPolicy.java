@@ -26,8 +26,8 @@ import java.lang.annotation.Target;
  * therefore this configuration option is only used to override other types of 
  * copy policies
  * 
- * An InstantiationCopyPolicy should be specified on an Entity or 
- * MappedSuperclass.
+ * An InstantiationCopyPolicy should be specified on an Entity, 
+ * MappedSuperclass or Embeddable.
  * 
  * Example:
  * @Entity

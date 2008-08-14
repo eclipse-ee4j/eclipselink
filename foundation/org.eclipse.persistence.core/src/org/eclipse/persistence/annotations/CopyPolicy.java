@@ -26,7 +26,8 @@ import java.lang.annotation.Target;
  * implements org.eclipse.persistence.descriptors.copying.CopyPolicy
  * be specified as the argument.
  * 
- * A CopyPolicy should be specified on an Entity or MappedSuperclass.
+ * A CopyPolicy should be specified on an Entity, MappedSuperclass or 
+ * Embeddable.
  * 
  * For instance:
  * @Entity
