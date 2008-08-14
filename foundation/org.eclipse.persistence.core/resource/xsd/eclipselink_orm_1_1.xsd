@@ -2024,7 +2024,8 @@
          * org.eclipse.persistence.descriptors.copying.CopyPolicy be specified 
          * as the argument.
          * 
-         * A CopyPolicy should be specified on an Entity or MappedSuperclass.
+         * A CopyPolicy should be specified on an Entity, MappedSuperclass or 
+         * Embeddable.
          * 
          * For instance:
          * @Entity
@@ -2057,8 +2058,8 @@
          * EclipseLink and therefore this configuration option is only used to 
          * override other types of copy policies
          * 
-         * An InstantiationCopyPolicy should be specified on an Entity or 
-         * MappedSuperclass.
+         * An InstantiationCopyPolicy should be specified on an Entity, 
+         * MappedSuperclass or Embeddable.
          * 
          * Example:
          * @Entity
@@ -2085,8 +2086,8 @@
          * be used for the clone that is used for comparison in conjunction with 
          * EclipseLink's DeferredChangeDetectionPolicy
          *  
-         * A CloneCopyPolicy should be specified on an Entity or 
-         * MappedSuperclass.
+         * A CloneCopyPolicy should be specified on an Entity, MappedSuperclass
+         * or Embeddable.
          * 
          * Example:
          * @Entity
@@ -2715,8 +2716,8 @@
          * which computes changes sets for EclipseLink's UnitOfWork commit 
          * process. An ObjectChangePolicy is stored on an Entity's descriptor.
          *
-         * A ChangeTracking annotation may be specified on an Entity or 
-         * MappedSuperclass.
+         * A ChangeTracking annotation may be specified on an Entity, 
+         * MappedSuperclass or Embeddable.
          */ 
         @Target({TYPE})
         @Retention(RUNTIME)

@@ -32,7 +32,8 @@ import java.lang.annotation.Target;
  * "method" will be used for the clone that is used for comparison in 
  * conjunction with EclipseLink's DeferredChangeDetectionPolicy
  *  
- * A CloneCopyPolicy should be specified on an Entity or MappedSuperclass.
+ * A CloneCopyPolicy should be specified on an Entity, MappedSuperclass or 
+ * Embeddable.
  * 
  * Example:
  * @Entity
