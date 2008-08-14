@@ -20,11 +20,11 @@ import java.util.HashMap;
 import java.util.List;
 
 import org.eclipse.persistence.exceptions.ValidationException;
+import org.eclipse.persistence.internal.jpa.JPAQuery;
 import org.eclipse.persistence.internal.jpa.QueryHintsHandler;
 import org.eclipse.persistence.internal.jpa.metadata.ORMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAccessibleObject;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
-import org.eclipse.persistence.queries.JPAQuery;
 
 /**
  * INTERNAL:

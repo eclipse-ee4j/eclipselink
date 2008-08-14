@@ -9,12 +9,23 @@
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
-package org.eclipse.persistence.internal.platform.database.oracle;
+ ******************************************************************************/
 
+package org.eclipse.persistence.platform.database.oracle.plsql;
+
+// Javse imports
+
+// Java extension imports
+
+// EclipseLink imports
+import org.eclipse.persistence.internal.helper.SimpleDatabaseType;
 
 /**
- * Class used to define Oracle specific JDBC types.
+ * <b>PUBLIC</b>: Marker interface for Oracle PL/SQL types
+ *
+ * @author Mike Norman - michael.norman@oracle.com
+ * @since Oracle TopLink 11.x.x
  */
-public interface Oracle9Specific {
+public interface OraclePLSQLType extends SimpleDatabaseType {
+
 }

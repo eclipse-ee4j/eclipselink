@@ -35,7 +35,6 @@ import org.eclipse.persistence.internal.jpa.deployment.PersistenceUnitProcessor;
 import org.eclipse.persistence.exceptions.StaticWeaveException;
 import org.eclipse.persistence.internal.localization.ToStringLocalization;
 import org.eclipse.persistence.internal.weaving.AbstractStaticWeaveOutputHandler;
-import org.eclipse.persistence.internal.weaving.StaticWeaveClassTransformer;
 import org.eclipse.persistence.internal.weaving.StaticWeaveDirectoryOutputHandler;
 import org.eclipse.persistence.internal.weaving.StaticWeaveJAROutputHandler;
 import org.eclipse.persistence.logging.AbstractSessionLog;

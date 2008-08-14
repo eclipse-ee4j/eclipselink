@@ -10,7 +10,7 @@
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
  ******************************************************************************/  
-package org.eclipse.persistence.platform.database.oracle;
+package org.eclipse.persistence.platform.database;
 
 import java.io.CharArrayWriter;
 import java.io.IOException;

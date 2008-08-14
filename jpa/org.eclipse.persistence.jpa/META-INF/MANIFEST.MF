@@ -6,10 +6,12 @@ Bundle-Version: 1.0.1
 Require-Bundle: org.eclipse.persistence.core;bundle-version="[1.0.0,2.0.0)";visibility:=reexport
 Export-Package: org.eclipse.persistence.internal.jpa,
  org.eclipse.persistence.internal.jpa.deployment,
+ org.eclipse.persistence.internal.jpa.deployment.osgi,
  org.eclipse.persistence.internal.jpa.deployment.xml.parser,
  org.eclipse.persistence.internal.jpa.jdbc,
  org.eclipse.persistence.internal.jpa.metadata,
  org.eclipse.persistence.internal.jpa.metadata.accessors,
+ org.eclipse.persistence.internal.jpa.metadata.accessors.classes,
  org.eclipse.persistence.internal.jpa.metadata.accessors.mappings,
  org.eclipse.persistence.internal.jpa.metadata.accessors.objects,
  org.eclipse.persistence.internal.jpa.metadata.cache,
@@ -26,10 +28,8 @@ Export-Package: org.eclipse.persistence.internal.jpa,
  org.eclipse.persistence.internal.jpa.metadata.transformers,
  org.eclipse.persistence.internal.jpa.metadata.xml,
  org.eclipse.persistence.internal.jpa.transaction,
- org.eclipse.persistence.internal.weaving,
  org.eclipse.persistence.jpa,
  org.eclipse.persistence.jpa.osgi,
- org.eclipse.persistence.queries,
  org.eclipse.persistence.tools.weaving.jpa
 Bundle-Activator: org.eclipse.persistence.jpa.osgi.Activator
 Bundle-ClassPath: .

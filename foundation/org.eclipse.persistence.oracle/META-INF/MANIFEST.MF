@@ -7,11 +7,9 @@ Export-Package: org.eclipse.persistence.eis.adapters.aq,
  org.eclipse.persistence.internal.eis.adapters.aq,
  org.eclipse.persistence.internal.platform.database.oracle,
  org.eclipse.persistence.internal.platform.database.oracle.xdb,
- org.eclipse.persistence.mappings.xdb,
  org.eclipse.persistence.platform.database.oracle,
  org.eclipse.persistence.platform.database.oracle.converters,
- org.eclipse.persistence.platform.xml.xdk,
- org.eclipse.persistence.sessions.factories
+ org.eclipse.persistence.platform.xml.xdk
 Require-Bundle: org.eclipse.persistence.core;bundle-version="[1.0.0,2.0.0)";visibility:=reexport
 Bundle-ClassPath: .
 Import-Package: javax.resource;version="1.5.0";resolution:=optional,

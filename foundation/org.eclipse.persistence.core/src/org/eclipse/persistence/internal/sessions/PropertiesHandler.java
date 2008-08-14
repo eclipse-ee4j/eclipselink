@@ -11,7 +11,7 @@
  *     Oracle - initial API and implementation from Oracle TopLink
         Gordon Yorke - VM managed entity detachment
  ******************************************************************************/  
-package org.eclipse.persistence.internal.jpa;
+package org.eclipse.persistence.internal.sessions;
 
 import java.util.HashMap;
 import java.util.Iterator;
@@ -23,7 +23,6 @@ import java.security.PrivilegedAction;
 
 import org.eclipse.persistence.config.*;
 import org.eclipse.persistence.internal.localization.ExceptionLocalization;
-import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.logging.SessionLog;
 import org.eclipse.persistence.sessions.factories.ReferenceMode;
 
@@ -502,7 +501,7 @@ public class PropertiesHandler {
             String pcg = "org.eclipse.persistence.platform.database.";
             valueArray = new Object[][] { 
                 {TargetDatabase.Auto, pcg + "DatabasePlatform"},
-                {TargetDatabase.Oracle, pcg + "oracle.OraclePlatform"},
+                {TargetDatabase.Oracle, pcg + "OraclePlatform"},
                 {TargetDatabase.Oracle8, pcg + "oracle.Oracle8Platform"},
                 {TargetDatabase.Oracle9, pcg + "oracle.Oracle9Platform"},
                 {TargetDatabase.Oracle10, pcg + "oracle.Oracle10Platform"},

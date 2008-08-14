@@ -849,7 +849,7 @@ public class XMLSessionConfigProject extends org.eclipse.persistence.sessions.Pr
                 this.platformList.put("org.eclipse.persistence.internal.databaseaccess.DBasePlatform", "org.eclipse.persistence.platform.database.DBasePlatform");
                 this.platformList.put("org.eclipse.persistence.internal.databaseaccess.HSQLPlatform", "org.eclipse.persistence.platform.database.HSQLPlatform");
                 this.platformList.put("org.eclipse.persistence.internal.databaseaccess.InformixPlatform", "org.eclipse.persistence.platform.database.InformixPlatform");
-                this.platformList.put("org.eclipse.persistence.internal.databaseaccess.OraclePlatform", "org.eclipse.persistence.platform.database.oracle.OraclePlatform");
+                this.platformList.put("org.eclipse.persistence.internal.databaseaccess.OraclePlatform", "org.eclipse.persistence.platform.database.OraclePlatform");
                 this.platformList.put("org.eclipse.persistence.internal.databaseaccess.PointBasePlatform", "org.eclipse.persistence.platform.database.PointBasePlatform");
                 this.platformList.put("org.eclipse.persistence.internal.databaseaccess.SQLAnyWherePlatform", "org.eclipse.persistence.platform.database.SQLAnywherePlatform");
                 this.platformList.put("org.eclipse.persistence.internal.databaseaccess.SQLServerPlatform", "org.eclipse.persistence.platform.database.SQLServerPlatform");

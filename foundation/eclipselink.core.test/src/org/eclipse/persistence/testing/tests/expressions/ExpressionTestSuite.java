@@ -16,7 +16,6 @@ import org.eclipse.persistence.testing.models.employee.domain.*;
 import org.eclipse.persistence.exceptions.*;
 import org.eclipse.persistence.expressions.*;
 import org.eclipse.persistence.platform.database.*;
-import org.eclipse.persistence.platform.database.oracle.*;
 import org.eclipse.persistence.queries.*;
 import org.eclipse.persistence.testing.models.collections.Restaurant;
 import org.eclipse.persistence.testing.models.multipletable.LargeBusinessProject;
@@ -80,7 +79,7 @@ public class ExpressionTestSuite extends TestSuite {
         test.setExpression(exp);
         test.setName("AdvancedExpressionFunctionTest");
         test.setDescription("advanced expression function test");
-        test.addSupportedPlatform(OraclePlatform.class);
+        test.addSupportedPlatform(org.eclipse.persistence.platform.database.OraclePlatform.class);
         addTest(test);
     }
 
@@ -141,7 +140,7 @@ public class ExpressionTestSuite extends TestSuite {
         test.setExpression(expression);
         test.setName("AdvancedExpressionMathTest");
         test.setDescription("Test advanced expression math package");
-        test.addSupportedPlatform(OraclePlatform.class);
+        test.addSupportedPlatform(org.eclipse.persistence.platform.database.OraclePlatform.class);
         addTest(test);
     }
 
@@ -366,7 +365,7 @@ public class ExpressionTestSuite extends TestSuite {
         test.setQuery(query);
         test.setName("ComputerViewCursoredStreamTest");
         test.setDescription("Test query using cursors with inheritance, supported if using views.  For bug 2718118.");
-        test.addSupportedPlatform(OraclePlatform.class);
+        test.addSupportedPlatform(org.eclipse.persistence.platform.database.OraclePlatform.class);
         test.addSupportedPlatform(SybasePlatform.class);
         test.addSupportedPlatform(SQLAnywherePlatform.class);
         //Uncomment it when we support MySQL 5.  Please refer to the comments in InheritanceSystem
@@ -824,7 +823,7 @@ public class ExpressionTestSuite extends TestSuite {
         test.setExpression(expression);
         test.setName("LikeEscapeExpressionTest");
         test.setDescription("Test LIKE ESCAPE expression");
-        test.addSupportedPlatform(OraclePlatform.class);
+        test.addSupportedPlatform(org.eclipse.persistence.platform.database.OraclePlatform.class);
         test.addSupportedPlatform(SybasePlatform.class);
         test.addSupportedPlatform(SQLAnywherePlatform.class);
         test.addSupportedPlatform(SQLServerPlatform.class);
@@ -1757,7 +1756,7 @@ public class ExpressionTestSuite extends TestSuite {
         test.setExpression(expression);
         test.setName("TruncCurrentDateTest");
         test.setDescription("Test if trunc on current date (SYSDATE) works.");
-        test.addSupportedPlatform(OraclePlatform.class);
+        test.addSupportedPlatform(org.eclipse.persistence.platform.database.OraclePlatform.class);
         addTest(test);
     }
 
@@ -1783,7 +1782,7 @@ public class ExpressionTestSuite extends TestSuite {
         test.setQuery(query);
         test.setName("VehicleViewCursoredStreamTest");
         test.setDescription("Test cursors with inheritance, supported if using views.  For bug 2718118.");
-        test.addSupportedPlatform(OraclePlatform.class);
+        test.addSupportedPlatform(org.eclipse.persistence.platform.database.OraclePlatform.class);
         test.addSupportedPlatform(SybasePlatform.class);
         test.addSupportedPlatform(SQLAnywherePlatform.class);
         //Uncomment it when we support MySQL 5.  Please refer to the comments in InheritanceSystem
@@ -1820,7 +1819,7 @@ public class ExpressionTestSuite extends TestSuite {
         test.setQuery(query);
         test.setName("VehicleViewOrderByJoinTest");
         test.setDescription("Test inheritance view with ordering and joining.");
-        test.addSupportedPlatform(OraclePlatform.class);
+        test.addSupportedPlatform(org.eclipse.persistence.platform.database.OraclePlatform.class);
         addTest(test);
     }
 

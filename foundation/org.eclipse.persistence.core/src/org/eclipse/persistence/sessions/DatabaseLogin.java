@@ -19,7 +19,6 @@ import org.eclipse.persistence.internal.databaseaccess.DatabaseAccessor;
 import org.eclipse.persistence.internal.databaseaccess.Platform;
 import org.eclipse.persistence.internal.localization.*;
 import org.eclipse.persistence.platform.database.*;
-import org.eclipse.persistence.platform.database.oracle.OraclePlatform;
 import org.eclipse.persistence.platform.database.converters.StructConverter;
 import org.eclipse.persistence.sequencing.NativeSequence;
 import org.eclipse.persistence.exceptions.*;

@@ -24,7 +24,7 @@ import static java.lang.Integer.MIN_VALUE;
 // EclipseLink imports
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.platform.database.DatabasePlatform;
-import org.eclipse.persistence.platform.database.oracle.PLSQLargument;
+import org.eclipse.persistence.platform.database.oracle.plsql.PLSQLargument;
 import org.eclipse.persistence.sessions.DatabaseRecord;
 import static org.eclipse.persistence.internal.databaseaccess.DatasourceCall.IN;
 import static org.eclipse.persistence.internal.databaseaccess.DatasourceCall.OUT;

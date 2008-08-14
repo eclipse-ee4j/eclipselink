@@ -10,15 +10,15 @@
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
  ******************************************************************************/  
-package org.eclipse.persistence.platform.database.oracle;
+package org.eclipse.persistence.internal.platform.database;
 
 import org.eclipse.persistence.internal.helper.NoConversion;
-import org.eclipse.persistence.internal.platform.database.Oracle9Specific;
-
 
 /**
- * This class can be used to define the dataType with an ObjectTypeConverter
- * to have EclipseLink bind the object string value as an NCLOB Oracle type.
+ * This is a dummy class which is used as a stand in for
+ * oracle.xdb.XMLType in class comparisions to prevent exceptions.
+ * @author  mmacivor
+ * @since TopLink OracleAS TopLink 10<i>g</i> (10.1.3)
  */
-public class NClob implements NoConversion, Oracle9Specific {
+public class XMLTypePlaceholder implements NoConversion, Oracle9Specific {
 }

@@ -10,6 +10,7 @@ Import-Package: org.eclipse.osgi.baseadaptor;resolution:=optional,
  org.eclipse.osgi.baseadaptor.loader;resolution:=optional,
  org.eclipse.osgi.framework.adaptor;resolution:=optional,
  org.eclipse.osgi.internal.baseadaptor;resolution:=optional,
+ org.eclipse.persistence.config,
  org.eclipse.persistence.jpa.equinox.weaving;resolution:=optional
 HK2-Bundle-Name: org.eclipse.persistence:org.eclipse.persistence.jpa.equinox
 JPA-Initializer: org.eclipse.persistence.internal.jpa.deployment.osgi.equinox.EquinoxInitializer

@@ -19,7 +19,7 @@ import org.eclipse.persistence.expressions.*;
 import org.eclipse.persistence.history.*;
 import org.eclipse.persistence.internal.history.*;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
-import org.eclipse.persistence.platform.database.oracle.OraclePlatform;
+import org.eclipse.persistence.platform.database.OraclePlatform;
 import org.eclipse.persistence.queries.*;
 import org.eclipse.persistence.mappings.querykeys.*;
 import org.eclipse.persistence.sessions.DatabaseLogin;

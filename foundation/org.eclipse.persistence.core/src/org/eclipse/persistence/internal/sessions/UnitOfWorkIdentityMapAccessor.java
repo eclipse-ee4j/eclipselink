@@ -14,7 +14,6 @@ package org.eclipse.persistence.internal.sessions;
 
 import java.util.*;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
-import org.eclipse.persistence.internal.jpa.RepeatableWriteUnitOfWork;
 import org.eclipse.persistence.internal.identitymaps.*;
 import org.eclipse.persistence.internal.sessions.IdentityMapAccessor;
 import org.eclipse.persistence.expressions.*;

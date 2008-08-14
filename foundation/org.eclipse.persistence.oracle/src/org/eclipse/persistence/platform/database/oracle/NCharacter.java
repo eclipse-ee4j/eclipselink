@@ -13,7 +13,7 @@
 package org.eclipse.persistence.platform.database.oracle;
 
 import org.eclipse.persistence.internal.helper.NoConversion;
-import org.eclipse.persistence.internal.platform.database.oracle.Oracle9Specific;
+import org.eclipse.persistence.internal.platform.database.Oracle9Specific;
 
 
 /**

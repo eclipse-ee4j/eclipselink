@@ -17,8 +17,8 @@ import junit.framework.TestSuite;
 
 import javax.persistence.*;
 
-import org.eclipse.persistence.internal.jpa.RepeatableWriteUnitOfWork;
 import org.eclipse.persistence.internal.jpa.EntityManagerImpl;
+import org.eclipse.persistence.internal.sessions.RepeatableWriteUnitOfWork;
 import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
 import org.eclipse.persistence.testing.models.jpa.fieldaccess.relationships.IsolatedItem;
 

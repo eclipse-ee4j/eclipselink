@@ -10,7 +10,7 @@
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
  ******************************************************************************/  
-package org.eclipse.persistence.internal.weaving;
+package org.eclipse.persistence.tools.weaving.jpa;
 
 import java.io.IOException;
 import java.io.Writer;
@@ -34,6 +34,7 @@ import org.eclipse.persistence.config.PersistenceUnitProperties;
 import org.eclipse.persistence.exceptions.PersistenceUnitLoadingException;
 import org.eclipse.persistence.exceptions.StaticWeaveException;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataProcessor;
+import org.eclipse.persistence.internal.weaving.TransformerFactory;
 import org.eclipse.persistence.internal.helper.JPAConversionManager;
 import org.eclipse.persistence.logging.DefaultSessionLog;
 import org.eclipse.persistence.logging.SessionLog;

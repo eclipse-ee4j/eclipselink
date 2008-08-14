@@ -13,7 +13,7 @@
 package org.eclipse.persistence.testing.tests.isolatedsession;
 
 import org.eclipse.persistence.config.ExclusiveConnectionMode;
-import org.eclipse.persistence.platform.database.oracle.OraclePlatform;
+import org.eclipse.persistence.platform.database.OraclePlatform;
 import org.eclipse.persistence.testing.framework.*;
 
 public class IsolatedSessionTestModel extends TestModel {

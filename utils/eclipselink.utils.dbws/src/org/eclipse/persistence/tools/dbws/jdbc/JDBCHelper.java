@@ -39,7 +39,7 @@ import org.eclipse.persistence.internal.databaseaccess.DatabasePlatform;
 import org.eclipse.persistence.platform.database.DerbyPlatform;
 import org.eclipse.persistence.platform.database.MySQLPlatform;
 import org.eclipse.persistence.platform.database.PostgreSQLPlatform;
-import org.eclipse.persistence.platform.database.oracle.OraclePlatform;
+import org.eclipse.persistence.platform.database.OraclePlatform;
 import static org.eclipse.persistence.tools.dbws.Util.InOut.INOUT;
 import static org.eclipse.persistence.tools.dbws.Util.InOut.OUT;
 import static org.eclipse.persistence.tools.dbws.Util.InOut.RETURN;

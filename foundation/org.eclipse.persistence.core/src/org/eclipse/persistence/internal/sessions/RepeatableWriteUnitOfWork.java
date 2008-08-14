@@ -11,7 +11,7 @@
  *     Oracle - initial API and implementation from Oracle TopLink
         Gordon Yorke - VM managed entity detachment
  ******************************************************************************/  
-package org.eclipse.persistence.internal.jpa;
+package org.eclipse.persistence.internal.sessions;
 
 import java.util.*;
 
@@ -20,13 +20,9 @@ import org.eclipse.persistence.config.PersistenceUnitProperties;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.descriptors.changetracking.AttributeChangeTrackingPolicy;
 import org.eclipse.persistence.internal.descriptors.ObjectBuilder;
-import org.eclipse.persistence.internal.sessions.UnitOfWorkImpl;
 import org.eclipse.persistence.exceptions.DatabaseException;
 import org.eclipse.persistence.exceptions.OptimisticLockException;
 import org.eclipse.persistence.exceptions.ValidationException;
-import org.eclipse.persistence.internal.sessions.MergeManager;
-import org.eclipse.persistence.internal.sessions.UnitOfWorkChangeSet;
-import org.eclipse.persistence.internal.sessions.ObjectChangeSet;
 import org.eclipse.persistence.sessions.IdentityMapAccessor;
 import org.eclipse.persistence.sessions.factories.ReferenceMode;
 

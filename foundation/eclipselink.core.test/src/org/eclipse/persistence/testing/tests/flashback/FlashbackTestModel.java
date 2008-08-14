@@ -15,7 +15,7 @@ package org.eclipse.persistence.testing.tests.flashback;
 import java.util.*;
 import java.sql.*;
 import org.eclipse.persistence.sessions.*;
-import org.eclipse.persistence.platform.database.oracle.OraclePlatform;
+import org.eclipse.persistence.platform.database.OraclePlatform;
 import org.eclipse.persistence.queries.*;
 import org.eclipse.persistence.history.*;
 import org.eclipse.persistence.exceptions.*;

@@ -35,7 +35,7 @@ import org.eclipse.persistence.internal.xr.StoredFunctionQueryHandler;
 import org.eclipse.persistence.internal.xr.StoredProcedureQueryHandler;
 import org.eclipse.persistence.internal.xr.sxf.SimpleXMLFormat;
 import org.eclipse.persistence.internal.xr.sxf.SimpleXMLFormatProject;
-import org.eclipse.persistence.platform.database.oracle.OraclePlatform;
+import org.eclipse.persistence.platform.database.OraclePlatform;
 import org.eclipse.persistence.tools.dbws.Util.InOut;
 import org.eclipse.persistence.tools.dbws.jdbc.DbStoredArgument;
 import org.eclipse.persistence.tools.dbws.jdbc.DbStoredFunction;

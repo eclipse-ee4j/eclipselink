@@ -37,7 +37,7 @@ public class LoadBuildProject extends org.eclipse.persistence.sessions.Project {
         login.setPassword("spec");
         login.setDriverClassName("oracle.jdbc.OracleDriver");
         login.setConnectionString("jdbc:oracle:thin:@qaott46.ca.oracle.com:1521:spec");
-        login.setPlatformClassName("org.eclipse.persistence.platform.database.oracle.OraclePlatform");
+        login.setPlatformClassName("org.eclipse.persistence.platform.database.OraclePlatform");
         NativeSequence sequence = new NativeSequence();
         sequence.setPreallocationSize(500);
         login.setDefaultSequence(sequence);
