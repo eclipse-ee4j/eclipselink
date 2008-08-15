@@ -75,7 +75,7 @@ public class ObjectChangeSet implements Serializable, org.eclipse.persistence.se
      */
     protected int cacheSynchronizationType = ClassDescriptor.UNDEFINED_OBJECT_CHANGE_BEHAVIOR;
     
-    /** PERF: Cache the session cacheKey during thr merge to avoid duplicate lookups. */
+    /** PERF: Cache the session cacheKey during the merge to avoid duplicate lookups. */
     protected transient CacheKey activeCacheKey;
 
     /**

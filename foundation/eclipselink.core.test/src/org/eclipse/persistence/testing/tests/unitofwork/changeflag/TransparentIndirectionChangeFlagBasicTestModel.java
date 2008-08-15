@@ -21,7 +21,7 @@ import org.eclipse.persistence.testing.models.relationshipmaintenance.Relationsh
 
 /**
  * This model tests reading/writing/deleting through using the employee demo.
- * This model is set up to test the use of chang tracking policy.  It uses
+ * This model is set up to test the use of change tracking policy.  It uses
  * the employee demo test framework to ensure everything works as it did before when 
  * the new change policy is used.  It also makes use of several of the tests from the UnitOfWork
  * model to ensure that the actual updates function correctly.

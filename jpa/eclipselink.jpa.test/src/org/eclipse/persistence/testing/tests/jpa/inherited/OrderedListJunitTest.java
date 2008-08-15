@@ -11,6 +11,8 @@
  *     Oracle - initial API and implementation from Oracle TopLink
  *     06/20/2008-1.0 Guy Pelletier 
  *       - 232975: Failure when attribute type is generic
+ *     08/15/2008-1.0.1 Chris Delahunt 
+ *       - 237545: List attribute types on OneToMany using @OrderBy does not work with attribute change tracking
  ******************************************************************************/  
 package org.eclipse.persistence.testing.tests.jpa.inherited;
 
@@ -160,13 +162,33 @@ public class OrderedListJunitTest extends JUnitTestCase {
             fail("An exception was caught during test1 : [" + ex.getMessage() + "]");
         }
             
-        // Read the beerConsumer back from the cache.
+        // Read the beerConsumer back from the EM.
         beerConsumer = em.find(BeerConsumer.class, m_beerConsumerId);
         Vector alpinesFromCache =  (Vector) beerConsumer.getAlpineBeersToConsume();
         
         assertTrue("Incorrect number of alpines in the list", alpinesFromCache.size() == 3);
         assertFalse("Alpine 1 was not removed from the list", alpinesFromCache.contains(alpine1));
         assertFalse("Alpine 2 was not removed from the list", alpinesFromCache.contains(alpine2));
+        
+        
+        // Read the beerConsumer back from the shared cache.
+        em.clear();
+        beerConsumer = em.find(BeerConsumer.class, m_beerConsumerId);
+        alpinesFromCache =  (Vector) beerConsumer.getAlpineBeersToConsume();
+        
+        assertTrue("Shared cache: Incorrect number of alpines in the list", alpinesFromCache.size() == 3);
+        assertFalse("Shared cache: Alpine 1 was not removed from the list", alpinesFromCache.contains(alpine1));
+        assertFalse("Shared cache: Alpine 2 was not removed from the list", alpinesFromCache.contains(alpine2));
+        
+        // Read the beerConsumer back from the database.
+        this.clearCache();
+        em.clear();
+        beerConsumer = em.find(BeerConsumer.class, m_beerConsumerId);
+        alpinesFromCache =  (Vector) beerConsumer.getAlpineBeersToConsume();
+        
+        assertTrue("database: Incorrect number of alpines in the list", alpinesFromCache.size() == 3);
+        assertFalse("database: Alpine 1 was not removed from the list", alpinesFromCache.contains(alpine1));
+        assertFalse("database: Alpine 2 was not removed from the list", alpinesFromCache.contains(alpine2));
             
     }
     
@@ -193,14 +215,33 @@ public class OrderedListJunitTest extends JUnitTestCase {
             closeEntityManager(em);
             fail("An exception was caught while adding the new alpine at a specific index: [" + ex.getMessage() + "]");
         }
-            
-        // Read the beerConsumer back from the cache.
+        
+        // Read the beerConsumer back from the EM.
         beerConsumer = em.find(BeerConsumer.class, m_beerConsumerId);
         Vector alpinesFromCache =  (Vector) beerConsumer.getAlpineBeersToConsume();
         
         assertTrue("Incorrect number of alpines in the list", alpinesFromCache.size() == 5);
         assertTrue("Alpine 1 was not at the correct index.", alpinesFromCache.indexOf(alpine1) == 4);
         assertTrue("Alpine 2 was not at the correct index.", alpinesFromCache.indexOf(alpine2) == 3);
+        
+        // Read the beerConsumer back from the shared cache.
+        em.clear();
+        beerConsumer = em.find(BeerConsumer.class, m_beerConsumerId);
+        alpinesFromCache =  (Vector) beerConsumer.getAlpineBeersToConsume();
+        
+        assertTrue("Shared cache: Incorrect number of alpines in the list", alpinesFromCache.size() == 5);
+        assertTrue("Shared cache: Alpine 1 was not at the correct index.", alpinesFromCache.indexOf(alpine1) == 4);
+        assertTrue("Shared cache: Alpine 2 was not at the correct index.", alpinesFromCache.indexOf(alpine2) == 3);
+        
+        // Read the beerConsumer back from the database.
+        this.clearCache();
+        em.clear();
+        beerConsumer = em.find(BeerConsumer.class, m_beerConsumerId);
+        alpinesFromCache =  (Vector) beerConsumer.getAlpineBeersToConsume();
+        //ensure the collection was reordered correctly
+        assertTrue("database: Incorrect number of alpines in the list", alpinesFromCache.size() == 5);
+        assertTrue("database: Alpine 1 was not at the correct index.", alpinesFromCache.indexOf(alpine1) == 2);
+        assertTrue("database: Alpine 2 was not at the correct index.", alpinesFromCache.indexOf(alpine2) == 1);
     }
     
     public void test3() {
@@ -208,9 +249,10 @@ public class OrderedListJunitTest extends JUnitTestCase {
         BeerConsumer beerConsumer = null;
         Alpine alpine1 = null, alpine2 = null, alpine3 = null, alpine4 = null;
         EntityManager em = createEntityManager();
-
+        //beerConsumer = (BeerConsumer)em.createQuery("select b from BeerConsumer b JOIN FETCH b.alpineBeersToConsume where b.id = "+m_beerConsumerId+" order by b.alpineBeersToConsume.bestBeforeDate").getSingleResult();
         try {
             beerConsumer = em.find(BeerConsumer.class, m_beerConsumerId);
+
             
             beginTransaction(em);
         
@@ -239,8 +281,8 @@ public class OrderedListJunitTest extends JUnitTestCase {
             closeEntityManager(em);
             fail("An exception was caught while adding the new alpine at a specific index: [" + ex.getMessage() + "]");
         }
-            
-        // Read the beerConsumer back from the cache.
+        
+        // Read the beerConsumer back from the shared cache.
         beerConsumer = em.find(BeerConsumer.class, m_beerConsumerId);
         Vector alpinesFromCache =  (Vector) beerConsumer.getAlpineBeersToConsume();
         
@@ -249,6 +291,29 @@ public class OrderedListJunitTest extends JUnitTestCase {
         assertFalse("Alpine 2 was not removed from the list", alpinesFromCache.contains(alpine2));
         assertTrue("Alpine 3 was not at the correct index.", alpinesFromCache.indexOf(alpine3) == 4);
         assertTrue("Alpine 4 was not at the correct index.", alpinesFromCache.indexOf(alpine4) == 3);
+        
+        // Read the beerConsumer back from the shared cache.
+        em.clear();
+        beerConsumer = em.find(BeerConsumer.class, m_beerConsumerId);
+        alpinesFromCache =  (Vector) beerConsumer.getAlpineBeersToConsume();
+        
+        assertTrue("Shared cache: Incorrect number of alpines in the list", alpinesFromCache.size() == 5);
+        assertTrue("Shared cache: Alpine 1 was not at the correct index.", alpinesFromCache.indexOf(alpine1) == 0);
+        assertFalse("Shared cache: Alpine 2 was not removed from the list", alpinesFromCache.contains(alpine2));
+        assertTrue("Shared cache: Alpine 3 was not at the correct index.", alpinesFromCache.indexOf(alpine3) == 4);
+        assertTrue("Shared cache: Alpine 4 was not at the correct index.", alpinesFromCache.indexOf(alpine4) == 3);
+        
+        // Read the beerConsumer back from the database. 
+        this.clearCache();
+        em.clear();
+        beerConsumer = em.find(BeerConsumer.class, m_beerConsumerId);
+        alpinesFromCache =  (Vector) beerConsumer.getAlpineBeersToConsume();
+        //ensure the collection was reordered correctly
+        assertTrue("database: Incorrect number of alpines in the list", alpinesFromCache.size() == 5);
+        assertTrue("database: Alpine 1 was not at the correct index.", alpinesFromCache.indexOf(alpine1) == 3);
+        assertFalse("database: Alpine 2 was not removed from the list", alpinesFromCache.contains(alpine2));
+        assertTrue("database: Alpine 3 was not at the correct index.", alpinesFromCache.indexOf(alpine3) == 0);
+        assertTrue("database: Alpine 4 was not at the correct index.", alpinesFromCache.indexOf(alpine4) == 4);
         
     }
 }

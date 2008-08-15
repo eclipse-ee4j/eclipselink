@@ -52,7 +52,7 @@ public class AttributeChangeTrackingPolicy extends ObjectChangeTrackingPolicy {
                 if (changes.getUOWChangeSet() != changeSet) {
                     changes = changeSet.mergeObjectChanges(changes, (org.eclipse.persistence.internal.sessions.UnitOfWorkChangeSet)changes.getUOWChangeSet());
                 }
-                // check for deferrd changes
+                // check for deferred changes
                 if (changes.hasDeferredAttributes()){
                     //need to calculate the changes for these attributes.
                     for (Iterator iterator = changes.getDeferredSet().iterator(); iterator.hasNext();){

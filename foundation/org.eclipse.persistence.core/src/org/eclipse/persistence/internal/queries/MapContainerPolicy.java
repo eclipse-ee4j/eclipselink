@@ -24,8 +24,12 @@ import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.internal.security.PrivilegedClassForName;
 import org.eclipse.persistence.internal.security.PrivilegedMethodInvoker;
 import org.eclipse.persistence.internal.security.PrivilegedGetValueFromField;
+import org.eclipse.persistence.internal.sessions.CollectionChangeRecord;
+import org.eclipse.persistence.internal.sessions.ObjectChangeSet;
 import org.eclipse.persistence.internal.sessions.UnitOfWorkImpl;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
+import org.eclipse.persistence.descriptors.changetracking.MapChangeEvent;
+import org.eclipse.persistence.descriptors.changetracking.CollectionChangeEvent;
 
 /**
  * <p><b>Purpose</b>: A MapContainerPolicy is ContainerPolicy whose container class
@@ -295,6 +299,30 @@ public class MapContainerPolicy extends InterfaceContainerPolicy {
             // If we get this far I think it is safe to assume we have
             // an element descriptor.
             return getElementDescriptor().getCMPPolicy().createPrimaryKeyInstance(keyElement, session);
+        }
+    }
+    
+    /**
+     * This method is used to bridge the behavior between Attribute Change Tracking and
+     * deferred change tracking with respect to adding the same instance multiple times.
+     * Each ContainerPolicy type will implement specific behavior for the collection 
+     * type it is wrapping.  These methods are only valid for collections containing object references
+     */
+    public void recordUpdateToCollectionInChangeRecord(CollectionChangeEvent event, ObjectChangeSet changeSet, CollectionChangeRecord collectionChangeRecord){
+        
+        Object key = null;
+        //This is to allow non-MapChangeEvent.  Not sure how one could get here, but wasn't willing to remove the chance that it could
+        if (event.getClass().equals(ClassConstants.MapChangeEvent_Class)){
+            key = ((MapChangeEvent)event).getKey();
+        }
+        if (event.getChangeType() == CollectionChangeEvent.ADD) {
+            recordAddToCollectionInChangeRecord(changeSet, collectionChangeRecord);
+            ((ObjectChangeSet)changeSet).setNewKey(key);
+        } else if (event.getChangeType() == MapChangeEvent.REMOVE) {
+            recordRemoveFromCollectionInChangeRecord(changeSet, collectionChangeRecord);
+            ((ObjectChangeSet)changeSet).setOldKey(key);
+        } else {
+            throw ValidationException.wrongCollectionChangeEventType(event.getChangeType());
         }
     }
 

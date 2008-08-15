@@ -35,6 +35,12 @@ public class CollectionChangeEvent extends PropertyChangeEvent {
      * Change type is either add or remove
      */
     protected int changeType;
+    
+    /**
+     * INTERNAL:
+     * index is the location of the change in the collection
+     */
+    protected Integer index;
 
     /**
      * PUBLIC:
@@ -42,8 +48,18 @@ public class CollectionChangeEvent extends PropertyChangeEvent {
      * and change type (add or remove)
      */
     public CollectionChangeEvent(Object collectionOwner, String propertyName, Object collectionChanged, Object elementChanged, int changeType) {
+        this(collectionOwner, propertyName, collectionChanged, elementChanged, changeType, (Integer)null);
+    }
+    
+    /**
+     * PUBLIC:
+     * Create a CollectionChangeEvent for an object based on the property name, old value, new value, 
+     * change type (add or remove) and the index where the object is/was in the collection (list)
+     */
+    public CollectionChangeEvent(Object collectionOwner, String propertyName, Object collectionChanged, Object elementChanged, int changeType, Integer index) {
         super(collectionOwner, propertyName, collectionChanged, elementChanged);
         this.changeType = changeType;
+        this.index = index;
     }
 
     /**
@@ -53,12 +69,20 @@ public class CollectionChangeEvent extends PropertyChangeEvent {
     public int getChangeType() {
         return changeType;
     }
+    
+    /**
+     * INTERNAL:
+     * Return the index of the change in the collection
+     */
+    public Integer getIndex() {
+        return index;
+    }
 
     /**
      * INTERNAL:
-     * Set the change type
+     * Set the index of the change in the collection
      */
-    public void setChangeType(int changeType) {
-        this.changeType = changeType;
+    public void setIndex(Integer index) {
+        this.index = index;
     }
 }

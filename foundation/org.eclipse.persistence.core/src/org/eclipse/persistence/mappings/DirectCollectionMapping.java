@@ -1898,6 +1898,31 @@ public class DirectCollectionMapping extends CollectionMapping implements Relati
 
         objectChangeSet.deferredDetectionRequiredOn(getAttributeName());
     }
+    
+    /**
+     * INTERNAL:
+     * Add or removes a new value and its change set to the collection change record based on the event passed in.  This is used by
+     * attribute change tracking.
+     */
+    public void updateCollectionChangeRecord(CollectionChangeEvent event, ObjectChangeSet changeSet, UnitOfWorkImpl uow) {
+        if (event != null ) {
+            //Letting the mapping create and add the ChangeSet to the ChangeRecord rather 
+            // than the policy, since the policy doesn't know how to handle DirectCollectionChangeRecord.
+            // if ordering is to be supported in the future, check how the method in CollectionMapping is implemented
+            Object key = null;
+            if (event.getClass().equals(ClassConstants.MapChangeEvent_Class)){
+                key = ((MapChangeEvent)event).getKey();
+            }
+            
+            if (event.getChangeType() == CollectionChangeEvent.ADD) {
+                addToCollectionChangeRecord(key, event.getNewValue(), changeSet, uow);
+            } else if (event.getChangeType() == CollectionChangeEvent.REMOVE) {
+                removeFromCollectionChangeRecord(key, event.getNewValue(), changeSet, uow);
+            } else {
+                throw ValidationException.wrongCollectionChangeEventType(event.getChangeType());
+            }
+        }
+    }
 
     /**
      * PUBLIC:
@@ -1992,16 +2017,7 @@ public class DirectCollectionMapping extends CollectionMapping implements Relati
         if (newValue == null) {
             newValue = DirectCollectionChangeRecord.Null;
         }
-        DirectCollectionChangeRecord collectionChangeRecord = (DirectCollectionChangeRecord)objectChangeSet.getChangesForAttributeNamed(this.getAttributeName());
-        if (collectionChangeRecord == null) {
-            collectionChangeRecord = new DirectCollectionChangeRecord(objectChangeSet);
-            collectionChangeRecord.setAttribute(getAttributeName());
-            collectionChangeRecord.setMapping(this);
-            objectChangeSet.addChange(collectionChangeRecord);
-            Object collection = getRealAttributeValueFromObject(objectChangeSet.getUnitOfWorkClone(), uow);
-            collectionChangeRecord.storeDatabaseCounts(collection, getContainerPolicy(), uow);
-        }
-        collectionChangeRecord.addAdditionChange(newValue, new Integer(1));
+        simpleAddToCollectionChangeRecord(newKey, newValue, objectChangeSet, uow);
     }
 
     /**
@@ -2029,15 +2045,6 @@ public class DirectCollectionMapping extends CollectionMapping implements Relati
         if (newValue == null) {
             newValue = DirectCollectionChangeRecord.Null;
         }
-        DirectCollectionChangeRecord collectionChangeRecord = (DirectCollectionChangeRecord)objectChangeSet.getChangesForAttributeNamed(this.getAttributeName());
-        if (collectionChangeRecord == null) {
-            collectionChangeRecord = new DirectCollectionChangeRecord(objectChangeSet);
-            collectionChangeRecord.setAttribute(getAttributeName());
-            collectionChangeRecord.setMapping(this);
-            objectChangeSet.addChange(collectionChangeRecord);
-            Object collection = getRealAttributeValueFromObject(objectChangeSet.getUnitOfWorkClone(), uow);
-            collectionChangeRecord.storeDatabaseCounts(collection, getContainerPolicy(), uow);
-        }
-        collectionChangeRecord.addRemoveChange(newValue, new Integer(1));
+        simpleRemoveFromCollectionChangeRecord(newKey, newValue, objectChangeSet, uow);
     }
 }

@@ -1527,6 +1527,15 @@ public abstract class DatabaseMapping implements Cloneable, Serializable {
     
     /**
      * INTERNAL:
+     * Add or removes a new value and its change set to the collection change record based on the event passed in.  This is used by
+     * attribute change tracking.
+     */
+    public void updateCollectionChangeRecord(org.eclipse.persistence.descriptors.changetracking.CollectionChangeEvent event, ObjectChangeSet objectChangeSet, UnitOfWorkImpl uow) throws DescriptorException {
+        throw DescriptorException.invalidMappingOperation(this, "updateCollectionChangeRecord");
+    }
+    
+    /**
+     * INTERNAL:
      * Set the change listener if required.
      * This is required for collections and aggregates or other change tracked mutable objects.
      * This is used for resuming or flushing units of work.

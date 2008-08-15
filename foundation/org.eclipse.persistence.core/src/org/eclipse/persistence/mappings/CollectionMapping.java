@@ -65,6 +65,7 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
      * Provide order support for queryKeyName in ascending order
      */
     public void addAscendingOrdering(String queryKeyName) {
+        this.hasOrderBy = true;
         if (queryKeyName == null) {
             return;
         }
@@ -77,6 +78,7 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
      * Provide order support for queryKeyName in descending order.
      */
     public void addDescendingOrdering(String queryKeyName) {
+        this.hasOrderBy = true;
         if (queryKeyName == null) {
             return;
         }
@@ -90,8 +92,6 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
      * Called from the EJBAnnotationsProcessor when an @OrderBy is found.
      */
     public void addOrderBy(String queryKeyName, boolean isDescending) {
-        this.hasOrderBy = true;
-        
         if (isDescending) {
             addDescendingOrdering(queryKeyName);
         } else {
@@ -927,7 +927,7 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
         }
 
         // Insert must not be done for uow or cascaded queries and we must cascade to cascade policy.
-        // We should distiguish between insert and write (optimization/paraniod).
+        // We should distinguish between insert and write (optimization/paraniod).
         if (isPrivateOwned()) {
             InsertObjectQuery insertQuery = new InsertObjectQuery();
             insertQuery.setIsExecutionClone(true);
@@ -959,7 +959,7 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
             if (query.shouldCascadeOnlyDependentParts()) {
                 // If the session is a unit of work
                 if (query.getSession().isUnitOfWork()) {
-                    // ...and the object has not been explictly deleted in the unit of work
+                    // ...and the object has not been explicitly deleted in the unit of work
                     if (!(((UnitOfWorkImpl)query.getSession()).getDeletedObjects().containsKey(objectDeleted))) {
                         query.getSession().getCommitManager().addObjectToDelete(objectDeleted);
                     }
@@ -1124,11 +1124,9 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
             collectionChangeRecord = new CollectionChangeRecord(changeSet);
             collectionChangeRecord.setAttribute(getAttributeName());
             collectionChangeRecord.setMapping(this);
-            collectionChangeRecord.getAddObjectList().put(changeSetToAdd, changeSetToAdd);
             changeSet.addChange(collectionChangeRecord);
-        } else {
-            getContainerPolicy().recordAddToCollectionInChangeRecord((ObjectChangeSet)changeSetToAdd, collectionChangeRecord);
         }
+        getContainerPolicy().recordAddToCollectionInChangeRecord((ObjectChangeSet)changeSetToAdd, collectionChangeRecord);
         if (referenceKey != null) {
             ((ObjectChangeSet)changeSetToAdd).setNewKey(referenceKey);
         }
@@ -1145,11 +1143,9 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
             collectionChangeRecord = new CollectionChangeRecord(changeSet);
             collectionChangeRecord.setAttribute(getAttributeName());
             collectionChangeRecord.setMapping(this);
-            collectionChangeRecord.getRemoveObjectList().put(changeSetToRemove, changeSetToRemove);
             changeSet.addChange(collectionChangeRecord);
-        } else {
-            getContainerPolicy().recordRemoveFromCollectionInChangeRecord((ObjectChangeSet)changeSetToRemove, collectionChangeRecord);
         }
+        getContainerPolicy().recordRemoveFromCollectionInChangeRecord((ObjectChangeSet)changeSetToRemove, collectionChangeRecord);
         if (referenceKey != null) {
             ((ObjectChangeSet)changeSetToRemove).setOldKey(referenceKey);
         }
@@ -1180,6 +1176,36 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
         collectionChangeRecord.setIsDeferred(true);
         
         objectChangeSet.deferredDetectionRequiredOn(getAttributeName());
+    }
+    
+    /**
+     * INTERNAL:
+     * Add or removes a new value and its change set to the collection change record based on the event passed in.  This is used by
+     * attribute change tracking.
+     */
+    public void updateCollectionChangeRecord(CollectionChangeEvent event, ObjectChangeSet changeSet, UnitOfWorkImpl uow) {
+        if (event !=null && event.getNewValue() != null) {
+            Object newValue = event.getNewValue();
+            ClassDescriptor descriptor;
+
+            //PERF: Use referenceDescriptor if it does not have inheritance
+            if (!getReferenceDescriptor().hasInheritance()) {
+                descriptor = getReferenceDescriptor();
+            } else {
+                descriptor = uow.getDescriptor(newValue);
+            }
+            newValue = descriptor.getObjectBuilder().unwrapObject(newValue, uow);
+            ObjectChangeSet changeSetToAdd = descriptor.getObjectBuilder().createObjectChangeSet(newValue, (UnitOfWorkChangeSet)changeSet.getUOWChangeSet(), uow);
+
+            CollectionChangeRecord collectionChangeRecord = (CollectionChangeRecord)changeSet.getChangesForAttributeNamed(this.getAttributeName());
+            if (collectionChangeRecord == null) {
+                collectionChangeRecord = new CollectionChangeRecord(changeSet);
+                collectionChangeRecord.setAttribute(getAttributeName());
+                collectionChangeRecord.setMapping(this);
+                changeSet.addChange(collectionChangeRecord);
+            }
+            getContainerPolicy().recordUpdateToCollectionInChangeRecord(event, (ObjectChangeSet)changeSetToAdd, collectionChangeRecord);
+        }
     }
            
     /**

@@ -9,6 +9,8 @@
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
+ *     08/15/2008-1.0.1 Chris Delahunt 
+ *       - 237545: List attribute types on OneToMany using @OrderBy does not work with attribute change tracking
  ******************************************************************************/  
 package org.eclipse.persistence.testing.models.employee.domain;
 
@@ -76,6 +78,10 @@ public class Employee implements org.eclipse.persistence.testing.models.employee
 
     /** Direct-to-field mapping, int -> NUMBER, salary of the employee in dollars. */
     public int salary;
+    
+    /** One-to-many mapping, employee references its collection of children arranged by age.
+     * This relationship uses transparent indirection */
+    public Vector children;
 
     /** For performance testing, how many times primary key extracted. */
     public static int getIdCallCount = 0;
@@ -124,6 +130,7 @@ public class Employee implements org.eclipse.persistence.testing.models.employee
         endTime.set(Calendar.MILLISECOND, 0);
         endTime.set(1970, 0, 1, 17, 0, 0);
         this.normalHours[1] = new Time(endTime.getTime().getTime());
+        this.children = new Vector();
     }
 
     /**
@@ -220,6 +227,10 @@ public class Employee implements org.eclipse.persistence.testing.models.employee
             }
         }
         return addressId;
+    }
+    
+    public Vector getChildren(){
+        return children;
     }
 
     public void setAddressId(BigDecimal newAddressId) {
@@ -331,6 +342,10 @@ public class Employee implements org.eclipse.persistence.testing.models.employee
         } else {
             this.setAddressId(address.getId());
         }
+    }
+    
+    public void setChildren(Vector children){
+        this.children = children;
     }
 
     /**

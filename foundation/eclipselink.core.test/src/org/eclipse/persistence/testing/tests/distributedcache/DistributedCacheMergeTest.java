@@ -41,6 +41,7 @@ public abstract class DistributedCacheMergeTest extends TestCase {
     protected Session originalSession = null;
     public static ConcurrencyManager semaphore = new ConcurrencyManager();
     Object originalObject = null;
+    int initialNumProjs;
 
     public DistributedCacheMergeTest() {
         setDescription("Testing");
@@ -151,7 +152,7 @@ public abstract class DistributedCacheMergeTest extends TestCase {
         if (object1 == null) {
             throw new TestErrorException("Employee on Server 1 exists");
         }
-        int initialNumProjs = getCollectionSize(object1);
+        initialNumProjs = getCollectionSize(object1);
 
         UnitOfWork uow = clientSession1.acquireUnitOfWork();
         Object newEmpWC = uow.registerObject(object1);
@@ -162,7 +163,7 @@ public abstract class DistributedCacheMergeTest extends TestCase {
         uow.commit();
 
         if (getCollectionSize(object1) != (initialNumProjs + 1)) {
-            throw new TestErrorException("Employee has the wrong number of items in the collection" + " expected:" + (initialNumProjs + 1) + " was:" + getCollectionSize(object1));
+            throw new TestErrorException("Employee has the wrong number of items in the collection; expected:" + (initialNumProjs + 1) + " was:" + getCollectionSize(object1));
         }
 
         try {
@@ -229,7 +230,7 @@ public abstract class DistributedCacheMergeTest extends TestCase {
         return session.executeQuery(roq);
     }
 
-    private SessionEventListener buildCacheMergeBlockingListener() {
+    protected SessionEventListener buildCacheMergeBlockingListener() {
         return new SessionEventAdapter() {
                 public void preDistributedMergeUnitOfWorkChangeSet(SessionEvent event) {
                     try {
