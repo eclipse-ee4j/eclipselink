@@ -589,7 +589,7 @@
       </class-mapping-descriptor>
    </class-mapping-descriptors>
    <login xsi:type="database-login">
-      <platform-class>org.eclipse.persistence.platform.database.oracle.OraclePlatform</platform-class>
+      <platform-class>org.eclipse.persistence.platform.database.OraclePlatform</platform-class>
       <user-name>jsutherl</user-name>
       <driver-class>oracle.jdbc.OracleDriver</driver-class>
       <connection-url>jdbc:oracle:thin:@tlsvrdb3.ca.oracle.com:1521:toplink</connection-url>

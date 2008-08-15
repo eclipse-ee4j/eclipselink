@@ -53,7 +53,7 @@
       </class-mapping-descriptor>
    </class-mapping-descriptors>
    <login xsi:type="database-login">
-      <platform-class>org.eclipse.persistence.platform.database.oracle.OraclePlatform</platform-class>
+      <platform-class>org.eclipse.persistence.platform.database.OraclePlatform</platform-class>
       <user-name>jsutherl</user-name>
       <password>BB742416276274A46959A54867978929</password>
       <driver-class>%%driverClass%%</driver-class>
