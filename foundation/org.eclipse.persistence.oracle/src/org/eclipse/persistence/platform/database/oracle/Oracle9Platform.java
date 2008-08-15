@@ -50,7 +50,7 @@ import org.eclipse.persistence.internal.platform.database.oracle.TIMESTAMPHelper
 import org.eclipse.persistence.internal.platform.database.oracle.TIMESTAMPLTZWrapper;
 import org.eclipse.persistence.internal.platform.database.oracle.TIMESTAMPTZWrapper;
 import org.eclipse.persistence.internal.platform.database.oracle.TIMESTAMPTypes;
-import org.eclipse.persistence.internal.platform.database.oracle.XMLTypePlaceholder;
+import org.eclipse.persistence.internal.platform.database.XMLTypePlaceholder;
 import org.eclipse.persistence.internal.platform.database.oracle.XMLTypeFactory;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.internal.security.PrivilegedClassForName;

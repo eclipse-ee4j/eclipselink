@@ -71,7 +71,7 @@ public class Util {
     public static final String WEB_XML_FILENAME =
         "web.xml";
     public static final String DEFAULT_PLATFORM_CLASSNAME =
-        "org.eclipse.persistence.platform.database.oracle.OraclePlatform";
+        "org.eclipse.persistence.platform.database.OraclePlatform";
     public static final String WEBSERVICES_FILENAME =
         "webservices.xml";
     public static final String UNDER_DBWS =

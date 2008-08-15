@@ -24,7 +24,7 @@ import org.eclipse.persistence.mappings.DirectToFieldMapping;
 import org.eclipse.persistence.mappings.OneToManyMapping;
 import org.eclipse.persistence.mappings.OneToOneMapping;
 import org.eclipse.persistence.platform.database.MySQLPlatform;
-import org.eclipse.persistence.platform.database.oracle.OraclePlatform;
+import org.eclipse.persistence.platform.database.OraclePlatform;
 import org.eclipse.persistence.queries.InMemoryQueryIndirectionPolicy;
 import org.eclipse.persistence.queries.ObjectLevelReadQuery;
 import org.eclipse.persistence.queries.QueryResultsCachePolicy;

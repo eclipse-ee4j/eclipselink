@@ -417,7 +417,7 @@
       </class-mapping-descriptor>
    </class-mapping-descriptors>
    <login xsi:type="database-login">
-      <platform-class>org.eclipse.persistence.platform.oracle.OraclePlatform</platform-class>
+      <platform-class>org.eclipse.persistence.platform.OraclePlatform</platform-class>
       <user-name></user-name>
       <driver-class>sun.jdbc.odbc.JdbcOdbcDriver</driver-class>
       <connection-url>jdbc:odbc:</connection-url>

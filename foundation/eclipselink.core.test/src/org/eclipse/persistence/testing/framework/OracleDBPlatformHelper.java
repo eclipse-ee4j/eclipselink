@@ -14,7 +14,7 @@ package org.eclipse.persistence.testing.framework;
 
 import org.eclipse.persistence.internal.security.PrivilegedClassForName;
 import org.eclipse.persistence.internal.security.PrivilegedNewInstanceFromClass;
-import org.eclipse.persistence.platform.database.oracle.OraclePlatform;
+import org.eclipse.persistence.platform.database.OraclePlatform;
 
 /**
  * Used to separate Oracle-Specific tests from the main test framework.  Returns OraclePlatform from all its

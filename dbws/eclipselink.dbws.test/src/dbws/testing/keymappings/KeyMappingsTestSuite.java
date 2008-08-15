@@ -46,7 +46,7 @@ import org.eclipse.persistence.internal.xr.XRServiceModel;
 import org.eclipse.persistence.oxm.XMLContext;
 import org.eclipse.persistence.oxm.XMLMarshaller;
 import org.eclipse.persistence.oxm.XMLUnmarshaller;
-import org.eclipse.persistence.platform.database.oracle.OraclePlatform;
+import org.eclipse.persistence.platform.database.OraclePlatform;
 import org.eclipse.persistence.platform.xml.XMLComparer;
 import org.eclipse.persistence.platform.xml.XMLParser;
 import org.eclipse.persistence.platform.xml.XMLPlatform;

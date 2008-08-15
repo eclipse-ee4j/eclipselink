@@ -1721,7 +1721,7 @@
       </class-mapping-descriptor>
    </class-mapping-descriptors>
    <login xsi:type="database-login">
-      <platform-class>org.eclipse.persistence.platform.database.oracle.OraclePlatform</platform-class>
+      <platform-class>org.eclipse.persistence.platform.database.OraclePlatform</platform-class>
       <user-name>scott</user-name>
       <password>3E20F8982C53F4ABA825E30206EC8ADE</password>
       <driver-class>oracle.jdbc.OracleDriver</driver-class>

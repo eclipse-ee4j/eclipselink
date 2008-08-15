@@ -14,7 +14,7 @@ package org.eclipse.persistence.platform.server.oc4j;
 
 import org.eclipse.persistence.sessions.DatabaseSession;
 import org.eclipse.persistence.transaction.oc4j.Oc4jTransactionController;
-import org.eclipse.persistence.platform.database.oracle.OraclePlatform;
+import org.eclipse.persistence.platform.database.OraclePlatform;
 import org.eclipse.persistence.platform.server.ServerPlatformBase;
 
 import org.eclipse.persistence.internal.databaseaccess.Platform;

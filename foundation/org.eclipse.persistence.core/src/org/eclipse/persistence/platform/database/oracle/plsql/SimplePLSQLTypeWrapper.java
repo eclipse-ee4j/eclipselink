@@ -10,35 +10,35 @@
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
  ******************************************************************************/
- package org.eclipse.persistence.platform.database.oracle;
+
+package org.eclipse.persistence.platform.database.oracle.plsql;
 
 // javse imports
 
 // Java extension imports
 
-// TopLink imports
-import org.eclipse.persistence.internal.helper.ComplexDatabaseType;
+// EclipseLink imports
 import org.eclipse.persistence.internal.helper.DatabaseType;
 import org.eclipse.persistence.internal.helper.DatabaseTypeWrapper;
 
 /**
  * <b>INTERNAL</b>: a helper class that holds DatabaseType's. Used to support marshalling
- * PLSQLStoredProcedureCall's 
- * 
+ * PLSQLStoredProcedureCall's
+ *
  * @author Mike Norman - michael.norman@oracle.com
  * @since Oracle TopLink 11.x.x
  */
-public class ComplexPLSQLTypeWrapper extends DatabaseTypeWrapper {
+public class SimplePLSQLTypeWrapper extends DatabaseTypeWrapper {
 
-    public ComplexPLSQLTypeWrapper() {
+    public SimplePLSQLTypeWrapper() {
         super();
     }
 
-    public ComplexPLSQLTypeWrapper(DatabaseType wrappedType) {
+    public SimplePLSQLTypeWrapper(DatabaseType wrappedType) {
         super(wrappedType);
     }
 
-    public ComplexDatabaseType getWrappedType() {
-        return (ComplexDatabaseType)wrappedDatabaseType;
+    public OraclePLSQLType getWrappedType() {
+        return (OraclePLSQLType)wrappedDatabaseType;
     }
 }

@@ -25,7 +25,7 @@ import org.eclipse.persistence.mappings.TransformationMapping;
 import org.eclipse.persistence.mappings.converters.ObjectTypeConverter;
 import org.eclipse.persistence.mappings.converters.TypeConversionConverter;
 import org.eclipse.persistence.platform.database.MySQLPlatform;
-import org.eclipse.persistence.platform.database.oracle.OraclePlatform;
+import org.eclipse.persistence.platform.database.OraclePlatform;
 import org.eclipse.persistence.queries.DoesExistQuery;
 import org.eclipse.persistence.queries.InMemoryQueryIndirectionPolicy;
 import org.eclipse.persistence.queries.QueryResultsCachePolicy;

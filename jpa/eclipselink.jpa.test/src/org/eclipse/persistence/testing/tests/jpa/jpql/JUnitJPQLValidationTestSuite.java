@@ -954,8 +954,6 @@ public class JUnitJPQLValidationTestSuite extends JUnitTestCase
                 secondEm.getTransaction().rollback();
             }
             secondEm.close();
-            System.out.println("*** JTAOptimisticLockExceptionTest Diagnosis message - Got Exception: ");
-            e.printStackTrace();
             if (isKnownMySQLIssue(e)) {
                 warning("EOFException found on MySQL db.  This is a known problem with the MySQL Database");
             } else {         

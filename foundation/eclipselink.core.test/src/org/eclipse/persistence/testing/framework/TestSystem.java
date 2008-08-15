@@ -452,7 +452,7 @@ public class TestSystem {
     		Class platformClass = Class.forName("org.eclipse.persistence.platform.database.oracle.Oracle9Platform");
     		platform = (DatabasePlatform)platformClass.newInstance();
     	} catch (Exception e){
-    		platform = new org.eclipse.persistence.platform.database.oracle.OraclePlatform();
+    		platform = new org.eclipse.persistence.platform.database.OraclePlatform();
     	}
         DatabaseLogin login = new DatabaseLogin(platform);
 
@@ -476,7 +476,7 @@ public class TestSystem {
     		Class platformClass = Class.forName("org.eclipse.persistence.platform.database.oracle.Oracle8Platform");
     		platform = (DatabasePlatform)platformClass.newInstance();
     	} catch (Exception e){
-    		platform = new org.eclipse.persistence.platform.database.oracle.OraclePlatform();
+    		platform = new org.eclipse.persistence.platform.database.OraclePlatform();
     	}
         DatabaseLogin login = new DatabaseLogin(platform);
         login.useOracleThinJDBCDriver();

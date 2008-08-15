@@ -1,7 +1,7 @@
 <?xml version = '1.0' encoding = 'UTF-8'?>
 <database-platform>
    <name>Oracle</name>
-   <runtime-platform-class>org.eclipse.persistence.platform.database.oracle.OraclePlatform</runtime-platform-class>
+   <runtime-platform-class>org.eclipse.persistence.platform.database.OraclePlatform</runtime-platform-class>
    <supports-native-sequencing>true</supports-native-sequencing>
    <database-types>
       <database-type>

@@ -24,8 +24,8 @@ import org.eclipse.persistence.internal.sessions.factories.ObjectPersistenceWork
 import org.eclipse.persistence.oxm.XMLContext;
 import org.eclipse.persistence.oxm.XMLMarshaller;
 import org.eclipse.persistence.platform.database.jdbc.JDBCTypes;
-import org.eclipse.persistence.platform.database.oracle.PLSQLStoredProcedureCall;
-import org.eclipse.persistence.platform.database.oracle.PLSQLrecord;
+import org.eclipse.persistence.platform.database.oracle.plsql.PLSQLStoredProcedureCall;
+import org.eclipse.persistence.platform.database.oracle.plsql.PLSQLrecord;
 import org.eclipse.persistence.queries.ReadObjectQuery;
 import org.eclipse.persistence.sessions.DatabaseSession;
 import org.eclipse.persistence.sessions.Project;

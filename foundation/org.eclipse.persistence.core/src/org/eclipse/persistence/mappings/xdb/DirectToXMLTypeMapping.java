@@ -15,7 +15,7 @@ package org.eclipse.persistence.mappings.xdb;
 import org.eclipse.persistence.exceptions.ConversionException;
 import org.eclipse.persistence.exceptions.DescriptorException;
 import org.eclipse.persistence.internal.helper.ClassConstants;
-import org.eclipse.persistence.internal.platform.database.oracle.XMLTypePlaceholder;
+import org.eclipse.persistence.internal.platform.database.XMLTypePlaceholder;
 import org.eclipse.persistence.internal.queries.JoinedAttributeManager;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.internal.sessions.UnitOfWorkImpl;

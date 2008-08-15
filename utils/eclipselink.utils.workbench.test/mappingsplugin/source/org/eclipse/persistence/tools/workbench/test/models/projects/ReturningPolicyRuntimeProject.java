@@ -77,7 +77,7 @@ public class ReturningPolicyRuntimeProject {
 	
 	public void applyLogin() {
 		DatabaseLogin login = new DatabaseLogin();
-		login.usePlatform(new org.eclipse.persistence.platform.database.oracle.OraclePlatform());
+		login.usePlatform(new org.eclipse.persistence.platform.database.OraclePlatform());
 		login.setDriverClassName(TestDatabases.oracleDriverClassName());
 		login.setConnectionString(TestDatabases.oracleServerURL());
 		login.setUserName(TestDatabases.userName());

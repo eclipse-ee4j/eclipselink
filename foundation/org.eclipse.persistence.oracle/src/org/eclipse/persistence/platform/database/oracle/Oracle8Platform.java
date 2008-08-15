@@ -27,6 +27,7 @@ import org.eclipse.persistence.internal.helper.ClassConstants;
 import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.logging.SessionLog;
+import org.eclipse.persistence.platform.database.OraclePlatform;
 import org.eclipse.persistence.queries.Call;
 
 

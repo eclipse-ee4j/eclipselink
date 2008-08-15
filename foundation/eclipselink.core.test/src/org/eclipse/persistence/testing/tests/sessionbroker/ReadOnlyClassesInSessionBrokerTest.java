@@ -12,7 +12,7 @@
  ******************************************************************************/  
 package org.eclipse.persistence.testing.tests.sessionbroker;
 
-import org.eclipse.persistence.platform.database.oracle.OraclePlatform;
+import org.eclipse.persistence.platform.database.OraclePlatform;
 import org.eclipse.persistence.sessions.broker.SessionBroker;
 import org.eclipse.persistence.sessions.DatabaseLogin;
 import org.eclipse.persistence.sessions.Project;

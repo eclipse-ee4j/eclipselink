@@ -30,7 +30,7 @@ import static org.junit.Assert.assertTrue;
 import org.eclipse.persistence.internal.xr.Invocation;
 import org.eclipse.persistence.internal.xr.Operation;
 import org.eclipse.persistence.oxm.XMLMarshaller;
-import org.eclipse.persistence.platform.database.oracle.OraclePlatform;
+import org.eclipse.persistence.platform.database.OraclePlatform;
 
 // domain-specific imports
 import dbws.testing.DBWSTestSuite;

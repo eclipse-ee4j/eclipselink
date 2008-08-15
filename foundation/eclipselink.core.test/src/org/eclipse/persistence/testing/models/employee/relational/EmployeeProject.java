@@ -41,7 +41,7 @@ public class EmployeeProject extends org.eclipse.persistence.sessions.Project {
 
     public void applyLogin() {
         DatabaseLogin login = new DatabaseLogin();
-        login.usePlatform(new org.eclipse.persistence.platform.database.oracle.OraclePlatform());
+        login.usePlatform(new org.eclipse.persistence.platform.database.OraclePlatform());
         login.setDriverClassName("oracle.jdbc.OracleDriver");
         login.setConnectionString("jdbc:oracle:thin:@localhost:1521:orcl");
         login.setUserName("scott");

@@ -13,6 +13,7 @@
 package org.eclipse.persistence.internal.jpa.transaction;
 
 import org.eclipse.persistence.internal.jpa.*;
+import org.eclipse.persistence.internal.sessions.RepeatableWriteUnitOfWork;
 import org.eclipse.persistence.internal.sessions.UnitOfWorkImpl;
 
 public abstract class TransactionWrapperImpl  {

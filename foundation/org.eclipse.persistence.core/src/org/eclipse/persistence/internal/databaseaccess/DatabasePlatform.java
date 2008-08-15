@@ -57,9 +57,9 @@ import org.eclipse.persistence.mappings.structures.ObjectRelationalDatabaseField
 import org.eclipse.persistence.platform.database.AccessPlatform;
 import org.eclipse.persistence.platform.database.DB2Platform;
 import org.eclipse.persistence.platform.database.DBasePlatform;
+import org.eclipse.persistence.platform.database.OraclePlatform;
 import org.eclipse.persistence.platform.database.SybasePlatform;
 import org.eclipse.persistence.platform.database.converters.StructConverter;
-import org.eclipse.persistence.platform.database.oracle.OraclePlatform;
 import org.eclipse.persistence.queries.Call;
 import org.eclipse.persistence.queries.SQLCall;
 import org.eclipse.persistence.queries.StoredProcedureCall;

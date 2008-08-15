@@ -42,7 +42,7 @@ public class CustomSQLTestModel extends TestModel {
 
         // Force the database to be recreated using custom SQL.
         addForcedRequiredSystem(new EmployeeCustomSQLSystem());
-        if (getSession().getPlatform() instanceof org.eclipse.persistence.platform.database.oracle.OraclePlatform) {
+        if (getSession().getPlatform() instanceof org.eclipse.persistence.platform.database.OraclePlatform) {
             addForcedRequiredSystem(new InsuranceORStoredProcedureSystem());
         }
     }

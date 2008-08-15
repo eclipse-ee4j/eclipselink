@@ -28,7 +28,6 @@ import org.eclipse.persistence.internal.localization.ExceptionLocalization;
 import org.eclipse.persistence.platform.server.ServerPlatform;
 import org.eclipse.persistence.queries.*;
 import org.eclipse.persistence.internal.identitymaps.*;
-import org.eclipse.persistence.internal.jpa.PropertiesHandler;
 import org.eclipse.persistence.internal.databaseaccess.*;
 import org.eclipse.persistence.expressions.*;
 import org.eclipse.persistence.exceptions.*;

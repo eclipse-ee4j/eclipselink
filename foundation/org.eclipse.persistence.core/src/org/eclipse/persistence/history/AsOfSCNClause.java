@@ -27,7 +27,7 @@ import org.eclipse.persistence.internal.helper.*;
  * @since OracleAS TopLink 10<i>g</i> (10.0.3)
  * @author Stephen McRitchie
  * @see AsOfClause
- * @see org.eclipse.persistence.internal.databaseaccess.OraclePlatform#getSystemChangeNumberQuery
+ * @see org.eclipse.persistence.platform.database.OraclePlatform#getSystemChangeNumberQuery
  */
 public class AsOfSCNClause extends AsOfClause {
     public AsOfSCNClause(Number systemChangeNumber) {

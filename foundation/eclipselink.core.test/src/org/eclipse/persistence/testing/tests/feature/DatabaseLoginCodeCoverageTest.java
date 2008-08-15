@@ -19,6 +19,7 @@ import org.eclipse.persistence.sessions.*;
 import org.eclipse.persistence.testing.framework.*;
 import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.internal.databaseaccess.*;
+import org.eclipse.persistence.platform.database.OraclePlatform;
 import org.eclipse.persistence.platform.database.oracle.*;
 
 public class DatabaseLoginCodeCoverageTest extends AutoVerifyTestCase {
@@ -560,7 +561,7 @@ public class DatabaseLoginCodeCoverageTest extends AutoVerifyTestCase {
         newSeqTableName = defaultSeqTableName.concat("_NEW");
         platform.setSequenceTableName(newSeqTableName);
         login.setPlatform(platform);
-        login.setPlatformClassName("org.eclipse.persistence.platform.database.oracle.OraclePlatform");
+        login.setPlatformClassName("org.eclipse.persistence.platform.database.OraclePlatform");
 
         name = login.getPlatform().getSequenceTableName();
         if (!name.equals(newSeqTableName)) {

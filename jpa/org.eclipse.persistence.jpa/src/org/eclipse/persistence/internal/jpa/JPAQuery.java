@@ -10,13 +10,14 @@
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
  ******************************************************************************/  
-package org.eclipse.persistence.queries;
+package org.eclipse.persistence.internal.jpa;
 
 
 import org.eclipse.persistence.exceptions.DatabaseException;
 import org.eclipse.persistence.exceptions.OptimisticLockException;
 import java.util.HashMap;
-import org.eclipse.persistence.internal.jpa.EJBQueryImpl;
+
+import org.eclipse.persistence.queries.DatabaseQuery;
 import org.eclipse.persistence.sessions.Session;
 
 

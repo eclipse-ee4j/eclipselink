@@ -11,7 +11,7 @@
  *     Oracle - initial API and implementation from Oracle TopLink
  ******************************************************************************/
 
-package org.eclipse.persistence.platform.database.oracle;
+package org.eclipse.persistence.platform.database.oracle.plsql;
 
 // Javse imports
 import java.util.ListIterator;

@@ -34,7 +34,7 @@ public class PromptTestRunner {
     public static final String DB_PWD_KEY = "db.pwd";
     public static final String DB_PWD_DEFAULT = "tiger";
     public static final String DB_PLATFORM_KEY = "db.platform";
-    public static final String DB_PLATFORM_DEFAULT = "org.eclipse.persistence.platform.database.oracle.OraclePlatform";
+    public static final String DB_PLATFORM_DEFAULT = "org.eclipse.persistence.platform.database.OraclePlatform";
     public static final String LOGGING_LEVEL_KEY = "eclipselink.logging.level";
     public static final String LOGGING_LEVEL_DEFAULT = "info";
 

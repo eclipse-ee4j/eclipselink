@@ -491,7 +491,7 @@ public abstract class DatasourceLogin implements org.eclipse.persistence.session
             usePlatform(platform);
             // EclipseLink 23869 - Initialize plaformOperators eagerly to avoid concurrancy issuese.
             platform.getPlatformOperators();
-        } catch(Exception cne) {
+        } catch(Throwable cne) {
             //next try using ConversionManager
             try {
                 platformClass = ConversionManager.loadClass(platformClassName);           
