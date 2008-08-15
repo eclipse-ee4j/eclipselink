@@ -872,7 +872,8 @@ public class ExpressionQueryMechanism extends StatementQueryMechanism {
             }
         }
         // If only checking the cache, and empty, return invalid.
-        if ((cachedObject == null) && query.shouldCheckCacheOnly()) {
+        if ((cachedObject == null) && query.shouldCheckCacheOnly() && !session.isUnitOfWork()) {
+
             return InvalidObject.instance;
         }
 

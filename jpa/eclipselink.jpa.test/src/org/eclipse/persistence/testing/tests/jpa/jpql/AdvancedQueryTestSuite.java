@@ -73,6 +73,7 @@ public class AdvancedQueryTestSuite extends JUnitTestCase {
         suite.setName("AdvancedQueryTestSuite");
         suite.addTest(new AdvancedQueryTestSuite("testQueryCacheFirstCacheHits"));
         suite.addTest(new AdvancedQueryTestSuite("testQueryCacheOnlyCacheHits"));
+        suite.addTest(new AdvancedQueryTestSuite("testQueryCacheOnlyCacheHitsOnSession"));
         suite.addTest(new AdvancedQueryTestSuite("testQueryPrimaryKeyCacheHits"));
         suite.addTest(new AdvancedQueryTestSuite("testQueryExactPrimaryKeyCacheHits"));
         suite.addTest(new AdvancedQueryTestSuite("testQueryTypeCacheHits"));
@@ -270,6 +271,58 @@ public class AdvancedQueryTestSuite extends JUnitTestCase {
             if (counter != null) {
                 counter.remove();
             }
+        }
+    }
+
+     /**
+     * Test that a cache hit will occur on a query when the object is not in the unit of work/em.
+     */
+    public void testQueryCacheOnlyCacheHitsOnSession() {
+        EntityManager em = createEntityManager();
+        beginTransaction(em);
+        QuerySQLTracker counter = null;
+        try {
+            // Load an employee into the cache.  
+            Query query = em.createQuery("Select employee from Employee employee");
+            List result = query.getResultList();
+            Employee employee = (Employee)result.get(result.size() - 1);
+
+            // Count SQL.
+            counter = new QuerySQLTracker(getServerSession());
+            // Query by primary key.
+            rollbackTransaction(em);
+            closeEntityManager(em);
+            em = createEntityManager();
+            beginTransaction(em);
+            query = em.createQuery("Select employee from Employee employee where employee.id = :id");
+            query.setHint(QueryHints.QUERY_TYPE, QueryType.ReadObject);
+            query.setHint(QueryHints.CACHE_USAGE, CacheUsage.CheckCacheOnly);
+            query.setParameter("id", employee.getId());
+            if (query.getSingleResult() == null) {
+                fail("Query did not check session cache.");
+            }
+            if (counter.getSqlStatements().size() > 0) {
+                fail("Cache hit do not occur: " + counter.getSqlStatements());
+            }
+            rollbackTransaction(em);
+            closeEntityManager(em);
+            em = createEntityManager();
+            beginTransaction(em);
+            query = em.createQuery("Select employee from Employee employee where employee.id = :id");
+            query.setHint(QueryHints.CACHE_USAGE, CacheUsage.CheckCacheOnly);
+            query.setParameter("id", employee.getId());
+            if (query.getResultList().size() != 1) {
+                fail("Query did not check session cache.");
+            }
+            if (counter.getSqlStatements().size() > 0) {
+                fail("Cache hit do not occur: " + counter.getSqlStatements());
+            }
+        } finally {
+            if (counter != null) {
+                counter.remove();
+            }
+            rollbackTransaction(em);
+            closeEntityManager(em);
         }
     }
 }
