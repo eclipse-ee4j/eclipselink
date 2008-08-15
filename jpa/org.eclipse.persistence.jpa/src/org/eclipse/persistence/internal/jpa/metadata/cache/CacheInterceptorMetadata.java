@@ -44,7 +44,7 @@ public class CacheInterceptorMetadata extends ORMetadata {
     public CacheInterceptorMetadata(Annotation cacheInterceptor, MetadataAccessibleObject accessibleObject) {
         super(cacheInterceptor, accessibleObject);
         
-        m_interceptorClassName = ((Class)MetadataHelper.invokeMethod("interceptorClass", cacheInterceptor)).getName();
+        m_interceptorClassName = ((Class)MetadataHelper.invokeMethod("value", cacheInterceptor)).getName();
     }
     
     
