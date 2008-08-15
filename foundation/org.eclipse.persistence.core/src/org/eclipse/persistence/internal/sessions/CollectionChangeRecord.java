@@ -14,6 +14,7 @@ package org.eclipse.persistence.internal.sessions;
 
 import java.util.*;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
+import org.eclipse.persistence.descriptors.changetracking.CollectionChangeEvent;
 
 /**
  * <p>
@@ -39,6 +40,11 @@ public class CollectionChangeRecord extends DeferrableChangeRecord implements or
      * Contains the added values index to the collection. 
      */
     protected Map orderedAddObjectIndices;
+    
+    /**
+     * Contains OrderedChangeObjects representing each change made to the collection. 
+     */
+    protected Vector orderedChangeObjectList;
     
     /** 
      * Contains the removed values to the collection and their corresponding ChangeSets.
@@ -207,7 +213,8 @@ public class CollectionChangeRecord extends DeferrableChangeRecord implements or
         return (!(  (this.addObjectList == null || this.addObjectList.isEmpty()) && 
                     (this.removeObjectList == null || this.removeObjectList.isEmpty()) && 
                     (this.orderedAddObjects == null || this.orderedAddObjects.isEmpty()) && 
-                    (this.orderedRemoveObjects == null || this.orderedRemoveObjects.isEmpty()))) 
+                    (this.orderedRemoveObjects == null || this.orderedRemoveObjects.isEmpty()) &&
+                    (this.orderedChangeObjectList == null || this.orderedChangeObjectList.isEmpty()))) 
                 || getOwner().isNew();
     }
 
@@ -235,6 +242,16 @@ public class CollectionChangeRecord extends DeferrableChangeRecord implements or
                 getRemoveObjectList().put(localChangeSet, localChangeSet);
             }
         }
+        //237545: merge the changes for ordered list's attribute change tracking. (still need to check if deferred changes need to be merged)
+        Iterator orderedChangeObjectEnum = ((CollectionChangeRecord)mergeFromRecord).getOrderedChangeObjectList().iterator();
+        while (orderedChangeObjectEnum.hasNext()) {
+            OrderedChangeObject changeObject = (OrderedChangeObject)orderedChangeObjectEnum.next();
+            ObjectChangeSet mergingObject = changeObject.getChangeSet();
+            ObjectChangeSet localChangeSet = mergeToChangeSet.findOrIntegrateObjectChangeSet(mergingObject, mergeFromChangeSet);
+            
+            OrderedChangeObject orderedChangeObject = new OrderedChangeObject(changeObject.getChangeType(), changeObject.getIndex(), localChangeSet);;
+            getOrderedChangeObjectList().add(orderedChangeObject);
+        }
     }
 
     /**
@@ -245,43 +262,39 @@ public class CollectionChangeRecord extends DeferrableChangeRecord implements or
     public void prepareForSynchronization(AbstractSession session) {
         Iterator changes = getAddObjectList().values().iterator();
         while (changes.hasNext()) {
-            ObjectChangeSet changedObject = (ObjectChangeSet)changes.next();
-            if (changedObject.getSynchronizationType() == ClassDescriptor.UNDEFINED_OBJECT_CHANGE_BEHAVIOR) {
-                ClassDescriptor descriptor = session.getDescriptor(changedObject.getClassType(session));
-                int syncType = descriptor.getCacheSynchronizationType();
-                changedObject.setSynchronizationType(syncType);
-                changedObject.prepareChangeRecordsForSynchronization(session);
-            }
+            prepareForSynchronization((ObjectChangeSet)changes.next(), session);
         }
         changes = getRemoveObjectList().values().iterator();
         while (changes.hasNext()) {
-            ObjectChangeSet changedObject = (ObjectChangeSet)changes.next();
-            if (changedObject.getSynchronizationType() == ClassDescriptor.UNDEFINED_OBJECT_CHANGE_BEHAVIOR) {
-                ClassDescriptor descriptor = session.getDescriptor(changedObject.getClassType(session));
-                int syncType = descriptor.getCacheSynchronizationType();
-                changedObject.setSynchronizationType(syncType);
-                changedObject.prepareChangeRecordsForSynchronization(session);
-            }
+            prepareForSynchronization((ObjectChangeSet)changes.next(), session);
         }
         changes = getOrderedAddObjects().iterator();
         while (changes.hasNext()) {
-            ObjectChangeSet changedObject = (ObjectChangeSet)changes.next();
-            if (changedObject.getSynchronizationType() == ClassDescriptor.UNDEFINED_OBJECT_CHANGE_BEHAVIOR) {
-                ClassDescriptor descriptor = session.getDescriptor(changedObject.getClassType(session));
-                int syncType = descriptor.getCacheSynchronizationType();
-                changedObject.setSynchronizationType(syncType);
-                changedObject.prepareChangeRecordsForSynchronization(session);
-            }
+            prepareForSynchronization((ObjectChangeSet)changes.next(), session);
         }
         changes = getOrderedRemoveObjects().values().iterator();
         while (changes.hasNext()) {
-            ObjectChangeSet changedObject = (ObjectChangeSet)changes.next();
-            if (changedObject.getSynchronizationType() == ClassDescriptor.UNDEFINED_OBJECT_CHANGE_BEHAVIOR) {
-                ClassDescriptor descriptor = session.getDescriptor(changedObject.getClassType(session));
-                int syncType = descriptor.getCacheSynchronizationType();
-                changedObject.setSynchronizationType(syncType);
-                changedObject.prepareChangeRecordsForSynchronization(session);
-            }
+            prepareForSynchronization((ObjectChangeSet)changes.next(), session);
+        }
+        
+        //237545: prepare the OrderedList from attribute change tracking 
+        Iterator orderedChangeObjectEnum = getOrderedChangeObjectList().iterator();
+        while (orderedChangeObjectEnum.hasNext()) {
+            OrderedChangeObject orderedChangeObject = (OrderedChangeObject)orderedChangeObjectEnum.next();
+            prepareForSynchronization(orderedChangeObject.getChangeSet(), session);
+        }
+    }
+    
+    /**
+     * Ensure an ObjectChangeSet is ready to by sent remotely for cache synchronization.
+     * In general, this means setting the CacheSynchronizationType.
+     */
+    private void prepareForSynchronization(ObjectChangeSet changedObject, AbstractSession session) {
+        if (changedObject.getSynchronizationType() == ClassDescriptor.UNDEFINED_OBJECT_CHANGE_BEHAVIOR) {
+            ClassDescriptor descriptor = session.getDescriptor(changedObject.getClassType(session));
+            int syncType = descriptor.getCacheSynchronizationType();
+            changedObject.setSynchronizationType(syncType);
+            changedObject.prepareChangeRecordsForSynchronization(session);
         }
     }
 
@@ -397,6 +410,19 @@ public class CollectionChangeRecord extends DeferrableChangeRecord implements or
     }
     
     /**
+     * This method returns the Vector of OrderedChangeObjects. These objects represent 
+     * all changes made to the collection, and their order in the vector represents the order
+     * they were performed.  
+     */
+    public Vector getOrderedChangeObjectList() {
+        if (orderedChangeObjectList == null) {
+            orderedChangeObjectList = new Vector();
+        }
+        
+        return orderedChangeObjectList;
+    }
+    
+    /**
      * This method returns the ordered list of indices to remove from the collection.
      */
     public Vector getOrderedRemoveObjectIndices() {
@@ -439,6 +465,10 @@ public class CollectionChangeRecord extends DeferrableChangeRecord implements or
      */
     public void setOrderedAddObjects(Vector orderedAddObjects) {
         this.orderedAddObjects = orderedAddObjects;
+    }
+    
+    public void setOrderedChangeObjectList(Vector orderedChangeObjectList) {
+        this.orderedChangeObjectList = orderedChangeObjectList;
     }
     
     /**

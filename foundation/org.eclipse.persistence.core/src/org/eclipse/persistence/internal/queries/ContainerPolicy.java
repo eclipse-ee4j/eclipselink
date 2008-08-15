@@ -33,6 +33,7 @@ import org.eclipse.persistence.internal.security.PrivilegedGetConstructorFor;
 import org.eclipse.persistence.internal.sessions.UnitOfWorkImpl;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
+import org.eclipse.persistence.descriptors.changetracking.CollectionChangeEvent;
 import org.eclipse.persistence.indirection.IndirectCollection;
 
 /**
@@ -734,7 +735,7 @@ public abstract class ContainerPolicy implements Cloneable, Serializable {
     /**
      * This method is used to bridge the behavior between Attribute Change Tracking and
      * deferred change tracking with respect to adding the same instance multiple times.
-     * Each containerplicy type will implement specific behavior for the collection 
+     * Each ContainerPolicy type will implement specific behavior for the collection 
      * type it is wrapping.  These methods are only valid for collections containing object references
      */
     public void recordAddToCollectionInChangeRecord(ObjectChangeSet changeSetToAdd, CollectionChangeRecord collectionChangeRecord){
@@ -748,7 +749,7 @@ public abstract class ContainerPolicy implements Cloneable, Serializable {
     /**
      * This method is used to bridge the behavior between Attribute Change Tracking and
      * deferred change tracking with respect to adding the same instance multiple times.
-     * Each containerplicy type will implement specific behavior for the collection 
+     * Each ContainerPolicy type will implement specific behavior for the collection 
      * type it is wrapping.  These methods are only valid for collections containing object references
      */
     public void recordRemoveFromCollectionInChangeRecord(ObjectChangeSet changeSetToRemove, CollectionChangeRecord collectionChangeRecord){
@@ -756,6 +757,22 @@ public abstract class ContainerPolicy implements Cloneable, Serializable {
             collectionChangeRecord.getAddObjectList().remove(changeSetToRemove);
         } else {
             collectionChangeRecord.getRemoveObjectList().put(changeSetToRemove, changeSetToRemove);
+        }
+    }
+    
+    /**
+     * This method is used to bridge the behavior between Attribute Change Tracking and
+     * deferred change tracking with respect to adding the same instance multiple times.
+     * Each ContainerPolicy type will implement specific behavior for the collection 
+     * type it is wrapping.  These methods are only valid for collections containing object references
+     */
+    public void recordUpdateToCollectionInChangeRecord(CollectionChangeEvent event, ObjectChangeSet changeSet, CollectionChangeRecord collectionChangeRecord){
+        if (event.getChangeType() == CollectionChangeEvent.ADD) {
+            recordAddToCollectionInChangeRecord(changeSet, collectionChangeRecord);
+        } else if (event.getChangeType() == CollectionChangeEvent.REMOVE) {
+            recordRemoveFromCollectionInChangeRecord(changeSet, collectionChangeRecord);
+        } else {
+            throw ValidationException.wrongCollectionChangeEventType(event.getChangeType());
         }
     }
     

@@ -36,6 +36,7 @@ import org.eclipse.persistence.testing.tests.jpa.inheritance.MixedInheritanceJUn
 import org.eclipse.persistence.testing.tests.jpa.inheritance.JoinedAttributeInheritanceJunitTest;
 
 import org.eclipse.persistence.testing.tests.jpa.inherited.OrderedListJunitTest;
+import org.eclipse.persistence.testing.tests.jpa.inherited.OrderedListAttributeChangeTrackingJunitTest;
 import org.eclipse.persistence.testing.tests.jpa.inherited.InheritedModelJunitTest;
 import org.eclipse.persistence.testing.tests.jpa.inherited.InheritedCallbacksJunitTest;
 import org.eclipse.persistence.testing.tests.jpa.inherited.EmbeddableSuperclassJunitTest;
@@ -122,6 +123,7 @@ public class FullRegressionTestSuite extends TestSuite{
         suite = new TestSuite();
         suite.setName("inherited");
         suite.addTest(OrderedListJunitTest.suite());
+        suite.addTest(OrderedListAttributeChangeTrackingJunitTest.suite());
         suite.addTest(InheritedModelJunitTest.suite());
         suite.addTest(InheritedCallbacksJunitTest.suite());
         suite.addTest(EmbeddableSuperclassJunitTest.suite());

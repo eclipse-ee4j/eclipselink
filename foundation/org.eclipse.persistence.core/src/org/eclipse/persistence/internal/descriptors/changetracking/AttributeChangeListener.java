@@ -147,24 +147,8 @@ public class AttributeChangeListener extends ObjectChangeListener {
 
         if (evt.getClass().equals(ClassConstants.PropertyChangeEvent_Class)) {
             mapping.updateChangeRecord(evt.getSource(), evt.getNewValue(), evt.getOldValue(), objectChangeSet, getUnitOfWork());
-        } else if (evt.getClass().equals(ClassConstants.CollectionChangeEvent_Class)) {
-            CollectionChangeEvent event = (CollectionChangeEvent)evt;
-            if (event.getChangeType() == CollectionChangeEvent.ADD) {
-                mapping.addToCollectionChangeRecord(null, evt.getNewValue(), objectChangeSet, getUnitOfWork());
-            } else if (event.getChangeType() == CollectionChangeEvent.REMOVE) {
-                mapping.removeFromCollectionChangeRecord(null, evt.getNewValue(), objectChangeSet, getUnitOfWork());
-            } else {
-                throw ValidationException.wrongCollectionChangeEventType(event.getChangeType());
-            }
-        } else if (evt.getClass().equals(ClassConstants.MapChangeEvent_Class)) {
-            MapChangeEvent event = (MapChangeEvent)evt;
-            if (event.getChangeType() == MapChangeEvent.ADD) {
-                mapping.addToCollectionChangeRecord(event.getKey(), event.getNewValue(), objectChangeSet, getUnitOfWork());
-            } else if (event.getChangeType() == MapChangeEvent.REMOVE) {
-                mapping.removeFromCollectionChangeRecord(event.getKey(), event.getNewValue(), objectChangeSet, getUnitOfWork());
-            } else {
-                throw ValidationException.wrongCollectionChangeEventType(event.getChangeType());
-            }
+        } else if (evt.getClass().equals(ClassConstants.CollectionChangeEvent_Class) || (evt.getClass().equals(ClassConstants.MapChangeEvent_Class))) {
+            mapping.updateCollectionChangeRecord((CollectionChangeEvent)evt, objectChangeSet, getUnitOfWork());
         } else {
             throw ValidationException.wrongChangeEvent(evt.getClass());
         }

@@ -34,11 +34,17 @@ public class DistributedCacheModel extends TestModel {
         TestSuite suite4 = new TestSuite();
         suite4.setName("DirectMap Test Suite");
         suite4.addTest(new DirectMapMergeTest());
+        TestSuite suite5 = new TestSuite();
+        suite5.setName("AttributeChangeTracking Test Suite");
+        suite5.addTest(new OrderedListMergeTest());
+        suite5.addTest(new OrderedListMergeTest2());
+        suite5.addTest(new OrderedListMergeTest3());
 
         addTest(suite1);
         addTest(suite2);
         addTest(suite3);
         addTest(suite4);
+        addTest(suite5);
     }
 
     public void addRequiredSystems() {

@@ -16,11 +16,13 @@
  ******************************************************************************/
 package org.eclipse.persistence.testing.models.jpa.inherited;
 
+import java.beans.PropertyChangeListener;
 import java.math.BigInteger;
 import java.util.Map;
 import java.util.Vector;
 import java.util.Hashtable;
 import java.util.Collection;
+import java.util.List;
 import java.util.Enumeration;
 import javax.persistence.*;
 
@@ -28,12 +30,13 @@ import static javax.persistence.FetchType.*;
 import static javax.persistence.CascadeType.*;
 import static javax.persistence.GenerationType.*;
 import static javax.persistence.InheritanceType.*;
+import org.eclipse.persistence.descriptors.changetracking.*;
 
 @Entity
 @Table(name="CMP3_CONSUMER")
 @Inheritance(strategy=JOINED)
 @DiscriminatorValue(value="BC")
-public class BeerConsumer {
+public class BeerConsumer implements ChangeTracker{
     public int post_load_count = 0;
     public int post_persist_count = 0;
     public int post_remove_count = 0;
@@ -46,13 +49,24 @@ public class BeerConsumer {
     private Integer version;
     private String name;
     
-    private Collection<Alpine> alpineBeersToConsume;
+    private List<Alpine> alpineBeersToConsume;
     private Collection<BlueLight> blueLightBeersToConsume;
     
     private Map<BigInteger, Blue> blueBeersToConsume;
     private Map<Integer, Canadian> canadianBeersToConsume;
     private Map<Integer, Certification> certifications;
     private Map<TelephoneNumberPK, TelephoneNumber> telephoneNumbers;
+    
+    //Added for OrderListWithAttributeChangeTrackingTest though other tests using this class use deferred change tracking.  
+    public PropertyChangeListener listener;
+
+    public PropertyChangeListener _persistence_getPropertyChangeListener() {
+        return listener;
+    }
+
+    public void _persistence_setPropertyChangeListener(PropertyChangeListener listener) {
+        this.listener = listener;
+    }
     
     public BeerConsumer() {
         super();
@@ -96,9 +110,9 @@ public class BeerConsumer {
         telephoneNumbers.put(telephoneNumber.buildPK(), telephoneNumber);
     }
     
-    @OneToMany(mappedBy="beerConsumer", cascade=ALL, fetch=EAGER)
+    @OneToMany(mappedBy="beerConsumer", cascade=ALL, fetch=LAZY)
     @OrderBy("bestBeforeDate ASC")
-    public Collection<Alpine> getAlpineBeersToConsume() {
+    public List<Alpine> getAlpineBeersToConsume() {
         return alpineBeersToConsume;
     }
     
@@ -234,7 +248,7 @@ public class BeerConsumer {
         }
     }
 
-    public void setAlpineBeersToConsume(Collection<Alpine> alpineBeersToConsume) {
+    public void setAlpineBeersToConsume(List<Alpine> alpineBeersToConsume) {
         this.alpineBeersToConsume = alpineBeersToConsume;
     }
     

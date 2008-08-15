@@ -31,6 +31,7 @@ public class EmployeeProject extends org.eclipse.persistence.sessions.Project {
         applyLogin();
 
         addDescriptor(buildAddressDescriptor());
+        addDescriptor(buildChildDescriptor());
         addDescriptor(buildEmployeeDescriptor());
         addDescriptor(buildEmploymentPeriodDescriptor());
         addDescriptor(buildLargeProjectDescriptor());
@@ -103,6 +104,64 @@ public class EmployeeProject extends org.eclipse.persistence.sessions.Project {
         descriptor.addMapping(streetMapping);
 
         return descriptor;
+    }
+    
+    public ClassDescriptor buildChildDescriptor() {
+        RelationalDescriptor descriptor = new RelationalDescriptor();
+        descriptor.setJavaClass(org.eclipse.persistence.testing.models.employee.domain.Child.class);
+        descriptor.addTableName("CHILD");
+        descriptor.addPrimaryKeyFieldName("CHILD.CHILD_ID");
+        
+        descriptor.useSoftCacheWeakIdentityMap();
+        descriptor.setIdentityMapSize(50);
+        descriptor.setSequenceNumberFieldName("CHILD.CHILD_ID");
+        descriptor.setSequenceNumberName("CHILD_SEQ");
+        descriptor.setAlias("Child");
+        
+        // Query Manager.
+        descriptor.getQueryManager().checkCacheForDoesExist();
+        
+        // Mappings.
+        DirectToFieldMapping firstNameMapping = new DirectToFieldMapping();
+        firstNameMapping.setAttributeName("firstName");
+        firstNameMapping.setFieldName("F_NAME");
+        firstNameMapping.setNullValue("");
+        descriptor.addMapping(firstNameMapping);
+
+        DirectToFieldMapping idMapping = new DirectToFieldMapping();
+        idMapping.setAttributeName("id");
+        idMapping.setFieldName("CHILD_ID");
+        descriptor.addMapping(idMapping);
+
+        DirectToFieldMapping lastNameMapping = new DirectToFieldMapping();
+        lastNameMapping.setAttributeName("lastName");
+        lastNameMapping.setFieldName("L_NAME");
+        lastNameMapping.setNullValue("");
+        descriptor.addMapping(lastNameMapping);
+        
+        DirectToFieldMapping genderMapping = new DirectToFieldMapping();
+        genderMapping.setAttributeName("gender");
+        genderMapping.setFieldName("GENDER");
+        ObjectTypeConverter genderMappingConverter = new ObjectTypeConverter();
+        genderMappingConverter.addConversionValue("F", "Female");
+        genderMappingConverter.addConversionValue("M", "Male");
+        genderMapping.setConverter(genderMappingConverter);
+        descriptor.addMapping(genderMapping);
+        
+        DirectToFieldMapping birthdayMapping = new DirectToFieldMapping();
+        birthdayMapping.setAttributeName("birthday");
+        birthdayMapping.setFieldName("BIRTHDAY");
+        descriptor.addMapping(birthdayMapping);
+        
+        OneToOneMapping managerMapping = new OneToOneMapping();
+        managerMapping.setAttributeName("parent");
+        managerMapping.setReferenceClass(org.eclipse.persistence.testing.models.employee.domain.Employee.class);
+        managerMapping.dontUseIndirection();
+        managerMapping.addForeignKeyFieldName("CHILD.PARENT_EMP_ID", "EMPLOYEE.EMP_ID");
+        descriptor.addMapping(managerMapping);
+        
+        
+        return descriptor;        
     }
 
     public ClassDescriptor buildEmployeeDescriptor() {
@@ -208,6 +267,15 @@ public class EmployeeProject extends org.eclipse.persistence.sessions.Project {
         managedEmployeesMapping.useBasicIndirection();
         managedEmployeesMapping.addTargetForeignKeyFieldName("EMPLOYEE.MANAGER_ID", "EMPLOYEE.EMP_ID");
         descriptor.addMapping(managedEmployeesMapping);
+        
+        OneToManyMapping childrenMapping = new OneToManyMapping();
+        childrenMapping.setAttributeName("children");
+        childrenMapping.setReferenceClass(org.eclipse.persistence.testing.models.employee.domain.Child.class);
+        childrenMapping.addAscendingOrdering("birthday");
+        childrenMapping.useTransparentList();
+        childrenMapping.privateOwnedRelationship();
+        childrenMapping.addTargetForeignKeyFieldName("CHILD.PARENT_EMP_ID", "EMPLOYEE.EMP_ID");
+        descriptor.addMapping(childrenMapping);
 
         OneToManyMapping phoneNumbersMapping = new OneToManyMapping();
         phoneNumbersMapping.setAttributeName("phoneNumbers");

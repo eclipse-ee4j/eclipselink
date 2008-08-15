@@ -115,15 +115,15 @@ public class IndirectList extends Vector implements CollectionChangeTracker, Ind
      */
     public void add(int index, Object element) {
         this.getDelegate().add(index, element);
-        raiseAddChangeEvent(element);
+        raiseAddChangeEvent(element, index);
     }
     
     /**
-     * Raise the add change event and relationship maintainence.
+     * Raise the add change event and relationship maintenance.
      */
-    protected void raiseAddChangeEvent(Object element) {
+    protected void raiseAddChangeEvent(Object element, Integer index) {
         if (hasTrackedPropertyChangeListener()) {
-            _persistence_getPropertyChangeListener().propertyChange(new CollectionChangeEvent(this, getTrackedAttributeName(), this, element, CollectionChangeEvent.ADD));
+            _persistence_getPropertyChangeListener().propertyChange(new CollectionChangeEvent(this, getTrackedAttributeName(), this, element, CollectionChangeEvent.ADD, index));
         }
         if (hasBeenRegistered()) {
             ((UnitOfWorkQueryValueHolder)getValueHolder()).updateForeignReferenceSet(element, null);
@@ -133,9 +133,9 @@ public class IndirectList extends Vector implements CollectionChangeTracker, Ind
     /**
      * Raise the remove change event.
      */
-    protected void raiseRemoveChangeEvent(Object element) {
+    protected void raiseRemoveChangeEvent(Object element, Integer index) {
         if (hasTrackedPropertyChangeListener()) {
-            _persistence_getPropertyChangeListener().propertyChange(new CollectionChangeEvent(this, getTrackedAttributeName(), this, element, CollectionChangeEvent.REMOVE));
+            _persistence_getPropertyChangeListener().propertyChange(new CollectionChangeEvent(this, getTrackedAttributeName(), this, element, CollectionChangeEvent.REMOVE, index));
         }
         if (hasBeenRegistered()) {
             ((UnitOfWorkQueryValueHolder)getValueHolder()).updateForeignReferenceRemove(element);
@@ -160,7 +160,7 @@ public class IndirectList extends Vector implements CollectionChangeTracker, Ind
         } else {
             added = getDelegate().add(element);
         }
-        raiseAddChangeEvent(element);
+        raiseAddChangeEvent(element, null);
         return added;
     }
 
@@ -258,7 +258,7 @@ public class IndirectList extends Vector implements CollectionChangeTracker, Ind
             while (objects.hasNext()) {
                 Object o = objects.next();
                 objects.remove();
-                this.raiseRemoveChangeEvent(o);
+                this.raiseRemoveChangeEvent(o, null);
             }
         } else {
             this.getDelegate().clear();
@@ -463,7 +463,7 @@ public class IndirectList extends Vector implements CollectionChangeTracker, Ind
      */
     public synchronized void insertElementAt(Object obj, int index) {
         this.getDelegate().insertElementAt(obj, index);
-        this.raiseAddChangeEvent(obj);
+        this.raiseAddChangeEvent(obj, new Integer(index));
     }
 
     /**
@@ -486,24 +486,7 @@ public class IndirectList extends Vector implements CollectionChangeTracker, Ind
      */
     public Iterator iterator() {
         // Must wrap the interator to raise the remove event.
-        return new Iterator() {
-            Iterator delegateIterator = IndirectList.this.getDelegate().iterator();
-            Object currentObject;
-            
-            public boolean hasNext() {
-                return this.delegateIterator.hasNext();
-            }
-            
-            public Object next() {
-                this.currentObject = this.delegateIterator.next();
-                return this.currentObject;
-            }
-            
-            public void remove() {
-                this.delegateIterator.remove();
-                IndirectList.this.raiseRemoveChangeEvent(this.currentObject);
-            }
-        };
+        return listIterator(0);
     }
 
     /**
@@ -571,18 +554,19 @@ public class IndirectList extends Vector implements CollectionChangeTracker, Ind
             
             public void remove() {
                 this.delegateIterator.remove();
-                IndirectList.this.raiseRemoveChangeEvent(this.currentObject);
+                IndirectList.this.raiseRemoveChangeEvent(this.currentObject, new Integer(this.delegateIterator.nextIndex()));
             }
             
             public void set(Object object) {
                 this.delegateIterator.set(object);
-                IndirectList.this.raiseRemoveChangeEvent(this.currentObject);
-                IndirectList.this.raiseAddChangeEvent(object);
+                Integer index = new Integer(this.delegateIterator.previousIndex());
+                IndirectList.this.raiseRemoveChangeEvent(this.currentObject, index);
+                IndirectList.this.raiseAddChangeEvent(object, index);
             }
             
             public void add(Object object) {
                 this.delegateIterator.add(object);
-                IndirectList.this.raiseAddChangeEvent(object);
+                IndirectList.this.raiseAddChangeEvent(object, new Integer(this.delegateIterator.previousIndex()));
             }
         };
     }
@@ -592,7 +576,7 @@ public class IndirectList extends Vector implements CollectionChangeTracker, Ind
      */
     public synchronized Object remove(int index) {
         Object value = this.getDelegate().remove(index);        
-        this.raiseRemoveChangeEvent(value);
+        this.raiseRemoveChangeEvent(value, new Integer(index));
         return value;
     }
 
@@ -610,10 +594,10 @@ public class IndirectList extends Vector implements CollectionChangeTracker, Ind
             } else {
                 getRemovedElements().add(element);
             }
-            this.raiseRemoveChangeEvent(element);
+            this.raiseRemoveChangeEvent(element, null);
             return true;
         } else if (this.getDelegate().remove(element)) {
-            this.raiseRemoveChangeEvent(element);
+            this.raiseRemoveChangeEvent(element, null);
             return true;
         }  
         return false;
@@ -644,7 +628,7 @@ public class IndirectList extends Vector implements CollectionChangeTracker, Ind
             while (objects.hasNext()) {
                 Object object = objects.next();
                 objects.remove();
-                this.raiseRemoveChangeEvent(object);
+                this.raiseRemoveChangeEvent(object, null);
             }
             return;
         }
@@ -676,7 +660,7 @@ public class IndirectList extends Vector implements CollectionChangeTracker, Ind
                 Object object = objects.next();
                 if (!c.contains(object)) {
                     objects.remove();
-                    this.raiseRemoveChangeEvent(object);
+                    this.raiseRemoveChangeEvent(object, null);
                 }
             }
             return true;
@@ -689,8 +673,9 @@ public class IndirectList extends Vector implements CollectionChangeTracker, Ind
      */
     public synchronized Object set(int index, Object element) {
         Object oldValue = this.getDelegate().set(index, element);
-        this.raiseRemoveChangeEvent(oldValue);
-        this.raiseAddChangeEvent(element);
+        Integer bigIntIndex = new Integer(index);
+        this.raiseRemoveChangeEvent(oldValue, bigIntIndex);
+        this.raiseAddChangeEvent(element, bigIntIndex);
         return oldValue;
     }
 

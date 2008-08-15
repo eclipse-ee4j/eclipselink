@@ -9,6 +9,8 @@
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
+ *     08/15/2008-1.0.1 Chris Delahunt 
+ *       - 237545: List attribute types on OneToMany using @OrderBy does not work with attribute change tracking
  ******************************************************************************/  
 package org.eclipse.persistence.internal.queries;
 
@@ -20,14 +22,18 @@ import java.util.Enumeration;
 import java.util.IdentityHashMap;
 import java.util.ListIterator;
 import org.eclipse.persistence.exceptions.QueryException;
+import org.eclipse.persistence.exceptions.ValidationException;
 import java.util.*;
 import org.eclipse.persistence.internal.sessions.MergeManager;
 import org.eclipse.persistence.internal.sessions.ObjectChangeSet;
+import org.eclipse.persistence.internal.sessions.OrderedChangeObject;
 import org.eclipse.persistence.internal.sessions.UnitOfWorkChangeSet;
 import org.eclipse.persistence.internal.sessions.CollectionChangeRecord;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
+import org.eclipse.persistence.descriptors.changetracking.CollectionChangeEvent;
 import org.eclipse.persistence.indirection.IndirectCollection;
+import org.eclipse.persistence.internal.identitymaps.CacheKey;
 
 /**
  * <p><b>Purpose</b>: A OrderedListContainerPolicy is ContainerPolicy whose
@@ -241,60 +247,140 @@ public class OrderedListContainerPolicy extends ListContainerPolicy {
             synchronizedValueOfTarget = ((IndirectCollection)valueOfTarget).getDelegateObject();
         }
         synchronized (synchronizedValueOfTarget) {
-            // Step 1 - iterate over the removed changes and remove them from the container.
-            Vector removedIndices = changeRecord.getOrderedRemoveObjectIndices();
-
-            if (removedIndices.isEmpty()) {
-                // Check if we have removed objects via a 
-                // simpleRemoveFromCollectionChangeRecord API call.
-                Iterator removedObjects = changeRecord.getRemoveObjectList().keySet().iterator();
-            
-                while (removedObjects.hasNext()) {
-                    objectChanges = (ObjectChangeSet) removedObjects.next();
-                    removeFrom(objectChanges.getOldKey(), objectChanges.getTargetVersionOfSourceObject(mergeManager.getSession()), valueOfTarget, parentSession);
-                    registerRemoveNewObjectIfRequired(objectChanges, mergeManager);
+            if (!changeRecord.getOrderedChangeObjectList().isEmpty()){
+                //Attribute change tracking merge behavior
+                Vector removedList = new Vector();
+                
+                Iterator objects =changeRecord.getOrderedChangeObjectList().iterator();
+                
+                while (objects.hasNext()){
+                    OrderedChangeObject changeObject = (OrderedChangeObject)objects.next();
+                    objectChanges = changeObject.getChangeSet();
+                    if (changeObject.getChangeType() == CollectionChangeEvent.REMOVE){
+                        boolean objectRemoved = changeRecord.getRemoveObjectList().containsKey(objectChanges);
+                        Object objectToRemove = objectChanges.getTargetVersionOfSourceObject(mergeManager.getSession());
+                        
+                        //if objectToRemove is null, we can't look it up in the collection. 
+                        // This should not happen unless identity is lost.
+                        if (objectToRemove!=null){
+                            Integer index = changeObject.getIndex();
+                            if (index!=null){
+                                if (objectToRemove.equals(get(index, valueOfTarget, mergeManager.getSession()) )){
+                                    removeFromAtIndex(index, valueOfTarget);
+                                } else {
+                                    //Object is in the cache, but the collection doesn't have it at the location we expect
+                                    // Collection is invalid with respect to these changes, so invalidate the parent and abort 
+                                    Vector key = ((org.eclipse.persistence.internal.sessions.ObjectChangeSet)changeRecord.getOwner()).getPrimaryKeys();
+                                    parentSession.getIdentityMapAccessor().invalidateObject(key, changeRecord.getOwner().getClassType(parentSession));
+                                    return;
+                                }
+                            } else{
+                                removeFrom(objectToRemove, valueOfTarget, parentSession);
+                            }
+                            
+                            if ( (! mergeManager.shouldMergeChangesIntoDistributedCache()) && changeRecord.getMapping().isPrivateOwned()) {
+                                // Check that the object was actually removed and not moved.
+                                if (objectRemoved) {
+                                    mergeManager.registerRemovedNewObjectIfRequired(objectChanges.getUnitOfWorkClone());
+                                }
+                            }
+                        }
+                        
+                        
+                    } else {//getChangeType == add
+                        boolean objectAdded = changeRecord.getAddObjectList().containsKey(objectChanges);
+                        Object object = null;
+                        // The object was actually added and not moved.
+                        if (objectAdded && shouldMergeCascadeParts) {
+                            object = mergeCascadeParts(objectChanges, mergeManager, parentSession);
+                        }
+                        
+                        if (object == null) {
+                            // Retrieve the object to be added to the collection.
+                            object = objectChanges.getTargetVersionOfSourceObject(mergeManager.getSession());
+                        }
+                        
+                        // Assume at this point the above merge will have created a new 
+                        // object if required and that the object was actually added and 
+                        // not moved.
+                        if (objectAdded && mergeManager.shouldMergeChangesIntoDistributedCache()) {
+                            // Bugs 4458089 & 4454532 - check if collection contains new item before adding 
+                            // during merge into distributed cache                  
+                            if (! contains(object, valueOfTarget, mergeManager.getSession())) {
+                                addIntoAtIndex(changeObject.getIndex(), object, valueOfTarget, mergeManager.getSession());                                
+                            }
+                        } else {
+                            addIntoAtIndex(changeObject.getIndex(), object, valueOfTarget, mergeManager.getSession());
+                        }
+                    }
                 }
             } else {
-                for (int i = removedIndices.size() - 1; i >= 0; i--) {
-                    Integer index = ((Integer) removedIndices.elementAt(i)).intValue();
-                    objectChanges = (ObjectChangeSet) changeRecord.getOrderedRemoveObject(index);;
-                    removeFromAtIndex(index, valueOfTarget);
+                //Deferred change tracking merge behavior
+                // Step 1 - iterate over the removed changes and remove them from the container.
+                Vector removedIndices = changeRecord.getOrderedRemoveObjectIndices();
+    
+                if (removedIndices.isEmpty()) {
+                    // Check if we have removed objects via a 
+                    // simpleRemoveFromCollectionChangeRecord API call.
+                    Iterator removedObjects = changeRecord.getRemoveObjectList().keySet().iterator();
                 
-                    // The object was actually removed and not moved.
-                    if (changeRecord.getRemoveObjectList().containsKey(objectChanges)) {
+                    while (removedObjects.hasNext()) {
+                        objectChanges = (ObjectChangeSet) removedObjects.next();
+                        removeFrom(objectChanges.getOldKey(), objectChanges.getTargetVersionOfSourceObject(mergeManager.getSession()), valueOfTarget, parentSession);
                         registerRemoveNewObjectIfRequired(objectChanges, mergeManager);
                     }
-                }
-            }
-            
-            // Step 2 - iterate over the added changes and add them to the container.
-            Enumeration addObjects = changeRecord.getOrderedAddObjects().elements();
-            while (addObjects.hasMoreElements()) {
-                objectChanges =  (ObjectChangeSet) addObjects.nextElement();
-                boolean objectAdded = changeRecord.getAddObjectList().containsKey(objectChanges);
-                Object object = null;
-                
-                // The object was actually added and not moved.
-                if (objectAdded && shouldMergeCascadeParts) {
-                    object = mergeCascadeParts(objectChanges, mergeManager, parentSession);
-                }
-                
-                if (object == null) {
-                    // Retrieve the object to be added to the collection.
-                    object = objectChanges.getTargetVersionOfSourceObject(mergeManager.getSession());
-                }
-
-                // Assume at this point the above merge will have created a new 
-                // object if required and that the object was actually added and 
-                // not moved.
-                if (objectAdded && mergeManager.shouldMergeChangesIntoDistributedCache()) {
-                    // Bugs 4458089 & 4454532 - check if collection contains new item before adding 
-                    // during merge into distributed cache					
-                    if (! contains(object, valueOfTarget, mergeManager.getSession())) {
-                        addIntoAtIndex(changeRecord.getOrderedAddObjectIndex(objectChanges), object, valueOfTarget, mergeManager.getSession());                                
-                    }
                 } else {
-                    addIntoAtIndex(changeRecord.getOrderedAddObjectIndex(objectChanges), object, valueOfTarget, mergeManager.getSession());
+                    for (int i = removedIndices.size() - 1; i >= 0; i--) {
+                        Integer index = ((Integer) removedIndices.elementAt(i)).intValue();
+                        objectChanges = (ObjectChangeSet) changeRecord.getOrderedRemoveObject(index);
+                        Object objectToRemove = objectChanges.getTargetVersionOfSourceObject(mergeManager.getSession());
+                        if ( (objectToRemove!=null) && 
+                                    (objectToRemove.equals(get(index, valueOfTarget, mergeManager.getSession()) )) ) {
+                            removeFromAtIndex(index, valueOfTarget);
+                            // The object was actually removed and not moved.
+                            if (changeRecord.getRemoveObjectList().containsKey(objectChanges)) {
+                                registerRemoveNewObjectIfRequired(objectChanges, mergeManager);
+                            }
+                        } else {
+                        
+                            //Object is either not in the cache, or not at the location we expect
+                            // Collection is invalid with respect to these changes, so invalidate the parent and abort 
+                            Vector key = ((org.eclipse.persistence.internal.sessions.ObjectChangeSet)changeRecord.getOwner()).getPrimaryKeys();
+                            parentSession.getIdentityMapAccessor().invalidateObject(key, changeRecord.getOwner().getClassType(parentSession));
+                            return;
+                        }
+                    }
+                }
+                
+                // Step 2 - iterate over the added changes and add them to the container.
+                Enumeration addObjects = changeRecord.getOrderedAddObjects().elements();
+                while (addObjects.hasMoreElements()) {
+                    objectChanges =  (ObjectChangeSet) addObjects.nextElement();
+                    boolean objectAdded = changeRecord.getAddObjectList().containsKey(objectChanges);
+                    Object object = null;
+                    
+                    // The object was actually added and not moved.
+                    if (objectAdded && shouldMergeCascadeParts) {
+                        object = mergeCascadeParts(objectChanges, mergeManager, parentSession);
+                    }
+                    
+                    if (object == null) {
+                        // Retrieve the object to be added to the collection.
+                        object = objectChanges.getTargetVersionOfSourceObject(mergeManager.getSession());
+                    }
+    
+                    // Assume at this point the above merge will have created a new 
+                    // object if required and that the object was actually added and 
+                    // not moved.
+                    if (objectAdded && mergeManager.shouldMergeChangesIntoDistributedCache()) {
+                        // Bugs 4458089 & 4454532 - check if collection contains new item before adding 
+                        // during merge into distributed cache					
+                        if (! contains(object, valueOfTarget, mergeManager.getSession())) {
+                            addIntoAtIndex(changeRecord.getOrderedAddObjectIndex(objectChanges), object, valueOfTarget, mergeManager.getSession());                                
+                        }
+                    } else {
+                        addIntoAtIndex(changeRecord.getOrderedAddObjectIndex(objectChanges), object, valueOfTarget, mergeManager.getSession());
+                    }
                 }
             }
         }
@@ -323,5 +409,35 @@ public class OrderedListContainerPolicy extends ListContainerPolicy {
         } catch (UnsupportedOperationException ex3) {
             throw QueryException.cannotRemoveFromContainer(new Integer(index), container, this);
         }
+    }
+    
+    /**
+     * This method is used to bridge the behavior between Attribute Change Tracking and
+     * deferred change tracking with respect to adding the same instance multiple times.
+     * Each ContainerPolicy type will implement specific behavior for the collection 
+     * type it is wrapping.  These methods are only valid for collections containing object references
+     */
+    public void recordAddToCollectionInChangeRecord(ObjectChangeSet changeSetToAdd, CollectionChangeRecord collectionChangeRecord){
+        OrderedChangeObject orderedChangeObject = new OrderedChangeObject(CollectionChangeEvent.ADD, null, changeSetToAdd);;
+        collectionChangeRecord.getOrderedChangeObjectList().add(orderedChangeObject);
+    }
+    
+    public void recordRemoveFromCollectionInChangeRecord(ObjectChangeSet changeSetToRemove, CollectionChangeRecord collectionChangeRecord){
+        OrderedChangeObject orderedChangeObject = new OrderedChangeObject(CollectionChangeEvent.REMOVE, null, changeSetToRemove);;
+        collectionChangeRecord.getOrderedChangeObjectList().add(orderedChangeObject);
+    }
+    
+    public void recordUpdateToCollectionInChangeRecord(CollectionChangeEvent event, ObjectChangeSet changeSet, CollectionChangeRecord collectionChangeRecord){
+        int changeType = event.getChangeType();
+        if (changeType == CollectionChangeEvent.ADD) {
+            super.recordAddToCollectionInChangeRecord(changeSet, collectionChangeRecord);
+        } else if (changeType == CollectionChangeEvent.REMOVE) {
+            super.recordRemoveFromCollectionInChangeRecord(changeSet, collectionChangeRecord);
+        } else {
+            throw ValidationException.wrongCollectionChangeEventType(changeType);
+        }
+
+        OrderedChangeObject orderedChangeObject = new OrderedChangeObject(changeType, event.getIndex(), changeSet);;
+        collectionChangeRecord.getOrderedChangeObjectList().add(orderedChangeObject);
     }
 }
