@@ -39,7 +39,6 @@ import org.eclipse.persistence.internal.databaseaccess.DatabasePlatform;
 import org.eclipse.persistence.platform.database.DerbyPlatform;
 import org.eclipse.persistence.platform.database.MySQLPlatform;
 import org.eclipse.persistence.platform.database.PostgreSQLPlatform;
-import org.eclipse.persistence.platform.database.OraclePlatform;
 import static org.eclipse.persistence.tools.dbws.Util.InOut.INOUT;
 import static org.eclipse.persistence.tools.dbws.Util.InOut.OUT;
 import static org.eclipse.persistence.tools.dbws.Util.InOut.RETURN;
@@ -216,7 +215,7 @@ public class JDBCHelper {
         String originalCatalogPattern, String originalSchemaPattern, String originalTablePattern) {
 
         List<DbTable> dbTables = null;
-        boolean isOracle = platform instanceof OraclePlatform ? true : false;
+        boolean isOracle = platform.getClass().getName().matches("Oracle*Platform") ? true : false;
         String schemaPattern = trimPunctuation(originalSchemaPattern, isOracle);
         String tablePattern = trimPunctuation(originalTablePattern, isOracle);
         DatabaseMetaData databaseMetaData = getDatabaseMetaData(connection);
@@ -361,7 +360,7 @@ public class JDBCHelper {
         }
         // Oracle is 'special' - the catalogMatchDontCare logic only applies if the catalogPattern
         // is NULL vs. the empty "" string
-        boolean isOracle = platform instanceof OraclePlatform ? true : false;
+        boolean isOracle = platform.getClass().getName().matches("Oracle*Platform") ? true : false;
         String catalogPattern = trimPunctuation(originalCatalogPattern, isOracle);
         String schemaPattern = trimPunctuation(originalSchemaPattern, isOracle);
         String procedurePattern = trimPunctuation(originalProcedurePattern, isOracle);

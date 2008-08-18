@@ -1,10 +1,10 @@
 /*******************************************************************************
  * Copyright (c) 1998, 2008 Oracle. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
@@ -35,7 +35,6 @@ import org.eclipse.persistence.internal.xr.StoredFunctionQueryHandler;
 import org.eclipse.persistence.internal.xr.StoredProcedureQueryHandler;
 import org.eclipse.persistence.internal.xr.sxf.SimpleXMLFormat;
 import org.eclipse.persistence.internal.xr.sxf.SimpleXMLFormatProject;
-import org.eclipse.persistence.platform.database.OraclePlatform;
 import org.eclipse.persistence.tools.dbws.Util.InOut;
 import org.eclipse.persistence.tools.dbws.jdbc.DbStoredArgument;
 import org.eclipse.persistence.tools.dbws.jdbc.DbStoredFunction;
@@ -142,7 +141,7 @@ public class ProcedureOperationModel extends OperationModel {
               spqh = new StoredProcedureQueryHandler();
             }
             sb = new StringBuilder();
-            if (builder.databasePlatform instanceof OraclePlatform) {
+            if (builder.databasePlatform.getClass().getName().matches("Oracle*Platform")) {
                 if (storedProcedure.getSchema() != null && storedProcedure.getSchema().length() > 0) {
                     sb.append(storedProcedure.getSchema());
                     sb.append('.');

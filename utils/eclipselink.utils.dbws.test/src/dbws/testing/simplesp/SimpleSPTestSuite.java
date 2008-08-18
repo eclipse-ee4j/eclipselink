@@ -30,7 +30,7 @@ import static org.junit.Assert.assertTrue;
 import org.eclipse.persistence.internal.xr.Invocation;
 import org.eclipse.persistence.internal.xr.Operation;
 import org.eclipse.persistence.oxm.XMLMarshaller;
-import org.eclipse.persistence.platform.database.OraclePlatform;
+import org.eclipse.persistence.platform.database.MySQLPlatform;
 
 // domain-specific imports
 import dbws.testing.DBWSTestSuite;
@@ -105,7 +105,7 @@ public class SimpleSPTestSuite extends DBWSTestSuite {
         marshaller.marshal(result, doc);
         Document controlDoc = xmlParser.parse(new StringReader(
         	xrService.getORSession().getProject().getDatasourceLogin().getPlatform()
-        	instanceof OraclePlatform ? VALUE_1_XML : VALUE_0_XML));
+        	instanceof MySQLPlatform ? VALUE_0_XML : VALUE_1_XML));
         assertTrue("control document not same as instance document",
             comparer.isNodeEqual(controlDoc, doc));
     }
@@ -127,7 +127,7 @@ public class SimpleSPTestSuite extends DBWSTestSuite {
         marshaller.marshal(result, doc);
         Document controlDoc = xmlParser.parse(new StringReader(
             xrService.getORSession().getProject().getDatasourceLogin().getPlatform()
-            instanceof OraclePlatform ? VALUE_1_XML : VALUE_0_XML));
+            instanceof MySQLPlatform ? VALUE_0_XML : VALUE_1_XML));
         assertTrue("control document not same as instance document",
             comparer.isNodeEqual(controlDoc, doc));
     }
