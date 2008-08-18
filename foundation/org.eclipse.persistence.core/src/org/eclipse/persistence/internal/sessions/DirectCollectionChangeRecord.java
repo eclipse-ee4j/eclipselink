@@ -50,8 +50,8 @@ public class DirectCollectionChangeRecord extends DeferrableChangeRecord impleme
     }
 
     /**
-     * This method takes a hastable of primitive objects and adds them to the add list.
-     * The hashtable stores the number of times the object is in the list.
+     * This method takes a map of primitive objects and adds them to the add list.
+     * The map stores the number of times the object is in the list.
      */
     public void addAdditionChange(HashMap additions, HashMap databaseCount) {
         Iterator enumtr = additions.keySet().iterator();

@@ -251,7 +251,12 @@ public class ObjectBuilder implements Cloneable, Serializable {
      */
     public Object assignSequenceNumber(Object object, AbstractSession writeSession) throws DatabaseException {
         DatabaseField sequenceNumberField = this.descriptor.getSequenceNumberField();
-        Object existingValue = getBaseValueForField(sequenceNumberField, object);
+        Object existingValue = null;
+        if (this.sequenceMapping != null) {
+            existingValue = this.sequenceMapping.getAttributeValueFromObject(object);
+        } else {
+            existingValue = getBaseValueForField(sequenceNumberField, object);
+        }
         // If the value is null or zero (int/long) return.
         // PERF: The (internal) support for letting the sequence decide this was removed,
         // as anything other than primitive should allow null and default as such.
@@ -948,40 +953,6 @@ public class ObjectBuilder implements Cloneable, Serializable {
         // If this descriptor is involved in inheritance add the class type.
         if (this.descriptor.hasInheritance()) {
             this.descriptor.getInheritancePolicy().addClassIndicatorFieldToRow(databaseRow);
-        }
-
-        return databaseRow;
-    }
-
-    /**
-     * Build the row representation of the object for update. The row built does not
-     * contain entries for uninstantiated attributes.
-     */
-    public AbstractRecord buildRowForShallowInsertWithChangeSet(ObjectChangeSet objectChangeSet, AbstractSession session) {
-        return buildRowForShallowInsertWithChangeSet(createRecord(session), objectChangeSet, session);
-    }
-
-    /**
-     * Build the row representation of the object for update. The row built does not
-     * contain entries for uninstantiated attributes.
-     */
-    public AbstractRecord buildRowForShallowInsertWithChangeSet(AbstractRecord databaseRow, ObjectChangeSet objectChangeSet, AbstractSession session) {
-        for (Iterator changeRecords = objectChangeSet.getChanges().iterator();
-                 changeRecords.hasNext();) {
-            ChangeRecord changeRecord = (ChangeRecord)changeRecords.next();
-            DatabaseMapping mapping = changeRecord.getMapping();
-            mapping.writeFromObjectIntoRowForShallowInsertWithChangeRecord(changeRecord, databaseRow, session);
-        }
-
-        // If this descriptor is involved in inheritance add the class type.
-        if (this.descriptor.hasInheritance()) {
-            this.descriptor.getInheritancePolicy().addClassIndicatorFieldToRow(databaseRow);
-        }
-
-        // If this descriptor has multiple tables then we need to append the primary keys for 
-        // the non default tables.
-        if (!this.descriptor.isAggregateDescriptor()) {
-            addPrimaryKeyForNonDefaultTable(databaseRow);
         }
 
         return databaseRow;
@@ -2305,7 +2276,7 @@ public class ObjectBuilder implements Cloneable, Serializable {
         
         if (getDescriptor().usesSequenceNumbers()) {
             DatabaseMapping sequenceMapping = getMappingForField(getDescriptor().getSequenceNumberField());
-            if (sequenceMapping.isDirectToFieldMapping()) {
+            if ((sequenceMapping != null) && sequenceMapping.isDirectToFieldMapping()) {
                 setSequenceMapping((AbstractDirectMapping)sequenceMapping);
             }
         }
@@ -2499,13 +2470,19 @@ public class ObjectBuilder implements Cloneable, Serializable {
      * Merge changes between the objects, this merge algorithm is dependent on the merge manager.
      */
     public void mergeChangesIntoObject(Object target, ObjectChangeSet changeSet, Object source, MergeManager mergeManager) {
-        for (Enumeration changes = changeSet.getChanges().elements(); changes.hasMoreElements();) {
-            ChangeRecord record = (ChangeRecord)changes.nextElement();
-
-            //cr 4236, use ObjectBuilder getMappingForAttributeName not the Descriptor one because the
-            // ObjectBuilder method is much more efficient.
-            DatabaseMapping mapping = getMappingForAttributeName(record.getAttribute());
-            mapping.mergeChangesIntoObject(target, record, source, mergeManager);
+        // PERF: Just merge the object for new objects, as the change set is not populated.
+        if ((source != null) && changeSet.isNew() && (!this.descriptor.shouldUseFullChangeSetsForNewObjects())) {
+            mergeIntoObject(target, true, source, mergeManager, false);
+        } else {
+            List changes = changeSet.getChanges();
+            int size = changes.size();
+            for (int index = 0; index < size; index++) {
+                ChangeRecord record = (ChangeRecord)changes.get(index);
+                //cr 4236, use ObjectBuilder getMappingForAttributeName not the Descriptor one because the
+                // ObjectBuilder method is much more efficient.
+                DatabaseMapping mapping = getMappingForAttributeName(record.getAttribute());
+                mapping.mergeChangesIntoObject(target, record, source, mergeManager);                
+            }
         }
 
         // PERF: Avoid events if no listeners.

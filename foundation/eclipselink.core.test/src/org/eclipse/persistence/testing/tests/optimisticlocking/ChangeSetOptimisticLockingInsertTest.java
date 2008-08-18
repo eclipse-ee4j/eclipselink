@@ -12,6 +12,7 @@
  ******************************************************************************/  
 package org.eclipse.persistence.testing.tests.optimisticlocking;
 
+import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.internal.sessions.MergeManager;
 import org.eclipse.persistence.internal.sessions.UnitOfWorkChangeSet;
@@ -35,12 +36,16 @@ public class ChangeSetOptimisticLockingInsertTest extends AutoVerifyTestCase {
     }
 
     protected void setup() {
+        // Force changes sets for new objects.
+        ClassDescriptor.shouldUseFullChangeSetsForNewObjects = true;
         beginTransaction();
         uow = getSession().acquireUnitOfWork();
         originalObject = uow.readObject(domainClass);
     }
 
     public void reset() {
+        // Reset force changes sets for new objects.
+        ClassDescriptor.shouldUseFullChangeSetsForNewObjects = false;
         rollbackTransaction();
         getSession().getIdentityMapAccessor().initializeIdentityMaps();
     }

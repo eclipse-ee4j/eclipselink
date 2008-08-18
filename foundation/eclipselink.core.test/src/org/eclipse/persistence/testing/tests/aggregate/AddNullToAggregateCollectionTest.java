@@ -23,6 +23,8 @@ public class AddNullToAggregateCollectionTest extends ComplexUpdateTest {
 
     public AddNullToAggregateCollectionTest() {
         super();
+        // Compare will fail because null is ignored.
+        this.shouldCompareClone = false;
     }
 
     public AddNullToAggregateCollectionTest(Agent originalObject) {

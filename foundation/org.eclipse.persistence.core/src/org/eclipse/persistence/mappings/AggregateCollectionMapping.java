@@ -299,7 +299,7 @@ public class AggregateCollectionMapping extends CollectionMapping implements Rel
             // For bug 2863721 must use a different UnitOfWorkChangeSet as here just
             // seeing if changes are needed.  If changes are needed then a
             // real changeSet will be created later.
-            UnitOfWorkChangeSet uowComparisonChangeSet = new UnitOfWorkChangeSet();
+            UnitOfWorkChangeSet uowComparisonChangeSet = new UnitOfWorkChangeSet(session);
             while (cp.hasNext(cloneIterator)) {
                 Object cloneObject = cp.next(cloneIterator, session);
 
@@ -1003,10 +1003,14 @@ public class AggregateCollectionMapping extends CollectionMapping implements Rel
                  containerPolicy.hasNext(sourceValuesIterator);) {
             Object sourceValue = containerPolicy.next(sourceValuesIterator, mergeManager.getSession());
 
-            //CR#2896 - TW
-            Object originalValue = getReferenceDescriptor(sourceValue.getClass(), mergeManager.getSession()).getObjectBuilder().buildNewInstance();
-            getReferenceDescriptor(sourceValue.getClass(), mergeManager.getSession()).getObjectBuilder().mergeIntoObject(originalValue, true, sourceValue, mergeManager);
-            containerPolicy.addInto(originalValue, valueOfTarget, mergeManager.getSession());
+            // For some odd reason support for having null in the collection was added. This does not make sense...
+            Object originalValue = null;
+            if (sourceValue != null) {
+                //CR#2896 - TW
+                originalValue = getReferenceDescriptor(sourceValue.getClass(), mergeManager.getSession()).getObjectBuilder().buildNewInstance();
+                getReferenceDescriptor(sourceValue.getClass(), mergeManager.getSession()).getObjectBuilder().mergeIntoObject(originalValue, true, sourceValue, mergeManager);
+                containerPolicy.addInto(originalValue, valueOfTarget, mergeManager.getSession());
+            }
         }
 
         // Must re-set variable to allow for set method to re-morph changes if the collection is not being stored directly.

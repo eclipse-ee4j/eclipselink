@@ -35,6 +35,7 @@
         - build-test : compiles all tests, excluding Oracle extensions
         - build-workbench-test : compiles the workbench tests
         - package-eclipselink-jar : packages eclipselink.jar
+        - jar : packages eclipselink.jar
         - package-src-jar : packages source jar
         - build-javadocs : generates Javadocs
         - package-installer-zip : builds installer
@@ -81,6 +82,10 @@
             dir="${eclipselink.plugins}"
             includes="${eclipselink.core.depend}"/>
     </path>
+
+    <!-- Short alias for building the jar. -->
+    <target name="jar" depends="package-eclipselink-jar"/>
+
     <!-- Default ant target, compiles all components and tests, builds eclipselink.jar. -->
     <target name="all" depends="package-eclipselink-jar, build-workbench, build-test, package-src-jar, package-packagerenamer-jar, package-installer-zip" description="build EclipseLink distribution files"/>
 

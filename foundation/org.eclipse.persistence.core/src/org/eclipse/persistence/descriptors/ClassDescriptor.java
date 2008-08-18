@@ -169,6 +169,9 @@ public class ClassDescriptor implements Cloneable, Serializable {
     public static final int ISOLATE_CACHE_AFTER_TRANSACTION = 2;
     public static final int ISOLATE_CACHE_ALWAYS = 3;
 
+    /** INTERNAL: Backdoor for using changes sets for new objects. */
+    public static boolean shouldUseFullChangeSetsForNewObjects = false;
+    
     /** Allow connection unwrapping to be configured. */
     protected boolean isNativeConnectionRequired;
 
@@ -2766,6 +2769,14 @@ public class ClassDescriptor implements Cloneable, Serializable {
         return (usesSequenceNumbers() && getSequence().shouldAcquireValueAfterInsert()) || (hasReturningPolicy() && getReturningPolicy().isUsedToSetPrimaryKey());
     }
 
+    /**
+     * INTERNAL:
+     * Return if change sets are required for new objects.
+     */
+    public boolean shouldUseFullChangeSetsForNewObjects() {
+        return this.cacheSynchronizationType == SEND_NEW_OBJECTS_WITH_CHANGES || shouldUseFullChangeSetsForNewObjects;
+    }
+    
     /**
      * PUBLIC:
      * This method is the equivalent of calling {@link #setShouldOnlyRefreshCacheIfNewerVersion} with an argument of <CODE>true</CODE>:

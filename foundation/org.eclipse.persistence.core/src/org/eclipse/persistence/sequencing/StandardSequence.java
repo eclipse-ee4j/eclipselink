@@ -13,7 +13,6 @@
 package org.eclipse.persistence.sequencing;
 
 import java.util.Vector;
-import java.math.*;
 import org.eclipse.persistence.internal.databaseaccess.Accessor;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.exceptions.ValidationException;
@@ -86,35 +85,27 @@ public abstract class StandardSequence extends Sequence {
      * @param size int size of Vector to create.
      */
     protected Vector createVector(Number sequence, String seqName, int size) {
-        BigDecimal nextSequence;
-        BigDecimal increment = new BigDecimal(1);
-
-        if (sequence instanceof BigDecimal) {
-            nextSequence = (BigDecimal)sequence;
-        } else {
-            nextSequence = new BigDecimal(sequence.doubleValue());
-        }
+        long nextSequence = sequence.longValue();
 
         Vector sequencesForName = new Vector(size);
-
-        nextSequence = nextSequence.subtract(new BigDecimal(size));
+        nextSequence = nextSequence - size;
 
         // Check for incorrect values return to validate that the sequence is setup correctly.
         // PRS 36451 intvalue would wrap
-        if (nextSequence.doubleValue() < -1) {
+        if (nextSequence < -1L) {
             throw ValidationException.sequenceSetupIncorrectly(seqName);
         }
 
         for (int index = size; index > 0; index--) {
-            nextSequence = nextSequence.add(increment);
-            sequencesForName.addElement(nextSequence);
+            nextSequence = nextSequence + 1L;
+            sequencesForName.add(nextSequence);
         }
         return sequencesForName;
     }
 
     public void setInitialValue(int initialValue) {
         // sequence value should be positive
-        if(initialValue <= 0) {
+        if (initialValue <= 0) {
             initialValue = 1;
         }
         super.setInitialValue(initialValue);

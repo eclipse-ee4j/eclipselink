@@ -29,7 +29,6 @@ public class JPAIsolatedPerformanceRegressionModel extends JPAPerformanceRegress
     public Map getPersistenceProperties() {    
         Map properties = super.getPersistenceProperties();
         properties.put("eclipselink.cache.shared.default", "false");
-        properties.put("eclipselink.jdbc.batch-writing", "JDBC");
         return properties;
     }
 }

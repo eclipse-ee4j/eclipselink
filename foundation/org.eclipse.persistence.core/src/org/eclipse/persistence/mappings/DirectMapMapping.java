@@ -161,12 +161,23 @@ public class DirectMapMapping extends DirectCollectionMapping {
         }
         return cloneValue;
     }
-
+    
+    /**
+     * INTERNAL:
+     * Used by AttributeLevelChangeTracking to update a changeRecord with calculated changes
+     * as apposed to detected changes.  If an attribute can not be change tracked it's
+     * changes can be detected through this process.
+     */
+    public void calculateDeferredChanges(ChangeRecord changeRecord, AbstractSession session) {
+        DirectMapChangeRecord collectionRecord = (DirectMapChangeRecord)changeRecord;
+        // TODO: Handle events that fired after collection was replaced.
+        compareCollectionsForChange(collectionRecord.getOriginalCollection(), collectionRecord.getLatestCollection(), collectionRecord, session);
+    }
+    
     /**
      * INTERNAL:
      * This method compares the changes between two direct collections.  Comparisons are made on equality
      * not identity.
-     * @return prototype.changeset.ChangeRecord
      */
     public ChangeRecord compareForChange(Object clone, Object backUp, ObjectChangeSet owner, AbstractSession session) {
         Object cloneAttribute = null;
@@ -236,7 +247,6 @@ public class DirectMapMapping extends DirectCollectionMapping {
      * Convert all the class-name-based settings in this mapping to actual class-based
      * settings
      * This method is implemented by subclasses as necessary.
-     * @param classLoader 
      */
     public void convertClassNamesToClasses(ClassLoader classLoader){
         super.convertClassNamesToClasses(classLoader);
@@ -308,7 +318,7 @@ public class DirectMapMapping extends DirectCollectionMapping {
     }
 
     /**
-     * set the key and value fields that are used to build the container from database rows
+     * Set the key and value fields that are used to build the container from database rows.
      */
     protected void initializeContainerPolicy(AbstractSession session) {
         ((DirectMapContainerPolicy)getContainerPolicy()).setKeyField(getDirectKeyField());
@@ -391,7 +401,7 @@ public class DirectMapMapping extends DirectCollectionMapping {
      * INTERNAL:
      * Merge changes from the source to the target object.
      * Because this is a collection mapping, values are added to or removed from the
-     * collection based on the changeset
+     * collection based on the changeset.
      */
     public void mergeChangesIntoObject(Object target, ChangeRecord changeRecord, Object source, MergeManager mergeManager) {
         DirectMapContainerPolicy containerPolicy = (DirectMapContainerPolicy)getContainerPolicy();
@@ -423,7 +433,7 @@ public class DirectMapMapping extends DirectCollectionMapping {
             }
         } else {
             Object synchronizationTarget = valueOfTarget;
-            // For indirect containers the delegate must be synchronzied on,
+            // For indirect containers the delegate must be synchronized on,
             // not the wrapper as the clone synchs on the delegate, see bug#5685287.
             if (valueOfTarget instanceof IndirectCollection) {
                 synchronizationTarget = ((IndirectCollection)valueOfTarget).getDelegateObject();
@@ -668,7 +678,7 @@ public class DirectMapMapping extends DirectCollectionMapping {
      * INTERNAL:
      */
     public void setDirectKeyField(DatabaseField keyField) {
-        directKeyField = keyField;
+        this.directKeyField = keyField;
     }
 
     /**
@@ -708,7 +718,7 @@ public class DirectMapMapping extends DirectCollectionMapping {
      * to hold the target objects.
      * <p>The default container class is java.util.Hashtable.
      * <p>The container class must implements (directly or indirectly) the Map interface.
-     * <p>Note: Do not use both useMapClass(Class concreteClass), useTransparentMap().  The last use of one of the two methods will overide the previous one.
+     * <p>Note: Do not use both useMapClass(Class concreteClass), useTransparentMap().  The last use of one of the two methods will override the previous one.
      */
     public void useMapClass(Class concreteClass) {
         if (!Helper.classImplementsInterface(concreteClass, ClassConstants.Map_Class)) {
@@ -722,9 +732,8 @@ public class DirectMapMapping extends DirectCollectionMapping {
      * PUBLIC:
      * Configure the mapping to use an instance of the specified container class
      * to hold the target objects.
-     * <p>jdk1.2.x: The container class must implement (directly or indirectly) the Map interface.
-     * <p>jdk1.1.x: The container class must be a subclass of Hashtable.
-     * <p>Note: Do not use both useMapClass(Class concreteClass), useTransparentMap().  The last use of one of the two methods will overide the previous one.
+     * <p>The container class must implement (directly or indirectly) the Map interface.
+     * <p>Note: Do not use both useMapClass(Class concreteClass), useTransparentMap().  The last use of one of the two methods will override the previous one.
      */
     public void useTransparentMap() {
         setIndirectionPolicy(new TransparentIndirectionPolicy());
@@ -829,7 +838,7 @@ public class DirectMapMapping extends DirectCollectionMapping {
 
     /**
      * INTERNAL:
-     * Ovewrite super method
+     * Overwrite super method.
      */
     public Object extractResultFromBatchQuery(DatabaseQuery query, AbstractRecord databaseRow, AbstractSession session, AbstractRecord argumentRow) {
         //this can be null, because either one exists in the query or it will be created
@@ -916,7 +925,7 @@ public class DirectMapMapping extends DirectCollectionMapping {
                 // A null direct value means an empty collection returned as nulls from an outerjoin.
                 return getIndirectionPolicy().valueFromRow(value);
             }                        
-            // Only build/add the taregt object once, skip duplicates from multiple 1-m joins.
+            // Only build/add the target object once, skip duplicates from multiple 1-m joins.
             if (!directValues.contains(directKey)) {
                 directValues.add(directKey);
                 // Allow for key conversion.

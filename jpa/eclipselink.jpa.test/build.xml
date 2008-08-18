@@ -594,6 +594,22 @@
         </antcall>
     </target>
 
+    <!-- Runs performance tests comparing with OpenJPA. -->
+    <target name="test-performance-openjpa" depends="clean-test,config-trunk, config-flat">
+        <path id="run.classpath.openjpa">
+            <fileset dir="${openjpa.dir}">
+                <include name="*.jar"/>
+            </fileset>
+            <path refid="run.classpath"/>
+        </path>
+        <antcall target="run-test-prompt" inheritRefs="true">
+            <param name="TEST_CLASS" value="org.eclipse.persistence.testing.tests.jpa.performance.OpenJPAPerformanceRegressionModel"/>
+            <param name="RUN_PATH" value="run.classpath.openjpa"/>
+            <param name="TEST_AGENT" value="-Dignore"/>
+            <param name="TEST_WEAVING" value="-Dignore"/>
+        </antcall>
+    </target>
+	
     <!-- Launches the testing browser -->
     <target name="test-browser" depends="config-trunk, config-flat">
         <echo>Running test browser</echo>

@@ -35,6 +35,9 @@ public class EmulatedResultSetMetaData implements ResultSetMetaData {
      * @exception SQLException if a database access error occurs
      */
     public int getColumnCount() {
+        if (resultSet.getRows().isEmpty()) {
+            return 0;
+        }
         return ((DatabaseRecord)resultSet.getRows().get(0)).getFields().size();
     }
 

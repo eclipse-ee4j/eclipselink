@@ -21,6 +21,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.spi.PersistenceProvider;
 
 import org.eclipse.persistence.testing.models.jpa.performance.*;
+import org.eclipse.persistence.testing.tests.performance.emulateddb.EmulatedDriver;
 import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.jpa.JpaEntityManager;
 import org.eclipse.persistence.testing.framework.*;
@@ -121,6 +122,7 @@ public class JPAPerformanceRegressionModel extends TestModel {
         getSession().logMessage(getExecutor().getEntityManagerFactory().getClass().toString());
         System.out.println(getExecutor().getEntityManagerFactory().getClass().toString());
         // Populate database.
+        EmulatedDriver.emulate = false;
         EntityManager manager = getExecutor().createEntityManager();
         // Create schema using session from entity manager to create sequences correctly.
         try {
@@ -158,13 +160,14 @@ public class JPAPerformanceRegressionModel extends TestModel {
         
         manager.getTransaction().commit();
         manager.close();
+        EmulatedDriver.emulate = true;
     }
     
     /**
      * Setup the JPA provider.
      */
     public void setupProvider() {
-        // Configure provider to be TopLink.
+        // Configure provider to be EclipseLink.
         String providerClass = "org.eclipse.persistence.jpa.PersistenceProvider";
         PersistenceProvider provider = null;
         try {
@@ -181,10 +184,26 @@ public class JPAPerformanceRegressionModel extends TestModel {
      */
     public Map getPersistenceProperties() {    
         Map properties = new HashMap();
+        
+        // For DataSource testing.
+        //properties.put("javax.persistence.nonJtaDataSource", "datasource");
+
+        // For JSE testing.
         properties.put("eclipselink.jdbc.driver", getSession().getLogin().getDriverClassName());
         properties.put("eclipselink.jdbc.url", getSession().getLogin().getConnectionString());
         properties.put("eclipselink.jdbc.user", getSession().getLogin().getUserName());
         properties.put("eclipselink.jdbc.password", getSession().getLogin().getPassword());
+        /*
+        // For emulated connection testing.
+        try {
+            Class.forName(getSession().getLogin().getDriverClassName());
+        } catch (Exception ignore) {}
+        properties.put("eclipselink.jdbc.driver", "org.eclipse.persistence.testing.tests.performance.emulateddb.EmulatedDriver");
+        properties.put("eclipselink.jdbc.url", "emulate:" + getSession().getLogin().getConnectionString());
+        properties.put("eclipselink.jdbc.user", getSession().getLogin().getUserName());
+        properties.put("eclipselink.jdbc.password", getSession().getLogin().getPassword());*/
+
+        properties.put("eclipselink.jdbc.batch-writing", "JDBC");
         properties.put("eclipselink.logging.level", getSession().getSessionLog().getLevelString());
         // This line should be commented out when comparing against Hibernate as they do not have statement caching support.
         properties.put("eclipselink.jdbc.cache-statements", "true");

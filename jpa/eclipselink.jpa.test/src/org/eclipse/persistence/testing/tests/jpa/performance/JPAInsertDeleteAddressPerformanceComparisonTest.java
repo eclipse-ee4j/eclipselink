@@ -13,6 +13,7 @@
  package org.eclipse.persistence.testing.tests.jpa.performance;
 
 import javax.persistence.*;
+
 import org.eclipse.persistence.testing.models.jpa.performance.*;
 import org.eclipse.persistence.testing.framework.*;
 
@@ -24,6 +25,23 @@ public class JPAInsertDeleteAddressPerformanceComparisonTest extends Performance
         setDescription("This test compares the performance of insert and delete Address.");
     }
 
+    /**
+     * Read an existing address for emulated database run.
+     */
+    public void setup() {
+        EntityManager manager = createEntityManager();
+        Address any = (Address)manager.createQuery("Select a from Address a").getResultList().get(0);
+        // Create a query to avoid a cache hit to load emulated data.
+        Query query = manager.createQuery("Select a from Address a where a.id = :id");
+        query.setParameter("id", new Long(any.getId()));
+        any = (Address)query.getSingleResult();
+        manager.close();
+        manager = createEntityManager();
+        // Also call find, as may use different SQL.
+        any = manager.find(Address.class, any.getId());
+        manager.close();
+    }
+    
     /**
      * Insert and delete address.
      */

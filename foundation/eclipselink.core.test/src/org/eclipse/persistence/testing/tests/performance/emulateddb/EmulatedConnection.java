@@ -22,27 +22,36 @@ import java.util.*;
  * minimize the database overhead and in-consistency.
  */
 public class EmulatedConnection implements Connection {
-    protected Map rows;
+    protected Map<String, List> rows;
+    protected Connection connection;
 
     public EmulatedConnection() {
         this.rows = new HashMap();
     }
+    
+    public EmulatedConnection(Connection connection) {
+        this();
+        this.connection = connection;
+    }
 
+    /**
+     * Return the real connection.
+     */
+    public Connection getRealConnection() {
+        return connection;
+    }
+    
     /**
      * Return the rows for the sql.
      */
-    public Vector getRows(String sql) {
-        Vector rows = (Vector)this.rows.get(sql);
-        if (rows == null) {
-            rows = new Vector(0);
-        }
-        return rows;
+    public List getRows(String sql) {
+        return this.rows.get(sql);
     }
 
     /**
      * Return the rows for the sql.
      */
-    public void putRows(String sql, Vector rows) {
+    public void putRows(String sql, List rows) {
         this.rows.put(sql, rows);
     }
 
@@ -61,7 +70,10 @@ public class EmulatedConnection implements Connection {
      * @return a new default <code>Statement</code> object
      * @exception SQLException if a database access error occurs
      */
-    public Statement createStatement() {
+    public Statement createStatement() throws SQLException {
+        if (!EmulatedDriver.emulate) {
+            return connection.createStatement();
+        }
         return new EmulatedStatement(this);
     }
 
@@ -94,7 +106,10 @@ public class EmulatedConnection implements Connection {
      * pre-compiled SQL statement
      * @exception SQLException if a database access error occurs
      */
-    public PreparedStatement prepareStatement(String sql) {
+    public PreparedStatement prepareStatement(String sql) throws SQLException {
+        if (!EmulatedDriver.emulate || (sql.indexOf("DUAL") != -1) || (sql.indexOf("dual") != -1)) {
+            return connection.prepareStatement(sql);
+        }
         return new EmulatedStatement(sql, this);
     }
 
@@ -125,7 +140,7 @@ public class EmulatedConnection implements Connection {
      * pre-compiled SQL statement
      * @exception SQLException if a database access error occurs
      */
-    public CallableStatement prepareCall(String sql) {
+    public CallableStatement prepareCall(String sql) throws SQLException {
         return null;
     }
 
@@ -140,7 +155,7 @@ public class EmulatedConnection implements Connection {
      * @return the native form of this statement
      * @exception SQLException if a database access error occurs
      */
-    public String nativeSQL(String sql) {
+    public String nativeSQL(String sql) throws SQLException {
         return sql;
     }
 
@@ -172,7 +187,10 @@ public class EmulatedConnection implements Connection {
      * @exception SQLException if a database access error occurs
      * @see #getAutoCommit
      */
-    public void setAutoCommit(boolean autoCommit) {
+    public void setAutoCommit(boolean autoCommit) throws SQLException {
+        if (!EmulatedDriver.emulate) {
+            connection.setAutoCommit(autoCommit);
+        }
     }
 
     /**
@@ -184,7 +202,10 @@ public class EmulatedConnection implements Connection {
      * @exception SQLException if a database access error occurs
      * @see #setAutoCommit
      */
-    public boolean getAutoCommit() {
+    public boolean getAutoCommit() throws SQLException {
+        if (!EmulatedDriver.emulate) {
+            connection.getAutoCommit();
+        }
         return false;
     }
 
@@ -199,7 +220,10 @@ public class EmulatedConnection implements Connection {
      *            <code>Connection</code> object is in auto-commit mode
      * @see #setAutoCommit
      */
-    public void commit() {
+    public void commit() throws SQLException {
+        if (!EmulatedDriver.emulate) {
+            connection.commit();
+        }
     }
 
     /**
@@ -212,7 +236,10 @@ public class EmulatedConnection implements Connection {
      *            <code>Connection</code> object is in auto-commit mode
      * @see #setAutoCommit
      */
-    public void rollback() {
+    public void rollback() throws SQLException {
+        if (!EmulatedDriver.emulate) {
+            connection.rollback();
+        }
     }
 
     /**
@@ -228,7 +255,7 @@ public class EmulatedConnection implements Connection {
      *
      * @exception SQLException if a database access error occurs
      */
-    public void close() {
+    public void close() throws SQLException {
     }
 
     /**
@@ -248,7 +275,7 @@ public class EmulatedConnection implements Connection {
      *         is closed; <code>false</code> if it is still open
      * @exception SQLException if a database access error occurs
      */
-    public boolean isClosed() {
+    public boolean isClosed() throws SQLException {
         return false;
     }
 
@@ -267,7 +294,10 @@ public class EmulatedConnection implements Connection {
      *         <code>Connection</code> object
      * @exception SQLException if a database access error occurs
      */
-    public DatabaseMetaData getMetaData() {
+    public DatabaseMetaData getMetaData() throws SQLException {
+        if (connection != null) {
+            return connection.getMetaData();
+        }
         return null;
     }
 
@@ -427,7 +457,7 @@ public class EmulatedConnection implements Connection {
      *         constants indicating type and concurrency
      * @since 1.2
      */
-    public Statement createStatement(int resultSetType, int resultSetConcurrency) {
+    public Statement createStatement(int resultSetType, int resultSetConcurrency) throws SQLException {
         return new EmulatedStatement(this);
     }
 
@@ -457,8 +487,8 @@ public class EmulatedConnection implements Connection {
      *         constants indicating type and concurrency
      * @since 1.2
      */
-    public PreparedStatement prepareStatement(String sql, int resultSetType, int resultSetConcurrency) {
-        return new EmulatedStatement(sql, this);
+    public PreparedStatement prepareStatement(String sql, int resultSetType, int resultSetConcurrency) throws SQLException {
+        return prepareStatement(sql);
     }
 
     /**
@@ -485,7 +515,7 @@ public class EmulatedConnection implements Connection {
      *         constants indicating type and concurrency
      * @since 1.2
      */
-    public CallableStatement prepareCall(String sql, int resultSetType, int resultSetConcurrency) {
+    public CallableStatement prepareCall(String sql, int resultSetType, int resultSetConcurrency) throws SQLException {
         return null;
     }
 
@@ -653,7 +683,7 @@ public class EmulatedConnection implements Connection {
      * @see ResultSet
      * @since 1.4
      */
-    public Statement createStatement(int resultSetType, int resultSetConcurrency, int resultSetHoldability) {
+    public Statement createStatement(int resultSetType, int resultSetConcurrency, int resultSetHoldability) throws SQLException {
         return new EmulatedStatement(this);
     }
 
@@ -692,8 +722,8 @@ public class EmulatedConnection implements Connection {
      * @see ResultSet
      * @since 1.4
      */
-    public PreparedStatement prepareStatement(String sql, int resultSetType, int resultSetConcurrency, int resultSetHoldability) {
-        return new EmulatedStatement(sql, this);
+    public PreparedStatement prepareStatement(String sql, int resultSetType, int resultSetConcurrency, int resultSetHoldability) throws SQLException {
+        return prepareStatement(sql);
     }
 
     /**
@@ -728,7 +758,7 @@ public class EmulatedConnection implements Connection {
      * @see ResultSet
      * @since 1.4
      */
-    public CallableStatement prepareCall(String sql, int resultSetType, int resultSetConcurrency, int resultSetHoldability) {
+    public CallableStatement prepareCall(String sql, int resultSetType, int resultSetConcurrency, int resultSetHoldability) throws SQLException {
         return null;
     }
 
@@ -768,8 +798,8 @@ public class EmulatedConnection implements Connection {
      *         returned
      * @since 1.4
      */
-    public PreparedStatement prepareStatement(String sql, int autoGeneratedKeys) {
-        return new EmulatedStatement(sql, this);
+    public PreparedStatement prepareStatement(String sql, int autoGeneratedKeys) throws SQLException {
+        return prepareStatement(sql);
     }
 
     /**
@@ -811,8 +841,8 @@ public class EmulatedConnection implements Connection {
      *
      * @since 1.4
      */
-    public PreparedStatement prepareStatement(String sql, int[] columnIndexes) {
-        return new EmulatedStatement(sql, this);
+    public PreparedStatement prepareStatement(String sql, int[] columnIndexes) throws SQLException {
+        return prepareStatement(sql);
     }
 
     /**
@@ -854,8 +884,8 @@ public class EmulatedConnection implements Connection {
      *
      * @since 1.4
      */
-    public PreparedStatement prepareStatement(String sql, String[] columnNames) {
-        return new EmulatedStatement(sql, this);
+    public PreparedStatement prepareStatement(String sql, String[] columnNames) throws SQLException {
+        return prepareStatement(sql);
     }
     
     // 236070: Methods introduced in JDK 1.6

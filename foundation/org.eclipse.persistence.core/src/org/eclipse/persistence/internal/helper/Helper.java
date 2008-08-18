@@ -634,17 +634,6 @@ public class Helper implements Serializable {
 
     }
 
-    /**
-     * Returns whether the given <code>Vector</code> contains a <code>null</code> element
-     * Return <code>true</code> if the Vector contains a null element
-     * Return <code>false</code> otherwise.
-     * This is needed in jdk1.1, where <code>Vector.contains(Object)</code>
-     * for a <code>null</code> element will result in a <code>NullPointerException</code>....
-     */
-    public static boolean containsNull(Vector v, int index) {
-        return indexOfNullElement(v, 0) != -1;
-    }
-
     /** Return a copy of the vector containing a subset starting at startIndex
      *  and ending at stopIndex.
      *  @param vector - original vector
@@ -1993,8 +1982,8 @@ public class Helper implements Serializable {
     public static boolean isEquivalentToNull(Object value) {
         return (value == null)
                         || (!isZeroValidPrimaryKey
-                                && (((value.getClass() == ClassConstants.LONG) && (((Long)value).longValue() == 0L))
-                                        || ((value.getClass() == ClassConstants.INTEGER) && (((Integer)value).intValue() == 0))));
+                                && (((value.getClass() == ClassConstants.LONG) && (((Long)value).longValue() <= 0L))
+                                        || ((value.getClass() == ClassConstants.INTEGER) && (((Integer)value).intValue() <= 0))));
     }
 
     /**

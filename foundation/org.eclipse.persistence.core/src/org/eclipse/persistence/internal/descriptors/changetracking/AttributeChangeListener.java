@@ -136,7 +136,7 @@ public class AttributeChangeListener extends ObjectChangeListener {
         super.internalPropertyChange(evt);
 
         if (uow.getUnitOfWorkChangeSet() == null) {
-            uow.setUnitOfWorkChangeSet(new UnitOfWorkChangeSet());
+            uow.setUnitOfWorkChangeSet(new UnitOfWorkChangeSet(uow));
         }
         if (objectChangeSet == null) {//only null if new or if in a new UOW
             //add to tracker list to prevent GC of clone if using weak references

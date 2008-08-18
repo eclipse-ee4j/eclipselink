@@ -40,12 +40,29 @@ public class HibernateJPAPerformanceRegressionModel extends JPAPerformanceRegres
             throw new TestProblemException("Failed to create persistence provider.", error);
         }
         Map properties = new HashMap();
-        properties.put("hibernate.dialect", "org.hibernate.dialect.Oracle9Dialect");
+
+        // For DataSource testing.
+        //properties.put("javax.persistence.nonJtaDataSource", "datasource");
+                
+        // For JSE testing.
         properties.put("hibernate.connection.driver_class", getSession().getLogin().getDriverClassName());
         properties.put("hibernate.connection.url", getSession().getLogin().getConnectionString());
         properties.put("hibernate.connection.username", getSession().getLogin().getUserName());
         properties.put("hibernate.connection.password", getSession().getLogin().getPassword());
         properties.put("hibernate.connection.pool_size", "10");
+        
+        /*/ For emulated connection testing.
+        try {
+            Class.forName(getSession().getLogin().getDriverClassName());
+        } catch (Exception ignore) {}
+        properties.put("hibernate.connection.driver_class", "org.eclipse.persistence.testing.tests.performance.emulateddb.EmulatedDriver");
+        properties.put("hibernate.connection.url", "emulate:" + getSession().getLogin().getConnectionString());
+        properties.put("hibernate.connection.username", getSession().getLogin().getUserName());
+        properties.put("hibernate.connection.password", getSession().getLogin().getPassword()); 
+        properties.put("hibernate.connection.pool_size", "10");*/
+        
+        properties.put("hibernate.jdbc.batch_size", "100");
+        properties.put("hibernate.dialect", "org.hibernate.dialect.Oracle9Dialect");
         properties.put("hibernate.cache.provider_class", "org.hibernate.cache.EhCacheProvider");
         if (getSession().shouldLogMessages()) {
             properties.put("hibernate.show_sql", "true");

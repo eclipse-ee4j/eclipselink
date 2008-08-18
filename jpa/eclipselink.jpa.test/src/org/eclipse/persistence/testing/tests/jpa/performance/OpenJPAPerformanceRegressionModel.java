@@ -40,6 +40,7 @@ public class OpenJPAPerformanceRegressionModel extends JPAPerformanceRegressionM
             throw new TestProblemException("Failed to create persistence provider.", error);
         }
         Map properties = new HashMap();
+        //properties.put("javax.persistence.nonJtaDataSource", "datasource");
         properties.put("openjpa.ConnectionDriverName", getSession().getLogin().getDriverClassName());
         properties.put("openjpa.ConnectionURL", getSession().getLogin().getConnectionString());
         properties.put("openjpa.ConnectionUserName", getSession().getLogin().getUserName());

@@ -14,16 +14,17 @@ package org.eclipse.persistence.internal.sessions;
 
 /**
  * Abstract change record for collection type records that allow deferrable change detection.
+ * Used for change tracking when user sets entire collection.
  */
 public abstract class DeferrableChangeRecord extends ChangeRecord {
 
     /**
-     * Used for change tracking when customer sets entire collection.
+     * Used for change tracking when user sets entire collection.
      */
     protected transient Object originalCollection;
 
     /**
-     * Used for change tracking when customer sets entire collection.
+     * Used for change tracking when user sets entire collection.
      */
     protected transient Object latestCollection;
 
@@ -58,7 +59,7 @@ public abstract class DeferrableChangeRecord extends ChangeRecord {
     }
 
     /**
-     * Used for change tracking when cutomer sets entire collection.
+     * Used for change tracking when user sets entire collection.
      * This is the last collection that was set on the object.
      */
     public Object getLatestCollection() {
@@ -66,7 +67,7 @@ public abstract class DeferrableChangeRecord extends ChangeRecord {
     }
 
     /**
-     * Used for change tracking when cutomer sets entire collection.
+     * Used for change tracking when user sets entire collection.
      * This is the original collection that was set on the object when it was cloned.
      */
     public Object getOriginalCollection() {
@@ -74,7 +75,7 @@ public abstract class DeferrableChangeRecord extends ChangeRecord {
     }
 
     /**
-     * Used for change tracking when cutomer sets entire collection.
+     * Used for change tracking when user sets entire collection.
      * This is the last collection that was set on the object.
      */
     public void setLatestCollection(Object latestCollection) {
@@ -82,7 +83,7 @@ public abstract class DeferrableChangeRecord extends ChangeRecord {
     }
 
     /**
-     * Used for change tracking when cutomer sets entire collection.
+     * Used for change tracking when user sets entire collection.
      * This is the original collection that was set on the object when it was cloned.
      */
     public void setOriginalCollection(Object originalCollection) {

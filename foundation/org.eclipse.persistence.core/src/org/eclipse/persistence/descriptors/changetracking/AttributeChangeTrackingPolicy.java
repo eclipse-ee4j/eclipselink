@@ -65,12 +65,14 @@ public class AttributeChangeTrackingPolicy extends ObjectChangeTrackingPolicy {
             }
         } else {
             changes = descriptor.getObjectBuilder().createObjectChangeSet(clone, changeSet, isNew, true, session);
-            // PERF: Avoid synchronized enumerator as is concurrency bottleneck.
-            Vector mappings = descriptor.getMappings();
-            int size = mappings.size();
-            for (int index = 0; index < size; index++) {
-                DatabaseMapping mapping = (DatabaseMapping)mappings.get(index);
-                changes.addChange(mapping.compareForChange(clone, null, changes, session));
+            // PERF: Do not create change records for new objects.
+            if (descriptor.shouldUseFullChangeSetsForNewObjects() || descriptor.isAggregateDescriptor()) {
+                List mappings = descriptor.getMappings();
+                int size = mappings.size();
+                for (int index = 0; index < size; index++) {
+                    DatabaseMapping mapping = (DatabaseMapping)mappings.get(index);
+                    changes.addChange(mapping.compareForChange(clone, null, changes, session));
+                }
             }
         }
 

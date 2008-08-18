@@ -460,4 +460,14 @@ public class EISDescriptor extends ClassDescriptor {
     public boolean isReturnTypeRequiredForReturningPolicy() {
         return false;
     }
+    
+    /**
+     * INTERNAL:
+     * Return if change sets are required for new objects.
+     */
+    public boolean shouldUseFullChangeSetsForNewObjects() {
+        // This is currently set to allow EIS tests to pass the same a before.
+        // TODO: It should be removed, and the test issues fixed (bug was logged).
+        return true;
+    }
 }

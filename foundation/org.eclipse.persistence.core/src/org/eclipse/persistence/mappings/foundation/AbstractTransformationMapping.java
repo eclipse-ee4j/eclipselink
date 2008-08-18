@@ -921,11 +921,12 @@ public abstract class AbstractTransformationMapping extends DatabaseMapping {
         }
         if (!isMutable()) {
             Object attribute = getRealAttributeValueFromObject(source, mergeManager.getSession());
-            if (this.getDescriptor().getObjectChangePolicy().isObjectChangeTrackingPolicy()) {
+            if (this.descriptor.getObjectChangePolicy().isObjectChangeTrackingPolicy()) {
                 // Object level or attribute level so lets see if we need to raise the event?
                 Object targetAttribute = getRealAttributeValueFromObject(target, mergeManager.getSession());
-                if ( (mergeManager.shouldMergeCloneIntoWorkingCopy()) && ((targetAttribute == null && attribute != null) || ( (targetAttribute != null) && (! targetAttribute.equals(attribute)) ) ) ){
-                    this.getDescriptor().getObjectChangePolicy().raiseInternalPropertyChangeEvent(target, getAttributeName(), targetAttribute, attribute);
+                if ((mergeManager.shouldMergeCloneIntoWorkingCopy() || mergeManager.shouldMergeCloneWithReferencesIntoWorkingCopy())
+                        && (((targetAttribute == null) && (attribute != null)) || ((targetAttribute != null) && (!targetAttribute.equals(attribute))))) {
+                    this.descriptor.getObjectChangePolicy().raiseInternalPropertyChangeEvent(target, getAttributeName(), targetAttribute, attribute);
                 }
             }
             setRealAttributeValueInObject(target, attribute);
@@ -938,11 +939,12 @@ public abstract class AbstractTransformationMapping extends DatabaseMapping {
         AbstractRecord targetRow = buildPhantomRowFrom(target, mergeManager.getSession());
         setRealAttributeValueInObject(target, attributeValue);
         //set the change after the set on the object as this mapping uses the object to build the change record.
-        if (this.getDescriptor().getObjectChangePolicy().isObjectChangeTrackingPolicy()) {
+        if (this.descriptor.getObjectChangePolicy().isObjectChangeTrackingPolicy()) {
             for (Enumeration keys = targetRow.keys(); keys.hasMoreElements(); ){
                 Object field = keys.nextElement();
-                if ( (mergeManager.shouldMergeCloneIntoWorkingCopy()) && (! row.get(field).equals(targetRow.get(field)) ) ) {
-                    this.getDescriptor().getObjectChangePolicy().raiseInternalPropertyChangeEvent(target, getAttributeName(), invokeAttributeTransformer(targetRow, source, mergeManager.getSession()), attributeValue);
+                if ((mergeManager.shouldMergeCloneIntoWorkingCopy() || mergeManager.shouldMergeCloneWithReferencesIntoWorkingCopy())
+                        && (!row.get(field).equals(targetRow.get(field)))) {
+                    this.descriptor.getObjectChangePolicy().raiseInternalPropertyChangeEvent(target, getAttributeName(), invokeAttributeTransformer(targetRow, source, mergeManager.getSession()), attributeValue);
                     break;
                 }
             }

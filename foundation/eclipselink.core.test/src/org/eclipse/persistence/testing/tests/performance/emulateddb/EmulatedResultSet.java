@@ -24,10 +24,10 @@ import org.eclipse.persistence.sessions.DatabaseRecord;
  * This extracts data from a list of DatabaseRows.
  */
 public class EmulatedResultSet implements ResultSet {
-    protected Vector rows;
+    protected List<DatabaseRecord> rows;
     protected int index;
 
-    public EmulatedResultSet(Vector rows) {
+    public EmulatedResultSet(List rows) {
         this.rows = rows;
         this.index = 0;
     }
@@ -35,7 +35,7 @@ public class EmulatedResultSet implements ResultSet {
     /**
      * Return the database records.
      */
-    public Vector getRows() {
+    public List getRows() {
         return rows;
     }     
      
@@ -165,7 +165,12 @@ public class EmulatedResultSet implements ResultSet {
      * @exception SQLException if a database access error occurs
      */
     public int getInt(int columnIndex) {
-        return ((Number)getObject(columnIndex)).intValue();
+        Number value = (Number)getObject(columnIndex);
+        if (value == null) {
+            return 0;
+        } else {
+            return value.intValue();
+        }
     }
 
     /**
@@ -198,7 +203,12 @@ public class EmulatedResultSet implements ResultSet {
      * @exception SQLException if a database access error occurs
      */
     public float getFloat(int columnIndex) {
-        return ((Number)getObject(columnIndex)).floatValue();
+        Number value = (Number)getObject(columnIndex);
+        if (value == null) {
+            return 0;
+        } else {
+            return value.floatValue();
+        }
     }
 
     /**
@@ -212,7 +222,12 @@ public class EmulatedResultSet implements ResultSet {
      * @exception SQLException if a database access error occurs
      */
     public double getDouble(int columnIndex) {
-        return ((Number)getObject(columnIndex)).doubleValue();
+        Number value = (Number)getObject(columnIndex);
+        if (value == null) {
+            return 0;
+        } else {
+            return value.doubleValue();
+        }
     }
 
     /**
@@ -257,7 +272,11 @@ public class EmulatedResultSet implements ResultSet {
      * @exception SQLException if a database access error occurs
      */
     public java.sql.Date getDate(int columnIndex) {
-        return (java.sql.Date)getObject(columnIndex);
+        java.util.Date date = (java.util.Date)getObject(columnIndex);
+        if (!(date instanceof java.sql.Date)) {
+            date = new java.sql.Date(date.getTime());
+        }
+        return (java.sql.Date)date;
     }
 
     /**
@@ -444,7 +463,12 @@ public class EmulatedResultSet implements ResultSet {
      * @exception SQLException if a database access error occurs
      */
     public int getInt(String columnName) {
-        return ((Number)getObject(columnName)).intValue();
+        Number value = (Number)getObject(columnName);
+        if (value == null) {
+            return 0;
+        } else {
+            return value.intValue();
+        }
     }
 
     /**
@@ -458,7 +482,12 @@ public class EmulatedResultSet implements ResultSet {
      * @exception SQLException if a database access error occurs
      */
     public long getLong(String columnName) {
-        return ((Number)getObject(columnName)).longValue();
+        Number value = (Number)getObject(columnName);
+        if (value == null) {
+            return 0;
+        } else {
+            return value.longValue();
+        }
     }
 
     /**
@@ -472,7 +501,12 @@ public class EmulatedResultSet implements ResultSet {
      * @exception SQLException if a database access error occurs
      */
     public float getFloat(String columnName) {
-        return ((Number)getObject(columnName)).floatValue();
+        Number value = (Number)getObject(columnName);
+        if (value == null) {
+            return 0;
+        } else {
+            return value.floatValue();
+        }
     }
 
     /**
@@ -486,7 +520,12 @@ public class EmulatedResultSet implements ResultSet {
      * @exception SQLException if a database access error occurs
      */
     public double getDouble(String columnName) {
-        return ((Number)getObject(columnName)).doubleValue();
+        Number value = (Number)getObject(columnName);
+        if (value == null) {
+            return 0;
+        } else {
+            return value.doubleValue();
+        }
     }
 
     /**
@@ -531,7 +570,11 @@ public class EmulatedResultSet implements ResultSet {
      * @exception SQLException if a database access error occurs
      */
     public java.sql.Date getDate(String columnName) {
-        return (java.sql.Date)getObject(columnName);
+        java.util.Date date = (java.util.Date)getObject(columnName);
+        if (!(date instanceof java.sql.Date)) {
+            date = new java.sql.Date(date.getTime());
+        }
+        return (java.sql.Date)date;
     }
 
     /**
@@ -752,7 +795,7 @@ public class EmulatedResultSet implements ResultSet {
      * @exception SQLException if a database access error occurs
      */
     public Object getObject(int columnIndex) {
-        return ((DatabaseRecord)this.rows.get(this.index - 1)).getValues().get(columnIndex - 1);
+        return this.rows.get(this.index - 1).getValues().get(columnIndex - 1);
     }
 
     /**
@@ -782,7 +825,7 @@ public class EmulatedResultSet implements ResultSet {
      * @exception SQLException if a database access error occurs
      */
     public Object getObject(String columnName) {
-        return ((DatabaseRecord)this.rows.get(this.index - 1)).get(columnName);
+        return this.rows.get(this.index - 1).get(columnName);
     }
 
     //----------------------------------------------------------------
@@ -2139,7 +2182,7 @@ public class EmulatedResultSet implements ResultSet {
      * @since 1.2
      */
     public java.sql.Date getDate(int columnIndex, Calendar cal) {
-        return null;
+        return getDate(columnIndex);
     }
 
     /**
@@ -2160,7 +2203,7 @@ public class EmulatedResultSet implements ResultSet {
      * @since 1.2
      */
     public java.sql.Date getDate(String columnName, Calendar cal) {
-        return null;
+        return getDate(columnName);
     }
 
     /**

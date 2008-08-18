@@ -26,6 +26,8 @@ public class ComplexUpdateTest extends WriteObjectTest {
     public boolean usesUnitOfWork = false;
     public boolean usesNestedUnitOfWork = false;
     public boolean shouldCommitParent = false;
+    /** TODO: Set this to true, and fix issues from tests that fail. */
+    public boolean shouldCompareClone = false;
 
     public ComplexUpdateTest() {
         super();
@@ -87,6 +89,10 @@ public class ComplexUpdateTest extends WriteObjectTest {
                     ((UnitOfWork)getSession()).commit();
                 }
                 getExecutor().setSession(((UnitOfWork)getSession()).getParent());
+            }
+            // Ensure that the clone matches the cache.
+            if (this.shouldCompareClone && !getAbstractSession().compareObjects(this.workingCopy, this.objectToBeWritten)) {
+                throw new TestErrorException("The clone does not match the cached object.");
             }
         } else {
             super.test();

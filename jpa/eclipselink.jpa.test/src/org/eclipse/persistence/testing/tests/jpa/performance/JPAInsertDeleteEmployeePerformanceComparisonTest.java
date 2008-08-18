@@ -13,6 +13,7 @@
  package org.eclipse.persistence.testing.tests.jpa.performance;
 
 import javax.persistence.*;
+
 import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.testing.models.jpa.performance.*;
 import org.eclipse.persistence.testing.framework.*;
@@ -25,6 +26,23 @@ public class JPAInsertDeleteEmployeePerformanceComparisonTest extends Performanc
         setDescription("This test compares the performance of insert Employee.");
     }
 
+    /**
+     * Read an existing employee for emulated database run.
+     */
+    public void setup() {
+        EntityManager manager = createEntityManager();
+        Employee any = (Employee)manager.createQuery("Select e from Employee e").getResultList().get(0);
+        // Create a query to avoid a cache hit to load emulated data.
+        Query query = manager.createQuery("Select e from Employee e where e.id = :id");
+        query.setParameter("id", new Long(any.getId()));
+        any = (Employee)query.getSingleResult();
+        manager.close();
+        manager = createEntityManager();
+        // Also call find, as may use different SQL.
+        any = manager.find(Employee.class, any.getId());
+        manager.close();
+    }
+    
     /**
      * Insert employee.
      */

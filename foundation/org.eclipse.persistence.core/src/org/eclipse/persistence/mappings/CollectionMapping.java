@@ -298,10 +298,7 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
      */
     public void calculateDeferredChanges(ChangeRecord changeRecord, AbstractSession session) {
         CollectionChangeRecord collectionRecord = (CollectionChangeRecord)changeRecord;
-
-        //clear incase events were fired since the set of the collection
-        //        collectionRecord.getAddObjectList().clear();
-        //        collectionRecord.getRemoveObjectList().clear();
+        // TODO: Handle events that fired after collection was replaced.
         compareCollectionsForChange(collectionRecord.getOriginalCollection(), collectionRecord.getLatestCollection(), collectionRecord, session);
     }
 
@@ -840,7 +837,7 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
             // instantiated anyway and we must continue to use the UnitOfWork 
             // valueholder in the case of transparent indirection
             Object newContainer = containerPolicy.containerInstance(containerPolicy.sizeFor(valueOfSource));
-            if ((this.getDescriptor().getObjectChangePolicy().isObjectChangeTrackingPolicy()) && (target instanceof ChangeTracker) && (((ChangeTracker)target)._persistence_getPropertyChangeListener() != null)) {
+            if ((this.descriptor.getObjectChangePolicy().isObjectChangeTrackingPolicy()) && (target instanceof ChangeTracker) && (((ChangeTracker)target)._persistence_getPropertyChangeListener() != null)) {
                 fireChangeEvents = true;
                 // Collections may not be indirect list or may have been replaced with user collection.
                 Object iterator = containerPolicy.iteratorFor(valueOfTarget);
@@ -873,13 +870,13 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
                 }
                 if (shouldMergeCascadeParts(mergeManager)) {
                     if ((mergeManager.getSession().isUnitOfWork()) && (((UnitOfWorkImpl)mergeManager.getSession()).getUnitOfWorkChangeSet() != null)) {
-                        // If it is a unit of work, we have to check if I have a change Set fot this object
+                        // If it is a unit of work, we have to check if I have a change Set for this object
                         mergeManager.mergeChanges(mergeManager.getObjectToMerge(object), (ObjectChangeSet)((UnitOfWorkImpl)mergeManager.getSession()).getUnitOfWorkChangeSet().getObjectChangeSetForClone(object));
                     } else {
                         mergeManager.mergeChanges(mergeManager.getObjectToMerge(object), null);
                     }
                 }
-                object = getReferenceDescriptor().getObjectBuilder().wrapObject(mergeManager.getTargetVersionOfSourceObject(object), mergeManager.getSession());
+                object = this.referenceDescriptor.getObjectBuilder().wrapObject(mergeManager.getTargetVersionOfSourceObject(object), mergeManager.getSession());
                 synchronized (valueOfTarget) {
                     if (fireChangeEvents) {
                         //Collections may not be indirect list or may have been replaced with user collection.
@@ -888,7 +885,7 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
                     containerPolicy.addInto(object, valueOfTarget, mergeManager.getSession());
                 }
             }
-            if (fireChangeEvents && (getDescriptor().getObjectChangePolicy().isAttributeChangeTrackingPolicy())) {
+            if (fireChangeEvents && (this.descriptor.getObjectChangePolicy().isAttributeChangeTrackingPolicy())) {
                 // check that there were changes, if not then remove the record.
                 ObjectChangeSet changeSet = ((AttributeChangeListener)((ChangeTracker)target)._persistence_getPropertyChangeListener()).getObjectChangeSet();
                 //Bug4910642  Add NullPointer check

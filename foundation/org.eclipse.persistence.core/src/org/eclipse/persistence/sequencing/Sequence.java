@@ -252,12 +252,8 @@ public abstract class Sequence implements Serializable, Cloneable {
      * Don't override this method.
      */
     public void onConnect(Platform platform) {
-        if (isConnected()) {
-            //verifyPlatform(platform);
-        } else {
-            setDatasourcePlatform(platform);
-            onConnect();
-        }
+        setDatasourcePlatform(platform);
+        onConnect();
         depth++;
     }
 
@@ -276,10 +272,7 @@ public abstract class Sequence implements Serializable, Cloneable {
     public void onDisconnect(Platform platform) {
         if (isConnected()) {
             depth--;
-            if (depth == 0) {
-                //onDisconnect();
-                //setDatasourcePlatform(null);
-            }
+            // Can no longer disconnect sequences, as they are part of descriptor shared meta-data.
         }
     }
 

@@ -95,8 +95,8 @@ public class SequencingConcurrencyTest extends TestCase implements Comparator {
      * Compare the two BigDecimal, for using TOPSort.
      */
     public int compare(Object b1, Object b2) {
-        java.math.BigDecimal big1 = (java.math.BigDecimal)b1;
-        java.math.BigDecimal big2 = (java.math.BigDecimal)b2;
+        java.math.BigDecimal big1 = new java.math.BigDecimal(((Number)b1).longValue());
+        java.math.BigDecimal big2 = new java.math.BigDecimal(((Number)b2).longValue());
         return big1.compareTo(big2);
     }
 
@@ -131,12 +131,12 @@ public class SequencingConcurrencyTest extends TestCase implements Comparator {
                  */
                 public void run() {
                     // Test
-                    java.math.BigDecimal[] sequence = (java.math.BigDecimal[])sequences.elementAt(threadNumber);
+                    Number[] sequence = (Number[])sequences.elementAt(threadNumber);
                     try {
                         if (handleException) {
                             for (int i = 0; i < nIterations; i++) {
                                 try {
-                                    sequence[i] = (java.math.BigDecimal)((AbstractSession)session).getSequencing().getNextValue(org.eclipse.persistence.testing.models.employee.domain.Employee.class);
+                                    sequence[i] = (Number)((AbstractSession)session).getSequencing().getNextValue(org.eclipse.persistence.testing.models.employee.domain.Employee.class);
                                 } catch (org.eclipse.persistence.exceptions.ConcurrencyException ex) {
                                     if (ex.getErrorCode() == org.eclipse.persistence.exceptions.ConcurrencyException.SEQUENCING_MULTITHREAD_THRU_CONNECTION) {
                                         // that's an acceptable exception, try again.
@@ -148,7 +148,7 @@ public class SequencingConcurrencyTest extends TestCase implements Comparator {
                             }
                         } else {
                             for (int i = 0; i < nIterations; i++) {
-                                sequence[i] = (java.math.BigDecimal)((AbstractSession)session).getSequencing().getNextValue(org.eclipse.persistence.testing.models.employee.domain.Employee.class);
+                                sequence[i] = (Number)((AbstractSession)session).getSequencing().getNextValue(org.eclipse.persistence.testing.models.employee.domain.Employee.class);
                             }
                         }
                     } catch (Exception ex2) {
@@ -199,7 +199,7 @@ public class SequencingConcurrencyTest extends TestCase implements Comparator {
         // Setup the arrays of BigDecimals to be filled.
         sequences = new java.util.Vector(nThreads);
         for (int i = 0; i < nThreads; i++) {
-            sequences.addElement(new java.math.BigDecimal[nIterations]);
+            sequences.addElement(new Number[nIterations]);
         }
     }
 
@@ -243,7 +243,7 @@ public class SequencingConcurrencyTest extends TestCase implements Comparator {
         }
 
         // Put all the sequences into one big array.
-        java.math.BigDecimal[] big = new java.math.BigDecimal[nThreads * nIterations];
+        Number[] big = new Number[nThreads * nIterations];
         for (int i = 0; i < nThreads; i++) {
             System.arraycopy(sequences.elementAt(i), 0, big, i * nIterations, nIterations);
         }
@@ -252,9 +252,9 @@ public class SequencingConcurrencyTest extends TestCase implements Comparator {
             Arrays.sort(big, this);
 
             // Verify that there are no duplicates or gaps in the array.
-            java.math.BigDecimal previous = big[0];
+            Number previous = big[0];
             for (int i = 1; i < (nIterations * nThreads); i++) {
-                java.math.BigDecimal current = big[i];
+                Number current = big[i];
                 if ((previous.intValue() + 1) != current.intValue()) {
                     throw new org.eclipse.persistence.testing.framework.TestErrorException("Gap in sequencing, or incorrect sequences generated.");
                 }

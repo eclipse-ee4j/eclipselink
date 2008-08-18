@@ -432,8 +432,12 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
         // in this case discoverAllUnregisteredNewObjects() is needed again (though 
         // if sequencing is not used the call will make no sense - but no harm, too).
         discoverAllUnregisteredNewObjects();
-        assignSequenceNumbers(getUnregisteredNewObjects());
-        assignSequenceNumbers(getNewObjectsCloneToOriginal());
+        if (hasUnregisteredNewObjects()) {
+            assignSequenceNumbers(getUnregisteredNewObjects());
+        }
+        if (hasNewObjects()) {
+            assignSequenceNumbers(getNewObjectsCloneToOriginal());
+        }
     }
     
     /**
@@ -537,8 +541,10 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
         getEventManager().preCalculateUnitOfWorkChangeSet();
 
         if (assignSequences && !getProject().isPureCMP2Project()) {
-            // First assign sequence numbers to new objects.
-            assignSequenceNumbers(getNewObjectsCloneToOriginal());
+            if (hasNewObjects()) {
+                // First assign sequence numbers to new objects.
+                assignSequenceNumbers(getNewObjectsCloneToOriginal());
+            }
         }
         
         // Second calculate changes for all registered objects.
@@ -1132,7 +1138,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
             // Iterate over each clone and let the object build merge to clones into the originals.
             // The change set may already exist if using change tracking.
             if (getUnitOfWorkChangeSet() == null) {
-                setUnitOfWorkChangeSet(new UnitOfWorkChangeSet());
+                setUnitOfWorkChangeSet(new UnitOfWorkChangeSet(this));
             }
             unitOfWorkChangeSet = calculateChanges(collectAndPrepareObjectsForNestedMerge(), (UnitOfWorkChangeSet)getUnitOfWorkChangeSet(), false);
             resetAllCloneCollection(); // no longer needed
@@ -1317,7 +1323,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
                 // Iterate over each clone and let the object build merge to clones into the originals.
                 // The change set may already exist if using change tracking.
                 if (getUnitOfWorkChangeSet() == null) {
-                    setUnitOfWorkChangeSet(new UnitOfWorkChangeSet());
+                    setUnitOfWorkChangeSet(new UnitOfWorkChangeSet(this));
                 }
                 calculateChanges(new IdentityHashMap(this.getCloneMapping()), (UnitOfWorkChangeSet)getUnitOfWorkChangeSet(), true);
             } catch (RuntimeException exception){
@@ -1802,7 +1808,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
      */
     public org.eclipse.persistence.sessions.changesets.UnitOfWorkChangeSet getCurrentChanges() {
         Map allObjects = collectAndPrepareObjectsForNestedMerge();
-        return calculateChanges(allObjects, new UnitOfWorkChangeSet(), false);
+        return calculateChanges(allObjects, new UnitOfWorkChangeSet(this), false);
     }
 
     /**
@@ -1917,7 +1923,16 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
     public boolean hasContainerBeans() {
         return ((containerBeans != null) && !containerBeans.isEmpty());
     }
-
+    
+    /**
+     * INTERNAL:
+     * Return if there are any unregistered new objects.
+     * PERF: Used to avoid initialization of new objects map unless required.
+     */
+    public boolean hasUnregisteredNewObjects() {
+        return ((this.unregisteredNewObjects != null) && !this.unregisteredNewObjects.isEmpty());
+    }
+    
     /**
      * INTERNAL:
      * Return if there are any registered new objects.
@@ -2405,7 +2420,10 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
      * @see #setReadOnlyClasses(Vector)
      */
     public Hashtable getReadOnlyClasses() {
-        return readOnlyClasses;
+        if (this.readOnlyClasses == null) {
+            this.readOnlyClasses = new Hashtable();
+        }
+        return this.readOnlyClasses;
     }
 
     /**
@@ -2551,7 +2569,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
             return true;
         }
         Map allObjects = new IdentityHashMap(getCloneMapping());
-        UnitOfWorkChangeSet changeSet = calculateChanges(allObjects, new UnitOfWorkChangeSet(), false);
+        UnitOfWorkChangeSet changeSet = calculateChanges(allObjects, new UnitOfWorkChangeSet(this), false);
         return changeSet.hasChanges();
     }
 
@@ -2648,7 +2666,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
         if ((descriptor != null) && (descriptor.shouldBeReadOnly())) {
             return true;
         }
-        if ((theClass != null) && getReadOnlyClasses().containsKey(theClass)) {
+        if ((theClass != null) && (this.readOnlyClasses != null) && this.readOnlyClasses.containsKey(theClass)) {
             return true;
         }
         return false;
@@ -2678,11 +2696,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
      * Check if the object is already registered.
      */
     public boolean isCloneNewObject(Object clone) {
-        // PERF: Avoid initialization of new objects if none.
-        if (!hasNewObjects()) {
-            return false;
-        }
-        return getNewObjectsCloneToOriginal().containsKey(clone);
+        return (this.newObjectsCloneToOriginal != null) && this.newObjectsCloneToOriginal.containsKey(clone);
     }
 
     /**
@@ -2764,11 +2778,9 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
      * Return if the object has been deleted in this unit of work.
      */
     public boolean isObjectDeleted(Object object) {
-        boolean isDeleted = false;
-        if (hasDeletedObjects()) {
-            isDeleted = getDeletedObjects().containsKey(object);
-        }
-        if (getParent().isUnitOfWork()) {
+        boolean isDeleted = (this.deletedObjects != null) && this.deletedObjects.containsKey(object);
+
+        if (this.parent.isUnitOfWork()) {
             return isDeleted || ((UnitOfWorkImpl)getParent()).isObjectDeleted(object);
         } else {
             return isDeleted;
@@ -2781,7 +2793,15 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
      */
     public boolean isObjectNew(Object clone) {
         //CR3678 - ported from 4.0
-        return (isCloneNewObject(clone) || (!isObjectRegistered(clone) && !getReadOnlyClasses().containsKey(clone.getClass()) && !getUnregisteredExistingObjects().containsKey(clone)));
+        return (isCloneNewObject(clone) || (!isObjectRegistered(clone) && !isClassReadOnly(clone.getClass(), null) && !isUnregisteredExistingObject(clone)));
+    }
+    
+    /**
+     * INTERNAL:
+     * Return if the object is a known unregistered existing object.
+     */
+    public boolean isUnregisteredExistingObject(Object object) {
+        return (this.unregisteredExistingObjects != null) && this.unregisteredExistingObjects.containsKey(object);
     }
 
     /**
@@ -2813,7 +2833,8 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
      * within another new object.
      */
     public boolean isOriginalNewObject(Object original) {
-        return (hasNewObjects() && getNewObjectsOriginalToClone().containsKey(original)) || getNewAggregates().containsKey(original);
+        return ((this.newObjectsOriginalToClone != null) && this.newObjectsOriginalToClone.containsKey(original)) 
+                    || ((this.newAggregates != null) && this.newAggregates.containsKey(original));
     }
 
     /**
@@ -4429,10 +4450,14 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
      * This set of classes given are checked that subclasses of a read-only class are also
      * in the read-only set provided.
      */
-    public void setReadOnlyClasses(Vector classes) {
-        this.readOnlyClasses = new Hashtable(classes.size() + 10);
-        for (Enumeration enumtr = classes.elements(); enumtr.hasMoreElements();) {
-            Class theClass = (Class)enumtr.nextElement();
+    public void setReadOnlyClasses(List classes) {
+        if (classes.isEmpty()) {
+            this.readOnlyClasses = null;
+            return;
+        }
+        this.readOnlyClasses = new Hashtable(classes.size());
+        for (Iterator iterator = classes.iterator(); iterator.hasNext();) {
+            Class theClass = (Class)iterator.next();
             addReadOnlyClass(theClass);
         }
     }
@@ -4742,7 +4767,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
      */
     public void synchronizeAndResume() {
         // For pessimistic locking all locks were released by commit.
-        getPessimisticLockedObjects().clear();
+        this.pessimisticLockedObjects = null;
         getProperties().remove(LOCK_QUERIES_PROPERTY);
 
         // find next power-of-2 size
@@ -5073,7 +5098,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
      * Return if the clone has been pessimistic locked in this unit of work.
      */
     public boolean isPessimisticLocked(Object clone) {
-        return getPessimisticLockedObjects().containsKey(clone);
+        return (this.pessimisticLockedObjects != null )&& this.pessimisticLockedObjects.containsKey(clone);
     }
 
     /**

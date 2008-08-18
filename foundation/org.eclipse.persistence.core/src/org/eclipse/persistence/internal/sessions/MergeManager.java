@@ -188,7 +188,7 @@ public class MergeManager {
     }
 
     /**
-     * Return the coresponding value that should be assigned to the target object for the source object.
+     * Return the corresponding value that should be assigned to the target object for the source object.
      * This value must be local to the targets object space.
      */
     public Object getTargetVersionOfSourceObject(Object source) {
@@ -220,7 +220,7 @@ public class MergeManager {
     
     /**
      * Recursively merge changes in the object dependent on the merge policy.
-     * The hastable is used to resolv recursion.
+     * The map is used to resolve recursion.
      */
     public Object mergeChanges(Object object, ObjectChangeSet objectChangeSet) throws ValidationException {
         if (object == null) {
@@ -441,7 +441,7 @@ public class MergeManager {
 
     /**
      * Recursively merge to rmi clone into the unit of work working copy.
-     * The hastable is used to resolv recursion.
+     * The map is used to resolve recursion.
      */
     protected Object mergeChangesOfCloneIntoWorkingCopy(Object rmiClone) {
         Object registeredObject = registerObjectForMergeCloneIntoWorkingCopy(rmiClone);
@@ -487,7 +487,7 @@ public class MergeManager {
 
     /**
      * Recursively merge to original from its parent into the clone.
-     * The hastable is used to resolv recursion.
+     * The map is used to resolve recursion.
      */
     protected Object mergeChangesOfOriginalIntoWorkingCopy(Object clone) {
         ClassDescriptor descriptor = getSession().getDescriptor(clone);
@@ -526,8 +526,8 @@ public class MergeManager {
     }
 
     /**
-     * Recursively merge to clone into the orignal in its parent.
-     * The hastable is used to resolv recursion.
+     * Recursively merge to clone into the original in its parent.
+     * The map is used to resolve recursion.
      */
     protected Object mergeChangesOfWorkingCopyIntoOriginal(Object clone, ObjectChangeSet objectChangeSet) {
         UnitOfWorkImpl unitOfWork = (UnitOfWorkImpl)getSession();
@@ -575,8 +575,11 @@ public class MergeManager {
                     objectBuilder.clearPrimaryKey(original);
                 }
             } else if (objectChangeSet == null) {
-                // If we have no change set then we must merge the entire object.
-                objectBuilder.mergeIntoObject(original, false, clone, this);
+                // PERF: If we have no change set if it is existing, then no merging is required.
+                // If it is new, then merge the object (normally a new object would have a change set, so this is an odd case.
+                if (unitOfWork.isCloneNewObject(clone)) {
+                    objectBuilder.mergeIntoObject(original, false, clone, this);
+                }
             } else {
                 // Invalidate any object that was marked invalid during the change calculation, even if it was new as multiple flushes 
                 // and custom SQL could still produce invalid new objects.
@@ -711,7 +714,7 @@ public class MergeManager {
     }
 
     /**
-     * This is used during cache synchronisation to merge the changes into the distributed cache.
+     * This is used during cache synchronization to merge the changes into the distributed cache.
      */
     public void mergeIntoDistributedCache() {
         setMergePolicy(CHANGES_INTO_DISTRIBUTED_CACHE);
@@ -730,14 +733,14 @@ public class MergeManager {
             Object object = changeSet.getTargetVersionOfSourceObject(getSession(), false);
             if (object == null) {
                 if (!getObjectsAlreadyMerged().containsKey(changeSet)) {
-                    // if we haven't merged this object allready then build a new object
+                    // if we haven't merged this object already then build a new object
                     // otherwise leave it as null which will stop the recursion
                     object = descriptor.getObjectBuilder().buildNewInstance();
                     //Store the changeset to prevent us from creating this new object again
                     getObjectsAlreadyMerged().put(changeSet, object);
                 } else {
                     //we have all ready created the object, must be in a cyclic
-                    //merge on a new object so get it out of the allreadymerged collection
+                    //merge on a new object so get it out of the alreadymerged collection
                     object = getObjectsAlreadyMerged().get(changeSet);
                 }
             } else {
@@ -812,7 +815,7 @@ public class MergeManager {
         if (existQuery.shouldCheckCacheForDoesExist()) {
             Object registeredObject = unitOfWork.internalRegisterObject(clone, descriptor);
             
-            if (unitOfWork.getNewObjectsOriginalToClone().containsKey(clone)) {
+            if (unitOfWork.hasNewObjects() && unitOfWork.getNewObjectsOriginalToClone().containsKey(clone)) {
                 mergedNewObjects.put(registeredObject, registeredObject);
             }
             
@@ -992,7 +995,7 @@ public class MergeManager {
     
     /**
      * INTERNAL:
-     * Used to return a hashtable containing new objects found through the 
+     * Used to return a map containing new objects found through the 
      * registerObjectForMergeCloneIntoWorkingCopy method.
      * @return Map
      */

@@ -85,13 +85,15 @@ public class EmploymentPeriod implements Serializable, ChangeTracker, Cloneable 
     }
 
     public void setEndDate(Date endDate) {
-        propertyChange("endDate", this.endDate, endDate);
+        Date oldDate = this.endDate;
         this.endDate = endDate;
+        propertyChange("endDate", oldDate, endDate);
     }
 
     public void setStartDate(Date startDate) {
-        propertyChange("startDate", this.startDate, startDate);
+        Date oldDate = this.startDate;
         this.startDate = startDate;
+        propertyChange("startDate", oldDate, startDate);
     }
 
     /**

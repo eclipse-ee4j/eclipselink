@@ -30,7 +30,7 @@ public class XMLFileConnectionMetaData implements ConnectionMetaData {
     }
 
     public String getEISProductName() {
-        return "TopLink XML File JCA Adapter";
+        return "EclipseLink XML File JCA Adapter";
     }
 
     public String getEISProductVersion() {

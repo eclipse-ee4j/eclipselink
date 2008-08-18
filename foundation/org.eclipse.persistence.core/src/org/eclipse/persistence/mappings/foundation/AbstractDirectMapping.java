@@ -283,43 +283,58 @@ public abstract class AbstractDirectMapping extends DatabaseMapping {
      * Compare the attributes belonging to this mapping for the objects.
      */
     public boolean compareObjects(Object firstObject, Object secondObject, AbstractSession session) {
-        Object one = getAttributeValueFromObject(firstObject);
-        Object two = getAttributeValueFromObject(secondObject);
-
+        Object firstValue = getAttributeValueFromObject(firstObject);
+        Object secondValue = getAttributeValueFromObject(secondObject);
+        return compareObjectValues(firstValue, secondValue, session);        
+    }
+    
+    /**
+     * INTERNAL:
+     * Compare the attribute values.
+     */
+    protected boolean compareObjectValues(Object firstValue, Object secondValue, AbstractSession session) {
         // PERF: Check identity before conversion.
-        if (one == two) {
+        if (firstValue == secondValue) {
             return true;
         }
 
         // CR2114 - following two lines modified; getFieldValue() needs class as an argument
-        one = getFieldValue(one, session);
-        two = getFieldValue(two, session);
+        firstValue = getFieldValue(firstValue, session);
+        secondValue = getFieldValue(secondValue, session);
         // PERF:  Check identity/nulls before special type comparison.
-        if (one == two) {
+        if (firstValue == secondValue) {
             return true;
         }
 
-        if ((one == null) || (two == null)) {
+        if ((firstValue == null) || (secondValue == null)) {
             return false;
         }
 
+        // PERF: Check equals first, as normally no change.
+        boolean equal = firstValue.equals(secondValue);
+        if (equal) {
+            return true;
+        }
+        
+        Class firstClasss = firstValue.getClass();
+        Class secondClass = secondValue.getClass();
         // Arrays must be checked for equality because default does identity
-        if ((one.getClass() == ClassConstants.APBYTE) && (two.getClass() == ClassConstants.APBYTE)) {
-            return Helper.compareByteArrays((byte[])one, (byte[])two);
+        if ((firstClasss == ClassConstants.APBYTE) && (secondClass == ClassConstants.APBYTE)) {
+            return Helper.compareByteArrays((byte[])firstValue, (byte[])secondValue);
         }
-        if ((one.getClass() == ClassConstants.APCHAR) && (two.getClass() == ClassConstants.APCHAR)) {
-            return Helper.compareCharArrays((char[])one, (char[])two);
+        if ((firstClasss == ClassConstants.APCHAR) && (secondClass == ClassConstants.APCHAR)) {
+            return Helper.compareCharArrays((char[])firstValue, (char[])secondValue);
         }
-        if ((one.getClass().isArray()) && (two.getClass().isArray())) {
-            return Helper.compareArrays((Object[])one, (Object[])two);
+        if ((firstClasss.isArray()) && (secondClass.isArray())) {
+            return Helper.compareArrays((Object[])firstValue, (Object[])secondValue);
         }
 
         // BigDecimals equals does not consider the precision correctly
-        if (one instanceof java.math.BigDecimal && two instanceof java.math.BigDecimal) {
-            return Helper.compareBigDecimals((java.math.BigDecimal)one, (java.math.BigDecimal)two);
+        if (firstValue instanceof java.math.BigDecimal && secondValue instanceof java.math.BigDecimal) {
+            return Helper.compareBigDecimals((java.math.BigDecimal)firstValue, (java.math.BigDecimal)secondValue);
         }
 
-        return one.equals(two);
+        return false;
     }
     
     /**
@@ -659,17 +674,21 @@ public abstract class AbstractDirectMapping extends DatabaseMapping {
      * does not exist or the target is uninitialized
      */
     public void mergeIntoObject(Object target, boolean isTargetUnInitialized, Object source, MergeManager mergeManager) {
-        Object attributeValue = getAttributeValueFromObject(source);
-        if ( (this.getDescriptor().getObjectChangePolicy().isObjectChangeTrackingPolicy()) && (!compareObjects(target, source, mergeManager.getSession())) ) {
+        // If merge into the unit of work, must only merge and raise the event is the value changed.
+        if ((mergeManager.shouldMergeCloneIntoWorkingCopy() || mergeManager.shouldMergeCloneWithReferencesIntoWorkingCopy())
+                && this.descriptor.getObjectChangePolicy().isObjectChangeTrackingPolicy()) {
             // if it didn't change then there will be no event
+            Object attributeValue = getAttributeValueFromObject(source);
             Object targetAttribute = getAttributeValueFromObject(target);
-            setAttributeValueInObject(target, attributeValue);
-            //set the value first, if the owner is new ( or aggregate) the change set may be created directly
-            //from the target.
-            this.getDescriptor().getObjectChangePolicy().raiseInternalPropertyChangeEvent(target, getAttributeName(), targetAttribute, attributeValue);
-        }else{
+            if (!compareObjectValues(attributeValue, targetAttribute, mergeManager.getSession())) {
+                setAttributeValueInObject(target, attributeValue);
+                //set the value first, if the owner is new ( or aggregate) the change set may be created directly
+                //from the target.
+                this.descriptor.getObjectChangePolicy().raiseInternalPropertyChangeEvent(target, getAttributeName(), targetAttribute, attributeValue);
+            }
+        } else {
             //just set the value and continue
-            setAttributeValueInObject(target, attributeValue);
+            setAttributeValueInObject(target, getAttributeValueFromObject(source));
         }
     }
 

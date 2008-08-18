@@ -48,6 +48,9 @@ public class UnitOfWorkChangeSet implements Serializable, org.eclipse.persistenc
     so we are aware the UOW does not contain the changes from this change set */
     private boolean isChangeSetFromOutsideUOW = false;
 
+    /** Stores unit of work before it is serialized. */
+    protected transient AbstractSession session;
+    
     /**
      * INTERNAL:
      * Create a ChangeSet
@@ -56,7 +59,23 @@ public class UnitOfWorkChangeSet implements Serializable, org.eclipse.persistenc
         super();
         this.setHasChanges(false);
     }
+    
+    /**
+     * INTERNAL:
+     * Create a ChangeSet
+     */
+    public UnitOfWorkChangeSet(AbstractSession session) {
+        this.session = session;
+    }
 
+    /**
+     * Return the session.
+     * This only exists before serialization.
+     */
+    public AbstractSession getSession() {
+        return session;
+    }
+    
     /**
      * INTERNAL:
      * Recreate a UnitOfWorkChangeSet that has been converted to a byte array with the
@@ -178,6 +197,7 @@ public class UnitOfWorkChangeSet implements Serializable, org.eclipse.persistenc
             getNewObjectChangeSets().put(objectChanges.getClassType(session), changeSetTable);
         }
         changeSetTable.put(objectChanges, objectChanges);
+        this.hasChanges = true;
     }
 
     /**

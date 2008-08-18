@@ -593,14 +593,17 @@ public abstract class AggregateMapping extends DatabaseMapping {
             mergeAttributeValue(targetAttributeValue, true, sourceAttributeValue, mergeManager);
             // setting new instance so fire event as if set was called by user.
             // this call will eventually get passed to updateChangeRecord which will 
-            //ensure this new aggregates is fully initilized with listeners.
-            this.getDescriptor().getObjectChangePolicy().raiseInternalPropertyChangeEvent(target, getAttributeName(), getAttributeValueFromObject(target), targetAttributeValue);
+            //ensure this new aggregates is fully initialized with listeners.
+            // If merge into the unit of work, must only merge and raise the event is the value changed.
+            if (mergeManager.shouldMergeCloneIntoWorkingCopy() || mergeManager.shouldMergeCloneWithReferencesIntoWorkingCopy()) {
+                this.descriptor.getObjectChangePolicy().raiseInternalPropertyChangeEvent(target, getAttributeName(), getAttributeValueFromObject(target), targetAttributeValue);
+            }
             
         } else {
             mergeAttributeValue(targetAttributeValue, isTargetUnInitialized, sourceAttributeValue, mergeManager);
         }
 
-        // allow setter to re-morph any changes...
+        // Must re-set variable to allow for set method to re-morph changes.
         setAttributeValueInObject(target, targetAttributeValue);
     }
 
@@ -726,7 +729,17 @@ public abstract class AggregateMapping extends DatabaseMapping {
             return;
         }
         WriteObjectQuery aggregateQuery = buildAggregateWriteQuery(query, attributeValue);
-
+        ObjectChangeSet changeSet = null;
+        if (query.getSession().isUnitOfWork() && (((UnitOfWorkImpl)query.getSession()).getUnitOfWorkChangeSet() != null)) {
+            UnitOfWorkChangeSet uowChangeSet = (UnitOfWorkChangeSet)((UnitOfWorkImpl)query.getSession()).getUnitOfWorkChangeSet();
+            changeSet = (ObjectChangeSet)uowChangeSet.getObjectChangeSetForClone(aggregateQuery.getObject());
+        }
+        aggregateQuery.setObjectChangeSet(changeSet);
+        // aggregates do not actually use a query to write to the database so the pre-write must be called here
+        if (changeSet == null) {// then we didn't fire events at calculations
+            executeEvent(DescriptorEventManager.PreWriteEvent, aggregateQuery);
+            executeEvent(DescriptorEventManager.PreInsertEvent, aggregateQuery);
+        }
         getQueryManager(attributeValue, query.getSession()).preInsert(aggregateQuery);
     }
 

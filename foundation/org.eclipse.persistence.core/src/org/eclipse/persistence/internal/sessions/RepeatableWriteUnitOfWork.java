@@ -290,7 +290,7 @@ public class RepeatableWriteUnitOfWork extends UnitOfWorkImpl {
                 unregisteredDeletedObjectsCloneToBackupAndOriginal = new IdentityHashMap(2);
             }
             if (getUnitOfWorkChangeSet() == null) {
-                setUnitOfWorkChangeSet(new UnitOfWorkChangeSet());
+                setUnitOfWorkChangeSet(new UnitOfWorkChangeSet(this));
             }
             // This also assigns sequence numbers and discover unregistered new objects.
             calculateChanges(getCloneMapping(), (UnitOfWorkChangeSet)getUnitOfWorkChangeSet(), true);
@@ -308,22 +308,24 @@ public class RepeatableWriteUnitOfWork extends UnitOfWorkImpl {
                 throw exception;
             }
 
-            Iterator enumtr = getNewObjectsCloneToOriginal().keySet().iterator();
-            while (enumtr.hasNext()) {
-                Object clone = enumtr.next();
-                Object original = getNewObjectsCloneToOriginal().get(clone);
-                if (original != null) {
-                    // No longer new to this unit of work, so need to store original.
-                    getCloneToOriginals().put(clone, original);
+            if (hasNewObjects()) {
+                Iterator enumtr = getNewObjectsCloneToOriginal().keySet().iterator();
+                while (enumtr.hasNext()) {
+                    Object clone = enumtr.next();
+                    Object original = getNewObjectsCloneToOriginal().get(clone);
+                    if (original != null) {
+                        // No longer new to this unit of work, so need to store original.
+                        getCloneToOriginals().put(clone, original);
+                    }
                 }
             }
-            getNewObjectsCloneToOriginal().clear();
-            getNewObjectsOriginalToClone().clear();
-            getUnregisteredExistingObjects().clear();
-            getUnregisteredNewObjects().clear();
+            this.newObjectsCloneToOriginal = null;
+            this.newObjectsOriginalToClone = null;
+            this.unregisteredExistingObjects = null;
+            this.unregisteredNewObjects = null;
             
             // bug 4730595: fix puts deleted objects in the UnitOfWorkChangeSet as they are removed.
-            getDeletedObjects().clear();
+            this.deletedObjects = null;
             // Unregister all deleted objects,
             // keep them along with their original and backup values in unregisteredDeletedObjectsCloneToBackupAndOriginal.
             Iterator enumDeleted = getObjectsDeletedDuringCommit().keySet().iterator();
@@ -333,7 +335,7 @@ public class RepeatableWriteUnitOfWork extends UnitOfWorkImpl {
                 unregisteredDeletedObjectsCloneToBackupAndOriginal.put(deletedObject, backupAndOriginal);
                 unregisterObject(deletedObject);
             }
-            getObjectsDeletedDuringCommit().clear();
+            this.objectsDeletedDuringCommit = null;
 
             if (this.cumulativeUOWChangeSet == null) {
                 this.cumulativeUOWChangeSet = (UnitOfWorkChangeSet)getUnitOfWorkChangeSet();

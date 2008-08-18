@@ -411,16 +411,21 @@ public abstract class ObjectReferenceMapping extends ForeignReferenceMapping {
             // Need to do this after merge so that an object exists in the database
             targetValueOfSource = mergeManager.getTargetVersionOfSourceObject(valueOfSource);
         }
-
-        if (this.getDescriptor().getObjectChangePolicy().isObjectChangeTrackingPolicy()) {
+        
+        // If merge into the unit of work, must only merge and raise the event is the value changed.
+        if ((mergeManager.shouldMergeCloneIntoWorkingCopy() || mergeManager.shouldMergeCloneWithReferencesIntoWorkingCopy())
+                && this.descriptor.getObjectChangePolicy().isObjectChangeTrackingPolicy()) {
             // Object level or attribute level so lets see if we need to raise the event?
             Object valueOfTarget = getRealAttributeValueFromObject(target, mergeManager.getSession());
-            if ( valueOfTarget != targetValueOfSource ) { //equality comparison cause both are uow clones
-                this.getDescriptor().getObjectChangePolicy().raiseInternalPropertyChangeEvent(target, getAttributeName(), valueOfTarget, targetValueOfSource);
+            if (valueOfTarget != targetValueOfSource) { //equality comparison cause both are uow clones
+                this.descriptor.getObjectChangePolicy().raiseInternalPropertyChangeEvent(target, getAttributeName(), valueOfTarget, targetValueOfSource);
+            } else {
+                // No change.
+                return;
             }
         }
  
-        targetValueOfSource = getReferenceDescriptor().getObjectBuilder().wrapObject(targetValueOfSource, mergeManager.getSession());
+        targetValueOfSource = this.referenceDescriptor.getObjectBuilder().wrapObject(targetValueOfSource, mergeManager.getSession());
         setRealAttributeValueInObject(target, targetValueOfSource);
     }
 
@@ -839,22 +844,15 @@ public abstract class ObjectReferenceMapping extends ForeignReferenceMapping {
         if (object == null) {
             return;
         }
-        ObjectChangeSet changeSet = query.getObjectChangeSet();
-        if (changeSet != null) {
-            ObjectReferenceChangeRecord changeRecord = (ObjectReferenceChangeRecord)query.getObjectChangeSet().getChangesForAttributeNamed(getAttributeName());
-            if (changeRecord != null) {
-                changeSet = (ObjectChangeSet)changeRecord.getNewValue();
-            } else {
-                // no changeRecord no reference.
+        ObjectChangeSet changeSet = null;
+        UnitOfWorkChangeSet uowChangeSet = null;
+        // Get changeSet for referenced object.  Change record may not exist for new objects, so always lookup.
+        if (query.getSession().isUnitOfWork() && (((UnitOfWorkImpl)query.getSession()).getUnitOfWorkChangeSet() != null)) {
+            uowChangeSet = (UnitOfWorkChangeSet)((UnitOfWorkImpl)query.getSession()).getUnitOfWorkChangeSet();
+            changeSet = (ObjectChangeSet)uowChangeSet.getObjectChangeSetForClone(object);
+            // PERF: If the changeSet is null it must be existing, if it is not new, then cascading is not required.
+            if (changeSet == null || !changeSet.isNew()) {
                 return;
-            }
-        } else {
-            UnitOfWorkChangeSet uowChangeSet = null;
-
-            // get changeSet for referenced object.  Could get it from the changeRecord but that would as much work
-            if (query.getSession().isUnitOfWork() && (((UnitOfWorkImpl)query.getSession()).getUnitOfWorkChangeSet() != null)) {
-                uowChangeSet = (UnitOfWorkChangeSet)((UnitOfWorkImpl)query.getSession()).getUnitOfWorkChangeSet();
-                changeSet = (ObjectChangeSet)uowChangeSet.getObjectChangeSetForClone(object);
             }
         }
 
@@ -897,17 +895,24 @@ public abstract class ObjectReferenceMapping extends ForeignReferenceMapping {
                 ObjectReferenceChangeRecord changeRecord = (ObjectReferenceChangeRecord)query.getObjectChangeSet().getChangesForAttributeNamed(getAttributeName());
                 if (changeRecord != null) {
                     changeSet = (ObjectChangeSet)changeRecord.getNewValue();
+                    // PERF: If it is not new, then cascading is not required.
+                    if (!changeSet.isNew()) {
+                        return;
+                    }
                 } else {
                     // no changeRecord no change to reference.
                     return;
                 }
             } else {
                 UnitOfWorkChangeSet uowChangeSet = null;
-
-                // get changeSet for referenced object.  Could get it from the changeRecord but that would as much work
+                // Get changeSet for referenced object.
                 if (query.getSession().isUnitOfWork() && (((UnitOfWorkImpl)query.getSession()).getUnitOfWorkChangeSet() != null)) {
                     uowChangeSet = (UnitOfWorkChangeSet)((UnitOfWorkImpl)query.getSession()).getUnitOfWorkChangeSet();
                     changeSet = (ObjectChangeSet)uowChangeSet.getObjectChangeSetForClone(object);
+                    // PERF: If the changeSet is null it must be existing, if it is not new, then cascading is not required.
+                    if (changeSet == null || !changeSet.isNew()) {
+                        return;
+                    }
                 }
             }
             // PERF: Only write dependent object if they are new.

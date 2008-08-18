@@ -15,6 +15,7 @@ package org.eclipse.persistence.testing.models.inheritance;
 import java.util.*;
 import org.eclipse.persistence.internal.databaseaccess.*;
 import org.eclipse.persistence.sessions.*;
+import org.eclipse.persistence.annotations.IdValidation;
 import org.eclipse.persistence.descriptors.*;
 import org.eclipse.persistence.queries.*;
 import org.eclipse.persistence.sessions.factories.*;
@@ -32,6 +33,8 @@ public class InheritanceSystem extends TestSystem {
         if (session.getLogin().getPlatform().isOracle()) {
             project.getDescriptor(SalesRep.class).getInheritancePolicy().setAlwaysUseOuterJoinForClassType(true);
         }
+        // Id for Entomologist can be negative (millis cast to int wraps...)
+        project.getDescriptor(Entomologist.class).setIdValidation(IdValidation.NONE);
 
         session.addDescriptors(project);
 

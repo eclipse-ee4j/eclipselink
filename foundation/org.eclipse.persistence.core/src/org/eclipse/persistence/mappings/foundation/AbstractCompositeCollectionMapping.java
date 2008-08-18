@@ -285,7 +285,7 @@ public abstract class AbstractCompositeCollectionMapping extends AggregateMappin
             // For bug 2863721 must use a different UnitOfWorkChangeSet as here just
             // seeing if changes are needed.  If changes are needed then a
             // real changeSet will be created later.
-            UnitOfWorkChangeSet uowComparisonChangeSet = new UnitOfWorkChangeSet();
+            UnitOfWorkChangeSet uowComparisonChangeSet = new UnitOfWorkChangeSet(session);
             while (cp.hasNext(cloneIterator)) {
                 Object cloneObject = cp.next(cloneIterator, session);
 

@@ -161,61 +161,64 @@ public class CommitManager {
      */
     public void commitAllObjectsWithChangeSet(UnitOfWorkChangeSet uowChangeSet) throws RuntimeException, DatabaseException, OptimisticLockException {
         reinitialize();
-        setIsActive(true);
-        getSession().beginTransaction();
+        this.isActive = true;
+        this.session.beginTransaction();
         try {
             // PERF: if the number of classes in the project is large this loop can be a perf issue.
             // If only one class types changed, then avoid loop.
             if ((uowChangeSet.getObjectChanges().size() + uowChangeSet.getNewObjectChangeSets().size()) <= 1) {
-                Enumeration classes = uowChangeSet.getNewObjectChangeSets().keys();
-                if (classes.hasMoreElements()) {
-                    Class theClass = (Class)classes.nextElement();
+                Iterator classes = uowChangeSet.getNewObjectChangeSets().keySet().iterator();
+                if (classes.hasNext()) {
+                    Class theClass = (Class)classes.next();
                     commitNewObjectsForClassWithChangeSet(uowChangeSet, theClass);
                 }
-                Enumeration classNames = uowChangeSet.getObjectChanges().keys();
-                if (classNames.hasMoreElements()) {
-                    String className = (String)classNames.nextElement();
+                Iterator classNames = uowChangeSet.getObjectChanges().keySet().iterator();
+                if (classNames.hasNext()) {
+                    String className = (String)classNames.next();
                     commitChangedObjectsForClassWithChangeSet(uowChangeSet, className);
                 }
             } else {
                 // The commit order is all of the classes ordered by dependencies, this is done for deadlock avoidance.
-                for (Enumeration classesEnum = getCommitOrder().elements();
-                         classesEnum.hasMoreElements();) {
-                    Class theClass = (Class)classesEnum.nextElement();
+                List commitOrder = getCommitOrder();
+                int size = commitOrder.size();
+                for (int index = 0; index < size; index++) {
+                    Class theClass = (Class)commitOrder.get(index);
                     commitAllObjectsForClassWithChangeSet(uowChangeSet, theClass);
                 }
             }
 
             if (hasDataModifications()) {
                 // Perform all batched up data modifications, done to avoid dependencies.
-                for (Enumeration mappingsEnum = getDataModifications().keys(), mappingEventsEnum = getDataModifications().elements();
-                         mappingEventsEnum.hasMoreElements();) {
-                    Vector events = (Vector)mappingEventsEnum.nextElement();
-                    DatabaseMapping mapping = (DatabaseMapping)mappingsEnum.nextElement();
-                    for (Enumeration eventsEnum = events.elements(); eventsEnum.hasMoreElements();) {
-                        Object[] event = (Object[])eventsEnum.nextElement();
+                Iterator mappings = getDataModifications().keySet().iterator();
+                Iterator mappingEvents = getDataModifications().values().iterator();
+                while (mappingEvents.hasNext()) {
+                    List events = (List)mappingEvents.next();
+                    int size = events.size();
+                    DatabaseMapping mapping = (DatabaseMapping)mappings.next();
+                    for (int index = 0; index < size; index++) {
+                        Object[] event = (Object[])events.get(index);
                         mapping.performDataModificationEvent(event, getSession());
                     }
                 }
             }
 
             if (hasObjectsToDelete()) {
-                Vector objects = getObjectsToDelete();
+                List objects = getObjectsToDelete();
+                int size = objects.size();
                 reinitialize();
-                for (Enumeration objectsToDeleteEnum = objects.elements();
-                         objectsToDeleteEnum.hasMoreElements();) {
-                    getSession().deleteObject(objectsToDeleteEnum.nextElement());
+                for (int index = 0; index < size; index++) {
+                    this.session.deleteObject(objects.get(index));
                 }
             }
         } catch (RuntimeException exception) {
-            getSession().rollbackTransaction();
+            this.session.rollbackTransaction();
             throw exception;
         } finally {
             reinitialize();
-            setIsActive(false);
+            this.isActive = false;
         }
 
-        getSession().commitTransaction();
+        this.session.commitTransaction();
     }
 
     /**
@@ -243,14 +246,21 @@ public class CommitManager {
                 Object objectToWrite = changeSetToWrite.getUnitOfWorkClone();
                 if ((!getProcessedCommits().containsKey(changeSetToWrite)) && (!getProcessedCommits().containsKey(objectToWrite))) {
                     addProcessedCommit(changeSetToWrite);
-                    InsertObjectQuery commitQuery = new InsertObjectQuery();
+                    // PERF: Get the descriptor query, to avoid extra query creation.
+                    InsertObjectQuery commitQuery = descriptor.getQueryManager().getInsertQuery();
+                    if (commitQuery == null) {
+                        commitQuery = new InsertObjectQuery();
+                    } else {
+                        // Ensure original query has been prepared.
+                        commitQuery.checkPrepare(getSession(), commitQuery.getTranslationRow());
+                        commitQuery = (InsertObjectQuery)commitQuery.clone();
+                    }
                     commitQuery.setIsExecutionClone(true);
                     commitQuery.setDescriptor(descriptor);
                     commitQuery.setObjectChangeSet(changeSetToWrite);
                     commitQuery.setObject(objectToWrite);
                     commitQuery.cascadeOnlyDependentParts();
-                    // removed checking session type to set cascade level
-                    // will always be a unitOfWork so we need to cascade dependent parts
+                    commitQuery.setModifyRow(null);
                     getSession().executeQuery(commitQuery);
                 }
                 uowChangeSet.putNewObjectInChangesList(changeSetToWrite, session);

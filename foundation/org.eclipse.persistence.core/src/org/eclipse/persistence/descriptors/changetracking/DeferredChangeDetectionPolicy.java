@@ -52,7 +52,7 @@ public class DeferredChangeDetectionPolicy implements ObjectChangePolicy, java.i
      */
     public ObjectChangeSet calculateChanges(Object clone, Object backUp, org.eclipse.persistence.internal.sessions.UnitOfWorkChangeSet changeSet, AbstractSession session, ClassDescriptor descriptor, boolean shouldRaiseEvent) {
         UnitOfWorkImpl unitOfWork = (UnitOfWorkImpl)session;
-        boolean isNew = ((backUp == null) || ((unitOfWork.isObjectNew(clone)) && (!descriptor.isAggregateDescriptor())));
+        boolean isNew = ((backUp == null) || ((unitOfWork.isObjectNew(clone)) && (!descriptor.isAggregateDescriptor()) && (!descriptor.isAggregateCollectionDescriptor())));
 
         // PERF: Provide EJB life-cycle callbacks without using events.
         if (descriptor.hasCMPPolicy()) {
@@ -127,12 +127,15 @@ public class DeferredChangeDetectionPolicy implements ObjectChangePolicy, java.i
             changes.setOptimisticLockingPolicyAndInitialWriteLockValue(descriptor.getOptimisticLockingPolicy(), session);
         }
 
-        // PERF: Avoid synchronized enumerator as is concurrency bottleneck.
-        Vector mappings = descriptor.getMappings();
-        int mappingsSize = mappings.size();
-        for (int index = 0; index < mappingsSize; index++) {
-            DatabaseMapping mapping = (DatabaseMapping)mappings.get(index);
-            changes.addChange(mapping.compareForChange(clone, backUp, changes, session));
+        // PERF: Do not create change records for new objects.
+        if (!isNew || descriptor.shouldUseFullChangeSetsForNewObjects() || descriptor.isAggregateDescriptor()) {
+            // PERF: Avoid synchronized enumerator as is concurrency bottleneck.
+            List mappings = descriptor.getMappings();
+            int mappingsSize = mappings.size();
+            for (int index = 0; index < mappingsSize; index++) {
+                DatabaseMapping mapping = (DatabaseMapping)mappings.get(index);
+                changes.addChange(mapping.compareForChange(clone, backUp, changes, session));
+            }
         }
 
         return changes;
@@ -140,7 +143,7 @@ public class DeferredChangeDetectionPolicy implements ObjectChangePolicy, java.i
 
     /**
      * INTERNAL:
-     * This method is used to dissable changetracking temporarily
+     * This method is used to disable changetracking temporarily
      */
     public void dissableEventProcessing(Object changeTracker){
         //no-op
@@ -208,16 +211,21 @@ public class DeferredChangeDetectionPolicy implements ObjectChangePolicy, java.i
         }
         Object backupClone = uow.getCloneMapping().get(clone);
         if (backupClone != null) {
-            MergeManager mergeManager = new MergeManager(uow);
-            mergeManager.setCascadePolicy(MergeManager.NO_CASCADE);
-            descriptor.getObjectBuilder().mergeChangesIntoObject(backupClone, objectChangeSet, clone, mergeManager);
+            // If new just re-build the backup clone, otherwise use MergeManager (should be a special merge though, not the default constructor like it is...)
+            if (objectChangeSet.isNew()) {
+                uow.getCloneMapping().put(clone, descriptor.getObjectBuilder().buildBackupClone(clone, uow));
+            } else {
+                MergeManager mergeManager = new MergeManager(uow);
+                mergeManager.setCascadePolicy(MergeManager.NO_CASCADE);
+                descriptor.getObjectBuilder().mergeChangesIntoObject(backupClone, objectChangeSet, clone, mergeManager);
+            }
         }
         clearChanges(clone, uow, descriptor);
     }
 
     /**
      * INTERNAL:
-     * This may cause a property change event to be raised to a listner in the case that a listener exists.
+     * This may cause a property change event to be raised to a listener in the case that a listener exists.
      * If there is no listener then this call is a no-op
      */
     public void raiseInternalPropertyChangeEvent(Object source, String propertyName, Object oldValue, Object newValue){
@@ -227,7 +235,7 @@ public class DeferredChangeDetectionPolicy implements ObjectChangePolicy, java.i
     /**
      * INTERNAL:
      * This method is used to revert an object within the unit of work
-     * @param cloneMapping may not be the same as whats in the uow
+     * @param cloneMapping may not be the same as what is in the uow
      */
     public void revertChanges(Object clone, ClassDescriptor descriptor, UnitOfWorkImpl uow, Map cloneMapping) {
         cloneMapping.put(clone, buildBackupClone(clone, descriptor.getObjectBuilder(), uow));

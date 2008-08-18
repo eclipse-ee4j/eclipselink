@@ -18,7 +18,18 @@ import java.sql.*;
  * Emulated database driver.
  */
 public class EmulatedDriver implements Driver {
-
+    static {
+        try {
+            DriverManager.registerDriver(new EmulatedDriver());
+        } catch (Exception ignore) {}
+    }
+    
+    /** Allow toggling of emulation. */
+    public static boolean emulate = true;
+    
+    /** Cache the connection. */
+    protected Connection connection;
+    
     /**
      * Attempts to make a database connection to the given URL.
      * The driver should return "null" if it realizes it is the wrong kind
@@ -43,8 +54,14 @@ public class EmulatedDriver implements Driver {
      *         connection to the URL
      * @exception SQLException if a database access error occurs
      */
-    public Connection connect(String url, java.util.Properties info) {
-        return new EmulatedConnection();
+    public Connection connect(String url, java.util.Properties info) throws SQLException {
+        if (! acceptsURL(url)) {
+            return null;
+        }
+        if (connection == null) {
+            connection = new EmulatedConnection(DriverManager.getConnection(url.substring("emulate:".length() + 1, url.length()), info));
+        }
+        return connection;
     }
 
     /**
@@ -59,7 +76,7 @@ public class EmulatedDriver implements Driver {
      * @exception SQLException if a database access error occurs
      */
     public boolean acceptsURL(String url) {
-        return true;
+        return url.indexOf("emulate:") != -1;
     }
 
     /**

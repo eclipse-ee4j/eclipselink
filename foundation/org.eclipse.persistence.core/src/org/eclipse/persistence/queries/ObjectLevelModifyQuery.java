@@ -88,12 +88,7 @@ public abstract class ObjectLevelModifyQuery extends ModifyQuery {
 
     /**
      * INTERNAL:
-     * This code was moved from UnitOfWork.internalExecuteQuery
-     * @param unitOfWork
-     * @param translationRow
-     * @return
-     * @throws org.eclipse.persistence.exceptions.DatabaseException
-     * @throws org.eclipse.persistence.exceptions.OptimisticLockException
+     * This code was moved from UnitOfWork.internalExecuteQuery.
      */
     protected Object executeInUnitOfWorkObjectLevelModifyQuery(UnitOfWorkImpl unitOfWork, AbstractRecord translationRow) throws DatabaseException, OptimisticLockException {
         if (!unitOfWork.getCommitManager().isActive()) {
@@ -105,7 +100,7 @@ public abstract class ObjectLevelModifyQuery extends ModifyQuery {
         }
 
         // CR#3216 - Apply check to ObjectLevelModifyQuery not just WriteObjectQuery
-        if (unitOfWork.shouldPerformNoValidation() && unitOfWork.getUnregisteredExistingObjects().containsKey(getObject())) {
+        if (unitOfWork.shouldPerformNoValidation() && unitOfWork.isUnregisteredExistingObject(getObject())) {
             //if the object is an unregistered existing object then skip it.  This
             // Will only be in the collection if validation is turned off
             return null;

@@ -834,7 +834,7 @@ public class DirectCollectionMapping extends CollectionMapping implements Relati
 
     /**
      * PUBLIC:
-     * Returns the qualified name of the reference table
+     * Returns the qualified name of the reference table.
      */
     public String getReferenceTableQualifiedName() {//CR#2407  
         if (getReferenceTable() == null) {
@@ -1048,7 +1048,7 @@ public class DirectCollectionMapping extends CollectionMapping implements Relati
     }
 
     /**
-     * The reference keys on the reference table are initalized
+     * The reference keys on the reference table are initialized
      */
     protected void initializeReferenceKeys(AbstractSession session) throws DescriptorException {
         if (getReferenceKeyFields().size() == 0) {
@@ -1130,7 +1130,7 @@ public class DirectCollectionMapping extends CollectionMapping implements Relati
     }
 
     /**
-     * The source keys are initalized
+     * The source keys are initialized
      */
     protected void initializeSourceKeys(AbstractSession session) {
         for (int index = 0; index < getSourceKeyFields().size(); index++) {
@@ -1175,7 +1175,7 @@ public class DirectCollectionMapping extends CollectionMapping implements Relati
 
     /**
      * INTERNAL:
-     * Return true if referenced objects are provately owned else false.
+     * Direct collection is always private owned.
      */
     public boolean isPrivateOwned() {
         return true;
@@ -1233,7 +1233,7 @@ public class DirectCollectionMapping extends CollectionMapping implements Relati
             }
         } else {
             Object synchronizationTarget = valueOfTarget;
-            // For indirect containers the delegate must be synchronzied on,
+            // For indirect containers the delegate must be synchronized on,
             // not the wrapper as the clone synchs on the delegate, see bug#5685287.
             if (valueOfTarget instanceof IndirectCollection) {
                 synchronizationTarget = ((IndirectCollection)valueOfTarget).getDelegateObject();
@@ -1305,7 +1305,7 @@ public class DirectCollectionMapping extends CollectionMapping implements Relati
         Object valueOfTarget = getRealCollectionAttributeValueFromObject(target, mergeManager.getSession());
         Object newContainer = containerPolicy.containerInstance(containerPolicy.sizeFor(valueOfSource));
         boolean fireChangeEvents = false;
-        if ((this.getDescriptor().getObjectChangePolicy().isObjectChangeTrackingPolicy()) && (target instanceof ChangeTracker) && (((ChangeTracker)target)._persistence_getPropertyChangeListener() != null)) {
+        if ((this.descriptor.getObjectChangePolicy().isObjectChangeTrackingPolicy()) && (target instanceof ChangeTracker) && (((ChangeTracker)target)._persistence_getPropertyChangeListener() != null)) {
             fireChangeEvents = true;
             //Collections may not be indirect list or may have been replaced with user collection.
             Object iterator = containerPolicy.iteratorFor(valueOfTarget);
@@ -1329,7 +1329,7 @@ public class DirectCollectionMapping extends CollectionMapping implements Relati
             }
             containerPolicy.addInto(sourceValue, valueOfTarget, mergeManager.getSession());
         }
-        if (fireChangeEvents && (getDescriptor().getObjectChangePolicy().isAttributeChangeTrackingPolicy())) {
+        if (fireChangeEvents && (this.descriptor.getObjectChangePolicy().isAttributeChangeTrackingPolicy())) {
             // check that there were changes, if not then remove the record.
             ObjectChangeSet changeSet = ((AttributeChangeListener)((ChangeTracker)target)._persistence_getPropertyChangeListener()).getObjectChangeSet();
             if (changeSet != null) {
@@ -1580,11 +1580,11 @@ public class DirectCollectionMapping extends CollectionMapping implements Relati
     /**
      * INTERNAL:
      * Once descriptors are serialized to the remote session. All its mappings and reference descriptors are traversed. Usually
-     * mappings are initilaized and serialized reference descriptors are replaced with local descriptors if they already exist on the
+     * mappings are initialized and serialized reference descriptors are replaced with local descriptors if they already exist on the
      * remote session.
      */
     public void remoteInitialization(DistributedSession session) {
-        // Remote mappings is initilaized here again because while serializing only the uninitialized data is passed
+        // Remote mappings is initialized here again because while serializing only the uninitialized data is passed
         // as the initialized data is not serializable.
         if (!isRemotelyInitialized()) {
             getAttributeAccessor().initializeAttributes(getDescriptor().getJavaClass());
@@ -1701,7 +1701,7 @@ public class DirectCollectionMapping extends CollectionMapping implements Relati
      * translated from the fields of the source row, through replacing the field names
      * marked by '#' with the values for those fields.
      * This is used to insert an entry into the direct table.
-     * Example, 'insert into RESPONS (EMP_ID, RES_DESC) values (#EMP_ID, #RES_DESC)'.
+     * <p>Example, 'insert into RESPONS (EMP_ID, RES_DESC) values (#EMP_ID, #RES_DESC)'.
      */
     public void setInsertSQLString(String sqlString) {
         DataModifyQuery query = new DataModifyQuery();
@@ -1832,6 +1832,7 @@ public class DirectCollectionMapping extends CollectionMapping implements Relati
      */
     public void calculateDeferredChanges(ChangeRecord changeRecord, AbstractSession session) {
         DirectCollectionChangeRecord collectionRecord = (DirectCollectionChangeRecord)changeRecord;
+        // TODO: Handle events that fired after collection was replaced.
         compareCollectionsForChange(collectionRecord.getOriginalCollection(), collectionRecord.getLatestCollection(), collectionRecord, session);
     }
 
@@ -1839,7 +1840,6 @@ public class DirectCollectionMapping extends CollectionMapping implements Relati
      * ADVANCED:
      * This method is used to have an object add to a collection once the changeSet is applied
      * The referenceKey parameter should only be used for direct Maps.
-
      */
     public void simpleAddToCollectionChangeRecord(Object referenceKey, Object objectToAdd, ObjectChangeSet changeSet, AbstractSession session) {
         DirectCollectionChangeRecord collectionChangeRecord = (DirectCollectionChangeRecord)changeSet.getChangesForAttributeNamed(getAttributeName());
@@ -1855,10 +1855,10 @@ public class DirectCollectionMapping extends CollectionMapping implements Relati
     }
 
     /**
-      * ADVANCED:
-      * This method is used to have an object removed from a collection once the changeSet is applied
-      * The referenceKey parameter should only be used for direct Maps.
-      */
+     * ADVANCED:
+     * This method is used to have an object removed from a collection once the changeSet is applied
+     * The referenceKey parameter should only be used for direct Maps.
+     */
     public void simpleRemoveFromCollectionChangeRecord(Object referenceKey, Object objectToRemove, ObjectChangeSet changeSet, AbstractSession session) {
         DirectCollectionChangeRecord collectionChangeRecord = (DirectCollectionChangeRecord)changeSet.getChangesForAttributeNamed(getAttributeName());
         if (collectionChangeRecord == null) {
@@ -1928,8 +1928,7 @@ public class DirectCollectionMapping extends CollectionMapping implements Relati
      * PUBLIC:
      * Configure the mapping to use an instance of the specified container class
      * to hold the target objects.
-     * <p>jdk1.2.x: The container class must implement (directly or indirectly) the Collection interface.
-     * <p>jdk1.1.x: The container class must be a subclass of Vector.
+     * <p>The container class must implement (directly or indirectly) the Collection interface.
      */
     public void useCollectionClass(Class concreteClass) {
         ContainerPolicy policy = ContainerPolicy.buildPolicyFor(concreteClass);
@@ -1950,7 +1949,7 @@ public class DirectCollectionMapping extends CollectionMapping implements Relati
      * INTERNAL:
      * Return the value of the reference attribute or a value holder.
      * Check whether the mapping's attribute should be optimized through batch and joining.
-     * Overridden to support flasback/historical queries.
+     * Overridden to support flashback/historical queries.
      */
     public Object valueFromRow(AbstractRecord row, JoinedAttributeManager joinManager, ObjectBuildingQuery sourceQuery, AbstractSession session) throws DatabaseException {
         // if the query uses batch reading, return a special value holder
@@ -2025,14 +2024,6 @@ public class DirectCollectionMapping extends CollectionMapping implements Relati
      * Return true if this mapping supports cascaded version optimistic locking.
      */
     public boolean isCascadedLockingSupported() {
-        return true;
-    }
-
-    /**
-     * INTERNAL:
-     * Return if this mapping supports change tracking.
-     */
-    public boolean isChangeTrackingSupported(Project project) {
         return true;
     }
 

@@ -105,7 +105,7 @@ public class ObjectChangeSet implements Serializable, org.eclipse.persistence.se
         this.cloneObject = cloneObject;
         this.isNew = isNew;
         this.shouldBeDeleted = false;
-        if ((primaryKey != null) && !org.eclipse.persistence.internal.helper.Helper.containsNull(primaryKey, 0)) {
+        if ((primaryKey != null) && !primaryKey.contains(null)) {
             this.cacheKey = new CacheKey(primaryKey);
         }
         this.classType = classType;
@@ -413,7 +413,7 @@ public class ObjectChangeSet implements Serializable, org.eclipse.persistence.se
         // a change set must also be considered dirty if only the version number has been updated
         // and the version is not a mapped field.  This is required to propagate the change
         // set via cache sync. to avoid opt. lock exceptions on the remote servers.
-        return this.hasVersionChange || ((this.changes != null) && (!this.changes.isEmpty()));
+        return this.isNew || this.hasVersionChange || ((this.changes != null) && (!this.changes.isEmpty()));
     }
 
     /**
@@ -478,7 +478,7 @@ public class ObjectChangeSet implements Serializable, org.eclipse.persistence.se
     /**
      * INTERNAL:
      * Used by calculateChanges to mark this ObjectChangeSet as having to be 
-     * flushed to the db steming from a cascade optimistic locking policy.
+     * flushed to the db stemming from a cascade optimistic locking policy.
      */
     public void setHasForcedChangesFromCascadeLocking(boolean newValue) {
         this.setShouldModifyVersionField(Boolean.TRUE);
@@ -747,8 +747,7 @@ public class ObjectChangeSet implements Serializable, org.eclipse.persistence.se
 
     /**
      * INTERNAL:
-     * Used to set the parent change Set
-     * @param newUnitOfWorkChangeSet prototype.changeset.UnitOfWorkChangeSet
+     * Used to set the parent change Set.
      */
     public void setUOWChangeSet(UnitOfWorkChangeSet newUnitOfWorkChangeSet) {
         unitOfWorkChangeSet = newUnitOfWorkChangeSet;
@@ -771,9 +770,8 @@ public class ObjectChangeSet implements Serializable, org.eclipse.persistence.se
      * ADVANCED:
      * This method is used to set the writeLock value for an ObjectChangeSet
      * Any changes to the write lock value
-     * should to through setWriteLockValue(Object obj) so that th change set is
+     * should to through setWriteLockValue(Object obj) so that the change set is
      * marked as being dirty.
-     * @param newWriteLockValue java.lang.Object
      */
     public void setWriteLockValue(java.lang.Object newWriteLockValue) {
         this.writeLockValue = newWriteLockValue;
@@ -787,7 +785,6 @@ public class ObjectChangeSet implements Serializable, org.eclipse.persistence.se
      * ADVANCED:
      * This method is used to set the initial writeLock value for an ObjectChangeSet.
      * The initial value will only be set once, and can not be overwritten.
-     * @param initialWriteLockValue java.lang.Object
      */
     public void setInitialWriteLockValue(java.lang.Object initialWriteLockValue) {
         if (this.initialWriteLockValue == null) {
@@ -796,8 +793,7 @@ public class ObjectChangeSet implements Serializable, org.eclipse.persistence.se
     }
 
     /**
-     * This method was created in VisualAge.
-     * @return boolean
+     * Mark change set for a deleted object.
      */
     public boolean shouldBeDeleted() {
         return shouldBeDeleted;
@@ -907,10 +903,24 @@ public class ObjectChangeSet implements Serializable, org.eclipse.persistence.se
      * Helper method to readObject.  Completely write this ObjectChangeSet to the stream
      */
     public void writeCompleteChangeSet(java.io.ObjectOutputStream stream) throws java.io.IOException {
+        // If the change set is new, it must be filled in.
+        // TODO: Rework change set coordination to not send changes at all if not required.
+        if (this.isNew && ((this.changes == null) || this.changes.isEmpty())) {
+            AbstractSession unitOfWork = this.unitOfWorkChangeSet.getSession();
+            if (unitOfWork != null) {
+                ClassDescriptor descriptor = unitOfWork.getDescriptor(cloneObject);
+                List mappings = descriptor.getMappings();
+                int mappingsSize = mappings.size();
+                for (int index = 0; index < mappingsSize; index++) {
+                    DatabaseMapping mapping = (DatabaseMapping)mappings.get(index);
+                    addChange(mapping.compareForChange(this.cloneObject, this.cloneObject, this, unitOfWork));
+                }
+            }
+        }
         writeIdentityInformation(stream);
-        stream.writeObject(changes);
-        stream.writeObject(oldKey);
-        stream.writeObject(newKey);
+        stream.writeObject(this.changes);
+        stream.writeObject(this.oldKey);
+        stream.writeObject(this.newKey);
     }
 
     /**
@@ -1044,7 +1054,7 @@ public class ObjectChangeSet implements Serializable, org.eclipse.persistence.se
     
     /**
      * INTERNAL:
-     * PERF: Return the session cache-key, cached during thr merge.
+     * PERF: Return the session cache-key, cached during the merge.
      */
     public CacheKey getActiveCacheKey()  {
         return activeCacheKey;
@@ -1052,7 +1062,7 @@ public class ObjectChangeSet implements Serializable, org.eclipse.persistence.se
     
     /**
      * INTERNAL:
-     * PERF: Set the session cache-key, cached during thr merge.
+     * PERF: Set the session cache-key, cached during the merge.
      */
     public void setActiveCacheKey(CacheKey activeCacheKey)  {
         this.activeCacheKey = activeCacheKey;
