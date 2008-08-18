@@ -51,6 +51,8 @@ public class QueryFrameworkTestSuite extends TestSuite {
         addTest(new CachedUpdateCallsQueryClearTest());
         addTest(new ZeroPrimaryKeyExistenceCheckTest(true));
         addTest(new ZeroPrimaryKeyExistenceCheckTest(false));
+        // EL Bug 244241 - connection not released on query timeout when cursor used
+        addTest(new QueryTimeoutConnectionReleasedTest());
     }
 
     //SRG test set is maintained by QA only, do NOT add any new test cases into it.

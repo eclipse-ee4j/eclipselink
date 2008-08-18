@@ -523,8 +523,10 @@ public class ServerSession extends DatabaseSessionImpl implements Server {
         } catch (RuntimeException caughtException) {
             exception = caughtException;
         } finally {
-            if (call.isFinished()) {
-                //don't release the cursoredStream connection until Stream is closed
+			// EL Bug 244241 - connection not released on query timeout when cursor used
+        	// Don't release the cursoredStream connection until Stream is closed 
+			// or unless an exception occurred executing the call.
+			if (call.isFinished() || exception != null) {
                 try {
                     if (accessorAllocated) {
                         releaseReadConnection(query.getAccessor());
