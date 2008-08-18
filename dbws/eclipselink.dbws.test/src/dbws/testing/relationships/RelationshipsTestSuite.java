@@ -42,7 +42,7 @@ import org.eclipse.persistence.internal.xr.XRServiceModel;
 import org.eclipse.persistence.oxm.XMLContext;
 import org.eclipse.persistence.oxm.XMLMarshaller;
 import org.eclipse.persistence.oxm.XMLUnmarshaller;
-import org.eclipse.persistence.platform.database.OraclePlatform;
+import org.eclipse.persistence.platform.database.MySQLPlatform;
 import org.eclipse.persistence.platform.xml.XMLComparer;
 import org.eclipse.persistence.platform.xml.XMLParser;
 import org.eclipse.persistence.platform.xml.XMLPlatform;
@@ -604,7 +604,7 @@ public class RelationshipsTestSuite {
                 login.setPassword(password);
                 ((DatabaseLogin)login).setConnectionString(url);
                 ((DatabaseLogin)login).setDriverClassName(driver);
-                Platform platform = new OraclePlatform();
+                Platform platform = new MySQLPlatform();
                 login.setDatasourcePlatform(platform);
                 ((DatabaseLogin)login).bindAllParameters();
                 orProject.setDatasourceLogin(login);
