@@ -21,9 +21,9 @@
 *   - Ant properties are lower case.
 *
 * Contributors:
-*     tware - initial API and implementation
+*     tware  - initial API and implementation
 *     pkrogh - javadocs
-*     eric.gwin - rework to follow ant conventions.
+*     egwin  - rework to follow ant conventions.
 #******************************************************************************/-->
 <!-- This ant project includes the following tasks:
         - all (default) : compiles all components and tests (excluding Oracle extensions)
@@ -87,10 +87,48 @@
     <target name="build-all" depends="build-core, build-workbench, build-test, build-extension"/>
 
     <!-- Builds and packages all jars, javadoc, and builds installer. -->
-    <target name="build-distribution" depends="package-eclipselink-jar, build-eclipselink-bundles, package-src-jar, package-jpa-tst-src-jar, package-packagerenamer-jar, build-workbench, build-javadocs, package-javadoc-zip, package-installer-zip"/>
+    <target name="build-distribution" depends="package-eclipselink-jar, build-eclipselink-bundles, package-src-jar, package-jpa-tst-src-jar, package-packagerenamer-jar, build-workbench, package-javadoc-zip, package-installer-zip"/>
 
     <!-- Compiles all components and tests (excluding workbench). -->
     <target name="build-core-all" depends="build-core, build-core-test, build-extension"/>
+
+    <!-- Cleans all build generated files. -->
+    <target name="clean" description="Clean the build">
+        <ant antfile="${eclipselink.core}/build.xml"             target="clean"/>
+        <ant antfile="${eclipselink.extension.oracle}/build.xml" target="clean"/>
+        <ant antfile="${eclipselink.jpa}/build.xml"              target="clean"/>
+        <ant antfile="${eclipselink.util.rename}/build.xml"      target="clean"/>
+        <ant antfile="${eclipselink.moxy}/build.xml"             target="clean"/>
+        <ant antfile="${eclipselink.sdo}/build.xml"              target="clean"/>
+        <ant antfile="${eclipselink.core.test}/build.xml"        target="clean"/>
+        <ant antfile="${eclipselink.jpa.test}/build.xml"         target="clean"/>
+        <ant antfile="${eclipselink.moxy.test}/build.xml"        target="clean"/>
+        <ant antfile="${eclipselink.sdo.test}/build.xml"         target="clean"/>
+        <delete dir="${build.dir}"/>
+        <delete file="${eclipselink.jar.name}"/>
+        <delete file="${eclipselink.src.install.prefix}${eclipselink.zip.suffix}"/>
+    </target>
+
+    <target name="clean-eclipselink-bundles">
+        <delete>
+            <fileset dir="${eclipselink.core.base}/${plugins.dir}" includes="org.eclipse.persistence*.jar"/>
+        </delete>
+        <delete>
+            <fileset dir="${eclipselink.jpa.base}/${plugins.dir}" includes="${eclipselink.jpa.jar}_*.jar"/>
+        </delete>
+        <delete>
+            <fileset dir="${eclipselink.moxy.base}/${plugins.dir}" includes="${eclipselink.moxy.jar}_*.jar"/>
+        </delete>
+         <delete>
+            <fileset dir="${eclipselink.sdo.base}/${plugins.dir}" includes="${eclipselink.sdo.jar}_*.jar"/>
+        </delete>
+        <delete>
+            <fileset dir="${eclipselink.plugins}" includes="${eclipselink.asm.jar}_*.jar"/>
+        </delete>
+        <delete>
+            <fileset dir="${eclipselink.plugins}" includes="${eclipselink.antlr.jar}_*.jar"/>
+        </delete>
+    </target>
 
     <!-- Compiles all components (excluding Tests, Oracle extensions). -->
     <target name="build-core">
@@ -172,46 +210,7 @@
         </jar>
     </target>
 
-    <!-- Cleans all build generated files. -->
-    <target name="clean" description="Clean the build">
-        <ant antfile="${eclipselink.core}/build.xml"             target="clean"/>
-        <ant antfile="${eclipselink.extension.oracle}/build.xml" target="clean"/>
-        <ant antfile="${eclipselink.jpa}/build.xml"              target="clean"/>
-        <ant antfile="${eclipselink.util.rename}/build.xml"      target="clean"/>
-        <ant antfile="${eclipselink.moxy}/build.xml"             target="clean"/>
-        <ant antfile="${eclipselink.sdo}/build.xml"              target="clean"/>
-        <ant antfile="${eclipselink.core.test}/build.xml"        target="clean"/>
-        <ant antfile="${eclipselink.jpa.test}/build.xml"         target="clean"/>
-        <ant antfile="${eclipselink.moxy.test}/build.xml"        target="clean"/>
-        <ant antfile="${eclipselink.sdo.test}/build.xml"         target="clean"/>
-        <delete dir="${build.dir}"/>
-        <delete file="${eclipselink.jar.name}"/>
-        <delete file="${eclipselink.src.install.prefix}${eclipselink.zip.suffix}"/>
-    </target>
-
-    <target name="clean-eclipselink-bundles">
-        <delete>
-            <fileset dir="${eclipselink.core.base}/${plugins.dir}" includes="org.eclipse.persistence*.jar"/>
-        </delete>
-        <delete>
-            <fileset dir="${eclipselink.jpa.base}/${plugins.dir}" includes="${eclipselink.jpa.jar}_*.jar"/>
-        </delete>
-        <delete>
-            <fileset dir="${eclipselink.moxy.base}/${plugins.dir}" includes="${eclipselink.moxy.jar}_*.jar"/>
-        </delete>
-         <delete>
-            <fileset dir="${eclipselink.sdo.base}/${plugins.dir}" includes="${eclipselink.sdo.jar}_*.jar"/>
-        </delete>
-        <delete>
-            <fileset dir="${eclipselink.plugins}" includes="${eclipselink.asm.jar}_*.jar"/>
-        </delete>
-        <delete>
-            <fileset dir="${eclipselink.plugins}" includes="${eclipselink.antlr.jar}_*.jar"/>
-        </delete>
-    </target>
-
-    <!-- Builds the eclipselink bundles. -->
-
+    <!-- Packages OSGI bundle jars. -->
     <target name="build-eclipselink-bundles" depends="create-build-dir, clean-eclipselink-bundles" description="build eclipselink bundles">
         <jar jarfile="${eclipselink.core.base}/${plugins.dir}/${eclipselink.core.jar}_${installer_id}.jar" manifest="${eclipselink.core}/META-INF/MANIFEST.MF">
             <fileset dir="${eclipselink.core}/${classes.dir}">

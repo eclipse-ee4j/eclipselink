@@ -171,16 +171,16 @@
     <target name="publish-build">
         <!-- New Publish Architecture -->
         <mkdir dir="${download.path}/${release.version}/${installer_id}"/>
-        <copy file="${build.root.dir}/${eclipselink.install.prefix}${eclipselink.zip.suffix}"         tofile="${download.path}/${release.version}/${installer_id}/${eclipselink.install.prefix}-${installer_id}${eclipselink.zip.suffix}"/>        
-        <copy file="${build.root.dir}/${eclipselink.src.install.prefix}${eclipselink.zip.suffix}"     tofile="${download.path}/${release.version}/${installer_id}/${eclipselink.src.install.prefix}-${installer_id}${eclipselink.zip.suffix}"/>    
-        <copy file="${build.root.dir}/${eclipselink.jpa.tst.src.prefix}${eclipselink.zip.suffix}"     tofile="${download.path}/${release.version}/${installer_id}/${eclipselink.jpa.tst.src.prefix}-${installer_id}${eclipselink.zip.suffix}"/>        
-        <copy file="${build.root.dir}/${eclipselink.plugins.install.prefix}${eclipselink.zip.suffix}" tofile="${download.path}/${release.version}/${installer_id}/${eclipselink.plugins.install.prefix}-${installer_id}${eclipselink.zip.suffix}"/>
-        <copy file="${build.root.dir}/foundation/eclipselink.core.test/reports/junit-noframes.html"   tofile="${download.path}/${release.version}/${installer_id}/eclipselink-core-srg-${installer_id}.html"/>
-        <copy file="${build.root.dir}/jpa/eclipselink.jpa.test/reports/junit-noframes.html"           tofile="${download.path}/${release.version}/${installer_id}/eclipselink-jpa-lrg-${installer_id}.html"/>
-        <copy file="${build.root.dir}/moxy/eclipselink.moxy.test/reports/jaxb/junit-noframes.html"    tofile="${download.path}/${release.version}/${installer_id}/eclipselink-jaxb-lrg-${installer_id}.html"/>
-        <copy file="${build.root.dir}/moxy/eclipselink.moxy.test/reports/oxm/junit-noframes.html"     tofile="${download.path}/${release.version}/${installer_id}/eclipselink-oxm-lrg-${installer_id}.html"/>
-        <copy file="${build.root.dir}/sdo/eclipselink.sdo.test/reports/true/junit-noframes.html"      tofile="${download.path}/${release.version}/${installer_id}/eclipselink-sdo-lrg-${installer_id}.html"/>
-        <exec executable="${svn.exec}" failonerror="true" logError="true">
+        <copy file="${build.root.dir}/${eclipselink.install.prefix}${eclipselink.zip.suffix}"         tofile="${download.path}/${release.version}/${installer_id}/${eclipselink.install.prefix}-${installer_id}${eclipselink.zip.suffix}" failonerror="false"/>        
+        <copy file="${build.root.dir}/${eclipselink.src.install.prefix}${eclipselink.zip.suffix}"     tofile="${download.path}/${release.version}/${installer_id}/${eclipselink.src.install.prefix}-${installer_id}${eclipselink.zip.suffix}" failonerror="false"/>    
+        <copy file="${build.root.dir}/${eclipselink.jpa.tst.src.prefix}${eclipselink.zip.suffix}"     tofile="${download.path}/${release.version}/${installer_id}/${eclipselink.jpa.tst.src.prefix}-${installer_id}${eclipselink.zip.suffix}" failonerror="false"/>        
+        <copy file="${build.root.dir}/${eclipselink.plugins.install.prefix}${eclipselink.zip.suffix}" tofile="${download.path}/${release.version}/${installer_id}/${eclipselink.plugins.install.prefix}-${installer_id}${eclipselink.zip.suffix}" failonerror="false"/>
+        <copy file="${build.root.dir}/foundation/eclipselink.core.test/reports/junit-noframes.html"   tofile="${download.path}/${release.version}/${installer_id}/eclipselink-core-srg-${installer_id}.html" failonerror="false"/>
+        <copy file="${build.root.dir}/jpa/eclipselink.jpa.test/reports/junit-noframes.html"           tofile="${download.path}/${release.version}/${installer_id}/eclipselink-jpa-lrg-${installer_id}.html" failonerror="false"/>
+        <copy file="${build.root.dir}/moxy/eclipselink.moxy.test/reports/jaxb/junit-noframes.html"    tofile="${download.path}/${release.version}/${installer_id}/eclipselink-jaxb-lrg-${installer_id}.html" failonerror="false"/>
+        <copy file="${build.root.dir}/moxy/eclipselink.moxy.test/reports/oxm/junit-noframes.html"     tofile="${download.path}/${release.version}/${installer_id}/eclipselink-oxm-lrg-${installer_id}.html" failonerror="false"/>
+        <copy file="${build.root.dir}/sdo/eclipselink.sdo.test/reports/true/junit-noframes.html"      tofile="${download.path}/${release.version}/${installer_id}/eclipselink-sdo-lrg-${installer_id}.html" failonerror="false"/>
+        <exec executable="${svn.exec}" failonerror="false" logError="true">
             <arg value="commit"/>
             <arg value="-m ${installer_id}"/>
             <arg value="${build.root.dir}/${eclipselink.jar.name}"/>
