@@ -21,9 +21,9 @@
 *   - Ant properties are lower case.
 *
 * Contributors:
-*     tware - initial API and implementation
+*     tware  - initial API and implementation
 *     pkrogh - javadocs
-*     eric.gwin - rework to follow ant conventions.
+*     egwin  - rework to follow ant conventions.
 #******************************************************************************/-->
 <!-- This ant project includes the following tasks:
         - all (default) : compiles all components and tests (excluding Oracle extensions)
@@ -88,10 +88,52 @@
     <target name="build-all" depends="build-core, build-workbench, build-test, build-extension"/>
 
     <!-- Builds and packages all jars, javadoc, and builds installer. -->
-    <target name="build-distribution" depends="package-eclipselink-jar, build-eclipselink-bundles, package-src-jar, package-packagerenamer-jar, package-util-dbws-jar, build-workbench, package-javadoc-zip, package-installer-zip"/>
+    <target name="build-distribution" depends="package-eclipselink-jar, build-eclipselink-bundles, package-src-jar, package-jpa-tst-src-jar, package-packagerenamer-jar, package-util-dbws-jar, build-workbench, package-javadoc-zip, package-installer-zip"/>
 
     <!-- Compiles all components and tests (excluding workbench). -->
     <target name="build-core-all" depends="build-core, build-core-test, build-extension"/>
+
+    <!-- Cleans all build generated files. -->
+    <target name="clean" description="Clean the build">
+        <ant antfile="${eclipselink.core}/build.xml"             target="clean"/>
+        <ant antfile="${eclipselink.extension.oracle}/build.xml" target="clean"/>
+        <ant antfile="${eclipselink.dbws}/build.xml"             target="clean"/>
+        <ant antfile="${eclipselink.jpa}/build.xml"              target="clean"/>
+        <ant antfile="${eclipselink.util.rename}/build.xml"      target="clean"/>
+        <ant antfile="${eclipselink.moxy}/build.xml"             target="clean"/>
+        <ant antfile="${eclipselink.sdo}/build.xml"              target="clean"/>
+        <ant antfile="build.xml" dir="${eclipselink.util.workbench}" target="clean"/>
+        <ant antfile="${eclipselink.core.test}/build.xml"        target="clean"/>
+        <!-- ant antfile="${eclipselink.dbws.test}/build.xml"        target="clean"/ -->
+        <ant antfile="${eclipselink.jpa.test}/build.xml"         target="clean"/>
+        <ant antfile="${eclipselink.moxy.test}/build.xml"        target="clean"/>
+        <ant antfile="${eclipselink.sdo.test}/build.xml"         target="clean"/>
+        <ant antfile="build.xml" dir="${eclipselink.util.workbench.test}" target="clean"/>
+        <delete dir="${build.dir}"/>
+        <delete file="${eclipselink.jar.name}"/>
+        <delete file="${eclipselink.src.install.prefix}${eclipselink.zip.suffix}"/>
+    </target>
+
+    <target name="clean-eclipselink-bundles">
+        <delete>
+            <fileset dir="${eclipselink.core.base}/${plugins.dir}" includes="org.eclipse.persistence*.jar"/>
+        </delete>
+        <delete>
+            <fileset dir="${eclipselink.jpa.base}/${plugins.dir}" includes="${eclipselink.jpa.bndl.prefix}_*.jar"/>
+        </delete>
+        <delete>
+            <fileset dir="${eclipselink.moxy.base}/${plugins.dir}" includes="${eclipselink.moxy.bndl.prefix}_*.jar"/>
+        </delete>
+         <delete>
+            <fileset dir="${eclipselink.sdo.base}/${plugins.dir}" includes="${eclipselink.sdo.bndl.prefix}_*.jar"/>
+        </delete>
+        <delete>
+            <fileset dir="${eclipselink.plugins}" includes="${eclipselink.asm.bndl.prefix}_*.jar"/>
+        </delete>
+        <delete>
+            <fileset dir="${eclipselink.plugins}" includes="${eclipselink.antlr.bndl.prefix}_*.jar"/>
+        </delete>
+    </target>
 
     <!-- Compiles all components (excluding Tests, Oracle extensions). -->
     <target name="build-core">
@@ -184,48 +226,6 @@
                 <include name="commonj/sdo/impl/HelperProviderImpl.class"/>
             </fileset>
         </jar>
-    </target>
-
-    <!-- Cleans all build generated files. -->
-    <target name="clean" description="Clean the build">
-        <ant antfile="${eclipselink.core}/build.xml"             target="clean"/>
-        <ant antfile="${eclipselink.extension.oracle}/build.xml" target="clean"/>
-        <ant antfile="${eclipselink.dbws}/build.xml"             target="clean"/>
-        <ant antfile="${eclipselink.jpa}/build.xml"              target="clean"/>
-        <ant antfile="${eclipselink.util.rename}/build.xml"      target="clean"/>
-        <ant antfile="${eclipselink.moxy}/build.xml"             target="clean"/>
-        <ant antfile="${eclipselink.sdo}/build.xml"              target="clean"/>
-        <ant antfile="build.xml" dir="${eclipselink.util.workbench}" target="clean"/>
-        <ant antfile="${eclipselink.core.test}/build.xml"        target="clean"/>
-        <!-- ant antfile="${eclipselink.dbws.test}/build.xml"        target="clean"/ -->
-        <ant antfile="${eclipselink.jpa.test}/build.xml"         target="clean"/>
-        <ant antfile="${eclipselink.moxy.test}/build.xml"        target="clean"/>
-        <ant antfile="${eclipselink.sdo.test}/build.xml"         target="clean"/>
-        <ant antfile="build.xml" dir="${eclipselink.util.workbench.test}" target="clean"/>
-        <delete dir="${build.dir}"/>
-        <delete file="${eclipselink.jar.name}"/>
-        <delete file="${eclipselink.src.install.prefix}${eclipselink.zip.suffix}"/>
-    </target>
-
-    <target name="clean-eclipselink-bundles">
-        <delete>
-            <fileset dir="${eclipselink.core.base}/${plugins.dir}" includes="org.eclipse.persistence*.jar"/>
-        </delete>
-        <delete>
-            <fileset dir="${eclipselink.jpa.base}/${plugins.dir}" includes="${eclipselink.jpa.bndl.prefix}_*.jar"/>
-        </delete>
-        <delete>
-            <fileset dir="${eclipselink.moxy.base}/${plugins.dir}" includes="${eclipselink.moxy.bndl.prefix}_*.jar"/>
-        </delete>
-         <delete>
-            <fileset dir="${eclipselink.sdo.base}/${plugins.dir}" includes="${eclipselink.sdo.bndl.prefix}_*.jar"/>
-        </delete>
-        <delete>
-            <fileset dir="${eclipselink.plugins}" includes="${eclipselink.asm.bndl.prefix}_*.jar"/>
-        </delete>
-        <delete>
-            <fileset dir="${eclipselink.plugins}" includes="${eclipselink.antlr.bndl.prefix}_*.jar"/>
-        </delete>
     </target>
 
     <!-- Packages OSGI bundle jars. -->
