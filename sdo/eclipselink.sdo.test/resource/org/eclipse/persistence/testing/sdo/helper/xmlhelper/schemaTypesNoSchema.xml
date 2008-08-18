@@ -30,7 +30,6 @@
    <ns0:myGMonthDayTest>--12-17</ns0:myGMonthDayTest>
    <ns0:myGYearTest>2001</ns0:myGYearTest>
    <ns0:myGYearMonthTest>2001-12</ns0:myGYearMonthTest>
-   <ns0:myHexBinaryTest>A9FD64E12C</ns0:myHexBinaryTest>
    <ns0:myIDTest>ID000000</ns0:myIDTest>
    <ns0:myIDREFTest>ID000000</ns0:myIDREFTest>
    <ns0:myIDREFSTest>ID000000 ID000000</ns0:myIDREFSTest>

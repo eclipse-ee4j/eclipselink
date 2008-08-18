@@ -101,7 +101,6 @@ public class LoadAndSaveSchemaTypesTestCases extends LoadAndSaveTestCases {
         addProperty(schemaTypesType, "myGMonthDayTest", SDOConstants.SDO_MONTHDAY, true, false, true);
         addProperty(schemaTypesType, "myGYearTest", SDOConstants.SDO_YEAR, true, false, true);
         addProperty(schemaTypesType, "myGYearMonthTest", SDOConstants.SDO_YEARMONTH, true, false, true);
-        addProperty(schemaTypesType, "myHexBinaryTest", SDOConstants.SDO_BYTES, true, false, true);        
         addProperty(schemaTypesType, "myIDTest", SDOConstants.SDO_STRING, true, false, true);
         addProperty(schemaTypesType, "myIDREFTest", SDOConstants.SDO_STRING, true, false, true);
         addProperty(schemaTypesType, "myIDREFSTest", SDOConstants.SDO_STRINGS, true, false, true);
@@ -131,8 +130,6 @@ public class LoadAndSaveSchemaTypesTestCases extends LoadAndSaveTestCases {
 
         Type schemaTypes = typeHelper.define(schemaTypesType);
         //TODO: workaround since hex is non-spec
-        SDOProperty hexProp = (SDOProperty) schemaTypes.getProperty("myHexBinaryTest");        
-        ((XMLField)((XMLDirectMapping)hexProp.getXmlMapping()).getField()).setSchemaType(XMLConstants.HEX_BINARY_QNAME);
                 
         DataObject propDO = dataFactory.create(propertyType);
         propDO.set("name", getControlRootName());

@@ -34,6 +34,7 @@ import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.exceptions.SDOException;
 import org.eclipse.persistence.internal.helper.ClassConstants;
 import org.eclipse.persistence.mappings.DatabaseMapping;
+import org.eclipse.persistence.oxm.XMLConstants;
 import org.eclipse.persistence.oxm.XMLField;
 import org.eclipse.persistence.oxm.mappings.FixedMimeTypePolicy;
 import org.eclipse.persistence.oxm.mappings.MimeTypePolicy;
@@ -501,7 +502,9 @@ public class SDOProperty implements Property, Serializable {
                     MimeTypePolicy mimeTypePolicy = getMimeTypePolicy();
 
                     //Removed check for XSD type since XSD type can't be set via typeHelper.define
-                    if (!aHelperContext.getXSDHelper().isAttribute(this) && ((mimeTypePolicy != null) || ((getType().getInstanceClass() != null) && getType().getInstanceClass().getName().equals("javax.activation.DataHandler")))) {
+                    if (!aHelperContext.getXSDHelper().isAttribute(this) && ((mimeTypePolicy != null) || 
+                            ((getType().getInstanceClass() != null) && getType().getInstanceClass().getName().equals("javax.activation.DataHandler")) ||
+                            (getXsdType() != null && getXsdType().equals(XMLConstants.BASE_64_BINARY_QNAME)))) {
                         xmlMapping = buildXMLBinaryDataCollectionMapping(mappingUri, mimeTypePolicy);
                     } else {
                         if(isSubstitutable()) {
@@ -514,8 +517,10 @@ public class SDOProperty implements Property, Serializable {
                     MimeTypePolicy mimeTypePolicy = getMimeTypePolicy();
 
                     //Removed check for XSD type since XSD type can't be set via typeHelper.define
-                    if (!aHelperContext.getXSDHelper().isAttribute(this) && ((mimeTypePolicy != null) || ((getType().getInstanceClass() != null) && getType().getInstanceClass().getName().equals("javax.activation.DataHandler")))) {
-                        xmlMapping = buildXMLBinaryDataMapping(mappingUri, mimeTypePolicy);
+                    if (!aHelperContext.getXSDHelper().isAttribute(this) && ((mimeTypePolicy != null) || 
+                            ((getType().getInstanceClass() != null) && getType().getInstanceClass().getName().equals("javax.activation.DataHandler")) ||
+                            (getXsdType() != null && getXsdType().equals(XMLConstants.BASE_64_BINARY_QNAME)))) {
+                         xmlMapping = buildXMLBinaryDataMapping(mappingUri, mimeTypePolicy);
                     } else {
                         if(isSubstitutable()) {
                             xmlMapping = buildXMLChoiceObjectMapping(mappingUri);
