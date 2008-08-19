@@ -32,6 +32,8 @@ import org.eclipse.persistence.testing.models.jpa.relationships.RelationshipsTab
 import org.eclipse.persistence.testing.models.jpa.relationships.Order;
 import org.eclipse.persistence.testing.models.jpa.relationships.TestInstantiationCopyPolicy;
 
+import org.eclipse.persistence.testing.models.jpa.relationships.Customer;
+
 public class RelationshipModelJUnitTestSuite extends JUnitTestCase {
     private static Integer itemId;
     
@@ -53,6 +55,7 @@ public class RelationshipModelJUnitTestSuite extends JUnitTestCase {
         suite.addTest(new RelationshipModelJUnitTestSuite("testInstantiationCopyPolicy"));
         suite.addTest(new RelationshipModelJUnitTestSuite("testCopyPolicy"));
         suite.addTest(new RelationshipModelJUnitTestSuite("testCloneCopyPolicy"));
+        suite.addTest(new RelationshipModelJUnitTestSuite("testCollectionImplementation"));
 
         return new TestSetup(suite) {
             protected void setUp(){
@@ -179,5 +182,30 @@ public class RelationshipModelJUnitTestSuite extends JUnitTestCase {
         assertTrue("The CloneCopyPolicy was not properly set.", copyPolicy  instanceof CloneCopyPolicy);
         assertTrue("The method on CloneCopyPolicy was not properly set.", ((CloneCopyPolicy)copyPolicy).getMethodName().equals("cloneNamco"));
         assertTrue("The workingCopyMethod on CloneCopyPolicy was not properly set.", ((CloneCopyPolicy)copyPolicy).getWorkingCopyMethodName().equals("cloneWorkingCopyNamco"));
+    }
+    
+    /**
+     * bug 236275: Use a Collection implementation type that does not implement List in an eager relationship
+     * This test uses a HashSet 
+     */
+    public void testCollectionImplementation(){
+        EntityManager em = createEntityManager();
+        beginTransaction(em);
+        try {
+            Customer c = new Customer();
+            //Customer uses HashSet by default, but set it anyway to ensure the model doesn't change. 
+            java.util.Collection<Customer> collection = new java.util.HashSet<Customer>();
+            c.setCCustomers(collection);
+            em.persist(c);
+            commitTransaction(em);
+        } catch (RuntimeException e) {
+            if (isTransactionActive(em)) {
+                rollbackTransaction(em);
+            }
+            
+            closeEntityManager(em);
+            throw e;
+        }
+        closeEntityManager(em);
     }
 }

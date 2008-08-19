@@ -16,6 +16,7 @@ import java.util.*;
 import org.eclipse.persistence.queries.*;
 import org.eclipse.persistence.sessions.remote.*;
 import org.eclipse.persistence.exceptions.*;
+import org.eclipse.persistence.internal.queries.InterfaceContainerPolicy;
 import org.eclipse.persistence.internal.sessions.remote.*;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
@@ -187,7 +188,8 @@ public class NoIndirectionPolicy extends IndirectionPolicy {
     public void validateDeclaredAttributeTypeForCollection(Class attributeType, IntegrityChecker checker) throws DescriptorException {
         super.validateDeclaredAttributeTypeForCollection(attributeType, checker);
         if (!this.collectionTypeIsValid(attributeType)) {
-            checker.handleError(DescriptorException.attributeTypeNotValid(this.getCollectionMapping()));
+            InterfaceContainerPolicy policy = (InterfaceContainerPolicy)getCollectionMapping().getContainerPolicy();
+            checker.handleError(DescriptorException.attributeTypeNotValid(this.getCollectionMapping(), policy.getInterfaceType()));
         }
     }
 

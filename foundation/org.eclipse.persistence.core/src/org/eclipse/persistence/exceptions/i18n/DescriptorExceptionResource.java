@@ -26,7 +26,7 @@ public class DescriptorExceptionResource extends ListResourceBundle {
                                            { "1", "The attribute [{0}] is not declared as type ValueHolderInterface, but its mapping uses indirection." },
                                            { "2", "The attribute [{0}] is declared as type ValueHolderInterface, but its mapping does not use indirection." },
                                            { "6", "Attribute name is missing." },
-                                           { "7", "The attribute [{0}] should be of type Vector (or a type that implements Map or Collection, if using Java 2)." },
+                                           { "7", "The attribute [{0}] should be a type that implements {1}." },
                                            { "8", "The descriptor [{0}] has been set to use inheritance, but a class indicator field has not been defined. {2}When using inheritance, a class indicator field or class extraction method must be set. {2}Parent Descriptor: [{1}]" },
                                            { "9", "This mapping does not have a direct field name set." },
                                            { "10", "This mapping does not have a field name set." },

@@ -343,9 +343,14 @@ public abstract class MappingAccessor extends MetadataAccessor {
             if (rawClass == Map.class) {
                 mapping.useMapClass(java.util.Hashtable.class, mapKey);
             } else if (rawClass == Set.class) {
+                //this will cause it to use a CollectionContainerPolicy type
                 mapping.useCollectionClass(java.util.HashSet.class);
-            } else if ( (rawClass == List.class) || (rawClass == Collection.class)){
+            } else if (rawClass == List.class) {
+                //this will cause a ListContainerPolicy type to be used or OrderedListContainerPolicy if ordering is specified
                 mapping.useCollectionClass(java.util.Vector.class);
+            } else if (rawClass == Collection.class) {
+                //bug236275 : Force CollectionContainerPolicy type to be used with a collection implementation
+                mapping.setContainerPolicy(new CollectionContainerPolicy(java.util.Vector.class));
             } else {
                 //bug221577: use the supplied collection class type if its not an interface
                 if (mapKey == null || mapKey.equals("")){

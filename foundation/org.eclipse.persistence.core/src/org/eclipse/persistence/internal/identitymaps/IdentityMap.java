@@ -157,7 +157,7 @@ public interface IdentityMap extends Cloneable{
     public CacheKey put(Vector primaryKey, Object object, Object writeLockValue, long readTime);
 
     /**
-     * This method may be called durring initialize all identity maps.  It allows the identity map
+     * This method may be called during initialize all identity maps.  It allows the identity map
      * or interceptor the opportunity to release any resources before being thrown away.
      */
     public void release();

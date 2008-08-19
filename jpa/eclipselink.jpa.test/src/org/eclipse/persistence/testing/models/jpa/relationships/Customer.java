@@ -103,7 +103,8 @@ public class Customer implements java.io.Serializable{
         getOrders().remove(anOrder);
     }
     
-    @ManyToMany
+    //bug 236275: changed to test collection implementations with eagerly fetched mappings
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(name="CMP3_CUSTOMER_CUSTOMER")
     public Collection<Customer> getCCustomers() {
         return controlledCustomers;
