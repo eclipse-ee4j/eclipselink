@@ -15,9 +15,10 @@
 package org.eclipse.persistence.testing.models.employee.domain;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
 
 public class Child implements java.io.Serializable{
-    public int id;
+    public int BigDecimal;
     /** Direct-to-field mapping, String -> VARCHAR. */
     public String firstName;
 
