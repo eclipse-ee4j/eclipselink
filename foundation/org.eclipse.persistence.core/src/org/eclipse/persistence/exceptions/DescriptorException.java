@@ -311,8 +311,8 @@ public class DescriptorException extends ValidationException {
 
     }
 
-    public static DescriptorException attributeTypeNotValid(CollectionMapping mapping) {
-        Object[] args = { mapping.getAttributeName() };
+    public static DescriptorException attributeTypeNotValid(CollectionMapping mapping, Class interfaceType) {
+        Object[] args = { mapping.getAttributeName(), interfaceType };
 
         DescriptorException exception = new DescriptorException(ExceptionMessageGenerator.buildMessage(DescriptorException.class, ATTRIBUTE_TYPE_NOT_VALID, args), mapping);
         exception.setErrorCode(ATTRIBUTE_TYPE_NOT_VALID);

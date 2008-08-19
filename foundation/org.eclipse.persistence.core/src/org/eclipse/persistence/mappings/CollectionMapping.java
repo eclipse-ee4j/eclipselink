@@ -635,7 +635,7 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
         Object value = super.getRealAttributeValueFromObject(object, session);
         if (value != null) {
             if (!getContainerPolicy().isValidContainer(value)) {
-                throw DescriptorException.attributeTypeNotValid(this);
+                throw DescriptorException.attributeTypeNotValid(this, ((InterfaceContainerPolicy)getContainerPolicy()).getInterfaceType());
             }
         }
         return value;
