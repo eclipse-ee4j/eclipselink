@@ -41,7 +41,6 @@ import org.eclipse.persistence.queries.*;
 import org.eclipse.persistence.sessions.remote.*;
 import org.eclipse.persistence.sessions.ObjectCopyingPolicy;
 import org.eclipse.persistence.sessions.DatabaseRecord;
-import org.eclipse.persistence.sessions.Project;
 
 /**
  * <p><b>Purpose</b>: This mapping is used to store a collection of simple types (String, Number, Date, etc.)
