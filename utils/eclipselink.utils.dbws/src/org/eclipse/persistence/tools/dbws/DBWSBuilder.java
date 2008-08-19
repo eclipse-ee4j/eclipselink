@@ -149,6 +149,7 @@ public class DBWSBuilder extends DBWSBuilderModel {
     public static final String SIMPLEJAR = "simpleJar";
     public static final String METRO = "metro";
     public static final String WLS103 = "wls103";
+    public static final String JDEV = "jDev";
     public static final String STAGE_DIR = "-stagedir";
     public static final String DRIVER_KEY = "driver";
     public static final String USERNAME_KEY= "username";

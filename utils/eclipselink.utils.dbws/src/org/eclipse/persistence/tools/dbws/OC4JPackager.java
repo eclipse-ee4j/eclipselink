@@ -1,17 +1,17 @@
 /*******************************************************************************
  * Copyright (c) 1998, 2008 Oracle. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
- *     Mike Norman - May 2008, created DBWS test package
+ *     Mike Norman - Aug 2008, created DBWS JDev(Boxer) packager
  ******************************************************************************/
 
-package dbws.testing;
+package org.eclipse.persistence.tools.dbws;
 
 // javase imports
 import java.io.BufferedOutputStream;
@@ -87,20 +87,20 @@ public class OC4JPackager extends WebFilesPackager implements DBWSPackager {
         "</web-app>\n";
 	public static final String ORACLE_WEBSERVICES_FILENAME =
 		"oracle-webservices.xml";
-    public static final String ORACLE_WEBSERVICES_PREAMBLE = 
+    public static final String ORACLE_WEBSERVICES_PREAMBLE =
         "<?xml version=\"1.0\" encoding=\"UTF-8\"?> \n" +
         "<oracle-webservices \n" +
-        "  xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" \n" + 
-        "  xsi:noNamespaceSchemaLocation=\"http://xmlns.oracle.com/oracleas/schema/oracle-webservices-11_1.xsd\" \n" + 
-        "  > \n" + 
+        "  xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" \n" +
+        "  xsi:noNamespaceSchemaLocation=\"http://xmlns.oracle.com/oracleas/schema/oracle-webservices-11_1.xsd\" \n" +
+        "  > \n" +
         "  <webservice-description name=\"";
                            // serviceName ^^ here
     public static final String ORACLE_WEBSERVICES_PORT_COMPONENT_NAME =
-                                             "\"> \n" + 
+                                             "\"> \n" +
         "    <port-component name=\"";
               // dotted-format serviceName.portName ^^ here
     public static final String ORACLE_WEBSERVICES_SUFFIX =
-                                        "\"> \n" + 
+                                        "\"> \n" +
         "      <policy-references>\n" +
         "        <!-- add policies here -->\n" +
         "      </policy-references>\n" +
