@@ -18,7 +18,7 @@ import java.io.Serializable;
 import java.math.BigDecimal;
 
 public class Child implements java.io.Serializable{
-    public int BigDecimal;
+    public BigDecimal id;
     /** Direct-to-field mapping, String -> VARCHAR. */
     public String firstName;
 
