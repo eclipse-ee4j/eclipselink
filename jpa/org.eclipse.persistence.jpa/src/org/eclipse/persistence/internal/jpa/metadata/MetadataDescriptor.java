@@ -1011,6 +1011,29 @@ public class MetadataDescriptor {
     
     /**
      * INTERNAL:
+     * Method to check if the given field is part of the primary key for
+     * this descriptor. It will check against actual field instances and
+     * not rely on the equals code logic from DatabaseField since it works
+     * as follows:
+     *  - ID and ID - returns true
+     *  - EMPLOYEE.ID and ID - returns true
+     *  - ID and ADDRESS.ID - returns true
+     *  - EMPLOYEE.ID and ADDRESS.ID - returns false
+     *  Performing a list contains check could incorrectly return a true value
+     *  indicating the field is part of the primary key when it actually is not.
+     */
+    public boolean isPrimaryKeyField(DatabaseField field) {
+        for (DatabaseField idField : getPrimaryKeyFields()) {
+            if (field == idField) {
+                return true;
+            }
+        }
+        
+        return false;
+    }
+    
+    /**
+     * INTERNAL:
      * Indicates that we found an XML field access type for this metadata
      * descriptor.
      */
@@ -1032,6 +1055,16 @@ public class MetadataDescriptor {
      */
     public boolean pkClassWasNotValidated() {
         return ! m_pkClassIDs.isEmpty();
+    }
+    
+    /**
+     * INTERNAL:
+     * Remove the following field from the primary key field lists. Presumably,
+     * it is not a primary key field or is being replaced with another. See
+     * EmbeddedAccessor processAttributeOverride method.
+     */
+    public void removePrimaryKeyField(DatabaseField field) {
+        getPrimaryKeyFields().remove(field);
     }
     
     /**

@@ -9,6 +9,9 @@
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
+ *     08/20/2008-1.0.1 Nathan Beyer (Cerner) 
+ *       - 241308: Primary key is incorrectly assigned to embeddable class 
+ *                 field with the same name as the primary key field's name
  ******************************************************************************/  
 package org.eclipse.persistence.testing.tests.jpa.ddlgeneration;
 
@@ -356,6 +359,44 @@ public class DDLGenerationJUnitTestSuite extends JUnitTestCase {
             assertNotNull(result);
             
             rollbackTransaction(em);
+            
+        } catch (RuntimeException e) {
+            if (isTransactionActive(em))
+                rollbackTransaction(em);
+            throw e;
+        } finally {
+            closeEntityManager(em);
+        }
+    }
+
+    // Bug 241308 - Primary key is incorrectly assigned to embeddable class 
+    // field with the same name as the primary key field's name
+    public void testBug241308() {
+        EntityManager em = createEntityManager(DDL_PU);
+        beginTransaction(em);
+     
+        try {
+            ThreadInfo threadInfo1 = new ThreadInfo();
+            threadInfo1.setId(0);
+            threadInfo1.setName("main");
+            
+            MachineState machineState1 = new MachineState();
+            machineState1.setId(0);
+            machineState1.setThread(threadInfo1);
+            
+            em.persist(machineState1);
+            
+            ThreadInfo threadInfo2 = new ThreadInfo();
+            threadInfo2.setId(0);
+            threadInfo2.setName("main");
+            
+            MachineState machineState2 = new MachineState();
+            machineState2.setId(1);
+            machineState2.setThread(threadInfo2);
+            
+            em.persist(machineState2);
+            
+            commitTransaction(em);
             
         } catch (RuntimeException e) {
             if (isTransactionActive(em))

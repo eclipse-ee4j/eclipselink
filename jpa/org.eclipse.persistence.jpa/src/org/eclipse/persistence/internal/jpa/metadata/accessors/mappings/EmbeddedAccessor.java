@@ -374,10 +374,12 @@ public class EmbeddedAccessor extends MappingAccessor {
 
         DatabaseField aggregateField = aggregateMapping.getField();
         
-        // If override field is to an id field, we need to update the list
-        // of primary keys on the owning descriptor.
-        if (getOwningDescriptor().getPrimaryKeyFields().contains(aggregateField)) {
-            getOwningDescriptor().getPrimaryKeyFields().remove(aggregateField);
+        // If the override field is to an id field, we need to update the list
+        // of primary keys on the owning descriptor. Embeddables can be shared
+        // and different owners may want to override the attribute with a 
+        // different column.
+        if (getOwningDescriptor().isPrimaryKeyField(aggregateField)) {
+            getOwningDescriptor().removePrimaryKeyField(aggregateField);
             getOwningDescriptor().addPrimaryKeyField(overrideField);
         }
 

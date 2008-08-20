@@ -6,7 +6,7 @@
     <entity class="CKeyEntityB"/>
     <entity class="CKeyEntityB2"/>
     <entity class="CKeyEntityC"/>
-
+    <entity class="MachineState"/>
     <entity class="UniqueConstraintsEntity1"/>
     <entity class="UniqueConstraintsEntity2">
         <table name="DDL_UCENTITY2">
@@ -26,4 +26,5 @@
         </attributes>
     </entity>
     
+    <embeddable class="ThreadInfo"/>
 </entity-mappings>
