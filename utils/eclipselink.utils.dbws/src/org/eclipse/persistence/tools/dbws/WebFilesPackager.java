@@ -128,6 +128,8 @@ public class WebFilesPackager extends SimpleFilesPackager {
     public static final String DBWS_PROVIDER_SOURCE_PREAMBLE =
         "package _dbws;\n" +
         "\n" +
+        "import java.lang.reflect.Method;\n" +
+        "\n" +
         "import javax.annotation.PostConstruct;\n" +
         "import javax.annotation.PreDestroy;\n" +
         "import javax.servlet.ServletContext;\n" +
@@ -136,6 +138,7 @@ public class WebFilesPackager extends SimpleFilesPackager {
         "import javax.xml.ws.ServiceMode;\n" +
         "import javax.xml.ws.WebServiceProvider;\n" +
         "import static javax.xml.ws.Service.Mode.MESSAGE;\n" +
+        "\n" +
         "import " + ProviderHelper.class.getName() + ";\n" +
         "\n" +
         "@WebServiceProvider(\n" +

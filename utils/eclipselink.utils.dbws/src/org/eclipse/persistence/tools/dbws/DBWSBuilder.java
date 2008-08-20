@@ -231,6 +231,9 @@ public class DBWSBuilder extends DBWSBuilderModel {
                     else if (METRO.equals(packageAs)) {
                         setPackager(new MetroPackager(true, getProjectName()));
                     }
+                    else if (JDEV.equals(packageAs)) {
+                        setPackager(new JDevPackager(false, getProjectName()));
+                    }
                     else {
                         logMessage(SEVERE, "unknown " + BUILDER_PACKAGING +
                             " option: " + packageAs);
@@ -576,10 +579,10 @@ public class DBWSBuilder extends DBWSBuilderModel {
             oxProject.setName(projectName + "-" + DBWS_OX_LABEL);
         }
         else {
-            logMessage(FINE, "Building TopLink OR Project " + DBWS_OR_XML);
+            logMessage(FINE, "Building EclipseLink OR Project " + DBWS_OR_XML);
             orProject = new Project();
             orProject.setName(projectName + "-" + DBWS_OR_LABEL);
-            logMessage(FINE, "Building TopLink OX Project " + DBWS_OX_XML);
+            logMessage(FINE, "Building EclipseLink OX Project " + DBWS_OX_XML);
             oxProject = new Project();
             oxProject.setName(projectName + "-" + DBWS_OX_LABEL);
             for (DbTable dbTable : dbTables) {
