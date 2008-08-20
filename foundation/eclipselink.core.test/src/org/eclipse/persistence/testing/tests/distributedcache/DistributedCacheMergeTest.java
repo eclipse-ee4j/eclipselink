@@ -49,6 +49,7 @@ public abstract class DistributedCacheMergeTest extends TestCase {
 
     protected void setup() throws Exception {
         originalSession = getExecutor().getSession();
+        originalSession.getIdentityMapAccessor().initializeAllIdentityMaps();
         createObject();
 
         try {

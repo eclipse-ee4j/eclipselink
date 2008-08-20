@@ -79,7 +79,11 @@ public class Child implements java.io.Serializable{
         if ( !(arg0 instanceof Child) ){
             return false;
         }
-        return id == ((Child)arg0).id;
+        Child c2 = (Child)arg0;
+        if ((id == c2.id) || ( (id !=null) && (c2.id !=null) && id.equals(c2.id) ) ){
+            return true;
+        }
+        return false;
     }
     
 }
