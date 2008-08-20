@@ -86,6 +86,7 @@
         <echo message="os.arch       ='${os.arch}'"/>
         <echo message="os.version    ='${os.version}'"/>
         <echo message=" "/>
+        <echo message="EL version    ='${release.version}'"/>
         <echo message="basedir       ='${basedir}'"/>
         <echo message="build.deps.dir='${build.deps.dir}'"/>
         <echo message="build.root.dir='${build.root.dir}'"/>
