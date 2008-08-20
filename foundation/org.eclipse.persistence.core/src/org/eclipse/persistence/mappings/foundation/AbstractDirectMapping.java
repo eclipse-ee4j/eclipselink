@@ -581,6 +581,22 @@ public abstract class AbstractDirectMapping extends DatabaseMapping {
     
     /**
      * INTERNAL:
+     * Once descriptors are serialized to the remote session. All its mappings and reference descriptors are traversed. Usually
+     * mappings are initialized and serialized reference descriptors are replaced with local descriptors if they already exist on the
+     * remote session.
+     */
+    public void remoteInitialization(DistributedSession session) {
+        if (!isRemotelyInitialized()) {
+            super.remoteInitialization(session);
+            if (this.attributeClassification == null) {
+                this.attributeClassification = getAttributeAccessor().getAttributeClass();
+            }
+            this.attributeObjectClassification = Helper.getObjectClass(this.attributeClassification);
+        }
+    }
+    
+    /**
+     * INTERNAL:
      * Initialize the attribute classification.
      * @Throws DescriptorException when attributeClassification is null
      */
