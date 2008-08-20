@@ -17,6 +17,8 @@ import java.io.InputStream;
 import java.io.Reader;
 import java.net.URL;
 import javax.xml.transform.Source;
+import javax.xml.validation.Schema;
+
 import org.w3c.dom.Document;
 import org.xml.sax.EntityResolver;
 import org.xml.sax.ErrorHandler;
@@ -46,6 +48,10 @@ public interface XMLParser {
     public void setXMLSchema(URL url) throws XMLPlatformException;
 
     public void setXMLSchemas(Object[] schemas) throws XMLPlatformException;
+    
+    public void setXMLSchema(Schema schema) throws XMLPlatformException;
+    
+    public Schema getXMLSchema() throws XMLPlatformException;
 
     public Document parse(InputSource inputSource) throws XMLPlatformException;
 

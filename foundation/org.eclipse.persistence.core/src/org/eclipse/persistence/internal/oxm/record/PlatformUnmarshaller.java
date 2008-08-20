@@ -21,6 +21,8 @@ import org.w3c.dom.Node;
 import org.xml.sax.EntityResolver;
 import org.xml.sax.ErrorHandler;
 import org.xml.sax.InputSource;
+import javax.xml.validation.Schema;
+
 
 public interface PlatformUnmarshaller {
     public abstract EntityResolver getEntityResolver();
@@ -38,6 +40,10 @@ public interface PlatformUnmarshaller {
     public abstract void setWhitespacePreserving(boolean isWhitespacePreserving);
 
     public abstract void setSchemas(Object[] schemas);
+    
+    public abstract void setSchema(Schema schema);
+    
+    public abstract Schema getSchema();
 
     public abstract Object unmarshal(File file);
 

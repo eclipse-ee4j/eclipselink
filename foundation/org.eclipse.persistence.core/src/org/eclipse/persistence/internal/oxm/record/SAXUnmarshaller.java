@@ -27,6 +27,8 @@ import javax.xml.transform.dom.DOMResult;
 import javax.xml.transform.sax.SAXSource;
 import javax.xml.transform.sax.SAXResult;
 import javax.xml.transform.stream.StreamSource;
+import javax.xml.validation.Schema;
+
 import org.eclipse.persistence.exceptions.EclipseLinkException;
 import org.eclipse.persistence.exceptions.XMLMarshalException;
 import org.eclipse.persistence.internal.oxm.XMLConversionManager;
@@ -74,19 +76,15 @@ public class SAXUnmarshaller implements PlatformUnmarshaller {
     private XMLUnmarshaller xmlUnmarshaller;
     private XMLParser xmlParser;
     private boolean isResultAlwaysXMLRoot;
-    private static final SAXParserFactory saxParserFactory = SAXParserFactory.newInstance();
-    static {
-        try {
-            saxParserFactory.setNamespaceAware(true);
-            saxParserFactory.setFeature("http://xml.org/sax/features/namespace-prefixes", true);
-        } catch (Exception e) {
-            throw XMLMarshalException.errorInstantiatingSchemaPlatform(e);
-        }
-    }
+    private SAXParserFactory saxParserFactory;
 
     public SAXUnmarshaller(XMLUnmarshaller xmlUnmarshaller) throws XMLMarshalException {
         super();
         try {
+            saxParserFactory = SAXParserFactory.newInstance();
+            saxParserFactory.setNamespaceAware(true);
+            saxParserFactory.setFeature("http://xml.org/sax/features/namespace-prefixes", true);
+            
             saxParser = saxParserFactory.newSAXParser();
             xmlReader = new XMLReader(saxParser.getXMLReader());
             xmlParser = XMLPlatformFactory.getInstance().getXMLPlatform().newXMLParser();
@@ -157,6 +155,25 @@ public class SAXUnmarshaller implements PlatformUnmarshaller {
         this.schemas = schemas;
     }
 
+    public void setSchema(Schema schema) {
+        saxParserFactory.setSchema(schema);
+        try {
+            saxParser = saxParserFactory.newSAXParser();
+            XMLReader newXmlReader = new XMLReader(saxParser.getXMLReader());
+            newXmlReader.setFeature(VALIDATING, xmlReader.getFeature(VALIDATING));
+            newXmlReader.setEntityResolver(xmlReader.getEntityResolver());
+            newXmlReader.setErrorHandler(xmlReader.getErrorHandler());
+            xmlReader = newXmlReader;
+            xmlParser.setXMLSchema(schema);
+        } catch (Exception e) {
+            throw XMLMarshalException.errorInstantiatingSchemaPlatform(e);
+        }
+    }
+    
+    public Schema getSchema() {
+        return saxParserFactory.getSchema();
+    }
+    
     public Object unmarshal(File file) {
         try {
             if (xmlUnmarshaller.getXMLContext().hasDocumentPreservation()) {

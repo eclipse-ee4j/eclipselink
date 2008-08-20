@@ -25,6 +25,8 @@ import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.sax.SAXResult;
+import javax.xml.validation.Schema;
+
 import org.eclipse.persistence.platform.xml.SAXDocumentBuilder;
 import org.eclipse.persistence.platform.xml.XMLParser;
 import org.eclipse.persistence.platform.xml.XMLPlatformException;
@@ -130,6 +132,14 @@ public class JAXPParser implements XMLParser {
         } catch (Exception e) {
             XMLPlatformException.xmlPlatformErrorResolvingXMLSchema(url, e);
         }
+    }
+    
+    public void setXMLSchema(Schema schema) throws XMLPlatformException {
+        documentBuilderFactory.setSchema(schema);
+    }
+    
+    public Schema getXMLSchema() throws XMLPlatformException {
+        return documentBuilderFactory.getSchema();
     }
 
     public void setXMLSchemas(Object[] schemas) throws XMLPlatformException {

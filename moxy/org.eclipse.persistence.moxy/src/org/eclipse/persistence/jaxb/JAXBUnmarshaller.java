@@ -67,7 +67,6 @@ import org.eclipse.persistence.internal.jaxb.WrappedValue;
 public class JAXBUnmarshaller implements Unmarshaller {
     private ValidationEventHandler validationEventHandler;
     private XMLUnmarshaller xmlUnmarshaller;
-    private Schema schema;
     public static final String XML_JAVATYPE_ADAPTERS = "xml-javatype-adapters";
     public static final String STAX_SOURCE_CLASS_NAME = "javax.xml.transform.stax.StAXSource";
     private HashMap<Class, QName> generatedClassesToQName;
@@ -416,12 +415,12 @@ public class JAXBUnmarshaller implements Unmarshaller {
         setAdapter(adapter.getClass(), adapter);
     }
     
-    public Schema getSchema() {
-        return schema;
+    public void setSchema(Schema schema) {
+        this.xmlUnmarshaller.setSchema(schema);
     }
     
-    public void setSchema(Schema schema) {
-        this.schema = schema;
+    public Schema getSchema() {
+        return this.xmlUnmarshaller.getSchema();
     }
     
     public AttachmentUnmarshaller getAttachmentUnmarshaller() {

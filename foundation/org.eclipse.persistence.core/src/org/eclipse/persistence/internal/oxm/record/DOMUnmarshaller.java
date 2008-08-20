@@ -19,6 +19,8 @@ import java.lang.reflect.Method;
 import java.net.URL;
 import javax.xml.namespace.QName;
 import javax.xml.transform.Source;
+import javax.xml.validation.Schema;
+
 import org.eclipse.persistence.exceptions.XMLMarshalException;
 import org.eclipse.persistence.internal.oxm.XMLConversionManager;
 import org.eclipse.persistence.internal.oxm.XMLObjectBuilder;
@@ -102,6 +104,14 @@ public class DOMUnmarshaller implements PlatformUnmarshaller {
         } catch (XMLPlatformException e) {
             throw XMLMarshalException.errorSettingSchemas(e, schemas);
         }
+    }
+    
+    public void setSchema(Schema schema) {
+        parser.setXMLSchema(schema);
+    }
+    
+    public Schema getSchema() {
+        return parser.getXMLSchema();
     }
 
     public Object unmarshal(File file) {
