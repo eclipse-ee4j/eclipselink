@@ -36,7 +36,7 @@ import org.eclipse.persistence.descriptors.changetracking.*;
 public class Employee implements org.eclipse.persistence.testing.models.employee.interfaces.Employee, Serializable, ChangeTracker {
     // implements ChangeTracker for testing
 
-    /** Primary key, maped as a direct-to-field, BigDecimal -> NUMBER, that makes use of sequence numbers to generate the id. */
+    /** Primary key, mapped as a direct-to-field, BigDecimal -> NUMBER, that makes use of sequence numbers to generate the id. */
     public BigDecimal id;
 
     /** Direct-to-field mapping, String -> VARCHAR. */
