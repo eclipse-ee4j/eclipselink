@@ -20,6 +20,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Properties;
 import javax.xml.transform.Source;
+import javax.xml.validation.Schema;
 import org.eclipse.persistence.exceptions.XMLMarshalException;
 import org.eclipse.persistence.internal.oxm.ReferenceResolver;
 import org.eclipse.persistence.internal.oxm.record.PlatformUnmarshaller;
@@ -505,5 +506,13 @@ public class XMLUnmarshaller {
 
     public boolean isResultAlwaysXMLRoot() {
         return platformUnmarshaller.isResultAlwaysXMLRoot();
+    }
+    
+    public void setSchema(Schema schema) {
+        this.platformUnmarshaller.setSchema(schema);
+    }
+    
+    public Schema getSchema() {
+        return this.platformUnmarshaller.getSchema();
     }
 }

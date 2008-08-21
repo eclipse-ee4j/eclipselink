@@ -25,6 +25,7 @@ import javax.xml.transform.Source;
 //import javax.xml.transform.TransformerException;
 //import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMResult;
+import javax.xml.validation.Schema;
 import org.w3c.dom.Document;
 import org.xml.sax.EntityResolver;
 import org.xml.sax.ErrorHandler;
@@ -228,5 +229,13 @@ public class XDKParser implements XMLParser {
         } catch (ParserConfigurationException e) {
             throw XMLPlatformException.xmlPlatformParseException(e);
         }
+    }
+    
+    public void setXMLSchema(Schema schema) {
+        this.documentBuilderFactory.setSchema(schema);
+    }
+    
+    public Schema getXMLSchema() {
+        return documentBuilderFactory.getSchema();
     }
 }
