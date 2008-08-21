@@ -15,6 +15,8 @@ package org.eclipse.persistence.exceptions;
 import java.util.Vector;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.*;
+import java.net.URL;
+
 import org.eclipse.persistence.mappings.DatabaseMapping;// 78aclt
 import org.eclipse.persistence.internal.queries.*;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
@@ -345,7 +347,6 @@ public class ValidationException extends EclipseLinkException {
     public static final int WRITE_TRANSFORMER_HAS_BOTH_CLASS_AND_METHOD = 7291;
     public static final int WRITE_TRANSFORMER_HAS_NEITHER_CLASS_NOR_METHOD = 7292;
     public static final int WRITE_TRANSFORMER_HAS_NO_COLUMN_NAME = 7293;
-    
     public static final int MULTIPLE_CLASSES_FOR_THE_SAME_DISCRIMINATOR = 7294;
     
     // Copy Policy
@@ -364,6 +365,8 @@ public class ValidationException extends EclipseLinkException {
     // ProxyConnectionCustomizer
     public static final int EXPECTED_PROXY_PROPERTY_NOT_FOUND = 7303;
     public static final int UNKNOWN_PROXY_TYPE = 7304;
+    
+    public static final int ERROR_PARSING_MAPPING_FILE = 7305;
     
     /**
      * INTERNAL:
@@ -743,6 +746,14 @@ public class ValidationException extends EclipseLinkException {
         return validationException;
     }
 
+    public static ValidationException errorParsingMappingFile(URL mappingFileURL, Exception exception) {
+        Object[] args = { mappingFileURL };
+
+        ValidationException validationException = new ValidationException(ExceptionMessageGenerator.buildMessage(ValidationException.class, ERROR_PARSING_MAPPING_FILE, args), exception);
+        validationException.setErrorCode(ERROR_PARSING_MAPPING_FILE);
+        return validationException;
+    }
+    
     public static ValidationException errorProcessingNamedQuery(Class entityClass, String namedQuery, Exception exception) {
         Object[] args = { entityClass, namedQuery };
 

@@ -44,7 +44,7 @@ public class XMLEntityMappingsReader {
     /**
      * INTERNAL:
      */
-    protected static XMLEntityMappings read(Reader reader1, Reader reader2, ClassLoader classLoader) {
+    protected static XMLEntityMappings read(URL mappingFileUrl, Reader reader1, Reader reader2, ClassLoader classLoader) {
         // -------------- Until bug 218047 is fixed. -----------------
         if (m_ormProject == null) {
             m_ormProject = new XMLContext(new XMLEntityMappingsMappingProject(ORM_NAMESPACE, ORM_XSD));
@@ -64,7 +64,7 @@ public class XMLEntityMappingsReader {
                 unmarshaller.setValidationMode(XMLUnmarshaller.SCHEMA_VALIDATION);
                 xmlEntityMappings = (XMLEntityMappings) unmarshaller.unmarshal(reader2);
             } catch (Exception ee) {
-                throw new RuntimeException(ee);
+                throw ValidationException.errorParsingMappingFile(mappingFileUrl, ee);
             }
         }
         
@@ -102,7 +102,7 @@ public class XMLEntityMappingsReader {
                 throw ValidationException.fatalErrorOccurred(exception);
             }
 
-            XMLEntityMappings entityMappings = read(reader1, reader2, classLoader);
+            XMLEntityMappings entityMappings = read(url, reader1, reader2, classLoader);
             // Setting the mapping file here is very important! Do not remove.
             entityMappings.setMappingFile(url);
             return entityMappings;

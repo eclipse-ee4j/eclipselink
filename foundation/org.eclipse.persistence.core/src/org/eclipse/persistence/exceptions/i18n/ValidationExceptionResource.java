@@ -287,6 +287,7 @@ public class ValidationExceptionResource extends ListResourceBundle {
                                            { "7302", "Conflicting xml elements [{0}] were found for the element [{1}]. The first was found in the mapping file [{2}] and the second in the mapping file [{3}]. Please correct this by removing the xml element which does not apply." },
                                            { "7303", "PersistenceUnitProperties.ORACLE_PROXY_TYPE property set to [{0}], required for this proxy type property [{1}] not found." },
                                            { "7304", "PersistenceUnitProperties.ORACLE_PROXY_TYPE property set to unknown type [{0}], known types are [{1}], [{2}], [{3}]." },
+                                           { "7305", "An exception was thrown while processing the mapping file from URL: [{0}]." },
  };
     
     /**
