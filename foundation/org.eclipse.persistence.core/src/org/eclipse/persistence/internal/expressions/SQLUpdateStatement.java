@@ -15,6 +15,7 @@ package org.eclipse.persistence.internal.expressions;
 import java.io.*;
 import java.util.*;
 import org.eclipse.persistence.exceptions.*;
+import org.eclipse.persistence.expressions.Expression;
 import org.eclipse.persistence.internal.helper.*;
 import org.eclipse.persistence.queries.*;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
@@ -46,11 +47,17 @@ public class SQLUpdateStatement extends SQLModifyStatement {
             writer.write(getTable().getQualifiedName());
             writer.write(" SET ");
 
+            ExpressionSQLPrinter printer = null;
+
             Vector fieldsForTable = new Vector();
+            Enumeration valuesEnum = getModifyRow().getValues().elements();
+            Vector values = new Vector();
             for (Enumeration fieldsEnum = getModifyRow().keys(); fieldsEnum.hasMoreElements();) {
                 DatabaseField field = (DatabaseField)fieldsEnum.nextElement();
+                Object value = valuesEnum.nextElement();
                 if (field.getTable().equals(getTable()) || (!field.hasTableName())) {
                     fieldsForTable.addElement(field);
+                    values.addElement(value);
                 }
             }
 
@@ -62,7 +69,19 @@ public class SQLUpdateStatement extends SQLModifyStatement {
                 DatabaseField field = (DatabaseField)fieldsForTable.elementAt(i);
                 writer.write(field.getName());
                 writer.write(" = ");
-                call.appendModify(writer, field);
+                if(values.elementAt(i) instanceof Expression) {
+                    // the value in the modify row is an expression - assign it.
+                    Expression exp = (Expression)values.elementAt(i);
+                    if(printer == null) {
+                        printer = new ExpressionSQLPrinter(session, getTranslationRow(), call, false);
+                        printer.setWriter(writer);
+                    }
+                    printer.printExpression(exp);
+                    
+                } else {
+                    // the value in the modify row is ignored, the parameter corresponding to the key field will be assigned.
+                    call.appendModify(writer, field);
+                }
 
                 if ((i + 1) < fieldsForTable.size()) {
                     writer.write(", ");
@@ -71,8 +90,10 @@ public class SQLUpdateStatement extends SQLModifyStatement {
 
             if (!(getWhereClause() == null)) {
                 writer.write(" WHERE ");
-                ExpressionSQLPrinter printer = new ExpressionSQLPrinter(session, getTranslationRow(), call, false);
-                printer.setWriter(writer);
+                if(printer == null) {
+                    printer = new ExpressionSQLPrinter(session, getTranslationRow(), call, false);
+                    printer.setWriter(writer);
+                }
                 printer.printExpression(getWhereClause());
             }
 

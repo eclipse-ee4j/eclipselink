@@ -65,6 +65,7 @@ public class TestRunModel extends TestModel {
             tests.addElement("org.eclipse.persistence.testing.tests.conversion.ConversionManagerTestModel");
             tests.addElement("org.eclipse.persistence.testing.tests.conversion.ConversionManagerTestModelWithoutBinding");
             tests.addElement("org.eclipse.persistence.testing.tests.employee.EmployeeBasicTestModel");
+            tests.addElement("org.eclipse.persistence.testing.tests.unidirectional.UnidirectionalEmployeeBasicTestModel");
             tests.addElement("org.eclipse.persistence.testing.tests.insurance.InsuranceBasicTestModel");
             tests.addElement("org.eclipse.persistence.testing.tests.insurance.InsuranceObjectRelationalTestModel");
             tests.addElement("org.eclipse.persistence.testing.tests.legacy.LegacyTestModel");

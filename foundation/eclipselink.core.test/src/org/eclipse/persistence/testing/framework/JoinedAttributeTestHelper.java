@@ -47,7 +47,7 @@ public class JoinedAttributeTestHelper {
      *   the result of controlQuery.
      * 
      * A simple way to create control query the will be in sync with queryWithJoins to be tested:
-     *   instatiate queryWithJoins - the one to be tested,
+     *   instantiate queryWithJoins - the one to be tested,
      *   set it's referenceClass, selectionCriteria,..., everything but joinedAttributes;
      *   clone queryWithJoins - this clone is controlQuery;
      *   now add joined attributes to queryWithJoins;

@@ -28,7 +28,7 @@ package org.eclipse.persistence.config;
  * 
  * <p>JPA persistence property Usage:
  * 
- * <p><code>properties.add(PersistenceUnitProperties.CONNECTION_EXCLUSIVE, ConnectionExclusive.Isolated);</code>
+ * <p><code>properties.add(PersistenceUnitProperties.EXCLUSIVE_CONNECTION_MODE, ExclusiveConnectionMode.Isolated);</code>
  * 
  * <p>Values are case-insensitive.
  * "" could be used instead of default value ExclusiveConnectionMode.DEFAULT.

@@ -45,6 +45,8 @@ import org.eclipse.persistence.testing.models.jpa.xml.advanced.Bungalow;
 import org.eclipse.persistence.testing.models.jpa.xml.advanced.EmployeePopulator;
 import org.eclipse.persistence.testing.models.jpa.xml.advanced.Address;
 import org.eclipse.persistence.testing.models.jpa.xml.advanced.AdvancedTableCreator;
+import org.eclipse.persistence.testing.models.jpa.xml.advanced.Customer;
+import org.eclipse.persistence.testing.models.jpa.xml.advanced.Dealer;
 import org.eclipse.persistence.testing.models.jpa.xml.advanced.Employee;
 import org.eclipse.persistence.testing.models.jpa.xml.advanced.EmploymentPeriod;
 import org.eclipse.persistence.testing.models.jpa.xml.advanced.LargeProject;
@@ -53,6 +55,7 @@ import org.eclipse.persistence.testing.models.jpa.xml.advanced.PhoneNumber;
 import org.eclipse.persistence.testing.models.jpa.xml.advanced.Project;
 import org.eclipse.persistence.testing.models.jpa.xml.advanced.ReadOnlyClass;
 import org.eclipse.persistence.testing.models.jpa.xml.advanced.SmallProject;
+import org.eclipse.persistence.testing.framework.JoinedAttributeTestHelper;
 import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
 import org.eclipse.persistence.testing.tests.jpa.TestingProperties;
  
@@ -91,6 +94,9 @@ public class EntityMappingsAdvancedJUnitTestCase extends JUnitTestCase {
         suite.addTest(new EntityMappingsAdvancedJUnitTestCase("testRefreshNotManagedEmployee", persistenceUnit));
         suite.addTest(new EntityMappingsAdvancedJUnitTestCase("testRefreshRemovedEmployee", persistenceUnit));
         suite.addTest(new EntityMappingsAdvancedJUnitTestCase("testDeleteEmployee", persistenceUnit));
+        suite.addTest(new EntityMappingsAdvancedJUnitTestCase("testUnidirectionalPersist", persistenceUnit));
+        suite.addTest(new EntityMappingsAdvancedJUnitTestCase("testUnidirectionalUpdate", persistenceUnit));
+        suite.addTest(new EntityMappingsAdvancedJUnitTestCase("testUnidirectionalFetchJoin", persistenceUnit));
         
         if (persistenceUnit.equals("extended-advanced")) {            
             suite.addTest(new EntityMappingsAdvancedJUnitTestCase("testExistenceCheckingSetting", persistenceUnit));
@@ -987,5 +993,221 @@ public class EntityMappingsAdvancedJUnitTestCase extends JUnitTestCase {
             }
         }
         return errorMsg;
+    }
+    
+    protected List<Employee> createEmployeesWithUnidirectionalMappings(String lastName) {
+        int n = 2;
+        List<Employee> employees = new ArrayList<Employee>(n);
+        for(int i=0; i<n; i++) {
+            Employee emp = new Employee();
+            emp.setFirstName(Integer.toString(i+1));
+            emp.setLastName(lastName);
+            employees.add(emp);
+            for(int j=0; j<n; j++) {
+                Dealer dealer = new Dealer();
+                dealer.setFirstName(emp.getFirstName() + "_" + Integer.toString(j+1));
+                dealer.setLastName(lastName);
+                emp.addDealer(dealer);
+                for(int k=0; k<n; k++) {
+                    Customer customer = new Customer();
+                    customer.setFirstName(dealer.getFirstName() + "_" + Integer.toString(k+1));
+                    customer.setLastName(lastName);
+                    dealer.addCustomer(customer);
+                }
+            }
+        }
+        return employees;
+    }
+    
+    protected List<Employee> persistEmployeesWithUnidirectionalMappings(String lastName) {
+        EntityManager em = createEntityManager();
+        try {
+            return persistEmployeesWithUnidirectionalMappings(lastName, em);
+        } finally {
+            em.close();
+        }
+    }
+    
+    protected List<Employee> persistEmployeesWithUnidirectionalMappings(String lastName, EntityManager em) {
+        List<Employee> employees = createEmployeesWithUnidirectionalMappings(lastName);
+        beginTransaction(em);
+        try {
+            for(int i=0; i<employees.size(); i++) {
+                em.persist(employees.get(i));
+            }
+            commitTransaction(em);
+        } finally {
+            if(this.isTransactionActive(em)) {
+                rollbackTransaction(em);
+            }
+        }
+        return employees;
+    }
+    
+    protected void deleteEmployeesWithUnidirectionalMappings(String lastName) {
+        EntityManager em = createEntityManager();
+        beginTransaction(em);
+        try {
+            em.createQuery("DELETE FROM AdvancedCustomer c WHERE c.lastName = '"+lastName+"'").executeUpdate();
+            em.createQuery("DELETE FROM Dealer d WHERE d.lastName = '"+lastName+"'").executeUpdate();
+            em.createQuery("DELETE FROM Employee e WHERE e.lastName = '"+lastName+"'").executeUpdate();
+            commitTransaction(em);
+        } finally {
+            if(this.isTransactionActive(em)) {
+                rollbackTransaction(em);
+            }
+            em.close();
+            clearCache();
+        }
+    }
+    
+    public void testUnidirectionalPersist() {
+        String lastName = "testUnidirectionalPersist";
+        
+        // persist employees
+        List<Employee> employeesPersisted = persistEmployeesWithUnidirectionalMappings(lastName);
+        
+        // clear cache
+        clearCache();
+        
+        // read the persisted employees back
+        EntityManager em = createEntityManager();
+        List<Employee> employeesRead = em.createQuery("SELECT OBJECT(e) FROM XMLEmployee e WHERE e.lastName = '"+lastName+"'").getResultList();
+        closeEntityManager(em);
+
+        // verify number persisted and read is the same
+        if(employeesPersisted.size() != employeesRead.size()) {
+            //clean-up
+            deleteEmployeesWithUnidirectionalMappings(lastName);
+            fail("Persisted " + employeesPersisted.size() + " employees, but read back " + employeesRead.size());
+        }
+
+        // verify that the persisted and read objects are equal
+        ServerSession session = JUnitTestCase.getServerSession();
+        String errorMsg = "";
+        for(int i=0; i<employeesPersisted.size(); i++) {
+            for(int j=0; j<employeesRead.size(); j++) {
+                if(employeesPersisted.get(i).getFirstName().equals(employeesRead.get(j).getFirstName())) {
+                    if(!session.compareObjects(employeesPersisted.get(i), employeesRead.get(j))) {
+                        errorMsg += "Employee " + employeesPersisted.get(i).getFirstName() +"  was not persisted correctly.";
+                    }
+                }
+            }
+        }
+        
+        // clean-up
+        deleteEmployeesWithUnidirectionalMappings(lastName);
+        
+        // non-empty error message means the test has failed
+        if(errorMsg.length() > 0) {
+            fail(errorMsg);
+        }
+    }
+    
+    public void testUnidirectionalUpdate() {
+        String lastName = "testUnidirectionalUpdate";
+
+        // em used for both persist and update
+        EntityManager em = createEntityManager();
+        // persist employees
+        List<Employee> employeesPersisted = persistEmployeesWithUnidirectionalMappings(lastName, em);
+        // update persisted employees:
+        beginTransaction(em);
+        try {
+            // add a new dealer to the first employee
+            employeesPersisted.get(0).addDealer(new Dealer("New", lastName));
+            // remove a dealer from the second employee
+            employeesPersisted.get(1).getDealers().remove(1);
+            // move a dealer from the first to the second employee
+            employeesPersisted.get(1).addDealer(employeesPersisted.get(0).getDealers().remove(0));
+            commitTransaction(em);
+        } finally {
+            if(this.isTransactionActive(em)) {
+                rollbackTransaction(em);
+            }
+            em.close();
+        }
+        
+        // clear cache
+        clearCache();
+        
+        em = createEntityManager();
+        // read the updated employees back
+        List<Employee> employeesRead = em.createQuery("SELECT OBJECT(e) FROM XMLEmployee e WHERE e.lastName = '"+lastName+"'").getResultList();
+        closeEntityManager(em);
+        
+        // verify number persisted and read is the same
+        if(employeesPersisted.size() != employeesRead.size()) {
+            // clean-up
+            deleteEmployeesWithUnidirectionalMappings(lastName);
+            fail("Updated " + employeesPersisted.size() + " employees, but read back " + employeesRead.size());
+        }
+        
+        // verify that the persisted and read objects are equal
+        ServerSession session = JUnitTestCase.getServerSession();
+        String errorMsg = "";
+        for(int i=0; i<employeesPersisted.size(); i++) {
+            for(int j=0; j<employeesRead.size(); j++) {
+                if(employeesPersisted.get(i).getFirstName().equals(employeesRead.get(j).getFirstName())) {
+                    if(!session.compareObjects(employeesPersisted.get(i), employeesRead.get(j))) {
+                        errorMsg += "Employee " + employeesPersisted.get(i).getFirstName() +"  was not updated correctly.";
+                    }
+                }
+            }
+        }
+        
+        // clean-up
+        deleteEmployeesWithUnidirectionalMappings(lastName);
+
+        // non-empty error message means the test has failed
+        if(errorMsg.length() > 0) {
+            fail(errorMsg);
+        }
+    }
+    
+    public void testUnidirectionalFetchJoin() {
+        String lastName = "testUnidirectionalFetchJoin";
+
+        // persist employees
+        persistEmployeesWithUnidirectionalMappings(lastName);
+        
+        // clear cache
+        clearCache();
+        
+        EntityManager em = createEntityManager();
+        // read the persisted employees back - without fetch join
+        List<Employee> employeesRead = em.createQuery("SELECT OBJECT(e) FROM XMLEmployee e WHERE e.lastName = '"+lastName+"'").getResultList();
+        closeEntityManager(em);
+        
+        // clear cache
+        clearCache();
+        
+        // read the persisted employees back - with fetch join. 
+        em = createEntityManager();
+        List<Employee> employeesReadWithFetchJoin = em.createQuery("SELECT e FROM XMLEmployee e JOIN FETCH e.dealers WHERE e.lastName = '"+lastName+"'").getResultList();
+        closeEntityManager(em);
+        
+        // verify that the persisted and read employees are the same.
+        // The comparison cascades to all references and requires the same state of indirection:
+        // it fails in case an object has triggered indirection for particular attribute and compared object's indirection for this attribute is not triggered.
+        // The expected result of join fetch query is Employee.dealers being triggered - so need to trigger it on the control collection (getDealers.size() does that);
+        // also the expected result should have an object for each row returned - therefore number of inclusions of each Employee equals its dealers.size()
+        List<Employee> employeesControl = new ArrayList<Employee>();
+        for(int i=0; i<employeesRead.size(); i++) {
+            int nDialers = employeesRead.get(i).getDealers().size(); 
+            for(int j=0; j<nDialers; j++) {
+                employeesControl.add(employeesRead.get(i));
+            }
+        }
+        ServerSession session = JUnitTestCase.getServerSession();
+        String errorMsg = JoinedAttributeTestHelper.compareCollections(employeesControl, employeesReadWithFetchJoin, session.getClassDescriptor(Employee.class), session);
+        
+        // clean-up
+        deleteEmployeesWithUnidirectionalMappings(lastName);
+        
+        // non-empty error message means the test has failed
+        if(errorMsg.length() > 0) {
+            fail(errorMsg);
+        }
     }
 }

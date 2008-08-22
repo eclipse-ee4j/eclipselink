@@ -21,6 +21,8 @@ public class AdvancedTableCreator extends TableCreator {
         addTableDefinition(buildADDRESSTable());
         addTableDefinition(buildBUYERTable());
         addTableDefinition(buildCREDITCARDSTable());
+        addTableDefinition(buildCUSTOMERTable());
+        addTableDefinition(buildDEALERTable());
         addTableDefinition(buildDEPTTable());
         addTableDefinition(buildDEPT_EMPTable());
         addTableDefinition(buildEMPLOYEETable());
@@ -251,6 +253,142 @@ public class AdvancedTableCreator extends TableCreator {
         return table;
     }
     
+     public static TableDefinition buildCUSTOMERTable() {
+         TableDefinition table = new TableDefinition();
+         table.setName("CMP3_ADV_CUSTOMER");
+
+         FieldDefinition field = new FieldDefinition();
+         field.setName("CUSTOMER_ID");
+         field.setTypeName("NUMERIC");
+         field.setSize(15);
+         field.setShouldAllowNull(false);
+         field.setIsPrimaryKey(true);
+         field.setUnique(false);
+         field.setIsIdentity(true);
+         table.addField(field);
+     
+         FieldDefinition field0 = new FieldDefinition();
+         field0.setName("FK_DEALER_ID");
+         field0.setTypeName("NUMERIC");
+         field0.setSize(15);
+         field0.setShouldAllowNull(true);
+         field0.setIsPrimaryKey(false);
+         field0.setUnique(false);
+         field0.setIsIdentity(false);
+         field0.setForeignKeyFieldName("CMP3_DEALER.DEALER_ID");
+         table.addField(field0);
+     
+         FieldDefinition field1 = new FieldDefinition();
+         field1.setName("F_NAME");
+         field1.setTypeName("VARCHAR");
+         field1.setSize(40);
+         field1.setShouldAllowNull(true);
+         field1.setIsPrimaryKey(false);
+         field1.setUnique(false);
+         field1.setIsIdentity(false);
+         table.addField(field1);
+     
+         FieldDefinition field2 = new FieldDefinition();
+         field2.setName("L_NAME");
+         field2.setTypeName("VARCHAR");
+         field2.setSize(40);
+         field2.setShouldAllowNull(true);
+         field2.setIsPrimaryKey(false);
+         field2.setUnique(false);
+         field2.setIsIdentity(false);
+         table.addField(field2);
+         
+         FieldDefinition field3 = new FieldDefinition();
+         field3.setName("BUDGET");
+         field3.setTypeName("NUMERIC");
+         field3.setSize(15);
+         field3.setShouldAllowNull(true);
+         field3.setIsPrimaryKey(false);
+         field3.setUnique(false);
+         field3.setIsIdentity(false);
+         table.addField(field3);
+         
+         FieldDefinition field4 = new FieldDefinition();
+         field4.setName("VERSION");
+         field4.setTypeName("NUMERIC");
+         field4.setSize(15);
+         field4.setShouldAllowNull(true);
+         field4.setIsPrimaryKey(false);
+         field4.setUnique(false);
+         field4.setIsIdentity(false);
+         table.addField(field4);
+         
+         return table;
+     }
+     
+     public static TableDefinition buildDEALERTable() {
+         TableDefinition table = new TableDefinition();
+         table.setName("CMP3_DEALER");
+
+         FieldDefinition field = new FieldDefinition();
+         field.setName("DEALER_ID");
+         field.setTypeName("NUMERIC");
+         field.setSize(15);
+         field.setShouldAllowNull(false);
+         field.setIsPrimaryKey(true);
+         field.setUnique(false);
+         field.setIsIdentity(true);
+         table.addField(field);
+     
+         FieldDefinition field0 = new FieldDefinition();
+         field0.setName("FK_EMP_ID");
+         field0.setTypeName("NUMERIC");
+         field0.setSize(15);
+         field0.setShouldAllowNull(true);
+         field0.setIsPrimaryKey(false);
+         field0.setUnique(false);
+         field0.setIsIdentity(false);
+         field0.setForeignKeyFieldName("CMP3_EMPLOYEE.EMP_ID");
+         table.addField(field0);
+     
+         FieldDefinition field1 = new FieldDefinition();
+         field1.setName("F_NAME");
+         field1.setTypeName("VARCHAR");
+         field1.setSize(40);
+         field1.setShouldAllowNull(true);
+         field1.setIsPrimaryKey(false);
+         field1.setUnique(false);
+         field1.setIsIdentity(false);
+         table.addField(field1);
+     
+         FieldDefinition field2 = new FieldDefinition();
+         field2.setName("L_NAME");
+         field2.setTypeName("VARCHAR");
+         field2.setSize(40);
+         field2.setShouldAllowNull(true);
+         field2.setIsPrimaryKey(false);
+         field2.setUnique(false);
+         field2.setIsIdentity(false);
+         table.addField(field2);
+         
+         FieldDefinition field3 = new FieldDefinition();
+         field3.setName("STATUS");
+         field3.setTypeName("VARCHAR");
+         field3.setSize(40);
+         field3.setShouldAllowNull(true);
+         field3.setIsPrimaryKey(false);
+         field3.setUnique(false);
+         field3.setIsIdentity(false);
+         table.addField(field3);
+         
+         FieldDefinition field4 = new FieldDefinition();
+         field4.setName("VERSION");
+         field4.setTypeName("NUMERIC");
+         field4.setSize(15);
+         field4.setShouldAllowNull(true);
+         field4.setIsPrimaryKey(false);
+         field4.setUnique(false);
+         field4.setIsIdentity(false);
+         table.addField(field4);
+         
+         return table;
+     }
+     
      public static TableDefinition buildDEPTTable() {
         TableDefinition table = new TableDefinition();
         table.setName("CMP3_DEPT");

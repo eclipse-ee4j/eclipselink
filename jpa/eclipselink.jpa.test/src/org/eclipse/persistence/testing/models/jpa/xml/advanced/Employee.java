@@ -66,6 +66,7 @@ public class Employee implements Serializable {
     private Collection<PhoneNumber> phoneNumbers;
 	private Collection<Project> projects;
 	private Collection<String> responsibilities;
+    private List<Dealer> dealers;
 	
 	private Map<String, Long> creditCards;
     private static final String AMEX = "Amex";
@@ -89,6 +90,7 @@ public class Employee implements Serializable {
         projects = new Vector<Project>();
         managedEmployees = new Vector<Employee>();
         responsibilities = new Vector<String>();
+        this.dealers = new ArrayList<Dealer>();
         creditCards = new HashMap<String, Long>();
         normalHours = new Time[2];
         overtimeHours = new Time[2];
@@ -102,6 +104,10 @@ public class Employee implements Serializable {
 
     public void addAmex(long number) {
         getCreditCards().put(AMEX, new Long(number));
+    }
+    
+    public void addDealer(Dealer dealer) {
+        dealers.add(dealer);
     }
     
     public void addDinersClub(long number) {
@@ -178,6 +184,10 @@ public class Employee implements Serializable {
     @Transient
     public Map<String, Long> getCreditCards() {
         return creditCards;
+    }
+    
+    public List<Dealer> getDealers() {
+        return dealers;
     }
     
     /**
@@ -310,6 +320,10 @@ public class Employee implements Serializable {
         return gender.equals(Gender.Male);
     }
     
+    public void removeDealer(Dealer dealer) {
+        dealers.remove(dealer);
+    }
+    
     public void removeManagedEmployee(Employee emp) {
         getManagedEmployees().remove(emp);
     }
@@ -346,6 +360,10 @@ public class Employee implements Serializable {
     protected void setCreditCards(Map<String, Long> creditCards) {
         this.creditCards = creditCards;
     }  
+    
+    public void setDealers(List<Dealer> dealers) {
+        this.dealers = dealers;
+    }
     
     /**
      * Set the last element of the Transformation mapped overtimeHours.

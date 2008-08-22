@@ -173,6 +173,7 @@ public class Employee implements Serializable, Cloneable {
     private Collection<String> responsibilities;
     private Collection<PhoneNumber> m_phoneNumbers;
     private Collection<Employee> managedEmployees;
+    private List<Dealer> dealers;
     
     public Employee () {
         this.normalHours = new Time[2];
@@ -181,6 +182,7 @@ public class Employee implements Serializable, Cloneable {
         this.projects = new Vector<Project>();
         this.managedEmployees = new Vector<Employee>();
         this.responsibilities = new Vector<String>();
+        this.dealers = new ArrayList<Dealer>();
     }
     
     public Employee(String firstName, String lastName){
@@ -200,6 +202,10 @@ public class Employee implements Serializable, Cloneable {
         clone.managedEmployees = new Vector(this.managedEmployees);
         clone.responsibilities = new Vector(this.responsibilities);
         return clone;
+    }
+    
+    public void addDealer(Dealer dealer) {
+        dealers.add(dealer);
     }
     
     public void addManagedEmployee(Employee emp) {
@@ -255,6 +261,13 @@ public class Employee implements Serializable, Cloneable {
     // ignored. Logs a warning though.
     public String getAnEmptyString() {
         return "";
+    }
+    
+    @OneToMany(cascade={PERSIST, MERGE})
+    @JoinColumn(name="FK_EMP_ID")
+    @Property(name="attributeName", value="dealers")
+    public List<Dealer> getDealers() {
+        return dealers;
     }
     
     /**
@@ -477,6 +490,10 @@ public class Employee implements Serializable, Cloneable {
         return gender.equals(Gender.Male);
     }
     
+    public void removeDealer(Dealer dealer) {
+        dealers.remove(dealer);
+    }
+    
     public void removeManagedEmployee(Employee emp) {
         getManagedEmployees().remove(emp);
     }
@@ -519,6 +536,10 @@ public class Employee implements Serializable, Cloneable {
     public void setAddressField(Address address){
         // Set the field directly to test if the change is still detected.
         this.m_address = address;
+    }
+    
+    public void setDealers(List<Dealer> dealers) {
+        this.dealers = dealers;
     }
     
     public void setDepartment(Department department) {

@@ -12,7 +12,8 @@
  ******************************************************************************/  
 package org.eclipse.persistence.internal.descriptors;
 
-import java.util.Vector;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Iterator;
 import java.util.Enumeration;
@@ -21,8 +22,10 @@ import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.expressions.Expression;
 import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.expressions.ExpressionBuilder;
+import org.eclipse.persistence.internal.expressions.SQLSelectStatement;
 import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.queries.ReadObjectQuery;
+import org.eclipse.persistence.queries.DataReadQuery;
 import org.eclipse.persistence.sessions.DatabaseRecord;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.internal.sessions.ObjectChangeSet;
@@ -37,9 +40,14 @@ public class CascadeLockingPolicy {
     protected ReadObjectQuery m_query;
     protected ClassDescriptor m_descriptor;
     protected ClassDescriptor m_parentDescriptor;
-    protected Map m_queryKeyFields;
-    protected Vector m_mappingLookupFields;
+    protected Map<DatabaseField, DatabaseField> m_queryKeyFields;
+    protected Map<DatabaseField, DatabaseField> m_mappedQueryKeyFields;
+    protected Map<DatabaseField, DatabaseField> m_unmappedQueryKeyFields;
     protected DatabaseMapping m_parentMapping;
+    protected boolean m_lookForParentMapping;
+    protected boolean m_shouldHandleUnmappedFields;
+    protected boolean m_hasCheckedForUnmappedFields;
+    protected DataReadQuery m_unmappedFieldsQuery;
     
     /**
      * INTERNAL:
@@ -90,13 +98,25 @@ public class CascadeLockingPolicy {
         // have been initialized.
         // If the parent mapping is not found, a query will be initialized
         // and the following lookup will no longer hit.
-        if (m_parentMapping == null && m_mappingLookupFields != null && m_query == null) {        
-            for (Enumeration fields = m_mappingLookupFields.elements(); fields.hasMoreElements();) {
-                DatabaseMapping mapping = m_descriptor.getObjectBuilder().getMappingForField((DatabaseField) fields.nextElement());
+        if (m_parentMapping == null && m_lookForParentMapping && m_query == null) {
+            Iterator<DatabaseField> itFields = m_queryKeyFields.values().iterator();
+            while(itFields.hasNext()) {
+                DatabaseMapping mapping = m_descriptor.getObjectBuilder().getMappingForField(itFields.next());
                 
-                if (mapping.isObjectReferenceMapping()) {
-                    m_parentMapping = mapping;
+                if(mapping == null) {
+                    // at least one field is not mapped therefore no parent mapping exists.
+                    m_parentMapping = null;
                     break;
+                } else if(mapping.isObjectReferenceMapping()) {
+                    if(m_parentMapping == null) {
+                        m_parentMapping = mapping;
+                    } else {
+                        if(m_parentMapping != mapping) {
+                            // there's more than one mapping therefore no parent mapping exists. 
+                            m_parentMapping = null;
+                            break;
+                        }
+                    }
                 }
             }
         }
@@ -107,22 +127,108 @@ public class CascadeLockingPolicy {
     /**
      * INTERNAL:
      */
-     protected AbstractRecord getTranslationRow(Object changedObj, UnitOfWorkImpl uow) {
-    	 AbstractRecord translationRow = new DatabaseRecord();
-        Iterator keys = m_queryKeyFields.keySet().iterator();
-        
-        while (keys.hasNext()) {
-            DatabaseField keyField = (DatabaseField) keys.next();
-            DatabaseField valueField = (DatabaseField) m_queryKeyFields.get(keyField);
-            
-            Object value = m_descriptor.getObjectBuilder().extractValueFromObjectForField(changedObj, valueField, uow);
-            translationRow.add(keyField, value);
-        }
-        
-        return translationRow;
+     protected AbstractRecord getMappedTranslationRow(Object changedObj, UnitOfWorkImpl uow) {
+         AbstractRecord translationRow = new DatabaseRecord();
+         Iterator<Map.Entry<DatabaseField, DatabaseField>> it = m_mappedQueryKeyFields.entrySet().iterator();
+         while(it.hasNext()) {
+             Map.Entry<DatabaseField, DatabaseField> entry = it.next();
+             Object value = m_descriptor.getObjectBuilder().extractValueFromObjectForField(changedObj, entry.getValue(), uow);
+             translationRow.add(entry.getKey(), value);
+         }
+         return translationRow;
      }
     
-    /**
+     /**
+      * INTERNAL:
+      */
+      protected AbstractRecord getUnmappedTranslationRow(Object changedObj, UnitOfWorkImpl uow) {
+         AbstractRecord unmappedFieldsQueryTranslationRow = new DatabaseRecord();
+         Iterator<DatabaseField> itPrimaryKey = m_descriptor.getPrimaryKeyFields().iterator();
+         while (itPrimaryKey.hasNext()) {
+             DatabaseField primaryKey = itPrimaryKey.next();
+             Object value = m_descriptor.getObjectBuilder().extractValueFromObjectForField(changedObj, primaryKey, uow);
+             unmappedFieldsQueryTranslationRow.add(primaryKey, value);
+         }
+         List result = (List)uow.executeQuery(m_unmappedFieldsQuery, unmappedFieldsQueryTranslationRow);
+         if(result == null || result.isEmpty()) {
+             // the object is not in the db
+             return null;
+         }
+         
+         AbstractRecord unmappedValues = (AbstractRecord)result.get(0);
+
+         AbstractRecord translationRow = new DatabaseRecord();
+         Iterator<Map.Entry<DatabaseField, DatabaseField>> it = m_unmappedQueryKeyFields.entrySet().iterator();
+         while(it.hasNext()) {
+             Map.Entry<DatabaseField, DatabaseField> entry = it.next();
+             Object value = unmappedValues.get(entry.getValue());
+             translationRow.add(entry.getKey(), value);
+         }
+         return translationRow;
+      }
+     
+     /**
+      * INTERNAL:
+      * Identify mapped and not mapped fields (should be done once).
+      * The result - either two non-empty Maps m_unmappedQueryKeyFields and m_mappedQueryKeyFields,
+      * or m_unmappedQueryKeyFields == null and m_mappedQueryKeyFields == m_queryKeyFields.
+      */
+     public void initUnmappedFields(UnitOfWorkImpl uow) {
+         if(!m_hasCheckedForUnmappedFields) {
+             m_mappedQueryKeyFields = new HashMap<DatabaseField, DatabaseField>();
+             m_unmappedQueryKeyFields = new HashMap<DatabaseField, DatabaseField>();
+             Iterator<Map.Entry<DatabaseField, DatabaseField>> it = m_queryKeyFields.entrySet().iterator();
+             while(it.hasNext()) {
+                 Map.Entry<DatabaseField, DatabaseField> entry = it.next();
+                 if(m_descriptor.getObjectBuilder().getMappingForField(entry.getValue()) == null) {
+                     m_unmappedQueryKeyFields.put(entry.getKey(), entry.getValue());
+                 } else {
+                     m_mappedQueryKeyFields.put(entry.getKey(), entry.getValue());
+                 }
+             }
+             if(m_unmappedQueryKeyFields.isEmpty()) {
+                 m_unmappedQueryKeyFields = null;
+                 m_mappedQueryKeyFields = m_queryKeyFields;
+             }
+             initUnmappedFieldsQuery(uow);
+             m_hasCheckedForUnmappedFields = true;
+         }
+     }
+
+     /**
+      * INTERNAL:
+      * This method called in case there are m_unmappedQueryKeyFields.
+      * It creates a query that would fetch the values for this fields from the db.
+      */
+     public void initUnmappedFieldsQuery(UnitOfWorkImpl uow) {
+         if(m_unmappedFieldsQuery == null) {
+             m_unmappedFieldsQuery = new DataReadQuery();
+
+             Expression whereClause = null;
+             Expression builder = new ExpressionBuilder();
+             Iterator<DatabaseField> itPrimaryKey = m_descriptor.getPrimaryKeyFields().iterator();
+             while (itPrimaryKey.hasNext()) {
+                 DatabaseField primaryKey = itPrimaryKey.next();
+                 Expression expression = builder.getField(primaryKey).equal(builder.getParameter(primaryKey));
+                 whereClause = expression.and(whereClause);
+                 m_unmappedFieldsQuery.addArgument(primaryKey.getQualifiedName());
+             }
+
+             SQLSelectStatement statement = new SQLSelectStatement();
+             Iterator<DatabaseField> itUnmappedFields = m_unmappedQueryKeyFields.values().iterator();
+             while (itUnmappedFields.hasNext()) {
+                 DatabaseField field = itUnmappedFields.next();
+                 statement.addField(field);
+             }
+             
+             statement.setWhereClause(whereClause);
+             statement.normalize(uow.getParent(), m_descriptor);
+             m_unmappedFieldsQuery.setSQLStatement(statement);
+             m_unmappedFieldsQuery.setSessionName(m_descriptor.getSessionName());
+         }
+     }
+     
+     /**
      * INTERNAL:
      */
     public void lockNotifyParent(Object obj, UnitOfWorkChangeSet changeSet, UnitOfWorkImpl uow) {
@@ -137,8 +243,31 @@ public class CascadeLockingPolicy {
         // If the parent object is still null at this point, try a query.
         // check out why no query keys.
         if (parentObj == null) {
+            AbstractRecord translationRow; 
+            if(m_shouldHandleUnmappedFields) {
+                // should look for unmapped fields.
+                initUnmappedFields(uow);
+                if(m_unmappedQueryKeyFields != null) {
+                    // there are some unmapped fields - fetch the values for the from the db.
+                    AbstractRecord unmappedTranslationRow = getUnmappedTranslationRow(obj, uow);
+                    if(unmappedTranslationRow == null) {
+                        // the object is not yet in the db
+                        return;
+                    } else {
+                        // merge mapped and unmapped values into the single translation row.
+                        translationRow = getMappedTranslationRow(obj, uow); 
+                        translationRow.putAll(unmappedTranslationRow);
+                    }
+                } else {
+                    // no unmapped fields
+                    translationRow = getMappedTranslationRow(obj, uow); 
+                }
+            } else {
+                // no unmapped fields
+                translationRow = getMappedTranslationRow(obj, uow); 
+            }
             // the query is set to return an unwrapped object.
-            parentObj = uow.executeQuery(getQuery(), getTranslationRow(obj, uow));
+            parentObj = uow.executeQuery(getQuery(), translationRow);
         } else {
             // make sure the parent object is unwrapped.
             if (m_parentDescriptor.hasWrapperPolicy()) {
@@ -174,22 +303,32 @@ public class CascadeLockingPolicy {
     /**
      * INTERNAL:
      */
-    public void setQueryKeyFields(Map queryKeyFields) {
+    public void setQueryKeyFields(Map<DatabaseField, DatabaseField> queryKeyFields) {
         setQueryKeyFields(queryKeyFields, true);
     }
     
     /**
      * INTERNAL:
      */
-    public void setQueryKeyFields(Map queryKeyFields, boolean lookForParentMapping) {
+    public void setQueryKeyFields(Map<DatabaseField, DatabaseField> queryKeyFields, boolean lookForParentMapping) {
         m_queryKeyFields = queryKeyFields;
-     
-        if (lookForParentMapping) {
-            // Extract the mapping lookup fields.
-            m_mappingLookupFields = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance();
-            for (Iterator keys = m_queryKeyFields.keySet().iterator(); keys.hasNext(); ) {
-                m_mappingLookupFields.add(m_queryKeyFields.get(keys.next()));
-            }
-        }
+        m_mappedQueryKeyFields = m_queryKeyFields; 
+        this.m_lookForParentMapping = lookForParentMapping;
+    }
+    
+    /**
+     * INTERNAL:
+     * Indicates whether to expect unmapped fields.
+     * That should be set to true for UnidirectionalOneToManyMapping.
+     */
+    public void setShouldHandleUnmappedFields(boolean shouldHandleUnmappedFields) {
+        m_shouldHandleUnmappedFields = shouldHandleUnmappedFields;
+    }
+
+    /**
+     * INTERNAL:
+     */
+    public boolean shouldHandleUnmappedFields() {
+        return m_shouldHandleUnmappedFields;
     }
 }

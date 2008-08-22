@@ -62,6 +62,13 @@
                     <cascade-all/>
                 </cascade>
             </one-to-many>
+            <one-to-many name="dealers" target-entity="org.eclipse.persistence.testing.models.jpa.xml.advanced.Dealer">
+                <join-column name="FK_EMP_ID"/>
+                <cascade>
+                    <cascade-persist/>
+                    <cascade-merge/>
+                </cascade>
+            </one-to-many>
             <many-to-many name="projects" target-entity="org.eclipse.persistence.testing.models.jpa.xml.advanced.Project">
                 <order-by>name</order-by>
                 <join-table name="CMP3_XML_PROJ_EMP">
@@ -182,6 +189,57 @@
                 <join-column name="LEADER_ID"/>
             </one-to-one>
             <many-to-many name="teamMembers" target-entity="org.eclipse.persistence.testing.models.jpa.xml.advanced.Employee" mapped-by="projects"/>
+        </attributes>
+    </entity>
+    <entity name="XMLAdvancedCustomer" class="org.eclipse.persistence.testing.models.jpa.xml.advanced.Customer" access="PROPERTY">
+      <table name="CMP3_XML_ADV_CUSTOMER"/>
+        <table-generator name="XML_ADV_CUSTOMER_TABLE_GENERATOR" table="CMP3_XML_EMPLOYEE_SEQ" pk-column-name="SEQ_NAME" value-column-name="SEQ_COUNT" pk-column-value="XML_ADV_CUSTOMER_SEQ"/>
+        <exclude-default-listeners/>
+        <exclude-superclass-listeners/>
+        <attributes>
+            <id name="id">
+                <column name="CUSTOMER_ID"/>
+                <generated-value strategy="TABLE" generator="XML_ADV_CUSTOMER_TABLE_GENERATOR"/>
+            </id>
+            <basic name="firstName">
+                <column name="F_NAME"/>
+            </basic>
+            <basic name="lastName">
+                <column name="L_NAME"/>
+            </basic>
+            <basic name="budget"/>
+            <version name="version">
+                <column name="VERSION"/>
+            </version>
+        </attributes>
+    </entity>
+    <entity name="XMLDealer" class="org.eclipse.persistence.testing.models.jpa.xml.advanced.Dealer" access="PROPERTY">
+      <table name="CMP3_XML_DEALER"/>
+        <table-generator name="XML_DEALER_TABLE_GENERATOR" table="CMP3_XML_EMPLOYEE_SEQ" pk-column-name="SEQ_NAME" value-column-name="SEQ_COUNT" pk-column-value="XML_DEALER_SEQ"/>
+        <exclude-default-listeners/>
+        <exclude-superclass-listeners/>
+        <attributes>
+            <id name="id">
+                <column name="DEALER_ID"/>
+                <generated-value strategy="TABLE" generator="XML_DEALER_TABLE_GENERATOR"/>
+            </id>
+            <basic name="firstName">
+                <column name="F_NAME"/>
+            </basic>
+            <basic name="lastName">
+                <column name="L_NAME"/>
+            </basic>
+            <basic name="status"/>
+            <version name="version">
+                <column name="VERSION"/>
+            </version>
+            <one-to-many name="customers" target-entity="org.eclipse.persistence.testing.models.jpa.xml.advanced.Customer">
+                <join-column name="FK_DEALER_ID"/>
+                <cascade>
+                    <cascade-persist/>
+                    <cascade-merge/>
+                </cascade>
+            </one-to-many>
         </attributes>
     </entity>
     <embeddable class="org.eclipse.persistence.testing.models.jpa.xml.advanced.EmploymentPeriod" access="PROPERTY">

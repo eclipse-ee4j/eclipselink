@@ -14,7 +14,6 @@ package org.eclipse.persistence.mappings;
 
 import java.util.*;
 
-import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.exceptions.*;
 import org.eclipse.persistence.expressions.*;
 import org.eclipse.persistence.internal.helper.*;
@@ -472,15 +471,6 @@ public class OneToManyMapping extends CollectionMapping implements RelationalMap
      */
     protected boolean isSourceKeySpecified() {
         return !getSourceKeyFields().isEmpty();
-    }
-
-    /**
-     * Return whether the reference objects must be deleted
-     * one by one, as opposed to with a single DELETE statement.
-     */
-    protected boolean mustDeleteReferenceObjectsOneByOne() {
-        ClassDescriptor referenceDescriptor = this.getReferenceDescriptor();
-        return referenceDescriptor.hasDependencyOnParts() || referenceDescriptor.usesOptimisticLocking() || (referenceDescriptor.hasInheritance() && referenceDescriptor.getInheritancePolicy().shouldReadSubclasses()) || referenceDescriptor.hasMultipleTables();
     }
 
     /**

@@ -25,13 +25,16 @@ import javax.persistence.JoinColumns;
 
 import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.mappings.ForeignReferenceMapping;
+import org.eclipse.persistence.mappings.UnidirectionalOneToManyMapping;
 
 import org.eclipse.persistence.annotations.JoinFetch;
 import org.eclipse.persistence.annotations.PrivateOwned;
 import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.indirection.ValueHolderInterface;
 
+import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataDescriptor;
+import org.eclipse.persistence.internal.jpa.metadata.MetadataLogger;
 
 import org.eclipse.persistence.internal.jpa.metadata.columns.JoinColumnMetadata;
 
@@ -368,6 +371,50 @@ public abstract class RelationshipAccessor extends MappingAccessor {
         }
     }
 
+    /**
+     * INTERNAL:
+     * Process the @JoinColumn(s) for the owning side of a unidirectional one to many mapping.
+     * The default pk used only with single primary key 
+     * entities. The processor should never get as far as to use them with 
+     * entities that have a composite primary key (validation exception will be 
+     * thrown).
+     */
+    protected void processUnidirectionalOneToManyTargetForeignKeyRelationship(UnidirectionalOneToManyMapping mapping) {         
+        // If the pk field (name) is not specified, it 
+        // defaults to the primary key of the source table.
+        String defaultPKFieldName = getDescriptor().getPrimaryKeyFieldName();
+        
+        // If the fk field (name) is not specified, it defaults to the 
+        // concatenation of the following: the name of the referencing 
+        // relationship property or field of the referencing entity; "_"; 
+        // the name of the referenced primary key column.
+        String defaultFKFieldName = getUpperCaseAttributeName() + "_" + defaultPKFieldName;
+            
+        // Join columns will come from a @JoinColumn(s).
+        // Add the source foreign key fields to the mapping.
+        for (JoinColumnMetadata joinColumn : processJoinColumns()) {
+            DatabaseField pkField = joinColumn.getPrimaryKeyField();
+            pkField.setName(getName(pkField, defaultPKFieldName, MetadataLogger.PK_COLUMN));
+            pkField.setTable(getDescriptor().getPrimaryKeyTable());
+            
+            DatabaseField fkField = joinColumn.getForeignKeyField();
+            fkField.setName(getName(fkField, defaultFKFieldName, MetadataLogger.FK_COLUMN));
+            // Set the table name if one is not already set.
+            if (fkField.getTableName().equals("")) {
+                fkField.setTable(getReferenceDescriptor().getPrimaryTable());
+            }
+            
+            // Add target foreign key to the mapping.
+            mapping.addTargetForeignKeyField(fkField, pkField);
+            
+            // If any of the join columns is marked read-only then set the 
+            // mapping to be read only.
+            if (fkField.isReadOnly()) {
+                mapping.setIsReadOnly(true);
+            }
+        }
+    }
+    
     /**
      * INTERNAL:
      * Set the cascade type on a mapping.

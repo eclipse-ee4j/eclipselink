@@ -436,8 +436,8 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
             CacheKey key = new CacheKey(primaryKey);
             previousObjectsByKey.put(key, previousObject);
 
-            // Delete must occur first, incase object with same pk is removed and added,
-            // (technically should not happen, but same applies to unquie constainsts)
+            // Delete must occur first, in case object with same pk is removed and added,
+            // (technically should not happen, but same applies to unique constraints)
             if (!currentObjectsByKey.containsKey(key)) {
                 objectRemovedDuringUpdate(query, previousObject);
             }
@@ -716,6 +716,15 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
         for (Object iter = cp.iteratorFor(realAttributeValue); cp.hasNext(iter);) {
             iterateOnElement(iterator, cp.next(iter, iterator.getSession()));
         }
+    }
+
+    /**
+     * Return whether the reference objects must be deleted
+     * one by one, as opposed to with a single DELETE statement.
+     */
+    protected boolean mustDeleteReferenceObjectsOneByOne() {
+        ClassDescriptor referenceDescriptor = this.getReferenceDescriptor();
+        return referenceDescriptor.hasDependencyOnParts() || referenceDescriptor.usesOptimisticLocking() || (referenceDescriptor.hasInheritance() && referenceDescriptor.getInheritancePolicy().shouldReadSubclasses()) || referenceDescriptor.hasMultipleTables();
     }
 
     /**

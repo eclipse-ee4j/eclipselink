@@ -949,6 +949,13 @@ public abstract class DatabaseMapping implements Cloneable, Serializable {
 
     /**
      * INTERNAL:
+     */
+    public boolean isUnidirectionalOneToManyMapping() {
+        return false;
+    }
+    
+    /**
+     * INTERNAL:
      * Related mapping should implement this method to return true.
      */
     public boolean isVariableOneToOneMapping() {

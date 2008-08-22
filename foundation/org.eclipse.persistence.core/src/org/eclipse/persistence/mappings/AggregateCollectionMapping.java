@@ -1125,7 +1125,7 @@ public class AggregateCollectionMapping extends CollectionMapping implements Rel
 
         // if privately owned parts have their privately own parts, delete those one by one
         // else delete everything in one shot.
-        if (getReferenceDescriptor().hasDependencyOnParts() || getReferenceDescriptor().usesOptimisticLocking() || (getReferenceDescriptor().hasInheritance() && getReferenceDescriptor().getInheritancePolicy().shouldReadSubclasses()) || getReferenceDescriptor().hasMultipleTables()) {
+        if (mustDeleteReferenceObjectsOneByOne()) {
             for (Object iter = containerPolicy.iteratorFor(objects); containerPolicy.hasNext(iter);) {
                 Object object = containerPolicy.next(iter, query.getSession());
                 DeleteObjectQuery deleteQuery = new DeleteObjectQuery();

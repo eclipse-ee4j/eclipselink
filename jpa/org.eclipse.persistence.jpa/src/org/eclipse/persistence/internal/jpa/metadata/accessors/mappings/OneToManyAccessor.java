@@ -32,6 +32,7 @@ import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.mappings.ManyToManyMapping;
 import org.eclipse.persistence.mappings.OneToManyMapping;
 import org.eclipse.persistence.mappings.OneToOneMapping;
+import org.eclipse.persistence.mappings.UnidirectionalOneToManyMapping;
 
 /**
  * INTERNAL:
@@ -83,26 +84,39 @@ public class OneToManyAccessor extends CollectionAccessor {
     public void process() {
         super.process();
         
-        // Should be treated as a uni-directional mapping using a join table.
+        // Should be treated as a uni-directional mapping.
         if (getMappedBy() == null || getMappedBy().equals("")) {
             // If we find a JoinColumn(s) annotations, then throw an exception.
-            if (isAnnotationPresent(JoinColumn.class) || isAnnotationPresent(JoinColumns.class)) {
-                throw ValidationException.uniDirectionalOneToManyHasJoinColumnAnnotations(getAttributeName(), getJavaClass());
-            }
-            
-            // Create a M-M mapping and process common collection mapping
-            // metadata.
-            ManyToManyMapping mapping = new ManyToManyMapping();
-            process(mapping);
-            
-            // Process the JoinTable metadata.
-            processJoinTable(mapping);
-            
-            // Process properties
-            processProperties(mapping);
+            if (!getJoinColumns().isEmpty()) {
+                // Create a 1-M unidirectional mapping and process common collection mapping
+                // metadata.
+                UnidirectionalOneToManyMapping mapping = new UnidirectionalOneToManyMapping();
+                process(mapping);
+                
+                // Process the JoinTable metadata.
+                processUnidirectionalOneToManyTargetForeignKeyRelationship(mapping);
+                
+                // Process properties
+                processProperties(mapping);
 
-            // Add the mapping to the descriptor.
-            getDescriptor().addMapping(mapping);
+                // Add the mapping to the descriptor.
+                getDescriptor().addMapping(mapping);
+            } else {
+            
+                // Create a M-M mapping and process common collection mapping
+                // metadata.
+                ManyToManyMapping mapping = new ManyToManyMapping();
+                process(mapping);
+                
+                // Process the JoinTable metadata.
+                processJoinTable(mapping);
+                
+                // Process properties
+                processProperties(mapping);
+    
+                // Add the mapping to the descriptor.
+                getDescriptor().addMapping(mapping);
+            }
         } else {
             // Create a 1-M mapping and process common collection mapping
             // metadata.
