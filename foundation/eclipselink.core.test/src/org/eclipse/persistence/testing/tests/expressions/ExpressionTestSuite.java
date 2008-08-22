@@ -16,7 +16,6 @@ import org.eclipse.persistence.testing.models.employee.domain.*;
 import org.eclipse.persistence.exceptions.*;
 import org.eclipse.persistence.expressions.*;
 import org.eclipse.persistence.platform.database.*;
-import org.eclipse.persistence.platform.database.oracle.*;
 import org.eclipse.persistence.queries.*;
 import org.eclipse.persistence.testing.models.collections.Restaurant;
 import org.eclipse.persistence.testing.models.multipletable.LargeBusinessProject;

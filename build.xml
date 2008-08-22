@@ -220,7 +220,7 @@
                 <include name="org/eclipse/persistence/**/*.class"/>
             </fileset>
              <fileset dir="${eclipselink.jpa}/${resource.dir}">
-                <include name="javax/persistence/*.xsd"/>
+                <include name="org/eclipse/persistence/jpa/*.xsd"/>
                 <include name="META-INF/services/javax.persistence.spi.PersistenceProvider"/>
             </fileset>
             <fileset dir="${eclipselink.moxy}/${classes.dir}">
@@ -253,7 +253,7 @@
                 <include name="org/eclipse/persistence/**/*.class"/>
             </fileset>
              <fileset dir="${eclipselink.jpa}/${resource.dir}">
-                <!-- javax/persistence/*.xsd files intentionally omitted to avoid package splitting issues in OSGI -->
+                <include name="org/eclipse/persistence/jpa/*.xsd"/>
                 <include name="META-INF/services/javax.persistence.spi.PersistenceProvider"/>
             </fileset>
         </jar>
