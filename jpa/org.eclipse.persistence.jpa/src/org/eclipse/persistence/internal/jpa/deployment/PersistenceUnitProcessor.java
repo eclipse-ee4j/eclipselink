@@ -56,7 +56,7 @@ public class PersistenceUnitProcessor {
     // JPA schema specs.
     private static final String SCHEMA_LANGUAGE = "http://java.sun.com/xml/jaxp/properties/schemaLanguage";
     private static final String XML_SCHEMA = "http://www.w3.org/2001/XMLSchema";
-    private static final String PERSISTENCE_SCHEMA_NAME = "javax/persistence/persistence_1_0.xsd";
+    private static final String PERSISTENCE_SCHEMA_NAME = "org/eclipse/persistence/jpa/persistence_1_0.xsd";
     private static final String JAXP_SCHEMA_SOURCE = "http://java.sun.com/xml/jaxp/properties/schemaSource";
     
     /**
@@ -349,7 +349,7 @@ public class PersistenceUnitProcessor {
         }
        
         // attempt to load the schema from the classpath
-        URL schemaURL = loader.getResource(PERSISTENCE_SCHEMA_NAME);
+        URL schemaURL = PersistenceUnitProcessor.class.getClassLoader().getResource(PERSISTENCE_SCHEMA_NAME);
         if (schemaURL != null) {
             try {
                 sp.setProperty(JAXP_SCHEMA_SOURCE, schemaURL.toString());

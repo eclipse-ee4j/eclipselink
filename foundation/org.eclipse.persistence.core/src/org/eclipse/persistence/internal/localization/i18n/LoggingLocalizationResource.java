@@ -334,7 +334,7 @@ public class LoggingLocalizationResource extends ListResourceBundle {
         { "persistence_unit_processor_jboss_temp_classloader_bypassed", "The temporary classLoader for PersistenceLoadProcessor [{0}] is not available.  Switching classLoader to [{1}].  Weaving has been disabled for this session. EclipseLink may be unable to get a spec mandated temporary class loader from the server, you may be able to use static weaving as an optional workaround. "},        
         { "persistence_unit_processor_error_in_class_forname_weaving_disabled", "The classLoader [{0}]: failed to load class [{1}]. Weaving has been disabled for this session. EclipseLink may be unable to get a spec mandated temporary class loader from the server, you may be able to use static weaving as an optional workaround. "},        
         { "entity_manager_sets_properties_while_context_is_active", "setProperties method called on EntityManager when active persistence context already exists therefore properties used to create persistence context will be ignored. "},
-        { "osgi_initializer_failed", "Construction of environment specific OSGi initializer, [{0}] failed with message: [{2}]."},
+        { "osgi_initializer_failed", "Construction of environment specific OSGi initializer, [{0}] failed with message: [{1}]."},
         { "osgi_initializer", "Using OSGi initializer: [{0}]."},
         { "entity_manager_ignores_nonjta_data_source", "Persistence unit uses JTA, therefore entity manager ignores non jta data source. "},        
         { "entity_manager_ignores_jta_data_source", "Persistence unit doesn't use JTA, therefore entity manager ignores jta data source. "},

@@ -51,7 +51,7 @@ public class XMLEntityMappingsWriter {
     public static void write(XMLEntityMappings entityMappings, Writer writer) {
         XMLContext context = new XMLContext(new XMLEntityMappingsMappingProject(XMLEntityMappingsReader.ECLIPSELINK_ORM_NAMESPACE, XMLEntityMappingsReader.ECLIPSELINK_ORM_XSD));
         XMLMarshaller marshaller = context.createMarshaller();
-        marshaller.setSchemaLocation(XMLEntityMappingsReader.ECLIPSELINK_ORM_XSD);
+        marshaller.setSchemaLocation(XMLEntityMappingsReader.ECLIPSELINK_ORM_NAMESPACE + " " + XMLEntityMappingsReader.ECLIPSELINK_ORM_XSD);
         marshaller.marshal(entityMappings, writer);
         
         try {

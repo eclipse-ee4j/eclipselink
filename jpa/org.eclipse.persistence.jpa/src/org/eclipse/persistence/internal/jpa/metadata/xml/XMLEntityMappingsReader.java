@@ -15,15 +15,22 @@
 package org.eclipse.persistence.internal.jpa.metadata.xml;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.io.UnsupportedEncodingException;
 import java.net.URL;
 
+import javax.xml.transform.stream.StreamSource;
+import javax.xml.validation.Schema;
+import javax.xml.validation.SchemaFactory;
+
 import org.eclipse.persistence.exceptions.ValidationException;
 
+import org.eclipse.persistence.oxm.XMLConstants;
 import org.eclipse.persistence.oxm.XMLContext;
 import org.eclipse.persistence.oxm.XMLUnmarshaller;
+import org.xml.sax.SAXException;
 
 /**
  * ORM.xml reader.
@@ -32,7 +39,7 @@ import org.eclipse.persistence.oxm.XMLUnmarshaller;
  * @since EclipseLink 1.0
  */
 public class XMLEntityMappingsReader {
-    public static final String ORM_XSD = "javax/persistence/orm_1_0.xsd";
+    public static final String ORM_XSD = "org/eclipse/persistence/jpa/orm_1_0.xsd";
     public static final String ORM_NAMESPACE = "http://java.sun.com/xml/ns/persistence/orm";
     public static final String ECLIPSELINK_ORM_XSD = "xsd/eclipselink_orm_1_0.xsd";
     public static final String ECLIPSELINK_ORM_NAMESPACE = "http://www.eclipse.org/eclipselink/xsds/persistence/orm";
@@ -56,12 +63,12 @@ public class XMLEntityMappingsReader {
         
         try {
             XMLUnmarshaller unmarshaller = m_ormProject.createUnmarshaller();
-            unmarshaller.setValidationMode(XMLUnmarshaller.SCHEMA_VALIDATION);
+            useLocalSchemaForUnmarshaller(unmarshaller, ORM_XSD);
             xmlEntityMappings = (XMLEntityMappings) unmarshaller.unmarshal(reader1);
         } catch (Exception e) {
             try {
                 XMLUnmarshaller unmarshaller = m_eclipseLinkOrmProject.createUnmarshaller();
-                unmarshaller.setValidationMode(XMLUnmarshaller.SCHEMA_VALIDATION);
+                useLocalSchemaForUnmarshaller(unmarshaller, ECLIPSELINK_ORM_XSD);
                 xmlEntityMappings = (XMLEntityMappings) unmarshaller.unmarshal(reader2);
             } catch (Exception ee) {
                 throw ValidationException.errorParsingMappingFile(mappingFileUrl, ee);
@@ -118,6 +125,30 @@ public class XMLEntityMappingsReader {
             } catch (IOException exception) {
                 throw ValidationException.fileError(exception);
             }
+        }
+    }
+
+        /**
+     * This method allows you to set an XML schema on a given unmarshaller.  It will get the schema from the same
+     * classloader that loaded this class and hence works for the case where the schema is shipped as part of EclipseLink
+     * @param unmarshaller
+     * @param schemaName
+     * @throws IOException
+     * @throws SAXException
+     */
+    private static void useLocalSchemaForUnmarshaller(XMLUnmarshaller unmarshaller, String schemaName) throws IOException, SAXException{
+        URL url = XMLEntityMappingsReader.class.getClassLoader().getResource(schemaName);
+        InputStream schemaStream = url.openStream();
+        StreamSource source = new StreamSource(url.openStream());
+        SchemaFactory schemaFactory = SchemaFactory.newInstance(XMLConstants.SCHEMA_URL);
+        Schema schema = schemaFactory.newSchema(source);
+        try{
+            unmarshaller.setSchema(schema);
+        } catch (UnsupportedOperationException ex){
+            // some parsers do not support setSchema.  In that case, setup validation another way
+            unmarshaller.setValidationMode(XMLUnmarshaller.SCHEMA_VALIDATION);
+        } finally{
+            schemaStream.close();
         }
     }
 }
