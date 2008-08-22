@@ -114,19 +114,19 @@
             <fileset dir="${eclipselink.core.base}/${plugins.dir}" includes="org.eclipse.persistence*.jar"/>
         </delete>
         <delete>
-            <fileset dir="${eclipselink.jpa.base}/${plugins.dir}" includes="${eclipselink.jpa.jar}_*.jar"/>
+            <fileset dir="${eclipselink.jpa.base}/${plugins.dir}" includes="${eclipselink.jpa.jar}*.jar"/>
         </delete>
         <delete>
-            <fileset dir="${eclipselink.moxy.base}/${plugins.dir}" includes="${eclipselink.moxy.jar}_*.jar"/>
+            <fileset dir="${eclipselink.moxy.base}/${plugins.dir}" includes="${eclipselink.moxy.jar}*.jar"/>
         </delete>
          <delete>
-            <fileset dir="${eclipselink.sdo.base}/${plugins.dir}" includes="${eclipselink.sdo.jar}_*.jar"/>
+            <fileset dir="${eclipselink.sdo.base}/${plugins.dir}" includes="${eclipselink.sdo.jar}*.jar"/>
         </delete>
         <delete>
-            <fileset dir="${eclipselink.plugins}" includes="${eclipselink.asm.jar}_*.jar"/>
+            <fileset dir="${eclipselink.plugins}" includes="${eclipselink.asm.jar}*.jar"/>
         </delete>
         <delete>
-            <fileset dir="${eclipselink.plugins}" includes="${eclipselink.antlr.jar}_*.jar"/>
+            <fileset dir="${eclipselink.plugins}" includes="${eclipselink.antlr.jar}*.jar"/>
         </delete>
     </target>
 
@@ -197,7 +197,7 @@
                 <include name="org/eclipse/persistence/**/*.class"/>
             </fileset>
              <fileset dir="${eclipselink.jpa}/${resource.dir}">
-                <include name="javax/persistence/*.xsd"/>
+                <include name="org/eclipse/persistence/jpa/*.xsd"/>
                 <include name="META-INF/services/javax.persistence.spi.PersistenceProvider"/>
             </fileset>
             <fileset dir="${eclipselink.moxy}/${classes.dir}">
@@ -211,11 +211,11 @@
     </target>
 
     <!-- Packages OSGI bundle jars. -->
+        <!-- Note: This target builds bundles that are parallell to the bundles built by target: build-eclipselink-source-bundles.  When updating this target, be careful to keep it in sync with build-eclipselink-source-bundles -->
     <target name="build-eclipselink-bundles" depends="create-build-dir, clean-eclipselink-bundles" description="build eclipselink bundles">
         <jar jarfile="${eclipselink.core.base}/${plugins.dir}/${eclipselink.core.jar}_${installer_id}.jar" manifest="${eclipselink.core}/META-INF/MANIFEST.MF">
             <fileset dir="${eclipselink.core}/${classes.dir}">
                 <include name="org/eclipse/persistence/**/*.class"/>
-                <include name="deprecated/**/*.class"/>
             </fileset>
             <fileset dir="${eclipselink.core}/${resource.dir}">
                 <include name="xsd/*.xsd"/>
@@ -230,7 +230,7 @@
                 <include name="org/eclipse/persistence/**/*.class"/>
             </fileset>
              <fileset dir="${eclipselink.jpa}/${resource.dir}">
-                <!-- javax/persistence/*.xsd files intentionally omitted to avoid package splitting issues in OSGI -->
+                <include name="org/eclipse/persistence/jpa/*.xsd"/>
                 <include name="META-INF/services/javax.persistence.spi.PersistenceProvider"/>
             </fileset>
         </jar>
@@ -262,7 +262,58 @@
         </jar>
     </target>
 
-    <target name="package-eclipselink-bundles" depends="build-eclipselink-bundles">
+    <!-- Note: This target builds bundles that are parallell to the bundles built by target: build-eclipselink-bundles.  When updating this target, be careful to keep it in sync with build-eclipselink-bundles -->
+    <target name="build-eclipselink-source-bundles" description="build source bundles for eclipselink OSGi bundles">
+        <jar jarfile="${eclipselink.core.base}/${plugins.dir}/${eclipselink.core.jar}.source_${installer_id}.jar" manifest="${eclipselink.core}/resource/source-bundle/MANIFEST.MF">
+            <fileset dir="${eclipselink.core}/${src.dir}">
+                <include name="org/eclipse/persistence/**/*.java"/>
+            </fileset>
+            <fileset dir="${eclipselink.core}/${resource.dir}">
+                <include name="xsd/*.xsd"/>
+                <include name="org/eclipse/persistence/internal/helper/VendorNameToPlatformMapping.properties"/>
+            </fileset>
+        </jar>
+        <jar jarfile="${eclipselink.jpa.base}/${plugins.dir}/${eclipselink.jpa.jar}.source_${installer_id}.jar" manifest="${eclipselink.jpa}/resource/source-bundle/MANIFEST.MF">
+            <fileset dir="${eclipselink.core}/${resource.dir}">
+                <include name="META-INF/services/javax.persistence.spi.PersistenceProvider"/>
+            </fileset>
+            <fileset dir="${eclipselink.jpa}/${src.dir}">
+                <include name="org/eclipse/persistence/**/*.java"/>
+            </fileset>
+             <fileset dir="${eclipselink.jpa}/${resource.dir}">
+                <include name="org/eclipse/persistence/jpa/*.xsd"/>
+                <include name="META-INF/services/javax.persistence.spi.PersistenceProvider"/>
+            </fileset>
+        </jar>
+        <jar jarfile="${eclipselink.moxy.base}/${plugins.dir}/${eclipselink.moxy.jar}.source_${installer_id}.jar" manifest="${eclipselink.moxy}/resource/source-bundle/MANIFEST.MF">
+            <fileset dir="${eclipselink.moxy}/${src.dir}">
+                <include name="org/eclipse/persistence/**/*.java"/>
+            </fileset>
+        </jar>
+        <jar jarfile="${eclipselink.sdo.base}/${plugins.dir}/${eclipselink.sdo.jar}.source_${installer_id}.jar" manifest="${eclipselink.sdo}/resource/source-bundle/MANIFEST.MF">
+            <fileset dir="${eclipselink.sdo}/${src.dir}">
+                <include name="org/eclipse/persistence/**/*.java"/>
+                <include name="commonj/sdo/impl/HelperProviderImpl.java"/>
+            </fileset>
+        </jar>
+        <jar jarfile="${eclipselink.core.base}/${plugins.dir}/${eclipselink.extension.oracle.jar}.source_${installer_id}.jar" manifest="${eclipselink.extension.oracle}/resource/source-bundle/MANIFEST.MF">
+            <fileset dir="${eclipselink.extension.oracle}/${src.dir}">
+                <include name="org/eclipse/persistence/**/*.java"/>
+            </fileset>
+        </jar>
+        <jar jarfile="${eclipselink.plugins}/${eclipselink.asm.jar}.source_${installer_id}.jar" manifest="${eclipselink.plugins}/${asm}/resource/source-bundle/MANIFEST.MF">
+            <fileset dir="${eclipselink.plugins}/${asm}/${src.dir}">
+                <include name="org/eclipse/persistence/**/*.java"/>
+            </fileset>
+        </jar>
+        <jar jarfile="${eclipselink.plugins}/${eclipselink.antlr.jar}.source_${installer_id}.jar" manifest="${eclipselink.plugins}/${antlr}/resource/source-bundle/MANIFEST.MF">
+            <fileset dir="${eclipselink.plugins}/${antlr}/${src.dir}">
+                <include name="org/eclipse/persistence/**/*.java"/>
+            </fileset>
+        </jar>
+    </target>
+
+    <target name="package-eclipselink-bundles" depends="build-eclipselink-bundles, build-eclipselink-source-bundles">
         <zip destfile="${eclipselink.plugins.install.prefix}${eclipselink.zip.suffix}">
             <zipfileset dir="${eclipselink.plugins}" prefix="plugins">
                 <include name="**.jar"/>
