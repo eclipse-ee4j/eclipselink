@@ -94,7 +94,7 @@
   <xsd:complexType name="dbws-type">
     <xsd:annotation>
       <xsd:documentation><![CDATA[
-         This is the XML Schema for TopLink Database WebService (DBWS) model.
+         This is the XML Schema for EclipseLink Database WebService (DBWS) model.
        ]]></xsd:documentation>
     </xsd:annotation>
     <xsd:sequence>
