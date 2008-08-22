@@ -30,6 +30,8 @@ import javax.xml.validation.Schema;
 import org.eclipse.persistence.platform.xml.SAXDocumentBuilder;
 import org.eclipse.persistence.platform.xml.XMLParser;
 import org.eclipse.persistence.platform.xml.XMLPlatformException;
+import org.eclipse.persistence.platform.xml.DefaultErrorHandler;
+
 import org.w3c.dom.Document;
 import org.xml.sax.EntityResolver;
 import org.xml.sax.ErrorHandler;
@@ -51,6 +53,7 @@ public class JAXPParser implements XMLParser {
     public JAXPParser() {
         super();
         documentBuilderFactory = DocumentBuilderFactory.newInstance();
+        errorHandler = new DefaultErrorHandler();
         setNamespaceAware(true);
         setWhitespacePreserving(false);
     }

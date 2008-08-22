@@ -38,6 +38,7 @@ import org.eclipse.persistence.oxm.XMLDescriptor;
 import org.eclipse.persistence.oxm.record.XMLRootRecord;
 import org.eclipse.persistence.oxm.XMLUnmarshaller;
 import org.eclipse.persistence.oxm.record.UnmarshalRecord;
+import org.eclipse.persistence.platform.xml.DefaultErrorHandler;
 import org.eclipse.persistence.platform.xml.XMLParser;
 import org.eclipse.persistence.platform.xml.XMLPlatformFactory;
 import org.eclipse.persistence.oxm.XMLUnmarshallerHandler;
@@ -87,6 +88,9 @@ public class SAXUnmarshaller implements PlatformUnmarshaller {
             
             saxParser = saxParserFactory.newSAXParser();
             xmlReader = new XMLReader(saxParser.getXMLReader());
+            
+            DefaultErrorHandler handler = new DefaultErrorHandler();
+            xmlReader.setErrorHandler(handler);
             xmlParser = XMLPlatformFactory.getInstance().getXMLPlatform().newXMLParser();
             xmlParser.setNamespaceAware(true);
             xmlParser.setValidationMode(XMLParser.NONVALIDATING);
