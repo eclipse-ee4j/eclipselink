@@ -52,41 +52,49 @@
         <antcall target="upload-artifact">
             <param name="artifactId" value="org.eclipse.persistence.core"/>
             <param name="artifact" value="${eclipselink.core.base}/${plugins.dir}/${eclipselink.core.bndl.prefix}_${installer_id}.jar"/>
+            <param name="artifactSrc" value="${eclipselink.core.base}/${plugins.dir}/${eclipselink.core.bndl.prefix}.source_${installer_id}.jar"/>
             <param name="artifactName" value="EclipseLink Core"/>
         </antcall>
         <antcall target="upload-artifact">
             <param name="artifactId" value="org.eclipse.persistence.jpa"/>
             <param name="artifact" value="${eclipselink.jpa.base}/${plugins.dir}/${eclipselink.jpa.bndl.prefix}_${installer_id}.jar"/>
+            <param name="artifactSrc" value="${eclipselink.jpa.base}/${plugins.dir}/${eclipselink.jpa.bndl.prefix}.source_${installer_id}.jar"/>
             <param name="artifactName" value="EclipseLink JPA"/>
         </antcall>
         <antcall target="upload-artifact">
             <param name="artifactId" value="org.eclipse.persistence.moxy"/>
             <param name="artifact" value="${eclipselink.moxy.base}/${plugins.dir}/${eclipselink.moxy.bndl.prefix}_${installer_id}.jar"/>
+            <param name="artifactSrc" value="${eclipselink.moxy.base}/${plugins.dir}/${eclipselink.moxy.bndl.prefix}.source_${installer_id}.jar"/>
             <param name="artifactName" value="EclipseLink Moxy"/>
         </antcall>
         <antcall target="upload-artifact">
             <param name="artifactId" value="org.eclipse.persistence.sdo"/>
             <param name="artifact" value="${eclipselink.sdo.base}/${plugins.dir}/${eclipselink.sdo.bndl.prefix}_${installer_id}.jar"/>
+            <param name="artifactSrc" value="${eclipselink.sdo.base}/${plugins.dir}/${eclipselink.sdo.bndl.prefix}.source_${installer_id}.jar"/>
             <param name="artifactName" value="EclipseLink SDO"/>
         </antcall>
         <antcall target="upload-artifact">
             <param name="artifactId" value="org.eclipse.persistence.oracle"/>
             <param name="artifact" value="${eclipselink.core.base}/${plugins.dir}/${eclipselink.extension.oracle.bndl.prefix}_${installer_id}.jar"/>
+            <param name="artifactSrc" value="${eclipselink.core.base}/${plugins.dir}/${eclipselink.extension.oracle.bndl.prefix}.source_${installer_id}.jar"/>
             <param name="artifactName" value="EclipseLink Oracle Extensions"/>
         </antcall>
         <antcall target="upload-artifact">
             <param name="artifactId" value="org.eclipse.persistence.antlr"/>
             <param name="artifact" value="${eclipselink.plugins}/${eclipselink.antlr.bndl.prefix}_${installer_id}.jar"/>
+            <param name="artifactSrc" value="${eclipselink.plugins}/${eclipselink.antlr.bndl.prefix}.source_${installer_id}.jar"/>
             <param name="artifactName" value="EclipseLink ANTLR"/>
         </antcall>
         <antcall target="upload-artifact">
             <param name="artifactId" value="org.eclipse.persistence.asm"/>
             <param name="artifact" value="${eclipselink.plugins}/${eclipselink.asm.bndl.prefix}_${installer_id}.jar"/>
+            <param name="artifactSrc" value="${eclipselink.plugins}/${eclipselink.asm.bndl.prefix}.source_${installer_id}.jar"/>
             <param name="artifactName" value="EclipseLink ASM"/>
         </antcall>
         <antcall target="upload-artifact">
             <param name="artifactId" value="eclipselink"/>
             <param name="artifact" value="${eclipselink.jar.name}"/>
+            <param name="artifactSrc" value="${eclipselink.src.install.prefix}${eclipselink.zip.suffix}"/>
             <param name="artifactName" value="EclipseLink"/>
        </antcall>
    </target>
@@ -109,7 +117,7 @@
        <artifact:deploy file="${artifact}">
          <remoteRepository refid="eclipselink.repository"/>
          <pom refid="maven.project"/>
-         <artifact:attach file="${eclipselink.src.install.prefix}${eclipselink.zip.suffix}" classifier="sources"/>
+         <artifact:attach file="${artifactSrc}" classifier="sources"/>
        </artifact:deploy>
 
        <!-- cleanup -->
