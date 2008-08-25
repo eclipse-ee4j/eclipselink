@@ -76,7 +76,7 @@ public class VersionAccessor extends BasicAccessor {
      */
     @Override
     public void process() {
-        // This will initialize the m_field variable.
+        // This will initialize the m_field variable. Accessible through getField().
         super.process();
         
         // Process an @Version or version element if there is one.
