@@ -218,15 +218,15 @@ public class EntityMappingsAdvancedJUnitTestCase extends JUnitTestCase {
     
     /**
      * Verifies that the change tracking metadata is correctly processed.
-     * Employee has an AUTO setting which means internally an
-     * AttributeChangePolicy should be set since the class has been weaved.
+     * Employee has an AUTO setting, but has EAGER collections and transformation mapping
+     * so should not be change tracked.
      */
     public void testEmployeeChangeTrackingPolicy() {
         ServerSession session = JUnitTestCase.getServerSession(m_persistenceUnit);
         ClassDescriptor descriptor = session.getDescriptor(Employee.class);
      
         assertFalse("Employee descriptor was not found in the PU [" + m_persistenceUnit + "]", descriptor == null);
-        assertTrue("Employee descriptor has incorrect object change policy", descriptor.getObjectChangePolicy().isAttributeChangeTrackingPolicy());
+        assertFalse("Employee descriptor has incorrect object change policy", descriptor.getObjectChangePolicy().isAttributeChangeTrackingPolicy());
     }
     
     /**
