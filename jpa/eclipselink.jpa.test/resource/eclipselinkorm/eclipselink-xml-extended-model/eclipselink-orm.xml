@@ -117,6 +117,7 @@
                 <cascade>
                     <cascade-all/>
                 </cascade>
+                <property name="attributeName" value="managedEmployees"/>
             </one-to-many>
             <one-to-many name="dealers" target-entity="Dealer">
                 <join-column name="FK_EMP_ID"/>
@@ -124,6 +125,7 @@
                     <cascade-persist/>
                     <cascade-merge/>
                 </cascade>
+                <property name="attributeName" value="dealers"/>
             </one-to-many>
             <many-to-many name="projects" target-entity="Project">
                 <order-by>name</order-by>
@@ -256,6 +258,7 @@
                     <cascade-persist/>
                     <cascade-merge/>
                 </cascade>
+                <property name="attributeName" value="customers"/>
             </one-to-many>
         </attributes>
     </entity>

@@ -995,72 +995,6 @@ public class EntityMappingsAdvancedJUnitTestCase extends JUnitTestCase {
         return errorMsg;
     }
     
-    protected List<Employee> createEmployeesWithUnidirectionalMappings(String lastName) {
-        int n = 2;
-        List<Employee> employees = new ArrayList<Employee>(n);
-        for(int i=0; i<n; i++) {
-            Employee emp = new Employee();
-            emp.setFirstName(Integer.toString(i+1));
-            emp.setLastName(lastName);
-            employees.add(emp);
-            for(int j=0; j<n; j++) {
-                Dealer dealer = new Dealer();
-                dealer.setFirstName(emp.getFirstName() + "_" + Integer.toString(j+1));
-                dealer.setLastName(lastName);
-                emp.addDealer(dealer);
-                for(int k=0; k<n; k++) {
-                    Customer customer = new Customer();
-                    customer.setFirstName(dealer.getFirstName() + "_" + Integer.toString(k+1));
-                    customer.setLastName(lastName);
-                    dealer.addCustomer(customer);
-                }
-            }
-        }
-        return employees;
-    }
-    
-    protected List<Employee> persistEmployeesWithUnidirectionalMappings(String lastName) {
-        EntityManager em = createEntityManager();
-        try {
-            return persistEmployeesWithUnidirectionalMappings(lastName, em);
-        } finally {
-            em.close();
-        }
-    }
-    
-    protected List<Employee> persistEmployeesWithUnidirectionalMappings(String lastName, EntityManager em) {
-        List<Employee> employees = createEmployeesWithUnidirectionalMappings(lastName);
-        beginTransaction(em);
-        try {
-            for(int i=0; i<employees.size(); i++) {
-                em.persist(employees.get(i));
-            }
-            commitTransaction(em);
-        } finally {
-            if(this.isTransactionActive(em)) {
-                rollbackTransaction(em);
-            }
-        }
-        return employees;
-    }
-    
-    protected void deleteEmployeesWithUnidirectionalMappings(String lastName) {
-        EntityManager em = createEntityManager();
-        beginTransaction(em);
-        try {
-            em.createQuery("DELETE FROM AdvancedCustomer c WHERE c.lastName = '"+lastName+"'").executeUpdate();
-            em.createQuery("DELETE FROM Dealer d WHERE d.lastName = '"+lastName+"'").executeUpdate();
-            em.createQuery("DELETE FROM Employee e WHERE e.lastName = '"+lastName+"'").executeUpdate();
-            commitTransaction(em);
-        } finally {
-            if(this.isTransactionActive(em)) {
-                rollbackTransaction(em);
-            }
-            em.close();
-            clearCache();
-        }
-    }
-    
     public void testUnidirectionalPersist() {
         String lastName = "testUnidirectionalPersist";
         
@@ -1071,7 +1005,7 @@ public class EntityMappingsAdvancedJUnitTestCase extends JUnitTestCase {
         clearCache();
         
         // read the persisted employees back
-        EntityManager em = createEntityManager();
+        EntityManager em = createEntityManager(m_persistenceUnit);
         List<Employee> employeesRead = em.createQuery("SELECT OBJECT(e) FROM XMLEmployee e WHERE e.lastName = '"+lastName+"'").getResultList();
         closeEntityManager(em);
 
@@ -1108,7 +1042,7 @@ public class EntityMappingsAdvancedJUnitTestCase extends JUnitTestCase {
         String lastName = "testUnidirectionalUpdate";
 
         // em used for both persist and update
-        EntityManager em = createEntityManager();
+        EntityManager em = createEntityManager(m_persistenceUnit);
         // persist employees
         List<Employee> employeesPersisted = persistEmployeesWithUnidirectionalMappings(lastName, em);
         // update persisted employees:
@@ -1131,7 +1065,7 @@ public class EntityMappingsAdvancedJUnitTestCase extends JUnitTestCase {
         // clear cache
         clearCache();
         
-        em = createEntityManager();
+        em = createEntityManager(m_persistenceUnit);
         // read the updated employees back
         List<Employee> employeesRead = em.createQuery("SELECT OBJECT(e) FROM XMLEmployee e WHERE e.lastName = '"+lastName+"'").getResultList();
         closeEntityManager(em);
@@ -1174,7 +1108,7 @@ public class EntityMappingsAdvancedJUnitTestCase extends JUnitTestCase {
         // clear cache
         clearCache();
         
-        EntityManager em = createEntityManager();
+        EntityManager em = createEntityManager(m_persistenceUnit);
         // read the persisted employees back - without fetch join
         List<Employee> employeesRead = em.createQuery("SELECT OBJECT(e) FROM XMLEmployee e WHERE e.lastName = '"+lastName+"'").getResultList();
         closeEntityManager(em);
@@ -1183,7 +1117,7 @@ public class EntityMappingsAdvancedJUnitTestCase extends JUnitTestCase {
         clearCache();
         
         // read the persisted employees back - with fetch join. 
-        em = createEntityManager();
+        em = createEntityManager(m_persistenceUnit);
         List<Employee> employeesReadWithFetchJoin = em.createQuery("SELECT e FROM XMLEmployee e JOIN FETCH e.dealers WHERE e.lastName = '"+lastName+"'").getResultList();
         closeEntityManager(em);
         
@@ -1210,4 +1144,70 @@ public class EntityMappingsAdvancedJUnitTestCase extends JUnitTestCase {
             fail(errorMsg);
         }
     }
+
+    protected List<Employee> createEmployeesWithUnidirectionalMappings(String lastName) {
+        int n = 2;
+        List<Employee> employees = new ArrayList<Employee>(n);
+        for(int i=0; i<n; i++) {
+            Employee emp = new Employee();
+            emp.setFirstName(Integer.toString(i+1));
+            emp.setLastName(lastName);
+            employees.add(emp);
+            for(int j=0; j<n; j++) {
+                Dealer dealer = new Dealer();
+                dealer.setFirstName(emp.getFirstName() + "_" + Integer.toString(j+1));
+                dealer.setLastName(lastName);
+                emp.addDealer(dealer);
+                for(int k=0; k<n; k++) {
+                    Customer customer = new Customer();
+                    customer.setFirstName(dealer.getFirstName() + "_" + Integer.toString(k+1));
+                    customer.setLastName(lastName);
+                    dealer.addCustomer(customer);
+                }
+            }
+        }
+        return employees;
+    }
+    
+    protected List<Employee> persistEmployeesWithUnidirectionalMappings(String lastName) {
+        EntityManager em = createEntityManager(m_persistenceUnit);
+        try {
+            return persistEmployeesWithUnidirectionalMappings(lastName, em);
+        } finally {
+            em.close();
+        }
+    }
+    
+    protected List<Employee> persistEmployeesWithUnidirectionalMappings(String lastName, EntityManager em) {
+        List<Employee> employees = createEmployeesWithUnidirectionalMappings(lastName);
+        beginTransaction(em);
+        try {
+            for(int i=0; i<employees.size(); i++) {
+                em.persist(employees.get(i));
+            }
+            commitTransaction(em);
+        } finally {
+            if(this.isTransactionActive(em)) {
+                rollbackTransaction(em);
+            }
+        }
+        return employees;
+    }
+    
+    protected void deleteEmployeesWithUnidirectionalMappings(String lastName) {
+        EntityManager em = createEntityManager(m_persistenceUnit);
+        beginTransaction(em);
+        try {
+            em.createQuery("DELETE FROM XMLAdvancedCustomer c WHERE c.lastName = '"+lastName+"'").executeUpdate();
+            em.createQuery("DELETE FROM XMLDealer d WHERE d.lastName = '"+lastName+"'").executeUpdate();
+            em.createQuery("DELETE FROM XMLEmployee e WHERE e.lastName = '"+lastName+"'").executeUpdate();
+            commitTransaction(em);
+        } finally {
+            if(this.isTransactionActive(em)) {
+                rollbackTransaction(em);
+            }
+            em.close();
+            clearCache();
+        }
+    }    
 }
