@@ -39,6 +39,8 @@ public class CacheStatementBatchWritingTest extends TransactionalTestCase {
         this.shouldBindAllParams = getSession().getPlatform().shouldBindAllParameters();
         getSession().getPlatform().setShouldCacheAllStatements(true);
         getSession().getPlatform().setShouldBindAllParameters(true);
+        //clear the statement cache for bug 245003 
+        ((DatabaseAccessor)getAbstractSession().getAccessor()).clearStatementCache((AbstractSession)getSession());
     }
 
     public void reset() {
