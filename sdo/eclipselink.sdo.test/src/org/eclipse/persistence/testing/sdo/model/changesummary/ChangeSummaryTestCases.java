@@ -59,6 +59,7 @@ public class ChangeSummaryTestCases extends SDOTestCase {
 
         rootProperty = (SDOProperty)rootType.getDeclaredPropertiesMap().get("property-Containment");
         rootProperty1 = (SDOProperty)rootType.getDeclaredPropertiesMap().get("property1-Containment");
+        rootProperty1.setNullable(true);
 
         DataObject contained_typeDO = defineType("containedUri", "containedType");
 

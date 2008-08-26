@@ -227,7 +227,7 @@ public class SDOCopyHelperDeepCopyTest extends SDOCopyEqualityHelperTestCases {
         // clear complex child
         root.set("rootproperty2-notdatatype", null);
         SDODataObject copyOfRoot = (SDODataObject)((SDOCopyHelper)copyHelper).copy(root, getChangeSummary());
-        assertTrue(root.isSet("rootproperty2-notdatatype"));
+        assertFalse(root.isSet("rootproperty2-notdatatype"));
         assertNotNull(copyOfRoot);
         // this assertion previously failed before fix for #5852525    	
         assertFalse(equalityHelper.equal(root, copyOfRoot));
