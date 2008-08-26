@@ -231,6 +231,27 @@ public class PrivilegedAccessHelper {
     }
     
     /**
+     * Get a public method declared in the given class. Wrap the call in doPrivileged if necessary. 
+     * This call will traverse the superclasses. The shouldSetAccessible parameter allows the the 
+     * setAccessible API to be called as well. This option was added to avoid making multiple 
+     * doPrivileged calls within MethodBasedAttributeAccessor.
+     * 
+     * @param javaClass The class to get the method from
+     * @param methodName The name of the method to get
+     * @param methodParameterTypes A list of classes representing the classes of the parameters of the method
+     * @param shouldSetAccessible whether or not to call the setAccessible API
+     * @throws java.lang.NoSuchMethodException
+     */
+    public static Method getPublicMethod(final Class javaClass, final String methodName, final Class[] methodParameterTypes, final boolean shouldSetAccessible) throws NoSuchMethodException {
+        // Return the (public) method - will traverse superclass(es) if necessary
+        Method method = javaClass.getMethod(methodName, methodParameterTypes);
+        if (shouldSetAccessible) {
+            method.setAccessible(true);
+        }
+        return method;
+    }
+
+    /**
      * Get the list of methods in a class. Wrap the call in doPrivileged if 
      * necessary. Excludes inherited methods.
      * @param clazz the class to get the methods from.

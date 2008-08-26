@@ -22,14 +22,26 @@ public class PrivilegedGetMethod implements PrivilegedExceptionAction<Method> {
     private String methodName;
     private Class[] methodParameterTypes;
     private boolean shouldSetAccessible;
+    private boolean publicOnly;
     
     public PrivilegedGetMethod(Class clazz, String methodName, Class[] methodParameterTypes, boolean shouldSetAccessible) {
         this.clazz = clazz;
         this.methodName = methodName;
         this.methodParameterTypes = methodParameterTypes;
+        this.publicOnly = false;
+    }
+
+    public PrivilegedGetMethod(Class clazz, String methodName, Class[] methodParameterTypes, boolean shouldSetAccessible, boolean publicOnly) {
+        this.clazz = clazz;
+        this.methodName = methodName;
+        this.methodParameterTypes = methodParameterTypes;
+        this.publicOnly = publicOnly;
     }
 
     public Method run() throws NoSuchMethodException {
+        if (publicOnly) {
+            return PrivilegedAccessHelper.getPublicMethod(clazz, methodName, methodParameterTypes, shouldSetAccessible);
+        }
         return PrivilegedAccessHelper.getMethod(clazz, methodName, methodParameterTypes, shouldSetAccessible);
     }
 
