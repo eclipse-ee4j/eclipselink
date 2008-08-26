@@ -1002,7 +1002,7 @@ public class EntityMappingsAdvancedJUnitTestCase extends JUnitTestCase {
         List<Employee> employeesPersisted = persistEmployeesWithUnidirectionalMappings(lastName);
         
         // clear cache
-        clearCache();
+        clearCache(m_persistenceUnit);
         
         // read the persisted employees back
         EntityManager em = createEntityManager(m_persistenceUnit);
@@ -1063,7 +1063,7 @@ public class EntityMappingsAdvancedJUnitTestCase extends JUnitTestCase {
         }
         
         // clear cache
-        clearCache();
+        clearCache(m_persistenceUnit);
         
         em = createEntityManager(m_persistenceUnit);
         // read the updated employees back
@@ -1106,7 +1106,7 @@ public class EntityMappingsAdvancedJUnitTestCase extends JUnitTestCase {
         persistEmployeesWithUnidirectionalMappings(lastName);
         
         // clear cache
-        clearCache();
+        clearCache(m_persistenceUnit);
         
         EntityManager em = createEntityManager(m_persistenceUnit);
         // read the persisted employees back - without fetch join
@@ -1114,7 +1114,7 @@ public class EntityMappingsAdvancedJUnitTestCase extends JUnitTestCase {
         closeEntityManager(em);
         
         // clear cache
-        clearCache();
+        clearCache(m_persistenceUnit);
         
         // read the persisted employees back - with fetch join. 
         em = createEntityManager(m_persistenceUnit);
@@ -1207,7 +1207,7 @@ public class EntityMappingsAdvancedJUnitTestCase extends JUnitTestCase {
                 rollbackTransaction(em);
             }
             em.close();
-            clearCache();
+            clearCache(m_persistenceUnit);
         }
     }    
 }
