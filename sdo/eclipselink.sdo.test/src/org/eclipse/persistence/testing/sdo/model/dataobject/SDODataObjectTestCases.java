@@ -33,12 +33,14 @@ public class SDODataObjectTestCases extends SDOTestCase {//TestCase {
     protected static final String DEFINED_PROPERTY_NAME_A_B = "propertyName_a/propertyName";
     protected static final int DEFINED_PROPERTY_INDEX = 0;
     protected static final String UNDEFINED_PROPERTY_NAME = "unPropertyName";
-    protected static final int UNDEFINED_PROPERTY_INDEX = 1;
+    protected static final int UNDEFINED_PROPERTY_INDEX = 2;
     protected static final String DEFINED_ReadOnly_PROPERTY_NAME = "ReadOnlyPropertyName";
     protected static final String CONTROL_STRING_1 = "test1";
     protected static final String CONTROL_STRING_2 = "test2";
     protected static final String DEFAULT_VALUE = "default";
     protected static final int MINUS_ONE = -1;
+    protected static final String DEFINED_MANY_PROPERTY_NAME = "manyPropertyName";
+    protected static final int DEFINED_MANY_PROPERTY_INDEX = 1;
 
     // move this up to SDOTestCase
     //protected HelperContext aHelperContext;
@@ -55,6 +57,12 @@ public class SDODataObjectTestCases extends SDOTestCase {//TestCase {
         property.setName(DEFINED_PROPERTY_NAME);
         property.setDefault(DEFAULT_VALUE);
         type.addDeclaredProperty(property);
+
+        SDOProperty manyProperty = new SDOProperty(aHelperContext);
+        manyProperty.setName(DEFINED_MANY_PROPERTY_NAME);
+        manyProperty.setDefault(DEFAULT_VALUE);
+        manyProperty.setMany(true);
+        type.addDeclaredProperty(manyProperty);
 
         SDOType type_Not_Open = new SDOType(URINAME, TYPENAME);
         type_Not_Open.setOpen(false);

@@ -428,8 +428,8 @@ public class PluggableTest extends PluggableTestCases {
         // verify set status
         boolean addressSet = anEmployee.isSet(TEST_EMPLOYEE_ADDRESS_FIELD_NAME);
 
-        // isSet status should be true (even for set(property, null)
-        assertTrue(addressSet);
+        // isSet status should be false for set(property, null)
+        assertFalse(addressSet);
 
     }
 

@@ -770,16 +770,16 @@ public class SDODataObject implements DataObject, SequencedObject {
             throw new UnsupportedOperationException("Property is Readonly." + property.getName() + "  " + getType().getName());
         }
         
-        // TODO: can't set null on a non-nullable property - we will either:
+        // Can't set null on a non-nullable property - implementation specific handling, one of:
         // 1) perform an unset operation
         // 2) throw new UnsupportedOperationException("Property ["+ property.getName() +"] is non-nullable");
-        //if (value == null && !property.isNullable()) {
-        //    ???
-        //}
-        
-        setInternal(property, value, updateSequence);
+        // We will perform an unset op...
+        if (value == null && !property.isNullable()) {
+            unset(property, false, updateSequence);
+        } else {
+            setInternal(property, value, updateSequence);
+        }
     }
-
 
     public boolean isSet(Property property) {
         if (null == property) {

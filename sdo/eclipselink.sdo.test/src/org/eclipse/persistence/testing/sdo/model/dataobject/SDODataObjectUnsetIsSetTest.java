@@ -180,4 +180,20 @@ public class SDODataObjectUnsetIsSetTest extends SDODataObjectTestCases {
         }
         fail("An SDOException should have occurred.");
     }
+
+    //purpose: set a non-nullable property's value to null - this should result in an unset op
+    public void testSetNonNullablePropertyToNull() {
+        Property test = dataObject.getInstanceProperty(DEFINED_PROPERTY_NAME);
+        dataObject.set(test, null);
+        // TODO: Verify ValueStore refactor does not change behavior
+        assertTrue("Set non-nullable property to null didn't result in an unset operation being performed as expected", dataObject.isSet(test) == false);
+    }
+
+    //purpose: set a non-nullable many property's value to null - this should result in an unset op
+    public void testSetNonNullableManyPropertyToNull() {
+        Property test = dataObject.getInstanceProperty(DEFINED_MANY_PROPERTY_NAME);
+        dataObject.set(test, null);
+        // TODO: Verify ValueStore refactor does not change behavior
+        assertTrue("Set non-nullable many property to null didn't result in an unset operation being performed as expected", dataObject.isSet(test) == false);
+    }
 }

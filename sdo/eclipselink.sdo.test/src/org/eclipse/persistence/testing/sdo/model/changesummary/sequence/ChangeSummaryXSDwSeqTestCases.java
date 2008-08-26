@@ -2255,6 +2255,9 @@ public class ChangeSummaryXSDwSeqTestCases extends SDOTestCase {
     }
 
     public void testUnsetSimpleIDSetToNullOnRoot() {
+        SDOProperty idProperty = (SDOProperty) ((SDOType)rootObject.getType()).getDeclaredPropertiesMap().get("poId");
+        idProperty.setNullable(true);
+        
         rootObject.set("poId", null);
         cs.beginLogging();
         rootObject.unset("poId");
