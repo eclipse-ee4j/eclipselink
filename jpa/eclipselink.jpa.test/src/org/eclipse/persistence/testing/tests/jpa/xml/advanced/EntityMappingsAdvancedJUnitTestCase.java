@@ -1007,6 +1007,8 @@ public class EntityMappingsAdvancedJUnitTestCase extends JUnitTestCase {
         // read the persisted employees back
         EntityManager em = createEntityManager(m_persistenceUnit);
         List<Employee> employeesRead = em.createQuery("SELECT OBJECT(e) FROM XMLEmployee e WHERE e.lastName = '"+lastName+"'").getResultList();
+        // while em is open, cache ServerSession that will be used later for verification
+        ServerSession session = ((EntityManagerImpl)em).getServerSession();
         closeEntityManager(em);
 
         // verify number persisted and read is the same
@@ -1017,7 +1019,6 @@ public class EntityMappingsAdvancedJUnitTestCase extends JUnitTestCase {
         }
 
         // verify that the persisted and read objects are equal
-        ServerSession session = JUnitTestCase.getServerSession();
         String errorMsg = "";
         for(int i=0; i<employeesPersisted.size(); i++) {
             for(int j=0; j<employeesRead.size(); j++) {
@@ -1068,6 +1069,8 @@ public class EntityMappingsAdvancedJUnitTestCase extends JUnitTestCase {
         em = createEntityManager(m_persistenceUnit);
         // read the updated employees back
         List<Employee> employeesRead = em.createQuery("SELECT OBJECT(e) FROM XMLEmployee e WHERE e.lastName = '"+lastName+"'").getResultList();
+        // while em is open, cache ServerSession that will be used later for verification
+        ServerSession session = ((EntityManagerImpl)em).getServerSession();
         closeEntityManager(em);
         
         // verify number persisted and read is the same
@@ -1078,7 +1081,6 @@ public class EntityMappingsAdvancedJUnitTestCase extends JUnitTestCase {
         }
         
         // verify that the persisted and read objects are equal
-        ServerSession session = JUnitTestCase.getServerSession();
         String errorMsg = "";
         for(int i=0; i<employeesPersisted.size(); i++) {
             for(int j=0; j<employeesRead.size(); j++) {
@@ -1119,6 +1121,8 @@ public class EntityMappingsAdvancedJUnitTestCase extends JUnitTestCase {
         // read the persisted employees back - with fetch join. 
         em = createEntityManager(m_persistenceUnit);
         List<Employee> employeesReadWithFetchJoin = em.createQuery("SELECT e FROM XMLEmployee e JOIN FETCH e.dealers WHERE e.lastName = '"+lastName+"'").getResultList();
+        // while em is open, cache ServerSession that will be used later for verification
+        ServerSession session = ((EntityManagerImpl)em).getServerSession();
         closeEntityManager(em);
         
         // verify that the persisted and read employees are the same.
@@ -1133,7 +1137,6 @@ public class EntityMappingsAdvancedJUnitTestCase extends JUnitTestCase {
                 employeesControl.add(employeesRead.get(i));
             }
         }
-        ServerSession session = JUnitTestCase.getServerSession();
         String errorMsg = JoinedAttributeTestHelper.compareCollections(employeesControl, employeesReadWithFetchJoin, session.getClassDescriptor(Employee.class), session);
         
         // clean-up
