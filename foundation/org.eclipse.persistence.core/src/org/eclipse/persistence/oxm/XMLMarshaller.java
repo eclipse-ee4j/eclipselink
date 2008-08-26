@@ -654,11 +654,15 @@ public class XMLMarshaller {
             if (xmlRootUri != null) {
                 if (descriptor != null) {
                     String xmlRootPrefix = marshalRecord.getNamespaceResolver().resolveNamespaceURI(xmlRootUri);
-                    if (xmlRootPrefix == null) {
+                    if (xmlRootPrefix == null && !(xmlRootUri.equals(marshalRecord.getNamespaceResolver().getDefaultNamespaceURI()))) {
                         xmlRootPrefix = marshalRecord.getNamespaceResolver().generatePrefix();
                         marshalRecord.getNamespaceResolver().put(xmlRootPrefix, xmlRootUri);
                     }
-                    rootFragment.setXPath(xmlRootPrefix + ":" + xmlRootLocalName);
+                    if(xmlRootPrefix == null) {
+                        rootFragment.setXPath(xmlRootLocalName);
+                    } else {
+                        rootFragment.setXPath(xmlRootPrefix + ":" + xmlRootLocalName);
+                    }
                 } else {
                     String xmlRootPrefix = "ns0";
                     marshalRecord.getNamespaceResolver().put(xmlRootPrefix, xmlRootUri);
@@ -852,12 +856,14 @@ public class XMLMarshaller {
                 String recordName = ((XMLRoot) object).getLocalName();
                 if (xmlRootUri != null) {
                     xmlRootPrefix = resolver.resolveNamespaceURI(xmlRootUri);
-                    if (xmlRootPrefix == null) {
+                    if (xmlRootPrefix == null && !(xmlRootUri.equals(resolver.getDefaultNamespaceURI()))) {
                         xmlRootPrefix = resolver.generatePrefix();
                         resolver.put(xmlRootPrefix, xmlRootUri);
                         shouldCallSetAttributeNS = true;
                     }
-                    recordName = xmlRootPrefix + ":" + recordName;
+                    if(xmlRootPrefix != null) {
+                        recordName = xmlRootPrefix + ":" + recordName;
+                    }
                 }
                 xmlRow = (XMLRecord) ((XMLObjectBuilder) descriptor.getObjectBuilder()).createRecordFor(((XMLRoot) object).getObject(), xmlContext.getDocumentPreservationPolicy(session), recordName, xmlRootUri);
                 xmlRow.setMarshaller(this);
