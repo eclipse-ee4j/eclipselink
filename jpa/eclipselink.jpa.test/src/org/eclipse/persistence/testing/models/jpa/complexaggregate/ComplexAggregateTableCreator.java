@@ -30,6 +30,17 @@ public class ComplexAggregateTableCreator extends org.eclipse.persistence.tools.
         TableDefinition table = new TableDefinition();
         table.setName("CMP3_CITYSLICKER");
 
+        FieldDefinition fieldID = new FieldDefinition();
+        fieldID.setName("ID");
+        fieldID.setTypeName("NUMBER");
+        fieldID.setSize(19);
+        fieldID.setSubSize(0);
+        fieldID.setIsPrimaryKey(true);
+        fieldID.setIsIdentity(false);
+        fieldID.setUnique(true);
+        fieldID.setShouldAllowNull(false);
+        table.addField(fieldID);
+        
         FieldDefinition fieldFNAME = new FieldDefinition();
         fieldFNAME.setName("FNAME");
         fieldFNAME.setTypeName("VARCHAR2");
@@ -93,6 +104,17 @@ public class ComplexAggregateTableCreator extends org.eclipse.persistence.tools.
         TableDefinition table = new TableDefinition();
         table.setName("CMP3_COUNTRY_DWELLER");
 
+        FieldDefinition fieldID = new FieldDefinition();
+        fieldID.setName("ID");
+        fieldID.setTypeName("NUMBER");
+        fieldID.setSize(19);
+        fieldID.setSubSize(0);
+        fieldID.setIsPrimaryKey(true);
+        fieldID.setIsIdentity(false);
+        fieldID.setUnique(true);
+        fieldID.setShouldAllowNull(false);
+        table.addField(fieldID);
+        
         FieldDefinition fieldFNAME = new FieldDefinition();
         fieldFNAME.setName("FNAME");
         fieldFNAME.setTypeName("VARCHAR2");

@@ -14,8 +14,11 @@ package org.eclipse.persistence.testing.models.jpa.complexaggregate;
 
 import javax.persistence.*;
 
+import static javax.persistence.GenerationType.IDENTITY;
+
 @Embeddable
 public class Name  {
+    private int id;
 	private String firstName;
 	private String lastName;
     
@@ -26,6 +29,11 @@ public class Name  {
         return firstName;
     }
     
+    @GeneratedValue(strategy = IDENTITY)
+    public int getId() {
+        return id;
+    }
+    
     @Column(name="LNAME")
     public String getLastName() {
         return lastName;
@@ -33,6 +41,10 @@ public class Name  {
     
     public void setFirstName(String firstName) {
         this.firstName = firstName;
+    }
+    
+    public void setId(int id) {
+        this.id = id;
     }
     
     public void setLastName(String lastName) {
