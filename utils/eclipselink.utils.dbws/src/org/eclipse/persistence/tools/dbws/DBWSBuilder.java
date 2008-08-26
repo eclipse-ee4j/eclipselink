@@ -375,7 +375,7 @@ public class DBWSBuilder extends DBWSBuilderModel {
     public void build(OutputStream dbwsSchemaStream, OutputStream dbwsSessionsStream,
         OutputStream dbwsServiceStream, OutputStream dbwsOrStream, OutputStream dbwsOxStream,
         OutputStream swarefStream, OutputStream webXmlStream, OutputStream webservicesXmlStream,
-        OutputStream oracleWebservicesXmlStream, OutputStream wsdlStream,
+        OutputStream platformWebservicesXmlStream, OutputStream wsdlStream,
         OutputStream codeGenProviderStream, OutputStream sourceProviderStream, Logger logger)
         throws WSDLException {
 
@@ -397,7 +397,7 @@ public class DBWSBuilder extends DBWSBuilderModel {
         buildWSDL(wsdlStream);
         writeWebXML(webXmlStream);
         writeWebservicesXML(webservicesXmlStream);
-        writePlatformWebservicesXML(oracleWebservicesXmlStream);
+        writePlatformWebservicesXML(platformWebservicesXmlStream);
         writeDBWSProviderClass(codeGenProviderStream);
         writeDBWSProviderSource(sourceProviderStream);
         writeSchema(dbwsSchemaStream); // now write out schema
