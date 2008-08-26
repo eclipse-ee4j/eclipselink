@@ -24,14 +24,14 @@ public class DataHelperToDayWithCalnTest extends DataHelperTestCases {
         controlCalendar.clear();
         controlCalendar.set(Calendar.DATE, 15);
         String tm = dataHelper.toDay(controlCalendar);
-        this.assertEquals("----15", tm);
+        this.assertEquals("---15", tm);
     }
 
     public void testToDateTimeWithDefault() {
         Calendar controlCalendar = Calendar.getInstance();
         controlCalendar.clear();
         String tm = dataHelper.toDay(controlCalendar);
-        this.assertEquals("----01", tm);
+        this.assertEquals("---01", tm);
     }
 
     public void testToDateTimeWithNullInput() {

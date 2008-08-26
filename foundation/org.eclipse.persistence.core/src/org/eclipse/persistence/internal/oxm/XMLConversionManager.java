@@ -56,7 +56,7 @@ public class XMLConversionManager extends ConversionManager implements TimeZoneH
     protected DateFormatThreadLocal timeFormatter;
     protected static final String XSD_DATE_TIME_FORMAT_STR = "yyyy-MM-dd'T'HH:mm:ss";
     protected DateFormatThreadLocal dateTimeFormatter;
-    protected static final String XSD_GDAY_FORMAT_STR = "----dd";
+    protected static final String XSD_GDAY_FORMAT_STR = "---dd";
     protected DateFormatThreadLocal gDayFormatter;
     protected static final String XSD_GMONTH_FORMAT_STR = "--MM--";
     protected DateFormatThreadLocal gMonthFormatter;

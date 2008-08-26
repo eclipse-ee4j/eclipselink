@@ -54,7 +54,7 @@ public class DateAndTimeTestCases extends OXTestCase {
     // 07:47:15.1
     private long CONTROL_TIME_100MS = 46035100L;
     
-    // ----21
+    // ---21
     private long CONTROL_G_DAY = 1746000000L;
     
     // --02--
@@ -258,7 +258,7 @@ public class DateAndTimeTestCases extends OXTestCase {
 
     public void testUtilDateToString_gDay() {
         java.util.Date utilDate = new java.util.Date(CONTROL_DATE_TIME_0MS);
-        String control = "----21";
+        String control = "---21";
         String test = (String)xcm.convertObject(utilDate, String.class, XMLConstants.G_DAY_QNAME);
         this.assertEquals(control, test);    	
     }
@@ -641,7 +641,7 @@ public class DateAndTimeTestCases extends OXTestCase {
     }
 
     public void testStringToUtilDate_gDay() {
-        String string = "----21";
+        String string = "---21";
         java.util.Date control = new java.util.Date(CONTROL_G_DAY);
         java.util.Date test = (java.util.Date)xcm.convertObject(string, java.util.Date.class, XMLConstants.G_DAY_QNAME);
         this.assertEquals(control, test);
@@ -872,7 +872,7 @@ public class DateAndTimeTestCases extends OXTestCase {
 
     public void testSqlDateToString_gDay() {
         java.sql.Date sqlDate = new java.sql.Date(CONTROL_DATE_TIME_0MS);
-        String control = "----21";
+        String control = "---21";
         String test = (String)xcm.convertObject(sqlDate, String.class, XMLConstants.G_DAY_QNAME);
         this.assertEquals(control, test);    	
     }
@@ -1188,7 +1188,7 @@ public class DateAndTimeTestCases extends OXTestCase {
     }
 
     public void testStringToSqlDate_gDay() {
-        String string = "----21";
+        String string = "---21";
         java.sql.Date control = new java.sql.Date(CONTROL_G_DAY);
         java.sql.Date test = (java.sql.Date)xcm.convertObject(string, java.sql.Date.class, XMLConstants.G_DAY_QNAME);
         this.assertEquals(control, test);
@@ -1461,7 +1461,7 @@ public class DateAndTimeTestCases extends OXTestCase {
 
     public void testSqlTimeToString_gDay() {
         java.sql.Time sqlTime = new java.sql.Time(CONTROL_DATE_TIME_0MS);
-        String control = "----21";
+        String control = "---21";
         String test = (String)xcm.convertObject(sqlTime, String.class, XMLConstants.G_DAY_QNAME);
         this.assertEquals(control, test);    	
     }
@@ -1805,7 +1805,7 @@ public class DateAndTimeTestCases extends OXTestCase {
     }
 
     public void testStringToSqlTime_gDay() {
-        String string = "----21";
+        String string = "---21";
         java.sql.Time control = new java.sql.Time(CONTROL_G_DAY);
         java.sql.Time test = (java.sql.Time)xcm.convertObject(string, java.sql.Time.class, XMLConstants.G_DAY_QNAME);
         this.assertEquals(control, test);
@@ -2081,7 +2081,7 @@ public class DateAndTimeTestCases extends OXTestCase {
 
     public void testTimestampToString_gDay() {
         java.sql.Timestamp timestamp = new java.sql.Timestamp(CONTROL_DATE_TIME_0MS);
-        String control = "----21";
+        String control = "---21";
         String test = (String)xcm.convertObject(timestamp, String.class, XMLConstants.G_DAY_QNAME);
         this.assertEquals(control, test);    	
     }
@@ -2463,7 +2463,7 @@ public class DateAndTimeTestCases extends OXTestCase {
     }
 
     public void testStringToTimestamp_gDay() {
-        String string = "----21";
+        String string = "---21";
         java.sql.Timestamp control = new java.sql.Timestamp(CONTROL_G_DAY);
         java.sql.Timestamp test = (java.sql.Timestamp)xcm.convertObject(string, java.sql.Timestamp.class, XMLConstants.G_DAY_QNAME);
         this.assertEquals(control, test);
@@ -2816,7 +2816,7 @@ public class DateAndTimeTestCases extends OXTestCase {
         Calendar calendar = Calendar.getInstance();
         calendar.clear();
         calendar.setTimeInMillis(CONTROL_DATE_TIME_0MS);
-        String control = "----21";
+        String control = "---21";
         String test = (String)xcm.convertObject(calendar, String.class, XMLConstants.G_DAY_QNAME);
         this.assertEquals(control, test);    	
     }
@@ -3237,7 +3237,7 @@ public class DateAndTimeTestCases extends OXTestCase {
     }
 
     public void testStringToCalendar_gDay() {
-        String string = "----21";
+        String string = "---21";
         Calendar control = Calendar.getInstance();
         control.clear();
         control.setTimeInMillis(CONTROL_G_DAY);

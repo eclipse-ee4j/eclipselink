@@ -26,7 +26,7 @@ public class DataHelperToDayTest extends DataHelperTestCases {
         controlCalendar.set(Calendar.DATE, 15);
         Date controlDate = controlCalendar.getTime();
         String tm = dataHelper.toDay(controlDate);
-        this.assertEquals("----15", tm);
+        this.assertEquals("---15", tm);
     }
 
     public void testToDateTimeWithDefault() {
@@ -34,7 +34,7 @@ public class DataHelperToDayTest extends DataHelperTestCases {
         controlCalendar.clear();
         Date controlDate = controlCalendar.getTime();
         String tm = dataHelper.toDay(controlDate);
-        this.assertEquals("----01", tm);
+        this.assertEquals("---01", tm);
     }
 
     public void testToDateTimeWithNullInput() {
