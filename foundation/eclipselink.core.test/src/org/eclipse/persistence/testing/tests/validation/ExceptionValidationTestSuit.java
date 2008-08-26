@@ -47,6 +47,7 @@ public class ExceptionValidationTestSuit extends org.eclipse.persistence.testing
         addTest(new ExceptionSerializationTestCase());
         
         //Bug6119707
-        addTest(new QueryParameterForOneToOneValidationTest());
+        addTest(new QueryParameterForOneToOneValidationTest(false));
+        addTest(new QueryParameterForOneToOneValidationTest(true));
     }
 }

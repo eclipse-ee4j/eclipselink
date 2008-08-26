@@ -9,6 +9,8 @@
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
+ *     dminsky - added changes to support conforming and dynamically finding an id
+ *      
  ******************************************************************************/  
 package org.eclipse.persistence.testing.tests.validation;
 
@@ -19,7 +21,9 @@ import org.eclipse.persistence.queries.*;
 import org.eclipse.persistence.exceptions.*;
 
 import org.eclipse.persistence.testing.framework.*;
-import org.eclipse.persistence.testing.models.employee.domain.*;
+import org.eclipse.persistence.testing.models.employee.domain.PhoneNumber;
+import org.eclipse.persistence.testing.models.employee.domain.Employee;
+import org.eclipse.persistence.testing.models.employee.domain.EmployeePopulator;
 
 /**
  * Bug 6119707 - A DATABASE QUERY AND IN-MEMORY QUERY PRODUCES A DIFFERENT RESULT
@@ -34,8 +38,12 @@ import org.eclipse.persistence.testing.models.employee.domain.*;
  */
 public class QueryParameterForOneToOneValidationTest extends ExceptionTest {
 
-    public QueryParameterForOneToOneValidationTest() {
+    protected boolean shouldConform;
+
+    public QueryParameterForOneToOneValidationTest(boolean shouldConform) {
         super();
+        this.shouldConform = shouldConform;
+        setName(getName() + " - conforming: " + shouldConform);
         setDescription("Test that an exception is thrown for 1:1 when using a simple parameter instead of a complex object");
     }
     
@@ -44,6 +52,21 @@ public class QueryParameterForOneToOneValidationTest extends ExceptionTest {
     }
     
     public void test() {
+        // find a suitable id
+    	org.eclipse.persistence.testing.models.employee.domain.Employee empExample = 
+            (org.eclipse.persistence.testing.models.employee.domain.Employee)new EmployeePopulator().basicEmployeeExample10();
+        ExpressionBuilder testBuilder = new ExpressionBuilder();
+        Expression testExpression = testBuilder.get("firstName").equal(empExample.getFirstName());
+        testExpression = testExpression.and(testBuilder.get("lastName").equal(empExample.getLastName()));
+        Employee testEmp = (Employee)getSession().readObject(Employee.class, testExpression);
+        
+        if (testEmp == null) {
+            throw new TestErrorException("Employee example was not retrieved from DB (null): " + empExample);
+        }
+        
+        int id = testEmp.getId().intValue();
+        getSession().getIdentityMapAccessor().initializeAllIdentityMaps();
+
         ReadAllQuery query = new ReadAllQuery(PhoneNumber.class);
         ExpressionBuilder builder = query.getExpressionBuilder();
         Expression expression = builder.get("owner").equal(builder.getParameter("the_parameter"));
@@ -53,7 +76,16 @@ public class QueryParameterForOneToOneValidationTest extends ExceptionTest {
         try {
             // doesn't matter what id is queried
             Vector params = new Vector();
-            params.add(new Integer(9)); 
+            params.add(new Integer(id));
+            
+            // special case for conforming
+            if (this.shouldConform) {
+                // enable conforming
+                query.setCacheUsage(query.CheckCacheOnly);
+                // preload objects into identitymap
+                getSession().readAllObjects(PhoneNumber.class);
+                getSession().readAllObjects(Employee.class);
+            }
             
             getSession().executeQuery(query, params);
         } catch (EclipseLinkException te) {

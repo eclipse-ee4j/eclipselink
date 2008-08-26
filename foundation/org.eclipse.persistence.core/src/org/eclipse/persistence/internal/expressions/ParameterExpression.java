@@ -192,7 +192,7 @@ public class ParameterExpression extends BaseExpression {
             
             // Bug6119707 validate parameter type against mapping
             if (descriptor == null) {
-                validateParameterValueAgainstMapping(value);
+                validateParameterValueAgainstMapping(value, true);
             }
 
             if (descriptor != null) {
@@ -203,7 +203,7 @@ public class ParameterExpression extends BaseExpression {
                 value = descriptor.getObjectBuilder().unwrapObject(value, session);
                 
                 // Bug6119707 must unwrap before validating parameter type
-                validateParameterValueAgainstMapping(value);
+                validateParameterValueAgainstMapping(value, true);
                 
                 translationRow.put(((ParameterExpression)getBaseExpression()).getField(), value);
 
@@ -237,6 +237,10 @@ public class ParameterExpression extends BaseExpression {
             if (value == AbstractRecord.noEntry) {
                 throw QueryException.parameterNameMismatch(getField().getName());
             }
+            
+            // validate parameter type against mapping
+            // validate against the localbase (false), since there are no nested params
+            validateParameterValueAgainstMapping(value, false);
         }
 
         // Convert the value to the correct type, i.e. object type mappings.
@@ -334,13 +338,21 @@ public class ParameterExpression extends BaseExpression {
      * INTERNAL
      * Validate the passed parameter against the local base mapping.
      * Throw a QueryException if the parameter is of an incorrect class for object comparison.
-     * Added for Bug6119707
+     * Added for Bug 6119707
      */
-    protected void validateParameterValueAgainstMapping(Object value) {
-        ParameterExpression baseExpression = (ParameterExpression)getBaseExpression();
-        ObjectExpression queryKey = (ObjectExpression) baseExpression.getLocalBase();
+    protected void validateParameterValueAgainstMapping(Object value, boolean useBaseExpression) {
+        Expression queryKey = null;
+        if (useBaseExpression) {
+            // used to support validating against the base expression in the case of nesting
+            ParameterExpression baseExpression = (ParameterExpression)getBaseExpression();
+            queryKey = baseExpression.getLocalBase();
+        } else {
+            // used where we need to simply validate against the local base expression
+            queryKey = this.getLocalBase();
+        }
+        
         if (value != null && queryKey != null && queryKey.isObjectExpression()) {
-            DatabaseMapping mapping = queryKey.getMapping();
+            DatabaseMapping mapping = ((ObjectExpression) queryKey).getMapping();
             if (mapping != null && mapping.isForeignReferenceMapping() && !mapping.getReferenceDescriptor().getJavaClass().isInstance(value)) {
                 throw QueryException.incorrectClassForObjectComparison(baseExpression, value, mapping);
             }
