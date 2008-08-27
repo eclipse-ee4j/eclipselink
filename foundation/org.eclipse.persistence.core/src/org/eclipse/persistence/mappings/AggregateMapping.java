@@ -846,8 +846,10 @@ public abstract class AggregateMapping extends DatabaseMapping {
                 }
                 //make sure the listener is initialized
                 if (referenceDescriptor.getObjectChangePolicy().isAttributeChangeTrackingPolicy()){
-                    //need to detach listener
-                    ((AggregateAttributeChangeListener)((ChangeTracker)oldValue)._persistence_getPropertyChangeListener()).setParentListener(null);
+                    if(oldValue != null) {
+                        //need to detach listener
+                        ((AggregateAttributeChangeListener)((ChangeTracker)oldValue)._persistence_getPropertyChangeListener()).setParentListener(null);
+                    }
                     //need to attach new listener.
                     AggregateAttributeChangeListener newListener = (AggregateAttributeChangeListener)((ChangeTracker)newValue)._persistence_getPropertyChangeListener();
                     if (newListener == null){

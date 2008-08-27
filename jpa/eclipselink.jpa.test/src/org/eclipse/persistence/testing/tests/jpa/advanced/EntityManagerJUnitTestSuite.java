@@ -26,6 +26,8 @@ import java.util.Collection;
 import java.util.Vector;
 import java.util.Iterator;
 
+import java.sql.Date;
+
 import javax.persistence.EntityExistsException;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
@@ -103,7 +105,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
     public static Test suite() {
         TestSuite suite = new TestSuite();
         suite.setName("EntityManagerJUnitTestSuite");
-
+        
         suite.addTest(new EntityManagerJUnitTestSuite("testSetup"));
         suite.addTest(new EntityManagerJUnitTestSuite("testWeaving"));
         suite.addTest(new EntityManagerJUnitTestSuite("testClearEntityManagerWithoutPersistenceContext"));
@@ -242,7 +244,8 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         suite.addTest(new EntityManagerJUnitTestSuite("testConverterIn"));
         suite.addTest(new EntityManagerJUnitTestSuite("testExceptionForPersistNonEntitySubclass"));
         suite.addTest(new EntityManagerJUnitTestSuite("testEnabledPersistNonEntitySubclass"));
-        suite.addTest(new EntityManagerJUnitTestSuite("testCloneEmbeddable"));    
+        suite.addTest(new EntityManagerJUnitTestSuite("testCloneEmbeddable"));
+        suite.addTest(new EntityManagerJUnitTestSuite("testEmbeddedNPE"));
         return suite;
     }
 
@@ -5922,4 +5925,58 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
     	}
     }
 
+    // bug 232555 - NPE setting embedded attributes after persist in woven classes
+    public void testEmbeddedNPE() {
+        // setup
+        // create and persist an Employee
+        Employee emp = new Employee();
+        emp.setFirstName("testEmbeddedNPE");
+        EntityManager em = createEntityManager();
+        beginTransaction(em);
+        em.persist(emp);
+        commitTransaction(em);
+        
+        // test
+        // add an embedded to the persisted Employee
+        EmploymentPeriod period = new EmploymentPeriod(Date.valueOf("2007-01-01"), Date.valueOf("2007-12-31")); 
+        try {
+            // that used to cause NPE
+            emp.setPeriod(period);
+        } catch (NullPointerException npe) {
+            // clean-up
+            beginTransaction(em);
+            em.remove(emp);
+            commitTransaction(em);
+            em.close();
+            
+            throw npe;
+        }
+        
+        // update the Employee in the db
+        beginTransaction(em);
+        em.merge(emp);
+        commitTransaction(em);
+        
+        // verify
+        // make sure that the Employee has been written into the db correctly:
+        // clear both em and shared cache
+        em.clear();
+        clearCache();
+        // and re-read it
+        Employee readEmp = em.find(Employee.class, emp.getId());
+        // should be the same as the original one
+        boolean equal = getServerSession().compareObjects(emp, readEmp);
+        
+        // clean-up
+        if(readEmp != null) {
+            beginTransaction(em);
+            em.remove(readEmp);
+            commitTransaction(em);
+        }
+        em.close();
+        
+        if(!equal) {
+            fail("The Employee wasn't updated correctly in the db");
+        }
+    }
 }
