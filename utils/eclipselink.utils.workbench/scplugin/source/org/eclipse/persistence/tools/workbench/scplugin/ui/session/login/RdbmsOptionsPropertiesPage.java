@@ -442,6 +442,42 @@ public class RdbmsOptionsPropertiesPage extends AbstractLoginPropertiesPage
 			}
 		};
 	}
+	
+	private ButtonModel buildConnectionHealthValidatedOnErrorCheckBoxModel() {
+		return new CheckBoxModelAdapter(buildConnectionHealthValidatedOnErrorHolder());
+	}
+
+	private PropertyValueModel buildConnectionHealthValidatedOnErrorHolder() {
+		return new PropertyAspectAdapter(getSelectionHolder(), DatabaseLoginAdapter.CONNECTION_HEALTH_VALIDATE_ON_ERROR_PROPERTY) {
+			@Override
+			protected Object getValueFromSubject() {
+				return Boolean.valueOf(((DatabaseLoginAdapter)subject).isConnectionHealthValidatedOnError());
+			}
+
+			@Override
+			protected void setValueOnSubject(Object value) {
+				((DatabaseLoginAdapter)subject).setConnectionHealthValidatedOnError(((Boolean)value).booleanValue());
+			}
+		};
+	}
+
+	private ButtonModel buildNativeSequencingCheckBoxModel(){
+		return new CheckBoxModelAdapter(buildNativeSequencingHolder());
+	}
+
+	private PropertyValueModel buildNativeSequencingHolder() {
+		return new PropertyAspectAdapter(getSelectionHolder(), DatabaseLoginAdapter.NATIVE_SEQUENCING_PROPERTY) {
+			@Override
+			protected Object getValueFromSubject() {
+				return Boolean.valueOf(((DatabaseLoginAdapter)subject).isNativeSequencing());
+			}
+
+			@Override
+			protected void setValueOnSubject(Object value) {
+				((DatabaseLoginAdapter)subject).setIsNativeSequencing(((Boolean)value).booleanValue());
+			}
+		};
+	}
 
 	/**
 	 * Creates the <code>ButtonModel</code> that keeps the selected state from
@@ -488,6 +524,7 @@ public class RdbmsOptionsPropertiesPage extends AbstractLoginPropertiesPage
 	{
 		GridBagConstraints constraints = new GridBagConstraints();
 		int index = 0;
+		int space = SwingTools.checkBoxIconWidth() + 5;
 
 		constraints.gridx       = 0;
 		constraints.gridy       = 0;
@@ -497,11 +534,39 @@ public class RdbmsOptionsPropertiesPage extends AbstractLoginPropertiesPage
 		constraints.weighty     = 0;
 		constraints.fill        = GridBagConstraints.NONE;
 		constraints.anchor      = GridBagConstraints.LINE_START;
-		constraints.insets      = new Insets(0, 5, 0, 0);
+		constraints.insets      = new Insets(0, space, 0, 0);
 
 		// Create the container
 		JPanel panel = new JPanel(new GridBagLayout());
 
+		// Ping SQL widgets
+		JComponent pingSQLWidgets = buildLabeledTextField("JDBC_OPTIONS_PANE_PING_SQL_LABEL", buildPingSQLDocument());
+		
+		constraints.fill		= GridBagConstraints.HORIZONTAL;
+		constraints.gridy 		= index++;
+		panel.add(pingSQLWidgets, constraints);
+
+		// Query Retry Attempts widgets
+		JComponent queryRetryAttemptsWidgets = buildLabeledSpinnerNumber("JDBC_OPTIONS_PANE_QUERY_RETRY_ATTEMPTS_LABEL", buildQueryRetryAttemptsSpinnerModel(), 6);
+
+		constraints.gridy 		= index++;
+		constraints.insets      = new Insets(5, space, 0, 0);
+		panel.add(queryRetryAttemptsWidgets, constraints);
+		
+		// Delay Between Connection Attempts widgets
+		JComponent delayBetweenConnectionAttemptsWidgets = buildLabeledSpinnerNumber("JDBC_OPTIONS_PANE_DELAY_BETWEEN_CONNECTION_ATTEMPTS_LABEL", buildDelayBetweenConnectionAttemptsSpinnerModel(), 6);
+		
+		constraints.gridy		= index++;
+		panel.add(delayBetweenConnectionAttemptsWidgets, constraints);
+
+		// Connection Health Validated On Error check box
+		JCheckBox connectionHealthValidatedOnErrorCheckBox = buildCheckBox("JDBC_OPTIONS_PANE_CONNECTION_HEALTH_VALIDATED_ON_ERROR_CHECK_BOX", buildConnectionHealthValidatedOnErrorCheckBoxModel());
+
+		constraints.fill        = GridBagConstraints.NONE;
+		constraints.gridy = index++;
+		constraints.insets      = new Insets(0, 5, 0, 0);
+		panel.add(connectionHealthValidatedOnErrorCheckBox, constraints);
+		
 		// Queries Should Bind All Parameters check box
 		JCheckBox queriesShouldBindAllParametersCheckBox =
 			buildCheckBox("LOGIN_QUERIES_SHOULD_BIND_ALL_PARAMETERS_CHECK_BOX",
@@ -534,6 +599,11 @@ public class RdbmsOptionsPropertiesPage extends AbstractLoginPropertiesPage
 		constraints.gridy = index++;
 		panel.add(streamsForBindingCheckBox, constraints);
 
+		// Native Sequencing check box
+		JCheckBox nativeSequencingCheckBox = buildCheckBox("JDBC_OPTIONS_PANE_NATIVE_SEQUENCING_CHECK_BOX", buildNativeSequencingCheckBoxModel());
+		constraints.gridy = index++;
+		panel.add(nativeSequencingCheckBox, constraints);
+		
 		// Native SQL check box
 		JCheckBox nativeSQLCheckBox =
 			buildCheckBox("LOGIN_NATIVE_SQL_CHECK_BOX",
@@ -544,14 +614,73 @@ public class RdbmsOptionsPropertiesPage extends AbstractLoginPropertiesPage
 
 		// Batch Reading label and combo box et
 		// String Binding check box and spin button
-		JComponent stringBingingPane = buildBatchWritingStringBindingPane();
+		JComponent stringBindingPane = buildBatchWritingStringBindingPane();
 
 		constraints.gridy  = index++;
 		constraints.insets = new Insets(0, 5, 5, 0);
-		panel.add(stringBingingPane, constraints);
+		panel.add(stringBindingPane, constraints);
 
 		addHelpTopicId(panel, "session.login.database.options.jdbcOptions");
 		return panel;
+	}
+
+	private SpinnerNumberModel buildQueryRetryAttemptsSpinnerModel() {
+		return new NumberSpinnerModelAdapter(buildQueryRetryAttemptsHolder(), 0, Integer.MAX_VALUE, 1, 3);
+	}
+	
+	private PropertyValueModel buildQueryRetryAttemptsHolder() {
+		return new PropertyAspectAdapter(getSelectionHolder(), DatabaseLoginAdapter.QUERY_RETRY_ATTEMPT_COUNT_PROPERTY) {
+			@Override
+			protected Object getValueFromSubject() {
+				return ((DatabaseLoginAdapter)subject).getQueryRetryAttemptCount();
+			}
+
+			@Override
+			protected void setValueOnSubject(Object value) {
+				((DatabaseLoginAdapter)subject).setQueryRetryAttemptCount((Integer)value);
+			}
+		};
+	}
+
+	private SpinnerNumberModel buildDelayBetweenConnectionAttemptsSpinnerModel() {
+		return new NumberSpinnerModelAdapter(buildDelayBetweenConnectionAttemptsHolder(), 0, Integer.MAX_VALUE, 1, 5000);
+	}
+	
+	private PropertyValueModel buildDelayBetweenConnectionAttemptsHolder()
+	{
+		return new PropertyAspectAdapter(getSelectionHolder(), DatabaseLoginAdapter.DELAY_BETWEEN_CONNECTION_ATTEMPTS_PROPERTY)
+		{
+			@Override
+			protected Object getValueFromSubject()
+			{
+				return ((DatabaseLoginAdapter)subject).getDelayBetweenConnectionAttempts();
+			}
+
+			@Override
+			protected void setValueOnSubject(Object value)
+			{
+				((DatabaseLoginAdapter)subject).setDelayBetweenConnectionAttempts((Integer)value);
+			}
+		};
+	}
+
+
+	private Document buildPingSQLDocument() {
+		return new DocumentAdapter(buildPingSQLHolder());
+	}
+
+	private PropertyValueModel buildPingSQLHolder() {
+		return new PropertyAspectAdapter(getSelectionHolder(), DatabaseLoginAdapter.PING_SQL_PROPERTY) {
+			@Override
+			protected Object getValueFromSubject() {
+				return ((DatabaseLoginAdapter)subject).getPingSQL();
+			}
+
+			@Override
+			protected void setValueOnSubject(Object value) {
+				((DatabaseLoginAdapter)subject).setPingSQL((String)value);
+			}
+		};
 	}
 
 	/**

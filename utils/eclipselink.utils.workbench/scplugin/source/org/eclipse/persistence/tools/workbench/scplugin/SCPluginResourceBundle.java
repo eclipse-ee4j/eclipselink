@@ -245,9 +245,14 @@ public final class SCPluginResourceBundle extends ListResourceBundle {
 		{ "LOGIN_FORCE_FIELD_NAMES_TO_UPPERCASE_CHECK_BOX",     "Force F&ield Names to Uppercase" },
 		{ "LOGIN_OPTIMIZE_DATA_CONVERSION_CHECK_BOX",           "&Optimize Data Conversion" },
 		{ "LOGIN_QUERIES_SHOULD_BIND_ALL_PARAMETERS_CHECK_BOX", "&Queries Should Bind All Parameters" },
-		{ "OPTIONS_STRUCT_CONVERTER_LIST",		     "Struct Converters:"},
-		{ "OPTIONS_STRUCT_CONVERTERS_ADD_BUTTON",    "&Add..."},
-		{ "OPTIONS_STRUCT_CONVERTERS_REMOVE_BUTTON", "Re&move"}, 
+		{ "OPTIONS_STRUCT_CONVERTER_LIST",		     "Struct Converters:" },
+		{ "OPTIONS_STRUCT_CONVERTERS_ADD_BUTTON",    "&Add..." },
+		{ "OPTIONS_STRUCT_CONVERTERS_REMOVE_BUTTON", "Re&move" }, 
+		{ "JDBC_OPTIONS_PANE_PING_SQL_LABEL",        "Ping SQL:" },
+		{ "JDBC_OPTIONS_PANE_QUERY_RETRY_ATTEMPTS_LABEL", "Query Retry Attempts:"},
+		{ "JDBC_OPTIONS_PANE_DELAY_BETWEEN_CONNECTION_ATTEMPTS_LABEL", "Delay Between Connection Attempts(ms):"},
+		{ "JDBC_OPTIONS_PANE_CONNECTION_HEALTH_VALIDATED_ON_ERROR_CHECK_BOX", "Connection Health Validated On Error"},
+		{ "JDBC_OPTIONS_PANE_NATIVE_SEQUENCING_CHECK_BOX", "Native Sequencing"},
 
 		// ui.session.login.RdbmsConnectionPropertiesPage
 		{ "UNKNOWN_PLATFORM_CLASS", "<unkown platform: {0}>" },

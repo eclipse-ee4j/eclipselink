@@ -47,6 +47,11 @@ public final class DatabaseLoginAdapter extends LoginAdapter {
 	public final static String CONNECTION_URL_PROPERTY = "connectionURL";
 	public final static String DATA_SOURCE_PROPERTY = "dataSource";
 
+	public final static String NATIVE_SEQUENCING_PROPERTY = "nativeSequencing";
+	public final static String CONNECTION_HEALTH_VALIDATE_ON_ERROR_PROPERTY = "connectionHealthValidateOnError";
+	public final static String DELAY_BETWEEN_CONNECTION_ATTEMPTS_PROPERTY = "delayBetweenConnectionAttempts";
+	public final static String QUERY_RETRY_ATTEMPT_COUNT_PROPERTY = "queryRetryAttemptCount";
+	public final static String PING_SQL_PROPERTY = "pingSQL";
 	public final static String BIND_ALL_PARAMETERS_PROPERTY = "bindAllParameters";
 	public final static String CACHE_ALL_STATEMENTS_PROPERTY = "cacheAllStatements";
 	public final static String BYTE_ARRAY_BINDING_PROPERTY = "byteArrayBinding";
@@ -537,7 +542,40 @@ public final class DatabaseLoginAdapter extends LoginAdapter {
 		this.login().setMaxBatchWritingSize( new Integer( value));
 		this.firePropertyChanged( MAX_BATCH_WRITING_SIZE_PROPERTY, old, value);
 	}
+	
+	public String getPingSQL() {
+		return this.login().getPingSQL();
+	}
 
+	public void setPingSQL(String value) {
+		String old = this.login().getPingSQL();
+		
+		this.login().setPingSQL(value);
+		this.firePropertyChanged(PING_SQL_PROPERTY, old, value);
+	}
+	
+	public Integer getQueryRetryAttemptCount() {
+		return this.login().getQueryRetryAttemptCount();
+	}
+	
+	public void setQueryRetryAttemptCount(Integer value) {
+		Integer old = this.login().getQueryRetryAttemptCount();
+		
+		this.login().setQueryRetryAttemptCount(value);
+		this.firePropertyChanged(QUERY_RETRY_ATTEMPT_COUNT_PROPERTY, old, value);
+	}
+	
+	public Integer getDelayBetweenConnectionAttempts() {
+		return this.login().getDelayBetweenConnectionAttempts();
+	}
+	
+	public void setDelayBetweenConnectionAttempts(Integer value) {
+		Integer old = this.login().getDelayBetweenConnectionAttempts();
+		
+		this.login().setDelayBetweenConnectionAttempts(value);
+		this.firePropertyChanged(DELAY_BETWEEN_CONNECTION_ATTEMPTS_PROPERTY, old, value);
+	}
+	
 	/**
 	 * Returns this config model property..
 	 */
@@ -554,6 +592,33 @@ public final class DatabaseLoginAdapter extends LoginAdapter {
 
 		this.login().setNativeSQL( value);
 		this.firePropertyChanged( NATIVE_SQL_PROPERTY, old, value);
+	}
+	
+	public boolean isNativeSequencing() {
+		return this.login().getNativeSequencing();
+	}
+	
+	public void setIsNativeSequencing(boolean value) {
+		boolean old = this.login().getNativeSequencing();
+		
+		this.login().setNativeSequencing(value);
+		this.firePropertyChanged(NATIVE_SEQUENCING_PROPERTY, old, value);
+	}
+	
+	public boolean isConnectionHealthValidatedOnError() {
+		Boolean value = this.login().isConnectionHealthValidatedOnError();
+		if (value == null) {
+			return false;
+		} else {
+			return value.booleanValue();
+		}
+	}
+	
+	public void setConnectionHealthValidatedOnError(boolean value) {
+		Boolean old = this.login().isConnectionHealthValidatedOnError();
+		Boolean newValue = Boolean.valueOf(value);
+		this.login().setConnectionHealthValidatedOnError(newValue);
+		this.firePropertyChanged(CONNECTION_HEALTH_VALIDATE_ON_ERROR_PROPERTY, old, newValue);
 	}
 
 	/**
