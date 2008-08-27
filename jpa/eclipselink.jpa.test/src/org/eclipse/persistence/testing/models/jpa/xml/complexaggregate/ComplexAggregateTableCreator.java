@@ -10,6 +10,8 @@
  * Contributors:
  *     04/02/2008-1.0M6 Guy Pelletier 
  *       - 224155: embeddable-attributes should be extended in the EclipseLink ORM.XML schema
+ *     08/27/2008-1.1 Guy Pelletier 
+ *       - 211329: Add sequencing on non-id attribute(s) support to the EclipseLink-ORM.XML Schema
  ******************************************************************************/  
 package org.eclipse.persistence.testing.models.jpa.xml.complexaggregate;
 
@@ -19,12 +21,164 @@ public class ComplexAggregateTableCreator extends org.eclipse.persistence.tools.
     public ComplexAggregateTableCreator() {
         setName("ComplexAggregateProject");
 
+        addTableDefinition(buildCITYSLICKERTable());
+        addTableDefinition(buildCOUNTRYDWELLERTable());
+        addTableDefinition(buildWORLDTable());
+        
         addTableDefinition(buildHOCKEYPLAYERTable());
         addTableDefinition(buildHOCKEYTEAMTable());
         addTableDefinition(buildOWNERSHIPGROUPTable());
         addTableDefinition(buildPRIVILEGESTable());
     }
+    
+    public TableDefinition buildCITYSLICKERTable() {
+        TableDefinition table = new TableDefinition();
+        table.setName("XML_CITYSLICKER");
 
+        FieldDefinition fieldID = new FieldDefinition();
+        fieldID.setName("ID");
+        fieldID.setTypeName("NUMBER");
+        fieldID.setSize(19);
+        fieldID.setSubSize(0);
+        fieldID.setIsPrimaryKey(true);
+        fieldID.setIsIdentity(true);
+        fieldID.setUnique(true);
+        fieldID.setShouldAllowNull(false);
+        table.addField(fieldID);
+        
+        FieldDefinition fieldFNAME = new FieldDefinition();
+        fieldFNAME.setName("FNAME");
+        fieldFNAME.setTypeName("VARCHAR2");
+        fieldFNAME.setSize(20);
+        fieldFNAME.setSubSize(0);
+        fieldFNAME.setIsPrimaryKey(true);
+        fieldFNAME.setIsIdentity(false);
+        fieldFNAME.setUnique(true);
+        fieldFNAME.setShouldAllowNull(false);
+        table.addField(fieldFNAME);
+        
+        FieldDefinition fieldLNAME = new FieldDefinition();
+        fieldLNAME.setName("LNAME");
+        fieldLNAME.setTypeName("VARCHAR2");
+        fieldLNAME.setSize(20);
+        fieldLNAME.setSubSize(0);
+        fieldLNAME.setIsPrimaryKey(true);
+        fieldLNAME.setIsIdentity(false);
+        fieldLNAME.setUnique(true);
+        fieldLNAME.setShouldAllowNull(false);
+        table.addField(fieldLNAME);
+        
+        FieldDefinition fieldAGE = new FieldDefinition();
+        fieldAGE.setName("AGE");
+        fieldAGE.setTypeName("NUMBER");
+        fieldAGE.setSize(15);
+        fieldAGE.setSubSize(0);
+        fieldAGE.setIsPrimaryKey(false);
+        fieldAGE.setIsIdentity(false);
+        fieldAGE.setUnique(false);
+        fieldAGE.setShouldAllowNull(false);
+        table.addField(fieldAGE);
+        
+        FieldDefinition fieldGENDER = new FieldDefinition();
+        fieldGENDER.setName("GENDER");
+        fieldGENDER.setTypeName("VARCHAR2");
+        fieldGENDER.setSize(6);
+        fieldGENDER.setSubSize(0);
+        fieldGENDER.setIsPrimaryKey(false);
+        fieldGENDER.setIsIdentity(false);
+        fieldGENDER.setUnique(false);
+        fieldGENDER.setShouldAllowNull(true);
+        table.addField(fieldGENDER);
+
+        FieldDefinition fieldWORLDID = new FieldDefinition();
+        fieldWORLDID.setName("WORLD_ID");
+        fieldWORLDID.setTypeName("NUMBER");
+        fieldWORLDID.setSize(19);
+        fieldWORLDID.setSubSize(0);
+        fieldWORLDID.setIsPrimaryKey(false);
+        fieldWORLDID.setIsIdentity(false);
+        fieldWORLDID.setUnique(false);
+        fieldWORLDID.setShouldAllowNull(true);
+        fieldWORLDID.setForeignKeyFieldName("CMP3_WORLD.ID");
+        table.addField(fieldWORLDID);
+        
+        return table;
+    }
+    
+    public TableDefinition buildCOUNTRYDWELLERTable() {
+        TableDefinition table = new TableDefinition();
+        table.setName("XML_COUNTRY_DWELLER");
+
+        FieldDefinition fieldID = new FieldDefinition();
+        fieldID.setName("ID");
+        fieldID.setTypeName("NUMBER");
+        fieldID.setSize(19);
+        fieldID.setSubSize(0);
+        fieldID.setIsPrimaryKey(true);
+        fieldID.setIsIdentity(false);
+        fieldID.setUnique(true);
+        fieldID.setShouldAllowNull(false);
+        table.addField(fieldID);
+        
+        FieldDefinition fieldFNAME = new FieldDefinition();
+        fieldFNAME.setName("FNAME");
+        fieldFNAME.setTypeName("VARCHAR2");
+        fieldFNAME.setSize(20);
+        fieldFNAME.setSubSize(0);
+        fieldFNAME.setIsPrimaryKey(true);
+        fieldFNAME.setIsIdentity(false);
+        fieldFNAME.setUnique(true);
+        fieldFNAME.setShouldAllowNull(false);
+        table.addField(fieldFNAME);
+        
+        FieldDefinition fieldLNAME = new FieldDefinition();
+        fieldLNAME.setName("LNAME");
+        fieldLNAME.setTypeName("VARCHAR2");
+        fieldLNAME.setSize(20);
+        fieldLNAME.setSubSize(0);
+        fieldLNAME.setIsPrimaryKey(true);
+        fieldLNAME.setIsIdentity(false);
+        fieldLNAME.setUnique(true);
+        fieldLNAME.setShouldAllowNull(false);
+        table.addField(fieldLNAME);
+        
+        FieldDefinition fieldAGE = new FieldDefinition();
+        fieldAGE.setName("AGE");
+        fieldAGE.setTypeName("NUMBER");
+        fieldAGE.setSize(15);
+        fieldAGE.setSubSize(0);
+        fieldAGE.setIsPrimaryKey(false);
+        fieldAGE.setIsIdentity(false);
+        fieldAGE.setUnique(false);
+        fieldAGE.setShouldAllowNull(false);
+        table.addField(fieldAGE);
+
+        FieldDefinition fieldGENDER = new FieldDefinition();
+        fieldGENDER.setName("GENDER");
+        fieldGENDER.setTypeName("VARCHAR2");
+        fieldGENDER.setSize(6);
+        fieldGENDER.setSubSize(0);
+        fieldGENDER.setIsPrimaryKey(false);
+        fieldGENDER.setIsIdentity(false);
+        fieldGENDER.setUnique(false);
+        fieldGENDER.setShouldAllowNull(true);
+        table.addField(fieldGENDER);
+        
+        FieldDefinition fieldWORLDID = new FieldDefinition();
+        fieldWORLDID.setName("WORLD_ID");
+        fieldWORLDID.setTypeName("NUMBER");
+        fieldWORLDID.setSize(19);
+        fieldWORLDID.setSubSize(0);
+        fieldWORLDID.setIsPrimaryKey(false);
+        fieldWORLDID.setIsIdentity(false);
+        fieldWORLDID.setUnique(false);
+        fieldWORLDID.setShouldAllowNull(true);
+        fieldWORLDID.setForeignKeyFieldName("CMP3_WORLD.ID");
+        table.addField(fieldWORLDID);
+        
+        return table;
+    }
+    
     public TableDefinition buildHOCKEYPLAYERTable() {
         TableDefinition table = new TableDefinition();
         table.setName("XML_HOCKEY_PLAYER");
@@ -293,4 +447,23 @@ public class ComplexAggregateTableCreator extends org.eclipse.persistence.tools.
     
         return table;
     }
+
+     public TableDefinition buildWORLDTable() {
+        TableDefinition table = new TableDefinition();
+        table.setName("XML_WORLD");
+
+        FieldDefinition fieldID = new FieldDefinition();
+        fieldID.setName("ID");
+        fieldID.setTypeName("NUMBER");
+        fieldID.setSize(19);
+        fieldID.setSubSize(0);
+        fieldID.setIsPrimaryKey(true);
+        fieldID.setIsIdentity(false);
+        fieldID.setUnique(false);
+        fieldID.setShouldAllowNull(false);
+        table.addField(fieldID);
+        
+        return table;
+    }
+
 }

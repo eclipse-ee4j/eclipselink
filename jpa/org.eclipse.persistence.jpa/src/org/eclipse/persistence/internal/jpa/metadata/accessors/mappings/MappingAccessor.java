@@ -11,7 +11,9 @@
  *     05/16/2008-1.0M8 Guy Pelletier 
  *       - 218084: Implement metadata merging functionality between mapping files
  *     06/20/2008-1.0 Guy Pelletier 
- *       - 232975: Failure when attribute type is generic  
+ *       - 232975: Failure when attribute type is generic
+ *     08/27/2008-1.1 Guy Pelletier 
+ *       - 211329: Add sequencing on non-id attribute(s) support to the EclipseLink-ORM.XML Schema
  ******************************************************************************/
 package org.eclipse.persistence.internal.jpa.metadata.accessors.mappings;
 
@@ -22,9 +24,15 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import javax.persistence.Column;
+import javax.persistence.FetchType;
+
+import org.eclipse.persistence.annotations.Convert;
 import org.eclipse.persistence.annotations.JoinFetchType;
 import org.eclipse.persistence.annotations.Properties;
 import org.eclipse.persistence.annotations.Property;
+import org.eclipse.persistence.annotations.ReturnInsert;
+import org.eclipse.persistence.annotations.ReturnUpdate;
 import org.eclipse.persistence.exceptions.ValidationException;
 
 import org.eclipse.persistence.internal.helper.ClassConstants;
@@ -72,6 +80,13 @@ public abstract class MappingAccessor extends MetadataAccessor {
      */
     public AccessMethodsMetadata getAccessMethods(){
         return m_accessMethods;
+    }
+    
+    /**
+     * INTERNAL:
+     */
+    public Enum getDefaultFetchType() {
+        return FetchType.valueOf("EAGER"); 
     }
     
     /**
@@ -164,6 +179,38 @@ public abstract class MappingAccessor extends MetadataAccessor {
         }
 
         return ((MetadataMethod) getAccessibleObject()).getSetMethodName();
+    }
+    
+    /**
+     * INTERNAL:
+     * Method to check if an annotated element has a Column annotation.
+     */
+    protected boolean hasColumn() {
+        return isAnnotationPresent(Column.class);
+    }
+    
+    /**
+     * INTERNAL:
+     * Method to check if an annotated element has a convert specified.
+     */
+    protected boolean hasConvert() {
+        return isAnnotationPresent(Convert.class);
+    }
+    
+    /**
+     * INTERNAL:
+     * Method to check if this accessor has a ReturnInsert annotation.
+     */
+    protected boolean hasReturnInsert() {
+        return isAnnotationPresent(ReturnInsert.class);
+    }
+    
+    /**
+     * INTERNAL:
+     * Method to check if this accessor has a ReturnUpdate annotation.
+     */
+    protected boolean hasReturnUpdate() {
+        return isAnnotationPresent(ReturnUpdate.class);
     }
     
     /**
@@ -293,6 +340,37 @@ public abstract class MappingAccessor extends MetadataAccessor {
         if (property.shouldOverride(m_properties.get(property.getName()))) {
             m_properties.put(property.getName(), property);
             mapping.getProperties().put(property.getName(), property.getConvertedValue());
+        }
+    }
+    
+    /**
+     * INTERNAL:
+     * Subclasses should call this method if they want the warning message or
+     * override the method if they want/support different behavior.
+     */
+    protected void processReturnInsert() {
+        if (hasReturnInsert()) {
+            getLogger().logWarningMessage(MetadataLogger.IGNORE_RETURN_INSERT_ANNOTATION, getAnnotatedElement());
+        }
+    }
+    
+    /**
+     * INTERNAL:
+     * Subclasses should call this method if they want the warning message.
+     */
+    protected void processReturnInsertAndUpdate() {
+        processReturnInsert();
+        processReturnUpdate();
+    }
+    
+    /**
+     * INTERNAL:
+     * Subclasses should call this method if they want the warning message or
+     * override the method if they want/support different behavior.
+     */
+    protected void processReturnUpdate() {
+        if (hasReturnUpdate()) {
+            getLogger().logWarningMessage(MetadataLogger.IGNORE_RETURN_UPDATE_ANNOTATION, getAnnotatedElement());
         }
     }
     

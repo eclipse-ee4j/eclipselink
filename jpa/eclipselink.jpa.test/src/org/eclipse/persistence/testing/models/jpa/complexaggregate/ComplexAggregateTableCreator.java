@@ -9,6 +9,8 @@
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
+ *     08/27/2008-1.1 Guy Pelletier 
+ *       - 211329: Add sequencing on non-id attribute(s) support to the EclipseLink-ORM.XML Schema
  ******************************************************************************/  
 package org.eclipse.persistence.testing.models.jpa.complexaggregate;
 
@@ -20,16 +22,27 @@ public class ComplexAggregateTableCreator extends org.eclipse.persistence.tools.
 
         addTableDefinition(buildCITYSLICKERTable());
         addTableDefinition(buildCOUNTRYDWELLERTable());
-        addTableDefinition(buildHOCKEYPLAYERTable());
-        //addTableDefinition(buildHOCKEYSEQTable());
-        addTableDefinition(buildHOCKEYTEAMTable());
         addTableDefinition(buildWORLDTable());
+        
+        addTableDefinition(buildHOCKEYPLAYERTable());
+        addTableDefinition(buildHOCKEYTEAMTable());
     }
 
     public TableDefinition buildCITYSLICKERTable() {
         TableDefinition table = new TableDefinition();
         table.setName("CMP3_CITYSLICKER");
 
+        FieldDefinition fieldID = new FieldDefinition();
+        fieldID.setName("ID");
+        fieldID.setTypeName("NUMBER");
+        fieldID.setSize(19);
+        fieldID.setSubSize(0);
+        fieldID.setIsPrimaryKey(true);
+        fieldID.setIsIdentity(true);
+        fieldID.setUnique(true);
+        fieldID.setShouldAllowNull(false);
+        table.addField(fieldID);
+        
         FieldDefinition fieldFNAME = new FieldDefinition();
         fieldFNAME.setName("FNAME");
         fieldFNAME.setTypeName("VARCHAR2");
@@ -93,6 +106,17 @@ public class ComplexAggregateTableCreator extends org.eclipse.persistence.tools.
         TableDefinition table = new TableDefinition();
         table.setName("CMP3_COUNTRY_DWELLER");
 
+        FieldDefinition fieldID = new FieldDefinition();
+        fieldID.setName("ID");
+        fieldID.setTypeName("NUMBER");
+        fieldID.setSize(19);
+        fieldID.setSubSize(0);
+        fieldID.setIsPrimaryKey(true);
+        fieldID.setIsIdentity(false);
+        fieldID.setUnique(true);
+        fieldID.setShouldAllowNull(false);
+        table.addField(fieldID);
+        
         FieldDefinition fieldFNAME = new FieldDefinition();
         fieldFNAME.setName("FNAME");
         fieldFNAME.setTypeName("VARCHAR2");
@@ -256,35 +280,6 @@ public class ComplexAggregateTableCreator extends org.eclipse.persistence.tools.
         fieldTEAMID.setForeignKeyFieldName("CMP3_HOCKEY_TEAM.ID");
         table.addField(fieldTEAMID);
         
-        return table;
-    }
-    
-    public static TableDefinition buildHOCKEYSEQTable() {
-        TableDefinition table = new TableDefinition();
-        table.setName("CMP3_HOCKEY_SEQ");
-
-        FieldDefinition fieldSEQ_COUNT = new FieldDefinition();
-        fieldSEQ_COUNT.setName("SEQ_COUNT");
-        fieldSEQ_COUNT.setTypeName("NUMBER");
-        fieldSEQ_COUNT.setSize(15);
-        fieldSEQ_COUNT.setSubSize(0);
-        fieldSEQ_COUNT.setIsPrimaryKey(false);
-        fieldSEQ_COUNT.setIsIdentity(false);
-        fieldSEQ_COUNT.setUnique(false);
-        fieldSEQ_COUNT.setShouldAllowNull(false);
-        table.addField(fieldSEQ_COUNT);
-
-        FieldDefinition fieldSEQ_NAME = new FieldDefinition();
-        fieldSEQ_NAME.setName("SEQ_NAME");
-        fieldSEQ_NAME.setTypeName("VARCHAR2");
-        fieldSEQ_NAME.setSize(80);
-        fieldSEQ_NAME.setSubSize(0);
-        fieldSEQ_NAME.setIsPrimaryKey(true);
-        fieldSEQ_NAME.setIsIdentity(false);
-        fieldSEQ_NAME.setUnique(false);
-        fieldSEQ_NAME.setShouldAllowNull(false);
-        table.addField(fieldSEQ_NAME);
-
         return table;
     }
     

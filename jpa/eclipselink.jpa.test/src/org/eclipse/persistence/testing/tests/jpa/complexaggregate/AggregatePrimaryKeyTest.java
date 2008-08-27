@@ -9,6 +9,8 @@
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
+ *     08/27/2008-1.1 Guy Pelletier 
+ *       - 211329: Add sequencing on non-id attribute(s) support to the EclipseLink-ORM.XML Schema
  ******************************************************************************/  
 package org.eclipse.persistence.testing.tests.jpa.complexaggregate;
 
@@ -41,22 +43,30 @@ public class AggregatePrimaryKeyTest extends EntityContainerTestBase {
     
     public void test() throws Exception {
         try {
-            Name name = new Name();
-            name.setFirstName("Tom");
-            name.setLastName("Ware");
+            Name sharedName = new Name();
+            sharedName.setFirstName("Tom");
+            sharedName.setLastName("Ware");
             
             CountryDweller countryDweller = new CountryDweller();
             countryDweller.setAge(30);
-            countryDweller.setName(name);
+            countryDweller.setName(sharedName);
             
             CitySlicker citySlicker = new CitySlicker();
             citySlicker.setAge(53);
-            citySlicker.setName(name);
+            citySlicker.setName(sharedName);
+            
+            Name name = new Name();
+            name.setFirstName("Guy");
+            name.setLastName("Pelletier");
+            
+            CountryDweller countryDweller2 = new CountryDweller();
+            countryDweller2.setAge(65);
+            countryDweller2.setName(name);
         
             beginTransaction();
             getEntityManager().persist(countryDweller);
+            getEntityManager().persist(countryDweller2);
             getEntityManager().persist(citySlicker);
-            
             commitTransaction();
         
             // Clear the cache.
@@ -65,11 +75,13 @@ public class AggregatePrimaryKeyTest extends EntityContainerTestBase {
             // Now read them back in and delete them.
             beginTransaction();
             
-            CitySlicker cs = getEntityManager().find(CitySlicker.class, name);
+            CitySlicker cs = getEntityManager().find(CitySlicker.class, sharedName);
             CountryDweller cd = getEntityManager().merge(countryDweller);
+            CountryDweller cd2 = getEntityManager().merge(countryDweller2);
             
             getEntityManager().remove(cs);
             getEntityManager().remove(cd);
+            getEntityManager().remove(cd2);
             
             commitTransaction();
         } catch (RuntimeException e) {

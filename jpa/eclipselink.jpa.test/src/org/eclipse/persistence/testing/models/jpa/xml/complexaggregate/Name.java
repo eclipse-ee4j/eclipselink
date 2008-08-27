@@ -8,17 +8,13 @@
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
- *     Oracle - initial API and implementation from Oracle TopLink
+ *     04/02/2008-1.0M6 Guy Pelletier 
+ *       - 224155: embeddable-attributes should be extended in the EclipseLink ORM.XML schema
  *     08/27/2008-1.1 Guy Pelletier 
  *       - 211329: Add sequencing on non-id attribute(s) support to the EclipseLink-ORM.XML Schema
  ******************************************************************************/  
-package org.eclipse.persistence.testing.models.jpa.complexaggregate;
+package org.eclipse.persistence.testing.models.jpa.xml.complexaggregate;
 
-import javax.persistence.*;
-
-import static javax.persistence.GenerationType.IDENTITY;
-
-@Embeddable
 public class Name  {
     private int id;
 	private String firstName;
@@ -26,17 +22,14 @@ public class Name  {
     
     public Name() {}
 
-    @Column(name="FNAME")
     public String getFirstName() {
         return firstName;
     }
     
-    @GeneratedValue(strategy = IDENTITY)
     public int getId() {
         return id;
     }
     
-    @Column(name="LNAME")
     public String getLastName() {
         return lastName;
     }

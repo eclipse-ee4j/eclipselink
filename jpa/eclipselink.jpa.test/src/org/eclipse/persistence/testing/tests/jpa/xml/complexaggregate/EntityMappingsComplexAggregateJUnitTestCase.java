@@ -10,6 +10,8 @@
  * Contributors:
  *     04/02/2008-1.0M6 Guy Pelletier 
  *       - 224155: embeddable-attributes should be extended in the EclipseLink ORM.XML schema
+ *     08/27/2008-1.1 Guy Pelletier 
+ *       - 211329: Add sequencing on non-id attribute(s) support to the EclipseLink-ORM.XML Schema
  ******************************************************************************/  
 package org.eclipse.persistence.testing.tests.jpa.xml.complexaggregate;
 
@@ -20,11 +22,14 @@ import junit.extensions.TestSetup;
 
 import org.eclipse.persistence.sessions.DatabaseSession;
 import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
+import org.eclipse.persistence.testing.models.jpa.xml.complexaggregate.CitySlicker;
 import org.eclipse.persistence.testing.models.jpa.xml.complexaggregate.ComplexAggregateTableCreator;
+import org.eclipse.persistence.testing.models.jpa.xml.complexaggregate.CountryDweller;
 import org.eclipse.persistence.testing.models.jpa.xml.complexaggregate.HockeyPlayer;
 import org.eclipse.persistence.testing.models.jpa.xml.complexaggregate.HockeyTeam;
 import org.eclipse.persistence.testing.models.jpa.xml.complexaggregate.HockeyTeamDetails;
 import org.eclipse.persistence.testing.models.jpa.xml.complexaggregate.HockeyTeamId;
+import org.eclipse.persistence.testing.models.jpa.xml.complexaggregate.Name;
 import org.eclipse.persistence.testing.models.jpa.xml.complexaggregate.PersonalVitals;
 import org.eclipse.persistence.testing.models.jpa.xml.complexaggregate.TeamVitals;
 import org.eclipse.persistence.testing.models.jpa.xml.complexaggregate.Vitals;
@@ -53,6 +58,7 @@ public class EntityMappingsComplexAggregateJUnitTestCase extends JUnitTestCase {
         if (persistenceUnit.equals("extended-complex-aggregate")) {
             suite.addTest(new EntityMappingsComplexAggregateJUnitTestCase("testCreateExtendedObjects", persistenceUnit)); 
             suite.addTest(new EntityMappingsComplexAggregateJUnitTestCase("testVerifyExtendedObjects", persistenceUnit));
+            suite.addTest(new EntityMappingsComplexAggregateJUnitTestCase("testAutoGenerationOnEmbeddedId", persistenceUnit));
         }
         
         return new TestSetup(suite) {
@@ -276,5 +282,63 @@ public class EntityMappingsComplexAggregateJUnitTestCase extends JUnitTestCase {
         HockeyTeam team = em.find(HockeyTeam.class, id);
         assertFalse("Hockey team with ID: " + id + ", was not created.", team == null);
         assertTrue("Hockey team with ID: " + id + ", did not have 2 players added.", team.getPlayers().size() == 2);
+    }
+    
+    
+    public void testAutoGenerationOnEmbeddedId() {
+        EntityManager em = createEntityManager(m_persistenceUnit);
+        
+        try {
+            Name sharedName = new Name();
+            sharedName.setFirstName("Tom");
+            sharedName.setLastName("Ware");
+            
+            CountryDweller countryDweller = new CountryDweller();
+            countryDweller.setAge(30);
+            countryDweller.setName(sharedName);
+            
+            CitySlicker citySlicker = new CitySlicker();
+            citySlicker.setAge(53);
+            citySlicker.setName(sharedName);
+            
+            Name name = new Name();
+            name.setFirstName("Guy");
+            name.setLastName("Pelletier");
+            
+            CountryDweller countryDweller2 = new CountryDweller();
+            countryDweller2.setAge(65);
+            countryDweller2.setName(name);
+        
+            beginTransaction(em);
+            em.persist(countryDweller);
+            em.persist(countryDweller2);
+            em.persist(citySlicker);
+            commitTransaction(em);
+        
+            // Clear the cache.
+            clearCache(m_persistenceUnit);            
+            
+            // Now read them back in and delete them.
+            beginTransaction(em);
+            
+            CitySlicker cs = em.find(CitySlicker.class, sharedName);
+            CountryDweller cd = em.merge(countryDweller);
+            CountryDweller cd2 = em.merge(countryDweller2);
+            
+            em.remove(cs);
+            em.remove(cd);
+            em.remove(cd2);
+            
+            commitTransaction(em);
+        } catch (RuntimeException e) {
+            if (isTransactionActive(em)){
+                rollbackTransaction(em);
+            }
+            
+            closeEntityManager(em);
+            throw e;
+        }
+        
+        closeEntityManager(em);
     }
 }

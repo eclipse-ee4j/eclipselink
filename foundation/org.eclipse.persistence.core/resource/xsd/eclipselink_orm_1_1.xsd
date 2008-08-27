@@ -980,8 +980,7 @@
         <xsd:element name="struct-converter" type="orm:struct-converter"/>
       </xsd:choice>
       <xsd:element name="property" type="orm:property" minOccurs="0" maxOccurs="unbounded"/>
-      <xsd:element name="access-methods" type="orm:access-methods" 
-                       minOccurs="0" maxOccurs="1"/>
+      <xsd:element name="access-methods" type="orm:access-methods" minOccurs="0" maxOccurs="1"/>
     </xsd:sequence>
     <xsd:attribute name="name" type="xsd:string" use="required"/>
     <xsd:attribute name="mutable" type="xsd:boolean"/>
@@ -1003,6 +1002,7 @@
     </xsd:annotation>
     <xsd:sequence>
       <xsd:element name="column" type="orm:column" minOccurs="0"/>
+      <xsd:element name="generated-value" type="orm:generated-value" minOccurs="0"/>
       <xsd:choice minOccurs="0">
         <xsd:element name="lob" type="orm:lob"/>
         <xsd:element name="temporal" type="orm:temporal"/>
@@ -1015,9 +1015,10 @@
         <xsd:element name="object-type-converter" type="orm:object-type-converter"/>
         <xsd:element name="struct-converter" type="orm:struct-converter"/>
       </xsd:choice>
+      <xsd:element name="table-generator" type="orm:table-generator" minOccurs="0"/>
+      <xsd:element name="sequence-generator" type="orm:sequence-generator" minOccurs="0"/>
       <xsd:element name="property" type="orm:property" minOccurs="0" maxOccurs="unbounded"/>
-      <xsd:element name="access-methods" type="orm:access-methods" 
-                   minOccurs="0" maxOccurs="1"/>
+      <xsd:element name="access-methods" type="orm:access-methods" minOccurs="0" maxOccurs="1"/>
     </xsd:sequence>
     <xsd:attribute name="name" type="xsd:string" use="required"/>
     <xsd:attribute name="fetch" type="orm:fetch-type"/>

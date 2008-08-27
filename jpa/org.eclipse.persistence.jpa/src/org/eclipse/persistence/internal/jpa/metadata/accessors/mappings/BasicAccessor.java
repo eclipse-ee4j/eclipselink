@@ -13,6 +13,8 @@
  *       - 218084: Implement metadata merging functionality between mapping files
  *     06/20/2008-1.0 Guy Pelletier 
  *       - 232975: Failure when attribute type is generic
+ *     08/27/2008-1.1 Guy Pelletier 
+ *       - 211329: Add sequencing on non-id attribute(s) support to the EclipseLink-ORM.XML Schema
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.accessors.mappings;
 
@@ -23,9 +25,13 @@ import java.util.Map;
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.SequenceGenerator;
+import javax.persistence.TableGenerator;
 
 import org.eclipse.persistence.annotations.Mutable;
 import org.eclipse.persistence.annotations.ReturnInsert;
+import org.eclipse.persistence.exceptions.ValidationException;
 
 import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.helper.DatabaseTable;
@@ -35,6 +41,9 @@ import org.eclipse.persistence.internal.jpa.metadata.MetadataLogger;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.classes.ClassAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAccessibleObject;
 import org.eclipse.persistence.internal.jpa.metadata.columns.ColumnMetadata;
+import org.eclipse.persistence.internal.jpa.metadata.sequencing.GeneratedValueMetadata;
+import org.eclipse.persistence.internal.jpa.metadata.sequencing.SequenceGeneratorMetadata;
+import org.eclipse.persistence.internal.jpa.metadata.sequencing.TableGeneratorMetadata;
 
 import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.mappings.DirectToFieldMapping;
@@ -51,7 +60,10 @@ import org.eclipse.persistence.mappings.converters.Converter;
 public class BasicAccessor extends DirectAccessor {
     private Boolean m_mutable;
     private ColumnMetadata m_column;
-    private DatabaseField m_field;
+    private DatabaseField m_field; 
+    private GeneratedValueMetadata m_generatedValue;
+    private SequenceGeneratorMetadata m_sequenceGenerator;
+    private TableGeneratorMetadata m_tableGenerator;
     
     /**
      * INTERNAL:
@@ -88,6 +100,21 @@ public class BasicAccessor extends DirectAccessor {
         Annotation mutable = getAnnotation(Mutable.class);
         if (mutable != null) {
             m_mutable = (Boolean) MetadataHelper.invokeMethod("value", mutable);
+        }
+        
+        // Set the generated value if one is present.
+        if (isAnnotationPresent(GeneratedValue.class)) {
+            m_generatedValue = new GeneratedValueMetadata(getAnnotation(GeneratedValue.class));
+        }
+        
+        // Set the sequence generator if one is present.        
+        if (isAnnotationPresent(SequenceGenerator.class)) {
+            m_sequenceGenerator = new SequenceGeneratorMetadata(getAnnotation(SequenceGenerator.class), accessibleObject);
+        }
+        
+        // Set the table generator if one is present.        
+        if (isAnnotationPresent(TableGenerator.class)) {
+            m_tableGenerator = new TableGeneratorMetadata(getAnnotation(TableGenerator.class), accessibleObject);
         }
     }
     
@@ -148,8 +175,32 @@ public class BasicAccessor extends DirectAccessor {
      * INTERNAL:
      * Used for OX mapping.
      */
+    public GeneratedValueMetadata getGeneratedValue() {
+        return m_generatedValue;
+    }
+    
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
     public Boolean getMutable() {
         return m_mutable;
+    }
+    
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+    public SequenceGeneratorMetadata getSequenceGenerator() {
+        return m_sequenceGenerator;
+    }
+    
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+    public TableGeneratorMetadata getTableGenerator() {
+        return m_tableGenerator;
     }
     
     /**
@@ -169,6 +220,10 @@ public class BasicAccessor extends DirectAccessor {
             // Initialize single objects.
             initXMLObject(m_column, accessibleObject);
         }
+        
+        // Initialize single objects.
+        initXMLObject(m_sequenceGenerator, accessibleObject);
+        initXMLObject(m_tableGenerator, accessibleObject);
     }
     
     /**
@@ -198,6 +253,8 @@ public class BasicAccessor extends DirectAccessor {
         DirectToFieldMapping mapping = new DirectToFieldMapping();
         
         // Process the @Column or column element if there is one.
+        // A number of methods depend on this field so it must be
+        // initialized before any further processing can take place.
         m_field = getDatabaseField(getDescriptor().getPrimaryTable(), MetadataLogger.COLUMN);
         
         // To resolve any generic types we need to set the attribute
@@ -227,14 +284,25 @@ public class BasicAccessor extends DirectAccessor {
             mapping.setIsMutable(m_mutable.booleanValue());
         }
 
-        // Process a @ReturnInsert
-        processReturnInsert(m_field);
-
-        // Process a @ReturnUpdate.
-        processReturnUpdate(m_field);
+        // Process the @ReturnInsert and @ReturnUpdate annotations.
+        // TODO: Expand this configuration to the eclipselink-orm.xsd
+        processReturnInsertAndUpdate();
         
-        // process properties
+        // Process any properties.
         processProperties(mapping);
+        
+        // Process a generated value setting.
+        processGeneratedValue();
+        
+        // Add the table generator to the project if one is set.
+        if (m_tableGenerator != null) {
+            getProject().addTableGenerator(m_tableGenerator, getDescriptor().getXMLCatalog(), getDescriptor().getXMLSchema());
+        }
+
+        // Add the sequence generator to the project if one is set.
+        if (m_sequenceGenerator != null) {
+            getProject().addSequenceGenerator(m_sequenceGenerator);
+        }
         
         // Add the mapping to the descriptor.
         getDescriptor().addMapping(mapping);
@@ -261,6 +329,24 @@ public class BasicAccessor extends DirectAccessor {
 
     /**
      * INTERNAL:
+     * Process the generated value metadata.
+     */
+    protected void processGeneratedValue() {
+        if (m_generatedValue != null) {
+            // Set the sequence number field on the descriptor.        
+            DatabaseField existingSequenceNumberField = getOwningDescriptor().getSequenceNumberField();
+
+            if (existingSequenceNumberField == null) {
+                getOwningDescriptor().setSequenceNumberField(m_field);
+                getProject().addGeneratedValue(m_generatedValue, getOwningDescriptor().getJavaClass());
+            } else {
+                throw ValidationException.onlyOneGeneratedValueIsAllowed(getOwningDescriptor().getJavaClass(), existingSequenceNumberField.getQualifiedName(), m_field.getQualifiedName());
+            }
+        }
+    }
+    
+    /**
+     * INTERNAL:
      * Process a Lob metadata. The lob must be specified to process and 
      * create a lob type mapping.
      */
@@ -279,36 +365,35 @@ public class BasicAccessor extends DirectAccessor {
     
     /**
      * INTERNAL:
-     * Process a ReturnInsert annotation.
+     * Process a ReturnInsert annotation. NOTE: This is currently only
+     * supported using annotations.
+     * TODO: Add to the eclipselink-orm.xsd
      */
-    protected void processReturnInsert(DatabaseField field) {
+    @Override
+    protected void processReturnInsert() {
         Object returnInsert = getAnnotation(ReturnInsert.class);
 
         if (returnInsert != null) {
-            // Process return only.
-            processReturnInsert(field, (Boolean) MetadataHelper.invokeMethod("returnOnly", returnInsert)); 
+            boolean returnOnly = (Boolean) MetadataHelper.invokeMethod("returnOnly", returnInsert);
+            
+            if (returnOnly) {
+                getDescriptor().addFieldForInsertReturnOnly(m_field);
+            } else {
+                getDescriptor().addFieldForInsert(m_field);
+            }
         }
     }
 
     /**
      * INTERNAL:
-     * Process a return insert setting.
+     * Process a return update setting.  NOTE: This is currently only
+     * supported using annotations.
+     * TODO: Add to the eclipselink-orm.xsd
      */
-    protected void processReturnInsert(DatabaseField field, boolean returnOnly) {
-        if (returnOnly) {
-            getDescriptor().addFieldForInsertReturnOnly(field);
-        } else {
-            getDescriptor().addFieldForInsert(field);
-        }
-    }
-
-    /**
-     * INTERNAL:
-     * Process a return update setting.
-     */
-    protected void processReturnUpdate(DatabaseField field) {
+    @Override
+    protected void processReturnUpdate() {
         if (hasReturnUpdate()) {
-            getDescriptor().addFieldForUpdate(field);
+            getDescriptor().addFieldForUpdate(m_field);
         }
     }
 
@@ -345,7 +430,31 @@ public class BasicAccessor extends DirectAccessor {
      * INTERNAL:
      * Used for OX mapping.
      */
+    public void setGeneratedValue(GeneratedValueMetadata value) {
+        m_generatedValue = value;
+    }
+    
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
     public void setMutable(Boolean mutable) {
         m_mutable = mutable;
+    }
+    
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+    public void setSequenceGenerator(SequenceGeneratorMetadata sequenceGenerator) {
+        m_sequenceGenerator = sequenceGenerator;
+    }
+    
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+    public void setTableGenerator(TableGeneratorMetadata tableGenerator) {
+        m_tableGenerator = tableGenerator;
     }
 }

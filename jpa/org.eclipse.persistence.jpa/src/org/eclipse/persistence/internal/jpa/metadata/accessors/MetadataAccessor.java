@@ -11,6 +11,8 @@
  *     Oracle - initial API and implementation from Oracle TopLink
  *     05/16/2008-1.0M8 Guy Pelletier 
  *       - 218084: Implement metadata merging functionality between mapping files
+ *     08/27/2008-1.1 Guy Pelletier 
+ *       - 211329: Add sequencing on non-id attribute(s) support to the EclipseLink-ORM.XML Schema
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.accessors;
 
@@ -20,14 +22,8 @@ import java.util.List;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedElement;
 
-import javax.persistence.Column;
-import javax.persistence.FetchType;
-
-import org.eclipse.persistence.annotations.Convert;
 import org.eclipse.persistence.annotations.Converter;
 import org.eclipse.persistence.annotations.ObjectTypeConverter;
-import org.eclipse.persistence.annotations.ReturnInsert;
-import org.eclipse.persistence.annotations.ReturnUpdate;
 import org.eclipse.persistence.annotations.TypeConverter;
 import org.eclipse.persistence.annotations.StructConverter;
 import org.eclipse.persistence.exceptions.ValidationException;
@@ -55,7 +51,7 @@ import org.eclipse.persistence.internal.jpa.metadata.ORMetadata;
 
 /**
  * INTERNAL:
- * Top level metadata accessor.
+ * Common metadata accessor level for mappings and classes.
  * 
  * @author Guy Pelletier
  * @since TopLink EJB 3.0 Reference Implementation
@@ -148,13 +144,6 @@ public abstract class MetadataAccessor extends ORMetadata {
      */
     public List<ConverterMetadata> getConverters() {
         return m_converters;
-    }
-    
-    /**
-     * INTERNAL:
-     */
-    public Enum getDefaultFetchType() {
-        return FetchType.valueOf("EAGER"); 
     }
     
     /**
@@ -323,38 +312,6 @@ public abstract class MetadataAccessor extends ORMetadata {
     protected String getValue(String value, String defaultValue) {
         return org.eclipse.persistence.internal.jpa.metadata.MetadataHelper.getValue(value, defaultValue);
     }
-
-    /**
-     * INTERNAL:
-     * Method to check if an annotated element has a Column annotation.
-     */
-    protected boolean hasColumn() {
-        return isAnnotationPresent(Column.class);
-    }
-    
-    /**
-     * INTERNAL:
-     * Method to check if an annotated element has a convert specified.
-     */
-    protected boolean hasConvert() {
-        return isAnnotationPresent(Convert.class);
-    }
-    
-    /**
-     * INTERNAL:
-     * Method to check if this accesosr has a ReturnInsert annotation.
-     */
-    protected boolean hasReturnInsert() {
-        return isAnnotationPresent(ReturnInsert.class);
-    }
-    
-    /**
-     * INTERNAL:
-     * Method to check if this accesosr has a ReturnUpdate annotation.
-     */
-    protected boolean hasReturnUpdate() {
-        return isAnnotationPresent(ReturnUpdate.class);
-    }
     
     /**
      * INTERNAL: 
@@ -505,35 +462,6 @@ public abstract class MetadataAccessor extends ORMetadata {
         }
         
         return pkJoinColumns;
-    }
-    
-    /**
-     * INTERNAL:
-     * Subclasses should call this method if they want the warning message.
-     */
-    protected void processReturnInsert() {
-        if (hasReturnInsert()) {
-            getLogger().logWarningMessage(MetadataLogger.IGNORE_RETURN_INSERT_ANNOTATION, getAnnotatedElement());
-        }
-    }
-    
-    /**
-     * INTERNAL:
-     * Subclasses should call this method if they want the warning message.
-     */
-    protected void processReturnInsertAndUpdate() {
-        processReturnInsert();
-        processReturnUpdate();
-    }
-    
-    /**
-     * INTERNAL:
-     * Subclasses should call this method if they want the warning message.
-     */
-    protected void processReturnUpdate() {
-        if (hasReturnUpdate()) {
-            getLogger().logWarningMessage(MetadataLogger.IGNORE_RETURN_UPDATE_ANNOTATION, getAnnotatedElement());
-        }
     }
       
     /**
