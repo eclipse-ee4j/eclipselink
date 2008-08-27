@@ -28,6 +28,7 @@ import org.eclipse.persistence.internal.helper.Helper;
 import java.util.*;
 import org.eclipse.persistence.internal.identitymaps.CacheKey;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
+import org.eclipse.persistence.mappings.CollectionMapping;
 import org.eclipse.persistence.mappings.ForeignReferenceMapping;
 import org.eclipse.persistence.queries.ObjectLevelReadQuery;
 import org.eclipse.persistence.queries.InMemoryQueryIndirectionPolicy;
@@ -214,36 +215,90 @@ public class JoinedAttributeTestHelper {
             errorMsg = ": size1==" + Integer.toString(col1.size()) + "!= size2==" + Integer.toString(col2.size()) + ";  ";
             return errorMsg;
         }
-        // objects keyed by pks
-        HashMap map1 = new HashMap(col1.size());
-        HashMap map2 = new HashMap(col2.size());
-        
-        boolean simplePk = desc.getPrimaryKeyFields().size()==1;
-        ObjectBuilder builder = desc.getObjectBuilder();
-        Iterator it1 = col1.iterator();
-        Iterator it2 = col2.iterator();
-        while(it1.hasNext()) {
-            Object obj1 = it1.next();
-            Object obj2 = it2.next();
-            Object pk1 = builder.extractPrimaryKeyFromObject(obj1, session);
-            Object pk2 = builder.extractPrimaryKeyFromObject(obj2, session);
-            if(simplePk) {
-                pk1 = ((Vector)pk1).firstElement();
-                pk2 = ((Vector)pk2).firstElement();
+
+        if(desc != null) {
+            // objects keyed by pks
+            HashMap map1 = new HashMap(col1.size());
+            HashMap map2 = new HashMap(col2.size());
+            
+            boolean simplePk = desc.getPrimaryKeyFields().size()==1;
+            ObjectBuilder builder = desc.getObjectBuilder();
+            Iterator it1 = col1.iterator();
+            Iterator it2 = col2.iterator();
+            while(it1.hasNext()) {
+                Object obj1 = it1.next();
+                Object obj2 = it2.next();
+                Object pk1 = builder.extractPrimaryKeyFromObject(obj1, session);
+                Object pk2 = builder.extractPrimaryKeyFromObject(obj2, session);
+                if(simplePk) {
+                    pk1 = ((Vector)pk1).firstElement();
+                    pk2 = ((Vector)pk2).firstElement();
+                }
+                map1.put(pk1, obj1);
+                map2.put(pk2, obj2);
             }
-            map1.put(pk1, obj1);
-            map2.put(pk2, obj2);
+    
+            Iterator itEntries1 = map1.entrySet().iterator();
+            while(itEntries1.hasNext()) {
+                Map.Entry entry = (Map.Entry)itEntries1.next();
+                Object pk = entry.getKey();
+                Object obj1 = entry.getValue();
+                Object obj2 = map2.get(pk);
+                String objErrorMsg = compareObjects(obj1, obj2, session, processed);
+                if(objErrorMsg.length() > 0) {
+                    errorMsg += "PK = " + pk.toString() + ": " + Helper.getShortClassName(obj1.getClass()) + objErrorMsg + "  ";
+                }
+                
+            }
+        } else {
+            // there's no target descriptor - compare collections directly
+            if(!col1.equals(col2)) {
+                errorMsg += "Collections " + col1.toString() + " and " + col2.toString() + " are not equal; ";
+            }
+        }
+
+        return errorMsg;
+    }
+    
+    protected static String compareMaps(Map map1, Map map2, AbstractSession session, Map processed) {
+        if(map1==null && map2==null) {
+            return "";
+        }
+        String errorMsg = "";
+        if(map1 != null) {
+            if(processed.containsKey(map1)) {
+                return "";
+            }
+            processed.put(map1, map1);
+            if(map2==null) {
+                errorMsg = ": " + map1.toString() + "!= null ;  ";
+                return errorMsg;
+            }
+        }
+        if(map2 != null) {
+            if(processed.containsKey(map2)) {
+                return "";
+            }
+            processed.put(map2, map2);
+            if(map1 == null) {
+                errorMsg = ": null !=" + map2.toString() + ";  ";
+                return errorMsg;
+            }
+        }
+        if(map1.size() != map2.size()) {
+            errorMsg = ": size1==" + Integer.toString(map1.size()) + "!= size2==" + Integer.toString(map2.size()) + ";  ";
+            return errorMsg;
         }
 
         Iterator itEntries1 = map1.entrySet().iterator();
         while(itEntries1.hasNext()) {
             Map.Entry entry = (Map.Entry)itEntries1.next();
-            Object pk = entry.getKey();
+            Object key = entry.getKey();
             Object obj1 = entry.getValue();
-            Object obj2 = map2.get(pk);
+            Object obj2 = map2.get(key);
             String objErrorMsg = compareObjects(obj1, obj2, session, processed);
             if(objErrorMsg.length() > 0) {
-                errorMsg += "PK = " + pk.toString() + ": " + Helper.getShortClassName(obj1.getClass()) + objErrorMsg + "  ";
+                errorMsg += "Key = " + key.toString() + ": " + Helper.getShortClassName(obj1.getClass()) + objErrorMsg + "  ";
             }
             
         }
@@ -316,7 +371,14 @@ public class JoinedAttributeTestHelper {
                 value1 = frm.getRealAttributeValueFromObject(obj1, session);
                 value2 = frm.getRealAttributeValueFromObject(obj2, session);
                 if(frm.isCollectionMapping()) {
-                    errorMsg += compareCollections((Collection)value1, (Collection)value2, frm.getReferenceDescriptor(), session, processed);
+                    Class containerClass = ((CollectionMapping)frm).getContainerPolicy().getContainerClass();
+                    if(Collection.class.isAssignableFrom(containerClass)) {
+                        errorMsg += compareCollections((Collection)value1, (Collection)value2, frm.getReferenceDescriptor(), session, processed);
+                    } else if(Map.class.isAssignableFrom(containerClass)) {
+                        errorMsg += compareMaps((Map)value1, (Map)value2, session, processed);
+                    } else {
+                        errorMsg += mapping.toString() + " container class implements neither Collection nor Map - can't processl; "; 
+                    }
                 } else {
                     errorMsg += compareObjects(value1, value2, session, processed);
                 }
