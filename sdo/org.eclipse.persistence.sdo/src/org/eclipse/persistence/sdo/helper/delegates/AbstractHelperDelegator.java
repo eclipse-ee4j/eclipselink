@@ -81,7 +81,7 @@ public abstract class AbstractHelperDelegator {
         		currentLoader = currentLoader.getParent();
             	loaders.add(currentLoader);
             	if (currentLoader.getParent() == systemLoader) {
-            		if (loaders.size() >= 4) {
+            		if (loaders.size() >= systemLoaderOffest) {
             			classLoader = loaders.get(loaders.size() - systemLoaderOffest); 
             			break;
             		}

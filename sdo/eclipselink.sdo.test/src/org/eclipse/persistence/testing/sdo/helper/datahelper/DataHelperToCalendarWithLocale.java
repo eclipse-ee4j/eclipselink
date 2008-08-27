@@ -9,7 +9,7 @@
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.sdo.helper.datahelper;
 
 import java.util.Calendar;
@@ -21,7 +21,7 @@ public class DataHelperToCalendarWithLocale extends DataHelperTestCases {
         super(name);
     }
 
-    public void testToDateWithGYearMonth() {
+    public void testToCalendarWithGYearMonth() {
         Locale lc = Locale.US;
         Calendar controlCalendar = Calendar.getInstance(lc);
         controlCalendar.clear();
@@ -29,20 +29,25 @@ public class DataHelperToCalendarWithLocale extends DataHelperTestCases {
         controlCalendar.set(Calendar.MONTH, 4);
         controlCalendar.setTimeZone(TimeZone.getTimeZone("GMT"));
         Calendar aCalendar = dataHelper.toCalendar("2001-05", lc);
-        this.assertEquals(controlCalendar, aCalendar);
+        assertTrue("Expected YEAR: " + controlCalendar.get(Calendar.YEAR) + ", but was: " + aCalendar.get(Calendar.YEAR), controlCalendar.get(Calendar.YEAR) == aCalendar.get(Calendar.YEAR));
+        assertTrue("Expected MONTH: " + controlCalendar.get(Calendar.MONTH) + ", but was: " + aCalendar.get(Calendar.MONTH), controlCalendar.get(Calendar.MONTH) == aCalendar.get(Calendar.MONTH));
+        assertTrue("Expected TimeZone: " + controlCalendar.getTimeZone() + ", but was: " + aCalendar.getTimeZone(), controlCalendar.getTimeZone().equals(aCalendar.getTimeZone()));
+        assertTrue("Expected toString: " + controlCalendar.toString() + ", but was: " + aCalendar.toString(), controlCalendar.toString().equals(aCalendar.toString()));
     }
 
-    public void testToDateWithGYear() {
+    public void testToCalendarWithGYear() {
         Locale lc = Locale.US;
         Calendar controlCalendar = Calendar.getInstance(lc);
         controlCalendar.clear();
         controlCalendar.set(Calendar.YEAR, 2000);
         controlCalendar.setTimeZone(TimeZone.getTimeZone("GMT"));
         Calendar aCalendar = dataHelper.toCalendar("2000", lc);
-        this.assertEquals(controlCalendar, aCalendar);
+        assertTrue("Expected YEAR: " + controlCalendar.get(Calendar.YEAR) + ", but was: " + aCalendar.get(Calendar.YEAR), controlCalendar.get(Calendar.YEAR) == aCalendar.get(Calendar.YEAR));
+        assertTrue("Expected TimeZone: " + controlCalendar.getTimeZone() + ", but was: " + aCalendar.getTimeZone(), controlCalendar.getTimeZone().equals(aCalendar.getTimeZone()));
+        assertTrue("Expected toString: " + controlCalendar.toString() + ", but was: " + aCalendar.toString(), controlCalendar.toString().equals(aCalendar.toString()));
     }
 
-    public void testToDateWithGMonthDay() {
+    public void testToCalendarWithGMonthDay() {
         Locale lc = Locale.US;
         Calendar controlCalendar = Calendar.getInstance(lc);
         controlCalendar.clear();
@@ -50,30 +55,37 @@ public class DataHelperToCalendarWithLocale extends DataHelperTestCases {
         controlCalendar.set(Calendar.DATE, 4);
         controlCalendar.setTimeZone(TimeZone.getTimeZone("GMT"));
         Calendar aCalendar = dataHelper.toCalendar("--07-04", lc);
-        this.assertEquals(controlCalendar, aCalendar);
+        assertTrue("Expected MONTH: " + controlCalendar.get(Calendar.MONTH) + ", but was: " + aCalendar.get(Calendar.MONTH), controlCalendar.get(Calendar.MONTH) == aCalendar.get(Calendar.MONTH));
+        assertTrue("Expected DATE: " + controlCalendar.get(Calendar.DATE) + ", but was: " + aCalendar.get(Calendar.DATE), controlCalendar.get(Calendar.DATE) == aCalendar.get(Calendar.DATE));
+        assertTrue("Expected TimeZone: " + controlCalendar.getTimeZone() + ", but was: " + aCalendar.getTimeZone(), controlCalendar.getTimeZone().equals(aCalendar.getTimeZone()));
+        assertTrue("Expected toString: " + controlCalendar.toString() + ", but was: " + aCalendar.toString(), controlCalendar.toString().equals(aCalendar.toString()));
     }
 
-    public void testToDateWithGMonth() {
+    public void testToCalendarWithGMonth() {
         Locale lc = Locale.US;
         Calendar controlCalendar = Calendar.getInstance(lc);
         controlCalendar.clear();
         controlCalendar.set(Calendar.MONTH, 10);
         controlCalendar.setTimeZone(TimeZone.getTimeZone("GMT"));
         Calendar aCalendar = dataHelper.toCalendar("--11--", lc);
-        this.assertEquals(controlCalendar, aCalendar);
+        assertTrue("Expected MONTH: " + controlCalendar.get(Calendar.MONTH) + ", but was: " + aCalendar.get(Calendar.MONTH), controlCalendar.get(Calendar.MONTH) == aCalendar.get(Calendar.MONTH));
+        assertTrue("Expected TimeZone: " + controlCalendar.getTimeZone() + ", but was: " + aCalendar.getTimeZone(), controlCalendar.getTimeZone().equals(aCalendar.getTimeZone()));
+        assertTrue("Expected toString: " + controlCalendar.toString() + ", but was: " + aCalendar.toString(), controlCalendar.toString().equals(aCalendar.toString()));
     }
 
-    public void testToDateWithGDay() {
+    public void testToCalendarWithGDay() {
         Locale lc = Locale.US;
         Calendar controlCalendar = Calendar.getInstance(lc);
         controlCalendar.clear();
         controlCalendar.set(Calendar.DATE, 15);
         controlCalendar.setTimeZone(TimeZone.getTimeZone("GMT"));
-        Calendar aCalendar = dataHelper.toCalendar("----15", lc);
-        this.assertEquals(controlCalendar, aCalendar);
+        Calendar aCalendar = dataHelper.toCalendar("---15", lc);
+        assertTrue("Expected DATE: " + controlCalendar.get(Calendar.DATE) + ", but was: " + aCalendar.get(Calendar.DATE), controlCalendar.get(Calendar.DATE) == aCalendar.get(Calendar.DATE));
+        assertTrue("Expected TimeZone: " + controlCalendar.getTimeZone() + ", but was: " + aCalendar.getTimeZone(), controlCalendar.getTimeZone().equals(aCalendar.getTimeZone()));
+        assertTrue("Expected toString: " + controlCalendar.toString() + ", but was: " + aCalendar.toString(), controlCalendar.toString().equals(aCalendar.toString()));
     }
 
-    public void testToDateWithTime() {
+    public void testToCalendarWithTime() {
         Locale lc = Locale.US;
         Calendar controlCalendar = Calendar.getInstance(lc);
         controlCalendar.clear();
@@ -83,10 +95,15 @@ public class DataHelperToCalendarWithLocale extends DataHelperTestCases {
         controlCalendar.set(Calendar.MILLISECOND, 0);
         controlCalendar.setTimeZone(TimeZone.getTimeZone("GMT"));
         Calendar aCalendar = dataHelper.toCalendar("01:21:12", lc);
-        this.assertEquals(controlCalendar, aCalendar);
+        assertTrue("Expected HOUR: " + controlCalendar.get(Calendar.HOUR) + ", but was: " + aCalendar.get(Calendar.HOUR), controlCalendar.get(Calendar.HOUR) == aCalendar.get(Calendar.HOUR));
+        assertTrue("Expected MINUTE: " + controlCalendar.get(Calendar.MINUTE) + ", but was: " + aCalendar.get(Calendar.MINUTE), controlCalendar.get(Calendar.MINUTE) == aCalendar.get(Calendar.MINUTE));
+        assertTrue("Expected SECOND: " + controlCalendar.get(Calendar.SECOND) + ", but was: " + aCalendar.get(Calendar.SECOND), controlCalendar.get(Calendar.SECOND) == aCalendar.get(Calendar.SECOND));
+        assertTrue("Expected MILLISECOND: " + controlCalendar.get(Calendar.MILLISECOND) + ", but was: " + aCalendar.get(Calendar.MILLISECOND), controlCalendar.get(Calendar.MILLISECOND) == aCalendar.get(Calendar.MILLISECOND));
+        assertTrue("Expected TimeZone: " + controlCalendar.getTimeZone() + ", but was: " + aCalendar.getTimeZone(), controlCalendar.getTimeZone().equals(aCalendar.getTimeZone()));
+        assertTrue("Expected toString: " + controlCalendar.toString() + ", but was: " + aCalendar.toString(), controlCalendar.toString().equals(aCalendar.toString()));
     }
 
-    public void testToDateWithDate() {
+    public void testToCalendarWithDate() {
         Locale lc = Locale.US;
         Calendar controlCalendar = Calendar.getInstance(lc);
         controlCalendar.clear();
@@ -95,10 +112,14 @@ public class DataHelperToCalendarWithLocale extends DataHelperTestCases {
         controlCalendar.set(Calendar.DATE, 1);
         controlCalendar.setTimeZone(TimeZone.getTimeZone("GMT"));
         Calendar aCalendar = dataHelper.toCalendar("2001-01-01", lc);
-        this.assertEquals(controlCalendar, aCalendar);
+        assertTrue("Expected YEAR: " + controlCalendar.get(Calendar.YEAR) + ", but was: " + aCalendar.get(Calendar.YEAR), controlCalendar.get(Calendar.YEAR) == aCalendar.get(Calendar.YEAR));
+        assertTrue("Expected MONTH: " + controlCalendar.get(Calendar.MONTH) + ", but was: " + aCalendar.get(Calendar.MONTH), controlCalendar.get(Calendar.MONTH) == aCalendar.get(Calendar.MONTH));
+        assertTrue("Expected DATE: " + controlCalendar.get(Calendar.DATE) + ", but was: " + aCalendar.get(Calendar.DATE), controlCalendar.get(Calendar.DATE) == aCalendar.get(Calendar.DATE));
+        assertTrue("Expected TimeZone: " + controlCalendar.getTimeZone() + ", but was: " + aCalendar.getTimeZone(), controlCalendar.getTimeZone().equals(aCalendar.getTimeZone()));
+        assertTrue("Expected toString: " + controlCalendar.toString() + ", but was: " + aCalendar.toString(), controlCalendar.toString().equals(aCalendar.toString()));
     }
 
-    public void testToDateWithDateTime() {
+    public void testToCalendarWithDateTime() {
         Locale lc = Locale.US;
         Calendar controlCalendar = Calendar.getInstance(lc);
         controlCalendar.clear();
@@ -111,15 +132,23 @@ public class DataHelperToCalendarWithLocale extends DataHelperTestCases {
         controlCalendar.set(Calendar.MILLISECOND, 0);
         controlCalendar.setTimeZone(TimeZone.getTimeZone("GMT"));
         Calendar aCalendar = dataHelper.toCalendar("2001-01-01T00:00:01", lc);
-        this.assertEquals(controlCalendar, aCalendar);
+        assertTrue("Expected YEAR: " + controlCalendar.get(Calendar.YEAR) + ", but was: " + aCalendar.get(Calendar.YEAR), controlCalendar.get(Calendar.YEAR) == aCalendar.get(Calendar.YEAR));
+        assertTrue("Expected MONTH: " + controlCalendar.get(Calendar.MONTH) + ", but was: " + aCalendar.get(Calendar.MONTH), controlCalendar.get(Calendar.MONTH) == aCalendar.get(Calendar.MONTH));
+        assertTrue("Expected DATE: " + controlCalendar.get(Calendar.DATE) + ", but was: " + aCalendar.get(Calendar.DATE), controlCalendar.get(Calendar.DATE) == aCalendar.get(Calendar.DATE));
+        assertTrue("Expected HOUR: " + controlCalendar.get(Calendar.HOUR) + ", but was: " + aCalendar.get(Calendar.HOUR), controlCalendar.get(Calendar.HOUR) == aCalendar.get(Calendar.HOUR));
+        assertTrue("Expected MINUTE: " + controlCalendar.get(Calendar.MINUTE) + ", but was: " + aCalendar.get(Calendar.MINUTE), controlCalendar.get(Calendar.MINUTE) == aCalendar.get(Calendar.MINUTE));
+        assertTrue("Expected SECOND: " + controlCalendar.get(Calendar.SECOND) + ", but was: " + aCalendar.get(Calendar.SECOND), controlCalendar.get(Calendar.SECOND) == aCalendar.get(Calendar.SECOND));
+        assertTrue("Expected MILLISECOND: " + controlCalendar.get(Calendar.MILLISECOND) + ", but was: " + aCalendar.get(Calendar.MILLISECOND), controlCalendar.get(Calendar.MILLISECOND) == aCalendar.get(Calendar.MILLISECOND));
+        assertTrue("Expected TimeZone: " + controlCalendar.getTimeZone() + ", but was: " + aCalendar.getTimeZone(), controlCalendar.getTimeZone().equals(aCalendar.getTimeZone()));
+        assertTrue("Expected toString: " + controlCalendar.toString() + ", but was: " + aCalendar.toString(), controlCalendar.toString().equals(aCalendar.toString()));
     }
 
-    public void testToDateWithDuration() {
+    public void testToCalendarWithDuration() {
         Locale lc = Locale.US;
         Calendar controlCalendar = Calendar.getInstance(lc);
         controlCalendar.clear();
         controlCalendar.set(Calendar.YEAR, 12);
-        controlCalendar.set(Calendar.MONTH, 9);
+        controlCalendar.set(Calendar.MONTH, Calendar.OCTOBER);
         controlCalendar.set(Calendar.DATE, 2);
         controlCalendar.set(Calendar.HOUR, 0);
         controlCalendar.set(Calendar.MINUTE, 40);
@@ -127,16 +156,20 @@ public class DataHelperToCalendarWithLocale extends DataHelperTestCases {
         controlCalendar.set(Calendar.MILLISECOND, 870);
         controlCalendar.setTimeZone(TimeZone.getTimeZone("GMT"));
         Calendar aCalendar = dataHelper.toCalendar("P12Y10M2DT0H40M27.87S", lc);
-        this.assertEquals(controlCalendar, aCalendar);
+        assertTrue("Expected YEAR: " + controlCalendar.get(Calendar.YEAR) + ", but was: " + aCalendar.get(Calendar.YEAR), controlCalendar.get(Calendar.YEAR) == aCalendar.get(Calendar.YEAR));
+        assertTrue("Expected MONTH: " + controlCalendar.get(Calendar.MONTH) + ", but was: " + aCalendar.get(Calendar.MONTH), controlCalendar.get(Calendar.MONTH) == aCalendar.get(Calendar.MONTH));
+        assertTrue("Expected DATE: " + controlCalendar.get(Calendar.DATE) + ", but was: " + aCalendar.get(Calendar.DATE), controlCalendar.get(Calendar.DATE) == aCalendar.get(Calendar.DATE));
+        assertTrue("Expected HOUR: " + controlCalendar.get(Calendar.HOUR) + ", but was: " + aCalendar.get(Calendar.HOUR), controlCalendar.get(Calendar.HOUR) == aCalendar.get(Calendar.HOUR));
+        assertTrue("Expected MINUTE: " + controlCalendar.get(Calendar.MINUTE) + ", but was: " + aCalendar.get(Calendar.MINUTE), controlCalendar.get(Calendar.MINUTE) == aCalendar.get(Calendar.MINUTE));
+        assertTrue("Expected SECOND: " + controlCalendar.get(Calendar.SECOND) + ", but was: " + aCalendar.get(Calendar.SECOND), controlCalendar.get(Calendar.SECOND) == aCalendar.get(Calendar.SECOND));
+        assertTrue("Expected MILLISECOND: " + controlCalendar.get(Calendar.MILLISECOND) + ", but was: " + aCalendar.get(Calendar.MILLISECOND), controlCalendar.get(Calendar.MILLISECOND) == aCalendar.get(Calendar.MILLISECOND));
+        assertTrue("Expected TimeZone: " + controlCalendar.getTimeZone() + ", but was: " + aCalendar.getTimeZone(), controlCalendar.getTimeZone().equals(aCalendar.getTimeZone()));
     }
 
     public void testToCalendarWithNullInput() {
-        try {
-            Locale lc = Locale.US;
-            Calendar aCalendar = dataHelper.toCalendar(null, lc);
-            this.fail();
-        } catch (IllegalArgumentException e) {
-        }
+        Locale lc = Locale.US;
+        Calendar aCalendar = dataHelper.toCalendar(null, lc);
+        assertTrue("dataHelper.toCalendar(null, Locale.US) did not return null as expected.", aCalendar == null);
     }
 
     public void testToCalendarWithInvalidInput() {
@@ -157,15 +190,16 @@ public class DataHelperToCalendarWithLocale extends DataHelperTestCases {
         controlCalendar.set(Calendar.DATE, 1);
         controlCalendar.setTimeZone(TimeZone.getTimeZone("GMT"));
         Calendar aCalendar = dataHelper.toCalendar("2001-01-01", lc);
-        this.assertEquals(controlCalendar, aCalendar);
+        assertTrue("Expected YEAR: " + controlCalendar.get(Calendar.YEAR) + ", but was: " + aCalendar.get(Calendar.YEAR), controlCalendar.get(Calendar.YEAR) == aCalendar.get(Calendar.YEAR));
+        assertTrue("Expected MONTH: " + controlCalendar.get(Calendar.MONTH) + ", but was: " + aCalendar.get(Calendar.MONTH), controlCalendar.get(Calendar.MONTH) == aCalendar.get(Calendar.MONTH));
+        assertTrue("Expected DATE: " + controlCalendar.get(Calendar.DATE) + ", but was: " + aCalendar.get(Calendar.DATE), controlCalendar.get(Calendar.DATE) == aCalendar.get(Calendar.DATE));
+        assertTrue("Expected TimeZone: " + controlCalendar.getTimeZone() + ", but was: " + aCalendar.getTimeZone(), controlCalendar.getTimeZone().equals(aCalendar.getTimeZone()));
+        assertTrue("Expected toString: " + controlCalendar.toString() + ", but was: " + aCalendar.toString(), controlCalendar.toString().equals(aCalendar.toString()));
     }
 
     public void testToCalendarWithNullString() {
         Locale lc = Locale.US;
-        try {
-            Calendar aCalendar = dataHelper.toCalendar(null, lc);
-            this.fail();
-        } catch (IllegalArgumentException e) {
-        }
+        Calendar aCalendar = dataHelper.toCalendar(null, lc);
+        assertTrue("dataHelper.toCalendar(null, Locale.US) did not return null as expected.", aCalendar == null);
     }
 }

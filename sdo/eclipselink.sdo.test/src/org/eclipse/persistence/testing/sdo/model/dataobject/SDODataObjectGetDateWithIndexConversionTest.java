@@ -127,12 +127,8 @@ public class SDODataObjectGetDateWithIndexConversionTest extends SDODataObjectCo
         SDOProperty property = new SDOProperty(aHelperContext);
         property.setName(PROPERTY_NAME);
         property.setType(SDOConstants.SDO_BOOLEAN);
-
-        try {
-            dataObject.getDate(PROPERTY_INDEX);
-            fail("IllegalArgumentException should be thrown.");
-        } catch (IllegalArgumentException e) {
-        }
+        Object obj = dataObject.getDate(PROPERTY_INDEX);
+        assertNull(obj);
     }
 
     //10. purpose: getDate with short Property
@@ -172,12 +168,8 @@ public class SDODataObjectGetDateWithIndexConversionTest extends SDODataObjectCo
         SDOProperty property = new SDOProperty(aHelperContext);
         property.setName(PROPERTY_NAME);
         property.setType(SDOConstants.SDO_STRING);
-
-        try {
-            dataObject.getDate(PROPERTY_INDEX);
-            fail("IllegalArgumentException should be thrown.");
-        } catch (IllegalArgumentException e) {
-        }
+        Object obj = dataObject.getDate(PROPERTY_INDEX);
+        assertNull(obj);
     }
 
     //13. purpose: getDate with bytes property
@@ -234,12 +226,8 @@ public class SDODataObjectGetDateWithIndexConversionTest extends SDODataObjectCo
         SDOProperty property = new SDOProperty(aHelperContext);
         property.setName(PROPERTY_NAME);
         property.setType(SDOConstants.SDO_DATE);
-
-        try {
-            dataObject.getDate(PROPERTY_INDEX);
-            fail("IllegalArgumentException should be thrown.");
-        } catch (IllegalArgumentException e) {
-        }
+        Object obj = dataObject.getDate(PROPERTY_INDEX);
+        assertNull(obj);
     }
 
     //purpose: getDate with nul value

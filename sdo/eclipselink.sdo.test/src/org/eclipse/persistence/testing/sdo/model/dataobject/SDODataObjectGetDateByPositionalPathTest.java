@@ -51,12 +51,8 @@ public class SDODataObjectGetDateByPositionalPathTest extends SDODataObjectGetBy
         property_c.setType(SDOConstants.SDO_BYTE);
         type_c.addDeclaredProperty(property_c);
         dataObject_c._setType(type_c);
-
-        try {
-            dataObject_a.getDate(propertyPath_a_b_c);
-            fail("ClassCastException should be thrown.");
-        } catch (ClassCastException e) {
-        }
+        Object obj = dataObject_a.getDate(propertyPath_a_b_c);
+        assertNull(obj);
     }
 
     //3. purpose: getDate with character property
@@ -66,12 +62,8 @@ public class SDODataObjectGetDateByPositionalPathTest extends SDODataObjectGetBy
         property_c.setType(SDOConstants.SDO_CHARACTER);
         type_c.addDeclaredProperty(property_c);
         dataObject_c._setType(type_c);
-
-        try {
-            dataObject_a.getDate(propertyPath_a_b_c);
-            fail("ClassCastException should be thrown.");
-        } catch (ClassCastException e) {
-        }
+        Object obj = dataObject_a.getDate(propertyPath_a_b_c);
+        assertNull(obj);
     }
 
     //4. purpose: getDate with Double Property
@@ -81,12 +73,8 @@ public class SDODataObjectGetDateByPositionalPathTest extends SDODataObjectGetBy
         property_c.setType(SDOConstants.SDO_DOUBLE);
         type_c.addDeclaredProperty(property_c);
         dataObject_c._setType(type_c);
-
-        try {
-            dataObject_a.getDate(propertyPath_a_b_c);
-            fail("ClassCastException should be thrown.");
-        } catch (ClassCastException e) {
-        }
+        Object obj = dataObject_a.getDate(propertyPath_a_b_c);
+        assertNull(obj);
     }
 
     //5. purpose: getDate with float Property
@@ -96,12 +84,8 @@ public class SDODataObjectGetDateByPositionalPathTest extends SDODataObjectGetBy
         property_c.setType(SDOConstants.SDO_FLOAT);
         type_c.addDeclaredProperty(property_c);
         dataObject_c._setType(type_c);
-
-        try {
-            dataObject_a.getDate(propertyPath_a_b_c);
-            fail("ClassCastException should be thrown.");
-        } catch (ClassCastException e) {
-        }
+        Object obj = dataObject_a.getDate(propertyPath_a_b_c);
+        assertNull(obj);
     }
 
     //7. purpose: getDate with int Property
@@ -111,12 +95,8 @@ public class SDODataObjectGetDateByPositionalPathTest extends SDODataObjectGetBy
         property_c.setType(SDOConstants.SDO_INT);
         type_c.addDeclaredProperty(property_c);
         dataObject_c._setType(type_c);
-
-        try {
-            dataObject_a.getDate(propertyPath_a_b_c);
-            fail("ClassCastException should be thrown.");
-        } catch (ClassCastException e) {
-        }
+        Object obj = dataObject_a.getDate(propertyPath_a_b_c);
+        assertNull(obj);
     }
 
     //8. purpose: getDate with Defined long Property
@@ -139,12 +119,8 @@ public class SDODataObjectGetDateByPositionalPathTest extends SDODataObjectGetBy
         property_c.setType(SDOConstants.SDO_SHORT);
         type_c.addDeclaredProperty(property_c);
         dataObject_c._setType(type_c);
-
-        try {
-            dataObject_a.getDate(propertyPath_a_b_c);
-            fail("ClassCastException should be thrown.");
-        } catch (ClassCastException e) {
-        }
+        Object obj = dataObject_a.getDate(propertyPath_a_b_c);
+        assertNull(obj);
     }
 
     //11. purpose: getDate with Defined String Property
@@ -193,12 +169,8 @@ public class SDODataObjectGetDateByPositionalPathTest extends SDODataObjectGetBy
         property_c.setType(SDOConstants.SDO_BYTES);
         type_c.addDeclaredProperty(property_c);
         dataObject_c._setType(type_c);
-
-        try {
-            dataObject_a.getDate(propertyPath_a_b_c);
-            fail("ClassCastException should be thrown.");
-        } catch (ClassCastException e) {
-        }
+        Object obj = dataObject_a.getDate(propertyPath_a_b_c);
+        assertNull(obj);
     }
 
     //14. purpose: getBoolean with decimal property
@@ -222,12 +194,8 @@ public class SDODataObjectGetDateByPositionalPathTest extends SDODataObjectGetBy
         property_c.setType(SDOConstants.SDO_INTEGER);
         type_c.addDeclaredProperty(property_c);
         dataObject_c._setType(type_c);
-
-        try {
-            dataObject_a.getDate(propertyPath_a_b_c);
-            fail("ClassCastException should be thrown.");
-        } catch (ClassCastException e) {
-        }
+        Object obj = dataObject_a.getDate(propertyPath_a_b_c);
+        assertNull(obj);
     }
 
     //16. purpose: getDate with Defined Date Property

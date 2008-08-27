@@ -77,14 +77,14 @@ public class XMLConversionManager extends ConversionManager implements TimeZoneH
     }
 
     protected static void buildFormatters(XMLConversionManager xmlConversionManager) {
-        xmlConversionManager.dateFormatter = new DateFormatThreadLocal(XSD_DATE_FORMAT_STR, null);
+        xmlConversionManager.dateFormatter = new DateFormatThreadLocal(XSD_DATE_FORMAT_STR, xmlConversionManager);
         xmlConversionManager.timeFormatter = new DateFormatThreadLocal(XSD_TIME_FORMAT_STR, xmlConversionManager);
         xmlConversionManager.dateTimeFormatter = new DateFormatThreadLocal(XSD_DATE_TIME_FORMAT_STR, xmlConversionManager);
-        xmlConversionManager.gDayFormatter = new DateFormatThreadLocal(XSD_GDAY_FORMAT_STR, null);
-        xmlConversionManager.gMonthFormatter = new DateFormatThreadLocal(XSD_GMONTH_FORMAT_STR, null);
-        xmlConversionManager.gMonthDayFormatter = new DateFormatThreadLocal(XSD_GMONTH_DAY_FORMAT_STR, null);
-        xmlConversionManager.gYearFormatter = new DateFormatThreadLocal(XSD_GYEAR_FORMAT_STR, null);
-        xmlConversionManager.gYearMonthFormatter = new DateFormatThreadLocal(XSD_GYEAR_MONTH_FORMAT_STR, null);
+        xmlConversionManager.gDayFormatter = new DateFormatThreadLocal(XSD_GDAY_FORMAT_STR, xmlConversionManager);
+        xmlConversionManager.gMonthFormatter = new DateFormatThreadLocal(XSD_GMONTH_FORMAT_STR, xmlConversionManager);
+        xmlConversionManager.gMonthDayFormatter = new DateFormatThreadLocal(XSD_GMONTH_DAY_FORMAT_STR, xmlConversionManager);
+        xmlConversionManager.gYearFormatter = new DateFormatThreadLocal(XSD_GYEAR_FORMAT_STR, xmlConversionManager);
+        xmlConversionManager.gYearMonthFormatter = new DateFormatThreadLocal(XSD_GYEAR_MONTH_FORMAT_STR, xmlConversionManager);
     }
 
     public static XMLConversionManager getDefaultXMLManager() {

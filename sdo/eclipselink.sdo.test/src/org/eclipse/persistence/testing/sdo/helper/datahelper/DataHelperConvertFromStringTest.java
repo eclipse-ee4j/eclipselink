@@ -48,8 +48,10 @@ public class DataHelperConvertFromStringTest extends DataHelperTestCases {
         controlCalendar.clear();
         controlCalendar.set(Calendar.YEAR, 2000);
         controlCalendar.setTimeZone(TimeZone.getTimeZone("GMT"));
-        
-        this.assertEquals(controlCalendar, (Calendar)dataHelper.convertFromStringValue(b, Calendar.class, null));
+        Calendar aCalendar = (Calendar)dataHelper.convertFromStringValue(b, Calendar.class, null);
+        assertTrue("Expected YEAR: " + controlCalendar.get(Calendar.YEAR) + ", but was: " + aCalendar.get(Calendar.YEAR), controlCalendar.get(Calendar.YEAR) == aCalendar.get(Calendar.YEAR));
+        assertTrue("Expected TimeZone: " + controlCalendar.getTimeZone() + ", but was: " + aCalendar.getTimeZone(), controlCalendar.getTimeZone().equals(aCalendar.getTimeZone()));
+        assertTrue("Expected toString: " + controlCalendar.toString() + ", but was: " + aCalendar.toString(), controlCalendar.toString().equals(aCalendar.toString()));
     }
 
     public void testConverFromString_NoQname() {
@@ -61,7 +63,6 @@ public class DataHelperConvertFromStringTest extends DataHelperTestCases {
     public void testConverFromString_Date_NoQName() {
         String b = "2000";
         Date aDate = dataHelper.toDate(b);
-
         this.assertEquals(aDate, (Date)dataHelper.convertFromStringValue(b, Date.class));
     }
 
@@ -71,8 +72,10 @@ public class DataHelperConvertFromStringTest extends DataHelperTestCases {
         controlCalendar.clear();
         controlCalendar.set(Calendar.YEAR, 2000);
         controlCalendar.setTimeZone(TimeZone.getTimeZone("GMT"));
-        
-        this.assertEquals(controlCalendar, (Calendar)dataHelper.convertFromStringValue(b, Calendar.class));
+        Calendar aCalendar = (Calendar)dataHelper.convertFromStringValue(b, Calendar.class, null);
+        assertTrue("Expected YEAR: " + controlCalendar.get(Calendar.YEAR) + ", but was: " + aCalendar.get(Calendar.YEAR), controlCalendar.get(Calendar.YEAR) == aCalendar.get(Calendar.YEAR));
+        assertTrue("Expected TimeZone: " + controlCalendar.getTimeZone() + ", but was: " + aCalendar.getTimeZone(), controlCalendar.getTimeZone().equals(aCalendar.getTimeZone()));
+        assertTrue("Expected toString: " + controlCalendar.toString() + ", but was: " + aCalendar.toString(), controlCalendar.toString().equals(aCalendar.toString()));
     }
 
     public void testConverFromString_Type() {
@@ -84,36 +87,28 @@ public class DataHelperConvertFromStringTest extends DataHelperTestCases {
     public void testConverFromString_DateWithType() {
         String b = "2000";
         Date aDate = dataHelper.toDate(b);
-
         SDOType d = SDOConstants.SDO_DATE;
-
         this.assertEquals(aDate, (Date)dataHelper.convertFromStringValue(b, d));
     }
 
     public void testConverFromString_DateWithTypeNullQName() {
         String b = "2000";
         Date aDate = dataHelper.toDate(b);
-
         SDOType d = SDOConstants.SDO_DATE;
-
         this.assertEquals(aDate, (Date)dataHelper.convertFromStringValue(b, d, null));
     }
 
     public void testConverFromString_DateWithTypeQName() {
         String b = "2000";
         Date aDate = dataHelper.toDate(b);
-
         SDOType d = SDOConstants.SDO_DATE;
-
         this.assertEquals(aDate, (Date)dataHelper.convertFromStringValue(b, d, SDOConstants.GYEARMONTH_QNAME));
     }
 
     public void testConverFromString_DateWithNullTypeNullQName() {
         String b = "2000";
         Date aDate = dataHelper.toDate(b);
-
         SDOType d = new SDOType(aHelperContext);
-
         this.assertEquals(b, (String)dataHelper.convertFromStringValue(b, d, null));
     }
 
@@ -122,14 +117,14 @@ public class DataHelperConvertFromStringTest extends DataHelperTestCases {
         Date aDate = dataHelper.toDate(b);
         
         this.assertEquals("2000-01-01T00:00:00.0Z", (String)dataHelper.convertToStringValue((Object)aDate, (Type)SDOConstants.SDO_DATETIME));
-        this.assertEquals("1999", (String)dataHelper.convertToStringValue((Object)aDate, (Type)SDOConstants.SDO_YEAR));
-        this.assertEquals("1999-12", (String)dataHelper.convertToStringValue((Object)aDate, (Type)SDOConstants.SDO_YEARMONTH));
+        this.assertEquals("2000", (String)dataHelper.convertToStringValue((Object)aDate, (Type)SDOConstants.SDO_YEAR));
+        this.assertEquals("2000-01", (String)dataHelper.convertToStringValue((Object)aDate, (Type)SDOConstants.SDO_YEARMONTH));
         this.assertEquals("2000-01-01T00:00:00.0Z", (String)dataHelper.convertToStringValue((Object)aDate, (Type)SDOConstants.SDO_DATE));
         this.assertEquals("00:00:00.0Z", (String)dataHelper.convertToStringValue((Object)aDate, (Type)SDOConstants.SDO_TIME));
-        this.assertEquals("---31", (String)dataHelper.convertToStringValue((Object)aDate, (Type)SDOConstants.SDO_DAY));
+        this.assertEquals("---01", (String)dataHelper.convertToStringValue((Object)aDate, (Type)SDOConstants.SDO_DAY));
         this.assertEquals("P2000Y1M1DT0H0M0.0S", (String)dataHelper.convertToStringValue((Object)aDate, (Type)SDOConstants.SDO_DURATION));
-        this.assertEquals("--12--", (String)dataHelper.convertToStringValue((Object)aDate, (Type)SDOConstants.SDO_MONTH));
-        this.assertEquals("--12-31", (String)dataHelper.convertToStringValue((Object)aDate, (Type)SDOConstants.SDO_MONTHDAY));
+        this.assertEquals("--01--", (String)dataHelper.convertToStringValue((Object)aDate, (Type)SDOConstants.SDO_MONTH));
+        this.assertEquals("--01-01Z", (String)dataHelper.convertToStringValue((Object)aDate, (Type)SDOConstants.SDO_MONTHDAY));
     }
     
     public void testConverFromObject_Date_GMTDefault() {

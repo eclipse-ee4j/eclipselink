@@ -24,11 +24,10 @@ public class DataHelperToDateTest extends DataHelperTestCases {
     }
 
     public void testToDateWithGYearMonth() {
-        Calendar controlCalendar = Calendar.getInstance();
+        Calendar controlCalendar = Calendar.getInstance(TimeZone.getTimeZone("GMT"));
         controlCalendar.clear();
         controlCalendar.set(Calendar.YEAR, 2001);
-        controlCalendar.set(Calendar.MONTH, 4);
-        controlCalendar.setTimeZone(TimeZone.getTimeZone("GMT"));
+        controlCalendar.set(Calendar.MONTH, Calendar.MAY);
         Date controlDate = controlCalendar.getTime();
         Date aDate = dataHelper.toDate("2001-05");
         this.assertEquals(controlDate, aDate);
@@ -71,7 +70,7 @@ public class DataHelperToDateTest extends DataHelperTestCases {
         controlCalendar.set(Calendar.DATE, 15);
         controlCalendar.setTimeZone(TimeZone.getTimeZone("GMT"));        
         Date controlDate = controlCalendar.getTime();
-        Date aDate = dataHelper.toDate("----15");
+        Date aDate = dataHelper.toDate("---15");
         this.assertEquals(controlDate, aDate);
     }
 
@@ -133,13 +132,9 @@ public class DataHelperToDateTest extends DataHelperTestCases {
     }
 
     public void testToDateWithNullInput() {
-        try {
-            String s = null;
-            Date aDate = dataHelper.toDate(s);
-            log(aDate.toString());
-            this.fail();
-        } catch (IllegalArgumentException e) {
-        }
+        String s = null;
+        Date aDate = dataHelper.toDate(s);
+        assertTrue("dataHelper.toDate(null) did not return null as expected.", aDate == null);
     }
 
     public void testToCalendaWithInvalidInput() {
