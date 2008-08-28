@@ -11,6 +11,8 @@
  *     Oracle - initial API and implementation from Oracle TopLink
  *     08/27/2008-1.1 Guy Pelletier 
  *       - 211329: Add sequencing on non-id attribute(s) support to the EclipseLink-ORM.XML Schema
+ *     08/28/2008-1.1 Guy Pelletier 
+ *       - 245120: unidir one-to-many within embeddable fails to deploy for missing primary key field       
  ******************************************************************************/  
 package org.eclipse.persistence.testing.models.jpa.complexaggregate;
 
@@ -26,6 +28,9 @@ public class ComplexAggregateTableCreator extends org.eclipse.persistence.tools.
         
         addTableDefinition(buildHOCKEYPLAYERTable());
         addTableDefinition(buildHOCKEYTEAMTable());
+        
+        addTableDefinition(buildROLETable());
+        addTableDefinition(buildPLAYERROLESTable());
     }
 
     public TableDefinition buildCITYSLICKERTable() {
@@ -345,7 +350,67 @@ public class ComplexAggregateTableCreator extends org.eclipse.persistence.tools.
         return table;
     }
     
-     public TableDefinition buildWORLDTable() {
+    public TableDefinition buildPLAYERROLESTable() {
+        TableDefinition table = new TableDefinition();
+        table.setName("PLAYER_ROLES");
+
+        FieldDefinition fieldPLAYERID = new FieldDefinition();
+        fieldPLAYERID.setName("PLAYER_ID");
+        fieldPLAYERID.setTypeName("NUMBER");
+        fieldPLAYERID.setSize(19);
+        fieldPLAYERID.setSubSize(0);
+        fieldPLAYERID.setIsPrimaryKey(false);
+        fieldPLAYERID.setIsIdentity(false);
+        fieldPLAYERID.setUnique(false);
+        fieldPLAYERID.setShouldAllowNull(false);
+        fieldPLAYERID.setForeignKeyFieldName("CMP3_HOCKEY_PLAYER.PLAYERID");
+        table.addField(fieldPLAYERID);
+        
+        FieldDefinition fieldROLEID = new FieldDefinition();
+        fieldROLEID.setName("ROLE_ID");
+        fieldROLEID.setTypeName("NUMBER");
+        fieldROLEID.setSize(19);
+        fieldROLEID.setSubSize(0);
+        fieldROLEID.setIsPrimaryKey(false);
+        fieldROLEID.setIsIdentity(false);
+        fieldROLEID.setUnique(false);
+        fieldROLEID.setShouldAllowNull(false);
+        fieldROLEID.setForeignKeyFieldName("CMP3_ROLE.ID");
+        table.addField(fieldROLEID);
+        
+        return table;
+    }
+    
+    public TableDefinition buildROLETable() {
+        TableDefinition table = new TableDefinition();
+        table.setName("CMP3_ROLE");
+
+        FieldDefinition fieldID = new FieldDefinition();
+        fieldID.setName("ID");
+        fieldID.setTypeName("NUMBER");
+        fieldID.setSize(19);
+        fieldID.setSubSize(0);
+        fieldID.setIsPrimaryKey(true);
+        fieldID.setIsIdentity(false);
+        fieldID.setUnique(false);
+        fieldID.setShouldAllowNull(false);
+        table.addField(fieldID);
+        
+        FieldDefinition fieldDESCRIPTION = new FieldDefinition();
+        fieldDESCRIPTION.setName("DESCRIP");
+        fieldDESCRIPTION.setTypeName("VARCHAR2");
+        fieldDESCRIPTION.setSize(50);
+        fieldDESCRIPTION.setSubSize(0);
+        fieldDESCRIPTION.setIsPrimaryKey(false);
+        fieldDESCRIPTION.setIsIdentity(false);
+        fieldDESCRIPTION.setUnique(false);
+        fieldDESCRIPTION.setShouldAllowNull(false);
+        table.addField(fieldDESCRIPTION);
+        
+        return table;
+    }
+    
+    public TableDefinition buildWORLDTable() {
         TableDefinition table = new TableDefinition();
         table.setName("CMP3_WORLD");
 

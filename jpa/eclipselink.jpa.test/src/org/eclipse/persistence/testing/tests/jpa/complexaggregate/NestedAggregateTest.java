@@ -80,6 +80,7 @@ public class NestedAggregateTest extends EntityContainerTestBase {
             team2.getPlayers().add(player1);
             teamVitals1.setJerseyNumber(20);
             teamVitals1.setPosition("Goalie");
+            teamVitals1.getRoles().add(new Role("Stop pucks!"));
             
             Vitals vitals1 = new Vitals();
             vitals1.setPersonalVitals(personalVitals1);
@@ -101,6 +102,8 @@ public class NestedAggregateTest extends EntityContainerTestBase {
             team1.getPlayers().add(player2);
             teamVitals2.setJerseyNumber(70);
             teamVitals2.setPosition("Left wing");
+            teamVitals2.getRoles().add(new Role("Power play unit"));
+            teamVitals2.getRoles().add(new Role("Face-off specialist"));
             
             Vitals vitals2 = new Vitals();
             vitals2.setPersonalVitals(personalVitals2);
@@ -122,6 +125,7 @@ public class NestedAggregateTest extends EntityContainerTestBase {
             team1.getPlayers().add(player3);
             teamVitals3.setJerseyNumber(12);
             teamVitals3.setPosition("Defence");
+            teamVitals3.getRoles().add(new Role("Penalty kill unit"));
             
             Vitals vitals3 = new Vitals();
             vitals3.setPersonalVitals(personalVitals3);
@@ -143,6 +147,8 @@ public class NestedAggregateTest extends EntityContainerTestBase {
             team3.getPlayers().add(player4);
             teamVitals4.setJerseyNumber(6);
             teamVitals4.setPosition("Center");
+            teamVitals4.getRoles().add(new Role("Power play unit"));
+            teamVitals4.getRoles().add(new Role("Goon"));
             
             Vitals vitals4 = new Vitals();
             vitals4.setPersonalVitals(personalVitals4);

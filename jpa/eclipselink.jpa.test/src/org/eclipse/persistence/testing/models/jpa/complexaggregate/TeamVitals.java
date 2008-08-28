@@ -9,20 +9,29 @@
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
+ *     08/28/2008-1.1 Guy Pelletier 
+ *       - 245120: unidir one-to-many within embeddable fails to deploy for missing primary key field
  ******************************************************************************/  
 package org.eclipse.persistence.testing.models.jpa.complexaggregate;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
+
 import static javax.persistence.FetchType.*;
+import static javax.persistence.CascadeType.PERSIST;
 
 @Embeddable
 public class TeamVitals implements Serializable {
     private String position;
     private int jerseyNumber;
     private HockeyTeam hockeyTeam;
+    private List<Role> roles;
     
-    public TeamVitals() {}
+    public TeamVitals() {
+        roles = new ArrayList<Role>();
+    }
 
     @Column(name="POSITION")
     public String getPosition() {
@@ -40,6 +49,16 @@ public class TeamVitals implements Serializable {
         return jerseyNumber;
     }
     
+    @OneToMany(cascade=PERSIST)
+    @JoinTable(
+        name="PLAYER_ROLES",
+        joinColumns=@JoinColumn(name="PLAYER_ID"),
+        inverseJoinColumns=@JoinColumn(name="ROLE_ID")
+    )
+    public List<Role> getRoles() {
+        return roles;
+    }
+        
     public void setPosition(String position) {
         this.position = position;    
     }
@@ -50,6 +69,10 @@ public class TeamVitals implements Serializable {
     
     public void setJerseyNumber(int jerseyNumber) {
         this.jerseyNumber = jerseyNumber;
+    }
+    
+    public void setRoles(List<Role> roles) {
+        this.roles = roles;
     }
     
     public String toString() {

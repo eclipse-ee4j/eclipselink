@@ -45,6 +45,18 @@
 			<embedded name="teamDetails" />
 		</attributes>
 	</entity>
+	<entity name="XMLExtendedRole" class="Role">
+        <table name="XML_ROLE"/>
+        <attributes>
+            <id name="id">
+                <generated-value strategy="TABLE" generator="ROLE_TABLE_GENERATOR"/>
+                <table-generator name="ROLE_TABLE_GENERATOR" table="XML_HOCKEY_SEQ" pk-column-name="SEQ_NAME" value-column-name="SEQ_COUNT" pk-column-value="ROLE_SEQ"/>
+            </id>
+            <basic name="description">
+                <column name="DESCRIP"/>
+            </basic>
+        </attributes>
+    </entity>
 	<entity name="XMLExtendedOwnershipGroup" class="OwnershipGroup">
 		<table name="XML_OWNERSHIP_GROUP" />
 		<attributes>
@@ -111,8 +123,16 @@
 			<basic name="jerseyNumber">
 				<column name="JERSEY_NUMBER" />
 			</basic>
-			<one-to-one name="hockeyTeam" target-entity="HockeyTeam"
-				fetch="EAGER">
+			<one-to-many name="roles">
+                <join-table name="XML_PLAYER_ROLES">
+                    <join-column name="PLAYER_ID"/>
+                    <inverse-join-column name="ROLE_ID"/>
+                </join-table>
+                <cascade>
+                    <cascade-persist/>
+                </cascade>   
+            </one-to-many>
+			<one-to-one name="hockeyTeam" target-entity="HockeyTeam" fetch="EAGER">
 				<join-column name="TEAM_ID" referenced-column-name="ID" />
 				<join-column name="TEAM_ID_DESC" referenced-column-name="ID_DESC" />
 			</one-to-one>

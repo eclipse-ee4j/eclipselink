@@ -311,7 +311,7 @@ public abstract class CollectionAccessor extends RelationshipAccessor {
         } else {
             defaultSourceFieldName = getDescriptor().getAlias();
         }
-        addManyToManyRelationKeyFields(processJoinColumns(m_joinTable.getJoinColumns(), getDescriptor()), mapping, defaultSourceFieldName, getDescriptor(), true);
+        addManyToManyRelationKeyFields(processJoinColumns(m_joinTable.getJoinColumns(), getOwningDescriptor()), mapping, defaultSourceFieldName, getOwningDescriptor(), true);
         
         // Add all the inverseJoinColumns (target foreign keys) to the mapping.
         String defaultTargetFieldName = getAttributeName();
