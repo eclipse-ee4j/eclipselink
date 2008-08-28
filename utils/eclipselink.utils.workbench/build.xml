@@ -612,13 +612,13 @@
                 <attribute name="Implementation-Version" value="${_VersionStamp}.${_buildNumber}" />
                 <attribute name="Implementation-Vendor" value="${_VendorString}" />
                 <attribute name="Release-Designation" value="${_releaseVersion}" />
-                <attribute name="Library-Designation" value="${workbenchcore.manifest.libraryName} (debug)" />
+                <attribute name="Library-Designation" value="${workbenchcore.manifest.libraryName}" />
             </manifest>
             <zipgroupfileset dir="${libDir}">
-                <include name="utility_g.jar"/>
-                <include name="platformsmodel_g.jar"/>
-                <include name="mappingsmodel_g.jar"/>
-                <include name="mappingsio_g.jar"/>
+                <include name="utilitydebug.jar"/>
+                <include name="platformsmodeldebug.jar"/>
+                <include name="mappingsmodeldebug.jar"/>
+                <include name="mappingsiodebug.jar"/>
             </zipgroupfileset>
         </jar>
     </target>
@@ -659,16 +659,16 @@
                 <attribute name="Implementation-Version" value="${_VersionStamp}.${_buildNumber}" />
                 <attribute name="Implementation-Vendor" value="${_VendorString}" />
                 <attribute name="Release-Designation" value="${_releaseVersion}" />
-                <attribute name="Library-Designation" value="${workbench.manifest.libraryName} (debug)" />
+                <attribute name="Library-Designation" value="${workbench.manifest.libraryName}" />
                 <attribute name="Main-Class" value="${workbench.manifest.mainclass}" />
             </manifest>
             <zipgroupfileset dir="${libDir}">
                 <include name="iconlib.jar"/>
-                <include name="uitools_g.jar"/>
-                <include name="framework_g.jar"/>
-                <include name="platformsplugin_g.jar"/>
-                <include name="mappingsplugin_g.jar"/>
-                <include name="scplugin_g.jar"/>
+                <include name="uitoolsdebug.jar"/>
+                <include name="frameworkdebug.jar"/>
+                <include name="platformsplugindebug.jar"/>
+                <include name="mappingsplugindebug.jar"/>
+                <include name="scplugindebug.jar"/>
             </zipgroupfileset>
         </jar>
     </target>
