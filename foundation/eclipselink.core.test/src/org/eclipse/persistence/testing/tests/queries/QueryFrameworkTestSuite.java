@@ -53,6 +53,9 @@ public class QueryFrameworkTestSuite extends TestSuite {
         addTest(new ZeroPrimaryKeyExistenceCheckTest(false));
         // EL Bug 244241 - connection not released on query timeout when cursor used
         addTest(new QueryTimeoutConnectionReleasedTest());
+        // EL Bug 245448 - Add regression tests for querying across  relationships using nested 
+        // joining and DailyCacheInvalidationPolicy
+        addTest(new QueryExecutionTimeSetOnBuildObjectTest());
     }
 
     //SRG test set is maintained by QA only, do NOT add any new test cases into it.
