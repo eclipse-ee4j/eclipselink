@@ -99,7 +99,7 @@ public class ComplexAggregateTableCreator extends org.eclipse.persistence.tools.
         fieldWORLDID.setIsIdentity(false);
         fieldWORLDID.setUnique(false);
         fieldWORLDID.setShouldAllowNull(true);
-        fieldWORLDID.setForeignKeyFieldName("CMP3_WORLD.ID");
+        fieldWORLDID.setForeignKeyFieldName("XML_WORLD.ID");
         table.addField(fieldWORLDID);
         
         return table;
@@ -173,7 +173,7 @@ public class ComplexAggregateTableCreator extends org.eclipse.persistence.tools.
         fieldWORLDID.setIsIdentity(false);
         fieldWORLDID.setUnique(false);
         fieldWORLDID.setShouldAllowNull(true);
-        fieldWORLDID.setForeignKeyFieldName("CMP3_WORLD.ID");
+        fieldWORLDID.setForeignKeyFieldName("XML_WORLD.ID");
         table.addField(fieldWORLDID);
         
         return table;
