@@ -19,12 +19,16 @@ import org.eclipse.persistence.oxm.documentpreservation.NodeOrderingPolicy;
 /**
  * INTERNAL:
  * <p><b>Purpose:</b>An implementation of NodeOrderingPolicy that ignores any new elements when
- * update a cached document. This is used for the JAXB 2.0 Binder implementation. 
- * @author mmacivor
+ * updating a cached document. This is used for the JAXB 2.0 Binder implementation. 
  *
+ * @see org.eclipse.persistence.oxm.documentpreservation.NodeOrderingPolicy
+ * @author mmacivor
+ * @author rbarkhouse - changed to subclass (NodeOrderingPolicy changed to abstract superclass) 
  */
-public class IgnoreNewElementsOrderingPolicy implements NodeOrderingPolicy {
+public class IgnoreNewElementsOrderingPolicy extends NodeOrderingPolicy {
+
     public void appendNode(Node parent, Node newChild, Node previousSibling) {
-        //no op
+        // No-op
     }      
+
 }

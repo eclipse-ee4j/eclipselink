@@ -43,10 +43,16 @@ import org.eclipse.persistence.internal.sessions.AbstractSession;
 public class DescriptorLevelDocumentPreservationPolicy extends DocumentPreservationPolicy {
  
     private XMLContext context;
-    public DescriptorLevelDocumentPreservationPolicy(XMLContext ctx) {
-        context = ctx;
-        this.setNodeOrderingPolicy(new AppendNewElementsOrderingPolicy());
+    
+    public DescriptorLevelDocumentPreservationPolicy() {
+        super();
+        this.setNodeOrderingPolicy(new AppendNewElementsOrderingPolicy());        
     }
+    
+    public void initialize(XMLContext ctx) {
+        context = ctx;
+    }
+    
     public void addObjectToCache(Object obj, Node node) {
         this.addObjectToCache(obj, node, null);
     }

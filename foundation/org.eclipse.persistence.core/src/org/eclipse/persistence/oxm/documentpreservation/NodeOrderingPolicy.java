@@ -15,13 +15,15 @@ package org.eclipse.persistence.oxm.documentpreservation;
 import org.w3c.dom.Node;
 
 /**
- * <p><b>Purpose:</b>Provide an interface that specifies how new XML Elements are added to an 
+ * <p><b>Purpose:</b>Provide a policy that specifies how new XML Elements are added to an 
  * existing XML Document.
  * 
  * @see org.eclipse.persistence.oxm.documentpreservation.DocumentPreservationPolicy
  * @author mmacivor
- *
+ * @author rbarkhouse - changed to abstract superclass 
  */
-public interface NodeOrderingPolicy {
-    public void appendNode(Node parent, Node newChild, Node previousSibling);
+public abstract class NodeOrderingPolicy {
+
+    public abstract void appendNode(Node parent, Node newChild, Node previousSibling);
+
 }

@@ -12,10 +12,36 @@
  ******************************************************************************/  
 package org.eclipse.persistence.internal.sessions.factories;
 
+import static javax.xml.XMLConstants.W3C_XML_SCHEMA_INSTANCE_NS_URI;
+import static javax.xml.XMLConstants.W3C_XML_SCHEMA_NS_URI;
+
+import java.util.Iterator;
+
 import org.eclipse.persistence.descriptors.ClassDescriptor;
+import org.eclipse.persistence.oxm.NamespaceResolver;
 import org.eclipse.persistence.oxm.XMLDescriptor;
+import org.eclipse.persistence.oxm.XMLField;
+import org.eclipse.persistence.oxm.documentpreservation.AppendNewElementsOrderingPolicy;
+import org.eclipse.persistence.oxm.documentpreservation.DocumentPreservationPolicy;
+import org.eclipse.persistence.oxm.documentpreservation.IgnoreNewElementsOrderingPolicy;
+import org.eclipse.persistence.oxm.documentpreservation.NodeOrderingPolicy;
+import org.eclipse.persistence.oxm.documentpreservation.RelativePositionOrderingPolicy;
+import org.eclipse.persistence.oxm.mappings.XMLCompositeObjectMapping;
 import org.eclipse.persistence.oxm.mappings.XMLDirectMapping;
 import org.eclipse.persistence.oxm.mappings.nullpolicy.NullPolicy;
+import org.eclipse.persistence.internal.oxm.documentpreservation.DescriptorLevelDocumentPreservationPolicy;
+import org.eclipse.persistence.internal.oxm.documentpreservation.NoDocumentPreservationPolicy;
+import org.eclipse.persistence.internal.oxm.documentpreservation.XMLBinderPolicy;
+import org.eclipse.persistence.internal.sessions.factories.model.login.AppendNewElementsOrderingPolicyConfig;
+import org.eclipse.persistence.internal.sessions.factories.model.login.DescriptorLevelDocumentPreservationPolicyConfig;
+import org.eclipse.persistence.internal.sessions.factories.model.login.DocumentPreservationPolicyConfig;
+import org.eclipse.persistence.internal.sessions.factories.model.login.IgnoreNewElementsOrderingPolicyConfig;
+import org.eclipse.persistence.internal.sessions.factories.model.login.LoginConfig;
+import org.eclipse.persistence.internal.sessions.factories.model.login.NoDocumentPreservationPolicyConfig;
+import org.eclipse.persistence.internal.sessions.factories.model.login.NodeOrderingPolicyConfig;
+import org.eclipse.persistence.internal.sessions.factories.model.login.RelativePositionOrderingPolicyConfig;
+import org.eclipse.persistence.internal.sessions.factories.model.login.XMLBinderPolicyConfig;
+import org.eclipse.persistence.internal.sessions.factories.model.login.XMLLoginConfig;
 import org.eclipse.persistence.internal.sessions.factories.model.platform.Oc4jPlatformConfig;
 import org.eclipse.persistence.internal.sessions.factories.model.platform.SunAS9PlatformConfig;
 import org.eclipse.persistence.internal.sessions.factories.model.platform.WebLogic_10_PlatformConfig;
@@ -42,6 +68,26 @@ public class XMLSessionConfigProject_11_1_1 extends XMLSessionConfigProject {
         addDescriptor(buildServerPlatformConfigDescriptorFor(WebLogic_9_PlatformConfig.class));
         addDescriptor(buildServerPlatformConfigDescriptorFor(WebLogic_10_PlatformConfig.class));
         addDescriptor(buildServerPlatformConfigDescriptorFor(WebSphere_6_1_PlatformConfig.class));
+        
+        // 242452 -- add metadata support for XMLLogin's DocumentPreservationPolicy
+        addDescriptor(buildDocumentPreservationPolicyConfigDescriptor());
+        addDescriptor(buildDescriptorLevelDocumentPreservationPolicyConfigDescriptor());
+        addDescriptor(buildNoDocumentPreservationPolicyConfigDescriptor());
+        addDescriptor(buildXMLBinderPolicyConfigDescriptor());
+        addDescriptor(buildNodeOrderingPolicyConfigDescriptor());
+        addDescriptor(buildAppendNewElementsOrderingPolicyConfigDescriptor());
+        addDescriptor(buildIgnoreNewElementsOrderingPolicyConfigDescriptor());
+        addDescriptor(buildRelativePositionOrderingPolicyConfigDescriptor());
+        
+        // Set the namespaces on all descriptors.
+        NamespaceResolver namespaceResolver = new NamespaceResolver();
+        namespaceResolver.put("xsi", W3C_XML_SCHEMA_INSTANCE_NS_URI);
+        namespaceResolver.put("xsd", W3C_XML_SCHEMA_NS_URI);
+
+        for (Iterator descriptors = getDescriptors().values().iterator(); descriptors.hasNext();) {
+            XMLDescriptor descriptor = (XMLDescriptor)descriptors.next();
+            descriptor.setNamespaceResolver(namespaceResolver);
+        }        
     }
 
     public ClassDescriptor buildSessionConfigsDescriptor() {
@@ -132,4 +178,108 @@ public class XMLSessionConfigProject_11_1_1 extends XMLSessionConfigProject {
 	
         return descriptor;
     }
+
+    public ClassDescriptor buildXMLLoginConfigDescriptor() {
+        ClassDescriptor descriptor = super.buildXMLLoginConfigDescriptor();
+
+        XMLDirectMapping equalNamespaceResolversMapping = new XMLDirectMapping();
+        equalNamespaceResolversMapping.setAttributeName("m_equalNamespaceResolvers");
+        equalNamespaceResolversMapping.setGetMethodName("getEqualNamespaceResolvers");
+        equalNamespaceResolversMapping.setSetMethodName("setEqualNamespaceResolvers");
+        equalNamespaceResolversMapping.setXPath("equal-namespace-resolvers/text()");
+        equalNamespaceResolversMapping.setNullValue(Boolean.TRUE);
+        descriptor.addMapping(equalNamespaceResolversMapping);
+
+        XMLCompositeObjectMapping documentPreservationPolicyMapping = new XMLCompositeObjectMapping();
+        documentPreservationPolicyMapping.setReferenceClass(DocumentPreservationPolicyConfig.class);
+        documentPreservationPolicyMapping.setAttributeName("m_documentPreservationPolicy");
+        documentPreservationPolicyMapping.setGetMethodName("getDocumentPreservationPolicy");
+        documentPreservationPolicyMapping.setSetMethodName("setDocumentPreservationPolicy");
+        documentPreservationPolicyMapping.setXPath("document-preservation-policy");
+        descriptor.addMapping(documentPreservationPolicyMapping);
+
+        return descriptor;
+    }
+
+    protected ClassDescriptor buildDocumentPreservationPolicyConfigDescriptor() {
+        XMLDescriptor descriptor = new XMLDescriptor();
+        descriptor.setJavaClass(DocumentPreservationPolicyConfig.class);
+        descriptor.setDefaultRootElement("document-preservation-policy");
+
+        XMLCompositeObjectMapping nodeOrderingPolicyMapping = new XMLCompositeObjectMapping();
+        nodeOrderingPolicyMapping.setReferenceClass(NodeOrderingPolicyConfig.class);
+        nodeOrderingPolicyMapping.setAttributeName("m_nodeOrderingPolicy");
+        nodeOrderingPolicyMapping.setGetMethodName("getNodeOrderingPolicy");
+        nodeOrderingPolicyMapping.setSetMethodName("setNodeOrderingPolicy");
+        nodeOrderingPolicyMapping.setXPath("node-ordering-policy");
+        descriptor.addMapping(nodeOrderingPolicyMapping);
+
+        descriptor.getInheritancePolicy().setClassIndicatorField(new XMLField("@xsi:type"));
+        descriptor.getInheritancePolicy().addClassIndicator(DescriptorLevelDocumentPreservationPolicyConfig.class, "descriptor-level-document-preservation-policy");
+        descriptor.getInheritancePolicy().addClassIndicator(NoDocumentPreservationPolicyConfig.class, "no-document-preservation-policy");
+        descriptor.getInheritancePolicy().addClassIndicator(XMLBinderPolicyConfig.class, "xml-binder-policy");
+
+        return descriptor;
+    }
+
+    protected ClassDescriptor buildDescriptorLevelDocumentPreservationPolicyConfigDescriptor() {
+        XMLDescriptor descriptor = new XMLDescriptor();
+        descriptor.setJavaClass(DescriptorLevelDocumentPreservationPolicyConfig.class);
+        descriptor.getInheritancePolicy().setParentClass(DocumentPreservationPolicyConfig.class);
+
+        return descriptor;
+    }
+
+    protected ClassDescriptor buildNoDocumentPreservationPolicyConfigDescriptor() {
+        XMLDescriptor descriptor = new XMLDescriptor();
+        descriptor.setJavaClass(NoDocumentPreservationPolicyConfig.class);
+        descriptor.getInheritancePolicy().setParentClass(DocumentPreservationPolicyConfig.class);
+
+        return descriptor;
+    }
+
+    protected ClassDescriptor buildXMLBinderPolicyConfigDescriptor() {
+        XMLDescriptor descriptor = new XMLDescriptor();
+        descriptor.setJavaClass(XMLBinderPolicyConfig.class);
+        descriptor.getInheritancePolicy().setParentClass(DocumentPreservationPolicyConfig.class);
+
+        return descriptor;
+    }
+    
+    protected ClassDescriptor buildNodeOrderingPolicyConfigDescriptor() {
+        XMLDescriptor descriptor = new XMLDescriptor();
+        descriptor.setJavaClass(NodeOrderingPolicyConfig.class);
+
+        descriptor.getInheritancePolicy().setClassIndicatorField(new XMLField("@xsi:type"));
+        descriptor.getInheritancePolicy().addClassIndicator(AppendNewElementsOrderingPolicyConfig.class, "append-new-elements-ordering-policy");
+        descriptor.getInheritancePolicy().addClassIndicator(IgnoreNewElementsOrderingPolicyConfig.class, "ignore-new-elements-ordering-policy");
+        descriptor.getInheritancePolicy().addClassIndicator(RelativePositionOrderingPolicyConfig.class, "relative-position-ordering-policy");
+
+        return descriptor;
+    }
+
+    protected ClassDescriptor buildAppendNewElementsOrderingPolicyConfigDescriptor() {
+        XMLDescriptor descriptor = new XMLDescriptor();
+        descriptor.setJavaClass(AppendNewElementsOrderingPolicyConfig.class);
+        descriptor.getInheritancePolicy().setParentClass(NodeOrderingPolicyConfig.class);
+
+        return descriptor;
+    }
+
+    protected ClassDescriptor buildIgnoreNewElementsOrderingPolicyConfigDescriptor() {
+        XMLDescriptor descriptor = new XMLDescriptor();
+        descriptor.setJavaClass(IgnoreNewElementsOrderingPolicyConfig.class);
+        descriptor.getInheritancePolicy().setParentClass(NodeOrderingPolicyConfig.class);
+
+        return descriptor;
+    }
+
+    protected ClassDescriptor buildRelativePositionOrderingPolicyConfigDescriptor() {
+        XMLDescriptor descriptor = new XMLDescriptor();
+        descriptor.setJavaClass(RelativePositionOrderingPolicyConfig.class);
+        descriptor.getInheritancePolicy().setParentClass(NodeOrderingPolicyConfig.class);
+
+        return descriptor;
+    }
+
 }

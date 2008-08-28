@@ -12,6 +12,7 @@
  ******************************************************************************/  
 package org.eclipse.persistence.oxm.documentpreservation;
 
+import org.eclipse.persistence.oxm.XMLContext;
 import org.eclipse.persistence.oxm.mappings.XMLMapping;
 
 import org.w3c.dom.Node;
@@ -58,4 +59,7 @@ public abstract class DocumentPreservationPolicy {
     
     public abstract boolean shouldPreserveDocument();
     
+    public void initialize(XMLContext context) {
+    }
+
 }

@@ -48,6 +48,11 @@ import org.eclipse.persistence.mappings.structures.ObjectRelationalDatabaseField
 import org.eclipse.persistence.mappings.transformers.ConstantTransformer;
 import org.eclipse.persistence.oxm.XMLDescriptor;
 import org.eclipse.persistence.oxm.XMLField;
+import org.eclipse.persistence.oxm.documentpreservation.AppendNewElementsOrderingPolicy;
+import org.eclipse.persistence.oxm.documentpreservation.DocumentPreservationPolicy;
+import org.eclipse.persistence.oxm.documentpreservation.IgnoreNewElementsOrderingPolicy;
+import org.eclipse.persistence.oxm.documentpreservation.NodeOrderingPolicy;
+import org.eclipse.persistence.oxm.documentpreservation.RelativePositionOrderingPolicy;
 import org.eclipse.persistence.oxm.mappings.UnmarshalKeepAsElementPolicy;
 import org.eclipse.persistence.oxm.mappings.XMLAnyAttributeMapping;
 import org.eclipse.persistence.oxm.mappings.XMLBinaryDataMapping;
@@ -63,6 +68,9 @@ import org.eclipse.persistence.oxm.mappings.XMLObjectReferenceMapping;
 import org.eclipse.persistence.oxm.mappings.XMLChoiceCollectionMapping;
 import org.eclipse.persistence.oxm.mappings.XMLChoiceObjectMapping;
 import org.eclipse.persistence.internal.oxm.XMLChoiceFieldToClassAssociation;
+import org.eclipse.persistence.internal.oxm.documentpreservation.DescriptorLevelDocumentPreservationPolicy;
+import org.eclipse.persistence.internal.oxm.documentpreservation.NoDocumentPreservationPolicy;
+import org.eclipse.persistence.internal.oxm.documentpreservation.XMLBinderPolicy;
 import org.eclipse.persistence.oxm.mappings.nullpolicy.AbstractNullPolicy;
 import org.eclipse.persistence.oxm.mappings.nullpolicy.IsSetNullPolicy;
 import org.eclipse.persistence.oxm.mappings.nullpolicy.NullPolicy;
@@ -146,6 +154,16 @@ public class ObjectPersistenceRuntimeXMLProject_11_1_1 extends ObjectPersistence
 
         // 5757849 -- add metadata support for ObjectRelationalDatabaseField
         addDescriptor(buildObjectRelationalDatabaseFieldDescriptor());
+        
+        // 242452 -- add metadata support for XMLLogin's DocumentPreservationPolicy
+        addDescriptor(buildDocumentPreservationPolicyDescriptor());
+        addDescriptor(buildDescriptorLevelDocumentPreservationPolicyDescriptor());
+        addDescriptor(buildNoDocumentPreservationPolicyDescriptor());
+        addDescriptor(buildXMLBinderPolicyDescriptor());
+        addDescriptor(buildNodeOrderingPolicyDescriptor());
+        addDescriptor(buildAppendNewElementsOrderingPolicyDescriptor());
+        addDescriptor(buildIgnoreNewElementsOrderingPolicyDescriptor());
+        addDescriptor(buildRelativePositionOrderingPolicyDescriptor());
     }
 
     @Override
@@ -1103,6 +1121,95 @@ public class ObjectPersistenceRuntimeXMLProject_11_1_1 extends ObjectPersistence
         equalNamespaceResolversMapping.setXPath(getPrimaryNamespaceXPath() + "equal-namespace-resolvers/text()");
         equalNamespaceResolversMapping.setNullValue(Boolean.TRUE);
         descriptor.addMapping(equalNamespaceResolversMapping);
+
+        XMLCompositeObjectMapping documentPreservationPolicyMapping = new XMLCompositeObjectMapping();
+        documentPreservationPolicyMapping.setReferenceClass(DocumentPreservationPolicy.class);
+        documentPreservationPolicyMapping.setAttributeName("documentPreservationPolicy");
+        documentPreservationPolicyMapping.setGetMethodName("getDocumentPreservationPolicy");
+        documentPreservationPolicyMapping.setSetMethodName("setDocumentPreservationPolicy");
+        documentPreservationPolicyMapping.setXPath(getPrimaryNamespaceXPath() + "document-preservation-policy");
+        descriptor.addMapping(documentPreservationPolicyMapping);
+
+        return descriptor;
+    }
+
+    protected ClassDescriptor buildDocumentPreservationPolicyDescriptor() {
+        XMLDescriptor descriptor = new XMLDescriptor();
+        descriptor.setJavaClass(DocumentPreservationPolicy.class);
+        descriptor.setDefaultRootElement("document-preservation-policy");
+
+        XMLCompositeObjectMapping nodeOrderingPolicyMapping = new XMLCompositeObjectMapping();
+        nodeOrderingPolicyMapping.setReferenceClass(NodeOrderingPolicy.class);
+        nodeOrderingPolicyMapping.setAttributeName("nodeOrderingPolicy");
+        nodeOrderingPolicyMapping.setGetMethodName("getNodeOrderingPolicy");
+        nodeOrderingPolicyMapping.setSetMethodName("setNodeOrderingPolicy");
+        nodeOrderingPolicyMapping.setXPath(getPrimaryNamespaceXPath() + "node-ordering-policy");
+        descriptor.addMapping(nodeOrderingPolicyMapping);
+
+        descriptor.getInheritancePolicy().setClassIndicatorField(new XMLField("@xsi:type"));
+        descriptor.getInheritancePolicy().addClassIndicator(DescriptorLevelDocumentPreservationPolicy.class, getPrimaryNamespaceXPath() + "descriptor-level-document-preservation-policy");
+        descriptor.getInheritancePolicy().addClassIndicator(NoDocumentPreservationPolicy.class, getPrimaryNamespaceXPath() + "no-document-preservation-policy");
+        descriptor.getInheritancePolicy().addClassIndicator(XMLBinderPolicy.class, getPrimaryNamespaceXPath() + "xml-binder-policy");
+
+        return descriptor;
+    }
+
+    protected ClassDescriptor buildDescriptorLevelDocumentPreservationPolicyDescriptor() {
+        XMLDescriptor descriptor = new XMLDescriptor();
+        descriptor.setJavaClass(DescriptorLevelDocumentPreservationPolicy.class);
+        descriptor.getInheritancePolicy().setParentClass(DocumentPreservationPolicy.class);
+
+        return descriptor;
+    }
+
+    protected ClassDescriptor buildNoDocumentPreservationPolicyDescriptor() {
+        XMLDescriptor descriptor = new XMLDescriptor();
+        descriptor.setJavaClass(NoDocumentPreservationPolicy.class);
+        descriptor.getInheritancePolicy().setParentClass(DocumentPreservationPolicy.class);
+
+        return descriptor;
+    }
+
+    protected ClassDescriptor buildXMLBinderPolicyDescriptor() {
+        XMLDescriptor descriptor = new XMLDescriptor();
+        descriptor.setJavaClass(XMLBinderPolicy.class);
+        descriptor.getInheritancePolicy().setParentClass(DocumentPreservationPolicy.class);
+
+        return descriptor;
+    }
+    
+    protected ClassDescriptor buildNodeOrderingPolicyDescriptor() {
+        XMLDescriptor descriptor = new XMLDescriptor();
+        descriptor.setJavaClass(NodeOrderingPolicy.class);
+
+        descriptor.getInheritancePolicy().setClassIndicatorField(new XMLField("@xsi:type"));
+        descriptor.getInheritancePolicy().addClassIndicator(AppendNewElementsOrderingPolicy.class, getPrimaryNamespaceXPath() + "append-new-elements-ordering-policy");
+        descriptor.getInheritancePolicy().addClassIndicator(IgnoreNewElementsOrderingPolicy.class, getPrimaryNamespaceXPath() + "ignore-new-elements-ordering-policy");
+        descriptor.getInheritancePolicy().addClassIndicator(RelativePositionOrderingPolicy.class, getPrimaryNamespaceXPath() + "relative-position-ordering-policy");
+
+        return descriptor;
+    }
+
+    protected ClassDescriptor buildAppendNewElementsOrderingPolicyDescriptor() {
+        XMLDescriptor descriptor = new XMLDescriptor();
+        descriptor.setJavaClass(AppendNewElementsOrderingPolicy.class);
+        descriptor.getInheritancePolicy().setParentClass(NodeOrderingPolicy.class);
+
+        return descriptor;
+    }
+
+    protected ClassDescriptor buildIgnoreNewElementsOrderingPolicyDescriptor() {
+        XMLDescriptor descriptor = new XMLDescriptor();
+        descriptor.setJavaClass(IgnoreNewElementsOrderingPolicy.class);
+        descriptor.getInheritancePolicy().setParentClass(NodeOrderingPolicy.class);
+
+        return descriptor;
+    }
+
+    protected ClassDescriptor buildRelativePositionOrderingPolicyDescriptor() {
+        XMLDescriptor descriptor = new XMLDescriptor();
+        descriptor.setJavaClass(RelativePositionOrderingPolicy.class);
+        descriptor.getInheritancePolicy().setParentClass(NodeOrderingPolicy.class);
 
         return descriptor;
     }

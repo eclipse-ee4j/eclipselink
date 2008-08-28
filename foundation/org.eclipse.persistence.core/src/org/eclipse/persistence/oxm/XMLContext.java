@@ -564,7 +564,7 @@ public class XMLContext {
             while (iterator.hasNext()) {
                 XMLDescriptor xmlDescriptor = (XMLDescriptor) iterator.next();
                 if (xmlDescriptor.shouldPreserveDocument()) {
-                    login.setDocumentPreservationPolicy(new DescriptorLevelDocumentPreservationPolicy(this));
+                    login.setDocumentPreservationPolicy(new DescriptorLevelDocumentPreservationPolicy());
                     break;
                 }
             }
@@ -572,6 +572,8 @@ public class XMLContext {
         if (login.getDocumentPreservationPolicy() == null) {
             login.setDocumentPreservationPolicy(new NoDocumentPreservationPolicy());
         }
+        
+        login.getDocumentPreservationPolicy().initialize(this);
 
         if (login.getDocumentPreservationPolicy().shouldPreserveDocument() && !hasDocumentPreservation) {
             hasDocumentPreservation = true;

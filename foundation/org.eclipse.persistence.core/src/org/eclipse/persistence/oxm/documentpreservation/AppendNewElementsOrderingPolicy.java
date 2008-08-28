@@ -24,11 +24,12 @@ import org.eclipse.persistence.oxm.documentpreservation.NodeOrderingPolicy;
  * 
  * @see org.eclipse.persistence.oxm.documentpreservation.NodeOrderingPolicy
  * @author mmacivor
- *
+ * @author rbarkhouse - changed to subclass (NodeOrderingPolicy changed to abstract superclass)
  */
-public class AppendNewElementsOrderingPolicy implements NodeOrderingPolicy {
+public class AppendNewElementsOrderingPolicy extends NodeOrderingPolicy {
+
     public void appendNode(Node parent, Node newChild, Node previousSibling) {
         parent.appendChild(newChild);
     }    
-}
 
+}

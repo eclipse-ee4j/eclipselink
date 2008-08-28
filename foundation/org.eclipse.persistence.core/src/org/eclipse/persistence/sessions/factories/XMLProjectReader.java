@@ -62,7 +62,8 @@ public class XMLProjectReader {
     protected static Project project;
     public static final String SCHEMA_DIR = "xsd/";
     public static final String OPM_SCHEMA = "object-persistence_1_0.xsd";
-    public static final String ECLIPSELINK_SCHEMA = "eclipselink_persistence_map_1.0.xsd";
+    public static final String ECLIPSELINK_SCHEMA = "eclipselink_persistence_map_1.1.xsd";
+    public static final String ECLIPSELINK_1_0_SCHEMA = "eclipselink_persistence_map_1.0.xsd";    
     public static final String TOPLINK_11_SCHEMA = "toplink-object-persistence_11_1_1.xsd";
     public static final String TOPLINK_10_SCHEMA = "toplink-object-persistence_10_1_3.xsd";
 
@@ -110,7 +111,7 @@ public class XMLProjectReader {
     public static Project read(Reader reader, ClassLoader classLoader) {
         // Since a reader is pass and it can only be streamed once (mark does not work)
         // It must be first read into a buffer so multiple readers can be used to
-        // determine the format.  This does not effect performance severly.
+        // determine the format.  This does not effect performance severely.
         StringWriter writer;
         Document document;
         try {
@@ -131,23 +132,32 @@ public class XMLProjectReader {
             try {
                 document = parser.parse(new StringReader(writer.toString()));
             } catch (Exception parseException) {
-                // If the parse fails, it may be because the format was 11.1.1
-                try{
+                // If the parse fails, it may be because the format was EclipseLink 1.0
+                try {
                     if (shouldUseSchemaValidation()) {
-                        schema = SCHEMA_DIR + TOPLINK_11_SCHEMA;
+                        schema = SCHEMA_DIR + ECLIPSELINK_1_0_SCHEMA;
                     }
                     parser = createXMLParser(xmlPlatform, true, false, schema);
                     document = parser.parse(new StringReader(writer.toString()));
-                } catch (Exception eclipselinkParseException){
-                    // If the parse validation fails, it may be because the format was 904 which is
-                    // not support in eclipselink, just not valid, through original exception.
-                    throw parseException;
-            	}
+                } catch (Exception parseException2){
+                    // If the parse fails, it may be because the format was 11.1.1
+                    try {
+                        if (shouldUseSchemaValidation()) {
+                            schema = SCHEMA_DIR + TOPLINK_11_SCHEMA;
+                        }
+                        parser = createXMLParser(xmlPlatform, true, false, schema);
+                        document = parser.parse(new StringReader(writer.toString()));
+                    } catch (Exception parseException3){
+                        // If the parse validation fails, it may be because the format was 904 which is
+                        // not support in eclipselink, just not valid, through original exception.
+                        throw parseException;
+                    }
 
-                String version = document.getDocumentElement().getAttribute("version");
-                // If 10.1.3 format use old format read.
-                if ((version == null) || (version.indexOf("1.0") == -1)) {
-                    throw parseException;
+                    String version = document.getDocumentElement().getAttribute("version");
+                    // If 10.1.3 format use old format read.
+                    if ((version == null) || (version.indexOf("1.0") == -1)) {
+                        throw parseException;
+                    }
                 }
             }
         } catch (Exception exception) {
