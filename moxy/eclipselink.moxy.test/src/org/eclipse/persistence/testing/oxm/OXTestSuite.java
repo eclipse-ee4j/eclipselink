@@ -20,6 +20,7 @@ import org.eclipse.persistence.testing.oxm.descriptor.rootelement.RootElementTes
 import org.eclipse.persistence.testing.oxm.mappings.DeploymentXMLMappingTestSuite;
 import org.eclipse.persistence.testing.oxm.mappings.MappingTestSuite;
 import org.eclipse.persistence.testing.oxm.xpathengine.XPathEngineTestSuite;
+import org.eclipse.persistence.testing.oxm.xmllogin.XMLLoginTestSuite;
 import org.eclipse.persistence.testing.oxm.xmlmarshaller.XMLMarshallerTestSuite;
 import org.eclipse.persistence.testing.oxm.schemareference.XMLSchemaReferenceTestSuite;
 import org.eclipse.persistence.testing.oxm.inheritance.InheritanceTestSuite;
@@ -61,6 +62,8 @@ public class OXTestSuite extends TestCase {
         suite.addTest(XMLBinderTestSuite.suite());
 
         suite.addTest(XMLRootTestSuite.suite());
+        
+        suite.addTest(XMLLoginTestSuite.suite());
 
         //this suite does not include the JAXBDOM and JAXBSAX test suites as they need system properties set to run.     
         return suite;
