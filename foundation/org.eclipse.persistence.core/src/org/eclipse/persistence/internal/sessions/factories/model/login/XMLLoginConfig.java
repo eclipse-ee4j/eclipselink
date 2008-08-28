@@ -12,12 +12,33 @@
  ******************************************************************************/  
 package org.eclipse.persistence.internal.sessions.factories.model.login;
 
-
 /**
  * INTERNAL:
  */
 public class XMLLoginConfig extends LoginConfig {
+
+    private boolean m_equalNamespaceResolvers;
+    private DocumentPreservationPolicyConfig m_documentPreservationPolicy;
+
     public XMLLoginConfig() {
         super();
+        m_equalNamespaceResolvers = true;
     }
+
+    public boolean getEqualNamespaceResolvers() {
+        return m_equalNamespaceResolvers;
+    }
+
+    public void setEqualNamespaceResolvers(boolean value) {
+        m_equalNamespaceResolvers = value;
+    }
+
+    public DocumentPreservationPolicyConfig getDocumentPreservationPolicy() {
+        return m_documentPreservationPolicy;
+    }
+
+    public void setDocumentPreservationPolicy(DocumentPreservationPolicyConfig value) {
+        m_documentPreservationPolicy = value;
+    }
+
 }
