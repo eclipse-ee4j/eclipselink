@@ -226,7 +226,7 @@ public class EntityMappingsAdvancedJUnitTestCase extends JUnitTestCase {
         ClassDescriptor descriptor = session.getDescriptor(Employee.class);
      
         assertFalse("Employee descriptor was not found in the PU [" + m_persistenceUnit + "]", descriptor == null);
-        assertFalse("Employee descriptor has incorrect object change policy", descriptor.getObjectChangePolicy().isAttributeChangeTrackingPolicy());
+        assertTrue("Employee descriptor has incorrect object change policy", descriptor.getObjectChangePolicy().isAttributeChangeTrackingPolicy());
     }
     
     /**
