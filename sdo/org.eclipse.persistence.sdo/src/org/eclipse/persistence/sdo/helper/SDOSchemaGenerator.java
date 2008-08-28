@@ -928,10 +928,11 @@ public class SDOSchemaGenerator {
     
      private boolean importExists(java.util.List imports, String schemaName){                
         for(int i=0;i < imports.size();i++){
-          Import nextImport = (Import)imports.get(i);
-          if(nextImport.getSchemaLocation() != null && nextImport.getSchemaLocation().equals(schemaName)){
-            return true;
-          }
+            //Cast to the parent class, since this could be an Include or an Import
+            Include nextImport = (Include)imports.get(i);
+            if(nextImport.getSchemaLocation() != null && nextImport.getSchemaLocation().equals(schemaName)){
+                return true;
+            }
         }
         return false;                
     }
