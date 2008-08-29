@@ -282,8 +282,7 @@ public class WSDLGenerator {
                     Sequence nestedSequence = new Sequence();
                     nestedComplexType.setSequence(nestedSequence);
                     Element nestedElement = new Element();
-                    nestedElement.setName(abbreviatedTypeLabel);
-                    nestedElement.setType(NS_IMPORTED_PREFIX + ":" + localPart);
+                    nestedElement.setRef(NS_IMPORTED_PREFIX + ":" + abbreviatedTypeLabel);
                     nestedSequence.addElement(nestedElement);
                     arg.setComplexType(nestedComplexType);
                 }
@@ -339,8 +338,7 @@ public class WSDLGenerator {
                         Sequence nestedSequence = new Sequence();
                         nestedComplexType.setSequence(nestedSequence);
                         Element nestedElement = new Element();
-                        nestedElement.setName(abbreviatedTypeLabel);
-                        nestedElement.setType(NS_IMPORTED_PREFIX + ":" +  localPart);
+                        nestedElement.setRef(NS_IMPORTED_PREFIX + ":" +  abbreviatedTypeLabel);
                         nestedElement.setMinOccurs("0");
                         if (q.isCollection()) {
                             nestedElement.setMaxOccurs("unbounded");
