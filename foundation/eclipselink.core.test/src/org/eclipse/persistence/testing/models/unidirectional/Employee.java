@@ -17,7 +17,8 @@ import java.io.*;
 import org.eclipse.persistence.indirection.*;
 
 /**
- * 
+ * This is a scaled-down version of Employee that uses UnidirectionalOneToManyMappings for managedEmployees and phoneNumbers.
+ * Everything else (ValueHolderInterface for example) is kept the same as in original Employee to simplify comparative debugging.
  */
 public class Employee implements Serializable {
     /** Primary key, mapped as a direct-to-field, BigDecimal -> NUMBER, that makes use of sequence numbers to generate the id. */
@@ -35,9 +36,6 @@ public class Employee implements Serializable {
     /** One-to-many mapping unidirectional, employee references its collection of phone numbers using a foreign key in the phone's table. */
     public ValueHolderInterface phoneNumbers;
 
-    /** Many-to-many mapping, employee references its projects through an intermediate join table. */
-//    public ValueHolderInterface projects;
-
     /**
      * For fields that make use of indirection the constructor should build the value holders.
      */
@@ -45,27 +43,16 @@ public class Employee implements Serializable {
         this.firstName = "";
         this.lastName = "";
         this.managedEmployees = new ValueHolder(new ArrayList());
-//        this.projects = new ValueHolder(new ArrayList());
         this.phoneNumbers = new ValueHolder(new ArrayList());
     }
 
-    /**
-     * For bi-directional relationships, it is important to maintain both sides of the relationship when changing it.
-     */
     public void addManagedEmployee(Employee employee) {
         getManagedEmployees().add(employee);
     }
 
-    /**
-     * For bi-directional relationships, it is important to maintain both sides of the relationship when changing it.
-     */
     public void addPhoneNumber(PhoneNumber phoneNumber) {
         getPhoneNumbers().add(phoneNumber);
     }
-
-/*    public void addProject(Project project) {
-        getProjects().add(project);
-    }*/
 
     public String getFirstName() {
         return firstName;
@@ -99,14 +86,6 @@ public class Employee implements Serializable {
     }
 
     /**
-     * Notice that the usage of value holders does not effect the public interface or usage of the class.
-     * The get/set methods must however be changed to wrap/unwrap the value holder.
-     */
-/*    public ArrayList getProjects() {
-        return (ArrayList)projects.getValue();
-    }*/
-
-    /**
      * 
      */
     public void removeManagedEmployee(Employee employee) {
@@ -119,10 +98,6 @@ public class Employee implements Serializable {
     public void removePhoneNumber(PhoneNumber phoneNumber) {
         getPhoneNumbers().remove(phoneNumber);
     }
-
-/*    public void removeProject(Project project) {
-        getProjects().removeElement(project);
-    }*/
 
     public void setFirstName(String firstName) {
         this.firstName = firstName;
@@ -157,14 +132,6 @@ public class Employee implements Serializable {
     public void setPhoneNumbers(List phoneNumbers) {
         this.phoneNumbers.setValue(phoneNumbers);
     }
-
-    /**
-     * Notice that the usage of value holders does not effect the public interface or usage of the class.
-     * The get/set methods must however be changed to wrap/unwrap the value holder.
-     */
-/*    public void setProjects(ArrayList projects) {
-        this.projects.setValue(projects);
-    }*/
 
     /**
      * Print the first & last name

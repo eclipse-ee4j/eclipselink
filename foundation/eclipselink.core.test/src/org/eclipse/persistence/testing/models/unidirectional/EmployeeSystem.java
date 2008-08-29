@@ -15,7 +15,6 @@ package org.eclipse.persistence.testing.models.unidirectional;
 import java.util.*;
 import org.eclipse.persistence.sessions.*;
 import org.eclipse.persistence.tools.schemaframework.*;
-import org.eclipse.persistence.queries.*;
 import org.eclipse.persistence.testing.framework.TestSystem;
 
 /**

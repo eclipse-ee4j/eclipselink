@@ -131,8 +131,8 @@ public class OneToManyMapping extends CollectionMapping implements RelationalMap
     
     /**
      * This method would allow customers to get the potential selection criteria for a mapping
-     * prior to initialization.  This would allow them to more easily create an ammendment method
-     * that would ammend the SQL for the join.
+     * prior to initialization.  This would allow them to more easily create an amendment method
+     * that would amend the SQL for the join.
      *
      * CR#3922 - This method is almost the same as buildDefaultSelectionCriteria() the difference
      * is that TargetForeignKeysToSourceKeys contains more information after login then SourceKeyFields

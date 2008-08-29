@@ -18,7 +18,9 @@ import java.util.Vector;
 
 import org.eclipse.persistence.expressions.Expression;
 import org.eclipse.persistence.expressions.ExpressionBuilder;
+import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.queries.Call;
+import org.eclipse.persistence.queries.ReadAllQuery;
 import org.eclipse.persistence.queries.ReadObjectQuery;
 import org.eclipse.persistence.queries.SQLCall;
 import org.eclipse.persistence.sessions.UnitOfWork;
@@ -103,6 +105,11 @@ public class UnidirectionalEmployeeBasicTestModel extends TestModel {
         Call call = new SQLCall("SELECT VERSION, EMP_ID, L_NAME, F_NAME FROM UNIDIR_EMPLOYEE");
         suite.addTest(new ReadAllCallWithOrderingTest(Employee.class, 12, call, orderBy));
 
+        suite.addTest(new JoinTest());
+        suite.addTest(new JoinTest_SelectByFirstName());
+        suite.addTest(new BatchReadingTest());
+        suite.addTest(new BatchReadingTest_SelectByFirstName());
+        
         return suite;
     }
 
@@ -127,18 +134,6 @@ public class UnidirectionalEmployeeBasicTestModel extends TestModel {
         employee = (Employee)manager.getObject(employeeClass, "0003");
         suite.addTest(new ReadObjectCallTest(employeeClass, new SQLCall("SELECT VERSION, EMP_ID, L_NAME, F_NAME FROM UNIDIR_EMPLOYEE WHERE F_NAME = '"+employee.getFirstName()+"' AND L_NAME = '"+employee.getLastName()+"'")));
 
-        Employee emp1 = (Employee)manager.getObject(employeeClass, "0001");
-        ReadObjectQuery query = new ReadObjectQuery(Employee.class);
-        query.setSelectionCriteria(query.getExpressionBuilder().get("id").equal(emp1.getId()));
-        Expression employees = query.getExpressionBuilder().anyOf("managedEmployees");
-        query.addJoinedAttribute(employees);
-        Expression phones = employees.anyOf("phoneNumbers");
-        query.addJoinedAttribute(phones);
-        ReadObjectTest test1 = new ReadObjectTest(emp1);
-        test1.setQuery(query);
-        test1.setName("JoinTest: " + test1.getName());
-        suite.addTest(test1);
-
         return suite;
     }
 
@@ -156,6 +151,14 @@ public class UnidirectionalEmployeeBasicTestModel extends TestModel {
         suite.addTest(new EmployeeComplexUpdateTest(originalEmployee, otherEmployee.getManagedEmployees().get(0), originalEmployee.getManagedEmployees().get(0)));
         // remove the first Phone.
         suite.addTest(new EmployeeComplexUpdateTest(originalEmployee, (Object)null, originalEmployee.getPhoneNumbers().get(0)));
+        // add a managed Employee from other Employee managed List and new phone;
+        // remove the first two managed Employees and the first Phone.
+        Employee newEmployee = new Employee();
+        newEmployee.setFirstName("New");
+        PhoneNumber newPhoneNumber = new PhoneNumber("home", "001", "0000001");
+        suite.addTest(new EmployeeComplexUpdateTest(originalEmployee, 
+                new Object[]{otherEmployee.getManagedEmployees().get(0), newEmployee, newPhoneNumber}, 
+                new Object[]{originalEmployee.getManagedEmployees().get(0), originalEmployee.getManagedEmployees().get(1), originalEmployee.getPhoneNumbers().get(0)}));
         suite.addTest(new CascadeLockingTest());
 
         return suite;
@@ -340,6 +343,11 @@ public class UnidirectionalEmployeeBasicTestModel extends TestModel {
     static class CascadeLockingTest extends TransactionalTestCase {
         long version[] = new long[7];
         long versionExpected[] = new long[] {1, 2, 2, 3, 4, 5, 6};
+        public CascadeLockingTest() {
+            super();
+            setName("CascadeLockingPolicyTest");
+            setDescription("Tests optimictic lock cascading for UnidirectionalOneToManyMapping");
+        }
         public void setup() {
             super.setup();
             for(int i=0; i<version.length; i++) {
@@ -410,7 +418,6 @@ public class UnidirectionalEmployeeBasicTestModel extends TestModel {
             managerClone.removePhoneNumber(phoneClone);
             uow.commit();
             version[6] = ((Long)getSession().getDescriptor(Employee.class).getOptimisticLockingPolicy().getWriteLockValue(manager, pk, getAbstractSession())).longValue();
-            System.out.println(version);
         }
         public void verify() {
             int numTestsFailed = 0;
@@ -424,6 +431,143 @@ public class UnidirectionalEmployeeBasicTestModel extends TestModel {
             if(numTestsFailed > 0) {
                 throw new TestErrorException(errorMsg);
             }
+        }
+    }
+    static class BatchReadingTest extends TestCase {
+        boolean shouldPrintDebugOutput = false;
+        public BatchReadingTest() {
+            setName("EmployeeBatchReadingTest - no selection criteria");
+            setDescription("Tests batch reading of Employees with batch expression managedEmployees.phoneNumbers");
+        }
+        void setSelectionCriteria(ReadAllQuery query) {
+        }
+        public void test() {
+            // clear cache
+            getSession().getIdentityMapAccessor().initializeAllIdentityMaps();
+            // create batch read query, set its selectionCriteria
+            ReadAllQuery query = new ReadAllQuery(Employee.class);
+            setSelectionCriteria(query);
+            // before adding batch read attributes clone the query to create control query
+            ReadAllQuery controlQuery = (ReadAllQuery)query.clone();
+            // add batch read attributes
+            Expression managedEmployees = query.getExpressionBuilder().get("managedEmployees");
+            Expression managedEmployeesPhoneNumbers = managedEmployees.get("phoneNumbers");
+            query.addBatchReadAttribute(managedEmployeesPhoneNumbers);
+            // execute the query
+            List employees = (List)getSession().executeQuery(query);
+            if(employees.isEmpty()) {
+                throw new TestProblemException("No Employees were read");
+            }
+            // need to instantiate only a single Phone on a single managed Employee to trigger sql that reads data from the db for all.
+            // still need to trigger all the indirections - but (except the first one) they are not accessing the db 
+            // (the data is already cached in the value holders).  
+            printDebug("Trigger batch reading results");
+            boolean isConnected = true;
+            for(int i=0; i < employees.size(); i++) {
+                Employee manager = (Employee)employees.get(i);
+                if(!manager.getManagedEmployees().isEmpty()) {
+                    printDebug("Manager = " + manager);
+                    for(int j=0; j < manager.getManagedEmployees().size(); j++) {
+                        Employee emp = (Employee)manager.getManagedEmployees().get(j);
+                        printDebug("     " + emp);
+                        for(int k = 0; k < emp.getPhoneNumbers().size(); k++) {
+                            if(isConnected) {
+                                // need to instantiate only a single Phone on a single managed Employee to trigger sql that reads data from the db for all.
+                                // to ensure that no other sql is issued close connection.
+                                ((AbstractSession)getSession()).getAccessor().closeConnection();
+                                isConnected = false;
+                            }
+                            PhoneNumber phone = (PhoneNumber)emp.getPhoneNumbers().get(k);
+                            printDebug("          " + phone);
+                        }
+                    }
+                } else {
+                    printDebug(manager.toString());
+                }
+            }
+            if(!isConnected) {
+                // reconnect connection
+                ((AbstractSession)getSession()).getAccessor().reestablishConnection((AbstractSession)getSession());
+            }
+            printDebug("");
+
+            // obtain control results
+            // clear cache
+            getSession().getIdentityMapAccessor().initializeAllIdentityMaps();
+            // execute control query
+            List controlEmployees = (List)getSession().executeQuery(controlQuery);
+            // instantiate all value holders that the batch query expected to instantiate            
+            printDebug("Trigger control results");
+            for(int i=0; i < controlEmployees.size(); i++) {
+                Employee manager = (Employee)controlEmployees.get(i);
+                if(!manager.getManagedEmployees().isEmpty()) {
+                    printDebug("Manager = " + manager);
+                    for(int j=0; j < manager.getManagedEmployees().size(); j++) {
+                        Employee emp = (Employee)manager.getManagedEmployees().get(j);
+                        printDebug("     " + emp);
+                        for(int k = 0; k < emp.getPhoneNumbers().size(); k++) {
+                            PhoneNumber phone = (PhoneNumber)emp.getPhoneNumbers().get(k);
+                            printDebug("          " + phone);
+                        }
+                    }
+                } else {
+                    printDebug(manager.toString());
+                }
+            }
+            
+            // compare results
+            String errorMsg = JoinedAttributeTestHelper.compareCollections(employees, controlEmployees, getSession().getClassDescriptor(Employee.class), ((AbstractSession)getSession()));
+            if(errorMsg.length() > 0) {
+                throw new TestErrorException(errorMsg);
+            }
+        }
+        void printDebug(String msg) {
+            if(shouldPrintDebugOutput) {
+                System.out.println(msg);
+            }
+        }
+    }
+    static class BatchReadingTest_SelectByFirstName extends BatchReadingTest {
+        public BatchReadingTest_SelectByFirstName() {
+            super();
+            setName("EmployeeBatchReadingTest - select by first name");
+        }
+        void setSelectionCriteria(ReadAllQuery query) {
+            query.setSelectionCriteria(query.getExpressionBuilder().get("firstName").like("J%"));
+        }
+    }
+    static class JoinTest extends TestCase {
+        public JoinTest() {
+            super();
+            setName("JoinTest - no selection criteria");
+            setDescription("Tests reading of Employees with join expressions anyOf(managedEmployees) and anyOf(managedEmployees).anyOf(phoneNumbers)");
+        }
+        void setSelectionCriteria(ReadAllQuery query) {
+        }
+        public void test() {
+            ReadAllQuery query = new ReadAllQuery();
+            query.setReferenceClass(Employee.class);
+            
+            ReadAllQuery controlQuery = (ReadAllQuery)query.clone();
+            
+            Expression employees = query.getExpressionBuilder().anyOf("managedEmployees");
+            query.addJoinedAttribute(employees);
+            Expression phones = employees.anyOf("phoneNumbers");
+            query.addJoinedAttribute(phones);
+    
+            String errorMsg = JoinedAttributeTestHelper.executeQueriesAndCompareResults(controlQuery, query, (AbstractSession)getSession());
+            if(errorMsg.length() > 0) {
+                throw new TestErrorException(errorMsg);
+            }
+        }
+    }
+    static class JoinTest_SelectByFirstName extends JoinTest {
+        public JoinTest_SelectByFirstName() {
+            super();
+            setName("JoinTest - select by first name");
+        }
+        void setSelectionCriteria(ReadAllQuery query) {
+            query.setSelectionCriteria(query.getExpressionBuilder().get("firstName").like("J%"));
         }
     }
 }

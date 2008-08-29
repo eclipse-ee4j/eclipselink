@@ -13,8 +13,11 @@
 package org.eclipse.persistence.mappings;
 
 import java.util.Enumeration;
+import java.util.Hashtable;
 import java.util.Iterator;
+import java.util.Vector;
 
+import org.eclipse.persistence.exceptions.ConversionException;
 import org.eclipse.persistence.exceptions.DatabaseException;
 import org.eclipse.persistence.exceptions.DescriptorException;
 import org.eclipse.persistence.exceptions.OptimisticLockException;
@@ -23,13 +26,18 @@ import org.eclipse.persistence.expressions.ExpressionBuilder;
 import org.eclipse.persistence.internal.descriptors.CascadeLockingPolicy;
 import org.eclipse.persistence.internal.expressions.SQLUpdateStatement;
 import org.eclipse.persistence.internal.helper.DatabaseField;
+import org.eclipse.persistence.internal.identitymaps.CacheKey;
 import org.eclipse.persistence.internal.queries.ContainerPolicy;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.internal.sessions.ObjectChangeSet;
+import org.eclipse.persistence.queries.ComplexQueryResult;
 import org.eclipse.persistence.queries.DataModifyQuery;
+import org.eclipse.persistence.queries.DatabaseQuery;
 import org.eclipse.persistence.queries.DeleteObjectQuery;
 import org.eclipse.persistence.queries.ObjectLevelModifyQuery;
+import org.eclipse.persistence.queries.ReadAllQuery;
+import org.eclipse.persistence.queries.ReadQuery;
 import org.eclipse.persistence.queries.WriteObjectQuery;
 import org.eclipse.persistence.sessions.DatabaseRecord;
 
@@ -97,6 +105,96 @@ public class UnidirectionalOneToManyMapping extends OneToManyMapping {
         this.removeAllTargetsQuery = new DataModifyQuery();
     }
     
+    /**
+     * INTERNAL:
+     * Extract the primary key value from the source row.
+     * Used for batch reading, most following same order and fields as in the mapping.
+     */
+    protected Vector extractPrimaryKeyFromRow(AbstractRecord row, AbstractSession session) {
+        Vector key = new Vector(getSourceKeyFields().size());
+
+        for (Enumeration fieldEnum = getSourceKeyFields().elements(); fieldEnum.hasMoreElements();) {
+            DatabaseField field = (DatabaseField)fieldEnum.nextElement();
+            Object value = row.get(field);
+
+            // Must ensure the classification gets a cache hit.
+            try {
+                value = session.getDatasourcePlatform().getConversionManager().convertObject(value, getDescriptor().getObjectBuilder().getFieldClassification(field));
+            } catch (ConversionException e) {
+                throw ConversionException.couldNotBeConverted(this, getDescriptor(), e);
+            }
+
+            key.addElement(value);
+        }
+
+        return key;
+    }
+
+    /**
+     * INTERNAL:
+     * Extract the source primary key value from the target row.
+     * Used for batch reading, most following same order and fields as in the mapping.
+     */
+    protected Vector extractSourceKeyFromRow(AbstractRecord row, AbstractSession session) {
+        Vector key = new Vector(getSourceKeyFields().size());
+
+        for (int index = 0; index < getSourceKeyFields().size(); index++) {
+            DatabaseField targetField = getTargetForeignKeyFields().elementAt(index);
+            DatabaseField sourceField = getSourceKeyFields().elementAt(index);
+            Object value = row.get(targetField);
+
+            // Must ensure the classification gets a cache hit.
+            try {
+                value = session.getDatasourcePlatform().getConversionManager().convertObject(value, getDescriptor().getObjectBuilder().getFieldClassification(sourceField));
+            } catch (ConversionException e) {
+                throw ConversionException.couldNotBeConverted(this, getDescriptor(), e);
+            }
+
+            key.addElement(value);
+        }
+
+        return key;
+    }
+
+    /**
+     * INTERNAL:
+     * Extract the value from the batch optimized query.
+     */
+    public Object extractResultFromBatchQuery(DatabaseQuery query, AbstractRecord databaseRow, AbstractSession session, AbstractRecord argumentRow) {
+        //this can be null, because either one exists in the query or it will be created
+        Hashtable referenceObjectsByKey = null;
+        ContainerPolicy mappingContainerPolicy = getContainerPolicy();
+        synchronized (query) {
+            referenceObjectsByKey = getBatchReadObjects(query, session);
+            mappingContainerPolicy = getContainerPolicy();
+            if (referenceObjectsByKey == null) {
+                ReadAllQuery batchQuery = (ReadAllQuery)query;
+                ComplexQueryResult complexResult = (ComplexQueryResult)session.executeQuery(batchQuery, argumentRow);
+                Object results = complexResult.getResult();
+                referenceObjectsByKey = new Hashtable();
+                Enumeration rowsEnum = ((Vector)complexResult.getData()).elements();
+                ContainerPolicy queryContainerPolicy = batchQuery.getContainerPolicy();
+                for (Object elementsIterator = queryContainerPolicy.iteratorFor(results); queryContainerPolicy.hasNext(elementsIterator);) {
+                    Object eachReferenceObject = queryContainerPolicy.next(elementsIterator, session);
+                    CacheKey eachReferenceKey = new CacheKey(extractSourceKeyFromRow((AbstractRecord)rowsEnum.nextElement(), session));
+                    if (!referenceObjectsByKey.containsKey(eachReferenceKey)) {
+                        referenceObjectsByKey.put(eachReferenceKey, mappingContainerPolicy.containerInstance());
+                    }
+                    mappingContainerPolicy.addInto(eachReferenceObject, referenceObjectsByKey.get(eachReferenceKey), session);
+                }
+                setBatchReadObjects(referenceObjectsByKey, query, session);
+            }
+        }
+        Object result = referenceObjectsByKey.get(new CacheKey(extractPrimaryKeyFromRow(databaseRow, session)));
+
+        // The source object might not have any target objects
+        if (result == null) {
+            return mappingContainerPolicy.containerInstance();
+        } else {
+            return result;
+        }
+    }
+
     /**
      * INTERNAL:
      */
@@ -334,6 +432,19 @@ public class UnidirectionalOneToManyMapping extends OneToManyMapping {
         }
     }
 
+    /**
+     * INTERNAL:
+     * Add additional fields
+     */
+    protected void postPrepareNestedBatchQuery(ReadQuery batchQuery, ReadAllQuery query) {
+        ReadAllQuery mappingBatchQuery = (ReadAllQuery)batchQuery;
+        mappingBatchQuery.setShouldIncludeData(true);
+        Iterator<DatabaseField> itTargetForeignKey = getTargetForeignKeyFields().iterator();
+        while (itTargetForeignKey.hasNext()) {
+            mappingBatchQuery.addAdditionalField(itTargetForeignKey.next());
+        }        
+    }
+    
     /**
      * INTERNAL:
      * Update the relation table with the entries related to this mapping.
