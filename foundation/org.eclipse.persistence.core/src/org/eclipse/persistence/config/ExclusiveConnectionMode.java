@@ -95,16 +95,15 @@ public class ExclusiveConnectionMode {
     public static final String  Isolated = "Isolated";
 
     /**
-     * The value causes creation of 
-     * ExclusiveIsolatedClientSession in isolated case
-     * and ExclusiveClientSession otherwise.
+     * The value causes creation of ExclusiveIsolatedClientSession
+     * in both isolated and non-isolated cases.
      * Connection is kept exclusive for the whole lifetime of the owning EntityManager.
      * All writes and reads performed through the exclusive connection.
      * 
      * In the example presented above all five readQueries
      * would read all entity through the exclusive connection.
      * 
-     * Note that in isolated case though all entities use the exclusive connection
+     * Note that though all entities use the exclusive connection
      * only isolated entities use isolated cache; non-isolated entities use shared cache.
      */
     public static final String  Always = "Always";
