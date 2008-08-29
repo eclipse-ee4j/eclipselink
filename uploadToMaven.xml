@@ -30,11 +30,23 @@
 
    <!-- The repository where maven artifacts will be uploaded -->
    <artifact:remoteRepository id="eclipselink.repository" url="file:///home/data/httpd/download.eclipse.org/rt/eclipselink/maven.repo" />
-
    <target name = "upload-maven-init">
        <property file="./build.properties"/> <!-- release.version and build_id are intialized from here -->
        <echo message="release.version ${release.version}"/>
        <echo message="build_id ${build_id}"/>
+
+        <condition property="version" value="${release.version}">
+            <or>
+                <not>
+                    <isset property="build_id"/>
+                </not>
+                <equals arg1="${build_id}" arg2="" trim="true"/>
+                
+            </or>
+        </condition>
+        <property name="version" value="${release.version}-${build_id}"/>
+
+       <echo message="version ${version}"/>
 
        <!-- ensure installer_id is set - in general, installer id will be set by previous scripts when this script is called-->
        <property name="installer_id" value="${build_date}"/>
@@ -104,8 +116,7 @@
        <!-- Copy pom.template to pom.xml filtering various properties -->
        <copy file="pom.xml.template" tofile="pom.xml" overwrite="true">
          <filterset>
-           <filter token="release.version" value="${release.version}"/>
-           <filter token="qualifier"       value="${build_id}"/>
+           <filter token="version" value="${version}"/>
            <filter token="subversion.revision" value="${subversion.revision}"/>
            <filter token="artifactId" value="${artifactId}"/>
            <filter token="artifactName" value="${artifactName}"/>

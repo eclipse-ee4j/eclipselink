@@ -6,7 +6,7 @@
   <packaging>jar</packaging>
   <name>@artifactName@</name>
   <description>EclipseLink subversion revision @subversion.revision@</description>
-  <version>@release.version@-@qualifier@</version>
+  <version>@version@</version>
   <url>http://www.eclipse.org/eclipselink</url>
   <issueManagement>
     <system>jira</system>
