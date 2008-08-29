@@ -65,7 +65,7 @@
         <isset property="build_id"/>
     </condition>
     <property name="build_number" value="SNAPSHOT"/>
-    <property name="build_number_string" value="${build_number} - ${build_date}"/>
+    <property name="build_number_string" value="${build_number}-${build_date}"/>
 
     <!-- usually, installer_id will already be set when we get here-->
     <property name="installer_id" value="${build_date}"/>
@@ -171,7 +171,8 @@
         <jar jarfile="${eclipselink.jar.name}">
              <manifest>
                 <attribute name="Implementation-Title" value="${implementation.title}"/>
-                <attribute name="Implementation-Version" value="${release.version} ${build_number_string}"/>
+                <attribute name="Implementation-Version" value="${release.version}${build_number_string}"/>
+                <attribute name="Specification-Version" value="${release.version}"/>
                 <attribute name="Implementation-Vendor" value="${implementation.vendor}"/>
                 <attribute name="Release-Designation" value="${release.designation}"/>
                 <attribute name="Premain-Class" value="${premain.class}"/>

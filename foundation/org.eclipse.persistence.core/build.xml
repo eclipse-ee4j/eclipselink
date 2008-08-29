@@ -30,7 +30,7 @@
     <tstamp>
         <format property="build.date" pattern="yyyyMMdd"/>
     </tstamp>
-    <property name="build_number_string" value="SNAPSHOT - ${build.date}"/>
+    <property name="build_number_string" value="SNAPSHOT-${build.date}"/>
 
     <path id="compile.path">
         <pathelement path="${eclipselink.plugins}/${antlr}"/>
