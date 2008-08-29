@@ -87,8 +87,8 @@ public class SOAPResponseWriter {
                     mapping.setXPath(SERVICE_NS_PREFIX + ":" + "result");
                     descriptor.addMapping(mapping);
                     mapping.initialize((AbstractSession)dbwsAdapter.getOXSession());
-                } 
-                else if (queryOperation.isAttachment()) { 
+                }
+                else if (queryOperation.isAttachment()) {
                     Attachment attachment = queryOperation.getResult().getAttachment();
                     XMLBinaryDataMapping mapping = new XMLBinaryDataMapping();
                     mapping.setAttributeName("result");
@@ -97,7 +97,7 @@ public class SOAPResponseWriter {
                     mapping.setShouldInlineBinaryData(false);
                     mapping.setMimeType(attachment.getMimeType());
                     descriptor.addMapping(mapping);
-                } 
+                }
                 else {
                     QName type = queryOperation.getResult().getType();
                     String prefix = null;
@@ -109,12 +109,12 @@ public class SOAPResponseWriter {
                     Set<Map.Entry> entrySet = dbwsAdapter.getSchema().getTopLevelElements().entrySet();
                     for (Map.Entry<String, Element> me : entrySet) {
                         if (me.getValue().getType().equals(type.getLocalPart())) {
-                            localElement = (String)me.getKey();
+                            localElement = me.getKey();
                             break;
                         }
                     }
                     XMLDescriptor typeDescriptor =
-                        (XMLDescriptor)dbwsAdapter.getDescriptorsByType().get(type);
+                        dbwsAdapter.getDescriptorsByType().get(type);
                     if (typeDescriptor != null) {
                         if (queryOperation.isCollection()) {
                             XMLCompositeCollectionMapping mapping =
@@ -126,7 +126,7 @@ public class SOAPResponseWriter {
                                 (prefix == null ? localElement : prefix + localElement));
                             descriptor.addMapping(mapping);
                             mapping.initialize((AbstractSession)dbwsAdapter.getOXSession());
-                        } 
+                        }
                         else {
                             XMLCompositeObjectMapping mapping = new XMLCompositeObjectMapping();
                             mapping.setAttributeName("result");
@@ -137,18 +137,18 @@ public class SOAPResponseWriter {
                             mapping.initialize((AbstractSession)dbwsAdapter.getOXSession());
                         }
                         List<Namespace> namespaces =
-                            (List<Namespace>) typeDescriptor.getNamespaceResolver().getNamespaces();
+                            typeDescriptor.getNamespaceResolver().getNamespaces();
                         for (Namespace n : namespaces) {
                             descriptor.getNamespaceResolver().put(n.getPrefix(),
                                 n.getNamespaceURI());
                         }
-                    } 
+                    }
                     else if (type.equals(new QName(W3C_XML_SCHEMA_NS_URI, "any"))) {
                         XMLAnyObjectMapping mapping = new XMLAnyObjectMapping();
                         mapping.setAttributeName("result");
-                        mapping.setXPath("result");
+                        mapping.setXPath(SERVICE_NS_PREFIX + ":" + "result");
                         descriptor.addMapping(mapping);
-                    } 
+                    }
                     else if (type.equals(new QName(W3C_XML_SCHEMA_NS_URI, BASE_64_BINARY))) {
                         XMLBinaryDataMapping mapping = new XMLBinaryDataMapping();
                         mapping.setAttributeName("result");
@@ -156,7 +156,7 @@ public class SOAPResponseWriter {
                         mapping.setShouldInlineBinaryData(true);
                         ((XMLField)mapping.getField()).setSchemaType(type);
                         descriptor.addMapping(mapping);
-                    } 
+                    }
                     else {
                         XMLDirectMapping mapping = new XMLDirectMapping();
                         mapping.setAttributeName("result");
@@ -192,7 +192,7 @@ public class SOAPResponseWriter {
         XMLMarshaller marshaller = dbwsAdapter.getXMLContext().createMarshaller();
         marshaller.setAttachmentMarshaller(attachmentHandler);
         marshaller.marshal(response, body);
-        
+
         if (attachmentHandler.hasAttachments()) {
             // add attachments to message
             for (String id : attachmentHandler.getAttachments().keySet()) {
@@ -205,7 +205,7 @@ public class SOAPResponseWriter {
                 message.addAttachmentPart(part);
             }
         }
-        
+
         return message;
     }
 }
