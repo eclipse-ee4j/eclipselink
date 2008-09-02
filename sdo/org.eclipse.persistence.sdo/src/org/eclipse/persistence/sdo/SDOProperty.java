@@ -33,6 +33,7 @@ import org.eclipse.persistence.sdo.helper.SDOXSDHelper;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.exceptions.SDOException;
 import org.eclipse.persistence.internal.helper.ClassConstants;
+import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.oxm.XMLConstants;
 import org.eclipse.persistence.oxm.XMLField;
@@ -93,7 +94,17 @@ public class SDOProperty implements Property, Serializable {
     private boolean isSubstitutable;
     private Collection<SDOProperty> substitutableElements;
     private boolean finalized;
+    private static boolean isActivationAvailable;
 
+    static {
+        isActivationAvailable = false;
+        try {
+            PrivilegedAccessHelper.getClassForName("javax.activation.DataHandler");
+            isActivationAvailable = true;
+        } catch(ClassNotFoundException ex) {
+            //ignore this exception and let the boolean remain false;
+        }
+    }
     // hold the context containing all helpers so that we can preserve inter-helper relationships
     private HelperContext aHelperContext;
 
@@ -502,9 +513,9 @@ public class SDOProperty implements Property, Serializable {
                     MimeTypePolicy mimeTypePolicy = getMimeTypePolicy();
 
                     //Removed check for XSD type since XSD type can't be set via typeHelper.define
-                    if (!aHelperContext.getXSDHelper().isAttribute(this) && ((mimeTypePolicy != null) || 
+                    if (isActivationAvailable && (!aHelperContext.getXSDHelper().isAttribute(this) && ((mimeTypePolicy != null) || 
                             ((getType().getInstanceClass() != null) && getType().getInstanceClass().getName().equals("javax.activation.DataHandler")) ||
-                            (getXsdType() != null && getXsdType().equals(XMLConstants.BASE_64_BINARY_QNAME)))) {
+                            (getXsdType() != null && getXsdType().equals(XMLConstants.BASE_64_BINARY_QNAME))))) {
                         xmlMapping = buildXMLBinaryDataCollectionMapping(mappingUri, mimeTypePolicy);
                     } else {
                         if(isSubstitutable()) {
@@ -517,9 +528,9 @@ public class SDOProperty implements Property, Serializable {
                     MimeTypePolicy mimeTypePolicy = getMimeTypePolicy();
 
                     //Removed check for XSD type since XSD type can't be set via typeHelper.define
-                    if (!aHelperContext.getXSDHelper().isAttribute(this) && ((mimeTypePolicy != null) || 
+                    if (isActivationAvailable && (!aHelperContext.getXSDHelper().isAttribute(this) && ((mimeTypePolicy != null) || 
                             ((getType().getInstanceClass() != null) && getType().getInstanceClass().getName().equals("javax.activation.DataHandler")) ||
-                            (getXsdType() != null && getXsdType().equals(XMLConstants.BASE_64_BINARY_QNAME)))) {
+                            (getXsdType() != null && getXsdType().equals(XMLConstants.BASE_64_BINARY_QNAME))))) {
                          xmlMapping = buildXMLBinaryDataMapping(mappingUri, mimeTypePolicy);
                     } else {
                         if(isSubstitutable()) {
