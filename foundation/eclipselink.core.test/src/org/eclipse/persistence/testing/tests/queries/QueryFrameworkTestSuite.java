@@ -56,6 +56,8 @@ public class QueryFrameworkTestSuite extends TestSuite {
         // EL Bug 245448 - Add regression tests for querying across  relationships using nested 
         // joining and DailyCacheInvalidationPolicy
         addTest(new QueryExecutionTimeSetOnBuildObjectTest());
+        // EL Bug 245986 - Add regression testing for queries using custom SQL and partial attribute population
+        addTest(new PartialAttributeWithCustomSQLTest());
     }
 
     //SRG test set is maintained by QA only, do NOT add any new test cases into it.
