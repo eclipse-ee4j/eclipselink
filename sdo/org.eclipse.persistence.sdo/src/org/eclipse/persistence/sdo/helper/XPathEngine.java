@@ -107,14 +107,8 @@ public class XPathEngine {
                 return getValueForFragment(path.substring(0, index), caller);
             } else {
                 Object value = getValueForFragment(path.substring(0, index), caller);
-                if (value instanceof DataObject) {
-                    DataObject currentDataObject = (DataObject)value;
-                    return get(path.substring(index + 1, path.length()), currentDataObject);
-                } else {
-                	// TODO: Throw a better exception here.
-                    // TODO: throw exception "ChangeSummary not found using xpath or xpath invalid" ?
-                	throw new RuntimeException("Expected DataObject");
-                }
+                DataObject currentDataObject = (DataObject) value;
+                return get(path.substring(index + 1, path.length()), currentDataObject);
             }
         }
         return getValueForFragment(path, caller);
