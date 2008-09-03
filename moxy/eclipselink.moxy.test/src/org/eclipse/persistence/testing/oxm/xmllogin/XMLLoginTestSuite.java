@@ -12,8 +12,6 @@
  ******************************************************************************/  
 package org.eclipse.persistence.testing.oxm.xmllogin;
 
-import org.eclipse.persistence.testing.oxm.xmlconversionmanager.DoubleToBigDecimalTestCases;
-
 import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
