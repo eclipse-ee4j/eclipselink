@@ -114,6 +114,8 @@ public class SDOXMLHelperLoadAndSaveTestSuite {
         
         //read-only
         suite.addTest(new TestSuite(org.eclipse.persistence.testing.sdo.helper.xmlhelper.loadandsave.LoadAndSaveWithReadOnlyTestCases.class));
+        // mixed text
+        suite.addTest(new TestSuite(org.eclipse.persistence.testing.sdo.helper.xmlhelper.loadandsave.mixed.LoadAndSaveMixedContentTestCases.class));
         return suite;
     }
 }

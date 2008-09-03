@@ -80,6 +80,7 @@ public class SDODataObject implements DataObject, SequencedObject {
     private HelperContext aHelperContext;
 
     /**Unique hash ID of this Externalizable class - not required at this point because we serialize the xml representation */
+    private String text;
 
     //static final long serialVersionUID = 5930094058760264198L;
 

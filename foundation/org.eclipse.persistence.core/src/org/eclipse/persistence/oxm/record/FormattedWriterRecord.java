@@ -49,11 +49,13 @@ public class FormattedWriterRecord extends WriterRecord {
     private static final char[] TAB = "   ".toCharArray();
     private int numberOfTabs;
     private boolean complexType;
+    private boolean isLastEventText;
 
     public FormattedWriterRecord() {
         super();
         numberOfTabs = 0;
         complexType = true;
+        isLastEventText = false;
     }
 
     /**
@@ -91,14 +93,17 @@ public class FormattedWriterRecord extends WriterRecord {
             if (isStartElementOpen) {
                 getWriter().write('>');
             }
-            getWriter().write(Helper.cr());
-            isStartElementOpen = true;
-            for (int x = 0; x < numberOfTabs; x++) {
-                getWriter().write(TAB);
+            if (!isLastEventText) {
+            	getWriter().write(Helper.cr());
+                for (int x = 0; x < numberOfTabs; x++) {
+                    getWriter().write(TAB);
+                }
             }
+            isStartElementOpen = true;
             getWriter().write('<');
             getWriter().write(xPathFragment.getShortName());
             numberOfTabs++;
+            isLastEventText = false;
         } catch (IOException e) {
             throw XMLMarshalException.marshalException(e);
         }
@@ -109,6 +114,7 @@ public class FormattedWriterRecord extends WriterRecord {
      */
     public void element(String namespaceURI, String localName, String qName) {
         try {
+            isLastEventText = false;
             if (isStartElementOpen) {
                 getWriter().write('>');
                 isStartElementOpen = false;
@@ -128,6 +134,7 @@ public class FormattedWriterRecord extends WriterRecord {
      */
     public void endElement(XPathFragment xPathFragment, NamespaceResolver namespaceResolver) {
         try {
+            isLastEventText = false;
             numberOfTabs--;
             if (isStartElementOpen) {
                 getWriter().write('/');
@@ -154,6 +161,7 @@ public class FormattedWriterRecord extends WriterRecord {
      */
     public void characters(String value) {
         super.characters(value);
+        isLastEventText = true;
         complexType = false;
     }
     
@@ -231,15 +239,17 @@ public class FormattedWriterRecord extends WriterRecord {
             	if (isStartElementOpen) {
                     getWriter().write('>');
             	}
-                getWriter().write(Helper.cr());
-                for (int x = 0; x < numberOfTabs; x++) {
-                    getWriter().write(TAB);
+                if (!isLastEventText) {
+                    getWriter().write(Helper.cr());
+                    for (int x = 0; x < numberOfTabs; x++) {
+                        getWriter().write(TAB);
+                    }
                 }
                 getWriter().write('<');
                 getWriter().write(qName);
                 numberOfTabs++;
                 isStartElementOpen = true;
-                
+                isLastEventText = false;
                 // Handle attributes
                 handleAttributes(atts);
                 // Handle prefix mappings
@@ -251,11 +261,13 @@ public class FormattedWriterRecord extends WriterRecord {
 
         public void endElement(String namespaceURI, String localName, String qName) throws SAXException {
             try {
+                isLastEventText = false;
                 numberOfTabs--;
                 if (isStartElementOpen) {
                     getWriter().write('/');
                     getWriter().write('>');
                     isStartElementOpen = false;
+                    complexType = true;
                     return;
                 }
                 if (complexType) {
@@ -281,6 +293,7 @@ public class FormattedWriterRecord extends WriterRecord {
         		return;
         	}        	
             super.characters(ch, start, length);
+            isLastEventText = true;
             complexType = false;
         }
         
