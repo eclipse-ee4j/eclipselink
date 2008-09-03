@@ -20,8 +20,7 @@ import org.eclipse.persistence.internal.oxm.NullCapableValue;
 import org.eclipse.persistence.internal.oxm.OptionalNodeValue;
 import org.eclipse.persistence.internal.oxm.XPathFragment;
 import org.eclipse.persistence.internal.oxm.XPathNode;
-import org.eclipse.persistence.internal.security.PrivilegedGetMethod;
-import org.eclipse.persistence.internal.security.PrivilegedMethodInvoker;
+import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.oxm.NamespaceResolver;
 import org.eclipse.persistence.oxm.XMLConstants;
@@ -62,6 +61,7 @@ public class IsSetNullPolicy extends AbstractNullPolicy {
     private String isSetMethodName;
     private Class[] isSetParameterTypes = PARAMETER_TYPES;
     private Object[] isSetParameters = PARAMETERS;
+    private Method isSetMethod;
 
     /**
      * Default Constructor
@@ -157,17 +157,12 @@ public class IsSetNullPolicy extends AbstractNullPolicy {
      * @return boolean (isSet status)
      */
     private boolean isSet(Object object) {
-        Boolean isSet;
         try {
-            Class objectClass = object.getClass();
-            PrivilegedGetMethod privilegedGetMethod = new PrivilegedGetMethod(objectClass, getIsSetMethodName(), getIsSetParameterTypes(), false, true);
-            Method isSetMethod = privilegedGetMethod.run();
-            PrivilegedMethodInvoker privilegedMethodInvoker = new PrivilegedMethodInvoker(isSetMethod, object, isSetParameters);
-            isSet = (Boolean) privilegedMethodInvoker.run();
+            Boolean isSet = (Boolean) PrivilegedAccessHelper.invokeMethod(getIsSetMethod(object.getClass()), object, isSetParameters);
+            return isSet.booleanValue();
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
-        return isSet.booleanValue();
     }
 
     /**
@@ -216,6 +211,13 @@ public class IsSetNullPolicy extends AbstractNullPolicy {
      */
     public void setIsSetParameters(Object[] parameters) {
         isSetParameters = parameters;
+    }
+
+    private Method getIsSetMethod(Class aClass) throws NoSuchMethodException {
+        if(null == isSetMethod) {
+             isSetMethod = PrivilegedAccessHelper.getPublicMethod(aClass, getIsSetMethodName(), getIsSetParameterTypes(), false);
+        }
+        return isSetMethod;
     }
 
 }
