@@ -23,6 +23,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Collection;
+import java.util.Map;
 import java.util.Vector;
 import java.util.Iterator;
 
@@ -245,6 +246,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         suite.addTest(new EntityManagerJUnitTestSuite("testExceptionForPersistNonEntitySubclass"));
         suite.addTest(new EntityManagerJUnitTestSuite("testEnabledPersistNonEntitySubclass"));
         suite.addTest(new EntityManagerJUnitTestSuite("testCloneEmbeddable"));
+        suite.addTest(new EntityManagerJUnitTestSuite("testCloseOnCommit"));
         suite.addTest(new EntityManagerJUnitTestSuite("testEmbeddedNPE"));
         return suite;
     }
@@ -1404,6 +1406,45 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         boolean cleared = !em.contains(employee);
         closeEntityManager(em);
         assertTrue("EntityManager not properly cleared", cleared);
+    }
+
+    // Test using the change tracking "Transaction" option, to defer change tracking until Transaction.begin().
+    public void testCloseOnCommit() {
+        // Properties only works in jse.
+        if (isOnServer()) {
+            return;
+        }
+        Map properties = new HashMap();
+        properties.put(PersistenceUnitProperties.PERSISTENCE_CONTEXT_CLOSE_ON_COMMIT, "true");
+        EntityManager em = createEntityManager(properties);
+        beginTransaction(em);
+        try {
+            Employee emp = new Employee();
+            emp.setFirstName("Douglas");
+            emp.setLastName("McRae");
+            em.persist(emp);
+            commitTransaction(em);
+            verifyObjectInCacheAndDatabase(emp);
+            closeEntityManager(em);
+            em = createEntityManager(properties);
+            beginTransaction(em);
+            emp = em.find(Employee.class, emp.getId());
+            emp.setFirstName("Joe");
+            commitTransaction(em);
+            verifyObjectInCacheAndDatabase(emp);
+            em = createEntityManager(properties);
+            beginTransaction(em);
+            emp = em.find(Employee.class, emp.getId());
+            em.remove(emp);
+            commitTransaction(em);
+            closeEntityManager(em);            
+        } catch (RuntimeException exception) {
+            if (isTransactionActive(em)){
+                rollbackTransaction(em);
+            }
+            closeEntityManager(em);
+            throw exception;
+        }
     }
     
     public void testClearWithFlush(){

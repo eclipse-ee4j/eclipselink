@@ -248,6 +248,9 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
     // to changed objects that may otherwise have been garbage collected.
     protected IdentityHashSet changeTrackedHardList;
 
+    /** Used to store objects already deleted from the db and unregistered */
+    protected Map unregisteredDeletedObjectsCloneToBackupAndOriginal;
+    
     /**
      * INTERNAL:
      * Create and return a new unit of work with the session as its parent.
@@ -1141,7 +1144,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
                 setUnitOfWorkChangeSet(new UnitOfWorkChangeSet(this));
             }
             unitOfWorkChangeSet = calculateChanges(collectAndPrepareObjectsForNestedMerge(), (UnitOfWorkChangeSet)getUnitOfWorkChangeSet(), false);
-            resetAllCloneCollection(); // no longer needed
+            this.allClones = null;
             mergeChangesIntoParent();
 
             if (hasDeletedObjects()) {
@@ -4136,14 +4139,6 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
     }
 
     /**
-     * INTERNAL:
-     * Used in the resume to reset the all clones collection
-     */
-    protected void resetAllCloneCollection() {
-        this.allClones = null;
-    }
-
-    /**
      * PUBLIC:
      * Revert all changes made to any registered object.
      * Clear all deleted and new objects.
@@ -4192,7 +4187,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
         setNewObjectsCloneToOriginal(null);
         setNewObjectsOriginalToClone(null);
         // Reset the all clones collection
-        resetAllCloneCollection();
+        this.allClones = null;
         // 2612538 - the default size of Map (32) is appropriate
         setObjectsDeletedDuringCommit(new IdentityHashMap());
         setDeletedObjects(new IdentityHashMap());
@@ -4768,65 +4763,98 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
     public void synchronizeAndResume() {
         // For pessimistic locking all locks were released by commit.
         this.pessimisticLockedObjects = null;
-        getProperties().remove(LOCK_QUERIES_PROPERTY);
-
-        // find next power-of-2 size
-        Map newCloneMapping = createMap(1 + getCloneMapping().size());
-
-        for (Iterator cloneEnum = getCloneMapping().keySet().iterator(); cloneEnum.hasNext();) {
-            Object clone = cloneEnum.next();
-
-            // Do not add object that were deleted, what about private parts??
-            if ((!isObjectDeleted(clone)) && (!getRemovedObjects().containsKey(clone))) {
-                ClassDescriptor descriptor = getDescriptor(clone);
-                // Build backup clone for DeferredChangeDetectionPolicy or ObjectChangeTrackingPolicy,
-                // but not for AttributeChangeTrackingPolicy.
-                descriptor.getObjectChangePolicy().revertChanges(clone, descriptor, this, newCloneMapping);
-            }
-        }
-        setCloneMapping(newCloneMapping);
-
-        if (hasObjectsDeletedDuringCommit()) {
-            for (Iterator removedObjects = getObjectsDeletedDuringCommit().keySet().iterator();
-                     removedObjects.hasNext();) {
-                Object removedObject = removedObjects.next();
-                getIdentityMapAccessor().removeFromIdentityMap((Vector)getObjectsDeletedDuringCommit().get(removedObject), removedObject.getClass());
-            }
+        if (hasProperties()) {
+            getProperties().remove(LOCK_QUERIES_PROPERTY);
         }
 
-        // New objects are not new anymore.
-        // can not set multi clone for NestedUnitOfWork.CR#2015 - XC
-        if (!isNestedUnitOfWork()) {
-            //Need to move objects and clones from NewObjectsCloneToOriginal to CloneToOriginals for use in the continued uow
-            if (hasNewObjects()) {
-                for (Iterator newClones = getNewObjectsCloneToOriginal().keySet().iterator(); newClones.hasNext();) {
-                    Object newClone = newClones.next();
-                    getCloneToOriginals().put(newClone, getNewObjectsCloneToOriginal().get(newClone));
-                }
-            }
-            setNewObjectsCloneToOriginal(null);
-            setNewObjectsOriginalToClone(null);
-        }
-
-        //reset unitOfWorkChangeSet.  Needed for ObjectChangeTrackingPolicy and DeferredChangeDetectionPolicy
-        setUnitOfWorkChangeSet(null);
+        resumeUnitOfWork();
 
         // The collections of clones may change in the new UnitOfWork
-        resetAllCloneCollection();
-        // 2612538 - the default size of Map (32) is appropriate
-        setObjectsDeletedDuringCommit(new IdentityHashMap());
-        setDeletedObjects(new IdentityHashMap());
-        setRemovedObjects(new IdentityHashMap());
-        setUnregisteredNewObjectsInParent(new IdentityHashMap());
-        setUnregisteredNewObjects(new IdentityHashMap());
+        this.allClones = null;
+        this.removedObjects = null;
         //Reset lifecycle
         this.lifecycle = Birth;
         this.isSynchronized = false;
+        this.unregisteredNewObjectsInParent = null;
         if (isNestedUnitOfWork()) {
             discoverAllUnregisteredNewObjectsInParent();
         }
     }
 
+
+    /**
+     * INTERNAL:
+     * Resume the unit of work state after a flush, or resume operation.
+     * This will occur on commitAndResume, JPA commit and JPA flush.
+     */
+    public void resumeUnitOfWork() {
+        // Resume new objects.
+        if (hasNewObjects() && !isNestedUnitOfWork()) {
+            Iterator newEntries = this.newObjectsCloneToOriginal.entrySet().iterator();
+            Map cloneToOriginals = getCloneToOriginals();
+            while (newEntries.hasNext()) {
+                Map.Entry entry = (Map.Entry)newEntries.next();
+                Object clone = entry.getKey();
+                Object original = entry.getValue();
+                if (original != null) {
+                    // No longer new to this unit of work, so need to store original.
+                    cloneToOriginals.put(clone, original);
+                }
+            }
+            this.newObjectsCloneToOriginal = null;
+            this.newObjectsOriginalToClone = null;
+        }
+        this.unregisteredExistingObjects = null;
+        this.unregisteredNewObjects = null;
+
+        Map cloneMapping = getCloneMapping();
+        // Clear all changes, reset backup clones.
+        // PERF: only clear objects that changed.
+        // The change sets include new objects as well.
+        if (this.unitOfWorkChangeSet != null) {
+            Map objectChanges = this.unitOfWorkChangeSet.getObjectChanges();
+            Iterator classes = objectChanges.keySet().iterator();
+            while (classes.hasNext()) {
+                String objectClass = (String)classes.next();
+                ClassDescriptor descriptor = null;
+                Iterator changeSets = ((Map)objectChanges.get(objectClass)).values().iterator();
+                while (changeSets.hasNext()) {
+                    ObjectChangeSet changeSet = (ObjectChangeSet)changeSets.next();
+                    descriptor = getDescriptor(changeSet.getUnitOfWorkClone());
+                    // Build backup clone for DeferredChangeDetectionPolicy or ObjectChangeTrackingPolicy,
+                    // but not for AttributeChangeTrackingPolicy.
+                    descriptor.getObjectChangePolicy().revertChanges(changeSet.getUnitOfWorkClone(), descriptor, this, cloneMapping);
+                }
+            }
+        }
+        
+        // Resume deleted objects.
+        // bug 4730595: fix puts deleted objects in the UnitOfWorkChangeSet as they are removed.
+        this.deletedObjects = null;
+        // Unregister all deleted objects,
+        // keep them along with their original and backup values in unregisteredDeletedObjectsCloneToBackupAndOriginal.
+        if (hasObjectsDeletedDuringCommit()) {
+            if (this.unregisteredDeletedObjectsCloneToBackupAndOriginal == null) {
+                this.unregisteredDeletedObjectsCloneToBackupAndOriginal = new IdentityHashMap(this.objectsDeletedDuringCommit.size());
+            }
+            Iterator iterator = this.objectsDeletedDuringCommit.keySet().iterator();
+            Map cloneToOriginals = getCloneToOriginals();
+            while (iterator.hasNext()) {
+                Object deletedObject = iterator.next();
+                Object[] backupAndOriginal = {cloneMapping.get(deletedObject), cloneToOriginals.get(deletedObject)};
+                this.unregisteredDeletedObjectsCloneToBackupAndOriginal.put(deletedObject, backupAndOriginal);
+                // If object exists in IM remove it from the IM and also from clone mapping.
+                getIdentityMapAccessorInstance().removeFromIdentityMap(deletedObject);
+                cloneMapping.remove(deletedObject);
+            }
+        }
+        this.objectsDeletedDuringCommit = null;
+
+        // Clean up, new objects are now existing.
+        this.unitOfWorkChangeSet = null;
+        this.changeTrackedHardList = null;
+    }
+    
     /**
      * INTERNAL:
      * THis method is used to transition an object from the deleted objects list

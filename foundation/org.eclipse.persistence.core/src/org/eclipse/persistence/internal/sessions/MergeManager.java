@@ -18,7 +18,6 @@ import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.descriptors.VersionLockingPolicy;
 import org.eclipse.persistence.internal.descriptors.ObjectBuilder;
 import org.eclipse.persistence.internal.descriptors.OptimisticLockingPolicy;
-import org.eclipse.persistence.mappings.*;
 import org.eclipse.persistence.exceptions.*;
 import org.eclipse.persistence.internal.helper.linkedlist.LinkedNode;
 import org.eclipse.persistence.sessions.remote.*;

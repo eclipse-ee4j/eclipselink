@@ -188,7 +188,7 @@ public class RemoteUnitOfWork extends UnitOfWorkImpl {
             setUnitOfWorkChangeSet(new UnitOfWorkChangeSet(this));
             uowChangeSet = (UnitOfWorkChangeSet)getUnitOfWorkChangeSet();
             calculateChanges(new IdentityHashMap(this.cloneMapping), (UnitOfWorkChangeSet)getUnitOfWorkChangeSet(), false);
-            resetAllCloneCollection();
+            this.allClones = null;
         }
         Enumeration classes = uowChangeSet.getNewObjectChangeSets().elements();
         while (classes.hasMoreElements()) {

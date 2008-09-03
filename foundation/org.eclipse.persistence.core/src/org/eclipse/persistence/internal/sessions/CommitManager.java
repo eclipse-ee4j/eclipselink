@@ -264,10 +264,6 @@ public class CommitManager {
                     getSession().executeQuery(commitQuery);
                 }
                 uowChangeSet.putNewObjectInChangesList(changeSetToWrite, session);
-                ((UnitOfWorkImpl)getSession()).updateChangeTrackersIfRequired(objectToWrite, changeSetToWrite, (UnitOfWorkImpl)getSession(), descriptor);
-
-                //after the query has executed lets clear the change detection policies
-                //this is important for write changes and non deferred writes support
             }
         }
     }
@@ -306,10 +302,6 @@ public class CommitManager {
                     // will always be a unitOfWork so we need to cascade dependent parts
                     getSession().executeQuery(commitQuery);
                 }
-                ((UnitOfWorkImpl)getSession()).updateChangeTrackersIfRequired(objectToWrite, changeSetToWrite, (UnitOfWorkImpl)getSession(), descriptor);
-
-                // after the query has executed lets clear the change detection policies
-                // this is important for write changes and non deferred writes support
             }
         }
     }

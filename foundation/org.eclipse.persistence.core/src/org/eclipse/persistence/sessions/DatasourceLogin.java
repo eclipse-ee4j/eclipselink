@@ -474,6 +474,10 @@ public abstract class DatasourceLogin implements org.eclipse.persistence.session
      * Creates a new instance of the specified Class.
      */
     public void setPlatformClassName(String platformClassName) throws ValidationException {
+        // Handle old Oracle platform conversion.
+        if (platformClassName.equals("org.eclipse.persistence.platform.database.oracle.OraclePlatform")) {
+            platformClassName = "org.eclipse.persistence.platform.database.OraclePlatform";
+        }
         Class platformClass = null;
         try {
             //First try loading with the Login's class loader

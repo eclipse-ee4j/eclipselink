@@ -30,12 +30,12 @@ import org.eclipse.persistence.sessions.server.ServerSession;
 
 public interface JpaEntityManager extends javax.persistence.EntityManager {
 
-	/**
-	 * This method returns the current session to the requester.  The current session
-	 * will be a the active UnitOfWork within a transaction and will be a 'scrap'
-	 * UnitOfWork outside of a transaction.  The caller is concerned about the results
-	 * then the getSession() or getUnitOfWork() API should be called.
-	 */
+    /**
+     * This method returns the current session to the requester.  The current session
+     * will be the active UnitOfWork within a transaction and will be a 'scrap'
+     * UnitOfWork outside of a transaction.  The caller is concerned about the results
+     * then the getSession() or getUnitOfWork() API should be called.
+     */
     public Session getActiveSession();
     
     /**

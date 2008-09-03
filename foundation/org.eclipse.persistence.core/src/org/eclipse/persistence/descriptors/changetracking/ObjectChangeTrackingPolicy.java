@@ -134,10 +134,10 @@ public class ObjectChangeTrackingPolicy extends DeferredChangeDetectionPolicy {
         } else {
             listener = (ObjectChangeListener)setChangeListener(clone, uow, descriptor);
         }
-        dissableEventProcessing(clone);
         ObjectBuilder builder = descriptor.getObjectBuilder();
         // Only relationship mappings need to be reset.
         if (!builder.isSimple()) {
+            dissableEventProcessing(clone);
             // Must also ensure the listener has been set on collections and aggregates.
             FetchGroupManager fetchGroupManager = descriptor.getFetchGroupManager();
             boolean isPartialObject = (fetchGroupManager != null) && fetchGroupManager.isPartialObject(clone);
@@ -150,8 +150,8 @@ public class ObjectChangeTrackingPolicy extends DeferredChangeDetectionPolicy {
                     mapping.setChangeListener(clone, listener, uow);
                 }
             }
+            enableEventProcessing(clone);
         }
-        enableEventProcessing(clone);
     }
 
     /**

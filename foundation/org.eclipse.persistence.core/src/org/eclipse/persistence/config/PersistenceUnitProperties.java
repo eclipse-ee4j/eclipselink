@@ -408,8 +408,21 @@ public class PersistenceUnitProperties {
      * Alternatively, to apply the property only to some SessionManagers pass it to createEntityManager method.
      * @see org.eclipse.persistence.sessions.factories.ReferenceMode
      */
-    public static final String PERSISTENCE_CONTEXT_REFERENCE_MODE="eclipselink.persistence-context.reference-mode";
+    public static final String PERSISTENCE_CONTEXT_REFERENCE_MODE = "eclipselink.persistence-context.reference-mode";
 
+    /**
+     * Specifies that the EntityManager will not be close or not used after commit (not extended).
+     * In general this is normally always the case for a container managed EntityManager,
+     * and common for application managed.
+     * This can be used to avoid additional performance overhead of resuming the persistence context
+     * after a commit().
+     * The property set in persistence.xml or passed to createEntityManagerFactory affects all EntityManagers
+     * created by the factory.
+     * Alternatively, to apply the property only to some EntityManagers pass it to createEntityManager method.
+     * Either "true" or "false.  "false" is the default.
+     */
+    public static final String PERSISTENCE_CONTEXT_CLOSE_ON_COMMIT = "eclipselink.persistence-context.close-on-commit";
+    
     /**
      * This property is used to specify proxy type that should be passed to OarcleConnection.openProxySession method.
      * Requires Oracle jdbc version 10.1.0.2 or later.

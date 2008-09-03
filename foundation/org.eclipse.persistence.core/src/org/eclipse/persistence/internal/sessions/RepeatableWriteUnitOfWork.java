@@ -31,8 +31,6 @@ public class RepeatableWriteUnitOfWork extends UnitOfWorkImpl {
     
     /** Used to store the final UnitOfWorkChangeSet for merge into the shared cache */
     protected UnitOfWorkChangeSet cumulativeUOWChangeSet;
-    /** Used to store objects already deleted from the db and unregistered */
-    protected Map unregisteredDeletedObjectsCloneToBackupAndOriginal;
     
     /** Used to determine if UnitOfWork should commit and rollback transactions 
      * This is used when an EntityTransaction is controlling the transaction
@@ -70,39 +68,38 @@ public class RepeatableWriteUnitOfWork extends UnitOfWorkImpl {
      */
     public void clear(boolean shouldClearCache) {
         super.clear(shouldClearCache);
-        if(cumulativeUOWChangeSet != null) {
-            if(flushClearCache == null) {
-                flushClearCache = PropertiesHandler.getSessionPropertyValueLogDebug(PersistenceUnitProperties.FLUSH_CLEAR_CACHE, this);
-                if(flushClearCache == null) {
-                    flushClearCache = FlushClearCache.DEFAULT;
+        if (this.cumulativeUOWChangeSet != null) {
+            if (this.flushClearCache == null) {
+                this.flushClearCache = PropertiesHandler.getSessionPropertyValueLogDebug(PersistenceUnitProperties.FLUSH_CLEAR_CACHE, this);
+                if (this.flushClearCache == null) {
+                    this.flushClearCache = FlushClearCache.DEFAULT;
                 }
             }
-            if(flushClearCache == FlushClearCache.Drop) {
-                cumulativeUOWChangeSet = null;
-                unregisteredDeletedObjectsCloneToBackupAndOriginal = null;
-            } else if(flushClearCache == FlushClearCache.DropInvalidate) {
+            if (this.flushClearCache == FlushClearCache.Drop) {
+                this.cumulativeUOWChangeSet = null;
+                this.unregisteredDeletedObjectsCloneToBackupAndOriginal = null;
+            } else if (this.flushClearCache == FlushClearCache.DropInvalidate) {
                 // classes of the updated objects should be invalidated in the shared cache on commit.
-                Set updatedObjectsClasses = cumulativeUOWChangeSet.findUpdatedObjectsClasses();
-                if(updatedObjectsClasses != null) {
-                    if(classesToBeInvalidated == null) {
-                        classesToBeInvalidated = updatedObjectsClasses;
+                Set updatedObjectsClasses = this.cumulativeUOWChangeSet.findUpdatedObjectsClasses();
+                if (updatedObjectsClasses != null) {
+                    if (this.classesToBeInvalidated == null) {
+                        this.classesToBeInvalidated = updatedObjectsClasses;
                     } else {
-                        classesToBeInvalidated.addAll(updatedObjectsClasses);
+                        this.classesToBeInvalidated.addAll(updatedObjectsClasses);
                     }
                 }
-                // unregisteredDeletedObjectsCloneToBackupAndOriginal != null because cumulativeUOWChangeSet != null
-                if(!unregisteredDeletedObjectsCloneToBackupAndOriginal.isEmpty()) {
-                    if(classesToBeInvalidated == null) {
-                        classesToBeInvalidated = new HashSet<Class>();
+                if ((this.unregisteredDeletedObjectsCloneToBackupAndOriginal != null) && !this.unregisteredDeletedObjectsCloneToBackupAndOriginal.isEmpty()) {
+                    if (this.classesToBeInvalidated == null) {
+                        this.classesToBeInvalidated = new HashSet<Class>();
                     }
-                    Iterator enumDeleted = unregisteredDeletedObjectsCloneToBackupAndOriginal.keySet().iterator();
+                    Iterator enumDeleted = this.unregisteredDeletedObjectsCloneToBackupAndOriginal.keySet().iterator();
                     // classes of the deleted objects should be invalidated in the shared cache
-                    while(enumDeleted.hasNext()) {
-                        classesToBeInvalidated.add(enumDeleted.next().getClass());
+                    while (enumDeleted.hasNext()) {
+                        this.classesToBeInvalidated.add(enumDeleted.next().getClass());
                     }
                 }
-                cumulativeUOWChangeSet = null;
-                unregisteredDeletedObjectsCloneToBackupAndOriginal = null;
+                this.cumulativeUOWChangeSet = null;
+                this.unregisteredDeletedObjectsCloneToBackupAndOriginal = null;
             }
         }
     }
@@ -281,72 +278,38 @@ public class RepeatableWriteUnitOfWork extends UnitOfWorkImpl {
 
     /**
      * INTERNAL:
-     * This method will cause the all of the tracked objects at this level to have
-     * their changes written to the database.  It will then decrement the depth
-     * level.
+     * This will flush all changes to the database,
+     * and create or merge into the cumulativeUOWChangeSet.
      */
     public void writeChanges() {
-            if (unregisteredDeletedObjectsCloneToBackupAndOriginal == null) {
-                unregisteredDeletedObjectsCloneToBackupAndOriginal = new IdentityHashMap(2);
-            }
-            if (getUnitOfWorkChangeSet() == null) {
-                setUnitOfWorkChangeSet(new UnitOfWorkChangeSet(this));
-            }
-            // This also assigns sequence numbers and discover unregistered new objects.
-            calculateChanges(getCloneMapping(), (UnitOfWorkChangeSet)getUnitOfWorkChangeSet(), true);
-            // Write those changes to the database.
-            UnitOfWorkChangeSet changeSet = (UnitOfWorkChangeSet)getUnitOfWorkChangeSet();
-            if (!changeSet.hasChanges() && !changeSet.hasForcedChanges() && ! this.hasDeletedObjects() && ! this.hasModifyAllQueries()){
-            	return;
-            }
-            try {
-                commitToDatabaseWithPreBuiltChangeSet(changeSet, false);
-                writesCompleted();
-            } catch (RuntimeException exception) {
-                clearFlushClearCache();
-                setLifecycle(WriteChangesFailed);
-                throw exception;
-            }
-
-            if (hasNewObjects()) {
-                Iterator enumtr = getNewObjectsCloneToOriginal().keySet().iterator();
-                while (enumtr.hasNext()) {
-                    Object clone = enumtr.next();
-                    Object original = getNewObjectsCloneToOriginal().get(clone);
-                    if (original != null) {
-                        // No longer new to this unit of work, so need to store original.
-                        getCloneToOriginals().put(clone, original);
-                    }
-                }
-            }
-            this.newObjectsCloneToOriginal = null;
-            this.newObjectsOriginalToClone = null;
-            this.unregisteredExistingObjects = null;
-            this.unregisteredNewObjects = null;
-            
-            // bug 4730595: fix puts deleted objects in the UnitOfWorkChangeSet as they are removed.
-            this.deletedObjects = null;
-            // Unregister all deleted objects,
-            // keep them along with their original and backup values in unregisteredDeletedObjectsCloneToBackupAndOriginal.
-            Iterator enumDeleted = getObjectsDeletedDuringCommit().keySet().iterator();
-            while (enumDeleted.hasNext()) {
-                Object deletedObject = enumDeleted.next();
-                Object[] backupAndOriginal = {getCloneMapping().get(deletedObject), getCloneToOriginals().get(deletedObject)};
-                unregisteredDeletedObjectsCloneToBackupAndOriginal.put(deletedObject, backupAndOriginal);
-                unregisterObject(deletedObject);
-            }
-            this.objectsDeletedDuringCommit = null;
-
-            if (this.cumulativeUOWChangeSet == null) {
-                this.cumulativeUOWChangeSet = (UnitOfWorkChangeSet)getUnitOfWorkChangeSet();
-            } else {
-                // Merge those changes back into the backup clones and the final uowChangeSet.
-                this.cumulativeUOWChangeSet.mergeUnitOfWorkChangeSet((UnitOfWorkChangeSet)getUnitOfWorkChangeSet(), this, true);
-            }
-            // Clean up, new objects are now existing.
-            setUnitOfWorkChangeSet(new UnitOfWorkChangeSet());
-            this.changeTrackedHardList = null;
+        if (this.unitOfWorkChangeSet == null) {
+            this.unitOfWorkChangeSet = new UnitOfWorkChangeSet(this);
         }
+        UnitOfWorkChangeSet changeSet = this.unitOfWorkChangeSet;
+        // This also assigns sequence numbers and discover unregistered new objects.
+        calculateChanges(getCloneMapping(), changeSet, true);
+        // Write those changes to the database.
+        if (!changeSet.hasChanges() && !changeSet.hasForcedChanges() && ! this.hasDeletedObjects() && ! this.hasModifyAllQueries()) {
+            return;
+        }
+        try {
+            commitToDatabaseWithPreBuiltChangeSet(changeSet, false);
+            writesCompleted();
+        } catch (RuntimeException exception) {
+            clearFlushClearCache();
+            setLifecycle(WriteChangesFailed);
+            throw exception;
+        }
+
+        if (this.cumulativeUOWChangeSet == null) {
+            this.cumulativeUOWChangeSet = changeSet;
+        } else {
+            // Merge those changes back into the backup clones and the final uowChangeSet.
+            this.cumulativeUOWChangeSet.mergeUnitOfWorkChangeSet(changeSet, this, true);
+        }
+
+        resumeUnitOfWork();
+    }
 
     /**
      * INTERNAL:

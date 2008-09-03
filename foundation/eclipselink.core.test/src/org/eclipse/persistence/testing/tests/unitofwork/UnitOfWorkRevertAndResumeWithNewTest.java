@@ -16,7 +16,6 @@ import java.util.Vector;
 
 import org.eclipse.persistence.sessions.UnitOfWork;
 import org.eclipse.persistence.testing.framework.AutoVerifyTestCase;
-import org.eclipse.persistence.testing.framework.TestErrorException;
 import org.eclipse.persistence.testing.framework.TestWarningException;
 import org.eclipse.persistence.testing.models.employee.domain.Address;
 import org.eclipse.persistence.testing.models.employee.domain.Employee;
@@ -68,11 +67,7 @@ public class UnitOfWorkRevertAndResumeWithNewTest extends AutoVerifyTestCase {
         emp = (Employee)results.firstElement();
         emp.setAddress(address);
 
-        try {
-            uow.commitAndResume();
-        } catch (Exception e) {
-            throw new TestErrorException("Failed to commit successfully the second time: " + e.toString());
-        }
+        uow.commitAndResume();
     }
 
     public void reset() {

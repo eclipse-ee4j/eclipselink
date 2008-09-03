@@ -35,7 +35,6 @@ import javax.sql.DataSource;
 import org.eclipse.persistence.exceptions.EclipseLinkException;
 import org.eclipse.persistence.exceptions.JPQLException;
 import org.eclipse.persistence.exceptions.ValidationException;
-import org.eclipse.persistence.exceptions.EclipseLinkException;
 import org.eclipse.persistence.expressions.Expression;
 import org.eclipse.persistence.queries.DatabaseQuery;
 import org.eclipse.persistence.queries.ObjectBuildingQuery;
@@ -84,7 +83,7 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
     protected TransactionWrapperImpl transaction = null;
     protected boolean isOpen = true;
     protected RepeatableWriteUnitOfWork extendedPersistenceContext;
-    // This attribute references the ServerSession that this deployement is using.
+    // This attribute references the ServerSession that this deployment is using.
     // This is a simple mechanism to reduce the number of SessionManager accesses.
     protected ServerSession serverSession;
     // References the factory that has created this entity manager
@@ -108,6 +107,9 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
     
     //Connection policy used to create the uow's parent ClientSession.
     protected ConnectionPolicy connectionPolicy;
+    
+    /** Property to avoid resuming unit of work if going to be closed on commit anyway. */
+    protected boolean closeOnCommit;
     
     /**
      * Constructor returns an EntityManager assigned to the a particular ServerSession.
@@ -855,7 +857,7 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
         // use local uow as it will be local to this EM and not on the txn
         if (this.extendedPersistenceContext == null || !this.extendedPersistenceContext.isActive()) {
             this.extendedPersistenceContext = new RepeatableWriteUnitOfWork(this.serverSession.acquireClientSession(connectionPolicy, properties), this.referenceMode);
-            this.extendedPersistenceContext.setResumeUnitOfWorkOnTransactionCompletion(true);
+            this.extendedPersistenceContext.setResumeUnitOfWorkOnTransactionCompletion(!this.closeOnCommit);
             this.extendedPersistenceContext.setShouldCascadeCloneToJoinedRelationship(true);
             if (txn != null) {
                 // if there is an active txn we must register with it on creation of PC
@@ -953,13 +955,18 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
      */
     private void processProperties(){
         String beginEarlyTransactionProperty = getPropertiesHandlerProperty(EntityManagerProperties.JOIN_EXISTING_TRANSACTION);
-        if(beginEarlyTransactionProperty!=null){
+        if (beginEarlyTransactionProperty != null) {
             this.beginEarlyTransaction="true".equalsIgnoreCase(beginEarlyTransactionProperty);
         }
         String referenceMode = getPropertiesHandlerProperty(EntityManagerProperties.PERSISTENCE_CONTEXT_REFERENCE_MODE);
-        if (referenceMode != null){
+        if (referenceMode != null) {
             this.referenceMode = ReferenceMode.valueOf(referenceMode);
         }
+        String closeOnCommit = getPropertiesHandlerProperty(EntityManagerProperties.PERSISTENCE_CONTEXT_CLOSE_ON_COMMIT);
+        if (closeOnCommit != null) {
+            this.closeOnCommit = "true".equalsIgnoreCase(closeOnCommit);
+        }
+        
         connectionPolicy = processConnectionPolicyProperties();
     }
     

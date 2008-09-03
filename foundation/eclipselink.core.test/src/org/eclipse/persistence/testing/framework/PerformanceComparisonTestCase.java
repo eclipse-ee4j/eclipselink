@@ -234,7 +234,7 @@ public abstract class PerformanceComparisonTestCase extends TestCase implements 
         DatabaseLogin login = (DatabaseLogin)project.getLogin().clone();
         login.useDirectDriverConnect();
         login.setDriverClass(org.eclipse.persistence.testing.tests.performance.emulateddb.EmulatedDriver.class);
-        login.setConnectionString("jdbc:emulateddb");
+        login.setConnectionString("emulate:" + login.getConnectionString());
         project.setLogin(login);
         DatabaseSession session = project.createDatabaseSession();
         session.setSessionLog(getSession().getSessionLog());
