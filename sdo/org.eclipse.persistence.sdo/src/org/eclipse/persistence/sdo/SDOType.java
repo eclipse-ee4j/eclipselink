@@ -317,6 +317,21 @@ public class SDOType implements Type, Serializable {
         xmlDescriptor.setSequencedObject(sequenced);
     }
 
+    public void setMixed(boolean isMixed) {
+        String textAttribute = "text";
+        XMLDirectMapping textMapping = (XMLDirectMapping) xmlDescriptor.getMappingForAttributeName(textAttribute);
+        if (isMixed) {
+            if (null == textMapping) {
+                textMapping = new XMLDirectMapping();
+                textMapping.setAttributeName(textAttribute);
+                textMapping.setXPath("text()");
+                xmlDescriptor.addMapping(textMapping);
+            }
+        } else {
+            xmlDescriptor.removeMappingForAttributeName(textAttribute);
+        }
+    }
+
     /**
      * INTERNAL:
      * Set this Type to a simple Type by passing in boolean value true. Otherwise,

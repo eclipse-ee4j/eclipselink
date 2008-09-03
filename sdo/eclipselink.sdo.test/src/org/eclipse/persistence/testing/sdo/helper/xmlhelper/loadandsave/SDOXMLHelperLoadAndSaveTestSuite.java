@@ -79,6 +79,8 @@ public class SDOXMLHelperLoadAndSaveTestSuite {
 
         // nillable
         suite.addTest(new TestSuite(org.eclipse.persistence.testing.sdo.helper.xmlhelper.loadandsave.nillable.ListPropertyNillableElementTestCases.class));
+        // mixed text
+        suite.addTest(new TestSuite(org.eclipse.persistence.testing.sdo.helper.xmlhelper.loadandsave.mixed.LoadAndSaveMixedContentTestCases.class));
 
         return suite;
     }

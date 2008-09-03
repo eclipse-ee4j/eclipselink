@@ -89,6 +89,9 @@ public class MultipleDefineSameTypeTestCases extends XSDHelperDefineTestCases {
         }*/
     }
 
+    // THIS TEST CAN BE UNCOMMENTED AFTER A FIX FOR BUG# 245444 IS SUBMITTED.  CHANGES WILL BE REQUIRED...
+    
+    /*
     public void testDefineThreeDifferenceSchemas() {
         InputStream is = getSchemaInputStream(getSchemaToDefine());
         List types = xsdHelper.define(is, null);
@@ -103,15 +106,15 @@ public class MultipleDefineSameTypeTestCases extends XSDHelperDefineTestCases {
 
         //else SDO113      
 
-        /*
-        assertEquals(controlTypes.size(), types2.size());
-        compare(getControlTypes(), types2);
+        
+        //assertEquals(controlTypes.size(), types2.size());
+        //compare(getControlTypes(), types2);
 
-        for (int i = 0; i < types.size(); i++) {
-            Type type1 = (Type)types.get(i);
-            Type type2 = (Type)types2.get(i);
-            assertEquals(type1, type2);
-        }*/
+        //for (int i = 0; i < types.size(); i++) {
+        //    Type type1 = (Type)types.get(i);
+        //    Type type2 = (Type)types2.get(i);
+        //    assertEquals(type1, type2);
+        //}
 
         //this schema is more complex and some new types will be defined but some old ones will be found
         InputStream is3 = getSchemaInputStream("org/eclipse/persistence/testing/sdo/schemas/PurchaseOrderComplex.xsd");
@@ -120,15 +123,14 @@ public class MultipleDefineSameTypeTestCases extends XSDHelperDefineTestCases {
         assertEquals(9, types3.size());
         compare(getComplexControlTypes(), types3);
 
-        /*
-        assertEquals(types.size(), types2.size());
-        for (int i = 0; i < types.size(); i++) {
-            Type type1 = (Type)types.get(i);
-            Type type2 = (Type)types2.get(i);
-            assertEquals(type1, type2);
-        }
-        */
-    }
+        
+        //assertEquals(types.size(), types2.size());
+        //for (int i = 0; i < types.size(); i++) {
+        //    Type type1 = (Type)types.get(i);
+        //    Type type2 = (Type)types2.get(i);
+        //    assertEquals(type1, type2);
+        //}
+    }*/
 
     public List getControlTypes() {
         List types = new ArrayList();

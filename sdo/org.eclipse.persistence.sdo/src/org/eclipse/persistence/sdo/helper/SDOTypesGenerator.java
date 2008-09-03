@@ -421,8 +421,9 @@ public class SDOTypesGenerator {
 
     private void startNewComplexType(String targetNamespace, String sdoTypeName, String xsdLocalName, ComplexType complexType) {
         SDOType currentType = createSDOTypeForName(targetNamespace, sdoTypeName, xsdLocalName);
-
+        
         if (complexType.isMixed()) {
+            currentType.setMixed(true);
             currentType.setSequenced(true);
             // currentType.setOpen(true); Remove as part of SDO JIRA-106
         }

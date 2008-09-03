@@ -657,7 +657,10 @@ public class SDOTypeHelperDelegate implements SDOTypeHelper {
             type = new SDODataType(uri, name, this);
         } else {
             type = new SDOType(uri, name, this);
-            type.setSequenced(dataObject.getBoolean("sequenced"));
+            if (dataObject.getBoolean("sequenced")) {
+                type.setSequenced(true);
+                type.setMixed(true);
+            }
         }
         type.setDataType(isDataType);
         addType(type);
