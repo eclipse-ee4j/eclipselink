@@ -69,6 +69,7 @@ public class SessionsXMLTestModel extends TestModel {
         suite.addTest(new SessionsXMLSchemaIncorrectTagValuesTest());
         suite.addTest(new SessionsXMLSchemaProjectXMLTest());
         suite.addTest(new SessionsXMLSchemaWebsphere61PlatformTest());
+        suite.addTest(new SessionsXMLSchemaWeblogicPlatformTest());
         suite.addTest(new SessionsXMLSchemaLoggingOptionsTest());
         suite.addTest(new SessionsXMLSchemaJBossPlatformTest());
         suite.addTest(new SessionManagerGetMultipleSessionsTest());
