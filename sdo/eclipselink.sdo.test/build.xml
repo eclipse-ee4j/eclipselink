@@ -149,11 +149,6 @@
                 </fileset>
                 <report format="noframes" todir="${eclipselink.sdo.test}/${report.dir}/@{customcontext}"/>
             </junitreport>
-            <delete includeEmptyDirs="true" failonerror="false">
-                <fileset dir="${eclipselink.sdo.test}/${report.dir}/@{customcontext}">
-                    <include name="**/*.xml"/>
-                </fileset>
-            </delete>
             <!-- Clean up generated files -->
             <delete dir="${eclipselink.sdo.test}/${resource.dir}/baseTypes"/>
             <delete dir="${eclipselink.sdo.test}/${resource.dir}/complextypes"/>
