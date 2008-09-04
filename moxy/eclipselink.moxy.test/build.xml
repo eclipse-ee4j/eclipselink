@@ -198,9 +198,6 @@
         </junitreport>
         <delete includeEmptyDirs="true" failonerror="false">
             <fileset dir="${eclipselink.moxy.test}/${resource.dir}/${tmp.dir}"/>
-            <fileset dir="${eclipselink.moxy.test}/${report.dir}/jaxb">
-                <include name="**/*.xml"/>
-            </fileset>
             <fileset dir="${eclipselink.moxy.test}/${resource.dir}">
                 <include name="File*.xml"/>
             </fileset>
@@ -213,16 +210,6 @@
             </fileset>
             <report format="noframes" todir="${eclipselink.moxy.test}/${report.dir}/oxm"/>
         </junitreport>
-        <delete dir="${eclipselink.moxy.test}/${report.dir}/oxm/default" failonerror="false"/>
-        <delete dir="${eclipselink.moxy.test}/${report.dir}/oxm/dom" failonerror="false"/>
-        <delete dir="${eclipselink.moxy.test}/${report.dir}/oxm/deploymentxml" failonerror="false"/>
-        <delete dir="${eclipselink.moxy.test}/${report.dir}/oxm/deploymentxml-tl" failonerror="false"/>
-        <delete dir="${eclipselink.moxy.test}/${report.dir}/oxm/docpres" failonerror="false"/>
-        <delete failonerror="false">
-            <fileset dir="${eclipselink.moxy.test}/${report.dir}/oxm">
-                <include name="**/*.xml"/>
-            </fileset>
-        </delete>
     </target>
 
     <!-- Clean targets -->
