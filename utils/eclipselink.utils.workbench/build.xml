@@ -227,6 +227,8 @@
     <target name="clean-workbench-debug" depends="init">
         <delete file="${libDir}/${mwcore.debug.jarfile}"/>
         <delete file="${libDir}/${workbench.debug.jarfile}"/>
+        <delete file="${libDir}/${mwcore.src.jarfile}"/>
+        <delete file="${libDir}/${workbench.src.jarfile}"/>
     </target>
 
 
@@ -601,7 +603,7 @@
         </jar>
     </target>
 
-    <target name="jar-mwcore-debug" depends="init">
+    <target name="jar-mwcore-debug" depends="init, jar-mwcore-src">
         <echo message="Implementation-Version: ${_VersionStamp}.${_buildNumber}"/>
         <jar jarfile="${libDir}/${mwcore.debug.jarfile}">
             <manifest>
@@ -623,6 +625,27 @@
         </jar>
     </target>
 
+    <target name="jar-mwcore-src">
+        <echo message="Implementation-Version: ${_VersionStamp}.${_buildNumber}"/>
+        <jar jarfile="${libDir}/${mwcore.src.jarfile}">
+            <manifest>
+                <attribute name="Specification-Title" value="${_productName}" />
+                <attribute name="Specification-Vendor" value="${_VendorString}" />
+                <attribute name="Specification-Version" value="${_VersionStamp}" />
+                <attribute name="Implementation-Title" value="${workbenchcore.manifest.basepackage}" />
+                <attribute name="Implementation-Version" value="${_VersionStamp}.${_buildNumber}" />
+                <attribute name="Implementation-Vendor" value="${_VendorString}" />
+                <attribute name="Release-Designation" value="${_releaseVersion}" />
+                <attribute name="Library-Designation" value="${workbenchcore.manifest.libraryName}" />
+            </manifest>
+            <zipgroupfileset dir="${libDir}">
+                <include name="utility_src.jar"/>
+                <include name="platformsmodel_src.jar"/>
+                <include name="mappingsmodel_src.jar"/>
+                <include name="mappingsio_src.jar"/>
+            </zipgroupfileset>
+        </jar>
+    </target>
     <target name="jar-workbench" depends="init">
         <echo message="Implementation-Version: ${_VersionStamp}.${_buildNumber}"/>
         <jar jarfile="${libDir}/${workbench.jarfile}">
@@ -648,7 +671,7 @@
         </jar>
     </target>
 
-    <target name="jar-workbench-debug" depends="init">
+    <target name="jar-workbench-debug" depends="init, jar-workbench-src">
         <echo message="Implementation-Version: ${_VersionStamp}.${_buildNumber}"/>
         <jar jarfile="${libDir}/${workbench.debug.jarfile}">
             <manifest>
@@ -669,6 +692,30 @@
                 <include name="platformsplugindebug.jar"/>
                 <include name="mappingsplugindebug.jar"/>
                 <include name="scplugindebug.jar"/>
+            </zipgroupfileset>
+        </jar>
+    </target>
+
+    <target name="jar-workbench-src">
+        <echo message="Implementation-Version: ${_VersionStamp}.${_buildNumber}"/>
+        <jar jarfile="${libDir}/${workbench.src.jarfile}">
+            <manifest>
+                <attribute name="Specification-Title" value="${_productName}" />
+                <attribute name="Specification-Vendor" value="${_VendorString}" />
+                <attribute name="Specification-Version" value="${_VersionStamp}" />
+                <attribute name="Implementation-Title" value="${workbench.manifest.basepackage}" />
+                <attribute name="Implementation-Version" value="${_VersionStamp}.${_buildNumber}" />
+                <attribute name="Implementation-Vendor" value="${_VendorString}" />
+                <attribute name="Release-Designation" value="${_releaseVersion}" />
+                <attribute name="Library-Designation" value="${workbench.manifest.libraryName}" />
+                <attribute name="Main-Class" value="${workbench.manifest.mainclass}" />
+            </manifest>
+            <zipgroupfileset dir="${libDir}">
+                <include name="uitools_src.jar"/>
+                <include name="framework_src.jar"/>
+                <include name="platformsplugin_src.jar"/>
+                <include name="mappingsplugin_src.jar"/>
+                <include name="scplugin_src.jar"/>
             </zipgroupfileset>
         </jar>
     </target>

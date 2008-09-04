@@ -92,6 +92,7 @@
 
         <delete dir="${_classesDestDir}" includeEmptyDirs="true" quiet="true"/>
         <delete file="${_jarDestDir}/${scplugin.jarfile}" quiet="true"/>
+        <delete file="${_jarDestDir}/${scplugin.jarfile.src}" quiet="true"/>
     </target>
 
     <!-- =================================================================== -->
@@ -119,7 +120,7 @@
     <!-- =================================================================== -->
     <target name="jar-scplugin" depends="jar-scplugin-lib, jar-scplugin-src"/>
 
-    <target name="jar-scplugin-lib" if="debug.set" depends="properties-init">
+    <target name="jar-scplugin-lib" depends="properties-init">
         <delete file="${_jarDestDir}/${scplugin.jarfile}"/>
         <jar jarfile="${_jarDestDir}/${scplugin.jarfile}">
             <manifest>
@@ -136,9 +137,9 @@
             />
         </jar>
     </target>
-    <target name="jar-scplugin-src" unless="debug.set" depends="properties-init">
-        <delete file="${_jarDestDir}/${scplugin.jarfile}"/>
-        <jar jarfile="${_jarDestDir}/${scplugin.jarfile}">
+    <target name="jar-scplugin-src" depends="properties-init">
+        <delete file="${_jarDestDir}/${scplugin.jarfile.src}"/>
+        <jar jarfile="${_jarDestDir}/${scplugin.jarfile.src}">
             <manifest>
                 <attribute name="Specification-Title" value="EclipseLink SC Plug-in Tests" />
                 <attribute name="Specification-Vendor" value="Eclipse Project" />
@@ -147,10 +148,6 @@
                 <attribute name="Implementation-Version" value="${_VersionStamp}.${_buildNumber}" />
                 <attribute name="Implementation-Vendor" value="Eclipse Project" />
             </manifest>
-            <fileset
-                dir="${compile.scplugin.destdir}"
-                includes="**/*.class"
-            />
             <fileset
                 dir="${compile.scplugin.srcdir}"
                 includes="**/*.java"

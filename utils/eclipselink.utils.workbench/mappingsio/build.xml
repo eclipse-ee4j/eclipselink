@@ -90,6 +90,7 @@
 
         <delete dir="${_classesDestDir}" includeEmptyDirs="true" quiet="true"/>
         <delete file="${_jarDestDir}/${mappingsio.jarfile}" quiet="true"/>
+        <delete file="${_jarDestDir}/${mappingsio.jarfile.src}" quiet="true"/>
     </target>
 
     <!-- =================================================================== -->
@@ -117,7 +118,7 @@
     <!-- =================================================================== -->
     <target name="jar-mappingsio" depends="jar-mappingsio-lib, jar-mappingsio-src"/>
 
-    <target name="jar-mappingsio-lib" if="debug.set" depends="properties-init">
+    <target name="jar-mappingsio-lib" depends="properties-init">
         <delete file="${_jarDestDir}/${mappingsio.jarfile}"/>
         <jar jarfile="${_jarDestDir}/${mappingsio.jarfile}">
             <manifest>
@@ -136,9 +137,9 @@
             />
         </jar>
     </target>
-    <target name="jar-mappingsio-src" unless="debug.set" depends="properties-init">
-        <delete file="${_jarDestDir}/${mappingsio.jarfile}"/>
-        <jar jarfile="${_jarDestDir}/${mappingsio.jarfile}">
+    <target name="jar-mappingsio-src" depends="properties-init">
+        <delete file="${_jarDestDir}/${mappingsio.jarfile.src}"/>
+        <jar jarfile="${_jarDestDir}/${mappingsio.jarfile.src}">
             <manifest>
                 <attribute name="Specification-Title" value="${_productName}" />
                 <attribute name="Specification-Vendor" value="Eclipse Project" />
@@ -149,10 +150,6 @@
                 <attribute name="Release-Designation" value="${_releaseVersion}" />
                 <attribute name="Library-Designation" value="${_LibraryName} (debug)" />
             </manifest>
-            <fileset
-                dir="${compile.mappingsio.destdir}"
-                includes="**/*.class"
-            />
             <fileset
                 dir="${compile.mappingsio.srcdir}"
                 includes="**/*.java"

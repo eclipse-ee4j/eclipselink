@@ -159,6 +159,7 @@
 
     <target name="clean-workbench-debug" depends="init">
         <delete file="${libDir}/${workbench.debug.jarfile}"/>
+        <delete file="${libDir}/${workbench.jarfile.src}"/>
     </target>
 
 
@@ -320,7 +321,7 @@
         </antcall>
     </target>
 
-    <target name="build-workbench-debug" depends="jar-workbench-debug"/>
+    <target name="build-workbench-debug" depends="jar-workbench-debug, jar-workbench-src"/>
 
 
     <!-- =================================================================== -->
@@ -432,16 +433,39 @@
                 <attribute name="Library-Designation" value="TopLink Workbench Tests (debug)" />
             </manifest>
             <zipgroupfileset dir="${libDir}">
-                <include name="utility_test_g.jar"/>
-                <include name="uitools_test_g.jar"/>
-                <include name="framework_test_g.jar"/>
-                <include name="platformsplugin_test_g.jar"/>
-                <include name="scplugin_test_g.jar"/>
-                <include name="mappingsplugin_test_g.jar"/>
+                <include name="utility_testdebug.jar"/>
+                <include name="uitools_testdebug.jar"/>
+                <include name="framework_testdebug.jar"/>
+                <include name="platformsplugin_testdebug.jar"/>
+                <include name="scplugin_testdebug.jar"/>
+                <include name="mappingsplugin_testdebug.jar"/>
             </zipgroupfileset>
         </jar>
     </target>
 
+    <target name="jar-workbench-src" depends="init">
+        <echo message="Implementation-Version: ${_VersionStamp}.${_buildNumber}"/>
+        <jar jarfile="${libDir}/${workbench.jarfile.src}">
+            <manifest>
+                <attribute name="Specification-Title" value="${_productName}" />
+                <attribute name="Specification-Vendor" value="Eclipse Project" />
+                <attribute name="Specification-Version" value="${_VersionStamp}" />
+                <attribute name="Implementation-Title" value="test.org.eclipse.persistence.workbench" />
+                <attribute name="Implementation-Version" value="${_VersionStamp}.${_buildNumber}" />
+                <attribute name="Implementation-Vendor" value="Eclipse Project" />
+                <attribute name="Release-Designation" value="${_releaseVersion}" />
+                <attribute name="Library-Designation" value="TopLink Workbench Tests (source)" />
+            </manifest>
+            <zipgroupfileset dir="${libDir}">
+                <include name="utility_test_src.jar"/>
+                <include name="uitools_test_src.jar"/>
+                <include name="framework_test_src.jar"/>
+                <include name="platformsplugin_test_src.jar"/>
+                <include name="scplugin_test_src.jar"/>
+                <include name="mappingsplugin_test_src.jar"/>
+            </zipgroupfileset>
+        </jar>
+    </target>
 
     <!-- =================================================================== -->
     <!--  JUnit tests                                                        -->

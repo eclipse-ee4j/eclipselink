@@ -92,6 +92,7 @@
 
         <delete dir="${_classesDestDir}" includeEmptyDirs="true" quiet="true"/>
         <delete file="${_jarDestDir}/${platformsplugin.jarfile}" quiet="true"/>
+        <delete file="${_jarDestDir}/${platformsplugin.jarfile.src}" quiet="true"/>
     </target>
 
     <!-- =================================================================== -->
@@ -119,7 +120,7 @@
     <!-- =================================================================== -->
     <target name="jar-platformsplugin" depends="jar-platformsplugin-lib, jar-platformsplugin-src"/>
 
-    <target name="jar-platformsplugin-lib" if="debug.set" depends="properties-init">
+    <target name="jar-platformsplugin-lib" depends="properties-init">
         <delete file="${_jarDestDir}/${platformsplugin.jarfile}"/>
         <jar jarfile="${_jarDestDir}/${platformsplugin.jarfile}">
             <manifest>
@@ -136,9 +137,9 @@
             />
         </jar>
     </target>
-    <target name="jar-platformsplugin-src" unless="debug.set" depends="properties-init">
-        <delete file="${_jarDestDir}/${platformsplugin.jarfile}"/>
-        <jar jarfile="${_jarDestDir}/${platformsplugin.jarfile}">
+    <target name="jar-platformsplugin-src" depends="properties-init">
+        <delete file="${_jarDestDir}/${platformsplugin.jarfile.src}"/>
+        <jar jarfile="${_jarDestDir}/${platformsplugin.jarfile.src}">
             <manifest>
                 <attribute name="Specification-Title" value="EclipseLink Platforms Plug-in Tests" />
                 <attribute name="Specification-Vendor" value="Eclipse Project" />
@@ -147,10 +148,6 @@
                 <attribute name="Implementation-Version" value="${_VersionStamp}.${_buildNumber}" />
                 <attribute name="Implementation-Vendor" value="Eclipse Project" />
             </manifest>
-            <fileset
-                dir="${compile.platformsplugin.destdir}"
-                includes="**/*.class"
-            />
             <fileset
                 dir="${compile.platformsplugin.srcdir}"
                 includes="**/*.java"

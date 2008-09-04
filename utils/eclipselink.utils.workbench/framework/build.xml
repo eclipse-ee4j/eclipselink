@@ -91,6 +91,7 @@
 
         <delete dir="${_classesDestDir}" includeEmptyDirs="true" quiet="true"/>
         <delete file="${_jarDestDir}/${framework.jarfile}" quiet="true"/>
+        <delete file="${_jarDestDir}/${framework.jarfile.src}" quiet="true"/>
     </target>
 
     <!-- =================================================================== -->
@@ -119,7 +120,7 @@
     <!-- =================================================================== -->
     <target name="jar-framework" depends="jar-framework-lib, jar-framework-src"/>
 
-    <target name="jar-framework-lib" if="debug.set" depends="properties-init">
+    <target name="jar-framework-lib" depends="properties-init">
         <delete file="${_jarDestDir}/${framework.jarfile}"/>
         <jar jarfile="${_jarDestDir}/${framework.jarfile}">
             <manifest>
@@ -138,9 +139,9 @@
             />
         </jar>
     </target>
-    <target name="jar-framework-src" unless="debug.set" depends="properties-init">
-        <delete file="${_jarDestDir}/${framework.jarfile}"/>
-        <jar jarfile="${_jarDestDir}/${framework.jarfile}">
+    <target name="jar-framework-src" depends="properties-init">
+        <delete file="${_jarDestDir}/${framework.jarfile.src}"/>
+        <jar jarfile="${_jarDestDir}/${framework.jarfile.src}">
             <manifest>
                 <attribute name="Specification-Title" value="${_productName}" />
                 <attribute name="Specification-Vendor" value="Eclipse Project" />
@@ -151,10 +152,6 @@
                 <attribute name="Release-Designation" value="${_releaseVersion}" />
                 <attribute name="Library-Designation" value="${_LibraryName} (debug)" />
             </manifest>
-            <fileset
-                dir="${compile.framework.destdir}"
-                includes="**/*.class"
-            />
             <fileset
                 dir="${compile.framework.srcdir}"
                 includes="**/*.java"

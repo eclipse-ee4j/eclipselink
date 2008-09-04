@@ -91,6 +91,7 @@
 
         <delete dir="${_classesDestDir}" includeEmptyDirs="true" quiet="true"/>
         <delete file="${_jarDestDir}/${uitools.jarfile}" quiet="true"/>
+        <delete file="${_jarDestDir}/${uitools.jarfile.src}" quiet="true"/>
     </target>
 
     <!-- =================================================================== -->
@@ -119,7 +120,7 @@
     <!-- =================================================================== -->
     <target name="jar-uitools" depends="jar-uitools-lib, jar-uitools-src"/>
 
-    <target name="jar-uitools-lib" if="debug.set" depends="properties-init">
+    <target name="jar-uitools-lib" depends="properties-init">
         <delete file="${_jarDestDir}/${uitools.jarfile}"/>
         <jar jarfile="${_jarDestDir}/${uitools.jarfile}">
             <manifest>
@@ -138,9 +139,9 @@
             />
         </jar>
     </target>
-    <target name="jar-uitools-src" unless="debug.set" depends="properties-init">
-        <delete file="${_jarDestDir}/${uitools.jarfile}"/>
-        <jar jarfile="${_jarDestDir}/${uitools.jarfile}">
+    <target name="jar-uitools-src" depends="properties-init">
+        <delete file="${_jarDestDir}/${uitools.jarfile.src}"/>
+        <jar jarfile="${_jarDestDir}/${uitools.jarfile.src}">
             <manifest>
                 <attribute name="Specification-Title" value="${_productName}" />
                 <attribute name="Specification-Vendor" value="Eclipse Project" />
@@ -151,10 +152,6 @@
                 <attribute name="Release-Designation" value="${_releaseVersion}" />
                 <attribute name="Library-Designation" value="${_LibraryName} (debug)" />
             </manifest>
-            <fileset
-                dir="${compile.uitools.destdir}"
-                includes="**/*.class"
-            />
             <fileset
                 dir="${compile.uitools.srcdir}"
                 includes="**/*.java"

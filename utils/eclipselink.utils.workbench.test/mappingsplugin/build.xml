@@ -92,6 +92,7 @@
 
         <delete dir="${_classesDestDir}" includeEmptyDirs="true" quiet="true"/>
         <delete file="${_jarDestDir}/${mappingsplugin.jarfile}" quiet="true"/>
+        <delete file="${_jarDestDir}/${mappingsplugin.jarfile.src}" quiet="true"/>
     </target>
 
     <!-- =================================================================== -->
@@ -119,7 +120,7 @@
     <!-- =================================================================== -->
     <target name="jar-mappingsplugin" depends="jar-mappingsplugin-lib, jar-mappingsplugin-src"/>
 
-    <target name="jar-mappingsplugin-lib" if="debug.set" depends="properties-init">
+    <target name="jar-mappingsplugin-lib" depends="properties-init">
         <delete file="${_jarDestDir}/${mappingsplugin.jarfile}"/>
         <jar jarfile="${_jarDestDir}/${mappingsplugin.jarfile}">
             <manifest>
@@ -136,9 +137,9 @@
             />
         </jar>
     </target>
-    <target name="jar-mappingsplugin-src" unless="debug.set" depends="properties-init">
-        <delete file="${_jarDestDir}/${mappingsplugin.jarfile}"/>
-        <jar jarfile="${_jarDestDir}/${mappingsplugin.jarfile}">
+    <target name="jar-mappingsplugin-src" depends="properties-init">
+        <delete file="${_jarDestDir}/${mappingsplugin.jarfile.src}"/>
+        <jar jarfile="${_jarDestDir}/${mappingsplugin.jarfile.src}">
             <manifest>
                 <attribute name="Specification-Title" value="EclipseLink Mappings Plug-in Tests" />
                 <attribute name="Specification-Vendor" value="Eclipse Project" />
@@ -147,10 +148,6 @@
                 <attribute name="Implementation-Version" value="${_VersionStamp}.${_buildNumber}" />
                 <attribute name="Implementation-Vendor" value="Eclipse Project" />
             </manifest>
-            <fileset
-                dir="${compile.mappingsplugin.destdir}"
-                includes="**/*.class"
-            />
             <fileset
                 dir="${compile.mappingsplugin.srcdir}"
                 includes="**/*.java"

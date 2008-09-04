@@ -92,6 +92,7 @@
 
         <delete dir="${_classesDestDir}" includeEmptyDirs="true" quiet="true"/>
         <delete file="${_jarDestDir}/${mappingsplugin.jarfile}" quiet="true"/>
+        <delete file="${_jarDestDir}/${mappingsplugin.jarfile.src}" quiet="true"/>
     </target>
 
     <!-- =================================================================== -->
@@ -120,7 +121,7 @@
     <!-- =================================================================== -->
     <target name="jar-mappingsplugin" depends="jar-mappingsplugin-lib, jar-mappingsplugin-src"/>
 
-    <target name="jar-mappingsplugin-lib" if="debug.set" depends="properties-init">
+    <target name="jar-mappingsplugin-lib" depends="properties-init">
         <delete file="${_jarDestDir}/${mappingsplugin.jarfile}"/>
         <jar jarfile="${_jarDestDir}/${mappingsplugin.jarfile}">
             <manifest>
@@ -139,9 +140,9 @@
             />
         </jar>
     </target>
-    <target name="jar-mappingsplugin-src" unless="debug.set" depends="properties-init">
-        <delete file="${_jarDestDir}/${mappingsplugin.jarfile}"/>
-        <jar jarfile="${_jarDestDir}/${mappingsplugin.jarfile}">
+    <target name="jar-mappingsplugin-src" depends="properties-init">
+        <delete file="${_jarDestDir}/${mappingsplugin.jarfile.src}"/>
+        <jar jarfile="${_jarDestDir}/${mappingsplugin.jarfile.src}">
             <manifest>
                 <attribute name="Specification-Title" value="${_productName}" />
                 <attribute name="Specification-Vendor" value="Eclipse Project" />
@@ -152,10 +153,6 @@
                 <attribute name="Release-Designation" value="${_releaseVersion}" />
                 <attribute name="Library-Designation" value="${_LibraryName} (debug)" />
             </manifest>
-            <fileset
-                dir="${compile.mappingsplugin.destdir}"
-                includes="**/*.class"
-            />
             <fileset
                 dir="${compile.mappingsplugin.srcdir}"
                 includes="**/*.java"
