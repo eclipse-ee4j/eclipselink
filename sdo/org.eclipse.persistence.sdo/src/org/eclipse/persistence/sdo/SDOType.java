@@ -28,9 +28,12 @@ import org.eclipse.persistence.sdo.helper.SDOTypeHelper;
 import org.eclipse.persistence.sdo.helper.SDOXMLHelper;
 import org.eclipse.persistence.sdo.helper.SDOXSDHelper;
 import org.eclipse.persistence.sdo.helper.extension.SDOUtil;
+import org.eclipse.persistence.descriptors.InheritancePolicy;
 import org.eclipse.persistence.exceptions.SDOException;
 import org.eclipse.persistence.internal.descriptors.Namespace;
 import org.eclipse.persistence.internal.helper.Helper;
+import org.eclipse.persistence.internal.oxm.InheritanceNodeValue;
+import org.eclipse.persistence.internal.oxm.TreeObjectBuilder;
 import org.eclipse.persistence.logging.AbstractSessionLog;
 import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.oxm.NamespaceResolver;
@@ -634,7 +637,7 @@ public class SDOType implements Type, Serializable {
      * @param xdesc
      * @param pCls
      */
-    private void addClassIndicator(XMLDescriptor xdesc, Class pCls) {
+    private void addClassIndicator(XMLDescriptor xdesc, Class pCls, boolean isInheritanceRoot) {
         XMLField field = (XMLField)getXmlDescriptor().buildField("@xsi:type");
         xdesc.getInheritancePolicy().setClassIndicatorField(field);
 
@@ -644,7 +647,16 @@ public class SDOType implements Type, Serializable {
             parentIndicator = parentPrefix + SDOConstants.SDO_XPATH_NS_SEPARATOR_FRAGMENT + parentIndicator;
         }
         xdesc.getInheritancePolicy().addClassIndicator(pCls, parentIndicator);
-
+        
+        // In some cases such as defining types via DataObject API (not by schema) we need 
+        // to add an inheritance node value to TreeObjectBuilder in order to have the class
+        // indicator (xsi:type) written out
+        if (isInheritanceRoot) {
+            InheritanceNodeValue inheritanceNodeValue = new InheritanceNodeValue();
+            inheritanceNodeValue.setInheritancePolicy(xdesc.getInheritancePolicy());
+            ((TreeObjectBuilder)xmlDescriptor.getObjectBuilder()).addChild(field.getXPathFragment(), inheritanceNodeValue, xmlDescriptor.getNamespaceResolver());
+        }
+        
         // only add the @sdoRef attribute if necessary
         if (xdesc.getMappingForAttributeName(SDO_REF_MAPPING_ATTRIBUTE_NAME) == null) {
             String sdoPrefix = ((SDOTypeHelper)aHelperContext.getTypeHelper()).getPrefix(SDOConstants.SDO_URL);
@@ -663,12 +675,12 @@ public class SDOType implements Type, Serializable {
     public void setupInheritance(SDOType parentType) {
         if (parentType == null) {
             // root of inheritance
-            addClassIndicator(getXmlDescriptor(), getImplClass());
+            addClassIndicator(getXmlDescriptor(), getImplClass(), true);
         } else {
             if ((parentType.getURI() != null) && (!parentType.getURI().equals(SDOConstants.SDO_URL))) {
                 // set parent descriptor indicator if necessary
                 if (!parentType.getXmlDescriptor().hasInheritance()) {
-                    addClassIndicator(parentType.getXmlDescriptor(), parentType.getImplClass());
+                    addClassIndicator(parentType.getXmlDescriptor(), parentType.getImplClass(), false);
                 }
 
                 XMLDescriptor parentDescriptor = (XMLDescriptor)parentType.getXmlDescriptor().getInheritancePolicy().getRootParentDescriptor();
