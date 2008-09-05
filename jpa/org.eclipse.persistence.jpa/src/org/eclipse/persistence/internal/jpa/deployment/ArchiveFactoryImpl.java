@@ -58,7 +58,17 @@ public class ArchiveFactoryImpl {
         if ("file".equals(protocol)) {
             URI uri = Helper.toURI(url);
             
-            File f = new File(uri);
+            File f;
+            try {
+                // Attempt to create the file with the uri. The pre-conditions
+                // are checked in the constructor and an exception is thrown
+                // if the uri does not meet them.
+                f = new File(uri);
+            } catch (IllegalArgumentException e) {
+                // Invalid uri for File. Go our back up route of using the 
+                // path from the url.
+                f = new File(url.getPath());
+            }
         
             if (f.isDirectory()) {
                 // e.g. file:/tmp/a_ear/ejb_jar
