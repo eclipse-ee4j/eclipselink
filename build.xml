@@ -93,7 +93,7 @@
     <target name="build-all" depends="build-core, build-workbench, build-test, build-extension"/>
 
     <!-- Builds and packages all jars, javadoc, and builds installer. -->
-    <target name="build-distribution" depends="package-eclipselink-jar, build-eclipselink-bundles, package-src-jar, package-jpa-tst-src-jar, package-packagerenamer-jar, package-util-dbws-jar, build-workbench, package-javadoc-zip, package-installer-zip"/>
+    <target name="build-distribution" depends="package-eclipselink-jar, build-eclipselink-bundles, package-src-jar, package-tst-src-jar, package-packagerenamer-jar, package-util-dbws-jar, build-workbench, package-javadoc-zip, package-installer-zip"/>
 
     <!-- Compiles all components and tests (excluding workbench). -->
     <target name="build-core-all" depends="build-core, build-core-test, build-extension"/>
@@ -395,8 +395,8 @@
     </target>
 
     <!-- Packages the eclipselink JPA testing source jar. -->
-    <target name="package-jpa-tst-src-jar" description="build EclipseLink JPA testing source jar">
-        <zip zipfile="${eclipselink.jpa.tst.src.prefix}${eclipselink.zip.suffix}">
+    <target name="package-tst-src-jar" description="build EclipseLink JPA and SDO testing source jar">
+        <zip zipfile="${eclipselink.tst.src.prefix}${eclipselink.zip.suffix}">
             <fileset dir="${eclipselink.core.test}/${src.dir}">
                 <include name="org\eclipse\persistence\testing\framework\**\*.java"/>
             </fileset>
@@ -416,6 +416,16 @@
                 dir="${eclipselink.jpa.test}/${resource.dir}"
                 includes="**"
                 prefix="resource"
+            />
+            <zipfileset
+                dir="${eclipselink.sdo.test}/${src.dir}"
+                includes="**"
+                prefix="sdo"
+            />
+            <zipfileset
+                dir="${eclipselink.sdo.test}/${resource.dir}"
+                includes="**"
+                prefix="sdo/resource"
             />
         </zip>
     </target>
