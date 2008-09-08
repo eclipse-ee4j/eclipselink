@@ -15,6 +15,7 @@ package org.eclipse.persistence.internal.sessions;
 import java.util.*;
 import java.io.*;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
+import org.eclipse.persistence.internal.identitymaps.CacheKey;
 
 /**
  * <p>
@@ -519,6 +520,10 @@ public class UnitOfWorkChangeSet implements Serializable, org.eclipse.persistenc
      * Assumes the transaction in in post commit stage.
      */
     public void putNewObjectInChangesList(ObjectChangeSet objectChangeSet, AbstractSession session) {
+        // Must reset the cache key for new objects assigned in insert.
+        if (objectChangeSet.getCacheKey() == null) {
+            objectChangeSet.setCacheKey(new CacheKey(session.getDescriptor(objectChangeSet.getUnitOfWorkClone().getClass()).getObjectBuilder().extractPrimaryKeyFromObject(objectChangeSet.getUnitOfWorkClone(), session, false)));
+        }
         this.addObjectChangeSet(objectChangeSet, session, false);
         removeObjectChangeSetFromNewList(objectChangeSet, session);
     }
