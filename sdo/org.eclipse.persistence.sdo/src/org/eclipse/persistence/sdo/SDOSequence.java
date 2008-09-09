@@ -399,8 +399,8 @@ public class SDOSequence implements Sequence {
         if (property.isMany()) {
             List listValue = dataObject.getList(property);
             int valueIndex = listValue.indexOf(oldValue);
-            listValue.remove(valueIndex);
-            listValue.add(valueIndex, value);
+            ((ListWrapper)listValue).remove(oldValue, property.isContainment(), false);
+            ((ListWrapper)listValue).add(valueIndex, value, false);
             setting.setValue(value, false);
         } else {
             if (dataObject.isSet(property)) {

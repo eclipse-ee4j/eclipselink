@@ -15,6 +15,7 @@ package org.eclipse.persistence.sdo.helper;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
+
 import org.eclipse.persistence.sdo.SDOConstants;
 import org.eclipse.persistence.sdo.SDODataObject;
 import org.eclipse.persistence.exceptions.ConversionException;
@@ -22,6 +23,7 @@ import org.eclipse.persistence.exceptions.SDOException;
 import org.eclipse.persistence.internal.oxm.XMLConversionManager;
 import commonj.sdo.DataObject;
 import commonj.sdo.Property;
+import commonj.sdo.Sequence;
 import commonj.sdo.helper.DataHelper;
 import commonj.sdo.impl.HelperProvider;
 
@@ -246,7 +248,13 @@ public class XPathEngine {
             if (convertValue) {
             	value =  DataHelper.INSTANCE.convert(lastProperty.getType(), value);
             }
-            objects.set(numInLastProperty, value);
+            
+            Sequence seq = lastDataObject.getSequence();
+            if (seq != null) {
+                seq.setValue(numInLastProperty, value);
+            } else {
+                objects.set(numInLastProperty, value);
+            }
         }
     }
 
