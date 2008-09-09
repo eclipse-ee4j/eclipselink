@@ -29,7 +29,6 @@
   default="test"
   basedir="."
   >
-
   <condition property="is.java.version.16">
       <equals arg1="${ant.java.version}" arg2="1.6"/>
   </condition>
@@ -45,8 +44,17 @@
   <property
     file="${user.home}/build.properties"
   />
+  <!-- properties checked into SVN -->
+  <property
+    file="${basedir}/build.properties"
+  />
+  <!-- local testing properties overrides -->
   <property
     file="${user.home}/test.properties"
+  />
+  <!-- testing properties checked into SVN -->
+  <property
+    file="${basedir}/test.properties"
   />
   <!-- find out where this build.xml file is -->
   <dirname
@@ -86,12 +94,13 @@
   <presetdef name="javac">
     <javac
       debug="${javac.debug}"
+      debuglevel="${javac.debuglevel}"
       optimize="${javac.optimize}"
       source="${javac.version}"
       deprecation="${javac.deprecation}"
       failonerror="true"
+      includes="**/*.java"
       memoryMaximumSize="512m"
-      fork="true"
     />
   </presetdef>
   <presetdef
@@ -224,6 +233,7 @@
     <attribute name="package-name"/>
     <sequential>
       <javac
+        fork="true"
         srcdir="${src.dir}"
         destdir="${classes.dir}"
         includes="dbws/testing/@{package-name}/@{testsuite-name}TestSuite.java"
@@ -239,6 +249,30 @@
           <pathelement path="${classes.dir}"/>
           <pathelement path="${eclipselink.utils.dbws.test}/${eclipselink.utils.dbws.common.jlib}"/>
         </classpath>
+        <sysproperty
+          key="eclipselink.logging.level"
+          value="${logging.level}"
+        />
+        <sysproperty
+          key="db.driver"
+          value="${db.driver}"
+        />
+        <sysproperty
+          key="db.url"
+          value="${db.url}"
+        />
+        <sysproperty
+          key="db.user"
+          value="${db.user}"
+        />
+        <sysproperty
+          key="db.pwd"
+          value="${db.pwd}"
+        />
+        <sysproperty
+          key="db.platform"
+          value="${db.platform}"
+        />
         <arg line="@{package-name}"/>
       </java>
     </sequential>
@@ -376,18 +410,5 @@
     <SetupCompileRunTeardown testsuite-name="InlineBinary"/>
     <SetupCompileRunTeardown testsuite-name="SimpleSP"/>
     <SetupCompileRunTeardown testsuite-name="SimpleTable"/>
-    <!-- clean up -->
-    <DeleteFileQuietly>
-      <fileset
-        dir="${basedir}"
-        >
-        <include
-          name="**/TEST*.xml"
-        />
-        <include
-          name="*.jar"
-        />
-      </fileset>
-    </DeleteFileQuietly>
   </target>
 </project>
