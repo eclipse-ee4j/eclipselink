@@ -12,9 +12,8 @@
  ******************************************************************************/  
 package org.eclipse.persistence.mappings;
 
-import java.util.Enumeration;
 import java.util.Hashtable;
-import java.util.Iterator;
+import java.util.List;
 import java.util.Vector;
 
 import org.eclipse.persistence.exceptions.ConversionException;
@@ -25,6 +24,7 @@ import org.eclipse.persistence.expressions.Expression;
 import org.eclipse.persistence.expressions.ExpressionBuilder;
 import org.eclipse.persistence.internal.descriptors.CascadeLockingPolicy;
 import org.eclipse.persistence.internal.expressions.SQLUpdateStatement;
+import org.eclipse.persistence.internal.helper.ConversionManager;
 import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.identitymaps.CacheKey;
 import org.eclipse.persistence.internal.queries.ContainerPolicy;
@@ -111,15 +111,17 @@ public class UnidirectionalOneToManyMapping extends OneToManyMapping {
      * Used for batch reading, most following same order and fields as in the mapping.
      */
     protected Vector extractPrimaryKeyFromRow(AbstractRecord row, AbstractSession session) {
-        Vector key = new Vector(getSourceKeyFields().size());
+        int size = sourceKeyFields.size();
+        Vector key = new Vector(size);
+        ConversionManager conversionManager = session.getDatasourcePlatform().getConversionManager();
 
-        for (Enumeration fieldEnum = getSourceKeyFields().elements(); fieldEnum.hasMoreElements();) {
-            DatabaseField field = (DatabaseField)fieldEnum.nextElement();
+        for (int index=0; index < size; index++) {
+            DatabaseField field = sourceKeyFields.get(index);
             Object value = row.get(field);
 
             // Must ensure the classification gets a cache hit.
             try {
-                value = session.getDatasourcePlatform().getConversionManager().convertObject(value, getDescriptor().getObjectBuilder().getFieldClassification(field));
+                value = conversionManager.convertObject(value, field.getType());
             } catch (ConversionException e) {
                 throw ConversionException.couldNotBeConverted(this, getDescriptor(), e);
             }
@@ -136,16 +138,18 @@ public class UnidirectionalOneToManyMapping extends OneToManyMapping {
      * Used for batch reading, most following same order and fields as in the mapping.
      */
     protected Vector extractSourceKeyFromRow(AbstractRecord row, AbstractSession session) {
-        Vector key = new Vector(getSourceKeyFields().size());
+        int size = sourceKeyFields.size();
+        Vector key = new Vector(size);
+        ConversionManager conversionManager = session.getDatasourcePlatform().getConversionManager();
 
-        for (int index = 0; index < getSourceKeyFields().size(); index++) {
-            DatabaseField targetField = getTargetForeignKeyFields().elementAt(index);
-            DatabaseField sourceField = getSourceKeyFields().elementAt(index);
+        for (int index = 0; index < size; index++) {
+            DatabaseField targetField = targetForeignKeyFields.get(index);
+            DatabaseField sourceField = sourceKeyFields.get(index);
             Object value = row.get(targetField);
 
             // Must ensure the classification gets a cache hit.
             try {
-                value = session.getDatasourcePlatform().getConversionManager().convertObject(value, getDescriptor().getObjectBuilder().getFieldClassification(sourceField));
+                value = conversionManager.convertObject(value, sourceField.getType());
             } catch (ConversionException e) {
                 throw ConversionException.couldNotBeConverted(this, getDescriptor(), e);
             }
@@ -163,24 +167,23 @@ public class UnidirectionalOneToManyMapping extends OneToManyMapping {
     public Object extractResultFromBatchQuery(DatabaseQuery query, AbstractRecord databaseRow, AbstractSession session, AbstractRecord argumentRow) {
         //this can be null, because either one exists in the query or it will be created
         Hashtable referenceObjectsByKey = null;
-        ContainerPolicy mappingContainerPolicy = getContainerPolicy();
         synchronized (query) {
             referenceObjectsByKey = getBatchReadObjects(query, session);
-            mappingContainerPolicy = getContainerPolicy();
             if (referenceObjectsByKey == null) {
                 ReadAllQuery batchQuery = (ReadAllQuery)query;
                 ComplexQueryResult complexResult = (ComplexQueryResult)session.executeQuery(batchQuery, argumentRow);
-                Object results = complexResult.getResult();
+                // Batch query created in ForeignReferenceMapping.prepareNestedBatchQuery without specifying container policy - uses ListContainerPolicy by default.
+                List results = (List)complexResult.getResult();
                 referenceObjectsByKey = new Hashtable();
-                Enumeration rowsEnum = ((Vector)complexResult.getData()).elements();
-                ContainerPolicy queryContainerPolicy = batchQuery.getContainerPolicy();
-                for (Object elementsIterator = queryContainerPolicy.iteratorFor(results); queryContainerPolicy.hasNext(elementsIterator);) {
-                    Object eachReferenceObject = queryContainerPolicy.next(elementsIterator, session);
-                    CacheKey eachReferenceKey = new CacheKey(extractSourceKeyFromRow((AbstractRecord)rowsEnum.nextElement(), session));
+                List rows = (List)complexResult.getData();
+                int size = results.size();
+                for (int index = 0; index < size; index++) {
+                    Object eachReferenceObject = results.get(index);
+                    CacheKey eachReferenceKey = new CacheKey(extractSourceKeyFromRow((AbstractRecord)rows.get(index), session));
                     if (!referenceObjectsByKey.containsKey(eachReferenceKey)) {
-                        referenceObjectsByKey.put(eachReferenceKey, mappingContainerPolicy.containerInstance());
+                        referenceObjectsByKey.put(eachReferenceKey, containerPolicy.containerInstance());
                     }
-                    mappingContainerPolicy.addInto(eachReferenceObject, referenceObjectsByKey.get(eachReferenceKey), session);
+                    containerPolicy.addInto(eachReferenceObject, referenceObjectsByKey.get(eachReferenceKey), session);
                 }
                 setBatchReadObjects(referenceObjectsByKey, query, session);
             }
@@ -189,7 +192,7 @@ public class UnidirectionalOneToManyMapping extends OneToManyMapping {
 
         // The source object might not have any target objects
         if (result == null) {
-            return mappingContainerPolicy.containerInstance();
+            return containerPolicy.containerInstance();
         } else {
             return result;
         }
@@ -229,17 +232,18 @@ public class UnidirectionalOneToManyMapping extends OneToManyMapping {
         Expression whereClause = null;
         Expression builder = new ExpressionBuilder();
 
-        Iterator<DatabaseField> itTargetPrimaryKey = getReferenceDescriptor().getPrimaryKeyFields().iterator();
-        while (itTargetPrimaryKey.hasNext()) {
-            DatabaseField targetPrimaryKey = itTargetPrimaryKey.next();
+        List<DatabaseField> targetPrimaryKeyFields = getReferenceDescriptor().getPrimaryKeyFields();
+        int size = targetPrimaryKeyFields.size();
+        for (int index = 0; index < size; index++) {
+            DatabaseField targetPrimaryKey = targetPrimaryKeyFields.get(index);
             Expression expression = builder.getField(targetPrimaryKey).equal(builder.getParameter(targetPrimaryKey));
             whereClause = expression.and(whereClause);
         }
 
         AbstractRecord modifyRow = new DatabaseRecord();
-        Iterator<DatabaseField> itTargetForeignKey = getTargetForeignKeyFields().iterator();
-        while (itTargetForeignKey.hasNext()) {
-            DatabaseField targetForeignKey = itTargetForeignKey.next();
+        size = targetForeignKeyFields.size();
+        for (int index = 0; index < size; index++) {
+            DatabaseField targetForeignKey = targetForeignKeyFields.get(index);
             modifyRow.put(targetForeignKey, null);
         }
 
@@ -266,17 +270,18 @@ public class UnidirectionalOneToManyMapping extends OneToManyMapping {
         Expression whereClause = null;
         Expression builder = new ExpressionBuilder();
 
-        Iterator<DatabaseField> itTargetPrimaryKey = getReferenceDescriptor().getPrimaryKeyFields().iterator();
-        while (itTargetPrimaryKey.hasNext()) {
-            DatabaseField targetPrimaryKey = itTargetPrimaryKey.next();
+        List<DatabaseField> targetPrimaryKeyFields = getReferenceDescriptor().getPrimaryKeyFields();
+        int size = targetPrimaryKeyFields.size();
+        for (int index = 0; index < size; index++) {
+            DatabaseField targetPrimaryKey = targetPrimaryKeyFields.get(index);
             Expression expression = builder.getField(targetPrimaryKey).equal(builder.getParameter(targetPrimaryKey));
             whereClause = expression.and(whereClause);
         }
 
         AbstractRecord modifyRow = new DatabaseRecord();
-        Iterator<DatabaseField> itTargetForeignKey = getTargetForeignKeyFields().iterator();
-        while (itTargetForeignKey.hasNext()) {
-            DatabaseField targetForeignKey = itTargetForeignKey.next();
+        size = targetForeignKeyFields.size();
+        for (int index = 0; index < size; index++) {
+            DatabaseField targetForeignKey = targetForeignKeyFields.get(index);
             modifyRow.put(targetForeignKey, builder.value(null));
             Expression expression = builder.getField(targetForeignKey).equal(builder.getParameter(targetForeignKey));
             whereClause = expression.and(whereClause);
@@ -306,9 +311,9 @@ public class UnidirectionalOneToManyMapping extends OneToManyMapping {
         Expression builder = new ExpressionBuilder();
 
         AbstractRecord modifyRow = new DatabaseRecord();
-        Iterator<DatabaseField> itTargetForeignKey = getTargetForeignKeyFields().iterator();
-        while (itTargetForeignKey.hasNext()) {
-            DatabaseField targetForeignKey = itTargetForeignKey.next();
+        int size = targetForeignKeyFields.size();
+        for (int index = 0; index < size; index++) {
+            DatabaseField targetForeignKey = targetForeignKeyFields.get(index);
             modifyRow.put(targetForeignKey, builder.value(null));
             Expression expression = builder.getField(targetForeignKey).equal(builder.getParameter(targetForeignKey));
             whereClause = expression.and(whereClause);
@@ -439,9 +444,9 @@ public class UnidirectionalOneToManyMapping extends OneToManyMapping {
     protected void postPrepareNestedBatchQuery(ReadQuery batchQuery, ReadAllQuery query) {
         ReadAllQuery mappingBatchQuery = (ReadAllQuery)batchQuery;
         mappingBatchQuery.setShouldIncludeData(true);
-        Iterator<DatabaseField> itTargetForeignKey = getTargetForeignKeyFields().iterator();
-        while (itTargetForeignKey.hasNext()) {
-            mappingBatchQuery.addAdditionalField(itTargetForeignKey.next());
+        int size = targetForeignKeyFields.size();
+        for(int i=0; i < size; i++) {
+            mappingBatchQuery.addAdditionalField(targetForeignKeyFields.get(i));
         }        
     }
     
@@ -477,9 +482,9 @@ public class UnidirectionalOneToManyMapping extends OneToManyMapping {
      */
     protected void prepareTranslationRow(AbstractRecord translationRow, Object object, AbstractSession session) {
         // Make sure that each source key field is in the translation row.
-        for (Enumeration sourceFieldsEnum = getSourceKeyFields().elements();
-                 sourceFieldsEnum.hasMoreElements();) {
-            DatabaseField sourceKey = (DatabaseField)sourceFieldsEnum.nextElement();
+        int size = sourceKeyFields.size();
+        for(int i=0; i < size; i++) {
+            DatabaseField sourceKey = sourceKeyFields.get(i);
             if (!translationRow.containsKey(sourceKey)) {
                 Object value = getDescriptor().getObjectBuilder().extractValueFromObjectForField(object, sourceKey, session);
                 translationRow.put(sourceKey, value);
@@ -563,19 +568,21 @@ public class UnidirectionalOneToManyMapping extends OneToManyMapping {
         AbstractRecord databaseRow = new DatabaseRecord();
 
         // Extract primary key and value from the source.
-        for (int index = 0; index < getSourceKeyFields().size(); index++) {
-            DatabaseField sourceKey = getSourceKeyFields().elementAt(index);
-            DatabaseField targetForeignKey = getTargetForeignKeyFields().elementAt(index);
+        int size = sourceKeyFields.size();
+        for (int index = 0; index < size; index++) {
+            DatabaseField sourceKey = sourceKeyFields.get(index);
+            DatabaseField targetForeignKey = targetForeignKeyFields.get(index);
             Object sourceKeyValue = query.getTranslationRow().get(sourceKey);
             databaseRow.put(targetForeignKey, sourceKeyValue);
         }
 
         // Extract target field and its value. Construct insert statement and execute it
+        List<DatabaseField> targetPrimaryKeyFields = getReferenceDescriptor().getPrimaryKeyFields();
+        size = targetPrimaryKeyFields.size();
         for (Object iter = cp.iteratorFor(objects); cp.hasNext(iter);) {
             Object object = cp.next(iter, query.getSession());
-            Iterator<DatabaseField> itTargetPrimaryKey = getReferenceDescriptor().getPrimaryKeyFields().iterator();
-            while (itTargetPrimaryKey.hasNext()) {
-                DatabaseField targetPrimaryKey = itTargetPrimaryKey.next();
+            for(int index = 0; index < size; index++) {
+                DatabaseField targetPrimaryKey = targetPrimaryKeyFields.get(index);
                 Object targetKeyValue = getReferenceDescriptor().getObjectBuilder().extractValueFromObjectForField(object, targetPrimaryKey, query.getSession());
                 databaseRow.put(targetPrimaryKey, targetKeyValue);
             }
@@ -601,17 +608,19 @@ public class UnidirectionalOneToManyMapping extends OneToManyMapping {
         AbstractRecord databaseRow = new DatabaseRecord();
 
         // Extract primary key and value from the source.
-        for (int index = 0; index < getSourceKeyFields().size(); index++) {
-            DatabaseField sourceKey = getSourceKeyFields().elementAt(index);
-            DatabaseField targetForeignKey = getTargetForeignKeyFields().elementAt(index);
+        int size = sourceKeyFields.size();
+        for (int index = 0; index < size; index++) {
+            DatabaseField sourceKey = sourceKeyFields.get(index);
+            DatabaseField targetForeignKey = targetForeignKeyFields.get(index);
             Object sourceKeyValue = query.getTranslationRow().get(sourceKey);
             databaseRow.put(targetForeignKey, sourceKeyValue);
         }
 
         // Extract target field and its value. Construct insert statement and execute it
-        Iterator<DatabaseField> itTargetPrimaryKey = getReferenceDescriptor().getPrimaryKeyFields().iterator();
-        while (itTargetPrimaryKey.hasNext()) {
-            DatabaseField targetPrimaryKey = itTargetPrimaryKey.next();
+        List<DatabaseField> targetPrimaryKeyFields = getReferenceDescriptor().getPrimaryKeyFields();
+        size = targetPrimaryKeyFields.size();
+        for (int index = 0; index < size; index++) {
+            DatabaseField targetPrimaryKey = targetPrimaryKeyFields.get(index);
             Object targetKeyValue = getReferenceDescriptor().getObjectBuilder().extractValueFromObjectForField(objectAdded, targetPrimaryKey, query.getSession());
             databaseRow.put(targetPrimaryKey, targetKeyValue);
         }
@@ -636,17 +645,19 @@ public class UnidirectionalOneToManyMapping extends OneToManyMapping {
         AbstractRecord databaseRow = new DatabaseRecord();
 
         // Extract primary key and value from the source.
-        for (int index = 0; index < getSourceKeyFields().size(); index++) {
-            DatabaseField sourceKey = getSourceKeyFields().elementAt(index);
-            DatabaseField targetForeignKey = getTargetForeignKeyFields().elementAt(index);
+        int size = sourceKeyFields.size();
+        for (int index = 0; index < size; index++) {
+            DatabaseField sourceKey = sourceKeyFields.get(index);
+            DatabaseField targetForeignKey = targetForeignKeyFields.get(index);
             Object sourceKeyValue = query.getTranslationRow().get(sourceKey);
             databaseRow.put(targetForeignKey, sourceKeyValue);
         }
 
         // Extract target field and its value. Construct insert statement and execute it
-        Iterator<DatabaseField> itTargetPrimaryKey = getReferenceDescriptor().getPrimaryKeyFields().iterator();
-        while (itTargetPrimaryKey.hasNext()) {
-            DatabaseField targetPrimaryKey = itTargetPrimaryKey.next();
+        List<DatabaseField> targetPrimaryKeyFields = getReferenceDescriptor().getPrimaryKeyFields();
+        size = targetPrimaryKeyFields.size();
+        for (int index = 0; index < size; index++) {
+            DatabaseField targetPrimaryKey = targetPrimaryKeyFields.get(index);
             Object targetKeyValue = getReferenceDescriptor().getObjectBuilder().extractValueFromObjectForField(objectRemoved, targetPrimaryKey, query.getSession());
             databaseRow.put(targetPrimaryKey, targetKeyValue);
         }
@@ -670,9 +681,10 @@ public class UnidirectionalOneToManyMapping extends OneToManyMapping {
         AbstractRecord databaseRow = new DatabaseRecord();
 
         // Extract primary key and value from the source.
-        for (int index = 0; index < getSourceKeyFields().size(); index++) {
-            DatabaseField sourceKey = getSourceKeyFields().elementAt(index);
-            DatabaseField targetForeignKey = getTargetForeignKeyFields().elementAt(index);
+        int size = sourceKeyFields.size();
+        for (int index = 0; index < size; index++) {
+            DatabaseField sourceKey = sourceKeyFields.get(index);
+            DatabaseField targetForeignKey = targetForeignKeyFields.get(index);
             Object sourceKeyValue = query.getTranslationRow().get(sourceKey);
             databaseRow.put(targetForeignKey, sourceKeyValue);
         }
