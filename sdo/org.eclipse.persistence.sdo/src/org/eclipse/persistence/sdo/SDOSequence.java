@@ -397,10 +397,10 @@ public class SDOSequence implements Sequence {
         Object oldValue = setting.getValue();
 
         if (property.isMany()) {
-            List listValue = dataObject.getList(property);
+            ListWrapper listValue = (ListWrapper) dataObject.getList(property);
             int valueIndex = listValue.indexOf(oldValue);
-            ((ListWrapper)listValue).remove(oldValue, property.isContainment(), false);
-            ((ListWrapper)listValue).add(valueIndex, value, false);
+            listValue.remove(oldValue, property.isContainment(), false);
+            listValue.add(valueIndex, value, false);
             setting.setValue(value, false);
         } else {
             if (dataObject.isSet(property)) {
