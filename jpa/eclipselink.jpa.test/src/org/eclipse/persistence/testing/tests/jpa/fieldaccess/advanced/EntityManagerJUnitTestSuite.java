@@ -1682,10 +1682,9 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         
         // make sure no Employee with the specified firstName exists.
         EntityManager em = createEntityManager("fieldaccess");
-        Query deleteQuery = em.createQuery("DELETE FROM Employee e WHERE e.firstName = '"+firstName+"'");        
         beginTransaction(em);
         try{
-            deleteQuery.executeUpdate();
+            em.createQuery("DELETE FROM Employee e WHERE e.firstName = '"+firstName+"'").executeUpdate();
             commitTransaction(em);
         }catch (RuntimeException ex){
             if (isTransactionActive(em)){
@@ -1785,7 +1784,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         // clean up
         beginTransaction(em);
         try{
-            deleteQuery.executeUpdate();
+            em.createQuery("DELETE FROM Employee e WHERE e.firstName = '"+firstName+"'").executeUpdate();
             commitTransaction(em);
         }catch (RuntimeException ex){
             if (isTransactionActive(em)){
@@ -1814,12 +1813,11 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         empWithoutAddress.setLastName("WithoutAddress");
 
         EntityManager em = createEntityManager("fieldaccess");
-        Query deleteQuery = em.createQuery("DELETE FROM Employee e WHERE e.firstName = '"+firstName+"'");
 
         // make sure no Employee with the specified firstName exists.
         beginTransaction(em);
         try{
-            deleteQuery.executeUpdate();
+            em.createQuery("DELETE FROM Employee e WHERE e.firstName = '"+firstName+"'").executeUpdate();
             commitTransaction(em);
         }catch (RuntimeException ex){
             if (isTransactionActive(em)){
@@ -1899,7 +1897,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
 
         // clean up
         beginTransaction(em);
-        deleteQuery.executeUpdate();
+        em.createQuery("DELETE FROM Employee e WHERE e.firstName = '"+firstName+"'").executeUpdate();
         commitTransaction(em);
     }
     
