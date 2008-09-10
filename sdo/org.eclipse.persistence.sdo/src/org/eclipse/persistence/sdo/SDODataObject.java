@@ -1751,7 +1751,7 @@ public class SDODataObject implements DataObject, SequencedObject {
          */
 
         // dont store an original sequence if there are already is one in the map
-        if (isLogging() && (!((SDOChangeSummary)getChangeSummary()).isDirty(this))) {
+        if (isLogging() && (!((SDOChangeSummary)getChangeSummary()).isDirty(this)) && (!((SDOChangeSummary)getChangeSummary()).isCreated(this))) {
             // dont copy containers of many props
             // TODO: Do not shallowcopy child nodes
             // original valuestore becomes current one (from null)                              
