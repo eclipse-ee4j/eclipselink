@@ -76,7 +76,11 @@ import org.eclipse.persistence.testing.framework.junit.JUnitTestCaseHelper;
 import org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced.*;
 
 /**
- * Test the EntityManager API using the advanced model.
+ * This test suite is identical to EntityManagerJUnitTestSuite
+ * but excluding the 2 failed tests - testPrimaryKeyUpdatePKFK() and testPrimaryKeyUpdate() -
+ * as described in bug 232564(WLS issue). 
+ * It is intended to be included in Oracle ASKERNAL_SRG only.
+ * Once the bug is fixed, it can be removed.
  */
 public class EntityManagerUTPJUnitTestSuite extends JUnitTestCase {
         
