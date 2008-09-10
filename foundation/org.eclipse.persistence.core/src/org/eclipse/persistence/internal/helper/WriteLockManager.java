@@ -284,7 +284,9 @@ public class WriteLockManager {
                                     //thread is entering the wait queue for the first time
                                     //set the QueueNode to be the node from the linked list for quick removal upon 
                                     //acquiring all locks
-                                    mergeManager.setQueueNode(this.prevailingQueue.addLast(mergeManager));
+                                    synchronized(this.prevailingQueue) {
+                                        mergeManager.setQueueNode(this.prevailingQueue.addLast(mergeManager));
+                                    }
                                 }
 
                                 //set the cache key on the merge manager for the object that could not be acquired
@@ -328,7 +330,9 @@ public class WriteLockManager {
         } finally {
             if (mergeManager.getWriteLockQueued() != null) {
                 //the merge manager entered the wait queue and must be cleaned up
-                this.prevailingQueue.remove(mergeManager.getQueueNode());
+                synchronized(this.prevailingQueue) {
+                    this.prevailingQueue.remove(mergeManager.getQueueNode());
+                }
                 mergeManager.setWriteLockQueued(null);
             }
         }
