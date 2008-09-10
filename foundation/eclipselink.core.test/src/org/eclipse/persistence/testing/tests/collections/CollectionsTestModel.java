@@ -62,6 +62,8 @@ public class CollectionsTestModel extends TestModel {
         PopulationManager manager = PopulationManager.getDefaultManager();
         suite.addTest(new CollectionInsertObjectTest(CollectionInsertObjectTest
                                                      .buildInstanceToInsert()));
+        suite.addTest(new CollectionInsertDetectionTest());
+        
         return suite;
     }
 

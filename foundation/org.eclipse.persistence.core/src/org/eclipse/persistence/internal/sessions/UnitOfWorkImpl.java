@@ -1541,7 +1541,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
         // This define an inner class for process the iteration operation, don't be scared, its just an inner class.
         DescriptorIterator iterator = new DescriptorIterator() {
             public void iterate(Object object) {
-                // If the object is read-only the do not continue the traversal.
+                // If the object is read-only then do not continue the traversal.
                 if (isClassReadOnly(object.getClass(), this.getCurrentDescriptor())) {
                     this.setShouldBreak(true);
                     return;
@@ -1553,7 +1553,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
                 if (isSmartMerge() && isOriginalNewObject(object)) {
                     return;
                 } else if (!isObjectRegistered(object)) {// Don't need to check for aggregates, as iterator does not iterate on them by default.
-                    if ((shouldPerformNoValidation()) && (!shouldValidateExistence() || checkForUnregisteredExistingObject(object))) {
+                    if ( shouldPerformNoValidation() && checkForUnregisteredExistingObject(object) ) {
                         // If no validation is performed and the object exists we need
                         // To keep a record of this object to ignore it, also I need to
                         // Stop iterating over it.
@@ -4702,7 +4702,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
      * ensures that objects from the parent cache are not refered in the unit of work cache.
      * The level of validation can be increased or decreased for debugging purposes or under
      * advanced situation where the application requires/desires to violate clone identity in the unit of work.
-     * It is strongly suggested that clone identity not be violate in the unit of work.
+     * It is strongly suggested that clone identity not be violated in the unit of work.
      */
     public boolean shouldPerformNoValidation() {
         return getValidationLevel() == None;
