@@ -65,7 +65,7 @@
         <isset property="build_id"/>
     </condition>
     <property name="build_number" value="SNAPSHOT"/>
-    <property name="build_number_string" value="-${build_date}"/>
+    <property name="build_number_string" value="${build_number}-${build_date}"/>
 
     <!-- usually, installer_id will already be set when we get here-->
     <property name="installer_id" value="${build_date}"/>
@@ -399,7 +399,7 @@
 
     <!-- Generates the Javadocs for all public EclipseLink classes. -->
     <target name="build-javadocs">
-        <property name="javadoc.title" value="${javadoc.prefixTitle}${release.version} ${javadoc.postfixTitle}"/>
+        <property name="javadoc.title" value="${javadoc.prefixTitle}${release.version} ${build_number_string} ${javadoc.postfixTitle}"/>
         <javadoc
             maxmemory="384m"
             Verbose="false"
