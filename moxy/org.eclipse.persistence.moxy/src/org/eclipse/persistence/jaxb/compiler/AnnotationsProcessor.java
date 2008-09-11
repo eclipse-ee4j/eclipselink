@@ -341,7 +341,7 @@ public class AnnotationsProcessor {
         for (Iterator<JavaField> fieldIt = cls.getDeclaredFields().iterator(); fieldIt.hasNext(); ) {
             JavaField nextField = fieldIt.next();
             if (!helper.isAnnotationPresent(nextField, XmlTransient.class)) {
-                if ((Modifier.isPublic(nextField.getModifiers()) && onlyPublic) || !onlyPublic) {
+                if (!Modifier.isStatic(nextField.getModifiers()) && (Modifier.isPublic(nextField.getModifiers()) && onlyPublic) || !onlyPublic) {
                 	Property property = null;
                     if(helper.isAnnotationPresent((JavaHasAnnotations)nextField, XmlElements.class)) {
                         property = new ChoiceProperty(helper);
@@ -491,7 +491,7 @@ public class AnnotationsProcessor {
         ArrayList<JavaMethod> getMethods = new ArrayList<JavaMethod>();
         for (JavaMethod next : new ArrayList<JavaMethod>(cls.getDeclaredMethods())) {
             if ((next.getName().startsWith("get") && next.getName().length() > 3) || ((areEquals((JavaClass) next.getReturnType(), Boolean.class) || areEquals((JavaClass) next.getReturnType(), boolean.class)) && (next.getName().startsWith("is") && next.getName().length() > 2))) {
-                if ((onlyPublic && Modifier.isPublic(next.getModifiers())) || !onlyPublic) {
+                if (!Modifier.isStatic(next.getModifiers()) && ((onlyPublic && Modifier.isPublic(next.getModifiers())) || !onlyPublic)) {
                     getMethods.add(next);                    
                 }
             }

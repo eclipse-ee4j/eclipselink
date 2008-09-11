@@ -17,6 +17,9 @@ import javax.xml.bind.annotation.*;
 @XmlRootElement(name="employee-data")
 public class Employee 
 {
+    
+    public static final int uid = 1234567;
+    
 	@XmlAttribute(name="id")
 	public int id;
 
