@@ -1602,6 +1602,8 @@ public class ExpressionTestSuite extends TestSuite {
         // ET. The test doesn't work with DB2 jcc driver(Bug 4563813)
         //addAdvancedDB2ExpressionFunctionTest();
         addInCollectionTest();
+        // Bug 247076 - LiteralExpression does not print SQL in statement 
+        addTest(new LiteralExpressionTest());
     }
 
     //SRG test set is maintained by QA only, do NOT add any new tests into it.

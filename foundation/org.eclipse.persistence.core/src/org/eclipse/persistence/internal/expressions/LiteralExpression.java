@@ -9,12 +9,14 @@
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
+ *     dminsky - added writeFields API overriding behavior from Expression
  ******************************************************************************/  
 package org.eclipse.persistence.internal.expressions;
 
 import java.io.*;
 import java.util.*;
 import org.eclipse.persistence.expressions.*;
+import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 
@@ -22,6 +24,7 @@ import org.eclipse.persistence.internal.sessions.AbstractSession;
  * Used for wrapping literal values.
  */
 public class LiteralExpression extends Expression {
+
     protected String value;
     protected Expression localBase;
 
@@ -159,4 +162,21 @@ public class LiteralExpression extends Expression {
     public void writeDescriptionOn(BufferedWriter writer) throws IOException {
         writer.write(getValue().toString());
     }
+
+    /**
+     * INTERNAL:
+     * Append the literal value into the printer, accounting for the first element
+     */
+    public void writeFields(ExpressionSQLPrinter printer, Vector newFields, SQLSelectStatement statement) {
+        // print ", " before each selected field except the first one
+        if (printer.isFirstElementPrinted()) {
+            printer.printString(", ");
+        } else {
+            printer.setIsFirstElementPrinted(true);
+        }
+
+        newFields.addElement(new DatabaseField(getValue()));
+        printSQL(printer);
+    }
+    
 }
