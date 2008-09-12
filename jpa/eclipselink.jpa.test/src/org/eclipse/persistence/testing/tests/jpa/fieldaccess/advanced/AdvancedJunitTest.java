@@ -231,8 +231,8 @@ public class AdvancedJunitTest extends JUnitTestCase {
         try {
             Parent p0 = new Parent(false);
             em1.persist(p0);
-            id = p0.getId();
             em1.flush();
+            id = p0.getId();
 
             Parent p1 = em1.find(Parent.class, id);
             p1.setSerialNumber("12345678");
