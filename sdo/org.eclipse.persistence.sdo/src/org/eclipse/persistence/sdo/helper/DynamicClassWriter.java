@@ -47,7 +47,7 @@ public class DynamicClassWriter {
     }
 
     private void initializeParentClass() {
-        if ((type.getBaseTypes() != null) && (type.getBaseTypes().size() > 0)) {
+        if (type.isSubType()) {
             SDOType parentSDOType = (SDOType)type.getBaseTypes().get(0);
             String parentClassName = parentSDOType.getInstanceClassName() + SDOConstants.SDO_IMPL_NAME;
             try {

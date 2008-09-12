@@ -184,7 +184,7 @@ public class SDOType implements Type, Serializable {
 
     public SDOProperty getProperty(String propertyName) {
         SDOProperty queriedProperty = (SDOProperty)getDeclaredPropertiesMap().get(propertyName);
-        if (null == queriedProperty) {
+        if (null == queriedProperty && isSubType()) {
             for (int i = 0; i < getBaseTypes().size(); i++) {
                 queriedProperty = ((SDOType)getBaseTypes().get(i)).getProperty(propertyName);
                 if (queriedProperty != null) {
@@ -216,6 +216,14 @@ public class SDOType implements Type, Serializable {
             baseTypes = new ArrayList();
         }
         return baseTypes;
+    }
+
+    /**
+     * INTERNAL:
+     * Provide a means to determine if this type has base types without causing the base types property to be initialized.
+     */
+    public boolean isSubType() {
+        return !(null == baseTypes || baseTypes.isEmpty());
     }
 
     public List getDeclaredProperties() {
@@ -268,9 +276,8 @@ public class SDOType implements Type, Serializable {
         if (open != bOpen) {
             open = bOpen;
             if (open) {
-                List baseTypes = getBaseTypes();
-                if ((baseTypes != null) && !baseTypes.isEmpty()) {
-                    Type baseType = (Type)baseTypes.get(0);
+                if (isSubType()) {
+                    Type baseType = (Type)getBaseTypes().get(0);
                     if (!baseType.isOpen()) {
                         addOpenMappings();
                     }
@@ -721,7 +728,7 @@ public class SDOType implements Type, Serializable {
         // now setup inheritance for any subtypes
         for (int i = 0; i < subTypes.size(); i++) {
             SDOType nextSubType = (SDOType)subTypes.get(i);
-            if (!nextSubType.isDataType() && (nextSubType.getBaseTypes() != null) && (nextSubType.getBaseTypes().size() > 0)) {
+            if (!nextSubType.isDataType() && nextSubType.isSubType()) {
                 nextSubType.setupInheritance(this);
             }
         }
@@ -800,7 +807,7 @@ public class SDOType implements Type, Serializable {
             nextProp.buildMapping(nextURI, nextProp.getIndexInType());
         }
         // set @sdoRef attribute mapping for complex types that are not involved in inheritance
-        if (!isDataType() && getBaseTypes().size() == 0 && getSubTypes().size() == 0) {
+        if (!isDataType() && !isSubType() && getSubTypes().size() == 0) {
             String sdoPrefix = ((SDOTypeHelper)aHelperContext.getTypeHelper()).getPrefix(SDOConstants.SDO_URL);
             XMLDirectMapping sdoRefMapping = new XMLDirectMapping();
             sdoRefMapping.setAttributeName(SDO_REF_MAPPING_ATTRIBUTE_NAME);

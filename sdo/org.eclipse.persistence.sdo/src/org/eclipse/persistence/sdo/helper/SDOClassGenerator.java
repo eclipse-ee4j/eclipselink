@@ -288,7 +288,7 @@ public class SDOClassGenerator {
 
         String implExtends = null;
         String interfaceExtends = null;
-        if ((sdoType.getBaseTypes() != null) && (sdoType.getBaseTypes().size() > 0)) {
+        if (sdoType.isSubType()) {
             SDOType baseType = ((SDOType)sdoType.getBaseTypes().get(0));
             if (!baseType.isDataType()) {
                 interfaceExtends = baseType.getInstanceClassName();
@@ -403,7 +403,7 @@ public class SDOClassGenerator {
         int declPropsSize = sdoType.getDeclaredProperties().size();
         attrBuffer.append(indent).append("public static final int START_PROPERTY_INDEX = ");
 
-        if (sdoType.getBaseTypes().size() > 0) {
+        if (sdoType.isSubType()) {
             String baseClassName = ((SDOType)sdoType.getBaseTypes().get(0)).getImplClassName();
             attrBuffer.append(baseClassName).append(".END_PROPERTY_INDEX");
             if (declPropsSize > 0) {
