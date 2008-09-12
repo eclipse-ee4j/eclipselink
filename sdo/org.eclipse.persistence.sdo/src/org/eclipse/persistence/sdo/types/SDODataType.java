@@ -37,7 +37,7 @@ public class SDODataType extends SDOType implements Type {
         this.pseudoDefault = aPseudoDefault;
     }
 
-	public boolean isAbstract() {
+    public boolean isAbstract() {
         return false;
     }
 
