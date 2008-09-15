@@ -21,9 +21,9 @@ public class SDODataType extends SDOType implements Type {
 
     private Object pseudoDefault;
 
-	public SDODataType(String aUri, String aName, SDOTypeHelper sdoTypeHelper) {
+    public SDODataType(String aUri, String aName, SDOTypeHelper sdoTypeHelper) {
         super(aUri, aName, sdoTypeHelper);
-	}
+    }
 
     public SDODataType(String aUri, String aName, Class aClass, SDOTypeHelper sdoTypeHelper) {
         this(aUri, aName, sdoTypeHelper);
