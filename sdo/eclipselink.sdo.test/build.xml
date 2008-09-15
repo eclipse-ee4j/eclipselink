@@ -22,6 +22,7 @@
 *
 * Contributors:
 *     bdoughan - initial API and implementation
+*     dtwelves - Sept 2008 Include SDO SRG testing
 #******************************************************************************/-->
 <project name="SDO Testing" default="test" basedir=".">
     <property file="${user.home}/build.properties"/>
@@ -105,6 +106,12 @@
         <!--run_sdo_tests customcontext="false" runpathref="${sdo.run.path.against.jar}"/-->
         <delete dir="${eclipselink.sdo.test}/${resource.dir}/${tmp.dir}"/>
     </target>
+    <target name="test-srg-against-jar" depends="compile-sdo-tests-against-jar" description="run sdo srg tests against eclipselink.jar">
+        <mkdir dir="${eclipselink.sdo.test}/${resource.dir}/${tmp.dir}"/>
+        <run_sdo_srg_tests customcontext="true" runpathref="sdo.run.path.against.jar"/>
+        <delete dir="${eclipselink.sdo.test}/${resource.dir}/${tmp.dir}"/>
+    </target>
+
 
     <!-- Test run macros -->
     <macrodef name="run_sdo_tests">
@@ -130,6 +137,7 @@
                     <fileset dir="${eclipselink.sdo.test}/${src.dir}">
                         <include name="**/*TestSuite.java"/>
                         <exclude name="org/eclipse/persistence/testing/sdo/SDOTestSuite.java"/>
+                        <exclude name="org/eclipse/persistence/testing/sdo/SDOSRGTestSuite.java"/>
                         <exclude name="org/eclipse/persistence/testing/sdo/helper/SDOHelperTestSuite.java"/>
                         <exclude name="org/eclipse/persistence/testing/sdo/helper/xmlhelper/SDOXMLHelperTestSuite.java"/>
                         <exclude name="org/eclipse/persistence/testing/sdo/helper/typehelper/define/SDOTypeHelperDefineTestSuite.java"/>
@@ -150,6 +158,52 @@
                 <report format="noframes" todir="${eclipselink.sdo.test}/${report.dir}/@{customcontext}"/>
             </junitreport>
             <!-- Clean up generated files -->
+			<clean_up_generated_files/>
+        </sequential>
+    </macrodef>
+
+    <!-- Test run macros -->
+    <macrodef name="run_sdo_srg_tests">
+        <attribute name="customcontext"/>
+        <attribute name="runpathref"/>
+        <sequential>
+            <delete dir="${eclipselink.sdo.test}/${report.dir}/srg/@{customcontext}"/>
+            <mkdir dir="${eclipselink.sdo.test}/${report.dir}/srg/@{customcontext}"/>
+            <echo message="customContext=@{customcontext}"/>
+			<junit printsummary="withOutAndErr" fork="yes" dir="${eclipselink.sdo.test}/${resource.dir}" maxmemory="512m" showoutput="yes">
+                <jvmarg value="-XX:MaxPermSize=256m"/>
+                <sysproperty key="loggingLevelFinest" value="false"/>
+                <sysproperty key="customContext" value="@{customcontext}"/>
+                <sysproperty key="eclipselink.xml.platform" value="${xml.platform}"/>
+                <sysproperty key="tempFileDir" value="${tmp.dir}"/>
+                <sysproperty key="ignoreCRLF" value="true"/>
+                <sysproperty key="useLogging" value="false"/>
+                <sysproperty key="sdo.classgen.compile.path" value="${sdo.classgen.run.path}"/>
+                <sysproperty key="useSAXParsing" value="true"/>
+                <sysproperty key="useDeploymentXML" value="false"/>
+                <sysproperty key="jaxb.test.contextpath" value="oracle.toplink.testing.ox.jaxb.sax"/>
+                <batchtest todir="${eclipselink.sdo.test}/${report.dir}/srg/@{customcontext}">
+                    <fileset dir="${eclipselink.sdo.test}/${src.dir}">
+                        <include name="org/eclipse/persistence/testing/sdo/SDOSRGTestSuite.java"/>
+                    </fileset>
+                    <formatter type="xml"/>
+                </batchtest>
+                <classpath refid="@{runpathref}"/>
+            </junit>
+            <!-- Create JUnit report -->
+            <junitreport todir="${eclipselink.sdo.test}/${report.dir}/srg/@{customcontext}">
+                <fileset dir="${eclipselink.sdo.test}/${report.dir}/srg/@{customcontext}">
+                    <include name="**/*.xml"/>
+                </fileset>
+                <report format="noframes" todir="${eclipselink.sdo.test}/${report.dir}/srg/@{customcontext}"/>
+            </junitreport>
+			<!-- Clean up generated files -->
+			<clean_up_generated_files/>
+        </sequential>
+    </macrodef>
+
+    <macrodef name="clean_up_generated_files">
+        <sequential>
             <delete dir="${eclipselink.sdo.test}/${resource.dir}/baseTypes"/>
             <delete dir="${eclipselink.sdo.test}/${resource.dir}/complextypes"/>
             <delete dir="${eclipselink.sdo.test}/${resource.dir}/elements"/>
@@ -164,7 +218,7 @@
             <delete dir="${eclipselink.sdo.test}/${resource.dir}/srcPO"/>
             <delete dir="${eclipselink.sdo.test}/${resource.dir}/srcPOAnnotations"/>
             <delete dir="${eclipselink.sdo.test}/${resource.dir}/union"/>
-        </sequential>
+		</sequential>
     </macrodef>
 
     <!-- Compile macros -->

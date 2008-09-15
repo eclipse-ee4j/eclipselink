@@ -24,6 +24,7 @@
 *     tware  - initial API and implementation
 *     pkrogh - javadocs
 *     egwin  - rework to follow ant conventions.
+*     dtwelves - Add SDO, MOXy SRG targets
 #******************************************************************************/-->
 <!-- This ant project includes the following tasks:
         - all (default) : compiles all components and tests (excluding Oracle extensions)
@@ -46,9 +47,11 @@
         - test-core-srg : runs core SRG
         - test-jpa : runs JPA tests
         - test-moxy : runs MOXY tests
+        - test-moxy-srg : runs MOXY SRG 
         - test-jaxb : runs MOXY jaxb tests
         - test-oxm : runs MOXY oxm tests
         - test-sdo : runs SDO tests
+        - test-sdo-srg : runs SDO SRG
 
         It may require some configuration of the build.properties to run.
     -->
@@ -604,10 +607,16 @@
     <target name="test-sdo" description="run the sdo tests">
         <ant antfile="${eclipselink.sdo.test}/build.xml" target="test-against-jar"/>
     </target>
-    <target name="test-moxy" description="run the moxy tests">
+    <target name="test-sdo-srg" description="run the sdo srg tests">
+        <ant antfile="${eclipselink.sdo.test}/build.xml" target="test-srg-against-jar"/>
+    </target>
+	<target name="test-moxy" description="run the moxy tests">
         <ant antfile="${eclipselink.moxy.test}/build.xml" target="test-against-jar"/>
     </target>
-    <target name="test-oxm" description="run the moxy (oxm) tests">
+	<target name="test-moxy-srg" description="run the moxy srg tests">
+        <ant antfile="${eclipselink.moxy.test}/build.xml" target="test-srg-against-jar"/>
+    </target>
+	<target name="test-oxm" description="run the moxy (oxm) tests">
         <ant antfile="${eclipselink.moxy.test}/build.xml" target="test-oxm-against-jar"/>
     </target>
     <target name="test-jaxb" description="run the moxy (jaxb) tests">

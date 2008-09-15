@@ -23,6 +23,7 @@
 *
 * Contributors:
 *     bdoughan - initial API and implementation
+*     dtwelves - Sept 2008 add in MOXy SRG testing
 #******************************************************************************/-->
 
 <project name="EclipseLink MOXy Testing" default="test">
@@ -106,7 +107,8 @@
     <target name="test-tl-deploymentxml" depends="clean-oxm-reports, compile-and-run-oxm-deploymentxml-tl-tests, update-deploymentxml-tl-package, oxm-junit-report" description="build and run moxy (oxm) tl deployment xml tests and generate junit report"/>
     <!-- The following tests build and run against eclipselink.jar -->
     <target name="test-against-jar" depends="clean-reports, compile-and-run-tests-against-jar, update-package-names, moxy-junit-report" description="run moxy tests against eclipselink.jar and generate junit report"/>
-    <target name="test-jaxb-against-jar" depends="clean-jaxb-reports, compile-and-run-jaxb-tests-against-jar, jaxb-junit-report" description="build and run moxy (jaxb) tests against eclipselink.jar and generate junit report"/>
+    <target name="test-srg-against-jar" depends="compile-and-run-srg-tests-against-jar, moxy-srg-junit-report" description="run moxy srg tests against eclipselink.jar and generate junit report"/>
+	<target name="test-jaxb-against-jar" depends="clean-jaxb-reports, compile-and-run-jaxb-tests-against-jar, jaxb-junit-report" description="build and run moxy (jaxb) tests against eclipselink.jar and generate junit report"/>
     <target name="test-oxm-against-jar" depends="clean-oxm-reports, compile-and-run-oxm-tests-against-jar, update-package-names, oxm-junit-report" description="build and run moxy (oxm) tests against eclipselink.jar and generate junit report"/>
 
     <!-- Build targets -->
@@ -151,7 +153,11 @@
         <run_oxm_deploymentxml_tests runpathref="oxm.run.path.against.jar"/>
         <run_oxm_docpres_tests runpathref="oxm.run.path.against.jar"/>
     </target>
-    <target name="compile-and-run-jaxb-tests-against-jar" depends="compile-tests-against-jar" description="build and run moxy (oxm) tests against eclipselink.jar">
+    <target name="compile-and-run-srg-tests-against-jar" depends="compile-tests-against-jar" description="build and run moxy srg tests against eclipselink.jar">
+        <run_jaxb_srg_tests runpathref="jaxb.run.path.against.jar"/>
+        <run_oxm_srg_tests runpathref="oxm.run.path.against.jar"/>
+    </target>
+	<target name="compile-and-run-jaxb-tests-against-jar" depends="compile-tests-against-jar" description="build and run moxy (oxm) tests against eclipselink.jar">
         <run_jaxb_tests runpathref="jaxb.run.path.against.jar"/>
     </target>
     <target name="compile-and-run-oxm-tests-against-jar" depends="compile-tests-against-jar" description="build and run moxy (oxm) tests against eclipselink.jar">
@@ -213,7 +219,24 @@
         </junitreport>
     </target>
 
-    <!-- Clean targets -->
+
+    <target name="moxy-srg-junit-report" description="create moxy srg junit report">
+        <junitreport todir="${eclipselink.moxy.test}/${report.dir}/srg">
+            <fileset dir="${eclipselink.moxy.test}/${report.dir}/srg">
+                <include name="**/*.xml"/>
+            </fileset>
+            <report format="noframes" todir="${eclipselink.moxy.test}/${report.dir}/srg"/>
+        </junitreport>
+        <delete includeEmptyDirs="true" failonerror="false">
+            <fileset dir="${eclipselink.moxy.test}/${resource.dir}/${tmp.dir}"/>
+            <fileset dir="${eclipselink.moxy.test}/${resource.dir}">
+                <include name="File*.xml"/>
+            </fileset>
+        </delete>
+    </target>
+
+
+	<!-- Clean targets -->
     <target name="clean-reports" depends="clean-oxm-reports, clean-jaxb-reports" description="clean moxy junit report directory">
         <delete dir="${eclipselink.moxy.test}/${report.dir}/jaxb" includeEmptyDirs="true" failonerror="false"/>
         <delete dir="${eclipselink.moxy.test}/${report.dir}/oxm" includeEmptyDirs="true" failonerror="false"/>
@@ -257,6 +280,55 @@
                 </batchtest>
                 <classpath>
                     <path refid="@{runpathref}"/>
+                </classpath>
+            </junit>
+        </sequential>
+    </macrodef>
+    <macrodef name="run_jaxb_srg_tests">
+        <attribute name="runpathref"/>
+        <sequential>
+            <delete dir="${eclipselink.moxy.test}/${report.dir}/srg/jaxb" includeEmptyDirs="true" failonerror="false"/>
+			<mkdir dir="${eclipselink.moxy.test}/${report.dir}/srg/jaxb"/>
+            <mkdir dir="${eclipselink.moxy.test}/${resource.dir}/${tmp.dir}"/>
+            <junit printsummary="yes" fork="true" dir="${eclipselink.moxy.test}/${resource.dir}" showoutput="yes">
+                <env key="T_WORK" value="${tmp.dir}"/>
+                <sysproperty key="platformType" value="SAX"/>
+                <sysproperty key="metadataType" value="JAVA"/>
+                <sysproperty key="useLogging" value="false"/>
+                <sysproperty key="eclipselink.xml.platform" value="${xml.platform}"/>
+                <sysproperty key="parser" value="${parser}"/>
+                <syspropertyset refid="parser.properties"/>
+                <batchtest todir="${eclipselink.moxy.test}/${report.dir}/srg/jaxb">
+                    <fileset dir="${eclipselink.moxy.test}/${src.dir}">
+                        <include name="org/eclipse/persistence/testing/jaxb/JAXBSRGTestSuite.java"/>
+                    </fileset>
+                    <formatter type="xml"/>
+                </batchtest>
+                <classpath>
+                    <path refid="@{runpathref}"/>
+                </classpath>
+            </junit>
+        </sequential>
+    </macrodef>
+	<macrodef name="run_oxm_srg_tests">
+        <attribute name="runpathref"/>
+        <sequential>
+            <delete dir="${eclipselink.moxy.test}/${report.dir}/srg/oxm" includeEmptyDirs="true" failonerror="false"/>
+			<mkdir dir="${eclipselink.moxy.test}/${report.dir}/srg/oxm"/>
+			<mkdir dir="${eclipselink.moxy.test}/${report.dir}/srg/oxm/default"/>
+            <junit printsummary="yes" fork="true" dir="${eclipselink.moxy.test}/${resource.dir}" showoutput="yes" maxmemory="512m">
+                <sysproperty key="useLogging" value="false"/>
+                <sysproperty key="eclipselink.xml.platform" value="${xml.platform}"/>
+                <sysproperty key="parser" value="${parser}"/>
+                <syspropertyset refid="parser.properties"/>
+                <batchtest todir="${eclipselink.moxy.test}/${report.dir}/srg/oxm/default">
+                    <fileset dir="${eclipselink.moxy.test}/${src.dir}">
+                        <include name="org/eclipse/persistence/testing/oxm/OXMSRGTestSuite.java"/>
+                    </fileset>
+                    <formatter type="xml"/>
+                </batchtest>
+                <classpath>
+                  <path refid="@{runpathref}"/>
                 </classpath>
             </junit>
         </sequential>
@@ -314,7 +386,8 @@
                         <include name="**/ClassLoaderTestCases.java"/>
                         <include name="**/MappingClassLoaderTestCases.java"/>
                         <exclude name="**/OXTestSuite.java"/>
-                        <exclude name="**/DeploymentXMLOXTestSuite.java"/>
+                        <exclude name="**/OXMSRGTestSuite.java"/>
+						<exclude name="**/DeploymentXMLOXTestSuite.java"/>
                         <exclude name="org/eclipse/persistence/testing/jaxb/**/*.java"/>
                         <exclude name="org/eclipse/persistence/testing/oxm/mappings/MappingTestSuite.java"/>
                         <exclude name="org/eclipse/persistence/testing/oxm/mappings/DeploymentXMLMappingTestSuite.java"/>
@@ -441,6 +514,7 @@
                         <include name="**/MappingClassLoaderTestCases.java"/>
                         <exclude name="**/ReadOnlyTestSuite.java"/>
                         <exclude name="**/OXTestSuite.java"/>
+                        <exclude name="**/OXMSRGTestSuite.java"/>
                         <exclude name="**/OneTo*TestSuite.java"/>
                         <exclude name="**/DeploymentXMLOXTestSuite.java"/>
                         <exclude name="org/eclipse/persistence/testing/jaxb/**/*.java"/>
