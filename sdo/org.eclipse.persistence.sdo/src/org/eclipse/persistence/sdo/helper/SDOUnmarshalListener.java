@@ -17,6 +17,7 @@ import commonj.sdo.Property;
 import commonj.sdo.Sequence;
 import commonj.sdo.helper.HelperContext;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import org.eclipse.persistence.sdo.SDOChangeSummary;
 import org.eclipse.persistence.sdo.SDOConstants;
@@ -301,6 +302,22 @@ public class SDOUnmarshalListener extends SDOCSUnmarshalListener {
                 nextCS.setModifiedDoms(null);
                 //clear deleted xpaths list
                 nextCS.setDeletedXPaths(null);
+
+                Iterator created = nextCS.getCreated().iterator();
+                while(created.hasNext()) {
+                    SDODataObject next = (SDODataObject)created.next();
+                    Property containmentProperty = next.getContainmentProperty();
+                    if(containmentProperty != null && containmentProperty.isMany()) {
+                        SDODataObject container = (SDODataObject)next.getContainer();
+                        ListWrapper list = (ListWrapper)container.get(containmentProperty);
+                        if(!(nextCS.getOriginalElements().containsKey(list))) {
+                            //if there was an object created as part of a list, and that list is not
+                            //already in the original elements map. Add an empty list to the map.
+                            nextCS.getOriginalElements().put(list, new ArrayList());
+                        }
+                    }
+                }
+                
             }
             // reset changeSummary list - we are done with it
             initialize();
