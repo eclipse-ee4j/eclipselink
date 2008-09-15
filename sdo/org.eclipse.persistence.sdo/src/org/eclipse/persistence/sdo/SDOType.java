@@ -28,7 +28,6 @@ import org.eclipse.persistence.sdo.helper.SDOTypeHelper;
 import org.eclipse.persistence.sdo.helper.SDOXMLHelper;
 import org.eclipse.persistence.sdo.helper.SDOXSDHelper;
 import org.eclipse.persistence.sdo.helper.extension.SDOUtil;
-import org.eclipse.persistence.descriptors.InheritancePolicy;
 import org.eclipse.persistence.exceptions.SDOException;
 import org.eclipse.persistence.internal.descriptors.Namespace;
 import org.eclipse.persistence.internal.helper.Helper;
@@ -124,6 +123,10 @@ public class SDOType implements Type, Serializable {
 
     public QName getQName() {
         return qName;
+    }
+
+    public void setQName(QName qName) {
+        this.qName = qName;
     }
 
     public String getName() {

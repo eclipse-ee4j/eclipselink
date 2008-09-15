@@ -852,9 +852,12 @@ public class SDOSchemaGenerator {
     }
 
     private String getPrefixStringForURI(String uri) {
+        if(null == uri || SDOConstants.EMPTY_STRING.equals(uri)) {
+            return SDOConstants.EMPTY_STRING;
+        }
         String prefix = getPrefixForURI(uri);
         if (prefix == null) {
-            return "";
+            return SDOConstants.EMPTY_STRING;
         } else {
             return prefix + ":";
         }
