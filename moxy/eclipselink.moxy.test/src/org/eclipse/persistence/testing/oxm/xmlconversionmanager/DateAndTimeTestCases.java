@@ -57,7 +57,7 @@ public class DateAndTimeTestCases extends OXTestCase {
     // ---21
     private long CONTROL_G_DAY = 1746000000L;
     
-    // --02--
+    // --02
     private long CONTROL_G_MONTH = 2696400000L;
     
     // --02-21
@@ -272,7 +272,7 @@ public class DateAndTimeTestCases extends OXTestCase {
 
     public void testUtilDateToString_gMonth() {
         java.util.Date utilDate = new java.util.Date(CONTROL_DATE_TIME_0MS);
-        String control = "--02--";
+        String control = "--02";
         String test = (String)xcm.convertObject(utilDate, String.class, XMLConstants.G_MONTH_QNAME);
         this.assertEquals(control, test);    	
     }
@@ -666,7 +666,7 @@ public class DateAndTimeTestCases extends OXTestCase {
     }
 
     public void testStringToUtilDate_gMonth() {
-        String string = "--02--";
+        String string = "--02";
         java.util.Date control = new java.util.Date(CONTROL_G_MONTH);
         java.util.Date test = (java.util.Date)xcm.convertObject(string, java.util.Date.class, XMLConstants.G_MONTH_QNAME);
         this.assertEquals(control, test);
@@ -886,7 +886,7 @@ public class DateAndTimeTestCases extends OXTestCase {
 
     public void testSqlDateToString_gMonth() {
         java.sql.Date sqlDate = new java.sql.Date(CONTROL_DATE_TIME_0MS);
-        String control = "--02--";
+        String control = "--02";
         String test = (String)xcm.convertObject(sqlDate, String.class, XMLConstants.G_MONTH_QNAME);
         this.assertEquals(control, test);    	
     }
@@ -1213,7 +1213,7 @@ public class DateAndTimeTestCases extends OXTestCase {
     }
 
     public void testStringToSqlDate_gMonth() {
-        String string = "--02--";
+        String string = "--02";
         java.sql.Date control = new java.sql.Date(CONTROL_G_MONTH);
         java.sql.Date test = (java.sql.Date)xcm.convertObject(string, java.sql.Date.class, XMLConstants.G_MONTH_QNAME);
         this.assertEquals(control, test);
@@ -1475,7 +1475,7 @@ public class DateAndTimeTestCases extends OXTestCase {
 
     public void testSqlTimeToString_gMonth() {
         java.sql.Time sqlTime = new java.sql.Time(CONTROL_DATE_TIME_0MS);
-        String control = "--02--";
+        String control = "--02";
         String test = (String)xcm.convertObject(sqlTime, String.class, XMLConstants.G_MONTH_QNAME);
         this.assertEquals(control, test);    	
     }
@@ -1830,7 +1830,7 @@ public class DateAndTimeTestCases extends OXTestCase {
     }
 
     public void testStringToSqlTime_gMonth() {
-        String string = "--02--";
+        String string = "--02";
         java.sql.Time control = new java.sql.Time(CONTROL_G_MONTH);
         java.sql.Time test = (java.sql.Time)xcm.convertObject(string, java.sql.Time.class, XMLConstants.G_MONTH_QNAME);
         this.assertEquals(control, test);
@@ -2095,7 +2095,7 @@ public class DateAndTimeTestCases extends OXTestCase {
 
     public void testTimestampToString_gMonth() {
         java.sql.Timestamp timestamp = new java.sql.Timestamp(CONTROL_DATE_TIME_0MS);
-        String control = "--02--";
+        String control = "--02";
         String test = (String)xcm.convertObject(timestamp, String.class, XMLConstants.G_MONTH_QNAME);
         this.assertEquals(control, test);    	
     }
@@ -2488,7 +2488,7 @@ public class DateAndTimeTestCases extends OXTestCase {
     }
 
     public void testStringToTimestamp_gMonth() {
-        String string = "--02--";
+        String string = "--02";
         java.sql.Timestamp control = new java.sql.Timestamp(CONTROL_G_MONTH);
         java.sql.Timestamp test = (java.sql.Timestamp)xcm.convertObject(string, java.sql.Timestamp.class, XMLConstants.G_MONTH_QNAME);
         this.assertEquals(control, test);
@@ -2832,7 +2832,7 @@ public class DateAndTimeTestCases extends OXTestCase {
         Calendar calendar = Calendar.getInstance();
         calendar.clear();
         calendar.setTimeInMillis(CONTROL_DATE_TIME_0MS);
-        String control = "--02--";
+        String control = "--02";
         String test = (String)xcm.convertObject(calendar, String.class, XMLConstants.G_MONTH_QNAME);
         this.assertEquals(control, test);    	
     }
@@ -3264,7 +3264,7 @@ public class DateAndTimeTestCases extends OXTestCase {
     }
 
     public void testStringToCalendar_gMonth() {
-        String string = "--02--";
+        String string = "--02";
         Calendar control = Calendar.getInstance();
         control.clear();
         control.setTimeInMillis(CONTROL_G_MONTH);
