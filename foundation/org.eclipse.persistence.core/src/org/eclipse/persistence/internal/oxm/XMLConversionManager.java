@@ -58,7 +58,7 @@ public class XMLConversionManager extends ConversionManager implements TimeZoneH
     protected DateFormatThreadLocal dateTimeFormatter;
     protected static final String XSD_GDAY_FORMAT_STR = "---dd";
     protected DateFormatThreadLocal gDayFormatter;
-    protected static final String XSD_GMONTH_FORMAT_STR = "--MM--";
+    protected static final String XSD_GMONTH_FORMAT_STR = "--MM";
     protected DateFormatThreadLocal gMonthFormatter;
     protected static final String XSD_GMONTH_DAY_FORMAT_STR = "--MM-dd";
     protected DateFormatThreadLocal gMonthDayFormatter;
