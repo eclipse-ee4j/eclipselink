@@ -153,7 +153,7 @@
         <echo message="db.pwd=${db.pwd}${line.separator}"                   file="${coretest.prop.file}" append="true"/>
         <echo message="db.platform=${db.platform}${line.separator}"         file="${coretest.prop.file}" append="true"/>
 
-        <!-- Builds all tests -- including MW tests (needed for nightly compile verification even if they aren't run) -->
+        <!-- Builds all tests including MW tests (needed for nightly compile verification even if they aren't run) -->
         <ant antfile="build.xml" dir="${build.root.dir}" target="build-test"/>
         <!-- delete file="${coretest.prop.file}"/ -->
     </target>
