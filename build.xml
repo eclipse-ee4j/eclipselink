@@ -574,7 +574,7 @@
 
     <!-- Testing -->
     <target name="test-srg" description="run all the SRG test suites"
-            depends="test-core-srg"
+            depends="test-core-srg, test-jpa-srg, test-sdo-srg, test-moxy-srg"
             />
     <target name="test-lrg" description="run all the LRG test suites"
             depends="test-core, test-jpa, test-moxy, test-sdo"
