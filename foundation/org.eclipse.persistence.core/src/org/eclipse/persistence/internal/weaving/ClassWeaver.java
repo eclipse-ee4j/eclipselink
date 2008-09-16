@@ -65,6 +65,9 @@ public class ClassWeaver extends ClassAdapter implements Constants {
     // Cloneable
     public static final String CLONEABLE_SHORT_SIGNATURE = "java/lang/Cloneable";
     
+    /** Store if JAXB is no the classpath. */
+    protected static Boolean isJAXBOnPath;
+    
     /** Stores information on the class gathered from the temp class loader and descriptor. */
     protected ClassDetails classDetails;
     /** Used to generate the serialization serial UUID based on the original class. */
@@ -115,6 +118,21 @@ public class ClassWeaver extends ClassAdapter implements Constants {
      */
     public static String getWeavedValueHolderSetMethodName(String attributeName) {
         return "_persistence_set" + attributeName + "_vh";
+    }
+    
+    /**
+     * Return if the JAXB classes are on the classpath (if they are the XmlTransient annotation is added).
+     */
+    public static boolean isJAXBOnPath() {
+        isJAXBOnPath = true;
+        if (isJAXBOnPath == null) {
+            try {
+                Class.forName("javax.xml.bind.annotation.XmlTransient");
+            } catch (Exception notThere) {
+                isJAXBOnPath = false;
+            }
+        }
+        return isJAXBOnPath;
     }
     
     public ClassWeaver(ClassWriter classWriter, ClassDetails classDetails) {
@@ -839,6 +857,11 @@ public class ClassWeaver extends ClassAdapter implements Constants {
         RuntimeVisibleAnnotations attrs = new RuntimeVisibleAnnotations();
         //Annotation transientAnnotation = new Annotation("Ljavax/persistence/Transient;");
         Annotation transientAnnotation = new Annotation(Type.getDescriptor(javax.persistence.Transient.class));
+        if (isJAXBOnPath()) {
+            try {
+                attrs.annotations.add(new Annotation(Type.getDescriptor(Class.forName("javax.xml.bind.annotation.XmlTransient"))));
+            } catch (Exception exception) {}
+        }
         attrs.annotations.add(transientAnnotation);
         return attrs;
     }

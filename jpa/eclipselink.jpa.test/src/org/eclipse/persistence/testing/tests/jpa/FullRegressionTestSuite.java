@@ -107,6 +107,7 @@ public class FullRegressionTestSuite extends TestSuite{
         suite.addTest(org.eclipse.persistence.testing.tests.jpa.fieldaccess.relationships.UniAndBiDirectionalMappingTestSuite.suite());
         suite.addTestSuite(org.eclipse.persistence.testing.tests.jpa.fieldaccess.relationships.ExpressionJUnitTestSuite.class);
         suite.addTest(org.eclipse.persistence.testing.tests.jpa.fieldaccess.relationships.VirtualAttributeTestSuite.suite());
+        suite.addTest(org.eclipse.persistence.testing.tests.jpa.fieldaccess.relationships.JAXBTestSuite.suite());
         fullSuite.addTest(suite);
 
         // Inheritance model.

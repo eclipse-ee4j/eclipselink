@@ -118,6 +118,27 @@ public class JPAPerformanceRegressionModel extends TestModel {
      * Create/populate database.
      */
     public void setup() {
+        /*
+        // Setup DataSource for apples to apples comparison (otherwise we crush them).
+        try {
+            System.setProperty("java.naming.factory.initial", "org.eclipse.persistence.testing.framework.naming.InitialContextFactoryImpl");
+            oracle.jdbc.pool.OracleDataSource datasource = new oracle.jdbc.pool.OracleDataSource();
+            datasource.setURL(getSession().getLogin().getConnectionString());
+            datasource.setUser(getSession().getLogin().getUserName());
+            datasource.setPassword(getSession().getLogin().getPassword());
+            datasource.setConnectionCachingEnabled(true);
+            java.util.Properties properties = new java.util.Properties();
+            properties.setProperty("MinLimit", "5"); 
+            properties.setProperty("MaxLimit", "100");
+            properties.setProperty("InitialLimit", "1");
+            properties.setProperty("MaxStatementsLimit", "50");
+            datasource.setConnectionCacheProperties(properties);
+
+            new javax.naming.InitialContext().bind("datasource", datasource);
+        } catch (Exception exception) {
+            throw new RuntimeException(exception);
+        }*/
+        
         setupProvider();
         getSession().logMessage(getExecutor().getEntityManagerFactory().getClass().toString());
         System.out.println(getExecutor().getEntityManagerFactory().getClass().toString());

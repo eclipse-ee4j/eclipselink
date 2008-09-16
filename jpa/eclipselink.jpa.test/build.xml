@@ -107,6 +107,8 @@
         <property name="eclipselink.core.dir" value="${eclipselink.jpa.test}/${eclipselink.core.trunk}"/>
         <property name="eclipselink.core.test.dir" value="${eclipselink.jpa.test}/${eclipselink.core.test.trunk}"/>
         <property name="eclipselink.core.lib.dir" value="${eclipselink.jpa.test}/${eclipselink.plugins.trunk}"/>
+        <property name="eclipselink.moxy.dir" value="${eclipselink.jpa.test}/${eclipselink.moxy.trunk}"/>
+        <property name="eclipselink.moxy.lib.dir" value="${eclipselink.jpa.test}/${eclipselink.moxy.plugins.trunk}"/>
         <property name="eclipselink.extension.oracle.dir" value="${eclipselink.jpa.test}/${eclipselink.extension.oracle.trunk}"/>
         <property name="eclipselink.extension.oracle.test.dir" value="${eclipselink.jpa.test}/${eclipselink.extension.oracle.test.trunk}"/>
         <antcall target="config-compile-path" inheritRefs="true"/>
@@ -118,6 +120,8 @@
         <property name="eclipselink.core.dir" value="${eclipselink.core}"/>
         <property name="eclipselink.core.test.dir" value="${eclipselink.core.test}"/>
         <property name="eclipselink.core.lib.dir" value="${eclipselink.plugins}"/>
+        <property name="eclipselink.moxy.dir" value="${eclipselink.moxy}"/>
+        <property name="eclipselink.moxy.lib.dir" value="${eclipselink.moxy.plugins}"/>
         <property name="eclipselink.extension.oracle.dir" value="${eclipselink.extension.oracle}"/>
         <property name="eclipselink.extension.oracle.test.dir" value="${eclipselink.extension.oracle.test}"/>
         <antcall target="config-compile-path" inheritRefs="true"/>
@@ -133,6 +137,10 @@
             <fileset
                 dir="${eclipselink.core.lib.dir}"
                 includes="${eclipselink.core.depend}"/>
+            <pathelement path="${eclipselink.moxy.dir}/${classes.dir}"/>
+            <fileset
+                dir="${eclipselink.moxy.lib.dir}"
+                includes="${eclipselink.moxy.depend}"/>
             <pathelement path="${eclipselink.jar.name}"/>
             <pathelement path="${junit.lib}"/>
             <pathelement path="${eclipselink.plugins}/${antlr}"/>
@@ -284,6 +292,9 @@
     <target name="package-jpa-advanced-field-access" depends="">
         <copy todir="${eclipselink.jpa.test}/${build.dir}/${eclipselink.advanced.field.access.model}/META-INF">
             <fileset dir="${eclipselink.jpa.test}/resource/${eclipselink.advanced.field.access.model}" includes="*.xml"/>
+        </copy>
+        <copy todir="${eclipselink.jpa.test}/${build.dir}/${eclipselink.advanced.field.access.model}/">
+            <fileset dir="${eclipselink.jpa.test}/resource/${eclipselink.advanced.field.access.model}" includes="org/eclipse/persistence/testing/models/jpa/fieldaccess/relationships/*"/>
         </copy>
         <copy todir="${eclipselink.jpa.test}/${build.dir}/${eclipselink.advanced.field.access.model}">
             <fileset dir="${eclipselink.jpa.test}/${classes.dir}"
