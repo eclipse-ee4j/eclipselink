@@ -342,7 +342,7 @@ public class AnnotationsProcessor {
             JavaField nextField = fieldIt.next();
             if (!helper.isAnnotationPresent(nextField, XmlTransient.class)) {
                 int modifiers = nextField.getModifiers();
-                if (!Modifier.isStatic(modifiers) && !Modifier.isTransient(modifiers) && (Modifier.isPublic(nextField.getModifiers()) && onlyPublic) || !onlyPublic) {
+                if (!Modifier.isStatic(modifiers) && !Modifier.isTransient(modifiers) && ((Modifier.isPublic(nextField.getModifiers()) && onlyPublic) || !onlyPublic)) {
                 	Property property = null;
                     if(helper.isAnnotationPresent((JavaHasAnnotations)nextField, XmlElements.class)) {
                         property = new ChoiceProperty(helper);

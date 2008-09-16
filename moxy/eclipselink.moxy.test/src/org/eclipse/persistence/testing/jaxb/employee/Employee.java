@@ -15,6 +15,7 @@ package org.eclipse.persistence.testing.jaxb.employee;
 import javax.xml.bind.annotation.*;
 
 @XmlRootElement(name="employee-data")
+@XmlAccessorType(XmlAccessType.FIELD)
 public class Employee 
 {
     
