@@ -35,15 +35,15 @@ public class SDOSRGTestSuite {
 		suite.addTest((new org.eclipse.persistence.testing.sdo.model.type.SDOTypeTestSuite()).suite());
 
 		suite.addTest(new TestSuite(org.eclipse.persistence.testing.sdo.model.dataobject.SDODataObjectSetGetWithPropertyTest.class));
-        suite.addTest(new TestSuite(org.eclipse.persistence.testing.sdo.model.dataobject.SDODataObjectSetGetWithIndexTest.class));
+/*        suite.addTest(new TestSuite(org.eclipse.persistence.testing.sdo.model.dataobject.SDODataObjectSetGetWithIndexTest.class));
         suite.addTest(new TestSuite(org.eclipse.persistence.testing.sdo.model.dataobject.SDODataObjectGetPathTest.class));
-        suite.addTest(new TestSuite(org.eclipse.persistence.testing.sdo.model.dataobject.SDODataObjectListWrapperTest.class));
+        suite.addTest(new TestSuite(org.eclipse.persistence.testing.sdo.model.dataobject.SDODataObjectListWrapperTest.class)); */
 
         suite.addTest(new TestSuite(org.eclipse.persistence.testing.sdo.model.changesummary.ChangeSummaryGetOldValueTest.class));
-        suite.addTest(new TestSuite(org.eclipse.persistence.testing.sdo.model.changesummary.ChangeSummaryIsCreatedIsDeletedIsModifiedTest.class));
+/*        suite.addTest(new TestSuite(org.eclipse.persistence.testing.sdo.model.changesummary.ChangeSummaryIsCreatedIsDeletedIsModifiedTest.class));
         suite.addTest(new TestSuite(org.eclipse.persistence.testing.sdo.model.changesummary.ChangeSummaryGetChangedDataObjectsTest.class));
         suite.addTest(new TestSuite(org.eclipse.persistence.testing.sdo.model.changesummary.ChangeSummaryCopyTestCases.class));
-        suite.addTest(new TestSuite(org.eclipse.persistence.testing.sdo.model.changesummary.ChangeSummaryBeginLoggingEndLoggingCombiningTests.class));
+        suite.addTest(new TestSuite(org.eclipse.persistence.testing.sdo.model.changesummary.ChangeSummaryBeginLoggingEndLoggingCombiningTests.class)); */
 
 
 
