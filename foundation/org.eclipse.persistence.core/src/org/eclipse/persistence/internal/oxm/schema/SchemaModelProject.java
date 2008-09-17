@@ -1,15 +1,15 @@
 /*******************************************************************************
  * Copyright (c) 1998, 2008 Oracle. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.internal.oxm.schema;
 
 import java.util.ArrayList;
@@ -55,7 +55,7 @@ public class SchemaModelProject extends Project {
         addDescriptor(buildAnnotationDescriptor());
         addDescriptor(buildGroupDescriptor());
         //addDescriptor(buildTypeDefParticleDescriptor());
-        //addDescriptor(buildOccursDescriptor());				
+        //addDescriptor(buildOccursDescriptor());
     }
 
     private XMLDescriptor buildSchemaDescriptor() {
@@ -66,13 +66,13 @@ public class SchemaModelProject extends Project {
 
         XMLCompositeCollectionMapping importsMapping = new XMLCompositeCollectionMapping();
         importsMapping.setReferenceClass(Import.class);
-        importsMapping.setAttributeName("imports");        
+        importsMapping.setAttributeName("imports");
         importsMapping.setXPath(XMLConstants.SCHEMA_PREFIX + ":" + "import");
         descriptor.addMapping(importsMapping);
 
         XMLCompositeCollectionMapping includesMapping = new XMLCompositeCollectionMapping();
         includesMapping.setReferenceClass(Include.class);
-        includesMapping.setAttributeName("includes");        
+        includesMapping.setAttributeName("includes");
         includesMapping.setXPath(XMLConstants.SCHEMA_PREFIX + ":" + "include");
         descriptor.addMapping(includesMapping);
 
@@ -155,7 +155,7 @@ public class SchemaModelProject extends Project {
         topLevelAttributesMapping.useMapClass(java.util.HashMap.class, "getName");
         topLevelAttributesMapping.setXPath(XMLConstants.SCHEMA_PREFIX + ":" + "attribute");
         descriptor.addMapping(topLevelAttributesMapping);
-        
+
               XMLCompositeObjectMapping annotationMapping = new XMLCompositeObjectMapping();
         annotationMapping.setReferenceClass(Annotation.class);
         annotationMapping.setAttributeName("annotation");
@@ -512,7 +512,7 @@ public class SchemaModelProject extends Project {
         refMapping.setAttributeName("ref");
         refMapping.setXPath("@ref");
         descriptor.addMapping(refMapping);
-        
+
         XMLDirectMapping minOccursMapping = new XMLDirectMapping();
         minOccursMapping.setAttributeName("minOccurs");
         minOccursMapping.setXPath("@minOccurs");
@@ -703,6 +703,11 @@ public class SchemaModelProject extends Project {
         typeMapping.setXPath("@type");
         descriptor.addMapping(typeMapping);
 
+        XMLDirectMapping useMapping = new XMLDirectMapping();
+        useMapping.setAttributeName("use");
+        useMapping.setXPath("@use");
+        descriptor.addMapping(useMapping);
+
         XMLDirectMapping defaultMapping = new XMLDirectMapping();
         defaultMapping.setAttributeName("defaultValue");
         defaultMapping.setXPath("@default");
@@ -783,7 +788,7 @@ public class SchemaModelProject extends Project {
 
         XMLDirectMapping schemaLocationMapping = new XMLDirectMapping();
         schemaLocationMapping.setAttributeName("schemaLocation");
-        schemaLocationMapping.setXPath("@"+XMLConstants.SCHEMA_LOCATION);        
+        schemaLocationMapping.setXPath("@"+XMLConstants.SCHEMA_LOCATION);
         descriptor.addMapping(schemaLocationMapping);
 
         XMLDirectMapping idMapping = new XMLDirectMapping();
