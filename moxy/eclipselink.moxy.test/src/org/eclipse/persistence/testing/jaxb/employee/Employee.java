@@ -28,6 +28,8 @@ public class Employee
 
 	public String lastName;
 	
+	private transient String blah;
+	
 	public java.util.Calendar birthday;
 
 	@XmlTransient
@@ -82,5 +84,9 @@ public class Employee
 		}
 		//need to compare responsibilities
 		return true;
+	}
+	
+	public void setBlah(String blah) {
+	    this.blah = blah;
 	}
 }

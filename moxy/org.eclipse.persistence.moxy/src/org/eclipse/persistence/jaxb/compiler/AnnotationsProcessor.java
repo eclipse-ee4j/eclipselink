@@ -149,7 +149,7 @@ public class AnnotationsProcessor {
             	rootElemName = new QName(rootNamespace, elementName);
             }
             schemaInfo.getGlobalElementDeclarations().add(rootElemName);
-            ElementDeclaration declaration = new ElementDeclaration(rootElemName, javaClass.getRawName());
+            ElementDeclaration declaration = new ElementDeclaration(rootElemName, javaClass, javaClass.getRawName());
             this.globalElements.put(rootElemName, declaration);
         }
         
@@ -986,7 +986,7 @@ public class AnnotationsProcessor {
     					if(this.globalElements == null) {
     						globalElements = new HashMap<QName, ElementDeclaration>();
     					}
-    					ElementDeclaration declaration = new ElementDeclaration(qname, type.getQualifiedName());
+    					ElementDeclaration declaration = new ElementDeclaration(qname, type, type.getQualifiedName());
     					if(!elementDecl.substitutionHeadName().equals("")) {
     						String subHeadLocal = elementDecl.substitutionHeadName();
     						String subHeadNamespace = elementDecl.substitutionHeadNamespace();
@@ -1049,7 +1049,7 @@ public class AnnotationsProcessor {
     			} else {
     				rootElemName = new QName(rootNamespace, elementName);
     			}
-    			ElementDeclaration declaration = new ElementDeclaration(rootElemName, javaClass.getRawName());
+    			ElementDeclaration declaration = new ElementDeclaration(rootElemName, javaClass, javaClass.getRawName());
     			declaration.setIsXmlRootElement(true);
     			if(this.globalElements == null) {
     				globalElements = new HashMap<QName, ElementDeclaration>();

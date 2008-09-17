@@ -964,7 +964,7 @@ public class MappingsGenerator {
     				}
     				descriptor.addRootElement(prefix + ":" + next.getLocalPart());
     			}
-    		} else if(helper.isBuiltInJavaType(helper.getJavaClass(nextClassName))) {
+    		} else if(helper.isBuiltInJavaType(nextElement.getJavaType())) {
     			//generate a class/descriptor for this element
     			
     			String namespaceUri = next.getNamespaceURI();

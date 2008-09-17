@@ -65,6 +65,8 @@ public class JAXBEmployeeTestCases extends JAXBTestCases {
 		employee.id = CONTROL_ID;
 		
 		employee.responsibilities = responsibilities;
+		
+		employee.setBlah("Some String");
               
         return employee;
     }

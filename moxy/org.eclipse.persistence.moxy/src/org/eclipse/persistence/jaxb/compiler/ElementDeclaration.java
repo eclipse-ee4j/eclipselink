@@ -13,6 +13,9 @@
 package org.eclipse.persistence.jaxb.compiler;
 
 import javax.xml.namespace.QName;
+
+import org.eclipse.persistence.jaxb.javamodel.JavaClass;
+
 import java.util.List;
 import java.util.ArrayList;
 
@@ -20,12 +23,14 @@ public class ElementDeclaration {
 	private QName elementName;
 	private QName substitutionHead;
 	private String javaTypeName;
+	private JavaClass javaType;
 	private List<ElementDeclaration> substitutableElements;
 	private boolean isXmlRootElement = false;
 	
-	public ElementDeclaration(QName name, String javaTypeName) {
+	public ElementDeclaration(QName name, JavaClass javaType, String javaTypeName) {
 		this.elementName = name;
 		this.javaTypeName = javaTypeName;
+		this.javaType = javaType;
 		this.substitutableElements = new ArrayList<ElementDeclaration>();
 	}
 	
@@ -59,5 +64,13 @@ public class ElementDeclaration {
 	
 	public void setIsXmlRootElement(boolean isXmlRoot) {
 		this.isXmlRootElement = isXmlRoot;
+	}
+	
+	public JavaClass getJavaType() {
+	    return this.javaType;
+	}
+	
+	public void setJavaType(JavaClass type) {
+	    this.javaType = type;
 	}
 }
