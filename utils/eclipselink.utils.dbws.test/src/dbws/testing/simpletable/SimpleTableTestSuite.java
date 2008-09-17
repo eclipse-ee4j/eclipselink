@@ -67,7 +67,7 @@ public class SimpleTableTestSuite extends DBWSTestSuite {
 
     @Test
     public void findByPrimaryKeyTest() {
-        Invocation invocation = new Invocation("findByPrimaryKey_simpletable");
+        Invocation invocation = new Invocation("findByPrimaryKey_simpletableType");
         invocation.setParameter("id",1);
         Operation op = xrService.getOperation(invocation.getName());
         Object result = op.invoke(xrService, invocation);
@@ -81,9 +81,9 @@ public class SimpleTableTestSuite extends DBWSTestSuite {
     }
     public static final String ONE_PERSON_XML =
     "<?xml version = '1.0' encoding = 'UTF-8'?>" +
-    "<ns1:simpletable xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:ns1=\"urn:simpletable\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +
+    "<ns1:simpletableType xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:ns1=\"urn:simpletable\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +
        "<ns1:id>1</ns1:id>" +
        "<ns1:name>mike</ns1:name>" +
        "<ns1:since>2001-12-25</ns1:since>" +
-    "</ns1:simpletable>";
+    "</ns1:simpletableType>";
 }

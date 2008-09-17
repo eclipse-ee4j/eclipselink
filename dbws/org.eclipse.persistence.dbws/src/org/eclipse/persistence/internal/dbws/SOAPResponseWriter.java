@@ -114,7 +114,7 @@ public class SOAPResponseWriter {
                         }
                     }
                     XMLDescriptor typeDescriptor =
-                        dbwsAdapter.getDescriptorsByType().get(type);
+                        dbwsAdapter.getDescriptorsByElement().get(type);
                     if (typeDescriptor != null) {
                         if (queryOperation.isCollection()) {
                             XMLCompositeCollectionMapping mapping =

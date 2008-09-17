@@ -20,13 +20,11 @@ import java.util.Map;
 
 // Java extension imports
 import javax.xml.namespace.QName;
-import static javax.xml.XMLConstants.NULL_NS_URI;
 
 // EclipseLink imports
 import org.eclipse.persistence.exceptions.DBWSException;
 import org.eclipse.persistence.internal.oxm.schema.SchemaModelProject;
 import org.eclipse.persistence.internal.oxm.schema.model.Schema;
-import org.eclipse.persistence.internal.oxm.schema.model.Element;
 import org.eclipse.persistence.oxm.NamespaceResolver;
 import org.eclipse.persistence.oxm.XMLContext;
 import org.eclipse.persistence.oxm.XMLDescriptor;
@@ -35,8 +33,6 @@ import org.eclipse.persistence.oxm.schema.XMLSchemaReference;
 import org.eclipse.persistence.sessions.DatabaseSession;
 import org.eclipse.persistence.sessions.Session;
 import org.eclipse.persistence.sessions.factories.SessionManager;
-import static org.eclipse.persistence.internal.xr.sxf.SimpleXMLFormat.DEFAULT_SIMPLE_XML_FORMAT_TAG;
-import static org.eclipse.persistence.internal.xr.sxf.SimpleXMLFormat.SIMPLE_XML_FORMAT_TYPE;
 import static org.eclipse.persistence.internal.xr.Util.DBWS_OR_SESSION_NAME_SUFFIX;
 import static org.eclipse.persistence.internal.xr.Util.DBWS_OX_SESSION_NAME_SUFFIX;
 import static org.eclipse.persistence.internal.xr.Util.DBWS_SESSIONS_XML;
@@ -172,8 +168,8 @@ public class XRServiceFactory  {
         validateOperations();
         initializeOperations();
     }
-    
-    @SuppressWarnings("unused") 
+
+    @SuppressWarnings("unused")
     public void customizeSession(Session orSession, Session oxSession) {
     }
 
@@ -181,7 +177,6 @@ public class XRServiceFactory  {
      * <p>INTERNAL:
      *
      */
-    @SuppressWarnings("unchecked")
     public void loadXMLSchema(InputStream xrSchemaStream) {
 
         SchemaModelProject schemaProject = new SchemaModelProject();
@@ -193,44 +188,6 @@ public class XRServiceFactory  {
         nr.put(TARGET_NAMESPACE_PREFIX, targetNamespace);
         xrService.schema = schema;
         xrService.schemaNamespace = targetNamespace;
-        for (Iterator i = schema.getTopLevelComplexTypes().keySet().iterator(); i.hasNext();) {
-            String typeLocal = (String)i.next();
-            QName typeName = null;
-            // special case simple-xml-format
-            if (typeLocal.equals(SIMPLE_XML_FORMAT_TYPE)) {
-                typeName = new QName(typeLocal);
-            }
-            else {
-                typeName = new QName(targetNamespace, typeLocal);
-            }
-            xrService.schemaTypes.add(typeName);
-        }
-        for (Iterator i = schema.getTopLevelElements().keySet().iterator(); i.hasNext();) {
-            String elementNameLocal = (String)i.next();
-            QName elementName = null;
-            // special case simple-xml-format
-            if (elementNameLocal.equals(DEFAULT_SIMPLE_XML_FORMAT_TAG)) {
-                elementName = new QName(elementNameLocal);
-            }
-            else {
-                elementName = new QName(targetNamespace, elementNameLocal);
-            }
-            Element element = (Element)schema.getTopLevelElements().get(elementNameLocal);
-            // ignore elements with inline complex types
-            if (element.getComplexType() != null) {
-                continue;
-            }
-            String typeNameNS = element.getType();
-            QName typeName = resolveName(typeNameNS, nr);
-            if (elementName.getNamespaceURI() != null && elementName.getNamespaceURI() != NULL_NS_URI) {
-                typeName = new QName(elementName.getNamespaceURI(), typeName.getLocalPart());
-            }
-            // ignore elements that reference types outside of this schema
-            if (!xrService.schemaTypes.contains(typeName)) {
-                continue;
-            }
-            xrService.elementTypes.put(elementName, typeName);
-        }
     }
 
     /**
@@ -298,49 +255,25 @@ public class XRServiceFactory  {
         for (Iterator i = xrService.oxSession.getProject().getOrderedDescriptors().iterator();
             i.hasNext();) {
             XMLDescriptor xd = (XMLDescriptor)i.next();
-            XMLSchemaReference reference = xd.getSchemaReference();
-            if (reference == null) {
-                QName rootName = resolveName(xd.getDefaultRootElementField().getQualifiedName(),
+            XMLSchemaReference schemaReference = xd.getSchemaReference();
+            QName descriptorQName = null;
+            if (schemaReference == null) {
+                descriptorQName = resolveName(xd.getDefaultRootElementField().getQualifiedName(),
                     xd.getNamespaceResolver());
-                QName typeName = xrService.elementTypes.get(rootName);
-                if (typeName == null) {
-                    for (Iterator<QName> i2 = xrService.schemaTypes.iterator(); i2.hasNext();) {
-                        QName qName = i2.next();
-                        if (qName.equals(rootName)) {
-                            typeName = qName;
-                            break;
-                        }
-                    }
-                    if (typeName == null) {
-                        continue;
-                    }
-                }
-                xrService.descriptorsByElement.put(rootName, xd);
-                xrService.descriptorsByType.put(typeName, xd);
             }
-            else if (reference.getType() == XMLSchemaReference.ELEMENT) {
-                String context = reference.getSchemaContext();
+            else if (schemaReference.getType() == XMLSchemaReference.ELEMENT) {
+                String context = schemaReference.getSchemaContext();
                 if (context != null && context.lastIndexOf('/') == 0) {
                     String elementNameNS = context.substring(1);
                     QName elementName = resolveName(elementNameNS, xd.getNamespaceResolver());
-                    QName typeName = xrService.elementTypes.get(elementName);
-                    if (typeName == null) {
+                    if (elementName == null) {
                         continue;
                     }
                     xrService.descriptorsByElement.put(elementName, xd);
-                    xrService.descriptorsByType.put(typeName, xd);
                 }
             }
-            else if (reference.getType() == XMLSchemaReference.COMPLEX_TYPE) {
-                String context = reference.getSchemaContext();
-                if (context != null && context.lastIndexOf('/') == 0) {
-                    String typeNameNS = context.substring(1);
-                    QName typeName = resolveName(typeNameNS, xd.getNamespaceResolver());
-                    if (!xrService.schemaTypes.contains(typeName)) {
-                        continue;
-                    }
-                    xrService.descriptorsByType.put(typeName, xd);
-                }
+            if (descriptorQName != null) {
+                xrService.descriptorsByElement.put(descriptorQName, xd);
             }
         }
     }

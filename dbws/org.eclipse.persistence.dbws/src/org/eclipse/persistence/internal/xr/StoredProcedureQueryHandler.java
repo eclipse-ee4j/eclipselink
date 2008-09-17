@@ -79,7 +79,7 @@ public class StoredProcedureQueryHandler extends QueryHandler {
                     databaseQueryToInitialize = new DataReadQuery();
                 }
                 else {
-                    if (!xrService.descriptorsByType.containsKey(type)) {
+                    if (!xrService.descriptorsByElement.containsKey(type)) {
                         // data-read query
                         databaseQueryToInitialize = new DataReadQuery();
                     }
@@ -92,7 +92,7 @@ public class StoredProcedureQueryHandler extends QueryHandler {
             else {
                 if (getOutArguments().size() == 0 && getInOutArguments().size() == 0) {
                     if (isStoredFunctionQueryHandler()) {
-                        if (!xrService.descriptorsByType.containsKey(type)) {
+                        if (!xrService.descriptorsByElement.containsKey(type)) {
                             databaseQueryToInitialize = new ValueReadQuery();
                         }
                         else {
@@ -108,7 +108,7 @@ public class StoredProcedureQueryHandler extends QueryHandler {
                     }
                 }
                 else {
-                    if (!xrService.descriptorsByType.containsKey(type)) {
+                    if (!xrService.descriptorsByElement.containsKey(type)) {
                     	if (type.equals(SXF_QNAME)) {
                     		databaseQueryToInitialize = new DataReadQuery();
                     	}
@@ -243,13 +243,8 @@ public class StoredProcedureQueryHandler extends QueryHandler {
         return null;
     }
 
-    protected boolean isCursorType(XRServiceAdapter xrService, QName type) {
+    protected boolean isCursorType(@SuppressWarnings("unused") XRServiceAdapter xrService, QName type) {
         if (type.getLocalPart().startsWith("cursor of")) {
-            return true;
-        }
-        if (xrService.descriptorsByType.containsKey(type) &&
-            xrService.getORSession().getProject().getAliasDescriptors().containsKey(
-                xrService.getTypeAlias(type))) {
             return true;
         }
         return false;

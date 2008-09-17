@@ -87,6 +87,7 @@ public class WSDLGenerator {
     public static final String NS_IMPORTED_PREFIX = "ns1";
 
     protected XRServiceModel xrServiceModel;
+    protected NamingConventionTransformer nct;
     protected String serviceName;
     protected String serviceNameSpace;
     protected String importedSchemaNameSpace;
@@ -94,9 +95,11 @@ public class WSDLGenerator {
     protected boolean hasAttachments;
     protected OutputStream os;
 
-    public WSDLGenerator(XRServiceModel xrServiceModel, String wsdlLocationURI, boolean hasAttachments,
-        String importedSchemaNameSpace, OutputStream os) {
+    public WSDLGenerator(XRServiceModel xrServiceModel, NamingConventionTransformer nct,
+        String wsdlLocationURI, boolean hasAttachments, String importedSchemaNameSpace,
+        OutputStream os) {
         this.xrServiceModel = xrServiceModel;
+        this.nct = nct;
         this.wsdlLocationURI = wsdlLocationURI;
         this.hasAttachments = hasAttachments;
         this.os = os;
@@ -239,6 +242,8 @@ public class WSDLGenerator {
     private org.w3c.dom.Element createInlineSchema() {
 
         SchemaModelProject project = new SchemaModelProject();
+        XMLContext context = new XMLContext(project);
+        XMLMarshaller marshaller = context.createMarshaller();
         XMLDescriptor descriptor = (XMLDescriptor) project.getClassDescriptor(Schema.class);
         if (descriptor.getNamespaceResolver() == null) {
             descriptor.setNamespaceResolver(new NamespaceResolver());
@@ -263,50 +268,45 @@ public class WSDLGenerator {
             ref.setSchemaLocation(WSI_SWAREF_XSD_FILE);
             schema.getImports().add(ref);
         }
-
         for (Operation op : xrServiceModel.getOperationsList()) {
+            String opName = op.getName();
             ComplexType requestType = new ComplexType();
-            requestType.setName(op.getName() + TYPE_SUFFIX);
+            // extract tableNameAlias from operation name - everything after first underscore _ character
+            String tableNameAlias = opName.substring(opName.indexOf('_')+1);
+            requestType.setName(opName + REQUEST_SUFFIX + TYPE_SUFFIX);
             Sequence requestSequence = null;
             if (op.getParameters().size() > 0) {
                 requestSequence = new Sequence();
-            }
-            for (Parameter p : op.getParameters()) {
-                Element arg = new Element();
-                arg.setName(p.getName());
-                if (THE_INSTANCE_NAME.equals(p.getName())) {
-                    String localPart = p.getType().getLocalPart();
-                    String abbreviatedTypeLabel = localPart.substring(0,
-                        localPart.indexOf(TYPE_SUFFIX));
-                    ComplexType nestedComplexType = new ComplexType();
-                    Sequence nestedSequence = new Sequence();
-                    nestedComplexType.setSequence(nestedSequence);
-                    Element nestedElement = new Element();
-                    nestedElement.setRef(NS_IMPORTED_PREFIX + ":" + abbreviatedTypeLabel);
-                    nestedSequence.addElement(nestedElement);
-                    arg.setComplexType(nestedComplexType);
-                }
-                else {
+                for (Parameter p : op.getParameters()) {
+                    Element arg = new Element();
                     arg.setName(p.getName());
-                    if (p.getType().getNamespaceURI().equals(W3C_XML_SCHEMA_NS_URI)) {
-                        arg.setType(NS_SCHEMA_PREFIX + ":" + p.getType().getLocalPart());
+                    if (THE_INSTANCE_NAME.equals(p.getName())) {
+                        ComplexType nestedComplexType = new ComplexType();
+                        Sequence nestedSequence = new Sequence();
+                        nestedComplexType.setSequence(nestedSequence);
+                        Element nestedElement = new Element();
+                        nestedElement.setRef(NS_IMPORTED_PREFIX + ":" + tableNameAlias);
+                        nestedSequence.addElement(nestedElement);
+                        arg.setComplexType(nestedComplexType);
                     }
                     else {
-                        arg.setType(p.getType().getLocalPart());
+                        arg.setName(p.getName());
+                        if (p.getType().getNamespaceURI().equals(W3C_XML_SCHEMA_NS_URI)) {
+                            arg.setType(NS_SCHEMA_PREFIX + ":" + p.getType().getLocalPart());
+                        }
+                        else {
+                            arg.setType(p.getType().getLocalPart());
+                        }
                     }
+                    requestSequence.addElement(arg);
                 }
-                requestSequence.addElement(arg);
-            }
-            if (requestSequence != null) {
                 requestType.setSequence(requestSequence);
             }
             schema.addTopLevelComplexTypes(requestType);
-
             Element requestElement = new Element();
             requestElement.setName(op.getName());
             requestElement.setType(NS_TNS_PREFIX + ":" + requestType.getName());
             schema.addTopLevelElement(requestElement);
-
             // build response message based on operation type
             if (op instanceof QueryOperation) {
                 QueryOperation q = (QueryOperation) op;
@@ -331,14 +331,11 @@ public class WSDLGenerator {
                         result.setType(NS_SCHEMA_PREFIX + ":" + q.getResultType().getLocalPart());
                     }
                     else {
-                        String localPart = q.getResultType().getLocalPart();
-                        String abbreviatedTypeLabel = localPart.substring(0,
-                            localPart.indexOf(TYPE_SUFFIX));
                         ComplexType nestedComplexType = new ComplexType();
                         Sequence nestedSequence = new Sequence();
                         nestedComplexType.setSequence(nestedSequence);
                         Element nestedElement = new Element();
-                        nestedElement.setRef(NS_IMPORTED_PREFIX + ":" +  abbreviatedTypeLabel);
+                        nestedElement.setRef(NS_IMPORTED_PREFIX + ":" + tableNameAlias);
                         nestedElement.setMinOccurs("0");
                         if (q.isCollection()) {
                             nestedElement.setMaxOccurs("unbounded");
@@ -350,15 +347,12 @@ public class WSDLGenerator {
                 responseSequence.addElement(result);
                 responseType.setSequence(responseSequence);
                 schema.addTopLevelComplexTypes(responseType);
-
                 Element responseElement = new Element();
                 responseElement.setName(op.getName() + RESPONSE_SUFFIX);
                 responseElement.setType(NS_TNS_PREFIX + ":" + responseType.getName());
                 schema.addTopLevelElement(responseElement);
             }
         }
-        XMLContext context = new XMLContext(project);
-        XMLMarshaller marshaller = context.createMarshaller();
         return marshaller.objectToXML(schema).getDocumentElement();
     }
 

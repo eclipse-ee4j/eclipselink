@@ -1,10 +1,10 @@
 /*******************************************************************************
  * Copyright (c) 1998, 2008 Oracle. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
@@ -46,7 +46,7 @@ public abstract class QueryHandler {
         this.databaseQuery = databaseQuery;
     }
 
-    @SuppressWarnings("unused") 
+    @SuppressWarnings("unused")
     public void validate(XRServiceAdapter xrService, QueryOperation queryOperation) {
     }
 
@@ -73,7 +73,7 @@ public abstract class QueryHandler {
                     databaseQueryToInitialize = new DataReadQuery();
                 }
                 else {
-                    if (!xrService.descriptorsByType.containsKey(type)) {
+                    if (!xrService.descriptorsByElement.containsKey(type)) {
                         // data-read query
                         databaseQueryToInitialize = new DataReadQuery();
                     }
@@ -89,7 +89,7 @@ public abstract class QueryHandler {
                     // data-read query
                     databaseQueryToInitialize = new DataReadQuery();
                 }
-                else if (!xrService.descriptorsByType.containsKey(type)) {
+                else if (!xrService.descriptorsByElement.containsKey(type)) {
                     // value read query
                     databaseQueryToInitialize = new ValueReadQuery();
                 }
@@ -115,7 +115,7 @@ public abstract class QueryHandler {
      * @param queryOperation the given <code>QueryOperation</code>
      * @param databaseQuery the given <code>DatabaseQuery</code>
      */
-    @SuppressWarnings("unused") 
+    @SuppressWarnings("unused")
     public void initializeCall(XRServiceAdapter xrService, QueryOperation queryOperation,
         DatabaseQuery databaseQuery) {
     }
@@ -127,7 +127,7 @@ public abstract class QueryHandler {
      * @param queryOperation the given <code>QueryOperation</code>
      * @param databaseQuery the given <code>DatabaseQuery</code>
      */
-    @SuppressWarnings("unused") 
+    @SuppressWarnings("unused")
     public void initializeArguments(XRServiceAdapter xrService, QueryOperation queryOperation,
         DatabaseQuery databaseQuery) {
         for (int i = 0; i < queryOperation.getParameters().size(); i++) {

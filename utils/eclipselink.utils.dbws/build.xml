@@ -97,6 +97,10 @@
             <fileset dir="${eclipselink.util.dbws}/${classes.dir}">
                 <include name="**/*.class"/>
             </fileset>
+            <zipfileset
+              dir="${src.dir}/META-INF/services"
+              prefix="META-INF/services"
+            />
         </jar>
     </target>
 

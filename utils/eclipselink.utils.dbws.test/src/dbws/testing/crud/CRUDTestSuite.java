@@ -1,10 +1,10 @@
 /*******************************************************************************
  * Copyright (c) 1998, 2008 Oracle. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
@@ -84,7 +84,7 @@ public class CRUDTestSuite extends DBWSTestSuite {
 
     @Test
     public void test1_readOne() {
-        Invocation invocation = new Invocation("findByPrimaryKey_crud_table");
+        Invocation invocation = new Invocation("findByPrimaryKey_crud_tableType");
         invocation.setParameter("id", 1);
         Operation op = xrService.getOperation(invocation.getName());
         Object result = op.invoke(xrService, invocation);
@@ -98,16 +98,16 @@ public class CRUDTestSuite extends DBWSTestSuite {
     }
     public static final String CRUD1_CONTROL_DOC =
         "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" +
-        "<ns1:crud_table xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:ns1=\"urn:crud\"" +
+        "<ns1:crud_tableType xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:ns1=\"urn:crud\"" +
                                        " xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +
           "<ns1:id>1</ns1:id>" +
           "<ns1:name>crud1</ns1:name>" +
-        "</ns1:crud_table>";
+        "</ns1:crud_tableType>";
 
     @SuppressWarnings("unchecked")
     @Test
     public void test2_readAll() {
-        Invocation invocation = new Invocation("findAll_crud_table");
+        Invocation invocation = new Invocation("findAll_crud_tableType");
         Operation op = xrService.getOperation(invocation.getName());
         Object result = op.invoke(xrService, invocation);
         assertNotNull("result is null", result);
@@ -125,18 +125,18 @@ public class CRUDTestSuite extends DBWSTestSuite {
     public static final String FIND_ALL_CONTROL_DOC =
     	"<?xml version=\"1.0\" encoding=\"UTF-8\"?> " +
     	"<all>" +
-    	  "<ns1:crud_table xmlns:ns1=\"urn:crud\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +
+    	  "<ns1:crud_tableType xmlns:ns1=\"urn:crud\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +
     	    "<ns1:id>1</ns1:id>" +
     	    "<ns1:name>crud1</ns1:name>" +
-    	  "</ns1:crud_table>" +
-    	  "<ns1:crud_table xmlns:ns1=\"urn:crud\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +
+    	  "</ns1:crud_tableType>" +
+    	  "<ns1:crud_tableType xmlns:ns1=\"urn:crud\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +
     	    "<ns1:id>2</ns1:id>" +
     	    "<ns1:name>crud2</ns1:name>" +
-    	  "</ns1:crud_table>" +
-    	  "<ns1:crud_table xmlns:ns1=\"urn:crud\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +
+    	  "</ns1:crud_tableType>" +
+    	  "<ns1:crud_tableType xmlns:ns1=\"urn:crud\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +
     	    "<ns1:id>3</ns1:id>" +
     	    "<ns1:name>other</ns1:name>" +
-    	  "</ns1:crud_table>" +
+    	  "</ns1:crud_tableType>" +
     	"</all>";
 
     @SuppressWarnings("unchecked")
@@ -160,14 +160,14 @@ public class CRUDTestSuite extends DBWSTestSuite {
     public static final String FIND_BY_NAME_CONTROL_DOC =
     	"<?xml version=\"1.0\" encoding=\"UTF-8\"?> " +
     	"<some>" +
-    	  "<ns1:crud_table xmlns:ns1=\"urn:crud\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +
+    	  "<ns1:crud_tableType xmlns:ns1=\"urn:crud\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +
     	    "<ns1:id>1</ns1:id>" +
     	    "<ns1:name>crud1</ns1:name>" +
-    	  "</ns1:crud_table>" +
-    	  "<ns1:crud_table xmlns:ns1=\"urn:crud\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +
+    	  "</ns1:crud_tableType>" +
+    	  "<ns1:crud_tableType xmlns:ns1=\"urn:crud\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +
     	    "<ns1:id>2</ns1:id>" +
     	    "<ns1:name>crud2</ns1:name>" +
-    	  "</ns1:crud_table>" +
+    	  "</ns1:crud_tableType>" +
     	"</some>";
 
     @Test
@@ -177,7 +177,7 @@ public class CRUDTestSuite extends DBWSTestSuite {
         InputSource inputSource = new InputSource(reader);
         BaseEntity firstEmp = (BaseEntity)unMarshaller.unmarshal(inputSource);
         firstEmp.set(1, "some other name");
-        Invocation invocation = new Invocation("update_crud_table");
+        Invocation invocation = new Invocation("update_crud_tableType");
         invocation.setParameter("theInstance", firstEmp);
         Operation op = xrService.getOperation(invocation.getName());
         op.invoke(xrService, invocation);
@@ -186,11 +186,11 @@ public class CRUDTestSuite extends DBWSTestSuite {
     @SuppressWarnings("unchecked")
     @Test
     public void test5_delete() {
-        Invocation invocation = new Invocation("findAll_crud_table");
+        Invocation invocation = new Invocation("findAll_crud_tableType");
         Operation op = xrService.getOperation(invocation.getName());
         Vector<BaseEntity> result = (Vector<BaseEntity>)op.invoke(xrService, invocation);
         BaseEntity firstEmp = result.firstElement();
-        Invocation invocation2 = new Invocation("delete_crud_table");
+        Invocation invocation2 = new Invocation("delete_crud_tableType");
         invocation2.setParameter("theInstance", firstEmp);
         Operation op2 = xrService.getOperation(invocation2.getName());
         op2.invoke(xrService, invocation2);
@@ -205,11 +205,11 @@ public class CRUDTestSuite extends DBWSTestSuite {
         Reader reader = new StringReader(CRUD1_CONTROL_DOC);
         InputSource inputSource = new InputSource(reader);
         BaseEntity anotherEmployee = (BaseEntity)unMarshaller.unmarshal(inputSource);
-        Invocation invocation = new Invocation("create_crud_table");
+        Invocation invocation = new Invocation("create_crud_tableType");
         invocation.setParameter("theInstance", anotherEmployee);
         Operation op = xrService.getOperation(invocation.getName());
         op.invoke(xrService, invocation);
-        Invocation invocation2 = new Invocation("findAll_crud_table");
+        Invocation invocation2 = new Invocation("findAll_crud_tableType");
         Operation op2 = xrService.getOperation(invocation2.getName());
         Vector<BaseEntity> result2 = (Vector<BaseEntity>)op2.invoke(xrService, invocation2);
         assertTrue("Wrong number of employees", result2.size() == 3);

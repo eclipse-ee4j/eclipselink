@@ -1,0 +1,3 @@
+org.eclipse.persistence.tools.dbws.ToLowerTransformer
+org.eclipse.persistence.tools.dbws.TypeSuffixTransformer
+org.eclipse.persistence.tools.dbws.SQLX2003Transformer

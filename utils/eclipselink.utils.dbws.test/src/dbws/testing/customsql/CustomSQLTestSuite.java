@@ -131,7 +131,7 @@ public class CustomSQLTestSuite extends DBWSTestSuite {
 
     @Test
     public void findByPrimaryKey() {
-        Invocation invocation = new Invocation("findByPrimaryKey_custom");
+        Invocation invocation = new Invocation("findByPrimaryKey_customType");
         invocation.setParameter("empno", 7788);
         Operation op = xrService.getOperation(invocation.getName());
         Object result = op.invoke(xrService, invocation);
@@ -146,7 +146,7 @@ public class CustomSQLTestSuite extends DBWSTestSuite {
 
     public static final String FINDBYPK_7788_CONTROL_DOC =
         "<?xml version = '1.0' encoding = 'UTF-8'?>" +
-        "<ns1:custom xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:ns1=\"urn:customSQL\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +
+        "<ns1:customType xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:ns1=\"urn:customSQL\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +
           "<ns1:empno>7788</ns1:empno>" +
           "<ns1:ename>SCOTT</ns1:ename>" +
           "<ns1:job>ANALYST</ns1:job>" +
@@ -154,12 +154,12 @@ public class CustomSQLTestSuite extends DBWSTestSuite {
           "<ns1:hiredate>1981-06-09</ns1:hiredate>" +
           "<ns1:sal>3000.00</ns1:sal>" +
           "<ns1:deptno>20</ns1:deptno>" +
-        "</ns1:custom>";
+        "</ns1:customType>";
 
     @SuppressWarnings("unchecked")
     @Test
     public void findAll() {
-        Invocation invocation = new Invocation("findAll_custom");
+        Invocation invocation = new Invocation("findAll_customType");
         Operation op = xrService.getOperation(invocation.getName());
         Object result = op.invoke(xrService, invocation);
         assertNotNull("result is null", result);
@@ -178,7 +178,7 @@ public class CustomSQLTestSuite extends DBWSTestSuite {
     public static final String FIND_ALL_CONTROL_DOC =
     	"<?xml version = '1.0' encoding = 'UTF-8'?>" +
     	"<collection>" +
-    	  "<ns1:custom xmlns:ns1=\"urn:customSQL\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +
+    	  "<ns1:customType xmlns:ns1=\"urn:customSQL\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +
     	    "<ns1:empno>7369</ns1:empno>" +
     	    "<ns1:ename>SMITH</ns1:ename>" +
     	    "<ns1:job>CLERK</ns1:job>" +
@@ -186,8 +186,8 @@ public class CustomSQLTestSuite extends DBWSTestSuite {
     	    "<ns1:hiredate>1980-12-17</ns1:hiredate>" +
     	    "<ns1:sal>800.00</ns1:sal>" +
     	    "<ns1:deptno>20</ns1:deptno>" +
-    	  "</ns1:custom>" +
-    	  "<ns1:custom xmlns:ns1=\"urn:customSQL\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +
+    	  "</ns1:customType>" +
+    	  "<ns1:customType xmlns:ns1=\"urn:customSQL\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +
     	    "<ns1:empno>7499</ns1:empno>" +
     	    "<ns1:ename>ALLEN</ns1:ename>" +
     	    "<ns1:job>SALESMAN</ns1:job>" +
@@ -196,8 +196,8 @@ public class CustomSQLTestSuite extends DBWSTestSuite {
     	    "<ns1:sal>1600.00</ns1:sal>" +
     	    "<ns1:comm>300.00</ns1:comm>" +
     	    "<ns1:deptno>30</ns1:deptno>" +
-    	  "</ns1:custom>" +
-    	  "<ns1:custom xmlns:ns1=\"urn:customSQL\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +
+    	  "</ns1:customType>" +
+    	  "<ns1:customType xmlns:ns1=\"urn:customSQL\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +
     	    "<ns1:empno>7521</ns1:empno>" +
     	    "<ns1:ename>WARD</ns1:ename>" +
     	    "<ns1:job>SALESMAN</ns1:job>" +
@@ -206,8 +206,8 @@ public class CustomSQLTestSuite extends DBWSTestSuite {
     	    "<ns1:sal>1250.00</ns1:sal>" +
     	    "<ns1:comm>500.00</ns1:comm>" +
     	    "<ns1:deptno>30</ns1:deptno>" +
-    	  "</ns1:custom>" +
-    	  "<ns1:custom xmlns:ns1=\"urn:customSQL\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +
+    	  "</ns1:customType>" +
+    	  "<ns1:customType xmlns:ns1=\"urn:customSQL\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +
     	    "<ns1:empno>7566</ns1:empno>" +
     	    "<ns1:ename>JONES</ns1:ename>" +
     	    "<ns1:job>MANAGER</ns1:job>" +
@@ -215,8 +215,8 @@ public class CustomSQLTestSuite extends DBWSTestSuite {
     	    "<ns1:hiredate>1981-04-02</ns1:hiredate>" +
     	    "<ns1:sal>2975.00</ns1:sal>" +
     	    "<ns1:deptno>20</ns1:deptno>" +
-    	  "</ns1:custom>" +
-    	  "<ns1:custom xmlns:ns1=\"urn:customSQL\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +
+    	  "</ns1:customType>" +
+    	  "<ns1:customType xmlns:ns1=\"urn:customSQL\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +
     	    "<ns1:empno>7654</ns1:empno>" +
     	    "<ns1:ename>MARTIN</ns1:ename>" +
     	    "<ns1:job>SALESMAN</ns1:job>" +
@@ -225,8 +225,8 @@ public class CustomSQLTestSuite extends DBWSTestSuite {
     	    "<ns1:sal>1250.00</ns1:sal>" +
     	    "<ns1:comm>1400.00</ns1:comm>" +
     	    "<ns1:deptno>30</ns1:deptno>" +
-    	  "</ns1:custom>" +
-    	  "<ns1:custom xmlns:ns1=\"urn:customSQL\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +
+    	  "</ns1:customType>" +
+    	  "<ns1:customType xmlns:ns1=\"urn:customSQL\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +
     	    "<ns1:empno>7698</ns1:empno>" +
     	    "<ns1:ename>BLAKE</ns1:ename>" +
     	    "<ns1:job>MANAGER</ns1:job>" +
@@ -234,8 +234,8 @@ public class CustomSQLTestSuite extends DBWSTestSuite {
     	    "<ns1:hiredate>1981-05-01</ns1:hiredate>" +
     	    "<ns1:sal>2850.00</ns1:sal>" +
     	    "<ns1:deptno>30</ns1:deptno>" +
-    	  "</ns1:custom>" +
-    	  "<ns1:custom xmlns:ns1=\"urn:customSQL\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +
+    	  "</ns1:customType>" +
+    	  "<ns1:customType xmlns:ns1=\"urn:customSQL\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +
     	    "<ns1:empno>7782</ns1:empno>" +
     	    "<ns1:ename>CLARK</ns1:ename>" +
     	    "<ns1:job>MANAGER</ns1:job>" +
@@ -243,8 +243,8 @@ public class CustomSQLTestSuite extends DBWSTestSuite {
     	    "<ns1:hiredate>1981-06-09</ns1:hiredate>" +
     	    "<ns1:sal>2450.00</ns1:sal>" +
     	    "<ns1:deptno>10</ns1:deptno>" +
-    	  "</ns1:custom>" +
-    	  "<ns1:custom xmlns:ns1=\"urn:customSQL\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +
+    	  "</ns1:customType>" +
+    	  "<ns1:customType xmlns:ns1=\"urn:customSQL\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +
     	    "<ns1:empno>7788</ns1:empno>" +
     	    "<ns1:ename>SCOTT</ns1:ename>" +
     	    "<ns1:job>ANALYST</ns1:job>" +
@@ -252,16 +252,16 @@ public class CustomSQLTestSuite extends DBWSTestSuite {
     	    "<ns1:hiredate>1981-06-09</ns1:hiredate>" +
     	    "<ns1:sal>3000.00</ns1:sal>" +
     	    "<ns1:deptno>20</ns1:deptno>" +
-    	  "</ns1:custom>" +
-    	  "<ns1:custom xmlns:ns1=\"urn:customSQL\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +
+    	  "</ns1:customType>" +
+    	  "<ns1:customType xmlns:ns1=\"urn:customSQL\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +
     	    "<ns1:empno>7839</ns1:empno>" +
     	    "<ns1:ename>KING</ns1:ename>" +
     	    "<ns1:job>PRESIDENT</ns1:job>" +
     	    "<ns1:hiredate>1981-11-17</ns1:hiredate>" +
     	    "<ns1:sal>5000.00</ns1:sal>" +
     	    "<ns1:deptno>10</ns1:deptno>" +
-    	  "</ns1:custom>" +
-    	  "<ns1:custom xmlns:ns1=\"urn:customSQL\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +
+    	  "</ns1:customType>" +
+    	  "<ns1:customType xmlns:ns1=\"urn:customSQL\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +
     	    "<ns1:empno>7844</ns1:empno>" +
     	    "<ns1:ename>TURNER</ns1:ename>" +
     	    "<ns1:job>SALESMAN</ns1:job>" +
@@ -270,8 +270,8 @@ public class CustomSQLTestSuite extends DBWSTestSuite {
     	    "<ns1:sal>1500.00</ns1:sal>" +
     	    "<ns1:comm>0.00</ns1:comm>" +
     	    "<ns1:deptno>30</ns1:deptno>" +
-    	  "</ns1:custom>" +
-    	  "<ns1:custom xmlns:ns1=\"urn:customSQL\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +
+    	  "</ns1:customType>" +
+    	  "<ns1:customType xmlns:ns1=\"urn:customSQL\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +
     	    "<ns1:empno>7876</ns1:empno>" +
     	    "<ns1:ename>ADAMS</ns1:ename>" +
     	    "<ns1:job>CLERK</ns1:job>" +
@@ -279,8 +279,8 @@ public class CustomSQLTestSuite extends DBWSTestSuite {
     	    "<ns1:hiredate>1987-05-23</ns1:hiredate>" +
     	    "<ns1:sal>1100.00</ns1:sal>" +
     	    "<ns1:deptno>20</ns1:deptno>" +
-    	  "</ns1:custom>" +
-    	  "<ns1:custom xmlns:ns1=\"urn:customSQL\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +
+    	  "</ns1:customType>" +
+    	  "<ns1:customType xmlns:ns1=\"urn:customSQL\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +
     	    "<ns1:empno>7900</ns1:empno>" +
     	    "<ns1:ename>JAMES</ns1:ename>" +
     	    "<ns1:job>CLERK</ns1:job>" +
@@ -288,8 +288,8 @@ public class CustomSQLTestSuite extends DBWSTestSuite {
     	    "<ns1:hiredate>1981-12-03</ns1:hiredate>" +
     	    "<ns1:sal>950.00</ns1:sal>" +
     	    "<ns1:deptno>30</ns1:deptno>" +
-    	  "</ns1:custom>" +
-    	  "<ns1:custom xmlns:ns1=\"urn:customSQL\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +
+    	  "</ns1:customType>" +
+    	  "<ns1:customType xmlns:ns1=\"urn:customSQL\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +
     	    "<ns1:empno>7902</ns1:empno>" +
     	    "<ns1:ename>FORD</ns1:ename>" +
     	    "<ns1:job>ANALYST</ns1:job>" +
@@ -297,8 +297,8 @@ public class CustomSQLTestSuite extends DBWSTestSuite {
     	    "<ns1:hiredate>1981-12-03</ns1:hiredate>" +
     	    "<ns1:sal>3000.00</ns1:sal>" +
     	    "<ns1:deptno>20</ns1:deptno>" +
-    	  "</ns1:custom>" +
-    	  "<ns1:custom xmlns:ns1=\"urn:customSQL\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +
+    	  "</ns1:customType>" +
+    	  "<ns1:customType xmlns:ns1=\"urn:customSQL\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +
     	    "<ns1:empno>7934</ns1:empno>" +
     	    "<ns1:ename>MILLER</ns1:ename>" +
     	    "<ns1:job>CLERK</ns1:job>" +
@@ -306,6 +306,6 @@ public class CustomSQLTestSuite extends DBWSTestSuite {
     	    "<ns1:hiredate>1982-01-23</ns1:hiredate>" +
     	    "<ns1:sal>1300.00</ns1:sal>" +
     	    "<ns1:deptno>10</ns1:deptno>" +
-    	  "</ns1:custom>" +
+    	  "</ns1:customType>" +
     	"</collection>";
 }

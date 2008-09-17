@@ -1,10 +1,10 @@
 /*******************************************************************************
  * Copyright (c) 1998, 2008 Oracle. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
@@ -89,6 +89,7 @@ public class QueryOperation extends Operation {
         this.queryHandler = queryHandler;
     }
 
+    @Override
     public boolean isCollection() {
         return result.isCollection();
     }
@@ -121,11 +122,9 @@ public class QueryOperation extends Operation {
             if (!resultType.getNamespaceURI().equals(W3C_XML_SCHEMA_NS_URI)) {
                 boolean sxf = resultType.getLocalPart().equals("sxfType") ||
                     resultType.getLocalPart().equals("cursor of sxfType");
-                if (!sxf && !xrService.schemaTypes.contains(resultType)) {
-                    throw DBWSException.resultDoesNotExistForOperation(resultType.toString(), name);
-                }
-                if (!sxf && !xrService.descriptorsByType.containsKey(resultType)) {
-                    throw DBWSException.resultHasNoMapping(resultType.toString(), name);
+                // check descriptor for Schema's high-level element type 'resultType'
+                if (!sxf && !xrService.descriptorsByElement.containsKey(resultType)) {
+                        throw DBWSException.resultHasNoMapping(resultType.toString(), name);
                 }
             }
         }

@@ -27,9 +27,11 @@ import java.sql.DriverManager;
 import java.sql.Types;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+import java.util.ServiceLoader;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -59,10 +61,12 @@ import org.eclipse.persistence.internal.databaseaccess.DatabasePlatform;
 import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.internal.oxm.schema.SchemaModelProject;
+import org.eclipse.persistence.internal.oxm.schema.model.Attribute;
 import org.eclipse.persistence.internal.oxm.schema.model.ComplexType;
 import org.eclipse.persistence.internal.oxm.schema.model.Element;
 import org.eclipse.persistence.internal.oxm.schema.model.Schema;
 import org.eclipse.persistence.internal.oxm.schema.model.Sequence;
+import org.eclipse.persistence.internal.oxm.schema.model.SimpleComponent;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.internal.security.PrivilegedClassForName;
 import org.eclipse.persistence.internal.sessions.factories.MissingDescriptorListener;
@@ -101,6 +105,7 @@ import org.eclipse.persistence.queries.ReadAllQuery;
 import org.eclipse.persistence.queries.ReadObjectQuery;
 import org.eclipse.persistence.sessions.DatabaseLogin;
 import org.eclipse.persistence.sessions.Project;
+import org.eclipse.persistence.tools.dbws.NamingConventionTransformer.ElementStyle;
 import org.eclipse.persistence.tools.dbws.jdbc.DbColumn;
 import org.eclipse.persistence.tools.dbws.jdbc.DbStoredArgument;
 import org.eclipse.persistence.tools.dbws.jdbc.DbStoredProcedure;
@@ -121,6 +126,9 @@ import static org.eclipse.persistence.internal.xr.Util.TARGET_NAMESPACE_PREFIX;
 import static org.eclipse.persistence.internal.xr.Util.getClassFromJDBCType;
 import static org.eclipse.persistence.oxm.XMLConstants.BASE_64_BINARY_QNAME;
 import static org.eclipse.persistence.tools.dbws.DBWSBasePackager.__nullStream;
+import static org.eclipse.persistence.tools.dbws.NamingConventionTransformer.ElementStyle.ATTRIBUTE;
+import static org.eclipse.persistence.tools.dbws.NamingConventionTransformer.ElementStyle.ELEMENT;
+import static org.eclipse.persistence.tools.dbws.NamingConventionTransformer.ElementStyle.NONE;
 import static org.eclipse.persistence.tools.dbws.Util.CREATE_OPERATION_NAME;
 import static org.eclipse.persistence.tools.dbws.Util.DBWS_PROVIDER_CLASS_FILE;
 import static org.eclipse.persistence.tools.dbws.Util.DBWS_PROVIDER_SOURCE_FILE;
@@ -386,15 +394,48 @@ public class DBWSBuilder extends DBWSBuilderModel {
         if (sessionsFileName != null && sessionsFileName.length() > 0) {
             xrServiceModel.setSessionsFile(sessionsFileName);
         }
+        // setup the NamingConventionTransformers
+        ServiceLoader<NamingConventionTransformer> transformers =
+            ServiceLoader.load(NamingConventionTransformer.class);
+        Iterator<NamingConventionTransformer> transformerIter = transformers.iterator();
+        NamingConventionTransformer topTransformer = transformerIter.next();
+        LinkedList<NamingConventionTransformer> transformerList =
+            new LinkedList<NamingConventionTransformer>();
+        // check for user-provided transformer in front of default transformers
+        if (!((DefaultNamingConventionTransformer)topTransformer).isDefaultTransformer()) {
+            // ditch all default transformers, except for the last one - SQLX2003Transformer
+            for (; transformerIter.hasNext(); ) {
+                NamingConventionTransformer nextTransformer = transformerIter.next();
+                if (!((DefaultNamingConventionTransformer)nextTransformer).isDefaultTransformer()) {
+                    transformerList.addLast(nextTransformer);
+                }
+                else if (nextTransformer instanceof SQLX2003Transformer) {
+                    transformerList.addLast(nextTransformer);
+                }
+            }
+        }
+        else {
+            // assume usual configuration: ToLowerTransformer -> TypeSuffixTransformer -> SQLX2003Transformer
+            for (; transformerIter.hasNext(); ) {
+                transformerList.addLast(transformerIter.next());
+            }
+        }
+        // hook up the chain-of-responsibility
+        NamingConventionTransformer nextTransformer = topTransformer;
+        for (Iterator<NamingConventionTransformer> i = transformerList.iterator(); i.hasNext();) {
+            NamingConventionTransformer nct = i.next();
+            ((DefaultNamingConventionTransformer)nextTransformer).setNextTransformer(nct);
+            nextTransformer = nct;
+        }
         packager.start();
         buildDbArtifacts();
-        buildOROXProjects(); // don't write out projects yet; buildDBWSModel may add additional mappings
+        buildOROXProjects(topTransformer); // don't write out projects yet; buildDBWSModel may add additional mappings
         // don't write out schema yet; buildDBWSModel/buildWSDL may add additional schema elements
-        buildSchema();
+        buildSchema(topTransformer);
         buildSessionsXML(dbwsSessionsStream);
-        buildDBWSModel(dbwsServiceStream);
+        buildDBWSModel(topTransformer, dbwsServiceStream);
         writeAttachmentSchema(swarefStream);
-        buildWSDL(wsdlStream);
+        buildWSDL(wsdlStream, topTransformer);
         writeWebXML(webXmlStream);
         writeWebservicesXML(webservicesXmlStream);
         writePlatformWebservicesXML(platformWebservicesXmlStream);
@@ -569,7 +610,7 @@ public class DBWSBuilder extends DBWSBuilderModel {
         operations.add(sqlOperation);
     }
 
-    protected void buildOROXProjects() {
+    protected void buildOROXProjects(NamingConventionTransformer nct) {
         String projectName = getProjectName();
         if (dbTables.isEmpty()) {
             logMessage(FINEST, "No tables specified");
@@ -589,22 +630,22 @@ public class DBWSBuilder extends DBWSBuilderModel {
                 RelationalDescriptor desc = new RelationalDescriptor();
                 orProject.addDescriptor(desc);
                 String tableName = dbTable.getName();
-                String tablename_lc = dbTable.getName().toLowerCase();
+                String tablenameAlias = nct.generateSchemaAlias(tableName);
                 desc.addTableName(tableName);
-                desc.setAlias(tablename_lc);
+                desc.setAlias(tablenameAlias);
                 String generatedJavaClassName = getGeneratedJavaClassName(tableName);
                 desc.setJavaClassName(generatedJavaClassName);
                 desc.useWeakIdentityMap();
                 XMLDescriptor xdesc = new XMLDescriptor();
                 oxProject.addDescriptor(xdesc);
                 xdesc.setJavaClassName(generatedJavaClassName);
-                xdesc.setAlias(tablename_lc);
+                xdesc.setAlias(tablenameAlias);
                 NamespaceResolver nr = new NamespaceResolver();
                 nr.put("xsi", W3C_XML_SCHEMA_INSTANCE_NS_URI);
                 nr.put("xsd", W3C_XML_SCHEMA_NS_URI);
                 nr.put(TARGET_NAMESPACE_PREFIX, getTargetNamespace());
                 xdesc.setNamespaceResolver(nr);
-                xdesc.setDefaultRootElement(TARGET_NAMESPACE_PREFIX + ":" + tablename_lc);
+                xdesc.setDefaultRootElement(TARGET_NAMESPACE_PREFIX + ":" + tablenameAlias);
                 for (DbColumn dbColumn : dbTable.getColumns()) {
                     String columnName = dbColumn.getName();
                     int jdbcType = dbColumn.getJDBCType();
@@ -655,18 +696,29 @@ public class DBWSBuilder extends DBWSBuilderModel {
                         attributeClass = APBYTE;
                     }
                     dtfm.setAttributeClassificationName(attributeClass.getName());
-                    String fieldName = columnName.toLowerCase();
+                    String fieldName = nct.generateElementAlias(columnName);
                     dtfm.setAttributeName(fieldName);
                     DatabaseField databaseField = new DatabaseField(columnName, tableName);
                     databaseField.setSqlType(jdbcType);
                     dtfm.setField(databaseField);
-                    desc.addMapping(dtfm);
                     if (dbColumn.isPK()) {
                         desc.addPrimaryKeyField(databaseField);
                     }
                     xdm.setAttributeName(fieldName);
-                    String xPath = TARGET_NAMESPACE_PREFIX + ":" + fieldName;
-                    if (!isSwaRef) {
+                    String xPath = TARGET_NAMESPACE_PREFIX + ":";
+                    ElementStyle style = nct.styleForElement(columnName);
+                    if (style == NONE) {
+                        continue;
+                    }
+                    else if (style == ATTRIBUTE) {
+                        xPath += "@" + fieldName;
+                    }
+                    else if (style == ELEMENT){
+                        xPath += fieldName;
+                    }
+                    desc.addMapping(dtfm);
+                    xdesc.addMapping(xdm);
+                    if (!isSwaRef && style == ELEMENT) {
                         xPath += "/text()";
                     }
                     xdm.setXPath(xPath);
@@ -676,7 +728,6 @@ public class DBWSBuilder extends DBWSBuilderModel {
                         xmlField.setIsTypedTextField(true);
                         xmlField.addConversion(BASE_64_BINARY_QNAME, APBYTE);
                     }
-                    xdesc.addMapping(xdm);
               }
               ReadObjectQuery roq = new ReadObjectQuery();
               roq.setReferenceClassName(generatedJavaClassName);
@@ -753,84 +804,110 @@ public class DBWSBuilder extends DBWSBuilderModel {
     }
 
     @SuppressWarnings("unchecked")
-    protected void buildSchema() {
+    protected void buildSchema(NamingConventionTransformer nct) {
         schema.setName(getProjectName());
         schema.setTargetNamespace(getTargetNamespace());
         ns.put(TARGET_NAMESPACE_PREFIX, getTargetNamespace());
         schema.setDefaultNamespace(getTargetNamespace());
         schema.setElementFormDefault(true);
         for (DbTable dbTable : dbTables) {
+            String dbTableName = dbTable.getName();
+            String schemaAlias = nct.generateSchemaAlias(dbTableName);
             ClassDescriptor desc = null;
             Set<Map.Entry<Class, ClassDescriptor>> orDescriptorSet =
                 orProject.getDescriptors().entrySet();
             for (Map.Entry<Class, ClassDescriptor> me : orDescriptorSet) {
                 desc = me.getValue();
-                if (desc.getAlias().equalsIgnoreCase(dbTable.getName())) {
+                if (desc.getAlias().equalsIgnoreCase(dbTableName)) {
                     break;
                 }
             }
             if (desc != null) {
-	            String tablename_lc = desc.getAlias();
+	            String tablenameAlias = desc.getAlias();
 	            ComplexType complexType = new ComplexType();
-	            complexType.setName(tablename_lc + "Type");
+	            complexType.setName(schemaAlias);
 	            Sequence sequence = new Sequence();
 	            Iterator j = desc.getMappings().iterator();
 	            while (j.hasNext()) {
 	                DirectToFieldMapping mapping = (DirectToFieldMapping)j.next();
-	                Element element = new Element();
-	                DatabaseField field = mapping.getField();
-	                element.setName(field.getName().toLowerCase());
-	                if (desc.getPrimaryKeyFields().contains(field)) {
-	                    element.setMinOccurs("1");
-	                }
-	                else {
-	                    element.setMinOccurs("0");
-	                }
-	                for (DbColumn dbColumn : dbTable.getColumns()) {
-	                    if (dbColumn.getName().equals(field.getName())) {
-	                        StringBuilder sb = new StringBuilder();
-	                        int jdbcType = dbColumn.getJDBCType();
-	                        QName qName = getXMLTypeFromJDBCType(jdbcType);
-	                        if (qName == BASE_64_BINARY_QNAME) {
-	                            Set<Map.Entry<Class, ClassDescriptor>> oxDescriptorSet =
-	                                oxProject.getDescriptors().entrySet();
-	                            for (Map.Entry<Class, ClassDescriptor> me : oxDescriptorSet) {
-	                                ClassDescriptor oxDesc = me.getValue();
-	                                if (oxDesc.getAlias().equals(tablename_lc)) {
-	                                    DatabaseMapping dm =
-	                                        oxDesc.getMappingForAttributeName(mapping.getAttributeName());
-	                                    if (dm instanceof XMLBinaryDataMapping) {
-	                                        XMLBinaryDataMapping xbdm = (XMLBinaryDataMapping)dm;
-	                                        if (xbdm.isSwaRef()) {
-	                                            sb.append(WSI_SWAREF_PREFIX + ":" + WSI_SWAREF);
-	                                            schema.getNamespaceResolver().put(WSI_SWAREF_PREFIX,
-	                                                WSI_SWAREF_URI);
-	                                        }
-	                                        else {
-	                                            sb.append(BASE_64_BINARY_QNAME.toString());
-	                                        }
-	                                    }
-	                                    break;
-	                                }
-	                            }
-	                        }
-	                        else {
-	                            if (qName.getNamespaceURI().equalsIgnoreCase(W3C_XML_SCHEMA_NS_URI)) {
-	                                sb.append("xsd:");
-	                            }
-	                            sb.append(qName.getLocalPart());
-	                        }
-	                        element.setType(sb.toString());
-	                        sequence.addElement(element);
-	                        break;
-	                    }
-	                }
+                    DatabaseField field = mapping.getField();
+	                SimpleComponent component = null;
+                    StringBuilder sb = new StringBuilder();
+                    String dbColumnName = null;
+                    boolean optional = true;
+                    for (DbColumn dbColumn : dbTable.getColumns()) {
+                        dbColumnName = dbColumn.getName();
+                        if (dbColumnName.equals(field.getName())) {
+                            if (!dbColumn.isNullable() || dbColumn.isPK() || dbColumn.isUnique()) {
+                                optional = false;
+                            }
+                            int jdbcType = dbColumn.getJDBCType();
+                            QName qName = getXMLTypeFromJDBCType(jdbcType);
+                            if (qName == BASE_64_BINARY_QNAME) {
+                                Set<Map.Entry<Class, ClassDescriptor>> oxDescriptorSet =
+                                    oxProject.getDescriptors().entrySet();
+                                for (Map.Entry<Class, ClassDescriptor> me : oxDescriptorSet) {
+                                    ClassDescriptor oxDesc = me.getValue();
+                                    if (oxDesc.getAlias().equals(tablenameAlias)) {
+                                        DatabaseMapping dm =
+                                            oxDesc.getMappingForAttributeName(mapping.getAttributeName());
+                                        if (dm instanceof XMLBinaryDataMapping) {
+                                            XMLBinaryDataMapping xbdm = (XMLBinaryDataMapping)dm;
+                                            if (xbdm.isSwaRef()) {
+                                                sb.append(WSI_SWAREF_PREFIX + ":" + WSI_SWAREF);
+                                                schema.getNamespaceResolver().put(WSI_SWAREF_PREFIX,
+                                                    WSI_SWAREF_URI);
+                                            }
+                                            else {
+                                                sb.append(BASE_64_BINARY_QNAME.toString());
+                                            }
+                                        }
+                                        break;
+                                    }
+                                }
+                            }
+                            else {
+                                if (qName.getNamespaceURI().equalsIgnoreCase(W3C_XML_SCHEMA_NS_URI)) {
+                                    sb.append("xsd:");
+                                }
+                                sb.append(qName.getLocalPart());
+                            }
+                            break;
+                        }
+                    }
+                    String elementNameAlias = nct.generateElementAlias(dbColumnName);
+                    if (nct.styleForElement(dbColumnName) == ELEMENT) {
+                        component = new Element();
+                        sequence.addElement((Element)component);
+                    }
+                    else {
+                        component = new Attribute();
+                        complexType.getOrderedAttributes().add(component);
+                    }
+                    component.setName(elementNameAlias);
+                    component.setType(sb.toString());
+                    if (optional) {
+                        if (component instanceof Element) {
+                            Element element = (Element)component;
+                            element.setMinOccurs("0");
+                        }
+                    }
+                    else {
+                        if (component instanceof Element) {
+                            Element element = (Element)component;
+                            element.setMinOccurs("1");
+                        }
+                        else {
+                            Attribute attribute = (Attribute)component;
+                            attribute.setUse(Attribute.REQUIRED);
+                        }
+                    }
 	            }
 	            complexType.setSequence(sequence);
 	            schema.addTopLevelComplexTypes(complexType);
 	            Element wrapperElement = new Element();
-	            wrapperElement.setName(tablename_lc);
-	            wrapperElement.setType(tablename_lc + "Type");
+	            wrapperElement.setName(tablenameAlias);
+	            wrapperElement.setType(complexType.getName());
 	            schema.addTopLevelElement(wrapperElement);
             }
         }
@@ -861,78 +938,78 @@ public class DBWSBuilder extends DBWSBuilderModel {
     }
 
     @SuppressWarnings("unchecked")
-    protected void buildDBWSModel(OutputStream dbwsServiceStream) {
+    protected void buildDBWSModel(NamingConventionTransformer nct, OutputStream dbwsServiceStream) {
 
         if (!isNullStream(dbwsServiceStream)) {
             for (Iterator i = orProject.getOrderedDescriptors().iterator(); i.hasNext();) {
                 ClassDescriptor desc = (ClassDescriptor)i.next();
-                String tablename_lc = desc.getAlias();
+                String tablenameAlias = desc.getAlias();
                 QueryOperation findByPKQueryOperation = new QueryOperation();
-                findByPKQueryOperation.setName(PK_QUERYNAME + "_" + tablename_lc);
+                findByPKQueryOperation.setName(PK_QUERYNAME + "_" + tablenameAlias);
                 NamedQueryHandler nqh1 = new NamedQueryHandler();
                 nqh1.setName(PK_QUERYNAME);
-                nqh1.setDescriptor(tablename_lc);
+                nqh1.setDescriptor(tablenameAlias);
                 Result result = new Result();
-                QName theInstanceType = new QName(getTargetNamespace(), tablename_lc + "Type",
+                QName theInstanceType = new QName(getTargetNamespace(), tablenameAlias,
                     TARGET_NAMESPACE_PREFIX);
                 result.setType(theInstanceType);
-            findByPKQueryOperation.setResult(result);
-            findByPKQueryOperation.setQueryHandler(nqh1);
-            for (Iterator j = desc.getPrimaryKeyFields().iterator(); j.hasNext();) {
-                DatabaseField field = (DatabaseField)j.next();
-                Parameter p = new Parameter();
-                p.setName(field.getName().toLowerCase());
-                p.setType(getXMLTypeFromJDBCType(field.getSqlType()));
-                findByPKQueryOperation.getParameters().add(p);
+                findByPKQueryOperation.setResult(result);
+                findByPKQueryOperation.setQueryHandler(nqh1);
+                for (Iterator j = desc.getPrimaryKeyFields().iterator(); j.hasNext();) {
+                    DatabaseField field = (DatabaseField)j.next();
+                    Parameter p = new Parameter();
+                    p.setName(field.getName().toLowerCase());
+                    p.setType(getXMLTypeFromJDBCType(field.getSqlType()));
+                    findByPKQueryOperation.getParameters().add(p);
+                }
+                xrServiceModel.getOperations().put(findByPKQueryOperation.getName(), findByPKQueryOperation);
+                QueryOperation findAllOperation = new QueryOperation();
+                findAllOperation.setName(FINDALL_QUERYNAME + "_" + tablenameAlias);
+                NamedQueryHandler nqh2 = new NamedQueryHandler();
+                nqh2.setName(FINDALL_QUERYNAME);
+                nqh2.setDescriptor(tablenameAlias);
+                Result result2 = new CollectionResult();
+                result2.setType(theInstanceType);
+                findAllOperation.setResult(result2);
+                findAllOperation.setQueryHandler(nqh2);
+                xrServiceModel.getOperations().put(findAllOperation.getName(), findAllOperation);
+                InsertOperation insertOperation = new InsertOperation();
+                insertOperation.setName(CREATE_OPERATION_NAME + "_" + tablenameAlias);
+                Parameter theInstance = new Parameter();
+                theInstance.setName(THE_INSTANCE_NAME);
+                theInstance.setType(theInstanceType);
+                insertOperation.getParameters().add(theInstance);
+                xrServiceModel.getOperations().put(insertOperation.getName(), insertOperation);
+                UpdateOperation updateOperation = new UpdateOperation();
+                updateOperation.setName(UPDATE_OPERATION_NAME + "_" + tablenameAlias);
+                updateOperation.getParameters().add(theInstance);
+                xrServiceModel.getOperations().put(updateOperation.getName(), updateOperation);
+                DeleteOperation deleteOperation = new DeleteOperation();
+                deleteOperation.setName(REMOVE_OPERATION_NAME + "_" + tablenameAlias);
+                deleteOperation.getParameters().add(theInstance);
+                xrServiceModel.getOperations().put(deleteOperation.getName(), deleteOperation);
             }
-            xrServiceModel.getOperations().put(findByPKQueryOperation.getName(), findByPKQueryOperation);
-            QueryOperation findAllOperation = new QueryOperation();
-            findAllOperation.setName(FINDALL_QUERYNAME + "_" + tablename_lc);
-            NamedQueryHandler nqh2 = new NamedQueryHandler();
-            nqh2.setName(FINDALL_QUERYNAME);
-            nqh2.setDescriptor(tablename_lc);
-            Result result2 = new CollectionResult();
-            result2.setType(theInstanceType);
-            findAllOperation.setResult(result2);
-            findAllOperation.setQueryHandler(nqh2);
-            xrServiceModel.getOperations().put(findAllOperation.getName(), findAllOperation);
-            InsertOperation insertOperation = new InsertOperation();
-            insertOperation.setName(CREATE_OPERATION_NAME + "_" + tablename_lc);
-            Parameter theInstance = new Parameter();
-            theInstance.setName(THE_INSTANCE_NAME);
-            theInstance.setType(theInstanceType);
-            insertOperation.getParameters().add(theInstance);
-            xrServiceModel.getOperations().put(insertOperation.getName(), insertOperation);
-            UpdateOperation updateOperation = new UpdateOperation();
-            updateOperation.setName(UPDATE_OPERATION_NAME + "_" + tablename_lc);
-            updateOperation.getParameters().add(theInstance);
-            xrServiceModel.getOperations().put(updateOperation.getName(), updateOperation);
-            DeleteOperation deleteOperation = new DeleteOperation();
-            deleteOperation.setName(REMOVE_OPERATION_NAME + "_" + tablename_lc);
-            deleteOperation.getParameters().add(theInstance);
-            xrServiceModel.getOperations().put(deleteOperation.getName(), deleteOperation);
-        }
-        // check for additional operations
-        for (OperationModel operation : operations) {
-            if (operation.isTableOperation()) {
-                TableOperationModel tableModel = (TableOperationModel)operation;
-                if (tableModel.additionalOperations.size() > 0) {
-                    for (OperationModel additionalOperation : tableModel.additionalOperations) {
-                        additionalOperation.buildOperation(this);
+            // check for additional operations
+            for (OperationModel operation : operations) {
+                if (operation.isTableOperation()) {
+                    TableOperationModel tableModel = (TableOperationModel)operation;
+                    if (tableModel.additionalOperations.size() > 0) {
+                        for (OperationModel additionalOperation : tableModel.additionalOperations) {
+                            additionalOperation.buildOperation(this);
+                        }
                     }
                 }
+                else { // handle non-nested <sql> and <procedure> operations
+                    operation.buildOperation(this);
+                }
             }
-            else { // handle non-nested <sql> and <procedure> operations
-                operation.buildOperation(this);
+                DBWSModelProject modelProject = new DBWSModelProject();
+                modelProject.ns.put(TARGET_NAMESPACE_PREFIX, getTargetNamespace());
+                XMLContext context = new XMLContext(modelProject);
+                XMLMarshaller marshaller = context.createMarshaller();
+                marshaller.marshal(xrServiceModel, dbwsServiceStream);
+                packager.closeServiceStream(dbwsServiceStream);
             }
-        }
-            DBWSModelProject modelProject = new DBWSModelProject();
-            modelProject.ns.put(TARGET_NAMESPACE_PREFIX, getTargetNamespace());
-            XMLContext context = new XMLContext(modelProject);
-            XMLMarshaller marshaller = context.createMarshaller();
-            marshaller.marshal(xrServiceModel, dbwsServiceStream);
-            packager.closeServiceStream(dbwsServiceStream);
-        }
     }
 
     protected void writeAttachmentSchema(OutputStream swarefStream) {
@@ -972,10 +1049,10 @@ public class DBWSBuilder extends DBWSBuilderModel {
         }
     }
 
-    public void buildWSDL(OutputStream wsdlStream) throws WSDLException {
+    public void buildWSDL(OutputStream wsdlStream, NamingConventionTransformer nct) throws WSDLException {
         if (!isNullStream(wsdlStream)) {
             logMessage(FINEST, "building " + DBWS_WSDL);
-            wsdlGenerator = new WSDLGenerator(xrServiceModel, getWsdlLocationURI(),
+            wsdlGenerator = new WSDLGenerator(xrServiceModel, nct, getWsdlLocationURI(),
                 packager.hasAttachments(), getTargetNamespace(), wsdlStream);
             wsdlGenerator.generateWSDL();
             packager.closeWSDLStream(wsdlStream);
@@ -1005,7 +1082,7 @@ public class DBWSBuilder extends DBWSBuilderModel {
             conn = DriverManager.getConnection(getUrl(), props);
         }
         catch (Exception e) {
-            logMessage(SEVERE, "cannot load JDBC driver " + driverClassName);
+            logMessage(SEVERE, "cannot load JDBC driver " + driverClassName, e);
         }
         return conn;
     }

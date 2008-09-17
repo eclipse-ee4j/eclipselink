@@ -1,10 +1,10 @@
 /*******************************************************************************
  * Copyright (c) 1998, 2008 Oracle. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
@@ -68,7 +68,7 @@ public class AttachedBinaryTestSuite extends DBWSTestSuite {
 	     "<procedure " +
 	       "name=\"getBLOBById\" " +
 	       "isCollection=\"false\" " +
-	       "returnType=\"ab:attachedbinary\" " +
+	       "returnType=\"ab:attachedbinaryType\" " +
 	       "procedurePattern=\"getBLOBById\" " +
 	       "binaryAttachment=\"true\" " +
 	     "/>" +
@@ -81,11 +81,11 @@ public class AttachedBinaryTestSuite extends DBWSTestSuite {
 	}
 
     public static SOAPAttachmentHandler attachmentHandler = new SOAPAttachmentHandler();
-    
+
     @SuppressWarnings("unchecked")
     @Test
     public void findAll() {
-        Invocation invocation = new Invocation("findAll_attachedbinary");
+        Invocation invocation = new Invocation("findAll_attachedbinaryType");
         Operation op = xrService.getOperation(invocation.getName());
         Object result = op.invoke(xrService, invocation);
         assertNotNull("result is null", result);
@@ -101,24 +101,24 @@ public class AttachedBinaryTestSuite extends DBWSTestSuite {
         assertTrue("control document not same as instance document",
             comparer.isNodeEqual(controlDoc, doc));
     }
-    public static final String ATTACHED_BINARY_COLLECTION_XML = 
+    public static final String ATTACHED_BINARY_COLLECTION_XML =
         "<?xml version = \"1.0\" encoding = \"UTF-8\"?>" +
         "<attachedbinary-collection>" +
-	        "<ns1:attachedbinary xmlns:ns1=\"urn:attachedbinary\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +
+	        "<ns1:attachedbinaryType xmlns:ns1=\"urn:attachedbinary\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +
 		        "<ns1:id>1</ns1:id>" +
 		        "<ns1:name>one</ns1:name>" +
 		        "<ns1:b>cid:ref1</ns1:b>" +
-	        "</ns1:attachedbinary>" +
-	        "<ns1:attachedbinary xmlns:ns1=\"urn:attachedbinary\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +
+	        "</ns1:attachedbinaryType>" +
+	        "<ns1:attachedbinaryType xmlns:ns1=\"urn:attachedbinary\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +
 		        "<ns1:id>2</ns1:id>" +
 		        "<ns1:name>two</ns1:name>" +
 		        "<ns1:b>cid:ref2</ns1:b>" +
-	        "</ns1:attachedbinary>" +
-	        "<ns1:attachedbinary xmlns:ns1=\"urn:attachedbinary\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +
+	        "</ns1:attachedbinaryType>" +
+	        "<ns1:attachedbinaryType xmlns:ns1=\"urn:attachedbinary\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +
 		        "<ns1:id>3</ns1:id>" +
 		        "<ns1:name>three</ns1:name>" +
 		        "<ns1:b>cid:ref3</ns1:b>" +
-	        "</ns1:attachedbinary>" +
+	        "</ns1:attachedbinaryType>" +
         "</attachedbinary-collection>";
 
     @Test
