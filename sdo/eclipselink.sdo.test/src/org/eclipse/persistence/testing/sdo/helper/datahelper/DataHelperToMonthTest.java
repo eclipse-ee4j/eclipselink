@@ -26,7 +26,7 @@ public class DataHelperToMonthTest extends DataHelperTestCases {
         controlCalendar.set(Calendar.MONTH, 10);
         Date controlDate = controlCalendar.getTime();
         String tm = dataHelper.toMonth(controlDate);
-        this.assertEquals("--11--", tm);
+        this.assertEquals("--11", tm);
     }
 
     public void testToMonthWithDefault() {
@@ -34,7 +34,7 @@ public class DataHelperToMonthTest extends DataHelperTestCases {
         controlCalendar.clear();
         Date controlDate = controlCalendar.getTime();
         String tm = dataHelper.toMonth(controlDate);
-        this.assertEquals("--01--", tm);
+        this.assertEquals("--01", tm);
     }
 
     public void testToMonthWithNullInput() {
