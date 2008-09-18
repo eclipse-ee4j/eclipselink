@@ -142,13 +142,12 @@ public interface OptimisticLockingPolicy extends Cloneable, Serializable {
     public Object getWriteLockValue(Object domainObject, java.util.Vector primaryKey, AbstractSession session);
 
     /**
-       * INTERNAL:
-       * This method will return an expression that is used to update its optimistic
-     * locking field.
+     * INTERNAL:
+     * This method will return an expression that is used to update its optimistic locking field
      *
      * #see this method in VersionLockingPolicy
-       */
-    public Expression getWriteLockUpdateExpression(ExpressionBuilder builder);
+     */
+    public Expression getWriteLockUpdateExpression(ExpressionBuilder builder, AbstractSession session);
 
     /**
      * INTERNAL:

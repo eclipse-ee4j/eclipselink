@@ -99,6 +99,9 @@ public class OptimisticLockingTestModel extends TestModel {
         suite.addTest(new WriteLockValueSerializationTest());
         
         suite.addTest(new FieldsLockingCachedUpdateCallsTest());
+        
+        // EL bug 247884 - NullPointerException using Timestamp (server) based optimistic locking and UpdateAllQuery
+        suite.addTest(new UpdateAllWithTimestampLockingTest());
 
         return suite;
     }

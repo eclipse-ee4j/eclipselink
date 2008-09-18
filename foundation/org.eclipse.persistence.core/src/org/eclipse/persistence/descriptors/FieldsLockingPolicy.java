@@ -246,7 +246,7 @@ public abstract class FieldsLockingPolicy implements OptimisticLockingPolicy {
     /**
      * INTERNAL:
      */
-    public Expression getWriteLockUpdateExpression(ExpressionBuilder builder) {
+    public Expression getWriteLockUpdateExpression(ExpressionBuilder builder, AbstractSession session) {
         // Does not apply to any field locking policy, so return null
         return null;
     }

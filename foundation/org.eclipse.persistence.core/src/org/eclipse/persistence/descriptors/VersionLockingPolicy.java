@@ -324,7 +324,7 @@ public class VersionLockingPolicy implements OptimisticLockingPolicy, Serializab
      * INTERNAL:
      * Retrun an expression that updates the write lock
      */
-    public Expression getWriteLockUpdateExpression(ExpressionBuilder builder) {
+    public Expression getWriteLockUpdateExpression(ExpressionBuilder builder, AbstractSession session) {
         return ExpressionMath.add(builder.getField(writeLockField.getName()), 1);
     }
 

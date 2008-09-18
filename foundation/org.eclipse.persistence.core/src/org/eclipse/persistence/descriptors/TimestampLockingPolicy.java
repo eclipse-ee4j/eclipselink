@@ -189,8 +189,8 @@ public class TimestampLockingPolicy extends VersionLockingPolicy {
      * INTERNAL:
      * Return an expression that updates the write lock
      */
-    public Expression getWriteLockUpdateExpression(ExpressionBuilder builder) {
-        return builder.value(getInitialWriteValue(builder.getSession()));
+    public Expression getWriteLockUpdateExpression(ExpressionBuilder builder, AbstractSession session) {
+        return builder.value(getInitialWriteValue(session));
     }
 
     /**

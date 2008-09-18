@@ -1646,7 +1646,7 @@ public class ExpressionQueryMechanism extends StatementQueryMechanism {
         if (policy != null) {
             if(policy.getWriteLockField() != null) {
                 Expression writeLock = builder.getField(policy.getWriteLockField());
-                Expression writeLockUpdateExpression = policy.getWriteLockUpdateExpression(builder);
+                Expression writeLockUpdateExpression = policy.getWriteLockUpdateExpression(builder, getQuery().getSession());
                 if (writeLockUpdateExpression != null) {
                     // clone it to keep user's original data intact
                     updateClauses = (HashMap)updateClauses.clone();
