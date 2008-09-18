@@ -716,7 +716,7 @@ public class SDOChangeSummary implements ChangeSummary {
      * @return the old containment property.
      */
     public Sequence getOldSequence(DataObject dataObject) {
-        if (!isLogging() || (dataObject == null) || (!isDeleted(dataObject) && ((dataObject.getChangeSummary() != null) && (dataObject.getChangeSummary() != this)))) {
+        if ((dataObject == null) || (!isDeleted(dataObject) && ((dataObject.getChangeSummary() != null) && (dataObject.getChangeSummary() != this)))) {
             return null;
         }
         if (!isCreated(dataObject) && dataObject.getType().isSequenced()) {

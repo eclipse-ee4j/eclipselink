@@ -85,8 +85,7 @@ public class ChangeSummaryGetOldSequenceTestCases extends SDOTestCase {
         address1Object.unset(address1Object.getInstanceProperty("city"));
         Sequence oldAddressSeq = cs.getOldSequence(address1Object);
 
-        //old seq should be null because logging is off
-        assertNull(oldAddressSeq);
+        assertNotNull(oldAddressSeq);
     }
 
     public void testGetOldSequenceNotLoggingNull() {
@@ -95,8 +94,7 @@ public class ChangeSummaryGetOldSequenceTestCases extends SDOTestCase {
         address1Object.unset(address1Object.getInstanceProperty("city"));
         Sequence oldAddressSeq = cs.getOldSequence(address1Object);
 
-        //old seq should be null because logging is off
-        assertNull(oldAddressSeq);
+        assertNotNull(oldAddressSeq);
     }
 
     public void testGetOldSequenceNotSequenced() {
