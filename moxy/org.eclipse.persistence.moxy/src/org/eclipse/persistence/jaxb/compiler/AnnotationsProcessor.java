@@ -149,7 +149,7 @@ public class AnnotationsProcessor {
             	rootElemName = new QName(rootNamespace, elementName);
             }
             schemaInfo.getGlobalElementDeclarations().add(rootElemName);
-            ElementDeclaration declaration = new ElementDeclaration(rootElemName, javaClass.getRawName());
+            ElementDeclaration declaration = new ElementDeclaration(rootElemName, javaClass, javaClass.getRawName());
             this.globalElements.put(rootElemName, declaration);
         }
         
@@ -341,7 +341,8 @@ public class AnnotationsProcessor {
         for (Iterator<JavaField> fieldIt = cls.getDeclaredFields().iterator(); fieldIt.hasNext(); ) {
             JavaField nextField = fieldIt.next();
             if (!helper.isAnnotationPresent(nextField, XmlTransient.class)) {
-                if ((Modifier.isPublic(nextField.getModifiers()) && onlyPublic) || !onlyPublic) {
+                int modifiers = nextField.getModifiers();
+                if (!Modifier.isStatic(modifiers) && !Modifier.isTransient(modifiers) && ((Modifier.isPublic(nextField.getModifiers()) && onlyPublic) || !onlyPublic)) {
                 	Property property = null;
                     if(helper.isAnnotationPresent((JavaHasAnnotations)nextField, XmlElements.class)) {
                         property = new ChoiceProperty(helper);
@@ -491,7 +492,8 @@ public class AnnotationsProcessor {
         ArrayList<JavaMethod> getMethods = new ArrayList<JavaMethod>();
         for (JavaMethod next : new ArrayList<JavaMethod>(cls.getDeclaredMethods())) {
             if ((next.getName().startsWith("get") && next.getName().length() > 3) || ((areEquals((JavaClass) next.getReturnType(), Boolean.class) || areEquals((JavaClass) next.getReturnType(), boolean.class)) && (next.getName().startsWith("is") && next.getName().length() > 2))) {
-                if ((onlyPublic && Modifier.isPublic(next.getModifiers())) || !onlyPublic) {
+                int modifiers = next.getModifiers();
+                if (!Modifier.isStatic(modifiers) && !Modifier.isTransient(modifiers) && ((onlyPublic && Modifier.isPublic(next.getModifiers())) || !onlyPublic)) {
                     getMethods.add(next);                    
                 }
             }
@@ -984,7 +986,7 @@ public class AnnotationsProcessor {
     					if(this.globalElements == null) {
     						globalElements = new HashMap<QName, ElementDeclaration>();
     					}
-    					ElementDeclaration declaration = new ElementDeclaration(qname, type.getQualifiedName());
+    					ElementDeclaration declaration = new ElementDeclaration(qname, type, type.getQualifiedName());
     					if(!elementDecl.substitutionHeadName().equals("")) {
     						String subHeadLocal = elementDecl.substitutionHeadName();
     						String subHeadNamespace = elementDecl.substitutionHeadNamespace();
@@ -1047,7 +1049,7 @@ public class AnnotationsProcessor {
     			} else {
     				rootElemName = new QName(rootNamespace, elementName);
     			}
-    			ElementDeclaration declaration = new ElementDeclaration(rootElemName, javaClass.getRawName());
+    			ElementDeclaration declaration = new ElementDeclaration(rootElemName, javaClass, javaClass.getRawName());
     			declaration.setIsXmlRootElement(true);
     			if(this.globalElements == null) {
     				globalElements = new HashMap<QName, ElementDeclaration>();
