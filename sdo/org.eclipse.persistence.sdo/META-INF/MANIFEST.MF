@@ -14,6 +14,5 @@ Export-Package: commonj.sdo.impl,
 Bundle-ClassPath: .
 Import-Package: commonj.sdo;version="2.1.0";resolution:=optional,
  commonj.sdo.helper;version="2.1.0";resolution:=optional,
- commonj.sdo.impl;version="2.1.0";resolution:=optional,
- org.osgi.util.tracker;resolution:=optional
+ commonj.sdo.impl;version="2.1.0";resolution:=optional
 HK2-Bundle-Name: org.eclipse.persistence:org.eclipse.persistence.sdo
