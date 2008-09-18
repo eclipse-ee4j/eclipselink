@@ -24,8 +24,18 @@
 * Contributors:
 *     egwin - initial API and implementation
 #******************************************************************************/-->
-<project name="eclipselink.utils.dbws" default="all" basedir=".">
-
+<project
+  name="eclipselink.utils.dbws"
+  default="all"
+  basedir="."
+  >
+  <condition property="is.java.version.16">
+      <equals arg1="${ant.java.version}" arg2="1.6"/>
+  </condition>
+  <fail
+    message="eclipselink.utils.dbws requires Java version 1.6 or higher. You are currently using Java version ${ant.java.version}."
+    unless="is.java.version.16"
+  />
   <!-- OS environment variables have 'env' as a prefix -->
   <property
     environment="env"
@@ -44,7 +54,7 @@
       debug="${javac.debug}"
       debuglevel="${javac.debuglevel}"
       optimize="${javac.optimize}"
-      source="${javac.version}"
+      source="1.6"
       deprecation="${javac.deprecation}"
       failonerror="true"
       includes="**/*.java"

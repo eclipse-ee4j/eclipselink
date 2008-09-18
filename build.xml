@@ -47,7 +47,7 @@
         - test-core-srg : runs core SRG
         - test-jpa : runs JPA tests
         - test-moxy : runs MOXY tests
-        - test-moxy-srg : runs MOXY SRG 
+        - test-moxy-srg : runs MOXY SRG
         - test-jaxb : runs MOXY jaxb tests
         - test-oxm : runs MOXY oxm tests
         - test-sdo : runs SDO tests
@@ -559,7 +559,9 @@
 
     <!-- Packages util-dbws jar. -->
     <target name="package-util-dbws-jar" description="build DBWS util jar">
+        <!--
         <ant antfile="${eclipselink.util.dbws}/build.xml" target="all"/>
+        -->
     </target>
 
     <!-- Packages package-renamer jar. -->
