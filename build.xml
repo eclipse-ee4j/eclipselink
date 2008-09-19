@@ -428,7 +428,7 @@
             <zipfileset
                 dir="${eclipselink.sdo.test}/${resource.dir}"
                 includes="**"
-                prefix="sdo/resource"
+                prefix="resource"
             />
         </zip>
     </target>
