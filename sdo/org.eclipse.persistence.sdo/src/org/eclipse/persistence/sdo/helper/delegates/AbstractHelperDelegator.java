@@ -53,10 +53,10 @@ public abstract class AbstractHelperDelegator {
          *  	1 - Application root loader
          *  	2 - WebLogic filtering loader
          *  	3 - Root WebLogic loader
-         *  	X - URL loader (was in 10.3 Beta, but not in 10.3)
-         *  	4 - System loader
-         *  	5 - Extensions loader
-         *  	6 - Bootstrap loader
+         *  	4 - URL loader
+         *  	5 - System loader
+         *  	6 - Extensions loader
+         *  	7 - Bootstrap loader
          */
 
         // Kludge for running in OC4J (from WebServices group), and WebLogic
@@ -72,7 +72,7 @@ public abstract class AbstractHelperDelegator {
             }
         // Handle WebLogic ClassLoader structure
         } else if (classLoaderName.startsWith("weblogic")) {
-        	final int systemLoaderOffest = 3; // indicates the number of child loaders between system and application
+        	final int systemLoaderOffest = 4; // indicates the number of child loaders between system and application
         	ClassLoader systemLoader = ClassLoader.getSystemClassLoader();
         	ClassLoader currentLoader = classLoader;
         	ArrayList<ClassLoader> loaders = new ArrayList<ClassLoader>();
