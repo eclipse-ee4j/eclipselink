@@ -20,7 +20,7 @@ import javax.xml.bind.annotation.*;
 @XmlAccessorType(XmlAccessType.FIELD)
 public class Employee 
 {
-    @XmlAttribute(name="id")
+    @XmlAttribute(name="id", required=true)
     public int id;
     
     @XmlElement(required = true)

@@ -320,6 +320,9 @@ public class SchemaGenerator {
                     Attribute attribute = new Attribute();
                     QName attributeName = next.getSchemaName(); 
                     attribute.setName(attributeName.getLocalPart());
+                    if(next.isRequired()) {
+                        attribute.setUse(Attribute.REQUIRED);
+                    }
                     //Check to see if it's a collection. 
                     //Should assume XmlList on any collection?
                     JavaClass javaType = next.getType();

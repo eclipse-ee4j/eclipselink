@@ -438,9 +438,14 @@ public class AnnotationsProcessor {
                         QName schemaTypeQname = new QName(XMLConstants.SCHEMA_INSTANCE_URL, schemaType.name());
                         property.setSchemaType(schemaTypeQname);
                     }
-                    if(helper.isAnnotationPresent(property.getElement(), XmlAttribute.class) || helper.isAnnotationPresent(property.getElement(), XmlAnyAttribute.class)) {
+                    if(helper.isAnnotationPresent(property.getElement(), XmlAttribute.class)) {
                         property.setIsAttribute(true);
+                        property.setIsRequired(((XmlAttribute)helper.getAnnotation(property.getElement(), XmlAttribute.class)).required());
                     }                    
+                    
+                    if(helper.isAnnotationPresent(property.getElement(), XmlAnyAttribute.class)) {
+                        property.setIsAttribute(true);
+                    }
 
                     // Check for XmlElement annotation and set required (a.k.a. minOccurs) accordingly
                     if (helper.isAnnotationPresent(property.getElement(), XmlElement.class)) {
@@ -578,7 +583,12 @@ public class AnnotationsProcessor {
             } else if(info.getAdaptersByClass().get(ptype) != null) {
                 property.setAdapterClass(info.getAdaptersByClass().get(ptype));
             }
-            if(helper.isAnnotationPresent(property.getElement(), XmlAttribute.class) || helper.isAnnotationPresent(property.getElement(), XmlAnyAttribute.class)) {
+            if(helper.isAnnotationPresent(property.getElement(), XmlAttribute.class)) {
+                property.setIsAttribute(true);
+                property.setIsRequired(((XmlAttribute)helper.getAnnotation(property.getElement(), XmlAttribute.class)).required());
+            }
+            
+            if(helper.isAnnotationPresent(property.getElement(), XmlAnyAttribute.class)) {
                 property.setIsAttribute(true);
             }
             if(helper.isAnnotationPresent(property.getElement(), XmlElements.class)) {
