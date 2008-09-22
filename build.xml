@@ -493,17 +493,17 @@
                 <include name="${eclipselink.javadoc.install.prefix}${eclipselink.zip.suffix}"/>
             </zipfileset>
             <!-- setenv and package-rename scripts -->
-            <zipfileset dir="${eclipselink.core.bin}" prefix="eclipselink/bin">
-                <include name="${setenv-scripts}"/>
+            <zipfileset dir="${eclipselink.core.bin}" prefix="eclipselink/bin" filemode="755">
+                <include name="${setenv-scripts}"/>                
             </zipfileset>
-            <zipfileset dir="${eclipselink.util.rename}" prefix="eclipselink/utils/rename">
+            <zipfileset dir="${eclipselink.util.rename}" prefix="eclipselink/utils/rename" filemode="755">
                 <include name="${package-rename-scripts}"/>
             </zipfileset>
 
             <!-- jaxb-compiler scripts -->
-            <zipfileset dir="${eclipselink.moxy.bin}" includes="${jaxb-compiler-scripts}" prefix="eclipselink/bin"/>
+            <zipfileset dir="${eclipselink.moxy.bin}" includes="${jaxb-compiler-scripts}" prefix="eclipselink/bin" filemode="755"/>
             <!-- sdo-compiler scripts -->
-            <zipfileset dir="${eclipselink.sdo.bin}" includes="${sdo-compiler-scripts}" prefix="eclipselink/bin"/>
+            <zipfileset dir="${eclipselink.sdo.bin}" includes="${sdo-compiler-scripts}" prefix="eclipselink/bin" filemode="755"/>
             <!-- package-rename.properties -->
             <zipfileset dir="./${eclipselink.util.rename.resource}" includes="${package-rename.properties}" fullpath="eclipselink/utils/rename/package-rename.properties"/>
             <!-- core XSD files -->
@@ -545,7 +545,7 @@
             <zipfileset dir="utils/eclipselink.utils.workbench/config/" includes="*" prefix="eclipselink/utils/workbench/config"/>
             <zipfileset dir="utils/eclipselink.utils.workbench/config/platforms/" includes="*" prefix="eclipselink/utils/workbench/config/platforms"/>
             <zipfileset dir="utils/eclipselink.utils.workbench/" includes="readme.html" prefix="eclipselink/utils/workbench"/>
-            <zipfileset dir="utils/eclipselink.utils.workbench/bin/" includes="*" prefix="eclipselink/utils/workbench/bin"/>
+            <zipfileset dir="utils/eclipselink.utils.workbench/bin/" includes="*" prefix="eclipselink/utils/workbench/bin" filemode="755"/>
         </zip>
     </target>
 
