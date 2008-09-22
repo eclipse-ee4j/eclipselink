@@ -355,11 +355,13 @@ public class MergeManager {
                     getSession().incrementProfile(SessionProfiler.ChangeSetsProcessed);
                 }
             }
-            Iterator deletedObjects = uowChangeSet.getDeletedObjects().values().iterator();
-            while (deletedObjects.hasNext()) {
-                ObjectChangeSet changeSet = (ObjectChangeSet)deletedObjects.next();
-                changeSet.removeFromIdentityMap(getSession());
-                getSession().incrementProfile(SessionProfiler.DeletedObject);
+            if (uowChangeSet.hasDeletedObjects()) {
+                Iterator deletedObjects = uowChangeSet.getDeletedObjects().values().iterator();
+                while (deletedObjects.hasNext()) {
+                    ObjectChangeSet changeSet = (ObjectChangeSet)deletedObjects.next();
+                    changeSet.removeFromIdentityMap(getSession());
+                    getSession().incrementProfile(SessionProfiler.DeletedObject);
+                }
             }
         } catch (RuntimeException exception) {
             getSession().handleException(exception);

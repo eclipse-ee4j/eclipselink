@@ -225,7 +225,7 @@ public class JPAPerformanceRegressionModel extends TestModel {
         properties.put("eclipselink.jdbc.password", getSession().getLogin().getPassword());*/
 
         properties.put("eclipselink.jdbc.batch-writing", "JDBC");
-        properties.put("eclipselink.persistence-context.close-on-commit", "true");
+        //properties.put("eclipselink.persistence-context.close-on-commit", "true");
         properties.put("eclipselink.logging.level", getSession().getSessionLog().getLevelString());
         // This line should be commented out when comparing against Hibernate as they do not have statement caching support.
         properties.put("eclipselink.jdbc.cache-statements", "true");

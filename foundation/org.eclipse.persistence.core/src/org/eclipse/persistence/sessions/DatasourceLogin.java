@@ -117,8 +117,6 @@ public abstract class DatasourceLogin implements org.eclipse.persistence.session
 
         this.properties = new Properties();
         this.properties.put("user", "");
-        // Bug 4117441 - Secure programming practices, store password in char[]
-        this.properties.put("password", new char[0]);
         this.isEncryptedPasswordSet = false;
         this.securableObjectHolder = new SecurableObjectHolder();
     }
@@ -295,7 +293,7 @@ public abstract class DatasourceLogin implements org.eclipse.persistence.session
      * of the properties with the password decrypted.
      */
     private Properties prepareProperties(Properties properties) {
-        Properties result = (Properties)properties.clone();
+        Properties result = properties;
         Object passwordObject = result.get("password");
         if (passwordObject != null) {
             // Fix for bug # 2700529
@@ -311,6 +309,7 @@ public abstract class DatasourceLogin implements org.eclipse.persistence.session
             // a securable object or the setEncryptedPassword flag is not true, 
             // don't bother trying to decrypt.
             if (getSecurableObjectHolder().hasSecurableObject() || isEncryptedPasswordSet) {
+                result = (Properties)properties.clone();
                 // Bug 4117441 - Secure programming practices, store password in char[]
                 // If isEncryptedPasswordSet is true, or we have a SecurableObject then we stored 
                 // the password as a char[], and we need to convert it into a String for the 
@@ -322,7 +321,7 @@ public abstract class DatasourceLogin implements org.eclipse.persistence.session
                     passwordString = (String)passwordObject;
                 }
                 result.put("password", getSecurableObjectHolder().getSecurableObject().decryptPassword(passwordString));
-            } else if (passwordObject.equals("") || (passwordObject instanceof char[] && ((char[])passwordObject).length == 0)){
+            } else if ((passwordObject instanceof char[]) && (((char[])passwordObject).length == 0)) {
                 // Bug 236726 - deal with empty string for passwords
                 result.put("password", "");
             }
@@ -392,8 +391,7 @@ public abstract class DatasourceLogin implements org.eclipse.persistence.session
         if (password != null) {
             // PERF: Do not encrypt empty string.
             if (password == "") {
-                // empty char[] for empty String
-                setProperty("password", new char[0]);
+                setProperty("password", "");
             } else {
                 // first call to get will initialize the securable object
                  // Bug 4117441 - Secure programming practices, store password in char[]
@@ -411,7 +409,11 @@ public abstract class DatasourceLogin implements org.eclipse.persistence.session
      */
     public String getPassword() {
         // Bug 4117441 - Secure programming practices, store password in char[]
-        char[] passwordObject = (char[]) properties.get("password");
+        Object password = properties.get("password");
+        if (password instanceof String) {
+            return (String)password;
+        }
+        char[] passwordObject = (char[]) password;
         if (passwordObject != null) {
             return new String(passwordObject);
         } else {

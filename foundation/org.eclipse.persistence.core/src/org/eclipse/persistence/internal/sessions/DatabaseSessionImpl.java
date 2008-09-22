@@ -80,7 +80,7 @@ public class DatabaseSessionImpl extends AbstractSession implements org.eclipse.
      */
 
     //Bug#3440544 Used to stop the attempt to login more than once. 
-    protected boolean isLoggedIn;
+    protected volatile boolean isLoggedIn;
 
     /**
      * INTERNAL:
@@ -102,6 +102,15 @@ public class DatabaseSessionImpl extends AbstractSession implements org.eclipse.
         return sequencingHome;
     }
 
+    /**
+     * INTERNAL:
+     * Return if the session was logged in.
+     * This may slight differ to isConnected which asks the JDBC Connection if it is connected.
+     */
+    public boolean isLoggedIn() {
+        return isLoggedIn;
+    }
+    
     /**
      * PUBLIC:
      * Return  SequencingControl which used for sequencing setup and
@@ -631,6 +640,7 @@ public class DatabaseSessionImpl extends AbstractSession implements org.eclipse.
         if (getServerPlatform().getServerNameAndVersion() != null) {
             log(SessionLog.INFO, null, "application_server_name_and_version", getServerPlatform().getServerNameAndVersion());
         }
+        this.isLoggingOff = (getLogLevel() == SessionLog.OFF);
     }
 
     /**

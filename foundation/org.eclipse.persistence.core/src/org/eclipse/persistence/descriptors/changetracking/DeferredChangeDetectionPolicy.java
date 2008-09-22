@@ -25,6 +25,7 @@ import org.eclipse.persistence.descriptors.DescriptorEvent;
 import org.eclipse.persistence.descriptors.DescriptorEventManager;
 import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
+import org.eclipse.persistence.internal.sessions.UnitOfWorkChangeSet;
 import org.eclipse.persistence.internal.sessions.UnitOfWorkImpl;
 
 /**
@@ -39,6 +40,22 @@ public class DeferredChangeDetectionPolicy implements ObjectChangePolicy, java.i
 
     /**
      * INTERNAL:
+     * PERF: Calculate change for the new object, avoids check for new since already know.
+     */
+    public ObjectChangeSet calculateChangesForNewObject(Object clone, UnitOfWorkChangeSet changeSet, UnitOfWorkImpl unitOfWork, ClassDescriptor descriptor, boolean shouldRaiseEvent) {
+        return calculateChanges(clone, null, true, changeSet, unitOfWork, descriptor, shouldRaiseEvent);
+    }
+
+    /**
+     * INTERNAL:
+     * PERF: Calculate change for the new object, avoids check for new since already know.
+     */
+    public ObjectChangeSet calculateChangesForExistingObject(Object clone, UnitOfWorkChangeSet changeSet, UnitOfWorkImpl unitOfWork, ClassDescriptor descriptor, boolean shouldRaiseEvent) {
+        return calculateChanges(clone, unitOfWork.getBackupClone(clone), false, changeSet, unitOfWork, descriptor, shouldRaiseEvent);
+    }
+    
+    /**
+     * INTERNAL:
      * calculateChanges creates a change set for a particular object.  In DeferredChangeDetectionPolicy
      * all mappings will be compared against a backup copy of the object.
      * @return an object change set describing
@@ -50,13 +67,10 @@ public class DeferredChangeDetectionPolicy implements ObjectChangePolicy, java.i
      * @param descriptor the descriptor for this object
      * @param shouldRaiseEvent indicates whether PreUpdate event should be risen (usually true)
      */
-    public ObjectChangeSet calculateChanges(Object clone, Object backUp, org.eclipse.persistence.internal.sessions.UnitOfWorkChangeSet changeSet, AbstractSession session, ClassDescriptor descriptor, boolean shouldRaiseEvent) {
-        UnitOfWorkImpl unitOfWork = (UnitOfWorkImpl)session;
-        boolean isNew = ((backUp == null) || ((unitOfWork.isObjectNew(clone)) && (!descriptor.isAggregateDescriptor()) && (!descriptor.isAggregateCollectionDescriptor())));
-
+    public ObjectChangeSet calculateChanges(Object clone, Object backUp, boolean isNew, UnitOfWorkChangeSet changeSet, UnitOfWorkImpl unitOfWork, ClassDescriptor descriptor, boolean shouldRaiseEvent) {
         // PERF: Provide EJB life-cycle callbacks without using events.
         if (descriptor.hasCMPPolicy()) {
-            descriptor.getCMPPolicy().invokeEJBStore(clone, session);
+            descriptor.getCMPPolicy().invokeEJBStore(clone, unitOfWork);
         }
     
         // PERF: Avoid events if no listeners.
@@ -65,7 +79,7 @@ public class DeferredChangeDetectionPolicy implements ObjectChangePolicy, java.i
             WriteObjectQuery writeQuery = new WriteObjectQuery(clone.getClass());
             writeQuery.setObject(clone);
             writeQuery.setBackupClone(backUp);
-            writeQuery.setSession(session);
+            writeQuery.setSession(unitOfWork);
             writeQuery.setDescriptor(descriptor);
 
             descriptor.getEventManager().executeEvent(new DescriptorEvent(DescriptorEventManager.PreWriteEvent, writeQuery));
@@ -77,7 +91,7 @@ public class DeferredChangeDetectionPolicy implements ObjectChangePolicy, java.i
             }
         }
         
-        ObjectChangeSet changes = createObjectChangeSet(clone, backUp, changeSet, isNew, session, descriptor);
+        ObjectChangeSet changes = createObjectChangeSet(clone, backUp, changeSet, isNew, unitOfWork, descriptor);
         //Check if the user set the PK to null and throw an exception (bug# 4569755)
         if (changes.getPrimaryKeys() == null && !isNew && !changes.isAggregate()) {
             if(!(unitOfWork.isNestedUnitOfWork()) || (unitOfWork.isNestedUnitOfWork() && !((UnitOfWorkImpl)unitOfWork.getParent()).isObjectNew(backUp))) {
@@ -165,7 +179,7 @@ public class DeferredChangeDetectionPolicy implements ObjectChangePolicy, java.i
      * @param unitOfWork the active unitOfWork
      * @param descriptor the descriptor for the current object
      */
-    public boolean shouldCompareForChange(Object object, UnitOfWorkImpl unitOfWork, ClassDescriptor descriptor) {
+    public boolean shouldCompareExistingObjectForChange(Object object, UnitOfWorkImpl unitOfWork, ClassDescriptor descriptor) {
         return true;
     }
 

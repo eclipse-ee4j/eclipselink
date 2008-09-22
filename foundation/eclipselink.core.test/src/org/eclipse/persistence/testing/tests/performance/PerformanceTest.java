@@ -117,7 +117,7 @@ public abstract class PerformanceTest extends PerformanceRegressionTestCase {
      */
     public void setupEmulatedDB() {
         Session session = buildEmulatedSession();
-
+        /*
         EmulatedConnection connection = (EmulatedConnection)((org.eclipse.persistence.internal.sessions.AbstractSession)session).getAccessor().getConnection();
 
         String sql;
@@ -163,7 +163,7 @@ public abstract class PerformanceTest extends PerformanceRegressionTestCase {
         record.put("NEXTVAL", new Long(12345));
         rows.add(record);
         connection.putRows("SELECT EMP_SEQ.NEXTVAL FROM DUAL", rows);
-        connection.putRows("SELECT ADDRESS_SEQ.NEXTVAL FROM DUAL", rows);
+        connection.putRows("SELECT ADDRESS_SEQ.NEXTVAL FROM DUAL", rows);*/
 
         getExecutor().swapSession(session);
     }

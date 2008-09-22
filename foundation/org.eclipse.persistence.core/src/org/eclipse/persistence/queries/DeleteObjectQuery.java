@@ -12,7 +12,6 @@
  ******************************************************************************/  
 package org.eclipse.persistence.queries;
 
-import org.eclipse.persistence.internal.indirection.ProxyIndirectionPolicy;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.internal.sessions.CommitManager;
@@ -231,33 +230,20 @@ public class DeleteObjectQuery extends ObjectLevelModifyQuery {
         super.prepare();
 
         getQueryMechanism().prepareDeleteObject();
-        
-        //Bug6001602, set FullRowRequired to true only when query is call query or is user defined
-        //and the call has more than one parameter.
-        if (isCallQuery() || isUserDefined()) {
-            if(getCall()!=null && getCall().getParameters()!=null && getCall().getParameters().size()>1){
-                isFullRowRequired=true;            
-           }
-        }
     }
 
     /**
      * INTERNAL:
      * Set the properties needed to be cascaded into the custom query.
+     * A custom query is set by the user, or used by default to allow caching of the prepared query.
+     * In a unit of work the custom query is used directly, so this step is bypassed.
      */
     protected void prepareCustomQuery(DatabaseQuery customQuery) {
         DeleteObjectQuery customDeleteQuery = (DeleteObjectQuery)customQuery;
-        // Bug#3947714  In case getObject() is proxy.
-        if (customQuery.getSession().getProject().hasProxyIndirection()) {
-            setObject(ProxyIndirectionPolicy.getValueFromProxy(getObject()));
-        }
         customDeleteQuery.setObject(getObject());
         customDeleteQuery.setObjectChangeSet(getObjectChangeSet());
         customDeleteQuery.setCascadePolicy(getCascadePolicy());
         customDeleteQuery.setShouldMaintainCache(shouldMaintainCache());
-        if (customDeleteQuery.isFullRowRequired()) {
-            customDeleteQuery.setTranslationRow(customDeleteQuery.getDescriptor().getObjectBuilder().buildRow(getObject(), customDeleteQuery.getSession()));
-        }
     }
 
     /**
@@ -268,14 +254,18 @@ public class DeleteObjectQuery extends ObjectLevelModifyQuery {
     public void prepareForExecution() throws QueryException {
         super.prepareForExecution();
 
-        // Set the tranlation row
-        if ((getTranslationRow() == null) || (getTranslationRow().isEmpty())) {
-            setTranslationRow(getDescriptor().getObjectBuilder().buildRowForTranslation(getObject(), getSession()));
+        // Set the translation row
+        if ((this.translationRow == null) || this.translationRow.isEmpty()) {
+            if (this.isFullRowRequired) {
+                this.translationRow = this.descriptor.getObjectBuilder().buildRow(this.object, this.session);
+            } else {
+                this.translationRow = this.descriptor.getObjectBuilder().buildRowForTranslation(this.object, this.session);
+            }
         }
 
         // Add the write lock field if required		
-        if (getDescriptor().usesOptimisticLocking()) {
-            getDescriptor().getOptimisticLockingPolicy().addLockValuesToTranslationRow(this);
+        if (this.descriptor.usesOptimisticLocking()) {
+            this.descriptor.getOptimisticLockingPolicy().addLockValuesToTranslationRow(this);
         }
     }
 }

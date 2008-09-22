@@ -38,7 +38,7 @@ import org.eclipse.persistence.internal.localization.ExceptionLocalization;
 */
 public class EntityManagerFactoryImpl implements EntityManagerFactory {
     // This stores a reference to the ServerSession for this deployment.
-    protected ServerSession serverSession;
+    protected volatile ServerSession serverSession;
     protected EntityManagerSetupImpl setupImpl;
     protected boolean isOpen = true;
     protected Map properties;
@@ -62,13 +62,19 @@ public class EntityManagerFactoryImpl implements EntityManagerFactory {
      * This method makes use of the partially constructed session stored in our setupImpl and
      * completes its construction
      */
-    public synchronized ServerSession getServerSession(){
-        if (serverSession == null){   
-            ClassLoader realLoader = setupImpl.getPersistenceUnitInfo().getClassLoader();
-            // the call top setupImpl.deploy() finishes the session creation
-            serverSession = setupImpl.deploy(realLoader, properties);
+    public ServerSession getServerSession(){
+        if (serverSession == null) {
+            // PERF: Avoid synchronization.
+            synchronized (this) {
+                // DCL ok as isLoggedIn is volatile boolean, set after login is complete.
+                if (serverSession == null) {
+                    ClassLoader realLoader = setupImpl.getPersistenceUnitInfo().getClassLoader();
+                    // the call top setupImpl.deploy() finishes the session creation
+                    serverSession = setupImpl.deploy(realLoader, properties);
+                }
+            }
         }
-        return this.serverSession;
+        return serverSession;
     }
     
     /**
@@ -112,11 +118,18 @@ public class EntityManagerFactoryImpl implements EntityManagerFactory {
         return createEntityManagerImpl(null, extended);
     }
 
-    protected synchronized EntityManagerImpl createEntityManagerImpl(Map properties, boolean extended) {
+    protected EntityManagerImpl createEntityManagerImpl(Map properties, boolean extended) {
         verifyOpen();
 
-        if (!getServerSession().isConnected()) {
-            getServerSession().login();
+        ServerSession session = getServerSession();
+        if (!session.isLoggedIn()) {
+            // PERF: Avoid synchronization.
+            synchronized (session) {
+                // DCL ok as isLoggedIn is volatile boolean, set after login is complete.
+                if (!session.isLoggedIn()) {
+                    session.login();
+                }
+            }
         }
         return createEntityManagerImplInternal(properties, extended);
     }

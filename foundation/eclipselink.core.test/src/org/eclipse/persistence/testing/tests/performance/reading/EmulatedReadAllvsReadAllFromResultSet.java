@@ -27,13 +27,13 @@ public class EmulatedReadAllvsReadAllFromResultSet extends ReadAllvsReadAllFromR
     public void setup() {
         Session session = buildEmulatedSession();
 
-        EmulatedConnection connection = (EmulatedConnection)((org.eclipse.persistence.internal.sessions.AbstractSession)session).getAccessor().getConnection();
+        /*EmulatedConnection connection = (EmulatedConnection)((org.eclipse.persistence.internal.sessions.AbstractSession)session).getAccessor().getConnection();
 
         ReadAllQuery query = new ReadAllQuery(Address.class);
         getSession().executeQuery(query);
         String sql = query.getSQLString();
         Vector rows = getSession().executeSQL(sql);
-        connection.putRows(sql, rows);
+        connection.putRows(sql, rows);*/
 
         getExecutor().swapSession(session);
         super.setup();

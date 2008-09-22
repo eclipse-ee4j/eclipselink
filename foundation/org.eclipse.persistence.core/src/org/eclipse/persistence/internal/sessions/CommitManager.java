@@ -91,6 +91,7 @@ public class CommitManager {
     /**
      * Commit all of the objects as a single transaction.
      * This should commit the object in the correct order to maintain referential integrity.
+     * This is only used by DatabaseSession.writeAllObjects().
      */
     public void commitAllObjects(Map domainObjects) throws RuntimeException, DatabaseException, OptimisticLockException {
         reinitialize();
@@ -203,6 +204,7 @@ public class CommitManager {
             }
 
             if (hasObjectsToDelete()) {
+                // TODO: These should be added to the unit of work deleted so they are deleted in the correct order.
                 List objects = getObjectsToDelete();
                 int size = objects.size();
                 reinitialize();
@@ -239,29 +241,29 @@ public class CommitManager {
     protected void commitNewObjectsForClassWithChangeSet(UnitOfWorkChangeSet uowChangeSet, Class theClass) {
         Map newObjectChangesList = (Map)uowChangeSet.getNewObjectChangeSets().get(theClass);
         if (newObjectChangesList != null) { // may be no changes for that class type.
-            ClassDescriptor descriptor = getSession().getDescriptor(theClass);
-            for (Iterator pendingEnum = new IdentityHashMap(newObjectChangesList).values().iterator();
-                     pendingEnum.hasNext();) {
+            AbstractSession session = getSession();
+            ClassDescriptor descriptor = session.getDescriptor(theClass);
+            for (Iterator pendingEnum = new ArrayList(newObjectChangesList.values()).iterator(); pendingEnum.hasNext();) {
                 ObjectChangeSet changeSetToWrite = (ObjectChangeSet)pendingEnum.next();
                 Object objectToWrite = changeSetToWrite.getUnitOfWorkClone();
-                if ((!getProcessedCommits().containsKey(changeSetToWrite)) && (!getProcessedCommits().containsKey(objectToWrite))) {
-                    addProcessedCommit(changeSetToWrite);
+                if ((!getProcessedCommits().containsKey(changeSetToWrite)) && (!this.processedCommits.containsKey(objectToWrite))) {
+                    this.processedCommits.put(changeSetToWrite, changeSetToWrite);
                     // PERF: Get the descriptor query, to avoid extra query creation.
                     InsertObjectQuery commitQuery = descriptor.getQueryManager().getInsertQuery();
                     if (commitQuery == null) {
                         commitQuery = new InsertObjectQuery();
+                        commitQuery.setDescriptor(descriptor);
                     } else {
                         // Ensure original query has been prepared.
-                        commitQuery.checkPrepare(getSession(), commitQuery.getTranslationRow());
+                        commitQuery.checkPrepare(session, commitQuery.getTranslationRow());
                         commitQuery = (InsertObjectQuery)commitQuery.clone();
                     }
                     commitQuery.setIsExecutionClone(true);
-                    commitQuery.setDescriptor(descriptor);
                     commitQuery.setObjectChangeSet(changeSetToWrite);
                     commitQuery.setObject(objectToWrite);
                     commitQuery.cascadeOnlyDependentParts();
                     commitQuery.setModifyRow(null);
-                    getSession().executeQuery(commitQuery);
+                    session.executeQuery(commitQuery);
                 }
                 uowChangeSet.putNewObjectInChangesList(changeSetToWrite, session);
             }
@@ -273,19 +275,18 @@ public class CommitManager {
      * This allows for the order of the classes to be processed optimally.
      */
     protected void commitChangedObjectsForClassWithChangeSet(UnitOfWorkChangeSet uowChangeSet, String className) {
-        Hashtable objectChangesList = (Hashtable)uowChangeSet.getObjectChanges().get(className);
+        Map objectChangesList = (Map)uowChangeSet.getObjectChanges().get(className);
         if (objectChangesList != null) {// may be no changes for that class type.				
             ClassDescriptor descriptor = null;
-            for (Enumeration pendingEnum = objectChangesList.elements();
-                     pendingEnum.hasMoreElements();) {
-                ObjectChangeSet changeSetToWrite = (ObjectChangeSet)pendingEnum.nextElement();
-                if (descriptor == null) {
-                    // Need a class to get descriptor, for some evil reason the keys are class name.
-                    descriptor = getSession().getDescriptor(changeSetToWrite.getClassType(getSession()));
-                }
+            AbstractSession session = getSession();
+            for (Iterator iterator = objectChangesList.values().iterator(); iterator.hasNext();) {
+                ObjectChangeSet changeSetToWrite = (ObjectChangeSet)iterator.next();
                 Object objectToWrite = changeSetToWrite.getUnitOfWorkClone();
-                if ((!getProcessedCommits().containsKey(changeSetToWrite)) && (!getProcessedCommits().containsKey(objectToWrite))) {
-                    addProcessedCommit(changeSetToWrite);
+                if (descriptor == null) {
+                    descriptor = session.getDescriptor(objectToWrite);
+                }
+                if ((!getProcessedCommits().containsKey(changeSetToWrite)) && (!this.processedCommits.containsKey(objectToWrite))) {
+                    this.processedCommits.put(changeSetToWrite, changeSetToWrite);
                     // Commit and resume on failure can cause a new change set to be in existing, so need to check here.
                     WriteObjectQuery commitQuery = null;
                     if (changeSetToWrite.isNew()) {
@@ -300,7 +301,7 @@ public class CommitManager {
                     commitQuery.cascadeOnlyDependentParts();
                     // removed checking session type to set cascade level
                     // will always be a unitOfWork so we need to cascade dependent parts
-                    getSession().executeQuery(commitQuery);
+                    session.executeQuery(commitQuery);
                 }
             }
         }
@@ -310,38 +311,64 @@ public class CommitManager {
      * delete all of the objects as a single transaction.
      * This should delete the object in the correct order to maintain referential integrity.
      */
-    public void deleteAllObjects(Vector objectsForDeletion) throws RuntimeException, DatabaseException, OptimisticLockException {
-        setIsActive(true);
-        getSession().beginTransaction();
+    public void deleteAllObjects(List objects) throws RuntimeException, DatabaseException, OptimisticLockException {
+        this.isActive = true;
+        AbstractSession session = getSession();
+        session.beginTransaction();
 
         try {
-            for (int index = getCommitOrder().size() - 1; index >= 0; index--) {
-                Class theClass = (Class)getCommitOrder().elementAt(index);
-
-                for (Enumeration objectsForDeletionEnum = objectsForDeletion.elements();
-                         objectsForDeletionEnum.hasMoreElements();) {
-                    Object objectToDelete = objectsForDeletionEnum.nextElement();
-                    if (objectToDelete.getClass() == theClass) {
-                        DeleteObjectQuery deleteQuery = new DeleteObjectQuery();
-                        deleteQuery.setIsExecutionClone(true);
-                        deleteQuery.setObject(objectToDelete);
-                        getSession().executeQuery(deleteQuery);
-                    }
+            // PERF: Optimize single object case.
+            if (objects.size() == 1) {                
+                deleteAllObjects(objects.get(0).getClass(), objects, session);                
+            } else {
+                List commitOrder = getCommitOrder();
+                for (int orderIndex = commitOrder.size() - 1; orderIndex >= 0; orderIndex--) {
+                    Class theClass = (Class)commitOrder.get(orderIndex);
+                    deleteAllObjects(theClass, objects, session);
                 }
             }
         } catch (RuntimeException exception) {
             try {
-                getSession().rollbackTransaction();
+                session.rollbackTransaction();
             } catch (Exception ignore) {
             }
             throw exception;
         } finally {
-            setIsActive(false);
+            this.isActive = false;
         }
 
-        getSession().commitTransaction();
+        session.commitTransaction();
     }
 
+    /**
+     * Delete all of the objects with the matching class.
+     */
+    public void deleteAllObjects(Class theClass, List objects, AbstractSession session) {
+        ClassDescriptor descriptor = null;
+        int size = objects.size();
+        for (int index = 0; index < size; index++) {
+            Object objectToDelete = objects.get(index);
+            if (objectToDelete.getClass() == theClass) {
+                if (descriptor == null) {
+                    descriptor = session.getDescriptor(theClass);
+                }
+                // PERF: Get the descriptor query, to avoid extra query creation.
+                DeleteObjectQuery deleteQuery = descriptor.getQueryManager().getDeleteQuery();
+                if (deleteQuery == null) {
+                    deleteQuery = new DeleteObjectQuery();
+                    deleteQuery.setDescriptor(descriptor);
+                } else {
+                    // Ensure original query has been prepared.
+                    deleteQuery.checkPrepare(session, deleteQuery.getTranslationRow());
+                    deleteQuery = (DeleteObjectQuery)deleteQuery.clone();
+                }
+                deleteQuery.setIsExecutionClone(true);
+                deleteQuery.setObject(objectToDelete);
+                session.executeQuery(deleteQuery);
+            }
+        }
+    }
+    
     /**
      * Return the order in which objects should be committed to the database.
      * This order is based on ownership in the descriptors and is require for referential integrity.
@@ -368,7 +395,7 @@ public class CommitManager {
     }
 
     /**
-     * Used to store data querys to be performed at the end of the commit.
+     * Used to store data queries to be performed at the end of the commit.
      * This is done to decrease dependencies and avoid deadlock.
      */
     protected Hashtable getDataModifications() {

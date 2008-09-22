@@ -158,6 +158,9 @@ public abstract class AbstractSession implements org.eclipse.persistence.session
     /** Used to determine If a session is in a profile or not */
     protected boolean isInProfile;
     
+    /** PERF: Quick check if logging is OFF entirely. */
+    protected boolean isLoggingOff;
+    
     /** PERF: Allow for finalizers to be enabled, currently enables client-session finalize. */
     protected boolean isFinalizersEnabled = false;
     
@@ -230,6 +233,15 @@ public abstract class AbstractSession implements org.eclipse.persistence.session
         }
     }
 
+
+    /**
+     * INTERNAL:
+     * PERF: Used for quick check if logging is OFF entirely.
+     */
+    public boolean isLoggingOff() {
+        return isLoggingOff;
+    }
+    
     /**
      * INTERNAL:
      * Called by a sessions queries to obtain individual query ids.
@@ -805,7 +817,7 @@ public abstract class AbstractSession implements org.eclipse.persistence.session
      * End the operation timing.
      */
     public void endOperationProfile(String operationName) {
-        if (isInProfile()) {
+        if (this.isInProfile) {
             getProfiler().endOperationProfile(operationName);
         }
     }
@@ -815,7 +827,7 @@ public abstract class AbstractSession implements org.eclipse.persistence.session
      * End the operation timing.
      */
     public void endOperationProfile(String operationName, DatabaseQuery query, int weight) {
-        if (isInProfile()) {
+        if (this.isInProfile) {
             getProfiler().endOperationProfile(operationName, query, weight);
         }
     }
@@ -2446,6 +2458,9 @@ public abstract class AbstractSession implements org.eclipse.persistence.session
      * Log the log entry.
      */
     public void log(SessionLogEntry entry) {
+        if (this.isLoggingOff) {
+            return;
+        }
         if (shouldLog(entry.getLevel(), entry.getNameSpace())) {
             if (entry.getSession() == null) {// Used for proxy session.
                 entry.setSession(this);
@@ -2458,6 +2473,9 @@ public abstract class AbstractSession implements org.eclipse.persistence.session
      * Log a untranslated message to the EclipseLink log at FINER level.
      */
     public void logMessage(String message) {
+        if (this.isLoggingOff) {
+            return;
+        }
         log(SessionLog.FINER, message, (Object[])null, null, false);
     }
 
@@ -2959,6 +2977,7 @@ public abstract class AbstractSession implements org.eclipse.persistence.session
      * @see #logMessage(String)
      */
     public void setSessionLog(SessionLog sessionLog) {
+        this.isLoggingOff = false;
         this.sessionLog = sessionLog;
         if ((sessionLog != null) && (sessionLog.getSession() == null)) {
             sessionLog.setSession(this);
@@ -2992,6 +3011,9 @@ public abstract class AbstractSession implements org.eclipse.persistence.session
      * Return if logging is enabled (false if log level is OFF)
      */
     public boolean shouldLogMessages() {
+        if (this.isLoggingOff) {
+            return false;
+        }
         if (getLogLevel(null) == SessionLog.OFF) {
             return false;
         } else {
@@ -3004,7 +3026,7 @@ public abstract class AbstractSession implements org.eclipse.persistence.session
      * Start the operation timing.
      */
     public void startOperationProfile(String operationName) {
-        if (isInProfile()) {
+        if (this.isInProfile) {
             getProfiler().startOperationProfile(operationName);
         }
     }
@@ -3014,7 +3036,7 @@ public abstract class AbstractSession implements org.eclipse.persistence.session
      * Start the operation timing.
      */
     public void startOperationProfile(String operationName, DatabaseQuery query, int weight) {
-        if (isInProfile()) {
+        if (this.isInProfile) {
             getProfiler().startOperationProfile(operationName, query, weight);
         }
     }
@@ -3241,6 +3263,9 @@ public abstract class AbstractSession implements org.eclipse.persistence.session
      * defined in the CommandProcessor interface.
      */
     public boolean shouldLogMessages(int logLevel) {
+        if (this.isLoggingOff) {
+            return false;
+        }
         if (LOG_ERROR == logLevel) {
             return getLogLevel(SessionLog.PROPAGATION) <= SessionLog.SEVERE;
         }
@@ -3266,6 +3291,9 @@ public abstract class AbstractSession implements org.eclipse.persistence.session
      * CommandProcessor interface.
      */
     public void logMessage(int logLevel, String message) {
+        if (this.isLoggingOff) {
+            return;
+        }
         if (shouldLogMessages(logLevel)) {
             int level;
             switch (logLevel) {
@@ -3326,6 +3354,7 @@ public abstract class AbstractSession implements org.eclipse.persistence.session
      * </p>
      */
     public void setLogLevel(int level) {
+        this.isLoggingOff = false;
         getSessionLog().setLevel(level);
     }
 
@@ -3342,6 +3371,9 @@ public abstract class AbstractSession implements org.eclipse.persistence.session
      * </p>
      */
     public boolean shouldLog(int Level, String category) {
+        if (this.isLoggingOff) {
+            return false;
+        }
         return getSessionLog().shouldLog(Level, category);
     }
 
@@ -3359,6 +3391,9 @@ public abstract class AbstractSession implements org.eclipse.persistence.session
      * </p>
      */
     public void log(int level, String category, String message) {
+        if (this.isLoggingOff) {
+            return;
+        }
         if (!shouldLog(level, category)) {
             return;
         }
@@ -3381,6 +3416,9 @@ public abstract class AbstractSession implements org.eclipse.persistence.session
      * </p>
      */
     public void log(int level, String category, String message, Object param) {
+        if (this.isLoggingOff) {
+            return;
+        }
         if (!shouldLog(level, category)) {
             return;
         }
@@ -3405,6 +3443,9 @@ public abstract class AbstractSession implements org.eclipse.persistence.session
      * </p>
      */
     public void log(int level, String category, String message, Object param1, Object param2) {
+        if (this.isLoggingOff) {
+            return;
+        }
         if (!shouldLog(level, category)) {
             return;
         }
@@ -3431,6 +3472,9 @@ public abstract class AbstractSession implements org.eclipse.persistence.session
      * </p>
      */
     public void log(int level, String category, String message, Object param1, Object param2, Object param3) {
+        if (this.isLoggingOff) {
+            return;
+        }
         if (!shouldLog(level, category)) {
             return;
         }
@@ -3453,6 +3497,9 @@ public abstract class AbstractSession implements org.eclipse.persistence.session
      * </p>
      */
     public void log(int level, String category, String message, Object[] params) {
+        if (this.isLoggingOff) {
+            return;
+        }
         log(level, category, message, params, null);
     }
 
@@ -3474,6 +3521,9 @@ public abstract class AbstractSession implements org.eclipse.persistence.session
      * </p>
      */
     public void log(int level, String category, String message, Object[] params, Accessor accessor) {
+        if (this.isLoggingOff) {
+            return;
+        }
         log(level, category, message, params, accessor, true);
     }
 
@@ -3497,6 +3547,9 @@ public abstract class AbstractSession implements org.eclipse.persistence.session
      * </p>
      */
     public void log(int level, String category, String message, Object[] params, Accessor accessor, boolean shouldTranslate) {
+        if (this.isLoggingOff) {
+            return;
+        }
         if (shouldLog(level, category)) {
             startOperationProfile(SessionProfiler.Logging);
             log(new SessionLogEntry(level, category, this, message, params, accessor, shouldTranslate));
@@ -3520,6 +3573,9 @@ public abstract class AbstractSession implements org.eclipse.persistence.session
      * </p>
      */
     public void log(int level, String message, Object[] params, Accessor accessor) {
+        if (this.isLoggingOff) {
+            return;
+        }
         log(level, message, params, accessor, true);
     }
 
@@ -3541,6 +3597,9 @@ public abstract class AbstractSession implements org.eclipse.persistence.session
      * </p>
      */
     public void log(int level, String message, Object[] params, Accessor accessor, boolean shouldTranslate) {
+        if (this.isLoggingOff) {
+            return;
+        }
         if (shouldLog(level, null)) {
             startOperationProfile(SessionProfiler.Logging);
             log(new SessionLogEntry(level, this, message, params, accessor, shouldTranslate));
@@ -3562,6 +3621,9 @@ public abstract class AbstractSession implements org.eclipse.persistence.session
      * </p>
      */
     public void logThrowable(int level, String category, Throwable throwable) {
+        if (this.isLoggingOff) {
+            return;
+        }
         // Must not create the log if not logging as is a performance issue.
         if (shouldLog(level, category)) {
             startOperationProfile(SessionProfiler.Logging);
@@ -3581,6 +3643,9 @@ public abstract class AbstractSession implements org.eclipse.persistence.session
      * </p>
      */
     public void severe(String message, String category) {
+        if (this.isLoggingOff) {
+            return;
+        }
         log(SessionLog.SEVERE, category, message);
     }
 
@@ -3595,6 +3660,9 @@ public abstract class AbstractSession implements org.eclipse.persistence.session
      * </p>
      */
     public void warning(String message, String category) {
+        if (this.isLoggingOff) {
+            return;
+        }
         log(SessionLog.WARNING, category, message);
     }
 
@@ -3609,6 +3677,9 @@ public abstract class AbstractSession implements org.eclipse.persistence.session
      * </p>
      */
     public void info(String message, String category) {
+        if (this.isLoggingOff) {
+            return;
+        }
         log(SessionLog.INFO, category, message);
     }
 
@@ -3623,6 +3694,9 @@ public abstract class AbstractSession implements org.eclipse.persistence.session
      * </p>
      */
     public void config(String message, String category) {
+        if (this.isLoggingOff) {
+            return;
+        }
         log(SessionLog.CONFIG, category, message);
     }
 
@@ -3637,6 +3711,9 @@ public abstract class AbstractSession implements org.eclipse.persistence.session
      * </p>
      */
     public void fine(String message, String category) {
+        if (this.isLoggingOff) {
+            return;
+        }
         log(SessionLog.FINE, category, message);
     }
 
@@ -3651,6 +3728,9 @@ public abstract class AbstractSession implements org.eclipse.persistence.session
      * </p>
      */
     public void finer(String message, String category) {
+        if (this.isLoggingOff) {
+            return;
+        }
         log(SessionLog.FINER, category, message);
     }
 
@@ -3665,6 +3745,9 @@ public abstract class AbstractSession implements org.eclipse.persistence.session
      * </p>
      */
     public void finest(String message, String category) {
+        if (this.isLoggingOff) {
+            return;
+        }
         log(SessionLog.FINEST, category, message);
     }
 

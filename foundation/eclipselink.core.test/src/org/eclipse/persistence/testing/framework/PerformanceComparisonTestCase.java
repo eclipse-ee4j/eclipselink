@@ -230,9 +230,15 @@ public abstract class PerformanceComparisonTestCase extends TestCase implements 
      * Build and return an emulated session for isolated Java performance from the database.
      */
     public Session buildEmulatedSession() {
+        try {
+            Class.forName(getSession().getLogin().getDriverClassName());
+        } catch (Exception ignore) {}
         Project project = (Project)getSession().getProject().clone();
         DatabaseLogin login = (DatabaseLogin)project.getLogin().clone();
-        login.useDirectDriverConnect();
+        try {
+            Class.forName(login.getDriverClassName());
+        } catch (Exception ignore) {}
+        //login.useDirectDriverConnect();
         login.setDriverClass(org.eclipse.persistence.testing.tests.performance.emulateddb.EmulatedDriver.class);
         login.setConnectionString("emulate:" + login.getConnectionString());
         project.setLogin(login);

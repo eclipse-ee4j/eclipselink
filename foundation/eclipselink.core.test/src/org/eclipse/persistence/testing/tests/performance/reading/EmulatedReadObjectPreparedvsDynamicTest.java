@@ -27,7 +27,7 @@ public class EmulatedReadObjectPreparedvsDynamicTest extends ReadObjectPreparedv
     public void setup() {
         Session session = buildEmulatedSession();
 
-        EmulatedConnection connection = (EmulatedConnection)((org.eclipse.persistence.internal.sessions.AbstractSession)session).getAccessor().getConnection();
+        /*EmulatedConnection connection = (EmulatedConnection)((org.eclipse.persistence.internal.sessions.AbstractSession)session).getAccessor().getConnection();
 
         ReadAllQuery query = new ReadAllQuery(Employee.class);
         query.setShouldIncludeData(true);
@@ -35,7 +35,7 @@ public class EmulatedReadObjectPreparedvsDynamicTest extends ReadObjectPreparedv
         ComplexQueryResult result = (ComplexQueryResult)getSession().executeQuery(query);
         Vector rows = (Vector)result.getData();
         String sql = query.getSQLString();
-        connection.putRows(sql, rows);
+        connection.putRows(sql, rows);*/
 
         getExecutor().swapSession(session);
         super.setup();

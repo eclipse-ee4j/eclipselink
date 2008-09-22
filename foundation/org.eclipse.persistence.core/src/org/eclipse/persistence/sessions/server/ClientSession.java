@@ -31,7 +31,7 @@ import org.eclipse.persistence.internal.sessions.AbstractSession;
  * <b>Purpose</b>: Acts as a client to the server session.
  * <p>
  * <b>Description</b>: This session is brokered by the server session for use in three-tiered applications.
- * It is used to store the context of the connection, i.e. the login to be used for this cleint.
+ * It is used to store the context of the connection, i.e. the login to be used for this client.
  * This allows each client connected to the server to contain its own user login.
  * <p>
  * <b>Responsibilities</b>:
@@ -40,11 +40,13 @@ import org.eclipse.persistence.internal.sessions.AbstractSession;
  *    <li> Forward all requests and queries to its parent server session.
  *    </ul>
  *  <p>
- *  This class is an implementation of {@link org.eclipse.persistence.sessions.Session}.
- *  Please refer to that class for a full API.  The public interface should be used.
+ * This class is an implementation of {@link org.eclipse.persistence.sessions.Session}.
+ * Please refer to that class for a full API.  The public interface should be used.
  * @see Server
+ * @see org.eclipse.persistence.sessions.Session
  * @see org.eclipse.persistence.sessions.UnitOfWork
- *  
+ */
+/*
  *  05/28/2008-1.0M8 Andrei Ilitchev 
  *        - 224964: Provide support for Proxy Authentication through JPA.
  *        Added a new constructor that takes Properties. 
@@ -71,6 +73,7 @@ public class ClientSession extends AbstractSession {
             this.setProject((Project)getProject().clone());
             this.setLogin(connectionPolicy.getLogin());
         }
+        this.isLoggingOff = parent.isLoggingOff();
         this.isActive = true;
         this.externalTransactionController = parent.getExternalTransactionController();
         this.parent = parent;
@@ -86,7 +89,7 @@ public class ClientSession extends AbstractSession {
         this.exceptionHandler = parent.getExceptionHandler();
         this.properties = properties;
 
-        getEventManager().postAcquireClientSession();
+        this.eventManager.postAcquireClientSession();
         incrementProfile(SessionProfiler.ClientSessionCreated);
     }
 
@@ -128,7 +131,7 @@ public class ClientSession extends AbstractSession {
      * This is internal to the unit of work and should not be called otherwise.
      */
     public void basicCommitTransaction() {
-        //Only releasee connection when transaction succeeds.  
+        //Only release connection when transaction succeeds.  
         //If not, connection will be released in rollback.
         super.basicCommitTransaction();
 
@@ -327,21 +330,21 @@ public class ClientSession extends AbstractSession {
     }
 
     /**
-    * INTERNAL:
-    * was ADVANCED:
-    * Creates sequencing object for the session.
-    * Typically there is no need for the user to call this method -
-    * it is called from the constructor.
-    */
+     * INTERNAL:
+     * was ADVANCED:
+     * Creates sequencing object for the session.
+     * Typically there is no need for the user to call this method -
+     * it is called from the constructor.
+     */
     public void initializeSequencing() {
         this.sequencing = SequencingFactory.createSequencing(this);
     }
 
     /**
-    * INTERNAL:
-    * Return the Sequencing object used by the session.
-    * Lazy  init sequencing to defer from client session creation to improve creation performance.
-    */
+     * INTERNAL:
+     * Return the Sequencing object used by the session.
+     * Lazy init sequencing to defer from client session creation to improve creation performance.
+     */
     public Sequencing getSequencing() {
         // PERF: lazy init defer from constructor, only created when needed.
         if (sequencing == null) {
@@ -353,8 +356,8 @@ public class ClientSession extends AbstractSession {
     /**
      * INTERNAL:
      * Marked internal as this is not customer API but helper methods for
-     * accessing the server platform from within TopLink's other sessions types
-     * (ie not DatabaseSession)
+     * accessing the server platform from within other sessions types
+     * (i.e. not DatabaseSession)
      */
     public ServerPlatform getServerPlatform() {
         return getParent().getServerPlatform();
@@ -407,7 +410,7 @@ public class ClientSession extends AbstractSession {
     /**
      * INTERNAL:
      * Was PUBLIC: customer will be redirected to {@link org.eclipse.persistence.sessions.Session}.
-     * Return if the client session is actvie (has not been released).
+     * Return if the client session is active (has not been released).
      */
     public boolean isActive() {
         return isActive;
@@ -526,7 +529,7 @@ public class ClientSession extends AbstractSession {
     /**
      * INTERNAL:
      * Return the manager that allows this processor to receive or propagate commands from/to TopLink cluster
-     * @see #CommandManager
+     * @see CommandManager
      * @return a remote command manager
      */
     public CommandManager getCommandManager() {
@@ -534,17 +537,17 @@ public class ClientSession extends AbstractSession {
     }
 
     /**
-      * INTERNAL:
-      * Return whether changes should be propagated to TopLink cluster.  This is one of the required
-      * cache synchronization setting
-      */
+     * INTERNAL:
+     * Return whether changes should be propagated to TopLink cluster.  This is one of the required
+     * cache synchronization setting
+     */
     public boolean shouldPropagateChanges() {
         return getParent().shouldPropagateChanges();
     }
 
     /**
-    * INTERNAL:
-    */
+     * INTERNAL:
+     */
     public void releaseReadConnection(Accessor connection) {
         //bug 4668234 -- used to only release connections on server sessions but should always release
         getParent().releaseReadConnection(connection);

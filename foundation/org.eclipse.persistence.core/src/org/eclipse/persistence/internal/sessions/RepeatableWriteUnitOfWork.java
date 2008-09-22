@@ -286,8 +286,8 @@ public class RepeatableWriteUnitOfWork extends UnitOfWorkImpl {
             this.unitOfWorkChangeSet = new UnitOfWorkChangeSet(this);
         }
         UnitOfWorkChangeSet changeSet = this.unitOfWorkChangeSet;
-        // This also assigns sequence numbers and discover unregistered new objects.
-        calculateChanges(getCloneMapping(), changeSet, true);
+        // This also discovers unregistered new objects, (which persists them and assign sequence, so no need to assign sequence twice).
+        calculateChanges(getCloneMapping(), changeSet, false);
         // Write those changes to the database.
         if (!changeSet.hasChanges() && !changeSet.hasForcedChanges() && ! this.hasDeletedObjects() && ! this.hasModifyAllQueries()) {
             return;

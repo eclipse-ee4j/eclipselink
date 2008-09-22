@@ -21,6 +21,7 @@ import org.eclipse.persistence.internal.descriptors.changetracking.*;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.internal.sessions.ChangeRecord;
 import org.eclipse.persistence.internal.sessions.ObjectChangeSet;
+import org.eclipse.persistence.internal.sessions.UnitOfWorkChangeSet;
 import org.eclipse.persistence.internal.sessions.UnitOfWorkImpl;
 import org.eclipse.persistence.internal.descriptors.*;
 import org.eclipse.persistence.mappings.*;
@@ -37,6 +38,15 @@ import org.eclipse.persistence.mappings.*;
  */
 public class AttributeChangeTrackingPolicy extends ObjectChangeTrackingPolicy {
 
+    /**
+     * INTERNAL:
+     * PERF: Calculate change for the existing object, avoids check for new since already know.
+     * Avoid backup clone, as not used.
+     */
+    public ObjectChangeSet calculateChangesForExistingObject(Object clone, UnitOfWorkChangeSet changeSet, UnitOfWorkImpl unitOfWork, ClassDescriptor descriptor, boolean shouldRaiseEvent) {
+        return calculateChanges(clone, null, false, changeSet, unitOfWork, descriptor, shouldRaiseEvent);
+    }
+    
     /**
      * INTERNAL:
      * Create ObjectChangeSet

@@ -21,6 +21,8 @@ import org.eclipse.persistence.internal.descriptors.ObjectBuilder;
 import org.eclipse.persistence.internal.descriptors.changetracking.ObjectChangeListener;
 import org.eclipse.persistence.internal.descriptors.changetracking.AggregateObjectChangeListener;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
+import org.eclipse.persistence.internal.sessions.ObjectChangeSet;
+import org.eclipse.persistence.internal.sessions.UnitOfWorkChangeSet;
 import org.eclipse.persistence.internal.sessions.UnitOfWorkImpl;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.descriptors.FetchGroupManager;
@@ -69,13 +71,10 @@ public class ObjectChangeTrackingPolicy extends DeferredChangeDetectionPolicy {
      * @param unitOfWork the active unitOfWork
      * @param descriptor the descriptor for the current object
      */
-    public boolean shouldCompareForChange(Object object, UnitOfWorkImpl unitOfWork, ClassDescriptor descriptor) {
+    public boolean shouldCompareExistingObjectForChange(Object object, UnitOfWorkImpl unitOfWork, ClassDescriptor descriptor) {
         //PERF: Breakdown the logic to have the most likely scenario checked first
         ObjectChangeListener listener = (ObjectChangeListener)((ChangeTracker)object)._persistence_getPropertyChangeListener();
         if ((listener != null) && listener.hasChanges()) {
-            return true;
-        }        
-        if (unitOfWork.isObjectNew(object)) {
             return true;
         }
         Boolean optimisticRead = null;
@@ -92,7 +91,7 @@ public class ObjectChangeTrackingPolicy extends DeferredChangeDetectionPolicy {
         }
         return false;
     }
-
+    
     /**
      * INTERNAL:
      * This may cause a property change event to be raised to a listner in the case that a listener exists.

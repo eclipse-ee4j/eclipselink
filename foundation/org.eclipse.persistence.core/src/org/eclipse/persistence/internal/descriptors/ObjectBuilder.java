@@ -1503,12 +1503,13 @@ public class ObjectBuilder implements Cloneable, Serializable {
 
     /**
      * INTERNAL:
-     * This method creates an records changes for a particular object
-     * @return ChangeRecord
+     * This method creates an records changes for a particular object.
+     * It should only be used by aggregates.
+     * @return ObjectChangeSet
      */
     public ObjectChangeSet compareForChange(Object clone, Object backUp, UnitOfWorkChangeSet changeSet, AbstractSession session) {
         // delegate the change comparison to this objects ObjectChangePolicy - TGW
-        return descriptor.getObjectChangePolicy().calculateChanges(clone, backUp, changeSet, session, this.descriptor, true);
+        return descriptor.getObjectChangePolicy().calculateChanges(clone, backUp, backUp == null, changeSet, ((UnitOfWorkImpl)session), this.descriptor, true);
     }
 
     /**

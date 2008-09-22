@@ -1078,9 +1078,11 @@ public class DescriptorQueryManager implements Cloneable, Serializable {
         if (query == null) {
             return;
         }
-        this.deleteQuery.setIsUserDefined(true);
-        this.deleteQuery.setDescriptor(getDescriptor());
-
+        query.setIsUserDefined(true);
+        query.setDescriptor(getDescriptor());
+        if (query.isCallQuery()) {
+            query.setIsFullRowRequired(true);
+        }
     }
 
     /**

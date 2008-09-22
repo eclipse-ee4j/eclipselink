@@ -257,6 +257,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
      */
     public UnitOfWorkImpl(AbstractSession parent, ReferenceMode referenceMode) {
         super();
+        this.isLoggingOff = parent.isLoggingOff();
         this.referenceMode = referenceMode;
         this.name = parent.getName();
         this.parent = parent;
@@ -543,10 +544,10 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
     public UnitOfWorkChangeSet calculateChanges(Map registeredObjects, UnitOfWorkChangeSet changeSet, boolean assignSequences) {
         getEventManager().preCalculateUnitOfWorkChangeSet();
 
-        if (assignSequences && !getProject().isPureCMP2Project()) {
+        if (assignSequences && !this.project.isPureCMP2Project()) {
             if (hasNewObjects()) {
                 // First assign sequence numbers to new objects.
-                assignSequenceNumbers(getNewObjectsCloneToOriginal());
+                assignSequenceNumbers(this.newObjectsCloneToOriginal);
             }
         }
         
@@ -563,9 +564,15 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
 
             // Block of code removed for code coverage, as it would never have been touched. bug # 2903600
             
+            boolean isNew = isObjectNew(object);
             // Use the object change policy to determine if we should run a comparison for this object - TGW.
-            if (descriptor.getObjectChangePolicy().shouldCompareForChange(object, this, descriptor)) {
-                ObjectChangeSet changes = descriptor.getObjectChangePolicy().calculateChanges(object, getBackupClone(object), changeSet, this, descriptor, true);
+            if (isNew || descriptor.getObjectChangePolicy().shouldCompareExistingObjectForChange(object, this, descriptor)) {
+                ObjectChangeSet changes = null;
+                if (isNew) {
+                    changes = descriptor.getObjectChangePolicy().calculateChangesForNewObject(object, changeSet, this, descriptor, true);
+                } else {
+                    changes = descriptor.getObjectChangePolicy().calculateChangesForExistingObject(object, changeSet, this, descriptor, true);
+                }
                 if (changes != null) {
                     changeSet.addObjectChangeSet(changes, this, true);
                     changedObjects.put(object, object);
@@ -583,10 +590,13 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
                     // Mark as visited so do not need to traverse.
                     visitedNodes.put(object, object);
                 }
+            } else {
+                // Mark as visited so do not need to traverse.
+                visitedNodes.put(object, object);
             }
         }
         
-        if (!getProject().isPureCMP2Project()) {
+        if (!this.project.isPureCMP2Project()) {
             // Third discover any new objects from the new or changed objects.
             Map newObjects = new IdentityHashMap();
             Map existingObjects = new IdentityHashMap(2);
@@ -601,13 +611,13 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
             for (Iterator newObjectsEnum = newObjects.values().iterator(); newObjectsEnum.hasNext(); ) {
                 Object object = newObjectsEnum.next();
                 ClassDescriptor descriptor = getDescriptor(object);
-                ObjectChangeSet changes = descriptor.getObjectChangePolicy().calculateChanges(object, getBackupClone(object), changeSet, this, descriptor, true);
+                ObjectChangeSet changes = descriptor.getObjectChangePolicy().calculateChangesForNewObject(object, changeSet, this, descriptor, true);
                 // Since it is new, it will always have a change set.
                 changeSet.addObjectChangeSet(changes, this, true);
             }
         }
         
-        getEventManager().postCalculateUnitOfWorkChangeSet(changeSet);
+        this.eventManager.postCalculateUnitOfWorkChangeSet(changeSet);
         return changeSet;
     }
 
@@ -1325,10 +1335,11 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
     
                 // Iterate over each clone and let the object build merge to clones into the originals.
                 // The change set may already exist if using change tracking.
-                if (getUnitOfWorkChangeSet() == null) {
-                    setUnitOfWorkChangeSet(new UnitOfWorkChangeSet(this));
+                if (this.unitOfWorkChangeSet == null) {
+                    this.unitOfWorkChangeSet = new UnitOfWorkChangeSet(this);
                 }
-                calculateChanges(new IdentityHashMap(this.getCloneMapping()), (UnitOfWorkChangeSet)getUnitOfWorkChangeSet(), true);
+                // PERF: clone is faster than new.
+                calculateChanges((IdentityHashMap)((IdentityHashMap)getCloneMapping()).clone(), this.unitOfWorkChangeSet, true);
             } catch (RuntimeException exception){
                 // The number of SQL statements been prepared need be stored into UOW 
                 // before any exception being thrown.
@@ -1553,16 +1564,19 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
                 if (isSmartMerge() && isOriginalNewObject(object)) {
                     return;
                 } else if (!isObjectRegistered(object)) {// Don't need to check for aggregates, as iterator does not iterate on them by default.
-                    if ( shouldPerformNoValidation() && checkForUnregisteredExistingObject(object) ) {
-                        // If no validation is performed and the object exists we need
-                        // To keep a record of this object to ignore it, also I need to
-                        // Stop iterating over it.
-                        unregisteredExistingObjects.put(object, object);
-                        this.setShouldBreak(true);
-                        return;
-
+                    if (shouldPerformNoValidation()) {
+                        if (checkForUnregisteredExistingObject(object)) {
+                            // If no validation is performed and the object exists we need
+                            // To keep a record of this object to ignore it, also I need to
+                            // Stop iterating over it.
+                            unregisteredExistingObjects.put(object, object);
+                            this.setShouldBreak(true);
+                            return;
+                        }
+                    } else {
+                        // This will validate that the object is not from the parent session, moved from calculate to optimize JPA.
+                        getBackupClone(object);
                     }
-
                     // This means it is a unregistered new object
                     knownNewObjects.put(object, object);
                 }
@@ -3360,8 +3374,8 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
      */
     protected void postMergeChanges() {
         //bug 4730595: objects removed during flush are not removed from the cache during commit
-        if (!this.getUnitOfWorkChangeSet().getDeletedObjects().isEmpty()){
-            Map deletedObjects = this.getUnitOfWorkChangeSet().getDeletedObjects();
+        if (this.unitOfWorkChangeSet.hasDeletedObjects()) {
+            Map deletedObjects = this.unitOfWorkChangeSet.getDeletedObjects();
             for (Iterator removedObjects = deletedObjects.keySet().iterator(); removedObjects.hasNext(); ) {
                 ObjectChangeSet removedObjectChangeSet = (ObjectChangeSet) removedObjects.next();
                 java.util.Vector primaryKeys = removedObjectChangeSet.getPrimaryKeys();

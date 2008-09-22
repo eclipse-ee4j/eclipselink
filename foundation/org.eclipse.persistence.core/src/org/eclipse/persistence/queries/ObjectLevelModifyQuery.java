@@ -205,17 +205,17 @@ public abstract class ObjectLevelModifyQuery extends ModifyQuery {
     public void prepareForExecution() throws QueryException {
         super.prepareForExecution();
 
-        if (getObject() == null) {
+        if (this.object == null) {
             throw QueryException.objectToModifyNotSpecified(this);
         }
 
-        setObject(getDescriptor().getObjectBuilder().unwrapObject(getObject(), getSession()));
+        this.object = this.descriptor.getObjectBuilder().unwrapObject(this.object, this.session);
 
-        if (getPrimaryKey() == null) {
-            if (getObjectChangeSet() != null) {
-                setPrimaryKey(getObjectChangeSet().getPrimaryKeys());
+        if (this.primaryKey == null) {
+            if (this.objectChangeSet != null) {
+                this.primaryKey = this.objectChangeSet.getPrimaryKeys();
             } else {
-                setPrimaryKey(getDescriptor().getObjectBuilder().extractPrimaryKeyFromObject(getObject(), getSession()));
+                this.primaryKey = this.descriptor.getObjectBuilder().extractPrimaryKeyFromObject(this.object, this.session);
             }
         }
     }

@@ -1031,7 +1031,7 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
      * Return the JPQL string of the query.
      */
     public String getJPQLString() {
-        return getJPQLString();
+        return getEJBQLString();
     }
     
     /**
