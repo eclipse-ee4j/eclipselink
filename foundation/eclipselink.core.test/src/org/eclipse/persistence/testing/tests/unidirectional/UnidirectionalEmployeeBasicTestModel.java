@@ -73,6 +73,9 @@ public class UnidirectionalEmployeeBasicTestModel extends TestModel {
         suite.addTest(new DeleteObjectTest(manager.getObject(employeeClass, "0004")));
         suite.addTest(new DeleteObjectTest(manager.getObject(employeeClass, "0005")));
 
+        suite.addTest(new TargetLockingTest_DeleteSource(true));
+        suite.addTest(new TargetLockingTest_DeleteSource(false));
+
         return suite;
     }
 
@@ -160,6 +163,7 @@ public class UnidirectionalEmployeeBasicTestModel extends TestModel {
                 new Object[]{otherEmployee.getManagedEmployees().get(0), newEmployee, newPhoneNumber}, 
                 new Object[]{originalEmployee.getManagedEmployees().get(0), originalEmployee.getManagedEmployees().get(1), originalEmployee.getPhoneNumbers().get(0)}));
         suite.addTest(new CascadeLockingTest());
+        suite.addTest(new TargetLockingTest_AddRemoveTarget());
 
         return suite;
     }
@@ -346,7 +350,7 @@ public class UnidirectionalEmployeeBasicTestModel extends TestModel {
         public CascadeLockingTest() {
             super();
             setName("CascadeLockingPolicyTest");
-            setDescription("Tests optimictic lock cascading for UnidirectionalOneToManyMapping");
+            setDescription("Tests optimistic lock cascading for UnidirectionalOneToManyMapping");
         }
         public void setup() {
             super.setup();
@@ -568,6 +572,192 @@ public class UnidirectionalEmployeeBasicTestModel extends TestModel {
         }
         void setSelectionCriteria(ReadAllQuery query) {
             query.setSelectionCriteria(query.getExpressionBuilder().get("firstName").like("J%"));
+        }
+    }
+
+    /**
+     * Base class for TargetLockingTest_AddRemoveTarget and TargetLockingTest_DeleteSource. 
+     * and mapping's shouldIncrementTargetLockValueOnAddOrRemoveTarget flag is set to true (default setting)
+     * adding/removing target to/from source causes target's version to increment.
+     */
+    static class TargetLockingTest extends TestCase {
+        Employee employee[];
+        
+        public TargetLockingTest() {
+            super();
+        }
+        long getVersion(Employee emp) {
+            Vector pk = new Vector(1);
+            pk.add(emp.getId());
+            
+            return ((Long)getSession().getDescriptor(Employee.class).getOptimisticLockingPolicy().getWriteLockValue(emp, pk, getAbstractSession())).longValue();
+        }
+        public void reset() {
+            UnitOfWork uow = getSession().acquireUnitOfWork();
+            for(int i=0; i<employee.length; i++) {
+                if(employee[i] != null) {
+                    uow.deleteObject(employee[i]);
+                }
+            }
+            uow.commit();
+        }
+    }
+    /**
+     * If target descriptor of UnidirectionalOneToMany mapping has optimistic locking policy,
+     * and mapping's shouldIncrementTargetLockValueOnAddOrRemoveTarget flag is set to true (default setting)
+     * adding/removing target to/from source causes target's version to increment.
+     */
+    static class TargetLockingTest_AddRemoveTarget extends TargetLockingTest {
+        
+        public TargetLockingTest_AddRemoveTarget() {
+            super();
+            setName("TargetLockingTest_AddRemoveTarget");
+            setDescription("Tests target optimistic locking for UnidirectionalOneToManyMapping when targets are added to and removed from the source.");
+        }
+        public void setup() {
+            // create 5 Employees.
+            employee = new Employee[5];
+            
+            employee[0] = new Employee();
+            employee[0].setFirstName("Manager");
+            
+            // 1 and 2 have manager 0.
+            employee[1] = new Employee();
+            employee[1].setFirstName("Employee_1");
+            employee[0].addManagedEmployee(employee[1]);
+            
+            employee[2] = new Employee();
+            employee[2].setFirstName("Employee_2");
+            employee[0].addManagedEmployee(employee[2]);
+            
+            // 3 and 4 don't have a manager.
+            employee[3] = new Employee();
+            employee[3].setFirstName("Employee_3");
+            
+            employee[4] = new Employee();
+            employee[4].setFirstName("Employee_4");
+
+            // insert all the Employees into the db.
+            UnitOfWork uow = getSession().acquireUnitOfWork();
+            for(int i=0; i<employee.length; i++) {
+                uow.registerObject(employee[i]);
+            }
+            uow.commit();
+        }
+        public void test() {
+            UnitOfWork uow = getSession().acquireUnitOfWork();
+            Employee managerClone = (Employee)uow.registerObject(employee[0]);
+            // remove all managed Employees (1 and 2)
+            managerClone.getManagedEmployees().clear();
+            // add to managed list new Employees (3 and 4)
+            Employee employee3Clone = (Employee)uow.registerObject(employee[3]);
+            Employee employee4Clone = (Employee)uow.registerObject(employee[4]);
+            managerClone.addManagedEmployee(employee3Clone);
+            managerClone.addManagedEmployee(employee4Clone);
+            // after commit the  versions of all Employees should be changed.
+            uow.commit();
+        }        
+        public void verify() {
+            long version[] = new long[employee.length];
+            String errorMsg = "";
+            for(int i=0; i<employee.length; i++) {
+                version[i] = getVersion(employee[i]);
+                if(version[i] != 2) {
+                    errorMsg += "in the cache version["+i+"] = "+version[i]+" (2 was expected); ";
+                }
+            }
+            // make sure that versions in the db are correct, too.
+            for(int i=0; i<employee.length; i++) {
+                employee[i] = (Employee)getSession().refreshObject(employee[i]);
+                version[i] = getVersion(employee[i]);
+                if(version[i] != 2) {
+                    errorMsg += "in the db version["+i+"] = "+version[i]+" (2 was expected); ";
+                }
+            }
+            if(errorMsg.length() > 0) {
+                throw new TestErrorException(errorMsg);
+            }
+        }
+    }
+    /**
+     * If target descriptor of UnidirectionalOneToMany mapping has optimistic locking policy,
+     * and mapping's shouldIncrementTargetLockValueOnDeleteSource flag is set to true (default setting)
+     * the deleting the source source causes all targets' versions to increment.
+     * Note that in this case the indirection is triggered to make sure that the proper targets' versions used.
+     */
+    static class TargetLockingTest_DeleteSource extends TargetLockingTest {
+        boolean isIndirectionTriggered;
+        
+        public TargetLockingTest_DeleteSource(boolean isIndirectionTriggered) {
+            super();
+            this.isIndirectionTriggered = isIndirectionTriggered;
+            setName("TargetLockingTest_DeleteSource");
+            if(isIndirectionTriggered) {
+                setName(getName() + "_IndirectionTriggered");
+            } else {
+                setName(getName() + "_IndirectionNotTriggered");
+            }
+            setDescription("Tests target optimistic locking for UnidirectionalOneToManyMapping when the source is deleted.");
+        }
+        public void setup() {
+            // create 3 Employees.
+            employee = new Employee[3];
+            
+            employee[0] = new Employee();
+            employee[0].setFirstName("Manager");
+            
+            // 1 and 2 have manager 0.
+            employee[1] = new Employee();
+            employee[1].setFirstName("Employee_1");
+            employee[0].addManagedEmployee(employee[1]);
+            
+            employee[2] = new Employee();
+            employee[2].setFirstName("Employee_2");
+            employee[0].addManagedEmployee(employee[2]);
+
+            // insert all the Employees into the db.
+            UnitOfWork uow = getSession().acquireUnitOfWork();
+            for(int i=0; i<employee.length; i++) {
+                uow.registerObject(employee[i]);
+            }
+            uow.commit();
+            
+            getSession().getIdentityMapAccessor().initializeAllIdentityMaps();
+        }
+        public void test() {
+            employee[0] = (Employee)getSession().readObject(employee[0]);
+            if(isIndirectionTriggered) {
+                // that triggers indirection.
+                employee[0].getManagedEmployees().size();
+            }
+            
+            UnitOfWork uow = getSession().acquireUnitOfWork();
+            Employee managerClone = (Employee)uow.deleteObject(employee[0]);
+            // after commit 0 is deleted and the versions of 1 and 2 should be changed.
+            uow.commit();
+            // set the deleted Employee to null so that reset method won't attempt to delete it again.
+            employee[0] = null;
+        }        
+        public void verify() {
+            long version[] = new long[employee.length];
+            String errorMsg = "";
+            for(int i=1; i<employee.length; i++) {
+                version[i] = getVersion(employee[i]);
+                if(version[i] != 2) {
+                    errorMsg += "in the cache version["+i+"] = "+version[i]+" (2 was expected); ";
+                }
+            }
+            // make sure that versions in the db are correct, too.
+            for(int i=1; i<employee.length; i++) {
+                employee[i] = (Employee)getSession().refreshObject(employee[i]);
+                version[i] = getVersion(employee[i]);
+                if(version[i] != 2) {
+                    errorMsg += "in the db version["+i+"] = "+version[i]+" (2 was expected); ";
+                }
+            }
+            if(errorMsg.length() > 0) {
+                throw new TestErrorException(errorMsg);
+            }
         }
     }
 }

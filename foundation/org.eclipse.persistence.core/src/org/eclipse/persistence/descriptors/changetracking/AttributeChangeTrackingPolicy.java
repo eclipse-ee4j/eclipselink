@@ -70,6 +70,20 @@ public class AttributeChangeTrackingPolicy extends ObjectChangeTrackingPolicy {
                         mapping.calculateDeferredChanges((ChangeRecord)changes.getChangesForAttributeNamed(mapping.getAttributeName()), session);
                     }
                 }
+                if(descriptor.hasMappingsPostCalculateChanges()) {
+                    int size = descriptor.getMappingsPostCalculateChanges().size();
+                    for(int i=0; i < size; i++) {
+                        DatabaseMapping mapping = descriptor.getMappingsPostCalculateChanges().get(i); 
+                        org.eclipse.persistence.sessions.changesets.ChangeRecord record = changes.getChangesForAttributeNamed(mapping.getAttributeName());
+                        if(record != null) {
+                            // don't call postCalculateChanges if calculateDeferredChanges has been already called:
+                            // the latter calls the former (required by DeferredChangePolicy). 
+                            if(!changes.hasDeferredAttributes() || !changes.getDeferredSet().contains(mapping.getAttributeName())) {
+                                mapping.postCalculateChanges(record, session);
+                            }
+                        }
+                    }
+                }
             } else {
                 changes = descriptor.getObjectBuilder().createObjectChangeSet(clone, changeSet, isNew, session);            
             }

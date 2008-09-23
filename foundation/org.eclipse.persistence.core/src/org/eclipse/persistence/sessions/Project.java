@@ -62,6 +62,11 @@ public class Project implements Serializable, Cloneable {
     /** Define the default setting for configuring if dates and calendars are mutable. */
     protected boolean defaultTemporalMutable = false;
     
+    /** Indicates whether there is at least one descriptor that has at least on mapping that
+     *  require a call on deleted objects to update change sets. 
+     */
+    protected transient boolean hasMappingsPostCalculateChangesOnDeleted = false;
+    
     /**
      * PUBLIC:
      * Create a new project.
@@ -843,4 +848,22 @@ public class Project implements Serializable, Cloneable {
     public void setAliasDescriptors(Map aHashtable) {
         aliasDescriptors = aHashtable;
     }
+    
+    /**
+     * INTERNAL:
+     * Indicates whether there is at least one descriptor that has at least on mapping that
+     * require a call on deleted objects to update change sets. 
+     */
+    public boolean hasMappingsPostCalculateChangesOnDeleted() {
+        return hasMappingsPostCalculateChangesOnDeleted;
+    }
+    
+    /**
+     * INTERNAL:
+     * Indicates whether there is at least one descriptor that has at least on mapping that
+     * require a call on deleted objects to update change sets. 
+     */
+    public void setHasMappingsPostCalculateChangesOnDeleted(boolean hasMappingsPostCalculateChangesOnDeleted) {
+        this.hasMappingsPostCalculateChangesOnDeleted = hasMappingsPostCalculateChangesOnDeleted;
+    }    
 }

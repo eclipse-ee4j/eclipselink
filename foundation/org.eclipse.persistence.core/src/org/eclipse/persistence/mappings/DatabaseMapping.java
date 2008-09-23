@@ -1576,4 +1576,18 @@ public abstract class DatabaseMapping implements Cloneable, Serializable {
     public ChangeRecord buildChangeRecord(Object newValue, ObjectChangeSet owner, AbstractSession session) throws DescriptorException {
         throw DescriptorException.invalidMappingOperation(this, "buildChangeRecord");
     }
+
+    /**
+     * INTERNAL:
+     * Overridden by mappings that require additional processing of the change record after the record has been calculated.
+     */
+    public void postCalculateChanges(org.eclipse.persistence.sessions.changesets.ChangeRecord changeRecord, AbstractSession session) {
+    }
+
+    /**
+     * INTERNAL:
+     * Overridden by mappings that require objects to be deleted contribute to change set creation.
+     */
+    public void postCalculateChangesOnDeleted(Object object, UnitOfWorkChangeSet changeSet, AbstractSession session) {
+    }
 }

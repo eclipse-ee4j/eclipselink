@@ -99,6 +99,8 @@ public class EntityMappingsAdvancedJUnitTestCase extends JUnitTestCase {
         suite.addTest(new EntityMappingsAdvancedJUnitTestCase("testUnidirectionalPersist", persistenceUnit));
         suite.addTest(new EntityMappingsAdvancedJUnitTestCase("testUnidirectionalUpdate", persistenceUnit));
         suite.addTest(new EntityMappingsAdvancedJUnitTestCase("testUnidirectionalFetchJoin", persistenceUnit));
+        suite.addTest(new EntityMappingsAdvancedJUnitTestCase("testUnidirectionalTargetLocking_AddRemoveTarget", persistenceUnit));
+        suite.addTest(new EntityMappingsAdvancedJUnitTestCase("testUnidirectionalTargetLocking_DeleteSource", persistenceUnit));
         
         if (persistenceUnit.equals("extended-advanced")) {            
             suite.addTest(new EntityMappingsAdvancedJUnitTestCase("testExistenceCheckingSetting", persistenceUnit));
@@ -1148,6 +1150,147 @@ public class EntityMappingsAdvancedJUnitTestCase extends JUnitTestCase {
         if(errorMsg.length() > 0) {
             fail(errorMsg);
         }
+    }
+    
+    public void testUnidirectionalTargetLocking_AddRemoveTarget() {
+        String lastName = "testUnidirectionalTargetLocking_ART";
+        
+        EntityManager em = createEntityManager(m_persistenceUnit);
+        // persist employees
+        List<Employee> employeesPersisted = persistEmployeesWithUnidirectionalMappings(lastName, em);
+
+        // remove a dealer from the second employee:
+        Dealer dealer;
+        beginTransaction(em);
+        try {
+            dealer = employeesPersisted.get(1).getDealers().remove(1);
+            commitTransaction(em);
+        } finally {
+            if(this.isTransactionActive(em)) {
+                rollbackTransaction(em);
+                closeEntityManager(em);
+            }
+        }
+        
+        String errorMsg = "";
+
+        // verify the version both in the cache and in the db
+        int version2 = getVersion(em, dealer);
+        if(version2 != 2) {
+            errorMsg += "In the cache the removed dealer's version is " + version2 + " (2 was expected); ";
+        }
+        em.refresh(dealer);
+        version2 = getVersion(em, dealer);
+        if(version2 != 2) {
+            errorMsg += "In the db the removed dealer's version is " + version2 + " (2 was expected); ";
+        }
+        
+        // add the dealer to the first employee:
+        beginTransaction(em);
+        try {
+            employeesPersisted.get(0).getDealers().add(dealer);
+            commitTransaction(em);
+        } finally {
+            if(this.isTransactionActive(em)) {
+                rollbackTransaction(em);
+                closeEntityManager(em);
+            }
+        }
+        
+        // verify the version both in the cache and in the db
+        int version3 = getVersion(em, dealer);
+        if(version3 != 3) {
+            errorMsg += "In the cache the added dealer's version is " + version3 + " (3 was expected); ";
+        }
+        em.refresh(dealer);
+        version3 = getVersion(em, dealer);
+        if(version3 != 3) {
+            errorMsg += "In the db the added dealer's version is " + version3 + " (3 was expected)";
+        }
+        
+        closeEntityManager(em);
+                
+        // clean-up
+        deleteEmployeesWithUnidirectionalMappings(lastName);
+        
+        // non-empty error message means the test has failed
+        if(errorMsg.length() > 0) {
+            fail(errorMsg);
+        }
+    }
+    
+    public void testUnidirectionalTargetLocking_DeleteSource() {
+        String lastName = "testUnidirectionalTargetLocking_DS";
+        
+        // persist employees (there should be two of them)
+        List<Employee> persistedEmployees = persistEmployeesWithUnidirectionalMappings(lastName);
+        // cache their dealers' ids
+        ArrayList<Integer> dealersIds = new ArrayList<Integer>();
+        for(int i=0; i<persistedEmployees.size(); i++) {
+            Employee emp = persistedEmployees.get(i);
+            for(int j=0; j<emp.getDealers().size(); j++) {
+                dealersIds.add(emp.getDealers().get(j).getId());
+            }
+        }
+        
+        // clear cache
+        clearCache(m_persistenceUnit);
+        
+        EntityManager em = createEntityManager();
+        // read the persisted employees
+        List<Employee> readEmployees = em.createQuery("SELECT OBJECT(e) FROM XMLEmployee e WHERE e.lastName = '"+lastName+"'").getResultList();
+        
+        // trigger indirection on the second employee's dealers
+        readEmployees.get(1).getDealers().size();
+        
+        // delete the Employees (there should be two of them).
+        beginTransaction(em);
+        try {
+            for(int i=0; i < readEmployees.size(); i++) {
+                em.remove(readEmployees.get(i));
+            }
+            commitTransaction(em);
+        } finally {
+            if(this.isTransactionActive(em)) {
+                rollbackTransaction(em);
+                closeEntityManager(em);
+            }
+        }
+
+        // find employees' dealers and verify their versions - all should be 2.
+        
+        String errorMsg = "";
+        for(int i=0; i<dealersIds.size(); i++) {
+            Dealer dealer = em.find(Dealer.class, dealersIds.get(i));
+
+            // verify the version both in the cache and in the db
+            int version2 = getVersion(em, dealer);
+            if(version2 != 2) {
+                errorMsg += "In the cache dealer "+dealer.getFirstName()+"'s version is " + version2 + " (2 was expected); ";
+            }
+            em.refresh(dealer);
+            version2 = getVersion(em, dealer);
+            if(version2 != 2) {
+                errorMsg += "In the db dealer "+dealer.getFirstName()+"'s version is " + version2 + " (2 was expected); ";
+            }
+        }
+
+        closeEntityManager(em);
+                
+        // clean-up
+        deleteEmployeesWithUnidirectionalMappings(lastName);
+        
+        // non-empty error message means the test has failed
+        if(errorMsg.length() > 0) {
+            fail(errorMsg);
+        }
+    }
+    
+    protected int getVersion(EntityManager em, Dealer dealer) {
+        Vector pk = new Vector(1);
+        pk.add(dealer.getId());
+        
+        return ((Integer)((EntityManagerImpl)em).getServerSession().getDescriptor(Dealer.class).getOptimisticLockingPolicy().getWriteLockValue(dealer, pk, ((EntityManagerImpl)em).getServerSession())).intValue();
     }
 
     protected List<Employee> createEmployeesWithUnidirectionalMappings(String lastName) {

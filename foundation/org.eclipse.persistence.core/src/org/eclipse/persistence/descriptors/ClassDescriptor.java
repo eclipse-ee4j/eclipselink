@@ -204,6 +204,11 @@ public class ClassDescriptor implements Cloneable, Serializable {
     /** Store the Sequence used for the descriptor. */
     protected Sequence sequence; 
     
+    /** Mappings that require postCalculateChanges method to be called */
+    protected List<DatabaseMapping> mappingsPostCalculateChanges;
+    /** Mappings that require postCalculateChangesOnDeleted method to be called */
+    protected List<DatabaseMapping> mappingsPostCalculateChangesOnDeleted;
+    
     /**
      * PUBLIC:
      * Return a new descriptor.
@@ -2323,6 +2328,10 @@ public class ClassDescriptor implements Cloneable, Serializable {
 
             // Add all the fields in the mapping to myself.
             Helper.addAllUniqueToVector(getFields(), mapping.getFields());
+        }
+        
+        if(hasMappingsPostCalculateChangesOnDeleted()) {
+            session.getProject().setHasMappingsPostCalculateChangesOnDeleted(true);
         }
 
         // PERF: Dont initialize locking until after fields have been computed so
@@ -5240,5 +5249,53 @@ public class ClassDescriptor implements Cloneable, Serializable {
      */
     public void setSequence(Sequence sequence) {
         this.sequence = sequence;
+    }
+
+    /** 
+     * Mappings that require postCalculateChanges method to be called 
+     */
+    public List<DatabaseMapping> getMappingsPostCalculateChanges() {
+        return mappingsPostCalculateChanges;
+    }
+
+    /** 
+     * Are there any mappings that require postCalculateChanges method to be called. 
+     */
+    public boolean hasMappingsPostCalculateChanges() {
+        return mappingsPostCalculateChanges != null;
+    }
+
+    /** 
+     * Add a mapping to the list of mappings that require postCalculateChanges method to be called. 
+     */
+    public void addMappingsPostCalculateChanges(DatabaseMapping mapping) {
+        if(mappingsPostCalculateChanges == null) {
+            mappingsPostCalculateChanges = new ArrayList<DatabaseMapping>();
+        }
+        mappingsPostCalculateChanges.add(mapping);
+    }
+
+    /** 
+     * Mappings that require mappingsPostCalculateChangesOnDeleted method to be called 
+     */
+    public List<DatabaseMapping> getMappingsPostCalculateChangesOnDeleted() {
+        return mappingsPostCalculateChangesOnDeleted;
+    }
+
+    /** 
+     * Are there any mappings that require mappingsPostCalculateChangesOnDeleted method to be called. 
+     */
+    public boolean hasMappingsPostCalculateChangesOnDeleted() {
+        return mappingsPostCalculateChangesOnDeleted != null;
+    }
+
+    /** 
+     * Add a mapping to the list of mappings that require mappingsPostCalculateChangesOnDeleted method to be called. 
+     */
+    public void addMappingsPostCalculateChangesOnDeleted(DatabaseMapping mapping) {
+        if(mappingsPostCalculateChangesOnDeleted == null) {
+            mappingsPostCalculateChangesOnDeleted = new ArrayList<DatabaseMapping>();
+        }
+        mappingsPostCalculateChangesOnDeleted.add(mapping);
     }
 }

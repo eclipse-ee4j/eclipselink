@@ -13,6 +13,7 @@
 package org.eclipse.persistence.mappings;
 
 import java.util.Hashtable;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Vector;
 
@@ -30,7 +31,10 @@ import org.eclipse.persistence.internal.identitymaps.CacheKey;
 import org.eclipse.persistence.internal.queries.ContainerPolicy;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
+import org.eclipse.persistence.internal.sessions.ChangeRecord;
+import org.eclipse.persistence.internal.sessions.CollectionChangeRecord;
 import org.eclipse.persistence.internal.sessions.ObjectChangeSet;
+import org.eclipse.persistence.internal.sessions.UnitOfWorkChangeSet;
 import org.eclipse.persistence.queries.ComplexQueryResult;
 import org.eclipse.persistence.queries.DataModifyQuery;
 import org.eclipse.persistence.queries.DatabaseQuery;
@@ -93,6 +97,20 @@ public class UnidirectionalOneToManyMapping extends OneToManyMapping {
      **/
     protected transient DataModifyQuery removeAllTargetsQuery;
     protected transient boolean hasCustomRemoveAllTargetsQuery;
+    
+    /**
+     * Indicates whether target's optimistic locking value should be incremented on
+     * target being added to / removed from a source. 
+     **/
+    protected transient boolean shouldIncrementTargetLockValueOnAddOrRemoveTarget;
+
+    /**
+     * Indicates whether target's optimistic locking value should be incremented on
+     * the source deletion. 
+     * Note that if the flag is set to true then the indirection will be triggered on
+     * source delete - in order to verify all targets' versions.
+     **/
+    protected transient boolean shouldIncrementTargetLockValueOnDeleteSource;
 
     /**
      * PUBLIC:
@@ -103,8 +121,23 @@ public class UnidirectionalOneToManyMapping extends OneToManyMapping {
         this.addTargetQuery = new DataModifyQuery();
         this.removeTargetQuery = new DataModifyQuery();
         this.removeAllTargetsQuery = new DataModifyQuery();
+        this.shouldIncrementTargetLockValueOnAddOrRemoveTarget = true;
+        this.shouldIncrementTargetLockValueOnDeleteSource = true;
     }
     
+    /**
+     * INTERNAL:
+     * This method is used to create a change record from comparing two collections
+     * @return org.eclipse.persistence.internal.sessions.ChangeRecord
+     */
+    public ChangeRecord compareForChange(Object clone, Object backUp, ObjectChangeSet owner, AbstractSession session) {
+        ChangeRecord record = super.compareForChange(clone, backUp, owner, session);
+        if(record != null && getReferenceDescriptor().getOptimisticLockingPolicy() != null) {
+            postCalculateChanges(record, session);
+        }
+        return record;
+    }
+
     /**
      * INTERNAL:
      * Extract the primary key value from the source row.
@@ -214,6 +247,14 @@ public class UnidirectionalOneToManyMapping extends OneToManyMapping {
         initializeAddTargetQuery(session);
         initializeRemoveTargetQuery(session);
         initializeRemoveAllTargetsQuery(session);
+        if(getReferenceDescriptor().getOptimisticLockingPolicy() != null) {
+            if(shouldIncrementTargetLockValueOnAddOrRemoveTarget) {
+                descriptor.addMappingsPostCalculateChanges(this);
+            }
+            if(shouldIncrementTargetLockValueOnDeleteSource && !isPrivateOwned) {
+                descriptor.addMappingsPostCalculateChangesOnDeleted(this);
+            }
+        }
     }
 
     /**
@@ -413,6 +454,59 @@ public class UnidirectionalOneToManyMapping extends OneToManyMapping {
 
     /**
      * INTERNAL:
+     * Overridden by mappings that require additional processing of the change record after the record has been calculated.
+     */
+    public void postCalculateChanges(org.eclipse.persistence.sessions.changesets.ChangeRecord changeRecord, AbstractSession session) {
+        // targets are added to and/or removed to/from the source.
+        CollectionChangeRecord collectionChangeRecord = (CollectionChangeRecord)changeRecord;
+        Iterator it = collectionChangeRecord.getAddObjectList().values().iterator();
+        while(it.hasNext()) {
+            ObjectChangeSet change = (ObjectChangeSet)it.next();
+            if(!change.hasChanges()) {
+                change.setShouldModifyVersionField(Boolean.TRUE);
+                ((org.eclipse.persistence.internal.sessions.UnitOfWorkChangeSet)change.getUOWChangeSet()).addObjectChangeSet(change, session, false);
+            }
+        }
+        // in the mapping is privately owned then the target will be deleted - no need to modify target version.
+        if(!isPrivateOwned()) {
+            it = collectionChangeRecord.getRemoveObjectList().values().iterator();
+            while(it.hasNext()) {
+                ObjectChangeSet change = (ObjectChangeSet)it.next(); 
+                if(!change.hasChanges()) {
+                    change.setShouldModifyVersionField(Boolean.TRUE);
+                    ((org.eclipse.persistence.internal.sessions.UnitOfWorkChangeSet)change.getUOWChangeSet()).addObjectChangeSet(change, session, false);
+                }
+            }
+        }
+    }
+
+    /**
+     * INTERNAL:
+     * Overridden by mappings that require objects to be deleted contribute to change set creation.
+     */
+    public void postCalculateChangesOnDeleted(Object deletedObject, UnitOfWorkChangeSet uowChangeSet, AbstractSession session) {        
+        // the source is deleted:
+        // trigger the indirection - we have to get optimistic lock exception
+        // in case another thread has updated one of the targets:
+        // triggered indirection caches the target with the old version,
+        // then the version update waits until the other thread (which is locking the version field) commits,
+        // then the version update is executed and it throws optimistic lock exception.
+        Object col = getRealCollectionAttributeValueFromObject(deletedObject, session);
+        if(col != null) {
+            Object iterator = containerPolicy.iteratorFor(col);
+            while (containerPolicy.hasNext(iterator)) {
+                Object target = containerPolicy.next(iterator, session);
+                ObjectChangeSet change = referenceDescriptor.getObjectBuilder().createObjectChangeSet(target, (org.eclipse.persistence.internal.sessions.UnitOfWorkChangeSet)uowChangeSet, session);
+                if(!change.hasChanges()) {
+                    change.setShouldModifyVersionField(Boolean.TRUE);
+                    ((org.eclipse.persistence.internal.sessions.UnitOfWorkChangeSet)change.getUOWChangeSet()).addObjectChangeSet(change, session, false);
+                }
+            }
+        }
+    }
+    
+    /**
+     * INTERNAL:
      * Insert target foreign key into the reference table. This follows following steps.
      * <p>- Extract primary key and its value from the source object.
      * <p>- Extract target key and its value from the target object.
@@ -542,6 +636,42 @@ public class UnidirectionalOneToManyMapping extends OneToManyMapping {
         addTargetQuery.setSessionName(name);
         removeTargetQuery.setSessionName(name);
         removeAllTargetsQuery.setSessionName(name);
+    }
+
+    /**
+     * PUBLIC:
+     * Set value that indicates whether target's optimistic locking value should be incremented on
+     * target being added to / removed from a source (default value is true).
+     **/
+    public void setShouldIncrementTargetLockValueOnAddOrRemoveTarget(boolean shouldIncrementTargetLockValueOnAddOrRemoveTarget) {
+        this.shouldIncrementTargetLockValueOnAddOrRemoveTarget = shouldIncrementTargetLockValueOnAddOrRemoveTarget;
+    }
+
+    /**
+     * PUBLIC:
+     * Set value that indicates whether target's optimistic locking value should be incremented on
+     * the source deletion (default value is true).
+     **/
+    public void setShouldIncrementTargetLockValueOnDeleteSource(boolean shouldIncrementTargetLockValueOnDeleteSource) {
+        this.shouldIncrementTargetLockValueOnDeleteSource = shouldIncrementTargetLockValueOnDeleteSource;
+    }
+
+    /**
+     * PUBLIC:
+     * Indicates whether target's optimistic locking value should be incremented on
+     * target being added to / removed from a source (default value is true).
+     **/
+    public boolean shouldIncrementTargetLockValueOnAddOrRemoveTarget() {
+        return shouldIncrementTargetLockValueOnAddOrRemoveTarget;
+    }
+
+    /**
+     * PUBLIC:
+     * Indicates whether target's optimistic locking value should be incremented on
+     * the source deletion (default value is true). 
+     **/
+    public boolean shouldIncrementTargetLockValueOnDeleteSource() {
+        return shouldIncrementTargetLockValueOnDeleteSource;
     }
 
     /**

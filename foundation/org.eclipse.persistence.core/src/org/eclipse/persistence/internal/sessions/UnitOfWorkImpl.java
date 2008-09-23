@@ -596,6 +596,22 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
             }
         }
         
+        if(this.project.hasMappingsPostCalculateChangesOnDeleted()) {
+            if (hasDeletedObjects()) {
+                for (Iterator deletedObjects = getDeletedObjects().keySet().iterator(); deletedObjects.hasNext();) {
+                    Object deletedObject = deletedObjects.next();
+                    ClassDescriptor descriptor = getDescriptor(deletedObject);
+                    if(descriptor.hasMappingsPostCalculateChanges()) {
+                        int size = descriptor.getMappingsPostCalculateChangesOnDeleted().size();
+                        for(int i=0; i < size; i++) {
+                            DatabaseMapping mapping = descriptor.getMappingsPostCalculateChangesOnDeleted().get(i); 
+                            mapping.postCalculateChangesOnDeleted(deletedObject, changeSet, this);
+                        }
+                    }
+                }
+            }
+        }
+        
         if (!this.project.isPureCMP2Project()) {
             // Third discover any new objects from the new or changed objects.
             Map newObjects = new IdentityHashMap();

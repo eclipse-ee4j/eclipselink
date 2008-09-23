@@ -17,6 +17,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.List;
+import java.util.Vector;
 
 import javax.persistence.EntityManager;
 
@@ -120,6 +121,8 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
         suite.addTest(new AdvancedJPAJunitTest("testUnidirectionalPersist"));
         suite.addTest(new AdvancedJPAJunitTest("testUnidirectionalUpdate"));
         suite.addTest(new AdvancedJPAJunitTest("testUnidirectionalFetchJoin"));
+        suite.addTest(new AdvancedJPAJunitTest("testUnidirectionalTargetLocking_AddRemoveTarget"));
+        suite.addTest(new AdvancedJPAJunitTest("testUnidirectionalTargetLocking_DeleteSource"));
         
         return new TestSetup(suite) {
             protected void setUp() { 
@@ -1000,72 +1003,6 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
         return errorMsg;
     }
     
-    protected List<Employee> createEmployeesWithUnidirectionalMappings(String lastName) {
-        int n = 2;
-        List<Employee> employees = new ArrayList<Employee>(n);
-        for(int i=0; i<n; i++) {
-            Employee emp = new Employee();
-            emp.setFirstName(Integer.toString(i+1));
-            emp.setLastName(lastName);
-            employees.add(emp);
-            for(int j=0; j<n; j++) {
-                Dealer dealer = new Dealer();
-                dealer.setFirstName(emp.getFirstName() + "_" + Integer.toString(j+1));
-                dealer.setLastName(lastName);
-                emp.addDealer(dealer);
-                for(int k=0; k<n; k++) {
-                    Customer customer = new Customer();
-                    customer.setFirstName(dealer.getFirstName() + "_" + Integer.toString(k+1));
-                    customer.setLastName(lastName);
-                    dealer.addCustomer(customer);
-                }
-            }
-        }
-        return employees;
-    }
-    
-    protected List<Employee> persistEmployeesWithUnidirectionalMappings(String lastName) {
-        EntityManager em = createEntityManager();
-        try {
-            return persistEmployeesWithUnidirectionalMappings(lastName, em);
-        } finally {
-            em.close();
-        }
-    }
-    
-    protected List<Employee> persistEmployeesWithUnidirectionalMappings(String lastName, EntityManager em) {
-        List<Employee> employees = createEmployeesWithUnidirectionalMappings(lastName);
-        beginTransaction(em);
-        try {
-            for(int i=0; i<employees.size(); i++) {
-                em.persist(employees.get(i));
-            }
-            commitTransaction(em);
-        } finally {
-            if(this.isTransactionActive(em)) {
-                rollbackTransaction(em);
-            }
-        }
-        return employees;
-    }
-    
-    protected void deleteEmployeesWithUnidirectionalMappings(String lastName) {
-        EntityManager em = createEntityManager();
-        beginTransaction(em);
-        try {
-            em.createQuery("DELETE FROM AdvancedCustomer c WHERE c.lastName = '"+lastName+"'").executeUpdate();
-            em.createQuery("DELETE FROM Dealer d WHERE d.lastName = '"+lastName+"'").executeUpdate();
-            em.createQuery("DELETE FROM Employee e WHERE e.lastName = '"+lastName+"'").executeUpdate();
-            commitTransaction(em);
-        } finally {
-            if(this.isTransactionActive(em)) {
-                rollbackTransaction(em);
-            }
-            em.close();
-            clearCache();
-        }
-    }
-    
     public void testUnidirectionalPersist() {
         String lastName = "testUnidirectionalPersist";
         
@@ -1213,6 +1150,213 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
         // non-empty error message means the test has failed
         if(errorMsg.length() > 0) {
             fail(errorMsg);
+        }
+    }
+    
+    public void testUnidirectionalTargetLocking_AddRemoveTarget() {
+        String lastName = "testUnidirectionalTargetLocking_ART";
+        
+        EntityManager em = createEntityManager();
+        // persist employees
+        List<Employee> employeesPersisted = persistEmployeesWithUnidirectionalMappings(lastName, em);
+
+        // remove a dealer from the second employee:
+        Dealer dealer;
+        beginTransaction(em);
+        try {
+            dealer = employeesPersisted.get(1).getDealers().remove(1);
+            commitTransaction(em);
+        } finally {
+            if(this.isTransactionActive(em)) {
+                rollbackTransaction(em);
+                closeEntityManager(em);
+            }
+        }
+        
+        String errorMsg = "";
+
+        // verify the version both in the cache and in the db
+        int version2 = getVersion(em, dealer);
+        if(version2 != 2) {
+            errorMsg += "In the cache the removed dealer's version is " + version2 + " (2 was expected); ";
+        }
+        em.refresh(dealer);
+        version2 = getVersion(em, dealer);
+        if(version2 != 2) {
+            errorMsg += "In the db the removed dealer's version is " + version2 + " (2 was expected); ";
+        }
+        
+        // add the dealer to the first employee:
+        beginTransaction(em);
+        try {
+            employeesPersisted.get(0).getDealers().add(dealer);
+            commitTransaction(em);
+        } finally {
+            if(this.isTransactionActive(em)) {
+                rollbackTransaction(em);
+                closeEntityManager(em);
+            }
+        }
+        
+        // verify the version both in the cache and in the db
+        int version3 = getVersion(em, dealer);
+        if(version3 != 3) {
+            errorMsg += "In the cache the added dealer's version is " + version3 + " (3 was expected); ";
+        }
+        em.refresh(dealer);
+        version3 = getVersion(em, dealer);
+        if(version3 != 3) {
+            errorMsg += "In the db the added dealer's version is " + version3 + " (3 was expected)";
+        }
+        
+        closeEntityManager(em);
+                
+        // clean-up
+        deleteEmployeesWithUnidirectionalMappings(lastName);
+        
+        // non-empty error message means the test has failed
+        if(errorMsg.length() > 0) {
+            fail(errorMsg);
+        }
+    }
+    
+    public void testUnidirectionalTargetLocking_DeleteSource() {
+        String lastName = "testUnidirectionalTargetLocking_DS";
+        
+        // persist employees (there should be two of them)
+        List<Employee> persistedEmployees = persistEmployeesWithUnidirectionalMappings(lastName);
+        // cache their dealers' ids
+        ArrayList<Integer> dealersIds = new ArrayList<Integer>();
+        for(int i=0; i<persistedEmployees.size(); i++) {
+            Employee emp = persistedEmployees.get(i);
+            for(int j=0; j<emp.getDealers().size(); j++) {
+                dealersIds.add(emp.getDealers().get(j).getId());
+            }
+        }
+        
+        // clear cache
+        clearCache();
+        
+        EntityManager em = createEntityManager();
+        // read the persisted employees
+        List<Employee> readEmployees = em.createQuery("SELECT OBJECT(e) FROM Employee e WHERE e.lastName = '"+lastName+"'").getResultList();
+        
+        // trigger indirection on the second employee's dealers
+        readEmployees.get(1).getDealers().size();
+        
+        // delete the Employees (there should be two of them).
+        beginTransaction(em);
+        try {
+            for(int i=0; i < readEmployees.size(); i++) {
+                em.remove(readEmployees.get(i));
+            }
+            commitTransaction(em);
+        } finally {
+            if(this.isTransactionActive(em)) {
+                rollbackTransaction(em);
+                closeEntityManager(em);
+            }
+        }
+
+        // find employees' dealers and verify their versions - all should be 2.
+        
+        String errorMsg = "";
+        for(int i=0; i<dealersIds.size(); i++) {
+            Dealer dealer = em.find(Dealer.class, dealersIds.get(i));
+
+            // verify the version both in the cache and in the db
+            int version2 = getVersion(em, dealer);
+            if(version2 != 2) {
+                errorMsg += "In the cache dealer "+dealer.getFirstName()+"'s version is " + version2 + " (2 was expected); ";
+            }
+            em.refresh(dealer);
+            version2 = getVersion(em, dealer);
+            if(version2 != 2) {
+                errorMsg += "In the db dealer "+dealer.getFirstName()+"'s version is " + version2 + " (2 was expected); ";
+            }
+        }
+
+        closeEntityManager(em);
+                
+        // clean-up
+        deleteEmployeesWithUnidirectionalMappings(lastName);
+        
+        // non-empty error message means the test has failed
+        if(errorMsg.length() > 0) {
+            fail(errorMsg);
+        }
+    }
+    
+    protected int getVersion(EntityManager em, Dealer dealer) {
+        Vector pk = new Vector(1);
+        pk.add(dealer.getId());
+        
+        return ((Integer)((EntityManagerImpl)em).getServerSession().getDescriptor(Dealer.class).getOptimisticLockingPolicy().getWriteLockValue(dealer, pk, ((EntityManagerImpl)em).getServerSession())).intValue();
+    }
+
+    protected List<Employee> createEmployeesWithUnidirectionalMappings(String lastName) {
+        int n = 2;
+        List<Employee> employees = new ArrayList<Employee>(n);
+        for(int i=0; i<n; i++) {
+            Employee emp = new Employee();
+            emp.setFirstName(Integer.toString(i+1));
+            emp.setLastName(lastName);
+            employees.add(emp);
+            for(int j=0; j<n; j++) {
+                Dealer dealer = new Dealer();
+                dealer.setFirstName(emp.getFirstName() + "_" + Integer.toString(j+1));
+                dealer.setLastName(lastName);
+                emp.addDealer(dealer);
+                for(int k=0; k<n; k++) {
+                    Customer customer = new Customer();
+                    customer.setFirstName(dealer.getFirstName() + "_" + Integer.toString(k+1));
+                    customer.setLastName(lastName);
+                    dealer.addCustomer(customer);
+                }
+            }
+        }
+        return employees;
+    }
+    
+    protected List<Employee> persistEmployeesWithUnidirectionalMappings(String lastName) {
+        EntityManager em = createEntityManager();
+        try {
+            return persistEmployeesWithUnidirectionalMappings(lastName, em);
+        } finally {
+            em.close();
+        }
+    }
+    
+    protected List<Employee> persistEmployeesWithUnidirectionalMappings(String lastName, EntityManager em) {
+        List<Employee> employees = createEmployeesWithUnidirectionalMappings(lastName);
+        beginTransaction(em);
+        try {
+            for(int i=0; i<employees.size(); i++) {
+                em.persist(employees.get(i));
+            }
+            commitTransaction(em);
+        } finally {
+            if(this.isTransactionActive(em)) {
+                rollbackTransaction(em);
+            }
+        }
+        return employees;
+    }
+    
+    protected void deleteEmployeesWithUnidirectionalMappings(String lastName) {
+        EntityManager em = createEntityManager();
+        beginTransaction(em);
+        try {
+            em.createQuery("DELETE FROM AdvancedCustomer c WHERE c.lastName = '"+lastName+"'").executeUpdate();
+            em.createQuery("DELETE FROM Dealer d WHERE d.lastName = '"+lastName+"'").executeUpdate();
+            em.createQuery("DELETE FROM Employee e WHERE e.lastName = '"+lastName+"'").executeUpdate();
+            commitTransaction(em);
+        } finally {
+            if(this.isTransactionActive(em)) {
+                rollbackTransaction(em);
+            }
+            em.close();
+            clearCache();
         }
     }
 }
