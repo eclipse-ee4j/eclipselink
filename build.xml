@@ -57,6 +57,7 @@
     -->
 <project name="Eclipse Persistence Services" default="all" basedir=".">
 
+    <property environment="env"/>
     <!-- Allows a user to overide certain user specific properties. -->
     <property file="${user.home}/build.properties"/>
     <property file="./build.properties"/>
