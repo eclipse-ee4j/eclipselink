@@ -30,6 +30,7 @@
     
     <target name="init" description="initialize local variables">
         <available file="../${ant.project.name}" type="dir" property="is.local"/>
+        // Test to make sure that the calling script doesn't inherit the variable (should be set locally, and be destroyed upon return)
         <fail message="Not running from '${ant.project.name}' directory" unless="is.local"/>
           
         <property name="project.version" value="1.99.0"/>
