@@ -209,7 +209,7 @@ public abstract class ObjectAccessor extends RelationshipAccessor {
     /**
      * INTERNAL:
      * Process the join columns for the owning side of a one to one mapping.
-     * The default pk and pk field names are used only with single primary key 
+     * The default pk and fk field names are used only with single primary key 
      * entities. The processor should never get as far as to use them with 
      * entities that have a composite primary key (validation exception will be 
      * thrown).
