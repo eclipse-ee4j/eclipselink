@@ -15,6 +15,8 @@
  *       - 211330: Add attributes-complete support to the EclipseLink-ORM.XML Schema
  *     07/15/2008-1.0.1 Guy Pelletier 
  *       - 240679: MappedSuperclass Id not picked when on get() method accessor
+ *     09/23/2008-1.1 Guy Pelletier 
+ *       - 241651: JPA 2.0 Access Type support
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.accessors.classes;
 
@@ -86,28 +88,14 @@ public class EmbeddableAccessor extends ClassAccessor {
      * Process the access type of this embeddable.
      */
     public void processAccessType() {
-        if (havePersistenceAnnotationsDefined(MetadataHelper.getFields(getJavaClass())) || getDescriptor().isXmlFieldAccess()) {
-            // We have persistence annotations defined on a field from 
-            // the entity or field access has been set via XML, set the 
-            // access to FIELD.
-            getDescriptor().setUsesPropertyAccess(false);
-        } else if (havePersistenceAnnotationsDefined(MetadataHelper.getDeclaredMethods(getJavaClass())) || getDescriptor().isXmlPropertyAccess()) {
-            // We have persistence annotations defined on a method from 
-            // the entity or method access has been set via XML, set the 
-            // access to PROPERTY.
-            getDescriptor().setUsesPropertyAccess(true);
-        } else {
-            // We found nothing ... we could throw an exception here, but for 
-            // now, the access automatically defaults to field. The user will 
-            // eventually get an exception saying invalid access type if its
-            // owning entity is not of the same type.
-        }
+        // Set the default access type on the descriptor and log a message
+        // to the user if we are defaulting the access type for this 
+        // embeddable to that default.
+        Enum owningClassAccessorsAccessType = getOwningDescriptor().getClassAccessor().getAccessType();
+        getDescriptor().setDefaultAccess(owningClassAccessorsAccessType);
         
-        // Log the access type. Will help with future debugging.
-        if (getDescriptor().usesPropertyAccess()) {
-            getLogger().logConfigMessage(MetadataLogger.FIELD_ACCESS_TYPE, getJavaClass());
-        } else {
-            getLogger().logConfigMessage(MetadataLogger.PROPERTY_ACCESS_TYPE, getJavaClass());
+        if (getExplicitAccessType() == null) {
+            getLogger().logConfigMessage(MetadataLogger.ACCESS_TYPE, owningClassAccessorsAccessType.name(), getJavaClass());
         }
     }
     
@@ -116,12 +104,7 @@ public class EmbeddableAccessor extends ClassAccessor {
      * Process the embeddable metadata.
      */
     protected void processEmbeddable() {
-        // Set an access type if specified (this will override a global setting)
-        if (getAccess() != null) {
-            getDescriptor().setXMLAccess(getAccess());
-        } 
-     
-        // Guy - process the access type now.
+        // Process the access type first.
         processAccessType();
         
         // Set a metadata complete flag if specified.

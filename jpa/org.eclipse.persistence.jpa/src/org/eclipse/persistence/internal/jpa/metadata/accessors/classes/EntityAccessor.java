@@ -19,6 +19,8 @@
  *       - 232975: Failure when attribute type is generic
  *     07/15/2008-1.0.1 Guy Pelletier 
  *       - 240679: MappedSuperclass Id not picked when on get() method accessor
+ *     09/23/2008-1.1 Guy Pelletier 
+ *       - 241651: JPA 2.0 Access Type support
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.accessors.classes;
 
@@ -31,6 +33,7 @@ import java.lang.reflect.TypeVariable;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.persistence.AccessType;
 import javax.persistence.DiscriminatorColumn;
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
@@ -449,8 +452,14 @@ public class EntityAccessor extends MappedSuperclassAccessor {
         
         // If we are an inheritance subclass process out root first.
         if (getDescriptor().isInheritanceSubclass()) {
-            // Process the root class accessor if it hasn't already been done.
-            EntityAccessor parentAccessor = (EntityAccessor) getDescriptor().getInheritanceRootDescriptor().getClassAccessor();
+            // Ensure our parent accessors are processed first. Top->down.
+            // An inheritance subclass can no longer blindly inherit a default
+            // access type from the root of the inheritance hierarchy since
+            // that root may explicitly set an access type which applies only
+            // to itself. The first entity in the hierarchy (going down) that
+            // does not specify an explicit type will be used to determine
+            // the default access type.
+            EntityAccessor parentAccessor = (EntityAccessor) getDescriptor().getInheritanceParentDescriptor().getClassAccessor();
             if (! parentAccessor.isProcessed()) {
                 parentAccessor.process();
                 parentAccessor.setIsProcessed();
@@ -481,20 +490,6 @@ public class EntityAccessor extends MappedSuperclassAccessor {
         
         // Process the accessors on this entity.
         processAccessors();
-            
-        // Validate we found a primary key.
-        validatePrimaryKey();
-            
-        // Validate the optimistic locking setting.
-        validateOptimisticLocking();
-            
-        // Process those items that depend on a primary key now ...
-            
-        // Process any BasicCollection and BasicMap metadata we found.
-        processBasicCollectionAccessors();
-            
-        // Process the SecondaryTable(s) metadata.
-        processSecondaryTables();
     }
     
     /**
@@ -571,55 +566,114 @@ public class EntityAccessor extends MappedSuperclassAccessor {
     
     /**
      * INTERNAL:
-     * Figure out the access type for this entity and log a message to the user
-     * stating which type we will be using to process this entity.
+     * Process the accessors for the given class.
+     */
+    protected void processAccessors() {
+        super.processAccessors();
+        
+        // After processing the accessors for this entity we need to run 
+        // some validation checks.
+        
+        // Validate we found a primary key.
+        validatePrimaryKey();
+            
+        // Validate the optimistic locking setting.
+        validateOptimisticLocking();
+            
+        // Primary key has been validated, let's process those items that
+        // depend on it now.
+            
+        // Process any BasicCollection and BasicMap metadata we found.
+        getDescriptor().processBasicCollectionAccessors();
+            
+        // Process the SecondaryTable(s) metadata.
+        processSecondaryTables();
+    }
+    
+    /**
+     * INTERNAL:
+     * Figure out the access type for this entity. It works as follows:
+     * 1 - check for an explicit access type specification
+     * 2 - check our inheritance parents (ignoring explicit specifications)
+     * 3 - check our mapped superclasses (ignoring explicit specifications) for 
+     *     the location of annotations
+     * 4 - check the entity itself for the location of annotations
+     * 5 - check for an xml default from a persistence-unit-metadata-defaults or 
+     *     entity-mappings setting.    
+     * 6 - we have exhausted our search, default to FIELD.
      */
     protected void processAccessType(List<MappedSuperclassAccessor> mappedSuperclasses) {
+        // Step 1 - Check for an explicit setting.
+        Enum explicitAccessType = getExplicitAccessType(); 
+        
+        // Step 2, regardless if there is an explicit access type we still
+        // want to determine the default access type for this entity since
+        // any embeddable, mapped superclass or id class that depends on it
+        // will have it available. 
+        Enum defaultAccessType = null;
+        
+        // 1 - Check the access types from our parents if we are an inheritance 
+        // sub-class. Inheritance hierarchies are processed top->down so our 
+        // first parent that does not define an explicit access type will have 
+        // the type we would want to default to.
         if (getDescriptor().isInheritanceSubclass()) {
-            getDescriptor().setUsesPropertyAccess(getDescriptor().getInheritanceRootDescriptor().usesPropertyAccess());
-        } else {
-            if (havePersistenceAnnotationsDefined(MetadataHelper.getFields(getJavaClass())) || getDescriptor().isXmlFieldAccess()) {
-                // We have persistence annotations defined on a field from 
-                // the entity or field access has been set via XML, set the 
-                // access to FIELD.
-                getDescriptor().setUsesPropertyAccess(false);
-            } else if (havePersistenceAnnotationsDefined(MetadataHelper.getDeclaredMethods(getJavaClass())) || getDescriptor().isXmlPropertyAccess()) {
-                // We have persistence annotations defined on a method from 
-                // the entity or method access has been set via XML, set the 
-                // access to PROPERTY.
-                getDescriptor().setUsesPropertyAccess(true);
-            } else {
-                // The java class for this entity has no access type 
-                // specified. Check for a  mapped superclass access.
-                for (MappedSuperclassAccessor mappedSuperclass : mappedSuperclasses) {
-                    if (havePersistenceAnnotationsDefined(MetadataHelper.getFields(mappedSuperclass.getJavaClass()))) {
-                        // We have persistence annotations defined on a field from 
-                        // the entity or field access has been set via XML, set the 
-                        // access to FIELD.
-                        getDescriptor().setUsesPropertyAccess(false);
-                        break; // stop looking
-                    } else if (havePersistenceAnnotationsDefined(MetadataHelper.getDeclaredMethods(mappedSuperclass.getJavaClass()))) {
-                        // We have persistence annotations defined on a method from 
-                        // the entity or method access has been set via XML, set the 
-                        // access to PROPERTY.
-                        getDescriptor().setUsesPropertyAccess(true);
-                        break; // stop looking.
-                    }
+            MetadataDescriptor parent = getDescriptor().getInheritanceParentDescriptor();
+            while (parent != null) {
+                if (! parent.getClassAccessor().hasExplicitAccessType()) {
+                    defaultAccessType = parent.getDefaultAccess();
+                    break;
                 }
-                        
-                // We still found nothing ... we could throw an exception 
-                // here, but for now, the access automatically defaults to
-                // field. The user will eventually get an exception saying 
-                // there is no primary key set if field access is not actually 
-                // the case.
+                    
+                parent = parent.getInheritanceParentDescriptor();
             }
         }
         
-        // Log the access type. Will help with future debugging.
-        if (getDescriptor().usesPropertyAccess()) {
-            getLogger().logConfigMessage(MetadataLogger.FIELD_ACCESS_TYPE, getJavaClass());
-        } else {
-            getLogger().logConfigMessage(MetadataLogger.PROPERTY_ACCESS_TYPE, getJavaClass());
+        // 2 - If there is no inheritance or no inheritance parent that does not 
+        // explicitly define an access type. Let's check this entities mapped 
+        // superclasses now.
+        if (defaultAccessType == null) {
+            for (MappedSuperclassAccessor mappedSuperclass : mappedSuperclasses) {
+                if (! mappedSuperclass.hasExplicitAccessType()) {
+                    if (havePersistenceAnnotationsDefined(MetadataHelper.getFields(mappedSuperclass.getJavaClass()))) {
+                        defaultAccessType = AccessType.FIELD;
+                    } else if (havePersistenceAnnotationsDefined(MetadataHelper.getDeclaredMethods(mappedSuperclass.getJavaClass()))) {
+                        defaultAccessType = AccessType.PROPERTY;
+                    }
+                        
+                    break;
+                }
+            }
+            
+            // 3 - If there are no mapped superclasses or no mapped superclasses 
+            // without an explicit access type. Check where the annotations are 
+            // defined on this entity class. 
+            if (defaultAccessType == null) {    
+                if (havePersistenceAnnotationsDefined(MetadataHelper.getFields(getJavaClass()))) {
+                    defaultAccessType = AccessType.FIELD;
+                } else if (havePersistenceAnnotationsDefined(MetadataHelper.getDeclaredMethods(getJavaClass()))) {
+                    defaultAccessType = AccessType.PROPERTY;
+                } else {
+                    // 4 - If there are no annotations defined on either the
+                    // fields or properties, check for an xml default from
+                    // persistence-unit-metadata-defaults or entity-mappings.
+                    if (getDescriptor().getDefaultAccess() != null) {
+                        defaultAccessType = getDescriptor().getDefaultAccess();
+                    } else {
+                        // 5 - We've exhausted our search, set the access type
+                        // to FIELD.
+                        defaultAccessType = AccessType.FIELD;
+                    }
+                }
+            }
+        } 
+        
+        // Finally set the default access type on the descriptor and log a 
+        // message to the user if we are defaulting the access type for this
+        // entity to use that default.
+        getDescriptor().setDefaultAccess(defaultAccessType);
+        
+        if (explicitAccessType == null) {
+            getLogger().logConfigMessage(MetadataLogger.ACCESS_TYPE, defaultAccessType.name(), getJavaClass());
         }
     }
     
@@ -628,20 +682,8 @@ public class EntityAccessor extends MappedSuperclassAccessor {
      * Process the entity metadata.
      */
     protected void processEntity(List<MappedSuperclassAccessor> mappedSuperclasses) {
-        // Set an access type if specified on the entity class or a mapped
-        // superclass.
-        if (getAccess() != null) {
-            getDescriptor().setXMLAccess(getAccess());
-        } else {
-            for (MappedSuperclassAccessor mappedSuperclass : mappedSuperclasses) {
-                if (mappedSuperclass.getAccess() != null) {
-                    getDescriptor().setXMLAccess(mappedSuperclass.getAccess());
-                    break; // stop searching.
-                }
-            }
-        }
-        
-        // Now process and set the access type ...
+        // We must first process the correct access type before any other
+        // processing.
         processAccessType(mappedSuperclasses);
         
         // Set a metadata complete flag if specified on the entity class or a 
@@ -1015,7 +1057,7 @@ public class EntityAccessor extends MappedSuperclassAccessor {
     protected void processTableGenerator() {
         // Process the xml defined table generator first.
         if (m_tableGenerator != null) {
-            getProject().addTableGenerator(m_tableGenerator, getDescriptor().getXMLCatalog(), getDescriptor().getXMLSchema());
+            getProject().addTableGenerator(m_tableGenerator, getDescriptor().getDefaultCatalog(), getDescriptor().getDefaultSchema());
         }
         
         // Process the annotation defined table generator second.

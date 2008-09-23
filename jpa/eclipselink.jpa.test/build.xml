@@ -134,6 +134,8 @@
             <pathelement path="${eclipselink.jpa}/${classes.dir}"/>
             <pathelement path="${eclipselink.core.test.dir}/${classes.dir}"/>
             <pathelement path="${eclipselink.core.test.dir}/${eclipselink.tests.jar}"/>
+            <fileset dir="${eclipselink.jpa}/../${plugins.dir}"
+                includes="${eclipselink.jpa.depend}"/>
             <fileset
                 dir="${eclipselink.core.lib.dir}"
                 includes="${eclipselink.core.depend}"/>

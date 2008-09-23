@@ -11,6 +11,8 @@
  *     Oracle - initial API and implementation from Oracle TopLink
  *     05/16/2008-1.0M8 Guy Pelletier 
  *       - 218084: Implement metadata merging functionality between mapping file
+ *     09/23/2008-1.1 Guy Pelletier 
+ *       - 241651: JPA 2.0 Access Type support
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.xml;
 
@@ -28,7 +30,7 @@ import org.eclipse.persistence.internal.jpa.metadata.listeners.EntityListenerMet
 public class XMLPersistenceUnitDefaults extends ORMetadata {
     private List<EntityListenerMetadata> m_entityListeners;
     private boolean m_cascadePersist;
-    private String m_access;
+    private Enum m_access;
     private String m_catalog;
     private String m_schema;
 
@@ -73,7 +75,7 @@ public class XMLPersistenceUnitDefaults extends ORMetadata {
      * INTERNAL:
      * Used for OX mapping.
      */
-    public String getAccess() {
+    public Enum getAccess() {
         return m_access;
     }
     
@@ -128,7 +130,7 @@ public class XMLPersistenceUnitDefaults extends ORMetadata {
             mergePrimitiveBoolean(m_cascadePersist, persistenceUnitDefaults.isCascadePersist(), persistenceUnitDefaults.getAccessibleObject(), "cascade-persist");
         
             // Simple object merging.
-            m_access = (String) mergeSimpleObjects(m_access, persistenceUnitDefaults.getAccess(), persistenceUnitDefaults.getAccessibleObject(), "<access>");
+            m_access = (Enum) mergeSimpleObjects(m_access, persistenceUnitDefaults.getAccess(), persistenceUnitDefaults.getAccessibleObject(), "<access>");
             m_catalog = (String) mergeSimpleObjects(m_catalog, persistenceUnitDefaults.getCatalog(), persistenceUnitDefaults.getAccessibleObject(), "<catalog>");
             m_schema = (String) mergeSimpleObjects(m_schema, persistenceUnitDefaults.getSchema(),  persistenceUnitDefaults.getAccessibleObject(), "<schema>");
         }
@@ -138,7 +140,7 @@ public class XMLPersistenceUnitDefaults extends ORMetadata {
      * INTERNAL:
      * Used for OX mapping.
      */
-    public void setAccess(String access) {
+    public void setAccess(Enum access) {
         m_access = access;
     }
     

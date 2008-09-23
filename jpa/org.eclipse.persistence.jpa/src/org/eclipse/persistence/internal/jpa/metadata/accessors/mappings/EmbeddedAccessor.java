@@ -11,13 +11,10 @@
  *     Oracle - initial API and implementation from Oracle TopLink
  *     05/16/2008-1.0M8 Guy Pelletier 
  *       - 218084: Implement metadata merging functionality between mapping files
+ *     09/23/2008-1.1 Guy Pelletier 
+ *       - 241651: JPA 2.0 Access Type support
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.accessors.mappings;
-
-import static org.eclipse.persistence.internal.jpa.metadata.accessors.mappings.EmbeddedAccessor.AccessType.MIXED;
-import static org.eclipse.persistence.internal.jpa.metadata.accessors.mappings.EmbeddedAccessor.AccessType.PROPERTY;
-import static org.eclipse.persistence.internal.jpa.metadata.accessors.mappings.EmbeddedAccessor.AccessType.FIELD;
-import static org.eclipse.persistence.internal.jpa.metadata.accessors.mappings.EmbeddedAccessor.AccessType.UNDEFINED;
 
 import java.lang.annotation.Annotation;
 import java.util.ArrayList;
@@ -55,8 +52,6 @@ import org.eclipse.persistence.mappings.OneToOneMapping;
  * @since TopLink EJB 3.0 Reference Implementation
  */
 public class EmbeddedAccessor extends MappingAccessor {
-    public enum AccessType {FIELD, PROPERTY, UNDEFINED, MIXED};
-    
     private List<AttributeOverrideMetadata> m_attributeOverrides;
 
     /**
@@ -100,94 +95,6 @@ public class EmbeddedAccessor extends MappingAccessor {
     
     /**
      * INTERNAL:
-     * This method computes access-type based on placement of annotations.
-     */
-    protected AccessType getAccessTypeFromAnnotation(MetadataDescriptor descriptor) {
-        boolean fieldAccess = MetadataHelper.havePersistenceAnnotationsDefined(MetadataHelper.getFields(descriptor.getJavaClass()));
-        boolean propertyAccess = MetadataHelper.havePersistenceAnnotationsDefined(MetadataHelper.getMethods(descriptor.getJavaClass()));
-        
-        if (fieldAccess && propertyAccess) {
-            return MIXED;
-        } else if (fieldAccess) {
-            return FIELD;
-        } else if (propertyAccess) {
-            return PROPERTY;
-        } else {
-            return UNDEFINED;
-        }
-    }
-    
-    /**
-     * INTERNAL:
-     * This method is responsible for determining the access-type for an
-     * Embeddable class represented by emDescr that is passed to
-     * this method. This method should *not* be called more than once as this is
-     * quite expensive. Now the rules:
-     *
-     * Rule 1: In the *absence* of metadata in embeddable class, access-type of
-     * an embeddable is determined by the access-type of the enclosing entity.
-     *
-     * Rule 2: In the presence of metadata in embeddable class, access-type of
-     * an embeddable is determined using that metadata. This allows sharing
-     * of the embeddable in entities with conflicting access-types.
-     *
-     * Rule 3: It is an error to use a *metadata-less* embeddable class in
-     * entities with conflicting access-types as that might result in
-     * different database mapping for the same embeddable class.
-     *
-     * Rule 4: It is an error if metadata-complete == false, and
-     * metadata is present *both* in annotations and XML, and
-     * access-type as determined by each of them is *not* same.
-     *
-     * Rule 5: It is an error if *both* fields and properties of an embeddable
-     * class are annotated and metadata-complete == false.
-     */
-    protected AccessType getAccessTypeOfEmbeddable(EmbeddableAccessor accessor) {
-        AccessType accessType = UNDEFINED;
-        
-        // 1 - get the owning entities' access type.
-        AccessType entityAccessType = getOwningDescriptor().usesPropertyAccess() ? PROPERTY : FIELD;
-        
-        // 2 - get the access type as specified in XML.
-        AccessType xmlAccessType = accessor.getDescriptor().getXMLAccess() == null ? UNDEFINED : AccessType.valueOf(accessor.getDescriptor().getXMLAccess());
-
-        if (accessor.getDescriptor().ignoreAnnotations()) {
-            // metadata-complete is true, then use XML access-type if defined,
-            // else use enclosing entity's access-type.
-            accessType = xmlAccessType == UNDEFINED ? entityAccessType : xmlAccessType;
-        } else {
-            // Let's look at access via location of annotations.
-            AccessType annotationAccessType = getAccessTypeFromAnnotation(accessor.getDescriptor());
-            
-            if (annotationAccessType == UNDEFINED && xmlAccessType == UNDEFINED) {
-                // metadata is absent, so we use enclosing entity's access-type
-                accessType = entityAccessType;
-            } else if (xmlAccessType == UNDEFINED && annotationAccessType != UNDEFINED) {
-                // annotation is present in embeddable class
-                accessType = annotationAccessType;
-
-                if (accessType == MIXED) {
-                    throw ValidationException.bothFieldsAndPropertiesAnnotated(accessor.getJavaClass());
-                }
-            } else if (annotationAccessType == UNDEFINED && xmlAccessType != UNDEFINED) {
-                // access is defined using XML for embeddable class
-                accessType = xmlAccessType;
-            } else if (annotationAccessType == xmlAccessType) {
-                // Annotations are present as well as access is defined using 
-                // XML and they are same. Use it!
-                accessType = annotationAccessType;
-            } else {
-                // Annotations are present as well as access is defined using 
-                // XML and they are different, throw an exception.
-                throw ValidationException.incorrectOverridingOfAccessType(accessor.getJavaClass(), xmlAccessType.toString(), annotationAccessType.toString());
-            }
-        }
-
-        return accessType;
-    }
-    
-    /**
-     * INTERNAL:
      * Used for OX mapping.
      */
     public List<AttributeOverrideMetadata> getAttributeOverrides() {
@@ -216,19 +123,6 @@ public class EmbeddedAccessor extends MappingAccessor {
     @Override
     public boolean isEmbedded() {
         return true;
-    }
-    
-    /**
-     * INTERNAL:
-     * 
-     * This method is used to decide if a class metadata or not.
-     */
-    protected boolean isMetadataPresent(EmbeddableAccessor accessor) {
-        MetadataDescriptor descriptor = accessor.getDescriptor();
-        AccessType annotationAccessType = getAccessTypeFromAnnotation(descriptor);
-        AccessType xmlAccessType = (descriptor.getXMLAccess() == null) ? UNDEFINED : AccessType.valueOf(descriptor.getXMLAccess());
-
-        return annotationAccessType != UNDEFINED || xmlAccessType != UNDEFINED;
     }
     
     /**
@@ -418,24 +312,38 @@ public class EmbeddedAccessor extends MappingAccessor {
             }
         } 
         
-        // Need to set the owning descriptor on the embeddable class before we
-        // proceed any further in the processing.
-        accessor.setOwningDescriptor(getOwningDescriptor());
-
-        if (! accessor.isProcessed()) {
-            accessor.getDescriptor().setUsesPropertyAccess(getAccessTypeOfEmbeddable(accessor) == PROPERTY);
+        if (accessor.isProcessed()) {
+            // We have already processed this embeddable class. Let's validate 
+            // that it is not used in entities with conflicting access type
+            // when the embeddable doesn't have its own explicit setting. The
+            // biggest mistake that could occur otherwise is that FIELD
+            // processing 'could' yield a different mapping set then PROPERTY
+            // processing would. Do we really care? If both access types
+            // yielded the same mappings then the only difference would be
+            // how they are accessed and well ... does it really matter at this
+            // point? The only way to know if they would yield different
+            // mappings would be by processing the class for each access type
+            // and comparing the yield or some other code to manually inspect
+            // the class. I think this error should be removed since the spec
+            // states: 
+            //  "Embedded objects belong strictly to their owning entity, and 
+            //   are not sharable across persistent entities. Attempting to 
+            //   share an embedded object across entities has undefined 
+            //   semantics."
+            // I think we should assume the users know what they are are doing
+            // in this case (that is, if they opt to share an embeddable).
+            if (accessor.getExplicitAccessType() == null) {
+                // We inherited our access from our owning entity.
+                if (accessor.getDescriptor().getDefaultAccess() != getOwningDescriptor().getDefaultAccess()) {
+                    throw ValidationException.conflictingAccessTypeForEmbeddable(accessor.getJavaClass(), accessor.usesPropertyAccess(), getOwningDescriptor().getJavaClass(), getOwningDescriptor().getClassAccessor().usesPropertyAccess());
+                }
+            }
+        } else {
+            // Need to set the owning descriptor on the embeddable class before 
+            // we proceed any further in the processing.
+            accessor.setOwningDescriptor(getOwningDescriptor());
             accessor.process();
             accessor.setIsProcessed();    
-        }
-            
-        // We have already processed this embeddable class. Let's validate 
-        // that it is not used in entities with conflicting access type. 
-        // Conflicting access-type is not allowed when there is no metadata 
-        // in the embeddable class.
-        if (! isMetadataPresent(accessor)) {
-            if (accessor.getDescriptor().usesPropertyAccess() != getOwningDescriptor().usesPropertyAccess()) {
-                throw ValidationException.conflictingAccessTypeForEmbeddable(accessor.getJavaClass(), accessor.getDescriptor().usesPropertyAccess(), getOwningDescriptor().getJavaClass(), getOwningDescriptor().usesPropertyAccess());
-            }
         }
     }
 

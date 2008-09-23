@@ -290,10 +290,10 @@ public class ValidationException extends EclipseLinkException {
     public static final int INVALID_MAPPING = 7244;
     public static final int CONFLICTNG_ACCESS_TYPE_FOR_EMBEDDABLE = 7245;
     public static final int INVALID_EMBEDDED_ATTRIBUTE = 7246;
-    public static final int BOTH_FIELDS_AND_PROPERTIES_ANNOTATED = 7247;
-    public static final int INCORRECT_OVERRIDING_OF_ACCESSTYPE = 7248;
-    public static final int EMBEDDED_ID_CLASS_HAS_NO_ATTR = 7249;
-    public static final int NON_ENTITY_AS_TARGET_IN_REL = 7250;
+    // 7247 deleted
+    // 7248 deleted
+    public static final int EMBEDDED_ID_CLASS_HAS_NO_ATTRIBUTES = 7249;
+    public static final int NON_ENTITY_AS_TARGET_IN_RELATIONSHIP = 7250;
 
     public static final int PRIMARY_KEY_UPDATE_DISALLOWED = 7251;
 
@@ -367,6 +367,9 @@ public class ValidationException extends EclipseLinkException {
     public static final int UNKNOWN_PROXY_TYPE = 7304;
     
     public static final int ERROR_PARSING_MAPPING_FILE = 7305;
+    
+    // JPA 2.0 Access type
+    public static final int INVALID_EXPLICIT_ACCESS_TYPE = 7306;
     
     /**
      * INTERNAL:
@@ -1219,8 +1222,8 @@ public class ValidationException extends EclipseLinkException {
     
     public static ValidationException nonEntityTargetInRelationship(Class javaClass, Class targetEntity, AnnotatedElement annotatedElement) {
         Object[] args = {javaClass, targetEntity, annotatedElement};
-        ValidationException validationException = new ValidationException(ExceptionMessageGenerator.buildMessage(ValidationException.class, NON_ENTITY_AS_TARGET_IN_REL, args));
-        validationException.setErrorCode(NON_ENTITY_AS_TARGET_IN_REL);
+        ValidationException validationException = new ValidationException(ExceptionMessageGenerator.buildMessage(ValidationException.class, NON_ENTITY_AS_TARGET_IN_RELATIONSHIP, args));
+        validationException.setErrorCode(NON_ENTITY_AS_TARGET_IN_RELATIONSHIP);
         return validationException;
     }
     
@@ -2281,25 +2284,10 @@ public class ValidationException extends EclipseLinkException {
         return validationException;
     }
 
-    public static ValidationException bothFieldsAndPropertiesAnnotated(Class javaClass) {
-        Object[] args = {javaClass};
-        ValidationException validationException = new ValidationException(ExceptionMessageGenerator.buildMessage(ValidationException.class, BOTH_FIELDS_AND_PROPERTIES_ANNOTATED, args));
-        validationException.setErrorCode(BOTH_FIELDS_AND_PROPERTIES_ANNOTATED);
-        return validationException;
-    }
-
-    public static ValidationException incorrectOverridingOfAccessType(
-        Class javaClass, String xmlAccessType, String annotAccessType) {
-        Object[] args = {javaClass, xmlAccessType, annotAccessType};
-        ValidationException validationException = new ValidationException(ExceptionMessageGenerator.buildMessage(ValidationException.class, INCORRECT_OVERRIDING_OF_ACCESSTYPE, args));
-        validationException.setErrorCode(INCORRECT_OVERRIDING_OF_ACCESSTYPE);
-        return validationException;
-    }
-
     public static ValidationException embeddedIdHasNoAttributes(Class entityClass, Class embeddableClass, String accessType) {
         Object[] args = {entityClass, embeddableClass, accessType};
-        ValidationException validationException = new ValidationException(ExceptionMessageGenerator.buildMessage(ValidationException.class, EMBEDDED_ID_CLASS_HAS_NO_ATTR, args));
-        validationException.setErrorCode(EMBEDDED_ID_CLASS_HAS_NO_ATTR);
+        ValidationException validationException = new ValidationException(ExceptionMessageGenerator.buildMessage(ValidationException.class, EMBEDDED_ID_CLASS_HAS_NO_ATTRIBUTES, args));
+        validationException.setErrorCode(EMBEDDED_ID_CLASS_HAS_NO_ATTRIBUTES);
         return validationException;
     }
     
@@ -2339,6 +2327,13 @@ public class ValidationException extends EclipseLinkException {
         return validationException;
     }
 
+    public static ValidationException invalidExplicitAccessTypeSpecified(AnnotatedElement annotatedElement, Class javaClass, String expectedAccessType) {
+        Object[] args = { annotatedElement, javaClass, expectedAccessType };
+        ValidationException validationException = new ValidationException(ExceptionMessageGenerator.buildMessage(ValidationException.class, INVALID_EXPLICIT_ACCESS_TYPE, args));
+        validationException.setErrorCode(INVALID_EXPLICIT_ACCESS_TYPE);
+        return validationException;
+    }
+    
     public static ValidationException invalidSessionEventListenerClass(String className) {
         Object[] args = { className };
         ValidationException validationException = new ValidationException(ExceptionMessageGenerator.buildMessage(ValidationException.class, INVALID_SESSIONEVENTLISTENER_CLASS, args));

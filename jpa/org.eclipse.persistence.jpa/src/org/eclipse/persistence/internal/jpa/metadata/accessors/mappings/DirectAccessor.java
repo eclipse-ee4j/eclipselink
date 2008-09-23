@@ -13,6 +13,8 @@
  *       - 218084: Implement metadata merging functionality between mapping files
  *     06/20/2008-1.0 Guy Pelletier 
  *       - 232975: Failure when attribute type is generic
+ *     09/23/2008-1.1 Guy Pelletier 
+ *       - 241651: JPA 2.0 Access Type support
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.accessors.mappings;
 
@@ -63,7 +65,7 @@ public abstract class DirectAccessor extends MappingAccessor {
     
     private final static String DEFAULT_MAP_KEY_COLUMN_SUFFIX = "_KEY";
     
-    private Boolean m_lob;
+    private boolean m_lob;
     private Boolean m_optional;
     
     private Enum m_fetch;
@@ -86,9 +88,7 @@ public abstract class DirectAccessor extends MappingAccessor {
         super(annotation, accessibleObject, classAccessor);
         
         // Set the lob if one is present.
-        if (isAnnotationPresent(Lob.class)) {
-            m_lob = new Boolean(true);
-        }
+        m_lob = isAnnotationPresent(Lob.class);
         
         // Set the enumerated if one is present.
         Annotation enumerated = getAnnotation(Enumerated.class);
@@ -210,8 +210,8 @@ public abstract class DirectAccessor extends MappingAccessor {
      * INTERNAL:
      * Used for OX mapping.
      */
-    public Boolean getLob() {
-        return m_lob;
+    public String getLob() {
+        return null;
     }
     
     /**
@@ -265,13 +265,13 @@ public abstract class DirectAccessor extends MappingAccessor {
         if (hasConvert()) {
             // If we have a Lob specified with a Convert, the Convert takes 
             // precedence and we will ignore the Lob and log a message.
-            if (m_lob != null) {
+            if (m_lob) {
                 getLogger().logWarningMessage(MetadataLogger.IGNORE_LOB, getJavaClass(), getAnnotatedElement());
             }
             
             return false;
         } else {
-            return m_lob != null;
+            return m_lob;
         }
     }
     
@@ -665,8 +665,8 @@ public abstract class DirectAccessor extends MappingAccessor {
      * INTERNAL:
      * Used for OX mapping.
      */
-    public void setLob(Boolean lob) {
-        m_lob = lob;
+    public void setLob(String ignore) {
+        m_lob = true;
     }
     
     /**

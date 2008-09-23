@@ -13,6 +13,8 @@
  *       - 218084: Implement metadata merging functionality between mapping files
  *     05/23/2008-1.0M8 Guy Pelletier 
  *       - 211330: Add attributes-complete support to the EclipseLink-ORM.XML Schema
+ *     09/23/2008-1.1 Guy Pelletier 
+ *       - 241651: JPA 2.0 Access Type support
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.accessors.classes;
 
@@ -341,8 +343,8 @@ public class MappedSuperclassAccessor extends ClassAccessor {
         // mapped superclass may define.
         processClassMetadata();
             
-        // Process the accessors from the mapped superclass.
-        processAccessors();
+        // Add the accessors from the mapped superclass to the owning descriptor.
+        addAccessors();
     }
     
     /**
@@ -675,12 +677,12 @@ public class MappedSuperclassAccessor extends ClassAccessor {
             
         getDescriptor().setPKClass(m_idClass);
             
-        if (getDescriptor().usesPropertyAccess()) {
+        if (getDescriptor().usesDefaultPropertyAccess()) {
             for (Method method : MetadataHelper.getDeclaredMethods(m_idClass)) {
                 MetadataMethod metadataMethod = new MetadataMethod(method, getLogger());
                 
                 // The is valid check will throw an exception if needed.
-                if (metadataMethod.isValidPersistenceMethod(getDescriptor())) {
+                if (metadataMethod.isValidPersistenceMethod(false, getDescriptor())) {
                     getDescriptor().addPKClassId(metadataMethod.getAttributeName(), metadataMethod.getRelationType());
                 }
             }    
@@ -689,7 +691,7 @@ public class MappedSuperclassAccessor extends ClassAccessor {
                 MetadataField metadataField = new MetadataField(field, getLogger());
                 
                 // The is valid check will throw an exception if needed.
-                if (metadataField.isValidPersistenceField(getDescriptor())) {
+                if (metadataField.isValidPersistenceField(false, getDescriptor())) {
                     getDescriptor().addPKClassId(field.getName(), field.getGenericType());
                 }
             }
@@ -867,7 +869,7 @@ public class MappedSuperclassAccessor extends ClassAccessor {
      */
     protected void processTableGenerator() {
         if (isAnnotationPresent(TableGenerator.class)) {
-            getProject().addTableGenerator(new TableGeneratorMetadata(getAnnotation(TableGenerator.class), getAccessibleObject()), getDescriptor().getXMLCatalog(), getDescriptor().getXMLSchema());
+            getProject().addTableGenerator(new TableGeneratorMetadata(getAnnotation(TableGenerator.class), getAccessibleObject()), getDescriptor().getDefaultCatalog(), getDescriptor().getDefaultSchema());
         }
     } 
     

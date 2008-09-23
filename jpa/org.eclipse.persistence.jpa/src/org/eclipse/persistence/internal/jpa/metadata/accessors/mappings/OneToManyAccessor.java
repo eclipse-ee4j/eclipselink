@@ -11,14 +11,13 @@
  *     Oracle - initial API and implementation from Oracle TopLink
  *     05/16/2008-1.0M8 Guy Pelletier 
  *       - 218084: Implement metadata merging functionality between mapping files
+ *     09/23/2008-1.1 Guy Pelletier 
+ *       - 241651: JPA 2.0 Access Type support
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.accessors.mappings;
 
 import java.lang.annotation.Annotation;
 import java.util.Map;
-
-import javax.persistence.JoinColumn;
-import javax.persistence.JoinColumns;
 
 import org.eclipse.persistence.exceptions.ValidationException;
 

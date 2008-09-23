@@ -37,6 +37,10 @@
             <pathelement path="${eclipselink.jpa}/${eclipselink.plugins}/${asm}"/>
             <pathelement path="${eclipselink.jpa}/${eclipselink.core.trunk}/${classes.dir}"/>
             <pathelement path="${eclipselink.jpa}/${eclipselink.plugins}/osgi.core.zip"/>
+            <pathelement path="${eclipselink.jpa.plugins.depend}"/>
+            <fileset 
+                dir="${eclipselink.jpa}/${eclipselink.jpa.plugins}"
+                includes="${eclipselink.jpa.depend}"/>
             <fileset
                 dir="${eclipselink.jpa}/${eclipselink.plugins}"
                 includes="${eclipselink.core.depend}"/>
@@ -49,6 +53,9 @@
             <pathelement path="${eclipselink.plugins}/${asm}"/>
             <pathelement path="${eclipselink.core}/${classes.dir}"/>
             <pathelement path="${eclipselink.plugins}/osgi.core.zip"/>
+            <fileset 
+                dir="${eclipselink.jpa.base}/${plugins.dir}"
+                includes="${eclipselink.jpa.depend}"/>
             <fileset
                 dir="${eclipselink.plugins}"
                 includes="${eclipselink.core.depend}"/>

@@ -11,6 +11,8 @@
  *     Oracle - initial API and implementation from Oracle TopLink
  *     06/20/2008-1.0 Guy Pelletier 
  *       - 232975: Failure when attribute type is generic
+ *     09/23/2008-1.1 Guy Pelletier 
+ *       - 241651: JPA 2.0 Access Type support
  ******************************************************************************/  
 package org.eclipse.persistence.testing.tests.jpa.inherited;
 
@@ -22,8 +24,10 @@ import javax.persistence.EntityManager;
 import junit.framework.*;
 import junit.extensions.TestSetup;
 
+import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.sessions.DatabaseSession;
+import org.eclipse.persistence.sessions.server.ServerSession;
 import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
 import org.eclipse.persistence.testing.models.jpa.inherited.BeerConsumer;
 import org.eclipse.persistence.testing.models.jpa.inherited.Blue;
@@ -137,9 +141,14 @@ public class InheritedModelJunitTest extends JUnitTestCase {
         EntityManager em = createEntityManager();
         beginTransaction(em);
         
+        ServerSession session = JUnitTestCase.getServerSession();
+        ClassDescriptor desc = session.getDescriptor(NoviceBeerConsumer.class);
+        System.out.println(desc.getMappings().size());
+        
         try {    
             NoviceBeerConsumer beerConsumer = new NoviceBeerConsumer();
             beerConsumer.setName("Novice Beer Consumer");
+            beerConsumer.setIQ(100);
             
             beerConsumer.getAcclaims().add(1);
             beerConsumer.getAcclaims().add(2);
@@ -171,6 +180,7 @@ public class InheritedModelJunitTest extends JUnitTestCase {
         try {    
             ExpertBeerConsumer beerConsumer = new ExpertBeerConsumer();
             beerConsumer.setName("Expert Beer Consumer");
+            beerConsumer.setIQ(110);
             
             beerConsumer.getAcclaims().add("A");
             beerConsumer.getAcclaims().add("B");
@@ -200,6 +210,8 @@ public class InheritedModelJunitTest extends JUnitTestCase {
         
         assertTrue("Error on reading back a NoviceBeerConsumer", consumer != null);
         
+        assertTrue("IQ Level was not persisted.", consumer.getIQ() == 100);
+        
         assertTrue("", consumer.getAcclaims().size() == 3);
         assertTrue("Missing acclaim - 1", consumer.getAcclaims().contains(1));
         assertTrue("Missing acclaim - 2", consumer.getAcclaims().contains(2));
@@ -223,6 +235,8 @@ public class InheritedModelJunitTest extends JUnitTestCase {
         ExpertBeerConsumer consumer = createEntityManager().find(ExpertBeerConsumer.class, m_expertBeerConsumerId);
         
         assertTrue("Error on reading back an ExpertBeerConsumer", consumer != null);
+        
+        assertTrue("IQ Level was not persisted.", consumer.getIQ() == 110);
         
         assertTrue("", consumer.getAcclaims().size() == 3);
         assertTrue("Missing acclaim - A", consumer.getAcclaims().contains("A"));

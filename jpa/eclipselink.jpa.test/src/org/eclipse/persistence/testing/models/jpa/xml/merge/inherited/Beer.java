@@ -9,6 +9,8 @@
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
+ *     09/23/2008-1.1 Guy Pelletier 
+ *       - 241651: JPA 2.0 Access Type support
  ******************************************************************************/  
 package org.eclipse.persistence.testing.models.jpa.xml.merge.inherited;
 
@@ -22,13 +24,26 @@ import static javax.persistence.FetchType.LAZY;
 import java.sql.Timestamp;
 
 /**
+ * This class is mapped in:
+ * resource/eclipselink-ddl-generation-model/merge-inherited-superclasses.xml
+ * 
  * All annotations should be ignored in this class as the XML definition is
- * declared as metadata-complete=true
+ * declared as metadata-complete=true. Not to mention the access is field
+ * therefore any annotations on methods are not processed (where they were
+ * before I moved them to the fields).
  */
 public class Beer extends Beverage {
+    // The version is defined in XML
     private Timestamp version;
+    
+    @Basic
+    @Column(name="ALCOHOL_CONTENT")
     private double alcoholContent;
+    
+    @ManyToOne(fetch=LAZY)
+    @JoinColumn(name="TOTALLY_WRONG_ID")
     private BeerConsumer beerConsumer;
+    
     private EmbeddedSerialNumber embeddedSerialNumber;
     
     public static int BEER_PRE_PERSIST_COUNT = 0;
@@ -40,19 +55,14 @@ public class Beer extends Beverage {
         BEER_PRE_PERSIST_COUNT++;
     }
     
-    @Basic
-    @Column(name="ALCOHOL_CONTENT")
     public double getAlcoholContent() {
         return alcoholContent;
     }
     
-    @ManyToOne(fetch=LAZY)
-    @JoinColumn(name="TOTALLY_WRONG_ID")
     public BeerConsumer getBeerConsumer() {
         return beerConsumer;
     }
     
-    // The version is defined in XML
     public Timestamp getVersion() {
         return version;
     }

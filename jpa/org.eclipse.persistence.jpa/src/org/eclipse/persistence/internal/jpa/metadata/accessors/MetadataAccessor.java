@@ -13,6 +13,8 @@
  *       - 218084: Implement metadata merging functionality between mapping files
  *     08/27/2008-1.1 Guy Pelletier 
  *       - 211329: Add sequencing on non-id attribute(s) support to the EclipseLink-ORM.XML Schema
+ *     09/23/2008-1.1 Guy Pelletier 
+ *       - 241651: JPA 2.0 Access Type support
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.accessors;
 
@@ -318,11 +320,9 @@ public abstract class MetadataAccessor extends ORMetadata {
      * This method should be subclassed in those methods that need to do 
      * extra initialization.
      */
-    public void initXMLAccessor(MetadataAccessibleObject accessibleObject, MetadataDescriptor descriptor, MetadataProject project) {
+    public void initXMLAccessor(MetadataDescriptor descriptor, MetadataProject project) {
         m_project = project;
         m_descriptor = descriptor;
-        
-        initXMLObject(accessibleObject);
     }
 
     /**
@@ -488,7 +488,7 @@ public abstract class MetadataAccessor extends ORMetadata {
      * collection table.
      */
     protected void processTable(TableMetadata table, String defaultName) {
-        getProject().processTable(table, defaultName, m_descriptor.getXMLCatalog(), m_descriptor.getXMLSchema());
+        getProject().processTable(table, defaultName, m_descriptor.getDefaultCatalog(), m_descriptor.getDefaultSchema());
     }
     
     /**

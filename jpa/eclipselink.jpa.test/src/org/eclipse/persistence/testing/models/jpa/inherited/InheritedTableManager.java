@@ -13,6 +13,8 @@
  *       - 230213: ValidationException when mapping to attribute in MappedSuperClass
  *     06/20/2008-1.0 Guy Pelletier 
  *       - 232975: Failure when attribute type is generic
+ *     09/23/2008-1.1 Guy Pelletier 
+ *       - 241651: JPA 2.0 Access Type support
  ******************************************************************************/  
 package org.eclipse.persistence.testing.models.jpa.inherited;
 
@@ -376,6 +378,16 @@ public class InheritedTableManager extends TableCreator {
         ID_field.setForeignKeyFieldName("CMP3_CONSUMER.ID");
         table.addField(ID_field);
         
+        FieldDefinition IQ_field = new FieldDefinition();
+        IQ_field.setName("CONSUMER_IQ");
+        IQ_field.setTypeName("NUMERIC");
+        IQ_field.setSize(15);
+        IQ_field.setShouldAllowNull(true);
+        IQ_field.setIsPrimaryKey(false);
+        IQ_field.setUnique(false);
+        IQ_field.setIsIdentity(false);
+        table.addField(IQ_field);
+        
         return table;
     }
     
@@ -459,6 +471,16 @@ public class InheritedTableManager extends TableCreator {
         ID_field.setShouldAllowNull(false);
         ID_field.setForeignKeyFieldName("CMP3_CONSUMER.ID");
         table.addField(ID_field);
+        
+        FieldDefinition IQ_field = new FieldDefinition();
+        IQ_field.setName("CONSUMER_IQ");
+        IQ_field.setTypeName("NUMERIC");
+        IQ_field.setSize(15);
+        IQ_field.setShouldAllowNull(true);
+        IQ_field.setIsPrimaryKey(false);
+        IQ_field.setUnique(false);
+        IQ_field.setIsIdentity(false);
+        table.addField(IQ_field);
         
         return table;
     }

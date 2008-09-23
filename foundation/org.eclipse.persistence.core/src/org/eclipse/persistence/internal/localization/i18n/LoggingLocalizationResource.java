@@ -180,9 +180,7 @@ public class LoggingLocalizationResource extends ListResourceBundle {
         { "jta_cannot_be_disabled_in_cmp", "When using Container Managed Persistence (CMP), JTA cannot be disabled. EclipseLink will act as if JTA is enabled." },
         { "descriptor_named_query_cannot_be_added", "Cannot add a descriptor named query whose name conflict with an existing query. Query To Be Added: [{0}] is named: [{1}] with arguments [{2}]." },
 
-        { "metadata_field_access_type", "The access type for the persistent class [{0}] is set to FIELD." },
-        { "metadata_property_access_type", "The access type for the persistent class [{0}] is set to PROPERTY." },
-        
+        { "metadata_access_type", "The access type for the persistent class [{1}] is set to [{0}]." },        
         { "metadata_default_alias", "The alias name for the entity class [{0}] is being defaulted to: {1}." },
         { "metadata_default_map_key_attribute_name", "The map key attribute name for the mapping element [{0}] is being defaulted to: {1}." },
         { "metadata_default_table_name", "The table name for entity [{0}] is being defaulted to: {1}." },

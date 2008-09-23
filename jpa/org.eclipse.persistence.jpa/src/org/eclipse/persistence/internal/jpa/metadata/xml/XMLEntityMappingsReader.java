@@ -11,6 +11,8 @@
  *     Oracle - initial API and implementation from Oracle TopLink
  *     05/16/2008-1.0M8 Guy Pelletier 
  *       - 218084: Implement metadata merging functionality between mapping file
+ *     09/23/2008-1.1 Guy Pelletier 
+ *       - 241651: JPA 2.0 Access Type support
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.xml;
 
@@ -39,22 +41,28 @@ import org.xml.sax.SAXException;
  * @since EclipseLink 1.0
  */
 public class XMLEntityMappingsReader {
-    public static final String ORM_XSD = "org/eclipse/persistence/jpa/orm_1_0.xsd";
-    public static final String ORM_NAMESPACE = "http://java.sun.com/xml/ns/persistence/orm";
+    public static final String ORM_1_0_XSD = "org/eclipse/persistence/jpa/orm_1_0.xsd";
+    public static final String ORM_1_0_NAMESPACE = "http://java.sun.com/xml/ns/persistence/orm";
+    public static final String ORM_2_0_XSD = "org/eclipse/persistence/jpa/orm_2_0.xsd";
+    public static final String ORM_2_0_NAMESPACE = "http://java.sun.com/xml/ns/persistence/orm";
     public static final String ECLIPSELINK_ORM_XSD = "xsd/eclipselink_orm_1_1.xsd";
     public static final String ECLIPSELINK_ORM_NAMESPACE = "http://www.eclipse.org/eclipselink/xsds/persistence/orm";
     
     //private static XMLContext m_xmlContext;
-    private static XMLContext m_ormProject;
+    // Humm ... do we need to keep the 1.0 around? Just validate against
+    // the latest??
+    private static XMLContext m_orm1_0Project;
+    private static XMLContext m_orm2_0Project;
     private static XMLContext m_eclipseLinkOrmProject;
     
     /**
      * INTERNAL:
      */
-    protected static XMLEntityMappings read(URL mappingFileUrl, Reader reader1, Reader reader2, ClassLoader classLoader) {
+    protected static XMLEntityMappings read(URL mappingFileUrl, Reader reader1, Reader reader2, Reader reader3, ClassLoader classLoader) {
         // -------------- Until bug 218047 is fixed. -----------------
-        if (m_ormProject == null) {
-            m_ormProject = new XMLContext(new XMLEntityMappingsMappingProject(ORM_NAMESPACE, ORM_XSD));
+        if (m_orm1_0Project == null) {
+            m_orm1_0Project = new XMLContext(new XMLEntityMappingsMappingProject(ORM_1_0_NAMESPACE, ORM_1_0_XSD));
+            m_orm2_0Project = new XMLContext(new XMLEntityMappingsMappingProject(ORM_2_0_NAMESPACE, ORM_2_0_XSD));
             m_eclipseLinkOrmProject = new XMLContext(new XMLEntityMappingsMappingProject(ECLIPSELINK_ORM_NAMESPACE, ECLIPSELINK_ORM_XSD));
         }
         
@@ -62,16 +70,22 @@ public class XMLEntityMappingsReader {
         XMLEntityMappings xmlEntityMappings;
         
         try {
-            XMLUnmarshaller unmarshaller = m_ormProject.createUnmarshaller();
-            useLocalSchemaForUnmarshaller(unmarshaller, ORM_XSD);
+            XMLUnmarshaller unmarshaller = m_orm2_0Project.createUnmarshaller();
+            useLocalSchemaForUnmarshaller(unmarshaller, ORM_2_0_XSD);
             xmlEntityMappings = (XMLEntityMappings) unmarshaller.unmarshal(reader1);
-        } catch (Exception e) {
+        } catch (Exception eee) {
             try {
-                XMLUnmarshaller unmarshaller = m_eclipseLinkOrmProject.createUnmarshaller();
-                useLocalSchemaForUnmarshaller(unmarshaller, ECLIPSELINK_ORM_XSD);
+                XMLUnmarshaller unmarshaller = m_orm1_0Project.createUnmarshaller();
+                useLocalSchemaForUnmarshaller(unmarshaller, ORM_1_0_XSD);
                 xmlEntityMappings = (XMLEntityMappings) unmarshaller.unmarshal(reader2);
-            } catch (Exception ee) {
-                throw ValidationException.errorParsingMappingFile(mappingFileUrl, ee);
+            } catch (Exception e) {
+                try {
+                    XMLUnmarshaller unmarshaller = m_eclipseLinkOrmProject.createUnmarshaller();
+                    useLocalSchemaForUnmarshaller(unmarshaller, ECLIPSELINK_ORM_XSD);
+                    xmlEntityMappings = (XMLEntityMappings) unmarshaller.unmarshal(reader3);
+                } catch (Exception ee) {
+                    throw ValidationException.errorParsingMappingFile(mappingFileUrl, ee);
+                }
             }
         }
         
@@ -100,16 +114,18 @@ public class XMLEntityMappingsReader {
     public static XMLEntityMappings read(URL url, ClassLoader classLoader) throws IOException {
         InputStreamReader reader1 = null;
         InputStreamReader reader2 = null;
+        InputStreamReader reader3 = null;
         
         try {
             try {
                 reader1 = new InputStreamReader(url.openStream(), "UTF-8");
                 reader2 = new InputStreamReader(url.openStream(), "UTF-8");
+                reader3 = new InputStreamReader(url.openStream(), "UTF-8");
             } catch (UnsupportedEncodingException exception) {
                 throw ValidationException.fatalErrorOccurred(exception);
             }
 
-            XMLEntityMappings entityMappings = read(url, reader1, reader2, classLoader);
+            XMLEntityMappings entityMappings = read(url, reader1, reader2, reader3, classLoader);
             // Setting the mapping file here is very important! Do not remove.
             entityMappings.setMappingFile(url);
             return entityMappings;

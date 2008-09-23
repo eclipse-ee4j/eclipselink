@@ -11,6 +11,8 @@
  *     Oracle - initial API and implementation from Oracle TopLink
  *     05/16/2008-1.0M8 Guy Pelletier 
  *       - 218084: Implement metadata merging functionality between mapping files
+ *     09/23/2008-1.1 Guy Pelletier 
+ *       - 241651: JPA 2.0 Access Type support
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.accessors.objects;
 
@@ -18,6 +20,7 @@ import java.lang.reflect.Method;
 import java.security.AccessController;
 import java.security.PrivilegedActionException;
 
+import javax.persistence.AccessType;
 import javax.persistence.PostLoad;
 import javax.persistence.PostPersist;
 import javax.persistence.PostRemove;
@@ -250,10 +253,17 @@ public class MetadataMethod extends MetadataAnnotatedElement {
     /**
      * INTERNAL:
      * Return true is this method is a valid persistence method. This method
-     * will validate against any declared annotations on the method.
+     * will validate against any declared annotations on the method.  If the 
+     * mustBeExplicit flag is true, then we are processing the inverse of an 
+     * explicit access setting and the property must have an Access(PROPERTY) 
+     * setting to be processed. Otherwise, it is ignored.
      */
-    public boolean isValidPersistenceMethod(MetadataDescriptor descriptor) {
-        return ! isALifeCycleCallbackMethod() && isValidPersistenceMethod(descriptor, hasDeclaredAnnotations(descriptor));
+    public boolean isValidPersistenceMethod(boolean mustBeExplicit, MetadataDescriptor descriptor) {
+        if (isValidPersistenceElement(mustBeExplicit, AccessType.PROPERTY, descriptor)) {
+            return ! isALifeCycleCallbackMethod() && isValidPersistenceMethod(descriptor, hasDeclaredAnnotations(descriptor));
+        }
+        
+        return false;
     }
     
     /**

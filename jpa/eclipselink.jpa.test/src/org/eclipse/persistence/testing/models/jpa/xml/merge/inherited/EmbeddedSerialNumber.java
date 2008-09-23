@@ -9,30 +9,35 @@
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
+ *     09/23/2008-1.1 Guy Pelletier 
+ *       - 241651: JPA 2.0 Access Type support
  ******************************************************************************/  
 package org.eclipse.persistence.testing.models.jpa.xml.merge.inherited;
+
+import javax.persistence.Access;
+import static javax.persistence.AccessType.FIELD;
+import static javax.persistence.AccessType.PROPERTY;
 
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
 
+/**
+ * The owning class has field access, and so to process this class as
+ * property access we must specify the Access(PROPERTY) 
+ */
 @Embeddable
+@Access(PROPERTY)
 public class EmbeddedSerialNumber {
-    private Integer number;
+    @Access(FIELD)
+    @Column(name="ES_NUMBER")
+    public Integer number;
+    
     private String breweryCode;
     
     public EmbeddedSerialNumber() {}
     
-    @Column(name="ES_NUMBER")
-    public Integer getNumber() {
-        return this.number;
-    }
-    
     public String getBreweryCode() {
         return this.breweryCode;
-    }
-
-    public void setNumber(Integer number) {
-        this.number = number;
     }
 
     public void setBreweryCode(String breweryCode) {

@@ -14,6 +14,8 @@
  *       - 232975: Failure when attribute type is generic
  *     08/27/2008-1.1 Guy Pelletier 
  *       - 211329: Add sequencing on non-id attribute(s) support to the EclipseLink-ORM.XML Schema
+ *     09/23/2008-1.1 Guy Pelletier 
+ *       - 241651: JPA 2.0 Access Type support
  ******************************************************************************/
 package org.eclipse.persistence.internal.jpa.metadata.accessors.mappings;
 
@@ -24,6 +26,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import javax.persistence.Access;
+import javax.persistence.AccessType;
 import javax.persistence.Column;
 import javax.persistence.FetchType;
 
@@ -58,7 +62,9 @@ import org.eclipse.persistence.mappings.ForeignReferenceMapping;
  * @since EclipseLink 1.0
  */
 public abstract class MappingAccessor extends MetadataAccessor {
+    private Enum m_access; // Access type specified from XML.
     private AccessMethodsMetadata m_accessMethods;
+    private ClassAccessor m_classAccessor;
     private Map<String, PropertyMetadata> m_properties = new HashMap<String, PropertyMetadata>();
     
     /**
@@ -73,6 +79,24 @@ public abstract class MappingAccessor extends MetadataAccessor {
      */
     protected MappingAccessor(Annotation annotation, MetadataAccessibleObject accessibleObject, ClassAccessor classAccessor) {
         super(annotation, accessibleObject, classAccessor.getDescriptor(), classAccessor.getProject());
+        
+        // We must keep a reference to the class accessors where this
+        // mapping accessor is defined. We need it to determine access types.
+        m_classAccessor = classAccessor;
+        
+        // Look for an explicit access type specification.
+        Annotation access = getAnnotation(Access.class);
+        if (access != null) {
+            m_access = (Enum) MetadataHelper.invokeMethod("value", access);
+        }
+    }
+    
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+    public Enum getAccess(){
+        return m_access;
     }
     
     /**
@@ -211,6 +235,16 @@ public abstract class MappingAccessor extends MetadataAccessor {
      */
     protected boolean hasReturnUpdate() {
         return isAnnotationPresent(ReturnUpdate.class);
+    }
+    
+    /**
+     * INTERNAL: 
+     * Init an xml mapping accessor with its necessary components. 
+     */
+    public void initXMLMappingAccessor(ClassAccessor classAccessor) {
+        m_classAccessor = classAccessor;
+        
+        initXMLAccessor(classAccessor.getDescriptor(), classAccessor.getProject());   
     }
     
     /**
@@ -376,6 +410,14 @@ public abstract class MappingAccessor extends MetadataAccessor {
     
     /**
      * INTERNAL:
+     * Used for OX mapping.
+     */
+    public void setAccess(Enum access){
+        m_access = access;
+    }
+    
+    /**
+     * INTERNAL:
      */
     public void setAccessMethods(AccessMethodsMetadata accessMethods){
         m_accessMethods = accessMethods;
@@ -390,6 +432,14 @@ public abstract class MappingAccessor extends MetadataAccessor {
             mapping.setGetMethodName(getGetMethodName());
             mapping.setSetMethodName(getSetMethodName());
         }
+    }
+    
+    /**
+     * INTERNAL:
+     * Sets the class accessor for this mapping accessor.
+     */
+    public void setClassAccessor(ClassAccessor classAccessor) {
+        m_classAccessor = classAccessor;
     }
     
     /** 
@@ -442,18 +492,15 @@ public abstract class MappingAccessor extends MetadataAccessor {
     
     /**
      * INTERNAL:
-     * Returns true if this class uses property access. In an inheritance 
-     * hierarchy, the subclasses inherit their access type from the parent.
-     * The metadata helper method caches the class access types for 
-     * efficiency.
-     * @see MetadataDescriptor usesPropertyAccess()
+     * Returns true if this mapping or class uses property access. In an 
+     * inheritance hierarchy, the subclasses inherit their access type from 
+     * the parent (unless there is an explicit access setting).
      */
     public boolean usesPropertyAccess(MetadataDescriptor descriptor) {
-        if (m_accessMethods == null) {
-            return descriptor.usesPropertyAccess();
+        if (m_access == null) {
+            return (m_accessMethods == null) ? m_classAccessor.usesPropertyAccess() : true;
+        } else {
+            return m_access.name().equals(AccessType.PROPERTY.name());
         }
-        
-        return true;
     }
-    
 }

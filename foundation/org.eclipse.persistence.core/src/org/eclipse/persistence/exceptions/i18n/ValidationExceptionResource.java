@@ -233,8 +233,6 @@ public class ValidationExceptionResource extends ListResourceBundle {
                                            { "7244", "An incompatible mapping has been encountered between [{0}] and [{1}]. This usually occurs when the cardinality of a mapping does not correspond with the cardinality of its backpointer."},
                                            { "7245", "The *metadata-less* embeddable class [{0}] is used in entity classes with conflicting access-types.  Its property access flag is set to [{1}]. It is being embedded in a [{2}] with property access flag set to: [{3}]. This is not allowed as this may result in inconsistent mappings of the embeddable class in different points of use. This problem can be corrected in two ways: 1. Provide metadata on class [{0}] that allows the access type to be determined. 2. Ensure all users of class [{0}] have the same access type."},
                                            { "7246", "The Entity class [{0}] has an embedded attribute [{1}] of type [{2}] which is NOT an Embeddable class. Probable reason: missing @Embeddable or missing <embeddable> in orm.xml if metadata-complete = true"},
-                                           { "7247", "Both fields and methods are annotated in [{0}]"},
-                                           { "7248", "For [{0}] access type [{1}] as determined by XML is different from access type [{2}] determined using annotation."},
                                            { "7249", "Entity [{0}] uses [{1}] as embedded id class whose access-type has been determined as [{2}]. But [{1}] does not define any [{2}]. It is likely that you have not provided sufficient metadata in your id class [{1}]."},
                                            { "7250", "[{0}] uses a non-entity [{1}] as target entity in the relationship attribute [{2}]."},
                                            { "7251", "The attribute [{1}] of class [{0}] is mapped to a primary key column in the database. Updates are not allowed."},
@@ -288,6 +286,8 @@ public class ValidationExceptionResource extends ListResourceBundle {
                                            { "7303", "PersistenceUnitProperties.ORACLE_PROXY_TYPE property set to [{0}], required for this proxy type property [{1}] not found." },
                                            { "7304", "PersistenceUnitProperties.ORACLE_PROXY_TYPE property set to unknown type [{0}], known types are [{1}], [{2}], [{3}]." },
                                            { "7305", "An exception was thrown while processing the mapping file from URL: [{0}]." },
+                                           { "7306", "The annotated element [{0}] from the class [{1}] has an incorrect explicit access type specified. It should specify an access type of [{2}]." },
+                                           
  };
     
     /**

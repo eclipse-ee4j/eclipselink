@@ -9,21 +9,9 @@
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
+ *     09/23/2008-1.1 Guy Pelletier 
+ *       - 241651: JPA 2.0 Access Type support
  ******************************************************************************/
-
-
-/*******************************************************************************
- * Copyright (c) 1998, 2008 Oracle. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
- * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
- * http://www.eclipse.org/org/documents/edl-v10.php.
- *
- * Contributors:
- *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
 package org.eclipse.persistence.testing.models.jpa.xml.advanced;
 
 import java.io.*;
@@ -35,7 +23,7 @@ import java.io.*;
 public class PhoneNumber implements Serializable {
 	private String number;
 	private String type;
-	private Employee owner;
+	Employee owner;
     private Integer id;
     private String areaCode;
 	
@@ -82,14 +70,6 @@ public class PhoneNumber implements Serializable {
 		this.areaCode = areaCode;
 	}
 
-	public Employee getOwner() { 
-        return owner; 
-    }
-    
-	public void setOwner(Employee owner) {
-		this.owner = owner;
-	}
-
     /**
      * Example: Phone[Work]: (613) 225-8812
      */
@@ -117,7 +97,7 @@ public class PhoneNumber implements Serializable {
      */
     public PhoneNumberPK buildPK(){
         PhoneNumberPK pk = new PhoneNumberPK();
-        pk.setId(this.getOwner().getId());
+        pk.setId(owner.getId());
         pk.setType(this.getType());
         return pk;
     }

@@ -11,6 +11,8 @@
  *     Oracle - initial API and implementation from Oracle TopLink
  *     05/16/2008-1.0M8 Guy Pelletier 
  *       - 218084: Implement metadata merging functionality between mapping files
+ *     09/23/2008-1.1 Guy Pelletier 
+ *       - 241651: JPA 2.0 Access Type support
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata;
 
@@ -78,8 +80,7 @@ public class MetadataLogger {
     /*************************************************************************/
     /*                       GENERIC DEFAULT MESSSAGES                       */ 
     /*************************************************************************/
-    public static final String FIELD_ACCESS_TYPE = "metadata_field_access_type";
-    public static final String PROPERTY_ACCESS_TYPE = "metadata_property_access_type";
+    public static final String ACCESS_TYPE = "metadata_access_type";
     
     public static final String ALIAS = "metadata_default_alias";
     public static final String MAP_KEY_ATTRIBUTE_NAME = "metadata_default_map_key_attribute_name";
@@ -193,8 +194,7 @@ public class MetadataLogger {
         
         // Generic default messages that could apply to XML and annotation
         // configurations.
-        m_ctxStrings.put(FIELD_ACCESS_TYPE, FIELD_ACCESS_TYPE);
-        m_ctxStrings.put(PROPERTY_ACCESS_TYPE, PROPERTY_ACCESS_TYPE);
+        m_ctxStrings.put(ACCESS_TYPE, ACCESS_TYPE);
         
         m_ctxStrings.put(ALIAS, ALIAS);
         m_ctxStrings.put(MAP_KEY_ATTRIBUTE_NAME, MAP_KEY_ATTRIBUTE_NAME);

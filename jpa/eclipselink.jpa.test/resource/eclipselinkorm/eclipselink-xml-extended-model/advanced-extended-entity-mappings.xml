@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<entity-mappings version="1.0" xmlns="http://java.sun.com/xml/ns/persistence/orm" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+<entity-mappings version="2.0" xmlns="http://java.sun.com/xml/ns/persistence/orm" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://java.sun.com/xml/ns/persistence/orm orm_2_0.xsd">
     <description>Advanced Test Model Instance Document</description>
     <package>org.eclipse.persistence.testing.models.jpa.xml.advanced</package>
-    <entity name="XMLEmployee" class="Employee">
+    <entity name="XMLEmployee" class="Employee" access="PROPERTY">
         <table name="CMP3_XML_EMPLOYEE"/>
         <secondary-table name="CMP3_XML_SALARY">
             <primary-key-join-column name="E_ID" referenced-column-name="EMP_ID"/>
@@ -29,18 +29,18 @@
                 <column name="EMP_ID"/>
                 <generated-value strategy="TABLE" generator="XML_EMPLOYEE_TABLE_GENERATOR"/>
             </id>
-            <basic name="firstName">
+            <basic name="firstName" access="FIELD">
                 <column name="F_NAME"/>
             </basic>
-            <basic name="lastName">
+            <basic name="lastName" access="FIELD">
                 <column name="L_NAME"/>
             </basic>
             <basic name="salary">
                 <column table="CMP3_XML_SALARY"/>
             </basic>
-            <version name="version">
+            <basic name="version">
                 <column name="VERSION"/>
-            </version>
+            </basic>
             <many-to-one name="address" target-entity="Address" fetch="LAZY">
                 <join-column name="ADDR_ID"/>
                 <cascade>
@@ -133,7 +133,7 @@
             <basic name="areaCode">
                 <column name="AREA_CODE"/>
             </basic>
-            <many-to-one name="owner" target-entity="org.eclipse.persistence.testing.models.jpa.xml.advanced.Employee">
+            <many-to-one name="owner" target-entity="org.eclipse.persistence.testing.models.jpa.xml.advanced.Employee" access="FIELD">
                 <join-column name="OWNER_ID" referenced-column-name="EMP_ID"/>
             </many-to-one>
         </attributes>
@@ -153,7 +153,7 @@
         <exclude-default-listeners/>
         <exclude-superclass-listeners/>
     </entity>
-    <entity name="XMLProject" class="org.eclipse.persistence.testing.models.jpa.xml.advanced.Project" access="PROPERTY">
+    <entity name="XMLProject" class="org.eclipse.persistence.testing.models.jpa.xml.advanced.Project" access="FIELD">
         <table name="CMP3_XML_PROJECT"/>
         <inheritance strategy="JOINED"/>
         <discriminator-value>P</discriminator-value>
@@ -182,13 +182,20 @@
             <basic name="description">
                 <column name="DESCRIP"/>
             </basic>
-            <basic name="version">
-              <column name="VERSION"/>
-            </basic>
-            <one-to-one name="teamLeader" target-entity="org.eclipse.persistence.testing.models.jpa.xml.advanced.Employee">
+            <version name="version">
+                <column name="VERSION"/>
+            </version>
+            <one-to-one name="teamLeader" target-entity="org.eclipse.persistence.testing.models.jpa.xml.advanced.Employee" access="PROPERTY">
                 <join-column name="LEADER_ID"/>
             </one-to-one>
-            <many-to-many name="teamMembers" target-entity="org.eclipse.persistence.testing.models.jpa.xml.advanced.Employee" mapped-by="projects"/>
+            <many-to-many name="teamMembers" target-entity="org.eclipse.persistence.testing.models.jpa.xml.advanced.Employee" mapped-by="projects" access="PROPERTY"/>
+            <transient name="pre_update_count"></transient>
+            <transient name="post_update_count"></transient>
+            <transient name="pre_remove_count"></transient>
+            <transient name="post_remove_count"></transient>
+            <transient name="pre_persist_count"></transient>
+            <transient name="post_persist_count"></transient>
+            <transient name="post_load_count"></transient>
         </attributes>
     </entity>
     <entity name="XMLAdvancedCustomer" class="org.eclipse.persistence.testing.models.jpa.xml.advanced.Customer" access="PROPERTY">

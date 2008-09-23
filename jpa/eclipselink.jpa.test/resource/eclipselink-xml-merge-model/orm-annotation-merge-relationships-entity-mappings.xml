@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<entity-mappings version="1.0" xmlns="http://java.sun.com/xml/ns/persistence/orm" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://java.sun.com/xml/ns/persistence/orm orm_1_0.xsd">
+<entity-mappings version="2.0" xmlns="http://java.sun.com/xml/ns/persistence/orm" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://java.sun.com/xml/ns/persistence/orm orm_2_0.xsd">
     <description>Merge Relationships Test Model Instance Document</description>
     <package>org.eclipse.persistence.testing.models.jpa.xml.merge.relationships</package>
     <access>PROPERTY</access>
@@ -13,7 +13,7 @@
     <named-query name="findAllXMLMergeItemsByName">
         <query>SELECT OBJECT(item) FROM XMLMergeItem item WHERE item.name = ?1</query>
     </named-query>
-    <entity name="XMLMergeCustomer" class="Customer">
+    <entity name="XMLMergeCustomer" class="Customer" access="PROPERTY">
         <table-generator name="XML_MERGE_CUSTOMER_TABLE_GENERATOR" table="CMP3_XML_MERGE_CUSTOMER_SEQ" pk-column-name="SEQ_NAME" value-column-name="SEQ_COUNT" pk-column-value="CUST_SEQ"/>
         <exclude-default-listeners/>
         <exclude-superclass-listeners/>
@@ -24,9 +24,6 @@
             <basic name="name">
                 <column name="NAME"/>
             </basic>
-            <version name="version">
-                <column name="CUST_VERSION"/>
-            </version>
             <one-to-many name="orders" target-entity="Order" mapped-by="customer">
                 <cascade>
                     <cascade-persist/>
@@ -56,22 +53,22 @@
             </one-to-one>
         </attributes>
     </entity>
-    <entity name="XMLMergeItem" class="Item">
+    <entity name="XMLMergeItem" class="Item" access="FIELD">
         <table-generator name="XML_MERGE_ITEM_TABLE_GENERATOR" table="CMP3_XML_MERGE_CUSTOMER_SEQ" pk-column-name="SEQ_NAME" value-column-name="SEQ_COUNT" pk-column-value="ITEM_SEQ"/>
         <exclude-default-listeners/>
         <exclude-superclass-listeners/>
         <attributes>
             <basic name="name"/>
-            <basic name="description"/>
-            <basic name="image">
+            <basic name="description" access="PROPERTY"/>
+            <basic name="image" access="PROPERTY">
                 <column name="IMAGE"/>
                 <lob/>
             </basic>
             <version name="version">
                 <column name="ITEM_VERSION"/>
             </version>
-            <one-to-one name="order" fetch="LAZY" mapped-by="item"/>
-            <many-to-many name="partsLists" target-entity="PartsList" mapped-by="items"/>
+            <one-to-one name="order" fetch="LAZY" mapped-by="item" access="PROPERTY"/>
+            <many-to-many name="partsLists" target-entity="PartsList" mapped-by="items" access="PROPERTY"/>
         </attributes>
     </entity>
     <entity name="XMLMergePartsList" class="PartsList">

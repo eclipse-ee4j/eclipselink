@@ -682,6 +682,17 @@ public class DirectMapMapping extends DirectCollectionMapping {
     }
 
     /**
+     * ADVANCED:
+     * Set the class type of the field value.
+     * This can be used if field value differs from the object value,
+     * has specific typing requirements such as usage of java.sql.Blob or NChar.
+     * This must be called after the field name has been set.
+     */
+    public void setDirectKeyFieldClassification(Class fieldType) {
+        getDirectKeyField().setType(fieldType);
+    }
+    
+    /**
      * PUBLIC:
      * Set the direct key field name in the reference table.
      * This is the field that the primitive data value of the Map key is stored in.

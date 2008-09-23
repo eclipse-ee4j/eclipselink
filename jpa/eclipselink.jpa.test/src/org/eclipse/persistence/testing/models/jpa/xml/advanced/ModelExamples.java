@@ -9,6 +9,8 @@
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
+ *     09/23/2008-1.1 Guy Pelletier 
+ *       - 241651: JPA 2.0 Access Type support
  ******************************************************************************/
 
 
@@ -20,8 +22,8 @@ public class ModelExamples  {
 
      public static Employee employeeExample1(){
         Employee emp = new Employee();
-        emp.setFirstName("Brady");
-        emp.setLastName("Bowaster");
+        emp.setGivenName("Brady");
+        emp.setFamilyName("Bowaster");
         emp.setPeriod(new EmploymentPeriod());
         emp.getPeriod().setStartDate(new Date(System.currentTimeMillis()-1000000));
         emp.getPeriod().setEndDate(new Date(System.currentTimeMillis()+1000000));
@@ -31,8 +33,8 @@ public class ModelExamples  {
 
     public static Employee employeeExample2(){
         Employee emp = new Employee();
-        emp.setFirstName("Sassly");
-        emp.setLastName("Soosly");
+        emp.setGivenName("Sassly");
+        emp.setFamilyName("Soosly");
         emp.setPeriod(new EmploymentPeriod());
         emp.getPeriod().setStartDate(new Date(System.currentTimeMillis()-3000000));
         emp.getPeriod().setEndDate(new Date(System.currentTimeMillis()-10000));
@@ -42,8 +44,8 @@ public class ModelExamples  {
     
     public static Employee employeeExample3(){
         Employee emp = new Employee();
-        emp.setFirstName("Lacy");
-        emp.setLastName("Lowry");
+        emp.setGivenName("Lacy");
+        emp.setFamilyName("Lowry");
         emp.setPeriod(new EmploymentPeriod());
         emp.getPeriod().setStartDate(new Date(System.currentTimeMillis()-48000000));
         emp.getPeriod().setEndDate(new Date(System.currentTimeMillis()+10000000));
@@ -53,8 +55,8 @@ public class ModelExamples  {
     
     public static Employee employeeExample4(){
         Employee emp = new Employee();
-        emp.setFirstName("Ralf");
-        emp.setLastName("Guedder");
+        emp.setGivenName("Ralf");
+        emp.setFamilyName("Guedder");
         emp.setPeriod(new EmploymentPeriod());
         emp.getPeriod().setStartDate(new Date(System.currentTimeMillis()-15000000));
         emp.getPeriod().setEndDate(new Date(System.currentTimeMillis()+15000000));

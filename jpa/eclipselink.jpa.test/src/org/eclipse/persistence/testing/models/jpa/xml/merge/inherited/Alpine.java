@@ -9,6 +9,8 @@
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
+ *     09/23/2008-1.1 Guy Pelletier 
+ *       - 241651: JPA 2.0 Access Type support
  ******************************************************************************/  
 package org.eclipse.persistence.testing.models.jpa.xml.merge.inherited;
 
@@ -19,12 +21,22 @@ import javax.persistence.PrePersist;
 import javax.persistence.Transient;
 import static javax.persistence.TemporalType.DATE;
 
+/**
+ * This class is mapped in:
+ * resource/eclipselink-ddl-generation-model/merge-inherited-beers.xml
+ */
 public class Alpine extends Beer  {
     public enum Classification { STRONG, BITTER, SWEET }
     
+    // Overidden in XML
+    @Column(name="OVERRIDDEN_IN_XML")
+    @Temporal(DATE)
     private Date bestBeforeDate;
+    
     private Classification classification;
-    @Transient private String localTransientString;
+    
+    @Transient 
+    private String localTransientString;
     
     public static int ALPINE_PRE_PERSIST_COUNT = 0;
     
@@ -35,32 +47,28 @@ public class Alpine extends Beer  {
         ALPINE_PRE_PERSIST_COUNT++;
     }
     
-    // Overidden in XML
-    @Column(name="BB_DATE")
-    @Temporal(DATE)
     public Date getBestBeforeDate() {
         return bestBeforeDate;
     }
     
-    // This annotation should be valid and the property should not be persisted
-    public String getLocalTransientString() {
-        return localTransientString;
-    }
-
     public Classification getClassification() {
         return classification;    
+    }
+    
+    public String getLocalTransientString() {
+        return localTransientString;
     }
 
     public void setBestBeforeDate(Date bestBeforeDate) {
         this.bestBeforeDate = bestBeforeDate;
     }
     
-    public void setLocalTransientString(String localTransientString) {
-        this.localTransientString=localTransientString;
-    }
-
     public void setClassification(Classification classification) {
         this.classification = classification;
+    }
+    
+    public void setLocalTransientString(String localTransientString) {
+        this.localTransientString=localTransientString;
     }
     
     public boolean equals(Object anotherAlpine) {

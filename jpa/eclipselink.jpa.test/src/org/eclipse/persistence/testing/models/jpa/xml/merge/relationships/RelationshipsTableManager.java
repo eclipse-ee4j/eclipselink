@@ -9,6 +9,8 @@
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
+ *     09/23/2008-1.1 Guy Pelletier 
+ *       - 241651: JPA 2.0 Access Type support
  ******************************************************************************/  
 package org.eclipse.persistence.testing.models.jpa.xml.merge.relationships;
 
@@ -102,7 +104,7 @@ public class RelationshipsTableManager extends TableCreator {
         table.addField(fieldDESCRIPTION);
 
         FieldDefinition fieldITEM_ID = new FieldDefinition();
-        fieldITEM_ID.setName("ITEM_ID");
+        fieldITEM_ID.setName("ID");
         fieldITEM_ID.setTypeName("NUMBER");
         fieldITEM_ID.setSize(15);
         fieldITEM_ID.setSubSize(0);
@@ -166,7 +168,7 @@ public class RelationshipsTableManager extends TableCreator {
         fieldITEM_ID.setIsIdentity(false);
         fieldITEM_ID.setUnique(false);
         fieldITEM_ID.setShouldAllowNull(true);
-        fieldITEM_ID.setForeignKeyFieldName("CMP3_XML_MERGE_ITEM.ITEM_ID");
+        fieldITEM_ID.setForeignKeyFieldName("CMP3_XML_MERGE_ITEM.ID");
         table.addField(fieldITEM_ID);
 
         FieldDefinition fieldORDER_ID = new FieldDefinition();
@@ -257,7 +259,7 @@ public class RelationshipsTableManager extends TableCreator {
         field.setIsPrimaryKey(true );
         field.setUnique(false );
         field.setIsIdentity(false );
-        field.setForeignKeyFieldName("CMP3_XML_MERGE_ITEM.ITEM_ID");
+        field.setForeignKeyFieldName("CMP3_XML_MERGE_ITEM.ID");
         table.addField(field);
     
         // SECTION: FIELD

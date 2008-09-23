@@ -9,6 +9,8 @@
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
+ *     09/23/2008-1.1 Guy Pelletier 
+ *       - 241651: JPA 2.0 Access Type support
  ******************************************************************************/
 package org.eclipse.persistence.testing.models.jpa.xml.advanced;
 
@@ -208,8 +210,8 @@ public class EmployeePopulator {
         Employee employee = createEmployee();
 
         try {
-            employee.setFirstName("Bob");
-            employee.setLastName("Smith");
+            employee.setGivenName("Bob");
+            employee.setFamilyName("Smith");
             //employee.setMale();
             employee.setSalary(35000);
             employee.setPeriod(employmentPeriodExample1());
@@ -229,8 +231,8 @@ public class EmployeePopulator {
         Employee employee = createEmployee();
 
         try {
-            employee.setFirstName("Jill");
-            employee.setLastName("May");
+            employee.setGivenName("Jill");
+            employee.setFamilyName("May");
             //employee.setFemale();
             employee.setPeriod(employmentPeriodExample10());
             employee.setAddress(addressExample10());
@@ -249,8 +251,8 @@ public class EmployeePopulator {
         Employee employee = createEmployee();
 
         try {
-            employee.setFirstName("Sarah-loo");
-            employee.setLastName("Smitty");
+            employee.setGivenName("Sarah-loo");
+            employee.setFamilyName("Smitty");
             //employee.setFemale();
             employee.setPeriod(employmentPeriodExample11());
             employee.setAddress(addressExample11());
@@ -270,8 +272,8 @@ public class EmployeePopulator {
         Employee employee = createEmployee();
 
         try {
-            employee.setFirstName("Jim-bob");
-            employee.setLastName("Jefferson");
+            employee.setGivenName("Jim-bob");
+            employee.setFamilyName("Jefferson");
             //employee.setMale();
             employee.setPeriod(employmentPeriodExample12());
             employee.setAddress(addressExample12());
@@ -289,8 +291,8 @@ public class EmployeePopulator {
         Employee employee = createEmployee();
 
         try {
-            employee.setFirstName("SquareRoot");
-            employee.setLastName("TestCase1");
+            employee.setGivenName("SquareRoot");
+            employee.setFamilyName("TestCase1");
             employee.setSalary(36);
             employee.setPeriod(employmentPeriodExample1());
             employee.setAddress(addressExample1());
@@ -307,8 +309,8 @@ public class EmployeePopulator {
         Employee employee = createEmployee();
 
         try {
-            employee.setFirstName("SquareRoot");
-            employee.setLastName("TestCase2");
+            employee.setGivenName("SquareRoot");
+            employee.setFamilyName("TestCase2");
             employee.setSalary(49);
             employee.setPeriod(employmentPeriodExample1());
             employee.setAddress(addressExample1());
@@ -326,8 +328,8 @@ public class EmployeePopulator {
         Employee employee = createEmployee();
 
         try {
-            employee.setFirstName("John");
-            employee.setLastName("Way");
+            employee.setGivenName("John");
+            employee.setFamilyName("Way");
             //employee.setMale();
             employee.setSalary(53000);
             startCalendar.set(1970, 0, 1, 8, 0, 0);
@@ -352,8 +354,8 @@ public class EmployeePopulator {
         Employee employee = createEmployee();
 
         try {
-            employee.setFirstName("Charles");
-            employee.setLastName("Chanley");
+            employee.setGivenName("Charles");
+            employee.setFamilyName("Chanley");
             //employee.setMale();
             employee.setSalary(43000);
             startCalendar.set(1970, 0, 1, 7, 0, 0);
@@ -377,8 +379,8 @@ public class EmployeePopulator {
         Employee employee = createEmployee();
 
         try {
-            employee.setFirstName("Emanual");
-            employee.setLastName("Smith");
+            employee.setGivenName("Emanual");
+            employee.setFamilyName("Smith");
             //employee.setMale();
             employee.setSalary(49631);
             startCalendar.set(1970, 0, 1, 6, 45, 0);
@@ -404,8 +406,8 @@ public class EmployeePopulator {
         Employee employee = createEmployee();
 
         try {
-            employee.setFirstName("Sarah");
-            employee.setLastName("Way");
+            employee.setGivenName("Sarah");
+            employee.setFamilyName("Way");
             //employee.setFemale();
             employee.setSalary(87000);
             startCalendar.set(1970, 0, 1, 12, 0, 0);
@@ -430,8 +432,8 @@ public class EmployeePopulator {
         Employee employee = createEmployee();
 
         try {
-            employee.setFirstName("Marcus");
-            employee.setLastName("Saunders");
+            employee.setGivenName("Marcus");
+            employee.setFamilyName("Saunders");
             //employee.setMale();
             employee.setSalary(54300);
             employee.setPeriod(employmentPeriodExample3());
@@ -452,8 +454,8 @@ public class EmployeePopulator {
         Employee employee = createEmployee();
 
         try {
-            employee.setFirstName("Nancy");
-            employee.setLastName("White");
+            employee.setGivenName("Nancy");
+            employee.setFamilyName("White");
             //employee.setFemale();
             employee.setSalary(31000);
             employee.setPeriod(employmentPeriodExample7());
@@ -472,8 +474,8 @@ public class EmployeePopulator {
         Employee employee = createEmployee();
 
         try {
-            employee.setFirstName("Fred");
-            employee.setLastName("Jones");
+            employee.setGivenName("Fred");
+            employee.setFamilyName("Jones");
             //employee.setMale();
             employee.setSalary(500000);
             employee.setPeriod(employmentPeriodExample8());
@@ -493,8 +495,8 @@ public class EmployeePopulator {
         Employee employee = createEmployee();
 
         try {
-            employee.setFirstName("Betty");
-            employee.setLastName("Jones");
+            employee.setGivenName("Betty");
+            employee.setFamilyName("Jones");
             //employee.setFemale();
             employee.setSalary(500001);
             startCalendar.set(1970, 0, 1, 22, 0, 0);

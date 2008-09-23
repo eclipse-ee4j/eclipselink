@@ -13,7 +13,9 @@
  *     05/23/2008-1.0M8 Guy Pelletier 
  *       - 211330: Add attributes-complete support to the EclipseLink-ORM.XML Schema
  *     06/20/2008-1.0 Guy Pelletier 
- *       - 232975: Failure when attribute type is generic  
+ *       - 232975: Failure when attribute type is generic
+ *     09/23/2008-1.1 Guy Pelletier 
+ *       - 241651: JPA 2.0 Access Type support
  ******************************************************************************/
 package org.eclipse.persistence.internal.jpa.metadata.accessors.objects;
 
@@ -29,6 +31,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import javax.persistence.Access;
+import javax.persistence.AccessType;
 import javax.persistence.Basic;
 import javax.persistence.Embeddable;
 import javax.persistence.Embedded;
@@ -49,6 +53,7 @@ import org.eclipse.persistence.annotations.ReadTransformer;
 import org.eclipse.persistence.annotations.VariableOneToOne;
 import org.eclipse.persistence.annotations.WriteTransformer;
 import org.eclipse.persistence.annotations.WriteTransformers;
+import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.indirection.ValueHolderInterface;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataDescriptor;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataLogger;
@@ -292,7 +297,7 @@ public class MetadataAnnotatedElement extends MetadataAccessibleObject {
      * Indicates whether the specified annotation is present on this accessible
      * object. NOTE: Calling this method directly does not take any metadata
      * complete flag into consideration. Look at the other isAnnotationPresent
-     * methods that take a descriptor. 
+     * methods that takes a descriptor. 
      */
     public boolean isAnnotationPresent(Class annotation) {
         return getAnnotation(annotation) != null;
@@ -473,6 +478,30 @@ public class MetadataAnnotatedElement extends MetadataAccessibleObject {
     
     /**
      * INTERNAL:
+     * When processing the inverse accessors to an explicit access setting,
+     * their must be an Access(FIELD) or Access(PROPERTY) present for the
+     * element to be processed. Otherwise, it is ignored.
+     */
+    protected boolean isValidPersistenceElement(boolean mustBeExplicit, AccessType explicitType, MetadataDescriptor descriptor) {
+        if (mustBeExplicit) {
+            Annotation annotation = getAnnotation(Access.class, descriptor);
+            
+            if (annotation == null) {
+                return false;
+            } else {
+                Enum access = (Enum) MetadataHelper.invokeMethod("value", annotation);
+                
+                if (! access.name().equals(explicitType.name())) {
+                    throw ValidationException.invalidExplicitAccessTypeSpecified(getAnnotatedElement(), descriptor.getJavaClass(), explicitType.name());
+                }
+            }
+        }
+        
+        return true;
+    }
+    
+    /**
+     * INTERNAL:
      * Return true if the modifiers are not transient, static or abstract.
      */
     protected boolean isValidPersistenceElement(int modifiers) {
@@ -492,7 +521,7 @@ public class MetadataAnnotatedElement extends MetadataAccessibleObject {
             if (getRawClass(descriptor).isInterface() && 
                     ! Map.class.isAssignableFrom(getRawClass(descriptor)) && 
                     ! Collection.class.isAssignableFrom(getRawClass(descriptor)) &&
-                    ! getRawClass(descriptor).equals(ValueHolderInterface.class)) {
+                    ! ValueHolderInterface.class.isAssignableFrom(getRawClass(descriptor))) {
                 getLogger().logConfigMessage(MetadataLogger.VARIABLE_ONE_TO_ONE_MAPPING, m_annotatedElement);
                 return true;
             }

@@ -11,6 +11,8 @@
  *     Oracle - initial API and implementation from Oracle TopLink
  *     05/16/2008-1.0M8 Guy Pelletier 
  *       - 218084: Implement metadata merging functionality between mapping files
+ *     09/23/2008-1.1 Guy Pelletier 
+ *       - 241651: JPA 2.0 Access Type support
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.accessors.mappings;
 
@@ -85,8 +87,7 @@ public class EmbeddedIdAccessor extends EmbeddedAccessor {
         // primary keys fields that we will eventually set on the owning 
         // descriptor metadata.
         if (getReferenceDescriptor().getMappings().isEmpty()) {
-            AccessType accessType = getReferenceDescriptor().usesPropertyAccess() ? AccessType.PROPERTY : AccessType.FIELD;
-            throw ValidationException.embeddedIdHasNoAttributes(getDescriptor().getJavaClass(), getReferenceDescriptor().getJavaClass(), accessType.name());
+            throw ValidationException.embeddedIdHasNoAttributes(getDescriptor().getJavaClass(), getReferenceDescriptor().getJavaClass(), getReferenceDescriptor().getClassAccessor().getAccess().name());
         } else {
             // Go through all our mappings, the fields from those mappings will
             // make up the composite primary key.

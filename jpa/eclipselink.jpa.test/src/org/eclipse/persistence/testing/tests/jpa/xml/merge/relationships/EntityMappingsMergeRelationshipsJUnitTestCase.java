@@ -9,9 +9,9 @@
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
+ *     09/23/2008-1.1 Guy Pelletier 
+ *       - 241651: JPA 2.0 Access Type support
  ******************************************************************************/  
-
-
 package org.eclipse.persistence.testing.tests.jpa.xml.merge.relationships;
 
 import javax.persistence.EntityManager;
@@ -164,9 +164,10 @@ public class EntityMappingsMergeRelationshipsJUnitTestCase extends JUnitTestCase
             partsLists.add(pl2);
 
             Item item = new Item();
-            item.setName("PartA");
+            item.name = "PartA";
             item.setDescription("This is part of a widget.");
             item.setImage(new byte[1024]);
+            //item.image = new byte[1024];
             item.setPartsLists(partsLists);
             em.persist(item);
             itemId = item.getItemId();

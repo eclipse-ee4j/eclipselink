@@ -13,6 +13,8 @@
  *       - 218084: Implement metadata merging functionality between mapping file
  *     05/23/2008-1.0M8 Guy Pelletier 
  *       - 211330: Add attributes-complete support to the EclipseLink-ORM.XML Schema
+ *     09/23/2008-1.1 Guy Pelletier 
+ *       - 241651: JPA 2.0 Access Type support
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.xml;
 
@@ -82,7 +84,7 @@ public class XMLEntityMappings extends ORMetadata {
     private MetadataFile m_file;
     private MetadataProject m_project;
     
-    private String m_access;
+    private Enum m_access;
     private String m_catalog;
     private String m_description; // Currently don't do anything with this.
     private String m_package;
@@ -104,7 +106,7 @@ public class XMLEntityMappings extends ORMetadata {
      * INTERNAL:
      * Used for OX mapping.
      */
-    public String getAccess() {
+    public Enum getAccess() {
         return m_access;
     }
     
@@ -410,7 +412,7 @@ public class XMLEntityMappings extends ORMetadata {
             
             // Initialize the entity with its metadata descriptor and 
             // project.
-            entity.initXMLAccessor(new MetadataClass(entityClass, this), new MetadataDescriptor(entityClass, entity), m_project);
+            entity.initXMLClassAccessor(new MetadataClass(entityClass, this), new MetadataDescriptor(entityClass, entity), m_project);
             
             if (allEntities.containsKey(entityClass.getName())) {
                 // Merge this entity with the existing one.
@@ -428,7 +430,7 @@ public class XMLEntityMappings extends ORMetadata {
             
             // Initialize the embeddable with its metadata descriptor and
             // project.
-            embeddable.initXMLAccessor(new MetadataClass(embeddableClass, this), new MetadataDescriptor(embeddableClass, embeddable), m_project);
+            embeddable.initXMLClassAccessor(new MetadataClass(embeddableClass, this), new MetadataDescriptor(embeddableClass, embeddable), m_project);
             
             if (allEmbeddables.containsKey(embeddableClass.getName())) {
                 // Merge this embeddable with the existing one.
@@ -552,17 +554,17 @@ public class XMLEntityMappings extends ORMetadata {
         
         // Set the entity-mappings access if specified.
         if (m_access != null) {
-            descriptor.setXMLAccess(m_access);
+            descriptor.setDefaultAccess(m_access);
         }
         
         // Set the entity-mappings catalog if specified.                
         if (m_catalog != null) {
-            descriptor.setXMLCatalog(m_catalog);
+            descriptor.setDefaultCatalog(m_catalog);
         }
         
         // Set the entity-mappings schema if specified.
         if (m_schema != null) {
-            descriptor.setXMLSchema(m_schema);
+            descriptor.setDefaultSchema(m_schema);
         }
     }
 
@@ -618,7 +620,7 @@ public class XMLEntityMappings extends ORMetadata {
             // Initialize the newly loaded/built mapped superclass
             MappedSuperclassAccessor mappedSuperclass = entityMappings.getMappedSuperclasses().get(0);
             Class mappedSuperclassClass = getClassForName(mappedSuperclass.getClassName());
-            mappedSuperclass.initXMLAccessor(new MetadataClass(mappedSuperclassClass, this), descriptor, m_project);
+            mappedSuperclass.initXMLClassAccessor(new MetadataClass(mappedSuperclassClass, this), descriptor, m_project);
             
             return mappedSuperclass;
         } catch (Exception e) {
@@ -631,7 +633,7 @@ public class XMLEntityMappings extends ORMetadata {
      * INTERNAL:
      * Used for OX mapping.
      */
-    public void setAccess(String access) {
+    public void setAccess(Enum access) {
         m_access = access;
     }
     

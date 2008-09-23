@@ -9,9 +9,9 @@
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
+ *     09/23/2008-1.1 Guy Pelletier 
+ *       - 241651: JPA 2.0 Access Type support
  ******************************************************************************/  
-
-
 package org.eclipse.persistence.testing.tests.jpa.xml.merge.inherited;
 
 import java.sql.Date;
@@ -97,7 +97,7 @@ public class EntityMappingsMergeInheritedJUnitTestCase extends JUnitTestCase {
             consumer.addAlpineBeerToConsume(alpine1);
 
             embeddedSerialNumber = new EmbeddedSerialNumber();
-            embeddedSerialNumber.setNumber(123456);
+            embeddedSerialNumber.number = 123456;
             embeddedSerialNumber.setBreweryCode("MOLSON");
              
             Canadian canadian1 = new Canadian();

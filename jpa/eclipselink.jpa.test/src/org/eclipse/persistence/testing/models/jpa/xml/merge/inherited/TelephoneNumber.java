@@ -9,6 +9,8 @@
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
+ *     09/23/2008-1.1 Guy Pelletier 
+ *       - 241651: JPA 2.0 Access Type support
  ******************************************************************************/  
 package org.eclipse.persistence.testing.models.jpa.xml.merge.inherited;
 
@@ -16,6 +18,9 @@ import java.io.*;
 import javax.persistence.*;
 
 /**
+ * This class is mapped in:
+ * resource/eclipselink-ddl-generation-model/merge-inherited-consumer.xml
+ * 
  * <p><b>Purpose</b>: Describes an BeerConsumers's telephone number.
  * <p><b>Description</b>: Used in a 1:M relationship from a BeerConsumer.
  */
@@ -57,7 +62,7 @@ public class TelephoneNumber extends ParentTelephoneNumber implements Serializab
     }
     
     // This component of the composite primary key is defined here, the remaining
-    // elements of the composit PK are defined in the XML mapping file.
+    // elements of the composite PK are defined in the XML mapping file.
     @Id
     @Column(name="TNUMBER")
 	public String getNumber() { 

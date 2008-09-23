@@ -9,9 +9,9 @@
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
+ *     09/23/2008-1.1 Guy Pelletier 
+ *       - 241651: JPA 2.0 Access Type support
  ******************************************************************************/  
-
-
 package org.eclipse.persistence.testing.models.jpa.xml.merge.relationships;
 
 public class RelationshipsExamples 
@@ -42,25 +42,25 @@ public class RelationshipsExamples
   }
   public static Item itemExample1(){
     Item item = new Item();
-    item.setName("item1");
+    item.name = "item1";
     item.setDescription("Item1 description");
     return item;
   }
   public static Item itemExample2(){
     Item item = new Item();
-    item.setName("item2");
+    item.name = "item2";
     item.setDescription("Item2 description");
     return item;
   }
   public static Item itemExample3(){
     Item item = new Item();
-    item.setName("item3");
+    item.name= "item3";
     item.setDescription("Item3 description");
     return item;
   }
   public static Item itemExample4(){
     Item item = new Item();
-    item.setName("item4");
+    item.name = "item4";
     item.setDescription("Item4 description");
     return item;
   }

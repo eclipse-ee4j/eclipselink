@@ -9,6 +9,8 @@
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
+ *     09/23/2008-1.1 Guy Pelletier 
+ *       - 241651: JPA 2.0 Access Type support
  ******************************************************************************/  
 package org.eclipse.persistence.testing.models.jpa.xml.advanced;
 
@@ -55,6 +57,9 @@ public class Employee implements Serializable {
 	private Integer id;
 	
 	private String firstName;
+	
+    // Currently the property annotation on an attribute should ignored in case there's orm xml.
+    @Property(name="ToBeIgnored", value="true", valueType=Boolean.class)
 	private String lastName;
 	
 	private Gender gender;
@@ -124,7 +129,7 @@ public class Employee implements Serializable {
     }
     
     public void addPhoneNumber(PhoneNumber phone) {
-        phone.setOwner(this);
+        phone.owner = this;
         getPhoneNumbers().add(phone);
     }
 
@@ -218,8 +223,6 @@ public class Employee implements Serializable {
         return id; 
     }
     
-    // Currently the property annotation on an attribute should ignored in case there's orm xml.
-    @Property(name="ToBeIgnored", value="true", valueType=Boolean.class)
     public String getLastName() { 
         return lastName; 
     }
@@ -389,7 +392,11 @@ public class Employee implements Serializable {
         this.gender = Gender.Female;
     }
     
-    public void setFirstName(String name) { 
+    // This mapping has been marked as having field access. I've therefore
+    // renamed the set method to test that the processing does not process
+    // the mapping as PROPERTY and look for an equivalent set method for the
+    // get. Otherwise a processing error will occur.
+    public void setGivenName(String name) { 
         this.firstName = name; 
     }
     
@@ -401,7 +408,11 @@ public class Employee implements Serializable {
         this.id = id; 
     }
 	
-	public void setLastName(String name) { 
+	// This mapping has been marked as having field access. I've therefore
+    // renamed the set method to test that the processing does not process
+    // the mapping as PROPERTY and look for an equivalent set method for the
+    // get. Otherwise a processing error will occur.
+	public void setFamilyName(String name) { 
         this.lastName = name; 
     }
 

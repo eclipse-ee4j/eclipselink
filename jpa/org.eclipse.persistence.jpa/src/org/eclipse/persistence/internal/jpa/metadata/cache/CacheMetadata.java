@@ -210,13 +210,13 @@ public class CacheMetadata extends ORMetadata {
         classDescriptor.setShouldDisableCacheHits(m_disableHits == null ? false : m_disableHits);
         
         // Process coordination type.
-        if (m_coordinationType == null || m_coordinationType.equals(CacheCoordinationType.SEND_OBJECT_CHANGES)) {
+        if (m_coordinationType == null || m_coordinationType.name().equals(CacheCoordinationType.SEND_OBJECT_CHANGES.name())) {
             classDescriptor.setCacheSynchronizationType(ClassDescriptor.SEND_OBJECT_CHANGES);
-        } else if (m_coordinationType.equals(CacheCoordinationType.INVALIDATE_CHANGED_OBJECTS)) {
+        } else if (m_coordinationType.name().equals(CacheCoordinationType.INVALIDATE_CHANGED_OBJECTS.name())) {
             classDescriptor.setCacheSynchronizationType(ClassDescriptor.INVALIDATE_CHANGED_OBJECTS);
-        } else if (m_coordinationType.equals(CacheCoordinationType.SEND_NEW_OBJECTS_WITH_CHANGES)) {
+        } else if (m_coordinationType.name().equals(CacheCoordinationType.SEND_NEW_OBJECTS_WITH_CHANGES.name())) {
             classDescriptor.setCacheSynchronizationType(ClassDescriptor.SEND_NEW_OBJECTS_WITH_CHANGES);
-        } else if (m_coordinationType.equals(CacheCoordinationType.NONE)) {
+        } else if (m_coordinationType.name().equals(CacheCoordinationType.NONE.name())) {
             classDescriptor.setCacheSynchronizationType(ClassDescriptor.DO_NOT_SEND_CHANGES);
         }
     }

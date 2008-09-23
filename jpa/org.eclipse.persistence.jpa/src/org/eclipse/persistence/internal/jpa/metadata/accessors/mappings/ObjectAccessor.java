@@ -11,6 +11,8 @@
  *     Oracle - initial API and implementation from Oracle TopLink
  *     05/16/2008-1.0M8 Guy Pelletier 
  *       - 218084: Implement metadata merging functionality between mapping files
+ *     09/23/2008-1.1 Guy Pelletier 
+ *       - 241651: JPA 2.0 Access Type support
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.accessors.mappings;
 
@@ -206,7 +208,7 @@ public abstract class ObjectAccessor extends RelationshipAccessor {
     
     /**
      * INTERNAL:
-     * Process the @JoinColumn(s) for the owning side of a one to one mapping.
+     * Process the join columns for the owning side of a one to one mapping.
      * The default pk and pk field names are used only with single primary key 
      * entities. The processor should never get as far as to use them with 
      * entities that have a composite primary key (validation exception will be 
@@ -223,7 +225,6 @@ public abstract class ObjectAccessor extends RelationshipAccessor {
         // the name of the referenced primary key column.
         String defaultFKFieldName = getUpperCaseAttributeName() + "_" + defaultPKFieldName;
             
-        // Join columns will come from a @JoinColumn(s).
         // Add the source foreign key fields to the mapping.
         for (JoinColumnMetadata joinColumn : processJoinColumns()) {
             DatabaseField pkField = joinColumn.getPrimaryKeyField();

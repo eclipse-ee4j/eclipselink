@@ -9,6 +9,8 @@
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
+ *     09/23/2008-1.1 Guy Pelletier 
+ *       - 241651: JPA 2.0 Access Type support
  ******************************************************************************/  
 package org.eclipse.persistence.testing.tests.jpa.xml.advanced;
 
@@ -392,8 +394,8 @@ public class EntityMappingsAdvancedJUnitTestCase extends JUnitTestCase {
         	address.setStreet("321 Crestway");
         	
             Employee employee = new Employee();
-            employee.setFirstName("Boy");
-            employee.setLastName("Pelletier");
+            employee.setGivenName("Boy");
+            employee.setFamilyName("Pelletier");
             employee.setMale();
             employee.addVisa(visa);
             employee.addAmex(amex);
@@ -455,7 +457,7 @@ public class EntityMappingsAdvancedJUnitTestCase extends JUnitTestCase {
         try {
         	Employee maleEmp = em.find(Employee.class, extendedEmployeeId);    
         	maleEmp.setFemale();
-        	maleEmp.setFirstName("Girl");
+        	maleEmp.setGivenName("Girl");
             commitTransaction(em);
                 
             // Clear cache and clear the entity manager
@@ -562,7 +564,7 @@ public class EntityMappingsAdvancedJUnitTestCase extends JUnitTestCase {
         beginTransaction(em);
         try {
             Employee emp = new Employee();
-            emp.setFirstName("NotManaged");
+            emp.setGivenName("NotManaged");
             em.refresh(emp);
             fail("entityManager.refresh(notManagedObject) didn't throw exception");
         } catch (IllegalArgumentException illegalArgumentException) {
@@ -587,7 +589,7 @@ public class EntityMappingsAdvancedJUnitTestCase extends JUnitTestCase {
             emp = (Employee)result.get(0);
         } else {
             emp = new Employee();
-            emp.setFirstName(firstName);
+            emp.setGivenName(firstName);
             // persist the Employee
             beginTransaction(em);
             try {
@@ -632,7 +634,7 @@ public class EntityMappingsAdvancedJUnitTestCase extends JUnitTestCase {
             emp = (Employee)result.get(0);
         } else {
             emp = new Employee();
-            emp.setFirstName(firstName);
+            emp.setGivenName(firstName);
             // persist the Employee
             beginTransaction(em);
             try{
@@ -675,7 +677,7 @@ public class EntityMappingsAdvancedJUnitTestCase extends JUnitTestCase {
             emp = (Employee)result.get(0);
         } else {
             emp = new Employee();
-            emp.setFirstName(firstName);
+            emp.setGivenName(firstName);
             // persist the Employee
             beginTransaction(em);
             try{
@@ -800,7 +802,7 @@ public class EntityMappingsAdvancedJUnitTestCase extends JUnitTestCase {
         int endHour = 17, endMin = 15, endSec = 45;
         String firstName = attributeName;
         Employee employee = new Employee();
-        employee.setFirstName(firstName);
+        employee.setGivenName(firstName);
         if(attributeName.equals("normalHours")) {
             employee.setStartTime(Helper.timeFromHourMinuteSecond(startHour, startMin, startSec));
             employee.setEndTime(Helper.timeFromHourMinuteSecond(endHour, endMin, endSec));
@@ -1153,8 +1155,8 @@ public class EntityMappingsAdvancedJUnitTestCase extends JUnitTestCase {
         List<Employee> employees = new ArrayList<Employee>(n);
         for(int i=0; i<n; i++) {
             Employee emp = new Employee();
-            emp.setFirstName(Integer.toString(i+1));
-            emp.setLastName(lastName);
+            emp.setGivenName(Integer.toString(i+1));
+            emp.setFamilyName(lastName);
             employees.add(emp);
             for(int j=0; j<n; j++) {
                 Dealer dealer = new Dealer();

@@ -9,11 +9,15 @@
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
+ *     09/23/2008-1.1 Guy Pelletier 
+ *       - 241651: JPA 2.0 Access Type support
  ******************************************************************************/  
-
-
 package org.eclipse.persistence.testing.models.jpa.xml.merge.inherited;
 
+/**
+ * This class is mapped in:
+ * resource/eclipselink-ddl-generation-model/merge-inherited-superclasses.xml
+ */
 public class Beverage {
     private Integer id;
     private String transientString;

@@ -13,6 +13,8 @@
  *       - 218084: Implement metadata merging functionality between mapping files
  *     05/23/2008-1.0M8 Guy Pelletier 
  *       - 211330: Add attributes-complete support to the EclipseLink-ORM.XML Schema
+ *     09/23/2008-1.1 Guy Pelletier 
+ *       - 241651: JPA 2.0 Access Type support
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata;
 
@@ -206,9 +208,9 @@ public class MetadataProject {
             XMLPersistenceUnitDefaults persistenceUnitDefaults = m_persistenceUnitMetadata.getPersistenceUnitDefaults();
             
             if (persistenceUnitDefaults != null) {
-                descriptor.setXMLAccess(persistenceUnitDefaults.getAccess());
-                descriptor.setXMLSchema(persistenceUnitDefaults.getSchema());
-                descriptor.setXMLCatalog(persistenceUnitDefaults.getCatalog());
+                descriptor.setDefaultAccess(persistenceUnitDefaults.getAccess());
+                descriptor.setDefaultSchema(persistenceUnitDefaults.getSchema());
+                descriptor.setDefaultCatalog(persistenceUnitDefaults.getCatalog());
                 descriptor.setIsCascadePersist(persistenceUnitDefaults.isCascadePersist());
             }
         }

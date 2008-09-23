@@ -9,18 +9,26 @@
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
+ *     09/23/2008-1.1 Guy Pelletier 
+ *       - 241651: JPA 2.0 Access Type support
  ******************************************************************************/  
 package org.eclipse.persistence.testing.models.jpa.xml.merge.inherited;
 
 import java.util.Date;
 import javax.persistence.*;
 
-// The table annotation is overidden in XML, remaining annotation is used
+/**
+ * This class is mapped in:
+ * resource/eclipselink-ddl-generation-model/merge-inherited-beers.xml
+ */
 @Table(name="BIGBAD_CANADIAN")
 public class Canadian extends Beer {
     public enum Flavor { LAGER, LIGHT, ICE, DRY }
 
+    @Basic
     private Flavor flavor;
+    
+    @Basic
     private Date bornOnDate;
     
     public Canadian() {}
@@ -29,7 +37,6 @@ public class Canadian extends Beer {
         return bornOnDate;
     }
     
-    @Basic
     public Flavor getFlavor() {
         return flavor;
     }

@@ -19,15 +19,20 @@
  *       - 232975: Failure when attribute type is generic
  *     07/15/2008-1.0.1 Guy Pelletier 
  *       - 240679: MappedSuperclass Id not picked when on get() method accessor
+ *     09/23/2008-1.1 Guy Pelletier 
+ *       - 241651: JPA 2.0 Access Type support
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata;
 
 import java.lang.reflect.Type;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import javax.persistence.AccessType;
 
 import org.eclipse.persistence.annotations.ExistenceType;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
@@ -70,12 +75,8 @@ import org.eclipse.persistence.mappings.DatabaseMapping;
  * @since TopLink EJB 3.0 Reference Implementation
  */
 public class MetadataDescriptor {
-    // Access types
-    private static final String FIELD = "FIELD";
-    private static final String PROPERTY = "PROPERTY";
-    
     private Class m_javaClass;
-    private ClassAccessor m_accessor;
+    private ClassAccessor m_classAccessor;
     private ClassDescriptor m_descriptor;
     private DatabaseTable m_primaryTable;
     private Enum m_existenceChecking;
@@ -96,12 +97,15 @@ public class MetadataDescriptor {
     private boolean m_hasCustomizer;
     private boolean m_hasReadOnly;
     private boolean m_hasCopyPolicy;
-    private boolean m_usesPropertyAccess;
     private Boolean m_usesCascadedOptimisticLocking;
     
-    private String m_xmlAccess;
-    private String m_xmlSchema;
-    private String m_xmlCatalog;
+    // This is the default access type for the class accessor of this 
+    // descriptor. The default access type is needed for those embeddables and 
+    // mapped superclasses that are 'owned' or rely on this value for their own 
+    // processing. It does not reflect an explicit access type.
+    private Enum m_defaultAccess; 
+    private String m_defaultSchema;
+    private String m_defaultCatalog;
     private String m_embeddedIdAttributeName;
     
     private List<String> m_idAttributeNames;
@@ -124,9 +128,9 @@ public class MetadataDescriptor {
      * INTERNAL: 
      */
     public MetadataDescriptor(Class javaClass) {
-        m_xmlAccess = null;
-        m_xmlSchema = null;
-        m_xmlCatalog = null;
+        m_defaultAccess = null;
+        m_defaultSchema = null;
+        m_defaultCatalog = null;
         
         m_inheritanceRootDescriptor = null;
         m_inheritanceParentDescriptor = null;
@@ -141,7 +145,6 @@ public class MetadataDescriptor {
         m_isCascadePersist = false;
         m_ignoreAnnotations = false;
         m_ignoreDefaultMappings = false;
-        m_usesPropertyAccess = false;
         
         m_idAttributeNames = new ArrayList<String>();
         m_orderByAttributeNames = new ArrayList<String>();
@@ -178,9 +181,13 @@ public class MetadataDescriptor {
     
     /**
      * INTERNAL:
+     * We must check for null since buildAccessor from ClassAccessor may return
+     * a null if ignore default mappings is set to true.
      */
     public void addAccessor(MappingAccessor accessor) {
-        m_accessors.put(accessor.getAttributeName(), accessor);
+        if (accessor != null) {
+            m_accessors.put(accessor.getAttributeName(), accessor);
+        }
     }
     
     /**
@@ -339,7 +346,7 @@ public class MetadataDescriptor {
             }
         }
         
-        m_accessor.getProject().addAccessorWithRelationships(m_accessor);
+        m_classAccessor.getProject().addAccessorWithRelationships(m_classAccessor);
     }
     
     /**
@@ -381,6 +388,14 @@ public class MetadataDescriptor {
         }
         
         return accessor;
+    }
+    
+    /**
+     * INTERNAL:
+     * Return the collection of mapping accessors for this descriptor.
+     */
+    public Collection<MappingAccessor> getAccessors() {
+        return m_accessors.values();
     }
     
     /**
@@ -433,7 +448,7 @@ public class MetadataDescriptor {
      * INTERNAL:
      */
     public ClassAccessor getClassAccessor() {
-        return m_accessor;
+        return m_classAccessor;
     }
     
     /**
@@ -441,6 +456,27 @@ public class MetadataDescriptor {
      */
     public ClassDescriptor getClassDescriptor() {
         return m_descriptor;
+    }
+    
+    /**
+     * INTERNAL:
+     */
+    public Enum getDefaultAccess() {
+        return m_defaultAccess;
+    }
+    
+    /**
+     * INTERNAL:
+     */
+    public String getDefaultCatalog() {
+        return m_defaultCatalog;
+    }
+    
+    /**
+     * INTERNAL:
+     */
+    public String getDefaultSchema() {
+        return m_defaultSchema;
     }
     
     /**
@@ -801,28 +837,7 @@ public class MetadataDescriptor {
     
     /**
      * INTERNAL:
-     */
-    public String getXMLAccess() {
-        return m_xmlAccess;
-    }
-    
-    /**
-     * INTERNAL:
-     */
-    public String getXMLCatalog() {
-        return m_xmlCatalog;
-    }
-    
-    /**
-     * INTERNAL:
-     */
-    public String getXMLSchema() {
-        return m_xmlSchema;
-    }
-    
-    /**
-     * INTERNAL:
-     * Returns true if we already have (processed) and accessor for the given
+     * Returns true if we already have (processed) an accessor for the given
      * attribute name.
      */
     public boolean hasAccessorFor(String attributeName) {
@@ -1034,27 +1049,57 @@ public class MetadataDescriptor {
     
     /**
      * INTERNAL:
-     * Indicates that we found an XML field access type for this metadata
-     * descriptor.
-     */
-    public boolean isXmlFieldAccess() {
-        return m_xmlAccess != null && m_xmlAccess.equals(FIELD);
-    }
-    
-    /**
-     * INTERNAL:
-     * Indicates that we found an XML property access type for this metadata
-     * descriptor.
-     */
-    public boolean isXmlPropertyAccess() {
-        return m_xmlAccess != null && m_xmlAccess.equals(PROPERTY);
-    }
-    
-    /**
-     * INTERNAL:
      */
     public boolean pkClassWasNotValidated() {
         return ! m_pkClassIDs.isEmpty();
+    }
+    
+    /**
+     * INTERNAL:
+     * Process this descriptos accessors. Relationship accessors will be stored 
+     * for later processing.
+     */
+    public void processAccessors(MetadataDescriptor owningDescriptor) {
+        for (MappingAccessor accessor : m_accessors.values()) {
+            if (! accessor.isProcessed()) {
+                // The actual owning descriptor for this class accessor. In most
+                // cases this is the same as our descriptor. However in an
+                // embeddable class accessor, it will be the owning entities
+                // descriptor. This was introduced to support nesting 
+                // embeddables to the nth level.
+                accessor.setOwningDescriptor(owningDescriptor);
+        
+                // Process any converters on this accessor.
+                accessor.processConverters();
+            
+                if (accessor.isBasicCollection()) {
+                    // BasicCollection and BasicMaps rely on a primary key
+                    // having been processed before hand.
+                    addBasicCollectionAccessor(accessor);
+                } else if (accessor.isRelationship()) {
+                    // Store the relationship accessors for later processing.
+                    // They get processed in stage 2, that is, MetadataProject
+                    // processing.
+                    addRelationshipAccessor(accessor);
+                } else {
+                    accessor.process();
+                    accessor.setIsProcessed();
+                }
+            }
+        }
+    }
+    
+    /**
+     * INTERNAL:
+     * Process any BasicCollection annotation and/or BasicMap annotation that 
+     * were found. They are not processed till after an id has been processed 
+     * since they rely on one to map the collection table.
+     */
+    public void processBasicCollectionAccessors() {
+        for (BasicCollectionAccessor accessor : m_basicCollectionAccessors) {
+            accessor.process();
+            accessor.setIsProcessed();
+        }
     }
     
     /**
@@ -1078,7 +1123,7 @@ public class MetadataDescriptor {
      * INTERNAL:
      */
     public void setClassAccessor(ClassAccessor accessor) {
-        m_accessor = accessor;
+        m_classAccessor = accessor;
         accessor.setDescriptor(this);
     }
     
@@ -1087,6 +1132,27 @@ public class MetadataDescriptor {
      */
     public void setClassIndicatorField(DatabaseField field) {
         m_descriptor.getInheritancePolicy().setClassIndicatorField(field);    
+    }
+    
+    /**
+     * INTERNAL:
+     */
+    public void setDefaultAccess(Enum defaultAccess) {
+        m_defaultAccess = defaultAccess;
+    }
+    
+    /**
+     * INTERNAL:
+     */
+    public void setDefaultCatalog(String defaultCatalog) {
+        m_defaultCatalog = defaultCatalog;
+    }
+    
+    /**
+     * INTERNAL:
+     */
+    public void setDefaultSchema(String defaultSchema) {
+        m_defaultSchema = defaultSchema;
     }
     
     /**
@@ -1331,39 +1397,19 @@ public class MetadataDescriptor {
     
     /**
      * INTERNAL:
-     * Set the access-type while processing a class like Embeddable as it 
-     * inherits the access-type from the referencing entity.
-     */
-    public void setUsesPropertyAccess(boolean usesPropertyAccess) {
-        m_usesPropertyAccess = usesPropertyAccess;
-    }
-    
-    /**
-     * INTERNAL:
-     */
-    public void setXMLAccess(String xmlAccess) {
-        m_xmlAccess = xmlAccess;
-    }
-    
-    /**
-     * INTERNAL:
-     */
-    public void setXMLCatalog(String xmlCatalog) {
-        m_xmlCatalog = xmlCatalog;
-    }
-    
-    /**
-     * INTERNAL:
-     */
-    public void setXMLSchema(String xmlSchema) {
-        m_xmlSchema = xmlSchema;
-    }
-    
-    /**
-     * INTERNAL:
      */
     public boolean usesCascadedOptimisticLocking() {
         return m_usesCascadedOptimisticLocking != null && m_usesCascadedOptimisticLocking.booleanValue();
+    }
+    
+    /**
+     * INTERNAL:
+     * Returns true if this class uses default property access. All access 
+     * discovery and processing should have been performed before calling 
+     * this method and a default access type should have been set. 
+     */
+    public boolean usesDefaultPropertyAccess() {
+        return m_defaultAccess.name().equals(AccessType.PROPERTY.name());
     }
     
     /**
@@ -1380,14 +1426,6 @@ public class MetadataDescriptor {
      */
     public boolean usesOptimisticLocking() {
         return m_descriptor.usesOptimisticLocking();
-    }
-    
-    /**
-     * INTERNAL:
-     * Returns true if this class uses property access.
-     */
-    public boolean usesPropertyAccess() {
-        return m_usesPropertyAccess;
     }
     
     /**

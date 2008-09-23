@@ -13,6 +13,8 @@
  *       - 218084: Implement metadata merging functionality between mapping files
  *     06/20/2008-1.0 Guy Pelletier 
  *       - 232975: Failure when attribute type is generic
+ *     09/23/2008-1.1 Guy Pelletier 
+ *       - 241651: JPA 2.0 Access Type support
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.accessors.mappings;
 
@@ -262,9 +264,9 @@ public class BasicMapAccessor extends BasicCollectionAccessor {
     @Override
     public void setFieldClassification(DatabaseMapping mapping, Class classification) {
         if (m_keyContextProcessing) {
-            ((DirectMapMapping) mapping).setDirectFieldClassification(classification);
+            ((DirectMapMapping) mapping).setDirectKeyFieldClassification(classification);
         } else {
-            ((DirectMapMapping) mapping).setDirectFieldClassification(classification);
+            super.setFieldClassification(mapping, classification);
         }
     }
     

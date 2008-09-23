@@ -32,11 +32,11 @@
                 <convert>String2String</convert>
                 <property name="attributeName" value="id"/>
             </id>
-            <basic name="firstName">
+            <basic name="firstName" access="FIELD">
                 <column name="F_NAME"/>
                 <property name="attributeName" value="firstName"/>
             </basic>
-            <basic name="lastName">
+            <basic name="lastName" access="FIELD">
                 <column name="L_NAME"/>
                 <property name="attributeName" value="lastName"/>
                 <property name="BooleanProperty" value="true" value-type="java.lang.Boolean"/>

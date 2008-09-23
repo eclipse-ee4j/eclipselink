@@ -11,10 +11,14 @@
  *     Oracle - initial API and implementation from Oracle TopLink
  *     05/16/2008-1.0M8 Guy Pelletier 
  *       - 218084: Implement metadata merging functionality between mapping files
+ *     09/23/2008-1.1 Guy Pelletier 
+ *       - 241651: JPA 2.0 Access Type support
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.accessors.objects;
 
 import java.lang.reflect.Field;
+
+import javax.persistence.AccessType;
 
 import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataDescriptor;
@@ -61,10 +65,17 @@ public class MetadataField extends MetadataAnnotatedElement {
     /**
      * INTERNAL:
      * Return true is this field is a valid persistence field. This method
-     * will validate against any declared annotations on the field. 
+     * will validate against any declared annotations on the field. If the 
+     * mustBeExplicit flag is true, then we are processing the inverse of an 
+     * explicit access setting and the field must have an Access(FIELD) 
+     * setting to be processed. Otherwise, it is ignored.
      */
-    public boolean isValidPersistenceField(MetadataDescriptor descriptor) {
-        return isValidPersistenceField(descriptor, hasDeclaredAnnotations(descriptor));
+    public boolean isValidPersistenceField(boolean mustBeExplicit, MetadataDescriptor descriptor) {
+        if (isValidPersistenceElement(mustBeExplicit, AccessType.FIELD, descriptor)) {
+            return isValidPersistenceField(descriptor, hasDeclaredAnnotations(descriptor)); 
+        }
+
+        return false;
     }
     
     /**
