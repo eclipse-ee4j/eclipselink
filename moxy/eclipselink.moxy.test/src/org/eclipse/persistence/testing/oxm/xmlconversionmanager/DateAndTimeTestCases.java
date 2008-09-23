@@ -69,6 +69,18 @@ public class DateAndTimeTestCases extends OXTestCase {
     // 1975-02
     private long CONTROL_G_YEAR_MONTH = 160462800000L;
 
+    // -2006-01-01T05:00:00.001
+    private long CONTROL_DATE_TIME_NEGATIVE_YEAR_1MS = -125471876399999L;
+
+    // 1965-01-01T05:00:00.001
+    private long CONTROL_DATE_TIME_BEFORE_EPOCH_1MS = -157748399999L;
+
+    // -2006-01-01T05:00:00
+    private long CONTROL_DATE_TIME_NEGATIVE_YEAR = -125471876400000L;
+
+    // 1965-01-01T05:00:00
+    private long CONTROL_DATE_TIME_BEFORE_EPOCH = -157748400000L;
+
     // XML Conversion Manager
     private XMLConversionManager xcm;
 
@@ -172,6 +184,24 @@ public class DateAndTimeTestCases extends OXTestCase {
         this.assertEquals(control, test);
     }
 
+    public void testUtilDateToString_dateTime_before_epoch() {
+        java.util.Date utilDate = new java.util.Date(CONTROL_DATE_TIME_BEFORE_EPOCH_1MS);
+        // the default timezone will be applied such that the returned datetime 
+        // should be 5 hours earlier
+        String control = "1965-01-01T00:00:00.001";
+        String test = (String)xcm.convertObject(utilDate, String.class, XMLConstants.DATE_TIME_QNAME);
+        this.assertEquals(control, test);
+    }
+
+    public void testUtilDateToString_dateTime_negative_year() {
+        java.util.Date utilDate = new java.util.Date(CONTROL_DATE_TIME_NEGATIVE_YEAR_1MS);
+        // the default timezone will be applied such that the returned datetime 
+        // should be 5 hours earlier
+        String control = "-2006-01-01T00:00:00.001";
+        String test = (String)xcm.convertObject(utilDate, String.class, XMLConstants.DATE_TIME_QNAME);
+        this.assertEquals(control, test);
+    }
+    
     public void testUtilDateToString_date() {
         java.util.Date utilDate = new java.util.Date(CONTROL_DATE_TIME_0MS);
         String control = "1975-02-21";
@@ -2029,6 +2059,25 @@ public class DateAndTimeTestCases extends OXTestCase {
         this.assertEquals(control, test);
     }
 
+    public void testTimestampToString_dateTime_negative_year_123456789ns() {
+        java.sql.Timestamp timestamp = new java.sql.Timestamp(CONTROL_DATE_TIME_NEGATIVE_YEAR);
+        timestamp.setNanos(123456789);
+        // the default timezone will be applied such that the returned timestamp 
+        // should be 5 hours earlier
+        String control = "-2006-01-01T00:00:00.123456789";
+        String test = (String)xcm.convertObject(timestamp, String.class, XMLConstants.DATE_TIME_QNAME);
+        this.assertEquals(control, test);
+    }
+
+    public void testTimestampToString_dateTime_before_epoch_123456789ns() {
+        java.sql.Timestamp timestamp = new java.sql.Timestamp(CONTROL_DATE_TIME_BEFORE_EPOCH);
+        timestamp.setNanos(123456789);
+        // the default timezone will be applied such that the returned timestamp 
+        // should be 5 hours earlier
+        String control = "1965-01-01T00:00:00.123456789";
+        String test = (String)xcm.convertObject(timestamp, String.class, XMLConstants.DATE_TIME_QNAME);
+        this.assertEquals(control, test);
+    }
     public void testTimestampToString_time_null() {
         java.sql.Timestamp timestamp = null;
         String control = null;

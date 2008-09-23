@@ -17,6 +17,7 @@ import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.StringTokenizer;
@@ -70,6 +71,10 @@ public class XMLConversionManager extends ConversionManager implements TimeZoneH
     protected boolean timeZoneQualified;
     protected TimeZone timeZone;
 
+    protected static int TOTAL_MS_DIGITS = 3;  // total digits for millisecond formatting
+    protected static int TOTAL_NS_DIGITS = 9;  // total digits for nanosecond  formatting
+    protected static long YEAR_ONE_AD_TIME = -62135769600000L; // time of 1 AD
+    
     public XMLConversionManager() {
         super();
         buildFormatters(this);
@@ -499,27 +504,11 @@ public class XMLConversionManager extends ConversionManager implements TimeZoneH
             return dateFormatter.get().format(sourceCalendar.getTime());
         } else if (!(sourceCalendar.isSet(Calendar.YEAR) || sourceCalendar.isSet(Calendar.MONTH) || sourceCalendar.isSet(Calendar.DATE))) {
             String string = timeFormatter.get().format(sourceCalendar.getTime());
-            int ms = (int) (sourceCalendar.getTimeInMillis() % 1000);
-            if (0 == ms) {
-                string += ".0";
-            } else {
-                string += ('.' + Helper.buildZeroPrefixAndTruncTrailZeros(ms, 3));
-            }
+            string = appendMillis(string, sourceCalendar.getTimeInMillis());
             return appendTimeZone(string);
         } else {
             return stringFromDate(sourceCalendar.getTime());
         }
-    }
-
-    private String stringFromDate(java.util.Date sourceDate) {
-        String string = dateTimeFormatter.get().format(sourceDate);
-        int ms = (int) (sourceDate.getTime() % 1000);
-        if (0 == ms) {
-            string += ".0";
-        } else {
-            string += ('.' + Helper.buildZeroPrefixAndTruncTrailZeros(ms, 3));
-        }
-        return appendTimeZone(string);
     }
 
     public java.util.Date convertStringToDate(String sourceString, QName schemaType) {
@@ -616,35 +605,76 @@ public class XMLConversionManager extends ConversionManager implements TimeZoneH
         return date;
     }
 
-    public String stringFromDate(java.util.Date sourceDate, QName schemaType) {
-        if (XMLConstants.DATE_QNAME.equals(schemaType)) {
-            return dateFormatter.get().format(sourceDate);
-        } else if (XMLConstants.TIME_QNAME.equals(schemaType)) {
-            String string = timeFormatter.get().format(sourceDate);
-            int ms = (int) (sourceDate.getTime() % 1000);
-            if (0 == ms) {
-                string += ".0";
-            } else {
-                string += ('.' + Helper.buildZeroPrefixAndTruncTrailZeros(ms, 3));
-            }
-            return appendTimeZone(string);
-        } else if (XMLConstants.G_DAY_QNAME.equals(schemaType)) {
-            return gDayFormatter.get().format(sourceDate);
-        } else if (XMLConstants.G_MONTH_QNAME.equals(schemaType)) {
-            return gMonthFormatter.get().format(sourceDate);
-        } else if (XMLConstants.G_MONTH_DAY_QNAME.equals(schemaType)) {
-            return gMonthDayFormatter.get().format(sourceDate);
-        } else if (XMLConstants.G_YEAR_QNAME.equals(schemaType)) {
-            return gYearFormatter.get().format(sourceDate);
-        } else if (XMLConstants.G_YEAR_MONTH_QNAME.equals(schemaType)) {
-            return gYearMonthFormatter.get().format(sourceDate);
-        } else if (XMLConstants.DURATION_QNAME.equals(schemaType)) {
-            throw new IllegalArgumentException();
-        } else {
-            return stringFromDate(sourceDate);
+    /**
+     * This method returns a dateTime string representing a given
+     * java.util.Date.  
+     * 
+     * BC dates (sourceDate.getTime() < YEAR_ONE_AD_TIME) are handled 
+     * as follows: '2007 BC' --> '-2006 AD' 
+     *  
+     * @param sourceDate
+     * @return
+     */
+    private String stringFromDate(java.util.Date sourceDate) {
+        // if bc is true, adjust the date from BC to AD, and prepend '-' to the string
+        boolean bc = sourceDate.getTime() < YEAR_ONE_AD_TIME;
+        if (bc) {
+            sourceDate = handleBCDate(sourceDate);
         }
+        String string = dateTimeFormatter.get().format(sourceDate);
+        string = appendMillis(string, sourceDate.getTime());
+        return bc ? '-' + appendTimeZone(string) : appendTimeZone(string); 
     }
 
+    /**
+     * This method returns a string representing a given java.util.Date
+     * based on a given schema type QName.  
+     * 
+     * BC dates (sourceDate.getTime() < YEAR_ONE_AD_TIME) are handled 
+     * as follows: '2007 BC' --> '-2006 AD'.
+     * 
+     * @param sourceDate
+     * @param schemaType
+     * @return
+     */
+    public String stringFromDate(java.util.Date sourceDate, QName schemaType) {
+        // if bc is true, adjust the date from BC to AD, and prepend '-' to the string
+        boolean bc = sourceDate.getTime() < YEAR_ONE_AD_TIME;
+        if (bc) {
+            sourceDate = handleBCDate(sourceDate);
+        }
+        if (XMLConstants.DATE_QNAME.equals(schemaType)) {
+            return bc ? '-' + dateFormatter.get().format(sourceDate) : dateFormatter.get().format(sourceDate);
+        } 
+        if (XMLConstants.TIME_QNAME.equals(schemaType)) {
+            String string = timeFormatter.get().format(sourceDate);
+            string = appendMillis(string, sourceDate.getTime());
+            return appendTimeZone(string);
+        } 
+        if (XMLConstants.G_DAY_QNAME.equals(schemaType)) {
+            return gDayFormatter.get().format(sourceDate);
+        } 
+        if (XMLConstants.G_MONTH_QNAME.equals(schemaType)) {
+            return gMonthFormatter.get().format(sourceDate);
+        } 
+        if (XMLConstants.G_MONTH_DAY_QNAME.equals(schemaType)) {
+            return gMonthDayFormatter.get().format(sourceDate);
+        } 
+        if (XMLConstants.G_YEAR_QNAME.equals(schemaType)) {
+            return bc ? '-' + gYearFormatter.get().format(sourceDate) : gYearFormatter.get().format(sourceDate); 
+        } 
+        if (XMLConstants.G_YEAR_MONTH_QNAME.equals(schemaType)) {
+            return bc ? '-' + gYearMonthFormatter.get().format(sourceDate) : gYearMonthFormatter.get().format(sourceDate);
+        } 
+        if (XMLConstants.DURATION_QNAME.equals(schemaType)) {
+            throw new IllegalArgumentException();
+        }
+        // default is dateTime
+        String string = dateTimeFormatter.get().format(sourceDate);
+        string = appendMillis(string, sourceDate.getTime());
+        return bc ? '-' + appendTimeZone(string) : appendTimeZone(string); 
+    }
+    
     private String stringFromSQLDate(java.sql.Date sourceDate) {
         return dateFormatter.get().format(sourceDate);
     }
@@ -700,53 +730,75 @@ public class XMLConversionManager extends ConversionManager implements TimeZoneH
         }
     }
 
+
+    /**
+     * This method returns a dateTime string representing a given
+     * Timestamp.  
+     * 
+     * BC dates (sourceDate.getTime() < YEAR_ONE_AD_TIME) are handled 
+     * as follows: '2007 BC' --> '-2006 AD' 
+     *  
+     * @param sourceDate
+     * @return
+     */
     private String stringFromTimestamp(Timestamp sourceDate) {
-        String string = dateTimeFormatter.get().format(sourceDate);
-        int ns = sourceDate.getNanos();
-        if (0 == ns) {
-            string += ".0";
-        } else {
-            string += ('.' + Helper.buildZeroPrefixAndTruncTrailZeros(ns, 9));
+        // if bc is true, adjust the date from BC to AD, and prepend '-' to the string
+        boolean bc = sourceDate.getTime() < YEAR_ONE_AD_TIME;
+        if (bc) {
+            sourceDate = handleBCDate(sourceDate);
         }
-        return appendTimeZone(string);
+        String string = dateTimeFormatter.get().format(sourceDate);
+        string = appendNanos(string, sourceDate);
+        return bc ? '-' + appendTimeZone(string) : appendTimeZone(string);
     }
 
+    /**
+     * This method returns a string representing a given Timestamp
+     * based on a given schema type QName.
+     * 
+     * BC dates (sourceDate.getTime() < YEAR_ONE_AD_TIME) are handled 
+     * as follows: '2007 BC' --> '-2006 AD'.
+     * 
+     * @param sourceDate
+     * @param schemaType
+     * @return
+     */
     private String stringFromTimestamp(Timestamp sourceDate, QName schemaType) {
-        if (XMLConstants.DATE_TIME_QNAME.equals(schemaType)) {
-            String string = dateTimeFormatter.get().format(sourceDate);
-            int ns = sourceDate.getNanos();
-            if (0 == ns) {
-                string += ".0";
-            } else {
-                string += ('.' + Helper.buildZeroPrefixAndTruncTrailZeros(ns, 9));
-            }
-            return appendTimeZone(string);
-        } else if (XMLConstants.DATE_QNAME.equals(schemaType)) {
-            return dateFormatter.get().format(sourceDate);
-        } else if (XMLConstants.TIME_QNAME.equals(schemaType)) {
-            String string = timeFormatter.get().format(sourceDate);
-            int ns = sourceDate.getNanos();
-            if (0 == ns) {
-                string += ".0";
-            } else {
-                string += ('.' + Helper.buildZeroPrefixAndTruncTrailZeros(ns, 9));
-            }
-            return appendTimeZone(string);
-        } else if (XMLConstants.G_DAY_QNAME.equals(schemaType)) {
-            return gDayFormatter.get().format(sourceDate);
-        } else if (XMLConstants.G_MONTH_QNAME.equals(schemaType)) {
-            return gMonthFormatter.get().format(sourceDate);
-        } else if (XMLConstants.G_MONTH_DAY_QNAME.equals(schemaType)) {
-            return gMonthDayFormatter.get().format(sourceDate);
-        } else if (XMLConstants.G_YEAR_QNAME.equals(schemaType)) {
-            return gYearFormatter.get().format(sourceDate);
-        } else if (XMLConstants.G_YEAR_MONTH_QNAME.equals(schemaType)) {
-            return gYearMonthFormatter.get().format(sourceDate);
-        } else if (XMLConstants.DURATION_QNAME.equals(schemaType)) {
-            throw new IllegalArgumentException();
-        } else {
-            return stringFromTimestamp(sourceDate);
+        // if bc is true, adjust the date from BC to AD, and prepend '-' to the string
+        boolean bc = sourceDate.getTime() < YEAR_ONE_AD_TIME;
+        if (bc) {
+            sourceDate = handleBCDate(sourceDate);
         }
+        if (XMLConstants.DATE_QNAME.equals(schemaType)) {
+            return bc ? '-' + dateFormatter.get().format(sourceDate) : dateFormatter.get().format(sourceDate);
+        } 
+        if (XMLConstants.TIME_QNAME.equals(schemaType)) {
+            String string = timeFormatter.get().format(sourceDate);
+            string = appendNanos(string, sourceDate);
+            return appendTimeZone(string);
+        } 
+        if (XMLConstants.G_DAY_QNAME.equals(schemaType)) {
+            return gDayFormatter.get().format(sourceDate);
+        } 
+        if (XMLConstants.G_MONTH_QNAME.equals(schemaType)) {
+            return gMonthFormatter.get().format(sourceDate);
+        } 
+        if (XMLConstants.G_MONTH_DAY_QNAME.equals(schemaType)) {
+            return gMonthDayFormatter.get().format(sourceDate);
+        } 
+        if (XMLConstants.G_YEAR_QNAME.equals(schemaType)) {
+            return bc ? '-' + gYearFormatter.get().format(sourceDate) : gYearFormatter.get().format(sourceDate); 
+        }
+        if (XMLConstants.G_YEAR_MONTH_QNAME.equals(schemaType)) {
+            return bc ? '-' + gYearMonthFormatter.get().format(sourceDate) : gYearMonthFormatter.get().format(sourceDate);
+        } 
+        if (XMLConstants.DURATION_QNAME.equals(schemaType)) {
+            throw new IllegalArgumentException();
+        } 
+        // default is dateTime 
+        String string = dateTimeFormatter.get().format(sourceDate);
+        string = appendNanos(string, sourceDate);
+        return bc ? '-' + appendTimeZone(string) : appendTimeZone(string);
     }
 
     private String stringFromQName(QName sourceQName) {
@@ -1003,4 +1055,75 @@ public class XMLConversionManager extends ConversionManager implements TimeZoneH
         return clone;
     }
 
+    /**
+     * Convenience method that appends nanosecond values from a given
+     * time to a given string.
+     * 
+     * @param string
+     * @param time
+     * @return
+     */
+    private String appendNanos(String string, Timestamp ts) {
+        StringBuilder strBldr = new StringBuilder(string);
+        int nanos = ts.getNanos();
+        strBldr.append(nanos==0 ? ".0" : '.' + Helper.buildZeroPrefixAndTruncTrailZeros(nanos, TOTAL_NS_DIGITS)).toString();
+        return strBldr.toString();
+    }
+
+    /**
+     * Convenience method that appends millisecond values from a given 
+     * time to a given string.
+     * 
+     * @param string
+     * @param time
+     * @return
+     */
+    private String appendMillis(String string, long time) {
+        StringBuilder strBldr = new StringBuilder(string);
+        int msns = (int) (time % 1000);
+        if (msns < 0) {
+            // adjust for negative time values, i.e. before Epoch
+            msns = msns + 1000;
+        }
+        strBldr.append(msns==0 ? ".0" : '.' + Helper.buildZeroPrefixAndTruncTrailZeros(msns, TOTAL_MS_DIGITS)).toString();
+        return strBldr.toString();
+    }
+
+    /**
+     * Convenience method for handling BC dates if necessary: '2007 BC' --> '-2006 AD'.
+     * This method will typically be called when converting a java.sql.Timestamp to a 
+     * String.
+     * 
+     * @param sourceTimestamp java.sql.Timestamp that may need to be adjusted from BC --> AD
+     * @return sourceTimestamp converted to AD.
+     */
+    private Timestamp handleBCDate(Timestamp sourceTimestamp) {
+        int nanos = sourceTimestamp.getNanos();
+        Calendar cal = Calendar.getInstance();
+        cal.clear();
+        cal.setTime(sourceTimestamp);
+        cal.roll(Calendar.YEAR, -1);                              // roll back the year
+        cal.set(Calendar.ERA, GregorianCalendar.AD);              // set the ERA to AD
+        sourceTimestamp = new Timestamp(cal.getTime().getTime()); // set adjusted value
+        sourceTimestamp.setNanos(nanos);                          // set original nanos
+        return sourceTimestamp;
+    }
+    
+    /**
+     * 
+     * Convenience method for handling BC dates if necessary: '2007 BC' --> '-2006 AD'.
+     * This method will typically be called when converting a java.util.Date to a 
+     * String.
+     * 
+     * @param sourceDate java.util.Date that may need to be adjusted from BC --> AD 
+     * @return sourceDate converted to AD.
+     */
+    private java.util.Date handleBCDate(java.util.Date sourceDate) {
+        Calendar cal = Calendar.getInstance();
+        cal.clear();
+        cal.setTime(sourceDate);
+        cal.roll(Calendar.YEAR, -1);                 // roll back the year
+        cal.set(Calendar.ERA, GregorianCalendar.AD); // set the ERA to AD
+        return cal.getTime();                        // return adjusted value
+    }
 }
