@@ -150,7 +150,8 @@
         <available file="${build.deps.dir}/mavenant/maven-ant-tasks-2.0.8.jar" type="file" property="mavenant-exist"/>
         <echo message="mavenant-exist: ${mavenant-exist}"/>
     </target>
-    <target name="get-mavenant" unless="mavenant-exist" depends="check-4-mavenant">
+    <target name="get-mavenant" if="mavenant-no-exist" depends="check-4-mavenant">
+        // changed so it'd be disabled
         <mkdir dir="${build.deps.dir}/mavenant"/>
         <get src="${mavenant.url}"   dest="${build.deps.dir}/mavenant/maven-ant-tasks-2.0.8.jar"/>
         <property name="dependencies-downloaded" value="true"/>
