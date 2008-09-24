@@ -108,10 +108,10 @@
         <ant antfile="build.xml" dir="${build.root.dir}" target="clean"/>
     </target>
 
-    <target name="test-4-junit">
+    <target name="check-4-junit">
         <available property="junit-exist" file="${junit.dir}/junit.jar"/>
     </target>
-    <target name="get-junit" unless="junit-exist" depends="test-4-junit">
+    <target name="get-junit" unless="junit-exist" depends="check-4-junit">
         <mkdir dir="${junit.dir}"/>
         
         <!-- Get junit, extract it, then copy to expected location and cleanup (flatten won't work) -->
@@ -122,7 +122,7 @@
         <property name="dependencies-downloaded" value="true"/>
     </target>
 
-    <target name="test-4-mail">
+    <target name="check-4-mail">
         <available property="mail-exist" file="${build.deps.dir}/mail/mail.jar"/>
     </target>
     <target name="get-mail" unless="mail-exist" depends="check-4-mail">
@@ -131,7 +131,7 @@
         <property name="dependencies-downloaded" value="true"/>
     </target>
 
-    <target name="test-4-activation">
+    <target name="check-4-activation">
         <available property="activation-exist" file="${build.deps.dir}/mail/activation.jar"/>
     </target>
     <target name="get-activation" unless="activation-exist" depends="check-4-activation">
@@ -139,7 +139,7 @@
         <property name="dependencies-downloaded" value="true"/>
     </target>
 
-    <target name="test-4-mavenant">
+    <target name="check-4-mavenant">
         <available property="mavenant-exist" file="${build.deps.dir}/mavenant/maven-ant-tasks-2.0.8.jar"/>
     </target>
     <target name="get-mavenant" unless="mavenant-exist" depends="check-4-mavenant">
