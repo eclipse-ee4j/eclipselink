@@ -1236,7 +1236,7 @@ public class EntityMappingsAdvancedJUnitTestCase extends JUnitTestCase {
         // clear cache
         clearCache(m_persistenceUnit);
         
-        EntityManager em = createEntityManager();
+        EntityManager em = createEntityManager(m_persistenceUnit);
         // read the persisted employees
         List<Employee> readEmployees = em.createQuery("SELECT OBJECT(e) FROM XMLEmployee e WHERE e.lastName = '"+lastName+"'").getResultList();
         
