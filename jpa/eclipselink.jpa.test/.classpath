@@ -10,5 +10,6 @@
 	<classpathentry combineaccessrules="false" kind="src" path="/javax.transaction 1.1.0"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/org.eclipse.persistence.jpa"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/org.eclipse.persistence.moxy"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/javax.persistence 1.99"/>
 	<classpathentry kind="output" path="classes"/>
 </classpath>
