@@ -149,7 +149,7 @@
     </target>
 
     <target name="get-dependencies" if="dependencies-downloaded" depends="get-junit, get-mail, get-activation, get-mavenant">
-        <delete file="${build.deps.dir}/dependencies.txt" failonerror="true"
+        <delete file="${build.deps.dir}/dependencies.txt" failonerror="true"/>
 
         <!-- Generate "dependencies.txt" file -->
         <echo message="Buildsystem external dependencies come from:${line.separator}" file="${build.deps.dir}/dependencies.txt" append="false"/>
