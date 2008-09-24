@@ -96,6 +96,10 @@
     </target>
 
     <target name="clean" depends="init">
+        <ant antfile="build.xml" dir="${build.root.dir}" target="clean"/>
+    </target>
+
+    <target name="clean-dependencies" depends="init">
         <!-- Removed full delete of source tree because build-clean should take care
              of old build artifacts, and "svn co" should update source (including
              updating revision numbers, and cleaning up files that were renamed or
@@ -105,7 +109,6 @@
         <delete dir="${build.deps.dir}/mavenant"/>
         <delete file="${build.deps.dir}/dependencies.txt"/>
         <delete file="${build.deps.dir}/junit.zip"/>
-        <ant antfile="build.xml" dir="${build.root.dir}" target="clean"/>
     </target>
 
     <target name="check-4-junit">
