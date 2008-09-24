@@ -109,7 +109,7 @@
     </target>
 
     <target name="check-4-junit">
-        <available property="junit-exist" file="${junit.dir}/junit.jar"/>
+        <available file="${junit.dir}/junit.jar" property="junit-exist"/>
     </target>
     <target name="get-junit" unless="junit-exist" depends="check-4-junit">
         <mkdir dir="${junit.dir}"/>
@@ -123,7 +123,7 @@
     </target>
 
     <target name="check-4-mail">
-        <available property="mail-exist" file="${build.deps.dir}/mail/mail.jar"/>
+        <available file="${build.deps.dir}/mail/mail.jar" property="mail-exist"/>
     </target>
     <target name="get-mail" unless="mail-exist" depends="check-4-mail">
         <mkdir dir="${build.deps.dir}/mail"/>
@@ -132,7 +132,7 @@
     </target>
 
     <target name="check-4-activation">
-        <available property="activation-exist" file="${build.deps.dir}/mail/activation.jar"/>
+        <available file="${build.deps.dir}/mail/activation.jar" property="activation-exist"/>
     </target>
     <target name="get-activation" unless="activation-exist" depends="check-4-activation">
         <get src="${activation.url}" dest="${build.deps.dir}/mail/activation.jar"/>
@@ -140,7 +140,7 @@
     </target>
 
     <target name="check-4-mavenant">
-        <available property="mavenant-exist" file="${build.deps.dir}/mavenant/maven-ant-tasks-2.0.8.jar"/>
+        <available file="${build.deps.dir}/mavenant/maven-ant-tasks-2.0.8.jar" property="mavenant-exist"/>
     </target>
     <target name="get-mavenant" unless="mavenant-exist" depends="check-4-mavenant">
         <mkdir dir="${build.deps.dir}/mavenant"/>
