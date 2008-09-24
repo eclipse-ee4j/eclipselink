@@ -109,7 +109,8 @@
     </target>
 
     <target name="check-4-junit">
-        <available file="${junit.dir}/junit.jar" property="junit-exist"/>
+        <echo message="Looking for: ${junit.dir}/junit.jar"/>
+        <available file="${junit.dir}/junit.jar" type="file" property="junit-exist"/>
         <echo message="junit-exist: ${junit-exist}"/>
     </target>
     <target name="get-junit" unless="junit-exist" depends="check-4-junit">
@@ -124,7 +125,8 @@
     </target>
 
     <target name="check-4-mail">
-        <available file="${build.deps.dir}/mail/mail.jar" property="mail-exist"/>
+        <echo message="Looking for: ${build.deps.dir}/mail/mail.jar"/>
+        <available file="${build.deps.dir}/mail/mail.jar" type="file" property="mail-exist"/>
         <echo message="mail-exist: ${mail-exist}"/>
     </target>
     <target name="get-mail" unless="mail-exist" depends="check-4-mail">
@@ -134,7 +136,8 @@
     </target>
 
     <target name="check-4-activation">
-        <available file="${build.deps.dir}/mail/activation.jar" property="activation-exist"/>
+        <echo message="Looking for: ${build.deps.dir}/mail/activation.jar"/>
+        <available file="${build.deps.dir}/mail/activation.jar" type="file" property="activation-exist"/>
         <echo message="activation-exist: ${activation-exist}"/>
     </target>
     <target name="get-activation" unless="activation-exist" depends="check-4-activation">
@@ -143,7 +146,8 @@
     </target>
 
     <target name="check-4-mavenant">
-        <available file="${build.deps.dir}/mavenant/maven-ant-tasks-2.0.8.jar" property="mavenant-exist"/>
+        <echo message="Looking for: ${build.deps.dir}/mavenant/maven-ant-tasks-2.0.8.jar"/>
+        <available file="${build.deps.dir}/mavenant/maven-ant-tasks-2.0.8.jar" type="file" property="mavenant-exist"/>
         <echo message="mavenant-exist: ${mavenant-exist}"/>
     </target>
     <target name="get-mavenant" unless="mavenant-exist" depends="check-4-mavenant">
