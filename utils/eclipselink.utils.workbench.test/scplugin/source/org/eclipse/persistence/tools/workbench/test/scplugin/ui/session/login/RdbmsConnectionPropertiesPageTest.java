@@ -25,7 +25,7 @@ import org.eclipse.persistence.tools.workbench.scplugin.ui.session.login.RdbmsCo
 // Mapping Workbench Test
 
 /**
- * Tests for {@link org.eclipse.persistence.tools.workbench.scplugin.ui.session.login.RdbmsSequencingPropertiesPage}.
+ * Tests for {@link org.eclipse.persistence.tools.workbench.scplugin.ui.session.login.SequencingPropertiesPage}.
  *
  * @author Pascal Filion
  * @version 10.0.3

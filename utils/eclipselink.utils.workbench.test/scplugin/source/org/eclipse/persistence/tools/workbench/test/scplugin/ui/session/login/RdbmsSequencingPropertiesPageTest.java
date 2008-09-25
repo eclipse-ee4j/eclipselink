@@ -20,12 +20,12 @@ import org.eclipse.persistence.tools.workbench.test.scplugin.ui.session.basic.Ab
 // Mapping Workbench
 import org.eclipse.persistence.tools.workbench.scplugin.model.adapter.DatabaseLoginAdapter;
 import org.eclipse.persistence.tools.workbench.scplugin.model.adapter.DatabaseSessionAdapter;
-import org.eclipse.persistence.tools.workbench.scplugin.ui.session.login.RdbmsSequencingPropertiesPage;
+import org.eclipse.persistence.tools.workbench.scplugin.ui.session.login.SequencingPropertiesPage;
 
 // Mapping Workbench Test
 
 /**
- * Tests for {@link org.eclipse.persistence.tools.workbench.scplugin.ui.session.login.RdbmsSequencingPropertiesPage}.
+ * Tests for {@link org.eclipse.persistence.tools.workbench.scplugin.ui.session.login.SequencingPropertiesPage}.
  *
  * @author Pascal Filion
  * @version 10.0.3
@@ -44,8 +44,6 @@ public class RdbmsSequencingPropertiesPageTest extends AbstractSessionPanelTest
 
 	protected void _testComponentEntryCounterField() throws Exception
 	{
-		setCustomSequenceTable();
-
 		simulateMnemonic("LOGIN_COUNTER_FIELD_FIELD");
 		simulateTextInput("MY_COUNTER_FIELD");
 
@@ -54,8 +52,6 @@ public class RdbmsSequencingPropertiesPageTest extends AbstractSessionPanelTest
 
 	protected void _testComponentEntryNameField() throws Exception
 	{
-		setCustomSequenceTable();
-
 		simulateMnemonic("LOGIN_NAME_FIELD_FIELD");
 		simulateTextInput("MY_NAME_FIELD");
 
@@ -64,7 +60,6 @@ public class RdbmsSequencingPropertiesPageTest extends AbstractSessionPanelTest
 
 	protected void _testComponentEntryPreallocationSize() throws Exception
 	{
-		setCustomSequenceTable();
 
 		simulateMnemonic("LOGIN_PREALLOCATION_SIZE_SPINNER");
 		simulateSpinnerInput(123);
@@ -74,8 +69,6 @@ public class RdbmsSequencingPropertiesPageTest extends AbstractSessionPanelTest
 
 	protected void _testComponentEntryTable() throws Exception
 	{
-		setCustomSequenceTable();
-
 		simulateMnemonic("LOGIN_TABLE_FIELD");
 		simulateTextInput("MY_TABLE");
 
@@ -84,8 +77,6 @@ public class RdbmsSequencingPropertiesPageTest extends AbstractSessionPanelTest
 
 	protected void _testFocusTransferCounterField() throws Exception
 	{
-		setCustomSequenceTable();
-
 		testFocusTransferByMnemonic("LOGIN_COUNTER_FIELD_FIELD", COMPONENT_TEXT_FIELD);
 	}
 
@@ -101,8 +92,6 @@ public class RdbmsSequencingPropertiesPageTest extends AbstractSessionPanelTest
 
 	protected void _testFocusTransferNameField() throws Exception
 	{
-		setCustomSequenceTable();
-
 		testFocusTransferByMnemonic("LOGIN_NAME_FIELD_FIELD", COMPONENT_TEXT_FIELD);
 	}
 
@@ -113,22 +102,17 @@ public class RdbmsSequencingPropertiesPageTest extends AbstractSessionPanelTest
 
 	protected void _testFocusTransferPreallocationSize() throws Exception
 	{
-		setCustomSequenceTable();
-
 		testFocusTransferByMnemonic("LOGIN_PREALLOCATION_SIZE_SPINNER", COMPONENT_SPINNER);
 	}
 
 	protected void _testFocusTransferTable() throws Exception
 	{
-		setCustomSequenceTable();
-
 		testFocusTransferByMnemonic("LOGIN_TABLE_FIELD", COMPONENT_TEXT_FIELD);
 	}
 
 	public void _textExtraDefaultValuesForCustomSequenceTable()
 	{
 		setDefaultSequenceTable();
-		setCustomSequenceTable();
 
 		String entry = retrieveFieldEntry("LOGIN_COUNTER_FIELD_FIELD");
 		assertEquals("SEQ_COUNT", entry);
@@ -142,7 +126,7 @@ public class RdbmsSequencingPropertiesPageTest extends AbstractSessionPanelTest
 
 	protected JComponent buildPane() throws Exception
 	{
-		return buildPage(RdbmsSequencingPropertiesPage.class, getNodeHolder());
+		return buildPage(SequencingPropertiesPage.class, getNodeHolder());
 	}
 
 	private DatabaseLoginAdapter getLogin()
@@ -157,11 +141,6 @@ public class RdbmsSequencingPropertiesPageTest extends AbstractSessionPanelTest
 
 	protected void resetProperty()
 	{
-	}
-
-	private void setCustomSequenceTable()
-	{
-		getLogin().setCustomTableSequence();
 	}
 
 	private void setDefaultSequenceTable()
