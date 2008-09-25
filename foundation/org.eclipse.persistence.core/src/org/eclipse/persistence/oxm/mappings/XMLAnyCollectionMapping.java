@@ -327,9 +327,12 @@ public class XMLAnyCollectionMapping extends DatabaseMapping implements XMLMappi
         ContainerPolicy cp = getContainerPolicy();
         Object container = cp.containerInstance();
         int length = children.getLength();
-        for (int i = 0; i < length; i++) {
+        Node next = null;
+        if(length > 0) {
+            next = record.getDOM().getFirstChild();
+        }
+        while(next != null) {
         	Object objectValue = null;
-            org.w3c.dom.Node next = children.item(i);
             if (isUnmappedContent(next)) {
                 if ((next.getNodeType() == Node.TEXT_NODE) && this.isMixedContent()) {
                     if (next.getNodeValue().trim().length() > 0) {
@@ -439,6 +442,7 @@ public class XMLAnyCollectionMapping extends DatabaseMapping implements XMLMappi
                     }
                 }
             }
+            next = next.getNextSibling();
         }
         return container;
     }
@@ -813,7 +817,8 @@ public class XMLAnyCollectionMapping extends DatabaseMapping implements XMLMappi
 
     private ArrayList getUnmappedChildNodes(NodeList nodes) {
         ArrayList unmappedNodes = new ArrayList();
-        for (int i = 0; i < nodes.getLength(); i++) {
+        int length = nodes.getLength();
+        for (int i = 0; i < length; i++) {
             Node next = nodes.item(i);
             if (isUnmappedContent(next)) {
                 unmappedNodes.add(next);

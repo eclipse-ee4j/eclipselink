@@ -235,7 +235,8 @@ public class XMLAnyAttributeMapping extends DatabaseMapping implements XMLMappin
         NamedNodeMap attributes = root.getAttributes();
         Attr next;
         String localName;
-        for (int i = 0; i < attributes.getLength(); i++) {
+        int numberOfAtts = attributes.getLength();
+        for (int i = 0; i < numberOfAtts; i++) {
             next = (Attr) attributes.item(i);
             localName = next.getLocalName();
             if (null == localName) {

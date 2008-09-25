@@ -30,7 +30,8 @@ public class NodeListElementEnumerator {
     public NodeListElementEnumerator(NodeList list) {
         this.index = 0;
         this.list = list;
-        while ((index < list.getLength()) && (list.item(index).getNodeType() != Node.ELEMENT_NODE)) {
+        int length = list.getLength();
+        while ((index < length) && (list.item(index).getNodeType() != Node.ELEMENT_NODE)) {
             ++this.index;
         }
     }
@@ -42,7 +43,8 @@ public class NodeListElementEnumerator {
     public Node nextNode() {
         Node result = list.item(index);
         ++index;
-        while ((index < list.getLength()) && (list.item(index).getNodeType() != Node.ELEMENT_NODE)) {
+        int length = list.getLength();
+        while ((index < length) && (list.item(index).getNodeType() != Node.ELEMENT_NODE)) {
             ++this.index;
         }
         return result;

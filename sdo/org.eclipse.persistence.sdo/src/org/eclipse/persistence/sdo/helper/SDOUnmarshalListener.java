@@ -139,9 +139,8 @@ public class SDOUnmarshalListener extends SDOCSUnmarshalListener {
                             unmarshalledDO = (DataObject)unmarshalledNode;
                         }
                         List modifiedProps = new ArrayList();
-                        NodeList children = nextNode.getChildNodes();
-                        for (int p = 0; p < children.getLength(); p++) {
-                            Node n = children.item(p);
+                        Node n = nextNode.getFirstChild();
+                        while(n != null) {
                             if (n.getNodeType() == Node.ELEMENT_NODE) {
                                 String propName = n.getLocalName();
                                 Property nextProp = unmarshalledDO.getInstanceProperty(propName);
@@ -152,6 +151,7 @@ public class SDOUnmarshalListener extends SDOCSUnmarshalListener {
                                     modifiedProps.add(nextProp);
                                 }
                             }
+                            n = n.getNextSibling();
                         }
                         //instead of iterating over all props can we just check elements in cs and get appropriate properties from DO
                         for (int k = 0; k < modifiedProps.size(); k++) {

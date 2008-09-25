@@ -261,12 +261,13 @@ public class UnmarshalXPathEngine {
 
     private Node selectSingleText(Node contextNode) {
         NodeList childrenNodes = contextNode.getChildNodes();
+        int numberOfNodes = childrenNodes.getLength();
 
-        if (childrenNodes.getLength() == 0) {
+        if (numberOfNodes == 0) {
             return null;
         }
 
-        if (childrenNodes.getLength() == 1) {
+        if (numberOfNodes == 1) {
             Node child = childrenNodes.item(0);
             if (child.getNodeType() == Node.TEXT_NODE || child.getNodeType() == Node.CDATA_SECTION_NODE) {
                 return child;
@@ -275,7 +276,7 @@ public class UnmarshalXPathEngine {
         }
 
         String returnVal = null;
-        for (int i = 0; i < childrenNodes.getLength(); i++) {
+        for (int i = 0; i < numberOfNodes; i++) {
             Node next = childrenNodes.item(i);
             if (next.getNodeType() == Node.TEXT_NODE || next.getNodeType() == Node.CDATA_SECTION_NODE) {
                 String val = next.getNodeValue();

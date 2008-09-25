@@ -292,7 +292,8 @@ public class JAXPPlatform implements XMLPlatform {
         }
 
         NodeList children = next.getChildNodes();
-        for (int i = 0; i < children.getLength(); i++) {
+        int numberOfNodes = children.getLength();
+        for (int i = 0; i < numberOfNodes; i++) {
             Node nextNode = children.item(i);
             if (nextNode.getNodeType() == Node.ELEMENT_NODE) {
                 Element child = (Element)nextNode;

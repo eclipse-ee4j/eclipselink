@@ -147,7 +147,8 @@ public class DOMReader extends XMLReader {
         for (Iterator stackIt = parentElements.iterator(); stackIt.hasNext(); ) {
             NamedNodeMap attrs = parentElements.pop().getAttributes();
             if (attrs != null) {
-                for (int i=0; i<attrs.getLength(); i++) {
+                int length = attrs.getLength();
+                for (int i=0; i < length; i++) {
                     Attr next = (Attr)attrs.item(i);
                     String attrPrefix = next.getPrefix();
                     if (attrPrefix != null && attrPrefix.equals(XMLConstants.XMLNS)) {
@@ -180,7 +181,8 @@ public class DOMReader extends XMLReader {
     protected IndexedAttributeList buildAttributeList(Element elem) throws SAXException {
         IndexedAttributeList attributes = new IndexedAttributeList();
         NamedNodeMap attrs = elem.getAttributes();
-        for (int i = 0; i < attrs.getLength(); i++) {
+        int length = attrs.getLength();
+        for (int i = 0; i < length; i++) {
             Attr next = (Attr)attrs.item(i);
             String attrPrefix = next.getPrefix();
             if(attrPrefix != null && attrPrefix.equals(XMLConstants.XMLNS)) {
@@ -203,7 +205,8 @@ public class DOMReader extends XMLReader {
     
     protected void endPrefixMappings(Element elem) throws SAXException {
         NamedNodeMap attrs = elem.getAttributes();
-        for(int i = 0; i < attrs.getLength(); i++) {
+        int numOfAtts = attrs.getLength();
+        for(int i = 0; i < numOfAtts; i++) {
             Attr next = (Attr)attrs.item(i);
             String attrPrefix = next.getPrefix();
             if (attrPrefix != null && attrPrefix.equals(XMLConstants.XMLNS)) {
@@ -256,29 +259,33 @@ public class DOMReader extends XMLReader {
     }
 
     protected void handleChildNodes(NodeList children) throws SAXException {
-        for(int i = 0; i < children.getLength(); i++) {
-            Node next = children.item(i);
-            if(next.getNodeType() == Node.TEXT_NODE) {
-                char[] value = ((Text)next).getNodeValue().toCharArray();
+        Node nextChild = null;
+        if(children.getLength() > 0) {
+            nextChild = children.item(0);
+        }
+        while(nextChild != null) {
+            if(nextChild.getNodeType() == Node.TEXT_NODE) {
+                char[] value = ((Text)nextChild).getNodeValue().toCharArray();
                 getContentHandler().characters(value, 0, value.length);
-            } else if(next.getNodeType() == Node.COMMENT_NODE) {
-                char[] value = ((Comment)next).getNodeValue().toCharArray();
+            } else if(nextChild.getNodeType() == Node.COMMENT_NODE) {
+                char[] value = ((Comment)nextChild).getNodeValue().toCharArray();
                 if (lexicalHandler != null) {
 	        	lexicalHandler.comment(value, 0, value.length);
                 }
-            } else if(next.getNodeType() == Node.ELEMENT_NODE) {
-                Element childElement = (Element)next;
+            } else if(nextChild.getNodeType() == Node.ELEMENT_NODE) {
+                Element childElement = (Element)nextChild;
                 reportElementEvents(childElement);
-            } else if(next.getNodeType() == Node.CDATA_SECTION_NODE) {
+            } else if(nextChild.getNodeType() == Node.CDATA_SECTION_NODE) {
                 if(lexicalHandler != null) {
                     lexicalHandler.startCDATA();
                 }
-                char[] value = ((CDATASection)next).getData().toCharArray();
+                char[] value = ((CDATASection)nextChild).getData().toCharArray();
                 getContentHandler().characters(value, 0, value.length);
                 if(lexicalHandler != null) {
                     lexicalHandler.endCDATA();
                 }
             }
+            nextChild = nextChild.getNextSibling();
         }
     }
     /**
@@ -382,7 +389,8 @@ public class DOMReader extends XMLReader {
         
         public int getIndex(String qname) {
             Attr item;
-            for (int i=0; i<attrs.size(); i++) {
+            int size = attrs.size();
+            for (int i=0; i<size; i++) {
                 item = attrs.get(i);
                 if (item.getName().equals(qname)) {
                     return i;
@@ -393,7 +401,8 @@ public class DOMReader extends XMLReader {
         
         public int getIndex(String uri, String localName) {
             Attr item;
-            for (int i=0; i<attrs.size(); i++) {
+            int size = attrs.size();
+            for (int i=0; i<size; i++) {
                 item = attrs.get(i);
                 try {
                     if (item.getNamespaceURI().equals(uri) && item.getLocalName().equals(localName)) {
@@ -430,7 +439,8 @@ public class DOMReader extends XMLReader {
         
         public String getValue(String qname) {
             Attr item;
-            for (int i=0; i<attrs.size(); i++) {
+            int size = attrs.size();
+            for (int i=0; i<size; i++) {
                 item = attrs.get(i);
                 if (item.getName().equals(qname)) {
                     return item.getValue();
@@ -441,7 +451,8 @@ public class DOMReader extends XMLReader {
 
         public String getValue(String uri, String localName) {
             Attr item;
-            for (int i=0; i<attrs.size(); i++) {
+            int size = attrs.size();
+            for (int i=0; i<size; i++) {
                 item = attrs.get(i);
                 if (item != null) {
                     String itemNS = item.getNamespaceURI();  

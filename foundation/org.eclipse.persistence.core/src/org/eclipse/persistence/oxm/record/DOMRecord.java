@@ -546,9 +546,15 @@ public class DOMRecord extends XMLRecord {
      * may also be called from toplin in some places.
      */
     public Vector getFields() {
-        Vector fields = new Vector(getDOM().getChildNodes().getLength());
-        for (int index = 0; index < getDOM().getChildNodes().getLength(); index++) {
-            fields.add(new DatabaseField(getDOM().getChildNodes().item(index).getNodeName()));
+        int length = getDOM().getChildNodes().getLength();
+        Node nextNode = null;
+        if(length > 0) {
+            nextNode = getDOM().getChildNodes().item(0);
+        }
+        Vector fields = new Vector(length);
+        while(nextNode != null) {
+            fields.add(new DatabaseField(nextNode.getNodeName()));
+            nextNode = nextNode.getNextSibling();
         }
         return fields;
     }
@@ -560,9 +566,15 @@ public class DOMRecord extends XMLRecord {
      * may also be called from TopLink in some places.
      */
     public Vector getValues() {
-        Vector values = new Vector(getDOM().getChildNodes().getLength());
-        for (int index = 0; index < getDOM().getChildNodes().getLength(); index++) {
-            values.add(getDOM().getChildNodes().item(index));
+        int length = getDOM().getChildNodes().getLength();
+        Node nextNode = null;
+        if(length > 0) {
+            nextNode = getDOM().getFirstChild();
+        }
+        Vector values = new Vector(length);
+        while(nextNode != null) {
+            values.add(nextNode);
+            nextNode = nextNode.getNextSibling();
         }
         return values;
     }
@@ -608,8 +620,9 @@ public class DOMRecord extends XMLRecord {
      * todo: need to check attributes, should be prefix or nodename? / innerclass
      */
     public Set keySet() {
-        HashSet keys = new HashSet(getDOM().getChildNodes().getLength());
-        for (int index = 0; index < getDOM().getChildNodes().getLength(); index++) {
+        int length = getDOM().getChildNodes().getLength();
+        HashSet keys = new HashSet(length);
+        for (int index = 0; index < length; index++) {
             keys.add(getDOM().getChildNodes().item(index).getNodeName());
         }
         return keys;
@@ -621,8 +634,9 @@ public class DOMRecord extends XMLRecord {
      * todo: needs to do gets with the keys to have correct values, need to check attributes / innerclass
      */
     public Collection values() {
-        Vector values = new Vector(getDOM().getChildNodes().getLength());
-        for (int index = 0; index < getDOM().getChildNodes().getLength(); index++) {
+        int length = getDOM().getChildNodes().getLength();
+        Vector values = new Vector(length);
+        for (int index = 0; index < length; index++) {
             values.add(getDOM().getChildNodes().item(index));
         }
         return values;

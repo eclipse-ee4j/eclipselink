@@ -535,7 +535,8 @@ public class XMLAnyObjectMapping extends DatabaseMapping implements XMLMapping {
 
     private ArrayList getUnmappedChildNodes(NodeList nodes) {
         ArrayList unmappedNodes = new ArrayList();
-        for (int i = 0; i < nodes.getLength(); i++) {
+        int length = nodes.getLength();
+        for (int i = 0; i < length; i++) {
             Node next = nodes.item(i);
             if (isUnmappedContent(next)) {
                 unmappedNodes.add(next);
@@ -609,14 +610,14 @@ public class XMLAnyObjectMapping extends DatabaseMapping implements XMLMapping {
 
     public Node getNodeToReplace(Node parent) {
         //find the first child node that this any applies to.
-        NodeList children = parent.getChildNodes();
-        for (int i = 0; i < children.getLength(); i++) {
-            Node next = children.item(i);
+        Node next = parent.getFirstChild();
+        while(next != null) {
             if ((next.getNodeType() == Node.ELEMENT_NODE) || (next.getNodeType() == Node.TEXT_NODE) || (next.getNodeType() == Node.CDATA_SECTION_NODE)) {
                 if (isUnmappedContent(next)) {
                     return next;
                 }
             }
+            next = next.getNextSibling();
         }
         return null;
     }
