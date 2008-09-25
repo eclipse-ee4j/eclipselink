@@ -631,7 +631,7 @@
         <java classname="org.eclipse.persistence.testing.framework.ui.TestingBrowserFrame"
              fork="true"
              maxmemory="512m"
-             failonerror="true"
+             failonerror="false"
              dir="${eclipselink.jpa.test}/${run.dir}">
             <jvmarg value="${test.agent}"/>
             <jvmarg value="${test.weaving}"/>
@@ -705,7 +705,7 @@
         <java classname="org.eclipse.persistence.testing.framework.PromptTestRunner"
              fork="true"
              maxmemory="512m"
-             failonerror="true"
+             failonerror="false"
              dir="${eclipselink.jpa.test}/${run.dir}">
             <jvmarg value="${jvmarg.performance.baseline.version}"/>
             <jvmarg value="${TEST_AGENT}"/>

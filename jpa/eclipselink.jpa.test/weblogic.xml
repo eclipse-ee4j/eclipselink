@@ -145,7 +145,7 @@
 
     <!-- Stop the server. -->
     <target name="weblogic-stop">
-        <wlserver fork="true" failonerror="true" weblogichome="${weblogic.home}"
+        <wlserver fork="true" failonerror="false" weblogichome="${weblogic.home}"
             dir="${weblogic.domain}" host="localhost"
             username="${server.user}" password="${server.pwd}" action="shutdown">
         </wlserver>

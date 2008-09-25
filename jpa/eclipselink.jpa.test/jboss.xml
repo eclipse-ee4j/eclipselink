@@ -91,7 +91,7 @@
     <target name="jboss-start">
         <java classname="org.jboss.Main" 
             fork="true"
-            failonerror="true" >
+            failonerror="false" >
             <jvmarg value="-Xms512m"/>
             <jvmarg value="-Xmx960m"/>
             <sysproperty key="http.proxyHost" value="www-proxy.us.oracle.com"/>

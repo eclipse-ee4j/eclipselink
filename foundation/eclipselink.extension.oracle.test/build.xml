@@ -212,7 +212,7 @@ CREATE OR REPLACE TYPE MY_GEOMETRY AS OBJECT (id NUMBER, geom MDSYS.SDO_GEOMETRY
         <java classname="org.eclipse.persistence.testing.framework.ui.TestingBrowserFrame"
              fork="true"
              maxmemory="512m"
-             failonerror="true"
+             failonerror="false"
              dir="${eclipselink.extension.oracle.test}/${run.dir}">
             <jvmarg value="-Declipselink.logging.level=${logging.level}"/>
             <jvmarg value="-Ddb.driver=${db.driver}"/>
@@ -268,7 +268,7 @@ CREATE OR REPLACE TYPE MY_GEOMETRY AS OBJECT (id NUMBER, geom MDSYS.SDO_GEOMETRY
         <java classname="org.eclipse.persistence.testing.framework.PromptTestRunner"
              fork="true"
              maxmemory="512m"
-             failonerror="true"
+             failonerror="false"
              dir="${eclipselink.extension.oracle.test}/${run.dir}">
             <jvmarg value="-Declipselink.logging.level=${logging.level}"/>
             <jvmarg value="-Ddb.driver=${db.driver}"/>

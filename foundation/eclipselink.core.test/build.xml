@@ -242,7 +242,7 @@
         <java classname="org.eclipse.persistence.testing.framework.ui.TestingBrowserFrame"
              fork="true"
              maxmemory="512m"
-             failonerror="true"
+             failonerror="false"
              dir="${eclipselink.core.test}/${run.dir}">
             <jvmarg value="-Declipselink.logging.level=${logging.level}"/>
             <jvmarg value="${test.security-manager}"/>
@@ -301,7 +301,7 @@
         <java classname="org.eclipse.persistence.testing.framework.PromptTestRunner"
              fork="true"
              maxmemory="512m"
-             failonerror="true"
+             failonerror="false"
              dir="${eclipselink.core.test}/${run.dir}">
             <jvmarg value="${jvmarg.performance.baseline.version}"/>
             <jvmarg value="-Declipselink.logging.level=${logging.level}"/>
@@ -330,7 +330,7 @@
         <java classname="org.eclipse.persistence.testing.framework.PromptTestRunner"
              fork="true"
              maxmemory="512m"
-             failonerror="true"
+             failonerror="false"
              dir="${eclipselink.core.test}/${run.dir}">
             <jvmarg value="-Declipselink.logging.level=${logging.level}"/>
             <jvmarg value="-Ddb.driver=${db.driver}"/>

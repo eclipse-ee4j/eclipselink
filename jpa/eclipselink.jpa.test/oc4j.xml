@@ -69,7 +69,7 @@
         <property file="./oc4j.properties"/>
         <java jar="${oc4j.home}/j2ee/home/oc4j.jar"
             fork="true"
-            failonerror="true">
+            failonerror="false">
             <jvmarg value="-Xms512m"/>
             <jvmarg value="-Xmx960m"/>
             <jvmarg value="-XX:PermSize=128m"/>
@@ -166,7 +166,7 @@
         <property file="./oc4j.properties"/>
         <java jar="${oc4j.home}/j2ee/home/admin_client.jar"
             fork="true"
-            failonerror="true">
+            failonerror="false">
             <arg value="deployer:oc4j:${oc4j.httphost}:${oc4j.rmiport}"/>
             <arg value="${server.user}"/>
             <arg value="${server.pwd}"/>
@@ -201,7 +201,7 @@
     <target name="oc4j-undeploy">
         <java jar="${oc4j.home}/j2ee/home/admin_client.jar"
             fork="true"
-            failonerror="true">
+            failonerror="false">
             <arg value="deployer:oc4j:${oc4j.httphost}:${oc4j.rmiport}"/>
             <arg value="${server.user}"/>
             <arg value="${server.pwd}"/>
