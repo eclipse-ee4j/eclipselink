@@ -41,6 +41,7 @@ public abstract class LoginAdapter extends SCAdapter implements Property {
 	public final static String TABLE_QUALIFIER_PROPERTY = "tableQualifier";
 	public final static String ENCRYPTION_CLASS_PROPERTY = "encryptionClass";
 	public final static String EXTERNAL_TRANSACTION_CONTROLLER_PROPERTY = "externalTransactionController";
+	public final static String EXTERNAL_CONNECTION_POOLING_PROPERTY = "externalConnectionPooling";
 
 	public final static String DEFAULT_SEQUENCE_PROPERTY = "defaultSequence";
 	private volatile SequencingAdapter sequencing;
@@ -327,16 +328,18 @@ public abstract class LoginAdapter extends SCAdapter implements Property {
 	/**
 	 * Returns usesExternalConnectionPooling.
 	 */
-	boolean usesExternalConnectionPooling() {
+	public boolean usesExternalConnectionPooling() {
 		
 		return this.loginConfig().getExternalConnectionPooling();
 	}
 	/**
 	 * Sets usesExternalConnectionPooling and the config model.
 	 */
-	void setExternalConnectionPooling( boolean value) {
+	public void setExternalConnectionPooling( boolean value) {
 		
+		boolean old = this.loginConfig().getExternalConnectionPooling();
 		this.loginConfig().setExternalConnectionPooling( value);
+		this.firePropertyChanged( EXTERNAL_CONNECTION_POOLING_PROPERTY, old, value);
 	}
 	/**
 	 * Returns this config model property..
@@ -348,7 +351,7 @@ public abstract class LoginAdapter extends SCAdapter implements Property {
 	/**
 	 * Sets this config model property.
 	 */
-	void setUsesExternalTransactionController( boolean value) {
+	public void setUsesExternalTransactionController( boolean value) {
 		
 		boolean old = this.loginConfig().getExternalTransactionController();
 

@@ -17,15 +17,21 @@ import java.awt.Component;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
+
 import javax.swing.BorderFactory;
+import javax.swing.ButtonModel;
+import javax.swing.JCheckBox;
 import javax.swing.JPanel;
 
 import org.eclipse.persistence.tools.workbench.framework.context.WorkbenchContextHolder;
 import org.eclipse.persistence.tools.workbench.framework.ui.view.ScrollablePropertiesPage;
 import org.eclipse.persistence.tools.workbench.scplugin.model.adapter.ConnectionPoolAdapter;
+import org.eclipse.persistence.tools.workbench.scplugin.model.adapter.DatabaseLoginAdapter;
+import org.eclipse.persistence.tools.workbench.scplugin.model.adapter.LoginAdapter;
 import org.eclipse.persistence.tools.workbench.scplugin.ui.login.RdbmsPoolLoginPane;
 import org.eclipse.persistence.tools.workbench.uitools.app.PropertyAspectAdapter;
 import org.eclipse.persistence.tools.workbench.uitools.app.PropertyValueModel;
+import org.eclipse.persistence.tools.workbench.uitools.app.swing.CheckBoxModelAdapter;
 
 // Mapping Workbench
 
@@ -58,41 +64,61 @@ public class RdbmsPoolLoginPropertiesPage extends ScrollablePropertiesPage
 	 *
 	 * @param nodeHolder
 	 */
-	public RdbmsPoolLoginPropertiesPage(PropertyValueModel nodeHolder, WorkbenchContextHolder contextHolder)
+	public RdbmsPoolLoginPropertiesPage(PropertyValueModel nodeHolder,
+	                                    WorkbenchContextHolder contextHolder)
 	{
 		super(nodeHolder, contextHolder);
 		addHelpTopicId(this, "connectionPool.login.database");
 	}
 
-	/**
-	 * Initializes the layout of this pane.
-	 *
-	 * @return The container with all its widgets
-	 */
-	protected Component buildPage()
+	private ButtonModel buildExternalConnectionPoolingCheckBoxModel()
 	{
-		GridBagConstraints constraints = new GridBagConstraints();
+		return new CheckBoxModelAdapter(buildExternalConnectionPoolingHolder());
+	}
 
-		// Create the container
-		JPanel panel = new JPanel(new GridBagLayout());
-		panel.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
+	private PropertyValueModel buildExternalConnectionPoolingHolder()
+	{
+		return new PropertyAspectAdapter(buildLoginHolder(), DatabaseLoginAdapter.EXTERNAL_CONNECTION_POOLING_PROPERTY)
+		{
+			@Override
+			protected Object getValueFromSubject()
+			{
+				DatabaseLoginAdapter adapter = (DatabaseLoginAdapter) subject;
+				return adapter.usesExternalConnectionPooling();
+			}
 
-		// Login pane
-		RdbmsPoolLoginPane loginPane = new RdbmsPoolLoginPane(buildLoginHolder(), getWorkbenchContextHolder());
+			@Override
+			protected void setValueOnSubject(Object value)
+			{
+				DatabaseLoginAdapter adapter = (DatabaseLoginAdapter) subject;
+				adapter.setExternalConnectionPooling((Boolean) value);
+			}
+		};
+	}
 
-		constraints.gridx       = 0;
-		constraints.gridy       = 0;
-		constraints.gridwidth   = 1;
-		constraints.gridheight  = 1;
-		constraints.weightx     = 1;
-		constraints.weighty     = 1;
-		constraints.fill        = GridBagConstraints.HORIZONTAL;
-		constraints.anchor      = GridBagConstraints.PAGE_START;
-		constraints.insets      = new Insets(0, 0, 0, 0);
+	private ButtonModel buildExternalTransactionControllerCheckBoxModel()
+	{
+		return new CheckBoxModelAdapter(buildExternalTransactionControllerHolder());
+	}
 
-		panel.add(loginPane, constraints);
-     
-		return panel;
+	private PropertyValueModel buildExternalTransactionControllerHolder()
+	{
+		return new PropertyAspectAdapter(buildLoginHolder(), DatabaseLoginAdapter.EXTERNAL_TRANSACTION_CONTROLLER_PROPERTY)
+		{
+			@Override
+			protected Boolean getValueFromSubject()
+			{
+				DatabaseLoginAdapter adapter = (DatabaseLoginAdapter) subject;
+				return adapter.usesExternalTransactionController();
+			}
+
+			@Override
+			protected void setValueOnSubject(Object value)
+			{
+				DatabaseLoginAdapter adapter = (DatabaseLoginAdapter) subject;
+				adapter.setUsesExternalTransactionController((Boolean) value);
+			}
+		};
 	}
 
 	/**
@@ -113,5 +139,75 @@ public class RdbmsPoolLoginPropertiesPage extends ScrollablePropertiesPage
 				return pool.getLogin();
 			}
 		};
+	}
+
+	/**
+	 * Initializes the layout of this pane.
+	 *
+	 * @return The container with all its widgets
+	 */
+	@Override
+	protected Component buildPage()
+	{
+		GridBagConstraints constraints = new GridBagConstraints();
+
+		// Create the container
+		JPanel container = new JPanel(new GridBagLayout());
+		container.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
+
+		// Login pane
+		RdbmsPoolLoginPane loginPane = new RdbmsPoolLoginPane(buildLoginHolder(), getWorkbenchContextHolder());
+
+		constraints.gridx       = 0;
+		constraints.gridy       = 0;
+		constraints.gridwidth   = 1;
+		constraints.gridheight  = 1;
+		constraints.weightx     = 1;
+		constraints.weighty     = 0;
+		constraints.fill        = GridBagConstraints.HORIZONTAL;
+		constraints.anchor      = GridBagConstraints.CENTER;
+		constraints.insets      = new Insets(0, 0, 0, 0);
+
+		container.add(loginPane, constraints);
+     
+		// External Connection Pooling check box
+		JCheckBox externalConnectionPoolingCheckBox = buildCheckBox
+		(
+			"RDBMS_POOL_LOGIN_PANE_EXTERNAL_CONNECTION_POOLING_CHECKBOX",
+			buildExternalConnectionPoolingCheckBoxModel()
+		);
+
+		constraints.gridx      = 0;
+		constraints.gridy      = 2;
+		constraints.gridwidth  = 1;
+		constraints.gridheight = 1;
+		constraints.weightx    = 1;
+		constraints.weighty    = 0;
+		constraints.fill       = GridBagConstraints.NONE;
+		constraints.anchor     = GridBagConstraints.LINE_START;
+		constraints.insets     = new Insets(5, 0, 0, 0);
+
+		container.add(externalConnectionPoolingCheckBox, constraints);
+
+		// External Transaction Controller check box
+		JCheckBox externalTransactionControllerCheckBox = buildCheckBox
+		(
+			"RDBMS_POOL_LOGIN_PANE_EXTERNAL_TRANSACTION_CONTROLLER_CHECKBOX",
+			buildExternalTransactionControllerCheckBoxModel()
+		);
+
+		constraints.gridx      = 0;
+		constraints.gridy      = 3;
+		constraints.gridwidth  = 1;
+		constraints.gridheight = 1;
+		constraints.weightx    = 1;
+		constraints.weighty    = 1;
+		constraints.fill       = GridBagConstraints.NONE;
+		constraints.anchor     = GridBagConstraints.FIRST_LINE_START;
+		constraints.insets     = new Insets(0, 0, 0, 0);
+
+		container.add(externalTransactionControllerCheckBox, constraints);
+
+		return container;
 	}
 }

@@ -526,6 +526,9 @@ public final class SCPluginResourceBundle extends ListResourceBundle {
 		{ "SESSION_CONNECTION_POLICY_ACQUIRE_EXCLUSIVE_CONNECTION_CHECKBOX", "&Acquire Exclusive Connection"},
 		{ "SESSION_CONNECTION_POLICY_ACQUIRE_CONNECTIONS_LAZILY_CHECKBOX",   "Acquire &Connections Lazily"},
 
+		{"RDBMS_POOL_LOGIN_PANE_EXTERNAL_CONNECTION_POOLING_CHECKBOX",     "E&xternal Connection Pooling"},
+		{"RDBMS_POOL_LOGIN_PANE_EXTERNAL_TRANSACTION_CONTROLLER_CHECKBOX", "External Transaction Controller (&JTA)"},
+
 		// Help Action
 		{ "HELP",         "&Help" },
 		{ "HELP.tooltip", "Help for the selected item(s)" },

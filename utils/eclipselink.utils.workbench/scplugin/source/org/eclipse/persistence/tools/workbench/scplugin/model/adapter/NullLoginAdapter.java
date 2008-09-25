@@ -151,7 +151,7 @@ public class NullLoginAdapter extends LoginAdapter {
 	/**
 	 * Sets this config model property.
 	 */
-	void setUsesExternalTransactionController( boolean value) {
+	public void setUsesExternalTransactionController( boolean value) {
 	}	
 	/**
 	 * Returns usesExternalConnectionPooling.
