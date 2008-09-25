@@ -282,7 +282,6 @@
             <report format="noframes" todir="${eclipselink.core.test}/${report.dir}"/>
         </junitreport>
         <!-- fail message="Some of the junit tests failed.  See the ${report.dir}/junit-noframes.html file for details." if="junit.failed"/ -->
-        <echo message="Some of the junit tests failed.  See the ${report.dir}/junit-noframes.html file for details." if="junit.failed"/>
     </target>
 
     <!-- Runs the test using the PromptTestRunner -->
