@@ -96,9 +96,12 @@ public abstract class AbstractValidatingDialog
 	// ********** initialization **********
 
 	protected void initializeContentPane() {
-		Container contentPane = this.getContentPane();
-		contentPane.setLayout(new GridBagLayout());
+		this.container.setLayout(new GridBagLayout());
 		GridBagConstraints constraints = new GridBagConstraints();
+		Container contentPane = this.getContentPane();
+		contentPane.setLayout(new BorderLayout());
+		container.setOpaque(false);
+		contentPane.add(container, BorderLayout.CENTER);
 
 		// main panel
 		constraints.gridx = 0;
@@ -110,7 +113,7 @@ public abstract class AbstractValidatingDialog
 		constraints.fill = GridBagConstraints.HORIZONTAL;
 		constraints.anchor = GridBagConstraints.PAGE_START;
 		constraints.insets = new Insets(5, 5, 0, 5);
-		contentPane.add(this.buildMainPanel(), constraints);
+		this.container.add(this.buildMainPanel(), constraints);
 		
 		// error message
 		this.errorMessageLabel = this.buildErrorMessageLabel();
@@ -123,7 +126,7 @@ public abstract class AbstractValidatingDialog
 		constraints.fill = GridBagConstraints.HORIZONTAL;
 		constraints.anchor = GridBagConstraints.FIRST_LINE_START;
 		constraints.insets = new Insets(5, 5, 0, 5);
-		contentPane.add(this.errorMessageLabel, constraints);
+		this.container.add(this.errorMessageLabel, constraints);
 		
 		// warning message
 		this.warningMessageLabel = this.buildWarningMessageLabel();
@@ -136,7 +139,7 @@ public abstract class AbstractValidatingDialog
 		constraints.fill = GridBagConstraints.HORIZONTAL;
 		constraints.anchor = GridBagConstraints.FIRST_LINE_START;
 		constraints.insets = new Insets(5, 5, 0, 5);
-		contentPane.add(this.warningMessageLabel, constraints);
+		this.container.add(this.warningMessageLabel, constraints);
 		
 		// separator
 		constraints.gridx = 0;
@@ -148,7 +151,7 @@ public abstract class AbstractValidatingDialog
 		constraints.fill = GridBagConstraints.HORIZONTAL;
 		constraints.anchor = GridBagConstraints.FIRST_LINE_START;
 		constraints.insets = new Insets(10, 5, 10, 5);
-		contentPane.add(new JSeparator(), constraints);
+		this.container.add(new JSeparator(), constraints);
 
 		// button panel
 		JPanel buttonPanel = this.buildButtonPanel();
@@ -162,7 +165,7 @@ public abstract class AbstractValidatingDialog
 		constraints.fill = GridBagConstraints.HORIZONTAL;
 		constraints.anchor = GridBagConstraints.FIRST_LINE_START;
 		constraints.insets = new Insets(0, 0, 0, 0);
-		contentPane.add(buttonPanel, constraints);
+		this.container.add(buttonPanel, constraints);
 
 		// Used for accessibility purposes
 		StatusBarPane statusBarPane = new StatusBarPane();
@@ -175,7 +178,7 @@ public abstract class AbstractValidatingDialog
 		constraints.fill = GridBagConstraints.HORIZONTAL;
 		constraints.anchor = GridBagConstraints.CENTER;
 		constraints.insets = new Insets(0, 0, 0, 0);
-		contentPane.add(statusBarPane, constraints);
+		this.container.add(statusBarPane, constraints);
 	}
 
 	// ********** opening **********

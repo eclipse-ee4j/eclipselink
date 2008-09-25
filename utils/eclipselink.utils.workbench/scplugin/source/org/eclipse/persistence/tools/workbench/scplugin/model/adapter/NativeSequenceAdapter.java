@@ -12,10 +12,8 @@
 ******************************************************************************/
 package org.eclipse.persistence.tools.workbench.scplugin.model.adapter;
 
-import org.eclipse.persistence.tools.workbench.platformsmodel.DatabasePlatform;
-import org.eclipse.persistence.tools.workbench.platformsmodel.DatabasePlatformRepository;
-
 import org.eclipse.persistence.internal.sessions.factories.model.sequencing.NativeSequenceConfig;
+import org.eclipse.persistence.tools.workbench.scplugin.model.SequenceType;
 
 /**
  * Session Configuration model adapter class for the 
@@ -25,7 +23,7 @@ import org.eclipse.persistence.internal.sessions.factories.model.sequencing.Nati
  * 
  * @author Tran Le
  */
-class NativeSequenceAdapter extends SequenceAdapter {
+public class NativeSequenceAdapter extends SequenceAdapter {
 	
 	/**
 	 * Creates a new NativeSequence for the specified model object.
@@ -59,19 +57,9 @@ class NativeSequenceAdapter extends SequenceAdapter {
 			
 		return true;
 	}	
-	
-	protected void initializeDefaults() {
-		super.initializeDefaults();
 		
-		LoginAdapter login = ( LoginAdapter)getParent().getParent();
-		String platformClass = login.getPlatformClass();
-		if( platformClass != null) {
-			DatabasePlatform platform = DatabasePlatformRepository.getDefault().platformForRuntimePlatformClassNamed( platformClass);
-			
-			// Only Oracle support preallocation size for Native Sequencing
-			if( !platform.getName().startsWith( "Oracle")) {
-				setPreallocationSize( 0);
-			}
-		}
+	@Override
+	public SequenceType getType() {
+		return SequenceType.NATIVE;
 	}
 }

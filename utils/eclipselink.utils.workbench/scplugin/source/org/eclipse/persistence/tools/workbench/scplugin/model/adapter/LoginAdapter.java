@@ -15,14 +15,15 @@ package org.eclipse.persistence.tools.workbench.scplugin.model.adapter;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
+import java.util.ListIterator;
 import java.util.Vector;
-
-import org.eclipse.persistence.tools.workbench.utility.ClassTools;
 
 import org.eclipse.persistence.internal.sessions.factories.XMLSessionConfigProject;
 import org.eclipse.persistence.internal.sessions.factories.model.login.LoginConfig;
 import org.eclipse.persistence.internal.sessions.factories.model.property.PropertyConfig;
 import org.eclipse.persistence.internal.sessions.factories.model.sequencing.SequencingConfig;
+import org.eclipse.persistence.tools.workbench.scplugin.model.SequenceType;
+import org.eclipse.persistence.tools.workbench.utility.ClassTools;
 
 /**
  * Session Configuration model adapter class for the 
@@ -105,17 +106,8 @@ public abstract class LoginAdapter extends SCAdapter implements Property {
 		this.firePropertyChanged( DEFAULT_SEQUENCE_PROPERTY, old, sequence);
 		return sequence;
 	}
-	/**
-	 * Facade for setting CustomTableSequence and firing defaultSequence property changed.
-	 */
-	public SequenceAdapter setCustomTableSequence() {
-
-		SequenceAdapter old = this.sequencing.getDefaultSequence();
-		SequenceAdapter sequence = this.sequencing.setCustomTableSequence( SequencingAdapter.CUSTOM_SEQUENCE_NAME, getSequencePreallocationSize());
-		this.firePropertyChanged( DEFAULT_SEQUENCE_PROPERTY, old, sequence);
-		return sequence;
-	}
 	
+	@Override
 	protected void initializeDefaults() {
 		super.initializeDefaults();
 		
@@ -594,8 +586,42 @@ public abstract class LoginAdapter extends SCAdapter implements Property {
 		return this.sequencing.getDefaultSequence();
 	}
 
-	public int sequencesSize() {
+	/**
+	 * Returns an iterator on a collection of sequences adapters.
+	 */
+	public ListIterator<SequenceAdapter> sequences() {
 		
+		return this.sequencing.sequences();
+	}
+
+	/**
+	 * Removes the given sequence.
+	 */
+	public SequenceAdapter removeSequence( SequenceAdapter sequenceAdapter) {	
+		// remove adapter
+		this.sequencing.removeSequence(sequenceAdapter);
+		fireListChanged(SEQUENCES_COLLECTION);
+		return sequenceAdapter;
+	}
+
+	public SequenceAdapter addSequence(String name, SequenceType sequenceType) {
+		SequenceAdapter newAdapter = this.sequencing.addSequence(name, sequenceType);
+		fireListChanged(SEQUENCES_COLLECTION);
+		return newAdapter;
+	}
+
+	public SequenceAdapter createAndSetDefaultSequence(String name, SequenceType type) {
+		SequenceAdapter old = this.getDefaultSequence();
+		SequenceAdapter adapter = this.sequencing.createAndSetDefaultSequence(name, type);
+		firePropertyChanged(DEFAULT_SEQUENCE_PROPERTY, old, adapter);
+		return adapter;
+	}
+
+	public int sequencesSize() {
 		return this.sequencing.sequencesSize();
+	}
+	
+	public Iterator<String> sequenceNames() {
+		return this.sequencing.sequenceNames();
 	}
 }

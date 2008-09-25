@@ -13,6 +13,7 @@
 package org.eclipse.persistence.tools.workbench.scplugin.model.adapter;
 
 import org.eclipse.persistence.internal.sessions.factories.model.sequencing.DefaultSequenceConfig;
+import org.eclipse.persistence.tools.workbench.scplugin.model.SequenceType;
 
 /**
  * Session Configuration model adapter class for the 
@@ -22,7 +23,7 @@ import org.eclipse.persistence.internal.sessions.factories.model.sequencing.Defa
  * 
  * @author Tran Le
  */
-class DefaultSequenceAdapter extends SequenceAdapter {
+public class DefaultSequenceAdapter extends SequenceAdapter {
 	
 	/**
 	 * Creates a new DefaultSequence for the specified model object.
@@ -50,5 +51,10 @@ class DefaultSequenceAdapter extends SequenceAdapter {
 	 */
 	protected Object buildModel() {
 		return new DefaultSequenceConfig();
+	}
+	
+	@Override
+	public SequenceType getType() {
+		return SequenceType.DEFAULT;
 	}
 }

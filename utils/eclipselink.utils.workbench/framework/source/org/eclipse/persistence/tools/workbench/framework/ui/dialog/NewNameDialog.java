@@ -19,6 +19,7 @@ import java.awt.Insets;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.List;
 
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -28,8 +29,20 @@ import javax.swing.event.DocumentListener;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.Document;
 import javax.swing.text.PlainDocument;
+import javax.xml.bind.Validator;
 
 import org.eclipse.persistence.tools.workbench.framework.context.WorkbenchContext;
+import org.eclipse.persistence.tools.workbench.uitools.app.PropertyAspectAdapter;
+import org.eclipse.persistence.tools.workbench.uitools.app.PropertyValueModel;
+import org.eclipse.persistence.tools.workbench.uitools.app.SimplePropertyValueModel;
+import org.eclipse.persistence.tools.workbench.uitools.app.ValueModel;
+import org.eclipse.persistence.tools.workbench.uitools.app.swing.DocumentAdapter;
+import org.eclipse.persistence.tools.workbench.utility.events.AWTChangeNotifier;
+import org.eclipse.persistence.tools.workbench.utility.events.ChangeNotifier;
+import org.eclipse.persistence.tools.workbench.utility.node.AbstractNodeModel;
+import org.eclipse.persistence.tools.workbench.utility.node.Node;
+import org.eclipse.persistence.tools.workbench.utility.node.Problem;
+import org.eclipse.persistence.tools.workbench.utility.string.StringTools;
 
 /**
  * This dialog can be used to prompt the user for the name of a new
@@ -66,7 +79,12 @@ public class NewNameDialog extends AbstractValidatingDialog {
 	private JLabel textFieldLabel;
 
 	/** After this is built, we need to set the text and select it. */
-	private JTextField textField;
+	protected JTextField textField;
+
+	/**
+	 * The holder of the state object used by this dialog.
+	 */
+	private PropertyValueModel subjectHolder;
 
 
 	// ********** constructors/initialization **********
@@ -80,6 +98,12 @@ public class NewNameDialog extends AbstractValidatingDialog {
 		this.builder = builder;
 	}
 
+	@Override
+	protected void initialize() {
+		super.initialize();
+		this.subjectHolder = new SimplePropertyValueModel();
+	}
+	
 	protected Component buildMainPanel() {
 		JPanel mainPanel = new JPanel(new GridBagLayout());
 		GridBagConstraints constraints = new GridBagConstraints();
@@ -98,7 +122,7 @@ public class NewNameDialog extends AbstractValidatingDialog {
 		mainPanel.add(this.textFieldLabel, constraints);
 
 		// text entry field
-		this.textField = new JTextField();
+		this.textField = new JTextField(25);
 		constraints.gridx = 0;
 		constraints.gridy = 1;
 		constraints.gridwidth = 1;
@@ -146,6 +170,28 @@ public class NewNameDialog extends AbstractValidatingDialog {
 	protected Document buildDocument() {
 		return this.builder.getDocumentFactory().buildDocument();
 	}
+	
+	protected Document buildDocumentWithStateObject() {
+		return new DocumentAdapter(
+			this.buildNameHolder(),
+			this.builder.getDocumentFactory().buildDocument()
+		);
+	}
+	
+	protected final PropertyValueModel buildNameHolder() {
+		return new PropertyAspectAdapter(getSubjectHolder(), StateObject.NAME_PROPERTY) {
+			@Override
+			protected Object getValueFromSubject() {
+				return ((StateObject)subject).getName();
+			}
+
+			@Override
+			protected void setValueOnSubject(Object value) {
+				((StateObject)subject).setName((String)value);
+			}
+		};
+	}
+
 
 	protected DocumentListener buildDocumentListener() {
 		return new DocumentListener() {
@@ -281,6 +327,52 @@ public class NewNameDialog extends AbstractValidatingDialog {
 
 
 	// ********** member classes **********
+
+	protected final ValueModel getSubjectHolder()
+	{
+		return subjectHolder;
+	}
+
+
+	protected StateObject buildStateObject()
+	{
+		return null;
+	}
+
+	@Override
+	public void show() {
+		installSubject();
+		super.show();
+	}
+	
+	private void installSubject()
+	{
+		StateObject subject = this.buildStateObject();
+		if (subject != null)
+		{
+			subject.setValidator(buildValidator());
+			subject.setChangeNotifier(AWTChangeNotifier.instance());
+		}
+		this.subjectHolder.setValue(subject);
+	}
+
+
+	/**
+	 * Returns the subject of this dialog.
+	 *
+	 * @return The subject of this dialog or <code>null</code> if no subject was
+	 * used
+	 */
+	public StateObject subject()
+	{
+		return (StateObject)this.subjectHolder.getValue();
+	}
+
+	Node.Validator buildValidator()
+	{
+		return Node.NULL_VALIDATOR;
+	}
+
 
 	/**
 	 * Configure an instance of this class to build a NewNameDialog.
@@ -509,5 +601,167 @@ public class NewNameDialog extends AbstractValidatingDialog {
 		Document buildDocument();
 
 	}
+
+
+	/**
+		 * The model object used by this dialog to automatically validate the input
+		 * name.
+		 */
+		public static class StateObject extends AbstractNodeModel
+		{
+			private Builder builder;
+			private ChangeNotifier changeNotifier;
+			private String name;
+			private Validator validator;
+	
+			public static final String NAME_PROPERTY = "name";
+			
+			protected StateObject(Builder builder)
+			{
+				super();
+				this.builder = builder;
+				this.name = builder.getOriginalName();
+	
+				if (name == null) {
+					name = "";
+				}
+			}
+	
+			/*
+			 * (non-Javadoc)
+			 */
+			@Override
+			protected void addProblemsTo(List currentProblems)
+			{
+				super.addProblemsTo(currentProblems);
+				editName(currentProblems);
+			}
+	
+			/*
+			 * (non-Javadoc)
+			 */
+			public String displayString()
+			{
+				return name;
+			}
+	
+			/**
+			 * Edit the name, using the settings in the builder, and update
+			 * the error message.
+			 */
+			protected void editName(List<Problem> currentProblems) {
+				String text = this.name;
+	
+				// empty string is not allowed
+				if (StringTools.stringIsEmpty(text)) {
+					currentProblems.add(buildProblem("NEW_NAME_DIALOG.EMPTY_VALUE"));
+					return;
+				}
+	
+				boolean nameIsSameAsOriginal = this.namesMatch(text, this.builder.getOriginalName());
+	
+				// original name might be "illegal"
+				if (this.builder.originalNameIsIllegal() && nameIsSameAsOriginal) {
+					currentProblems.add(buildProblem("NEW_NAME_DIALOG.ORIGINAL_VALUE"));
+					return;
+				}
+	
+				// check for "existing" name
+				if (this.nameIsAlreadyTaken(text, nameIsSameAsOriginal)) {
+					currentProblems.add(buildProblem("NEW_NAME_DIALOG.DUPLICATE_VALUE"));
+					return;
+				}
+	
+				// check for "illegal" name
+				if (this.nameIsIllegal(text)) {
+					currentProblems.add(buildProblem("NEW_NAME_DIALOG.ILLEGAL_VALUE"));
+					return;
+				}
+	
+				// no problems...
+				//this.parentDialog.clearErrorMessage();
+			}
+	
+			/*
+			 * (non-Javadoc)
+			 */
+			@Override
+			public ChangeNotifier getChangeNotifier()
+			{
+				return changeNotifier;
+			}
+	
+			public String getName()
+			{
+				return name;
+			}
+	
+			/*
+			 * (non-Javadoc)
+			 */
+			@Override
+			public Validator getValidator()
+			{
+				return validator;
+			}
+	
+			protected boolean nameIsAlreadyTaken(String name, boolean nameIsSameAsOriginal) {
+				for (Iterator<String> stream = this.builder.existingNames(); stream.hasNext(); ) {
+					if (this.namesMatch(name, stream.next())) {
+						if ( ! nameIsSameAsOriginal) {
+							// if the name can be the same as the original and the original
+							// is among the "existing" names, ignore it
+							return true;
+						}
+					}
+				}
+				return false;
+			}
+	
+			protected boolean nameIsIllegal(String name) {
+				for (Iterator<String> stream = this.builder.illegalNames(); stream.hasNext(); ) {
+					if (this.namesMatch(name, stream.next())) {
+						// we may want to put a check for the "original" name here, also...
+						// see above
+						return true;
+					}
+				}
+				return false;
+			}
+	
+			protected boolean namesMatch(String name1, String name2) {
+				return this.builder.comparisonIsCaseSensitive() ?
+					name1.equals(name2)
+				:
+					name1.equalsIgnoreCase(name2);
+			}
+	
+			/*
+			 * (non-Javadoc)
+			 */
+			@Override
+			public void setChangeNotifier(ChangeNotifier changeNotifier)
+			{
+				this.changeNotifier = changeNotifier;
+			}
+	
+			public void setName(String name)
+			{
+				String oldName = this.name;
+				this.name = name;
+				firePropertyChanged(NAME_PROPERTY, oldName, name);
+			}
+	
+			/*
+			 * (non-Javadoc)
+			 */
+			@Override
+			public void setValidator(Validator validator)
+			{
+				this.validator = validator;
+			}
+		}
+	
+	
 
 }

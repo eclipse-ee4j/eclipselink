@@ -46,6 +46,16 @@ public final class FrameworkIconResourceFileNameMap extends AbstractIconResource
 		{"tools.problemReport", "basic/misc/ProblemsReport.gif"},
 		{"window.showProblems", "basic/misc/Problems.gif"},
 		
+		// Expand/Collapse
+		{ "collapse",          "basic/misc/collapse.png" },
+		{ "collapse.disabled", "basic/misc/collapse.disabled.png" },
+		{ "collapse.focus",    "basic/misc/collapse.focus.png" },
+		{ "collapse.pressed",  "basic/misc/collapse.pressed.png" },
+		{ "expand",            "basic/misc/expand.png" },
+		{ "expand.disabled",   "basic/misc/expand.disabled.png" },
+		{ "expand.focus",      "basic/misc/expand.focus.png" },
+		{ "expand.pressed",    "basic/misc/expand.pressed.png" },
+		
 		{"PREFERENCES", "basic/misc/Preferences.gif"},
 		{"HELP_TOPIC_ID_WINDOW", "basic/help/Note.gif"},
 		{"HELP", "basic/help/Help.gif"},

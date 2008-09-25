@@ -265,6 +265,47 @@ public final class SCPluginResourceBundle extends ListResourceBundle {
 		{ "LOGIN_BATCH_WRITING_BUFFERED_CHOICE", "Buffered" },
 		{ "LOGIN_BATCH_WRITING_NATIVE_CHOICE",   "Native(Oracle)"},	
 
+		// NewSequenceDialog
+		{ "NEW_SEQUENCE_DIALOG_DEFAULT_RADIO_BUTTON",       "&Default"},
+		{ "NEW_SEQUENCE_DIALOG_DEFAULT_SEQUENCE_CHECK_BOX", "Default &Sequence"},
+		{ "NEW_SEQUENCE_DIALOG_DESCRIPTION",                "Specify the name and the type of the sequence to create."},
+		{ "NEW_SEQUENCE_DIALOG_NAME_LABEL",                 "&Name:"},
+		{ "NEW_SEQUENCE_DIALOG_NATIVE_RADIO_BUTTON",        "N&ative"},
+		{ "NEW_SEQUENCE_DIALOG_SEQUENCE_TYPE_GROUP_BOX",    "Type"},
+		{ "NEW_SEQUENCE_DIALOG_TABLE_RADIO_BUTTON",         "&Table"},
+		{ "NEW_SEQUENCE_DIALOG_TITLE",                      "Create New Sequence"},
+		{ "NEW_SEQUENCE_DIALOG_UNARY_TABLE_RADIO_BUTTON",   "&Unary Table"},
+		{ "NEW_SEQUENCE_DIALOG_XML_FILE_RADIO_BUTTON",      "&XML File"},
+
+		// SequencePane
+		{"SEQUENCE_PANE_PREALLOCATION_SIZE_LABEL", "Preallocation Size:"},
+
+		// SequencingPane
+		{"SEQUENCING_PANE_ADD_BUTTON",                             "Add New Sequence"},
+		{"SEQUENCING_PANE_DEFAULT_SEQUENCE_TEXT",                  "(Default Sequence)"},
+		{"SEQUENCING_PANE_DESCRIPTION_1",                          "You configure TopLink {0} at the session or project level to tell TopLink how to obtain sequence values: that is, what type of sequences to use."},
+		{"SEQUENCING_PANE_DESCRIPTION_2",                          "sequencing"},
+		{"SEQUENCING_PANE_EDIT_BUTTON",                            "Rename"},
+		{"SEQUENCING_PANE_EDIT_SEQUENCE_DIALOG_DESCRIPTION_TITLE", "Rename Sequence"},
+		{"SEQUENCING_PANE_EDIT_SEQUENCE_DIALOG_DESCRIPTION",       "Specify a new name for the sequence."},
+		{"SEQUENCING_PANE_EDIT_SEQUENCE_DIALOG_LABEL",             "&Name:"},
+		{"SEQUENCING_PANE_EDIT_SEQUENCE_DIALOG_TITLE",             "Rename Sequence"},
+		{"SEQUENCING_PANE_REMOVE_BUTTON",                          "Remove"},
+		{"SEQUENCING_PANE_SEQUENCE_NO_NAME",                       "<name not set ({0})>"},
+		{"SEQUENCING_PANE_SEQUENCE_TYPE_DEFAULT",                  "Default"},
+		{"SEQUENCING_PANE_SEQUENCE_TYPE_NATIVE",                   "Native"},
+		{"SEQUENCING_PANE_SEQUENCE_TYPE_TABLE",                    "Table"},
+		{"SEQUENCING_PANE_SEQUENCE_TYPE_UNARY_TABLE",              "Unary Table"},
+		{"SEQUENCING_PANE_SEQUENCE_TYPE_XML_FILE",                 "XML File"},
+
+		// TableSequencePane
+		{"TABLE_SEQUENCE_PANE_COUNTER_FIELD_LABEL", "Counter Field:"},
+		{"TABLE_SEQUENCE_PANE_NAME_FIELD_LABEL",    "Name Field:"},
+		{"TABLE_SEQUENCE_PANE_TABLE_LABEL",         "Table:"},
+
+		// UnaryTableSequencePane
+		{"UNARY_TABLE_SEQUENCE_PANE_COUNTER_FIELD_LABEL", "Counter Field:"},
+
 		// Session pages
 		{ "SESSION_CLUSTERING_TAB_TITLE",        "Cache Coordination" },
 		{ "SESSION_GENERAL_TAB_TITLE",           "General" },
@@ -351,7 +392,7 @@ public final class SCPluginResourceBundle extends ListResourceBundle {
 		// Login panels
 		{ "LOGIN_CONNECTION_TAB_TITLE",       "Connection" },
 		{ "LOGIN_PROPERTIES_TAB_TITLE",       "Properties" },
-		{ "LOGIN_RDBMS_SEQUENCING_TAB_TITLE", "Sequencing" },
+		{ "LOGIN_SEQUENCING_TAB_TITLE", "Sequencing" },
 		{ "LOGIN_RDBMS_OPTIONS_TAB_TITLE",    "Options" },
 
 		// ui.session.clustering.CacheSynchronizationManagerPane

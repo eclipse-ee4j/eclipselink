@@ -36,6 +36,7 @@ import javax.swing.event.PopupMenuListener;
 import javax.swing.plaf.basic.BasicComboBoxUI;
 
 import org.eclipse.persistence.tools.workbench.uitools.swing.CachingComboBoxModel;
+import org.eclipse.persistence.tools.workbench.uitools.swing.Combo;
 import org.eclipse.persistence.tools.workbench.uitools.swing.EmptyIcon;
 import org.eclipse.persistence.tools.workbench.uitools.swing.NonCachingComboBoxModel;
 import org.eclipse.persistence.tools.workbench.utility.ClassTools;
@@ -54,7 +55,7 @@ import org.eclipse.persistence.tools.workbench.utility.ClassTools;
  * 		#buildBrowser() may be ignored.
  */
 public class ListChooser 
-	extends JComboBox
+	extends Combo
 {
 	
 	/** the size of a "long" list - anything smaller is a "short" list */

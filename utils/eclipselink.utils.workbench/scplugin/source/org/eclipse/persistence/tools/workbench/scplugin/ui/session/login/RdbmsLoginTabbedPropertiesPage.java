@@ -89,11 +89,11 @@ public class RdbmsLoginTabbedPropertiesPage extends TabbedPropertiesPage {
 	}
 
 	protected Component buildSequencingPropertiesPage() {
-		return new RdbmsSequencingPropertiesPage( getNodeHolder(), getWorkbenchContextHolder());
+		return new SequencingPropertiesPage( getNodeHolder(), getWorkbenchContextHolder());
 	}
 
 	protected String buildSequencingPropertiesPageTitle() {
-		return "LOGIN_RDBMS_SEQUENCING_TAB_TITLE";
+		return "LOGIN_SEQUENCING_TAB_TITLE";
 	}
 
 	protected Component buildTitlePanel() {

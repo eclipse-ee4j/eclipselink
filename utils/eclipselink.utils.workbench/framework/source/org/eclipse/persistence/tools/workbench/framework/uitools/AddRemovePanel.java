@@ -151,7 +151,14 @@ public abstract class AddRemovePanel extends AbstractPanel {
 			return;
         }
 
-		this.selectedItemHolder.setValue(this.getSelectionModel().getSelectedValue());
+		if (getSelectionModel().getSelectedValuesSize() == 1)
+		{
+			selectedItemHolder.setValue(getSelectionModel().getSelectedValue());
+		}
+		else
+		{
+			selectedItemHolder.setValue(null);
+		}
         this.updateButtons();
 		fireListSelectionEvent(e);
 	}
@@ -474,6 +481,10 @@ public abstract class AddRemovePanel extends AbstractPanel {
 	
 	public ObjectListSelectionModel getSelectionModel() {
 		return this.rowSelectionModel;
+	}
+	
+	public PropertyValueModel getSelectedItemHolder() {
+		return this.selectedItemHolder;
 	}
 	
 	protected Adapter getAdapter() {

@@ -29,6 +29,7 @@ public class EmptyIcon
 
 	public static final EmptyIcon NULL_INSTANCE = new EmptyIcon(0);
 
+	public static final EmptyIcon SMALL_ICON = new EmptyIcon(16);
 
 	public EmptyIcon(int width, int height) {
 		super();

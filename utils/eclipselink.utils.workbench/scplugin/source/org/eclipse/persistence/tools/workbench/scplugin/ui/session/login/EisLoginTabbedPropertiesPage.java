@@ -49,6 +49,14 @@ public class EisLoginTabbedPropertiesPage extends AbstractPropertiesPage
 		return "LOGIN_PROPERTIES_TAB_TITLE";
 	}
 
+	protected Component buildSequencingPropertiesPage() {
+		return new SequencingPropertiesPage( getNodeHolder(), getWorkbenchContextHolder());
+	}
+
+	protected String buildSequencingPropertiesPageTitle() {
+		return "LOGIN_SEQUENCING_TAB_TITLE";
+	}
+
 	protected void initializeLayout()
 	{
 		JTabbedPane tabbedPane = new JTabbedPane();
@@ -56,6 +64,9 @@ public class EisLoginTabbedPropertiesPage extends AbstractPropertiesPage
 		add(tabbedPane, BorderLayout.CENTER);
 
 		tabbedPane.addTab(resourceRepository().getString(buildConnectionPropertiesPageTitle()), buildConnectionPropertiesPage());
+		tabbedPane.addTab(resourceRepository().getString(buildSequencingPropertiesPageTitle()), buildSequencingPropertiesPage());
 		tabbedPane.addTab(resourceRepository().getString(buildPropertiesPropertiesPageTitle()), buildPropertiesPropertiesPage());
+
 	}
+
 }

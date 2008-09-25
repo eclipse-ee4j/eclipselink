@@ -1,15 +1,3 @@
-/*******************************************************************************
- * Copyright (c) 1998, 2008 Oracle. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
- * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
- * http://www.eclipse.org/org/documents/edl-v10.php.
- *
- * Contributors:
- *     Oracle - initial API and implementation from Oracle TopLink
-******************************************************************************/
 package org.eclipse.persistence.tools.workbench.uitools.app.swing;
 
 import java.beans.PropertyChangeEvent;
@@ -21,7 +9,6 @@ import javax.swing.event.ChangeListener;
 import org.eclipse.persistence.tools.workbench.uitools.app.PropertyValueModel;
 import org.eclipse.persistence.tools.workbench.uitools.app.ValueModel;
 import org.eclipse.persistence.tools.workbench.utility.string.StringTools;
-
 
 /**
  * This javax.swing.SpinnerNumberModel can be used to keep a ChangeListener
@@ -45,7 +32,7 @@ public class NumberSpinnerModelAdapter extends SpinnerNumberModel {
 	private Number defaultValue;
 
 	/** A value model on the underlying number. */
-	private PropertyValueModel numberHolder;
+	protected PropertyValueModel numberHolder;
 
 	/**
 	 * A listener that allows us to synchronize with
@@ -148,6 +135,10 @@ public class NumberSpinnerModelAdapter extends SpinnerNumberModel {
 		return super.getValue();
 	}
 
+	protected final Number getSuperValue() {
+		return super.getNumber();
+	}
+
 	/**
 	 * Extend to update the underlying number directly.
 	 * The resulting event will be ignored: @see synchronizeDelegate(Object).
@@ -188,6 +179,11 @@ public class NumberSpinnerModelAdapter extends SpinnerNumberModel {
 		return this.defaultValue;
 	}
 
+	protected void setDefaultValue(Number defaultValue) {
+		this.defaultValue = defaultValue;
+	}
+
+
 	/**
 	 * Convert to a non-null value.
 	 */
@@ -201,7 +197,7 @@ public class NumberSpinnerModelAdapter extends SpinnerNumberModel {
 	/**
 	 * Set the spinner value if it has changed.
 	 */
-	void synchronize(Object value) {
+	protected void synchronize(Object value) {
 		Object newValue = this.spinnerValueOf(value);
 		// check to see whether the date has already been synchronized
 		// (via #setValue())

@@ -12,6 +12,7 @@
 ******************************************************************************/
 package org.eclipse.persistence.tools.workbench.framework.ui.dialog;
 
+import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Container;
 import java.awt.Dialog;
@@ -36,23 +37,52 @@ import java.util.prefs.Preferences;
 import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.Box;
+import javax.swing.ButtonModel;
+import javax.swing.ComboBoxModel;
 import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JDialog;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JRadioButton;
+import javax.swing.JRootPane;
 import javax.swing.JSeparator;
+import javax.swing.JSpinner;
+import javax.swing.JTable;
+import javax.swing.JTextField;
+import javax.swing.JToggleButton;
+import javax.swing.JTree;
 import javax.swing.KeyStroke;
+import javax.swing.ListCellRenderer;
+import javax.swing.ListSelectionModel;
+import javax.swing.SpinnerDateModel;
+import javax.swing.SpinnerNumberModel;
 import javax.swing.SwingConstants;
 import javax.swing.WindowConstants;
+import javax.swing.border.Border;
 import javax.swing.border.EmptyBorder;
+import javax.swing.table.TableColumnModel;
+import javax.swing.table.TableModel;
+import javax.swing.text.Document;
+import javax.swing.tree.TreeModel;
 
 import org.eclipse.persistence.tools.workbench.framework.context.ApplicationContext;
 import org.eclipse.persistence.tools.workbench.framework.context.WindowWorkbenchContext;
 import org.eclipse.persistence.tools.workbench.framework.context.WorkbenchContext;
 import org.eclipse.persistence.tools.workbench.framework.help.HelpManager;
 import org.eclipse.persistence.tools.workbench.framework.resources.ResourceRepository;
+import org.eclipse.persistence.tools.workbench.framework.ui.view.AbstractPanel;
 import org.eclipse.persistence.tools.workbench.framework.uitools.ComponentAligner;
+import org.eclipse.persistence.tools.workbench.framework.uitools.SwingComponentFactory;
+import org.eclipse.persistence.tools.workbench.uitools.app.PropertyValueModel;
+import org.eclipse.persistence.tools.workbench.uitools.app.ValueModel;
+import org.eclipse.persistence.tools.workbench.uitools.cell.CellRendererAdapter;
+import org.eclipse.persistence.tools.workbench.uitools.chooser.ListChooser;
+import org.eclipse.persistence.tools.workbench.uitools.swing.ExpandablePane;
+import org.eclipse.persistence.tools.workbench.uitools.swing.TriStateCheckBox;
+import org.eclipse.persistence.tools.workbench.uitools.swing.TriStateCheckBox.TriStateButtonModel;
 import org.eclipse.persistence.tools.workbench.utility.iterators.NullIterator;
+import org.eclipse.persistence.tools.workbench.utility.string.BidiStringConverter;
 
 
 /**
@@ -118,6 +148,12 @@ public abstract class AbstractDialog extends JDialog implements SwingConstants {
 	/** supplies strings, mnemonics, accelerators, icons, etc. */
 	private WorkbenchContext context;
 	
+	/**
+	 * This container holds onto the content of this dialog, which is the
+	 * description pane (if required) and the main panel.
+	 */
+	protected AbstractPanel container;
+
 	/** contains any subclass-defined custom buttons */
 	private JPanel customButtonPanel;
 
@@ -192,7 +228,7 @@ public abstract class AbstractDialog extends JDialog implements SwingConstants {
 	protected void initialize() {
 		this.buttons = new HashMap();
 		this.wasConfirmed = false;
-		
+		container = new AbstractPanel(new GridBagLayout(), getApplicationContext()) {};
 		this.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
 		this.initializeActions();
 		this.initializeDefaultKeyboardActions();
@@ -211,9 +247,12 @@ public abstract class AbstractDialog extends JDialog implements SwingConstants {
 	// ********** GUI **********
 
 	protected void initializeContentPane() {
-		Container contentPane = this.getContentPane();
-		contentPane.setLayout(new GridBagLayout());
 		GridBagConstraints constraints = new GridBagConstraints();
+
+		Container contentPane = this.getContentPane();
+		contentPane.setLayout(new BorderLayout());
+		container.setOpaque(false);
+		contentPane.add(container, BorderLayout.CENTER);
 		
 		// main panel
 		constraints.gridx = 		0;
@@ -228,7 +267,7 @@ public abstract class AbstractDialog extends JDialog implements SwingConstants {
 		
 		Component mainPanel = this.buildMainPanel();
 		this.helpManager().addTopicID(mainPanel, this.helpTopicId());
-		contentPane.add(mainPanel, constraints);
+		container.add(mainPanel, constraints);
 
 		// separator
 		constraints.gridx = 		0;
@@ -241,7 +280,7 @@ public abstract class AbstractDialog extends JDialog implements SwingConstants {
 		constraints.anchor = 		GridBagConstraints.NORTH;
 		constraints.insets = 		new Insets(10, 5, 10, 5);
 
-		contentPane.add(new JSeparator(), constraints);
+		container.add(new JSeparator(), constraints);
 		
 		// button panel
 		JPanel buttonPanel = this.buildButtonPanel();
@@ -257,7 +296,7 @@ public abstract class AbstractDialog extends JDialog implements SwingConstants {
 		constraints.anchor = 		GridBagConstraints.NORTH;
 		constraints.insets = 		new Insets(0, 0, 0, 0);
 
-		contentPane.add(buttonPanel, constraints);
+		container.add(buttonPanel, constraints);
 	}
 
 	/** 
@@ -708,5 +747,2362 @@ public abstract class AbstractDialog extends JDialog implements SwingConstants {
 	public static void launchAndWait(Dialog d) throws InterruptedException, InvocationTargetException {
 		EventQueue.invokeAndWait(buildDialogLauncher(d));
 	}
+	
+	//*********************************  Swing Helpers ******************************************************\
+	
+	/**
+	 * @see SwingComponentFactory#buildExpandablePanel(String, JComponent, ResourceRepository)
+	 */
+	protected final ExpandablePane buildExpandablePanel(String key,
+	                                                     JComponent internalPane)
+	{
+		return SwingComponentFactory.buildExpandablePanel
+		(
+			key,
+			internalPane,
+			resourceRepository()
+		);
+	}
+
+	/**
+	 * @see SwingComponentFactory#buildExpandablePanel(String, JComponent, boolean, ResourceRepository)
+	 */
+	protected final ExpandablePane buildExpandablePanel(String key,
+	                                                     JComponent internalPane,
+	                                                     boolean expanded)
+	{
+		return SwingComponentFactory.buildExpandablePanel
+		(
+			key,
+			internalPane,
+			expanded,
+			resourceRepository()
+		);
+	}
+
+	/**
+	 * @see SwingComponentFactory#buildExpandablePanel(String, String, JComponent, ResourceRepository)
+	 */
+	protected final ExpandablePane buildExpandablePanel(String expandedTextKey,
+	                                                     String collapsedTextKey,
+	                                                     JComponent internalPane)
+	{
+		return SwingComponentFactory.buildExpandablePanel
+		(
+			expandedTextKey,
+			collapsedTextKey,
+			internalPane,
+			resourceRepository()
+		);
+	}
+
+	/**
+	 * @see SwingComponentFactory#buildExpandablePanel(String, String, JComponent, boolean, ResourceRepository)
+	 */
+	protected final ExpandablePane buildExpandablePanel(String expandedTextKey,
+	                                                     String collapsedTextKey,
+	                                                     JComponent internalPane,
+	                                                     boolean expanded)
+	{
+		return SwingComponentFactory.buildExpandablePanel
+		(
+			expandedTextKey,
+			collapsedTextKey,
+			internalPane,
+			expanded,
+			resourceRepository()
+		);
+	}
+
+	/**
+	 * @see SwingComponentFactory#buildLabel(String, ResourceRepository)
+	 */
+	protected final JLabel buildLabel(String key)
+	{
+		return SwingComponentFactory.buildLabel(key, resourceRepository());
+	}
+
+	/**
+	 * @see SwingComponentFactory#buildLabeledComboBox(String, ComboBoxModel, ResourceRepository, ComponentAligner, ComponentAligner)
+	 */
+	protected final JComponent buildLabeledComboBox(String key,
+	                                                ComboBoxModel model)
+	{
+		return SwingComponentFactory.buildLabeledComboBox
+		(
+			key,
+			model,
+			resourceRepository(),
+			getAlignLeftGroup(),
+			getAlignRightGroup()
+		);
+	}
+
+	/**
+	 * @see SwingComponentFactory#buildLabeledComboBox(String, ComboBoxModel, JComponent, ResourceRepository, ComponentAligner, ComponentAligner)
+	 */
+	protected final JComponent buildLabeledComboBox(String key,
+	                                                ComboBoxModel model,
+	                                                JComponent rightComponent)
+	{
+		return SwingComponentFactory.buildLabeledComboBox
+		(
+			key,
+			model,
+			rightComponent,
+			resourceRepository(),
+			getAlignLeftGroup(),
+			getAlignRightGroup()
+		);
+	}
+
+	/**
+	 * @see SwingComponentFactory#buildLabeledComboBox(String, ComboBoxModel, ListCellRenderer, ResourceRepository, ComponentAligner, ComponentAligner)
+	 */
+	protected final JComponent buildLabeledComboBox(String key,
+	                                                ComboBoxModel model,
+	                                                ListCellRenderer renderer)
+	{
+		return SwingComponentFactory.buildLabeledComboBox
+		(
+			key,
+			model,
+			renderer,
+			resourceRepository(),
+			getAlignLeftGroup(),
+			getAlignRightGroup()
+		);
+	}
+
+	/**
+	 * @see SwingComponentFactory#buildLabeledComboBox(String, ComboBoxModel, ListCellRenderer, ResourceRepository, ComponentAligner, ComponentAligner)
+	 */
+	protected final JComponent buildLabeledComboBox(String key,
+	                                                ComboBoxModel model,
+	                                                CellRendererAdapter renderer)
+	{
+		return SwingComponentFactory.buildLabeledComboBox
+		(
+			key,
+			model,
+			renderer,
+			resourceRepository(),
+			getAlignLeftGroup(),
+			getAlignRightGroup()
+		);
+	}
+
+	/**
+	 * @see SwingComponentFactory#buildLabeledComboBox(String, ComboBoxModel, ListCellRenderer, JComponent, ResourceRepository, ComponentAligner, ComponentAligner)
+	 */
+	protected final JComponent buildLabeledComboBox(String key,
+	                                                ComboBoxModel model,
+	                                                ListCellRenderer renderer,
+	                                                JComponent rightComponent)
+	{
+		return SwingComponentFactory.buildLabeledComboBox
+		(
+			key,
+			model,
+			renderer,
+			rightComponent,
+			resourceRepository(),
+			getAlignLeftGroup(),
+			getAlignRightGroup()
+		);
+	}
+
+	/**
+	 * @see SwingComponentFactory#buildLabeledComponent(JComponent, JComponent, JComponent, ResourceRepository, ComponentAligner, ComponentAligner)
+	 */
+	protected final JComponent buildLabeledComponent(JComponent leftComponent,
+	                                                 JComponent centerComponent,
+	                                                 JComponent rightComponent)
+	{
+		return SwingComponentFactory.buildLabeledComponent
+		(
+			leftComponent,
+			centerComponent,
+			rightComponent,
+			resourceRepository(),
+			getAlignLeftGroup(),
+			getAlignRightGroup()
+		);
+	}
+
+	/**
+	 * @see SwingComponentFactory#buildLabeledComponent(String, JComponent, ResourceRepository, ComponentAligner, ComponentAligner)
+	 */
+	protected final JComponent buildLabeledComponent(String key, JComponent component)
+	{
+		return SwingComponentFactory.buildLabeledComponent
+		(
+			key,
+			component,
+			resourceRepository(),
+			getAlignLeftGroup(),
+			getAlignRightGroup()
+		);
+	}
+
+	/**
+	 * @see SwingComponentFactory#buildLabeledComponent(String, JComponent, JComponent, ResourceRepository, ComponentAligner, ComponentAligner)
+	 */
+	protected final JComponent buildLabeledComponent(String key,
+	                                                 JComponent component,
+	                                                 JComponent rightComponent)
+	{
+		return SwingComponentFactory.buildLabeledComponent
+		(
+			key,
+			component,
+			rightComponent,
+			resourceRepository(),
+			getAlignLeftGroup(),
+			getAlignRightGroup()
+		);
+	}
+
+	/**
+	 * @see SwingComponentFactory#buildLabeledEditableComboBox(String, ComboBoxModel, ValueModel, PropertyValueModel, ResourceRepository, ComponentAligner, ComponentAligner)
+	 */
+	protected final JComponent buildLabeledEditableComboBox(String key,
+	                                                        ComboBoxModel model,
+	                                                        ValueModel subjectHolder,
+	                                                        PropertyValueModel valueHolder)
+	{
+		return SwingComponentFactory.buildLabeledEditableComboBox
+		(
+			key,
+			model,
+			subjectHolder,
+			valueHolder,
+			resourceRepository(),
+			getAlignLeftGroup(),
+			getAlignRightGroup()
+		);
+	}
+
+	/**
+	 * @see SwingComponentFactory#buildLabeledEditableComboBox(String, ComboBoxModel, ValueModel, PropertyValueModel, JComponent, ResourceRepository, ComponentAligner, ComponentAligner)
+	 */
+	protected final JComponent buildLabeledEditableComboBox(String key,
+	                                                        ComboBoxModel model,
+	                                                        ValueModel subjectHolder,
+	                                                        PropertyValueModel valueHolder,
+	                                                        JComponent rightComponent)
+	{
+		return SwingComponentFactory.buildLabeledEditableComboBox
+		(
+			key,
+			model,
+			subjectHolder,
+			valueHolder,
+			rightComponent,
+			resourceRepository(),
+			getAlignLeftGroup(),
+			getAlignRightGroup()
+		);
+	}
+
+	/**
+	 * @see SwingComponentFactory#buildLabeledEditableComboBox(String, ComboBoxModel, ValueModel, PropertyValueModel, ListCellRenderer, ResourceRepository, ComponentAligner, ComponentAligner)
+	 */
+	protected final JComponent buildLabeledEditableComboBox(String key,
+	                                                        ComboBoxModel model,
+	                                                        ValueModel subjectHolder,
+	                                                        PropertyValueModel valueHolder,
+	                                                        ListCellRenderer renderer)
+	{
+		return SwingComponentFactory.buildLabeledEditableComboBox
+		(
+			key,
+			model,
+			subjectHolder,
+			valueHolder,
+			renderer,
+			resourceRepository(),
+			getAlignLeftGroup(),
+			getAlignRightGroup()
+		);
+	}
+
+	/**
+	 * @see SwingComponentFactory#buildLabeledEditableComboBox(String, ComboBoxModel, ValueModel, PropertyValueModel, ListCellRenderer, BidiStringConverter, ResourceRepository, ComponentAligner, ComponentAligner)
+	 */
+	protected final JComponent buildLabeledEditableComboBox(String key,
+	                                                        ComboBoxModel model,
+	                                                        ValueModel subjectHolder,
+	                                                        PropertyValueModel valueHolder,
+	                                                        ListCellRenderer renderer,
+	                                                        BidiStringConverter editorValueConverter)
+	{
+		return SwingComponentFactory.buildLabeledEditableComboBox
+		(
+			key,
+			model,
+			subjectHolder,
+			valueHolder,
+			renderer,
+			editorValueConverter,
+			resourceRepository(),
+			getAlignLeftGroup(),
+			getAlignRightGroup()
+		);
+	}
+
+	/**
+	 * @see SwingComponentFactory#buildLabeledEditableComboBox(String, ComboBoxModel, ValueModel, PropertyValueModel, ListCellRenderer, BidiStringConverter, Object, ResourceRepository, ComponentAligner, ComponentAligner)
+	 */
+	protected final JComponent buildLabeledEditableComboBox(String key,
+	                                                        ComboBoxModel model,
+	                                                        ValueModel subjectHolder,
+	                                                        PropertyValueModel valueHolder,
+	                                                        ListCellRenderer renderer,
+	                                                        BidiStringConverter editorValueConverter,
+	                                                        Object nullValue)
+	{
+		return SwingComponentFactory.buildLabeledEditableComboBox
+		(
+			key,
+			model,
+			subjectHolder,
+			valueHolder,
+			renderer,
+			editorValueConverter,
+			nullValue,
+			resourceRepository(),
+			getAlignLeftGroup(),
+			getAlignRightGroup()
+		);
+	}
+
+	/**
+	 * @see SwingComponentFactory#buildLabeledEditableComboBox(String, ComboBoxModel, ValueModel, PropertyValueModel, ListCellRenderer, BidiStringConverter, Object, JComponent, ResourceRepository, ComponentAligner, ComponentAligner)
+	 */
+	protected final JComponent buildLabeledEditableComboBox(String key,
+	                                                        ComboBoxModel model,
+	                                                        ValueModel subjectHolder,
+	                                                        PropertyValueModel valueHolder,
+	                                                        ListCellRenderer renderer,
+	                                                        BidiStringConverter editorValueConverter,
+	                                                        Object nullValue,
+	                                                        JComponent rightComponent)
+	{
+		return SwingComponentFactory.buildLabeledEditableComboBox
+		(
+			key,
+			model,
+			subjectHolder,
+			valueHolder,
+			renderer,
+			editorValueConverter,
+			nullValue,
+			rightComponent,
+			resourceRepository(),
+			getAlignLeftGroup(),
+			getAlignRightGroup()
+		);
+	}
+
+	/**
+	 * @see SwingComponentFactory#buildLabeledEditableComboBox(String, ComboBoxModel, ValueModel, PropertyValueModel, ListCellRenderer, JComponent, ResourceRepository, ComponentAligner, ComponentAligner)
+	 */
+	protected final JComponent buildLabeledEditableComboBox(String key,
+	                                                        ComboBoxModel model,
+	                                                        ValueModel subjectHolder,
+	                                                        PropertyValueModel valueHolder,
+	                                                        ListCellRenderer renderer,
+	                                                        JComponent rightComponent)
+	{
+		return SwingComponentFactory.buildLabeledEditableComboBox
+		(
+			key,
+			model,
+			subjectHolder,
+			valueHolder,
+			renderer,
+			rightComponent,
+			resourceRepository(),
+			getAlignLeftGroup(),
+			getAlignRightGroup()
+		);
+	}
+
+	/**
+	 * @see SwingComponentFactory#buildLabeledEditableComboBox(String, ComboBoxModel, ValueModel, PropertyValueModel, ListCellRenderer, Object, ResourceRepository, ComponentAligner, ComponentAligner)
+	 */
+	protected final JComponent buildLabeledEditableComboBox(String key,
+	                                                        ComboBoxModel model,
+	                                                        ValueModel subjectHolder,
+	                                                        PropertyValueModel valueHolder,
+	                                                        ListCellRenderer renderer,
+	                                                        Object nullValue)
+	{
+		return SwingComponentFactory.buildLabeledEditableComboBox
+		(
+			key,
+			model,
+			subjectHolder,
+			valueHolder,
+			renderer,
+			nullValue,
+			resourceRepository(),
+			getAlignLeftGroup(),
+			getAlignRightGroup()
+		);
+	}
+
+	/**
+	 * @see SwingComponentFactory#buildLabeledEditableComboBox(String, ComboBoxModel, ValueModel, PropertyValueModel, ValueModel, ResourceRepository, ComponentAligner, ComponentAligner)
+	 */
+	protected final JComponent buildLabeledEditableComboBox(String key,
+	                                                        ComboBoxModel model,
+	                                                        ValueModel subjectHolder,
+	                                                        PropertyValueModel valueHolder,
+	                                                        ValueModel defaultValueHolder)
+	{
+		return SwingComponentFactory.buildLabeledEditableComboBox
+		(
+			key,
+			model,
+			subjectHolder,
+			valueHolder,
+			defaultValueHolder,
+			resourceRepository(),
+			getAlignLeftGroup(),
+			getAlignRightGroup()
+		);
+	}
+
+	/**
+	 * @see SwingComponentFactory#buildLabeledEditableComboBox(String, ComboBoxModel, ValueModel, PropertyValueModel, ValueModel, JComponent, ResourceRepository, ComponentAligner, ComponentAligner)
+	 */
+	protected final JComponent buildLabeledEditableComboBox(String key,
+	                                                        ComboBoxModel model,
+	                                                        ValueModel subjectHolder,
+	                                                        PropertyValueModel valueHolder,
+	                                                        ValueModel defaultValueHolder,
+	                                                        JComponent rightComponent)
+	{
+		return SwingComponentFactory.buildLabeledEditableComboBox
+		(
+			key,
+			model,
+			subjectHolder,
+			valueHolder,
+			defaultValueHolder,
+			rightComponent,
+			resourceRepository(),
+			getAlignLeftGroup(),
+			getAlignRightGroup()
+		);
+	}
+
+	/**
+	 * @see SwingComponentFactory#buildLabeledEditableComboBox(String, ComboBoxModel, ValueModel, PropertyValueModel, ValueModel, ListCellRenderer, ResourceRepository, ComponentAligner, ComponentAligner)
+	 */
+	protected final JComponent buildLabeledEditableComboBox(String key,
+	                                                        ComboBoxModel model,
+	                                                        ValueModel subjectHolder,
+	                                                        PropertyValueModel valueHolder,
+	                                                        ValueModel defaultValueHolder,
+	                                                        ListCellRenderer renderer)
+	{
+		return SwingComponentFactory.buildLabeledEditableComboBox
+		(
+			key,
+			model,
+			subjectHolder,
+			valueHolder,
+			defaultValueHolder,
+			renderer,
+			resourceRepository(),
+			getAlignLeftGroup(),
+			getAlignRightGroup()
+		);
+	}
+
+	/**
+	 * @see SwingComponentFactory#buildLabeledEditableComboBox(String, ComboBoxModel, ValueModel, PropertyValueModel, ValueModel, ListCellRenderer, BidiStringConverter, ResourceRepository, ComponentAligner, ComponentAligner)
+	 */
+	protected final JComponent buildLabeledEditableComboBox(String key,
+	                                                        ComboBoxModel model,
+	                                                        ValueModel subjectHolder,
+	                                                        PropertyValueModel valueHolder,
+	                                                        ValueModel defaultValueHolder,
+	                                                        ListCellRenderer renderer,
+	                                                        BidiStringConverter editorValueConverter)
+	{
+		return SwingComponentFactory.buildLabeledEditableComboBox
+		(
+			key,
+			model,
+			subjectHolder,
+			valueHolder,
+			defaultValueHolder,
+			renderer,
+			editorValueConverter,
+			resourceRepository(),
+			getAlignLeftGroup(),
+			getAlignRightGroup()
+		);
+	}
+
+	/**
+	 * @see SwingComponentFactory#buildLabeledEditableComboBox(String, ComboBoxModel, ValueModel, PropertyValueModel, ValueModel, ListCellRenderer, BidiStringConverter, Object, ResourceRepository, ComponentAligner, ComponentAligner)
+	 */
+	protected final JComponent buildLabeledEditableComboBox(String key,
+	                                                        ComboBoxModel model,
+	                                                        ValueModel subjectHolder,
+	                                                        PropertyValueModel valueHolder,
+	                                                        ValueModel defaultValueHolder,
+	                                                        ListCellRenderer renderer,
+	                                                        BidiStringConverter editorValueConverter,
+	                                                        Object nullValue)
+	{
+		return SwingComponentFactory.buildLabeledEditableComboBox
+		(
+			key,
+			model,
+			subjectHolder,
+			valueHolder,
+			defaultValueHolder,
+			renderer,
+			editorValueConverter,
+			nullValue,
+			resourceRepository(),
+			getAlignLeftGroup(),
+			getAlignRightGroup()
+		);
+	}
+
+	/**
+	 * @see SwingComponentFactory#buildLabeledEditableComboBox(String, ComboBoxModel, ValueModel, PropertyValueModel, ValueModel, ListCellRenderer, BidiStringConverter, Object, JComponent, ResourceRepository, ComponentAligner, ComponentAligner)
+	 */
+	protected final JComponent buildLabeledEditableComboBox(String key,
+	                                                        ComboBoxModel model,
+	                                                        ValueModel subjectHolder,
+	                                                        PropertyValueModel valueHolder,
+	                                                        ValueModel defaultValueHolder,
+	                                                        ListCellRenderer renderer,
+	                                                        BidiStringConverter editorValueConverter,
+	                                                        Object nullValue,
+	                                                        JComponent rightComponent)
+	{
+		return SwingComponentFactory.buildLabeledEditableComboBox
+		(
+			key,
+			model,
+			subjectHolder,
+			valueHolder,
+			defaultValueHolder,
+			renderer,
+			editorValueConverter,
+			nullValue,
+			rightComponent,
+			resourceRepository(),
+			getAlignLeftGroup(),
+			getAlignRightGroup()
+		);
+	}
+
+	/**
+	 * @see SwingComponentFactory#buildLabeledEditableComboBox(String, ComboBoxModel, ValueModel, PropertyValueModel, ValueModel, ListCellRenderer, JComponent, ResourceRepository, ComponentAligner, ComponentAligner)
+	 */
+	protected final JComponent buildLabeledEditableComboBox(String key,
+	                                                        ComboBoxModel model,
+	                                                        ValueModel subjectHolder,
+	                                                        PropertyValueModel valueHolder,
+	                                                        ValueModel defaultValueHolder,
+	                                                        ListCellRenderer renderer,
+	                                                        JComponent rightComponent)
+	{
+		return SwingComponentFactory.buildLabeledEditableComboBox
+		(
+			key,
+			model,
+			subjectHolder,
+			valueHolder,
+			defaultValueHolder,
+			renderer,
+			rightComponent,
+			resourceRepository(),
+			getAlignLeftGroup(),
+			getAlignRightGroup()
+		);
+	}
+
+	/**
+	 * @see SwingComponentFactory#buildLabeledEditableComboBox(String, ComboBoxModel, ValueModel, PropertyValueModel, ValueModel, ListCellRenderer, Object, ResourceRepository, ComponentAligner, ComponentAligner)
+	 */
+	protected final JComponent buildLabeledEditableComboBox(String key,
+	                                                        ComboBoxModel model,
+	                                                        ValueModel subjectHolder,
+	                                                        PropertyValueModel valueHolder,
+	                                                        ValueModel defaultValueHolder,
+	                                                        ListCellRenderer renderer,
+	                                                        Object nullValue)
+	{
+		return SwingComponentFactory.buildLabeledEditableComboBox
+		(
+			key,
+			model,
+			subjectHolder,
+			valueHolder,
+			defaultValueHolder,
+			renderer,
+			nullValue,
+			resourceRepository(),
+			getAlignLeftGroup(),
+			getAlignRightGroup()
+		);
+	}
+
+	/**
+	 * @see SwingComponentFactory#buildLabeledEditableListChooser(String, ComboBoxModel, ValueModel, PropertyValueModel, ResourceRepository, ComponentAligner, ComponentAligner)
+	 */
+	protected final JComponent buildLabeledEditableListChooser(String key,
+	                                                           ComboBoxModel model,
+	                                                           ValueModel subjectHolder,
+	                                                           PropertyValueModel valueHolder)
+	{
+		return SwingComponentFactory.buildLabeledEditableListChooser
+		(
+			key,
+			model,
+			subjectHolder,
+			valueHolder,
+			resourceRepository(),
+			getAlignLeftGroup(),
+			getAlignRightGroup()
+		);
+	}
+
+	/**
+	 * @see SwingComponentFactory#buildLabeledEditableListChooser(String, ComboBoxModel, ValueModel, PropertyValueModel, ValueModel, JComponent, ResourceRepository, ComponentAligner, ComponentAligner)
+	 */
+	protected final JComponent buildLabeledEditableListChooser(String key,
+	                                                           ComboBoxModel model,
+	                                                           ValueModel subjectHolder,
+	                                                           PropertyValueModel valueHolder,
+	                                                           JComponent rightComponent)
+	{
+		return SwingComponentFactory.buildLabeledEditableListChooser
+		(
+			key,
+			model,
+			subjectHolder,
+			valueHolder,
+			rightComponent,
+			resourceRepository(),
+			getAlignLeftGroup(),
+			getAlignRightGroup()
+		);
+	}
+
+	/**
+	 * @see SwingComponentFactory#buildLabeledEditableListChooser(String, ComboBoxModel, ValueModel, PropertyValueModel, ValueModel, ListCellRenderer, ResourceRepository, ComponentAligner, ComponentAligner)
+	 */
+	protected final JComponent buildLabeledEditableListChooser(String key,
+	                                                           ComboBoxModel model,
+	                                                           ValueModel subjectHolder,
+	                                                           PropertyValueModel valueHolder,
+	                                                           ListCellRenderer renderer)
+	{
+		return SwingComponentFactory.buildLabeledEditableListChooser
+		(
+			key,
+			model,
+			subjectHolder,
+			valueHolder,
+			renderer,
+			resourceRepository(),
+			getAlignLeftGroup(),
+			getAlignRightGroup()
+		);
+	}
+
+	/**
+	 * @see SwingComponentFactory#buildLabeledEditableListChooser(String, ComboBoxModel, ValueModel, PropertyValueModel, ValueModel, ListCellRenderer, BidiStringConverter, ResourceRepository, ComponentAligner, ComponentAligner)
+	 */
+	protected final JComponent buildLabeledEditableListChooser(String key,
+	                                                           ComboBoxModel model,
+	                                                           ValueModel subjectHolder,
+	                                                           PropertyValueModel valueHolder,
+	                                                           ListCellRenderer renderer,
+	                                                           BidiStringConverter editorValueConverter)
+	{
+		return SwingComponentFactory.buildLabeledEditableListChooser
+		(
+			key,
+			model,
+			subjectHolder,
+			valueHolder,
+			renderer,
+			editorValueConverter,
+			resourceRepository(),
+			getAlignLeftGroup(),
+			getAlignRightGroup()
+		);
+	}
+
+	/**
+	 * @see SwingComponentFactory#buildLabeledEditableListChooser(String, ComboBoxModel, ValueModel, PropertyValueModel, ValueModel, ListCellRenderer, BidiStringConverter, Object, ResourceRepository, ComponentAligner, ComponentAligner)
+	 */
+	protected final JComponent buildLabeledEditableListChooser(String key,
+	                                                           ComboBoxModel model,
+	                                                           ValueModel subjectHolder,
+	                                                           PropertyValueModel valueHolder,
+	                                                           ListCellRenderer renderer,
+	                                                           BidiStringConverter editorValueConverter,
+	                                                           Object nullValue)
+	{
+		return SwingComponentFactory.buildLabeledEditableListChooser
+		(
+			key,
+			model,
+			subjectHolder,
+			valueHolder,
+			renderer,
+			editorValueConverter,
+			nullValue,
+			resourceRepository(),
+			getAlignLeftGroup(),
+			getAlignRightGroup()
+		);
+	}
+
+	/**
+	 * @see SwingComponentFactory#buildLabeledEditableListChooser(String, ComboBoxModel, ValueModel, PropertyValueModel, ValueModel, ListCellRenderer, BidiStringConverter, Object, JComponent, ResourceRepository, ComponentAligner, ComponentAligner)
+	 */
+	protected final JComponent buildLabeledEditableListChooser(String key,
+	                                                           ComboBoxModel model,
+	                                                           ValueModel subjectHolder,
+	                                                           PropertyValueModel valueHolder,
+	                                                           ListCellRenderer renderer,
+	                                                           BidiStringConverter editorValueConverter,
+	                                                           Object nullValue,
+	                                                           JComponent rightComponent)
+	{
+		return SwingComponentFactory.buildLabeledEditableListChooser
+		(
+			key,
+			model,
+			subjectHolder,
+			valueHolder,
+			renderer,
+			editorValueConverter,
+			nullValue,
+			rightComponent,
+			resourceRepository(),
+			getAlignLeftGroup(),
+			getAlignRightGroup()
+		);
+	}
+
+	/**
+	 * @see SwingComponentFactory#buildLabeledEditableListChooser(String, ComboBoxModel, ValueModel, PropertyValueModel, ValueModel, ListCellRenderer, JComponent, ResourceRepository, ComponentAligner, ComponentAligner)
+	 */
+	protected final JComponent buildLabeledEditableListChooser(String key,
+	                                                           ComboBoxModel model,
+	                                                           ValueModel subjectHolder,
+	                                                           PropertyValueModel valueHolder,
+	                                                           ListCellRenderer renderer,
+	                                                           JComponent rightComponent)
+	{
+		return SwingComponentFactory.buildLabeledEditableListChooser
+		(
+			key,
+			model,
+			subjectHolder,
+			valueHolder,
+			renderer,
+			rightComponent,
+			resourceRepository(),
+			getAlignLeftGroup(),
+			getAlignRightGroup()
+		);
+	}
+
+	/**
+	 * @see SwingComponentFactory#buildLabeledEditableListChooser(String, ComboBoxModel, ValueModel, PropertyValueModel, ValueModel, ListCellRenderer, Object, ResourceRepository, ComponentAligner, ComponentAligner)
+	 */
+	protected final JComponent buildLabeledEditableListChooser(String key,
+	                                                           ComboBoxModel model,
+	                                                           ValueModel subjectHolder,
+	                                                           PropertyValueModel valueHolder,
+	                                                           ListCellRenderer renderer,
+	                                                           Object nullValue)
+	{
+		return SwingComponentFactory.buildLabeledEditableListChooser
+		(
+			key,
+			model,
+			subjectHolder,
+			valueHolder,
+			renderer,
+			nullValue,
+			resourceRepository(),
+			getAlignLeftGroup(),
+			getAlignRightGroup()
+		);
+	}
+
+	/**
+	 * @see SwingComponentFactory#buildLabeledEditableListChooser(String, ComboBoxModel, ValueModel, PropertyValueModel, ValueModel, Object, ResourceRepository, ComponentAligner, ComponentAligner)
+	 */
+	protected final JComponent buildLabeledEditableListChooser(String key,
+	                                                           ComboBoxModel model,
+	                                                           ValueModel subjectHolder,
+	                                                           PropertyValueModel valueHolder,
+	                                                           Object nullValue)
+	{
+		return SwingComponentFactory.buildLabeledEditableListChooser
+		(
+			key,
+			model,
+			subjectHolder,
+			valueHolder,
+			nullValue,
+			resourceRepository(),
+			getAlignLeftGroup(),
+			getAlignRightGroup()
+		);
+	}
+
+	/**
+	 * @see SwingComponentFactory#buildLabeledEditableListChooser(String, ComboBoxModel, ValueModel, PropertyValueModel, ValueModel, Object, JComponent, ResourceRepository, ComponentAligner, ComponentAligner)
+	 */
+	protected final JComponent buildLabeledEditableListChooser(String key,
+	                                                           ComboBoxModel model,
+	                                                           ValueModel subjectHolder,
+	                                                           PropertyValueModel valueHolder,
+	                                                           Object nullValue,
+	                                                           JComponent rightComponent)
+	{
+		return SwingComponentFactory.buildLabeledEditableListChooser
+		(
+			key,
+			model,
+			subjectHolder,
+			valueHolder,
+			nullValue,
+			rightComponent,
+			resourceRepository(),
+			getAlignLeftGroup(),
+			getAlignRightGroup()
+		);
+	}
+
+	/**
+	 * @see SwingComponentFactory#buildLabeledEditableListChooser(String, ComboBoxModel, ValueModel, PropertyValueModel, ValueModel, ResourceRepository, ComponentAligner, ComponentAligner)
+	 */
+	protected final JComponent buildLabeledEditableListChooser(String key,
+	                                                           ComboBoxModel model,
+	                                                           ValueModel subjectHolder,
+	                                                           PropertyValueModel valueHolder,
+	                                                           ValueModel defaultValueHolder)
+	{
+		return SwingComponentFactory.buildLabeledEditableListChooser
+		(
+			key,
+			model,
+			subjectHolder,
+			valueHolder,
+			defaultValueHolder,
+			resourceRepository(),
+			getAlignLeftGroup(),
+			getAlignRightGroup()
+		);
+	}
+
+	/**
+	 * @see SwingComponentFactory#buildLabeledEditableListChooser(String, ComboBoxModel, ValueModel, PropertyValueModel, ValueModel, JComponent, ResourceRepository, ComponentAligner, ComponentAligner)
+	 */
+	protected final JComponent buildLabeledEditableListChooser(String key,
+	                                                           ComboBoxModel model,
+	                                                           ValueModel subjectHolder,
+	                                                           PropertyValueModel valueHolder,
+	                                                           ValueModel defaultValueHolder,
+	                                                           JComponent rightComponent)
+	{
+		return SwingComponentFactory.buildLabeledEditableListChooser
+		(
+			key,
+			model,
+			subjectHolder,
+			valueHolder,
+			defaultValueHolder,
+			rightComponent,
+			resourceRepository(),
+			getAlignLeftGroup(),
+			getAlignRightGroup()
+		);
+	}
+
+	/**
+	 * @see SwingComponentFactory#buildLabeledEditableListChooser(String, ComboBoxModel, ValueModel, PropertyValueModel, ValueModel, ListCellRenderer, JComponent, ResourceRepository, ComponentAligner, ComponentAligner)
+	 */
+	protected final JComponent buildLabeledEditableListChooser(String key,
+	                                                           ComboBoxModel model,
+	                                                           ValueModel subjectHolder,
+	                                                           PropertyValueModel valueHolder,
+	                                                           ValueModel defaultValueHolder,
+	                                                           ListCellRenderer renderer)
+	{
+		return SwingComponentFactory.buildLabeledEditableListChooser
+		(
+			key,
+			model,
+			subjectHolder,
+			valueHolder,
+			defaultValueHolder,
+			renderer,
+			resourceRepository(),
+			getAlignLeftGroup(),
+			getAlignRightGroup()
+		);
+	}
+
+	/**
+	 * @see SwingComponentFactory#buildLabeledEditableListChooser(String, ComboBoxModel, ValueModel, PropertyValueModel, ValueModel, ListCellRenderer, BidiStringConverter, ResourceRepository, ComponentAligner, ComponentAligner)
+	 */
+	protected final JComponent buildLabeledEditableListChooser(String key,
+	                                                           ComboBoxModel model,
+	                                                           ValueModel subjectHolder,
+	                                                           PropertyValueModel valueHolder,
+	                                                           ValueModel defaultValueHolder,
+	                                                           ListCellRenderer renderer,
+	                                                           BidiStringConverter editorValueConverter)
+	{
+		return SwingComponentFactory.buildLabeledEditableListChooser
+		(
+			key,
+			model,
+			subjectHolder,
+			valueHolder,
+			defaultValueHolder,
+			renderer,
+			editorValueConverter,
+			resourceRepository(),
+			getAlignLeftGroup(),
+			getAlignRightGroup()
+		);
+	}
+
+	/**
+	 * @see SwingComponentFactory#buildLabeledEditableListChooser(String, ComboBoxModel, ValueModel, PropertyValueModel, ValueModel, ListCellRenderer, BidiStringConverter, Object, ResourceRepository, ComponentAligner, ComponentAligner)
+	 */
+	protected final JComponent buildLabeledEditableListChooser(String key,
+	                                                           ComboBoxModel model,
+	                                                           ValueModel subjectHolder,
+	                                                           PropertyValueModel valueHolder,
+	                                                           ValueModel defaultValueHolder,
+	                                                           ListCellRenderer renderer,
+	                                                           BidiStringConverter editorValueConverter,
+	                                                           Object nullValue)
+	{
+		return SwingComponentFactory.buildLabeledEditableListChooser
+		(
+			key,
+			model,
+			subjectHolder,
+			valueHolder,
+			defaultValueHolder,
+			renderer,
+			editorValueConverter,
+			nullValue,
+			resourceRepository(),
+			getAlignLeftGroup(),
+			getAlignRightGroup()
+		);
+	}
+
+	/**
+	 * @see SwingComponentFactory#buildLabeledEditableListChooser(String, ComboBoxModel, ValueModel, PropertyValueModel, ValueModel, ListCellRenderer, JComponent, ResourceRepository, ComponentAligner, ComponentAligner)
+	 */
+	protected final JComponent buildLabeledEditableListChooser(String key,
+	                                                           ComboBoxModel model,
+	                                                           ValueModel subjectHolder,
+	                                                           PropertyValueModel valueHolder,
+	                                                           ValueModel defaultValueHolder,
+	                                                           ListCellRenderer renderer,
+	                                                           JComponent rightComponent)
+	{
+		return SwingComponentFactory.buildLabeledEditableListChooser
+		(
+			key,
+			model,
+			subjectHolder,
+			valueHolder,
+			defaultValueHolder,
+			renderer,
+			resourceRepository(),
+			getAlignLeftGroup(),
+			getAlignRightGroup()
+		);
+	}
+
+	/**
+	 * @see SwingComponentFactory#buildLabeledEditableListChooser(String, ComboBoxModel, ValueModel, PropertyValueModel, ValueModel, ListCellRenderer, Object, JComponent, ResourceRepository, ComponentAligner, ComponentAligner)
+	 */
+	protected final JComponent buildLabeledEditableListChooser(String key,
+	                                                           ComboBoxModel model,
+	                                                           ValueModel subjectHolder,
+	                                                           PropertyValueModel valueHolder,
+	                                                           ValueModel defaultValueHolder,
+	                                                           ListCellRenderer renderer,
+	                                                           Object nullValue)
+	{
+		return SwingComponentFactory.buildLabeledEditableListChooser
+		(
+			key,
+			model,
+			subjectHolder,
+			valueHolder,
+			defaultValueHolder,
+			renderer,
+			nullValue,
+			resourceRepository(),
+			getAlignLeftGroup(),
+			getAlignRightGroup()
+		);
+	}
+
+	/**
+	 * @see SwingComponentFactory#buildLabeledEditableListChooser(String, ComboBoxModel, ValueModel, PropertyValueModel, ValueModel, Object, ResourceRepository, ComponentAligner, ComponentAligner)
+	 */
+	protected final JComponent buildLabeledEditableListChooser(String key,
+	                                                           ComboBoxModel model,
+	                                                           ValueModel subjectHolder,
+	                                                           PropertyValueModel valueHolder,
+	                                                           ValueModel defaultValueHolder,
+	                                                           Object nullValue)
+	{
+		return SwingComponentFactory.buildLabeledEditableListChooser
+		(
+			key,
+			model,
+			subjectHolder,
+			valueHolder,
+			defaultValueHolder,
+			nullValue,
+			resourceRepository(),
+			getAlignLeftGroup(),
+			getAlignRightGroup()
+		);
+	}
+
+	/**
+	 * @see SwingComponentFactory#buildLabeledEditableListChooser(String, ComboBoxModel, ValueModel, PropertyValueModel, ValueModel, Object, JComponent, ResourceRepository, ComponentAligner, ComponentAligner)
+	 */
+	protected final JComponent buildLabeledEditableListChooser(String key,
+	                                                           ComboBoxModel model,
+	                                                           ValueModel subjectHolder,
+	                                                           PropertyValueModel valueHolder,
+	                                                           ValueModel defaultValueHolder,
+	                                                           Object nullValue,
+	                                                           JComponent rightComponent)
+	{
+		return SwingComponentFactory.buildLabeledEditableListChooser
+		(
+			key,
+			model,
+			subjectHolder,
+			valueHolder,
+			defaultValueHolder,
+			nullValue,
+			rightComponent,
+			resourceRepository(),
+			getAlignLeftGroup(),
+			getAlignRightGroup()
+		);
+	}
+
+	/**
+	 * @see SwingComponentFactory#buildLabeledListChooser(String, ComboBoxModel, ResourceRepository, ComponentAligner, ComponentAligner)
+	 */
+	protected final JComponent buildLabeledListChooser(String key,
+	                                                   ComboBoxModel model)
+	{
+		return SwingComponentFactory.buildLabeledListChooser
+		(
+			key,
+			model,
+			resourceRepository(),
+			getAlignLeftGroup(),
+			getAlignRightGroup()
+		);
+	}
+
+	/**
+	 * @see SwingComponentFactory#buildLabeledListChooser(String, ComboBoxModel, JComponent, ResourceRepository, ComponentAligner, ComponentAligner)
+	 */
+	protected final JComponent buildLabeledListChooser(String key,
+	                                                   ComboBoxModel model,
+	                                                   JComponent rightComponent)
+	{
+		return SwingComponentFactory.buildLabeledListChooser
+		(
+			key,
+			model,
+			rightComponent,
+			resourceRepository(),
+			getAlignLeftGroup(),
+			getAlignRightGroup()
+		);
+	}
+
+	/**
+	 * @see SwingComponentFactory#buildLabeledListChooser(String, ComboBoxModel, ListCellRenderer, ResourceRepository, ComponentAligner, ComponentAligner)
+	 */
+	protected final JComponent buildLabeledListChooser(String key,
+	                                                   ComboBoxModel model,
+	                                                   ListCellRenderer renderer)
+	{
+		return SwingComponentFactory.buildLabeledListChooser
+		(
+			key,
+			model,
+			renderer,
+			resourceRepository(),
+			getAlignLeftGroup(),
+			getAlignRightGroup()
+		);
+	}
+
+	/**
+	 * @see SwingComponentFactory#buildLabeledListChooser(String, ComboBoxModel, JComponent, ResourceRepository, ComponentAligner, ComponentAligner)
+	 */
+	protected final JComponent buildLabeledListChooser(String key,
+	                                                   ComboBoxModel model,
+	                                                   ListCellRenderer renderer,
+	                                                   JComponent rightComponent)
+	{
+		return SwingComponentFactory.buildLabeledListChooser
+		(
+			key,
+			model,
+			renderer,
+			rightComponent,
+			resourceRepository(),
+			getAlignLeftGroup(),
+			getAlignRightGroup()
+		);
+	}
+
+	/**
+	 * @see SwingComponentFactory#buildLabeledNonEditableTextField(String, Document, ResourceRepository, ComponentAligner, ComponentAligner)
+	 */
+	protected final JComponent buildLabeledNonEditableTextField(String key, Document document)
+	{
+		return SwingComponentFactory.buildLabeledNonEditableTextField
+		(
+			key,
+			document,
+			resourceRepository(),
+			getAlignLeftGroup(),
+			getAlignRightGroup()
+		);
+	}
+
+	/**
+	 * @see SwingComponentFactory#buildLabeledNonEditableTextField(String, Document, JComponent, ResourceRepository, ComponentAligner, ComponentAligner)
+	 */
+	protected final JComponent buildLabeledNonEditableTextField(String key,
+	                                                            Document document,
+	                                                            JComponent rightComponent)
+	{
+		return SwingComponentFactory.buildLabeledNonEditableTextField
+		(
+			key,
+			document,
+			rightComponent,
+			resourceRepository(),
+			getAlignLeftGroup(),
+			getAlignRightGroup()
+		);
+	}
+
+	/**
+	 * @see SwingComponentFactory#buildLabeledSpinnerDate(String, SpinnerDateModel, ResourceRepository, ComponentAligner, ComponentAligner)
+	 */
+	protected final JComponent buildLabeledSpinnerDate(String labelKey,
+	                                                   SpinnerDateModel model)
+	{
+		return SwingComponentFactory.buildLabeledSpinnerDate
+		(
+			labelKey,
+			model,
+			resourceRepository(),
+			getAlignLeftGroup(),
+			getAlignRightGroup()
+		);
+	}
+
+	/**
+	 * @see SwingComponentFactory#buildLabeledSpinnerNumber(String, SpinnerNumberModel, ResourceRepository, ComponentAligner, ComponentAligner)
+	 */
+	protected final JComponent buildLabeledSpinnerNumber(String key,
+	                                                     SpinnerNumberModel model)
+	{
+		return SwingComponentFactory.buildLabeledSpinnerNumber
+		(
+			key,
+			model,
+			resourceRepository(),
+			getAlignLeftGroup(),
+			getAlignRightGroup()
+		);
+	}
+
+	/**
+	 * @see SwingComponentFactory#buildLabeledSpinnerNumber(String, SpinnerNumberModel, int, ResourceRepository, ComponentAligner, ComponentAligner)
+	 */
+	protected final JComponent buildLabeledSpinnerNumber(String key,
+	                                                     SpinnerNumberModel model,
+	                                                     int columns)
+	{
+		return SwingComponentFactory.buildLabeledSpinnerNumber
+		(
+			key,
+			model,
+			columns,
+			resourceRepository(),
+			getAlignLeftGroup(),
+			getAlignRightGroup()
+		);
+	}
+
+	/**
+	 * @see SwingComponentFactory#buildLabeledTextField(String, Document, ResourceRepository, ComponentAligner, ComponentAligner)
+	 */
+	protected final JComponent buildLabeledTextField(String key,
+	                                                 Document document)
+	{
+		return SwingComponentFactory.buildLabeledTextField
+		(
+			key,
+			document,
+			resourceRepository(),
+			getAlignLeftGroup(),
+			getAlignRightGroup()
+		);
+	}
+
+	/**
+	 * @see SwingComponentFactory#buildLabeledTextField(String, Document, int, ResourceRepository, ComponentAligner, ComponentAligner)
+	 */
+	protected final JComponent buildLabeledTextField(String key,
+	                                                 Document document,
+	                                                 int columns)
+	{
+		return SwingComponentFactory.buildLabeledTextField
+		(
+			key,
+			document,
+			columns,
+			resourceRepository(),
+			getAlignLeftGroup(),
+			getAlignRightGroup()
+		);
+	}
+
+	/**
+	 * @see SwingComponentFactory#buildLabeledTextField(String, Document, int, ResourceRepository, ComponentAligner, ComponentAligner)
+	 */
+	protected final JComponent buildLabeledTextField(String key,
+	                                                 Document document,
+	                                                 int columns,
+	                                                 JComponent rightComponent)
+	{
+		return SwingComponentFactory.buildLabeledTextField
+		(
+			key,
+			document,
+			columns,
+			rightComponent,
+			resourceRepository(),
+			getAlignLeftGroup(),
+			getAlignRightGroup()
+		);
+	}
+
+	/**
+	 * @see SwingComponentFactory#buildLabeledTextField(String, Document, JComponent, ResourceRepository, ComponentAligner, ComponentAligner)
+	 */
+	protected final JComponent buildLabeledTextField(String key,
+	                                                 Document document,
+	                                                 JComponent rightComponent)
+	{
+		return SwingComponentFactory.buildLabeledTextField
+		(
+			key,
+			document,
+			rightComponent,
+			resourceRepository(),
+			getAlignLeftGroup(),
+			getAlignRightGroup()
+		);
+	}
+	
+	protected final JComponent buildLabeledTextField(String key, 
+													Document document,
+													JTextField field) 
+	{
+		return SwingComponentFactory.buildLabeledTextField
+		(
+			key,
+			document,
+			field,
+			resourceRepository(),
+			getAlignLeftGroup(),
+			getAlignRightGroup()
+		);
+	}
+
+	/**
+	 * @see SwingComponentFactory#buildListChooser(ComboBoxModel)
+	 */
+	protected final ListChooser buildListChooser(ComboBoxModel model)
+	{
+		return SwingComponentFactory.buildListChooser(model);
+	}
+
+	/**
+	 * @see SwingComponentFactory#buildListChooser(ComboBoxModel, ListCellRenderer)
+	 */
+	protected final ListChooser buildListChooser(ComboBoxModel model,
+	                                             ListCellRenderer cellRenderer)
+	{
+		return SwingComponentFactory.buildListChooser(model, cellRenderer);
+	}
+
+	/**
+	 * @see SwingComponentFactory#buildPaneTitledBorder(ResourceRepository, String)
+	 */
+	protected final Border buildPaneTitledBorder(String key)
+	{
+		return SwingComponentFactory.buildPaneTitledBorder(key, resourceRepository());
+	}
+
+	/**
+	 * @see SwingComponentFactory#buildRadioButton(String, ButtonModel)
+	 */
+	protected final JRadioButton buildRadioButton(String key,
+	                                              ButtonModel buttonModel)
+	{
+		return SwingComponentFactory.buildRadioButton
+		(
+			key,
+			buttonModel,
+			resourceRepository()
+		);
+	}
+
+	/**
+	 * @see SwingComponentFactory#buildSpinnerDate(SpinnerNumberModel)
+	 */
+	protected final JSpinner buildSpinnerDate(SpinnerDateModel model)
+	{
+		return SwingComponentFactory.buildSpinnerDate(model);
+	}
+
+	/**
+	 * @see SwingComponentFactory#buildSpinnerNumber(SpinnerNumberModel)
+	 */
+	protected final JSpinner buildSpinnerNumber(SpinnerNumberModel model)
+	{
+		return SwingComponentFactory.buildSpinnerNumber(model);
+	}
+
+	/**
+	 * @see SwingComponentFactory#buildSpinnerNumber(SpinnerNumberModel, int)
+	 */
+	protected final JSpinner buildSpinnerNumber(SpinnerNumberModel model, int columns)
+	{
+		return SwingComponentFactory.buildSpinnerNumber(model, columns);
+	}
+
+	/**
+	 * @see SwingComponentFactory#buildTable(TableModel)
+	 */
+	protected final JTable buildTable(TableModel tableModel)
+	{
+		return SwingComponentFactory.buildTable(tableModel);
+	}
+
+	/**
+	 * @see SwingComponentFactory#buildTable(TableModel, ListSelectionModel)
+	 */
+	protected final JTable buildTable(TableModel tableModel,
+	                                  ListSelectionModel listSelectionModel)
+	{
+		return SwingComponentFactory.buildTable(tableModel, listSelectionModel);
+	}
+
+	/**
+	 * @see SwingComponentFactory#buildTable(TableModel, TableColumnModel, ListSelectionModel)
+	 */
+	protected final JTable buildTable(TableModel tableModel,
+	                                  TableColumnModel tableColumnModel,
+	                                  ListSelectionModel listSelectionModel)
+	{
+		return SwingComponentFactory.buildTable(tableModel, tableColumnModel, listSelectionModel);
+	}
+
+	/**
+	 * @see SwingComponentFactory#buildTextField(Document)
+	 */
+	protected final JTextField buildTextField(Document document)
+	{
+		return SwingComponentFactory.buildTextField(document);
+	}
+
+	/**
+	 * @see SwingComponentFactory#buildTitledBorder(ResourceRepository, String)
+	 */
+	protected final Border buildTitledBorder(String key)
+	{
+		return SwingComponentFactory.buildTitledBorder(key, resourceRepository());
+	}
+
+	/**
+	 * @see SwingComponentFactory#buildToggleButton(String, ResourceRepository)
+	 */
+	protected final JToggleButton buildToggleButton(String key)
+	{
+		return SwingComponentFactory.buildToggleButton(key, resourceRepository());
+	}
+
+	/**
+	 * @see SwingComponentFactory#buildTopLabeledComboBox(String, ComboBoxModel, ResourceRepository, ComponentAligner, ComponentAligner)
+	 */
+	protected final JComponent buildTopLabeledComboBox(String key,
+	                                                   ComboBoxModel model)
+	{
+		return SwingComponentFactory.buildTopLabeledComboBox
+		(
+			key,
+			model,
+			resourceRepository(),
+			getAlignLeftGroup(),
+			getAlignRightGroup()
+		);
+	}
+
+	/**
+	 * @see SwingComponentFactory#buildTopLabeledComboBox(String, ComboBoxModel, JComponent, ResourceRepository, ComponentAligner, ComponentAligner)
+	 */
+	protected final JComponent buildTopLabeledComboBox(String key,
+	                                                   ComboBoxModel model,
+	                                                   JComponent rightComponent)
+	{
+		return SwingComponentFactory.buildTopLabeledComboBox
+		(
+			key,
+			model,
+			rightComponent,
+			resourceRepository(),
+			getAlignLeftGroup(),
+			getAlignRightGroup()
+		);
+	}
+
+	/**
+	 * @see SwingComponentFactory#buildTopLabeledComboBox(String, ComboBoxModel, ListCellRenderer, ResourceRepository, ComponentAligner, ComponentAligner)
+	 */
+	protected final JComponent buildTopLabeledComboBox(String key,
+	                                                   ComboBoxModel model,
+	                                                   ListCellRenderer renderer)
+	{
+		return SwingComponentFactory.buildTopLabeledComboBox
+		(
+			key,
+			model,
+			renderer,
+			resourceRepository(),
+			getAlignLeftGroup(),
+			getAlignRightGroup()
+		);
+	}
+
+	/**
+	 * @see SwingComponentFactory#buildTopLabeledComboBox(String, ComboBoxModel, ListCellRenderer, JComponent, ResourceRepository, ComponentAligner, ComponentAligner)
+	 */
+	protected final JComponent buildTopLabeledComboBox(String key,
+	                                                   ComboBoxModel model,
+	                                                   ListCellRenderer renderer,
+	                                                   JComponent rightComponent)
+	{
+		return SwingComponentFactory.buildTopLabeledComboBox
+		(
+			key,
+			model,
+			renderer,
+			rightComponent,
+			resourceRepository(),
+			getAlignLeftGroup(),
+			getAlignRightGroup()
+		);
+	}
+
+	/**
+	 * @see SwingComponentFactory#buildTopLabeledComponent(JComponent, JComponent, JComponent, ResourceRepository, ComponentAligner, ComponentAligner)
+	 */
+	protected final JComponent buildTopLabeledComponent(JComponent leftComponent,
+	                                                    JComponent centerComponent,
+	                                                    JComponent rightComponent)
+	{
+		return SwingComponentFactory.buildTopLabeledComponent
+		(
+			leftComponent,
+			centerComponent,
+			rightComponent,
+			resourceRepository(),
+			getAlignLeftGroup(),
+			getAlignRightGroup()
+		);
+	}
+
+	/**
+	 * @see SwingComponentFactory#buildTopLabeledComponent(String, JComponent, ResourceRepository, ComponentAligner, ComponentAligner)
+	 */
+	protected final JComponent buildTopLabeledComponent(String key,
+	                                                    JComponent component)
+	{
+		return SwingComponentFactory.buildTopLabeledComponent
+		(
+			key,
+			component,
+			resourceRepository(),
+			getAlignLeftGroup(),
+			getAlignRightGroup()
+		);
+	}
+
+	/**
+	 * @see SwingComponentFactory#buildTopLabeledComponent(String, JComponent, JComponent, ResourceRepository, ComponentAligner, ComponentAligner)
+	 */
+	protected final JComponent buildTopLabeledComponent(String key,
+	                                                    JComponent component,
+	                                                    JComponent rightComponent)
+	{
+		return SwingComponentFactory.buildTopLabeledComponent
+		(
+			key,
+			component,
+			rightComponent,
+			resourceRepository(),
+			getAlignLeftGroup(),
+			getAlignRightGroup()
+		);
+	}
+
+	/**
+	 * @see SwingComponentFactory#buildTopLabeledEditableComboBox(String, ComboBoxModel, ValueModel, PropertyValueModel, ResourceRepository, ComponentAligner, ComponentAligner)
+	 */
+	protected final JComponent buildTopLabeledEditableComboBox(String key,
+	                                                           ComboBoxModel model,
+		                                                        ValueModel subjectHolder,
+	                                                           PropertyValueModel valueHolder)
+	{
+		return SwingComponentFactory.buildTopLabeledEditableComboBox
+		(
+			key,
+			model,
+			subjectHolder,
+			valueHolder,
+			resourceRepository(),
+			getAlignLeftGroup(),
+			getAlignRightGroup()
+		);
+	}
+
+	/**
+	 * @see SwingComponentFactory#buildTopLabeledEditableComboBox(String, ComboBoxModel, ValueModel, PropertyValueModel, ListCellRenderer, ResourceRepository, ComponentAligner, ComponentAligner)
+	 */
+	protected final JComponent buildTopLabeledEditableComboBox(String key,
+	                                                           ComboBoxModel model,
+		                                                        ValueModel subjectHolder,
+	                                                           PropertyValueModel valueHolder,
+	                                                           ListCellRenderer renderer)
+	{
+		return SwingComponentFactory.buildTopLabeledEditableComboBox
+		(
+			key,
+			model,
+			subjectHolder,
+			valueHolder,
+			renderer,
+			resourceRepository(),
+			getAlignLeftGroup(),
+			getAlignRightGroup()
+		);
+	}
+
+	/**
+	 * @see SwingComponentFactory#buildTopLabeledEditableComboBox(String, ComboBoxModel, ValueModel, PropertyValueModel, ListCellRenderer, BidiStringConverter, ResourceRepository, ComponentAligner, ComponentAligner)
+	 */
+	protected final JComponent buildTopLabeledEditableComboBox(String key,
+	                                                           ComboBoxModel model,
+		                                                        ValueModel subjectHolder,
+	                                                           PropertyValueModel valueHolder,
+	                                                           ListCellRenderer renderer,
+	                                                           BidiStringConverter editorValueConverter)
+	{
+		return SwingComponentFactory.buildTopLabeledEditableComboBox
+		(
+			key,
+			model,
+			subjectHolder,
+			valueHolder,
+			renderer,
+			editorValueConverter,
+			resourceRepository(),
+			getAlignLeftGroup(),
+			getAlignRightGroup()
+		);
+	}
+
+	/**
+	 * @see SwingComponentFactory#buildTopLabeledEditableComboBox(String, ComboBoxModel, ValueModel, PropertyValueModel, ListCellRenderer, BidiStringConverter, Object, ResourceRepository, ComponentAligner, ComponentAligner)
+	 */
+	protected final JComponent buildTopLabeledEditableComboBox(String key,
+	                                                           ComboBoxModel model,
+		                                                        ValueModel subjectHolder,
+	                                                           PropertyValueModel valueHolder,
+	                                                           ListCellRenderer renderer,
+	                                                           BidiStringConverter editorValueConverter,
+	                                                           Object nullValue)
+	{
+		return SwingComponentFactory.buildTopLabeledEditableComboBox
+		(
+			key,
+			model,
+			subjectHolder,
+			valueHolder,
+			renderer,
+			editorValueConverter,
+			nullValue,
+			resourceRepository(),
+			getAlignLeftGroup(),
+			getAlignRightGroup()
+		);
+	}
+
+	/**
+	 * @see SwingComponentFactory#buildTopLabeledEditableComboBox(String, ComboBoxModel, ValueModel, PropertyValueModel, ListCellRenderer, Object, ResourceRepository, ComponentAligner, ComponentAligner)
+	 */
+	protected final JComponent buildTopLabeledEditableComboBox(String key,
+	                                                           ComboBoxModel model,
+		                                                        ValueModel subjectHolder,
+	                                                           PropertyValueModel valueHolder,
+	                                                           ListCellRenderer renderer,
+	                                                           Object nullValue)
+	{
+		return SwingComponentFactory.buildTopLabeledEditableComboBox
+		(
+			key,
+			model,
+			subjectHolder,
+			valueHolder,
+			renderer,
+			nullValue,
+			resourceRepository(),
+			getAlignLeftGroup(),
+			getAlignRightGroup()
+		);
+	}
+
+	/**
+	 * @see SwingComponentFactory#buildTopLabeledEditableComboBox(String, ComboBoxModel, ValueModel, PropertyValueModel, ValueModel, ResourceRepository, ComponentAligner, ComponentAligner)
+	 */
+	protected final JComponent buildTopLabeledEditableComboBox(String key,
+	                                                           ComboBoxModel model,
+		                                                        ValueModel subjectHolder,
+	                                                           PropertyValueModel valueHolder,
+	                                                           ValueModel defaultValueHolder)
+	{
+		return SwingComponentFactory.buildTopLabeledEditableComboBox
+		(
+			key,
+			model,
+			subjectHolder,
+			valueHolder,
+			defaultValueHolder,
+			resourceRepository(),
+			getAlignLeftGroup(),
+			getAlignRightGroup()
+		);
+	}
+
+	/**
+	 * @see SwingComponentFactory#buildTopLabeledEditableComboBox(String, ComboBoxModel, ValueModel, PropertyValueModel, ValueModel, ListCellRenderer, ResourceRepository, ComponentAligner, ComponentAligner)
+	 */
+	protected final JComponent buildTopLabeledEditableComboBox(String key,
+	                                                           ComboBoxModel model,
+		                                                        ValueModel subjectHolder,
+	                                                           PropertyValueModel valueHolder,
+	                                                           ValueModel defaultValueHolder,
+	                                                           ListCellRenderer renderer)
+	{
+		return SwingComponentFactory.buildTopLabeledEditableComboBox
+		(
+			key,
+			model,
+			subjectHolder,
+			valueHolder,
+			defaultValueHolder,
+			renderer,
+			resourceRepository(),
+			getAlignLeftGroup(),
+			getAlignRightGroup()
+		);
+	}
+
+	/**
+	 * @see SwingComponentFactory#buildTopLabeledEditableComboBox(String, ComboBoxModel, ValueModel, PropertyValueModel, ValueModel, ListCellRenderer, BidiStringConverter, ResourceRepository, ComponentAligner, ComponentAligner)
+	 */
+	protected final JComponent buildTopLabeledEditableComboBox(String key,
+	                                                           ComboBoxModel model,
+		                                                        ValueModel subjectHolder,
+	                                                           PropertyValueModel valueHolder,
+	                                                           ValueModel defaultValueHolder,
+	                                                           ListCellRenderer renderer,
+	                                                           BidiStringConverter editorValueConverter)
+	{
+		return SwingComponentFactory.buildTopLabeledEditableComboBox
+		(
+			key,
+			model,
+			subjectHolder,
+			valueHolder,
+			defaultValueHolder,
+			renderer,
+			editorValueConverter,
+			resourceRepository(),
+			getAlignLeftGroup(),
+			getAlignRightGroup()
+		);
+	}
+
+	/**
+	 * @see SwingComponentFactory#buildTopLabeledEditableComboBox(String, ComboBoxModel, ValueModel, PropertyValueModel, ValueModel, ListCellRenderer, BidiStringConverter, Object, ResourceRepository, ComponentAligner, ComponentAligner)
+	 */
+	protected final JComponent buildTopLabeledEditableComboBox(String key,
+	                                                           ComboBoxModel model,
+		                                                        ValueModel subjectHolder,
+	                                                           PropertyValueModel valueHolder,
+	                                                           ValueModel defaultValueHolder,
+	                                                           ListCellRenderer renderer,
+	                                                           BidiStringConverter editorValueConverter,
+	                                                           Object nullValue)
+	{
+		return SwingComponentFactory.buildTopLabeledEditableComboBox
+		(
+			key,
+			model,
+			subjectHolder,
+			valueHolder,
+			defaultValueHolder,
+			renderer,
+			editorValueConverter,
+			nullValue,
+			resourceRepository(),
+			getAlignLeftGroup(),
+			getAlignRightGroup()
+		);
+	}
+
+	/**
+	 * @see SwingComponentFactory#buildTopLabeledEditableComboBox(String, ComboBoxModel, ValueModel, PropertyValueModel, ValueModel, ListCellRenderer, Object, ResourceRepository, ComponentAligner, ComponentAligner)
+	 */
+	protected final JComponent buildTopLabeledEditableComboBox(String key,
+	                                                           ComboBoxModel model,
+		                                                        ValueModel subjectHolder,
+	                                                           PropertyValueModel valueHolder,
+	                                                           ValueModel defaultValueHolder,
+	                                                           ListCellRenderer renderer,
+	                                                           Object nullValue)
+	{
+		return SwingComponentFactory.buildTopLabeledEditableComboBox
+		(
+			key,
+			model,
+			subjectHolder,
+			valueHolder,
+			defaultValueHolder,
+			renderer,
+			nullValue,
+			resourceRepository(),
+			getAlignLeftGroup(),
+			getAlignRightGroup()
+		);
+	}
+
+	/**
+	 * @see SwingComponentFactory#buildTopLabeledEditableListChooser(String, ComboBoxModel, ValueModel, PropertyValueModel, ResourceRepository, ComponentAligner, ComponentAligner)
+	 */
+	protected final JComponent buildTopLabeledEditableListChooser(String key,
+	                                                              ComboBoxModel model,
+	                                                              ValueModel subjectHolder,
+	                                                              PropertyValueModel valueHolder)
+	{
+		return SwingComponentFactory.buildTopLabeledEditableListChooser
+		(
+			key,
+			model,
+			subjectHolder,
+			valueHolder,
+			resourceRepository(),
+			getAlignLeftGroup(),
+			getAlignRightGroup()
+		);
+	}
+
+	/**
+	 * @see SwingComponentFactory#buildTopLabeledEditableListChooser(String, ComboBoxModel, ValueModel, JComponent, ResourceRepository, ComponentAligner, ComponentAligner)
+	 */
+	protected final JComponent buildTopLabeledEditableListChooser(String key,
+	                                                              ComboBoxModel model,
+	                                                              ValueModel subjectHolder,
+	                                                              PropertyValueModel valueHolder,
+	                                                              JComponent rightComponent)
+	{
+		return SwingComponentFactory.buildTopLabeledEditableListChooser
+		(
+			key,
+			model,
+			subjectHolder,
+			valueHolder,
+			rightComponent,
+			resourceRepository(),
+			getAlignLeftGroup(),
+			getAlignRightGroup()
+		);
+	}
+
+	/**
+	 * @see SwingComponentFactory#buildTopLabeledEditableListChooser(String, ComboBoxModel, ValueModel, PropertyValueModel, Object, ResourceRepository, ComponentAligner, ComponentAligner)
+	 */
+	protected final JComponent buildTopLabeledEditableListChooser(String key,
+	                                                              ComboBoxModel model,
+	                                                              ValueModel subjectHolder,
+	                                                              PropertyValueModel valueHolder,
+	                                                              ListCellRenderer renderer)
+	{
+		return SwingComponentFactory.buildTopLabeledEditableListChooser
+		(
+			key,
+			model,
+			subjectHolder,
+			valueHolder,
+			renderer,
+			resourceRepository(),
+			getAlignLeftGroup(),
+			getAlignRightGroup()
+		);
+	}
+
+	/**
+	 * @see SwingComponentFactory#buildTopLabeledEditableListChooser(String, ComboBoxModel, ValueModel, PropertyValueModel, BidiStringConverter, Object, ResourceRepository, ComponentAligner, ComponentAligner)
+	 */
+	protected final JComponent buildTopLabeledEditableListChooser(String key,
+	                                                              ComboBoxModel model,
+	                                                              ValueModel subjectHolder,
+	                                                              PropertyValueModel valueHolder,
+	                                                              ListCellRenderer renderer,
+	                                                              BidiStringConverter editorValueConverter)
+	{
+		return SwingComponentFactory.buildTopLabeledEditableListChooser
+		(
+			key,
+			model,
+			subjectHolder,
+			valueHolder,
+			renderer,
+			editorValueConverter,
+			resourceRepository(),
+			getAlignLeftGroup(),
+			getAlignRightGroup()
+		);
+	}
+
+	/**
+	 * @see SwingComponentFactory#buildTopLabeledEditableListChooser(String, ComboBoxModel, ValueModel, PropertyValueModel, BidiStringConverter, Object, ResourceRepository, ComponentAligner, ComponentAligner)
+	 */
+	protected final JComponent buildTopLabeledEditableListChooser(String key,
+	                                                              ComboBoxModel model,
+	                                                              ValueModel subjectHolder,
+	                                                              PropertyValueModel valueHolder,
+	                                                              ListCellRenderer renderer,
+	                                                              BidiStringConverter editorValueConverter,
+	                                                              Object nullValue)
+	{
+		return SwingComponentFactory.buildTopLabeledEditableListChooser
+		(
+			key,
+			model,
+			subjectHolder,
+			valueHolder,
+			resourceRepository(),
+			getAlignLeftGroup(),
+			getAlignRightGroup()
+		);
+	}
+
+	/**
+	 * @see SwingComponentFactory#buildTopLabeledEditableListChooser(String, ComboBoxModel, ValueModel, PropertyValueModel, ListCellRenderer, Object, ResourceRepository, ComponentAligner, ComponentAligner)
+	 */
+	protected final JComponent buildTopLabeledEditableListChooser(String key,
+	                                                              ComboBoxModel model,
+	                                                              ValueModel subjectHolder,
+	                                                              PropertyValueModel valueHolder,
+	                                                              ListCellRenderer renderer,
+	                                                              Object nullValue)
+	{
+		return SwingComponentFactory.buildTopLabeledEditableListChooser
+		(
+			key,
+			model,
+			subjectHolder,
+			valueHolder,
+			renderer,
+			nullValue,
+			resourceRepository(),
+			getAlignLeftGroup(),
+			getAlignRightGroup()
+		);
+	}
+
+	/**
+	 * @see SwingComponentFactory#buildTopLabeledEditableListChooser(String, ComboBoxModel, ValueModel, PropertyValueModel, Object, ResourceRepository, ComponentAligner, ComponentAligner)
+	 */
+	protected final JComponent buildTopLabeledEditableListChooser(String key,
+	                                                              ComboBoxModel model,
+	                                                              ValueModel subjectHolder,
+	                                                              PropertyValueModel valueHolder,
+	                                                              Object nullValue)
+	{
+		return SwingComponentFactory.buildTopLabeledEditableListChooser
+		(
+			key,
+			model,
+			subjectHolder,
+			valueHolder,
+			resourceRepository(),
+			getAlignLeftGroup(),
+			getAlignRightGroup()
+		);
+	}
+
+	/**
+	 * @see SwingComponentFactory#buildTopLabeledEditableListChooser(String, ComboBoxModel, ValueModel, PropertyValueModel, Object, JComponent, ResourceRepository, ComponentAligner, ComponentAligner)
+	 */
+	protected final JComponent buildTopLabeledEditableListChooser(String key,
+	                                                              ComboBoxModel model,
+	                                                              ValueModel subjectHolder,
+	                                                              PropertyValueModel valueHolder,
+	                                                              Object nullValue,
+	                                                              JComponent rightComponent)
+	{
+		return SwingComponentFactory.buildTopLabeledEditableListChooser
+		(
+			key,
+			model,
+			subjectHolder,
+			valueHolder,
+			rightComponent,
+			resourceRepository(),
+			getAlignLeftGroup(),
+			getAlignRightGroup()
+		);
+	}
+
+	/**
+	 * @see SwingComponentFactory#buildTopLabeledEditableListChooser(String, ComboBoxModel, ValueModel, PropertyValueModel, ValueModel, ResourceRepository, ComponentAligner, ComponentAligner)
+	 */
+	protected final JComponent buildTopLabeledEditableListChooser(String key,
+	                                                              ComboBoxModel model,
+	                                                              ValueModel subjectHolder,
+	                                                              PropertyValueModel valueHolder,
+	                                                              ValueModel defaultValueHolder)
+	{
+		return SwingComponentFactory.buildTopLabeledEditableListChooser
+		(
+			key,
+			model,
+			subjectHolder,
+			valueHolder,
+			defaultValueHolder,
+			resourceRepository(),
+			getAlignLeftGroup(),
+			getAlignRightGroup()
+		);
+	}
+
+	/**
+	 * @see SwingComponentFactory#buildTopLabeledEditableListChooser(String, ComboBoxModel, ValueModel, PropertyValueModel, ValueModel, JComponent, ResourceRepository, ComponentAligner, ComponentAligner)
+	 */
+	protected final JComponent buildTopLabeledEditableListChooser(String key,
+	                                                              ComboBoxModel model,
+	                                                              ValueModel subjectHolder,
+	                                                              PropertyValueModel valueHolder,
+	                                                              ValueModel defaultValueHolder,
+	                                                              JComponent rightComponent)
+	{
+		return SwingComponentFactory.buildTopLabeledEditableListChooser
+		(
+			key,
+			model,
+			subjectHolder,
+			valueHolder,
+			defaultValueHolder,
+			rightComponent,
+			resourceRepository(),
+			getAlignLeftGroup(),
+			getAlignRightGroup()
+		);
+	}
+
+	/**
+	 * @see SwingComponentFactory#buildTopLabeledEditableListChooser(String, ComboBoxModel, ValueModel, PropertyValueModel, ValueModel, ListCellRenderer, ResourceRepository, ComponentAligner, ComponentAligner)
+	 */
+	protected final JComponent buildTopLabeledEditableListChooser(String key,
+	                                                              ComboBoxModel model,
+	                                                              ValueModel subjectHolder,
+	                                                              PropertyValueModel valueHolder,
+	                                                              ValueModel defaultValueHolder,
+	                                                              ListCellRenderer renderer)
+	{
+		return SwingComponentFactory.buildTopLabeledEditableListChooser
+		(
+			key,
+			model,
+			subjectHolder,
+			valueHolder,
+			defaultValueHolder,
+			renderer,
+			resourceRepository(),
+			getAlignLeftGroup(),
+			getAlignRightGroup()
+		);
+	}
+
+	/**
+	 * @see SwingComponentFactory#buildTopLabeledEditableListChooser(String, ComboBoxModel, ValueModel, PropertyValueModel, ValueModel, ListCellRenderer, BidiStringConverter, ResourceRepository, ComponentAligner, ComponentAligner)
+	 */
+	protected final JComponent buildTopLabeledEditableListChooser(String key,
+	                                                              ComboBoxModel model,
+	                                                              ValueModel subjectHolder,
+	                                                              PropertyValueModel valueHolder,
+	                                                              ValueModel defaultValueHolder,
+	                                                              ListCellRenderer renderer,
+	                                                              BidiStringConverter editorValueConverter)
+	{
+		return SwingComponentFactory.buildTopLabeledEditableListChooser
+		(
+			key,
+			model,
+			subjectHolder,
+			valueHolder,
+			defaultValueHolder,
+			renderer,
+			editorValueConverter,
+			resourceRepository(),
+			getAlignLeftGroup(),
+			getAlignRightGroup()
+		);
+	}
+
+	/**
+	 * @see SwingComponentFactory#buildTopLabeledEditableListChooser(String, ComboBoxModel, ValueModel, PropertyValueModel, ValueModel, ListCellRenderer, BidiStringConverter, Object, ResourceRepository, ComponentAligner, ComponentAligner)
+	 */
+	protected final JComponent buildTopLabeledEditableListChooser(String key,
+	                                                              ComboBoxModel model,
+	                                                              ValueModel subjectHolder,
+	                                                              PropertyValueModel valueHolder,
+	                                                              ValueModel defaultValueHolder,
+	                                                              ListCellRenderer renderer,
+	                                                              BidiStringConverter editorValueConverter,
+	                                                              Object nullValue)
+	{
+		return SwingComponentFactory.buildTopLabeledEditableListChooser
+		(
+			key,
+			model,
+			subjectHolder,
+			valueHolder,
+			defaultValueHolder,
+			renderer,
+			editorValueConverter,
+			nullValue,
+			resourceRepository(),
+			getAlignLeftGroup(),
+			getAlignRightGroup()
+		);
+	}
+
+	/**
+	 * @see SwingComponentFactory#buildTopLabeledEditableListChooser(String, ComboBoxModel, ValueModel, PropertyValueModel, ValueModel, ListCellRenderer, Object, ResourceRepository, ComponentAligner, ComponentAligner)
+	 */
+	protected final JComponent buildTopLabeledEditableListChooser(String key,
+	                                                              ComboBoxModel model,
+	                                                              ValueModel subjectHolder,
+	                                                              PropertyValueModel valueHolder,
+	                                                              ValueModel defaultValueHolder,
+	                                                              ListCellRenderer renderer,
+	                                                              Object nullValue)
+	{
+		return SwingComponentFactory.buildTopLabeledEditableListChooser
+		(
+			key,
+			model,
+			subjectHolder,
+			valueHolder,
+			defaultValueHolder,
+			renderer,
+			nullValue,
+			resourceRepository(),
+			getAlignLeftGroup(),
+			getAlignRightGroup()
+		);
+	}
+
+	/**
+	 * @see SwingComponentFactory#buildTopLabeledEditableListChooser(String, ComboBoxModel, ValueModel, PropertyValueModel, ValueModel, Object, ResourceRepository, ComponentAligner, ComponentAligner)
+	 */
+	protected final JComponent buildTopLabeledEditableListChooser(String key,
+	                                                              ComboBoxModel model,
+	                                                              ValueModel subjectHolder,
+	                                                              PropertyValueModel valueHolder,
+	                                                              ValueModel defaultValueHolder,
+	                                                              Object nullValue)
+	{
+		return SwingComponentFactory.buildTopLabeledEditableListChooser
+		(
+			key,
+			model,
+			subjectHolder,
+			valueHolder,
+			defaultValueHolder,
+			nullValue,
+			resourceRepository(),
+			getAlignLeftGroup(),
+			getAlignRightGroup()
+		);
+	}
+
+	/**
+	 * @see SwingComponentFactory#buildTopLabeledEditableListChooser(String, ComboBoxModel, ValueModel, PropertyValueModel, ValueModel, Object, JComponent, ResourceRepository, ComponentAligner, ComponentAligner)
+	 */
+	protected final JComponent buildTopLabeledEditableListChooser(String key,
+	                                                              ComboBoxModel model,
+	                                                              ValueModel subjectHolder,
+	                                                              PropertyValueModel valueHolder,
+	                                                              ValueModel defaultValueHolder,
+	                                                              Object nullValue,
+	                                                              JComponent rightComponent)
+	{
+		return SwingComponentFactory.buildTopLabeledEditableListChooser
+		(
+			key,
+			model,
+			subjectHolder,
+			valueHolder,
+			defaultValueHolder,
+			nullValue,
+			rightComponent,
+			resourceRepository(),
+			getAlignLeftGroup(),
+			getAlignRightGroup()
+		);
+	}
+
+	/**
+	 * @see SwingComponentFactory#buildTopLabeledListChooser(String, ComboBoxModel, ResourceRepository, ComponentAligner, ComponentAligner)
+	 */
+	protected final JComponent buildTopLabeledListChooser(String key,
+	                                                      ComboBoxModel model)
+	{
+		return SwingComponentFactory.buildTopLabeledListChooser
+		(
+			key,
+			model,
+			resourceRepository(),
+			getAlignLeftGroup(),
+			getAlignRightGroup()
+		);
+	}
+
+	/**
+	 * @see SwingComponentFactory#buildTopLabeledListChooser(String, ComboBoxModel, JComponnet, ResourceRepository, ComponentAligner, ComponentAligner)
+	 */
+	protected final JComponent buildTopLabeledListChooser(String key,
+	                                                      ComboBoxModel model,
+	                                                      JComponent rightComponent)
+	{
+		return SwingComponentFactory.buildTopLabeledListChooser
+		(
+			key,
+			model,
+			rightComponent,
+			resourceRepository(),
+			getAlignLeftGroup(),
+			getAlignRightGroup()
+		);
+	}
+
+	/**
+	 * @see SwingComponentFactory#buildTopLabeledListChooser(String, ComboBoxModel, ListCellRenderer, ResourceRepository, ComponentAligner, ComponentAligner)
+	 */
+	protected final JComponent buildTopLabeledListChooser(String key,
+	                                                      ComboBoxModel model,
+	                                                      ListCellRenderer cellRenderer)
+	{
+		return SwingComponentFactory.buildTopLabeledListChooser
+		(
+			key,
+			model,
+			resourceRepository(),
+			getAlignLeftGroup(),
+			getAlignRightGroup()
+		);
+	}
+
+	/**
+	 * @see SwingComponentFactory#buildTopLabeledListChooser(String, ComboBoxModel, ListCellRenderer, JComponnet, ResourceRepository, ComponentAligner, ComponentAligner)
+	 */
+	protected final JComponent buildTopLabeledListChooser(String key,
+	                                                      ComboBoxModel model,
+	                                                      ListCellRenderer renderer,
+	                                                      JComponent rightComponent)
+	{
+		return SwingComponentFactory.buildTopLabeledListChooser
+		(
+			key,
+			model,
+			rightComponent,
+			resourceRepository(),
+			getAlignLeftGroup(),
+			getAlignRightGroup()
+		);
+	}
+
+	/**
+	 * @see SwingComponentFactory#buildTopLabeledNonEditableTextField(String, Document, JComponent, ResourceRepository, ComponentAligner, ComponentAligner)
+	 */
+	protected final JComponent buildTopLabeledNonEditableTextField(String key,
+	                                                               Document document,
+	                                                               JComponent rightComponent,
+	                                                               ResourceRepository repository)
+	{
+		return SwingComponentFactory.buildTopLabeledNonEditableTextField
+		(
+			key,
+			document,
+			rightComponent,
+			repository,
+			getAlignRightGroup(),
+			getAlignLeftGroup()
+		);
+	}
+
+	/**
+	 * @see SwingComponentFactory#buildLabeledSpinnerNumber(String, SpinnerNumberModel, int, ResourceRepository, ComponentAligner, ComponentAligner)
+	 */
+	protected final JComponent buildTopLabeledSpinnerNumber(String key,
+	                                                        SpinnerNumberModel model,
+	                                                        int columns)
+	{
+		return SwingComponentFactory.buildLabeledSpinnerNumber
+		(
+			key,
+			model,
+			columns,
+			resourceRepository(),
+			getAlignLeftGroup(),
+			getAlignRightGroup()
+		);
+	}
+
+	/**
+	 * @see SwingComponentFactory#buildTopLabeledTextField(String, Document, ResourceRepository, ComponentAligner, ComponentAligner)
+	 */
+	protected final JComponent buildTopLabeledTextField(String key,
+	                                                    Document document)
+	{
+		return SwingComponentFactory.buildTopLabeledTextField
+		(
+			key,
+			document,
+			resourceRepository(),
+			getAlignLeftGroup(),
+			getAlignRightGroup()
+		);
+	}
+
+	/**
+	 * @see SwingComponentFactory#buildTopLabeledTextField(String, Document, JComponent, ResourceRepository, ComponentAligner, ComponentAligner)
+	 */
+	protected final JComponent buildTopLabeledTextField(String key,
+	                                                    Document document,
+	                                                    JComponent rightComponent)
+	{
+		return SwingComponentFactory.buildTopLabeledTextField
+		(
+			key,
+			document,
+			rightComponent,
+			resourceRepository(),
+			getAlignLeftGroup(),
+			getAlignRightGroup()
+		);
+	}
+
+	/**
+	 * @see SwingComponentFactory#buildTree(TreeModel)
+	 */
+	protected final JTree buildTree(TreeModel model)
+	{
+		return SwingComponentFactory.buildTree(model);
+	}
+
+	/**
+	 * @see SwingComponentFactory#buildTriStateCheckBox(String, TriStateButtonModel, ResourceRepository)
+	 */
+	protected final TriStateCheckBox buildTriStateCheckBox(String key, TriStateButtonModel model)
+	{
+		return SwingComponentFactory.buildTriStateCheckBox(key, model, resourceRepository());
+	}
+
+	/**
+	 * Returns the <code>ComponentAligner</code> that is responsible to align all
+	 * the components that are on the left side of a pane, usually those
+	 * components are labels.
+	 *
+	 * @return The <code>ComponentAligner</code> that makes sure all components
+	 * with it have the same width
+	 */
+	private ComponentAligner getAlignLeftGroup()
+	{
+		return container.getAlignLeftGroup();
+	}
+
+	/**
+	 * Returns the <code>ComponentAligner</code> that is responsible to align all
+	 * the components that are on the right side of a pane, usually those
+	 * components are browse buttons.
+	 *
+	 * @return The <code>ComponentAligner</code> that makes sure all components
+	 * with it have the same width
+	 */
+	private ComponentAligner getAlignRightGroup()
+	{
+		return container.getAlignRightGroup();
+	}
+	
 
 }

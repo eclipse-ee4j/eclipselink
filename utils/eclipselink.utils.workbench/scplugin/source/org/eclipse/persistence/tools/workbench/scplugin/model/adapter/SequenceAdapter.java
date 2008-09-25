@@ -13,6 +13,7 @@
 package org.eclipse.persistence.tools.workbench.scplugin.model.adapter;
 
 import org.eclipse.persistence.internal.sessions.factories.model.sequencing.SequenceConfig;
+import org.eclipse.persistence.tools.workbench.scplugin.model.SequenceType;
 
 /**
  * Session Configuration model adapter class for the 
@@ -23,6 +24,12 @@ import org.eclipse.persistence.internal.sessions.factories.model.sequencing.Sequ
  * @author Tran Le
  */
 public abstract class SequenceAdapter extends SCAdapter implements Nominative {
+	
+	public static final String PREALLOCATION_SIZE_PROPERTY = "preAllocationSize";
+	public static final String NAME_PROPERTY = "name";
+	
+	private boolean isTheDefaultSequence;
+	
 	/**
 	 * Creates a new SequenceAdapter for the specified model object.
 	 */
@@ -38,7 +45,7 @@ public abstract class SequenceAdapter extends SCAdapter implements Nominative {
 		super( parent);	
 		
 		this.setName( name);	
-		this.setPreallocationSize( preallocationSize);
+		this.setPreallocationSize( new Integer(preallocationSize));
 	}
 	/**
 	 * Returns this Config Model Object.
@@ -64,14 +71,15 @@ public abstract class SequenceAdapter extends SCAdapter implements Nominative {
 	/**
 	 * Sets this config model property.
 	 */
-	void setName( String name) {
-
+	public void setName( String name) {
+		String old = this.sequence().getName();
 		this.sequence().setName( name);
+		firePropertyChanged(NAME_PROPERTY, old, name);
 	}
 	/**
 	 * Returns this config model property.
 	 */
-	int getPreallocationSize() {
+	public int getPreallocationSize() {
 			
 		Integer size = this.sequence().getPreallocationSize();
 		return (size != null) ? size.intValue() : 0;
@@ -79,9 +87,10 @@ public abstract class SequenceAdapter extends SCAdapter implements Nominative {
 	/**
 	 * Sets this config model property.
 	 */
-	void setPreallocationSize( int size) {
-			
+	public void setPreallocationSize(Integer size) {
+		Integer old = this.sequence().getPreallocationSize();	
 		this.sequence().setPreallocationSize( new Integer( size));
+		firePropertyChanged(PREALLOCATION_SIZE_PROPERTY, old, size);
 	}
 		
 	public String displayString() {
@@ -110,8 +119,23 @@ public abstract class SequenceAdapter extends SCAdapter implements Nominative {
 	/**
 	 * Temporary support for Multiple Sequencing schema.
 	 */
+	public boolean isXMLFile() {
+		return false;
+	}
+	
+	/**
+	 * Temporary support for Multiple Sequencing schema.
+	 */
 	public boolean isCustom() {
 			
 		return false;
+	}
+	
+	public abstract SequenceType getType();
+	public boolean isTheDefaultSequence() {
+		return isTheDefaultSequence;
+	}
+	public void setTheDefaultSequence(boolean isTheDefaultSequence) {
+		this.isTheDefaultSequence = isTheDefaultSequence;
 	}
 }

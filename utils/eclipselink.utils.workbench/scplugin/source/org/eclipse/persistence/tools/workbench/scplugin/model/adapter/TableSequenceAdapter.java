@@ -12,8 +12,8 @@
 ******************************************************************************/
 package org.eclipse.persistence.tools.workbench.scplugin.model.adapter;
 
-import org.eclipse.persistence.internal.sessions.factories.XMLSessionConfigProject;
 import org.eclipse.persistence.internal.sessions.factories.model.sequencing.TableSequenceConfig;
+import org.eclipse.persistence.tools.workbench.scplugin.model.SequenceType;
 
 /**
  * Session Configuration model adapter class for the 
@@ -23,7 +23,11 @@ import org.eclipse.persistence.internal.sessions.factories.model.sequencing.Tabl
  * 
  * @author Tran Le
  */
-class TableSequenceAdapter extends SequenceAdapter {
+public class TableSequenceAdapter extends SequenceAdapter {
+	
+	public static final String TABLE_PROPERTY = "sequenceTable";
+	public static final String NAME_FIELD_PROPERTY = "nameField";
+	public static final String COUNTER_FIELD_PROPERTY = "counterField";
 	
 	/**
 	 * Creates a new TableSequence for the specified model object.
@@ -53,47 +57,48 @@ class TableSequenceAdapter extends SequenceAdapter {
 		return new TableSequenceConfig();
 	}
 
-	String getSequenceTable() {
+	public String getSequenceTable() {
 		return this.config().getTable();
 	}
 
-	void setSequenceTable( String value) {
-
+	public void setSequenceTable( String value) {
+		String old = this.config().getTable();
 		this.config().setTable( value);
+		firePropertyChanged(TABLE_PROPERTY, old, value);
 	}
 
-	String getSequenceNameField() {
+	public String getSequenceNameField() {
 		return this.config().getNameField();
 	}
 
-	void setSequenceNameField( String value) {
-
+	public void setSequenceNameField( String value) {
+		String old = this.config().getNameField();
 		this.config().setNameField( value);
+		firePropertyChanged(NAME_FIELD_PROPERTY, old, value);
 	}
 
-	String getSequenceCounterField() {
+	public String getSequenceCounterField() {
 		return this.config().getCounterField();
 	}
 
-	void setSequenceCounterField( String value) {
-
+	public void setSequenceCounterField( String value) {
+		String old = this.config().getCounterField();
 		this.config().setCounterField( value);
+		firePropertyChanged(COUNTER_FIELD_PROPERTY, old, value);
 	}
 	
 	public boolean isCustom() {
 
-		return !this.isDefault();
+		return (config().getName().equals("Custom"));
 	}
 	
 	public boolean isDefault() {
 		
-	    if( getSequenceTable() == null ||  getSequenceTable().length() == 0) 
-	        return true;
-	    else if( getSequenceTable().equals( XMLSessionConfigProject.SEQUENCE_TABLE_DEFAULT)
-	    		&& getSequenceNameField().equals(XMLSessionConfigProject.SEQUENCE_NAME_FIELD_DEFAULT)
-	    		&& getSequenceCounterField().equals(XMLSessionConfigProject.SEQUENCE_COUNTER_FIELD_DEFAULT)) 
-	        return true;
-
-		return false;
-		}
+	    return (config().getName().equals("Default"));
+	}
+	
+	@Override
+	public SequenceType getType() {
+		return SequenceType.TABLE;
+	}
 }

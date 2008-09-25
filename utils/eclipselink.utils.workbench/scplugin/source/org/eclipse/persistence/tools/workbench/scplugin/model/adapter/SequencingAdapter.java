@@ -12,16 +12,18 @@
 ******************************************************************************/
 package org.eclipse.persistence.tools.workbench.scplugin.model.adapter;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
+import java.util.ListIterator;
 import java.util.Vector;
-
-import org.eclipse.persistence.tools.workbench.utility.iterators.CloneIterator;
 
 import org.eclipse.persistence.internal.sessions.factories.XMLSessionConfigProject;
 import org.eclipse.persistence.internal.sessions.factories.model.sequencing.SequenceConfig;
 import org.eclipse.persistence.internal.sessions.factories.model.sequencing.SequencingConfig;
+import org.eclipse.persistence.tools.workbench.scplugin.model.SequenceType;
+import org.eclipse.persistence.tools.workbench.utility.iterators.CloneListIterator;
 
 /**
  * Session Configuration model adapter class for the 
@@ -31,13 +33,13 @@ import org.eclipse.persistence.internal.sessions.factories.model.sequencing.Sequ
  * 
  * @author Tran Le
  */
-class SequencingAdapter extends SCAdapter {
+public class SequencingAdapter extends SCAdapter {
 
 	public static final String DEFAULT_SEQUENCE_NAME = "Default";
 	public static final String NATIVE_SEQUENCE_NAME = "Native";
 	public static final String CUSTOM_SEQUENCE_NAME = "Custom";
 
-	private Collection sequences;
+	private List<SequenceAdapter> sequences;
 	private volatile SequenceAdapter defaultSequence;
 	
 	/**
@@ -173,18 +175,6 @@ class SequencingAdapter extends SCAdapter {
 	
 		return this.defaultSequence;
 	}
-	/**
-	 * Facade to provide the interface to the Multiple Sequence structure.
-	 */
-	SequenceAdapter setCustomTableSequence( String name, int preallocationSize) {
-		if( this.defaultSequenceNameEquals( name)) return this.defaultSequence;
-
-		this.defaultSequence = new TableSequenceAdapter( this, name, preallocationSize);
-		this.config().setDefaultSequenceConfig(( SequenceConfig)this.defaultSequence.getModel());
-		
-		this.initializeCustomTableSequenceDefaults();	    
-		return this.defaultSequence;
-	}	
 	
 	private void initializeDefaultSequenceDefaults() {
 		TableSequenceAdapter sequence = ( TableSequenceAdapter)this.defaultSequence;
@@ -194,13 +184,6 @@ class SequencingAdapter extends SCAdapter {
 		sequence.setSequenceNameField( XMLSessionConfigProject.SEQUENCE_NAME_FIELD_DEFAULT);
 	}
 	
-	private void initializeCustomTableSequenceDefaults() {
-		TableSequenceAdapter sequence = ( TableSequenceAdapter)this.defaultSequence;
-
-		sequence.setSequenceTable( "MY_" + XMLSessionConfigProject.SEQUENCE_TABLE_DEFAULT);
-		sequence.setSequenceCounterField( "MY_" + XMLSessionConfigProject.SEQUENCE_COUNTER_FIELD_DEFAULT);
-		sequence.setSequenceNameField( "MY_" + XMLSessionConfigProject.SEQUENCE_NAME_FIELD_DEFAULT);
-	}
 	/**
 	 * Remove the default sequence.
 	 */
@@ -215,15 +198,7 @@ class SequencingAdapter extends SCAdapter {
 		
 		return removedSequence;
 	}
-	/**
-	 * Factory method for adding a native sequence.
-	 */
-	SequenceAdapter addNativeSequenceNamed( String name, int preallocationSize) {
-		
-		SequenceAdapter sequence = new NativeSequenceAdapter( this, name, preallocationSize);
-		
-		return this.addSequence( sequence);
-	}
+	
 	/**
 	 * Remove the sequence with the given name.
 	 */
@@ -236,16 +211,36 @@ class SequencingAdapter extends SCAdapter {
 	 */
 	private SequenceAdapter addSequence( SequenceAdapter sequenceAdapter) {
 		// add config
-		this.getSequenceConfigs().add( sequenceAdapter.getModel());
+		this.getSequenceConfigs().add((SequenceConfig) sequenceAdapter.getModel());
 		// add adapter
 		this.sequences.add( sequenceAdapter);
 		
 		return sequenceAdapter;
 	}
+	
+	public SequenceAdapter addSequence(String name, SequenceType sequenceType)
+	{
+		SequenceAdapter sequence = buildSequence(name, sequenceType);
+		return addSequence(sequence);
+	}
+
+	private SequenceAdapter buildSequence(String name, SequenceType sequenceType)
+	{
+		switch (sequenceType)
+		{
+			case DEFAULT:     return new DefaultSequenceAdapter(this, name, 50);
+			case NATIVE:      return new NativeSequenceAdapter(this, name, 50);
+			case TABLE:       return new TableSequenceAdapter(this, name, 50);
+			case UNARY_TABLE: return new UnaryTableSequenceAdapter(this, name, 50);
+			case XML_FILE:    return new XMLFileSequenceAdapter(this, name, 50);
+			default:          return null;
+		}
+	}
+
 	/**
 	 * Removes the given sequence.
 	 */
-	private SequenceAdapter removeSequence( SequenceAdapter sequenceAdapter) {	
+	public SequenceAdapter removeSequence( SequenceAdapter sequenceAdapter) {	
 
 		// remove config
 		this.getSequenceConfigs().remove( sequenceAdapter.getModel());
@@ -266,6 +261,24 @@ class SequencingAdapter extends SCAdapter {
 		
 		return  this.defaultSequenceNameEquals( NATIVE_SEQUENCE_NAME);
 	}
+	
+	public SequenceAdapter getDefaultSequence() {		
+		return this.defaultSequence;
+	}
+	
+	public void setDefaultSequence(SequenceAdapter adapter) {
+		this.defaultSequence.setTheDefaultSequence(false);
+		this.defaultSequence = adapter;
+		adapter.setTheDefaultSequence(true);
+		this.config().setDefaultSequenceConfig(( SequenceConfig)this.defaultSequence.getModel());
+	}
+	
+	public SequenceAdapter createAndSetDefaultSequence(String name, SequenceType type) {
+		SequenceAdapter adapter = this.buildSequence(name, type);
+		this.setDefaultSequence(adapter);
+		return adapter;
+	}
+
 	/**
 	 * Factory method for building a child default SequencingAdapter.
 	 */
@@ -279,11 +292,7 @@ class SequencingAdapter extends SCAdapter {
 
 		return sequence;
 }
-	
-	protected SequenceAdapter getDefaultSequence() {
-		
-		return this.defaultSequence;
-	}
+
 	/**
 	 * Initializes this adapter.
 	 */
@@ -319,6 +328,8 @@ class SequencingAdapter extends SCAdapter {
 
 		if( this.defaultSequence == null) {
 			this.defaultSequence = buildDefaultSequence();
+		} else {
+			this.defaultSequence.setTheDefaultSequence(true);
 		}
 
 		//TOREVIEW
@@ -341,12 +352,21 @@ class SequencingAdapter extends SCAdapter {
 	/**
 	 * Returns an iterator on a collection of sequences adapters.
 	 */
-	Iterator sequences() {
+	public ListIterator<SequenceAdapter> sequences() {
 		
-		return new CloneIterator(this.sequences);
+		return new CloneListIterator(this.sequences);
 	}
 	
-	int sequencesSize() {
+	public Iterator<String> sequenceNames() {
+		Iterator<SequenceAdapter> sequencesIter = (Iterator<SequenceAdapter>)sequences();
+		Collection<String> names = new ArrayList<String>(sequencesSize());
+		while(sequencesIter.hasNext()) {
+			names.add(sequencesIter.next().getName());
+		}
+		return names.iterator();
+	}
+	
+	public int sequencesSize() {
 		
 		return this.sequences.size();
 	}

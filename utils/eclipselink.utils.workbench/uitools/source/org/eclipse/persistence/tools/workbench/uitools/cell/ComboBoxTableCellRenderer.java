@@ -125,7 +125,7 @@ public class ComboBoxTableCellRenderer implements TableCellEditorAdapter.Rendere
 		}
 	}
 
-    static JLabel prototypeLabel = new JLabel("Prototype", new EmptyIcon(16), SwingConstants.LEADING);
+    public static JLabel prototypeLabel = new JLabel("Prototype", new EmptyIcon(16), SwingConstants.LEADING);
 
     protected JComboBox buildComboBox() {
 

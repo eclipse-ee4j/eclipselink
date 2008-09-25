@@ -533,7 +533,7 @@ public abstract class AbstractPanel extends AccessibleTitledPanel {
 	 * @return The <code>ComponentAligner</code> that makes sure all components
 	 * with it have the same width
 	 */
-	private ComponentAligner getAlignLeftGroup() {
+	public ComponentAligner getAlignLeftGroup() {
 		if (this.alignLeftGroup == null) {
 			this.alignLeftGroup = new ComponentAligner();
 		}
@@ -548,7 +548,7 @@ public abstract class AbstractPanel extends AccessibleTitledPanel {
 	 * @return The <code>ComponentAligner</code> that makes sure all components
 	 * with it have the same width
 	 */
-	private ComponentAligner getAlignRightGroup() {
+	public ComponentAligner getAlignRightGroup() {
 		if (this.alignRightGroup == null) {
 			this.alignRightGroup = new ComponentAligner();
 		}

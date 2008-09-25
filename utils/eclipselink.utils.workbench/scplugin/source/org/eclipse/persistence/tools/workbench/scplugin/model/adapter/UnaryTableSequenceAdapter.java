@@ -13,6 +13,7 @@
 package org.eclipse.persistence.tools.workbench.scplugin.model.adapter;
 
 import org.eclipse.persistence.internal.sessions.factories.model.sequencing.UnaryTableSequenceConfig;
+import org.eclipse.persistence.tools.workbench.scplugin.model.SequenceType;
 
 /**
  * Session Configuration model adapter class for the 
@@ -22,7 +23,9 @@ import org.eclipse.persistence.internal.sessions.factories.model.sequencing.Unar
  * 
  * @author Tran Le
  */
-class UnaryTableSequenceAdapter extends SequenceAdapter {
+public class UnaryTableSequenceAdapter extends SequenceAdapter {
+	
+	public static final String COUNTER_FIELD_PROPERTY = "counterField";
 	
 	/**
 	 * Creates a new UnaryTableSequence for the specified model object.
@@ -52,13 +55,19 @@ class UnaryTableSequenceAdapter extends SequenceAdapter {
 		return new UnaryTableSequenceConfig();
 	}
 
-	String getSequenceCounterField() {
+	public String getSequenceCounterField() {
 		return this.config().getCounterField();
 	}
 
-	void setSequenceCounterField( String value) {
-
+	public void setSequenceCounterField( String value) {
+		String old = this.config().getCounterField();
 		this.config().setCounterField( value);
+		firePropertyChanged(COUNTER_FIELD_PROPERTY, old, value);
+	}
+	
+	@Override
+	public SequenceType getType() {
+		return SequenceType.UNARY_TABLE;
 	}
 
 }
