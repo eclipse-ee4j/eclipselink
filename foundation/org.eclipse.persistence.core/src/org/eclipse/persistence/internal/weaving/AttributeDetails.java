@@ -32,6 +32,12 @@ public class AttributeDetails {
 
     protected boolean weaveValueHolders = false;
     
+    // Determine if we need to weave field level value holders as transient.
+    // With JPA 2.0 a mapping may have PROPERTY access when the owning class
+    // itself has FIELD access, meaning we want to avoid having the class
+    // process a weaved value holder field into a descriptor mapping.
+    protected boolean weaveTransientFieldValueHolders;
+    
     protected DatabaseMapping mapping;
     
     protected String getterMethodName;
@@ -108,6 +114,14 @@ public class AttributeDetails {
         return attributeOnSuperClass;
     }
 
+    public void setWeaveTransientFieldValueHolders() {
+        weaveTransientFieldValueHolders = true;
+    }
+    
+    public boolean weaveTransientFieldValueHolders() {
+        return weaveTransientFieldValueHolders;
+    }
+    
     public boolean weaveValueHolders() {
         return weaveValueHolders;
     }

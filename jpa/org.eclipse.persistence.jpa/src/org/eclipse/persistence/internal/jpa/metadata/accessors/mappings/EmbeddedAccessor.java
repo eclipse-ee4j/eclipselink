@@ -332,7 +332,7 @@ public class EmbeddedAccessor extends MappingAccessor {
             //   semantics."
             // I think we should assume the users know what they are are doing
             // in this case (that is, if they opt to share an embeddable).
-            if (accessor.getExplicitAccessType() == null) {
+            if (! accessor.hasAccess()) {
                 // We inherited our access from our owning entity.
                 if (accessor.getDescriptor().getDefaultAccess() != getOwningDescriptor().getDefaultAccess()) {
                     throw ValidationException.conflictingAccessTypeForEmbeddable(accessor.getJavaClass(), accessor.usesPropertyAccess(), getOwningDescriptor().getJavaClass(), getOwningDescriptor().getClassAccessor().usesPropertyAccess());

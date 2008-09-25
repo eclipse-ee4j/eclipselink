@@ -91,11 +91,11 @@ public class EmbeddableAccessor extends ClassAccessor {
         // Set the default access type on the descriptor and log a message
         // to the user if we are defaulting the access type for this 
         // embeddable to that default.
-        Enum owningClassAccessorsAccessType = getOwningDescriptor().getClassAccessor().getAccessType();
-        getDescriptor().setDefaultAccess(owningClassAccessorsAccessType);
+        Enum owningClassAccessorsAccess = getOwningDescriptor().getClassAccessor().getAccess();
+        getDescriptor().setDefaultAccess(owningClassAccessorsAccess);
         
-        if (getExplicitAccessType() == null) {
-            getLogger().logConfigMessage(MetadataLogger.ACCESS_TYPE, owningClassAccessorsAccessType.name(), getJavaClass());
+        if (getAccess() == null) {
+            getLogger().logConfigMessage(MetadataLogger.ACCESS_TYPE, owningClassAccessorsAccess.name(), getJavaClass());
         }
     }
     

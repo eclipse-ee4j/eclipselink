@@ -429,6 +429,11 @@ public class TransformerFactory {
                     settersMap.put(mapping.getSetMethodName(), attributeDetails);
                     attributeDetails.setSetterMethodName(mapping.getSetMethodName());
                 }
+                
+                if (mapping.isForeignReferenceMapping() && ((ForeignReferenceMapping) mapping).requiresTransientWeavedFields()) {
+                    attributeDetails.setWeaveTransientFieldValueHolders();
+                }
+                
                 // If the property has a matching field, then weave it instead (unless internal weaving is disabled).
                 if (this.weaveInternal) {
                     attributeDetails.setHasField(hasFieldInClass(clz, attribute));

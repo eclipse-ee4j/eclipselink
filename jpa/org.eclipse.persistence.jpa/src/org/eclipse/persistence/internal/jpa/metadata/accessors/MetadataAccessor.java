@@ -24,6 +24,9 @@ import java.util.List;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedElement;
 
+import javax.persistence.Access;
+import javax.persistence.AccessType;
+
 import org.eclipse.persistence.annotations.Converter;
 import org.eclipse.persistence.annotations.ObjectTypeConverter;
 import org.eclipse.persistence.annotations.TypeConverter;
@@ -61,6 +64,8 @@ import org.eclipse.persistence.internal.jpa.metadata.ORMetadata;
 public abstract class MetadataAccessor extends ORMetadata {
     private boolean m_isProcessed = false;
    
+    private Enum m_access;
+    
     private List<ConverterMetadata> m_converters = new ArrayList<ConverterMetadata>();
     private List<ObjectTypeConverterMetadata> m_objectTypeConverters = new ArrayList<ObjectTypeConverterMetadata>();
     private List<StructConverterMetadata> m_structConverters = new ArrayList<StructConverterMetadata>();
@@ -89,6 +94,20 @@ public abstract class MetadataAccessor extends ORMetadata {
         
         m_project = project;
         m_descriptor = descriptor;
+        
+        // Look for an explicit access type specification.
+        Annotation access = getAnnotation(Access.class);
+        if (access != null) {
+            setAccess((Enum) MetadataHelper.invokeMethod("value", access));
+        }
+    }
+    
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+    public Enum getAccess() {
+        return m_access;
     }
     
     /**
@@ -155,7 +174,7 @@ public abstract class MetadataAccessor extends ORMetadata {
     public MetadataDescriptor getDescriptor() {
         return m_descriptor;
     }
-    
+
     /**
      * INTERNAL:
      * To satisfy the abstract getIdentifier() method from ORMetadata.
@@ -316,6 +335,21 @@ public abstract class MetadataAccessor extends ORMetadata {
     }
     
     /**
+     * INTERNAL:
+     */
+    public boolean hasAccess() {
+        return m_access != null;
+    }
+    
+    /**
+     * INTERNAL:
+     */
+    public boolean hasPropertyAccess() {
+        return hasAccess() && m_access.name().equals(AccessType.PROPERTY.name());
+    }
+    
+    
+    /**
      * INTERNAL: 
      * This method should be subclassed in those methods that need to do 
      * extra initialization.
@@ -365,6 +399,9 @@ public abstract class MetadataAccessor extends ORMetadata {
     @Override
     public void merge(ORMetadata metadata) {
         MetadataAccessor accessor = (MetadataAccessor) metadata;
+        
+        // Simple object merging.
+        m_access = (Enum) mergeSimpleObjects(m_access, accessor.getAccess(), accessor.getAccessibleObject(), "@access");
         
         // ORMetadata list merging.
         m_converters = mergeORObjectLists(m_converters, accessor.getConverters());
@@ -508,6 +545,14 @@ public abstract class MetadataAccessor extends ORMetadata {
             m_project.addConverter(new TypeConverterMetadata(typeConverter, getAccessibleObject()));
         }
     }
+    
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+    public void setAccess(Enum access) {
+        m_access = access;
+    } 
     
     /**
      * INTERNAL:

@@ -152,7 +152,7 @@ public class ClassWeaver extends ClassAdapter implements Constants {
         RuntimeVisibleAnnotations annotations = null;
         // only mark @Transient if this is property access.  Otherwise, the @Transient annotation could mistakenly
         // cause the class to use attribute access.
-        if (attributeDetails.getGetterMethodName() == null || attributeDetails.getGetterMethodName().equals("")){
+        if (attributeDetails.getGetterMethodName() == null || attributeDetails.getGetterMethodName().equals("") || attributeDetails.weaveTransientFieldValueHolders()) {
             annotations = getTransientAnnotation();
         }
         cv.visitField(ACC_PROTECTED, "_persistence_" + attribute + "_vh", VHI_SIGNATURE, null, annotations);

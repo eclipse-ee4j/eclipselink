@@ -604,7 +604,7 @@ public class EntityAccessor extends MappedSuperclassAccessor {
      */
     protected void processAccessType(List<MappedSuperclassAccessor> mappedSuperclasses) {
         // Step 1 - Check for an explicit setting.
-        Enum explicitAccessType = getExplicitAccessType(); 
+        Enum explicitAccessType = getAccess(); 
         
         // Step 2, regardless if there is an explicit access type we still
         // want to determine the default access type for this entity since
@@ -619,7 +619,7 @@ public class EntityAccessor extends MappedSuperclassAccessor {
         if (getDescriptor().isInheritanceSubclass()) {
             MetadataDescriptor parent = getDescriptor().getInheritanceParentDescriptor();
             while (parent != null) {
-                if (! parent.getClassAccessor().hasExplicitAccessType()) {
+                if (! parent.getClassAccessor().hasAccess()) {
                     defaultAccessType = parent.getDefaultAccess();
                     break;
                 }
@@ -633,7 +633,7 @@ public class EntityAccessor extends MappedSuperclassAccessor {
         // superclasses now.
         if (defaultAccessType == null) {
             for (MappedSuperclassAccessor mappedSuperclass : mappedSuperclasses) {
-                if (! mappedSuperclass.hasExplicitAccessType()) {
+                if (! mappedSuperclass.hasAccess()) {
                     if (havePersistenceAnnotationsDefined(MetadataHelper.getFields(mappedSuperclass.getJavaClass()))) {
                         defaultAccessType = AccessType.FIELD;
                     } else if (havePersistenceAnnotationsDefined(MetadataHelper.getDeclaredMethods(mappedSuperclass.getJavaClass()))) {

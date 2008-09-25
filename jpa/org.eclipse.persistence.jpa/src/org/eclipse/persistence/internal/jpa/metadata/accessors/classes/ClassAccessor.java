@@ -26,7 +26,6 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 
-import javax.persistence.Access;
 import javax.persistence.AccessType;
 import javax.persistence.Basic;
 import javax.persistence.Embedded;
@@ -53,7 +52,6 @@ import org.eclipse.persistence.annotations.VariableOneToOne;
 
 import org.eclipse.persistence.exceptions.ValidationException;
 
-import org.eclipse.persistence.indirection.ValueHolderInterface;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.PropertyMetadata;
 
 import org.eclipse.persistence.internal.jpa.metadata.accessors.mappings.EmbeddedIdAccessor;
@@ -111,7 +109,7 @@ public abstract class ClassAccessor extends MetadataAccessor {
     private CustomCopyPolicyMetadata m_customCopyPolicy;
     private InstantiationCopyPolicyMetadata m_instantiationCopyPolicy;
     
-    private Enum m_access;
+    //private Enum m_access;
     private String m_className;
     private String m_customizerClassName;
     private String m_description;
@@ -173,18 +171,15 @@ public abstract class ClassAccessor extends MetadataAccessor {
         } else if (accessibleObject.isManyToOne(getDescriptor())) {
             return new ManyToOneAccessor(accessibleObject.getAnnotation(ManyToOne.class), accessibleObject, this);
         } else if (accessibleObject.isOneToMany(getDescriptor())) {
-            // A OneToMany can default, that is, doesn't require an 
-            // annotation to be present.
+            // A OneToMany can default and doesn't require an annotation to be present.
             return new OneToManyAccessor(accessibleObject.getAnnotation(OneToMany.class), accessibleObject, this);
         } else if (accessibleObject.isOneToOne(getDescriptor())) {
-            // A OneToOne can default, that is, doesn't require an 
-            // annotation to be present.
+            // A OneToOne can default and doesn't require an annotation to be present.
             return new OneToOneAccessor(accessibleObject.getAnnotation(OneToOne.class), accessibleObject, this);
         } else if (accessibleObject.isVariableOneToOne(getDescriptor())) {
-            // A VariableOneToOne can default, that is, doesn't require
-            // an annotation to be present.
+            // A VariableOneToOne can default and doesn't require an annotation to be present.
             return new VariableOneToOneAccessor(accessibleObject.getAnnotation(VariableOneToOne.class), accessibleObject, this);
-        } else if (getDescriptor().ignoreDefaultMappings() || ValueHolderInterface.class.isAssignableFrom(accessibleObject.getRawClass(getDescriptor()))) {     
+        } else if (getDescriptor().ignoreDefaultMappings()) {
             return null;
         } else {
             // Default case (everything else falls into a Basic)
@@ -201,20 +196,13 @@ public abstract class ClassAccessor extends MetadataAccessor {
     
     /**
      * INTERNAL:
-     * Used for OX mapping.
-     */
-    public Enum getAccess() {
-        return m_access;
-    }
-    
-    /**
-     * INTERNAL:
      * Return the access type of this accessor. Assumes all access processing
      * has been performed before calling this method.
      */
-    public Enum getAccessType() {
-        if (hasExplicitAccessType()) {
-            return getExplicitAccessType();
+    @Override
+    public Enum getAccess() {
+        if (hasAccess()) {
+            return super.getAccess();
         } else {
             return getDescriptor().getDefaultAccess();
         }
@@ -306,17 +294,6 @@ public abstract class ClassAccessor extends MetadataAccessor {
     
     /**
      * INTERNAL:
-     */
-    public Enum getExplicitAccessType() {
-        if (m_access == null) {
-            return isAnnotationPresent(Access.class) ? (Enum) MetadataHelper.invokeMethod("value", getAnnotation(Access.class)) : null;
-        } else {
-            return m_access;
-        }
-    }
-    
-    /**
-     * INTERNAL:
      * To satisfy the abstract getIdentifier() method from ORMetadata.
      */
     @Override
@@ -358,13 +335,6 @@ public abstract class ClassAccessor extends MetadataAccessor {
      */
     public Boolean getMetadataComplete() {
         return m_metadataComplete;
-    }
-    
-    /**
-     * INTERNAL:
-     */
-    public boolean hasExplicitAccessType() {
-        return m_access != null || isAnnotationPresent(Access.class);
     }
     
     /**
@@ -452,7 +422,6 @@ public abstract class ClassAccessor extends MetadataAccessor {
         ClassAccessor accessor = (ClassAccessor) metadata;
         
         // Simple object merging.
-        m_access = (Enum) mergeSimpleObjects(m_access, accessor.getAccess(), accessor.getAccessibleObject(), "@access");
         m_customizerClass = (Class) mergeSimpleObjects(m_customizerClass, accessor.getCustomizerClass(), accessor.getAccessibleObject(), "<customizer>");
         m_description = (String) mergeSimpleObjects(m_description, accessor.getDescription(), accessor.getAccessibleObject(), "<description>");
         m_metadataComplete = (Boolean) mergeSimpleObjects(m_metadataComplete, accessor.getMetadataComplete(), accessor.getAccessibleObject(), "@metadata-complete");
@@ -510,7 +479,7 @@ public abstract class ClassAccessor extends MetadataAccessor {
         
         // If we have an explicit access setting we must process the inverse
         // for those accessors that have an Access(PROPERTY) setting.
-        if (hasExplicitAccessType() && ! processingInverse) {
+        if (hasAccess() && ! processingInverse) {
             processAccessorMethods(true);
         }  
     }
@@ -547,7 +516,7 @@ public abstract class ClassAccessor extends MetadataAccessor {
         
         // If we have an explicit access setting we must process the inverse
         // for those accessors that have an Access(FIELD)setting. 
-        if (hasExplicitAccessType() && ! processingInverse) {
+        if (hasAccess() && ! processingInverse) {
             processAccessorFields(true);
         }  
     }
@@ -782,14 +751,6 @@ public abstract class ClassAccessor extends MetadataAccessor {
      * INTERNAL:
      * Used for OX mapping.
      */
-    public void setAccess(Enum access) {
-        m_access = access;
-    } 
-    
-    /**
-     * INTERNAL:
-     * Used for OX mapping.
-     */
     public void setAttributes(XMLAttributes attributes) {
         m_attributes = attributes;
     }
@@ -884,6 +845,6 @@ public abstract class ClassAccessor extends MetadataAccessor {
      * since we may be processing a mapped superclass.
      */
     public boolean usesPropertyAccess() {
-        return getAccessType().name().equals(AccessType.PROPERTY.name());
+        return getAccess().name().equals(AccessType.PROPERTY.name());
     }
 }

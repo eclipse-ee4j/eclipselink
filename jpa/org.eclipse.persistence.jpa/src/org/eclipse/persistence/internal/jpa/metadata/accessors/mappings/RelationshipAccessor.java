@@ -417,18 +417,36 @@ public abstract class RelationshipAccessor extends MappingAccessor {
     
     /**
      * INTERNAL:
+     * Set the getter and setter access methods for this accessor.
+     */
+    @Override
+    protected void setAccessorMethods(DatabaseMapping mapping) {
+        super.setAccessorMethods(mapping);
+        
+        // If we have property access and the owning class has field access, 
+        // mark the mapping to weave transient field value holders (if it 
+        // so applies at weaving time). Setting the accessor methods 
+        // previously told us the type of access in turn indicating if we 
+        // needed to weave  transient value holder fields on the class. 
+        // With JPA 2.0 and the possibility of mixed access types this 
+        // assumption no longer applies.
+        ((ForeignReferenceMapping) mapping).setRequiresTransientWeavedFields(usesPropertyAccess(getDescriptor()) && ! getClassAccessor().usesPropertyAccess());
+    }
+    
+    /**
+     * INTERNAL:
      * Set the cascade type on a mapping.
      */
     protected void setCascadeType(Enum type, ForeignReferenceMapping mapping) {
-        if(type.name().equals(CascadeType.ALL.name())) {
+        if (type.name().equals(CascadeType.ALL.name())) {
             mapping.setCascadeAll(true);
-        }else if(type.name().equals(CascadeType.MERGE.name())) {
+        } else if(type.name().equals(CascadeType.MERGE.name())) {
             mapping.setCascadeMerge(true);
-        }else if(type.name().equals(CascadeType.PERSIST.name())) {
+        } else if(type.name().equals(CascadeType.PERSIST.name())) {
             mapping.setCascadePersist(true);
-        }else if(type.name().equals(CascadeType.REFRESH.name())) {
+        } else if(type.name().equals(CascadeType.REFRESH.name())) {
             mapping.setCascadeRefresh(true);
-        }else if(type.name().equals(CascadeType.REMOVE.name())) {
+        } else if(type.name().equals(CascadeType.REMOVE.name())) {
             mapping.setCascadeRemove(true);
         }
     }

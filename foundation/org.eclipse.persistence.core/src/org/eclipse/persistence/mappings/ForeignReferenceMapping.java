@@ -78,6 +78,9 @@ public abstract class ForeignReferenceMapping extends DatabaseMapping {
     protected boolean cascadeRefresh;
     protected boolean cascadeRemove;
     
+    /** Flag used to determe if we need to weave the transient annotation on weaved fields.*/
+    protected boolean requiresTransientWeavedFields;
+    
     /** Define if the relationship should always be join fetched. */
     protected int joinFetch = NONE;
     /** Specify any INNER join on a join fetch. */
@@ -96,6 +99,7 @@ public abstract class ForeignReferenceMapping extends DatabaseMapping {
         this.cascadeMerge = false;
         this.cascadeRefresh = false;
         this.cascadeRemove = false;
+        this.requiresTransientWeavedFields = true;
     }
 
     /**
@@ -912,6 +916,14 @@ public abstract class ForeignReferenceMapping extends DatabaseMapping {
     }
 
     /**
+     * Returns true if this mappings associated weaved field requires a
+     * transient setting to avoid metadata processing. 
+     */
+    public boolean requiresTransientWeavedFields() {
+        return requiresTransientWeavedFields;
+    }
+    
+    /**
      * PUBLIC:
      * Sets the cascading for all JPA operations.
      */
@@ -1049,6 +1061,14 @@ public abstract class ForeignReferenceMapping extends DatabaseMapping {
         this.relationshipPartnerAttributeName = attributeName;
     }
 
+    /**
+     * Set this flag if this mappings associated weaved field requires a
+     * transient setting to avoid metadata processing. 
+     */
+    public void setRequiresTransientWeavedFields(boolean requiresTransientWeavedFields) {
+        this.requiresTransientWeavedFields = requiresTransientWeavedFields;
+    }
+    
     /**
      * PUBLIC:
      * Sets the selection criteria to be used as a where clause to read
@@ -1519,4 +1539,8 @@ public abstract class ForeignReferenceMapping extends DatabaseMapping {
         }
         return nestedQuery;
     }
+
+
+
+
 }

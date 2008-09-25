@@ -1086,7 +1086,6 @@ public abstract class DatabaseMapping implements Cloneable, Serializable {
      * A subclass that supports cascade version optimistic locking should 
      * implement this method to properly prepare the locking policy for their 
      * mapping type.
-     * Guy
      */
     public void prepareCascadeLockingPolicy() {
         return;

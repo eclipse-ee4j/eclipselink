@@ -26,8 +26,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import javax.persistence.Access;
-import javax.persistence.AccessType;
 import javax.persistence.Column;
 import javax.persistence.FetchType;
 
@@ -62,7 +60,6 @@ import org.eclipse.persistence.mappings.ForeignReferenceMapping;
  * @since EclipseLink 1.0
  */
 public abstract class MappingAccessor extends MetadataAccessor {
-    private Enum m_access; // Access type specified from XML.
     private AccessMethodsMetadata m_accessMethods;
     private ClassAccessor m_classAccessor;
     private Map<String, PropertyMetadata> m_properties = new HashMap<String, PropertyMetadata>();
@@ -83,20 +80,6 @@ public abstract class MappingAccessor extends MetadataAccessor {
         // We must keep a reference to the class accessors where this
         // mapping accessor is defined. We need it to determine access types.
         m_classAccessor = classAccessor;
-        
-        // Look for an explicit access type specification.
-        Annotation access = getAnnotation(Access.class);
-        if (access != null) {
-            m_access = (Enum) MetadataHelper.invokeMethod("value", access);
-        }
-    }
-    
-    /**
-     * INTERNAL:
-     * Used for OX mapping.
-     */
-    public Enum getAccess(){
-        return m_access;
     }
     
     /**
@@ -104,6 +87,14 @@ public abstract class MappingAccessor extends MetadataAccessor {
      */
     public AccessMethodsMetadata getAccessMethods(){
         return m_accessMethods;
+    }
+    
+    /**
+     * INTERNAL:
+     * Returns the class accessor on which this mapping was defined.
+     */
+    public ClassAccessor getClassAccessor(){
+        return m_classAccessor;
     }
     
     /**
@@ -410,14 +401,6 @@ public abstract class MappingAccessor extends MetadataAccessor {
     
     /**
      * INTERNAL:
-     * Used for OX mapping.
-     */
-    public void setAccess(Enum access){
-        m_access = access;
-    }
-    
-    /**
-     * INTERNAL:
      */
     public void setAccessMethods(AccessMethodsMetadata accessMethods){
         m_accessMethods = accessMethods;
@@ -497,10 +480,10 @@ public abstract class MappingAccessor extends MetadataAccessor {
      * the parent (unless there is an explicit access setting).
      */
     public boolean usesPropertyAccess(MetadataDescriptor descriptor) {
-        if (m_access == null) {
-            return (m_accessMethods == null) ? m_classAccessor.usesPropertyAccess() : true;
+        if (hasAccess()) {
+            return hasPropertyAccess();
         } else {
-            return m_access.name().equals(AccessType.PROPERTY.name());
+            return (m_accessMethods == null) ? m_classAccessor.usesPropertyAccess() : true;
         }
     }
 }
