@@ -113,7 +113,7 @@
         <ant antfile="${eclipselink.sdo}/build.xml"              target="clean"/>
         <ant antfile="build.xml" dir="${eclipselink.util.workbench}" target="clean"/>
         <ant antfile="${eclipselink.core.test}/build.xml"        target="clean"/>
-        <!-- ant antfile="${eclipselink.dbws.test}/build.xml"        target="clean"/ -->
+        <ant antfile="${eclipselink.dbws.test}/build.xml"        target="clean"/>
         <ant antfile="${eclipselink.jpa.test}/build.xml"         target="clean"/>
         <ant antfile="${eclipselink.moxy.test}/build.xml"        target="clean"/>
         <ant antfile="${eclipselink.sdo.test}/build.xml"         target="clean"/>
@@ -166,7 +166,7 @@
     <!-- Compiles tests (excluding workbench, and Oracle extensions). -->
     <target name="build-core-test">
         <ant antfile="${eclipselink.core.test}/build.xml" target="all"/>
-        <!-- ant antfile="${eclipselink.dbws.test}/build.xml" target="all"/ -->
+        <ant antfile="${eclipselink.dbws.test}/build.xml" target="all"/>
         <ant antfile="${eclipselink.jpa.test}/build.xml"  target="all"/>
         <ant antfile="${eclipselink.moxy.test}/build.xml" target="compile-tests"/>
         <ant antfile="${eclipselink.sdo.test}/build.xml"  target="compile-sdo-tests"/>
@@ -495,7 +495,7 @@
             </zipfileset>
             <!-- setenv and package-rename scripts -->
             <zipfileset dir="${eclipselink.core.bin}" prefix="eclipselink/bin" filemode="755">
-                <include name="${setenv-scripts}"/>                
+                <include name="${setenv-scripts}"/>
             </zipfileset>
             <zipfileset dir="${eclipselink.util.rename}" prefix="eclipselink/utils/rename" filemode="755">
                 <include name="${package-rename-scripts}"/>
@@ -560,9 +560,7 @@
 
     <!-- Packages util-dbws jar. -->
     <target name="package-util-dbws-jar" description="build DBWS util jar">
-        <!--
         <ant antfile="${eclipselink.util.dbws}/build.xml" target="all"/>
-        -->
     </target>
 
     <!-- Packages package-renamer jar. -->
@@ -624,6 +622,9 @@
     </target>
     <target name="test-jaxb" description="run the moxy (jaxb) tests">
         <ant antfile="${eclipselink.moxy.test}/build.xml" target="test-jaxb-against-jar"/>
+    </target>
+    <target name="test-dbws-utils" description="run the DBWS utils tests">
+        <ant antfile="${eclipselink.utils.dbws.test}/build.xml" target="test"/>
     </target>
 
 </project>

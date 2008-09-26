@@ -66,15 +66,15 @@ public class RelationshipsTestSuite {
         "  xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"\n" +
         "  xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\"\n" +
         "  >\n" +
-        "  <xsd:complexType name=\"phoneType\">\n" +
+        "  <xsd:complexType name=\"phone\">\n" +
         "    <xsd:sequence>\n" +
         "      <xsd:element name=\"area-code\" type=\"xsd:string\" />\n" +
         "      <xsd:element name=\"phonenumber\" type=\"xsd:string\" />\n" +
         "      <xsd:element name=\"type\" type=\"xsd:string\" />\n" +
         "    </xsd:sequence>\n" +
         "  </xsd:complexType>\n" +
-        "  <xsd:element name=\"phone\" type=\"phoneType\"/>\n" +
-        "  <xsd:complexType name=\"addressType\">\n" +
+        "  <xsd:element name=\"phone\" type=\"phone\"/>\n" +
+        "  <xsd:complexType name=\"address\">\n" +
         "    <xsd:sequence>\n" +
         "      <xsd:element name=\"id\" type=\"xsd:int\" />\n" +
         "      <xsd:element name=\"street\" type=\"xsd:string\" />\n" +
@@ -84,15 +84,15 @@ public class RelationshipsTestSuite {
         "      <xsd:element name=\"country\" type=\"xsd:string\" />\n" +
         "    </xsd:sequence>\n" +
         "  </xsd:complexType>\n" +
-        "  <xsd:element name=\"address\" type=\"addressType\"/>\n" +
-        "  <xsd:complexType name=\"employeeType\">\n" +
+        "  <xsd:element name=\"address\" type=\"address\"/>\n" +
+        "  <xsd:complexType name=\"employee\">\n" +
         "    <xsd:sequence>\n" +
         "      <xsd:element name=\"id\" type=\"xsd:int\" />\n" +
         "      <xsd:element name=\"first-name\" type=\"xsd:string\" />\n" +
         "     <xsd:element name=\"last-name\" type=\"xsd:string\" />\n" +
-        "      <xsd:element name=\"address\" type=\"addressType\" minOccurs=\"0\" />\n" +
+        "      <xsd:element name=\"address\" type=\"address\" minOccurs=\"0\" />\n" +
         "      <xsd:sequence>\n" +
-        "        <xsd:element name=\"phones\" type=\"phoneType\" minOccurs=\"0\" />\n" +
+        "        <xsd:element name=\"phones\" type=\"phone\" minOccurs=\"0\" />\n" +
         "      </xsd:sequence>\n" +
         "      <xsd:sequence>\n" +
         "        <xsd:element name=\"responsibilities\" type=\"xsd:string\" minOccurs=\"0\" />\n" +
@@ -106,7 +106,7 @@ public class RelationshipsTestSuite {
         "      <xsd:element name=\"version\" type=\"xsd:int\"/>\n" +
         "    </xsd:sequence>\n" +
         "  </xsd:complexType>\n" +
-        "  <xsd:element name=\"employee\" type=\"employeeType\"/>\n" +
+        "  <xsd:element name=\"employee\" type=\"employee\"/>\n" +
         "</xsd:schema>";
     static final String RELATIONSHIPS_DBWS =
         "<?xml version='1.0' encoding='UTF-8'?>\n" +
@@ -119,7 +119,7 @@ public class RelationshipsTestSuite {
         "  <query>\n" +
         "   <name>getAllEmployees</name>\n" +
         "   <result isCollection=\"true\">\n" +
-        "     <type>ns1:employeeType</type>\n" +
+        "     <type>ns1:employee</type>\n" +
         "   </result>\n" +
         "   <named-query>\n" +
         "     <name>getAllEmployees</name>\n" +

@@ -44,26 +44,20 @@
   <property
     file="${user.home}/build.properties"
   />
-  <!-- properties checked into SVN -->
-  <property
-    file="${basedir}/build.properties"
-  />
   <!-- local testing properties overrides -->
   <property
     file="${user.home}/test.properties"
-  />
-  <!-- testing properties checked into SVN -->
-  <property
-    file="${basedir}/test.properties"
   />
   <!-- find out where this build.xml file is -->
   <dirname
     property="eclipselink.utils.dbws.test"
     file="${ant.file.eclipselink.utils.dbws.test}"
   />
+  <!-- properties checked into SVN -->
   <property
     file="${eclipselink.utils.dbws.test}/build.properties"
   />
+  <!-- testing properties checked into SVN -->
   <property
     file="${eclipselink.utils.dbws.test}/test.properties"
   />
@@ -80,15 +74,15 @@
     <pathelement
       path="${eclipselink.plugins}/${asm}"
     />
-    <fileset
-      dir="${eclipselink.plugins}"
-      includes="${eclipselink.dbws.core.depend}"
-    />
     <pathelement
       path="${eclipselink.utils.plugins}/${eclipselink.utils.dbws.depend}"
     />
     <pathelement
       path="${eclipselink.utils.dbws}/${eclipselink.utils.dbws.jlib}"
+    />
+    <fileset
+      dir="${eclipselink.plugins}"
+      includes="${eclipselink.dbws.core.depend}"
     />
   </path>
   <presetdef name="javac">
@@ -151,8 +145,8 @@
     depends="test-common-available"
     >
     <javac
-      srcdir="${src.dir}"
-      destdir="${classes.dir}"
+      srcdir="${eclipselink.utils.dbws.test}/${src.dir}"
+      destdir="${eclipselink.utils.dbws.test}/${classes.dir}"
       includes="dbws/testing/*.java"
       >
       <classpath>
@@ -163,7 +157,7 @@
       destfile="${eclipselink.utils.dbws.test}/${eclipselink.utils.dbws.common.jlib}"
       >
 			<fileset
-        dir="${classes.dir}"
+        dir="${eclipselink.utils.dbws.test}/${classes.dir}"
         includes="dbws/testing/*.class"
 			/>
     </jar>
@@ -200,8 +194,8 @@
           path="${eclipselink.utils.dbws.test}/${eclipselink.utils.dbws.common.jlib}"
         />
       </path>
-      <DeleteDirQuietly dir="${report.dir}"/>
-      <mkdir dir="${report.dir}"/>
+      <DeleteDirQuietly dir="${eclipselink.utils.dbws.test}/${report.dir}"/>
+      <mkdir dir="${eclipselink.utils.dbws.test}/${report.dir}"/>
   </target>
   <macrodef
     name="SetupDatabase"
@@ -219,7 +213,7 @@
         delimiter="|"
         >
         <fileset
-          dir="${etc.dir}"
+          dir="${eclipselink.utils.dbws.test}/${etc.dir}"
           >
          <include name="dbsetup_@{testsuite-name}.sql"/>
         </fileset>
@@ -234,8 +228,8 @@
     <sequential>
       <javac
         fork="true"
-        srcdir="${src.dir}"
-        destdir="${classes.dir}"
+        srcdir="${eclipselink.utils.dbws.test}/${src.dir}"
+        destdir="${eclipselink.utils.dbws.test}/${classes.dir}"
         includes="dbws/testing/@{package-name}/@{testsuite-name}TestSuite.java"
         classpathref="run.path"
       />
@@ -246,7 +240,7 @@
         >
         <classpath>
           <path refid="run.path"/>
-          <pathelement path="${classes.dir}"/>
+          <pathelement path="${eclipselink.utils.dbws.test}/${classes.dir}"/>
           <pathelement path="${eclipselink.utils.dbws.test}/${eclipselink.utils.dbws.common.jlib}"/>
         </classpath>
         <sysproperty
@@ -297,7 +291,7 @@
             refid="run.path"
           />
           <pathelement
-            path="${classes.dir}"
+            path="${eclipselink.utils.dbws.test}/${classes.dir}"
           />
           <pathelement
             path="${eclipselink.utils.dbws.test}/${eclipselink.utils.dbws.common.jlib}"
@@ -335,7 +329,7 @@
         />
       </junit>
       <junitreport
-        todir="${report.dir}"
+        todir="${eclipselink.utils.dbws.test}/${report.dir}"
         >
         <fileset
           dir="."
@@ -346,7 +340,7 @@
         </fileset>
         <report
           format="noframes"
-          todir="${report.dir}"
+          todir="${eclipselink.utils.dbws.test}/${report.dir}"
         />
       </junitreport>
     </sequential>
@@ -367,7 +361,7 @@
         delimiter="|"
         >
         <fileset
-          dir="${etc.dir}"
+          dir="${eclipselink.utils.dbws.test}/${etc.dir}"
           >
          <include name="dbteardown_@{testsuite-name}.sql"/>
         </fileset>
