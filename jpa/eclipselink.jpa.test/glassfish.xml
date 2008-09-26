@@ -54,6 +54,10 @@
         <copy file="${junit.lib}" todir="${glassfish.home}/domains/domain1/lib"/>
         <copy file="${eclipselink.jar.name}" todir="${glassfish.home}/domains/domain1/lib"/>
         <copy file="${jdbc.driver.jar}" todir="${glassfish.home}/domains/domain1/lib"/>
+        <!-- The line below copies JPA 2.0 interfaces to ${glassfish.home}/lib. 
+            It can be removed when ${glassfish.home}/lib/javaee.jar contains JPA 2.0 interfaces 
+        -->
+        <copy file="${eclipselink.jpa}/../${plugins.dir}/${eclipselink.jpa.depend}" todir="${glassfish.home}/lib"/>
     </target>
     
     <!-- Start the server. -->
