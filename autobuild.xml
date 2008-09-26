@@ -30,7 +30,7 @@
             depends="clean, build, build-test"
     />
     <target name="build-nightly"    description="Trigger the nightly automated build and lrg tests"
-            depends="clean, build, package-bundles, build-test, test-lrg, publish-build, publish-results"
+            depends="clean, build, package-bundles, build-test, test-lrg, publish-build, publish-results, test-for-errors"
     />
     <target name="build-continuous" description="Trigger an automated build and run the tests if source changes exist"
             depends="clean, build-no-javadoc, build-core-test, test-srg"
@@ -263,6 +263,10 @@
         <exec executable="/bin/sh" failonerror="true" logError="true" >
             <arg value="${build.root.dir}/buildsystem/buildNightlyList.sh"/>
         </exec>
+    </target>
+    
+    <target name="test-for-errors">
+         <fail message="Some of the junit tests failed.  See the ${report.dir}/junit-noframes.html file for details." if="junit.failed"/>
     </target>
 
 </project>
