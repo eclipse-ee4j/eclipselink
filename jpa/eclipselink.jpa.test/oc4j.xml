@@ -49,18 +49,22 @@
         <delete dir="${oc4j.home}"/>
         <mkdir dir="${oc4j.home}"/>
         <unzip src="${oc4j.extended.zip}" dest="${oc4j.home}"/>
-		<!--Change password for admin-->
-		<java classname="oracle.security.jazn.util.JAZNInstallHelper" fork="true" dir="${oc4j.home}/j2ee/home">
-			<classpath>
-				<pathelement location="${oc4j.home}/j2ee/home/jazncore.jar" />
-				<pathelement location="${oc4j.home}/j2ee/home/jazn.jar" />
-	        </classpath>
-		    <arg line="-oh ${oc4j.home} -realm jazn.com -user ${server.user} -oldpwd welcome -newpwd ${server.pwd} -clearpwd true"/>
-	    </java>
+        <!--Change password for admin-->
+        <java classname="oracle.security.jazn.util.JAZNInstallHelper" fork="true" dir="${oc4j.home}/j2ee/home">
+            <classpath>
+                <pathelement location="${oc4j.home}/j2ee/home/jazncore.jar" />
+                <pathelement location="${oc4j.home}/j2ee/home/jazn.jar" />
+            </classpath>
+            <arg line="-oh ${oc4j.home} -realm jazn.com -user ${server.user} -oldpwd welcome -newpwd ${server.pwd} -clearpwd true"/>
+        </java>
 
         <copy file="${eclipselink.jar.name}" todir="${oc4j.home}/j2ee/home/applib"/>
         <copy file="${junit.lib}" todir="${oc4j.home}/j2ee/home/applib"/>
         <copy file="${jdbc.driver.jar}" todir="${oc4j.home}/j2ee/home/applib"/>
+        <!-- The line below copies JPA 2.0 interfaces to ${oc4j.home}/j2ee/home/applib. 
+            It can be removed when OC4J ships JPA 2.0 interfaces 
+        -->
+        <copy file="${eclipselink.jpa}/../${plugins.dir}/${eclipselink.jpa.depend}" todir="${oc4j.home}/j2ee/home/applib"/>
     </target>
 
     <!-- Start the server. -->
