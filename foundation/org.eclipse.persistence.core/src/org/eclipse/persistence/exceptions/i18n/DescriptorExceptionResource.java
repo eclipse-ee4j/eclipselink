@@ -34,7 +34,7 @@ public class DescriptorExceptionResource extends ListResourceBundle {
                                            { "12", "Descriptors must use an identity map in order to use the \"Check Cache\" existence checking option." },
                                            { "13", "The instance variable [{0}] in the object [{1}] is inaccessible." },
                                            { "14", "Problem in cloning the object [{0}].  The clone method [{1}] is not accessible." },
-                                           { "15", "This class does not define a default constructor, which TopLink requires." },
+                                           { "15", "This class does not define a default constructor, which EclipseLink requires." },
                                            { "16", "The descriptor callback method [{0}], with parameter (DescriptorEvent), is inaccessible." },
                                            { "17", "Trying to access the method [{0}] on the object [{1}].  The underlying method is inaccessible." },
                                            { "18", "Illegal method access in a Transformation mapping using a ValueHolder." },

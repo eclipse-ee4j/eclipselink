@@ -43,7 +43,7 @@ public class UseDistinctScenario extends ReportQueryTestCase {
         for (int i = 1; i < employees.size(); i++) {
             boolean duplicateFound = false;
 
-            // iterate throught distinctEmployees to check for duplicate provinces, if found, employee not added
+            // iterate through distinctEmployees to check for duplicate provinces, if found, employee not added
             for (int j = 0; j < distinctEmployees.size(); j++) {
                 if ((((Employee)employees.elementAt(i)).getAddress().getProvince()).equals((((Employee)distinctEmployees.elementAt(j)).getAddress().getProvince()))) {
                     duplicateFound = true;

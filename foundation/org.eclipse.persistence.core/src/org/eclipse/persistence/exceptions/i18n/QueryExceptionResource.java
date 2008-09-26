@@ -129,7 +129,7 @@ public class QueryExceptionResource extends ListResourceBundle {
        { "6124", "Required query of {0}, found {1}" },
        { "6125", "ReadQuery.clearQueryResults() can no longer be called. The call to clearQueryResults now requires that the session be provided. clearQueryResults(session) should be called." },
        { "6126", "A query is being executed that uses both conforming and cached query results.  These two settings are incompatible." },
-       { "6127", "A reflective call failed on the TopLink class {0}, your environment must be set up to allow Java reflection." },
+       { "6127", "A reflective call failed on the EclipseLink class {0}, your environment must be set up to allow Java reflection." },
        { "6128", "Batch Reading is not supported on Queries using custom Calls."},
        { "6129", "Refreshing is not possible if the query does not go to the database." },
        { "6130", "Custom SQL failed to provide descriminator column : {0}, as defined in SQLResultSetMapping : {1}."},

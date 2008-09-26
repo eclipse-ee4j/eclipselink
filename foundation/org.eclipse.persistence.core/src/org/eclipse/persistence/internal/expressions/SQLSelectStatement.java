@@ -136,7 +136,7 @@ public class SQLSelectStatement extends SQLStatement {
                 fieldExpression = orderExpression;
             }
 
-            // Changed to call a method to loop throught the fields vector and check each element
+            // Changed to call a method to loop through the fields vector and check each element
             // individually. Jon D. May 4, 2000 for pr 7811
             if ((fieldExpression.selectIfOrderedBy()) && !fieldsContainField(getFields(), fieldExpression)) {
                 addField(fieldExpression);
@@ -157,7 +157,7 @@ public class SQLSelectStatement extends SQLStatement {
     /**
      * ADVANCED:
      * If a platform is Informix, then the outer join must be in the FROM clause.
-     * This is used internally by TopLink for building Informix outer join syntax which differs from
+     * This is used internally by EclipseLink for building Informix outer join syntax which differs from
      * other platforms(Oracle,Sybase) that print the outer join in the WHERE clause and from DB2 which prints
      * the.
      * OuterJoinedAliases passed in to keep track of tables used for outer join so no normal join is given
@@ -240,7 +240,7 @@ public class SQLSelectStatement extends SQLStatement {
     /**
      * ADVANCED:
      * If a platform is DB2 or MySQL, then the outer join must be in the FROM clause.
-     * This is used internally by TopLink for building DB2 outer join syntax which differs from
+     * This is used internally by EclipseLink for building DB2 outer join syntax which differs from
      * other platforms(Oracle,Sybase) that print the outer join in the WHERE clause.
      * OuterJoinedAliases passed in to keep track of tables used for outer join so no normal join is given
      */
@@ -1877,7 +1877,7 @@ public class SQLSelectStatement extends SQLStatement {
         
     /**
      * This class manages outer join expressions. It stores them per source
-     * aliases, resolves nested joins and provides a method retuning a list of
+     * aliases, resolves nested joins and provides a method returning a list of
      * outer join expressions in the correct order for code generation.
      */
     static class OuterJoinExpressionHolders {
