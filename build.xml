@@ -106,14 +106,13 @@
     <target name="clean" description="Clean the build">
         <ant antfile="${eclipselink.core}/build.xml"             target="clean"/>
         <ant antfile="${eclipselink.extension.oracle}/build.xml" target="clean"/>
-        <!-- ant antfile="${eclipselink.dbws}/build.xml"             target="clean"/ -->
+        <ant antfile="${eclipselink.dbws}/build.xml"             target="clean"/>
         <ant antfile="${eclipselink.jpa}/build.xml"              target="clean"/>
         <ant antfile="${eclipselink.util.rename}/build.xml"      target="clean"/>
         <ant antfile="${eclipselink.moxy}/build.xml"             target="clean"/>
         <ant antfile="${eclipselink.sdo}/build.xml"              target="clean"/>
         <ant antfile="build.xml" dir="${eclipselink.util.workbench}" target="clean"/>
         <ant antfile="${eclipselink.core.test}/build.xml"        target="clean"/>
-        <!-- ant antfile="${eclipselink.dbws.test}/build.xml"        target="clean"/ -->
         <ant antfile="${eclipselink.jpa.test}/build.xml"         target="clean"/>
         <ant antfile="${eclipselink.moxy.test}/build.xml"        target="clean"/>
         <ant antfile="${eclipselink.sdo.test}/build.xml"         target="clean"/>
@@ -147,7 +146,7 @@
     <!-- Compiles all components (excluding Tests, Oracle extensions). -->
     <target name="build-core">
         <ant antfile="${eclipselink.core}/build.xml" target="all"/>
-        <!-- ant antfile="${eclipselink.core}/build.xml" target="all"/ -->
+        <ant antfile="${eclipselink.dbws}/build.xml" target="all"/>
         <ant antfile="${eclipselink.jpa}/build.xml"  target="all"/>
         <ant antfile="${eclipselink.moxy}/build.xml" target="all"/>
         <ant antfile="${eclipselink.sdo}/build.xml"  target="all"/>
@@ -166,7 +165,7 @@
     <!-- Compiles tests (excluding workbench, and Oracle extensions). -->
     <target name="build-core-test">
         <ant antfile="${eclipselink.core.test}/build.xml" target="all"/>
-        <!-- ant antfile="${eclipselink.dbws.test}/build.xml" target="all"/ -->
+        <ant antfile="${eclipselink.dbws.test}/build.xml" target="all"/>
         <ant antfile="${eclipselink.jpa.test}/build.xml"  target="all"/>
         <ant antfile="${eclipselink.moxy.test}/build.xml" target="compile-tests"/>
         <ant antfile="${eclipselink.sdo.test}/build.xml"  target="compile-sdo-tests"/>
@@ -624,7 +623,7 @@
         <ant antfile="${eclipselink.moxy.test}/build.xml" target="test-jaxb-against-jar"/>
     </target>
     <target name="test-dbws-utils" description="run the DBWS utils tests">
-        <!-- ant antfile="${eclipselink.utils.dbws.test}/build.xml" target="test"/ -->
+        <ant antfile="${eclipselink.utils.dbws.test}/build.xml" target="test"/>
     </target>
 
 </project>
