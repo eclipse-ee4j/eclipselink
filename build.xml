@@ -113,7 +113,7 @@
         <ant antfile="${eclipselink.sdo}/build.xml"              target="clean"/>
         <ant antfile="build.xml" dir="${eclipselink.util.workbench}" target="clean"/>
         <ant antfile="${eclipselink.core.test}/build.xml"        target="clean"/>
-        <ant antfile="${eclipselink.dbws.test}/build.xml"        target="clean"/>
+        <!-- ant antfile="${eclipselink.dbws.test}/build.xml"        target="clean"/ -->
         <ant antfile="${eclipselink.jpa.test}/build.xml"         target="clean"/>
         <ant antfile="${eclipselink.moxy.test}/build.xml"        target="clean"/>
         <ant antfile="${eclipselink.sdo.test}/build.xml"         target="clean"/>
