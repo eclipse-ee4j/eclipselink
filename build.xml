@@ -165,7 +165,7 @@
     <!-- Compiles tests (excluding workbench, and Oracle extensions). -->
     <target name="build-core-test">
         <ant antfile="${eclipselink.core.test}/build.xml" target="all"/>
-        <ant antfile="${eclipselink.dbws.test}/build.xml" target="all"/>
+        <ant antfile="${eclipselink.dbws.test}/build.xml" target="init"/>
         <ant antfile="${eclipselink.jpa.test}/build.xml"  target="all"/>
         <ant antfile="${eclipselink.moxy.test}/build.xml" target="compile-tests"/>
         <ant antfile="${eclipselink.sdo.test}/build.xml"  target="compile-sdo-tests"/>
@@ -621,6 +621,9 @@
     </target>
     <target name="test-jaxb" description="run the moxy (jaxb) tests">
         <ant antfile="${eclipselink.moxy.test}/build.xml" target="test-jaxb-against-jar"/>
+    </target>
+    <target name="test-dbws" description="run the DBWS core tests">
+        <ant antfile="${eclipselink.dbws.test}/build.xml" target="all"/>
     </target>
     <target name="test-dbws-utils" description="run the DBWS utils tests">
         <ant antfile="${eclipselink.utils.dbws.test}/build.xml" target="test"/>

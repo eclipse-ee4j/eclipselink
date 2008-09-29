@@ -58,6 +58,19 @@
   <property
     file="${eclipselink.dbws.test}/test.properties"
   />
+  <condition
+    property="supported.db"
+    >
+    <and>
+      <isset
+        property="db.platform"
+      />
+      <matches
+        pattern="org.eclipse.persistence.platform.database.MySQLPlatform"
+        string="${db.platform}"
+      />
+    </and>
+  </condition>
   <!-- Classpath used for compiling tests. -->
   <path
     id="compile.path"
@@ -134,6 +147,9 @@
     unless="eclipselink.dbws.common.available"
     depends="test-common-available"
     >
+    <mkdir
+      dir="${eclipselink.dbws.test}/${classes.dir}"
+    />
     <javac
       srcdir="${eclipselink.dbws.test}/${src.dir}"
       destdir="${eclipselink.dbws.test}/${classes.dir}"
@@ -168,24 +184,28 @@
     />
   </target>
   <target
-      name="init"
-      depends="should-compile-common"
+    name="init"
+    depends="should-compile-common"
+    >
+    <path
+      id="run.path"
       >
       <path
-        id="run.path"
-        >
-        <path
-          refid="compile.path"
-        />
-        <pathelement
-          path="${jdbc.driver.jar}"
-        />
-        <pathelement
-          path="${eclipselink.dbws.test}/${eclipselink.dbws.test.common.jlib}"
-        />
-      </path>
-      <DeleteDirQuietly dir="${eclipselink.dbws.test}/${report.dir}"/>
-      <mkdir dir="${eclipselink.dbws.test}/${report.dir}"/>
+        refid="compile.path"
+      />
+      <pathelement
+        path="${jdbc.driver.jar}"
+      />
+      <pathelement
+        path="${eclipselink.dbws.test}/${eclipselink.dbws.test.common.jlib}"
+      />
+    </path>
+    <DeleteDirQuietly
+      dir="${eclipselink.dbws.test}/${report.dir}"
+    />
+    <mkdir
+      dir="${eclipselink.dbws.test}/${report.dir}"
+    />
   </target>
   <macrodef
     name="SetupDatabase"
@@ -216,6 +236,9 @@
     <attribute name="testsuite-name"/>
     <attribute name="package-name"/>
     <sequential>
+      <mkdir
+        dir="${eclipselink.dbws.test}/${classes.dir}"
+      />
       <javac
         srcdir="${eclipselink.dbws.test}/${src.dir}"
         destdir="${eclipselink.dbws.test}/${classes.dir}"
@@ -342,6 +365,7 @@
   </macrodef>
   <target
     name="all"
+    if="supported.db"
     depends="init"
     description="setup, compile, and run dbws util testsuites"
     >
