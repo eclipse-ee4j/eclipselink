@@ -90,6 +90,7 @@
             <classpath>
                 <fileset dir="${server.lib}" includes="${server.depend}"/>
                 <pathelement location="${env.JAVA_HOME}/lib/tools.jar"/>
+                <fileset dir="${eclipselink.jpa}/../${plugins.dir}" includes="${eclipselink.jpa.depend}"/>
             </classpath>
             <jvmarg value="-Xms512m"/>
             <jvmarg value="-Xmx960m"/>
