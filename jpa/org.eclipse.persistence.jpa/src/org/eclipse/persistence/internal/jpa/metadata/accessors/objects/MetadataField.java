@@ -13,14 +13,15 @@
  *       - 218084: Implement metadata merging functionality between mapping files
  *     09/23/2008-1.1 Guy Pelletier 
  *       - 241651: JPA 2.0 Access Type support
+ *     10/01/2008-1.1 Guy Pelletier 
+ *       - 249329: To remain JPA 1.0 compliant, any new JPA 2.0 annotations should be referenced by name
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.accessors.objects;
 
 import java.lang.reflect.Field;
 
-import javax.persistence.AccessType;
-
 import org.eclipse.persistence.exceptions.ValidationException;
+import org.eclipse.persistence.internal.jpa.metadata.MetadataConstants;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataDescriptor;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataLogger;
 import org.eclipse.persistence.internal.jpa.metadata.xml.XMLEntityMappings;
@@ -71,7 +72,7 @@ public class MetadataField extends MetadataAnnotatedElement {
      * setting to be processed. Otherwise, it is ignored.
      */
     public boolean isValidPersistenceField(boolean mustBeExplicit, MetadataDescriptor descriptor) {
-        if (isValidPersistenceElement(mustBeExplicit, AccessType.FIELD, descriptor)) {
+        if (isValidPersistenceElement(mustBeExplicit, MetadataConstants.FIELD, descriptor)) {
             return isValidPersistenceField(descriptor, hasDeclaredAnnotations(descriptor)); 
         }
 

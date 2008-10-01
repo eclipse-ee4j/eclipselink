@@ -19,6 +19,8 @@
  *       - 240679: MappedSuperclass Id not picked when on get() method accessor
  *     09/23/2008-1.1 Guy Pelletier 
  *       - 241651: JPA 2.0 Access Type support
+ *     10/01/2008-1.1 Guy Pelletier 
+ *       - 249329: To remain JPA 1.0 compliant, any new JPA 2.0 annotations should be referenced by name
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.accessors.classes;
 
@@ -26,7 +28,6 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 
-import javax.persistence.AccessType;
 import javax.persistence.Basic;
 import javax.persistence.Embedded;
 import javax.persistence.EmbeddedId;
@@ -84,6 +85,7 @@ import org.eclipse.persistence.internal.jpa.metadata.copypolicy.CustomCopyPolicy
 import org.eclipse.persistence.internal.jpa.metadata.copypolicy.InstantiationCopyPolicyMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.copypolicy.CloneCopyPolicyMetadata;
 
+import org.eclipse.persistence.internal.jpa.metadata.MetadataConstants;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataDescriptor;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataLogger;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataProject;
@@ -200,7 +202,7 @@ public abstract class ClassAccessor extends MetadataAccessor {
      * has been performed before calling this method.
      */
     @Override
-    public Enum getAccess() {
+    public String getAccess() {
         if (hasAccess()) {
             return super.getAccess();
         } else {
@@ -845,6 +847,6 @@ public abstract class ClassAccessor extends MetadataAccessor {
      * since we may be processing a mapped superclass.
      */
     public boolean usesPropertyAccess() {
-        return getAccess().name().equals(AccessType.PROPERTY.name());
+        return getAccess().equals(MetadataConstants.PROPERTY);
     }
 }

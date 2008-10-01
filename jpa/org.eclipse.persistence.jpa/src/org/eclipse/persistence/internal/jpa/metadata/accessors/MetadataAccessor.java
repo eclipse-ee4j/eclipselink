@@ -15,6 +15,8 @@
  *       - 211329: Add sequencing on non-id attribute(s) support to the EclipseLink-ORM.XML Schema
  *     09/23/2008-1.1 Guy Pelletier 
  *       - 241651: JPA 2.0 Access Type support
+ *     10/01/2008-1.1 Guy Pelletier 
+ *       - 249329: To remain JPA 1.0 compliant, any new JPA 2.0 annotations should be referenced by name
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.accessors;
 
@@ -23,9 +25,6 @@ import java.util.List;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedElement;
-
-import javax.persistence.Access;
-import javax.persistence.AccessType;
 
 import org.eclipse.persistence.annotations.Converter;
 import org.eclipse.persistence.annotations.ObjectTypeConverter;
@@ -49,6 +48,7 @@ import org.eclipse.persistence.internal.jpa.metadata.converters.TypeConverterMet
 
 import org.eclipse.persistence.internal.jpa.metadata.tables.TableMetadata;
 
+import org.eclipse.persistence.internal.jpa.metadata.MetadataConstants;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataLogger;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataProject;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataDescriptor;
@@ -64,7 +64,7 @@ import org.eclipse.persistence.internal.jpa.metadata.ORMetadata;
 public abstract class MetadataAccessor extends ORMetadata {
     private boolean m_isProcessed = false;
    
-    private Enum m_access;
+    private String m_access;
     
     private List<ConverterMetadata> m_converters = new ArrayList<ConverterMetadata>();
     private List<ObjectTypeConverterMetadata> m_objectTypeConverters = new ArrayList<ObjectTypeConverterMetadata>();
@@ -96,9 +96,9 @@ public abstract class MetadataAccessor extends ORMetadata {
         m_descriptor = descriptor;
         
         // Look for an explicit access type specification.
-        Annotation access = getAnnotation(Access.class);
+        Annotation access = getAnnotation(MetadataConstants.ACCESS_ANNOTATION);
         if (access != null) {
-            setAccess((Enum) MetadataHelper.invokeMethod("value", access));
+            setAccess(((Enum) MetadataHelper.invokeMethod("value", access)).name());
         }
     }
     
@@ -106,7 +106,7 @@ public abstract class MetadataAccessor extends ORMetadata {
      * INTERNAL:
      * Used for OX mapping.
      */
-    public Enum getAccess() {
+    public String getAccess() {
         return m_access;
     }
     
@@ -145,9 +145,17 @@ public abstract class MetadataAccessor extends ORMetadata {
     
     /**
      * INTERNAL:
-     * Return the annotated element for this accessor.
+     * Return the annotation if it exists.
      */
     protected <T extends Annotation> T getAnnotation(Class annotation) {
+        return (T) getAnnotation(annotation.getName());
+    }
+    
+    /**
+     * INTERNAL:
+     * Return the annotation if it exists.
+     */
+    protected <T extends Annotation> T getAnnotation(String annotation) {
         return (T) getAccessibleObject().getAnnotation(annotation, m_descriptor);
     }
     
@@ -345,7 +353,7 @@ public abstract class MetadataAccessor extends ORMetadata {
      * INTERNAL:
      */
     public boolean hasPropertyAccess() {
-        return hasAccess() && m_access.name().equals(AccessType.PROPERTY.name());
+        return hasAccess() && m_access.equals(MetadataConstants.PROPERTY);
     }
     
     
@@ -401,7 +409,7 @@ public abstract class MetadataAccessor extends ORMetadata {
         MetadataAccessor accessor = (MetadataAccessor) metadata;
         
         // Simple object merging.
-        m_access = (Enum) mergeSimpleObjects(m_access, accessor.getAccess(), accessor.getAccessibleObject(), "@access");
+        m_access = (String) mergeSimpleObjects(m_access, accessor.getAccess(), accessor.getAccessibleObject(), "@access");
         
         // ORMetadata list merging.
         m_converters = mergeORObjectLists(m_converters, accessor.getConverters());
@@ -550,7 +558,7 @@ public abstract class MetadataAccessor extends ORMetadata {
      * INTERNAL:
      * Used for OX mapping.
      */
-    public void setAccess(Enum access) {
+    public void setAccess(String access) {
         m_access = access;
     } 
     

@@ -15,6 +15,8 @@
  *       - 211330: Add attributes-complete support to the EclipseLink-ORM.XML Schema
  *     09/23/2008-1.1 Guy Pelletier 
  *       - 241651: JPA 2.0 Access Type support
+ *     10/01/2008-1.1 Guy Pelletier 
+ *       - 249329: To remain JPA 1.0 compliant, any new JPA 2.0 annotations should be referenced by name
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.xml;
 
@@ -84,7 +86,7 @@ public class XMLEntityMappings extends ORMetadata {
     private MetadataFile m_file;
     private MetadataProject m_project;
     
-    private Enum m_access;
+    private String m_access;
     private String m_catalog;
     private String m_description; // Currently don't do anything with this.
     private String m_package;
@@ -106,7 +108,7 @@ public class XMLEntityMappings extends ORMetadata {
      * INTERNAL:
      * Used for OX mapping.
      */
-    public Enum getAccess() {
+    public String getAccess() {
         return m_access;
     }
     
@@ -633,7 +635,7 @@ public class XMLEntityMappings extends ORMetadata {
      * INTERNAL:
      * Used for OX mapping.
      */
-    public void setAccess(Enum access) {
+    public void setAccess(String access) {
         m_access = access;
     }
     

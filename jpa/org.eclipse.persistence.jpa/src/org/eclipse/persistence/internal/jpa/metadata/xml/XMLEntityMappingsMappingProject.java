@@ -24,7 +24,6 @@ package org.eclipse.persistence.internal.jpa.metadata.xml;
 
 import java.util.Collection;
 
-import javax.persistence.AccessType;
 import javax.persistence.DiscriminatorType;
 import javax.persistence.EnumType;
 import javax.persistence.FetchType;
@@ -2163,7 +2162,6 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         accessMapping.setAttributeName("m_access");
         accessMapping.setGetMethodName("getAccess");
         accessMapping.setSetMethodName("setAccess");
-        accessMapping.setConverter(new EnumTypeConverter(accessMapping, AccessType.class, false));
         accessMapping.setXPath("@access");
         return accessMapping;
     }
@@ -2176,7 +2174,6 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         accessMapping.setAttributeName("m_access");
         accessMapping.setGetMethodName("getAccess");
         accessMapping.setSetMethodName("setAccess");
-        accessMapping.setConverter(new EnumTypeConverter(accessMapping, AccessType.class, false));
         accessMapping.setXPath("orm:access/text()");
         return accessMapping;
     }

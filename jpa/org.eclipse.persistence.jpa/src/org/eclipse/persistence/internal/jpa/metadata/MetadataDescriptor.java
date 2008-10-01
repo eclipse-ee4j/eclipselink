@@ -21,6 +21,8 @@
  *       - 240679: MappedSuperclass Id not picked when on get() method accessor
  *     09/23/2008-1.1 Guy Pelletier 
  *       - 241651: JPA 2.0 Access Type support
+ *     10/01/2008-1.1 Guy Pelletier 
+ *       - 249329: To remain JPA 1.0 compliant, any new JPA 2.0 annotations should be referenced by name
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata;
 
@@ -31,8 +33,6 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import javax.persistence.AccessType;
 
 import org.eclipse.persistence.annotations.ExistenceType;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
@@ -103,7 +103,7 @@ public class MetadataDescriptor {
     // descriptor. The default access type is needed for those embeddables and 
     // mapped superclasses that are 'owned' or rely on this value for their own 
     // processing. It does not reflect an explicit access type.
-    private Enum m_defaultAccess; 
+    private String m_defaultAccess; 
     private String m_defaultSchema;
     private String m_defaultCatalog;
     private String m_embeddedIdAttributeName;
@@ -461,7 +461,7 @@ public class MetadataDescriptor {
     /**
      * INTERNAL:
      */
-    public Enum getDefaultAccess() {
+    public String getDefaultAccess() {
         return m_defaultAccess;
     }
     
@@ -1137,7 +1137,7 @@ public class MetadataDescriptor {
     /**
      * INTERNAL:
      */
-    public void setDefaultAccess(Enum defaultAccess) {
+    public void setDefaultAccess(String defaultAccess) {
         m_defaultAccess = defaultAccess;
     }
     
@@ -1409,7 +1409,7 @@ public class MetadataDescriptor {
      * this method and a default access type should have been set. 
      */
     public boolean usesDefaultPropertyAccess() {
-        return m_defaultAccess.name().equals(AccessType.PROPERTY.name());
+        return m_defaultAccess.equals(MetadataConstants.PROPERTY);
     }
     
     /**

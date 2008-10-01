@@ -16,6 +16,8 @@
  *       - 232975: Failure when attribute type is generic
  *     09/23/2008-1.1 Guy Pelletier 
  *       - 241651: JPA 2.0 Access Type support
+ *     10/01/2008-1.1 Guy Pelletier 
+ *       - 249329: To remain JPA 1.0 compliant, any new JPA 2.0 annotations should be referenced by name
  ******************************************************************************/
 package org.eclipse.persistence.internal.jpa.metadata.accessors.objects;
 
@@ -31,8 +33,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import javax.persistence.Access;
-import javax.persistence.AccessType;
 import javax.persistence.Basic;
 import javax.persistence.Embeddable;
 import javax.persistence.Embedded;
@@ -55,6 +55,7 @@ import org.eclipse.persistence.annotations.WriteTransformer;
 import org.eclipse.persistence.annotations.WriteTransformers;
 import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.indirection.ValueHolderInterface;
+import org.eclipse.persistence.internal.jpa.metadata.MetadataConstants;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataDescriptor;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataLogger;
 import org.eclipse.persistence.internal.jpa.metadata.xml.XMLEntityMappings;
@@ -126,8 +127,8 @@ public class MetadataAnnotatedElement extends MetadataAccessibleObject {
      * INTERNAL:
      * Return the annotated element for this accessor.
      */
-    public <T extends Annotation> T getAnnotation(Class annotationClass, MetadataDescriptor descriptor) {
-        Annotation annotation = m_annotations.get(annotationClass.getName());
+    public <T extends Annotation> T getAnnotation(String annotationClassName, MetadataDescriptor descriptor) {
+        Annotation annotation = m_annotations.get(annotationClassName);
         
         if (annotation != null && descriptor.ignoreAnnotations()) {
             getLogger().logWarningMessage(MetadataLogger.IGNORE_ANNOTATION, annotation, m_annotatedElement);
@@ -482,17 +483,17 @@ public class MetadataAnnotatedElement extends MetadataAccessibleObject {
      * their must be an Access(FIELD) or Access(PROPERTY) present for the
      * element to be processed. Otherwise, it is ignored.
      */
-    protected boolean isValidPersistenceElement(boolean mustBeExplicit, AccessType explicitType, MetadataDescriptor descriptor) {
+    protected boolean isValidPersistenceElement(boolean mustBeExplicit, String explicitType, MetadataDescriptor descriptor) {
         if (mustBeExplicit) {
-            Annotation annotation = getAnnotation(Access.class, descriptor);
+            Annotation annotation = getAnnotation(MetadataConstants.ACCESS_ANNOTATION, descriptor);
             
             if (annotation == null) {
                 return false;
             } else {
                 Enum access = (Enum) MetadataHelper.invokeMethod("value", annotation);
                 
-                if (! access.name().equals(explicitType.name())) {
-                    throw ValidationException.invalidExplicitAccessTypeSpecified(getAnnotatedElement(), descriptor.getJavaClass(), explicitType.name());
+                if (! access.name().equals(explicitType)) {
+                    throw ValidationException.invalidExplicitAccessTypeSpecified(getAnnotatedElement(), descriptor.getJavaClass(), explicitType);
                 }
             }
         }

@@ -21,6 +21,8 @@
  *       - 240679: MappedSuperclass Id not picked when on get() method accessor
  *     09/23/2008-1.1 Guy Pelletier 
  *       - 241651: JPA 2.0 Access Type support
+ *     10/01/2008-1.1 Guy Pelletier 
+ *       - 249329: To remain JPA 1.0 compliant, any new JPA 2.0 annotations should be referenced by name
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.accessors.classes;
 
@@ -33,7 +35,6 @@ import java.lang.reflect.TypeVariable;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.persistence.AccessType;
 import javax.persistence.DiscriminatorColumn;
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
@@ -63,6 +64,7 @@ import org.eclipse.persistence.internal.jpa.metadata.inheritance.InheritanceMeta
 import org.eclipse.persistence.internal.jpa.metadata.listeners.EntityClassListenerMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.listeners.EntityListenerMetadata;
 
+import org.eclipse.persistence.internal.jpa.metadata.MetadataConstants;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataDescriptor;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataLogger;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataProject;
@@ -604,13 +606,13 @@ public class EntityAccessor extends MappedSuperclassAccessor {
      */
     protected void processAccessType(List<MappedSuperclassAccessor> mappedSuperclasses) {
         // Step 1 - Check for an explicit setting.
-        Enum explicitAccessType = getAccess(); 
+        String explicitAccessType = getAccess(); 
         
         // Step 2, regardless if there is an explicit access type we still
         // want to determine the default access type for this entity since
         // any embeddable, mapped superclass or id class that depends on it
         // will have it available. 
-        Enum defaultAccessType = null;
+        String defaultAccessType = null;
         
         // 1 - Check the access types from our parents if we are an inheritance 
         // sub-class. Inheritance hierarchies are processed top->down so our 
@@ -635,9 +637,9 @@ public class EntityAccessor extends MappedSuperclassAccessor {
             for (MappedSuperclassAccessor mappedSuperclass : mappedSuperclasses) {
                 if (! mappedSuperclass.hasAccess()) {
                     if (havePersistenceAnnotationsDefined(MetadataHelper.getFields(mappedSuperclass.getJavaClass()))) {
-                        defaultAccessType = AccessType.FIELD;
+                        defaultAccessType = MetadataConstants.FIELD;
                     } else if (havePersistenceAnnotationsDefined(MetadataHelper.getDeclaredMethods(mappedSuperclass.getJavaClass()))) {
-                        defaultAccessType = AccessType.PROPERTY;
+                        defaultAccessType = MetadataConstants.PROPERTY;
                     }
                         
                     break;
@@ -649,9 +651,9 @@ public class EntityAccessor extends MappedSuperclassAccessor {
             // defined on this entity class. 
             if (defaultAccessType == null) {    
                 if (havePersistenceAnnotationsDefined(MetadataHelper.getFields(getJavaClass()))) {
-                    defaultAccessType = AccessType.FIELD;
+                    defaultAccessType = MetadataConstants.FIELD;
                 } else if (havePersistenceAnnotationsDefined(MetadataHelper.getDeclaredMethods(getJavaClass()))) {
-                    defaultAccessType = AccessType.PROPERTY;
+                    defaultAccessType = MetadataConstants.PROPERTY;
                 } else {
                     // 4 - If there are no annotations defined on either the
                     // fields or properties, check for an xml default from
@@ -661,7 +663,7 @@ public class EntityAccessor extends MappedSuperclassAccessor {
                     } else {
                         // 5 - We've exhausted our search, set the access type
                         // to FIELD.
-                        defaultAccessType = AccessType.FIELD;
+                        defaultAccessType = MetadataConstants.FIELD;
                     }
                 }
             }
@@ -673,7 +675,7 @@ public class EntityAccessor extends MappedSuperclassAccessor {
         getDescriptor().setDefaultAccess(defaultAccessType);
         
         if (explicitAccessType == null) {
-            getLogger().logConfigMessage(MetadataLogger.ACCESS_TYPE, defaultAccessType.name(), getJavaClass());
+            getLogger().logConfigMessage(MetadataLogger.ACCESS_TYPE, defaultAccessType, getJavaClass());
         }
     }
     

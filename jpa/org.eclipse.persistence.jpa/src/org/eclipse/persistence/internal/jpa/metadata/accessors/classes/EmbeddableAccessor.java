@@ -17,6 +17,8 @@
  *       - 240679: MappedSuperclass Id not picked when on get() method accessor
  *     09/23/2008-1.1 Guy Pelletier 
  *       - 241651: JPA 2.0 Access Type support
+ *     10/01/2008-1.1 Guy Pelletier 
+ *       - 249329: To remain JPA 1.0 compliant, any new JPA 2.0 annotations should be referenced by name
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.accessors.classes;
 
@@ -91,11 +93,11 @@ public class EmbeddableAccessor extends ClassAccessor {
         // Set the default access type on the descriptor and log a message
         // to the user if we are defaulting the access type for this 
         // embeddable to that default.
-        Enum owningClassAccessorsAccess = getOwningDescriptor().getClassAccessor().getAccess();
+        String owningClassAccessorsAccess = getOwningDescriptor().getClassAccessor().getAccess();
         getDescriptor().setDefaultAccess(owningClassAccessorsAccess);
         
         if (getAccess() == null) {
-            getLogger().logConfigMessage(MetadataLogger.ACCESS_TYPE, owningClassAccessorsAccess.name(), getJavaClass());
+            getLogger().logConfigMessage(MetadataLogger.ACCESS_TYPE, owningClassAccessorsAccess, getJavaClass());
         }
     }
     
