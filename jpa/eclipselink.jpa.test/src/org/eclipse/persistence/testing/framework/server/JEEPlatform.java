@@ -38,12 +38,23 @@ public class JEEPlatform implements ServerPlatform {
      */
     public boolean isTransactionActive() {
         try {
-            return getUserTransaction().getStatus() == Status.STATUS_ACTIVE;
+            return getUserTransaction().getStatus() != Status.STATUS_NO_TRANSACTION;
         } catch (Exception exception) {
             throw new RuntimeException(exception);
         }
     }
-    
+
+    /**
+     * Return if the JTA transaction is roll back only.
+     */
+    public boolean getRollbackOnly() {
+        try {
+            return getUserTransaction().getStatus() != Status.STATUS_ACTIVE;
+        } catch (Exception exception) {
+            throw new RuntimeException(exception);
+        }
+    }
+
     /**
      * Start a new JTA transaction.
      */

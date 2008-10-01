@@ -41,21 +41,20 @@ public class DDLGenerationJUnitTestSuite extends JUnitTestCase {
 
     public static Test suite() {
         TestSuite suite = new TestSuite(DDLGenerationJUnitTestSuite.class);
-
-        return new TestSetup(suite) {
-
-            protected void setUp() {
-                // Trigger DDL generation
-                //TODO: Let's add a flag which do not disregard DDL generation errors.
-                //TODO: This is required to ensure that DDL generation has succeeded.
-                EntityManager em = createEntityManager(DDL_PU);
-                em.close();
-            }
-
-            protected void tearDown() {
-                clearCache(DDL_PU);
-            }
-        };
+        
+        return suite;
+    }
+    
+    /**
+     * The setup is done as a test, both to record its failure, and to allow execution in the server.
+     */
+    public void testSetup() {
+        // Trigger DDL generation
+        //TODO: Let's add a flag which do not disregard DDL generation errors.
+        //TODO: This is required to ensure that DDL generation has succeeded.
+        EntityManager em = createEntityManager(DDL_PU);
+        //em.close();
+        clearCache(DDL_PU);
     }
 
     // Test for GF#1392
@@ -248,6 +247,10 @@ public class DDLGenerationJUnitTestSuite extends JUnitTestCase {
     
     // Test to check if unique constraints are generated correctly
     public void testDDLUniqueConstraintsByXML() {
+        if (isOnServer()) {
+            // Not work on server.
+            return;
+        }
         if(!getServerSession(DDL_PU).getPlatform().supportsUniqueKeyConstraints()) {
             return;
         }

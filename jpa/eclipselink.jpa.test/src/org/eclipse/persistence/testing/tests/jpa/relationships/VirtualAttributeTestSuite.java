@@ -19,6 +19,7 @@ import junit.framework.*;
 
 import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
 import org.eclipse.persistence.testing.models.jpa.virtualattribute.*;
+import org.eclipse.persistence.testing.models.jpa.relationships.RelationshipsTableManager;
 
 public class VirtualAttributeTestSuite extends JUnitTestCase {
 
@@ -35,24 +36,20 @@ public class VirtualAttributeTestSuite extends JUnitTestCase {
     public static Test suite() {
         TestSuite suite = new TestSuite();
         suite.setName("VirtualAttributeTestSuite");
+        suite.addTest(new VirtualAttributeTestSuite("testSetup"));
         suite.addTest(new VirtualAttributeTestSuite("testInsertVirtualAttribute")); 
         suite.addTest(new VirtualAttributeTestSuite("testReadVirtualAttribute")); 
         suite.addTest(new VirtualAttributeTestSuite("testUpdateVirtualAttribute")); 
-        suite.addTest(new VirtualAttributeTestSuite("testDeleteVirtualAttribute")); 
-
-        return new TestSetup(suite) {
-            protected void setUp(){
-                new VirtualAttributeTableCreator().replaceTables(JUnitTestCase.getServerSession());
-            }
-
-            protected void tearDown() {
-                clearCache();
-            }
-        };
+        suite.addTest(new VirtualAttributeTestSuite("testDeleteVirtualAttribute"));
+        
+        return suite;
     }
-   
-    public void setUp () {
-        super.setUp();
+    
+    /**
+     * The setup is done as a test, both to record its failure, and to allow execution in the server.
+     */
+    public void testSetup() {
+        new VirtualAttributeTableCreator().replaceTables(JUnitTestCase.getServerSession());
         clearCache();
     }
     

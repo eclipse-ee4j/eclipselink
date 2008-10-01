@@ -45,24 +45,23 @@ public class LobJUnitTestCase extends JUnitTestCase {
 
     public static Test suite() {
         TestSuite suite = new TestSuite("Lob Model");
+        suite.addTest(new LobJUnitTestCase("testSetup"));
         suite.addTest(new LobJUnitTestCase("testCreate"));
         suite.addTest(new LobJUnitTestCase("testRead"));
         suite.addTest(new LobJUnitTestCase("testUpdate"));
         suite.addTest(new LobJUnitTestCase("testDelete"));
-
-        return new TestSetup(suite) {
-
-                protected void setUp() {
-                    DatabaseSession session = JUnitTestCase.getServerSession();
-                    new LobTableCreator().replaceTables(session);
-                }
-
-                protected void tearDown() {
-                    clearCache();
-                }
-            };
+        
+        return suite;
     }
-
+    
+    /**
+     * The setup is done as a test, both to record its failure, and to allow execution in the server.
+     */
+    public void testSetup() {
+        new LobTableCreator().replaceTables(JUnitTestCase.getServerSession());
+        clearCache();
+    }
+    
     public void testCreate() {
         EntityManager em = createEntityManager();
         beginTransaction(em);

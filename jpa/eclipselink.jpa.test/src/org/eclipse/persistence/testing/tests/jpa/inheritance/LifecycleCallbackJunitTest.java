@@ -43,6 +43,7 @@ public class LifecycleCallbackJunitTest extends JUnitTestCase {
     public static Test suite() {
         TestSuite suite = new TestSuite();
         suite.setName("LifecycleCallbackJunitTest");
+        suite.addTest(new LifecycleCallbackJunitTest("testSetup"));
         suite.addTest(new LifecycleCallbackJunitTest("testPrePersistBusOverrideAndAbstractInheritAndDefault"));
         suite.addTest(new LifecycleCallbackJunitTest("testPostPersistBusInheritAndDefault"));
         suite.addTest(new LifecycleCallbackJunitTest("testPostLoadBusInheritAndDefault"));
@@ -50,18 +51,17 @@ public class LifecycleCallbackJunitTest extends JUnitTestCase {
         suite.addTest(new LifecycleCallbackJunitTest("testPostPersistSportsCarInheritAndExcludeDefault"));
         suite.addTest(new LifecycleCallbackJunitTest("testPrePersistSportsCarOverride"));
 
-        return new TestSetup(suite) {
-        
-            protected void setUp(){               
-                DatabaseSession session = JUnitTestCase.getServerSession();
-                new InheritanceTableCreator().replaceTables(session);
-            }
-
-            protected void tearDown() {
-                clearCache();
-            }
-        };
+        return suite;
     }
+    
+    /**
+     * The setup is done as a test, both to record its failure, and to allow execution in the server.
+     */
+    public void testSetup() {
+        new InheritanceTableCreator().replaceTables(JUnitTestCase.getServerSession());
+        clearCache();
+    }
+
     
     public void testPostLoadBusInheritAndDefault() {
         int vehiclePostLoadCountBefore = VehicleListener.POST_LOAD_COUNT;
@@ -99,7 +99,7 @@ public class LifecycleCallbackJunitTest extends JUnitTestCase {
             em.refresh(bus);
             defaultListenerPostLoadCountIntermidiate = DefaultListener.POST_LOAD_COUNT;
                 
-        	javax.persistence.Query q = em.createQuery("select distinct b from Bus b where b.id = " + bus.getId());
+            javax.persistence.Query q = em.createQuery("select distinct b from Bus b where b.id = " + bus.getId());
             // This should not fire a postLoad event ...
             q.getResultList();
             
