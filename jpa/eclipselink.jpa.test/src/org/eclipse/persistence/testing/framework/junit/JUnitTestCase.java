@@ -173,6 +173,18 @@ public abstract class JUnitTestCase extends TestCase {
             return entityManager.getTransaction().isActive();
         }
     }
+
+    /**
+     * Return if the transaction is roll back only.
+     * This allows the same code to be used on the server where JTA is used.
+     */
+    public boolean getRollbackOnly(EntityManager entityManager) {
+        if (isOnServer()) {
+            return getServerPlatform().getRollbackOnly();
+        } else {
+            return entityManager.getTransaction().getRollbackOnly();
+        }
+    }
     
     /**
      * Begin a transaction on the entity manager.

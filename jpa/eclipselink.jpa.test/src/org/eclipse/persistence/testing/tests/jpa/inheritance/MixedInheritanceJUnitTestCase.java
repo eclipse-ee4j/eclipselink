@@ -49,24 +49,22 @@ public class MixedInheritanceJUnitTestCase extends JUnitTestCase {
     public static Test suite() {
         TestSuite suite = new TestSuite();
         suite.setName("MixedInheritanceJUnitTestCase");
-        
+        suite.addTest(new MixedInheritanceJUnitTestCase("testSetup"));
         suite.addTest(new MixedInheritanceJUnitTestCase("testCreateNewMudTire"));
         suite.addTest(new MixedInheritanceJUnitTestCase("testCreateNewRockTire"));
         
         suite.addTest(new MixedInheritanceJUnitTestCase("testReadNewMudTire"));
         suite.addTest(new MixedInheritanceJUnitTestCase("testReadNewRockTire"));
 
-        return new TestSetup(suite) {
-
-            protected void setUp(){
-                DatabaseSession session = JUnitTestCase.getServerSession();
-                new InheritanceTableCreator().replaceTables(session);
-            }
-
-            protected void tearDown() {
-                clearCache();
-            }
-        };
+        return suite;
+    }
+    
+    /**
+     * The setup is done as a test, both to record its failure, and to allow execution in the server.
+     */
+    public void testSetup() {
+        new InheritanceTableCreator().replaceTables(JUnitTestCase.getServerSession());
+        clearCache();
     }
 
     public void testCreateNewMudTire() {

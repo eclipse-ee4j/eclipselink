@@ -26,7 +26,7 @@ import org.eclipse.persistence.sessions.DatabaseSession;
 import junit.framework.Test;
 import junit.framework.TestSuite;
 import junit.extensions.TestSetup;
-
+import java.sql.*;
 import javax.persistence.EntityManager;
 
 public class EntityManagerJUnitTestCase extends JUnitTestCase {
@@ -42,17 +42,15 @@ public class EntityManagerJUnitTestCase extends JUnitTestCase {
     public static Test suite() {
         TestSuite suite = new TestSuite(EntityManagerJUnitTestCase.class);
 
-        return new TestSetup(suite) {
-
-            protected void setUp(){
-                DatabaseSession session = JUnitTestCase.getServerSession();
-                new InheritanceTableCreator().replaceTables(session);
-            }
-
-            protected void tearDown() {
-                clearCache();
-            }
-        };
+        return suite;
+    }
+    
+    /**
+     * The setup is done as a test, both to record its failure, and to allow execution in the server.
+     */
+    public void testSetup() {
+        new InheritanceTableCreator().replaceTables(JUnitTestCase.getServerSession());
+        clearCache();
     }
 
     // gf issue 1356 - persisting a polymorphic relationship throws a NPE.
@@ -121,7 +119,7 @@ public class EntityManagerJUnitTestCase extends JUnitTestCase {
         }
     }
 
-        // https://bugs.eclipse.org/bugs/show_bug.cgi?id=241979
+    // https://bugs.eclipse.org/bugs/show_bug.cgi?id=241979
     public void testUpateTireInfo(){
         EntityManager em = createEntityManager();
         beginTransaction(em);

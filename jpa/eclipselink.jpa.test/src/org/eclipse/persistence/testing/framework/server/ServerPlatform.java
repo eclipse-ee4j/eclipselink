@@ -21,7 +21,12 @@ public interface ServerPlatform {
      * Return if the JTA transaction is active.
      */
     boolean isTransactionActive();
-    
+
+    /**
+     * Return if the JTA transaction is roll back only.
+     */
+    boolean getRollbackOnly();
+
     /**
      * Start a new JTS transaction.
      */

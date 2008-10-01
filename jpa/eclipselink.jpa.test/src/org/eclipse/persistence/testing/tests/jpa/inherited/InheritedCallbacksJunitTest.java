@@ -41,6 +41,7 @@ public class InheritedCallbacksJunitTest extends JUnitTestCase {
     public static Test suite() {
         TestSuite suite = new TestSuite();
         suite.setName("InheritedCallbacksJunitTest");
+        suite.addTest(new InheritedCallbacksJunitTest("testSetup"));
         suite.addTest(new InheritedCallbacksJunitTest("testPreAndPostPersistAlpine"));
         suite.addTest(new InheritedCallbacksJunitTest("testPrePersistAlpineOnMerge"));
         suite.addTest(new InheritedCallbacksJunitTest("testPreAndPostPersistBeerConsumer"));
@@ -49,18 +50,15 @@ public class InheritedCallbacksJunitTest extends JUnitTestCase {
         suite.addTest(new InheritedCallbacksJunitTest("testPreAndPostUpdate"));
         suite.addTest(new InheritedCallbacksJunitTest("testPreAndPostRemove"));
 
-        return new TestSetup(suite) {
-        
-            protected void setUp(){               
-                DatabaseSession session = JUnitTestCase.getServerSession();
-                
-                new InheritedTableManager().replaceTables(session);
-            }
-
-            protected void tearDown() {
-                clearCache();
-            }
-        };
+        return suite;
+    }
+    
+    /**
+     * The setup is done as a test, both to record its failure, and to allow execution in the server.
+     */
+    public void testSetup() {
+        new InheritedTableManager().replaceTables(JUnitTestCase.getServerSession());
+        clearCache();
     }
     
     public void testPreAndPostPersistAlpine() {

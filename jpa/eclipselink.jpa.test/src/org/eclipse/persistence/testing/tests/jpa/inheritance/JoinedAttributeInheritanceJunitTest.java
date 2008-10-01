@@ -97,15 +97,15 @@ public class JoinedAttributeInheritanceJunitTest extends JUnitTestCase {
     
     public static Test suite() {
         TestSuite suite = new TestSuite(JoinedAttributeInheritanceJunitTest.class);
-        
-        return new TestSetup(suite) {
-            protected void setUp(){               
-                new InheritanceTableCreator().replaceTables(JUnitTestCase.getServerSession());
-            }
-
-            protected void tearDown() {
-            }
-        };
+        return suite;
+    }
+    
+    /**
+     * The setup is done as a test, both to record its failure, and to allow execution in the server.
+     */
+    public void testSetup() {
+        new InheritanceTableCreator().replaceTables(JUnitTestCase.getServerSession());
+        clearCache();
     }
     
     public void tearDown() {

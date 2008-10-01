@@ -63,6 +63,7 @@ public class EmbeddableSuperclassJunitTest extends JUnitTestCase {
     public static Test suite() {
         TestSuite suite = new TestSuite();
         suite.setName("EmbeddableSuperclassJunitTest");
+        suite.addTest(new EmbeddableSuperclassJunitTest("testSetup"));
         suite.addTest(new EmbeddableSuperclassJunitTest("testExistenceCheckingSetting"));
         suite.addTest(new EmbeddableSuperclassJunitTest("testCreateBeerConsumer"));
         suite.addTest(new EmbeddableSuperclassJunitTest("testCreateAlpine"));
@@ -87,19 +88,17 @@ public class EmbeddableSuperclassJunitTest extends JUnitTestCase {
         suite.addTest(new EmbeddableSuperclassJunitTest("testDeleteBeerConsumer"));
         suite.addTest(new EmbeddableSuperclassJunitTest("testOptimisticLockingTest"));
 
-        return new TestSetup(suite) {
-        
-            protected void setUp() {               
-                DatabaseSession session = JUnitTestCase.getServerSession();
-                
-                new InheritedTableManager().replaceTables(session);
-            }
-
-            protected void tearDown() {
-                clearCache();
-            }
-        };
+        return suite;
     }
+    /**
+     * The setup is done as a test, both to record its failure, and to allow execution in the server.
+     */
+    public void testSetup() {
+        new InheritedTableManager().replaceTables(JUnitTestCase.getServerSession());
+        clearCache();
+    }
+    
+
     
     /**
      * Verifies that existence-checking metadata is correctly processed.

@@ -4018,7 +4018,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
             fail("IllegalArgumentException has not been thrown");
         } catch(IllegalArgumentException ex) {
             if (isOnServer()) {
-                assertTrue("Transaction is not roll back only", !isTransactionActive(em));
+                assertTrue("Transaction is not roll back only", getRollbackOnly(em));
             } else {
                 assertTrue("Transaction is not roll back only", em.getTransaction().getRollbackOnly());
             }

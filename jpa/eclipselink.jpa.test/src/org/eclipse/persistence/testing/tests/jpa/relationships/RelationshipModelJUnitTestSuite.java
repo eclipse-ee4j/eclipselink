@@ -49,6 +49,7 @@ public class RelationshipModelJUnitTestSuite extends JUnitTestCase {
         TestSuite suite = new TestSuite();
         suite.setName("RelationshipModelJUnitTestSuite");
         
+        suite.addTest(new RelationshipModelJUnitTestSuite("testSetup")); 
         suite.addTest(new RelationshipModelJUnitTestSuite("testCreateItem")); 
         suite.addTest(new RelationshipModelJUnitTestSuite("testModifyItem"));
         suite.addTest(new RelationshipModelJUnitTestSuite("testVerifyItem"));
@@ -57,19 +58,14 @@ public class RelationshipModelJUnitTestSuite extends JUnitTestCase {
         suite.addTest(new RelationshipModelJUnitTestSuite("testCloneCopyPolicy"));
         suite.addTest(new RelationshipModelJUnitTestSuite("testCollectionImplementation"));
 
-        return new TestSetup(suite) {
-            protected void setUp(){
-                new RelationshipsTableManager().replaceTables(JUnitTestCase.getServerSession());
-            }
-
-            protected void tearDown() {
-                clearCache();
-            }
-        };
+        return suite;
     }
-   
-    public void setUp () {
-        super.setUp();
+    
+    /**
+     * The setup is done as a test, both to record its failure, and to allow execution in the server.
+     */
+    public void testSetup() {
+        new RelationshipsTableManager().replaceTables(JUnitTestCase.getServerSession());
         clearCache();
     }
     

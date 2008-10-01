@@ -57,6 +57,7 @@ public class InheritedModelJunitTest extends JUnitTestCase {
         TestSuite suite = new TestSuite();
         suite.setName("InheritedModelJunitTest");
         
+        suite.addTest(new InheritedModelJunitTest("testSetup"));
         suite.addTest(new InheritedModelJunitTest("testCreateBlue"));
         suite.addTest(new InheritedModelJunitTest("testReadBlue"));
         suite.addTest(new InheritedModelJunitTest("testCreateBeerConsumer"));
@@ -68,18 +69,15 @@ public class InheritedModelJunitTest extends JUnitTestCase {
         suite.addTest(new InheritedModelJunitTest("testInheritedClone"));
         suite.addTest(new InheritedModelJunitTest("testCascadeRemove"));
         
-        return new TestSetup(suite) {
-        
-            protected void setUp() {               
-                DatabaseSession session = JUnitTestCase.getServerSession();
-                
-                new InheritedTableManager().replaceTables(session);
-            }
-
-            protected void tearDown() {
-                clearCache();
-            }
-        };
+        return suite;
+    }
+    
+    /**
+     * The setup is done as a test, both to record its failure, and to allow execution in the server.
+     */
+    public void testSetup() {
+        new InheritedTableManager().replaceTables(JUnitTestCase.getServerSession());
+        clearCache();
     }
     
     public void testCreateBlue() {
