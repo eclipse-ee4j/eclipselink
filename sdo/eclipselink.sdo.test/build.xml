@@ -1,19 +1,19 @@
 <!--/*******************************************************************************
-* This program and the accompanying materials are made available under the 
-* terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
-* which accompanies this distribution. 
+* This program and the accompanying materials are made available under the
+* terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+* which accompanies this distribution.
 * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
-* and the Eclipse Distribution License is available at 
+* and the Eclipse Distribution License is available at
 * http://www.eclipse.org/org/documents/edl-v10.php.
 *
 *   Ant naming conventions:
 *   - regardless of the actual OS platform,'/' is the directory separator
 *     (Ant will convert as appropriate).
 *   - multi-word properties use periods '.'
-*   - multi-word targets use hyphens '-' 
+*   - multi-word targets use hyphens '-'
 *   - multi-word macros use underscores '_'
 *   - multi-word macro attributes are concatinated
-*     e.g. 'runpathref'  
+*     e.g. 'runpathref'
 *   - multi-word tasks (taskdef) names are concatinated
 *     e.g. 'validateconnection'
 *   - OS environment variables are in ALLCAPS and have 'env' as a prefix
@@ -158,7 +158,7 @@
                 <report format="noframes" todir="${eclipselink.sdo.test}/${report.dir}/@{customcontext}"/>
             </junitreport>
             <!-- Clean up generated files -->
-			<clean_up_generated_files/>
+            <clean_up_generated_files/>
         </sequential>
     </macrodef>
 
@@ -170,7 +170,7 @@
             <delete dir="${eclipselink.sdo.test}/${report.dir}/srg/@{customcontext}"/>
             <mkdir dir="${eclipselink.sdo.test}/${report.dir}/srg/@{customcontext}"/>
             <echo message="customContext=@{customcontext}"/>
-			<junit printsummary="withOutAndErr" fork="yes" dir="${eclipselink.sdo.test}/${resource.dir}" maxmemory="512m" showoutput="yes">
+            <junit printsummary="withOutAndErr" fork="yes" dir="${eclipselink.sdo.test}/${resource.dir}" maxmemory="512m" showoutput="yes">
                 <jvmarg value="-XX:MaxPermSize=256m"/>
                 <sysproperty key="loggingLevelFinest" value="false"/>
                 <sysproperty key="customContext" value="@{customcontext}"/>
@@ -197,8 +197,8 @@
                 </fileset>
                 <report format="noframes" todir="${eclipselink.sdo.test}/${report.dir}/srg/@{customcontext}"/>
             </junitreport>
-			<!-- Clean up generated files -->
-			<clean_up_generated_files/>
+            <!-- Clean up generated files -->
+            <clean_up_generated_files/>
         </sequential>
     </macrodef>
 
@@ -218,7 +218,7 @@
             <delete dir="${eclipselink.sdo.test}/${resource.dir}/srcPO"/>
             <delete dir="${eclipselink.sdo.test}/${resource.dir}/srcPOAnnotations"/>
             <delete dir="${eclipselink.sdo.test}/${resource.dir}/union"/>
-		</sequential>
+        </sequential>
     </macrodef>
 
     <!-- Compile macros -->
@@ -231,6 +231,7 @@
                 debug="${javac.debug}"
                 optimize="${javac.optimize}"
                 source="${javac.version}"
+                target="${javac.version}"
                 deprecation="${javac.deprecation}"
                 failonerror="true"
                 includes="org/eclipse/persistence/testing/sdo/**/*.java">

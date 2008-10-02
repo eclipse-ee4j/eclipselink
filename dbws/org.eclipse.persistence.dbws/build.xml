@@ -70,6 +70,7 @@
       debug="${javac.debug}"
       optimize="${javac.optimize}"
       source="${javac.version}"
+      target="${javac.version}"
       deprecation="${javac.deprecation}"
       failonerror="true"
       memoryMaximumSize="512m"

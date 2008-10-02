@@ -107,6 +107,7 @@
             failonerror="${stop.on.error}"
             optimize="${optimize.code}"
             deprecation="${report.deprecation}"
+            source="${target.jvm}"
             target="${target.jvm}"
             includes="**/*.java"
             excludes="**/*&#35;*/**, **/.ade_path/**"

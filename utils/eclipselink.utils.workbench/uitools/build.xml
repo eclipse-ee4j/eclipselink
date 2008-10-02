@@ -108,6 +108,7 @@
             failonerror="${stop.on.error}"
             optimize="${optimize.code}"
             deprecation="${report.deprecation}"
+            source="${target.jvm}"
             target="${target.jvm}"
             nowarn="${_nowarn}"
             includes="**/*.java"

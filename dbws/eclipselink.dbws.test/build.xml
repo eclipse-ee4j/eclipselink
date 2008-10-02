@@ -94,6 +94,7 @@
       debug="${javac.debug}"
       optimize="${javac.optimize}"
       source="${javac.version}"
+      target="${javac.version}"
       deprecation="${javac.deprecation}"
       failonerror="true"
       memoryMaximumSize="512m"
@@ -162,10 +163,10 @@
     <jar
       destfile="${eclipselink.dbws.test}/${eclipselink.dbws.test.common.jlib}"
       >
-			<fileset
+            <fileset
         dir="${eclipselink.dbws.test}/${classes.dir}"
         includes="dbws/testing/*.class"
-			/>
+            />
     </jar>
   </target>
   <target
