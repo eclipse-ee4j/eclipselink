@@ -246,7 +246,6 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         suite.addTest(new EntityManagerJUnitTestSuite("testExceptionForPersistNonEntitySubclass"));
         suite.addTest(new EntityManagerJUnitTestSuite("testEnabledPersistNonEntitySubclass"));
         suite.addTest(new EntityManagerJUnitTestSuite("testCloneEmbeddable"));
-        suite.addTest(new EntityManagerJUnitTestSuite("testCloseOnCommit"));
         suite.addTest(new EntityManagerJUnitTestSuite("testEmbeddedNPE"));
         return suite;
     }
