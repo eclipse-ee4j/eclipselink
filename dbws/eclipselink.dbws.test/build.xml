@@ -32,10 +32,6 @@
   <condition property="is.java.version.16">
       <equals arg1="${ant.java.version}" arg2="1.6"/>
   </condition>
-  <fail
-    message="eclipselink.dbws.test requires Java version 1.6 or higher. You are currently using Java version ${ant.java.version}."
-    unless="is.java.version.16"
-  />
   <!-- OS environment variables have 'env' as a prefix -->
   <property
     environment="env"
@@ -59,9 +55,12 @@
     file="${eclipselink.dbws.test}/test.properties"
   />
   <condition
-    property="supported.db"
+    property="support.test"
     >
     <and>
+      <isset
+        property="is.java.version.16"
+      />
       <isset
         property="db.platform"
       />
@@ -163,10 +162,10 @@
     <jar
       destfile="${eclipselink.dbws.test}/${eclipselink.dbws.test.common.jlib}"
       >
-            <fileset
+      <fileset
         dir="${eclipselink.dbws.test}/${classes.dir}"
         includes="dbws/testing/*.class"
-            />
+      />
     </jar>
   </target>
   <target
@@ -366,7 +365,7 @@
   </macrodef>
   <target
     name="all"
-    if="supported.db"
+    if="support.test"
     depends="init"
     description="setup, compile, and run dbws util testsuites"
     >
