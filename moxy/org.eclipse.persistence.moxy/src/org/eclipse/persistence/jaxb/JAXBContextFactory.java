@@ -28,6 +28,7 @@ import org.eclipse.persistence.jaxb.compiler.*;
 import org.eclipse.persistence.jaxb.javamodel.reflection.JavaModelImpl;
 import org.eclipse.persistence.jaxb.javamodel.reflection.JavaModelInputImpl;
 import org.eclipse.persistence.internal.jaxb.JaxbClassLoader;
+import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.sessions.Project;
 
@@ -96,7 +97,7 @@ public class JAXBContextFactory {
             XMLContext xmlContext = new XMLContext(contextPath, classLoader);
             return new org.eclipse.persistence.jaxb.JAXBContext(xmlContext);
         } catch (ValidationException vex) {
-            if(vex.getErrorCode() != 7095) {
+            if(vex.getErrorCode() != ValidationException.NO_SESSIONS_XML_FOUND) {
                 //If something went wrong other than not finding a sessions.xml re-throw the exception
                 throw new JAXBException(vex);
             }
@@ -109,7 +110,9 @@ public class JAXBContextFactory {
             String path = tokenizer.nextToken();
             try {
                 Class objectFactory = classLoader.loadClass(path + ".ObjectFactory");
-                classes.add(objectFactory);
+                if(isJAXB2ObjectFactory(objectFactory)) {
+                    classes.add(objectFactory);
+                }
             } catch (Exception ex) {
                 //if there's no object factory, don't worry about it. Check for jaxb.index next
             }
@@ -146,5 +149,15 @@ public class JAXBContextFactory {
         }
         return createContext(classArray, null, classLoader);
     }
-
+    private static boolean isJAXB2ObjectFactory(Class objectFactoryClass) {
+        try {
+            Class xmlRegistry = PrivilegedAccessHelper.getClassForName("javax.xml.bind.annotation.XmlRegistry");
+            if(objectFactoryClass.isAnnotationPresent(xmlRegistry)) {
+                return true;
+            }
+            return false;
+        } catch(Exception ex) {
+            return false;
+        }
+    }
 }
