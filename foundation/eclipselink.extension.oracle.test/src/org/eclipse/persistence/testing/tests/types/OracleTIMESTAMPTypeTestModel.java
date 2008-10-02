@@ -18,7 +18,7 @@ import java.util.Enumeration;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.platform.database.oracle.Oracle9Platform;
 import org.eclipse.persistence.sessions.DatabaseSession;
-import org.eclipse.persistence.testing.framework.TestSuite;
+import org.eclipse.persistence.testing.framework.*;
 import org.eclipse.persistence.testing.tests.types.CalendarToTSTZWithoutSessionTZTest;
 
 public class OracleTIMESTAMPTypeTestModel extends org.eclipse.persistence.testing.framework.TestModel {
@@ -51,21 +51,23 @@ public class OracleTIMESTAMPTypeTestModel extends org.eclipse.persistence.testin
                 //The combination of driver version of 9.2.0.4 or lower and JDK14 or up would cause
                 //an exception, and therefore is not tested
                 if (driverVersion.indexOf("9.2.0.4") == -1) {
-                    //Oracle 9.2.0.x oci dirver causes an exception, and therefore is not tested. Bug 4483904
+                    //Oracle 9.2.0.x OCI driver causes an exception, and therefore is not tested. Bug 4483904
 
                     if (driverVersion.indexOf("9.2") == -1 || 
                         getSession().getLogin().getDatabaseURL().indexOf("oci") == -1) {
                         addTest(getTIMESTAMPTestSuite());
                         addTest(getTIMESTAMPWithBindingTestSuite());
                         addTest(getTIMESTAMPUsingNativeSQLTestSuite());
+                        addTest(getCalendarDaylightSavingsTestSuite());
                     }
                     if (!useAccessors) {
-                        //Oracle 9.2.0.x oci driver causes an exception, and therefore is not tested. Bug 4483904
+                        //Oracle 9.2.0.x OCI driver causes an exception, and therefore is not tested. Bug 4483904
                         if (driverVersion.indexOf("9.2") == 
                             -1 || getSession().getLogin().getDatabaseURL().indexOf("oci") == -1) {
                             addTest(getTIMESTAMPTCTestSuite());
                             addTest(getTIMESTAMPTCWithBindingTestSuite());
                             addTest(getTIMESTAMPTCUsingNativeSQLTestSuite());
+                            addTest(getCalendarDaylightSavingsTestSuite());
                         }
                         addTest(new SerializationOfValueHolderWithTIMESTAMPTZTest());
                     }
@@ -111,7 +113,9 @@ public class OracleTIMESTAMPTypeTestModel extends org.eclipse.persistence.testin
 
     public static TestSuite getTIMESTAMPUsingNativeSQLTestSuite() {
         TestSuite suite = new TestSuite();
-        Enumeration examples = TIMESTAMPDirectToFieldTester.testInstances2().elements();
+        // Use testInstances3 since Oracle appears to have trouble with native SQL when
+        // using TZR TZD with dates 100 years in the future.
+        Enumeration examples = TIMESTAMPDirectToFieldTester.testInstances3().elements();
 
         suite.setName("TIMESTAMP & TIMESTAMPTZ Types using native sql Test Suite");
         suite.setDescription("Tests the use of TIMESTAMP/TIMESTAMPTZ using native sql with TopLink");
@@ -181,11 +185,25 @@ public class OracleTIMESTAMPTypeTestModel extends org.eclipse.persistence.testin
         return suite;
     }
 
+    public static TestSuite getCalendarDaylightSavingsTestSuite() {
+        TestSuite suite = new TestSuite();
+        Enumeration examples = CalendarDaylightSavingsTest.testInstancesWithNoBindingAndNativeSql().elements();
+
+        suite.setName("Calendar Daylight Savings Test Suite");
+        suite.setDescription("Tests if daylight savings-aware calendar printing works properly");
+
+        while (examples.hasMoreElements()) {
+            suite.addTest((TestCase)examples.nextElement());
+        }
+        return suite;
+    }
+    
     public void setup() {
         DatabaseSession session = (DatabaseSession)getSession();
         if (useAccessors) {
             if (getSession().getPlatform() instanceof Oracle9Platform) {
                 session.addDescriptor(TIMESTAMPDirectToFieldTester.descriptorWithAccessors());
+                session.addDescriptor(CalendarDaylightSavingsTest.descriptorWithAccessors());
             }
         } else {
             if (getSession().getPlatform() instanceof Oracle9Platform) {
@@ -193,6 +211,7 @@ public class OracleTIMESTAMPTypeTestModel extends org.eclipse.persistence.testin
                 session.addDescriptor(TIMESTAMPTypeConversionTester.descriptor());
                 session.addDescriptor(CalendarToTSTZWithoutSessionTZTest.descriptor());
                 session.addDescriptor(TIMESTAMPTZOwner.descriptor());
+                session.addDescriptor(CalendarDaylightSavingsTest.descriptor());
             }
         }
     }

@@ -26,7 +26,8 @@ public class OracleTIMESTAMPTypeTestSystem extends TestSystem {
             schemaManager.replaceObject(TIMESTAMPDirectToFieldTester.tableDefinition(session)); 
             schemaManager.replaceObject(TIMESTAMPTypeConversionTester.tableDefinition(session));    
             schemaManager.replaceObject(CalendarToTSTZWithoutSessionTZTest.tableDefinition(session));   
-            schemaManager.replaceObject(TIMESTAMPTZOwner.tableDefinition());    
+            schemaManager.replaceObject(TIMESTAMPTZOwner.tableDefinition());
+            schemaManager.replaceObject(CalendarDaylightSavingsTest.tableDefinition());    
         }
     }
     

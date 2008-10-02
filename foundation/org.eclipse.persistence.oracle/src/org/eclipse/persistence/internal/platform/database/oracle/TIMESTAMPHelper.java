@@ -79,8 +79,9 @@ public class TIMESTAMPHelper {
 
 
     /**
-     * Build a calendar string based on the calendar fields.  includeTimeZone indicates
-     * if the TimeZone part of the string is required.
+     * Build a calendar string based on the calendar fields.
+     * If the daylight savings time should be printed and the zone is in daylight savings time, 
+     * print the short representation of daylight savings from the calendar's timezone data. 
      */
     public static String printCalendar(Calendar calendar) {
         if (calendar == null) {
@@ -90,7 +91,25 @@ public class TIMESTAMPHelper {
         writer.write(Helper.printCalendar(calendar, false));
         writer.write(" ");
         writer.write(calendar.getTimeZone().getID());
+        // If we should print daylight savings and the zone is reported to be using daylight time, 
+        // write the short representation of the daylight time in the writer.
+        if (shouldAppendDaylightTime(calendar)) {
+            writer.write(" ");
+            writer.write(calendar.getTimeZone().getDisplayName(true, TimeZone.SHORT));
+        }
         return writer.toString();
+    }
+    
+    /**
+     * Return true if the calendar supports and is in daylight time
+     * (according to its timezone), false otherwise
+     */
+    public static boolean shouldAppendDaylightTime(Calendar calendar) {
+        if (calendar == null) {
+            return false;
+        }
+        TimeZone zone = calendar.getTimeZone();
+        return zone.useDaylightTime() && zone.inDaylightTime(calendar.getTime());
     }
 
     /**

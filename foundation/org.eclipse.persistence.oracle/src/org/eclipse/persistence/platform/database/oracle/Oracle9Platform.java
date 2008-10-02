@@ -310,14 +310,22 @@ public class Oracle9Platform extends Oracle8Platform {
 
     /**
      * INTERNAL:
-     *    Appends an Oracle specific Timestamp, if usesNativeSQL is true otherwise use the ODBC format.
-     *    Native Format: to_timestamp_tz ('1997-11-06 10:35:45.345 America/Los_Angeles' , 'yyyy-mm-dd hh:mm:ss.ff TZR')
+     * Appends an Oracle specific Timestamp with timezone and daylight time 
+     * elements if usesNativeSQL is true, otherwise use the ODBC format.
+     * Native Format: 
+     * (DST) to_timestamp_tz ('1997-11-06 10:35:45.345 America/Los_Angeles','yyyy-mm-dd hh:mm:ss.ff TZR TZD')
+     * (non-DST) to_timestamp_tz ('1997-11-06 10:35:45.345 America/Los_Angeles','yyyy-mm-dd hh:mm:ss.ff TZR')
      */
     protected void appendCalendar(Calendar calendar, Writer writer) throws IOException {
         if (usesNativeSQL()) {
             writer.write("to_timestamp_tz('");
             writer.write(TIMESTAMPHelper.printCalendar(calendar));
-            writer.write("','yyyy-mm-dd HH24:MI:SS.FF TZR')");
+            // append TZD element if the calendar's timezone is in daylight time
+            if (TIMESTAMPHelper.shouldAppendDaylightTime(calendar)) {
+                writer.write("','yyyy-mm-dd HH24:MI:SS.FF TZR TZD')");
+            } else {
+                writer.write("','yyyy-mm-dd HH24:MI:SS.FF TZR')");
+            }
         } else {
             super.appendCalendar(calendar, writer);
         }

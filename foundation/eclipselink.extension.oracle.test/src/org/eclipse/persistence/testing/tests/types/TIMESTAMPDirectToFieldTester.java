@@ -198,5 +198,23 @@ public class TIMESTAMPDirectToFieldTester extends TIMESTAMPTester {
 		tests.addElement(new TIMESTAMPDirectToFieldTester("Nano with two zeros 2", 465346464007L));
 		return tests;
 	}
+        
+        public static Vector testInstances3() {
+            Vector<TIMESTAMPDirectToFieldTester> tests = testInstances2();
+            for (int i = 0; i < tests.size(); i++) {
+                TIMESTAMPDirectToFieldTester test = tests.get(i);
+                String testName = test.getTestName().toLowerCase();
+                if (testName.startsWith("100 years ago")) {
+                    Calendar calendar = Calendar.getInstance();
+                    calendar.set(Calendar.YEAR, (calendar.get(Calendar.YEAR) - 10));
+                    tests.set(i, new TIMESTAMPDirectToFieldTester("10 Years ago", calendar));
+                } else if (testName.startsWith("100 years from now")) {
+                    Calendar calendar = Calendar.getInstance();
+                    calendar.set(Calendar.YEAR, (calendar.get(Calendar.YEAR) + 10));
+                    tests.set(i, new TIMESTAMPDirectToFieldTester("10 Years from now", calendar));
+                }
+            }
+            return tests;
+        }
 	
 }
