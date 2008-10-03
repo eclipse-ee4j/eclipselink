@@ -876,7 +876,7 @@
             source="${javac.version}"
             target="${javac.version}"
             deprecation="${javac.deprecation}"
-            failonerror="true">
+            failonerror="true"
             includes="${TEST_DIR}/*.java">
             <classpath refid="compile.path"/>
         </javac>
@@ -888,7 +888,7 @@
             source="${javac.version}"
             target="${javac.version}"
             deprecation="${javac.deprecation}"
-            failonerror="true">
+            failonerror="true"
             includes="org/eclipse/persistence/testing/framework/**">
             <classpath refid="compile.path"/>
         </javac>
@@ -900,7 +900,7 @@
             source="${javac.version}"
             target="${javac.version}"
             deprecation="${javac.deprecation}"
-            failonerror="true">
+            failonerror="true"
             includes="org/eclipse/persistence/testing/framework/junit/**">
             <classpath refid="compile.path"/>
         </javac>
@@ -927,8 +927,8 @@
             source="${javac.version}"
             target="${javac.version}"
             deprecation="${javac.deprecation}"
-            failonerror="true">
-            includes="${TEST_DIR}/*.java">
+            failonerror="true"
+            includes="${TEST_DIR}/*.java"
             <classpath refid="compile.path"/>
         </javac>
         <javac
@@ -939,7 +939,7 @@
             source="${javac.version}"
             target="${javac.version}"
             deprecation="${javac.deprecation}"
-            failonerror="true">
+            failonerror="true"
             includes="org/eclipse/persistence/testing/framework/**">
             <classpath refid="compile.path"/>
         </javac>
@@ -951,7 +951,7 @@
             source="${javac.version}"
             target="${javac.version}"
             deprecation="${javac.deprecation}"
-            failonerror="true">
+            failonerror="true"
             includes="org/eclipse/persistence/testing/framework/junit/**,
                 org/eclipse/persistence/testing/framework/AutoVerifyTestCase.java,
                 org/eclipse/persistence/testing/framework/TestCase.java,
@@ -969,7 +969,7 @@
             source="${javac.version}"
             target="${javac.version}"
             deprecation="${javac.deprecation}"
-            failonerror="true">
+            failonerror="true"
             includes="${MODEL_DIR}/*.java">
             <classpath refid="compile.path"/>
         </javac>
@@ -981,7 +981,7 @@
             source="${javac.version}"
             target="${javac.version}"
             deprecation="${javac.deprecation}"
-            failonerror="true">
+            failonerror="true"
             includes="${MODEL_DIR2}/*.java">
             <classpath refid="compile.path"/>
         </javac>
