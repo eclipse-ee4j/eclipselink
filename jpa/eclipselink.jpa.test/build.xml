@@ -928,7 +928,7 @@
             target="${javac.version}"
             deprecation="${javac.deprecation}"
             failonerror="true"
-            includes="${TEST_DIR}/*.java"
+            includes="${TEST_DIR}/*.java">
             <classpath refid="compile.path"/>
         </javac>
         <javac
