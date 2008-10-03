@@ -546,6 +546,7 @@
                 debug="${javac.debug}"
                 optimize="${javac.optimize}"
                 source="${javac.version}"
+                target="${javac.version}"
                 deprecation="${javac.deprecation}"
                 failonerror="true"
                 includes="org/eclipse/persistence/testing/jaxb/**/*.java">
