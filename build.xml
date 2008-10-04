@@ -165,10 +165,10 @@
     <!-- Compiles tests (excluding workbench, and Oracle extensions). -->
     <target name="build-core-test">
         <ant antfile="${eclipselink.core.test}/build.xml" target="all"/>
-        <ant antfile="${eclipselink.dbws.test}/build.xml" target="init"/>
         <ant antfile="${eclipselink.jpa.test}/build.xml"  target="all"/>
         <ant antfile="${eclipselink.moxy.test}/build.xml" target="compile-tests"/>
         <ant antfile="${eclipselink.sdo.test}/build.xml"  target="compile-sdo-tests"/>
+        <ant antfile="${eclipselink.dbws.test}/build.xml" target="init"/>
     </target>
 
     <!-- Compiles all tests (excluding Oracle extensions). -->
