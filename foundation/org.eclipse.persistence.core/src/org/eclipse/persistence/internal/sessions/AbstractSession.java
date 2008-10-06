@@ -1680,6 +1680,21 @@ public abstract class AbstractSession implements org.eclipse.persistence.session
     }
 
     /**
+     * INTERNAL:
+     * Process the JPA named queries into EclipseLink Session queries.
+     */
+    public void processJPAQueries() {
+        List queries = getJPAQueries();
+        for (Iterator iterator = queries.iterator(); iterator.hasNext();) {
+            DatabaseQuery jpaQuery = (DatabaseQuery)iterator.next();
+            jpaQuery.checkPrepare(this, null);
+            DatabaseQuery databaseQuery = (DatabaseQuery)jpaQuery.getProperty("databasequery");
+            addQuery(databaseQuery.getName(), databaseQuery);
+        }
+        queries.clear();
+    }
+
+    /**
      * PUBLIC:
      * Return the event manager.
      * The event manager can be used to register for various session events.

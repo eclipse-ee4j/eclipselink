@@ -71,6 +71,7 @@ import org.eclipse.persistence.internal.security.SecurableObjectHolder;
 import org.eclipse.persistence.queries.DatabaseQuery;
 import org.eclipse.persistence.platform.database.converters.StructConverter;
 import org.eclipse.persistence.platform.server.ServerPlatformBase;
+import org.eclipse.persistence.tools.profiler.PerformanceProfiler;
 import org.eclipse.persistence.tools.profiler.QueryMonitor;
 
 
@@ -181,19 +182,19 @@ public class EntityManagerSetupImpl {
      * @return An EntityManagerFactory to be used by the Container to obtain EntityManagers
      */
     public ServerSession deploy(ClassLoader realClassLoader, Map additionalProperties) {
-        if(state != STATE_PREDEPLOYED && state != STATE_DEPLOYED) {
+        if (state != STATE_PREDEPLOYED && state != STATE_DEPLOYED) {
             throw new PersistenceException(EntityManagerSetupException.cannotDeployWithoutPredeploy(persistenceUnitInfo.getPersistenceUnitName(), state));
         }
         // state is PREDEPLOYED or DEPLOYED
         session.log(SessionLog.FINEST, SessionLog.PROPERTIES, "deploy_begin", new Object[]{getPersistenceUnitInfo().getPersistenceUnitName(), state, factoryCount});
         List<StructConverter> structConverters = null;
-        try {                        
+        try {
             Map deployProperties = mergeMaps(additionalProperties, predeployProperties);
             translateOldProperties(deployProperties, session);
             
-            if(state == STATE_PREDEPLOYED) {
-                synchronized(session) {
-                    if(state == STATE_PREDEPLOYED) {
+            if (state == STATE_PREDEPLOYED) {
+                synchronized (session) {
+                    if (state == STATE_PREDEPLOYED) {
                         try {
                             // The project is initially created using class names rather than classes.  This call will make the conversion.
                             // If the session was loaded from sessions.xml this will also converter the descriptor classes to the correct class loader.
@@ -230,19 +231,19 @@ public class EntityManagerSetupImpl {
                 }
             }
             // state is DEPLOYED
-            if(!session.isConnected()) {
-                synchronized(session) {
+            if (!session.isConnected()) {
+                synchronized (session) {
                     if(!session.isConnected()) {
                         session.setProperties(deployProperties);
                         updateServerSession(deployProperties, realClassLoader);
-                        if(isValidationOnly(deployProperties, false)) {
+                        if (isValidationOnly(deployProperties, false)) {
                             session.initializeDescriptors();
                         } else {
-                            if(isSessionLoadedFromSessionsXML) {
+                            if (isSessionLoadedFromSessionsXML) {
                                 if (!session.isConnected()) {
                                     session.login();
                                 }
-                            }else{
+                            } else {
                                 login(session, deployProperties);
                             }
                             if (!isSessionLoadedFromSessionsXML) {
@@ -252,19 +253,18 @@ public class EntityManagerSetupImpl {
                         }
                     }
                 }
-            List queries = session.getJPAQueries();
-            for (Iterator iterator = queries.iterator(); iterator.hasNext();) {
-                JPAQuery existingQuery = (JPAQuery)iterator.next();
-                DatabaseQuery databaseQuery = existingQuery.processJPQLQuery(session);
-                session.addQuery(databaseQuery.getName(), databaseQuery);
-            }
-            queries.clear();
             }
             return session;
-        } catch (IllegalArgumentException illegalArgumentException) {
-            throw new javax.persistence.PersistenceException(illegalArgumentException);
-        } catch (org.eclipse.persistence.exceptions.ValidationException exception) {
-            throw new javax.persistence.PersistenceException(exception);
+        } catch (Exception exception) {
+            PersistenceException persistenceException = null;
+            if (exception instanceof PersistenceException) {
+                persistenceException = (PersistenceException)exception;
+                persistenceException = new PersistenceException(exception);
+            } else {
+                persistenceException = new PersistenceException(exception);
+            }
+            session.logThrowable(SessionLog.SEVERE, SessionLog.EJB, exception);
+            throw persistenceException;
         } finally {
             session.log(SessionLog.FINEST, SessionLog.PROPERTIES, "deploy_end", new Object[]{getPersistenceUnitInfo().getPersistenceUnitName(), state, factoryCount});
         }
@@ -470,46 +470,56 @@ public class EntityManagerSetupImpl {
         }
     }
     
-    protected void updateProfiler(Map persistenceProperties,ClassLoader loader){
-        String newProfilerClassName = PropertiesHandler.getPropertyValueLogDebug(PersistenceUnitProperties.PROFILER, persistenceProperties, session);
+    /**
+     * Check for the PROFILER persistence or system property and set the Session's profiler.
+     * This can also set the QueryMonitor.
+     */
+    protected void updateProfiler(Map persistenceProperties,ClassLoader loader) {
+        // This must use config property as the profiler is not in the PropertiesHandler and requires
+        // supporting generic profiler classes.
+        String newProfilerClassName = getConfigPropertyAsStringLogDebug(PersistenceUnitProperties.PROFILER, persistenceProperties, session);
 
-        if(newProfilerClassName == null){
+        if (newProfilerClassName == null) {
                ((ServerPlatformBase)session.getServerPlatform()).configureProfiler(session);
-        }else{
+        } else {
 
-            if(newProfilerClassName.equals(ProfilerType.NoProfiler)){
+            if (newProfilerClassName.equals(ProfilerType.NoProfiler)) {
                 session.setProfiler(null);
                 return;
             }
-            if(newProfilerClassName.equals(ProfilerType.QueryMonitor)){
+            if (newProfilerClassName.equals(ProfilerType.QueryMonitor)) {
                 session.setProfiler(null);
                 QueryMonitor.shouldMonitor=true;
                 return;
             }
+            if (newProfilerClassName.equals(ProfilerType.PerformanceProfiler)) {
+                session.setProfiler(new PerformanceProfiler());
+                return;
+            }
             
             String originalProfilerClassNamer = null;
-            if(session.getProfiler()!=null){
+            if (session.getProfiler() != null) {
                 originalProfilerClassNamer = session.getProfiler().getClass().getName();
-                if(originalProfilerClassNamer.equals(newProfilerClassName)){
+                if (originalProfilerClassNamer.equals(newProfilerClassName)) {
                     return;
                 }
             }
             
             // New profiler - create the new instance and set it.
             try {
-                Class newProfilerClass = findClassForProperty(newProfilerClassName,PersistenceUnitProperties.PROFILER, loader);
+                Class newProfilerClass = findClassForProperty(newProfilerClassName, PersistenceUnitProperties.PROFILER, loader);
                 SessionProfiler sessionProfiler = (SessionProfiler)buildObjectForClass(newProfilerClass, SessionProfiler.class);
-                if(sessionProfiler!=null){
+                if (sessionProfiler != null) {
                     session.setProfiler(sessionProfiler);
                 } else {
                     session.handleException(ValidationException.invalidProfilerClass(newProfilerClassName));
                 }
             } catch (IllegalAccessException e) {
-                session.handleException(ValidationException.cannotInstantiateSessionEventListenerClass(newProfilerClassName,e));
+                session.handleException(ValidationException.cannotInstantiateProfilerClass(newProfilerClassName,e));
             } catch (PrivilegedActionException e) {
-                session.handleException(ValidationException.cannotInstantiateSessionEventListenerClass(newProfilerClassName,e));
+                session.handleException(ValidationException.cannotInstantiateProfilerClass(newProfilerClassName,e));
             } catch (InstantiationException e) {
-                session.handleException(ValidationException.cannotInstantiateSessionEventListenerClass(newProfilerClassName,e));
+                session.handleException(ValidationException.cannotInstantiateProfilerClass(newProfilerClassName,e));
             }
         }
     }

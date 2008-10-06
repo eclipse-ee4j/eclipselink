@@ -97,7 +97,7 @@ public class ValidationTestSuite extends JUnitTestCase {
         try {
             em = createEntityManager("ignore", properties);
         } catch (RuntimeException expected) {
-            pass = "tmpDataSourceImp getConnection called".equals(expected.getMessage());
+            pass = expected.getMessage().indexOf("tmpDataSourceImp getConnection called") != -1;
             if (!pass) {
                 throw expected;
             }
@@ -127,7 +127,7 @@ public class ValidationTestSuite extends JUnitTestCase {
         try {
             em = createEntityManager("ignore", properties);
         } catch (RuntimeException expected) {
-            pass = "tmpDataSourceImp getConnection called".equals(expected.getMessage());
+            pass = expected.getMessage().indexOf("tmpDataSourceImp getConnection called") != -1;
             if (!pass) {
                 throw expected;
             }

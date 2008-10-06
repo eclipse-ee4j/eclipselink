@@ -402,8 +402,11 @@ public class DatabaseSessionImpl extends AbstractSession implements org.eclipse.
     public void initializeDescriptors() {
         // Assume all descriptors are CMP, if any are not their init will set this to false.
         getProject().setIsPureCMP2Project(true);
-        // Must clone to avoid modification of the hashtable while enumerating.
+        // Must clone to avoid modification of the map while enumerating.
         initializeDescriptors((Map)((HashMap)getDescriptors()).clone());
+        // Process JPA named queries and add as session queries,
+        // this must be done after descriptor init as requires to parse the JPQL.
+        processJPAQueries();
     }
 
     /**

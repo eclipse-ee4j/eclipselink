@@ -26,6 +26,10 @@ import org.eclipse.persistence.config.CacheUsage;
 import org.eclipse.persistence.config.QueryHints;
 import org.eclipse.persistence.config.QueryType;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
+import org.eclipse.persistence.jpa.JpaQuery;
+import org.eclipse.persistence.queries.DatabaseQuery;
+import org.eclipse.persistence.queries.QueryResultsCachePolicy;
+import org.eclipse.persistence.queries.ReadQuery;
 import org.eclipse.persistence.sessions.DatabaseSession;
 
 import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
@@ -77,6 +81,7 @@ public class AdvancedQueryTestSuite extends JUnitTestCase {
         suite.addTest(new AdvancedQueryTestSuite("testQueryPrimaryKeyCacheHits"));
         suite.addTest(new AdvancedQueryTestSuite("testQueryExactPrimaryKeyCacheHits"));
         suite.addTest(new AdvancedQueryTestSuite("testQueryTypeCacheHits"));
+        suite.addTest(new AdvancedQueryTestSuite("testQueryCache"));
         return new TestSetup(suite) {
 
                 //This method is run at the end of the SUITE only
@@ -323,6 +328,38 @@ public class AdvancedQueryTestSuite extends JUnitTestCase {
             }
             rollbackTransaction(em);
             closeEntityManager(em);
+        }
+    }
+    
+    /**
+     * Test the query cache.
+     */
+    public void testQueryCache() {
+        EntityManager em = createEntityManager();
+        beginTransaction(em);
+        QuerySQLTracker counter = null;
+        try {
+            // Load an employee into the cache.  
+            JpaQuery jpaQuery = (JpaQuery)((EntityManager)em.getDelegate()).createNamedQuery("CachedAllEmployees");
+            ReadQuery readQuery = (ReadQuery)jpaQuery.getDatabaseQuery();
+            readQuery.setQueryResultsCachePolicy(new QueryResultsCachePolicy());
+            List result = jpaQuery.getResultList();
+
+            // Count SQL.
+            counter = new QuerySQLTracker(getServerSession());
+            // Query by primary key.
+            Query query = em.createNamedQuery("CachedAllEmployees");
+            if (result.size() != query.getResultList().size()) {
+                fail("List result size is not correct.");
+            }
+            if (counter.getSqlStatements().size() > 0) {
+                fail("Query cache was not used: " + counter.getSqlStatements());
+            }
+        } finally {
+            rollbackTransaction(em);
+            if (counter != null) {
+                counter.remove();
+            }
         }
     }
 }

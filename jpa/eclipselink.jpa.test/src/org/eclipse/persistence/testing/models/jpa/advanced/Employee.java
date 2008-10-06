@@ -98,6 +98,10 @@ import static org.eclipse.persistence.annotations.OptimisticLockingType.VERSION_
 @NamedQuery(
         name="findAllEmployeesOrderById",
         query="SELECT e FROM Employee e order by e.id"
+),
+@NamedQuery(
+        name="CachedAllEmployees",
+        query="SELECT e FROM Employee e"
 )
 }
 )

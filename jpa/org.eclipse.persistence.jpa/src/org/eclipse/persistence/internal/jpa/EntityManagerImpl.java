@@ -111,6 +111,9 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
     /** Property to avoid resuming unit of work if going to be closed on commit anyway. */
     protected boolean closeOnCommit;
     
+    /** Property to avoid discover new objects in unit of work if application always uses persist. */
+    protected boolean persistOnCommit;
+    
     /**
      * Constructor returns an EntityManager assigned to the a particular ServerSession.
      * @param sessionName the ServerSession name that should be used.
@@ -119,7 +122,6 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
      */
     public EntityManagerImpl(String sessionName, boolean propagatePersistenceContext, boolean extended) {
         this((ServerSession)SessionManager.getManager().getSession(sessionName), null, propagatePersistenceContext, extended);
-        flushMode = FlushModeType.AUTO;
     }
 
    /**
@@ -138,15 +140,23 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
      */
     public EntityManagerImpl(ServerSession serverSession, Map properties, boolean propagatePersistenceContext, boolean extended) {
         this.serverSession = serverSession;
+        initialize(properties);
+    }
+    
+    /**
+     * Initialize the state after construction.
+     */
+    protected void initialize(Map properties) {
         detectTransactionWrapper();
         this.extended = true;
         this.propagatePersistenceContext = false;
         // bug 236249: In JPA session.setProperty() throws UnsupportedOperationException.
-        if(properties != null) {
+        if (properties != null) {
             this.properties = new HashMap(properties);
         }
+        this.flushMode = FlushModeType.AUTO;
+        this.persistOnCommit = true;
         processProperties();
-        flushMode = FlushModeType.AUTO;
     }
     
     /**
@@ -158,15 +168,7 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
     public EntityManagerImpl(EntityManagerFactoryImpl factory, Map properties, boolean propagatePersistenceContext, boolean extended) {
         this.factory = factory;
         this.serverSession = factory.getServerSession();
-        detectTransactionWrapper();
-        this.extended = true;
-        this.propagatePersistenceContext = false;
-        // bug 236249: In JPA session.setProperty() throws UnsupportedOperationException.
-        if(properties != null) {
-            this.properties = new HashMap(properties);
-        }
-        processProperties();
-        flushMode = FlushModeType.AUTO;
+        initialize(properties);
     }
     
     /**
@@ -858,6 +860,7 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
         if (this.extendedPersistenceContext == null || !this.extendedPersistenceContext.isActive()) {
             this.extendedPersistenceContext = new RepeatableWriteUnitOfWork(this.serverSession.acquireClientSession(connectionPolicy, properties), this.referenceMode);
             this.extendedPersistenceContext.setResumeUnitOfWorkOnTransactionCompletion(!this.closeOnCommit);
+            this.extendedPersistenceContext.setShouldDiscoverNewObjects(this.persistOnCommit);
             this.extendedPersistenceContext.setShouldCascadeCloneToJoinedRelationship(true);
             if (txn != null) {
                 // if there is an active txn we must register with it on creation of PC
@@ -962,9 +965,17 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
         if (referenceMode != null) {
             this.referenceMode = ReferenceMode.valueOf(referenceMode);
         }
+        String flushMode = getPropertiesHandlerProperty(EntityManagerProperties.PERSISTENCE_CONTEXT_FLUSH_MODE);
+        if (flushMode != null) {
+            this.flushMode = FlushModeType.valueOf(flushMode);
+        }
         String closeOnCommit = getPropertiesHandlerProperty(EntityManagerProperties.PERSISTENCE_CONTEXT_CLOSE_ON_COMMIT);
         if (closeOnCommit != null) {
             this.closeOnCommit = "true".equalsIgnoreCase(closeOnCommit);
+        }
+        String persistOnCommit = getPropertiesHandlerProperty(EntityManagerProperties.PERSISTENCE_CONTEXT_PERSIST_ON_COMMIT);
+        if (persistOnCommit != null) {
+            this.persistOnCommit = "true".equalsIgnoreCase(persistOnCommit);
         }
         
         connectionPolicy = processConnectionPolicyProperties();

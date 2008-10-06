@@ -792,7 +792,7 @@ public abstract class ForeignReferenceMapping extends DatabaseMapping {
         if (((ObjectLevelReadQuery)getSelectionQuery()).getReferenceClass() == null) {
             throw DescriptorException.referenceClassNotSpecified(this);
         }
-
+        getSelectionQuery().setName(getAttributeName());
         getSelectionQuery().setDescriptor(getReferenceDescriptor());
     }
 

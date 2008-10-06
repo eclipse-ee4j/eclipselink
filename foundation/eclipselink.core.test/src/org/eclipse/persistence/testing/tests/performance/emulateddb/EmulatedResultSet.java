@@ -273,7 +273,7 @@ public class EmulatedResultSet implements ResultSet {
      */
     public java.sql.Date getDate(int columnIndex) {
         java.util.Date date = (java.util.Date)getObject(columnIndex);
-        if (!(date instanceof java.sql.Date)) {
+        if ((date != null) && (!(date instanceof java.sql.Date))) {
             date = new java.sql.Date(date.getTime());
         }
         return (java.sql.Date)date;
@@ -571,7 +571,7 @@ public class EmulatedResultSet implements ResultSet {
      */
     public java.sql.Date getDate(String columnName) {
         java.util.Date date = (java.util.Date)getObject(columnName);
-        if (!(date instanceof java.sql.Date)) {
+        if ((date != null) && (!(date instanceof java.sql.Date))) {
             date = new java.sql.Date(date.getTime());
         }
         return (java.sql.Date)date;
@@ -2266,7 +2266,7 @@ public class EmulatedResultSet implements ResultSet {
      * @since 1.2
      */
     public java.sql.Timestamp getTimestamp(int columnIndex, Calendar cal) {
-        return null;
+        return getTimestamp(columnIndex);
     }
 
     /**
@@ -2287,7 +2287,7 @@ public class EmulatedResultSet implements ResultSet {
      * @since 1.2
      */
     public java.sql.Timestamp getTimestamp(String columnName, Calendar cal) {
-        return null;
+        return getTimestamp(columnName);
     }
 
     //-------------------------- JDBC 3.0 ----------------------------------------

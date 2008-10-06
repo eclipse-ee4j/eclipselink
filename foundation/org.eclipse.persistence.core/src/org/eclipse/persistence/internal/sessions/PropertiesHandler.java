@@ -21,6 +21,8 @@ import java.util.logging.Level;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
 
+import javax.persistence.FlushModeType;
+
 import org.eclipse.persistence.config.*;
 import org.eclipse.persistence.internal.localization.ExceptionLocalization;
 import org.eclipse.persistence.logging.SessionLog;
@@ -218,7 +220,9 @@ public class PropertiesHandler {
             addProp(new BatchWritingProp());
             addProp(new FlushClearCacheProp());
             addProp(new ReferenceModeProp());
+            addProp(new FlushModeProp());
             addProp(new BooleanProp(PersistenceUnitProperties.PERSISTENCE_CONTEXT_CLOSE_ON_COMMIT, "false"));
+            addProp(new BooleanProp(PersistenceUnitProperties.PERSISTENCE_CONTEXT_PERSIST_ON_COMMIT, "true"));
             addProp(new BooleanProp(PersistenceUnitProperties.VALIDATE_EXISTENCE, "false"));
             addProp(new BooleanProp(PersistenceUnitProperties.JOIN_EXISTING_TRANSACTION, "false"));
             addProp(new ExclusiveConnectionModeProp());
@@ -293,7 +297,7 @@ public class PropertiesHandler {
         static String getPropertyValueToApply(String name, Map m, AbstractSession session, boolean useSystemAsDefault) {
             Prop prop = (Prop)mainMap.get(name);
             if(prop == null) {
-                return null; 
+                throw new IllegalArgumentException(name); 
             }
             String value = getPropertyValueFromMap(name, m, useSystemAsDefault);
             if(value == null) {
@@ -491,6 +495,16 @@ public class PropertiesHandler {
                 ReferenceMode.HARD.toString(),
                 ReferenceMode.WEAK.toString(),
                 ReferenceMode.FORCE_WEAK.toString()
+            };
+        }
+    }
+    
+    protected static class FlushModeProp extends Prop {
+        FlushModeProp() {
+            super(EntityManagerProperties.PERSISTENCE_CONTEXT_FLUSH_MODE, FlushModeType.AUTO.toString());
+            valueArray = new Object[] {
+                FlushModeType.AUTO.toString(),
+                FlushModeType.COMMIT.toString()
             };
         }
     }

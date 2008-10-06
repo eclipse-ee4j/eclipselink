@@ -23,11 +23,11 @@ import org.eclipse.persistence.sessions.Session;
 
 /**
  * <b>Purpose</b>: 
- * A EJB3 placeholder Query object to store JPQL strings so that processing the string is delayed 
- *  until Login<p>
+ * A JPA placeholder Query object to store JPQL strings so that processing the string is delayed 
+ * until Login.<p>
  *
  * @author Chris Delahunt
- * @since TopLink Java Essentials
+ * @since TopLink Essentials
  */
 
 public class JPAQuery extends DatabaseQuery  {
@@ -38,10 +38,11 @@ public class JPAQuery extends DatabaseQuery  {
     
     public JPAQuery() {
     }
+    
     public JPAQuery(String jpqlString) {
         this.jpqlString=jpqlString;
     }
-    //buildEJBQLDatabaseQuery(queryString, session, hints, m_loader)
+    
     public JPAQuery(String name, String jpqlString, HashMap hints) {
         this.name=name;
         this.jpqlString=jpqlString;
@@ -57,11 +58,7 @@ public class JPAQuery extends DatabaseQuery  {
     }    
 
     /**
-     * INTERNAL:
-     * Add the expression value to be included in the result.
-     * EXAMPLE: reportQuery.addItem("name", expBuilder.get("firstName").toUpperCase());
-     * The resultType can be specified to support EJBQL that adheres to the
-     * EJB 3.0 spec.
+     * Return the JPQL string.
      */
     public String getJPQLString(){
         return jpqlString;
@@ -71,9 +68,7 @@ public class JPAQuery extends DatabaseQuery  {
     }
     
     /**
-     * INTERNAL:
-     * Accessor methods for hints that would be added to the EJBQuery class and 
-     * applied to the TopLink query.
+     * Return the JPA query hints.
      */
     public HashMap getHints(){
         return hints;
@@ -82,29 +77,42 @@ public class JPAQuery extends DatabaseQuery  {
         this.hints = hints;
     }
     
+    public DatabaseQuery getDatabaseQuery() {
+        return (DatabaseQuery)getProperty("databasequery");
+    }
+    public void setDatabaseQuery(DatabaseQuery databaseQuery) {
+        setProperty("databasequery", databaseQuery);
+    }
     
+    /**
+     * INTERNAL:
+     * Generate the DatabaseQuery query from the JPA named query.
+     */
+    public void prepare() {
+        setDatabaseQuery(processJPQLQuery(getSession()));
+    }
+    
+    /**
+     * INTERNAL:
+     * Convert the JPA query into a DatabaseQuery.
+     */
     public DatabaseQuery processJPQLQuery(Session session){
         ClassLoader classloader = session.getDatasourcePlatform().getConversionManager().getLoader();
         DatabaseQuery ejbquery = EJBQueryImpl.buildEJBQLDatabaseQuery(
             this.getName(), jpqlString,  flushOnExecute, session, hints, classloader);
         ejbquery.setName(this.getName());
         return ejbquery;
-    }
-    
+    }    
     
     
     /**
      * INTERNAL:
      * This should never be called and is only here because it is needed as an extension
-     * to DatabaseQuery.  An exception should be thrown to warn users, but for now
-     * it will process the JPQL and execute the resulting query instead.
-     *
-     * @exception  DatabaseException - an error has occurred on the database.
-     * @exception  OptimisticLockException - an error has occurred using the optimistic lock feature.
-     * @return - the result of executing the query.
+     * to DatabaseQuery.  Perhaps exception should be thrown to warn users, but for now
+     * it will execute the resulting query instead, this allows JPA style queries to be executed
+     * on a normal EclipseLink Session.
      */
     public Object executeDatabaseQuery() throws DatabaseException, OptimisticLockException{
-        DatabaseQuery ejbquery = processJPQLQuery(this.getSession());
-        return ejbquery.executeDatabaseQuery();
+        return getSession().executeQuery(getDatabaseQuery());
     }
 }

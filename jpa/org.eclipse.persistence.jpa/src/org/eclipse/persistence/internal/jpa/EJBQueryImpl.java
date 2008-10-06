@@ -34,37 +34,32 @@ import org.eclipse.persistence.internal.queries.JPQLCallQueryMechanism;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 
 /**
-* Concrete EJB 3.0 query class
-*
-* To do:
-* Internationalize exceptions
-* Change TopLink exceptions to exception types used by the spec
-* Named Parameters
-* Report Query
-* firstResultIndex set in query framework
-* temporal type parameters
-* Change single result to use ReadObjectQuery
-**/
+ * Concrete JPA query class.
+ * The JPA query wraps a DatabaseQuery which is executed.
+ */
 public class EJBQueryImpl implements org.eclipse.persistence.jpa.JpaQuery {
-	protected DatabaseQuery databaseQuery = null;
+    protected DatabaseQuery databaseQuery = null;
     protected EntityManagerImpl entityManager = null;
     protected String queryName = null;
     protected Map parameters = null;
     protected int firstResultIndex = -1; // -1 indicates undefined
     protected int maxResults = -1; // -1 indicates undefined
-    protected int maxRows = -1; // -1 indicates undefined    
-
+    protected int maxRows = -1; // -1 indicates undefined
+    
+    /** Stores if the wrapped query is shared, and requires cloning before being changed. */
+    protected boolean isShared;
+    
     /**
      * Base constructor for EJBQueryImpl.  Initializes basic variables.
      */
     protected EJBQueryImpl(EntityManagerImpl entityManager) {
-        parameters = new HashMap();
+        this.parameters = new HashMap();
         this.entityManager = entityManager;
+        this.isShared = true;
     }
 
     /**
-     * Create an EJBQueryImpl with a TopLink query.
-     * @param query
+     * Create an EJBQueryImpl with a DatabaseQuery.
      */
     public EJBQueryImpl(DatabaseQuery query, EntityManagerImpl entityManager) {
         this(entityManager);
@@ -72,19 +67,15 @@ public class EJBQueryImpl implements org.eclipse.persistence.jpa.JpaQuery {
     }
 
     /**
-     * Build an EJBQueryImpl based on the given ejbql string
-     * @param ejbql
-     * @param entityManager
+     * Build an EJBQueryImpl based on the given jpql string.
      */
-    public EJBQueryImpl(String ejbql, EntityManagerImpl entityManager) {
-        this(ejbql, entityManager, false);
+    public EJBQueryImpl(String jpql, EntityManagerImpl entityManager) {
+        this(jpql, entityManager, false);
     }
 
     /**
-     * Create an EJBQueryImpl with either a query name or an ejbql string
-     * @param queryDescription
-     * @param entityManager
-     * @param isNamedQuery determines whether to treat the query description as ejbql or a query name
+     * Create an EJBQueryImpl with either a query name or an jpql string.
+     * @param isNamedQuery determines whether to treat the queryDescription as jpql or a query name.
      */
     public EJBQueryImpl(String queryDescription, EntityManagerImpl entityManager, boolean isNamedQuery) {
         this(entityManager);
@@ -98,7 +89,7 @@ public class EJBQueryImpl implements org.eclipse.persistence.jpa.JpaQuery {
     }
 
     /**
-     * Internal method to change the wrapped query to a DataModifyQuery if neccessary
+     * Internal method to change the wrapped query to a DataModifyQuery if necessary.
      */
     protected void setAsSQLModifyQuery(){
         if (getDatabaseQuery().isDataReadQuery()){
@@ -111,7 +102,7 @@ public class EJBQueryImpl implements org.eclipse.persistence.jpa.JpaQuery {
     }
 
     /**
-     * Internal method to change the wrapped query to a DataReadQuery if neccessary
+     * Internal method to change the wrapped query to a DataReadQuery if necessary.
      */
     protected void setAsSQLReadQuery(){
         if(getDatabaseQuery().isDataModifyQuery()){
@@ -125,60 +116,13 @@ public class EJBQueryImpl implements org.eclipse.persistence.jpa.JpaQuery {
     }
 
     /**
-     * Build a DatabaseQuery from an EJBQL string.
-     * @param ejbql
+     * Build a DatabaseQuery from an jpql string.
+     * @param jpql
      * @param session the session to get the descriptors for this query for.
-     * @return a DatabaseQuery representing the given ejbql
+     * @return a DatabaseQuery representing the given jpql.
      */
-    public static DatabaseQuery buildEJBQLDatabaseQuery(String ejbql, Session session) {
-        return buildEJBQLDatabaseQuery(ejbql, null, session);
-    }
-    
-    /**
-     * Build a DatabaseQuery from an EJBQL string.
-     * 
-     * @param ejbql
-     * @param session the session to get the descriptors for this query for.
-     * @param hints a list of hints to be applied to the query
-     * @return a DatabaseQuery representing the given ejbql
-     */
-    public static DatabaseQuery buildEJBQLDatabaseQuery(String ejbql, Session session, HashMap hints) {
-        return buildEJBQLDatabaseQuery(null, ejbql, null, session, hints, null);
-    }
-    
-    /**
-     * Build a DatabaseQuery from an EJBQL string.
-     * 
-     * @param ejbql
-     * @param session the session to get the descriptors for this query for.
-     * @param hints a list of hints to be applied to the query
-     * @param classLoader the class loader to build the query with
-     * @return a DatabaseQuery representing the given ejbql
-     */
-    public static DatabaseQuery buildEJBQLDatabaseQuery(String ejbql, Session session, HashMap hints, ClassLoader classLoader) {
-        return buildEJBQLDatabaseQuery(null, ejbql, null, session, hints, classLoader);
-    }
-    
-    /**
-     * Build a DatabaseQuery from an EJBQL string.
-     * @param ejbql
-     * @parem flushOnExecute
-     * @param session the session to get the descriptors for this query for.
-     * @return a DatabaseQuery representing the given ejbql
-     */
-    public static DatabaseQuery buildEJBQLDatabaseQuery(String ejbql,  Boolean flushOnExecute, Session session) {
-        return buildEJBQLDatabaseQuery(null, ejbql, flushOnExecute, session, null, null);
-    }
-    
-    /**
-     * Build a DatabaseQuery from an EJBQL string.
-     * @param ejbql
-     * @parem flushOnExecute
-     * @param session the session to get the descriptors for this query for.
-     * @return a DatabaseQuery representing the given ejbql
-     */
-    public static DatabaseQuery buildEJBQLDatabaseQuery(String ejbql,  Boolean flushOnExecute, Session session, ClassLoader classLoader) {
-        return buildEJBQLDatabaseQuery(null, ejbql, flushOnExecute, session, null, classLoader);
+    public static DatabaseQuery buildEJBQLDatabaseQuery(String jpql, Session session) {
+        return buildEJBQLDatabaseQuery(null, jpql, null, session, null, null);
     }
     
     /**
@@ -228,7 +172,6 @@ public class EJBQueryImpl implements org.eclipse.persistence.jpa.JpaQuery {
             if (isCacheable) {
                 // Prepare query as hint may cause cloning (but not un-prepare as in read-only).
                 databaseQuery.prepareCall(session, new DatabaseRecord());
-                databaseQuery.setIsFromParseCache(true);
                 session.getProject().getJPQLParseCache().put(jpql, databaseQuery);
             }
         }
@@ -378,7 +321,7 @@ public class EJBQueryImpl implements org.eclipse.persistence.jpa.JpaQuery {
             performPreQueryFlush();
             if (getDatabaseQuery().isObjectLevelReadQuery()) {
                 if (((ObjectLevelReadQuery)getDatabaseQuery()).shouldConformResultsInUnitOfWork()) {
-                    cloneIfParseCachedQuery();
+                    cloneSharedQuery();
                     ((ObjectLevelReadQuery)getDatabaseQuery()).setCacheUsage(ObjectLevelReadQuery.UseDescriptorSetting);
                     shouldResetConformResultsInUnitOfWork = true;
                 }
@@ -413,7 +356,7 @@ public class EJBQueryImpl implements org.eclipse.persistence.jpa.JpaQuery {
             //bug51411440: need to throw IllegalStateException if query executed on closed em
             entityManager.verifyOpen();
             setAsSQLModifyQuery();
-            //bug:4294241, only allow modify queries - UpdateAllQuery prefered
+            //bug:4294241, only allow modify queries - UpdateAllQuery preferred
             if (!(getDatabaseQuery() instanceof ModifyQuery)){
                 throw new IllegalStateException(ExceptionLocalization.buildMessage("incorrect_query_for_execute_update"));
             }
@@ -448,8 +391,6 @@ public class EJBQueryImpl implements org.eclipse.persistence.jpa.JpaQuery {
                     //prepare the query before cloning, this ensures we do not have to continually prepare on each usage
                     databaseQuery.prepareCall(getActiveSession(), new DatabaseRecord());
                 }
-                //Bug5040609  Make a clone of the original DatabaseQuery for this EJBQuery
-                databaseQuery = (DatabaseQuery)databaseQuery.clone();
             } else {
                 throw new IllegalArgumentException(ExceptionLocalization.buildMessage("unable_to_find_named_query", new Object[] {queryName}));
             }
@@ -645,7 +586,7 @@ public class EJBQueryImpl implements org.eclipse.persistence.jpa.JpaQuery {
              if (flushMode == null) {
                  getDatabaseQuery().setFlushOnExecute(null);
              } else {
-                 cloneIfParseCachedQuery();
+                 cloneSharedQuery();
                  getDatabaseQuery().setFlushOnExecute(flushMode == FlushModeType.AUTO);
              }
              return this;
@@ -718,7 +659,7 @@ public class EJBQueryImpl implements org.eclipse.persistence.jpa.JpaQuery {
      * valid for the implementation.
      */
     protected void setHintInternal(String hintName, Object value) {
-        cloneIfParseCachedQuery();
+        cloneSharedQuery();
         DatabaseQuery hintQuery = QueryHintsHandler.apply(hintName, value, getDatabaseQuery());
         if (hintQuery != null) {
             setDatabaseQuery(hintQuery);
@@ -728,19 +669,19 @@ public class EJBQueryImpl implements org.eclipse.persistence.jpa.JpaQuery {
     /**
      * If the query was from the jpql parse cache it must be cloned before being modified.
      */
-    protected void cloneIfParseCachedQuery() {
+    protected void cloneSharedQuery() {
         DatabaseQuery query = getDatabaseQuery();
-        if (query.isFromParseCache()) {
+        if (this.isShared) {
             // Clone to allow setting of hints or other properties without corrupting original query.
             query = (DatabaseQuery)databaseQuery.clone();
-            query.setIsFromParseCache(false);
             setDatabaseQuery(query);
+            this.isShared = false;
         }
     }
     
     /**
      *  Convert the given object to the class represented by the given temporal type.
-     *  @return an object represting the given TemporalType
+     *  @return an object representing the given TemporalType.
      */
     protected Object convertTemporalType(Object value, TemporalType type) {
         ConversionManager conversionManager = ((org.eclipse.persistence.internal.sessions.AbstractSession)getEntityManager().getActiveSession()).getDatasourcePlatform().getConversionManager();
@@ -867,14 +808,14 @@ public class EJBQueryImpl implements org.eclipse.persistence.jpa.JpaQuery {
         if (databaseQuery.isReadQuery()) {
             ReadQuery readQuery = (ReadQuery)databaseQuery;
             if (maxResults >= 0) {
-                cloneIfParseCachedQuery();
+                cloneSharedQuery();
                 readQuery = (ReadQuery)getDatabaseQuery();
                 maxRows = maxResults + ((firstResultIndex >= 0) ? firstResultIndex : 0);
                 readQuery.setMaxRows(maxRows);
                 maxResults = -1;
             }
             if (firstResultIndex > -1) {
-                cloneIfParseCachedQuery();
+                cloneSharedQuery();
                 readQuery = (ReadQuery)getDatabaseQuery();
                 readQuery.setFirstResult(firstResultIndex);
                 firstResultIndex = -1;
@@ -883,10 +824,10 @@ public class EJBQueryImpl implements org.eclipse.persistence.jpa.JpaQuery {
     }
 
     /**
-    * Bind an argument to a named parameter.
-    * @param name the parameter name
-    * @param value
-    */
+     * Bind an argument to a named parameter.
+     * @param name the parameter name
+     * @param value
+     */
     protected void setParameterInternal(String name, Object value) {
         int index  = getDatabaseQuery().getArguments().indexOf(name);
         if (getDatabaseQuery().getEJBQLString() != null){  //only non native queries
@@ -901,10 +842,10 @@ public class EJBQueryImpl implements org.eclipse.persistence.jpa.JpaQuery {
     }
 
     /**
-    * Bind an argument to a positional parameter.
-    * @param position
-    * @param value
-    */
+     * Bind an argument to a positional parameter.
+     * @param position
+     * @param value
+     */
     protected void setParameterInternal(int position, Object value) {
         String pos = (new Integer(position)).toString();
         int index = getDatabaseQuery().getArguments().indexOf(pos);

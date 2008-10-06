@@ -247,6 +247,8 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         suite.addTest(new EntityManagerJUnitTestSuite("testEnabledPersistNonEntitySubclass"));
         suite.addTest(new EntityManagerJUnitTestSuite("testCloneEmbeddable"));
         suite.addTest(new EntityManagerJUnitTestSuite("testCloseOnCommit"));
+        suite.addTest(new EntityManagerJUnitTestSuite("testPersistOnCommit"));
+        suite.addTest(new EntityManagerJUnitTestSuite("testFlushMode"));
         suite.addTest(new EntityManagerJUnitTestSuite("testEmbeddedNPE"));
         return suite;
     }
@@ -1410,7 +1412,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         assertTrue("EntityManager not properly cleared", cleared);
     }
 
-    // Test using the change tracking "Transaction" option, to defer change tracking until Transaction.begin().
+    // Test using PERSISTENCE_CONTEXT_CLOSE_ON_COMMIT option to avoid the resume on commit.
     public void testCloseOnCommit() {
         // Properties only works in jse.
         if (isOnServer()) {
@@ -1439,6 +1441,76 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
             emp = em.find(Employee.class, emp.getId());
             em.remove(emp);
             commitTransaction(em);
+            closeEntityManager(em);            
+        } catch (RuntimeException exception) {
+            if (isTransactionActive(em)){
+                rollbackTransaction(em);
+            }
+            closeEntityManager(em);
+            throw exception;
+        }
+    }
+
+    // Test using PERSISTENCE_CONTEXT_PERSIST_ON_COMMIT option to avoid the discover on commit.
+    public void testPersistOnCommit() {
+        // Properties only works in jse.
+        if (isOnServer()) {
+            return;
+        }
+        Map properties = new HashMap();
+        properties.put(PersistenceUnitProperties.PERSISTENCE_CONTEXT_PERSIST_ON_COMMIT, "false");
+        EntityManager em = createEntityManager(properties);
+        beginTransaction(em);
+        try {
+            Employee emp = new Employee();
+            emp.setFirstName("Douglas");
+            emp.setLastName("McRae");
+            em.persist(emp);
+            commitTransaction(em);
+            verifyObjectInCacheAndDatabase(emp);
+            closeEntityManager(em);
+            em = createEntityManager(properties);
+            beginTransaction(em);
+            Address address = new Address();
+            emp = em.find(Employee.class, emp.getId());
+            emp.setAddress(address);
+            commitTransaction(em);
+            verifyObjectInCacheAndDatabase(emp);
+            em = createEntityManager(properties);
+            beginTransaction(em);
+            emp = em.find(Employee.class, emp.getId());
+            em.remove(emp);
+            commitTransaction(em);
+            closeEntityManager(em);            
+        } catch (RuntimeException exception) {
+            if (isTransactionActive(em)){
+                rollbackTransaction(em);
+            }
+            closeEntityManager(em);
+            throw exception;
+        }
+    }
+
+    // Test using PERSISTENCE_CONTEXT_FLUSH_MODE option.
+    public void testFlushMode() {
+        // Properties only works in jse.
+        if (isOnServer()) {
+            return;
+        }
+        Map properties = new HashMap();
+        properties.put(PersistenceUnitProperties.PERSISTENCE_CONTEXT_FLUSH_MODE, "COMMIT");
+        EntityManager em = createEntityManager(properties);
+        beginTransaction(em);
+        try {
+            Employee emp = new Employee();
+            emp.setFirstName("Douglas");
+            emp.setLastName("McRae");
+            em.persist(emp);
+            Query query = em.createQuery("Select e from Employee e where e.id = " + emp.getId());
+            if (query.getResultList().size() > 0) {
+                fail("Query triggered flush.");
+            }
+            rollbackTransaction(em);
             closeEntityManager(em);            
         } catch (RuntimeException exception) {
             if (isTransactionActive(em)){
@@ -2937,6 +3009,8 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
     public void testQueryHints() {
         EntityManager em = getEntityManagerFactory().createEntityManager();
         Query query = em.createQuery("SELECT OBJECT(e) FROM Employee e WHERE e.firstName = 'testQueryHints'");
+        // Set a hint first to trigger query clone (because query is accessed before other hints are set).
+        query.setHint(QueryHints.READ_ONLY, false);
         ObjectLevelReadQuery olrQuery = (ObjectLevelReadQuery)((EJBQueryImpl)query).getDatabaseQuery();
 
         // binding

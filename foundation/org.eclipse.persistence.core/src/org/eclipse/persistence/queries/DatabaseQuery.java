@@ -189,9 +189,6 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
     /** PERF: Store if this query will use the descriptor custom query. */
     protected Boolean isCustomQueryUsed;    
     
-    /** PERF: Store if the query if from the JPQL parse cache, to avoid corruption of the cache query. */
-    protected boolean isFromParseCache = false;
-
     /** Allow connection unwrapping to be configured. */
     protected boolean isNativeConnectionRequired;
     
@@ -213,22 +210,6 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
         this.shouldBindAllParameters = null;
         this.shouldCacheStatement = null;
         this.isExecutionClone = false;
-    }
-
-    /**
-     * INTERNAL:
-     * Return if the query if from the JPQL parse cache, to avoid corruption of the cache query.
-     */
-    public boolean isFromParseCache() {
-        return isFromParseCache;
-    }
-
-    /**
-     * INTERNAL:
-     * Set if the query if from the JPQL parse cache, to avoid corruption of the cache query.
-     */
-    public void setIsFromParseCache(boolean isFromParseCache) {
-        this.isFromParseCache = isFromParseCache;
     }
     
     /**

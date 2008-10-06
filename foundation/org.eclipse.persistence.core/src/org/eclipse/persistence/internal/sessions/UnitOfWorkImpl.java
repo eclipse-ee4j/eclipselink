@@ -220,6 +220,11 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
     protected boolean resumeOnTransactionCompletion;
     
     /**
+     * PERF: Allows discover new objects to be skipped if app always calls persist.
+     */
+    protected boolean shouldDiscoverNewObjects;
+    
+    /**
      * True if either DataModifyQuery or ModifyAllQuery was executed.
      * Gets reset on commit, effects DoesExistQuery behavior and reading.
      */
@@ -259,6 +264,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
         super();
         this.isLoggingOff = parent.isLoggingOff();
         this.referenceMode = referenceMode;
+        this.shouldDiscoverNewObjects = true;
         this.name = parent.getName();
         this.parent = parent;
         // 2612538 - the default size of Map (32) is appropriate
@@ -618,7 +624,9 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
             Map existingObjects = new IdentityHashMap(2);
     
             // Iterate over the changed objects only.
-            discoverUnregisteredNewObjects(changedObjects, newObjects, existingObjects, visitedNodes);
+            if (this.shouldDiscoverNewObjects) {
+                discoverUnregisteredNewObjects(changedObjects, newObjects, existingObjects, visitedNodes);
+            }
             setUnregisteredExistingObjects(existingObjects);
             setUnregisteredNewObjects(newObjects);
             if (assignSequences) {
@@ -4501,8 +4509,24 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
      * Set if this UnitofWork should be resumed after the end of the transaction
      * Used when UnitOfWork is synchronized with external transaction control
      */
-    public void setResumeUnitOfWorkOnTransactionCompletion(boolean resumeUnitOfWork){
+    public void setResumeUnitOfWorkOnTransactionCompletion(boolean resumeUnitOfWork) {
         this.resumeOnTransactionCompletion = resumeUnitOfWork;
+    }
+
+    /**
+     * INTERNAL:
+     * Set if this UnitofWork should discover new objects on commit.
+     */
+    public boolean shouldDiscoverNewObjects() {
+        return this.shouldDiscoverNewObjects;
+    }
+    
+    /**
+     * INTERNAL:
+     * Set if this UnitofWork should discover new objects on commit.
+     */
+    public void setShouldDiscoverNewObjects(boolean shouldDiscoverNewObjects) {
+        this.shouldDiscoverNewObjects = shouldDiscoverNewObjects;
     }
 
     /**
