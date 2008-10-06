@@ -113,6 +113,7 @@ public class DataSource {
 	    
 	    this.platformId = XML_PLATFORM_ID;
 	    this.platformName = "xml-platform";
+	    this.platformClassName = XMLLoginAdapter.DEFAULT_PLATFORM_CLASS_NAME;
 	}
 
 	private void initializeDefaultDs() {

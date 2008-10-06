@@ -69,6 +69,8 @@ public class ConnectionPoolAdapter extends SCAdapter implements Nominative, Logi
 	    
 		if( this.platformIsEis()) {
 		    return new EISLoginAdapter( this);
+		} else if ( this.platformIsXml() ) {
+			return new XMLLoginAdapter(this);
 		}
 		return new DatabaseLoginAdapter( this);
 	}

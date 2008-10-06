@@ -393,8 +393,12 @@ public final class SCPluginResourceBundle extends ListResourceBundle {
 		{ "LOGIN_CONNECTION_TAB_TITLE",       "Connection" },
 		{ "LOGIN_PROPERTIES_TAB_TITLE",       "Properties" },
 		{ "LOGIN_SEQUENCING_TAB_TITLE", "Sequencing" },
-		{ "LOGIN_RDBMS_OPTIONS_TAB_TITLE",    "Options" },
-
+		{ "LOGIN_OPTIONS_TAB_TITLE",    	"Options" },
+		{ "LOGIN_DATASOURCE_PLATFORM",		"&Datasource Platform Class:" },
+		{ "LOGIN_EQUAL_NAMESPACE_RESOLVERS",	"&Equal Namespace Resolvers" },
+		{ "LOGIN_DOCUMENT_PRESERVATION_POLICY",		"Document &Preservation Policy:" },
+		{ "LOGIN_NODE_ORDERING_POLICY",		"&Login Node Ordering Policy:"},
+		
 		// ui.session.clustering.CacheSynchronizationManagerPane
 		{ "CSM_ASYNCHRONOUS_CHECK_BOX",               "&Asynchronous" },
 		{ "CSM_CLUSTERING_SERVICE_COMBO_BOX",         "Clustering Ser&vice:" },

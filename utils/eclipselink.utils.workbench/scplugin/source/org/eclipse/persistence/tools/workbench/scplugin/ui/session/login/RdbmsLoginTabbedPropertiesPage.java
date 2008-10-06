@@ -45,7 +45,7 @@ public class RdbmsLoginTabbedPropertiesPage extends TabbedPropertiesPage {
 	}
 
 	protected String buildOptionsPropertiesPageTitle() {
-		return "LOGIN_RDBMS_OPTIONS_TAB_TITLE";
+		return "LOGIN_OPTIONS_TAB_TITLE";
 	}
 
 	protected PropertyValueModel buildPropertiesHolder() {

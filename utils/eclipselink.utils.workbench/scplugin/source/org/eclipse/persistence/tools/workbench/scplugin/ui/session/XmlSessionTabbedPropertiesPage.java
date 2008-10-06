@@ -21,6 +21,7 @@ import org.eclipse.persistence.tools.workbench.framework.ui.view.ComponentBuilde
 import org.eclipse.persistence.tools.workbench.scplugin.ui.session.basic.SessionServerPlatformPropertiesPage;
 import org.eclipse.persistence.tools.workbench.scplugin.ui.session.basic.XmlSessionMultipleProjectsPropertiesPage;
 import org.eclipse.persistence.tools.workbench.scplugin.ui.session.basic.XmlSessionProjectPropertiesPage;
+import org.eclipse.persistence.tools.workbench.scplugin.ui.session.login.XMLLoginTabbedPropertiesPage;
 import org.eclipse.persistence.tools.workbench.uitools.app.PropertyValueModel;
 
 
@@ -56,12 +57,21 @@ final class XmlSessionTabbedPropertiesPage extends SessionTabbedPropertiesPage
 		return "SESSION_SERVER_PLATFORM_TAB_TITLE";
 	}
 
+	protected String buildLoginPropertiesPageTitle() {
+		return "SESSION_LOGIN_TAB_TITLE";
+	}
+	
+	protected AbstractPropertiesPage buildLoginPropertiesPage() {
+		return new XMLLoginTabbedPropertiesPage(getNodeHolder(), getWorkbenchContextHolder());
+	}
+	
 	protected void initializeTabs()
 	{
 
 		addTab(buildGeneralPropertiesPage(), 0, buildGeneralPropertiesPageTitle());
-		addTab(buildMultipleProjectsHolder(), 1, buildMultipleProjectsPageBuilder(), buildMultipleProjectsPropertiesPageTitle());
-		addTab(buildServerPlatformPropertiesPage(), 2, buildServerPlatformPropertiesPageTitle());
+		addTab(buildLoginPropertiesPage(), 1, buildLoginPropertiesPageTitle());
+		addTab(buildMultipleProjectsHolder(), 2, buildMultipleProjectsPageBuilder(), buildMultipleProjectsPropertiesPageTitle());
+		addTab(buildServerPlatformPropertiesPage(), 3, buildServerPlatformPropertiesPageTitle());
 	}
 
 

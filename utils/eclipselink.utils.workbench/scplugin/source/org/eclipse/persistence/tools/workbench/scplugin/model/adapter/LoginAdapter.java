@@ -113,6 +113,7 @@ public abstract class LoginAdapter extends SCAdapter implements Property {
 		super.initializeDefaults();
 		
 		if( XMLSessionConfigProject.NATIVE_SEQUENCING_DEFAULT) setNativeSequencing();
+		
 	}
 	
 	/**
