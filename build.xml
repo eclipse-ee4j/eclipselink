@@ -162,18 +162,19 @@
         <ant antfile="${eclipselink.extension.oracle.test}/build.xml" target="all"/>
     </target>
 
-    <!-- Compiles tests (excluding workbench, and Oracle extensions). -->
+    <!-- Compiles tests (excluding workbench, dbws, and Oracle extensions). -->
     <target name="build-core-test">
         <ant antfile="${eclipselink.core.test}/build.xml" target="all"/>
         <ant antfile="${eclipselink.jpa.test}/build.xml"  target="all"/>
         <ant antfile="${eclipselink.moxy.test}/build.xml" target="compile-tests"/>
         <ant antfile="${eclipselink.sdo.test}/build.xml"  target="compile-sdo-tests"/>
-        <ant antfile="${eclipselink.dbws.test}/build.xml" target="init"/>
     </target>
 
     <!-- Compiles all tests (excluding Oracle extensions). -->
     <target name="build-test" depends="build-core-test">
         <ant antfile="build.xml" dir="${eclipselink.util.workbench.test}" target="all"/>
+        <!-- Compiling dbws tests requires JDK 1.6 -->
+        <ant antfile="${eclipselink.dbws.test}/build.xml" target="init"/>
     </target>
 
     <!-- Compiles all tests (excluding Oracle extensions). -->
