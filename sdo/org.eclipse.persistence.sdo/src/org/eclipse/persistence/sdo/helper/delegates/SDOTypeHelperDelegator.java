@@ -126,16 +126,15 @@ public class SDOTypeHelperDelegator extends AbstractHelperDelegator implements S
 
     /**
      * INTERNAL:
-     * @return
      */
     private SDOTypeHelperDelegate getSDOTypeHelperDelegate() {
-        ClassLoader contextClassLoader = getContextClassLoader();
-        SDOTypeHelperDelegate sdoTypeHelperDelegate = (SDOTypeHelperDelegate)sdoTypeHelperDelegates.get(contextClassLoader);
+        Object key = getDelegateMapKey();
+        SDOTypeHelperDelegate sdoTypeHelperDelegate = (SDOTypeHelperDelegate)sdoTypeHelperDelegates.get(key);
         if (null == sdoTypeHelperDelegate) {
             sdoTypeHelperDelegate = new SDOTypeHelperDelegate(getHelperContext());
-            sdoTypeHelperDelegates.put(contextClassLoader, sdoTypeHelperDelegate);
-            AbstractSessionLog.getLog().log(AbstractSessionLog.FINEST, "{0} creating new {1} keyed on classLoader: {2}",//
-                                            new Object[] { getClass().getName(), sdoTypeHelperDelegate, contextClassLoader.toString() }, false);
+            sdoTypeHelperDelegates.put(key, sdoTypeHelperDelegate);
+            AbstractSessionLog.getLog().log(AbstractSessionLog.FINEST, "{0} creating new {1} keyed on: {2}",//
+                                            new Object[] { getClass().getName(), sdoTypeHelperDelegate, key }, false);
         }
         return sdoTypeHelperDelegate;
     }

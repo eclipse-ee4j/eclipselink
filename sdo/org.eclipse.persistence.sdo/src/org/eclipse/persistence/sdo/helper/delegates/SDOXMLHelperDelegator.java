@@ -174,16 +174,15 @@ public class SDOXMLHelperDelegator extends AbstractHelperDelegator implements SD
 
     /**
      * INTERNAL:
-     * @return
      */
     private SDOXMLHelperDelegate getSDOXMLHelperDelegate() {
-        ClassLoader contextClassLoader = getContextClassLoader();
-        SDOXMLHelperDelegate sdoXMLHelperDelegate = (SDOXMLHelperDelegate)sdoXMLHelperDelegates.get(contextClassLoader);
+        Object key = getDelegateMapKey();
+        SDOXMLHelperDelegate sdoXMLHelperDelegate = (SDOXMLHelperDelegate)sdoXMLHelperDelegates.get(key);
         if (null == sdoXMLHelperDelegate) {
             sdoXMLHelperDelegate = new SDOXMLHelperDelegate(getHelperContext());
-            sdoXMLHelperDelegates.put(contextClassLoader, sdoXMLHelperDelegate);
-            AbstractSessionLog.getLog().log(AbstractSessionLog.FINEST, "{0} creating new {1} keyed on classLoader: {2}", //
-            		new Object[] {getClass().getName(), sdoXMLHelperDelegate, contextClassLoader.toString()}, false);
+            sdoXMLHelperDelegates.put(key, sdoXMLHelperDelegate);
+            AbstractSessionLog.getLog().log(AbstractSessionLog.FINEST, "{0} creating new {1} keyed on: {2}", //
+                    new Object[] {getClass().getName(), sdoXMLHelperDelegate, key }, false);
         }
         return sdoXMLHelperDelegate;
     }
