@@ -9,6 +9,7 @@
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
+ *     Markus KARG - Added methods allowing to support stored procedure creation on SQLAnywherePlatform. 
  ******************************************************************************/  
 package org.eclipse.persistence.internal.databaseaccess;
 
@@ -1010,6 +1011,14 @@ public class DatabasePlatform extends DatasourcePlatform {
     }
 
     /**
+     * Used for stored procedure creation: Prefix for INPUT parameters. 
+     * Not required on most platforms. 
+     */
+    public String getInputProcedureToken() {
+        return "";
+    }
+
+    /**
      * This method is used to print the output parameter token when stored
      * procedures are called
      */
@@ -1314,6 +1323,13 @@ public class DatabasePlatform extends DatasourcePlatform {
     }
 
     /**
+     * Used for stored procedure creation: Some platforms need brackets around arguments declaration even if no arguments exist. Those platform will override this and return true. All other platforms will omit the brackets in this case. 
+     */
+    public boolean requiresProcedureBrackets() {
+        return false;
+    }
+
+    /**
      * USed for sp calls.
      */
     public boolean requiresProcedureCallBrackets() {
@@ -1556,6 +1572,13 @@ public class DatabasePlatform extends DatasourcePlatform {
     public boolean shouldOptimizeDataConversion() {
         return shouldOptimizeDataConversion;
     }
+    
+    /**
+     * Used for stored procedure creation: Some platforms declare variables AFTER the procedure body's BEGIN string. These need to override and return true. All others will print the variable declaration BEFORE the body's BEGIN string. 
+     */
+    public boolean shouldPrintStoredProcedureVariablesAfterBeginString() {
+        return false;
+    }
 
     /**
     * Some Platforms want the constraint name after the constraint definition.
@@ -1579,6 +1602,13 @@ public class DatabasePlatform extends DatasourcePlatform {
         return false;
     }
 
+    /**
+     * Used for stored procedure creation: Some platforms want to print prefix for INPUT arguments BEFORE NAME. If wanted, override and return true. 
+     */
+    public boolean shouldPrintInputTokenAtStart() {
+        return false;
+    }
+    
     /**
      * This is required in the construction of the stored procedures with
      * output parameters

@@ -52,8 +52,8 @@ public class ModTest extends JPQLTestCase {
     }
 
     public void setup() {
-        if (getSession().getLogin().getPlatform().isSQLServer() || getSession().getLogin().getPlatform().isSybase() || getSession().getLogin().getPlatform().isSQLAnywhere()) {
-            throw new TestWarningException("This test is not supported on SQL Server and Sybase and SQLAnywhere. Because 'MOD' is not a recognized function name on SQL Server and Sybase.");
+        if (getSession().getLogin().getPlatform().isSQLServer() || getSession().getLogin().getPlatform().isSybase()) {
+            throw new TestWarningException("This test is not supported on SQL Server and Sybase. Because 'MOD' is not a recognized function name on SQL Server and Sybase.");
         }
 
         ReadAllQuery raq = new ReadAllQuery();

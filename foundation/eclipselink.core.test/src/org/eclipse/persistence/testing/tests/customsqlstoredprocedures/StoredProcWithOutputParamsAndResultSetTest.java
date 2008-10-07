@@ -66,7 +66,8 @@ public class StoredProcWithOutputParamsAndResultSetTest extends TestCase {
             } else {
                 prefix = "###";
             }
-            sqlCall = new SQLCall("EXECUTE Select_Output_and_ResultSet @ARG1 = #argument, @VERSION = " + prefix + "version " + getSession().getPlatform().getOutputProcedureToken());
+            String parameterNamePrefix = getSession().getPlatform().getStoredProcedureParameterPrefix();
+            sqlCall = new SQLCall("EXECUTE Select_Output_and_ResultSet ARG1 = #argument, "+parameterNamePrefix+"VERSION = " + prefix + "version " + getSession().getPlatform().getOutputProcedureToken());
             sqlCall.setCustomSQLArgumentType("version", BigDecimal.class);
             call = sqlCall;
         } else {

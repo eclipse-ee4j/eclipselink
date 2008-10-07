@@ -35,7 +35,7 @@ public class ConversionManagerSystem extends TestSystem {
             objDescriptor.getMappings().removeElement(objDescriptor.getMappingForAttributeName("aPByteArray"));
         }
 
-        if (!(platform.isSybase() || platform.isSQLAnywhere() || platform.isSQLServer())) {
+        if (!(platform.isSybase() || platform.isSQLServer())) {
             // Must switch boolean to type converion as these do not support booleans.
             ClassDescriptor objDescriptor = ((ClassDescriptor)project.getDescriptors().get(ConversionDataObject.class));
             objDescriptor.getMappings().removeElement(objDescriptor.getMappingForAttributeName("aBoolean"));

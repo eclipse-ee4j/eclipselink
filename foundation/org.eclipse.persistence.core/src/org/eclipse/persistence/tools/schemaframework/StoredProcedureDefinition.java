@@ -9,14 +9,19 @@
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
+ *     Markus KARG - Added methods allowing to support stored procedure creation on SQLAnywherePlatform. 
  ******************************************************************************/  
 package org.eclipse.persistence.tools.schemaframework;
 
-import java.util.*;
-import java.io.*;
-import org.eclipse.persistence.internal.databaseaccess.*;
+import java.io.IOException;
+import java.io.Writer;
+import java.util.Enumeration;
+import java.util.Vector;
+
+import org.eclipse.persistence.exceptions.ValidationException;
+import org.eclipse.persistence.internal.databaseaccess.DatabasePlatform;
+import org.eclipse.persistence.internal.databaseaccess.FieldTypeDefinition;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
-import org.eclipse.persistence.exceptions.*;
 
 /**
  * <b>Purpose</b>: Allow a semi-generic way of creating store procedures.
@@ -138,7 +143,7 @@ public class StoredProcedureDefinition extends DatabaseObjectDefinition {
         try {
             DatabasePlatform platform = session.getPlatform();
             writer.write(getCreationHeader() + getFullName());
-            if (getArguments().size() > getFirstArgumentIndex()) {
+            if (getArguments().size() > getFirstArgumentIndex() || platform.requiresProcedureBrackets()) {
                 writer.write(" (");
             }
             writer.write("\n");
@@ -157,13 +162,19 @@ public class StoredProcedureDefinition extends DatabaseObjectDefinition {
                     writer.write(",\n");
                 }
             }
-            if (getArguments().size() > getFirstArgumentIndex()) {
+            if (getArguments().size() > getFirstArgumentIndex() || platform.requiresProcedureBrackets()) {
                 writer.write(")");
             }
 
             printReturn(writer, session);
             writer.write(platform.getProcedureAsString());
             writer.write("\n");
+            
+            if (platform.shouldPrintStoredProcedureVariablesAfterBeginString()) {
+                writer.write(platform.getProcedureBeginString());
+                writer.write("\n");
+            }
+            
             if (!getVariables().isEmpty()) {
                 writer.write("DECLARE\n");
             }
@@ -178,8 +189,12 @@ public class StoredProcedureDefinition extends DatabaseObjectDefinition {
                 writer.write(platform.getBatchDelimiterString());
                 writer.write("\n");
             }
-            writer.write(platform.getProcedureBeginString());
-            writer.write("\n");
+            
+            if (!platform.shouldPrintStoredProcedureVariablesAfterBeginString()) {
+                writer.write(platform.getProcedureBeginString());
+                writer.write("\n");
+            }
+
             for (Enumeration statementsEnum = getStatements().elements();
                      statementsEnum.hasMoreElements();) {
                 writer.write((String)statementsEnum.nextElement());
@@ -269,6 +284,13 @@ public class StoredProcedureDefinition extends DatabaseObjectDefinition {
             fieldType = new FieldTypeDefinition(argument.getTypeName());
         }
         writer.write(platform.getProcedureArgumentString());
+        
+        if (platform.shouldPrintInputTokenAtStart()) {
+            writer.write(" ");
+            writer.write(platform.getInputProcedureToken());
+            writer.write(" ");
+        }
+        
         writer.write(argument.getName());
         writer.write(" ");
         writer.write(fieldType.getName());

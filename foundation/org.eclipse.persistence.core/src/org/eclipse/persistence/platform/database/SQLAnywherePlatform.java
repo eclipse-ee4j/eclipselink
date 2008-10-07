@@ -75,6 +75,11 @@ public class SQLAnywherePlatform extends SybasePlatform {
         fieldTypeMapping.put(Timestamp.class, new FieldTypeDefinition("TIMESTAMP", false));
         return fieldTypeMapping;
     }*/
+    protected Hashtable buildFieldTypes() {
+        Hashtable fieldTypeMapping = super.buildFieldTypes();
+        fieldTypeMapping.put(Boolean.class, new FieldTypeDefinition("BIT", false));
+        return fieldTypeMapping;
+    }
 
     /**
      * INTERNAL:
@@ -110,7 +115,34 @@ public class SQLAnywherePlatform extends SybasePlatform {
 
     @Override
     protected String getCreateTempTableSqlPrefix() {
-        return "DECLARE TEMPORARY TABLE ";
+        return "DECLARE LOCAL TEMPORARY TABLE ";
+    }
+
+    /**
+     * Used for stored procedure creation: Prefix for INPUT parameters. 
+     * Not required on most platforms. 
+     */
+    public String getInputProcedureToken() {
+        return "IN";
+    }
+
+    @Override
+    public String getInOutputProcedureToken() {
+        return "";
+    }
+
+    /* This method is used to print the output parameter token when stored
+     * procedures is created
+     */
+    public String getCreationOutputProcedureToken() {
+        return "OUT";
+    }
+    
+    /* This method is used to print the output parameter token when stored
+     * procedures are called
+     */
+    public String getOutputProcedureToken() {
+        return "";
     }
 
     @Override
@@ -123,6 +155,67 @@ public class SQLAnywherePlatform extends SybasePlatform {
         return 128;
     }
 
+    /**
+     * Used for sp defs.
+     */
+    public String getProcedureArgumentString() {
+        return "";
+    }
+
+    public String getStoredProcedureParameterPrefix() {
+        return "";
+    }
+
+    public String getStoredProcedureTerminationToken() {
+        return ";";
+    }
+    
+    @Override
+    public String getProcedureAsString() {
+        return "";
+    }
+
+    @Override
+    public String getProcedureBeginString() {
+        return "BEGIN";
+    }
+
+    @Override
+    public String getProcedureEndString() {
+        return "END";
+    }
+
+    /**
+     * Used for batch writing and sp defs.
+     */
+    public String getBatchBeginString() {
+        return "BEGIN ";
+    }
+
+    /**
+     * Used for batch writing and sp defs.
+     */
+    public String getBatchEndString() {
+        return "END;";
+    }
+
+    /**
+     * Used for batch writing and sp defs.
+     */
+    public String getBatchDelimiterString() {
+        return "; ";
+    }
+
+    /**
+     * Used for sp calls.
+     */
+    public String getProcedureCallHeader() {
+        return "CALL ";
+    }
+
+    /**
+     * Used for sp calls.
+     */
     @Override
     public DatabaseTable getTempTableForTable(DatabaseTable table) {
         return new DatabaseTable("$" + table.getName(), table.getTableQualifier());
@@ -140,11 +233,30 @@ public class SQLAnywherePlatform extends SybasePlatform {
         this.addOperator(ExpressionOperator.mod());
     }
 
+    @Override
     public boolean isSQLAnywhere() {
         return true;
     }
 
     public boolean isSybase() {
+        return false;
+    }
+
+    @Override
+    public boolean requiresProcedureBrackets() {
+        return true;
+    }
+
+    public boolean requiresProcedureCallBrackets() {
+        return true;
+    }
+
+    /**
+     * INTERNAL:
+     * Indicates whether the version of CallableStatement.registerOutputParameter method
+     * that takes type name should be used.
+     */
+    public boolean requiresTypeNameToRegisterOutputParameter() {
         return false;
     }
 
@@ -166,14 +278,43 @@ public class SQLAnywherePlatform extends SybasePlatform {
         }
     }
 
+    @Override
+    public boolean shouldPrintInputTokenAtStart() {
+        return true;
+    }
 
     @Override
-    public boolean supportsLocalTempTables() {
+    public boolean shouldPrintInOutputTokenBeforeType() {
+        return false;
+    }
+
+    @Override
+    public boolean shouldPrintOutputTokenAtStart() {
+        return true;
+    }
+
+    @Override
+    public boolean shouldPrintOutputTokenBeforeType() {
+        return false;
+    }
+
+    //**temp
+    public boolean shouldPrintStoredProcedureArgumentNameInCall() {
+        return false;
+    }
+
+    @Override
+    public boolean shouldPrintStoredProcedureVariablesAfterBeginString() {
         return true;
     }
 
     @Override
     public boolean supportsIdentity() {
+        return true;
+    }
+
+    @Override
+    public boolean supportsLocalTempTables() {
         return true;
     }
 
