@@ -1474,6 +1474,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
             Address address = new Address();
             emp = em.find(Employee.class, emp.getId());
             emp.setAddress(address);
+            em.persist(address);
             commitTransaction(em);
             verifyObjectInCacheAndDatabase(emp);
             em = createEntityManager(properties);
