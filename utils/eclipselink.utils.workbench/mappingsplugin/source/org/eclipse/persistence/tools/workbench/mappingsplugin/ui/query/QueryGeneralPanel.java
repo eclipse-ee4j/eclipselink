@@ -187,7 +187,7 @@ final public class QueryGeneralPanel
 		JComboBox comboBox = new JComboBox(new ComboBoxModelAdapter(buildQueryTypeValueModel(), buildQueryTypePropertyAdapter(querySelectionModel)));
 		comboBox.setEnabled(false);
 		comboBox.setEditable(false);
-		this.queryHolder.addPropertyChangeListener(ValueModel.VALUE, buildQueryTypeChooserListener(comboBox));
+		this.queryHolder.addPropertyChangeListener(buildQueryTypeChooserListener(comboBox));
 		return comboBox;
 	}
 
@@ -287,6 +287,8 @@ final public class QueryGeneralPanel
 			public void propertyChange(PropertyChangeEvent evt) {
 				if (getQuery() == null) {
 					comboBox.setEnabled(false);
+				} else {
+					comboBox.setEnabled(true);
 				}
 			}
 		};
