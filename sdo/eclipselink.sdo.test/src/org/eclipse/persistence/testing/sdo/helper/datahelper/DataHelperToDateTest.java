@@ -60,7 +60,7 @@ public class DataHelperToDateTest extends DataHelperTestCases {
         controlCalendar.set(Calendar.MONTH, 10);
         controlCalendar.setTimeZone(TimeZone.getTimeZone("GMT"));        
         Date controlDate = controlCalendar.getTime();
-        Date aDate = dataHelper.toDate("--11--");
+        Date aDate = dataHelper.toDate("--11");
         this.assertEquals(controlDate, aDate);
     }
 

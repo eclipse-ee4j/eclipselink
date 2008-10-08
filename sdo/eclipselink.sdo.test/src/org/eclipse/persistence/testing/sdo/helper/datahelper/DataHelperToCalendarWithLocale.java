@@ -67,7 +67,7 @@ public class DataHelperToCalendarWithLocale extends DataHelperTestCases {
         controlCalendar.clear();
         controlCalendar.set(Calendar.MONTH, 10);
         controlCalendar.setTimeZone(TimeZone.getTimeZone("GMT"));
-        Calendar aCalendar = dataHelper.toCalendar("--11--", lc);
+        Calendar aCalendar = dataHelper.toCalendar("--11", lc);
         assertTrue("Expected MONTH: " + controlCalendar.get(Calendar.MONTH) + ", but was: " + aCalendar.get(Calendar.MONTH), controlCalendar.get(Calendar.MONTH) == aCalendar.get(Calendar.MONTH));
         assertTrue("Expected TimeZone: " + controlCalendar.getTimeZone() + ", but was: " + aCalendar.getTimeZone(), controlCalendar.getTimeZone().equals(aCalendar.getTimeZone()));
         assertTrue("Expected toString: " + controlCalendar.toString() + ", but was: " + aCalendar.toString(), controlCalendar.toString().equals(aCalendar.toString()));

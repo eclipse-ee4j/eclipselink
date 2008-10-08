@@ -62,7 +62,7 @@ public class DataHelperToCalendarTest extends DataHelperTestCases {
         controlCalendar.clear();
         controlCalendar.set(Calendar.MONTH, 9);
         controlCalendar.setTimeZone(TimeZone.getTimeZone("GMT"));
-        Calendar aCalendar = dataHelper.toCalendar("--10--");
+        Calendar aCalendar = dataHelper.toCalendar("--10");
         assertTrue("Expected MONTH: " + controlCalendar.get(Calendar.MONTH) + ", but was: " + aCalendar.get(Calendar.MONTH), controlCalendar.get(Calendar.MONTH) == aCalendar.get(Calendar.MONTH));
         assertTrue("Expected TimeZone: " + controlCalendar.getTimeZone() + ", but was: " + aCalendar.getTimeZone(), controlCalendar.getTimeZone().equals(aCalendar.getTimeZone()));
         assertTrue("Expected toString: " + controlCalendar.toString() + ", but was: " + aCalendar.toString(), controlCalendar.toString().equals(aCalendar.toString()));
