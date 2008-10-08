@@ -269,7 +269,7 @@ public class LoggingLocalizationResource extends ListResourceBundle {
         
         { "weaver_class_not_in_project", "Weaver found a class that is not part of the project: {0}."},
         { "weaver_processing_class", "Weaver processing class: {0}."},
-        { "cannot_weave_changetracking", "Class {0} could not weaved for change tracking as not supported by its mappings."},
+        { "cannot_weave_changetracking", "Class {0} could not be weaved for change tracking as it is not supported by its mappings."},
 
         { "field_type_set_to_java_lang_string", "The default table generator could not locate or convert a java type ({1}) into a database type for database field ({0}). The generator uses 'java.lang.String' as default java type for the field." },
         { "relational_descriptor_support_only", "The default table generator currently only supports generating default table schema from a relational project."},
@@ -293,7 +293,7 @@ public class LoggingLocalizationResource extends ListResourceBundle {
         { "broadcast_remote_command_wrong_type", "Warning: {0}: received message {1} containg an object of type {2} instead of expected type RemoteCommand." },
         { "broadcast_ignored_command_while_closing_connection", "Warning: {0}: ignoring request to publish command while connection is closing." },
         { "broadcast_listening_sleep_on_error", "Warning: {0}: Exception {1} was thrown. The thread will sleep for {2} milliseconds before resuming listening." },
-        { "dbPlaformHelper_defaultingPlatform", "Not able to detect platform for vendor name [{0}]. Defaulting to [{1}]. The database dialect used may not match with the database you are using. Please explicitly provide a platform using property 'toplink.platform.class.name'."},
+        { "dbPlaformHelper_defaultingPlatform", "Not able to detect platform for vendor name [{0}]. Defaulting to [{1}]. The database dialect used may not match with the database you are using. Please explicitly provide a platform using property 'eclipselink.platform.class.name'."},
         { "dbPlaformHelper_noMappingFound", "Can not load resource [{0}] that loads mapping from vendor name to database platform. Autodetection of database platform will not work."},
         
         { "sessions_xml_path_where_session_load_from", "The session info is loaded from [{0}]."},
