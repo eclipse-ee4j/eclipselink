@@ -57,11 +57,15 @@ public class NodeTreeCellEditor extends AbstractCellEditor implements TreeCellEd
 	 * @see javax.swing.CellEditor#isCellEditable(java.util.EventObject)
 	 */
 	public boolean isCellEditable(EventObject e) {
-		MouseEvent mouseEvent = (MouseEvent) e;
-		JTree tree = (JTree) mouseEvent.getSource();
-		TreePath path = tree.getPathForLocation(mouseEvent.getX(), mouseEvent.getY());
-		EditingNode node = (EditingNode) path.getLastPathComponent();
-		return node.getEditor().isCellEditable(e);
+		try {
+			MouseEvent mouseEvent = (MouseEvent) e;
+			JTree tree = (JTree) mouseEvent.getSource();
+			TreePath path = tree.getPathForLocation(mouseEvent.getX(), mouseEvent.getY());
+			EditingNode node = (EditingNode) path.getLastPathComponent();
+			return node.getEditor().isCellEditable(e);
+		} catch (NullPointerException exception) {
+			return false;
+		}
 	}
 
 	/**
