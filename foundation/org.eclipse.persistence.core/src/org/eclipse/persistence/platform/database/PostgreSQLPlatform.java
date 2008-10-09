@@ -195,7 +195,7 @@ public class PostgreSQLPlatform extends DatabasePlatform {
 
         fieldTypeMapping.put(Integer.class, new FieldTypeDefinition("INTEGER", false));
         fieldTypeMapping.put(Long.class, new FieldTypeDefinition("BIGINT", false));
-        fieldTypeMapping.put(Float.class, new FieldTypeDefinition("FLOAT"));
+        fieldTypeMapping.put(Float.class, new FieldTypeDefinition("FLOAT", false));
         fieldTypeMapping.put(Double.class, new FieldTypeDefinition("FLOAT", false));
         fieldTypeMapping.put(Short.class, new FieldTypeDefinition("SMALLINT", false));
         fieldTypeMapping.put(Byte.class, new FieldTypeDefinition("SMALLINT", false));
