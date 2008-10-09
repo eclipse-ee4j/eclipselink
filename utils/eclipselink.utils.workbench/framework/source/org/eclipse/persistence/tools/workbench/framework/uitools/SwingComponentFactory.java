@@ -356,24 +356,26 @@ public class SwingComponentFactory
 	public static JSpinner buildSpinnerNumber(SpinnerNumberModel model,
 															  int columns)
 	{
-		// Do not use "new JSpinner(SpinButtonModel)", the value is not set in the
-		// UI when model already contains it, but by going through
-		// JSpinner.setModel(SpinButtonModel), then the value is set, the bug has
-		// not yet been located
-		JSpinner spinner = new JSpinner();
+		JSpinner spinner = new JSpinner(model);
 
-		// Generate a number with the proper number of columns
-		char[] numbers = new char[columns];
-		Arrays.fill(numbers, '5');
-		Integer tempMaximum = new Integer(new String(numbers));
+		// Set the number of columns
+		JSpinner.NumberEditor editor = (JSpinner.NumberEditor) spinner.getEditor();
+		JFormattedTextField textField = editor.getTextField();
+		textField.setColumns(columns);
 
-		// Because there is no "nicely" way to set the number of columns of the
-		// JSpinner's editor, we set a temporary max value with the corresponding
-		// number of columns
-		Comparable maximum = model.getMaximum();
-		model.setMaximum(tempMaximum);
-		spinner.setModel(model);
-		model.setMaximum(maximum);
+		// JSpinner seems to ignore the value set in the model
+		try
+		{
+			String value = textField.getFormatter().valueToString(model.getValue());
+			textField.setText(value);
+		}
+		catch (ParseException e)
+		{
+			if (model.getValue() != null)
+			{
+				textField.setText(model.getValue().toString());
+			}
+		}
 
 		return spinner;
 	}
