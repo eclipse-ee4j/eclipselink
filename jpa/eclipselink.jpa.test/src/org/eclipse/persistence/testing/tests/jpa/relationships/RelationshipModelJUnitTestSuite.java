@@ -15,7 +15,6 @@ package org.eclipse.persistence.testing.tests.jpa.relationships;
 
 import javax.persistence.EntityManager;
 
-import junit.extensions.TestSetup;
 import junit.framework.Test;
 import junit.framework.TestSuite;
 

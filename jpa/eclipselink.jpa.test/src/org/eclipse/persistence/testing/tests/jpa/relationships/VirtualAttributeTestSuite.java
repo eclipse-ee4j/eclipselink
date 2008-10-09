@@ -14,12 +14,10 @@ package org.eclipse.persistence.testing.tests.jpa.relationships;
 
 import javax.persistence.EntityManager;
 
-import junit.extensions.TestSetup;
 import junit.framework.*;
 
 import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
 import org.eclipse.persistence.testing.models.jpa.virtualattribute.*;
-import org.eclipse.persistence.testing.models.jpa.relationships.RelationshipsTableManager;
 
 public class VirtualAttributeTestSuite extends JUnitTestCase {
 

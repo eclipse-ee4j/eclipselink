@@ -17,11 +17,9 @@ import java.lang.reflect.Field;
 
 import javax.persistence.EntityManager;
 import junit.framework.*;
-import junit.extensions.TestSetup;
 
 import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.internal.weaving.PersistenceWeaved;
-import org.eclipse.persistence.sessions.DatabaseSession;
 import org.eclipse.persistence.testing.models.jpa.lob.Image;
 import org.eclipse.persistence.testing.models.jpa.lob.ImageSimulator;
 import org.eclipse.persistence.testing.models.jpa.lob.LobTableCreator;

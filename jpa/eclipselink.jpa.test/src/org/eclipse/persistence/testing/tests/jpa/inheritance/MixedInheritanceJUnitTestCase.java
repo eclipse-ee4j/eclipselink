@@ -22,10 +22,8 @@ import org.eclipse.persistence.testing.models.jpa.inheritance.TireRatingComment;
 
 import org.eclipse.persistence.testing.models.jpa.inheritance.listeners.TireInfoListener;
 
-import org.eclipse.persistence.sessions.DatabaseSession;
 import junit.framework.Test;
 import junit.framework.TestSuite;
-import junit.extensions.TestSetup;
 
 import javax.persistence.EntityManager;
 

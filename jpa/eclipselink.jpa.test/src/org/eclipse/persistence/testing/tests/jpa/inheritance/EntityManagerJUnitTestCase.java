@@ -22,11 +22,8 @@ import org.eclipse.persistence.testing.models.jpa.inheritance.ComputerPK;
 import org.eclipse.persistence.testing.models.jpa.inheritance.Desktop;
 import org.eclipse.persistence.testing.models.jpa.inheritance.Laptop;
 import org.eclipse.persistence.testing.models.jpa.inheritance.TireInfo;
-import org.eclipse.persistence.sessions.DatabaseSession;
 import junit.framework.Test;
 import junit.framework.TestSuite;
-import junit.extensions.TestSetup;
-import java.sql.*;
 import javax.persistence.EntityManager;
 
 public class EntityManagerJUnitTestCase extends JUnitTestCase {

@@ -15,7 +15,6 @@
  ******************************************************************************/  
 package org.eclipse.persistence.testing.tests.jpa.ddlgeneration;
 
-import junit.extensions.TestSetup;
 import junit.framework.Test;
 import junit.framework.TestSuite;
 import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
