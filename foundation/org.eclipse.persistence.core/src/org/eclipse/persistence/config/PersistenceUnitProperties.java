@@ -84,7 +84,7 @@ public class PersistenceUnitProperties {
      * Property names formed out of these prefixes by appending either 
      * entity name, or class name (indicating that the property values applies only to a particular entity)
      * or DEFAULT suffix (indicating that the property value applies to all entities).
-     * CACHE_SIZE_ properties default value is 1000.
+     * CACHE_SIZE_ properties default value is 100.
      */
     public static final String CACHE_SIZE_ = "eclipselink.cache.size.";
     
