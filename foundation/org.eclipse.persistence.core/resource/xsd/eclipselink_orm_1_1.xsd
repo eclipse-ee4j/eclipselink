@@ -2795,7 +2795,7 @@
 	
       /** 
        * The Customizer annotation is used to specify a class that implements 
-       * the org.eclipse.persistence.internal.sessions.factories.DescriptorCustomizer 
+       * the org.eclipse.persistence.config.DescriptorCustomizer 
        * interface and is to run against an enetity's class descriptor after all 
        * metadata processing has been completed.
        *
