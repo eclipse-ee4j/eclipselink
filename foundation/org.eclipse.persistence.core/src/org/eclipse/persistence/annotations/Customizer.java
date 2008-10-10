@@ -20,7 +20,7 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
 /** 
  * The Customizer annotation is used to specify a class that implements the 
- * org.eclipse.persistence.internal.sessions.factories.DescriptorCustomizer 
+ * org.eclipse.persistence.config.DescriptorCustomizer 
  * interface and is to run against an entity's class descriptor after all 
  * metadata processing has been completed.
  *
