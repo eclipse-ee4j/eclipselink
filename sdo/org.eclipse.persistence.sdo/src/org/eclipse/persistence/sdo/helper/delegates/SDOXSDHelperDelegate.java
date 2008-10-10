@@ -88,6 +88,15 @@ public class SDOXSDHelperDelegate implements SDOXSDHelper {
 
     /**
      * Returns the namespace URI as declared in the XSD.
+     * @param type to return namespace URI for.
+     * @return the namespace URI as declared in the XSD.
+     */
+    public String getNamespaceURI(Type type) {
+        return type.getURI();
+    }
+
+    /**
+     * Returns the namespace URI as declared in the XSD.
      * @param property to return namespace URI for.
      * @return the namespace URI as declared in the XSD.
      */

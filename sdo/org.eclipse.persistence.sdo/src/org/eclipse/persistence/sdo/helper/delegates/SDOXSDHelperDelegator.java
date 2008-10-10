@@ -58,6 +58,10 @@ public class SDOXSDHelperDelegator extends AbstractHelperDelegator implements SD
         return getSDOXSDHelperDelegate().getLocalName(property);
     }
 
+    public String getNamespaceURI(Type type) {
+        return getSDOXSDHelperDelegate().getNamespaceURI(type);
+    }
+
     public String getNamespaceURI(Property property) {
         return getSDOXSDHelperDelegate().getNamespaceURI(property);
     }
