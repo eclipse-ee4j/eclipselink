@@ -109,6 +109,16 @@ public class XMLEntityMappingsReader {
     }
    
     /**
+     * Gets a reader from given URL.
+     */
+    private static InputStreamReader getInputStreamReader(URL url) throws IOException {
+        java.net.URLConnection cnx1 = url.openConnection();
+        //set to false to prevent locking of jar files on Windows. EclipseLink issue 249664
+        cnx1.setUseCaches(false);
+        return new InputStreamReader(cnx1.getInputStream(), "UTF-8");
+    }
+
+    /**
      * INTERNAL:
      */
     public static XMLEntityMappings read(URL url, ClassLoader classLoader) throws IOException {
@@ -118,9 +128,10 @@ public class XMLEntityMappingsReader {
         
         try {
             try {
-                reader1 = new InputStreamReader(url.openStream(), "UTF-8");
-                reader2 = new InputStreamReader(url.openStream(), "UTF-8");
-                reader3 = new InputStreamReader(url.openStream(), "UTF-8");
+                //Get separate readers as the read method below is coded to seek through both of them
+                reader1 = getInputStreamReader(url);
+                reader2 = getInputStreamReader(url);
+                reader3 = getInputStreamReader(url);
             } catch (UnsupportedEncodingException exception) {
                 throw ValidationException.fatalErrorOccurred(exception);
             }
@@ -138,6 +149,11 @@ public class XMLEntityMappingsReader {
                 if (reader2 != null) {
                     reader2.close();
                 }
+
+                if (reader3 != null) {
+                    reader3.close();
+                }
+
             } catch (IOException exception) {
                 throw ValidationException.fileError(exception);
             }
