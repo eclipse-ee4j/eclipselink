@@ -149,6 +149,11 @@ public final class MWTypeDeclaration extends MWModel {
 		return (this.dimensionality == 0)
 				&& this.getType().isValueHolder();
 	}
+	
+	boolean isTLValueHolder() {
+		return (this.dimensionality == 0)
+			&& "oracle.toplink.indirection.ValueHolderInterface".equals(this.getType().fullName());
+	}
 
 	boolean isBooleanPrimitive() {
 		return (this.dimensionality == 0)

@@ -357,7 +357,9 @@ public abstract class MWAbstractReferenceMapping extends MWMapping
 	//TODO refactor this along with other mappings that test 022 and 044.
 	protected void checkIndirection(List newProblems) {
 		if (this.usesValueHolderIndirection()) {
-			if ( ! getProject().usesWeaving() && ! this.getInstanceVariable().isValueHolder()) {
+			if (this.getInstanceVariable().isTLValueHolder()) {
+				newProblems.add(this.buildProblem(ProblemConstants.MAPPING_VALUE_HOLDER_INDIRECTION_WITH_TL_VALUE_HOLDER_ATTRIBUTE));
+			} else if ( ! getProject().usesWeaving() && ! this.getInstanceVariable().isValueHolder()) {
 				newProblems.add(this.buildProblem(ProblemConstants.MAPPING_VALUE_HOLDER_INDIRECTION_WITHOUT_VALUE_HOLDER_ATTRIBUTE));
 			}
 		} else {

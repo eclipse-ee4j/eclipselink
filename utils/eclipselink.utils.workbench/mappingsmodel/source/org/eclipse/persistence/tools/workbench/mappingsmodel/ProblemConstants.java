@@ -360,6 +360,8 @@ public final class ProblemConstants
 																							= "0550";
 	public static final String MAPPING_VALUE_HOLDER_INDIRECTION_WITHOUT_VALUE_HOLDER_ATTRIBUTE		
 																							= "0551";
+	public static final String MAPPING_VALUE_HOLDER_INDIRECTION_WITH_TL_VALUE_HOLDER_ATTRIBUTE
+																							= "0552";
 	
 	// *** MWIndirectableCollectionMapping *** Common to all mappings that can use transparent indirection
 	public static final String MAPPING_CONTAINER_CLASS_INVALID_FOR_TRANSPARENT_INDIRECTION	= "0560";

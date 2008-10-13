@@ -345,6 +345,7 @@ public class ProblemsBundle extends ListResourceBundle
 		// *** MWIndirectableMapping ***
 		{"0550", "Attribute is typed as a ValueHolderInterface but the mapping does not use Value Holder Indirection."},
 		{"0551", "Mapping uses Value Holder Indirection but its associated attribute is not a ValueHolderInterface."},
+		{"0552", "Mapping uses Value Holder Indirection, but its associated attribute is \"oracle.toplink.indirection.ValueHolderInterface\" the package renamer should be run on project classes before importation in EclipseLink Workbench"},
 		
 		// *** MWIndirectableCollectionMapping ***
 		{"0560", "The container class for this mapping must implement org.eclipse.persistence.indirection.IndirectContainer."},

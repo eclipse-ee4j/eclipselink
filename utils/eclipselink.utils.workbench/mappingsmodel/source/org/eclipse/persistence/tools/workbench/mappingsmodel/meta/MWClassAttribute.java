@@ -580,6 +580,10 @@ public final class MWClassAttribute extends MWModel
 	public boolean isValueHolder() {
 		return this.typeDeclaration.isValueHolder();
 	}
+	
+	public boolean isTLValueHolder() {
+		return this.typeDeclaration.isTLValueHolder();
+	}
 
 	public boolean isBooleanPrimitive() {
 		return this.typeDeclaration.isBooleanPrimitive();
