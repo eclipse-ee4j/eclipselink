@@ -531,6 +531,7 @@ public class DatabaseSessionAdapter extends SessionAdapter implements LoginHandl
    
    private void removeAllAdditionalProjects() {
 	   this.removeItemsFromCollection(CollectionTools.collection(additionalProjects()), additionalProjects, ADDITIONAL_PROJECTS_COLLECTION);
+	   this.getAdditionalProjectsConfigs().clear();
    }
    
    public boolean usesAdditionalProjects() {
