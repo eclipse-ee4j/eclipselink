@@ -10,13 +10,20 @@
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
  ******************************************************************************/  
-
-
- 
 package org.eclipse.persistence.testing.tests.jpa.jpql;
+
 import java.util.List;
 import java.util.Vector;
 import java.util.Iterator;
+
+import junit.framework.Assert;
+import junit.framework.Test;
+import junit.framework.TestSuite;
+import junit.extensions.TestSetup;
+
+import javax.persistence.Query;
+import javax.persistence.EntityManager;
+
 import org.eclipse.persistence.expressions.Expression;
 import org.eclipse.persistence.expressions.ExpressionBuilder;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
@@ -26,16 +33,10 @@ import org.eclipse.persistence.queries.ReportQuery;
 import org.eclipse.persistence.queries.ReportQueryResult;
 import org.eclipse.persistence.testing.models.jpa.advanced.EmployeePopulator;
 import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
-import junit.framework.Assert;
-import junit.framework.Test;
-import junit.framework.TestSuite;
-import junit.extensions.TestSetup;
 import org.eclipse.persistence.sessions.DatabaseSession;
 import org.eclipse.persistence.testing.models.jpa.advanced.AdvancedTableCreator;
 import org.eclipse.persistence.testing.models.jpa.advanced.Employee;
 import org.eclipse.persistence.testing.models.jpa.advanced.PhoneNumber;
-import javax.persistence.Query;
-
 
 /**
  * <p>
@@ -51,7 +52,6 @@ import javax.persistence.Query;
  * @see org.eclipse.persistence.testing.models.jpa.advanced.EmployeePopulator
  * @see JUnitDomainObjectComparer
  */
- 
  
 //This test suite demonstrates the bug 4616218, waiting for bug fix
 public class JUnitJPQLUnitTestSuite extends JUnitTestCase
@@ -74,13 +74,13 @@ public class JUnitJPQLUnitTestSuite extends JUnitTestCase
       clearCache();
   }
   
-  
   //This suite contains all tests contained in this class
   public static Test suite() 
   {
     TestSuite suite = new TestSuite();
     suite.setName("JUnitJPQLUnitTestSuite");
-    suite.addTest(new JUnitJPQLUnitTestSuite("testSelectPhoneNumberAreaCode"));   
+    suite.addTest(new JUnitJPQLUnitTestSuite("testSetup"));   
+    suite.addTest(new JUnitJPQLUnitTestSuite("testSelectPhoneNumberAreaCode"));
     suite.addTest(new JUnitJPQLUnitTestSuite("testSelectPhoneNumberAreaCodeWithEmployee"));   
     suite.addTest(new JUnitJPQLUnitTestSuite("testSelectPhoneNumberNumberWithEmployeeWithExplicitJoin"));   
     suite.addTest(new JUnitJPQLUnitTestSuite("testSelectPhoneNumberNumberWithEmployeeWithFirstNameFirst"));
@@ -93,51 +93,46 @@ public class JUnitJPQLUnitTestSuite extends JUnitTestCase
     suite.addTest(new JUnitJPQLUnitTestSuite("testMaxAndFirstResultsOnDataQuery"));
     suite.addTest(new JUnitJPQLUnitTestSuite("testMaxAndFirstResultsOnDataQueryWithGroupBy"));
     suite.addTest(new JUnitJPQLUnitTestSuite("testDistinctSelectForEmployeeWithNullAddress"));
-
-     return new TestSetup(suite) {
-            
-            //This method is run at the end of the SUITE only
-            protected void tearDown() {
-                clearCache();
-            }
-            
-            //This method is run at the start of the SUITE only
-            protected void setUp() {
-            
-                //get session to start setup
-                DatabaseSession session = JUnitTestCase.getServerSession();
-                
-                //create a new EmployeePopulator
-                EmployeePopulator employeePopulator = new EmployeePopulator();
-                
-                new AdvancedTableCreator().replaceTables(session);
-                
-                //initialize the global comparer object
-                comparer = new JUnitDomainObjectComparer();
-                
-                //set the session for the comparer to use
-                comparer.setSession((AbstractSession)session.getActiveSession());              
-                
-                //Populate the tables
-                employeePopulator.buildExamples();
-                
-                //Persist the examples in the database
-                employeePopulator.persistExample(session);               
-            }            
-        };
     
+    return suite;
   }
     
-    public Vector getAttributeFromAll(String attributeName, Vector objects, Class referenceClass){
-	   
-        org.eclipse.persistence.jpa.JpaEntityManager em = (org.eclipse.persistence.jpa.JpaEntityManager) createEntityManager();
+    /**
+     * The setup is done as a test, both to record its failure, and to allow execution in the server.
+     */
+    public void testSetup() {
+        clearCache();
+        //get session to start setup
+        DatabaseSession session = JUnitTestCase.getServerSession();
         
-        ClassDescriptor descriptor = em.getActiveSession().getClassDescriptor(referenceClass);
-	    DirectToFieldMapping mapping = (DirectToFieldMapping)descriptor.getMappingForAttributeName(attributeName);
-	    
-	    Vector attributes = new Vector();
-	    Object currentObject;
-	    for(int i = 0; i < objects.size(); i++) {
+        //create a new EmployeePopulator
+        EmployeePopulator employeePopulator = new EmployeePopulator();
+        
+        new AdvancedTableCreator().replaceTables(session);
+        
+        //initialize the global comparer object
+        comparer = new JUnitDomainObjectComparer();
+        
+        //set the session for the comparer to use
+        comparer.setSession((AbstractSession)session.getActiveSession());              
+        
+        //Populate the tables
+        employeePopulator.buildExamples();
+        
+        //Persist the examples in the database
+        employeePopulator.persistExample(session);
+    }
+    
+    public Vector getAttributeFromAll(String attributeName, Vector objects, Class referenceClass){
+    
+        EntityManager em = createEntityManager();
+        
+        ClassDescriptor descriptor = getServerSession().getClassDescriptor(referenceClass);
+        DirectToFieldMapping mapping = (DirectToFieldMapping)descriptor.getMappingForAttributeName(attributeName);
+        
+        Vector attributes = new Vector();
+        Object currentObject;
+        for(int i = 0; i < objects.size(); i++) {
             currentObject = objects.elementAt(i);
             if(currentObject.getClass() == ReportQueryResult.class) {
                 attributes.addElement(
@@ -146,12 +141,12 @@ public class JUnitJPQLUnitTestSuite extends JUnitTestCase
                 attributes.addElement(
                     mapping.getAttributeValueFromObject(currentObject));
             }
-	    }
-	    return attributes;
-	}
+        }
+        return attributes;
+    }
     
     public void testFirstResultOnNamedQuery(){
-        org.eclipse.persistence.jpa.JpaEntityManager em = (org.eclipse.persistence.jpa.JpaEntityManager) createEntityManager();
+        EntityManager em = createEntityManager();
         clearCache();
 
         Query query = em.createNamedQuery("findAllEmployeesByFirstName");
@@ -161,16 +156,16 @@ public class JUnitJPQLUnitTestSuite extends JUnitTestCase
 
         Iterator i = initialList.iterator();
         while (i.hasNext()){
-        	assertTrue("Employee with incorrect name returned on first query.", ((Employee)i.next()).getFirstName().equals("Nancy"));
+            assertTrue("Employee with incorrect name returned on first query.", ((Employee)i.next()).getFirstName().equals("Nancy"));
         }
         i = secondList.iterator();
         while (i.hasNext()){
-        	assertTrue("Employee with incorrect name returned on second query.", ((Employee)i.next()).getFirstName().equals("Nancy"));
+            assertTrue("Employee with incorrect name returned on second query.", ((Employee)i.next()).getFirstName().equals("Nancy"));
         }
     }
     
     public void testOuterJoinOnOneToOne(){
-        org.eclipse.persistence.jpa.JpaEntityManager em = (org.eclipse.persistence.jpa.JpaEntityManager) createEntityManager();
+        EntityManager em = createEntityManager();
         clearCache();
         beginTransaction(em);
         int initialSize = em.createQuery("SELECT e from Employee e JOIN e.address a").getResultList().size(); 
@@ -185,7 +180,7 @@ public class JUnitJPQLUnitTestSuite extends JUnitTestCase
     }
 
     public void testOuterJoinPolymorphic(){
-        org.eclipse.persistence.jpa.JpaEntityManager em = (org.eclipse.persistence.jpa.JpaEntityManager) createEntityManager();
+        EntityManager em = createEntityManager();
         clearCache();
         List resultList = null;
         try{
@@ -201,56 +196,56 @@ public class JUnitJPQLUnitTestSuite extends JUnitTestCase
   {
         
         ExpressionBuilder employeeBuilder = new ExpressionBuilder();
-		Expression phones = employeeBuilder.anyOf("phoneNumbers");
-    	Expression whereClause = phones.get("areaCode").equal("613");
-    	    
-    	ReportQuery rq = new ReportQuery();
-    	rq.setSelectionCriteria(whereClause);
-		rq.addAttribute("areaCode", new ExpressionBuilder().anyOf("phoneNumbers").get("areaCode"));
-    	rq.setReferenceClass(Employee.class);    
+        Expression phones = employeeBuilder.anyOf("phoneNumbers");
+        Expression whereClause = phones.get("areaCode").equal("613");
+            
+        ReportQuery rq = new ReportQuery();
+        rq.setSelectionCriteria(whereClause);
+        rq.addAttribute("areaCode", new ExpressionBuilder().anyOf("phoneNumbers").get("areaCode"));
+        rq.setReferenceClass(Employee.class);    
         rq.dontUseDistinct(); // distinct no longer used on joins in JPQL for gf bug 1395
-        org.eclipse.persistence.jpa.JpaEntityManager em = (org.eclipse.persistence.jpa.JpaEntityManager) createEntityManager();
-        Vector expectedResult = getAttributeFromAll("areaCode", (Vector)em.getActiveSession().executeQuery(rq),Employee.class);
+        EntityManager em = createEntityManager();
+        Vector expectedResult = getAttributeFromAll("areaCode", (Vector)getServerSession().executeQuery(rq),Employee.class);
         
         clearCache();
         
         List result = em.createQuery("SELECT phone.areaCode FROM Employee employee, IN (employee.phoneNumbers) phone " + 
-		    "WHERE phone.areaCode = \"613\"").getResultList();                     
+            "WHERE phone.areaCode = \"613\"").getResultList();                     
       
-        Assert.assertTrue("SimpleSelectPhoneNumberAreaCode test failed !", comparer.compareObjects(result,expectedResult));    	
+        Assert.assertTrue("SimpleSelectPhoneNumberAreaCode test failed !", comparer.compareObjects(result,expectedResult));        
   }
   
   
     public void testSelectPhoneNumberAreaCodeWithEmployee()
     {
-        org.eclipse.persistence.jpa.JpaEntityManager em = (org.eclipse.persistence.jpa.JpaEntityManager) createEntityManager();
+        EntityManager em = createEntityManager();
         ExpressionBuilder employees = new ExpressionBuilder();
         Expression exp = employees.get("firstName").equal("Bob");
         exp = exp.and(employees.get("lastName").equal("Smith"));
-        Employee emp = (Employee) em.getActiveSession().readAllObjects(Employee.class, exp).firstElement();
+        Employee emp = (Employee) getServerSession().readAllObjects(Employee.class, exp).firstElement();
     
         PhoneNumber phone = (PhoneNumber) ((Vector)emp.getPhoneNumbers()).firstElement();
         String areaCode = phone.getAreaCode();
         String firstName = emp.getFirstName();
 
-		ExpressionBuilder employeeBuilder = new ExpressionBuilder();
-		Expression phones = employeeBuilder.anyOf("phoneNumbers");
-    	Expression whereClause = phones.get("areaCode").equal(areaCode).and(
-    	phones.get("owner").get("firstName").equal(firstName));
-    	    
-    	ReportQuery rq = new ReportQuery();
-    	rq.setSelectionCriteria(whereClause);
-    	rq.addAttribute("areaCode", phones.get("areaCode"));
-		rq.setReferenceClass(Employee.class);
-    	rq.dontMaintainCache();
-    	
-        Vector expectedResult = getAttributeFromAll("areaCode", (Vector)em.getActiveSession().executeQuery(rq),Employee.class);   	
+        ExpressionBuilder employeeBuilder = new ExpressionBuilder();
+        Expression phones = employeeBuilder.anyOf("phoneNumbers");
+        Expression whereClause = phones.get("areaCode").equal(areaCode).and(
+        phones.get("owner").get("firstName").equal(firstName));
+            
+        ReportQuery rq = new ReportQuery();
+        rq.setSelectionCriteria(whereClause);
+        rq.addAttribute("areaCode", phones.get("areaCode"));
+        rq.setReferenceClass(Employee.class);
+        rq.dontMaintainCache();
         
-    	clearCache();
+        Vector expectedResult = getAttributeFromAll("areaCode", (Vector)getServerSession().executeQuery(rq),Employee.class);       
+        
+        clearCache();
     
-    	String ejbqlString;
-    	ejbqlString = "SELECT phone.areaCode FROM Employee employee, IN (employee.phoneNumbers) phone " + 
-		    "WHERE phone.areaCode = \"" + areaCode + "\" AND phone.owner.firstName = \"" + firstName + "\"";    
+        String ejbqlString;
+        ejbqlString = "SELECT phone.areaCode FROM Employee employee, IN (employee.phoneNumbers) phone " + 
+            "WHERE phone.areaCode = \"" + areaCode + "\" AND phone.owner.firstName = \"" + firstName + "\"";    
         
         List result = em.createQuery(ejbqlString).getResultList();                     
         
@@ -260,35 +255,35 @@ public class JUnitJPQLUnitTestSuite extends JUnitTestCase
     
     public void testSelectPhoneNumberNumberWithEmployeeWithExplicitJoin()
     {
-        org.eclipse.persistence.jpa.JpaEntityManager em = (org.eclipse.persistence.jpa.JpaEntityManager) createEntityManager();
+        EntityManager em = createEntityManager();
         ExpressionBuilder employees = new ExpressionBuilder();
         Expression exp = employees.get("firstName").equal("Bob");
         exp = exp.and(employees.get("lastName").equal("Smith"));
-        Employee emp = (Employee) em.getActiveSession().readAllObjects(Employee.class, exp).firstElement();
+        Employee emp = (Employee) getServerSession().readAllObjects(Employee.class, exp).firstElement();
     
         PhoneNumber phone = (PhoneNumber) ((Vector)emp.getPhoneNumbers()).firstElement();
         String areaCode = phone.getAreaCode();
         String firstName = emp.getFirstName();
         
         ExpressionBuilder employeeBuilder = new ExpressionBuilder(Employee.class);
-		Expression phones = employeeBuilder.anyOf("phoneNumbers");
-    	Expression whereClause = phones.get("areaCode").equal(areaCode).and(
-    	    phones.get("owner").get("id").equal(employeeBuilder.get("id")).and(
-    	        employeeBuilder.get("firstName").equal(firstName)));
+        Expression phones = employeeBuilder.anyOf("phoneNumbers");
+        Expression whereClause = phones.get("areaCode").equal(areaCode).and(
+            phones.get("owner").get("id").equal(employeeBuilder.get("id")).and(
+                employeeBuilder.get("firstName").equal(firstName)));
 
-    	
-    	ReportQuery rq = new ReportQuery();
-		rq.addAttribute("number", new ExpressionBuilder().anyOf("phoneNumbers").get("number"));
-    	rq.setSelectionCriteria(whereClause);
-		rq.setReferenceClass(Employee.class);
-    	
-        Vector expectedResult = getAttributeFromAll("number", (Vector)em.getActiveSession().executeQuery(rq),Employee.class);
         
-    	clearCache();    	
+        ReportQuery rq = new ReportQuery();
+        rq.addAttribute("number", new ExpressionBuilder().anyOf("phoneNumbers").get("number"));
+        rq.setSelectionCriteria(whereClause);
+        rq.setReferenceClass(Employee.class);
+        
+        Vector expectedResult = getAttributeFromAll("number", (Vector)getServerSession().executeQuery(rq),Employee.class);
+        
+        clearCache();        
     
-    	String ejbqlString;
-    	ejbqlString = "SELECT phone.number FROM Employee employee, IN (employee.phoneNumbers) phone " + 
-    		"WHERE phone.areaCode = \"" + areaCode + "\" AND (phone.owner.id = employee.id AND employee.firstName = \"" + firstName + "\")";
+        String ejbqlString;
+        ejbqlString = "SELECT phone.number FROM Employee employee, IN (employee.phoneNumbers) phone " + 
+            "WHERE phone.areaCode = \"" + areaCode + "\" AND (phone.owner.id = employee.id AND employee.firstName = \"" + firstName + "\")";
     
         List result = em.createQuery(ejbqlString).getResultList();                     
         
@@ -298,33 +293,33 @@ public class JUnitJPQLUnitTestSuite extends JUnitTestCase
     
     public void testSelectPhoneNumberNumberWithEmployeeWithFirstNameFirst()
     {
-        org.eclipse.persistence.jpa.JpaEntityManager em = (org.eclipse.persistence.jpa.JpaEntityManager) createEntityManager();
+        EntityManager em = createEntityManager();
         ExpressionBuilder employees = new ExpressionBuilder();
         Expression exp = employees.get("firstName").equal("Bob");
         exp = exp.and(employees.get("lastName").equal("Smith"));
-        Employee emp = (Employee) em.getActiveSession().readAllObjects(Employee.class, exp).firstElement();
+        Employee emp = (Employee) getServerSession().readAllObjects(Employee.class, exp).firstElement();
     
         PhoneNumber phone = (PhoneNumber) ((Vector)emp.getPhoneNumbers()).firstElement();
         String areaCode = phone.getAreaCode();
         String firstName = emp.getFirstName();
         
         ExpressionBuilder employeeBuilder = new ExpressionBuilder();
-		Expression phones = employeeBuilder.anyOf("phoneNumbers");
-    	Expression whereClause = phones.get("owner").get("firstName").equal(firstName).and(
-            	phones.get("areaCode").equal(areaCode));
-    	
-    	ReportQuery rq = new ReportQuery();
-    	rq.setSelectionCriteria(whereClause);
-    	rq.addAttribute("number", phones.get("number"));
-		rq.setReferenceClass(Employee.class);
-		
-        Vector expectedResult = getAttributeFromAll("number", (Vector)em.getActiveSession().executeQuery(rq),Employee.class);	
+        Expression phones = employeeBuilder.anyOf("phoneNumbers");
+        Expression whereClause = phones.get("owner").get("firstName").equal(firstName).and(
+                phones.get("areaCode").equal(areaCode));
+        
+        ReportQuery rq = new ReportQuery();
+        rq.setSelectionCriteria(whereClause);
+        rq.addAttribute("number", phones.get("number"));
+        rq.setReferenceClass(Employee.class);
+        
+        Vector expectedResult = getAttributeFromAll("number", (Vector)getServerSession().executeQuery(rq),Employee.class);    
         
         clearCache();
         
-    	String ejbqlString;
-    	ejbqlString = "SELECT phone.number FROM Employee employee, IN(employee.phoneNumbers) phone " + 
-		    "WHERE phone.owner.firstName = \"" + firstName + "\" AND phone.areaCode = \"" + areaCode + "\"";
+        String ejbqlString;
+        ejbqlString = "SELECT phone.number FROM Employee employee, IN(employee.phoneNumbers) phone " + 
+            "WHERE phone.owner.firstName = \"" + firstName + "\" AND phone.areaCode = \"" + areaCode + "\"";
             
         List result = em.createQuery(ejbqlString).getResultList();                     
         
@@ -367,7 +362,7 @@ public class JUnitJPQLUnitTestSuite extends JUnitTestCase
      * throws an SQl exception.
      */
     public void testMaxAndFirstResultsOnDataQuery(){
-        org.eclipse.persistence.jpa.JpaEntityManager em = (org.eclipse.persistence.jpa.JpaEntityManager) createEntityManager();
+        EntityManager em = createEntityManager();
         Exception exception = null;
         List resultList = null;
         clearCache();
@@ -389,7 +384,7 @@ public class JUnitJPQLUnitTestSuite extends JUnitTestCase
      * throws an SQl exception.
      */
     public void testMaxAndFirstResultsOnDataQueryWithGroupBy() {
-        org.eclipse.persistence.jpa.JpaEntityManager em = (org.eclipse.persistence.jpa.JpaEntityManager) createEntityManager();
+        EntityManager em = createEntityManager();
         Exception exception = null;
         List resultList = null;
         clearCache();
@@ -427,7 +422,7 @@ public class JUnitJPQLUnitTestSuite extends JUnitTestCase
      * For GF3233, Distinct process fail with NPE when relationship has NULL-valued target.
      */
     public void testDistinctSelectForEmployeeWithNullAddress(){
-        org.eclipse.persistence.jpa.JpaEntityManager em = (org.eclipse.persistence.jpa.JpaEntityManager) createEntityManager();
+        EntityManager em = createEntityManager();
         try {
             beginTransaction(em);
             Employee emp = new Employee();

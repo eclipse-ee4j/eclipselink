@@ -33,21 +33,25 @@ public class JUnitJPQLDateTimeTestSuite extends JUnitTestCase {
         super();
     }
 
+    public JUnitJPQLDateTimeTestSuite(String name) {
+        super(name);
+    }
+
     public static Test suite() {
         TestSuite suite = new TestSuite(JUnitJPQLDateTimeTestSuite.class);
+        suite.addTest(new JUnitJPQLDateTimeTestSuite("testSetup"));
 
-        return new TestSetup(suite) {
-            protected void setUp(){
-                new DateTimeTableCreator().replaceTables(JUnitTestCase.getServerSession());
-                
+        return suite;
+    }
+    
+    /**
+     * The setup is done as a test, both to record its failure, and to allow execution in the server.
+     */
+    public void testSetup() {
+        new DateTimeTableCreator().replaceTables(JUnitTestCase.getServerSession());
                 DateTimePopulator dateTimePopulator = new DateTimePopulator();                
                 dateTimePopulator.persistExample(getServerSession());   
-            }
-
-            protected void tearDown() {
-                clearCache();
-            }
-        };
+        clearCache();
     }
     
     public void testSqlDate() {

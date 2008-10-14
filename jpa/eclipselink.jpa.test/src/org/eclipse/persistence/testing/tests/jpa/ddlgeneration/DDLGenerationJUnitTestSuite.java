@@ -247,10 +247,6 @@ public class DDLGenerationJUnitTestSuite extends JUnitTestCase {
     
     // Test to check if unique constraints are generated correctly
     public void testDDLUniqueConstraintsByXML() {
-        if (isOnServer()) {
-            // Not work on server.
-            return;
-        }
         if(!getServerSession(DDL_PU).getPlatform().supportsUniqueKeyConstraints()) {
             return;
         }

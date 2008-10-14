@@ -17,6 +17,8 @@ import junit.framework.Test;
 import junit.framework.TestSuite;
 import junit.extensions.TestSetup;
 
+import javax.persistence.EntityManager;
+
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.queries.ReadObjectQuery;
 import org.eclipse.persistence.sessions.DatabaseSession;
@@ -64,6 +66,7 @@ public class JUnitJPQLInheritanceTestSuite extends JUnitTestCase {
     public static Test suite() {
         TestSuite suite = new TestSuite();
         suite.setName("JUnitJPQLInheritanceTestSuite");
+        suite.addTest(new JUnitJPQLInheritanceTestSuite("testSetup"));
         suite.addTest(new JUnitJPQLInheritanceTestSuite("testStraightReadSuperClass"));
         suite.addTest(new JUnitJPQLInheritanceTestSuite("testStraightReadSubClass"));
         suite.addTest(new JUnitJPQLInheritanceTestSuite("testJoinSuperClass"));
@@ -75,72 +78,70 @@ public class JUnitJPQLInheritanceTestSuite extends JUnitTestCase {
         suite.addTest(new JUnitJPQLInheritanceTestSuite("testJoinedInheritanceWithLeftOuterJoin2"));
         suite.addTest(new JUnitJPQLInheritanceTestSuite("testJoinedInheritanceWithLeftOuterJoin3"));
         
-        return new TestSetup(suite) {
-     
-            //This method is run at the end of the SUITE only
-            protected void tearDown() {
-                clearCache();
-            }
-            
-            //This method is run at the start of the SUITE only
-            protected void setUp() {
-                //get session to start setup
-                DatabaseSession session = JUnitTestCase.getServerSession();
-                
-                //create a new EmployeePopulator
-                EmployeePopulator employeePopulator = new EmployeePopulator();
-                
-                //initialize the global comparer object
-                comparer = new JUnitDomainObjectComparer();
+        return suite;
+    }
+    
+    /**
+     * The setup is done as a test, both to record its failure, and to allow execution in the server.
+     */
+    public void testSetup() {
+        clearCache();
+        //get session to start setup
+        DatabaseSession session = JUnitTestCase.getServerSession();
+        
+        //create a new EmployeePopulator
+        EmployeePopulator employeePopulator = new EmployeePopulator();
+        
+        //initialize the global comparer object
+        comparer = new JUnitDomainObjectComparer();
 
-                //set the session for the comparer to use
-                comparer.setSession((AbstractSession)session.getActiveSession());   
-                
-                new AdvancedTableCreator().replaceTables(session);
-                new InheritanceTableCreator().replaceTables(session);
-                
-                //Populate the tables
-                employeePopulator.buildExamples();
-                
-                //Persist the examples in the database
-                employeePopulator.persistExample(session);
-                
-                //Populate the tables
-                InheritancePopulator inheritancePopulator = new InheritancePopulator();
-                inheritancePopulator.buildExamples();
-                
-                //Persist the examples in the database
-                inheritancePopulator.persistExample(session);       
-            }            
-        };    
+        //set the session for the comparer to use
+        comparer.setSession((AbstractSession)session.getActiveSession());   
+        
+        new AdvancedTableCreator().replaceTables(session);
+        new InheritanceTableCreator().replaceTables(session);
+        
+        //Populate the tables
+        employeePopulator.buildExamples();
+        
+        //Persist the examples in the database
+        employeePopulator.persistExample(session);
+        
+        //Populate the tables
+        InheritancePopulator inheritancePopulator = new InheritancePopulator();
+        inheritancePopulator.buildExamples();
+        
+        //Persist the examples in the database
+        inheritancePopulator.persistExample(session);
+
     }
 
     public void testStraightReadSuperClass() {
-        org.eclipse.persistence.jpa.JpaEntityManager em = (org.eclipse.persistence.jpa.JpaEntityManager) createEntityManager();                  
+        EntityManager em = createEntityManager();                  
          
         Project project = (Project)em.createQuery("SELECT p from Project p").getResultList().get(0);
         clearCache();
         ReadObjectQuery tlQuery = new ReadObjectQuery(Project.class);
         tlQuery.setSelectionCriteria(tlQuery.getExpressionBuilder().get("id").equal(project.getId()));
         
-        Project tlProject = (Project)em.getActiveSession().executeQuery(tlQuery);
+        Project tlProject = (Project)getServerSession().executeQuery(tlQuery);
         Assert.assertTrue("SuperClass Inheritance Test Failed", comparer.compareObjects(project, tlProject));                    
     }
     
     public void testStraightReadSubClass() {
-        org.eclipse.persistence.jpa.JpaEntityManager em = (org.eclipse.persistence.jpa.JpaEntityManager) createEntityManager();                  
+        EntityManager em = createEntityManager();                  
          
         SmallProject project = (SmallProject)em.createQuery("SELECT s from SmallProject s").getResultList().get(0);
         clearCache();
         ReadObjectQuery tlQuery = new ReadObjectQuery(SmallProject.class);
         tlQuery.setSelectionCriteria(tlQuery.getExpressionBuilder().get("id").equal(project.getId()));
         
-        SmallProject tlProject = (SmallProject)em.getActiveSession().executeQuery(tlQuery);
+        SmallProject tlProject = (SmallProject)getServerSession().executeQuery(tlQuery);
         Assert.assertTrue("Subclass Inheritance Test Failed", comparer.compareObjects(project, tlProject));                 
     }
 
     public void testJoinSuperClass() {
-        org.eclipse.persistence.jpa.JpaEntityManager em = (org.eclipse.persistence.jpa.JpaEntityManager) createEntityManager();                  
+        EntityManager em = createEntityManager();                  
          
         Employee emp = (Employee)em.createQuery("SELECT e from Employee e JOIN e.projects p where e.lastName is not null").getResultList().get(0);
         clearCache();
@@ -148,12 +149,12 @@ public class JUnitJPQLInheritanceTestSuite extends JUnitTestCase {
         tlQuery.setSelectionCriteria(tlQuery.getExpressionBuilder().get("id").equal(emp.getId()));
         tlQuery.addJoinedAttribute(tlQuery.getExpressionBuilder().anyOf("projects"));
         
-        Employee tlEmp = (Employee)em.getActiveSession().executeQuery(tlQuery);
+        Employee tlEmp = (Employee)getServerSession().executeQuery(tlQuery);
         Assert.assertTrue("Join superclass Inheritance Test Failed", comparer.compareObjects(emp, tlEmp));                 
     }
 
     public void testJoinSubClass() {
-        org.eclipse.persistence.jpa.JpaEntityManager em = (org.eclipse.persistence.jpa.JpaEntityManager) createEntityManager();                  
+        EntityManager em = createEntityManager();                  
          
         Engineer emp = (Engineer)em.createQuery("SELECT e from Engineer e JOIN e.bestFriend b WHERE e.title is not null").getResultList().get(0);
         clearCache();
@@ -161,12 +162,12 @@ public class JUnitJPQLInheritanceTestSuite extends JUnitTestCase {
         tlQuery.setSelectionCriteria(tlQuery.getExpressionBuilder().get("id").equal(emp.getId()));
         tlQuery.addJoinedAttribute(tlQuery.getExpressionBuilder().get("bestFriend"));
         
-        Engineer tlEmp = (Engineer)em.getActiveSession().executeQuery(tlQuery);
+        Engineer tlEmp = (Engineer)getServerSession().executeQuery(tlQuery);
         Assert.assertTrue("Join Subclass Inheritance Test Failed", comparer.compareObjects(emp, tlEmp));                 
     }
 
     public void testJoinFetchSuperClass() {
-        org.eclipse.persistence.jpa.JpaEntityManager em = (org.eclipse.persistence.jpa.JpaEntityManager) createEntityManager();                  
+        EntityManager em = createEntityManager();                  
          
         Employee emp = (Employee)em.createQuery("SELECT e from Employee e JOIN FETCH e.projects").getResultList().get(0);
         clearCache();
@@ -174,12 +175,12 @@ public class JUnitJPQLInheritanceTestSuite extends JUnitTestCase {
         tlQuery.setSelectionCriteria(tlQuery.getExpressionBuilder().get("id").equal(emp.getId()));
         tlQuery.addJoinedAttribute(tlQuery.getExpressionBuilder().anyOf("projects"));
         
-        Employee tlEmp = (Employee)em.getActiveSession().executeQuery(tlQuery);
+        Employee tlEmp = (Employee)getServerSession().executeQuery(tlQuery);
         Assert.assertTrue("Join superclass Inheritance Test Failed", comparer.compareObjects(emp, tlEmp));                 
     }
 
     public void testJoinFetchSubClass() {
-        org.eclipse.persistence.jpa.JpaEntityManager em = (org.eclipse.persistence.jpa.JpaEntityManager) createEntityManager();                  
+        EntityManager em = createEntityManager();                  
          
         Engineer emp = (Engineer)em.createQuery("SELECT e from Engineer e JOIN FETCH e.bestFriend").getResultList().get(0);
         clearCache();
@@ -187,7 +188,7 @@ public class JUnitJPQLInheritanceTestSuite extends JUnitTestCase {
         tlQuery.setSelectionCriteria(tlQuery.getExpressionBuilder().get("id").equal(emp.getId()));
         tlQuery.addJoinedAttribute(tlQuery.getExpressionBuilder().get("bestFriend"));
         
-        Engineer tlEmp = (Engineer)em.getActiveSession().executeQuery(tlQuery);
+        Engineer tlEmp = (Engineer)getServerSession().executeQuery(tlQuery);
         Assert.assertTrue("Join Subclass Inheritance Test Failed", comparer.compareObjects(emp, tlEmp));                 
     }
 
@@ -197,7 +198,7 @@ public class JUnitJPQLInheritanceTestSuite extends JUnitTestCase {
      * See issue 860.
      */
     public void testJoinedInheritance() {
-        org.eclipse.persistence.jpa.JpaEntityManager em = (org.eclipse.persistence.jpa.JpaEntityManager) createEntityManager();
+        EntityManager em = createEntityManager();
 
         String ejbqlString = "SELECT OBJECT(b) FROM BBB b WHERE b.foo = ?1";
         // query throws exception, if result not unique!
@@ -205,7 +206,7 @@ public class JUnitJPQLInheritanceTestSuite extends JUnitTestCase {
     }
     
     public void testJoinedInheritanceWithLeftOuterJoin1() {
-        org.eclipse.persistence.jpa.JpaEntityManager em = (org.eclipse.persistence.jpa.JpaEntityManager) createEntityManager();        
+        EntityManager em = createEntityManager();        
         String ejbqlString = "SELECT t0.maxSpeed, t0.color, t0.description, t0.fuelCapacity, t0.fuelType, t0.id, t0.passengerCapacity, t1.name, t1.id FROM SportsCar t0 LEFT OUTER JOIN t0.owner t1";
         try {
             em.createQuery(ejbqlString).getResultList();
@@ -215,7 +216,7 @@ public class JUnitJPQLInheritanceTestSuite extends JUnitTestCase {
     }
     
     public void testJoinedInheritanceWithLeftOuterJoin2() {
-        org.eclipse.persistence.jpa.JpaEntityManager em = (org.eclipse.persistence.jpa.JpaEntityManager) createEntityManager();
+        EntityManager em = createEntityManager();
         String ejbqlString = "SELECT t0.color, t0.description, t0.fuelCapacity, t0.fuelType, t0.id, t0.passengerCapacity, t1.name, t1.id FROM FueledVehicle t0 LEFT OUTER JOIN t0.owner t1";
         try {
             em.createQuery(ejbqlString).getResultList();
@@ -225,7 +226,7 @@ public class JUnitJPQLInheritanceTestSuite extends JUnitTestCase {
     }
     
     public void testJoinedInheritanceWithLeftOuterJoin3() {
-        org.eclipse.persistence.jpa.JpaEntityManager em = (org.eclipse.persistence.jpa.JpaEntityManager) createEntityManager();
+        EntityManager em = createEntityManager();
         String ejbqlString = "SELECT t0.color, t0.description, t0.fuelCapacity, t0.fuelType, t0.id, t0.passengerCapacity, t1.name, t1.id FROM Bus t0 LEFT OUTER JOIN t0.busDriver t1";
         try {
             em.createQuery(ejbqlString).getResultList();
