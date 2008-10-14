@@ -90,7 +90,7 @@ public class ConversionManager implements Serializable, Cloneable {
             }
         }
 
-        if ((sourceObject.getClass() == javaClass) || (javaClass == null) || (javaClass == ClassConstants.OBJECT) || (javaClass == ClassConstants.BLOB) || (javaClass == ClassConstants.CLOB) || ClassConstants.NOCONVERSION.isAssignableFrom(javaClass)) {
+        if ((sourceObject.getClass() == javaClass) || (javaClass == null) || (javaClass == ClassConstants.OBJECT) || (javaClass == ClassConstants.BLOB) || (javaClass == ClassConstants.CLOB)) {
             return sourceObject;
         }
 
@@ -153,6 +153,9 @@ public class ConversionManager implements Serializable, Cloneable {
 
         // Delay this check as poor performance.
         if (javaClass.isInstance(sourceObject)) {
+            return sourceObject;
+        }
+        if (ClassConstants.NOCONVERSION.isAssignableFrom(javaClass)) {
             return sourceObject;
         }
 

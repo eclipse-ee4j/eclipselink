@@ -538,7 +538,6 @@ public class SessionBroker extends DatabaseSessionImpl {
         super.initializeDescriptors();
         // Must reset project options to session broker project, as initialization occurs
         // with local projects.
-        getProject().setIsPureCMP2Project(false);
         for (Iterator enumtr = getSessionsByName().values().iterator(); enumtr.hasNext();) {
             DatabaseSessionImpl databaseSession = (DatabaseSessionImpl)enumtr.next();
             if (databaseSession.getProject().hasGenericHistorySupport()) {

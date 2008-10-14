@@ -50,8 +50,6 @@ public class Project implements Serializable, Cloneable {
     protected boolean hasGenericHistorySupport;
     /** Cache if any descriptor is using ProxyIndirection. (set during initialization */
     protected boolean hasProxyIndirection;
-    /** Cache if all descriptors are CMP1/2 */
-    protected boolean isPureCMP2Project;
     
     /** This a collection of 'maps' that allow users to map custom SQL to query results */
     protected Map sqlResultSetMappings;
@@ -78,7 +76,6 @@ public class Project implements Serializable, Cloneable {
         this.orderedDescriptors = NonSynchronizedVector.newInstance();
         this.hasIsolatedClasses = false;
         this.hasGenericHistorySupport = false;
-        this.isPureCMP2Project = false;
         this.hasProxyIndirection = false;
         this.jpqlParseCache = new ConcurrentFixedCache(200);
     }
@@ -566,24 +563,7 @@ public class Project implements Serializable, Cloneable {
     public void setHasGenericHistorySupport(boolean hasGenericHistorySupport) {
         this.hasGenericHistorySupport = hasGenericHistorySupport;
     }
-    /**
-     * INTERNAL:
-     * Return if all descriptors are for CMP1 or CMP2 beans.
-     * Set to true during descriptor initialize.
-     * Allows certain optimizations to be made.
-     */
-    public boolean isPureCMP2Project() {
-        return isPureCMP2Project;
-    }
-    /**
-     * INTERNAL:
-     * Set if all descriptors are for CMP1 or CMP2 beans.
-     * Set to true during descriptor initialize.
-     * Allows certain optimizations to be made.
-     */
-    public void setIsPureCMP2Project(boolean isPureCMP2Project) {
-        this.isPureCMP2Project = isPureCMP2Project;
-    }
+
     /**
      * INTERNAL:
      * Return if any descriptors are isolated.

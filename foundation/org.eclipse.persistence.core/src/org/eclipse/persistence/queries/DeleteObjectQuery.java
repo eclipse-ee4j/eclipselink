@@ -133,7 +133,7 @@ public class DeleteObjectQuery extends ObjectLevelModifyQuery {
         boolean isUnitOfWork = session.isUnitOfWork();
         try {
             // Check if the object has already been commited, then no work is required
-            if (commitManager.isCommitCompleted(object) || commitManager.isCommitInPostModify(object) || commitManager.isCommitInPreModify(object)) {
+            if (commitManager.isProcessedCommit(object)) {
                 return object;
             }
             commitManager.markPreModifyCommitInProgress(getObject());

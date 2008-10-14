@@ -400,8 +400,6 @@ public class DatabaseSessionImpl extends AbstractSession implements org.eclipse.
      * Normally the descriptors are added before login, then initialized on login.
      */
     public void initializeDescriptors() {
-        // Assume all descriptors are CMP, if any are not their init will set this to false.
-        getProject().setIsPureCMP2Project(true);
         // Must clone to avoid modification of the map while enumerating.
         initializeDescriptors((Map)((HashMap)getDescriptors()).clone());
         // Process JPA named queries and add as session queries,

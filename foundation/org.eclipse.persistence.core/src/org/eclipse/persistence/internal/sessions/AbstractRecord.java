@@ -63,8 +63,8 @@ public abstract class AbstractRecord implements Record, Cloneable, Serializable,
      *  converts JDBC results to collections of rows.
      */
     public AbstractRecord() {
-        this.fields = new Vector();
-        this.values = new Vector();
+        this.fields = new NonSynchronizedVector();
+        this.values = new NonSynchronizedVector();
         this.size = 0;
     }
 
@@ -73,8 +73,8 @@ public abstract class AbstractRecord implements Record, Cloneable, Serializable,
      *  converts JDBC results to collections of rows.
      */
     public AbstractRecord(int initialCapacity) {
-        this.fields = new Vector(initialCapacity);
-        this.values = new Vector(initialCapacity);
+        this.fields = new NonSynchronizedVector(initialCapacity);
+        this.values = new NonSynchronizedVector(initialCapacity);
         this.size = 0;
     }
 

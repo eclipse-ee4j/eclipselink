@@ -18,7 +18,6 @@ import java.util.Vector;
 import org.eclipse.persistence.exceptions.DescriptorException;
 import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.queries.UpdateObjectQuery;
-import org.eclipse.persistence.internal.descriptors.CMPLifeCycleListener;
 import org.eclipse.persistence.internal.descriptors.ObjectBuilder;
 import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
@@ -32,8 +31,6 @@ import org.eclipse.persistence.internal.sessions.AbstractSession;
  * @since TopLink 10.1.3
  */
 public class CMPPolicy implements java.io.Serializable {
-    // SPECJ: Temporary global optimization flag, use to disable uow merge.
-    public static boolean OPTIMIZE_PESSIMISTIC_CMP = false;
     
     protected Boolean forceUpdate;
     protected Boolean updateAllFields;
@@ -41,14 +38,12 @@ public class CMPPolicy implements java.io.Serializable {
     /** Allow the bean to always be locked as it enters a new transaction. */
     protected PessimisticLockingPolicy pessimisticLockingPolicy;
 
-    /** Allows for the CMP life-cycle events to be intercepted from core by the CMP integration. */
-    protected CMPLifeCycleListener lifeCycleListener;
 
     /** Class originally mapped, before anything was generated. */
     protected Class mappedClass;
     protected ClassDescriptor descriptor;
 
-    /** The object deferral level.  This controlls when objects changes will be sent to the Database. */
+    /** The object deferral level.  This controls when objects changes will be sent to the Database. */
     protected int modificationDeferralLevel = ALL_MODIFICATIONS;
 
     /** defer no changes */
@@ -75,53 +70,6 @@ public class CMPPolicy implements java.io.Serializable {
     public CMPPolicy() {
         this.forceUpdate = null;
         this.updateAllFields = null;
-    }
-
-    /**
-     * INTERNAL:
-     * Notify that the insert operation has occurred, allow a sequence primary key to be reset.
-     */
-    public void postInsert(Object bean, AbstractSession session) {
-        if (getLifeCycleListener() != null) {
-            getLifeCycleListener().postInsert(bean, session);
-        }
-    }
-
-    /**
-     * INTERNAL:
-     * Allow the ejbLoad life-cycle callback to be called.
-     */
-    public void invokeEJBLoad(Object bean, AbstractSession session) {
-        if (getLifeCycleListener() != null) {
-            getLifeCycleListener().invokeEJBLoad(bean, session);
-        }
-    }
-
-    /**
-     * INTERNAL:
-     * Allow the ejbStore life-cycle callback to be called.
-     */
-    public void invokeEJBStore(Object bean, AbstractSession session) {
-        if (getLifeCycleListener() != null) {
-            getLifeCycleListener().invokeEJBStore(bean, session);
-        }
-    }
-
-    /**
-     * INTERNAL:
-     * Return the CMP life-cycle listener, used to intercept events from core by CMP integration.
-     */
-    public CMPLifeCycleListener getLifeCycleListener() {
-        return this.lifeCycleListener;
-    }
-
-    /**
-     * INTERNAL:
-     * Set the CMP life-cycle listener, used to intercept events from core by CMP integration.
-     * This should be set by the CMP integration during deployment.
-     */
-    public void setLifeCycleListener(CMPLifeCycleListener lifeCycleListener) {
-        this.lifeCycleListener = lifeCycleListener;
     }
 
     /**

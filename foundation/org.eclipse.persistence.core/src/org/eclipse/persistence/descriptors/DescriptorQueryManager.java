@@ -283,6 +283,12 @@ public class DescriptorQueryManager implements Cloneable, Serializable {
                 ((DatabaseQuery)queries.next()).convertClassNamesToClasses(classLoader);
             }
         }
+        if (getReadObjectQuery() != null) {
+            getReadObjectQuery().convertClassNamesToClasses(classLoader);
+        }
+        if (getReadAllQuery() != null) {
+            getReadAllQuery().convertClassNamesToClasses(classLoader);
+        }
     };
 
     /**

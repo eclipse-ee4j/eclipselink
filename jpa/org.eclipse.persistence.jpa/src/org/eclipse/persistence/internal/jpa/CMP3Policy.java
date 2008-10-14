@@ -19,6 +19,7 @@ import java.security.PrivilegedActionException;
 import java.util.*;
 import org.eclipse.persistence.descriptors.*;
 import org.eclipse.persistence.internal.helper.ConversionManager;
+import org.eclipse.persistence.internal.helper.NonSynchronizedVector;
 import org.eclipse.persistence.internal.localization.ExceptionLocalization;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.mappings.DatabaseMapping;
@@ -47,6 +48,9 @@ public class CMP3Policy extends CMPPolicy {
 
     /** Stores the fields for this classes compound primary key class if required. */
     protected KeyElementAccessor[] keyClassFields;
+    
+    /** Stores the mappings for the key fields, order is the same as keyClassFields. */
+    protected DatabaseMapping[] keyMappings;
     
     // Store the primary key class name
     protected String pkClassName;
@@ -152,18 +156,9 @@ public class CMP3Policy extends CMPPolicy {
         // then no elaborate conversion is required.
         // If key is compound, add each value to the vector.
         KeyElementAccessor[] pkElementArray = this.getKeyClassFields(key.getClass());
-        Vector pkVector = new Vector(pkElementArray.length);
+        Vector pkVector = new NonSynchronizedVector(pkElementArray.length);
         for (int index = 0; index < pkElementArray.length; index++) {
-            DatabaseMapping mapping = this.getDescriptor().getObjectBuilder().getMappingForAttributeName(pkElementArray[index].getAttributeName());
-            if (mapping == null) {
-                mapping = this.getDescriptor().getObjectBuilder().getMappingForField(pkElementArray[index].getDatabaseField());
-            }
-            while (mapping.isAggregateObjectMapping()) {
-                mapping = mapping.getReferenceDescriptor().getObjectBuilder().getMappingForAttributeName(pkElementArray[index].getAttributeName());
-                if (mapping == null) {// must be aggregate
-                    mapping = this.getDescriptor().getObjectBuilder().getMappingForField(pkElementArray[index].getDatabaseField());
-                }
-            }
+            DatabaseMapping mapping = this.keyMappings[index];
             Object fieldValue = null;
             if (mapping.isDirectToFieldMapping()) {
                 fieldValue = ((AbstractDirectMapping)mapping).getFieldValue(pkElementArray[index].getValue(key), session);
@@ -367,8 +362,26 @@ public class CMP3Policy extends CMPPolicy {
      * @return Returns the keyClassFields.
      */
     protected KeyElementAccessor[] getKeyClassFields(Class clazz) {
-        if (this.keyClassFields == null){
-            this.keyClassFields = initializePrimaryKeyFields(this.pkClass == null? clazz : this.pkClass);
+        if (this.keyClassFields == null) {
+            this.keyClassFields = initializePrimaryKeyFields(this.pkClass == null ? clazz : this.pkClass);
+            // Also initialize the key mappings.
+            int size = this.keyClassFields.length;
+            DatabaseMapping[] mappings = new DatabaseMapping[size];
+            for (int index = 0; index < size; index++) {
+                KeyElementAccessor accessor = this.keyClassFields[index];
+                DatabaseMapping mapping = getDescriptor().getObjectBuilder().getMappingForAttributeName(accessor.getAttributeName());
+                if (mapping == null) {
+                    mapping = this.getDescriptor().getObjectBuilder().getMappingForField(accessor.getDatabaseField());
+                }
+                while (mapping.isAggregateObjectMapping()) {
+                    mapping = mapping.getReferenceDescriptor().getObjectBuilder().getMappingForAttributeName(accessor.getAttributeName());
+                    if (mapping == null) {// must be aggregate
+                        mapping = this.getDescriptor().getObjectBuilder().getMappingForField(accessor.getDatabaseField());
+                    }
+                }
+                mappings[index] = mapping;
+            }
+            this.keyMappings = mappings;
         }
         return this.keyClassFields;
     }

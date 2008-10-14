@@ -748,8 +748,10 @@ public class ReadObjectQuery extends ObjectLevelReadQuery {
     public void setSelectionKey(List selectionKey) {
         if (selectionKey == null) {
             this.selectionKey = null;
+        } else if (selectionKey instanceof NonSynchronizedVector) {
+            this.selectionKey = (Vector)selectionKey;
         } else {
-            this.selectionKey = new NonSynchronizedVector(selectionKey);
+            this.selectionKey = new NonSynchronizedVector(selectionKey);            
         }
         // setIsPrepared(false); PERF: This cause the findByPrimaryKey query to unprepare,
         // Since this is an argument, and not a query modifier do not unprepare.

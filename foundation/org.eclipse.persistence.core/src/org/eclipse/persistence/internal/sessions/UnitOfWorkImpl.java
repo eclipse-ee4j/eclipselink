@@ -190,7 +190,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
      * be used to determine at which point the process can begin to wait on locks
      * without being concerned about creating deadlock situations.
      */
-    protected int cloneDepth = 0;
+    protected int cloneDepth;
 
     /**
      * This collection will be used to store those objects that are currently locked
@@ -267,11 +267,6 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
         this.shouldDiscoverNewObjects = true;
         this.name = parent.getName();
         this.parent = parent;
-        // 2612538 - the default size of Map (32) is appropriate
-        this.cloneMapping = createMap();
-        // PERF: lazy-init hashtables (3286089) - cloneToOriginals,
-        // newObjectsInParentOriginalToClone, objectsDeletedDuringCommit
-        // removedObjects.
         this.project = parent.getProject();
         this.profiler = parent.getProfiler();
         this.isInProfile = parent.isInProfile;
@@ -281,12 +276,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
 
         // Initialize the readOnlyClasses variable.
         this.setReadOnlyClasses(parent.copyReadOnlyClasses());
-        this.wasTransactionBegunPrematurely = false;
-        // False by default as this may screw up things for objects with 0, -1 or other non-null default keys.
-        this.shouldNewObjectsBeCached = false;
         this.validationLevel = Partial;
-
-        this.shouldPerformDeletesFirst = false;
 
         // for 3.0.x this conforming queries will not throw exceptions unless explicitly asked to
         this.shouldThrowConformExceptions = DO_NOT_THROW_CONFORM_EXCEPTIONS;
@@ -295,10 +285,9 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
         this.lifecycle = Birth;
         // PERF: Cache the write-lock check to avoid cost of checking in every register/clone.
         this.shouldCheckWriteLock = parent.getDatasourceLogin().shouldSynchronizedReadOnWrite() || parent.getDatasourceLogin().shouldSynchronizeWrites();
-        this.resumeOnTransactionCompletion = false;
         this.isNestedUnitOfWork = parent.isUnitOfWork();
         
-        getEventManager().postAcquireUnitOfWork();
+        this.eventManager.postAcquireUnitOfWork();
         incrementProfile(SessionProfiler.UowCreated);
     }
 
@@ -550,11 +539,9 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
     public UnitOfWorkChangeSet calculateChanges(Map registeredObjects, UnitOfWorkChangeSet changeSet, boolean assignSequences) {
         getEventManager().preCalculateUnitOfWorkChangeSet();
 
-        if (assignSequences && !this.project.isPureCMP2Project()) {
-            if (hasNewObjects()) {
-                // First assign sequence numbers to new objects.
-                assignSequenceNumbers(this.newObjectsCloneToOriginal);
-            }
+        if (assignSequences && hasNewObjects()) {
+            // First assign sequence numbers to new objects.
+            assignSequenceNumbers(this.newObjectsCloneToOriginal);
         }
         
         // Second calculate changes for all registered objects.
@@ -618,15 +605,14 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
             }
         }
         
-        if (!this.project.isPureCMP2Project()) {
+        if (this.shouldDiscoverNewObjects) {
             // Third discover any new objects from the new or changed objects.
             Map newObjects = new IdentityHashMap();
             Map existingObjects = new IdentityHashMap(2);
     
             // Iterate over the changed objects only.
-            if (this.shouldDiscoverNewObjects) {
-                discoverUnregisteredNewObjects(changedObjects, newObjects, existingObjects, visitedNodes);
-            }
+            discoverUnregisteredNewObjects(changedObjects, newObjects, existingObjects, visitedNodes);
+            
             setUnregisteredExistingObjects(existingObjects);
             setUnregisteredNewObjects(newObjects);
             if (assignSequences) {
@@ -3149,10 +3135,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
      * for synchronized units of work, merge changes into parent
      */
     public void mergeClonesAfterCompletion() {
-        // SPECJ: Avoid merge as pessimistic locking used.
-        if (!CMPPolicy.OPTIMIZE_PESSIMISTIC_CMP) {
-            mergeChangesIntoParent();
-        }
+        mergeChangesIntoParent();
         // CR#... call event and log.
         getEventManager().postCommitUnitOfWork();
         log(SessionLog.FINER, SessionLog.TRANSACTION, "end_unit_of_work_commit");
@@ -5227,7 +5210,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
      */
     public void clear(boolean shouldClearCache) {
         this.cloneToOriginals = null;
-        this.cloneMapping = createMap();
+        this.cloneMapping = null;
         this.newObjectsCloneToOriginal = null;
         this.newObjectsOriginalToClone = null;
         this.deletedObjects = null;

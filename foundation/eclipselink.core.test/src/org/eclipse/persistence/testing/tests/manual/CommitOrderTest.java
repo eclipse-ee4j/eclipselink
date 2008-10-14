@@ -27,9 +27,9 @@ public class CommitOrderTest extends ManualVerifyTestCase {
         setDescription("Check that the commit order is consistent and order by 1-1 constraints.");
     }
 
-    public void printClasses(Vector classes) {
-        for (Enumeration enumtr = classes.elements(); enumtr.hasMoreElements();) {
-            System.out.print(org.eclipse.persistence.internal.helper.Helper.getShortClassName((Class)enumtr.nextElement()));
+    public void printClasses(List classes) {
+        for (Iterator iterator = classes.iterator(); iterator.hasNext();) {
+            System.out.print(org.eclipse.persistence.internal.helper.Helper.getShortClassName((Class)iterator.next()));
             System.out.print(", ");
         }
         System.out.println(":");

@@ -60,6 +60,7 @@ import org.eclipse.persistence.internal.sessions.RepeatableWriteUnitOfWork;
 import org.eclipse.persistence.logging.SessionLog;
 import org.eclipse.persistence.internal.sessions.UnitOfWorkImpl;
 import org.eclipse.persistence.config.EntityManagerProperties;
+import org.eclipse.persistence.descriptors.CMPPolicy;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.descriptors.VersionLockingPolicy;
 
@@ -360,12 +361,21 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
         if (primaryKey instanceof List) {
             primaryKeyValues = (List)primaryKey;
         } else {
-            if (descriptor.getCMPPolicy().getPKClass() != null && !descriptor.getCMPPolicy().getPKClass().isAssignableFrom(primaryKey.getClass())) {
+            CMPPolicy policy = descriptor.getCMPPolicy();
+            Class pkClass = policy.getPKClass();
+            if ((pkClass != null) && (pkClass != primaryKey.getClass()) && (!pkClass.isAssignableFrom(primaryKey.getClass()))) {
                 throw new IllegalArgumentException(ExceptionLocalization.buildMessage("invalid_pk_class", new Object[] { descriptor.getCMPPolicy().getPKClass(), primaryKey.getClass() }));
             }
-            primaryKeyValues = descriptor.getCMPPolicy().createPkVectorFromKey(primaryKey, (AbstractSession)session);
+            primaryKeyValues = policy.createPkVectorFromKey(primaryKey, (AbstractSession)session);
         }
-        ReadObjectQuery query = new ReadObjectQuery(descriptor.getJavaClass());
+        // PERF: use descriptor defined query to avoid extra query creation.
+        ReadObjectQuery query = descriptor.getQueryManager().getReadObjectQuery();
+        if (query == null) {
+            query = new ReadObjectQuery(descriptor.getJavaClass());
+        } else {
+            query.checkPrepare((AbstractSession)session, null);
+            query = (ReadObjectQuery)query.clone();
+        }
         query.setSelectionKey(primaryKeyValues);
         query.conformResultsInUnitOfWork();
         query.setIsExecutionClone(true);

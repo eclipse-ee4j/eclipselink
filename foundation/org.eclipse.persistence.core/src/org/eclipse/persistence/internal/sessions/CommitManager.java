@@ -19,29 +19,43 @@ import org.eclipse.persistence.queries.*;
 import org.eclipse.persistence.exceptions.*;
 import org.eclipse.persistence.internal.localization.*;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
-import org.eclipse.persistence.descriptors.changetracking.AttributeChangeTrackingPolicy;
 
 /**
  * This class maintains a commit stack and resolves circular references.
  */
 public class CommitManager {
-    protected Vector commitOrder;
+    /** Order based on mapping foreign key constraints on how to insert objects by class. */
+    protected List<Class> commitOrder;
 
-    /** Changed the following line to work like mergemanager.  The commitManager
-     * will now track what has been processed as apposed to removing from the list
-     * objects that have been processed.  This must be done to allow for customers
-     * modifying the changesets in events
+    /**
+     * This tracks the commit state for the objects, PENDING, PRE, POST, COMPLETE.
+     * The key is the object and the value is the state.
      */
-    protected Map processedCommits;
-    protected Map pendingCommits;
-    protected Map preModifyCommits;
-    protected Map postModifyCommits;
-    protected Map completedCommits;
+    protected Map<Object, Integer> commitState;
+    
+    /** The commit is in progress, but the row has not been written. */
+    protected static final Integer PRE = Integer.valueOf(1);
+    /** The commit is in progress, and the row has been written. */
+    protected static final Integer POST = Integer.valueOf(2);
+    /** The commit is complete for the object. */
+    protected static final Integer COMPLETE = Integer.valueOf(3);
+    
+    /** Set of objects that had partial row written to resolve constraints. */
     protected Map shallowCommits;
+    
     protected AbstractSession session;
+    
+    /** The commit manager is active while writing a set of objects (UOW), it is not active when writing a single object (DB session). */
     protected boolean isActive;
-    protected Hashtable dataModifications;
-    protected Vector objectsToDelete;
+    
+    /** Map of modification events used to defer insertion into m-m, dc, join tables. */
+    protected Map<DatabaseMapping, List<Object[]>> dataModifications;
+    
+    /** List of orphaned objects pending deletion. */
+    protected List objectsToDelete;  
+    
+    /** Counter used to keep track of commit depth for non-UOW writes. */
+    protected int commitDepth;
 
     /**
      * Create the commit manager on the session.
@@ -49,16 +63,9 @@ public class CommitManager {
      */
     public CommitManager(AbstractSession session) {
         this.session = session;
-        this.commitOrder = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance();
+        this.commitOrder = new ArrayList();
         this.isActive = false;
-
-        // PERF - move to lazy initialization (3286091)
-        //this.processedCommits = new IdentityHashMap(20);
-        //this.pendingCommits = new IdentityHashMap(20);
-        //this.preModifyCommits = new IdentityHashMap(20);
-        //this.postModifyCommits = new IdentityHashMap(20);
-        //this.completedCommits = new IdentityHashMap(20);
-        //this.shallowCommits = new IdentityHashMap(20);
+        this.commitDepth = 0;
     }
 
     /**
@@ -68,92 +75,17 @@ public class CommitManager {
     public void addDataModificationEvent(DatabaseMapping mapping, Object[] event) {
         // For lack of inner class the array is being called an event.
         if (!getDataModifications().containsKey(mapping)) {
-            getDataModifications().put(mapping, new Vector());
+            this.dataModifications.put(mapping, new ArrayList());
         }
 
-        ((Vector)getDataModifications().get(mapping)).addElement(event);
+        this.dataModifications.get(mapping).add(event);
     }
 
     /**
      * Deletion are cached until the end.
      */
     public void addObjectToDelete(Object objectToDelete) {
-        getObjectsToDelete().addElement(objectToDelete);
-    }
-
-    /**
-     * add the commit of the object to the processed list.
-     */
-    protected void addProcessedCommit(Object domainObject) {
-        getProcessedCommits().put(domainObject, domainObject);
-    }
-
-    /**
-     * Commit all of the objects as a single transaction.
-     * This should commit the object in the correct order to maintain referential integrity.
-     * This is only used by DatabaseSession.writeAllObjects().
-     */
-    public void commitAllObjects(Map domainObjects) throws RuntimeException, DatabaseException, OptimisticLockException {
-        reinitialize();
-        setPendingCommits(domainObjects);
-
-        setIsActive(true);
-        getSession().beginTransaction();
-        try {
-            // The commit order is all of the classes ordered by dependencies, this is done for deadlock avoidance.
-            for (Enumeration classesEnum = getCommitOrder().elements();
-                     classesEnum.hasMoreElements();) {
-                Class theClass = (Class)classesEnum.nextElement();
-
-                for (Iterator pendingEnum = getPendingCommits().values().iterator();
-                         pendingEnum.hasNext();) {
-                    Object objectToWrite = pendingEnum.hasNext();
-
-                    // Old commit is not supported for attribute change tracking.
-                    if (getSession().getDescriptor(objectToWrite).getObjectChangePolicy() instanceof AttributeChangeTrackingPolicy) {
-                        throw ValidationException.oldCommitNotSupportedForAttributeTracking();
-                    }
-                    if (objectToWrite.getClass() == theClass) {
-                        removePendingCommit(objectToWrite);// I think removing while enumerating is ok.
-
-                        WriteObjectQuery commitQuery = new WriteObjectQuery();
-                        commitQuery.setIsExecutionClone(true);
-                        commitQuery.setObject(objectToWrite);
-                        if (getSession().isUnitOfWork()) {
-                            commitQuery.cascadeOnlyDependentParts();
-                        } else {
-                            commitQuery.cascadeAllParts();// Used in write all objects in session.
-                        }
-                        getSession().executeQuery(commitQuery);
-                    }
-                }
-            }
-
-            for (Enumeration mappingsEnum = getDataModifications().keys(), mappingEventsEnum = getDataModifications().elements();
-                     mappingEventsEnum.hasMoreElements();) {
-                Vector events = (Vector)mappingEventsEnum.nextElement();
-                DatabaseMapping mapping = (DatabaseMapping)mappingsEnum.nextElement();
-                for (Enumeration eventsEnum = events.elements(); eventsEnum.hasMoreElements();) {
-                    Object[] event = (Object[])eventsEnum.nextElement();
-                    mapping.performDataModificationEvent(event, getSession());
-                }
-            }
-
-            Vector objects = getObjectsToDelete();
-            reinitialize();
-            for (Enumeration objectsToDeleteEnum = objects.elements();
-                     objectsToDeleteEnum.hasMoreElements();) {
-                getSession().deleteObject(objectsToDeleteEnum.nextElement());
-            }
-        } catch (RuntimeException exception) {
-            getSession().rollbackTransaction();
-            throw exception;
-        } finally {
-            reinitialize();
-            setIsActive(false);
-        }
-
-        getSession().commitTransaction();
+        getObjectsToDelete().add(objectToDelete);
     }
 
     /**
@@ -204,6 +136,7 @@ public class CommitManager {
             }
 
             if (hasObjectsToDelete()) {
+                // These are orphaned objects, to be deleted from private ownership updates.
                 // TODO: These should be added to the unit of work deleted so they are deleted in the correct order.
                 List objects = getObjectsToDelete();
                 int size = objects.size();
@@ -246,8 +179,7 @@ public class CommitManager {
             for (Iterator pendingEnum = new ArrayList(newObjectChangesList.values()).iterator(); pendingEnum.hasNext();) {
                 ObjectChangeSet changeSetToWrite = (ObjectChangeSet)pendingEnum.next();
                 Object objectToWrite = changeSetToWrite.getUnitOfWorkClone();
-                if ((!getProcessedCommits().containsKey(changeSetToWrite)) && (!this.processedCommits.containsKey(objectToWrite))) {
-                    this.processedCommits.put(changeSetToWrite, changeSetToWrite);
+                if (!isProcessedCommit(objectToWrite)) {
                     // PERF: Get the descriptor query, to avoid extra query creation.
                     InsertObjectQuery commitQuery = descriptor.getQueryManager().getInsertQuery();
                     if (commitQuery == null) {
@@ -285,8 +217,7 @@ public class CommitManager {
                 if (descriptor == null) {
                     descriptor = session.getDescriptor(objectToWrite);
                 }
-                if ((!getProcessedCommits().containsKey(changeSetToWrite)) && (!this.processedCommits.containsKey(objectToWrite))) {
-                    this.processedCommits.put(changeSetToWrite, changeSetToWrite);
+                if (!isProcessedCommit(objectToWrite)) {
                     // Commit and resume on failure can cause a new change set to be in existing, so need to check here.
                     WriteObjectQuery commitQuery = null;
                     if (changeSetToWrite.isNew()) {
@@ -334,6 +265,7 @@ public class CommitManager {
             }
             throw exception;
         } finally {
+            reinitialize();
             this.isActive = false;
         }
 
@@ -375,32 +307,33 @@ public class CommitManager {
      * The commit order is a vector of vectors,
      * where the first vector is all root level classes, the second is classes owned by roots and so on.
      */
-    public Vector getCommitOrder() {
-        return commitOrder;
+    public List<Class> getCommitOrder() {
+        return this.commitOrder;
     }
 
     /**
-     * Return any objects that have been written during this commit process.
+     * Return the map of states of the objects being committed.
+     * The states are defined as static Integers (PENDING, PRE, POST, COMPLETE).
      */
-    protected Map getCompletedCommits() {
-        if (completedCommits == null) {
+    protected Map<Object, Integer> getCommitState() {
+        if (this.commitState == null) {
             // 2612538 - the default size of Map (32) is appropriate
-            completedCommits = new IdentityHashMap();
+            this.commitState = new IdentityHashMap();
         }
-        return completedCommits;
+        return this.commitState;
     }
 
     protected boolean hasDataModifications() {
-        return ((dataModifications != null) && (!dataModifications.isEmpty()));
+        return ((this.dataModifications != null) && (!this.dataModifications.isEmpty()));
     }
 
     /**
      * Used to store data queries to be performed at the end of the commit.
      * This is done to decrease dependencies and avoid deadlock.
      */
-    protected Hashtable getDataModifications() {
+    protected Map<DatabaseMapping, List<Object[]>> getDataModifications() {
         if (dataModifications == null) {
-            dataModifications = new Hashtable(10);
+            dataModifications = new HashMap(16);
         }
         return dataModifications;
     }
@@ -412,75 +345,29 @@ public class CommitManager {
     /**
      * Deletion are cached until the end.
      */
-    protected Vector getObjectsToDelete() {
+    protected List getObjectsToDelete() {
         if (objectsToDelete == null) {
-            objectsToDelete = new Vector(5);
+            objectsToDelete = new ArrayList();
         }
         return objectsToDelete;
-    }
-
-    /**
-     * Return any objects that should be written during this commit process.
-     */
-    protected Map getProcessedCommits() {
-        if (processedCommits == null) {
-            // 2612538 - the default size of Map (32) is appropriate
-            processedCommits = new IdentityHashMap();
-        }
-        return processedCommits;
-    }
-
-    /**
-     * Return any objects that should be written during this commit process.
-     */
-    protected Map getPendingCommits() {
-        if (pendingCommits == null) {
-            // 2612538 - the default size of Map (32) is appropriate
-            pendingCommits = new IdentityHashMap();
-        }
-        return pendingCommits;
-    }
-
-    /**
-     * Return any objects that should be written during post modify commit process.
-     * These objects should be order by their ownership constraints to maintain referential integrity.
-     */
-    protected Map getPostModifyCommits() {
-        if (postModifyCommits == null) {
-            // 2612538 - the default size of Map (32) is appropriate
-            postModifyCommits = new IdentityHashMap();
-        }
-        return postModifyCommits;
-    }
-
-    /**
-     * Return any objects that should be written during pre modify commit process.
-     * These objects should be order by their ownership constraints to maintain referential integrity.
-     */
-    protected Map getPreModifyCommits() {
-        if (preModifyCommits == null) {
-            // 2612538 - the default size of Map (32) is appropriate
-            preModifyCommits = new IdentityHashMap();
-        }
-        return preModifyCommits;
     }
 
     /**
      * Return the session that this is managing commits for.
      */
     protected AbstractSession getSession() {
-        return session;
+        return this.session;
     }
 
     /**
      * Return any objects that have been shallow committed during this commit process.
      */
     protected Map getShallowCommits() {
-        if (shallowCommits == null) {
+        if (this.shallowCommits == null) {
             // 2612538 - the default size of Map (32) is appropriate
-            shallowCommits = new IdentityHashMap();
+            this.shallowCommits = new IdentityHashMap();
         }
-        return shallowCommits;
+        return this.shallowCommits;
     }
 
     /**
@@ -528,21 +415,39 @@ public class CommitManager {
     }
 
     /**
-     * Return if the object has been commited.
+     * Return if the object has been processed.
      * This should be called by any query that is writing an object,
      * if true the query should not write the object.
      */
-    public boolean isCommitCompleted(Object domainObject) {
-        return getCompletedCommits().containsKey(domainObject);
+    public boolean isProcessedCommit(Object object) {
+        return getCommitState().get(object) != null;
+    }
+
+    /**
+     * Return if the object has been committed.
+     * This should be called by any query that is writing an object,
+     * if true the query should not write the object.
+     */
+    public boolean isCommitCompleted(Object object) {
+        return getCommitState().get(object) == COMPLETE;
+    }
+
+    /**
+     * Return if the object has been committed.
+     * This should be called by any query that is writing an object,
+     * if true the query should not write the object.
+     */
+    public boolean isCommitCompletedOrInPost(Object object) {
+        Integer state = getCommitState().get(object);
+        return (state == COMPLETE) || (state == POST);
     }
 
     /**
      * Return if the object is being in progress of being post modify commit.
-     * This should be called by any query that is writing an object,
-     * if true the query must force a shallow insert of the object if it is new.
+     * This should be called by any query that is writing an object.
      */
-    public boolean isCommitInPostModify(Object domainObject) {
-        return getPostModifyCommits().containsKey(domainObject);
+    public boolean isCommitInPostModify(Object object) {
+        return getCommitState().get(object) == POST;
     }
 
     /**
@@ -550,58 +455,58 @@ public class CommitManager {
      * This should be called by any query that is writing an object,
      * if true the query must force a shallow insert of the object if it is new.
      */
-    public boolean isCommitInPreModify(Object domainObject) {
-        return getPreModifyCommits().containsKey(domainObject);
+    public boolean isCommitInPreModify(Object objectOrChangeSet) {
+        return getCommitState().get(objectOrChangeSet) == PRE;
     }
 
     /**
      * Return if the object is shallow committed.
      * This is required to resolve bidirectional references.
      */
-    public boolean isShallowCommitted(Object domainObject) {
-        return getShallowCommits().containsKey(domainObject);
+    public boolean isShallowCommitted(Object object) {
+        if (this.shallowCommits == null) {
+            return false;
+        }
+        return this.shallowCommits.containsKey(object);
     }
 
     /**
      * Mark the commit of the object as being fully completed.
      * This should be called by any query that has finished writing an object.
      */
-    public void markCommitCompleted(Object domainObject) {
-        getPreModifyCommits().remove(domainObject);
-        getPostModifyCommits().remove(domainObject);
-        // If not in a unit of work commit and the commit of this object is done reset the commit manager
-        if ((!isActive()) && getPostModifyCommits().isEmpty() && getPreModifyCommits().isEmpty()) {
+    public void markCommitCompleted(Object object) {
+        this.commitDepth --;
+        getCommitState().put(object, COMPLETE);
+        // If not in a unit of work commit and the commit of this object is done reset the commit manager.
+        if ((!this.isActive) && (this.commitDepth == 0)) {
             reinitialize();
             return;
         }
-        getCompletedCommits().put(domainObject, domainObject);// Treat as set.
     }
 
     /**
      * Add an object as being in progress of being committed.
      * This should be called by any query that is writing an object.
      */
-    public void markPostModifyCommitInProgress(Object domainObject) {
-        getPreModifyCommits().remove(domainObject);
-        getPostModifyCommits().put(domainObject, domainObject);// Use as set.
+    public void markPostModifyCommitInProgress(Object object) {
+        getCommitState().put(object, POST);
     }
 
     /**
      * Add an object as being in progress of being committed.
      * This should be called by any query that is writing an object.
      */
-    public void markPreModifyCommitInProgress(Object domainObject) {
-        removePendingCommit(domainObject);
-        addProcessedCommit(domainObject);
-        getPreModifyCommits().put(domainObject, domainObject);// Use as set.
+    public void markPreModifyCommitInProgress(Object object) {
+        this.commitDepth ++;
+        getCommitState().put(object, PRE);
     }
 
     /**
      * Mark the object as shallow committed.
      * This is required to resolve bidirectional references.
      */
-    public void markShallowCommit(Object domainObject) {
-        getShallowCommits().put(domainObject, domainObject);// Use as set.
+    public void markShallowCommit(Object object) {
+        getShallowCommits().put(object, object); // Use as set.
     }
 
     /**
@@ -609,21 +514,11 @@ public class CommitManager {
      * This must be done before a new commit process is begun.
      */
     public void reinitialize() {
-        this.pendingCommits = null;
-        this.processedCommits = null;
-        this.preModifyCommits = null;
-        this.postModifyCommits = null;
-        this.completedCommits = null;
+        this.commitState = null;
+        this.commitDepth = 0;
         this.shallowCommits = null;
         this.objectsToDelete = null;
         this.dataModifications = null;
-    }
-
-    /**
-     * Remove the commit of the object from pending.
-     */
-    protected void removePendingCommit(Object domainObject) {
-        getPendingCommits().remove(domainObject);
     }
 
     /**
@@ -632,22 +527,15 @@ public class CommitManager {
      * The commit order is a vector of vectors,
      * where the first vector is all root level classes, the second is classes owned by roots and so on.
      */
-    public void setCommitOrder(Vector commitOrder) {
+    public void setCommitOrder(List commitOrder) {
         this.commitOrder = commitOrder;
-    }
-
-    /**
-     * Set the objects that have been written during this commit process.
-     */
-    protected void setCompletedCommits(Map completedCommits) {
-        this.completedCommits = completedCommits;
     }
 
     /**
      * Used to store data queries to be performed at the end of the commit.
      * This is done to decrease dependencies and avoid deadlock.
      */
-    protected void setDataModifications(Hashtable dataModifications) {
+    protected void setDataModifications(Map<DatabaseMapping, List<Object[]>> dataModifications) {
         this.dataModifications = dataModifications;
     }
 
@@ -661,38 +549,8 @@ public class CommitManager {
     /**
      * Deletion are cached until the end.
      */
-    protected void setObjectsToDelete(Vector objectsToDelete) {
+    protected void setObjectsToDelete(List objectsToDelete) {
         this.objectsToDelete = objectsToDelete;
-    }
-
-    /**
-     * Set the objects that should be written during this commit process.
-     */
-    protected void setPendingCommits(Map pendingCommits) {
-        this.pendingCommits = pendingCommits;
-    }
-
-    /**
-     * Set the objects that should be written during this commit process.
-     */
-    protected void setProcessedCommits(Map processedCommits) {
-        this.processedCommits = processedCommits;
-    }
-
-    /**
-     * Set any objects that should be written during post modify commit process.
-     * These objects should be order by their ownership constraints to maintain referential integrity.
-     */
-    protected void setPostModifyCommits(Map postModifyCommits) {
-        this.postModifyCommits = postModifyCommits;
-    }
-
-    /**
-     * Set any objects that should be written during pre modify commit process.
-     * These objects should be order by their ownership constraints to maintain referential integrity.
-     */
-    protected void setPreModifyCommits(Map preModifyCommits) {
-        this.preModifyCommits = preModifyCommits;
     }
 
     /**
@@ -713,14 +571,7 @@ public class CommitManager {
      * Print the in progress depth.
      */
     public String toString() {
-        int size = 0;
-        if (preModifyCommits != null) {
-            size += getPreModifyCommits().size();
-        }
-        if (postModifyCommits != null) {
-            size += getPostModifyCommits().size();
-        }
-        Object[] args = { new Integer(size) };
+        Object[] args = { new Integer(this.commitDepth) };
         return Helper.getShortClassName(getClass()) + ToStringLocalization.buildMessage("commit_depth", args);
     }
 }

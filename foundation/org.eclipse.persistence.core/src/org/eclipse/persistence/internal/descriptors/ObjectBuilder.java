@@ -558,9 +558,9 @@ public class ObjectBuilder implements Cloneable, Serializable {
             original = buildObjectInUnitOfWork(query, joinManager, databaseRow, (UnitOfWorkImpl)session, primaryKey, concreteDescriptor);
         } else {
             original = buildObject(query, databaseRow, session, primaryKey, concreteDescriptor, joinManager);
-        }
-        if (query.shouldCacheQueryResults()) {
-            query.cacheResult(original);
+            if (query.shouldCacheQueryResults()) {
+                query.cacheResult(original);
+            }
         }
         query.setSession(unitOfWork);
         //GFBug#404  Pass in joinManager or not based on if shouldCascadeCloneToJoinedRelationship is set to true 
@@ -1217,11 +1217,6 @@ public class ObjectBuilder implements Cloneable, Serializable {
             if (readAllMappings || query.shouldReadMapping(mapping)) {
                 mapping.buildCloneFromRow(databaseRow, joinManager, clone, query, unitOfWork, unitOfWork);
             }
-        }
-
-        // PERF: Provide EJB life-cycle callbacks without using events.
-        if (this.descriptor.hasCMPPolicy()) {
-            this.descriptor.getCMPPolicy().invokeEJBLoad(clone, unitOfWork);
         }
 
         // PERF: Avoid events if no listeners.
@@ -2554,11 +2549,6 @@ public class ObjectBuilder implements Cloneable, Serializable {
             for (int index = 0; index < size; index++) {
                 ((DatabaseMapping)mappings.get(index)).buildClone(original, clone, unitOfWork);
             }
-        }
-
-        // PERF: Provide EJB life-cycle callbacks without using events.
-        if (this.descriptor.hasCMPPolicy()) {
-            this.descriptor.getCMPPolicy().invokeEJBLoad(clone, unitOfWork);
         }
 
         // PERF: Avoid events if no listeners.

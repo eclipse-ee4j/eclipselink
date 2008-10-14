@@ -220,7 +220,7 @@ public abstract class DatabaseQueryMechanism implements Cloneable, Serializable 
         CommitManager commitManager = getSession().getCommitManager();
 
         // if the object has already been committed, no work is required
-        if (commitManager.isCommitCompleted(object) || commitManager.isCommitInPostModify(object)) {
+        if (commitManager.isCommitCompletedOrInPost(object)) {
             return object;
         }
 
@@ -285,7 +285,7 @@ public abstract class DatabaseQueryMechanism implements Cloneable, Serializable 
         }
         // If the object has already been committed, no work is required
         // need to check for the object to ensure insert wasn't completed already.
-        if (commitManager.isCommitCompleted(object) || commitManager.isCommitInPostModify(object)) {
+        if (commitManager.isCommitCompletedOrInPost(object)) {
             return object;
         }
         try {
@@ -477,11 +477,6 @@ public abstract class DatabaseQueryMechanism implements Cloneable, Serializable 
         }
         if ((descriptor.getHistoryPolicy() != null) && descriptor.getHistoryPolicy().shouldHandleWrites()) {
             descriptor.getHistoryPolicy().postInsert(writeQuery);
-        }
-        
-        // PERF: Provide EJB life-cycle callbacks without using events.
-        if (descriptor.hasCMPPolicy()) {
-            descriptor.getCMPPolicy().postInsert(object, session);
         }
 
         // PERF: Avoid events if no listeners.

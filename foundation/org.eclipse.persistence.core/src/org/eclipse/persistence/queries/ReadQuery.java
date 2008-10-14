@@ -407,15 +407,6 @@ public abstract class ReadQuery extends DatabaseQuery {
      * Set the cached results of the query.
      * This will only be set if the query caches results.
      */
-    protected void setQueryResults(Object resultFromQuery, AbstractSession session) {
-        session.getIdentityMapAccessorInstance().putQueryResult(this, getTranslationRow().getValues(), resultFromQuery);
-    }
-
-    /**
-     * INTERNAL:
-     * Set the cached results of the query.
-     * This will only be set if the query caches results.
-     */
     protected void setQueryResults(Object resultFromQuery, AbstractRecord row, AbstractSession session) {
         Vector arguments = null;
         if (row == null) {

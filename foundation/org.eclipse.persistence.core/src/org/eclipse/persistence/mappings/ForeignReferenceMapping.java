@@ -247,6 +247,9 @@ public abstract class ForeignReferenceMapping extends DatabaseMapping {
             }
             setReferenceClass(referenceClass);
         }
+        if (getSelectionQuery() != null) {
+            getSelectionQuery().convertClassNamesToClasses(classLoader);
+        }
     }
 
     /**

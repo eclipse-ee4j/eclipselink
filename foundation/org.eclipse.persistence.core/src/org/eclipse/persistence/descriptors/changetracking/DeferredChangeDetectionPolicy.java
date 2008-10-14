@@ -68,11 +68,6 @@ public class DeferredChangeDetectionPolicy implements ObjectChangePolicy, java.i
      * @param shouldRaiseEvent indicates whether PreUpdate event should be risen (usually true)
      */
     public ObjectChangeSet calculateChanges(Object clone, Object backUp, boolean isNew, UnitOfWorkChangeSet changeSet, UnitOfWorkImpl unitOfWork, ClassDescriptor descriptor, boolean shouldRaiseEvent) {
-        // PERF: Provide EJB life-cycle callbacks without using events.
-        if (descriptor.hasCMPPolicy()) {
-            descriptor.getCMPPolicy().invokeEJBStore(clone, unitOfWork);
-        }
-    
         // PERF: Avoid events if no listeners.
         if (descriptor.getEventManager().hasAnyEventListeners() && shouldRaiseEvent) {
             // The query is built for compatibility to old event mechanism.

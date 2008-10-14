@@ -2269,11 +2269,6 @@ public class ClassDescriptor implements Cloneable, Serializable {
             session.getProject().setHasIsolatedClasses(true);
         }
 
-        // Record that there is a non-CMP1/2 object in the project.
-        if ((!hasCMPPolicy()) || getCMPPolicy().isCMP3Policy()) {
-            session.getProject().setIsPureCMP2Project(false);
-        }
-
         // Avoid repetitive initialization (this does not solve loops)
         if (isInitialized(INITIALIZED) || isInvalid()) {
             return;
