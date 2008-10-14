@@ -387,7 +387,7 @@
                         <include name="**/MappingClassLoaderTestCases.java"/>
                         <exclude name="**/OXTestSuite.java"/>
                         <exclude name="**/OXMSRGTestSuite.java"/>
-						<exclude name="**/DeploymentXMLOXTestSuite.java"/>
+                        <exclude name="**/DeploymentXMLOXTestSuite.java"/>
                         <exclude name="org/eclipse/persistence/testing/jaxb/**/*.java"/>
                         <exclude name="org/eclipse/persistence/testing/oxm/mappings/MappingTestSuite.java"/>
                         <exclude name="org/eclipse/persistence/testing/oxm/mappings/DeploymentXMLMappingTestSuite.java"/>
