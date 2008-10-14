@@ -30,7 +30,7 @@
             depends="clean, build, build-test"
     />
     <target name="build-nightly"    description="Trigger the nightly automated build and lrg tests"
-            depends="clean, build, package-bundles, build-test, test-lrg, publish-build, publish-results"
+            depends="clean, build, package-bundles, build-test, test-lrg, publish-build, publish-results, test-for-errors"
     />
     <target name="build-continuous" description="Trigger an automated build and run the tests if source changes exist"
             depends="clean, build-no-javadoc, build-test, test-srg"
@@ -96,6 +96,10 @@
     </target>
 
     <target name="clean" depends="init">
+        <ant antfile="build.xml" dir="${build.root.dir}" target="clean"/>
+    </target>
+
+    <target name="clean-dependencies" depends="init">
         <!-- Removed full delete of source tree because build-clean should take care
              of old build artifacts, and "svn co" should update source (including
              updating revision numbers, and cleaning up files that were renamed or
@@ -105,23 +109,60 @@
         <delete dir="${build.deps.dir}/mavenant"/>
         <delete file="${build.deps.dir}/dependencies.txt"/>
         <delete file="${build.deps.dir}/junit.zip"/>
-        <ant antfile="build.xml" dir="${build.root.dir}" target="clean"/>
     </target>
 
-    <target name="get-dependencies" depends="clean">
+    <target name="check-4-junit">
+        <echo message="Looking for: ${junit.dir}/junit.jar"/>
+        <available file="${junit.dir}/junit.jar" type="file" property="junit-exist"/>
+        <echo message="junit-exist: ${junit-exist}"/>
+    </target>
+    <target name="get-junit" unless="junit-exist" depends="check-4-junit">
         <mkdir dir="${junit.dir}"/>
-        <mkdir dir="${build.deps.dir}/mail"/>
-        <mkdir dir="${build.deps.dir}/mavenant"/>
-
-        <get src="${activation.url}" dest="${build.deps.dir}/mail/activation.jar"/>
-        <get src="${mail.url}"       dest="${build.deps.dir}/mail/mail.jar"/>
-        <get src="${mavenant.url}"   dest="${build.deps.dir}/mavenant/maven-ant-tasks-2.0.8.jar"/>
-
+        
         <!-- Get junit, extract it, then copy to expected location and cleanup (flatten won't work) -->
         <get src="${junit.url}" dest="${build.deps.dir}/junit.zip"/>
         <unzip src="${build.deps.dir}/junit.zip" dest="${build.deps.dir}"/>
         <copy file="${build.deps.dir}/${junit.bundle}/junit.jar" todir="${junit.dir}"/>
         <delete dir="${build.deps.dir}/${junit.bundle}"/>
+        <property name="dependencies-downloaded" value="true"/>
+    </target>
+
+    <target name="check-4-mail">
+        <echo message="Looking for: ${build.deps.dir}/mail/mail.jar"/>
+        <available file="${build.deps.dir}/mail/mail.jar" type="file" property="mail-exist"/>
+        <echo message="mail-exist: ${mail-exist}"/>
+    </target>
+    <target name="get-mail" unless="mail-exist" depends="check-4-mail">
+        <mkdir dir="${build.deps.dir}/mail"/>
+        <get src="${mail.url}"       dest="${build.deps.dir}/mail/mail.jar"/>
+        <property name="dependencies-downloaded" value="true"/>
+    </target>
+
+    <target name="check-4-activation">
+        <echo message="Looking for: ${build.deps.dir}/mail/activation.jar"/>
+        <available file="${build.deps.dir}/mail/activation.jar" type="file" property="activation-exist"/>
+        <echo message="activation-exist: ${activation-exist}"/>
+    </target>
+    <target name="get-activation" unless="activation-exist" depends="check-4-activation">
+        <get src="${activation.url}" dest="${build.deps.dir}/mail/activation.jar"/>
+        <property name="dependencies-downloaded" value="true"/>
+    </target>
+
+    <target name="check-4-mavenant">
+        <echo message="Looking for: ${build.deps.dir}/mavenant/maven-ant-tasks-2.0.8.jar"/>
+        <available file="${build.deps.dir}/mavenant/maven-ant-tasks-2.0.8.jar" type="file" property="mavenant-exist"/>
+        <echo message="mavenant-exist: ${mavenant-exist}"/>
+    </target>
+    <target name="get-mavenant" unless="mavenant-exist" depends="check-4-mavenant">
+        <!-- Commented out download, because it seems the access to apache.org has been blocked -->
+        <!-- mkdir dir="${build.deps.dir}/mavenant"/ -->
+        <!-- get src="${mavenant.url}"   dest="${build.deps.dir}/mavenant/maven-ant-tasks-2.0.8.jar"/ -->
+        <!-- property name="dependencies-downloaded" value="true"/ -->
+        <fail message="Must manually create dependency. Build cannot find: ${build.deps.dir}/mavenant/maven-ant-tasks-2.0.8.jar"/>
+    </target>
+
+    <target name="get-dependencies" if="dependencies-downloaded" depends="get-junit, get-mail, get-activation, get-mavenant">
+        <delete file="${build.deps.dir}/dependencies.txt" failonerror="true"/>
 
         <!-- Generate "dependencies.txt" file -->
         <echo message="Buildsystem external dependencies come from:${line.separator}" file="${build.deps.dir}/dependencies.txt" append="false"/>
@@ -174,7 +215,7 @@
         <mkdir dir="${download.path}/${release.version}/${installer_id}"/>
         <copy file="${build.root.dir}/${eclipselink.install.prefix}${eclipselink.zip.suffix}"         tofile="${download.path}/${release.version}/${installer_id}/${eclipselink.install.prefix}-${installer_id}${eclipselink.zip.suffix}" failonerror="false"/>        
         <copy file="${build.root.dir}/${eclipselink.src.install.prefix}${eclipselink.zip.suffix}"     tofile="${download.path}/${release.version}/${installer_id}/${eclipselink.src.install.prefix}-${installer_id}${eclipselink.zip.suffix}" failonerror="false"/>    
-        <copy file="${build.root.dir}/${eclipselink.jpa.tst.src.prefix}${eclipselink.zip.suffix}"     tofile="${download.path}/${release.version}/${installer_id}/${eclipselink.jpa.tst.src.prefix}-${installer_id}${eclipselink.zip.suffix}" failonerror="false"/>        
+        <copy file="${build.root.dir}/${eclipselink.tst.src.prefix}${eclipselink.zip.suffix}"         tofile="${download.path}/${release.version}/${installer_id}/${eclipselink.tst.src.prefix}-${installer_id}${eclipselink.zip.suffix}" failonerror="false"/>        
         <copy file="${build.root.dir}/${eclipselink.plugins.install.prefix}${eclipselink.zip.suffix}" tofile="${download.path}/${release.version}/${installer_id}/${eclipselink.plugins.install.prefix}-${installer_id}${eclipselink.zip.suffix}" failonerror="false"/>
         <copy file="${build.root.dir}/foundation/eclipselink.core.test/reports/junit-noframes.html"   tofile="${download.path}/${release.version}/${installer_id}/eclipselink-core-srg-${installer_id}.html" failonerror="false"/>
         <copy file="${build.root.dir}/jpa/eclipselink.jpa.test/reports/junit-noframes.html"           tofile="${download.path}/${release.version}/${installer_id}/eclipselink-jpa-lrg-${installer_id}.html" failonerror="false"/>
@@ -207,6 +248,10 @@
         <exec executable="/bin/sh" failonerror="true" logError="true" >
             <arg value="${build.root.dir}/buildsystem/buildNightlyList.sh"/>
         </exec>
+    </target>
+    
+    <target name="test-for-errors">
+         <fail message="Some of the junit tests failed.  See the ${report.dir}/junit-noframes.html file for details." if="junit.failed"/>
     </target>
 
 </project>

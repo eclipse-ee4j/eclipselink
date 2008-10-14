@@ -471,6 +471,7 @@
                 debug="${javac.debug}"
                 optimize="${javac.optimize}"
                 source="${javac.version}"
+                target="${javac.version}"
                 deprecation="${javac.deprecation}"
                 failonerror="true"
                 includes="org/eclipse/persistence/testing/jaxb/**/*.java">
@@ -489,7 +490,7 @@
                 optimize="${javac.optimize}"
                 source="${javac.version}"
                 deprecation="${javac.deprecation}"
-                failonerror="true"
+                failonerror="false"
                 includes="org/eclipse/persistence/testing/oxm/**/*.java">
                 <classpath>
                     <path refid="@{compilepathref}"/>

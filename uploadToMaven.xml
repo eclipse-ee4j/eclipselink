@@ -49,7 +49,8 @@
        <echo message="version ${version}"/>
 
        <!-- ensure installer_id is set - in general, installer id will be set by previous scripts when this script is called-->
-       <property name="installer_id" value="${build_date}"/>
+       <property name="installer_id" value="${release.version}"/>
+       <echo message="installer_id ${installer_id}"/>
 
        <!-- Get the subversion version for current working copy -->
        <!-- A freshly checked out copy of workspace is guaranteed to not have mixed revisions -->

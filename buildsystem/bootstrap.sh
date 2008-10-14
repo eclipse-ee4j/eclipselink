@@ -75,7 +75,7 @@ fi
 
 #Define common variables
 BOOTSTRAP_BLDFILE=bootstrap.xml
-JAVA_HOME=/shared/common/ibm-java2-ppc-50
+JAVA_HOME=/shared/common/ibm-java-jdk-ppc-60
 ANT_HOME=/shared/common/apache-ant-1.7.0
 HOME_DIR=/shared/rt/eclipselink
 LOG_DIR=${HOME_DIR}/logs

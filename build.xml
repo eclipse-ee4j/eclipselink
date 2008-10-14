@@ -52,6 +52,7 @@
     -->
 <project name="Eclipse Persistence Services" default="all" basedir=".">
 
+    <property environment="env"/>
     <!-- Allows a user to overide certain user specific properties. -->
     <property file="${user.home}/build.properties"/>
     <property file="./build.properties"/>
@@ -80,6 +81,10 @@
             dir="${eclipselink.plugins}"
             includes="${eclipselink.core.depend}"/>
     </path>
+
+    <!-- Short alias for building the jar. -->
+    <target name="jar" depends="package-eclipselink-jar"/>
+
     <!-- Default ant target, compiles all components and tests, builds eclipselink.jar. -->
     <target name="all" depends="package-eclipselink-jar, build-workbench, build-test, package-src-jar, package-packagerenamer-jar, package-installer-zip" description="build EclipseLink distribution files"/>
 
@@ -87,7 +92,7 @@
     <target name="build-all" depends="build-core, build-workbench, build-test, build-extension"/>
 
     <!-- Builds and packages all jars, javadoc, and builds installer. -->
-    <target name="build-distribution" depends="package-eclipselink-jar, build-eclipselink-bundles, package-src-jar, package-jpa-tst-src-jar, package-packagerenamer-jar, build-workbench, package-javadoc-zip, package-installer-zip"/>
+    <target name="build-distribution" depends="package-eclipselink-jar, build-eclipselink-bundles, package-src-jar, package-tst-src-jar, package-packagerenamer-jar, build-workbench, package-javadoc-zip, package-installer-zip"/>
 
     <!-- Compiles all components and tests (excluding workbench). -->
     <target name="build-core-all" depends="build-core, build-core-test, build-extension"/>
@@ -212,7 +217,7 @@
     </target>
 
     <!-- Packages OSGI bundle jars. -->
-        <!-- Note: This target builds bundles that are parallell to the bundles built by target: build-eclipselink-source-bundles.  When updating this target, be careful to keep it in sync with build-eclipselink-source-bundles -->
+    <!-- Note: This target builds bundles that are parallell to the bundles built by target: build-eclipselink-source-bundles.  When updating this target, be careful to keep it in sync with build-eclipselink-source-bundles -->
     <target name="build-eclipselink-bundles" depends="create-build-dir, clean-eclipselink-bundles" description="build eclipselink bundles">
         <jar jarfile="${eclipselink.core.base}/${plugins.dir}/${eclipselink.core.jar}_${installer_id}.jar" manifest="${eclipselink.core}/META-INF/MANIFEST.MF">
             <fileset dir="${eclipselink.core}/${classes.dir}">
@@ -372,8 +377,8 @@
     </target>
 
     <!-- Packages the eclipselink JPA testing source jar. -->
-    <target name="package-jpa-tst-src-jar" description="build EclipseLink JPA testing source jar">
-        <zip zipfile="${eclipselink.jpa.tst.src.prefix}${eclipselink.zip.suffix}">
+    <target name="package-tst-src-jar" description="build EclipseLink JPA testing source jar">
+        <zip zipfile="${eclipselink.tst.src.prefix}${eclipselink.zip.suffix}">
             <fileset dir="${eclipselink.core.test}/${src.dir}">
                 <include name="org\eclipse\persistence\testing\framework\**\*.java"/>
             </fileset>
@@ -453,17 +458,17 @@
                 <include name="${eclipselink.javadoc.install.prefix}${eclipselink.zip.suffix}"/>
             </zipfileset>
             <!-- setenv and package-rename scripts -->
-            <zipfileset dir="${eclipselink.core.bin}" prefix="eclipselink/bin">
+            <zipfileset dir="${eclipselink.core.bin}" prefix="eclipselink/bin" filemode="755">
                 <include name="${setenv-scripts}"/>
             </zipfileset>
-            <zipfileset dir="${eclipselink.util.rename}" prefix="eclipselink/utils/rename">
+            <zipfileset dir="${eclipselink.util.rename}" prefix="eclipselink/utils/rename" filemode="755">
                 <include name="${package-rename-scripts}"/>
             </zipfileset>
 
             <!-- jaxb-compiler scripts -->
-            <zipfileset dir="${eclipselink.moxy.bin}" includes="${jaxb-compiler-scripts}" prefix="eclipselink/bin"/>
+            <zipfileset dir="${eclipselink.moxy.bin}" includes="${jaxb-compiler-scripts}" prefix="eclipselink/bin" filemode="755"/>
             <!-- sdo-compiler scripts -->
-            <zipfileset dir="${eclipselink.sdo.bin}" includes="${sdo-compiler-scripts}" prefix="eclipselink/bin"/>
+            <zipfileset dir="${eclipselink.sdo.bin}" includes="${sdo-compiler-scripts}" prefix="eclipselink/bin" filemode="755"/>
             <!-- package-rename.properties -->
             <zipfileset dir="./${eclipselink.util.rename.resource}" includes="${package-rename.properties}" fullpath="eclipselink/utils/rename/package-rename.properties"/>
             <!-- core XSD files -->
@@ -505,7 +510,7 @@
             <zipfileset dir="utils/eclipselink.utils.workbench/config/" includes="*" prefix="eclipselink/utils/workbench/config"/>
             <zipfileset dir="utils/eclipselink.utils.workbench/config/platforms/" includes="*" prefix="eclipselink/utils/workbench/config/platforms"/>
             <zipfileset dir="utils/eclipselink.utils.workbench/" includes="readme.html" prefix="eclipselink/utils/workbench"/>
-            <zipfileset dir="utils/eclipselink.utils.workbench/bin/" includes="*" prefix="eclipselink/utils/workbench/bin"/>
+            <zipfileset dir="utils/eclipselink.utils.workbench/bin/" includes="*" prefix="eclipselink/utils/workbench/bin" filemode="755"/>
         </zip>
     </target>
 
