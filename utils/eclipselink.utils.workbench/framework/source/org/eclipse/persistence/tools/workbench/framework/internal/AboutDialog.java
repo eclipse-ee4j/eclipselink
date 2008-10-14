@@ -148,7 +148,6 @@ final class AboutDialog extends JDialog {
 
 		mainPanel.add(logoLabel, constraints);
 
-		// OracleAS TopLink
 		JLabel toplinkLabel = new JLabel(context.getApplication().getProductName());
 		toplinkLabel.setHorizontalAlignment(SwingConstants.CENTER);
 
@@ -187,7 +186,7 @@ final class AboutDialog extends JDialog {
 		mainPanel.add(applicationLabel, constraints);
 
 		// version
-		JLabel versionLabel = new JLabel(context.getApplication().getReleaseDesignation() + " (" + context.getApplication().getVersionNumber() + ")");
+		JLabel versionLabel = new JLabel(context.getApplication().getReleaseDesignation());
 		versionLabel.setHorizontalAlignment(SwingConstants.CENTER);
 
 		font = versionLabel.getFont();
