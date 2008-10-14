@@ -91,6 +91,7 @@ public class JUnitJPQLModifyTestSuite extends JUnitTestCase {
     {
         TestSuite suite = new TestSuite();
         suite.setName("JUnitJPQLModifyTestSuite");
+        suite.addTest(new JUnitJPQLModifyTestSuite("testSetup"));
         suite.addTest(new JUnitJPQLModifyTestSuite("simpleUpdate"));
         suite.addTest(new JUnitJPQLModifyTestSuite("updateWithSubquery"));
         suite.addTest(new JUnitJPQLModifyTestSuite("updateEmbedded"));
@@ -99,28 +100,26 @@ public class JUnitJPQLModifyTestSuite extends JUnitTestCase {
         suite.addTest(new JUnitJPQLModifyTestSuite("updateUnqualifiedAttributeInWhere"));
         suite.addTest(new JUnitJPQLModifyTestSuite("updateDateTimeFields"));
         suite.addTest(new JUnitJPQLModifyTestSuite("simpleDelete"));
-        return new TestSetup(suite) {
-     
-            //This method is run at the end of the SUITE only
-            protected void tearDown() {
-                clearCache();
-            }
-            
-            //This method is run at the start of the SUITE only
-            protected void setUp() {
-                
-                //get session to start setup
-                DatabaseSession session = JUnitTestCase.getServerSession();
-                
-                //initialize the global comparer object
-                comparer = new JUnitDomainObjectComparer();
-                
-                //set the session for the comparer to use
-                comparer.setSession((AbstractSession)session.getActiveSession());              
-            }            
-        };    
+        
+        return suite;
     }
-  
+    
+    /**
+     * The setup is done as a test, both to record its failure, and to allow execution in the server.
+     */
+    public void testSetup() {
+        clearCache();
+        //get session to start setup
+        DatabaseSession session = JUnitTestCase.getServerSession();
+        
+        //initialize the global comparer object
+        comparer = new JUnitDomainObjectComparer();
+        
+        //set the session for the comparer to use
+        comparer.setSession((AbstractSession)session.getActiveSession());
+
+    }
+    
     public void simpleUpdate()
     {          
         EntityManager em = createEntityManager();

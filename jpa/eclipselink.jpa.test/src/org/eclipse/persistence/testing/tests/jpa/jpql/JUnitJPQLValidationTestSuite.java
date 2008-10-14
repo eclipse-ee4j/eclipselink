@@ -81,6 +81,7 @@ public class JUnitJPQLValidationTestSuite extends JUnitTestCase
     {
         TestSuite suite = new TestSuite();
         suite.setName("JUnitJPQLValidationTestSuite");
+        suite.addTest(new JUnitJPQLValidationTestSuite("testSetup"));
         suite.addTest(new JUnitJPQLValidationTestSuite("generalExceptionTest"));
         suite.addTest(new JUnitJPQLValidationTestSuite("recognitionExceptionTest"));
         suite.addTest(new JUnitJPQLValidationTestSuite("missingSelectExceptionTest"));
@@ -125,39 +126,36 @@ public class JUnitJPQLValidationTestSuite extends JUnitTestCase
         suite.addTest(new JUnitJPQLValidationTestSuite("testInvalidSetClause"));
         suite.addTest(new JUnitJPQLValidationTestSuite("testUnsupportedCountDistinctOnOuterJoinedCompositePK"));
         suite.addTest(new JUnitJPQLValidationTestSuite("testInvalidHint"));
-        return new TestSetup(suite) {
-     
-            //This method is run at the end of the SUITE only
-            protected void tearDown() {
-                clearCache();
-            }
-            
-            //This method is run at the start of the SUITE only
-            protected void setUp() {
-                
-                //get session to start setup
-                DatabaseSession session = JUnitTestCase.getServerSession();
-                
-                //create a new EmployeePopulator
-                EmployeePopulator employeePopulator = new EmployeePopulator();
-                
-                new AdvancedTableCreator().replaceTables(session);
-                
-                //initialize the global comparer object
-                comparer = new JUnitDomainObjectComparer();
-                
-                //set the session for the comparer to use
-                comparer.setSession((AbstractSession)session.getActiveSession());              
-                
-                //Populate the tables
-                employeePopulator.buildExamples();
-                
-                //Persist the examples in the database
-                employeePopulator.persistExample(session);     
-            }            
-        };    
-  }
-  
+        
+        return suite;
+    }
+    
+    /**
+     * The setup is done as a test, both to record its failure, and to allow execution in the server.
+     */
+    public void testSetup() {
+        clearCache();
+        //get session to start setup
+        DatabaseSession session = JUnitTestCase.getServerSession();
+        
+        //create a new EmployeePopulator
+        EmployeePopulator employeePopulator = new EmployeePopulator();
+        
+        new AdvancedTableCreator().replaceTables(session);
+        
+        //initialize the global comparer object
+        comparer = new JUnitDomainObjectComparer();
+        
+        //set the session for the comparer to use
+        comparer.setSession((AbstractSession)session.getActiveSession());              
+        
+        //Populate the tables
+        employeePopulator.buildExamples();
+        
+        //Persist the examples in the database
+        employeePopulator.persistExample(session);
+    }
+    
     public void illegalArgumentExceptionTest() 
     {
         
@@ -545,7 +543,7 @@ public class JUnitJPQLValidationTestSuite extends JUnitTestCase
         }
     }
 
-	public void unknownAbstractSchemaTypeTest()
+    public void unknownAbstractSchemaTypeTest()
     {
         String ejbqlString =  " SELECT OBJECT(i) FROM Integer i WHERE i.city = \"Ottawa\"";
         
@@ -597,19 +595,20 @@ public class JUnitJPQLValidationTestSuite extends JUnitTestCase
         Query query = em.createQuery("Select e from Employee e where e.lastName like :name ");
         try{
             query.setParameter("l", "%ay");
+            query.getResultList();
         }catch (IllegalArgumentException ex){
             assertTrue("Failed to throw expected IllegalArgumentException, when incorrect parameter name is used", ex.getMessage().contains("using a name"));
             return;
         }
         fail("Failed to throw expected IllegalArgumentException, when incorrect parameter name is used");
     }
-    
    
     public void testParameterPositionValidation(){
         EntityManager em = this.createEntityManager();
         Query query = em.createQuery("Select e from Employee e where e.firstName like ?1 ");
         try{
             query.setParameter(2, "%ay");
+            query.getResultList();
         }catch (IllegalArgumentException ex){
             assertTrue("Failed to throw expected IllegalArgumentException, when incorrect parameter name is used", ex.getMessage().contains("parameter at position"));
             return;
@@ -625,6 +624,7 @@ public class JUnitJPQLValidationTestSuite extends JUnitTestCase
             query.setParameter(1, "foo");
             query.setParameter(2, "");
             query.setParameter(3, "bar");
+            query.getResultList();
         } catch (IllegalArgumentException ex) {
             assertTrue("Failed to throw expected IllegalArgumentException, when incorrect parameter name is used", ex.getMessage().contains("parameter at position"));
             return;
@@ -638,6 +638,7 @@ public class JUnitJPQLValidationTestSuite extends JUnitTestCase
         try {
             query.setParameter("fname", "foo");
             query.setParameter("lname", new Integer(1));
+            query.getResultList();
         } catch (IllegalArgumentException ex) {
             assertTrue("Failed to throw expected IllegalArgumentException, when parameter with incorrect type is used", ex.getMessage().contains("attempted to set a value of type"));
             return;
@@ -807,7 +808,9 @@ public class JUnitJPQLValidationTestSuite extends JUnitTestCase
     public void testUnknownEnumConstant() {
         EntityManager em = this.createEntityManager();
         try {
-            em.createQuery("SELECT e FROM Employee e WHERE e.status = EmployeeStatus.FULL_TIME");
+            //em.createQuery("SELECT e FROM Employee e WHERE e.status = EmployeeStatus.FULL_TIME");
+            Query query = em.createQuery("SELECT e FROM Employee e WHERE e.status = EmployeeStatus.FULL_TIME");
+            query.getResultList();
             fail("Failed to throw expected IllegalArgumentException for a query"+
                 "unknown enumerated class constant.");
         } catch (IllegalArgumentException ex) {
@@ -817,15 +820,16 @@ public class JUnitJPQLValidationTestSuite extends JUnitTestCase
         }
     }
 
-
-
-
   /**
    * For this test you need to add a persistence unit named default1 in the persistence.xml file
    * in essentials_testmodels.jar.
    */
-  public void flushOptimisticLockExceptionTest()
+    public void flushOptimisticLockExceptionTest()
     {
+        if (isOnServer()) {
+            // Multi-persistece-unit not work on server.
+            return;
+        }
         EntityManager firstEm = createEntityManager();        
         EntityManager secondEm = createAlternateEntityManager();
         
@@ -871,10 +875,12 @@ public class JUnitJPQLValidationTestSuite extends JUnitTestCase
     
      /* For this test you need to add a persistence unit named default1 in the persistence.xml file 
        in essentials_testmodels.jar */   
-  
-
-  public void commitOptimisticLockExceptionTest()
+    public void commitOptimisticLockExceptionTest()
     {
+          if (isOnServer()) {
+            // Multi-persistece-unit not work on server.
+            return;
+        }
         EntityManager firstEm = createEntityManager();        
         EntityManager secondEm = createAlternateEntityManager();
         
@@ -921,6 +927,10 @@ public class JUnitJPQLValidationTestSuite extends JUnitTestCase
     //this test fakes a JTA transaction
     public void JTAOptimisticLockExceptionTest() 
     {
+        if (isOnServer()) {
+            // Multi-persistece-unit not work on server.
+            return;
+        }
         EntityManager firstEm = createEntityManager();        
         EntityManager secondEm = createAlternateEntityManager();
         
@@ -1110,6 +1120,10 @@ public class JUnitJPQLValidationTestSuite extends JUnitTestCase
 
     public void testCommitRollbackException() 
     {
+        if (isOnServer()) {
+            // Cannot create parallel entity managers in the server.
+            return;
+        }
         EntityManager em = createEntityManager();
         String ejbqlString = "SELECT OBJECT (emp) FROM Employee emp WHERE emp.firstName='Bob'";
         DirectToFieldMapping idMapping = null;

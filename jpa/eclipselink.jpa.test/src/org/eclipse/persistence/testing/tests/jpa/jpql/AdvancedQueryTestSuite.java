@@ -75,6 +75,7 @@ public class AdvancedQueryTestSuite extends JUnitTestCase {
     public static Test suite() {
         TestSuite suite = new TestSuite();
         suite.setName("AdvancedQueryTestSuite");
+        suite.addTest(new AdvancedQueryTestSuite("testSetup"));
         suite.addTest(new AdvancedQueryTestSuite("testQueryCacheFirstCacheHits"));
         suite.addTest(new AdvancedQueryTestSuite("testQueryCacheOnlyCacheHits"));
         suite.addTest(new AdvancedQueryTestSuite("testQueryCacheOnlyCacheHitsOnSession"));
@@ -82,33 +83,29 @@ public class AdvancedQueryTestSuite extends JUnitTestCase {
         suite.addTest(new AdvancedQueryTestSuite("testQueryExactPrimaryKeyCacheHits"));
         suite.addTest(new AdvancedQueryTestSuite("testQueryTypeCacheHits"));
         suite.addTest(new AdvancedQueryTestSuite("testQueryCache"));
-        return new TestSetup(suite) {
-
-                //This method is run at the end of the SUITE only
-
-                protected void tearDown() {
-                    clearCache();
-                }
-                // This method is run at the start of the SUITE only.
-
-                protected void setUp() {
-                    //get session to start setup
-                    DatabaseSession session = JUnitTestCase.getServerSession();
-                    //create a new EmployeePopulator
-                    EmployeePopulator employeePopulator = new EmployeePopulator();
-                    new AdvancedTableCreator().replaceTables(session);
-                    //initialize the global comparer object
-                    comparer = new JUnitDomainObjectComparer();
-                    //set the session for the comparer to use
-                    comparer.setSession((AbstractSession)session.getActiveSession());
-                    //Populate the tables
-                    employeePopulator.buildExamples();
-                    //Persist the examples in the database
-                    employeePopulator.persistExample(session);
-                }
-            };
+        
+        return suite;
     }
-
+    
+    /**
+     * The setup is done as a test, both to record its failure, and to allow execution in the server.
+     */
+    public void testSetup() {
+        clearCache();
+        DatabaseSession session = JUnitTestCase.getServerSession();
+        //create a new EmployeePopulator
+        EmployeePopulator employeePopulator = new EmployeePopulator();
+        new AdvancedTableCreator().replaceTables(session);
+        //initialize the global comparer object
+        comparer = new JUnitDomainObjectComparer();
+        //set the session for the comparer to use
+        comparer.setSession((AbstractSession)session.getActiveSession());
+        //Populate the tables
+        employeePopulator.buildExamples();
+        //Persist the examples in the database
+        employeePopulator.persistExample(session);
+    }
+    
     /**
      * Test that a cache hit will occur on a primary key query.
      */

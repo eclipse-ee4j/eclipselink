@@ -21,6 +21,7 @@ import java.util.List;
 
 import java.util.Vector;
 import javax.persistence.Query;
+import javax.persistence.EntityManager;
 import junit.framework.Assert;
 import junit.framework.Test;
 import junit.framework.TestSuite;
@@ -86,6 +87,7 @@ public class JUnitJPQLComplexAggregateTestSuite extends JUnitTestCase
     {
         TestSuite suite = new TestSuite();
         suite.setName("JUnitJPQLComplexAggregateTestSuite");
+        suite.addTest(new JUnitJPQLComplexAggregateTestSuite("testSetup"));
         suite.addTest(new JUnitJPQLComplexAggregateTestSuite("complexAVGTest"));
         suite.addTest(new JUnitJPQLComplexAggregateTestSuite("complexCountDistinctWithGroupByAndHavingTest"));
         suite.addTest(new JUnitJPQLComplexAggregateTestSuite("complexCountDistinctWithGroupByTest"));
@@ -102,52 +104,47 @@ public class JUnitJPQLComplexAggregateTestSuite extends JUnitTestCase
         suite.addTest(new JUnitJPQLComplexAggregateTestSuite("complexCountOnJoinedVariableCompositePK"));
         suite.addTest(new JUnitJPQLComplexAggregateTestSuite("complexCountOnJoinedVariableOverManyToManySelfRefRelationship"));
         suite.addTest(new JUnitJPQLComplexAggregateTestSuite("complexCountOnJoinedCompositePK"));
+        
+        return suite;
+    }
+    
+    /**
+     * The setup is done as a test, both to record its failure, and to allow execution in the server.
+     */
+    public void testSetup() {
+        clearCache();
+        //get session to start setup
+        DatabaseSession session = JUnitTestCase.getServerSession();
+        
+        //create a new EmployeePopulator
+        EmployeePopulator employeePopulator = new EmployeePopulator();
+        
+        new AdvancedTableCreator().replaceTables(session);
+        new CompositePKTableCreator().replaceTables(session);
 
-        return new TestSetup(suite) {
-     
-            //This method is run at the end of the SUITE only
-            protected void tearDown() {
-                clearCache();
-            }
-            
-            //This method is run at the start of the SUITE only
-            protected void setUp() {
-                clearCache();
-                
-                //get session to start setup
-                DatabaseSession session = JUnitTestCase.getServerSession();
-                
-                //create a new EmployeePopulator
-                EmployeePopulator employeePopulator = new EmployeePopulator();
-                
-                new AdvancedTableCreator().replaceTables(session);
-                new CompositePKTableCreator().replaceTables(session);
+        RelationshipsExamples relationshipExamples = new RelationshipsExamples();
+        new RelationshipsTableManager().replaceTables(session);
+        
+        //initialize the global comparer object
+        comparer = new JUnitDomainObjectComparer();
+        
+        //set the session for the comparer to use
+        comparer.setSession((AbstractSession)session.getActiveSession());              
+        
+        //Populate the tables
+        employeePopulator.buildExamples();
+        
+        //Persist the examples in the database
+        employeePopulator.persistExample(session);  
 
-                RelationshipsExamples relationshipExamples = new RelationshipsExamples();
-                new RelationshipsTableManager().replaceTables(session);
-                
-                //initialize the global comparer object
-                comparer = new JUnitDomainObjectComparer();
-                
-                //set the session for the comparer to use
-                comparer.setSession((AbstractSession)session.getActiveSession());              
-                
-                //Populate the tables
-                employeePopulator.buildExamples();
-                
-                //Persist the examples in the database
-                employeePopulator.persistExample(session);  
-
-                //populate the relationships model and persist as well
-                relationshipExamples.buildExamples(session);
-            }     
-        };    
-  }
-  
+        //populate the relationships model and persist as well
+        relationshipExamples.buildExamples(session);
+    }
+    
     public void complexAVGTest()
     {
-        org.eclipse.persistence.jpa.JpaEntityManager em = (org.eclipse.persistence.jpa.JpaEntityManager) createEntityManager();                  
-               
+        EntityManager em = createEntityManager();
+        beginTransaction(em);
         ExpressionBuilder expbldr = new ExpressionBuilder();
             
         ReportQuery rq = new ReportQuery(Employee.class, expbldr);
@@ -161,9 +158,9 @@ public class JUnitJPQLComplexAggregateTestSuite extends JUnitTestCase
         rq.useDistinct();
         rq.addAverage("salary", Double.class);
         
-        String ejbqlString = "SELECT AVG(DISTINCT emp.salary) FROM Employee emp WHERE emp.lastName = \"Smith\"";      
+        String ejbqlString = "SELECT AVG(DISTINCT emp.salary) FROM Employee emp WHERE emp.lastName = \"Smith\"";
         
-        Vector expectedResultVector = (Vector) em.getActiveSession().executeQuery(rq);
+        Vector expectedResultVector = (Vector) getServerSession().executeQuery(rq);
         Double expectedResult = (Double)expectedResultVector.get(0);
         
         clearCache();
@@ -171,6 +168,8 @@ public class JUnitJPQLComplexAggregateTestSuite extends JUnitTestCase
         Double result = (Double) em.createQuery(ejbqlString).getSingleResult();
  
         Assert.assertEquals("Complex AVG test failed", expectedResult, result);
+        rollbackTransaction(em);
+        closeEntityManager(em);
     }
     
     /*
@@ -180,7 +179,8 @@ public class JUnitJPQLComplexAggregateTestSuite extends JUnitTestCase
     public void complexCountDistinctWithGroupByAndHavingTest()
     {
         String havingFilterString = "Toronto";
-        org.eclipse.persistence.jpa.JpaEntityManager em = (org.eclipse.persistence.jpa.JpaEntityManager) createEntityManager();                  
+        EntityManager em = createEntityManager();
+        beginTransaction(em);
         //Need to set the class in the expressionbuilder, as the Count(Distinct) will cause the 
         // query to change and be built around the Employee class instead of the Address class.
         ExpressionBuilder expbldr = new ExpressionBuilder(Address.class);
@@ -193,14 +193,15 @@ public class JUnitJPQLComplexAggregateTestSuite extends JUnitTestCase
         rq.addCount("COUNT",exp.distinct(),Long.class );
         rq.addGrouping(exp2);
         rq.setHavingExpression(exp2.equal(havingFilterString));
-        Vector expectedResult = (Vector) em.getActiveSession().executeQuery(rq);
-        
+        Vector expectedResult = (Vector) getServerSession().executeQuery(rq);
         String ejbqlString3 = "SELECT a.city, COUNT( DISTINCT e ) FROM Address a JOIN a.employees e GROUP BY a.city HAVING a.city =?1";
         Query q = em.createQuery(ejbqlString3);
         q.setParameter(1,havingFilterString);
         List result = q.getResultList();
         
-        Assert.assertTrue("Complex COUNT test failed", comparer.compareObjects(result, expectedResult));                      
+        Assert.assertTrue("Complex COUNT test failed", comparer.compareObjects(result, expectedResult));
+        rollbackTransaction(em);
+        closeEntityManager(em);
     }
 
 
@@ -210,8 +211,8 @@ public class JUnitJPQLComplexAggregateTestSuite extends JUnitTestCase
      */
     public void complexCountDistinctWithGroupByTest()
     {
-        org.eclipse.persistence.jpa.JpaEntityManager em = (org.eclipse.persistence.jpa.JpaEntityManager) createEntityManager();                  
-        
+        EntityManager em = createEntityManager();
+        beginTransaction(em);
         //need to set the class in the expressionbuilder, as the Count(Distinct) will cause the 
         // query to change and be built around the Employee class instead of the Address class.  
         ExpressionBuilder expbldr = new ExpressionBuilder(Address.class);
@@ -223,13 +224,14 @@ public class JUnitJPQLComplexAggregateTestSuite extends JUnitTestCase
         rq.addAttribute("city", exp2);
         rq.addCount("COUNT",exp.distinct(),Long.class );
         rq.addGrouping(exp2);
-        Vector expectedResult = (Vector) em.getActiveSession().executeQuery(rq);
-        
+        Vector expectedResult = (Vector) getServerSession().executeQuery(rq);
         String ejbqlString3 = "SELECT a.city, COUNT( DISTINCT e ) FROM Address a JOIN a.employees e GROUP BY a.city";
         Query q = em.createQuery(ejbqlString3);
         List result = q.getResultList();
         
-        Assert.assertTrue("Complex COUNT(Distinct) with Group By test failed", comparer.compareObjects(result, expectedResult));                      
+        Assert.assertTrue("Complex COUNT(Distinct) with Group By test failed", comparer.compareObjects(result, expectedResult));
+        rollbackTransaction(em);
+        closeEntityManager(em);
     }
     
     /*
@@ -238,8 +240,8 @@ public class JUnitJPQLComplexAggregateTestSuite extends JUnitTestCase
      */
     public void complexCountDistinctWithGroupByTest2()
     {
-        org.eclipse.persistence.jpa.JpaEntityManager em = (org.eclipse.persistence.jpa.JpaEntityManager) createEntityManager();                  
-        
+        EntityManager em = createEntityManager();
+        beginTransaction(em);
         //need to set the class in the expressionbuilder, as the Count(Distinct) will cause the 
         // query to change and be built around the Employee class instead of the Address class.  
         ExpressionBuilder expbldr = new ExpressionBuilder(Address.class);
@@ -252,13 +254,14 @@ public class JUnitJPQLComplexAggregateTestSuite extends JUnitTestCase
         rq.addCount("COUNT1",exp, Long.class);
         rq.addCount("COUNT2",exp.get("lastName").distinct(),Long.class );
         rq.addGrouping(exp2);
-        Vector expectedResult = (Vector) em.getActiveSession().executeQuery(rq);
-        
+        Vector expectedResult = (Vector) getServerSession().executeQuery(rq);
         String ejbqlString3 = "SELECT a.city, COUNT( e ), COUNT( DISTINCT e.lastName ) FROM Address a JOIN a.employees e GROUP BY a.city";
         Query q = em.createQuery(ejbqlString3);
         List result = q.getResultList();
         
-        Assert.assertTrue("Complex COUNT(Distinct) with Group By test failed", comparer.compareObjects(result, expectedResult));                      
+        Assert.assertTrue("Complex COUNT(Distinct) with Group By test failed", comparer.compareObjects(result, expectedResult));
+        rollbackTransaction(em);
+        closeEntityManager(em);
     }
     
     /**
@@ -266,8 +269,8 @@ public class JUnitJPQLComplexAggregateTestSuite extends JUnitTestCase
      */
     public void complexHavingWithAggregate()
     {
-        org.eclipse.persistence.jpa.JpaEntityManager em = (org.eclipse.persistence.jpa.JpaEntityManager) createEntityManager();
-        
+        EntityManager em = createEntityManager();
+        beginTransaction(em);
         // Test using the project id in COUNT, GROUP BY and HAVING
         ExpressionBuilder employeeBuilder = new ExpressionBuilder(Employee.class);
         ReportQuery rq = new ReportQuery(Employee.class, employeeBuilder);
@@ -279,8 +282,8 @@ public class JUnitJPQLComplexAggregateTestSuite extends JUnitTestCase
         rq.addGrouping(pid);
         rq.setHavingExpression(count.greaterThan(1));
         rq.setShouldReturnWithoutReportQueryResult(true);
-        Vector expectedResult = (Vector) em.getActiveSession().executeQuery(rq);
-
+        //Vector expectedResult = (Vector) em.getActiveSession().executeQuery(rq);
+        Vector expectedResult = (Vector) getServerSession().executeQuery(rq);
         String jpql = 
             "SELECT p.id, COUNT(p.id) FROM Employee e JOIN e.projects p " + 
             "GROUP BY p.id HAVING COUNT(p.id)>1";
@@ -299,7 +302,7 @@ public class JUnitJPQLComplexAggregateTestSuite extends JUnitTestCase
         rq.addGrouping(projects);
         rq.setHavingExpression(count.greaterThan(1));
         rq.setShouldReturnWithoutReportQueryResult(true);
-        expectedResult = (Vector) em.getActiveSession().executeQuery(rq);
+        expectedResult = (Vector) getServerSession().executeQuery(rq);
 
         jpql = 
             "SELECT p, COUNT(p) FROM Employee e JOIN e.projects p " + 
@@ -308,30 +311,37 @@ public class JUnitJPQLComplexAggregateTestSuite extends JUnitTestCase
 
         Assert.assertTrue("Complex HAVING with aggregate function failed", 
                           comparer.compareObjects(result, expectedResult));
+        rollbackTransaction(em);
+        closeEntityManager(em);
     }
     
     public void complexCountTest()
     {
-        org.eclipse.persistence.jpa.JpaEntityManager em = (org.eclipse.persistence.jpa.JpaEntityManager) createEntityManager();                  
-               
-        ExpressionBuilder expbldr = new ExpressionBuilder();
+        EntityManager em = createEntityManager();
+        beginTransaction(em);
+        try {
+            ExpressionBuilder expbldr = new ExpressionBuilder();
             
-        ReportQuery rq = new ReportQuery(Employee.class, expbldr);
+            ReportQuery rq = new ReportQuery(Employee.class, expbldr);
         
-        Expression exp = expbldr.get("lastName").equal("Smith");
+            Expression exp = expbldr.get("lastName").equal("Smith");
         
-        rq.setReferenceClass(Employee.class);
-        rq.setSelectionCriteria(exp);
-        rq.returnSingleAttribute();
-        rq.dontRetrievePrimaryKeys();
-        rq.addCount("COUNT", expbldr, Long.class);
-        Vector expectedResultVector = (Vector) em.getActiveSession().executeQuery(rq);
-        Long expectedResult = (Long) expectedResultVector.get(0);
+            rq.setReferenceClass(Employee.class);
+            rq.setSelectionCriteria(exp);
+            rq.returnSingleAttribute();
+            rq.dontRetrievePrimaryKeys();
+            rq.addCount("COUNT", expbldr, Long.class);
+            Vector expectedResultVector = (Vector) getServerSession().executeQuery(rq);
+            Long expectedResult = (Long) expectedResultVector.get(0);
         
-        String ejbqlString = "SELECT COUNT(emp) FROM Employee emp WHERE emp.lastName = \"Smith\"";    
-        Long result = (Long) em.createQuery(ejbqlString).getSingleResult();
+            String ejbqlString = "SELECT COUNT(emp) FROM Employee emp WHERE emp.lastName = \"Smith\"";    
+            Long result = (Long) em.createQuery(ejbqlString).getSingleResult();
  
-        Assert.assertEquals("Complex COUNT test failed", expectedResult, result);
+            Assert.assertEquals("Complex COUNT test failed", expectedResult, result);
+        } finally {
+            rollbackTransaction(em);
+            closeEntityManager(em);
+        }
     }
     
     /*
@@ -340,7 +350,8 @@ public class JUnitJPQLComplexAggregateTestSuite extends JUnitTestCase
      */
     public void complexCountWithGroupByTest()
     {
-        org.eclipse.persistence.jpa.JpaEntityManager em = (org.eclipse.persistence.jpa.JpaEntityManager) createEntityManager();                  
+        EntityManager em = createEntityManager();
+        beginTransaction(em);
         //Need to set the class in the expressionbuilder, as the Count(Distinct) will cause the 
         // query to change and be built around the Employee class instead of the Address class.  
         ExpressionBuilder expbldr = new ExpressionBuilder(Address.class);
@@ -352,19 +363,20 @@ public class JUnitJPQLComplexAggregateTestSuite extends JUnitTestCase
         rq.addAttribute("city", exp2);
         rq.addCount("COUNT",exp.distinct(),Long.class );
         rq.addGrouping(exp2);
-        Vector expectedResult = (Vector) em.getActiveSession().executeQuery(rq);
-
+        Vector expectedResult = (Vector) getServerSession().executeQuery(rq);
         String ejbqlString3 = "SELECT a.city, COUNT( DISTINCT e ) FROM Address a JOIN a.employees e GROUP BY a.city";
         Query q = em.createQuery(ejbqlString3);
         List result = q.getResultList();
         
-        Assert.assertTrue("Complex COUNT with Group By test failed", comparer.compareObjects(result, expectedResult));                      
+        Assert.assertTrue("Complex COUNT with Group By test failed", comparer.compareObjects(result, expectedResult));
+        rollbackTransaction(em);
+        closeEntityManager(em);
     }
     
     public void complexDistinctCountTest()
     {
-        org.eclipse.persistence.jpa.JpaEntityManager em = (org.eclipse.persistence.jpa.JpaEntityManager) createEntityManager();                  
-               
+        EntityManager em = createEntityManager();
+        beginTransaction(em);
         ExpressionBuilder expbldr = new ExpressionBuilder();
             
         ReportQuery rq = new ReportQuery(Employee.class, expbldr);
@@ -377,19 +389,21 @@ public class JUnitJPQLComplexAggregateTestSuite extends JUnitTestCase
         rq.returnSingleAttribute();
         rq.dontRetrievePrimaryKeys();
         rq.addCount("COUNT", expbldr.get("lastName").distinct(), Long.class);
-        Vector expectedResultVector = (Vector) em.getActiveSession().executeQuery(rq);
+        Vector expectedResultVector = (Vector) getServerSession().executeQuery(rq);
         Long expectedResult = (Long) expectedResultVector.get(0);
         
         String ejbqlString = "SELECT COUNT(DISTINCT emp.lastName) FROM Employee emp WHERE emp.lastName = \"Smith\"";
         Long result = (Long) em.createQuery(ejbqlString).getSingleResult();
  
         Assert.assertEquals("Complex DISTINCT COUNT test failed", expectedResult, result);
+        rollbackTransaction(em);
+        closeEntityManager(em);
     }
     
     public void complexMaxTest()
     {
-        org.eclipse.persistence.jpa.JpaEntityManager em = (org.eclipse.persistence.jpa.JpaEntityManager) createEntityManager();                  
-               
+        EntityManager em = createEntityManager();
+        beginTransaction(em);
         ExpressionBuilder expbldr = new ExpressionBuilder();
             
         ReportQuery rq = new ReportQuery(Employee.class, expbldr);
@@ -397,40 +411,43 @@ public class JUnitJPQLComplexAggregateTestSuite extends JUnitTestCase
         rq.returnSingleAttribute();     
         rq.dontRetrievePrimaryKeys();
         rq.addAttribute("salary", expbldr.get("salary").distinct().maximum());
-        Vector expectedResultVector = (Vector) em.getActiveSession().executeQuery(rq);
+        Vector expectedResultVector = (Vector) getServerSession().executeQuery(rq);
         Number expectedResult = (Number) expectedResultVector.get(0);
         
         String ejbqlString = "SELECT MAX(DISTINCT emp.salary) FROM Employee emp";
         Number result = (Number) em.createQuery(ejbqlString).getSingleResult();
  
         Assert.assertEquals("Complex MAX test failed", expectedResult, result);
+        rollbackTransaction(em);
+        closeEntityManager(em);
     }
     
     public void complexMinTest()
     {
-        org.eclipse.persistence.jpa.JpaEntityManager em = (org.eclipse.persistence.jpa.JpaEntityManager) createEntityManager();                  
-               
+        EntityManager em = createEntityManager();
+        beginTransaction(em);
         ExpressionBuilder expbldr = new ExpressionBuilder();
-            
+        
         ReportQuery rq = new ReportQuery(Employee.class, expbldr);
         rq.setReferenceClass(Employee.class);
         rq.returnSingleAttribute();     
         rq.dontRetrievePrimaryKeys();
         rq.addAttribute("salary", expbldr.get("salary").distinct().minimum());
-        Vector expectedResultVector = (Vector) em.getActiveSession().executeQuery(rq);
+        Vector expectedResultVector = (Vector) getServerSession().executeQuery(rq);
         Number expectedResult = (Number) expectedResultVector.get(0);
 
         String ejbqlString = "SELECT MIN(DISTINCT emp.salary) FROM Employee emp";
         Number result = (Number) em.createQuery(ejbqlString).getSingleResult();
- 
+
         Assert.assertEquals("Complex MIN test failed", expectedResult, result);  
-        
+        rollbackTransaction(em);
+        closeEntityManager(em);
     }
     
     public void complexSumTest()
     {
-        org.eclipse.persistence.jpa.JpaEntityManager em = (org.eclipse.persistence.jpa.JpaEntityManager) createEntityManager();                  
-               
+        EntityManager em = createEntityManager();
+        beginTransaction(em);
         ExpressionBuilder expbldr = new ExpressionBuilder();
             
         ReportQuery rq = new ReportQuery(Employee.class, expbldr);
@@ -438,14 +455,15 @@ public class JUnitJPQLComplexAggregateTestSuite extends JUnitTestCase
         rq.returnSingleAttribute();     
         rq.dontRetrievePrimaryKeys();
         rq.addAttribute("salary", expbldr.get("salary").distinct().sum(), Long.class);
-        Vector expectedResultVector = (Vector) em.getActiveSession().executeQuery(rq);
+        Vector expectedResultVector = (Vector) getServerSession().executeQuery(rq);
         Long expectedResult = (Long) expectedResultVector.get(0);
         
         String ejbqlString = "SELECT SUM(DISTINCT emp.salary) FROM Employee emp";
         Long result = (Long) em.createQuery(ejbqlString).getSingleResult();
  
         Assert.assertEquals("Complex SUMtest failed", expectedResult, result);
-        
+        rollbackTransaction(em);
+        closeEntityManager(em);
     }
 
     /**
@@ -453,16 +471,19 @@ public class JUnitJPQLComplexAggregateTestSuite extends JUnitTestCase
      */
     public void complexCountDistinctOnBaseQueryClass()
     {
-        org.eclipse.persistence.jpa.JpaEntityManager em = 
-            (org.eclipse.persistence.jpa.JpaEntityManager) createEntityManager();
+        EntityManager em = createEntityManager();
+        beginTransaction(em);
         
-        Long expectedResult = Long.valueOf(em.getActiveSession().readAllObjects(Employee.class).size());
+        Long expectedResult = Long.valueOf(getServerSession().readAllObjects(Employee.class).size());
         
         String jpql = "SELECT COUNT(DISTINCT e) FROM Employee e";
         Query q = em.createQuery(jpql);
         Long result = (Long) q.getSingleResult();
 
         Assert.assertEquals("Complex COUNT DISTINCT on base query class ", expectedResult, result);
+
+        rollbackTransaction(em);
+        closeEntityManager(em);
     }
     
     /**
@@ -470,8 +491,7 @@ public class JUnitJPQLComplexAggregateTestSuite extends JUnitTestCase
      */
     public void complexCountOnJoinedVariableSimplePK()
     {
-        org.eclipse.persistence.jpa.JpaEntityManager em = 
-            (org.eclipse.persistence.jpa.JpaEntityManager) createEntityManager();
+        EntityManager em = createEntityManager();
 
         // Need to create the expected result manually, because using the
         // TopLink query API would run into the same issue 2497.
@@ -499,8 +519,7 @@ public class JUnitJPQLComplexAggregateTestSuite extends JUnitTestCase
      */
     public void complexCountOnJoinedVariableCompositePK()
     {
-        org.eclipse.persistence.jpa.JpaEntityManager em = 
-            (org.eclipse.persistence.jpa.JpaEntityManager) createEntityManager();
+        EntityManager em = createEntityManager();
 
         // Need to create the expected result manually, because using the
         // TopLink query API would run into the same issue 2497.
@@ -528,8 +547,7 @@ public class JUnitJPQLComplexAggregateTestSuite extends JUnitTestCase
      */
     public void complexCountOnJoinedCompositePK()
     {
-        org.eclipse.persistence.jpa.JpaEntityManager em = 
-            (org.eclipse.persistence.jpa.JpaEntityManager) createEntityManager();
+        EntityManager em = createEntityManager();
         try{
             beginTransaction(em);
                 Scientist s = new Scientist();
@@ -569,8 +587,7 @@ public class JUnitJPQLComplexAggregateTestSuite extends JUnitTestCase
      */
     public void complexCountOnJoinedVariableOverManyToManySelfRefRelationship()
     {
-        org.eclipse.persistence.jpa.JpaEntityManager em = 
-            (org.eclipse.persistence.jpa.JpaEntityManager) createEntityManager();
+        EntityManager em = createEntityManager();
 
         Long zero = Long.valueOf(0);
         List expectedResult = Arrays.asList(new Long[] { zero, zero, zero, zero });

@@ -19,6 +19,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Vector;
 
+import javax.persistence.EntityManager;
+
 import junit.framework.Assert;
 
 import org.eclipse.persistence.jpa.JpaEntityManager;
@@ -75,6 +77,7 @@ public class JUnitJPQLExamplesTestSuite extends JUnitTestCase {
     public static Test suite() {
         TestSuite suite = new TestSuite();
         suite.setName("JUnitJPQLExamplesTestSuite");
+        suite.addTest(new JUnitJPQLExamplesTestSuite("testSetup"));
         suite.addTest(new JUnitJPQLExamplesTestSuite("findAllOrders"));
         suite.addTest(new JUnitJPQLExamplesTestSuite("findEmployeesInOntario"));
         suite.addTest(new JUnitJPQLExamplesTestSuite("findAllProvinceWithEmployees"));
@@ -112,52 +115,45 @@ public class JUnitJPQLExamplesTestSuite extends JUnitTestCase {
         // Bug 5090182
         suite.addTest(new JUnitJPQLExamplesTestSuite("testEJBQLQueryString"));
         suite.addTest(new JUnitJPQLExamplesTestSuite("updateEmbeddedFieldTest"));
+        
+        return suite;
+    }
+    
+    /**
+     * The setup is done as a test, both to record its failure, and to allow execution in the server.
+     */
+    public void testSetup() {
+        clearCache();
+        //get session to start setup
+        DatabaseSession session = JUnitTestCase.getServerSession();
+        
+        //create a new EmployeePopulator
+        EmployeePopulator employeePopulator = new EmployeePopulator();
+        
+        RelationshipsExamples relationshipExamples = new RelationshipsExamples();
 
-        return new TestSetup(suite) {
+        new AdvancedTableCreator().replaceTables(session);
 
-                //This method is run at the end of the SUITE only
+        new RelationshipsTableManager().replaceTables(session);
 
-                protected void tearDown() {
-                    clearCache();
-                }
+        //initialize the global comparer object
+        comparer = new JUnitDomainObjectComparer();
 
-                //This method is run at the start of the SUITE only
+        //set the session for the comparer to use
+        comparer.setSession((AbstractSession)session.getActiveSession());
 
-                protected void setUp() {
+        //Populate the advanced model
+        employeePopulator.buildExamples();
+        //populate the relationships model and persist as well
+        relationshipExamples.buildExamples(session);
 
-                    //get session to start setup
-                    DatabaseSession session = JUnitTestCase.getServerSession();
-
-                    //create a new EmployeePopulator
-                    employeePopulator = new EmployeePopulator();
-
-                    RelationshipsExamples relationshipExamples = new RelationshipsExamples();
-
-                    new AdvancedTableCreator().replaceTables(session);
-
-                    new RelationshipsTableManager().replaceTables(session);
-
-                    //initialize the global comparer object
-                    comparer = new JUnitDomainObjectComparer();
-
-                    //set the session for the comparer to use
-                    comparer.setSession((AbstractSession)session.getActiveSession());
-
-
-                    //Populate the advanced model
-                    employeePopulator.buildExamples();
-                    //populate the relationships model and persist as well
-                    relationshipExamples.buildExamples(session);
-
-                    //Persist the advanced model examples in the database
-                    employeePopulator.persistExample(session);
-                }
-            };
+        //Persist the advanced model examples in the database
+        employeePopulator.persistExample(session);
     }
 
     public void findAllOrders() {
-        JpaEntityManager em = (org.eclipse.persistence.jpa.JpaEntityManager)createEntityManager();
-        List expectedResult = em.getActiveSession().readAllObjects(Order.class);
+        EntityManager em = createEntityManager();
+        List expectedResult = getServerSession().readAllObjects(Order.class);
 
         String ejbqlString = "SELECT o FROM OrderBean o";
         List result = em.createQuery(ejbqlString).getResultList();
@@ -167,11 +163,11 @@ public class JUnitJPQLExamplesTestSuite extends JUnitTestCase {
     }
 
     public void findEmployeesInOntario() {
-        JpaEntityManager em = (org.eclipse.persistence.jpa.JpaEntityManager)createEntityManager();
+        EntityManager em = createEntityManager();
         ExpressionBuilder builder = new ExpressionBuilder();
         Expression whereClause = builder.get("address").get("province").equal("ONT");
 
-        List expectedResult = em.getActiveSession().readAllObjects(Employee.class, whereClause);
+        List expectedResult = getServerSession().readAllObjects(Employee.class, whereClause);
 
         String ejbqlString = "SELECT e FROM Employee e WHERE e.address.province='ONT'";
         List result = em.createQuery(ejbqlString).getResultList();
@@ -183,7 +179,7 @@ public class JUnitJPQLExamplesTestSuite extends JUnitTestCase {
 
     public void findAllProvinceWithEmployees() {
         boolean testPass = false;
-        JpaEntityManager em = (org.eclipse.persistence.jpa.JpaEntityManager)createEntityManager();
+        EntityManager em = createEntityManager();
         ExpressionBuilder builder = new ExpressionBuilder();
         Expression whereClause = builder.get("address").get("province");
 
@@ -193,7 +189,7 @@ public class JUnitJPQLExamplesTestSuite extends JUnitTestCase {
         rq.addItem("province", whereClause);
         rq.useDistinct();
 
-        List expectedResult = (List)em.getActiveSession().executeQuery(rq);
+        List expectedResult = (List)getServerSession().executeQuery(rq);
 
         String ejbqlString = "SELECT DISTINCT e.address.province FROM Employee e";
         List result = em.createQuery(ejbqlString).getResultList();
@@ -206,7 +202,7 @@ public class JUnitJPQLExamplesTestSuite extends JUnitTestCase {
     }
 
     public void findAllEmployeesWithPhoneNumbers() {
-        JpaEntityManager em = (org.eclipse.persistence.jpa.JpaEntityManager)createEntityManager();
+        EntityManager em = createEntityManager();
         ExpressionBuilder builder = new ExpressionBuilder();
         Expression whereClause = builder.isEmpty("phoneNumbers").not();
 
@@ -214,7 +210,7 @@ public class JUnitJPQLExamplesTestSuite extends JUnitTestCase {
         raq.setSelectionCriteria(whereClause);
         raq.useDistinct();
 
-        List expectedResult = (List)em.getActiveSession().executeQuery(raq);
+        List expectedResult = (List)getServerSession().executeQuery(raq);
 
         String ejbqlString = "SELECT DISTINCT e FROM Employee e, IN (e.phoneNumbers) l";
         List firstResult = em.createQuery(ejbqlString).getResultList();
@@ -228,7 +224,7 @@ public class JUnitJPQLExamplesTestSuite extends JUnitTestCase {
     }
 
     public void findAllEmployeesWithOutPhoneNumbers() {
-        JpaEntityManager em = (org.eclipse.persistence.jpa.JpaEntityManager)createEntityManager();
+        EntityManager em = createEntityManager();
         ExpressionBuilder builder = new ExpressionBuilder();
         Expression whereClause = builder.isEmpty("phoneNumbers");
 
@@ -236,7 +232,7 @@ public class JUnitJPQLExamplesTestSuite extends JUnitTestCase {
         raq.setSelectionCriteria(whereClause);
         raq.useDistinct();
 
-        List expectedResult = (List)em.getActiveSession().executeQuery(raq);
+        List expectedResult = (List)getServerSession().executeQuery(raq);
 
         String ejbqlString = "SELECT DISTINCT e FROM Employee e WHERE e.phoneNumbers IS EMPTY";
         List result = em.createQuery(ejbqlString).getResultList();
@@ -246,7 +242,7 @@ public class JUnitJPQLExamplesTestSuite extends JUnitTestCase {
     }
 
     public void findAllEmployeesWithCellPhones() {
-        JpaEntityManager em = (org.eclipse.persistence.jpa.JpaEntityManager)createEntityManager();
+        EntityManager em = createEntityManager();
         ExpressionBuilder builder = new ExpressionBuilder();
         Expression whereClause = builder.anyOf("phoneNumbers").get("type").equal("Cellular");
 
@@ -254,7 +250,7 @@ public class JUnitJPQLExamplesTestSuite extends JUnitTestCase {
         raq.setSelectionCriteria(whereClause);
         raq.useDistinct();
 
-        List expectedResult = (List)em.getActiveSession().executeQuery(raq);
+        List expectedResult = (List)getServerSession().executeQuery(raq);
 
         String ejbqlString = "SELECT DISTINCT e FROM Employee e JOIN e.phoneNumbers p " + "WHERE p.type = 'Cellular'";
         List firstResult = em.createQuery(ejbqlString).getResultList();
@@ -267,14 +263,14 @@ public class JUnitJPQLExamplesTestSuite extends JUnitTestCase {
     }
 
     public void findOrdersWithDifferentBilledCustomer() {
-        JpaEntityManager em = (org.eclipse.persistence.jpa.JpaEntityManager)createEntityManager();
+        EntityManager em = createEntityManager();
         ExpressionBuilder builder = new ExpressionBuilder();
         Expression whereClause = builder.get("customer").equal(builder.get("billedCustomer")).not();
 
         ReadAllQuery raq = new ReadAllQuery(Order.class);
         raq.setSelectionCriteria(whereClause);
 
-        List expectedResult = (List)em.getActiveSession().executeQuery(raq);
+        List expectedResult = (List)getServerSession().executeQuery(raq);
 
         String ejbqlString = "SELECT o FROM OrderBean o WHERE o.customer <> o.billedCustomer";
         List firstResult = em.createQuery(ejbqlString).getResultList();
@@ -287,7 +283,7 @@ public class JUnitJPQLExamplesTestSuite extends JUnitTestCase {
     }
 
     public void findEmployeeWithWorkPhone2258812() {
-        JpaEntityManager em = (org.eclipse.persistence.jpa.JpaEntityManager)createEntityManager();
+        EntityManager em = createEntityManager();
         ExpressionBuilder builder = new ExpressionBuilder();
         Expression whereClause1 = builder.anyOf("phoneNumbers").get("type").equal("Work");
         Expression whereClause2 = builder.anyOf("phoneNumbers").get("number").equal("2258812");
@@ -296,7 +292,7 @@ public class JUnitJPQLExamplesTestSuite extends JUnitTestCase {
         raq.setSelectionCriteria(whereClause1.and(whereClause2));
         raq.useDistinct();
 
-        List expectedResult = (List)em.getActiveSession().executeQuery(raq);
+        List expectedResult = (List)getServerSession().executeQuery(raq);
 
         String ejbqlString = "SELECT DISTINCT e FROM Employee e JOIN e.phoneNumbers p " + "WHERE p.type = 'Work' AND p.number = '2258812' ";
         List result = em.createQuery(ejbqlString).getResultList();
@@ -306,8 +302,8 @@ public class JUnitJPQLExamplesTestSuite extends JUnitTestCase {
     }
 
     public void parameterTest() {
-        JpaEntityManager em = (org.eclipse.persistence.jpa.JpaEntityManager)createEntityManager();
-        List employeeList = em.getActiveSession().readAllObjects(Employee.class);
+        EntityManager em = createEntityManager();
+        List employeeList = getServerSession().readAllObjects(Employee.class);
         Employee expectedEmployee = (Employee)employeeList.get(0);
         int i = 1;
         while (expectedEmployee.getPhoneNumbers().size() == 0) {
@@ -327,7 +323,7 @@ public class JUnitJPQLExamplesTestSuite extends JUnitTestCase {
 
 
     public void getOrderLargerThan() {
-        JpaEntityManager em = (org.eclipse.persistence.jpa.JpaEntityManager)createEntityManager();
+        EntityManager em = createEntityManager();
 
         ExpressionBuilder builder1 = new ExpressionBuilder(Order.class);
         ExpressionBuilder builder2 = new ExpressionBuilder(Order.class);
@@ -342,7 +338,7 @@ public class JUnitJPQLExamplesTestSuite extends JUnitTestCase {
         raq.setSelectionCriteria(whereClause);
         raq.setReferenceClass(Order.class);
         raq.useDistinct();
-        List expectedResult = (List)em.getActiveSession().executeQuery(raq);
+        List expectedResult = (List)getServerSession().executeQuery(raq);
 
         String ejbqlString = "SELECT DISTINCT o1 FROM OrderBean o1, OrderBean o2 WHERE o1.quantity > o2.quantity AND" + " o2.customer.name = 'Jane Smith' ";
         List result = em.createQuery(ejbqlString).getResultList();
@@ -352,14 +348,14 @@ public class JUnitJPQLExamplesTestSuite extends JUnitTestCase {
     }
 
     public void getOrderForCustomer() {
-        JpaEntityManager em = (org.eclipse.persistence.jpa.JpaEntityManager)createEntityManager();
+        EntityManager em = createEntityManager();
         ExpressionBuilder builder = new ExpressionBuilder();
         Expression whereClause = builder.get("name").equal("Jane Smith");
 
         ReadAllQuery raq = new ReadAllQuery(Customer.class);
         raq.setSelectionCriteria(whereClause);
 
-        Customer expectedCustomer = (Customer)(((List)em.getActiveSession().executeQuery(raq)).get(0));
+        Customer expectedCustomer = (Customer)(((List)getServerSession().executeQuery(raq)).get(0));
         SalesPerson salesPerson = ((Order)(expectedCustomer.getOrders().iterator().next())).getSalesPerson();
 
         String ejbqlString = "SELECT DISTINCT c FROM Customer c JOIN c.orders o JOIN o.salesPerson s WHERE s.id = " + salesPerson.getId();
@@ -374,9 +370,9 @@ public class JUnitJPQLExamplesTestSuite extends JUnitTestCase {
     }
 
     public void getSalesPersonForOrders() {
-        JpaEntityManager em = (org.eclipse.persistence.jpa.JpaEntityManager)createEntityManager();
+        EntityManager em = createEntityManager();
 
-        List expectedResult = em.getActiveSession().readAllObjects(SalesPerson.class);
+        List expectedResult = getServerSession().readAllObjects(SalesPerson.class);
 
         String ejbqlString = "SELECT DISTINCT o.salesPerson FROM Customer AS c, IN(c.orders) o";
         List result = em.createQuery(ejbqlString).getResultList();
@@ -386,12 +382,12 @@ public class JUnitJPQLExamplesTestSuite extends JUnitTestCase {
     }
 
     public void testOuterJoin() {
-        JpaEntityManager em = (org.eclipse.persistence.jpa.JpaEntityManager)createEntityManager();
+        EntityManager em = createEntityManager();
         ExpressionBuilder builder = new ExpressionBuilder();
         Expression whereClause = builder.anyOfAllowingNone("phoneNumbers").get("type").equal("Cellular");
         ReadAllQuery raq = new ReadAllQuery(Employee.class);
         raq.setSelectionCriteria(whereClause);
-        List expectedResult = (List)em.getActiveSession().executeQuery(raq);
+        List expectedResult = (List)getServerSession().executeQuery(raq);
 
         String ejbqlString = "SELECT e FROM Employee e LEFT JOIN e.phoneNumbers p " + "WHERE p.type = 'Cellular'";
         List firstResult = em.createQuery(ejbqlString).getResultList();
@@ -404,7 +400,7 @@ public class JUnitJPQLExamplesTestSuite extends JUnitTestCase {
     }
 
     public void testExistsExpression() {
-        JpaEntityManager em = (org.eclipse.persistence.jpa.JpaEntityManager)createEntityManager();
+        EntityManager em = createEntityManager();
         boolean testPass = false;
         ExpressionBuilder employeeBuilder = new ExpressionBuilder(Employee.class);
         ExpressionBuilder managerBuilder = new ExpressionBuilder(Employee.class);
@@ -421,7 +417,7 @@ public class JUnitJPQLExamplesTestSuite extends JUnitTestCase {
         mainQuery.setSelectionCriteria(employeeExpression);
         mainQuery.addAttribute("id");
         mainQuery.returnWithoutReportQueryResult();
-        List expectedResult = (List)em.getActiveSession().executeQuery(mainQuery);
+        List expectedResult = (List)getServerSession().executeQuery(mainQuery);
 
         String ejbqlString = "SELECT DISTINCT emp.id FROM Employee emp WHERE EXISTS ( SELECT managedEmp.id FROM Employee managedEmp WHERE managedEmp = emp.manager)";
         List result = em.createQuery(ejbqlString).getResultList();
@@ -434,7 +430,7 @@ public class JUnitJPQLExamplesTestSuite extends JUnitTestCase {
     }
 
     public void testAllExpressions() {
-        JpaEntityManager em = (org.eclipse.persistence.jpa.JpaEntityManager)createEntityManager();
+        EntityManager em = createEntityManager();
         boolean testPass = false;
         ExpressionBuilder mainQueryBuilder = new ExpressionBuilder(Employee.class);
         ExpressionBuilder subQueryBuilder = new ExpressionBuilder(Employee.class);
@@ -450,7 +446,7 @@ public class JUnitJPQLExamplesTestSuite extends JUnitTestCase {
         mainQuery.addAttribute("id");
         mainQuery.setSelectionCriteria(mainQueryExpression);
         mainQuery.returnWithoutReportQueryResult();
-        List expectedResult = (List)em.getActiveSession().executeQuery(mainQuery);
+        List expectedResult = (List)getServerSession().executeQuery(mainQuery);
 
         String ejbqlString = "SELECT emp.id FROM Employee emp WHERE emp.salary > ALL ( SELECT e.salary FROM Employee e WHERE e.address.city = emp.address.city AND e.salary < 1000)";
         List result = em.createQuery(ejbqlString).getResultList();
@@ -463,7 +459,7 @@ public class JUnitJPQLExamplesTestSuite extends JUnitTestCase {
     }
 
     public void testCountInSubQuery() {
-        JpaEntityManager em = (org.eclipse.persistence.jpa.JpaEntityManager)createEntityManager();
+        EntityManager em = createEntityManager();
         boolean testPass = false;
         ReportQuery mainQuery = new ReportQuery(Customer.class, new ExpressionBuilder());
         ReportQuery subQuery = new ReportQuery(Order.class, new ExpressionBuilder());
@@ -472,7 +468,7 @@ public class JUnitJPQLExamplesTestSuite extends JUnitTestCase {
         mainQuery.setSelectionCriteria(mainQuery.getExpressionBuilder().subQuery(subQuery).greaterThan(0));
         mainQuery.addAttribute("customerId");
         mainQuery.returnWithoutReportQueryResult();
-        List expectedResult = (List)em.getActiveSession().executeQuery(mainQuery);
+        List expectedResult = (List)getServerSession().executeQuery(mainQuery);
         String ejbqlString = "SELECT c.customerId FROM Customer c WHERE (SELECT COUNT(o) FROM c.orders o) > 0";
         List result = em.createQuery(ejbqlString).getResultList();
         if (result.containsAll(expectedResult) && expectedResult.containsAll(result))
@@ -483,7 +479,7 @@ public class JUnitJPQLExamplesTestSuite extends JUnitTestCase {
     }
 
     public void testGroupByHavingExpression() {
-        JpaEntityManager em = (org.eclipse.persistence.jpa.JpaEntityManager)createEntityManager();
+        EntityManager em = createEntityManager();
         boolean testPass = true;
 
         ReadAllQuery raq = new ReadAllQuery(Employee.class, new ExpressionBuilder());
@@ -493,7 +489,7 @@ public class JUnitJPQLExamplesTestSuite extends JUnitTestCase {
         Expression whereClause4 = raq.getExpressionBuilder().get("lastName").equal("Way");
 
         raq.setSelectionCriteria((whereClause1.and(whereClause2)).or(whereClause3.and(whereClause4)));
-        List employees = (List)em.getActiveSession().executeQuery(raq);
+        List employees = (List)getServerSession().executeQuery(raq);
         int firstManagerId = ((Employee)employees.get(0)).getId();
         int secondManagerId = ((Employee)employees.get(1)).getId();
         int expectedEmployeesManaged = ((Employee)employees.get(0)).getManagedEmployees().size() + ((Employee)employees.get(1)).getManagedEmployees().size();
@@ -509,7 +505,7 @@ public class JUnitJPQLExamplesTestSuite extends JUnitTestCase {
         query.addCount("id", Long.class);
 
 
-        List expectedResult = (List)em.getActiveSession().executeQuery(query);
+        List expectedResult = (List)getServerSession().executeQuery(query);
 
         String ejbqlString = "SELECT e.manager.id, avg(e.salary), count(e) FROM Employee e" + " GROUP BY e.manager.id HAVING e.manager.id IN (" + firstManagerId + "," + secondManagerId + ")";
 
@@ -536,7 +532,7 @@ public class JUnitJPQLExamplesTestSuite extends JUnitTestCase {
     }
 
     public void testGroupByHavingCount() {
-        JpaEntityManager em = (org.eclipse.persistence.jpa.JpaEntityManager)createEntityManager();
+        EntityManager em = createEntityManager();
         boolean testPass = true;
         ReportQuery query = new ReportQuery(Employee.class, new ExpressionBuilder());
         query.returnWithoutReportQueryResult();
@@ -544,7 +540,7 @@ public class JUnitJPQLExamplesTestSuite extends JUnitTestCase {
         query.addAttribute("province", query.getExpressionBuilder().get("address").get("province"));
         query.addCount("provinces", query.getExpressionBuilder().get("address").get("province"), Long.class);
         query.setHavingExpression(query.getExpressionBuilder().get("address").get("province").count().greaterThan(3));
-        List expectedResult = (List)em.getActiveSession().executeQuery(query);
+        List expectedResult = (List)getServerSession().executeQuery(query);
 
         String ejbqlString = "SELECT e.address.province, COUNT(e) FROM Employee e GROUP BY e.address.province HAVING COUNT(e.address.province) > 3";
         List result = em.createQuery(ejbqlString).getResultList();
@@ -566,7 +562,7 @@ public class JUnitJPQLExamplesTestSuite extends JUnitTestCase {
     }
 
     public void testConstructorQuery() {
-        JpaEntityManager em = (org.eclipse.persistence.jpa.JpaEntityManager)createEntityManager();
+        EntityManager em = createEntityManager();
         String ejbqlString = "SELECT NEW org.eclipse.persistence.testing.models.jpa.relationships.CustomerDetails(c.customerId, o.quantity) FROM Customer " + "c JOIN c.orders o WHERE o.quantity > 100";
 
         List custDetails = em.createQuery(ejbqlString).getResultList();
@@ -575,26 +571,26 @@ public class JUnitJPQLExamplesTestSuite extends JUnitTestCase {
     }
 
     public void testSumExpression() {
-        JpaEntityManager em = (org.eclipse.persistence.jpa.JpaEntityManager)createEntityManager();
+        EntityManager em = createEntityManager();
 
         ReportQuery query = new ReportQuery(Employee.class, new ExpressionBuilder());
         Expression whereClause = query.getExpressionBuilder().get("address").get("province").equal("QUE");
         query.addSum("areaCodeSums", query.getExpressionBuilder().anyOf("phoneNumbers").get("id"), Long.class);
         query.setSelectionCriteria(whereClause);
         query.returnWithoutReportQueryResult();
-        Long expectedResult = (Long)((List)em.getActiveSession().executeQuery(query)).get(0);
+        Long expectedResult = (Long)((List)getServerSession().executeQuery(query)).get(0);
         String ejbqlString = "SELECT SUM(p.id) FROM Employee e JOIN e.phoneNumbers p JOIN e.address a" + " WHERE a.province = 'QUE' ";
         Long result = (Long)em.createQuery(ejbqlString).getSingleResult();
         Assert.assertEquals("Average expression test failed", expectedResult, result);
     }
 
     public void testAvgExpression() {
-        JpaEntityManager em = (org.eclipse.persistence.jpa.JpaEntityManager)createEntityManager();
+        EntityManager em = createEntityManager();
 
         ReportQuery query = new ReportQuery(Order.class, new ExpressionBuilder());
         query.addAverage("average quantity", query.getExpressionBuilder().get("quantity"), Double.class);
         query.returnSingleResult();
-        Double expectedResult = (Double)((ReportQueryResult)em.getActiveSession().executeQuery(query)).get("average quantity");
+        Double expectedResult = (Double)((ReportQueryResult)getServerSession().executeQuery(query)).get("average quantity");
         String ejbqlString = "SELECT AVG(o.quantity) FROM OrderBean o";
         Double result = (Double)em.createQuery(ejbqlString).getSingleResult();
         Assert.assertEquals("Average expression test failed", expectedResult, result);
@@ -603,7 +599,7 @@ public class JUnitJPQLExamplesTestSuite extends JUnitTestCase {
     //bug 5166658
 
     public void testCountExpression() {
-        JpaEntityManager em = (org.eclipse.persistence.jpa.JpaEntityManager)createEntityManager();
+        EntityManager em = createEntityManager();
 
         ReportQuery query = new ReportQuery(Employee.class, new ExpressionBuilder());
         Expression whereClause1 = query.getExpressionBuilder().get("address").get("province").equal("QUE");
@@ -611,7 +607,7 @@ public class JUnitJPQLExamplesTestSuite extends JUnitTestCase {
         query.setSelectionCriteria(whereClause1.and(whereClause2));
         query.addCount("areaCodeCount", query.getExpressionBuilder().anyOf("phoneNumbers").get("areaCode"), Long.class);
         query.returnSingleResult();
-        Long expectedResult = (Long)((ReportQueryResult)em.getActiveSession().executeQuery(query)).get("areaCodeCount");
+        Long expectedResult = (Long)((ReportQueryResult)getServerSession().executeQuery(query)).get("areaCodeCount");
 
         String ejbqlString = "SELECT COUNT(p.areaCode) FROM Employee e JOIN e.phoneNumbers p JOIN e.address a " + " WHERE a.province='QUE' AND a.city='Montreal'";
         Long result = (Long)em.createQuery(ejbqlString).getSingleResult();
@@ -627,14 +623,14 @@ public class JUnitJPQLExamplesTestSuite extends JUnitTestCase {
     }
 
     public void testOrderByExpression() {
-        JpaEntityManager em = (org.eclipse.persistence.jpa.JpaEntityManager)createEntityManager();
+        EntityManager em = createEntityManager();
 
         ReadAllQuery raq = new ReadAllQuery(PhoneNumber.class, new ExpressionBuilder());
         Expression whereClause = raq.getExpressionBuilder().get("owner").get("address").get("province").equal("ONT");
         raq.setSelectionCriteria(whereClause);
         raq.addOrdering(raq.getExpressionBuilder().get("areaCode"));
         raq.addOrdering(raq.getExpressionBuilder().get("type"));
-        List expectedResult = (List)em.getActiveSession().executeQuery(raq);
+        List expectedResult = (List)getServerSession().executeQuery(raq);
 
         String ejbqlString = "SELECT p FROM Employee e JOIN e.phoneNumbers p JOIN e.address a WHERE a.province = 'ONT' " + "ORDER BY p.areaCode, p.type";
         List result = em.createQuery(ejbqlString).getResultList();
@@ -643,7 +639,7 @@ public class JUnitJPQLExamplesTestSuite extends JUnitTestCase {
     }
 
     public void testOrderByExpressionWithSelect() {
-        JpaEntityManager em = (org.eclipse.persistence.jpa.JpaEntityManager)createEntityManager();
+        EntityManager em = createEntityManager();
         boolean testPass = true;
         ReportQuery query = new ReportQuery(PhoneNumber.class, new ExpressionBuilder());
         Expression whereClause = query.getExpressionBuilder().get("owner").get("address").get("province").equal("ONT");
@@ -654,7 +650,7 @@ public class JUnitJPQLExamplesTestSuite extends JUnitTestCase {
         query.addAttribute("type", query.getExpressionBuilder().get("type"));
         //query.useDistinct(); //removed as distinct no longer used on joins in JPQL
         query.returnWithoutReportQueryResult();
-        List expectedResult = (List)em.getActiveSession().executeQuery(query);
+        List expectedResult = (List)getServerSession().executeQuery(query);
 
         String ejbqlString = "SELECT p.areaCode, p.type FROM Employee e JOIN e.phoneNumbers p JOIN e.address a WHERE a.province = 'ONT' " + "ORDER BY p.areaCode, p.type";
         List result = em.createQuery(ejbqlString).getResultList();
@@ -676,7 +672,7 @@ public class JUnitJPQLExamplesTestSuite extends JUnitTestCase {
     }
 
     public void testDeleteExpression() {
-        JpaEntityManager em = (org.eclipse.persistence.jpa.JpaEntityManager)createEntityManager();
+        EntityManager em = createEntityManager();
         try {
             beginTransaction(em);
             String orderString = "DELETE FROM OrderBean o WHERE o.customer.name ='Karen McDonald' ";
@@ -691,7 +687,7 @@ public class JUnitJPQLExamplesTestSuite extends JUnitTestCase {
             ReadAllQuery raq = new ReadAllQuery(Customer.class, new ExpressionBuilder());
             Expression whereClause = raq.getExpressionBuilder().get("name").equal("Karen McDonald");
             raq.setSelectionCriteria(whereClause);
-            List customerFound = (List)em.getActiveSession().executeQuery(raq);
+            List customerFound = (List)getServerSession().executeQuery(raq);
             Assert.assertEquals("Delete Expression test failed", 0, customerFound.size());
         } finally {
             rollbackTransaction(em);
@@ -706,7 +702,7 @@ public class JUnitJPQLExamplesTestSuite extends JUnitTestCase {
     }
 
     public void testComplexDeleteExpression() {
-        JpaEntityManager em = (org.eclipse.persistence.jpa.JpaEntityManager)createEntityManager();
+        EntityManager em = createEntityManager();
         try {
             beginTransaction(em);
             String orderString = "DELETE FROM OrderBean o WHERE o.customer.name ='Karen McDonald' ";
@@ -722,7 +718,7 @@ public class JUnitJPQLExamplesTestSuite extends JUnitTestCase {
             Expression whereClause1 = raq.getExpressionBuilder().get("name").equal("Karen McDonald");
             Expression whereClause2 = raq.getExpressionBuilder().isEmpty("orders");
             raq.setSelectionCriteria(whereClause1.and(whereClause2));
-            List customerFound = (List)em.getActiveSession().executeQuery(raq);
+            List customerFound = (List)getServerSession().executeQuery(raq);
             Assert.assertEquals("Complex Delete Expression test failed", 0, customerFound.size());
         } finally {
             rollbackTransaction(em);
@@ -732,7 +728,7 @@ public class JUnitJPQLExamplesTestSuite extends JUnitTestCase {
     //bug 5159164, 5159198   
 
     public void testUpdateExpression() {
-        JpaEntityManager em = (org.eclipse.persistence.jpa.JpaEntityManager)createEntityManager();
+        EntityManager em = createEntityManager();
         int result = 0;
         UpdateAllQuery uaq = new UpdateAllQuery(Customer.class, new ExpressionBuilder());
         uaq.addUpdate(uaq.getExpressionBuilder().get("name"), "Test Case");
@@ -744,7 +740,7 @@ public class JUnitJPQLExamplesTestSuite extends JUnitTestCase {
         Expression whereClause2 = uaq.getExpressionBuilder().subQuery(innerQuery).greaterThan(0);
         uaq.setSelectionCriteria(whereClause1.and(whereClause2));
         beginTransaction(em);
-        List expectedResult = (List)em.getActiveSession().executeQuery(uaq);
+        List expectedResult = (List)getServerSession().executeQuery(uaq);
         commitTransaction(em);
 
         String ejbqlString = "UPDATE Customer c SET c.name = 'Test Case' WHERE c.name = 'Jane Smith' " + "AND 0 < (SELECT COUNT(o) FROM Customer cust JOIN cust.orders o)";
@@ -757,7 +753,7 @@ public class JUnitJPQLExamplesTestSuite extends JUnitTestCase {
     //Bug5097278 Test case for updating the manager of ALL employees that have a certain address 
 
     public void updateAllTest() {
-        org.eclipse.persistence.jpa.JpaEntityManager em = (org.eclipse.persistence.jpa.JpaEntityManager)createEntityManager();
+        EntityManager em = createEntityManager();
 
         String empName = "Saunders";
         String manName = "Smitty";
@@ -785,7 +781,7 @@ public class JUnitJPQLExamplesTestSuite extends JUnitTestCase {
 
     public void updateEmbeddedFieldTest() {
 
-        JpaEntityManager em = (org.eclipse.persistence.jpa.JpaEntityManager)createEntityManager();
+        EntityManager em = createEntityManager();
         Calendar startCalendar = Calendar.getInstance();
         startCalendar.set(1905, 11, 31, 0, 0, 0);
         java.sql.Date startDate = new java.sql.Date(startCalendar.getTime().getTime());
@@ -799,7 +795,7 @@ public class JUnitJPQLExamplesTestSuite extends JUnitTestCase {
     //Bug5040609  Test if EJBQuery makes a clone of the original DatabaseQuery from the session
 
     public void namedQueryCloneTest() {
-        JpaEntityManager em = (org.eclipse.persistence.jpa.JpaEntityManager)createEntityManager();
+        EntityManager em = createEntityManager();
 
         List result1 = em.createNamedQuery("findAllCustomers").getResultList();
 
@@ -815,7 +811,7 @@ public class JUnitJPQLExamplesTestSuite extends JUnitTestCase {
     //Bug5040609 Test case for aggregates as parameters in EJBQL
 
     public void aggregateParameterTest() {
-        org.eclipse.persistence.jpa.JpaEntityManager em = (org.eclipse.persistence.jpa.JpaEntityManager)createEntityManager();
+        EntityManager em = createEntityManager();
 
         ExpressionBuilder builder = new ExpressionBuilder();
         ReportQuery query = new ReportQuery(org.eclipse.persistence.testing.models.jpa.advanced.Employee.class, builder);
@@ -836,7 +832,7 @@ public class JUnitJPQLExamplesTestSuite extends JUnitTestCase {
         Vector args = new Vector();
         args.add(period);
 
-        List expectedResult = (Vector)em.getActiveSession().executeQuery(query, args);
+        List expectedResult = (Vector)getServerSession().executeQuery(query, args);
 
         List result = em.createQuery("SELECT e FROM Employee e WHERE e.period = :period ").setParameter("period", period).getResultList();
 

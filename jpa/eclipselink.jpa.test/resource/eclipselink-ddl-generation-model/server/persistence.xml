@@ -7,7 +7,7 @@
         <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
         <jta-data-source>%%data-source-name%%</jta-data-source>
 
-        <!--mapping-file>META-INF/ddl-generation-model.xml</mapping-file-->
+        <mapping-file>META-INF/ddl-generation-model.xml</mapping-file>
 
         <properties>
             <property name="eclipselink.target-server" value="%%server-platform%%"/>
