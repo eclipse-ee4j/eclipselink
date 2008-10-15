@@ -872,9 +872,8 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
             // Cannot create parallel entity managers in the server.
             return;
         }
-        EntityManager em = createEntityManager(); 
-        beginTransaction(em);
-        Collection emps = getServerSession().readAllObjects(Employee.class);
+        JpaEntityManager em = (JpaEntityManager) createEntityManager(); 
+        Collection emps = em.getActiveSession().readAllObjects(Employee.class);
         Employee empWithManager = null;
         Employee empWithOutManager = null;
         // find an employee w/ and w/o manager
@@ -910,8 +909,6 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
         result = (Employee)query.getSingleResult();
         Assert.assertNull("Select Relationship Test Case Failed (employee without manager)",
                           result);
-        rollbackTransaction(em);
-        closeEntityManager(em);
     }
 
     public void complexConstructorTest()
@@ -939,21 +936,18 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
             // Not work on the server.
             return;
         }
-        EntityManager em = createEntityManager();
-        beginTransaction(em);
-        try {
-            Employee emp = (Employee)getServerSession().readAllObjects(Employee.class).firstElement();
-            // constructor query using a variable as argument
-            String jpqlString = "SELECT NEW org.eclipse.persistence.testing.tests.jpa.jpql.JUnitJPQLComplexTestSuite.EmployeeDetail(emp) FROM Employee emp WHERE emp.id = :id";
-            Query query = em.createQuery(jpqlString);
-            query.setParameter("id", emp.getId());
-            EmployeeDetail result = (EmployeeDetail)query.getSingleResult();
-            EmployeeDetail expectedResult = new EmployeeDetail(emp);
-            Assert.assertTrue("Constructor with variable argument Test Case Failed", result.equals(expectedResult));
-        } finally {
-            rollbackTransaction(em);
-            closeEntityManager(em);
-        }
+        JpaEntityManager em = (JpaEntityManager) createEntityManager(); 
+        
+        Employee emp = (Employee)em.getActiveSession().readAllObjects(Employee.class).firstElement();
+
+        // constructor query using a variable as argument
+        String jpqlString = "SELECT NEW org.eclipse.persistence.testing.tests.jpa.jpql.JUnitJPQLComplexTestSuite.EmployeeDetail(emp) FROM Employee emp WHERE emp.id = :id";
+        Query query = em.createQuery(jpqlString);
+        query.setParameter("id", emp.getId());
+        EmployeeDetail result = (EmployeeDetail)query.getSingleResult();
+        EmployeeDetail expectedResult = new EmployeeDetail(emp);
+
+        Assert.assertTrue("Constructor with variable argument Test Case Failed", result.equals(expectedResult));
     }
 
     public void complexConstructorRelationshipTest()
@@ -962,9 +956,9 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
             // Cannot create parallel entity managers in the server.
             return;
         }
-        EntityManager em = createEntityManager(); 
-        beginTransaction(em);
-        Collection emps = getServerSession().readAllObjects(Employee.class);
+        JpaEntityManager em = (JpaEntityManager) createEntityManager(); 
+        
+        Collection emps = em.getActiveSession().readAllObjects(Employee.class);
         Employee empWithManager = null;
         Employee empWithOutManager = null;
         // find an employee w/ and w/o manager
@@ -995,7 +989,8 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
         EmployeeDetail expectedResult = new EmployeeDetail(
             empWithManager.getFirstName(), empWithManager.getLastName(), 
             empWithManager.getManager());
-        Assert.assertTrue("Constructor Relationship Test Case Failed (employee with manager)", comparer.compareObjects(result, expectedResult));
+        Assert.assertTrue("Constructor Relationship Test Case Failed (employee with manager)", 
+                          result.equals(expectedResult));
 
         // execute query using employee with manager
         query.setParameter("id", empWithOutManager.getId());
@@ -1003,9 +998,8 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
         expectedResult = new EmployeeDetail(
             empWithOutManager.getFirstName(), empWithOutManager.getLastName(), 
             empWithOutManager.getManager());
-        Assert.assertTrue("Constructor Relationship Test Case Failed (employee without manager)", comparer.compareObjects(result, expectedResult));
-        rollbackTransaction(em);
-        closeEntityManager(em);
+        Assert.assertTrue("Constructor Relationship Test Case Failed (employee without manager)", 
+                          result.equals(expectedResult));
     }
 
     public void complexConstructorAggregatesTest()

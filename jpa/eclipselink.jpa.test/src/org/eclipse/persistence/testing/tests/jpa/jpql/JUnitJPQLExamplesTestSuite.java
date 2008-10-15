@@ -38,6 +38,7 @@ import org.eclipse.persistence.queries.ReportQuery;
 import org.eclipse.persistence.queries.ReportQueryResult;
 import org.eclipse.persistence.queries.UpdateAllQuery;
 import org.eclipse.persistence.sessions.DatabaseSession;
+import org.eclipse.persistence.sessions.server.ServerSession;
 import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
 import org.eclipse.persistence.testing.models.jpa.advanced.Address;
 import org.eclipse.persistence.testing.models.jpa.advanced.AdvancedTableCreator;
@@ -672,7 +673,12 @@ public class JUnitJPQLExamplesTestSuite extends JUnitTestCase {
     }
 
     public void testDeleteExpression() {
-        EntityManager em = createEntityManager();
+        if (isOnServer()) {
+            // Not work on server.
+            return;
+        }
+        
+        JpaEntityManager em = (org.eclipse.persistence.jpa.JpaEntityManager)createEntityManager();
         try {
             beginTransaction(em);
             String orderString = "DELETE FROM OrderBean o WHERE o.customer.name ='Karen McDonald' ";
@@ -687,7 +693,7 @@ public class JUnitJPQLExamplesTestSuite extends JUnitTestCase {
             ReadAllQuery raq = new ReadAllQuery(Customer.class, new ExpressionBuilder());
             Expression whereClause = raq.getExpressionBuilder().get("name").equal("Karen McDonald");
             raq.setSelectionCriteria(whereClause);
-            List customerFound = (List)getServerSession().executeQuery(raq);
+            List customerFound = (List)em.getActiveSession().executeQuery(raq);
             Assert.assertEquals("Delete Expression test failed", 0, customerFound.size());
         } finally {
             rollbackTransaction(em);
@@ -702,7 +708,12 @@ public class JUnitJPQLExamplesTestSuite extends JUnitTestCase {
     }
 
     public void testComplexDeleteExpression() {
-        EntityManager em = createEntityManager();
+        if (isOnServer()) {
+            // Not work on server.
+            return;
+        }
+        
+        JpaEntityManager em = (org.eclipse.persistence.jpa.JpaEntityManager)createEntityManager();
         try {
             beginTransaction(em);
             String orderString = "DELETE FROM OrderBean o WHERE o.customer.name ='Karen McDonald' ";
@@ -718,7 +729,7 @@ public class JUnitJPQLExamplesTestSuite extends JUnitTestCase {
             Expression whereClause1 = raq.getExpressionBuilder().get("name").equal("Karen McDonald");
             Expression whereClause2 = raq.getExpressionBuilder().isEmpty("orders");
             raq.setSelectionCriteria(whereClause1.and(whereClause2));
-            List customerFound = (List)getServerSession().executeQuery(raq);
+            List customerFound = (List)em.getActiveSession().executeQuery(raq);
             Assert.assertEquals("Complex Delete Expression test failed", 0, customerFound.size());
         } finally {
             rollbackTransaction(em);
