@@ -2,7 +2,7 @@
 set -x
 
 
-version=1.0.1
+version=1.0.2
 BaseDownloadNFSDir="/home/data/httpd/download.eclipse.org/rt/eclipselink"
 buildir=/shared/rt/eclipselink
 
