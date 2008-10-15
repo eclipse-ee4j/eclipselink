@@ -16,6 +16,8 @@ package org.eclipse.persistence.testing.tests.jpa.jpaadvancedproperties;
 
 import java.util.ArrayList;
 import java.util.Vector;
+import java.util.AbstractList;
+
 
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
@@ -75,9 +77,13 @@ public class JPAAdvPropertiesJUnitTestCase extends JUnitTestCase {
 
     
     public void testSessionEventListenerProperty() {
-        
         EntityManager em = createEntityManager(persistenceUnitName);
-        ServerSession session = getServerSession();
+        ServerSession session = null;
+        if (isOnServer()) {
+                session = getServerSession();
+            } else {
+                session = ((org.eclipse.persistence.jpa.JpaEntityManager)em.getDelegate()).getServerSession();
+            }
         try {
             //Create new customer
             beginTransaction(em);
@@ -133,7 +139,12 @@ public class JPAAdvPropertiesJUnitTestCase extends JUnitTestCase {
 
     public void testExceptionHandlerProperty() {
         EntityManager em = createEntityManager(persistenceUnitName);
-        ServerSession session = getServerSession();
+        ServerSession session = null;
+        if (isOnServer()) {
+                session = getServerSession();
+            } else {
+                session = ((org.eclipse.persistence.jpa.JpaEntityManager)em.getDelegate()).getServerSession();
+            }
         Expression exp = new ExpressionBuilder().get("name1").equal("George W.");
         try {
             Object result = session.readObject(Customer.class, exp);
@@ -147,7 +158,12 @@ public class JPAAdvPropertiesJUnitTestCase extends JUnitTestCase {
     
     public void testNativeSQLProperty() {
         EntityManager em = createEntityManager(persistenceUnitName);
-        ServerSession session = getServerSession();
+        ServerSession session = null;
+        if (isOnServer()) {
+                session = getServerSession();
+            } else {
+                session = ((org.eclipse.persistence.jpa.JpaEntityManager)em.getDelegate()).getServerSession();
+            }
         if(!session.getProject().getLogin().shouldUseNativeSQL()){
             assertTrue("The native sql flag specified as true by the property eclipselink.jdbc.native-sql in persistence.xml, it however read as false.", true);
         }
@@ -156,8 +172,12 @@ public class JPAAdvPropertiesJUnitTestCase extends JUnitTestCase {
     
     public void testBatchwritingProperty(){
         EntityManager em = createEntityManager(persistenceUnitName);
-        ServerSession session = getServerSession();
-        
+        ServerSession session = null;
+        if (isOnServer()) {
+                session = getServerSession();
+            } else {
+                session = ((org.eclipse.persistence.jpa.JpaEntityManager)em.getDelegate()).getServerSession();
+            }
         if(!(session.getPlatform().usesBatchWriting() && 
            !session.getPlatform().usesJDBCBatchWriting() &&
            !session.getPlatform().usesNativeBatchWriting())){
@@ -168,7 +188,12 @@ public class JPAAdvPropertiesJUnitTestCase extends JUnitTestCase {
     
     public void testCopyDescriptorNamedQueryToSessionProperty(){
         EntityManager em = createEntityManager(persistenceUnitName);
-        ServerSession session = getServerSession();
+        ServerSession session = null;
+        if (isOnServer()) {
+                session = getServerSession();
+            } else {
+                session = ((org.eclipse.persistence.jpa.JpaEntityManager)em.getDelegate()).getServerSession();
+            }
         org.eclipse.persistence.queries.DatabaseQuery query = session.getQuery("customerReadByName");
         if(query == null){
             assertTrue("The copy descriptor named query is enable by the property eclipselink.session.include.descriptor.queries in persistence.xml, one descriptor named query has not been copied to the session", true);
@@ -178,7 +203,12 @@ public class JPAAdvPropertiesJUnitTestCase extends JUnitTestCase {
     
     public void testCacheStatementsAndItsSizeProperty() {
         EntityManager em = createEntityManager(persistenceUnitName);
-        ServerSession session = getServerSession();
+        ServerSession session = null;
+        if (isOnServer()) {
+                session = getServerSession();
+            } else {
+                session = ((org.eclipse.persistence.jpa.JpaEntityManager)em.getDelegate()).getServerSession();
+            }
         if(session.getConnectionPools().size()>0){//And if connection pooling is configured,
             if(!session.getProject().getLogin().shouldCacheAllStatements()){
                 assertTrue("Caching all statements flag set equals to true by property eclipselink.jdbc.cache-statements in persistence.xml, it however read as false.", true);
@@ -193,7 +223,12 @@ public class JPAAdvPropertiesJUnitTestCase extends JUnitTestCase {
     
     public void testLoggingTyperProperty(){
         EntityManager em = createEntityManager(persistenceUnitName);
-        ServerSession session = getServerSession();
+        ServerSession session = null;
+        if (isOnServer()) {
+                session = getServerSession();
+            } else {
+                session = ((org.eclipse.persistence.jpa.JpaEntityManager)em.getDelegate()).getServerSession();
+            }
         if(!(session.getSessionLog() instanceof org.eclipse.persistence.logging.JavaLog)){
             assertTrue("Logging type set to JavaLog, it however has been detected as different type logger.", true);
         }
@@ -219,7 +254,7 @@ public class JPAAdvPropertiesJUnitTestCase extends JUnitTestCase {
         closeEntityManager(em);
         
         em = createEntityManager("JPAADVProperties3");
-        session = getServerSession();
+        session = ((org.eclipse.persistence.jpa.JpaEntityManager)em.getDelegate()).getServerSession();
         if((session.getSessionLog() !=null)){
             assertTrue("no profiler has been set,it however has been detected.", true);
         }
@@ -259,7 +294,12 @@ public class JPAAdvPropertiesJUnitTestCase extends JUnitTestCase {
             assertTrue("Error finding customer ", true);    
         }
 
-        Vector orders = (Vector)cm1.getOrders();
+        AbstractList orders = null;
+        if (isOnServer()) {
+                orders = (Vector)cm1.getOrders();
+            } else {
+                orders = (ArrayList)cm1.getOrders();
+            }
         if(orders == null || orders.size()!=3){
             assertTrue("Error finding order pertaining to the customer ", true);    
             }
@@ -288,7 +328,6 @@ public class JPAAdvPropertiesJUnitTestCase extends JUnitTestCase {
             throw e;
         }
         assertTrue("Error executing named query 'customerReadByName'", cm2 != null);
-
         
         //Update customer
         beginTransaction(em);
