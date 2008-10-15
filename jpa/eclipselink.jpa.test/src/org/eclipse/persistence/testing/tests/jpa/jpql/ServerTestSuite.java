@@ -24,7 +24,7 @@ public class ServerTestSuite extends TestSuite {
         TestSuite suite = new TestSuite();
         suite.setName("JPQL ServerTestSuite");
         suite.addTest(AdvancedQueryTestSuite.suite());
-        /**suite.addTest(JUnitJPQLComplexAggregateTestSuite.suite());
+        suite.addTest(JUnitJPQLComplexAggregateTestSuite.suite());
         suite.addTest(JUnitJPQLComplexTestSuite.suite());
         suite.addTest(JUnitJPQLDateTimeTestSuite.suite());
         suite.addTest(JUnitJPQLExamplesTestSuite.suite());
@@ -33,7 +33,7 @@ public class ServerTestSuite extends TestSuite {
         suite.addTest(JUnitJPQLParameterTestSuite.suite());
         suite.addTest(JUnitJPQLSimpleTestSuite.suite());
         suite.addTest(JUnitJPQLUnitTestSuite.suite());
-        suite.addTest(JUnitJPQLValidationTestSuite.suite());*/
+        suite.addTest(JUnitJPQLValidationTestSuite.suite());
 
         return suite;
     }

@@ -147,6 +147,10 @@
             <pathelement path="${eclipselink.plugins}/${antlr}"/>
             <pathelement path="${eclipselink.plugins}/${asm}"/>
         </path>
+        <path id="compile.server.path">
+    		<path refid="compile.path"/>
+            <pathelement path="${jdbc.driver.jar}"/>
+        </path>
     </target>
 
     <!-- Default ant target, compiles and packages test jars, does not run tests. -->
@@ -809,7 +813,7 @@
             deprecation="${javac.deprecation}"
             failonerror="true"
             includes="org/eclipse/persistence/testing/framework/**">
-            <classpath refid="compile.path"/>
+            <classpath refid="compile.server.path"/>
         </javac>
         <javac
             srcdir="${eclipselink.jpa.test.dir}/${src.dir}"
@@ -821,7 +825,7 @@
             deprecation="${javac.deprecation}"
             failonerror="true"
             includes="${TEST_DIR}/*.java">
-            <classpath refid="compile.path"/>
+            <classpath refid="compile.server.path"/>
         </javac>
         <javac
             srcdir="${eclipselink.core.test.dir}/${src.dir}"
@@ -833,7 +837,7 @@
             deprecation="${javac.deprecation}"
             failonerror="true"
             includes="org/eclipse/persistence/testing/framework/junit/**">
-            <classpath refid="compile.path"/>
+            <classpath refid="compile.server.path"/>
         </javac>
         <copy file="${eclipselink.jpa.test}/resource/server/application-client.xml" todir="stage/META-INF"/>
         <filter token="server.user" value="${server.user}"/>
@@ -860,7 +864,7 @@
             deprecation="${javac.deprecation}"
             failonerror="true"
             includes="org/eclipse/persistence/testing/framework/**">
-            <classpath refid="compile.path"/>
+            <classpath refid="compile.server.path"/>
         </javac>
         <javac
             srcdir="${eclipselink.jpa.test.dir}/${src.dir}"
@@ -872,7 +876,7 @@
             deprecation="${javac.deprecation}"
             failonerror="true"
             includes="${TEST_DIR}/*.java">
-            <classpath refid="compile.path"/>
+            <classpath refid="compile.server.path"/>
         </javac>
         <javac
             srcdir="${eclipselink.core.test.dir}/${src.dir}"
@@ -891,7 +895,7 @@
                 org/eclipse/persistence/testing/framework/*TestHelper.java,
                 org/eclipse/persistence/testing/framework/QuerySQLTracker.java,
                 org/eclipse/persistence/testing/framework/TestCollection.java">
-            <classpath refid="compile.path"/>
+            <classpath refid="compile.server.path"/>
         </javac>
         <javac
             srcdir="${eclipselink.jpa.test.dir}/${src.dir}"
@@ -903,7 +907,7 @@
             deprecation="${javac.deprecation}"
             failonerror="true"
             includes="${MODEL_DIR}/*.java">
-            <classpath refid="compile.path"/>
+            <classpath refid="compile.server.path"/>
         </javac>
         <javac
             srcdir="${eclipselink.jpa.test.dir}/${src.dir}"
@@ -915,7 +919,7 @@
             deprecation="${javac.deprecation}"
             failonerror="true"
             includes="${MODEL_DIR2}/*.java">
-            <classpath refid="compile.path"/>
+            <classpath refid="compile.server.path"/>
         </javac>
 
         <copy todir="${eclipselink.jpa.test}/stage/META-INF">
@@ -1001,7 +1005,7 @@
             <pathelement path="${eclipselink.jpa.test}/${build.dir}/${TEST_NAME}_client.jar"/>
             <pathelement path="${eclipselink.jpa.test}/${build.dir}/${MODEL_NAME}_ejb.jar"/>
             <fileset dir="${server.lib}" includes="${server.depend}"/>
-            <path refid="compile.path"/>
+            <path refid="compile.server.path"/>
         </path>
         <echo>Running test ${EAR_NAME} on ${server.name}</echo>
         <mkdir dir="${eclipselink.jpa.test}/${report.dir}"/>
@@ -1200,7 +1204,7 @@
         </antcall>
     </target>
 
-    <target name="server-test-oracle-timestamptz">
+    <target name="server-test-oracle-timestamptz" if="is.oracle">
         <antcall target="server-run-all" inheritRefs="true">
             <param name="PERSISTENCE_UNIT_NAME" value="default"/>
             <param name="MODEL_DIR" value="org/eclipse/persistence/testing/models/jpa/timestamptz"/>

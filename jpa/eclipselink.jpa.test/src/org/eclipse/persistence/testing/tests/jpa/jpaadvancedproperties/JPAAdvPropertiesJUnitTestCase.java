@@ -213,7 +213,6 @@ public class JPAAdvPropertiesJUnitTestCase extends JUnitTestCase {
         closeEntityManager(em);
         
         em = createEntityManager("JPAADVProperties2");
-        ServerSession session = getServerSession();
         if(!(session.getProfiler() instanceof org.eclipse.persistence.tools.profiler.QueryMonitor)){
             assertTrue("Profiler type set to QueryMonitor, it however has been detected as different type profiler.", true);
         }
