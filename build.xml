@@ -120,6 +120,7 @@
         <delete dir="${build.dir}"/>
         <delete file="${eclipselink.jar.name}"/>
         <delete file="${eclipselink.src.install.prefix}${eclipselink.zip.suffix}"/>
+        <delete file="${eclipselink.install.prefix}${eclipselink.zip.suffix}"/>
     </target>
 
     <target name="clean-eclipselink-bundles">
@@ -400,26 +401,36 @@
 
     <!-- Packages the eclipselink JPA testing source jar. -->
     <target name="package-tst-src-jar" description="build EclipseLink JPA and SDO testing source jar">
+        <delete file="${eclipselink.tst.src.prefix}${eclipselink.zip.suffix}"/>
         <zip zipfile="${eclipselink.tst.src.prefix}${eclipselink.zip.suffix}">
-            <fileset dir="${eclipselink.core.test}/${src.dir}">
-                <include name="org\eclipse\persistence\testing\framework\**\*.java"/>
-            </fileset>
-            <fileset dir="${eclipselink.core.test}/${src.dir}">
-                <include name="org\eclipse\persistence\testing\tests\TestRunModel.java"/>
-            </fileset>
-            <fileset dir="${eclipselink.core.test}/${src.dir}">
-                <include name="org\eclipse\persistence\tools\**\*.java"/>
-            </fileset>
-            <fileset dir="${eclipselink.core.test}/${src.dir}">
-                <include name="org\eclipse\persistence\testing\tests\performance\**\*.java"/>
-            </fileset>
-            <fileset dir="${eclipselink.jpa.test}/${src.dir}">
-                <include name="**/*.java"/>
-            </fileset>
-            <zipfileset
-                dir="${eclipselink.jpa.test}/${resource.dir}"
+            <zipfileset dir="${eclipselink.core.test}/${src.dir}"
+                includes="org\eclipse\persistence\testing\framework\**\*.java"
+                prefix="foundation"
+            />
+            <zipfileset dir="${eclipselink.core.test}/${src.dir}"
+                includes="org\eclipse\persistence\testing\tests\TestRunModel.java"
+                prefix="foundation"
+            />
+            <zipfileset dir="${eclipselink.core.test}/${src.dir}"
+                includes="org\eclipse\persistence\tools\**\*.java"
+                prefix="foundation"
+            />
+            <zipfileset dir="${eclipselink.core.test}/${src.dir}"
+                includes="org\eclipse\persistence\testing\tests\performance\**\*.java"
+                prefix="foundation"
+            />
+            <zipfileset dir="${eclipselink.jpa.test}/${src.dir}"
+                includes="**/*.java"
+                prefix="jpa"  
+            />
+            <zipfileset dir="${eclipselink.extension.oracle.test}/${src.dir}"
+                includes="org\eclipse\persistence\testing\tests\jpa\**\*.java,
+                               org\eclipse\persistence\testing\models\jpa\**\*.java"
+                prefix="jpa"  
+            />
+            <zipfileset dir="${eclipselink.jpa.test}/${resource.dir}"
                 includes="**"
-                prefix="resource"
+                prefix="jpa/resource"
             />
             <zipfileset
                 dir="${eclipselink.sdo.test}/${src.dir}"
@@ -429,7 +440,7 @@
             <zipfileset
                 dir="${eclipselink.sdo.test}/${resource.dir}"
                 includes="**"
-                prefix="resource"
+                prefix="sdo/resource"
             />
         </zip>
     </target>
@@ -485,6 +496,7 @@
 
     <!-- Packages the installer zip. -->
     <target name="package-installer-zip" description="build EclipseLink installer zip - includes utils and javadocs">
+        <delete file="${eclipselink.install.prefix}${eclipselink.zip.suffix}"/>
         <zip destfile="${eclipselink.install.prefix}${eclipselink.zip.suffix}">
             <!-- miscellaneous files -->
             <zipfileset dir="." prefix="eclipselink">
