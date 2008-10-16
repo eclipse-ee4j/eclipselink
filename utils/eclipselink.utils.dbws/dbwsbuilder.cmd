@@ -11,12 +11,13 @@ call :fixpath "%~dp0"
 set THIS=%_FIXPATH:~1%
 
 set CLASSPATH=%THIS%..\jlib\javax.wsdl_1.6.2.jar
-set CLASSPATH=%CLASSPATH%;%DRIVER_CLASSPATH%
+set CLASSPATH=%CLASSPATH%;%THIS%..\..\..\jlib\eclipselink.jar
 set CLASSPATH=%CLASSPATH%;%THIS%..\eclipselink-dbwsutils.jar
+set CLASSPATH=%CLASSPATH%;%DRIVER_CLASSPATH%
 
 set DBWSBUILDER_ARGS=%*
  
-start %JAVA_HOME%\bin\javaw.exe %JVM_ARGS% -cp %CLASSPATH% org.eclipse.persistence.tools.dbws.DBWSBuilder %DBWSBUILDER_ARGS%
+%JAVA_HOME%\bin\java.exe %JVM_ARGS% -cp %CLASSPATH% org.eclipse.persistence.tools.dbws.DBWSBuilder %DBWSBUILDER_ARGS%
 
 endlocal
 goto :EOF
