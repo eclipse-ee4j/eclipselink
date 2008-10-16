@@ -349,12 +349,17 @@ public class PersistenceUnitProcessor {
         }
        
         // attempt to load the schema from the classpath
-        URL schemaURL = PersistenceUnitProcessor.class.getClassLoader().getResource(PERSISTENCE_SCHEMA_NAME);
-        if (schemaURL != null) {
-            try {
-                sp.setProperty(JAXP_SCHEMA_SOURCE, schemaURL.toString());
-            } catch (org.xml.sax.SAXException exc){
-                throw XMLParseException.exceptionSettingSchemaSource(baseURL, schemaURL, exc);
+        // Bug 249493: in some environments, PersistenceUnitProcessor.class.getClassLoader() will return null for the bootstrap classloader
+        // do a check to avoid the NPE
+        ClassLoader jpaLoader = PersistenceUnitProcessor.class.getClassLoader();
+        if (jpaLoader != null){
+            URL schemaURL = jpaLoader.getResource(PERSISTENCE_SCHEMA_NAME);
+            if (schemaURL != null) {
+                try {
+                    sp.setProperty(JAXP_SCHEMA_SOURCE, schemaURL.toString());
+                } catch (org.xml.sax.SAXException exc){
+                    throw XMLParseException.exceptionSettingSchemaSource(baseURL, schemaURL, exc);
+                }
             }
         }
 
