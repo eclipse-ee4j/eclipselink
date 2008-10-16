@@ -423,9 +423,9 @@
                 includes="**/*.java"
                 prefix="jpa"  
             />
-            <zipfileset dir="${eclipselink.extension.oracle.test}/${src.dir}"
+            <zipfileset dir="${eclipselink.core.base}/eclipselink.extension.oracle.test/${src.dir}"
                 includes="org\eclipse\persistence\testing\tests\jpa\**\*.java,
-                               org\eclipse\persistence\testing\models\jpa\**\*.java"
+                          org\eclipse\persistence\testing\models\jpa\**\*.java"
                 prefix="jpa"  
             />
             <zipfileset dir="${eclipselink.jpa.test}/${resource.dir}"
