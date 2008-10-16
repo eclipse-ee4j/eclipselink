@@ -113,7 +113,7 @@ public class ExceptionLocalizationResource extends ListResourceBundle {
                                            { "null_not_supported_identityweakhashmap", "The IdentityWeakHashMap does not support 'null' as a key or value."},
                                            { "entity_manager_properties_conflict_default_connector_vs_jndi_connector", "EntityManager properties' conflict: eclipselink.jdbc.driver and/or eclipselink.jdbc.url require DefaultConnector, but javax.persistence.jtaDataSource and/or javax.persistence.nonjtaDataSource require JNDIConnector."},
                                            { "entity_manager_properties_conflict_default_connector_vs_external_transaction_controller", "EntityManager properties' conflict: eclipselink.jdbc.driver and/or eclipselink.jdbc.url require DefaultConnector, but persistence unit uses external transaction controller, therefore JNDIConnector is required."},
-                                           { "invalid_lock_query", "A locking query must be of type ReadQuery."}
+                                           { "invalid_lock_query", "A lock type can only be used with a select query (which allows the database to be locked where necessary)."}
                                            
     };
 
