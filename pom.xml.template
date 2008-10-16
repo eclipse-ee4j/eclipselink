@@ -5,7 +5,7 @@
   <artifactId>@artifactId@</artifactId>
   <packaging>jar</packaging>
   <name>@artifactName@</name>
-  <description>EclipseLink subversion revision @subversion.revision@</description>
+  <description>EclipseLink subversion revision @svn.revision@</description>
   <version>@version@</version>
   <url>http://www.eclipse.org/eclipselink</url>
   <issueManagement>

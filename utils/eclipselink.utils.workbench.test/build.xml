@@ -396,16 +396,16 @@
     <!-- =================================================================== -->
 
     <target name="jar-workbench" depends="init">
-        <echo message="Implementation-Version: ${_VersionStamp}.${_buildNumber}"/>
+        <echo message="Implementation-Version: ${version.string}"/>
         <jar jarfile="${libDir}/${workbench.jarfile}">
             <manifest>
                 <attribute name="Specification-Title" value="${_productName}" />
                 <attribute name="Specification-Vendor" value="Eclipse Project" />
-                <attribute name="Specification-Version" value="${_VersionStamp}" />
+                <attribute name="Specification-Version" value="${release.version}" />
                 <attribute name="Implementation-Title" value="test.org.eclipse.persistence.workbench" />
-                <attribute name="Implementation-Version" value="${_VersionStamp}.${_buildNumber}" />
+                <attribute name="Implementation-Version" value="${version.string}"/>
                 <attribute name="Implementation-Vendor" value="Eclipse Project" />
-                <attribute name="Release-Designation" value="${_releaseVersion}" />
+                <attribute name="Release-Designation" value="${release.designation}" />
                 <attribute name="Library-Designation" value="TopLink Workbench Tests" />
             </manifest>
             <zipgroupfileset dir="${libDir}">
@@ -420,16 +420,16 @@
     </target>
 
     <target name="jar-workbench-debug" depends="init">
-        <echo message="Implementation-Version: ${_VersionStamp}.${_buildNumber}"/>
+        <echo message="Implementation-Version: ${version.string}"/>
         <jar jarfile="${libDir}/${workbench.debug.jarfile}">
             <manifest>
                 <attribute name="Specification-Title" value="${_productName}" />
                 <attribute name="Specification-Vendor" value="Eclipse Project" />
-                <attribute name="Specification-Version" value="${_VersionStamp}" />
+                <attribute name="Specification-Version" value="${release.version}" />
                 <attribute name="Implementation-Title" value="test.org.eclipse.persistence.workbench" />
-                <attribute name="Implementation-Version" value="${_VersionStamp}.${_buildNumber}" />
+                <attribute name="Implementation-Version" value="${version.string}"/>
                 <attribute name="Implementation-Vendor" value="Eclipse Project" />
-                <attribute name="Release-Designation" value="${_releaseVersion}" />
+                <attribute name="Release-Designation" value="${release.designation}" />
                 <attribute name="Library-Designation" value="TopLink Workbench Tests (debug)" />
             </manifest>
             <zipgroupfileset dir="${libDir}">
@@ -444,16 +444,16 @@
     </target>
 
     <target name="jar-workbench-src" depends="init">
-        <echo message="Implementation-Version: ${_VersionStamp}.${_buildNumber}"/>
+        <echo message="Implementation-Version: ${version.string}"/>
         <jar jarfile="${libDir}/${workbench.jarfile.src}">
             <manifest>
                 <attribute name="Specification-Title" value="${_productName}" />
                 <attribute name="Specification-Vendor" value="Eclipse Project" />
-                <attribute name="Specification-Version" value="${_VersionStamp}" />
+                <attribute name="Specification-Version" value="${release.version}" />
                 <attribute name="Implementation-Title" value="test.org.eclipse.persistence.workbench" />
-                <attribute name="Implementation-Version" value="${_VersionStamp}.${_buildNumber}" />
+                <attribute name="Implementation-Version" value="${version.string}"/>
                 <attribute name="Implementation-Vendor" value="Eclipse Project" />
-                <attribute name="Release-Designation" value="${_releaseVersion}" />
+                <attribute name="Release-Designation" value="${release.designation}" />
                 <attribute name="Library-Designation" value="TopLink Workbench Tests (source)" />
             </manifest>
             <zipgroupfileset dir="${libDir}">

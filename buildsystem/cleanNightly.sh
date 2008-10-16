@@ -2,7 +2,8 @@
 set -x
 
 
-version=1.1
+version=1.1.0
+mavenVersion=${version}-SNAPSHOT
 BaseDownloadNFSDir="/home/data/httpd/download.eclipse.org/rt/eclipselink"
 buildir=/shared/rt/eclipselink
 
@@ -22,7 +23,7 @@ done
 index=0
 # 5 days worth of files - 9 files per day
 num_files=45
-for mvnfile in `ls -r ${BaseDownloadNFSDir}/maven.repo/org/eclipse/persistence/eclipselink/${version}-SNAPSHOT/eclipse*.* ` ; do
+for mvnfile in `ls -r ${BaseDownloadNFSDir}/maven.repo/org/eclipse/persistence/eclipselink/${mavenVersion}/eclipse*.* ` ; do
         index=`expr $index + 1`
         if [ $index -gt $num_files ] ; then
            rm $mvnfile

@@ -79,11 +79,11 @@
             <manifest>
                 <attribute name="Specification-Title" value="${_productName}" />
                 <attribute name="Specification-Vendor" value="Eclipse Project" />
-                <attribute name="Specification-Version" value="${_VersionStamp}" />
+                <attribute name="Specification-Version" value="${release.version}" />
                 <attribute name="Implementation-Title" value="org.eclipse.persistence.workbench.iconlib" />
-                <attribute name="Implementation-Version" value="${_VersionStamp}.${_buildNumber}" />
+                <attribute name="Implementation-Version" value="${version.string}"/>
                 <attribute name="Implementation-Vendor" value="Eclipse Project" />
-                <attribute name="Release-Designation" value="${_releaseVersion}" />
+                <attribute name="Release-Designation" value="${release.designation}" />
             </manifest>
             <fileset
                 dir="${compile.iconlib.resources}"

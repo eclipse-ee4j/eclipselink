@@ -1,7 +1,7 @@
 # !/bin/sh
 #set -x
 
-export JAVA_HOME=/shared/common/ibm-java2-ppc-50
+export JAVA_HOME=/shared/common/ibm-java-jdk-ppc-60
 export PATH=${JAVA_HOME}/bin:/usr/bin:/usr/local/bin:${PATH}
 
 BaseDownloadURL="http://www.eclipse.org/downloads/download.php?file=/rt/eclipselink/nightly"

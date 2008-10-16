@@ -101,6 +101,11 @@
         <property name="javac.debug"       value="on"/>
         <property name="target.jvm"   value="${javac.version}"/>
 
+        <property name="build.type" value="SNAPSHOT"/>
+        <property name="release.designation" value="EclipseLink DeveloperBuild"/>
+        <property name="version.string" value="${release.version}.${build.date}-${build.type}"/>
+        
+        <echo message="release.designation='${release.designation}'"/>
         <echo message="BuildDate.BuildTime='${build.date}.${build.time}'"/>
         <echo message="java.version='${java.version}'"/>
         <echo message="os.name='${os.name}'"/>
@@ -111,6 +116,7 @@
         <echo message="report.deprecation='${report.deprecation}'"/>
         <echo message="target.jvm='${target.jvm}'"/>
         <echo message="java_home=${java.home}/.."/>
+        
         <property file="build.properties"/>
         <mkdir dir="${_buildLogDir}"/>
     </target>
@@ -582,16 +588,16 @@
     <!-- =================================================================== -->
 
     <target name="jar-mwcore" depends="init">
-        <echo message="Implementation-Version: ${_VersionStamp}.${_buildNumber}"/>
+        <echo message="Implementation-Version: ${version.string}"/>
         <jar jarfile="${libDir}/${mwcore.jarfile}">
             <manifest>
                 <attribute name="Specification-Title" value="${_productName}" />
                 <attribute name="Specification-Vendor" value="${_VendorString}" />
-                <attribute name="Specification-Version" value="${_VersionStamp}" />
+                <attribute name="Specification-Version" value="${release.version}" />
                 <attribute name="Implementation-Title" value="${workbenchcore.manifest.basepackage}" />
-                <attribute name="Implementation-Version" value="${_VersionStamp}.${_buildNumber}" />
+                <attribute name="Implementation-Version" value="${version.string}"/>
                 <attribute name="Implementation-Vendor" value="${_VendorString}" />
-                <attribute name="Release-Designation" value="${_releaseVersion}" />
+                <attribute name="Release-Designation" value="${release.designation}" />
                 <attribute name="Library-Designation" value="${workbenchcore.manifest.libraryName}" />
             </manifest>
             <zipgroupfileset dir="${libDir}">
@@ -604,16 +610,16 @@
     </target>
 
     <target name="jar-mwcore-debug" depends="init, jar-mwcore-src">
-        <echo message="Implementation-Version: ${_VersionStamp}.${_buildNumber}"/>
+        <echo message="Implementation-Version: ${version.string}"/>
         <jar jarfile="${libDir}/${mwcore.debug.jarfile}">
             <manifest>
                 <attribute name="Specification-Title" value="${_productName}" />
                 <attribute name="Specification-Vendor" value="${_VendorString}" />
-                <attribute name="Specification-Version" value="${_VersionStamp}" />
+                <attribute name="Specification-Version" value="${release.version}" />
                 <attribute name="Implementation-Title" value="${workbenchcore.manifest.basepackage}" />
-                <attribute name="Implementation-Version" value="${_VersionStamp}.${_buildNumber}" />
+                <attribute name="Implementation-Version" value="${version.string}"/>
                 <attribute name="Implementation-Vendor" value="${_VendorString}" />
-                <attribute name="Release-Designation" value="${_releaseVersion}" />
+                <attribute name="Release-Designation" value="${release.designation}" />
                 <attribute name="Library-Designation" value="${workbenchcore.manifest.libraryName}" />
             </manifest>
             <zipgroupfileset dir="${libDir}">
@@ -626,16 +632,16 @@
     </target>
 
     <target name="jar-mwcore-src">
-        <echo message="Implementation-Version: ${_VersionStamp}.${_buildNumber}"/>
+        <echo message="Implementation-Version: ${version.string}"/>
         <jar jarfile="${libDir}/${mwcore.src.jarfile}">
             <manifest>
                 <attribute name="Specification-Title" value="${_productName}" />
                 <attribute name="Specification-Vendor" value="${_VendorString}" />
-                <attribute name="Specification-Version" value="${_VersionStamp}" />
+                <attribute name="Specification-Version" value="${release.version}" />
                 <attribute name="Implementation-Title" value="${workbenchcore.manifest.basepackage}" />
-                <attribute name="Implementation-Version" value="${_VersionStamp}.${_buildNumber}" />
+                <attribute name="Implementation-Version" value="${version.string}"/>
                 <attribute name="Implementation-Vendor" value="${_VendorString}" />
-                <attribute name="Release-Designation" value="${_releaseVersion}" />
+                <attribute name="Release-Designation" value="${release.designation}" />
                 <attribute name="Library-Designation" value="${workbenchcore.manifest.libraryName}" />
             </manifest>
             <zipgroupfileset dir="${libDir}">
@@ -647,16 +653,16 @@
         </jar>
     </target>
     <target name="jar-workbench" depends="init">
-        <echo message="Implementation-Version: ${_VersionStamp}.${_buildNumber}"/>
+        <echo message="Implementation-Version: ${version.string}"/>
         <jar jarfile="${libDir}/${workbench.jarfile}">
             <manifest>
                 <attribute name="Specification-Title" value="${_productName}" />
                 <attribute name="Specification-Vendor" value="${_VendorString}" />
-                <attribute name="Specification-Version" value="${_VersionStamp}" />
+                <attribute name="Specification-Version" value="${release.version}" />
                 <attribute name="Implementation-Title" value="${workbench.manifest.basepackage}" />
-                <attribute name="Implementation-Version" value="${_VersionStamp}.${_buildNumber}" />
+                <attribute name="Implementation-Version" value="${version.string}"/>
                 <attribute name="Implementation-Vendor" value="${_VendorString}" />
-                <attribute name="Release-Designation" value="${_releaseVersion}" />
+                <attribute name="Release-Designation" value="${release.designation}" />
                 <attribute name="Library-Designation" value="${workbench.manifest.libraryName}" />
                 <attribute name="Main-Class" value="${workbench.manifest.mainclass}" />
             </manifest>
@@ -672,16 +678,16 @@
     </target>
 
     <target name="jar-workbench-debug" depends="init, jar-workbench-src">
-        <echo message="Implementation-Version: ${_VersionStamp}.${_buildNumber}"/>
+        <echo message="Implementation-Version: ${version.string}"/>
         <jar jarfile="${libDir}/${workbench.debug.jarfile}">
             <manifest>
                 <attribute name="Specification-Title" value="${_productName}" />
                 <attribute name="Specification-Vendor" value="${_VendorString}" />
-                <attribute name="Specification-Version" value="${_VersionStamp}" />
+                <attribute name="Specification-Version" value="${release.version}" />
                 <attribute name="Implementation-Title" value="${workbench.manifest.basepackage}" />
-                <attribute name="Implementation-Version" value="${_VersionStamp}.${_buildNumber}" />
+                <attribute name="Implementation-Version" value="${version.string}"/>
                 <attribute name="Implementation-Vendor" value="${_VendorString}" />
-                <attribute name="Release-Designation" value="${_releaseVersion}" />
+                <attribute name="Release-Designation" value="${release.designation}" />
                 <attribute name="Library-Designation" value="${workbench.manifest.libraryName}" />
                 <attribute name="Main-Class" value="${workbench.manifest.mainclass}" />
             </manifest>
@@ -697,16 +703,16 @@
     </target>
 
     <target name="jar-workbench-src">
-        <echo message="Implementation-Version: ${_VersionStamp}.${_buildNumber}"/>
+        <echo message="Implementation-Version: ${version.string}"/>
         <jar jarfile="${libDir}/${workbench.src.jarfile}">
             <manifest>
                 <attribute name="Specification-Title" value="${_productName}" />
                 <attribute name="Specification-Vendor" value="${_VendorString}" />
-                <attribute name="Specification-Version" value="${_VersionStamp}" />
+                <attribute name="Specification-Version" value="${release.version}" />
                 <attribute name="Implementation-Title" value="${workbench.manifest.basepackage}" />
-                <attribute name="Implementation-Version" value="${_VersionStamp}.${_buildNumber}" />
+                <attribute name="Implementation-Version" value="${version.string}"/>
                 <attribute name="Implementation-Vendor" value="${_VendorString}" />
-                <attribute name="Release-Designation" value="${_releaseVersion}" />
+                <attribute name="Release-Designation" value="${release.designation}" />
                 <attribute name="Library-Designation" value="${workbench.manifest.libraryName}" />
                 <attribute name="Main-Class" value="${workbench.manifest.mainclass}" />
             </manifest>

@@ -42,8 +42,8 @@
 
         <property name="build.compiler" value="javac1.5"/>
         <tstamp>
-            <format property="build_date" pattern="yyyyMMdd"/>
-            <format property="build_time" pattern="HHmm"/>
+            <format property="build.date" pattern="yyyyMMdd"/>
+            <format property="build.time" pattern="HHmm"/>
         </tstamp>
         <property environment="env"/>
         <!-- This needs to be here because if not set we need to check OS     -->
@@ -53,7 +53,7 @@
         <echo message="ANT_ARGS='${env.ANT_ARGS}'"/>
         <echo message="ANT_OPTS='${env.ANT_OPTS}'"/>
         <echo message=" "/>
-        <echo message="build_date.build_time='${build_date}.${build_time}'"/>
+        <echo message="build.date.build.time='${build.date}.${build.time}'"/>
         <echo message="java.version    = '${java.version}'"/>
         <echo message="os.name         = '${os.name}'"/>
         <echo message="os.arch         = '${os.arch}'"/>
@@ -203,6 +203,16 @@
         </java -->
     </target>
 
+    <target name="release" depends="get-src" description="Trigger the nightly automated build and lrg tests">
+        <echo message="'release' target: Calling 'build-release' target in '${build.root.dir}/${autobld.file}'"/>
+        <ant antfile="${autobld.file}" dir="${build.root.dir}" target="build-nightly"/>
+    </target>
+    
+    <target name="milestone" depends="get-src" description="Trigger the nightly automated build and lrg tests">
+        <echo message="'milestone' target: Calling 'build-milestone' target in '${build.root.dir}/${autobld.file}'"/>
+        <ant antfile="${autobld.file}" dir="${build.root.dir}" target="build-nightly"/>
+    </target>
+    
     <target name="nightly" depends="get-src" description="Trigger the nightly automated build and lrg tests">
         <echo message="'nightly' target: Calling 'build-nightly' target in '${build.root.dir}/${autobld.file}'"/>
         <ant antfile="${autobld.file}" dir="${build.root.dir}" target="build-nightly"/>
@@ -234,7 +244,7 @@
     <!-- ============================================================================= -->
     <target name="no-cb" unless="_DoBuild" depends="query-svn-changed">
         <echo message="----------------------------------"/>
-        <echo message="  ${build_date}.${build_time} build unnecessary"/>
+        <echo message="  ${build.date}.${build.time} build unnecessary"/>
         <echo message="  "/>
     </target>
 

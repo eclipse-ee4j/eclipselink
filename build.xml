@@ -25,7 +25,20 @@
 *     pkrogh - javadocs
 *     egwin  - rework to follow ant conventions.
 *     dtwelves - Add SDO, MOXy SRG targets
+*     egwin  - rework to incorporate new versioning standards and revision info.
 #******************************************************************************/-->
+<!-- =============================================================================
+*  General Comments
+*  This buildfile contains:
+*        - calls to the component builds to clean, compile, package and test thier bits
+*        - calls to initiate component tests
+*        - targets to package the eclipselink jar 
+*        - targets to generate the eclipselink installer
+*        - targets to generate the javadocs
+*  Used standalone it can generate Developer Builds of the entire product or subsets
+*        of the product.
+*  When called by autobuild it generates Nightly and Milestone builds
+*================================================================================= -->
 <!-- This ant project includes the following tasks:
         - all (default) : compiles all components and tests (excluding Oracle extensions)
         - build.all : compiles all components and tests, including Oracle extensions
@@ -61,21 +74,17 @@
     <!-- Allows a user to overide certain user specific properties. -->
     <property file="${user.home}/build.properties"/>
     <property file="./build.properties"/>
-
+        
     <!-- versioning -->
-    <!-- ${build_id} will be given by the build system. Manual build is SNAPSHOT. -->
+    <!-- These variables  are set in autobuild.xml. A manual build gets defaults -->
     <tstamp>
-       <format property="build_date" pattern="yyyyMMdd"/>
+       <format property="build.date" pattern="yyyyMMdd"/>
     </tstamp>
-    <condition property="build_number" value="${build_id}">
-        <isset property="build_id"/>
-    </condition>
-    <property name="build_number" value="SNAPSHOT"/>
-    <property name="build_number_string" value="${build_number}-${build_date}"/>
-
-    <!-- usually, installer_id will already be set when we get here-->
-    <property name="installer_id" value="${build_date}"/>
-
+    <property name="build.type" value="SNAPSHOT"/>
+    <property name="svn.revision" value="NA"/>
+    <property name="version.string" value="${release.version}.${build.date}-${build.type}"/>
+    <property name="release.designation"  value="EclipseLink DeveloperBuild"/>
+       
     <path id="javadoc.path">
         <pathelement path="${eclipselink.jar.name}"/>
         <pathelement path="${commonj.sdo.lib}"/>
@@ -193,7 +202,7 @@
         <jar jarfile="${eclipselink.jar.name}">
              <manifest>
                 <attribute name="Implementation-Title" value="${implementation.title}"/>
-                <attribute name="Implementation-Version" value="${release.version}${build_number_string}"/>
+                <attribute name="Implementation-Version" value="${version.string}"/>
                 <attribute name="Specification-Version" value="${release.version}"/>
                 <attribute name="Implementation-Vendor" value="${implementation.vendor}"/>
                 <attribute name="Release-Designation" value="${release.designation}"/>
@@ -242,7 +251,7 @@
     <!-- Packages OSGI bundle jars. -->
     <!-- Note: This target builds bundles that are parallell to the bundles built by target: build-eclipselink-source-bundles.  When updating this target, be careful to keep it in sync with build-eclipselink-source-bundles -->
     <target name="build-eclipselink-bundles" depends="create-build-dir, clean-eclipselink-bundles" description="build eclipselink bundles">
-        <jar jarfile="${eclipselink.core.base}/${plugins.dir}/${eclipselink.core.bndl.prefix}_${installer_id}.jar" manifest="${eclipselink.core}/META-INF/MANIFEST.MF">
+        <jar jarfile="${eclipselink.core.base}/${plugins.dir}/${eclipselink.core.bndl.prefix}_${version.string}.jar" manifest="${eclipselink.core}/META-INF/MANIFEST.MF">
             <fileset dir="${eclipselink.core}/${classes.dir}">
                 <include name="org/eclipse/persistence/**/*.class"/>
             </fileset>
@@ -251,7 +260,7 @@
                 <include name="org/eclipse/persistence/internal/helper/VendorNameToPlatformMapping.properties"/>
             </fileset>
         </jar>
-        <jar jarfile="${eclipselink.jpa.base}/${plugins.dir}/${eclipselink.jpa.bndl.prefix}_${installer_id}.jar" manifest="${eclipselink.jpa}/META-INF/MANIFEST.MF">
+        <jar jarfile="${eclipselink.jpa.base}/${plugins.dir}/${eclipselink.jpa.bndl.prefix}_${version.string}.jar" manifest="${eclipselink.jpa}/META-INF/MANIFEST.MF">
             <fileset dir="${eclipselink.core}/${resource.dir}">
                 <include name="META-INF/services/javax.persistence.spi.PersistenceProvider"/>
             </fileset>
@@ -263,28 +272,28 @@
                 <include name="META-INF/services/javax.persistence.spi.PersistenceProvider"/>
             </fileset>
         </jar>
-        <jar jarfile="${eclipselink.moxy.base}/${plugins.dir}/${eclipselink.moxy.bndl.prefix}_${installer_id}.jar" manifest="${eclipselink.moxy}/META-INF/MANIFEST.MF">
+        <jar jarfile="${eclipselink.moxy.base}/${plugins.dir}/${eclipselink.moxy.bndl.prefix}_${version.string}.jar" manifest="${eclipselink.moxy}/META-INF/MANIFEST.MF">
             <fileset dir="${eclipselink.moxy}/${classes.dir}">
                 <include name="org/eclipse/persistence/**/*.class"/>
             </fileset>
         </jar>
-        <jar jarfile="${eclipselink.sdo.base}/${plugins.dir}/${eclipselink.sdo.bndl.prefix}_${installer_id}.jar" manifest="${eclipselink.sdo}/META-INF/MANIFEST.MF">
+        <jar jarfile="${eclipselink.sdo.base}/${plugins.dir}/${eclipselink.sdo.bndl.prefix}_${version.string}.jar" manifest="${eclipselink.sdo}/META-INF/MANIFEST.MF">
             <fileset dir="${eclipselink.sdo}/${classes.dir}">
                 <include name="org/eclipse/persistence/**/*.class"/>
                 <include name="commonj/sdo/impl/HelperProviderImpl.class"/>
             </fileset>
         </jar>
-        <jar jarfile="${eclipselink.core.base}/${plugins.dir}/${eclipselink.extension.oracle.bndl.prefix}_${installer_id}.jar" manifest="${eclipselink.extension.oracle}/META-INF/MANIFEST.MF">
+        <jar jarfile="${eclipselink.core.base}/${plugins.dir}/${eclipselink.extension.oracle.bndl.prefix}_${version.string}.jar" manifest="${eclipselink.extension.oracle}/META-INF/MANIFEST.MF">
             <fileset dir="${build.dir}">
                 <include name="org/eclipse/persistence/**/*.class"/>
             </fileset>
         </jar>
-        <jar jarfile="${eclipselink.plugins}/${eclipselink.asm.bndl.prefix}_${installer_id}.jar" manifest="${eclipselink.plugins}/${asm}/META-INF/MANIFEST.MF">
+        <jar jarfile="${eclipselink.plugins}/${eclipselink.asm.bndl.prefix}_${version.string}.jar" manifest="${eclipselink.plugins}/${asm}/META-INF/MANIFEST.MF">
             <fileset dir="${eclipselink.plugins}/${asm}">
                 <include name="org/eclipse/persistence/**/*.class"/>
             </fileset>
         </jar>
-        <jar jarfile="${eclipselink.plugins}/${eclipselink.antlr.bndl.prefix}_${installer_id}.jar" manifest="${eclipselink.plugins}/${antlr}/META-INF/MANIFEST.MF">
+        <jar jarfile="${eclipselink.plugins}/${eclipselink.antlr.bndl.prefix}_${version.string}.jar" manifest="${eclipselink.plugins}/${antlr}/META-INF/MANIFEST.MF">
             <fileset dir="${eclipselink.plugins}/${antlr}">
                 <include name="org/eclipse/persistence/**/*.class"/>
             </fileset>
@@ -293,7 +302,7 @@
 
     <!-- Note: This target builds bundles that are parallell to the bundles built by target: build-eclipselink-bundles.  When updating this target, be careful to keep it in sync with build-eclipselink-bundles -->
     <target name="build-eclipselink-source-bundles" description="build source bundles for eclipselink OSGi bundles">
-        <jar jarfile="${eclipselink.core.base}/${plugins.dir}/${eclipselink.core.bndl.prefix}.source_${installer_id}.jar" manifest="${eclipselink.core}/resource/source-bundle/MANIFEST.MF">
+        <jar jarfile="${eclipselink.core.base}/${plugins.dir}/${eclipselink.core.bndl.prefix}.source_${version.string}.jar" manifest="${eclipselink.core}/resource/source-bundle/MANIFEST.MF">
             <fileset dir="${eclipselink.core}/${src.dir}">
                 <include name="org/eclipse/persistence/**/*.java"/>
             </fileset>
@@ -302,7 +311,7 @@
                 <include name="org/eclipse/persistence/internal/helper/VendorNameToPlatformMapping.properties"/>
             </fileset>
         </jar>
-        <jar jarfile="${eclipselink.jpa.base}/${plugins.dir}/${eclipselink.jpa.bndl.prefix}.source_${installer_id}.jar" manifest="${eclipselink.jpa}/resource/source-bundle/MANIFEST.MF">
+        <jar jarfile="${eclipselink.jpa.base}/${plugins.dir}/${eclipselink.jpa.bndl.prefix}.source_${version.string}.jar" manifest="${eclipselink.jpa}/resource/source-bundle/MANIFEST.MF">
             <fileset dir="${eclipselink.core}/${resource.dir}">
                 <include name="META-INF/services/javax.persistence.spi.PersistenceProvider"/>
             </fileset>
@@ -314,28 +323,28 @@
                 <include name="META-INF/services/javax.persistence.spi.PersistenceProvider"/>
             </fileset>
         </jar>
-        <jar jarfile="${eclipselink.moxy.base}/${plugins.dir}/${eclipselink.moxy.bndl.prefix}.source_${installer_id}.jar" manifest="${eclipselink.moxy}/resource/source-bundle/MANIFEST.MF">
+        <jar jarfile="${eclipselink.moxy.base}/${plugins.dir}/${eclipselink.moxy.bndl.prefix}.source_${version.string}.jar" manifest="${eclipselink.moxy}/resource/source-bundle/MANIFEST.MF">
             <fileset dir="${eclipselink.moxy}/${src.dir}">
                 <include name="org/eclipse/persistence/**/*.java"/>
             </fileset>
         </jar>
-        <jar jarfile="${eclipselink.sdo.base}/${plugins.dir}/${eclipselink.sdo.bndl.prefix}.source_${installer_id}.jar" manifest="${eclipselink.sdo}/resource/source-bundle/MANIFEST.MF">
+        <jar jarfile="${eclipselink.sdo.base}/${plugins.dir}/${eclipselink.sdo.bndl.prefix}.source_${version.string}.jar" manifest="${eclipselink.sdo}/resource/source-bundle/MANIFEST.MF">
             <fileset dir="${eclipselink.sdo}/${src.dir}">
                 <include name="org/eclipse/persistence/**/*.java"/>
                 <include name="commonj/sdo/impl/HelperProviderImpl.java"/>
             </fileset>
         </jar>
-        <jar jarfile="${eclipselink.core.base}/${plugins.dir}/${eclipselink.extension.oracle.bndl.prefix}.source_${installer_id}.jar" manifest="${eclipselink.extension.oracle}/resource/source-bundle/MANIFEST.MF">
+        <jar jarfile="${eclipselink.core.base}/${plugins.dir}/${eclipselink.extension.oracle.bndl.prefix}.source_${version.string}.jar" manifest="${eclipselink.extension.oracle}/resource/source-bundle/MANIFEST.MF">
             <fileset dir="${eclipselink.extension.oracle}/${src.dir}">
                 <include name="org/eclipse/persistence/**/*.java"/>
             </fileset>
         </jar>
-        <jar jarfile="${eclipselink.plugins}/${eclipselink.asm.bndl.prefix}.source_${installer_id}.jar" manifest="${eclipselink.plugins}/${asm}/resource/source-bundle/MANIFEST.MF">
+        <jar jarfile="${eclipselink.plugins}/${eclipselink.asm.bndl.prefix}.source_${version.string}.jar" manifest="${eclipselink.plugins}/${asm}/resource/source-bundle/MANIFEST.MF">
             <fileset dir="${eclipselink.plugins}/${asm}/${src.dir}">
                 <include name="org/eclipse/persistence/**/*.java"/>
             </fileset>
         </jar>
-        <jar jarfile="${eclipselink.plugins}/${eclipselink.antlr.bndl.prefix}.source_${installer_id}.jar" manifest="${eclipselink.plugins}/${antlr}/resource/source-bundle/MANIFEST.MF">
+        <jar jarfile="${eclipselink.plugins}/${eclipselink.antlr.bndl.prefix}.source_${version.string}.jar" manifest="${eclipselink.plugins}/${antlr}/resource/source-bundle/MANIFEST.MF">
             <fileset dir="${eclipselink.plugins}/${antlr}/${src.dir}">
                 <include name="org/eclipse/persistence/**/*.java"/>
             </fileset>
@@ -447,7 +456,7 @@
 
     <!-- Generates the Javadocs for all public EclipseLink classes. -->
     <target name="build-javadocs">
-        <property name="javadoc.title" value="${javadoc.prefixTitle}${release.version} ${build_number_string} ${javadoc.postfixTitle}"/>
+        <property name="javadoc.title" value="${javadoc.prefixTitle} ${version.string} ${javadoc.postfixTitle}"/>
         <javadoc
             maxmemory="384m"
             Verbose="false"

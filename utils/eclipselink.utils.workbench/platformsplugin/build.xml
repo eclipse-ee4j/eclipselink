@@ -77,6 +77,9 @@
     <!-- =================================================================== -->
     <target name="properties-init" depends="set-debug">
         <property file="build.properties"/>
+        <property name="build.type" value="SNAPSHOT"/>
+        <property name="release.designation" value="EclipseLink DeveloperBuild"/>
+        <property name="version.string" value="${release.version}.${build.date}-${build.type}"/>
         <mkdir dir="${_classesDestDir}"/>
         <mkdir dir="${_jarDestDir}"/>
     </target>
@@ -124,11 +127,11 @@
             <manifest>
                 <attribute name="Specification-Title" value="${_productName}" />
                 <attribute name="Specification-Vendor" value="Eclipse Project" />
-                <attribute name="Specification-Version" value="${_VersionStamp}" />
+                <attribute name="Specification-Version" value="${release.version}" />
                 <attribute name="Implementation-Title" value="org.eclipse.persistence.workbench.platformsplugin" />
-                <attribute name="Implementation-Version" value="${_VersionStamp}.${_buildNumber}" />
+                <attribute name="Implementation-Version" value="${version.string}"/>
                 <attribute name="Implementation-Vendor" value="Eclipse Project" />
-                <attribute name="Release-Designation" value="${_releaseVersion}" />
+                <attribute name="Release-Designation" value="${release.designation}" />
                 <attribute name="Library-Designation" value="${_LibraryName}" />
             </manifest>
             <fileset
@@ -143,11 +146,11 @@
             <manifest>
                 <attribute name="Specification-Title" value="${_productName}" />
                 <attribute name="Specification-Vendor" value="Eclipse Project" />
-                <attribute name="Specification-Version" value="${_VersionStamp}" />
+                <attribute name="Specification-Version" value="${release.version}" />
                 <attribute name="Implementation-Title" value="org.eclipse.persistence.workbench.platformsplugin" />
-                <attribute name="Implementation-Version" value="${_VersionStamp}.${_buildNumber}" />
+                <attribute name="Implementation-Version" value="${version.string}"/>
                 <attribute name="Implementation-Vendor" value="Eclipse Project" />
-                <attribute name="Release-Designation" value="${_releaseVersion}" />
+                <attribute name="Release-Designation" value="${release.designation}" />
                 <attribute name="Library-Designation" value="${_LibraryName} (debug)" />
             </manifest>
             <fileset
