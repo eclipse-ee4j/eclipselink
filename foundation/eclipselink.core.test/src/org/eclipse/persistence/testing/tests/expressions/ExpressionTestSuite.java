@@ -534,7 +534,7 @@ public class ExpressionTestSuite extends TestSuite {
         expression = expression.and((ExpressionMath.cos(builder.get("salary")).lessThanEqual(1)));
         expression = expression.and((ExpressionMath.sin(builder.get("salary")).lessThanEqual(1)));
         expression = expression.and((ExpressionMath.tan(builder.get("salary")).lessThanEqual(1)));
-        expression = expression.and((ExpressionMath.log(builder.get("salary"))).greaterThan(0));
+        expression = expression.and((ExpressionMath.log(builder.get("salary"))).greaterThan(4));
 
         ReadAllExpressionTest test = new ReadAllExpressionTest(Employee.class, 6);
         test.setExpression(expression);
