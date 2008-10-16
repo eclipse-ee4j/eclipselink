@@ -12,8 +12,6 @@
  ******************************************************************************/  
 package org.eclipse.persistence.testing.tests.optimisticlocking;
 
-import java.math.BigDecimal;
-
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.internal.sessions.ObjectChangeSet;
 import org.eclipse.persistence.sessions.*;

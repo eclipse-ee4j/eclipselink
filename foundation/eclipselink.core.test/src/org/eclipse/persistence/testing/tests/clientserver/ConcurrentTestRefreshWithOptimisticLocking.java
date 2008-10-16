@@ -19,6 +19,7 @@ import org.eclipse.persistence.sessions.Session;
 import org.eclipse.persistence.queries.*;
 import org.eclipse.persistence.testing.framework.*;
 
+@SuppressWarnings("deprecation")
 public class ConcurrentTestRefreshWithOptimisticLocking extends org.eclipse.persistence.testing.framework.AutoVerifyTestCase {
     public static int numThreads = 6;
     public boolean isCheckerThread;

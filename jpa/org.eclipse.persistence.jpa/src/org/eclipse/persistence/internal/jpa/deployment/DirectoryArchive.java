@@ -49,8 +49,10 @@ public class DirectoryArchive implements Archive {
      */
     private List<String> entries = new ArrayList<String>();
 
+    @SuppressWarnings("unused")
     private Logger logger;
 
+    @SuppressWarnings("deprecation")
     public DirectoryArchive(File directory) throws MalformedURLException {
         this(directory, Logger.global);
     }

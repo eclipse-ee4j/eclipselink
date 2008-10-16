@@ -31,6 +31,7 @@ public class DatePrintingTest extends PerformanceComparisonTestCase {
     /**
      * Prints using deprecate APIs.
      */
+    @SuppressWarnings("deprecation")
     public void test() throws Exception {
         StringWriter writer = new StringWriter();
         writer.write(String.valueOf(this.date.getYear()));

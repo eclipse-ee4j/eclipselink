@@ -35,8 +35,10 @@ public class JarInputStreamURLArchive implements Archive {
 
     private List<String> entries = new ArrayList<String>();
 
+    @SuppressWarnings("unused")
     private Logger logger;
 
+    @SuppressWarnings("deprecation")
     public JarInputStreamURLArchive(URL url) throws IOException {
         this(url, Logger.global);
     }

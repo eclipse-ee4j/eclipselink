@@ -41,6 +41,7 @@ public class ArchiveFactoryImpl {
 
     private Logger logger;
 
+    @SuppressWarnings("deprecation")
     public ArchiveFactoryImpl() {
         this(Logger.global);
     }

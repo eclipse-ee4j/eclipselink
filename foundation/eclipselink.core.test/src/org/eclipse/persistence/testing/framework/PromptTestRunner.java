@@ -13,7 +13,6 @@
 package org.eclipse.persistence.testing.framework;
 
 import java.io.*;
-import java.util.*;
 
 import org.eclipse.persistence.platform.database.DatabasePlatform;
 import org.eclipse.persistence.sessions.*;

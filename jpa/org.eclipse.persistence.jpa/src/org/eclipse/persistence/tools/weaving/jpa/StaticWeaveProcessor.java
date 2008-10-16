@@ -49,6 +49,7 @@ import org.eclipse.persistence.logging.SessionLog;
  * <p>
  * <b>Responsibilities</b>: Process the source classes, performs weaving as necessary out outputs to the target
  */
+@SuppressWarnings("deprecation")
 public class StaticWeaveProcessor {
     private URL source;
     private URL target;

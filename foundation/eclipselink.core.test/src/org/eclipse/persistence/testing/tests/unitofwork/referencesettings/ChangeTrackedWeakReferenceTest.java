@@ -10,7 +10,6 @@ import org.eclipse.persistence.testing.framework.AutoVerifyTestCase;
 import org.eclipse.persistence.testing.tests.unitofwork.changeflag.model.ALCTEmployee;
 
 import org.eclipse.persistence.testing.framework.TestErrorException;
-import org.eclipse.persistence.testing.models.employee.domain.Employee;
 
 public class ChangeTrackedWeakReferenceTest extends AutoVerifyTestCase {
     public void test(){

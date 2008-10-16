@@ -22,7 +22,7 @@ import javax.persistence.RollbackException;
 import javax.persistence.TransactionRequiredException;
 import javax.persistence.Query;
 import javax.persistence.EntityManager;
-import junit.extensions.TestSetup;
+
 import junit.framework.Assert;
 import junit.framework.Test;
 import junit.framework.TestSuite;

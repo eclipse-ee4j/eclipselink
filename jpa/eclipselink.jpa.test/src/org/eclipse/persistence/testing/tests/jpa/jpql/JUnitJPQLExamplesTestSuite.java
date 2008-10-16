@@ -22,23 +22,18 @@ import java.util.Vector;
 import javax.persistence.EntityManager;
 
 import junit.framework.Assert;
-
-import org.eclipse.persistence.jpa.JpaEntityManager;
-
-import junit.extensions.TestSetup;
-
 import junit.framework.Test;
 import junit.framework.TestSuite;
 
 import org.eclipse.persistence.expressions.Expression;
 import org.eclipse.persistence.expressions.ExpressionBuilder;
+import org.eclipse.persistence.jpa.JpaEntityManager;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.queries.ReadAllQuery;
 import org.eclipse.persistence.queries.ReportQuery;
 import org.eclipse.persistence.queries.ReportQueryResult;
 import org.eclipse.persistence.queries.UpdateAllQuery;
 import org.eclipse.persistence.sessions.DatabaseSession;
-import org.eclipse.persistence.sessions.server.ServerSession;
 import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
 import org.eclipse.persistence.testing.models.jpa.advanced.Address;
 import org.eclipse.persistence.testing.models.jpa.advanced.AdvancedTableCreator;

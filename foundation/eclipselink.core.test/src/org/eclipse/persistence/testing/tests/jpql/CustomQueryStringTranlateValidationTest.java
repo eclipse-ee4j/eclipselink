@@ -12,11 +12,7 @@
  ******************************************************************************/  
 package org.eclipse.persistence.testing.tests.jpql;
 
-import java.util.*;
-import org.eclipse.persistence.expressions.*;
 import org.eclipse.persistence.queries.*;
-import org.eclipse.persistence.testing.framework.*;
-import org.eclipse.persistence.testing.models.employee.domain.*;
 
 /**
  * For Bug 217745 - Verify DataSourceCall.translateCustomQuery() and translatePureCustomQuery() methods

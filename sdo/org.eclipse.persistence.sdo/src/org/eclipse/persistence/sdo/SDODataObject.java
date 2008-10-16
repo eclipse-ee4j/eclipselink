@@ -82,6 +82,7 @@ public class SDODataObject implements DataObject, SequencedObject {
 
     /**Unique hash ID of this Externalizable class - not required at this point because we serialize the xml representation */
 
+    @SuppressWarnings("unused")
     private String text;
 
     //static final long serialVersionUID = 5930094058760264198L;

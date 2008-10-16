@@ -28,6 +28,7 @@ import org.eclipse.persistence.tools.sessionconsole.SessionConsolePanel;
  * Main panel for the testing browser.
  * This was original done in the VA UI builder, so code is ugly, but is maintain by hand now.
  */
+@SuppressWarnings("deprecation")
 public class TestingBrowserPanel extends JPanel implements ItemListener, TestEventListener, SynchronizedTester {
     protected SynchronizedTestExecutor executionThread;
     protected TestExecutor executor;

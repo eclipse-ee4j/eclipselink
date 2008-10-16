@@ -20,14 +20,12 @@ import javax.persistence.EntityManager;
 
 import junit.framework.Test;
 import junit.framework.TestSuite;
-import junit.extensions.TestSetup;
 
 import org.eclipse.persistence.config.CacheUsage;
 import org.eclipse.persistence.config.QueryHints;
 import org.eclipse.persistence.config.QueryType;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.jpa.JpaQuery;
-import org.eclipse.persistence.queries.DatabaseQuery;
 import org.eclipse.persistence.queries.QueryResultsCachePolicy;
 import org.eclipse.persistence.queries.ReadQuery;
 import org.eclipse.persistence.sessions.DatabaseSession;

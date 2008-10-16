@@ -19,6 +19,7 @@ import org.eclipse.persistence.sessions.DatabaseLogin;
 /**
  * Tests that a deadlock in sequencing does not occur.
  */
+@SuppressWarnings("deprecation")
 public class ClientServerSequenceDeadlockTest extends ClientServerConcurrentWriteTest {
     protected FIFO[] fifoArray;
     protected int[] clientStateArray;

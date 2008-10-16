@@ -1019,6 +1019,7 @@ public class MappingsGenerator {
     	return null;
     }
     
+    @SuppressWarnings("unused")
     private String getPackageNameForURI(String namespaceUri) {
     	for(String next:this.packageToNamespaceMappings.keySet()) {
     		if(packageToNamespaceMappings.get(next).getNamespace().equals(namespaceUri)) {

@@ -85,6 +85,7 @@ public class InstanceCreationTest extends PerformanceComparisonTestCase {
      */
     public void addDateTest() {
         PerformanceComparisonTestCase test = new PerformanceComparisonTestCase() {
+            @SuppressWarnings("deprecation")
             public void test() {
                 new Date(1973, 10, 11);
             }

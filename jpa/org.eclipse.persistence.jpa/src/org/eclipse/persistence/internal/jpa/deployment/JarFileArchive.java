@@ -37,8 +37,10 @@ public class JarFileArchive implements Archive {
 
     private URL rootURL;
 
+    @SuppressWarnings("unused")
     private Logger logger;
 
+    @SuppressWarnings("deprecation")
     public JarFileArchive(JarFile jarFile) throws MalformedURLException {
         this(jarFile, Logger.global);
     }

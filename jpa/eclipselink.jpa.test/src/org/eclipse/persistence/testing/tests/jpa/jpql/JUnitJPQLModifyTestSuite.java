@@ -13,14 +13,12 @@
 
 package org.eclipse.persistence.testing.tests.jpa.jpql;
 
-
 import java.util.Calendar;
 import junit.framework.Test;
 import junit.framework.TestSuite;
 import org.eclipse.persistence.testing.models.jpa.advanced.EmployeePopulator;
 import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
 
-import junit.extensions.TestSetup;
 import org.eclipse.persistence.sessions.DatabaseSession;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.testing.models.jpa.advanced.AdvancedTableCreator;

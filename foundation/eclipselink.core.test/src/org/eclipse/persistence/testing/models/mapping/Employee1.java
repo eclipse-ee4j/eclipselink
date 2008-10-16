@@ -18,7 +18,6 @@ import java.io.*;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.descriptors.RelationalDescriptor;
 import org.eclipse.persistence.internal.helper.*;
-import org.eclipse.persistence.sessions.*;
 import org.eclipse.persistence.internal.sessions.DatabaseSessionImpl;
 import org.eclipse.persistence.expressions.*;
 

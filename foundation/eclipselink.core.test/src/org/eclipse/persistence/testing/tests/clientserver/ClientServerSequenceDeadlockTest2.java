@@ -28,6 +28,7 @@ import org.eclipse.persistence.sessions.DatabaseLogin;
  * Some dbs (Oracle) use deadlock-avoidance strategies. To defy those, Client0 waits after creating
  * 5 Employees until Client1 will creates its 5 Projects - this would insure a deadlock in "false" case
  */
+@SuppressWarnings("deprecation")
 public class ClientServerSequenceDeadlockTest2 extends ClientServerSequenceDeadlockTest {
     protected FIFO[] fifoInArray;
     protected boolean[] firstHalfDone;

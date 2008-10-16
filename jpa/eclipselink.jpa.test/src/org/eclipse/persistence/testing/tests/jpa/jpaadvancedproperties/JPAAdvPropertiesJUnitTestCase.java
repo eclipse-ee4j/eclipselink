@@ -18,16 +18,13 @@ import java.util.ArrayList;
 import java.util.Vector;
 import java.util.AbstractList;
 
-
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
 
-import junit.extensions.TestSetup;
 import junit.framework.Test;
 import junit.framework.TestSuite;
 import org.eclipse.persistence.expressions.Expression;
 import org.eclipse.persistence.expressions.ExpressionBuilder;
-import org.eclipse.persistence.internal.jpa.EJBQueryImpl;
 import org.eclipse.persistence.sessions.server.ServerSession;
 import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
 import org.eclipse.persistence.testing.models.jpa.jpaadvancedproperties.Customer;

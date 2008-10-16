@@ -29,9 +29,7 @@ import java.sql.RowId;
 import java.sql.SQLException;
 import java.sql.SQLWarning;
 import java.sql.SQLXML;
-import java.sql.Struct;
 import java.util.Calendar;
-import java.util.Properties;
 
 public class EmulatedStatement implements PreparedStatement {
 

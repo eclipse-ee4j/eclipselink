@@ -17,6 +17,7 @@ import org.eclipse.persistence.sessions.*;
 import org.eclipse.persistence.exceptions.*;
 import org.eclipse.persistence.sessions.DatabaseLogin;
 
+@SuppressWarnings("deprecation")
 public class ConcurrentTestWithReadLocks extends org.eclipse.persistence.testing.framework.AutoVerifyTestCase {
     public static int numThreads = 8;
     public boolean isCheckerThread;

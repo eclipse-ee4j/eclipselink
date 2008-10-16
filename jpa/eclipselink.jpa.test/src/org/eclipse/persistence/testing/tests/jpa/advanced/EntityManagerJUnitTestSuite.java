@@ -47,7 +47,6 @@ import junit.framework.*;
 import org.eclipse.persistence.config.EntityManagerProperties;
 import org.eclipse.persistence.config.ExclusiveConnectionMode;
 import org.eclipse.persistence.internal.jpa.EJBQueryImpl;
-import org.eclipse.persistence.internal.jpa.EntityManagerFactoryImpl;
 import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.queries.DatabaseQuery;
 import org.eclipse.persistence.queries.ObjectLevelReadQuery;

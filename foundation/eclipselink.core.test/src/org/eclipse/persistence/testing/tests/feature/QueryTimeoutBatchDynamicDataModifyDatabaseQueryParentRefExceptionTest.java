@@ -12,10 +12,6 @@
  ******************************************************************************/  
 package org.eclipse.persistence.testing.tests.feature;
 
-import org.eclipse.persistence.exceptions.DatabaseException;
-import org.eclipse.persistence.internal.sessions.AbstractSession;
-import org.eclipse.persistence.queries.DataModifyQuery;
-import org.eclipse.persistence.sessions.UnitOfWork;
 import org.eclipse.persistence.testing.framework.TestErrorException;
 
 /**

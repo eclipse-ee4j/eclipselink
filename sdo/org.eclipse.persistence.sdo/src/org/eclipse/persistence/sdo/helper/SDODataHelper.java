@@ -553,6 +553,7 @@ public class SDODataHelper implements DataHelper {
      * @param i an offset indicate what value to be set
      * @param data the value to set to the Calendar
      */
+    @SuppressWarnings("unused")
     private void setCalendar(Calendar c, int i, int data) {
         switch (i) {
         case 0:

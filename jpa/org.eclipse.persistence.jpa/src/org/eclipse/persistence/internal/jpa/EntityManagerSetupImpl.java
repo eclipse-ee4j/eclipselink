@@ -68,7 +68,6 @@ import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.internal.security.PrivilegedNewInstanceFromClass;
 import org.eclipse.persistence.internal.jpa.jdbc.DataSourceImpl;
 import org.eclipse.persistence.internal.security.SecurableObjectHolder;
-import org.eclipse.persistence.queries.DatabaseQuery;
 import org.eclipse.persistence.platform.database.converters.StructConverter;
 import org.eclipse.persistence.platform.server.ServerPlatformBase;
 import org.eclipse.persistence.tools.profiler.PerformanceProfiler;

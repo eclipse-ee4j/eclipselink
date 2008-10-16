@@ -22,6 +22,7 @@ import org.eclipse.persistence.expressions.*;
 import org.eclipse.persistence.testing.framework.*;
 import org.eclipse.persistence.testing.models.employee.domain.*;
 
+@SuppressWarnings("deprecation")
 public class ConcurrentBatchReadingTest extends TestCase {
 
     public static int numThreads = 8;

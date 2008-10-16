@@ -12,18 +12,11 @@
  ******************************************************************************/  
 package org.eclipse.persistence.testing.tests.validation;
 
-import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.descriptors.RelationalDescriptor;
 import org.eclipse.persistence.exceptions.DescriptorException;
-import org.eclipse.persistence.exceptions.IntegrityChecker;
 import org.eclipse.persistence.exceptions.EclipseLinkException;
-import org.eclipse.persistence.expressions.Expression;
-import org.eclipse.persistence.expressions.ExpressionBuilder;
 import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.mappings.DirectToFieldMapping;
-import org.eclipse.persistence.sessions.UnitOfWork;
-import org.eclipse.persistence.testing.framework.TestErrorException;
-
 
 public class NullPointerWhileGettingValueThruInstanceVariableAccessorTest extends ExceptionTest {
     public NullPointerWhileGettingValueThruInstanceVariableAccessorTest() {

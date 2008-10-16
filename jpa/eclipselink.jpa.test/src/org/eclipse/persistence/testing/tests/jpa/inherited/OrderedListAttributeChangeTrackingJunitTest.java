@@ -23,8 +23,7 @@
     import org.eclipse.persistence.sessions.server.ServerSession;
     import org.eclipse.persistence.descriptors.changetracking.ObjectChangePolicy;
     import org.eclipse.persistence.descriptors.changetracking.AttributeChangeTrackingPolicy;
-     
-    @SuppressWarnings("deprecation")
+
     public class OrderedListAttributeChangeTrackingJunitTest extends OrderedListJunitTest {
         private static Integer m_beerConsumerId;
         

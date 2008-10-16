@@ -52,6 +52,7 @@ public class JUnitTestCaseHelper {
      * The location of properties file can be given by system property <tt>test.properties</tt>.
      * The default location is "test.properties" file in current directory. 
      */
+    @SuppressWarnings("deprecation")
     public static Map getDatabaseProperties(){
         if (propertiesMap == null){
             String dbDriver = System.getProperty(DB_DRIVER_KEY);

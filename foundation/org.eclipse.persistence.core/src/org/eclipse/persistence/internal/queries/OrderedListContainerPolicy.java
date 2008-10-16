@@ -33,7 +33,6 @@ import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.descriptors.changetracking.CollectionChangeEvent;
 import org.eclipse.persistence.indirection.IndirectCollection;
-import org.eclipse.persistence.internal.identitymaps.CacheKey;
 
 /**
  * <p><b>Purpose</b>: A OrderedListContainerPolicy is ContainerPolicy whose

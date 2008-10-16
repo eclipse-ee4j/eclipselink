@@ -47,8 +47,10 @@ public class DirectoryInsideJarURLArchive  implements Archive {
 
     private List<String> entries = new ArrayList<String>();
 
+    @SuppressWarnings("unused")
     private Logger logger;
 
+    @SuppressWarnings("deprecation")
     public DirectoryInsideJarURLArchive(URL url) throws IOException {
         this(url, Logger.global);
     }

@@ -14,12 +14,8 @@ package org.eclipse.persistence.testing.tests.performance;
 
 import java.util.*;
 
-import org.eclipse.persistence.expressions.*;
-import org.eclipse.persistence.queries.*;
 import org.eclipse.persistence.sessions.*;
 import org.eclipse.persistence.testing.framework.*;
-import org.eclipse.persistence.testing.models.performance.toplink.*;
-import org.eclipse.persistence.testing.tests.performance.emulateddb.EmulatedConnection;
 
 /**
  * Performance test that allows cache and parameterizedSQL to be configured.

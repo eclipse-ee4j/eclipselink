@@ -12,7 +12,6 @@
  ******************************************************************************/  
 package org.eclipse.persistence.testing.tests.mapping;
 
-import org.eclipse.persistence.sessions.*;
 import org.eclipse.persistence.internal.sessions.DatabaseSessionImpl;
 import org.eclipse.persistence.testing.models.mapping.Employee1;
 

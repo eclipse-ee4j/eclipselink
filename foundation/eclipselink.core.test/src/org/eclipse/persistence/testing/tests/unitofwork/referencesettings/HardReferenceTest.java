@@ -2,7 +2,6 @@ package org.eclipse.persistence.testing.tests.unitofwork.referencesettings;
 
 import org.eclipse.persistence.internal.sessions.UnitOfWorkImpl;
 import org.eclipse.persistence.sessions.UnitOfWork;
-import org.eclipse.persistence.sessions.factories.ReferenceMode;
 import org.eclipse.persistence.testing.framework.AutoVerifyTestCase;
 import org.eclipse.persistence.testing.tests.unitofwork.changeflag.model.ALCTEmployee;
 

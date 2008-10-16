@@ -12,12 +12,8 @@
  ******************************************************************************/  
 package org.eclipse.persistence.testing.tests.performance.reading;
 
-import java.util.*;
-import org.eclipse.persistence.queries.*;
 import org.eclipse.persistence.sessions.*;
-import org.eclipse.persistence.testing.models.performance.Address;
 import org.eclipse.persistence.testing.framework.*;
-import org.eclipse.persistence.testing.tests.performance.emulateddb.EmulatedConnection;
 
 /**
  * This test compares the performance of read all vs reading directly from a result-set.

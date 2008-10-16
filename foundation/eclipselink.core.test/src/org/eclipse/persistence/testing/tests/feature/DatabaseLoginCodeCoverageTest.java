@@ -20,7 +20,6 @@ import org.eclipse.persistence.testing.framework.*;
 import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.internal.databaseaccess.*;
 import org.eclipse.persistence.platform.database.OraclePlatform;
-import org.eclipse.persistence.platform.database.oracle.*;
 
 public class DatabaseLoginCodeCoverageTest extends AutoVerifyTestCase {
     private DatabaseLogin login;

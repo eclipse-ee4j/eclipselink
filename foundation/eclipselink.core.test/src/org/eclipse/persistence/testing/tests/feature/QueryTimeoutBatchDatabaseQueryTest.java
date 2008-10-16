@@ -19,7 +19,6 @@ import org.eclipse.persistence.exceptions.DatabaseException;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.queries.DataModifyQuery;
 import org.eclipse.persistence.sessions.UnitOfWork;
-import org.eclipse.persistence.testing.framework.TestErrorException;
 
 /**
  * Bug 214910:  Add query timeout support to batched update queries (Oracle DB 9.0.1+)</p>

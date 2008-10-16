@@ -15,7 +15,6 @@ package org.eclipse.persistence.testing.tests.expressions;
 import org.eclipse.persistence.testing.models.employee.domain.*;
 import org.eclipse.persistence.expressions.*;
 import org.eclipse.persistence.platform.database.*;
-import org.eclipse.persistence.platform.database.oracle.*;
 import org.eclipse.persistence.queries.*;
 import org.eclipse.persistence.testing.framework.*;
 import org.eclipse.persistence.tools.schemaframework.PopulationManager;

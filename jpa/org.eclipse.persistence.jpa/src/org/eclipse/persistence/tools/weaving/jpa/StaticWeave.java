@@ -259,6 +259,7 @@ public class StaticWeave {
         /*
          * Convert the specified classpath array to URL array where new classloader will build on.
          */
+        @SuppressWarnings("deprecation")
         private ClassLoader getClassLoader() throws MalformedURLException{
             if (classpaths!=null){
                 URL[] urls= new URL[classpaths.length];

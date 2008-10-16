@@ -18,8 +18,6 @@ import java.util.List;
 
 import javax.persistence.TemporalType;
 
-import junit.extensions.TestSetup;
-
 import junit.framework.Test;
 import junit.framework.TestSuite;
 

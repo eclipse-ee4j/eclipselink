@@ -19,7 +19,6 @@ import java.util.Iterator;
 import junit.framework.Assert;
 import junit.framework.Test;
 import junit.framework.TestSuite;
-import junit.extensions.TestSetup;
 
 import javax.persistence.Query;
 import javax.persistence.EntityManager;

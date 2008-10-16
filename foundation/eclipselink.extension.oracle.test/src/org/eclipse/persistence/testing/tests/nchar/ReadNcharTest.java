@@ -27,6 +27,7 @@ public class ReadNcharTest extends BaseNcharTest {
         setDescription("Tests reading NCHAR, NVARCHAR2, NCLOB from Oracle database.");
     }
 
+    @SuppressWarnings("deprecation")
     protected void setup() {
         super.setup();
     //#Bug5200836, the added line ensures the connection is available when tests being switched

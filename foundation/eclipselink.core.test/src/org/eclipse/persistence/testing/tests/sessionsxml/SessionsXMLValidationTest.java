@@ -16,7 +16,6 @@ package org.eclipse.persistence.testing.tests.sessionsxml;
 import org.eclipse.persistence.exceptions.*;
 import org.eclipse.persistence.sessions.*;
 import org.eclipse.persistence.sessions.factories.*;
-import org.eclipse.persistence.internal.sessions.factories.*;
 
 // Testing imports
 import org.eclipse.persistence.testing.framework.*;

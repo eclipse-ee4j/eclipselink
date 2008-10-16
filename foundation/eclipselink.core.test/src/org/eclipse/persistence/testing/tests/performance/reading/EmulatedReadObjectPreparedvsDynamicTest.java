@@ -12,12 +12,8 @@
  ******************************************************************************/  
 package org.eclipse.persistence.testing.tests.performance.reading;
 
-import java.util.*;
-import org.eclipse.persistence.queries.*;
 import org.eclipse.persistence.sessions.*;
 import org.eclipse.persistence.testing.framework.PerformanceComparisonTestCase;
-import org.eclipse.persistence.testing.models.performance.toplink.*;
-import org.eclipse.persistence.testing.tests.performance.emulateddb.EmulatedConnection;
 
 /**
  * This test compares the performance of prepared queries vs dynamic queries.

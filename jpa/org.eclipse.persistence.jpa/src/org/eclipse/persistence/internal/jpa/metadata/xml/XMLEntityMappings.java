@@ -604,6 +604,7 @@ public class XMLEntityMappings extends ORMetadata {
      * We clone/reload a mapped-superclass by writing it out to XML and 
      * reload it through OX.
      */
+    @SuppressWarnings("deprecation")
     public MappedSuperclassAccessor reloadMappedSuperclass(MappedSuperclassAccessor accessor, MetadataDescriptor descriptor) {
         try {
             // Create entity mappings object to write out.

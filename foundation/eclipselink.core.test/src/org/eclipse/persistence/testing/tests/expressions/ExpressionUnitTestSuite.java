@@ -18,7 +18,6 @@ import org.eclipse.persistence.tools.schemaframework.PopulationManager;
 import org.eclipse.persistence.queries.*;
 import org.eclipse.persistence.expressions.*;
 import org.eclipse.persistence.platform.database.*;
-import org.eclipse.persistence.platform.database.oracle.*;
 import org.eclipse.persistence.internal.helper.*;
 import org.eclipse.persistence.exceptions.*;
 import org.eclipse.persistence.testing.framework.*;
