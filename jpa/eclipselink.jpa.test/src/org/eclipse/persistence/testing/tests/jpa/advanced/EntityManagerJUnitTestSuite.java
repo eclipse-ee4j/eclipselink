@@ -176,6 +176,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         suite.addTest(new EntityManagerJUnitTestSuite("testClose"));
         suite.addTest(new EntityManagerJUnitTestSuite("testPersistOnNonEntity"));
         suite.addTest(new EntityManagerJUnitTestSuite("testWRITELock"));
+        suite.addTest(new EntityManagerJUnitTestSuite("testOPTIMISTIC_FORCE_INCREMENTLock"));
         suite.addTest(new EntityManagerJUnitTestSuite("testReadTransactionIsolation_OriginalInCache_UpdateAll_Refresh_Flush"));
         suite.addTest(new EntityManagerJUnitTestSuite("testReadTransactionIsolation_OriginalInCache_UpdateAll_Refresh"));
         suite.addTest(new EntityManagerJUnitTestSuite("testReadTransactionIsolation_OriginalInCache_UpdateAll_Flush"));
@@ -202,6 +203,12 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         suite.addTest(new EntityManagerJUnitTestSuite("testPersistManagedException"));
         suite.addTest(new EntityManagerJUnitTestSuite("testPersistRemoved"));
         suite.addTest(new EntityManagerJUnitTestSuite("testREADLock"));
+        suite.addTest(new EntityManagerJUnitTestSuite("testOPTIMISTICLock"));
+        suite.addTest(new EntityManagerJUnitTestSuite("testPESSIMISTICLock"));
+        suite.addTest(new EntityManagerJUnitTestSuite("testPESSIMISTIC_FORCE_INCREMENTLock"));
+        suite.addTest(new EntityManagerJUnitTestSuite("testPESSIMISTIC_TIMEOUTLock"));
+        suite.addTest(new EntityManagerJUnitTestSuite("testRefreshOPTIMISTICLock"));
+        suite.addTest(new EntityManagerJUnitTestSuite("testRefreshPESSIMISTICLock"));
         suite.addTest(new EntityManagerJUnitTestSuite("testIgnoreRemovedObjectsOnDatabaseSync"));
         suite.addTest(new EntityManagerJUnitTestSuite("testIdentityOutsideTransaction"));
         suite.addTest(new EntityManagerJUnitTestSuite("testIdentityInsideTransaction"));
@@ -320,6 +327,148 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         }
     }
 
+    public void testRefreshOPTIMISTICLock(){
+        // Cannot create parallel entity managers in the server.
+        if (! isOnServer()) {
+            EntityManager em = createEntityManager();
+            beginTransaction(em);
+            Employee employee = null;
+            
+            try {
+                employee = new Employee();
+                employee.setFirstName("Billy");
+                employee.setLastName("Madsen");
+                em.persist(employee);
+                commitTransaction(em);
+            } catch (RuntimeException ex) {
+                if (isTransactionActive(em)) {
+                    rollbackTransaction(em);
+                }
+                
+                closeEntityManager(em);
+                throw ex;
+            }
+            
+            EntityManager em2 = createEntityManager();
+            Exception optimisticLockException = null;
+            beginTransaction(em);
+            
+            try {
+                em.refresh(employee, LockModeType.OPTIMISTIC);
+                beginTransaction(em2);
+                
+                try {
+                    Employee employee2 = em2.find(Employee.class, employee.getId());
+                    employee2.setFirstName("Tilly");
+                    commitTransaction(em2);
+                    em2.close();
+                } catch (RuntimeException ex) {
+                    if (isTransactionActive(em2)) {
+                        rollbackTransaction(em2);
+                    }
+                    
+                    closeEntityManager(em2);
+                    throw ex;
+                }
+            
+                try {
+                    em.flush();
+                } catch (PersistenceException exception) {
+                    if (exception instanceof OptimisticLockException){
+                        optimisticLockException = exception;
+                    } else {
+                        throw exception;
+                    }
+                }
+                
+                rollbackTransaction(em);
+            } catch (RuntimeException ex) {
+                if (isTransactionActive(em)){
+                    rollbackTransaction(em);
+                }
+                
+                closeEntityManager(em);
+                throw ex;
+            }
+            
+            try {
+                beginTransaction(em);
+                employee = em.find(Employee.class, employee.getId());
+                em.remove(employee);
+                commitTransaction(em);
+            } catch (RuntimeException ex) {
+                if (isTransactionActive(em)) {
+                    rollbackTransaction(em);
+                }
+                
+                closeEntityManager(em);
+                throw ex;
+            }
+            
+            assertFalse("Proper exception not thrown when EntityManager.lock(object, OPTIMISTIC) is used.", optimisticLockException == null);
+        }
+    }
+    
+    public void testRefreshPESSIMISTICLock() {
+        // Cannot create parallel entity managers in the server.
+        if (! isOnServer()) {
+            EntityManager em = createEntityManager();
+            Department dept = null;
+            
+            try {
+                beginTransaction(em);
+                dept = new Department();
+                dept.setName("Pessimistic Department");
+                em.persist(dept);
+                commitTransaction(em);
+            } catch (RuntimeException ex) {
+                if (isTransactionActive(em)) {
+                    rollbackTransaction(em);
+                }
+                
+                closeEntityManager(em);
+                throw ex;
+            }
+            
+            Exception pessimisticLockException = null;
+            
+            try {
+                beginTransaction(em);
+                dept = em.find(Department.class, dept.getId());
+                em.lock(dept, LockModeType.PESSIMISTIC);
+                dept.setName("New Pessimistic Department");
+                
+                EntityManager em2 = createEntityManager();
+                
+                try {
+                    beginTransaction(em2);
+                    Department dept2 = em2.find(Department.class, dept.getId());
+                    em2.refresh(dept2, LockModeType.PESSIMISTIC);
+                } catch (PersistenceException ex) {
+                    if (ex instanceof javax.persistence.PessimisticLockException) {
+                        pessimisticLockException = ex;
+                    } else {
+                        throw ex;
+                    } 
+                } finally {
+                    closeEntityManager(em2);
+                }
+            
+                commitTransaction(em);
+            } catch (RuntimeException ex) {
+                if (isTransactionActive(em)) {
+                    rollbackTransaction(em);
+                }
+                
+                throw ex;
+            } finally {
+                closeEntityManager(em);
+            }
+            
+            assertFalse("Proper exception not thrown when EntityManager.lock(object, PESSIMISTIC) is used.", pessimisticLockException == null);
+        }
+    }
+    
     public void testRefreshRemoved() {
         // find an existing or create a new Employee
         String firstName = "testRefreshRemoved";
@@ -902,10 +1051,12 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         if (isOnServer()) {
             return;
         }
+        
         EntityManager em = createEntityManager();
         beginTransaction(em);
         Employee employee = null;
-        try{
+        
+        try {
             employee = new Employee();
             employee.setFirstName("Mark");
             employee.setLastName("Madsen");
@@ -969,6 +1120,317 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         
         if (optimisticLockException == null){
             fail("Proper exception not thrown when EntityManager.lock(object, READ) is used.");
+        }
+    }
+    
+    public void testOPTIMISTIC_FORCE_INCREMENTLock(){
+        // Cannot create parallel transactions.
+        if (! isOnServer()) {
+            EntityManager em = createEntityManager();
+            Employee employee;
+            
+            try {
+                beginTransaction(em);
+                employee = new Employee();
+                employee.setFirstName("Philip");
+                employee.setLastName("Madsen");
+                em.persist(employee);
+                commitTransaction(em);
+            } catch (RuntimeException ex) {
+                if (isTransactionActive(em)) {
+                    rollbackTransaction(em);
+                }
+                
+                closeEntityManager(em);
+                throw ex;
+            }
+                
+            Exception optimisticLockException = null;
+
+            try {
+                beginTransaction(em);
+                employee = em.find(Employee.class, employee.getId(), LockModeType.OPTIMISTIC_FORCE_INCREMENT);
+                EntityManager em2 = createEntityManager();
+
+                try {
+                    beginTransaction(em2);
+                    Employee employee2 = em2.find(Employee.class, employee.getId());
+                    employee2.setFirstName("Tulip");
+                    commitTransaction(em2);
+                } catch (RuntimeException ex) {
+                    if (isTransactionActive(em2)) {
+                        rollbackTransaction(em2);
+                    }
+                    
+                    throw ex;
+                } finally {
+                    closeEntityManager(em2);
+                }
+                
+                commitTransaction(em);
+            } catch (RollbackException exception) {
+                if (exception.getCause() instanceof OptimisticLockException){
+                    optimisticLockException = exception;
+                }
+            } catch (RuntimeException ex) {
+                if (isTransactionActive(em)) {
+                    rollbackTransaction(em);
+                }
+                
+                closeEntityManager(em);
+                throw ex;
+            }
+            
+            beginTransaction(em);
+            
+            try {
+                employee = em.find(Employee.class, employee.getId());
+                em.remove(employee);
+                commitTransaction(em);
+            } catch (RuntimeException ex) {
+                if (isTransactionActive(em)) {
+                    rollbackTransaction(em);
+                }
+                
+                throw ex;
+            } finally {
+                closeEntityManager(em);
+            }
+            
+            assertFalse("Proper exception not thrown when EntityManager.lock(object, WRITE) is used.", optimisticLockException == null);
+        }
+    }
+    
+    public void testOPTIMISTICLock(){
+        // Cannot create parallel entity managers in the server.
+        if (! isOnServer()) {
+            EntityManager em = createEntityManager();
+            beginTransaction(em);
+            Employee employee = null;
+            
+            try {
+                employee = new Employee();
+                employee.setFirstName("Harry");
+                employee.setLastName("Madsen");
+                em.persist(employee);
+                commitTransaction(em);
+            } catch (RuntimeException ex) {
+                if (isTransactionActive(em)) {
+                    rollbackTransaction(em);
+                }
+                
+                closeEntityManager(em);
+                throw ex;
+            }
+            
+            EntityManager em2 = createEntityManager();
+            Exception optimisticLockException = null;
+            beginTransaction(em);
+            
+            try {
+                employee = em.find(Employee.class, employee.getId());
+                em.lock(employee, LockModeType.OPTIMISTIC);
+                beginTransaction(em2);
+                
+                try {
+                    Employee employee2 = em2.find(Employee.class, employee.getId());
+                    employee2.setFirstName("Michael");
+                    commitTransaction(em2);
+                    em2.close();
+                } catch (RuntimeException ex) {
+                    if (isTransactionActive(em2)) {
+                        rollbackTransaction(em2);
+                    }
+                    
+                    closeEntityManager(em2);
+                    throw ex;
+                }
+            
+                try {
+                    em.flush();
+                } catch (PersistenceException exception) {
+                    if (exception instanceof OptimisticLockException){
+                        optimisticLockException = exception;
+                    } else {
+                        throw exception;
+                    }
+                }
+                
+                rollbackTransaction(em);
+            } catch (RuntimeException ex) {
+                if (isTransactionActive(em)){
+                    rollbackTransaction(em);
+                }
+                
+                closeEntityManager(em);
+                throw ex;
+            }
+            
+            try {
+                beginTransaction(em);
+                employee = em.find(Employee.class, employee.getId());
+                em.remove(employee);
+                commitTransaction(em);
+            } catch (RuntimeException ex) {
+                if (isTransactionActive(em)) {
+                    rollbackTransaction(em);
+                }
+                
+                closeEntityManager(em);
+                throw ex;
+            }
+            
+            assertFalse("Proper exception not thrown when EntityManager.lock(object, OPTIMISTIC) is used.", optimisticLockException == null);
+        }
+    }
+    
+    public void testPESSIMISTICLock() {
+        // Cannot create parallel entity managers in the server.
+        if (! isOnServer()) {
+            EntityManager em = createEntityManager();
+            Department dept = null;
+            
+            try {
+                beginTransaction(em);
+                dept = new Department();
+                dept.setName("Pessimistic Department");
+                em.persist(dept);
+                commitTransaction(em);
+            } catch (RuntimeException ex) {
+                if (isTransactionActive(em)) {
+                    rollbackTransaction(em);
+                }
+                
+                closeEntityManager(em);
+                throw ex;
+            }
+            
+            Exception pessimisticLockException = null;
+            
+            try {
+                beginTransaction(em);
+                dept = em.find(Department.class, dept.getId());
+                em.lock(dept, LockModeType.PESSIMISTIC);
+                dept.setName("New Pessimistic Department");
+                
+                EntityManager em2 = createEntityManager();
+                
+                try {
+                    beginTransaction(em2);
+                    Department dept2 = em2.find(Department.class, dept.getId());
+                    em2.lock(dept2, LockModeType.PESSIMISTIC);
+                } catch (PersistenceException ex) {
+                    if (ex instanceof javax.persistence.PessimisticLockException) {
+                        pessimisticLockException = ex;
+                    } else {
+                        throw ex;
+                    } 
+                } finally {
+                    closeEntityManager(em2);
+                }
+            
+                commitTransaction(em);
+            } catch (RuntimeException ex) {
+                if (isTransactionActive(em)) {
+                    rollbackTransaction(em);
+                }
+                
+                throw ex;
+            } finally {
+                closeEntityManager(em);
+            }
+            
+            assertFalse("Proper exception not thrown when EntityManager.lock(object, PESSIMISTIC) is used.", pessimisticLockException == null);
+        }
+    }
+    
+    public void testPESSIMISTIC_FORCE_INCREMENTLock() {        
+        Employee employee = null;
+        Integer version1;
+        Integer version2;
+        
+        EntityManager em = createEntityManager();
+        
+        try {
+            beginTransaction(em);
+            employee = new Employee();
+            employee.setFirstName("Guillaume");
+            employee.setLastName("Aujet");
+            em.persist(employee);
+            commitTransaction(em);
+        } catch (RuntimeException ex) {
+            if (isTransactionActive(em)) {
+                rollbackTransaction(em);
+            }
+         
+            closeEntityManager(em);
+            throw ex;
+        }
+        
+        version1 = employee.getVersion();
+        
+        try {
+            beginTransaction(em);
+            employee = em.find(Employee.class, employee.getId(), LockModeType.PESSIMISTIC_FORCE_INCREMENT);
+            employee.setLastName("Auger");
+            commitTransaction(em);
+            
+            assertTrue("The version was not updated on the pessimistic lock.", version1.intValue() < employee.getVersion().intValue());
+        } catch (RuntimeException ex) {
+            if (isTransactionActive(em)) {
+                rollbackTransaction(em);
+            }
+            
+            throw ex;
+        } finally {
+            closeEntityManager(em);
+        }
+    }
+    
+    public void testPESSIMISTIC_TIMEOUTLock() {
+        // Cannot create parallel entity managers in the server.
+        if (! isOnServer()) {
+            EntityManager em = createEntityManager();
+            List result = em.createQuery("Select employee from Employee employee").getResultList();
+            Employee employee = (Employee) result.get(0);
+            Exception lockTimeOutException = null;
+           
+            try {
+                beginTransaction(em);
+                employee = em.find(Employee.class, employee.getId(), LockModeType.PESSIMISTIC);
+            
+                EntityManager em2 = createEntityManager();
+            
+                try {
+                    beginTransaction(em2);
+                    
+                    HashMap properties = new HashMap();
+                    properties.put(QueryHints.PESSIMISTIC_LOCK_TIMEOUT, 5);
+                    Employee employee2 = em2.find(Employee.class, employee.getId(), LockModeType.PESSIMISTIC, properties);
+                    employee2.setFirstName("Invalid Lock Employee");
+                    commitTransaction(em2);
+                } catch (PersistenceException ex) {
+                    if (ex instanceof javax.persistence.LockTimeoutException) {
+                        lockTimeOutException = ex;
+                    } else {
+                        throw ex;
+                    } 
+                } finally {
+                    closeEntityManager(em2);
+                }
+                
+                commitTransaction(em);
+            } catch (RuntimeException ex) {
+                if (isTransactionActive(em)) {
+                    rollbackTransaction(em);
+                }
+                
+                throw ex;
+            } finally {
+                closeEntityManager(em);
+            }
+        
+            assertFalse("Proper exception not thrown when Query with LockModeType.PESSIMISTIC is used.", lockTimeOutException == null);
         }
     }
     
@@ -2666,6 +3128,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
             fail("Proper exception not thrown when EntityManager.lock(object, WRITE) is used.");
         }
     }
+    
     /*This test case uses the "default2" PU defined in the persistence.xml 
     located at tltest/resource/essentials/broken-testmodels/META-INF 
     and included in essentials_testmodels_broken.jar */

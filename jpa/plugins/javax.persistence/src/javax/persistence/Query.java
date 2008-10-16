@@ -175,4 +175,20 @@ public interface Query {
      * @param flushMode
      */
     public Query setFlushMode(FlushModeType flushMode);
+    
+    /**
+     * Set the lock mode type to be used for the query execution.
+     * @param lockMode
+     * @throws IllegalStateException if not a Java Persistence
+     * query language SELECT query
+     */
+    public Query setLockMode(LockModeType lockMode);
+    
+    /**
+     * Get the current lock mode for the query.
+     * @return lock mode
+     * @throws IllegalStateException if not a Java Persistence
+     * query language SELECT query
+     */
+    public LockModeType getLockMode();
 }

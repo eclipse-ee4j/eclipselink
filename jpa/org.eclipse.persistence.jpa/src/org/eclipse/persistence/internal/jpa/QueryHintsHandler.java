@@ -123,6 +123,35 @@ public class QueryHintsHandler {
     }
     
     /**
+     * Common hint value processing into an boolean value. If the hint is
+     * null, false is returned. Those methods that need to handle a null hint
+     * to be something other than false should not call this method.
+     */
+    public static boolean parseBooleanHint(Object hint) {
+        if (hint == null) {
+            return false;
+        } else {
+            return Boolean.valueOf(hint.toString());
+        }
+    }
+    
+    /**
+     * Common hint value processing into an integer value. If the hint is
+     * null, -1 is returned.
+     */
+    public static int parseIntegerHint(Object hint, String hintName) {
+        if (hint == null) {
+            return -1;
+        } else {
+            try {
+                return Integer.parseInt(hint.toString());
+            } catch (NumberFormatException e) {
+                throw QueryException.queryHintContainedInvalidIntegerValue(hintName, hint, e);
+            }
+        }
+    }
+    
+    /**
      * Empty String hintValue indicates that the default hint value
      * should be used.
      */
@@ -148,6 +177,7 @@ public class QueryHintsHandler {
             addHint(new CacheUsageHint());
             addHint(new QueryTypeHint());
             addHint(new PessimisticLockHint());
+            addHint(new PessimisticLockTimeoutHint());
             addHint(new RefreshHint());
             addHint(new CascadePolicyHint());
             addHint(new BatchHint());
@@ -164,7 +194,7 @@ public class QueryHintsHandler {
             this.name = name;
             this.defaultValue = defaultValue;
         }
-
+        
         abstract DatabaseQuery applyToDatabaseQuery(Object valueToApply, DatabaseQuery query);
                 
         static void verify(String hintName, boolean shouldUseDefault, Object hintValue, String queryName, AbstractSession session) {
@@ -396,6 +426,17 @@ public class QueryHintsHandler {
         }
     }
 
+    protected static class PessimisticLockTimeoutHint extends Hint {
+        PessimisticLockTimeoutHint() {
+            super(QueryHints.PESSIMISTIC_LOCK_TIMEOUT, "");
+        }
+    
+        DatabaseQuery applyToDatabaseQuery(Object valueToApply, DatabaseQuery query) {
+            query.setQueryTimeout(QueryHintsHandler.parseIntegerHint(valueToApply, QueryHints.PESSIMISTIC_LOCK_TIMEOUT));
+            return query;
+        }
+    }
+    
     protected static class RefreshHint extends Hint {
         RefreshHint() {
             super(QueryHints.REFRESH, HintValues.FALSE);
@@ -526,14 +567,12 @@ public class QueryHintsHandler {
         }
     
         DatabaseQuery applyToDatabaseQuery(Object valueToApply, DatabaseQuery query) {
-            try {
-                query.setQueryTimeout(Integer.parseInt(valueToApply.toString()));
-            } catch (NumberFormatException e) {
-                throw QueryException.queryHintContainedInvalidIntegerValue(QueryHints.JDBC_TIMEOUT,valueToApply,e);
-            }
+            query.setQueryTimeout(QueryHintsHandler.parseIntegerHint(valueToApply, QueryHints.JDBC_TIMEOUT));
             return query;
         }
     }
+    
+
     
     protected static class JDBCFetchSizeHint extends Hint {
         JDBCFetchSizeHint() {
@@ -542,14 +581,11 @@ public class QueryHintsHandler {
     
         DatabaseQuery applyToDatabaseQuery(Object valueToApply, DatabaseQuery query) {
             if (query.isReadQuery()) {
-                try {
-                    ((ReadQuery)query).setFetchSize(Integer.parseInt(valueToApply.toString()));
-                } catch (NumberFormatException e) {
-                    throw QueryException.queryHintContainedInvalidIntegerValue(QueryHints.JDBC_FETCH_SIZE,valueToApply,e);
-                }
+                ((ReadQuery) query).setFetchSize(QueryHintsHandler.parseIntegerHint(valueToApply, QueryHints.JDBC_FETCH_SIZE));
             } else {
                 throw new IllegalArgumentException(ExceptionLocalization.buildMessage("ejb30-wrong-type-for-query-hint",new Object[]{getQueryId(query), name, getPrintValue(valueToApply)}));
             }
+            
             return query;
         }
     }
@@ -561,14 +597,11 @@ public class QueryHintsHandler {
     
         DatabaseQuery applyToDatabaseQuery(Object valueToApply, DatabaseQuery query) {
             if (query.isReadQuery()) {
-                try {
-                    ((ReadQuery)query).setMaxRows(Integer.parseInt(valueToApply.toString()));
-                } catch (NumberFormatException e) {
-                    throw QueryException.queryHintContainedInvalidIntegerValue(QueryHints.JDBC_MAX_ROWS,valueToApply,e);
-                }
+                ((ReadQuery) query).setMaxRows(QueryHintsHandler.parseIntegerHint(valueToApply, QueryHints.JDBC_MAX_ROWS));
             } else {
                 throw new IllegalArgumentException(ExceptionLocalization.buildMessage("ejb30-wrong-type-for-query-hint",new Object[]{getQueryId(query), name, getPrintValue(valueToApply)}));
             }
+            
             return query;
         }
     }

@@ -14,6 +14,7 @@ package org.eclipse.persistence.internal.jpa;
 
 import java.util.*;
 
+import javax.persistence.LockModeType;
 import javax.persistence.Query;
 import javax.persistence.TemporalType;
 import javax.persistence.FlushModeType;
@@ -45,6 +46,8 @@ public class EJBQueryImpl implements org.eclipse.persistence.jpa.JpaQuery {
     protected int firstResultIndex = -1; // -1 indicates undefined
     protected int maxResults = -1; // -1 indicates undefined
     protected int maxRows = -1; // -1 indicates undefined
+    
+    protected LockModeType lockMode = null;
     
     /** Stores if the wrapped query is shared, and requires cloning before being changed. */
     protected boolean isShared;
@@ -327,6 +330,27 @@ public class EJBQueryImpl implements org.eclipse.persistence.jpa.JpaQuery {
                 }
             }
         }
+
+        // Set a pessimistic locking on the query if specified.
+        if (lockMode != null) {
+            // We need to throw TransactionRequiredException if there is no 
+            // active transaction
+            entityManager.checkForTransaction(true);
+
+            // The lock mode setters and getters validate the query type
+            // so should be safe to make the casting.
+            cloneSharedQuery();                
+            ObjectLevelReadQuery query = (ObjectLevelReadQuery) getDatabaseQuery();
+            
+            if (lockMode.name().contains("PESSIMISTIC")) {
+                if (query.getQueryTimeout() > 0) {
+                    query.setLockMode(ObjectBuildingQuery.LOCK);
+                } else {
+                    query.setLockMode(ObjectBuildingQuery.LOCK_NOWAIT);
+                }
+            }
+        }
+        
         try {
             // in case it's a user-defined query
             if (getDatabaseQuery().isUserDefined()) {
@@ -339,8 +363,42 @@ public class EJBQueryImpl implements org.eclipse.persistence.jpa.JpaQuery {
                     }
                 }
             }
-            return getActiveSession().executeQuery(getDatabaseQuery(), parameterValues);
+            
+            // Execute the query.
+            Object result = getActiveSession().executeQuery(getDatabaseQuery(), parameterValues);
+            
+            // If we have an optimistic locking policy, force the update to the
+            // version field if necessary.
+            if (lockMode != null && result != null) {
+                if (lockMode.name().equals("READ") || lockMode.name().equals("WRITE") || lockMode.name().contains("OPTIMISTIC")) {
+                    org.eclipse.persistence.internal.sessions.UnitOfWorkImpl uow = (org.eclipse.persistence.internal.sessions.UnitOfWorkImpl) getActiveSession();
+                    
+                    if (result instanceof Collection) {
+                        Iterator i = ((Collection) result).iterator();
+                        while (i.hasNext()) {
+                            uow.forceUpdateToVersionField(i.next(), lockMode.name().equals("WRITE") || lockMode.name().equals("OPTIMISTIC_FORCE_INCREMENT"));
+                        }
+                    } else {
+                        uow.forceUpdateToVersionField(result, lockMode.name().equals("WRITE") || lockMode.name().equals("OPTIMISTIC_FORCE_INCREMENT"));
+                    }
+                }
+            }
+            
+            // Return the result.
+            return result; 
+        } catch (Exception e) {
+            if (lockMode.name().contains("PESSIMISTIC")) {
+                if (getDatabaseQuery().getQueryTimeout() > 0) {
+                    throw new javax.persistence.LockTimeoutException(e);
+                } else {
+                    throw new javax.persistence.PessimisticLockException(e);
+                }
+            }
+            
+            return null;
         } finally {
+            lockMode = null;
+            
             if (shouldResetConformResultsInUnitOfWork) {
                 ((ObjectLevelReadQuery)getDatabaseQuery()).conformResultsInUnitOfWork();
             }
@@ -406,6 +464,27 @@ public class EJBQueryImpl implements org.eclipse.persistence.jpa.JpaQuery {
         return entityManager;
     }
 
+    /**
+     * Get the current lock mode for the query.
+     * @return lock mode
+     * @throws IllegalStateException if not a Java Persistence query language 
+     *         SELECT query
+     */
+    public LockModeType getLockMode() {
+        try {
+            entityManager.verifyOpen();
+            
+            if (! getDatabaseQuery().isReadQuery()) {
+                throw new IllegalArgumentException(ExceptionLocalization.buildMessage("invalid_lock_query", (Object[]) null));
+            }
+            
+            return this.lockMode;
+        } catch (RuntimeException e) {
+            setRollbackOnly();
+            throw e;
+        }
+    }
+     
     /**
      * Non-standard method to return results of a ReadQuery that has a containerPolicy
      * that returns objects as a collection rather than a List
@@ -667,6 +746,28 @@ public class EJBQueryImpl implements org.eclipse.persistence.jpa.JpaQuery {
     }
     
     /**
+     * Set the lock mode type to be used for the query execution.
+     * @param lockMode
+     * @throws IllegalStateException if not a Java Persistence query language 
+     *         SELECT query
+     */
+    public Query setLockMode(LockModeType lockMode) {
+        try {
+            entityManager.verifyOpen();
+             
+            if (! getDatabaseQuery().isReadQuery()) {
+                throw new IllegalArgumentException(ExceptionLocalization.buildMessage("invalid_lock_query", (Object[]) null));
+            }
+             
+            this.lockMode = lockMode;
+            return this;
+        } catch (RuntimeException e) {
+            setRollbackOnly();
+            throw e;
+        }
+    }
+     
+    /**
      * If the query was from the jpql parse cache it must be cloned before being modified.
      */
     protected void cloneSharedQuery() {
@@ -801,7 +902,7 @@ public class EJBQueryImpl implements org.eclipse.persistence.jpa.JpaQuery {
      }
      
     /**
-     * Configure the firstResult and maxRows in the TopLink ReadQuery.
+     * Configure the firstResult, maxRows and lock mode in the EclipseLink ReadQuery.
      */
     protected void propagateResultProperties() {
         DatabaseQuery databaseQuery = getDatabaseQuery();
@@ -814,6 +915,7 @@ public class EJBQueryImpl implements org.eclipse.persistence.jpa.JpaQuery {
                 readQuery.setMaxRows(maxRows);
                 maxResults = -1;
             }
+            
             if (firstResultIndex > -1) {
                 cloneSharedQuery();
                 readQuery = (ReadQuery)getDatabaseQuery();

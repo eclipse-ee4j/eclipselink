@@ -105,14 +105,16 @@ public class ExceptionLocalizationResource extends ListResourceBundle {
                                            { "ejb30-wrong-type-for-query-hint", "Query {0}, query hint {1} is not valid for this type of query."},
                                            { "ejb30-default-for-unknown-property", "Can't return default value for unknown property {0}."},
                                            { "ejb30-illegal-property-value", "Property {0} has an illegal value {1}."},
-                                           
+                                           { "ejb30-wrong-lock_called_without_version_locking-index", "Invalid lock mode type on for an entity that does not have a version locking index. Only a PESSIMISTIC lock mode type can be used when there is no version locking index."},
                                            { "jpa_helper_invalid_report_query", "The query of type {0} is not an EclipseLink report query and therefore, could not be converted."},
                                            { "jpa_helper_invalid_read_all_query", "The query of type {0} is not an EclipseLink read all query and therefore, could not be converted."},
                                            { "jpa_helper_invalid_query", "The query of type {0} is not an EclipseLink query and therefore, could not be converted."},
                                            { "jpa_helper_invalid_entity_manager_factory", "The JPA entity manager factory {0} is not an EclipseLink entity manager factory and therefore, could not be converted."},
                                            { "null_not_supported_identityweakhashmap", "The IdentityWeakHashMap does not support 'null' as a key or value."},
                                            { "entity_manager_properties_conflict_default_connector_vs_jndi_connector", "EntityManager properties' conflict: eclipselink.jdbc.driver and/or eclipselink.jdbc.url require DefaultConnector, but javax.persistence.jtaDataSource and/or javax.persistence.nonjtaDataSource require JNDIConnector."},
-                                           { "entity_manager_properties_conflict_default_connector_vs_external_transaction_controller", "EntityManager properties' conflict: eclipselink.jdbc.driver and/or eclipselink.jdbc.url require DefaultConnector, but persistence unit uses external transaction controller, therefore JNDIConnector is required."}
+                                           { "entity_manager_properties_conflict_default_connector_vs_external_transaction_controller", "EntityManager properties' conflict: eclipselink.jdbc.driver and/or eclipselink.jdbc.url require DefaultConnector, but persistence unit uses external transaction controller, therefore JNDIConnector is required."},
+                                           { "invalid_lock_query", "A locking query must be of type ReadQuery."}
+                                           
     };
 
     /**

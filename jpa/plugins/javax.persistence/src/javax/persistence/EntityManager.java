@@ -35,6 +35,8 @@
  */
 package javax.persistence;
 
+import java.util.Map;
+
 /**
  * Interface used to interact with the persistence context.
  *
@@ -118,6 +120,81 @@ public interface EntityManager {
     public <T> T find(Class<T> entityClass, Object primaryKey);
 
     /**
+     * Find by primary key and lock.
+     * Search for an entity of the specified class and primary key and lock it 
+     * with respect to the specified lock type. If the entity instance is 
+     * contained in the persistence context it is returned from there. If the 
+     * entity is found within the persistence context and the lock mode type
+     * is pessimistic and the entity has a version attribute, the persistence 
+     * provider must perform optimistic version checks when obtaining the 
+     * database lock. If these checks fail, the OptimisticLockException will be 
+     * thrown.
+     * If the lock mode type is pessimistic and the entity instance is found but 
+     * cannot be locked:
+     *  - the PessimisticLockException will be thrown if the database locking 
+     *    failure causes transaction-level rollback.
+     *  - the LockTimeoutException will be thrown if the database locking 
+     *    failure causes only statement-level rollback
+     *    
+     * @param entityClass
+     * @param primaryKey
+     * @param lockMode
+     * @return the found entity instance or null if the entity does not exist
+     * @throws IllegalArgumentException if the first argument does not denote an 
+     *         entity type or the second argument is not a valid type for that 
+     *         entity's primary key or is null
+     * @throws TransactionRequiredException if there is no transaction and a 
+     *         lock mode other than NONE is set
+     * @throws OptimisticLockException if the optimistic version check fails
+     * @throws PessimisticLockException if pessimistic locking fails and the 
+     *         transaction is rolled back
+     * @throws LockTimeoutException if pessimistic locking fails and only the 
+     *         statement is rolled back
+     * @throws PersistenceException if an unsupported lock call is made
+     */
+    public <T> T find(Class<T> entityClass, Object primaryKey, LockModeType lockMode);
+    
+    /**
+     * Find by primary key and lock.
+     * Search for an entity of the specified class and primary key and lock it 
+     * with respect to the specified lock type. If the entity instance is 
+     * contained in the persistence context it is returned from there. If the 
+     * entity is found within the persistence context and the lock mode type is 
+     * pessimistic and the entity has a version attribute, the persistence 
+     * provider must perform optimistic version checks when obtaining the 
+     * database lock. If these checks fail, the OptimisticLockException will be 
+     * thrown. 
+     * If the lock mode type is pessimistic and the entity instance is found but 
+     * cannot be locked:
+     *  - the PessimisticLockException will be thrown if the database locking 
+     *    failure causes transaction-level rollback.
+     *  - the LockTimeoutException will be thrown if the database locking failure 
+     *    causes only statement-level rollback
+     * If a vendor-specific property or hint is not recognized, it is silently 
+     * ignored. Portable applications should not rely on the standard timeout
+     * hint. Depending on the database in use and the locking mechanisms used by 
+     * the provider, the hint may or may not be observed.
+     * 
+     * @param entityClass
+     * @param primaryKey
+     * @param lockMode
+     * @param properties standard and vendor-specific properties and hints
+     * @return the found entity instance or null if the entity does not exist
+     * @throws IllegalArgumentException if the first argument does not denote an 
+     *         entity type or the second argument is not a valid type for that 
+     *         entity's primary key or is null
+     * @throws TransactionRequiredException if there is no transaction and a lock 
+     *         mode other than NONE is set
+     * @throws OptimisticLockException if the optimistic version check fails
+     * @throws PessimisticLockException if pessimistic locking fails and the 
+     *         transaction is rolled back
+     * @throws LockTimeoutException if pessimistic locking fails and only the 
+     *         statement is rolled back
+     * @throws PersistenceException if an unsupported lock call is made
+     */
+    public <T> T find(Class<T> entityClass, Object primaryKey, LockModeType lockMode, Map properties);
+     
+    /**
      * Get an instance, whose state may be lazily fetched.
      * If the requested instance does not exist in the database,
      * throws {@link EntityNotFoundException} when the instance state is
@@ -151,36 +228,50 @@ public interface EntityManager {
     public void flush();
   
     /**
-    * Set the flush mode that applies to all objects contained
-    * in the persistence context.
-    * @param flushMode
+     * Set the flush mode that applies to all objects contained
+     * in the persistence context.
+     * @param flushMode
      * @throws IllegalStateException if this EntityManager has been closed.
-    */
+     */
     public void setFlushMode(FlushModeType flushMode);    
 
     /**
-    * Get the flush mode that applies to all objects contained
-    * in the persistence context.
-    * @return flush mode
+     * Get the flush mode that applies to all objects contained
+     * in the persistence context.
+     * @return flush mode
      * @throws IllegalStateException if this EntityManager has been closed.
-    */
+     */
     public FlushModeType getFlushMode();
 
     /**
-    * Set the lock mode for an entity object contained
-    * in the persistence context.
-    * @param entity
-    * @param lockMode
+     * Set the lock mode for an entity object contained
+     * in the persistence context.
+     * @param entity
+     * @param lockMode
      * @throws IllegalStateException if this EntityManager has been closed.
-    * @throws PersistenceException if an unsupported lock call
-    * is made
-    * @throws IllegalArgumentException if the instance is not
-    * an entity or is a detached entity
-    * @throws TransactionRequiredException if there is no
-    * transaction
-    */
+     * @throws PersistenceException if an unsupported lock call
+     * is made
+     * @throws IllegalArgumentException if the instance is not
+     * an entity or is a detached entity
+     * @throws TransactionRequiredException if there is no
+     * transaction
+     */
     public void lock(Object entity, LockModeType lockMode);
 
+    /**
+     * Set the lock mode for an entity object contained in the persistence 
+     * context.
+     * 
+     * @param entity
+     * @param lockMode
+     * @throws PersistenceException if an unsupported lock call is made
+     * @throws IllegalArgumentException if the instance is not an entity or is 
+     *         a detached entity
+     * @throws javax.persistence.TransactionRequiredException if there is no 
+     *         transaction
+     */
+    public void lock(Object entity, LockModeType lockMode, Map properties);
+    
     /** 
      * Refresh the state of the instance from the database,
      * overwriting changes made to the entity, if any.
@@ -198,12 +289,69 @@ public interface EntityManager {
     public void refresh(Object entity);
     
     /**
-    * Clear the persistence context, causing all managed
-    * entities to become detached. Changes made to entities that
-    * have not been flushed to the database will not be
-    * persisted.
+     * Refresh the state of the instance from the database, overwriting changes 
+     * made to the entity, if any, and lock it with respect to given lock mode 
+     * type. 
+     * If the lock mode type is pessimistic and the entity instance is found but 
+     * cannot be locked:
+     *  - the PessimisticLockException will be thrown if the database locking 
+     *    failure causes transaction-level rollback.
+     *  - the LockTimeoutException will be thrown if the database locking failure 
+     *    causes only statement-level rollback.
+     *    
+     * @param entity
+     * @param lockMode
+     * @throws IllegalArgumentException if the instance is not an entity or the 
+     *         entity is not managed
+     * @throws TransactionRequiredException if there is no transaction
+     * @throws EntityNotFoundException if the entity no longer exists in the 
+     *         database
+     * @throws PessimisticLockException if pessimistic locking fails and the 
+     *         transaction is rolled back
+     * @throws LockTimeoutException if pessimistic locking fails and only the 
+     *         statement is rolled back
+     * @throws PersistenceException if an unsupported lock call is made
+     */
+    public void refresh(Object entity, LockModeType lockMode);
+     
+    /**
+     * Refresh the state of the instance from the database, overwriting changes 
+     * made to the entity, if any, and lock it with respect to given lock mode 
+     * type. 
+     * If the lock mode type is pessimistic and the entity instance is found but 
+     * cannot be locked:
+     *  - the PessimisticLockException will be thrown if the database locking 
+     *    failure causes transaction-level rollback.
+     *  - the LockTimeoutException will be thrown if the database locking failure 
+     *    causes only statement-level rollback
+     * If a vendor-specific property or hint is not recognized, it is silently 
+     * ignored. Portable applications should not rely on the standard timeout
+     * hint. Depending on the database in use and the locking mechanisms used by 
+     * the provider, the hint may or may not be observed.
+     * 
+     * @param entity
+     * @param lockMode
+     * @param properties standard and vendor-specific properties and hints
+     * @throws IllegalArgumentException if the instance is not an entity or the 
+     *         entity is not managed
+     * @throws TransactionRequiredException if there is no transaction
+     * @throws EntityNotFoundException if the entity no longer exists in the 
+     *         database
+     * @throws PessimisticLockException if pessimistic locking fails and the 
+     *         transaction is rolled back
+     * @throws LockTimeoutException if pessimistic locking fails and only the 
+     *         statement is rolled back
+     * @throws PersistenceException if an unsupported lock call is made
+     */
+    public void refresh(Object entity, LockModeType lockMode, Map properties);
+     
+    /**
+     * Clear the persistence context, causing all managed
+     * entities to become detached. Changes made to entities that
+     * have not been flushed to the database will not be
+     * persisted.
      * @throws IllegalStateException if this EntityManager has been closed.
-    */
+     */
     public void clear();
 
     /**

@@ -15,8 +15,12 @@ package org.eclipse.persistence.testing.tests.jpa.jpql;
 
 import java.util.List;
 
+import javax.persistence.LockModeType;
+import javax.persistence.OptimisticLockException;
+import javax.persistence.PersistenceException;
 import javax.persistence.Query;
 import javax.persistence.EntityManager;
+import javax.persistence.RollbackException;
 
 import junit.framework.Test;
 import junit.framework.TestSuite;
@@ -81,6 +85,13 @@ public class AdvancedQueryTestSuite extends JUnitTestCase {
         suite.addTest(new AdvancedQueryTestSuite("testQueryExactPrimaryKeyCacheHits"));
         suite.addTest(new AdvancedQueryTestSuite("testQueryTypeCacheHits"));
         suite.addTest(new AdvancedQueryTestSuite("testQueryCache"));
+        suite.addTest(new AdvancedQueryTestSuite("testQueryREADLock"));
+        suite.addTest(new AdvancedQueryTestSuite("testQueryWRITELock"));
+        suite.addTest(new AdvancedQueryTestSuite("testQueryOPTIMISTICLock"));
+        suite.addTest(new AdvancedQueryTestSuite("testQueryOPTIMISTIC_FORCE_INCREMENTLock"));
+        suite.addTest(new AdvancedQueryTestSuite("testQueryPESSIMISTICLock"));
+        suite.addTest(new AdvancedQueryTestSuite("testQueryPESSIMISTIC_FORCE_INCREMENTLock"));
+        suite.addTest(new AdvancedQueryTestSuite("testQueryPESSIMISTICTIMEOUTLock"));
         
         return suite;
     }
@@ -355,6 +366,389 @@ public class AdvancedQueryTestSuite extends JUnitTestCase {
             if (counter != null) {
                 counter.remove();
             }
+        }
+    }
+    
+    public void testQueryREADLock(){
+        // Cannot create parallel entity managers in the server.
+        if (isOnServer()) {
+            return;
+        }
+        
+        // Load an employee into the cache.
+        EntityManager em = createEntityManager();
+        List result = em.createQuery("Select employee from Employee employee").getResultList();
+        Employee employee = (Employee) result.get(0);
+        Exception optimisticLockException = null;
+       
+        try {
+            beginTransaction(em);
+            
+            // Query by primary key.
+            Query query = em.createQuery("Select employee from Employee employee where employee.id = :id and employee.firstName = :firstName");
+            query.setLockMode(LockModeType.READ);
+            query.setHint(QueryHints.REFRESH, true);
+            query.setParameter("id", employee.getId());
+            query.setParameter("firstName", employee.getFirstName());
+            Employee queryResult = (Employee) query.getSingleResult();
+            
+            EntityManager em2 = createEntityManager();
+            
+            try {
+                beginTransaction(em2);
+                Employee employee2 = em2.find(Employee.class, employee.getId());
+                employee2.setFirstName("Read");
+                commitTransaction(em2);
+            } catch (RuntimeException ex) {
+                rollbackTransaction(em2);
+                throw ex;
+            } finally {
+                closeEntityManager(em2);
+            }
+        
+            try {
+                em.flush();
+            } catch (PersistenceException exception) {
+                if (exception instanceof OptimisticLockException) {
+                    optimisticLockException = exception;
+                } else {
+                    throw exception;
+                }
+            }
+            
+            rollbackTransaction(em);
+        } catch (RuntimeException ex) {
+            if (isTransactionActive(em)){
+                rollbackTransaction(em);
+            }
+            
+            throw ex;
+        } finally {
+            closeEntityManager(em);
+        }
+        
+        assertFalse("Proper exception not thrown when Query with LockModeType.READ is used.", optimisticLockException == null);
+    }
+    
+    public void testQueryWRITELock(){
+        // Cannot create parallel transactions.
+        if (isOnServer()) {
+            return;
+        }
+
+        // Load an employee into the cache.
+        EntityManager em = createEntityManager();
+        List result = em.createQuery("Select employee from Employee employee").getResultList();
+        Employee employee = (Employee) result.get(0);
+        Exception optimisticLockException = null;
+        
+        try {
+            beginTransaction(em);
+            
+            // Query by primary key.
+            Query query = em.createQuery("Select employee from Employee employee where employee.id = :id and employee.firstName = :firstName");
+            query.setLockMode(LockModeType.WRITE);
+            query.setHint(QueryHints.REFRESH, true);
+            query.setParameter("id", employee.getId());
+            query.setParameter("firstName", employee.getFirstName());
+            Employee queryResult = (Employee) query.getSingleResult();
+        
+            EntityManager em2 = createEntityManager();
+            
+            try {
+                beginTransaction(em2);
+                
+                Employee employee2 = em2.find(Employee.class, queryResult.getId());
+                employee2.setFirstName("Write");
+                commitTransaction(em2);
+            } catch (RuntimeException ex) {
+                rollbackTransaction(em2);
+                closeEntityManager(em2);
+                throw ex;
+            }
+            
+            commitTransaction(em);
+        } catch (RollbackException exception) {
+            if (exception.getCause() instanceof OptimisticLockException){
+                optimisticLockException = exception;
+            }
+        } catch (RuntimeException ex) {
+            if (isTransactionActive(em)) {
+                rollbackTransaction(em);
+            }
+            
+            closeEntityManager(em);
+            
+            throw ex;
+        }
+
+        assertFalse("Proper exception not thrown when Query with LockModeType.WRITE is used.", optimisticLockException == null);
+    }
+    
+    public void testQueryOPTIMISTICLock(){
+        // Cannot create parallel entity managers in the server.
+        if (! isOnServer()) {
+            // Load an employee into the cache.
+            EntityManager em = createEntityManager();
+            List result = em.createQuery("Select employee from Employee employee").getResultList();
+            Employee employee = (Employee) result.get(0);
+            Exception optimisticLockException = null;
+           
+            try {
+                beginTransaction(em);
+                
+                // Query by primary key.
+                Query query = em.createQuery("Select employee from Employee employee where employee.id = :id and employee.firstName = :firstName");
+                query.setLockMode(LockModeType.OPTIMISTIC);
+                query.setHint(QueryHints.REFRESH, true);
+                query.setParameter("id", employee.getId());
+                query.setParameter("firstName", employee.getFirstName());
+                Employee queryResult = (Employee) query.getSingleResult();
+            
+                EntityManager em2 = createEntityManager();
+                
+                try {
+                    beginTransaction(em2);
+                    Employee employee2 = em2.find(Employee.class, employee.getId());
+                    employee2.setFirstName("Optimistic");
+                    commitTransaction(em2);
+                } catch (RuntimeException ex) {
+                    rollbackTransaction(em2);
+                    throw ex;
+                } finally {
+                    closeEntityManager(em2);
+                }
+            
+                try {
+                    em.flush();
+                } catch (PersistenceException exception) {
+                    if (exception instanceof OptimisticLockException) {
+                        optimisticLockException = exception;
+                    } else {
+                        throw exception;
+                    }
+                }
+                
+                rollbackTransaction(em);
+            } catch (RuntimeException ex) {
+                if (isTransactionActive(em)){
+                    rollbackTransaction(em);
+                }
+                
+                throw ex;
+            } finally {
+                closeEntityManager(em);
+            }
+            
+            assertFalse("Proper exception not thrown when Query with LockModeType.READ is used.", optimisticLockException == null);
+        }
+    }
+    
+    public void testQueryOPTIMISTIC_FORCE_INCREMENTLock(){
+        // Cannot create parallel transactions.
+        if (! isOnServer()) {
+            // Load an employee into the cache.
+            EntityManager em = createEntityManager();
+            List result = em.createQuery("Select employee from Employee employee").getResultList();
+            Employee employee = (Employee) result.get(0);
+            Exception optimisticLockException = null;
+            
+            try {
+                beginTransaction(em);
+                
+                // Query by primary key.
+                Query query = em.createQuery("Select employee from Employee employee where employee.id = :id and employee.firstName = :firstName");
+                query.setLockMode(LockModeType.OPTIMISTIC_FORCE_INCREMENT);
+                query.setHint(QueryHints.REFRESH, true);
+                query.setParameter("id", employee.getId());
+                query.setParameter("firstName", employee.getFirstName());
+                Employee queryResult = (Employee) query.getSingleResult();
+            
+                EntityManager em2 = createEntityManager();
+                
+                try {
+                    beginTransaction(em2);
+                    
+                    Employee employee2 = em2.find(Employee.class, queryResult.getId());
+                    employee2.setFirstName("OptimisticForceIncrement");
+                    commitTransaction(em2);
+                } catch (RuntimeException ex) {
+                    rollbackTransaction(em2);
+                    closeEntityManager(em2);
+                    throw ex;
+                }
+                
+                commitTransaction(em);
+            } catch (RollbackException exception) {
+                if (exception.getCause() instanceof OptimisticLockException){
+                    optimisticLockException = exception;
+                }
+            } catch (RuntimeException ex) {
+                if (isTransactionActive(em)) {
+                    rollbackTransaction(em);
+                }
+                
+                closeEntityManager(em);
+                
+                throw ex;
+            }
+    
+            assertFalse("Proper exception not thrown when Query with LockModeType.WRITE is used.", optimisticLockException == null);
+        }
+    }
+    
+    public void testQueryPESSIMISTICLock() {
+        // Cannot create parallel entity managers in the server.
+        if (! isOnServer()) {
+            EntityManager em = createEntityManager();
+            Exception pessimisticLockException = null;
+        
+            try {
+                beginTransaction(em);
+            
+                // Find all the departments and lock them.
+                List employees = em.createQuery("Select employee from Employee employee").setLockMode(LockModeType.PESSIMISTIC).getResultList();
+                Employee employee = (Employee) employees.get(0);
+                employee.setFirstName("New Pessimistic Employee");
+            
+                EntityManager em2 = createEntityManager();
+            
+                try {
+                    beginTransaction(em2);
+                
+                    Employee employee2 = em2.find(Employee.class, employee.getId());
+                    em2.lock(employee2, LockModeType.PESSIMISTIC);
+                    employee2.setFirstName("Invalid Lock Employee");
+                    
+                    commitTransaction(em2);
+                } catch (PersistenceException ex) {
+                    if (ex instanceof javax.persistence.PessimisticLockException) {
+                        pessimisticLockException = ex;
+                    } else {
+                        throw ex;
+                    } 
+                } finally {
+                    closeEntityManager(em2);
+                }
+                
+                commitTransaction(em);
+            } catch (RuntimeException ex) {
+                if (isTransactionActive(em)) {
+                    rollbackTransaction(em);
+                }
+                
+                throw ex;
+            } finally {
+                closeEntityManager(em);
+            }
+        
+            assertFalse("Proper exception not thrown when Query with LockModeType.PESSIMISTIC is used.", pessimisticLockException == null);
+        }
+    }
+    
+    public void testQueryPESSIMISTIC_FORCE_INCREMENTLock() {        
+        Employee employee = null;
+        Integer version1;
+        Integer version2;
+        
+        EntityManager em = createEntityManager();
+        beginTransaction(em);
+        
+        try {
+            employee = new Employee();
+            employee.setFirstName("Guillaume");
+            employee.setLastName("Aujet");
+            em.persist(employee);
+            commitTransaction(em);
+        } catch (RuntimeException ex) {
+            if (isTransactionActive(em)) {
+                rollbackTransaction(em);
+            }
+         
+            closeEntityManager(em);
+            throw ex;
+        }
+        
+        version1 = employee.getVersion();
+        
+        try {
+            beginTransaction(em);
+            Query query = em.createQuery("Select employee from Employee employee where employee.id = :id and employee.firstName = :firstName").setLockMode(LockModeType.PESSIMISTIC_FORCE_INCREMENT);
+            query.setHint(QueryHints.REFRESH, true);
+            query.setParameter("id", employee.getId());
+            query.setParameter("firstName", employee.getFirstName());
+            Employee queryResult = (Employee) query.getSingleResult();
+            queryResult.setLastName("Auger");
+            commitTransaction(em);
+            
+            assertTrue("The version was not updated on the pessimistic lock.", version1.intValue() < employee.getVersion().intValue());
+        } catch (RuntimeException ex) {
+            if (isTransactionActive(em)) {
+                rollbackTransaction(em);
+            }
+            
+            throw ex;
+        } finally {
+            closeEntityManager(em);
+        }
+    }
+    
+    public void testQueryPESSIMISTICTIMEOUTLock() {
+        // Cannot create parallel entity managers in the server.
+        if (! isOnServer()) {
+            EntityManager em = createEntityManager();
+            List result = em.createQuery("Select employee from Employee employee").getResultList();
+            Employee employee = (Employee) result.get(0);
+            Exception lockTimeOutException = null;
+           
+            try {
+                beginTransaction(em);
+                
+                // Query by primary key.
+                Query query = em.createQuery("Select employee from Employee employee where employee.id = :id and employee.firstName = :firstName");
+                query.setLockMode(LockModeType.PESSIMISTIC);
+                query.setHint(QueryHints.REFRESH, true);
+                query.setParameter("id", employee.getId());
+                query.setParameter("firstName", employee.getFirstName());
+                Employee queryResult = (Employee) query.getSingleResult();
+            
+                EntityManager em2 = createEntityManager();
+            
+                try {
+                    beginTransaction(em2);
+                
+                    // Query by primary key.
+                    Query query2 = em2.createQuery("Select employee from Employee employee where employee.id = :id and employee.firstName = :firstName");
+                    query2.setLockMode(LockModeType.PESSIMISTIC);
+                    query2.setHint(QueryHints.REFRESH, true);
+                    query2.setHint(QueryHints.PESSIMISTIC_LOCK_TIMEOUT, 5);
+                    query2.setParameter("id", employee.getId());
+                    query2.setParameter("firstName", employee.getFirstName());
+                    Employee employee2 = (Employee) query2.getSingleResult();
+                    employee2.setFirstName("Invalid Lock Employee");
+                    commitTransaction(em2);
+                } catch (PersistenceException ex) {
+                    if (ex instanceof javax.persistence.LockTimeoutException) {
+                        lockTimeOutException = ex;
+                    } else {
+                        throw ex;
+                    } 
+                } finally {
+                    closeEntityManager(em2);
+                }
+                
+                commitTransaction(em);
+            } catch (RuntimeException ex) {
+                if (isTransactionActive(em)) {
+                    rollbackTransaction(em);
+                }
+                
+                throw ex;
+            } finally {
+                closeEntityManager(em);
+            }
+        
+            assertFalse("Proper exception not thrown when Query with LockModeType.PESSIMISTIC is used.", lockTimeOutException == null);
         }
     }
 }

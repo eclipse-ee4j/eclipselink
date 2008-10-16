@@ -64,6 +64,14 @@ public class QueryHints {
     */
     public static final String PESSIMISTIC_LOCK = "eclipselink.pessimistic-lock";
     
+    /**
+     * Configures the JDBC timeout used in pessimistic locking, if the database 
+     * query exceeds the timeout the database will terminate the query and 
+     * return an exception. Valid values are Integer or Strings that can be 
+     * parsed to int values.
+     */
+    public static final String PESSIMISTIC_LOCK_TIMEOUT = "javax.persistence.lock.timeout";
+    
    /**
     * Configures the query to refresh the resulting objects in the cache and persistent context with the current state of the database.
     * Valid values are:  HintValues.FALSE, HintValues.TRUE,
