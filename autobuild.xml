@@ -1,9 +1,9 @@
 <!--/*******************************************************************************
-* This program and the accompanying materials are made available under the 
-* terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
-* which accompanies this distribution. 
+* This program and the accompanying materials are made available under the
+* terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+* which accompanies this distribution.
 * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
-* and the Eclipse Distribution License is available at 
+* and the Eclipse Distribution License is available at
 * http://www.eclipse.org/org/documents/edl-v10.php.
 *
 *   Ant naming conventions:
@@ -27,10 +27,10 @@
 <!-- =============================================================================
 *  General Comments
 *  This buildfile contains branch specific instructions for the automated build
-*  process for EclipseLink and is intended to be called by the generic 
+*  process for EclipseLink and is intended to be called by the generic
 *  "bootstrap.xml" which is called by bootstrap.sh.
 *     Autobuild contains targets to generate and test continuous and nightly
-*        snapshot, monthly and Release milestone builds, with the associated 
+*        snapshot, monthly and Release milestone builds, with the associated
 *        Delivery steps (uploading files and test results to the download
 *        server, interfacing with the "uploadToMaven" script, tagging source,
 *        etc.  It is not intended to be  executed directly, nor does it directly
@@ -40,19 +40,19 @@
 <project name="EclipseLink Automated Build" basedir="." default="build-nightly">
 <echo message="---- AutoBuild.xml ----"/>
 
-    <target name="build-no-publish"  description="Trigger an automated build without testing or publish"
+    <target name="build-no-publish" description="Trigger an automated build without testing or publish"
             depends="clean, build, package-bundles, build-test"
     />
     <target name="build-nightly"    description="Trigger the nightly automated build and lrg tests"
             depends="clean, build, package-bundles, build-test, test-lrg, publish-build, publish-results, test-for-errors"
     />
-    <target name="build-milestone"    description="Trigger build, testing, and publishing of a milestone release ("release" is a milestone in this case)"
+    <target name="build-milestone"  description="Trigger build, testing, and publishing of a milestone release ('release' is a milestone in this case)"
             depends="clean, build, package-bundles, build-test, test-lrg, test-for-errors, create-tag, publish-build, publish-results"
     />
     <target name="build-continuous" description="Trigger an automated build and run the tests if source changes exist"
             depends="clean, build-no-javadoc, build-core-test, test-srg"
     />
-    <target name="publish-all"    description="Trigger just the publish targets"
+    <target name="publish-all"      description="Trigger just the publish targets"
             depends="publish-build, publish-results"
     />
 
@@ -71,7 +71,7 @@
         <property name="test.properties.run" value="${coretest.prop.file}"/>
 
         <!-- get svn.revision    NOTE: if get fails defaulted to "NA"            -->
-        <exec outputproperty="svn.revision" 
+        <exec outputproperty="svn.revision"
             failonerror="false"
             failifexecutionfails="false"
             errorproperty="svnversion.failed"
@@ -79,7 +79,7 @@
             <arg line="."/>
         </exec>
         <property name="svn.revision" value="NA"/>
-        
+
         <!-- build.type should default to "SNAPSHOT, unless it is set to "M#"  -->
         <!--   or "RELEASE" on the command-line for milestone or release builds  -->
         <property name="build.type" value="SNAPSHOT"/>
@@ -95,7 +95,7 @@
             <equals arg1="${build.type}" arg2="RELEASE"/>
         </condition>
         <property name="version.string" value="${release.version}.r${svn.revision}-${build.type}"/>
-        
+
         <!-- Set download.path appropriately depending upon build target          -->
         <condition property="download.path" value="${eclipselink.download.path}/nightly/${release.version}/${build.date}">
             <equals arg1="${build.type}" arg2="SNAPSHOT"/>
@@ -172,7 +172,7 @@
     </target>
     <target name="get-junit" unless="junit-exist" depends="check-4-junit">
         <mkdir dir="${junit.dir}"/>
-        
+
         <!-- Get junit, extract it, then copy to expected location and cleanup (flatten won't work) -->
         <get src="${junit.url}" dest="${build.deps.dir}/junit.zip"/>
         <unzip src="${build.deps.dir}/junit.zip" dest="${build.deps.dir}"/>
@@ -282,9 +282,9 @@
     <target name="publish-build">
         <!-- New Publish Architecture -->
         <mkdir dir="${download.path}"/>
-        <copy file="${build.root.dir}/${eclipselink.install.prefix}${eclipselink.zip.suffix}"         tofile="${download.path}/${eclipselink.install.prefix}-${version.string}${eclipselink.zip.suffix}" failonerror="false"/>        
-        <copy file="${build.root.dir}/${eclipselink.src.install.prefix}${eclipselink.zip.suffix}"     tofile="${download.path}/${eclipselink.src.install.prefix}-${version.string}${eclipselink.zip.suffix}" failonerror="false"/>    
-        <copy file="${build.root.dir}/${eclipselink.tst.src.prefix}${eclipselink.zip.suffix}"         tofile="${download.path}/${eclipselink.tst.src.prefix}-${version.string}${eclipselink.zip.suffix}" failonerror="false"/>        
+        <copy file="${build.root.dir}/${eclipselink.install.prefix}${eclipselink.zip.suffix}"         tofile="${download.path}/${eclipselink.install.prefix}-${version.string}${eclipselink.zip.suffix}" failonerror="false"/>
+        <copy file="${build.root.dir}/${eclipselink.src.install.prefix}${eclipselink.zip.suffix}"     tofile="${download.path}/${eclipselink.src.install.prefix}-${version.string}${eclipselink.zip.suffix}" failonerror="false"/>
+        <copy file="${build.root.dir}/${eclipselink.tst.src.prefix}${eclipselink.zip.suffix}"         tofile="${download.path}/${eclipselink.tst.src.prefix}-${version.string}${eclipselink.zip.suffix}" failonerror="false"/>
         <copy file="${build.root.dir}/${eclipselink.plugins.install.prefix}${eclipselink.zip.suffix}" tofile="${download.path}/${eclipselink.plugins.install.prefix}-${version.string}${eclipselink.zip.suffix}" failonerror="false"/>
         <copy file="${build.root.dir}/foundation/eclipselink.core.test/reports/junit-noframes.html"   tofile="${download.path}/eclipselink-core-srg-${version.string}.html" failonerror="false"/>
         <copy file="${build.root.dir}/jpa/eclipselink.jpa.test/reports/junit-noframes.html"           tofile="${download.path}/eclipselink-jpa-lrg-${version.string}.html" failonerror="false"/>
@@ -318,7 +318,7 @@
             <arg value="${build.root.dir}/buildsystem/buildNightlyList.sh"/>
         </exec>
     </target>
-    
+
     <target name="test-for-errors">
         <fail message="Some of the junit tests failed.  See the ${report.dir}/junit-noframes.html file for details." if="junit.failed"/>
     </target>
