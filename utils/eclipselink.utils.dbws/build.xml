@@ -108,6 +108,10 @@
                 <include name="**/*.class"/>
             </fileset>
             <zipfileset
+              dir="${resource.dir}/xsd"
+              prefix="xsd"
+            />
+            <zipfileset
               dir="${src.dir}/META-INF/services"
               prefix="META-INF/services"
             />
