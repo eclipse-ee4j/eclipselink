@@ -180,7 +180,7 @@ ANT_BASEARG="-f \"${BOOTSTRAP_BLDFILE}\" -Dbranch.name=\"${BRANCH}\""
 # May need to add "milestone" flag to alert build
 if [ "${MILESTONE}" = "true" ]
 then
-    ANT_BASEARG="${ANT_BASEARG} -Dbuild.type=${TARGET}"
+    ANT_BASEARG="${ANT_BASEARG} -Dbuild.type=${TARGET} -Dbuild_id=${TARGET}"
     TARGET="milestone"
 fi
 
@@ -188,7 +188,7 @@ fi
 if [ "${RELEASE}" = "true" ]
 then
     ANT_BASEARG="${ANT_BASEARG} -Dbuild.type=RELEASE"
-    TARGET="release"
+    TARGET="milestone"
 fi
 
 if [ "${LOCAL_REPOS}" = "true" ]
