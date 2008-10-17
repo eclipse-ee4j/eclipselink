@@ -574,6 +574,9 @@
             </zipfileset>
             <!-- grab the sdo jar -->
             <zipfileset dir="${eclipselink.sdo.base}/${plugins.dir}/" includes="${commonj-sdo.jar}" prefix="eclipselink/jlib/sdo"/>
+            <!-- grab the dbws util stuff -->
+            <zipfileset dir="utils/eclipselink.utils.dbws/" includes="${dbws-util.jar.name}, setenv.*, dbwsbuilder.*" prefix="eclipselink/utils/dbws"/>
+            <zipfileset dir="${eclipselink.util.plugins}/" includes="javax.wsdl_1.6.2.jar" prefix="eclipselink/utils/dbws"/>
             <!-- workbench jars -->
             <zipfileset dir="utils/eclipselink.utils.workbench.lib/mw/" includes="elmwcore.jar" prefix="eclipselink/utils/workbench/jlib"/>
             <zipfileset dir="utils/eclipselink.utils.workbench.lib/mw/" includes="eclipselinkmw.jar" prefix="eclipselink/utils/workbench/jlib"/>
