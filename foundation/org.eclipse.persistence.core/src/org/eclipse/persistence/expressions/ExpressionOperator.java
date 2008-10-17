@@ -9,6 +9,7 @@
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
+ *     Markus Karg - allow arguments to be specified multiple times in argumentIndices
  ******************************************************************************/  
 package org.eclipse.persistence.expressions;
 
@@ -1755,14 +1756,15 @@ public class ExpressionOperator implements Serializable {
         } catch (IOException e) {
             e.printStackTrace();
         }
-
-        for (int i = 0; i < items.size(); i++) {
-            int index = 0;
-            if (argumentIndices == null) {
-                index = i;
-            } else {
-                index = argumentIndices[i];
+        
+        if (argumentIndices == null) {
+            argumentIndices = new int[items.size()];
+            for (int i = 0; i < argumentIndices.length; i++){
+                argumentIndices[i] = i; 
             }
+        }
+        
+        for (final int index : argumentIndices) {
             Expression item = (Expression)items.elementAt(index);
             if ((getSelector() == Ref) || ((getSelector() == Deref) && (item.isObjectExpression()))) {
                 DatabaseTable alias = ((ObjectExpression)item).aliasForTable(((ObjectExpression)item).getDescriptor().getTables().firstElement());
@@ -1979,8 +1981,11 @@ public class ExpressionOperator implements Serializable {
     }
 
     /**
-     * ADVANCED:
-     * Set the array of indexes to use when building the SQL function.
+     * ADVANCED: Set the array of indexes to use when building the SQL function.
+     * 
+     * The index of the array is the position in the printout, from left to right, starting with zero.
+     * The value of the array entry is the number of the argument to print at that particular output position.
+     * So each argument can be used zero, one or many times.
      */
     public void setArgumentIndices(int[] indices) {
         argumentIndices = indices;
