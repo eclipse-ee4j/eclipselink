@@ -661,7 +661,7 @@
         <ant antfile="${eclipselink.dbws.test}/build.xml" target="all"/>
     </target>
     <target name="test-dbws-utils" description="run the DBWS utils tests">
-        <ant antfile="${eclipselink.util.dbws.test}/build.xml" target="test"/>
+        <!-- ant antfile="${eclipselink.util.dbws.test}/build.xml" target="test"/ -->
     </target>
 
 </project>
