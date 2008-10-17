@@ -203,14 +203,9 @@
         </java -->
     </target>
 
-    <target name="release" depends="get-src" description="Trigger the nightly automated build and lrg tests">
-        <echo message="'release' target: Calling 'build-release' target in '${build.root.dir}/${autobld.file}'"/>
-        <ant antfile="${autobld.file}" dir="${build.root.dir}" target="build-nightly"/>
-    </target>
-    
     <target name="milestone" depends="get-src" description="Trigger the nightly automated build and lrg tests">
         <echo message="'milestone' target: Calling 'build-milestone' target in '${build.root.dir}/${autobld.file}'"/>
-        <ant antfile="${autobld.file}" dir="${build.root.dir}" target="build-nightly"/>
+        <ant antfile="${autobld.file}" dir="${build.root.dir}" target="build-milestone"/>
     </target>
     
     <target name="nightly" depends="get-src" description="Trigger the nightly automated build and lrg tests">
