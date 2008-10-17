@@ -144,6 +144,7 @@
     unless="eclipselink.utils.dbws.common.available"
     depends="test-common-available"
     >
+    <mkdir dir="${eclipselink.utils.dbws.test}/${classes.dir}"/>
     <javac
       srcdir="${eclipselink.utils.dbws.test}/${src.dir}"
       destdir="${eclipselink.utils.dbws.test}/${classes.dir}"
