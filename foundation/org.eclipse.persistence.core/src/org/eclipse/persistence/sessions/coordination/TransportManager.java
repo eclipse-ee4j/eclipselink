@@ -9,6 +9,10 @@
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
+ *     17/10/2008-1.1  Michael O'Brien 
+ *       - 251005: The default JNDI InitialContextFactory is modified from
+ *       OC4J: oracle.j2ee.rmi.RMIInitialContextFactory to
+ *       WebLogic: weblogic.jndi.WLInitialContextFactory
  ******************************************************************************/  
 package org.eclipse.persistence.sessions.coordination;
 
@@ -72,7 +76,7 @@ public abstract class TransportManager {
     public static final int DEFAULT_NAMING_SERVICE = JNDI_NAMING_SERVICE;
 
     /** Default JNDI properties for remote access */
-    public static final String DEFAULT_CONTEXT_FACTORY = "oracle.j2ee.rmi.RMIInitialContextFactory";
+    public static final String DEFAULT_CONTEXT_FACTORY = "weblogic.jndi.WLInitialContextFactory";
     public static final String DEFAULT_DEDICATED_CONNECTION_KEY = "dedicated.connection";
     public static final String DEFAULT_DEDICATED_CONNECTION_VALUE = "true";
     public static final String DEFAULT_USER_NAME = "admin";

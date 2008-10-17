@@ -961,7 +961,7 @@ public class SessionsFactory {
         } else if (sequenceConfig instanceof XMLFileSequenceConfig) {
             return new XMLFileSequence(name, size);
         } else {
-            // Unknow SequenceConfig subclass - should never happen
+            // Unknown SequenceConfig subclass - should never happen
             return null;
         }
     }
@@ -1078,7 +1078,7 @@ public class SessionsFactory {
         // Password - XML Schema default is password
         tm.setEncryptedPassword(namingConfig.getEncryptedPassword());
 
-        // Initial context factory name - XML Schema is oracle.j2ee.rmi.RMIInitialContextFactory
+        // Initial context factory name - XML Schema is weblogic.jndi.WLInitialContextFactory
         tm.setInitialContextFactoryName(namingConfig.getInitialContextFactoryName());
 
         // Properties (assumes they are all valid)

@@ -9,6 +9,10 @@
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
+ *     17/10/2008-1.1  Michael O'Brien 
+ *       - 251005: The default JNDI InitialContextFactory is modified from
+ *       OC4J: oracle.j2ee.rmi.RMIInitialContextFactory to
+ *       WebLogic: weblogic.jndi.WLInitialContextFactory
  ******************************************************************************/  
 package org.eclipse.persistence.internal.sessions.factories;
 
@@ -134,7 +138,7 @@ public class XMLSessionConfigProject extends org.eclipse.persistence.sessions.Pr
     public static final int READ_CONNECTION_POOL_MAX_DEFAULT = 2;
     public static final int READ_CONNECTION_POOL_MIN_DEFAULT = 2;
 
-    //the default is composite name for consistency with previous TopLink verisons
+    //the default is composite name for consistency with previous TopLink versions
     public static final int DATASOURCE_LOOKUP_TYPE_DEFAULT = JNDIConnector.COMPOSITE_NAME_LOOKUP;
     public static final String SEQUENCE_TABLE_DEFAULT = "SEQUENCE";
     public static final String SEQUENCE_NAME_FIELD_DEFAULT = "SEQ_NAME";
@@ -147,7 +151,7 @@ public class XMLSessionConfigProject extends org.eclipse.persistence.sessions.Pr
     public static final String USERNAME_DEFAULT = "admin";
     public static final String PASSWORD_DEFAULT = "password";
     public static final String ENCRYPTION_CLASS_DEFAULT = "org.eclipse.persistence.internal.security.JCEEncryptor";
-    public static final String INITIAL_CONTEXT_FACTORY_NAME_DEFAULT = "oracle.j2ee.rmi.RMIInitialContextFactory";
+    public static final String INITIAL_CONTEXT_FACTORY_NAME_DEFAULT = "weblogic.jndi.WLInitialContextFactory";
     public static final String SEND_MODE_DEFAULT = "Asynchronous";
     public static final String CHANNEL_DEFAULT = "TopLinkCommandChannel";
     public static final String ON_CONNECTION_ERROR_DEFAULT = "DiscardConnection";

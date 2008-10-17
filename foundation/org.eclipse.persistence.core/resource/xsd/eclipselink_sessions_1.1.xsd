@@ -1284,10 +1284,10 @@ of this file are typically located as: 'META-INF/sessions.xml'
                 minOccurs="0" />
             <xsd:element name="password" type="xsd:string"
                 default="password" minOccurs="0" />
-            <!--  TODO: Need to have a non Oracle-AS default or route through server platform by default -->
+            <!--  TODO: Need to have a non WebLogic (previously OC4J) default or route through server platform by default -->
             <xsd:element name="initial-context-factory-name"
                 type="xsd:string"
-                default="com.evermind.server.rmi.RMIInitialContextFactory"
+                default="weblogic.jndi.WLInitialContextFactory"
                 minOccurs="0">
                 <xsd:annotation>
                     <xsd:documentation>
