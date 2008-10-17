@@ -158,6 +158,7 @@
 
     <!-- Compiles all components (excluding Tests, Oracle extensions). -->
     <target name="build-core">
+        <ant antfile="${eclipselink.core}/build.xml" target="all"/>
         <ant antfile="${eclipselink.jpa}/build.xml"  target="all"/>
         <ant antfile="${eclipselink.moxy}/build.xml" target="all"/>
         <ant antfile="${eclipselink.sdo}/build.xml"  target="all"/>
