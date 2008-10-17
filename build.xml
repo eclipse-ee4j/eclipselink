@@ -158,10 +158,10 @@
 
     <!-- Compiles all components (excluding Tests, Oracle extensions). -->
     <target name="build-core">
-        <ant antfile="${eclipselink.dbws}/build.xml" target="all"/>
         <ant antfile="${eclipselink.jpa}/build.xml"  target="all"/>
         <ant antfile="${eclipselink.moxy}/build.xml" target="all"/>
         <ant antfile="${eclipselink.sdo}/build.xml"  target="all"/>
+        <ant antfile="${eclipselink.dbws}/build.xml" target="all"/>
         <!-- Quick fix: since this is called 4-5 times, make sure the last one is the one that builds correctly -->
         <ant antfile="${eclipselink.core}/build.xml" target="all"/>
     </target>
