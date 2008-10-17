@@ -52,6 +52,11 @@
     <!-- compile -->
     <target name="compile" description="compile EclipseLink">
         <mkdir dir="${eclipselink.core}/${classes.dir}"/>
+        <echo message="Stamping the following values:"/>
+        <echo message="version:       '${release.version}'"/>
+        <echo message="buildDate:     '${build.date}'"/>
+        <echo message="buildType:     '${build.type}'"/>
+        <echo message="buildRevision: '${svn.revision}'"/>
         <filter token="VERSION" value="${release.version}"/>
         <filter token="BUILD_DATE" value="${build.date}"/>
         <filter token="BUILD_TYPE" value="${build.type}"/>

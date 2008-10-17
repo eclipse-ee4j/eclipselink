@@ -106,9 +106,19 @@ public class Version {
 
     public static void main ( String[] args ) {
         if( getBuildType()=="RELEASE" ) {
-            System.out.println( "\n" + getProduct() + " (EclipseLink)\n   Release Version: " + getVersionString() + "\n   Build Date:      " + getBuildDate() );
+            System.out.println( 
+                "\n" + getProduct() + " (EclipseLink)"
+                + "\n   Release Version: " + getVersionString() 
+                + "\n   Build Date:      " + getBuildDate()
+                + "\n   SVN Revision:    " + getBuildRevision()
+            );
         }else {
-            System.out.println( "\n" + getProduct() + " (EclipseLink)\n   Build Version: " + getVersionString() + "\n   Build Date:    " + getBuildDate() );
+            System.out.println(
+                "\n" + getProduct() + " (EclipseLink)"
+                + "\n   Build Version: " + getVersionString()
+                + "\n   Build Date:    " + getBuildDate()
+                + "\n   SVN Revision:  " + getBuildRevision()
+           );
         }        
     }
 }
