@@ -29,7 +29,15 @@
     <property file="./build.properties"/>
 
     <!-- all -->
-    <target name="all" depends="clean, compile" description="Build util classes"/>
+    <target name="all" depends="clean, compile, package" description="Build util classes"/>
+
+    <!-- clean -->
+    <target name="clean" description="Clean the build">
+        <delete includeEmptyDirs="true" failonerror="false">
+            <fileset dir="${eclipselink.util.rename}/${classes.dir}"/>
+            <fileset file="${eclipselink.util.rename}/${package-rename.jar}"/>
+        </delete>
+    </target>
 
     <!-- compile -->
     <target name="compile" depends="" description="compile EclipseLink Util">
@@ -44,12 +52,14 @@
                failonerror="true">
         </javac>
     </target>
-
-    <!-- compile -->
-    <target name="clean" description="Clean the build">
-        <delete includeEmptyDirs="true" failonerror="false">
-            <fileset dir="${eclipselink.util.rename}/${classes.dir}"/>
-        </delete>
+        
+    <!-- package -->
+    <target name="package" description="jar the util">
+        <jar jarfile="${eclipselink.util.rename}/${package-rename.jar}">
+            <fileset dir="${eclipselink.util.rename}/${classes.dir}">
+                <include name="**/*.class"/>
+            </fileset>
+        </jar>
     </target>
 
 </project>

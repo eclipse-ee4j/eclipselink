@@ -108,11 +108,11 @@
                 <include name="**/*.class"/>
             </fileset>
             <zipfileset
-              dir="${resource.dir}/xsd"
+              dir="${eclipselink.util.dbws}/${resource.dir}/xsd"
               prefix="xsd"
             />
             <zipfileset
-              dir="${src.dir}/META-INF/services"
+              dir="${eclipselink.util.dbws}/${src.dir}/META-INF/services"
               prefix="META-INF/services"
             />
         </jar>

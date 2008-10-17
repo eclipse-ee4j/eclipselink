@@ -55,6 +55,31 @@
     <target name="publish-all"      description="Trigger just the publish targets"
             depends="publish-build, publish-results"
     />
+    
+    <!-- script to "cleanup" the revision information --> 
+    <scriptdef name="cleanRevision" language="javascript" manager="javax">
+        <attribute name="input"/>
+        <attribute name="property"/>
+        <![CDATA[
+            // getting the value
+            input = attributes.get("input");
+            property = attributes.get("property");
+            if (input == null || property == null) {
+               self.fail("both 'input' and 'property' attributes must be set.");
+            }
+            if (input.startsWith("${") || input == "" ) {
+                // Set the result of an undefined (unexpanded) or "empty string" variable to 'NA'
+                project.setProperty(attributes.get("property"), "NA");
+            }
+            else {
+                if (input.endsWith("M")) {
+                    trimmedInput = input.substring(0,input.length()-1);
+                    // put result into property - NB overwrites previous value! Not safe for <parallel> tasks
+                    project.setProperty(attributes.get("property"), trimmedInput);
+                }
+            }
+        ]]>
+    </scriptdef>
 
     <target name="init">
         <tstamp>
@@ -78,6 +103,7 @@
             executable="svnversion">
             <arg line="."/>
         </exec>
+        <cleanRevision input="${svn.revision}" property="svn.revision"/>
         <property name="svn.revision" value="NA"/>
 
         <!-- build.type should default to "SNAPSHOT, unless it is set to "M#"  -->
@@ -282,15 +308,17 @@
     <target name="publish-build">
         <!-- New Publish Architecture -->
         <mkdir dir="${download.path}"/>
-        <copy file="${build.root.dir}/${eclipselink.install.prefix}${eclipselink.zip.suffix}"         tofile="${download.path}/${eclipselink.install.prefix}-${version.string}${eclipselink.zip.suffix}" failonerror="false"/>
-        <copy file="${build.root.dir}/${eclipselink.src.install.prefix}${eclipselink.zip.suffix}"     tofile="${download.path}/${eclipselink.src.install.prefix}-${version.string}${eclipselink.zip.suffix}" failonerror="false"/>
-        <copy file="${build.root.dir}/${eclipselink.tst.src.prefix}${eclipselink.zip.suffix}"         tofile="${download.path}/${eclipselink.tst.src.prefix}-${version.string}${eclipselink.zip.suffix}" failonerror="false"/>
-        <copy file="${build.root.dir}/${eclipselink.plugins.install.prefix}${eclipselink.zip.suffix}" tofile="${download.path}/${eclipselink.plugins.install.prefix}-${version.string}${eclipselink.zip.suffix}" failonerror="false"/>
-        <copy file="${build.root.dir}/foundation/eclipselink.core.test/reports/junit-noframes.html"   tofile="${download.path}/eclipselink-core-srg-${version.string}.html" failonerror="false"/>
-        <copy file="${build.root.dir}/jpa/eclipselink.jpa.test/reports/junit-noframes.html"           tofile="${download.path}/eclipselink-jpa-lrg-${version.string}.html" failonerror="false"/>
-        <copy file="${build.root.dir}/moxy/eclipselink.moxy.test/reports/jaxb/junit-noframes.html"    tofile="${download.path}/eclipselink-jaxb-lrg-${version.string}.html" failonerror="false"/>
-        <copy file="${build.root.dir}/moxy/eclipselink.moxy.test/reports/oxm/junit-noframes.html"     tofile="${download.path}/eclipselink-oxm-lrg-${version.string}.html" failonerror="false"/>
-        <copy file="${build.root.dir}/sdo/eclipselink.sdo.test/reports/true/junit-noframes.html"      tofile="${download.path}/eclipselink-sdo-lrg-${version.string}.html" failonerror="false"/>
+        <copy file="${build.root.dir}/${eclipselink.install.prefix}${eclipselink.zip.suffix}"          tofile="${download.path}/${eclipselink.install.prefix}-${version.string}${eclipselink.zip.suffix}" failonerror="false"/>
+        <copy file="${build.root.dir}/${eclipselink.src.install.prefix}${eclipselink.zip.suffix}"      tofile="${download.path}/${eclipselink.src.install.prefix}-${version.string}${eclipselink.zip.suffix}" failonerror="false"/>
+        <copy file="${build.root.dir}/${eclipselink.tst.src.prefix}${eclipselink.zip.suffix}"          tofile="${download.path}/${eclipselink.tst.src.prefix}-${version.string}${eclipselink.zip.suffix}" failonerror="false"/>
+        <copy file="${build.root.dir}/${eclipselink.plugins.install.prefix}${eclipselink.zip.suffix}"  tofile="${download.path}/${eclipselink.plugins.install.prefix}-${version.string}${eclipselink.zip.suffix}" failonerror="false"/>
+        <copy file="${build.root.dir}/${eclipselink.core.test}/${reports.dir}/junit-noframes.html"            tofile="${download.path}/eclipselink-core-lrg-${version.string}.html" failonerror="false"/>
+        <copy file="${build.root.dir}/${eclipselink.jpa.test}/${reports.dir}/junit-noframes.html"             tofile="${download.path}/eclipselink-jpa-lrg-${version.string}.html" failonerror="false"/>
+        <copy file="${build.root.dir}/${eclipselink.moxy.test}/${reports.dir}/jaxb/junit-noframes.html"       tofile="${download.path}/eclipselink-jaxb-lrg-${version.string}.html" failonerror="false"/>
+        <copy file="${build.root.dir}/${eclipselink.moxy.test}/${reports.dir}/oxm/junit-noframes.html"        tofile="${download.path}/eclipselink-oxm-lrg-${version.string}.html" failonerror="false"/>
+        <copy file="${build.root.dir}/${eclipselink.sdo.test}/${reports.dir}/true/junit-noframes.html"        tofile="${download.path}/eclipselink-sdo-lrg-${version.string}.html" failonerror="false"/>
+        <copy file="${build.root.dir}/${eclipselink.dbws.test}/${reports.dir}/oxm/junit-noframes.html"        tofile="${download.path}/eclipselink-dbws-lrg-${version.string}.html" failonerror="false"/>
+        <copy file="${build.root.dir}/${eclipselink.util.dbws.test}/${reports.dir}/true/junit-noframes.html" tofile="${download.path}/eclipselink-dbws-util-lrg-${version.string}.html" failonerror="false"/>
         <exec executable="${svn.exec}" failonerror="false" logError="true">
             <arg value="commit"/>
             <arg value="-m ${version.string}"/>
@@ -316,6 +344,7 @@
     <target name="publish-results" depends="clean-results">
         <exec executable="/bin/sh" failonerror="true" logError="true" >
             <arg value="${build.root.dir}/buildsystem/buildNightlyList.sh"/>
+            <arg value="${version.string}"/>
         </exec>
     </target>
 

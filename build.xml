@@ -126,10 +126,13 @@
         <ant antfile="${eclipselink.moxy.test}/build.xml"        target="clean"/>
         <ant antfile="${eclipselink.sdo.test}/build.xml"         target="clean"/>
         <ant antfile="build.xml" dir="${eclipselink.util.workbench.test}" target="clean"/>
+        <ant antfile="${eclipselink.util.rename}/build.xml"      target="clean"/>
         <delete dir="${build.dir}"/>
         <delete file="${eclipselink.jar.name}"/>
         <delete file="${eclipselink.src.install.prefix}${eclipselink.zip.suffix}"/>
         <delete file="${eclipselink.install.prefix}${eclipselink.zip.suffix}"/>
+        <delete file="${eclipselink.javadoc.install.prefix}${eclipselink.zip.suffix}"/>
+        <delete file="${eclipselink.tst.src.prefix}${eclipselink.zip.suffix}"/>
     </target>
 
     <target name="clean-eclipselink-bundles">
@@ -451,6 +454,16 @@
                 includes="**"
                 prefix="sdo/resource"
             />
+            <zipfileset
+                dir="${eclipselink.moxy.test}/${src.dir}"
+                includes="**"
+                prefix="moxy"
+            />
+            <zipfileset
+                dir="${eclipselink.moxy.test}/${resource.dir}"
+                includes="**"
+                prefix="moxy/resource"
+            />
         </zip>
     </target>
 
@@ -581,17 +594,12 @@
 
     <!-- Packages util-dbws jar. -->
     <target name="package-util-dbws-jar" description="build DBWS util jar">
-        <!-- ant antfile="${eclipselink.util.dbws}/build.xml" target="all"/ -->
+        <ant antfile="${eclipselink.util.dbws}/build.xml" target="all"/>
     </target>
 
     <!-- Packages package-renamer jar. -->
     <target name="package-packagerenamer-jar" description="build Package rename jar">
         <ant antfile="${eclipselink.util.rename}/build.xml" target="all"/>
-        <jar jarfile="${eclipselink.util.rename}/${package-rename.jar}">
-            <fileset dir="${eclipselink.util.rename}/${classes.dir}">
-                <include name="**/*.class"/>
-            </fileset>
-        </jar>
     </target>
 
     <!-- Testing -->
@@ -599,7 +607,7 @@
             depends="test-core-srg, test-jpa-srg, test-sdo-srg, test-moxy-srg"
             />
     <target name="test-lrg" description="run all the LRG test suites"
-            depends="test-core, test-jpa, test-moxy, test-sdo"
+            depends="test-core, test-jpa, test-moxy, test-sdo, test-dbws, test-dbws-utils"
             />
 
     <!-- Run core LRG. -->
@@ -648,7 +656,7 @@
         <ant antfile="${eclipselink.dbws.test}/build.xml" target="all"/>
     </target>
     <target name="test-dbws-utils" description="run the DBWS utils tests">
-        <ant antfile="${eclipselink.utils.dbws.test}/build.xml" target="test"/>
+        <ant antfile="${eclipselink.util.dbws.test}/build.xml" target="test"/>
     </target>
 
 </project>
