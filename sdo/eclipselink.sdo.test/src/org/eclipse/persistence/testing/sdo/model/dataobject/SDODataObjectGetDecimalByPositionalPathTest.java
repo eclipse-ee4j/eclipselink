@@ -38,7 +38,7 @@ public class SDODataObjectGetDecimalByPositionalPathTest extends SDODataObjectGe
         dataObject_c.set(prop, true);
         try {
             BigDecimal value = dataObject_a.getBigDecimal(propertyPath_a_b_c);
-            assertEquals(1, value);
+            assertEquals(null, value);
         } catch (ClassCastException e) {
         }
     }
@@ -69,8 +69,8 @@ public class SDODataObjectGetDecimalByPositionalPathTest extends SDODataObjectGe
 
         try {
             dataObject_a.getBigDecimal(propertyPath_a_b_c);
-            fail("ClassCastException should be thrown.");
-        } catch (ClassCastException e) {
+        } catch (Exception e) {
+            fail("No Exception expected, but caught " + e.getClass());            
         }
     }
 
@@ -147,8 +147,8 @@ public class SDODataObjectGetDecimalByPositionalPathTest extends SDODataObjectGe
 
         try {
             dataObject_a.getBigDecimal(propertyPath_a_b_c);
-            fail("ClassCastException should be thrown.");
-        } catch (ClassCastException e) {
+        } catch (Exception e) {
+            fail("No Exception expected, but caught " + e.getClass());            
         }
     }
 
@@ -234,8 +234,8 @@ public class SDODataObjectGetDecimalByPositionalPathTest extends SDODataObjectGe
     public void testGetDecimalConversionFromUnDefinedProperty() {        
         try {
             dataObject_a.getBigDecimal(UNDEFINED_PATH);
-            fail("ClassCastException should be thrown.");
-        } catch (ClassCastException e) {
+        } catch (Exception e) {
+            fail("No Exception expected, but caught " + e.getClass());            
         }
     }
 
@@ -261,8 +261,8 @@ public class SDODataObjectGetDecimalByPositionalPathTest extends SDODataObjectGe
 
         try {
             dataObject_a.getBigDecimal(propertyPath_a_b_c);
-            fail("ClassCastException should be thrown.");
-        } catch (ClassCastException e) {
+        } catch (Exception e) {
+            fail("No Exception expected, but caught " + e.getClass());            
         }
     }
 
@@ -271,8 +271,8 @@ public class SDODataObjectGetDecimalByPositionalPathTest extends SDODataObjectGe
         try {
             String p = null;
             dataObject_a.getBigDecimal(p);
-            fail("ClassCastException should be thrown.");
-        } catch (ClassCastException e) {
+        } catch (Exception e) {
+            fail("No Exception expected, but caught " + e.getClass());            
         }
     }
 }

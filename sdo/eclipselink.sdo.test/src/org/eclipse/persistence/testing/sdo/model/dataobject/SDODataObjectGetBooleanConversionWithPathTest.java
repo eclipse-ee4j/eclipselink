@@ -58,8 +58,8 @@ public class SDODataObjectGetBooleanConversionWithPathTest extends SDODataObject
 
         try {
             dataObject_a.getBoolean(property);
-            fail("IllegalArgumentException should be thrown.");
-        } catch (ClassCastException e) {
+        } catch (Exception e) {
+            fail("No Exception expected, but caught " + e.getClass());            
         }
     }
 
@@ -304,8 +304,8 @@ public class SDODataObjectGetBooleanConversionWithPathTest extends SDODataObject
 
         try {
             dataObject_a.getBoolean(property);
-            fail("IllegalArgumentException should be thrown.");
-        } catch (ClassCastException e) {
+        } catch (Exception e) {
+            fail("No Exception expected, but caught " + e.getClass());            
         }
     }
 
@@ -320,8 +320,8 @@ public class SDODataObjectGetBooleanConversionWithPathTest extends SDODataObject
         dataObject_c.set(property_c, new String("eee").getBytes());
         try {
             dataObject_a.getBoolean(property);
-            fail("ClassCastException should be thrown.");
-        } catch (ClassCastException e) {
+        } catch (Exception e) {
+            fail("No Exception expected, but caught " + e.getClass());            
         }
     }
 
@@ -370,8 +370,8 @@ public class SDODataObjectGetBooleanConversionWithPathTest extends SDODataObject
         dataObject_c.set(property_c, Calendar.getInstance().getTime());
         try {
             dataObject_a.getBoolean(property);
-            fail("ClassCastException should be thrown.");
-        } catch (ClassCastException e) {
+        } catch (Exception e) {
+            fail("No Exception expected, but caught " + e.getClass());            
         }
     }
 
@@ -380,8 +380,8 @@ public class SDODataObjectGetBooleanConversionWithPathTest extends SDODataObject
         try {
             String path = null;
             dataObject_a.getBoolean(path);
-            fail("IllegalArgumentException should be thrown.");
-        } catch (ClassCastException e) {
+        } catch (Exception e) {
+            fail("No Exception expected, but caught " + e.getClass());            
         }
     }
     

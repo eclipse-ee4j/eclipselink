@@ -40,7 +40,7 @@ public class SDODataObjectGetIntegerConversionWithPathTest extends SDODataObject
 
         try {
             BigInteger value = dataObject_a.getBigInteger(propertyPath_a_b_c);
-            assertEquals(1, value);
+            assertEquals(null, value);
         } catch (ClassCastException e) {
         }
     }
@@ -75,8 +75,8 @@ public class SDODataObjectGetIntegerConversionWithPathTest extends SDODataObject
 
         try {
             dataObject_a.getBigInteger(propertyPath_a_b_c);
-            fail("ClassCastException should be thrown.");
-        } catch (ClassCastException e) {
+        } catch (Exception e) {
+            fail("No Exception expected, but caught " + e.getClass());            
         }
     }
 
@@ -107,8 +107,8 @@ public class SDODataObjectGetIntegerConversionWithPathTest extends SDODataObject
 
         try {
             dataObject_a.getBigInteger(propertyPath_a_b_c);
-            fail("ClassCastException should be thrown.");
-        } catch (ClassCastException e) {
+        } catch (Exception e) {
+            fail("No Exception expected, but caught " + e.getClass());            
         }
     }
 
@@ -139,8 +139,8 @@ public class SDODataObjectGetIntegerConversionWithPathTest extends SDODataObject
 
         try {
             dataObject_a.getBigInteger(propertyPath_a_b_c);
-            fail("ClassCastException should be thrown.");
-        } catch (ClassCastException e) {
+        } catch (Exception e) {
+            fail("No Exception expected, but caught " + e.getClass());            
         }
     }
 
@@ -170,8 +170,8 @@ public class SDODataObjectGetIntegerConversionWithPathTest extends SDODataObject
 
         try {
             dataObject_a.getBigInteger(propertyPath_a_b_c);
-            fail("ClassCastException should be thrown.");
-        } catch (ClassCastException e) {
+        } catch (Exception e) {
+            fail("No Exception expected, but caught " + e.getClass());            
         }
     }
 
@@ -201,8 +201,8 @@ public class SDODataObjectGetIntegerConversionWithPathTest extends SDODataObject
 
         try {
             dataObject_a.getBigInteger(propertyPath_a_b_c);
-            fail("ClassCastException should be thrown.");
-        } catch (ClassCastException e) {
+        } catch (Exception e) {
+            fail("No Exception expected, but caught " + e.getClass());            
         }
     }
 
@@ -248,8 +248,8 @@ public class SDODataObjectGetIntegerConversionWithPathTest extends SDODataObject
 
         try {
             dataObject_a.getBigInteger(propertyPath_a_b_c);
-            fail("ClassCastException should be thrown.");
-        } catch (ClassCastException e) {
+        } catch (Exception e) {
+            fail("No Exception expected, but caught " + e.getClass());            
         }
     }
 
@@ -280,8 +280,8 @@ public class SDODataObjectGetIntegerConversionWithPathTest extends SDODataObject
 
         try {
             dataObject_a.getBigInteger(propertyPath_a_b_c);
-            fail("ClassCastException should be thrown.");
-        } catch (ClassCastException e) {
+        } catch (Exception e) {
+            fail("No Exception expected, but caught " + e.getClass());            
         }
     }
 
@@ -312,8 +312,8 @@ public class SDODataObjectGetIntegerConversionWithPathTest extends SDODataObject
 
         try {
             dataObject_a.getBigInteger(propertyPath_a_b_c);
-            fail("ClassCastException should be thrown.");
-        } catch (ClassCastException e) {
+        } catch (Exception e) {
+            fail("No Exception expected, but caught " + e.getClass());            
         }
     }
 
@@ -342,8 +342,8 @@ public class SDODataObjectGetIntegerConversionWithPathTest extends SDODataObject
 
         try {
             dataObject_a.getBigInteger(propertyPath_a_b_c);
-            fail("ClassCastException should be thrown.");
-        } catch (ClassCastException e) {
+        } catch (Exception e) {
+            fail("No Exception expected, but caught " + e.getClass());            
         }
     }
 
@@ -357,8 +357,8 @@ public class SDODataObjectGetIntegerConversionWithPathTest extends SDODataObject
         dataObject_c.set(property_c, Calendar.getInstance().getTime());
         try {
             dataObject_a.getBigInteger(propertyPath_a_b_c);
-            fail("ClassCastException should be thrown.");
-        } catch (ClassCastException e) {
+        } catch (Exception e) {
+            fail("No Exception expected, but caught " + e.getClass());            
         }
     }
 
@@ -367,8 +367,8 @@ public class SDODataObjectGetIntegerConversionWithPathTest extends SDODataObject
         try {
             String p = null;
             dataObject_a.getBigInteger(p);
-            fail("ClassCastException should be thrown.");
-        } catch (ClassCastException e) {
+        } catch (Exception e) {
+            fail("No Exception expected, but caught " + e.getClass());            
         }
     }
 }

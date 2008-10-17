@@ -41,8 +41,8 @@ public class SDODataObjectGetDoubleConversionWithPathTest extends SDODataObjectC
         dataObject_c.set(property_c, true);
         try {
             dataObject_a.getDouble(propertyPath_a_b_c);
-            fail("ClassCastException should be thrown.");
-        } catch (ClassCastException e) {
+        } catch (Exception e) {
+            fail("No Exception expected, but caught " + e.getClass());            
         }
     }
 
@@ -73,8 +73,8 @@ public class SDODataObjectGetDoubleConversionWithPathTest extends SDODataObjectC
 
         try {
             dataObject_a.getDouble(propertyPath_a_b_c);
-            fail("ClassCastException should be thrown.");
-        } catch (ClassCastException e) {
+        } catch (Exception e) {
+            fail("No Exception expected, but caught " + e.getClass());            
         }
     }
 
@@ -88,8 +88,8 @@ public class SDODataObjectGetDoubleConversionWithPathTest extends SDODataObjectC
         dataObject_c.set(property_c, 'e');
         try {
             dataObject_a.getDouble(propertyPath_a_b_c);
-            fail("ClassCastException should be thrown.");
-        } catch (ClassCastException e) {
+        } catch (Exception e) {
+            fail("No Exception expected, but caught " + e.getClass());            
         }
     }
 
@@ -119,8 +119,8 @@ public class SDODataObjectGetDoubleConversionWithPathTest extends SDODataObjectC
 
         try {
             dataObject_a.getDouble(propertyPath_a_b_c);
-            fail("ClassCastException should be thrown.");
-        } catch (ClassCastException e) {
+        } catch (Exception e) {
+            fail("No Exception expected, but caught " + e.getClass());            
         }
     }
 
@@ -150,8 +150,8 @@ public class SDODataObjectGetDoubleConversionWithPathTest extends SDODataObjectC
 
         try {
             dataObject_a.getDouble(propertyPath_a_b_c);
-            fail("ClasscastException should be thrown.");
-        } catch (ClassCastException e) {
+        } catch (Exception e) {
+            fail("No Exception expected, but caught " + e.getClass());            
         }
     }
 
@@ -181,8 +181,8 @@ public class SDODataObjectGetDoubleConversionWithPathTest extends SDODataObjectC
 
         try {
             dataObject_a.getDouble(propertyPath_a_b_c);
-            fail("ClassCastException should be thrown.");
-        } catch (ClassCastException e) {
+        } catch (Exception e) {
+            fail("No Exception expected, but caught " + e.getClass());            
         }
     }
 
@@ -212,8 +212,8 @@ public class SDODataObjectGetDoubleConversionWithPathTest extends SDODataObjectC
 
         try {
             dataObject_a.getDouble(propertyPath_a_b_c);
-            fail("ClasscastException should be thrown.");
-        } catch (ClassCastException e) {
+        } catch (Exception e) {
+            fail("No Exception expected, but caught " + e.getClass());            
         }
     }
 
@@ -243,8 +243,8 @@ public class SDODataObjectGetDoubleConversionWithPathTest extends SDODataObjectC
 
         try {
             dataObject_a.getDouble(propertyPath_a_b_c);
-            fail("ClasscastException should be thrown.");
-        } catch (ClassCastException e) {
+        } catch (Exception e) {
+            fail("No Exception expected, but caught " + e.getClass());            
         }
     }
 
@@ -275,8 +275,8 @@ public class SDODataObjectGetDoubleConversionWithPathTest extends SDODataObjectC
 
         try {
             dataObject_a.getDouble(propertyPath_a_b_c);
-            fail("ClassCastException should be thrown.");
-        } catch (ClassCastException e) {
+        } catch (Exception e) {
+            fail("No Exception expected, but caught " + e.getClass());            
         }
     }
 
@@ -290,8 +290,8 @@ public class SDODataObjectGetDoubleConversionWithPathTest extends SDODataObjectC
         dataObject_c.set(property_c, new byte[]{10, 100});
         try {
             dataObject_a.getDouble(propertyPath_a_b_c);
-            fail("ClassCastException should be thrown.");
-        } catch (ClassCastException e) {
+        } catch (Exception e) {
+            fail("No Exception expected, but caught " + e.getClass());            
         }
     }
 
@@ -322,8 +322,8 @@ public class SDODataObjectGetDoubleConversionWithPathTest extends SDODataObjectC
 
         try {
             dataObject_a.getDouble(propertyPath_a_b_c);
-            fail("ClassCastException should be thrown.");
-        } catch (ClassCastException e) {
+        } catch (Exception e) {
+            fail("No Exception expected, but caught " + e.getClass());            
         }
     }
 
@@ -353,8 +353,8 @@ public class SDODataObjectGetDoubleConversionWithPathTest extends SDODataObjectC
 
         try {
             dataObject_a.getDouble(propertyPath_a_b_c);
-            fail("ClassCastException should be thrown.");
-        } catch (ClassCastException e) {
+        } catch (Exception e) {
+            fail("No Exception expected, but caught " + e.getClass());            
         }
     }
 
@@ -368,8 +368,8 @@ public class SDODataObjectGetDoubleConversionWithPathTest extends SDODataObjectC
         dataObject_c.set(property_c, Calendar.getInstance().getTime());
         try {
             dataObject_a.getDouble(propertyPath_a_b_c);
-            fail("ClassCastException should be thrown.");
-        } catch (ClassCastException e) {
+        } catch (Exception e) {
+            fail("No Exception expected, but caught " + e.getClass());            
         }
     }
 
@@ -378,8 +378,8 @@ public class SDODataObjectGetDoubleConversionWithPathTest extends SDODataObjectC
         try {
             String p = null;
             dataObject_a.getDouble(p);
-            fail("ClassCastException should be thrown.");
-        } catch (ClassCastException e) {
+        } catch (Exception e) {
+            fail("No Exception expected, but caught " + e.getClass());            
         }
     }
     

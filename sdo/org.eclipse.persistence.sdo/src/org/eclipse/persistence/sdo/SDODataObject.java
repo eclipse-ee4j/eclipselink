@@ -166,84 +166,139 @@ public class SDODataObject implements DataObject, SequencedObject {
     }
 
     public boolean getBoolean(String path) throws ClassCastException {
-        Boolean value = (Boolean)XPathEngine.getInstance().convertObjectToValueByPath(path, Boolean.class, this);
+        try {
+            Boolean value = (Boolean)XPathEngine.getInstance().convertObjectToValueByPath(path, Boolean.class, this);
 
-        //TODO: this is temporary
-        if (value == null) {
+            //TODO: this is temporary
+            if (value == null) {
+                return false;
+            }
+            return value.booleanValue();
+        } catch (Exception e) {
+            // Swallow exception and return null, as per SDO 2.1 spec
             return false;
         }
-        return value.booleanValue();
     }
 
     public byte getByte(String path) {
-        Byte value = (Byte)XPathEngine.getInstance().convertObjectToValueByPath(path, Byte.class, this);
-        if (value == null) {
+        try {
+            Byte value = (Byte)XPathEngine.getInstance().convertObjectToValueByPath(path, Byte.class, this);
+            if (value == null) {
+                return 0;
+            }
+            return value.byteValue();
+        } catch (Exception e) {
+            // Swallow exception and return null, as per SDO 2.1 spec
             return 0;
         }
-        return value.byteValue();
     }
 
     public char getChar(String path) {
-        Character value = (Character)XPathEngine.getInstance().convertObjectToValueByPath(path, Character.class, this);
-        if (value == null) {
+        try {
+            Character value = (Character)XPathEngine.getInstance().convertObjectToValueByPath(path, Character.class, this);
+            if (value == null) {
+                return '\u0000';
+            }
+            return value.charValue();
+        } catch (Exception e) {
+            // Swallow exception and return null, as per SDO 2.1 spec
             return '\u0000';
         }
-        return value.charValue();
     }
 
     public double getDouble(String path) {
-        Double value = (Double)XPathEngine.getInstance().convertObjectToValueByPath(path, Double.class, this);
-        if (value == null) {
+        try {
+            Double value = (Double)XPathEngine.getInstance().convertObjectToValueByPath(path, Double.class, this);
+            if (value == null) {
+                return 0.0d;
+            }
+            return value.doubleValue();
+        } catch (Exception e) {
+            // Swallow exception and return null, as per SDO 2.1 spec
             return 0.0d;
         }
-        return value.doubleValue();
     }
 
     public float getFloat(String path) {
-        Float value = (Float)XPathEngine.getInstance().convertObjectToValueByPath(path, Float.class, this);
-        if (value == null) {
+        try {
+            Float value = (Float)XPathEngine.getInstance().convertObjectToValueByPath(path, Float.class, this);
+            if (value == null) {
+                return 0.0f;
+            }
+            return value.floatValue();
+        } catch (Exception e) {
+            // Swallow exception and return null, as per SDO 2.1 spec
             return 0.0f;
         }
-        return value.floatValue();
     }
 
     public int getInt(String path) {
-        Integer value = (Integer)XPathEngine.getInstance().convertObjectToValueByPath(path, Integer.class, this);
-        if (value == null) {
+        try {
+            Integer value = (Integer)XPathEngine.getInstance().convertObjectToValueByPath(path, Integer.class, this);
+            if (value == null) {
+                return 0;
+            }
+            return value.intValue();
+        } catch (Exception e) {
+            // Swallow exception and return null, as per SDO 2.1 spec
             return 0;
         }
-        return value.intValue();
     }
 
     public long getLong(String path) {
-        Long value = (Long)XPathEngine.getInstance().convertObjectToValueByPath(path, Long.class, this);
-        if (value == null) {
+        try {
+            Long value = (Long)XPathEngine.getInstance().convertObjectToValueByPath(path, Long.class, this);
+            if (value == null) {
+                return 0L;
+            }
+            return value.longValue();
+        } catch (Exception e) {
+            // Swallow exception and return null, as per SDO 2.1 spec
             return 0L;
         }
-        return value.longValue();
     }
 
     public short getShort(String path) {
-        Short value = (Short)XPathEngine.getInstance().convertObjectToValueByPath(path, Short.class, this);
-        if (value == null) {
+        try {
+            Short value = (Short)XPathEngine.getInstance().convertObjectToValueByPath(path, Short.class, this);
+            if (value == null) {
+                return 0;
+            }
+            return value.shortValue();
+        } catch (Exception e) {
+            // Swallow exception and return null, as per SDO 2.1 spec
             return 0;
         }
-        return value.shortValue();
     }
 
     public byte[] getBytes(String path) {
-        byte[] value = (byte[])XPathEngine.getInstance().convertObjectToValueByPath(path, byte[].class, this);
-        return value;
+        try {
+            byte[] value = (byte[])XPathEngine.getInstance().convertObjectToValueByPath(path, byte[].class, this);
+            return value;
+        } catch (Exception e) {
+            // Swallow exception and return null, as per SDO 2.1 spec
+            return null;
+        }
     }
 
     public BigDecimal getBigDecimal(String path) {
-        BigDecimal value = (BigDecimal)XPathEngine.getInstance().convertObjectToValueByPath(path, BigDecimal.class, this);
-        return value;
+        try {
+            BigDecimal value = (BigDecimal)XPathEngine.getInstance().convertObjectToValueByPath(path, BigDecimal.class, this);
+            return value;
+        } catch (Exception e) {
+            // Swallow exception and return null, as per SDO 2.1 spec
+            return null;
+        }
     }
 
     public BigInteger getBigInteger(String path) {
-        BigInteger value = (BigInteger)XPathEngine.getInstance().convertObjectToValueByPath(path, BigInteger.class, this);
-        return value;
+        try {
+            BigInteger value = (BigInteger)XPathEngine.getInstance().convertObjectToValueByPath(path, BigInteger.class, this);
+            return value;
+        } catch (Exception e) {
+            // Swallow exception and return null, as per SDO 2.1 spec
+            return null;
+        }
     }
 
     public DataObject getDataObject(String path) throws ClassCastException {
@@ -251,17 +306,32 @@ public class SDODataObject implements DataObject, SequencedObject {
     }
 
     public Date getDate(String path) {
-        Date value = (Date)XPathEngine.getInstance().convertObjectToValueByPath(path, Date.class, this);
-        return value;
+        try {
+            Date value = (Date)XPathEngine.getInstance().convertObjectToValueByPath(path, Date.class, this);
+            return value;
+        } catch (Exception e) {
+            // Swallow exception and return null, as per SDO 2.1 spec
+            return null;
+        }
     }
 
     public String getString(String path) {
-        String value = (String)XPathEngine.getInstance().convertObjectToValueByPath(path, String.class, this);
-        return value;
+        try {
+            String value = (String)XPathEngine.getInstance().convertObjectToValueByPath(path, String.class, this);
+            return value;
+        } catch (Exception e) {
+            // Swallow exception and return null, as per SDO 2.1 spec
+            return null;
+        }
     }
 
     public List getList(String path) {
-        return (List)XPathEngine.getInstance().convertObjectToValueByPath(path, List.class, this);
+        try {
+            return (List)XPathEngine.getInstance().convertObjectToValueByPath(path, List.class, this);
+        } catch (Exception e) {
+            // Swallow exception and return null, as per SDO 2.1 spec
+            return null;
+        }
     }
 
     public void setBoolean(String path, boolean value) {

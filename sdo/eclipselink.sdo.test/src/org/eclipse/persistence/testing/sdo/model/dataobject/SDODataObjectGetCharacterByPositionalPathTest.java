@@ -40,8 +40,8 @@ public class SDODataObjectGetCharacterByPositionalPathTest extends SDODataObject
 
         try {
             dataObject_a.getChar(propertyPath_a_b_c);
-            fail("ClassCastException should be thrown.");
-        } catch (ClassCastException e) {
+        } catch (Exception e) {
+            fail("No Exception expected, but caught " + e.getClass());            
         }
     }
 
@@ -138,8 +138,8 @@ public class SDODataObjectGetCharacterByPositionalPathTest extends SDODataObject
     public void testGetCharacterConversionFromUnDefinedProperty() {        
         try {
             dataObject_a.getChar(UNDEFINED_PATH);
-            fail("ClassCastException should be thrown.");
-        } catch (ClassCastException e) {
+        } catch (Exception e) {
+            fail("No Exception expected, but caught " + e.getClass());            
         }
     }
 
@@ -244,8 +244,8 @@ public class SDODataObjectGetCharacterByPositionalPathTest extends SDODataObject
 
         try {
             dataObject_a.getChar(propertyPath_a_b_c);
-            fail("ClassCastException should be thrown.");
-        } catch (ClassCastException e) {
+        } catch (Exception e) {
+            fail("No Exception expected, but caught " + e.getClass());            
         }
     }
 
@@ -289,18 +289,18 @@ public class SDODataObjectGetCharacterByPositionalPathTest extends SDODataObject
 
         try {
             dataObject_a.getChar(propertyPath_a_b_c);
-            fail("ClassCastException should be thrown.");
-        } catch (ClassCastException e) {
+        } catch (Exception e) {
+            fail("No Exception expected, but caught " + e.getClass());            
         }
     }
 
-    //purpose: getChar with nul value
+    //purpose: getChar with null value
     public void testGGetCharacterWithNullArgument() {
         try {
             String p = null;
             dataObject_a.getChar(p);
-            fail("ClassCastException should be thrown.");
-        } catch (ClassCastException e) {
+        } catch (Exception e) {
+            fail("No Exception expected, but caught " + e.getClass());            
         }
     }
 }

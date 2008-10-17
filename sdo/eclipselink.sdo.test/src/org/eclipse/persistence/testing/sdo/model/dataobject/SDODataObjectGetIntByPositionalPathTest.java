@@ -57,12 +57,10 @@ public class SDODataObjectGetIntByPositionalPathTest extends SDODataObjectGetByP
 
     //3. purpose: getInt with Undefined Byte Property
     public void testGetIntConversionFromUnDefinedProperty() {
-     
-
         try {
             dataObject_a.getInt(UNDEFINED_PATH);
-            fail("ClassCastException should be thrown.");
-        } catch (ClassCastException e) {
+        } catch (Exception e) {
+            fail("No Exception expected, but caught " + e.getClass());            
         }
     }
 
@@ -74,8 +72,8 @@ public class SDODataObjectGetIntByPositionalPathTest extends SDODataObjectGetByP
         dataObject_c.set(prop, 'e');       
         try {
             dataObject_a.getInt(propertyPath_a_b_c);
-            fail("ClassCastException should be thrown.");
-        } catch (ClassCastException e) {
+        } catch (Exception e) {
+            fail("No Exception expected, but caught " + e.getClass());
         }
     }
 
@@ -128,7 +126,6 @@ public class SDODataObjectGetIntByPositionalPathTest extends SDODataObjectGetByP
         dataObject_a.setInt(property3, in);
 
         this.assertEquals(in, dataObject_a.getInt(property3));
-
     }
 
     //1. purpose: getBoolean with Defined Boolean Property
@@ -144,7 +141,6 @@ public class SDODataObjectGetIntByPositionalPathTest extends SDODataObjectGetByP
         dataObject_a.setInt(property + ".0", in);
 
         this.assertEquals(in, dataObject_a.getInt(property + ".0"));
-
     }
 
     //1. purpose: getBoolean with Defined Boolean Property
@@ -222,8 +218,8 @@ public class SDODataObjectGetIntByPositionalPathTest extends SDODataObjectGetByP
         dataObject_c.set(prop, new String("eee").getBytes());
         try {
             dataObject_a.getInt(propertyPath_a_b_c);
-            fail("ClassCastException should be thrown.");
-        } catch (ClassCastException e) {
+        } catch (Exception e) {
+            fail("No Exception expected, but caught " + e.getClass());            
         }
     }
 
@@ -259,18 +255,18 @@ public class SDODataObjectGetIntByPositionalPathTest extends SDODataObjectGetByP
         dataObject_c.set(prop, Calendar.getInstance().getTime());
         try {
             dataObject_a.getInt(propertyPath_a_b_c);
-            fail("ClassCastException should be thrown.");
-        } catch (ClassCastException e) {
+        } catch (Exception e) {
+            fail("No Exception expected, but caught " + e.getClass());            
         }
     }
 
-    //purpose: getInt with nul value
+    //purpose: getInt with null value
     public void testGetIntWithNullArgument() {
         try {
             String p = null;
             dataObject_a.getInt(p);
-            fail("ClassCastException should be thrown.");
-        } catch (ClassCastException e) {
+        } catch (Exception e) {
+            fail("No Exception expected, but caught " + e.getClass());            
         }
     }
 }

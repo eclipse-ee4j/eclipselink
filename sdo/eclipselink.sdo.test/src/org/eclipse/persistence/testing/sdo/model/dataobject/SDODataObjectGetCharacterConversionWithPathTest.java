@@ -44,8 +44,8 @@ public class SDODataObjectGetCharacterConversionWithPathTest extends SDODataObje
         dataObject_c.set(property_c, theValue);
         try {
             dataObject_a.getChar(propertyPath_a_b_c);
-            fail("ClassCastException should be thrown.");
-        } catch (ClassCastException e) {
+        } catch (Exception e) {
+            fail("No Exception expected, but caught " + e.getClass());            
         }
     }
 
@@ -94,8 +94,8 @@ public class SDODataObjectGetCharacterConversionWithPathTest extends SDODataObje
 
         try {
             dataObject_a.getChar(propertyPath_a_b_c);
-            fail("ClassCastException should be thrown.");
-        } catch (ClassCastException e) {
+        } catch (Exception e) {
+            fail("No Exception expected, but caught " + e.getClass());            
         }
     }
 
@@ -215,8 +215,8 @@ public class SDODataObjectGetCharacterConversionWithPathTest extends SDODataObje
 
         try {
             dataObject_a.getChar(propertyPath_a_b_c);
-            fail("ClassCastException should be thrown.");
-        } catch (ClassCastException e) {
+        } catch (Exception e) {
+            fail("No Exception expected, but caught " + e.getClass());            
         }
     }
 
@@ -231,8 +231,8 @@ public class SDODataObjectGetCharacterConversionWithPathTest extends SDODataObje
         dataObject_c.set(property_c, theValue);
         try {
             dataObject_a.getChar(propertyPath_a_b_c);
-            fail("ClassCastException should be thrown.");
-        } catch (ClassCastException e) {
+        } catch (Exception e) {
+            fail("No Exception expected, but caught " + e.getClass());            
         }
     }
 
@@ -282,8 +282,8 @@ public class SDODataObjectGetCharacterConversionWithPathTest extends SDODataObje
         dataObject_c.set(property_c, Calendar.getInstance().getTime());
         try {
             dataObject_a.getChar(propertyPath_a_b_c);
-            fail("ClassCastException should be thrown.");
-        } catch (ClassCastException e) {
+        } catch (Exception e) {
+            fail("No Exception expected, but caught " + e.getClass());            
         }
     }
 
@@ -292,8 +292,8 @@ public class SDODataObjectGetCharacterConversionWithPathTest extends SDODataObje
         try {
             String p = null;
             dataObject_a.getChar(p);
-            fail("ClassCastException should be thrown.");
-        } catch (ClassCastException e) {
+        } catch (Exception e) {
+            fail("No Exception expected, but caught " + e.getClass());            
         }
     }
     

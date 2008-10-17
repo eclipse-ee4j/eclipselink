@@ -61,8 +61,8 @@ public class SDODataObjectGetShortByPositionalPathTest extends SDODataObjectGetB
         
         try {
             dataObject_a.getShort(UNDEFINED_PATH);
-            fail("ClassCastException should be thrown.");
-        } catch (ClassCastException e) {
+        } catch (Exception e) {
+            fail("No Exception expected, but caught " + e.getClass());            
         }
     }
 
@@ -73,8 +73,8 @@ public class SDODataObjectGetShortByPositionalPathTest extends SDODataObjectGetB
         dataObject_c.set(property, 'e');
         try {
             dataObject_a.getShort(propertyPath_a_b_c);
-            fail("ClassCastException should be thrown.");
-        } catch (ClassCastException e) {
+        } catch (Exception e) {
+            fail("No Exception expected, but caught " + e.getClass());            
         }
     }
 
@@ -227,8 +227,8 @@ public class SDODataObjectGetShortByPositionalPathTest extends SDODataObjectGetB
         dataObject_c.set(property, new String("eee").getBytes());
         try {
             dataObject_a.getShort(propertyPath_a_b_c);
-            fail("ClassCastException should be thrown.");
-        } catch (ClassCastException e) {
+        } catch (Exception e) {
+            fail("No Exception expected, but caught " + e.getClass());            
         }
     }
 
@@ -267,18 +267,18 @@ public class SDODataObjectGetShortByPositionalPathTest extends SDODataObjectGetB
         dataObject_c.set(property, Calendar.getInstance().getTime());
         try {
             dataObject_a.getShort(propertyPath_a_b_c);
-            fail("ClassCastException should be thrown.");
-        } catch (ClassCastException e) {
+        } catch (Exception e) {
+            fail("No Exception expected, but caught " + e.getClass());            
         }
     }
 
-    //purpose: getShort with nul value
+    //purpose: getShort with null value
     public void testGetShortWithNullArgument() {
         try {
             String p = null;
             dataObject_a.getShort(p);
-            fail("ClassCastException should be thrown.");
-        } catch (ClassCastException e) {
+        } catch (Exception e) {
+            fail("No Exception expected, but caught " + e.getClass());            
         }
     }
 }

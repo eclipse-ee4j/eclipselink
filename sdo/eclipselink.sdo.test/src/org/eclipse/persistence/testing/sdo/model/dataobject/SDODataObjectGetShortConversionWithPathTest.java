@@ -72,8 +72,8 @@ public class SDODataObjectGetShortConversionWithPathTest extends SDODataObjectCo
 
         try {
             dataObject_a.getShort(propertyPath_a_b_c);
-            fail("ClassCastException should be thrown.");
-        } catch (ClassCastException e) {
+        } catch (Exception e) {
+            fail("No Exception expected, but caught " + e.getClass());            
         }
     }
 
@@ -87,8 +87,8 @@ public class SDODataObjectGetShortConversionWithPathTest extends SDODataObjectCo
         dataObject_c.set(property_c, 'e');
       try {
             dataObject_a.getShort(propertyPath_a_b_c);
-            fail("ClassCastException should be thrown.");
-        } catch (ClassCastException e) {
+        } catch (Exception e) {
+            fail("No Exception expected, but caught " + e.getClass());            
         }
     }
 
@@ -117,8 +117,8 @@ public class SDODataObjectGetShortConversionWithPathTest extends SDODataObjectCo
 
         try {
             dataObject_a.getShort(propertyPath_a_b_c);
-            fail("ClassCastException should be thrown.");
-        } catch (ClassCastException e) {
+        } catch (Exception e) {
+            fail("No Exception expected, but caught " + e.getClass());            
         }
     }
 
@@ -147,8 +147,8 @@ public class SDODataObjectGetShortConversionWithPathTest extends SDODataObjectCo
 
         try {
             dataObject_a.getShort(propertyPath_a_b_c);
-            fail("ClassCastException should be thrown.");
-        } catch (ClassCastException e) {
+        } catch (Exception e) {
+            fail("No Exception expected, but caught " + e.getClass());            
         }
     }
 
@@ -177,8 +177,8 @@ public class SDODataObjectGetShortConversionWithPathTest extends SDODataObjectCo
 
         try {
             dataObject_a.getShort(propertyPath_a_b_c);
-            fail("ClassCastException should be thrown.");
-        } catch (ClassCastException e) {
+        } catch (Exception e) {
+            fail("No Exception expected, but caught " + e.getClass());            
         }
     }
 
@@ -207,8 +207,8 @@ public class SDODataObjectGetShortConversionWithPathTest extends SDODataObjectCo
 
         try {
             dataObject_a.getShort(propertyPath_a_b_c);
-            fail("ClassCastException should be thrown.");
-        } catch (ClassCastException e) {
+        } catch (Exception e) {
+            fail("No Exception expected, but caught " + e.getClass());            
         }
     }
 
@@ -237,8 +237,8 @@ public class SDODataObjectGetShortConversionWithPathTest extends SDODataObjectCo
 
         try {
             dataObject_a.getShort(propertyPath_a_b_c);
-            fail("ClassCastException should be thrown.");
-        } catch (ClassCastException e) {
+        } catch (Exception e) {
+            fail("No Exception expected, but caught " + e.getClass());            
         }
     }
 
@@ -268,8 +268,8 @@ public class SDODataObjectGetShortConversionWithPathTest extends SDODataObjectCo
 
         try {
             dataObject_a.getShort(propertyPath_a_b_c);
-            fail("ClassCastException should be thrown.");
-        } catch (ClassCastException e) {
+        } catch (Exception e) {
+            fail("No Exception expected, but caught " + e.getClass());            
         }
     }
 
@@ -283,8 +283,8 @@ public class SDODataObjectGetShortConversionWithPathTest extends SDODataObjectCo
         dataObject_c.set(property_c, new String("eee").getBytes());
         try {
             dataObject_a.getShort(propertyPath_a_b_c);
-            fail("ClassCastException should be thrown.");
-        } catch (ClassCastException e) {
+        } catch (Exception e) {
+            fail("No Exception expected, but caught " + e.getClass());            
         }
     }
 
@@ -332,8 +332,8 @@ public class SDODataObjectGetShortConversionWithPathTest extends SDODataObjectCo
         dataObject_c.set(property_c, Calendar.getInstance().getTime());
         try {
             dataObject_a.getShort(propertyPath_a_b_c);
-            fail("ClassCastException should be thrown.");
-        } catch (ClassCastException e) {
+        } catch (Exception e) {
+            fail("No Exception expected, but caught " + e.getClass());            
         }
     }
 
@@ -342,8 +342,8 @@ public class SDODataObjectGetShortConversionWithPathTest extends SDODataObjectCo
         try {
             String p = null;
             dataObject_a.getShort(p);
-            fail("ClassCastException should be thrown.");
-        } catch (ClassCastException e) {
+        } catch (Exception e) {
+            fail("No Exception expected, but caught " + e.getClass());            
         }
     }
     

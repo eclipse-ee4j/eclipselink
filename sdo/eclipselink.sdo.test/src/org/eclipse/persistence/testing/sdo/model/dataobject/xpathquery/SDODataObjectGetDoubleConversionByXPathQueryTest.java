@@ -68,8 +68,8 @@ public class SDODataObjectGetDoubleConversionByXPathQueryTest extends SDODataObj
 
         try {
             dataObject_a.getDouble(property1);
-            fail("ClassCastException should be thrown.");
-        } catch (ClassCastException e) {
+        } catch (Exception e) {
+            fail("No Exception expected, but caught " + e.getClass());                        
         }
     }
 

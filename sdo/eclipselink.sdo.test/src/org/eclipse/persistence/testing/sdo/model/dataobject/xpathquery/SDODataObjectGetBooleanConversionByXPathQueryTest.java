@@ -109,8 +109,8 @@ public class SDODataObjectGetBooleanConversionByXPathQueryTest extends SDODataOb
 
         try {
             dataObject_a.getBoolean(property1);
-            fail("ClassCastException should be thrown.");
-        } catch (ClassCastException e) {
+        } catch (Exception e) {
+            fail("No Exception expected, but caught " + e.getClass());                        
         }
     }
 

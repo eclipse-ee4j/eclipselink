@@ -38,7 +38,7 @@ public class SDODataObjectGetFloatByPositionalPathTest extends SDODataObjectGetB
         dataObject_c.set(prop, true);
         try {
             float value = dataObject_a.getFloat(propertyPath_a_b_c);
-            assertEquals(1, value);
+            assertEquals(0.0f, value);
         } catch (ClassCastException e) {
         }
     }
@@ -61,8 +61,8 @@ public class SDODataObjectGetFloatByPositionalPathTest extends SDODataObjectGetB
         
         try {
             dataObject_a.getFloat(UNDEFINED_PATH);
-            fail("ClassCastException should be thrown.");
         } catch (ClassCastException e) {
+            fail("No Exception expected, but caught " + e.getClass());            
         }
     }
 
@@ -73,8 +73,8 @@ public class SDODataObjectGetFloatByPositionalPathTest extends SDODataObjectGetB
         dataObject_c.set(prop, 'e');
         try {
             dataObject_a.getFloat(propertyPath_a_b_c);
-            fail("ClassCastException should be thrown.");
-        } catch (ClassCastException e) {
+        } catch (Exception e) {
+            fail("No Exception expected, but caught " + e.getClass());            
         }
     }
 
@@ -234,8 +234,8 @@ public class SDODataObjectGetFloatByPositionalPathTest extends SDODataObjectGetB
 
         try {
             dataObject_a.getFloat(propertyPath_a_b_c);
-            fail("ClassCastException should be thrown.");
-        } catch (ClassCastException e) {
+        } catch (Exception e) {
+            fail("No Exception expected, but caught " + e.getClass());            
         }
     }
 
@@ -274,8 +274,8 @@ public class SDODataObjectGetFloatByPositionalPathTest extends SDODataObjectGetB
         dataObject_c.set(prop, Calendar.getInstance().getTime());
         try {
             dataObject_a.getFloat(propertyPath_a_b_c);
-            fail("ClassCastException should be thrown.");
-        } catch (ClassCastException e) {
+        } catch (Exception e) {
+            fail("No Exception expected, but caught " + e.getClass());            
         }
     }
 
@@ -284,8 +284,8 @@ public class SDODataObjectGetFloatByPositionalPathTest extends SDODataObjectGetB
         try {
             String p = null;
             dataObject_a.getFloat(p);
-            fail("ClassCastException should be thrown.");
-        } catch (ClassCastException e) {
+        } catch (Exception e) {
+            fail("No Exception expected, but caught " + e.getClass());            
         }
     }
 }

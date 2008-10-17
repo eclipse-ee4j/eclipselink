@@ -41,7 +41,7 @@ public class SDODataObjectGetDoubleByPositionalPathTest extends SDODataObjectGet
         dataObject_c.set(property_c, true);
         try {
             double value = dataObject_a.getDouble(propertyPath_a_b_c);
-            double controlValue = 1;
+            double controlValue = 0.0d;
             assertEquals(controlValue, value);
             //TODO: conversion not supported by sdo spec but is supported by TopLink
         } catch (ClassCastException e) {
@@ -75,8 +75,8 @@ public class SDODataObjectGetDoubleByPositionalPathTest extends SDODataObjectGet
 
         try {
             dataObject_a.getDouble(propertyPath_a_b_c);
-            fail("ClassCastException should be thrown.");
-        } catch (ClassCastException e) {
+        } catch (Exception e) {
+            fail("No Exception expected, but caught " + e.getClass());                        
         }
     }
 
@@ -90,8 +90,8 @@ public class SDODataObjectGetDoubleByPositionalPathTest extends SDODataObjectGet
         dataObject_c.set(property_c, 'w');
         try {
             dataObject_a.getDouble(propertyPath_a_b_c);
-            fail("ClassCastException should be thrown.");
-        } catch (ClassCastException e) {
+        } catch (Exception e) {
+            fail("No Exception expected, but caught " + e.getClass());                        
         }
     }
 
@@ -199,8 +199,8 @@ public class SDODataObjectGetDoubleByPositionalPathTest extends SDODataObjectGet
 
         try {
             dataObject_a.getDouble(propertyPath_a_b_c);
-            fail("ClassCastException should be thrown.");
-        } catch (ClassCastException e) {
+        } catch (Exception e) {
+            fail("No Exception expected, but caught " + e.getClass());                        
         }
     }
 
@@ -230,8 +230,8 @@ public class SDODataObjectGetDoubleByPositionalPathTest extends SDODataObjectGet
 
         try {
             dataObject_a.getDouble(propertyPath_a_b_c);
-            fail("ClasscastException should be thrown.");
-        } catch (ClassCastException e) {
+        } catch (Exception e) {
+            fail("No Exception expected, but caught " + e.getClass());                        
         }
     }
 
@@ -261,8 +261,8 @@ public class SDODataObjectGetDoubleByPositionalPathTest extends SDODataObjectGet
 
         try {
             dataObject_a.getDouble(propertyPath_a_b_c);
-            fail("ClassCastException should be thrown.");
-        } catch (ClassCastException e) {
+        } catch (Exception e) {
+            fail("No Exception expected, but caught " + e.getClass());                        
         }
     }
 
@@ -292,8 +292,8 @@ public class SDODataObjectGetDoubleByPositionalPathTest extends SDODataObjectGet
 
         try {
             dataObject_a.getDouble(propertyPath_a_b_c);
-            fail("ClasscastException should be thrown.");
-        } catch (ClassCastException e) {
+        } catch (Exception e) {
+            fail("No Exception expected, but caught " + e.getClass());                        
         }
     }
 
@@ -323,8 +323,8 @@ public class SDODataObjectGetDoubleByPositionalPathTest extends SDODataObjectGet
 
         try {
             dataObject_a.getDouble(propertyPath_a_b_c);
-            fail("ClasscastException should be thrown.");
-        } catch (ClassCastException e) {
+        } catch (Exception e) {
+            fail("No Exception expected, but caught " + e.getClass());                        
         }
     }
 
@@ -355,8 +355,8 @@ public class SDODataObjectGetDoubleByPositionalPathTest extends SDODataObjectGet
 
         try {
             dataObject_a.getDouble(propertyPath_a_b_c);
-            fail("ClassCastException should be thrown.");
-        } catch (ClassCastException e) {
+        } catch (Exception e) {
+            fail("No Exception expected, but caught " + e.getClass());                        
         }
     }
 
@@ -371,8 +371,8 @@ public class SDODataObjectGetDoubleByPositionalPathTest extends SDODataObjectGet
         dataObject_c.set(property_c, bytes);
         try {
             dataObject_a.getDouble(propertyPath_a_b_c);
-            fail("ClassCastException should be thrown.");
-        } catch (ClassCastException e) {
+        } catch (Exception e) {
+            fail("No Exception expected, but caught " + e.getClass());                        
         }
     }
 
@@ -403,8 +403,8 @@ public class SDODataObjectGetDoubleByPositionalPathTest extends SDODataObjectGet
 
         try {
             dataObject_a.getDouble(propertyPath_a_b_c);
-            fail("ClassCastException should be thrown.");
-        } catch (ClassCastException e) {
+        } catch (Exception e) {
+            fail("No Exception expected, but caught " + e.getClass());                        
         }
     }
 
@@ -434,8 +434,8 @@ public class SDODataObjectGetDoubleByPositionalPathTest extends SDODataObjectGet
 
         try {
             dataObject_a.getDouble(propertyPath_a_b_c);
-            fail("ClassCastException should be thrown.");
-        } catch (ClassCastException e) {
+        } catch (Exception e) {
+            fail("No Exception expected, but caught " + e.getClass());                        
         }
     }
 
@@ -450,8 +450,8 @@ public class SDODataObjectGetDoubleByPositionalPathTest extends SDODataObjectGet
         
         try {
             dataObject_a.getDouble(propertyPath_a_b_c);
-            fail("ClassCastException should be thrown.");
-        } catch (ClassCastException e) {
+        } catch (Exception e) {
+            fail("No Exception expected, but caught " + e.getClass());                        
         }
     }
 
@@ -460,8 +460,8 @@ public class SDODataObjectGetDoubleByPositionalPathTest extends SDODataObjectGet
         try {
             String p = null;
             dataObject_a.getDouble(p);
-            fail("ClassCastException should be thrown.");
-        } catch (ClassCastException e) {
+        } catch (Exception e) {
+            fail("No Exception expected, but caught " + e.getClass());                        
         }
     }
 }

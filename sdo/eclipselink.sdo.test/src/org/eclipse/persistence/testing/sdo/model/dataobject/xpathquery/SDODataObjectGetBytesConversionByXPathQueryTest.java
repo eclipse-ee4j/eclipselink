@@ -70,8 +70,8 @@ public class SDODataObjectGetBytesConversionByXPathQueryTest extends SDODataObje
 
         try {
             dataObject_a.getBytes(property1);
-            fail("ClassCastException should be thrown.");
-        } catch (ClassCastException e) {
+        } catch (Exception e) {
+            fail("No Exception expected, but caught " + e.getClass());                        
         }
     }
 

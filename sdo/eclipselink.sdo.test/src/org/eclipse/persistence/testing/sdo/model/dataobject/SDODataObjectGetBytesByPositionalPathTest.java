@@ -39,8 +39,8 @@ public class SDODataObjectGetBytesByPositionalPathTest extends SDODataObjectGetB
         dataObject_c.set(property_c, true);
         try {            
             dataObject_a.getBytes(propertyPath_a_b_c);
-            fail("ClassCastException should be thrown.");
-        } catch (ClassCastException e) {
+        } catch (Exception e) {
+            fail("No Exception expected, but caught " + e.getClass());            
         }
     }
 
@@ -51,8 +51,8 @@ public class SDODataObjectGetBytesByPositionalPathTest extends SDODataObjectGetB
         dataObject_c.set(property_c, new String("aaa").getBytes()[0]);
         try {
             dataObject_a.getBytes(propertyPath_a_b_c);
-            fail("ClassCastException should be thrown.");
-        } catch (ClassCastException e) {
+        } catch (Exception e) {
+            fail("No Exception expected, but caught " + e.getClass());            
         }
     }
 
@@ -63,8 +63,8 @@ public class SDODataObjectGetBytesByPositionalPathTest extends SDODataObjectGetB
         dataObject_c.set(property_c, 'c');
         try {
             dataObject_a.getBytes(propertyPath_a_b_c);
-            fail("ClassCastException should be thrown.");
-        } catch (ClassCastException e) {
+        } catch (Exception e) {
+            fail("No Exception expected, but caught " + e.getClass());            
         }
     }
 
@@ -76,8 +76,8 @@ public class SDODataObjectGetBytesByPositionalPathTest extends SDODataObjectGetB
         dataObject_c.set(property_c, doubleValue);
         try {
             dataObject_a.getBytes(propertyPath_a_b_c);
-            fail("ClassCastException should be thrown.");
-        } catch (ClassCastException e) {
+        } catch (Exception e) {
+            fail("No Exception expected, but caught " + e.getClass());            
         }
     }
 
@@ -89,8 +89,8 @@ public class SDODataObjectGetBytesByPositionalPathTest extends SDODataObjectGetB
         dataObject_c.set(property_c, floatValue);
         try {
             dataObject_a.getBytes(propertyPath_a_b_c);
-            fail("ClassCastException should be thrown.");
-        } catch (ClassCastException e) {
+        } catch (Exception e) {
+            fail("No Exception expected, but caught " + e.getClass());            
         }
     }
 
@@ -102,8 +102,8 @@ public class SDODataObjectGetBytesByPositionalPathTest extends SDODataObjectGetB
         dataObject_c.set(property_c, intValue);
         try {
             dataObject_a.getBytes(propertyPath_a_b_c);
-            fail("ClassCastException should be thrown.");
-        } catch (ClassCastException e) {
+        } catch (Exception e) {
+            fail("No Exception expected, but caught " + e.getClass());            
         }
     }
 
@@ -117,8 +117,8 @@ public class SDODataObjectGetBytesByPositionalPathTest extends SDODataObjectGetB
         
         try {
             dataObject_a.getBytes(propertyPath_a_b_c);
-            fail("ClassCastException should be thrown.");
-        } catch (ClassCastException e) {
+        } catch (Exception e) {
+            fail("No Exception expected, but caught " + e.getClass());            
         }
     }
 
@@ -132,8 +132,8 @@ public class SDODataObjectGetBytesByPositionalPathTest extends SDODataObjectGetB
       
         try {
             dataObject_a.getBytes(propertyPath_a_b_c);
-            fail("ClassCastException should be thrown.");
-        } catch (ClassCastException e) {
+        } catch (Exception e) {
+            fail("No Exception expected, but caught " + e.getClass());
         }
     }
 
@@ -146,8 +146,8 @@ public class SDODataObjectGetBytesByPositionalPathTest extends SDODataObjectGetB
            
         try {
             dataObject_a.getBytes(propertyPath_a_b_c);
-            fail("ClassCastException should be thrown.");
-        } catch (ClassCastException e) {
+        } catch (Exception e) {
+            fail("No Exception expected, but caught " + e.getClass());            
         }
     }
 
@@ -232,8 +232,8 @@ public class SDODataObjectGetBytesByPositionalPathTest extends SDODataObjectGetB
       
         try {
             dataObject_a.getBytes(propertyPath_a_b_c);
-            fail("ClassCastException should be thrown.");
-        } catch (ClassCastException e) {
+        } catch (Exception e) {
+            fail("No Exception expected, but caught " + e.getClass());            
         }
     }
 
@@ -262,8 +262,8 @@ public class SDODataObjectGetBytesByPositionalPathTest extends SDODataObjectGetB
 
         try {
             dataObject_a.getBytes(propertyPath_a_b_c);
-            fail("ClassCastException should be thrown.");
-        } catch (ClassCastException e) {
+        } catch (Exception e) {
+            fail("No Exception expected, but caught " + e.getClass());            
         }
     }
 
@@ -272,8 +272,8 @@ public class SDODataObjectGetBytesByPositionalPathTest extends SDODataObjectGetB
         try {
             String p = null;
             dataObject_a.getBytes(p);
-            fail("ClassCastException should be thrown.");
-        } catch (ClassCastException e) {
+        } catch (Exception e) {
+            fail("No Exception expected, but caught " + e.getClass());            
         }
     }
 }

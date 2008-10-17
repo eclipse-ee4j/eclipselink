@@ -39,7 +39,7 @@ public class SDODataObjectGetIntegerByPositionalPathTest extends SDODataObjectGe
 
         try {
             BigInteger value = dataObject_a.getBigInteger(propertyPath_a_b_c);
-            assertEquals(1, value);
+            assertEquals(null, value);
         } catch (ClassCastException e) {
         }
     }
@@ -69,8 +69,8 @@ public class SDODataObjectGetIntegerByPositionalPathTest extends SDODataObjectGe
 
         try {
             dataObject_a.getBigInteger(propertyPath_a_b_c);
-            fail("ClassCastException should be thrown.");
-        } catch (ClassCastException e) {
+        } catch (Exception e) {
+            fail("No Exception expected, but caught " + e.getClass());            
         }
     }
 
@@ -93,8 +93,8 @@ public class SDODataObjectGetIntegerByPositionalPathTest extends SDODataObjectGe
 
         try {
             dataObject_a.getBigInteger(UNDEFINED_PATH);
-            fail("ClassCastException should be thrown.");
-        } catch (ClassCastException e) {
+        } catch (Exception e) {
+            fail("No Exception expected, but caught " + e.getClass());            
         }
     }
 
@@ -278,8 +278,8 @@ public class SDODataObjectGetIntegerByPositionalPathTest extends SDODataObjectGe
         dataObject_c.set(prop, Calendar.getInstance().getTime());
         try {
             dataObject_a.getBigInteger(propertyPath_a_b_c);
-            fail("ClassCastException should be thrown.");
-        } catch (ClassCastException e) {
+        } catch (Exception e) {
+            fail("No Exception expected, but caught " + e.getClass());            
         }
     }
 
@@ -288,8 +288,8 @@ public class SDODataObjectGetIntegerByPositionalPathTest extends SDODataObjectGe
         try {
             String p = null;
             dataObject_a.getBigInteger(p);
-            fail("ClassCastException should be thrown.");
         } catch (ClassCastException e) {
+            fail("No Exception expected, but caught " + e.getClass());            
         }
     }
 }

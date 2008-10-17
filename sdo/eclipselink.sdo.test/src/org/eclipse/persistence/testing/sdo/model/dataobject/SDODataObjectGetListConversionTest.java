@@ -52,8 +52,8 @@ public class SDODataObjectGetListConversionTest extends SDODataObjectConversionW
 
         try {
             dataObject_a_pathLength_1.getList("PName-Undefined");
-            fail("ClassCastException should be thrown.");
-        } catch (ClassCastException e) {
+        } catch (Exception e) {
+            fail("No Exception expected, but caught " + e.getClass());            
         }
     }
 
@@ -156,8 +156,8 @@ public class SDODataObjectGetListConversionTest extends SDODataObjectConversionW
         property_a_pathLength_1.setMany(false);        
         try {
             dataObject_a_pathLength_1.getList("PName-a-length-1");            
-            fail("An exception should have been thrown called getList for a non-many property.");
         } catch (Exception e) {
+            fail("No Exception expected, but caught " + e.getClass());            
         }
     }
 

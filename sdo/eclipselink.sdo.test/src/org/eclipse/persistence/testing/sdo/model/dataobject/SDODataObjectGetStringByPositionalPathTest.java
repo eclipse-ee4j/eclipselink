@@ -52,8 +52,8 @@ public class SDODataObjectGetStringByPositionalPathTest extends SDODataObjectGet
         
         try {
             dataObject_a.getString(UNDEFINED_PATH);
-            fail("ClassCastException should be thrown.");
-        } catch (ClassCastException e) {
+        } catch (Exception e) {
+            fail("No Exception expected, but caught " + e.getClass());            
         }
     }
 
@@ -295,8 +295,8 @@ public class SDODataObjectGetStringByPositionalPathTest extends SDODataObjectGet
         try {
             String p = null;
             dataObject_a.getString(p);
-            fail("ClassCastException should be thrown.");
-        } catch (ClassCastException e) {
+        } catch (Exception e) {
+            fail("No Exception expected, but caught " + e.getClass());            
         }
     }
 }
