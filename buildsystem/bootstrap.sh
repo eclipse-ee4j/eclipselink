@@ -6,6 +6,7 @@ CUR_DIR=`dirname ${THIS}`
 umask 0002
 LOCAL_REPOS=false
 MILESTONE=false
+UPLOAD=false
 TEST=false
 RHB=false
 TARGET=$1
@@ -48,6 +49,10 @@ then
         echo "USAGE: ./boostrap.sh milestone M9 [branch]"
         exit
     fi
+fi
+if [ "${TARGET}" = "upload-all" ]
+then
+    UPLOAD=true
 fi
 
 echo "Target=${TARGET}"
@@ -176,6 +181,13 @@ fi
 ANT_ARGS=" "
 ANT_OPTS="-Xmx128m"
 ANT_BASEARG="-f \"${BOOTSTRAP_BLDFILE}\" -Dbranch.name=\"${BRANCH}\""
+
+# May need to add "milestone" flag to alert build
+if [ "${UPLOAD}" = "true" ]
+then
+    ANT_BASEARG="${ANT_BASEARG} -Dbuild.date=20081017 -Dbuild.type=M3 -Drelease.version=1.1.0 -Dsvn.revision=2609"
+    TARGET="publish-all"
+fi
 
 # May need to add "milestone" flag to alert build
 if [ "${MILESTONE}" = "true" ]

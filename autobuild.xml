@@ -53,7 +53,7 @@
             depends="clean, build-no-javadoc, build-core-test, test-srg"
     />
     <target name="publish-all"      description="Trigger just the publish targets"
-            depends="publish-build, publish-results"
+            depends="init, publish-build, publish-results"
     />
     
     <!-- script to "cleanup" the revision information --> 
@@ -150,7 +150,7 @@
         <property name="release.designation" value="EclipseLink Milestone ${build.type}"/>
 
         <!-- Now that all our overrides are complete, pull in the rest of the build properties -->
-        <property file="${basedir}/build.properties"/>
+        <property file="${build.root.dir}/build.properties"/>
 
         <echo message="ANT_ARGS='${env.ANT_ARGS}'"/>
         <echo message="ANT_OPTS='${env.ANT_OPTS}'"/>
@@ -312,13 +312,13 @@
         <copy file="${build.root.dir}/${eclipselink.src.install.prefix}${eclipselink.zip.suffix}"      tofile="${download.path}/${eclipselink.src.install.prefix}-${version.string}${eclipselink.zip.suffix}" failonerror="false"/>
         <copy file="${build.root.dir}/${eclipselink.tst.src.prefix}${eclipselink.zip.suffix}"          tofile="${download.path}/${eclipselink.tst.src.prefix}-${version.string}${eclipselink.zip.suffix}" failonerror="false"/>
         <copy file="${build.root.dir}/${eclipselink.plugins.install.prefix}${eclipselink.zip.suffix}"  tofile="${download.path}/${eclipselink.plugins.install.prefix}-${version.string}${eclipselink.zip.suffix}" failonerror="false"/>
-        <copy file="${build.root.dir}/${eclipselink.core.test}/${reports.dir}/junit-noframes.html"            tofile="${download.path}/eclipselink-core-lrg-${version.string}.html" failonerror="false"/>
-        <copy file="${build.root.dir}/${eclipselink.jpa.test}/${reports.dir}/junit-noframes.html"             tofile="${download.path}/eclipselink-jpa-lrg-${version.string}.html" failonerror="false"/>
-        <copy file="${build.root.dir}/${eclipselink.moxy.test}/${reports.dir}/jaxb/junit-noframes.html"       tofile="${download.path}/eclipselink-jaxb-lrg-${version.string}.html" failonerror="false"/>
-        <copy file="${build.root.dir}/${eclipselink.moxy.test}/${reports.dir}/oxm/junit-noframes.html"        tofile="${download.path}/eclipselink-oxm-lrg-${version.string}.html" failonerror="false"/>
-        <copy file="${build.root.dir}/${eclipselink.sdo.test}/${reports.dir}/true/junit-noframes.html"        tofile="${download.path}/eclipselink-sdo-lrg-${version.string}.html" failonerror="false"/>
-        <copy file="${build.root.dir}/${eclipselink.dbws.test}/${reports.dir}/oxm/junit-noframes.html"        tofile="${download.path}/eclipselink-dbws-lrg-${version.string}.html" failonerror="false"/>
-        <copy file="${build.root.dir}/${eclipselink.util.dbws.test}/${reports.dir}/true/junit-noframes.html" tofile="${download.path}/eclipselink-dbws-util-lrg-${version.string}.html" failonerror="false"/>
+        <copy file="${build.root.dir}/${eclipselink.core.test}/${report.dir}/junit-noframes.html"      tofile="${download.path}/eclipselink-core-lrg-${version.string}.html" failonerror="false"/>
+        <copy file="${build.root.dir}/${eclipselink.jpa.test}/${report.dir}/junit-noframes.html"       tofile="${download.path}/eclipselink-jpa-lrg-${version.string}.html" failonerror="false"/>
+        <copy file="${build.root.dir}/${eclipselink.moxy.test}/${report.dir}/jaxb/junit-noframes.html" tofile="${download.path}/eclipselink-jaxb-lrg-${version.string}.html" failonerror="false"/>
+        <copy file="${build.root.dir}/${eclipselink.moxy.test}/${report.dir}/oxm/junit-noframes.html"  tofile="${download.path}/eclipselink-oxm-lrg-${version.string}.html" failonerror="false"/>
+        <copy file="${build.root.dir}/${eclipselink.sdo.test}/${report.dir}/true/junit-noframes.html"  tofile="${download.path}/eclipselink-sdo-lrg-${version.string}.html" failonerror="false"/>
+        <copy file="${build.root.dir}/${eclipselink.dbws.test}/${report.dir}/junit-noframes.html"      tofile="${download.path}/eclipselink-dbws-lrg-${version.string}.html" failonerror="false"/>
+        <copy file="${build.root.dir}/${eclipselink.util.dbws.test}/${report.dir}/junit-noframes.html" tofile="${download.path}/eclipselink-dbws-util-lrg-${version.string}.html" failonerror="false"/>
         <exec executable="${svn.exec}" failonerror="false" logError="true">
             <arg value="commit"/>
             <arg value="-m ${version.string}"/>
