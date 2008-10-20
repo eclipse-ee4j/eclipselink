@@ -35,12 +35,12 @@ public class OXMSRGTestSuite extends TestCase {
     public static Test suite() {
         TestSuite suite = new TestSuite("OXM SRG Test Suite");
 
-        suite.addTest(InheritanceTestSuite.suite());
+        //suite.addTest(InheritanceTestSuite.suite());
         suite.addTest(XMLMarshallerTestSuite.suite()); 
         suite.addTest(RootElementTestSuite.suite());
         suite.addTest(XPathEngineTestSuite.suite());
         suite.addTest(XMLLoginTestSuite.suite());
-        suite.addTest(ConverterTestSuite.suite());
+        //suite.addTest(ConverterTestSuite.suite());
      
         return suite;
     }
