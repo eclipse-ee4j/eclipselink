@@ -33,7 +33,7 @@ import org.eclipse.persistence.mappings.querykeys.*;
  * <p><b>Purpose</b>: Variable one to one mappings are used to represent a pointer references
  * between a java object and an implementer of an interface. This mapping is usually represented by a single pointer
  * (stored in an instance variable) between the source and target objects. In the relational
- * database tables, these mappings are normally implemented using a foreign key and a typr code.
+ * database tables, these mappings are normally implemented using a foreign key and a type code.
  *
  * @author Sati
  * @since TOPLink/Java 2.0
