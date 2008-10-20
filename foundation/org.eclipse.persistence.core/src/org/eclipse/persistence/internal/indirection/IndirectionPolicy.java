@@ -104,7 +104,7 @@ public abstract class IndirectionPolicy implements Cloneable, Serializable {
 
     /**
      * INTERNAL:
-     *    Return a clone of the attribute.
+     * Return a clone of the attribute.
      *  @param builtDirectlyFromRow indicates that we are building the clone
      *  directly from a row as opposed to building the original from the
      *  row, putting it in the shared cache, and then cloning the original.
@@ -113,7 +113,7 @@ public abstract class IndirectionPolicy implements Cloneable, Serializable {
 
     /**
      * INTERNAL:
-     *    Return the primary key for the reference object (i.e. the object
+     * Return the primary key for the reference object (i.e. the object
      * object referenced by domainObject and specified by mapping).
      * This key will be used by a RemoteValueHolder.
      */
@@ -123,7 +123,7 @@ public abstract class IndirectionPolicy implements Cloneable, Serializable {
 
     /**
      * INTERNAL:
-     *    Return the reference row for the reference object.
+     * Return the reference row for the reference object.
      * This allows the new row to be built without instantiating
      * the reference object.
      * Return null if the object has already been instantiated.
@@ -172,7 +172,7 @@ public abstract class IndirectionPolicy implements Cloneable, Serializable {
 
     /**
      * INTERNAL:
-     *    Return the original indirection object for a unit of work indirection object.
+     * Return the original indirection object for a unit of work indirection object.
      */
     public abstract Object getOriginalIndirectionObject(Object unitOfWorkIndirectionObject, AbstractSession session);
 
@@ -224,7 +224,7 @@ public abstract class IndirectionPolicy implements Cloneable, Serializable {
 
     /**
      * INTERNAL:
-     *    Iterate over the specified attribute value,
+     * Iterate over the specified attribute value,
      * heeding the settings in the iterator.
      */
     public void iterateOnAttributeValue(DescriptorIterator iterator, Object attributeValue) {
@@ -257,7 +257,7 @@ public abstract class IndirectionPolicy implements Cloneable, Serializable {
 
     /**
      * INTERNAL:
-     *    Return the null value of the appropriate attribute. That is, the
+     * Return the null value of the appropriate attribute. That is, the
      * field from the database is NULL, return what should be
      * placed in the object's attribute as a result.
      */
@@ -287,7 +287,7 @@ public abstract class IndirectionPolicy implements Cloneable, Serializable {
 
     /**
      * INTERNAL:
-     *    Set the value of the appropriate attribute of target to attributeValue.
+     * Set the value of the appropriate attribute of target to attributeValue.
      * In this case, simply place the value inside the target.
      */
     public void setRealAttributeValueInObject(Object target, Object attributeValue) {
@@ -295,8 +295,16 @@ public abstract class IndirectionPolicy implements Cloneable, Serializable {
     }
 
     /**
+     * Reset the wrapper used to store the value.
+     * This is only required if a wrapper is used.
+     */
+    public void reset(Object target) {
+        // Nothing by default.
+    }
+
+    /**
      * INTERNAL:
-     *    Return whether the indirection policy actually uses indirection.
+     * Return whether the indirection policy actually uses indirection.
      * The default is true.
      */
     public boolean usesIndirection() {
@@ -305,7 +313,7 @@ public abstract class IndirectionPolicy implements Cloneable, Serializable {
     
     /**
      * INTERNAL:
-     *    Return whether the indirection policy uses transparent indirection.
+     * Return whether the indirection policy uses transparent indirection.
      * The default is false.
      */
     public boolean usesTransparentIndirection(){
@@ -314,7 +322,7 @@ public abstract class IndirectionPolicy implements Cloneable, Serializable {
 
     /**
      * INTERNAL:
-     *    Verify that the value of the attribute within an instantiated object
+     * Verify that the value of the attribute within an instantiated object
      * is of the appropriate type for the indirection policy.
      * If it is incorrect, throw an exception.
      * If the value is null return a new indirection object to be used for the attribute.
@@ -325,7 +333,7 @@ public abstract class IndirectionPolicy implements Cloneable, Serializable {
 
     /**
      * INTERNAL:
-     *    Verify that the container policy is compatible with the
+     * Verify that the container policy is compatible with the
      * indirection policy. If it is incorrect, add an exception to the
      * integrity checker.
      */
@@ -335,7 +343,7 @@ public abstract class IndirectionPolicy implements Cloneable, Serializable {
 
     /**
      * INTERNAL:
-     *    Verify that attributeType is correct for the
+     * Verify that attributeType is correct for the
      * indirection policy. If it is incorrect, add an exception to the
      * integrity checker.
      */
@@ -345,7 +353,7 @@ public abstract class IndirectionPolicy implements Cloneable, Serializable {
 
     /**
      * INTERNAL:
-     *    Verify that attributeType is an appropriate collection type for the
+     * Verify that attributeType is an appropriate collection type for the
      * indirection policy. If it is incorrect, add an exception to the integrity checker.
      */
     public void validateDeclaredAttributeTypeForCollection(Class attributeType, IntegrityChecker checker) throws DescriptorException {
@@ -354,7 +362,7 @@ public abstract class IndirectionPolicy implements Cloneable, Serializable {
 
     /**
      * INTERNAL:
-     *    Verify that getter returnType is correct for the
+     * Verify that getter returnType is correct for the
      * indirection policy. If it is incorrect, add an exception
      * to the integrity checker.
      */
@@ -364,7 +372,7 @@ public abstract class IndirectionPolicy implements Cloneable, Serializable {
 
     /**
      * INTERNAL:
-     *    Verify that getter returnType is an appropriate collection type for the
+     * Verify that getter returnType is an appropriate collection type for the
      * indirection policy. If it is incorrect, add an exception to the integrity checker.
      */
     public void validateGetMethodReturnTypeForCollection(Class returnType, IntegrityChecker checker) throws DescriptorException {
@@ -373,7 +381,7 @@ public abstract class IndirectionPolicy implements Cloneable, Serializable {
 
     /**
      * INTERNAL:
-     *    Verify that setter parameterType is correct for the
+     * Verify that setter parameterType is correct for the
      * indirection policy. If it is incorrect, add an exception
      * to the integrity checker.
      */
@@ -383,7 +391,7 @@ public abstract class IndirectionPolicy implements Cloneable, Serializable {
 
     /**
      * INTERNAL:
-     *    Verify that setter parameterType is an appropriate collection type for the
+     * Verify that setter parameterType is an appropriate collection type for the
      * indirection policy. If it is incorrect, add an exception to the integrity checker.
      */
     public void validateSetMethodParameterTypeForCollection(Class parameterType, IntegrityChecker checker) throws DescriptorException {
@@ -393,7 +401,7 @@ public abstract class IndirectionPolicy implements Cloneable, Serializable {
     /**
      * INTERNAL:
      * Return the value to be stored in the object's attribute.
-     *    This value is determined by the batchQuery.
+     * This value is determined by the batchQuery.
      */
     public abstract Object valueFromBatchQuery(ReadQuery batchQuery, AbstractRecord row, ObjectLevelReadQuery originalQuery);
 
@@ -408,14 +416,14 @@ public abstract class IndirectionPolicy implements Cloneable, Serializable {
     /**
      * INTERNAL:
      * Return the value to be stored in the object's attribute.
-     *    This value is determined by the query.
+     * This value is determined by the query.
      */
     public abstract Object valueFromQuery(ReadQuery query, AbstractRecord row, AbstractSession session);
 
     /**
      * INTERNAL:
      * Return the value to be stored in the object's attribute.
-     *    This value is determined by the row.
+     * This value is determined by the row.
      */
     public abstract Object valueFromRow(Object object);
 }

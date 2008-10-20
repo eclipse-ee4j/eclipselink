@@ -72,6 +72,13 @@ public class ProxyIndirectionPolicy extends BasicIndirectionPolicy {
     public void initialize() {
         // Nothing required
     }
+    
+    /**
+     * Reset the wrapper used to store the value.
+     */
+    public void reset(Object target) {
+        // Nothing required.
+    }
 
     /**
      * INTERNAL:

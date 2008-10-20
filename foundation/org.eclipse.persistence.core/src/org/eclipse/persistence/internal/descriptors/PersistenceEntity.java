@@ -18,8 +18,9 @@ import java.util.Vector;
 import org.eclipse.persistence.internal.identitymaps.CacheKey;
 
 /**
- * Define an interface which stores the CacheKey and primary key.
- * This allows us to quickly extract the primary key from an object.
+ * Define an interface for utility methods weaved into the persistence classes.
+ * These general methods are used to optimize performance, such as caching the key in the object.
+ * It can be disabled through the "weaving.internal" option.
  * 
  * @author  mmacivor
  * @since   10.1.3
@@ -29,5 +30,7 @@ public interface PersistenceEntity {
     void _persistence_setCacheKey(CacheKey key);
     
     Vector _persistence_getPKVector();
-    void _persistence_setPKVector(Vector pk);    
+    void _persistence_setPKVector(Vector pk);
+    
+    Object _persistence_shallow_clone();
 }

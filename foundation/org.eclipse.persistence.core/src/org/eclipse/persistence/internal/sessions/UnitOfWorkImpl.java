@@ -3769,7 +3769,8 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
                     }
                 }
                 ObjectBuilder builder = descriptor.getObjectBuilder();
-                Object original = builder.buildNewInstance();
+                // New objects should not have an original until merge.
+                Object original = null;
 
                 Object backupClone = implementation;
                 if (!descriptor.getObjectChangePolicy().isAttributeChangeTrackingPolicy()) {
@@ -3916,7 +3917,8 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
         logDebugMessage(newObject, "register_new_for_persist");
         
         ObjectBuilder builder = descriptor.getObjectBuilder();
-        Object original = builder.buildNewInstance();
+        // New objects should not have an original until merge.
+        Object original = null;
 
         Object backupClone = newObject;
         if (!descriptor.getObjectChangePolicy().isAttributeChangeTrackingPolicy()) {

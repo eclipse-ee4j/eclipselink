@@ -2898,8 +2898,25 @@ public class ClassDescriptor implements Cloneable, Serializable {
             if (getFetchGroupManager() == null) {
                 setFetchGroupManager(new FetchGroupManager());
             }
-        }        
-
+        }
+        // If weaved configure the copy policy.
+        if (PersistenceEntity.class.isAssignableFrom(getJavaClass())) {
+            if (this.copyPolicy == null) {
+                // Cloning is only auto set for field access, as method access
+                // may not have simple fields.
+                boolean isMethodAccess = false;
+                for (Iterator iterator = getMappings().iterator(); iterator.hasNext(); ) {
+                    if (((DatabaseMapping)iterator.next()).isUsingMethodAccess()) {
+                        isMethodAccess = true;
+                        break;
+                    }
+                }
+                if (!isMethodAccess) {
+                    setCopyPolicy(new PersistenceEntityCopyPolicy());
+                }
+            }
+        }
+        
         // 4924665 Check for spaces in table names, and add the appropriate quote character
         Iterator tables = this.getTables().iterator();
         while(tables.hasNext()) {

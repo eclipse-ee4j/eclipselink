@@ -29,7 +29,7 @@ import org.eclipse.persistence.sessions.ObjectCopyingPolicy;
 import org.eclipse.persistence.sessions.Project;
 
 /**
- * <p><b>Purpose</b>: Abstract class for 1:1, varibale 1:1 and reference mappings
+ * <p><b>Purpose</b>: Abstract class for 1:1, variable 1:1 and reference mappings
  */
 public abstract class ObjectReferenceMapping extends ForeignReferenceMapping {
 
@@ -113,8 +113,8 @@ public abstract class ObjectReferenceMapping extends ForeignReferenceMapping {
 
     /**
      * INTERNAL:
-     * This method was created in VisualAge.
-     * @return prototype.changeset.ChangeRecord
+     * Return an ObjectReferenceChangeRecord describing the change, or null if no change.
+     * Used to compute changes for deferred change tracking.
      */
     public ChangeRecord compareForChange(Object clone, Object backUp, ObjectChangeSet owner, AbstractSession session) {
         Object cloneAttribute = null;
@@ -366,10 +366,16 @@ public abstract class ObjectReferenceMapping extends ForeignReferenceMapping {
      */
     public void mergeIntoObject(Object target, boolean isTargetUnInitialized, Object source, MergeManager mergeManager) {
         if (isTargetUnInitialized) {
-            // This will happen if the target object was removed from the cache before the commit was attempted
-            if (mergeManager.shouldMergeWorkingCopyIntoOriginal() && (!isAttributeValueInstantiated(source))) {
-                setAttributeValueInObject(target, getIndirectionPolicy().getOriginalIndirectionObject(getAttributeValueFromObject(source), mergeManager.getSession()));
-                return;
+            // This will happen if the target object was removed from the cache before the commit was attempted,
+            // or for new objects.
+            if (mergeManager.shouldMergeWorkingCopyIntoOriginal()) {
+                if (!isAttributeValueInstantiated(source)) {
+                    setAttributeValueInObject(target, getIndirectionPolicy().getOriginalIndirectionObject(getAttributeValueFromObject(source), mergeManager.getSession()));
+                    return;
+                } else {
+                    // Must clear the old value holder to cause it to be reset.
+                    getIndirectionPolicy().reset(target);
+                }
             }
         }
         if (!shouldMergeCascadeReference(mergeManager)) {
@@ -449,7 +455,7 @@ public abstract class ObjectReferenceMapping extends ForeignReferenceMapping {
     /**
     * INTERNAL:
     * Set the foreign key fields associated with the mapping.
-    * These are the fields that will be populated by the 1-1 mapping when writting.
+    * These are the fields that will be populated by the 1-1 mapping when writing.
     */
     protected void setForeignKeyFields(Vector<DatabaseField> foreignKeyFields) {
         this.foreignKeyFields = foreignKeyFields;
@@ -938,7 +944,7 @@ public abstract class ObjectReferenceMapping extends ForeignReferenceMapping {
      * <UL>
      *        <LI>The target class must implement at least one public interface
      *        <LI>The attribute on the source class must be typed as that public interface
-     *        <LI>get() and set() methods for the atttribute must use the interface
+     *        <LI>get() and set() methods for the attribute must use the interface
      * </UL>
      *
      * With this policy, proxy objects are returned during object creation.  When a message other than
@@ -994,7 +1000,7 @@ public abstract class ObjectReferenceMapping extends ForeignReferenceMapping {
      * <UL>
      *        <LI>The target class must implement at least one public interface
      *        <LI>The attribute on the source class must be typed as that public interface
-     *        <LI>get() and set() methods for the atttribute must use the interface
+     *        <LI>get() and set() methods for the attribute must use the interface
      * </UL>
      *
      * With this policy, proxy objects are returned during object creation.  When a message other than
@@ -1018,7 +1024,7 @@ public abstract class ObjectReferenceMapping extends ForeignReferenceMapping {
      * <UL>
      *        <LI>The target class must implement at least one public interface
      *        <LI>The attribute on the source class must be typed as that public interface
-     *        <LI>get() and set() methods for the atttribute must use the interface
+     *        <LI>get() and set() methods for the attribute must use the interface
      * </UL>
      *
      * With this policy, proxy objects are returned during object creation.  When a message other than

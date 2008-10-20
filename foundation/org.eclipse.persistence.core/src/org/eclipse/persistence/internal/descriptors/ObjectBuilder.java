@@ -22,6 +22,7 @@ import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.descriptors.DescriptorEvent;
 import org.eclipse.persistence.descriptors.DescriptorEventManager;
 import org.eclipse.persistence.descriptors.FetchGroupManager;
+import org.eclipse.persistence.descriptors.changetracking.ChangeTracker;
 import org.eclipse.persistence.descriptors.changetracking.ObjectChangePolicy;
 import org.eclipse.persistence.exceptions.*;
 import org.eclipse.persistence.expressions.*;
@@ -2407,7 +2408,12 @@ public class ObjectBuilder implements Cloneable, Serializable {
      * this allows the stub of the clone to be registered before cloning its parts.
      */
     public Object instantiateClone(Object domainObject, AbstractSession session) {
-        return this.descriptor.getCopyPolicy().buildClone(domainObject, session);
+        Object clone = this.descriptor.getCopyPolicy().buildClone(domainObject, session);
+        // Clear change tracker.
+        if (clone instanceof ChangeTracker) {
+            ((ChangeTracker)clone)._persistence_setPropertyChangeListener(null);
+        }
+        return clone;
     }
 
     /**
@@ -2460,15 +2466,23 @@ public class ObjectBuilder implements Cloneable, Serializable {
             mappings.get(index).iterate(iterator);
         }
     }
-
+    
     /**
      * INTERNAL:
      * Merge changes between the objects, this merge algorithm is dependent on the merge manager.
      */
     public void mergeChangesIntoObject(Object target, ObjectChangeSet changeSet, Object source, MergeManager mergeManager) {
+        mergeChangesIntoObject(target, changeSet, source, mergeManager, false);
+    }
+    
+    /**
+     * INTERNAL:
+     * Merge changes between the objects, this merge algorithm is dependent on the merge manager.
+     */
+    public void mergeChangesIntoObject(Object target, ObjectChangeSet changeSet, Object source, MergeManager mergeManager, boolean isTargetCloneOfOriginal) {
         // PERF: Just merge the object for new objects, as the change set is not populated.
         if ((source != null) && changeSet.isNew() && (!this.descriptor.shouldUseFullChangeSetsForNewObjects())) {
-            mergeIntoObject(target, true, source, mergeManager, false);
+            mergeIntoObject(target, true, source, mergeManager, false, isTargetCloneOfOriginal);
         } else {
             List changes = changeSet.getChanges();
             int size = changes.size();
@@ -2498,7 +2512,7 @@ public class ObjectBuilder implements Cloneable, Serializable {
      * This merge also prevents the extra step of calculating the changes when it is not required.
      */
     public void mergeIntoObject(Object target, boolean isUnInitialized, Object source, MergeManager mergeManager) {
-        mergeIntoObject(target, isUnInitialized, source, mergeManager, false);
+        mergeIntoObject(target, isUnInitialized, source, mergeManager, false, false);
     }
     
     /**
@@ -2506,8 +2520,9 @@ public class ObjectBuilder implements Cloneable, Serializable {
      * Merge the contents of one object into another, this merge algorithm is dependent on the merge manager.
      * This merge also prevents the extra step of calculating the changes when it is not required.
      * If 'cascadeOnly' is true, only foreign reference mappings are merged.
+     * If 'isTargetCloneOfOriginal' then the target was create through a shallow clone of the source, so merge basics is not required.
      */
-    public void mergeIntoObject(Object target, boolean isUnInitialized, Object source, MergeManager mergeManager, boolean cascadeOnly) {
+    public void mergeIntoObject(Object target, boolean isUnInitialized, Object source, MergeManager mergeManager, boolean cascadeOnly, boolean isTargetCloneOfOriginal) {
         // cascadeOnly is introduced to optimize merge 
         // for GF#1139 Cascade merge operations to relationship mappings even if already registered
         
@@ -2515,9 +2530,13 @@ public class ObjectBuilder implements Cloneable, Serializable {
         List mappings = this.descriptor.getMappings();
         for (int index = 0; index < mappings.size(); index++) {
             DatabaseMapping mapping = (DatabaseMapping)mappings.get(index);
-            if(!cascadeOnly || mapping.isForeignReferenceMapping()){
+            if ((!cascadeOnly && !isTargetCloneOfOriginal) 
+                    || (cascadeOnly && mapping.isForeignReferenceMapping())
+                    || (isTargetCloneOfOriginal && mapping.isCloningRequired())) {
                 mapping.mergeIntoObject(target, isUnInitialized, source, mergeManager);
-            }
+            } else if (isTargetCloneOfOriginal && mapping.isCloningRequired()) {
+                mapping.mergeIntoObject(target, isUnInitialized, source, mergeManager);                
+            } 
         }
 
         // PERF: Avoid events if no listeners.

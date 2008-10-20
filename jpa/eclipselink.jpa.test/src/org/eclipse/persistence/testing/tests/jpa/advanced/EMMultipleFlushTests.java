@@ -150,7 +150,7 @@ public class EMMultipleFlushTests extends EntityContainerTestBase  {
             commitTransaction();
         } catch (Exception ex) {
             this.rollbackTransaction();
-            throw new TestErrorException("Exception thrown durring flushing of Employee" + ex);
+            throw new TestErrorException("Exception thrown durring flushing of Employee", ex);
         }
     }
 

@@ -244,6 +244,13 @@ public class ContainerIndirectionPolicy extends BasicIndirectionPolicy {
     }
 
     /**
+     * Reset the wrapper used to store the value.
+     */
+    public void reset(Object target) {
+        getMapping().setAttributeValueInObject(target, buildContainer(new ValueHolder()));
+    }
+
+    /**
      * INTERNAL:
      * Return whether the specified object is instantiated.
      */

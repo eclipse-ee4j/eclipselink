@@ -130,18 +130,14 @@ public class DirectMapContainerPolicy extends InterfaceContainerPolicy {
 
     /**
      * INTERNAL:
-     * Return true if keys are the same in the source as the backup.  False otherwise
-     * in the case of readonly compare against the original
+     * Return true if keys are the same in the source as the backup.
+     * Always true if read-only.
      */
     public boolean compareKeys(Object sourceValue, AbstractSession session) {
-        Object backUpVersion = null;
-
-        //CR 4172
         if (((UnitOfWorkImpl)session).isClassReadOnly(sourceValue.getClass())) {
-            backUpVersion = ((UnitOfWorkImpl)session).getOriginalVersionOfObject(sourceValue);
-        } else {
-            backUpVersion = ((UnitOfWorkImpl)session).getBackupClone(sourceValue);
+            return true;
         }
+        Object backUpVersion = ((UnitOfWorkImpl)session).getBackupClone(sourceValue);
         return (keyFrom(backUpVersion, session).equals(keyFrom(sourceValue, session)));
     }
 

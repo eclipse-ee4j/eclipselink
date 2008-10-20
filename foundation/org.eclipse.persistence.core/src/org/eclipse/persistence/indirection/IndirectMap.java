@@ -146,6 +146,8 @@ public class IndirectMap extends Hashtable implements CollectionChangeTracker, I
     public synchronized Object clone() {
         IndirectMap result = (IndirectMap)super.clone();
         result.delegate = (Hashtable)this.getDelegate().clone();
+        result.attributeName = null;
+        result.changeListener = null;
         return result;
     }
 

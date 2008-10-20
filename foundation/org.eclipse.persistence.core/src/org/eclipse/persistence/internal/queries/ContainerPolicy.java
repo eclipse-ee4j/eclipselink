@@ -262,14 +262,14 @@ public abstract class ContainerPolicy implements Cloneable, Serializable {
                             originalKeyValues.remove(firstObject);
                         } else {
                             // The keys have changed, create a changeSet 
-                            // (it will be resused later) and set the old key 
+                            // (it will be reused later) and set the old key 
                             // value to be used to remove.
                             Object backUpVersion = null;
     
                             // CR4172 compare the keys from the back up to the 
                             // clone not from the original to the clone.
                             if (((UnitOfWorkImpl)session).isClassReadOnly(firstObject.getClass())) {
-                                backUpVersion = ((UnitOfWorkImpl)session).getOriginalVersionOfObject(firstObject);
+                                backUpVersion = firstObject;
                             } else {
                                 backUpVersion = ((UnitOfWorkImpl)session).getBackupClone(firstObject);
                             }

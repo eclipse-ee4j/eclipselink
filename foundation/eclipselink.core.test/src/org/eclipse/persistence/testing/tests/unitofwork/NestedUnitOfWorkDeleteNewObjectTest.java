@@ -29,9 +29,8 @@ public class NestedUnitOfWorkDeleteNewObjectTest extends AutoVerifyTestCase {
 
         UnitOfWork uow = getSession().acquireUnitOfWork();
         UnitOfWork nestedUow1 = uow.acquireUnitOfWork();
-        Employee employee = (Employee)new EmployeePopulator().basicEmployeeExample1();
-        nestedUow1.registerNewObject(employee);
-        Employee original = (Employee)((UnitOfWorkImpl)nestedUow1).getNewObjectsCloneToOriginal().get(employee);
+        Employee original = (Employee)new EmployeePopulator().basicEmployeeExample1();
+        Employee employee = (Employee)nestedUow1.registerObject(original);
         nestedUow1.commit();
         UnitOfWork nestedUOW2 = uow.acquireUnitOfWork();
         nestedUOW2.deleteObject(nestedUOW2.registerObject(original));

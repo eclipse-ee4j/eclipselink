@@ -415,7 +415,7 @@ public class MergeManager {
         getSession().log(SessionLog.FINEST, SessionLog.PROPAGATION, "Merging_from_remote_server", changeSet.getClassName(), changeSet.getPrimaryKeys());
 
         if (!(changeSet.getSynchronizationType() == ClassDescriptor.DO_NOT_SEND_CHANGES)) {
-            descriptor.getObjectBuilder().mergeChangesIntoObject(original, changeSet, null, this);
+            descriptor.getObjectBuilder().mergeChangesIntoObject(original, changeSet, null, this, false);
             Vector primaryKey = changeSet.getPrimaryKeys();
 
             // Must ensure the get and put of the cache occur as a single operation.
@@ -478,7 +478,7 @@ public class MergeManager {
             
             // Merge into the clone from the original and use the clone as 
             // backup as anything different should be merged.
-            builder.mergeIntoObject(registeredObject, false, rmiClone, this, cascadeOnly);  
+            builder.mergeIntoObject(registeredObject, false, rmiClone, this, cascadeOnly, false);  
         } finally {
             descriptor.getObjectChangePolicy().enableEventProcessing(registeredObject);
         }
@@ -562,16 +562,16 @@ public class MergeManager {
                 // If original does not exist then we must merge the entire object.
                 original = unitOfWork.buildOriginal(clone);
                 if (objectChangeSet == null) {
-                    objectBuilder.mergeIntoObject(original, true, clone, this);
+                    objectBuilder.mergeIntoObject(original, true, clone, this, false, !descriptor.getCopyPolicy().buildsNewInstance());
                 } else if (!objectChangeSet.isNew()) {
                     // Once the original is created we must put it in the cache and
                     // lock it to prevent a reading thread from creating it as well
                     // there will be no deadlock situation because no other threads
                     // will be able to reference this object.
                     original = parent.getIdentityMapAccessorInstance().getWriteLockManager().appendLock(objectChangeSet.getPrimaryKeys(), original, descriptor, this, parent);
-                    objectBuilder.mergeIntoObject(original, true, clone, this);
+                    objectBuilder.mergeIntoObject(original, true, clone, this, false, !descriptor.getCopyPolicy().buildsNewInstance());
                 } else {
-                    objectBuilder.mergeChangesIntoObject(original, objectChangeSet, clone, this);
+                    objectBuilder.mergeChangesIntoObject(original, objectChangeSet, clone, this, !descriptor.getCopyPolicy().buildsNewInstance());
                     // PERF: If PersistenceEntity is caching the primary key this must be cleared as the primary key may have changed in new objects.
                     objectBuilder.clearPrimaryKey(original);
                 }
@@ -579,7 +579,7 @@ public class MergeManager {
                 // PERF: If we have no change set if it is existing, then no merging is required.
                 // If it is new, then merge the object (normally a new object would have a change set, so this is an odd case.
                 if (unitOfWork.isCloneNewObject(clone)) {
-                    objectBuilder.mergeIntoObject(original, false, clone, this);
+                    objectBuilder.mergeIntoObject(original, true, clone, this, false, !descriptor.getCopyPolicy().buildsNewInstance());
                 }
             } else {
                 // Invalidate any object that was marked invalid during the change calculation, even if it was new as multiple flushes 
@@ -597,7 +597,7 @@ public class MergeManager {
                 // shared cache for filling in foreign reference relationships. If merge did not occur in some cases (new  objects, garbage 
                 // collection objects, object read in a transaction) then no object would be in the shared cache and foreign reference 
                 // mappings would be set to null when they should be set to an object.
-                objectBuilder.mergeChangesIntoObject(original, objectChangeSet, clone, this);
+                objectBuilder.mergeChangesIntoObject(original, objectChangeSet, clone, this, false);
             }
         } catch (QueryException exception) {
             // Ignore validation errors if unit of work validation is suppressed.

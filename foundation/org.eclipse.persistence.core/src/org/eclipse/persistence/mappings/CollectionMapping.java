@@ -240,6 +240,17 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
     public void cascadeDiscoverAndPersistUnregisteredNewObjects(Object object, Map newObjects, Map unregisteredExistingObjects, Map visitedObjects, UnitOfWorkImpl uow) {
         Object cloneAttribute = getAttributeValueFromObject(object);
         if ((cloneAttribute == null) || (!getIndirectionPolicy().objectIsInstantiated(cloneAttribute))) {
+            if (cloneAttribute instanceof IndirectCollection)  {
+                IndirectCollection collection = (IndirectCollection)cloneAttribute;
+                if (collection.hasDeferredChanges()) {
+                    Iterator iterator = collection.getAddedElements().iterator();
+                    boolean cascade = isCascadePersist();
+                    while (iterator.hasNext()) {
+                        Object nextObject = iterator.next();
+                        uow.discoverAndPersistUnregisteredNewObjects(nextObject, cascade, newObjects, unregisteredExistingObjects, visitedObjects);
+                    }                    
+                }
+            }
             return;
         }
 

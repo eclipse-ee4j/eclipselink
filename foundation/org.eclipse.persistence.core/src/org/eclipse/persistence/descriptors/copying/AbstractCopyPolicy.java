@@ -18,7 +18,6 @@ import java.util.Vector;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.exceptions.*;
 import org.eclipse.persistence.sessions.*;
-import org.eclipse.persistence.queries.ObjectLevelReadQuery;
 import org.eclipse.persistence.queries.ObjectBuildingQuery;
 
 /**
@@ -47,21 +46,14 @@ public abstract class AbstractCopyPolicy implements CopyPolicy {
      * By default create a new instance.
      */
     public Object buildWorkingCopyCloneFromPrimaryKeyObject(Object primaryKeyObject, ObjectBuildingQuery query, org.eclipse.persistence.sessions.UnitOfWork uow) {
-        return getDescriptor().getObjectBuilder().buildNewInstance();
-    }
-
-    /**
-     * Create a new instance, unless a workingCopyClone method is specified, then build a new instance and clone it.
-     */
-    public Object buildWorkingCopyCloneFromRow(Record row, ObjectLevelReadQuery query, Vector primaryKey, UnitOfWork uow) throws DescriptorException {
-        return this.buildWorkingCopyCloneFromRow(row, (ObjectBuildingQuery)query, primaryKey, uow);
+        return this.descriptor.getObjectBuilder().buildNewInstance();
     }
     
     /**
      * By default create a new instance.
      */
     public Object buildWorkingCopyCloneFromRow(Record row, ObjectBuildingQuery query, Vector primaryKey, UnitOfWork uow) throws DescriptorException {
-        return getDescriptor().getObjectBuilder().buildNewInstance();
+        return this.descriptor.getObjectBuilder().buildNewInstance();
     }
 
     /**
@@ -98,8 +90,4 @@ public abstract class AbstractCopyPolicy implements CopyPolicy {
         this.descriptor = descriptor;
     }
 
-    /**
-     * Return if a new instance is created or a clone.
-     */
-    public abstract boolean buildsNewInstance();
 }

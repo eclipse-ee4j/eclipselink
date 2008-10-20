@@ -376,7 +376,7 @@ public class CMP3Policy extends CMPPolicy {
                 while (mapping.isAggregateObjectMapping()) {
                     mapping = mapping.getReferenceDescriptor().getObjectBuilder().getMappingForAttributeName(accessor.getAttributeName());
                     if (mapping == null) {// must be aggregate
-                        mapping = this.getDescriptor().getObjectBuilder().getMappingForField(accessor.getDatabaseField());
+                        mapping = mapping.getReferenceDescriptor().getObjectBuilder().getMappingForField(accessor.getDatabaseField());
                     }
                 }
                 mappings[index] = mapping;

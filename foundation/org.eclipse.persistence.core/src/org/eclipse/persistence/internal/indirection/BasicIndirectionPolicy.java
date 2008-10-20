@@ -204,6 +204,13 @@ public class BasicIndirectionPolicy extends IndirectionPolicy {
     }
 
     /**
+     * Reset the wrapper used to store the value.
+     */
+    public void reset(Object target) {
+        getMapping().setAttributeValueInObject(target, new ValueHolder());
+    }
+    
+    /**
      * INTERNAL:
      * Return the "real" attribute value, as opposed to any wrapper.
      * This will trigger the wrapper to instantiate the value.

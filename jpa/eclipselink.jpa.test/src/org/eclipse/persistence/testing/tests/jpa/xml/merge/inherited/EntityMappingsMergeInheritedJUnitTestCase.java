@@ -253,15 +253,17 @@ public class EntityMappingsMergeInheritedJUnitTestCase extends JUnitTestCase {
     
     // Verify transient property from mapped superclass is not persisted
     public void testMappedSuperclassTransientField() {
+        clearCache("ddlGeneration");
         Canadian canadianBeer = createEntityManager("ddlGeneration").find(Canadian.class, canadianId);
-        assertTrue("Error reading Canadian", canadianBeer.getId() == canadianId);
+        assertTrue("Error reading Canadian", canadianBeer.getId().equals(canadianId));
         assertTrue("Mapped superclass transientString was persisted to the database", canadianBeer.getTransientString() == null);
     }
 
     // Verify transient property is not persisted
     public void testTransientField() {
+        clearCache("ddlGeneration");
         Alpine alpineBeer = createEntityManager("ddlGeneration").find(Alpine.class, alpineId);
-        assertTrue("Error reading Alpine", alpineBeer.getId() == alpineId);
+        assertTrue("Error reading Alpine", alpineBeer.getId().equals(alpineId));
         assertTrue("localTransientString was persisted to the database", alpineBeer.getLocalTransientString() == null);
     }
 

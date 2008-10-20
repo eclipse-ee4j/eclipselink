@@ -39,7 +39,7 @@ import static org.eclipse.persistence.internal.helper.Helper.getShortClassName;
  * @since EclipseLink 1.x
  */
 @SuppressWarnings("unchecked")
-public class BaseEntity implements PersistenceEntity {
+public class BaseEntity implements PersistenceEntity, Cloneable {
 
     protected Object[] fields; // BaseEntities only deal with Objects, never
                                 // primitives
@@ -70,6 +70,17 @@ public class BaseEntity implements PersistenceEntity {
     }
     public void _persistence_setPKVector(Vector pk) {
         this.__pk = pk;
+    }
+
+    public Object _persistence_shallow_clone() {
+        BaseEntity entity = null;
+        try{
+            entity = (BaseEntity)super.clone();
+        } catch (Exception error) {
+            throw new Error(error);
+        }
+        entity.fields = entity.fields.clone();
+        return entity;
     }
 
     public String toString() {
