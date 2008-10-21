@@ -27,9 +27,9 @@ public class TIMESTAMPTZWrapper implements Serializable {
     Timestamp ts;
     TimeZone tz;
 
-    public TIMESTAMPTZWrapper(TIMESTAMPTZ timestampTZ) {
+    public TIMESTAMPTZWrapper(TIMESTAMPTZ timestampTZ, Connection connection) {
 		try {
-            ts = timestampTZ.timestampValue(null);
+            ts = timestampTZ.timestampValue(connection);
             tz = TIMESTAMPHelper.extractTimeZone(timestampTZ.toBytes());
 		} catch (SQLException exception) {
 			throw DatabaseException.sqlException(exception);
