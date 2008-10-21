@@ -131,10 +131,11 @@ public class Oracle9Platform extends Oracle8Platform {
             //Need to call timestampValue once here with the connection to avoid null point 
             //exception later when timestampValue is called in converObject()
             if ((tsTZ != null) && (tsTZ.getLength() != 0)) {
-                tsTZ.timestampValue(getConnection(session, resultSet.getStatement().getConnection()));
+            	Connection connection = getConnection(session, resultSet.getStatement().getConnection());
+                tsTZ.timestampValue(connection);
                 //Bug#4364359  Add a wrapper to overcome TIMESTAMPTZ not serializable as of jdbc 9.2.0.5 and 10.1.0.2.  
                 //It has been fixed in the next version for both streams
-                return new TIMESTAMPTZWrapper(tsTZ);
+                return new TIMESTAMPTZWrapper(tsTZ, connection);
             }
             return null;
         } else if (type == oracle.jdbc.OracleTypes.TIMESTAMPLTZ) {
