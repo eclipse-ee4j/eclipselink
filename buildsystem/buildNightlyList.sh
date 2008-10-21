@@ -38,7 +38,7 @@ for version in `ls -dr [0-9]*` ; do
     echo "      <p>                                                                    " >> $tmp/index.xml
     echo "        <table border=\"1\">                                                 " >> $tmp/index.xml
     echo "          <tr>                                                               " >> $tmp/index.xml
-    echo "            <th colspan=\"9\" align=\"center\"> ${version} Nightly Build Results </th>" >> $tmp/index.xml
+    echo "            <th colspan=\"11\" align=\"center\"> ${version} Nightly Build Results </th>" >> $tmp/index.xml
     echo "          </tr>                                                              " >> $tmp/index.xml
     echo "          <tr>                                                               " >> $tmp/index.xml
     echo "            <th align=\"center\"> Build ID </th>                             " >> $tmp/index.xml
