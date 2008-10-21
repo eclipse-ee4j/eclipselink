@@ -324,16 +324,15 @@ public class PersistenceUnitProcessor {
     private static List<SEPersistenceUnitInfo> processPersistenceXML(URL baseURL, InputStream input, ClassLoader loader){
         SAXParserFactory spf = SAXParserFactory.newInstance();
         spf.setNamespaceAware(true);
-        spf.setValidating(true);
         
         XMLReader xmlReader = null;
         SAXParser sp = null;
         XMLExceptionHandler xmlErrorHandler = new XMLExceptionHandler();
+        // 247735 - remove the validation of XML.  
 
         // create a SAX parser
         try {
             sp = spf.newSAXParser();
-            sp.setProperty(SCHEMA_LANGUAGE, XML_SCHEMA);
         } catch (javax.xml.parsers.ParserConfigurationException exc){
             throw XMLParseException.exceptionCreatingSAXParser(baseURL, exc);
         } catch (org.xml.sax.SAXException exc){
@@ -346,24 +345,6 @@ public class PersistenceUnitProcessor {
             xmlReader.setErrorHandler(xmlErrorHandler);
         } catch (org.xml.sax.SAXException exc){
             throw XMLParseException.exceptionCreatingXMLReader(baseURL, exc);
-        }
-       
-        // attempt to load the schema from the classpath
-        // Bug 249493: in some environments, PersistenceUnitProcessor.class.getClassLoader() will return null for the bootstrap classloader
-        // do a check to avoid the NPE
-        ClassLoader jpaLoader = PersistenceUnitProcessor.class.getClassLoader();
-        URL schemaURL = null;
-        if (jpaLoader == null){
-            schemaURL = loader.getResource(PERSISTENCE_SCHEMA_NAME);
-        } else {
-            schemaURL = jpaLoader.getResource(PERSISTENCE_SCHEMA_NAME);
-        }
-        if (schemaURL != null) {
-            try {
-                sp.setProperty(JAXP_SCHEMA_SOURCE, schemaURL.toString());
-            } catch (org.xml.sax.SAXException exc){
-                throw XMLParseException.exceptionSettingSchemaSource(baseURL, schemaURL, exc);
-            }           
         }
 
         PersistenceContentHandler myContentHandler = new PersistenceContentHandler();
