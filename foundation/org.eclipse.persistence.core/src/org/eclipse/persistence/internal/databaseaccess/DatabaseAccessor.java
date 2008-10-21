@@ -1125,7 +1125,7 @@ public class DatabaseAccessor extends DatasourceAccessor {
         // Optimize numeric values to avoid conversion into big-dec and back to primitives.
         if ((fieldType == ClassConstants.PLONG) || (fieldType == ClassConstants.LONG)) {
             value = new Long(resultSet.getLong(columnNumber));
-            isPrimitive = true;
+            isPrimitive = ((Long)value).longValue() == 0l;
         } else if ((type == Types.VARCHAR) || (type == Types.CHAR)) {
             // CUSTOM PATCH for oracle drivers because they don't respond to getObject() when using scrolling result sets. 
             // Chars may require blanks to be trimmed.
@@ -1135,16 +1135,16 @@ public class DatabaseAccessor extends DatasourceAccessor {
             }
         } else if ((fieldType == ClassConstants.INTEGER) || (fieldType == ClassConstants.PINT)) {
             value = new Integer(resultSet.getInt(columnNumber));
-            isPrimitive = true;
+            isPrimitive = ((Integer)value).intValue() == 0;
         } else if ((fieldType == ClassConstants.FLOAT) || (fieldType == ClassConstants.PFLOAT)) {
             value = new Float(resultSet.getFloat(columnNumber));
-            isPrimitive = true;
+            isPrimitive = ((Float)value).floatValue() == 0f;
         } else if ((fieldType == ClassConstants.DOUBLE) || (fieldType == ClassConstants.PDOUBLE)) {
             value = new Double(resultSet.getDouble(columnNumber));
-            isPrimitive = true;
+            isPrimitive = ((Double)value).doubleValue() == 0d;
         } else if ((fieldType == ClassConstants.SHORT) || (fieldType == ClassConstants.PSHORT)) {
             value = new Short(resultSet.getShort(columnNumber));
-            isPrimitive = true;
+            isPrimitive = ((Short)value).shortValue() == 0;
         } else if (Helper.shouldOptimizeDates() && (fieldType != null) && ((type == Types.TIME) || (type == Types.DATE) || (type == Types.TIMESTAMP))) {
             // Optimize dates by avoid conversion to timestamp then back to date or time or util.date.
             String dateString = resultSet.getString(columnNumber);
