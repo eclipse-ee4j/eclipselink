@@ -6,7 +6,7 @@ CUR_DIR=`dirname ${THIS}`
 umask 0002
 LOCAL_REPOS=false
 MILESTONE=false
-UPLOAD=false
+RELEASE=false
 TEST=false
 RHB=false
 TARGET=$1
@@ -50,9 +50,9 @@ then
         exit
     fi
 fi
-if [ "${TARGET}" = "upload-all" ]
+if [ "${TARGET}" = "release" ]
 then
-    UPLOAD=true
+    RELEASE=true
 fi
 
 echo "Target=${TARGET}"
@@ -183,13 +183,6 @@ ANT_OPTS="-Xmx128m"
 ANT_BASEARG="-f \"${BOOTSTRAP_BLDFILE}\" -Dbranch.name=\"${BRANCH}\""
 
 # May need to add "milestone" flag to alert build
-if [ "${UPLOAD}" = "true" ]
-then
-    ANT_BASEARG="${ANT_BASEARG} -Dbuild.date=20081017 -Dbuild.type=M3 -Drelease.version=1.1.0 -Dsvn.revision=2609"
-    TARGET="publish-all"
-fi
-
-# May need to add "milestone" flag to alert build
 if [ "${MILESTONE}" = "true" ]
 then
     ANT_BASEARG="${ANT_BASEARG} -Dbuild.type=${TARGET} -Dbuild_id=${TARGET}"
@@ -199,7 +192,7 @@ fi
 # May need to add "release" flag to alert build
 if [ "${RELEASE}" = "true" ]
 then
-    ANT_BASEARG="${ANT_BASEARG} -Dbuild.type=RELEASE"
+    ANT_BASEARG="${ANT_BASEARG} -Dbuild.type=RELEASE" -Dbuild_id=
     TARGET="milestone"
 fi
 

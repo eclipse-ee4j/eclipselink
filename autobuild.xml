@@ -133,22 +133,22 @@
 
         <!-- generate Release Designation string for manifest                     -->
         <condition property="release.designation" value="EclipseLink DeveloperBuild">
-            <or>
-                <equals arg1="${svn.revision}" arg2="NA"/>
-            </or>
+            <equals arg1="${svn.revision}" arg2="NA"/>
         </condition>
         <condition property="release.designation" value="EclipseLink Daily Build">
-            <or>
-                <equals arg1="${build.type}" arg2="SNAPSHOT"/>
-            </or>
+            <equals arg1="${build.type}" arg2="SNAPSHOT"/>
         </condition>
         <condition property="release.designation" value="EclipseLink Release ${release.version}">
-            <or>
-                <equals arg1="${build.type}" arg2="RELEASE"/>
-            </or>
+            <equals arg1="${build.type}" arg2="RELEASE"/>
         </condition>
-        <property name="release.designation" value="EclipseLink Milestone ${build.type}"/>
-
+        <property name="release.designation" value="EclipseLink ${build.type}"/>
+        
+        <!-- generate string for tag creation (only used if milestone, or release build)  -->
+        <condition property="milestone.tag" value="${release.version}">
+            <equals arg1="${build.type}" arg2="RELEASE"/>
+        </condition>
+        <property name="milestone.tag" value="${release.version}${build.type}"/>
+        
         <!-- Now that all our overrides are complete, pull in the rest of the build properties -->
         <property file="${build.root.dir}/build.properties"/>
 
@@ -344,7 +344,6 @@
     <target name="publish-results" depends="clean-results">
         <exec executable="/bin/sh" failonerror="true" logError="true" >
             <arg value="${build.root.dir}/buildsystem/buildNightlyList.sh"/>
-            <arg value="${version.string}"/>
         </exec>
     </target>
 
