@@ -1135,6 +1135,14 @@ public class EntityManagerSetupImpl {
     protected void initServerSession(Map properties) {
         assignCMP3Policy();
 
+        // This server session could have been initialized in predeploy with
+        // another set of properties that would have set the session name to 
+        // something else.  We need to verify session name here.
+        String newName = getConfigPropertyAsStringLogDebug(PersistenceUnitProperties.SESSION_NAME, properties, session);
+        if (newName != null && !(newName.equals(session.getName()))) {
+            session.setName(newName);
+        }
+
         // Register session that has been created earlier.
         addSessionToGlobalSessionManager();
     }
