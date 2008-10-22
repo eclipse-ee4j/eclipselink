@@ -6,6 +6,7 @@ CUR_DIR=`dirname ${THIS}`
 umask 0002
 LOCAL_REPOS=false
 MILESTONE=false
+RELEASE=false
 TEST=false
 RHB=false
 TARGET=$1
@@ -48,6 +49,10 @@ then
         echo "USAGE: ./boostrap.sh milestone M9 [branch]"
         exit
     fi
+fi
+if [ "${TARGET}" = "release" ]
+then
+    RELEASE=true
 fi
 
 echo "Target=${TARGET}"
@@ -177,11 +182,18 @@ ANT_ARGS=" "
 ANT_OPTS="-Xmx128m"
 ANT_BASEARG="-f \"${BOOTSTRAP_BLDFILE}\" -Dbranch.name=\"${BRANCH}\""
 
-# May need to add "milestone flag to alert build
+# May need to add "milestone" flag to alert build
 if [ "${MILESTONE}" = "true" ]
 then
-    ANT_BASEARG="${ANT_BASEARG} -Dbuild_id=${TARGET}"
-    TARGET="nightly"
+    ANT_BASEARG="${ANT_BASEARG} -Dbuild.type=${TARGET} -Dbuild_id=${TARGET}"
+    TARGET="milestone"
+fi
+
+# May need to add "release" flag to alert build
+if [ "${RELEASE}" = "true" ]
+then
+    ANT_BASEARG="${ANT_BASEARG} -Dbuild.type=RELEASE" -Dbuild_id=
+    TARGET="milestone"
 fi
 
 if [ "${LOCAL_REPOS}" = "true" ]
