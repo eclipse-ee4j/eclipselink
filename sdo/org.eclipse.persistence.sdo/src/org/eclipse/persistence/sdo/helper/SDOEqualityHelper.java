@@ -269,7 +269,7 @@ public class SDOEqualityHelper implements EqualityHelper {
                 }
 
                 // the property field on the setting must point to the same property instance as the original
-                if (originalProperty != copyProperty) {// handle both properties == null
+                if (!arePropertiesEqual(originalProperty, copyProperty)) {// handle both properties == null
                     return false;
                 }
 
@@ -405,7 +405,7 @@ public class SDOEqualityHelper implements EqualityHelper {
             return false;
         }
         // the property field on the setting must point to the same property instance as the original
-        if (prop1 != prop2) {
+        if (!prop1.equals(prop2)) {
             return false;
         }
         return true;
@@ -521,7 +521,14 @@ public class SDOEqualityHelper implements EqualityHelper {
             if (l1.size() != l2.size()) {
                 return false;
             }
-            return (l1.containsAll(l2));
+            for (int i = 0; i < l1.size(); i++) {
+                Object o1 = l1.get(i);
+                Object o2 = l2.get(i);
+                if (!o1.equals(o2)) {
+                    return false;
+                }
+            }
+            return true;
         }
         if (isDeep) {
             if (dataObject1.isSet(p) != dataObject2.isSet(p)) {
