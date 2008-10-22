@@ -25,8 +25,8 @@ import java.beans.*;
  * </ul>
  */
 public class ObjectChangeListener implements PropertyChangeListener {
-    // when TopLink merges events should be ignored that are not issued by TopLink
-    // ie when TopLink call setters.
+    // when EclipseLink merges events should be ignored that are not issued by EclipseLink
+    // ie when EclipseLink call setters.
     protected boolean ignoreEvents = false;
     
     protected boolean hasChanges;
@@ -41,7 +41,7 @@ public class ObjectChangeListener implements PropertyChangeListener {
 
     /**
      * INTERNAL:
-     * This method will set this listener to ignore events not issues by TopLink
+     * This method will set this listener to ignore events not issues by EclipseLink
      */
     public void ignoreEvents(){
         this.ignoreEvents = true;
@@ -49,7 +49,7 @@ public class ObjectChangeListener implements PropertyChangeListener {
     
     /**
      * INTERNAL:
-     * This method will set this listener to ignore events not issues by TopLink
+     * This method will set this listener to ignore events not issues by EclipseLink
      */
     public void processEvents(){
         this.ignoreEvents = false;
@@ -69,7 +69,7 @@ public class ObjectChangeListener implements PropertyChangeListener {
     /**
      * INTERNAL:
      * This method turns marks the object as changed.  This method is only
-     * called by TopLink
+     * called by EclipseLink
      */
     public void internalPropertyChange(PropertyChangeEvent evt) {
         if (evt.getNewValue() == evt.getOldValue()) {

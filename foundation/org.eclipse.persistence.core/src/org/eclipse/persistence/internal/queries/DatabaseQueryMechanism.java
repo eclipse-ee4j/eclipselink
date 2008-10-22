@@ -1064,7 +1064,7 @@ public abstract class DatabaseQueryMechanism implements Cloneable, Serializable 
         if ((!writeQuery.isUserDefined())// this is not a user-defined query
                  && queryManager.hasUpdateQuery()// there is a user-defined query
                  && isExpressionQueryMechanism()) {// this is not a hand-coded call (custom SQL etc.)
-            // This must be done here because the userdefined updatedoes not use a changeset so it will noe be set otherwise
+            // This must be done here because the user defined update does not use a changeset so it will not be set otherwise
             commitManager.markPreModifyCommitInProgress(object);
             performUserDefinedUpdate();
             return;

@@ -1885,8 +1885,8 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
         // session of a broker, must execute on that session directly.
     
         //bug 5201121 Always use the parent or execution session from the parent
-        // should never use the unit of work as it does not controll the
-        //accessors and with a sessioon broker it will not ahve the correct
+        // should never use the unit of work as it does not control the
+        //accessors and with a session broker it will not have the correct
         //login info
         return getParent().getExecutionSession(query);
     }
@@ -1919,7 +1919,6 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
      * identitymap can not be found.  As in a CacheIdentityMap
      */
     public Map getCloneToOriginals() {
-        //Helper.toDo("proper fix, collection merge can have objects disappear for original.");
         if (cloneToOriginals == null) {// Must lazy initialize for remote.
             // 2612538 - the default size of Map (32) is appropriate
             cloneToOriginals = createMap();
@@ -3387,7 +3386,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
                 ObjectChangeSet removedObjectChangeSet = (ObjectChangeSet) removedObjects.next();
                 java.util.Vector primaryKeys = removedObjectChangeSet.getPrimaryKeys();
                 ClassDescriptor descriptor = getDescriptor(removedObjectChangeSet.getClassType(this));
-                // PERF: Do not remove is uow is isolated.
+                // PERF: Do not remove if uow is isolated.
                 if (!descriptor.shouldIsolateObjectsInUnitOfWork()) {
                     getParent().getIdentityMapAccessorInstance().removeFromIdentityMap(primaryKeys, descriptor.getJavaClass(), descriptor, removedObjectChangeSet.getUnitOfWorkClone());
                 }

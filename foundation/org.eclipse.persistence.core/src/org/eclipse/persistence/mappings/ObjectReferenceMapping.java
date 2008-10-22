@@ -62,7 +62,7 @@ public abstract class ObjectReferenceMapping extends ForeignReferenceMapping {
         if (isExisting) {
             return unitOfWork.registerExistingObject(attributeValue);
         } else {
-            // Not known wether existing or not.
+            // Not known whether existing or not.
             return unitOfWork.registerObject(attributeValue);
         }
     }
@@ -434,7 +434,7 @@ public abstract class ObjectReferenceMapping extends ForeignReferenceMapping {
         targetValueOfSource = this.referenceDescriptor.getObjectBuilder().wrapObject(targetValueOfSource, mergeManager.getSession());
         setRealAttributeValueInObject(target, targetValueOfSource);
     }
-
+    
     /**
      * INTERNAL:
      * Return all the fields populated by this mapping, these are foreign keys only.

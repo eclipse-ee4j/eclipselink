@@ -114,7 +114,7 @@ public class AttributeChangeListener extends ObjectChangeListener {
     /**
      * INTERNAL:
      * This method marks the object as changed.  This method is only
-     * called by TopLink
+     * called by EclipseLink
      */
     public void internalPropertyChange(PropertyChangeEvent evt) {
         if (evt.getNewValue() == evt.getOldValue()) {
