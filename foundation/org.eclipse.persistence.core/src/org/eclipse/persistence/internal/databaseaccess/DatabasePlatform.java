@@ -1971,7 +1971,7 @@ public class DatabasePlatform extends DatasourcePlatform {
      * though attempt is always made to perform UpdateAll without using temporary
      * storage there are some scenarios that can't be fulfilled without it.
      * Don't override this method.
-     * If the platform support temorary tables then override
+     * If the platform support temporary tables then override
      * either supportsLocalTempTables() or supportsGlobalTempTables()
      * method.
      */
