@@ -565,6 +565,11 @@ public class SDOTypeHelperDelegate implements SDOTypeHelper {
             return type;
         }
 
+        type = getTypeForSimpleJavaType(interfaceClass);
+        if (type != null) {
+            return type;
+        }
+        
         //TODO: what is uri for qname if package is null or targetnamespace
         //types keyed on qname
         Iterator iter = getTypesHashMap().keySet().iterator();
@@ -577,7 +582,7 @@ public class SDOTypeHelperDelegate implements SDOTypeHelper {
             }
         }
 
-        return getTypeForSimpleJavaType(interfaceClass);
+        return null; 
     }
 
     /**
