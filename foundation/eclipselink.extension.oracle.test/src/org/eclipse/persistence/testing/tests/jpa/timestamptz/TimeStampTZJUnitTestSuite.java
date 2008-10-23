@@ -14,8 +14,6 @@ package org.eclipse.persistence.testing.tests.jpa.timestamptz;
 
 import java.util.Calendar;
 import java.util.TimeZone;
-import java.util.List;
-import java.util.Iterator;
 import javax.persistence.EntityManager;
 
 import junit.framework.*;
