@@ -175,6 +175,7 @@ else
     DB_USER=`cat $JDBC_LOGIN_INFO_FILE | cut -d'*' -f1`
     DB_PWD=`cat $JDBC_LOGIN_INFO_FILE | cut -d'*' -f2`
     DB_URL=`cat $JDBC_LOGIN_INFO_FILE | cut -d'*' -f3`
+    DB_NAME=`cat $JDBC_LOGIN_INFO_FILE | cut -d'*' -f4`
 fi
 
 #Set appropriate max Heap for VM and let Ant inherit JavaVM (OS's) proxy settings
@@ -221,6 +222,12 @@ export SVN_EXEC BLD_DEPS_DIR JUNIT_HOME TARGET
 
 cd ${HOME_DIR}
 echo "Results logged to: ${DATED_LOG}"
+
+echo "Cleaning the db for build..."
+echo "drop schema ${DB_NAME};" > sql.sql
+echo "create schema ${DB_NAME};" >> sql.sql
+mysql -u${DB_USER} -p${DB_PWD} < sql.sql
+rm sql.sql
 
 touch ${DATED_LOG}
 echo "Build started at: `date`" >> ${DATED_LOG}
