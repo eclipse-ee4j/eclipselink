@@ -46,6 +46,9 @@
     <!-- compile -->
     <target name="compile" description="compile EclipseLink">
         <mkdir dir="${eclipselink.core}/${classes.dir}"/>
+        <echo message="Stamping the following values:"/>
+        <echo message="version:             '${release.version}'"/>
+        <echo message="build_number_string: '${build_number_string}'"/>
         <filter token="VERSION" value="${release.version}"/>
         <filter token="BUILD_NUMBER" value="${build_number_string}"/>
         <copy file="${eclipselink.core}/${src.dir}/org/eclipse/persistence/Version.java" tofile="${eclipselink.core}/${classes.dir}/org/eclipse/persistence/Version.java" filtering="true"/>

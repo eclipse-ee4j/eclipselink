@@ -70,6 +70,10 @@
             <equals arg1="${build_id}" arg2="SNAPSHOT"/>
         </condition>
         <property name="installer_id" value="${release.version}${build_id}"/>
+        <condition property="build_number_string" value="${build.date}">
+            <equals arg1="${build_id}" arg2=""/>
+        </condition>
+        <property name="build_number_string" value="${build_id}-${build.date}"/>
         <condition property="download.path" value="${eclipse.download.path}/nightly">
             <equals arg1="${build_id}" arg2="SNAPSHOT"/>
         </condition>
@@ -103,6 +107,7 @@
         <echo message="installer_id  ='${installer_id}'"/>
         <echo message="download.path ='${download.path}'"/>
         <echo message="milestone.tag ='${milestone.tag}'"/>
+        <echo message="build_number_string ='${build_number_string}'"/>
     </target>
 
     <target name="clean" depends="init">
