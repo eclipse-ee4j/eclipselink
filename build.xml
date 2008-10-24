@@ -206,10 +206,12 @@
     <target name="package-eclipselink-jar" depends="create-build-dir" description="build EclipseLink jar">
         <jar jarfile="${eclipselink.jar.name}">
              <manifest>
-                <attribute name="Implementation-Title" value="${implementation.title}"/>
-                <attribute name="Implementation-Version" value="${version.string}"/>
+                <attribute name="Specification-Title" value="${specification.title}"/>
+                <attribute name="Specification-Vendor" value="${specification.vendor}"/>
                 <attribute name="Specification-Version" value="${release.version}"/>
+                <attribute name="Implementation-Title" value="${implementation.title}"/>
                 <attribute name="Implementation-Vendor" value="${implementation.vendor}"/>
+                <attribute name="Implementation-Version" value="${release.version}.${build_number_string}"/>
                 <attribute name="Release-Designation" value="${release.designation}"/>
                 <attribute name="Premain-Class" value="${premain.class}"/>
             </manifest>
