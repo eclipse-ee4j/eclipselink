@@ -62,6 +62,9 @@ public class UnitOfWorkTestSuite extends TestSuite {
 
         addTest(new UnregisterUnitOfWorkTest());
 
+        // EL Bug 252047 - Mutable attributes are not cloned when isMutable is enabled on a Direct Mapping
+        addTest(new CloneAttributeIfMutableTest());
+
         addSRGTests();
     }
 

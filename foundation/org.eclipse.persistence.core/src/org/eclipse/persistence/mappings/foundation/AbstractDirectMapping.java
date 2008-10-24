@@ -163,11 +163,25 @@ public abstract class AbstractDirectMapping extends DatabaseMapping {
     /**
      * INTERNAL:
      * Clone the attribute from the original and assign it to the clone.
+     * If mutability is configured to be true, clone the attribute if it is an instance of
+     * byte[], java.util.Calendar or java.util.Date (or their subclasses).
      */
     public void buildCloneValue(Object original, Object clone, AbstractSession session) {
         Object attributeValue = getAttributeValueFromObject(original);
-        if (isMutable()) {
-            attributeValue = getAttributeValue(getFieldValue(attributeValue, session), session);
+        if (isMutable() && attributeValue != null) {
+            // EL Bug 252047 - Mutable attributes are not cloned when isMutable is enabled on a Direct Mapping
+            if (attributeValue instanceof byte[]) {
+                int length = ((byte[]) attributeValue).length;
+                byte[] arrayCopy = new byte[length];
+                System.arraycopy(attributeValue, 0, arrayCopy, 0, length);
+                attributeValue = arrayCopy;
+            } else if (attributeValue instanceof Date) {
+                attributeValue = ((Date)attributeValue).clone();
+            } else if (attributeValue instanceof Calendar) {
+                attributeValue = ((Calendar)attributeValue).clone();
+            } else {
+                attributeValue = getAttributeValue(getFieldValue(attributeValue, session), session);                    
+            }
         }
         setAttributeValueInObject(clone, attributeValue);
     }
