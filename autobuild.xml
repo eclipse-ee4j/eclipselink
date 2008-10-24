@@ -99,6 +99,10 @@
         <echo message="EL version    ='${release.version}'"/>
         <echo message="build_id      ='${build_id}'"/>
         <echo message="build_number  ='${build_number}'"/>
+        <echo message="_buildNumber  ='${_buildNumber}'"/>
+        <echo message="installer_id  ='${installer_id}'"/>
+        <echo message="download.path ='${download.path}'"/>
+        <echo message="milestone.tag ='${milestone.tag}'"/>
     </target>
 
     <target name="clean" depends="init">
