@@ -9,6 +9,7 @@
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
+ *     stardif - updates for Cacaded locking and inheritance
  ******************************************************************************/  
 package org.eclipse.persistence.descriptors;
 
@@ -268,28 +269,26 @@ public class ClassDescriptor implements Cloneable, Serializable {
      */
     public void addCascadeLockingPolicy(CascadeLockingPolicy policy) {
         cascadeLockingPolicies.add(policy);
-        if (usesOptimisticLocking() && getOptimisticLockingPolicy().isCascaded()) {
-            // 232608: propagate later version changes up to the locking policy on a parent branch by setting the policy on all children here            
-            if(this.hasInheritance()) {
-                // InOrder traverse the entire [deep] tree, not just the next level
-                Iterator<ClassDescriptor> anIterator = getInheritancePolicy().getAllChildDescriptors().iterator();
-                while(anIterator.hasNext()) {
-                    // Set the same cascade locking policy on all descriptors that inherit from this descriptor.
-                    anIterator.next().addCascadeLockingPolicy(policy);
-                }
-            }           
-        } else {
-            // Check the mappings only if the descriptor has been initialized.
-            // Otherwise, they will be handled in the initialize method.
-            if (isInitialized(INITIALIZED)) {
-                // Set cascade locking policies on privately owned children mappings.
-                for (Enumeration mappings = getMappings().elements(); mappings.hasMoreElements();) {
-                    prepareCascadeLockingPolicy((DatabaseMapping)mappings.nextElement());
-                }
+        // 232608: propagate later version changes up to the locking policy on a parent branch by setting the policy on all children here            
+        if(this.hasInheritance()) {
+            // InOrder traverse the entire [deep] tree, not just the next level
+            Iterator<ClassDescriptor> anIterator = getInheritancePolicy().getAllChildDescriptors().iterator();
+            while(anIterator.hasNext()) {
+                // Set the same cascade locking policy on all descriptors that inherit from this descriptor.
+                anIterator.next().addCascadeLockingPolicy(policy);
+            }
+        }
+
+        // do not propagate an extra locking policy to other mappings, if this descriptor already
+        // has a cascaded optimistic locking policy that will be cascaded
+        if (!(usesOptimisticLocking() && getOptimisticLockingPolicy().isCascaded()) && isInitialized(INITIALIZED)) {
+            // Set cascade locking policies on privately owned children mappings.
+            for (Enumeration mappings = getMappings().elements(); mappings.hasMoreElements();) {
+                prepareCascadeLockingPolicy((DatabaseMapping)mappings.nextElement());
             }
         }
     }
-
+    
     /**
      * ADVANCED:
      * EclipseLink automatically orders database access through the foreign key information provided in 1:1 and 1:m mappings.
@@ -2478,6 +2477,9 @@ public class ClassDescriptor implements Cloneable, Serializable {
                 //if the parent is isolated then the child must be isolated as well.
                 this.setIsIsolated(true);
             }
+            // Setup this early before useOptimisticLocking is called so that subclass
+            // versioned by superclass are also covered
+            getInheritancePolicy().initializeOptimisticLocking();
         }
 
         // Mappings must be sorted before field are collected in the order of the mapping for indexes to work.

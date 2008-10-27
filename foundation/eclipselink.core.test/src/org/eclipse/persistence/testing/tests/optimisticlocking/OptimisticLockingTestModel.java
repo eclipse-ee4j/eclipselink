@@ -117,6 +117,7 @@ public class OptimisticLockingTestModel extends TestModel {
         suite.addTest(new CascadedMultiLevel121OptimisticLockingTest());
         suite.addTest(new CascadedMultiLevel12MOptimisticLockingTest());
         suite.addTest(new CascadedMultiLevelCollectionOptimisticLockingTest());
+        suite.addTest(new Cascaded12MInheritanceOptimisticLockingTest());
     
         return suite;
     }

@@ -895,11 +895,7 @@ public class InheritancePolicy implements Serializable, Cloneable {
                 addClassIndicatorTypeToParent(getClassIndicatorValue());
             }
 
-            // CR#3214106, do not override if specified in subclass.
-            if (!getDescriptor().usesOptimisticLocking() && getParentDescriptor().usesOptimisticLocking()) {
-                getDescriptor().setOptimisticLockingPolicy((OptimisticLockingPolicy)getParentDescriptor().getOptimisticLockingPolicy().clone());
-                getDescriptor().getOptimisticLockingPolicy().setDescriptor(getDescriptor());
-            }
+            initializeOptimisticLocking();
 
             if (!getDescriptor().hasReturningPolicy() && getParentDescriptor().hasReturningPolicy()) {
                 getDescriptor().setReturningPolicy(new ReturningPolicy());
@@ -997,6 +993,19 @@ public class InheritancePolicy implements Serializable, Cloneable {
         }
     }
 
+
+    /**
+     * INTERNAL:
+     * Potentially override the optimistic locking behavior
+     */
+    protected void initializeOptimisticLocking(){
+        // CR#3214106, do not override if specified in subclass.
+        if (!getDescriptor().usesOptimisticLocking() && getParentDescriptor().usesOptimisticLocking()) {
+            getDescriptor().setOptimisticLockingPolicy((OptimisticLockingPolicy)getParentDescriptor().getOptimisticLockingPolicy().clone());
+            getDescriptor().getOptimisticLockingPolicy().setDescriptor(getDescriptor());
+        }
+    }
+    
     /**
      * INTERNAL:
      * Initialize the expression to use for queries to the class and its subclasses.
@@ -1011,7 +1020,7 @@ public class InheritancePolicy implements Serializable, Cloneable {
             }
         }
     }
-
+    
     /**
      * INTERNAL:
      * Check if it is a child descriptor.
