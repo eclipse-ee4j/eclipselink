@@ -18,6 +18,7 @@ import commonj.sdo.Property;
 import org.eclipse.persistence.sdo.SDODataObject;
 import org.eclipse.persistence.sdo.SDOProperty;
 import org.eclipse.persistence.exceptions.DescriptorException;
+import org.eclipse.persistence.internal.descriptors.MethodAttributeAccessor;
 import org.eclipse.persistence.mappings.AttributeAccessor;
 
 /**
@@ -26,7 +27,7 @@ import org.eclipse.persistence.mappings.AttributeAccessor;
  * when marsalling/unmarshalling SDODataObjects. The propertyName is the name of the property on
  * the DataObject and that must be set on this accessor.
  */
-public class SDOMethodAttributeAccessor extends AttributeAccessor {
+public class SDOMethodAttributeAccessor extends MethodAttributeAccessor {
     protected Class attributeClass;
     protected SDOProperty property;
 
@@ -100,4 +101,13 @@ public class SDOMethodAttributeAccessor extends AttributeAccessor {
     public Property getProperty() {
         return property;
     }
+
+    public Class getGetMethodReturnType() {
+        return attributeClass;
+    }
+    
+    public Class getSetMethodParameterType() {
+        return attributeClass;
+    }
+
 }

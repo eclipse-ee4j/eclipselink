@@ -28,6 +28,7 @@ import javax.xml.namespace.QName;
 import org.eclipse.persistence.sdo.helper.AttributeMimeTypePolicy;
 import org.eclipse.persistence.sdo.helper.InstanceClassConverter;
 import org.eclipse.persistence.sdo.helper.ListWrapper;
+import org.eclipse.persistence.sdo.helper.QNameTransformer;
 import org.eclipse.persistence.sdo.helper.SDOMethodAttributeAccessor;
 import org.eclipse.persistence.sdo.helper.SDOXSDHelper;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
@@ -54,6 +55,7 @@ import org.eclipse.persistence.oxm.mappings.XMLDirectMapping;
 import org.eclipse.persistence.oxm.mappings.XMLMapping;
 import org.eclipse.persistence.oxm.mappings.XMLNillableMapping;
 import org.eclipse.persistence.oxm.mappings.XMLObjectReferenceMapping;
+import org.eclipse.persistence.oxm.mappings.XMLTransformationMapping;
 import org.eclipse.persistence.oxm.mappings.nullpolicy.AbstractNullPolicy;
 import org.eclipse.persistence.oxm.mappings.nullpolicy.IsSetNullPolicy;
 import org.eclipse.persistence.oxm.mappings.nullpolicy.XMLNullRepresentationType;
@@ -536,7 +538,11 @@ public class SDOProperty implements Property, Serializable {
                         if(isSubstitutable()) {
                             xmlMapping = buildXMLChoiceObjectMapping(mappingUri);
                         } else {
-                            xmlMapping = buildXMLDirectMapping(mappingUri);
+                            if (getXsdType() != null && getXsdType().equals(XMLConstants.QNAME_QNAME)) {
+                                xmlMapping = buildXMLTransformationMapping(mappingUri);
+                            } else {
+                                xmlMapping = buildXMLDirectMapping(mappingUri);
+                            }
                         }
                     }
                 }
@@ -651,6 +657,19 @@ public class SDOProperty implements Property, Serializable {
         return mapping;
     }
 
+    private DatabaseMapping buildXMLTransformationMapping(String mappingUri) {
+        XMLTransformationMapping mapping = new XMLTransformationMapping();
+        mapping.setAttributeName(getName());
+
+        String xpath = getQualifiedXPath(mappingUri, true);
+        QNameTransformer transformer = new QNameTransformer(xpath);
+
+        mapping.setAttributeTransformer(transformer);
+        mapping.addFieldTransformer(xpath, transformer);
+        
+        return mapping;
+    }
+    
     private DatabaseMapping buildXMLDirectMapping(String mappingUri) {
         XMLDirectMapping mapping = new XMLDirectMapping();
         mapping.setAttributeName(getName());

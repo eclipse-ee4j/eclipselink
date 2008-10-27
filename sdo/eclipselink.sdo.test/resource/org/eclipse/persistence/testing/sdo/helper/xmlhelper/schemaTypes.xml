@@ -48,7 +48,7 @@
    <myNormalizedStringTest>normalizedString</myNormalizedStringTest>
    <myPositiveIntegerTest>2</myPositiveIntegerTest>
    <myNonPositiveIntegerTest>-1</myNonPositiveIntegerTest>
-   <myQNameTest>q:name</myQNameTest>
+   <myQNameTest>ns0:name</myQNameTest>
    <myShort>4096</myShort>
    <myStringTest>String</myStringTest>
    <myTimeTest>14:20:00-05:00</myTimeTest>

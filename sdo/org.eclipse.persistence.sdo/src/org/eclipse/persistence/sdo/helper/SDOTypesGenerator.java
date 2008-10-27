@@ -1189,7 +1189,8 @@ public class SDOTypesGenerator {
                         processGlobalItem(targetNamespace, defaultNamespace, qname.getLocalPart());
                     }
                 }
-                if ((qname.equals(XMLConstants.BASE_64_BINARY_QNAME)) || (qname.equals(XMLConstants.HEX_BINARY_QNAME)) || (qname.equals(XMLConstants.DATE_QNAME)) || (qname.equals(XMLConstants.TIME_QNAME)) || (qname.equals(XMLConstants.DATE_TIME_QNAME))) {
+
+                if ((qname.equals(XMLConstants.QNAME_QNAME)) || (qname.equals(XMLConstants.BASE_64_BINARY_QNAME)) || (qname.equals(XMLConstants.HEX_BINARY_QNAME)) || (qname.equals(XMLConstants.DATE_QNAME)) || (qname.equals(XMLConstants.TIME_QNAME)) || (qname.equals(XMLConstants.DATE_TIME_QNAME))) {
                     p.setXsdType(qname);
                 }
 
