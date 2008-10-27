@@ -68,7 +68,7 @@ public class ClassDescriptor implements Cloneable, Serializable {
     protected List<DatabaseField> primaryKeyFields;
     protected transient Map<DatabaseTable, Map<DatabaseField, DatabaseField>> additionalTablePrimaryKeyFields;
     protected transient Vector<DatabaseTable> multipleTableInsertOrder;
-    protected transient Map<DatabaseTable, DatabaseTable> multipleTableForeignKeys;
+    protected transient Map<DatabaseTable, Set<DatabaseTable>> multipleTableForeignKeys;
     protected transient Vector<DatabaseField> fields;
     protected transient Vector<DatabaseField> allFields;
     protected Vector<DatabaseMapping> mappings;
@@ -370,7 +370,12 @@ public class ClassDescriptor implements Cloneable, Serializable {
      * information. Use this method to associate secondary tables to a 
      * primary table. Specify the source foreign key field to the target
      * primary key field. The join criteria will be generated based on the 
-     * fields provided.
+     * fields provided. Unless the customary insert order is specified by the user
+     * (using setMultipleTableInsertOrder method)
+     * the (automatically generated) table insert order will ensure that 
+     * insert into target table happens before insert into the source table
+     * (there may be a foreign key constraint in the database that requires
+     * target table to be inserted before the source table).
      */
     public void addForeignKeyFieldNameForMultipleTable(String sourceForeignKeyFieldName, String targetPrimaryKeyFieldName) throws DescriptorException {  
         addForeignKeyFieldForMultipleTable(new DatabaseField(sourceForeignKeyFieldName), new DatabaseField(targetPrimaryKeyFieldName));
@@ -391,7 +396,12 @@ public class ClassDescriptor implements Cloneable, Serializable {
         }
 
         setAdditionalTablePrimaryKeyFields(sourceForeignKeyField.getTable(), targetPrimaryKeyField, sourceForeignKeyField);
-        getMultipleTableForeignKeys().put(targetPrimaryKeyField.getTable(), sourceForeignKeyField.getTable());
+        Set<DatabaseTable> sourceTables = getMultipleTableForeignKeys().get(targetPrimaryKeyField.getTable());
+        if(sourceTables == null) {
+            sourceTables = new HashSet<DatabaseTable>(3);
+            getMultipleTableForeignKeys().put(targetPrimaryKeyField.getTable(), sourceTables);
+        }
+        sourceTables.add(sourceForeignKeyField.getTable());
     }
 
     /**
@@ -475,16 +485,11 @@ public class ClassDescriptor implements Cloneable, Serializable {
     public void adjustMultipleTableInsertOrder() {
         // Check if a user defined insert order was given.
         if ((getMultipleTableInsertOrder() == null) || getMultipleTableInsertOrder().isEmpty()) {
-            setMultipleTableInsertOrder((Vector)getTables().clone());
-
-            checkMultipleTableForeignKeys(false);
+            createMultipleTableInsertOrder();
         } else {
-            if (getMultipleTableInsertOrder().size() != getTables().size()) {
-                throw DescriptorException.multipleTableInsertOrderMismatch(this);
-            }
-
-            checkMultipleTableForeignKeys(true);
+            verifyMultipleTableInsertOrder();
         }
+        toggleAdditionalTablePrimaryKeyFields();
     }
 
     /**
@@ -805,55 +810,245 @@ public class ClassDescriptor implements Cloneable, Serializable {
 
     /**
      * INTERNAL:
+     * Create multiple table insert order.
+     * If its a child descriptor then insert order starts
+     * with the same insert order as in the parent.
+     * Non-inherited tables ordered to adhere to 
+     * multipleTableForeignKeys:
+     * the target table (the key in multipleTableForeignKeys map)
+     * should stand in insert order before any of the source tables
+     * (members of the corresponding value in multipleTableForeignKeys).
      */
-    protected void checkMultipleTableForeignKeys(boolean userSpecifiedOrder) {
-        // Loop through n times to be sure that the insert order is correct. 
-        // Loop n times eliminates our dependence on the order of the foreignKey 
-        // relationships specified. We could do this adjustment in one pass but 
-        // we would have to put the foreignKeyTables in the same order as the 
-        // tables being sorted.
-        Map foreignKeyTableRelationships = getMultipleTableForeignKeys();
+    protected void createMultipleTableInsertOrder() {
+        int nParentTables = 0;
+        if (isChildDescriptor()) {
+            nParentTables = getInheritancePolicy().getParentDescriptor().getTables().size();
+            setMultipleTableInsertOrder((Vector)getInheritancePolicy().getParentDescriptor().getMultipleTableInsertOrder().clone());
+            
+            if(nParentTables == getTables().size()) {
+                // all the tables mapped by the parent - nothing to do.
+                return;
+            }
+        }
 
-        for (int i = 0; i < foreignKeyTableRelationships.size(); i++) {
-            for (Iterator sourceTables = foreignKeyTableRelationships.entrySet().iterator(); sourceTables.hasNext();) {
-                Map.Entry entry = (Map.Entry)sourceTables.next();
-                DatabaseTable sourceTable = (DatabaseTable) entry.getKey();
-                DatabaseTable targetTable = (DatabaseTable) entry.getValue();
-
-                // Verify the source table is a valid.
-                if (getMultipleTableInsertOrder().indexOf(sourceTable) == -1) {
-                    throw DescriptorException.illegalTableNameInMultipleTableForeignKeyField(this, sourceTable);
+        if(getMultipleTableForeignKeys().isEmpty()) {
+            if(nParentTables == 0) {
+                // no multipleTableForeignKeys specified - keep getTables() order.
+                setMultipleTableInsertOrder((Vector)getTables().clone());
+            } else {
+                // insert order for parent-defined tables has been already copied from parent descriptor,
+                // add the remaining tables keeping the same order as in getTables()
+                for(int k = nParentTables; k < getTables().size(); k++) {
+                    getMultipleTableInsertOrder().add(getTables().get(k));
                 }
+            }
+            return;
+        }
+        
+        verifyMultipleTablesForeignKeysTables();
+        
+        // tableComparison[i][j] indicates the order between i and j tables:
+        // -1 i table before j table;
+        // +1 i table after j table;
+        //  0 - not defined (could be either before or after)
+        int[][] tableComparison = createTableComparison(getTables(), nParentTables);
 
-                // Verify the target table is a valid.
-                if (getMultipleTableInsertOrder().indexOf(targetTable) == -1) {
-                    throw DescriptorException.illegalTableNameInMultipleTableForeignKeyField(this, targetTable);
-                }
+        // Now create insert order of the tables:
+        // getTables.get(i) table should be 
+        //  before getTable.get(j) in insert order if tableComparison[i][j]==-1;
+        //  after getTable.get(j) in insert order if tableComparison[i][j]== 1;
+        //  doesn't matter if tableComparison[i][j]== 0.
+        createMultipleTableInsertOrderFromComparison(tableComparison, nParentTables);
+    }
 
-                int sourceTableIndex = getTables().indexOf(sourceTable);
-                int targetTableIndex = getTables().indexOf(targetTable);
+    /**
+     * INTERNAL:
+     * Verify multiple table insert order provided by the user.
+     * If its a child descriptor then insert order starts
+     * with the same insert order as in the parent.
+     * Non-inherited tables ordered to adhere to 
+     * multipleTableForeignKeys:
+     * the target table (the key in multipleTableForeignKeys map)
+     * should stand in insert order before any of the source tables
+     * (members of the corresponding value in multipleTableForeignKeys).
+     */
+    protected void verifyMultipleTableInsertOrder() {
+        int nParentTables = 0;
+        if (isChildDescriptor()) {
+            nParentTables = getInheritancePolicy().getParentDescriptor().getTables().size();
 
-                // The sourceTable must be before the targetTable to avoid 
-                // foreign key constraint violations when inserting into the 
-                // database.
-                if (targetTableIndex < sourceTableIndex) {
-                    if (userSpecifiedOrder) {
-                        toggleAdditionalTablePrimaryKeyFields(targetTable, sourceTable);
-                    } else {
-                        int sti = getMultipleTableInsertOrder().indexOf(sourceTable);
-                        int tti = getMultipleTableInsertOrder().indexOf(targetTable);
+            if(nParentTables + getMultipleTableInsertOrder().size() == getTables().size()) {
+                // the user specified insert order only for the tables directly mapped by the descriptor,
+                // the inherited tables order must be the same as in parent descriptor
+                Vector childMultipleTableInsertOrder = getMultipleTableInsertOrder(); 
+                setMultipleTableInsertOrder((Vector)getInheritancePolicy().getParentDescriptor().getMultipleTableInsertOrder().clone());
+                getMultipleTableInsertOrder().addAll(childMultipleTableInsertOrder);
+            }
+            
+        }
+        
+        if (getMultipleTableInsertOrder().size() != getTables().size()) {
+            throw DescriptorException.multipleTableInsertOrderMismatch(this);
+        }
 
-                        if (tti < sti) {
-                            toggleAdditionalTablePrimaryKeyFields(targetTable, sourceTable);
-                            getMultipleTableInsertOrder().removeElementAt(tti);
-                            getMultipleTableInsertOrder().insertElementAt(targetTable, sti);
-                        }
-                    }
+        if(nParentTables == getTables().size()) {
+            // all the tables mapped by the parent - nothing to do.
+            return;
+        }
+
+        if(getMultipleTableForeignKeys().isEmpty()) {
+            // nothing to do
+            return;
+        }
+        
+        verifyMultipleTablesForeignKeysTables();
+        
+        // tableComparison[i][j] indicates the order between i and j tables:
+        // -1 i table before j table;
+        // +1 i table after j table;
+        //  0 - not defined (could be either before or after)
+        int[][] tableComparison = createTableComparison(getMultipleTableInsertOrder(), nParentTables);
+
+        for(int i = nParentTables; i < getMultipleTableInsertOrder().size(); i++) {
+            for(int j = i + 1; j < getTables().size(); j++) {
+                if(tableComparison[i - nParentTables][j - nParentTables] > 0) {
+                    throw DescriptorException.insertOrderConflictsWithMultipleTableForeignKeys(this, getMultipleTableInsertOrder().get(i), getMultipleTableInsertOrder().get(j));
                 }
             }
         }
     }
+    
+    /**
+     * INTERNAL:
+     * Verify that the tables specified in multipleTablesForeignKeysTables are valid.
+     */
+    protected void verifyMultipleTablesForeignKeysTables() {
+        Iterator<Map.Entry<DatabaseTable, Set<DatabaseTable>>> itTargetTables = getMultipleTableForeignKeys().entrySet().iterator();
+        while(itTargetTables.hasNext()) {
+            Map.Entry<DatabaseTable, Set<DatabaseTable>> entry = itTargetTables.next();
+            DatabaseTable targetTable = entry.getKey();
+            if (getTables().indexOf(targetTable) == -1) {
+                throw DescriptorException.illegalTableNameInMultipleTableForeignKeyField(this, targetTable);
+            }
+            Iterator<DatabaseTable> itSourceTables = entry.getValue().iterator();
+            while(itSourceTables.hasNext()) {
+                DatabaseTable sourceTable = itSourceTables.next();
+                if (getTables().indexOf(sourceTable) == -1) {
+                    throw DescriptorException.illegalTableNameInMultipleTableForeignKeyField(this, targetTable);
+                }
+            }
+        }
+    }
+    
+    /**
+     * INTERNAL:
+     * This helper method creates a matrix that contains insertion order comparison for the tables.
+     * Comparison is done for indexes from nStart to tables.size()-1.
+     */
+    protected int[][] createTableComparison(Vector tables, int nStart) {
+        int nTables = tables.size();
+        // tableComparison[i][j] indicates the order between i and j tables:
+        // -1 i table before j table;
+        // +1 i table after j table;
+        //  0 - not defined (could be either before or after)
+        int[][] tableComparison = new int[nTables - nStart][nTables - nStart];
 
+        Iterator<Map.Entry<DatabaseTable, Set<DatabaseTable>>> itTargetTables = getMultipleTableForeignKeys().entrySet().iterator();
+        // loop through all pairs of target and source tables and insert either +1 or -1 into tableComparison for each pair.  
+        while(itTargetTables.hasNext()) {
+            Map.Entry<DatabaseTable, Set<DatabaseTable>> entry = itTargetTables.next();
+            DatabaseTable targetTable = entry.getKey();
+            int targetIndex = tables.indexOf(targetTable) - nStart;
+            if(targetIndex >= 0) {
+                Set<DatabaseTable> sourceTables = entry.getValue(); 
+                Iterator<DatabaseTable> itSourceTables = sourceTables.iterator();
+                while(itSourceTables.hasNext()) {
+                    DatabaseTable sourceTable = itSourceTables.next();
+                    int sourceIndex = tables.indexOf(sourceTable) - nStart;
+                    if(sourceIndex >= 0) {
+                        // targetTable should be before sourceTable: tableComparison[sourceIndex, targetIndex] = 1; tableComparison[targetIndex, sourceIndex] =-1.
+                        if(tableComparison[targetIndex][sourceIndex] == 1) {
+                            throw DescriptorException.insertOrderCyclicalDependencyBetweenTwoTables(this, sourceTable, targetTable);
+                        } else {
+                            tableComparison[targetIndex][sourceIndex] =-1;
+                            tableComparison[sourceIndex][targetIndex] = 1;
+                        }
+                    } else {
+                        throw DescriptorException.insertOrderChildBeforeParent(this, sourceTable, targetTable);
+                    }
+                }
+            }
+        }
+        return tableComparison;
+    }
+    
+    /**
+     * INTERNAL:
+     * This helper method creates multipleTableInsertOrderFromComparison using comparison matrix 
+     * created by createTableComparison(getTables()) method call. 
+     */
+    protected void createMultipleTableInsertOrderFromComparison(int[][] tableComparison, int nStart) {
+        int nTables = getTables().size();
+        int[] tableOrder = new int[nTables - nStart];
+        boolean bOk = createTableOrder(0, nTables - nStart, tableOrder, tableComparison);
+        if(bOk) {
+            if(nStart == 0) {
+                setMultipleTableInsertOrder(NonSynchronizedVector.newInstance(nTables));
+            }
+            for(int k=0; k < nTables - nStart; k++) {
+                getMultipleTableInsertOrder().add(getTables().get(tableOrder[k] + nStart));
+            }
+        } else {
+            throw DescriptorException.insertOrderCyclicalDependencyBetweenThreeOrMoreTables(this);
+        }
+    }
+    
+    /**
+     * INTERNAL:
+     * This helper method recursively puts indexes from 0 to nTables-1 into tableOrder according to tableComparison 2 dim array.
+     * k is index in tableOrder that currently the method is working on - the method should be called with k = 0.
+     */
+    protected boolean createTableOrder(int k, int nTables, int[] tableOrder, int[][] tableComparison) {
+        if(k == nTables) {
+            return true;
+        }
+
+        // array of indexes not yet ordered
+        int[] iAvailable = new int[nTables-k];
+        int l = 0;
+        for(int i=0; i < nTables; i++) {
+            boolean isUsed = false;
+            for(int j=0; j<k && !isUsed; j++) {
+                if(i == tableOrder[j]) {
+                    isUsed = true;
+                }
+            }
+            if(!isUsed) {
+                iAvailable[l] = i;
+                l++;
+            }
+        }
+
+        boolean bOk = false;
+        for(int i=0; (i < nTables-k)  && !bOk; i++) {
+            boolean isSmallest = true;
+            for(int j=0; (j < nTables-k) && isSmallest; j++) {
+                if(i != j) {
+                    if(tableComparison[iAvailable[i]][iAvailable[j]] > 0) {
+                        isSmallest = false;
+                    }
+                }
+            }
+            if(isSmallest) {
+                // iAvailable[i] is less or equal according to tableComparison to all other remaining indexes - let's try to use it as tableOrder[k]
+                tableOrder[k] = iAvailable[i];
+                // now try to fill out the last remaining n - k - 1 elements of tableOrder
+                bOk = createTableOrder(k + 1, nTables, tableOrder, tableComparison);
+            }
+        }
+        return bOk;
+    }
+    
     /**
      * INTERNAL:
      * Clones the descriptor
@@ -1845,7 +2040,7 @@ public class ClassDescriptor implements Cloneable, Serializable {
      *
      * @see #adjustMultipleTableInsertOrder()
      */
-    public Map<DatabaseTable, DatabaseTable> getMultipleTableForeignKeys() {
+    public Map<DatabaseTable, Set<DatabaseTable>> getMultipleTableForeignKeys() {
         return multipleTableForeignKeys;
     }
 
@@ -3179,28 +3374,55 @@ public class ClassDescriptor implements Cloneable, Serializable {
 
     /**
      * INTERNAL:
-     * This method will be called in the case where the foreign key field is
-     * in the target table which is before the source table. In most cases,
-     * this would be when the fk is on the primary table (that is, true
-     * multiple table foreign key field)
+     * Eclipselink needs additionalTablePKFields entries to be associated with tables other than the main (getTables.get(0)) one.
+     * Also in case of two non-main tables additionalTablePKFields entry should be associated with the one
+     * father down insert order. 
      */
-    protected void toggleAdditionalTablePrimaryKeyFields(DatabaseTable targetTable, DatabaseTable sourceTable) {
-        Map targetTableAdditionalPKFields = getAdditionalTablePrimaryKeyFields().get(targetTable);
+    protected void toggleAdditionalTablePrimaryKeyFields() {
+        if(additionalTablePrimaryKeyFields == null) {
+            // nothing to do
+            return;
+        }
 
-        if (targetTableAdditionalPKFields != null) {
-            Iterator e = targetTableAdditionalPKFields.keySet().iterator();
-            List sourceFields = new ArrayList();
-            while (e.hasNext()) {
-                DatabaseField sourceField = (DatabaseField)e.next();
-                DatabaseField targetField = (DatabaseField)targetTableAdditionalPKFields.get(sourceField);
-                if (sourceField.getTable().equals(sourceTable)){
+        // nProcessedTables is a number of tables (first in egtTables() order) that don't require toggle - to, but may be toggled - from
+        // (meaning by "toggle - to" table:    setAdditionalTablePrimaryKeyFields(table, .., ..);)
+        // "Processed" tables always include the main table (getTables().get(0)) plus all the inherited tables.
+        // Don't toggle between processed tables (that has been already done by the parent);
+        // always toggle from processed to non-processed;
+        // toggle between two non-processed to the one that is father down insert order.
+        int nProcessedTables = 1;
+        if (isChildDescriptor()) {
+            nProcessedTables = getInheritancePolicy().getParentDescriptor().getTables().size();
+        }
+
+        // cache the original map in a new variable 
+        Map<DatabaseTable, Map<DatabaseField, DatabaseField>> additionalTablePrimaryKeyFieldsOld = additionalTablePrimaryKeyFields;
+        // nullify the original map variable - it will be re-created from scratch
+        additionalTablePrimaryKeyFields = null;
+        Iterator<Map.Entry<DatabaseTable, Map<DatabaseField, DatabaseField>>> itTable = additionalTablePrimaryKeyFieldsOld.entrySet().iterator();
+        // loop through the cached original map and add all its entries (either toggled or unchanged) to the re-created map 
+        while(itTable.hasNext()) {
+            Map.Entry<DatabaseTable, Map<DatabaseField, DatabaseField>> entryTable = itTable.next();
+            DatabaseTable sourceTable = entryTable.getKey();
+            boolean isSourceProcessed = getTables().indexOf(sourceTable) < nProcessedTables;
+            int sourceInsertOrderIndex = getMultipleTableInsertOrder().indexOf(sourceTable);
+            Map<DatabaseField, DatabaseField> targetTableAdditionalPKFields = entryTable.getValue(); 
+            Iterator<Map.Entry<DatabaseField, DatabaseField>> itField = targetTableAdditionalPKFields.entrySet().iterator();
+            while(itField.hasNext()) {
+                Map.Entry<DatabaseField, DatabaseField> entryField = itField.next();
+                DatabaseField targetField = entryField.getKey();
+                DatabaseField sourceField = entryField.getValue();
+                DatabaseTable targetTable = targetField.getTable();
+                boolean isTargetProcessed = getTables().indexOf(targetTable) < nProcessedTables;
+                int targetInsertOrderIndex = getMultipleTableInsertOrder().indexOf(targetTable);
+                // add the entry to the map
+                if(!isTargetProcessed && (isSourceProcessed || (sourceInsertOrderIndex > targetInsertOrderIndex))) {
+                    // source and target toggled
+                    setAdditionalTablePrimaryKeyFields(targetTable, sourceField, targetField);
+                } else {
+                    // exactly the same as in the original map
                     setAdditionalTablePrimaryKeyFields(sourceTable, targetField, sourceField);
-                    sourceFields.add(sourceField);
                 }
-            }
-            Iterator sourceFieldIterator = sourceFields.iterator();
-            while (sourceFieldIterator.hasNext()){
-                targetTableAdditionalPKFields.remove(sourceFieldIterator.next());
             }
         }
     }
@@ -3705,7 +3927,7 @@ public class ClassDescriptor implements Cloneable, Serializable {
      *
      * @see #getMultipleTableForeignKeys
      */
-    protected void setMultipleTableForeignKeys(Map<DatabaseTable, DatabaseTable> newValue) {
+    protected void setMultipleTableForeignKeys(Map<DatabaseTable, Set<DatabaseTable>> newValue) {
         this.multipleTableForeignKeys = newValue;
     }
 

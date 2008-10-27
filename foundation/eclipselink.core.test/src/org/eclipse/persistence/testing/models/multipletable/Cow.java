@@ -25,6 +25,10 @@ public class Cow {
     protected int calfCount;
     protected int calfCountId;
     protected String name;
+    protected int age;
+    protected int ageId;
+    protected int weight;
+    protected int weightId;
 
     public Cow() {
     }
@@ -41,8 +45,28 @@ public class Cow {
         return this.cowId;
     }
 
+    public int getAge() {
+        return this.age;
+    }
+
+    public int getAgeId() {
+        return ageId;
+    }
+
+    public int getWeight() {
+        return this.weight;
+    }
+
+    public int getWeightId() {
+        return weightId;
+    }
+
     public String getName() {
         return this.name;
+    }
+
+    public void setCalfCountId(int calfCountId) {
+        this.calfCountId = calfCountId;
     }
 
     public void setCalfCount(int calfCount) {
@@ -55,5 +79,21 @@ public class Cow {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public void setAge(int age) {
+        this.age = age;
+    }
+
+    public void setAgeId(int ageId) {
+        this.ageId = ageId;
+    }
+
+    public void setWeight(int weight) {
+        this.weight = weight;
+    }
+
+    public void setWeightId(int weightId) {
+        this.weightId = weightId;
     }
 }

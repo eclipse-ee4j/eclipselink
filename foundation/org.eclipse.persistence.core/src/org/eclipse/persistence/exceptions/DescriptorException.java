@@ -217,6 +217,10 @@ public class DescriptorException extends ValidationException {
     public final static int INTERNAL_ERROR_ACCESSING_PKFIELD = 201;
     public final static int UNIT_OF_WORK_ISOLATED_OBJECTS_ACCESSED_IN_SESSION = 202;
     public final static int INTERNAL_ERROR_SET_METHOD = 203;
+    public final static int INSERT_ORDER_CONFLICTS_WITH_MULTIPLE_TABLE_FOREIGN_KEYS = 204;
+    public final static int INSERT_ORDER_CYCLICAL_DEPENDENCY_BETWEEN_TWO_TABLES = 205;
+    public final static int INSERT_ORDER_CYCLICAL_DEPENDENCY_BETWEEN_THREE_OR_MORE_TABLES = 206;
+    public final static int INSERT_ORDER_CHILD_BEFORE_PARENT = 207;
 
     /**
      * INTERNAL:
@@ -1889,6 +1893,38 @@ public class DescriptorException extends ValidationException {
 
         DescriptorException descriptorException = new DescriptorException(ExceptionMessageGenerator.buildMessage(DescriptorException.class, UNIT_OF_WORK_ISOLATED_OBJECTS_ACCESSED_IN_SESSION, args), descriptor);
         descriptorException.setErrorCode(UNIT_OF_WORK_ISOLATED_OBJECTS_ACCESSED_IN_SESSION);
+        return descriptorException;
+    }
+
+    public static DescriptorException insertOrderConflictsWithMultipleTableForeignKeys(ClassDescriptor descriptor, DatabaseTable table1, DatabaseTable table2) {
+        Object[] args = { table1, table2 };
+
+        DescriptorException descriptorException = new DescriptorException(ExceptionMessageGenerator.buildMessage(DescriptorException.class, INSERT_ORDER_CONFLICTS_WITH_MULTIPLE_TABLE_FOREIGN_KEYS, args), descriptor);
+        descriptorException.setErrorCode(INSERT_ORDER_CONFLICTS_WITH_MULTIPLE_TABLE_FOREIGN_KEYS);
+        return descriptorException;
+    }
+
+    public static DescriptorException insertOrderCyclicalDependencyBetweenTwoTables(ClassDescriptor descriptor, DatabaseTable table1, DatabaseTable table2) {
+        Object[] args = { table1, table2 };
+
+        DescriptorException descriptorException = new DescriptorException(ExceptionMessageGenerator.buildMessage(DescriptorException.class, INSERT_ORDER_CYCLICAL_DEPENDENCY_BETWEEN_TWO_TABLES, args), descriptor);
+        descriptorException.setErrorCode(INSERT_ORDER_CYCLICAL_DEPENDENCY_BETWEEN_TWO_TABLES);
+        return descriptorException;
+    }
+
+    public static DescriptorException insertOrderCyclicalDependencyBetweenThreeOrMoreTables(ClassDescriptor descriptor) {
+        Object[] args = { };
+
+        DescriptorException descriptorException = new DescriptorException(ExceptionMessageGenerator.buildMessage(DescriptorException.class, INSERT_ORDER_CYCLICAL_DEPENDENCY_BETWEEN_THREE_OR_MORE_TABLES, args), descriptor);
+        descriptorException.setErrorCode(INSERT_ORDER_CYCLICAL_DEPENDENCY_BETWEEN_THREE_OR_MORE_TABLES);
+        return descriptorException;
+    }
+
+    public static DescriptorException insertOrderChildBeforeParent(ClassDescriptor descriptor, DatabaseTable table1, DatabaseTable table2) {
+        Object[] args = { table1, table2 };
+
+        DescriptorException descriptorException = new DescriptorException(ExceptionMessageGenerator.buildMessage(DescriptorException.class, INSERT_ORDER_CHILD_BEFORE_PARENT, args), descriptor);
+        descriptorException.setErrorCode(INSERT_ORDER_CHILD_BEFORE_PARENT);
         return descriptorException;
     }
 }

@@ -192,10 +192,7 @@ public class XMLProjectWriterTestModel extends TestModel {
         // Multiple table model test
         TestSuite multipleTableTestSuite = new TestSuite();
         multipleTableTestSuite.setName("MultipleTableTestModel");
-        multipleTableTestSuite.addTest(MultipleTableModel.getCowTest());
-        multipleTableTestSuite.addTest(MultipleTableModel.getHorseTest());
-        multipleTableTestSuite.addTest(MultipleTableModel.getSwanTest());
-        multipleTableTestSuite.addTest(MultipleTableModel.getHumanTest());
+        MultipleTableModel.addTestsToTestCollection(multipleTableTestSuite);
         addTest(multipleTableTestSuite);
     }
 }

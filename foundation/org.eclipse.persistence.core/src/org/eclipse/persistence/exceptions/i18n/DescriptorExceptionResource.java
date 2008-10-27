@@ -211,7 +211,11 @@ public class DescriptorExceptionResource extends ListResourceBundle {
                                            { "200", "Attempt to register an object with dead indirection as a new object.  Possibly the object was deleted or removed from the cache during a merge of a serialized clone.  This is a concurrency violation, consider a locking strategy." },
                                            { "201", "An object was attempted to be built in the session cache, but the descriptor is marked as isolated in the unit of work, so should never be accessed outside of a unit of work." },
                                            { "202", "An internal error occurred accessing the primary key object [{0}]." },
-                                           { "203", "An internal error occurred while accessing method [{1}] on class [{0}]." }
+                                           { "203", "An internal error occurred while accessing method [{1}] on class [{0}]." },
+                                           { "204", "Insert table order contradicts to multiple tables foreign keys - according to the latter table [{0}] shouild be inserted before table [{1}]." },
+                                           { "205", "Insert table order has cyclical dependency between tables [{0}] and [{1}]." },
+                                           { "206", "Insert table order has cyclical dependency between three or more tables." },
+                                           { "207", "Insert table order is wrong: table [{0}] mapped to parent is specified to be inserted after table [{1}] mapped to child." }
     };
 
     /**

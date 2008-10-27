@@ -23,6 +23,8 @@ public class Swan {
     protected int id;
     protected String name;
     protected int cygnetCount;
+    protected int age;
+    protected int weight;
 
     public Swan() {
     }
@@ -35,6 +37,14 @@ public class Swan {
         return this.id;
     }
 
+    public int getAge() {
+        return this.age;
+    }
+
+    public int getWeight() {
+        return this.weight;
+    }
+
     public String getName() {
         return this.name;
     }
@@ -45,5 +55,13 @@ public class Swan {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public void setAge(int age) {
+        this.age = age;
+    }
+
+    public void setWeight(int weight) {
+        this.weight = weight;
     }
 }
