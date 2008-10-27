@@ -37,6 +37,7 @@ import org.eclipse.persistence.annotations.ReadTransformer;
 import org.eclipse.persistence.annotations.TypeConverter;
 import org.eclipse.persistence.annotations.WriteTransformer;
 import org.eclipse.persistence.annotations.WriteTransformers;
+import org.eclipse.persistence.config.QueryHints;
 import org.eclipse.persistence.sessions.Record;
 import org.eclipse.persistence.sessions.Session;
 
@@ -101,7 +102,21 @@ import static org.eclipse.persistence.annotations.OptimisticLockingType.VERSION_
 ),
 @NamedQuery(
         name="CachedAllEmployees",
-        query="SELECT e FROM Employee e"
+        query="SELECT e FROM Employee e",
+        hints={
+                @QueryHint(name=QueryHints.QUERY_RESULTS_CACHE, value="true"),
+                @QueryHint(name=QueryHints.QUERY_RESULTS_CACHE_SIZE, value="200"),
+                @QueryHint(name=QueryHints.QUERY_RESULTS_CACHE_EXPIRY, value="5000")
+        }
+),
+@NamedQuery(
+        name="CachedTimeOfDayAllEmployees",
+        query="SELECT e FROM Employee e",
+        hints={
+                @QueryHint(name=QueryHints.QUERY_RESULTS_CACHE, value="true"),
+                @QueryHint(name=QueryHints.QUERY_RESULTS_CACHE_SIZE, value="200"),
+                @QueryHint(name=QueryHints.QUERY_RESULTS_CACHE_EXPIRY_TIME_OF_DAY, value="23:59:59")
+        }
 )
 }
 )

@@ -13,6 +13,7 @@
 
 package org.eclipse.persistence.testing.tests.jpa.jpql;
 
+import java.util.Calendar;
 import java.util.List;
 
 import javax.persistence.LockModeType;
@@ -28,6 +29,8 @@ import junit.framework.TestSuite;
 import org.eclipse.persistence.config.CacheUsage;
 import org.eclipse.persistence.config.QueryHints;
 import org.eclipse.persistence.config.QueryType;
+import org.eclipse.persistence.descriptors.invalidation.DailyCacheInvalidationPolicy;
+import org.eclipse.persistence.descriptors.invalidation.TimeToLiveCacheInvalidationPolicy;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.jpa.JpaQuery;
 import org.eclipse.persistence.queries.QueryResultsCachePolicy;
@@ -347,9 +350,38 @@ public class AdvancedQueryTestSuite extends JUnitTestCase {
         try {
             // Load an employee into the cache.  
             JpaQuery jpaQuery = (JpaQuery)((EntityManager)em.getDelegate()).createNamedQuery("CachedAllEmployees");
-            ReadQuery readQuery = (ReadQuery)jpaQuery.getDatabaseQuery();
-            readQuery.setQueryResultsCachePolicy(new QueryResultsCachePolicy());
             List result = jpaQuery.getResultList();
+            ReadQuery readQuery = (ReadQuery)jpaQuery.getDatabaseQuery();
+            if (readQuery.getQueryResultsCachePolicy() == null) {
+                fail("Query cache not set.");
+            }
+            if (readQuery.getQueryResultsCachePolicy().getMaximumCachedResults() != 200) {
+                fail("Query cache size not set.");
+            }
+            if (!(readQuery.getQueryResultsCachePolicy().getCacheInvalidationPolicy() instanceof TimeToLiveCacheInvalidationPolicy)) {
+                fail("Query cache invalidation not set.");
+            }
+            if (((TimeToLiveCacheInvalidationPolicy)readQuery.getQueryResultsCachePolicy().getCacheInvalidationPolicy()).getTimeToLive() != 5000) {
+                fail("Query cache invalidation time not set.");
+            }
+            
+            jpaQuery = (JpaQuery)((EntityManager)em.getDelegate()).createNamedQuery("CachedTimeOfDayAllEmployees");
+            readQuery = (ReadQuery)jpaQuery.getDatabaseQuery();
+            if (readQuery.getQueryResultsCachePolicy() == null) {
+                fail("Query cache not set.");
+            }
+            if (readQuery.getQueryResultsCachePolicy().getMaximumCachedResults() != 200) {
+                fail("Query cache size not set.");
+            }
+            if (!(readQuery.getQueryResultsCachePolicy().getCacheInvalidationPolicy() instanceof DailyCacheInvalidationPolicy)) {
+                fail("Query cache invalidation not set.");
+            }
+            Calendar calendar = ((DailyCacheInvalidationPolicy)readQuery.getQueryResultsCachePolicy().getCacheInvalidationPolicy()).getExpiryTime();
+            if ((calendar.get(Calendar.HOUR_OF_DAY) != 23 )
+                    && (calendar.get(Calendar.MINUTE) != 59)
+                    && (calendar.get(Calendar.SECOND) != 59)) {
+                fail("Query cache invalidation time not set.");
+            }
 
             // Count SQL.
             counter = new QuerySQLTracker(getServerSession());

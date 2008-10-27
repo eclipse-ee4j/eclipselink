@@ -31,19 +31,53 @@ package org.eclipse.persistence.config;
  * @see QueryType
  */
 public class QueryHints {
-   /**
-    * Configures parameter binding to be disabled or enabled just for this query (overrides persistent unit setting, which default to true).
-    * Valid values are:  HintValues.PERSISTENCE_UNIT_DEFAULT, HintValues.TRUE, HintValues.FALSE,
-    * "" could be used instead of default value HintValues.PERSISTENCE_UNIT_DEFAULT
-    */
+    /**
+     * Configures parameter binding to be disabled or enabled just for this query (overrides persistent unit setting, which default to true).
+     * Valid values are:  HintValues.PERSISTENCE_UNIT_DEFAULT, HintValues.TRUE, HintValues.FALSE,
+     * "" could be used instead of default value HintValues.PERSISTENCE_UNIT_DEFAULT
+     */
     public static final String BIND_PARAMETERS = "eclipselink.jdbc.bind-parameters";
 
-   /**
-    * Configures the query to utilize the EclipseLink cache, by default the cache is not checked on queries before accessing the database.
-    * Valid values are all declared in CacheUsage class.
-    * For primary key cache hits the QUERY_TYPE hint must also be set to QueryType.ReadObject.
-    */
+    /**
+     * Configures the query to utilize the EclipseLink cache, by default the cache is not checked on queries before accessing the database.
+     * Valid values are all declared in CacheUsage class.
+     * For primary key cache hits the QUERY_TYPE hint must also be set to QueryType.ReadObject.
+     */
     public static final String CACHE_USAGE = "eclipselink.cache-usage";
+    
+    /**
+     * Configures the query to use a results cache.
+     * By default the query will cache 100 query results, such that the same named query with the same arguments
+     * is re-executed it will skip the database and just return the cached results.
+     * Valid values are:  HintValues.PERSISTENCE_UNIT_DEFAULT, HintValues.TRUE, HintValues.FALSE,
+     * "" could be used instead of default value HintValues.PERSISTENCE_UNIT_DEFAULT.
+     * By default query results are not cached.
+     * This is not, and is independent from the object cache.
+     */
+    public static final String QUERY_RESULTS_CACHE = "eclipselink.query-results-cache";
+
+    /**
+     * Configures the size of the query's results cache.
+     * By default the query will cache 100 query results, such that the same named query with the same arguments
+     * is re-executed it will skip the database and just return the cached results.
+     * If the query has no arguments a size of 1 should be used (as there is only a single result).
+     * Valid values are Integer or Strings that can be parsed to int values.
+     */
+    public static final String QUERY_RESULTS_CACHE_SIZE = "eclipselink.query-results-cache.size";
+
+    /**
+     * Configures the time to live, or expiry time of the query's results cache.
+     * By default the query results cache will not expiry results.     * 
+     * Valid values are number of milliseconds, Integer or Strings that can be parsed to int values.
+     */
+    public static final String QUERY_RESULTS_CACHE_EXPIRY = "eclipselink.query-results-cache.expiry";
+    
+    /**
+     * Configures the time of day expiry time of the query's results cache.
+     * By default the query results cache will not expiry results.     * 
+     * Valid values are String Time format, "HH:MM:SS".
+     */
+    public static final String QUERY_RESULTS_CACHE_EXPIRY_TIME_OF_DAY = "eclipselink.query-results-cache.expiry-time-of-day";
     
     /**
      * Used to provide a Query Redirector to the executing query.
@@ -51,17 +85,17 @@ public class QueryHints {
     public static final String QUERY_REDIRECTOR = "eclipselink.query.redirector";
 
     /**
-    * Configures the EclipseLink query type to use for the query.
-    * By default EclipseLink ReportQuery or ReadAllQuery are used for most JPQL queries, this allows other query types to be used,
-    * such as ReadObjectQuery which can be used for queries that are know to return a single object, and has different caching semantics.
-    * Valid values are all declared in QueryType class.
-    */
+     * Configures the EclipseLink query type to use for the query.
+     * By default EclipseLink ReportQuery or ReadAllQuery are used for most JPQL queries, this allows other query types to be used,
+     * such as ReadObjectQuery which can be used for queries that are know to return a single object, and has different caching semantics.
+     * Valid values are all declared in QueryType class.
+     */
     public static final String QUERY_TYPE = "eclipselink.query-type";
     
-   /**
-    * Configures  the query to acquire a pessimistic lock (write-lock) on the resulting rows in the database.
-    * Valid values are all declared in PessimisticLock class.
-    */
+    /**
+     * Configures  the query to acquire a pessimistic lock (write-lock) on the resulting rows in the database.
+     * Valid values are all declared in PessimisticLock class.
+     */
     public static final String PESSIMISTIC_LOCK = "eclipselink.pessimistic-lock";
     
     /**
@@ -72,11 +106,11 @@ public class QueryHints {
      */
     public static final String PESSIMISTIC_LOCK_TIMEOUT = "javax.persistence.lock.timeout";
     
-   /**
-    * Configures the query to refresh the resulting objects in the cache and persistent context with the current state of the database.
-    * Valid values are:  HintValues.FALSE, HintValues.TRUE,
-    * "" could be used instead of default value HintValues.FALSE
-    */
+    /**
+     * Configures the query to refresh the resulting objects in the cache and persistent context with the current state of the database.
+     * Valid values are:  HintValues.FALSE, HintValues.TRUE,
+     * "" could be used instead of default value HintValues.FALSE
+     */
     public static final String REFRESH = "eclipselink.refresh";
     
     /**
@@ -119,11 +153,11 @@ public class QueryHints {
      */
     public static final String JDBC_FETCH_SIZE = "eclipselink.jdbc.fetch-size";
     
-     /**
-      * Configures the JDBC max-rows, if the query returns more rows than the max-rows
-      * the trailing rows will not be returned by the database.
-      * Valid values are Integer or Strings that can be parsed to int values.
-      */
+    /**
+     * Configures the JDBC max-rows, if the query returns more rows than the max-rows
+     * the trailing rows will not be returned by the database.
+     * Valid values are Integer or Strings that can be parsed to int values.
+     */
     public static final String JDBC_MAX_ROWS = "eclipselink.jdbc.max-rows";
     
     /**

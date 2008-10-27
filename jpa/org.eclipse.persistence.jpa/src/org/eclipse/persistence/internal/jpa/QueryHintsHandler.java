@@ -14,11 +14,14 @@ package org.eclipse.persistence.internal.jpa;
 
 import java.security.AccessController;
 import java.security.PrivilegedActionException;
+import java.sql.Time;
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.StringTokenizer;
 
+import org.eclipse.persistence.exceptions.ConversionException;
 import org.eclipse.persistence.exceptions.QueryException;
 
 
@@ -28,6 +31,9 @@ import org.eclipse.persistence.queries.ReadAllQuery;
 import org.eclipse.persistence.expressions.Expression;
 import org.eclipse.persistence.config.*;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
+import org.eclipse.persistence.descriptors.invalidation.DailyCacheInvalidationPolicy;
+import org.eclipse.persistence.descriptors.invalidation.TimeToLiveCacheInvalidationPolicy;
+import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.internal.localization.ExceptionLocalization;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.internal.security.PrivilegedClassForName;
@@ -188,13 +194,17 @@ public class QueryHintsHandler {
             addHint(new JDBCMaxRowsHint());
             addHint(new ResultCollectionTypeHint());
             addHint(new RedirectorHint());
+            addHint(new QueryCacheHint());
+            addHint(new QueryCacheSizeHint());
+            addHint(new QueryCacheExpiryHint());
+            addHint(new QueryCacheExpiryTimeOfDayHint());
         }
         
         Hint(String name, String defaultValue) {
             this.name = name;
             this.defaultValue = defaultValue;
         }
-        
+
         abstract DatabaseQuery applyToDatabaseQuery(Object valueToApply, DatabaseQuery query);
                 
         static void verify(String hintName, boolean shouldUseDefault, Object hintValue, String queryName, AbstractSession session) {
@@ -453,6 +463,119 @@ public class QueryHintsHandler {
             return query;
         }
     }
+
+    /**
+     * Define the query cache hint.
+     * Only reset the query cache if unset (as other query cache properties may be set first).
+     */
+    protected static class QueryCacheHint extends Hint {
+        QueryCacheHint() {
+            super(QueryHints.QUERY_RESULTS_CACHE, HintValues.FALSE);
+            valueArray = new Object[][] { 
+                {HintValues.FALSE, Boolean.FALSE},
+                {HintValues.TRUE, Boolean.TRUE}
+            };
+        }
+    
+        DatabaseQuery applyToDatabaseQuery(Object valueToApply, DatabaseQuery query) {
+            if (query.isReadQuery()) {
+                if (((Boolean)valueToApply).booleanValue()) {
+                    if (((ReadQuery)query).getQueryResultsCachePolicy() == null) {
+                        ((ReadQuery)query).cacheQueryResults();
+                    }
+                }
+            } else {
+                throw new IllegalArgumentException(ExceptionLocalization.buildMessage("ejb30-wrong-type-for-query-hint",new Object[]{getQueryId(query), name, getPrintValue(valueToApply)}));
+            }
+            return query;
+        }
+    }
+
+    /**
+     * Define the query cache size hint.
+     * Only reset the query cache if unset (as other query cache properties may be set first).
+     */
+    protected static class QueryCacheSizeHint extends Hint {
+        QueryCacheSizeHint() {
+            super(QueryHints.QUERY_RESULTS_CACHE_SIZE, "");
+        }
+    
+        DatabaseQuery applyToDatabaseQuery(Object valueToApply, DatabaseQuery query) {
+            if (query.isReadQuery()) {
+                ReadQuery readQuery = (ReadQuery)query;
+                if (readQuery.getQueryResultsCachePolicy() == null) {
+                    readQuery.cacheQueryResults();
+                }
+                try {
+                    readQuery.getQueryResultsCachePolicy().setMaximumCachedResults(Integer.parseInt((String)valueToApply));
+                } catch (NumberFormatException exception) {
+                    throw QueryException.queryHintContainedInvalidIntegerValue(QueryHints.QUERY_RESULTS_CACHE_SIZE, valueToApply, exception);
+                }
+            } else {
+                throw new IllegalArgumentException(ExceptionLocalization.buildMessage("ejb30-wrong-type-for-query-hint",new Object[]{getQueryId(query), name, getPrintValue(valueToApply)}));
+            }
+            return query;
+        }
+    }
+
+    /**
+     * Define the query cache expiry hint.
+     * Only reset the query cache if unset (as other query cache properties may be set first).
+     */
+    protected static class QueryCacheExpiryHint extends Hint {
+        QueryCacheExpiryHint() {
+            super(QueryHints.QUERY_RESULTS_CACHE_EXPIRY, "");
+        }
+    
+        DatabaseQuery applyToDatabaseQuery(Object valueToApply, DatabaseQuery query) {
+            if (query.isReadQuery()) {
+                ReadQuery readQuery = (ReadQuery)query;
+                if (readQuery.getQueryResultsCachePolicy() == null) {
+                    readQuery.cacheQueryResults();
+                }
+                try {
+                    readQuery.getQueryResultsCachePolicy().setCacheInvalidationPolicy(
+                            new TimeToLiveCacheInvalidationPolicy(Integer.parseInt((String)valueToApply)));
+                } catch (NumberFormatException exception) {
+                    throw QueryException.queryHintContainedInvalidIntegerValue(QueryHints.QUERY_RESULTS_CACHE_EXPIRY, valueToApply, exception);
+                }
+            } else {
+                throw new IllegalArgumentException(ExceptionLocalization.buildMessage("ejb30-wrong-type-for-query-hint",new Object[]{getQueryId(query), name, getPrintValue(valueToApply)}));
+            }
+            return query;
+        }
+    }
+
+    /**
+     * Define the query cache expiry time of day hint.
+     * Only reset the query cache if unset (as other query cache properties may be set first).
+     */
+    protected static class QueryCacheExpiryTimeOfDayHint extends Hint {
+        QueryCacheExpiryTimeOfDayHint() {
+            super(QueryHints.QUERY_RESULTS_CACHE_EXPIRY_TIME_OF_DAY, "");
+        }
+    
+        DatabaseQuery applyToDatabaseQuery(Object valueToApply, DatabaseQuery query) {
+            if (query.isReadQuery()) {
+                ReadQuery readQuery = (ReadQuery)query;
+                if (readQuery.getQueryResultsCachePolicy() == null) {
+                    readQuery.cacheQueryResults();
+                }
+                try {
+                    Time time = Helper.timeFromString((String)valueToApply);
+                    Calendar calendar = Calendar.getInstance();
+                    calendar.setTime(time);
+                    readQuery.getQueryResultsCachePolicy().setCacheInvalidationPolicy(
+                            new DailyCacheInvalidationPolicy(calendar.get(Calendar.HOUR_OF_DAY), calendar.get(Calendar.MINUTE), calendar.get(Calendar.SECOND), 0));
+                } catch (ConversionException exception) {
+                    throw QueryException.queryHintContainedInvalidIntegerValue(QueryHints.QUERY_RESULTS_CACHE_EXPIRY_TIME_OF_DAY, valueToApply, exception);
+                }
+            } else {
+                throw new IllegalArgumentException(ExceptionLocalization.buildMessage("ejb30-wrong-type-for-query-hint",new Object[]{getQueryId(query), name, getPrintValue(valueToApply)}));
+            }
+            return query;
+        }
+    }
     
     protected static class BatchHint extends Hint {
         BatchHint() {
@@ -464,7 +587,7 @@ public class QueryHintsHandler {
                 ReadAllQuery raq = (ReadAllQuery)query;
                 StringTokenizer tokenizer = new StringTokenizer((String)valueToApply, ".");
                 if (tokenizer.countTokens() < 2){
-                    throw QueryException.queryHintDidNotContainEnoughTokens(query, QueryHints.FETCH, valueToApply);
+                    throw QueryException.queryHintDidNotContainEnoughTokens(query, QueryHints.BATCH, valueToApply);
                 }
                 // ignore the first token since we are assuming read all query
                 // e.g. In e.phoneNumbers we will assume "e" refers to the base of the query
@@ -601,7 +724,6 @@ public class QueryHintsHandler {
             } else {
                 throw new IllegalArgumentException(ExceptionLocalization.buildMessage("ejb30-wrong-type-for-query-hint",new Object[]{getQueryId(query), name, getPrintValue(valueToApply)}));
             }
-            
             return query;
         }
     }

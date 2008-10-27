@@ -13,7 +13,7 @@
 package org.eclipse.persistence.testing.tests.performance.java;
 
 import java.lang.reflect.*;
-import sun.misc.Unsafe;
+//import sun.misc.Unsafe;
 import org.eclipse.persistence.testing.framework.*;
 
 /**
@@ -28,7 +28,7 @@ public class FieldTest extends PerformanceComparisonTestCase {
         addSetMethodTest();
         addReflectionFieldTest();
         addReflectionMethodTest();
-        addUnsafeFieldTest();
+        //addUnsafeFieldTest();
         addAssignableSetTest();
     }
 
@@ -147,7 +147,7 @@ public class FieldTest extends PerformanceComparisonTestCase {
 
     /**
      * Unsafe field.
-     */
+     *
     public void addUnsafeFieldTest() {
         PerformanceComparisonTestCase test = new PerformanceComparisonTestCase() {
             public Field field;
@@ -163,5 +163,5 @@ public class FieldTest extends PerformanceComparisonTestCase {
         };
         test.setName("UnsafeFieldTest");
         addTest(test);
-    }
+    }*/
 }

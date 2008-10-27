@@ -36,8 +36,26 @@ public class JUnitJPQLDateTimeTestSuite extends JUnitTestCase {
     }
 
     public static Test suite() {
-        TestSuite suite = new TestSuite(JUnitJPQLDateTimeTestSuite.class);
+        TestSuite suite = new TestSuite();
+        suite.setName("JUnitJPQLDateTimeTestSuite");
         suite.addTest(new JUnitJPQLDateTimeTestSuite("testSetup"));
+        suite.addTest(new JUnitJPQLDateTimeTestSuite("testSqlDate"));
+        suite.addTest(new JUnitJPQLDateTimeTestSuite("testSqlDateToTS"));
+        suite.addTest(new JUnitJPQLDateTimeTestSuite("testTime"));
+        suite.addTest(new JUnitJPQLDateTimeTestSuite("testTimeToTS"));
+        suite.addTest(new JUnitJPQLDateTimeTestSuite("testTimestamp"));
+        suite.addTest(new JUnitJPQLDateTimeTestSuite("testTimestampToDate"));
+        suite.addTest(new JUnitJPQLDateTimeTestSuite("testTimestampToTime"));
+        suite.addTest(new JUnitJPQLDateTimeTestSuite("testUtilDate"));
+        suite.addTest(new JUnitJPQLDateTimeTestSuite("testCalenderWithUtilDate"));
+        suite.addTest(new JUnitJPQLDateTimeTestSuite("testSqlDateWithCal"));
+        suite.addTest(new JUnitJPQLDateTimeTestSuite("testTimeWithCal"));
+        suite.addTest(new JUnitJPQLDateTimeTestSuite("testTimestampWithCal"));
+        suite.addTest(new JUnitJPQLDateTimeTestSuite("testCalendar"));
+        suite.addTest(new JUnitJPQLDateTimeTestSuite("testTimestampGreaterThan"));
+        suite.addTest(new JUnitJPQLDateTimeTestSuite("testTimestampLessThan"));
+        suite.addTest(new JUnitJPQLDateTimeTestSuite("testTimestampIn"));
+        suite.addTest(new JUnitJPQLDateTimeTestSuite("testTimestampBetween"));
 
         return suite;
     }

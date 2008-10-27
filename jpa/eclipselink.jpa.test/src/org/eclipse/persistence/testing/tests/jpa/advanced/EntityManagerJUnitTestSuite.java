@@ -256,6 +256,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         suite.addTest(new EntityManagerJUnitTestSuite("testPersistOnCommit"));
         suite.addTest(new EntityManagerJUnitTestSuite("testFlushMode"));
         suite.addTest(new EntityManagerJUnitTestSuite("testEmbeddedNPE"));
+        suite.addTest(new EntityManagerJUnitTestSuite("testCollectionAddNewObjectUpdate"));
         return suite;
     }
 
@@ -6258,6 +6259,29 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         commitTransaction(em);
 
         verifyObjectInCacheAndDatabase(employee);
+    }
+    
+    /**
+     * Test adding a new object to a collection.
+     */
+    public void testCollectionAddNewObjectUpdate() {
+        int id = createEmployee("testCollectionAddNew").getId();
+                
+        clearCache();
+        
+        EntityManager em = createEntityManager();
+        beginTransaction(em);
+        Employee employee = em.find(Employee.class, id);
+        SmallProject project = new SmallProject();
+        employee.getProjects().add(project);
+        project.getTeamMembers().add(employee);
+        commitTransaction(em);
+
+        verifyObject(project);
+        verifyObject(employee);
+        clearCache();
+        verifyObject(project);
+        verifyObject(employee);
     }
     
     /**
