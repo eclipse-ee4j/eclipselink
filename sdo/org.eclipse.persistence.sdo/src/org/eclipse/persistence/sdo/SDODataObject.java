@@ -1173,7 +1173,7 @@ public class SDODataObject implements DataObject, SequencedObject {
 
         if (property.isMany()) {
             //getList.add will call updateContainment
-            ((ListWrapper)getList(property)).add(created, false);
+            ((ListWrapper)getList(property)).add(created, true);
         } else {//TODO:  do we need this check if (property.getType().equals(aType)) {
             set(property, created);
             //TODO: should we be calling set
