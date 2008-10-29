@@ -14,6 +14,7 @@
 package org.eclipse.persistence.testing.tests.jpa.jpql;
 
 import java.util.Calendar;
+import java.util.HashMap;
 import java.util.List;
 
 import javax.persistence.LockModeType;
@@ -33,9 +34,9 @@ import org.eclipse.persistence.descriptors.invalidation.DailyCacheInvalidationPo
 import org.eclipse.persistence.descriptors.invalidation.TimeToLiveCacheInvalidationPolicy;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.jpa.JpaQuery;
-import org.eclipse.persistence.queries.QueryResultsCachePolicy;
 import org.eclipse.persistence.queries.ReadQuery;
 import org.eclipse.persistence.sessions.DatabaseSession;
+import org.eclipse.persistence.sessions.server.ServerSession;
 
 import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
 import org.eclipse.persistence.testing.framework.QuerySQLTracker;
@@ -630,8 +631,10 @@ public class AdvancedQueryTestSuite extends JUnitTestCase {
     }
     
     public void testQueryPESSIMISTICLock() {
+        ServerSession session = JUnitTestCase.getServerSession();
+        
         // Cannot create parallel entity managers in the server.
-        if (! isOnServer()) {
+        if (! isOnServer() && ! session.getPlatform().isMySQL() && ! session.getPlatform().isTimesTen()) {
             EntityManager em = createEntityManager();
             Exception pessimisticLockException = null;
         
@@ -649,7 +652,9 @@ public class AdvancedQueryTestSuite extends JUnitTestCase {
                     beginTransaction(em2);
                 
                     Employee employee2 = em2.find(Employee.class, employee.getId());
-                    em2.lock(employee2, LockModeType.PESSIMISTIC);
+                    HashMap properties = new HashMap();
+                    properties.put(QueryHints.PESSIMISTIC_LOCK_TIMEOUT, 0);
+                    em2.lock(employee2, LockModeType.PESSIMISTIC, properties);
                     employee2.setFirstName("Invalid Lock Employee");
                     
                     commitTransaction(em2);
@@ -726,8 +731,10 @@ public class AdvancedQueryTestSuite extends JUnitTestCase {
     }
     
     public void testQueryPESSIMISTICTIMEOUTLock() {
+        ServerSession session = JUnitTestCase.getServerSession();
+        
         // Cannot create parallel entity managers in the server.
-        if (! isOnServer()) {
+        if (! isOnServer() && ! session.getPlatform().isMySQL() && ! session.getPlatform().isTimesTen()) {
             EntityManager em = createEntityManager();
             List result = em.createQuery("Select employee from Employee employee").getResultList();
             Employee employee = (Employee) result.get(0);

@@ -395,7 +395,7 @@ public class EntityManagerSetupImpl {
         }    
         return false;
     }
-
+    
     /**
      * Update loggers and settings for the singleton logger and the session logger. 
      * @param persistenceProperties the properties map
@@ -725,6 +725,9 @@ public class EntityManagerSetupImpl {
             updateServerPlatform(predeployProperties, realClassLoader);
             // Update loggers and settings for the singleton logger and the session logger.
             updateLoggers(predeployProperties, true, false, realClassLoader);
+            
+            // Update the default pessimistic lock timeout value.
+            updatePessimisticLockTimeout(predeployProperties);
             
             // If it's SE case and the pu has been undeployed weaving again here is impossible:
             // the classes were loaded already. Therefore using temporaryClassLoader is no longer required.
@@ -1478,6 +1481,18 @@ public class EntityManagerSetupImpl {
         }
     }
 
+    /**
+     * Update the default pessimistic lock timeout value. 
+     * @param persistenceProperties the properties map
+     */
+    protected void updatePessimisticLockTimeout(Map persistenceProperties) {
+        String pessimisticLockTimeout = PropertiesHandler.getPropertyValueLogDebug(PersistenceUnitProperties.PESSIMISTIC_LOCK_TIMEOUT, persistenceProperties, session);
+        
+        if (pessimisticLockTimeout != null) {
+            session.setPessimisticLockTimeoutDefault(Integer.parseInt(pessimisticLockTimeout));
+        }
+    }
+    
     /**
      * Enable or disable statements cached, update statements cache size. 
      * The method needs to be called in deploy stage. 

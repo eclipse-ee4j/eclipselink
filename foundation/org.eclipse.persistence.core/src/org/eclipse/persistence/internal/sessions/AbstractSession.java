@@ -182,6 +182,11 @@ public abstract class AbstractSession implements org.eclipse.persistence.session
     protected ReferenceMode defaultReferenceMode = null;
     
     /**
+     * Default pessimistic lock timeout value.
+     */
+    protected Integer pessimisticLockTimeoutDefault;
+    
+    /**
      * INTERNAL:
      * Create and return a new session.
      * This should only be called if the database login information is not know at the time of creation.
@@ -1482,6 +1487,14 @@ public abstract class AbstractSession implements org.eclipse.persistence.session
         return this;
     }
 
+    /**
+     * INTERNAL:
+     * Returns the default pessimistic lock timeout value.
+     */
+    public Integer getPessimisticLockTimeoutDefault() {
+        return pessimisticLockTimeoutDefault;
+    }
+    
     /**
      * INTERNAL:
      * Gets the session which this query will be executed on.
@@ -2924,6 +2937,17 @@ public abstract class AbstractSession implements org.eclipse.persistence.session
         this.numberOfActiveUnitsOfWork = numberOfActiveUnitsOfWork;
     }
 
+    /**
+     * PUBLIC:
+     * Set the default pessimistic lock timeout value. This value will be used
+     * to set the WAIT clause of a SQL SELECT FOR UPDATE statement. It defines
+     * how long EcliseLink should wait for a lock on the database row before 
+     * aborting.
+     */
+    public void setPessimisticLockTimeoutDefault(Integer pessimisticLockTimeoutDefault) {
+        this.pessimisticLockTimeoutDefault = pessimisticLockTimeoutDefault;
+    }
+    
     /**
      * PUBLIC:
      * Set the profiler for the session.

@@ -29,6 +29,7 @@ import javax.persistence.EnumType;
 import javax.persistence.FetchType;
 import javax.persistence.GenerationType;
 import javax.persistence.InheritanceType;
+import javax.persistence.LockModeType;
 import javax.persistence.TemporalType;
 
 import org.eclipse.persistence.annotations.CacheCoordinationType;
@@ -1433,6 +1434,7 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
 
         descriptor.addMapping(getQueryMapping());        
         descriptor.addMapping(getHintMapping());
+        descriptor.addMapping(getLockModeMapping());
         descriptor.addMapping(getNameAttributeMapping());
         
         return descriptor;
@@ -2714,6 +2716,19 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         lobMapping.setNullPolicy(lobPolicy);
         lobMapping.setXPath("orm:lob");
         return lobMapping;
+    }
+    
+    /**
+     * INTERNAL:
+     */
+    protected XMLDirectMapping getLockModeMapping() {
+        XMLDirectMapping lockModeMapping = new XMLDirectMapping();
+        lockModeMapping.setAttributeName("m_lockMode");
+        lockModeMapping.setGetMethodName("getLockMode");
+        lockModeMapping.setSetMethodName("setLockMode");
+        lockModeMapping.setConverter(new EnumTypeConverter(lockModeMapping, LockModeType.class, false));
+        lockModeMapping.setXPath("orm:lock-mode");
+        return lockModeMapping;
     }
     
     /**

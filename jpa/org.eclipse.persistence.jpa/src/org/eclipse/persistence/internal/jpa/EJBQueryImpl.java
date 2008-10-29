@@ -15,6 +15,8 @@ package org.eclipse.persistence.internal.jpa;
 import java.util.*;
 
 import javax.persistence.LockModeType;
+import javax.persistence.LockTimeoutException;
+import javax.persistence.PessimisticLockException;
 import javax.persistence.Query;
 import javax.persistence.TemporalType;
 import javax.persistence.FlushModeType;
@@ -125,7 +127,7 @@ public class EJBQueryImpl implements org.eclipse.persistence.jpa.JpaQuery {
      * @return a DatabaseQuery representing the given jpql.
      */
     public static DatabaseQuery buildEJBQLDatabaseQuery(String jpql, Session session) {
-        return buildEJBQLDatabaseQuery(null, jpql, null, session, null, null);
+        return buildEJBQLDatabaseQuery(null, jpql, null, session, null, null, null);
     }
     
     /**
@@ -138,7 +140,7 @@ public class EJBQueryImpl implements org.eclipse.persistence.jpa.JpaQuery {
      * @return a DatabaseQuery representing the given jpql.
      */
     public static DatabaseQuery buildEJBQLDatabaseQuery(String queryName, String jpql, 
-            Boolean flushOnExecute, Session session, HashMap hints, ClassLoader classLoader) {            
+            Boolean flushOnExecute, Session session, Enum lockMode, HashMap hints, ClassLoader classLoader) {            
         // PERF: Check if the JPQL has already been parsed.
         // Only allow queries with default properties to be parse cached.
         boolean isCacheable = (queryName == null) && (hints == null) && (flushOnExecute == null);
@@ -170,6 +172,15 @@ public class EJBQueryImpl implements org.eclipse.persistence.jpa.JpaQuery {
                 databaseQuery.cascadeByMapping();
             }
 
+            // Apply the lock mode.
+            if (lockMode != null) {
+                if (databaseQuery.isObjectLevelReadQuery()) {
+                    ((ObjectLevelReadQuery) databaseQuery).setLockModeType((LockModeType)lockMode, (AbstractSession)session);
+                } else {
+                    throw new IllegalArgumentException(ExceptionLocalization.buildMessage("invalid_lock_query", (Object[]) null));
+                }
+            }
+            
             // Apply any query hints.
             databaseQuery = applyHints(hints, databaseQuery);
             if (isCacheable) {
@@ -330,25 +341,19 @@ public class EJBQueryImpl implements org.eclipse.persistence.jpa.JpaQuery {
                 }
             }
         }
-
+        
         // Set a pessimistic locking on the query if specified.
         if (lockMode != null) {
             // We need to throw TransactionRequiredException if there is no 
             // active transaction
             entityManager.checkForTransaction(true);
-
+            
             // The lock mode setters and getters validate the query type
             // so should be safe to make the casting.
-            cloneSharedQuery();                
-            ObjectLevelReadQuery query = (ObjectLevelReadQuery) getDatabaseQuery();
+            cloneSharedQuery();
             
-            if (lockMode.name().contains("PESSIMISTIC")) {
-                if (query.getQueryTimeout() > 0) {
-                    query.setLockMode(ObjectBuildingQuery.LOCK);
-                } else {
-                    query.setLockMode(ObjectBuildingQuery.LOCK_NOWAIT);
-                }
-            }
+            // Set the lock mode (the session is passed in to do some validation checks)
+            ((ObjectLevelReadQuery) getDatabaseQuery()).setLockModeType(lockMode, (AbstractSession) getActiveSession());
         }
         
         try {
@@ -364,37 +369,13 @@ public class EJBQueryImpl implements org.eclipse.persistence.jpa.JpaQuery {
                 }
             }
             
-            // Execute the query.
-            Object result = getActiveSession().executeQuery(getDatabaseQuery(), parameterValues);
-            
-            // If we have an optimistic locking policy, force the update to the
-            // version field if necessary.
-            if (lockMode != null && result != null) {
-                if (lockMode.name().equals("READ") || lockMode.name().equals("WRITE") || lockMode.name().contains("OPTIMISTIC")) {
-                    org.eclipse.persistence.internal.sessions.UnitOfWorkImpl uow = (org.eclipse.persistence.internal.sessions.UnitOfWorkImpl) getActiveSession();
-                    
-                    if (result instanceof Collection) {
-                        Iterator i = ((Collection) result).iterator();
-                        while (i.hasNext()) {
-                            uow.forceUpdateToVersionField(i.next(), lockMode.name().equals("WRITE") || lockMode.name().equals("OPTIMISTIC_FORCE_INCREMENT"));
-                        }
-                    } else {
-                        uow.forceUpdateToVersionField(result, lockMode.name().equals("WRITE") || lockMode.name().equals("OPTIMISTIC_FORCE_INCREMENT"));
-                    }
-                }
-            }
-            
-            // Return the result.
-            return result; 
+            // Execute the query and return the result.
+            return getActiveSession().executeQuery(getDatabaseQuery(), parameterValues);
+        } catch (LockTimeoutException e) {
+            throw e;
+        } catch (PessimisticLockException e) {
+            throw e;
         } catch (Exception e) {
-            if (lockMode.name().contains("PESSIMISTIC")) {
-                if (getDatabaseQuery().getQueryTimeout() > 0) {
-                    throw new javax.persistence.LockTimeoutException(e);
-                } else {
-                    throw new javax.persistence.PessimisticLockException(e);
-                }
-            }
-            
             return null;
         } finally {
             lockMode = null;
@@ -507,8 +488,16 @@ public class EJBQueryImpl implements org.eclipse.persistence.jpa.JpaQuery {
         } else if (!(getDatabaseQuery() instanceof ReadQuery)){
             throw new IllegalStateException(ExceptionLocalization.buildMessage("incorrect_query_for_get_result_collection"));
         }
-        Object result = executeReadQuery();
-        return (Collection)result;
+        
+        try {
+            Object result = executeReadQuery();
+            return (Collection)result;
+        } catch (LockTimeoutException e) {
+            throw e;
+        } catch (RuntimeException e) {
+            setRollbackOnly();
+            throw e;
+        }
     }
 
     /**
@@ -536,6 +525,8 @@ public class EJBQueryImpl implements org.eclipse.persistence.jpa.JpaQuery {
             }
             Object result = executeReadQuery();
             return (List)result;
+        } catch (LockTimeoutException e) {
+            throw e;
         } catch (RuntimeException e) {
             setRollbackOnly();
             throw e;
@@ -582,8 +573,10 @@ public class EJBQueryImpl implements org.eclipse.persistence.jpa.JpaQuery {
                 }
                 return result;
             }
+        } catch (LockTimeoutException e) {
+            throw e;
         } catch (RuntimeException e) {
-            if(rollbackOnException) {
+            if (rollbackOnException) {
                 setRollbackOnly();
             }
             throw e;

@@ -27,6 +27,7 @@ import javax.persistence.EntityExistsException;
 import javax.persistence.EntityNotFoundException;
 import javax.persistence.FlushModeType;
 import javax.persistence.LockModeType;
+import javax.persistence.LockTimeoutException;
 import javax.persistence.PersistenceException;
 import javax.persistence.Query;
 
@@ -37,7 +38,7 @@ import org.eclipse.persistence.exceptions.JPQLException;
 import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.expressions.Expression;
 import org.eclipse.persistence.queries.DatabaseQuery;
-import org.eclipse.persistence.queries.ObjectBuildingQuery;
+import org.eclipse.persistence.queries.ObjectLevelReadQuery;
 import org.eclipse.persistence.queries.ReadAllQuery;
 import org.eclipse.persistence.queries.ReadObjectQuery;
 import org.eclipse.persistence.queries.ResultSetMappingQuery;
@@ -60,6 +61,7 @@ import org.eclipse.persistence.internal.sessions.RepeatableWriteUnitOfWork;
 import org.eclipse.persistence.logging.SessionLog;
 import org.eclipse.persistence.internal.sessions.UnitOfWorkImpl;
 import org.eclipse.persistence.config.EntityManagerProperties;
+import org.eclipse.persistence.descriptors.CMPPolicy;
 import org.eclipse.persistence.config.QueryHints;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.descriptors.VersionLockingPolicy;
@@ -80,12 +82,6 @@ import org.eclipse.persistence.descriptors.VersionLockingPolicy;
 * @since TopLink 10.1.3 EJB 3.0 Preview
 */
 public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityManager {
-    // To avoid any dependencies on new functionalities from JPA 2.0 we'll
-    // reference the new locking strategy by string name.
-    private static final String NONE = "NONE";
-    private static final String PESSIMISTIC = "PESSIMISTIC";
-    private static final String OPTIMISTIC_FORCE_INCREMENT = "OPTIMISTIC_FORCE_INCREMENT";
-    
     protected TransactionWrapperImpl transaction = null;
     protected boolean isOpen = true;
     protected RepeatableWriteUnitOfWork extendedPersistenceContext;
@@ -312,7 +308,7 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
      *   primary key.
      */
     public <T> T find(Class<T> entityClass, Object primaryKey) {
-        return find(entityClass, primaryKey, null, new HashMap());
+        return find(entityClass, primaryKey, null, null);
     }
     
     /**
@@ -349,8 +345,9 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
      * @throws PersistenceException if an unsupported lock call is made
      */
     public <T> T find(Class<T> entityClass, Object primaryKey, LockModeType lockMode) {
-        HashMap queryHints = new HashMap();
+        HashMap queryHints = null;
         if (properties != null && properties.containsKey(QueryHints.PESSIMISTIC_LOCK_TIMEOUT)) {
+            queryHints = new HashMap();
             queryHints.put(QueryHints.PESSIMISTIC_LOCK_TIMEOUT, properties.get(QueryHints.PESSIMISTIC_LOCK_TIMEOUT));
         }
         
@@ -404,12 +401,10 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
                 throw new IllegalArgumentException(ExceptionLocalization.buildMessage("unknown_bean_class", new Object[] { entityClass }));
             }
             return (T) findInternal(descriptor, (UnitOfWork) session, primaryKey, lockMode, properties);
-        } catch (RuntimeException e) {
-            // Only roll back if it is not a LockTimeoutException.
-            if (! (e instanceof javax.persistence.LockTimeoutException)) { 
-                setRollbackOnly();
-            }
-            
+        } catch (LockTimeoutException e) {
+            throw e;
+        } catch (RuntimeException e) { 
+            setRollbackOnly();
             throw e;
         }
     }
@@ -431,12 +426,10 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
                 throw new IllegalArgumentException(ExceptionLocalization.buildMessage("unknown_entitybean_name", new Object[] { entityName }));
             }
             return findInternal(descriptor, session, primaryKey, null, null);
-        } catch (RuntimeException e) {
-            // Only roll back if it is not a LockTimeoutException.
-            if (! (e instanceof javax.persistence.LockTimeoutException)) { 
-                setRollbackOnly();
-            }
-
+        } catch (LockTimeoutException e) {
+            throw e;
+        } catch (RuntimeException e) { 
+            setRollbackOnly();
             throw e;
         }
     }
@@ -459,10 +452,12 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
         if (primaryKey instanceof List) {
             primaryKeyValues = (List)primaryKey;
         } else {
-            if (descriptor.getCMPPolicy().getPKClass() != null && !descriptor.getCMPPolicy().getPKClass().isAssignableFrom(primaryKey.getClass())) {
+            CMPPolicy policy = descriptor.getCMPPolicy();
+            Class pkClass = policy.getPKClass();
+            if ((pkClass != null) && (pkClass != primaryKey.getClass()) && (!pkClass.isAssignableFrom(primaryKey.getClass()))) {
                 throw new IllegalArgumentException(ExceptionLocalization.buildMessage("invalid_pk_class", new Object[] { descriptor.getCMPPolicy().getPKClass(), primaryKey.getClass() }));
             }
-            primaryKeyValues = descriptor.getCMPPolicy().createPkVectorFromKey(primaryKey, (AbstractSession)session);
+            primaryKeyValues = policy.createPkVectorFromKey(primaryKey, (AbstractSession)session);
         }
         
         // Get the read object query and apply the properties to it.
@@ -470,6 +465,8 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
         ReadObjectQuery query = descriptor.getQueryManager().getReadObjectQuery();
         
         if (query == null) {
+            // The properties/query hints and setIsExecutionClone etc. is set
+            // in the getReadObjectQuery.
             query = getReadObjectQuery(descriptor.getJavaClass(), primaryKeyValues, properties);
         } else {
             query.checkPrepare((AbstractSession)session, null);
@@ -531,74 +528,12 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
      * Execute the locking query.
      */
     private Object executeQuery(ReadObjectQuery query, LockModeType lockMode, UnitOfWork uow) {
-        try {
-            ClassDescriptor descriptor;
-            if (query.getSelectionObject() == null) {
-                // No selection object, must be doing a find via primary key.
-                // Use the reference class from the query.
-                descriptor = uow.getDescriptor(query.getReferenceClass());
-            } else {
-                // Use the selection object to get the descriptor.
-                descriptor = uow.getDescriptor(query.getSelectionObject());
-            }
-            
-            OptimisticLockingPolicy lockingPolicy = descriptor.getOptimisticLockingPolicy();
-            
-            if (lockingPolicy == null || !(lockingPolicy instanceof VersionLockingPolicy)) {
-                if (lockMode != null && ! lockMode.name().equals(PESSIMISTIC) && ! lockMode.name().equals(NONE)) {
-                    // Any locking mode other than PESSIMISTIC and NONE needs a 
-                    // version locking policy to be present, otherwise an 
-                    // exception is thrown.
-                    throw new PersistenceException(ExceptionLocalization.buildMessage("ejb30-wrong-lock_called_without_version_locking-index", null));
-                }
-            }
-            
-            if (lockMode == null || lockMode.name().equals(NONE)) {
-                // If force refresh or no selection object has been specified 
-                // (indicating a find by primary key is being executed), then 
-                // set the lock and execute the query.
-                if (query.getSelectionObject() == null || query.shouldRefreshIdentityMapResult()) {
-                    query.setLockMode(ObjectBuildingQuery.NO_LOCK);
-                    return uow.executeQuery(query);
-                } else {
-                    // Just return the selection object.
-                    return query.getSelectionObject();
-                }
-            } else if (lockMode.name().contains(PESSIMISTIC)) {
-                if (query.getQueryTimeout() > 0) {
-                    query.setLockMode(ObjectBuildingQuery.LOCK);
-                } else {
-                    query.setLockMode(ObjectBuildingQuery.LOCK_NOWAIT);    
-                }
-            
-                return uow.executeQuery(query);
-            } else {
-                Object obj;
-                
-                // If force refresh or no selection object has been specified 
-                // (indicating a find by primary key is being executed), then 
-                // execute the query to find the object we must lock.
-                if (query.getSelectionObject() == null || query.shouldRefreshIdentityMapResult()) {
-                    obj = uow.executeQuery(query);
-                } else {
-                    obj = query.getSelectionObject();
-                }
-                
-                uow.forceUpdateToVersionField(obj, (lockMode == LockModeType.WRITE || lockMode.name().equals(OPTIMISTIC_FORCE_INCREMENT)));
-                
-                return obj;
-            }
-        } catch (RuntimeException e) {
-            if (lockMode != null && lockMode.name().contains(PESSIMISTIC)) {
-                if (query.getQueryTimeout() > 0) {
-                    throw new javax.persistence.LockTimeoutException(e);    
-                } else {
-                    throw new javax.persistence.PessimisticLockException(e);    
-                }
-            } else {
-                throw e;
-            }
-        }
+        // Make sure we set the lock mode type if there is one. It will
+        // be handled in the query prepare statement. Setting the lock mode
+        // will validate that a valid locking policy is in place if needed.
+        query.setLockModeType(lockMode, (AbstractSession) getActiveSession());
+        
+        return uow.executeQuery(query);
     }
     
     /**
@@ -634,8 +569,9 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
      * @throws PersistenceException if an unsupported lock call is made
      */
     public void refresh(Object entity, LockModeType lockMode) {
-        HashMap queryHints = new HashMap();
+        HashMap queryHints = null;
         if (properties != null && properties.containsKey(QueryHints.PESSIMISTIC_LOCK_TIMEOUT)) {
+            queryHints = new HashMap();
             queryHints.put(QueryHints.PESSIMISTIC_LOCK_TIMEOUT, properties.get(QueryHints.PESSIMISTIC_LOCK_TIMEOUT));
         }
         
@@ -697,12 +633,10 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
                 // bug5955326, ReadObjectQuery will now ensure the object is invalidated if refresh returns null.
                 throw new EntityNotFoundException(ExceptionLocalization.buildMessage("entity_no_longer_exists_in_db", new Object[] { entity }));
             }
-        } catch (RuntimeException exception) {
-            // Only roll back if it is not a LockTimeoutException.
-            if (! (exception instanceof javax.persistence.LockTimeoutException)) { 
-                setRollbackOnly();
-            }
-            
+        } catch (LockTimeoutException e) {
+            throw e;
+        } catch (RuntimeException exception) { 
+            setRollbackOnly();
             throw exception;
         }
     }
@@ -1139,8 +1073,9 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
      * @throws javax.persistence.TransactionRequiredException if there is no transaction
      */
     public void lock(Object entity, LockModeType lockMode) {
-        HashMap queryHints = new HashMap();
+        HashMap queryHints = null;
         if (properties != null && properties.containsKey(QueryHints.PESSIMISTIC_LOCK_TIMEOUT)) {
+            queryHints = new HashMap();
             queryHints.put(QueryHints.PESSIMISTIC_LOCK_TIMEOUT, properties.get(QueryHints.PESSIMISTIC_LOCK_TIMEOUT));
         }
         
@@ -1163,25 +1098,35 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
         try {
             verifyOpen();
             
-            // Get the read object query and apply the properties to it.        
-            ReadObjectQuery query = getReadObjectQuery(entity, properties);
+            if (lockMode.name().contains(ObjectLevelReadQuery.PESSIMISTIC)) {
+                // Get the read object query and apply the properties to it.        
+                ReadObjectQuery query = getReadObjectQuery(entity, properties);
+                
+                // Apply any EclipseLink defaults if they haven't been set through
+                // the properties.
+                if (properties == null || ! properties.containsKey(QueryHints.REFRESH)) {
+                    query.refreshIdentityMapResult();
+                }
+                
+                if (properties == null || ! properties.containsKey(QueryHints.REFRESH_CASCADE)) {
+                    query.cascadePrivateParts();
+                }
+                
+                executeQuery(query, lockMode, getActivePersistenceContext(checkForTransaction(!isExtended())));
+            } else {
+                RepeatableWriteUnitOfWork context = getActivePersistenceContext(checkForTransaction(!isExtended()));
+                ClassDescriptor descriptor = context.getDescriptor(entity);
+                OptimisticLockingPolicy lockingPolicy = descriptor.getOptimisticLockingPolicy();
+                if ((lockingPolicy == null) || !(lockingPolicy instanceof VersionLockingPolicy)) {
+                    throw new PersistenceException(ExceptionLocalization.buildMessage("ejb30-wrong-lock_called_without_version_locking-index", null));
+                }
             
-            // Apply any EclipseLink defaults if they haven't been set through
-            // the properties.
-            if (properties == null || ! properties.containsKey(QueryHints.REFRESH)) {
-                query.refreshIdentityMapResult();
+                context.forceUpdateToVersionField(entity, (lockMode == LockModeType.WRITE || lockMode.name().equals(ObjectLevelReadQuery.OPTIMISTIC_FORCE_INCREMENT)));
             }
-            
-            if (properties == null || ! properties.containsKey(QueryHints.REFRESH_CASCADE)) {
-                query.cascadePrivateParts();
-            }
-            
-            executeQuery(query, lockMode, getActivePersistenceContext(checkForTransaction(!isExtended())));
+        } catch (LockTimeoutException e) {
+            throw e;
         } catch (RuntimeException e) {
-            if (! (e instanceof javax.persistence.LockTimeoutException)) {
-                setRollbackOnly();
-            }
-            
+            setRollbackOnly();
             throw e;
         }
     }

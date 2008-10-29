@@ -34,6 +34,7 @@ import org.eclipse.persistence.internal.sessions.AbstractSession;
  * @since TopLink EJB 3.0 Reference Implementation
  */
 public class NamedQueryMetadata extends ORMetadata {
+    private Enum m_lockMode;
     private List<QueryHintMetadata> m_hints = new ArrayList<QueryHintMetadata>();
     private String m_name;
     private String m_query;
@@ -61,7 +62,8 @@ public class NamedQueryMetadata extends ORMetadata {
         
         m_name = (String) MetadataHelper.invokeMethod("name", namedQuery);
         m_query = (String) MetadataHelper.invokeMethod("query", namedQuery);
-
+        m_lockMode = (Enum) MetadataHelper.invokeMethod("lockMode", namedQuery);
+        
         for (Annotation hint : (Annotation[]) MetadataHelper.invokeMethod("hints", namedQuery)) {
             m_hints.add(new QueryHintMetadata(hint, accessibleObject));
         }
@@ -110,6 +112,14 @@ public class NamedQueryMetadata extends ORMetadata {
      * INTERNAL:
      * Used for OX mapping.
      */
+    public Enum getLockMode() {
+        return m_lockMode;
+    }
+    
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
     public String getName() {
         return m_name;
     }
@@ -128,7 +138,7 @@ public class NamedQueryMetadata extends ORMetadata {
     public void process(AbstractSession session, ClassLoader loader) {
         try {
             HashMap<String, String> hints = processQueryHints(session);
-            session.addJPAQuery(new JPAQuery(getName(), getQuery(), hints));
+            session.addJPAQuery(new JPAQuery(getName(), getQuery(), getLockMode(), hints));
         } catch (Exception exception) {
             throw ValidationException.errorProcessingNamedQuery(getClass(), getName(), exception);
         }
@@ -154,6 +164,14 @@ public class NamedQueryMetadata extends ORMetadata {
      */
     public void setHints(List<QueryHintMetadata> hints) {
         m_hints = hints;
+    }
+    
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+    public void setLockMode(Enum lockMode) {
+        m_lockMode = lockMode;
     }
     
     /**

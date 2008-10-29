@@ -128,6 +128,16 @@ public class AdvancedTableCreator extends TableCreator {
         fieldType.setShouldAllowNull(true);
         table.addField(fieldType);
         
+        FieldDefinition fieldVERSION = new FieldDefinition();
+        fieldVERSION.setName("VERSION");
+        fieldVERSION.setTypeName("NUMERIC");
+        fieldVERSION.setSize(15);
+        fieldVERSION.setShouldAllowNull(true);
+        fieldVERSION.setIsPrimaryKey(false);
+        fieldVERSION.setUnique(false);
+        fieldVERSION.setIsIdentity(false);
+        table.addField(fieldVERSION);
+        
         return table;
     }
     

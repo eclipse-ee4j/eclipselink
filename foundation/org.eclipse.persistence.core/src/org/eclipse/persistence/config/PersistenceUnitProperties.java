@@ -411,6 +411,14 @@ public class PersistenceUnitProperties {
     public static final String PERSISTENCE_CONTEXT_REFERENCE_MODE = "eclipselink.persistence-context.reference-mode";
 
     /**
+     * Configures the WAIT timeout used in pessimistic locking, if the database 
+     * query exceeds the timeout the database will terminate the query and 
+     * return an exception. Valid values are Integer or Strings that can be 
+     * parsed to int values.
+     */
+    public static final String PESSIMISTIC_LOCK_TIMEOUT = "javax.persistence.lock.timeout";
+    
+    /**
      * Specifies that the EntityManager will be closed or not used after commit (not extended).
      * In general this is normally always the case for a container managed EntityManager,
      * and common for application managed.

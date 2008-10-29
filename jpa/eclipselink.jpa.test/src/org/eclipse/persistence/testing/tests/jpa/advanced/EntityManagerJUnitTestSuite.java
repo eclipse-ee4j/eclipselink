@@ -162,6 +162,8 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         suite.addTest(new EntityManagerJUnitTestSuite("testSerializedLazy"));
         suite.addTest(new EntityManagerJUnitTestSuite("testCloneable"));
         suite.addTest(new EntityManagerJUnitTestSuite("testLeftJoinOneToOneQuery"));
+        suite.addTest(new EntityManagerJUnitTestSuite("testLockingLeftJoinOneToOneQuery"));
+        suite.addTest(new EntityManagerJUnitTestSuite("testLockingLeftJoinOneToOneQuery2"));
         suite.addTest(new EntityManagerJUnitTestSuite("testNullifyAddressIn"));
         suite.addTest(new EntityManagerJUnitTestSuite("testQueryOnClosedEM"));
         suite.addTest(new EntityManagerJUnitTestSuite("testIncorrectBatchQueryHint"));
@@ -411,8 +413,10 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
     }
     
     public void testRefreshPESSIMISTICLock() {
+        ServerSession session = JUnitTestCase.getServerSession();
+        
         // Cannot create parallel entity managers in the server.
-        if (! isOnServer()) {
+        if (! isOnServer() && ! session.getPlatform().isMySQL() && ! session.getPlatform().isTimesTen()) {
             EntityManager em = createEntityManager();
             Department dept = null;
             
@@ -444,7 +448,10 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
                 try {
                     beginTransaction(em2);
                     Department dept2 = em2.find(Department.class, dept.getId());
-                    em2.refresh(dept2, LockModeType.PESSIMISTIC);
+                    HashMap properties = new HashMap();
+                    // According to the spec a 0 indicates a NOWAIT clause.
+                    properties.put(QueryHints.PESSIMISTIC_LOCK_TIMEOUT, 0);
+                    em2.refresh(dept2, LockModeType.PESSIMISTIC, properties);
                 } catch (PersistenceException ex) {
                     if (ex instanceof javax.persistence.PessimisticLockException) {
                         pessimisticLockException = ex;
@@ -1285,9 +1292,14 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         }
     }
     
+    /**
+     * This test issues a LOCK and a LOCK NOWAIT.
+     */
     public void testPESSIMISTICLock() {
+        ServerSession session = JUnitTestCase.getServerSession();
+        
         // Cannot create parallel entity managers in the server.
-        if (! isOnServer()) {
+        if (! isOnServer() && ! session.getPlatform().isMySQL() && ! session.getPlatform().isTimesTen()) {
             EntityManager em = createEntityManager();
             Department dept = null;
             
@@ -1319,7 +1331,10 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
                 try {
                     beginTransaction(em2);
                     Department dept2 = em2.find(Department.class, dept.getId());
-                    em2.lock(dept2, LockModeType.PESSIMISTIC);
+                    HashMap properties = new HashMap();
+                    // According to the spec a 0 indicates a NOWAIT clause.
+                    properties.put(QueryHints.PESSIMISTIC_LOCK_TIMEOUT, 0);
+                    em2.lock(dept2, LockModeType.PESSIMISTIC, properties);
                 } catch (PersistenceException ex) {
                     if (ex instanceof javax.persistence.PessimisticLockException) {
                         pessimisticLockException = ex;
@@ -1389,8 +1404,10 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
     }
     
     public void testPESSIMISTIC_TIMEOUTLock() {
+        ServerSession session = JUnitTestCase.getServerSession();
+        
         // Cannot create parallel entity managers in the server.
-        if (! isOnServer()) {
+        if (! isOnServer() && ! session.getPlatform().isMySQL() && ! session.getPlatform().isTimesTen()) {
             EntityManager em = createEntityManager();
             List result = em.createQuery("Select employee from Employee employee").getResultList();
             Employee employee = (Employee) result.get(0);
@@ -3854,6 +3871,68 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         EntityManager em = createEntityManager();
         List results = em.createQuery("SELECT a FROM Employee e LEFT JOIN e.address a").getResultList();
         closeEntityManager(em);
+    }
+    
+    // Test multiple items from a report query. Will verify the version on
+    // only one of the results.
+    public void testLockingLeftJoinOneToOneQuery() {
+        // Grab a copy of the results that we will lock then verify.
+        List<Object[]> results = createEntityManager().createQuery("SELECT m, e FROM Employee e LEFT JOIN e.manager m").getResultList();
+        
+        if (! results.isEmpty()) {
+            // Issuing the force increment locking query.
+            EntityManager em = createEntityManager();
+            beginTransaction(em);
+            em.createQuery("SELECT m, e FROM Employee e LEFT JOIN e.manager m").setLockMode(LockModeType.OPTIMISTIC_FORCE_INCREMENT).getResultList();
+            commitTransaction(em);
+        
+            // Verify the items of the result list all had a version increment.
+            for (Object[] result : results) {
+                Employee managerBefore = (Employee) result[0];
+                if (managerBefore != null) {
+                    int managerVersionBefore = managerBefore.getVersion();
+                    Employee managerAfter = em.find(Employee.class, managerBefore.getId());
+                    int managerVersionAfter = managerAfter.getVersion();
+                    assertTrue("The manager version was not updated on the locking query.", (managerVersionAfter - managerVersionBefore) == 1);
+                }
+                
+                Employee employeeBefore = (Employee) result[1];
+                if (employeeBefore != null) {
+                    int employeeVersionBefore = employeeBefore.getVersion();
+                    Employee employeeAfter = em.find(Employee.class, employeeBefore.getId());
+                    int employeeVersionAfter = employeeAfter.getVersion();
+                    assertTrue("The manager version was not updated on the locking query.", (employeeVersionAfter - employeeVersionBefore) == 1);
+                }
+            }
+        
+            closeEntityManager(em);
+        }
+    }
+    
+    // Test single item from a report query.
+    public void testLockingLeftJoinOneToOneQuery2() {
+        // Grab a copy of the results that we will lock then verify.
+        List<Address> results = createEntityManager().createQuery("SELECT a FROM Employee e LEFT JOIN e.address a").getResultList();
+        
+        if (results != null) {
+            // Issuing the force increment locking query.
+            EntityManager em = createEntityManager();
+            beginTransaction(em);
+            em.createQuery("SELECT a FROM Employee e LEFT JOIN e.address a").setLockMode(LockModeType.OPTIMISTIC_FORCE_INCREMENT).getResultList();
+            commitTransaction(em);
+            
+            // Verify the items of the result list all had a version increment.
+            for (Address address : results) {
+                if (address != null) {
+                    int versionBefore = address.getVersion();    
+                    Address addressAfter = em.find(Address.class, address.getId());
+                    int versionAfter = addressAfter.getVersion();
+                    assertTrue("The version on an address was not updated on the locking query.", (versionAfter - versionBefore) == 1);
+                }
+            }
+            
+            closeEntityManager(em);
+        }
     }
 
     // Test the clone method works correctly with lazy attributes.

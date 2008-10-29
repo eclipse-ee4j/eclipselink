@@ -87,8 +87,8 @@ public class ClientSession extends AbstractSession {
         this.sessionLog = parent.getSessionLog();
         this.eventManager = parent.getEventManager().clone(this);
         this.exceptionHandler = parent.getExceptionHandler();
+        this.pessimisticLockTimeoutDefault = parent.getPessimisticLockTimeoutDefault();
         this.properties = properties;
-
         this.eventManager.postAcquireClientSession();
         incrementProfile(SessionProfiler.ClientSessionCreated);
     }

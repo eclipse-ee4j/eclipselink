@@ -15,14 +15,20 @@ package org.eclipse.persistence.queries;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
+import javax.persistence.LockModeType;
+import javax.persistence.PersistenceException;
+
 import org.eclipse.persistence.descriptors.ClassDescriptor;
+import org.eclipse.persistence.descriptors.VersionLockingPolicy;
 import org.eclipse.persistence.exceptions.*;
 import org.eclipse.persistence.expressions.*;
 import org.eclipse.persistence.history.*;
 import org.eclipse.persistence.internal.databaseaccess.DatabaseCall;
+import org.eclipse.persistence.internal.descriptors.OptimisticLockingPolicy;
 import org.eclipse.persistence.internal.expressions.*;
 import org.eclipse.persistence.internal.helper.*;
 import org.eclipse.persistence.internal.history.*;
+import org.eclipse.persistence.internal.localization.ExceptionLocalization;
 import org.eclipse.persistence.internal.queries.*;
 import org.eclipse.persistence.mappings.*;
 import org.eclipse.persistence.mappings.querykeys.*;
@@ -42,7 +48,14 @@ import org.eclipse.persistence.logging.SessionLog;
  * @since TOPLink/Java 1.0
  */
 public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
-
+    // Names of the possible lock more types.
+    public static final String NONE = "NONE";
+    public static final String PESSIMISTIC = "PESSIMISTIC";
+    public static final String READ = "READ";
+    public static final String WRITE = "WRITE";
+    public static final String OPTIMISTIC = "OPTIMISTIC";
+    public static final String OPTIMISTIC_FORCE_INCREMENT = "OPTIMISTIC_FORCE_INCREMENT";
+    
     /** Provide a default builder so that it's easier to be consistent */
     protected ExpressionBuilder defaultBuilder;
 
@@ -120,6 +133,17 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
     
     /** Allow concrete subclasses calls to be prepared and cached for inheritance queries. */
     protected Map<Class, DatabaseCall> concreteSubclassCalls;
+    
+    /** Used when specifying a lock mode for the query */
+    protected String lockModeType;
+    
+    /**
+     * waitTimeout has three possible setting: null, 0 and 1..N
+     * null: use the session.getPessimisticLockTimeoutDefault() if available.
+     * 0: issue a LOCK_NOWAIT
+     * 1..N: use this value to set the WAIT clause.
+     */
+    protected Integer waitTimeout;
     
     /**
      * INTERNAL:
@@ -226,6 +250,33 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
      */
     protected boolean wasDefaultLockMode() {
         return wasDefaultLockMode;
+    }
+    
+    /**
+     * PUBLIC:
+     * Sets that this a pessimistic wait locking query.
+     * <ul>
+     * <li>ObjectBuildingQuery.LOCK: SELECT .... FOR UPDATE WAIT issued.
+     * </ul>
+     * <p>Fine Grained Locking: On execution the reference class and those of 
+     * all joined attributes will be checked. If any of these have a 
+     * PessimisticLockingPolicy set on their descriptor, they will be locked 
+     * in a SELECT ... FOR UPDATE OF ... {NO WAIT}. Issues fewer locks
+     * and avoids setting the lock mode on each query.
+     * 
+     * <p>Example:
+     * <code>readAllQuery.setSelectionCriteria(employee.get("address").equal("Ottawa"));</code>
+     * <ul>
+     * <li>LOCK: all employees in Ottawa and all referenced Ottawa addresses 
+     * will be locked and the lock will wait only the specified amount of time.
+     * </ul>
+     * @see org.eclipse.persistence.descriptors.PessimisticLockingPolicy
+     */
+    public void setWaitTimeout(Integer waitTimeout) {
+        this.waitTimeout = waitTimeout;
+        setIsPrePrepared(false);
+        setIsPrepared(false);
+        setWasDefaultLockMode(false);
     }
     
     /**
@@ -837,6 +888,7 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
         if (shouldRefreshIdentityMapResult() && shouldCheckCacheOnly()) {
             throw QueryException.refreshNotPossibleWithCheckCacheOnly(this);
         }
+        
         return super.execute(session, translationRow);
     }
 
@@ -894,12 +946,60 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
      * Execute the query in the unit of work.
      * This allows any pre-execute checks to be done for unit of work queries.
      */
-    public Object executeInUnitOfWork(UnitOfWorkImpl unitOfWork, AbstractRecord translationRow) throws DatabaseException, OptimisticLockException {
-        if (!shouldMaintainCache() || isReadOnly()) {
-            return unitOfWork.getParent().executeQuery(this, translationRow);
+    public Object executeInUnitOfWork(UnitOfWorkImpl unitOfWork, AbstractRecord translationRow) throws DatabaseException, OptimisticLockException {        
+        Object result = null;
+        
+        try {
+            if (!shouldMaintainCache() || isReadOnly()) {
+                result = unitOfWork.getParent().executeQuery(this, translationRow);
+            } else {
+                result = execute(unitOfWork, translationRow);
+            }
+            
+            // If a lockModeType was set (from JPA) we need to check if we need
+            // to perform a force update to the version field.
+            if (lockModeType != null && result != null) {
+                if (lockModeType.equals(READ) || lockModeType.equals(WRITE) || lockModeType.contains(OPTIMISTIC)) {
+                    boolean forceUpdateToVersionField = lockModeType.equals(WRITE) || lockModeType.equals(OPTIMISTIC_FORCE_INCREMENT);
+                    
+                    if (result instanceof Collection) {
+                        Iterator i = ((Collection) result).iterator();
+                        while (i.hasNext()) {
+                            Object obj = i.next();
+                            
+                            if (obj != null) {
+                                // If it is a report query the result could be an array of objects. Must
+                                // also deal with null results.
+                                if (obj instanceof Object[]) {    
+                                    for (Object o : (Object[]) obj) {
+                                        if (o != null) {
+                                            unitOfWork.forceUpdateToVersionField(o, forceUpdateToVersionField);
+                                        }
+                                    }
+                                } else {
+                                    unitOfWork.forceUpdateToVersionField(obj, forceUpdateToVersionField);
+                                }
+                            }
+                        }
+                    } else {
+                        unitOfWork.forceUpdateToVersionField(result, forceUpdateToVersionField);
+                    }
+                }
+            }
+        } catch (DatabaseException e) {
+            // If we catch a database exception as a result of executing a
+            // pessimistic locking query we need to ask the platform which
+            // JPA 2.0 locking exception we should throw. It will be either
+            // be a PessimisticLockException or a LockTimeoutException (if
+            // the query was executed using a wait timeout value)
+            if (lockModeType != null && lockModeType.contains(PESSIMISTIC)) {
+                throw unitOfWork.getPlatform().getLockException(e);
+            } else {
+                throw e;
+            }
         }
         
-        return execute(unitOfWork, translationRow);
+        return result;
     }
 
     /**
@@ -1412,6 +1512,14 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
     }
  
     /**
+     * PUBLIC:
+     * Return the WAIT timeout value of pessimistic locking query.
+     */
+    public Integer getWaitTimeout() {
+        return waitTimeout;
+    }
+    
+    /**
      * Initialize the expression builder which should be used for this query. If
      * there is a where clause, use its expression builder, otherwise
      * generate one and cache it. This helps avoid unnecessary rebuilds.
@@ -1491,7 +1599,7 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
         }
         return false;
     }
-
+    
     /**
      * PUBLIC:
      * Queries prepare common stated in themselves.
@@ -1646,6 +1754,26 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
             getJoinedAttributeManager().processJoinedMappings();
         }
 
+        if (lockModeType != null) {
+            if (lockModeType.equals(NONE)) {
+                setLockMode(ObjectBuildingQuery.NO_LOCK);
+            } else if (lockModeType.contains(PESSIMISTIC)) {
+                // If no wait timeout was set from a query hint, grab the
+                // default one from the session if one is available.
+                Integer timeout = (waitTimeout == null) ? getSession().getPessimisticLockTimeoutDefault() : waitTimeout;
+                
+                if (timeout == null) {
+                    setLockMode(ObjectBuildingQuery.LOCK);
+                } else {
+                    if (timeout.intValue() == 0) {
+                        setLockMode(ObjectBuildingQuery.LOCK_NOWAIT);    
+                    } else {
+                        lockingClause = ForUpdateClause.newInstance(timeout);    
+                    }
+                }
+            }
+        }
+        
         // modify query for locking only if locking has not been configured
         if (isDefaultLock()) {
             setWasDefaultLockMode(true);
@@ -1946,6 +2074,38 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
         setIsPrepared(false);
     }
 
+    /**
+     * INTERNAL:
+     * Sets a javax.persistence.LockModeType to used with this queries execution. 
+     * The valid types are:
+     *  - WRITE
+     *  - READ
+     *  - OPTIMISTIC
+     *  - OPTIMISTIC_FORCE_INCREMENT
+     *  - PESSIMISTIC
+     *  - PESSIMISTIC_FORCE_INCREMENT
+     *  - NONE
+     * Setting a null type will do nothing.
+     */
+    public void setLockModeType(LockModeType lockModeType, AbstractSession session) {
+        if (lockModeType != null) {
+            OptimisticLockingPolicy lockingPolicy = session.getDescriptor(getReferenceClass()).getOptimisticLockingPolicy();
+        
+            if (lockingPolicy == null || !(lockingPolicy instanceof VersionLockingPolicy)) {
+                if (! lockModeType.name().equals(PESSIMISTIC) && ! lockModeType.name().equals(NONE)) {
+                    // Any locking mode other than PESSIMISTIC and NONE needs a 
+                    // version locking policy to be present, otherwise an exception is thrown.
+                    throw new PersistenceException(ExceptionLocalization.buildMessage("ejb30-wrong-lock_called_without_version_locking-index", null));
+                }
+            }
+            
+            this.lockModeType = lockModeType.name();
+            setIsPrePrepared(false);
+            setIsPrepared(false);
+            setWasDefaultLockMode(false);
+        }
+    }
+    
     /**
      * INTERNAL:
      * Return the attributes that must be joined, but not fetched, that is,
@@ -2334,7 +2494,7 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
     }
     
     /**
-     * INTERNAL: Helper method to determine the default mode. If true and quey has a pessimistic locking policy,
+     * INTERNAL: Helper method to determine the default mode. If true and query has a pessimistic locking policy,
      * locking will be configured according to the pessimistic locking policy.
      */
     public boolean isDefaultLock() {

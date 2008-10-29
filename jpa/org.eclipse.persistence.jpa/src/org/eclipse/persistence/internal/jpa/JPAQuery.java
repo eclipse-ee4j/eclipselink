@@ -31,7 +31,7 @@ import org.eclipse.persistence.sessions.Session;
  */
 
 public class JPAQuery extends DatabaseQuery  {
-
+    private Enum lockMode;
     private String jpqlString;
     private Boolean flushOnExecute;
     private HashMap hints;
@@ -43,11 +43,12 @@ public class JPAQuery extends DatabaseQuery  {
         this.jpqlString=jpqlString;
     }
     
-    public JPAQuery(String name, String jpqlString, HashMap hints) {
+    public JPAQuery(String name, String jpqlString, Enum lockMode, HashMap hints) {
         this.name=name;
         this.jpqlString=jpqlString;
         this.flushOnExecute=null;
         this.hints=hints;
+        this.lockMode=lockMode;
     }  
     
     public JPAQuery(String name, String jpqlString,  Boolean flushOnExecute, HashMap hints) {
@@ -99,7 +100,7 @@ public class JPAQuery extends DatabaseQuery  {
     public DatabaseQuery processJPQLQuery(Session session){
         ClassLoader classloader = session.getDatasourcePlatform().getConversionManager().getLoader();
         DatabaseQuery ejbquery = EJBQueryImpl.buildEJBQLDatabaseQuery(
-            this.getName(), jpqlString,  flushOnExecute, session, hints, classloader);
+            this.getName(), jpqlString,  flushOnExecute, session, lockMode, hints, classloader);
         ejbquery.setName(this.getName());
         return ejbquery;
     }    

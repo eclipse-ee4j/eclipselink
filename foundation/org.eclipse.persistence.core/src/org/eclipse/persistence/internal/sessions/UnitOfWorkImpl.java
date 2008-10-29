@@ -273,7 +273,8 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
         this.sessionLog = parent.getSessionLog();
         this.eventManager = parent.getEventManager().clone(this);
         this.exceptionHandler = parent.getExceptionHandler();
-
+        this.pessimisticLockTimeoutDefault = parent.getPessimisticLockTimeoutDefault();
+        
         // Initialize the readOnlyClasses variable.
         this.setReadOnlyClasses(parent.copyReadOnlyClasses());
         this.validationLevel = Partial;
@@ -5144,7 +5145,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
         }
         return pessimisticLockedObjects;
     }
-
+    
     public void addToChangeTrackedHardList(Object obj){
     	if (this.referenceMode != ReferenceMode.HARD){
     		this.getChangeTrackedHardList().add(obj);

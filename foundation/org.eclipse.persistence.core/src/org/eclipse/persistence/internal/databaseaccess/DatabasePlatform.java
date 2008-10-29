@@ -40,8 +40,11 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Vector;
 
+import javax.persistence.PessimisticLockException;
+
 // EclipseLink imports
 import org.eclipse.persistence.descriptors.ClassDescriptor;
+import org.eclipse.persistence.exceptions.DatabaseException;
 import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.internal.expressions.ExpressionSQLPrinter;
 import org.eclipse.persistence.internal.expressions.ParameterExpression;
@@ -1027,6 +1030,21 @@ public class DatabasePlatform extends DatasourcePlatform {
     }
 
     /**
+     * Return a JPA 2.0 PessimisticLockException.
+     * If a WAIT clause is specified, we need to throw a LockTimeoutException.
+     * Therefore, if the platform supports this clause, this method should be
+     * overridden and handled accordingly.
+     * 
+     * By default though, this method will return a PessimisticLockException 
+     * which forces a rollback of the transaction.
+     * 
+     * @see OraclePlatform.
+     */
+    public RuntimeException getLockException(DatabaseException e) {
+        return new PessimisticLockException(e);
+    }
+    
+    /**
      * Used for determining if an SQL exception was communication based. This SQL should be
      * as efficient as possible and ensure a round trip to the database.
      */
@@ -1107,6 +1125,14 @@ public class DatabasePlatform extends DatasourcePlatform {
      * Some require the OF some don't like it.
      */
     public String getSelectForUpdateString() {
+        return " FOR UPDATE";
+    }
+    
+    /**
+     * Platforms that support the WAIT option should override this method.
+     * By default the wait timeout is ignored.
+     */
+    public String getSelectForUpdateWaitString(Integer waitTimeout) {
         return " FOR UPDATE";
     }
 

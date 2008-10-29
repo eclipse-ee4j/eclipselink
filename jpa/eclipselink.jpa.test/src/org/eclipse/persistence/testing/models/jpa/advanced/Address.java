@@ -15,6 +15,7 @@ package org.eclipse.persistence.testing.models.jpa.advanced;
 import java.util.*;
 import java.io.Serializable;
 import javax.persistence.*;
+
 import static javax.persistence.CascadeType.*;
 
 import org.eclipse.persistence.annotations.NamedStoredProcedureQuery;
@@ -82,6 +83,7 @@ import static org.eclipse.persistence.annotations.Direction.IN_OUT;
 })
 public class Address implements Serializable {
 	private int id;
+	private Integer version;
 	private String street;
 	private String city;
     private String province;
@@ -182,5 +184,14 @@ public class Address implements Serializable {
     
     public void setType(AddressType type){
         this.type = type;
+    }
+    
+    @Version
+    public Integer getVersion() {
+        return version; 
+    }
+    
+    public void setVersion(Integer version) {
+        this.version = version;
     }
 }

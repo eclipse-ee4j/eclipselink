@@ -442,7 +442,12 @@ public class QueryHintsHandler {
         }
     
         DatabaseQuery applyToDatabaseQuery(Object valueToApply, DatabaseQuery query) {
-            query.setQueryTimeout(QueryHintsHandler.parseIntegerHint(valueToApply, QueryHints.PESSIMISTIC_LOCK_TIMEOUT));
+            if (query.isObjectLevelReadQuery()) {                    
+                ((ObjectLevelReadQuery) query).setWaitTimeout(QueryHintsHandler.parseIntegerHint(valueToApply, QueryHints.PESSIMISTIC_LOCK_TIMEOUT));
+            } else {
+                throw new IllegalArgumentException(ExceptionLocalization.buildMessage("ejb30-wrong-type-for-query-hint",new Object[]{getQueryId(query), name, getPrintValue(valueToApply)}));
+            }
+            
             return query;
         }
     }

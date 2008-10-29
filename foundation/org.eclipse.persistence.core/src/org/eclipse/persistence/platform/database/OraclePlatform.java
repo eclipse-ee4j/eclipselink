@@ -24,6 +24,9 @@ import java.util.Calendar;
 import java.util.Hashtable;
 import java.util.Vector;
 
+import javax.persistence.LockTimeoutException;
+
+import org.eclipse.persistence.exceptions.DatabaseException;
 import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.expressions.ExpressionOperator;
 import org.eclipse.persistence.internal.databaseaccess.DatabaseCall;
@@ -266,7 +269,7 @@ public class OraclePlatform extends org.eclipse.persistence.platform.database.Da
     public String getDeclareBeginString() {
         return "DECLARE ";
     }
-
+    
     /**
      * Used for batch writing and sp defs.
      */
@@ -315,6 +318,23 @@ public class OraclePlatform extends org.eclipse.persistence.platform.database.Da
     }
 
     /**
+     * Return a JPA 2.0 pessimistic locking exception.
+     * Oracle supports the WAIT clause. If there is a way we can determine the
+     * exception was indeed caused by a WAIT expiry, it should be figured out
+     * here. For the time being, if a query was executed with a timeout value
+     * greater than 0 we assume we need to throw a LockTimeoutException. A
+     * LockTimeoutException will not cause a rollback to occur.
+     */
+    @Override
+    public RuntimeException getLockException(DatabaseException e) {
+        if (e.getInternalException() instanceof java.sql.SQLException && ((java.sql.SQLException) e.getInternalException()).getErrorCode() == 30006) {
+            return new LockTimeoutException(e);
+        } else {
+            return super.getLockException(e);
+        }
+    }
+    
+    /**
      * Used for sp calls.
      */
     public String getProcedureArgumentSetter() {
@@ -337,6 +357,11 @@ public class OraclePlatform extends org.eclipse.persistence.platform.database.Da
 
     public String getSelectForUpdateString() {
         return " FOR UPDATE";
+    }
+    
+    @Override
+    public String getSelectForUpdateWaitString(Integer waitTimeout) {
+        return " FOR UPDATE WAIT " + waitTimeout.intValue();
     }
 
     public String getStoredProcedureParameterPrefix() {

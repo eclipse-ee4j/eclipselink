@@ -75,6 +75,7 @@ import static org.eclipse.persistence.annotations.OptimisticLockingType.VERSION_
 ),
 @NamedQuery(
 	name="findFieldAccessEmployeeByPK",
+	lockMode=LockModeType.PESSIMISTIC,
 	query="SELECT OBJECT(employee) FROM Employee employee WHERE employee.id = :id"
 ),
 @NamedQuery(

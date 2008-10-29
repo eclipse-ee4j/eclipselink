@@ -26,6 +26,7 @@ import org.eclipse.persistence.queries.ObjectBuildingQuery;
 public class ForUpdateClause implements Serializable, Cloneable {
     protected static final ForUpdateClause NO_LOCK_CLAUSE = new ForUpdateClause();
     short lockMode;
+    Integer waitTimeout;
 
     public ForUpdateClause() {
         this.lockMode = ObjectBuildingQuery.NO_LOCK;
@@ -33,6 +34,11 @@ public class ForUpdateClause implements Serializable, Cloneable {
 
     public ForUpdateClause(short lockMode) {
         this.lockMode = lockMode;
+    }
+    
+    public ForUpdateClause(Integer waitTimeout) {
+        this.lockMode = ObjectBuildingQuery.LOCK;
+        this.waitTimeout = waitTimeout;
     }
 
     public Object clone() {
@@ -50,7 +56,11 @@ public class ForUpdateClause implements Serializable, Cloneable {
             return new ForUpdateClause(lockMode);
         }
     }
-
+    
+    public static ForUpdateClause newInstance(Integer waitTimeout) {
+        return new ForUpdateClause(waitTimeout);
+    }
+    
     public boolean isForUpdateOfClause() {
         return false;
     }
@@ -58,11 +68,15 @@ public class ForUpdateClause implements Serializable, Cloneable {
     public boolean isReferenceClassLocked() {
         return true;
     }
-
+    
     public short getLockMode() {
         return lockMode;
     }
-
+    
+    public Integer getWaitTimeout() {
+        return waitTimeout;
+    }
+    
     /**
      * INTERNAL:
      * Prints the as of clause for an expression inside of the FROM clause.
@@ -70,7 +84,11 @@ public class ForUpdateClause implements Serializable, Cloneable {
     public void printSQL(ExpressionSQLPrinter printer, SQLSelectStatement statement) {
         // Append lock strings
         if (getLockMode() == ObjectBuildingQuery.LOCK) {
-            printer.printString(printer.getSession().getPlatform().getSelectForUpdateString());
+            if (waitTimeout == null) {
+                printer.printString(printer.getSession().getPlatform().getSelectForUpdateString());
+            } else {
+                printer.printString(printer.getSession().getPlatform().getSelectForUpdateWaitString(waitTimeout));
+            }
         } else if (lockMode == ObjectBuildingQuery.LOCK_NOWAIT) {
             printer.printString(printer.getSession().getPlatform().getSelectForUpdateNoWaitString());
         }

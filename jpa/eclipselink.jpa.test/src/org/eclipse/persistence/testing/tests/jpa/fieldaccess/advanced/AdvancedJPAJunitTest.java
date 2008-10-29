@@ -13,7 +13,11 @@
 package org.eclipse.persistence.testing.tests.jpa.fieldaccess.advanced;
 
 import java.util.Collection;
+import java.util.HashMap;
+
 import javax.persistence.EntityManager;
+import javax.persistence.LockModeType;
+import javax.persistence.PersistenceException;
 
 import junit.framework.*;
 import junit.extensions.TestSetup;
@@ -25,6 +29,7 @@ import org.eclipse.persistence.internal.jpa.EJBQueryImpl;
 import org.eclipse.persistence.internal.jpa.EntityManagerImpl;
 
 import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
+import org.eclipse.persistence.config.QueryHints;
 import org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced.Address;
 import org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced.AdvancedTableCreator;
 import org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced.Department;
@@ -87,6 +92,8 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
         
         suite.addTest(new AdvancedJPAJunitTest("testNamedStoredProcedureQuery"));
         suite.addTest(new AdvancedJPAJunitTest("testNamedStoredProcedureQueryInOut"));
+        
+        suite.addTest(new AdvancedJPAJunitTest("testPessimisticLockingNamedQuery"));
 
         return new TestSetup(suite) {
             protected void setUp() { 
@@ -691,5 +698,78 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
         }
         
         closeEntityManager(em);
+    }
+    
+    /**
+     * This tests verifies two things:
+     * 1 - That a metadata named query is processed correctly when it uses a 
+     * lock mode type.
+     * 2 - That a default persistence unit lock timeout value is correctly
+     * processed and utilized.
+     */
+    public void testPessimisticLockingNamedQuery() {
+        ServerSession session = JUnitTestCase.getServerSession();
+        
+        // Cannot create parallel entity managers in the server.
+        if (! isOnServer() && ! session.getPlatform().isMySQL() && ! session.getPlatform().isTimesTen()) {
+            EntityManager em = createEntityManager("fieldaccess");
+            Employee employee;
+            
+            try {
+                beginTransaction(em);
+                employee = new Employee();
+                employee.setFirstName("Lucie");
+                employee.setLastName("Ogdensburgh");
+                em.persist(employee);
+                commitTransaction(em);
+            } catch (RuntimeException ex) {
+                if (isTransactionActive(em)) {
+                    rollbackTransaction(em);
+                }
+             
+                closeEntityManager(em);
+                throw ex;
+            }
+            
+            Exception lockTimeoutException = null;
+            
+            try {
+                beginTransaction(em);
+                // This query is configured as a pessimistic locking query.
+                employee = (Employee) em.createNamedQuery("findFieldAccessEmployeeByPK").setParameter("id", employee.getId()).getSingleResult();
+                EntityManager em2 = createEntityManager("fieldaccess");
+                
+                try {
+                    beginTransaction(em2);
+                    // This find should pick up a lock timeout value from the 
+                    // session default. In case it doesn't we'll set a jdbc 
+                    // timeout (bigger than the lock timeout default so we don't 
+                    // get deadlocked).
+                    HashMap properties = new HashMap();
+                    properties.put(QueryHints.JDBC_TIMEOUT, 10);
+                    Employee emp2 = em2.find(Employee.class, employee.getId(), LockModeType.PESSIMISTIC);
+                } catch (PersistenceException ex) {
+                    if (ex instanceof javax.persistence.LockTimeoutException) {
+                        lockTimeoutException = ex;
+                    } else {
+                        throw ex;
+                    } 
+                } finally {
+                    closeEntityManager(em2);
+                }
+            
+                commitTransaction(em);
+            } catch (RuntimeException ex) {
+                if (isTransactionActive(em)) {
+                    rollbackTransaction(em);
+                }
+                
+                throw ex;
+            } finally {
+                closeEntityManager(em);
+            }
+            
+            assertFalse("A lock timeout exception was not thrown (likely because the persistence unit lock timeout default property was not processed).", lockTimeoutException == null);
+        }
     }
 }

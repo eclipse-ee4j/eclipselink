@@ -13,12 +13,19 @@
 package org.eclipse.persistence.queries;
 
 import java.util.*;
+
+import javax.persistence.LockModeType;
+import javax.persistence.PersistenceException;
+
 import org.eclipse.persistence.descriptors.ClassDescriptor;
+import org.eclipse.persistence.descriptors.VersionLockingPolicy;
 import org.eclipse.persistence.expressions.*;
+import org.eclipse.persistence.internal.descriptors.OptimisticLockingPolicy;
 import org.eclipse.persistence.internal.expressions.*;
 import org.eclipse.persistence.internal.queries.*;
 import org.eclipse.persistence.exceptions.*;
 import org.eclipse.persistence.internal.helper.*;
+import org.eclipse.persistence.internal.localization.ExceptionLocalization;
 import org.eclipse.persistence.internal.sessions.remote.*;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
@@ -926,6 +933,42 @@ public class ReportQuery extends ReadAllQuery {
         this.items = items;
     }
 
+    /**
+     * INTERNAL:
+     * Sets a javax.persistence.LockModeType to used with this queries execution. 
+     * The valid types are:
+     *  - WRITE
+     *  - READ
+     *  - OPTIMISTIC
+     *  - OPTIMISTIC_FORCE_INCREMENT
+     *  - PESSIMISTIC
+     *  - PESSIMISTIC_FORCE_INCREMENT
+     *  - NONE
+     * Setting a null type will do nothing.
+     */
+    @Override
+    public void setLockModeType(LockModeType lockModeType, AbstractSession session) {
+        if (lockModeType != null) {
+            super.setLockModeType(lockModeType, session);
+        
+            // When a lock mode is used, we must validate that our report items 
+            // all have a version locking policy if the lock is set to anything 
+            // but PESSIMISTIC and NONE. Validate only those report items that
+            // are expression builders (ignoring the others)
+            if (! lockModeType.equals(PESSIMISTIC) && ! lockModeType.equals(NONE)) {
+                for (ReportItem reportItem : (Vector<ReportItem>) getItems()) {
+                    if (reportItem.getAttributeExpression() != null && reportItem.getAttributeExpression().isExpressionBuilder()) {
+                        OptimisticLockingPolicy lockingPolicy = ((ReportItem) reportItem).getDescriptor().getOptimisticLockingPolicy();
+                    
+                        if (lockingPolicy == null || !(lockingPolicy instanceof VersionLockingPolicy)) {
+                            throw new PersistenceException(ExceptionLocalization.buildMessage("ejb30-wrong-lock_called_without_version_locking-index", null));
+                        }
+                    }
+                }
+            }
+        }
+    }
+    
     /**
      * INTERNAL:
      * Clear the ReportQueryItems
