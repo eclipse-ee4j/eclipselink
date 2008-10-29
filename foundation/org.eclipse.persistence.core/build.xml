@@ -44,6 +44,10 @@
         <fileset
             dir="${eclipselink.plugins}"
             includes="${eclipselink.core.depend}"/>
+
+         <!-- TEMPORARY HACK PENDING DECISION ABOUT WHETHER ECLIPSELINK FOUNDATION WILL DEPEND ON JPA CLASSES -->
+         <pathelement path="${eclipselink.jpa}/../plugins/javax.persistence_1.99.0.jar"/>
+         <!-- End of Temporary hack -->
     </path>
     
 
