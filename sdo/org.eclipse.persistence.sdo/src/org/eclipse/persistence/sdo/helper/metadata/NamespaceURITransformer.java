@@ -10,66 +10,28 @@
  * Contributors:
  *     rick.barkhouse - added as part of fix for SDO 2.1.1 TCK 'sdoPathXSDQNameTest' 
  ******************************************************************************/
-package org.eclipse.persistence.sdo.helper;
+package org.eclipse.persistence.sdo.helper.metadata;
 
 import org.eclipse.persistence.mappings.foundation.AbstractTransformationMapping;
-import org.eclipse.persistence.mappings.transformers.AttributeTransformer;
 import org.eclipse.persistence.mappings.transformers.FieldTransformer;
 import org.eclipse.persistence.oxm.NamespaceResolver;
 import org.eclipse.persistence.oxm.XMLDescriptor;
-import org.eclipse.persistence.oxm.record.XMLRecord;
-import org.eclipse.persistence.sessions.Record;
 import org.eclipse.persistence.sessions.Session;
 
-public class QNameTransformer implements AttributeTransformer, FieldTransformer {
+public class NamespaceURITransformer implements FieldTransformer {
 
-    private static final char COLON = ':';
     private static final char HASH = '#';
-    private static final String DEFAULT_NAMESPACE_PREFIX = "";
-
+    
     AbstractTransformationMapping transformationMapping;
     private NamespaceResolver namespaceResolver;
-    private String xPath;
 
-    public QNameTransformer(String xPath) {
+    public NamespaceURITransformer() {
         super();
-        this.xPath = xPath;
     }
 
     public void initialize(AbstractTransformationMapping mapping) {
         transformationMapping = mapping;
         namespaceResolver = ((XMLDescriptor) mapping.getDescriptor()).getNamespaceResolver();
-    }
-
-    public Object buildAttributeValue(Record record, Object object, Session session) {
-        if (null == record) {
-            return null;
-        }
-
-        String value = (String) record.get(xPath);
-        if (null == value) {
-            return null;
-        }
-
-        int index = value.lastIndexOf(COLON);
-        if (index > -1) {
-            String prefix =  value.substring(0, index);
-            String localName = value.substring(index + 1);
-            String namespaceURI = ((XMLRecord) record).resolveNamespacePrefix(prefix);
-            if (namespaceURI != null) {
-                return namespaceURI + HASH + localName;
-            } else {
-                return localName;
-            }
-        } else {
-            String namespaceURI = ((XMLRecord) record).resolveNamespacePrefix(DEFAULT_NAMESPACE_PREFIX);
-            if (namespaceURI != null) {
-                return namespaceURI + HASH + value;    
-            } else {
-                return value;
-            }
-
-        }
     }
 
     public Object buildFieldValue(Object instance, String fieldName, Session session) {
@@ -81,14 +43,15 @@ public class QNameTransformer implements AttributeTransformer, FieldTransformer 
 
         int index = value.lastIndexOf(HASH);
         if (index > -1) {
-            String namespaceURI =  value.substring(0, index);
-            String localName = value.substring(index + 1);
+            String namespaceURI = value.substring(0, index);
 
             String prefix = namespaceResolver.resolveNamespaceURI(namespaceURI);
-
-            return prefix + COLON + localName;
+            if (prefix == null) {
+                return namespaceURI;
+            }
+            return null;
         } else {
-            return value;
+            return null;
         }
     }
 

@@ -28,7 +28,6 @@ import javax.xml.namespace.QName;
 import org.eclipse.persistence.sdo.helper.AttributeMimeTypePolicy;
 import org.eclipse.persistence.sdo.helper.InstanceClassConverter;
 import org.eclipse.persistence.sdo.helper.ListWrapper;
-import org.eclipse.persistence.sdo.helper.QNameTransformer;
 import org.eclipse.persistence.sdo.helper.SDOMethodAttributeAccessor;
 import org.eclipse.persistence.sdo.helper.SDOXSDHelper;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
@@ -36,6 +35,7 @@ import org.eclipse.persistence.exceptions.SDOException;
 import org.eclipse.persistence.internal.helper.ClassConstants;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.mappings.DatabaseMapping;
+import org.eclipse.persistence.oxm.NamespaceResolver;
 import org.eclipse.persistence.oxm.XMLConstants;
 import org.eclipse.persistence.oxm.XMLField;
 import org.eclipse.persistence.oxm.mappings.FixedMimeTypePolicy;
@@ -60,6 +60,8 @@ import org.eclipse.persistence.oxm.mappings.nullpolicy.AbstractNullPolicy;
 import org.eclipse.persistence.oxm.mappings.nullpolicy.IsSetNullPolicy;
 import org.eclipse.persistence.oxm.mappings.nullpolicy.XMLNullRepresentationType;
 import org.eclipse.persistence.sdo.helper.SDOFragmentMappingAttributeAccessor;
+import org.eclipse.persistence.sdo.helper.metadata.NamespaceURITransformer;
+import org.eclipse.persistence.sdo.helper.metadata.QNameTransformer;
 
 /**
  * <p><b>Purpose</b>:A representation of a Property in the {@link Type type} of a {@link DataObject data object}.
@@ -662,10 +664,20 @@ public class SDOProperty implements Property, Serializable {
         mapping.setAttributeName(getName());
 
         String xpath = getQualifiedXPath(mappingUri, true);
+        String xpathMinusText = xpath.substring(0, xpath.lastIndexOf("/text()"));
         QNameTransformer transformer = new QNameTransformer(xpath);
 
         mapping.setAttributeTransformer(transformer);
         mapping.addFieldTransformer(xpath, transformer);
+        
+        NamespaceResolver nsr = new NamespaceResolver();
+        nsr.put(XMLConstants.XMLNS, XMLConstants.XMLNS_URL);
+
+        XMLField field = new XMLField();
+        field.setNamespaceResolver(nsr);
+        field.setXPath(xpathMinusText + "/@" + XMLConstants.XMLNS + ":" + QNameTransformer.QNAME_NAMESPACE_PREFIX);
+        
+        mapping.addFieldTransformer(field, new NamespaceURITransformer());
         
         return mapping;
     }
