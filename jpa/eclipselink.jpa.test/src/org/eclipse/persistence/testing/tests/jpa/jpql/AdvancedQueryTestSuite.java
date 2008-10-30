@@ -93,9 +93,11 @@ public class AdvancedQueryTestSuite extends JUnitTestCase {
         suite.addTest(new AdvancedQueryTestSuite("testQueryWRITELock"));
         suite.addTest(new AdvancedQueryTestSuite("testQueryOPTIMISTICLock"));
         suite.addTest(new AdvancedQueryTestSuite("testQueryOPTIMISTIC_FORCE_INCREMENTLock"));
-        suite.addTest(new AdvancedQueryTestSuite("testQueryPESSIMISTICLock"));
+        // Temporary removal of JPA 2.0 dependency
+        //suite.addTest(new AdvancedQueryTestSuite("testQueryPESSIMISTICLock"));
         suite.addTest(new AdvancedQueryTestSuite("testQueryPESSIMISTIC_FORCE_INCREMENTLock"));
-        suite.addTest(new AdvancedQueryTestSuite("testQueryPESSIMISTICTIMEOUTLock"));
+        // Temporary removal of JPA 2.0 dependency
+        //suite.addTest(new AdvancedQueryTestSuite("testQueryPESSIMISTICTIMEOUTLock"));
         
         return suite;
     }

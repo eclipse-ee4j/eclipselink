@@ -93,7 +93,8 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
         suite.addTest(new AdvancedJPAJunitTest("testNamedStoredProcedureQuery"));
         suite.addTest(new AdvancedJPAJunitTest("testNamedStoredProcedureQueryInOut"));
         
-        suite.addTest(new AdvancedJPAJunitTest("testPessimisticLockingNamedQuery"));
+        // Temporary removal of JPA 2.0 dependency
+        //suite.addTest(new AdvancedJPAJunitTest("testPessimisticLockingNamedQuery"));
 
         return new TestSetup(suite) {
             protected void setUp() { 

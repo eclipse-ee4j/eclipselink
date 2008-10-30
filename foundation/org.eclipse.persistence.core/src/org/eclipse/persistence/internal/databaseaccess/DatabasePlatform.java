@@ -40,7 +40,8 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Vector;
 
-import javax.persistence.PessimisticLockException;
+// Temporary dependency removal.
+//import javax.persistence.PessimisticLockException;
 
 // EclipseLink imports
 import org.eclipse.persistence.descriptors.ClassDescriptor;
@@ -1041,7 +1042,9 @@ public class DatabasePlatform extends DatasourcePlatform {
      * @see OraclePlatform.
      */
     public RuntimeException getLockException(DatabaseException e) {
-        return new PessimisticLockException(e);
+        return e;
+        // Temporary dependency removal.
+        //return new PessimisticLockException(e);
     }
     
     /**

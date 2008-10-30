@@ -206,11 +206,14 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         suite.addTest(new EntityManagerJUnitTestSuite("testPersistRemoved"));
         suite.addTest(new EntityManagerJUnitTestSuite("testREADLock"));
         suite.addTest(new EntityManagerJUnitTestSuite("testOPTIMISTICLock"));
-        suite.addTest(new EntityManagerJUnitTestSuite("testPESSIMISTICLock"));
+        // Temporary removal of JPA 2.0 dependency
+        //suite.addTest(new EntityManagerJUnitTestSuite("testPESSIMISTICLock"));
         suite.addTest(new EntityManagerJUnitTestSuite("testPESSIMISTIC_FORCE_INCREMENTLock"));
-        suite.addTest(new EntityManagerJUnitTestSuite("testPESSIMISTIC_TIMEOUTLock"));
+        // Temporary removal of JPA 2.0 dependency
+        //suite.addTest(new EntityManagerJUnitTestSuite("testPESSIMISTIC_TIMEOUTLock"));
         suite.addTest(new EntityManagerJUnitTestSuite("testRefreshOPTIMISTICLock"));
-        suite.addTest(new EntityManagerJUnitTestSuite("testRefreshPESSIMISTICLock"));
+        // Temporary removal of JPA 2.0 dependency
+        //suite.addTest(new EntityManagerJUnitTestSuite("testRefreshPESSIMISTICLock"));
         suite.addTest(new EntityManagerJUnitTestSuite("testIgnoreRemovedObjectsOnDatabaseSync"));
         suite.addTest(new EntityManagerJUnitTestSuite("testIdentityOutsideTransaction"));
         suite.addTest(new EntityManagerJUnitTestSuite("testIdentityInsideTransaction"));

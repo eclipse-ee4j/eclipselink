@@ -24,7 +24,8 @@ import java.util.Calendar;
 import java.util.Hashtable;
 import java.util.Vector;
 
-import javax.persistence.LockTimeoutException;
+// Temporary dependency removal.
+//import javax.persistence.LockTimeoutException;
 
 import org.eclipse.persistence.exceptions.DatabaseException;
 import org.eclipse.persistence.exceptions.ValidationException;
@@ -327,11 +328,15 @@ public class OraclePlatform extends org.eclipse.persistence.platform.database.Da
      */
     @Override
     public RuntimeException getLockException(DatabaseException e) {
-        if (e.getInternalException() instanceof java.sql.SQLException && ((java.sql.SQLException) e.getInternalException()).getErrorCode() == 30006) {
-            return new LockTimeoutException(e);
-        } else {
-            return super.getLockException(e);
-        }
+        return e;
+        
+        // Temporary dependency removal.
+        
+        //if (e.getInternalException() instanceof java.sql.SQLException && ((java.sql.SQLException) e.getInternalException()).getErrorCode() == 30006) {
+          //  return new LockTimeoutException(e);
+        //} else {
+            //return super.getLockException(e);
+        //}
     }
     
     /**
