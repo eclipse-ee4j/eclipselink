@@ -2763,6 +2763,7 @@ public class DateAndTimeTestCases extends OXTestCase {
         Calendar calendar = Calendar.getInstance();
         calendar.clear();
         calendar.setTimeInMillis(CONTROL_DATE_TIME_0MS);
+        calendar.clear(Calendar.ZONE_OFFSET);
         String control = "1975-02-21";
         String test = (String)xcm.convertObject(calendar, String.class, XMLConstants.DATE_QNAME);
         this.assertEquals(control, test);
@@ -2779,6 +2780,7 @@ public class DateAndTimeTestCases extends OXTestCase {
         Calendar calendar = Calendar.getInstance();
         calendar.clear();
         calendar.setTimeInMillis(CONTROL_DATE_TIME_0MS);
+        calendar.clear(Calendar.ZONE_OFFSET);
         String control = "1975-02-21T07:47:15.0";
         String test = (String)xcm.convertObject(calendar, String.class, XMLConstants.DATE_TIME_QNAME);
         this.assertEquals(control, test);
@@ -2788,6 +2790,7 @@ public class DateAndTimeTestCases extends OXTestCase {
         Calendar calendar = Calendar.getInstance();
         calendar.clear();
         calendar.setTimeInMillis(CONTROL_DATE_TIME_1MS);
+        calendar.clear(Calendar.ZONE_OFFSET);
         String control = "1975-02-21T07:47:15.001";
         String test = (String)xcm.convertObject(calendar, String.class, XMLConstants.DATE_TIME_QNAME);
         this.assertEquals(control, test);
@@ -2797,6 +2800,7 @@ public class DateAndTimeTestCases extends OXTestCase {
         Calendar calendar = Calendar.getInstance();
         calendar.clear();
         calendar.setTimeInMillis(CONTROL_DATE_TIME_10MS);
+        calendar.clear(Calendar.ZONE_OFFSET);
         String control = "1975-02-21T07:47:15.01";
         String test = (String)xcm.convertObject(calendar, String.class, XMLConstants.DATE_TIME_QNAME);
         this.assertEquals(control, test);
@@ -2806,6 +2810,7 @@ public class DateAndTimeTestCases extends OXTestCase {
         Calendar calendar = Calendar.getInstance();
         calendar.clear();
         calendar.setTimeInMillis(CONTROL_DATE_TIME_100MS);
+        calendar.clear(Calendar.ZONE_OFFSET);
         String control = "1975-02-21T07:47:15.1";
         String test = (String)xcm.convertObject(calendar, String.class, XMLConstants.DATE_TIME_QNAME);
         this.assertEquals(control, test);
@@ -2822,6 +2827,7 @@ public class DateAndTimeTestCases extends OXTestCase {
         Calendar calendar = Calendar.getInstance();
         calendar.clear();
         calendar.setTimeInMillis(CONTROL_DATE_TIME_0MS);
+        calendar.clear(Calendar.ZONE_OFFSET);
         String control = "07:47:15.0";
         String test = (String)xcm.convertObject(calendar, String.class, XMLConstants.TIME_QNAME);
         this.assertEquals(control, test);
@@ -2831,6 +2837,7 @@ public class DateAndTimeTestCases extends OXTestCase {
         Calendar calendar = Calendar.getInstance();
         calendar.clear();
         calendar.setTimeInMillis(CONTROL_DATE_TIME_1MS);
+        calendar.clear(Calendar.ZONE_OFFSET);
         String control = "07:47:15.001";
         String test = (String)xcm.convertObject(calendar, String.class, XMLConstants.TIME_QNAME);
         this.assertEquals(control, test);
@@ -2840,6 +2847,7 @@ public class DateAndTimeTestCases extends OXTestCase {
         Calendar calendar = Calendar.getInstance();
         calendar.clear();
         calendar.setTimeInMillis(CONTROL_DATE_TIME_10MS);
+        calendar.clear(Calendar.ZONE_OFFSET);
         String control = "07:47:15.01";
         String test = (String)xcm.convertObject(calendar, String.class, XMLConstants.TIME_QNAME);
         this.assertEquals(control, test);
@@ -2849,6 +2857,7 @@ public class DateAndTimeTestCases extends OXTestCase {
         Calendar calendar = Calendar.getInstance();
         calendar.clear();
         calendar.setTimeInMillis(CONTROL_DATE_TIME_100MS);
+        calendar.clear(Calendar.ZONE_OFFSET);
         String control = "07:47:15.1";
         String test = (String)xcm.convertObject(calendar, String.class, XMLConstants.TIME_QNAME);
         this.assertEquals(control, test);
@@ -2865,6 +2874,7 @@ public class DateAndTimeTestCases extends OXTestCase {
         Calendar calendar = Calendar.getInstance();
         calendar.clear();
         calendar.setTimeInMillis(CONTROL_DATE_TIME_0MS);
+        calendar.clear(Calendar.ZONE_OFFSET);
         String control = "---21";
         String test = (String)xcm.convertObject(calendar, String.class, XMLConstants.G_DAY_QNAME);
         this.assertEquals(control, test);    	
@@ -2881,6 +2891,7 @@ public class DateAndTimeTestCases extends OXTestCase {
         Calendar calendar = Calendar.getInstance();
         calendar.clear();
         calendar.setTimeInMillis(CONTROL_DATE_TIME_0MS);
+        calendar.clear(Calendar.ZONE_OFFSET);
         String control = "--02";
         String test = (String)xcm.convertObject(calendar, String.class, XMLConstants.G_MONTH_QNAME);
         this.assertEquals(control, test);    	
@@ -2897,6 +2908,7 @@ public class DateAndTimeTestCases extends OXTestCase {
         Calendar calendar = Calendar.getInstance();
         calendar.clear();
         calendar.setTimeInMillis(CONTROL_DATE_TIME_0MS);
+        calendar.clear(Calendar.ZONE_OFFSET);
         String control = "--02-21";
         String test = (String)xcm.convertObject(calendar, String.class, XMLConstants.G_MONTH_DAY_QNAME);
         this.assertEquals(control, test);    	
@@ -2913,6 +2925,7 @@ public class DateAndTimeTestCases extends OXTestCase {
         Calendar calendar = Calendar.getInstance();
         calendar.clear();
         calendar.setTimeInMillis(CONTROL_DATE_TIME_0MS);
+        calendar.clear(Calendar.ZONE_OFFSET);
         String control = "1975";
         String test = (String)xcm.convertObject(calendar, String.class, XMLConstants.G_YEAR_QNAME);
         this.assertEquals(control, test);    	
@@ -2929,6 +2942,7 @@ public class DateAndTimeTestCases extends OXTestCase {
         Calendar calendar = Calendar.getInstance();
         calendar.clear();
         calendar.setTimeInMillis(CONTROL_DATE_TIME_0MS);
+        calendar.clear(Calendar.ZONE_OFFSET);
         String control = "1975-02";
         String test = (String)xcm.convertObject(calendar, String.class, XMLConstants.G_YEAR_MONTH_QNAME);
         this.assertEquals(control, test);    	

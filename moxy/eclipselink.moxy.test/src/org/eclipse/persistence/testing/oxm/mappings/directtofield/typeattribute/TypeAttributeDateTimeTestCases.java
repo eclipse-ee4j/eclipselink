@@ -14,6 +14,8 @@ package org.eclipse.persistence.testing.oxm.mappings.directtofield.typeattribute
 
 import java.io.InputStream;
 import java.util.Calendar;
+import java.util.TimeZone;
+
 import org.eclipse.persistence.testing.oxm.mappings.XMLMappingTestCases;
 import org.eclipse.persistence.exceptions.ConversionException;
 
@@ -32,6 +34,7 @@ public class TypeAttributeDateTimeTestCases extends XMLMappingTestCases {
     }
 
     private void buildCalendar() {
+        CONTROL_ID.clear();
         CONTROL_ID.set(Calendar.YEAR, 2000);
         CONTROL_ID.set(Calendar.MONTH, Calendar.JANUARY);
         CONTROL_ID.set(Calendar.DAY_OF_MONTH, 2);

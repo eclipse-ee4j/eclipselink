@@ -50,33 +50,36 @@ public class TypedDirectMappingTestCases extends XMLMappingTestCases {
 
 			Date parsedDate = new SimpleDateFormat(TIME_FORMAT).parse("23:21:00");
 			time = Calendar.getInstance();
-			time.setTime(parsedDate); time.clear(Calendar.YEAR); time.clear(Calendar.MONTH); time.clear(Calendar.DATE);
+			time.setTime(parsedDate); time.clear(Calendar.YEAR); time.clear(Calendar.MONTH); time.clear(Calendar.DATE); time.clear(Calendar.ZONE_OFFSET);
 			parsedDate = new SimpleDateFormat(TIME_FORMAT).parse("23:58:00");
 			time2 = Calendar.getInstance();
-			time2.setTime(parsedDate); time2.clear(Calendar.YEAR); time2.clear(Calendar.MONTH); time2.clear(Calendar.DATE);
+			time2.setTime(parsedDate); time2.clear(Calendar.YEAR); time2.clear(Calendar.MONTH); time2.clear(Calendar.DATE); time2.clear(Calendar.ZONE_OFFSET);
 			parsedDate = new SimpleDateFormat(TIME_FORMAT).parse("06:00:00");
 			time3 = Calendar.getInstance();
-			time3.setTime(parsedDate); time3.clear(Calendar.YEAR); time3.clear(Calendar.MONTH); time3.clear(Calendar.DATE);
+			time3.setTime(parsedDate); time3.clear(Calendar.YEAR); time3.clear(Calendar.MONTH); time3.clear(Calendar.DATE); time3.clear(Calendar.ZONE_OFFSET);
 
 			parsedDate = new SimpleDateFormat(DATE_FORMAT).parse("1976-02-17");
 			date = Calendar.getInstance();
-			date.setTime(parsedDate); date.clear(Calendar.HOUR); date.clear(Calendar.MINUTE); date.clear(Calendar.SECOND); date.clear(Calendar.MILLISECOND);
+			date.setTime(parsedDate); date.clear(Calendar.HOUR); date.clear(Calendar.MINUTE); date.clear(Calendar.SECOND); date.clear(Calendar.MILLISECOND); date.clear(Calendar.ZONE_OFFSET);
 			parsedDate = new SimpleDateFormat(DATE_FORMAT).parse("1976-04-09");
 			date2 = Calendar.getInstance();
-			date2.setTime(parsedDate); date2.clear(Calendar.HOUR); date2.clear(Calendar.MINUTE); date2.clear(Calendar.SECOND); date2.clear(Calendar.MILLISECOND);
+			date2.setTime(parsedDate); date2.clear(Calendar.HOUR); date2.clear(Calendar.MINUTE); date2.clear(Calendar.SECOND); date2.clear(Calendar.MILLISECOND); date2.clear(Calendar.ZONE_OFFSET);
 			parsedDate = new SimpleDateFormat(DATE_FORMAT).parse("1978-04-18");
 			date3 = Calendar.getInstance();
-			date3.setTime(parsedDate); date3.clear(Calendar.HOUR); date3.clear(Calendar.MINUTE); date3.clear(Calendar.SECOND); date3.clear(Calendar.MILLISECOND);
+			date3.setTime(parsedDate); date3.clear(Calendar.HOUR); date3.clear(Calendar.MINUTE); date3.clear(Calendar.SECOND); date3.clear(Calendar.MILLISECOND); date3.clear(Calendar.ZONE_OFFSET);
 
 			parsedDate = new SimpleDateFormat(DATE_TIME_FORMAT).parse("1976-02-17T23:21:00");
 			dateTime = Calendar.getInstance(); dateTime.clear();
 			dateTime.setTime(parsedDate);
+			dateTime.clear(Calendar.ZONE_OFFSET);
 			parsedDate = new SimpleDateFormat(DATE_TIME_FORMAT).parse("1976-04-09T23:58:00");
 			dateTime2 = Calendar.getInstance(); dateTime2.clear();
 			dateTime2.setTime(parsedDate);
+            dateTime2.clear(Calendar.ZONE_OFFSET);
 			parsedDate = new SimpleDateFormat(DATE_TIME_FORMAT).parse("1978-04-18T06:00:00");
 			dateTime3 = Calendar.getInstance(); dateTime3.clear();
 			dateTime3.setTime(parsedDate);
+            dateTime3.clear(Calendar.ZONE_OFFSET);
 
             typedDate = new SimpleDateFormat(DATE_FORMAT).parse("1978-08-02");
             untypedDate = new SimpleDateFormat(DATE_TIME_FORMAT).parse("1978-08-02T01:00:00");

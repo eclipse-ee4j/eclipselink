@@ -23,23 +23,22 @@ public class DataHelperToTimeWithCalnTest extends DataHelperTestCases {
 
     public void testToTimeWithFullSetting() {
         Calendar controlCalendar = Calendar.getInstance();
-        controlCalendar.clear();
         controlCalendar.set(Calendar.YEAR, 2001);
         controlCalendar.set(Calendar.MONTH, 4);
         controlCalendar.set(Calendar.DATE, 1);
-        controlCalendar.set(Calendar.HOUR, 12);
+        controlCalendar.set(Calendar.HOUR_OF_DAY, 11);
         controlCalendar.set(Calendar.MINUTE, 23);
         controlCalendar.set(Calendar.SECOND, 11);
         controlCalendar.set(Calendar.MILLISECOND, 1);
         controlCalendar.setTimeZone(TimeZone.getTimeZone("GMT"));
         String tm = dataHelper.toTime(controlCalendar);
-        this.assertEquals("12:23:11.001Z", tm);
+        this.assertEquals("11:23:11.001Z", tm);
     }
 
     public void testToTimeWithDefault() {
-        Calendar controlCalendar = Calendar.getInstance();
+        Calendar controlCalendar = Calendar.getInstance(TimeZone.getTimeZone("GMT"));
         controlCalendar.clear();
-        controlCalendar.setTimeZone(TimeZone.getTimeZone("GMT"));
+        controlCalendar.set(Calendar.ZONE_OFFSET, 0);
         String tm = dataHelper.toTime(controlCalendar);
         this.assertEquals("00:00:00.0Z", tm);
     }

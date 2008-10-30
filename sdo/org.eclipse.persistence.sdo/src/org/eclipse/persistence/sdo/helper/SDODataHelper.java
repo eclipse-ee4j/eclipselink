@@ -23,9 +23,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.TimeZone;
 
-import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeConstants;
-import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.Duration;
 import javax.xml.datatype.XMLGregorianCalendar;
 import javax.xml.namespace.QName;
@@ -85,6 +83,31 @@ public class SDODataHelper implements DataHelper {
     }
 
     /**
+     * Creates a Calendar based on a given Duration and Locale.
+     * 
+     * @param dur the Duration object to use to populate the Calendar
+     * @param loc the Locale to use - null is a valid value
+     *            
+     * @return a Calendar 
+     */
+    private Calendar toCalendar(Duration dur, Locale loc) {
+        Calendar cal;
+        if (loc == null) {
+            cal = Calendar.getInstance(getXMLConversionManager().getTimeZone());
+        } else {
+            cal = Calendar.getInstance(getXMLConversionManager().getTimeZone(), loc);
+        }
+        cal.setTimeInMillis(dur.getTimeInMillis(cal));
+        cal.set(Calendar.YEAR, dur.getYears());
+        cal.set(Calendar.MONTH, dur.getMonths() - 1);
+        cal.set(Calendar.DATE, dur.getDays());
+        cal.set(Calendar.HOUR_OF_DAY, dur.getHours());
+        cal.set(Calendar.MINUTE, dur.getMinutes());
+        cal.set(Calendar.SECOND, dur.getSeconds());
+        return cal;
+    }
+    
+    /**
      * Convert from a String representation of an SDO date type to a Calendar
      * using the default locale. Same as toCalendar(dateString, null).
      * 
@@ -95,63 +118,7 @@ public class SDODataHelper implements DataHelper {
      *             for invalid formats.
      */
     public Calendar toCalendar(String dateString) {
-        if (null == dateString) {
-            return null;
-        }
-
-        // Handle duration if necessary
-        if (dateString.startsWith("P")) {
-            Calendar cal = Calendar.getInstance(getXMLConversionManager().getTimeZone());
-            cal.clear();
-            try {
-                Duration dur = DatatypeFactory.newInstance().newDuration(dateString);
-                cal.setTimeInMillis(dur.getTimeInMillis(cal));
-                cal.set(Calendar.YEAR, dur.getYears());
-                cal.set(Calendar.MONTH, dur.getMonths() - 1);
-                cal.set(Calendar.DATE, dur.getDays());
-            } catch (DatatypeConfigurationException e) {
-                throw new RuntimeException(e);
-            }
-            return cal;
-        }
-
-        try {
-            // AN XML GREGORIAN CALENDAR COULD BE USED TO PARSE THE DATE STRING
-            DatatypeFactory df = DatatypeFactory.newInstance();
-            XMLGregorianCalendar xgc = df.newXMLGregorianCalendar(dateString);
-
-            Calendar calendar = Calendar.getInstance(getXMLConversionManager().getTimeZone());
-            calendar.clear();
-
-            if (xgc.getTimezone() != DatatypeConstants.FIELD_UNDEFINED) {
-                calendar.set(Calendar.ZONE_OFFSET, xgc.getTimezone() * 60000);
-            }
-            if (xgc.getYear() != DatatypeConstants.FIELD_UNDEFINED) {
-                calendar.set(Calendar.YEAR, xgc.getYear());
-            }
-            if (xgc.getMonth() != DatatypeConstants.FIELD_UNDEFINED) {
-                calendar.set(Calendar.MONTH, xgc.getMonth() - 1);
-            }
-            if (xgc.getDay() != DatatypeConstants.FIELD_UNDEFINED) {
-                calendar.set(Calendar.DAY_OF_MONTH, xgc.getDay());
-            }
-            if (xgc.getHour() != DatatypeConstants.FIELD_UNDEFINED) {
-                calendar.set(Calendar.HOUR_OF_DAY, xgc.getHour());
-            }
-            if (xgc.getMinute() != DatatypeConstants.FIELD_UNDEFINED) {
-                calendar.set(Calendar.MINUTE, xgc.getMinute());
-            }
-            if (xgc.getSecond() != DatatypeConstants.FIELD_UNDEFINED) {
-                calendar.set(Calendar.SECOND, xgc.getSecond());
-            }
-            if (xgc.getMillisecond() != DatatypeConstants.FIELD_UNDEFINED) {
-                calendar.set(Calendar.MILLISECOND, xgc.getMillisecond());
-            }
-
-            return calendar;
-        } catch (DatatypeConfigurationException e) {
-            throw new RuntimeException(e);
-        }
+        return toCalendar(dateString, null);
     }
 
     /**
@@ -170,64 +137,20 @@ public class SDODataHelper implements DataHelper {
         if (null == dateString) {
             return null;
         }
-
-        if (locale == null) {
-            return toCalendar(dateString);
-        }
-
         // Handle duration if necessary
         if (dateString.startsWith("P")) {
-            Calendar cal = Calendar.getInstance(getXMLConversionManager().getTimeZone(), locale);
-            cal.clear();
-            try {
-                Duration dur = DatatypeFactory.newInstance().newDuration(dateString);
-                cal.setTimeInMillis(dur.getTimeInMillis(cal));
-                cal.set(Calendar.YEAR, dur.getYears());
-                cal.set(Calendar.MONTH, dur.getMonths() - 1);
-                cal.set(Calendar.DATE, dur.getDays());
-            } catch (DatatypeConfigurationException e) {
-                throw new RuntimeException(e);
-            }
-            return cal;
+            return toCalendar(getXMLConversionManager().convertStringToDuration(dateString), locale);
         }
-
-        try {
-            // AN XML GREGORIAN CALENDAR COULD BE USED TO PARSE THE DATE STRING
-            DatatypeFactory df = DatatypeFactory.newInstance();
-            XMLGregorianCalendar xgc = df.newXMLGregorianCalendar(dateString);
-
-            Calendar calendar = Calendar.getInstance(getXMLConversionManager().getTimeZone(), locale);
-            calendar.clear();
-
-            if (xgc.getTimezone() != DatatypeConstants.FIELD_UNDEFINED) {
-                calendar.set(Calendar.ZONE_OFFSET, xgc.getTimezone() * 60000);
-            }
-            if (xgc.getYear() != DatatypeConstants.FIELD_UNDEFINED) {
-                calendar.set(Calendar.YEAR, xgc.getYear());
-            }
-            if (xgc.getMonth() != DatatypeConstants.FIELD_UNDEFINED) {
-                calendar.set(Calendar.MONTH, xgc.getMonth() - 1);
-            }
-            if (xgc.getDay() != DatatypeConstants.FIELD_UNDEFINED) {
-                calendar.set(Calendar.DAY_OF_MONTH, xgc.getDay());
-            }
-            if (xgc.getHour() != DatatypeConstants.FIELD_UNDEFINED) {
-                calendar.set(Calendar.HOUR_OF_DAY, xgc.getHour());
-            }
-            if (xgc.getMinute() != DatatypeConstants.FIELD_UNDEFINED) {
-                calendar.set(Calendar.MINUTE, xgc.getMinute());
-            }
-            if (xgc.getSecond() != DatatypeConstants.FIELD_UNDEFINED) {
-                calendar.set(Calendar.SECOND, xgc.getSecond());
-            }
-            if (xgc.getMillisecond() != DatatypeConstants.FIELD_UNDEFINED) {
-                calendar.set(Calendar.MILLISECOND, xgc.getMillisecond());
-            }
-
-            return calendar;
-        } catch (DatatypeConfigurationException e) {
-            throw new RuntimeException(e);
+        // An XMLGregorianCalendar will be used to parse the date string
+        XMLGregorianCalendar xgc = getXMLConversionManager().convertStringToXMLGregorianCalendar(dateString);
+        Calendar cal;
+        if (xgc.getTimezone() == DatatypeConstants.FIELD_UNDEFINED) {
+            cal = xgc.toGregorianCalendar(getXMLConversionManager().getTimeZone(), locale, null);
+            cal.clear(Calendar.ZONE_OFFSET);
+        } else {
+            cal = xgc.toGregorianCalendar(xgc.getTimeZone(xgc.getTimezone()), locale, null);
         }
+        return cal;
     }
 
     /**
@@ -240,7 +163,13 @@ public class SDODataHelper implements DataHelper {
         if (null == dateString) {
             return null;
         }
-        return toCalendar(dateString).getTime();
+        if (dateString.startsWith("P")) {
+            Calendar cal = toCalendar(getXMLConversionManager().convertStringToDuration(dateString), null);
+            return cal.getTime();
+        }
+        XMLGregorianCalendar xgc = getXMLConversionManager().convertStringToXMLGregorianCalendar(dateString);
+        QName schemaType = xgc.getXMLSchemaType();
+        return getXMLConversionManager().convertStringToDate(dateString, schemaType);
     }
 
     /**
@@ -438,6 +367,7 @@ public class SDODataHelper implements DataHelper {
         Calendar dateCalendar = Calendar.getInstance(getXMLConversionManager().getTimeZone());
         dateCalendar.clear();
         dateCalendar.setTime(date);
+        dateCalendar.clear(Calendar.ZONE_OFFSET);
         return toMonthDay(dateCalendar);
     }
 
