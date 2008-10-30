@@ -9,13 +9,13 @@
       </xsd:choice>
       <xsd:anyAttribute processContents="lax"/>
    </xsd:complexType>
-   <xsd:complexType name='myTestType3'>
+   <xsd:complexType name='myTestType3' mixed="true">
       <xsd:sequence>
          <xsd:any processContents="lax" maxOccurs="unbounded"/>
       </xsd:sequence>
       <xsd:anyAttribute processContents="lax"/>
    </xsd:complexType>
-   <xsd:complexType name='myTestType'>
+   <xsd:complexType name='myTestType' mixed="true">
       <xsd:sequence>
          <xsd:any processContents="lax" maxOccurs="unbounded"/>
       </xsd:sequence>

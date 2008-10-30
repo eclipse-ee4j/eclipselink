@@ -12,14 +12,15 @@
  ******************************************************************************/  
 package org.eclipse.persistence.testing.sdo.helper.xsdhelper.define.complextypes;
 
+import java.util.List;
+
+import junit.textui.TestRunner;
+
+import org.eclipse.persistence.sdo.SDOConstants;
+import org.eclipse.persistence.testing.sdo.helper.xsdhelper.XSDHelperTestCases;
+
 import commonj.sdo.Property;
 import commonj.sdo.Type;
-import commonj.sdo.impl.HelperProvider;
-import java.util.List;
-import org.eclipse.persistence.sdo.SDOConstants;
-import org.eclipse.persistence.sdo.SDOProperty;
-import org.eclipse.persistence.sdo.helper.SDOTypeHelper;
-import org.eclipse.persistence.testing.sdo.helper.xsdhelper.XSDHelperTestCases;
 
 // Note: the getProperties() has not been tested yet
 public class XSDHelperComplexTypeTestCases extends XSDHelperTestCases {
@@ -27,6 +28,10 @@ public class XSDHelperComplexTypeTestCases extends XSDHelperTestCases {
         super(name);
     }
 
+    public static void main(String[] args) {
+        TestRunner.run(XSDHelperComplexTypeTestCases.class);
+    }
+    
     public void testComplexTypeWithEmptyContent() {
         String xsdSchema = getSchema("org/eclipse/persistence/testing/sdo/helper/xsdhelper/define/complextypes/ComplexTypeWithEmptyContent.xsd");
 
@@ -618,7 +623,7 @@ public class XSDHelperComplexTypeTestCases extends XSDHelperTestCases {
         // check if it is open
         assertTrue(aType.isOpen());
         // check if it is sequenced
-        assertFalse(aType.isSequenced());
+        assertTrue("Type was not 'sequenced' as expected.", aType.isSequenced());
 
         aType = null;
         for(int i = 0; i < types.size(); i++) {
@@ -672,7 +677,7 @@ public class XSDHelperComplexTypeTestCases extends XSDHelperTestCases {
         // check if it is not open
         assertTrue(aType.isOpen());
         // check if it is sequenced
-        assertFalse(aType.isSequenced());              
+        assertTrue("Type was not 'sequenced' as expected.", aType.isSequenced());              
         
     }
 

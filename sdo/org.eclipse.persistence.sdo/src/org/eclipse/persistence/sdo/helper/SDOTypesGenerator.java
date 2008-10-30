@@ -38,6 +38,7 @@ import org.eclipse.persistence.internal.oxm.schema.model.Group;
 import org.eclipse.persistence.internal.oxm.schema.model.Import;
 import org.eclipse.persistence.internal.oxm.schema.model.Include;
 import org.eclipse.persistence.internal.oxm.schema.model.List;
+import org.eclipse.persistence.internal.oxm.schema.model.NestedParticle;
 import org.eclipse.persistence.internal.oxm.schema.model.Occurs;
 import org.eclipse.persistence.internal.oxm.schema.model.Restriction;
 import org.eclipse.persistence.internal.oxm.schema.model.Schema;
@@ -1018,13 +1019,8 @@ public class SDOTypesGenerator {
         }
         SDOType currentType = getTypeForName(targetNamespace, defaultNamespace, owner);
 
-        if (typeDefParticle instanceof Choice && ((Choice) typeDefParticle).hasAny()) {
+        if (((NestedParticle) typeDefParticle).hasAny()) {
             currentType.setOpen(true);
-        } else if (typeDefParticle instanceof Sequence && ((Sequence) typeDefParticle).hasAny()) {
-            currentType.setOpen(true);
-        }
-
-        if (maxOccursGreaterThanOne(any.getMaxOccurs())) {
             currentType.setSequenced(true);
         }
 

@@ -81,7 +81,8 @@ public class DefineAndGenerateSequencesTestCases extends XSDHelperDefineAndGener
         DataObject myTestType3DO = dataFactory.create("commonj.sdo", "Type");
         myTestType3DO.set("uri", NON_DEFAULT_URI);
         myTestType3DO.set("name", "myTestType3");        
-        myTestType3DO.set("open", true);        
+        myTestType3DO.set("open", true);
+        myTestType3DO.set("sequenced", true);
         Type myTestType3 = typeHelper.define(myTestType3DO);
         ((SDOType)myTestType3).setXsd(true);
         ((SDOType)myTestType3).setXsdLocalName("myTestType3");
@@ -89,7 +90,8 @@ public class DefineAndGenerateSequencesTestCases extends XSDHelperDefineAndGener
         DataObject myTestTypeDO = dataFactory.create("commonj.sdo", "Type");
         myTestTypeDO.set("uri", NON_DEFAULT_URI);
         myTestTypeDO.set("name", "myTestType");        
-        myTestTypeDO.set("open", true);        
+        myTestTypeDO.set("open", true);
+        myTestTypeDO.set("sequenced", true);
         Type myTestType = typeHelper.define(myTestTypeDO);
         ((SDOType)myTestType).setXsd(true);
         ((SDOType)myTestType).setXsdLocalName("myTestType");
@@ -99,6 +101,7 @@ public class DefineAndGenerateSequencesTestCases extends XSDHelperDefineAndGener
         myTestType4DO.set("name", "myTestType4");                
         myTestType4DO.set("sequenced", true);
         myTestType4DO.set("open", true);
+        myTestType4DO.set("sequenced", true);
         prop = addProperty(myTestType4DO, "test", SDOConstants.SDO_STRING);
         prop.set("many", true);
         
