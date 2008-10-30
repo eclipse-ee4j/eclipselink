@@ -776,6 +776,9 @@ public class SDOTypesGenerator {
 
     private void processAll(String targetNamespace, String defaultNamespace, String ownerName, All all, boolean isMany) {
         if (all != null) {
+            SDOType currentType = getTypeForName(targetNamespace, defaultNamespace, ownerName);
+            currentType.setSequenced(true);
+            
             processTypeDef(targetNamespace, defaultNamespace, ownerName, all);
             if (!isMany && maxOccursGreaterThanOne(all.getMaxOccurs())) {
                 isMany = true;
