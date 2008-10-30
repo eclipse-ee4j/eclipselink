@@ -2095,7 +2095,9 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
                 if (! lockModeType.name().equals(PESSIMISTIC) && ! lockModeType.name().equals(NONE)) {
                     // Any locking mode other than PESSIMISTIC and NONE needs a 
                     // version locking policy to be present, otherwise an exception is thrown.
-                    throw new PersistenceException(ExceptionLocalization.buildMessage("ejb30-wrong-lock_called_without_version_locking-index", null));
+                    //throw new PersistenceException(ExceptionLocalization.buildMessage("ejb30-wrong-lock_called_without_version_locking-index", null));
+                    // Temporary removal of JPA 2.0 dependency.
+                    throw new RuntimeException(ExceptionLocalization.buildMessage("ejb30-wrong-lock_called_without_version_locking-index", null));
                 }
             }
             

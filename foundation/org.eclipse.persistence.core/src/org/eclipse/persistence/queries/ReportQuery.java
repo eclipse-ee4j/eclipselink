@@ -961,7 +961,10 @@ public class ReportQuery extends ReadAllQuery {
                         OptimisticLockingPolicy lockingPolicy = ((ReportItem) reportItem).getDescriptor().getOptimisticLockingPolicy();
                     
                         if (lockingPolicy == null || !(lockingPolicy instanceof VersionLockingPolicy)) {
-                            throw new PersistenceException(ExceptionLocalization.buildMessage("ejb30-wrong-lock_called_without_version_locking-index", null));
+                            //throw new PersistenceException(ExceptionLocalization.buildMessage("ejb30-wrong-lock_called_without_version_locking-index", null));
+                            
+                            // Temporary removal of JPA 2.0 dependency.
+                            throw new RuntimeException(ExceptionLocalization.buildMessage("ejb30-wrong-lock_called_without_version_locking-index", null));
                         }
                     }
                 }
