@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: EclipseLink JPA
 Bundle-SymbolicName: org.eclipse.persistence.jpa
-Bundle-Version: 1.0.1
+Bundle-Version: 1.0.2
 Require-Bundle: org.eclipse.persistence.core;bundle-version="[1.0.0,2.0.0)";visibility:=reexport
 Export-Package: org.eclipse.persistence.internal.jpa,
  org.eclipse.persistence.internal.jpa.deployment,
