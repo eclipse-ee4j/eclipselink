@@ -173,12 +173,12 @@ public class MutableAttributeObject {
         
         // regular direct mapping fields
         definition.addField("BYTE_ARRAY", java.sql.Blob.class); // byte[] mapping to BLOB
-        definition.addField("DATE_SUBCLASS", java.util.Date.class);
+        definition.addField("DATE_SUBCLASS", java.sql.Date.class);
         definition.addField("SQL_DATE", java.sql.Date.class);
         definition.addField("SQL_TIME", java.sql.Time.class);
         definition.addField("SQL_TIMESTAMP", java.sql.Timestamp.class);
-        definition.addField("UTIL_CALENDAR", java.util.Calendar.class);
-        definition.addField("UTIL_DATE", java.util.Date.class);
+        definition.addField("UTIL_CALENDAR", java.sql.Timestamp.class);
+        definition.addField("UTIL_DATE", java.sql.Date.class);
 
         return definition;
     }
