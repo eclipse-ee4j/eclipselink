@@ -233,8 +233,8 @@ public class MySQLPlatform extends DatabasePlatform {
         ExpressionOperator result = new ExpressionOperator();
         result.setSelector(ExpressionOperator.Log);
         Vector v = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance(2);
-        v.addElement("LOG(");
-        v.addElement(", 10)");
+        v.addElement("LOG(10, ");
+        v.addElement(")");
         result.printsAs(v);
         result.bePrefix();
         result.setNodeClass(FunctionExpression.class);
