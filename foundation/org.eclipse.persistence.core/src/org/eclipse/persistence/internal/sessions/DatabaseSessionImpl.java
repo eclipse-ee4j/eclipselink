@@ -31,6 +31,7 @@ import org.eclipse.persistence.sessions.SessionProfiler;
 import org.eclipse.persistence.platform.database.DatabasePlatform;
 import org.eclipse.persistence.platform.server.ServerPlatform;
 import org.eclipse.persistence.platform.server.NoServerPlatform;
+import org.eclipse.persistence.platform.server.ServerPlatformBase;
 
 /**
  * Implementation of org.eclipse.persistence.sessions.DatabaseSession
@@ -638,7 +639,8 @@ public class DatabaseSessionImpl extends AbstractSession implements org.eclipse.
         //setup the external transaction controller
         getServerPlatform().initializeExternalTransactionController();
         log(SessionLog.INFO, null, "topLink_version", DatasourceLogin.getVersion());
-        if (getServerPlatform().getServerNameAndVersion() != null) {
+        if (getServerPlatform().getServerNameAndVersion() != null && 
+                !getServerPlatform().getServerNameAndVersion().equals(ServerPlatformBase.DEFAULT_SERVER_NAME_AND_VERSION)) {
             log(SessionLog.INFO, null, "application_server_name_and_version", getServerPlatform().getServerNameAndVersion());
         }
         this.isLoggingOff = (getLogLevel() == SessionLog.OFF);

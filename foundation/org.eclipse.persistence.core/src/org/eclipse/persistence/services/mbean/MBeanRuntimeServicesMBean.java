@@ -126,7 +126,8 @@ public interface MBeanRuntimeServicesMBean {
 
     /**
      *        This method is used to return the number of objects in a particular Identity Map
-     * If ClassNotFoundException is thrown then the IdenityMap for that class name could not be found
+     * @param className the fully qualified name of the class to get number of instances of.
+     * @exception If ClassNotFoundException is thrown then the IdentityMap for that class name could not be found
      */
     public Integer getNumberOfObjectsInIdentityMap(String className) throws ClassNotFoundException;
 

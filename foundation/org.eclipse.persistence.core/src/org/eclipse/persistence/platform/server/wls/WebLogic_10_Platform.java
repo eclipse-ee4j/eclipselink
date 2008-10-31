@@ -9,6 +9,9 @@
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
+ *     10/20/2008-1.1M4 Michael O'Brien 
+ *       - 248748: Add WebLogic 10.3 specific JMX MBean attributes and functions
+ *       see <link>http://wiki.eclipse.org/EclipseLink/DesignDocs/248748</link>
  ******************************************************************************/  
 package org.eclipse.persistence.platform.server.wls;
 
@@ -23,17 +26,18 @@ import javax.naming.Context;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 
+import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.logging.AbstractSessionLog;
 import org.eclipse.persistence.logging.SessionLog;
 import org.eclipse.persistence.services.mbean.MBeanDevelopmentServices;
-import org.eclipse.persistence.services.mbean.MBeanRuntimeServices;
+import org.eclipse.persistence.services.weblogic.MBeanWebLogicRuntimeServices;
 import org.eclipse.persistence.sessions.DatabaseSession;
 import org.eclipse.persistence.sessions.Session;
 
 /**
  * PUBLIC:
  *
- * This is the concrete subclass responsible for representing WebLogic10 specific behavior.
+ * This is the concrete subclass responsible for representing WebLogic 10 specific behavior.
  * This includes WebLogic 10.3 behavior.
  *
  */
@@ -51,13 +55,14 @@ public class WebLogic_10_Platform extends WebLogic_9_Platform {
     /** This JNDI address is for JMX MBean unregistration */    
     private static final String JMX_JNDI_RUNTIME_UNREGISTER = "java:comp/jmx/runtime";
     /** This is the prefix for all MBeans that are registered with their specific session name appended */
-    private static final String JMX_REGISTRATION_PREFIX = "EclipseLink_Domain:Name=";
+    private static final String JMX_REGISTRATION_PREFIX = "org.eclipse.persistence:Name=";
     // Secondary override properties can be set to disable MBean registration
     /** This System property "eclipselink.register.dev.mbean" when set to true will enable registration/unregistration of the DevelopmentServices MBean */
-    public static final String  JMX_REGISTER_DEV_MBEAN_PROPERTY = "eclipselink.register.dev.mbean";
+    public static final String JMX_REGISTER_DEV_MBEAN_PROPERTY = "eclipselink.register.dev.mbean";
     /** This System property "eclipselink.register.run.mbean" when set to true will enable registration/unregistration of the RuntimeServices MBean */    
-    public static final String  JMX_REGISTER_RUN_MBEAN_PROPERTY = "eclipselink.register.run.mbean";
-    
+    public static final String JMX_REGISTER_RUN_MBEAN_PROPERTY = "eclipselink.register.run.mbean";
+    /** This persistence.xml or sessions.xml property is used to override the modulename */
+    public static final String WEBLOGIC_MODULENAME_PROPERTY = "eclipselink.weblogic.moduleName"; 
     // Any value such as true will turn on the MBean
     protected boolean shouldRegisterDevelopmentBean = System.getProperty(JMX_REGISTER_DEV_MBEAN_PROPERTY) != null;
     protected boolean shouldRegisterRuntimeBean = System.getProperty(JMX_REGISTER_RUN_MBEAN_PROPERTY) != null;
@@ -93,7 +98,7 @@ public class WebLogic_10_Platform extends WebLogic_9_Platform {
                 // Attempt to register new mBean with the server
                 if (shouldRegisterDevelopmentBean) {
                     try {
-                        name = new ObjectName(JMX_REGISTRATION_PREFIX + "Development_" + sessionName + ",Type=Configuration");
+                        name = new ObjectName(JMX_REGISTRATION_PREFIX + "Development-" + sessionName + ",Type=Configuration");
                     } catch (MalformedObjectNameException mne) {
                         AbstractSessionLog.getLog().log(SessionLog.WARNING, "problem_registering_mbean", mne);
                     } catch (Exception exception) {
@@ -114,13 +119,14 @@ public class WebLogic_10_Platform extends WebLogic_9_Platform {
 
                 if (shouldRegisterRuntimeBean) {
                     try {
-                        name = new ObjectName(JMX_REGISTRATION_PREFIX + "Runtime_" + sessionName + ",Type=Reporting");                        
+                        name = new ObjectName(JMX_REGISTRATION_PREFIX + "Runtime-" + sessionName + ",Type=Reporting");                        
                     } catch (MalformedObjectNameException mne) {
                         AbstractSessionLog.getLog().log(SessionLog.WARNING, "problem_registering_mbean", mne);
                     } catch (Exception exception) {
                         AbstractSessionLog.getLog().log(SessionLog.WARNING, "problem_registering_mbean", exception);
                     }
-                    MBeanRuntimeServices runtimeServices = new MBeanRuntimeServices((Session)getDatabaseSession());
+                    
+                    MBeanWebLogicRuntimeServices runtimeServices = new MBeanWebLogicRuntimeServices((AbstractSession)getDatabaseSession());                    
                     ObjectInstance runtimeInstance = null;
                     try {
                         runtimeInstance = mBeanServerRuntime.registerMBean(runtimeServices, name);
@@ -144,7 +150,7 @@ public class WebLogic_10_Platform extends WebLogic_9_Platform {
                     mBeanServerRuntime = null;
                     initialContext.close();                    
                 } catch (NamingException ne) {
-                    // exceptions on context close will be ignored, the context will be GC'd
+                    // exceptions on context close will be ignored, the context will be GC'd                   
                 }
             }
         }
@@ -227,13 +233,34 @@ public class WebLogic_10_Platform extends WebLogic_9_Platform {
     }
 
     /**
+     * INTERNAL: getModuleName(): Answer the name of the module (jar name) that my session
+       * is associated with.
+       * Answer "unknown" if there is no module name available.
+       *
+       * Default behavior is to return "unknown" - we override this behavior here for WebLogic.
+     *
+     * @return String moduleName
+     */
+    public String getModuleName() {
+        // Get property from persistence.xml or sessions.xml
+        String cmpModuleName = (String)getDatabaseSession().getProperty(WEBLOGIC_MODULENAME_PROPERTY);
+        if (cmpModuleName != null) {
+            return cmpModuleName;
+        } else {
+            // defer to the superclass implementation
+            // bug# 248746: A fully reflective version will be required to get the app name from the EJB, Web or MDB module in the future
+            return super.getModuleName();
+        }
+    }
+
+    /**
      * Remove JMX reserved characters from the session name
      * @param aSession
      * @return
      */
     private String getMBeanSessionName() {
         // Check for a valid session - should never occur though        
-        if(null != getDatabaseSession()) {
+        if(null != getDatabaseSession() && null != getDatabaseSession().getName()) {
             // remove any JMX reserved characters when the session name is file:/drive:/directory
             return getDatabaseSession().getName().replaceAll("[=,:]", "_");
         } else {

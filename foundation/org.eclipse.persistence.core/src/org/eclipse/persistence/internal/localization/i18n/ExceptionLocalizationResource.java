@@ -49,7 +49,7 @@ public class ExceptionLocalizationResource extends ListResourceBundle {
                                            { "error_marshalling_arguments", "Error marshalling arguments" },
                                            { "error_unmarshalling_return", "error unmarshalling return" },
                                            { "null_jar_file_names", "Null jar file names" },
-                                           { "oc4jruntime_exception", "An exception occurred while creating an OC4J runtime service for exposing toplink session information, exception is: {0}" },
+                                           { "weblogic_mbean_runtime_exception", "An exception occurred while creating a WebLogic runtime service for exposing EclipseLink session information, exception is: {0}" },
                                            
     { "error_loading_resources", "Error loading resources {0} from the classpath" },
                                            { "error_parsing_resources", "Error parsing resources {0}" },

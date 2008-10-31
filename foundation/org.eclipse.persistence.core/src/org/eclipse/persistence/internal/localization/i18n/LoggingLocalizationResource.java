@@ -172,7 +172,7 @@ public class LoggingLocalizationResource extends ListResourceBundle {
         { "delay_database_insert_until_ejb_post_create_not_supported", "WLS native CMP setting 'delay-database-insert-until-ejbPostCreate' on entity({0}) is not directly supported in EclipseLink CMP. See migration doc for details." },
         { "field_group_not_supported", "WLS native CMP setting 'field-group' on entity({0}) is not directly supported in EclipseLink CMP. See migration doc for details." },
         { "relationship_cacheing_not_supported", "WLS native CMP setting 'relationship-caching' on entity({0}) is not directly supported in EclipseLink CMP. See migration doc for details." },
-        { "weblogic_query_not_supported", "WLS native CMP setting 'weblogic-query' on entity({0}) is not directly supported in EclipseLink CMP. See migration doc for details." },
+        { "weblogic_query_not_supported", "WLS native CMP setting 'weblogic-query' on entity({0}) is not directly supported in EclipseLink CMP. See migration doc for details." }, // unused
         { "sequence_cachekey_improper_format", "WLS native CMP setting 'key-cache-size' on entity ({0}) is ill-formatted with value ({1})" },
         { "dir_cleaned_for_mw_files", "Files and sub-directories under directory {0} have been deleted in order to create a clean directory for the new generated EclipseLink Mapping Workbench project files" },
         { "mapping_not_supported_by_mw", "The EclipseLink mapping {0} is not supported by the mapping workbench" },
@@ -337,10 +337,20 @@ public class LoggingLocalizationResource extends ListResourceBundle {
         { "entity_manager_ignores_jta_data_source", "Persistence unit doesn't use JTA, therefore entity manager ignores jta data source. "},
         { "problem_registering_mbean", "Problem while registering MBean: {0}" },
         { "problem_unregistering_mbean", "Problem while unregistering MBean: {0}" },
-        { "session_key_for_mbean_name_is_null", "Session used for the MBean name is null." },       
-                
-        
-        
+        { "session_key_for_mbean_name_is_null", "Session name used for the MBean registration cannot be null." },
+        // Implemented by WebLogicRuntimeServices
+        { "jmx_mbean_runtime_services_pool_name", "Pool Name = {0}" },
+        { "jmx_mbean_runtime_services_identity_map_non_existent", "Identity Map [{0}] does not exist." },
+        { "jmx_mbean_runtime_services_identity_map_empty", "Identity Map [{0}] is empty." },
+        { "jmx_mbean_runtime_services_identity_map_class", "Identity Map [{0}] class = {1}" },
+        { "jmx_mbean_runtime_services_no_identity_maps_in_session", "There are no Identity Maps in this session." },
+        { "jmx_mbean_runtime_services_identity_map_initialized", "Identity Map [{0}] is initialized." },
+        { "jmx_mbean_runtime_services_identity_map_invalidated", "Identity Map [{0}] is invalidated." },
+        { "jmx_mbean_runtime_services_print_cache_key_value", "Key [{0}] => Value [{1}]" },
+        { "jmx_mbean_runtime_services_no_classes_in_session", "No Classes in session." },
+        { "jmx_mbean_runtime_services_statement_cache_cleared", "Statement cache cleared." },
+        { "jmx_mbean_runtime_services_no_connection_pools_available", "No Connection Pools Available." },        
+     
         
         
         // newly added for message id
@@ -489,7 +499,7 @@ public class LoggingLocalizationResource extends ListResourceBundle {
         {"delay_database_insert_until_ejb_post_create_not_supported.MSGID" ,"TOP-50131"}, 
         {"field_group_not_supported.MSGID" ,"TOP-50132"}, 
         {"relationship_cacheing_not_supported.MSGID" ,"TOP-50133"}, 
-        {"weblogic_query_not_supported.MSGID" ,"TOP-50134"}, 
+        {"weblogic_query_not_supported.MSGID" ,"TOP-50134"},  // unused
         {"sequence_cachekey_improper_format.MSGID" ,"TOP-50135"}, 
         {"dir_cleaned_for_mw_files.MSGID" ,"TOP-50136"}, 
         {"mapping_not_supported_by_mw.MSGID" ,"TOP-50137"}, 
@@ -580,8 +590,19 @@ public class LoggingLocalizationResource extends ListResourceBundle {
         { "entity_manager_ignores_jta_data_source.MSGID", "TOP-50214"},
         { "problem_registering_mbean.MSGID", "TOP-50215}" },
         { "problem_unregistering_mbean.MSGID", "TOP-50216" },
-        { "session_key_for_mbean_name_is_null.MSGID", "TOP-50217" }        
-
+        { "session_key_for_mbean_name_is_null.MSGID", "TOP-50217" },
+        // Implemented by WebLogicRuntimeServices
+        { "jmx_mbean_runtime_services_pool_name.MSGID", "TOP-50218" },        
+        { "jmx_mbean_runtime_services_identity_map_non_existent.MSGID", "TOP-50219"},
+        { "jmx_mbean_runtime_services_identity_map_empty.MSGID", "TOP-50220"},
+        { "jmx_mbean_runtime_services_identity_map_class.MSGID", "TOP-50221"},
+        { "jmx_mbean_runtime_services_no_identity_maps_in_session.MSGID", "TOP-50222"},
+        { "jmx_mbean_runtime_services_identity_map_initialized.MSGID", "TOP-50223"},
+        { "jmx_mbean_runtime_services_identity_map_invalidated.MSGID", "TOP-50224"},
+        { "jmx_mbean_runtime_services_print_cache_key_value.MSGID", "TOP-50225"},
+        { "jmx_mbean_runtime_services_no_classes_in_session.MSGID", "TOP-50226"},
+        { "jmx_mbean_runtime_services_statement_cache_cleared.MSGID", "TOP-50227"},
+        { "jmx_mbean_runtime_services_no_connection_pools_available.MSGID", "TOP-50228"}        
     }; 
      
     /**

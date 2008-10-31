@@ -59,32 +59,41 @@ import org.eclipse.persistence.sessions.Session;
  * @since TOPLink/Java 3.0
  */
 public interface SessionLog extends Cloneable {
-    //TopLink log levels.  They are mapped to java.util.logging.Level values
+    //EclipseLink log levels.  They are mapped to java.util.logging.Level values
     public static final int OFF = 8;
+    public static final String OFF_LABEL = "OFF";    
 
-    //TL is not in a state to continue
+    //EL is not in a state to continue
     public static final int SEVERE = 7;
+    public static final String SEVERE_LABEL = "SEVERE";
 
     //Exceptions that don't force a stop
     public static final int WARNING = 6;
+    public static final String WARNING_LABEL = "WARNING";    
 
     //Login and logout per server session with name
     public static final int INFO = 5;
+    public static final String INFO_LABEL = "INFO";    
 
     //Configuration info
     public static final int CONFIG = 4;
+    public static final String CONFIG_LABEL = "CONFIG";    
 
     //SQL
     public static final int FINE = 3;
+    public static final String FINE_LABEL = "FINE";    
 
     //Previously logged under logMessage and stack trace of exceptions at WARNING level
     public static final int FINER = 2;
+    public static final String FINER_LABEL = "FINER";    
 
     //Previously logged under logDebug
     public static final int FINEST = 1;
+    public static final String FINEST_LABEL = "FINEST";    
     public static final int ALL = 0;
+    public static final String ALL_LABEL = "SEVERE";    
 
-    //TopLink categories used for logging name space.
+    //EclipseLink categories used for logging name space.
     public static final String SQL = "sql";
     public static final String TRANSACTION = "transaction";
     public static final String EVENT = "event";
@@ -103,7 +112,7 @@ public interface SessionLog extends Cloneable {
 
     /**
      * PUBLIC:
-     * TopLink will call this method whenever something
+     * EclipseLink will call this method whenever something
      * needs to be logged (messages, SQL, etc.).
      * All the pertinent information will be contained in
      * the specified entry.
@@ -184,7 +193,7 @@ public interface SessionLog extends Cloneable {
      * PUBLIC:
      * Return the log level.  Used when session is not available.
      * <p>
-     * The Toplink logging levels returned correspond to:
+     * The EclipseLink logging levels returned correspond to:
      * <table>
      * <tr><td>ALL</td>    <td>&nbsp;</td><td>= 0</td>
      * <tr><td>FINEST</td> <td>&nbsp;</td><td>= 1</td>
@@ -302,7 +311,7 @@ public interface SessionLog extends Cloneable {
      * Check if a message of the given level would actually be logged.
      * Used when session is not available.
      * <p>
-     * The Eclipselink logging levels available are:
+     * The EclipseLink logging levels available are:
      * <table>
      * <tr><td>ALL</td>    <td>&nbsp;</td><td>= 0</td>
      * <tr><td>FINEST</td> <td>&nbsp;</td><td>= 1</td>

@@ -98,6 +98,12 @@ public abstract class ServerPlatformBase implements ServerPlatform {
      * Server name and version.
      */
     protected String serverNameAndVersion;
+    
+    /**
+     * INTERNAL:
+     * Answer "unknown" as a default for platforms that do not implement getModuleName()
+     */
+    public static final String DEFAULT_SERVER_NAME_AND_VERSION = ToStringLocalization.buildMessage("unknown");
 
     /**
      * INTERNAL:
@@ -147,7 +153,7 @@ public abstract class ServerPlatformBase implements ServerPlatform {
      * Default is "unknown"
      */
     protected void initializeServerNameAndVersion() {
-        this.serverNameAndVersion = ToStringLocalization.buildMessage("unknown");
+        this.serverNameAndVersion = DEFAULT_SERVER_NAME_AND_VERSION;
     }
 
     /**
@@ -160,7 +166,7 @@ public abstract class ServerPlatformBase implements ServerPlatform {
      * @return String moduleName
      */
     public String getModuleName() {
-        return "unknown";
+        return DEFAULT_SERVER_NAME_AND_VERSION;
     }
 
     /**
