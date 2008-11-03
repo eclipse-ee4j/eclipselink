@@ -137,10 +137,10 @@ public abstract class ObjectReferenceMapping extends ForeignReferenceMapping {
         Object backUpAttributeValue = null;
 
         if (cloneAttribute != null) {
-            cloneAttributeValue = getRealAttributeValueFromObject(clone, session);
+            cloneAttributeValue = getRealAttributeValueFromAttribute(cloneAttribute, clone, session);
         }
         if (backUpAttribute != null) {
-            backUpAttributeValue = getRealAttributeValueFromObject(backUp, session);
+            backUpAttributeValue = getRealAttributeValueFromAttribute(backUpAttribute, backUp, session);
         }
 
         if ((cloneAttributeValue == backUpAttributeValue) && (!owner.isNew())) {// if it is new record the value
@@ -265,14 +265,14 @@ public abstract class ObjectReferenceMapping extends ForeignReferenceMapping {
     public ClassDescriptor getDescriptorForTarget(Object object, AbstractSession session) {
         return session.getDescriptor(object);
     }
-
+    
     /**
      * INTERNAL:
      * Object reference must unwrap the reference object if required.
      */
-    public Object getRealAttributeValueFromObject(Object object, AbstractSession session) {
-        Object value = super.getRealAttributeValueFromObject(object, session);
-        value = getReferenceDescriptor().getObjectBuilder().unwrapObject(value, session);
+    public Object getRealAttributeValueFromAttribute(Object attributeValue, Object object, AbstractSession session) {
+        Object value = super.getRealAttributeValueFromAttribute(attributeValue, object, session);
+        value = this.referenceDescriptor.getObjectBuilder().unwrapObject(value, session);
 
         return value;
     }

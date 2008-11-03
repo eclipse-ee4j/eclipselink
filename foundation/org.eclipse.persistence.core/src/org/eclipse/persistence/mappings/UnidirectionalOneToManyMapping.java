@@ -492,12 +492,12 @@ public class UnidirectionalOneToManyMapping extends OneToManyMapping {
         // then the version update waits until the other thread (which is locking the version field) commits,
         // then the version update is executed and it throws optimistic lock exception.
         Object col = getRealCollectionAttributeValueFromObject(deletedObject, session);
-        if(col != null) {
+        if (col != null) {
             Object iterator = containerPolicy.iteratorFor(col);
             while (containerPolicy.hasNext(iterator)) {
                 Object target = containerPolicy.next(iterator, session);
-                ObjectChangeSet change = referenceDescriptor.getObjectBuilder().createObjectChangeSet(target, (org.eclipse.persistence.internal.sessions.UnitOfWorkChangeSet)uowChangeSet, session);
-                if(!change.hasChanges()) {
+                ObjectChangeSet change = referenceDescriptor.getObjectBuilder().createObjectChangeSet(target, uowChangeSet, session);
+                if (!change.hasChanges()) {
                     change.setShouldModifyVersionField(Boolean.TRUE);
                     ((org.eclipse.persistence.internal.sessions.UnitOfWorkChangeSet)change.getUOWChangeSet()).addObjectChangeSet(change, session, false);
                 }

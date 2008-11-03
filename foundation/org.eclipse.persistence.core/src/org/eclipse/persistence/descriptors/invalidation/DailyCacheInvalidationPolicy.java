@@ -56,7 +56,7 @@ public class DailyCacheInvalidationPolicy extends CacheInvalidationPolicy {
      */
     public long getExpiryTimeInMillis(CacheKey key) {
         incrementExpiry();
-        return JavaPlatform.getTimeInMillis(expiryTime);
+        return expiryTime.getTimeInMillis();
     }
 
     /**
@@ -76,11 +76,11 @@ public class DailyCacheInvalidationPolicy extends CacheInvalidationPolicy {
             return true;
         }
 
-        long expiryMillis = JavaPlatform.getTimeInMillis(expiryTime);
+        long expiryMillis = expiryTime.getTimeInMillis();
         long readTime = key.getReadTime();
 
         if (currentTimeMillis < expiryMillis) {
-            long previousExpiryMillis = JavaPlatform.getTimeInMillis(previousExpiry);
+            long previousExpiryMillis = previousExpiry.getTimeInMillis();
             if (readTime >= previousExpiryMillis) {
                 // both current time and read time are between expiry yesterday and expiry today - not expired
                 return false;
@@ -110,12 +110,12 @@ public class DailyCacheInvalidationPolicy extends CacheInvalidationPolicy {
      */
     public void incrementExpiry() {
         long currentTimeMillis = System.currentTimeMillis();
-        long expiryInMillis = JavaPlatform.getTimeInMillis(expiryTime);
+        long expiryInMillis = expiryTime.getTimeInMillis();
         if (currentTimeMillis <= expiryInMillis) {
             // no updated needed.  Return for efficiency
             return;
         }
-        while (currentTimeMillis > JavaPlatform.getTimeInMillis(expiryTime)) {
+        while (currentTimeMillis > expiryTime.getTimeInMillis()) {
             // increment the expiry time until it is after the current time
             previousExpiry.add(Calendar.DAY_OF_YEAR, 1);
             expiryTime.add(Calendar.DAY_OF_YEAR, 1);

@@ -400,7 +400,7 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
             if (descriptor == null || descriptor.isAggregateDescriptor() || descriptor.isAggregateCollectionDescriptor()) {
                 throw new IllegalArgumentException(ExceptionLocalization.buildMessage("unknown_bean_class", new Object[] { entityClass }));
             }
-            return (T) findInternal(descriptor, (UnitOfWork) session, primaryKey, lockMode, properties);
+            return (T) findInternal(descriptor, session, primaryKey, lockMode, properties);
         } catch (LockTimeoutException e) {
             throw e;
         } catch (RuntimeException e) { 
@@ -931,6 +931,16 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
             setRollbackOnly();
             throw exception;
         }
+    }
+
+    /**
+     * Return a read-only session (client session) for read-only operations.
+     */
+    public Session getReadOnlySession() {
+        if (this.extendedPersistenceContext != null && this.extendedPersistenceContext.isActive()) {
+            return this.extendedPersistenceContext.getParent();
+        }
+        return this.serverSession.acquireClientSession(connectionPolicy, properties);
     }
 
     /**

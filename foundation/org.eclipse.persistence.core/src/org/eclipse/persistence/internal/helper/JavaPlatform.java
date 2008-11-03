@@ -80,48 +80,10 @@ public class JavaPlatform {
 
     /**
      * INTERNAL:
-     * Get the milliseconds from a Calendar.
-     * @param calendar the instance of calendar to get the millis from
-     * @return long the number of millis
-     */
-    public static long getTimeInMillis(Calendar calendar) {
-        return getPlatform().getTimeInMillis(calendar);
-    }
-
-    /**
-     * INTERNAL:
      * Get the Map to store the query cache in
      */
     public static Map getConcurrentMap() {
         return getPlatform().getConcurrentMap();
     }
 
-    /**
-     * INTERNAL:
-     * Set the milliseconds for a Calendar.
-     */
-    public static void setTimeInMillis(java.util.Calendar calendar, long millis) {
-        getPlatform().setTimeInMillis(calendar, millis);
-    }
-
-    /**
-     *  INTERNAL:
-     *  Set the cause of an exception.  This is useful for JDK 1.4 exception chaining
-     *  @param java.lang.Throwable the exception to set the cause for
-     *  @param java.lang.Throwable the cause of this exception
-     */
-    public static void setExceptionCause(Throwable exception, Throwable cause) {
-        getPlatform().setExceptionCause(exception, cause);
-    }
-
-    /**
-     * INTERNAL
-     * return a boolean which determines where EclipseLink should include the EclipseLink-stored
-     * Internal exception in it's stack trace.  For JDK 1.4 VMs with exception chaining
-     * the Internal exception can be redundant and confusing.
-     * @return boolean
-     */
-    public static boolean shouldPrintInternalException() {
-        return getPlatform().shouldPrintInternalException();
-    }
 }

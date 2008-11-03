@@ -13,7 +13,7 @@
 package org.eclipse.persistence.descriptors.copying;
 
 import org.eclipse.persistence.exceptions.*;
-import org.eclipse.persistence.internal.descriptors.PersistenceEntity;
+import org.eclipse.persistence.internal.descriptors.PersistenceObject;
 import org.eclipse.persistence.internal.helper.*;
 import org.eclipse.persistence.sessions.*;
 
@@ -28,11 +28,11 @@ public class PersistenceEntityCopyPolicy extends AbstractCopyPolicy {
     }
 
     public Object buildWorkingCopyClone(Object object, Session session) throws DescriptorException {
-        return ((PersistenceEntity)object)._persistence_shallow_clone();
+        return ((PersistenceObject)object)._persistence_shallow_clone();
     }
     
     public Object buildClone(Object object, Session session) throws DescriptorException {
-        return ((PersistenceEntity)object)._persistence_shallow_clone();
+        return ((PersistenceObject)object)._persistence_shallow_clone();
     }
 
     public boolean buildsNewInstance() {

@@ -55,7 +55,7 @@ public abstract class AbstractCompositeDirectCollectionMapping extends DatabaseM
      */
     public AbstractCompositeDirectCollectionMapping() {
         super();
-        this.containerPolicy = ContainerPolicy.buildPolicyFor(ClassConstants.Vector_class);
+        this.containerPolicy = ContainerPolicy.buildDefaultPolicy();
         this.elementDataTypeName = "";
     }
 

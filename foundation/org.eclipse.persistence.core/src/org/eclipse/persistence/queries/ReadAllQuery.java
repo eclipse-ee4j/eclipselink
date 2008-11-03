@@ -71,7 +71,7 @@ public class ReadAllQuery extends ObjectLevelReadQuery {
      */
     public ReadAllQuery() {
         super();
-        this.useCollectionClass(ClassConstants.Vector_class);
+        setContainerPolicy(ContainerPolicy.buildDefaultPolicy());
     }
 
     /**
@@ -438,11 +438,12 @@ public class ReadAllQuery extends ObjectLevelReadQuery {
                     }
                     Collection results = (Collection)queryResults;
                     if (session.isUnitOfWork()) {
-                        Collection resultCollection = (Collection)getContainerPolicy().containerInstance();
-                        Object iterator = getContainerPolicy().iteratorFor(results);
-                        while (getContainerPolicy().hasNext(iterator)) {
-                            Object result = ((UnitOfWorkImpl)session).registerExistingObject(getContainerPolicy().next(iterator, session));
-                            resultCollection.add(result);
+                        ContainerPolicy policy = getContainerPolicy();
+                        Object resultCollection = policy.containerInstance();
+                        Object iterator = policy.iteratorFor(results);
+                        while (policy.hasNext(iterator)) {
+                            Object result = ((UnitOfWorkImpl)session).registerExistingObject(policy.next(iterator, session), this.descriptor);
+                            policy.addInto(result, resultCollection, session);
                         }
                         return resultCollection;
                     }
@@ -475,20 +476,21 @@ public class ReadAllQuery extends ObjectLevelReadQuery {
             return returnValue;
         }
 
-        Vector rows = getQueryMechanism().selectAllRows();
+        List rows = getQueryMechanism().selectAllRows();
         setExecutionTime(System.currentTimeMillis());
         // If using 1-m joins, must set all rows.
-        if (hasJoining() && getJoinedAttributeManager().isToManyJoin()) {
-            getJoinedAttributeManager().setDataResults(rows, getSession());
+        if (hasJoining() && this.joinedAttributeManager.isToManyJoin()) {
+            this.joinedAttributeManager.setDataResults(rows, this.session);
         }
 
-        if (getSession().isUnitOfWork()) {
-            result = registerResultInUnitOfWork(rows, (UnitOfWorkImpl)getSession(), getTranslationRow(), true);// 
+        if (this.session.isUnitOfWork()) {
+            result = registerResultInUnitOfWork(rows, (UnitOfWorkImpl)this.session, this.translationRow, true);// 
         } else {
-            result = getQueryMechanism().buildObjectsFromRows(rows);
+            result = getContainerPolicy().containerInstance(rows.size());
+            this.descriptor.getObjectBuilder().buildObjectsInto(this, rows, result);
         }
 
-        if (shouldIncludeData()) {
+        if (this.shouldIncludeData) {
             ComplexQueryResult complexResult = new ComplexQueryResult();
             complexResult.setResult(result);
             complexResult.setData(rows);
@@ -873,7 +875,7 @@ public class ReadAllQuery extends ObjectLevelReadQuery {
         // For bug 2612366: Conforming results in UOW extremely slow.
         // Replacing results with registered versions in the UOW is a part of 
         // conforming and is now done while conforming to maximize performance.
-        if (shouldConformResultsInUnitOfWork() || getDescriptor().shouldAlwaysConformResultsInUnitOfWork()) {
+        if (shouldConformResultsInUnitOfWork() || this.descriptor.shouldAlwaysConformResultsInUnitOfWork()) {
             return conformResult(result, unitOfWork, arguments, buildDirectlyFromRows);
         }
 
@@ -882,11 +884,12 @@ public class ReadAllQuery extends ObjectLevelReadQuery {
         // result is just a vector, not a collection of wrapped originals.
         // Also for cursors the initial connection is automatically registered.
         if (buildDirectlyFromRows) {
-            Vector rows = (Vector)result;
+            List<AbstractRecord> rows = (List<AbstractRecord>)result;
             ContainerPolicy cp = getContainerPolicy();
-            Object clones = cp.containerInstance(rows.size());
-            for (Enumeration enumtr = rows.elements(); enumtr.hasMoreElements();) {
-                AbstractRecord row = (AbstractRecord)enumtr.nextElement();
+            int size = rows.size();
+            Object clones = cp.containerInstance(size);
+            for (int index = 0; index < size; index++) {
+                AbstractRecord row = rows.get(index);
 
                 // null is placed in the row collection for 1-m joining to filter duplicate rows.
                 if (row != null) {

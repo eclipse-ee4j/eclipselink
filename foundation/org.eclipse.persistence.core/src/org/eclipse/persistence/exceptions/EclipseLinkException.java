@@ -208,9 +208,11 @@ public abstract class EclipseLinkException extends RuntimeException {
      * INTERNAL:
      * Used to specify the internal exception.
      */
-    public void setInternalException(Throwable anException) {
-        internalException = anException;
-        JavaPlatform.setExceptionCause(this, anException);
+    public void setInternalException(Throwable exception) {
+        internalException = exception;
+        if (getCause() == null) {
+            initCause(exception);
+        }
     }
 
     /**
@@ -240,7 +242,7 @@ public abstract class EclipseLinkException extends RuntimeException {
      */
     public static boolean shouldPrintInternalException() {
         if (shouldPrintInternalException == null) {
-            shouldPrintInternalException = new Boolean(JavaPlatform.shouldPrintInternalException());
+            shouldPrintInternalException = Boolean.FALSE;
         }
         return shouldPrintInternalException.booleanValue();
     }

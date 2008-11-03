@@ -56,7 +56,7 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
     public CollectionMapping() {
         this.selectionQuery = new ReadAllQuery();
         this.hasCustomDeleteAllQuery = false;
-        this.containerPolicy = ContainerPolicy.buildPolicyFor(ClassConstants.Vector_class);
+        this.containerPolicy = ContainerPolicy.buildDefaultPolicy();
         this.hasOrderBy = false;
     }
 
@@ -282,22 +282,6 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
         while (cp.hasNext(cloneIter)) {
             Object nextObject = cp.next(cloneIter, uow);
             uow.registerNewObjectForPersist(nextObject, visitedObjects);
-        }
-    }
-    
-    /**
-     * INTERNAL:
-     * Common validation for a collection mapping using a Map class.
-     * This method is no longer used? Not sure why, but seems it should be.
-     */    
-    private void checkMapClass(Class concreteClass) {
-        // the reference class has to be specified before coming here
-        if (getReferenceClass() == null) {
-            throw DescriptorException.referenceClassNotSpecified(this);
-        }
-        
-        if (! Helper.classImplementsInterface(concreteClass, ClassConstants.Map_Class)) {
-            throw ValidationException.illegalContainerClass(concreteClass);
         }
     }
 
@@ -635,29 +619,14 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
     }
 
     /**
-     * INTERNAL:
-     * Return the value of an attribute, unwrapping value holders if necessary.
-     * Also check to ensure the collection is a vector.
-     */
-    public Object getRealAttributeValueFromObject(Object object, AbstractSession session) throws DescriptorException {
-        Object value = super.getRealAttributeValueFromObject(object, session);
-        if (value != null) {
-            if (!getContainerPolicy().isValidContainer(value)) {
-                throw DescriptorException.attributeTypeNotValid(this, ((InterfaceContainerPolicy)getContainerPolicy()).getInterfaceType());
-            }
-        }
-        return value;
-    }
-
-    /**
      * Convenience method.
      * Return the value of an attribute, unwrapping value holders if necessary.
      * If the value is null, build a new container.
      */
     public Object getRealCollectionAttributeValueFromObject(Object object, AbstractSession session) throws DescriptorException {
-        Object value = this.getRealAttributeValueFromObject(object, session);
+        Object value = getRealAttributeValueFromObject(object, session);
         if (value == null) {
-            value = this.getContainerPolicy().containerInstance(1);
+            value = getContainerPolicy().containerInstance(1);
         }
         return value;
     }
@@ -1221,7 +1190,7 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
                 collectionChangeRecord.setMapping(this);
                 changeSet.addChange(collectionChangeRecord);
             }
-            getContainerPolicy().recordUpdateToCollectionInChangeRecord(event, (ObjectChangeSet)changeSetToAdd, collectionChangeRecord);
+            getContainerPolicy().recordUpdateToCollectionInChangeRecord(event, changeSetToAdd, collectionChangeRecord);
         }
     }
            

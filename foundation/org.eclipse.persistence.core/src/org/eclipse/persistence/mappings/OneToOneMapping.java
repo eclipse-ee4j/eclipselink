@@ -956,26 +956,29 @@ public class OneToOneMapping extends ObjectReferenceMapping implements Relationa
      */
     public Object valueFromObject(Object object, DatabaseField field, AbstractSession session) {
         // First check if the value can be obtained from the value holder's row.
-        AbstractRecord referenceRow = getIndirectionPolicy().extractReferenceRow(getAttributeValueFromObject(object));
+        Object attributeValue = getAttributeValueFromObject(object);
+        AbstractRecord referenceRow = this.indirectionPolicy.extractReferenceRow(attributeValue);
         if (referenceRow != null) {
             Object value = referenceRow.get(field);
-
-            // Must ensure the classification to get a cache hit.
-            try {
-                value = session.getDatasourcePlatform().convertObject(value, getFieldClassification(field));
-            } catch (ConversionException e) {
-                throw ConversionException.couldNotBeConverted(this, getDescriptor(), e);
+            Class type = getFieldClassification(field);
+            if ((value == null) || (value.getClass() != type)) {
+                // Must ensure the classification to get a cache hit.
+                try {
+                    value = session.getDatasourcePlatform().convertObject(value, type);
+                } catch (ConversionException exception) {
+                    throw ConversionException.couldNotBeConverted(this, getDescriptor(), exception);
+                }
             }
             return value;
         }
 
-        Object referenceObject = getRealAttributeValueFromObject(object, session);
+        Object referenceObject = getRealAttributeValueFromAttribute(attributeValue, object, session);
         if (referenceObject == null) {
             return null;
         }
-        DatabaseField targetField = getSourceToTargetKeyFields().get(field);
+        DatabaseField targetField = this.sourceToTargetKeyFields.get(field);
 
-        return getReferenceDescriptor().getObjectBuilder().extractValueFromObjectForField(referenceObject, targetField, session);
+        return this.referenceDescriptor.getObjectBuilder().extractValueFromObjectForField(referenceObject, targetField, session);
     }
 
     /**
@@ -1037,34 +1040,33 @@ public class OneToOneMapping extends ObjectReferenceMapping implements Relationa
      * Get a value from the object and set that in the respective field of the row.
      */
     public void writeFromObjectIntoRow(Object object, AbstractRecord databaseRow, AbstractSession session) {
-        if (isReadOnly() || (!isForeignKeyRelationship())) {
+        if (this.isReadOnly || (!this.isForeignKeyRelationship)) {
             return;
         }
-
-        AbstractRecord referenceRow = getIndirectionPolicy().extractReferenceRow(getAttributeValueFromObject(object));
+        Object attributeValue = getAttributeValueFromObject(object);
+        // If the value holder has the row, avoid instantiation and just use it.
+        AbstractRecord referenceRow = this.indirectionPolicy.extractReferenceRow(attributeValue);
         if (referenceRow == null) {
             // Extract from object.
-            Object referenceObject = getRealAttributeValueFromObject(object, session);
-
-            for (Enumeration fieldsEnum = getForeignKeyFields().elements();
-                     fieldsEnum.hasMoreElements();) {
-                DatabaseField sourceKey = (DatabaseField)fieldsEnum.nextElement();
-                DatabaseField targetKey = getSourceToTargetKeyFields().get(sourceKey);
-
+            Object referenceObject = getRealAttributeValueFromAttribute(attributeValue, object, session);
+            List<DatabaseField> foreignKeyFields = getForeignKeyFields();
+            int size = foreignKeyFields.size();
+            for (int index = 0; index < size; index++) {
+                DatabaseField sourceKey = foreignKeyFields.get(index);
                 Object referenceValue = null;
-
                 // If privately owned part is null then method cannot be invoked.
                 if (referenceObject != null) {
-                    referenceValue = getReferenceDescriptor().getObjectBuilder().extractValueFromObjectForField(referenceObject, targetKey, session);
+                    DatabaseField targetKey = this.sourceToTargetKeyFields.get(sourceKey);
+                    referenceValue = this.referenceDescriptor.getObjectBuilder().extractValueFromObjectForField(referenceObject, targetKey, session);
                 }
                 databaseRow.add(sourceKey, referenceValue);
             }
         } else {
-            for (Enumeration fieldsEnum = getForeignKeyFields().elements();
-                     fieldsEnum.hasMoreElements();) {
-                DatabaseField sourceKey = (DatabaseField)fieldsEnum.nextElement();
-                Object referenceValue = referenceRow.get(sourceKey);
-                databaseRow.add(sourceKey, referenceValue);
+            List<DatabaseField> foreignKeyFields = getForeignKeyFields();
+            int size = foreignKeyFields.size();
+            for (int index = 0; index < size; index++) {
+                DatabaseField sourceKey = foreignKeyFields.get(index);
+                databaseRow.add(sourceKey, referenceRow.get(sourceKey));
             }
         }
     }
@@ -1092,43 +1094,14 @@ public class OneToOneMapping extends ObjectReferenceMapping implements Relationa
      * Validation preventing primary key updates is implemented here.
      */
     public void writeFromObjectIntoRowWithChangeRecord(ChangeRecord changeRecord, AbstractRecord databaseRow, AbstractSession session) {
-        if (isReadOnly() || (!isForeignKeyRelationship())) {
-            return;
-        }
-
-        if (isPrimaryKeyMapping() && !changeRecord.getOwner().isNew()) {
+        if ((!this.isReadOnly) && this.isPrimaryKeyMapping && (!changeRecord.getOwner().isNew())) {
            throw ValidationException.primaryKeyUpdateDisallowed(changeRecord.getOwner().getClassName(), changeRecord.getAttribute());
         }
         
-        // the object must be used here as the foreign key may include more than just the
-        // primary key of the referenced object and the changeSet may not have the rquired information
+        // The object must be used here as the foreign key may include more than just the
+        // primary key of the referenced object and the changeSet may not have the required information.
         Object object = ((ObjectChangeSet)changeRecord.getOwner()).getUnitOfWorkClone();
-        AbstractRecord referenceRow = getIndirectionPolicy().extractReferenceRow(getAttributeValueFromObject(object));
-        if (referenceRow == null) {
-            // Extract from object.
-            Object referenceObject = getRealAttributeValueFromObject(object, session);
-
-            for (Enumeration fieldsEnum = getForeignKeyFields().elements();
-                     fieldsEnum.hasMoreElements();) {
-                DatabaseField sourceKey = (DatabaseField)fieldsEnum.nextElement();
-                DatabaseField targetKey = getSourceToTargetKeyFields().get(sourceKey);
-
-                Object referenceValue = null;
-
-                // If privately owned part is null then method cannot be invoked.
-                if (referenceObject != null) {
-                    referenceValue = getReferenceDescriptor().getObjectBuilder().extractValueFromObjectForField(referenceObject, targetKey, session);
-                }
-                databaseRow.add(sourceKey, referenceValue);
-            }
-        } else {
-            for (Enumeration fieldsEnum = getForeignKeyFields().elements();
-                     fieldsEnum.hasMoreElements();) {
-                DatabaseField sourceKey = (DatabaseField)fieldsEnum.nextElement();
-                Object referenceValue = referenceRow.get(sourceKey);
-                databaseRow.add(sourceKey, referenceValue);
-            }
-        }
+        writeFromObjectIntoRow(object, databaseRow, session);
     }
 
     /**

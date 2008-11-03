@@ -155,7 +155,7 @@ public class RepeatableWriteUnitOfWork extends UnitOfWorkImpl {
     public void commitRootUnitOfWork() throws DatabaseException, OptimisticLockException {
         commitToDatabaseWithChangeSet(false);
         // unit of work has been committed so it's ok to set the cumulative into the UOW for merge
-        if(this.cumulativeUOWChangeSet != null) {
+        if (this.cumulativeUOWChangeSet != null) {
             this.cumulativeUOWChangeSet.mergeUnitOfWorkChangeSet((UnitOfWorkChangeSet)this.getUnitOfWorkChangeSet(), this, true);
             setUnitOfWorkChangeSet(this.cumulativeUOWChangeSet);
         }
@@ -233,16 +233,16 @@ public class RepeatableWriteUnitOfWork extends UnitOfWorkImpl {
      * INTERNAL: Merge the changes to all objects to the parent.
      */
     protected void mergeChangesIntoParent() {
-        if(classesToBeInvalidated != null) {
+        if (this.classesToBeInvalidated != null) {
             // get identityMap of the parent ServerSession
             IdentityMapAccessor accessor = this.getParentIdentityMapSession(null, false, true).getIdentityMapAccessor();
-            Iterator<Class> it = classesToBeInvalidated.iterator();
-            while(it.hasNext()) {
-               accessor.invalidateClass(it.next(), false);
+            Iterator<Class> iterator = this.classesToBeInvalidated.iterator();
+            while (iterator.hasNext()) {
+               accessor.invalidateClass(iterator.next(), false);
             }
-            classesToBeInvalidated = null;
+            this.classesToBeInvalidated = null;
         }
-        flushClearCache = null;
+        this.flushClearCache = null;
         super.mergeChangesIntoParent();
     }
     

@@ -30,7 +30,5 @@ public interface PersistenceEntity {
     void _persistence_setCacheKey(CacheKey key);
     
     Vector _persistence_getPKVector();
-    void _persistence_setPKVector(Vector pk);
-    
-    Object _persistence_shallow_clone();
+    void _persistence_setPKVector(Vector pk);    
 }

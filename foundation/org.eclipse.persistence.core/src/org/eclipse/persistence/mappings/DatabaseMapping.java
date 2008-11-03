@@ -95,7 +95,7 @@ public abstract class DatabaseMapping implements Cloneable, Serializable {
      * PERF: Used as a quick check to see if this mapping is a primary key mapping,
      * set by the object builder during initialization.
      */
-    protected boolean primaryKeyMapping = false;
+    protected boolean isPrimaryKeyMapping = false;
     
     /**
      * PERF: Cache the mappings attribute name.
@@ -546,7 +546,15 @@ public abstract class DatabaseMapping implements Cloneable, Serializable {
      * Return the value of an attribute unwrapping value holders if required.
      */
     public Object getRealAttributeValueFromObject(Object object, AbstractSession session) throws DescriptorException {
-        return getAttributeValueFromObject(object);
+        return getRealAttributeValueFromAttribute(getAttributeValueFromObject(object), object, session);
+    }
+
+    /**
+     * INTERNAL:
+     * Return the value of an attribute unwrapping value holders if required.
+     */
+    public Object getRealAttributeValueFromAttribute(Object attributeValue, Object object, AbstractSession session) throws DescriptorException {
+        return attributeValue;
     }
     
     /**
@@ -885,7 +893,7 @@ public abstract class DatabaseMapping implements Cloneable, Serializable {
      * is used as a primary key mapping.
      */
     public boolean isPrimaryKeyMapping() {
-        return this.primaryKeyMapping;
+        return this.isPrimaryKeyMapping;
     }
     /**
      * INTERNAL:
@@ -1287,8 +1295,8 @@ public abstract class DatabaseMapping implements Cloneable, Serializable {
      * Set by the Object builder during initialization returns true if this mapping
      * is used as a primary key mapping.
      */
-    public void setIsPrimaryKeyMapping(boolean pkMapping) {
-        this.primaryKeyMapping = pkMapping;
+    public void setIsPrimaryKeyMapping(boolean isPrimaryKeyMapping) {
+        this.isPrimaryKeyMapping = isPrimaryKeyMapping;
     }
 
     /**

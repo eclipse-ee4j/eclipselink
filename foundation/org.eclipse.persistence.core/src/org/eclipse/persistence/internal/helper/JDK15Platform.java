@@ -29,14 +29,6 @@ public class JDK15Platform implements JDKPlatform {
     public Map getConcurrentMap(){
     	return new java.util.concurrent.ConcurrentHashMap();
     }
-
-    /**
-     * INTERNAL
-     * Get the Map to store the query cache in
-     */
-    public java.util.Map getQueryCacheMap() {
-        return new java.util.concurrent.ConcurrentHashMap();
-    }
     
     /**
      * PERF: The regular expression compiled Pattern objects are cached
@@ -104,40 +96,4 @@ public class JDK15Platform implements JDKPlatform {
         return null;
     }
 
-    /**
-     * INTERNAL:
-     * Get the milliseconds from a Calendar.  In JDK 1.4, this can be accessed directly from the calendar.
-     */
-    public long getTimeInMillis(java.util.Calendar calendar) {
-        return calendar.getTimeInMillis();
-    }
-
-    /**
-     * INTERNAL:
-     * Set the milliseconds for a Calendar.  In JDK 1.4, this can be set directly in the calendar.
-     */
-    public void setTimeInMillis(java.util.Calendar calendar, long millis) {
-        calendar.setTimeInMillis(millis);
-    }
-
-    /**
-     * INTERNAL:
-     * Use API first available in JDK 1.4 to set the cause of an exception.
-     */
-    public void setExceptionCause(Throwable exception, Throwable cause) {
-        if (exception.getCause() == null) {
-            exception.initCause(cause);
-        }
-    }
-
-    /**
-     * INTERNAL
-     * return a boolean which determines where EclipseLink should include the EclipseLink-stored
-     * Internal exception in it's stack trace.  For JDK 1.4 VMs with exception chaining
-     * the Internal exception can be redundant and confusing.
-     * @return boolean will return false since JDK 1.4 does supports exception chaining
-     */
-    public boolean shouldPrintInternalException() {
-        return false;
-    }
 }

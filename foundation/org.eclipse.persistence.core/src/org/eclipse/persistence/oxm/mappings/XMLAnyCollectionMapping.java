@@ -167,7 +167,7 @@ public class XMLAnyCollectionMapping extends DatabaseMapping implements XMLMappi
     private XMLConverter valueConverter;
 
     public XMLAnyCollectionMapping() {
-        this.containerPolicy = ContainerPolicy.buildPolicyFor(ClassConstants.Vector_class);
+        this.containerPolicy = ContainerPolicy.buildDefaultPolicy();
         useXMLRoot = false;
         keepAsElementPolicy = UnmarshalKeepAsElementPolicy.KEEP_NONE_AS_ELEMENT;
     }

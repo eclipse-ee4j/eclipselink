@@ -42,7 +42,7 @@ public abstract class AbstractCompositeCollectionMapping extends AggregateMappin
      */
     public AbstractCompositeCollectionMapping() {
         super();
-        this.containerPolicy = ContainerPolicy.buildPolicyFor(ClassConstants.Vector_class);
+        this.containerPolicy = ContainerPolicy.buildDefaultPolicy();
     }
 
     /**

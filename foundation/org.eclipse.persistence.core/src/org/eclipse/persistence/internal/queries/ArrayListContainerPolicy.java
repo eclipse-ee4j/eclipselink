@@ -8,29 +8,25 @@
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
- *     Oracle - initial API and implementation from Oracle TopLink
+ *     10/28/2008-1.1 James Sutherland - initial implementation
  ******************************************************************************/  
 package org.eclipse.persistence.internal.queries;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Vector;
 
-import org.eclipse.persistence.indirection.*;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 
 /**
- * PERF: Avoids reflection usage for IndirectList.
- *
- * @see ContainerPolicy
- * @author Big Country
- * @since TOPLink/Java 2.5
+ * PERF: Avoids reflection usage for ArrayList.
  */
-public class IndirectListContainerPolicy extends ListContainerPolicy {
-
+public class ArrayListContainerPolicy extends ListContainerPolicy {
     /**
      * INTERNAL:
      * Construct a new policy.
      */
-    public IndirectListContainerPolicy() {
+    public ArrayListContainerPolicy() {
         super();
     }
 
@@ -38,10 +34,17 @@ public class IndirectListContainerPolicy extends ListContainerPolicy {
      * INTERNAL:
      * Construct a new policy for the specified class.
      */
-    public IndirectListContainerPolicy(Class containerClass) {
+    public ArrayListContainerPolicy(Class containerClass) {
         super(containerClass);
     }
-
+    
+    /**
+     * INTERNAL:
+     * Construct a new policy for the specified class name.
+     */
+    public ArrayListContainerPolicy(String containerClassName) {
+        super(containerClassName);
+    }
 
     /**
      * INTERNAL:
@@ -51,36 +54,35 @@ public class IndirectListContainerPolicy extends ListContainerPolicy {
         if (container == null) {
             return null;
         }
-        // Use Vector as new objects can have a Vector.
         try {
-            return ((Vector)container).clone();
-        } catch (Exception notVector) {
+            return ((ArrayList)container).clone();
+        } catch (Exception notArrayList) {
             // Could potentially be another Collection type as well.
-            return new IndirectList((Collection)container);
+            return new ArrayList((Collection)container);
         }
     }
     
     /**
      * INTERNAL:
-     * Just return the Vector.
+     * Return an ArrayList from the Vector.
      */
     public Object buildContainerFromVector(Vector vector, AbstractSession session) {
-        return new IndirectList(vector);
+        return new ArrayList(vector);
     }
     
     /**
      * INTERNAL:
-     * Return a new Vector.
+     * Return a new ArrayList.
      */
     public Object containerInstance() {
-        return new IndirectList();
+        return new ArrayList();
     }
     
     /**
      * INTERNAL:
-     * Return a new Vector.
+     * Return a new ArrayList.
      */
     public Object containerInstance(int initialCapacity) {
-        return new IndirectList(initialCapacity);
+        return new ArrayList(initialCapacity);
     }
 }

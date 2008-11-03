@@ -35,6 +35,7 @@ import org.eclipse.persistence.internal.jpa.parsing.jpql.JPQLParser;
 import org.eclipse.persistence.internal.localization.ExceptionLocalization;
 import org.eclipse.persistence.internal.queries.JPQLCallQueryMechanism;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
+import org.eclipse.persistence.internal.sessions.UnitOfWorkImpl;
 
 /**
  * Concrete JPA query class.
@@ -88,7 +89,7 @@ public class EJBQueryImpl implements org.eclipse.persistence.jpa.JpaQuery {
             this.queryName = queryDescription;
         } else {
             if (databaseQuery == null) {
-                databaseQuery = buildEJBQLDatabaseQuery(queryDescription, getActiveSession());
+                databaseQuery = buildEJBQLDatabaseQuery(queryDescription, this.entityManager.getServerSession());
             }
         }
     }
@@ -343,10 +344,10 @@ public class EJBQueryImpl implements org.eclipse.persistence.jpa.JpaQuery {
         }
         
         // Set a pessimistic locking on the query if specified.
-        if (lockMode != null) {
+        if (this.lockMode != null) {
             // We need to throw TransactionRequiredException if there is no 
             // active transaction
-            entityManager.checkForTransaction(true);
+            this.entityManager.checkForTransaction(true);
             
             // The lock mode setters and getters validate the query type
             // so should be safe to make the casting.
@@ -356,15 +357,18 @@ public class EJBQueryImpl implements org.eclipse.persistence.jpa.JpaQuery {
             ((ObjectLevelReadQuery) getDatabaseQuery()).setLockModeType(lockMode, (AbstractSession) getActiveSession());
         }
         
+        Session session = getActiveSession();
         try {
             // in case it's a user-defined query
             if (getDatabaseQuery().isUserDefined()) {
                 // and there is an active transaction
                 if (this.entityManager.checkForTransaction(false) != null) {
                     // verify whether uow has begun early transaction
-                    if (!((org.eclipse.persistence.internal.sessions.UnitOfWorkImpl)getActiveSession()).wasTransactionBegunPrematurely()) {
+                    if (session.isUnitOfWork() && !((UnitOfWorkImpl)session).wasTransactionBegunPrematurely()) {
                         // uow begins early transaction in case it hasn't already begun.
-                        ((org.eclipse.persistence.internal.sessions.UnitOfWorkImpl)getActiveSession()).beginEarlyTransaction();
+                        // TODO: This is not good, it means that no SQL queries can ever use the cache,
+                        // using isUserDefined to mean an SQL query is also wrong.
+                        ((UnitOfWorkImpl)session).beginEarlyTransaction();
                     }
                 }
             }
@@ -422,20 +426,20 @@ public class EJBQueryImpl implements org.eclipse.persistence.jpa.JpaQuery {
      * and stored as the cached query.
      */
     public DatabaseQuery getDatabaseQuery() {
-        if ((queryName != null) && (databaseQuery == null)) {
+        if ((this.queryName != null) && (this.databaseQuery == null)) {
             // need error checking and appropriate exception for non-existing query
-            databaseQuery = getActiveSession().getQuery(queryName);
-            if (databaseQuery != null) {
-                if (!databaseQuery.isPrepared()){
+            this.databaseQuery = this.entityManager.getServerSession().getQuery(this.queryName);
+            if (this.databaseQuery != null) {
+                if (!this.databaseQuery.isPrepared()){ 
                     //prepare the query before cloning, this ensures we do not have to continually prepare on each usage
-                    databaseQuery.prepareCall(getActiveSession(), new DatabaseRecord());
+                    this.databaseQuery.prepareCall(this.entityManager.getServerSession(), new DatabaseRecord());
                 }
             } else {
-                throw new IllegalArgumentException(ExceptionLocalization.buildMessage("unable_to_find_named_query", new Object[] {queryName}));
+                throw new IllegalArgumentException(ExceptionLocalization.buildMessage("unable_to_find_named_query", new Object[] {this.queryName}));
             }
             
         }
-        return databaseQuery;
+        return this.databaseQuery;
     }
     
     /**
@@ -964,7 +968,12 @@ public class EJBQueryImpl implements org.eclipse.persistence.jpa.JpaQuery {
     }
 
     protected Session getActiveSession() {
-        return entityManager.getActiveSession();
+        DatabaseQuery query = getDatabaseQuery();
+        // PERF: If read-only query, avoid creating unit of work and JTA transaction.
+        if (query.isObjectLevelReadQuery() && ((ObjectLevelReadQuery)query).isReadOnly()) {
+            return this.entityManager.getReadOnlySession();
+        }
+        return this.entityManager.getActiveSession();
     }    
     
     protected void performPreQueryFlush(){

@@ -714,7 +714,7 @@ public class Helper implements Serializable {
         Calendar localCalendar = allocateCalendar();
         localCalendar.clear();
         localCalendar.set(year, month, day, 0, 0, 0);
-        long millis = JavaPlatform.getTimeInMillis(localCalendar);
+        long millis = localCalendar.getTimeInMillis();
         java.sql.Date date = new java.sql.Date(millis);
         releaseCalendar(localCalendar);
         return date;
@@ -1384,7 +1384,7 @@ public class Helper implements Serializable {
         if (useLocalTime && (!defaultTimeZone.equals(calendar.getTimeZone()))) {
             // Must convert the calendar to the local timezone if different, as dates have no timezone (always local).
             Calendar localCalendar = allocateCalendar();
-            JavaPlatform.setTimeInMillis(localCalendar, JavaPlatform.getTimeInMillis(calendar));
+            localCalendar.setTimeInMillis(calendar.getTimeInMillis());
             year = localCalendar.get(Calendar.YEAR);
             month = localCalendar.get(Calendar.MONTH) + 1;
             day = localCalendar.get(Calendar.DATE);
@@ -1439,7 +1439,7 @@ public class Helper implements Serializable {
         if (useLocalTime && (!defaultTimeZone.equals(calendar.getTimeZone()))) {
             // Must convert the calendar to the local timezone if different, as dates have no timezone (always local).
             Calendar localCalendar = allocateCalendar();
-            JavaPlatform.setTimeInMillis(localCalendar, JavaPlatform.getTimeInMillis(calendar));
+            localCalendar.setTimeInMillis(calendar.getTimeInMillis());
             hour = localCalendar.get(Calendar.HOUR_OF_DAY);
             minute = localCalendar.get(Calendar.MINUTE);
             second = localCalendar.get(Calendar.SECOND);
@@ -1602,7 +1602,7 @@ public class Helper implements Serializable {
         if (!defaultTimeZone.equals(calendar.getTimeZone())) {
             // Must convert the calendar to the local timezone if different, as dates have no timezone (always local).
             Calendar localCalendar = allocateCalendar();
-            JavaPlatform.setTimeInMillis(localCalendar, JavaPlatform.getTimeInMillis(calendar));
+            localCalendar.setTimeInMillis(calendar.getTimeInMillis());
             java.sql.Date date = dateFromYearMonthDate(localCalendar.get(Calendar.YEAR), localCalendar.get(Calendar.MONTH), localCalendar.get(Calendar.DATE));
             releaseCalendar(localCalendar);
             return date;
@@ -1654,7 +1654,7 @@ public class Helper implements Serializable {
         Calendar localCalendar = allocateCalendar();
         localCalendar.clear();
         localCalendar.set(1970, 0, 1, hour, minute, second);
-        long millis = JavaPlatform.getTimeInMillis(localCalendar);
+        long millis = localCalendar.getTimeInMillis();
         java.sql.Time time = new java.sql.Time(millis);
         releaseCalendar(localCalendar);
         return time;
@@ -1710,7 +1710,7 @@ public class Helper implements Serializable {
         if (!defaultTimeZone.equals(calendar.getTimeZone())) {
             // Must convert the calendar to the local timezone if different, as dates have no timezone (always local).
             Calendar localCalendar = allocateCalendar();
-            JavaPlatform.setTimeInMillis(localCalendar, JavaPlatform.getTimeInMillis(calendar));
+            localCalendar.setTimeInMillis(calendar.getTimeInMillis());
             java.sql.Time date = timeFromHourMinuteSecond(localCalendar.get(Calendar.HOUR_OF_DAY), localCalendar.get(Calendar.MINUTE), localCalendar.get(Calendar.SECOND));
             releaseCalendar(localCalendar);
             return date;
@@ -1722,7 +1722,7 @@ public class Helper implements Serializable {
      * Answer a Timestamp from a Calendar.
      */
     public static java.sql.Timestamp timestampFromCalendar(Calendar calendar) {
-        return timestampFromLong(JavaPlatform.getTimeInMillis(calendar));
+        return timestampFromLong(calendar.getTimeInMillis());
     }
 
     /**

@@ -220,7 +220,7 @@ public class EntityResult extends SQLResult {
      *   This method is for processing a single FieldResult, returning the DatabaseField it refers to.
      */
     public DatabaseField processValueFromRecordForMapping(ClassDescriptor descriptor, String[] attributeNames, int currentLoc){
-        DatabaseMapping mapping = descriptor.getMappingForAttributeName(attributeNames[currentLoc]);
+        DatabaseMapping mapping = descriptor.getObjectBuilder().getMappingForAttributeName(attributeNames[currentLoc]);
         if (mapping==null){throw QueryException.mappingForFieldResultNotFound(attributeNames,currentLoc);}
         currentLoc++;
         if (attributeNames.length!=currentLoc){

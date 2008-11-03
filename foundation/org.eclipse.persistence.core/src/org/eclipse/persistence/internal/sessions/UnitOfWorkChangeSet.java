@@ -494,19 +494,21 @@ public class UnitOfWorkChangeSet implements Serializable, org.eclipse.persistenc
     * INTERNAL:
     * THis method will be used to merge another changeset into this changeset.  The
     * Main use of this method is for non-deferred writes and checkpointing so that
-    * the acumulated changes are collected and merged at the end of the transaction
-    *
+    * the accumulated changes are collected and merged at the end of the transaction.
     */
     public void mergeUnitOfWorkChangeSet(UnitOfWorkChangeSet mergeFromChangeSet, AbstractSession session, boolean postCommit) {
+        if (mergeFromChangeSet == null) {
+            return;
+        }
         Iterator iterator = mergeFromChangeSet.getObjectChanges().values().iterator();
         while (iterator.hasNext()) {
             //iterate over the classes
-            Hashtable table = (Hashtable)iterator.next();
+            Map table = (Map)iterator.next();
             Iterator changes = table.values().iterator();
             while (changes.hasNext()) {
                 ObjectChangeSet objectChangeSet = (ObjectChangeSet)changes.next();
                 objectChangeSet = mergeObjectChanges(objectChangeSet, mergeFromChangeSet);
-                this.addObjectChangeSet(objectChangeSet, session, !postCommit);
+                addObjectChangeSet(objectChangeSet, session, !postCommit);
             }
         }
 
@@ -520,7 +522,7 @@ public class UnitOfWorkChangeSet implements Serializable, org.eclipse.persistenc
                 if (localObjectChangeSet == null) {
                     localObjectChangeSet = objectChangeSet;
                 }
-                this.getDeletedObjects().put(localObjectChangeSet, localObjectChangeSet);
+                getDeletedObjects().put(localObjectChangeSet, localObjectChangeSet);
             }
         }
     }

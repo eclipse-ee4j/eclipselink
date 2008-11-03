@@ -41,7 +41,7 @@ public class ReadOnlyClassAccessingTestCase extends TestCase {
     /**
      *  Compares a Hashtable and a vector for equality.
      */
-    protected boolean areEqual(Hashtable ht, Vector v1) {
+    protected boolean areEqual(Set ht, Vector v1) {
         if (v1.size() != ht.size()) {
             return false;
         }

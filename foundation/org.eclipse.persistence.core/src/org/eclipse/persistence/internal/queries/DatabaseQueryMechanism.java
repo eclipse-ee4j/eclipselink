@@ -174,15 +174,6 @@ public abstract class DatabaseQueryMechanism implements Cloneable, Serializable 
         return false;
     }
 
-    /**
-     * Build the objects for the rows, and answer them
-     * @exception  DatabaseException - an error has occurred on the database
-     */
-    public Object buildObjectsFromRows(Vector rows) throws DatabaseException {
-        Object result = ((ReadAllQuery)getQuery()).getContainerPolicy().containerInstance(rows.size());
-        return getDescriptor().getObjectBuilder().buildObjectsInto((ReadAllQuery)getQuery(), rows, result);
-    }
-    ;
     public abstract Integer deleteAll() throws DatabaseException;
 
     /**
@@ -790,7 +781,7 @@ public abstract class DatabaseQueryMechanism implements Cloneable, Serializable 
                 writeQuery.setPrimaryKey(primaryKeys);
                 // Now I need to update the row
                 getModifyRow().putAll(pkToModify);
-                getDescriptor().getObjectBuilder().addPrimaryKeyForNonDefaultTable(getModifyRow());
+                getDescriptor().getObjectBuilder().addPrimaryKeyForNonDefaultTable(getModifyRow(), object, getSession());
             }
         }
 
@@ -929,7 +920,9 @@ public abstract class DatabaseQueryMechanism implements Cloneable, Serializable 
         AbstractRecord modifyRow = getModifyRow();
         // Update the row.
         modifyRow.put(sequenceNumberField, sequenceValue);
-        objectBuilder.addPrimaryKeyForNonDefaultTable(modifyRow);
+        if (descriptor.hasMultipleTables()) {
+            objectBuilder.addPrimaryKeyForNonDefaultTable(modifyRow, object, session);
+        }
         // Update the changeSet if there is one.
         if (session.isUnitOfWork()) {
             ObjectChangeSet objectChangeSet = writeQuery.getObjectChangeSet();

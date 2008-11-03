@@ -602,7 +602,7 @@ public class QueryHintsHandler {
                 while (tokenizer.hasMoreTokens()){
                     String token = tokenizer.nextToken();
                     ForeignReferenceMapping frMapping = null;
-                    DatabaseMapping mapping = descriptor.getMappingForAttributeName(token);
+                    DatabaseMapping mapping = descriptor.getObjectBuilder().getMappingForAttributeName(token);
                     if (mapping == null){
                         throw QueryException.queryHintNavigatedNonExistantRelationship(query, QueryHints.BATCH, valueToApply, previousToken + "." + token);
                     } else if (!mapping.isForeignReferenceMapping()){
@@ -646,7 +646,7 @@ public class QueryHintsHandler {
                 while (tokenizer.hasMoreTokens()){
                     String token = tokenizer.nextToken();
                     ForeignReferenceMapping frMapping = null;
-                    DatabaseMapping mapping = descriptor.getMappingForAttributeName(token);
+                    DatabaseMapping mapping = descriptor.getObjectBuilder().getMappingForAttributeName(token);
                     if (mapping == null){
                         throw QueryException.queryHintNavigatedNonExistantRelationship(query, QueryHints.BATCH, valueToApply, previousToken + "." + token);
                     } else if (!mapping.isForeignReferenceMapping()){

@@ -407,7 +407,7 @@ public abstract class ObjectBuildingQuery extends ReadQuery {
         }
         ClassDescriptor descriptor = unitOfWork.getDescriptor(clone);
         for (int index = 0; index < size; index++) {
-            DatabaseMapping mapping = descriptor.getMappingForAttributeName(joinManager.getJoinedAttributes().get(index));
+            DatabaseMapping mapping = descriptor.getObjectBuilder().getMappingForAttributeName(joinManager.getJoinedAttributes().get(index));
             if (mapping !=null){
                 Object attributeValue = mapping.getRealAttributeValueFromObject(clone, unitOfWork);
                 if (attributeValue != null){

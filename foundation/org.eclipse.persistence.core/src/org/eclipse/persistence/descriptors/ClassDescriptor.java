@@ -3097,7 +3097,7 @@ public class ClassDescriptor implements Cloneable, Serializable {
             }
         }
         // If weaved configure the copy policy.
-        if (PersistenceEntity.class.isAssignableFrom(getJavaClass())) {
+        if (PersistenceObject.class.isAssignableFrom(getJavaClass())) {
             if (this.copyPolicy == null) {
                 // Cloning is only auto set for field access, as method access
                 // may not have simple fields.

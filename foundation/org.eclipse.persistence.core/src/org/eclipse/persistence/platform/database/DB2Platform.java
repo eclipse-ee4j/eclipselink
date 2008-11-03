@@ -143,7 +143,7 @@ public class DB2Platform extends org.eclipse.persistence.platform.database.Datab
         if (!Helper.getDefaultTimeZone().equals(calendar.getTimeZone())) {
             // Must convert the calendar to the local timezone if different, as dates have no timezone (always local).
             Calendar localCalendar = Helper.allocateCalendar();
-            JavaPlatform.setTimeInMillis(localCalendar, JavaPlatform.getTimeInMillis(calendar));
+            localCalendar.setTimeInMillis(calendar.getTimeInMillis());
             hour = calendar.get(Calendar.HOUR_OF_DAY);
             minute = calendar.get(Calendar.MINUTE);
             second = calendar.get(Calendar.SECOND);

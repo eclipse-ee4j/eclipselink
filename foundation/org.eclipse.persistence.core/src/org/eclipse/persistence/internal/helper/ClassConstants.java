@@ -37,6 +37,7 @@ public class ClassConstants {
     public static final Class Object_Class = Object.class;
     public static final Class SortedSet_Class = SortedSet.class;
     public static final Class Vector_class = Vector.class;
+    public static final Class ArrayList_class = ArrayList.class;
     public static final Class Void_Class = void.class;
     public static final Class PropertyChangeEvent_Class = java.beans.PropertyChangeEvent.class;
 

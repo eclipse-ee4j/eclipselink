@@ -565,9 +565,9 @@ public abstract class AbstractDirectMapping extends DatabaseMapping {
         // EclipseLink bug 240407 - nulls not translated when writing to database
         if ((fieldValue == null) || (fieldClassification != fieldValue.getClass())) {
             try {
-                fieldValue = session.getPlatform(descriptor.getJavaClass()).convertObject(fieldValue, fieldClassification);
+                fieldValue = session.getPlatform(this.descriptor.getJavaClass()).convertObject(fieldValue, fieldClassification);
             } catch (ConversionException exception) {
-                throw ConversionException.couldNotBeConverted(this, descriptor, exception);
+                throw ConversionException.couldNotBeConverted(this, this.descriptor, exception);
             }
         }
         return fieldValue;
@@ -873,14 +873,14 @@ public abstract class AbstractDirectMapping extends DatabaseMapping {
      * Get a value from the object and set that in the respective field of the row.
      */
     public void writeFromObjectIntoRow(Object object, AbstractRecord row, AbstractSession session) {
-        if (isReadOnly()) {
+        if (this.isReadOnly) {
             return;
         }
 
         Object attributeValue = getAttributeValueFromObject(object);
         Object fieldValue = getFieldValue(attributeValue, session);
 
-        writeValueIntoRow(row, getField(), fieldValue);
+        writeValueIntoRow(row, this.field, fieldValue);
 
     }
 
@@ -892,32 +892,32 @@ public abstract class AbstractDirectMapping extends DatabaseMapping {
      * Validation preventing primary key updates is implemented here.
      */
     public void writeFromObjectIntoRowWithChangeRecord(ChangeRecord changeRecord, AbstractRecord row, AbstractSession session) {
-        if (isReadOnly()) {
+        if (this.isReadOnly) {
             return;
         }
 
-        if (isPrimaryKeyMapping() && !changeRecord.getOwner().isNew()) {
+        if (this.isPrimaryKeyMapping && !changeRecord.getOwner().isNew()) {
            throw ValidationException.primaryKeyUpdateDisallowed(changeRecord.getOwner().getClassName(), changeRecord.getAttribute());
         }
         
         Object attributeValue = ((DirectToFieldChangeRecord)changeRecord).getNewValue();
         Object fieldValue = getFieldValue(attributeValue, session);
 
-        row.add(getField(), fieldValue);
+        row.add(this.field, fieldValue);
     }
 
     /**
      * INTERNAL:
      * Write the attribute value from the object to the row for update.
      */
-    public void writeFromObjectIntoRowForUpdate(WriteObjectQuery query, AbstractRecord aDatabaseRow) {
+    public void writeFromObjectIntoRowForUpdate(WriteObjectQuery query, AbstractRecord databaseRow) {
         if (query.getSession().isUnitOfWork()) {
             if (compareObjects(query.getBackupClone(), query.getObject(), query.getSession())) {
                 return;
             }
         }
 
-        super.writeFromObjectIntoRowForUpdate(query, aDatabaseRow);
+        super.writeFromObjectIntoRowForUpdate(query, databaseRow);
     }
 
     /**

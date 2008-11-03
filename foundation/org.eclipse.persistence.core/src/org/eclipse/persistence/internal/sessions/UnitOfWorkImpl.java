@@ -122,7 +122,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
     protected Map batchReadObjects;
 
     /** Read-only class can be used for reference data to avoid cloning when not required. */
-    protected Hashtable readOnlyClasses;
+    protected Set readOnlyClasses;
 
     /** Flag indicating that the transaction for this UOW was already begun. */
     protected boolean wasTransactionBegunPrematurely;
@@ -171,7 +171,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
     protected static boolean SmartMerge = false;
 
     /** Kept reference of read lock objects*/
-    protected Hashtable optimisticReadLockObjects;
+    protected Map optimisticReadLockObjects;
 
     /** Used for read lock to determine update the version field with the same value or increment value */
     public static final String ReadLockOnly = "no update";
@@ -202,11 +202,6 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
      * PERF: Stores the JTA transaction to optimize activeUnitOfWork lookup.
      */
     protected Object transaction;
-    
-    /**
-     * PERF: Stores the CMP bean tracker directly to avoid CMP usage of session events.
-     */
-    protected ObjectTracker objectTracker;
     
     /**
      * PERF: Cache the write-lock check to avoid cost of checking in every register/clone.
@@ -346,7 +341,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
             throw ValidationException.cannotModifyReadOnlyClassesSetAfterUsingUnitOfWork();
         }
 
-        getReadOnlyClasses().put(theClass, theClass);
+        getReadOnlyClasses().add(theClass);
 
         ClassDescriptor descriptor = getDescriptor(theClass);
 
@@ -1204,7 +1199,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
         commitToDatabaseWithChangeSet(true);
         // Merge after commit	
         mergeChangesIntoParent();
-        this.changeTrackedHardList = new IdentityHashSet();
+        this.changeTrackedHardList = null;
 
     }
 
@@ -1335,6 +1330,11 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
      * not to finalize the transaction.
      */
     protected void commitToDatabaseWithChangeSet(boolean commitTransaction) throws DatabaseException, OptimisticLockException {
+        // PERF: If this is an empty unit of work, do nothing.
+        if ((this.unitOfWorkChangeSet == null) && !(hasCloneMapping() || hasDeletedObjects() || hasModifyAllQueries() || hasDeferredModifyAllQueries())) {
+            return;
+        }
+        
         try {
             startOperationProfile(SessionProfiler.UowCommit);
             try{
@@ -1373,16 +1373,17 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
                         }
                     }
                     getCommitManager().setIsActive(false);
-                }catch(RuntimeException exception){
+                } catch( RuntimeException exception){
                     // The number of SQL statements been prepared need be stored into UOW 
                     // before any exception being thrown.
                     copyStatementsCountIntoProperties();
                     throw exception;
                 }
             }
-            endOperationProfile(SessionProfiler.UowCommit);
         } catch (RuntimeException exception) {
             handleException(exception);
+        } finally {
+            endOperationProfile(SessionProfiler.UowCommit);            
         }
     }
 
@@ -1461,7 +1462,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
      */
     // Added Nov 8, 2000 JED for Patch 2.5.1.8, Ref: Prs 24502
     public Vector copyReadOnlyClasses() {
-        return Helper.buildVectorFromHashtableElements(getReadOnlyClasses());
+        return new Vector(getReadOnlyClasses());
     }
 
     /**
@@ -2222,11 +2223,11 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
      * INTERNAL:
      * Return optimistic read lock objects
      */
-    public Hashtable getOptimisticReadLockObjects() {
-        if (optimisticReadLockObjects == null) {
-            optimisticReadLockObjects = new Hashtable(2);
+    public Map getOptimisticReadLockObjects() {
+        if (this.optimisticReadLockObjects == null) {
+            this.optimisticReadLockObjects = new HashMap(2);
         }
-        return optimisticReadLockObjects;
+        return this.optimisticReadLockObjects;
     }
 
     /**
@@ -2443,12 +2444,12 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
      * Returns the set of read-only classes for the receiver.
      * Use this method with setReadOnlyClasses() to modify a UnitOfWork's set of read-only
      * classes before using the UnitOfWork.
-     * @return Hashtable containing the Java Classes that are currently read-only.
+     * @return Set containing the Java Classes that are currently read-only.
      * @see #setReadOnlyClasses(Vector)
      */
-    public Hashtable getReadOnlyClasses() {
+    public Set getReadOnlyClasses() {
         if (this.readOnlyClasses == null) {
-            this.readOnlyClasses = new Hashtable();
+            this.readOnlyClasses = new HashSet();
         }
         return this.readOnlyClasses;
     }
@@ -2485,22 +2486,6 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
      */
     public int getState() {
         return lifecycle;
-    }
-    
-    /**
-     * INTERNAL:
-     * PERF: Return the object tracker.  Used to callback to CMP for bean pool releasing.
-     */
-    public ObjectTracker getObjectTracker() {
-        return objectTracker;
-    }
-    
-    /**
-     * INTERNAL:
-     * PERF: Set the object tracker.  Used to callback to CMP for bean pool releasing.
-     */
-    public void setObjectTracker(ObjectTracker objectTracker) {
-        this.objectTracker = objectTracker;
     }
     
     /**
@@ -2609,7 +2594,8 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
      * Note if a transaction was begun prematurely it still needs to be committed.
      */
     protected boolean hasModifications() {
-        if (getUnitOfWorkChangeSet().hasChanges() || hasDeletedObjects() || hasModifyAllQueries() || hasDeferredModifyAllQueries() || ((org.eclipse.persistence.internal.sessions.UnitOfWorkChangeSet)getUnitOfWorkChangeSet()).hasForcedChanges()) {
+        if (((this.unitOfWorkChangeSet != null) && (this.unitOfWorkChangeSet.hasChanges() || ((org.eclipse.persistence.internal.sessions.UnitOfWorkChangeSet)getUnitOfWorkChangeSet()).hasForcedChanges()))
+                || hasDeletedObjects() || hasModifyAllQueries() || hasDeferredModifyAllQueries()) {
             return true;
         } else {
             return false;
@@ -2693,7 +2679,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
         if ((descriptor != null) && (descriptor.shouldBeReadOnly())) {
             return true;
         }
-        if ((theClass != null) && (this.readOnlyClasses != null) && this.readOnlyClasses.containsKey(theClass)) {
+        if ((theClass != null) && (this.readOnlyClasses != null) && this.readOnlyClasses.contains(theClass)) {
             return true;
         }
         return false;
@@ -2951,6 +2937,10 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
      */
     protected void mergeChangesIntoParent() {
         UnitOfWorkChangeSet uowChangeSet = (UnitOfWorkChangeSet)getUnitOfWorkChangeSet();
+        if (uowChangeSet == null) {
+            // No changes.
+            return;
+        }
 
         // 3286123 - if no work to be done, skip this part of uow.commit()
         if (hasModifications()) {
@@ -3553,7 +3543,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
      * @return The clone of the original object, the return value must be used for editing.
      * Editing the original is not allowed in the unit of work.
      */
-    public synchronized Object registerExistingObject(Object existingObject) {
+    public Object registerExistingObject(Object existingObject) {
         if (existingObject == null) {
             return null;
         }
@@ -3586,7 +3576,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
      * @return The clone of the original object, the return value must be used for editing.
      * Editing the original is not allowed in the unit of work.
      */
-    protected synchronized Object registerExistingObject(Object objectToRegister, ClassDescriptor descriptor) {
+    public Object registerExistingObject(Object objectToRegister, ClassDescriptor descriptor) {
         if (this.isClassReadOnly(descriptor.getJavaClass(), descriptor)) {
             return objectToRegister;
         }
@@ -3713,7 +3703,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
      *
      * @see #registerObject(Object)
      */
-    public synchronized Object registerNewObject(Object newObject) {
+    public Object registerNewObject(Object newObject) {
         if (newObject == null) {
             return null;
         }
@@ -3746,7 +3736,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
      *
      * @see #registerObject(Object)
      */
-    protected synchronized Object registerNewObject(Object implementation, ClassDescriptor descriptor) {
+    protected Object registerNewObject(Object implementation, ClassDescriptor descriptor) {
         if (isAfterWriteChangesButBeforeCommit()) {
             throw ValidationException.illegalOperationForUnitOfWorkLifecycle(getLifecycle(), "registerNewObject");
         }
@@ -3855,7 +3845,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
      * object's mappings cascade requirements.  This is specific to EJB 3.0 support.
      * @see #registerObject(Object)
      */
-    public synchronized void registerNewObjectForPersist(Object newObject, Map visitedObjects) {
+    public void registerNewObjectForPersist(Object newObject, Map visitedObjects) {
         if (newObject == null) {
             return;
         }
@@ -3982,7 +3972,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
      *
      * ** Editing the original is not allowed in the unit of work. **
      */
-    public synchronized Object registerObject(Object object) {
+    public Object registerObject(Object object) {
         if (object == null) {
             return null;
         }
@@ -4023,7 +4013,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
      *
      * @return the clone of the original object, the return value must be used for editing,
      */
-    protected synchronized Object registerObject(Object object, ClassDescriptor descriptor) {
+    protected Object registerObject(Object object, ClassDescriptor descriptor) {
         if (this.isClassReadOnly(descriptor.getJavaClass(), descriptor)) {
             return object;
         }
@@ -4117,9 +4107,6 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
         setBatchReadObjects(null);
         getParent().releaseUnitOfWork(this);
         getEventManager().postReleaseUnitOfWork();
-        if (getObjectTracker() != null) {
-            getObjectTracker().releaseAllocatedObjects();
-        }
     }
 
     /**
@@ -4473,10 +4460,10 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
             this.readOnlyClasses = null;
             return;
         }
-        this.readOnlyClasses = new Hashtable(classes.size());
-        for (Iterator iterator = classes.iterator(); iterator.hasNext();) {
-            Class theClass = (Class)iterator.next();
-            addReadOnlyClass(theClass);
+        int size = classes.size();
+        this.readOnlyClasses = new HashSet(size);
+        for (int index = 0; index < size; index++) {
+            this.readOnlyClasses.add(classes.get(index));
         }
     }
 
@@ -5054,10 +5041,10 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
         try {
             commitToDatabaseWithChangeSet(false);
             //bug:5526260 - flush batch mechanisms
-            this.writesCompleted();
-        } catch (RuntimeException e) {
+            writesCompleted();
+        } catch (RuntimeException exception) {
             setLifecycle(WriteChangesFailed);
-            throw e;
+            throw exception;
         }
         setLifecycle(CommitTransactionPending);
     }
@@ -5289,9 +5276,16 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
         return referenceMode;
     }
 
+    /**
+     * INTERNAL:
+     * Return the list of object with changes.
+     * This is used in weak reference mode to avoid garbage collection of changed objects.
+     */
     public IdentityHashSet getChangeTrackedHardList() {
-        if (changeTrackedHardList == null) changeTrackedHardList = new IdentityHashSet();
-        return changeTrackedHardList;
+        if (this.changeTrackedHardList == null) {
+            this.changeTrackedHardList = new IdentityHashSet();
+        }
+        return this.changeTrackedHardList;
     }
     
     /**

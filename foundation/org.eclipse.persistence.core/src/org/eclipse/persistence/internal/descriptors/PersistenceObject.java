@@ -8,16 +8,17 @@
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
- *     Oracle - initial API and implementation from Oracle TopLink
+ *     2008-10-29 - James Sutherland - initial implementation
  ******************************************************************************/  
-package org.eclipse.persistence.internal.sessions;
+package org.eclipse.persistence.internal.descriptors;
 
 /**
- * Interface to allow callbacks to CMP2 bean pool allocation and releasing.
+ * Define an interface for utility methods weaved into the persistence classes.
+ * This defines any persistence object including aggregates/embeddables.
+ * 
+ * @author  James Sutherland
+ * @since   EclipseLink 1.1
  */
-public interface ObjectTracker {
-    /**
-     * Release all tracked objects.
-     */
-    void releaseAllocatedObjects();
+public interface PersistenceObject {    
+    Object _persistence_shallow_clone();
 }

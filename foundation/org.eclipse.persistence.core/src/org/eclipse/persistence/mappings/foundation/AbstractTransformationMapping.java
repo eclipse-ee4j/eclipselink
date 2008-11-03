@@ -668,12 +668,12 @@ public abstract class AbstractTransformationMapping extends DatabaseMapping {
  
     /**
      * INTERNAL:
-     * Returns the attribute value from the reference object.
+     * Returns the real attribute value from the reference object's attribute value.
      * If the attribute is using indirection the value of the value-holder is returned.
      * If the value holder is not instantiated then it is instantiated.
      */
-    public Object getRealAttributeValueFromObject(Object object, AbstractSession session) {
-        return getIndirectionPolicy().getRealAttributeValueFromObject(object, getAttributeValueFromObject(object));
+    public Object getRealAttributeValueFromAttribute(Object attributeValue, Object object, AbstractSession session) {
+        return this.indirectionPolicy.getRealAttributeValueFromObject(object, attributeValue);
     }
     
     /**

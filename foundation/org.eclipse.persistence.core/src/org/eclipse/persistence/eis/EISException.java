@@ -72,11 +72,6 @@ public class EISException extends org.eclipse.persistence.exceptions.DatabaseExc
     }
 
     public static EISException resourceException(ResourceException resourceException, EISAccessor accessor, AbstractSession session) {
-        // JCA 1.0 does not set caused by, 1.5 seems to.
-        if (resourceException.getCause() != null) {
-            JavaPlatform.setExceptionCause(resourceException, resourceException.getCause());
-        }
-
         return resourceException((Exception)resourceException, accessor, session);
     }
 

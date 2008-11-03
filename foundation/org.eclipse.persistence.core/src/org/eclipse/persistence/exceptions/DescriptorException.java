@@ -377,7 +377,7 @@ public class DescriptorException extends ValidationException {
         Object[] args = { aClass, methodName };
 
         DescriptorException exception = new DescriptorException(ExceptionMessageGenerator.buildMessage(DescriptorException.class, INTERNAL_ERROR_SET_METHOD, args), descriptor, underlying);
-        JavaPlatform.setExceptionCause(exception, underlying);
+        exception.initCause(underlying);
         return exception;
     }
     
@@ -1884,7 +1884,7 @@ public class DescriptorException extends ValidationException {
         Object[] args = { String.valueOf(INTERNAL_ERROR_ACCESSING_PKFIELD), primaryKey };
 
         DescriptorException exception = new DescriptorException(ExceptionMessageGenerator.buildMessage(DescriptorException.class, INTERNAL_ERROR_ACCESSING_PKFIELD, args), descriptor, underlying);
-        JavaPlatform.setExceptionCause(exception, underlying);
+        exception.initCause(underlying);
         return exception;
     }
 

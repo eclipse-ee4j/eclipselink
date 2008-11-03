@@ -625,8 +625,13 @@ public abstract class AggregateMapping extends DatabaseMapping {
         if (attributeValue == null) {
             return;
         }
+        // PERF: Avoid for simple aggregates.
+        ClassDescriptor descriptor = getReferenceDescriptor(attributeValue, query.getSession());
+        if (descriptor.getObjectBuilder().isSimple() && !descriptor.getEventManager().hasAnyEventListeners()) {
+            return;
+        }
         DeleteObjectQuery aggregateQuery = buildAggregateDeleteQuery(query, attributeValue);
-        getQueryManager(attributeValue, query.getSession()).postDelete(aggregateQuery);
+        descriptor.getQueryManager().postDelete(aggregateQuery);
         executeEvent(DescriptorEventManager.PostDeleteEvent, aggregateQuery);
     }
 
@@ -648,8 +653,13 @@ public abstract class AggregateMapping extends DatabaseMapping {
         if (attributeValue == null) {
             return;
         }
+        // PERF: Avoid for simple aggregates.
+        ClassDescriptor descriptor = getReferenceDescriptor(attributeValue, query.getSession());
+        if (descriptor.getObjectBuilder().isSimple() && !descriptor.getEventManager().hasAnyEventListeners()) {
+            return;
+        }
         WriteObjectQuery aggregateQuery = buildAggregateWriteQuery(query, attributeValue);
-        getQueryManager(attributeValue, query.getSession()).postInsert(aggregateQuery);
+        descriptor.getQueryManager().postInsert(aggregateQuery);
         executeEvent(DescriptorEventManager.PostInsertEvent, aggregateQuery);
         // aggregates do not actually use a query to write to the database so the post write must be called here
         executeEvent(DescriptorEventManager.PostWriteEvent, aggregateQuery);
@@ -673,15 +683,21 @@ public abstract class AggregateMapping extends DatabaseMapping {
         if (attributeValue == null) {
             return;
         }
+        // PERF: Avoid for simple aggregates.
+        AbstractSession session = query.getSession();
+        ClassDescriptor descriptor = getReferenceDescriptor(attributeValue, session);
+        if (descriptor.getObjectBuilder().isSimple() && !descriptor.getEventManager().hasAnyEventListeners()) {
+            return;
+        }
         ObjectChangeSet changeSet = null;
         UnitOfWorkChangeSet uowChangeSet = null;
-        if (query.getSession().isUnitOfWork() && (((UnitOfWorkImpl)query.getSession()).getUnitOfWorkChangeSet() != null)) {
-            uowChangeSet = (UnitOfWorkChangeSet)((UnitOfWorkImpl)query.getSession()).getUnitOfWorkChangeSet();
+        if (session.isUnitOfWork() && (((UnitOfWorkImpl)session).getUnitOfWorkChangeSet() != null)) {
+            uowChangeSet = (UnitOfWorkChangeSet)((UnitOfWorkImpl)session).getUnitOfWorkChangeSet();
             changeSet = (ObjectChangeSet)uowChangeSet.getObjectChangeSetForClone(attributeValue);
         }
         WriteObjectQuery aggregateQuery = buildAggregateWriteQuery(query, attributeValue);
         aggregateQuery.setObjectChangeSet(changeSet);
-        getQueryManager(attributeValue, query.getSession()).postUpdate(aggregateQuery);
+        descriptor.getQueryManager().postUpdate(aggregateQuery);
         executeEvent(DescriptorEventManager.PostUpdateEvent, aggregateQuery);
         // aggregates do not actually use a query to write to the database so the post write must be called here
         executeEvent(DescriptorEventManager.PostWriteEvent, aggregateQuery);
@@ -705,9 +721,15 @@ public abstract class AggregateMapping extends DatabaseMapping {
         if (attributeValue == null) {
             return;
         }
+        // PERF: Avoid for simple aggregates.
+        AbstractSession session = query.getSession();
+        ClassDescriptor descriptor = getReferenceDescriptor(attributeValue, session);
+        if (descriptor.getObjectBuilder().isSimple() && !descriptor.getEventManager().hasAnyEventListeners()) {
+            return;
+        }
         DeleteObjectQuery aggregateQuery = buildAggregateDeleteQuery(query, attributeValue);
         executeEvent(DescriptorEventManager.PreDeleteEvent, aggregateQuery);
-        getQueryManager(attributeValue, query.getSession()).preDelete(aggregateQuery);
+        descriptor.getQueryManager().preDelete(aggregateQuery);
     }
 
     /**
@@ -728,10 +750,16 @@ public abstract class AggregateMapping extends DatabaseMapping {
         if (attributeValue == null) {
             return;
         }
+        // PERF: Avoid for simple aggregates.
+        AbstractSession session = query.getSession();
+        ClassDescriptor descriptor = getReferenceDescriptor(attributeValue, session);
+        if (descriptor.getObjectBuilder().isSimple() && !descriptor.getEventManager().hasAnyEventListeners()) {
+            return;
+        }
         WriteObjectQuery aggregateQuery = buildAggregateWriteQuery(query, attributeValue);
         ObjectChangeSet changeSet = null;
-        if (query.getSession().isUnitOfWork() && (((UnitOfWorkImpl)query.getSession()).getUnitOfWorkChangeSet() != null)) {
-            UnitOfWorkChangeSet uowChangeSet = (UnitOfWorkChangeSet)((UnitOfWorkImpl)query.getSession()).getUnitOfWorkChangeSet();
+        if (session.isUnitOfWork() && (((UnitOfWorkImpl)session).getUnitOfWorkChangeSet() != null)) {
+            UnitOfWorkChangeSet uowChangeSet = (UnitOfWorkChangeSet)((UnitOfWorkImpl)session).getUnitOfWorkChangeSet();
             changeSet = (ObjectChangeSet)uowChangeSet.getObjectChangeSetForClone(aggregateQuery.getObject());
         }
         aggregateQuery.setObjectChangeSet(changeSet);
@@ -740,7 +768,7 @@ public abstract class AggregateMapping extends DatabaseMapping {
             executeEvent(DescriptorEventManager.PreWriteEvent, aggregateQuery);
             executeEvent(DescriptorEventManager.PreInsertEvent, aggregateQuery);
         }
-        getQueryManager(attributeValue, query.getSession()).preInsert(aggregateQuery);
+        descriptor.getQueryManager().preInsert(aggregateQuery);
     }
 
     /**
@@ -761,11 +789,17 @@ public abstract class AggregateMapping extends DatabaseMapping {
         if (attributeValue == null) {
             return;
         }
+        // PERF: Avoid for simple aggregates.
+        AbstractSession session = query.getSession();
+        ClassDescriptor descriptor = getReferenceDescriptor(attributeValue, session);
+        if (descriptor.getObjectBuilder().isSimple() && !descriptor.getEventManager().hasAnyEventListeners()) {
+            return;
+        }
         WriteObjectQuery aggregateQuery = buildAggregateWriteQuery(query, attributeValue);
         ObjectChangeSet changeSet = null;
         UnitOfWorkChangeSet uowChangeSet = null;
-        if (query.getSession().isUnitOfWork() && (((UnitOfWorkImpl)query.getSession()).getUnitOfWorkChangeSet() != null)) {
-            uowChangeSet = (UnitOfWorkChangeSet)((UnitOfWorkImpl)query.getSession()).getUnitOfWorkChangeSet();
+        if (session.isUnitOfWork() && (((UnitOfWorkImpl)session).getUnitOfWorkChangeSet() != null)) {
+            uowChangeSet = (UnitOfWorkChangeSet)((UnitOfWorkImpl)session).getUnitOfWorkChangeSet();
             changeSet = (ObjectChangeSet)uowChangeSet.getObjectChangeSetForClone(aggregateQuery.getObject());
         }
 
@@ -775,7 +809,7 @@ public abstract class AggregateMapping extends DatabaseMapping {
             executeEvent(DescriptorEventManager.PreWriteEvent, aggregateQuery);
             executeEvent(DescriptorEventManager.PreUpdateEvent, aggregateQuery);
         }
-        getQueryManager(attributeValue, query.getSession()).preUpdate(aggregateQuery);
+        descriptor.getQueryManager().preUpdate(aggregateQuery);
     }
 
     /**

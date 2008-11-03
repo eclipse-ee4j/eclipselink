@@ -2261,7 +2261,7 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
      * Return if cache should be checked.
      */
     public boolean shouldCheckCacheOnly() {
-        return getCacheUsage() == CheckCacheOnly;
+        return this.cacheUsage == CheckCacheOnly;
     }
 
     /**
@@ -2270,7 +2270,7 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
      * to querying the cache.
      */
     public boolean shouldCheckDescriptorForCacheUsage() {
-        return getCacheUsage() == UseDescriptorSetting;
+        return this.cacheUsage == UseDescriptorSetting;
     }
 
     /**
@@ -2278,7 +2278,7 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
      * Should the results will be checked against the changes within the unit of work and object no longer matching or deleted will be remove, matching new objects will also be added..
      */
     public boolean shouldConformResultsInUnitOfWork() {
-        return getCacheUsage() == ConformResultsInUnitOfWork;
+        return this.cacheUsage == ConformResultsInUnitOfWork;
     }
 
     /**

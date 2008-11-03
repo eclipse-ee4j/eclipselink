@@ -551,7 +551,7 @@ public class ConversionManager implements Serializable, Cloneable {
                 return new Long(((java.util.Date)sourceObject).getTime());
             }
             if (sourceObject instanceof java.util.Calendar) {
-                return new Long(JavaPlatform.getTimeInMillis(((java.util.Calendar)sourceObject)));
+                return new Long(((java.util.Calendar)sourceObject).getTimeInMillis());
             }
 
             if (sourceObject instanceof Boolean) {

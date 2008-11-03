@@ -117,7 +117,7 @@ public class EnumTypeConverter extends ObjectTypeConverter {
         if (attributeValue == null) {
             return super.convertObjectValueToDataValue(null, session);
         } else {
-            return super.convertObjectValueToDataValue((Enum.class.cast(attributeValue)).name(), session);
+            return super.convertObjectValueToDataValue(((Enum)attributeValue).name(), session);
         }
     }
 }

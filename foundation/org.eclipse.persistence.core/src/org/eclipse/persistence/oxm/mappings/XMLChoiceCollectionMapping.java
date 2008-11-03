@@ -85,7 +85,7 @@ public class XMLChoiceCollectionMapping extends DatabaseMapping implements XMLMa
         classToFieldMappings = new HashMap<Class, XMLField>();
         choiceElementMappings = new HashMap<XMLField, XMLMapping>();
         fieldsToConverters = new HashMap<XMLField, Converter>();
-        this.containerPolicy = ContainerPolicy.buildPolicyFor(ClassConstants.Vector_class);
+        this.containerPolicy = ContainerPolicy.buildDefaultPolicy();
     }
 
     /**

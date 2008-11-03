@@ -78,7 +78,7 @@ public abstract class ForeignReferenceMapping extends DatabaseMapping {
     protected boolean cascadeRefresh;
     protected boolean cascadeRemove;
     
-    /** Flag used to determe if we need to weave the transient annotation on weaved fields.*/
+    /** Flag used to determine if we need to weave the transient annotation on weaved fields.*/
     protected boolean requiresTransientWeavedFields;
     
     /** Define if the relationship should always be join fetched. */
@@ -597,10 +597,10 @@ public abstract class ForeignReferenceMapping extends DatabaseMapping {
      * If the attribute is using indirection the value of the value-holder is returned.
      * If the value holder is not instantiated then it is instantiated.
      */
-    public Object getRealAttributeValueFromObject(Object object, AbstractSession session) {
-        return getIndirectionPolicy().getRealAttributeValueFromObject(object, getAttributeValueFromObject(object));
+    public Object getRealAttributeValueFromAttribute(Object attributeValue, Object object, AbstractSession session) {
+        return this.indirectionPolicy.getRealAttributeValueFromObject(object, attributeValue);
     }
-    
+        
     /**
      * Return if this mapping is lazy.
      * For relationship mappings this should normally be the same value as indirection,

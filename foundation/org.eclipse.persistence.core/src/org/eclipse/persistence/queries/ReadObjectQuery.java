@@ -807,7 +807,7 @@ public class ReadObjectQuery extends ObjectLevelReadQuery {
      * Return if the cache should be checked.
      */
     public boolean shouldCheckCache() {
-        return getCacheUsage() != DoNotCheckCache;
+        return this.cacheUsage != DoNotCheckCache;
     }
 
     /**
@@ -815,7 +815,7 @@ public class ReadObjectQuery extends ObjectLevelReadQuery {
      * Return if cache should be checked.
      */
     public boolean shouldCheckCacheByExactPrimaryKey() {
-        return getCacheUsage() == CheckCacheByExactPrimaryKey;
+        return this.cacheUsage == CheckCacheByExactPrimaryKey;
     }
 
     /**
@@ -823,7 +823,7 @@ public class ReadObjectQuery extends ObjectLevelReadQuery {
      * Return if cache should be checked.
      */
     public boolean shouldCheckCacheByPrimaryKey() {
-        return (getCacheUsage() == CheckCacheByPrimaryKey) || (getCacheUsage() == UseDescriptorSetting);
+        return (this.cacheUsage == CheckCacheByPrimaryKey) || (this.cacheUsage == UseDescriptorSetting);
     }
 
     /**
@@ -831,7 +831,7 @@ public class ReadObjectQuery extends ObjectLevelReadQuery {
      * Return if cache should be checked.
      */
     public boolean shouldCheckCacheThenDatabase() {
-        return getCacheUsage() == CheckCacheThenDatabase;
+        return this.cacheUsage == CheckCacheThenDatabase;
     }
 
     /**

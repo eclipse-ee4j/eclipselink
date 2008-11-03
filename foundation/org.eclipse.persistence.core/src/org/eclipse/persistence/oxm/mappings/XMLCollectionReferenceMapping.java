@@ -25,6 +25,7 @@ import org.eclipse.persistence.exceptions.DatabaseException;
 import org.eclipse.persistence.exceptions.DescriptorException;
 import org.eclipse.persistence.internal.descriptors.ObjectBuilder;
 import org.eclipse.persistence.internal.helper.ClassConstants;
+import org.eclipse.persistence.internal.helper.NonSynchronizedVector;
 import org.eclipse.persistence.internal.oxm.Reference;
 import org.eclipse.persistence.internal.oxm.ReferenceResolver;
 import org.eclipse.persistence.internal.oxm.XMLConversionManager;
@@ -69,8 +70,8 @@ public class XMLCollectionReferenceMapping extends XMLObjectReferenceMapping imp
      */
     public XMLCollectionReferenceMapping() {
         sourceToTargetKeyFieldAssociations = new HashMap();
-        sourceToTargetKeys = new Vector();
-        this.containerPolicy = ContainerPolicy.buildPolicyFor(ClassConstants.Vector_class);
+        sourceToTargetKeys = new NonSynchronizedVector();
+        this.containerPolicy = ContainerPolicy.buildDefaultPolicy();
         this.usesSingleNode = false;
     }
 

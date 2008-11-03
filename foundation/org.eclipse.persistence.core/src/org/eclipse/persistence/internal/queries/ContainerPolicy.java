@@ -49,10 +49,29 @@ import org.eclipse.persistence.indirection.IndirectCollection;
  */
 public abstract class ContainerPolicy implements Cloneable, Serializable {
 
+    /**
+     * Allow the default collection class to be set.
+     */
+    protected static Class defaultContainerClass = ClassConstants.Vector_class;
+    
     /** The descriptor is used to wrap and unwrap objects using the wrapper policy. **/
     protected transient ClassDescriptor elementDescriptor;
     protected transient Constructor constructor;
 
+    /**
+     * Return the default collection class.
+     */
+    protected static Class getDefaultContainerClass() {
+        return defaultContainerClass;
+    }
+    
+    /**
+     * Allow the default collection class to be set.
+     */
+    protected static void setDefaultContainerClass(Class collectionClass) {
+        defaultContainerClass = collectionClass;
+    }
+    
     /**
      * Default constructor.
      */
@@ -149,6 +168,14 @@ public abstract class ContainerPolicy implements Cloneable, Serializable {
 
     /**
      * INTERNAL:
+     * Return the appropriate container policy for the default container class.
+     */
+    public static ContainerPolicy buildDefaultPolicy() {
+        return buildPolicyFor(ContainerPolicy.getDefaultContainerClass());
+    }
+    
+    /**
+     * INTERNAL:
      * Return the appropriate container policy for the specified
      * concrete container class.
      */
@@ -165,7 +192,13 @@ public abstract class ContainerPolicy implements Cloneable, Serializable {
         if (Helper.classImplementsInterface(concreteContainerClass, ClassConstants.List_Class)) {
             if (hasOrdering) {
                 return new OrderedListContainerPolicy(concreteContainerClass);
-            } else {
+            } else if (concreteContainerClass == ClassConstants.Vector_class) {
+                return new VectorContainerPolicy(concreteContainerClass);
+            }  else if (concreteContainerClass == ClassConstants.IndirectList_Class) {
+                return new IndirectListContainerPolicy(concreteContainerClass);
+            }   else if (concreteContainerClass == ClassConstants.ArrayList_class) {
+                return new ArrayListContainerPolicy(concreteContainerClass);
+            } else {                
                 return new ListContainerPolicy(concreteContainerClass);
             }
         } else if (Helper.classImplementsInterface(concreteContainerClass, ClassConstants.SortedSet_Class)) {

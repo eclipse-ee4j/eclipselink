@@ -43,8 +43,8 @@ public class DataReadQuery extends ReadQuery {
     public DataReadQuery() {
         super();
         this.shouldMaintainCache = false;
-        useAbstractRecord = true;
-        setContainerPolicy(ContainerPolicy.buildPolicyFor(ClassConstants.Vector_class));
+        this.useAbstractRecord = true;
+        setContainerPolicy(ContainerPolicy.buildDefaultPolicy());
     }
 
     /**

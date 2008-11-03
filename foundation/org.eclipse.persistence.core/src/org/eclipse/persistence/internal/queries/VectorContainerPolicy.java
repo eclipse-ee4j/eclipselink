@@ -8,29 +8,25 @@
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
- *     Oracle - initial API and implementation from Oracle TopLink
+ *     10/28/2008-1.1 James Sutherland - initial implementation
  ******************************************************************************/  
 package org.eclipse.persistence.internal.queries;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.Vector;
 
-import org.eclipse.persistence.indirection.*;
+import org.eclipse.persistence.indirection.IndirectList;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 
 /**
- * PERF: Avoids reflection usage for IndirectList.
- *
- * @see ContainerPolicy
- * @author Big Country
- * @since TOPLink/Java 2.5
+ * PERF: Avoids reflection usage for Vectors.
  */
-public class IndirectListContainerPolicy extends ListContainerPolicy {
-
+public class VectorContainerPolicy extends ListContainerPolicy {
     /**
      * INTERNAL:
      * Construct a new policy.
      */
-    public IndirectListContainerPolicy() {
+    public VectorContainerPolicy() {
         super();
     }
 
@@ -38,10 +34,17 @@ public class IndirectListContainerPolicy extends ListContainerPolicy {
      * INTERNAL:
      * Construct a new policy for the specified class.
      */
-    public IndirectListContainerPolicy(Class containerClass) {
+    public VectorContainerPolicy(Class containerClass) {
         super(containerClass);
     }
-
+    
+    /**
+     * INTERNAL:
+     * Construct a new policy for the specified class name.
+     */
+    public VectorContainerPolicy(String containerClassName) {
+        super(containerClassName);
+    }
 
     /**
      * INTERNAL:
@@ -51,12 +54,11 @@ public class IndirectListContainerPolicy extends ListContainerPolicy {
         if (container == null) {
             return null;
         }
-        // Use Vector as new objects can have a Vector.
         try {
             return ((Vector)container).clone();
         } catch (Exception notVector) {
             // Could potentially be another Collection type as well.
-            return new IndirectList((Collection)container);
+            return new Vector((Collection)container);
         }
     }
     
@@ -65,7 +67,7 @@ public class IndirectListContainerPolicy extends ListContainerPolicy {
      * Just return the Vector.
      */
     public Object buildContainerFromVector(Vector vector, AbstractSession session) {
-        return new IndirectList(vector);
+        return vector;
     }
     
     /**
@@ -73,7 +75,7 @@ public class IndirectListContainerPolicy extends ListContainerPolicy {
      * Return a new Vector.
      */
     public Object containerInstance() {
-        return new IndirectList();
+        return new Vector();
     }
     
     /**
@@ -81,6 +83,6 @@ public class IndirectListContainerPolicy extends ListContainerPolicy {
      * Return a new Vector.
      */
     public Object containerInstance(int initialCapacity) {
-        return new IndirectList(initialCapacity);
+        return new Vector(initialCapacity);
     }
 }

@@ -49,7 +49,8 @@ public class ClassWeaver extends ClassAdapter implements Constants {
     public static final String PCE_SIGNATURE = "L" + PCE_SHORT_SIGNATURE +";";
     
     // PersistenceEntity
-    public static final String TOPLINK_ENTITY_SHORT_SIGNATURE = "org/eclipse/persistence/internal/descriptors/PersistenceEntity";
+    public static final String PERSISTENCE_ENTITY_SHORT_SIGNATURE = "org/eclipse/persistence/internal/descriptors/PersistenceEntity";
+    public static final String PERSISTENCE_OBJECT_SHORT_SIGNATURE = "org/eclipse/persistence/internal/descriptors/PersistenceObject";
     public static final String VECTOR_SIGNATURE = "Ljava/util/Vector;";
     public static final String CACHEKEY_SIGNATURE = "Lorg/eclipse/persistence/internal/identitymaps/CacheKey;";
     
@@ -900,10 +901,17 @@ public class ClassWeaver extends ClassAdapter implements Constants {
         int persistenceWeavedIndex = newInterfacesLength;
         newInterfacesLength++;
         // PersistenceEntity
-        int toplinkEntityIndex = 0;
+        int persistenceEntityIndex = 0;
         boolean persistenceEntity = classDetails.shouldWeaveInternal() && (classDetails.getSuperClassDetails() == null) && (!classDetails.isEmbedable());
         if (persistenceEntity) {
-            toplinkEntityIndex = newInterfacesLength;
+            persistenceEntityIndex = newInterfacesLength;
+            newInterfacesLength++;
+        }
+        // PersistenceObject
+        int persistenceObjectIndex = 0;
+        boolean persistenceObject = classDetails.shouldWeaveInternal() && (classDetails.getSuperClassDetails() == null);
+        if (persistenceObject) {
+            persistenceObjectIndex = newInterfacesLength;
             newInterfacesLength++;
         }
         // FetchGroupTracker
@@ -948,7 +956,11 @@ public class ClassWeaver extends ClassAdapter implements Constants {
         }
         // Add org.eclipse.persistence.internal.descriptors.PersistenceEntity interface.
         if (persistenceEntity) {
-            newInterfaces[toplinkEntityIndex] = TOPLINK_ENTITY_SHORT_SIGNATURE;
+            newInterfaces[persistenceEntityIndex] = PERSISTENCE_ENTITY_SHORT_SIGNATURE;
+        }
+        // Add org.eclipse.persistence.internal.descriptors.PersistenceObject interface.
+        if (persistenceObject) {
+            newInterfaces[persistenceObjectIndex] = PERSISTENCE_OBJECT_SHORT_SIGNATURE;
         }
         // Add org.eclipse.persistence.queries.FetchGroupTracker interface.
         if (fetchGroupTracker) {

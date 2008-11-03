@@ -77,6 +77,9 @@ public class IdentityMapManager implements Serializable, Cloneable {
         // PERF: Avoid query cache for uow as never used.
         if (session.isUnitOfWork()) {
             this.identityMaps = new HashMap();
+        } else if (session.isIsolatedClientSession()) {
+            this.identityMaps = new HashMap();
+            this.queryResults = new HashMap();
         } else {
             this.identityMaps = new ConcurrentHashMap();
             this.queryResults = new ConcurrentHashMap();
@@ -722,6 +725,9 @@ public class IdentityMapManager implements Serializable, Cloneable {
             IdentityMap newIdentityMap = null;
             if (this.session.isUnitOfWork()) {
                 newIdentityMap = buildNewIdentityMapForUnitOfWork((UnitOfWorkImpl)this.session, descriptor);
+                identityMap = this.identityMaps.put(descriptorClass, newIdentityMap);
+            } else if (this.session.isIsolatedClientSession()) {
+                newIdentityMap = buildNewIdentityMap(descriptor);
                 identityMap = this.identityMaps.put(descriptorClass, newIdentityMap);
             } else {
                 newIdentityMap = buildNewIdentityMap(descriptor);

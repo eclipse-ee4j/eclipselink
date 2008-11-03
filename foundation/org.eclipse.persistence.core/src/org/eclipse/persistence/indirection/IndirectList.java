@@ -58,7 +58,10 @@ public class IndirectList extends Vector implements CollectionChangeTracker, Ind
     private transient List removedElements;
 
     /** Store initial size for lazy init. */
-    protected int initialCapacity = 10;
+    protected int initialCapacity;
+    
+    /** PERF: Quick check flag if has been registered in a unit of work. */
+    protected boolean isRegistered;
 
     /**
      * PUBLIC:
@@ -95,7 +98,8 @@ public class IndirectList extends Vector implements CollectionChangeTracker, Ind
      */
     public IndirectList(int initialCapacity, int capacityIncrement) {
         super(0);
-        this.initialize(initialCapacity, capacityIncrement);
+        this.initialCapacity = initialCapacity;
+        this.capacityIncrement = capacityIncrement;
     }
 
     /**
@@ -103,18 +107,18 @@ public class IndirectList extends Vector implements CollectionChangeTracker, Ind
      * Construct an IndirectList containing the elements of the specified
      * collection, in the order they are returned by the collection's
      * iterator.
-     * @param c a collection containing the elements to construct this IndirectList with.
+     * @param collection a collection containing the elements to construct this IndirectList with.
      */
-    public IndirectList(Collection c) {
+    public IndirectList(Collection collection) {
         super(0);
-        this.initialize(c);
+        this.valueHolder = new ValueHolder(new Vector(collection));
     }
 
     /**
      * @see java.util.Vector#add(int, java.lang.Object)
      */
     public void add(int index, Object element) {
-        this.getDelegate().add(index, element);
+        getDelegate().add(index, element);
         raiseAddChangeEvent(element, index);
     }
     
@@ -145,7 +149,10 @@ public class IndirectList extends Vector implements CollectionChangeTracker, Ind
     /**
      * @see java.util.Vector#add(java.lang.Object)
      */
-    public synchronized boolean add(Object element) {
+    public boolean add(Object element) {
+        if (!this.isRegistered) {
+            return getDelegate().add(element);
+        }
         boolean added = true;
         // PERF: If not instantiated just record the add to avoid the instantiation.
         if (shouldAvoidInstantiation()) {
@@ -167,7 +174,7 @@ public class IndirectList extends Vector implements CollectionChangeTracker, Ind
     /**
      * @see java.util.Vector#addAll(int, java.util.Collection)
      */
-    public synchronized boolean addAll(int index, Collection c) {
+    public boolean addAll(int index, Collection c) {
         Iterator objects = c.iterator();
         // Must trigger add events if tracked or uow.
         if (hasBeenRegistered() || hasTrackedPropertyChangeListener()) {
@@ -178,14 +185,14 @@ public class IndirectList extends Vector implements CollectionChangeTracker, Ind
             return true;
         }
 
-        return this.getDelegate().addAll(index, c);
+        return getDelegate().addAll(index, c);
 
     }
 
     /**
      * @see java.util.Vector#addAll(java.util.Collection)
      */
-    public synchronized boolean addAll(Collection c) {
+    public boolean addAll(Collection c) {
         // Must trigger add events if tracked or uow.
         if (hasBeenRegistered() || hasTrackedPropertyChangeListener()) {
             Iterator objects = c.iterator();
@@ -201,8 +208,8 @@ public class IndirectList extends Vector implements CollectionChangeTracker, Ind
     /**
      * @see java.util.Vector#addElement(java.lang.Object)
      */
-    public synchronized void addElement(Object obj) {
-        this.add(obj);
+    public void addElement(Object obj) {
+        add(obj);
     }
 
     /**
@@ -246,7 +253,7 @@ public class IndirectList extends Vector implements CollectionChangeTracker, Ind
      * @see java.util.Vector#capacity()
      */
     public int capacity() {
-        return this.getDelegate().capacity();
+        return getDelegate().capacity();
     }
 
     /**
@@ -254,14 +261,14 @@ public class IndirectList extends Vector implements CollectionChangeTracker, Ind
      */
     public void clear() {
         if (hasBeenRegistered() || hasTrackedPropertyChangeListener()) {
-            Iterator objects = this.iterator();
+            Iterator objects = iterator();
             while (objects.hasNext()) {
                 Object o = objects.next();
                 objects.remove();
-                this.raiseRemoveChangeEvent(o, null);
+                raiseRemoveChangeEvent(o, null);
             }
         } else {
-            this.getDelegate().clear();
+            getDelegate().clear();
         }
     }
 
@@ -307,63 +314,63 @@ public class IndirectList extends Vector implements CollectionChangeTracker, Ind
                 return false;
             }
         }
-        return this.getDelegate().contains(element);
+        return getDelegate().contains(element);
     }
 
     /**
      * @see java.util.Vector#containsAll(java.util.Collection)
      */
-    public synchronized boolean containsAll(Collection c) {
-        return this.getDelegate().containsAll(c);
+    public boolean containsAll(Collection c) {
+        return getDelegate().containsAll(c);
     }
 
     /**
      * @see java.util.Vector#copyInto(java.lang.Object[])
      */
     public synchronized void copyInto(Object[] anArray) {
-        this.getDelegate().copyInto(anArray);
+        getDelegate().copyInto(anArray);
     }
 
     /**
      * @see java.util.Vector#elementAt(int)
      */
-    public synchronized Object elementAt(int index) {
-        return this.getDelegate().elementAt(index);
+    public Object elementAt(int index) {
+        return getDelegate().elementAt(index);
     }
 
     /**
      * @see java.util.Vector#elements()
      */
     public Enumeration elements() {
-        return this.getDelegate().elements();
+        return getDelegate().elements();
     }
 
     /**
      * @see java.util.Vector#ensureCapacity(int)
      */
-    public synchronized void ensureCapacity(int minCapacity) {
-        this.getDelegate().ensureCapacity(minCapacity);
+    public void ensureCapacity(int minCapacity) {
+        getDelegate().ensureCapacity(minCapacity);
     }
 
     /**
      * @see java.util.Vector#equals(java.lang.Object)
      */
-    public synchronized boolean equals(Object o) {
-        return this.getDelegate().equals(o);
+    public boolean equals(Object o) {
+        return getDelegate().equals(o);
     }
 
     /**
      * @see java.util.Vector#firstElement()
      */
-    public synchronized Object firstElement() {
-        return this.getDelegate().firstElement();
+    public Object firstElement() {
+        return getDelegate().firstElement();
     }
 
     /**
      * @see java.util.Vector#get(int)
      */
-    public synchronized Object get(int index) {
-        return this.getDelegate().get(index);
+    public Object get(int index) {
+        return getDelegate().get(index);
     }
 
     /**
@@ -400,7 +407,7 @@ public class IndirectList extends Vector implements CollectionChangeTracker, Ind
     public ValueHolderInterface getValueHolder() {
         // PERF: lazy initialize value holder and vector as are normally set after creation.
         if (valueHolder == null) {
-            synchronized(this){
+            synchronized(this) {
                 if (valueHolder == null) {
                         valueHolder = new ValueHolder(new Vector(this.initialCapacity, this.capacityIncrement));
                 }
@@ -414,14 +421,14 @@ public class IndirectList extends Vector implements CollectionChangeTracker, Ind
      * return whether this IndirectList has been registered with the UnitOfWork
      */
     public boolean hasBeenRegistered() {
-        return getValueHolder() instanceof org.eclipse.persistence.internal.indirection.UnitOfWorkQueryValueHolder;
+        return getValueHolder() instanceof UnitOfWorkQueryValueHolder;
     }
 
     /**
      * INTERNAL:
      * @see java.util.Vector#hashCode()
      */
-    public synchronized int hashCode() {
+    public int hashCode() {
         return this.getDelegate().hashCode();
     }
 
@@ -435,33 +442,14 @@ public class IndirectList extends Vector implements CollectionChangeTracker, Ind
     /**
      * @see java.util.Vector#indexOf(java.lang.Object, int)
      */
-    public synchronized int indexOf(Object elem, int index) {
+    public int indexOf(Object elem, int index) {
         return this.getDelegate().indexOf(elem, index);
-    }
-
-    /**
-     * Initialize the instance.
-     */
-    protected void initialize(int initialCapacity, int capacityIncrement) {
-        this.initialCapacity = initialCapacity;
-        this.capacityIncrement = capacityIncrement;
-        this.delegate = null;
-        this.valueHolder = null;
-    }
-
-    /**
-     * Initialize the instance.
-     */
-    protected void initialize(Collection c) {
-        this.delegate = null;
-        Vector temp = new Vector(c);
-        this.valueHolder = new ValueHolder(temp);
     }
 
     /**
      * @see java.util.Vector#insertElementAt(java.lang.Object, int)
      */
-    public synchronized void insertElementAt(Object obj, int index) {
+    public void insertElementAt(Object obj, int index) {
         this.getDelegate().insertElementAt(obj, index);
         this.raiseAddChangeEvent(obj, new Integer(index));
     }
@@ -478,7 +466,7 @@ public class IndirectList extends Vector implements CollectionChangeTracker, Ind
      * Return whether the contents have been read from the database.
      */
     public boolean isInstantiated() {
-        return this.getValueHolder().isInstantiated();
+        return getValueHolder().isInstantiated();
     }
 
     /**
@@ -492,29 +480,29 @@ public class IndirectList extends Vector implements CollectionChangeTracker, Ind
     /**
      * @see java.util.Vector#lastElement()
      */
-    public synchronized Object lastElement() {
-        return this.getDelegate().lastElement();
+    public Object lastElement() {
+        return getDelegate().lastElement();
     }
 
     /**
      * @see java.util.Vector#lastIndexOf(java.lang.Object)
      */
     public int lastIndexOf(Object elem) {
-        return this.getDelegate().lastIndexOf(elem);
+        return getDelegate().lastIndexOf(elem);
     }
 
     /**
      * @see java.util.Vector#lastIndexOf(java.lang.Object, int)
      */
-    public synchronized int lastIndexOf(Object elem, int index) {
-        return this.getDelegate().lastIndexOf(elem, index);
+    public int lastIndexOf(Object elem, int index) {
+        return getDelegate().lastIndexOf(elem, index);
     }
 
     /**
      * @see java.util.AbstractList#listIterator()
      */
     public ListIterator listIterator() {
-        return this.listIterator(0);
+        return listIterator(0);
     }
 
     /**
@@ -574,8 +562,8 @@ public class IndirectList extends Vector implements CollectionChangeTracker, Ind
     /**
      * @see java.util.Vector#remove(int)
      */
-    public synchronized Object remove(int index) {
-        Object value = this.getDelegate().remove(index);        
+    public Object remove(int index) {
+        Object value = getDelegate().remove(index);        
         this.raiseRemoveChangeEvent(value, new Integer(index));
         return value;
     }
@@ -584,6 +572,9 @@ public class IndirectList extends Vector implements CollectionChangeTracker, Ind
      * @see java.util.Vector#remove(java.lang.Object)
      */
     public boolean remove(Object element) {
+        if (!this.isRegistered) {
+            return getDelegate().remove(element);
+        }
         // PERF: If not instantiated just record the removal to avoid the instantiation.
         if (shouldAvoidInstantiation()) {
             if (hasAddedElements() && getAddedElements().contains(element)) {
@@ -606,53 +597,53 @@ public class IndirectList extends Vector implements CollectionChangeTracker, Ind
     /**
      * @see java.util.Vector#removeAll(java.util.Collection)
      */
-    public synchronized boolean removeAll(Collection c) {
+    public boolean removeAll(Collection c) {
         // Must trigger remove events if tracked or uow.
         if (hasBeenRegistered() || hasTrackedPropertyChangeListener()) {
             Iterator objects = c.iterator();
             while (objects.hasNext()) {
-                this.remove(objects.next());
+                remove(objects.next());
             }
             return true;
         }
-        return this.getDelegate().removeAll(c);
+        return getDelegate().removeAll(c);
     }
 
     /**
      * @see java.util.Vector#removeAllElements()
      */
-    public synchronized void removeAllElements() {
+    public void removeAllElements() {
         // Must trigger remove events if tracked or uow.
         if (hasBeenRegistered() || hasTrackedPropertyChangeListener()) {
-            Iterator objects = this.iterator();
+            Iterator objects = iterator();
             while (objects.hasNext()) {
                 Object object = objects.next();
                 objects.remove();
-                this.raiseRemoveChangeEvent(object, null);
+                raiseRemoveChangeEvent(object, null);
             }
             return;
         }
-        this.getDelegate().removeAllElements();
+        getDelegate().removeAllElements();
     }
 
     /**
      * @see java.util.Vector#removeElement(java.lang.Object)
      */
-    public synchronized boolean removeElement(Object obj) {
-        return this.remove(obj);
+    public boolean removeElement(Object obj) {
+        return remove(obj);
     }
 
     /**
      * @see java.util.Vector#removeElementAt(int)
      */
-    public synchronized void removeElementAt(int index) {
-        this.remove(index);
+    public void removeElementAt(int index) {
+        remove(index);
     }
 
     /**
      * @see java.util.Vector#retainAll(java.util.Collection)
      */
-    public synchronized boolean retainAll(Collection c) {
+    public boolean retainAll(Collection c) {
         // Must trigger remove events if tracked or uow.
         if (hasBeenRegistered() || hasTrackedPropertyChangeListener()) {
             Iterator objects = getDelegate().iterator();
@@ -660,45 +651,45 @@ public class IndirectList extends Vector implements CollectionChangeTracker, Ind
                 Object object = objects.next();
                 if (!c.contains(object)) {
                     objects.remove();
-                    this.raiseRemoveChangeEvent(object, null);
+                    raiseRemoveChangeEvent(object, null);
                 }
             }
             return true;
         }
-        return this.getDelegate().retainAll(c);
+        return getDelegate().retainAll(c);
     }
 
     /**
      * @see java.util.Vector#set(int, java.lang.Object)
      */
-    public synchronized Object set(int index, Object element) {
-        Object oldValue = this.getDelegate().set(index, element);
+    public Object set(int index, Object element) {
+        Object oldValue = getDelegate().set(index, element);
         Integer bigIntIndex = new Integer(index);
-        this.raiseRemoveChangeEvent(oldValue, bigIntIndex);
-        this.raiseAddChangeEvent(element, bigIntIndex);
+        raiseRemoveChangeEvent(oldValue, bigIntIndex);
+        raiseAddChangeEvent(element, bigIntIndex);
         return oldValue;
     }
 
     /**
      * @see java.util.Vector#setElementAt(java.lang.Object, int)
      */
-    public synchronized void setElementAt(Object obj, int index) {
-        this.set(index, obj);
+    public void setElementAt(Object obj, int index) {
+        set(index, obj);
     }
 
     /**
      * @see java.util.Vector#setSize(int)
      */
-    public synchronized void setSize(int newSize) {
+    public void setSize(int newSize) {
         // Must trigger remove events if tracked or uow.
         if (hasBeenRegistered() || hasTrackedPropertyChangeListener()) {
-            if (newSize > this.size()) {
+            if (newSize > size()) {
                 for (int index = size(); index > newSize; index--) {
                     this.remove(index - 1);
                 }
             }
         }    
-        this.getDelegate().setSize(newSize);
+        getDelegate().setSize(newSize);
     }
 
     /**
@@ -708,34 +699,37 @@ public class IndirectList extends Vector implements CollectionChangeTracker, Ind
     public void setValueHolder(ValueHolderInterface valueHolder) {
         this.delegate = null;
         this.valueHolder = valueHolder;
+        if (valueHolder instanceof UnitOfWorkQueryValueHolder) {
+            this.isRegistered = true;
+        }
     }
 
     /**
      * @see java.util.Vector#size()
      */
     public int size() {
-        return this.getDelegate().size();
+        return getDelegate().size();
     }
 
     /**
      * @see java.util.Vector#subList(int, int)
      */
     public List subList(int fromIndex, int toIndex) {
-        return this.getDelegate().subList(fromIndex, toIndex);
+        return getDelegate().subList(fromIndex, toIndex);
     }
 
     /**
      * @see java.util.Vector#toArray()
      */
-    public synchronized Object[] toArray() {
-        return this.getDelegate().toArray();
+    public Object[] toArray() {
+        return getDelegate().toArray();
     }
 
     /**
      * @see java.util.Vector#toArray(java.lang.Object[])
      */
-    public synchronized Object[] toArray(Object[] a) {
-        return this.getDelegate().toArray(a);
+    public Object[] toArray(Object[] a) {
+        return getDelegate().toArray(a);
     }
 
     /**
@@ -747,10 +741,10 @@ public class IndirectList extends Vector implements CollectionChangeTracker, Ind
      */
     public String toString() {
         if (ValueHolderInterface.shouldToStringInstantiate) {
-            return this.getDelegate().toString();
+            return getDelegate().toString();
         }
         if (this.isInstantiated()) {
-            return "{" + this.getDelegate().toString() + "}";
+            return "{" + getDelegate().toString() + "}";
         } else {
             return "{" + org.eclipse.persistence.internal.helper.Helper.getShortClassName(this.getClass()) + ": not instantiated}";
         }
@@ -759,8 +753,8 @@ public class IndirectList extends Vector implements CollectionChangeTracker, Ind
     /**
      * @see java.util.Vector#trimToSize()
      */
-    public synchronized void trimToSize() {
-        this.getDelegate().trimToSize();
+    public void trimToSize() {
+        getDelegate().trimToSize();
     }
     
     /**
@@ -785,6 +779,9 @@ public class IndirectList extends Vector implements CollectionChangeTracker, Ind
      */
      public void _persistence_setPropertyChangeListener(PropertyChangeListener changeListener) {
          this.changeListener = changeListener;
+         if (changeListener != null) {
+             this.isRegistered = true;
+         }
      }
      
     /**

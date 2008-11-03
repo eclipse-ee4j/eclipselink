@@ -31,30 +31,10 @@ public interface JDKPlatform {
      */
     Boolean conformLike(Object left, Object right);
 
-    /**
-     * Get the milliseconds from a Calendar. JDK 1.4 offers a more efficient way of doing this.
-     */
-    long getTimeInMillis(Calendar calendar);
-
-    /**
-     * Set the milliseconds for a Calendar. JDK 1.4 offers a more efficient way of doing this.
-     */
-    void setTimeInMillis(Calendar calendar, long millis);
 
     /**
      * Get a concurrent Map that allow concurrent gets but block on put.
      */
     Map getConcurrentMap();
 
-    /**
-     * JDK 1.4 and its above offers the option of setting the cause of an exception
-     */
-    void setExceptionCause(Throwable exception, Throwable cause);
-
-    /**
-     * Return a boolean which determines where EclipseLink should include the EclipseLink-stored
-     * Internal exception in it's stack trace.  For JDK 1.4 VMs with exception chaining
-     * the Internal exception can be redundant and confusing.
-     */
-    boolean shouldPrintInternalException();
 }
