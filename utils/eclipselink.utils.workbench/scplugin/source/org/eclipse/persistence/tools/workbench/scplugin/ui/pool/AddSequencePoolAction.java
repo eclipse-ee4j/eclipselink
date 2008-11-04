@@ -12,6 +12,8 @@
 ******************************************************************************/
 package org.eclipse.persistence.tools.workbench.scplugin.ui.pool;
 
+import javax.swing.JOptionPane;
+
 import org.eclipse.persistence.tools.workbench.framework.action.AbstractEnablableFrameworkAction;
 import org.eclipse.persistence.tools.workbench.framework.app.AbstractApplicationNode;
 import org.eclipse.persistence.tools.workbench.framework.app.ApplicationNode;
@@ -39,12 +41,16 @@ public class AddSequencePoolAction extends AbstractEnablableFrameworkAction {
 
 		ServerSessionAdapter session = ( ServerSessionAdapter)selectedNode.getValue();
 
-		navigatorSelectionModel().pushExpansionState();
-		ConnectionPoolAdapter newPool = session.addSequenceConnectionPool();
+		if (session.usesExternalConnectionPooling()) {
+			promptUserToTurnOffExternalConnectionPooling();
+		} else {
+			navigatorSelectionModel().pushExpansionState();
+			ConnectionPoolAdapter newPool = session.addSequenceConnectionPool();
 		
-		navigatorSelectionModel().popAndRestoreExpansionState();
+			navigatorSelectionModel().popAndRestoreExpansionState();
 			
-		(( AbstractApplicationNode)selectedNode.getProjectRoot()).selectDescendantNodeForValue( newPool, navigatorSelectionModel());
+			(( AbstractApplicationNode)selectedNode.getProjectRoot()).selectDescendantNodeForValue( newPool, navigatorSelectionModel());
+		}
 	}
 
 	
@@ -57,4 +63,13 @@ public class AddSequencePoolAction extends AbstractEnablableFrameworkAction {
 	protected String[] enabledPropertyNames() {
 		return new String[] {ServerSessionAdapter.SEQUENCE_CONNECTION_POOL_PROPERTY};
 	}
+
+	private void promptUserToTurnOffExternalConnectionPooling()
+	{
+		
+		JOptionPane.showMessageDialog(getWorkbenchContext().getCurrentWindow(), 
+				resourceRepository().getString("EXTERNAL_CONNECTION_POOLING_ENABLED_WARNING_MESSAGE"));
+	
+	}
+
 }

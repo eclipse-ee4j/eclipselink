@@ -10,6 +10,8 @@
  */
 package org.eclipse.persistence.tools.workbench.scplugin.ui.pool;
 
+import javax.swing.JOptionPane;
+
 import org.eclipse.persistence.tools.workbench.framework.action.AbstractEnablableFrameworkAction;
 import org.eclipse.persistence.tools.workbench.framework.app.AbstractApplicationNode;
 import org.eclipse.persistence.tools.workbench.framework.app.ApplicationNode;
@@ -36,12 +38,16 @@ public class AddReadPoolAction extends AbstractEnablableFrameworkAction {
 
 		ServerSessionAdapter session = ( ServerSessionAdapter)selectedNode.getValue();
 
-		navigatorSelectionModel().pushExpansionState();
-		ConnectionPoolAdapter newPool = session.addReadConnectionPool();
+		if (session.usesExternalConnectionPooling()) {
+			promptUserToTurnOffExternalConnectionPooling();
+		} else {
+			navigatorSelectionModel().pushExpansionState();
+			ConnectionPoolAdapter newPool = session.addReadConnectionPool();
 
-		navigatorSelectionModel().popAndRestoreExpansionState();
+			navigatorSelectionModel().popAndRestoreExpansionState();
 
-		(( AbstractApplicationNode)selectedNode.getProjectRoot()).selectDescendantNodeForValue( newPool, navigatorSelectionModel());
+			(( AbstractApplicationNode)selectedNode.getProjectRoot()).selectDescendantNodeForValue( newPool, navigatorSelectionModel());
+		}
 	}
 
 	protected boolean shouldBeEnabled(ApplicationNode selectedNode) {
@@ -52,5 +58,13 @@ public class AddReadPoolAction extends AbstractEnablableFrameworkAction {
 	
 	protected String[] enabledPropertyNames() {
 		return new String[] {ServerSessionAdapter.READ_CONNECTION_POOL_PROPERTY};
+	}
+	
+	private void promptUserToTurnOffExternalConnectionPooling()
+	{
+		
+		JOptionPane.showMessageDialog(getWorkbenchContext().getCurrentWindow(), 
+				resourceRepository().getString("EXTERNAL_CONNECTION_POOLING_ENABLED_WARNING_MESSAGE"));
+	
 	}
 }

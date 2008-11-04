@@ -12,6 +12,8 @@
 ******************************************************************************/
 package org.eclipse.persistence.tools.workbench.scplugin.ui.pool;
 
+import javax.swing.JOptionPane;
+
 import org.eclipse.persistence.tools.workbench.framework.action.AbstractFrameworkAction;
 import org.eclipse.persistence.tools.workbench.framework.app.AbstractApplicationNode;
 import org.eclipse.persistence.tools.workbench.framework.app.ApplicationNode;
@@ -41,27 +43,39 @@ public class AddNewNamedPoolAction extends AbstractFrameworkAction {
 		ServerSessionAdapter session = ( ServerSessionAdapter)selectedNode.getValue();
 		SimplePropertyValueModel stringHolder = new SimplePropertyValueModel();
 
-		NamedConnectionPoolCreationDialog dialog = new NamedConnectionPoolCreationDialog
-		(
-			getWorkbenchContext(),
-			stringHolder,
-			session.poolNames()
-		);
+		if (session.usesExternalConnectionPooling()) {
+			promptUserToTurnOffExternalConnectionPooling();
+		} else {
+			NamedConnectionPoolCreationDialog dialog = new NamedConnectionPoolCreationDialog
+			(
+					getWorkbenchContext(),
+					stringHolder,
+					session.poolNames()
+			);
 
-		dialog.show();
+			dialog.show();
 
-		if( dialog.wasConfirmed()) {
+			if( dialog.wasConfirmed()) {
 
-			navigatorSelectionModel().pushExpansionState();
-			ConnectionPoolAdapter newPool = session.addConnectionPoolNamed( (String) stringHolder.getValue());
-			
-			navigatorSelectionModel().popAndRestoreExpansionState();
-				
-			(( AbstractApplicationNode)selectedNode.getProjectRoot()).selectDescendantNodeForValue( newPool, navigatorSelectionModel());
+				navigatorSelectionModel().pushExpansionState();
+				ConnectionPoolAdapter newPool = session.addConnectionPoolNamed( (String) stringHolder.getValue());
+
+				navigatorSelectionModel().popAndRestoreExpansionState();
+
+				(( AbstractApplicationNode)selectedNode.getProjectRoot()).selectDescendantNodeForValue( newPool, navigatorSelectionModel());
+			}
 		}
 	}
 	
 	public void execute() {
 		super.execute();
+	}
+	
+	private void promptUserToTurnOffExternalConnectionPooling()
+	{
+		
+		JOptionPane.showMessageDialog(getWorkbenchContext().getCurrentWindow(), 
+				resourceRepository().getString("EXTERNAL_CONNECTION_POOLING_ENABLED_WARNING_MESSAGE"));
+	
 	}
 }

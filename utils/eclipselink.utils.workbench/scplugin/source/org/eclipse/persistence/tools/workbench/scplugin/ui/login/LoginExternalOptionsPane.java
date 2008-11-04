@@ -120,15 +120,19 @@ public class LoginExternalOptionsPane extends AbstractSubjectPanel
 					if (serverSession.hasAnyConnectionPool())
 					{
 						removeConnectionPool = promptUserToDeleteConnectionPools();
+						if (removeConnectionPool) {
+							serverSession.removeAllConnectionPools();
+							session.setExternalConnectionPooling(true);
+						} else {
+							session.setExternalConnectionPooling(true);
+							session.setExternalConnectionPooling(false);
+						}
 					}
+					
+				} else {
+					session.setExternalConnectionPooling(((Boolean)value).booleanValue());
 				}
-				
-				session.setExternalConnectionPooling(Boolean.TRUE.equals(value));
-				
-				if (removeConnectionPool) {
-					ServerSessionAdapter serverSession = (ServerSessionAdapter) session;
-					serverSession.removeAllConnectionPools();
-				}
+
 			}
 		};
 	}

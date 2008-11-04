@@ -256,7 +256,7 @@ public final class SCPluginResourceBundle extends ListResourceBundle {
 
 		// ui.session.login.RdbmsConnectionPropertiesPage
 		{ "UNKNOWN_PLATFORM_CLASS", "<unkown platform: {0}>" },
-		{ "CONNECTION_PANE_PROMPT_TO_REMOVE_CONNECTION_POOLS_MESSAGE", "Connection pools are only for usage with internal connection pooling and should not be used if using external connection pooling. Do you want to remove all the connection pools?" },
+		{ "CONNECTION_PANE_PROMPT_TO_REMOVE_CONNECTION_POOLS_MESSAGE", "A Session cannot be configured with internal connection pools and set to use external connection pooling.  This will cause data coruption at runtime.  Do you want to remove all the connection pools in this configuration?" },
 		{ "CONNECTION_PANE_PROMPT_TO_REMOVE_CONNECTION_POOLS_TITLE", "Connection Pools" },
 
 		// RdbmsOptionsPropertiesPage - Batch Writing choice
@@ -500,6 +500,8 @@ public final class SCPluginResourceBundle extends ListResourceBundle {
 		{ "NAMED_CONNECTION_POOL_CREATION_DIALOG_TITLE",        "Create New Named Connection Pool" },
 		{ "POOL_CREATION_DIALOG_NEW_POOL_NAME",                 "ConnectionPool" },
 		{ "POOL_NAME_LABEL",                                    "&Name:" },
+		{ "EXTERNAL_CONNECTION_POOLING_ENABLED_WARNING_TITLE", 	"External Connection Pooling" },
+		{ "EXTERNAL_CONNECTION_POOLING_ENABLED_WARNING_MESSAGE","External Connection Pooling is enabled on this session configuration, this must be turned off to add a connection pool." },
 
 		// PoolCellRendererAdapter
 		{ "CONNECTION_POOL",          "Named Connection Pool: {0}" },
