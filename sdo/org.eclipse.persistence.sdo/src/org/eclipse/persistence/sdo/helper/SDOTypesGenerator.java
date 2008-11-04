@@ -369,44 +369,46 @@ public class SDOTypesGenerator {
         Object processed = processedComplexTypes.get(qname);
 
         if (processed == null) {
-            processComplexType(targetNamespace, defaultNamespace, complexType.getName(), complexType);
+            SDOType type = processComplexType(targetNamespace, defaultNamespace, complexType.getName(), complexType);
             processedComplexTypes.put(qname, complexType);
         }
     }
 
-    private void processComplexType(String targetNamespace, String defaultNamespace, String name, ComplexType complexType) {
+    private SDOType processComplexType(String targetNamespace, String defaultNamespace, String name, ComplexType complexType) {
         if (complexType == null) {
-            return;
+            return null;
         }
         boolean addedNR = addNextNamespaceResolver(complexType.getAttributesMap());
-        boolean newType = startComplexType(targetNamespace, defaultNamespace, name, complexType);
-        if (newType) {
+        SDOType newType = startComplexType(targetNamespace, defaultNamespace, name, complexType);
+        if (newType != null) {
             if (complexType.getComplexContent() != null) {
-                processComplexContent(targetNamespace, defaultNamespace, complexType.getComplexContent());
-                finishComplexType(targetNamespace, defaultNamespace, name);
+                processComplexContent(targetNamespace, defaultNamespace, complexType.getComplexContent(), newType);
+                finishComplexType(newType);
             } else if (complexType.getSimpleContent() != null) {
-                processSimpleContent(targetNamespace, defaultNamespace, complexType.getSimpleContent());
-                finishComplexType(targetNamespace, defaultNamespace, name);
+                processSimpleContent(targetNamespace, defaultNamespace, complexType.getSimpleContent(), newType);
+                finishComplexType(newType);
             } else {
                 if (complexType.getChoice() != null) {
-                    processChoice(targetNamespace, defaultNamespace, name, complexType.getChoice(), false);
+                    processChoice(targetNamespace, defaultNamespace, newType, complexType.getChoice(), false);
                 } else if (complexType.getSequence() != null) {
-                    processSequence(targetNamespace, defaultNamespace, name, complexType.getSequence(), false);
+                    processSequence(targetNamespace, defaultNamespace, newType, complexType.getSequence(), false);
                 } else if (complexType.getAll() != null) {
-                    processAll(targetNamespace, defaultNamespace, name, complexType.getAll(), false);
+                    processAll(targetNamespace, defaultNamespace, newType, complexType.getAll(), false);
                 }
 
-                processOrderedAttributes(targetNamespace, defaultNamespace, name, complexType.getOrderedAttributes());
-                finishComplexType(targetNamespace, defaultNamespace, name);
+                processOrderedAttributes(targetNamespace, defaultNamespace, newType, complexType.getOrderedAttributes());
+                finishComplexType(newType);
             }
         }
         if (addedNR) {
             namespaceResolvers.remove(namespaceResolvers.size() - 1);
         }
+        
+        return newType;
     }
 
     //return true if a new type was created
-    private boolean startComplexType(String targetNamespace, String defaultNamespace, String name, ComplexType complexType) {
+    private SDOType startComplexType(String targetNamespace, String defaultNamespace, String name, ComplexType complexType) {
         String nameValue = (String) complexType.getAttributesMap().get(SDOConstants.SDOXML_NAME_QNAME);
         String originalName = name;
         if (nameValue != null) {
@@ -417,15 +419,15 @@ public class SDOTypesGenerator {
 
         //check if already processed, if yes return false because a new type was not started else start new type and return true
         boolean alreadyExists = typesExists(targetNamespace, name);
+
         if (!alreadyExists) {
-            startNewComplexType(targetNamespace, name, originalName, complexType);
-            return true;
+            return startNewComplexType(targetNamespace, name, originalName, complexType);
         }
 
-        return false;
+        return null;
     }
 
-    private void startNewComplexType(String targetNamespace, String sdoTypeName, String xsdLocalName, ComplexType complexType) {
+    private SDOType startNewComplexType(String targetNamespace, String sdoTypeName, String xsdLocalName, ComplexType complexType) {
         SDOType currentType = createSDOTypeForName(targetNamespace, sdoTypeName, xsdLocalName);
         
         if (complexType.isMixed()) {
@@ -463,20 +465,21 @@ public class SDOTypesGenerator {
         if (complexType.getAnnotation() != null) {
             currentType.setAppInfoElements(complexType.getAnnotation().getAppInfo());
         }
+        
+        return currentType;
     }
 
-    private void finishComplexType(String targetNamespace, String defaultNamespace, String name) {
-        SDOType currentType = getSDOTypeForName(targetNamespace, defaultNamespace, false, name);
+    private void finishComplexType(SDOType currentType) {
         currentType.postInitialize();
     }
 
-    private void processOrderedAttributes(String targetNamespace, String defaultNamespace, String name, java.util.List orderedAttributes) {
+    private void processOrderedAttributes(String targetNamespace, String defaultNamespace, SDOType owningType, java.util.List orderedAttributes) {
         for (int i = 0; i < orderedAttributes.size(); i++) {
             Object next = orderedAttributes.get(i);
             if (next instanceof Attribute) {
-                processAttribute(targetNamespace, defaultNamespace, name, (Attribute) next, false);
+                processAttribute(targetNamespace, defaultNamespace, owningType, (Attribute) next, false);
             } else if (next instanceof AttributeGroup) {
-                processAttributeGroup(targetNamespace, defaultNamespace, name, (AttributeGroup) next);
+                processAttributeGroup(targetNamespace, defaultNamespace, owningType, (AttributeGroup) next);
             }
         }
     }
@@ -507,7 +510,7 @@ public class SDOTypesGenerator {
         }
     }
 
-    private void processGroup(String targetNamespace, String defaultNamespace, String ownerName, TypeDefParticle typeDefParticle, Group group, boolean isMany) {
+    private void processGroup(String targetNamespace, String defaultNamespace, SDOType owningType, TypeDefParticle typeDefParticle, Group group, boolean isMany) {
         if (!isMany && maxOccursGreaterThanOne(group.getMaxOccurs())) {
             isMany = true;
         }
@@ -530,29 +533,29 @@ public class SDOTypesGenerator {
             if (globalGroup != null) {
                 if (globalGroup.getChoice() != null) {
                     globalGroup.getChoice().setMaxOccurs(group.getMaxOccurs());
-                    processChoice(targetNamespace, defaultNamespace, ownerName, globalGroup.getChoice(), isMany);
+                    processChoice(targetNamespace, defaultNamespace, owningType, globalGroup.getChoice(), isMany);
                 } else if (globalGroup.getSequence() != null) {
                     globalGroup.getSequence().setMaxOccurs(group.getMaxOccurs());
-                    processSequence(targetNamespace, defaultNamespace, ownerName, globalGroup.getSequence(), isMany);
+                    processSequence(targetNamespace, defaultNamespace, owningType, globalGroup.getSequence(), isMany);
                 } else if (globalGroup.getAll() != null) {
                     globalGroup.getAll().setMaxOccurs(group.getMaxOccurs());
-                    processAll(targetNamespace, defaultNamespace, ownerName, globalGroup.getAll(), isMany);
+                    processAll(targetNamespace, defaultNamespace, owningType, globalGroup.getAll(), isMany);
                 }
             }
         }
     }
 
-    private void processAttribute(String targetNamespace, String defaultNamespace, String ownerName, Attribute attribute, boolean isGlobal) {
+    private void processAttribute(String targetNamespace, String defaultNamespace, SDOType owningType, Attribute attribute, boolean isGlobal) {
         SimpleType simpleType = attribute.getSimpleType();
         if (simpleType != null) {
             processSimpleType(targetNamespace, defaultNamespace, attribute.getName(), simpleType);
-            processSimpleAttribute(targetNamespace, defaultNamespace, ownerName, attribute, isGlobal, rootSchema.isAttributeFormDefault());
+            processSimpleAttribute(targetNamespace, defaultNamespace, owningType, attribute, isGlobal, rootSchema.isAttributeFormDefault());
         } else {
-            processSimpleAttribute(targetNamespace, defaultNamespace, ownerName, attribute, isGlobal, rootSchema.isAttributeFormDefault());
+            processSimpleAttribute(targetNamespace, defaultNamespace, owningType, attribute, isGlobal, rootSchema.isAttributeFormDefault());
         }
     }
 
-    private void processAttributeGroup(String targetNamespace, String defaultNamespace, String ownerName, AttributeGroup attributeGroup) {
+    private void processAttributeGroup(String targetNamespace, String defaultNamespace, SDOType owningType, AttributeGroup attributeGroup) {
         String attributeGroupName = attributeGroup.getRef();
         if (attributeGroupName != null) {
             int idx = attributeGroupName.indexOf(":");
@@ -571,22 +574,22 @@ public class SDOTypesGenerator {
             if (globalAttributeGroup != null) {
                 int size = globalAttributeGroup.getAttributes().size();
                 if (globalAttributeGroup.getAnyAttribute() != null) {
-                    processAnyAttribute(targetNamespace, defaultNamespace, ownerName);
+                    processAnyAttribute(targetNamespace, defaultNamespace, owningType);
                 }
                 for (int j = 0; j < size; j++) {
-                    processAttribute(targetNamespace, defaultNamespace, ownerName, (Attribute) globalAttributeGroup.getAttributes().get(j), false);
+                    processAttribute(targetNamespace, defaultNamespace, owningType, (Attribute) globalAttributeGroup.getAttributes().get(j), false);
                 }
             }
         }
     }
 
-    private void processAttributes(String targetNamespace, String defaultNamespace, String ownerName, java.util.List attributes) {
+    private void processAttributes(String targetNamespace, String defaultNamespace, SDOType owningType, java.util.List attributes) {
         if (attributes == null) {
             return;
         }
         for (int i = 0; i < attributes.size(); i++) {
             Attribute nextAttribute = (Attribute) attributes.get(i);
-            processAttribute(targetNamespace, defaultNamespace, ownerName, nextAttribute, false);
+            processAttribute(targetNamespace, defaultNamespace, owningType, nextAttribute, false);
         }
     }
 
@@ -606,21 +609,20 @@ public class SDOTypesGenerator {
     private void processGlobalSimpleType(String targetNamespace, String defaultNamespace, SimpleType simpleType) {
         QName qname = new QName(targetNamespace, simpleType.getName());
         if (!processedSimpleTypes.containsKey(qname)) {
-            processSimpleType(targetNamespace, defaultNamespace, simpleType.getName(), simpleType);
+            SDOType type = processSimpleType(targetNamespace, defaultNamespace, simpleType.getName(), simpleType);
             processedSimpleTypes.put(qname, simpleType);
         }
     }
 
-    private boolean startSimpleType(String targetNamespace, String defaultNamespace, String name, String xsdLocalName, SimpleType simpleType) {
+    private SDOType startSimpleType(String targetNamespace, String defaultNamespace, String name, String xsdLocalName, SimpleType simpleType) {
         boolean alreadyExists = typesExists(targetNamespace, name);
         if (!alreadyExists) {
-            startNewSimpleType(targetNamespace, defaultNamespace, name, xsdLocalName, simpleType);
-            return true;
+            return startNewSimpleType(targetNamespace, defaultNamespace, name, xsdLocalName, simpleType);
         }
-        return false;
+        return null;
     }
 
-    private void startNewSimpleType(String targetNamespace, String defaultNamespace, String sdoTypeName, String xsdLocalName, SimpleType simpleType) {
+    private SDOType startNewSimpleType(String targetNamespace, String defaultNamespace, String sdoTypeName, String xsdLocalName, SimpleType simpleType) {
         SDOType currentType = createSDOTypeForName(targetNamespace, sdoTypeName, xsdLocalName);
         currentType.setDataType(true);
 
@@ -660,11 +662,13 @@ public class SDOTypesGenerator {
         if (simpleType.getAnnotation() != null) {
             currentType.setAppInfoElements(simpleType.getAnnotation().getAppInfo());
         }
+        
+        return currentType;
     }
 
-    private void processSimpleType(String targetNamespace, String defaultNamespace, String sdoTypeName, SimpleType simpleType) {
+    private SDOType processSimpleType(String targetNamespace, String defaultNamespace, String sdoTypeName, SimpleType simpleType) {
         if (simpleType == null) {
-            return;
+            return null;
         }
         boolean addedNR = addNextNamespaceResolver(simpleType.getAttributesMap());
         String name = sdoTypeName;
@@ -675,12 +679,12 @@ public class SDOTypesGenerator {
             name = nameValue;
         }
 
-        boolean newType = startSimpleType(targetNamespace, defaultNamespace, name, originalName, simpleType);
-        if (newType) {
+        SDOType newType = startSimpleType(targetNamespace, defaultNamespace, name, originalName, simpleType);
+        if (newType != null) {
             Restriction restriction = simpleType.getRestriction();
 
             if (restriction != null) {
-                processRestriction(targetNamespace, defaultNamespace, sdoTypeName, restriction);
+                processRestriction(targetNamespace, defaultNamespace, newType, restriction);
             }
             List list = simpleType.getList();
             if (list != null) {
@@ -697,6 +701,8 @@ public class SDOTypesGenerator {
         if (addedNR) {
             namespaceResolvers.remove(namespaceResolvers.size() - 1);
         }
+        
+        return newType;
     }
 
     private void finishSimpleType(String targetNamespace, String defaultNamespace, String sdoTypeName, SimpleType simpleType) {
@@ -724,9 +730,9 @@ public class SDOTypesGenerator {
         currentType.postInitialize();
     }
 
-    private void processChoice(String targetNamespace, String defaultNamespace, String ownerName, Choice choice, boolean isMany) {
+    private void processChoice(String targetNamespace, String defaultNamespace, SDOType owningType, Choice choice, boolean isMany) {
         if (choice != null) {
-            processTypeDef(targetNamespace, defaultNamespace, ownerName, choice);
+            processTypeDef(targetNamespace, defaultNamespace, owningType, choice);
 
             java.util.List orderedItems = choice.getOrderedElements();
             for (int i = 0; i < orderedItems.size(); i++) {
@@ -736,23 +742,23 @@ public class SDOTypesGenerator {
                 }
 
                 if (next instanceof Choice) {
-                    processChoice(targetNamespace, defaultNamespace, ownerName, (Choice) next, isMany);
+                    processChoice(targetNamespace, defaultNamespace, owningType, (Choice) next, isMany);
                 } else if (next instanceof Sequence) {
-                    processSequence(targetNamespace, defaultNamespace, ownerName, (Sequence) next, isMany);
+                    processSequence(targetNamespace, defaultNamespace, owningType, (Sequence) next, isMany);
                 } else if (next instanceof Any) {
-                    processAny(targetNamespace, defaultNamespace, (Any) next, ownerName, choice);//isMany??
+                    processAny(targetNamespace, defaultNamespace, (Any) next, owningType, choice);//isMany??
                 } else if (next instanceof Element) {
-                    processElement(targetNamespace, defaultNamespace, ownerName, choice, (Element) next, false, isMany);
+                    processElement(targetNamespace, defaultNamespace, owningType, choice, (Element) next, false, isMany);
                 } else if (next instanceof Group) {
-                    processGroup(targetNamespace, defaultNamespace, ownerName, choice, (Group) next, isMany);
+                    processGroup(targetNamespace, defaultNamespace, owningType, choice, (Group) next, isMany);
                 }
             }
         }
     }
 
-    private void processSequence(String targetNamespace, String defaultNamespace, String ownerName, Sequence sequence, boolean isMany) {
+    private void processSequence(String targetNamespace, String defaultNamespace, SDOType owningType, Sequence sequence, boolean isMany) {
         if (sequence != null) {
-            processTypeDef(targetNamespace, defaultNamespace, ownerName, sequence);
+            processTypeDef(targetNamespace, defaultNamespace, owningType, sequence);
 
             java.util.List orderedItems = sequence.getOrderedElements();
             for (int i = 0; i < orderedItems.size(); i++) {
@@ -761,26 +767,25 @@ public class SDOTypesGenerator {
                     isMany = true;
                 }
                 if (next instanceof Choice) {
-                    processChoice(targetNamespace, defaultNamespace, ownerName, (Choice) next, isMany);
+                    processChoice(targetNamespace, defaultNamespace, owningType, (Choice) next, isMany);
                 } else if (next instanceof Sequence) {
-                    processSequence(targetNamespace, defaultNamespace, ownerName, (Sequence) next, isMany);
+                    processSequence(targetNamespace, defaultNamespace, owningType, (Sequence) next, isMany);
                 } else if (next instanceof Any) {
-                    processAny(targetNamespace, defaultNamespace, (Any) next, ownerName, sequence);//isMany?
+                    processAny(targetNamespace, defaultNamespace, (Any) next, owningType, sequence);//isMany?
                 } else if (next instanceof Element) {
-                    processElement(targetNamespace, defaultNamespace, ownerName, sequence, (Element) next, false, isMany);
+                    processElement(targetNamespace, defaultNamespace, owningType, sequence, (Element) next, false, isMany);
                 } else if (next instanceof Group) {
-                    processGroup(targetNamespace, defaultNamespace, ownerName, sequence, (Group) next, isMany);
+                    processGroup(targetNamespace, defaultNamespace, owningType, sequence, (Group) next, isMany);
                 }
             }
         }
     }
 
-    private void processAll(String targetNamespace, String defaultNamespace, String ownerName, All all, boolean isMany) {
+    private void processAll(String targetNamespace, String defaultNamespace, SDOType owningType, All all, boolean isMany) {
         if (all != null) {
-            SDOType currentType = getTypeForName(targetNamespace, defaultNamespace, ownerName);
-            currentType.setSequenced(true);
+            owningType.setSequenced(true);
             
-            processTypeDef(targetNamespace, defaultNamespace, ownerName, all);
+            processTypeDef(targetNamespace, defaultNamespace, owningType, all);
             if (!isMany && maxOccursGreaterThanOne(all.getMaxOccurs())) {
                 isMany = true;
             }
@@ -788,58 +793,58 @@ public class SDOTypesGenerator {
             for (int i = 0; i < elements.size(); i++) {
                 Object next = elements.get(i);
                 if (next instanceof Element) {
-                    processElement(targetNamespace, defaultNamespace, ownerName, all, (Element) next, false, isMany);
+                    processElement(targetNamespace, defaultNamespace, owningType, all, (Element) next, false, isMany);
                 }
             }
         }
     }
 
-    private void processComplexContent(String targetNamespace, String defaultNamespace, ComplexContent complexContent) {
+    private void processComplexContent(String targetNamespace, String defaultNamespace, ComplexContent complexContent, SDOType owningType) {
         if (complexContent != null) {
             if (complexContent.getExtension() != null) {
-                processExtension(targetNamespace, defaultNamespace, complexContent.getOwnerName(), complexContent.getExtension(), false);
+                processExtension(targetNamespace, defaultNamespace, owningType, complexContent.getExtension(), false);
             } else {
                 if (complexContent.getRestriction() != null) {
-                    processRestriction(targetNamespace, defaultNamespace, complexContent.getOwnerName(), complexContent.getRestriction());
+                    processRestriction(targetNamespace, defaultNamespace, owningType, complexContent.getRestriction());
                 }
             }
         }
     }
 
-    private void processSimpleContent(String targetNamespace, String defaultNamespace, SimpleContent simpleContent) {
+    private void processSimpleContent(String targetNamespace, String defaultNamespace, SimpleContent simpleContent, SDOType owningType) {
         if (simpleContent != null) {
             if (simpleContent.getExtension() != null) {
-                processExtension(targetNamespace, defaultNamespace, simpleContent.getOwnerName(), simpleContent.getExtension(), true);
+                processExtension(targetNamespace, defaultNamespace, owningType, simpleContent.getExtension(), true);
             } else {
                 if (simpleContent.getRestriction() != null) {
-                    processRestriction(targetNamespace, defaultNamespace, simpleContent.getOwnerName(), simpleContent.getRestriction());
+                    processRestriction(targetNamespace, defaultNamespace, owningType, simpleContent.getRestriction());
                 }
             }
         }
     }
 
-    private void processExtension(String targetNamespace, String defaultNamespace, String ownerName, Extension extension, boolean simpleContent) {
+    private void processExtension(String targetNamespace, String defaultNamespace, SDOType owningType, Extension extension, boolean simpleContent) {
         if (extension != null) {
             String qualifiedType = extension.getBaseType();
-            processBaseType(targetNamespace, defaultNamespace, extension.getOwnerName(), qualifiedType, simpleContent);
+            processBaseType(targetNamespace, defaultNamespace, owningType, qualifiedType, simpleContent);
 
             //TODO: typedefparticle all seq choice
             //TODO: attrDecls
             if (extension.getChoice() != null) {
-                processChoice(targetNamespace, defaultNamespace, ownerName, extension.getChoice(), false);
+                processChoice(targetNamespace, defaultNamespace, owningType, extension.getChoice(), false);
             } else if (extension.getSequence() != null) {
-                processSequence(targetNamespace, defaultNamespace, ownerName, extension.getSequence(), false);
+                processSequence(targetNamespace, defaultNamespace, owningType, extension.getSequence(), false);
             } else if (extension.getAll() != null) {
             }
 
-            processOrderedAttributes(targetNamespace, defaultNamespace, ownerName, extension.getOrderedAttributes());
+            processOrderedAttributes(targetNamespace, defaultNamespace, owningType, extension.getOrderedAttributes());
         }
     }
 
-    private void processRestriction(String targetNamespace, String defaultNamespace, String ownerName, Restriction restriction) {
+    private void processRestriction(String targetNamespace, String defaultNamespace, SDOType owningType, Restriction restriction) {
         if (restriction != null) {
             String qualifiedType = restriction.getBaseType();
-            processBaseType(targetNamespace, defaultNamespace, ownerName, qualifiedType, false);
+            processBaseType(targetNamespace, defaultNamespace, owningType, qualifiedType, false);
             boolean alreadyIn = inRestriction;
             if (!alreadyIn) {
                 inRestriction = true;
@@ -848,13 +853,13 @@ public class SDOTypesGenerator {
             //TODO: typedefparticle all seq choice
             //TODO: attrDecls
             if (restriction.getChoice() != null) {
-                processChoice(targetNamespace, defaultNamespace, ownerName, restriction.getChoice(), false);
+                processChoice(targetNamespace, defaultNamespace, owningType, restriction.getChoice(), false);
             } else if (restriction.getSequence() != null) {
-                processSequence(targetNamespace, defaultNamespace, ownerName, restriction.getSequence(), false);
+                processSequence(targetNamespace, defaultNamespace, owningType, restriction.getSequence(), false);
             } else if (restriction.getAll() != null) {
             }
 
-            processAttributes(targetNamespace, defaultNamespace, ownerName, restriction.getAttributes());
+            processAttributes(targetNamespace, defaultNamespace, owningType, restriction.getAttributes());
             if (!alreadyIn) {
                 inRestriction = false;
             }
@@ -925,21 +930,20 @@ public class SDOTypesGenerator {
         }
     }
 
-    private void processBaseType(String targetNamespace, String defaultNamespace, String ownerName, String qualifiedName, boolean simpleContentExtension) {
+    private void processBaseType(String targetNamespace, String defaultNamespace, SDOType owningType, String qualifiedName, boolean simpleContentExtension) {
         if (qualifiedName == null) {
             return;
         }
         SDOType baseType = getSDOTypeForName(targetNamespace, defaultNamespace, qualifiedName);
 
         if (simpleContentExtension && baseType.isDataType()) {
-            Type ownerType = getTypeForName(targetNamespace, defaultNamespace, ownerName);
-            if (ownerType != null) {
+            if (owningType != null) {
                 SDOProperty prop = new SDOProperty(aHelperContext);
                 prop.setName("value");
                 prop.setType(baseType);
                 prop.setValueProperty(true);
                 prop.setInstanceProperty(SDOConstants.XMLELEMENT_PROPERTY, Boolean.TRUE);
-                ((SDOType) ownerType).addDeclaredProperty(prop);
+                ((SDOType) owningType).addDeclaredProperty(prop);
                 prop.buildMapping(null, -1);
                 prop.setFinalized(true);
 
@@ -950,34 +954,31 @@ public class SDOTypesGenerator {
         java.util.List<Type> baseTypes = new ArrayList<Type>();
         baseTypes.add(baseType);
 
-        if (ownerName != null) {
-            SDOType owner = getTypeForName(targetNamespace, defaultNamespace, ownerName);
-            if (owner.isDataType()) {
-                owner.setInstanceClassName(baseType.getInstanceClassName());
+        if (owningType != null) {
+            if (owningType.isDataType()) {
+                owningType.setInstanceClassName(baseType.getInstanceClassName());
                 if (baseType.getInstanceClass() != null) {
-                    owner.setInstanceClass(baseType.getInstanceClass());
+                    owningType.setInstanceClass(baseType.getInstanceClass());
                 }
 
                 QName baseQName = getQNameForString(defaultNamespace, qualifiedName);
                 if ((baseQName.equals(XMLConstants.BASE_64_BINARY_QNAME)) || (baseQName.equals(XMLConstants.HEX_BINARY_QNAME)) || (baseQName.equals(XMLConstants.DATE_QNAME)) || (baseQName.equals(XMLConstants.TIME_QNAME))
                         || (baseQName.equals(XMLConstants.DATE_TIME_QNAME))) {
-                    owner.setXsdType(baseQName);
+                    owningType.setXsdType(baseQName);
                 }
             }
 
-            if (!owner.getBaseTypes().contains(baseType)) {
-                owner.addBaseType(baseType);
+            if (!owningType.getBaseTypes().contains(baseType)) {
+                owningType.addBaseType(baseType);
             }
         }
         //TODO: need owner currentType.setOpen(true);
     }
 
-    private void processTypeDef(String targetNamespace, String defaultNamespace, String owner, TypeDefParticle typeDefParticle) {
-        SDOType currentType = getTypeForName(targetNamespace, defaultNamespace, owner);
-
+    private void processTypeDef(String targetNamespace, String defaultNamespace, SDOType owningType, TypeDefParticle typeDefParticle) {
         if (maxOccursGreaterThanOne(typeDefParticle.getMaxOccurs())) {
-            if (!currentType.isSequenced() && shouldBeSequenced(typeDefParticle)) {
-                currentType.setSequenced(true);
+            if (!owningType.isSequenced() && shouldBeSequenced(typeDefParticle)) {
+                owningType.setSequenced(true);
             }
         }
     }
@@ -1013,15 +1014,14 @@ public class SDOTypesGenerator {
         return false;
     }
 
-    private void processAny(String targetNamespace, String defaultNamespace, Any any, String owner, TypeDefParticle typeDefParticle) {
+    private void processAny(String targetNamespace, String defaultNamespace, Any any, SDOType owningType, TypeDefParticle typeDefParticle) {
         if (any == null) {
             return;
         }
-        SDOType currentType = getTypeForName(targetNamespace, defaultNamespace, owner);
 
         if (((NestedParticle) typeDefParticle).hasAny()) {
-            currentType.setOpen(true);
-            currentType.setSequenced(true);
+            owningType.setOpen(true);
+            owningType.setSequenced(true);
         }
 
         //TODO: need owner currentType.setOpen(true);??
@@ -1055,7 +1055,7 @@ public class SDOTypesGenerator {
         }
     }
 
-    private void processElement(String targetNamespace, String defaultNamespace, String ownerName, TypeDefParticle typeDefParticle, Element element, boolean isGlobal, boolean isMany) {
+    private void processElement(String targetNamespace, String defaultNamespace, SDOType owningType, TypeDefParticle typeDefParticle, Element element, boolean isGlobal, boolean isMany) {
 
         boolean addedNR = addNextNamespaceResolver(element.getAttributesMap());
 
@@ -1070,15 +1070,15 @@ public class SDOTypesGenerator {
 
         if (complexType != null) {
             //TODO: if this is nested we need to add new type to owner
-            processComplexType(targetNamespace, defaultNamespace, element.getName(), complexType);
+            SDOType type = processComplexType(targetNamespace, defaultNamespace, element.getName(), complexType);
 
-            processSimpleElement(targetNamespace, defaultNamespace, ownerName, typeDefParticle, element, qualified, isGlobal, isMany);
+            processSimpleElement(targetNamespace, defaultNamespace, owningType, type, typeDefParticle, element, qualified, isGlobal, isMany);
 
         } else if (element.getSimpleType() != null) {
-            processSimpleType(targetNamespace, defaultNamespace, element.getName(), element.getSimpleType());
-            processSimpleElement(targetNamespace, defaultNamespace, ownerName, typeDefParticle, element, qualified, isGlobal, isMany);
+            SDOType type = processSimpleType(targetNamespace, defaultNamespace, element.getName(), element.getSimpleType());
+            processSimpleElement(targetNamespace, defaultNamespace, owningType, type, typeDefParticle, element, qualified, isGlobal, isMany);
         } else {
-            processSimpleElement(targetNamespace, defaultNamespace, ownerName, typeDefParticle, element, qualified, isGlobal, isMany);
+            processSimpleElement(targetNamespace, defaultNamespace, owningType, null, typeDefParticle, element, qualified, isGlobal, isMany);
         }
         if (addedNR) {
             namespaceResolvers.remove(namespaceResolvers.size() - 1);
@@ -1088,7 +1088,8 @@ public class SDOTypesGenerator {
     private void processSimpleElement( //
             String targetNamespace,//
             String defaultNamespace,//
-            String ownerName,//
+            SDOType owningType,//
+            SDOType sdoPropertyType,//
             TypeDefParticle typeDefParticle,//
             Element element,//
             boolean isQualified,//
@@ -1106,12 +1107,9 @@ public class SDOTypesGenerator {
         }
 
         SDOProperty p = null;
-        SDOType owningType = null;
         String typeName = null;
-        SDOType sdoPropertyType = null;
         String mappingUri = null;
         if (typeDefParticle != null) {
-            owningType = getTypeForName(targetNamespace, defaultNamespace, ownerName);
             mappingUri = owningType.getURI();
         }
 
@@ -1448,18 +1446,17 @@ public class SDOTypesGenerator {
         return stringValue;
     }
 
-    private void processSimpleAttribute(String targetNamespace, String defaultNamespace, String ownerName, Attribute attribute, boolean isGlobal, boolean isQualified) {
+    private void processSimpleAttribute(String targetNamespace, String defaultNamespace, SDOType owningType, Attribute attribute, boolean isGlobal, boolean isQualified) {
         if (attribute == null) {
             return;
         }
 
         SDOProperty p = null;
-        SDOType owningType = null;
+        
         String typeName = null;
         SDOType sdoPropertyType = null;
         String mappingUri = null;
-        if (ownerName != null) {
-            owningType = getTypeForName(targetNamespace, defaultNamespace, ownerName);
+        if (owningType != null) {
             mappingUri = owningType.getURI();
         }
         if (attribute.getRef() != null) {
@@ -1943,8 +1940,7 @@ public class SDOTypesGenerator {
         }
     }
 
-    private void processAnyAttribute(String targetNamespace, String defaultNamespace, String ownerName) {
-        SDOType owningType = getTypeForName(targetNamespace, defaultNamespace, ownerName);
+    private void processAnyAttribute(String targetNamespace, String defaultNamespace, SDOType owningType) {
         owningType.setOpen(true);
     }
 
