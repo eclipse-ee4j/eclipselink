@@ -272,7 +272,7 @@ public abstract class ObjectReferenceMapping extends ForeignReferenceMapping {
      */
     public Object getRealAttributeValueFromAttribute(Object attributeValue, Object object, AbstractSession session) {
         Object value = super.getRealAttributeValueFromAttribute(attributeValue, object, session);
-        value = this.referenceDescriptor.getObjectBuilder().unwrapObject(value, session);
+        value = getReferenceDescriptor().getObjectBuilder().unwrapObject(value, session);
 
         return value;
     }
