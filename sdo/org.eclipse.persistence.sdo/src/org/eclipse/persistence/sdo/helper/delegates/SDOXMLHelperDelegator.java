@@ -15,21 +15,21 @@ package org.eclipse.persistence.sdo.helper.delegates;
 import commonj.sdo.DataObject;
 import commonj.sdo.helper.HelperContext;
 import commonj.sdo.helper.XMLDocument;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.Reader;
 import java.io.Writer;
 import java.util.List;
-import java.util.Map;
 import java.util.TimeZone;
-import java.util.WeakHashMap;
 import javax.xml.transform.Result;
 import javax.xml.transform.Source;
+
 import org.eclipse.persistence.internal.oxm.XMLConversionManager;
 import org.eclipse.persistence.sdo.helper.SDOClassLoader;
+import org.eclipse.persistence.sdo.helper.SDOHelperContext;
 import org.eclipse.persistence.sdo.helper.SDOXMLHelper;
-import org.eclipse.persistence.logging.AbstractSessionLog;
 import org.eclipse.persistence.oxm.XMLContext;
 import org.eclipse.persistence.oxm.XMLDescriptor;
 import org.eclipse.persistence.oxm.XMLMarshaller;
@@ -40,23 +40,20 @@ import org.xml.sax.InputSource;
 /**
  * <p><b>Purpose</b>: Helper to XML documents into DataObects and DataObjects into XML documents.
  * <p><b>Responsibilities</b>:<ul>
- * <li> Finds the appropriate SDOXMLHelperDelegate for the classLoader and delegates work to that 
+ * <li> Finds the appropriate SDOXMLHelperDelegate for the classLoader/application name and delegates work to that 
  * <li> Load methods create commonj.sdo.XMLDocument objects from XML (unmarshal) 
  * <li> Save methods create XML from commonj.sdo.XMLDocument and commonj.sdo.DataObject objects (marshal) 
  * </ul>
  */
 public class SDOXMLHelperDelegator extends AbstractHelperDelegator implements SDOXMLHelper {
-    private Map sdoXMLHelperDelegates;
 
     public SDOXMLHelperDelegator() {
         // TODO: JIRA129 - default to static global context - Do Not use this convenience constructor outside of JUnit testing
-        sdoXMLHelperDelegates = new WeakHashMap();
     }
 
     public SDOXMLHelperDelegator(HelperContext aContext) {
         super();
         aHelperContext = aContext;
-        sdoXMLHelperDelegates = new WeakHashMap();
     }
 
     /**
@@ -171,20 +168,13 @@ public class SDOXMLHelperDelegator extends AbstractHelperDelegator implements SD
     public XMLUnmarshaller getXmlUnmarshaller() {
         return getSDOXMLHelperDelegate().getXmlUnmarshaller();
     }
-
+    
     /**
      * INTERNAL:
      */
     private SDOXMLHelperDelegate getSDOXMLHelperDelegate() {
-        Object key = getDelegateMapKey();
-        SDOXMLHelperDelegate sdoXMLHelperDelegate = (SDOXMLHelperDelegate)sdoXMLHelperDelegates.get(key);
-        if (null == sdoXMLHelperDelegate) {
-            sdoXMLHelperDelegate = new SDOXMLHelperDelegate(getHelperContext());
-            sdoXMLHelperDelegates.put(key, sdoXMLHelperDelegate);
-            AbstractSessionLog.getLog().log(AbstractSessionLog.FINEST, "{0} creating new {1} keyed on: {2}", //
-                    new Object[] {getClass().getName(), sdoXMLHelperDelegate, key }, false);
-        }
-        return sdoXMLHelperDelegate;
+        HelperContext hCtx = SDOHelperContext.getHelperContext(getDelegateMapKey());
+        return (SDOXMLHelperDelegate) hCtx.getXMLHelper();
     }
 
     public void reset() {

@@ -16,13 +16,14 @@ import java.io.InputStream;
 import java.io.Reader;
 import java.util.List;
 import java.util.Map;
-import java.util.WeakHashMap;
 import javax.xml.namespace.QName;
 import javax.xml.transform.Source;
+
+import org.eclipse.persistence.sdo.helper.SDOHelperContext;
 import org.eclipse.persistence.sdo.helper.SDOXSDHelper;
 import org.eclipse.persistence.sdo.helper.SchemaLocationResolver;
 import org.eclipse.persistence.sdo.helper.SchemaResolver;
-import org.eclipse.persistence.logging.AbstractSessionLog;
+
 import commonj.sdo.Property;
 import commonj.sdo.Type;
 import commonj.sdo.helper.HelperContext;
@@ -30,24 +31,21 @@ import commonj.sdo.helper.HelperContext;
 /**
  * <p><b>Purpose</b>: Provides access to additional information when the Type or Property is defined by an XML Schema (XSD)..
  * <p><b>Responsibilities</b>:<ul>
- * <li> Finds the appropriate SDOXSDHelperDelegate for the classLoader and delegates work to that implementation of SDOXSDHelper. 
+ * <li> Finds the appropriate SDOXSDHelperDelegate for the classLoader/application name and delegates work to that implementation of SDOXSDHelper. 
  * <li> Define methods defines Types from an XSD.
  * <li> Generate methods an XSD from Types.
  * <li> Other Methods return null/false otherwise or if the information is unavailable.
  * </ul>
  */
 public class SDOXSDHelperDelegator extends AbstractHelperDelegator implements SDOXSDHelper {
-    private Map sdoXSDHelperDelegates;
 
     public SDOXSDHelperDelegator() {
         // TODO: JIRA129 - default to static global context - Do Not use this convenience constructor outside of JUnit testing
-        sdoXSDHelperDelegates = new WeakHashMap();
     }
 
     public SDOXSDHelperDelegator(HelperContext aContext) {
         super();
         aHelperContext = aContext;
-        sdoXSDHelperDelegates = new WeakHashMap();
     }
 
     public String getLocalName(Type type) {
@@ -149,15 +147,8 @@ public class SDOXSDHelperDelegator extends AbstractHelperDelegator implements SD
      * INTERNAL:
      */
     private SDOXSDHelperDelegate getSDOXSDHelperDelegate() {
-        Object key = getDelegateMapKey();
-        SDOXSDHelperDelegate sdoXSDHelperDelegate = (SDOXSDHelperDelegate)sdoXSDHelperDelegates.get(key);
-        if (null == sdoXSDHelperDelegate) {
-            sdoXSDHelperDelegate = new SDOXSDHelperDelegate(getHelperContext());
-            sdoXSDHelperDelegates.put(key, sdoXSDHelperDelegate);
-            AbstractSessionLog.getLog().log(AbstractSessionLog.FINEST, "{0} creating new {1} keyed on: {2}", //
-            		new Object[] {getClass().getName(), sdoXSDHelperDelegate, key }, false);
-        }
-        return sdoXSDHelperDelegate;
+        HelperContext hCtx = SDOHelperContext.getHelperContext(getDelegateMapKey());
+        return (SDOXSDHelperDelegate) hCtx.getXSDHelper();
     }
     
     public void reset() {

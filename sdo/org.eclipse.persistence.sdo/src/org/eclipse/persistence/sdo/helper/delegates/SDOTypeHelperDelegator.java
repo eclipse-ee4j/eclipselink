@@ -16,38 +16,33 @@ import commonj.sdo.DataObject;
 import commonj.sdo.Property;
 import commonj.sdo.Type;
 import commonj.sdo.helper.HelperContext;
+
 import java.util.List;
 import java.util.Map;
-import java.util.WeakHashMap;
 import javax.xml.namespace.QName;
 import org.eclipse.persistence.sdo.SDOType;
+import org.eclipse.persistence.sdo.helper.SDOHelperContext;
 import org.eclipse.persistence.sdo.helper.SDOTypeHelper;
 import org.eclipse.persistence.sessions.Project;
-import org.eclipse.persistence.logging.AbstractSessionLog;
 import org.eclipse.persistence.oxm.NamespaceResolver;
 
 /**
  * <p><b>Purpose</b>: Helper to provide access to declared SDO Types.
  * <p><b>Responsibilities</b>:<ul>
- * <li> Finds the appropriate SDOTypeHelperDelegate for the classLoader and delegates work to that
+ * <li> Finds the appropriate SDOTypeHelperDelegate for the classLoader/application name and delegates work to that
  * <li> Look up a Type given the uri and typeName or interfaceClass.
  * <li> SDO Types are available through the getType("commonj.sdo", typeName) method.
  * <li> Defines Types from DataObjects.
  * </ul>
  */
 public class SDOTypeHelperDelegator extends AbstractHelperDelegator implements SDOTypeHelper {
-    private Map sdoTypeHelperDelegates;
 
     public SDOTypeHelperDelegator() {
-        super();
         // TODO: JIRA129 - default to static global context - Do Not use this convenience constructor outside of JUnit testing
-        sdoTypeHelperDelegates = new WeakHashMap();
     }
 
     public SDOTypeHelperDelegator(HelperContext aContext) {
-        super();
         aHelperContext = aContext;
-        sdoTypeHelperDelegates = new WeakHashMap();
     }
 
     public Class getJavaWrapperTypeForSDOType(Type sdoType) {
@@ -123,20 +118,10 @@ public class SDOTypeHelperDelegator extends AbstractHelperDelegator implements S
     public Property getOpenContentProperty(String uri, String propertyName) {
         return getSDOTypeHelperDelegate().getOpenContentProperty(uri, propertyName);
     }
-
-    /**
-     * INTERNAL:
-     */
+    
     private SDOTypeHelperDelegate getSDOTypeHelperDelegate() {
-        Object key = getDelegateMapKey();
-        SDOTypeHelperDelegate sdoTypeHelperDelegate = (SDOTypeHelperDelegate)sdoTypeHelperDelegates.get(key);
-        if (null == sdoTypeHelperDelegate) {
-            sdoTypeHelperDelegate = new SDOTypeHelperDelegate(getHelperContext());
-            sdoTypeHelperDelegates.put(key, sdoTypeHelperDelegate);
-            AbstractSessionLog.getLog().log(AbstractSessionLog.FINEST, "{0} creating new {1} keyed on: {2}",//
-                                            new Object[] { getClass().getName(), sdoTypeHelperDelegate, key }, false);
-        }
-        return sdoTypeHelperDelegate;
+        HelperContext hCtx = SDOHelperContext.getHelperContext(getDelegateMapKey());
+        return (SDOTypeHelperDelegate) hCtx.getTypeHelper();
     }
 
     /**

@@ -177,7 +177,7 @@ public class XPathEngineSimpleTestCases extends SDOTestCase {
         boolean unexpectedEx = false;
         
         try {
-            SDODataFactory factory = new SDODataFactory(getHelperContext());
+            SDODataFactory factory =  (SDODataFactory) getHelperContext().getDataFactory();
             SDODataObject po = (SDODataObject) factory.create("http://www.example.org", "PurchaseOrderType");
             po.set("customer/gender", "male");
         } catch (SDOException sdoex) {
@@ -197,7 +197,7 @@ public class XPathEngineSimpleTestCases extends SDOTestCase {
         boolean unexpectedEx = false;
         
         try {
-            SDODataFactory factory = new SDODataFactory(getHelperContext());
+            SDODataFactory factory =  (SDODataFactory) getHelperContext().getDataFactory();
             SDODataObject po = (SDODataObject) factory.create("http://www.example.org", "PurchaseOrderType");
             SDODataObject items = (SDODataObject) po.createDataObject("items");
             items.createDataObject("item");
@@ -219,7 +219,7 @@ public class XPathEngineSimpleTestCases extends SDOTestCase {
         boolean unexpectedEx = false;
         
         try {
-            SDODataFactory factory = new SDODataFactory(getHelperContext());
+            SDODataFactory factory =  (SDODataFactory) getHelperContext().getDataFactory();
             SDODataObject po = (SDODataObject) factory.create("http://www.example.org", "PurchaseOrderType");
             po.createDataObject("items");
             po.set("items/item[1]/productName", "Gizmo");

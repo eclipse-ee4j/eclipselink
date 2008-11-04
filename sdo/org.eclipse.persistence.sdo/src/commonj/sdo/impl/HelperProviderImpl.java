@@ -20,6 +20,7 @@ import org.eclipse.persistence.sdo.helper.SDOEqualityHelper;
 import org.eclipse.persistence.sdo.helper.SDOTypeHelper;
 import org.eclipse.persistence.sdo.helper.SDOXMLHelper;
 import org.eclipse.persistence.sdo.helper.SDOXSDHelper;
+import org.eclipse.persistence.sdo.helper.delegates.SDODataFactoryDelegator;
 import org.eclipse.persistence.sdo.helper.delegates.SDOTypeHelperDelegator;
 import org.eclipse.persistence.sdo.helper.delegates.SDOXMLHelperDelegator;
 import org.eclipse.persistence.sdo.helper.delegates.SDOXSDHelperDelegator;
@@ -36,7 +37,7 @@ public class HelperProviderImpl extends HelperProvider {
     private static final SDOXMLHelper xmlHelper = new SDOXMLHelperDelegator();
     private static final SDOTypeHelper typeHelper = new SDOTypeHelperDelegator();
     private static final SDOXSDHelper xsdHelper = new SDOXSDHelperDelegator();
-    private static final SDODataFactory dataFactory = new SDODataFactory();
+    private static final SDODataFactory dataFactory = new SDODataFactoryDelegator();
     private static final SDODataHelper dataHelper = new SDODataHelper();
     private static final SDOCopyHelper copyHelper = new SDOCopyHelper();
     private static final SDOEqualityHelper equalityHelper = new SDOEqualityHelper();

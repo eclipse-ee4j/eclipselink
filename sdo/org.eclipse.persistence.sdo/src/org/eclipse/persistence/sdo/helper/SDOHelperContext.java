@@ -28,7 +28,11 @@
  */
 package org.eclipse.persistence.sdo.helper;
 
+import java.util.Map;
+import java.util.WeakHashMap;
+
 import org.eclipse.persistence.sdo.SDOResolvable;
+import org.eclipse.persistence.sdo.helper.delegates.SDODataFactoryDelegate;
 import org.eclipse.persistence.sdo.helper.delegates.SDOTypeHelperDelegate;
 import org.eclipse.persistence.sdo.helper.delegates.SDOXMLHelperDelegate;
 import org.eclipse.persistence.sdo.helper.delegates.SDOXSDHelperDelegate;
@@ -51,6 +55,10 @@ public class SDOHelperContext implements HelperContext {
     private TypeHelper typeHelper;
     private XSDHelper xsdHelper;
 
+    // Each application will have its own helper context - it is assumed that application 
+    // names/loaders are unique within each active server instance
+    private static Map<Object, HelperContext> helperContexts = new WeakHashMap<Object, HelperContext>();
+    
     public SDOHelperContext() {
         this(Thread.currentThread().getContextClassLoader());
     }
@@ -58,7 +66,7 @@ public class SDOHelperContext implements HelperContext {
     public SDOHelperContext(ClassLoader aClassLoader) {
         super();
         copyHelper = new SDOCopyHelper(this);
-        dataFactory = new SDODataFactory(this);
+        dataFactory = new SDODataFactoryDelegate(this);
         dataHelper = new SDODataHelper(this);
         equalityHelper = new SDOEqualityHelper(this);
         xmlHelper = new SDOXMLHelperDelegate(this, aClassLoader);
@@ -106,5 +114,23 @@ public class SDOHelperContext implements HelperContext {
 
     public ExternalizableDelegator.Resolvable createResolvable(Object target) {
         return new SDOResolvable(target, this);
+    }
+    
+    /**
+     * INTERNAL: 
+     * Return the helper context for a given key.  The key will either
+     * be a ClassLoader or a String (representing an application name).
+     * A new context will be created and put in the map if none exists 
+     * for the given key.
+     * 
+     * @param key Either a class loader or string (application name)
+     */
+    public static HelperContext getHelperContext(Object key) {
+        HelperContext hCtx = helperContexts.get(key);
+        if (hCtx == null) {
+            hCtx = new SDOHelperContext();
+            helperContexts.put(key, hCtx);
+        }
+        return hCtx;
     }
 }
