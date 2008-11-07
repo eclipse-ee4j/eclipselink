@@ -9,7 +9,8 @@
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- *     Markus KARG - Added methods allowing to support stored procedure creation on SQLAnywherePlatform. 
+ *     Markus KARG - Added methods allowing to support stored procedure creation on SQLAnywherePlatform.
+ *     tware - added implementation of updateMaxRowsForQuery 
  ******************************************************************************/  
 package org.eclipse.persistence.internal.databaseaccess;
 
@@ -66,6 +67,7 @@ import org.eclipse.persistence.platform.database.OraclePlatform;
 import org.eclipse.persistence.platform.database.SybasePlatform;
 import org.eclipse.persistence.platform.database.converters.StructConverter;
 import org.eclipse.persistence.queries.Call;
+import org.eclipse.persistence.queries.ReadQuery;
 import org.eclipse.persistence.queries.SQLCall;
 import org.eclipse.persistence.queries.StoredProcedureCall;
 import org.eclipse.persistence.queries.ValueReadQuery;
@@ -1868,6 +1870,27 @@ public class DatabasePlatform extends DatasourcePlatform {
         }
     }
 
+    /**
+     * INTERNAL:
+     * Set the max rows on the query.
+     * DatabasePlatform subclasses implement max rows in several ways.
+     * 1. MaxRows is the index of the last row to be returned
+     * 2. MaxRows is the number of rows to be returned
+     * 
+     * Based on the way the underlying API works, for Platforms in case 1, we take into account the
+     * index of the first result when setting MaxRows on the actual query.  This is the default setting 
+     * since, at the time of writing this feature that is how it must be done when using JDBC API (rather than 
+     * Platform-specific SQL) and Platform-specific SQL is only implemented for a few Platforms.
+     * 
+     * @param readQuery
+     * @param firstResultIndex
+     * @param maxResults
+     */
+    public void updateMaxRowsForQuery(ReadQuery readQuery, int firstResultIndex, int maxResults){
+        int maxRows = maxResults + ((firstResultIndex >= 0) ? firstResultIndex : 0);
+        readQuery.setMaxRows(maxRows);
+    }
+    
     public boolean usesBatchWriting() {
         return usesBatchWriting;
     }

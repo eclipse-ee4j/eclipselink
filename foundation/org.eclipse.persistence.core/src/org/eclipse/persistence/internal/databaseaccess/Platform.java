@@ -9,6 +9,7 @@
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
+ *     tware - added of updateMaxRowsForQuery 
  ******************************************************************************/  
 package org.eclipse.persistence.internal.databaseaccess;
 
@@ -210,6 +211,15 @@ public interface Platform extends Serializable, Cloneable {
      */
     public void setSequences(Map sequences);
 
+    /**
+     * INTERNAL:
+     * Set the max rows on the query. 
+     * @param readQuery
+     * @param firstResultIndex
+     * @param maxResults
+     */
+    public void updateMaxRowsForQuery(ReadQuery readQuery, int firstResultIndex, int maxResults);
+    
     /**
      * INTERNAL:
      * Indicates whether defaultSequence is the same as platform default sequence.

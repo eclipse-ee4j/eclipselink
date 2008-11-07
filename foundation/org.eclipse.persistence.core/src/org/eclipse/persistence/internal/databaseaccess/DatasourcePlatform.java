@@ -9,6 +9,7 @@
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
+ *     tware - added implementation of updateMaxRowsForQuery 
  ******************************************************************************/  
 package org.eclipse.persistence.internal.databaseaccess;
 
@@ -651,6 +652,19 @@ public class DatasourcePlatform implements Platform {
         this.sequences = sequences;
     }
 
+    /**
+     * INTERNAL:
+     * Set the max rows on the query.  This method is be overridden by subclasses to provide platform specific behavior
+     * @param readQuery
+     * @param firstResultIndex
+     * @param maxResults
+     * @see org.eclipse.persistence.internal.databaseaccess.DatabasePlatform
+     * @see org.eclipse.persistence.platform.database.MySQLPlatform
+     */
+    public void updateMaxRowsForQuery(ReadQuery readQuery, int firstResultIndex, int maxResults){
+        readQuery.setMaxRows(maxResults);
+    }
+    
     /**
      * INTERNAL:
      * Indicates whether defaultSequence is the same as platform default sequence.

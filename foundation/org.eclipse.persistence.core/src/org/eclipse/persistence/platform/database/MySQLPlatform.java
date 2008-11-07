@@ -9,6 +9,7 @@
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
+ *     Zoltan NAGY & tware - added implementation of updateMaxRowsForQuery 
  ******************************************************************************/  
 package org.eclipse.persistence.platform.database;
 
@@ -16,10 +17,14 @@ import java.io.*;
 import java.util.*;
 import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.expressions.ExpressionOperator;
+import org.eclipse.persistence.internal.databaseaccess.DatabaseCall;
 import org.eclipse.persistence.internal.databaseaccess.FieldTypeDefinition;
 import org.eclipse.persistence.internal.expressions.FunctionExpression;
+import org.eclipse.persistence.internal.expressions.ExpressionSQLPrinter;
+import org.eclipse.persistence.internal.expressions.SQLSelectStatement;
 import org.eclipse.persistence.internal.helper.*;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
+import org.eclipse.persistence.queries.ReadQuery;
 import org.eclipse.persistence.queries.StoredProcedureCall;
 import org.eclipse.persistence.queries.ValueReadQuery;
 
@@ -37,6 +42,9 @@ import org.eclipse.persistence.queries.ValueReadQuery;
  */
 public class MySQLPlatform extends DatabasePlatform {
 
+    
+    private static final String LIMIT = " LIMIT ";
+    
     public MySQLPlatform(){
         super();
         this.pingSQL = "SELECT 1";
@@ -492,6 +500,19 @@ public class MySQLPlatform extends DatabasePlatform {
     
     /**
      * INTERNAL:
+     * Set the max rows on the query.  Overrides the default behavior in DatabasePlatform.
+     * 
+     * @param readQuery
+     * @param firstResultIndex
+     * @param maxResults
+     * @see org.eclipse.persistence.internal.databaseaccess.DatabasePlatform
+     */
+    public void updateMaxRowsForQuery(ReadQuery readQuery, int firstResultIndex, int maxResults){
+        readQuery.setMaxRows(maxResults);
+    }
+    
+    /**
+     * INTERNAL:
      * Writes MySQL specific SQL for accessing temp tables for update-all queries.
      */
     public void writeUpdateOriginalFromTempTableSql(Writer writer, DatabaseTable table,
@@ -526,4 +547,28 @@ public class MySQLPlatform extends DatabasePlatform {
         writer.write(tempTableName);
         writeJoinWhereClause(writer, targetTableName, tempTableName, targetPkFields, pkFields);
     }
+
+    @Override
+    public void printSQLSelectStatement(DatabaseCall call, ExpressionSQLPrinter printer, SQLSelectStatement statement) {
+        int max = 0;
+        int firstRow = 0;
+        if (statement.getQuery() != null) {
+            max = statement.getQuery().getMaxRows();
+            firstRow = statement.getQuery().getFirstResult();
+        }
+        if (max <= 0) {
+            super.printSQLSelectStatement(call, printer, statement);
+            return;
+        }
+        statement.setUseUniqueFieldAliases(true);
+        call.setFields(statement.printSQL(printer));
+        printer.printString(LIMIT);
+        if (firstRow > 0) {
+           printer.printParameter(DatabaseCall.FIRSTRESULT_FIELD);
+           printer.printString(", ");
+        }
+        printer.printParameter(DatabaseCall.MAXROW_FIELD);
+        call.setIgnoreFirstRowMaxResultsSettings(true);
+    }
+    
 }

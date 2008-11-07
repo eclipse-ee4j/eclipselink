@@ -9,6 +9,7 @@
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
+ *     Zoltan NAGY & tware - updated support for MaxRows
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa;
 
@@ -908,8 +909,7 @@ public class EJBQueryImpl implements org.eclipse.persistence.jpa.JpaQuery {
             if (maxResults >= 0) {
                 cloneSharedQuery();
                 readQuery = (ReadQuery)getDatabaseQuery();
-                maxRows = maxResults + ((firstResultIndex >= 0) ? firstResultIndex : 0);
-                readQuery.setMaxRows(maxRows);
+                ((org.eclipse.persistence.internal.sessions.AbstractSession)getEntityManager().getActiveSession()).getDatasourcePlatform().updateMaxRowsForQuery(readQuery, firstResultIndex, maxResults);
                 maxResults = -1;
             }
             
