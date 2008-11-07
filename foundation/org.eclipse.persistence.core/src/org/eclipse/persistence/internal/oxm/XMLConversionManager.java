@@ -275,6 +275,19 @@ public class XMLConversionManager extends ConversionManager implements TimeZoneH
     }
 
     /**
+     * Build a valid instance of Character from the provided sourceObject.
+     * 
+     * @param sourceObject
+     */
+    protected Character convertObjectToChar(Object sourceObject) throws ConversionException {
+        if (sourceObject == null || sourceObject.equals("")) {
+            return (char) 0;
+        }
+
+        return super.convertObjectToChar(sourceObject);
+    }    
+    
+    /**
      * Convert a String to a URI.
      *
      * @param sourceObject
@@ -336,7 +349,9 @@ public class XMLConversionManager extends ConversionManager implements TimeZoneH
         if (sourceObject instanceof Calendar) {
             return stringFromCalendar((Calendar) sourceObject);
         }
-
+        if (sourceObject instanceof Character && sourceObject.equals((char) 0)) {
+            return "";
+        }
         if (sourceObject instanceof QName) {
             return stringFromQName((QName) sourceObject);
         }
@@ -1279,4 +1294,5 @@ public class XMLConversionManager extends ConversionManager implements TimeZoneH
         cal.set(Calendar.ERA, GregorianCalendar.AD); // set the ERA to AD
         return cal.getTime();                        // return adjusted value
     }
+    
 }
