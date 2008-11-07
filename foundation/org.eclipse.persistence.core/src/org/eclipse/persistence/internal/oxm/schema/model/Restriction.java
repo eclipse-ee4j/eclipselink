@@ -23,12 +23,48 @@ public class Restriction implements SimpleDerivation {
     private SimpleType simpleType;
     private java.util.ArrayList enumerationFacets;
     private AnyAttribute anyAttribute;
+    private String minInclusive;
+    private String maxInclusive;
+    private String minExclusive;
+    private String maxExclusive;
 
     //private List facets
     private java.util.List attributes;
     private Restrictable owner;
 
     public Restriction() {
+    }
+
+    public void setMinInclusive(String minInclusive) {
+        this.minInclusive = minInclusive;
+    }
+
+    public String getMinInclusive() {
+        return minInclusive;
+    }
+
+    public void setMaxInclusive(String maxInclusive) {
+        this.maxInclusive = maxInclusive;
+    }
+
+    public String getMaxInclusive() {
+        return maxInclusive;
+    }
+
+    public void setMinExclusive(String minExclusive) {
+        this.minExclusive = minExclusive;
+    }
+
+    public String getMinExclusive() {
+        return minExclusive;
+    }
+    
+    public void setMaxExclusive(String maxExclusive) {
+        this.maxExclusive = maxExclusive;
+    }
+
+    public String getMaxExclusive() {
+        return maxExclusive;
     }
 
     public void setBaseType(String baseType) {

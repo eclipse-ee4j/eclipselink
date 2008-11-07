@@ -826,8 +826,10 @@ public class SDOTypesGenerator {
     private void processExtension(String targetNamespace, String defaultNamespace, SDOType owningType, Extension extension, boolean simpleContent) {
         if (extension != null) {
             String qualifiedType = extension.getBaseType();
-            processBaseType(targetNamespace, defaultNamespace, owningType, qualifiedType, simpleContent);
-
+            if (qualifiedType != null) {
+                SDOType baseType = getSDOTypeForName(targetNamespace, defaultNamespace, qualifiedType);
+                processBaseType(baseType, targetNamespace, defaultNamespace, owningType, qualifiedType, simpleContent);
+            }
             //TODO: typedefparticle all seq choice
             //TODO: attrDecls
             if (extension.getChoice() != null) {
@@ -844,7 +846,7 @@ public class SDOTypesGenerator {
     private void processRestriction(String targetNamespace, String defaultNamespace, SDOType owningType, Restriction restriction) {
         if (restriction != null) {
             String qualifiedType = restriction.getBaseType();
-            processBaseType(targetNamespace, defaultNamespace, owningType, qualifiedType, false);
+            processBaseType(targetNamespace, defaultNamespace, owningType, qualifiedType, false, restriction);
             boolean alreadyIn = inRestriction;
             if (!alreadyIn) {
                 inRestriction = true;
@@ -930,12 +932,48 @@ public class SDOTypesGenerator {
         }
     }
 
-    private void processBaseType(String targetNamespace, String defaultNamespace, SDOType owningType, String qualifiedName, boolean simpleContentExtension) {
+    private void processBaseType(String targetNamespace, String defaultNamespace, SDOType owningType, String qualifiedName, boolean simpleContentExtension, Restriction restriction) {
         if (qualifiedName == null) {
             return;
         }
-        SDOType baseType = getSDOTypeForName(targetNamespace, defaultNamespace, qualifiedName);
 
+        SDOType baseType = getSDOTypeForName(targetNamespace, defaultNamespace, qualifiedName);
+        QName baseQName = getQNameForString(defaultNamespace, qualifiedName);
+
+        // When the XSD type is one of the following, and there are facets (maxInclusive, 
+        // maxExclusive) constraining the range to be within the range of int then the 
+        // Java instance class is int
+        if (baseQName.equals(XMLConstants.INTEGER_QNAME) ||
+                baseQName.equals(SDOConstants.POSITIVEINTEGER_QNAME) ||
+                baseQName.equals(SDOConstants.NEGATIVEINTEGER_QNAME) ||
+                baseQName.equals(SDOConstants.NONPOSITIVEINTEGER_QNAME) ||
+                baseQName.equals(SDOConstants.NONNEGATIVEINTEGER_QNAME) ||
+                baseQName.equals(XMLConstants.LONG_QNAME) ||
+                baseQName.equals(SDOConstants.UNSIGNEDLONG_QNAME)) {
+
+            boolean alreadySet = false;
+            String value = restriction.getMaxInclusive();
+            if (value != null) {
+                if (Integer.parseInt(value) <= Integer.MAX_VALUE) {
+                    baseType = getTypeForXSDQName(XMLConstants.INT_QNAME);
+                    alreadySet = true;
+                }
+            }
+            // if maxInclusive was processed, no need to handle maxExclusive 
+            if (!alreadySet) {
+                value = restriction.getMaxExclusive();
+                if (value != null) {
+                    if (Integer.parseInt(value) < Integer.MAX_VALUE) {
+                        baseType = getTypeForXSDQName(XMLConstants.INT_QNAME);
+                    }
+                }
+            }
+        }
+
+        processBaseType(baseType, targetNamespace, defaultNamespace, owningType, qualifiedName, simpleContentExtension);
+    }
+
+    private void processBaseType(SDOType baseType, String targetNamespace, String defaultNamespace, SDOType owningType, String qualifiedName, boolean simpleContentExtension) {
         if (simpleContentExtension && baseType.isDataType()) {
             if (owningType != null) {
                 SDOProperty prop = new SDOProperty(aHelperContext);

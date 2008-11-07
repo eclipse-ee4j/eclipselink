@@ -443,6 +443,34 @@ public class SchemaModelProject extends Project {
         anyAttributeMapping.setXPath(XMLConstants.SCHEMA_PREFIX + ":" + "anyAttribute");
         descriptor.addMapping(anyAttributeMapping);
 
+        XMLDirectMapping minInclusiveMapping = new XMLDirectMapping();
+        minInclusiveMapping.setAttributeName("minInclusive");
+        minInclusiveMapping.setSetMethodName("setMinInclusive");
+        minInclusiveMapping.setGetMethodName("getMinInclusive");
+        minInclusiveMapping.setXPath(XMLConstants.SCHEMA_PREFIX + ":minInclusive/@value");
+        descriptor.addMapping(minInclusiveMapping);
+
+        XMLDirectMapping maxInclusiveMapping = new XMLDirectMapping();
+        maxInclusiveMapping.setAttributeName("maxInclusive");
+        maxInclusiveMapping.setSetMethodName("setMaxInclusive");
+        maxInclusiveMapping.setGetMethodName("getMaxInclusive");
+        maxInclusiveMapping.setXPath(XMLConstants.SCHEMA_PREFIX + ":maxInclusive/@value");
+        descriptor.addMapping(maxInclusiveMapping);
+
+        XMLDirectMapping minExclusiveMapping = new XMLDirectMapping();
+        minExclusiveMapping.setAttributeName("minExclusive");
+        minExclusiveMapping.setSetMethodName("setMinExclusive");
+        minExclusiveMapping.setGetMethodName("getMinExclusive");
+        minExclusiveMapping.setXPath(XMLConstants.SCHEMA_PREFIX + ":minExclusive/@value");
+        descriptor.addMapping(minExclusiveMapping);
+        
+        XMLDirectMapping maxExclusiveMapping = new XMLDirectMapping();
+        maxExclusiveMapping.setAttributeName("maxExclusive");
+        maxExclusiveMapping.setSetMethodName("setMaxExclusive");
+        maxExclusiveMapping.setGetMethodName("getMaxExclusive");
+        maxExclusiveMapping.setXPath(XMLConstants.SCHEMA_PREFIX + ":maxExclusive/@value");
+        descriptor.addMapping(maxExclusiveMapping);
+
         XMLCompositeDirectCollectionMapping enumerationFacetsMapping = new XMLCompositeDirectCollectionMapping();
         enumerationFacetsMapping.setAttributeName("enumerationFacets");
         enumerationFacetsMapping.useCollectionClass(java.util.ArrayList.class);
