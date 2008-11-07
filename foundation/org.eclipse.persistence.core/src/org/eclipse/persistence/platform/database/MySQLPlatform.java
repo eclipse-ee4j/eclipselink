@@ -507,9 +507,9 @@ public class MySQLPlatform extends DatabasePlatform {
      * @param maxResults
      * @see org.eclipse.persistence.internal.databaseaccess.DatabasePlatform
      */
-    public void updateMaxRowsForQuery(ReadQuery readQuery, int firstResultIndex, int maxResults){
+   /* public void updateMaxRowsForQuery(ReadQuery readQuery, int firstResultIndex, int maxResults){
         readQuery.setMaxRows(maxResults);
-    }
+    }*/
     
     /**
      * INTERNAL:
@@ -548,7 +548,7 @@ public class MySQLPlatform extends DatabasePlatform {
         writeJoinWhereClause(writer, targetTableName, tempTableName, targetPkFields, pkFields);
     }
 
-    @Override
+  /*  @Override
     public void printSQLSelectStatement(DatabaseCall call, ExpressionSQLPrinter printer, SQLSelectStatement statement) {
         int max = 0;
         int firstRow = 0;
@@ -556,7 +556,8 @@ public class MySQLPlatform extends DatabasePlatform {
             max = statement.getQuery().getMaxRows();
             firstRow = statement.getQuery().getFirstResult();
         }
-        if (max <= 0) {
+
+        if (max <= 0 || !(this.shouldUseRownumFiltering())) {
             super.printSQLSelectStatement(call, printer, statement);
             return;
         }
@@ -569,6 +570,6 @@ public class MySQLPlatform extends DatabasePlatform {
         }
         printer.printParameter(DatabaseCall.MAXROW_FIELD);
         call.setIgnoreFirstRowMaxResultsSettings(true);
-    }
+    }*/
     
 }
