@@ -579,7 +579,7 @@ public class SDOProperty implements Property, Serializable {
     /**
       * INTERNAL:
       */
-    private void addMappingToOwner(boolean sdoMethodAttributeAccessor, int indexToAdd) {
+    public void addMappingToOwner(boolean sdoMethodAttributeAccessor, int indexToAdd) {
         if (xmlMapping != null) {
             if (sdoMethodAttributeAccessor) {
                 SDOMethodAttributeAccessor accessor = null;

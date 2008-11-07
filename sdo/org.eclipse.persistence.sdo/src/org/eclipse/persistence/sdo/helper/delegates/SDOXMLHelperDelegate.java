@@ -38,6 +38,8 @@ import org.eclipse.persistence.sdo.helper.SDOMarshalListener;
 import org.eclipse.persistence.sdo.helper.SDOTypeHelper;
 import org.eclipse.persistence.sdo.helper.SDOUnmarshalListener;
 import org.eclipse.persistence.sdo.helper.SDOXMLHelper;
+import org.eclipse.persistence.sdo.types.SDOPropertyType;
+import org.eclipse.persistence.sdo.types.SDOTypeType;
 import org.eclipse.persistence.exceptions.SDOException;
 import org.eclipse.persistence.exceptions.XMLMarshalException;
 import org.eclipse.persistence.internal.oxm.XMLConversionManager;
@@ -523,6 +525,17 @@ public class SDOXMLHelperDelegate implements SDOXMLHelper {
             topLinkProject.addDescriptor(changeSummaryType.getXmlDescriptor());
             SDOType openSequencedType = (SDOType) aHelperContext.getTypeHelper().getType(SDOConstants.ORACLE_SDO_URL, "OpenSequencedType");
             topLinkProject.addDescriptor(openSequencedType.getXmlDescriptor());
+            SDOTypeType typeType = (SDOTypeType)aHelperContext.getTypeHelper().getType(SDOConstants.SDO_URL, SDOConstants.TYPE);
+            if(!typeType.isInitialized()) {
+                typeType.initializeMappings();
+            }
+            topLinkProject.addDescriptor(typeType.getXmlDescriptor());
+            SDOPropertyType propertyType = (SDOPropertyType)aHelperContext.getTypeHelper().getType(SDOConstants.SDO_URL, SDOConstants.PROPERTY);
+            if(!propertyType.isInitialized()) {
+                propertyType.initializeMappings();
+            }
+            topLinkProject.addDescriptor(propertyType.getXmlDescriptor());
+            
             ((SDOTypeHelper)aHelperContext.getTypeHelper()).addWrappersToProject(topLinkProject);
         }
         return topLinkProject;

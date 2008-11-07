@@ -581,6 +581,18 @@ public class SDOTypeHelperDelegate implements SDOTypeHelper {
                 return value;
             }
         }
+        
+        //Check in the commonjHashMap as well.
+        iter = this.commonjHashMap.keySet().iterator();
+        while (iter.hasNext()) {
+            Object key = iter.next();
+            SDOType value = (SDOType) commonjHashMap.get(key);
+
+            if (value.getInstanceClass() == interfaceClass) {
+                return value;
+            }
+        }
+       
 
         return null; 
     }

@@ -680,12 +680,12 @@ public class SDODataHelper implements DataHelper {
      * @see #convert(Property, Object)
      */
     public Object convert(Type type, Object value) {
-        Class convertClass;
+        Class convertClass = null;
         if (type.isDataType()) {
             convertClass = type.getInstanceClass();
-        } else {
+        } /*else {
             convertClass = ((org.eclipse.persistence.sdo.SDOType) type).getImplClass();
-        }
+        }*/
 
         if (value.getClass() == ClassConstants.STRING) {
             return convertFromStringValue((String) value, type);

@@ -13,8 +13,12 @@
 package org.eclipse.persistence.sdo.types;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import commonj.sdo.Type;
+import org.eclipse.persistence.oxm.NamespaceResolver;
+import org.eclipse.persistence.oxm.schema.XMLSchemaClassPathReference;
+import org.eclipse.persistence.oxm.schema.XMLSchemaReference;
 import org.eclipse.persistence.sdo.SDOConstants;
 import org.eclipse.persistence.sdo.SDOProperty;
 import org.eclipse.persistence.sdo.SDOType;
@@ -23,10 +27,22 @@ import org.eclipse.persistence.sdo.helper.SDOTypeHelper;
 public class SDOTypeType extends SDOType implements Type {
 
     private static final List EMPTY_LIST = new ArrayList(0);
+    private boolean initialized = false;
     
     public SDOTypeType(SDOTypeHelper sdoTypeHelper) {
         super(SDOConstants.SDO_URL, SDOConstants.TYPE, sdoTypeHelper);
 
+        setInstanceClassName(SDOConstants.ORACLE_SDO_URL + ".TypeClass");
+        getInstanceClass();
+        Class implClass = getImplClass();
+
+        xmlDescriptor.setJavaClass(implClass);
+        xmlDescriptor.setDefaultRootElement("sdo:type");
+        XMLSchemaReference schemaReference = new XMLSchemaClassPathReference();
+        schemaReference.setSchemaContext("/sdo:Type");
+        xmlDescriptor.setSchemaReference(schemaReference);
+        NamespaceResolver namespaceResolver = new NamespaceResolver();
+        namespaceResolver.put(SDOConstants.SDO_PREFIX, SDOConstants.SDO_URL);
         SDOType propertyType = new SDOPropertyType(sdoTypeHelper, this);
         sdoTypeHelper.addType(propertyType);
         
@@ -36,6 +52,7 @@ public class SDOTypeType extends SDOType implements Type {
         baseTypeProperty.setName("baseType");
         baseTypeProperty.setMany(true);
         baseTypeProperty.setType(this);
+        baseTypeProperty.setContainment(true);
         addDeclaredProperty(baseTypeProperty);
 
         SDOProperty propertiesProperty = new SDOProperty(aHelperContext);
@@ -83,6 +100,7 @@ public class SDOTypeType extends SDOType implements Type {
         
         // set the XMLAnyCollectionMapping on the descriptor on SDO_TYPE
         setOpen(true);        
+        setFinalized(true);
     }
     
     public List getAliasNames() {
@@ -119,6 +137,19 @@ public class SDOTypeType extends SDOType implements Type {
     
     public boolean isTypeType() {
         return true;
+    }
+    
+    public void initializeMappings() {
+        Iterator propIterator = this.getDeclaredProperties().iterator();
+        while(propIterator.hasNext()) {
+            SDOProperty nextProp = (SDOProperty)propIterator.next();
+            nextProp.buildMapping(SDOConstants.SDO_URL);
+        }
+        initialized = true;
+    }
+    
+    public boolean isInitialized() {
+        return this.initialized;
     }
 
 }
