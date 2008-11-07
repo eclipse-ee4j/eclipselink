@@ -26,6 +26,8 @@
 *     egwin  - rework to follow ant conventions.
 *     dtwelves - Add SDO, MOXy SRG targets
 *     egwin  - rework to incorporate new versioning standards and revision info.
+*     egwin  - add jpa 2.0 jar creation, and JPA 1.1/2.0 concurrent development
+               strategy. Also includes fixes to eclipselink.jar creation.
 #******************************************************************************/-->
 <!-- =============================================================================
 *  General Comments
@@ -113,6 +115,7 @@
 
     <!-- Cleans all build generated files. -->
     <target name="clean" description="Clean the build">
+        <ant antfile="build.xml" dir="${jpa.prototype}"          target="clean"/>
         <ant antfile="${eclipselink.core}/build.xml"             target="clean"/>
         <ant antfile="${eclipselink.extension.oracle}/build.xml" target="clean"/>
         <ant antfile="${eclipselink.dbws}/build.xml"             target="clean"/>
@@ -158,6 +161,7 @@
 
     <!-- Compiles all components (excluding Tests, Oracle extensions). -->
     <target name="build-core">
+        <ant antfile="build.xml" dir="${jpa.prototype}"     target="build"/>
         <ant antfile="${eclipselink.core}/build.xml" target="all"/>
         <ant antfile="${eclipselink.jpa}/build.xml"  target="all"/>
         <ant antfile="${eclipselink.moxy}/build.xml" target="all"/>
@@ -204,16 +208,17 @@
 
     <!-- Packages the eclipselink.jar. -->
     <target name="package-eclipselink-jar" depends="create-build-dir" description="build EclipseLink jar">
+        <echo message="Implementation-Version: ${version.string}"/>
         <jar jarfile="${eclipselink.jar.name}">
              <manifest>
-                <attribute name="Specification-Title" value="${specification.title}"/>
-                <attribute name="Specification-Vendor" value="${specification.vendor}"/>
-                <attribute name="Specification-Version" value="${release.version}"/>
-                <attribute name="Implementation-Title" value="${implementation.title}"/>
-                <attribute name="Implementation-Vendor" value="${implementation.vendor}"/>
-                <attribute name="Implementation-Version" value="${release.version}.${build_number_string}"/>
-                <attribute name="Release-Designation" value="${release.designation}"/>
-                <attribute name="Premain-Class" value="${premain.class}"/>
+                <attribute name="Specification-Title"    value="${eclipselink.specification.title}"/>
+                <attribute name="Specification-Vendor"   value="${specification.vendor}"/>
+                <attribute name="Specification-Version"  value="${release.version}"/>
+                <attribute name="Implementation-Title"   value="${eclipselink.implementation.title}"/>
+                <attribute name="Implementation-Vendor"  value="${implementation.vendor}"/>
+                <attribute name="Implementation-Version" value="${version.string}"/>
+                <attribute name="Release-Designation"    value="${release.designation}"/>
+                <attribute name="Premain-Class"          value="${eclipselink.premain.class}"/>
             </manifest>
             <fileset dir="${eclipselink.core}/${classes.dir}">
                 <include name="org/eclipse/persistence/**/*.class"/>
@@ -245,6 +250,18 @@
                 <include name="org/eclipse/persistence/jpa/*.xsd"/>
                 <include name="META-INF/services/javax.persistence.spi.PersistenceProvider"/>
             </fileset>
+            <!-- JPA 1.1/2.0 concurrent dev solution: New classes from javax.persistence 2.0 -->
+            <fileset
+                dir="${eclipselink.jpa.plugins}/javax.persistence/${classes.dir}"
+                includes="
+                    javax/persistence/Access.class,
+                    javax/persistence/AccessType.class,
+                    javax/persistence/Cache.class,
+                    javax/persistence/LockModeType.class,
+                    javax/persistence/LockTimeoutException.class,
+                    javax/persistence/PessimisticLockException.class
+            "/>
+
             <fileset dir="${eclipselink.moxy}/${classes.dir}">
                 <include name="org/eclipse/persistence/**/*.class"/>
             </fileset>
@@ -278,6 +295,17 @@
                 <include name="org/eclipse/persistence/jpa/*.xsd"/>
                 <include name="META-INF/services/javax.persistence.spi.PersistenceProvider"/>
             </fileset>
+            <!-- JPA 1.1/2.0 concurrent dev solution: New classes from javax.persistence 2.0 -->
+            <fileset
+                dir="${eclipselink.jpa.plugins}/javax.persistence/${classes.dir}"
+                includes="
+                    javax/persistence/Access.class,
+                    javax/persistence/AccessType.class,
+                    javax/persistence/Cache.class,
+                    javax/persistence/LockModeType.class,
+                    javax/persistence/LockTimeoutException.class,
+                    javax/persistence/PessimisticLockException.class
+            "/>
         </jar>
         <jar jarfile="${eclipselink.moxy.base}/${plugins.dir}/${eclipselink.moxy.bndl.prefix}_${version.string}.jar" manifest="${eclipselink.moxy}/META-INF/MANIFEST.MF">
             <fileset dir="${eclipselink.moxy}/${classes.dir}">
@@ -378,7 +406,7 @@
             <zipfileset dir="${eclipselink.sdo.base}/${plugins.dir}" prefix="plugins">
                 <include name="**.jar"/>
             </zipfileset>
-            <zipfileset dir="${eclipselink.jpa.base}/${plugins.dir}" prefix="plugins">
+            <zipfileset dir="${eclipselink.jpa.plugins}" prefix="plugins">
                 <include name="**.jar"/>
             </zipfileset>
             <zipfileset dir="${eclipselink.plugins}/readme.for.distribution">
@@ -560,6 +588,8 @@
             </zipfileset>
             <!-- jpa persistence jar -->
             <zipfileset dir="${eclipselink.plugins}/" includes="${persistence.jar}" prefix="eclipselink/jlib/jpa"/>
+            <!-- jpa persistence 2.0 prototype jar -->
+            <zipfileset dir="${eclipselink.jpa.plugins}/" includes="${jpa.prototype.jar}" prefix="eclipselink/jlib/jpa"/>
             <!-- moxy jar's and zips -->
             <zipfileset dir="${eclipselink.plugins}/" prefix="eclipselink/jlib/moxy">
                 <include name="${activation.jar}"/>

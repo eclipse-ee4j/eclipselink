@@ -24,38 +24,43 @@
 *     egwin - initial API and implementation
 #******************************************************************************/-->
 
-<project name="javax.persistence" default="all" basedir=".">
+<project name="javax.persistence" default="build" basedir=".">
+    <available file="../${ant.project.name}" type="dir" property="jpaproto.is.local"/>
+    <!-- Test to make sure that the calling script doesn't inherit the variable -->
+    <!-- (should be set locally, and be destroyed upon return) -->
+    <fail message="Not running from '${ant.project.name}' directory" unless="jpaproto.is.local"/>
 
-    <target name="all" depends="init, clean, compile, package"/>
+    <dirname  property="jpaproto.build.location" file="${ant.file.org.eclipse.persistence.core}"/>
+    <echo message="jpaproto.build.location = '${jpaproto.build.location}'"/>
 
-    <target name="init" description="initialize local variables">
-        <available file="../${ant.project.name}" type="dir" property="is.local"/>
-        <!-- Test to make sure that the calling script doesn't inherit the variable -->
-        <!-- (should be set locally, and be destroyed upon return) -->
-        <fail message="Not running from '${ant.project.name}' directory" unless="is.local"/>
+    <condition property="jpaproto.2.common.plugins.dir" value="../../../plugins" else="../plugins">
+        <contains string="${jpaproto.build.location}" substring="jpa"/>
+    </condition>
 
-        <property name="project.version" value="1.99.0"/>
-        <property name="project.jar"     value="${ant.project.name}_${project.version}.jar"/>
-        <property name="src.dir"      value="src"/>
-        <property name="resource.dir" value="META-INF"/>
-        <property name="package.dir"  value=".."/>
-        <property name="classes.dir"  value="classes"/>
+    <property name="jpaproto.version" value="1.99.0"/>
+    <property name="jpaproto.jar"     value="${ant.project.name}_${jpaproto.version}.jar"/>
+    <property name="jpaproto.src.jar" value="${ant.project.name}.source_${jpaproto.version}.jar"/>
+    <property name="src.dir"          value="src"/>
+    <property name="package.dir"      value=".."/>
+    <property name="classes.dir"      value="classes"/>
+    <property name="jpaproto.resource.dir"     value="META-INF"/>
 
-        <property name="javac.debug"  value="true"/>
-        <property name="javac.optimize"  value="off"/>
-        <property name="javac.deprecation"  value="off"/>
-        <property name="javac.version"  value="1.5"/>
+    <property name="javac.debug"       value="true"/>
+    <property name="javac.optimize"    value="off"/>
+    <property name="javac.deprecation" value="off"/>
+    <property name="javac.version"     value="1.5"/>
 
-        <path id="compile.path">
-            <pathelement path="../../../plugins/osgi.core.zip"/>
-            <pathelement path="../../../plugins/osgi.cmpn_4.1.0.jar"/>
-        </path>
+    <path id="jpaproto.compile.path">
+        <pathelement path="${jpaproto.2.common.plugins.dir}/osgi.core.zip"/>
+        <pathelement path="${jpaproto.2.common.plugins.dir}/osgi.cmpn_4.1.0.jar"/>
+    </path>
 
-    </target>
+    <!-- all -->
+    <target name="build" depends="clean, compile, package" description="build JAXB 2.0 Prototype component"/>
 
     <target name="clean" description="Clean the build">
         <delete dir="${classes.dir}"  includeEmptyDirs="true" quiet="true"/>
-        <delete file="${package.dir}/${project.jar}" quiet="true"/>
+        <delete file="${package.dir}/${jpaproto.jar}" quiet="true"/>
     </target>
 
     <!-- compile -->
@@ -69,22 +74,36 @@
                source="${javac.version}"
                target="${javac.version}"
                deprecation="${javac.deprecation}"
-               failonerror="true">
+               failonerror="true"
+               memoryMaximumSize="512m"
+               fork="true">
             <classpath>
-                <path refid="compile.path"/>
+                <path refid="jpaproto.compile.path"/>
             </classpath>
         </javac>
     </target>
 
+    <!-- package -->
     <target name="package" description="package ${ant.project.name}">
-        <delete file="${package.dir}/${project.jar}" quiet="true"/>
-        <jar jarfile="${package.dir}/${project.jar}" manifest="${resource.dir}/MANIFEST.MF">
+        <jar jarfile="${package.dir}/${jpaproto.jar}" manifest="${jpaproto.resource.dir}/MANIFEST.MF">
             <fileset dir="${classes.dir}"
                 includes="**"
             />
-            <fileset dir="${resource.dir}"
+            <fileset dir="${jpaproto.resource.dir}"
                 includes="**"
                 excludes="MANIFEST.MF"
+            />
+        </jar>
+        <jar jarfile="${package.dir}/${jpaproto.src.jar}">
+            <manifest>
+                <attribute name="Bundle-ManifestVersion" value="2"/>
+                <attribute name="Bundle-Name"            value="EclipseLink JAXB 2.0 Prototype Source"/>
+                <attribute name="Bundle-SymbolicName"    value="${ant.project.name}"/>
+                <attribute name="Bundle-Version"         value="${jpaproto.version}"/>
+                <attribute name="Eclipse-SourceBundle"   value="${ant.project.name};version=&quot;${jpaproto.version}&quot;"/>
+            </manifest>
+            <fileset dir="${src.dir}"
+                includes="**"
             />
         </jar>
     </target>
