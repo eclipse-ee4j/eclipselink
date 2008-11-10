@@ -8,7 +8,8 @@
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
- *     Oracle - initial API and implementation from Oracle TopLink
+ *     Oracle  - initial API and implementation from Oracle TopLink
+ *     dmccann - Nov. 7/2008 - Added delegate key logic from AbstractHelperDelegator
  ******************************************************************************/  
 
 /**
@@ -28,9 +29,18 @@
  */
 package org.eclipse.persistence.sdo.helper;
 
+import java.lang.reflect.Method;
 import java.util.Map;
 import java.util.WeakHashMap;
 
+import javax.management.MBeanServer;
+import javax.management.ObjectName;
+import javax.naming.Context;
+import javax.naming.InitialContext;
+import javax.naming.NamingException;
+
+import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
+import org.eclipse.persistence.sdo.SDOConstants;
 import org.eclipse.persistence.sdo.SDOResolvable;
 import org.eclipse.persistence.sdo.helper.delegates.SDODataFactoryDelegate;
 import org.eclipse.persistence.sdo.helper.delegates.SDOTypeHelperDelegate;
@@ -59,6 +69,21 @@ public class SDOHelperContext implements HelperContext {
     // names/loaders are unique within each active server instance
     private static Map<Object, HelperContext> helperContexts = new WeakHashMap<Object, HelperContext>();
     
+    private static String OC4J_CLASSLOADER_NAME = "oracle";
+    private static String WLS_CLASSLOADER_NAME = "weblogic";
+    
+    // For WebLogic
+    private static MBeanServer wlsMBeanServer = null;
+    private static ObjectName wlsThreadPoolRuntime = null;
+    private static final String WLS_ENV_CONTEXT_LOOKUP = "java:comp/env/jmx/runtime";
+    private static final String WLS_CONTEXT_LOOKUP = "java:comp/jmx/runtime";
+    private static final String WLS_SERVICE_KEY = "com.bea:Name=RuntimeService,Type=weblogic.management.mbeanservers.runtime.RuntimeServiceMBean";    
+    private static final String WLS_SERVER_RUNTIME = "ServerRuntime";    
+    private static final String WLS_THREADPOOL_RUNTIME = "ThreadPoolRuntime";
+    private static final String WLS_EXECUTE_THREAD_GET_METHOD_NAME = "getExecuteThread";
+    private static final String WLS_APPLICATION_NAME_GET_METHOD_NAME = "getApplicationName";
+    private static final Class[] PARAMETER_TYPES = {};
+
     public SDOHelperContext() {
         this(Thread.currentThread().getContextClassLoader());
     }
@@ -122,15 +147,111 @@ public class SDOHelperContext implements HelperContext {
      * be a ClassLoader or a String (representing an application name).
      * A new context will be created and put in the map if none exists 
      * for the given key.
-     * 
-     * @param key Either a class loader or string (application name)
      */
-    public static HelperContext getHelperContext(Object key) {
+    public static HelperContext getHelperContext() {
+        Object key = getDelegateMapKey();
         HelperContext hCtx = helperContexts.get(key);
         if (hCtx == null) {
             hCtx = new SDOHelperContext();
             helperContexts.put(key, hCtx);
         }
         return hCtx;
+    }
+    
+    /**
+     * INTERNAL:
+     * This method will return the key to be used to store/retrieve the delegates
+     * for a given application.
+     * 
+     * OC4J classLoader levels: 
+     *      0 - APP.web (servlet/jsp) or APP.wrapper (ejb)
+     *      1 - APP.root (parent for helperContext)
+     *      2 - default.root
+     *      3 - system.root
+     *      4 - oc4j.10.1.3 (remote EJB) or org.eclipse.persistence:11.1.1.0.0
+     *      5 - api:1.4.0
+     *      6 - jre.extension:0.0.0
+     *      7 - jre.bootstrap:1.5.0_07 (with various J2SE versions)
+     * 
+     * @return Application classloader for OC4J, application name for WebLogic, 
+     *         otherwise Thread.currentThread().getContextClassLoader()
+     */
+    private static Object getDelegateMapKey() {
+        ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
+        String classLoaderName = classLoader.getClass().getName();
+
+        // Default to Thread.currentThread().getContextClassLoader()
+        Object delegateKey = classLoader;
+
+        // Delegates in OC4J server will be keyed on classloader  
+        if (classLoaderName.startsWith(OC4J_CLASSLOADER_NAME)) {
+            // Check to see if we are running in a Servlet container or a local EJB container
+            if ((classLoader.getParent() != null) //
+                    && ((classLoader.toString().indexOf(SDOConstants.CLASSLOADER_WEB_FRAGMENT) != -1) //
+                    ||  (classLoader.toString().indexOf(SDOConstants.CLASSLOADER_EJB_FRAGMENT) != -1))) {
+                classLoader = classLoader.getParent();
+            }
+            delegateKey = classLoader;
+        // Delegates in WebLogic server will be keyed on application name
+        } else if (classLoaderName.contains(WLS_CLASSLOADER_NAME)) {
+            Object executeThread = getExecuteThread();
+            if (executeThread != null) {
+                try {
+                    Method getMethod = PrivilegedAccessHelper.getPublicMethod(executeThread.getClass(), WLS_APPLICATION_NAME_GET_METHOD_NAME, PARAMETER_TYPES, false);
+                    delegateKey = PrivilegedAccessHelper.invokeMethod(getMethod, executeThread);
+                } catch (Exception e) {}
+            }
+        }        
+        return delegateKey;
+    }
+
+    /**
+     * INTERNAL:
+     * This convenience method will look up a WebLogic execute thread from the runtime 
+     * MBean tree.  The execute thread contains application information.  This code 
+     * will use the name of the current thread to lookup the corresponding ExecuteThread.
+     * The ExecuteThread will allow us to obtain the application name (and version, etc).
+     * 
+     * Note that the MBeanServer and ThreadPoolRuntime instances will be cached for 
+     * performance.
+     * 
+     * @return application name or null if the name cannot be obtained
+     */
+    private static Object getExecuteThread() {
+        // Lazy load the MBeanServer instance
+        if (wlsMBeanServer == null) {
+            Context weblogicContext = null;
+            try {
+                weblogicContext = new InitialContext();
+                try {
+                    // The lookup string used depends on the context from which this class is being 
+                    // accessed, i.e. servlet, EJB, etc.
+                    // Try java:comp/env lookup
+                    wlsMBeanServer = (MBeanServer) weblogicContext.lookup(WLS_ENV_CONTEXT_LOOKUP);
+                } catch (NamingException e) {
+                    // Lookup failed - try java:comp
+                    try {
+                        wlsMBeanServer = (MBeanServer) weblogicContext.lookup(WLS_CONTEXT_LOOKUP);
+                    } catch (NamingException ne) {}
+                }
+            } catch (NamingException nex) {}
+        }
+        
+        if (wlsMBeanServer != null) {
+            // Lazy load the ThreadPoolRuntime instance
+            if (wlsThreadPoolRuntime == null) {
+                try {
+                    ObjectName service = new ObjectName(WLS_SERVICE_KEY);
+                    ObjectName serverRuntime = (ObjectName) wlsMBeanServer.getAttribute(service, WLS_SERVER_RUNTIME);
+                    wlsThreadPoolRuntime = (ObjectName) wlsMBeanServer.getAttribute(serverRuntime, WLS_THREADPOOL_RUNTIME);
+                } catch (Exception x) {}
+            }
+            if (wlsThreadPoolRuntime != null) {
+                try {
+                    return wlsMBeanServer.invoke(wlsThreadPoolRuntime, WLS_EXECUTE_THREAD_GET_METHOD_NAME, new Object[] { Thread.currentThread().getName() }, new String[] { String.class.getName() });
+                } catch (Exception e) {}
+            }
+        }
+        return null;
     }
 }

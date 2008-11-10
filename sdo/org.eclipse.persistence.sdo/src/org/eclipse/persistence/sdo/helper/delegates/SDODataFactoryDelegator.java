@@ -48,7 +48,6 @@ public class SDODataFactoryDelegator extends AbstractHelperDelegator implements 
     }
 
     private SDODataFactoryDelegate getSDODataFactoryDelegate() {
-        HelperContext hCtx = SDOHelperContext.getHelperContext(getDelegateMapKey());
-        return (SDODataFactoryDelegate) hCtx.getDataFactory();
+        return (SDODataFactoryDelegate) SDOHelperContext.getHelperContext().getDataFactory();
     }
 }

@@ -147,8 +147,7 @@ public class SDOXSDHelperDelegator extends AbstractHelperDelegator implements SD
      * INTERNAL:
      */
     private SDOXSDHelperDelegate getSDOXSDHelperDelegate() {
-        HelperContext hCtx = SDOHelperContext.getHelperContext(getDelegateMapKey());
-        return (SDOXSDHelperDelegate) hCtx.getXSDHelper();
+        return (SDOXSDHelperDelegate) SDOHelperContext.getHelperContext().getXSDHelper();
     }
     
     public void reset() {

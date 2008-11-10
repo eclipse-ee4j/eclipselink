@@ -120,8 +120,7 @@ public class SDOTypeHelperDelegator extends AbstractHelperDelegator implements S
     }
     
     private SDOTypeHelperDelegate getSDOTypeHelperDelegate() {
-        HelperContext hCtx = SDOHelperContext.getHelperContext(getDelegateMapKey());
-        return (SDOTypeHelperDelegate) hCtx.getTypeHelper();
+        return (SDOTypeHelperDelegate) SDOHelperContext.getHelperContext().getTypeHelper();
     }
 
     /**
