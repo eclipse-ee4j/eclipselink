@@ -16,6 +16,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import javax.persistence.EntityManager;
+import javax.persistence.Query;
 
 import junit.framework.*;
 import junit.extensions.TestSetup;
@@ -57,6 +58,7 @@ public class EntityMappingsInheritanceJUnitTestCase extends JUnitTestCase {
     
     public static Test suite() {
         TestSuite suite = new TestSuite("Inheritance Model");
+        suite.addTest(new EntityMappingsInheritanceJUnitTestCase("testSetup"));
         suite.addTest(new EntityMappingsInheritanceJUnitTestCase("testCreateFueledVehicle"));
         suite.addTest(new EntityMappingsInheritanceJUnitTestCase("testCreateBusFueledVehicle"));
         suite.addTest(new EntityMappingsInheritanceJUnitTestCase("testCreateNonFueledVehicle"));
@@ -70,17 +72,16 @@ public class EntityMappingsInheritanceJUnitTestCase extends JUnitTestCase {
         suite.addTest(new EntityMappingsInheritanceJUnitTestCase("testDeleteFueledVehicle"));
         suite.addTest(new EntityMappingsInheritanceJUnitTestCase("testDeleteNonFueledVehicle"));
         
-        return new TestSetup(suite) {
-            
-            protected void setUp(){
-                DatabaseSession session = JUnitTestCase.getServerSession();   
-                new InheritanceTableCreator().replaceTables(session);
-            }
-        
-            protected void tearDown() {
-                clearCache();
-            }
-        };
+        return suite;
+    }
+    
+    /**
+     * The setup is done as a test, both to record its failure, and to allow execution in the server.
+     */
+    public void testSetup() {
+        DatabaseSession session = JUnitTestCase.getServerSession();
+        new InheritanceTableCreator().replaceTables(session);
+        clearCache();
     }
     
     public void testCreateBusFueledVehicle() {
@@ -243,7 +244,7 @@ public class EntityMappingsInheritanceJUnitTestCase extends JUnitTestCase {
     }
 
     public void testNamedNativeQueryOnSportsCar() {
-        EJBQueryImpl query = (EJBQueryImpl) createEntityManager().createNamedQuery("findSQLMaxSpeedForFerrari");
+        Query query = createEntityManager().createNamedQuery("findSQLMaxSpeedForFerrari");
         List results = query.getResultList();
         assertTrue("Failed to return 1 item", (results.size() == 1));
 
@@ -293,7 +294,9 @@ public class EntityMappingsInheritanceJUnitTestCase extends JUnitTestCase {
         int postLoadBusCountBefore = Bus.POST_LOAD_COUNT;
         int postLoadBusCountAfter1;
 
+        beginTransaction(em);
         try {
+            bus = em.find(Bus.class, busId);
             // Clear the cache and check that we get a post load (post build internally).
             clearCache();
             em.refresh(bus);
@@ -301,6 +304,7 @@ public class EntityMappingsInheritanceJUnitTestCase extends JUnitTestCase {
 
             // Don't clear the cache and check that we get a post load (post refresh internally).
             em.refresh(bus);
+            commitTransaction(em);
         } catch (RuntimeException e) {
             if (isTransactionActive(em)){
                 rollbackTransaction(em);

@@ -45,6 +45,10 @@ public class EntityMappingsComplexAggregateJUnitTestCase extends JUnitTestCase {
         super();
     }
     
+    public EntityMappingsComplexAggregateJUnitTestCase(String name) {
+        super(name);
+    }
+    
     public EntityMappingsComplexAggregateJUnitTestCase(String name, String persistenceUnit) {
         super(name);
         
@@ -57,22 +61,22 @@ public class EntityMappingsComplexAggregateJUnitTestCase extends JUnitTestCase {
         TestSuite suite = new TestSuite("Complex Aggregate Model - " + persistenceUnit);
         
         if (persistenceUnit.equals("extended-complex-aggregate")) {
-            suite.addTest(new EntityMappingsComplexAggregateJUnitTestCase("testCreateExtendedObjects", persistenceUnit)); 
+            suite.addTest(new EntityMappingsComplexAggregateJUnitTestCase("testSetup", persistenceUnit));
+            suite.addTest(new EntityMappingsComplexAggregateJUnitTestCase("testCreateExtendedObjects", persistenceUnit));
             suite.addTest(new EntityMappingsComplexAggregateJUnitTestCase("testVerifyExtendedObjects", persistenceUnit));
             suite.addTest(new EntityMappingsComplexAggregateJUnitTestCase("testAutoGenerationOnEmbeddedId", persistenceUnit));
         }
         
-        return new TestSetup(suite) {
-            
-            protected void setUp(){               
-                DatabaseSession session = JUnitTestCase.getServerSession(persistenceUnit);   
-                new ComplexAggregateTableCreator().replaceTables(session);
-            }
-        
-            protected void tearDown() {
-                clearCache(persistenceUnit);
-            }
-        };
+        return suite;
+    }
+    
+    /**
+     * The setup is done as a test, both to record its failure, and to allow execution in the server.
+     */
+    public void testSetup() {
+        DatabaseSession session = JUnitTestCase.getServerSession(m_persistenceUnit);
+        new ComplexAggregateTableCreator().replaceTables(session);
+        clearCache(m_persistenceUnit);
     }
     
     public void setUp () {

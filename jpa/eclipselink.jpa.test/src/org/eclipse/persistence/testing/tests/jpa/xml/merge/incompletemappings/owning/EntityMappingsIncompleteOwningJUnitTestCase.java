@@ -44,22 +44,22 @@ public class EntityMappingsIncompleteOwningJUnitTestCase extends JUnitTestCase {
     
     public static Test suite() {
         TestSuite suite = new TestSuite("Owning Model");
+        suite.addTest(new EntityMappingsIncompleteOwningJUnitTestCase("testSetup"));
         suite.addTest(new EntityMappingsIncompleteOwningJUnitTestCase("testCreateEmployee"));
         suite.addTest(new EntityMappingsIncompleteOwningJUnitTestCase("testReadEmployee"));
         suite.addTest(new EntityMappingsIncompleteOwningJUnitTestCase("testUpdateEmployee"));
         suite.addTest(new EntityMappingsIncompleteOwningJUnitTestCase("testDeleteEmployee"));
         
-        return new TestSetup(suite) {
-            
-            protected void setUp(){  
-            	DatabaseSession session = JUnitTestCase.getServerSession();   
-                new AdvancedTableCreator().replaceTables(session);
-			}
-        
-            protected void tearDown() {
-                clearCache();
-            }
-        };
+        return suite;
+    }
+    
+    /**
+     * The setup is done as a test, both to record its failure, and to allow execution in the server.
+     */
+    public void testSetup() {
+        DatabaseSession session = JUnitTestCase.getServerSession();
+        new AdvancedTableCreator().replaceTables(session);
+        clearCache();
     }
     
     public void testCreateEmployee() {

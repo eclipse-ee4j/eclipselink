@@ -51,7 +51,7 @@ public class EntityMappingsMergeAdvancedJUnitTestCase extends JUnitTestCase {
 
         return new TestSetup(suite) {
             
-            protected void setUp(){               
+            protected void setUp(){
             }
         
             protected void tearDown() {
@@ -59,7 +59,7 @@ public class EntityMappingsMergeAdvancedJUnitTestCase extends JUnitTestCase {
         };
     }
     
-	public void testInheritanceDiscriminatorFieldValue() {
+    public void testInheritanceDiscriminatorFieldValue() {
         InheritancePolicy projectInheritancePolicy = getServerSession().getDescriptor(Project.class).getInheritancePolicy();
         
         // defined in xml
@@ -95,7 +95,7 @@ public class EntityMappingsMergeAdvancedJUnitTestCase extends JUnitTestCase {
         }
     }
 
-	// The test compares the mappings's types for each class with the corresponding class from packageToCompare.
+    // The test compares the mappings's types for each class with the corresponding class from packageToCompare.
     // The test should be altered accordingly in case the two classes are no longer use the same mappings types.
     public void testMappingsTypes() throws ClassNotFoundException {
         Map descriptors = getServerSession().getDescriptors();
@@ -131,7 +131,7 @@ public class EntityMappingsMergeAdvancedJUnitTestCase extends JUnitTestCase {
         }
     }
 
-	public static void main(String[] args) {
+    public static void main(String[] args) {
          junit.textui.TestRunner.run(EntityMappingsMergeAdvancedJUnitTestCase.suite());
     }
 }

@@ -22,6 +22,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Vector;
 
+import javax.persistence.Query;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityNotFoundException;
 
@@ -76,6 +77,10 @@ public class EntityMappingsAdvancedJUnitTestCase extends JUnitTestCase {
         super();
     }
     
+    public EntityMappingsAdvancedJUnitTestCase(String name) {
+        super(name);
+    }
+    
     public EntityMappingsAdvancedJUnitTestCase(String name, String persistenceUnit) {
         super(name);
         
@@ -87,7 +92,7 @@ public class EntityMappingsAdvancedJUnitTestCase extends JUnitTestCase {
         final String persistenceUnit = ormTesting.equals(TestingProperties.JPA_ORM_TESTING)? "default" : "extended-advanced";
 
         TestSuite suite = new TestSuite("Advanced Model - " + persistenceUnit);
-        
+        suite.addTest(new EntityMappingsAdvancedJUnitTestCase("testSetup", persistenceUnit));
         suite.addTest(new EntityMappingsAdvancedJUnitTestCase("testCreateEmployee", persistenceUnit));
         suite.addTest(new EntityMappingsAdvancedJUnitTestCase("testReadEmployee", persistenceUnit));
         suite.addTest(new EntityMappingsAdvancedJUnitTestCase("testNamedNativeQueryOnAddress", persistenceUnit));
@@ -125,22 +130,20 @@ public class EntityMappingsAdvancedJUnitTestCase extends JUnitTestCase {
             suite.addTest(new EntityMappingsAdvancedJUnitTestCase("testIfMultipleBasicCollectionMappingsExistForEmployeeResponsibilites", persistenceUnit));
         }
         
-        return new TestSetup(suite) {
-            
-            protected void setUp() {
-            	DatabaseSession session = JUnitTestCase.getServerSession(persistenceUnit);   
-            	new AdvancedTableCreator().replaceTables(session);
-            	
-            	// Populate the database with our examples.
-                EmployeePopulator employeePopulator = new EmployeePopulator();         
-                employeePopulator.buildExamples();
-                employeePopulator.persistExample(session);
-            }
-        
-            protected void tearDown() {
-                clearCache(persistenceUnit);
-            }
-        };
+        return suite;
+    }
+    
+    /**
+     * The setup is done as a test, both to record its failure, and to allow execution in the server.
+     */
+    public void testSetup() {
+        DatabaseSession session = JUnitTestCase.getServerSession(m_persistenceUnit);   
+        new AdvancedTableCreator().replaceTables(session);
+        // Populate the database with our examples.
+        EmployeePopulator employeePopulator = new EmployeePopulator();
+        employeePopulator.buildExamples();
+        employeePopulator.persistExample(session);
+        clearCache(m_persistenceUnit);
     }
     
     /**
@@ -290,7 +293,7 @@ public class EntityMappingsAdvancedJUnitTestCase extends JUnitTestCase {
      * Verifies that the optimistic-locking settings were read correctly from XML.
      */
     public void testEmployeeOptimisticLockingSettings() {
-    	ServerSession session = JUnitTestCase.getServerSession(m_persistenceUnit);
+        ServerSession session = JUnitTestCase.getServerSession(m_persistenceUnit);
         ClassDescriptor descriptor = session.getDescriptor(Employee.class);
             
         if (descriptor == null) {
@@ -329,26 +332,26 @@ public class EntityMappingsAdvancedJUnitTestCase extends JUnitTestCase {
      * Verifies that the optimistic-locking settings were read correctly from XML.
      */
     public void testProjectOptimisticLockingSettings() {
-    	ServerSession session = JUnitTestCase.getServerSession(m_persistenceUnit);
+        ServerSession session = JUnitTestCase.getServerSession(m_persistenceUnit);
         ClassDescriptor descriptor = session.getDescriptor(Project.class);
             
         if (descriptor == null) {
             fail("Project descriptor was not found in the PU [" + m_persistenceUnit + "]");
         } else {
-        	OptimisticLockingPolicy policy = descriptor.getOptimisticLockingPolicy();
-        	
-        	if (policy instanceof SelectedFieldsLockingPolicy) {
-        		Vector<DatabaseField> lockFields = ((SelectedFieldsLockingPolicy) policy).getLockFields();
-        		
-        		if (lockFields.isEmpty() || lockFields.size() > 1) {
-        			fail("Invalid amount of lock fields were set on Project's selected fields locking policy.");
-        		} else {
-        			DatabaseField lockField = lockFields.firstElement();
-        			assertTrue("Incorrect lock field was set on Project's selected fields locking policy.", lockField.getName().equals("VERSION"));
-        		}
-        	} else {
-        		fail("A SelectedFieldsLockingPolicy was not set on the Project descriptor.");
-        	}
+            OptimisticLockingPolicy policy = descriptor.getOptimisticLockingPolicy();
+            
+            if (policy instanceof SelectedFieldsLockingPolicy) {
+                Vector<DatabaseField> lockFields = ((SelectedFieldsLockingPolicy) policy).getLockFields();
+                
+                if (lockFields.isEmpty() || lockFields.size() > 1) {
+                    fail("Invalid amount of lock fields were set on Project's selected fields locking policy.");
+                } else {
+                    DatabaseField lockField = lockFields.firstElement();
+                    assertTrue("Incorrect lock field was set on Project's selected fields locking policy.", lockField.getName().equals("VERSION"));
+                }
+            } else {
+            fail("A SelectedFieldsLockingPolicy was not set on the Project descriptor.");
+            }
         }
     }
     
@@ -386,15 +389,15 @@ public class EntityMappingsAdvancedJUnitTestCase extends JUnitTestCase {
         beginTransaction(em);
         
         try {
-        	Address address = new Address();
-        	address.setCity("Nepean");
-        	address.setCountry("Canada");
-        	address.setPostalCode("K2J 6T3");
-        	// One it goes through the custom converter this should be
-        	// set to Ontario.
-        	address.setProvince("oNtArIo");
-        	address.setStreet("321 Crestway");
-        	
+            Address address = new Address();
+            address.setCity("Nepean");
+            address.setCountry("Canada");
+            address.setPostalCode("K2J 6T3");
+            // One it goes through the custom converter this should be
+            // set to Ontario.
+            address.setProvince("oNtArIo");
+            address.setStreet("321 Crestway");
+            
             Employee employee = new Employee();
             employee.setGivenName("Boy");
             employee.setFamilyName("Pelletier");
@@ -427,15 +430,15 @@ public class EntityMappingsAdvancedJUnitTestCase extends JUnitTestCase {
             assertTrue("Diners Club card did not persist correctly.", emp.hasDinersClub(diners));
             assertTrue("Mastercard card did not persist correctly.", emp.hasMastercard(mastercard));
             
-        	boolean found = false;
-        	for (String responsibility : (Collection<String>) emp.getResponsibilities()) {
-        		if (responsibility.equals("A very important responsibility")) {
-        			found = true;
-        			break;
-        		}
-        	}
+            boolean found = false;
+            for (String responsibility : (Collection<String>) emp.getResponsibilities()) {
+                if (responsibility.equals("A very important responsibility")) {
+                    found = true;
+                    break;
+                }
+            }
         
-        	assertTrue("The new responsibility was not added.", found);
+            assertTrue("The new responsibility was not added.", found);
             
         } catch (RuntimeException e) {
             if (isTransactionActive(em)){
@@ -457,9 +460,9 @@ public class EntityMappingsAdvancedJUnitTestCase extends JUnitTestCase {
         beginTransaction(em);
         
         try {
-        	Employee maleEmp = em.find(Employee.class, extendedEmployeeId);    
-        	maleEmp.setFemale();
-        	maleEmp.setGivenName("Girl");
+            Employee maleEmp = em.find(Employee.class, extendedEmployeeId);    
+            maleEmp.setFemale();
+            maleEmp.setGivenName("Girl");
             commitTransaction(em);
                 
             // Clear cache and clear the entity manager
@@ -512,13 +515,23 @@ public class EntityMappingsAdvancedJUnitTestCase extends JUnitTestCase {
             closeEntityManager(em);
             throw e;
         }
-        EJBQueryImpl query = (EJBQueryImpl) em.createNamedQuery("findAllXMLAddresses");
+        Query query;
+        if (isOnServer()) {
+            query = em.createNamedQuery("findAllXMLAddresses");
+        } else {
+            query = (EJBQueryImpl) em.createNamedQuery("findAllXMLAddresses");
+        }
         List addresses = query.getResultList();
         assertTrue("Error executing named native query 'findAllXMLAddresses'", addresses != null);
     }
 
     public void testNamedQueryOnEmployee() {
-        EJBQueryImpl query = (EJBQueryImpl) createEntityManager(m_persistenceUnit).createNamedQuery("findAllXMLEmployeesByFirstName");
+        Query query;
+        if (isOnServer()) {
+            query = createEntityManager(m_persistenceUnit).createNamedQuery("findAllXMLEmployeesByFirstName");
+        } else {
+            query = (EJBQueryImpl) createEntityManager(m_persistenceUnit).createNamedQuery("findAllXMLEmployeesByFirstName");
+        }
         query.setParameter("firstname", "Brady");
         Employee employee = (Employee) query.getSingleResult();
         assertTrue("Error executing named query 'findAllXMLEmployeesByFirstName'", employee != null);
@@ -1012,7 +1025,12 @@ public class EntityMappingsAdvancedJUnitTestCase extends JUnitTestCase {
         EntityManager em = createEntityManager(m_persistenceUnit);
         List<Employee> employeesRead = em.createQuery("SELECT OBJECT(e) FROM XMLEmployee e WHERE e.lastName = '"+lastName+"'").getResultList();
         // while em is open, cache ServerSession that will be used later for verification
-        ServerSession session = ((EntityManagerImpl)em).getServerSession();
+        ServerSession session;
+        if (isOnServer()) {
+            session = getServerSession();
+        } else {
+            session = ((EntityManagerImpl)em).getServerSession();
+        }
         closeEntityManager(em);
 
         // verify number persisted and read is the same
@@ -1045,7 +1063,6 @@ public class EntityMappingsAdvancedJUnitTestCase extends JUnitTestCase {
     
     public void testUnidirectionalUpdate() {
         String lastName = "testUnidirectionalUpdate";
-
         // em used for both persist and update
         EntityManager em = createEntityManager(m_persistenceUnit);
         // persist employees
@@ -1064,7 +1081,7 @@ public class EntityMappingsAdvancedJUnitTestCase extends JUnitTestCase {
             if(this.isTransactionActive(em)) {
                 rollbackTransaction(em);
             }
-            em.close();
+            closeEntityManager(em);
         }
         
         // clear cache
@@ -1074,8 +1091,12 @@ public class EntityMappingsAdvancedJUnitTestCase extends JUnitTestCase {
         // read the updated employees back
         List<Employee> employeesRead = em.createQuery("SELECT OBJECT(e) FROM XMLEmployee e WHERE e.lastName = '"+lastName+"'").getResultList();
         // while em is open, cache ServerSession that will be used later for verification
-        ServerSession session = ((EntityManagerImpl)em).getServerSession();
-        closeEntityManager(em);
+        ServerSession session;
+        if (isOnServer()) {
+            session = getServerSession();
+        } else {
+            session = ((EntityManagerImpl)em).getServerSession();
+        }
         
         // verify number persisted and read is the same
         if(employeesPersisted.size() != employeesRead.size()) {
@@ -1085,17 +1106,27 @@ public class EntityMappingsAdvancedJUnitTestCase extends JUnitTestCase {
         }
         
         // verify that the persisted and read objects are equal
+        beginTransaction(em);
         String errorMsg = "";
-        for(int i=0; i<employeesPersisted.size(); i++) {
-            for(int j=0; j<employeesRead.size(); j++) {
-                if(employeesPersisted.get(i).getFirstName().equals(employeesRead.get(j).getFirstName())) {
-                    if(!session.compareObjects(employeesPersisted.get(i), employeesRead.get(j))) {
-                        errorMsg += "Employee " + employeesPersisted.get(i).getFirstName() +"  was not updated correctly.";
+        try{
+            for(int i=0; i<employeesPersisted.size(); i++) {
+                for(int j=0; j<employeesRead.size(); j++) {
+                    Employee emp1 = em.find(Employee.class, employeesPersisted.get(i).getId());
+                    Employee emp2 = em.find(Employee.class, employeesRead.get(j).getId());
+                    if(emp1.getFirstName().equals(emp2.getFirstName())) {
+                        if(!session.compareObjects(emp1, emp2)) {
+                            errorMsg += "Employee " + emp1.getFirstName() +"  was not updated correctly.";
+                        }
                     }
                 }
             }
+        } finally {
+           if(this.isTransactionActive(em)) {
+               rollbackTransaction(em);
+              }
+               closeEntityManager(em);
         }
-        
+
         // clean-up
         deleteEmployeesWithUnidirectionalMappings(lastName);
 
@@ -1126,7 +1157,13 @@ public class EntityMappingsAdvancedJUnitTestCase extends JUnitTestCase {
         em = createEntityManager(m_persistenceUnit);
         List<Employee> employeesReadWithFetchJoin = em.createQuery("SELECT e FROM XMLEmployee e JOIN FETCH e.dealers WHERE e.lastName = '"+lastName+"'").getResultList();
         // while em is open, cache ServerSession that will be used later for verification
-        ServerSession session = ((EntityManagerImpl)em).getServerSession();
+        ServerSession session;
+        if (isOnServer()) {
+            session = getServerSession();
+        } else {
+            session = ((EntityManagerImpl)em).getServerSession();
+        }
+
         closeEntityManager(em);
         
         // verify that the persisted and read employees are the same.
@@ -1162,12 +1199,13 @@ public class EntityMappingsAdvancedJUnitTestCase extends JUnitTestCase {
         // remove a dealer from the second employee:
         Dealer dealer;
         beginTransaction(em);
-        try {
-            dealer = employeesPersisted.get(1).getDealers().remove(1);
+    try {
+            Employee emp1 = em.find(Employee.class, employeesPersisted.get(1).getId());
+            dealer = emp1.getDealers().remove(1);
             commitTransaction(em);
         } finally {
             if(this.isTransactionActive(em)) {
-                rollbackTransaction(em);
+                rollbackTransaction(em); 
                 closeEntityManager(em);
             }
         }
@@ -1179,31 +1217,51 @@ public class EntityMappingsAdvancedJUnitTestCase extends JUnitTestCase {
         if(version2 != 2) {
             errorMsg += "In the cache the removed dealer's version is " + version2 + " (2 was expected); ";
         }
-        em.refresh(dealer);
-        version2 = getVersion(em, dealer);
-        if(version2 != 2) {
-            errorMsg += "In the db the removed dealer's version is " + version2 + " (2 was expected); ";
-        }
-        
         // add the dealer to the first employee:
+        //version2 = getDealerVersionFromDB(em, dealer);
         beginTransaction(em);
         try {
-            employeesPersisted.get(0).getDealers().add(dealer);
-            commitTransaction(em);
+            Dealer dealer2 = em.find(Dealer.class, dealer.getId());
+            em.refresh(dealer2);
+            version2 = getVersion(em, dealer2);
         } finally {
             if(this.isTransactionActive(em)) {
                 rollbackTransaction(em);
+            }
+        }
+        if(version2 != 2) {
+            errorMsg += "In the db the removed dealer's version is " + version2 + " (2 was expected); ";
+        }
+        beginTransaction(em);
+        Dealer dealer3;
+        try {
+            Employee emp2 = em.find(Employee.class, employeesPersisted.get(1).getId());
+            dealer3 = em.find(Dealer.class, dealer.getId());
+            emp2.getDealers().add(dealer3);
+            commitTransaction(em);
+        } finally {
+            if(this.isTransactionActive(em)) {
+                rollbackTransaction(em); 
                 closeEntityManager(em);
             }
         }
         
         // verify the version both in the cache and in the db
-        int version3 = getVersion(em, dealer);
+        int version3 = getVersion(em, dealer3);
         if(version3 != 3) {
             errorMsg += "In the cache the added dealer's version is " + version3 + " (3 was expected); ";
         }
-        em.refresh(dealer);
-        version3 = getVersion(em, dealer);
+
+        beginTransaction(em);
+        try {
+            Dealer dealer4 = em.find(Dealer.class, dealer3.getId());
+            em.refresh(dealer4);
+            version3 = getVersion(em, dealer4);
+        } finally {
+            if(this.isTransactionActive(em)) {
+                rollbackTransaction(em);
+            }
+        }
         if(version3 != 3) {
             errorMsg += "In the db the added dealer's version is " + version3 + " (3 was expected)";
         }
@@ -1218,6 +1276,23 @@ public class EntityMappingsAdvancedJUnitTestCase extends JUnitTestCase {
             fail(errorMsg);
         }
     }
+
+    private int getDealerVersionFromDB(EntityManager em, Dealer dealer) {
+        int version = 0;
+        // add the dealer to the first employee:
+        beginTransaction(em);
+        try {
+            em.merge(dealer);
+            em.refresh(dealer);
+            version = getVersion(em, dealer);
+        } finally {
+            if(this.isTransactionActive(em)) {
+                rollbackTransaction(em);
+            }
+        }
+        return version;
+    }
+
     
     public void testUnidirectionalTargetLocking_DeleteSource() {
         String lastName = "testUnidirectionalTargetLocking_DS";
@@ -1237,6 +1312,7 @@ public class EntityMappingsAdvancedJUnitTestCase extends JUnitTestCase {
         clearCache(m_persistenceUnit);
         
         EntityManager em = createEntityManager(m_persistenceUnit);
+        beginTransaction(em);
         // read the persisted employees
         List<Employee> readEmployees = em.createQuery("SELECT OBJECT(e) FROM XMLEmployee e WHERE e.lastName = '"+lastName+"'").getResultList();
         
@@ -1244,10 +1320,10 @@ public class EntityMappingsAdvancedJUnitTestCase extends JUnitTestCase {
         readEmployees.get(1).getDealers().size();
         
         // delete the Employees (there should be two of them).
-        beginTransaction(em);
+        
         try {
-            for(int i=0; i < readEmployees.size(); i++) {
-                em.remove(readEmployees.get(i));
+            for(Employee emp:  readEmployees) {
+                em.remove(emp);
             }
             commitTransaction(em);
         } finally {
@@ -1258,21 +1334,28 @@ public class EntityMappingsAdvancedJUnitTestCase extends JUnitTestCase {
         }
 
         // find employees' dealers and verify their versions - all should be 2.
-        
+        beginTransaction(em);
         String errorMsg = "";
-        for(int i=0; i<dealersIds.size(); i++) {
-            Dealer dealer = em.find(Dealer.class, dealersIds.get(i));
+        try{
+            for(int i=0; i<dealersIds.size(); i++) {
+                Dealer dealer = em.find(Dealer.class, dealersIds.get(i));
 
-            // verify the version both in the cache and in the db
-            int version2 = getVersion(em, dealer);
-            if(version2 != 2) {
-                errorMsg += "In the cache dealer "+dealer.getFirstName()+"'s version is " + version2 + " (2 was expected); ";
+                // verify the version both in the cache and in the db
+                int version2 = getVersion(em, dealer);
+                if(version2 != 2) {
+                    errorMsg += "In the cache dealer "+dealer.getFirstName()+"'s version is " + version2 + " (2 was expected); ";
+                }
+                em.refresh(dealer);
+                
+                version2 = getVersion(em, dealer);
+                if(version2 != 2) {
+                    errorMsg += "In the db dealer "+dealer.getFirstName()+"'s version is " + version2 + " (2 was expected); ";
+                }
             }
-            em.refresh(dealer);
-            version2 = getVersion(em, dealer);
-            if(version2 != 2) {
-                errorMsg += "In the db dealer "+dealer.getFirstName()+"'s version is " + version2 + " (2 was expected); ";
-            }
+        } finally {
+           if(this.isTransactionActive(em)) {
+               rollbackTransaction(em);               
+           }
         }
 
         closeEntityManager(em);
@@ -1290,7 +1373,11 @@ public class EntityMappingsAdvancedJUnitTestCase extends JUnitTestCase {
         Vector pk = new Vector(1);
         pk.add(dealer.getId());
         
-        return ((Integer)((EntityManagerImpl)em).getServerSession().getDescriptor(Dealer.class).getOptimisticLockingPolicy().getWriteLockValue(dealer, pk, ((EntityManagerImpl)em).getServerSession())).intValue();
+        if (isOnServer()) {
+            return ((Integer)getServerSession().getDescriptor(Dealer.class).getOptimisticLockingPolicy().getWriteLockValue(dealer, pk, getServerSession())).intValue();
+        } else {
+            return ((Integer)((EntityManagerImpl)em).getServerSession().getDescriptor(Dealer.class).getOptimisticLockingPolicy().getWriteLockValue(dealer, pk, ((EntityManagerImpl)em).getServerSession())).intValue();
+        }
     }
 
     protected List<Employee> createEmployeesWithUnidirectionalMappings(String lastName) {
@@ -1322,7 +1409,7 @@ public class EntityMappingsAdvancedJUnitTestCase extends JUnitTestCase {
         try {
             return persistEmployeesWithUnidirectionalMappings(lastName, em);
         } finally {
-            em.close();
+            closeEntityManager(em);
         }
     }
     
@@ -1354,7 +1441,7 @@ public class EntityMappingsAdvancedJUnitTestCase extends JUnitTestCase {
             if(this.isTransactionActive(em)) {
                 rollbackTransaction(em);
             }
-            em.close();
+            closeEntityManager(em);
             clearCache(m_persistenceUnit);
         }
     }    

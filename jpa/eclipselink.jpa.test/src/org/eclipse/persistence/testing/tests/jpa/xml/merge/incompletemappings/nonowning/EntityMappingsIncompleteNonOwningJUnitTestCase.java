@@ -47,6 +47,7 @@ public class EntityMappingsIncompleteNonOwningJUnitTestCase extends JUnitTestCas
     
     public static Test suite() {
         TestSuite suite = new TestSuite("Non-owning Model");
+        suite.addTest(new EntityMappingsIncompleteNonOwningJUnitTestCase("testSetup"));
         suite.addTest(new EntityMappingsIncompleteNonOwningJUnitTestCase("testCreateCustomer"));
         suite.addTest(new EntityMappingsIncompleteNonOwningJUnitTestCase("testCreateItem"));
         suite.addTest(new EntityMappingsIncompleteNonOwningJUnitTestCase("testCreateOrder"));
@@ -63,17 +64,16 @@ public class EntityMappingsIncompleteNonOwningJUnitTestCase extends JUnitTestCas
         suite.addTest(new EntityMappingsIncompleteNonOwningJUnitTestCase("testDeleteCustomer"));
         suite.addTest(new EntityMappingsIncompleteNonOwningJUnitTestCase("testDeleteItem"));
         
-        return new TestSetup(suite) {
-            
-            protected void setUp(){  
-            	DatabaseSession session = JUnitTestCase.getServerSession();   
-                new RelationshipsTableManager().replaceTables(session);
-            }
-        
-            protected void tearDown() {
-                clearCache();
-            }
-        };
+        return suite;
+    }
+    
+    /**
+     * The setup is done as a test, both to record its failure, and to allow execution in the server.
+     */
+    public void testSetup() {
+        DatabaseSession session = JUnitTestCase.getServerSession();
+        new RelationshipsTableManager().replaceTables(session);
+        clearCache();
     }
     
     public void testCreateCustomer() {

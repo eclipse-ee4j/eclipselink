@@ -47,7 +47,8 @@ public class EntityMappingsInheritedJUnitTestCase extends JUnitTestCase {
     
     public static Test suite() {
         TestSuite suite = new TestSuite("Inherited Model");
-		suite.addTest(new EntityMappingsInheritedJUnitTestCase("testOneToManyRelationships"));
+        suite.addTest(new EntityMappingsInheritedJUnitTestCase("testSetup"));
+        suite.addTest(new EntityMappingsInheritedJUnitTestCase("testOneToManyRelationships"));
         suite.addTest(new EntityMappingsInheritedJUnitTestCase("testVerifyOneToManyRelationships"));
         suite.addTest(new EntityMappingsInheritedJUnitTestCase("testCreateBeerConsumer"));
         suite.addTest(new EntityMappingsInheritedJUnitTestCase("testReadBeerConsumer"));
@@ -56,17 +57,16 @@ public class EntityMappingsInheritedJUnitTestCase extends JUnitTestCase {
         suite.addTest(new EntityMappingsInheritedJUnitTestCase("testUpdateBeerConsumer"));
         suite.addTest(new EntityMappingsInheritedJUnitTestCase("testDeleteBeerConsumer"));
         
-        return new TestSetup(suite) {
-            
-            protected void setUp(){               
-                DatabaseSession session = JUnitTestCase.getServerSession();   
-                new InheritedTableManager().replaceTables(session);
-            }
-        
-            protected void tearDown() {
-                clearCache();
-            }
-        };
+        return suite;
+    }
+    
+    /**
+     * The setup is done as a test, both to record its failure, and to allow execution in the server.
+     */
+    public void testSetup() {
+        DatabaseSession session = JUnitTestCase.getServerSession();
+        new InheritedTableManager().replaceTables(session);
+        clearCache();
     }
     
     public void testCreateBeerConsumer() {
@@ -185,39 +185,39 @@ public class EntityMappingsInheritedJUnitTestCase extends JUnitTestCase {
         closeEntityManager(em);
         assertTrue("Error updating BeerConsumer name", newBeerConsumer.getName().equals("Joe White"));
     }
-	
-	//Merge Test:Have a class(TelephoneNumber) that uses a composite primary key (defined in annotations) and define a 1-M (BeerConsumer->TelephoneNumber) for it in XML
-	//Setup Relationship
-	public void testOneToManyRelationships() {
-		EntityManager em = createEntityManager();
-		try {
-			beginTransaction(em);
-			
-			BeerConsumer consumer = new BeerConsumer();
-			consumer.setName("Joe Black");
-			
-			TelephoneNumber homeNumber = new TelephoneNumber();
-			homeNumber.setAreaCode("555");
-			homeNumber.setType("Home");
-			homeNumber.setNumber("123-1234");
-			
-			TelephoneNumber workNumber = new TelephoneNumber();
-			workNumber.setAreaCode("555");
-			workNumber.setType("Work");
-			workNumber.setNumber("987-9876");
-			 
-			consumer.addTelephoneNumber(homeNumber);
-			consumer.addTelephoneNumber(workNumber);
-			em.persist(consumer);
-			beerConsumerId = consumer.getId();
-			
-			commitTransaction(em);    
-		} catch (RuntimeException e) {
-			if (isTransactionActive(em)){
+    
+    //Merge Test:Have a class(TelephoneNumber) that uses a composite primary key (defined in annotations) and define a 1-M (BeerConsumer->TelephoneNumber) for it in XML
+    //Setup Relationship
+    public void testOneToManyRelationships() {
+        EntityManager em = createEntityManager();
+        try {
+            beginTransaction(em);
+            
+            BeerConsumer consumer = new BeerConsumer();
+            consumer.setName("Joe Black");
+            
+            TelephoneNumber homeNumber = new TelephoneNumber();
+            homeNumber.setAreaCode("555");
+            homeNumber.setType("Home");
+            homeNumber.setNumber("123-1234");
+            
+            TelephoneNumber workNumber = new TelephoneNumber();
+            workNumber.setAreaCode("555");
+            workNumber.setType("Work");
+            workNumber.setNumber("987-9876");
+             
+            consumer.addTelephoneNumber(homeNumber);
+            consumer.addTelephoneNumber(workNumber);
+            em.persist(consumer);
+            beerConsumerId = consumer.getId();
+            
+            commitTransaction(em);    
+        } catch (RuntimeException e) {
+            if (isTransactionActive(em)){
                             rollbackTransaction(em);
                         }
-			throw e;
-		}
+            throw e;
+        }
         
     }
     //Verify Relationship

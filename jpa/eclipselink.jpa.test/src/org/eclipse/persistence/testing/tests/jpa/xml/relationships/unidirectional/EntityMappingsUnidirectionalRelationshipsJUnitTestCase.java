@@ -55,6 +55,7 @@ public class EntityMappingsUnidirectionalRelationshipsJUnitTestCase extends JUni
     
     public static Test suite() {
         TestSuite suite = new TestSuite("Unidirectional Relationships Model");
+        suite.addTest(new EntityMappingsUnidirectionalRelationshipsJUnitTestCase("testSetup"));
         suite.addTest(new EntityMappingsUnidirectionalRelationshipsJUnitTestCase("testUnidirectionalOneToOneCreate"));
         suite.addTest(new EntityMappingsUnidirectionalRelationshipsJUnitTestCase("testUnidirectionalOneToOneRead"));
         suite.addTest(new EntityMappingsUnidirectionalRelationshipsJUnitTestCase("testUnidirectionalOneToOneDeleteNonowning"));
@@ -74,19 +75,19 @@ public class EntityMappingsUnidirectionalRelationshipsJUnitTestCase extends JUni
         suite.addTest(new EntityMappingsUnidirectionalRelationshipsJUnitTestCase("testUnidirectionalManyToManyRead"));
         suite.addTest(new EntityMappingsUnidirectionalRelationshipsJUnitTestCase("testUnidirectionalManyToManyDeleteNonowning"));
         suite.addTest(new EntityMappingsUnidirectionalRelationshipsJUnitTestCase("testUnidirectionalManyToManyDeleteOwning"));
-        return new TestSetup(suite) {
-            
-            protected void setUp(){               
-                DatabaseSession session = JUnitTestCase.getServerSession();   
-                new AdvancedTableCreator().replaceTables(session);
-            }
         
-            protected void tearDown() {
-                clearCache();
-            }
-        };
+        return suite;
     }
-
+    
+    /**
+     * The setup is done as a test, both to record its failure, and to allow execution in the server.
+     */
+    public void testSetup() {
+        DatabaseSession session = JUnitTestCase.getServerSession();
+        new AdvancedTableCreator().replaceTables(session);
+        clearCache();
+    }
+    
     public void testUnidirectionalOneToOneCreate() {
         EntityManager em = createEntityManager();
         beginTransaction(em);

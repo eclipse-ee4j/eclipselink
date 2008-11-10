@@ -158,7 +158,7 @@
             <pathelement path="${eclipselink.plugins}/${asm}"/>
         </path>
         <path id="compile.server.path">
-    		<path refid="compile.path"/>
+            <path refid="compile.path"/>
             <pathelement path="${jdbc.driver.jar}"/>
         </path>
     </target>
@@ -893,7 +893,7 @@
             target="${javac.version}"
             deprecation="${javac.deprecation}"
             failonerror="true"
-            includes="${TEST_DIR}/*.java">
+            includes="${TEST_DIR}/**/*.java">
             <classpath refid="compile.server.path"/>
         </javac>
         <javac
@@ -944,7 +944,7 @@
             target="${javac.version}"
             deprecation="${javac.deprecation}"
             failonerror="true"
-            includes="${TEST_DIR}/*.java">
+            includes="${TEST_DIR}/**/*.java">
             <classpath refid="compile.server.path"/>
         </javac>
         <javac
@@ -975,7 +975,7 @@
             target="${javac.version}"
             deprecation="${javac.deprecation}"
             failonerror="true"
-            includes="${MODEL_DIR}/*.java">
+            includes="${MODEL_DIR}/**/*.java">
             <classpath refid="compile.server.path"/>
         </javac>
         <javac
@@ -1099,64 +1099,23 @@
 
     <!-- Run all the JPA tests in the server -->
     <target name="server-test-lrg" depends="clean-test">
-        <antcall target="server-test-sessionbean" inheritRefs="true"/>
-        <antcall target="server-test-fieldaccess-advanced" inheritRefs="true"/>
         <antcall target="server-test-advanced" inheritRefs="true"/>
         <antcall target="server-test-datatypes" inheritRefs="true"/>
         <antcall target="server-test-datetime" inheritRefs="true"/>
         <antcall target="server-test-ddlgeneration" inheritRefs="true"/>
+        <antcall target="server-test-fieldaccess-advanced" inheritRefs="true"/>
         <antcall target="server-test-inheritance" inheritRefs="true"/>
         <antcall target="server-test-inherited" inheritRefs="true"/>
         <antcall target="server-test-jpaadvancedproperties" inheritRefs="true"/>
         <antcall target="server-test-jpql" inheritRefs="true"/>
         <antcall target="server-test-lob" inheritRefs="true"/>
         <antcall target="server-test-relationships" inheritRefs="true"/>
+        <antcall target="server-test-sessionbean" inheritRefs="true"/>
+        <antcall target="server-test-validation" inheritRefs="true"/>
+        <antcall target="server-test-xml-mergeinherited" inheritRefs="true"/>
+        <antcall target="server-test-xmltest" inheritRefs="true"/>
         <antcall target="server-test-oracle-timestamptz" inheritRefs="true"/>
         <antcall target="generate-report" inheritRefs="true"/>
-    </target>
-
-    <target name="server-test-sessionbean">
-        <antcall target="server-run-all" inheritRefs="true">
-            <param name="PERSISTENCE_UNIT_NAME" value="sessionbean"/>
-            <param name="MODEL_DIR" value="org/eclipse/persistence/testing/models/jpa/sessionbean"/>
-            <param name="MODEL_DIR2" value="org/eclipse/persistence/testing/models/jpa/fieldaccess/advanced"/>
-            <param name="MODEL_NAME" value="eclipselink-sessionbean-model"/>
-            <param name="TEST_DIR" value="org/eclipse/persistence/testing/tests/jpa/sessionbean"/>
-            <param name="TEST_NAME" value="eclipselink-sessionbean-model"/>
-            <param name="EAR_NAME" value="eclipselink-sessionbean-model"/>
-            <param name="TEST_SUITE" value="org.eclipse.persistence.testing.tests.jpa.sessionbean.SessionBeanTests"/>
-            <param name="eclipselink.jpa.test.dir" value="."/>
-        </antcall>
-    </target>
-
-    <!-- This target can only be called in an Oracle High Availability environment - 
-        a WebLogic server configured with Multi Data Sources to connect to Oracle RAC database
-    -->
-    <target name="server-test-sessionbean-ha">
-        <antcall target="server-run-all" inheritRefs="true">
-            <param name="PERSISTENCE_UNIT_NAME" value="sessionbean"/>
-            <param name="MODEL_DIR" value="org/eclipse/persistence/testing/models/jpa/sessionbean"/>
-            <param name="MODEL_DIR2" value="org/eclipse/persistence/testing/models/jpa/fieldaccess/advanced"/>
-            <param name="MODEL_NAME" value="eclipselink-sessionbean-model"/>
-            <param name="TEST_DIR" value="org/eclipse/persistence/testing/tests/jpa/sessionbean"/>
-            <param name="TEST_NAME" value="eclipselink-sessionbean-model"/>
-            <param name="EAR_NAME" value="eclipselink-sessionbean-model"/>
-            <param name="TEST_SUITE" value="org.eclipse.persistence.testing.tests.jpa.sessionbean.SessionBeanHATests"/>
-            <param name="eclipselink.jpa.test.dir" value="."/>
-        </antcall>
-    </target>
-
-    <target name="server-test-fieldaccess-advanced">
-        <antcall target="server-run-all" inheritRefs="true">
-            <param name="PERSISTENCE_UNIT_NAME" value="fieldaccess"/>
-            <param name="MODEL_DIR" value="org/eclipse/persistence/testing/models/jpa/fieldaccess/advanced"/>
-            <param name="MODEL_NAME" value="eclipselink-advanced-field-access-model"/>
-            <param name="TEST_DIR" value="org/eclipse/persistence/testing/tests/jpa/fieldaccess/advanced"/>
-            <param name="TEST_NAME" value="eclipselink-advanced-field-access-model"/>
-            <param name="EAR_NAME" value="eclipselink-advanced-field-access-model"/>
-            <param name="TEST_SUITE" value="org.eclipse.persistence.testing.tests.jpa.fieldaccess.advanced.EntityManagerJUnitTestSuite"/>
-            <param name="eclipselink.jpa.test.dir" value="."/>
-        </antcall>
     </target>
 
     <target name="server-test-advanced">
@@ -1207,6 +1166,19 @@
             <param name="TEST_NAME" value="eclipselink-ddl-generation-model"/>
             <param name="EAR_NAME" value="eclipselink-ddl-generation-model"/>
             <param name="TEST_SUITE" value="org.eclipse.persistence.testing.tests.jpa.ddlgeneration.DDLGenerationJUnitTestSuite"/>
+            <param name="eclipselink.jpa.test.dir" value="."/>
+        </antcall>
+    </target>
+
+    <target name="server-test-fieldaccess-advanced">
+        <antcall target="server-run-all" inheritRefs="true">
+            <param name="PERSISTENCE_UNIT_NAME" value="fieldaccess"/>
+            <param name="MODEL_DIR" value="org/eclipse/persistence/testing/models/jpa/fieldaccess/advanced"/>
+            <param name="MODEL_NAME" value="eclipselink-advanced-field-access-model"/>
+            <param name="TEST_DIR" value="org/eclipse/persistence/testing/tests/jpa/fieldaccess/advanced"/>
+            <param name="TEST_NAME" value="eclipselink-advanced-field-access-model"/>
+            <param name="EAR_NAME" value="eclipselink-advanced-field-access-model"/>
+            <param name="TEST_SUITE" value="org.eclipse.persistence.testing.tests.jpa.fieldaccess.advanced.EntityManagerJUnitTestSuite"/>
             <param name="eclipselink.jpa.test.dir" value="."/>
         </antcall>
     </target>
@@ -1286,6 +1258,78 @@
             <param name="TEST_NAME" value="eclipselink-relationships-model"/>
             <param name="EAR_NAME" value="eclipselink-relationships-model"/>
             <param name="TEST_SUITE" value="org.eclipse.persistence.testing.tests.jpa.relationships.ServerTestSuite"/>
+            <param name="eclipselink.jpa.test.dir" value="."/>
+        </antcall>
+    </target>
+
+    <target name="server-test-sessionbean">
+        <antcall target="server-run-all" inheritRefs="true">
+            <param name="PERSISTENCE_UNIT_NAME" value="sessionbean"/>
+            <param name="MODEL_DIR" value="org/eclipse/persistence/testing/models/jpa/sessionbean"/>
+            <param name="MODEL_DIR2" value="org/eclipse/persistence/testing/models/jpa/fieldaccess/advanced"/>
+            <param name="MODEL_NAME" value="eclipselink-sessionbean-model"/>
+            <param name="TEST_DIR" value="org/eclipse/persistence/testing/tests/jpa/sessionbean"/>
+            <param name="TEST_NAME" value="eclipselink-sessionbean-model"/>
+            <param name="EAR_NAME" value="eclipselink-sessionbean-model"/>
+            <param name="TEST_SUITE" value="org.eclipse.persistence.testing.tests.jpa.sessionbean.SessionBeanTests"/>
+            <param name="eclipselink.jpa.test.dir" value="."/>
+        </antcall>
+    </target>
+
+    <target name="server-test-validation">
+        <antcall target="server-run-all" inheritRefs="true">
+            <param name="PERSISTENCE_UNIT_NAME" value="default"/>
+            <param name="MODEL_DIR" value="org/eclipse/persistence/testing/models/jpa/advanced"/>
+            <param name="MODEL_NAME" value="eclipselink-validation-model"/>
+            <param name="TEST_DIR" value="org/eclipse/persistence/testing/tests/jpa/validation"/>
+            <param name="TEST_NAME" value="eclipselink-validation-model"/>
+            <param name="EAR_NAME" value="eclipselink-validation-model"/>
+            <param name="TEST_SUITE" value="org.eclipse.persistence.testing.tests.jpa.validation.CMP3ValidationTestModel"/>
+            <param name="eclipselink.jpa.test.dir" value="."/>
+        </antcall>
+    </target>
+
+    <target name="server-test-xml-mergeinherited">
+        <copy todir="${eclipselink.jpa.test}/resource/eclipselink-ddl-generation-model/server_merge-inherited/" overwrite="true" failonerror="false">
+            <fileset dir="${eclipselink.jpa.test}/resource/eclipselink-ddl-generation-model/">
+                <include name="merge-*.xml"/>
+            </fileset>
+        </copy>
+        <move file="${eclipselink.jpa.test}/resource/eclipselink-ddl-generation-model/server" tofile="${eclipselink.jpa.test}/resource/eclipselink-ddl-generation-model/server_ddl"/>
+        <move file="${eclipselink.jpa.test}/resource/eclipselink-ddl-generation-model/server_merge-inherited" tofile="${eclipselink.jpa.test}/resource/eclipselink-ddl-generation-model/server"/>
+        <antcall target="server-run-all" inheritRefs="true">
+            <param name="PERSISTENCE_UNIT_NAME" value="ddlGeneration"/>
+            <param name="MODEL_DIR" value="org/eclipse/persistence/testing/models/jpa/xml/merge/inherited"/>
+            <param name="MODEL_NAME" value="eclipselink-ddl-generation-model"/>
+            <param name="TEST_DIR" value="org/eclipse/persistence/testing/tests/jpa/xml/merge/inherited"/>
+            <param name="TEST_NAME" value="eclipselink-ddl-generation-model"/>
+            <param name="EAR_NAME" value="eclipselink-xml-merge-inherited-model"/>
+            <param name="TEST_SUITE" value="org.eclipse.persistence.testing.tests.jpa.xml.merge.inherited.EntityMappingsMergeInheritedJUnitTestCase"/>
+            <param name="eclipselink.jpa.test.dir" value="."/>
+        </antcall>
+        <move file="${eclipselink.jpa.test}/resource/eclipselink-ddl-generation-model/server" tofile="${eclipselink.jpa.test}/resource/eclipselink-ddl-generation-model/server_merge-inherited"/>
+        <move file="${eclipselink.jpa.test}/resource/eclipselink-ddl-generation-model/server_ddl" tofile="${eclipselink.jpa.test}/resource/eclipselink-ddl-generation-model/server"/>
+    </target>
+
+    <target name="server-test-xmltest">
+        <copy todir="${eclipselink.jpa.test}/resource/eclipselink-xml-servertest-model/server/" overwrite="true" failonerror="false">
+            <fileset dir="${eclipselink.jpa.test}/resource/eclipselink-xml-merge-model/">
+                <include name="*.xml"/>
+            </fileset>
+            <fileset dir="${eclipselink.jpa.test}/resource/eclipselink-xml-only-model/">
+                <include name="*.xml"/>
+                <exclude name="orm.xml"/>
+            </fileset>
+        </copy>
+        <antcall target="server-run-all" inheritRefs="true">
+            <param name="PERSISTENCE_UNIT_NAME" value="default"/>
+            <param name="MODEL_DIR" value="org/eclipse/persistence/testing/models/jpa/xml"/>
+            <param name="MODEL_DIR2" value="org/eclipse/persistence/testing/models/jpa/advanced"/>
+            <param name="MODEL_NAME" value="eclipselink-xml-servertest-model"/>
+            <param name="TEST_DIR" value="org/eclipse/persistence/testing/tests/jpa/xml"/>
+            <param name="TEST_NAME" value="eclipselink-xml-servertest-model"/>
+            <param name="EAR_NAME" value="eclipselink-xml-servertest-model"/>
+            <param name="TEST_SUITE" value="org.eclipse.persistence.testing.tests.jpa.xml.EntityMappingsServerJUnitTestSuite"/>
             <param name="eclipselink.jpa.test.dir" value="."/>
         </antcall>
     </target>

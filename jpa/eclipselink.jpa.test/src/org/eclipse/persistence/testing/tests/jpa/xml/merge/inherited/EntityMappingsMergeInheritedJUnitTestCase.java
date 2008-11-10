@@ -53,6 +53,7 @@ public class EntityMappingsMergeInheritedJUnitTestCase extends JUnitTestCase {
     
     public static Test suite() {
         TestSuite suite = new TestSuite("Inherited Model");
+        suite.addTest(new EntityMappingsMergeInheritedJUnitTestCase("testSetup"));
         suite.addTest(new EntityMappingsMergeInheritedJUnitTestCase("testOneToManyRelationships"));
         suite.addTest(new EntityMappingsMergeInheritedJUnitTestCase("testVerifyOneToManyRelationships"));
         suite.addTest(new EntityMappingsMergeInheritedJUnitTestCase("testCreateBeerConsumer"));
@@ -66,16 +67,16 @@ public class EntityMappingsMergeInheritedJUnitTestCase extends JUnitTestCase {
         suite.addTest(new EntityMappingsMergeInheritedJUnitTestCase("testBeerLifeCycleMethodAnnotationIgnored"));
         suite.addTest(new EntityMappingsMergeInheritedJUnitTestCase("testMappedSuperclassEntityListener"));
         suite.addTest(new EntityMappingsMergeInheritedJUnitTestCase("testMappedSuperclassEmbeddedXMLElement"));
-        return new TestSetup(suite) {
-            
-            protected void setUp(){               
-                DatabaseSession session = JUnitTestCase.getServerSession();   
-            }
         
-            protected void tearDown() {
-                clearCache("ddlGeneration");
-            }
-        };
+        return suite;
+    }
+    
+    /**
+     * The setup is done as a test, both to record its failure, and to allow execution in the server.
+     */
+    public void testSetup() {
+        DatabaseSession session = JUnitTestCase.getServerSession();
+        clearCache("ddlGeneration");
     }
     
     public void testCreateBeerConsumer() {

@@ -40,6 +40,7 @@ public class QueryParameterValidationTestSuite extends JUnitTestCase {
         Query query = createEntityManager().createQuery("Select e from Employee e where e.lastName like :name ");
         try{
             query.setParameter("l", "%ay");
+            query.getResultList();
         }catch (IllegalArgumentException ex){
             assertTrue("Failed to throw expected IllegalArgumentException, when incorrect parameter name is used", ex.getMessage().contains("using a name"));
             return;
@@ -52,6 +53,7 @@ public class QueryParameterValidationTestSuite extends JUnitTestCase {
         Query query = createEntityManager().createQuery("Select e from Employee e where e.firstName like ?1 ");
         try{
             query.setParameter(2, "%ay");
+            query.getResultList();
         }catch (IllegalArgumentException ex){
             assertTrue("Failed to throw expected IllegalArgumentException, when incorrect parameter name is used", ex.getMessage().contains("parameter at position"));
             return;
@@ -66,6 +68,7 @@ public class QueryParameterValidationTestSuite extends JUnitTestCase {
             query.setParameter(1, "foo");
             query.setParameter(2, "");
             query.setParameter(3, "bar");
+            query.getResultList();
         } catch (IllegalArgumentException ex) {
             assertTrue("Failed to throw expected IllegalArgumentException, when incorrect parameter name is used", ex.getMessage().contains("parameter at position"));
             return;
@@ -79,16 +82,7 @@ public class QueryParameterValidationTestSuite extends JUnitTestCase {
         
         suite.setName("QueryParameterValidationTestSuite");
         
-        return new TestSetup(suite) {
-        
-            protected void setUp(){      
-            
-            }
-
-            protected void tearDown() {
-                clearCache();
-            }
-        };
+        return suite;
     }
     
 

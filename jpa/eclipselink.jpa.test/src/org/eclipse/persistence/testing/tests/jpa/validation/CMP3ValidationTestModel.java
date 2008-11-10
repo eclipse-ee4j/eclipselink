@@ -12,31 +12,20 @@
  ******************************************************************************/  
 package org.eclipse.persistence.testing.tests.jpa.validation;
 
-import org.eclipse.persistence.testing.framework.TestSuite;
-import org.eclipse.persistence.testing.tests.jpa.CMP3TestModel;
-import org.eclipse.persistence.testing.framework.JUnitTestCase;
+import junit.framework.TestSuite;
+import junit.framework.Test;
 
 /**
- * <p><b>Purpose</b>: To collect the tests that will test specifics of our
- * EJB3.0 implementation through the use of the EntityContainer.  In order for
- * this test model to work correctly the EntityContainer must be initialized
- * thought the comandline agent.
+ * <p><b>Purpose</b>: To collect the tests that will run against Application Server only.
  */
-public class CMP3ValidationTestModel extends CMP3TestModel{
-
-    public void setup(){
-        super.setup();
-    }
-
-    public void addTests(){
-        TestSuite tests = new TestSuite();
-        tests.setName("ValidationTestSuite");
-        tests.addTests(JUnitTestCase.suite(ValidationTestSuite.class));
-        addTest(tests);
-        tests = new TestSuite();
-        tests.setName("QueryParameterValidationTestSuite");
-        tests.addTests(JUnitTestCase.suite(QueryParameterValidationTestSuite.class));
-        addTest(tests);
-    }
+public class CMP3ValidationTestModel extends TestSuite {
     
+    public static Test suite() {
+        TestSuite suite = new TestSuite();
+        suite.setName("ValidationTestSuite");
+        suite.addTest(QueryParameterValidationTestSuite.suite());
+        //suite.addTest(ValidationTestSuite.suite()); - couldn't run on server because of multiple persistence_unit required
+        
+        return suite;
+    }
 }

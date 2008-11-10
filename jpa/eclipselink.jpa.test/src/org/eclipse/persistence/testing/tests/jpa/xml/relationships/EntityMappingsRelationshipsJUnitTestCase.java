@@ -13,6 +13,7 @@
 package org.eclipse.persistence.testing.tests.jpa.xml.relationships;
 
 import javax.persistence.EntityManager;
+import javax.persistence.Query;
 
 import junit.framework.*;
 import junit.extensions.TestSetup;
@@ -51,6 +52,10 @@ public class EntityMappingsRelationshipsJUnitTestCase extends JUnitTestCase {
         super();
     }
     
+    public EntityMappingsRelationshipsJUnitTestCase(String name) {
+        super(name);
+    }
+    
     public EntityMappingsRelationshipsJUnitTestCase(String name, String persistenceUnit) {
         super(name);
         
@@ -62,6 +67,7 @@ public class EntityMappingsRelationshipsJUnitTestCase extends JUnitTestCase {
         final String persistenceUnit = ormTesting.equals(TestingProperties.JPA_ORM_TESTING)? "default" : "extended-relationships";
 
         TestSuite suite = new TestSuite("Relationships Model - " + persistenceUnit);
+        suite.addTest(new EntityMappingsRelationshipsJUnitTestCase("testSetup", persistenceUnit));
         suite.addTest(new EntityMappingsRelationshipsJUnitTestCase("testCreateCustomer", persistenceUnit));
         suite.addTest(new EntityMappingsRelationshipsJUnitTestCase("testCreateItem", persistenceUnit));
         suite.addTest(new EntityMappingsRelationshipsJUnitTestCase("testCreateOrder", persistenceUnit));
@@ -92,21 +98,15 @@ public class EntityMappingsRelationshipsJUnitTestCase extends JUnitTestCase {
             suite.addTest(new EntityMappingsRelationshipsJUnitTestCase("testInstantiationCopyPolicy", persistenceUnit));
         }
         
-        return new TestSetup(suite) {
-            
-            protected void setUp(){               
-                DatabaseSession session = JUnitTestCase.getServerSession(persistenceUnit);   
-                new RelationshipsTableManager().replaceTables(session);
-            }
-        
-            protected void tearDown() {
-                clearCache(persistenceUnit);
-            }
-        };
+        return suite;
     }
     
-    public void setUp () {
-        super.setUp();
+    /**
+     * The setup is done as a test, both to record its failure, and to allow execution in the server.
+     */
+    public void testSetup() {
+        DatabaseSession session = JUnitTestCase.getServerSession(m_persistenceUnit);
+        new RelationshipsTableManager().replaceTables(session);
         clearCache(m_persistenceUnit);
     }
     
@@ -238,7 +238,7 @@ public class EntityMappingsRelationshipsJUnitTestCase extends JUnitTestCase {
 
     public void testNamedQueryOnOrder() {
         EntityManager em = createEntityManager(m_persistenceUnit);
-        EJBQueryImpl query = (EJBQueryImpl) em.createNamedQuery("findAllXMLOrdersByItem");
+        Query query = em.createNamedQuery("findAllXMLOrdersByItem");
         query.setParameter("id", itemId);
         Order order = (Order) query.getSingleResult();
         assertTrue("Error executing named query 'findAllXMLOrdersByItem'", order != null);
@@ -247,7 +247,7 @@ public class EntityMappingsRelationshipsJUnitTestCase extends JUnitTestCase {
 
     public void testNamedQueryOnItem() {
         EntityManager em = createEntityManager(m_persistenceUnit);
-        EJBQueryImpl query = (EJBQueryImpl) em.createNamedQuery("findAllXMLItemsByName");
+        Query query = em.createNamedQuery("findAllXMLItemsByName");
         query.setParameter("1", "Widget");
         Item item = (Item) query.getSingleResult();
         assertTrue("Error executing named query 'findAllXMLItemsByName'", item != null);

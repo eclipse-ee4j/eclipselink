@@ -15,6 +15,7 @@
 package org.eclipse.persistence.testing.tests.jpa.xml.merge.relationships;
 
 import javax.persistence.EntityManager;
+import javax.persistence.Query;
 
 import junit.framework.*;
 import junit.extensions.TestSetup;
@@ -54,6 +55,7 @@ public class EntityMappingsMergeRelationshipsJUnitTestCase extends JUnitTestCase
         TestSuite suite = new TestSuite("Relationships Model");
         
         // These tests will verify some merging rules.
+        suite.addTest(new EntityMappingsMergeRelationshipsJUnitTestCase("testSetup"));
         suite.addTest(new EntityMappingsMergeRelationshipsJUnitTestCase("testCustomerOrdersMapping"));
         suite.addTest(new EntityMappingsMergeRelationshipsJUnitTestCase("testOrderCustomerMapping"));
         suite.addTest(new EntityMappingsMergeRelationshipsJUnitTestCase("testItemNameMapping"));
@@ -78,17 +80,16 @@ public class EntityMappingsMergeRelationshipsJUnitTestCase extends JUnitTestCase
         suite.addTest(new EntityMappingsMergeRelationshipsJUnitTestCase("testDeleteCustomer"));
         suite.addTest(new EntityMappingsMergeRelationshipsJUnitTestCase("testDeleteItem"));
         
-        return new TestSetup(suite) {
-            
-            protected void setUp(){  
-            	DatabaseSession session = JUnitTestCase.getServerSession();   
-                new RelationshipsTableManager().replaceTables(session);
-            }
-        
-            protected void tearDown() {
-                clearCache();
-            }
-        };
+        return suite;
+    }
+    
+    /**
+     * The setup is done as a test, both to record its failure, and to allow execution in the server.
+     */
+    public void testSetup() {
+        DatabaseSession session = JUnitTestCase.getServerSession();
+        new RelationshipsTableManager().replaceTables(session);
+        clearCache();
     }
     
     /**
@@ -242,7 +243,7 @@ public class EntityMappingsMergeRelationshipsJUnitTestCase extends JUnitTestCase
         beginTransaction(em);
         try {
             em.remove(em.find(Order.class, orderId));
-        	em.refresh(em.find(Customer.class, customerId)); //refresh Customer
+            em.refresh(em.find(Customer.class, customerId)); //refresh Customer
             commitTransaction(em);
         } catch (RuntimeException e) {
             if (isTransactionActive(em)){
@@ -260,14 +261,14 @@ public class EntityMappingsMergeRelationshipsJUnitTestCase extends JUnitTestCase
     }
 
     public void testNamedQueryOnOrder() {
-        EJBQueryImpl query = (EJBQueryImpl) createEntityManager().createNamedQuery("findAllXMLMergeOrdersByItem");
+        Query query = createEntityManager().createNamedQuery("findAllXMLMergeOrdersByItem");
         query.setParameter("id", itemId);
         Order order = (Order) query.getSingleResult();
         assertTrue("Error executing named query 'findAllXMLMergeOrdersByItem'", order != null);
     }
 
     public void testNamedQueryOnItem() {
-        EJBQueryImpl query = (EJBQueryImpl) createEntityManager().createNamedQuery("findAllXMLMergeItemsByName");
+        Query query = createEntityManager().createNamedQuery("findAllXMLMergeItemsByName");
         query.setParameter("1", "PartA");
         Item item = (Item) query.getSingleResult();
         assertTrue("Error executing named query 'findAllXMLMergeItemsByName'", item != null);
