@@ -32,6 +32,7 @@ import org.eclipse.persistence.testing.models.jpa.advanced.Vegetable;
 import org.eclipse.persistence.testing.models.jpa.advanced.VegetablePK;
 import org.eclipse.persistence.testing.models.jpa.advanced.WorldRank;
 import org.eclipse.persistence.testing.models.jpa.advanced.PartnerLink;
+import org.eclipse.persistence.testing.models.jpa.advanced.LargeProject;
 
 public class AdvancedJunitTest extends JUnitTestCase {
     public AdvancedJunitTest() {
@@ -78,6 +79,35 @@ public class AdvancedJunitTest extends JUnitTestCase {
         }
         
         closeEntityManager(em);
+    }
+    
+    public void testEL254937(){
+        EntityManager em = createEntityManager();
+        beginTransaction(em);
+        LargeProject lp1 = new LargeProject();
+        lp1.setName("one");
+        em.persist(lp1);
+        commitTransaction(em);
+        em = createEntityManager();
+        beginTransaction(em);
+        em.remove(em.find(LargeProject.class, lp1.getId()));
+        em.flush();
+        System.out.println("done the flush!!!");
+        org.eclipse.persistence.jpa.JpaEntityManager eclipselinkEm = (org.eclipse.persistence.jpa.JpaEntityManager)em;
+        org.eclipse.persistence.internal.sessions.RepeatableWriteUnitOfWork uow = 
+            (org.eclipse.persistence.internal.sessions.RepeatableWriteUnitOfWork)eclipselinkEm.getActiveSession();
+        //duplicate the beforeCompletion call
+        uow.issueSQLbeforeCompletion();
+        //commit the transaction
+        uow.setShouldTerminateTransaction(true);
+        uow.commitTransaction();
+        
+        //duplicate the AfterCompletion call.  This should merge, removing the LargeProject from the shared cache
+        uow.mergeClonesAfterCompletion();
+        em = createEntityManager();
+        LargeProject cachedLargeProject = em.find(LargeProject.class, lp1.getId());
+        em.close();
+        assertTrue("Entity removed during flush was not removed from the shared cache on commit", cachedLargeProject==null);
     }
     
     public void testGF1894() {

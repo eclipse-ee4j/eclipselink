@@ -215,7 +215,7 @@ public class RepeatableWriteUnitOfWork extends UnitOfWorkImpl {
 
         super.issueSQLbeforeCompletion(false);
 
-        if (this.cumulativeUOWChangeSet != null && this.getUnitOfWorkChangeSet() != null){
+        if (this.cumulativeUOWChangeSet != null){
             // unit of work has been committed so it's ok to set the cumulative into the UOW for merge
             this.cumulativeUOWChangeSet.mergeUnitOfWorkChangeSet((UnitOfWorkChangeSet)this.getUnitOfWorkChangeSet(), this, true);
             setUnitOfWorkChangeSet(this.cumulativeUOWChangeSet);
