@@ -143,55 +143,7 @@ public class PropertiesHandler {
     
     /**
      * INTERNAL:
-     * Gets the property from the provided Map m first; if none found then
-     * gets property value from AbstractSession.getProperties() map,
-     * if none found looks in its parent recursively;
-     * if none is found looks in System properties.
-     * Use this to get a value for a non-prefixed property.
-     * Throws IllegalArgumentException in case the property value is illegal.
-     */
-    public static String getSessionPropertyValue(String name, Map m, AbstractSession session) {
-        String value = null;
-        if(m != null) {
-            value = Prop.getPropertyValueToApply(name, m, null, false);
-        }
-        while(value == null && session != null) {
-            AbstractSession parent = session.getParent();
-            // Don't use System properties as default unless session has no parent.
-            // Motivation: look in all the recursive parents' properties before looking in System properties.
-            value = Prop.getPropertyValueToApply(name, session.getProperties(), null, parent == null);
-            session = parent;
-        }
-        return value;
-    }
-
-    public static String getSessionPropertyValueLogDebug(String name, Map m, AbstractSession session) {
-        String value = null;
-        if(m != null) {
-            value = Prop.getPropertyValueToApply(name, m, session, false);
-        }
-        while(value == null && session != null) {
-            AbstractSession parent = session.getParent();
-            // Don't use System properties as default unless session has no parent.
-            // Motivation: look in all the recursive parents' properties before looking in System properties.
-            value = Prop.getPropertyValueToApply(name, session.getProperties(), session, parent == null);
-            session = parent;
-        }
-        return value;
-    }
-    
-    public static String getSessionPropertyValue(String name, AbstractSession session) {
-        return getSessionPropertyValue(name, null, session);
-    }
-
-    public static String getSessionPropertyValueLogDebug(String name, AbstractSession session) {
-        return getSessionPropertyValueLogDebug(name, null, session);
-    }
-    
-    /**
-     * INTERNAL:
-     * Empty String value indicates that the default property value
-     * should be used.
+     * Empty String value indicates that the default property value should be used.
      */
     protected static boolean shouldUseDefault(String value) {
         return value != null &&  value.length() == 0;
@@ -426,29 +378,33 @@ public class PropertiesHandler {
         }
         
         void logDefault(AbstractSession session, String suffix) {
-            if(session != null) {
-                String propertyName = name;
-                if(suffix != null) {
-                    propertyName = propertyName + suffix;
-                }
-                if(defaultValue != defaultValueToApply) {
-                    session.log(SessionLog.FINEST, SessionLog.PROPERTIES, "handler_property_value_default", new Object[]{propertyName, defaultValue, defaultValueToApply});
-                } else {
-                    session.log(SessionLog.FINEST, SessionLog.PROPERTIES, "property_value_default", new Object[]{propertyName, defaultValue});
+            if (session != null) {
+                if (session.shouldLog(SessionLog.FINEST, SessionLog.PROPERTIES)) {
+                    String propertyName = name;
+                    if (suffix != null) {
+                        propertyName = propertyName + suffix;
+                    }
+                    if (defaultValue != defaultValueToApply) {
+                        session.log(SessionLog.FINEST, SessionLog.PROPERTIES, "handler_property_value_default", new Object[]{propertyName, defaultValue, defaultValueToApply});
+                    } else {
+                        session.log(SessionLog.FINEST, SessionLog.PROPERTIES, "property_value_default", new Object[]{propertyName, defaultValue});
+                    }
                 }
             }
         }
         
         void log(AbstractSession session, String value, String valueToApply, String suffix) {
-            if(session != null) {
-                String propertyName = name;
-                if(suffix != null) {
-                    propertyName = propertyName + suffix;
-                }
-                if(value != valueToApply) {
-                    session.log(SessionLog.FINEST, SessionLog.PROPERTIES, "handler_property_value_specified", new Object[]{propertyName, value, valueToApply});
-                } else {
-                    session.log(SessionLog.FINEST, SessionLog.PROPERTIES, "property_value_specified", new Object[]{propertyName, value});
+            if (session != null) {
+                if (session.shouldLog(SessionLog.FINEST, SessionLog.PROPERTIES)) {
+                    String propertyName = name;
+                    if(suffix != null) {
+                        propertyName = propertyName + suffix;
+                    }
+                    if(value != valueToApply) {
+                        session.log(SessionLog.FINEST, SessionLog.PROPERTIES, "handler_property_value_specified", new Object[]{propertyName, value, valueToApply});
+                    } else {
+                        session.log(SessionLog.FINEST, SessionLog.PROPERTIES, "property_value_specified", new Object[]{propertyName, value});
+                    }
                 }
             }
         }

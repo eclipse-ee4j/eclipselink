@@ -13,7 +13,6 @@
 package org.eclipse.persistence.exceptions;
 
 import java.io.*;
-import org.eclipse.persistence.internal.helper.JavaPlatform;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.exceptions.i18n.ExceptionMessageGenerator;
 
@@ -102,7 +101,7 @@ public abstract class EclipseLinkException extends RuntimeException {
         StringWriter writer = new StringWriter(100);
 
         // Avoid printing internal exception error message twice.
-        if ((getInternalException() == null) || (!super.getMessage().equals(getInternalException().toString()))) {
+        if ((getInternalException() == null) || ((super.getMessage() != null) && !super.getMessage().equals(getInternalException().toString()))) {
             writer.write(cr());
             writer.write(getIndentationString());
             writer.write(ExceptionMessageGenerator.getHeader("DescriptionHeader"));

@@ -61,6 +61,7 @@ import org.eclipse.persistence.internal.sessions.RepeatableWriteUnitOfWork;
 import org.eclipse.persistence.logging.SessionLog;
 import org.eclipse.persistence.internal.sessions.UnitOfWorkImpl;
 import org.eclipse.persistence.config.EntityManagerProperties;
+import org.eclipse.persistence.config.FlushClearCache;
 import org.eclipse.persistence.descriptors.CMPPolicy;
 import org.eclipse.persistence.config.QueryHints;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
@@ -73,8 +74,9 @@ import org.eclipse.persistence.descriptors.VersionLockingPolicy;
 * <b>Description</b>: This class provides the implementation for the combined EclipseLink
 * and JPA EntityManager class.  
 * <p>
-* <b>Responsibilities</b>:It is responsible for tracking transaction state and the
+* <b>Responsibilities</b>: It is responsible for tracking transaction state and the
 * objects within that transaction.
+* 
 * @see javax.persistence.EntityManager
 * @see org.eclipse.persistence.jpa.JpaEntityManager
 * 
@@ -82,32 +84,39 @@ import org.eclipse.persistence.descriptors.VersionLockingPolicy;
 * @since TopLink 10.1.3 EJB 3.0 Preview
 */
 public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityManager {
-    protected TransactionWrapperImpl transaction = null;
-    protected boolean isOpen = true;
+    /** Allows transparent transactions across JTA and local transactions. */
+    protected TransactionWrapperImpl transaction;
+    
+    /** Store is this entity manager has been closed. */
+    protected boolean isOpen;
+    
+    /** Stores the UnitOfWork representing the persistence context. */
     protected RepeatableWriteUnitOfWork extendedPersistenceContext;
-    // This attribute references the ServerSession that this deployment is using.
-    // This is a simple mechanism to reduce the number of SessionManager accesses.
+    
+    /**
+     * References the ServerSession that this deployment is using.
+     */
     protected ServerSession serverSession;
-    // References the factory that has created this entity manager
-    // to make sure that the factory is not garbage collected
+    
+    /**
+     * References to the parent factory that has created this entity manager.
+     * Ensures that the factory is not garbage collected.
+     */
     protected EntityManagerFactoryImpl factory;
 
-    // We have not removed these flags because we may want to use them at a later date to provide transactional EntityManagers in JAVA SE
-    protected boolean extended;
-    protected boolean propagatePersistenceContext;
-        
-    //gf3334, force early transaction flag.
-    protected boolean beginEarlyTransaction = false;
+    /** Join existing transaction property, allows reading through write connection. */
+    protected boolean beginEarlyTransaction;
     
-    //gf3334, this is place holder for properties that passed from createEntityManager 
+    /** Local properties passed from createEntityManager. */
     protected Map properties;
 
+    /** Flush mode property, allows flush before query to be avoided. */
     protected FlushModeType flushMode;
-    
-    //Stores the reference mode for the UOW options WEAK or HARD
+
+    /** Reference mode property, allows weak unit of work references to allow garbage collection during a transaction. */
     protected ReferenceMode referenceMode;
     
-    //Connection policy used to create the uow's parent ClientSession.
+    /** Connection policy used to create ClientSession, allows using a different pool/connection/exclusive connections. */
     protected ConnectionPolicy connectionPolicy;
     
     /** Property to avoid resuming unit of work if going to be closed on commit anyway. */
@@ -115,6 +124,16 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
     
     /** Property to avoid discover new objects in unit of work if application always uses persist. */
     protected boolean persistOnCommit;
+
+    /**
+     * The FlashClearCache mode to be used.
+     * Relevant only in case call to flush method followed by call to clear method.
+     * @see org.eclipse.persistence.config.FlushClearCache
+     */
+    protected String flushClearCache;
+
+    /** Determine if does-exist should be performed on persist. */
+    protected boolean shouldValidateExistence;
     
     /**
      * Constructor returns an EntityManager assigned to the a particular ServerSession.
@@ -122,16 +141,16 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
      * This constructor can potentially throw EclipseLink exceptions regarding the existence, or
      * errors with the specified session.
      */
-    public EntityManagerImpl(String sessionName, boolean propagatePersistenceContext, boolean extended) {
-        this((ServerSession)SessionManager.getManager().getSession(sessionName), null, propagatePersistenceContext, extended);
+    public EntityManagerImpl(String sessionName) {
+        this((ServerSession)SessionManager.getManager().getSession(sessionName), null);
     }
 
    /**
      * Constructor called from the EntityManagerFactory to create an EntityManager
      * @param serverSession the serverSession assigned to this deployment.
      */
-    public EntityManagerImpl(ServerSession serverSession, boolean propagatePersistenceContext, boolean extended){
-        this(serverSession, null, propagatePersistenceContext, extended);
+    public EntityManagerImpl(ServerSession serverSession){
+        this(serverSession, null);
     }
     
     /**
@@ -140,25 +159,14 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
      * Note: The properties argument is provided to allow properties to be passed into this EntityManager,
      * but there are currently no such properties implemented
      */
-    public EntityManagerImpl(ServerSession serverSession, Map properties, boolean propagatePersistenceContext, boolean extended) {
+    public EntityManagerImpl(ServerSession serverSession, Map properties) {
         this.serverSession = serverSession;
-        initialize(properties);
-    }
-    
-    /**
-     * Initialize the state after construction.
-     */
-    protected void initialize(Map properties) {
-        detectTransactionWrapper();
-        this.extended = true;
-        this.propagatePersistenceContext = false;
-        // bug 236249: In JPA session.setProperty() throws UnsupportedOperationException.
-        if (properties != null) {
-            this.properties = new HashMap(properties);
-        }
+        this.referenceMode = ReferenceMode.HARD;
         this.flushMode = FlushModeType.AUTO;
+        this.flushClearCache = FlushClearCache.DEFAULT;
         this.persistOnCommit = true;
-        processProperties();
+        this.isOpen = true;
+        initialize(properties);
     }
     
     /**
@@ -167,10 +175,30 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
      * Note: The properties argument is provided to allow properties to be passed into this EntityManager,
      * but there are currently no such properties implemented
      */
-    public EntityManagerImpl(EntityManagerFactoryImpl factory, Map properties, boolean propagatePersistenceContext, boolean extended) {
+    public EntityManagerImpl(EntityManagerFactoryImpl factory, Map properties) {
         this.factory = factory;
         this.serverSession = factory.getServerSession();
+        this.beginEarlyTransaction = factory.getBeginEarlyTransaction();
+        this.closeOnCommit = factory.getCloseOnCommit();
+        this.flushMode = factory.getFlushMode();
+        this.persistOnCommit = factory.getPersistOnCommit();
+        this.referenceMode = factory.getReferenceMode();
+        this.flushClearCache = factory.getFlushClearCache();
+        this.shouldValidateExistence = factory.shouldValidateExistence();
+        this.isOpen = true;
         initialize(properties);
+    }
+    
+    /**
+     * Initialize the state after construction.
+     */
+    protected void initialize(Map properties) {
+        detectTransactionWrapper();
+        // bug 236249: In JPA session.setProperty() throws UnsupportedOperationException.
+        if (properties != null) {
+            this.properties = new HashMap(properties);
+        }
+        processProperties();
     }
     
     /**
@@ -182,23 +210,19 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
     public void clear() {
         try {
             verifyOpen();
-            if (this.isExtended()) {
-                if (this.extendedPersistenceContext != null) {
-                    if (checkForTransaction(false) == null) {
-                        // clear all change sets and cache
-                        this.extendedPersistenceContext.clearForClose(true);
-                        this.extendedPersistenceContext = null;
-                    } else {
-                        // clear all change sets created after the last flush and cache
-                        this.extendedPersistenceContext.clear(true);
-                    }
+            if (this.extendedPersistenceContext != null) {
+                if (checkForTransaction(false) == null) {
+                    // clear all change sets and cache
+                    this.extendedPersistenceContext.clearForClose(true);
+                    this.extendedPersistenceContext = null;
+                } else {
+                    // clear all change sets created after the last flush and cache
+                    this.extendedPersistenceContext.clear(true);
                 }
-            } else {
-                transaction.clear();
             }
-        } catch (RuntimeException e) {
-            this.setRollbackOnly();
-            throw e;
+        } catch (RuntimeException exception) {
+            setRollbackOnly();
+            throw exception;
         }
     }
 
@@ -223,16 +247,16 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
                 throw new IllegalArgumentException(ExceptionLocalization.buildMessage("not_an_entity", new Object[] { entity }));
             }
             try {
-                getActivePersistenceContext(checkForTransaction(!isExtended())).registerNewObjectForPersist(entity, new IdentityHashMap());
-            } catch (RuntimeException e) {
-                if (ValidationException.class.isAssignableFrom(e.getClass())) {
-                    throw new EntityExistsException(e.getLocalizedMessage(), e);
+                getActivePersistenceContext(checkForTransaction(false)).registerNewObjectForPersist(entity, new IdentityHashMap());
+            } catch (RuntimeException exception) {
+                if (exception instanceof ValidationException) {
+                    throw new EntityExistsException(exception.getLocalizedMessage(), exception);
                 }
-                throw e;
+                throw exception;
             }
-        } catch (RuntimeException e) {
+        } catch (RuntimeException exception) {
             setRollbackOnly();
-            throw e;
+            throw exception;
         }
     }
 
@@ -266,7 +290,7 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
             throw new IllegalArgumentException(ExceptionLocalization.buildMessage("not_an_entity", new Object[] { entity }));
         }
         Object merged = null;
-        UnitOfWorkImpl context = getActivePersistenceContext(checkForTransaction(!isExtended()));
+        UnitOfWorkImpl context = getActivePersistenceContext(checkForTransaction(false));
         try {
             merged = context.mergeCloneWithReferences(entity, MergeManager.CASCADE_BY_MAPPING, true);
         } catch (org.eclipse.persistence.exceptions.OptimisticLockException ole) {
@@ -287,7 +311,7 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
                 throw new IllegalArgumentException(ExceptionLocalization.buildMessage("not_an_entity", new Object[] { entity }));
             }
             try {
-                getActivePersistenceContext(checkForTransaction(!isExtended())).performRemove(entity, new IdentityHashMap());
+                getActivePersistenceContext(checkForTransaction(false)).performRemove(entity, new IdentityHashMap());
             } catch (RuntimeException e) {
                 throw e;
             }
@@ -610,7 +634,7 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
     public void refresh(Object entity, LockModeType lockMode, Map properties) {
         try {
             verifyOpen();
-            UnitOfWork uow = getActivePersistenceContext(checkForTransaction(!isExtended()));
+            UnitOfWork uow = getActivePersistenceContext(checkForTransaction(false));
             if (! contains(entity, uow)) {
                 throw new IllegalArgumentException(ExceptionLocalization.buildMessage("cant_refresh_not_managed_object", new Object[] { entity }));
             }
@@ -654,7 +678,7 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
             if (entity == null) {
                 throw new IllegalArgumentException(ExceptionLocalization.buildMessage("not_an_entity", new Object[] { entity }));
             }
-            ClassDescriptor descriptor = (ClassDescriptor)getServerSession().getDescriptors().get(entity.getClass());
+            ClassDescriptor descriptor = (ClassDescriptor)this.serverSession.getDescriptors().get(entity.getClass());
             if (descriptor == null || descriptor.isAggregateDescriptor() || descriptor.isAggregateCollectionDescriptor()) {
                 throw new IllegalArgumentException(ExceptionLocalization.buildMessage("not_an_entity", new Object[] { entity }));
             }
@@ -685,7 +709,7 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
     public javax.persistence.Query createDescriptorNamedQuery(String queryName, Class descriptorClass, Vector argumentTypes){
         try {
             verifyOpen();
-            ClassDescriptor descriptor = getServerSession().getDescriptor(descriptorClass);
+            ClassDescriptor descriptor = this.serverSession.getDescriptor(descriptorClass);
             if (descriptor != null){
                 DatabaseQuery query = descriptor.getQueryManager().getLocalQueryByArgumentTypes(queryName, argumentTypes);
                 if (query != null){
@@ -777,13 +801,9 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
      * then the getSession() or getUnitOfWork() API should be called.
      */
     public Session getActiveSession() {
-        Object txn = checkForTransaction(false);
-        if (txn == null && !this.isExtended()) {
-            return this.serverSession.acquireNonSynchronizedUnitOfWork(this.referenceMode);
-        } else {
-            return getActivePersistenceContext(txn);
-        }
+        return getActivePersistenceContext(checkForTransaction(false));
     }
+    
     /**
      * Return the underlying provider object for the EntityManager,
      * if available. The result of this method is implementation
@@ -1047,14 +1067,6 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
             throw e;
         }
     }
-
-
-    /**
-     * Indicates if this EntityManager is an extended Persistence Context
-     */
-    public boolean isExtended() {
-        return this.extended;
-    }
     
     /**
      * Internal method. Indicates whether flushMode is AUTO.
@@ -1122,9 +1134,9 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
                     query.cascadePrivateParts();
                 }
                 
-                executeQuery(query, lockMode, getActivePersistenceContext(checkForTransaction(!isExtended())));
+                executeQuery(query, lockMode, getActivePersistenceContext(checkForTransaction(false)));
             } else {
-                RepeatableWriteUnitOfWork context = getActivePersistenceContext(checkForTransaction(!isExtended()));
+                RepeatableWriteUnitOfWork context = getActivePersistenceContext(checkForTransaction(false));
                 ClassDescriptor descriptor = context.getDescriptor(entity);
                 OptimisticLockingPolicy lockingPolicy = descriptor.getOptimisticLockingPolicy();
                 if ((lockingPolicy == null) || !(lockingPolicy instanceof VersionLockingPolicy)) {
@@ -1152,6 +1164,8 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
             this.extendedPersistenceContext = new RepeatableWriteUnitOfWork(this.serverSession.acquireClientSession(connectionPolicy, properties), this.referenceMode);
             this.extendedPersistenceContext.setResumeUnitOfWorkOnTransactionCompletion(!this.closeOnCommit);
             this.extendedPersistenceContext.setShouldDiscoverNewObjects(this.persistOnCommit);
+            this.extendedPersistenceContext.setFlushClearCache(this.flushClearCache);
+            this.extendedPersistenceContext.setShouldValidateExistence(this.shouldValidateExistence);
             this.extendedPersistenceContext.setShouldCascadeCloneToJoinedRelationship(true);
             if (txn != null) {
                 // if there is an active txn we must register with it on creation of PC
@@ -1186,14 +1200,19 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
      * If there is no active persistence context the method returns false
      */
     private boolean hasActivePersistenceContext() {
-        if (isExtended() && (this.extendedPersistenceContext == null || !this.extendedPersistenceContext.isActive()))
+        if (this.extendedPersistenceContext == null || !this.extendedPersistenceContext.isActive()) {
             return false;
-        else
+        } else {
             return true;
+        }
     }
 
+    /**
+     * Return the current transaction object.
+     * If validateExistence is true throw an error if there is no transaction, otherwise return null.
+     */
     protected Object checkForTransaction(boolean validateExistence) {
-        return transaction.checkForTransaction(validateExistence);
+        return this.transaction.checkForTransaction(validateExistence);
     }
 
     public boolean shouldFlushBeforeQuery() {
@@ -1203,17 +1222,12 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
         }
         return false;
     }
-
-    /**
-     * This is used to determine if the Persistence Contexts (in the form of UOWs)
-     * should be propagated or not, which effectively means we will use the 
-     * active unit of work.
-     */
-    public boolean shouldPropagatePersistenceContext() {
-        return this.propagatePersistenceContext;
-    }
     
-    //Indicate the early transaction should be forced to start.
+    /**
+     * Indicate the early transaction should be forced to start.
+     * This allows for reading through the write connection.
+     * As a side effect, this will also prevent anything from being cached.
+     */
     public boolean shouldBeginEarlyTransaction(){
         return this.beginEarlyTransaction;
     }
@@ -1245,41 +1259,51 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
     }
     
     /**
-     * Internal method, set begin early transaction if property has been specified.
+     * Process the local EntityManager properties only.
+     * The persistence unit properties are processed by the factory.
      */
-    private void processProperties(){
-        String beginEarlyTransactionProperty = getPropertiesHandlerProperty(EntityManagerProperties.JOIN_EXISTING_TRANSACTION);
-        if (beginEarlyTransactionProperty != null) {
-            this.beginEarlyTransaction="true".equalsIgnoreCase(beginEarlyTransactionProperty);
+    private void processProperties() {
+        if ((this.properties != null) && !this.properties.isEmpty()) {
+            String beginEarlyTransactionProperty = getPropertiesHandlerProperty(EntityManagerProperties.JOIN_EXISTING_TRANSACTION);
+            if (beginEarlyTransactionProperty != null) {
+                this.beginEarlyTransaction="true".equalsIgnoreCase(beginEarlyTransactionProperty);
+            }
+            String referenceMode = getPropertiesHandlerProperty(EntityManagerProperties.PERSISTENCE_CONTEXT_REFERENCE_MODE);
+            if (referenceMode != null) {
+                this.referenceMode = ReferenceMode.valueOf(referenceMode);
+            }
+            String flushMode = getPropertiesHandlerProperty(EntityManagerProperties.PERSISTENCE_CONTEXT_FLUSH_MODE);
+            if (flushMode != null) {
+                this.flushMode = FlushModeType.valueOf(flushMode);
+            }
+            String closeOnCommit = getPropertiesHandlerProperty(EntityManagerProperties.PERSISTENCE_CONTEXT_CLOSE_ON_COMMIT);
+            if (closeOnCommit != null) {
+                this.closeOnCommit = "true".equalsIgnoreCase(closeOnCommit);
+            }
+            String persistOnCommit = getPropertiesHandlerProperty(EntityManagerProperties.PERSISTENCE_CONTEXT_PERSIST_ON_COMMIT);
+            if (persistOnCommit != null) {
+                this.persistOnCommit = "true".equalsIgnoreCase(persistOnCommit);
+            }
+            String shouldValidateExistence = getPropertiesHandlerProperty(EntityManagerProperties.VALIDATE_EXISTENCE);
+            if (shouldValidateExistence != null) {
+                this.shouldValidateExistence = "true".equalsIgnoreCase(shouldValidateExistence);
+            }
+            String flushClearCache = getPropertiesHandlerProperty(EntityManagerProperties.FLUSH_CLEAR_CACHE);
+            if (shouldValidateExistence != null) {
+                this.flushClearCache = flushClearCache;
+            }
         }
-        String referenceMode = getPropertiesHandlerProperty(EntityManagerProperties.PERSISTENCE_CONTEXT_REFERENCE_MODE);
-        if (referenceMode != null) {
-            this.referenceMode = ReferenceMode.valueOf(referenceMode);
-        }
-        String flushMode = getPropertiesHandlerProperty(EntityManagerProperties.PERSISTENCE_CONTEXT_FLUSH_MODE);
-        if (flushMode != null) {
-            this.flushMode = FlushModeType.valueOf(flushMode);
-        }
-        String closeOnCommit = getPropertiesHandlerProperty(EntityManagerProperties.PERSISTENCE_CONTEXT_CLOSE_ON_COMMIT);
-        if (closeOnCommit != null) {
-            this.closeOnCommit = "true".equalsIgnoreCase(closeOnCommit);
-        }
-        String persistOnCommit = getPropertiesHandlerProperty(EntityManagerProperties.PERSISTENCE_CONTEXT_PERSIST_ON_COMMIT);
-        if (persistOnCommit != null) {
-            this.persistOnCommit = "true".equalsIgnoreCase(persistOnCommit);
-        }
-        
-        connectionPolicy = processConnectionPolicyProperties();
+
+        this.connectionPolicy = processConnectionPolicyProperties();
     }
     
     /**
-     * The method search for user defined property passed in from EntityManager that uses PropertiesHandler, if it is not found then
-     * search for it from EntityManagerFactory properties.
-     * @param name
-     * @return
+     * Get the local EntityManager property from the properties Map.
+     * This only searches the local Map.
+     * The persistence unit properties are processed by the EntityManagerFactory.
      */
     protected String getPropertiesHandlerProperty(String name) {
-        return PropertiesHandler.getSessionPropertyValue(name, properties, getServerSession());
+        return PropertiesHandler.getPropertyValue(name, this.properties, false);
     }
 
     protected void setEntityTransactionWrapper() {   
@@ -1548,12 +1572,14 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
     protected static boolean isPropertyToBeAdded(DataSource ds, String dsName) {
         return ds!=null || (dsName != null && dsName.length()>0);
     }
+    
     /**
      * Property value of an empty string indicates that the existing property should be removed.
      */
     protected static boolean isPropertyToBeRemoved(String value) {
         return value != null && value.length() == 0;
     }
+    
     /**
      * @return null: no change; TRUE: substitute oldValue by newValue; FALSE: remove oldValue 
      */

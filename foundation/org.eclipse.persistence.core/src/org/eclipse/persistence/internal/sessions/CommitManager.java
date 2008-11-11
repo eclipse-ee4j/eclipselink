@@ -63,9 +63,6 @@ public class CommitManager {
      */
     public CommitManager(AbstractSession session) {
         this.session = session;
-        this.commitOrder = new ArrayList();
-        this.isActive = false;
-        this.commitDepth = 0;
     }
 
     /**
@@ -308,6 +305,9 @@ public class CommitManager {
      * where the first vector is all root level classes, the second is classes owned by roots and so on.
      */
     public List<Class> getCommitOrder() {
+        if (this.commitOrder == null) {
+            this.commitOrder = new ArrayList();
+        }
         return this.commitOrder;
     }
 

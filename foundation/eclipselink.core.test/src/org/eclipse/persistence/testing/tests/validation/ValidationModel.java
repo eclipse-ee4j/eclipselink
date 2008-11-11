@@ -181,7 +181,6 @@ public class ValidationModel extends TestModel {
         TestSuite suite = new TestSuite();
         suite.setName("DescriptorExceptionTestSuite(SupportPhaseOne.3)");
         suite.setDescription("This suite tests that proper descriptor exceptions are thrown when appropriate.");
-        suite.addTest(new IndirectContainerInstantiationMismatchTest()); //vesna added
         suite.addTest(new NoSubClassMatchTest_AggregateCollection()); //ian added
         suite.addTest(new NoSubClassMatchTest_AggregateObject()); //ian added  
         suite.addTest(new ReturnAndMappingWithTransparentIndirectionMismatchTest()); //vesna added

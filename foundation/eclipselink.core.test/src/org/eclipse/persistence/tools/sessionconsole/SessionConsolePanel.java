@@ -3214,7 +3214,14 @@ public class SessionConsolePanel extends JPanel implements ActionListener,
 
     public void loggingChanged() {
         int logLevel = getLogLevelChoice().getSelectedIndex();
-        getSession().setLogLevel(logLevel);
+        if (logLevel != getSession().getLogLevel()) {
+            getSession().setLogLevel(logLevel);
+            // Also update all sessions in session manager.
+            Iterator iterator = SessionManager.getManager().getSessions().values().iterator();
+            while (iterator.hasNext()) {
+                ((Session)iterator.next()).setSessionLog(getSession().getSessionLog());
+            }
+        }
     }
 
     public void login() {

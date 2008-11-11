@@ -30,6 +30,8 @@ import org.eclipse.persistence.descriptors.ClassDescriptor;
  */
 public class BasicTypeHelperImpl {
 
+    /** Set of numeric types and its wrapper classes. */
+    private static Set numericTypes = new HashSet();
     /** Set of integral types and its wrapper classes. */
     private static Set integralTypes = new HashSet();
     /** Set of floating point types and its wrapper classes. */
@@ -66,6 +68,11 @@ public class BasicTypeHelperImpl {
         dateClasses.add(java.sql.Date.class);
         dateClasses.add(java.sql.Time.class);
         dateClasses.add(java.sql.Timestamp.class);
+        
+        numericTypes.addAll(integralTypes);
+        numericTypes.addAll(floatingPointTypes);
+        numericTypes.add(java.math.BigDecimal.class);
+        numericTypes.add(java.math.BigInteger.class);
 
         // Initialize mapping primitives to their wrapper classes
         primitiveToWrapper.put(boolean.class, Boolean.class);
@@ -224,10 +231,11 @@ public class BasicTypeHelperImpl {
         return (clazz != null) && (clazz.isEnum());
     }
 
-    /** */
+    /**
+     * Returns true if the class is any numeric type.
+     */
     public boolean isNumericType(Object type) {
-        return isIntegralType(type) || isFloatingPointType(type) ||
-            isBigIntegerType(type) || isBigDecimalType(type);
+        return numericTypes.contains(type);
     }
 
     /**
@@ -336,23 +344,25 @@ public class BasicTypeHelperImpl {
     /** */
     public boolean isAssignableFrom(Object left, Object right) {
         if ((left == null) || (right == null)) {
-            return false;
+            return true;
         }
-        // chec for identical types
+        // check for identical types
         if (left == right) {
             return true;
         }
+        if ((left == ClassConstants.OBJECT) || (right == ClassConstants.OBJECT)) {
+            return true;            
+        }
         // numeric types are compatible
-        Object promoted = extendedBinaryNumericPromotion(left, right);
-        if (promoted != null) {
+        else if (isNumericType(left) && isNumericType(right))  {
             return true;
         }
         // date types are compatible
-        if (isDateClass(left) && isDateClass(right))  {
+        else if (isDateClass(left) && isDateClass(right))  {
             return true;
         }
         // handle boolean and Boolean
-        if (isBooleanType(left) && isBooleanType(right)) {
+        else if (isBooleanType(left) && isBooleanType(right)) {
             return true;
         }
         // check for inheritance and implements

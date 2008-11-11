@@ -35,7 +35,7 @@ public abstract class TransactionWrapperImpl  {
     /**
      * INTERNAL:
      * This method will be used to check for a transaction and throws exception if none exists.
-     * If this methiod returns without exception then a transaction exists.
+     * If this method returns without exception then a transaction exists.
      * This method must be called before accessing the localUOW.
      */
     public abstract Object checkForTransaction(boolean validateExistence);

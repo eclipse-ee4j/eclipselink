@@ -1128,26 +1128,12 @@ public abstract class AbstractSession implements org.eclipse.persistence.session
     /**
      * PUBLIC:
      * Return the results from executing the database query.
-     * the arguments are passed in as a vector
+     * The query arguments are passed in as a List of argument values in the same order as the query arguments.
      */
     public Object executeQuery(DatabaseQuery query, List argumentValues) throws DatabaseException {
-        if (argumentValues instanceof Vector) {
-            return executeQuery(query, (Vector)argumentValues);
-        } else {
-            return executeQuery(query, new Vector(argumentValues));            
-        }
-    }
-    
-    /**
-     * PUBLIC:
-     * Return the results from executing the database query.
-     * the arguments are passed in as a vector
-     */
-    public Object executeQuery(DatabaseQuery query, Vector argumentValues) throws DatabaseException {
         if (query == null) {
             throw QueryException.queryNotDefined();
         }
-
         AbstractRecord row = query.rowFromArguments(argumentValues);
 
         return executeQuery(query, row);

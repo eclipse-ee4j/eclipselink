@@ -16,7 +16,6 @@ import java.io.*;
 import java.util.*;
 import org.eclipse.persistence.internal.helper.*;
 import org.eclipse.persistence.sessions.*;
-import org.eclipse.persistence.sessions.DatabaseLogin;
 import org.eclipse.persistence.sessions.server.*;
 import org.eclipse.persistence.exceptions.*;
 import org.eclipse.persistence.testing.framework.*;
@@ -28,7 +27,7 @@ public class MultithreadTestCase extends AutoVerifyTestCase {
     protected int numberOfTests;
     protected boolean useSequenceConnectionPool = false;
 
-    protected class TestEventListenerImpl implements TestEventListener {
+    protected class TestEventListenerImpl implements junit.framework.TestListener {
         public static final int INITIAL = 0;
         public static final int STARTED = 1;
         public static final int FINISHED = 2;
@@ -38,11 +37,17 @@ public class MultithreadTestCase extends AutoVerifyTestCase {
             state = INITIAL;
         }
 
-        public void testFinished(junit.framework.Test test) {
+        public void addError(junit.framework.Test test, Throwable error) {
+        }
+
+        public void addFailure(junit.framework.Test test, junit.framework.AssertionFailedError error) {
+        }
+
+        public void endTest(junit.framework.Test test) {
             state = FINISHED;
         }
 
-        public void testStarted(junit.framework.Test test) {
+        public void startTest(junit.framework.Test test) {
             state = STARTED;
         }
 

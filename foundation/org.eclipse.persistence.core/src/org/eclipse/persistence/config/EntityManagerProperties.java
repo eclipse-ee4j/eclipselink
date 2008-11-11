@@ -178,4 +178,23 @@ public class EntityManagerProperties {
      * they will be applied to this ConnectionPolicy. 
      */
     public static final String CONNECTION_POLICY = "eclipselink.jdbc.connection-policy";
+
+    /**
+     * Configures if the existence of an object should be verified on persist(),
+     * otherwise it will assume to be new if not in the persistence context.
+     * If checked and existing and not in the persistence context and error will be thrown.
+     * "false" by default.
+     */    
+    public static final String VALIDATE_EXISTENCE = PersistenceUnitProperties.VALIDATE_EXISTENCE;
+    
+    /**
+     * Defines EntityManager cache behavior after a call to flush method
+     * followed by a call to clear method.
+     * This property could be specified while creating either EntityManagerFactory 
+     * (either in the map passed to createEntityManagerFactory method or in persistence.xml)
+     * or EntityManager (in the map passed to createEntityManager method);
+     * the latter overrides the former.
+     * @see FlushClearCache
+     */
+    public static final String FLUSH_CLEAR_CACHE = PersistenceUnitProperties.FLUSH_CLEAR_CACHE;
 }

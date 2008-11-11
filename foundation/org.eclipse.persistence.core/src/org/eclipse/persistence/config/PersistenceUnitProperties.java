@@ -84,12 +84,18 @@ public class PersistenceUnitProperties {
      * Property names formed out of these prefixes by appending either 
      * entity name, or class name (indicating that the property values applies only to a particular entity)
      * or DEFAULT suffix (indicating that the property value applies to all entities).
-     * CACHE_SIZE_ properties default value is 100.
+     * For most cache types, the size is only the initial size, not a fixed or maximum size.
+     * For CacheType.SoftCache and CacheType.HardCache the size is the sub-cache size.
+     * The default cache size is 100.
      */
     public static final String CACHE_SIZE_ = "eclipselink.cache.size.";
     
     /**
      * All valid values for CACHE_TYPE_ properties are declared in CacheType class.
+     * The default cache type is SoftWeak.
+     * This sets the type of cache, if you do not wish to cache entities at all,
+     * then set CACHE_SHARED_.
+     * @see #CACHE_SHARED_
      * @see CacheType
      */
     public static final String CACHE_TYPE_ = "eclipselink.cache.type.";
@@ -97,6 +103,7 @@ public class PersistenceUnitProperties {
     /**
      * Indicates whether entity's cache should be shared (non-isolated).
      * Valid values are case-insensitive "false" and "true"; "true" is default.
+     * If you do not wish to cache your entities, set this to "false".
      */
     public static final String CACHE_SHARED_ = "eclipselink.cache.shared.";
     
@@ -109,18 +116,26 @@ public class PersistenceUnitProperties {
     /**
      * Default caching properties - apply to all entities. 
      * May be overridden by individual entity property with the same prefix.
+     * For most cache types, the size is only the initial size, not a fixed or maximum size.
+     * For CacheType.SoftCache and CacheType.HardCache the size is the sub-cache size.
+     * The default cache size is 100.
      */
     public static final String CACHE_SIZE_DEFAULT = CACHE_SIZE_ + DEFAULT;
     
     /**
      * Default caching properties - apply to all entities. 
      * May be overridden by individual entity property with the same prefix.
+     * The default cache type is SoftWeak.
+     * This sets the type of cache, if you do not wish to cache entities at all,
+     * then set CACHE_SHARED_DEFAULT.
+     * @see #CACHE_SHARED_DEFAULT
      */
     public static final String CACHE_TYPE_DEFAULT = CACHE_TYPE_ + DEFAULT;
     
     /**
      * Default caching properties - apply to all entities. 
      * May be overridden by individual entity property with the same prefix.
+     * If you do not wish to cache your entities, set this to "false".
      */
     public static final String CACHE_SHARED_DEFAULT = CACHE_SHARED_ + DEFAULT;
 

@@ -16,10 +16,16 @@ import java.util.Map;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
+import javax.persistence.FlushModeType;
+
+import org.eclipse.persistence.sessions.factories.ReferenceMode;
 import org.eclipse.persistence.sessions.server.ServerSession;
+import org.eclipse.persistence.config.EntityManagerProperties;
+import org.eclipse.persistence.config.FlushClearCache;
 import org.eclipse.persistence.internal.jpa.EntityManagerSetupImpl;
 import org.eclipse.persistence.internal.jpa.EntityManagerImpl;
 import org.eclipse.persistence.internal.localization.ExceptionLocalization;
+import org.eclipse.persistence.internal.sessions.PropertiesHandler;
 
 /**
 * <p>
@@ -37,18 +43,47 @@ import org.eclipse.persistence.internal.localization.ExceptionLocalization;
 * @since   TopLink 10.1.3 EJB 3.0 Preview
 */
 public class EntityManagerFactoryImpl implements EntityManagerFactory {
-    // This stores a reference to the ServerSession for this deployment.
+    /** Reference to the ServerSession for this deployment. */
     protected volatile ServerSession serverSession;
+    /** EntityManagerSetupImpl that deployed this factory. */
     protected EntityManagerSetupImpl setupImpl;
+    /** Stores if closed has been called. */
     protected boolean isOpen = true;
+    /** Persistence unit properties from persistence.xml or from create factory. */
     protected Map properties;
+    
+    /** Default join existing transaction property, allows reading through write connection. */
+    protected boolean beginEarlyTransaction;
 
+    /** Default property, allows flush before query to be avoided. */
+    protected FlushModeType flushMode = FlushModeType.AUTO;
+
+    /** Default property, allows weak unit of work references. */
+    protected ReferenceMode referenceMode = ReferenceMode.HARD;
+        
+    /** Default property to avoid resuming unit of work if going to be closed on commit anyway. */
+    protected boolean closeOnCommit;
+    
+    /** Default property to avoid discover new objects in unit of work if application always uses persist. */
+    protected boolean persistOnCommit = true;
+    
+    /**
+     * Default FlashClearCache mode to be used.
+     * Relevant only in case call to flush method followed by call to clear method.
+     * @see org.eclipse.persistence.config.FlushClearCache
+     */
+    protected String flushClearCache = FlushClearCache.DEFAULT;
+
+    /** Default to determine if does-exist should be performed on persist. */
+    protected boolean shouldValidateExistence;
+    
     /**
      * Will return an instance of the Factory.  Should only be called by EclipseLink.
      * @param serverSession
      */
     public EntityManagerFactoryImpl(ServerSession serverSession){
         this.serverSession = serverSession;
+        processProperties(serverSession.getProperties());
     }
     
     public EntityManagerFactoryImpl(EntityManagerSetupImpl setupImpl, Map properties){
@@ -63,18 +98,20 @@ public class EntityManagerFactoryImpl implements EntityManagerFactory {
      * completes its construction
      */
     public ServerSession getServerSession(){
-        if (serverSession == null) {
+        if (this.serverSession == null) {
             // PERF: Avoid synchronization.
             synchronized (this) {
                 // DCL ok as isLoggedIn is volatile boolean, set after login is complete.
-                if (serverSession == null) {
+                if (this.serverSession == null) {
                     ClassLoader realLoader = setupImpl.getPersistenceUnitInfo().getClassLoader();
                     // the call top setupImpl.deploy() finishes the session creation
-                    serverSession = setupImpl.deploy(realLoader, properties);
+                    ServerSession tempServerSession = setupImpl.deploy(realLoader, properties);
+                    processProperties(tempServerSession.getProperties());
+                    this.serverSession = tempServerSession;
                 }
             }
         }
-        return serverSession;
+        return this.serverSession;
     }
     
     /**
@@ -100,27 +137,22 @@ public class EntityManagerFactoryImpl implements EntityManagerFactory {
 
     /**
      * PUBLIC:
-     * Returns an EntityManager for this deployment
+     * Returns an EntityManager for this deployment.
      */
     public EntityManager createEntityManager() {
-        return createEntityManagerImpl(false);
+        return createEntityManagerImpl(null);
     }
     
     /**
      * PUBLIC:
-     * Returns an EntityManager for this deployment
+     * Returns an EntityManager for this deployment.
      */
     public EntityManager createEntityManager(Map properties) {
-        return createEntityManagerImpl(properties, false);
-    }
-    
-    protected EntityManagerImpl createEntityManagerImpl(boolean extended) {
-        return createEntityManagerImpl(null, extended);
+        return createEntityManagerImpl(properties);
     }
 
-    protected EntityManagerImpl createEntityManagerImpl(Map properties, boolean extended) {
+    protected EntityManagerImpl createEntityManagerImpl(Map properties) {
         verifyOpen();
-
         ServerSession session = getServerSession();
         if (!session.isLoggedIn()) {
             // PERF: Avoid synchronization.
@@ -131,22 +163,17 @@ public class EntityManagerFactoryImpl implements EntityManagerFactory {
                 }
             }
         }
-        return createEntityManagerImplInternal(properties, extended);
-    }
-
-    //TODO change the way create works to deal with how the specification works with persistence contexts
-    protected EntityManagerImpl createEntityManagerImplInternal(Map properties, boolean extended) {
-        return new EntityManagerImpl(this, properties, false, extended);
+        return new EntityManagerImpl(this, properties);
     }
     
     protected void verifyOpen(){
-        if (!isOpen){
+        if (!this.isOpen){
             throw new IllegalStateException(ExceptionLocalization.buildMessage("operation_on_closed_entity_manager_factory"));
         }
     }    
 
     protected void finalize() throws Throwable {
-        if(isOpen()) {
+        if (isOpen()) {
             close();
         }
     }
@@ -155,9 +182,148 @@ public class EntityManagerFactoryImpl implements EntityManagerFactory {
      * The method return user defined property passed in from EntityManagerFactory. 
      */
     public Object getProperty(String name) {
-        if(name==null){
+        if (name == null) {
             return null;
         }
-        return this.getServerSession().getProperty(name);
+        return getServerSession().getProperty(name);
+    }
+    
+    /**
+     * Process all EntityManager properties.
+     * This allows all EntityManager properties specified in the persistence.xml, factory properties, or System properties to be preprocessed.
+     * This save the cost of processing these properties each time an EntityManager is created,
+     * which can add considerable overhead to both performance and concurrency as System properties are a Hashtable and synchronized.
+     */
+    protected void processProperties(Map properties) {
+        String beginEarlyTransactionProperty = PropertiesHandler.getPropertyValueLogDebug(EntityManagerProperties.JOIN_EXISTING_TRANSACTION, properties, this.serverSession, true);
+        if (beginEarlyTransactionProperty != null) {
+            this.beginEarlyTransaction = "true".equalsIgnoreCase(beginEarlyTransactionProperty);
+        }
+        String referenceMode = PropertiesHandler.getPropertyValueLogDebug(EntityManagerProperties.PERSISTENCE_CONTEXT_REFERENCE_MODE, properties, this.serverSession, true);
+        if (referenceMode != null) {
+            this.referenceMode = ReferenceMode.valueOf(referenceMode);
+        }
+        String flushMode = PropertiesHandler.getPropertyValueLogDebug(EntityManagerProperties.PERSISTENCE_CONTEXT_FLUSH_MODE, properties, this.serverSession, true);
+        if (flushMode != null) {
+            this.flushMode = FlushModeType.valueOf(flushMode);
+        }
+        String closeOnCommit = PropertiesHandler.getPropertyValueLogDebug(EntityManagerProperties.PERSISTENCE_CONTEXT_CLOSE_ON_COMMIT, properties, this.serverSession, true);
+        if (closeOnCommit != null) {
+            this.closeOnCommit = "true".equalsIgnoreCase(closeOnCommit);
+        }
+        String persistOnCommit = PropertiesHandler.getPropertyValueLogDebug(EntityManagerProperties.PERSISTENCE_CONTEXT_PERSIST_ON_COMMIT, properties, this.serverSession, true);
+        if (persistOnCommit != null) {
+            this.persistOnCommit = "true".equalsIgnoreCase(persistOnCommit);
+        }
+        String shouldValidateExistence = PropertiesHandler.getPropertyValueLogDebug(EntityManagerProperties.VALIDATE_EXISTENCE, properties, this.serverSession, true);
+        if (shouldValidateExistence != null) {
+            this.shouldValidateExistence = "true".equalsIgnoreCase(shouldValidateExistence);
+        }
+        String flushClearCache = PropertiesHandler.getPropertyValueLogDebug(EntityManagerProperties.FLUSH_CLEAR_CACHE, properties, this.serverSession, true);
+        if (flushClearCache != null) {
+            this.flushClearCache = flushClearCache;
+        }
+    }
+    
+    /**
+     * Return default join existing transaction property, allows reading through write connection.
+     */
+    public boolean getBeginEarlyTransaction() {
+        return beginEarlyTransaction;
+    }
+    
+    /**
+     * Set default join existing transaction property, allows reading through write connection.
+     */
+    public void setBeginEarlyTransaction(boolean beginEarlyTransaction) {
+        this.beginEarlyTransaction = beginEarlyTransaction;
+    }
+
+    /**
+     * Return default property, allows flush before query to be avoided.
+     */
+    public FlushModeType getFlushMode() {
+        return flushMode;
+    }
+
+    /**
+     * Set default property, allows flush before query to be avoided.
+     */
+    public void setFlushMode(FlushModeType flushMode) {
+        this.flushMode = flushMode;
+    }
+
+    /**
+     * Return default property, allows weak unit of work references.
+     */    
+    public ReferenceMode getReferenceMode() {
+        return referenceMode;
+    }
+
+    /**
+     * Set default property, allows weak unit of work references.
+     */    
+    public void setReferenceMode(ReferenceMode referenceMode) {
+        this.referenceMode = referenceMode;
+    }
+        
+    /**
+     * Return default property to avoid resuming unit of work if going to be closed on commit anyway.
+     */
+    public boolean getCloseOnCommit() {
+        return closeOnCommit;
+    }
+        
+    /**
+     * Set default property to avoid resuming unit of work if going to be closed on commit anyway.
+     */
+    public void setCloseOnCommit(boolean closeOnCommit) {
+        this.closeOnCommit = closeOnCommit;
+    }
+    
+    /**
+     * Return default property to avoid discover new objects in unit of work if application always uses persist.
+     */
+    public boolean getPersistOnCommit() {
+        return persistOnCommit;
+    }
+    
+    /**
+     * Set default property to avoid discover new objects in unit of work if application always uses persist.
+     */
+    public void setPersistOnCommit(boolean persistOnCommit) {
+        this.persistOnCommit = persistOnCommit;
+    }
+
+    /**
+     * Return the default FlashClearCache mode to be used.
+     * Relevant only in case call to flush method followed by call to clear method.
+     * @see org.eclipse.persistence.config.FlushClearCache
+     */
+    public String getFlushClearCache() {
+        return flushClearCache;
+    }
+
+    /**
+     * Set the default FlashClearCache mode to be used.
+     * Relevant only in case call to flush method followed by call to clear method.
+     * @see org.eclipse.persistence.config.FlushClearCache
+     */
+    public void setFlushClearCache(String flushClearCache) {
+        this.flushClearCache = flushClearCache;
+    }
+
+    /**
+     * Return the default to determine if does-exist should be performed on persist.
+     */
+    public boolean shouldValidateExistence() {
+        return shouldValidateExistence;
+    }
+
+    /**
+     * Set the default to determine if does-exist should be performed on persist.
+     */
+    public void setShouldValidateExistence(boolean shouldValidateExistence) {
+        this.shouldValidateExistence = shouldValidateExistence;
     }
 }

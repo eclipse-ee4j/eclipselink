@@ -28,12 +28,11 @@ import org.eclipse.persistence.tools.sessionconsole.SessionConsolePanel;
  * Main panel for the testing browser.
  * This was original done in the VA UI builder, so code is ugly, but is maintain by hand now.
  */
-@SuppressWarnings("deprecation")
-public class TestingBrowserPanel extends JPanel implements ItemListener, TestEventListener, SynchronizedTester {
+public class TestingBrowserPanel extends JPanel implements ItemListener, junit.framework.TestListener, SynchronizedTester {
     protected SynchronizedTestExecutor executionThread;
     protected TestExecutor executor;
     protected Vector models;
-    protected TestCollection currentRun;
+    protected junit.framework.Test currentRun;
     private JButton theKillButton = null;
     private JButton theResetButton = null;
     private JButton theRunTestButton = null;
@@ -128,7 +127,7 @@ public class TestingBrowserPanel extends JPanel implements ItemListener, TestEve
     /**
      * The run is the currently executing test model.
      */
-    public TestCollection getCurrentRun() {
+    public junit.framework.Test getCurrentRun() {
         return currentRun;
     }
 
@@ -952,6 +951,7 @@ public class TestingBrowserPanel extends JPanel implements ItemListener, TestEve
     /**
      * Kill the test thread.
      */
+    @SuppressWarnings("deprecation")
     public void killTest() {
         if (getExecutionThread() != null) {
             getExecutionThread().stop();
@@ -1245,7 +1245,7 @@ public class TestingBrowserPanel extends JPanel implements ItemListener, TestEve
     /**
      * The run is the currently executing test model.
      */
-    public void setCurrentRun(TestCollection currentRun) {
+    public void setCurrentRun(junit.framework.Test currentRun) {
         this.currentRun = currentRun;
     }
 
@@ -1369,9 +1369,37 @@ public class TestingBrowserPanel extends JPanel implements ItemListener, TestEve
     }
 
     /**
+     * Increment the errors bar.
+     */
+    public void addError(junit.framework.Test test, Throwable error) {
+        if (!getExecutor().shouldHandleErrors()) {
+            throw new TestErrorException(error.getMessage(), error);
+        }
+        getErrorsProgressBar().setValue(getErrorsProgressBar().getValue() + 1);
+        // Expand the errors size if maxed out.
+        if (getErrorsProgressBar().getValue() >= getErrorsProgressBar().getMaximum()) {
+            getErrorsProgressBar().setMaximum(getErrorsProgressBar().getMaximum() * 2);
+        }
+    }
+
+    /**
+     * Increment the errors bar.
+     */
+    public void addFailure(junit.framework.Test test, junit.framework.AssertionFailedError error) {
+        if (!getExecutor().shouldHandleErrors()) {
+            throw new TestErrorException(error.getMessage(), error);
+        }
+        getErrorsProgressBar().setValue(getErrorsProgressBar().getValue() + 1);
+        // Expand the errors size if maxed out.
+        if (getErrorsProgressBar().getValue() >= getErrorsProgressBar().getMaximum()) {
+            getErrorsProgressBar().setMaximum(getErrorsProgressBar().getMaximum() * 2);
+        }
+    }
+    
+    /**
      * Move the progress bar.
      */
-    public void testFinished(junit.framework.Test test) {
+    public void endTest(junit.framework.Test test) {
         getRunModelProgressBar().setValue(getRunModelProgressBar().getValue() + 1);        
         if (test instanceof TestEntity) {
             TestEntity testEntity = (TestEntity)test;
@@ -1396,27 +1424,25 @@ public class TestingBrowserPanel extends JPanel implements ItemListener, TestEve
     /**
      * Move the progress bar.
      */
-    public void testStarted(junit.framework.Test test) {
-        if (test instanceof TestCollection) {
-            TestCollection suite = (TestCollection)test;
+    public void startTest(junit.framework.Test test) {
+        if (test instanceof junit.framework.TestSuite) {
+            junit.framework.TestSuite suite = (junit.framework.TestSuite)test;
             getRunModelProgressBar().setValue(0);
-            getRunModelProgressBar().setMaximum(suite.getTests().size());
+            getRunModelProgressBar().setMaximum(suite.countTestCases());
             getCurrentSuiteTextField().setText(suite.getName());
             if (getCurrentRun() == null) {
-                setCurrentRun((TestCollection)test);
+                setCurrentRun(test);
                 getRunProgressBar().setValue(0);
-                getRunProgressBar().setMaximum(suite.getTests().size());
+                getRunProgressBar().setMaximum(suite.countTestCases());
                 getErrorsProgressBar().setMaximum(10);
                 getErrorsProgressBar().setValue(0);
             }
             getCurrentTestTextField().setText(suite.getName());
         } else if (test instanceof junit.framework.TestCase) {
             getCurrentTestTextField().setText(((junit.framework.TestCase)test).getName());
-        } else if (test instanceof junit.framework.TestSuite) {
-            junit.framework.TestSuite suite = (junit.framework.TestSuite)test;
-            getRunProgressBar().setMaximum(suite.testCount());
-            getRunProgressBar().setValue(0);
-            getCurrentTestTextField().setText(suite.getName());
+            if (!(test instanceof TestEntity)) {
+                getCurrentSuiteTextField().setText(Helper.getShortClassName(test.getClass()));
+            }
         }
     }
 

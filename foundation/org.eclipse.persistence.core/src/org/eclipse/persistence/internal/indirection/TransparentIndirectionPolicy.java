@@ -443,9 +443,6 @@ public class TransparentIndirectionPolicy extends IndirectionPolicy {
         if (attributeValue == null) {
             return buildIndirectContainer();
         }
-        if (!(this.getContainerPolicy().isValidContainer(attributeValue))) {
-            throw DescriptorException.indirectContainerInstantiationMismatch(attributeValue, this.getMapping());
-        }
         return attributeValue;
     }
 

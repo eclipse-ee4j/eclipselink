@@ -21,7 +21,6 @@ import java.util.*;
 import java.io.*;
 
 import org.eclipse.persistence.internal.helper.*;
-import org.eclipse.persistence.config.PersistenceUnitProperties;
 import org.eclipse.persistence.descriptors.*;
 import org.eclipse.persistence.internal.descriptors.*;
 import org.eclipse.persistence.internal.localization.ExceptionLocalization;
@@ -235,7 +234,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
     protected boolean isNestedUnitOfWork;
     
     /** Determine if does-exist should be performed on persist. */
-    protected Boolean shouldValidateExistence;
+    protected boolean shouldValidateExistence;
 
     /** This stored the reference mode for this UOW.  If the reference mode is
      * weak then this unit of work will retain only weak references to non new, 
@@ -4685,15 +4684,17 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
     }
 
     /**
-     * INTERNAL:
-     * Determine if does-exist should be performed on persist.
+     * Return the default to determine if does-exist should be performed on persist.
      */
-    protected boolean shouldValidateExistence() {
-        if (this.shouldValidateExistence == null) {
-            String value = PropertiesHandler.getSessionPropertyValueLogDebug(PersistenceUnitProperties.VALIDATE_EXISTENCE, this);
-            this.shouldValidateExistence = ((value != null) && value.equalsIgnoreCase("true"));
-        }
+    public boolean shouldValidateExistence() {
         return shouldValidateExistence;
+    }
+
+    /**
+     * Set the default to determine if does-exist should be performed on persist.
+     */
+    public void setShouldValidateExistence(boolean shouldValidateExistence) {
+        this.shouldValidateExistence = shouldValidateExistence;
     }
     
     /**

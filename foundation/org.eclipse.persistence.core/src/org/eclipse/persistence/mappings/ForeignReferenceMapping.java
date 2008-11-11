@@ -902,7 +902,7 @@ public abstract class ForeignReferenceMapping extends DatabaseMapping {
     /**
      * INTERNAL:
      * Once descriptors are serialized to the remote session. All its mappings and reference descriptors are traversed. Usually
-     * mappings are initilaized and serialized reference descriptors are replaced with local descriptors if they already exist on the
+     * mappings are initialized and serialized reference descriptors are replaced with local descriptors if they already exist on the
      * remote session.
      */
     public void remoteInitialization(DistributedSession session) {

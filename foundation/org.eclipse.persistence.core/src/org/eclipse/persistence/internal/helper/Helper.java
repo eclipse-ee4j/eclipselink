@@ -1606,6 +1606,12 @@ public class Helper implements Serializable {
             java.sql.Date date = dateFromYearMonthDate(localCalendar.get(Calendar.YEAR), localCalendar.get(Calendar.MONTH), localCalendar.get(Calendar.DATE));
             releaseCalendar(localCalendar);
             return date;
+        } else if ((calendar.get(Calendar.HOUR_OF_DAY) == 0)
+                        && (calendar.get(Calendar.MINUTE) == 0)
+                        && (calendar.get(Calendar.SECOND) == 0)
+                        && (calendar.get(Calendar.MILLISECOND) == 0)) {
+            // PERF: If just a date set in the Calendar, then just use its millis.
+            return new java.sql.Date(calendar.getTimeInMillis());
         }
         return dateFromYearMonthDate(calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DATE));
     }

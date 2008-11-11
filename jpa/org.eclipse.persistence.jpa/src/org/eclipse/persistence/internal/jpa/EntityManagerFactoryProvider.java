@@ -172,13 +172,15 @@ public class EntityManagerFactoryProvider {
         if (overrides != null){
             value = overrides.get(propertyKey);
         }
-        if (value == null && useSystemAsDefault){
+        if ((value == null) && useSystemAsDefault){
             value = System.getProperty(propertyKey);
         }
-        if(value != null && session !=  null) {
-            String overrideValue = PersistenceUnitProperties.getOverriddenLogStringForProperty(propertyKey);;           
-            Object logValue = (overrideValue == null) ? value : overrideValue;
-            session.log(SessionLog.FINEST, SessionLog.PROPERTIES, "property_value_specified", new Object[]{propertyKey, logValue});
+        if ((value != null) && (session !=  null)) {
+            if (session.shouldLog(SessionLog.FINEST, SessionLog.PROPERTIES)) {
+                String overrideValue = PersistenceUnitProperties.getOverriddenLogStringForProperty(propertyKey);;           
+                Object logValue = (overrideValue == null) ? value : overrideValue;
+                session.log(SessionLog.FINEST, SessionLog.PROPERTIES, "property_value_specified", new Object[]{propertyKey, logValue});
+            }
         }
         
         return value;

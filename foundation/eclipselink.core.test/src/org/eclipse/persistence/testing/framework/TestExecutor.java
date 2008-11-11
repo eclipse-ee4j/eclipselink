@@ -15,6 +15,7 @@ package org.eclipse.persistence.testing.framework;
 import java.io.*;
 import java.util.*;
 import javax.persistence.*;
+
 import org.eclipse.persistence.sessions.*;
 import org.eclipse.persistence.sessions.server.*;
 
@@ -60,8 +61,8 @@ public class TestExecutor {
     /** This is used to stop execution thread */
     protected boolean shouldStopExecution;
 
-    /** Used for test event progress notifiaction */
-    protected TestEventListener listener;
+    /** Used for test event progress notification */
+    protected junit.framework.TestListener listener;
 
     /** Hold a default executor.  Used to cache the executor for tests run in JUnit. */
     protected static TestExecutor executor;
@@ -231,7 +232,7 @@ public class TestExecutor {
         try {
             getSession().logMessage("Begin " + test);
             if (getListener() != null) {
-                getListener().testStarted(test);
+                getListener().startTest(test);
             }
 
             // If the suite was run through JUnit, or is a Junit suite,
@@ -240,6 +241,7 @@ public class TestExecutor {
                 junit.framework.TestResult result = getDefaultJUnitTestResult();
                 if (getDefaultJUnitTestResult() == null) {
                     result = new junit.framework.TestResult();
+                    result.addListener(getListener());
                     getJUnitTestResults().put(test, result);
                 }
                 test.run(result);
@@ -247,7 +249,7 @@ public class TestExecutor {
                 ((TestEntity)test).execute(this);
             }
             if (getListener() != null) {
-                getListener().testFinished(test);
+                getListener().endTest(test);
             }
             getSession().logMessage("Finished " + test);
             if (getAbstractSession().isInTransaction()) {
@@ -259,7 +261,7 @@ public class TestExecutor {
                 throw exception;
             }            
             if (getListener() != null) {
-                getListener().testFinished(test);
+                getListener().endTest(test);
             }
             getSession().logMessage("Failed " + test);
         }
@@ -284,7 +286,7 @@ public class TestExecutor {
     /**
      * Used for test event progress notifiaction.
      */
-    public TestEventListener getListener() {
+    public junit.framework.TestListener getListener() {
         return listener;
     }
 
@@ -686,9 +688,9 @@ public class TestExecutor {
     }
 
     /**
-     * Used for test event progress notifiaction.
+     * Used for test event progress notification.
      */
-    public void setListener(TestEventListener listener) {
+    public void setListener(junit.framework.TestListener listener) {
         this.listener = listener;
     }
 

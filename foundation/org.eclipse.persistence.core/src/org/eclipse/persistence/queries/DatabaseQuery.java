@@ -55,6 +55,9 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
 
     /** Arguments can be given and specified to predefined queries to allow reuse. */
     protected Vector arguments;
+    
+    /** PERF: Argument fields are cached in prepare to avoid rebuilding on each execution. */
+    protected List<DatabaseField> argumentFields;
 
     /** Arguments values can be given and specified to predefined queries to allow reuse. */
     protected Vector argumentValues;
@@ -233,9 +236,9 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
      * different argument lists.
      */
     public void addArgument(String argumentName, Class type) {
-        getArguments().addElement(argumentName);
-        getArgumentTypes().addElement(type);
-        getArgumentTypeNames().addElement(type.getName());
+        getArguments().add(argumentName);
+        getArgumentTypes().add(type);
+        getArgumentTypeNames().add(type.getName());
     }
 
     /**
@@ -247,10 +250,10 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
      * different argument lists.
      */
     public void addArgument(String argumentName, String typeAsString) {
-        getArguments().addElement(argumentName);
+        getArguments().add(argumentName);
         //bug 3197587
-        getArgumentTypes().addElement(Helper.getObjectClass(ConversionManager.loadClass(typeAsString)));
-        getArgumentTypeNames().addElement(typeAsString);
+        getArgumentTypes().add(Helper.getObjectClass(ConversionManager.loadClass(typeAsString)));
+        getArgumentTypeNames().add(typeAsString);
     }
 
     /**
@@ -278,8 +281,8 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
      * Add the argumentValues to the query.
      * Argument values must be added in the same order the arguments are defined.
      */
-    public void addArgumentValues(Vector theArgumentValues) {
-        setArgumentValues(theArgumentValues);
+    public void addArgumentValues(List theArgumentValues) {
+        getArgumentValues().addAll(theArgumentValues);
     }
 
     /**
@@ -737,10 +740,20 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
      * Maintain the argumentTypes as well.
      */
     public void setArguments(Vector arguments) {
-        for (Enumeration enumtr = arguments.elements(); enumtr.hasMoreElements();) {
-            // Maintain the argumentTypes as well
-            addArgument((String)enumtr.nextElement());
+        Vector types = new Vector(arguments.size());
+        Vector typeNames = new Vector(arguments.size());
+        Vector typeFields = new Vector(arguments.size());
+        int size = arguments.size();
+        for (int index = 0; index < size; index++) {
+            types.add(Object.class);
+            typeNames.add("java.lang.Object");
+            DatabaseField field = new DatabaseField((String)arguments.get(index));
+            typeFields.add(field);
         }
+        this.arguments = arguments;
+        this.argumentTypes = types;
+        this.argumentTypeNames = typeNames;   
+        this.argumentFields = typeFields;       
     }
 
     /**
@@ -1442,14 +1455,15 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
      * Resolve the queryTimeout using the DescriptorQueryManager if required.
      */
     protected void prepare() throws QueryException {
-        //If the queryTimeout is DefaultTimeout, resolve using the DescriptorQueryManager
-        if (this.getQueryTimeout() == DescriptorQueryManager.DefaultTimeout) {
-            if (this.getDescriptor() == null) {
-                this.setQueryTimeout(DescriptorQueryManager.NoTimeout);
+        // If the queryTimeout is DefaultTimeout, resolve using the DescriptorQueryManager.
+        if (getQueryTimeout() == DescriptorQueryManager.DefaultTimeout) {
+            if (getDescriptor() == null) {
+                setQueryTimeout(DescriptorQueryManager.NoTimeout);
             } else {
-                this.setQueryTimeout(getDescriptor().getQueryManager().getQueryTimeout());
+                setQueryTimeout(getDescriptor().getQueryManager().getQueryTimeout());
             }
         }
+        this.argumentFields = buildArgumentFields();
 
         getQueryMechanism().prepare();
     }
@@ -1485,7 +1499,7 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
      * Prepare the query from the prepared query.
      * This allows a dynamic query to prepare itself directly from a prepared query instance.
      * This is used in the JPQL parse cache to allow preparsed queries to be used to prepare
-     * dyanmic queries.
+     * dynamic queries.
      * This only copies over properties that are configured through JPQL.
      */
     public void prepareFromQuery(DatabaseQuery query) {
@@ -1494,6 +1508,7 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
         this.descriptor = query.descriptor;
         this.hintString = query.hintString;
         this.isCustomQueryUsed = query.isCustomQueryUsed;
+        this.argumentFields = query.argumentFields;
         //this.properties = query.properties; - Cannot set properties and CMP stores finders there.
     }
 
@@ -1586,25 +1601,39 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
     }
 
     /**
+     * INTERNAL: Build the list of arguments fields from the argument names and types.
+     */
+    public List<DatabaseField> buildArgumentFields() {
+        List arguments = getArguments();
+        List argumentTypes = getArgumentTypes();
+        List argumentFields = new ArrayList(arguments.size());
+        int size = arguments.size();
+        for (int index = 0; index < size; index++) {
+            DatabaseField argumentField = new DatabaseField((String)arguments.get(index));
+            argumentField.setType((Class)argumentTypes.get(index));
+            argumentFields.add(argumentField);
+        }
+        return argumentFields;
+    }
+
+    /**
      * INTERNAL:
      * Translate argumentValues into a database row.
      */
-    public AbstractRecord rowFromArguments(Vector argumentValues) throws QueryException {
-        Vector argumentNames = getArguments();
-
-        if (argumentNames.size() != argumentValues.size()) {
+    public AbstractRecord rowFromArguments(List argumentValues) throws QueryException {
+        List<DatabaseField> argumentFields = this.argumentFields;
+        // PERF: argumentFields are set in prepare, but need to be built if query is not prepared.
+        if (!isPrepared() || (argumentFields == null)) {
+            argumentFields = buildArgumentFields();
+        }
+        
+        if (argumentFields.size() != argumentValues.size()) {
             throw QueryException.argumentSizeMismatchInQueryAndQueryDefinition(this);
         }
-        Vector argumentTypes = getArgumentTypes();
-        int argumentsSize = argumentNames.size();
-
+        int argumentsSize = argumentFields.size();
         AbstractRecord row = new DatabaseRecord(argumentsSize);
         for (int index = 0; index < argumentsSize; index++) {
-            String argumentName = (String)argumentNames.get(index);
-            Object argumentValue = argumentValues.get(index);
-            DatabaseField argumentField = new DatabaseField(argumentName);
-            argumentField.setType((Class)argumentTypes.get(index));
-            row.put(argumentField, argumentValue);
+            row.put(argumentFields.get(index), argumentValues.get(index));
         }
 
         return row;

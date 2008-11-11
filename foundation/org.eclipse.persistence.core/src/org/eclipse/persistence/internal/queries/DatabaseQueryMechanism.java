@@ -107,9 +107,12 @@ public abstract class DatabaseQueryMechanism implements Cloneable, Serializable 
         // provided. Use them for the cache lookup.
         List queryFields;
         if (query.getCall() == null) {
+            // TODO: This is a bug, arguments is a list of Strings, not fields.
+            // Also if the call was null, it would be an expression, if it was not
+            // prepared the parameters would be empty.
             queryFields = query.getArguments();
         } else {
-            // The query was prepared. Use the parameters off the call to look
+            // The query was prepared. Use the parameters of the call to look
             // up the object in cache.
             queryFields = query.getCall().getParameters();
         }

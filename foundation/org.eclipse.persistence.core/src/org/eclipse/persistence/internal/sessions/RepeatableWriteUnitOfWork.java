@@ -16,7 +16,6 @@ package org.eclipse.persistence.internal.sessions;
 import java.util.*;
 
 import org.eclipse.persistence.config.FlushClearCache;
-import org.eclipse.persistence.config.PersistenceUnitProperties;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.descriptors.changetracking.AttributeChangeTrackingPolicy;
 import org.eclipse.persistence.internal.descriptors.ObjectBuilder;
@@ -32,15 +31,18 @@ public class RepeatableWriteUnitOfWork extends UnitOfWorkImpl {
     /** Used to store the final UnitOfWorkChangeSet for merge into the shared cache */
     protected UnitOfWorkChangeSet cumulativeUOWChangeSet;
     
-    /** Used to determine if UnitOfWork should commit and rollback transactions 
-     * This is used when an EntityTransaction is controlling the transaction
+    /**
+     * Used to determine if UnitOfWork should commit and rollback transactions.
+     * This is used when an EntityTransaction is controlling the transaction.
      */
     protected boolean shouldTerminateTransaction;
     
-    /** The FlashClearCache mode to be used (see oracle.toplink.config.FlushClearCache).
+    /**
+     * The FlashClearCache mode to be used.
      * Initialized by setUnitOfWorkChangeSet method in case it's null;
      * commitAndResume sets this attribute back to null.
      * Relevant only in case call to flush method followed by call to clear method.
+     * @see org.eclipse.persistence.config.FlushClearCache
      */
     protected transient String flushClearCache;
     
@@ -68,13 +70,7 @@ public class RepeatableWriteUnitOfWork extends UnitOfWorkImpl {
      */
     public void clear(boolean shouldClearCache) {
         super.clear(shouldClearCache);
-        if (this.cumulativeUOWChangeSet != null) {
-            if (this.flushClearCache == null) {
-                this.flushClearCache = PropertiesHandler.getSessionPropertyValueLogDebug(PersistenceUnitProperties.FLUSH_CLEAR_CACHE, this);
-                if (this.flushClearCache == null) {
-                    this.flushClearCache = FlushClearCache.DEFAULT;
-                }
-            }
+        if (this.cumulativeUOWChangeSet != null) {            
             if (this.flushClearCache == FlushClearCache.Drop) {
                 this.cumulativeUOWChangeSet = null;
                 this.unregisteredDeletedObjectsCloneToBackupAndOriginal = null;
@@ -242,7 +238,6 @@ public class RepeatableWriteUnitOfWork extends UnitOfWorkImpl {
             }
             this.classesToBeInvalidated = null;
         }
-        this.flushClearCache = null;
         super.mergeChangesIntoParent();
     }
     
@@ -466,10 +461,27 @@ public class RepeatableWriteUnitOfWork extends UnitOfWorkImpl {
     
     /**
      * INTERNAL:
-     * Clears flushClearCache attribute and the related collections.
+     * Clears invalidation list.
      */
     public void clearFlushClearCache() {
-        flushClearCache = null;
         classesToBeInvalidated = null;
+    }
+
+    /**
+     * Return the FlashClearCache mode to be used.
+     * Relevant only in case call to flush method followed by call to clear method.
+     * @see org.eclipse.persistence.config.FlushClearCache
+     */
+    public String getFlushClearCache() {
+        return flushClearCache;
+    }
+
+    /**
+     * Set the FlashClearCache mode to be used.
+     * Relevant only in case call to flush method followed by call to clear method.
+     * @see org.eclipse.persistence.config.FlushClearCache
+     */
+    public void setFlushClearCache(String flushClearCache) {
+        this.flushClearCache = flushClearCache;
     }
 }

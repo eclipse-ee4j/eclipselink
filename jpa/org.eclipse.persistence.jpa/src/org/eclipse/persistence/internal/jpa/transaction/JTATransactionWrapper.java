@@ -21,11 +21,8 @@ import org.eclipse.persistence.exceptions.TransactionException;
 
 /**
  * INTERNAL:
- * JDK 1.5 specific version of JTATransactionWrapper. Differs from the JDK 1.4 version
- * in that it implements a different version of the TransactionWrapper interface, 
- * uses a different EntityManager, and returns a different EntityTransaction version.
- * 
- * @see org.eclipse.persistence.internal.jpa.transactionJTATransactionWrapper
+ * JTA transaction wrapper.
+ * Allows the EntityManager to transparently use JTA vs local transactions.
  */
 public class JTATransactionWrapper extends TransactionWrapperImpl implements TransactionWrapper {
 
@@ -40,7 +37,7 @@ public class JTATransactionWrapper extends TransactionWrapperImpl implements Tra
     /**
      * INTERNAL:
      * This method will be used to check for a transaction and throws exception if none exists.
-     * If this methiod returns without exception then a transaction exists.
+     * If this method returns without exception then a transaction exists.
      * This method must be called before accessing the localUOW.
      */
     public Object checkForTransaction(boolean validateExistence){
@@ -56,11 +53,8 @@ public class JTATransactionWrapper extends TransactionWrapperImpl implements Tra
      * Internal clear the underlying data structures that this transaction owns.
      */
     public void clear(){
-        if (txnKey != null && this.entityManager.shouldPropagatePersistenceContext()){
-            this.txnController.getUnitsOfWork().remove(txnKey);
-        }      
-        localUOW.release();
-        localUOW = null;
+        this.localUOW.release();
+        this.localUOW = null;
     }
     
     /**
@@ -91,11 +85,6 @@ public class JTATransactionWrapper extends TransactionWrapperImpl implements Tra
     protected void throwCheckTransactionFailedException() {
         throw new TransactionRequiredException(TransactionException.externalTransactionNotActive().getMessage());
     }
-    
-    // From old parent.
-    //protected void throwCheckTransactionFailedException() {
-      //  throw TransactionException.externalTransactionNotActive();
-    //}
 
     public void registerUnitOfWorkWithTxn(UnitOfWorkImpl uow){
         uow.registerWithTransactionIfRequired();

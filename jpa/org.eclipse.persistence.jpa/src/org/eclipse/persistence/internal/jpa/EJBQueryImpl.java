@@ -316,7 +316,7 @@ public class EJBQueryImpl implements org.eclipse.persistence.jpa.JpaQuery {
      * @return the results of the query execution
      */
     protected Object executeReadQuery() {
-        Vector parameterValues = processParameters();
+        List parameterValues = processParameters();
         //TODO: the following performFlush() call is a temporary workaround for bug 4752493:
         // CTS: INMEMORY QUERYING IN EJBQUERY BROKEN DUE TO CHANGE TO USE REPORTQUERY.
         // Ideally we should only flush in case the selectionExpression can't be conformed in memory.
@@ -375,13 +375,14 @@ public class EJBQueryImpl implements org.eclipse.persistence.jpa.JpaQuery {
             }
             
             // Execute the query and return the result.
-            return getActiveSession().executeQuery(getDatabaseQuery(), parameterValues);
+            return session.executeQuery(getDatabaseQuery(), parameterValues);
         } catch (LockTimeoutException e) {
             throw e;
         } catch (PessimisticLockException e) {
             throw e;
-        } catch (Exception e) {
-            return null;
+        } catch (RuntimeException e) {
+            setRollbackOnly();
+            throw e;
         } finally {
             lockMode = null;
             
@@ -409,7 +410,7 @@ public class EJBQueryImpl implements org.eclipse.persistence.jpa.JpaQuery {
             entityManager.checkForTransaction(true);
             
             //fix for bug:4288845, did not add the parameters to the query
-            Vector parameterValues = processParameters();
+            List parameterValues = processParameters();
             if(isFlushModeAUTO()) {
                 performPreQueryFlush();
             }
@@ -593,24 +594,23 @@ public class EJBQueryImpl implements org.eclipse.persistence.jpa.JpaQuery {
      * Returns a list of parameter values in the order the parameters are
      * defined for the databaseQuery.
      */
-    protected Vector processParameters() {
-        if (databaseQuery == null) {
-            getDatabaseQuery();
-        }
-        List arguments = databaseQuery.getArguments();
+    protected List processParameters() {
+        DatabaseQuery query = getDatabaseQuery();
+        List arguments = query.getArguments();
         if (arguments.isEmpty()) {
-            Iterator params = parameters.keySet().iterator();
-            while (params.hasNext()) {
-                databaseQuery.addArgument((String)params.next());
-            }
-            arguments = databaseQuery.getArguments();
+            // This occurs for native queries, as the query does not know of its arguments.
+            // This may have issues, it is better if the query set its arguments when parsing the SQL.
+            arguments = new Vector(this.parameters.keySet());
+            query.setArguments((Vector)arguments);
         }
         // now create parameterValues in the same order as the argument list
-        Vector parameterValues = new Vector(arguments.size());
-        for (Iterator i = arguments.iterator(); i.hasNext();) {
-            String name = (String)i.next();
-            if (parameters.containsKey(name)) {
-                parameterValues.add(parameters.get(name));
+        int size = arguments.size();
+        List parameterValues = new Vector(size);
+        for (int index = 0; index < size; index++) {
+            String name = (String)arguments.get(index);
+            Object parameter = this.parameters.get(name);
+            if ((parameter != null) || this.parameters.containsKey(name)) {
+                parameterValues.add(parameter);
             } else {
                 // Error: missing actual parameter value
                 throw new IllegalStateException(ExceptionLocalization.buildMessage("missing_parameter_value", new Object[]{name}));
@@ -830,7 +830,7 @@ public class EJBQueryImpl implements org.eclipse.persistence.jpa.JpaQuery {
      public Query setParameter(String name, Object value) {
          try {
              entityManager.verifyOpen();
-             setParameterInternal(name, value);
+             setParameterInternal(name, value, false);
              return this;
          } catch (RuntimeException e) {
              setRollbackOnly();
@@ -923,21 +923,31 @@ public class EJBQueryImpl implements org.eclipse.persistence.jpa.JpaQuery {
     }
 
     /**
-     * Bind an argument to a named parameter.
+     * Bind an argument to a named or indexed parameter.
      * @param name the parameter name
-     * @param value
+     * @param value to bind
+     * @param isIndex defines if index or named
      */
-    protected void setParameterInternal(String name, Object value) {
-        int index  = getDatabaseQuery().getArguments().indexOf(name);
-        if (getDatabaseQuery().getEJBQLString() != null){  //only non native queries
-            if (index == -1){
-                throw new IllegalArgumentException(ExceptionLocalization.buildMessage("ejb30-wrong-argument-name",new Object[]{name, getDatabaseQuery().getEJBQLString()}));
+    protected void setParameterInternal(String name, Object value, boolean isIndex) {
+        DatabaseQuery query = getDatabaseQuery();
+        int index  = query.getArguments().indexOf(name);
+        if (query.getQueryMechanism().isJPQLCallQueryMechanism()){  //only non native queries
+            if (index == -1) {
+                if (isIndex) {
+                    throw new IllegalArgumentException(ExceptionLocalization.buildMessage("ejb30-wrong-argument-index",new Object[]{name, query.getEJBQLString()}));
+                } else {
+                    throw new IllegalArgumentException(ExceptionLocalization.buildMessage("ejb30-wrong-argument-name", new Object[]{name, query.getEJBQLString()}));
+                }
             }
-            if (!isValidActualParameter(value, getDatabaseQuery().getArgumentTypes().get(index))) {
-                throw new IllegalArgumentException(ExceptionLocalization.buildMessage("ejb30-incorrect-parameter-type", new Object[] {name, value.getClass(), getDatabaseQuery().getArgumentTypes().get(index), getDatabaseQuery().getEJBQLString()}));
+            Class type = (Class)query.getArgumentTypes().get(index);
+            // PERF: Only validate the type if known, and different.
+            if ((type != null) && (type != ClassConstants.OBJECT) && (value != null) && (type != value.getClass())) {
+                if (!isValidActualParameter(value, type)) {
+                    throw new IllegalArgumentException(ExceptionLocalization.buildMessage("ejb30-incorrect-parameter-type", new Object[] {name, value.getClass(), query.getArgumentTypes().get(index), query.getEJBQLString()}));
+                }
             }
         }
-        parameters.put(name, value);
+        this.parameters.put(name, value);
     }
 
     /**
@@ -946,20 +956,10 @@ public class EJBQueryImpl implements org.eclipse.persistence.jpa.JpaQuery {
      * @param value
      */
     protected void setParameterInternal(int position, Object value) {
-        String pos = (new Integer(position)).toString();
-        int index = getDatabaseQuery().getArguments().indexOf(pos);
-        if (getDatabaseQuery().getEJBQLString() != null){  //only non native queries
-            if (index == -1) {
-                throw new IllegalArgumentException(ExceptionLocalization.buildMessage("ejb30-wrong-argument-index", new Object[]{position, getDatabaseQuery().getEJBQLString()}));
-            }
-            if (!isValidActualParameter(value, getDatabaseQuery().getArgumentTypes().get(index))) {
-                throw new IllegalArgumentException(ExceptionLocalization.buildMessage("ejb30-incorrect-parameter-type", new Object[] {position, value.getClass(), getDatabaseQuery().getArgumentTypes().get(index), getDatabaseQuery().getEJBQLString()}));
-            }
-        }
-        parameters.put(pos, value);
+        setParameterInternal(String.valueOf(position), value, true);
     }
 
-    protected boolean isValidActualParameter(Object value, Object parameterType) {
+    protected boolean isValidActualParameter(Object value, Class parameterType) {
         if (value == null) {
             return true;
         } else {
