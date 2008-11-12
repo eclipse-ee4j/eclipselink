@@ -62,11 +62,11 @@ public class DBPlatformHelper {
             detectedDbPlatform = matchVendorNameInProperties(vendorName, _nameToVendorPlatform, logger);
         }
         if (logger.shouldLog(SessionLog.FINE) ) {
-            logger.log(SessionLog.FINE, "dbPlaformHelper_detectedVendorPlatform", detectedDbPlatform ); // NOI18N
+            logger.log(SessionLog.FINE, "dbPlatformHelper_detectedVendorPlatform", detectedDbPlatform ); // NOI18N
         }
         if (detectedDbPlatform == null) {
             if(logger.shouldLog(SessionLog.INFO)) {
-                logger.log(SessionLog.INFO, "dbPlaformHelper_defaultingPlatform",  vendorName, DEFAULTPLATFORM); // NOI18N
+                logger.log(SessionLog.INFO, "dbPlatformHelper_defaultingPlatform",  vendorName, DEFAULTPLATFORM); // NOI18N
             }
             detectedDbPlatform = DEFAULTPLATFORM;
         }
@@ -84,7 +84,7 @@ public class DBPlatformHelper {
                     loadFromResource(_nameToVendorPlatform, VENDOR_NAME_TO_PLATFORM_RESOURCE_NAME,
                                             DBPlatformHelper.class.getClassLoader() );
                 } catch (IOException e) {
-                    logger.log(SessionLog.WARNING, "dbPlaformHelper_noMappingFound", VENDOR_NAME_TO_PLATFORM_RESOURCE_NAME);
+                    logger.log(SessionLog.WARNING, "dbPlatformHelper_noMappingFound", VENDOR_NAME_TO_PLATFORM_RESOURCE_NAME);
                 }
             }
         }
@@ -104,7 +104,7 @@ public class DBPlatformHelper {
             String regExpr = (String) entry.getKey();
             String value = (String) entry.getValue();
             if(logger.shouldLog(SessionLog.FINEST)) {
-                logger.log(SessionLog.FINEST, "dbPlaformHelper_regExprDbPlatform", regExpr, value); // NOI18N
+                logger.log(SessionLog.FINEST, "dbPlatformHelper_regExprDbPlatform", regExpr, value); // NOI18N
             }
             if( matchPattern(regExpr, vendorName, logger) ) {
                 dbPlatform = value;
@@ -127,7 +127,7 @@ public class DBPlatformHelper {
             matches = Pattern.matches(regExp,target);
         } catch (PatternSyntaxException e){
             if(logger.shouldLog(SessionLog.FINE)) {
-                logger.log(SessionLog.FINE, "dbPlaformHelper_patternSyntaxException", e); // NOI18N
+                logger.log(SessionLog.FINE, "dbPlatformHelper_patternSyntaxException", e); // NOI18N
             }
         }
         return matches;

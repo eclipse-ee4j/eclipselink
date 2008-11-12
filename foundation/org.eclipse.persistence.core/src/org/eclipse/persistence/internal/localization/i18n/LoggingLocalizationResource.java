@@ -295,8 +295,8 @@ public class LoggingLocalizationResource extends ListResourceBundle {
         { "broadcast_remote_command_wrong_type", "Warning: {0}: received message {1} containg an object of type {2} instead of expected type RemoteCommand." },
         { "broadcast_ignored_command_while_closing_connection", "Warning: {0}: ignoring request to publish command while connection is closing." },
         { "broadcast_listening_sleep_on_error", "Warning: {0}: Exception {1} was thrown. The thread will sleep for {2} milliseconds before resuming listening." },
-        { "dbPlaformHelper_defaultingPlatform", "Not able to detect platform for vendor name [{0}]. Defaulting to [{1}]. The database dialect used may not match with the database you are using. Please explicitly provide a platform using property 'eclipselink.platform.class.name'."},
-        { "dbPlaformHelper_noMappingFound", "Can not load resource [{0}] that loads mapping from vendor name to database platform. Autodetection of database platform will not work."},
+        { "dbPlatformHelper_defaultingPlatform", "Not able to detect platform for vendor name [{0}]. Defaulting to [{1}]. The database dialect used may not match with the database you are using. Please explicitly provide a platform using property 'eclipselink.platform.class.name'."},
+        { "dbPlatformHelper_noMappingFound", "Can not load resource [{0}] that loads mapping from vendor name to database platform. Autodetection of database platform will not work."},
         
         { "sessions_xml_path_where_session_load_from", "The session info is loaded from [{0}]."},
         { "resource_local_persistence_init_info_ignores_jta_data_source", "PersistenceUnitInfo {0} has transactionType RESOURCE_LOCAL and therefore jtaDataSource will be ignored"},
