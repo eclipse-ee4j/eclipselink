@@ -50,7 +50,11 @@ abstract class SequencePropertyPane extends AbstractSubjectPanel
 			@Override
 			protected void setValueOnSubject(Object value)
 			{
-				((SequenceAdapter)subject).setPreallocationSize(((Integer)value).intValue());
+				if (value == null) {
+					((SequenceAdapter)subject).setPreallocationSize(0);
+				} else {
+					((SequenceAdapter)subject).setPreallocationSize(((Integer)value).intValue());
+				}
 			}
 		};
 	}
