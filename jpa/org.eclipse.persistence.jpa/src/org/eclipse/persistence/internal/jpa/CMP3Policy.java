@@ -37,13 +37,12 @@ import org.eclipse.persistence.internal.security.PrivilegedMethodInvoker;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataMethod;
 
 /**
- * <b>Description</b>: Defines primary key extraction coce,
- * and differentiates CMP3 from CMP1/2.
+ * Defines primary key extraction code for use in JPA. A descriptor should have a CMP3Policy
+ * attached to handle basic Id as well as IdClass/EmbeddedId usage.
  *
  * @since TopLink 10.1.3
  */
 
-// This should be refactored to have an abstract CMPPolicy, and have CMP1/2/3 subclass and define correct functionality.
 public class CMP3Policy extends CMPPolicy {
 
     /** Stores the fields for this classes compound primary key class if required. */
