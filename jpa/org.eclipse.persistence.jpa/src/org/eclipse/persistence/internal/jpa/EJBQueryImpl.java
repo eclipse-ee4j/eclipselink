@@ -258,17 +258,19 @@ public class EJBQueryImpl implements org.eclipse.persistence.jpa.JpaQuery {
      * stored procedure call.
      */
     public static DatabaseQuery buildStoredProcedureQuery(StoredProcedureCall call, List<String> arguments, HashMap hints) {
-        DatabaseQuery query = new ResultSetMappingQuery();
+        DataReadQuery query = new DataReadQuery();
+        query.setUseAbstractRecord(false);
+        
         query.setCall(call);
         query.setIsUserDefined(true);
         
         // apply any query hints
-        query = applyHints(hints, query);
+        DatabaseQuery hintQuery = applyHints(hints, query);
         
         // apply any query arguments
-        applyArguments(arguments, query);
+        applyArguments(arguments, hintQuery);
 
-        return query;
+        return hintQuery;
     }
     
     /**

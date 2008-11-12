@@ -77,6 +77,11 @@ import static org.eclipse.persistence.annotations.Direction.IN_OUT;
     resultClass=org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced.Address.class,
     procedureName="SProc_Read_InOut",
     parameters={@StoredProcedureParameter(direction=IN_OUT, name="address_id_v", queryParameter="ADDRESS_ID", type=Long.class),
+                @StoredProcedureParameter(direction=OUT, name="street_v", queryParameter="STREET", type=String.class)}),
+    @NamedStoredProcedureQuery(
+    name="SProcInOutReturningRawData",
+    procedureName="SProc_Read_InOut",
+    parameters={@StoredProcedureParameter(direction=IN_OUT, name="address_id_v", queryParameter="ADDRESS_ID", type=Long.class),
                 @StoredProcedureParameter(direction=OUT, name="street_v", queryParameter="STREET", type=String.class)})
 })
 public class Address implements Serializable {

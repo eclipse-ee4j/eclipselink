@@ -110,6 +110,7 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
         
         suite.addTest(new AdvancedJPAJunitTest("testNamedStoredProcedureQuery"));
         suite.addTest(new AdvancedJPAJunitTest("testNamedStoredProcedureQueryInOut"));
+        suite.addTest(new AdvancedJPAJunitTest("testNamedStoredProcedureQueryWithRawData"));
 
         suite.addTest(new AdvancedJPAJunitTest("testMethodBasedTransformationMapping"));
         suite.addTest(new AdvancedJPAJunitTest("testClassBasedTransformationMapping"));
@@ -736,6 +737,42 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
             
             closeEntityManager(em);
             
+            // Re-throw exception to ensure stacktrace appears in test result.
+            throw e;
+        }
+        
+        closeEntityManager(em);
+    }
+    
+    /**
+     * Tests a @NamedStoredProcedureQuery that returns raw data 
+     * bug 254946 
+     */
+    public void testNamedStoredProcedureQueryWithRawData() {
+        EntityManager em = createEntityManager();
+        beginTransaction(em);
+        
+        try {
+            Address address1 = new Address();
+        
+            address1.setCity("Ottawa");
+            address1.setPostalCode("K1G6P3");
+            address1.setProvince("ON");
+            address1.setStreet("123 Street");
+            address1.setCountry("Canada");
+
+            em.persist(address1);
+            commitTransaction(em);
+
+            Vector objectdata = (Vector)em.createNamedQuery("SProcInOutReturningRawData").setParameter("ADDRESS_ID", address1.getId()).getSingleResult();
+            assertTrue("Address data not found or returned using stored procedure", ((objectdata!=null)&& (objectdata.size()==2)) );
+            assertTrue("Address Id data returned doesn't match persisted address", (address1.getId() == ((Integer)objectdata.get(0)).intValue()) );
+            assertTrue("Address Street data returned doesn't match persisted address", ( address1.getStreet().equals(objectdata.get(1) )) );
+        } catch (RuntimeException e) {
+            if (isTransactionActive(em)){
+                rollbackTransaction(em);
+            }
+            closeEntityManager(em);
             // Re-throw exception to ensure stacktrace appears in test result.
             throw e;
         }
