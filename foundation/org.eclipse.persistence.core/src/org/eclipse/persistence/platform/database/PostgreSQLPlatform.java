@@ -331,15 +331,11 @@ public class PostgreSQLPlatform extends DatabasePlatform {
     
     public void printFieldTypeSize(Writer writer, FieldDefinition field, 
             FieldTypeDefinition fieldType, boolean shouldPrintFieldIdentityClause) throws IOException {
-        if(!shouldPrintFieldIdentityClause) {
-            super.printFieldTypeSize(writer, field, fieldType);
-        }
+        super.printFieldTypeSize(writer, field, fieldType, shouldPrintFieldIdentityClause);
     }
     
     public void printFieldUnique(Writer writer,  boolean shouldPrintFieldIdentityClause) throws IOException {
-        if(!shouldPrintFieldIdentityClause) {
-            super.printFieldUnique(writer);
-        }
+        super.printFieldUnique(writer, shouldPrintFieldIdentityClause);
     }
 
     /**
