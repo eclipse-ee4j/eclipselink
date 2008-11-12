@@ -842,7 +842,7 @@ public abstract class AbstractApplicationNode
 	 * and model nodes. There are many more model nodes than there are
 	 * application nodes; but the application node containment hierarchies
 	 * is roughly parallel to the model node containment hierarchy (with
-	 * the exception of MWClass, which is screwed up until we have a
+	 * the exception of MWClass, which requires review until we have a
 	 * visible Class Repository).
 	 */
 	private boolean ownsExclusively(Problem problem) {

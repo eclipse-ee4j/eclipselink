@@ -14,6 +14,8 @@
  *     10/20/2008-1.1M4 Michael O'Brien 
  *       - 248748: Add WebLogic 10.3 specific JMX MBean attributes and functions
  *       see <link>http://wiki.eclipse.org/EclipseLink/DesignDocs/248748</link>
+ *     11/06/2008-1.1M5 Michael O'Brien 
+ *       - 248746: Add getModuleName() implementation and new getApplicationName()
  ******************************************************************************/  
 package org.eclipse.persistence.services.weblogic;
 
@@ -61,6 +63,7 @@ import org.eclipse.persistence.logging.DefaultSessionLog;
 import org.eclipse.persistence.logging.JavaLog;
 import org.eclipse.persistence.logging.SessionLog;
 import org.eclipse.persistence.platform.server.ServerPlatform;
+import org.eclipse.persistence.platform.server.wls.WebLogicPlatform;
 import org.eclipse.persistence.services.RuntimeServices;
 import org.eclipse.persistence.sessions.DatabaseLogin;
 import org.eclipse.persistence.sessions.DefaultConnector;
@@ -584,17 +587,34 @@ public class WebLogicRuntimeServices extends RuntimeServices {
     }
 
     /**
-     * PUBLIC: getModuleName: Answer the EJB-Module I belong to. This is the name of the jar
-       * the session is contained in.
+     * getModuleName(): Answer the name of the context-root of the application that this session is associated with.
+     * Answer "unknown" if there is no module name available.
+     * Default behavior is to return "unknown" - we override this behavior here for WebLogic.
      */
     public String getModuleName() {
         String moduleName = null;
         DatabaseSessionImpl session = (DatabaseSessionImpl)getSession();
         ServerPlatform platform = session.getServerPlatform();
         moduleName = platform.getModuleName();
-        return ((DatabaseSessionImpl)this.getSession()).getServerPlatform().getModuleName();
+        return ((DatabaseSessionImpl)getSession())
+            .getServerPlatform().getModuleName();
     }
 
+    
+    /**
+     * getApplicationName(): Answer the name of the module (EAR name) that this session is associated with.
+     * Answer "unknown" if there is no application name available.
+     * Default behavior is to return "unknown" - we override this behavior here for WebLogic.
+     */
+    public String getApplicationName() {
+        String moduleName = null;
+        DatabaseSessionImpl session = (DatabaseSessionImpl)getSession();
+        ServerPlatform platform = session.getServerPlatform();
+        moduleName = platform.getModuleName();
+        return ((WebLogicPlatform)((DatabaseSessionImpl)getSession())
+                .getServerPlatform()).getApplicationName();
+    }
+    
     /**
      * PUBLIC: Answer the EclipseLink log level at deployment time. This is read-only.
      */
@@ -949,7 +969,6 @@ public class WebLogicRuntimeServices extends RuntimeServices {
     * @return void
     */
     public void printClassesInSession() {
-        getModuleName();
         Vector classes = getSession().getIdentityMapAccessorInstance().getIdentityMapManager().getClassesRegistered();
         int index;
         if (classes.isEmpty()) {
@@ -1375,5 +1394,16 @@ public class WebLogicRuntimeServices extends RuntimeServices {
             data[i] = ((CompositeData) rows[i]).getAll(names);
         }
         return data;
+    }
+    
+    
+    /**
+     * Return whether this session is an EclipseLink JPA session.
+     * The absence of this function or a value of false will signify that the session
+     * belongs to a provider other than EclipseLink.  
+     * @return
+     */
+    public boolean isJPASession() {
+        return true;
     }
 }

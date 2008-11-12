@@ -2690,7 +2690,7 @@ public class ClassDescriptor implements Cloneable, Serializable {
      * This initialized method is used exclusively for inheritance.  It passes in
      * true if the child descriptor is isolated.
      *
-     * This is needed by regular aggregate descriptors (because they are screwed up);
+     * This is needed by regular aggregate descriptors (because they require review);
      * but not by SDK aggregate descriptors.
      */
     public void initializeAggregateInheritancePolicy(AbstractSession session) {

@@ -41,7 +41,7 @@ public class AllUIToolsTests {
 		suite.addTest(SimpleDisplayableTests.suite());
 
 		// remove the following test suite because it opens a window and
-		// screws with the focus when running the tests  ~bjv
+		// modifies the focus when running the tests  ~bjv
 		// suite.addTest(SwitcherPanelTests.suite());
 	
 		return suite;

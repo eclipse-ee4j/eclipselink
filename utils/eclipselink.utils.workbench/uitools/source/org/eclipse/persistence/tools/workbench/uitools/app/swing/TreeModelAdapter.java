@@ -495,7 +495,7 @@ private abstract class ChangePolicy {
 
 	/**
 	 * Build an array to hold the elements in the specified iterator.
-	 * If they are different sizes, something is screwed up...
+	 * If they are different sizes, something is wrong...
 	 */
 	Object[] buildArray(Iterator stream, int size) {
 		Object[] array = new Object[size];

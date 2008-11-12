@@ -24,6 +24,8 @@ import java.util.ListResourceBundle;
  *
  * Message id is added for iAS 11 logging compliance.
  * Every message added into this file needs the message id entry as well.
+ * Logs by AbstractSessionLog.getLog().log() when the level is below CONFIG=4 (FINE, FINER, FINEST, ALL) 
+ * should be moved to TraceLocalizationResource. 
  * 
  */
 public class LoggingLocalizationResource extends ListResourceBundle {
@@ -350,7 +352,10 @@ public class LoggingLocalizationResource extends ListResourceBundle {
         { "jmx_mbean_runtime_services_no_classes_in_session", "No Classes in session." },
         { "jmx_mbean_runtime_services_statement_cache_cleared", "Statement cache cleared." },
         { "jmx_mbean_runtime_services_no_connection_pools_available", "No Connection Pools Available." },        
-     
+        { "jmx_mbean_runtime_services_failed_toget_initial_context", "Failed to get InitialContext for MBean registration: {0}" },        
+        { "jmx_mbean_runtime_services_mbeanserver_lookup_failed", "Failed to get InitialContext for MBean registration: {0}" },
+        { "jmx_mbean_runtime_services_threadpool_initialize_failed", "Failed to initialize MBean threadPoolRuntime: {0}" },
+        { "jmx_mbean_runtime_services_get_executethreadruntime_object_failed", "Version of WebLogic does not support executeThreadRuntime - using ClassLoader: {0}" },        
         
         
         // newly added for message id
@@ -602,7 +607,12 @@ public class LoggingLocalizationResource extends ListResourceBundle {
         { "jmx_mbean_runtime_services_print_cache_key_value.MSGID", "TOP-50225"},
         { "jmx_mbean_runtime_services_no_classes_in_session.MSGID", "TOP-50226"},
         { "jmx_mbean_runtime_services_statement_cache_cleared.MSGID", "TOP-50227"},
-        { "jmx_mbean_runtime_services_no_connection_pools_available.MSGID", "TOP-50228"}        
+        { "jmx_mbean_runtime_services_no_connection_pools_available.MSGID", "TOP-50228"},
+        { "jmx_mbean_runtime_services_failed_toget_initial_context.MSGID", "TOP-50229"},        
+        { "jmx_mbean_runtime_services_mbeanserver_lookup_failed.MSGID", "TOP-50230"},
+        { "jmx_mbean_runtime_services_threadpool_initialize_failed.MSGID", "TOP-50231"},
+        { "jmx_mbean_runtime_services_get_executethreadruntime_object_failed.MSGID", "TOP-50232"}        
+        
     }; 
      
     /**

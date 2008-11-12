@@ -88,7 +88,7 @@ public abstract class AbstractCircularReferenceDiffTests extends TestCase {
 	}
 
 	public void testMismatch01() {
-		// changing the root's key screws everything up...
+		// changing the root's key modifies everything up...
 		this.testRootNode2.setName("*" + this.testRootNode1.getName() + "*");
 		Diff diff = this.differentiator.diff(this.testRootNode1, this.testRootNode2);
 		this.verifyDiffMismatch(diff, this.testRootNode1, this.testRootNode2);

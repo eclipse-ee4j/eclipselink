@@ -386,7 +386,7 @@ public class XMLDescriptor extends ClassDescriptor {
 
     /**
      * INTERNAL:
-     * This is needed by regular aggregate descriptors (because they are screwed up);
+     * This is needed by regular aggregate descriptors (because they require review);
      * but not by XML aggregate descriptors.
      */
     public void initializeAggregateInheritancePolicy(AbstractSession session) {

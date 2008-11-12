@@ -102,10 +102,18 @@ public interface MBeanWebLogicRuntimeServicesMBean extends MBeanRuntimeServicesM
     public Vector getMappedClassNamesUsingFilter(String filter);
 
     /**
-     *  getModuleName: Answer the EJB-Module I belong to. This is the name of the jar
-       * the session is contained in.
+     * getModuleName(): Answer the name of the context-root of the application that this session is associated with.
+     * Answer "unknown" if there is no module name available.
+     * Default behavior is to return "unknown" - we override this behavior here for WebLogic.
      */
     public String getModuleName();
+    
+    /**
+     * getApplicationName(): Answer the name of the module (EAR name) that this session is associated with.
+     * Answer "unknown" if there is no application name available.
+     * Default behavior is to return "unknown" - we override this behavior here for WebLogic.
+     */
+    public String getApplicationName();
 
     /**
      *  Answer the EclipseLink log level at deployment time. This is read-only.
@@ -385,4 +393,12 @@ public interface MBeanWebLogicRuntimeServicesMBean extends MBeanRuntimeServicesM
     */
     public void invalidateIdentityMap(String className, Boolean recurse) throws ClassNotFoundException;
 
+    /**
+     * Return whether this session is an EclipseLink JPA session.
+     * The absence of this function or a value of false will signify that the session
+     * belongs to a provider other than EclipseLink.  
+     * @return
+     */
+    public boolean isJPASession();
+    
 }

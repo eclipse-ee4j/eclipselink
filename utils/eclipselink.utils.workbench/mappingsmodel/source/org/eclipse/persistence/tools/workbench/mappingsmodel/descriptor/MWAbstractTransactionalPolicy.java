@@ -151,7 +151,7 @@ public abstract class MWAbstractTransactionalPolicy extends MWModel
 	}
 	
 	public boolean isConformResultsInUnitOfWork() {
-		// this method name sucks, but it's convention to have it... for boolean attributes
+		// this method name not good, but it's convention to have it... for boolean attributes
 		return this.conformResultsInUnitOfWork;
 	}
 	

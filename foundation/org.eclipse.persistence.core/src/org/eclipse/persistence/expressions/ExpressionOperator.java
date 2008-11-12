@@ -742,7 +742,7 @@ public class ExpressionOperator implements Serializable {
      */
     public boolean doesRelationConform(Object left, Object right) {
         // Big ugly case statement follows.
-        // Java really sucks, Smalltalk equivalent to this... left peform: self selector with: right
+        // Java is really verbose, the Smalltalk equivalent to this... left perform: self selector with: right
         // Note, compareTo for String returns a number <= -1 if the String is less than.  We assumed that
         // it would return -1.  The same thing for strings that are greater than (ie it returns >= 1). PWK
         // Equals
@@ -770,7 +770,7 @@ public class ExpressionOperator implements Serializable {
             return (left != null);
         }
         // Less thans, greater thans
-        else if (this.selector == LessThan) {// You have gottan love polymorphism in Java, NOT!!!
+        else if (this.selector == LessThan) {// You have got to love polymorphism in Java, NOT!!!
             if ((left == null) || (right == null)) {
                 return false;
             }

@@ -1878,7 +1878,7 @@ public class DatabasePlatform extends DatasourcePlatform {
             statement.setNull(index, getJDBCType((Class)null));
         } else if (parameter instanceof DatabaseField) {
             // Substituted null value for the corresponding DatabaseField.
-            // Cannot bind null through set object, so we must compute the type, this sucks.
+            // Cannot bind null through set object, so we must compute the type, this is not good.
             // Fix for bug 2730536: for ARRAY/REF/STRUCT types must pass in the 
             // user defined type to setNull as well.
             if (parameter instanceof ObjectRelationalDatabaseField) {
