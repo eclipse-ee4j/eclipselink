@@ -134,15 +134,20 @@ public class SDOTestCase extends junit.framework.TestCase {
             fail("Could not create parser.");
             e.printStackTrace();
         }
-        ((SDOTypeHelper) aHelperContext.getTypeHelper()).reset();
-        ((SDOXMLHelper) aHelperContext.getXMLHelper()).reset();
-        ((SDOXSDHelper) aHelperContext.getXSDHelper()).reset();
+        
+        if (customContext) {
+            ((SDOHelperContext) aHelperContext).reset();
+        } else {
+            SDOHelperContext.resetHelperContext();
+        }
     }
     
     public void tearDown() throws Exception {
-        ((SDOTypeHelper) aHelperContext.getTypeHelper()).reset();
-        ((SDOXMLHelper) aHelperContext.getXMLHelper()).reset();
-        ((SDOXSDHelper) aHelperContext.getXSDHelper()).reset();
+        if (customContext) {
+            ((SDOHelperContext) aHelperContext).reset();
+        } else {
+            SDOHelperContext.resetHelperContext();
+        }
         
         typeHelper = null;
         xmlHelper = null;

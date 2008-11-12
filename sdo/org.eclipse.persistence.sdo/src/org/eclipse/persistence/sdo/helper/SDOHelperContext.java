@@ -100,8 +100,8 @@ public class SDOHelperContext implements HelperContext {
     }
 
     public void reset() {
-        ((SDOXMLHelper)getXMLHelper()).reset();
         ((SDOTypeHelper)getTypeHelper()).reset();
+        ((SDOXMLHelper)getXMLHelper()).reset();
         ((SDOXSDHelper)getXSDHelper()).reset();
     }
 
@@ -156,6 +156,19 @@ public class SDOHelperContext implements HelperContext {
             helperContexts.put(key, hCtx);
         }
         return hCtx;
+    }
+    
+    /**
+     * ADVANCED:
+     * Reset the HelperContext for the current application if one exists.
+     * 
+     */
+    public static void resetHelperContext() {
+        Object key = getDelegateMapKey();
+        HelperContext hCtx = helperContexts.get(key);
+        if (hCtx != null) {
+            ((SDOHelperContext)hCtx).reset();
+        }        
     }
     
     /**
