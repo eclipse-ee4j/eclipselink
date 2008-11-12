@@ -304,10 +304,9 @@ public abstract class ReadQuery extends DatabaseQuery {
                 parameters = new DatabaseRecord();
             }
             parameters.add(DatabaseCall.FIRSTRESULT_FIELD, this.getFirstResult());
-            parameters.add(DatabaseCall.MAXROW_FIELD, this.getMaxRows());
+            parameters.add(DatabaseCall.MAXROW_FIELD, session.getPlatform().computeMaxRowsForSQL(this.getFirstResult(), this.getMaxRows()));
             this.setTranslationRow(parameters);
         }
-        
     }
 
     /**

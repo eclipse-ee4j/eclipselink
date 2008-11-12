@@ -24,7 +24,6 @@ import org.eclipse.persistence.internal.expressions.ExpressionSQLPrinter;
 import org.eclipse.persistence.internal.expressions.SQLSelectStatement;
 import org.eclipse.persistence.internal.helper.*;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
-import org.eclipse.persistence.queries.ReadQuery;
 import org.eclipse.persistence.queries.StoredProcedureCall;
 import org.eclipse.persistence.queries.ValueReadQuery;
 
@@ -160,6 +159,27 @@ public class MySQLPlatform extends DatabasePlatform {
     @Override
     public String buildProcedureCallString(StoredProcedureCall call, AbstractSession session) {
         return "{ " + super.buildProcedureCallString(call, session);
+    }
+    
+    /**
+     * INTERNAL:
+     * Use the JDBC maxResults and firstResultIndex setting to compute a value to use when
+     * limiting the results of a query in SQL.  These limits tend to be used in two ways.
+     * 
+     * 1. MaxRows is the index of the last row to be returned (like JDBC maxResults)
+     * 2. MaxRows is the number of rows to be returned
+     * 
+     * MySQL uses case #2 and therefore the maxResults has to be altered based on the firstResultIndex
+     * 
+     * @param readQuery
+     * @param firstResultIndex
+     * @param maxResults
+     * 
+     * @see org.eclipse.persistence.platform.database.MySQLPlatform
+     */
+    @Override
+    public int computeMaxRowsForSQL(int firstResultIndex, int maxResults){
+        return maxResults - ((firstResultIndex >= 0) ? firstResultIndex : 0);
     }
     
     /**
@@ -500,19 +520,6 @@ public class MySQLPlatform extends DatabasePlatform {
     
     /**
      * INTERNAL:
-     * Set the max rows on the query.  Overrides the default behavior in DatabasePlatform.
-     * 
-     * @param readQuery
-     * @param firstResultIndex
-     * @param maxResults
-     * @see org.eclipse.persistence.internal.databaseaccess.DatabasePlatform
-     */
-   /* public void updateMaxRowsForQuery(ReadQuery readQuery, int firstResultIndex, int maxResults){
-        readQuery.setMaxRows(maxResults);
-    }*/
-    
-    /**
-     * INTERNAL:
      * Writes MySQL specific SQL for accessing temp tables for update-all queries.
      */
     public void writeUpdateOriginalFromTempTableSql(Writer writer, DatabaseTable table,
@@ -548,7 +555,7 @@ public class MySQLPlatform extends DatabasePlatform {
         writeJoinWhereClause(writer, targetTableName, tempTableName, targetPkFields, pkFields);
     }
 
-  /*  @Override
+    @Override
     public void printSQLSelectStatement(DatabaseCall call, ExpressionSQLPrinter printer, SQLSelectStatement statement) {
         int max = 0;
         int firstRow = 0;
@@ -570,6 +577,6 @@ public class MySQLPlatform extends DatabasePlatform {
         }
         printer.printParameter(DatabaseCall.MAXROW_FIELD);
         call.setIgnoreFirstRowMaxResultsSettings(true);
-    }*/
+    }
     
 }

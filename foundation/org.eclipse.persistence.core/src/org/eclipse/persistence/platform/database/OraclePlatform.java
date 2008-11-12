@@ -54,13 +54,7 @@ import org.eclipse.persistence.queries.ValueReadQuery;
  * @since TOPLink/Java 1.0
  */
 public class OraclePlatform extends org.eclipse.persistence.platform.database.DatabasePlatform {
-
-    /** 
-     * Oracle's Rownum can be used to limit results and for pagination, 
-     * using the query's maxRows and FirstResult settings
-     */ 
-    protected boolean useRownumFiltering = true;
-    
+   
     /** 
      * Advanced attribute indicating whether identity is supported,
      * see comment to setSupportsIdentity method.
@@ -584,15 +578,6 @@ public class OraclePlatform extends org.eclipse.persistence.platform.database.Da
     public String serverTimestampString() {
         return "SYSDATE";
     }
-    
-    /**
-     * PUBLIC:
-     * Set if Oracle ROWNUM pagination should be used for FirstResult and MaxRows settings.
-     * Default is false.
-     */
-    public void setShouldUseRownumFiltering(boolean useRownumFiltering) {
-        this.useRownumFiltering = useRownumFiltering;
-    }
 
     /**
      * Some database require outer joins to be given in the where clause, others require it in the from clause.
@@ -606,15 +591,6 @@ public class OraclePlatform extends org.eclipse.persistence.platform.database.Da
      */
     public boolean shouldUseJDBCOuterJoinSyntax() {
         return false;
-    }
-    
-    /**
-     * PUBLIC:
-     * Return if Oracle ROWNUM pagination should be used for FirstResult and MaxRows settings.
-     * Default is false.
-     */
-    public boolean shouldUseRownumFiltering() {
-        return this.useRownumFiltering;
     }
 
     /**

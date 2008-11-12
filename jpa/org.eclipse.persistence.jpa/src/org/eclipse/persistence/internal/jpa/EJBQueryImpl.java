@@ -909,7 +909,8 @@ public class EJBQueryImpl implements org.eclipse.persistence.jpa.JpaQuery {
             if (maxResults >= 0) {
                 cloneSharedQuery();
                 readQuery = (ReadQuery)getDatabaseQuery();
-                ((org.eclipse.persistence.internal.sessions.AbstractSession)getEntityManager().getActiveSession()).getDatasourcePlatform().updateMaxRowsForQuery(readQuery, firstResultIndex, maxResults);
+                maxRows = maxResults + ((firstResultIndex >= 0) ? firstResultIndex : 0);
+                readQuery.setMaxRows(maxRows);
                 maxResults = -1;
             }
             

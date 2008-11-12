@@ -10,7 +10,7 @@
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
  *     Markus KARG - Added methods allowing to support stored procedure creation on SQLAnywherePlatform.
- *     tware - added implementation of updateMaxRowsForQuery 
+ *     tware - added implementation of computeMaxRowsForSQL 
  ******************************************************************************/  
 package org.eclipse.persistence.internal.databaseaccess;
 
@@ -67,7 +67,6 @@ import org.eclipse.persistence.platform.database.OraclePlatform;
 import org.eclipse.persistence.platform.database.SybasePlatform;
 import org.eclipse.persistence.platform.database.converters.StructConverter;
 import org.eclipse.persistence.queries.Call;
-import org.eclipse.persistence.queries.ReadQuery;
 import org.eclipse.persistence.queries.SQLCall;
 import org.eclipse.persistence.queries.StoredProcedureCall;
 import org.eclipse.persistence.queries.ValueReadQuery;
@@ -178,6 +177,12 @@ public class DatabasePlatform extends DatasourcePlatform {
      */
     protected Map<String, StructConverter> structConverters = null;
     protected Map<Class, StructConverter> typeConverters = null;
+
+    /** 
+     * Some platforms allow a query's maxRows and FirstResult settings to be
+     * specified in SQL.  This setting allows it to be enabled/disabled
+     */ 
+    protected boolean useRownumFiltering = true;
 
     public DatabasePlatform() {
         this.tableQualifier = "";
@@ -633,6 +638,27 @@ public class DatabasePlatform extends DatasourcePlatform {
         return false;
     }
 
+    /**
+     * INTERNAL:
+     * Use the JDBC maxResults and firstResultIndex setting to compute a value to use when
+     * limiting the results of a query in SQL.  These limits tend to be used in two ways.
+     * 
+     * 1. MaxRows is the index of the last row to be returned (like JDBC maxResults)
+     * 2. MaxRows is the number of rows to be returned
+     * 
+     * By default, we assume case 1 and simply return the value of maxResults.  Subclasses
+     * may provide an override
+     * 
+     * @param readQuery
+     * @param firstResultIndex
+     * @param maxResults
+     * 
+     * @see org.eclipse.persistence.platform.database.MySQLPlatform
+     */
+    public int computeMaxRowsForSQL(int firstResultIndex, int maxResults){
+        return maxResults;
+    }
+    
     /**
      *  Used for jdbc drivers which do not support autocommit to explicitly commit a transaction
      *  This method is a no-op for databases which implement autocommit as expected.
@@ -1550,7 +1576,19 @@ public class DatabasePlatform extends DatasourcePlatform {
     public void setUsesNativeSQL(boolean usesNativeSQL) {
         this.usesNativeSQL = usesNativeSQL;
     }
-
+    
+    /**
+     * PUBLIC:
+     * Set if SQL-Level pagination should be used for FirstResult and MaxRows settings.
+     * Default is true.
+     * 
+     * Note: This setting is used to disable SQL-level pagination on platforms for which it is
+     * implemented.  On platforms where we use JDBC for pagination, it will be ignored
+     */
+    public void setShouldUseRownumFiltering(boolean useRownumFiltering) {
+        this.useRownumFiltering = useRownumFiltering;
+    }
+    
     public void setUsesStreamsForBinding(boolean usesStreamsForBinding) {
         this.usesStreamsForBinding = usesStreamsForBinding;
     }
@@ -1682,7 +1720,19 @@ public class DatabasePlatform extends DatasourcePlatform {
     public boolean shouldUseJDBCOuterJoinSyntax() {
         return true;
     }
-
+    
+    /**
+     * PUBLIC:
+     * Return if Oracle ROWNUM pagination should be used for FirstResult and MaxRows settings.
+     * Default is true.
+     * 
+     * Note: This setting is used to disable SQL-level pagination on platforms for which it is
+     * implemented.  On platforms where we use JDBC for pagination, it will be ignored
+     */
+    public boolean shouldUseRownumFiltering() {
+        return this.useRownumFiltering;
+    }
+    
     /**
      * supportsAutoCommit must sometimes be set to false for JDBC drivers which do not
      * support autocommit.  Used to determine how to handle transactions properly.
@@ -1868,27 +1918,6 @@ public class DatabasePlatform extends DatasourcePlatform {
         } else {
             statement.setObject(index, parameter);
         }
-    }
-
-    /**
-     * INTERNAL:
-     * Set the max rows on the query.
-     * DatabasePlatform subclasses implement max rows in several ways.
-     * 1. MaxRows is the index of the last row to be returned
-     * 2. MaxRows is the number of rows to be returned
-     * 
-     * Based on the way the underlying API works, for Platforms in case 1, we take into account the
-     * index of the first result when setting MaxRows on the actual query.  This is the default setting 
-     * since, at the time of writing this feature that is how it must be done when using JDBC API (rather than 
-     * Platform-specific SQL) and Platform-specific SQL is only implemented for a few Platforms.
-     * 
-     * @param readQuery
-     * @param firstResultIndex
-     * @param maxResults
-     */
-    public void updateMaxRowsForQuery(ReadQuery readQuery, int firstResultIndex, int maxResults){
-        int maxRows = maxResults + ((firstResultIndex >= 0) ? firstResultIndex : 0);
-        readQuery.setMaxRows(maxRows);
     }
     
     public boolean usesBatchWriting() {
