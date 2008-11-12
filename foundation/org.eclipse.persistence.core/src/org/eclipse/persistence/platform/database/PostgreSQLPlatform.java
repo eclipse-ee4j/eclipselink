@@ -9,6 +9,7 @@
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
+ *     Phillip Ross - LIMIT/OFFSET syntax support
  ******************************************************************************/  
 package org.eclipse.persistence.platform.database;
 
@@ -16,8 +17,11 @@ import java.io.*;
 import java.util.*;
 import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.expressions.ExpressionOperator;
+import org.eclipse.persistence.internal.databaseaccess.DatabaseCall;
 import org.eclipse.persistence.internal.databaseaccess.FieldTypeDefinition;
+import org.eclipse.persistence.internal.expressions.ExpressionSQLPrinter;
 import org.eclipse.persistence.internal.expressions.RelationExpression;
+import org.eclipse.persistence.internal.expressions.SQLSelectStatement;
 import org.eclipse.persistence.internal.helper.*;
 import org.eclipse.persistence.queries.ValueReadQuery;
 import org.eclipse.persistence.tools.schemaframework.FieldDefinition;
@@ -30,11 +34,16 @@ import org.eclipse.persistence.tools.schemaframework.FieldDefinition;
  * <li> Mapping of class types to database types for the schema framework.
  * <li> Pessimistic locking.
  * <li> Platform specific operators.
+ * <li> LIMIT/OFFSET query syntax for select statements.
  * </ul>
  *
  * @since OracleAS TopLink 10<i>g</i> (10.1.3)
  */
 public class PostgreSQLPlatform extends DatabasePlatform {
+
+    private static final String LIMIT = " LIMIT ";
+
+    private static final String OFFSET = " OFFSET ";
     
     public PostgreSQLPlatform() {
         super();
@@ -60,6 +69,28 @@ public class PostgreSQLPlatform extends DatabasePlatform {
         } else {
             writer.write("\'0\'");
         }
+    }
+    
+    
+    /**
+     * INTERNAL:
+     * Use the JDBC maxResults and firstResultIndex setting to compute a value to use when
+     * limiting the results of a query in SQL.  These limits tend to be used in two ways.
+     * 
+     * 1. MaxRows is the index of the last row to be returned (like JDBC maxResults)
+     * 2. MaxRows is the number of rows to be returned
+     * 
+     * PostGreSQL uses case #2 and therefore the maxResults has to be altered based on the firstResultIndex
+     * 
+     * @param readQuery
+     * @param firstResultIndex
+     * @param maxResults
+     * 
+     * @see org.eclipse.persistence.platform.database.MySQLPlatform
+     */
+    @Override
+    public int computeMaxRowsForSQL(int firstResultIndex, int maxResults){
+        return maxResults - ((firstResultIndex >= 0) ? firstResultIndex : 0);
     }
     
     /**
@@ -365,4 +396,28 @@ public class PostgreSQLPlatform extends DatabasePlatform {
     public boolean isAlterSequenceObjectSupported() {
         return true;
     }
+
+    @Override
+    public void printSQLSelectStatement(DatabaseCall call, ExpressionSQLPrinter printer, SQLSelectStatement statement) {
+        int max = 0;
+        int firstRow = 0;
+        if (statement.getQuery() != null) {
+            max = statement.getQuery().getMaxRows();
+            firstRow = statement.getQuery().getFirstResult();
+        }
+        if (max <= 0  || !(this.shouldUseRownumFiltering())) {
+            super.printSQLSelectStatement(call, printer, statement);
+            return;
+        }
+        statement.setUseUniqueFieldAliases(true);
+        call.setFields(statement.printSQL(printer));
+        printer.printString(LIMIT);
+        printer.printParameter(DatabaseCall.MAXROW_FIELD);
+        if (firstRow > 0) {
+           printer.printString(OFFSET);
+           printer.printParameter(DatabaseCall.FIRSTRESULT_FIELD);
+        }
+        call.setIgnoreFirstRowMaxResultsSettings(true);
+    }
+
 }
