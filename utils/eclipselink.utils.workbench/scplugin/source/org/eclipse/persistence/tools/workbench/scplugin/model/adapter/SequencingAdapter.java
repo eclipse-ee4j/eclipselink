@@ -232,7 +232,6 @@ public class SequencingAdapter extends SCAdapter {
 			case NATIVE:      return new NativeSequenceAdapter(this, name, 50);
 			case TABLE:       return new TableSequenceAdapter(this, name, 50);
 			case UNARY_TABLE: return new UnaryTableSequenceAdapter(this, name, 50);
-			case XML_FILE:    return new XMLFileSequenceAdapter(this, name, 50);
 			default:          return null;
 		}
 	}

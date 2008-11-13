@@ -284,21 +284,6 @@ final class NewSequenceDialog extends NewNameDialog
 
 		sequenceTypeContainer.add(unaryTableRadioButton, constraints);
 
-		// XML File radio button
-		JRadioButton xmlFileRadioButton = SwingComponentFactory.buildRadioButton("NEW_SEQUENCE_DIALOG_XML_FILE_RADIO_BUTTON", buildXMLFileRadioButtonModel(sequenceTypeHolder), resourceRepository());
-
-		constraints.gridx      = 0;
-		constraints.gridy      = 4;
-		constraints.gridwidth  = 1;
-		constraints.gridheight = 1;
-		constraints.weightx    = 1;
-		constraints.weighty    = 0;
-		constraints.fill       = GridBagConstraints.NONE;
-		constraints.anchor     = GridBagConstraints.LINE_START;
-		constraints.insets     = new Insets(0, 0, 0, 20);
-
-		sequenceTypeContainer.add(xmlFileRadioButton, constraints);
-
 		return container;
 	}
 

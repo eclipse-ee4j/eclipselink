@@ -39,7 +39,6 @@ import org.eclipse.persistence.tools.workbench.scplugin.model.adapter.NativeSequ
 import org.eclipse.persistence.tools.workbench.scplugin.model.adapter.SequenceAdapter;
 import org.eclipse.persistence.tools.workbench.scplugin.model.adapter.TableSequenceAdapter;
 import org.eclipse.persistence.tools.workbench.scplugin.model.adapter.UnaryTableSequenceAdapter;
-import org.eclipse.persistence.tools.workbench.scplugin.model.adapter.XMLFileSequenceAdapter;
 import org.eclipse.persistence.tools.workbench.scplugin.ui.session.DatabaseSessionNode;
 import org.eclipse.persistence.tools.workbench.scplugin.ui.session.login.NewSequenceDialog.NewSequenceBuilder;
 import org.eclipse.persistence.tools.workbench.scplugin.ui.session.login.NewSequenceDialog.SequenceStateObject;
@@ -86,7 +85,6 @@ public class SequencingPropertiesPage extends AbstractLoginPropertiesPage
 	private NativeSequencePropertyPane nativeSequencePane;
 	private TableSequencePropertyPane tableSequencePane;
 	private UnaryTableSequencePropertyPane unaryTableSequencePane;
-	private XMLFileSequencePropertyPane xmlFileSequencePane;
 
 	/**
 	 * A constant associated with the default custom table sequence type.
@@ -157,7 +155,6 @@ public class SequencingPropertiesPage extends AbstractLoginPropertiesPage
 		nativeSequencePane     = buildNativeSequencePane(selectedSequenceHolder);
 		tableSequencePane      = buildTableSequencePane(selectedSequenceHolder);
 		unaryTableSequencePane = buildUnaryTableSequencePane(selectedSequenceHolder);
-		xmlFileSequencePane    = buildXMLFileSequencePane(selectedSequenceHolder);
 
 		SwitcherPanel sequencePane = new SwitcherPanel(selectedSequenceHolder, buildSequencePaneTransformer());
 
@@ -208,11 +205,6 @@ public class SequencingPropertiesPage extends AbstractLoginPropertiesPage
 					return unaryTableSequencePane;
 				}
 
-				if (((SequenceAdapter)sequence).getType() == SequenceType.XML_FILE)
-				{
-					return xmlFileSequencePane;
-				}
-
 				return null;
 			}
 		};
@@ -256,27 +248,6 @@ public class SequencingPropertiesPage extends AbstractLoginPropertiesPage
 		return new UnaryTableSequencePropertyPane
 		(
 			buildUnaryTableSequenceHolder(selectedSequenceHolder),
-			getWorkbenchContextHolder()
-		);
-	}
-
-	private ValueModel buildXMLFileSequenceHolder(ValueModel selectedSequenceHolder)
-	{
-		return new TransformationValueModel(selectedSequenceHolder)
-		{
-			@Override
-			protected XMLFileSequenceAdapter transformNonNull(Object value)
-			{
-				return (((SequenceAdapter)value).getType() == SequenceType.XML_FILE) ? (XMLFileSequenceAdapter) value : null;
-			}
-		};
-	}
-
-	private XMLFileSequencePropertyPane buildXMLFileSequencePane(ValueModel selectedSequenceHolder)
-	{
-		return new XMLFileSequencePropertyPane
-		(
-			buildXMLFileSequenceHolder(selectedSequenceHolder),
 			getWorkbenchContextHolder()
 		);
 	}
