@@ -14,6 +14,7 @@ package org.eclipse.persistence.testing.tests.jpa.fieldaccess.advanced;
 
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.Vector;
 
 import javax.persistence.EntityManager;
 import javax.persistence.LockModeType;
