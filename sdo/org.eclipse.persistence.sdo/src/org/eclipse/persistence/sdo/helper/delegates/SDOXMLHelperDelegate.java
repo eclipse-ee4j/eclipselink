@@ -384,6 +384,9 @@ public class SDOXMLHelperDelegate implements SDOXMLHelper {
         // get XMLMarshaller once - as we may create a new instance if this helper isDirty=true
         XMLMarshaller anXMLMarshaller = getXmlMarshaller();
 
+        // Ask the SDOXMLDocument if we should include the XML declaration in the resulting XML
+        anXMLMarshaller.setFragment(!xmlDocument.isXMLDeclaration());
+        
         anXMLMarshaller.setEncoding(xmlDocument.getEncoding());
         anXMLMarshaller.setSchemaLocation(xmlDocument.getSchemaLocation());
         anXMLMarshaller.setNoNamespaceSchemaLocation(xmlDocument.getNoNamespaceSchemaLocation());
@@ -396,6 +399,9 @@ public class SDOXMLHelperDelegate implements SDOXMLHelper {
         // get XMLMarshaller once - as we may create a new instance if this helper isDirty=true
         XMLMarshaller anXMLMarshaller = getXmlMarshaller();
 
+        // Ask the SDOXMLDocument if we should include the XML declaration in the resulting XML
+        anXMLMarshaller.setFragment(!xmlDocument.isXMLDeclaration());
+        
         anXMLMarshaller.setEncoding(xmlDocument.getEncoding());
         anXMLMarshaller.setSchemaLocation(xmlDocument.getSchemaLocation());
         anXMLMarshaller.setNoNamespaceSchemaLocation(xmlDocument.getNoNamespaceSchemaLocation());
@@ -445,6 +451,10 @@ public class SDOXMLHelperDelegate implements SDOXMLHelper {
 
         // get XMLMarshaller once - as we may create a new instance if this helper isDirty=true
         XMLMarshaller anXMLMarshaller = getXmlMarshaller();
+        
+        // Ask the SDOXMLDocument if we should include the XML declaration in the resulting XML
+        anXMLMarshaller.setFragment(!xmlDocument.isXMLDeclaration());
+        
         ((SDOMarshalListener)anXMLMarshaller.getMarshalListener()).setMarshalledObject(rootObject);
         anXMLMarshaller.marshal(xmlDocument, writer);
     }

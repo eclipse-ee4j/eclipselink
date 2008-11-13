@@ -61,21 +61,6 @@ public class FormattedWriterRecord extends WriterRecord {
     /**
      * INTERNAL:
      */
-    public void startDocument(String encoding, String version) {
-        try {
-            getWriter().write("<?xml version=\"");
-            getWriter().write(version);
-            getWriter().write("\" encoding=\"");
-            getWriter().write(encoding);
-            getWriter().write("\"?>");
-        } catch (IOException e) {
-            throw XMLMarshalException.marshalException(e);
-        }
-    }
-
-    /**
-     * INTERNAL:
-     */
     public void endDocument() {
         try {
           getWriter().write(Helper.cr());    
@@ -94,7 +79,9 @@ public class FormattedWriterRecord extends WriterRecord {
                 getWriter().write('>');
             }
             if (!isLastEventText) {
-            	getWriter().write(Helper.cr());
+                if (numberOfTabs > 0) {
+                    getWriter().write(Helper.cr());                    
+                }
                 for (int x = 0; x < numberOfTabs; x++) {
                     getWriter().write(TAB);
                 }

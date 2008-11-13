@@ -79,9 +79,13 @@ public class WriterRecord extends MarshalRecord {
         try {
             writer.write("<?xml version=\"");
             writer.write(version);
-            writer.write("\" encoding=\"");
-            writer.write(encoding);
-            writer.write("\"?>");
+            writer.write("\"");
+            if (null != encoding) {
+                writer.write(" encoding=\"");
+                writer.write(encoding);
+                writer.write("\"");
+            }
+            writer.write("?>");
             writer.write(Helper.cr());
         } catch (IOException e) {
             throw XMLMarshalException.marshalException(e);
