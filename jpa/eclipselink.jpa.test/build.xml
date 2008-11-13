@@ -1318,7 +1318,6 @@
             </fileset>
             <fileset dir="${eclipselink.jpa.test}/resource/eclipselink-xml-only-model/">
                 <include name="*.xml"/>
-                <exclude name="orm.xml"/>
             </fileset>
         </copy>
         <antcall target="server-run-all" inheritRefs="true">

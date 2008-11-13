@@ -3,7 +3,6 @@
         <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
         <jta-data-source>%%data-source-name%%</jta-data-source>
         <mapping-file>META-INF/advanced-entity-mappings.xml</mapping-file>
-        <!--mapping-file>META-INF/orm.xml</mapping-file-->
         <mapping-file>META-INF/inherited-entity-mappings.xml</mapping-file>
         <mapping-file>META-INF/incomplete-nonowning-entity-mappings.xml</mapping-file>
         <mapping-file>META-INF/incomplete-owning-entity-mappings.xml</mapping-file>
@@ -11,8 +10,6 @@
         <mapping-file>META-INF/orm-annotation-merge-advanced-entity-mappings.xml</mapping-file>
         <mapping-file>META-INF/orm-annotation-merge-relationships-entity-mappings.xml</mapping-file>
         <mapping-file>META-INF/unidirectional-relationships-entity-mappings.xml</mapping-file>
-        <!--mapping-file>META-INF/complexaggregate-extended-entity-mappings.xml</mapping-file-->
-        <mapping-file>META-INF/inheritance-entity-mappings.xml</mapping-file>
         <mapping-file>META-INF/defaultlistener.xml</mapping-file>
         <exclude-unlisted-classes>false</exclude-unlisted-classes>
         <properties>

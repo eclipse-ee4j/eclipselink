@@ -2860,7 +2860,6 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
             if (isTransactionActive(em)){
                 rollbackTransaction(em);
             }
-            closeEntityManager(em);
             throw ex;
         }
         clearCache();
@@ -2881,7 +2880,6 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
             if (isTransactionActive(em)){
                 rollbackTransaction(em);
             }
-            closeEntityManager(em);
             throw ex;
         }
         
@@ -2940,7 +2938,6 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
             if (isTransactionActive(em)){
                 rollbackTransaction(em);
             }
-            closeEntityManager(em);
             if (Error.class.isAssignableFrom(ex.getClass())){
                 throw (Error)ex;
             }else{
@@ -2968,7 +2965,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
             if (isTransactionActive(em)){
                 rollbackTransaction(em);
             }
-            closeEntityManager(em);
+            closeEntityManager(em2);
             throw ex;
         }
         clearCache();
@@ -3890,25 +3887,31 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
             commitTransaction(em);
         
             // Verify the items of the result list all had a version increment.
-            for (Object[] result : results) {
-                Employee managerBefore = (Employee) result[0];
-                if (managerBefore != null) {
-                    int managerVersionBefore = managerBefore.getVersion();
-                    Employee managerAfter = em.find(Employee.class, managerBefore.getId());
-                    int managerVersionAfter = managerAfter.getVersion();
-                    assertTrue("The manager version was not updated on the locking query.", (managerVersionAfter - managerVersionBefore) == 1);
+            beginTransaction(em);
+            try{
+                for (Object[] result : results) {
+                    Employee managerBefore = (Employee) result[0];
+                    if (managerBefore != null) {
+                        int managerVersionBefore = managerBefore.getVersion();
+                        Employee managerAfter = em.find(Employee.class, managerBefore.getId());
+                        int managerVersionAfter = managerAfter.getVersion();
+                        assertTrue("The manager version was not updated on the locking query.", (managerVersionAfter - managerVersionBefore) == 1);
+                    }
+                    
+                    Employee employeeBefore = (Employee) result[1];
+                    if (employeeBefore != null) {
+                        int employeeVersionBefore = employeeBefore.getVersion();
+                        Employee employeeAfter = em.find(Employee.class, employeeBefore.getId());
+                        int employeeVersionAfter = employeeAfter.getVersion();
+                        assertTrue("The manager version was not updated on the locking query.", (employeeVersionAfter - employeeVersionBefore) == 1);
+                    }
                 }
-                
-                Employee employeeBefore = (Employee) result[1];
-                if (employeeBefore != null) {
-                    int employeeVersionBefore = employeeBefore.getVersion();
-                    Employee employeeAfter = em.find(Employee.class, employeeBefore.getId());
-                    int employeeVersionAfter = employeeAfter.getVersion();
-                    assertTrue("The manager version was not updated on the locking query.", (employeeVersionAfter - employeeVersionBefore) == 1);
-                }
+            } finally {
+               if(this.isTransactionActive(em)) {
+                   rollbackTransaction(em);
+                  }
+                   closeEntityManager(em);
             }
-        
-            closeEntityManager(em);
         }
     }
     
@@ -3925,16 +3928,22 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
             commitTransaction(em);
             
             // Verify the items of the result list all had a version increment.
-            for (Address address : results) {
-                if (address != null) {
-                    int versionBefore = address.getVersion();    
-                    Address addressAfter = em.find(Address.class, address.getId());
-                    int versionAfter = addressAfter.getVersion();
-                    assertTrue("The version on an address was not updated on the locking query.", (versionAfter - versionBefore) == 1);
+            beginTransaction(em);
+            try{
+                for (Address address : results) {
+                    if (address != null) {
+                        int versionBefore = address.getVersion();    
+                        Address addressAfter = em.find(Address.class, address.getId());
+                        int versionAfter = addressAfter.getVersion();
+                        assertTrue("The version on an address was not updated on the locking query.", (versionAfter - versionBefore) == 1);
+                    }
                 }
+            } finally {
+               if(this.isTransactionActive(em)) {
+                   rollbackTransaction(em);
+                  }
+                   closeEntityManager(em);
             }
-            
-            closeEntityManager(em);
         }
     }
 
