@@ -120,6 +120,10 @@ public class UiDbBundle extends java.util.ListResourceBundle
 			{"TABLES_WILL_BE_OVERWRITTEN_DIALOG.message","The selected tables on the database will be overwritten with the new table information.  All existing table information will be lost.  Do you wish to continue?"},
 			{"EXCEPTION_DURING_TABLE_GEN", "An exception occured during table creation."},
 			{"EXCEPTION_DURING_TABLE_GEN.title", "Table creation failed."},
+			{"EXCEPTION2270_DURING_TABLE_GEN", "The application encountered and error while creating the table on the database.{0}Database error code 2270 indicates that an attempt to create a reference failed.{0}This is likely due to the reference field on the target table not being unique or a primary key.{0}Assure reference fields are set to be unique or primary key on table to avoid this.{0}The table was not successfully created on the database."},
+			{"EXCEPTION2270_DURING_TABLE_GEN.title", "Table Reference Creatation Failure"},
+			{"EXCEPTION955_DURING_TABLE_GEN", "The application encountered an error while replacing the table on the database.{0}This is most likely caused by another table referencing the table to be replaced.{0}Try replacing all associated tables at once rather than just one to avoid this issue.{0}Table was not successfully created on the database."},
+			{"EXCEPTION955_DURING_TABLE_GEN.title", "Table already exists error."},
 
 				{"NO_LOGIN_DEFINED_DIALOG.message", "No login is currently defined."},		
 				{"SELECTED_TABLES_LABEL", "&Selected Tables"},

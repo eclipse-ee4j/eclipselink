@@ -22,7 +22,9 @@ import org.eclipse.persistence.tools.workbench.framework.context.WorkbenchContex
 import org.eclipse.persistence.tools.workbench.framework.ui.dialog.ExceptionDialog;
 import org.eclipse.persistence.tools.workbench.mappingsmodel.db.MWDatabase;
 import org.eclipse.persistence.tools.workbench.uitools.LabelArea;
+import org.eclipse.persistence.tools.workbench.utility.string.StringTools;
 
+import org.eclipse.persistence.exceptions.DatabaseException;
 import org.eclipse.persistence.exceptions.EclipseLinkException;
 
 abstract class AbstractCreateTablesOnDatabaseAction extends AbstractTableGenerationAction {
@@ -50,15 +52,29 @@ abstract class AbstractCreateTablesOnDatabaseAction extends AbstractTableGenerat
 		try { 
 			this.database().generateTables(tables);
 		} catch (EclipseLinkException exception) {
-			ExceptionDialog dialog = new ExceptionDialog(
+			if (exception instanceof DatabaseException && ((DatabaseException)exception).getDatabaseErrorCode() == 955) {
+					JOptionPane.showMessageDialog(
+						this.getWorkbenchContext().getCurrentWindow(),
+						resourceRepository().getString("EXCEPTION955_DURING_TABLE_GEN", StringTools.CR),					
+						resourceRepository().getString("EXCEPTION955_DURING_TABLE_GEN.title"),
+						JOptionPane.WARNING_MESSAGE);
+			} else if (exception instanceof DatabaseException && ((DatabaseException)exception).getDatabaseErrorCode() == 2270) {
+					JOptionPane.showMessageDialog(
+							this.getWorkbenchContext().getCurrentWindow(),
+							resourceRepository().getString("EXCEPTION2270_DURING_TABLE_GEN", StringTools.CR),
+							resourceRepository().getString("EXCEPTION2270_DURING_TABLE_GEN.title"),
+							JOptionPane.ERROR_MESSAGE);
+			} else {
+				ExceptionDialog dialog = new ExceptionDialog(
 					resourceRepository().getString("EXCEPTION_DURING_TABLE_GEN"),
 					exception,
 					this.getWorkbenchContext(),
 					resourceRepository().getString("EXCEPTION_DURING_TABLE_GEN.title"));
-			dialog.show();
+				dialog.show();
+			}
 			return;
 		}
-
+		
 		JOptionPane.showMessageDialog(
 				this.getWorkbenchContext().getCurrentWindow(),
 				this.resourceRepository().getString("CREATE_ON_DATABASE_DONE_DIALOG.message", new Object[] { NumberFormat.getInstance().format(tables.size()) }),
