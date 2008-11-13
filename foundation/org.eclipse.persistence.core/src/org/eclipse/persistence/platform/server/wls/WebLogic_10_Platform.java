@@ -70,7 +70,7 @@ public class WebLogic_10_Platform extends WebLogic_9_Platform {
     /** This persistence.xml or sessions.xml property is used to override the moduleName */
     public static final String WEBLOGIC_MODULENAME_PROPERTY = "eclipselink.weblogic.moduleName"; 
     /** This persistence.xml or sessions.xml property is used to override the applicationName */
-    public static final String WEBLOGIC_APPLICATIONNAME_PROPERTY = "eclipselink.weblogic.applicattionName"; 
+    public static final String WEBLOGIC_APPLICATIONNAME_PROPERTY = "eclipselink.weblogic.applicationName"; 
     // Any value such as true will turn on the MBean
     protected boolean shouldRegisterDevelopmentBean = System.getProperty(JMX_REGISTER_DEV_MBEAN_PROPERTY) != null;
     protected boolean shouldRegisterRuntimeBean = System.getProperty(JMX_REGISTER_RUN_MBEAN_PROPERTY) != null;
@@ -78,8 +78,6 @@ public class WebLogic_10_Platform extends WebLogic_9_Platform {
     /**
      * The following constants and attributes are used during reflective API calls
      */
-    /** WebLogic substring must be present in a WebLogic ClassLoader */
-    private static final String WLS_CLASSLOADER_NAME_SUBSTRING = "weblogic";
     /** Cache the WebLogic MBeanServer for performance */
     private MBeanServer wlsMBeanServer = null;
     /** Cache the WebLogic ThreadPoolRuntime for performance */    
@@ -350,7 +348,7 @@ public class WebLogic_10_Platform extends WebLogic_9_Platform {
              }
             
             // If we are running a version of WebLogic 10.3 that does not support ExecuteThreadRuntime (from 10.3.3.1) then use the ClassLoader                    
-            if(jpaModuleName.indexOf("@") != -1) {
+            if(null != jpaModuleName && jpaModuleName.indexOf("@") != -1) {
                 moduleName = jpaModuleName.substring(jpaModuleName.indexOf("@") + 1);
             } else {
                 moduleName = jpaModuleName;
@@ -379,7 +377,7 @@ public class WebLogic_10_Platform extends WebLogic_9_Platform {
              }
             
             // If we are running a version of WebLogic 10.3 that does not support ExecuteThreadRuntime (from 10.3.3.1) then use the ClassLoader                    
-            if(jpaApplicationName.indexOf("@") > -1) {
+            if(null != jpaApplicationName && jpaApplicationName.indexOf("@") > -1) {
                 applicationName = jpaApplicationName.substring(jpaApplicationName.indexOf("@") + 1);
             } else {
                 applicationName = jpaApplicationName;
