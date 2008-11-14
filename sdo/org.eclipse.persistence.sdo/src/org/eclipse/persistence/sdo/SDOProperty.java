@@ -732,6 +732,10 @@ public class SDOProperty implements Property, Serializable {
             //((XMLField)mapping.getField()).setSchemaType(schemaType);
         }
 
+        if (getType().equals(SDOConstants.SDO_STRINGS)) {
+            mapping.setUsesSingleNode(true);
+        }
+        
         if (getType().getInstanceClass() != null) {
             if (shouldAddInstanceClassConverter()) {
                 InstanceClassConverter converter = new InstanceClassConverter();

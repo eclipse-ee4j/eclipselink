@@ -1450,10 +1450,12 @@ public class SDOTypesGenerator {
                 }
             } else if (xsdType.getLocalPart().equals(SDOConstants.IDREFS)) {
                 p.setContainment(false);
-                p.setMany(true);
                 String propertyTypeValue = (String) simpleComponent.getAttributesMap().get(SDOConstants.SDOXML_PROPERTYTYPE_QNAME);
                 if (propertyTypeValue != null) {
                     buildMapping = false;
+                    p.setMany(true);
+                } else {
+                    p.setMany(false);
                 }
             }
         }
