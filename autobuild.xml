@@ -257,7 +257,7 @@
     </target>
 
     <target name="build-no-javadoc" depends="get-dependencies">
-        <ant antfile="build.xml" dir="${build.root.dir}" target="package-eclipselink-jar"/>
+        <ant antfile="build.xml" dir="${build.root.dir}" target="build"/>
     </target>
 
     <target name="package-bundles" depends="get-dependencies">
