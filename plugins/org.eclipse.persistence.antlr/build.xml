@@ -1,0 +1,96 @@
+<!--/*******************************************************************************
+* This program and the accompanying materials are made available under the
+* terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+* which accompanies this distribution.
+* The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
+* and the Eclipse Distribution License is available at
+* http://www.eclipse.org/org/documents/edl-v10.php.
+*
+*   Ant naming conventions:
+*   - regardless of the actual OS platform,'/' is the directory separator
+*     (Ant will convert as appropriate).
+*   - multi-word properties use periods '.'
+*   - multi-word targets use hyphens '-'
+*   - multi-word macros use underscores '_'
+*   - multi-word macro attributes are concatinated
+*     e.g. 'runpathref'
+*   - multi-word tasks (taskdef) names are concatinated
+*     e.g. 'validateconnection'
+*   - OS environment variables are in ALLCAPS and have 'env' as a prefix
+*     e.g. ${env.XXX}.
+*   - Ant properties are lower case.
+*
+* Contributors:
+*     egwin - initial API and implementation
+#******************************************************************************/-->
+
+<project name="org.eclipse.persistence.antlr" default="build">
+    <available file="../${ant.project.name}" type="dir" property="antlr.is.local"/>
+    <!-- Test to make sure that the calling script doesn't inherit the variable -->
+    <!-- (should be set locally, and be destroyed upon return) -->
+    <fail message="Not running from '${ant.project.name}' directory" unless="antlr.is.local"/>
+
+    <dirname  property="antlr.build.location" file="${ant.file.org.eclipse.persistence.antlr}"/>
+    <echo message="antlr.build.location = '${antlr.build.location}'"/>
+    <property name="antlr.2.common.plugins.dir" value=".."/>
+
+    <!-- versioning -->
+    <!-- These variables  are set in autobuild.xml. A manual build gets defaults -->
+    <tstamp>
+       <format property="build.date" pattern="yyyyMMdd"/>
+    </tstamp>
+    <property name="release.version" value="1.1.0"/>
+    <property name="build.type" value="SNAPSHOT"/>
+    <property name="svn.revision" value="NA"/>
+    <property name="version.string" value="${release.version}.${build.date}-${build.type}"/>
+    <property name="release.designation"  value="EclipseLink DeveloperBuild"/>
+
+    <property name="eclipselink.antlr.bndl.prefix" value="${ant.project.name}"/>
+    <property name="src.dir"         value="src"/>
+    <property name="antlr.classes.dir"     value="."/>
+
+    <!-- build -->
+    <target name="build" depends="clean, package" description="build antlr"/>
+
+    <!-- clean -->
+    <target name="clean" description="Clean the build">
+        <delete includeEmptyDirs="true" failonerror="false">
+            <fileset dir="${antlr.2.common.plugins.dir}" includes="${eclipselink.antlr.bndl.prefix}*.jar"/>
+       </delete>
+    </target>
+    
+    <!-- package -->
+    <target name="package" description="jar OSGI bundle">
+        <jar jarfile="${antlr.2.common.plugins.dir}/${eclipselink.antlr.bndl.prefix}_${version.string}.jar" manifest="META-INF/MANIFEST.MF">
+            <fileset dir="${antlr.classes.dir}">
+                <include name="org/eclipse/persistence/**/*.class"/>
+            </fileset>
+        </jar>
+        <jar jarfile="${antlr.2.common.plugins.dir}/${eclipselink.antlr.bndl.prefix}.source_${version.string}.jar">
+             <manifest>
+                <attribute name="Bundle-ManifestVersion" value="2"/>
+                <attribute name="Bundle-Name"            value="EclipseLink ANTLR Source"/>
+                <attribute name="Bundle-SymbolicName"    value="${ant.project.name}"/>
+                <attribute name="Bundle-Version"         value="${release.version}"/>
+                <attribute name="Eclipse-SourceBundle"   value="${ant.project.name};version=&quot;${release.version}&quot;"/>
+            </manifest>
+            <fileset dir="${src.dir}">
+                <include name="org/eclipse/persistence/**/*.java"/>
+            </fileset>
+        </jar>
+    </target>
+
+    <!--  This target is used ONCE at the beginning of a release to update the bundle manifest files.  -->
+    <!--  Do not run it, or hook it up to the "build" target -->
+    <target name="update-manifest" if="svn.exec" description="update and check-in the manifest">
+        <filter token="VERSION" value="${release.version}"/>
+        <delete file="META-INF/MANIFEST.MF" failonerror="false"/>
+        <copy file="META-INF/MANIFEST.template" tofile="META-INF/MANIFEST.MF" filtering="true"/>
+        <exec executable="${svn.exec}" failonerror="false" logError="true">
+            <arg value="commit"/>
+            <arg value="-m ${version.string}"/>
+            <arg value="META-INF/MANIFEST.MF"/>
+        </exec>
+    </target>
+    
+</project>
