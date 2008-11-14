@@ -1,3 +1,4 @@
+<?xml version="1.0"?>
 <!--/*******************************************************************************
 * This program and the accompanying materials are made available under the
 * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
@@ -23,6 +24,7 @@
 * Contributors:
 *     bdoughan - initial API and implementation
 *     dtwelves - Sept 2008 Include SDO SRG testing
+*     egwin    - Nov 08, remove compile of SDO (add dep check instead)
 #******************************************************************************/-->
 <project name="SDO Testing" default="test" basedir=".">
     <property file="${user.home}/build.properties"/>
@@ -37,9 +39,13 @@
         <pathelement path="${eclipselink.core}/${classes.dir}"/>
         <fileset
             dir="${eclipselink.plugins}"
-            includes="${eclipselink.core.depend}"/>
+            includes="
+               ${eclipselink.core.depend},
+               org.eclipse.persistence.core_${version.string}.jar,
+               org.eclipse.persistence.sdo_${version.string}.jar
+            "/>
         <pathelement path="${junit.lib}"/>
-        <pathelement path="${commonj.sdo.lib}"/>
+        <pathelement path="${eclipselink.sdo.base}/plugins/${commonj.sdo.lib}"/>
     </path>
     <path id="sdo.run.path">
         <fileset
@@ -59,8 +65,8 @@
         <fileset
             dir="${eclipselink.plugins}"
             includes="${eclipselink.core.depend}"/>
-    <pathelement path="${junit.lib}"/>
-        <pathelement path="${commonj.sdo.lib}"/>
+        <pathelement path="${junit.lib}"/>
+        <pathelement path="${eclipselink.sdo.base}/plugins/${commonj.sdo.lib}"/>
         <pathelement path="${eclipselink.jar.name}"/>
     </path>
     <path id="sdo.run.path.against.jar">
@@ -86,11 +92,12 @@
     <target name="compile-sdo-tests-against-jar" depends="clean" description="build sdo test classes against eclipselink.jar">
         <compile_sdo_tests compilepathref="sdo.compile.path.against.jar"/>
     </target>
-    <target name="compile-sdo-tests" depends="clean, compile-sdo" description="build sdo test classes">
+    <target name="compile-sdo-tests" depends="clean" description="build sdo test classes">
+        <available file="${eclipselink.plugins}/org.eclipse.persistence.core_${version.string}.jar" property="core.bundle.exist"/>
+        <available file="${eclipselink.plugins}/org.eclipse.persistence.sdo_${version.string}.jar" property="sdo.bundle.exist"/>
+        <fail message="Cannot find CORE: '${eclipselink.plugins}/org.eclipse.persistence.core_${version.string}.jar'." unless="core.bundle.exist"/>
+        <fail message="Cannot find SDO: '${eclipselink.plugins}/org.eclipse.persistence.sdo_${version.string}.jar'." unless="sdo.bundle.exist"/>
         <compile_sdo_tests compilepathref="sdo.compile.path"/>
-    </target>
-    <target name="compile-sdo" description="build sdo classes">
-        <ant antfile="${eclipselink.sdo}/build.xml" target="all"/>
     </target>
 
     <!-- Run targets -->

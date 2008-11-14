@@ -1,3 +1,4 @@
+<?xml version="1.0"?>
 <!--/*******************************************************************************
 * This program and the accompanying materials are made available under the
 * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
@@ -22,71 +23,133 @@
 *
 * Contributors:
 *     tware - initial API and implementation
+*     egwin - update to adopt calling standards
 #******************************************************************************/-->
+<project name="org.eclipse.persistence.jpa" default="build" basedir=".">
+    <available file="../${ant.project.name}" type="dir" property="jpa.is.local"/>
+    <!-- Test to make sure that the calling script doesn't inherit the variable -->
+    <!-- (should be set locally, and be destroyed upon return) -->
+    <fail message="Not running from '${ant.project.name}' directory" unless="jpa.is.local"/>
 
-<project name="Eclipse Persistence Services" default="all" basedir=".">
+    <dirname  property="jpa.build.location" file="${ant.file.org.eclipse.persistence.core}"/>
+    <condition property="jpa.2.common.plugins.dir" value="../../plugins" else="../plugins">
+        <contains string="${jpa.build.location}" substring="jpa"/>
+    </condition>
 
     <property file="${user.home}/build.properties"/>
-    <property file="build.properties"/>
+    <property file="./build.properties"/>
 
-    <available file="${eclipselink.jpa}/${eclipselink.core.trunk}" type="dir" property="is.trunk"/>
+    <!-- versioning -->
+    <!-- These variables  are set in autobuild.xml. A manual build gets defaults -->
+    <tstamp>
+       <format property="build.date" pattern="yyyyMMdd"/>
+    </tstamp>
+    <property name="build.type" value="SNAPSHOT"/>
+    <property name="svn.revision" value="NA"/>
+    <property name="version.string" value="${release.version}.${build.date}-${build.type}"/>
+    <property name="release.designation"  value="EclipseLink DeveloperBuild"/>
 
-    <target name="config-trunk" if="is.trunk">
-        <path id="compile.path">
-            <pathelement path="${eclipselink.jpa}/${eclipselink.plugins}/${antlr}"/>
-            <pathelement path="${eclipselink.jpa}/${eclipselink.plugins}/${asm}"/>
-            <pathelement path="${eclipselink.jpa}/${eclipselink.core.trunk}/${classes.dir}"/>
-            <pathelement path="${eclipselink.jpa}/${eclipselink.plugins}/osgi.core.zip"/>
-            <pathelement path="${eclipselink.jpa.plugins.depend}"/>
-            <fileset
-                dir="${eclipselink.jpa}/${eclipselink.jpa.plugins}"
-                includes="${eclipselink.jpa.depend}"/>
-            <fileset
-                dir="${eclipselink.jpa}/${eclipselink.plugins}"
-                includes="${eclipselink.core.depend}"/>
-        </path>
-    </target>
-
-    <target name="config-flat" unless="is.trunk">
-        <path id="compile.path">
-            <pathelement path="${eclipselink.plugins}/${antlr}"/>
-            <pathelement path="${eclipselink.plugins}/${asm}"/>
-            <pathelement path="${eclipselink.core}/${classes.dir}"/>
-            <pathelement path="${eclipselink.plugins}/osgi.core.zip"/>
-            <fileset
-                dir="${eclipselink.jpa.base}/${plugins.dir}"
-                includes="${eclipselink.jpa.depend}"/>
-            <fileset
-                dir="${eclipselink.plugins}"
-                includes="${eclipselink.core.depend}"/>
-        </path>
-    </target>
+    <!-- Set Compile Path-->
+    <path id="jpa.compile.path">
+        <pathelement path="${jpa.2.common.plugins.dir}/${antlr}"/>
+        <pathelement path="${jpa.2.common.plugins.dir}/${asm}"/>
+        <pathelement path="${jpa.2.common.plugins.dir}/org.eclipse.persistence.core_${version.string}.jar"/>
+        <pathelement path="${jpa.2.common.plugins.dir}/osgi.core.zip"/>
+        <fileset
+            dir="../${plugins.dir}"
+            includes="${eclipselink.jpa.depend}"/>
+        <fileset
+            dir="${jpa.2.common.plugins.dir}"
+            includes="${eclipselink.core.depend}"/>
+    </path>
+    <available file="${jpa.2.common.plugins.dir}/org.eclipse.persistence.core_${version.string}.jar" property="core.bundle.exist"/>
+    <available file="../${plugins.dir}/javax.persistence_1.99.0.jar" property="jpa2.jar.exist"/>
+    <available file="../${plugins.dir}/javax.persistence/${classes.dir}" type="dir" property="jpa2.classes.exist"/>
 
     <!-- all -->
-    <target name="all" depends="clean, compile" description="build core classes"/>
+    <target name="build" depends="clean, compile, package" description="build JPA component"/>
+
+    <!-- clean -->
+    <target name="clean" description="Clean all generated content">
+        <delete includeEmptyDirs="true" failonerror="false">
+            <fileset dir="${classes.dir}"/>
+            <fileset dir="${jpa.2.common.plugins.dir}" includes="${eclipselink.jpa.bndl.prefix}*.jar"/>
+        </delete>
+    </target>
 
     <!-- compile -->
-    <target name="compile" depends="config-trunk, config-flat" description="compile EclipseLink JPA">
-        <mkdir dir="${eclipselink.jpa}/${classes.dir}"/>
-        <javac srcdir="${eclipselink.jpa}/${src.dir}"
-               destdir="${eclipselink.jpa}/${classes.dir}"
-               includes="org/eclipse/persistence/**"
+    <target name="compile" description="Compile EclipseLink JPA">
+        <fail message="Cannot find Core: '${jpa.2.common.plugins.dir}/org.eclipse.persistence.core_${version.string}.jar'." unless="core.bundle.exist"/>
+        <fail message="Cannot find JAXB 2.0:'../plugins/javax.persistence_1.99.0.jar'." unless="jpa2.jar.exist"/>
+        <mkdir dir="${classes.dir}"/>
+        <javac srcdir="${src.dir}"
+               destdir="${classes.dir}"
+               includes="org/eclipse/persistence/**/*.java"
                debug="${javac.debug}"
                optimize="${javac.optimize}"
                source="${javac.version}"
                target="${javac.version}"
                deprecation="${javac.deprecation}"
-               failonerror="true">
-            <classpath>
-                <path refid="compile.path"/>
-            </classpath>
-        </javac>
+               failonerror="true"
+               memoryMaximumSize="512m"
+               fork="true"
+               classpathref="jpa.compile.path"
+        />
     </target>
 
-    <target name="clean" description="Clean the build">
-        <delete includeEmptyDirs="true" failonerror="false">
-            <fileset dir="${eclipselink.jpa}/${classes.dir}/org"/>
-        </delete>
+    <!-- package -->
+    <target name="package" description="jar OSGI bundle">
+        <fail message="Cannot find JAXB 2.0 class dir:'../plugins/javax.persistence/${classes.dir}'" unless="jpa2.classes.exist"/>
+        <jar jarfile="${jpa.2.common.plugins.dir}/${eclipselink.jpa.bndl.prefix}_${version.string}.jar" manifest="META-INF/MANIFEST.MF">
+            <fileset dir="${classes.dir}">
+                <include name="org/eclipse/persistence/**/*.class"/>
+            </fileset>
+            <fileset dir="${resource.dir}">
+                <include name="org/eclipse/persistence/jpa/*.xsd"/>
+                <include name="META-INF/services/javax.persistence.spi.PersistenceProvider"/>
+            </fileset>
+            <!-- JPA 1.1/2.0 concurrent dev solution: New classes from javax.persistence 2.0 -->
+            <fileset
+                dir="../plugins/javax.persistence/${classes.dir}"
+                includes="
+                    javax/persistence/Access.class,
+                    javax/persistence/AccessType.class,
+                    javax/persistence/Cache.class,
+                    javax/persistence/LockModeType.class,
+                    javax/persistence/LockTimeoutException.class,
+                    javax/persistence/PessimisticLockException.class,
+                    javax/persistence/NamedQuery.class
+            "/>
+        </jar>
+        <jar jarfile="${jpa.2.common.plugins.dir}/${eclipselink.jpa.bndl.prefix}.source_${version.string}.jar">
+             <manifest>
+                <attribute name="Bundle-ManifestVersion" value="2"/>
+                <attribute name="Bundle-Name"            value="EclipseLink JPA Source"/>
+                <attribute name="Bundle-SymbolicName"    value="${ant.project.name}"/>
+                <attribute name="Bundle-Version"         value="${release.version}"/>
+                <attribute name="Eclipse-SourceBundle"   value="${ant.project.name};version=&quot;${release.version}&quot;"/>
+            </manifest>
+            <fileset dir="${src.dir}">
+                <include name="org/eclipse/persistence/**/*.java"/>
+            </fileset>
+            <fileset dir="${resource.dir}">
+                <include name="org/eclipse/persistence/jpa/*.xsd"/>
+                <include name="META-INF/services/javax.persistence.spi.PersistenceProvider"/>
+            </fileset>
+        </jar>
+    </target>
+
+    <!--  This target is used ONCE at the beginning of a release to update the bundle manifest files.  -->
+    <!--  Do not run it, or hook it up to the "build" target -->
+    <target name="update-manifest" if="svn.exec" description="update and check-in the manifest">
+        <filter token="VERSION" value="${release.version}"/>
+        <delete file="META-INF/MANIFEST.MF" failonerror="false"/>
+        <copy file="META-INF/MANIFEST.template" tofile="META-INF/MANIFEST.MF" filtering="true"/>
+        <exec executable="${svn.exec}" failonerror="false" logError="true">
+            <arg value="commit"/>
+            <arg value="-m ${version.string}"/>
+            <arg value="META-INF/MANIFEST.MF"/>
+        </exec>
     </target>
 
 </project>

@@ -24,148 +24,114 @@
 * Contributors:
 *     egwin - initial API and implementation
 *     mnorman - fix to deal with basedir/path problems
+*     egwin - update to adopt calling standards
 #******************************************************************************/-->
-<project
-  name="org.eclipse.persistence.dbws"
-  default="all"
-  basedir="."
-  >
-  <!-- OS environment variables have 'env' as a prefix -->
-  <property
-    environment="env"
-  />
-  <!-- local property overrides -->
-  <property
-    file="${user.home}/build.properties"
-  />
-  <!-- find out where this build.xml file is -->
-  <dirname
-    property="eclipselink.dbws"
-    file="${ant.file.org.eclipse.persistence.dbws}"
-  />
-  <!-- property checked into SVN -->
-  <property
-    file="${eclipselink.dbws}/build.properties"
-  />
-  <!-- Classpath used for compiling. -->
-  <path
-    id="compile.path"
-    >
-    <pathelement
-      path="${eclipselink.core}/${classes.dir}"
-    />
-    <pathelement
-      path="${eclipselink.jar.name}"
-    />
-    <pathelement
-      path="${eclipselink.plugins}/${asm}"
-    />
-    <fileset
-      dir="${eclipselink.plugins}"
-      includes="${eclipselink.dbws.core.depend}"
-    />
-  </path>
-  <presetdef name="javac">
-    <javac
-      debug="${javac.debug}"
-      optimize="${javac.optimize}"
-      source="${javac.version}"
-      target="${javac.version}"
-      deprecation="${javac.deprecation}"
-      failonerror="true"
-      memoryMaximumSize="512m"
-      fork="true"
-    />
-  </presetdef>
-  <presetdef
-    name="DeleteDirQuietly"
-    >
-    <delete
-      dir="_tmp_"
-      quiet="true"
-      failonerror="false"
-    />
-  </presetdef>
-  <target
-    name="all"
-    depends="clean, create-jar"
-    description="build EclipseLink jar"
-  />
-  <target
-    name="clean"
-    description="Clean all generated content"
-    >
-    <DeleteDirQuietly
-      dir="${eclipselink.dbws}/${classes.dir}"
-    />
-  </target>
-  <target
-    name="verify-dependencies"
-    description="verify core classes were compiled"
-    >
-    <available
-      file="${eclipselink.core}/${classes.dir}/org/eclipse/persistence/Version.class"
-      property="core.classes.exist"
-    />
-    <available
-      file="${eclipselink.plugins}/${asm}"
-      type="dir"
-      property="asm.exist"
-    />
-    <fail
-      unless="core.classes.exist"
-      message="Core Classes cannot be found (check they compiled). Exiting..."
-    />
-    <fail
-      unless="asm.exist"
-      message="ASM Bundle cannot be found. Exiting..."
-    />
-  </target>
-  <target
-    name="compile"
-    depends="verify-dependencies"
-    description="build dbws classes"
-    >
-    <mkdir
-      dir="${eclipselink.dbws}/${classes.dir}"
-    />
-    <javac
-      srcdir="${eclipselink.dbws}/${src.dir}"
-      destdir="${eclipselink.dbws}/${classes.dir}"
-      includes="**/*.java"
-      classpathref="compile.path"
-    />
-  </target>
-  <!-- Packages dbws OSGI bundle jar. -->
-  <target
-    name="create-jar"
-    depends="compile"
-    description="Packages dbws OSGI bundle jar"
-    >
-    <DeleteDirQuietly
-      dir="${eclipselink.dbws}/../${plugins.dir}"
-    />
-    <mkdir
-      dir="${eclipselink.dbws}/../${plugins.dir}"
-    />
-    <jar
-      jarfile="${eclipselink.dbws}/../${plugins.dir}/${eclipselink.dbws.bndl.prefix}.jar"
-      manifest="${eclipselink.dbws}/META-INF/MANIFEST.MF"
-      >
-      <fileset
-        dir="${eclipselink.dbws}/${classes.dir}"
-        >
-        <include
-          name="org/eclipse/persistence/**/*.class"
+<project name="org.eclipse.persistence.dbws" default="build" basedir=".">
+    <available file="../${ant.project.name}" type="dir" property="dbws.is.local"/>
+    <!-- Test to make sure that the calling script doesn't inherit the variable -->
+    <!-- (should be set locally, and be destroyed upon return) -->
+    <fail message="Not running from '${ant.project.name}' directory" unless="dbws.is.local"/>
+
+    <dirname  property="dbws.build.location" file="${ant.file.org.eclipse.persistence.core}"/>
+    <condition property="dbws.2.common.plugins.dir" value="../../plugins" else="../plugins">
+        <contains string="${dbws.build.location}" substring="dbws"/>
+    </condition>
+
+    <!-- OS environment variables have 'env' as a prefix -->
+    <property environment="env"/>
+    <!-- local property overrides -->
+    <property file="${user.home}/build.properties"/>
+    <property file="./build.properties"/>
+
+    <!-- versioning -->
+    <!-- These variables  are set in autobuild.xml. A manual build gets defaults -->
+    <tstamp>
+       <format property="build.date" pattern="yyyyMMdd"/>
+    </tstamp>
+    <property name="build.type" value="SNAPSHOT"/>
+    <property name="svn.revision" value="NA"/>
+    <property name="version.string" value="${release.version}.${build.date}-${build.type}"/>
+    <property name="release.designation"  value="EclipseLink DeveloperBuild"/>
+
+    <!-- Set Compile Path-->
+    <path id="dbws.compile.path">
+        <pathelement path="${dbws.2.common.plugins.dir}/${asm}"/>
+        <pathelement path="${dbws.2.common.plugins.dir}/org.eclipse.persistence.core_${version.string}.jar"/>
+        <fileset
+            dir="${dbws.2.common.plugins.dir}"
+            includes="${dbws.common.dependencies}"/>
+    </path>
+    <available file="${dbws.2.common.plugins.dir}/org.eclipse.persistence.core_${version.string}.jar" property="core.bundle.exist"/>
+
+    <!-- all -->
+    <target name="build" depends="clean, compile, package" description="build DBWS component"/>
+
+    <!-- clean -->
+    <target name="clean" description="Clean all generated content">
+        <delete includeEmptyDirs="true" failonerror="false">
+            <fileset dir="${classes.dir}"/>
+            <fileset dir="${dbws.2.common.plugins.dir}" includes="${eclipselink.dbws.bndl.prefix}*.jar"/>
+        </delete>
+    </target>
+
+    <!-- compile -->
+    <target name="compile" description="Compile EclipseLink DBWS classes">
+        <fail message="Cannot find Core: '${dbws.2.common.plugins.dir}/org.eclipse.persistence.core_${version.string}.jar'." unless="core.bundle.exist"/>
+        <mkdir dir="${classes.dir}"/>
+        <javac srcdir="${src.dir}"
+               destdir="${classes.dir}"
+               includes="**/*.java"
+               debug="${javac.debug}"
+               optimize="${javac.optimize}"
+               source="${javac.version}"
+               target="${javac.version}"
+               deprecation="${javac.deprecation}"
+               failonerror="true"
+               memoryMaximumSize="512m"
+               fork="true"
+               classpathref="dbws.compile.path"
         />
-      </fileset>
-      <fileset
-        dir="${eclipselink.dbws}/${resource.dir}"
-        >
-        <include
-          name="xsd/*.xsd"
-        />
-      </fileset>
-    </jar>
-  </target>
+    </target>
+
+    <!-- package -->
+    <target name="package" description="jar OSGI bundle">
+        <jar jarfile="${dbws.2.common.plugins.dir}/${eclipselink.dbws.bndl.prefix}_${version.string}.jar" manifest="META-INF/MANIFEST.MF">
+            <fileset dir="${classes.dir}">
+                <include name="org/eclipse/persistence/**/*.class"/>
+            </fileset>
+            <fileset dir="${resource.dir}">
+                <include name="xsd/*.xsd"/>
+            </fileset>
+        </jar>
+        <jar jarfile="${dbws.2.common.plugins.dir}/${eclipselink.dbws.bndl.prefix}.source_${version.string}.jar">
+             <manifest>
+                <attribute name="Bundle-ManifestVersion" value="2"/>
+                <attribute name="Bundle-Name"            value="EclipseLink DBWS Source"/>
+                <attribute name="Bundle-SymbolicName"    value="${ant.project.name}"/>
+                <attribute name="Bundle-Version"         value="${release.version}"/>
+                <attribute name="Eclipse-SourceBundle"   value="${ant.project.name};version=&quot;${release.version}&quot;"/>
+            </manifest>
+            <fileset dir="${src.dir}">
+                <include name="org/eclipse/persistence/**/*.java"/>
+            </fileset>
+            <fileset dir="${resource.dir}">
+                <include name="org/eclipse/persistence/dbws/*.xsd"/>
+                <include name="META-INF/services/javax.persistence.spi.PersistenceProvider"/>
+            </fileset>
+        </jar>
+    </target>
+
+    <!--  This target is used ONCE at the beginning of a release to update the bundle manifest files.  -->
+    <!--  Do not run it, or hook it up to the "build" target -->
+    <target name="update-manifest" if="svn.exec" description="update and check-in the manifest">
+        <filter token="VERSION" value="${release.version}"/>
+        <delete file="META-INF/MANIFEST.MF" failonerror="false"/>
+        <copy file="META-INF/MANIFEST.template" tofile="META-INF/MANIFEST.MF" filtering="true"/>
+        <exec executable="${svn.exec}" failonerror="false" logError="true">
+            <arg value="commit"/>
+            <arg value="-m ${version.string}"/>
+            <arg value="META-INF/MANIFEST.MF"/>
+        </exec>
+    </target>
+
 </project>

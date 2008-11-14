@@ -28,6 +28,7 @@
 *     egwin  - rework to incorporate new versioning standards and revision info.
 *     egwin  - add jpa 2.0 jar creation, and JPA 1.1/2.0 concurrent development
                strategy. Also includes fixes to eclipselink.jar creation.
+*     egwin  - rework to standardize antcall conventions and fix multiple target builds.  
 #******************************************************************************/-->
 <!-- =============================================================================
 *  General Comments
@@ -42,11 +43,11 @@
 *  When called by autobuild it generates Nightly and Milestone builds
 *================================================================================= -->
 <!-- This ant project includes the following tasks:
-        - all (default) : compiles all components and tests (excluding Oracle extensions)
+        - build (default) : compiles all components and tests (excluding Oracle extensions)
         - build.all : compiles all components and tests, including Oracle extensions
         - clean : removes all build generated files
         - build-distribution : compiles and packages all jars, javadocs, installer
-        - build-core : compiles all components, excluding tests, workbench, and Oracle extensions
+        - build-core : compiles all components, excluding tests, utilities, and Oracle extensions
         - build-extension : compiles Oracle extensions and tests
         - build-test : compiles all tests, excluding Oracle extensions
         - build-workbench-test : compiles the workbench tests
@@ -70,7 +71,7 @@
 
         It may require some configuration of the build.properties to run.
     -->
-<project name="Eclipse Persistence Services" default="all" basedir=".">
+<project name="Eclipse Persistence Services" default="build" basedir=".">
 
     <property environment="env"/>
     <!-- Allows a user to overide certain user specific properties. -->
@@ -98,86 +99,86 @@
             includes="${eclipselink.core.depend}"/>
     </path>
 
+<!-- ================================================================================= -->
+    <!-- *** Convienience and Compatability targets *** -->
+    
     <!-- Short alias for building the jar. -->
     <target name="jar" depends="package-eclipselink-jar"/>
 
-    <!-- Default ant target, compiles all components and tests, builds eclipselink.jar. -->
-    <target name="all" depends="package-eclipselink-jar, build-workbench, build-test, package-src-jar, package-packagerenamer-jar, package-installer-zip" description="build EclipseLink distribution files"/>
+    <!-- Compatability targets for Oracle QA Nightly testing. -->
+    <!--   Needed until All branches use the new standards.   -->
+    <target name="build-test" depends="build-core-test"/>             <!-- Assumes 'build-core' has been run  -->
+    <target name="build-extension" depends="build-oracle-extension"/> <!-- Assumes 'build-core' and 'build-core-test' have been run -->
+    <target name="build-workbench" depends="build-util"/>             <!-- Assumes 'package-eclipselink-jar' has been run  --> 
 
-    <!-- Compiles all components and tests including Oracle extensions. -->
-    <target name="build-all" depends="build-core, build-workbench, build-test, build-extension"/>
+<!-- ================================================================================= -->
+
+    <!-- "top-level" target for creating the distribution archives. -->
+    <target name="package-all" depends="package-src-jar, package-tst-src-jar, package-javadoc-zip, package-installer-zip"/>
+
+    <!-- Default ant target, compiles all components and tests, builds eclipselink.jar. -->
+    <target name="build" depends="build-core, package-eclipselink-jar, build-core-test" description="build all EclipseLink distribution files except docs"/>
+
+    <!-- Compiles all components and tests (excluding extensions). -->
+    <target name="build-all-but-ext" depends="build, build-util, build-util-test"/>
+
+    <!-- Compiles core components, tests and extensions (excluding utilities). -->
+    <target name="build-extensions" depends="build-core, build-core-test, build-oracle-extension"/>
 
     <!-- Builds and packages all jars, javadoc, and builds installer. -->
-    <target name="build-distribution" depends="package-eclipselink-jar, build-eclipselink-bundles, package-src-jar, package-tst-src-jar, package-packagerenamer-jar, package-util-dbws-jar, build-workbench, package-javadoc-zip, package-installer-zip"/>
+    <target name="build-distribution" depends="build-all-but-ext, package-all"/>
 
-    <!-- Compiles all components and tests (excluding workbench). -->
-    <target name="build-core-all" depends="build-core, build-core-test, build-extension"/>
+<!-- ================================================================================= -->
 
     <!-- Cleans all build generated files. -->
     <target name="clean" description="Clean the build">
-        <ant antfile="build.xml" dir="${jpa.prototype}"          target="clean"/>
-        <ant antfile="${eclipselink.core}/build.xml"             target="clean"/>
-        <ant antfile="${eclipselink.extension.oracle}/build.xml" target="clean"/>
-        <ant antfile="${eclipselink.dbws}/build.xml"             target="clean"/>
-        <ant antfile="${eclipselink.jpa}/build.xml"              target="clean"/>
-        <ant antfile="${eclipselink.util.rename}/build.xml"      target="clean"/>
-        <ant antfile="${eclipselink.moxy}/build.xml"             target="clean"/>
-        <ant antfile="${eclipselink.sdo}/build.xml"              target="clean"/>
-        <ant antfile="build.xml" dir="${eclipselink.util.workbench}" target="clean"/>
-        <ant antfile="${eclipselink.core.test}/build.xml"        target="clean"/>
-        <ant antfile="${eclipselink.jpa.test}/build.xml"         target="clean"/>
-        <ant antfile="${eclipselink.moxy.test}/build.xml"        target="clean"/>
-        <ant antfile="${eclipselink.sdo.test}/build.xml"         target="clean"/>
+        <ant antfile="build.xml" dir="${eclipselink.antlr}"            target="clean"/>
+        <ant antfile="build.xml" dir="${eclipselink.asm}"              target="clean"/>
+        <ant antfile="build.xml" dir="${jpa.prototype}"                target="clean"/>
+        <ant antfile="build.xml" dir="${eclipselink.core}"             target="clean"/>
+        <ant antfile="build.xml" dir="${eclipselink.extension.oracle}" target="clean"/>
+        <ant antfile="build.xml" dir="${eclipselink.dbws}"             target="clean"/>
+        <ant antfile="build.xml" dir="${eclipselink.jpa}"              target="clean"/>
+        <ant antfile="build.xml" dir="${eclipselink.moxy}"             target="clean"/>
+        <ant antfile="build.xml" dir="${eclipselink.sdo}"              target="clean"/>
+        <ant antfile="build.xml" dir="${eclipselink.util.dbws}"        target="clean"/>
+        <ant antfile="build.xml" dir="${eclipselink.util.rename}"      target="clean"/>
+        <ant antfile="build.xml" dir="${eclipselink.util.workbench}"   target="clean"/>
+        <ant antfile="build.xml" dir="${eclipselink.core.test}"        target="clean"/>
+        <ant antfile="build.xml" dir="${eclipselink.jpa.test}"         target="clean"/>
+        <ant antfile="build.xml" dir="${eclipselink.moxy.test}"        target="clean"/>
+        <ant antfile="build.xml" dir="${eclipselink.sdo.test}"         target="clean"/>
         <ant antfile="build.xml" dir="${eclipselink.util.workbench.test}" target="clean"/>
-        <ant antfile="${eclipselink.util.rename}/build.xml"      target="clean"/>
-        <delete dir="${build.dir}"/>
         <delete file="${eclipselink.jar.name}"/>
+        <delete file="${eclipselink.plugins.install.prefix}${eclipselink.zip.suffix}"/>
         <delete file="${eclipselink.src.install.prefix}${eclipselink.zip.suffix}"/>
-        <delete file="${eclipselink.install.prefix}${eclipselink.zip.suffix}"/>
-        <delete file="${eclipselink.javadoc.install.prefix}${eclipselink.zip.suffix}"/>
         <delete file="${eclipselink.tst.src.prefix}${eclipselink.zip.suffix}"/>
-    </target>
-
-    <target name="clean-eclipselink-bundles">
-        <delete>
-            <fileset dir="${eclipselink.core.base}/${plugins.dir}" includes="org.eclipse.persistence*.jar"/>
-        </delete>
-        <delete>
-            <fileset dir="${eclipselink.jpa.base}/${plugins.dir}" includes="${eclipselink.jpa.bndl.prefix}*.jar"/>
-        </delete>
-        <delete>
-            <fileset dir="${eclipselink.moxy.base}/${plugins.dir}" includes="${eclipselink.moxy.bndl.prefix}*.jar"/>
-        </delete>
-         <delete>
-            <fileset dir="${eclipselink.sdo.base}/${plugins.dir}" includes="${eclipselink.sdo.bndl.prefix}*.jar"/>
-        </delete>
-        <delete>
-            <fileset dir="${eclipselink.plugins}" includes="${eclipselink.asm.bndl.prefix}*.jar"/>
-        </delete>
-        <delete>
-            <fileset dir="${eclipselink.plugins}" includes="${eclipselink.antlr.bndl.prefix}*.jar"/>
-        </delete>
+        <delete file="${eclipselink.javadoc.install.prefix}${eclipselink.zip.suffix}"/>
+        <delete file="${eclipselink.install.prefix}${eclipselink.zip.suffix}"/>
     </target>
 
     <!-- Compiles all components (excluding Tests, Oracle extensions). -->
     <target name="build-core">
         <ant antfile="build.xml" dir="${jpa.prototype}"     target="build"/>
-        <ant antfile="${eclipselink.core}/build.xml" target="all"/>
-        <ant antfile="${eclipselink.jpa}/build.xml"  target="all"/>
-        <ant antfile="${eclipselink.moxy}/build.xml" target="all"/>
-        <ant antfile="${eclipselink.sdo}/build.xml"  target="all"/>
-        <ant antfile="${eclipselink.dbws}/build.xml" target="all"/>
-        <!-- Quick fix: since this is called 4-5 times, make sure the last one is the one that builds correctly -->
-        <ant antfile="${eclipselink.core}/build.xml" target="all"/>
+        <ant antfile="build.xml" dir="${eclipselink.asm}"   target="build"/>
+        <ant antfile="build.xml" dir="${eclipselink.antlr}" target="build"/>
+        <ant antfile="build.xml" dir="${eclipselink.core}"  target="build"/>
+        <ant antfile="build.xml" dir="${eclipselink.jpa}"   target="build"/>
+        <ant antfile="build.xml" dir="${eclipselink.moxy}"  target="build"/>
+        <ant antfile="build.xml" dir="${eclipselink.sdo}"   target="build"/>
+        <ant antfile="build.xml" dir="${eclipselink.dbws}"  target="build"/>
     </target>
 
-    <target name="build-workbench">
+    <target name="build-util">
+        <ant antfile="build.xml" dir="${eclipselink.util.dbws}"      target="build"/>
+        <ant antfile="build.xml" dir="${eclipselink.util.rename}"    target="build"/>
         <ant antfile="build.xml" dir="${eclipselink.util.workbench}" target="all"/>
     </target>
 
     <!-- Compiles Oracle extensions and tests. -->
-    <target name="build-extension" depends="build-core, build-core-test">
-        <ant antfile="${eclipselink.extension.oracle}/build.xml"      target="all"/>
+    <target name="build-oracle-extension">
+        <ant antfile="build.xml" dir="${eclipselink.extension.oracle}"      target="build"/>
+        <!-- ant antfile="build.xml" dir="${eclipselink.extension.oracle.test}" target="build"/ -->
         <ant antfile="${eclipselink.extension.oracle.test}/build.xml" target="all"/>
     </target>
 
@@ -187,27 +188,20 @@
         <ant antfile="${eclipselink.jpa.test}/build.xml"  target="all"/>
         <ant antfile="${eclipselink.moxy.test}/build.xml" target="compile-tests"/>
         <ant antfile="${eclipselink.sdo.test}/build.xml"  target="compile-sdo-tests"/>
+        <!-- Compiling dbws tests requires JDK 1.6 -->
+        <ant antfile="build.xml" dir="${eclipselink.dbws.test}" target="build"/>
     </target>
 
-    <!-- Compiles all tests (excluding Oracle extensions). -->
-    <target name="build-test" depends="build-core-test">
+    <!-- Compiles all tests (excluding Oracle extensions) -->
+    <target name="build-util-test">
         <ant antfile="build.xml" dir="${eclipselink.util.workbench.test}" target="all"/>
         <!-- Compiling dbws tests requires JDK 1.6 -->
-        <ant antfile="${eclipselink.dbws.test}/build.xml" target="init"/>
-    </target>
-
-    <!-- Compiles all tests (excluding Oracle extensions). -->
-    <target name="build-workbench-test">
-        <ant antfile="build.xml" dir="${eclipselink.util.workbench.test}" target="all"/>
-    </target>
-
-    <!-- Updates and copies the manifest file to build dir.  Extracts the oracle extension jar to the build dir -->
-    <target name="create-build-dir" depends="build-core" description="create the directory used to build jars from">
-        <unjar src="${eclipselink.extension.oracle}/${eclipselink.oracle.depend.jar}" dest="${build.dir}"/>
+        <ant antfile="build.xml" dir="${eclipselink.util.dbws.test}" target="build"/>
     </target>
 
     <!-- Packages the eclipselink.jar. -->
-    <target name="package-eclipselink-jar" depends="create-build-dir" description="build EclipseLink jar">
+    <target name="package-eclipselink-jar" description="build EclipseLink jar">
+        <delete file="${eclipselink.jar.name}"/>
         <echo message="Implementation-Version: ${version.string}"/>
         <jar jarfile="${eclipselink.jar.name}">
              <manifest>
@@ -220,173 +214,20 @@
                 <attribute name="Release-Designation"    value="${release.designation}"/>
                 <attribute name="Premain-Class"          value="${eclipselink.premain.class}"/>
             </manifest>
-            <fileset dir="${eclipselink.core}/${classes.dir}">
-                <include name="org/eclipse/persistence/**/*.class"/>
-                <include name="deprecated/**/*.class"/>
-            </fileset>
-            <fileset dir="${eclipselink.core}/${resource.dir}">
-                <include name="xsd/*.xsd"/>
-                <include name="org/eclipse/persistence/internal/helper/VendorNameToPlatformMapping.properties"/>
-            </fileset>
-            <fileset dir="${eclipselink.plugins}/${asm}">
-                <include name="org/eclipse/persistence/internal/libraries/asm/**/*.class"/>
-            </fileset>
-            <fileset dir="${eclipselink.plugins}/${antlr}">
-                <include name="org/eclipse/persistence/internal/libraries/antlr/**/*.class"/>
-            </fileset>
-            <fileset dir="${build.dir}">
-                <include name="org/eclipse/persistence/**/*.class"/>
-            </fileset>
-            <fileset dir="${eclipselink.dbws}/${classes.dir}">
-                <include name="org/eclipse/persistence/**/*.class"/>
-            </fileset>
-             <fileset dir="${eclipselink.dbws}/${resource.dir}">
-                <include name="xsd/*.xsd"/>
-            </fileset>
-            <fileset dir="${eclipselink.jpa}/${classes.dir}">
-                <include name="org/eclipse/persistence/**/*.class"/>
-            </fileset>
-             <fileset dir="${eclipselink.jpa}/${resource.dir}">
-                <include name="org/eclipse/persistence/jpa/*.xsd"/>
-                <include name="META-INF/services/javax.persistence.spi.PersistenceProvider"/>
-            </fileset>
-            <!-- JPA 1.1/2.0 concurrent dev solution: New classes from javax.persistence 2.0 -->
-            <fileset
-                dir="${eclipselink.jpa.plugins}/javax.persistence/${classes.dir}"
-                includes="
-                    javax/persistence/Access.class,
-                    javax/persistence/AccessType.class,
-                    javax/persistence/Cache.class,
-                    javax/persistence/LockModeType.class,
-                    javax/persistence/LockTimeoutException.class,
-                    javax/persistence/PessimisticLockException.class
-            "/>
-
-            <fileset dir="${eclipselink.moxy}/${classes.dir}">
-                <include name="org/eclipse/persistence/**/*.class"/>
-            </fileset>
-            <fileset dir="${eclipselink.sdo}/${classes.dir}">
-                <include name="org/eclipse/persistence/**/*.class"/>
-                <include name="commonj/sdo/impl/HelperProviderImpl.class"/>
-            </fileset>
+            <zipgroupfileset dir="${eclipselink.plugins}">
+                <include name="${asm}_${version.string}.jar"/>
+                <include name="${antlr}_${version.string}.jar"/>
+                <include name="org.eclipse.persistence*.jar"/>
+                <exclude name="*source*.jar"/>
+            </zipgroupfileset>
+            <zipgroupfileset dir="${eclipselink.extension.oracle}">
+                <include name="*.jar"/>
+            </zipgroupfileset>
         </jar>
     </target>
 
-    <!-- Packages OSGI bundle jars. -->
-    <!-- Note: This target builds bundles that are parallell to the bundles built by target: build-eclipselink-source-bundles.  When updating this target, be careful to keep it in sync with build-eclipselink-source-bundles -->
-    <target name="build-eclipselink-bundles" depends="create-build-dir, clean-eclipselink-bundles" description="build eclipselink bundles">
-        <jar jarfile="${eclipselink.core.base}/${plugins.dir}/${eclipselink.core.bndl.prefix}_${version.string}.jar" manifest="${eclipselink.core}/META-INF/MANIFEST.MF">
-            <fileset dir="${eclipselink.core}/${classes.dir}">
-                <include name="org/eclipse/persistence/**/*.class"/>
-            </fileset>
-            <fileset dir="${eclipselink.core}/${resource.dir}">
-                <include name="xsd/*.xsd"/>
-                <include name="org/eclipse/persistence/internal/helper/VendorNameToPlatformMapping.properties"/>
-            </fileset>
-        </jar>
-        <jar jarfile="${eclipselink.jpa.base}/${plugins.dir}/${eclipselink.jpa.bndl.prefix}_${version.string}.jar" manifest="${eclipselink.jpa}/META-INF/MANIFEST.MF">
-            <fileset dir="${eclipselink.core}/${resource.dir}">
-                <include name="META-INF/services/javax.persistence.spi.PersistenceProvider"/>
-            </fileset>
-            <fileset dir="${eclipselink.jpa}/${classes.dir}">
-                <include name="org/eclipse/persistence/**/*.class"/>
-            </fileset>
-             <fileset dir="${eclipselink.jpa}/${resource.dir}">
-                <include name="org/eclipse/persistence/jpa/*.xsd"/>
-                <include name="META-INF/services/javax.persistence.spi.PersistenceProvider"/>
-            </fileset>
-            <!-- JPA 1.1/2.0 concurrent dev solution: New classes from javax.persistence 2.0 -->
-            <fileset
-                dir="${eclipselink.jpa.plugins}/javax.persistence/${classes.dir}"
-                includes="
-                    javax/persistence/Access.class,
-                    javax/persistence/AccessType.class,
-                    javax/persistence/Cache.class,
-                    javax/persistence/LockModeType.class,
-                    javax/persistence/LockTimeoutException.class,
-                    javax/persistence/PessimisticLockException.class
-            "/>
-        </jar>
-        <jar jarfile="${eclipselink.moxy.base}/${plugins.dir}/${eclipselink.moxy.bndl.prefix}_${version.string}.jar" manifest="${eclipselink.moxy}/META-INF/MANIFEST.MF">
-            <fileset dir="${eclipselink.moxy}/${classes.dir}">
-                <include name="org/eclipse/persistence/**/*.class"/>
-            </fileset>
-        </jar>
-        <jar jarfile="${eclipselink.sdo.base}/${plugins.dir}/${eclipselink.sdo.bndl.prefix}_${version.string}.jar" manifest="${eclipselink.sdo}/META-INF/MANIFEST.MF">
-            <fileset dir="${eclipselink.sdo}/${classes.dir}">
-                <include name="org/eclipse/persistence/**/*.class"/>
-                <include name="commonj/sdo/impl/HelperProviderImpl.class"/>
-            </fileset>
-        </jar>
-        <jar jarfile="${eclipselink.core.base}/${plugins.dir}/${eclipselink.extension.oracle.bndl.prefix}_${version.string}.jar" manifest="${eclipselink.extension.oracle}/META-INF/MANIFEST.MF">
-            <fileset dir="${build.dir}">
-                <include name="org/eclipse/persistence/**/*.class"/>
-            </fileset>
-        </jar>
-        <jar jarfile="${eclipselink.plugins}/${eclipselink.asm.bndl.prefix}_${version.string}.jar" manifest="${eclipselink.plugins}/${asm}/META-INF/MANIFEST.MF">
-            <fileset dir="${eclipselink.plugins}/${asm}">
-                <include name="org/eclipse/persistence/**/*.class"/>
-            </fileset>
-        </jar>
-        <jar jarfile="${eclipselink.plugins}/${eclipselink.antlr.bndl.prefix}_${version.string}.jar" manifest="${eclipselink.plugins}/${antlr}/META-INF/MANIFEST.MF">
-            <fileset dir="${eclipselink.plugins}/${antlr}">
-                <include name="org/eclipse/persistence/**/*.class"/>
-            </fileset>
-        </jar>
-    </target>
-
-    <!-- Note: This target builds bundles that are parallell to the bundles built by target: build-eclipselink-bundles.  When updating this target, be careful to keep it in sync with build-eclipselink-bundles -->
-    <target name="build-eclipselink-source-bundles" description="build source bundles for eclipselink OSGi bundles">
-        <jar jarfile="${eclipselink.core.base}/${plugins.dir}/${eclipselink.core.bndl.prefix}.source_${version.string}.jar" manifest="${eclipselink.core}/resource/source-bundle/MANIFEST.MF">
-            <fileset dir="${eclipselink.core}/${src.dir}">
-                <include name="org/eclipse/persistence/**/*.java"/>
-            </fileset>
-            <fileset dir="${eclipselink.core}/${resource.dir}">
-                <include name="xsd/*.xsd"/>
-                <include name="org/eclipse/persistence/internal/helper/VendorNameToPlatformMapping.properties"/>
-            </fileset>
-        </jar>
-        <jar jarfile="${eclipselink.jpa.base}/${plugins.dir}/${eclipselink.jpa.bndl.prefix}.source_${version.string}.jar" manifest="${eclipselink.jpa}/resource/source-bundle/MANIFEST.MF">
-            <fileset dir="${eclipselink.core}/${resource.dir}">
-                <include name="META-INF/services/javax.persistence.spi.PersistenceProvider"/>
-            </fileset>
-            <fileset dir="${eclipselink.jpa}/${src.dir}">
-                <include name="org/eclipse/persistence/**/*.java"/>
-            </fileset>
-             <fileset dir="${eclipselink.jpa}/${resource.dir}">
-                <include name="org/eclipse/persistence/jpa/*.xsd"/>
-                <include name="META-INF/services/javax.persistence.spi.PersistenceProvider"/>
-            </fileset>
-        </jar>
-        <jar jarfile="${eclipselink.moxy.base}/${plugins.dir}/${eclipselink.moxy.bndl.prefix}.source_${version.string}.jar" manifest="${eclipselink.moxy}/resource/source-bundle/MANIFEST.MF">
-            <fileset dir="${eclipselink.moxy}/${src.dir}">
-                <include name="org/eclipse/persistence/**/*.java"/>
-            </fileset>
-        </jar>
-        <jar jarfile="${eclipselink.sdo.base}/${plugins.dir}/${eclipselink.sdo.bndl.prefix}.source_${version.string}.jar" manifest="${eclipselink.sdo}/resource/source-bundle/MANIFEST.MF">
-            <fileset dir="${eclipselink.sdo}/${src.dir}">
-                <include name="org/eclipse/persistence/**/*.java"/>
-                <include name="commonj/sdo/impl/HelperProviderImpl.java"/>
-            </fileset>
-        </jar>
-        <jar jarfile="${eclipselink.core.base}/${plugins.dir}/${eclipselink.extension.oracle.bndl.prefix}.source_${version.string}.jar" manifest="${eclipselink.extension.oracle}/resource/source-bundle/MANIFEST.MF">
-            <fileset dir="${eclipselink.extension.oracle}/${src.dir}">
-                <include name="org/eclipse/persistence/**/*.java"/>
-            </fileset>
-        </jar>
-        <jar jarfile="${eclipselink.plugins}/${eclipselink.asm.bndl.prefix}.source_${version.string}.jar" manifest="${eclipselink.plugins}/${asm}/resource/source-bundle/MANIFEST.MF">
-            <fileset dir="${eclipselink.plugins}/${asm}/${src.dir}">
-                <include name="org/eclipse/persistence/**/*.java"/>
-            </fileset>
-        </jar>
-        <jar jarfile="${eclipselink.plugins}/${eclipselink.antlr.bndl.prefix}.source_${version.string}.jar" manifest="${eclipselink.plugins}/${antlr}/resource/source-bundle/MANIFEST.MF">
-            <fileset dir="${eclipselink.plugins}/${antlr}/${src.dir}">
-                <include name="org/eclipse/persistence/**/*.java"/>
-            </fileset>
-        </jar>
-    </target>
-
-    <target name="package-eclipselink-bundles" depends="build-eclipselink-bundles, build-eclipselink-source-bundles">
+    <target name="package-eclipselink-bundles">
+        <delete file="${eclipselink.plugins.install.prefix}${eclipselink.zip.suffix}"/>
         <zip destfile="${eclipselink.plugins.install.prefix}${eclipselink.zip.suffix}">
             <zipfileset dir="${eclipselink.plugins}" prefix="plugins">
                 <include name="**.jar"/>
@@ -397,26 +238,15 @@
                 <include name="**.zip"/>
                 <exclude name="osgi.core.zip"/>
             </zipfileset>
-            <zipfileset dir="${eclipselink.core.base}/${plugins.dir}" prefix="plugins">
+            <zipfileset dir="${eclipselink.plugins}" prefix="plugins">
                 <include name="**.jar"/>
-            </zipfileset>
-             <zipfileset dir="${eclipselink.moxy.base}/${plugins.dir}" prefix="plugins">
-                <include name="**.jar"/>
-            </zipfileset>
-            <zipfileset dir="${eclipselink.sdo.base}/${plugins.dir}" prefix="plugins">
-                <include name="**.jar"/>
-            </zipfileset>
-            <zipfileset dir="${eclipselink.jpa.plugins}" prefix="plugins">
-                <include name="**.jar"/>
-            </zipfileset>
-            <zipfileset dir="${eclipselink.plugins}/readme.for.distribution">
-                <include name="readme.txt"/>
             </zipfileset>
         </zip>
     </target>
 
     <!-- Packages the eclipselink source jar. -->
     <target name="package-src-jar" description="build EclipseLink source jar">
+        <delete file="${eclipselink.src.install.prefix}${eclipselink.zip.suffix}"/>
         <zip zipfile="${eclipselink.src.install.prefix}${eclipselink.zip.suffix}">
             <fileset dir="${eclipselink.core}/${src.dir}">
                 <include name="org/eclipse/persistence/**/*.java"/>
@@ -467,7 +297,7 @@
                 includes="**/*.java"
                 prefix="jpa"  
             />
-            <zipfileset dir="${eclipselink.core.base}/eclipselink.extension.oracle.test/${src.dir}"
+            <zipfileset dir="${eclipselink.extension.oracle.test}/${src.dir}"
                 includes="org\eclipse\persistence\testing\tests\jpa\**\*.java,
                           org\eclipse\persistence\testing\models\jpa\**\*.java"
                 prefix="jpa"  
@@ -548,6 +378,15 @@
         </javadoc>
     </target>
 
+    <!-- Packages javadoc into a zip. -->
+    <target name="package-javadoc-zip" depends="build-javadocs" description="build EclipseLink javadoc zip">
+        <delete file="${eclipselink.javadoc.install.prefix}${eclipselink.zip.suffix}"/>
+        <zip destfile="${eclipselink.javadoc.install.prefix}${eclipselink.zip.suffix}">
+            <!-- miscellaneous files -->
+            <zipfileset dir="${eclipselink.javadocs}/"/>
+        </zip>
+    </target>
+
     <!-- Packages the installer zip. -->
     <target name="package-installer-zip" description="build EclipseLink installer zip - includes utils and javadocs">
         <delete file="${eclipselink.install.prefix}${eclipselink.zip.suffix}"/>
@@ -589,7 +428,7 @@
             <!-- jpa persistence jar -->
             <zipfileset dir="${eclipselink.plugins}/" includes="${persistence.jar}" prefix="eclipselink/jlib/jpa"/>
             <!-- jpa persistence 2.0 prototype jar -->
-            <zipfileset dir="${eclipselink.jpa.plugins}/" includes="${jpa.prototype.jar}" prefix="eclipselink/jlib/jpa"/>
+            <!-- zipfileset dir="${eclipselink.jpa.plugins}/" includes="${jpa.prototype.jar}" prefix="eclipselink/jlib/jpa"/ -->
             <!-- moxy jar's and zips -->
             <zipfileset dir="${eclipselink.plugins}/" prefix="eclipselink/jlib/moxy">
                 <include name="${activation.jar}"/>
@@ -607,36 +446,16 @@
             <!-- grab the sdo jar -->
             <zipfileset dir="${eclipselink.sdo.base}/${plugins.dir}/" includes="${commonj-sdo.jar}" prefix="eclipselink/jlib/sdo"/>
             <!-- grab the dbws util stuff -->
-            <zipfileset dir="utils/eclipselink.utils.dbws/" includes="${dbws-util.jar.name}, setenv.*, dbwsbuilder.*" prefix="eclipselink/utils/dbws"/>
-            <zipfileset dir="${eclipselink.util.plugins}/" includes="javax.wsdl_1.6.2.jar" prefix="eclipselink/utils/dbws"/>
+            <zipfileset dir="${eclipselink.util.dbws}"    includes="${dbws-util.jar.name}, setenv.*, dbwsbuilder.*" prefix="eclipselink/utils/dbws"/>
+            <zipfileset dir="${eclipselink.util.plugins}" includes="javax.wsdl_1.6.2.jar" prefix="eclipselink/utils/dbws"/>
             <!-- workbench jars -->
-            <zipfileset dir="utils/eclipselink.utils.workbench.lib/mw/" includes="elmwcore.jar" prefix="eclipselink/utils/workbench/jlib"/>
-            <zipfileset dir="utils/eclipselink.utils.workbench.lib/mw/" includes="eclipselinkmw.jar" prefix="eclipselink/utils/workbench/jlib"/>
-            <zipfileset dir="utils/eclipselink.utils.workbench.lib/compile/" includes="xercesImpl.jar" prefix="eclipselink/utils/workbench/jlib"/>
-            <zipfileset dir="utils/eclipselink.utils.workbench.lib/run/" includes="connector.jar" prefix="eclipselink/utils/workbench/jlib"/>
-            <zipfileset dir="utils/eclipselink.utils.workbench/config/" includes="*" prefix="eclipselink/utils/workbench/config"/>
-            <zipfileset dir="utils/eclipselink.utils.workbench/config/platforms/" includes="*" prefix="eclipselink/utils/workbench/config/platforms"/>
-            <zipfileset dir="utils/eclipselink.utils.workbench/" includes="readme.html" prefix="eclipselink/utils/workbench"/>
-            <zipfileset dir="utils/eclipselink.utils.workbench/bin/" includes="*" prefix="eclipselink/utils/workbench/bin" filemode="755"/>
+            <zipfileset dir="${eclipselink.util.workbench.lib}/mw/"  includes="elmwcore.jar, eclipselinkmw.jar" prefix="eclipselink/utils/workbench/jlib"/>
+            <zipfileset dir="${eclipselink.util.workbench.lib}/compile/" includes="xercesImpl.jar" prefix="eclipselink/utils/workbench/jlib"/>
+            <zipfileset dir="${eclipselink.util.workbench.lib}/run/" includes="connector.jar"      prefix="eclipselink/utils/workbench/jlib"/>
+            <zipfileset dir="${eclipselink.util.workbench}/config/"  includes="*, platforms/*"     prefix="eclipselink/utils/workbench/config"/>
+            <zipfileset dir="${eclipselink.util.workbench}"          includes="readme.html"        prefix="eclipselink/utils/workbench"/>
+            <zipfileset dir="${eclipselink.util.workbench}/bin/"     includes="*"                  prefix="eclipselink/utils/workbench/bin" filemode="755"/>
         </zip>
-    </target>
-
-    <!-- Packages javadoc into a zip. -->
-    <target name="package-javadoc-zip" depends="build-javadocs" description="build EclipseLink javadoc zip">
-        <zip destfile="${eclipselink.javadoc.install.prefix}${eclipselink.zip.suffix}">
-            <!-- miscellaneous files -->
-            <zipfileset dir="${eclipselink.javadocs}/"/>
-        </zip>
-    </target>
-
-    <!-- Packages util-dbws jar. -->
-    <target name="package-util-dbws-jar" description="build DBWS util jar">
-        <ant antfile="${eclipselink.util.dbws}/build.xml" target="all"/>
-    </target>
-
-    <!-- Packages package-renamer jar. -->
-    <target name="package-packagerenamer-jar" description="build Package rename jar">
-        <ant antfile="${eclipselink.util.rename}/build.xml" target="all"/>
     </target>
 
     <!-- Testing -->
@@ -690,10 +509,10 @@
         <ant antfile="${eclipselink.moxy.test}/build.xml" target="test-jaxb-against-jar"/>
     </target>
     <target name="test-dbws" description="run the DBWS core tests">
-        <ant antfile="${eclipselink.dbws.test}/build.xml" target="all"/>
+        <ant antfile="build.xml" dir="${eclipselink.dbws.test}" target="test"/>
     </target>
     <target name="test-dbws-utils" description="run the DBWS utils tests">
-        <!-- ant antfile="${eclipselink.util.dbws.test}/build.xml" target="test"/ -->
+        <ant antfile="build.xml" dir="${eclipselink.util.dbws.test}" target="test"/>
     </target>
 
 </project>

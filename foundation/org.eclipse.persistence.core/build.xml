@@ -1,3 +1,4 @@
+<?xml version="1.0"?>
 <!--/*******************************************************************************
 * This program and the accompanying materials are made available under the
 * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
@@ -22,8 +23,24 @@
 *
 * Contributors:
 *     tware - initial API and implementation
+*     egwin - update to adopt calling standards
 #******************************************************************************/-->
-<project name="Eclipse Persistence Services" default="all" basedir=".">
+<project name="org.eclipse.persistence.core" default="build" basedir=".">
+    <available file="../${ant.project.name}" type="dir" property="core.is.local"/>
+    <!-- Test to make sure that the calling script doesn't inherit the variable -->
+    <!-- (should be set locally, and be destroyed upon return) -->
+    <fail message="Not running from '${ant.project.name}' directory" unless="core.is.local"/>
+
+    <dirname  property="core.build.location" file="${ant.file.org.eclipse.persistence.core}"/>
+    <condition property="core.2.common.plugins.dir" value="../../plugins" else="../plugins">
+        <contains string="${core.build.location}" substring="foundation"/>
+    </condition>
+
+    <!-- TEMPORARY HACK PENDING DECISION ABOUT WHETHER ECLIPSELINK FOUNDATION WILL DEPEND ON JPA CLASSES -->
+    <condition property="core.2.jpa.plugins.dir" value="../../jpa/plugins" else="../plugins">
+        <contains string="${core.build.location}" substring="foundation"/>
+    </condition>
+    <!-- End of Temporary hack -->
 
     <property file="${user.home}/build.properties"/>
     <property file="./build.properties"/>
@@ -37,25 +54,46 @@
     <property name="svn.revision" value="NA"/>
     <property name="version.string" value="${release.version}.${build.date}-${build.type}"/>
     <property name="release.designation"  value="EclipseLink DeveloperBuild"/>
+    <property name="eclipselink.core.bndl.prefix" value="${ant.project.name}"/>
 
-    <path id="compile.path">
-        <pathelement path="${eclipselink.plugins}/${antlr}"/>
-        <pathelement path="${eclipselink.plugins}/${asm}"/>
+    <!-- Set Compile Path-->
+    <path id="core.compile.path">
+        <pathelement path="${core.2.common.plugins.dir}/${antlr}"/>
+        <pathelement path="${core.2.common.plugins.dir}/${asm}"/>
         <fileset
-            dir="${eclipselink.plugins}"
+            dir="${core.2.common.plugins.dir}"
             includes="${eclipselink.core.depend}"/>
 
          <!-- TEMPORARY HACK PENDING DECISION ABOUT WHETHER ECLIPSELINK FOUNDATION WILL DEPEND ON JPA CLASSES -->
-         <pathelement path="${eclipselink.jpa}/../plugins/javax.persistence_1.99.0.jar"/>
+         <pathelement path="${core.2.jpa.plugins.dir}/javax.persistence_1.99.0.jar"/>
          <!-- End of Temporary hack -->
     </path>
+    <available file="${core.2.common.plugins.dir}/${antlr}_${version.string}.jar" property="antlr.bundle.exist"/>
+    <available file="${core.2.common.plugins.dir}/${asm}_${version.string}.jar" property="asm.bundle.exist"/>
+    <!-- TEMPORARY HACK PENDING DECISION ABOUT WHETHER ECLIPSELINK FOUNDATION WILL DEPEND ON JPA CLASSES -->
+    <available file="${core.2.jpa.plugins.dir}/javax.persistence_1.99.0.jar" property="jpa2.jar.exist"/>
+    <!-- End of Temporary hack -->
     
 
     <!-- all -->
-    <target name="all" depends="clean, compile" description="build EclipseLink jar"/>
+    <target name="build" depends="clean, compile, package" description="build Core component"/>
+
+    <!-- clean -->
+    <target name="clean" description="Clean the build">
+        <delete includeEmptyDirs="true" failonerror="false">
+            <fileset dir="${classes.dir}"/>
+            <fileset dir="${core.2.common.plugins.dir}" includes="${eclipselink.core.bndl.prefix}*.jar"/>
+        </delete>
+    </target>
+
     <!-- compile -->
-    <target name="compile" description="compile EclipseLink">
-        <mkdir dir="${eclipselink.core}/${classes.dir}"/>
+    <target name="compile" description="Compile EclipseLink Core">
+        <fail message="Cannot find ANTLR: '${core.2.common.plugins.dir}/${antlr}_${version.string}.jar'." unless="antlr.bundle.exist"/>
+        <fail message="Cannot find ASM: '${core.2.common.plugins.dir}/${asm}_${version.string}.jar'." unless="asm.bundle.exist"/>
+        <!-- TEMPORARY HACK PENDING DECISION ABOUT WHETHER ECLIPSELINK FOUNDATION WILL DEPEND ON JPA CLASSES -->
+        <fail message="Cannot find JPA 2.0:'../plugins/javax.persistence_1.99.0.jar'." unless="jpa2.jar.exist"/>
+        <!-- End of Temporary hack -->
+        <mkdir dir="${classes.dir}"/>
         <echo message="Stamping the following values:"/>
         <echo message="version:       '${release.version}'"/>
         <echo message="buildDate:     '${build.date}'"/>
@@ -65,9 +103,9 @@
         <filter token="BUILD_DATE" value="${build.date}"/>
         <filter token="BUILD_TYPE" value="${build.type}"/>
         <filter token="BUILD_REVISION" value="${svn.revision}"/>
-        <copy file="${eclipselink.core}/${src.dir}/org/eclipse/persistence/Version.java" tofile="${eclipselink.core}/${classes.dir}/org/eclipse/persistence/Version.java" filtering="true"/>
-        <javac srcdir="${eclipselink.core}/${classes.dir}"
-               destdir="${eclipselink.core}/${classes.dir}"
+        <copy file="${src.dir}/org/eclipse/persistence/Version.java" tofile="${basedir}/${classes.dir}/org/eclipse/persistence/Version.java" filtering="true"/>
+        <javac srcdir="${classes.dir}"
+               destdir="${classes.dir}"
                includes="org/eclipse/persistence/Version.java"
                debug="${javac.debug}"
                optimize="${javac.optimize}"
@@ -76,14 +114,12 @@
                deprecation="${javac.deprecation}"
                failonerror="true"
                memoryMaximumSize="512m"
-               fork="true">
-            <classpath>
-                <path refid="compile.path"/>
-            </classpath>
-        </javac>
-        <delete file="${eclipselink.core}/${classes.dir}/org/eclipse/persistence/Version.java"/>
-        <javac srcdir="${eclipselink.core}/${src.dir}"
-               destdir="${eclipselink.core}/${classes.dir}"
+               fork="true"
+               classpathref="core.compile.path"
+        />
+        <delete file="${classes.dir}/org/eclipse/persistence/Version.java"/>
+        <javac srcdir="${src.dir}"
+               destdir="${classes.dir}"
                includes="org/eclipse/persistence/**, deprecated/**"
                excludes="org/eclipse/persistence/Version.java"
                debug="${javac.debug}"
@@ -93,17 +129,51 @@
                deprecation="${javac.deprecation}"
                failonerror="true"
                memoryMaximumSize="512m"
-               fork="true">
-            <classpath>
-                <path refid="compile.path"/>
-            </classpath>
-        </javac>
+               fork="true"
+               classpathref="core.compile.path"
+        />
     </target>
 
-    <target name="clean" description="Clean the build">
-        <delete includeEmptyDirs="true" failonerror="false">
-            <fileset dir="${eclipselink.core}/${classes.dir}/org"/>
-        </delete>
+    <!-- package -->
+    <target name="package" description="jar OSGI bundle">
+        <jar jarfile="${core.2.common.plugins.dir}/${eclipselink.core.bndl.prefix}_${version.string}.jar" manifest="META-INF/MANIFEST.MF">
+            <fileset dir="${classes.dir}">
+                <include name="org/eclipse/persistence/**/*.class"/>
+            </fileset>
+            <fileset dir="${resource.dir}">
+                <include name="xsd/*.xsd"/>
+                <include name="org/eclipse/persistence/internal/helper/VendorNameToPlatformMapping.properties"/>
+            </fileset>
+        </jar>
+        <jar jarfile="${core.2.common.plugins.dir}/${eclipselink.core.bndl.prefix}.source_${version.string}.jar">
+             <manifest>
+                <attribute name="Bundle-ManifestVersion" value="2"/>
+                <attribute name="Bundle-Name"            value="EclipseLink Core Source"/>
+                <attribute name="Bundle-SymbolicName"    value="${ant.project.name}"/>
+                <attribute name="Bundle-Version"         value="${release.version}"/>
+                <attribute name="Eclipse-SourceBundle"   value="${ant.project.name};version=&quot;${release.version}&quot;"/>
+            </manifest>
+            <fileset dir="${src.dir}">
+                <include name="org/eclipse/persistence/**/*.java"/>
+            </fileset>
+            <fileset dir="${resource.dir}">
+                <include name="xsd/*.xsd"/>
+                <include name="org/eclipse/persistence/internal/helper/VendorNameToPlatformMapping.properties"/>
+            </fileset>
+        </jar>
     </target>
 
+    <!--  This target is used ONCE at the beginning of a release to update the bundle manifest files.  -->
+    <!--  Do not run it, or hook it up to the "build" target -->
+    <target name="update-manifest" if="svn.exec" description="update and check-in the manifest">
+        <filter token="VERSION" value="${release.version}"/>
+        <delete file="META-INF/MANIFEST.MF" failonerror="false"/>
+        <copy file="META-INF/MANIFEST.template" tofile="META-INF/MANIFEST.MF" filtering="true"/>
+        <exec executable="${svn.exec}" failonerror="false" logError="true">
+            <arg value="commit"/>
+            <arg value="-m ${version.string}"/>
+            <arg value="META-INF/MANIFEST.MF"/>
+        </exec>
+    </target>
+    
 </project>

@@ -24,6 +24,7 @@
 * Contributors:
 *     bdoughan - initial API and implementation
 *     dtwelves - Sept 2008 add in MOXy SRG testing
+*     egwin      Nov 08 - remove compile of MOXY (add dep check instead)
 #******************************************************************************/-->
 
 <project name="EclipseLink MOXy Testing" default="test">
@@ -112,17 +113,15 @@
     <target name="test-oxm-against-jar" depends="clean-oxm-reports, compile-and-run-oxm-tests-against-jar, update-package-names, oxm-junit-report" description="build and run moxy (oxm) tests against eclipselink.jar and generate junit report"/>
 
     <!-- Build targets -->
-    <target name="compile-tests" depends="clean, compile-jaxb" description="build moxy test classes">
+    <target name="compile-tests" depends="clean" description="build moxy test classes">
+        <available file="${eclipselink.plugins}/org.eclipse.persistence.moxy_${version.string}.jar" property="moxy.bundle.exist"/>
+        <fail message="Cannot find MOXY: '${eclipselink.plugins}/org.eclipse.persistence.moxy_${version.string}.jar'." unless="moxy.bundle.exist"/>
         <compile_oxm_tests compilepathref="oxm.compile.path"/>
         <compile_jaxb_tests compilepathref="jaxb.compile.path"/>
     </target>
     <target name="compile-tests-against-jar" depends="clean" description="build moxy test classes against eclipselink.jar">
         <compile_oxm_tests compilepathref="oxm.compile.path.against.jar"/>
         <compile_jaxb_tests compilepathref="jaxb.compile.path.against.jar"/>
-    </target>
-    <target name="compile-jaxb" description="build moxy (jaxb) classes">
-        <!-- The following build target will also compile eclipselink.core -->
-        <ant antfile="${eclipselink.moxy}/build.xml" target="all"/>
     </target>
 
     <!-- Build & Run targets -->

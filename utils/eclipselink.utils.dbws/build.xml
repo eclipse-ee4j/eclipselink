@@ -23,99 +23,123 @@
 *
 * Contributors:
 *     egwin - initial API and implementation
+*     egwin - update to adopt calling standards
 #******************************************************************************/-->
-<project
-  name="eclipselink.utils.dbws"
-  default="all"
-  basedir="."
-  >
-  <condition property="is.java.version.16">
-      <equals arg1="${ant.java.version}" arg2="1.6"/>
-  </condition>
-  <fail
-    message="eclipselink.utils.dbws requires Java version 1.6 or higher. You are currently using Java version ${ant.java.version}."
-    unless="is.java.version.16"
-  />
-  <!-- OS environment variables have 'env' as a prefix -->
-  <property
-    environment="env"
-  />
-  <!-- local property overrides -->
-  <property
-    file="${user.home}/build.properties"
-  />
-  <!-- properties checked into SVN -->
-  <property
-    file="${basedir}/build.properties"
-  />
-
-  <presetdef name="javac">
-    <javac
-      debug="${javac.debug}"
-      debuglevel="${javac.debuglevel}"
-      optimize="${javac.optimize}"
-      source="1.6"
-      deprecation="${javac.deprecation}"
-      failonerror="true"
-      includes="**/*.java"
-      memoryMaximumSize="512m"
+<project name="eclipselink.utils.dbws" default="build" basedir=".">
+    <available file="../${ant.project.name}" type="dir" property="dbwsutil.is.local"/>
+    <!-- Test to make sure that the calling script doesn't inherit the variable -->
+    <!-- (should be set locally, and be destroyed upon return) -->
+    <fail unless="dbwsutil.is.local" message="Not running from '${ant.project.name}' directory"/>
+    <condition property="is.java.version.16">
+        <equals arg1="${ant.java.version}" arg2="1.6"/>
+    </condition>
+    <fail unless="is.java.version.16"
+        message="eclipselink.utils.dbws requires Java version 1.6 or higher. You are currently using Java version ${ant.java.version}."
     />
-  </presetdef>
 
-    <target name="all" depends="clean, create-jar" description="build eclipselink-dbwsutils.jar"/>
+    <dirname  property="dbwsutil.build.location" file="${ant.file.org.eclipse.persistence.core}"/>
+    <condition property="dbwsutil.2.common.plugins.dir" value="../../plugins" else="../plugins">
+        <contains string="${dbwsutil.build.location}" substring="util"/>
+    </condition>
 
-    <target name="init">
-        <path id="compile.path">
-            <pathelement path="${eclipselink.plugins}/${asm}"/>
-            <pathelement path="${eclipselink.core}/${classes.dir}"/>
-            <pathelement path="${eclipselink.dbws}/${classes.dir}"/>
-            <pathelement path="${wsdl.lib}"/>
-        </path>
+    <!-- OS environment variables have 'env' as a prefix -->
+    <property environment="env"/>
+    <!-- local property overrides -->
+    <property file="${user.home}/build.properties"/>
+    <!-- properties checked into SVN -->
+    <property file="./build.properties"/>
+
+    <!-- versioning -->
+    <!-- These variables  are set in autobuild.xml. A manual build gets defaults -->
+    <tstamp>
+       <format property="build.date" pattern="yyyyMMdd"/>
+    </tstamp>
+    <property name="build.type" value="SNAPSHOT"/>
+    <property name="svn.revision" value="NA"/>
+    <property name="version.string" value="${release.version}.${build.date}-${build.type}"/>
+    <property name="release.designation"  value="EclipseLink DeveloperBuild"/>
+
+    <!-- Set Compile Path-->
+    <path id="dbwsutil.compile.path">
+        <pathelement path="${dbwsutil.2.common.plugins.dir}/${asm}"/>
+        <pathelement path="${dbwsutil.2.common.plugins.dir}/org.eclipse.persistence.core_${version.string}.jar"/>
+        <pathelement path="${dbwsutil.2.common.plugins.dir}/org.eclipse.persistence.dbws_${version.string}.jar"/>
+        <pathelement path="../plugins/${wsdl.lib}"/>
+    </path>
+    <available file="${dbwsutil.2.common.plugins.dir}/org.eclipse.persistence.core_${version.string}.jar" property="core.bundle.exist"/>
+    <available file="${dbwsutil.2.common.plugins.dir}/org.eclipse.persistence.dbws_${version.string}.jar" property="dbws.bundle.exist"/>
+    <available file="${dbwsutil.2.common.plugins.dir}/${asm}"  type="dir" property="asm.exist"/>
+    <available file="../plugins/${wsdl.lib}" property="wsdl.exist"/>
+
+    <!-- all -->
+    <target name="build" depends="clean, compile, package" description="build dbwsutils jar"/>
+
+    <!-- clean -->
+    <target name="clean" description="Clean all generated content">
+        <delete includeEmptyDirs="true" failonerror="false">
+            <fileset dir="${classes.dir}"/>
+            <fileset dir="." includes="${dbwsutil.jar.name}"/>
+        </delete>
     </target>
 
-    <target name="clean" depends="init" description="clean the build">
-        <delete dir="${eclipselink.util.dbws}/${classes.dir}" includeEmptyDirs="true" failonerror="false"/>
+    <!-- compile -->
+    <target name="compile" description="Compile DBWS Util classes">
+        <fail unless="core.bundle.exist" message="Core bundle cannot be found. Exiting..."/>
+        <fail unless="dbws.bundle.exist" message="DBWS bundle cannot be found. Exiting..."/>
+        <fail unless="asm.exist"         message="ASM Bundle cannot be found. Exiting..."/>
+        <fail unless="wsdl.exist"        message="WSDL Library cannot be found. Exiting..."/>
+        <mkdir dir="${classes.dir}"/>
+        <javac srcdir="${src.dir}"
+               destdir="${classes.dir}"
+               includes="**/*.java"
+               debug="${javac.debug}"
+               debuglevel="${javac.debuglevel}"
+               optimize="${javac.optimize}"
+               source="1.6"
+               target="1.6"
+               deprecation="${javac.deprecation}"
+               failonerror="true"
+               memoryMaximumSize="512m"
+               fork="true"
+               classpathref="dbwsutil.compile.path"
+        />
     </target>
 
-    <target name="verify-dependencies" depends="init" description="verify core classes were compiled">
-        <available file="${eclipselink.core}/${classes.dir}/org/eclipse/persistence/Version.class"        property="core.classes.exist"/>
-        <available file="${eclipselink.dbws}/${classes.dir}/org/eclipse/persistence/dbws/DBWSModel.class" property="dbws.classes.exist"/>
-        <available file="${eclipselink.plugins}/${asm}"                                    type="dir"     property="asm.exist"/>
-        <available file="${wsdl.lib}"                                                                     property="wsdl.exist"/>
-        <fail unless="core.classes.exist" message="Core Classes cannot be found (check they compiled). Exiting..."/>
-        <fail unless="dbws.classes.exist" message="DBWS Classes cannot be found (check they compiled). Exiting..."/>
-        <fail unless="asm.exist"          message="ASM Bundle cannot be found. Exiting..."/>
-        <fail unless="wsdl.exist"         message="WSDL Library cannot be found. Exiting..."/>
-    </target>
-
-    <!-- target name="compile" description="build dbws-util classes" -->
-    <target name="compile" depends="verify-dependencies" description="build dbws util classes">
-        <mkdir dir="${eclipselink.util.dbws}/${classes.dir}"/>
-        <javac srcdir="${eclipselink.util.dbws}/${src.dir}"
-               destdir="${eclipselink.util.dbws}/${classes.dir}"
-               fork="true">
-            <classpath>
-                <path refid="compile.path"/>
-            </classpath>
-        </javac>
-    </target>
-
-    <!-- Packages util-dbws jar. -->
-    <target name="create-jar" depends="compile" description="build DBWS util jar">
-        <delete file="${eclipselink.util.dbws}/${dbws-util.jar.name}"/>
-        <jar jarfile="${eclipselink.util.dbws}/${dbws-util.jar.name}">
-            <fileset dir="${eclipselink.util.dbws}/${classes.dir}">
+    <!-- package -->
+    <target name="package" description="package DBWS util jar">
+        <jar jarfile="./${dbwsutil.jar.name}">
+             <manifest>
+                <attribute name="Specification-Title"    value="${dbwsutil.util.specification.title}"/>
+                <attribute name="Specification-Vendor"   value="${specification.vendor}"/>
+                <attribute name="Specification-Version"  value="${release.version}"/>
+                <attribute name="Implementation-Title"   value="${dbwsutil.util.implementation.title}"/>
+                <attribute name="Implementation-Vendor"  value="${implementation.vendor}"/>
+                <attribute name="Implementation-Version" value="${version.string}"/>
+                <attribute name="Release-Designation"    value="${release.designation}"/>
+            </manifest>
+            <fileset dir="${classes.dir}">
                 <include name="**/*.class"/>
             </fileset>
-            <zipfileset
-              dir="${eclipselink.util.dbws}/${resource.dir}/xsd"
-              prefix="xsd"
-            />
-            <zipfileset
-              dir="${eclipselink.util.dbws}/${src.dir}/META-INF/services"
-              prefix="META-INF/services"
-            />
+            <fileset dir="${resource.dir}">
+                <include name="xsd/*.xsd"/>
+            </fileset>
+            <fileset dir="${src.dir}">
+                <include name="META-INF/services/**/*.*"/>
+            </fileset>
         </jar>
+    </target>
+
+    <!--  This target is used ONCE at the beginning of a release to update the bundle manifest files.  -->
+    <!--  Do not run it, or hook it up to the "build" target -->
+    <target name="update-manifest" if="svn.exec" description="update and check-in the manifest">
+        <filter token="VERSION" value="${release.version}"/>
+        <delete file="META-INF/MANIFEST.MF" failonerror="false"/>
+        <copy file="META-INF/MANIFEST.template" tofile="META-INF/MANIFEST.MF" filtering="true"/>
+        <exec executable="${svn.exec}" failonerror="false" logError="true">
+            <arg value="commit"/>
+            <arg value="-m ${version.string}"/>
+            <arg value="META-INF/MANIFEST.MF"/>
+        </exec>
     </target>
 
 </project>

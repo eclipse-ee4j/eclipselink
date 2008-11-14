@@ -22,28 +22,44 @@
 *
 * Contributors:
 *     tware - initial API and implementation
+*     egwin - update to adopt calling standards
 #******************************************************************************/-->
-<project name="Eclipse Persistence Services" default="all" basedir=".">
+<project name="eclipselink.utils.rename" default="build" basedir=".">
+    <available file="../${ant.project.name}" type="dir" property="rename.is.local"/>
+    <!-- Test to make sure that the calling script doesn't inherit the variable -->
+    <!-- (should be set locally, and be destroyed upon return) -->
+    <fail unless="rename.is.local" message="Not running from '${ant.project.name}' directory"/>
 
-    <property file="${user.home}/build.properties"/>
+    <!-- properties checked into SVN -->
     <property file="./build.properties"/>
 
+    <!-- versioning -->
+    <!-- These variables  are set in autobuild.xml. A manual build gets defaults -->
+    <tstamp>
+       <format property="build.date" pattern="yyyyMMdd"/>
+    </tstamp>
+    <property name="build.type" value="SNAPSHOT"/>
+    <property name="svn.revision" value="NA"/>
+    <property name="version.string" value="${release.version}.${build.date}-${build.type}"/>
+    <property name="release.designation"  value="EclipseLink DeveloperBuild"/>
+
     <!-- all -->
-    <target name="all" depends="clean, compile, package" description="Build util classes"/>
+    <target name="build" depends="clean, compile, package" description="build rename jar"/>
 
     <!-- clean -->
     <target name="clean" description="Clean the build">
         <delete includeEmptyDirs="true" failonerror="false">
-            <fileset dir="${eclipselink.util.rename}/${classes.dir}"/>
-            <fileset file="${eclipselink.util.rename}/${package-rename.jar}"/>
+            <fileset dir="${classes.dir}"/>
+            <fileset dir="." file="${package-rename.jar}"/>
         </delete>
     </target>
 
     <!-- compile -->
-    <target name="compile" depends="" description="compile EclipseLink Util">
-        <mkdir dir="${eclipselink.util.rename}/${classes.dir}"/>
-        <javac srcdir="${eclipselink.util.rename}/${src.dir}"
-               destdir="${eclipselink.util.rename}/${classes.dir}"
+    <target name="compile" description="compile Rename Util">
+        <mkdir dir="${classes.dir}"/>
+        <javac srcdir="${src.dir}"
+               destdir="${classes.dir}"
+               includes="**/*.java"
                debug="${javac.debug}"
                optimize="${javac.optimize}"
                source="${javac.version}"
@@ -55,8 +71,17 @@
         
     <!-- package -->
     <target name="package" description="jar the util">
-        <jar jarfile="${eclipselink.util.rename}/${package-rename.jar}">
-            <fileset dir="${eclipselink.util.rename}/${classes.dir}">
+        <jar jarfile="./${package-rename.jar}">
+             <manifest>
+                <attribute name="Specification-Title"    value="${rename.util.specification.title}"/>
+                <attribute name="Specification-Vendor"   value="${specification.vendor}"/>
+                <attribute name="Specification-Version"  value="${release.version}"/>
+                <attribute name="Implementation-Title"   value="${rename.util.implementation.title}"/>
+                <attribute name="Implementation-Vendor"  value="${implementation.vendor}"/>
+                <attribute name="Implementation-Version" value="${version.string}"/>
+                <attribute name="Release-Designation"    value="${release.designation}"/>
+            </manifest>
+            <fileset dir="${classes.dir}">
                 <include name="**/*.class"/>
             </fileset>
         </jar>
