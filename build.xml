@@ -187,7 +187,7 @@
         <ant antfile="${eclipselink.core.test}/build.xml" target="all"/>
         <ant antfile="${eclipselink.jpa.test}/build.xml"  target="all"/>
         <ant antfile="${eclipselink.moxy.test}/build.xml" target="compile-tests"/>
-        <ant antfile="${eclipselink.sdo.test}/build.xml"  target="compile-sdo-tests"/>
+        <ant antfile="build.xml" dir="${eclipselink.sdo.test}" target="compile-sdo-tests"/>
         <!-- Compiling dbws tests requires JDK 1.6 -->
         <ant antfile="build.xml" dir="${eclipselink.dbws.test}" target="build"/>
     </target>
@@ -278,28 +278,19 @@
         <delete file="${eclipselink.tst.src.prefix}${eclipselink.zip.suffix}"/>
         <zip zipfile="${eclipselink.tst.src.prefix}${eclipselink.zip.suffix}">
             <zipfileset dir="${eclipselink.core.test}/${src.dir}"
-                includes="org\eclipse\persistence\testing\framework\**\*.java"
+                includes="org\eclipse\persistence\testing\framework\**\*.java,
+                          org\eclipse\persistence\testing\tests\TestRunModel.java,
+                          org\eclipse\persistence\tools\**\*.java,
+                          org\eclipse\persistence\testing\tests\performance\**\*.java"
                 prefix="foundation"
-            />
-            <zipfileset dir="${eclipselink.core.test}/${src.dir}"
-                includes="org\eclipse\persistence\testing\tests\TestRunModel.java"
-                prefix="foundation"
-            />
-            <zipfileset dir="${eclipselink.core.test}/${src.dir}"
-                includes="org\eclipse\persistence\tools\**\*.java"
-                prefix="foundation"
-            />
-            <zipfileset dir="${eclipselink.core.test}/${src.dir}"
-                includes="org\eclipse\persistence\testing\tests\performance\**\*.java"
-                prefix="foundation"
-            />
-            <zipfileset dir="${eclipselink.jpa.test}/${src.dir}"
-                includes="**/*.java"
-                prefix="jpa"  
             />
             <zipfileset dir="${eclipselink.extension.oracle.test}/${src.dir}"
                 includes="org\eclipse\persistence\testing\tests\jpa\**\*.java,
                           org\eclipse\persistence\testing\models\jpa\**\*.java"
+                prefix="jpa"  
+            />
+            <zipfileset dir="${eclipselink.jpa.test}/${src.dir}"
+                includes="**/*.java"
                 prefix="jpa"  
             />
             <zipfileset dir="${eclipselink.jpa.test}/${resource.dir}"
@@ -491,10 +482,10 @@
     </target>
     <!-- Run SDO & MOXY tests. -->
     <target name="test-sdo" description="run the sdo tests">
-        <ant antfile="${eclipselink.sdo.test}/build.xml" target="test-against-jar"/>
+        <ant antfile="build.xml" dir="${eclipselink.sdo.test}" target="test-against-jar"/>
     </target>
     <target name="test-sdo-srg" description="run the sdo srg tests">
-        <ant antfile="${eclipselink.sdo.test}/build.xml" target="test-srg-against-jar"/>
+        <ant antfile="build.xml" dir="${eclipselink.sdo.test}" target="test-srg-against-jar"/>
     </target>
 	<target name="test-moxy" description="run the moxy tests">
         <ant antfile="${eclipselink.moxy.test}/build.xml" target="test-against-jar"/>
