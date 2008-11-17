@@ -105,12 +105,6 @@
     <!-- Short alias for building the jar. -->
     <target name="jar" depends="package-eclipselink-jar"/>
 
-    <!-- Compatability targets for Oracle QA Nightly testing. -->
-    <!--   Needed until All branches use the new standards.   -->
-    <target name="build-test" depends="build-core-test"/>             <!-- Assumes 'build-core' has been run  -->
-    <target name="build-extension" depends="build-oracle-extension"/> <!-- Assumes 'build-core' and 'build-core-test' have been run -->
-    <target name="build-workbench" depends="build-util"/>             <!-- Assumes 'package-eclipselink-jar' has been run  --> 
-
 <!-- ================================================================================= -->
 
     <!-- "top-level" target for creating the distribution archives. -->
