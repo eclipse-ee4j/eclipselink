@@ -12,6 +12,7 @@
  ******************************************************************************/  
 package org.eclipse.persistence.testing.sdo.model.dataobject;
 
+import junit.textui.TestRunner;
 import commonj.sdo.Property;
 import org.eclipse.persistence.sdo.SDOConstants;
 import org.eclipse.persistence.sdo.SDOProperty;
@@ -29,6 +30,11 @@ public class SDODataObjectSetGetWithPropertyTest extends SDODataObjectTestCases 
         super(name);
     }
 
+    public static void main(String[] args) {
+        String[] arguments = { "-c", "org.eclipse.persistence.testing.sdo.model.dataobject.SDODataObjectSetGetWithPropertyTest" };
+        TestRunner.main(arguments);
+    }
+    
     //purpose:  Confirm that property is in instance property.
     public void testInstancePropertiesWithDefinedProperty() {
         Property definedProperty = dataObject.getInstanceProperty(DEFINED_PROPERTY_NAME);

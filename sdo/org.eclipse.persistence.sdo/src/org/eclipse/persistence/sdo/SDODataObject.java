@@ -2624,6 +2624,8 @@ public class SDODataObject implements DataObject, SequencedObject {
          * we have 3 states( !attribute, !element and (!attribute && !element))
          * - two of which are valid for sequence setting creation.
          */
+        Object origValue = getPropertyInternal(property);
+        
         if (type.isSequenced() && updateSequence//
                  &&!property.getType().isChangeSummaryType() && !aHelperContext.getXSDHelper().isAttribute(property)) {
             // As we do for ListWrappers and DataObjects we will need to remove the previous setting if this set is actually a modify
@@ -2645,6 +2647,18 @@ public class SDODataObject implements DataObject, SequencedObject {
         } else {
             _getCurrentValueStore().setDeclaredProperty(index, value);
         }
+        
+        if (origValue != null && property.getOpposite() != null && property.getType() != null && !property.getType().isDataType()) {
+            // Set the opposite property in the new value
+            Property oppositeProp = property.getOpposite();
+            DataObject valueDO = (DataObject) value;
+            valueDO.set(oppositeProp, this);
+            
+            // Clear the old opposite property in the original value
+            DataObject origValueDO = (DataObject) origValue;
+            origValueDO.set(oppositeProp, null);
+        }
+        
     }
 
     /**
