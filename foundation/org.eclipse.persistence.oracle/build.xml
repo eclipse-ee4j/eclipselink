@@ -34,7 +34,7 @@
     <condition property="oracle.2.common.plugins.dir" value="../../plugins" else="../plugins">
         <contains string="${oracle.build.location}" substring="oracle"/>
     </condition>
-    <dirname  property="oracle.plugins.dir" file="../plugins"/>
+    <property name="oracle.plugins.dir" value="../plugins"/>
     
     <property file="${user.home}/build.properties"/>
     <property file="./build.properties"/>
@@ -94,12 +94,12 @@
     </target>
 
     <target name="package" description="jar OSGI bundles">
-        <jar jarfile="${oracle.plugins.dir}/${eclipselink.jpa.bndl.prefix}_${version.string}.jar" manifest="META-INF/MANIFEST.MF">
+        <jar jarfile="${oracle.plugins.dir}/${eclipselink.extension.oracle.bndl.prefix}_${version.string}.jar" manifest="META-INF/MANIFEST.MF">
             <fileset dir="${classes.dir}">
                 <include name="org/eclipse/persistence/**/*.class"/>
             </fileset>
         </jar>
-        <jar jarfile="${oracle.plugins.dir}/${eclipselink.jpa.bndl.prefix}.source_${version.string}.jar">
+        <jar jarfile="${oracle.plugins.dir}/${eclipselink.extension.oracle.bndl.prefix}.source_${version.string}.jar">
              <manifest>
                 <attribute name="Bundle-ManifestVersion" value="2"/>
                 <attribute name="Bundle-Name"            value="EclipseLink Oracle Extensions Source"/>
