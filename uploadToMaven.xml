@@ -115,8 +115,8 @@
         </antcall>
         <antcall target="upload-artifact">
             <param name="artifactId" value="org.eclipse.persistence.oracle"/>
-            <param name="artifact" value="${eclipselink.core.base}/${plugins.dir}/${eclipselink.extension.oracle.bndl.prefix}_${version.string}.jar"/>
-            <param name="artifactSrc" value="${eclipselink.core.base}/${plugins.dir}/${eclipselink.extension.oracle.bndl.prefix}.source_${version.string}.jar"/>
+            <param name="artifact" value="${eclipselink.plugins}/${eclipselink.extension.oracle.bndl.prefix}_${version.string}.jar"/>
+            <param name="artifactSrc" value="${eclipselink.plugins}/${eclipselink.extension.oracle.bndl.prefix}.source_${version.string}.jar"/>
             <param name="artifactName" value="EclipseLink Oracle Extensions"/>
         </antcall>
         <antcall target="upload-artifact">

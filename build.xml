@@ -71,11 +71,17 @@
 
         It may require some configuration of the build.properties to run.
     -->
-<project name="Eclipse Persistence Services" default="build" basedir=".">
+<project name="trunk" default="build" basedir=".">
 
+    <dirname  property="trunk.build.location" file="${ant.file.org.eclipse.persistence.core}"/>
+    <echo message="trunk.build.location = '${trunk.build.location}'"/>
     <property environment="env"/>
     <!-- Allows a user to overide certain user specific properties. -->
     <property file="${user.home}/build.properties"/>
+    <!-- Sets default junit.lib location to a static path -->
+    <!-- temporary until all build files reworked -->
+    <property name="junit.lib" value="${trunk.build.location}/../extension.lib.external/junit.jar"/>
+    <echo message="junit.lib='${junit.lib}'"/>
     <property file="./build.properties"/>
         
     <!-- versioning -->
@@ -108,7 +114,7 @@
 <!-- ================================================================================= -->
 
     <!-- "top-level" target for creating the distribution archives. -->
-    <target name="package-all" depends="package-src-jar, package-tst-src-jar, package-javadoc-zip, package-installer-zip"/>
+    <target name="package-all" depends="package-eclipselink-bundles, package-src-jar, package-tst-src-jar, package-javadoc-zip, package-installer-zip"/>
 
     <!-- Default ant target, compiles all components and tests, builds eclipselink.jar. -->
     <target name="build" depends="build-core, package-eclipselink-jar, build-core-test" description="build all EclipseLink distribution files except docs"/>
@@ -214,14 +220,23 @@
                 <include name="org.eclipse.persistence*.jar"/>
                 <exclude name="*source*.jar"/>
             </zipgroupfileset>
-            <zipgroupfileset dir="${eclipselink.extension.oracle}">
-                <include name="*.jar"/>
+            <zipgroupfileset dir="${eclipselink.extension.oracle.dir}">
+                <include name="${eclipselink.extension.oracle.bndl.prefix}.jar"/>
+                <exclude name="*source*.jar"/>
             </zipgroupfileset>
         </jar>
     </target>
 
     <target name="package-eclipselink-bundles">
         <delete file="${eclipselink.plugins.install.prefix}${eclipselink.zip.suffix}"/>
+        <copy file="${eclipselink.extension.oracle.dir}/${eclipselink.extension.oracle.bndl.prefix}.jar"
+            tofile="${eclipselink.plugins}/${eclipselink.extension.oracle.bndl.prefix}-${version.string}.jar"
+            failonerror="false"
+        />
+        <copy file="${eclipselink.extension.oracle.dir}/${eclipselink.extension.oracle.bndl.prefix}.source.jar"
+            tofile="${eclipselink.plugins}/${eclipselink.extension.oracle.bndl.prefix}.source-${version.string}.jar"
+            failonerror="false"
+        />
         <zip destfile="${eclipselink.plugins.install.prefix}${eclipselink.zip.suffix}">
             <zipfileset dir="${eclipselink.plugins}" prefix="plugins">
                 <include name="**.jar"/>
@@ -231,9 +246,6 @@
             <zipfileset dir="${eclipselink.plugins}" prefix="plugins">
                 <include name="**.zip"/>
                 <exclude name="osgi.core.zip"/>
-            </zipfileset>
-            <zipfileset dir="${eclipselink.plugins}" prefix="plugins">
-                <include name="**.jar"/>
             </zipfileset>
         </zip>
     </target>
