@@ -1085,11 +1085,11 @@ public class SDOTypesGenerator {
             Object processed = processedElements.get(qname);
 
             if (processed == null) {
-                processElement(targetNamespace, defaultNamespace, null, null, element, true, false);
+                processElement(targetNamespace, defaultNamespace, null, null, element, true, true);
                 processedElements.put(qname, element);
             }
         } else {
-            processElement(targetNamespace, defaultNamespace, null, null, element, true, false);
+            processElement(targetNamespace, defaultNamespace, null, null, element, true, true);
         }
     }
 

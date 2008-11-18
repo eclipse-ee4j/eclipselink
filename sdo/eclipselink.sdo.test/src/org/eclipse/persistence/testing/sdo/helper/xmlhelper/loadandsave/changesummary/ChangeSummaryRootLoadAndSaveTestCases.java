@@ -12,6 +12,8 @@
  ******************************************************************************/  
 package org.eclipse.persistence.testing.sdo.helper.xmlhelper.loadandsave.changesummary;
 
+import static org.eclipse.persistence.sdo.SDOConstants.SDOXML_MANY;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -83,6 +85,7 @@ public abstract class ChangeSummaryRootLoadAndSaveTestCases extends LoadAndSaveT
         propDO2.set("name", "simpleOpenTestDefined");
         propDO2.set("type", SDOConstants.SDO_INT);
         propDO2.set(SDOConstants.XMLELEMENT_PROPERTY, true);
+        propDO2.setBoolean(SDOXML_MANY, true);
         typeHelper.defineOpenContentProperty(getControlRootURI(), propDO2);
         
         DataObject propDO3 = dataFactory.create(propertyType);
@@ -90,6 +93,7 @@ public abstract class ChangeSummaryRootLoadAndSaveTestCases extends LoadAndSaveT
         propDO3.set(SDOConstants.XMLELEMENT_PROPERTY, true);
         Type yardType = typeHelper.getType("http://www.example.org", "Yard");
         propDO3.set("type", yardType);
+        propDO3.setBoolean(SDOXML_MANY, true);
         typeHelper.defineOpenContentProperty(getControlRootURI(), propDO3);
     }
 

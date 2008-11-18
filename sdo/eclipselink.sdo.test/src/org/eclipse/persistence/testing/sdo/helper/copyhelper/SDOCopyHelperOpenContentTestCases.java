@@ -81,7 +81,12 @@ public class SDOCopyHelperOpenContentTestCases extends SDOTestCase {
             if (shallow) {
                 if (next.getType().isDataType()) {
                     assertEquals(originalSet, copySet);
-                    assertEquals(originalValue, copyValue);
+                    if (next.isMany()) {
+                        assertEquals(((List)originalValue).size(), ((List)copyValue).size());
+                        assertTrue(((List)originalValue).containsAll((List)copyValue));
+                    } else {
+                        assertEquals(originalValue, copyValue);
+                    }
                 } else {
                     assertFalse(copySet);
                 }

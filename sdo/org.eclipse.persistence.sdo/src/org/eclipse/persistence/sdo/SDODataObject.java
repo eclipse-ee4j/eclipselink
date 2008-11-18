@@ -302,7 +302,11 @@ public class SDODataObject implements DataObject, SequencedObject {
     }
 
     public DataObject getDataObject(String path) throws ClassCastException {
-        return (DataObject)get(path);
+        Object value = get(path);
+        if(value instanceof ListWrapper) {
+            return (DataObject)((ListWrapper)value).get(0);
+        }
+        return (DataObject)value;
     }
 
     public Date getDate(String path) {
@@ -1016,6 +1020,14 @@ public class SDODataObject implements DataObject, SequencedObject {
     }
 
     public DataObject getDataObject(Property property) throws IllegalArgumentException, ClassCastException {
+        if(property != null && property.isMany()) {
+            List value = (List)get(property);
+            if(value.size() > 0) {
+                return (DataObject)value.get(0);
+            } else {
+                return null;
+            }
+        }
         return (DataObject)get(property);
     }
 

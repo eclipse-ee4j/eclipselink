@@ -15,6 +15,8 @@ package org.eclipse.persistence.sdo.types;
 import java.util.ArrayList;
 import java.util.List;
 import commonj.sdo.Type;
+
+import org.eclipse.persistence.oxm.NamespaceResolver;
 import org.eclipse.persistence.sdo.SDOConstants;
 import org.eclipse.persistence.sdo.SDOType;
 import org.eclipse.persistence.sdo.helper.SDOTypeHelper;
@@ -25,7 +27,7 @@ public class SDOOpenSequencedType extends SDOType implements Type {
     
     public SDOOpenSequencedType(SDOTypeHelper sdoTypeHelper) {
         super(SDOConstants.ORACLE_SDO_URL, "OpenSequencedType", sdoTypeHelper);
-        
+        this.xmlDescriptor.setNamespaceResolver(new NamespaceResolver());
         setInstanceClassName(SDOConstants.ORACLE_SDO_URL + ".OpenSequencedClass");        
         //need to call getInstanceClass to initialize the class in the SDOClassLoader
         getInstanceClass();

@@ -74,7 +74,7 @@ public class ChangeSummaryModifyOpenContentTestCases extends ChangeSummaryRootLo
         assertEquals("theWidthUndefined", yardUndefined.getList("width").get(0));
                 
         String controlValue = "15";
-        assertEquals(controlValue, manager.get("simpleOpenTestDefined"));
+        assertEquals(controlValue, manager.getList("simpleOpenTestDefined").get(0));
         
         List simpleOpenList = manager.getList("simpleOpenTest");
         assertEquals(1, simpleOpenList.size());
@@ -82,7 +82,7 @@ public class ChangeSummaryModifyOpenContentTestCases extends ChangeSummaryRootLo
 
         ChangeSummary.Setting simpleOpenTestDefinedSetting = managerCS.getOldValue(manager, manager.getInstanceProperty("simpleOpenTestDefined"));
         assertNotNull(simpleOpenTestDefinedSetting);
-        assertEquals("10", simpleOpenTestDefinedSetting.getValue());
+        assertEquals("10", ((List)simpleOpenTestDefinedSetting.getValue()).get(0));
 
 
         ChangeSummary.Setting simpleSetting = managerCS.getOldValue(manager, manager.getInstanceProperty("simpleOpenTest"));
