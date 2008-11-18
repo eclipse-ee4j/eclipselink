@@ -3103,8 +3103,12 @@ public class ClassDescriptor implements Cloneable, Serializable {
                 // may not have simple fields.
                 boolean isMethodAccess = false;
                 for (Iterator iterator = getMappings().iterator(); iterator.hasNext(); ) {
-                    if (((DatabaseMapping)iterator.next()).isUsingMethodAccess()) {
-                        isMethodAccess = true;
+                    DatabaseMapping mapping = (DatabaseMapping)iterator.next();
+                    if (mapping.isUsingMethodAccess()) {
+                        // Ok for lazy 1-1s
+                        if (!mapping.isOneToOneMapping() || !((ForeignReferenceMapping)mapping).usesIndirection()) {
+                            isMethodAccess = true;
+                        }
                         break;
                     }
                 }

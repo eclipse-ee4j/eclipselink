@@ -1775,8 +1775,7 @@ public class Helper implements Serializable {
      * @param timestampString - string representation of timestamp
      * @return  - timestamp representation of string
      */
-    @SuppressWarnings("deprecation")
-	public static java.sql.Timestamp timestampFromString(String timestampString) throws ConversionException {
+    public static java.sql.Timestamp timestampFromString(String timestampString) throws ConversionException {
         if ((timestampString.indexOf('-') == -1) && (timestampString.indexOf('/') == -1) && (timestampString.indexOf('.') == -1) && (timestampString.indexOf(':') == -1)) {
             throw ConversionException.incorrectTimestampFormat(timestampString);
         }
@@ -1826,7 +1825,7 @@ public class Helper implements Serializable {
         month = month - 1;
 
         java.sql.Timestamp timestamp;
-        // This was not converted to use Calendar for the conversion because calendars do not take nanos.
+        // TODO: This was not converted to use Calendar for the conversion because calendars do not take nanos.
         // but it should be, and then just call setNanos.
         timestamp = new java.sql.Timestamp(year, month, day, hour, minute, second, nanos);
         return timestamp;

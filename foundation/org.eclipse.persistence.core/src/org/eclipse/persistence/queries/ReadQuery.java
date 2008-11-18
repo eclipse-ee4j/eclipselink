@@ -346,21 +346,21 @@ public abstract class ReadQuery extends DatabaseQuery {
     /**
      * PUBLIC:
      * Used to set the first result in any result set that is returned for this query.
-     * This method should only be set once per query.  To change the firstReslt use another query.
-     * This method will call the absolute method on the JDBC result set to move the initial row
-     * used by TopLink.  Note: The set of results returned from the database will still include
-     * the results before the first result.  TopLink will just not use them for object building.
+     * On supported database platforms this will cause the query to issue specific SQL
+     * that avoids selecting the firstResult number of rows.
+     * Otherwise by it will use the JDBC absolute to skip the firstResult number of rows.
      */
     public void setFirstResult(int firstResult) {
-        if ( isPrepared() && this.firstResult != firstResult){
-            if ( this.getCall()!=null && this.getCall().shouldIgnoreFirstRowMaxResultsSettings() ){
-                //don't need to reprepare as firstResult is already built into the sql if ignoreFirstRowMaxResultsSettings is set
-            }else{
+        if (isPrepared() && this.firstResult != firstResult) {
+            if (getCall()!=null && getCall().shouldIgnoreFirstRowMaxResultsSettings()) {
+                // Don't need to reprepare as firstResult is already built into the sql if ignoreFirstRowMaxResultsSettings is set,
+                // firstResult is just a query parameter.
+            } else {
                 setIsPrepared(false);
             }
         }
         this.firstResult = firstResult;
-        shouldCloneCall=true;
+        this.shouldCloneCall = true;
     }
 
     /**

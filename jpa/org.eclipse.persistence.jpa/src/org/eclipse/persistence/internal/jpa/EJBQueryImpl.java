@@ -97,28 +97,30 @@ public class EJBQueryImpl implements org.eclipse.persistence.jpa.JpaQuery {
 
     /**
      * Internal method to change the wrapped query to a DataModifyQuery if necessary.
+     * When created, the query is created as a DataReadQuery as it is unknown if it is a SELECT or UPDATE.
+     * Note that this prevents the original named query from every being prepared.
      */
     protected void setAsSQLModifyQuery(){
-        if (getDatabaseQuery().isDataReadQuery()){
+        if (getDatabaseQuery().isDataReadQuery()) {
             DataModifyQuery query = new DataModifyQuery();
-            query.setSQLString(databaseQuery.getSQLString());
-            query.setIsUserDefined(databaseQuery.isUserDefined());
-            query.setFlushOnExecute(databaseQuery.getFlushOnExecute());
-            databaseQuery = query;
+            query.setIsUserDefined(this.databaseQuery.isUserDefined());
+            query.copyFromQuery(this.databaseQuery);
+            this.databaseQuery = query;
         }
     }
 
     /**
      * Internal method to change the wrapped query to a DataReadQuery if necessary.
+     * This should never occur, but could possibly if the same query was executed as executeUpdate() then as getResultList().
+     * Note that the initial conversion to modify would loose any read settings that had been set.
      */
     protected void setAsSQLReadQuery(){
-        if(getDatabaseQuery().isDataModifyQuery()){
+        if (getDatabaseQuery().isDataModifyQuery()) {
             DataReadQuery query = new DataReadQuery();
             query.setUseAbstractRecord(false);
-            query.setSQLString(databaseQuery.getSQLString());
             query.setIsUserDefined(databaseQuery.isUserDefined());
-            query.setFlushOnExecute(databaseQuery.getFlushOnExecute());
-            databaseQuery = query;
+            query.copyFromQuery(this.databaseQuery);
+            this.databaseQuery = query;
         }
     }
 
@@ -475,6 +477,39 @@ public class EJBQueryImpl implements org.eclipse.persistence.jpa.JpaQuery {
     }
      
     /**
+     * Non-standard method to return results of a ReadQuery that uses a Cursor.
+     * @return Cursor on results, either a CursoredStream, or ScrollableCursor
+     */
+    public Cursor getResultCursor() {
+        //bug51411440: need to throw IllegalStateException if query executed on closed em
+        entityManager.verifyOpen();
+        setAsSQLReadQuery();
+        propagateResultProperties();
+        //bug:4297903, check container policy class and throw exception if its not the right type 
+        if (getDatabaseQuery() instanceof ReadAllQuery){
+          Class containerClass = ((ReadAllQuery)getDatabaseQuery()).getContainerPolicy().getContainerClass();
+          if (! ((ReadAllQuery)getDatabaseQuery()).getContainerPolicy().isCursorPolicy()){
+            throw QueryException.invalidContainerClass( containerClass, Cursor.class );
+          }
+        } else if (getDatabaseQuery() instanceof ReadObjectQuery){
+            //bug:4300879, no support for ReadObjectQuery if a collection is required
+            throw QueryException.incorrectQueryObjectFound( getDatabaseQuery(), ReadAllQuery.class );
+        } else if (!(getDatabaseQuery() instanceof ReadQuery)){
+            throw new IllegalStateException(ExceptionLocalization.buildMessage("incorrect_query_for_get_result_collection"));
+        }
+        
+        try {
+            Object result = executeReadQuery();
+            return (Cursor)result;
+        } catch (LockTimeoutException e) {
+            throw e;
+        } catch (RuntimeException e) {
+            setRollbackOnly();
+            throw e;
+        }
+    }
+     
+    /**
      * Non-standard method to return results of a ReadQuery that has a containerPolicy
      * that returns objects as a collection rather than a List
      * @return Collection of results
@@ -554,17 +589,13 @@ public class EJBQueryImpl implements org.eclipse.persistence.jpa.JpaQuery {
             entityManager.verifyOpen();
             setAsSQLReadQuery();
             propagateResultProperties();
-            //bug:4301674, requires lists to be returned from ReadAllQuery objects
-            if (getDatabaseQuery() instanceof ReadAllQuery){
-              Class containerClass = ((ReadAllQuery)getDatabaseQuery()).getContainerPolicy().getContainerClass();
-              if (! Helper.classImplementsInterface(containerClass, ClassConstants.List_Class)){
-                throw QueryException.invalidContainerClass( containerClass, ClassConstants.List_Class );
-              }
-            } else if (!(getDatabaseQuery() instanceof ReadQuery)){
+            // This API is used to return non-List results, so no other validation is done.
+            // It could be Cursor or other Collection or Map type.
+            if (!(getDatabaseQuery() instanceof ReadQuery)) {
                 throw new IllegalStateException(ExceptionLocalization.buildMessage("incorrect_query_for_get_single_result"));
             }
             Object result = executeReadQuery();
-            if (result instanceof List){
+            if (result instanceof List) {
                 List results = (List)result;
                 if (results.isEmpty()) {
                     rollbackOnException = false;
@@ -574,7 +605,7 @@ public class EJBQueryImpl implements org.eclipse.persistence.jpa.JpaQuery {
                     throwNonUniqueResultException(ExceptionLocalization.buildMessage("too_many_results_for_get_single_result", (Object[])null));
                 }
                 return results.get(0);
-            }else{
+            } else {
                 if (result == null) {
                     rollbackOnException = false;
                     throwNoResultException(ExceptionLocalization.buildMessage("no_entities_retrieved_for_get_single_result", (Object[])null));

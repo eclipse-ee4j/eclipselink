@@ -454,7 +454,7 @@ public abstract class Cursor implements Enumeration, java.io.Serializable {
 
     /**
      * PUBLIC:
-     * Retreive the size of the open cursor by executing a count on the same query as the cursor.
+     * Retrieve the size of the open cursor by executing a count on the same query as the cursor.
      *
      * If this cursor is conforming size() can only be an estimate.  cursor size
      * plus number of conforming instances found in memory will be returned.  The

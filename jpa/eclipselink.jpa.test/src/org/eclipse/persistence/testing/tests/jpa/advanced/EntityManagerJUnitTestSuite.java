@@ -48,6 +48,7 @@ import org.eclipse.persistence.config.EntityManagerProperties;
 import org.eclipse.persistence.config.ExclusiveConnectionMode;
 import org.eclipse.persistence.internal.jpa.EJBQueryImpl;
 import org.eclipse.persistence.internal.helper.Helper;
+import org.eclipse.persistence.queries.CursoredStreamPolicy;
 import org.eclipse.persistence.queries.DatabaseQuery;
 import org.eclipse.persistence.queries.ObjectLevelReadQuery;
 import org.eclipse.persistence.queries.ReadAllQuery;
@@ -3554,6 +3555,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         query.setHint(QueryHints.REFRESH, "");
         assertFalse("Refresh not set.", olrQuery.shouldRefreshIdentityMapResult());
         
+        // Read-only
         query.setHint(QueryHints.READ_ONLY, "false");
         assertFalse("Read-only not set.", olrQuery.isReadOnly()); 
         
@@ -3561,17 +3563,154 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         assertTrue("Read-only not set.", olrQuery.isReadOnly());
         
         query.setHint(QueryHints.READ_ONLY, Boolean.FALSE);
-        assertFalse("Read-only not set.", olrQuery.isReadOnly());
+        assertFalse("Read-only not set.", olrQuery.isReadOnly());        
+
+        // Maintain cache
+        query.setHint(QueryHints.MAINTAIN_CACHE, true);
+        assertTrue("MAINTAIN_CACHE set.", olrQuery.shouldMaintainCache());
         
+        query.setHint(QueryHints.MAINTAIN_CACHE, "false");
+        assertFalse("MAINTAIN_CACHE not set.", olrQuery.shouldMaintainCache());
+        
+        query.setHint(QueryHints.MAINTAIN_CACHE, Boolean.TRUE);
+        assertTrue("MAINTAIN_CACHE not set.", olrQuery.shouldMaintainCache());
+        
+        query.setHint(QueryHints.MAINTAIN_CACHE, Boolean.FALSE);
+        assertFalse("MAINTAIN_CACHE not set.", olrQuery.shouldMaintainCache());
+
+        // Prepare
+        query.setHint(QueryHints.PREPARE, true);
+        assertTrue("PREPARE set.", olrQuery.shouldPrepare());
+        
+        query.setHint(QueryHints.PREPARE, "false");
+        assertFalse("PREPARE not set.", olrQuery.shouldPrepare());
+        
+        query.setHint(QueryHints.PREPARE, Boolean.TRUE);
+        assertTrue("PREPARE not set.", olrQuery.shouldPrepare());
+        
+        query.setHint(QueryHints.PREPARE, Boolean.FALSE);
+        assertFalse("PREPARE not set.", olrQuery.shouldPrepare());
+
+        // Cache statement
+        query.setHint(QueryHints.CACHE_STATMENT, true);
+        assertTrue("CACHE_STATMENT set.", olrQuery.shouldCacheStatement());
+        
+        query.setHint(QueryHints.CACHE_STATMENT, "false");
+        assertFalse("CACHE_STATMENT not set.", olrQuery.shouldCacheStatement());
+        
+        query.setHint(QueryHints.CACHE_STATMENT, Boolean.TRUE);
+        assertTrue("CACHE_STATMENT not set.", olrQuery.shouldCacheStatement());
+        
+        query.setHint(QueryHints.CACHE_STATMENT, Boolean.FALSE);
+        assertFalse("CACHE_STATMENT not set.", olrQuery.shouldCacheStatement());
+
+        // Flush
+        query.setHint(QueryHints.FLUSH, true);
+        assertTrue("FLUSH set.", olrQuery.getFlushOnExecute());
+        
+        query.setHint(QueryHints.FLUSH, "false");
+        assertFalse("FLUSH not set.", olrQuery.getFlushOnExecute());
+        
+        query.setHint(QueryHints.FLUSH, Boolean.TRUE);
+        assertTrue("FLUSH not set.", olrQuery.getFlushOnExecute());
+        
+        query.setHint(QueryHints.FLUSH, Boolean.FALSE);
+        assertFalse("FLUSH not set.", olrQuery.getFlushOnExecute());
+
+        // Native connection
+        query.setHint(QueryHints.NATIVE_CONNECTION, true);
+        assertTrue("NATIVE_CONNECTION set.", olrQuery.isNativeConnectionRequired());
+        
+        query.setHint(QueryHints.NATIVE_CONNECTION, "false");
+        assertFalse("NATIVE_CONNECTION not set.", olrQuery.isNativeConnectionRequired());
+        
+        query.setHint(QueryHints.NATIVE_CONNECTION, Boolean.TRUE);
+        assertTrue("NATIVE_CONNECTION not set.", olrQuery.isNativeConnectionRequired());
+        
+        query.setHint(QueryHints.NATIVE_CONNECTION, Boolean.FALSE);
+        assertFalse("NATIVE_CONNECTION not set.", olrQuery.isNativeConnectionRequired());
+        
+        // Hint
+        query.setHint(QueryHints.HINT, "/* use the index man */");
+        assertTrue("HINT not set.", olrQuery.getHintString().equals("/* use the index man */"));
+
+        // Cursor
+        query.setHint(QueryHints.CURSOR, Boolean.TRUE);
+        assertTrue("CURSOR not set.", ((ReadAllQuery)olrQuery).getContainerPolicy().isCursoredStreamPolicy());
+        
+        query.setHint(QueryHints.CURSOR, Boolean.FALSE);
+        assertFalse("CURSOR set.", ((ReadAllQuery)olrQuery).getContainerPolicy().isCursoredStreamPolicy());
+        
+        query.setHint(QueryHints.CURSOR_INITIAL_SIZE, "100");
+        assertTrue("CURSOR not set.", ((ReadAllQuery)olrQuery).getContainerPolicy().isCursoredStreamPolicy());
+        assertTrue("CURSOR_INITIAL_SIZE not set.", ((CursoredStreamPolicy)((ReadAllQuery)olrQuery).getContainerPolicy()).getInitialReadSize() == 100);
+
+        query.setHint(QueryHints.CURSOR_INITIAL_SIZE, 200);
+        assertTrue("CURSOR_INITIAL_SIZE not set.", ((CursoredStreamPolicy)((ReadAllQuery)olrQuery).getContainerPolicy()).getInitialReadSize() == 200);
+
+        query.setHint(QueryHints.CURSOR, Boolean.FALSE);
+        
+        query.setHint(QueryHints.CURSOR_PAGE_SIZE, "100");
+        assertTrue("CURSOR not set.", ((ReadAllQuery)olrQuery).getContainerPolicy().isCursoredStreamPolicy());
+        assertTrue("CURSOR_PAGE_SIZE not set.", ((CursoredStreamPolicy)((ReadAllQuery)olrQuery).getContainerPolicy()).getPageSize() == 100);
+
+        query.setHint(QueryHints.CURSOR_PAGE_SIZE, 200);
+        assertTrue("CURSOR_PAGE_SIZE not set.", ((CursoredStreamPolicy)((ReadAllQuery)olrQuery).getContainerPolicy()).getPageSize() == 200);
+
+        query.setHint(QueryHints.CURSOR, Boolean.FALSE);
+        
+        query.setHint(QueryHints.CURSOR_SIZE, "Select Count(*) from Employee");
+        assertTrue("CURSOR_SIZE not set.", ((CursoredStreamPolicy)((ReadAllQuery)olrQuery).getContainerPolicy()).getSizeQuery().getSQLString().equals("Select Count(*) from Employee"));
+
+        // Scrollable cursor
+        query.setHint(QueryHints.SCROLLABLE_CURSOR, Boolean.TRUE);
+        assertTrue("SCROLLABLE_CURSOR not set.", ((ReadAllQuery)olrQuery).getContainerPolicy().isScrollableCursorPolicy());
+        
+        query.setHint(QueryHints.SCROLLABLE_CURSOR, Boolean.FALSE);
+        assertFalse("SCROLLABLE_CURSOR set.", ((ReadAllQuery)olrQuery).getContainerPolicy().isScrollableCursorPolicy());
+
+        // Exclusive connection
+        query.setHint(QueryHints.EXCLUSIVE_CONNECTION, Boolean.TRUE);
+        assertTrue("EXCLUSIVE_CONNECTION not set.", olrQuery.shouldUseExclusiveConnection());
+
+        // Inheritance
+        query.setHint(QueryHints.INHERITANCE_OUTER_JOIN, Boolean.TRUE);
+        assertTrue("INHERITANCE_OUTER_JOIN not set.", olrQuery.shouldOuterJoinSubclasses());
+        
+        // History
+        query.setHint(QueryHints.AS_OF, "1973/10/11 12:00:00");
+        assertTrue("AS_OF not set.", olrQuery.getAsOfClause() != null);
+        
+        query.setHint(QueryHints.AS_OF_SCN, "12345");
+        assertTrue("AS_OF_SCN not set.", ((Number)olrQuery.getAsOfClause().getValue()).intValue() == 12345);
+        
+        // Fetch groups
+        query.setHint(QueryHints.FETCH_GROUP_DEFAULT, Boolean.FALSE);
+        assertFalse("FETCH_GROUP_DEFAULT not set.", olrQuery.shouldUseDefaultFetchGroup());
+
+        query.setHint(QueryHints.FETCH_GROUP_NAME, "nameAndCity");
+        assertTrue("FETCH_GROUP_NAME not set.", olrQuery.getFetchGroupName().equals("nameAndCity"));
+        
+        query.setHint(QueryHints.FETCH_GROUP_ATTRIBUTE, "firstName");
+        query.setHint(QueryHints.FETCH_GROUP_ATTRIBUTE, "lastName");
+        assertTrue("FETCH_GROUP_ATTRIBUTE not set.", olrQuery.getFetchGroup().containsAttribute("firstName"));
+        assertTrue("FETCH_GROUP_ATTRIBUTE not set.", olrQuery.getFetchGroup().containsAttribute("lastName"));
+        
+        // Timeout
         query.setHint(QueryHints.JDBC_TIMEOUT, new Integer(100));
         assertTrue("Timeout not set.", olrQuery.getQueryTimeout() == 100);
         
+        // JDBC
         query.setHint(QueryHints.JDBC_FETCH_SIZE, new Integer(101));
         assertTrue("Fetch-size not set.", olrQuery.getFetchSize() == 101);
         
         query.setHint(QueryHints.JDBC_MAX_ROWS, new Integer(103));
-        assertTrue("Max-rows not set.", olrQuery.getMaxRows() == 103); 
+        assertTrue("Max-rows not set.", olrQuery.getMaxRows() == 103);
+        
+        query.setHint(QueryHints.JDBC_FIRST_RESULT, new Integer(123));
+        assertTrue("JDBC_FIRST_RESULT not set.", olrQuery.getFirstResult() == 123); 
 
+        // Refresh
         query.setHint(QueryHints.REFRESH_CASCADE, CascadePolicy.NoCascading);
         assertTrue(olrQuery.getCascadePolicy()==DatabaseQuery.NoCascading);
         query.setHint(QueryHints.REFRESH_CASCADE, CascadePolicy.CascadeByMapping);

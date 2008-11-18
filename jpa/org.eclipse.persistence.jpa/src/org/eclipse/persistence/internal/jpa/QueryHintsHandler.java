@@ -33,19 +33,28 @@ import org.eclipse.persistence.config.*;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.descriptors.invalidation.DailyCacheInvalidationPolicy;
 import org.eclipse.persistence.descriptors.invalidation.TimeToLiveCacheInvalidationPolicy;
+import org.eclipse.persistence.history.AsOfClause;
+import org.eclipse.persistence.history.AsOfSCNClause;
 import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.internal.localization.ExceptionLocalization;
+import org.eclipse.persistence.internal.queries.ContainerPolicy;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.internal.security.PrivilegedClassForName;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.logging.SessionLog;
 import org.eclipse.persistence.mappings.ForeignReferenceMapping;
 import org.eclipse.persistence.mappings.DatabaseMapping;
+import org.eclipse.persistence.queries.CursorPolicy;
+import org.eclipse.persistence.queries.CursoredStreamPolicy;
+import org.eclipse.persistence.queries.DataReadQuery;
+import org.eclipse.persistence.queries.FetchGroup;
+import org.eclipse.persistence.queries.ModifyAllQuery;
 import org.eclipse.persistence.queries.ObjectBuildingQuery;
 import org.eclipse.persistence.queries.QueryRedirector;
 import org.eclipse.persistence.queries.ReadObjectQuery;
 import org.eclipse.persistence.queries.ReadQuery;
 import org.eclipse.persistence.queries.ReportQuery;
+import org.eclipse.persistence.queries.ValueReadQuery;
 
 /**
  * The class processes query hints.
@@ -188,16 +197,35 @@ public class QueryHintsHandler {
             addHint(new CascadePolicyHint());
             addHint(new BatchHint());
             addHint(new FetchHint());
-            addHint(new ReturnSharedHint());
+            addHint(new ReadOnlyHint());
             addHint(new JDBCTimeoutHint());
             addHint(new JDBCFetchSizeHint());
             addHint(new JDBCMaxRowsHint());
+            addHint(new JDBCFirstResultHint());
             addHint(new ResultCollectionTypeHint());
             addHint(new RedirectorHint());
             addHint(new QueryCacheHint());
             addHint(new QueryCacheSizeHint());
             addHint(new QueryCacheExpiryHint());
             addHint(new QueryCacheExpiryTimeOfDayHint());
+            addHint(new MaintainCacheHint());
+            addHint(new PrepareHint());
+            addHint(new CacheStatementHint());
+            addHint(new FlushHint());
+            addHint(new HintHint());
+            addHint(new NativeConnectionHint());
+            addHint(new CursorHint());
+            addHint(new CursorInitialSizeHint());
+            addHint(new CursorPageSizeHint());
+            addHint(new ScrollableCursorHint());
+            addHint(new CursorSizeHint());
+            addHint(new FetchGroupHint());
+            addHint(new FetchGroupDefaultHint());
+            addHint(new FetchGroupAttributeHint());
+            addHint(new ExclusiveHint());
+            addHint(new InheritanceJoinHint());
+            addHint(new AsOfHint());
+            addHint(new AsOfSCNHint());
         }
         
         Hint(String name, String defaultValue) {
@@ -279,6 +307,14 @@ public class QueryHintsHandler {
             return hintValue != null ? hintValue.toString().toUpperCase() : null;
         }
 
+        static Class loadClass(String className, ClassLoader loader) throws ClassNotFoundException, PrivilegedActionException {
+            if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
+                return (Class)AccessController.doPrivileged(new PrivilegedClassForName(className, true, loader));
+            } else {
+                return PrivilegedAccessHelper.getClassForName(className, true, loader);
+            }
+        }
+
         void initialize() {
             if(valueArray != null) {
                 valueMap = new HashMap(valueArray.length);
@@ -342,7 +378,9 @@ public class QueryHintsHandler {
                 {CacheUsage.CheckCacheByPrimaryKey, ObjectLevelReadQuery.CheckCacheByPrimaryKey},
                 {CacheUsage.CheckCacheThenDatabase, ObjectLevelReadQuery.CheckCacheThenDatabase},
                 {CacheUsage.CheckCacheOnly, ObjectLevelReadQuery.CheckCacheOnly},
-                {CacheUsage.ConformResultsInUnitOfWork, ObjectLevelReadQuery.ConformResultsInUnitOfWork}
+                {CacheUsage.ConformResultsInUnitOfWork, ObjectLevelReadQuery.ConformResultsInUnitOfWork},
+                {CacheUsage.NoCache, ModifyAllQuery.NO_CACHE},
+                {CacheUsage.Invalidate, ModifyAllQuery.INVALIDATE_CACHE}
             };
         }
     
@@ -357,6 +395,11 @@ public class QueryHintsHandler {
                     newQuery.copyFromQuery(query);
                     return newQuery;
                 }
+            } else if (query.isModifyAllQuery()) {
+                int cacheUsage = ((Integer)valueToApply).intValue();
+                ((ModifyAllQuery)query).setCacheUsage(cacheUsage);
+            } else {
+                throw new IllegalArgumentException(ExceptionLocalization.buildMessage("ejb30-wrong-type-for-query-hint",new Object[]{getQueryId(query), name, getPrintValue(valueToApply)}));
             }
             return query;
         }
@@ -374,12 +417,7 @@ public class QueryHintsHandler {
         }
     
         DatabaseQuery applyToDatabaseQuery(Object valueToApply, DatabaseQuery query) {
-            // this time cascade policy make sense only for read query with refresh option
-            // However cascade policy is generic property for DatabaseQuery, 
-            // therefore can have a meaning for other types of query in the future. 
-            if (query.isObjectLevelReadQuery()) {
-                query.setCascadePolicy((Integer)valueToApply);
-            }
+            query.setCascadePolicy((Integer)valueToApply);
             return query;
         }
     }
@@ -431,6 +469,8 @@ public class QueryHintsHandler {
         DatabaseQuery applyToDatabaseQuery(Object valueToApply, DatabaseQuery query) {
             if (query.isObjectBuildingQuery()) {
                 ((ObjectBuildingQuery)query).setLockMode(((Short)valueToApply).shortValue());
+            } else {
+                throw new IllegalArgumentException(ExceptionLocalization.buildMessage("ejb30-wrong-type-for-query-hint",new Object[]{getQueryId(query), name, getPrintValue(valueToApply)}));
             }
             return query;
         }
@@ -464,6 +504,100 @@ public class QueryHintsHandler {
         DatabaseQuery applyToDatabaseQuery(Object valueToApply, DatabaseQuery query) {
             if (query.isObjectBuildingQuery()) {
                 ((ObjectBuildingQuery)query).setShouldRefreshIdentityMapResult(((Boolean)valueToApply).booleanValue());
+            } else {
+                throw new IllegalArgumentException(ExceptionLocalization.buildMessage("ejb30-wrong-type-for-query-hint",new Object[]{getQueryId(query), name, getPrintValue(valueToApply)}));
+            }
+            return query;
+        }
+    }
+    
+    protected static class ExclusiveHint extends Hint {
+        ExclusiveHint() {
+            super(QueryHints.EXCLUSIVE_CONNECTION, HintValues.FALSE);
+            valueArray = new Object[][] { 
+                {HintValues.FALSE, Boolean.FALSE},
+                {HintValues.TRUE, Boolean.TRUE}
+            };
+        }
+    
+        DatabaseQuery applyToDatabaseQuery(Object valueToApply, DatabaseQuery query) {
+            if (query.isObjectBuildingQuery()) {
+                ((ObjectBuildingQuery)query).setShouldUseExclusiveConnection(((Boolean)valueToApply).booleanValue());
+            } else {
+                throw new IllegalArgumentException(ExceptionLocalization.buildMessage("ejb30-wrong-type-for-query-hint",new Object[]{getQueryId(query), name, getPrintValue(valueToApply)}));
+            }
+            return query;
+        }
+    }
+    
+    protected static class InheritanceJoinHint extends Hint {
+        InheritanceJoinHint() {
+            super(QueryHints.INHERITANCE_OUTER_JOIN, HintValues.FALSE);
+            valueArray = new Object[][] { 
+                {HintValues.FALSE, Boolean.FALSE},
+                {HintValues.TRUE, Boolean.TRUE}
+            };
+        }
+    
+        DatabaseQuery applyToDatabaseQuery(Object valueToApply, DatabaseQuery query) {
+            if (query.isObjectLevelReadQuery()) {
+                ((ObjectLevelReadQuery)query).setShouldOuterJoinSubclasses(((Boolean)valueToApply).booleanValue());
+            } else {
+                throw new IllegalArgumentException(ExceptionLocalization.buildMessage("ejb30-wrong-type-for-query-hint",new Object[]{getQueryId(query), name, getPrintValue(valueToApply)}));
+            }
+            return query;
+        }
+    }
+    
+    protected static class FetchGroupDefaultHint extends Hint {
+        FetchGroupDefaultHint() {
+            super(QueryHints.FETCH_GROUP_DEFAULT, HintValues.TRUE);
+            valueArray = new Object[][] { 
+                {HintValues.FALSE, Boolean.FALSE},
+                {HintValues.TRUE, Boolean.TRUE}
+            };
+        }
+    
+        DatabaseQuery applyToDatabaseQuery(Object valueToApply, DatabaseQuery query) {
+            if (query.isObjectLevelReadQuery()) {
+                ((ObjectLevelReadQuery)query).setShouldUseDefaultFetchGroup(((Boolean)valueToApply).booleanValue());
+            } else {
+                throw new IllegalArgumentException(ExceptionLocalization.buildMessage("ejb30-wrong-type-for-query-hint",new Object[]{getQueryId(query), name, getPrintValue(valueToApply)}));
+            }
+            return query;
+        }
+    }
+    
+    protected static class FetchGroupHint extends Hint {
+        FetchGroupHint() {
+            super(QueryHints.FETCH_GROUP_NAME, "");
+        }
+    
+        DatabaseQuery applyToDatabaseQuery(Object valueToApply, DatabaseQuery query) {
+            if (query.isObjectLevelReadQuery()) {
+                ((ObjectLevelReadQuery)query).setFetchGroupName((String)valueToApply);
+            } else {
+                throw new IllegalArgumentException(ExceptionLocalization.buildMessage("ejb30-wrong-type-for-query-hint",new Object[]{getQueryId(query), name, getPrintValue(valueToApply)}));
+            }
+            return query;
+        }
+    }
+    
+    protected static class FetchGroupAttributeHint extends Hint {
+        FetchGroupAttributeHint() {
+            super(QueryHints.FETCH_GROUP_ATTRIBUTE, "");
+        }
+    
+        DatabaseQuery applyToDatabaseQuery(Object valueToApply, DatabaseQuery query) {
+            if (query.isObjectLevelReadQuery()) {
+                FetchGroup fetchGroup = ((ObjectLevelReadQuery)query).getFetchGroup();
+                if (fetchGroup == null) {
+                    fetchGroup = new FetchGroup();
+                    ((ObjectLevelReadQuery)query).setFetchGroup(fetchGroup);
+                }
+                fetchGroup.addAttribute((String)valueToApply);
+            } else {
+                throw new IllegalArgumentException(ExceptionLocalization.buildMessage("ejb30-wrong-type-for-query-hint",new Object[]{getQueryId(query), name, getPrintValue(valueToApply)}));
             }
             return query;
         }
@@ -670,8 +804,8 @@ public class QueryHintsHandler {
         }
     }
 
-    protected static class ReturnSharedHint extends Hint {
-        ReturnSharedHint() {
+    protected static class ReadOnlyHint extends Hint {
+        ReadOnlyHint() {
             super(QueryHints.READ_ONLY, HintValues.FALSE);
             valueArray = new Object[][] { 
                 {HintValues.FALSE, Boolean.FALSE},
@@ -688,6 +822,240 @@ public class QueryHintsHandler {
             return query;
         }
     }
+
+    protected static class NativeConnectionHint extends Hint {
+        NativeConnectionHint() {
+            super(QueryHints.NATIVE_CONNECTION, HintValues.FALSE);
+            valueArray = new Object[][] { 
+                {HintValues.FALSE, Boolean.FALSE},
+                {HintValues.TRUE, Boolean.TRUE}
+            };
+        }
+    
+        DatabaseQuery applyToDatabaseQuery(Object valueToApply, DatabaseQuery query) {
+            query.setIsNativeConnectionRequired(((Boolean)valueToApply).booleanValue());
+            return query;
+        }
+    }
+    
+    protected static class CursorHint extends Hint {
+        CursorHint() {
+            super(QueryHints.CURSOR, HintValues.FALSE);
+            valueArray = new Object[][] { 
+                {HintValues.FALSE, Boolean.FALSE},
+                {HintValues.TRUE, Boolean.TRUE}
+            };
+        }
+    
+        DatabaseQuery applyToDatabaseQuery(Object valueToApply, DatabaseQuery query) {
+            if (!((Boolean)valueToApply).booleanValue()) {
+                if (query.isReadAllQuery()) {
+                    if (((ReadAllQuery) query).getContainerPolicy().isCursoredStreamPolicy()) {
+                        ((ReadAllQuery) query).setContainerPolicy(ContainerPolicy.buildDefaultPolicy());
+                    }
+                } else if (query.isDataReadQuery()) {
+                    if (((DataReadQuery) query).getContainerPolicy().isCursoredStreamPolicy()) {
+                        ((DataReadQuery) query).setContainerPolicy(ContainerPolicy.buildDefaultPolicy());
+                    }
+                }
+            } else {
+                if (query.isReadAllQuery()) {
+                    if (!((ReadAllQuery) query).getContainerPolicy().isCursoredStreamPolicy()) {
+                        ((ReadAllQuery) query).useCursoredStream();
+                    }
+                } else if (query.isDataReadQuery()) {
+                    if (!((DataReadQuery) query).getContainerPolicy().isCursoredStreamPolicy()) {
+                        ((DataReadQuery) query).useCursoredStream();
+                    }
+                } else {
+                    throw new IllegalArgumentException(ExceptionLocalization.buildMessage("ejb30-wrong-type-for-query-hint",new Object[]{getQueryId(query), name, getPrintValue(valueToApply)}));
+                }
+            }
+            
+            return query;
+        }
+    }
+
+    protected static class CursorInitialSizeHint extends Hint {
+        CursorInitialSizeHint() {
+            super(QueryHints.CURSOR_INITIAL_SIZE, "");
+        }
+    
+        DatabaseQuery applyToDatabaseQuery(Object valueToApply, DatabaseQuery query) {
+            if (query.isReadAllQuery()) {
+                if (!((ReadAllQuery) query).getContainerPolicy().isCursoredStreamPolicy()) {
+                    ((ReadAllQuery) query).useCursoredStream();
+                }
+                ((CursoredStreamPolicy)((ReadAllQuery) query).getContainerPolicy()).setInitialReadSize(QueryHintsHandler.parseIntegerHint(valueToApply, QueryHints.CURSOR_INITIAL_SIZE));
+            } else if (query.isDataReadQuery()) {
+                if (!((DataReadQuery) query).getContainerPolicy().isCursoredStreamPolicy()) {
+                    ((DataReadQuery) query).useCursoredStream();
+                }
+                ((CursoredStreamPolicy)((DataReadQuery) query).getContainerPolicy()).setInitialReadSize(QueryHintsHandler.parseIntegerHint(valueToApply, QueryHints.CURSOR_INITIAL_SIZE));
+            } else {
+                throw new IllegalArgumentException(ExceptionLocalization.buildMessage("ejb30-wrong-type-for-query-hint",new Object[]{getQueryId(query), name, getPrintValue(valueToApply)}));
+            }
+            
+            return query;
+        }
+    }
+
+    protected static class CursorPageSizeHint extends Hint {
+        CursorPageSizeHint() {
+            super(QueryHints.CURSOR_PAGE_SIZE, "");
+        }
+    
+        DatabaseQuery applyToDatabaseQuery(Object valueToApply, DatabaseQuery query) {
+            if (query.isReadAllQuery()) {
+                if (!((ReadAllQuery) query).getContainerPolicy().isCursorPolicy()) {
+                    ((ReadAllQuery) query).useCursoredStream();
+                }
+                ((CursorPolicy)((ReadAllQuery) query).getContainerPolicy()).setPageSize(QueryHintsHandler.parseIntegerHint(valueToApply, QueryHints.CURSOR_PAGE_SIZE));
+            } else if (query.isDataReadQuery()) {
+                if (!((DataReadQuery) query).getContainerPolicy().isCursorPolicy()) {
+                    ((DataReadQuery) query).useCursoredStream();
+                }
+                ((CursorPolicy)((DataReadQuery) query).getContainerPolicy()).setPageSize(QueryHintsHandler.parseIntegerHint(valueToApply, QueryHints.CURSOR_PAGE_SIZE));
+            } else {
+                throw new IllegalArgumentException(ExceptionLocalization.buildMessage("ejb30-wrong-type-for-query-hint",new Object[]{getQueryId(query), name, getPrintValue(valueToApply)}));
+            }
+            
+            return query;
+        }
+    }
+
+    protected static class CursorSizeHint extends Hint {
+        CursorSizeHint() {
+            super(QueryHints.CURSOR_SIZE, "");
+        }
+    
+        DatabaseQuery applyToDatabaseQuery(Object valueToApply, DatabaseQuery query) {
+            if (query.isReadAllQuery()) {
+                if (!((ReadAllQuery) query).getContainerPolicy().isCursoredStreamPolicy()) {
+                    ((ReadAllQuery) query).useCursoredStream();
+                }
+                ((CursoredStreamPolicy)((ReadAllQuery) query).getContainerPolicy()).setSizeQuery(new ValueReadQuery((String)valueToApply));
+            } else if (query.isDataReadQuery()) {
+                if (!((DataReadQuery) query).getContainerPolicy().isCursoredStreamPolicy()) {
+                    ((DataReadQuery) query).useCursoredStream();
+                }
+                ((CursoredStreamPolicy)((ReadAllQuery) query).getContainerPolicy()).setSizeQuery(new ValueReadQuery((String)valueToApply));
+            } else {
+                throw new IllegalArgumentException(ExceptionLocalization.buildMessage("ejb30-wrong-type-for-query-hint",new Object[]{getQueryId(query), name, getPrintValue(valueToApply)}));
+            }
+            
+            return query;
+        }
+    }
+
+    protected static class ScrollableCursorHint extends Hint {
+        ScrollableCursorHint() {
+            super(QueryHints.SCROLLABLE_CURSOR, HintValues.FALSE);
+            valueArray = new Object[][] { 
+                {HintValues.FALSE, Boolean.FALSE},
+                {HintValues.TRUE, Boolean.TRUE}
+            };
+        }
+    
+        DatabaseQuery applyToDatabaseQuery(Object valueToApply, DatabaseQuery query) {
+            if (!((Boolean)valueToApply).booleanValue()) {
+                if (query.isReadAllQuery()) {
+                    if (((ReadAllQuery) query).getContainerPolicy().isScrollableCursorPolicy()) {
+                        ((ReadAllQuery) query).setContainerPolicy(ContainerPolicy.buildDefaultPolicy());
+                    }
+                } else if (query.isDataReadQuery()) {
+                    if (((DataReadQuery) query).getContainerPolicy().isScrollableCursorPolicy()) {
+                        ((DataReadQuery) query).setContainerPolicy(ContainerPolicy.buildDefaultPolicy());
+                    }
+                }
+            } else {
+                if (query.isReadAllQuery()) {
+                    if (!((ReadAllQuery) query).getContainerPolicy().isScrollableCursorPolicy()) {
+                        ((ReadAllQuery) query).useScrollableCursor();
+                    }
+                } else if (query.isDataReadQuery()) {
+                    if (!((DataReadQuery) query).getContainerPolicy().isScrollableCursorPolicy()) {
+                        ((DataReadQuery) query).useScrollableCursor();
+                    }
+                } else {
+                    throw new IllegalArgumentException(ExceptionLocalization.buildMessage("ejb30-wrong-type-for-query-hint",new Object[]{getQueryId(query), name, getPrintValue(valueToApply)}));
+                }
+            }
+            
+            return query;
+        }
+    }
+    
+    protected static class MaintainCacheHint extends Hint {
+        MaintainCacheHint() {
+            super(QueryHints.MAINTAIN_CACHE, HintValues.FALSE);
+            valueArray = new Object[][] { 
+                {HintValues.FALSE, Boolean.FALSE},
+                {HintValues.TRUE, Boolean.TRUE}
+            };
+        }
+    
+        DatabaseQuery applyToDatabaseQuery(Object valueToApply, DatabaseQuery query) {
+            query.setShouldMaintainCache(((Boolean)valueToApply).booleanValue());
+            return query;
+        }
+    }
+
+    protected static class PrepareHint extends Hint {
+        PrepareHint() {
+            super(QueryHints.PREPARE, HintValues.FALSE);
+            valueArray = new Object[][] { 
+                {HintValues.FALSE, Boolean.FALSE},
+                {HintValues.TRUE, Boolean.TRUE}
+            };
+        }
+    
+        DatabaseQuery applyToDatabaseQuery(Object valueToApply, DatabaseQuery query) {
+            query.setShouldPrepare(((Boolean)valueToApply).booleanValue());
+            return query;
+        }
+    }
+
+    protected static class CacheStatementHint extends Hint {
+        CacheStatementHint() {
+            super(QueryHints.CACHE_STATMENT, HintValues.FALSE);
+            valueArray = new Object[][] { 
+                {HintValues.FALSE, Boolean.FALSE},
+                {HintValues.TRUE, Boolean.TRUE}
+            };
+        }
+    
+        DatabaseQuery applyToDatabaseQuery(Object valueToApply, DatabaseQuery query) {
+            query.setShouldCacheStatement(((Boolean)valueToApply).booleanValue());
+            return query;
+        }
+    }
+
+    protected static class FlushHint extends Hint {
+        FlushHint() {
+            super(QueryHints.FLUSH, HintValues.FALSE);
+            valueArray = new Object[][] { 
+                {HintValues.FALSE, Boolean.FALSE},
+                {HintValues.TRUE, Boolean.TRUE}
+            };
+        }
+    
+        DatabaseQuery applyToDatabaseQuery(Object valueToApply, DatabaseQuery query) {
+            query.setFlushOnExecute((Boolean)valueToApply);
+            return query;
+        }
+    }
+
+    protected static class HintHint extends Hint {
+        HintHint() {
+            super(QueryHints.HINT, "");
+        }
+    
+        DatabaseQuery applyToDatabaseQuery(Object valueToApply, DatabaseQuery query) {
+            query.setHintString((String)valueToApply);
+            return query;
+        }
+    }
     
     protected static class JDBCTimeoutHint extends Hint {
         JDBCTimeoutHint() {
@@ -699,9 +1067,7 @@ public class QueryHintsHandler {
             return query;
         }
     }
-    
-
-    
+        
     protected static class JDBCFetchSizeHint extends Hint {
         JDBCFetchSizeHint() {
             super(QueryHints.JDBC_FETCH_SIZE, "");
@@ -710,6 +1076,38 @@ public class QueryHintsHandler {
         DatabaseQuery applyToDatabaseQuery(Object valueToApply, DatabaseQuery query) {
             if (query.isReadQuery()) {
                 ((ReadQuery) query).setFetchSize(QueryHintsHandler.parseIntegerHint(valueToApply, QueryHints.JDBC_FETCH_SIZE));
+            } else {
+                throw new IllegalArgumentException(ExceptionLocalization.buildMessage("ejb30-wrong-type-for-query-hint",new Object[]{getQueryId(query), name, getPrintValue(valueToApply)}));
+            }
+            
+            return query;
+        }
+    }
+        
+    protected static class AsOfHint extends Hint {
+        AsOfHint() {
+            super(QueryHints.AS_OF, "");
+        }
+    
+        DatabaseQuery applyToDatabaseQuery(Object valueToApply, DatabaseQuery query) {
+            if (query.isObjectLevelReadQuery()) {
+                ((ObjectLevelReadQuery) query).setAsOfClause(new AsOfClause(Helper.timeFromString((String)valueToApply)));
+            } else {
+                throw new IllegalArgumentException(ExceptionLocalization.buildMessage("ejb30-wrong-type-for-query-hint",new Object[]{getQueryId(query), name, getPrintValue(valueToApply)}));
+            }
+            
+            return query;
+        }
+    }
+        
+    protected static class AsOfSCNHint extends Hint {
+        AsOfSCNHint() {
+            super(QueryHints.AS_OF_SCN, "");
+        }
+    
+        DatabaseQuery applyToDatabaseQuery(Object valueToApply, DatabaseQuery query) {
+            if (query.isObjectLevelReadQuery()) {
+                ((ObjectLevelReadQuery) query).setAsOfClause(new AsOfSCNClause(QueryHintsHandler.parseIntegerHint(valueToApply, QueryHints.AS_OF_SCN)));
             } else {
                 throw new IllegalArgumentException(ExceptionLocalization.buildMessage("ejb30-wrong-type-for-query-hint",new Object[]{getQueryId(query), name, getPrintValue(valueToApply)}));
             }
@@ -726,6 +1124,21 @@ public class QueryHintsHandler {
         DatabaseQuery applyToDatabaseQuery(Object valueToApply, DatabaseQuery query) {
             if (query.isReadQuery()) {
                 ((ReadQuery) query).setMaxRows(QueryHintsHandler.parseIntegerHint(valueToApply, QueryHints.JDBC_MAX_ROWS));
+            } else {
+                throw new IllegalArgumentException(ExceptionLocalization.buildMessage("ejb30-wrong-type-for-query-hint",new Object[]{getQueryId(query), name, getPrintValue(valueToApply)}));
+            }
+            return query;
+        }
+    }
+    
+    protected static class JDBCFirstResultHint extends Hint {
+        JDBCFirstResultHint() {
+            super(QueryHints.JDBC_FIRST_RESULT, "");
+        }
+    
+        DatabaseQuery applyToDatabaseQuery(Object valueToApply, DatabaseQuery query) {
+            if (query.isReadQuery()) {
+                ((ReadQuery) query).setFirstResult(QueryHintsHandler.parseIntegerHint(valueToApply, QueryHints.JDBC_FIRST_RESULT));
             } else {
                 throw new IllegalArgumentException(ExceptionLocalization.buildMessage("ejb30-wrong-type-for-query-hint",new Object[]{getQueryId(query), name, getPrintValue(valueToApply)}));
             }

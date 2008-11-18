@@ -531,7 +531,7 @@ public abstract class ObjectBuildingQuery extends ReadQuery {
      * ADVANCED:
      * If the user has isolated data and specified that the client session should
      * use an exclusive connection then by setting this condition to true
-     * TopLink will ensure that the query is executed through the exclusive
+     * EclipseLink will ensure that the query is executed through the exclusive
      * connection.  This may be required in certain cases.  An example being
      * where database security will prevent a query joining to a secure table
      * from returning the correct results when executed through the shared

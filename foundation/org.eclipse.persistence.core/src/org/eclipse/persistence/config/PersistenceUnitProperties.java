@@ -471,7 +471,7 @@ public class PersistenceUnitProperties {
     public static final String PERSISTENCE_CONTEXT_FLUSH_MODE = "eclipselink.persistence-context.flush-mode";
     
     /**
-     * This property is used to specify proxy type that should be passed to OarcleConnection.openProxySession method.
+     * This property is used to specify proxy type that should be passed to OracleConnection.openProxySession method.
      * Requires Oracle jdbc version 10.1.0.2 or later.
      * Requires Oracle9Platform or later as a database platform 
      * (TARGET_DATABASE property value should be TargetDatabase.Oracle9 or later).

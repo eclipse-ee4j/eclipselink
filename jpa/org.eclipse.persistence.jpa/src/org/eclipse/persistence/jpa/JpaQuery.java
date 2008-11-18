@@ -13,6 +13,8 @@
 package org.eclipse.persistence.jpa;
 
 import java.util.Collection;
+
+import org.eclipse.persistence.queries.Cursor;
 import org.eclipse.persistence.queries.DatabaseQuery;
 
 /**
@@ -25,7 +27,7 @@ public interface JpaQuery extends javax.persistence.Query {
 
     /**
      * PUBLIC:
-     * Return the cached database query for this EJBQueryImpl.  If the query is
+     * Return the cached database query for this query.  If the query is
      * a named query and it has not yet been looked up, the query will be looked up
      * and stored as the cached query.
      */
@@ -44,7 +46,14 @@ public interface JpaQuery extends javax.persistence.Query {
      * @return Collection of results
      */
     public Collection getResultCollection();
-
+    
+    /**
+     * PUBLIC:
+     * Non-standard method to return results of a ReadQuery that uses a Cursor.
+     * @return Cursor on results, either a CursoredStream, or ScrollableCursor
+     */
+    public Cursor getResultCursor();
+    
     /**
      * PUBLIC:
      * Replace the cached query with the given query.

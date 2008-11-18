@@ -19,6 +19,10 @@ package org.eclipse.persistence.config;
  * but is used after accessing the database to avoid re-building the objects and avoid
  * accessing the database for relationships.
  * 
+ * Cache usage can also be used for modify Update-All and Delete-All queries.
+ * For modify-all queries it effects how the cache is updated, either NoCache or Invalidate.
+ * By default modify-all queries invalidate the cache.
+ * 
  * The class contains all the valid values for QueryHints.CACHE_USAGE query hint.
  * 
  * <p>JPA Query Hint Usage:
@@ -68,6 +72,14 @@ public class CacheUsage {
      * This can only be used on queries that return a single set of entities.
      */
     public static final String  ConformResultsInUnitOfWork = "ConformResultsInUnitOfWork";
+    /**
+     * Configures a modify-all query to not invalidate the cache.
+     */
+    public static final String  NoCache = "NoCache";
+    /**
+     * Configures a modify-all query to invalidate the cache.
+     */
+    public static final String  Invalidate = "Invalidate";
  
     public static final String DEFAULT = UseEntityDefault;
 }
