@@ -91,26 +91,26 @@
      <!-- call upload for each artifact we want to upload -->
         <antcall target="upload-artifact">
             <param name="artifactId" value="org.eclipse.persistence.core"/>
-            <param name="artifact" value="${eclipselink.core.base}/${plugins.dir}/${eclipselink.core.bndl.prefix}_${version.string}.jar"/>
-            <param name="artifactSrc" value="${eclipselink.core.base}/${plugins.dir}/${eclipselink.core.bndl.prefix}.source_${version.string}.jar"/>
+            <param name="artifact" value="${eclipselink.plugins}/${eclipselink.core.bndl.prefix}_${version.string}.jar"/>
+            <param name="artifactSrc" value="${eclipselink.plugins}/${eclipselink.core.bndl.prefix}.source_${version.string}.jar"/>
             <param name="artifactName" value="EclipseLink Core"/>
         </antcall>
         <antcall target="upload-artifact">
             <param name="artifactId" value="org.eclipse.persistence.jpa"/>
-            <param name="artifact" value="${eclipselink.jpa.base}/${plugins.dir}/${eclipselink.jpa.bndl.prefix}_${version.string}.jar"/>
-            <param name="artifactSrc" value="${eclipselink.jpa.base}/${plugins.dir}/${eclipselink.jpa.bndl.prefix}.source_${version.string}.jar"/>
+            <param name="artifact" value="${eclipselink.plugins}/${eclipselink.jpa.bndl.prefix}_${version.string}.jar"/>
+            <param name="artifactSrc" value="${eclipselink.plugins}/${eclipselink.jpa.bndl.prefix}.source_${version.string}.jar"/>
             <param name="artifactName" value="EclipseLink JPA"/>
         </antcall>
         <antcall target="upload-artifact">
             <param name="artifactId" value="org.eclipse.persistence.moxy"/>
-            <param name="artifact" value="${eclipselink.moxy.base}/${plugins.dir}/${eclipselink.moxy.bndl.prefix}_${version.string}.jar"/>
-            <param name="artifactSrc" value="${eclipselink.moxy.base}/${plugins.dir}/${eclipselink.moxy.bndl.prefix}.source_${version.string}.jar"/>
+            <param name="artifact" value="${eclipselink.plugins}/${eclipselink.moxy.bndl.prefix}_${version.string}.jar"/>
+            <param name="artifactSrc" value="${eclipselink.plugins}/${eclipselink.moxy.bndl.prefix}.source_${version.string}.jar"/>
             <param name="artifactName" value="EclipseLink Moxy"/>
         </antcall>
         <antcall target="upload-artifact">
             <param name="artifactId" value="org.eclipse.persistence.sdo"/>
-            <param name="artifact" value="${eclipselink.sdo.base}/${plugins.dir}/${eclipselink.sdo.bndl.prefix}_${version.string}.jar"/>
-            <param name="artifactSrc" value="${eclipselink.sdo.base}/${plugins.dir}/${eclipselink.sdo.bndl.prefix}.source_${version.string}.jar"/>
+            <param name="artifact" value="${eclipselink.plugins}/${eclipselink.sdo.bndl.prefix}_${version.string}.jar"/>
+            <param name="artifactSrc" value="${eclipselink.plugins}/${eclipselink.sdo.bndl.prefix}.source_${version.string}.jar"/>
             <param name="artifactName" value="EclipseLink SDO"/>
         </antcall>
         <antcall target="upload-artifact">
