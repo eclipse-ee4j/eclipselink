@@ -41,16 +41,16 @@
 <echo message="---- AutoBuild.xml ----"/>
 
     <target name="build-no-publish" description="Trigger an automated build without testing or publish"
-            depends="clean, build, package-bundles, build-test"
+            depends="clean, build"
     />
     <target name="build-nightly"    description="Trigger the nightly automated build and lrg tests"
-            depends="clean, build, package-bundles, build-test, test-lrg, publish-build, publish-results, test-for-errors"
+            depends="clean, build, test-lrg, publish-build, publish-results, test-for-errors"
     />
     <target name="build-milestone"  description="Trigger build, testing, and publishing of a milestone release ('release' is a milestone in this case)"
-            depends="clean, build, package-bundles, build-test, test-lrg, test-for-errors, create-tag, publish-build, publish-results"
+            depends="clean, build, test-lrg, test-for-errors, create-tag, publish-build, publish-results"
     />
     <target name="build-continuous" description="Trigger an automated build and run the tests if source changes exist"
-            depends="clean, build-no-javadoc, build-core-test, test-srg"
+            depends="clean, build-no-javadoc, test-srg"
     />
     <target name="publish-all"      description="Trigger just the publish targets"
             depends="init, publish-build, publish-results"
@@ -260,26 +260,16 @@
         <ant antfile="build.xml" dir="${build.root.dir}" target="build"/>
     </target>
 
-    <target name="package-bundles" depends="get-dependencies">
-        <ant antfile="build.xml" dir="${build.root.dir}" target="package-eclipselink-bundles"/>
-    </target>
-
     <target name="build-test" depends="get-dependencies">
-        <!-- Generate Test properties file -->
-        <echo message="# Generated db connection properties (by bootstrap.xml)${line.separator}" file="${coretest.prop.file}" append="false"/>
-        <echo message="jdbc.driver.jar=${jdbc.driver.jar}${line.separator}" file="${coretest.prop.file}" append="true"/>
-        <echo message="db.driver=${db.driver}${line.separator}"             file="${coretest.prop.file}" append="true"/>
-        <echo message="db.url=${db.url}${line.separator}"                   file="${coretest.prop.file}" append="true"/>
-        <echo message="db.user=${db.user}${line.separator}"                 file="${coretest.prop.file}" append="true"/>
-        <echo message="db.pwd=${db.pwd}${line.separator}"                   file="${coretest.prop.file}" append="true"/>
-        <echo message="db.platform=${db.platform}${line.separator}"         file="${coretest.prop.file}" append="true"/>
-
         <!-- Builds all tests including MW tests (needed for nightly compile verification even if they aren't run) -->
         <ant antfile="build.xml" dir="${build.root.dir}" target="build-test"/>
-        <!-- delete file="${coretest.prop.file}"/ -->
     </target>
 
     <target name="build-core-test" depends="get-dependencies">
+        <ant antfile="build.xml" dir="${build.root.dir}" target="build-core-test"/>
+    </target>
+
+    <target name="test-srg">
         <!-- Generate Test properties file -->
         <echo message="# Generated db connection properties (by bootstrap.xml)${line.separator}" file="${coretest.prop.file}" append="false"/>
         <echo message="jdbc.driver.jar=${jdbc.driver.jar}${line.separator}" file="${coretest.prop.file}" append="true"/>
@@ -289,20 +279,26 @@
         <echo message="db.pwd=${db.pwd}${line.separator}"                   file="${coretest.prop.file}" append="true"/>
         <echo message="db.platform=${db.platform}${line.separator}"         file="${coretest.prop.file}" append="true"/>
 
-        <ant antfile="build.xml" dir="${build.root.dir}" target="build-core-test"/>
-        <!-- delete file="${coretest.prop.file}"/ -->
-    </target>
-
-    <target name="test-srg">
         <ant antfile="build.xml" dir="${build.root.dir}" target="test-srg">
             <property name="eclipselink.logging.level" value="${test.logging.level}"/>
         </ant>
+        <!-- delete file="${coretest.prop.file}"/ -->
     </target>
 
     <target name="test-lrg">
+        <!-- Generate Test properties file -->
+        <echo message="# Generated db connection properties (by bootstrap.xml)${line.separator}" file="${coretest.prop.file}" append="false"/>
+        <echo message="jdbc.driver.jar=${jdbc.driver.jar}${line.separator}" file="${coretest.prop.file}" append="true"/>
+        <echo message="db.driver=${db.driver}${line.separator}"             file="${coretest.prop.file}" append="true"/>
+        <echo message="db.url=${db.url}${line.separator}"                   file="${coretest.prop.file}" append="true"/>
+        <echo message="db.user=${db.user}${line.separator}"                 file="${coretest.prop.file}" append="true"/>
+        <echo message="db.pwd=${db.pwd}${line.separator}"                   file="${coretest.prop.file}" append="true"/>
+        <echo message="db.platform=${db.platform}${line.separator}"         file="${coretest.prop.file}" append="true"/>
+
         <ant antfile="build.xml" dir="${build.root.dir}" target="test-lrg">
             <property name="eclipselink.logging.level" value="${test.logging.level}"/>
         </ant>
+        <!-- delete file="${coretest.prop.file}"/ -->
     </target>
 
     <target name="publish-build">
