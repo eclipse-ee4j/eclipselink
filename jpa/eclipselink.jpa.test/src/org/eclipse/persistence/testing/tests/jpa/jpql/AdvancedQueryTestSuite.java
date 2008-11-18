@@ -89,6 +89,7 @@ public class AdvancedQueryTestSuite extends JUnitTestCase {
         suite.addTest(new AdvancedQueryTestSuite("testQueryExactPrimaryKeyCacheHits"));
         suite.addTest(new AdvancedQueryTestSuite("testQueryTypeCacheHits"));
         suite.addTest(new AdvancedQueryTestSuite("testQueryCache"));
+/* KERNEL-SRG-TEMP
         suite.addTest(new AdvancedQueryTestSuite("testQueryREADLock"));
         suite.addTest(new AdvancedQueryTestSuite("testQueryWRITELock"));
         suite.addTest(new AdvancedQueryTestSuite("testQueryOPTIMISTICLock"));
@@ -98,7 +99,7 @@ public class AdvancedQueryTestSuite extends JUnitTestCase {
         suite.addTest(new AdvancedQueryTestSuite("testQueryPESSIMISTIC_FORCE_INCREMENTLock"));
         // Temporary removal of JPA 2.0 dependency
         //suite.addTest(new AdvancedQueryTestSuite("testQueryPESSIMISTICTIMEOUTLock"));
-        
+*/        
         return suite;
     }
     
@@ -404,6 +405,7 @@ public class AdvancedQueryTestSuite extends JUnitTestCase {
         }
     }
     
+    /* // KERNEL_SRG_TEMP       
     public void testQueryREADLock(){
         // Cannot create parallel entity managers in the server.
         if (isOnServer()) {
@@ -791,5 +793,5 @@ public class AdvancedQueryTestSuite extends JUnitTestCase {
         
             assertFalse("Proper exception not thrown when Query with LockModeType.PESSIMISTIC is used.", lockTimeOutException == null);
         }
-    }
+    } */
 }

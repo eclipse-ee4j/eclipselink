@@ -73,11 +73,12 @@ import static org.eclipse.persistence.annotations.OptimisticLockingType.VERSION_
 	name="constuctFieldAccessEmployees",
 	query="SELECT new org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced.Employee(employee.firstName, employee.lastName) FROM Employee employee"
 ),
+/* KERNEL-SRG-TEMP
 @NamedQuery(
 	name="findFieldAccessEmployeeByPK",
 	lockMode=LockModeType.PESSIMISTIC,
 	query="SELECT OBJECT(employee) FROM Employee employee WHERE employee.id = :id"
-),
+), */
 @NamedQuery(
     name="findFieldAccessEmployeeByPostalCode",
     query="SELECT e FROM Employee e where e.address.postalCode = :postalCode"

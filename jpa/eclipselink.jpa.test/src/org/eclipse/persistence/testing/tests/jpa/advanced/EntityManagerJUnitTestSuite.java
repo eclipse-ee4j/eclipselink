@@ -163,8 +163,10 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         suite.addTest(new EntityManagerJUnitTestSuite("testSerializedLazy"));
         suite.addTest(new EntityManagerJUnitTestSuite("testCloneable"));
         suite.addTest(new EntityManagerJUnitTestSuite("testLeftJoinOneToOneQuery"));
+        /* KERNEL-SRG-TEMP
         suite.addTest(new EntityManagerJUnitTestSuite("testLockingLeftJoinOneToOneQuery"));
         suite.addTest(new EntityManagerJUnitTestSuite("testLockingLeftJoinOneToOneQuery2"));
+*/
         suite.addTest(new EntityManagerJUnitTestSuite("testNullifyAddressIn"));
         suite.addTest(new EntityManagerJUnitTestSuite("testQueryOnClosedEM"));
         suite.addTest(new EntityManagerJUnitTestSuite("testIncorrectBatchQueryHint"));
@@ -179,7 +181,9 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         suite.addTest(new EntityManagerJUnitTestSuite("testClose"));
         suite.addTest(new EntityManagerJUnitTestSuite("testPersistOnNonEntity"));
         suite.addTest(new EntityManagerJUnitTestSuite("testWRITELock"));
+        /* KERNEL-SRG-TEMP
         suite.addTest(new EntityManagerJUnitTestSuite("testOPTIMISTIC_FORCE_INCREMENTLock"));
+*/
         suite.addTest(new EntityManagerJUnitTestSuite("testReadTransactionIsolation_OriginalInCache_UpdateAll_Refresh_Flush"));
         suite.addTest(new EntityManagerJUnitTestSuite("testReadTransactionIsolation_OriginalInCache_UpdateAll_Refresh"));
         suite.addTest(new EntityManagerJUnitTestSuite("testReadTransactionIsolation_OriginalInCache_UpdateAll_Flush"));
@@ -205,6 +209,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         suite.addTest(new EntityManagerJUnitTestSuite("testPersistManagedNoException"));
         suite.addTest(new EntityManagerJUnitTestSuite("testPersistManagedException"));
         suite.addTest(new EntityManagerJUnitTestSuite("testPersistRemoved"));
+        /* KERNEL-SRG-TEMP
         suite.addTest(new EntityManagerJUnitTestSuite("testREADLock"));
         suite.addTest(new EntityManagerJUnitTestSuite("testOPTIMISTICLock"));
         // Temporary removal of JPA 2.0 dependency
@@ -215,6 +220,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         suite.addTest(new EntityManagerJUnitTestSuite("testRefreshOPTIMISTICLock"));
         // Temporary removal of JPA 2.0 dependency
         //suite.addTest(new EntityManagerJUnitTestSuite("testRefreshPESSIMISTICLock"));
+*/
         suite.addTest(new EntityManagerJUnitTestSuite("testIgnoreRemovedObjectsOnDatabaseSync"));
         suite.addTest(new EntityManagerJUnitTestSuite("testIdentityOutsideTransaction"));
         suite.addTest(new EntityManagerJUnitTestSuite("testIdentityInsideTransaction"));
@@ -334,6 +340,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         }
     }
 
+    /* // KERNEL_SRG_TEMP       
     public void testRefreshOPTIMISTICLock(){
         // Cannot create parallel entity managers in the server.
         if (! isOnServer()) {
@@ -355,7 +362,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
                 closeEntityManager(em);
                 throw ex;
             }
-            
+          
             EntityManager em2 = createEntityManager();
             Exception optimisticLockException = null;
             beginTransaction(em);
@@ -415,6 +422,8 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
             assertFalse("Proper exception not thrown when EntityManager.lock(object, OPTIMISTIC) is used.", optimisticLockException == null);
         }
     }
+    */
+    /* // KERNEL_SRG_TEMP       
     
     public void testRefreshPESSIMISTICLock() {
         ServerSession session = JUnitTestCase.getServerSession();
@@ -440,7 +449,6 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
             }
             
             Exception pessimisticLockException = null;
-            
             try {
                 beginTransaction(em);
                 dept = em.find(Department.class, dept.getId());
@@ -480,6 +488,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
             assertFalse("Proper exception not thrown when EntityManager.lock(object, PESSIMISTIC) is used.", pessimisticLockException == null);
         }
     }
+    */
     
     public void testRefreshRemoved() {
         // find an existing or create a new Employee
@@ -1058,6 +1067,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         commitTransaction(em);
     }
     
+    /* // KERNEL_SRG_TEMP       
     public void testREADLock(){
         // Cannot create parallel entity managers in the server.
         if (isOnServer()) {
@@ -1295,10 +1305,11 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
             assertFalse("Proper exception not thrown when EntityManager.lock(object, OPTIMISTIC) is used.", optimisticLockException == null);
         }
     }
-    
+    */
     /**
      * This test issues a LOCK and a LOCK NOWAIT.
      */
+    /* // KERNEL_SRG_TEMP       
     public void testPESSIMISTICLock() {
         ServerSession session = JUnitTestCase.getServerSession();
         
@@ -1455,7 +1466,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
             assertFalse("Proper exception not thrown when Query with LockModeType.PESSIMISTIC is used.", lockTimeOutException == null);
         }
     }
-    
+ */   
     // test for bug 4676587: 
     // CTS: AFTER A REMOVE THEN A PERSIST ON THE SAME ENTITY, CONTAINS RETURNS FALSE
     // The test performs persist, remove, persist sequence on a single object
@@ -4011,6 +4022,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         List results = em.createQuery("SELECT a FROM Employee e LEFT JOIN e.address a").getResultList();
         closeEntityManager(em);
     }
+    /* // KERNEL_SRG_TEMP       
     
     // Test multiple items from a report query. Will verify the version on
     // only one of the results.
@@ -4085,7 +4097,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
             }
         }
     }
-
+*/
     // Test the clone method works correctly with lazy attributes.
     public void testCloneable() {
         EntityManager em = createEntityManager();

@@ -746,6 +746,7 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
      * 2 - That a default persistence unit lock timeout value is correctly
      * processed and utilized.
      */
+    /* // KERNEL_SRG_TEMP       
     public void testPessimisticLockingNamedQuery() {
         ServerSession session = JUnitTestCase.getServerSession();
         
@@ -810,5 +811,6 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
             
             assertFalse("A lock timeout exception was not thrown (likely because the persistence unit lock timeout default property was not processed).", lockTimeoutException == null);
         }
-    }
+        
+    } */
 }
