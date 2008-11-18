@@ -230,11 +230,11 @@
     <target name="package-eclipselink-bundles">
         <delete file="${eclipselink.plugins.install.prefix}${eclipselink.zip.suffix}"/>
         <copy file="${eclipselink.extension.oracle.dir}/${eclipselink.extension.oracle.bndl.prefix}.jar"
-            tofile="${eclipselink.plugins}/${eclipselink.extension.oracle.bndl.prefix}-${version.string}.jar"
+            tofile="${eclipselink.plugins}/${eclipselink.extension.oracle.bndl.prefix}_${version.string}.jar"
             failonerror="false"
         />
         <copy file="${eclipselink.extension.oracle.dir}/${eclipselink.extension.oracle.bndl.prefix}.source.jar"
-            tofile="${eclipselink.plugins}/${eclipselink.extension.oracle.bndl.prefix}.source-${version.string}.jar"
+            tofile="${eclipselink.plugins}/${eclipselink.extension.oracle.bndl.prefix}.source_${version.string}.jar"
             failonerror="false"
         />
         <zip destfile="${eclipselink.plugins.install.prefix}${eclipselink.zip.suffix}">
