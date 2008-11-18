@@ -155,6 +155,7 @@
         <delete file="${eclipselink.tst.src.prefix}${eclipselink.zip.suffix}"/>
         <delete file="${eclipselink.javadoc.install.prefix}${eclipselink.zip.suffix}"/>
         <delete file="${eclipselink.install.prefix}${eclipselink.zip.suffix}"/>
+        <delete file="${eclipselink.plugins}/${eclipselink.extension.oracle.bndl.prefix}*.jar"/>
     </target>
 
     <!-- Compiles all components (excluding Tests, Oracle extensions). -->
