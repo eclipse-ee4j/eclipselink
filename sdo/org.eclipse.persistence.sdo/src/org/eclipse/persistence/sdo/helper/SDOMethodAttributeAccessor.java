@@ -19,12 +19,11 @@ import org.eclipse.persistence.sdo.SDODataObject;
 import org.eclipse.persistence.sdo.SDOProperty;
 import org.eclipse.persistence.exceptions.DescriptorException;
 import org.eclipse.persistence.internal.descriptors.MethodAttributeAccessor;
-import org.eclipse.persistence.mappings.AttributeAccessor;
 
 /**
  * <p><b>Purpose</b>: A wrapper class for handling cases when the domain object attributes are
  * to be accessed thru the accessor methods that are called "get" and "set". This is to be used
- * when marsalling/unmarshalling SDODataObjects. The propertyName is the name of the property on
+ * when marshalling/unmarshalling SDODataObjects. The propertyName is the name of the property on
  * the DataObject and that must be set on this accessor.
  */
 public class SDOMethodAttributeAccessor extends MethodAttributeAccessor {
@@ -74,7 +73,7 @@ public class SDOMethodAttributeAccessor extends MethodAttributeAccessor {
     }
 
     /**
-     * INTERNAL:   
+     * INTERNAL:
      */
     public boolean isMethodAttributeAccessor() {
         return true;
@@ -89,14 +88,14 @@ public class SDOMethodAttributeAccessor extends MethodAttributeAccessor {
     }
 
    /**
-     * INTERNAL:   
+     * INTERNAL:
      */
     public void setProperty(Property property) {
         this.property = (SDOProperty) property;
     }
 
     /**
-     * INTERNAL:   
+     * INTERNAL:
      */
     public Property getProperty() {
         return property;
@@ -105,7 +104,7 @@ public class SDOMethodAttributeAccessor extends MethodAttributeAccessor {
     public Class getGetMethodReturnType() {
         return attributeClass;
     }
-    
+
     public Class getSetMethodParameterType() {
         return attributeClass;
     }
