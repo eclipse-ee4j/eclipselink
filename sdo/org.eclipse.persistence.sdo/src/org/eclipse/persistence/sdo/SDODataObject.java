@@ -91,24 +91,28 @@ public class SDODataObject implements DataObject, SequencedObject {
     private static Class pluggableClass;
 
     static {
-        try {
-            String pluggableClassName = System.getProperty(SDOConstants.SDO_PLUGGABLE_MAP_IMPL_CLASS_KEY,//
-                                                           SDOConstants.SDO_PLUGGABLE_MAP_IMPL_CLASS_VALUE);
-            if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) {
-                try {
-                    pluggableClass = (Class)AccessController.doPrivileged(new PrivilegedClassForName(pluggableClassName));
-                } catch (PrivilegedActionException ex) {
-                    if (ex.getCause() instanceof ClassNotFoundException) {
-                        throw (ClassNotFoundException)ex.getCause();
+        String pluggableClassName = System.getProperty(SDOConstants.SDO_PLUGGABLE_MAP_IMPL_CLASS_KEY,//
+                SDOConstants.SDO_PLUGGABLE_MAP_IMPL_CLASS_VALUE);
+        if(SDOConstants.SDO_PLUGGABLE_MAP_IMPL_CLASS_VALUE.equals(pluggableClassName)) {
+            pluggableClass = DefaultValueStore.class;
+        } else {
+            try {
+                if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) {
+                    try {
+                        pluggableClass = (Class)AccessController.doPrivileged(new PrivilegedClassForName(pluggableClassName));
+                    } catch (PrivilegedActionException ex) {
+                        if (ex.getCause() instanceof ClassNotFoundException) {
+                            throw (ClassNotFoundException)ex.getCause();
+                        }
+                        throw (RuntimeException)ex.getCause();
                     }
-                    throw (RuntimeException)ex.getCause();
+                } else {
+                    pluggableClass = PrivilegedAccessHelper.getClassForName(pluggableClassName);
                 }
-            } else {
-                pluggableClass = PrivilegedAccessHelper.getClassForName(pluggableClassName);
+            } catch (ClassNotFoundException cnfe) {
+                // TODO: throw or propagate these properly
+                throw new IllegalArgumentException(cnfe.getMessage());
             }
-        } catch (ClassNotFoundException cnfe) {
-            // TODO: throw or propagate these properly
-            throw new IllegalArgumentException(cnfe.getMessage());
         }
     }
 

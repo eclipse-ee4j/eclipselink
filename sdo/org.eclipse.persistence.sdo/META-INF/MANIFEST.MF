@@ -5,8 +5,7 @@ Bundle-SymbolicName: org.eclipse.persistence.sdo
 Bundle-Version: 1.0.2
 Require-Bundle: org.eclipse.persistence.core;bundle-version="[1.0.0,2.0.0)";visibility:=reexport,
  org.eclipse.persistence.asm;bundle-version="[1.0.0,2.0.0)"
-Export-Package: commonj.sdo.impl,
- org.eclipse.persistence.sdo,
+Export-Package: org.eclipse.persistence.sdo,
  org.eclipse.persistence.sdo.helper,
  org.eclipse.persistence.sdo.helper.delegates,
  org.eclipse.persistence.sdo.helper.extension,
