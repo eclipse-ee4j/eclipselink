@@ -2863,15 +2863,15 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         
         // make sure no Employee with the specified firstName exists.
         EntityManager em = createEntityManager();
-        Query deleteQuery = em.createQuery("DELETE FROM Employee e WHERE e.firstName = '"+firstName+"'");        
         beginTransaction(em);
         try{
-            deleteQuery.executeUpdate();
+            em.createQuery("DELETE FROM Employee e WHERE e.firstName = '"+firstName+"'").executeUpdate();
             commitTransaction(em);
         }catch (RuntimeException ex){
             if (isTransactionActive(em)){
                 rollbackTransaction(em);
             }
+            closeEntityManager(em);
             throw ex;
         }
         clearCache();
@@ -2892,6 +2892,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
             if (isTransactionActive(em)){
                 rollbackTransaction(em);
             }
+            closeEntityManager(em);
             throw ex;
         }
         
@@ -2950,6 +2951,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
             if (isTransactionActive(em)){
                 rollbackTransaction(em);
             }
+            closeEntityManager(em);
             if (Error.class.isAssignableFrom(ex.getClass())){
                 throw (Error)ex;
             }else{
@@ -2966,18 +2968,18 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         employeeFoundAfterTransaction = em2.find(Employee.class, employeeUOW.getId());
         assertTrue("employeeFoundAfterTransaction().getLastName()=="+ employeeFoundAfterTransaction.getLastName() +"; " + lastNameNew + " was expected", employeeFoundAfterTransaction.getLastName().equals(lastNameNew));
         assertTrue("employeeFoundAfterTransaction().getSalary()=="+ employeeFoundAfterTransaction.getSalary() +"; " + salaryNew + " was expected", employeeFoundAfterTransaction.getSalary() == salaryNew);
-        //em2.close();
+        closeEntityManager(em2);
         
         // clean up
         beginTransaction(em);
         try{
-            deleteQuery.executeUpdate();
+            em.createQuery("DELETE FROM Employee e WHERE e.firstName = '"+firstName+"'").executeUpdate();
             commitTransaction(em);
         }catch (RuntimeException ex){
             if (isTransactionActive(em)){
                 rollbackTransaction(em);
             }
-            closeEntityManager(em2);
+            closeEntityManager(em);
             throw ex;
         }
         clearCache();
@@ -3000,12 +3002,11 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         empWithoutAddress.setLastName("WithoutAddress");
 
         EntityManager em = createEntityManager();
-        Query deleteQuery = em.createQuery("DELETE FROM Employee e WHERE e.firstName = '"+firstName+"'");
 
         // make sure no Employee with the specified firstName exists.
         beginTransaction(em);
         try{
-            deleteQuery.executeUpdate();
+            em.createQuery("DELETE FROM Employee e WHERE e.firstName = '"+firstName+"'").executeUpdate();
             commitTransaction(em);
         }catch (RuntimeException ex){
             if (isTransactionActive(em)){
@@ -3085,8 +3086,9 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
 
         // clean up
         beginTransaction(em);
-        deleteQuery.executeUpdate();
+        em.createQuery("DELETE FROM Employee e WHERE e.firstName = '"+firstName+"'").executeUpdate();
         commitTransaction(em);
+        closeEntityManager(em);
     }
     
     public void testWRITELock(){
