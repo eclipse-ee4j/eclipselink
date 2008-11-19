@@ -179,8 +179,7 @@
     <!-- Compiles Oracle extensions and tests. -->
     <target name="build-oracle-extension">
         <ant antfile="build.xml" dir="${eclipselink.extension.oracle}"      target="build"/>
-        <!-- ant antfile="build.xml" dir="${eclipselink.extension.oracle.test}" target="build"/ -->
-        <ant antfile="${eclipselink.extension.oracle.test}/build.xml" target="all"/>
+        <ant antfile="build.xml" dir="${eclipselink.extension.oracle.test}" inheritAll="false" target="all"/>
     </target>
 
     <!-- Compiles tests (excluding workbench, dbws, and Oracle extensions). -->
