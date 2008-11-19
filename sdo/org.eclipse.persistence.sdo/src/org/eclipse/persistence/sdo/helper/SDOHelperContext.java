@@ -157,20 +157,7 @@ public class SDOHelperContext implements HelperContext {
         }
         return hCtx;
     }
-    
-    /**
-     * ADVANCED:
-     * Reset the HelperContext for the current application if one exists.
-     * 
-     */
-    public static void resetHelperContext() {
-        Object key = getDelegateMapKey();
-        HelperContext hCtx = helperContexts.get(key);
-        if (hCtx != null) {
-            ((SDOHelperContext)hCtx).reset();
-        }        
-    }
-    
+  
     /**
      * INTERNAL:
      * This method will return the key to be used to store/retrieve the delegates
@@ -212,6 +199,9 @@ public class SDOHelperContext implements HelperContext {
                 try {
                     Method getMethod = PrivilegedAccessHelper.getPublicMethod(executeThread.getClass(), WLS_APPLICATION_NAME_GET_METHOD_NAME, PARAMETER_TYPES, false);
                     delegateKey = PrivilegedAccessHelper.invokeMethod(getMethod, executeThread);
+                    if (delegateKey == null) {
+                        delegateKey = classLoader;
+                    }
                 } catch (Exception e) {}
             }
         }        

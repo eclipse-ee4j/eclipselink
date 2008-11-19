@@ -135,19 +135,16 @@ public class SDOTestCase extends junit.framework.TestCase {
             e.printStackTrace();
         }
         
-        if (customContext) {
-            ((SDOHelperContext) aHelperContext).reset();
-        } else {
-            SDOHelperContext.resetHelperContext();
-        }
+        ((SDOTypeHelper) typeHelper).reset();
+        ((SDOXMLHelper) xmlHelper).reset();
+        ((SDOXSDHelper) xsdHelper).reset();
     }
     
     public void tearDown() throws Exception {
-        if (customContext) {
-            ((SDOHelperContext) aHelperContext).reset();
-        } else {
-            SDOHelperContext.resetHelperContext();
-        }
+        
+        ((SDOTypeHelper) typeHelper).reset();
+        ((SDOXMLHelper) xmlHelper).reset();
+        ((SDOXSDHelper) xsdHelper).reset();
         
         typeHelper = null;
         xmlHelper = null;
