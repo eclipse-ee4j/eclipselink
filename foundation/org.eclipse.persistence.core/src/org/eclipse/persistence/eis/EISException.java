@@ -14,7 +14,6 @@ package org.eclipse.persistence.eis;
 
 import javax.resource.ResourceException;
 import org.eclipse.persistence.exceptions.i18n.ExceptionMessageGenerator;
-import org.eclipse.persistence.internal.helper.JavaPlatform;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.queries.Call;
 

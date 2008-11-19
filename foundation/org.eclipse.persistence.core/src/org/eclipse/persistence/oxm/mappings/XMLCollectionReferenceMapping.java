@@ -24,7 +24,6 @@ import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.exceptions.DatabaseException;
 import org.eclipse.persistence.exceptions.DescriptorException;
 import org.eclipse.persistence.internal.descriptors.ObjectBuilder;
-import org.eclipse.persistence.internal.helper.ClassConstants;
 import org.eclipse.persistence.internal.helper.NonSynchronizedVector;
 import org.eclipse.persistence.internal.oxm.Reference;
 import org.eclipse.persistence.internal.oxm.ReferenceResolver;

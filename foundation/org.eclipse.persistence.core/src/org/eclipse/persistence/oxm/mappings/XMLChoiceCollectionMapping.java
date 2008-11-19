@@ -25,7 +25,6 @@ import org.eclipse.persistence.exceptions.DatabaseException;
 import org.eclipse.persistence.exceptions.DescriptorException;
 import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.internal.descriptors.DescriptorIterator;
-import org.eclipse.persistence.internal.helper.ClassConstants;
 import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.oxm.XMLConversionManager;
 import org.eclipse.persistence.internal.queries.CollectionContainerPolicy;
