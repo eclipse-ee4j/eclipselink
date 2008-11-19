@@ -18,10 +18,6 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.TimeZone;
 
-// Java extension imports
-
-// EclipseLink imports
-
 /**
  * <p><b>INTERNAL:</b> <code>DateFormatThreadLocal<code> is a thread-safe helper class to handle 
  * DateFormat's
@@ -31,12 +27,12 @@ import java.util.TimeZone;
  */
 public class DateFormatThreadLocal extends ThreadLocal<DateFormat> {
 
-    protected SimpleDateFormat simpleDateFormat;
+    protected String formatStr;
     protected TimeZoneHolder timeZoneHolder;
     
     public DateFormatThreadLocal(String formatStr, TimeZoneHolder timeZoneHolder) {
         super();
-        simpleDateFormat = new SimpleDateFormat(formatStr);
+        this.formatStr = formatStr;
         this.timeZoneHolder = timeZoneHolder;
     }
   
@@ -44,17 +40,19 @@ public class DateFormatThreadLocal extends ThreadLocal<DateFormat> {
     public DateFormat get() {
         // check to see if the (cached-per-thread) simpleDateFormat should have its
         // timezone set from the timeZoneHolder
+        DateFormat simpleDateFormat = super.get();
         if (timeZoneHolder != null) {
           TimeZone tz = timeZoneHolder.getTimeZone();
           if (tz != null && !simpleDateFormat.getTimeZone().equals(tz)) {
               simpleDateFormat.setTimeZone(tz);
           }
         }
-        return super.get();
+        return simpleDateFormat;
     }
   
     @Override
     protected DateFormat initialValue() {
-        return simpleDateFormat;
+        SimpleDateFormat format = new SimpleDateFormat(formatStr);
+        return format;
     }
 }
