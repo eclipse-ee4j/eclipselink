@@ -30,7 +30,7 @@
     <!-- (should be set locally, and be destroyed upon return) -->
     <fail message="Not running from '${ant.project.name}' directory" unless="oracle.is.local"/>
 
-    <dirname  property="oracle.build.location" file="${ant.file.org.eclipse.persistence.core}"/>
+    <dirname  property="oracle.build.location" file="${ant.file.org.eclipse.persistence.oracle}"/>
     <condition property="oracle.2.common.plugins.dir" value="../../plugins" else="../plugins">
         <contains string="${oracle.build.location}" substring="oracle"/>
     </condition>
@@ -69,7 +69,7 @@
     <target name="clean" description="Clean all generated content">
         <delete includeEmptyDirs="true" failonerror="false">
             <fileset dir="${classes.dir}"/>
-            <fileset dir="${oracle.2.common.plugins.dir}" includes="${eclipselink.oracle.bndl.prefix}*.jar"/>
+            <fileset dir="${oracle.2.common.plugins.dir}" includes="${eclipselink.extension.oracle.bndl.prefix}*.jar"/>
         </delete>
     </target>
 

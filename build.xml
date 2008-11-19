@@ -73,13 +73,14 @@
     -->
 <project name="trunk" default="build" basedir=".">
 
-    <dirname  property="trunk.build.location" file="${ant.file.org.eclipse.persistence.core}"/>
+    <dirname  property="trunk.build.location" file="${ant.file.trunk}"/>
     <echo message="trunk.build.location = '${trunk.build.location}'"/>
     <property environment="env"/>
     <!-- Allows a user to overide certain user specific properties. -->
     <property file="${user.home}/build.properties"/>
-    <!-- Sets default junit.lib location to a static path -->
+    <!-- Sets default junit.lib and oracle.extensions.depend location to static paths -->
     <!-- temporary until all build files reworked -->
+    <property name="oracle.extensions.depend.dir" value="${trunk.build.location}/../extension.oracle.lib.external"/>
     <property name="junit.lib" value="${trunk.build.location}/../extension.lib.external/junit.jar"/>
     <echo message="junit.lib='${junit.lib}'"/>
     <property file="./build.properties"/>
