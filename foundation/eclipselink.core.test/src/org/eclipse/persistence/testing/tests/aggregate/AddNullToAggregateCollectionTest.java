@@ -37,11 +37,21 @@ public class AddNullToAggregateCollectionTest extends ComplexUpdateTest {
         commitParentUnitOfWork();
     }
 
+    public AddNullToAggregateCollectionTest(Builder originalObject) {
+        super(originalObject);
+        // The original problem was with compareForChange() called by
+        // mergeChangesIntoParent().  The following allows the latter to
+        // be executed prior to a write to the database, which would 
+        // just throw a null field exception, 
+        //preventing the recreation of the problem.
+        commitParentUnitOfWork();
+    }
+
     protected void changeObject() {
-        Agent agent = (Agent)this.workingCopy;
-        agent.getHouses().add(null);
+        Object object = this.workingCopy;
+        AgentBuilderHelper.getHouses(object).add(null);
         //Test nesting.
-        House house = (House)agent.getHouses().firstElement();
+        House house = (House)AgentBuilderHelper.getHouses(object).get(0);
         house.getSellingPoints().add(null);
         //CR#2896
         SellingPoint sellingPoint = new RoomSellingPoint();

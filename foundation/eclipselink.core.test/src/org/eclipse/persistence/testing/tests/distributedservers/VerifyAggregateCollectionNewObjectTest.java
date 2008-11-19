@@ -12,17 +12,19 @@
  ******************************************************************************/  
 package org.eclipse.persistence.testing.tests.distributedservers;
 
-import java.util.Vector;
+import java.util.List;
 
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.testing.framework.TestErrorException;
 import org.eclipse.persistence.testing.models.aggregate.Agent;
+import org.eclipse.persistence.testing.models.aggregate.Builder;
 import org.eclipse.persistence.testing.models.aggregate.Customer;
+import org.eclipse.persistence.testing.tests.aggregate.AgentBuilderHelper;
 
 
 /**
  * Tests that a removed aggregate object from a collection does not cause a nullPointerException
- *  when propogated to distributed cache (CR 4080)
+ *  when propagated to distributed cache (CR 4080)
  */
 public class VerifyAggregateCollectionNewObjectTest extends ComplexUpdateTest {
 
@@ -33,21 +35,19 @@ public class VerifyAggregateCollectionNewObjectTest extends ComplexUpdateTest {
     public VerifyAggregateCollectionNewObjectTest(Agent originalObject) {
         super(originalObject);
     }
+    public VerifyAggregateCollectionNewObjectTest(Builder originalObject) {
+        super(originalObject);
+    }
 
     protected void changeObject() {
-        if (this.workingCopy instanceof Agent) {
-            //trigger indirection;
-            this.distributedCopy = getObjectFromDistributedSession(this.query);
-            ((Agent)this.distributedCopy).getCustomers();
-            Agent agent = (Agent)this.workingCopy;
-            Vector customers = agent.getCustomers();
-            // cr 4155 do not trigger indirection here.  Merge should now handle it
-            Customer customerx = Customer.example3();
-            agent.addCustomer(customerx);
-
-        } else {
-            //do nothing for the time being
-        }
+        //trigger indirection;
+        this.distributedCopy = getObjectFromDistributedSession(this.query);
+        AgentBuilderHelper.getCustomers(this.distributedCopy);
+        Object object = this.workingCopy;
+        List customers = AgentBuilderHelper.getCustomers(object);
+        // cr 4155 do not trigger indirection here.  Merge should now handle it
+        Customer customerx = Customer.example3();
+        AgentBuilderHelper.addCustomer(object, customerx);
     }
 
     /**

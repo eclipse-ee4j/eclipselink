@@ -334,7 +334,7 @@ public class DescriptorEvent extends EventObject {
         }
         if (eventChangeSet != null) {
             eventChangeSet.removeChange(attributeName);
-            eventChangeSet.addChange(mapping.compareForChange(clone, ((UnitOfWorkImpl)getSession()).getBackupClone(clone), eventChangeSet, getSession()));
+            eventChangeSet.addChange(mapping.compareForChange(clone, ((UnitOfWorkImpl)getSession()).getBackupClone(clone, getDescriptor()), eventChangeSet, getSession()));
         }
     }
 

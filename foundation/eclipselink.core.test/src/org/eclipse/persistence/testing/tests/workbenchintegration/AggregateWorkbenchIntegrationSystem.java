@@ -22,7 +22,7 @@ public class AggregateWorkbenchIntegrationSystem extends AggregateSystem {
      * write XML.
      */
     public AggregateWorkbenchIntegrationSystem() {
-        super();
+        super(false);
         buildProject();
     }
 

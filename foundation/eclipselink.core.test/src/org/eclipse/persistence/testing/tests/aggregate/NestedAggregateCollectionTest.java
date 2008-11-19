@@ -15,21 +15,29 @@ package org.eclipse.persistence.testing.tests.aggregate;
 import org.eclipse.persistence.sessions.*;
 import org.eclipse.persistence.testing.framework.*;
 import org.eclipse.persistence.testing.models.aggregate.RoomSellingPoint;
-import org.eclipse.persistence.testing.models.aggregate.Agent;
 import org.eclipse.persistence.testing.models.aggregate.House;
 import org.eclipse.persistence.testing.models.aggregate.SellingPoint;
 
 /**
- * Test to make sure that the appropriate update is made when an aggregate using inheriance is
+ * Test to make sure that the appropriate update is made when an aggregate using inheritance is
  * changed from one subclass to another.
  * @author Tom Ware
  */
 public class NestedAggregateCollectionTest extends org.eclipse.persistence.testing.framework.AutoVerifyTestCase {
+    private Class cls;
     private String errorMessage = null;
     private UnitOfWork uow = null;
-    private Agent agent = null;
+    // that's either Agent or Builder
+    private Object object = null;
     private House house = null;
 
+    // Must be Agent or Builder.
+    public NestedAggregateCollectionTest(Class cls) {
+        super();
+        this.cls = cls;
+        setName(getName() + AgentBuilderHelper.getNameInBrackets(cls));
+    }
+    
     public void reset() {
         rollbackTransaction();
     }
@@ -97,7 +105,7 @@ public class NestedAggregateCollectionTest extends org.eclipse.persistence.testi
         DatabaseSession session = (DatabaseSession)getSession();
         session.getIdentityMapAccessor().initializeIdentityMaps();
         uow = session.acquireUnitOfWork();
-        agent = (Agent)uow.readObject(Agent.class);
-        house = (House)agent.getHouses().firstElement();
+        object = uow.readObject(cls);
+        house = (House)AgentBuilderHelper.getHouses(object).get(0);
     }
 }

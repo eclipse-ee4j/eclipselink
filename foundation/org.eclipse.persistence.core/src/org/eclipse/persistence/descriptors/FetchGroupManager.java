@@ -170,7 +170,7 @@ public class FetchGroupManager implements Cloneable {
     public void writePartialIntoClones(Object partialObject, Object workingClone, UnitOfWorkImpl uow) {
         FetchGroup fetchGroupInClone = ((FetchGroupTracker)workingClone)._persistence_getFetchGroup();
         FetchGroup fetchGroupInObject = ((FetchGroupTracker)partialObject)._persistence_getFetchGroup();
-        Object backupClone = uow.getBackupClone(workingClone);
+        Object backupClone = uow.getBackupClone(workingClone, descriptor);
 
         // Update fetch group in clone as the union of two,
         // do this first to avoid fetching during method access.

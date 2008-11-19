@@ -811,6 +811,18 @@ public class InheritancePolicy implements Serializable, Cloneable {
 
     /**
      * INTERNAL:
+     * Returns descriptor corresponding to the class owning the policy or its subclass - otherwise null.
+     */
+    public ClassDescriptor getDescriptor(Class theClass) {
+        if(getDescriptor().getJavaClass().equals(theClass)) {
+            return getDescriptor();
+        } else {
+            return getSubclassDescriptor(theClass);
+        }
+    }
+
+    /**
+     * INTERNAL:
      * return if we should use the descriptor inheritance to determine
      * if an object can be returned from the identity map or not.
      */
@@ -1249,8 +1261,8 @@ public class InheritancePolicy implements Serializable, Cloneable {
         }
 
         Vector rows = new Vector();
-        // joinedMappingIndexes contains Integer indexes corrsponding to the number of fields
-        // to which the query rference class is mapped, for instance:
+        // joinedMappingIndexes contains Integer indexes corresponding to the number of fields
+        // to which the query reference class is mapped, for instance:
         // referenceClass = SmallProject => joinedMappingIndexes(0) = 6;
         // referenceClass = LargeProject => joinedMappingIndexes(0) = 8;
         // This information should be preserved in the main query against the parent class,
@@ -1263,7 +1275,7 @@ public class InheritancePolicy implements Serializable, Cloneable {
         }
         for (Enumeration classesEnum = classes.elements(); classesEnum.hasMoreElements();) {
             Class concreteClass = (Class)classesEnum.nextElement();
-            ClassDescriptor concreteDescriptor = query.getSession().getDescriptor(concreteClass);
+            ClassDescriptor concreteDescriptor = getDescriptor(concreteClass);
             if (concreteDescriptor == null) {
                 throw QueryException.noDescriptorForClassFromInheritancePolicy(query, concreteClass);
             }
@@ -1348,7 +1360,7 @@ public class InheritancePolicy implements Serializable, Cloneable {
     /**
      * INTERNAL:
      * Select one row of any concrete subclass,
-     * This must use two selects, the first retreives the type field only.
+     * This must use two selects, the first retrieves the type field only.
      */
     protected AbstractRecord selectOneRowUsingDefaultMultipleTableSubclassRead(ReadObjectQuery query) throws DatabaseException, QueryException {
         // Get the row for the given class indicator field
@@ -1360,7 +1372,7 @@ public class InheritancePolicy implements Serializable, Cloneable {
         }
 
         Class concreteClass = classFromRow(typeRow, query.getSession());
-        ClassDescriptor concreteDescriptor = query.getSession().getDescriptor(concreteClass);
+        ClassDescriptor concreteDescriptor = getDescriptor(concreteClass);
         if (concreteDescriptor == null) {
             throw QueryException.noDescriptorForClassFromInheritancePolicy(query, concreteClass);
         }

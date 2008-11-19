@@ -51,7 +51,7 @@ public class DeferredChangeDetectionPolicy implements ObjectChangePolicy, java.i
      * PERF: Calculate change for the new object, avoids check for new since already know.
      */
     public ObjectChangeSet calculateChangesForExistingObject(Object clone, UnitOfWorkChangeSet changeSet, UnitOfWorkImpl unitOfWork, ClassDescriptor descriptor, boolean shouldRaiseEvent) {
-        return calculateChanges(clone, unitOfWork.getBackupClone(clone), false, changeSet, unitOfWork, descriptor, shouldRaiseEvent);
+        return calculateChanges(clone, unitOfWork.getBackupClone(clone, descriptor), false, changeSet, unitOfWork, descriptor, shouldRaiseEvent);
     }
     
     /**
@@ -137,7 +137,7 @@ public class DeferredChangeDetectionPolicy implements ObjectChangePolicy, java.i
         }
 
         // PERF: Do not create change records for new objects.
-        if (!isNew || descriptor.shouldUseFullChangeSetsForNewObjects() || descriptor.isAggregateDescriptor()) {
+        if (!isNew || descriptor.shouldUseFullChangeSetsForNewObjects() || descriptor.isAggregateDescriptor() || descriptor.isAggregateCollectionDescriptor()) {
             // PERF: Avoid synchronized enumerator as is concurrency bottleneck.
             List mappings = descriptor.getMappings();
             int mappingsSize = mappings.size();

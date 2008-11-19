@@ -1199,7 +1199,7 @@ public class SQLSelectStatement extends SQLStatement {
                 Class queryClass = builder.getQueryClass();
                 // GF 2333 Only change the descriptor class if it is not set, or if this is an inheritance query
                 if ((queryClass == null) || descriptor.isChildDescriptor()) {
-                    builder.setQueryClass(descriptor.getJavaClass());
+                    builder.setQueryClassAndDescriptor(descriptor.getJavaClass(), descriptor);
                 }
             }
         }

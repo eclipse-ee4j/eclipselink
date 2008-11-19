@@ -33,8 +33,8 @@ public class EmployeeWithProblems extends org.eclipse.persistence.testing.models
     /** One-to-one mapping (same class relationship), employee references its manager through a foreign key. */
     public EmployeeWithProblems managerWithProblems; //used to test TL-144
 
-    /** Aggregate-object mapping, stores the object in the employee's table. */
-    public Vector periodWithProblems; //used to test TL-153 
+    /** Aggregate-collection mapping. */
+    public Vector addressesWithProblems; //used to test TL-153 
 
     public String notMapped; //used to test TL-45
 
@@ -69,7 +69,7 @@ public class EmployeeWithProblems extends org.eclipse.persistence.testing.models
         // 	this.addressWithProblems = new org.eclipse.persistence.testing.models.employee.domain.Address();//new ValueHolder();//initilized to null to cause error
         //  	this.managedEmployeesWithProblems = new Vector();
         //    this.managerWithProblems = null;
-        this.periodWithProblems = new Vector();
+        this.addressesWithProblems = new Vector();
         this.courses = new Vector();
     }
     //this method returns void (instead of Time[]) to produce the error (TL-ERROR 81)

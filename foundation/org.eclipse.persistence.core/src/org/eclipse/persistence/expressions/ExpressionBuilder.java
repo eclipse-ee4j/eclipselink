@@ -369,6 +369,15 @@ public class ExpressionBuilder extends ObjectExpression {
 
     /**
      * INTERNAL:
+     * Set the class and descriptor which this node represents.
+     */
+    public void setQueryClassAndDescriptor(Class queryClass, ClassDescriptor descriptor) {
+        this.queryClass = queryClass;
+        this.descriptor = descriptor;
+    }
+
+    /**
+     * INTERNAL:
      * Set the session in which we expect this expression to be translated.
      */
     public void setSession(AbstractSession session) {

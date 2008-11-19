@@ -589,16 +589,20 @@ public class OneToOneMapping extends ObjectReferenceMapping implements Relationa
      * The foreign keys primary keys are stored as database fields in the hashtable.
      */
     protected void initializeForeignKeys(AbstractSession session) {
-        Iterator iterator = new HashMap(getSourceToTargetKeyFields()).entrySet().iterator();
+        HashMap<DatabaseField, DatabaseField> newSourceToTargetKeyFields = new HashMap(getSourceToTargetKeyFields().size());
+        HashMap<DatabaseField, DatabaseField> newTargetToSourceKeyFields = new HashMap(getTargetToSourceKeyFields().size());
+        Iterator<Map.Entry<DatabaseField, DatabaseField>> iterator = getSourceToTargetKeyFields().entrySet().iterator();
         while (iterator.hasNext()) {
-            Map.Entry entry = (Map.Entry)iterator.next();
-            DatabaseField sourceField = (DatabaseField)entry.getKey();
+            Map.Entry<DatabaseField, DatabaseField> entry = (Map.Entry)iterator.next();
+            DatabaseField sourceField = entry.getKey();
             sourceField = getDescriptor().buildField(sourceField);
-            DatabaseField targetField = (DatabaseField)entry.getValue();
+            DatabaseField targetField = entry.getValue();
             targetField = getReferenceDescriptor().buildField(targetField);
-            getSourceToTargetKeyFields().put(sourceField, targetField);
-            getTargetToSourceKeyFields().put(targetField, sourceField);
+            newSourceToTargetKeyFields.put(sourceField, targetField);
+            newTargetToSourceKeyFields.put(targetField, sourceField);
         }
+        setSourceToTargetKeyFields(newSourceToTargetKeyFields);
+        setTargetToSourceKeyFields(newTargetToSourceKeyFields);
     }
 
     /**
@@ -619,6 +623,8 @@ public class OneToOneMapping extends ObjectReferenceMapping implements Relationa
             //grab the only element out of the Hashtable
             DatabaseField sourceField = getSourceToTargetKeyFields().keySet().iterator().next();
             sourceField = getDescriptor().buildField(sourceField);
+            getSourceToTargetKeyFields().clear();
+            getTargetToSourceKeyFields().clear();
             getSourceToTargetKeyFields().put(sourceField, targetKeys.get(0));
             getTargetToSourceKeyFields().put(targetKeys.get(0), sourceField);
         } else {
@@ -634,6 +640,8 @@ public class OneToOneMapping extends ObjectReferenceMapping implements Relationa
             //grab the only element out of the Hashtable
             DatabaseField targetField = getTargetToSourceKeyFields().keySet().iterator().next();
             targetField = getReferenceDescriptor().buildField(targetField);
+            getSourceToTargetKeyFields().clear();
+            getTargetToSourceKeyFields().clear();
             getTargetToSourceKeyFields().put(targetField, sourceKeys.get(0));
             getSourceToTargetKeyFields().put(sourceKeys.get(0), targetField);
         }

@@ -16,33 +16,39 @@ import org.eclipse.persistence.testing.framework.*;
 import org.eclipse.persistence.sessions.*;
 import org.eclipse.persistence.mappings.*;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
-import org.eclipse.persistence.testing.models.aggregate.Agent;
 import org.eclipse.persistence.testing.models.aggregate.Company;
 import org.eclipse.persistence.testing.models.aggregate.Customer;
 
 public class VerifyCascadeDelete extends TransactionalTestCase {
+    public Class cls;
     public Company company;
-    public Agent agent;
+    public Object object;
     private OneToOneMapping companyMapping;
     private boolean privateOwnedValue = false;
 
-    public VerifyCascadeDelete() {
+    // Must be Agent or Builder
+    public VerifyCascadeDelete(Class cls) {
+        super();
+        this.cls = cls;
+        setName(getName() + AgentBuilderHelper.getNameInBrackets(cls));
         setDescription("Verifies that deletes in an aggregate collections does not cascade to non-privately owned children");
     }
 
     public void setup() {
         super.setup();
-        ClassDescriptor customerDescriptor = (ClassDescriptor)getSession().getProject().getDescriptors().get(Customer.class);
+        // AggregateCollectionMapping descriptors now cloned - should be obtained from the parent descriptor (Agent or Builder).
+        ClassDescriptor parentDescriptor = getSession().getDescriptor(cls);
+        ClassDescriptor customerDescriptor = ((AggregateCollectionMapping)parentDescriptor.getMappingForAttributeName("customers")).getReferenceDescriptor();
         companyMapping = (OneToOneMapping)customerDescriptor.getMappingForAttributeName("company");
         privateOwnedValue = companyMapping.isPrivateOwned();
         companyMapping.setIsPrivateOwned(false);
-        java.util.Vector agents = getSession().readAllObjects(Agent.class);
+        java.util.List objects = getSession().readAllObjects(cls);
 
         // Find an agent with a customer.
-        for (int index = 0; index < agents.size(); index++) {
-            agent = (Agent)agents.get(index);
-            if (agent.getCustomers().size() > 0) {
-                company = ((Customer)agent.getCustomers().get(0)).getCompany();
+        for (int index = 0; index < objects.size(); index++) {
+            object = objects.get(index);
+            if (AgentBuilderHelper.getCustomers(object).size() > 0) {
+                company = ((Customer)AgentBuilderHelper.getCustomers(object).get(0)).getCompany();
                 // Found one.
                 break;
             }
@@ -51,8 +57,8 @@ public class VerifyCascadeDelete extends TransactionalTestCase {
 
     public void test() {
         UnitOfWork uow = getSession().acquireUnitOfWork();
-        Agent agentClone = (Agent)uow.readObject(agent);
-        agentClone.getCustomers().clear();
+        Object objectClone = uow.readObject(object);
+        AgentBuilderHelper.getCustomers(objectClone).clear();
         uow.commit();
     }
 

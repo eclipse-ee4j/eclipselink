@@ -36,7 +36,6 @@ public class ReferenceDescriptorIsNotAggreagteCollectionTest extends ExceptionTe
     public void test() {
         try {
             ((DatabaseSession)getSession()).addDescriptor(buildEmployeeDescriptor());
-            ((DatabaseSession)getSession()).addDescriptor(buildEmploymentPeriodDescriptor());
         } catch (EclipseLinkException exception) {
             caughtException = exception;
         }
@@ -73,64 +72,13 @@ public class ReferenceDescriptorIsNotAggreagteCollectionTest extends ExceptionTe
         descriptor.addMapping(idMapping);
 
 
-        org.eclipse.persistence.mappings.AggregateCollectionMapping periodMapping = new org.eclipse.persistence.mappings.AggregateCollectionMapping();
-        periodMapping.setAttributeName("periodWithProblems");
-        periodMapping.setReferenceClass(org.eclipse.persistence.testing.models.employee.domain.EmploymentPeriod.class);
-        //periodMapping.setIsNullAllowed(true);
-        periodMapping.setUsesIndirection(false);
-        periodMapping.setIsPrivateOwned(true);
-        periodMapping.setIsReadOnly(false);
-        descriptor.addMapping(periodMapping);
-        /*
-	// SECTION: AGGREGATECOLLECTIONMAPPING
-	org.eclipse.persistence.mappings.AggregateCollectionMapping aggregatecollectionmapping = new org.eclipse.persistence.mappings.AggregateCollectionMapping();
-	aggregatecollectionmapping.setAttributeName("phones");
-	aggregatecollectionmapping.setIsReadOnly(false );
-	aggregatecollectionmapping.setUsesIndirection(false);
-	aggregatecollectionmapping.setGetMethodName("getPhones");
-	aggregatecollectionmapping.setSetMethodName("setPhones");
-	aggregatecollectionmapping.setIsPrivateOwned(true);
-	aggregatecollectionmapping.setReferenceClass(org.eclipse.persistence.testing.models.insurance.Phone.class);
-	aggregatecollectionmapping.addTargetForeignKeyFieldName("INS_PHONE.HOLDER_SSN","HOLDER.SSN");
-	descriptor.addMapping(aggregatecollectionmapping);	
- */
-
-        return descriptor;
-    }
-
-    public RelationalDescriptor buildEmploymentPeriodDescriptor() {
-        RelationalDescriptor descriptor = new RelationalDescriptor();
-        descriptor.setJavaClass(org.eclipse.persistence.testing.models.employee.domain.EmploymentPeriod.class);
-
-        //if the following is missing then the correct error will occure.  
-        //  descriptor.descriptorIsAggregateCollection();
-
-        descriptor.addTableName("EMPLOYEE"); //added to prevent error tl-94
-        descriptor.addPrimaryKeyFieldName("EMPLOYEE.EMP_ID"); //added to prevent ERRROR 74 and 59
-        //added to prevent error - 46 
-        DirectToFieldMapping idMapping = new DirectToFieldMapping();
-        idMapping.setAttributeName("id");
-        idMapping.setFieldName("EMPLOYEE.EMP_ID");
-        descriptor.addMapping(idMapping);
-
-        // Descriptor properties.
-
-        // Query manager.
-
-        // Event manager.
-
-        // Mappings.
-        /*DirectToFieldMapping endDateMapping = new DirectToFieldMapping();
-	endDateMapping.setAttributeName("endDate");
-	endDateMapping.setFieldName("END_DATE");
-	descriptor.addMapping(endDateMapping);
-	
-	DirectToFieldMapping startDateMapping = new DirectToFieldMapping();
-	startDateMapping.setAttributeName("startDate");
-	startDateMapping.setFieldName("START_DATE");
-	descriptor.addMapping(startDateMapping);
-*/
-
+        org.eclipse.persistence.mappings.AggregateCollectionMapping addressesMapping = new org.eclipse.persistence.mappings.AggregateCollectionMapping();
+        addressesMapping.setAttributeName("addressesWithProblems");
+        addressesMapping.setReferenceClass(org.eclipse.persistence.testing.models.employee.domain.Address.class);
+        addressesMapping.setUsesIndirection(false);
+        addressesMapping.setIsPrivateOwned(true);
+        addressesMapping.setIsReadOnly(false);
+        descriptor.addMapping(addressesMapping);
 
         return descriptor;
     }

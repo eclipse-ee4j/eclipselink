@@ -304,7 +304,7 @@ public abstract class ContainerPolicy implements Cloneable, Serializable {
                             if (((UnitOfWorkImpl)session).isClassReadOnly(firstObject.getClass())) {
                                 backUpVersion = firstObject;
                             } else {
-                                backUpVersion = ((UnitOfWorkImpl)session).getBackupClone(firstObject);
+                                backUpVersion = ((UnitOfWorkImpl)session).getBackupClone(firstObject, referenceDescriptor);
                             }
                             
                             ObjectChangeSet changeSet = referenceDescriptor.getObjectBuilder().createObjectChangeSet(firstObject, (UnitOfWorkChangeSet) changeRecord.getOwner().getUOWChangeSet(), session);

@@ -18,15 +18,21 @@ import org.eclipse.persistence.queries.*;
 import org.eclipse.persistence.expressions.*;
 import org.eclipse.persistence.testing.framework.*;
 import org.eclipse.persistence.testing.models.aggregate.Agent;
+import org.eclipse.persistence.testing.models.aggregate.Builder;
 import org.eclipse.persistence.testing.models.aggregate.House;
 
 /**
  * Bug 2847621 - Test to ensure outer joins are working with aggregate collections
  */
 public class AggregateCollectionOuterJoinTest extends AutoVerifyTestCase {
-    protected Vector agents = null;
+    Class cls;
+    protected List objects = null;
 
-    public AggregateCollectionOuterJoinTest() {
+    // Must be either Agent or Builder
+    public AggregateCollectionOuterJoinTest(Class cls) {
+        super();
+        this.cls = cls;
+        setName(getName() + AgentBuilderHelper.getNameInBrackets(cls));
         setDescription("Tests that outer joins work with aggregate collections.");
     }
 
@@ -34,15 +40,21 @@ public class AggregateCollectionOuterJoinTest extends AutoVerifyTestCase {
         getSession().getIdentityMapAccessor().initializeIdentityMaps();
         beginTransaction();
         // insert two new agents.  One will satisfy my expression with the outer join, one will not
-        Agent bob = new Agent();
-        bob.setFirstName("Bob");
-        bob.setLastName("Smith");
-        Agent frank = new Agent();
-        frank.setFirstName("Frank");
-        frank.setLastName("Jones");
+        Object bob, frank;
+        if(Agent.class.equals(cls)) {
+            bob = new Agent();
+            frank = new Agent();
+        } else {
+            bob = new Builder();
+            frank = new Builder();
+        }
+        AgentBuilderHelper.setFirstName(bob, "Bob");
+        AgentBuilderHelper.setLastName(bob, "Smith");
+        AgentBuilderHelper.setFirstName(frank, "Frank");
+        AgentBuilderHelper.setLastName(frank, "Jones");
         House house = new House();
         house.setLocation("50 O'Connor St.");
-        frank.addHouse(house);
+        AgentBuilderHelper.addHouse(frank, house);
         UnitOfWork uow = getSession().acquireUnitOfWork();
         uow.registerObject(bob);
         uow.registerObject(frank);
@@ -51,17 +63,17 @@ public class AggregateCollectionOuterJoinTest extends AutoVerifyTestCase {
 
     public void test() {
         // Read using an outer join on an agent's houses houses.
-        ReadAllQuery query = new ReadAllQuery(Agent.class);
-        ExpressionBuilder agent = new ExpressionBuilder();
-        Expression exp = agent.get("firstName").equal("Bob");
-        exp = exp.or(agent.anyOfAllowingNone("houses").get("location").equal("435 Carling Ave."));
+        ReadAllQuery query = new ReadAllQuery(cls);
+        ExpressionBuilder object = new ExpressionBuilder();
+        Expression exp = object.get("firstName").equal("Bob");
+        exp = exp.or(object.anyOfAllowingNone("houses").get("location").equal("435 Carling Ave."));
         query.setSelectionCriteria(exp);
-        agents = (Vector)getSession().executeQuery(query);
+        objects = (List)getSession().executeQuery(query);
     }
 
     public void verify() {
         // We should get back the prepopulated agent plus one agent that was added in setup.
-        if (agents.size() != 2) {
+        if (objects.size() != 2) {
             throw new TestErrorException("Outer join is not working correctly with AggregateCollections.");
         }
     }

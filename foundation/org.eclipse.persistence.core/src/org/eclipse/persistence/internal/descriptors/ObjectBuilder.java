@@ -458,7 +458,7 @@ public class ObjectBuilder implements Cloneable, Serializable {
         ClassDescriptor concreteDescriptor = this.descriptor;
         if (concreteDescriptor.hasInheritance() && concreteDescriptor.getInheritancePolicy().shouldReadSubclasses()) {
             Class classValue = concreteDescriptor.getInheritancePolicy().classFromRow(databaseRow, session);
-            concreteDescriptor = session.getDescriptor(classValue);
+            concreteDescriptor = concreteDescriptor.getInheritancePolicy().getDescriptor(classValue);
             if ((concreteDescriptor == null) && query.hasPartialAttributeExpressions()) {
                 concreteDescriptor = this.descriptor;
             }
@@ -1895,6 +1895,9 @@ public class ObjectBuilder implements Cloneable, Serializable {
         ClassDescriptor descriptor = null;//this variable will be assigned in the final
 
         if (this.descriptor.hasInheritance() && (domainObject.getClass() != this.descriptor.getJavaClass()) && ((descriptor = session.getDescriptor(domainObject)).getJavaClass() != this.descriptor.getJavaClass())) {
+            if(descriptor.isAggregateCollectionDescriptor()) {
+                descriptor = this.descriptor.getInheritancePolicy().getDescriptor(descriptor.getJavaClass());
+            }
             return descriptor.getObjectBuilder().extractValueFromObjectForField(domainObject, field, session);
         } else {
             DatabaseMapping mapping = getMappingForField(field);
@@ -2347,6 +2350,17 @@ public class ObjectBuilder implements Cloneable, Serializable {
         createPrimaryKeyExpression(session);
 
         List primaryKeyfields = this.descriptor.getPrimaryKeyFields();
+        if(primaryKeyfields.isEmpty() && getDescriptor().isAggregateCollectionDescriptor()) {
+            // populate primaryKeys with all mapped fields found in the main table.
+            DatabaseTable defaultTable = getDescriptor().getDefaultTable();
+            Iterator<DatabaseField> it = getDescriptor().getFields().iterator();
+            while(it.hasNext()) {
+                DatabaseField field = it.next();
+                if(field.getTable().equals(defaultTable) && getMappingsByField().containsKey(field)) {
+                    primaryKeyfields.add(field);
+                }
+            }
+        }
 
         this.getPrimaryKeyMappings().clear();
         this.getNonPrimaryKeyMappings().clear();

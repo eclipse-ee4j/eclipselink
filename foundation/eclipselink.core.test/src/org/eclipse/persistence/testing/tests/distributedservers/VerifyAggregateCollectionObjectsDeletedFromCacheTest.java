@@ -12,13 +12,16 @@
  ******************************************************************************/  
 package org.eclipse.persistence.testing.tests.distributedservers;
 
+import java.util.List;
 import java.util.Vector;
 
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.testing.framework.TestErrorException;
 import org.eclipse.persistence.testing.models.aggregate.Agent;
+import org.eclipse.persistence.testing.models.aggregate.Builder;
 import org.eclipse.persistence.testing.models.aggregate.Customer;
 import org.eclipse.persistence.testing.models.aggregate.Dependant;
+import org.eclipse.persistence.testing.tests.aggregate.AgentBuilderHelper;
 
 
 /**
@@ -36,19 +39,18 @@ public class VerifyAggregateCollectionObjectsDeletedFromCacheTest extends Comple
         super(originalObject);
     }
 
+    public VerifyAggregateCollectionObjectsDeletedFromCacheTest(Builder originalObject) {
+        super(originalObject);
+    }
+
     protected void changeObject() {
-        if (this.workingCopy instanceof Agent) {
-            Agent agent = (Agent)this.workingCopy;
-            Vector customers = agent.getCustomers();
+        Object object = this.workingCopy;
+        List customers = AgentBuilderHelper.getCustomers(object);
 
-            Customer customerx = (Customer)customers.firstElement();
-            Vector dependants = customerx.getDependants();
-            customerx.removeDependant((Dependant)dependants.lastElement());
-            agent.removeCustomer((Customer)customers.lastElement());
-
-        } else {
-            //do nothing for the time being
-        }
+        Customer customerx = (Customer)customers.get(0);
+        Vector dependants = customerx.getDependants();
+        customerx.removeDependant((Dependant)dependants.lastElement());
+        AgentBuilderHelper.removeCustomer(object, (Customer)customers.get(customers.size()-1));
     }
 
     /**

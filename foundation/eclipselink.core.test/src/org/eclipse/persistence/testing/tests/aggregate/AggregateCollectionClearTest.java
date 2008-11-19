@@ -14,36 +14,37 @@ package org.eclipse.persistence.testing.tests.aggregate;
 
 import org.eclipse.persistence.testing.framework.*;
 import org.eclipse.persistence.sessions.*;
-import org.eclipse.persistence.testing.models.aggregate.Agent;
-import org.eclipse.persistence.testing.models.aggregate.Customer;
 
 public class AggregateCollectionClearTest extends TransactionalTestCase {
-    public Agent agent;
+    public Object object;
+    public Class cls;
 
-    public AggregateCollectionClearTest() {
+    public AggregateCollectionClearTest(Class cls) {
+        this.cls = cls;
+        setName(getName() + AgentBuilderHelper.getNameInBrackets(cls));
         setDescription("Verifies that when aggregate collections get cleared that the changes are merged.  CR 3013");
     }
 
     public void setup() {
         super.setup();
-        java.util.Vector agents = getSession().readAllObjects(Agent.class);
+        java.util.Vector objects = getSession().readAllObjects(cls);
         int index = 0;
-        while ((index < agents.size()) && ((agent == null) || (((Customer)agent.getCustomers().get(0)) == null))) {
-            agent = (Agent)agents.get(index);
+        while ((index < objects.size()) && ((object == null) || (AgentBuilderHelper.getCustomers(object).get(0) == null))) {
+            object = objects.get(index);
             ++index;
         }
     }
 
     public void test() {
         UnitOfWork uow = getSession().acquireUnitOfWork();
-        Agent agentClone = (Agent)uow.readObject(agent);
-        agentClone.getCustomers().clear();
+        Object objectClone = uow.readObject(object);
+        AgentBuilderHelper.getCustomers(objectClone).clear();
         uow.commit();
     }
 
     public void verify() {
-        Agent agent1 = (Agent)getSession().readObject(agent);
-        if (!agent1.getCustomers().isEmpty()) {
+        Object object1 = getSession().readObject(object);
+        if (!AgentBuilderHelper.getCustomers(object1).isEmpty()) {
             throw new TestErrorException("Did not merge change");
         }
     }

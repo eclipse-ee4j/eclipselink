@@ -15,6 +15,7 @@ package org.eclipse.persistence.testing.tests.expressions;
 import org.eclipse.persistence.testing.models.employee.domain.*;
 import org.eclipse.persistence.exceptions.*;
 import org.eclipse.persistence.expressions.*;
+import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.platform.database.*;
 import org.eclipse.persistence.queries.*;
 import org.eclipse.persistence.testing.models.collections.Restaurant;
@@ -195,13 +196,13 @@ public class ExpressionTestSuite extends TestSuite {
         addTest(test);
     }
 
-    private void addAggregeateCollectionJoinTest() {
+    private void addAggregeateCollectionJoinTest(Class cls) {
         ExpressionBuilder builder = new ExpressionBuilder();
         Expression expression = builder.anyOf("customers").anyOf("dependants").get("firstName").equal("Kyle");
 
-        ReadAllExpressionTest test = new ReadAllExpressionTest(org.eclipse.persistence.testing.models.aggregate.Agent.class, 1);
+        ReadAllExpressionTest test = new ReadAllExpressionTest(cls, 1);
         test.setExpression(expression);
-        test.setName("Aggregate Colection Join Test");
+        test.setName("Aggregate Colection Join Test " + Helper.getShortClassName(cls));
         test.setDescription("Test aggregate collection join with 2 anyOf clauses");
         addTest(test);
     }
@@ -1726,7 +1727,8 @@ public class ExpressionTestSuite extends TestSuite {
         addOneToOneObjectTest();
         addGetFunctionWithTwoArgumentsTest();
 
-        addAggregeateCollectionJoinTest();
+        addAggregeateCollectionJoinTest(org.eclipse.persistence.testing.models.aggregate.Agent.class);
+        addAggregeateCollectionJoinTest(org.eclipse.persistence.testing.models.aggregate.Builder.class);
         addTest(new InvalidQueryKeyFunctionExpressionTest(new ExpressionBuilder().get("appartments").isNull()));
 
         addConstantEqualConstantTest();

@@ -30,22 +30,22 @@ public class AggregateCollectionMultipleUoWTest extends WriteObjectTest {
         super(originalObject);
     }
 
-    protected void changeUnitOfWorkWorkingCopy1(Agent agent) {
-        agent.setLastName("Jackson");
-        Vector customers = agent.getCustomers();
-        Customer customer1 = (Customer)customers.firstElement();
+    protected void changeUnitOfWorkWorkingCopy1(Object object) {
+        AgentBuilderHelper.setLastName(object, "Jackson");
+        List customers = AgentBuilderHelper.getCustomers(object);
+        Customer customer1 = (Customer)customers.get(0);
         customer1.setName("Vince Carter");
         customer1.removeDependant((Dependant)customer1.getDependants().lastElement());
 
-        Vector houses = agent.getHouses();
-        House house2 = (House)houses.lastElement();
+        List houses = AgentBuilderHelper.getHouses(object);
+        House house2 = (House)houses.get(houses.size()-1);
         house2.setDescriptions("do not buy it, it collapses -:)");
     }
 
-    protected void changeUnitOfWorkWorkingCopy2(Agent agent) {
-        agent.setLastName("White");
-        Vector customers = agent.getCustomers();
-        Customer customer1 = (Customer)customers.firstElement();
+    protected void changeUnitOfWorkWorkingCopy2(Object object) {
+        AgentBuilderHelper.setLastName(object, "White");
+        List customers = AgentBuilderHelper.getCustomers(object);
+        Customer customer1 = (Customer)customers.get(0);
         customer1.setName("Tracy Martins");
         Customer newCustomer = new Customer();
         newCustomer.setIncome(753923);
@@ -53,25 +53,25 @@ public class AggregateCollectionMultipleUoWTest extends WriteObjectTest {
         newCustomer.setCompany(Company.example5());
         newCustomer.addDependant(new Dependant("Sue", 5));
         newCustomer.addDependant(new Dependant("David", 1));
-        agent.addCustomer(newCustomer);
+        AgentBuilderHelper.addCustomer(object, newCustomer);
         SingleHouse newHouse = new SingleHouse();
         newHouse.setLocation("123 Slater Street");
         newHouse.setDescriptions("every convinent to who works with The Object People");
         newHouse.setNumberOfGarages(3);
-        agent.addHouse(newHouse);
+        AgentBuilderHelper.addHouse(object, newHouse);
     }
 
-    protected void changeUnitOfWorkWorkingCopy3(Agent agent) {
-        agent.setFirstName("Johnie");
-        Customer customer1 = (Customer)agent.getCustomers().elementAt(2);
+    protected void changeUnitOfWorkWorkingCopy3(Object object) {
+        AgentBuilderHelper.setFirstName(object, "Johnie");
+        Customer customer1 = (Customer)AgentBuilderHelper.getCustomers(object).get(2);
         customer1.setName("James");
         customer1.removeDependant((Dependant)customer1.getDependants().firstElement());
         customer1.addDependant(new Dependant("Stevenson", 14));
-        agent.removeHouse((House)agent.getHouses().lastElement());
+        AgentBuilderHelper.removeHouse(object, (House)AgentBuilderHelper.getHouses(object).get(AgentBuilderHelper.getHouses(object).size()-1));
         House newHouse = new House();
         newHouse.setLocation("45 Mann Ave");
         newHouse.setDescriptions("Close to Ottawa U.");
-        agent.addHouse(newHouse);
+        AgentBuilderHelper.addHouse(object, newHouse);
     }
 
     protected void setup() {
@@ -82,20 +82,20 @@ public class AggregateCollectionMultipleUoWTest extends WriteObjectTest {
         try {
             // Acquire one unit of work
             unitOfWork1 = getSession().acquireUnitOfWork();
-            Agent agent = (Agent)unitOfWork1.registerObject(this.objectToBeWritten);
-            changeUnitOfWorkWorkingCopy1(agent);
+            Object object = unitOfWork1.registerObject(this.objectToBeWritten);
+            changeUnitOfWorkWorkingCopy1(object);
             //		unitOfWork1.commit();
             unitOfWork1.commitAndResume();
 
             /// Acquire nested unit of work
             UnitOfWork nestedUnitOfWork = unitOfWork1.acquireUnitOfWork();
-            Agent agentClone1 = (Agent)nestedUnitOfWork.registerObject(agent);
+            Object objectClone1 = nestedUnitOfWork.registerObject(object);
 
             /// Acquire nested nested unit of work
             UnitOfWork nestedNestedUnitOfWork = nestedUnitOfWork.acquireUnitOfWork();
-            Agent agentClone = (Agent)nestedNestedUnitOfWork.registerObject(agentClone1);
+            Object objectClone = nestedNestedUnitOfWork.registerObject(objectClone1);
 
-            changeUnitOfWorkWorkingCopy2(agentClone);
+            changeUnitOfWorkWorkingCopy2(objectClone);
             nestedNestedUnitOfWork.commit();
             nestedUnitOfWork.commit();
             unitOfWork1.commit();
@@ -109,8 +109,8 @@ public class AggregateCollectionMultipleUoWTest extends WriteObjectTest {
 
             // Acquire another unit of work
             unitOfWork2 = getSession().acquireUnitOfWork();
-            Agent agentClone2 = (Agent)unitOfWork2.readObject(Agent.class);
-            changeUnitOfWorkWorkingCopy3(agentClone2);
+            Object objectClone2 = unitOfWork2.readObject(originalObject.getClass());
+            changeUnitOfWorkWorkingCopy3(objectClone2);
             unitOfWork2.commit();
 
         } catch (org.eclipse.persistence.exceptions.OptimisticLockException ex) {

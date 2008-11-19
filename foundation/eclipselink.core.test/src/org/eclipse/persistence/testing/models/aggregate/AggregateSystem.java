@@ -18,13 +18,25 @@ import org.eclipse.persistence.testing.framework.*;
 import org.eclipse.persistence.testing.models.aggregate.nested.*;
 
 public class AggregateSystem extends TestSystem {
+    // The new apis added to AggregateCollectionMapping
+    // in order to support jpa 2.0 element collections currently
+    // are not compatible with project.xml
+    // The flag provided so that AggregateWorkbenchIntegrationSystem
+    // could remove all the setup that uses this new feature.
+    protected boolean useNewAggregateCollection = true;
+    
     public AggregateSystem() {
-        project = new AggregateProject();
+        this(true);
+    }
+
+    public AggregateSystem(boolean useNewAggregateCollection) {
+        this.useNewAggregateCollection = useNewAggregateCollection;  
+        project = new AggregateProject(useNewAggregateCollection);
     }
 
     public void addDescriptors(DatabaseSession session) {
         if (project == null) {
-            project = new AggregateProject();
+            project = new AggregateProject(useNewAggregateCollection);
         }
         session.addDescriptors(project);
 
@@ -63,6 +75,16 @@ public class AggregateSystem extends TestSystem {
         schemaManager.replaceObject(Company.tableDefinition());
         schemaManager.replaceObject(SingleHouse.tableDefinition());
         schemaManager.replaceObject(SellingPoint.tableDefinition());
+        // the added tables for jpa 2.0 aggregate testing
+        if(useNewAggregateCollection) {
+            schemaManager.replaceObject(Builder.tableDefinition());
+            schemaManager.replaceObject(Builder.houseTableDefinition());
+            schemaManager.replaceObject(Builder.singleHouseTableDefinition());
+            schemaManager.replaceObject(Builder.sellingPointTableDefinition());
+            schemaManager.replaceObject(Builder.customerTableDefinition());
+            schemaManager.replaceObject(Builder.dependantTableDefinition());
+            schemaManager.replaceObject(Builder.vehicleTableDefinition());
+        }
 
         TableDefinition table = Employee1.tableDefinition();
         schemaManager.buildFieldTypes(table);
@@ -183,5 +205,14 @@ public class AggregateSystem extends TestSystem {
 
         // Added May 5, 2000 - Jon D. for pr381
         Vehicle.loadTables(session);
+
+        if(useNewAggregateCollection) {
+            instance = Builder.example1();
+            //use uow to ensure that all parts get inserted not just privately owned parts
+            uow = session.acquireUnitOfWork();
+            uow.registerObject(instance);
+            uow.commit();
+            manager.registerObject(instance, "example1");
+        }
     }
 }

@@ -88,6 +88,9 @@ public class XMLProjectWriterTestModel extends TestModel {
         // Aggregate Tests
         TestSuite aggregateSuite = new TestSuite();
         aggregateSuite.setName("AggregateModel");
+        boolean useNewAggregateCollectionOriginal = AggregateTestModel.useNewAggregateCollection;
+        // MW doesn't support new AggregateCollection apis - temporary set the flag to false
+        AggregateTestModel.useNewAggregateCollection = false;
         aggregateSuite.addTest(AggregateTestModel.getReadObjectTestSuite());
         aggregateSuite.addTest(AggregateTestModel.getUpdateObjectTestSuite());
         aggregateSuite.addTest(AggregateTestModel.getReadAllTestSuite());
@@ -101,6 +104,8 @@ public class XMLProjectWriterTestModel extends TestModel {
         aggregateSuite.addTest(AggregateTestModel.getEventTestSuite());
         aggregateSuite.addTest(AggregateTestModel.getNestedAggregateTestSuite());
         aggregateSuite.addTest(AggregateTestModel.getAggregateInheritanceTestSuite());
+        // reset the original value
+        AggregateTestModel.useNewAggregateCollection = useNewAggregateCollectionOriginal;
         addTest(aggregateSuite);
 
         // Interface Tests

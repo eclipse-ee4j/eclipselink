@@ -399,6 +399,7 @@ public abstract class ForeignReferenceMapping extends DatabaseMapping {
     public ReadQuery prepareNestedBatchQuery(ReadAllQuery query) {
         ReadAllQuery batchQuery = new ReadAllQuery();
         batchQuery.setReferenceClass(getReferenceClass());
+        batchQuery.setDescriptor(getReferenceDescriptor());
         batchQuery.setSession(query.getSession());
 
         //bug 3965568 

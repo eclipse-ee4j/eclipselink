@@ -16,13 +16,22 @@ import java.util.*;
 import org.eclipse.persistence.sessions.*;
 import org.eclipse.persistence.expressions.*;
 import org.eclipse.persistence.testing.framework.*;
+import org.eclipse.persistence.testing.models.aggregate.Builder;
 import org.eclipse.persistence.testing.models.aggregate.RoomSellingPoint;
 import org.eclipse.persistence.testing.models.aggregate.Agent;
 import org.eclipse.persistence.testing.models.aggregate.House;
 
 public class NestedAggregateCollectionAbstractTestCase extends org.eclipse.persistence.testing.framework.AutoVerifyTestCase {
+    public Class cls;
     public boolean instantiationExceptionOccurred = false;
 
+    // Must be Agent or Builder
+    public NestedAggregateCollectionAbstractTestCase(Class cls) {
+        super();
+        this.cls = cls;
+        setName(getName() + AgentBuilderHelper.getNameInBrackets(cls));
+    }
+    
     public void reset() {
         rollbackTransaction();
     }
@@ -34,14 +43,19 @@ public class NestedAggregateCollectionAbstractTestCase extends org.eclipse.persi
     public void test() {
         try {
             UnitOfWork uow = getSession().acquireUnitOfWork();
-            Agent instance = Agent.example1();
+            Object instance;
+            if(Agent.class.equals(cls)) {
+                instance = Agent.example1();
+            } else {
+                instance = Builder.example1();
+            }
             ExpressionBuilder builder = new ExpressionBuilder();
-            Expression exp = builder.get("firstName").equal(instance.getFirstName());
-            exp = exp.and(builder.get("lastName").equal(instance.getLastName()));
-            Agent clone = (Agent)uow.readObject(Agent.class, exp);
+            Expression exp = builder.get("firstName").equal(AgentBuilderHelper.getFirstName(instance));
+            exp = exp.and(builder.get("lastName").equal(AgentBuilderHelper.getLastName(instance)));
+            Object clone = uow.readObject(cls, exp);
             uow.commitAndResume();
 
-            House h1 = (House)instance.getHouses().firstElement();
+            House h1 = (House)AgentBuilderHelper.getHouses(instance).get(0);
             Vector sellingPoints = h1.getSellingPoints();
             sellingPoints.add(RoomSellingPoint.example4());
             uow.deepMergeClone(instance);

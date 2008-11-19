@@ -14,13 +14,9 @@ package org.eclipse.persistence.testing.tests.aggregate;
 
 import org.eclipse.persistence.tools.schemaframework.PopulationManager;
 import org.eclipse.persistence.testing.framework.*;
-import org.eclipse.persistence.testing.framework.DeleteObjectTest;
-import org.eclipse.persistence.testing.framework.InsertObjectTest;
-import org.eclipse.persistence.testing.framework.ReadAllTest;
-import org.eclipse.persistence.testing.framework.ReadObjectTest;
-import org.eclipse.persistence.testing.framework.WriteObjectTest;
 import org.eclipse.persistence.testing.models.aggregate.Agent;
 import org.eclipse.persistence.testing.models.aggregate.AggregateSystem;
+import org.eclipse.persistence.testing.models.aggregate.Builder;
 import org.eclipse.persistence.testing.models.aggregate.Client;
 import org.eclipse.persistence.testing.models.aggregate.Employee;
 import org.eclipse.persistence.testing.models.aggregate.Employee1;
@@ -31,6 +27,12 @@ import org.eclipse.persistence.testing.models.aggregate.Transport;
  * This model tests reading/writing/deleting through using the aggregate model.
  */
 public class AggregateTestModel extends TestModel {
+    // The new apis added to AggregateCollectionMapping
+    // in order to support jpa 2.0 element collections currently
+    // are not compatible with project.xml
+    // The flag provided so that XMLProjectWriterTestModel
+    // could remove all tests that for this new feature.
+    public static boolean useNewAggregateCollection = true;
     public AggregateTestModel() {
         setDescription("This model tests reading/writing/deleting of the complex aggregate model.");
     }
@@ -158,8 +160,14 @@ public class AggregateTestModel extends TestModel {
 
         //aggregate 1:m delete test
         suite.addTest(new DeleteObjectTest(manager.getObject(Agent.class, "example1")));
-        suite.addTest(new VerifyCascadeDelete());
-        suite.addTest(new AggregateCollectionClearTest());
+        suite.addTest(new VerifyCascadeDelete(Agent.class));
+        suite.addTest(new AggregateCollectionClearTest(Agent.class));
+
+        if(useNewAggregateCollection) {
+            suite.addTest(new DeleteObjectTest(manager.getObject(Builder.class, "example1")));
+            suite.addTest(new VerifyCascadeDelete(Builder.class));
+            suite.addTest(new AggregateCollectionClearTest(Builder.class));
+        }
         return suite;
     }
 
@@ -227,6 +235,9 @@ public class AggregateTestModel extends TestModel {
 
         //insert aggregate collection object
         suite.addTest(new InsertObjectTest(Agent.example2()));
+        if(useNewAggregateCollection) {
+            suite.addTest(new InsertObjectTest(Builder.example1()));
+        }
         suite.addTest(new AggregateMappingNullNotAllow());
 
         return suite;
@@ -267,10 +278,15 @@ public class AggregateTestModel extends TestModel {
 
         suite.addTest(new NestedAggregateTestCase());
         //For CR#2587
-        suite.addTest(new NestedAggregateCollectionTest());
+        suite.addTest(new NestedAggregateCollectionTest(Agent.class));
 
         // CR#2896
-        suite.addTest(new NestedAggregateCollectionAbstractTestCase());
+        suite.addTest(new NestedAggregateCollectionAbstractTestCase(Agent.class));
+        
+        if(useNewAggregateCollection) {
+            suite.addTest(new NestedAggregateCollectionTest(Builder.class));
+            suite.addTest(new NestedAggregateCollectionAbstractTestCase(Builder.class));
+        }
         return suite;
     }
 
@@ -300,7 +316,12 @@ public class AggregateTestModel extends TestModel {
         // Added May 5, 2000 - Jon D. for pr381
         suite.addTest(new ReadAllTest(Transport.class, 4));
         // Bug 2847621
-        suite.addTest(new AggregateCollectionOuterJoinTest());
+        suite.addTest(new AggregateCollectionOuterJoinTest(Agent.class));
+        
+        if(useNewAggregateCollection) {
+            suite.addTest(new ReadAllTest(Builder.class, 1));
+            suite.addTest(new AggregateCollectionOuterJoinTest(Builder.class));
+        }
 
         return suite;
     }
@@ -354,6 +375,9 @@ public class AggregateTestModel extends TestModel {
 
         //aggregate collection read
         suite.addTest(new ReadObjectTest(manager.getObject(Agent.class, "example1")));
+        if(useNewAggregateCollection) {
+            suite.addTest(new ReadObjectTest(manager.getObject(Builder.class, "example1")));
+        }
         return suite;
     }
 
@@ -373,7 +397,10 @@ public class AggregateTestModel extends TestModel {
         Class employeeClass = Employee.class;
         PopulationManager manager = PopulationManager.getDefaultManager();
 
-        suite.addTest(new BatchReadingWithAggregateCollectionMapping());
+        suite.addTest(new BatchReadingWithAggregateCollectionMapping(Agent.class));
+        if(useNewAggregateCollection) { 
+            suite.addTest(new BatchReadingWithAggregateCollectionMapping(Builder.class));
+        }
         suite.addTest(new UnitOfWorkCommitResumeTest(manager.getObject(employeeClass, "example1")));
         suite.addTest(new UnitOfWorkCommitResumeTest(manager.getObject(employeeClass, "example2")));
         suite.addTest(new UnitOfWorkCommitResumeTest(manager.getObject(employeeClass, "example3")));
@@ -417,6 +444,12 @@ public class AggregateTestModel extends TestModel {
 
         //For CR#2285, handle adding nulls to a collection.
         suite.addTest(new AddNullToAggregateCollectionTest((Agent)manager.getObject(Agent.class, "example1")));
+
+        if(useNewAggregateCollection) {
+            suite.addTest(new AggregateCollectionUoWTest(manager.getObject(Builder.class, "example1")));
+            suite.addTest(new AggregateCollectionMultipleUoWTest(manager.getObject(Builder.class, "example1")));
+            suite.addTest(new AddNullToAggregateCollectionTest((Builder)manager.getObject(Builder.class, "example1")));
+        }
 
         return suite;
     }
@@ -464,6 +497,10 @@ public class AggregateTestModel extends TestModel {
         //update testing on aggregate collection mapping
         suite.addTest(new WriteObjectTest(manager.getObject(Agent.class, "example1")));
         suite.addTest(new UnitOfWorkBasicUpdateObjectTest(manager.getObject(Agent.class, "example1")));
+        if(useNewAggregateCollection) {
+            suite.addTest(new WriteObjectTest(manager.getObject(Builder.class, "example1")));
+            suite.addTest(new UnitOfWorkBasicUpdateObjectTest(manager.getObject(Builder.class, "example1")));
+        }
 
         return suite;
     }

@@ -18,6 +18,7 @@ import java.util.Vector;
 import org.eclipse.persistence.sessions.Session;
 import org.eclipse.persistence.testing.framework.TestModel;
 import org.eclipse.persistence.testing.models.aggregate.Agent;
+import org.eclipse.persistence.testing.models.aggregate.Builder;
 import org.eclipse.persistence.testing.models.aggregate.Client;
 import org.eclipse.persistence.testing.models.aggregate.Employee1;
 import org.eclipse.persistence.testing.models.employee.domain.Employee;
@@ -75,8 +76,10 @@ public abstract class DistributedServersModel extends TestModel {
 
         //CR 4080
         addTest(new VerifyAggregateCollectionObjectsDeletedFromCacheTest((Agent)manager.getObject(Agent.class, "example1")));
+        addTest(new VerifyAggregateCollectionObjectsDeletedFromCacheTest((Builder)manager.getObject(Builder.class, "example1")));
         //cr 4143
         addTest(new VerifyAggregateCollectionNewObjectTest((Agent)manager.getObject(Agent.class, "example1")));
+        addTest(new VerifyAggregateCollectionNewObjectTest((Builder)manager.getObject(Builder.class, "example1")));
         //bug 3443422
         addTest(new UpdateChangeObjectWithOptimisticLockTest(employee));
         //bug 3485635

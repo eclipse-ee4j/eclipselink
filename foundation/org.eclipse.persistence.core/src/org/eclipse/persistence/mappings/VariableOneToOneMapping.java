@@ -491,11 +491,14 @@ public class VariableOneToOneMapping extends ObjectReferenceMapping implements R
      * The foreign key names and their primary keys are converted to DatabaseField and stored.
      */
     protected void initializeForeignKeys(AbstractSession session) {
-        for (Iterator iterator = new HashMap(getSourceToTargetQueryKeyNames()).entrySet().iterator(); iterator.hasNext();) {
+        HashMap newSourceToTargetQueryKeyNames = new HashMap(getSourceToTargetQueryKeyNames().size());
+        Iterator iterator = getSourceToTargetQueryKeyNames().entrySet().iterator();
+        while(iterator.hasNext()) {
             Map.Entry entry = (Map.Entry)iterator.next();
             DatabaseField field = getDescriptor().buildField((DatabaseField)entry.getKey());
-            getSourceToTargetQueryKeyNames().put(field, entry.getValue());
+            newSourceToTargetQueryKeyNames.put(field, entry.getValue());
         }
+        this.sourceToTargetQueryKeyNames = newSourceToTargetQueryKeyNames;
     }
 
     /**

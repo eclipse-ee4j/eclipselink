@@ -309,6 +309,16 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
 
     /**
      * INTERNAL:
+     * The mapping clones itself to create deep copy.
+     */
+    public Object clone() {
+        CollectionMapping clone = (CollectionMapping)super.clone();
+        clone.setDeleteAllQuery((ModifyQuery)getDeleteAllQuery().clone());
+        return clone;
+    }
+
+    /**
+     * INTERNAL:
      * This method is used to calculate the differences between two collections.
      */
     public void compareCollectionsForChange(Object oldCollection, Object newCollection, ChangeRecord changeRecord, AbstractSession session) {

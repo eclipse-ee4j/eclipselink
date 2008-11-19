@@ -1586,7 +1586,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
                         }
                     } else {
                         // This will validate that the object is not from the parent session, moved from calculate to optimize JPA.
-                        getBackupClone(object);
+                        getBackupClone(object, getCurrentDescriptor());
                     }
                     // This means it is a unregistered new object
                     knownNewObjects.put(object, object);
@@ -1758,6 +1758,14 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
      * Return the backup clone for the working clone.
      */
     public Object getBackupClone(Object clone) throws QueryException {
+        return getBackupClone(clone, null);
+    }
+    
+    /**
+     * INTERNAL:
+     * Return the backup clone for the working clone.
+     */
+    public Object getBackupClone(Object clone, ClassDescriptor descriptor) throws QueryException {
         Object backupClone = getCloneMapping().get(clone);
         if (backupClone != null) {
             return backupClone;
@@ -1770,7 +1778,9 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
             return getCloneMapping().get(clone);
 
         } else {
-            ClassDescriptor descriptor = getDescriptor(clone);
+            if(descriptor == null) {
+                descriptor = getDescriptor(clone);
+            }
             Vector primaryKey = keyFromObject(clone, descriptor);
 
             // This happens if clone was from the parent identity map.		
@@ -1803,6 +1813,28 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
             } else {
                 // This means it is an unregistered new object, so create a new backup clone for it.
                 backupClone = descriptor.getObjectBuilder().buildNewInstance();
+            }
+        }
+
+        return backupClone;
+    }
+
+    /**
+     * INTERNAL:
+     * Return the backup clone for the working clone.
+     */
+    public Object getBackupCloneForCommit(Object clone, ClassDescriptor descriptor) {
+        Object backupClone = getBackupClone(clone, descriptor);
+
+        /* CR3440: Steven Vo
+         * Build new instance only if it was not handled by getBackupClone()
+         */
+        if (isCloneNewObject(clone)) {
+            if(descriptor != null) {
+                return descriptor.getObjectBuilder().buildNewInstance();
+            } else {
+                // Can this ever happen?
+                return getDescriptor(clone).getObjectBuilder().buildNewInstance();
             }
         }
 
@@ -3428,7 +3460,10 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
             throw QueryException.objectToModifyNotSpecified(deleteQuery);
         }
 
-        ClassDescriptor descriptor = getDescriptor(deleteQuery.getObject());
+        ClassDescriptor descriptor = deleteQuery.getDescriptor();
+        if(descriptor == null) {
+            descriptor = getDescriptor(deleteQuery.getObject());
+        }
         ObjectBuilder builder = descriptor.getObjectBuilder();
         Object implementation = builder.unwrapObject(deleteQuery.getObject(), this);
 
@@ -4976,7 +5011,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
                         setShouldBreak(true);
                         return;
                     } else {
-                        getBackupClone(object);
+                        getBackupClone(object, getCurrentDescriptor());
                     }
                 } catch (EclipseLinkException exception) {
                     log(SessionLog.FINEST, SessionLog.TRANSACTION, "stack_of_visited_objects_that_refer_to_the_corrupt_object", getVisitedStack());

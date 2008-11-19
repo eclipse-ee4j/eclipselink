@@ -17,14 +17,18 @@ import java.util.*;
 import org.eclipse.persistence.queries.*;
 import org.eclipse.persistence.expressions.*;
 import org.eclipse.persistence.testing.framework.ReadObjectTest;
-import org.eclipse.persistence.testing.models.aggregate.*;
 
 public class BatchReadingWithAggregateCollectionMapping extends ReadObjectTest {
 
-    public BatchReadingWithAggregateCollectionMapping() {
+    Class cls;
+    // Must be Agent or Builder
+    public BatchReadingWithAggregateCollectionMapping(Class cls) {
         super();
+        this.cls = cls;
+        setName(getName() + AgentBuilderHelper.getNameInBrackets(cls));
     }
 
+    // Must be Agent or Builder
     public BatchReadingWithAggregateCollectionMapping(Object originalObject) {
         super(originalObject);
     }
@@ -37,13 +41,15 @@ public class BatchReadingWithAggregateCollectionMapping extends ReadObjectTest {
     }
 
     public void test() {
-
-        ReadAllQuery query = new ReadAllQuery(Agent.class);
+        if(cls == null) {
+            cls = originalObject.getClass();
+        }
+        ReadAllQuery query = new ReadAllQuery(cls);
         query.addBatchReadAttribute("houses");
         query.setSelectionCriteria(new ExpressionBuilder().get("lastName").equal("Jordan"));
-        Vector agents = (Vector)getSession().executeQuery(query);
-        Agent agt = (Agent)agents.firstElement();
-        Vector houses = agt.getHouses();
+        List objects = (List)getSession().executeQuery(query);
+        Object object = objects.get(0);
+        List houses = AgentBuilderHelper.getHouses(object);
     }
 
     public void verify() {

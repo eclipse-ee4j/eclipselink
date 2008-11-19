@@ -15,6 +15,8 @@ package org.eclipse.persistence.testing.tests.queries.inmemory;
 import java.util.*;
 import java.math.BigDecimal;
 import org.eclipse.persistence.testing.framework.*;
+import org.eclipse.persistence.testing.models.aggregate.Agent;
+import org.eclipse.persistence.testing.models.aggregate.Builder;
 import org.eclipse.persistence.testing.models.employee.domain.*;
 import org.eclipse.persistence.tools.schemaframework.PopulationManager;
 import org.eclipse.persistence.queries.*;
@@ -278,7 +280,8 @@ public class CacheHitAndInMemoryTestSuite extends TestSuite {
         addTest(new MemoryQueryAcrossManyToManyMapping());
         addTest(new MemoryQueryAcrossManyToManyAcrossOneToManyMapping());
         addTest(new MemoryQueryAcrossDirectCollectionMapping());
-        addTest(new MemoryQueryAcrossAggregateCollectionMapping());
+        addTest(new MemoryQueryAcrossAggregateCollectionMapping(Agent.class));
+        addTest(new MemoryQueryAcrossAggregateCollectionMapping(Builder.class));
         addTest(new NamedQueryConformNullPointerException());
         addTest(new MemoryQueryTriggerIndirection());
         addTest(new MemoryQueryReturnConformedOnIndirection());

@@ -48,6 +48,15 @@ public class AggregateCollectionMapping extends CollectionMapping implements Rel
     /** Foreign keys in the target table to the related keys in the source table */
     protected transient Map<DatabaseField, DatabaseField> targetForeignKeyToSourceKeys;
 
+    /** Map the name of a field in the aggregate collection descriptor to a field in the actual table specified in the mapping. */
+    protected transient Map<String, String> aggregateToSourceFieldNames;
+
+    /** Map the name of an attribute of the reference descriptor mapped with AggregateCollectionMapping to aggregateToSourceFieldNames
+     * that should be applied to this mapping.
+     */  
+    protected transient Map<String, Map<String, String>> nestedAggregateToSourceFieldNames;
+
+
     /**
      * PUBLIC:
      * Default constructor.
@@ -66,6 +75,65 @@ public class AggregateCollectionMapping extends CollectionMapping implements Rel
      */
     public boolean isRelationalMapping() {
         return true;
+    }
+
+    /**
+     * PUBLIC:
+     * Maps a field name in the aggregate descriptor
+     * to a field name in the source table.
+     */
+    public void addFieldNameTranslation(String sourceFieldName, String aggregateFieldName) {
+        if(aggregateToSourceFieldNames == null) {
+            aggregateToSourceFieldNames = new HashMap(5); 
+        }
+        aggregateToSourceFieldNames.put(aggregateFieldName, sourceFieldName);
+    }
+
+    /**
+     * PUBLIC:
+     * Maps a field name in the aggregate descriptor
+     * to a field name in the source table.
+     */
+    public void addFieldNameTranslations(Map<String, String> map) {
+        if(aggregateToSourceFieldNames == null) {
+            aggregateToSourceFieldNames = map; 
+        } else {
+            aggregateToSourceFieldNames.putAll(map);
+        }
+    }
+
+    /**
+     * PUBLIC:
+     * Map the name of an attribute of the reference descriptor mapped with AggregateCollectionMapping to aggregateToSourceFieldNames
+     * that should be applied to this mapping.
+     */
+    public void addNestedFieldNameTranslation(String attributeName, String sourceFieldName, String aggregateFieldName) {
+        if(nestedAggregateToSourceFieldNames == null) {
+            nestedAggregateToSourceFieldNames = new HashMap<String, Map<String, String>>(5); 
+        }
+        Map<String, String> attributeFieldNameTranslation = nestedAggregateToSourceFieldNames.get(attributeName);
+        if(attributeFieldNameTranslation == null) {
+            attributeFieldNameTranslation = new HashMap<String, String>(5);
+            nestedAggregateToSourceFieldNames.put(attributeName, attributeFieldNameTranslation);
+        }
+        attributeFieldNameTranslation.put(aggregateFieldName, sourceFieldName);
+    }
+
+    /**
+     * PUBLIC:
+     * Map the name of an attribute of the reference descriptor mapped with AggregateCollectionMapping to aggregateToSourceFieldNames
+     * that should be applied to this mapping.
+     */
+    public void addNestedFieldNameTranslations(String attributeName, Map<String, String> map) {
+        if(nestedAggregateToSourceFieldNames == null) {
+            nestedAggregateToSourceFieldNames = new HashMap<String, Map<String, String>>(5); 
+        }
+        Map<String, String> attributeFieldNameTranslation = nestedAggregateToSourceFieldNames.get(attributeName);
+        if(attributeFieldNameTranslation == null) {
+            nestedAggregateToSourceFieldNames.put(attributeName, map);
+        } else {
+            attributeFieldNameTranslation.putAll(map);
+        }
     }
 
     /**
@@ -141,7 +209,7 @@ public class AggregateCollectionMapping extends CollectionMapping implements Rel
      */
     protected Object buildElementBackupClone(Object element, UnitOfWorkImpl unitOfWork) {
         // Do not clone for read-only.
-        if (unitOfWork.isClassReadOnly(element.getClass())) {
+        if (unitOfWork.isClassReadOnly(element.getClass(), getReferenceDescriptor())) {
             return element;
         }
 
@@ -157,7 +225,7 @@ public class AggregateCollectionMapping extends CollectionMapping implements Rel
      */
     protected Object buildElementClone(Object element, UnitOfWorkImpl unitOfWork, boolean isExisting) {
         // Do not clone for read-only.
-        if (unitOfWork.isClassReadOnly(element.getClass())) {
+        if (unitOfWork.isClassReadOnly(element.getClass(), getReferenceDescriptor())) {
             return element;
         }
 
@@ -259,6 +327,8 @@ public class AggregateCollectionMapping extends CollectionMapping implements Rel
     public Object clone() {
         AggregateCollectionMapping mappingObject = (AggregateCollectionMapping)super.clone();
         mappingObject.setTargetForeignKeyToSourceKeys(new HashMap(getTargetForeignKeyToSourceKeys()));
+        mappingObject.setSourceKeyFields(org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance(getSourceKeyFields()));
+        mappingObject.setTargetForeignKeyFields(org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance(getTargetForeignKeyFields()));
         return mappingObject;
     }
 
@@ -543,7 +613,7 @@ public class AggregateCollectionMapping extends CollectionMapping implements Rel
 
     /**
      * INTERNAL:
-     * return the aggregate Record with the primary keys from the source table and targer table
+     * return the aggregate Record with the primary keys from the source table and target table
      */
     public AbstractRecord getAggregateRow(ObjectLevelModifyQuery query, Object object) {
         Vector referenceObjectKeys = getReferenceObjectKeys(query);
@@ -580,13 +650,26 @@ public class AggregateCollectionMapping extends CollectionMapping implements Rel
 
     /**
      * INTERNAL:
+     * Return the referenceDescriptor. This is a descriptor which is associated with the reference class.
+     * NOTE: If you are looking for the descriptor for a specific aggregate object, use
+     * #getReferenceDescriptor(Object). This will ensure you get the right descriptor if the object's
+     * descriptor is part of an inheritance tree.
+     */
+    public ClassDescriptor getReferenceDescriptor() {
+        return referenceDescriptor;
+    }
+
+    /**
+     * INTERNAL:
      * for inheritance purpose
      */
     public ClassDescriptor getReferenceDescriptor(Class theClass, AbstractSession session) {
         if (getReferenceDescriptor().getJavaClass().equals(theClass)) {
             return getReferenceDescriptor();
         } else {
-            ClassDescriptor subDescriptor = session.getDescriptor(theClass);
+            ClassDescriptor subDescriptor;
+            // Since aggregate collection mappings clone their descriptors, for inheritance the correct child clone must be found.
+            subDescriptor = getReferenceDescriptor().getInheritancePolicy().getSubclassDescriptor(theClass);
             if (subDescriptor == null) {
                 throw DescriptorException.noSubClassMatch(theClass, this);
             } else {
@@ -708,6 +791,213 @@ public class AggregateCollectionMapping extends CollectionMapping implements Rel
     }
 
     /**
+     * Initialize and set the descriptor for the referenced class in this mapping.
+     */
+    protected void initializeReferenceDescriptor(AbstractSession session) throws DescriptorException {
+        super.initializeReferenceDescriptor(session);
+
+        HashMap<DatabaseField, DatabaseField> fieldTranslation = null;
+        HashMap<DatabaseTable, DatabaseTable> tableTranslation = null;
+        Vector<DatabaseTable> newTables = null;
+
+        int nAggregateTables = 0;
+        if(getReferenceDescriptor().getTables() != null) {
+            nAggregateTables = getReferenceDescriptor().getTables().size();
+        }
+        if(this.aggregateToSourceFieldNames != null) {
+            DatabaseTable aggregateDefaultTable = null;
+            if(nAggregateTables != 0) {
+                aggregateDefaultTable = getReferenceDescriptor().getTables().get(0);
+            } else {
+                aggregateDefaultTable = new DatabaseTable();
+            }
+            tableTranslation = new HashMap<DatabaseTable, DatabaseTable>();
+            fieldTranslation = new HashMap<DatabaseField, DatabaseField>();
+            
+            Iterator<Map.Entry<String, String>> it = this.aggregateToSourceFieldNames.entrySet().iterator();
+            while(it.hasNext()) {
+                Map.Entry<String, String> entry = it.next(); 
+                DatabaseField aggregateField = new DatabaseField(entry.getKey());
+                if(!aggregateField.hasTableName()) {
+                    aggregateField.setTable(aggregateDefaultTable);
+                }
+                DatabaseField sourceField = new DatabaseField(entry.getValue());
+                if(!sourceField.hasTableName()) {
+                    //TODO: throw exception: source field doesn't have table
+                }
+                DatabaseTable sourceTable = sourceField.getTable();
+                DatabaseTable savedSourceTable = tableTranslation.get(aggregateField.getTable());
+                if(savedSourceTable == null) {
+                    tableTranslation.put(aggregateField.getTable(), sourceTable);
+                } else {
+                    if(!sourceTable.equals(savedSourceTable)) {
+                        // TODO: throw exception: aggregate table mapped to two source tables
+                    }
+                }
+                fieldTranslation.put(aggregateField, sourceField);
+            }
+        } else {
+            if(nAggregateTables == 0) {
+                //TODO: throw exception
+            }
+        }
+        
+        ClassDescriptor clonedDescriptor = (ClassDescriptor)getReferenceDescriptor().clone();
+        if(fieldTranslation != null) {
+            translateTablesAndFields(clonedDescriptor, fieldTranslation, tableTranslation); 
+        }
+        
+        if(this.nestedAggregateToSourceFieldNames != null) {
+            updateNestedAggregateCollectionMappings(clonedDescriptor);
+        }
+        
+        if (clonedDescriptor.isChildDescriptor()) {
+            ClassDescriptor parentDescriptor = session.getDescriptor(clonedDescriptor.getInheritancePolicy().getParentClass());
+            initializeParentInheritance(parentDescriptor, clonedDescriptor, session, fieldTranslation, tableTranslation);
+        }
+
+        if(clonedDescriptor.isAggregateDescriptor()) {
+            clonedDescriptor.descriptorIsAggregateCollection();
+        }
+
+        setReferenceDescriptor(clonedDescriptor);
+        
+        clonedDescriptor.preInitialize(session);
+        clonedDescriptor.initialize(session);
+        if (clonedDescriptor.hasInheritance() && clonedDescriptor.getInheritancePolicy().hasChildren()) {
+            //clone child descriptors
+            initializeChildInheritance(clonedDescriptor, session, fieldTranslation, tableTranslation);
+        }
+    }
+
+    /**
+     * INTERNAL:
+     * Called in case fieldTranslation != null
+     * Sets new primary keys, tables, appends fieldTranslation to fieldMap so that all fields in mappings, inheritance etc. translated to the new ones.
+     */
+    protected static void translateTablesAndFields(ClassDescriptor descriptor, HashMap<DatabaseField, DatabaseField> fieldTranslation, HashMap<DatabaseTable, DatabaseTable> tableTranslation) {
+        int nTables = 0;
+        if(descriptor.getTables() != null) {
+            nTables = descriptor.getTables().size(); 
+        }
+        DatabaseTable defaultAggregateTable = null;
+        if(nTables == 0) {
+            defaultAggregateTable = new DatabaseTable();
+            DatabaseTable defaultSourceTable = tableTranslation.get(defaultAggregateTable);
+            if(defaultSourceTable == null) {
+                //TODO: throw exception
+            }
+            descriptor.addTable(defaultSourceTable);
+        } else {
+            defaultAggregateTable = descriptor.getTables().get(0);
+            Vector newTables = NonSynchronizedVector.newInstance(nTables);
+            for(int i=0; i < nTables; i++) {
+                DatabaseTable table = tableTranslation.get(descriptor.getTables().get(i));
+                if(table == null) {
+                    //TODO: throw exception
+                }
+                if(!newTables.contains(table)) {
+                    newTables.add(table);
+                }
+            }
+            descriptor.setTables(newTables);
+        }
+        
+        int nPrimaryKeyFields = 0;
+        if(descriptor.getPrimaryKeyFields() != null) {
+            nPrimaryKeyFields = descriptor.getPrimaryKeyFields().size(); 
+        }
+        if(nPrimaryKeyFields > 0) {
+            ArrayList<DatabaseField> newPrimaryKeyFields = new ArrayList(nPrimaryKeyFields);
+            for(int i=0; i < nPrimaryKeyFields; i++) {
+                DatabaseField pkField = descriptor.getPrimaryKeyFields().get(i);
+                if(!pkField.hasTableName() && nTables > 0) {
+                    pkField = new DatabaseField(pkField.getName(), defaultAggregateTable);
+                }
+                DatabaseField field = fieldTranslation.get(pkField);
+                if(field == null) {
+                    //TODO: throw exception: pk not translated
+                }
+                newPrimaryKeyFields.add(field);
+            }
+            descriptor.setPrimaryKeyFields(newPrimaryKeyFields);
+        }
+        
+        // put fieldTranslation into fieldsMap so that all the fields in the mappings, inheritance policy etc
+        // are translated to the new ones.
+        descriptor.getObjectBuilder().getFieldsMap().putAll(fieldTranslation);
+    }
+    
+    /**
+     * INTERNAL:
+     * Called in case nestedAggregateToSourceFieldNames != null
+     * Updates AggregateCollectionMappings of the reference descriptor.  
+     */
+    protected void updateNestedAggregateCollectionMappings(ClassDescriptor descriptor) {
+        Iterator<Map.Entry<String, Map<String, String>>> it = nestedAggregateToSourceFieldNames.entrySet().iterator();
+        while(it.hasNext()) {
+            Map.Entry<String, Map<String, String>> entry = it.next();
+            String attribute = entry.getKey();
+            String nestedAttribute = null;
+            int indexOfDot = attribute.indexOf('.'); 
+            // attribute "homes.sellingPonts" is divided into attribute "homes" and nestedAttribute "sellingPoints" 
+            if(indexOfDot >= 0) {
+                nestedAttribute = attribute.substring(indexOfDot + 1, attribute.length());
+                attribute = attribute.substring(0, indexOfDot);
+            }
+            DatabaseMapping mapping = descriptor.getMappingForAttributeName(attribute);
+            if(mapping == null) {
+                //TODO: may have been already processed by the parent, may be processed later by a child.
+                //Should add method verifyNestedAggregateToSourceFieldNames that would go through
+                //all the children and detect the wrong attribute.
+                continue;
+            }
+            if(!mapping.isAggregateCollectionMapping()) {
+                //TODO: throw exception: mapping corresponding to attribute is not AggregateCollectionMapping
+            }
+            AggregateCollectionMapping nestedAggregateCollectionMapping = (AggregateCollectionMapping)mapping;
+            if(nestedAttribute == null) {
+                nestedAggregateCollectionMapping.addFieldNameTranslations(entry.getValue());
+            } else {
+                nestedAggregateCollectionMapping.addNestedFieldNameTranslations(nestedAttribute, entry.getValue());
+            }
+        }
+    }
+    
+    /**
+     * INTERNAL:
+     * If field names are different in the source and aggregate objects then the translation
+     * is done here. The aggregate field name is converted to source field name from the
+     * field name mappings stored.
+     */
+    protected void translateFields(ClassDescriptor clonedDescriptor, AbstractSession session) {
+        if(aggregateToSourceFieldNames != null) {
+            for (Enumeration entry = clonedDescriptor.getFields().elements(); entry.hasMoreElements();) {
+                DatabaseField field = (DatabaseField)entry.nextElement();
+                String nameInAggregate = field.getName();
+                String nameInSource = aggregateToSourceFieldNames.get(nameInAggregate);
+    
+                // Do not modify non-translated fields.
+                if (nameInSource != null) {
+                    DatabaseField fieldInSource = new DatabaseField(nameInSource);
+    
+                    // Check if the translated field specified a table qualifier.
+                    if (fieldInSource.getName().equals(nameInSource)) {
+                        // No table so just set the field name.
+                        field.setName(nameInSource);
+                    } else {
+                        // There is a table, so set the name and table.
+                        field.setName(fieldInSource.getName());
+                        field.setTable(clonedDescriptor.getTable(fieldInSource.getTable().getName()));
+                    }
+                }
+            }
+    
+            clonedDescriptor.rehashFieldDependancies(session);
+        }
+    }
+
+    /**
      * INTERNAL:
      * For aggregate mapping the reference descriptor is cloned. Also the involved inheritance descriptor, its children
      * and parents all need to be cloned. The cloned descriptors are then assigned primary keys and table names before
@@ -716,7 +1006,8 @@ public class AggregateCollectionMapping extends CollectionMapping implements Rel
      * and after that mapping never uses it.
      * Some initialization is done in postInitialize to ensure the target descriptor's references are initialized.
      */
-    public void initializeChildInheritance(ClassDescriptor parentDescriptor, AbstractSession session) throws DescriptorException {
+    public void initializeChildInheritance(ClassDescriptor parentDescriptor, AbstractSession session, 
+                HashMap<DatabaseField, DatabaseField> fieldTranslation, HashMap<DatabaseTable, DatabaseTable> tableTranslation) throws DescriptorException {
         //recursive call to further children descriptors
         if (parentDescriptor.getInheritancePolicy().hasChildren()) {
             //setFields(clonedChildDescriptor.getFields());		
@@ -724,7 +1015,16 @@ public class AggregateCollectionMapping extends CollectionMapping implements Rel
             Vector cloneChildDescriptors = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance();
             for (Enumeration enumtr = childDescriptors.elements(); enumtr.hasMoreElements();) {
                 ClassDescriptor clonedChildDescriptor = (ClassDescriptor)((ClassDescriptor)enumtr.nextElement()).clone();
-
+                if(fieldTranslation != null) {
+                    translateTablesAndFields(clonedChildDescriptor, fieldTranslation, tableTranslation); 
+                }
+                if(this.nestedAggregateToSourceFieldNames != null) {
+                    updateNestedAggregateCollectionMappings(clonedChildDescriptor);
+                }
+                
+                if(clonedChildDescriptor.isAggregateDescriptor()) {
+                    clonedChildDescriptor.descriptorIsAggregateCollection();
+                }
                 if (!clonedChildDescriptor.isAggregateCollectionDescriptor()) {
                     session.getIntegrityChecker().handleError(DescriptorException.referenceDescriptorIsNotAggregate(clonedChildDescriptor.getJavaClass().getName(), this));
                 }
@@ -733,7 +1033,7 @@ public class AggregateCollectionMapping extends CollectionMapping implements Rel
                 clonedChildDescriptor.preInitialize(session);
                 clonedChildDescriptor.initialize(session);
                 cloneChildDescriptors.addElement(clonedChildDescriptor);
-                initializeChildInheritance(clonedChildDescriptor, session);
+                initializeChildInheritance(clonedChildDescriptor, session, fieldTranslation, tableTranslation);
             }
             parentDescriptor.getInheritancePolicy().setChildDescriptors(cloneChildDescriptors);
         }
@@ -747,6 +1047,7 @@ public class AggregateCollectionMapping extends CollectionMapping implements Rel
     protected void initializeDeleteAllQuery(AbstractSession session) {
         DeleteAllQuery query = (DeleteAllQuery)getDeleteAllQuery();
         query.setReferenceClass(getReferenceClass());
+        query.setDescriptor(getReferenceDescriptor());
         query.setShouldMaintainCache(false);
         if (!hasCustomDeleteAllQuery()) {
             if (getSelectionCriteria() == null) {
@@ -766,17 +1067,27 @@ public class AggregateCollectionMapping extends CollectionMapping implements Rel
      * and after that mapping never uses it.
      * Some initialization is done in postInitialize to ensure the target descriptor's references are initialized.
      */
-    public void initializeParentInheritance(ClassDescriptor parentDescriptor, ClassDescriptor childDescriptor, AbstractSession session) throws DescriptorException {
-        if (!parentDescriptor.isAggregateCollectionDescriptor()) {
-            session.getIntegrityChecker().handleError(DescriptorException.referenceDescriptorIsNotAggregateCollection(parentDescriptor.getJavaClass().getName(), this));
-        }
+    public void initializeParentInheritance(ClassDescriptor parentDescriptor, ClassDescriptor childDescriptor, AbstractSession session, 
+                HashMap<DatabaseField, DatabaseField> fieldTranslation, HashMap<DatabaseTable, DatabaseTable> tableTranslation) throws DescriptorException {
 
         ClassDescriptor clonedParentDescriptor = (ClassDescriptor)parentDescriptor.clone();
-
+        if(clonedParentDescriptor.isAggregateDescriptor()) {
+            clonedParentDescriptor.descriptorIsAggregateCollection();
+        }
+        if (!clonedParentDescriptor.isAggregateCollectionDescriptor()) {
+            session.getIntegrityChecker().handleError(DescriptorException.referenceDescriptorIsNotAggregateCollection(parentDescriptor.getJavaClass().getName(), this));
+        }
+        if (fieldTranslation != null) {
+            translateTablesAndFields(clonedParentDescriptor, fieldTranslation, tableTranslation); 
+        }
+        if(this.nestedAggregateToSourceFieldNames != null) {
+            updateNestedAggregateCollectionMappings(clonedParentDescriptor);
+        }
+        
         //recursive call to the further parent descriptors
         if (clonedParentDescriptor.getInheritancePolicy().isChildDescriptor()) {
             ClassDescriptor parentToParentDescriptor = session.getDescriptor(clonedParentDescriptor.getJavaClass());
-            initializeParentInheritance(parentToParentDescriptor, parentDescriptor, session);
+            initializeParentInheritance(parentToParentDescriptor, parentDescriptor, session, fieldTranslation, tableTranslation);
         }
 
         Vector children = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance(1);
@@ -872,9 +1183,9 @@ public class AggregateCollectionMapping extends CollectionMapping implements Rel
      */
     public void iterateOnElement(DescriptorIterator iterator, Object element) {
         // CR#... Aggregate collections must iterate as aggregates, not regular mappings.
-        // For some reason the element can be null, this makes absolutly no sense, but we have a test case for it...
+        // For some reason the element can be null, this makes absolutely no sense, but we have a test case for it...
         if (element != null) {
-            iterator.iterateForAggregateMapping(element, this, iterator.getSession().getDescriptor(element));
+            iterator.iterateForAggregateMapping(element, this, getReferenceDescriptor(element.getClass(), iterator.getSession()));
         }
     }
 
@@ -1164,7 +1475,7 @@ public class AggregateCollectionMapping extends CollectionMapping implements Rel
             // aggregates do not actually use a query to write to the database so the pre-write must be called here
             executeEvent(DescriptorEventManager.PreWriteEvent, insertQuery);
             executeEvent(DescriptorEventManager.PreInsertEvent, insertQuery);
-            getReferenceDescriptor().getQueryManager().preInsert(insertQuery);
+            getReferenceDescriptor(object.getClass(), query.getSession()).getQueryManager().preInsert(insertQuery);
         }
     }
 
@@ -1202,6 +1513,7 @@ public class AggregateCollectionMapping extends CollectionMapping implements Rel
 
         InsertObjectQuery insertQuery = (InsertObjectQuery)insertQueryFromDescriptor.clone();
         insertQuery.setObject(object);
+        insertQuery.setDescriptor(objReferenceDescriptor);
 
         AbstractRecord targetForeignKeyRow = new DatabaseRecord();
         Vector referenceObjectKeys = getReferenceObjectKeys(originalQuery);
@@ -1232,6 +1544,7 @@ public class AggregateCollectionMapping extends CollectionMapping implements Rel
     public void prepareModifyQueryForDelete(ObjectLevelModifyQuery originalQuery, ObjectLevelModifyQuery modifyQuery, Object object) {
         AbstractRecord aggregateRow = getAggregateRow(originalQuery, object);
         modifyQuery.setObject(object);
+        modifyQuery.setDescriptor(getReferenceDescriptor(object.getClass(), originalQuery.getSession()));
         modifyQuery.setPrimaryKey(getReferenceDescriptor().getObjectBuilder().extractPrimaryKeyFromRow(aggregateRow, originalQuery.getSession()));
         modifyQuery.setModifyRow(aggregateRow);
         modifyQuery.setTranslationRow(aggregateRow);
@@ -1253,6 +1566,7 @@ public class AggregateCollectionMapping extends CollectionMapping implements Rel
     public void prepareModifyQueryForUpdate(ObjectLevelModifyQuery originalQuery, ObjectLevelModifyQuery modifyQuery, Object object) {
         AbstractRecord aggregateRow = getAggregateRow(originalQuery, object);
         modifyQuery.setObject(object);
+        modifyQuery.setDescriptor(getReferenceDescriptor(object.getClass(), originalQuery.getSession()));
         modifyQuery.setPrimaryKey(getReferenceDescriptor().getObjectBuilder().extractPrimaryKeyFromRow(aggregateRow, originalQuery.getSession()));
         modifyQuery.setTranslationRow(aggregateRow);
         modifyQuery.setSession(originalQuery.getSession());

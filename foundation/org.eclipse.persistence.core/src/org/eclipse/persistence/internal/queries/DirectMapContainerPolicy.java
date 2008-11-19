@@ -137,7 +137,7 @@ public class DirectMapContainerPolicy extends InterfaceContainerPolicy {
         if (((UnitOfWorkImpl)session).isClassReadOnly(sourceValue.getClass())) {
             return true;
         }
-        Object backUpVersion = ((UnitOfWorkImpl)session).getBackupClone(sourceValue);
+        Object backUpVersion = ((UnitOfWorkImpl)session).getBackupClone(sourceValue, getElementDescriptor());
         return (keyFrom(backUpVersion, session).equals(keyFrom(sourceValue, session)));
     }
 
@@ -252,7 +252,7 @@ public class DirectMapContainerPolicy extends InterfaceContainerPolicy {
     public void validateElementAndRehashIfRequired(Object sourceValue, Object targetMap, AbstractSession session, Object targetVersionOfSource) {
         if (session.isUnitOfWork()) {
             //this must be a unit of work at this point
-            Object backupValue = ((UnitOfWorkImpl)session).getBackupClone(sourceValue);
+            Object backupValue = ((UnitOfWorkImpl)session).getBackupClone(sourceValue, getElementDescriptor());
             if (!keyFrom(backupValue, session).equals(keyFrom(sourceValue, session))) {
                 //the key has been changed.  Remove the old value and put back the new one
                 removeFrom(backupValue, targetMap, session);

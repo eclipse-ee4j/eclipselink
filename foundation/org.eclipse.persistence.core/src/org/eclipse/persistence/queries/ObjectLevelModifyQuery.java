@@ -95,7 +95,7 @@ public abstract class ObjectLevelModifyQuery extends ModifyQuery {
             throw QueryException.invalidQuery(this);
         }
 
-        if ((getObject() != null) && (unitOfWork.isClassReadOnly(getObject().getClass()))) {
+        if ((getObject() != null) && (unitOfWork.isClassReadOnly(getObject().getClass(), getDescriptor()))) {
             return getObject();
         }
 
@@ -117,7 +117,7 @@ public abstract class ObjectLevelModifyQuery extends ModifyQuery {
         // PERF: A backup clone is only required for the old commit,
         // So avoid its creation for normal commit.	
         if ((backupClone == null) && getSession().isUnitOfWork()) {
-            setBackupClone(((UnitOfWorkImpl)getSession()).getBackupCloneForCommit(getObject()));
+            setBackupClone(((UnitOfWorkImpl)getSession()).getBackupCloneForCommit(getObject(), getDescriptor()));
         }
         return backupClone;
     }

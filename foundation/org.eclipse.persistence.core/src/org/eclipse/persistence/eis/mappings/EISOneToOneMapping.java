@@ -285,16 +285,21 @@ public class EISOneToOneMapping extends ObjectReferenceMapping implements EISMap
      * The foreign keys primary keys are stored as database fields in the hashtable.
      */
     protected void initializeForeignKeys(AbstractSession session) {
-        Iterator sourceKeyIterator = new HashMap(getSourceToTargetKeyFields()).keySet().iterator();
-        while (sourceKeyIterator.hasNext()) {
-            DatabaseField sourceField = (DatabaseField)sourceKeyIterator.next();
-            DatabaseField targetField = (DatabaseField)getSourceToTargetKeyFields().get(sourceField);
+        HashMap newSourceToTargetKeyFields = new HashMap(getSourceToTargetKeyFields().size());
+        HashMap newTargetToSourceKeyFields = new HashMap(getTargetToSourceKeyFields().size());
+        Iterator iterator = getSourceToTargetKeyFields().entrySet().iterator();
+        while (iterator.hasNext()) {
+            Map.Entry entry = (Map.Entry)iterator.next();
+            DatabaseField sourceField = (DatabaseField)entry.getKey();
+            DatabaseField targetField = (DatabaseField)entry.getValue();
 
             sourceField = getDescriptor().buildField(sourceField);
             targetField = getReferenceDescriptor().buildField(targetField);
-            getSourceToTargetKeyFields().put(sourceField, targetField);
-            getTargetToSourceKeyFields().put(targetField, sourceField);
+            newSourceToTargetKeyFields.put(sourceField, targetField);
+            newTargetToSourceKeyFields.put(targetField, sourceField);
         }
+        setSourceToTargetKeyFields(newSourceToTargetKeyFields);
+        setTargetToSourceKeyFields(newTargetToSourceKeyFields);
     }
 
     /**
