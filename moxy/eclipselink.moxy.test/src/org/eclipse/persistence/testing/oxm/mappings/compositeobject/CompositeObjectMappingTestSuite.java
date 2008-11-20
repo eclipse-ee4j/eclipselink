@@ -48,6 +48,7 @@ import org.eclipse.persistence.testing.oxm.mappings.compositeobject.self.Attribu
 import org.eclipse.persistence.testing.oxm.mappings.compositeobject.self.AttributeOnTargetTestCases;
 import org.eclipse.persistence.testing.oxm.mappings.compositeobject.self.AttributesOnTargetTestCases;
 import org.eclipse.persistence.testing.oxm.mappings.compositeobject.self.CompositeObjectSelfTestCases;
+import org.eclipse.persistence.testing.oxm.mappings.compositeobject.self.defaultnamespace.SelfMappingTestCases;
 import org.eclipse.persistence.testing.oxm.mappings.compositeobject.self.plsqlcallmodel.PLSQLCallModelTestCases;
 import org.eclipse.persistence.testing.oxm.mappings.compositeobject.singleelement.CompositeObjectSingleElementTestCases;
 
@@ -72,6 +73,7 @@ public class CompositeObjectMappingTestSuite extends TestCase {
         suite.addTestSuite(AttributeListOnTargetTestCases.class);
         // Self mapping tests
         suite.addTestSuite(CompositeObjectSelfTestCases.class);
+        suite.addTestSuite(SelfMappingTestCases.class);
         // The following self tests are not meant to run with deployment XML
         if (!deploymentXML) {
             suite.addTestSuite(PLSQLCallModelTestCases.class);

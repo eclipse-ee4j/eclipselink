@@ -155,7 +155,7 @@ public class XPathFragment {
     }
 
     public void setNamespaceURI(String namespaceURI) {
-        if ("".equals(namespaceURI)) {
+        if (isSelfFragment || "".equals(namespaceURI)) {
             this.namespaceURI = null;
         } else {
             this.namespaceURI = namespaceURI;
