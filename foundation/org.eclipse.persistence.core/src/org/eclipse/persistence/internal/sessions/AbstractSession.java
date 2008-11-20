@@ -441,7 +441,7 @@ public abstract class AbstractSession implements org.eclipse.persistence.session
                             return;
                         } catch (DatabaseException ex){
                             //replace original exception with last exception thrown
-                            //this exception could be a data based exception as apposed
+                            //this exception could be a data based exception as opposed
                             //to a connection exception that needs to go back to the customer.
                             exceptionToThrow = ex;
                         }
@@ -483,7 +483,7 @@ public abstract class AbstractSession implements org.eclipse.persistence.session
     /**
      * INTERNAL:
      * Called by rollbackTransaction() to rollback a transaction.
-     * This rollsback the active transaction.
+     * This rolls back the active transaction.
      */
     protected void basicRollbackTransaction() throws DatabaseException {
         try {
@@ -497,7 +497,7 @@ public abstract class AbstractSession implements org.eclipse.persistence.session
      * INTERNAL:
      * Attempts to begin an external transaction.
      * Returns true only in one case -
-     * extenal transaction has been internally started during this method call:
+     * external transaction has been internally started during this method call:
      * wasJTSTransactionInternallyStarted()==false in the beginning of this method and
      * wasJTSTransactionInternallyStarted()==true in the end of this method.
      */
@@ -713,7 +713,7 @@ public abstract class AbstractSession implements org.eclipse.persistence.session
     /**
      * PUBLIC:
      * Return a complete copy of the object.
-     * This can be used to obtain a scatch copy of an object,
+     * This can be used to obtain a scratch copy of an object,
      * or for templatizing an existing object into another new object.
      * The object copying policy allow for the depth, and reseting of the primary key to null, to be specified.
      */
@@ -1115,7 +1115,7 @@ public abstract class AbstractSession implements org.eclipse.persistence.session
     /**
      * PUBLIC:
      * Execute the database query.
-     * A query is a database operation such as reading or writting.
+     * A query is a database operation such as reading or writing.
      * The query allows for the operation to be customized for such things as,
      * performance, depth, caching, etc.
      *
@@ -1304,7 +1304,7 @@ public abstract class AbstractSession implements org.eclipse.persistence.session
     /**
      * INTERNAL:
      * Return the lowlevel database accessor.
-     * The database accesor is used for direct database access.
+     * The database accessor is used for direct database access.
      */
     public Accessor getAccessor() {
         if ((accessor == null) && (project != null) && (project.getDatasourceLogin() != null)) {
@@ -1321,7 +1321,7 @@ public abstract class AbstractSession implements org.eclipse.persistence.session
     /**
      * INTERNAL:
      * Return the lowlevel database accessor.
-     * The database accesor is used for direct database access.
+     * The database accessor is used for direct database access.
      * If sessionBroker is used, the right accessor for this
      * broker will be returned.
      */
@@ -1332,7 +1332,7 @@ public abstract class AbstractSession implements org.eclipse.persistence.session
     /**
      * INTERNAL:
      * Return the lowlevel database accessor.
-     * The database accesor is used for direct database access.
+     * The database accessor is used for direct database access.
      * If sessionBroker is used, the right accessor for this
      * broker will be returned based on the session name.
      */
@@ -1510,7 +1510,7 @@ public abstract class AbstractSession implements org.eclipse.persistence.session
 
     /**
      * INTERNAL:
-     * The commit manager is used to resolve referncial integrity on commits of multiple objects.
+     * The commit manager is used to resolve referential integrity on commits of multiple objects.
      * All brokered sessions share the same commit manager.
      */
     public CommitManager getCommitManager() {
@@ -1737,8 +1737,8 @@ public abstract class AbstractSession implements org.eclipse.persistence.session
     /**
      * PUBLIC:
      * Used for JTS integration.  If your application requires to have JTS control transactions instead of EclipseLink an
-     * external transaction controler must be specified.
-     * EclipseLink provides JTS controlers for several JTS implementations including JTS 1.0, Weblogic 5.1 and WebSphere 3.0.
+     * external transaction controller must be specified.
+     * EclipseLink provides JTS controllers for several JTS implementations including JTS 1.0, Weblogic 5.1 and WebSphere 3.0.
      *
      * @see org.eclipse.persistence.transaction.JTATransactionController
      */

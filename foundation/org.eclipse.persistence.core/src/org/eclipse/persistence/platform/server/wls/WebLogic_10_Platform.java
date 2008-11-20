@@ -380,8 +380,16 @@ public class WebLogic_10_Platform extends WebLogic_9_Platform {
             if(null != jpaApplicationName && jpaApplicationName.indexOf("@") > -1) {
                 applicationName = jpaApplicationName.substring(jpaApplicationName.indexOf("@") + 1);
             } else {
-                applicationName = jpaApplicationName;
+                applicationName = jpaApplicationName;                
             }            
+        }
+        
+        // Final check for null values
+        if(null == applicationName) {
+            applicationName = DEFAULT_SERVER_NAME_AND_VERSION;
+        }
+        if(null == moduleName) {
+            moduleName = DEFAULT_SERVER_NAME_AND_VERSION;
         }
         AbstractSessionLog.getLog().log(SessionLog.FINEST, "mbean_get_application_name", 
                 getDatabaseSession().getName(), applicationName);
@@ -444,7 +452,7 @@ public class WebLogic_10_Platform extends WebLogic_9_Platform {
                 initialContext = new InitialContext();
                 try {
                     // The lookup string used depends on the context from which this class is being accessed, i.e. servlet, EJB, etc.
-                    // In this case we do not know at runtime wether we are running as a module or not - so we try both lookups
+                    // In this case we do not know at runtime whether we are running as a module or not - so we try both lookups
                     // Try java:comp/env lookup  - normally used when the app is a module
                     wlsMBeanServer = (MBeanServer) initialContext.lookup(WLS_MODULE_ENV_CONTEXT_LOOKUP);
                 } catch (NamingException e) {

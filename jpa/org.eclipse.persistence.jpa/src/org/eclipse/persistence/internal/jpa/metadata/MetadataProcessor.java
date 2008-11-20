@@ -162,7 +162,7 @@ public class MetadataProcessor {
     protected void handleORMException(RuntimeException e, String mappingFile, boolean throwException){
         if (m_session == null) {
             // Metadata processor is mainly used with a session. Java SE 
-            // bootstraping uses some functions such as ORM processing without
+            // bootstrapping uses some functions such as ORM processing without
             // a session. In these cases, it is impossible to get the session 
             // to properly handle the exception. As a result we log an error. 
             // The same code will be called later in the bootstrapping code 
