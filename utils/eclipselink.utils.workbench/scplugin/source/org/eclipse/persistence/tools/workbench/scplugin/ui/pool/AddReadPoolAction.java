@@ -38,16 +38,12 @@ public class AddReadPoolAction extends AbstractEnablableFrameworkAction {
 
 		ServerSessionAdapter session = ( ServerSessionAdapter)selectedNode.getValue();
 
-		if (session.usesExternalConnectionPooling()) {
-			promptUserToTurnOffExternalConnectionPooling();
-		} else {
-			navigatorSelectionModel().pushExpansionState();
-			ConnectionPoolAdapter newPool = session.addReadConnectionPool();
+		navigatorSelectionModel().pushExpansionState();
+		ConnectionPoolAdapter newPool = session.addReadConnectionPool();
 
-			navigatorSelectionModel().popAndRestoreExpansionState();
+		navigatorSelectionModel().popAndRestoreExpansionState();
 
-			(( AbstractApplicationNode)selectedNode.getProjectRoot()).selectDescendantNodeForValue( newPool, navigatorSelectionModel());
-		}
+		(( AbstractApplicationNode)selectedNode.getProjectRoot()).selectDescendantNodeForValue( newPool, navigatorSelectionModel());
 	}
 
 	protected boolean shouldBeEnabled(ApplicationNode selectedNode) {

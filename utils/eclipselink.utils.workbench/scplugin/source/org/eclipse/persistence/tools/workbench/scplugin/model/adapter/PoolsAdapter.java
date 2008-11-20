@@ -214,11 +214,6 @@ final class PoolsAdapter extends SCAdapter {
 	 */
 	protected void initialize( Object newConfig) {
 		super.initialize( newConfig);
-
-		if( !this.platformIsXml()) {
-			this.addReadConnectionPool();
-			this.addWriteConnectionPool();
-		}
 	}
 	/**
 	 * Initializes this adapter from the specified config model.

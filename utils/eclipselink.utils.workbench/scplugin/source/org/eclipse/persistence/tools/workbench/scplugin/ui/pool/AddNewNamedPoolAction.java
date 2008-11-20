@@ -43,27 +43,23 @@ public class AddNewNamedPoolAction extends AbstractFrameworkAction {
 		ServerSessionAdapter session = ( ServerSessionAdapter)selectedNode.getValue();
 		SimplePropertyValueModel stringHolder = new SimplePropertyValueModel();
 
-		if (session.usesExternalConnectionPooling()) {
-			promptUserToTurnOffExternalConnectionPooling();
-		} else {
-			NamedConnectionPoolCreationDialog dialog = new NamedConnectionPoolCreationDialog
-			(
-					getWorkbenchContext(),
-					stringHolder,
-					session.poolNames()
-			);
+		NamedConnectionPoolCreationDialog dialog = new NamedConnectionPoolCreationDialog
+		(
+				getWorkbenchContext(),
+				stringHolder,
+				session.poolNames()
+		);
 
-			dialog.show();
+		dialog.show();
 
-			if( dialog.wasConfirmed()) {
+		if( dialog.wasConfirmed()) {
 
-				navigatorSelectionModel().pushExpansionState();
-				ConnectionPoolAdapter newPool = session.addConnectionPoolNamed( (String) stringHolder.getValue());
+			navigatorSelectionModel().pushExpansionState();
+			ConnectionPoolAdapter newPool = session.addConnectionPoolNamed( (String) stringHolder.getValue());
 
-				navigatorSelectionModel().popAndRestoreExpansionState();
+			navigatorSelectionModel().popAndRestoreExpansionState();
 
-				(( AbstractApplicationNode)selectedNode.getProjectRoot()).selectDescendantNodeForValue( newPool, navigatorSelectionModel());
-			}
+			(( AbstractApplicationNode)selectedNode.getProjectRoot()).selectDescendantNodeForValue( newPool, navigatorSelectionModel());
 		}
 	}
 	

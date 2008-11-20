@@ -112,42 +112,11 @@ public class LoginExternalOptionsPane extends AbstractSubjectPanel
 
 			protected void setValueOnSubject(Object value) {
 				DatabaseSessionAdapter session = (DatabaseSessionAdapter) subject;
-				boolean removeConnectionPool = false;
-
-				if ((Boolean)value && session.isServer()) {
-					ServerSessionAdapter serverSession = (ServerSessionAdapter) session;
-
-					if (serverSession.hasAnyConnectionPool())
-					{
-						removeConnectionPool = promptUserToDeleteConnectionPools();
-						if (removeConnectionPool) {
-							serverSession.removeAllConnectionPools();
-							session.setExternalConnectionPooling(true);
-						} else {
-							session.setExternalConnectionPooling(true);
-							session.setExternalConnectionPooling(false);
-						}
-					}
-					
-				} else {
-					session.setExternalConnectionPooling(((Boolean)value).booleanValue());
-				}
-
+				session.setExternalConnectionPooling(((Boolean)value).booleanValue());
 			}
 		};
 	}
 	
-	private boolean promptUserToDeleteConnectionPools()
-	{
-		
-		int remove = JOptionPane.showConfirmDialog(this, 
-				resourceRepository().getString("CONNECTION_PANE_PROMPT_TO_REMOVE_CONNECTION_POOLS_MESSAGE"), 
-				resourceRepository().getString("CONNECTION_PANE_PROMPT_TO_REMOVE_CONNECTION_POOLS_TITLE"), 
-				JOptionPane.YES_NO_OPTION);
-	
-		return remove == JOptionPane.YES_OPTION;
-	}
-
 	/**
 	 * Initializes the layout of this pane.
 	 */

@@ -41,16 +41,12 @@ public class AddSequencePoolAction extends AbstractEnablableFrameworkAction {
 
 		ServerSessionAdapter session = ( ServerSessionAdapter)selectedNode.getValue();
 
-		if (session.usesExternalConnectionPooling()) {
-			promptUserToTurnOffExternalConnectionPooling();
-		} else {
-			navigatorSelectionModel().pushExpansionState();
-			ConnectionPoolAdapter newPool = session.addSequenceConnectionPool();
-		
-			navigatorSelectionModel().popAndRestoreExpansionState();
-			
-			(( AbstractApplicationNode)selectedNode.getProjectRoot()).selectDescendantNodeForValue( newPool, navigatorSelectionModel());
-		}
+		navigatorSelectionModel().pushExpansionState();
+		ConnectionPoolAdapter newPool = session.addSequenceConnectionPool();
+
+		navigatorSelectionModel().popAndRestoreExpansionState();
+
+		(( AbstractApplicationNode)selectedNode.getProjectRoot()).selectDescendantNodeForValue( newPool, navigatorSelectionModel());
 	}
 
 	
