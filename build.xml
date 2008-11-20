@@ -51,7 +51,7 @@
         - build-core : compiles all components, excluding tests, utilities, and Oracle extensions
         - build-extension : compiles Oracle extensions and tests
         - build-test : compiles all tests, excluding Oracle extensions
-        - build-workbench-test : compiles the workbench tests        
+        - build-workbench-test : compiles the workbench tests
         - package-eclipselink-jar : packages eclipselink.jar
         - jar : packages eclipselink.jar
         - package-src-jar : packages source jar
@@ -118,11 +118,11 @@
     <!-- "top-level" target for creating the distribution archives. -->
     <target name="package-all" depends="package-eclipselink-bundles, package-src-jar, package-tst-src-jar, package-javadoc-zip, package-installer-zip"/>
 
-    <!-- Default ant target, compiles all components and tests, builds eclipselink.jar. -->
-    <target name="build" depends="build-core, package-eclipselink-jar, build-core-test" description="build all EclipseLink distribution files except docs"/>
-
     <!-- Compiles all components except tests, builds eclipselink.jar. -->
     <target name="build-eclipselink-jar" depends="build-core, package-eclipselink-jar" description="build all EclipseLink distribution files except docs and tests"/>
+
+    <!-- Default ant target, compiles all components and tests, builds eclipselink.jar. -->
+    <target name="build" depends="build-eclipselink-jar, build-core-test" description="build all EclipseLink distribution files except docs"/>
 
     <!-- Compiles all components and tests (excluding extensions). -->
     <target name="build-all-but-ext" depends="build, build-util, build-util-test"/>
@@ -184,7 +184,7 @@
     <!-- Compiles Oracle extensions and tests. -->
     <target name="build-oracle-extension">
         <ant antfile="build.xml" dir="${eclipselink.extension.oracle}"      target="build"/>
-        <ant antfile="build.xml" dir="${eclipselink.extension.oracle.test}" inheritAll="false" target="all"/>
+        <ant antfile="build.xml" dir="${eclipselink.extension.oracle.test}" target="build"/>
     </target>
 
     <!-- Compiles tests (excluding workbench, dbws, and Oracle extensions). -->

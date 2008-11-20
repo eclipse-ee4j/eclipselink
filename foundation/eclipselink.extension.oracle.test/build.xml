@@ -22,6 +22,7 @@
 *
 * Contributors:
 *     tware - initial API and implementation
+*     egwin - update to adopt calling standards
 #******************************************************************************/-->
 <!-- This ant project includes the following tasks:
         - all (default) : compiles all tests
@@ -33,59 +34,92 @@
         The build file currently only compiles the tests, but does not define targets for running them as they are run through core and jpa.
         It requires some configuration of the build.properties.
     -->
-<project name="Eclipse Persistence Services" default="all" basedir=".">
-    <!-- Allows a user to overide certain user specific properties. -->
+<project name="eclipselink.extension.oracle.test" default="build" basedir=".">
+    <available file="../${ant.project.name}" type="dir" property="oracle_test.is.local"/>
+    <!-- Test to make sure that the calling script doesn't inherit the variable -->
+    <!-- (should be set locally, and be destroyed upon return) -->
+    <fail message="Not running from '${ant.project.name}' directory" unless="oracle_test.is.local"/>
+
+    <dirname  property="oracle_test.build.location" file="${ant.file.eclipselink.extension.oracle.test}"/>
+    <condition property="oracle_test.2.common.plugins.dir" value="../../plugins" else="../plugins">
+        <contains string="${oracle_test.build.location}" substring="foundation"/>
+    </condition>
+    <condition property="oracle_test.2.jpa.test.dir" value="../../jpa/eclipselink.jpa.test" else="../eclipselink.jpa.test">
+        <contains string="${oracle_test.build.location}" substring="foundation"/>
+    </condition>
+    <property name="oracle_test.2.core.test.dir" value="../eclipselink.core.test"/>
+    <property name="oracle_test.plugins.dir" value="../plugins"/>
+
     <property file="${user.home}/build.properties"/>
     <property file="${user.home}/test.properties"/>
     <property name="eclipselink.extension.oracle.test" value="."/>
-    <property file="${eclipselink.extension.oracle.test}/build.properties"/>
-    <property file="${eclipselink.extension.oracle.test}/${test.properties}"/>
-    <property file="${eclipselink.extension.oracle.test}/test.properties"/>
+    <property file="build.properties"/>
+    <property file="${test.properties}"/>
+    <property file="test.properties"/>
 
     <!-- This checks<P> if the trunk was checked out, or just the Eclipse projects. -->
-    <available file="${eclipselink.extension.oracle.test}/${eclipselink.jpa.trunk}" type="dir" property="is.trunk"/>
-
-    <!-- Configures paths for trunk checkout. -->
-    <target name="config-trunk" if="is.trunk">
-        <property name="eclipselink.jpa.dir" value="${eclipselink.extension.oracle.test}/${eclipselink.jpa.trunk}"/>
-        <property name="eclipselink.jpa.test.dir" value="${eclipselink.extension.oracle.test}/${eclipselink.jpa.test.trunk}"/>
-        <antcall target="config-compile-path" inheritRefs="true"/>
-    </target>
-
-    <!-- Configures paths for Eclipse project checkout. -->
-    <target name="config-flat" unless="is.trunk">
-        <property name="eclipselink.jpa.dir" value="${eclipselink.extension.oracle.test}/${eclipselink.jpa}"/>
-        <property name="eclipselink.jpa.test.dir" value="${eclipselink.extension.oracle.test}/${eclipselink.jpa.test}"/>
-        <antcall target="config-compile-path" inheritRefs="true"/>
-    </target>
+    <!-- These variables  are set in autobuild.xml. A manual build gets defaults -->
+    <tstamp>
+       <format property="build.date" pattern="yyyyMMdd"/>
+    </tstamp>
+    <property name="build.type" value="SNAPSHOT"/>
+    <property name="svn.revision" value="NA"/>
+    <property name="version.string" value="${release.version}.${build.date}-${build.type}"/>
+    <property name="release.designation"  value="EclipseLink DeveloperBuild"/>
 
     <!-- Classpath used for compiling tests. -->
-    <target name="config-compile-path">
-        <path id="compile.path">
-            <fileset
-                dir="${eclipselink.plugins}"
+    <!-- target name="config-compile-path" -->
+    <path id="oracle_test.compile.path">
+        <pathelement path="${oracle_test.plugins.dir}/org.eclipse.persistence.oracle.jar"/>
+        <pathelement path="${oracle_test.2.common.plugins.dir}/org.eclipse.persistence.core_${version.string}.jar"/>
+        <pathelement path="${oracle_test.2.common.plugins.dir}/org.eclipse.persistence.jpa_${version.string}.jar"/>
+        <fileset
+            dir="${oracle_test.2.common.plugins.dir}"
                 includes="${eclipselink.core.depend}"/>
-            <pathelement path="${eclipselink.core}/${classes.dir}"/>
-            <pathelement path="${eclipselink.core.test}/${classes.dir}"/>
-            <pathelement path="${eclipselink.jpa.dir}/${classes.dir}"/>
-            <pathelement path="${eclipselink.jpa.test.dir}/${classes.dir}"/>
-            <pathelement path="${eclipselink.extension.oracle}/${classes.dir}"/>
-            <pathelement path="${eclipselink.jar.name}"/>
-            <fileset
-                dir="${oracle.extensions.depend.dir}"
-                includes="${oracle.extensions.depend.jars}"/>
-            <pathelement path="${junit.lib}"/>
+        <pathelement path="${oracle_test.2.core.test.dir}/${classes.dir}"/>
+        <pathelement path="${oracle_test.2.jpa.test.dir}/${classes.dir}"/>
+        <pathelement path="../../${eclipselink.jar.name}"/>
+        <fileset
+            dir="${oracle.extensions.depend.dir}"
+            includes="${oracle.extensions.depend.jars}"/>
+        <pathelement path="${junit.lib}"/>
         </path>
+    <!-- Classpath used for running tests. -->
+    <path id="run.classpath">
+        <pathelement path="${run.dir}"/>
+        <pathelement path="${eclipselink.oracle.depend.test.jar}"/>
+        <pathelement path="${jdbc.driver.jar}"/>
+        <path refid="oracle_test.compile.path"/>
+    </path>
+    <available file="${oracle_test.plugins.dir}/org.eclipse.persistence.oracle.jar" property="oracle.bundle.exist"/>
+    <available file="${oracle_test.2.common.plugins.dir}/org.eclipse.persistence.core_${version.string}.jar" property="core.bundle.exist"/>
+    <available file="${oracle_test.2.common.plugins.dir}/org.eclipse.persistence.jpa_${version.string}.jar"  property="jpa.bundle.exist"/>
+    <available file="${oracle.extensions.depend.dir}" type="dir" property="oracle.depend.dir.exist"/>
+
+    <!-- all -->
+    <target name="build" depends="clean, compile, package" description="build oracle component"/>
+
+    <!-- clean -->
+    <target name="clean" description="Clean all generated content">
+        <delete includeEmptyDirs="true" failonerror="false">
+            <fileset dir="${classes.dir}"/>
+            <fileset dir="${struct.converter.classes.dir}"/>
+            <fileset dir="${build.dir}"/>
+            <fileset file="${eclipselink.oracle.depend.test.jar}"/>
+            <fileset file="eclipselink-struct-converter-model-tests.jar"/>
+            <fileset file="eclipselink-struct-converter-model.jar"/>
+        </delete>
     </target>
 
-    <!-- Default ant target, compiles and jars tests, packages jpa structconverter jar, does not run tests. -->
-    <target name="all" depends="clean, compile, package-structconverter, package-structconverter-tests, build-jar" description="compiles tests, packages jpa structconverter jar"/>
-
     <!-- Compiles all tests. -->
-    <target name="compile" depends="config-trunk, config-flat" description="compile oracle tests">
-        <mkdir dir="${eclipselink.extension.oracle.test}/${classes.dir}"/>
-        <javac srcdir="${eclipselink.extension.oracle.test}/${src.dir}"
-               destdir="${eclipselink.extension.oracle.test}/${classes.dir}"
+    <target name="compile" description="Compile EclipseLink Oracle tests">
+        <fail message="Cannot find Extensions: '${oracle_test.plugins.dir}/org.eclipse.persistence.oracle.jar'." unless="oracle.bundle.exist"/>
+        <fail message="Cannot find Core: '${oracle_test.2.common.plugins.dir}/org.eclipse.persistence.core_${version.string}.jar'." unless="core.bundle.exist"/>
+        <fail message="Cannot find JPA: '${oracle_test.2.common.plugins.dir}/org.eclipse.persistence.jpa_${version.string}.jar'." unless="jpa.bundle.exist"/>
+        <fail message="Cannot find Dependency dir:'${oracle.extensions.depend.dir}'." unless="oracle.depend.dir.exist"/>
+        <mkdir dir="${classes.dir}"/>
+        <javac srcdir="${src.dir}"
+               destdir="${classes.dir}"
                includes="org/eclipse/persistence/**, java/sql/**"
                debug="${javac.debug}"
                optimize="${javac.optimize}"
@@ -94,65 +128,32 @@
                deprecation="${javac.deprecation}"
                failonerror="true"
                memoryMaximumSize="512m"
-               fork="true">
-            <classpath>
-                <path refid="compile.path"/>
-            </classpath>
-        </javac>
+               fork="true"
+               classpathref="oracle_test.compile.path"
+        />
     </target>
-
-    <!-- Package the structconverter JPA model jar. -->
-    <target name="package-structconverter">
-        <copy todir="${eclipselink.extension.oracle.test}/${build.dir}/${struct.converter.classes.dir}/META-INF">
-            <fileset dir="${eclipselink.extension.oracle.test}/resource/structconverter" includes="*.xml"/>
-        </copy>
-        <copy todir="${eclipselink.extension.oracle.test}/${build.dir}/${struct.converter.classes.dir}">
-            <fileset dir="${eclipselink.extension.oracle.test}/${classes.dir}"
-                     includes="org/eclipse/persistence/testing/models/jpa/structconverter/**"/>
-        </copy>
-        <jar jarfile="${eclipselink.extension.oracle.test}/eclipselink-struct-converter-model.jar">
-            <fileset dir="${eclipselink.extension.oracle.test}/${build.dir}/${struct.converter.classes.dir}">
-            </fileset>
+    
+    <target name="package">
+        <!-- Package the structconverter JPA model jar. -->
+        <jar jarfile="eclipselink-struct-converter-model.jar">
+            <zipfileset dir="resource/structconverter" includes="*.xml" prefix="META-INF"/>
+            <fileset dir="${classes.dir}"
+                     includes="org/eclipse/persistence/testing/models/jpa/**"/>
+        </jar>
+        <!-- Package the structconverter JPA tests jar. -->
+        <jar jarfile="eclipselink-struct-converter-model-tests.jar">
+            <fileset dir="${classes.dir}"
+                     includes="org/eclipse/persistence/testing/tests/jpa/**"/>
+        </jar>
+        <!-- Build tests jar. -->
+        <jar jarfile="${eclipselink.oracle.depend.test.jar}">
+            <fileset dir="${classes.dir}"
+                     includes="org/eclipse/persistence/**/*.class"
+                     excludes="org/eclipse/persistence/testing/models/jpa/**,
+                               org/eclipse/persistence/testing/tests/jpa/**"/>
         </jar>
     </target>
 
-    <!-- Package the structconverter JPA tests jar. -->
-    <target name="package-structconverter-tests">
-        <jar jarfile="${eclipselink.extension.oracle.test}/eclipselink-struct-converter-model-tests.jar">
-            <fileset dir="${eclipselink.extension.oracle.test}/${classes.dir}"
-                     includes="org/eclipse/persistence/testing/tests/spatial/jgeometry/**/*.class,
-                               org/eclipse/persistence/testing/tests/jpa/structconverter/**/*.class"/>
-        </jar>
-    </target>
-
-    <!-- Build tests jar. -->
-    <target name="build-jar" depends="compile" description="build a jar file other projects can use for dependancies if they cannot compile with oracle dependancies">
-      <jar jarfile="${eclipselink.extension.oracle.test}/${eclipselink.oracle.depend.test.jar}">
-          <fileset dir="${eclipselink.extension.oracle.test}/${classes.dir}">
-            <include name="org/eclipse/persistence/**/*.class"/>
-          </fileset>
-      </jar>
-    </target>
-
-    <!-- Clean all build generated content. -->
-    <target name="clean" description="Clean the build">
-        <delete includeEmptyDirs="true" failonerror="false">
-            <fileset dir="${eclipselink.extension.oracle.test}/${classes.dir}"/>
-            <fileset dir="${eclipselink.extension.oracle.test}/${struct.converter.classes.dir}"/>
-            <fileset dir="${eclipselink.extension.oracle.test}/${build.dir}"/>
-            <fileset dir="${eclipselink.extension.oracle.test}" includes="${eclipselink.oracle.depend.test.jar}"/>
-            <fileset dir="${eclipselink.extension.oracle.test}" includes="eclipselink-struct-converter-model-tests.jar"/>
-            <fileset dir="${eclipselink.extension.oracle.test}" includes="eclipselink-struct-converter-model.jar"/>
-        </delete>
-    </target>
-
-    <!-- Classpath used for running tests. -->
-    <path id="run.classpath">
-        <pathelement path="${eclipselink.extension.oracle.test}/${run.dir}"/>
-        <pathelement path="${eclipselink.extension.oracle.test}/${eclipselink.oracle.depend.test.jar}"/>
-        <pathelement path="${jdbc.driver.jar}"/>
-        <path refid="compile.path"/>
-    </path>
 
     <!-- Default test target, runs test.class from test.properties (default is OracleTestModel). -->
     <target name="test">
@@ -205,16 +206,16 @@ CREATE OR REPLACE TYPE MY_GEOMETRY AS OBJECT (id NUMBER, geom MDSYS.SDO_GEOMETRY
     </target>
 
     <!-- Launches the testing browser -->
-    <target name="test-browser" depends="config-trunk, config-flat">
+    <target name="test-browser">
         <echo>Running test browser</echo>
-        <mkdir dir="${eclipselink.extension.oracle.test}/${run.dir}"/>
-        <mkdir dir="${eclipselink.extension.oracle.test}/${report.dir}"/>
-        <copy file="${eclipselink.core.test}/${resource.dir}/java.policy.allpermissions" todir="${eclipselink.extension.oracle.test}/${run.dir}" overwrite="true"/>
+        <mkdir dir="${run.dir}"/>
+        <mkdir dir="${report.dir}"/>
+        <copy file="${eclipselink.core.test}/${resource.dir}/java.policy.allpermissions" todir="${run.dir}" overwrite="true"/>
         <java classname="org.eclipse.persistence.testing.framework.ui.TestingBrowserFrame"
              fork="true"
              maxmemory="512m"
              failonerror="false"
-             dir="${eclipselink.extension.oracle.test}/${run.dir}">
+             dir="${run.dir}">
             <jvmarg value="-Declipselink.logging.level=${logging.level}"/>
             <jvmarg value="-Ddb.driver=${db.driver}"/>
             <jvmarg value="-Ddb.url=${db.url}"/>
@@ -230,10 +231,10 @@ CREATE OR REPLACE TYPE MY_GEOMETRY AS OBJECT (id NUMBER, geom MDSYS.SDO_GEOMETRY
     </target>
 
     <!-- Generic target for running tests. -->
-    <target name="run-test" depends="config-trunk, config-flat">
+    <target name="run-test">
         <echo>Running test on ${DB_URL}</echo>
-        <mkdir dir="${eclipselink.extension.oracle.test}/${run.dir}"/>
-        <mkdir dir="${eclipselink.extension.oracle.test}/${report.dir}"/>
+        <mkdir dir="${run.dir}"/>
+        <mkdir dir="${report.dir}"/>
         <junit printsummary="yes" failureproperty="junit.failed" fork="yes" showoutput="true" maxmemory="512m" dir="${eclipselink.core.test}/${run.dir}">
             <jvmarg value="-Declipselink.logging.level=${logging.level}"/>
             <jvmarg value="-Ddb.driver=${db.driver}"/>
@@ -247,30 +248,30 @@ CREATE OR REPLACE TYPE MY_GEOMETRY AS OBJECT (id NUMBER, geom MDSYS.SDO_GEOMETRY
                 <path refid="run.classpath"/>
             </classpath>
             <formatter type="xml"/>
-            <test name="${TEST_CLASS}" haltonfailure="no" outfile="${eclipselink.extension.oracle.test}/${report.dir}/${TEST_CLASS}-test-results">
+            <test name="${TEST_CLASS}" haltonfailure="no" outfile="${report.dir}/${TEST_CLASS}-test-results">
             </test>
         </junit>
     </target>
 
     <target name="generate-report">
-        <junitreport todir="${eclipselink.extension.oracle.test}/${report.dir}">
-            <fileset dir="${eclipselink.extension.oracle.test}/${report.dir}">
+        <junitreport todir="${report.dir}">
+            <fileset dir="${report.dir}">
                 <include name="*test-results.xml"/>
             </fileset>
-            <report format="noframes" todir="${eclipselink.extension.oracle.test}/${report.dir}"/>
+            <report format="noframes" todir="${report.dir}"/>
         </junitreport>
     </target>
 
     <!-- Runs the test using the PromptTestRunner -->
-    <target name="run-test-prompt" depends="config-trunk, config-flat">
+    <target name="run-test-prompt">
         <echo>Running test on ${DB_URL}</echo>
-        <mkdir dir="${eclipselink.extension.oracle.test}/${run.dir}"/>
-        <mkdir dir="${eclipselink.extension.oracle.test}/${report.dir}"/>
+        <mkdir dir="${run.dir}"/>
+        <mkdir dir="${report.dir}"/>
         <java classname="org.eclipse.persistence.testing.framework.PromptTestRunner"
              fork="true"
              maxmemory="512m"
              failonerror="false"
-             dir="${eclipselink.extension.oracle.test}/${run.dir}">
+             dir="${run.dir}">
             <jvmarg value="-Declipselink.logging.level=${logging.level}"/>
             <jvmarg value="-Ddb.driver=${db.driver}"/>
             <jvmarg value="-Ddb.url=${DB_URL}"/>
