@@ -580,6 +580,7 @@ public class XMLMarshaller {
             if (root.getNoNamespaceSchemaLocation() != null) {
                 noNsSchemaLocation = root.getNoNamespaceSchemaLocation();
             }
+            marshalRecord.setLeafElementType(root.getSchemaType());
         }
 
         String xsiPrefix = null;

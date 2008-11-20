@@ -13,6 +13,7 @@
 package org.eclipse.persistence.sdo.helper.delegates;
 
 import commonj.sdo.DataObject;
+import commonj.sdo.Property;
 import commonj.sdo.helper.HelperContext;
 import commonj.sdo.helper.XMLDocument;
 import java.io.IOException;
@@ -424,6 +425,12 @@ public class SDOXMLHelperDelegate implements SDOXMLHelper {
         if (rootElementName != null) {
             document.setRootElementName(rootElementName);
         }
+        
+        Property globalProp = getHelperContext().getXSDHelper().getGlobalProperty(rootElementURI, rootElementName, true);
+        if (null != globalProp) {
+            document.setSchemaType(((SDOType) globalProp.getType()).getXsdType());
+        }
+        
         document.setEncoding(SDOXMLDocument.DEFAULT_XML_ENCODING);
         document.setXMLVersion(SDOXMLDocument.DEFAULT_XML_VERSION);
 

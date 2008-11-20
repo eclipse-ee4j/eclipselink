@@ -20,6 +20,7 @@ import org.eclipse.persistence.oxm.XMLConstants;
 import org.eclipse.persistence.oxm.XMLDescriptor;
 import org.eclipse.persistence.oxm.XMLField;
 import org.eclipse.persistence.oxm.mappings.*;
+import org.eclipse.persistence.oxm.mappings.nullpolicy.NullPolicy;
 import org.eclipse.persistence.sessions.Project;
 
 /**
@@ -562,7 +563,10 @@ public class SchemaModelProject extends Project {
 
         XMLDirectMapping defaultMapping = new XMLDirectMapping();
         defaultMapping.setAttributeName("defaultValue");
+        defaultMapping.setGetMethodName("getDefaultValue");
+        defaultMapping.setSetMethodName("setDefaultValue");
         defaultMapping.setXPath("@default");
+        ((NullPolicy) defaultMapping.getNullPolicy()).setSetPerformedForAbsentNode(false);
         descriptor.addMapping(defaultMapping);
 
         XMLDirectMapping fixedMapping = new XMLDirectMapping();
@@ -738,7 +742,10 @@ public class SchemaModelProject extends Project {
 
         XMLDirectMapping defaultMapping = new XMLDirectMapping();
         defaultMapping.setAttributeName("defaultValue");
+        defaultMapping.setGetMethodName("getDefaultValue");
+        defaultMapping.setSetMethodName("setDefaultValue");
         defaultMapping.setXPath("@default");
+        ((NullPolicy) defaultMapping.getNullPolicy()).setSetPerformedForAbsentNode(false);
         descriptor.addMapping(defaultMapping);
 
         XMLDirectMapping fixedMapping = new XMLDirectMapping();

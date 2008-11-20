@@ -20,6 +20,7 @@ public abstract class SimpleComponent {
     private String name;
     private String type;//should be a QName later
     private String defaultValue;
+    private boolean isSetDefaultValue = false;
     private String fixed;
     private Map attributesMap;
     private Annotation annotation;
@@ -54,6 +55,7 @@ public abstract class SimpleComponent {
 
     public void setDefaultValue(String defaultValue) {
         this.defaultValue = defaultValue;
+        isSetDefaultValue = true;
     }
 
     public String getDefaultValue() {
@@ -82,5 +84,9 @@ public abstract class SimpleComponent {
 
     public Annotation getAnnotation() {
         return annotation;
+    }
+    
+    public boolean isSetDefaultValue() {
+        return isSetDefaultValue;
     }
 }

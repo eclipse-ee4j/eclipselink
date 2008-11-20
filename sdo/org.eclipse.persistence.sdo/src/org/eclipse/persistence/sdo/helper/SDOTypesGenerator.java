@@ -1472,6 +1472,10 @@ public class SDOTypesGenerator {
         } else if (sc.getDefaultValue() != null) {
             Object convertedValue = convertDefaultValue(p.getType(), sc.getDefaultValue());
             p.setDefault(convertedValue);
+        } else {
+            if (p.getType().getQName().equals(SDOConstants.SDO_STRING.getQName()) && sc.isSetDefaultValue()) {
+                p.setDefault("");
+            }
         }
     }
 
