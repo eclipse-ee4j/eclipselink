@@ -78,7 +78,7 @@
                 includes="${eclipselink.core.depend}"/>
         <pathelement path="${oracle_test.2.core.test.dir}/${classes.dir}"/>
         <pathelement path="${oracle_test.2.jpa.test.dir}/${classes.dir}"/>
-        <pathelement path="../../${eclipselink.jar.name}"/>
+        <pathelement path="${eclipselink.jar.name}"/>
         <fileset
             dir="${oracle.extensions.depend.dir}"
             includes="${oracle.extensions.depend.jars}"/>
