@@ -117,7 +117,7 @@ public class WebSpherePlatform extends ServerPlatformBase {
             try {
                 Class args[] = new Class[1];
                 args[0] = getWebsphereConnectionClass();
-                this.vendorConnectionMethod = PrivilegedAccessHelper.getDeclaredMethod(getWebsphereUtilClass(), "getNativeConnection", new Class[0]);
+                this.vendorConnectionMethod = PrivilegedAccessHelper.getDeclaredMethod(getWebsphereUtilClass(), "getNativeConnection", args);
             } catch (NoSuchMethodException exception) {
                 getDatabaseSession().getSessionLog().logThrowable(SessionLog.WARNING, exception);
             }
@@ -133,7 +133,7 @@ public class WebSpherePlatform extends ServerPlatformBase {
     public Connection unwrapConnection(Connection connection) {
         if (getWebsphereConnectionClass().isInstance(connection) && getVendorConnectionMethod() != null) {
             try {
-                return (Connection) PrivilegedAccessHelper.invokeMethod(getVendorConnectionMethod(), connection);
+                return (Connection) PrivilegedAccessHelper.invokeMethod(getVendorConnectionMethod(), null, new Object[]{connection});
             } catch (IllegalAccessException exception) {
                 getDatabaseSession().getSessionLog().logThrowable(SessionLog.WARNING, exception);
             } catch (InvocationTargetException exception) {
