@@ -22,6 +22,7 @@ import javax.xml.namespace.QName;
 import javax.xml.transform.Source;
 
 import org.eclipse.persistence.exceptions.SDOException;
+import org.eclipse.persistence.internal.helper.ClassConstants;
 import org.eclipse.persistence.internal.oxm.XMLConversionManager;
 import org.eclipse.persistence.internal.oxm.schema.SchemaModelProject;
 import org.eclipse.persistence.internal.oxm.schema.model.All;
@@ -923,11 +924,9 @@ public class SDOTypesGenerator {
 
     private void processList(String targetNamespace, String defaultNamespace, String sdoTypeName, List list) {
         if (list != null) {
-            //String itemType = list.getItemType();
-            //SimpleType simpleType = list.getSimpleType();
             SDOType type = getSDOTypeForName(targetNamespace, defaultNamespace, sdoTypeName);
             type.setXsdList(true);
-
+            type.setInstanceClass(ClassConstants.List_Class);
             //TODO: process union spec page. 84
         }
     }
