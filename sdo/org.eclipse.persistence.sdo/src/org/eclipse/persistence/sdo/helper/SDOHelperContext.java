@@ -32,7 +32,10 @@ package org.eclipse.persistence.sdo.helper;
 import java.lang.reflect.Method;
 import java.util.concurrent.ConcurrentHashMap;
 
+import javax.management.AttributeChangeNotification;
 import javax.management.MBeanServer;
+import javax.management.Notification;
+import javax.management.NotificationListener;
 import javax.management.ObjectName;
 import javax.naming.Context;
 import javax.naming.InitialContext;
@@ -66,7 +69,6 @@ public class SDOHelperContext implements HelperContext {
 
     // Each application will have its own helper context - it is assumed that application 
     // names/loaders are unique within each active server instance
-    //private static Map<Object, HelperContext> helperContexts = new WeakHashMap<Object, HelperContext>();
     private static ConcurrentHashMap<Object, HelperContext> helperContexts = new ConcurrentHashMap<Object, HelperContext>();
     
     private static String OC4J_CLASSLOADER_NAME = "oracle";
@@ -78,10 +80,13 @@ public class SDOHelperContext implements HelperContext {
     private static final String WLS_ENV_CONTEXT_LOOKUP = "java:comp/env/jmx/runtime";
     private static final String WLS_CONTEXT_LOOKUP = "java:comp/jmx/runtime";
     private static final String WLS_SERVICE_KEY = "com.bea:Name=RuntimeService,Type=weblogic.management.mbeanservers.runtime.RuntimeServiceMBean";    
+    private static final String WLS_APP_RUNTIMES = "ApplicationRuntimes";    
     private static final String WLS_SERVER_RUNTIME = "ServerRuntime";    
     private static final String WLS_THREADPOOL_RUNTIME = "ThreadPoolRuntime";
     private static final String WLS_EXECUTE_THREAD_GET_METHOD_NAME = "getExecuteThread";
+    private static final String WLS_APPLICATION_NAME = "ApplicationName";
     private static final String WLS_APPLICATION_NAME_GET_METHOD_NAME = "getApplicationName";
+    private static final String WLS_ACTIVE_VERSION_STATE = "ActiveVersionState";
     private static final Class[] PARAMETER_TYPES = {};
     
     /**
@@ -174,10 +179,23 @@ public class SDOHelperContext implements HelperContext {
             if (existingCtx != null) {
                 hCtx = existingCtx;
             }
+            addNotificationListener(key);
         }
         return hCtx;
     }
 
+    /**
+     * ADVANCED:
+     * Remove the HelperContext for the application associated with a
+     * given key, if it exists in the map.
+     */
+    private static void resetHelperContext(Object key) {
+        HelperContext hCtx = helperContexts.get(key);
+        if (hCtx != null) {
+            helperContexts.remove(key);        
+        }
+    }
+    
     /**
      * INTERNAL:
      * This method will return the key to be used to store/retrieve the delegates
@@ -280,5 +298,60 @@ public class SDOHelperContext implements HelperContext {
             } catch (Exception e) {}
         }
         return null;
+    }
+    
+    /**
+     * INTERNAL:
+     * Adds a notification listener to the ApplicationRuntimeMBean instance with "ApplicationName" 
+     * attribute equals to 'applicationName'.  The listener will handle application re-deployment.
+     * If any errors occur, we will fail silently, i.e. the listener will not be added.
+     *  
+     * @param mapKey
+     */
+    private static void addNotificationListener(Object mapKey) {
+        if (Thread.currentThread().getContextClassLoader().getClass().getName().contains(WLS_CLASSLOADER_NAME) && getWLSMBeanServer() != null) {
+            try {
+                ObjectName service = new ObjectName(WLS_SERVICE_KEY);
+                ObjectName serverRuntime = (ObjectName) wlsMBeanServer.getAttribute(service, WLS_SERVER_RUNTIME);
+                ObjectName[] appRuntimes = (ObjectName[]) wlsMBeanServer.getAttribute(serverRuntime, WLS_APP_RUNTIMES);
+                for (int i=0; i < appRuntimes.length; i++) {
+                    try {
+                        ObjectName appRuntime = appRuntimes[i];
+                        Object appName = wlsMBeanServer.getAttribute(appRuntime, WLS_APPLICATION_NAME);
+                        if (appName != null && appName.toString().equals(mapKey)) {
+                            wlsMBeanServer.addNotificationListener(appRuntime, new MyNotificationListener(appName.toString()), null, null);
+                            break;
+                        }
+                    } catch (Exception ex) {}
+                }
+            } catch (Exception x) {}
+        }
+    }
+
+    /**
+     * INTERNAL:
+     * Inner class used to catch application re-deployment.  Upon notification of this event,
+     * the helper context for the given application will be removed from the helper context
+     * to application map.
+     */
+    private static class MyNotificationListener implements NotificationListener {
+        Object mapKey;
+        
+        public MyNotificationListener(Object mapKey) {
+            this.mapKey = mapKey;
+        }
+        
+        public void handleNotification(Notification notification, Object handback) {
+            if (notification instanceof AttributeChangeNotification) {
+                try {
+                    AttributeChangeNotification acn = (AttributeChangeNotification) notification;
+                    if (acn.getAttributeName().equals(WLS_ACTIVE_VERSION_STATE)) {
+                        if (acn.getNewValue().equals(new Integer(0))) {
+                            resetHelperContext(mapKey);
+                        }
+                    }
+                } catch (Exception x) {}
+            }
+        }
     }
 }
