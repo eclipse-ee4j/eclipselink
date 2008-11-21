@@ -30,8 +30,7 @@
 package org.eclipse.persistence.sdo.helper;
 
 import java.lang.reflect.Method;
-import java.util.Map;
-import java.util.WeakHashMap;
+import java.util.concurrent.ConcurrentHashMap;
 
 import javax.management.MBeanServer;
 import javax.management.ObjectName;
@@ -67,7 +66,8 @@ public class SDOHelperContext implements HelperContext {
 
     // Each application will have its own helper context - it is assumed that application 
     // names/loaders are unique within each active server instance
-    private static Map<Object, HelperContext> helperContexts = new WeakHashMap<Object, HelperContext>();
+    //private static Map<Object, HelperContext> helperContexts = new WeakHashMap<Object, HelperContext>();
+    private static ConcurrentHashMap<Object, HelperContext> helperContexts = new ConcurrentHashMap<Object, HelperContext>();
     
     private static String OC4J_CLASSLOADER_NAME = "oracle";
     private static String WLS_CLASSLOADER_NAME = "weblogic";
@@ -83,11 +83,20 @@ public class SDOHelperContext implements HelperContext {
     private static final String WLS_EXECUTE_THREAD_GET_METHOD_NAME = "getExecuteThread";
     private static final String WLS_APPLICATION_NAME_GET_METHOD_NAME = "getApplicationName";
     private static final Class[] PARAMETER_TYPES = {};
-
+    
+    /**
+     * The default constructor will use the current thread's context
+     * class loader.
+     */
     public SDOHelperContext() {
         this(Thread.currentThread().getContextClassLoader());
     }
 
+    /**
+     * This constructor creates the helper instances.
+     * 
+     * @param aClassLoader
+     */
     public SDOHelperContext(ClassLoader aClassLoader) {
         super();
         copyHelper = new SDOCopyHelper(this);
@@ -99,6 +108,9 @@ public class SDOHelperContext implements HelperContext {
         xsdHelper = new SDOXSDHelperDelegate(this);
     }
 
+    /**
+     * Reset the Type,XML and XSD helper instances.
+     */
     public void reset() {
         ((SDOTypeHelper)getTypeHelper()).reset();
         ((SDOXMLHelper)getXMLHelper()).reset();
@@ -147,17 +159,25 @@ public class SDOHelperContext implements HelperContext {
      * be a ClassLoader or a String (representing an application name).
      * A new context will be created and put in the map if none exists 
      * for the given key.
+     * 
+     * The key is assumed to be non-null -  getDelegateKey should always
+     * return either a string representing the application name (for WLS)
+     * or a class loader.  This is relevant since 'putIfAbsent' will 
+     * throw a null pointer exception if the key is null.   
      */
     public static HelperContext getHelperContext() {
         Object key = getDelegateMapKey();
         HelperContext hCtx = helperContexts.get(key);
         if (hCtx == null) {
             hCtx = new SDOHelperContext();
-            helperContexts.put(key, hCtx);
+            HelperContext existingCtx = helperContexts.putIfAbsent(key, hCtx);
+            if (existingCtx != null) {
+                hCtx = existingCtx;
+            }
         }
         return hCtx;
     }
-  
+
     /**
      * INTERNAL:
      * This method will return the key to be used to store/retrieve the delegates
@@ -199,6 +219,7 @@ public class SDOHelperContext implements HelperContext {
                 try {
                     Method getMethod = PrivilegedAccessHelper.getPublicMethod(executeThread.getClass(), WLS_APPLICATION_NAME_GET_METHOD_NAME, PARAMETER_TYPES, false);
                     delegateKey = PrivilegedAccessHelper.invokeMethod(getMethod, executeThread);
+                    // TODO:  remove this fix once ExecuteThread stops returning null
                     if (delegateKey == null) {
                         delegateKey = classLoader;
                     }
@@ -209,27 +230,18 @@ public class SDOHelperContext implements HelperContext {
     }
 
     /**
-     * INTERNAL:
-     * This convenience method will look up a WebLogic execute thread from the runtime 
-     * MBean tree.  The execute thread contains application information.  This code 
-     * will use the name of the current thread to lookup the corresponding ExecuteThread.
-     * The ExecuteThread will allow us to obtain the application name (and version, etc).
+     * Lazy load the WebLogic MBeanServer instance.
      * 
-     * Note that the MBeanServer and ThreadPoolRuntime instances will be cached for 
-     * performance.
-     * 
-     * @return application name or null if the name cannot be obtained
+     * @return
      */
-    private static Object getExecuteThread() {
-        // Lazy load the MBeanServer instance
+    private static MBeanServer getWLSMBeanServer() {
         if (wlsMBeanServer == null) {
             Context weblogicContext = null;
             try {
                 weblogicContext = new InitialContext();
                 try {
                     // The lookup string used depends on the context from which this class is being 
-                    // accessed, i.e. servlet, EJB, etc.
-                    // Try java:comp/env lookup
+                    // accessed, i.e. servlet, EJB, etc.  Try java:comp/env lookup
                     wlsMBeanServer = (MBeanServer) weblogicContext.lookup(WLS_ENV_CONTEXT_LOOKUP);
                 } catch (NamingException e) {
                     // Lookup failed - try java:comp
@@ -239,21 +251,33 @@ public class SDOHelperContext implements HelperContext {
                 }
             } catch (NamingException nex) {}
         }
-        
-        if (wlsMBeanServer != null) {
+        return wlsMBeanServer;
+    }
+    
+    /**
+     * INTERNAL:
+     * This convenience method will look up a WebLogic execute thread from the runtime 
+     * MBean tree.  The execute thread contains application information.  This code 
+     * will use the name of the current thread to lookup the corresponding ExecuteThread.
+     * The ExecuteThread will allow us to obtain the application name (and version, etc).
+     * 
+     * @return application name or null if the name cannot be obtained
+     */
+    private static Object getExecuteThread() {
+        if (getWLSMBeanServer() != null) {
             // Lazy load the ThreadPoolRuntime instance
             if (wlsThreadPoolRuntime == null) {
                 try {
                     ObjectName service = new ObjectName(WLS_SERVICE_KEY);
                     ObjectName serverRuntime = (ObjectName) wlsMBeanServer.getAttribute(service, WLS_SERVER_RUNTIME);
                     wlsThreadPoolRuntime = (ObjectName) wlsMBeanServer.getAttribute(serverRuntime, WLS_THREADPOOL_RUNTIME);
-                } catch (Exception x) {}
+                } catch (Exception x) {
+                    return null;
+                }
             }
-            if (wlsThreadPoolRuntime != null) {
-                try {
-                    return wlsMBeanServer.invoke(wlsThreadPoolRuntime, WLS_EXECUTE_THREAD_GET_METHOD_NAME, new Object[] { Thread.currentThread().getName() }, new String[] { String.class.getName() });
-                } catch (Exception e) {}
-            }
+            try {
+                return wlsMBeanServer.invoke(wlsThreadPoolRuntime, WLS_EXECUTE_THREAD_GET_METHOD_NAME, new Object[] { Thread.currentThread().getName() }, new String[] { String.class.getName() });
+            } catch (Exception e) {}
         }
         return null;
     }
