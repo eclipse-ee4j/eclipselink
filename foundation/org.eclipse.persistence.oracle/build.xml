@@ -24,6 +24,12 @@
 *     tware - initial API and implementation
 *     egwin - update to adopt calling standards
 #******************************************************************************/-->
+<!-- This ant project includes the following tasks:
+        - build (default) : cleans, compiles, and packages all tests
+        - clean   : cleans up all generated files and dirs
+        - compile : compiles all classes
+        - package : packages the oracle extensions OSGi bundle jar.
+-->
 <project name="org.eclipse.persistence.oracle" default="build" basedir=".">
     <available file="../${ant.project.name}" type="dir" property="oracle.is.local"/>
     <!-- Test to make sure that the calling script doesn't inherit the variable -->
@@ -32,12 +38,17 @@
 
     <dirname  property="oracle.build.location" file="${ant.file.org.eclipse.persistence.oracle}"/>
     <condition property="oracle.2.common.plugins.dir" value="../../plugins" else="../plugins">
-        <contains string="${oracle.build.location}" substring="oracle"/>
+        <contains string="${oracle.build.location}" substring="foundation"/>
     </condition>
     <property name="oracle.plugins.dir" value="../plugins"/>
     
     <property file="${user.home}/build.properties"/>
-    <property file="./build.properties"/>
+    <!-- Sets default junit.lib and all extensions.depend dir locations to defaults based upon discovered dir heirarchy -->
+    <!-- Must be defined after ${user.home}/build.properties is included to allow redefinition -->
+    <condition property="oracle.extensions.depend.dir" value="../../../extension.oracle.lib.external" else="../../extension.oracle.lib.external">
+        <contains string="${oracle.build.location}" substring="foundation"/>
+    </condition>
+    <property file="build.properties"/>
 
     <!-- versioning -->
     <!-- These variables  are set in autobuild.xml. A manual build gets defaults -->
@@ -50,6 +61,7 @@
     <property name="release.designation"  value="EclipseLink DeveloperBuild"/>
 
     <!-- Set Compile Path-->
+    <!-- Need multiple extensions dir includes because different systems are defaulting to different locations -->
     <path id="oracle.compile.path">
         <pathelement path="${oracle.2.common.plugins.dir}/org.eclipse.persistence.core_${version.string}.jar"/>
         <fileset
@@ -57,6 +69,9 @@
             includes="${eclipselink.core.depend}"/>
         <fileset
             dir="${oracle.extensions.depend.dir}"
+            includes="${oracle.extensions.depend.jars}"/>
+        <fileset
+            dir="${extensions.depend.dir}"
             includes="${oracle.extensions.depend.jars}"/>
     </path>
     <available file="${oracle.2.common.plugins.dir}/org.eclipse.persistence.core_${version.string}.jar" property="core.bundle.exist"/>

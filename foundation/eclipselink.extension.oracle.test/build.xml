@@ -25,15 +25,16 @@
 *     egwin - update to adopt calling standards
 #******************************************************************************/-->
 <!-- This ant project includes the following tasks:
-        - all (default) : compiles all tests
-        - compile : compiles all tests
-        - package.structconverter : packages JPA structure converter model jar
-        - package.structconverter.tests : packages JPA structure converter test jar
+        - build (default) : cleans, compiles, and packages all tests
+        - clean   : cleans up all generated files and dirs
+        - compile : compiles all test classes
+        - package : packages JPA structure converter model jar, JPA structure converter test jar, and eclipselink-oracle-depend-test.jar
         - test-oracle: Runs Core Oracle-specific tests
 
-        The build file currently only compiles the tests, but does not define targets for running them as they are run through core and jpa.
+        The build file currently only compiles the tests, but does not define functioning targets for running them
+        as they are run through core and jpa.
         It requires some configuration of the build.properties.
-    -->
+-->
 <project name="eclipselink.extension.oracle.test" default="build" basedir=".">
     <available file="../${ant.project.name}" type="dir" property="oracle_test.is.local"/>
     <!-- Test to make sure that the calling script doesn't inherit the variable -->
@@ -52,7 +53,15 @@
 
     <property file="${user.home}/build.properties"/>
     <property file="${user.home}/test.properties"/>
-    <property name="eclipselink.extension.oracle.test" value="."/>
+    <!-- Sets default junit.lib and all extensions.depend dir locations to defaults based upon discovered dir heirarchy -->
+    <!-- Must be defined after ${user.home}/build.properties is included to allow redefinition -->
+    <condition property="oracle.extensions.depend.dir" value="../../../extension.oracle.lib.external" else="../../extension.oracle.lib.external">
+        <contains string="${oracle_test.build.location}" substring="foundation"/>
+    </condition>
+    <condition property="extensions.depend.dir" value="../../../extension.lib.external" else="../../extension.lib.external">
+        <contains string="${oracle_test.build.location}" substring="foundation"/>
+    </condition>
+    <property name="junit.lib" value="${extensions.depend.dir}/junit.jar"/>
     <property file="build.properties"/>
     <property file="${test.properties}"/>
     <property file="test.properties"/>
@@ -69,6 +78,9 @@
 
     <!-- Classpath used for compiling tests. -->
     <!-- target name="config-compile-path" -->
+    <!-- Need multiple extensions dir includes because different systems are defaulting to different locations -->
+    <!-- Need ../.. for eclipselink.jar, because it is only refenced from component dir, but trunk defines without path. -->
+    <!--   However, only needed for trunk build, that is not going to be finding plugins bundles for compile/run -->
     <path id="oracle_test.compile.path">
         <pathelement path="${oracle_test.plugins.dir}/org.eclipse.persistence.oracle.jar"/>
         <pathelement path="${oracle_test.2.common.plugins.dir}/org.eclipse.persistence.core_${version.string}.jar"/>
@@ -78,9 +90,12 @@
                 includes="${eclipselink.core.depend}"/>
         <pathelement path="${oracle_test.2.core.test.dir}/${classes.dir}"/>
         <pathelement path="${oracle_test.2.jpa.test.dir}/${classes.dir}"/>
-        <pathelement path="${eclipselink.jar.name}"/>
+        <pathelement path="../../${eclipselink.jar.name}"/>
         <fileset
             dir="${oracle.extensions.depend.dir}"
+            includes="${oracle.extensions.depend.jars}"/>
+        <fileset
+            dir="${extensions.depend.dir}"
             includes="${oracle.extensions.depend.jars}"/>
         <pathelement path="${junit.lib}"/>
         </path>
@@ -103,8 +118,6 @@
     <target name="clean" description="Clean all generated content">
         <delete includeEmptyDirs="true" failonerror="false">
             <fileset dir="${classes.dir}"/>
-            <fileset dir="${struct.converter.classes.dir}"/>
-            <fileset dir="${build.dir}"/>
             <fileset file="${eclipselink.oracle.depend.test.jar}"/>
             <fileset file="eclipselink-struct-converter-model-tests.jar"/>
             <fileset file="eclipselink-struct-converter-model.jar"/>
@@ -210,7 +223,7 @@ CREATE OR REPLACE TYPE MY_GEOMETRY AS OBJECT (id NUMBER, geom MDSYS.SDO_GEOMETRY
         <echo>Running test browser</echo>
         <mkdir dir="${run.dir}"/>
         <mkdir dir="${report.dir}"/>
-        <copy file="${eclipselink.core.test}/${resource.dir}/java.policy.allpermissions" todir="${run.dir}" overwrite="true"/>
+        <copy file="${oracle_test.2.core.test.dir}/${resource.dir}/java.policy.allpermissions" todir="${run.dir}" overwrite="true"/>
         <java classname="org.eclipse.persistence.testing.framework.ui.TestingBrowserFrame"
              fork="true"
              maxmemory="512m"
@@ -235,7 +248,7 @@ CREATE OR REPLACE TYPE MY_GEOMETRY AS OBJECT (id NUMBER, geom MDSYS.SDO_GEOMETRY
         <echo>Running test on ${DB_URL}</echo>
         <mkdir dir="${run.dir}"/>
         <mkdir dir="${report.dir}"/>
-        <junit printsummary="yes" failureproperty="junit.failed" fork="yes" showoutput="true" maxmemory="512m" dir="${eclipselink.core.test}/${run.dir}">
+        <junit printsummary="yes" failureproperty="junit.failed" fork="yes" showoutput="true" maxmemory="512m" dir="${oracle_test.2.core.test.dir}/${run.dir}">
             <jvmarg value="-Declipselink.logging.level=${logging.level}"/>
             <jvmarg value="-Ddb.driver=${db.driver}"/>
             <jvmarg value="-Ddb.url=${DB_URL}"/>
