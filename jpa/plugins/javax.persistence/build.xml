@@ -86,6 +86,9 @@
     <!-- package -->
     <target name="package" description="package ${ant.project.name}">
         <jar jarfile="${package.dir}/${jpaproto.jar}" manifest="${jpaproto.resource.dir}/MANIFEST.MF">
+            <fileset dir="."
+                includes="readme.txt"
+            />
             <fileset dir="${classes.dir}"
                 includes="**"
             />
@@ -102,6 +105,9 @@
                 <attribute name="Bundle-Version"         value="${jpaproto.version}"/>
                 <attribute name="Eclipse-SourceBundle"   value="${ant.project.name};version=&quot;${jpaproto.version}&quot;"/>
             </manifest>
+            <fileset dir="."
+                includes="readme.txt"
+            />
             <fileset dir="${src.dir}"
                 includes="**"
             />
