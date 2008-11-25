@@ -230,6 +230,18 @@
                 <include name="${eclipselink.extension.oracle.bndl.prefix}.jar"/>
                 <exclude name="*source*.jar"/>
             </zipgroupfileset>
+            <!-- JPA 1.1/2.0 concurrent dev solution: New classes from javax.persistence 2.0 -->
+            <fileset
+                dir="${eclipselink.jpa.plugins}/javax.persistence/${classes.dir}"
+                includes="
+                    javax/persistence/Access.class,
+                    javax/persistence/AccessType.class,
+                    javax/persistence/Cache.class,
+                    javax/persistence/LockModeType.class,
+                    javax/persistence/LockTimeoutException.class,
+                    javax/persistence/PessimisticLockException.class,
+                    javax/persistence/NamedQuery.class
+            "/>
         </jar>
     </target>
 

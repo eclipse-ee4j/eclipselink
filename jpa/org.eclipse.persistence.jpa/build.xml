@@ -108,18 +108,6 @@
                 <include name="org/eclipse/persistence/jpa/*.xsd"/>
                 <include name="META-INF/services/javax.persistence.spi.PersistenceProvider"/>
             </fileset>
-            <!-- JPA 1.1/2.0 concurrent dev solution: New classes from javax.persistence 2.0 -->
-            <fileset
-                dir="../plugins/javax.persistence/${classes.dir}"
-                includes="
-                    javax/persistence/Access.class,
-                    javax/persistence/AccessType.class,
-                    javax/persistence/Cache.class,
-                    javax/persistence/LockModeType.class,
-                    javax/persistence/LockTimeoutException.class,
-                    javax/persistence/PessimisticLockException.class,
-                    javax/persistence/NamedQuery.class
-            "/>
         </jar>
         <jar jarfile="${jpa.2.common.plugins.dir}/${eclipselink.jpa.bndl.prefix}.source_${version.string}.jar">
              <manifest>
