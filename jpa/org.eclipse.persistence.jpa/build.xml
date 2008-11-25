@@ -67,7 +67,7 @@
     <available file="../${plugins.dir}/javax.persistence/${classes.dir}" type="dir" property="jpa2.classes.exist"/>
 
     <!-- all -->
-    <target name="build" depends="clean, compile, package" description="build JPA component"/>
+    <target name="build" depends="clean, compile, generate-manifest, package" description="build JPA component"/>
 
     <!-- clean -->
     <target name="clean" description="Clean all generated content">
@@ -127,17 +127,51 @@
         </jar>
     </target>
 
-    <!--  This target is used ONCE at the beginning of a release to update the bundle manifest files.  -->
-    <!--  Do not run it, or hook it up to the "build" target -->
-    <target name="update-manifest" if="svn.exec" description="update and check-in the manifest">
-        <filter token="VERSION" value="${release.version}"/>
-        <delete file="META-INF/MANIFEST.MF" failonerror="false"/>
-        <copy file="META-INF/MANIFEST.template" tofile="META-INF/MANIFEST.MF" filtering="true"/>
-        <exec executable="${svn.exec}" failonerror="false" logError="true">
-            <arg value="commit"/>
-            <arg value="-m ${version.string}"/>
-            <arg value="META-INF/MANIFEST.MF"/>
-        </exec>
+    <target name="generate-manifest" description="Generate the OSGi bundle manifest before jarring">
+        <delete file="META-INF/MANIFEST.MF" quiet="true"/>
+        <echo message="Manifest-Version: 1.0${line.separator}"                                                      file="META-INF/MANIFEST.MF" append="false"/>
+        <echo message="Bundle-ManifestVersion: 2${line.separator}"                                                  file="META-INF/MANIFEST.MF" append="true"/>
+        <echo message="Bundle-Name: EclipseLink JPA${line.separator}"                                               file="META-INF/MANIFEST.MF" append="true"/>
+        <echo message="Bundle-SymbolicName: ${ant.project.name}${line.separator}"                                   file="META-INF/MANIFEST.MF" append="true"/>
+        <echo message="Bundle-Version: ${release.version}${line.separator}"                                         file="META-INF/MANIFEST.MF" append="true"/>
+        <echo message="Require-Bundle: org.eclipse.persistence.core;bundle-version=&quot;${release.version}&quot;;visibility:=reexport${line.separator}" file="META-INF/MANIFEST.MF" append="true"/>
+        <echo message="Export-Package: org.eclipse.persistence.internal.jpa;version=&quot;${release.version}&quot;,${line.separator}"                    file="META-INF/MANIFEST.MF" append="true"/>
+        <echo message=" org.eclipse.persistence.internal.jpa.deployment;version=&quot;${release.version}&quot;,${line.separator}"                        file="META-INF/MANIFEST.MF" append="true"/>
+        <echo message=" org.eclipse.persistence.internal.jpa.deployment.osgi;version=&quot;${release.version}&quot;,${line.separator}"                   file="META-INF/MANIFEST.MF" append="true"/>
+        <echo message=" org.eclipse.persistence.internal.jpa.deployment.xml.parser;version=&quot;${release.version}&quot;,${line.separator}"             file="META-INF/MANIFEST.MF" append="true"/>
+        <echo message=" org.eclipse.persistence.internal.jpa.jdbc;version=&quot;${release.version}&quot;,${line.separator}"                              file="META-INF/MANIFEST.MF" append="true"/>
+        <echo message=" org.eclipse.persistence.internal.jpa.metadata;version=&quot;${release.version}&quot;,${line.separator}"                          file="META-INF/MANIFEST.MF" append="true"/>
+        <echo message=" org.eclipse.persistence.internal.jpa.metadata.accessors;version=&quot;${release.version}&quot;,${line.separator}"                file="META-INF/MANIFEST.MF" append="true"/>
+        <echo message=" org.eclipse.persistence.internal.jpa.metadata.accessors.classes;version=&quot;${release.version}&quot;,${line.separator}"        file="META-INF/MANIFEST.MF" append="true"/>
+        <echo message=" org.eclipse.persistence.internal.jpa.metadata.accessors.mappings;version=&quot;${release.version}&quot;,${line.separator}"       file="META-INF/MANIFEST.MF" append="true"/>
+        <echo message=" org.eclipse.persistence.internal.jpa.metadata.accessors.objects;version=&quot;${release.version}&quot;,${line.separator}"        file="META-INF/MANIFEST.MF" append="true"/>
+        <echo message=" org.eclipse.persistence.internal.jpa.metadata.cache;version=&quot;${release.version}&quot;,${line.separator}"                    file="META-INF/MANIFEST.MF" append="true"/>
+        <echo message=" org.eclipse.persistence.internal.jpa.metadata.changetracking;version=&quot;${release.version}&quot;,${line.separator}"           file="META-INF/MANIFEST.MF" append="true"/>
+        <echo message=" org.eclipse.persistence.internal.jpa.metadata.columns;version=&quot;${release.version}&quot;,${line.separator}"                  file="META-INF/MANIFEST.MF" append="true"/>
+        <echo message=" org.eclipse.persistence.internal.jpa.metadata.converters;version=&quot;${release.version}&quot;,${line.separator}"               file="META-INF/MANIFEST.MF" append="true"/>
+        <echo message=" org.eclipse.persistence.internal.jpa.metadata.copypolicy;version=&quot;${release.version}&quot;,${line.separator}"               file="META-INF/MANIFEST.MF" append="true"/>
+        <echo message=" org.eclipse.persistence.internal.jpa.metadata.inheritance;version=&quot;${release.version}&quot;,${line.separator}"              file="META-INF/MANIFEST.MF" append="true"/>
+        <echo message=" org.eclipse.persistence.internal.jpa.metadata.listeners;version=&quot;${release.version}&quot;,${line.separator}"                file="META-INF/MANIFEST.MF" append="true"/>
+        <echo message=" org.eclipse.persistence.internal.jpa.metadata.locking;version=&quot;${release.version}&quot;,${line.separator}"                  file="META-INF/MANIFEST.MF" append="true"/>
+        <echo message=" org.eclipse.persistence.internal.jpa.metadata.queries;version=&quot;${release.version}&quot;,${line.separator}"                  file="META-INF/MANIFEST.MF" append="true"/>
+        <echo message=" org.eclipse.persistence.internal.jpa.metadata.sequencing;version=&quot;${release.version}&quot;,${line.separator}"               file="META-INF/MANIFEST.MF" append="true"/>
+        <echo message=" org.eclipse.persistence.internal.jpa.metadata.tables;version=&quot;${release.version}&quot;,${line.separator}"                   file="META-INF/MANIFEST.MF" append="true"/>
+        <echo message=" org.eclipse.persistence.internal.jpa.metadata.transformers;version=&quot;${release.version}&quot;,${line.separator}"             file="META-INF/MANIFEST.MF" append="true"/>
+        <echo message=" org.eclipse.persistence.internal.jpa.metadata.xml;version=&quot;${release.version}&quot;,${line.separator}"                      file="META-INF/MANIFEST.MF" append="true"/>
+        <echo message=" org.eclipse.persistence.internal.jpa.transaction;version=&quot;${release.version}&quot;,${line.separator}"                       file="META-INF/MANIFEST.MF" append="true"/>
+        <echo message=" org.eclipse.persistence.jpa;version=&quot;${release.version}&quot;,${line.separator}"                                            file="META-INF/MANIFEST.MF" append="true"/>
+        <echo message=" org.eclipse.persistence.jpa.osgi;version=&quot;${release.version}&quot;,${line.separator}"                                       file="META-INF/MANIFEST.MF" append="true"/>
+        <echo message=" org.eclipse.persistence.tools.weaving.jpa;version=&quot;${release.version}&quot;${line.separator}"                               file="META-INF/MANIFEST.MF" append="true"/>
+        <echo message="Bundle-Activator: org.eclipse.persistence.jpa.osgi.Activator${line.separator}"                                             file="META-INF/MANIFEST.MF" append="true"/>
+        <echo message="Bundle-ClassPath: .${line.separator}"                                                                                      file="META-INF/MANIFEST.MF" append="true"/>
+        <echo message="Import-Package: javax.persistence;version=&quot;1.0.0&quot;,${line.separator}"                                                    file="META-INF/MANIFEST.MF" append="true"/>
+        <echo message=" javax.persistence.spi;version=&quot;1.0.0&quot;,${line.separator}"                                                               file="META-INF/MANIFEST.MF" append="true"/>
+        <echo message=" javax.transaction;version=&quot;1.1.0&quot;;resolution:=optional,${line.separator}"                                       file="META-INF/MANIFEST.MF" append="true"/>
+        <echo message=" org.apache.tools.ant;version=&quot;1.6.0&quot;;resolution:=optional,${line.separator}"                                    file="META-INF/MANIFEST.MF" append="true"/>
+        <echo message=" org.apache.tools.ant.types;version=&quot;1.6.0&quot;;resolution:=optional,${line.separator}"                              file="META-INF/MANIFEST.MF" append="true"/>
+        <echo message=" org.osgi.framework;resolution:=optional,${line.separator}"                                                                       file="META-INF/MANIFEST.MF" append="true"/>
+        <echo message=" org.osgi.service.packageadmin;resolution:=optional${line.separator}"                                                             file="META-INF/MANIFEST.MF" append="true"/>
+        <echo message="HK2-Bundle-Name: org.eclipse.persistence:${ant.project.name}${line.separator}"                                            file="META-INF/MANIFEST.MF" append="true"/>
     </target>
 
 </project>

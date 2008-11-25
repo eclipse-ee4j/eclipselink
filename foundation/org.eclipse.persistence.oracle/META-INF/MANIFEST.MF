@@ -2,15 +2,15 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: EclipseLink Oracle Extensions
 Bundle-SymbolicName: org.eclipse.persistence.oracle
-Bundle-Version: 1.1
-Export-Package: org.eclipse.persistence.eis.adapters.aq,
- org.eclipse.persistence.internal.eis.adapters.aq,
- org.eclipse.persistence.internal.platform.database.oracle,
- org.eclipse.persistence.internal.platform.database.oracle.xdb,
- org.eclipse.persistence.platform.database.oracle,
- org.eclipse.persistence.platform.database.oracle.converters,
- org.eclipse.persistence.platform.xml.xdk
-Require-Bundle: org.eclipse.persistence.core;bundle-version="[1.0.0,2.0.0)";visibility:=reexport
+Bundle-Version: 1.1.0
+Require-Bundle: org.eclipse.persistence.core;bundle-version="1.1.0";visibility:=reexport
+Export-Package: org.eclipse.persistence.eis.adapters.aq;version="1.1.0",
+ org.eclipse.persistence.internal.eis.adapters.aq;version="1.1.0",
+ org.eclipse.persistence.internal.platform.database.oracle;version="1.1.0",
+ org.eclipse.persistence.internal.platform.database.oracle.xdb;version="1.1.0",
+ org.eclipse.persistence.platform.database.oracle;version="1.1.0",
+ org.eclipse.persistence.platform.database.oracle.converters;version="1.1.0",
+ org.eclipse.persistence.platform.xml.xdk;version="1.1.0"
 Bundle-ClassPath: .
 Import-Package: javax.resource;version="1.5.0";resolution:=optional,
  javax.resource.cci;version="1.5.0"

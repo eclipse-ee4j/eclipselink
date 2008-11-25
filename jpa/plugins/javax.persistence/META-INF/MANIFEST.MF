@@ -1,10 +1,10 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
-Bundle-Name: JPA - Extended for OSGi
+Bundle-Name: JPA 2.0 Preview - Extended for OSGi
 Bundle-SymbolicName: javax.persistence
-Bundle-Version: 1.99
-Export-Package: javax.persistence;version="1.99.0",
- javax.persistence.spi;version="1.99.0"
+Bundle-Version: 1.99.1
+Export-Package: javax.persistence;version="1.99.1",
+ javax.persistence.spi;version="1.99.1"
 Bundle-Activator: javax.persistence.osgi.Activator
 Bundle-ClassPath: .
 Import-Package: org.osgi.framework;resolution:=optional,

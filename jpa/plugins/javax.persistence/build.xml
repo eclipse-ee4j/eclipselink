@@ -38,8 +38,8 @@
     </condition>
 
     <property name="jpaproto.version" value="1.99.0"/>
-    <property name="jpaproto.jar"     value="${ant.project.name}_${jpaproto.version}.jar"/>
-    <property name="jpaproto.src.jar" value="${ant.project.name}.source_${jpaproto.version}.jar"/>
+    <property name="jpaproto.jar"     value="${ant.project.name}_2.0_preview.jar"/>
+    <property name="jpaproto.src.jar" value="${ant.project.name}.source_2.0_preview.jar"/>
     <property name="src.dir"          value="src"/>
     <property name="package.dir"      value=".."/>
     <property name="classes.dir"      value="classes"/>
@@ -56,7 +56,7 @@
     </path>
 
     <!-- all -->
-    <target name="build" depends="clean, compile, package" description="build JAXB 2.0 Prototype component"/>
+    <target name="build" depends="clean, compile, generate-manifest, package" description="build JAXB 2.0 Prototype component"/>
 
     <target name="clean" description="Clean the build">
         <delete dir="${classes.dir}"  includeEmptyDirs="true" quiet="true"/>
@@ -100,7 +100,7 @@
         <jar jarfile="${package.dir}/${jpaproto.src.jar}">
             <manifest>
                 <attribute name="Bundle-ManifestVersion" value="2"/>
-                <attribute name="Bundle-Name"            value="EclipseLink JAXB 2.0 Prototype Source"/>
+                <attribute name="Bundle-Name"            value="EclipseLink's javax.persistence 2.0 Library Preview Source"/>
                 <attribute name="Bundle-SymbolicName"    value="${ant.project.name}"/>
                 <attribute name="Bundle-Version"         value="${jpaproto.version}"/>
                 <attribute name="Eclipse-SourceBundle"   value="${ant.project.name};version=&quot;${jpaproto.version}&quot;"/>
@@ -112,6 +112,21 @@
                 includes="**"
             />
         </jar>
+    </target>
+
+    <target name="generate-manifest" description="Generate the OSGi bundle manifest before jarring">
+        <delete file="${jpaproto.resource.dir}/MANIFEST.MF" quiet="true"/>
+        <echo message="Manifest-Version: 1.0${line.separator}"                                                      file="${jpaproto.resource.dir}/MANIFEST.MF" append="false"/>
+        <echo message="Bundle-ManifestVersion: 2${line.separator}"                                                  file="${jpaproto.resource.dir}/MANIFEST.MF" append="true"/>
+        <echo message="Bundle-Name: JPA 2.0 Preview - Extended for OSGi${line.separator}"                                       file="${jpaproto.resource.dir}/MANIFEST.MF" append="true"/>
+        <echo message="Bundle-SymbolicName: ${ant.project.name}${line.separator}"                                     file="${jpaproto.resource.dir}/MANIFEST.MF" append="true"/>
+        <echo message="Bundle-Version: ${jpaproto.version}${line.separator}"                                        file="${jpaproto.resource.dir}/MANIFEST.MF" append="true"/>
+        <echo message="Export-Package: javax.persistence;version=&quot;${jpaproto.version}&quot;,${line.separator}" file="${jpaproto.resource.dir}/MANIFEST.MF" append="true"/>
+        <echo message=" javax.persistence.spi;version=&quot;${jpaproto.version}&quot;${line.separator}"             file="${jpaproto.resource.dir}/MANIFEST.MF" append="true"/>
+        <echo message="Bundle-Activator: javax.persistence.osgi.Activator${line.separator}"                         file="${jpaproto.resource.dir}/MANIFEST.MF" append="true"/>
+        <echo message="Bundle-ClassPath: .${line.separator}"                                                        file="${jpaproto.resource.dir}/MANIFEST.MF" append="true"/>
+        <echo message="Import-Package: org.osgi.framework;resolution:=optional,${line.separator}"                   file="${jpaproto.resource.dir}/MANIFEST.MF" append="true"/>
+        <echo message=" org.osgi.util.tracker;resolution:=optional${line.separator}"                                file="${jpaproto.resource.dir}/MANIFEST.MF" append="true"/>
     </target>
 
 </project>

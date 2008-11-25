@@ -60,7 +60,7 @@
     <available file="${sdo.2.common.plugins.dir}/org.eclipse.persistence.core_${version.string}.jar" property="core.bundle.exist"/>
 
     <!-- all -->
-    <target name="build" depends="clean, compile, package" description="build SDO component"/>
+    <target name="build" depends="clean, compile, generate-manifest, package" description="build SDO component"/>
 
     <!-- clean -->
     <target name="clean" description="Clean all generated content">
@@ -112,16 +112,25 @@
         </jar>
     </target>
 
-    <!--  This target is used ONCE at the beginning of a release to update the bundle manifest files.  -->
-    <!--  Do not run it, or hook it up to the "build" target -->
-    <target name="update-manifest" if="svn.exec" description="update and check-in the manifest">
-        <filter token="VERSION" value="${release.version}"/>
-        <delete file="META-INF/MANIFEST.MF" failonerror="false"/>
-        <copy file="META-INF/MANIFEST.template" tofile="META-INF/MANIFEST.MF" filtering="true"/>
-        <exec executable="${svn.exec}" failonerror="false" logError="true">
-            <arg value="commit"/>
-            <arg value="-m ${version.string}"/>
-            <arg value="META-INF/MANIFEST.MF"/>
-        </exec>
+    <target name="generate-manifest" description="Generate the OSGi bundle manifest before jarring">                                                                                                               
+        <delete file="META-INF/MANIFEST.MF" quiet="true"/>                                                                                                                                                         
+        <echo message="Manifest-Version: 1.0${line.separator}"                                                      file="META-INF/MANIFEST.MF" append="false"/>                                                   
+        <echo message="Bundle-ManifestVersion: 2${line.separator}"                                                  file="META-INF/MANIFEST.MF" append="true"/>                                                    
+        <echo message="Bundle-Name: EclipseLink SDO${line.separator}"                                               file="META-INF/MANIFEST.MF" append="true"/>                                                   
+        <echo message="Bundle-SymbolicName: ${ant.project.name}${line.separator}"                                   file="META-INF/MANIFEST.MF" append="true"/>                                                    
+        <echo message="Bundle-Version: ${release.version}${line.separator}"                                         file="META-INF/MANIFEST.MF" append="true"/>                                                    
+        <echo message="Require-Bundle: org.eclipse.persistence.core;bundle-version=&quot;${release.version}&quot;;visibility:=reexport,${line.separator}" file="META-INF/MANIFEST.MF" append="true"/>              
+        <echo message=" org.eclipse.persistence.asm;bundle-version=&quot;${release.version}&quot;${line.separator}"                                       file="META-INF/MANIFEST.MF" append="true"/>              
+        <echo message="Export-Package: org.eclipse.persistence.sdo;version=&quot;${release.version}&quot;,${line.separator}"                              file="META-INF/MANIFEST.MF" append="true"/>
+        <echo message=" org.eclipse.persistence.sdo.helper;version=&quot;${release.version}&quot;,${line.separator}"                                      file="META-INF/MANIFEST.MF" append="true"/>
+        <echo message=" org.eclipse.persistence.sdo.helper.delegates;version=&quot;${release.version}&quot;,${line.separator}"                            file="META-INF/MANIFEST.MF" append="true"/>
+        <echo message=" org.eclipse.persistence.sdo.helper.extension;version=&quot;${release.version}&quot;,${line.separator}"                            file="META-INF/MANIFEST.MF" append="true"/>
+        <echo message=" org.eclipse.persistence.sdo.types;version=&quot;${release.version}&quot;,${line.separator}"                                       file="META-INF/MANIFEST.MF" append="true"/>
+        <echo message="Bundle-ClassPath: .${line.separator}"                                                                                              file="META-INF/MANIFEST.MF" append="true"/>
+        <echo message="Import-Package: commonj.sdo;version=&quot;2.1.0&quot;;resolution:=optional,${line.separator}"                                      file="META-INF/MANIFEST.MF" append="true"/>
+        <echo message=" commonj.sdo.helper;version=&quot;2.1.0&quot;;resolution:=optional,${line.separator}"                                              file="META-INF/MANIFEST.MF" append="true"/>
+        <echo message=" commonj.sdo.impl;version=&quot;2.1.0&quot;;resolution:=optional${line.separator}"                                                 file="META-INF/MANIFEST.MF" append="true"/>
+        <echo message="HK2-Bundle-Name: org.eclipse.persistence:${ant.project.name}${line.separator}"                                                     file="META-INF/MANIFEST.MF" append="true"/>
     </target>
+    
 </project>

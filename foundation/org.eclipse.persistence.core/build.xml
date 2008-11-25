@@ -76,7 +76,7 @@
     
 
     <!-- all -->
-    <target name="build" depends="clean, compile, package" description="build Core component"/>
+    <target name="build" depends="clean, compile, generate-manifest, package" description="build Core component"/>
 
     <!-- clean -->
     <target name="clean" description="Clean the build">
@@ -163,17 +163,165 @@
         </jar>
     </target>
 
-    <!--  This target is used ONCE at the beginning of a release to update the bundle manifest files.  -->
-    <!--  Do not run it, or hook it up to the "build" target -->
-    <target name="update-manifest" if="svn.exec" description="update and check-in the manifest">
-        <filter token="VERSION" value="${release.version}"/>
-        <delete file="META-INF/MANIFEST.MF" failonerror="false"/>
-        <copy file="META-INF/MANIFEST.template" tofile="META-INF/MANIFEST.MF" filtering="true"/>
-        <exec executable="${svn.exec}" failonerror="false" logError="true">
-            <arg value="commit"/>
-            <arg value="-m ${version.string}"/>
-            <arg value="META-INF/MANIFEST.MF"/>
-        </exec>
+    <target name="generate-manifest" description="Generate the OSGi bundle manifest before jarring">
+        <delete file="META-INF/MANIFEST.MF" quiet="true"/>
+        <echo message="Manifest-Version: 1.0${line.separator}"                                                      file="META-INF/MANIFEST.MF" append="false"/>
+        <echo message="Bundle-ManifestVersion: 2${line.separator}"                                                  file="META-INF/MANIFEST.MF" append="true"/>
+        <echo message="Bundle-Name: EclipseLink Core${line.separator}"                                               file="META-INF/MANIFEST.MF" append="true"/>
+        <echo message="Bundle-SymbolicName: ${ant.project.name}${line.separator}"                                   file="META-INF/MANIFEST.MF" append="true"/>
+        <echo message="Bundle-Version: ${release.version}${line.separator}"                                         file="META-INF/MANIFEST.MF" append="true"/>
+        <echo message="Require-Bundle: org.eclipse.persistence.antlr;bundle-version=&quot;${release.version}&quot;;resolution:=optional,${line.separator}"      file="META-INF/MANIFEST.MF" append="true"/>
+        <echo message=" org.eclipse.persistence.asm;bundle-version=&quot;${release.version}&quot;;resolution:=optional${line.separator}"                        file="META-INF/MANIFEST.MF" append="true"/>
+        <echo message="Export-Package: org.eclipse.persistence;version=&quot;${release.version}&quot;,${line.separator}"                                        file="META-INF/MANIFEST.MF" append="true"/>
+        <echo message=" org.eclipse.persistence.annotations;version=&quot;${release.version}&quot;,${line.separator}"                                           file="META-INF/MANIFEST.MF" append="true"/>
+        <echo message=" org.eclipse.persistence.config;version=&quot;${release.version}&quot;,${line.separator}"                                                file="META-INF/MANIFEST.MF" append="true"/>
+        <echo message=" org.eclipse.persistence.descriptors;version=&quot;${release.version}&quot;,${line.separator}"                                           file="META-INF/MANIFEST.MF" append="true"/>
+        <echo message=" org.eclipse.persistence.descriptors.changetracking;version=&quot;${release.version}&quot;,${line.separator}"                            file="META-INF/MANIFEST.MF" append="true"/>
+        <echo message=" org.eclipse.persistence.descriptors.copying;version=&quot;${release.version}&quot;,${line.separator}"                                   file="META-INF/MANIFEST.MF" append="true"/>
+        <echo message=" org.eclipse.persistence.descriptors.invalidation;version=&quot;${release.version}&quot;,${line.separator}"                              file="META-INF/MANIFEST.MF" append="true"/>
+        <echo message=" org.eclipse.persistence.eis;version=&quot;${release.version}&quot;,${line.separator}"                                                   file="META-INF/MANIFEST.MF" append="true"/>
+        <echo message=" org.eclipse.persistence.eis.adapters.jms;version=&quot;${release.version}&quot;,${line.separator}"                                      file="META-INF/MANIFEST.MF" append="true"/>
+        <echo message=" org.eclipse.persistence.eis.adapters.xmlfile;version=&quot;${release.version}&quot;,${line.separator}"                                  file="META-INF/MANIFEST.MF" append="true"/>
+        <echo message=" org.eclipse.persistence.eis.interactions;version=&quot;${release.version}&quot;,${line.separator}"                                      file="META-INF/MANIFEST.MF" append="true"/>
+        <echo message=" org.eclipse.persistence.eis.mappings;version=&quot;${release.version}&quot;,${line.separator}"                                          file="META-INF/MANIFEST.MF" append="true"/>
+        <echo message=" org.eclipse.persistence.exceptions;version=&quot;${release.version}&quot;,${line.separator}"                                            file="META-INF/MANIFEST.MF" append="true"/>
+        <echo message=" org.eclipse.persistence.exceptions.i18n;version=&quot;${release.version}&quot;,${line.separator}"                                       file="META-INF/MANIFEST.MF" append="true"/>
+        <echo message=" org.eclipse.persistence.expressions;version=&quot;${release.version}&quot;,${line.separator}"                                           file="META-INF/MANIFEST.MF" append="true"/>
+        <echo message=" org.eclipse.persistence.expressions.spatial;version=&quot;${release.version}&quot;,${line.separator}"                                   file="META-INF/MANIFEST.MF" append="true"/>
+        <echo message=" org.eclipse.persistence.history;version=&quot;${release.version}&quot;,${line.separator}"                                               file="META-INF/MANIFEST.MF" append="true"/>
+        <echo message=" org.eclipse.persistence.indirection;version=&quot;${release.version}&quot;,${line.separator}"                                           file="META-INF/MANIFEST.MF" append="true"/>
+        <echo message=" org.eclipse.persistence.internal.codegen;version=&quot;${release.version}&quot;,${line.separator}"                                      file="META-INF/MANIFEST.MF" append="true"/>
+        <echo message=" org.eclipse.persistence.internal.databaseaccess;version=&quot;${release.version}&quot;,${line.separator}"                               file="META-INF/MANIFEST.MF" append="true"/>
+        <echo message=" org.eclipse.persistence.internal.descriptors;version=&quot;${release.version}&quot;,${line.separator}"                                  file="META-INF/MANIFEST.MF" append="true"/>
+        <echo message=" org.eclipse.persistence.internal.descriptors.changetracking;version=&quot;${release.version}&quot;,${line.separator}"                   file="META-INF/MANIFEST.MF" append="true"/>
+        <echo message=" org.eclipse.persistence.internal.eis.adapters.jms;version=&quot;${release.version}&quot;,${line.separator}"                             file="META-INF/MANIFEST.MF" append="true"/>
+        <echo message=" org.eclipse.persistence.internal.eis.adapters.xmlfile;version=&quot;${release.version}&quot;,${line.separator}"                         file="META-INF/MANIFEST.MF" append="true"/>
+        <echo message=" org.eclipse.persistence.internal.eis.cobol;version=&quot;${release.version}&quot;,${line.separator}"                                    file="META-INF/MANIFEST.MF" append="true"/>
+        <echo message=" org.eclipse.persistence.internal.eis.cobol.helper;version=&quot;${release.version}&quot;,${line.separator}"                             file="META-INF/MANIFEST.MF" append="true"/>
+        <echo message=" org.eclipse.persistence.internal.expressions;version=&quot;${release.version}&quot;,${line.separator}"                                  file="META-INF/MANIFEST.MF" append="true"/>
+        <echo message=" org.eclipse.persistence.internal.helper;version=&quot;${release.version}&quot;,${line.separator}"                                       file="META-INF/MANIFEST.MF" append="true"/>
+        <echo message=" org.eclipse.persistence.internal.helper.linkedlist;version=&quot;${release.version}&quot;,${line.separator}"                            file="META-INF/MANIFEST.MF" append="true"/>
+        <echo message=" org.eclipse.persistence.internal.history;version=&quot;${release.version}&quot;,${line.separator}"                                      file="META-INF/MANIFEST.MF" append="true"/>
+        <echo message=" org.eclipse.persistence.internal.identitymaps;version=&quot;${release.version}&quot;,${line.separator}"                                 file="META-INF/MANIFEST.MF" append="true"/>
+        <echo message=" org.eclipse.persistence.internal.indirection;version=&quot;${release.version}&quot;,${line.separator}"                                  file="META-INF/MANIFEST.MF" append="true"/>
+        <echo message=" org.eclipse.persistence.internal.jpa.parsing;version=&quot;${release.version}&quot;,${line.separator}"                                  file="META-INF/MANIFEST.MF" append="true"/>
+        <echo message=" org.eclipse.persistence.internal.jpa.parsing.jpql;version=&quot;${release.version}&quot;,${line.separator}"                             file="META-INF/MANIFEST.MF" append="true"/>
+        <echo message=" org.eclipse.persistence.internal.jpa.parsing.jpql.antlr;version=&quot;${release.version}&quot;,${line.separator}"                       file="META-INF/MANIFEST.MF" append="true"/>
+        <echo message=" org.eclipse.persistence.internal.localization;version=&quot;${release.version}&quot;,${line.separator}"                                 file="META-INF/MANIFEST.MF" append="true"/>
+        <echo message=" org.eclipse.persistence.internal.localization.i18n;version=&quot;${release.version}&quot;,${line.separator}"                            file="META-INF/MANIFEST.MF" append="true"/>
+        <echo message=" org.eclipse.persistence.internal.oxm;version=&quot;${release.version}&quot;,${line.separator}"                                          file="META-INF/MANIFEST.MF" append="true"/>
+        <echo message=" org.eclipse.persistence.internal.oxm.conversion;version=&quot;${release.version}&quot;,${line.separator}"                               file="META-INF/MANIFEST.MF" append="true"/>
+        <echo message=" org.eclipse.persistence.internal.oxm.documentpreservation;version=&quot;${release.version}&quot;,${line.separator}"                     file="META-INF/MANIFEST.MF" append="true"/>
+        <echo message=" org.eclipse.persistence.internal.oxm.record;version=&quot;${release.version}&quot;,${line.separator}"                                   file="META-INF/MANIFEST.MF" append="true"/>
+        <echo message=" org.eclipse.persistence.internal.oxm.record.deferred;version=&quot;${release.version}&quot;,${line.separator}"                          file="META-INF/MANIFEST.MF" append="true"/>
+        <echo message=" org.eclipse.persistence.internal.oxm.schema;version=&quot;${release.version}&quot;,${line.separator}"                                   file="META-INF/MANIFEST.MF" append="true"/>
+        <echo message=" org.eclipse.persistence.internal.oxm.schema.model;version=&quot;${release.version}&quot;,${line.separator}"                             file="META-INF/MANIFEST.MF" append="true"/>
+        <echo message=" org.eclipse.persistence.internal.platform.database;version=&quot;${release.version}&quot;,${line.separator}"                            file="META-INF/MANIFEST.MF" append="true"/>
+        <echo message=" org.eclipse.persistence.internal.queries;version=&quot;${release.version}&quot;,${line.separator}"                                      file="META-INF/MANIFEST.MF" append="true"/>
+        <echo message=" org.eclipse.persistence.internal.security;version=&quot;${release.version}&quot;,${line.separator}"                                     file="META-INF/MANIFEST.MF" append="true"/>
+        <echo message=" org.eclipse.persistence.internal.sequencing;version=&quot;${release.version}&quot;,${line.separator}"                                   file="META-INF/MANIFEST.MF" append="true"/>
+        <echo message=" org.eclipse.persistence.internal.sessions;version=&quot;${release.version}&quot;,${line.separator}"                                     file="META-INF/MANIFEST.MF" append="true"/>
+        <echo message=" org.eclipse.persistence.internal.sessions.coordination;version=&quot;${release.version}&quot;,${line.separator}"                        file="META-INF/MANIFEST.MF" append="true"/>
+        <echo message=" org.eclipse.persistence.internal.sessions.coordination.broadcast;version=&quot;${release.version}&quot;,${line.separator}"              file="META-INF/MANIFEST.MF" append="true"/>
+        <echo message=" org.eclipse.persistence.internal.sessions.coordination.corba;version=&quot;${release.version}&quot;,${line.separator}"                  file="META-INF/MANIFEST.MF" append="true"/>
+        <echo message=" org.eclipse.persistence.internal.sessions.coordination.corba.sun;version=&quot;${release.version}&quot;,${line.separator}"              file="META-INF/MANIFEST.MF" append="true"/>
+        <echo message=" org.eclipse.persistence.internal.sessions.coordination.jms;version=&quot;${release.version}&quot;,${line.separator}"                    file="META-INF/MANIFEST.MF" append="true"/>
+        <echo message=" org.eclipse.persistence.internal.sessions.coordination.rmi;version=&quot;${release.version}&quot;,${line.separator}"                    file="META-INF/MANIFEST.MF" append="true"/>
+        <echo message=" org.eclipse.persistence.internal.sessions.coordination.rmi.iiop;version=&quot;${release.version}&quot;,${line.separator}"               file="META-INF/MANIFEST.MF" append="true"/>
+        <echo message=" org.eclipse.persistence.internal.sessions.factories;version=&quot;${release.version}&quot;,${line.separator}"                           file="META-INF/MANIFEST.MF" append="true"/>
+        <echo message=" org.eclipse.persistence.internal.sessions.factories.model;version=&quot;${release.version}&quot;,${line.separator}"                     file="META-INF/MANIFEST.MF" append="true"/>
+        <echo message=" org.eclipse.persistence.internal.sessions.factories.model.event;version=&quot;${release.version}&quot;,${line.separator}"               file="META-INF/MANIFEST.MF" append="true"/>
+        <echo message=" org.eclipse.persistence.internal.sessions.factories.model.log;version=&quot;${release.version}&quot;,${line.separator}"                 file="META-INF/MANIFEST.MF" append="true"/>
+        <echo message=" org.eclipse.persistence.internal.sessions.factories.model.login;version=&quot;${release.version}&quot;,${line.separator}"               file="META-INF/MANIFEST.MF" append="true"/>
+        <echo message=" org.eclipse.persistence.internal.sessions.factories.model.platform;version=&quot;${release.version}&quot;,${line.separator}"            file="META-INF/MANIFEST.MF" append="true"/>
+        <echo message=" org.eclipse.persistence.internal.sessions.factories.model.pool;version=&quot;${release.version}&quot;,${line.separator}"                file="META-INF/MANIFEST.MF" append="true"/>
+        <echo message=" org.eclipse.persistence.internal.sessions.factories.model.project;version=&quot;${release.version}&quot;,${line.separator}"             file="META-INF/MANIFEST.MF" append="true"/>
+        <echo message=" org.eclipse.persistence.internal.sessions.factories.model.property;version=&quot;${release.version}&quot;,${line.separator}"            file="META-INF/MANIFEST.MF" append="true"/>
+        <echo message=" org.eclipse.persistence.internal.sessions.factories.model.rcm;version=&quot;${release.version}&quot;,${line.separator}"                 file="META-INF/MANIFEST.MF" append="true"/>
+        <echo message=" org.eclipse.persistence.internal.sessions.factories.model.rcm.command;version=&quot;${release.version}&quot;,${line.separator}"         file="META-INF/MANIFEST.MF" append="true"/>
+        <echo message=" org.eclipse.persistence.internal.sessions.factories.model.sequencing;version=&quot;${release.version}&quot;,${line.separator}"          file="META-INF/MANIFEST.MF" append="true"/>
+        <echo message=" org.eclipse.persistence.internal.sessions.factories.model.session;version=&quot;${release.version}&quot;,${line.separator}"             file="META-INF/MANIFEST.MF" append="true"/>
+        <echo message=" org.eclipse.persistence.internal.sessions.factories.model.transport;version=&quot;${release.version}&quot;,${line.separator}"           file="META-INF/MANIFEST.MF" append="true"/>
+        <echo message=" org.eclipse.persistence.internal.sessions.factories.model.transport.discovery;version=&quot;${release.version}&quot;,${line.separator}" file="META-INF/MANIFEST.MF" append="true"/>
+        <echo message=" org.eclipse.persistence.internal.sessions.factories.model.transport.naming;version=&quot;${release.version}&quot;,${line.separator}"    file="META-INF/MANIFEST.MF" append="true"/>
+        <echo message=" org.eclipse.persistence.internal.sessions.remote;version=&quot;${release.version}&quot;,${line.separator}"                              file="META-INF/MANIFEST.MF" append="true"/>
+        <echo message=" org.eclipse.persistence.internal.weaving;version=&quot;${release.version}&quot;,${line.separator}"                                      file="META-INF/MANIFEST.MF" append="true"/>
+        <echo message=" org.eclipse.persistence.logging;version=&quot;${release.version}&quot;,${line.separator}"                                               file="META-INF/MANIFEST.MF" append="true"/>
+        <echo message=" org.eclipse.persistence.mappings;version=&quot;${release.version}&quot;,${line.separator}"                                              file="META-INF/MANIFEST.MF" append="true"/>
+        <echo message=" org.eclipse.persistence.mappings.converters;version=&quot;${release.version}&quot;,${line.separator}"                                   file="META-INF/MANIFEST.MF" append="true"/>
+        <echo message=" org.eclipse.persistence.mappings.foundation;version=&quot;${release.version}&quot;,${line.separator}"                                   file="META-INF/MANIFEST.MF" append="true"/>
+        <echo message=" org.eclipse.persistence.mappings.querykeys;version=&quot;${release.version}&quot;,${line.separator}"                                    file="META-INF/MANIFEST.MF" append="true"/>
+        <echo message=" org.eclipse.persistence.mappings.structures;version=&quot;${release.version}&quot;,${line.separator}"                                   file="META-INF/MANIFEST.MF" append="true"/>
+        <echo message=" org.eclipse.persistence.mappings.transformers;version=&quot;${release.version}&quot;,${line.separator}"                                 file="META-INF/MANIFEST.MF" append="true"/>
+        <echo message=" org.eclipse.persistence.mappings.xdb;version=&quot;${release.version}&quot;,${line.separator}"                                          file="META-INF/MANIFEST.MF" append="true"/>
+        <echo message=" org.eclipse.persistence.oxm;version=&quot;${release.version}&quot;,${line.separator}"                                                   file="META-INF/MANIFEST.MF" append="true"/>
+        <echo message=" org.eclipse.persistence.oxm.attachment;version=&quot;${release.version}&quot;,${line.separator}"                                        file="META-INF/MANIFEST.MF" append="true"/>
+        <echo message=" org.eclipse.persistence.oxm.documentpreservation;version=&quot;${release.version}&quot;,${line.separator}"                              file="META-INF/MANIFEST.MF" append="true"/>
+        <echo message=" org.eclipse.persistence.oxm.mappings;version=&quot;${release.version}&quot;,${line.separator}"                                          file="META-INF/MANIFEST.MF" append="true"/>
+        <echo message=" org.eclipse.persistence.oxm.mappings.converters;version=&quot;${release.version}&quot;,${line.separator}"                               file="META-INF/MANIFEST.MF" append="true"/>
+        <echo message=" org.eclipse.persistence.oxm.mappings.nullpolicy;version=&quot;${release.version}&quot;,${line.separator}"                               file="META-INF/MANIFEST.MF" append="true"/>
+        <echo message=" org.eclipse.persistence.oxm.platform;version=&quot;${release.version}&quot;,${line.separator}"                                          file="META-INF/MANIFEST.MF" append="true"/>
+        <echo message=" org.eclipse.persistence.oxm.record;version=&quot;${release.version}&quot;,${line.separator}"                                            file="META-INF/MANIFEST.MF" append="true"/>
+        <echo message=" org.eclipse.persistence.oxm.schema;version=&quot;${release.version}&quot;,${line.separator}"                                            file="META-INF/MANIFEST.MF" append="true"/>
+        <echo message=" org.eclipse.persistence.oxm.sequenced;version=&quot;${release.version}&quot;,${line.separator}"                                         file="META-INF/MANIFEST.MF" append="true"/>
+        <echo message=" org.eclipse.persistence.oxm.unmapped;version=&quot;${release.version}&quot;,${line.separator}"                                          file="META-INF/MANIFEST.MF" append="true"/>
+        <echo message=" org.eclipse.persistence.platform.database;version=&quot;${release.version}&quot;,${line.separator}"                                     file="META-INF/MANIFEST.MF" append="true"/>
+        <echo message=" org.eclipse.persistence.platform.database.converters;version=&quot;${release.version}&quot;,${line.separator}"                          file="META-INF/MANIFEST.MF" append="true"/>
+        <echo message=" org.eclipse.persistence.platform.database.jdbc;version=&quot;${release.version}&quot;,${line.separator}"                                file="META-INF/MANIFEST.MF" append="true"/>
+        <echo message=" org.eclipse.persistence.platform.database.oracle.plsql;version=&quot;${release.version}&quot;,${line.separator}"                        file="META-INF/MANIFEST.MF" append="true"/>
+        <echo message=" org.eclipse.persistence.platform.server;version=&quot;${release.version}&quot;,${line.separator}"                                       file="META-INF/MANIFEST.MF" append="true"/>
+        <echo message=" org.eclipse.persistence.platform.server.jboss;version=&quot;${release.version}&quot;,${line.separator}"                                 file="META-INF/MANIFEST.MF" append="true"/>
+        <echo message=" org.eclipse.persistence.platform.server.oc4j;version=&quot;${release.version}&quot;,${line.separator}"                                  file="META-INF/MANIFEST.MF" append="true"/>
+        <echo message=" org.eclipse.persistence.platform.server.sunas;version=&quot;${release.version}&quot;,${line.separator}"                                 file="META-INF/MANIFEST.MF" append="true"/>
+        <echo message=" org.eclipse.persistence.platform.server.was;version=&quot;${release.version}&quot;,${line.separator}"                                   file="META-INF/MANIFEST.MF" append="true"/>
+        <echo message=" org.eclipse.persistence.platform.server.wls;version=&quot;${release.version}&quot;,${line.separator}"                                   file="META-INF/MANIFEST.MF" append="true"/>
+        <echo message=" org.eclipse.persistence.platform.xml;version=&quot;${release.version}&quot;,${line.separator}"                                          file="META-INF/MANIFEST.MF" append="true"/>
+        <echo message=" org.eclipse.persistence.platform.xml.jaxp;version=&quot;${release.version}&quot;,${line.separator}"                                     file="META-INF/MANIFEST.MF" append="true"/>
+        <echo message=" org.eclipse.persistence.queries;version=&quot;${release.version}&quot;,${line.separator}"                                               file="META-INF/MANIFEST.MF" append="true"/>
+        <echo message=" org.eclipse.persistence.sequencing;version=&quot;${release.version}&quot;,${line.separator}"                                            file="META-INF/MANIFEST.MF" append="true"/>
+        <echo message=" org.eclipse.persistence.services;version=&quot;${release.version}&quot;,${line.separator}"                                              file="META-INF/MANIFEST.MF" append="true"/>
+        <echo message=" org.eclipse.persistence.services.mbean;version=&quot;${release.version}&quot;,${line.separator}"                                        file="META-INF/MANIFEST.MF" append="true"/>
+        <echo message=" org.eclipse.persistence.services.weblogic;version=&quot;${release.version}&quot;,${line.separator}"                                     file="META-INF/MANIFEST.MF" append="true"/>
+        <echo message=" org.eclipse.persistence.sessions;version=&quot;${release.version}&quot;,${line.separator}"                                              file="META-INF/MANIFEST.MF" append="true"/>
+        <echo message=" org.eclipse.persistence.sessions.broker;version=&quot;${release.version}&quot;,${line.separator}"                                       file="META-INF/MANIFEST.MF" append="true"/>
+        <echo message=" org.eclipse.persistence.sessions.changesets;version=&quot;${release.version}&quot;,${line.separator}"                                   file="META-INF/MANIFEST.MF" append="true"/>
+        <echo message=" org.eclipse.persistence.sessions.coordination;version=&quot;${release.version}&quot;,${line.separator}"                                 file="META-INF/MANIFEST.MF" append="true"/>
+        <echo message=" org.eclipse.persistence.sessions.coordination.broadcast;version=&quot;${release.version}&quot;,${line.separator}"                       file="META-INF/MANIFEST.MF" append="true"/>
+        <echo message=" org.eclipse.persistence.sessions.coordination.corba;version=&quot;${release.version}&quot;,${line.separator}"                           file="META-INF/MANIFEST.MF" append="true"/>
+        <echo message=" org.eclipse.persistence.sessions.coordination.corba.sun;version=&quot;${release.version}&quot;,${line.separator}"                       file="META-INF/MANIFEST.MF" append="true"/>
+        <echo message=" org.eclipse.persistence.sessions.coordination.jms;version=&quot;${release.version}&quot;,${line.separator}"                             file="META-INF/MANIFEST.MF" append="true"/>
+        <echo message=" org.eclipse.persistence.sessions.coordination.rmi;version=&quot;${release.version}&quot;,${line.separator}"                             file="META-INF/MANIFEST.MF" append="true"/>
+        <echo message=" org.eclipse.persistence.sessions.factories;version=&quot;${release.version}&quot;,${line.separator}"                                    file="META-INF/MANIFEST.MF" append="true"/>
+        <echo message=" org.eclipse.persistence.sessions.interceptors;version=&quot;${release.version}&quot;,${line.separator}"                                 file="META-INF/MANIFEST.MF" append="true"/>
+        <echo message=" org.eclipse.persistence.sessions.remote;version=&quot;${release.version}&quot;,${line.separator}"                                       file="META-INF/MANIFEST.MF" append="true"/>
+        <echo message=" org.eclipse.persistence.sessions.remote.corba.sun;version=&quot;${release.version}&quot;,${line.separator}"                             file="META-INF/MANIFEST.MF" append="true"/>
+        <echo message=" org.eclipse.persistence.sessions.remote.rmi;version=&quot;${release.version}&quot;,${line.separator}"                                   file="META-INF/MANIFEST.MF" append="true"/>
+        <echo message=" org.eclipse.persistence.sessions.remote.rmi.iiop;version=&quot;${release.version}&quot;,${line.separator}"                              file="META-INF/MANIFEST.MF" append="true"/>
+        <echo message=" org.eclipse.persistence.sessions.server;version=&quot;${release.version}&quot;,${line.separator}"                                       file="META-INF/MANIFEST.MF" append="true"/>
+        <echo message=" org.eclipse.persistence.tools;version=&quot;${release.version}&quot;,${line.separator}"                                                 file="META-INF/MANIFEST.MF" append="true"/>
+        <echo message=" org.eclipse.persistence.tools.file;version=&quot;${release.version}&quot;,${line.separator}"                                            file="META-INF/MANIFEST.MF" append="true"/>
+        <echo message=" org.eclipse.persistence.tools.profiler;version=&quot;${release.version}&quot;,${line.separator}"                                        file="META-INF/MANIFEST.MF" append="true"/>
+        <echo message=" org.eclipse.persistence.tools.schemaframework;version=&quot;${release.version}&quot;,${line.separator}"                                 file="META-INF/MANIFEST.MF" append="true"/>
+        <echo message=" org.eclipse.persistence.transaction;version=&quot;${release.version}&quot;,${line.separator}"                                           file="META-INF/MANIFEST.MF" append="true"/>
+        <echo message=" org.eclipse.persistence.transaction.jboss;version=&quot;${release.version}&quot;,${line.separator}"                                     file="META-INF/MANIFEST.MF" append="true"/>
+        <echo message=" org.eclipse.persistence.transaction.oc4j;version=&quot;${release.version}&quot;,${line.separator}"                                      file="META-INF/MANIFEST.MF" append="true"/>
+        <echo message=" org.eclipse.persistence.transaction.sunas;version=&quot;${release.version}&quot;,${line.separator}"                                     file="META-INF/MANIFEST.MF" append="true"/>
+        <echo message=" org.eclipse.persistence.transaction.was;version=&quot;${release.version}&quot;,${line.separator}"                                       file="META-INF/MANIFEST.MF" append="true"/>
+        <echo message=" org.eclipse.persistence.transaction.wls;version=&quot;${release.version}&quot;,${line.separator}"                                       file="META-INF/MANIFEST.MF" append="true"/>
+        <echo message=" xsd;version=&quot;${release.version}&quot;${line.separator}"                                                                            file="META-INF/MANIFEST.MF" append="true"/>
+        <echo message="Bundle-ClassPath: .${line.separator}"                                                                                                    file="META-INF/MANIFEST.MF" append="true"/>
+        <echo message="Import-Package: javax.activation;version=&quot;1.1.0&quot;;resolution:=optional,${line.separator}"                                       file="META-INF/MANIFEST.MF" append="true"/>
+        <echo message=" javax.jms;version=&quot;1.1.0&quot;;resolution:=optional,${line.separator}"                                                             file="META-INF/MANIFEST.MF" append="true"/>
+        <echo message=" javax.mail;version=&quot;1.4.0&quot;;resolution:=optional,${line.separator}"                                                            file="META-INF/MANIFEST.MF" append="true"/>
+        <echo message=" javax.mail.internet;version=&quot;1.4.0&quot;;resolution:=optional,${line.separator}"                                                   file="META-INF/MANIFEST.MF" append="true"/>
+        <echo message=" javax.persistence;version=&quot;1.0.0&quot;;resolution:=optional,${line.separator}"                                                     file="META-INF/MANIFEST.MF" append="true"/>
+        <echo message=" javax.persistence.spi;version=&quot;1.0.0&quot;;resolution:=optional,${line.separator}"                                                 file="META-INF/MANIFEST.MF" append="true"/>
+        <echo message=" javax.resource;version=&quot;1.5.0&quot;;resolution:=optional,${line.separator}"                                                        file="META-INF/MANIFEST.MF" append="true"/>
+        <echo message=" javax.resource.cci;version=&quot;1.5.0&quot;;resolution:=optional,${line.separator}"                                                    file="META-INF/MANIFEST.MF" append="true"/>
+        <echo message=" javax.transaction;version=&quot;1.1.0&quot;;resolution:=optional,${line.separator}"                                                     file="META-INF/MANIFEST.MF" append="true"/>
+        <echo message=" org.w3c.dom;version=&quot;3.0.0&quot;;resolution:=optional${line.separator}"                                                            file="META-INF/MANIFEST.MF" append="true"/>
+        <echo message="HK2-Bundle-Name: org.eclipse.persistence:${ant.project.name}${line.separator}"                                                  file="META-INF/MANIFEST.MF" append="true"/>
+        <echo message="Premain-Class: org.eclipse.persistence.internal.jpa.deployment.JavaSECMPInitializerAgent${line.separator}"                               file="META-INF/MANIFEST.MF" append="true"/>
     </target>
-    
+
 </project>

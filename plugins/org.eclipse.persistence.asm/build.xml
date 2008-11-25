@@ -50,7 +50,7 @@
     <property name="asm.classes.dir" value="."/>
 
     <!-- build -->
-    <target name="build" depends="clean, package" description="build asm"/>
+    <target name="build" depends="clean, generate-manifest, package" description="build asm"/>
 
     <!-- clean -->
     <target name="clean" description="clean the build">
@@ -80,17 +80,23 @@
         </jar>
     </target>
 
-    <!--  This target is used ONCE at the beginning of a release to update the bundle manifest files.  -->
-    <!--  Do not run it, or hook it up to the "build" target -->
-    <target name="update-manifest" if="svn.exec" description="update and check-in the manifest">
-        <filter token="VERSION" value="${release.version}"/>
-        <delete file="META-INF/MANIFEST.MF" failonerror="false"/>
-        <copy file="META-INF/MANIFEST.template" tofile="META-INF/MANIFEST.MF" filtering="true"/>
-        <exec executable="${svn.exec}" failonerror="false" logError="true">
-            <arg value="commit"/>
-            <arg value="-m ${version.string}"/>
-            <arg value="META-INF/MANIFEST.MF"/>
-        </exec>
+    <target name="generate-manifest" description="Generate the OSGi bundle manifest before jarring">
+        <delete file="META-INF/MANIFEST.MF" quiet="true"/>
+        <echo message="Manifest-Version: 1.0${line.separator}"                                                      file="META-INF/MANIFEST.MF" append="false"/>
+        <echo message="Bundle-ManifestVersion: 2${line.separator}"                                                  file="META-INF/MANIFEST.MF" append="true"/>
+        <echo message="Bundle-Name: EclipseLink ASM${line.separator}"                                 file="META-INF/MANIFEST.MF" append="true"/>
+        <echo message="Bundle-SymbolicName: ${ant.project.name}${line.separator}"                                   file="META-INF/MANIFEST.MF" append="true"/>
+        <echo message="Bundle-Version: ${release.version}${line.separator}"                                         file="META-INF/MANIFEST.MF" append="true"/>
+        <echo message="Export-Package: org.eclipse.persistence.internal.libraries.asm;version=&quot;${release.version}&quot;,${line.separator}" file="META-INF/MANIFEST.MF" append="true"/>
+        <echo message=" org.eclipse.persistence.internal.libraries.asm.attrs;version=&quot;${release.version}&quot;,${line.separator}"          file="META-INF/MANIFEST.MF" append="true"/>
+        <echo message=" org.eclipse.persistence.internal.libraries.asm.commons;version=&quot;${release.version}&quot;,${line.separator}"        file="META-INF/MANIFEST.MF" append="true"/>
+        <echo message=" org.eclipse.persistence.internal.libraries.asm.tree;version=&quot;${release.version}&quot;,${line.separator}"           file="META-INF/MANIFEST.MF" append="true"/>
+        <echo message=" org.eclipse.persistence.internal.libraries.asm.tree.analysis;version=&quot;${release.version}&quot;,${line.separator}"  file="META-INF/MANIFEST.MF" append="true"/>
+        <echo message=" org.eclipse.persistence.internal.libraries.asm.util;version=&quot;${release.version}&quot;,${line.separator}"           file="META-INF/MANIFEST.MF" append="true"/>
+        <echo message=" org.eclipse.persistence.internal.libraries.asm.util.attrs;version=&quot;${release.version}&quot;,${line.separator}"     file="META-INF/MANIFEST.MF" append="true"/>
+        <echo message=" org.eclipse.persistence.internal.libraries.asm.xml;version=&quot;${release.version}&quot;${line.separator}"             file="META-INF/MANIFEST.MF" append="true"/>
+        <echo message="Bundle-ClassPath: .${line.separator}"                                                                                    file="META-INF/MANIFEST.MF" append="true"/>
+        <echo message="HK2-Bundle-Name: org.eclipse.persistence:${ant.project.name}${line.separator}"                                           file="META-INF/MANIFEST.MF" append="true"/>
     </target>
     
 </project>

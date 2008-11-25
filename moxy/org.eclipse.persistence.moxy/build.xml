@@ -64,7 +64,7 @@
     <available file="${moxy.2.common.plugins.dir}/org.eclipse.persistence.core_${version.string}.jar" property="core.bundle.exist"/>
 
     <!-- all -->
-    <target name="build" depends="clean, compile, package" description="build MOXY component"/>
+    <target name="build" depends="clean, compile, generate-manifest, package" description="build MOXy component"/>
 
     <!-- clean -->
     <target name="clean" description="Clean the build">
@@ -114,17 +114,35 @@
         </jar>
     </target>
 
-    <!--  This target is used ONCE at the beginning of a release to update the bundle manifest files.  -->
-    <!--  Do not run it, or hook it up to the "build" target -->
-    <target name="update-manifest" if="svn.exec" description="update and check-in the manifest">
-        <filter token="VERSION" value="${release.version}"/>
-        <delete file="META-INF/MANIFEST.MF" failonerror="false"/>
-        <copy file="META-INF/MANIFEST.template" tofile="META-INF/MANIFEST.MF" filtering="true"/>
-        <exec executable="${svn.exec}" failonerror="false" logError="true">
-            <arg value="commit"/>
-            <arg value="-m ${version.string}"/>
-            <arg value="META-INF/MANIFEST.MF"/>
-        </exec>
+    <target name="generate-manifest" description="Generate the OSGi bundle manifest before jarring">                                                                                                               
+        <delete file="META-INF/MANIFEST.MF" quiet="true"/>                                                                                                                                                         
+        <echo message="Manifest-Version: 1.0${line.separator}"                                                      file="META-INF/MANIFEST.MF" append="false"/>                                                   
+        <echo message="Bundle-ManifestVersion: 2${line.separator}"                                                  file="META-INF/MANIFEST.MF" append="true"/>                                                    
+        <echo message="Bundle-Name: EclipseLink MOXy${line.separator}"                                               file="META-INF/MANIFEST.MF" append="true"/>                                                   
+        <echo message="Bundle-SymbolicName: ${ant.project.name}${line.separator}"                                   file="META-INF/MANIFEST.MF" append="true"/>                                                    
+        <echo message="Bundle-Version: ${release.version}${line.separator}"                                         file="META-INF/MANIFEST.MF" append="true"/>                                                    
+        <echo message="Require-Bundle: org.eclipse.persistence.core;bundle-version=&quot;${release.version}&quot;;visibility:=reexport,${line.separator}" file="META-INF/MANIFEST.MF" append="true"/>              
+        <echo message=" org.eclipse.persistence.asm;bundle-version=&quot;${release.version}&quot;${line.separator}"                                       file="META-INF/MANIFEST.MF" append="true"/>              
+        <echo message="Export-Package: org.eclipse.persistence.internal.jaxb;version=&quot;${release.version}&quot;,${line.separator}"                    file="META-INF/MANIFEST.MF" append="true"/>
+        <echo message=" org.eclipse.persistence.jaxb;version=&quot;${release.version}&quot;,${line.separator}"                                            file="META-INF/MANIFEST.MF" append="true"/>
+        <echo message=" org.eclipse.persistence.jaxb.attachment;version=&quot;${release.version}&quot;,${line.separator}"                                 file="META-INF/MANIFEST.MF" append="true"/>
+        <echo message=" org.eclipse.persistence.jaxb.compiler;version=&quot;${release.version}&quot;,${line.separator}"                                   file="META-INF/MANIFEST.MF" append="true"/>
+        <echo message=" org.eclipse.persistence.jaxb.javamodel;version=&quot;${release.version}&quot;,${line.separator}"                                  file="META-INF/MANIFEST.MF" append="true"/>
+        <echo message=" org.eclipse.persistence.jaxb.javamodel.reflection;version=&quot;${release.version}&quot;${line.separator}"                        file="META-INF/MANIFEST.MF" append="true"/>
+        <echo message="Bundle-ClassPath: .${line.separator}"                                                                                              file="META-INF/MANIFEST.MF" append="true"/>
+        <echo message="Import-Package: javax.activation;version=&quot;1.1.0&quot;;resolution:=optional,${line.separator}"                                 file="META-INF/MANIFEST.MF" append="true"/>
+        <echo message=" javax.mail;version=&quot;1.4.0&quot;;resolution:=optional,${line.separator}"                                                      file="META-INF/MANIFEST.MF" append="true"/>
+        <echo message=" javax.xml.bind;version=&quot;2.0.0&quot;;resolution:=optional,${line.separator}"                                                  file="META-INF/MANIFEST.MF" append="true"/>
+        <echo message=" javax.xml.bind.annotation;version=&quot;2.0.0&quot;;resolution:=optional,${line.separator}"                                       file="META-INF/MANIFEST.MF" append="true"/>
+        <echo message=" javax.xml.bind.annotation.adapters;version=&quot;2.0.0&quot;;resolution:=optional,${line.separator}"                              file="META-INF/MANIFEST.MF" append="true"/>
+        <echo message=" javax.xml.bind.attachment;version=&quot;2.0.0&quot;;resolution:=optional,${line.separator}"                                       file="META-INF/MANIFEST.MF" append="true"/>
+        <echo message=" javax.xml.bind.helpers;version=&quot;2.0.0&quot;;resolution:=optional,${line.separator}"                                          file="META-INF/MANIFEST.MF" append="true"/>
+        <echo message=" javax.xml.bind.util;version=&quot;2.0.0&quot;;resolution:=optional,${line.separator}"                                             file="META-INF/MANIFEST.MF" append="true"/>
+        <echo message=" javax.xml.soap;version=&quot;1.3.0&quot;;resolution:=optional,${line.separator}"                                                  file="META-INF/MANIFEST.MF" append="true"/>
+        <echo message=" javax.xml.stream;version=&quot;1.0.0&quot;;resolution:=optional,${line.separator}"                                                file="META-INF/MANIFEST.MF" append="true"/>
+        <echo message=" javax.xml.stream.events;version=&quot;1.0.0&quot;;resolution:=optional,${line.separator}"                                         file="META-INF/MANIFEST.MF" append="true"/>
+        <echo message=" javax.xml.stream.util;version=&quot;1.0.0&quot;;resolution:=optional${line.separator}"                                            file="META-INF/MANIFEST.MF" append="true"/>
+        <echo message="HK2-Bundle-Name: org.eclipse.persistence:${ant.project.name}${line.separator}"                                                     file="META-INF/MANIFEST.MF" append="true"/>
     </target>
 
 </project>
