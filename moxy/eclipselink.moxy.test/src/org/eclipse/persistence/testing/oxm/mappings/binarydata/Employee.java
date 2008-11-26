@@ -28,6 +28,9 @@
 package org.eclipse.persistence.testing.oxm.mappings.binarydata;
 
 import java.awt.Image;
+
+import javax.activation.DataHandler;
+
 import org.eclipse.persistence.testing.oxm.mappings.binarydatacollection.MyAttachmentUnmarshaller;
 
 public class Employee {
@@ -35,6 +38,7 @@ public class Employee {
     private int id;
     private byte[] photo;
     private byte[] extraPhoto;
+    private DataHandler data;
 
     public Employee() {
         super();
@@ -77,6 +81,14 @@ public class Employee {
 
     public void setExtraPhoto(byte[] extraPhoto) {
         this.extraPhoto = extraPhoto;
+    }
+    
+    public DataHandler getData() {
+        return data;
+    }
+    
+    public void setData(DataHandler theData) {
+        this.data = theData;
     }
 
     public String toString() {

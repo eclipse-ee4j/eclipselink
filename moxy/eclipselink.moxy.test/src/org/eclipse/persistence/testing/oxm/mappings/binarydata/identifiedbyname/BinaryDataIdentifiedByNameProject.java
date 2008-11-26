@@ -53,7 +53,15 @@ public class BinaryDataIdentifiedByNameProject extends Project {
         photoMapping.setShouldInlineBinaryData(false);
         photoMapping.setSwaRef(false);
         photoMapping.setMimeType("image");
-
+        
+        XMLBinaryDataMapping dataMapping = new XMLBinaryDataMapping();
+        dataMapping.setAttributeName("data");
+        field = new XMLField("data");
+        field.setSchemaType(XMLConstants.BASE_64_BINARY_QNAME);
+        dataMapping.setField(field);
+        dataMapping.setShouldInlineBinaryData(false);
+        dataMapping.setSwaRef(false);
+        descriptor.addMapping(dataMapping);
         //photoMapping.setCollectionContentType(java.awt.Image.class);
         //photoMapping.setCollectionContentType(ClassConstants.APBYTE);
         return descriptor;

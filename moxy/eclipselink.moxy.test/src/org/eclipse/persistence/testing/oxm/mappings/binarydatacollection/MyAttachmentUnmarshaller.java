@@ -37,7 +37,12 @@ public class MyAttachmentUnmarshaller implements XMLAttachmentUnmarshaller {
     public static final String XOP_NAMESPACE_URL = "http://www.w3.org/2004/08/xop/include";
     public static final String ATTACHMENT_PREFIX = "c_id";
     public static final String ATTACHMENT_TEST_ID = "c_id0";
+    public boolean getAttachmentAsDataHandlerWasCalled;
 
+    public MyAttachmentUnmarshaller() {
+        getAttachmentAsDataHandlerWasCalled = false;
+    }
+    
     public byte[] getAttachmentAsByteArray(String cid) {
         Object obj = MyAttachmentMarshaller.attachments.get(ATTACHMENT_TEST_ID);//cid);
 
@@ -48,6 +53,7 @@ public class MyAttachmentUnmarshaller implements XMLAttachmentUnmarshaller {
     }
 
     public DataHandler getAttachmentAsDataHandler(String cid) {
+        this.getAttachmentAsDataHandlerWasCalled = true;
         Object obj = MyAttachmentMarshaller.attachments.get(cid);
         if (obj instanceof DataHandler) {
             return (DataHandler)obj;
@@ -58,5 +64,9 @@ public class MyAttachmentUnmarshaller implements XMLAttachmentUnmarshaller {
     public boolean isXOPPackage() {
         // force attachment usage
         return true;
+    }
+    
+    public boolean getAttachmentAsDataHandlerWasCalled() {
+        return this.getAttachmentAsDataHandlerWasCalled;
     }
 }

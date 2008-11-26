@@ -3,4 +3,7 @@
 	<photo>
     	<xop:Include href="c_id0"/>
    	</photo>
+	<data>
+	    <xop:Include href="c_id0"/>
+	</data>
 </employee>

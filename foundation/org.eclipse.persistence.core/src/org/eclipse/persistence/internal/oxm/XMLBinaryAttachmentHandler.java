@@ -17,6 +17,7 @@ import javax.activation.DataHandler;
 import org.eclipse.persistence.mappings.converters.Converter;
 import org.eclipse.persistence.oxm.XMLConstants;
 import org.eclipse.persistence.oxm.attachment.XMLAttachmentUnmarshaller;
+import org.eclipse.persistence.oxm.mappings.XMLBinaryDataCollectionMapping;
 import org.eclipse.persistence.oxm.mappings.converters.XMLConverter;
 import org.eclipse.persistence.oxm.record.UnmarshalRecord;
 import org.eclipse.persistence.mappings.DatabaseMapping;
@@ -71,7 +72,18 @@ public class XMLBinaryAttachmentHandler extends UnmarshalRecord {
         if(XMLConstants.XOP_URL.equals(namespaceURI) && (INCLUDE_ELEMENT_NAME.equals(localName) || INCLUDE_ELEMENT_NAME.equals(qName))) {
             //Get the attachment and set it in the object.
             XMLAttachmentUnmarshaller attachmentUnmarshaller = record.getUnmarshaller().getAttachmentUnmarshaller();
-            Object data = attachmentUnmarshaller.getAttachmentAsByteArray(this.c_id);
+            Object data = null;
+            Class attributeClassification = null;
+            if(isCollection) {
+                attributeClassification = ((XMLBinaryDataCollectionMapping)mapping).getCollectionContentType();
+            } else {
+                attributeClassification = mapping.getAttributeClassification();
+            }
+            if(attributeClassification.equals(XMLBinaryDataHelper.getXMLBinaryDataHelper().DATA_HANDLER)) {
+                data = attachmentUnmarshaller.getAttachmentAsDataHandler(this.c_id);
+            } else {
+                data = attachmentUnmarshaller.getAttachmentAsByteArray(this.c_id);
+            }
             if (this.converter != null) {
                 Converter converter = this.converter;
                 if (converter instanceof XMLConverter) {

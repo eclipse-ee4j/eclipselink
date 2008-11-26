@@ -27,6 +27,9 @@
 package org.eclipse.persistence.testing.oxm.mappings.binarydata.identifiedbyname;
 
 import java.util.Vector;
+
+import javax.activation.DataHandler;
+
 import org.eclipse.persistence.internal.descriptors.Namespace;
 import org.eclipse.persistence.oxm.NamespaceResolver;
 import org.eclipse.persistence.sessions.Project;
@@ -41,6 +44,7 @@ import org.eclipse.persistence.testing.oxm.mappings.binarydatacollection.MyAttac
  */
 public class BinaryDataIdentifiedByNameXOPonNSRTestCases extends XMLMappingTestCases {
     private final static String XML_RESOURCE = "org/eclipse/persistence/testing/oxm/mappings/binarydata/identifiedbyname/BinaryDataIdentifiedByNameXOPonNSR.xml";
+    private MyAttachmentUnmarshaller attachmentUnmarshaller;
 
     public BinaryDataIdentifiedByNameXOPonNSRTestCases(String name) throws Exception {
         super(name);
@@ -56,13 +60,23 @@ public class BinaryDataIdentifiedByNameXOPonNSRTestCases extends XMLMappingTestC
     }
 
     protected Object getControlObject() {
-        return Employee.example1();
+        Employee emp = Employee.example1();
+        emp.setData(new DataHandler("THISISATEXTSTRINGFORTHISDATAHANDLER", "text"));
+        return emp;
     }
 
     public void setUp() throws Exception {
         super.setUp();
         xmlMarshaller.setAttachmentMarshaller(new MyAttachmentMarshaller());
-        xmlUnmarshaller.setAttachmentUnmarshaller(new MyAttachmentUnmarshaller());
+        attachmentUnmarshaller = new MyAttachmentUnmarshaller();
+        xmlUnmarshaller.setAttachmentUnmarshaller(attachmentUnmarshaller);
     }
+    
+    public void xmlToObjectTest(Object testObject) throws Exception {
+        super.xmlToObjectTest(testObject);
+        
+        assertTrue(attachmentUnmarshaller.getAttachmentAsDataHandlerWasCalled());
+    }
+    
     
 }
