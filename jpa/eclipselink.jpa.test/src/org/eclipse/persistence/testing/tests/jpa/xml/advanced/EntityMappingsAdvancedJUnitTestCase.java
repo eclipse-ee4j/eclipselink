@@ -143,7 +143,7 @@ public class EntityMappingsAdvancedJUnitTestCase extends JUnitTestCase {
         EmployeePopulator employeePopulator = new EmployeePopulator();
         employeePopulator.buildExamples();
         employeePopulator.persistExample(session);
-        clearCache(m_persistenceUnit);
+        //clearCache(m_persistenceUnit); - temp commented out due to bug 256484
     }
     
     /**

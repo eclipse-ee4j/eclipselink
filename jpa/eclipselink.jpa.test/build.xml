@@ -1300,9 +1300,10 @@
         <antcall target="server-run-all" inheritRefs="true">
             <param name="PERSISTENCE_UNIT_NAME" value="ddlGeneration"/>
             <param name="MODEL_DIR" value="org/eclipse/persistence/testing/models/jpa/xml/merge/inherited"/>
-            <param name="MODEL_NAME" value="eclipselink-ddl-generation-model"/>
+            <param name="MODEL_NAME" value="eclipselink-xml-merge-inherited-model"/>
+            <param name="MODEL_NAME2" value="eclipselink-ddl-generation-model"/>
             <param name="TEST_DIR" value="org/eclipse/persistence/testing/tests/jpa/xml/merge/inherited"/>
-            <param name="TEST_NAME" value="eclipselink-ddl-generation-model"/>
+            <param name="TEST_NAME" value="eclipselink-xml-merge-inherited-model"/>
             <param name="EAR_NAME" value="eclipselink-xml-merge-inherited-model"/>
             <param name="TEST_SUITE" value="org.eclipse.persistence.testing.tests.jpa.xml.merge.inherited.EntityMappingsMergeInheritedJUnitTestCase"/>
             <param name="eclipselink.jpa.test.dir" value="."/>
