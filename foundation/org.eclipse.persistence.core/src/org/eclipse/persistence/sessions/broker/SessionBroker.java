@@ -72,7 +72,7 @@ public class SessionBroker extends DatabaseSessionImpl {
     /**
      * PUBLIC:
      * Return a session broker that behaves as a client session broker.  An
-     * aquire session broker is done under the covers on each session inside
+     * acquire session broker is done under the covers on each session inside
      * the session broker, and a new broker is returned.
      *
      * NOTE: when finished with the client broker, it should be releases.  See
@@ -86,6 +86,7 @@ public class SessionBroker extends DatabaseSessionImpl {
         clientBroker.commitManager = getCommitManager();
         clientBroker.commandManager = getCommandManager();
         clientBroker.externalTransactionController = getExternalTransactionController();
+        clientBroker.setServerPlatform(getServerPlatform());
         String sessionName;
         AbstractSession ssession;
         Iterator names = this.getSessionsByName().keySet().iterator();
@@ -273,7 +274,8 @@ public class SessionBroker extends DatabaseSessionImpl {
         broker.sessionLog = getSessionLog();
         broker.project = project;
         broker.eventManager = getEventManager().clone(broker);
-
+        broker.shouldPropagateChanges = shouldPropagateChanges;
+	
         return broker;
     }
 

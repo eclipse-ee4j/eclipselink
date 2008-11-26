@@ -85,15 +85,14 @@ public class ServerBrokerTestModel extends TestModel {
         addTest(getSessionBrokerClientQueryTestSuite());
         //cr 2923
         addTest(new SessionBrokerPlatformTest());
-        addTest(new ReadOnlyClassesInSessionBrokerTest());
+        addTest(new ReadOnlyClassesInSessionBrokerTest());       
+        addTest(new VerifyClientBrokerCreationTest());
     }
 
     /**
      * Build the session broker, this assume two data-sources Broker1 and Broker2 (JConnect).
      */
-    public
-
-    SessionBroker buildBroker() {
+    public SessionBroker buildBroker() {
         createTables();
 
         SessionBroker broker = new SessionBroker();
