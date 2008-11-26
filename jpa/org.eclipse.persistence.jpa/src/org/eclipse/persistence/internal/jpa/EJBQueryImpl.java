@@ -49,7 +49,6 @@ public class EJBQueryImpl implements org.eclipse.persistence.jpa.JpaQuery {
     protected Map parameters = null;
     protected int firstResultIndex = -1; // -1 indicates undefined
     protected int maxResults = -1; // -1 indicates undefined
-    protected int maxRows = -1; // -1 indicates undefined
     
     protected LockModeType lockMode = null;
     
@@ -942,9 +941,12 @@ public class EJBQueryImpl implements org.eclipse.persistence.jpa.JpaQuery {
             if (maxResults >= 0) {
                 cloneSharedQuery();
                 readQuery = (ReadQuery)getDatabaseQuery();
-                maxRows = maxResults + ((firstResultIndex >= 0) ? firstResultIndex : 0);
+                int maxRows = maxResults + ((firstResultIndex >= 0) ? firstResultIndex : 0);
                 readQuery.setMaxRows(maxRows);
                 maxResults = -1;
+                if (readQuery.isObjectLevelReadQuery()){
+                    ((org.eclipse.persistence.queries.ObjectLevelReadQuery)readQuery).setShouldOuterJoinSubclasses(true);
+                }
             }
             
             if (firstResultIndex > -1) {
@@ -952,6 +954,9 @@ public class EJBQueryImpl implements org.eclipse.persistence.jpa.JpaQuery {
                 readQuery = (ReadQuery)getDatabaseQuery();
                 readQuery.setFirstResult(firstResultIndex);
                 firstResultIndex = -1;
+                if (readQuery.isObjectLevelReadQuery()){
+                    ((org.eclipse.persistence.queries.ObjectLevelReadQuery)readQuery).setShouldOuterJoinSubclasses(true);
+                }
             }
         }
     }

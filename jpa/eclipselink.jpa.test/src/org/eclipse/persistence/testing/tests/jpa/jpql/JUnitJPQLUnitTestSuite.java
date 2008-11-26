@@ -91,6 +91,7 @@ public class JUnitJPQLUnitTestSuite extends JUnitTestCase
     suite.addTest(new JUnitJPQLUnitTestSuite("testInvertedSelectionCriteriaInvalidQueryKey"));
     suite.addTest(new JUnitJPQLUnitTestSuite("testMaxAndFirstResultsOnDataQuery"));
     suite.addTest(new JUnitJPQLUnitTestSuite("testMaxAndFirstResultsOnDataQueryWithGroupBy"));
+    suite.addTest(new JUnitJPQLUnitTestSuite("testMaxAndFirstResultsOnObjectQueryOnInheritanceRoot"));
     suite.addTest(new JUnitJPQLUnitTestSuite("testDistinctSelectForEmployeeWithNullAddress"));
     
     return suite;
@@ -349,7 +350,7 @@ public class JUnitJPQLUnitTestSuite extends JUnitTestCase
             String jpqlString = "SELECT e, p FROM Employee e, PhoneNumber p WHERE p.id = e.id AND e.firstName = 'Bob'";
             List resultList = createEntityManager().createQuery(jpqlString).getResultList();
         } catch (Exception e) {
-            e.printStackTrace();
+            logThrowable(exception);
             exception = e;
         }
         
@@ -371,7 +372,7 @@ public class JUnitJPQLUnitTestSuite extends JUnitTestCase
             query.setMaxResults(1);
             resultList = query.getResultList();
         } catch (Exception e) {
-            e.printStackTrace();
+            logThrowable(exception);
             exception = e;
         }
         Assert.assertNull("Exception was caught.", exception);
@@ -393,8 +394,30 @@ public class JUnitJPQLUnitTestSuite extends JUnitTestCase
             query.setMaxResults(1);
             resultList = query.getResultList();
         } catch (Exception e) {
-            e.printStackTrace();
+            logThrowable(exception);
             exception = e;
+        }
+        Assert.assertNull("Exception was caught.", exception);
+        Assert.assertTrue("Incorrect number of results returned.  Expected 1, returned "+resultList.size(), resultList.size()==1);
+    }
+    
+    /**
+     * Tests fix for bug 253258 that using filtering using MaxResults/FirstResult returns
+     * the correct number of results on an inheritance root class.
+     */
+    public void testMaxAndFirstResultsOnObjectQueryOnInheritanceRoot() {
+        EntityManager em = createEntityManager();
+        Exception exception = null;
+        List resultList = null;
+        clearCache();
+        Query query = em.createQuery("SELECT p FROM Project p");
+        try {
+            query.setFirstResult(6);
+            query.setMaxResults(1);
+            resultList = query.getResultList();
+        } catch (Exception e) {
+            exception = e;
+            logThrowable(exception);
         }
         Assert.assertNull("Exception was caught.", exception);
         Assert.assertTrue("Incorrect number of results returned.  Expected 1, returned "+resultList.size(), resultList.size()==1);
@@ -410,7 +433,7 @@ public class JUnitJPQLUnitTestSuite extends JUnitTestCase
             String jpqlString = "select e, a from Employee e, Address a where a.city = 'Ottawa' and e.address.country = a.country";
             List resultList = createEntityManager().createQuery(jpqlString).getResultList();
         } catch (Exception e) {
-            e.printStackTrace();
+            logThrowable(e);
             exception = e;
         }
         

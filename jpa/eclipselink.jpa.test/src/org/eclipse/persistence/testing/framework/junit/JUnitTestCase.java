@@ -23,6 +23,7 @@ import javax.persistence.*;
 import junit.framework.*;
 
 import org.eclipse.persistence.internal.databaseaccess.Platform;
+import org.eclipse.persistence.logging.SessionLog;
 import org.eclipse.persistence.sessions.server.ServerSession;
 import org.eclipse.persistence.testing.framework.server.JEEPlatform;
 import org.eclipse.persistence.testing.framework.server.ServerPlatform;
@@ -421,6 +422,14 @@ public abstract class JUnitTestCase extends TestCase {
         if (!getServerSession().compareObjects(readObject, writtenObject)) {
             fail("Object from database: " + readObject + " does not match object that was written: " + writtenObject + ". See log (on finest) for what did not match.");
         }
+    }
+    
+    /**
+     * Allow printing off stack traces for exceptions that cause test failures when the session log level is set appropriately.  
+     * Logs at at the warning level
+     */
+    public void logThrowable(Throwable exception){
+        getServerSession().getSessionLog().logThrowable(SessionLog.WARNING, exception);
     }
 
 }

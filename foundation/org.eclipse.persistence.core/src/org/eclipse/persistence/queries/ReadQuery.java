@@ -298,7 +298,7 @@ public abstract class ReadQuery extends DatabaseQuery {
     public void prepareForExecution() throws QueryException {
         super.prepareForExecution();
         DatabaseCall databaseCall = this.getCall();
-        if ( databaseCall !=null && databaseCall.shouldIgnoreFirstRowMaxResultsSettings() ){
+        if ( databaseCall !=null ){
             AbstractRecord parameters = this.getTranslationRow();
             if (parameters.isEmpty()){
                 parameters = new DatabaseRecord();
