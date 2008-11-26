@@ -9,6 +9,7 @@
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
+ *     stardif - ClientSession broker ServerSession and change propogation additions
  ******************************************************************************/  
 package org.eclipse.persistence.sessions.broker;
 
