@@ -68,7 +68,7 @@ public abstract class ChangeSummaryRootLoadAndSaveTestCases extends LoadAndSaveT
         teamType.set(prop, "Team");
         teamType.set("open", true);
         teamType.set("sequenced", true);
-        addProperty(teamType, "name", stringType, true, false, true);
+        addProperty(teamType, "name", stringType, false, false, true);
         DataObject managerProp = addProperty(teamType, "manager", employeeType, true, false, true);
         DataObject empProp = addProperty(teamType, "employee", employeeType, true, true, true);
         DataObject myChangeSummaryProp = addProperty(teamType, "myChangeSummary", changeSummaryType, true, false, true);
@@ -79,8 +79,8 @@ public abstract class ChangeSummaryRootLoadAndSaveTestCases extends LoadAndSaveT
         propDO.set("name", "team");
         propDO.set("type", teamSDOType);
         propDO.set(SDOConstants.XMLELEMENT_PROPERTY, true);
-        typeHelper.defineOpenContentProperty(getControlRootURI(), propDO);        
-        
+        typeHelper.defineOpenContentProperty(getControlRootURI(), propDO);
+
         DataObject propDO2 = dataFactory.create(propertyType);
         propDO2.set("name", "simpleOpenTestDefined");
         propDO2.set("type", SDOConstants.SDO_INT);
@@ -114,7 +114,7 @@ public abstract class ChangeSummaryRootLoadAndSaveTestCases extends LoadAndSaveT
 
         addProperty(employeeType, "id", stringType, false, false, true);
         addProperty(employeeType, "name", stringType, false, false, true);
-        addProperty(employeeType, "previousLastNames", stringType, false, true, true);        
+        addProperty(employeeType, "previousLastNames", stringType, false, true, true);
         addProperty(employeeType, "address", addressType, true, false, true);
         DataObject phoneProp = addProperty(employeeType, "phone", phoneType, true, true, true);
 

@@ -53,7 +53,6 @@ public class LoadAndSaveBase64AttachmentTestCases extends LoadAndSaveTestCases {
         return "EmployeeType";
     }
 
-
     public void registerTypes() {
         SDOType stringType = (SDOType) typeHelper.getType("commonj.sdo", "String");
         SDOType bytesType = (SDOType) typeHelper.getType("commonj.sdo", "Bytes");
@@ -65,17 +64,17 @@ public class LoadAndSaveBase64AttachmentTestCases extends LoadAndSaveTestCases {
         customerType.set("name", "EmployeeType");
 
         // create an idproperty
-        addProperty(customerType, "id", stringType, true, false, true);
-        
+        addProperty(customerType, "id", stringType, false, false, true);
+
         // create a first name property
-        addProperty(customerType, "name", stringType, true, false, true);
-        
-        // create a photo property                
+        addProperty(customerType, "name", stringType, false, false, true);
+
+        // create a photo property
         DataObject photoProp = addProperty(customerType, "photo", bytesType, true, true, true);        
-        
+
         // now define the Customer type so that customers can be made
          Type customerSDOType = typeHelper.define(customerType);
-        
+
         DataObject propDO = dataFactory.create(propertyType);
         propDO.set("name", getControlRootName());
         propDO.set("type", customerSDOType);
@@ -87,5 +86,3 @@ public class LoadAndSaveBase64AttachmentTestCases extends LoadAndSaveTestCases {
         TestRunner.main(arguments);
     }
 }
-
-

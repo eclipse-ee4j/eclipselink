@@ -61,11 +61,10 @@ public class LoadAndSaveMimeTypeOnPropertyManyTestCases extends LoadAndSaveTestC
     protected String getControlRootName() {
         return "employeeType";
     }
-    
+
     protected String getRootInterfaceName() {
         return "EmployeeType";
     }
-
 
     public void registerTypes() {
         SDOType stringType = (SDOType) typeHelper.getType("commonj.sdo", "String");
@@ -78,20 +77,20 @@ public class LoadAndSaveMimeTypeOnPropertyManyTestCases extends LoadAndSaveTestC
         customerType.set("name", "EmployeeType");
 
         // create an idproperty
-        addProperty(customerType, "id", stringType, true, false, true);
-        
+        addProperty(customerType, "id", stringType, false, false, true);
+
         // create a first name property
-        addProperty(customerType, "name", stringType, true, false, true);
-        
-        // create a photo property                
-        DataObject photoProp = addProperty(customerType, "photo", bytesType, true, true, true);        
+        addProperty(customerType, "name", stringType, false, false, true);
+
+        // create a photo property
+        DataObject photoProp = addProperty(customerType, "photo", bytesType, false, true, true);
         photoProp.set(SDOConstants.MIME_TYPE_PROPERTY_PROPERTY, "photoMimeType");
         
-        addProperty(customerType, "photoMimeType", stringType, true, false, true);
+        addProperty(customerType, "photoMimeType", stringType, false, false, true);
 
         // now define the Customer type so that customers can be made
          Type customerSDOType = typeHelper.define(customerType);
-        
+
         DataObject propDO = dataFactory.create(propertyType);
         propDO.set("name", getControlRootName());
         propDO.set("type", customerSDOType);

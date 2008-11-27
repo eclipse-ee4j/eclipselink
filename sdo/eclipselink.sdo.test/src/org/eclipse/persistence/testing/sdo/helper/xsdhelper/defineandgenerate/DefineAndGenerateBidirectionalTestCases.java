@@ -475,7 +475,7 @@ public class DefineAndGenerateBidirectionalTestCases extends XSDHelperDefineAndG
         itemProp.setBoolean("many", true);
         //itemProp.set("opposite", null);
 
-        DataObject poidProperty = addProperty(purchaseOrderTypeDO, "poID", stringType, true);
+        DataObject poidProperty = addProperty(purchaseOrderTypeDO, "poID", stringType, false);
 //      bug: we need to change from attribute to element
         //poidProperty.setBoolean("containment", true); // I know containment=false - this is to put poid in the sequence
         //poidProperty.set("xmlElement", true); // not an instance property
@@ -490,7 +490,6 @@ public class DefineAndGenerateBidirectionalTestCases extends XSDHelperDefineAndG
         Type purchaseOrderType = typeHelper.define(purchaseOrderTypeDO);
         types.add(purchaseOrderType);
 
-        
         // define customer
         DataObject customerTypeDO = dataFactory.create(SDOConstants.SDO_URL, SDOConstants.TYPE);
         SDOProperty customerProp = (SDOProperty)customerTypeDO.getType().getProperty("uri");
@@ -501,11 +500,9 @@ public class DefineAndGenerateBidirectionalTestCases extends XSDHelperDefineAndG
         custProp.setBoolean("many", false);
         custProp.setBoolean("containment", false);
 
-        
         //addProperty(customerType, "custName", stringType);
         DataObject custidProperty = addProperty(customerTypeDO, "custID", stringType);
 
-        
         // Bidirectional Opposite IDREF to po/customer
 //        DataObject poProp = addProperty(customerTypeDO, "purchaseOrder", types.get(0));
 //        SDOProperty poCustomerProperty =  (SDOProperty)purchaseOrderType.getProperty("customer");
@@ -513,17 +510,16 @@ public class DefineAndGenerateBidirectionalTestCases extends XSDHelperDefineAndG
 //        poProp.setBoolean("containment", false);
         
         types.add(typeHelper.define(customerTypeDO));
-        
-        
+
         // set opposites after definition
         //poProp.set("opposite", poCustomerProperty);
         //custProp.set("opposite", customerPOProperty);
-        
+
         // /company/porder/customer is bidirectional with /company/customer/purchaseOrder
 //        SDOProperty poCustomerBidirectionalProperty = (SDOProperty)purchaseOrderType.getProperty("customer");
         // /company/customer/purchaseOrder is bidirectional with /company/porder/customer
 //        SDOProperty customerPOBidirectionalProperty = (SDOProperty)customerType.getProperty("purchaseOrder");
-        
+
         return types;
     }
 
@@ -568,7 +564,6 @@ public class DefineAndGenerateBidirectionalTestCases extends XSDHelperDefineAndG
         //assertXMLIdentical(getDocument(getControlGeneratedFileName()), generatedSchemaDoc);    	
     }
  
-    
     // use XSD to define and programmatic DataFactory to load -  not working
     public void testDefineViaXSDandLoadViaDataFactory() throws Exception {
     	DefaultSchemaLocationResolver resolver = new DefaultSchemaLocationResolver(getMap());
@@ -588,7 +583,6 @@ public class DefineAndGenerateBidirectionalTestCases extends XSDHelperDefineAndG
         //assertXMLIdentical(getDocument(getControlGeneratedFileName()), generatedSchemaDoc);    	
     }
 
-    
     // use programmatic define(DataObject) to define and XML to load - not working
     public void testDefineViaDataObjectandLoadViaXML() throws Exception {
     	DefaultSchemaLocationResolver resolver = new DefaultSchemaLocationResolver(getMap());

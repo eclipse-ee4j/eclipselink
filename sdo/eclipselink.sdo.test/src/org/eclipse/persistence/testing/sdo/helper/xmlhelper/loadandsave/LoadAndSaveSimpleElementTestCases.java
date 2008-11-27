@@ -34,7 +34,7 @@ public class LoadAndSaveSimpleElementTestCases extends LoadAndSaveTestCases {
         return ("./org/eclipse/persistence/testing/sdo/helper/xmlhelper/simpleElement.xml");
     }
 
-    protected String getNoSchemaControlFileName() {        
+    protected String getNoSchemaControlFileName() {
         return ("./org/eclipse/persistence/testing/sdo/helper/xmlhelper/simpleElementNoSchema.xml");
     }
 
@@ -45,18 +45,18 @@ public class LoadAndSaveSimpleElementTestCases extends LoadAndSaveTestCases {
     protected String getControlRootName() {
         return "customer";
     }
-    
+
     protected String getRootInterfaceName() {
         return "CustomerType";
     }
 
     // Override package generation based on the JAXB 2.0 algorithm in SDOUtil.java
     protected List<String> getPackages() {
-        List<String> packages = new ArrayList<String>();       
+        List<String> packages = new ArrayList<String>();
         packages.add(NON_DEFAULT_JAVA_PACKAGE_DIR);
         return packages;
     }
-    
+
     public void registerTypes() {
         Type stringType = typeHelper.getType("commonj.sdo", "String");
         SDOType propertyType = (SDOType) typeHelper.getType(SDOConstants.SDO_URL, SDOConstants.PROPERTY);
@@ -66,15 +66,15 @@ public class LoadAndSaveSimpleElementTestCases extends LoadAndSaveTestCases {
         customerType.set("uri", getControlRootURI());
         customerType.set("name", "customer");
 
-        // create a first name property        
-        addProperty(customerType, "firstName", stringType, true, false, true);
-        
-        // create a last name property        
-        addProperty(customerType, "lastName", stringType, true, false, true);
-              
+        // create a first name property
+        addProperty(customerType, "firstName", stringType, false, false, true);
+
+        // create a last name property
+        addProperty(customerType, "lastName", stringType, false, false, true);
+
         // now define the Customer type so that customers can be made
         Type customerSDOType = typeHelper.define(customerType);
-        
+
         DataObject propDO = dataFactory.create(propertyType);
         propDO.set("name", getControlRootName());
         propDO.set("type", customerSDOType);

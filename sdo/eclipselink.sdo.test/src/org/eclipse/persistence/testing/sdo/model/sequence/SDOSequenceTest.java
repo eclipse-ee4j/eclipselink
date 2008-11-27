@@ -52,7 +52,7 @@ public class SDOSequenceTest extends SDOSequenceTestCases {
     
     public static final String XML_PATH = "org/eclipse/persistence/testing/sdo/model/sequence/CompanyWithSequence.xml";
     public static final String XSD_PATH = "org/eclipse/persistence/testing/sdo/schemas/CompanyWithSequence.xsd";    
-	
+
     protected DataObject root;
     protected ChangeSummary cs;
     protected Type stringType;
@@ -60,8 +60,7 @@ public class SDOSequenceTest extends SDOSequenceTestCases {
     protected Type yearMonthDayType;
     protected Type decimalType;
     protected Type idType;
-    
-    
+
     public SDOSequenceTest(String name) {
         super(name);
     }
@@ -78,15 +77,15 @@ public class SDOSequenceTest extends SDOSequenceTestCases {
         String[] arguments = { "-c", "org.eclipse.persistence.testing.sdo.model.sequence.SDOSequenceTest" };
         TestRunner.main(arguments);
     }
-    
+
     protected String getControlRootURI() {
         return URINAME;
     }
-    
+
     protected String getControlRootName() {
         return "company";
     }
-    
+
     public String getSchemaToDefine() {
         return XSD_PATH;
     }
@@ -110,7 +109,7 @@ public class SDOSequenceTest extends SDOSequenceTestCases {
 			return null;
 		}
 	}
-    
+
     /**
      * This function will define control types programmatically to compare to XSD definition
      * by using the standard spec SDODataObject generation method on page
@@ -175,7 +174,6 @@ public class SDOSequenceTest extends SDOSequenceTestCases {
     	return aRoot;
     }
 
-    
     private Type defineAndPostProcessUnidirectional(String containingPropertyLocalName, DataObject typeToDefine, //
     		String idPropertyName, String containingPropertyName) {
     	// define the current type
@@ -195,7 +193,7 @@ public class SDOSequenceTest extends SDOSequenceTestCases {
         //((SDOType)aType).setIDProp(aType.getProperty(idPropertyName));
         return aType;
     }
-    
+
     private Type registerAddressType() {
         DataObject addressType = dataFactory.create(SDOConstants.SDO_URL, SDOConstants.TYPE);
         SDOProperty prop = (SDOProperty)addressType.getType().getProperty("uri");
@@ -268,7 +266,7 @@ public class SDOSequenceTest extends SDOSequenceTestCases {
         // unidirectional IDREFS
         DataObject itemProp = addProperty(purchaseOrderTypeDO, "item", itemType, false, true);
 
-        DataObject poidProperty = addProperty(purchaseOrderTypeDO, idPropName, stringType, true);
+        DataObject poidProperty = addProperty(purchaseOrderTypeDO, idPropName, stringType, false);
         addProperty(purchaseOrderTypeDO, "orderDate", yearMonthDayType);
 
         String containingPropertyName = "item";
@@ -308,7 +306,7 @@ public class SDOSequenceTest extends SDOSequenceTestCases {
         String idPropName = "custID";
         customerType.set(prop, typeName);
         setIDPropForReferenceProperties(customerType, "custID");
-        
+
         DataObject custidProperty = addProperty(customerType, idPropName, stringType);
         DataObject poProp = addProperty(customerType, "purchaseOrder", purchaseOrderType, false, false);
         // post define processing
@@ -333,7 +331,6 @@ public class SDOSequenceTest extends SDOSequenceTestCases {
         	customerType = registerCustomerType(poType);
         Type companyType = registerCompanyType(poType, customerType, itemType);        
     }    
-
 
     public List<Type> getControlTypes() {
         List<Type> types = new ArrayList<Type>();
@@ -449,7 +446,7 @@ public class SDOSequenceTest extends SDOSequenceTestCases {
         Property afterMoveProp1 = aSequence.getProperty(1);
         assertTrue(beforeMoveProp1 == afterMoveProp1);
     }
-    
+
     public void testMoveIndex0toEnd() {
     	getRootViaDefineViaDataObjectandLoadViaDataFactory();
     	//SDOSequence aSequence = getSequence();
@@ -489,8 +486,7 @@ public class SDOSequenceTest extends SDOSequenceTestCases {
         assertTrue(writeXML(root, URINAME, COMPANY_TYPENAME, System.out));
         //assertXMLIdentical(getDocument(getControlGeneratedFileName()), generatedSchemaDoc);    	
     }
- 
-    
+
     // use XSD to define and programmatic DataFactory to load -  not working
     public void testDefineViaXSDandLoadViaDataFactory() throws Exception {
     	DefaultSchemaLocationResolver resolver = new DefaultSchemaLocationResolver(getMap());

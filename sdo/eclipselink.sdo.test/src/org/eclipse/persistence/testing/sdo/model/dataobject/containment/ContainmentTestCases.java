@@ -130,20 +130,21 @@ public class ContainmentTestCases extends SDOTestCase {
         ((SDOTypeHelper)typeHelper).addType(type);
         return type;
     }
-    
+
     // new version
     // 6159746: no null Type allowed on Property Object
     public SDOType getSecondChildType() {
         Type stringType = typeHelper.getType("commonj.sdo", "String");
         Type intType = typeHelper.getType("commonj.sdo", "Int");
+        Type dataObjectType = typeHelper.getType("commonj.sdo", "DataObject");
         SDOType propertyType = (SDOType) typeHelper.getType(SDOConstants.SDO_URL, SDOConstants.PROPERTY);
 
         DataObject aTypeDO = dataFactory.create("commonj.sdo", "Type");        
         aTypeDO.set("uri", "http://testing");
         aTypeDO.set("name", "secondChildType");
         addProperty(aTypeDO, "name", stringType, false, false, true);
-        addProperty(aTypeDO, "child", stringType, true, false, true);
-        
+        addProperty(aTypeDO, "child", dataObjectType, true, false, true);
+
         // define type
         SDOType anSDOType = (SDOType)typeHelper.define(aTypeDO);
         // create a property of type employee - and associate the discriptor by QName
@@ -151,7 +152,7 @@ public class ContainmentTestCases extends SDOTestCase {
         propDO.set("name", getControlRootName());
         propDO.set("type", anSDOType);
         typeHelper.defineOpenContentProperty(getControlRootURI(), propDO);
-        
+
         anSDOType.setOpen(true);
         anSDOType.setAbstract(false);
 

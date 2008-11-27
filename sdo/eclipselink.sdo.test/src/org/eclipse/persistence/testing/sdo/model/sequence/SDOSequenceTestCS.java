@@ -327,7 +327,7 @@ public class SDOSequenceTestCS extends SDOSequenceTestCases {
 
         // changeSummary property
         DataObject changeSumPropertyDO = addProperty(companyType, "myChangeSummary", changeSummaryType);
-        changeSumPropertyDO.set("containment", true);
+        changeSumPropertyDO.set("containment", false);
         
         Type aType = typeHelper.define(companyType);
         return aType;
