@@ -16,9 +16,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.Query;
 
 import junit.framework.*;
-import junit.extensions.TestSetup;
 
-import org.eclipse.persistence.internal.jpa.EJBQueryImpl;
 import org.eclipse.persistence.sessions.DatabaseSession;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.descriptors.copying.CopyPolicy;
