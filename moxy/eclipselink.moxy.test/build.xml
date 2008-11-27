@@ -34,9 +34,15 @@
         <propertyref prefix="javax.xml"/>
     </propertyset>
 
+    <condition property="eclipselink.moxy.depend" value="${jaxb-api.jar}" else="">
+        <contains string="${java.version}" substring="1.5"/>
+    </condition>
+
     <!-- Compile/run paths -->
     <path id="jaxb.compile.path">
-        <pathelement path="${jaxb-api.lib}"/>
+        <fileset
+            dir="${eclipselink.moxy.plugins}"
+            includes="${eclipselink.moxy.depend}"/>
         <fileset
             dir="${eclipselink.plugins}"
             includes="${eclipselink.core.depend}"/>
@@ -45,7 +51,9 @@
         <pathelement path="${eclipselink.core}/${classes.dir}"/>
     </path>
     <path id="jaxb.run.path">
-        <pathelement path="${jaxb-api.lib}"/>
+        <fileset
+            dir="${eclipselink.moxy.plugins}"
+            includes="${eclipselink.moxy.depend}"/>
         <pathelement path="${eclipselink.moxy}/${classes.dir}"/>
         <pathelement path="${eclipselink.moxy.test}/${classes.dir}"/>
         <pathelement path="${eclipselink.moxy.test}/${resource.dir}"/>
@@ -74,14 +82,18 @@
 
     <!-- The following compile/run paths reference eclipselink.jar for non-test classes and resources -->
     <path id="jaxb.compile.path.against.jar">
-        <pathelement path="${jaxb-api.lib}"/>
+        <fileset
+            dir="${eclipselink.moxy.plugins}"
+            includes="${eclipselink.moxy.depend}"/>
         <fileset
             dir="${eclipselink.plugins}"
             includes="${eclipselink.core.depend}"/>
         <pathelement path="${eclipselink.jar.name}"/>
     </path>
     <path id="jaxb.run.path.against.jar">
-        <pathelement path="${jaxb-api.lib}"/>
+        <fileset
+            dir="${eclipselink.moxy.plugins}"
+            includes="${eclipselink.moxy.depend}"/>
         <pathelement path="${eclipselink.moxy.test}/${classes.dir}"/>
         <pathelement path="${eclipselink.moxy.test}/${resource.dir}"/>
         <pathelement path="${eclipselink.jar.name}"/>
