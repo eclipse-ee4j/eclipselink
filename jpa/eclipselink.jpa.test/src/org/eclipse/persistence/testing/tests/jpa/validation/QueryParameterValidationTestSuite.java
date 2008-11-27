@@ -20,7 +20,6 @@ import junit.framework.Test;
 import junit.framework.TestSuite;
 
 import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
-import junit.extensions.TestSetup;
 
 public class QueryParameterValidationTestSuite extends JUnitTestCase {
         
