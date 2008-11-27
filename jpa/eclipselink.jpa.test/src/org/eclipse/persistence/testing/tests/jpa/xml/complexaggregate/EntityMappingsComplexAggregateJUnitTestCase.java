@@ -18,7 +18,6 @@ package org.eclipse.persistence.testing.tests.jpa.xml.complexaggregate;
 import javax.persistence.EntityManager;
 
 import junit.framework.*;
-import junit.extensions.TestSetup;
 
 import org.eclipse.persistence.sessions.DatabaseSession;
 import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
