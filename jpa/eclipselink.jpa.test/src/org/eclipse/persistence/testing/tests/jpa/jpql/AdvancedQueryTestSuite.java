@@ -14,15 +14,10 @@
 package org.eclipse.persistence.testing.tests.jpa.jpql;
 
 import java.util.Calendar;
-import java.util.HashMap;
 import java.util.List;
 
-import javax.persistence.LockModeType;
-import javax.persistence.OptimisticLockException;
-import javax.persistence.PersistenceException;
 import javax.persistence.Query;
 import javax.persistence.EntityManager;
-import javax.persistence.RollbackException;
 
 import junit.framework.Test;
 import junit.framework.TestSuite;
@@ -36,7 +31,6 @@ import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.jpa.JpaQuery;
 import org.eclipse.persistence.queries.ReadQuery;
 import org.eclipse.persistence.sessions.DatabaseSession;
-import org.eclipse.persistence.sessions.server.ServerSession;
 
 import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
 import org.eclipse.persistence.testing.framework.QuerySQLTracker;
