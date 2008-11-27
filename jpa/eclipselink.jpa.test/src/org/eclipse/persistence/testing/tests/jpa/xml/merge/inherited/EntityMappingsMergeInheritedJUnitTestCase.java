@@ -21,7 +21,6 @@ import java.util.List;
 import javax.persistence.EntityManager;
 
 import junit.framework.*;
-import junit.extensions.TestSetup;
 import org.eclipse.persistence.sessions.DatabaseSession;
 import org.eclipse.persistence.testing.models.jpa.xml.merge.inherited.Alpine;
 import org.eclipse.persistence.testing.models.jpa.xml.merge.inherited.BeerConsumer;
