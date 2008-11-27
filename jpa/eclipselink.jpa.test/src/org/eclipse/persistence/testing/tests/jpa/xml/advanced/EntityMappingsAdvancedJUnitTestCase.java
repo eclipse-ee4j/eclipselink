@@ -27,7 +27,6 @@ import javax.persistence.EntityManager;
 import javax.persistence.EntityNotFoundException;
 
 import junit.framework.*;
-import junit.extensions.TestSetup;
 
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.descriptors.SelectedFieldsLockingPolicy;
