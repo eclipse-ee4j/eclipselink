@@ -23,9 +23,6 @@ import javax.rmi.PortableRemoteObject;
 
 import junit.framework.*;
 
-import org.eclipse.persistence.sessions.server.ServerSession;
-
-import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
 import org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced.Department;
 import org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced.Employee;
