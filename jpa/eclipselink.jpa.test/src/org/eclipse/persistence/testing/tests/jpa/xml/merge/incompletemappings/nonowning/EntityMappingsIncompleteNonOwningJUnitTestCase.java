@@ -17,7 +17,6 @@ package org.eclipse.persistence.testing.tests.jpa.xml.merge.incompletemappings.n
 import javax.persistence.EntityManager;
 
 import junit.framework.*;
-import junit.extensions.TestSetup;
 import org.eclipse.persistence.sessions.DatabaseSession;
 import org.eclipse.persistence.testing.models.jpa.xml.merge.incompletemappings.nonowning.Address;
 import org.eclipse.persistence.testing.models.jpa.xml.merge.incompletemappings.nonowning.Customer;
