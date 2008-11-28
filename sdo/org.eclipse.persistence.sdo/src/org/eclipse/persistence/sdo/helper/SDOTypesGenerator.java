@@ -549,10 +549,10 @@ public class SDOTypesGenerator {
     private void processAttribute(String targetNamespace, String defaultNamespace, SDOType owningType, Attribute attribute, boolean isGlobal) {
         SimpleType simpleType = attribute.getSimpleType();
         if (simpleType != null) {
-            processSimpleType(targetNamespace, defaultNamespace, attribute.getName(), simpleType);
-            processSimpleAttribute(targetNamespace, defaultNamespace, owningType, attribute, isGlobal, rootSchema.isAttributeFormDefault());
+            SDOType propertyType = processSimpleType(targetNamespace, defaultNamespace, attribute.getName(), simpleType);
+            processSimpleAttribute(targetNamespace, defaultNamespace, owningType, attribute, isGlobal, rootSchema.isAttributeFormDefault(), propertyType);
         } else {
-            processSimpleAttribute(targetNamespace, defaultNamespace, owningType, attribute, isGlobal, rootSchema.isAttributeFormDefault());
+            processSimpleAttribute(targetNamespace, defaultNamespace, owningType, attribute, isGlobal, rootSchema.isAttributeFormDefault(), null);
         }
     }
 
@@ -689,15 +689,15 @@ public class SDOTypesGenerator {
             }
             List list = simpleType.getList();
             if (list != null) {
-                processList(targetNamespace, defaultNamespace, sdoTypeName, list);
+                processList(targetNamespace, defaultNamespace, sdoTypeName, list, newType);
             }
 
             Union union = simpleType.getUnion();
             if (union != null) {
-                processUnion(targetNamespace, defaultNamespace, sdoTypeName, union);
+                processUnion(targetNamespace, defaultNamespace, sdoTypeName, union, newType);
             }
 
-            finishSimpleType(targetNamespace, defaultNamespace, sdoTypeName, simpleType);
+            finishSimpleType(targetNamespace, defaultNamespace, sdoTypeName, simpleType, newType);
         }
         if (addedNR) {
             namespaceResolvers.remove(namespaceResolvers.size() - 1);
@@ -706,8 +706,7 @@ public class SDOTypesGenerator {
         return newType;
     }
 
-    private void finishSimpleType(String targetNamespace, String defaultNamespace, String sdoTypeName, SimpleType simpleType) {
-        SDOType currentType = getSDOTypeForName(targetNamespace, defaultNamespace, false, sdoTypeName);
+    private void finishSimpleType(String targetNamespace, String defaultNamespace, String sdoTypeName, SimpleType simpleType, SDOType currentType) {
         String value = (String) simpleType.getAttributesMap().get(SDOConstants.SDOXML_ALIASNAME_QNAME);
         if (value != null) {
             XMLConversionManager xmlConversionManager = ((SDOXMLHelper) aHelperContext.getXMLHelper()).getXmlConversionManager();
@@ -869,10 +868,9 @@ public class SDOTypesGenerator {
         }
     }
 
-    private void processUnion(String targetNamespace, String defaultNamespace, String sdoTypeName, Union union) {
+    private void processUnion(String targetNamespace, String defaultNamespace, String sdoTypeName, Union union, SDOType type) {
         if (union != null) {
             java.util.List allMemberTypes = union.getAllMemberTypes();
-            SDOType type = getSDOTypeForName(targetNamespace, defaultNamespace, sdoTypeName);
             String firstInstanceClassName = null;
             for (int i = 0; i < allMemberTypes.size(); i++) {
                 String nextMemberType = (String) allMemberTypes.get(i);
@@ -922,9 +920,8 @@ public class SDOTypesGenerator {
         return false;
     }
 
-    private void processList(String targetNamespace, String defaultNamespace, String sdoTypeName, List list) {
+    private void processList(String targetNamespace, String defaultNamespace, String sdoTypeName, List list, SDOType type) {
         if (list != null) {
-            SDOType type = getSDOTypeForName(targetNamespace, defaultNamespace, sdoTypeName);
             type.setXsdList(true);
             type.setInstanceClass(ClassConstants.List_Class);
             //TODO: process union spec page. 84
@@ -1489,7 +1486,7 @@ public class SDOTypesGenerator {
         return stringValue;
     }
 
-    private void processSimpleAttribute(String targetNamespace, String defaultNamespace, SDOType owningType, Attribute attribute, boolean isGlobal, boolean isQualified) {
+    private void processSimpleAttribute(String targetNamespace, String defaultNamespace, SDOType owningType, Attribute attribute, boolean isGlobal, boolean isQualified, SDOType sdoPropertyType) {
         if (attribute == null) {
             return;
         }
@@ -1497,7 +1494,6 @@ public class SDOTypesGenerator {
         SDOProperty p = null;
         
         String typeName = null;
-        SDOType sdoPropertyType = null;
         String mappingUri = null;
         if (owningType != null) {
             mappingUri = owningType.getURI();
@@ -1580,7 +1576,6 @@ public class SDOTypesGenerator {
                 }
             } else if (attribute.getSimpleType() != null) {
                 p.setName(attribute.getName());
-                sdoPropertyType = getSDOTypeForName(targetNamespace, defaultNamespace, attribute.getName());
                 typeName = attribute.getName();
             } else {
                 p.setName(attribute.getName());
