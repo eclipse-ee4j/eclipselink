@@ -42,6 +42,16 @@
         <propertyref prefix="javax.xml"/>
     </propertyset>
 
+    <!-- Needed because this package is only included in JDK6 and beyond -->
+    <condition property="jaxb-api.lib" value="javax.xml.bind_2.0.0.jar" else="">
+        <contains string="${java.version}" substring="1.5"/>
+    </condition>
+    <!-- for dependencies found it local plugins dir, add more as needed   -->
+    <!-- NOTE: the jaxb-api.lib variable is set in the build.xml depending -->
+    <!--       which JDK is used                                           -->
+    <property name="moxy.local.depend" value="${jaxb-api.lib}"/>
+
+
     <!-- versioning -->
     <!-- These variables  are set in autobuild.xml. A manual build gets defaults -->
     <tstamp>
@@ -54,12 +64,14 @@
 
     <!-- Set Compile Path-->
     <path id="moxy.compile.path">
-        <pathelement path="../${plugins.dir}/${jaxb-api.jar}"/>
+        <fileset
+            dir="${moxy.plugins}"
+            includes="${moxy.local.depend}"/>
         <pathelement path="${moxy.2.common.plugins.dir}/${asm}"/>
         <pathelement path="${moxy.2.common.plugins.dir}/org.eclipse.persistence.core_${version.string}.jar"/>
         <fileset
             dir="${moxy.2.common.plugins.dir}"
-            includes="${eclipselink.core.depend}"/>
+            includes="${moxy.global.depend}"/>
     </path>
     <available file="${moxy.2.common.plugins.dir}/org.eclipse.persistence.core_${version.string}.jar" property="core.bundle.exist"/>
 
