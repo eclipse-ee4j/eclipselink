@@ -339,7 +339,8 @@ public class SDOUnmappedContentHandler implements UnmappedContentHandler {
             }
             if (newType == null) {
                 newType = aHelperContext.getTypeHelper().getType(SDOConstants.ORACLE_SDO_URL, "OpenSequencedType");
-                Property property = defineNewSDOProperty(namespaceURI, localName, true, newType);
+                Type dataObjectType = aHelperContext.getTypeHelper().getType(SDOConstants.SDO_URL, "DataObject");
+                Property property = defineNewSDOProperty(namespaceURI, localName, true, dataObjectType);
                 DataObject newDO = aHelperContext.getDataFactory().create(newType);
                 processAttributes(atts, newDO, false);
                 currentDataObjects.push(newDO);
@@ -347,7 +348,6 @@ public class SDOUnmappedContentHandler implements UnmappedContentHandler {
                 parentRecord.setCurrentObject(newDO);
 
                 currentProperties.push(property);
-
             } else {
                 //this means that type is a known type which will have a descriptor                      
                 XMLDescriptor xmlDescriptor = ((SDOType)newType).getXmlDescriptor();
