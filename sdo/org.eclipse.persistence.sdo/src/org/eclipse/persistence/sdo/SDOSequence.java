@@ -9,7 +9,7 @@
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.sdo;
 
 import commonj.sdo.DataObject;
@@ -24,6 +24,7 @@ import javax.xml.namespace.QName;
 import org.eclipse.persistence.sdo.SDODataObject;
 import org.eclipse.persistence.sdo.helper.ListWrapper;
 import org.eclipse.persistence.sdo.helper.SDOTypeHelper;
+import org.eclipse.persistence.sdo.helper.SDOXSDHelper;
 import org.eclipse.persistence.exceptions.SDOException;
 import org.eclipse.persistence.internal.oxm.XPathFragment;
 import org.eclipse.persistence.oxm.NamespaceResolver;
@@ -43,7 +44,8 @@ public class SDOSequence implements Sequence {
     private Map<Key, Setting> valuesToSettings;
 
     public SDOSequence(SDODataObject dataObject) {
-        // catch a null dataObject early before we get NPE on any update operations during add/remove
+        // catch a null dataObject early before we get NPE on any update
+        // operations during add/remove
         if (null == dataObject) {
             throw SDOException.sequenceDataObjectInstanceFieldIsNull();
         }
@@ -93,7 +95,8 @@ public class SDOSequence implements Sequence {
                     Setting setting = convertToSetting(property, aValue);
                     valuesToSettings.put(new Key(property, aValue), setting);
                     settings.add(index++, setting);
-                    // no need to check updateContainment flag - ListWrapper.add() will not pass an entire List here
+                    // no need to check updateContainment flag -
+                    // ListWrapper.add() will not pass an entire List here
                     listWrapper.add(aValue, false);
                 }
             } else {
@@ -128,14 +131,15 @@ public class SDOSequence implements Sequence {
             return false;
         }
         // Disallow the addition of a Properties representing an XML attribute
-        if (((SDOType)dataObject.getType()).getHelperContext().getXSDHelper().isAttribute(property)) {
+        if (((SDOType) dataObject.getType()).getHelperContext().getXSDHelper().isAttribute(property)) {
             throw SDOException.sequenceAttributePropertyNotSupported(property.getName());
         }
         // Disallow an open Property on a closed Type
         if (property.isOpenContent() && !dataObject.getType().isOpen()) {
             return false;
         }
-        // Disallow the addition of an isMany==false Property that is already set
+        // Disallow the addition of an isMany==false Property that is already
+        // set
         if (property.isMany()) {
             return true;
         }
@@ -148,7 +152,8 @@ public class SDOSequence implements Sequence {
     public void add(int index, String propertyName, Object value) {
         Property property = dataObject.getInstanceProperty(propertyName);
         if (property == null) {
-            // Property with given name does not exist - create an open content property
+            // Property with given name does not exist - create an open content
+            // property
             property = dataObject.defineOpenContentProperty(propertyName, value);
             ((SDOProperty) property).setMany(true);
         }
@@ -171,7 +176,7 @@ public class SDOSequence implements Sequence {
                 ListWrapper listWrapper = (ListWrapper) dataObject.getList(property);
                 listWrapper.add(value, false);
             } else {
-                dataObject.setPropertyInternal((SDOProperty)property, value, false);
+                dataObject.setPropertyInternal((SDOProperty) property, value, false);
             }
             return true;
         }
@@ -181,7 +186,8 @@ public class SDOSequence implements Sequence {
     public boolean add(String propertyName, Object value) {
         Property property = dataObject.getInstanceProperty(propertyName);
         if (property == null) {
-            // Property with given name does not exist - create an open content property
+            // Property with given name does not exist - create an open content
+            // property
             property = dataObject.defineOpenContentProperty(propertyName, value);
             ((SDOProperty) property).setMany(true);
         }
@@ -392,7 +398,7 @@ public class SDOSequence implements Sequence {
             }
             return null;
         }
-        
+
         Property property = getProperty(setting);
         Object oldValue = setting.getValue();
 
@@ -426,8 +432,7 @@ public class SDOSequence implements Sequence {
         XMLDescriptor xmlDescriptor = sdoType.getXmlDescriptor();
         if (null == mapping) {
             setting.setObject(dataObject);
-            
-            
+
             mapping = xmlDescriptor.getMappingForAttributeName("openContentProperties");
             setting.setMapping(mapping);
             XMLRoot xmlRoot = new XMLRoot();
@@ -439,10 +444,13 @@ public class SDOSequence implements Sequence {
                 xmlRoot.setLocalName(sdoProperty.getName());
                 xmlRoot.setNamespaceURI(sdoProperty.getUri());
                 xmlRoot.setObject(value);
-              
-                QName schemaTypeQName = ((SDOTypeHelper)((SDOType)dataObject.getType()).getHelperContext().getTypeHelper()).getXSDTypeFromSDOType(property.getType());
-                if(schemaTypeQName != null && schemaTypeQName != XMLConstants.STRING_QNAME){
-                  xmlRoot.setSchemaType(schemaTypeQName);
+                // do not set schema type for global properties
+                SDOTypeHelper hlpr = (SDOTypeHelper) ((SDOType) dataObject.getType()).getHelperContext().getTypeHelper();
+                if (hlpr.getOpenContentProperty(sdoProperty.getUri(), sdoProperty.getName()) == null) {
+                    QName schemaTypeQName = hlpr.getXSDTypeFromSDOType(property.getType());
+                    if (schemaTypeQName != null && schemaTypeQName != XMLConstants.STRING_QNAME) {
+                        xmlRoot.setSchemaType(schemaTypeQName);
+                    }
                 }
             }
             setting.setValue(xmlRoot, false);
@@ -507,22 +515,23 @@ public class SDOSequence implements Sequence {
     }
 
     /**
-     * INTERNAL:
-     * Add a setting to the list at the specified index.  The owning DataObject will not
-     * be made aware of this addition.
+     * INTERNAL: Add a setting to the list at the specified index. The owning
+     * DataObject will not be made aware of this addition.
      * 
-     * @param index the index at which to add the new Setting in the Settings list
+     * @param index
+     *            the index at which to add the new Setting in the Settings list
      * @param property
      * @param value
-     * @return true if the a Setting was successfully added to the list, otherwise false
+     * @return true if the a Setting was successfully added to the list,
+     *         otherwise false
      */
-    public boolean addSettingWithoutModifyingDataObject(int index, Property property, Object value) {        
+    public boolean addSettingWithoutModifyingDataObject(int index, Property property, Object value) {
         Setting setting = convertToSetting(property, value);
         valuesToSettings.put(new Key(property, value), setting);
-        if(index >= 0) {
-          settings.add(index, setting);
-        }else {
-          settings.add(setting);
+        if (index >= 0) {
+            settings.add(index, setting);
+        } else {
+            settings.add(setting);
         }
         return true;
     }
@@ -587,13 +596,12 @@ public class SDOSequence implements Sequence {
     }
 
     /**
-     * INTERNAL:
-     * Convenience method that returns the index of the Setting associated 
-     * with a given property in the Settings list
+     * INTERNAL: Convenience method that returns the index of the Setting
+     * associated with a given property in the Settings list
      * 
      * @param property
-     * @return index of the Setting associated with a given property in 
-     * the Settings list or -1 if not found
+     * @return index of the Setting associated with a given property in the
+     *         Settings list or -1 if not found
      */
     public int getIndexForProperty(Property property) {
         List<Key> keys = new ArrayList<Key>(valuesToSettings.keySet());
@@ -607,17 +615,16 @@ public class SDOSequence implements Sequence {
     }
 
     /**
-     * INTERNAL:
-     * Convenience method that, given a many property and a value, returns the
-     * associated Setting's index in the Settings list.  For example, if a 
-     * sequence contains many properties "letters" and "numbers", such as 
-     * [A, 1, C, 2, B, D], and we are looking for the letter B, this method
-     * will return 2.  Although B is at index 4 of the Settings list, it is at
-     * index 2 of the list of "letters" - [A, C, B, D].    
+     * INTERNAL: Convenience method that, given a many property and a value,
+     * returns the associated Setting's index in the Settings list. For example,
+     * if a sequence contains many properties "letters" and "numbers", such as
+     * [A, 1, C, 2, B, D], and we are looking for the letter B, this method will
+     * return 2. Although B is at index 4 of the Settings list, it is at index 2
+     * of the list of "letters" - [A, C, B, D].
      * 
      * @param property
-     * @return index of the value's Setting in the list relative to a given 
-     * property or -1 if not found.
+     * @return index of the value's Setting in the list relative to a given
+     *         property or -1 if not found.
      */
     private int getIndexInList(Property manyProp, Object value) {
         int returnIndex = -1;
@@ -633,10 +640,9 @@ public class SDOSequence implements Sequence {
         }
         return returnIndex;
     }
-    
+
     /**
-     * INTERNAL:
-     * Get the root Setting for a given Setting.
+     * INTERNAL: Get the root Setting for a given Setting.
      * 
      * @param setting
      * @return the root Setting or this Setting if it is a root
@@ -648,14 +654,13 @@ public class SDOSequence implements Sequence {
         }
         return rootSetting;
     }
-    
+
     /**
-     * INTERNAL:
-     * Ensure that each Setting in the settings list is also present in the
-     * valuesToSettings map 
+     * INTERNAL: Ensure that each Setting in the settings list is also present
+     * in the valuesToSettings map
      */
     public void afterUnmarshal() {
-        for (Iterator<Setting> setIt = getSettings().iterator(); setIt.hasNext(); ) {
+        for (Iterator<Setting> setIt = getSettings().iterator(); setIt.hasNext();) {
             addValueToSettings(setIt.next());
         }
     }
