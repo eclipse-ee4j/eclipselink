@@ -158,6 +158,11 @@ public interface Accessor extends Cloneable {
     boolean isConnected();
 
     /**
+     * Return whether the accessor is in transaction.
+     */
+    public boolean isInTransaction();
+
+    /**
      * Returns true if this Accessor can continue to be used.  This will be false if a communication
      * failure occurred during a call execution.  In the case of an invalid accessor the Accessor
      * will not be returned to the pool.

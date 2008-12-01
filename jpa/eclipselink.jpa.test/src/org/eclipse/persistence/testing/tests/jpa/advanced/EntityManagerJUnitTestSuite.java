@@ -21,6 +21,7 @@ import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Collection;
 import java.util.Map;
@@ -47,6 +48,7 @@ import junit.framework.*;
 import org.eclipse.persistence.config.EntityManagerProperties;
 import org.eclipse.persistence.config.ExclusiveConnectionMode;
 import org.eclipse.persistence.internal.jpa.EJBQueryImpl;
+import org.eclipse.persistence.internal.jpa.EntityManagerFactoryImpl;
 import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.queries.CursoredStreamPolicy;
 import org.eclipse.persistence.queries.DataModifyQuery;
@@ -63,6 +65,7 @@ import org.eclipse.persistence.sequencing.NativeSequence;
 import org.eclipse.persistence.sequencing.Sequence;
 import org.eclipse.persistence.sessions.server.ClientSession;
 import org.eclipse.persistence.sessions.server.ConnectionPolicy;
+import org.eclipse.persistence.sessions.server.ConnectionPool;
 import org.eclipse.persistence.sessions.server.ReadConnectionPool;
 import org.eclipse.persistence.sessions.server.ServerSession;
 import org.eclipse.persistence.exceptions.ValidationException;
@@ -75,6 +78,8 @@ import org.eclipse.persistence.expressions.ExpressionBuilder;
 import org.eclipse.persistence.sessions.DatasourceLogin;
 import org.eclipse.persistence.sessions.JNDIConnector;
 import org.eclipse.persistence.sessions.Session;
+import org.eclipse.persistence.sessions.SessionEvent;
+import org.eclipse.persistence.sessions.SessionEventAdapter;
 import org.eclipse.persistence.config.CacheUsage;
 import org.eclipse.persistence.config.CacheUsageIndirectionPolicy;
 import org.eclipse.persistence.config.CascadePolicy;
@@ -88,12 +93,14 @@ import org.eclipse.persistence.config.ResultType;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.descriptors.InheritancePolicy;
 import org.eclipse.persistence.descriptors.changetracking.ChangeTracker;
+import org.eclipse.persistence.internal.databaseaccess.Accessor;
 import org.eclipse.persistence.internal.descriptors.PersistenceEntity;
 import org.eclipse.persistence.internal.jpa.EntityManagerImpl;
 import org.eclipse.persistence.internal.weaving.PersistenceWeaved;
 import org.eclipse.persistence.internal.weaving.PersistenceWeavedLazy;
 import org.eclipse.persistence.queries.FetchGroupTracker;
 
+import org.eclipse.persistence.testing.framework.DriverWrapper;
 import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
 import org.eclipse.persistence.testing.framework.junit.JUnitTestCaseHelper;
 import org.eclipse.persistence.testing.models.jpa.advanced.*;
@@ -281,6 +288,8 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         suite.addTest(new EntityManagerJUnitTestSuite("testFlushMode"));
         suite.addTest(new EntityManagerJUnitTestSuite("testEmbeddedNPE"));
         suite.addTest(new EntityManagerJUnitTestSuite("testCollectionAddNewObjectUpdate"));
+        suite.addTest(new EntityManagerJUnitTestSuite("testEMCloseAndOpen"));
+        suite.addTest(new EntityManagerJUnitTestSuite("testEMFactoryCloseAndOpen"));
         return suite;
     }
 
@@ -6936,7 +6945,226 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
             fail("The Employee wasn't updated correctly in the db");
         }
     }
+    
+    // Bug 256296: Reconnect fails when session loses connectivity
+    static class AcquireReleaseListener extends SessionEventAdapter {
+        HashSet<Accessor> acquiredReadConnections = new HashSet(); 
+        HashSet<Accessor> acquiredWriteConnections = new HashSet(); 
+        public void postAcquireConnection(SessionEvent event) {
+            if(event.getSession().isServerSession()) {
+                acquiredReadConnections.add((Accessor)event.getResult());
+            } else {
+                acquiredWriteConnections.add((Accessor)event.getResult());
+            }
+        }
+        public void preReleaseConnection(SessionEvent event) {
+            if(event.getSession().isServerSession()) {
+                acquiredReadConnections.remove((Accessor)event.getResult());
+            } else {
+                acquiredWriteConnections.remove((Accessor)event.getResult());
+            }
+        }
+        int nAcquredReadConnections() {
+            return acquiredReadConnections.size(); 
+        }
+        int nAcquredWriteConnections() {
+            return acquiredWriteConnections.size(); 
+        }
+        void clear() {
+            acquiredReadConnections.clear(); 
+            acquiredWriteConnections.clear(); 
+        }
+    }
+    public void testEMCloseAndOpen(){
+        if (isOnServer()) {
+            // Uses DefaultConnector.
+            return;
+        }
+        
+        // make sure the id hasn't been already used - it will be assigned to a new object (in case sequencing is not used). 
+        int id = ((Number)((EntityManagerFactoryImpl)getEntityManagerFactory()).getServerSession().getNextSequenceNumberValue(Employee.class)).intValue();
+        
+        // cache the driver name
+        String driverName = ((EntityManagerFactoryImpl)getEntityManagerFactory()).getServerSession().getLogin().getDriverClassName();
+        
+        // disconnect the session
+        closeEntityManagerFactory();
+        
+        // setup the wrapper driver
+        DriverWrapper.initialize(driverName);
+        
+        // connect the session using the wrapper driver
+        HashMap properties = new HashMap(JUnitTestCaseHelper.getDatabaseProperties());
+        // required by DriverWrapper (if DriverManager is used, JDBC_DRIVER may be skipped) 
+        properties.put(PersistenceUnitProperties.JDBC_DRIVER, DriverWrapper.class.getName());
+        properties.put(PersistenceUnitProperties.JDBC_URL, DriverWrapper.codeUrl((String)properties.get(PersistenceUnitProperties.JDBC_URL)));
+        
+        ServerSession ss = ((EntityManagerFactoryImpl)getEntityManagerFactory(properties)).getServerSession();
+        AcquireReleaseListener listener = new AcquireReleaseListener();  
+        ss.getEventManager().addListener(listener);
+        
+        RuntimeException exception = null;
+        String errorMsg = "";
+        // test several configurations:
+        // all exclusive connection modes
+        String[] exclusiveConnectionModeArray = new String[]{ExclusiveConnectionMode.Transactional, ExclusiveConnectionMode.Isolated, ExclusiveConnectionMode.Always};
+        for(int i=0; i<3 && (exception==null); i++) {
+            String exclusiveConnectionMode = exclusiveConnectionModeArray[i];
+            for(int j=0; j<2 && (exception==null); j++) {
+                // either using or not using sequencing 
+                boolean useSequencing = (j==0);
+
+                HashMap emProperties = new HashMap(1);
+                emProperties.put(EntityManagerProperties.EXCLUSIVE_CONNECTION_MODE, exclusiveConnectionMode);
+                EntityManager em = createEntityManager(emProperties);
+                
+                em.find(Employee.class, 1);
+                Employee emp = null;
+                try{
+                    em.getTransaction().begin();
+
+                    // imitate disconnecting from network:
+                    // driver's connect method and any method on any connection will throw SQLException
+                    DriverWrapper.breakDriver();
+                    DriverWrapper.breakOldConnections();
+                    
+                    emp = new Employee();
+                    if(!useSequencing) {
+                        emp.setId(id);
+                    }
+                    em.persist(emp);
+                    em.getTransaction().commit();
+                } catch (Exception e){
+                    // expected exception - connection is invalid and cannot be reconnected.
+                    if(em.getTransaction().isActive()) {
+                        em.getTransaction().rollback();
+                    }            
+                }
+                closeEntityManager(em);
+                
+                // verify - all connections should be release
+                String localErrorMsg = "";
+                if(listener.nAcquredWriteConnections() > 0) {
+                    localErrorMsg += "writeConnection not released; ";
+                }
+                if(listener.nAcquredReadConnections() > 0) {
+                    localErrorMsg += "readConnection not released; ";
+                }
+                if(localErrorMsg.length() > 0) {
+                    localErrorMsg = exclusiveConnectionMode + " useSequencing="+useSequencing + ": " + localErrorMsg;
+                    errorMsg += localErrorMsg;
+                    listener.clear();
+                }
+                
+                // imitate  reconnecting to network:
+                // driver's connect method will now work, all newly acquired connections will work, too;
+                // however the old connections cached in the connection pools are still invalid.
+                DriverWrapper.repairDriver();
+                
+                try {
+                    em = createEntityManager();
+                    em.find(Employee.class, 1);
+                    em.getTransaction().begin();
+                    emp = new Employee();
+                    if(!useSequencing) {
+                        emp.setId(id);
+                    }
+                    em.persist(emp);
+                    em.getTransaction().commit();
+                } catch (RuntimeException ex) {
+                    // This should not happen
+                    if(em.getTransaction().isActive()) {
+                        em.getTransaction().rollback();
+                    }
+                    // can't just let exception fly - need to clean up
+                    exception = ex;
+                    closeEntityManager(em);
+                    break;
+                }
+
+                // clean-up
+                // remove the inserted object
+                em.getTransaction().begin();
+                em.remove(emp);
+                em.getTransaction().commit();
+                closeEntityManager(em);
+            }
+        }
+
+        // clean-up
+        // disconnect the session that uses the wrapped driver
+        closeEntityManagerFactory();
+        // clear the driver wrapper
+        DriverWrapper.clear();
+        // reconnect the session using the original driver
+        EntityManager em = createEntityManager();
+        
+        if(exception != null) {
+            throw exception;
+        }
+        if(errorMsg.length() > 0) {
+            fail(errorMsg);
+        }
+    }
+
+    // Bug 256284: Closing an EMF where the database is unavailable results in deployment exception on redeploy
+    public void testEMFactoryCloseAndOpen(){
+        if (isOnServer()) {
+            // Uses DefaultConnector.
+            return;
+        }
+        
+        // cache the driver name
+        String driverName = ((EntityManagerFactoryImpl)getEntityManagerFactory()).getServerSession().getLogin().getDriverClassName();
+        
+        // disconnect the session
+        closeEntityManagerFactory();
+        
+        // setup the wrapper driver
+        DriverWrapper.initialize(driverName);
+        
+        // connect the session using the wrapper driver
+        HashMap properties = new HashMap(JUnitTestCaseHelper.getDatabaseProperties());
+        properties.put(PersistenceUnitProperties.JDBC_DRIVER, DriverWrapper.class.getName());
+        properties.put(PersistenceUnitProperties.JDBC_URL, DriverWrapper.codeUrl((String)properties.get(PersistenceUnitProperties.JDBC_URL)));
+        getEntityManagerFactory(properties);
+
+        // this connects the session
+        EntityManager em = createEntityManager();
+        
+        // imitate disconnecting from network:
+        // driver's connect method and any method on any connection will throw SQLException
+        DriverWrapper.breakDriver();
+        DriverWrapper.breakOldConnections();
+
+        // close factory
+        RuntimeException exception = null;
+        try {
+            closeEntityManagerFactory();
+        } finally {
+            // clear the driver wrapper
+            DriverWrapper.clear();
+        }
+
+        String errorMsg = "";
+        //reconnect the session
+        em = createEntityManager();
+        //verify connections
+        Iterator<ConnectionPool> itPools = ((EntityManagerImpl)em).getServerSession().getConnectionPools().values().iterator();
+        while(itPools.hasNext()) {
+            ConnectionPool pool = itPools.next();
+            int disconnected = 0;
+            for(int i=0; i < pool.getConnectionsAvailable().size(); i++) {
+                if(!((Accessor)(pool.getConnectionsAvailable().get(i))).isConnected()) {
+                    disconnected++;
+                }
+            }
+            if(disconnected > 0) {
+                errorMsg += pool.getName() + " has " + disconnected + " connections; ";
+            }
+        }
+        if(errorMsg.length() > 0) {
+            fail(errorMsg);
+        }
+    }
 }
-
-
-

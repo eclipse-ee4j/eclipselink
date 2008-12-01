@@ -14,6 +14,7 @@ package org.eclipse.persistence.internal.sequencing;
 
 import org.eclipse.persistence.internal.sequencing.Sequencing;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
+import org.eclipse.persistence.sessions.server.ConnectionPool;
 
 /**
  * <p>
@@ -21,7 +22,13 @@ import org.eclipse.persistence.internal.sessions.AbstractSession;
  * <p>
  * <b>Description</b>: This interface accessed through
  * ServerSession.getSequencingServer() method.
- * Used for creation of ClientSessionSequencing object only.
+ * Used for creation of ClientSessionSequencing object
+ * and for access to sequencing connection pool.
+ * Note that if session is disconnected ServerSession.getSequencingServer() always returns null.
+ * Setup of SequencingConnectionPool is done only through SequencingControl interface.
+ * Even if getSequencingControl().setShouldUseSeparateConnection(true) is specified,
+ * SequencingConnectionPool is NOT created unless the session has at least one Sequence object
+ * that requires transaction.
  * <p>
  * <b>Responsibilities</b>:
  * <ul>
@@ -31,4 +38,5 @@ import org.eclipse.persistence.internal.sessions.AbstractSession;
  */
 public interface SequencingServer extends Sequencing {
     Object getNextValue(AbstractSession writeSession, Class cls);
+    ConnectionPool getConnectionPool();
 }

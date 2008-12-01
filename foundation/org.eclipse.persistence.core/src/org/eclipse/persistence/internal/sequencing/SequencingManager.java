@@ -237,6 +237,14 @@ class SequencingManager implements SequencingHome, SequencingServer, SequencingC
         this.connectionHandler = handler;
     }
 
+    public ConnectionPool getConnectionPool() {
+        ConnectionPool pool = null;
+        if(getConnectionHandler()!=null && getConnectionHandler() instanceof ServerSessionConnectionHandler) {
+            pool = ((ServerSessionConnectionHandler)getConnectionHandler()).getPool();
+        }
+        return pool;
+    }
+    
     public Object getNextValue(Class cls) {
         return getNextValue(getOwnerSession(), cls);
     }

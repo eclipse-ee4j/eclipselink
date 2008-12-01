@@ -99,7 +99,7 @@ public class ClientSession extends AbstractSession {
 
     /**
      * INTERNAL:
-     * Called in the end of beforeCompletion of external transaction sychronization listener.
+     * Called in the end of beforeCompletion of external transaction synchronization listener.
      * Close the managed sql connection corresponding to the external transaction
      * and releases accessor.
      */
@@ -115,15 +115,27 @@ public class ClientSession extends AbstractSession {
      * This is internal to the unit of work and should never be called otherwise.
      */
     public void basicBeginTransaction() {
-        // if an exclusve connection is use this client session may have 
+        // if an exclusive connection is use this client session may have 
         // a connection already
-        if (!hasWriteConnection()) {
+        if (getWriteConnection() == null) {
             // Ensure that the client is logged in for lazy clients.
             if (getConnectionPolicy().isLazy()) {
                 getParent().acquireClientConnection(this);
             }
         }
-        super.basicBeginTransaction();
+        try {
+            super.basicBeginTransaction();
+        } catch (RuntimeException ex) {
+            if(getWriteConnection() != null && !getWriteConnection().isInTransaction()) {
+                if (getConnectionPolicy().isLazy()) {
+                    // If not released right away the accessor
+                    // may never be released (in case of repeated attempt to begin transaction).
+                    // In case of internal connection pool it would mean less connections available.
+                    getParent().releaseClientSession(this);
+                }
+            }
+            throw ex;
+        }
     }
 
     /**
@@ -450,7 +462,7 @@ public class ClientSession extends AbstractSession {
         //removed is Lazy check as we should always release the connection once
         //the client session has been released.  It is also required for the 
         //behavior of a subclass ExclusiveIsolatedClientSession
-        if (hasWriteConnection()) {
+        if (getWriteConnection() != null) {
             getParent().releaseClientSession(this);
         }
 
@@ -465,7 +477,7 @@ public class ClientSession extends AbstractSession {
      * This is internal to the unit of work and should not be called otherwise.
      */
     protected void releaseWriteConnection() {
-        if (getConnectionPolicy().isLazy() && hasWriteConnection()) {
+        if (getConnectionPolicy().isLazy() && getWriteConnection()!= null) {
             getParent().releaseClientSession(this);
         }
     }

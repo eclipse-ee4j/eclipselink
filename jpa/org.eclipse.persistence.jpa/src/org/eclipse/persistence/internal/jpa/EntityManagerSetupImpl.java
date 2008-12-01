@@ -149,10 +149,13 @@ public class EntityManagerSetupImpl {
      */
     protected void removeSessionFromGlobalSessionManager() {
         if (session != null){
-            if(session.isConnected()) {
-                session.logout();
+            try {
+                if(session.isConnected()) {
+                    session.logout();
+                }
+            } finally {
+                SessionManager.getManager().getSessions().remove(session.getName());
             }
-            SessionManager.getManager().getSessions().remove(session.getName());
         }
     }
     

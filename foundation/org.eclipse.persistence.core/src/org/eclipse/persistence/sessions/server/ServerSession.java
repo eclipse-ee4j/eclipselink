@@ -236,7 +236,9 @@ public class ServerSession extends DatabaseSessionImpl implements Server {
         this(project, defaultConnectionPolicy, readLogin);
 
         if (sequenceLogin != null) {
-            //** sequencing refactoring
+            // Even if getSequencingControl().setShouldUseSeparateConnection(true) is specified,
+            // SequencingConnectionPool is NOT created unless the session has at least one Sequence object
+            // that requires transaction.
             getSequencingControl().setShouldUseSeparateConnection(true);
             getSequencingControl().setLogin(sequenceLogin);
         }
@@ -508,6 +510,18 @@ public class ServerSession extends DatabaseSessionImpl implements Server {
 
     /**
      * INTERNAL:
+     * Disconnect the accessor only.
+     */
+    public void disconnect() throws DatabaseException {
+        try {
+            super.disconnect();
+        } catch (DatabaseException ex) {
+            // the exception caused by attempt to disconnect session's accessor - ignore it.
+        }
+    }
+
+    /**
+     * INTERNAL:
      * Override to acquire the connection from the pool at the last minute
      */
     public Object executeCall(Call call, AbstractRecord translationRow, DatabaseQuery query) throws DatabaseException {
@@ -671,12 +685,14 @@ public class ServerSession extends DatabaseSessionImpl implements Server {
      * Shutdown the server session, also shutdown all of the connection pools.
      */
     public void logout() {
-        super.logout();
-
-        getReadConnectionPool().shutDown();
-
-        for (Iterator poolsEnum = getConnectionPools().values().iterator(); poolsEnum.hasNext();) {
-            ((ConnectionPool)poolsEnum.next()).shutDown();
+        try {
+            super.logout();
+        } finally {    
+            getReadConnectionPool().shutDown();
+    
+            for (Iterator poolsEnum = getConnectionPools().values().iterator(); poolsEnum.hasNext();) {
+                ((ConnectionPool)poolsEnum.next()).shutDown();
+            }
         }
     }
 
@@ -750,6 +766,22 @@ public class ServerSession extends DatabaseSessionImpl implements Server {
         getReadConnectionPool().releaseConnection(connection);
     }
 
+    /**
+     * INTERNAL:
+     * This method is called to indicate that all available connections should be checked.
+     * Noop on external connection pools.
+     */
+    public void setCheckConnections() {
+        getReadConnectionPool().setCheckConnections();
+        for (Iterator poolsEnum = getConnectionPools().values().iterator(); poolsEnum.hasNext();) {
+            ((ConnectionPool)poolsEnum.next()).setCheckConnections();
+        }
+        ConnectionPool sequencingPool = getSequencingServer().getConnectionPool();
+        if(sequencingPool != null) {
+            sequencingPool.setCheckConnections();
+        }
+    }
+    
     /**
      * INTERNAL:
      * Connection are pooled to share and restrict the number of database connections.

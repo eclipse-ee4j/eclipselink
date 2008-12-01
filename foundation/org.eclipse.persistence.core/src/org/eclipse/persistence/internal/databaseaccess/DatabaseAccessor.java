@@ -1257,7 +1257,7 @@ public class DatabaseAccessor extends DatasourceAccessor {
         try {
             return !getConnection().isClosed();
         } catch (SQLException exception) {
-            throw DatabaseException.sqlException(exception, this, null, false);
+            return false;
         }
     }
 

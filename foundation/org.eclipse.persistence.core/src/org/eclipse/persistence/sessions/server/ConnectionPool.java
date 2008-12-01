@@ -235,7 +235,7 @@ public class ConnectionPool {
         this.connectionsUsed.remove(connection);
 
         if (!connection.isValid()){
-            this.checkConnections = true;
+            getOwner().setCheckConnections();
             try{
                 connection.disconnect(getOwner());
             }catch (DatabaseException ex){
@@ -261,8 +261,17 @@ public class ConnectionPool {
     public void resetConnections() {
         this.connectionsUsed = new Vector();
         this.connectionsAvailable = new Vector();
+        this.checkConnections = false;
     }
 
+    /**
+     * INTERNAL:
+     * This method is called to indicate that all available connections should be checked.
+     */
+    public void setCheckConnections() {
+        this.checkConnections = true; 
+    }
+    
     /**
      *  INTERNAL:
      *  Set this list of connections available

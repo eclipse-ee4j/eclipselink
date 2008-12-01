@@ -94,6 +94,14 @@ public class ExternalConnectionPool extends ConnectionPool {
 
     /**
      * INTERNAL:
+     * This method is called to indicate that all available connections should be checked.
+     * Noop on external connection pool.
+     */
+    public void setCheckConnections() {
+    }
+    
+    /**
+     * INTERNAL:
      * This mehtod is a no-op for external pools.
      */
     public synchronized void shutDown() {

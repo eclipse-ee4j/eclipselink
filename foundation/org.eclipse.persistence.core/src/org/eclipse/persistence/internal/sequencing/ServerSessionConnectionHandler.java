@@ -36,6 +36,10 @@ class ServerSessionConnectionHandler implements SequencingConnectionHandler {
         return pool.acquireConnection();
     }
 
+    public ConnectionPool getPool() {
+        return pool;
+    }
+    
     public void releaseAccessor(Accessor accessor) {
         pool.releaseConnection(accessor);
     }

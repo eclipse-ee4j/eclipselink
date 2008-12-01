@@ -48,7 +48,7 @@ public class ReadConnectionPool extends ConnectionPool {
     public synchronized Accessor acquireConnection() throws ConcurrencyException {
         Accessor leastBusyConnection = null;
 
-        // Search for an unused connection, also find the least busy incase all are used.
+        // Search for an unused connection, also find the least busy in case all are used.
         int size = this.connectionsAvailable.size();
         for (int index = 0; index < size; index++) {
             Accessor connection = (Accessor)connectionsAvailable.get(index);
@@ -102,6 +102,7 @@ public class ReadConnectionPool extends ConnectionPool {
     public synchronized void releaseConnection(Accessor connection) throws DatabaseException {
         connection.decrementCallCount();
         if (!connection.isValid()){
+            getOwner().setCheckConnections();
             this.connectionsAvailable.remove(connection);
             try{
                 connection.disconnect(getOwner());
