@@ -37,7 +37,7 @@ public class Customer implements java.io.Serializable{
     private String city;
     private String name;
     private Collection<Order> orders = new HashSet<Order>();
-    private Collection<Customer> controlledCustomers = new HashSet<Customer>();
+    private CustomerCollection controlledCustomers = new CustomerCollection();
         
     public Customer() {}
 
@@ -106,11 +106,11 @@ public class Customer implements java.io.Serializable{
     //bug 236275: changed to test collection implementations with eagerly fetched mappings
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(name="CMP3_CUSTOMER_CUSTOMER")
-    public Collection<Customer> getCCustomers() {
+    public CustomerCollection<Customer> getCCustomers() {
         return controlledCustomers;
     }
     
-    public void setCCustomers(Collection<Customer> controlledCustomers) {
+    public void setCCustomers(CustomerCollection controlledCustomers) {
         this.controlledCustomers = controlledCustomers;
     }
     

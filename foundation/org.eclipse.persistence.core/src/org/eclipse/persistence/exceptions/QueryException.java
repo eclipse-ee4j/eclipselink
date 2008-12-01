@@ -162,10 +162,11 @@ public class QueryException extends ValidationException {
     public final static int UNNAMED_ARG_NOT_SUPPORTED = 6149;
     public final static int MAP_KEY_IS_NULL = 6150;
     public final static int UNABLE_TO_SET_REDIRECTOR_FROM_HINT = 6151;
+    public final static int ERROR_INSTANTIATING_CLASS_FOR_QUERY_HINT = 6152;
 
     /**
      * INTERNAL:
-     * TopLink exceptions should only be thrown by TopLink.
+     * Constructor.
      */
     protected QueryException(String message) {
         super(message);
@@ -173,7 +174,7 @@ public class QueryException extends ValidationException {
 
     /**
      * INTERNAL:
-     * TopLink exceptions should only be thrown by TopLink.
+     * Constructor.
      */
     protected QueryException(String message, DatabaseQuery query) {
         super(message);
@@ -182,7 +183,7 @@ public class QueryException extends ValidationException {
 
     /**
      * INTERNAL:
-     * TopLink exceptions should only be thrown by TopLink.
+     * Constructor.
      */
     protected QueryException(String message, DatabaseQuery query, Exception internalException) {
         super(message,internalException);
@@ -1354,6 +1355,17 @@ public class QueryException extends ValidationException {
             new QueryException(ExceptionMessageGenerator.buildMessage(QueryException.class,
 		UNNAMED_ARG_NOT_SUPPORTED, args));
         queryException.setErrorCode(UNNAMED_ARG_NOT_SUPPORTED);
+        return queryException;
+    }
+
+    public static QueryException errorInstantiatedClassForQueryHint(Exception exception, DatabaseQuery query, Class theClass, String hint) {
+        Object[] args = { theClass, hint };
+
+        QueryException queryException = 
+            new QueryException(ExceptionMessageGenerator.buildMessage(QueryException.class,
+                ERROR_INSTANTIATING_CLASS_FOR_QUERY_HINT, args), query);
+        queryException.setErrorCode(ERROR_INSTANTIATING_CLASS_FOR_QUERY_HINT);
+        queryException.setInternalException(exception);
         return queryException;
     }
 }

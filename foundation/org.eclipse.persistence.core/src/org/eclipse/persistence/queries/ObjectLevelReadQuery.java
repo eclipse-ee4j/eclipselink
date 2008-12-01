@@ -2543,22 +2543,22 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
      * Initialize fetch group
      */
     public void initializeFetchGroup() {
-        if (fetchGroup != null) {
+        if (this.fetchGroup != null) {
             //fetch group already set.
             return;
         }
 
         //not explicitly set dynamically fetch group
-        if (fetchGroupName != null) {//set pre-defined named group
-            fetchGroup = getDescriptor().getFetchGroupManager().getFetchGroup(fetchGroupName);
-            if (fetchGroup == null) {
+        if (this.fetchGroupName != null) {//set pre-defined named group
+            this.fetchGroup = getDescriptor().getFetchGroupManager().getFetchGroup(this.fetchGroupName);
+            if (this.fetchGroup == null) {
                 //named fetch group is not defined in the descriptor
-                throw QueryException.fetchGroupNotDefinedInDescriptor(fetchGroupName);
+                throw QueryException.fetchGroupNotDefinedInDescriptor(this.fetchGroupName);
             }
         } else {//not set fetch group at all
             //use the default fetch group if not explicitly turned off
             if (shouldUseDefaultFetchGroup()) {
-                fetchGroup = getDescriptor().getDefaultFetchGroup();
+                this.fetchGroup = getDescriptor().getDefaultFetchGroup();
             }
         }
     }
@@ -2567,7 +2567,8 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
      * Set a dynamic (use case) fetch group to the query.
      */
     public void setFetchGroup(FetchGroup newFetchGroup) {
-        fetchGroup = newFetchGroup;
+        this.fetchGroup = newFetchGroup;
+        setIsPrepared(false);
     }
 
     /**
@@ -2575,8 +2576,9 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
      */
     public void setFetchGroupName(String groupName) {
         //nullify the fetch group reference as one query can only has one fetch group.
-        fetchGroup = null;
-        fetchGroupName = groupName;
+        this.fetchGroup = null;
+        this.fetchGroupName = groupName;
+        setIsPrepared(false);
     }
 
     /**
@@ -2598,6 +2600,7 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
      */
     public void setShouldUseDefaultFetchGroup(boolean shouldUseDefaultFetchGroup) {
         this.shouldUseDefaultFetchGroup = shouldUseDefaultFetchGroup;
+        setIsPrepared(false);
     }
 
     /**

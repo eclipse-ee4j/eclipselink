@@ -12,8 +12,10 @@
  ******************************************************************************/  
 package org.eclipse.persistence.jpa;
 
-import java.util.Vector;
+import java.util.List;
 
+import org.eclipse.persistence.queries.Call;
+import org.eclipse.persistence.queries.DatabaseQuery;
 import org.eclipse.persistence.sessions.*;
 import org.eclipse.persistence.expressions.Expression;
 import org.eclipse.persistence.sessions.server.ServerSession;
@@ -36,37 +38,57 @@ public interface JpaEntityManager extends javax.persistence.EntityManager {
      * UnitOfWork outside of a transaction.  The caller is concerned about the results
      * then the getSession() or getUnitOfWork() API should be called.
      */
-    public Session getActiveSession();
+    Session getActiveSession();
     
     /**
      * Return the underlying server session
      */
-    public ServerSession getServerSession();
+    ServerSession getServerSession();
     
     /**
      * This method will return the transactional UnitOfWork during the transaction and null
      * outside of the transaction.
      */
-    public UnitOfWork getUnitOfWork();
+    UnitOfWork getUnitOfWork();
     
     /**
      * This method will return a Session outside of a transaction and null within a transaction.
      */
-    public Session getSession();
+    Session getSession();
     
     /**
-     * This method is used to create a query using a EclipseLink Expression and the return type.
+     * This method is used to create a query using a EclipseLink Expression for the entity class.
      */
-    public javax.persistence.Query createQuery(Expression expression, Class resultType);
+    javax.persistence.Query createQuery(Expression expression, Class entityClass);
+    
+    /**
+     * This method is used to create a query using a EclipseLink DatabaseQuery.
+     */
+    javax.persistence.Query createQuery(DatabaseQuery query);
+    
+    /**
+     * This method is used to create a query using a EclipseLink Call.
+     */
+    javax.persistence.Query createQuery(Call call);
+    
+    /**
+     * This method is used to create a query using a EclipseLink Call for the entity class.
+     */
+    javax.persistence.Query createQuery(Call call, Class entityClass);
+    
+    /**
+     * This method is used to create a query using query by example.
+     */
+    javax.persistence.Query createQueryByExample(Object exampleObject);
     
     /**
      * This method will create a query object that wraps a EclipseLink Named Query.
      */
-    public javax.persistence.Query createDescriptorNamedQuery(String queryName, Class descriptorClass);
+    javax.persistence.Query createDescriptorNamedQuery(String queryName, Class descriptorClass);
     
     /**
      * This method will create a query object that wraps a EclipseLink Named Query.
      */
-    public javax.persistence.Query createDescriptorNamedQuery(String queryName, Class descriptorClass, Vector argumentTypes);
+    javax.persistence.Query createDescriptorNamedQuery(String queryName, Class descriptorClass, List argumentTypes);
 
 }

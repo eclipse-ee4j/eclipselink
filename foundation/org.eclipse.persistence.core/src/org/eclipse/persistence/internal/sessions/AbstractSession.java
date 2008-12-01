@@ -1889,6 +1889,16 @@ public abstract class AbstractSession implements org.eclipse.persistence.session
         return (DatabasePlatform)platform;
     }
 
+
+    /**
+     * INTERNAL:
+     * Return the class loader for the session's application.
+     * This loader should be able to load any application or EclipseLink class.
+     */
+    public ClassLoader getLoader() {
+        return getDatasourcePlatform().getConversionManager().getLoader();
+    }
+    
     /**
      * INTERNAL:
      * Return the database platform currently connected to.

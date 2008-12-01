@@ -33,27 +33,6 @@ public class ValueReadQueryTest1 extends TestCase {
 
     public void test() {
         this.testStackContainerPolicy();
-        this.testCursoredStreamPolicy();
-    }
-
-    /**
-     * assume the stack has already been populated by the previous test
-     */
-    public void testCursoredStreamPolicy() {
-
-        // maybe there is some way to have this query always return 1...
-        ValueReadQuery sizeQuery = new ValueReadQuery("select count(*) from EMPLOYEE");
-
-        ValueReadQuery query = this.buildNewQuery();
-        query.useCursoredStream(1, 1, sizeQuery);
-
-        int streamValue = ((Number)getSession().executeQuery(query)).intValue();
-        // if we get here, we must not have generated a ClassCastException
-
-        if (streamValue != stackValue) {
-            throw new TestErrorException("stream does not match stack - " + "expected: " + stackValue + 
-                                         " actual: " + streamValue);
-        }
     }
 
     public void testStackContainerPolicy() {

@@ -643,10 +643,10 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
             em.persist(address1);
             commitTransaction(em);
 
-            Vector objectdata = (Vector)em.createNamedQuery("SProcInOutReturningRawData").setParameter("ADDRESS_ID", address1.getId()).getSingleResult();
-            assertTrue("Address data not found or returned using stored procedure", ((objectdata!=null)&& (objectdata.size()==2)) );
-            assertTrue("Address Id data returned doesn't match persisted address", (address1.getId() == ((Integer)objectdata.get(0)).intValue()) );
-            assertTrue("Address Street data returned doesn't match persisted address", ( address1.getStreet().equals(objectdata.get(1) )) );
+            Object[] objectdata = (Object[])em.createNamedQuery("SProcInOutReturningRawData").setParameter("ADDRESS_ID", address1.getId()).getSingleResult();
+            assertTrue("Address data not found or returned using stored procedure", ((objectdata!=null)&& (objectdata.length==2)) );
+            assertTrue("Address Id data returned doesn't match persisted address", (address1.getId() == ((Integer)objectdata[0]).intValue()) );
+            assertTrue("Address Street data returned doesn't match persisted address", ( address1.getStreet().equals(objectdata[1] )) );
         } catch (RuntimeException e) {
             if (isTransactionActive(em)){
                 rollbackTransaction(em);

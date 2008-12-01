@@ -111,6 +111,9 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
         suite.addTest(new AdvancedJPAJunitTest("testNamedStoredProcedureQuery"));
         suite.addTest(new AdvancedJPAJunitTest("testNamedStoredProcedureQueryInOut"));
         suite.addTest(new AdvancedJPAJunitTest("testNamedStoredProcedureQueryWithRawData"));
+        suite.addTest(new AdvancedJPAJunitTest("testModifyNamedStoredProcedureQueryWithRawData"));
+        suite.addTest(new AdvancedJPAJunitTest("testNamedStoredProcedureQueryWithResultSetMapping"));
+        suite.addTest(new AdvancedJPAJunitTest("testNamedStoredProcedureQueryWithResultSetFieldMapping"));
 
         suite.addTest(new AdvancedJPAJunitTest("testMethodBasedTransformationMapping"));
         suite.addTest(new AdvancedJPAJunitTest("testClassBasedTransformationMapping"));
@@ -709,6 +712,78 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
     }
     
     /**
+     * Tests a @NamedStoredProcedureQuery using a result-set mapping.
+     */
+    public void testNamedStoredProcedureQueryWithResultSetMapping() {
+        EntityManager em = createEntityManager();
+        beginTransaction(em);
+        
+        try {
+            Address address1 = new Address();
+        
+            address1.setCity("Ottawa");
+            address1.setPostalCode("K1G6P3");
+            address1.setProvince("ON");
+            address1.setStreet("123 Street");
+            address1.setCountry("Canada");
+
+            em.persist(address1);
+            commitTransaction(em);
+            
+            Address address2 = (Address) em.createNamedQuery("SProcAddressWithResultSetMapping").setParameter("address_id_v", address1.getId()).getSingleResult();
+            assertTrue("Address not found using stored procedure", address2.equals(address1));
+            
+        } catch (RuntimeException e) {
+            if (isTransactionActive(em)){
+                rollbackTransaction(em);
+            }
+            
+            closeEntityManager(em);
+            
+            // Re-throw exception to ensure stacktrace appears in test result.
+            throw e;
+        }
+        
+        closeEntityManager(em);
+    }
+    
+    /**
+     * Tests a @NamedStoredProcedureQuery using a result-set mapping.
+     */
+    public void testNamedStoredProcedureQueryWithResultSetFieldMapping() {
+        EntityManager em = createEntityManager();
+        beginTransaction(em);
+        
+        try {
+            Address address1 = new Address();
+        
+            address1.setCity("Ottawa");
+            address1.setPostalCode("K1G6P3");
+            address1.setProvince("ON");
+            address1.setStreet("123 Street");
+            address1.setCountry("Canada");
+
+            em.persist(address1);
+            commitTransaction(em);
+            
+            Object[] values = (Object[]) em.createNamedQuery("SProcAddressWithResultSetFieldMapping").setParameter("address_id_v", address1.getId()).getSingleResult();
+            assertTrue("Address not found using stored procedure", values[1].equals(address1.getStreet()));
+            
+        } catch (RuntimeException e) {
+            if (isTransactionActive(em)){
+                rollbackTransaction(em);
+            }
+            
+            closeEntityManager(em);
+            
+            // Re-throw exception to ensure stacktrace appears in test result.
+            throw e;
+        }
+        
+        closeEntityManager(em);
+    }
+    
+    /**
      * Tests a @NamedStoredProcedureQuery.
      */
     public void testNamedStoredProcedureQueryInOut() {
@@ -764,10 +839,10 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
             em.persist(address1);
             commitTransaction(em);
 
-            Vector objectdata = (Vector)em.createNamedQuery("SProcInOutReturningRawData").setParameter("ADDRESS_ID", address1.getId()).getSingleResult();
-            assertTrue("Address data not found or returned using stored procedure", ((objectdata!=null)&& (objectdata.size()==2)) );
-            assertTrue("Address Id data returned doesn't match persisted address", (address1.getId() == ((Integer)objectdata.get(0)).intValue()) );
-            assertTrue("Address Street data returned doesn't match persisted address", ( address1.getStreet().equals(objectdata.get(1) )) );
+            Object[] objectdata = (Object[])em.createNamedQuery("SProcInOutReturningRawData").setParameter("ADDRESS_ID", address1.getId()).getSingleResult();
+            assertTrue("Address data not found or returned using stored procedure", ((objectdata!=null)&& (objectdata.length==2)) );
+            assertTrue("Address Id data returned doesn't match persisted address", (address1.getId() == ((Integer)objectdata[0]).intValue()) );
+            assertTrue("Address Street data returned doesn't match persisted address", ( address1.getStreet().equals(objectdata[1] )) );
         } catch (RuntimeException e) {
             if (isTransactionActive(em)){
                 rollbackTransaction(em);
@@ -777,6 +852,40 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
             throw e;
         }
         
+        closeEntityManager(em);
+    }
+
+    
+    /**
+     * Tests a @NamedStoredProcedureQuery that returns raw data using executeUpdate().
+     */
+    public void testModifyNamedStoredProcedureQueryWithRawData() {
+        EntityManager em = createEntityManager();
+        beginTransaction(em);
+        
+        try {
+            Address address1 = new Address();
+        
+            address1.setCity("Ottawa");
+            address1.setPostalCode("K1G6P3");
+            address1.setProvince("ON");
+            address1.setStreet("123 Street");
+            address1.setCountry("Canada");
+
+            em.persist(address1);
+            commitTransaction(em);
+            beginTransaction(em);
+
+            em.createNamedQuery("SProcInOutReturningRawData").setParameter("ADDRESS_ID", address1.getId()).executeUpdate();
+       } catch (RuntimeException exception) {
+            if (isTransactionActive(em)){
+                rollbackTransaction(em);
+            }
+            closeEntityManager(em);
+            // Re-throw exception to ensure stacktrace appears in test result.
+            throw exception;
+        }
+        commitTransaction(em);
         closeEntityManager(em);
     }
     

@@ -15,7 +15,7 @@
 package org.eclipse.persistence.internal.jpa.metadata.queries;
 
 import java.lang.annotation.Annotation;
-import java.util.HashMap;
+import java.util.Map;
 
 import org.eclipse.persistence.internal.jpa.EJBQueryImpl;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAccessibleObject;
@@ -114,17 +114,17 @@ public class NamedNativeQueryMetadata extends NamedQueryMetadata {
      */
     @Override
     public void process(AbstractSession session, ClassLoader loader) {
-        HashMap<String, String> hints = processQueryHints(session);
+        Map<String, Object> hints = processQueryHints(session);
 
         if (m_resultClass == void.class) {
             if (m_resultSetMapping.equals("")) {
                 // Neither a resultClass or resultSetMapping is specified so place in a temp query on the session
-                session.addQuery(getName(), EJBQueryImpl.buildSQLDatabaseQuery(getQuery(), hints));
+                session.addQuery(getName(), EJBQueryImpl.buildSQLDatabaseQuery(getQuery(), hints, loader));
             } else {
-                session.addQuery(getName(), EJBQueryImpl.buildSQLDatabaseQuery(m_resultSetMapping, getQuery(), hints));
+                session.addQuery(getName(), EJBQueryImpl.buildSQLDatabaseQuery(m_resultSetMapping, getQuery(), hints, loader));
             }
         } else { 
-            session.addQuery(getName(), EJBQueryImpl.buildSQLDatabaseQuery(MetadataHelper.getClassForName(m_resultClass.getName(), loader), getQuery(), hints));
+            session.addQuery(getName(), EJBQueryImpl.buildSQLDatabaseQuery(MetadataHelper.getClassForName(m_resultClass.getName(), loader), getQuery(), hints, loader));
         }
     }
     

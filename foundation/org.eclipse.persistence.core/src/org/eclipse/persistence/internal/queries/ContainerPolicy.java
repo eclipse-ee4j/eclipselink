@@ -59,16 +59,18 @@ public abstract class ContainerPolicy implements Cloneable, Serializable {
     protected transient Constructor constructor;
 
     /**
+     * ADVANCED:
      * Return the default collection class.
      */
-    protected static Class getDefaultContainerClass() {
+    public static Class getDefaultContainerClass() {
         return defaultContainerClass;
     }
     
     /**
+     * ADVANCED:
      * Allow the default collection class to be set.
      */
-    protected static void setDefaultContainerClass(Class collectionClass) {
+    public static void setDefaultContainerClass(Class collectionClass) {
         defaultContainerClass = collectionClass;
     }
     

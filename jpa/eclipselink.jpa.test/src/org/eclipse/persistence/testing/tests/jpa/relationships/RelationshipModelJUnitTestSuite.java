@@ -22,6 +22,7 @@ import org.eclipse.persistence.descriptors.copying.CloneCopyPolicy;
 import org.eclipse.persistence.descriptors.copying.CopyPolicy;
 import org.eclipse.persistence.descriptors.copying.InstantiationCopyPolicy;
 import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
+import org.eclipse.persistence.testing.models.jpa.relationships.CustomerCollection;
 import org.eclipse.persistence.testing.models.jpa.relationships.Lego;
 import org.eclipse.persistence.testing.models.jpa.relationships.Item;
 import org.eclipse.persistence.testing.models.jpa.relationships.Mattel;
@@ -189,7 +190,7 @@ public class RelationshipModelJUnitTestSuite extends JUnitTestCase {
         try {
             Customer c = new Customer();
             //Customer uses HashSet by default, but set it anyway to ensure the model doesn't change. 
-            java.util.Collection<Customer> collection = new java.util.HashSet<Customer>();
+            CustomerCollection collection = new CustomerCollection();
             c.setCCustomers(collection);
             em.persist(c);
             commitTransaction(em);

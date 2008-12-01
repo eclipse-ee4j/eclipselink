@@ -313,10 +313,10 @@ public class MapContainerPolicy extends InterfaceContainerPolicy {
         }
         if (event.getChangeType() == CollectionChangeEvent.ADD) {
             recordAddToCollectionInChangeRecord(changeSet, collectionChangeRecord);
-            ((ObjectChangeSet)changeSet).setNewKey(key);
+            changeSet.setNewKey(key);
         } else if (event.getChangeType() == MapChangeEvent.REMOVE) {
             recordRemoveFromCollectionInChangeRecord(changeSet, collectionChangeRecord);
-            ((ObjectChangeSet)changeSet).setOldKey(key);
+            changeSet.setOldKey(key);
         } else {
             throw ValidationException.wrongCollectionChangeEventType(event.getChangeType());
         }

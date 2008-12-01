@@ -145,11 +145,10 @@ public class SelectNode extends QueryNode {
         if (readQuery instanceof ReportQuery) {
             ReportQuery reportQuery = (ReportQuery)readQuery;
             reportQuery.returnWithoutReportQueryResult();
-            if (isSingleSelectExpression() && 
-                !getFirstSelectExpressionNode().isConstructorNode()) {
+            if (isSingleSelectExpression()) {
                 reportQuery.returnSingleAttribute();
             }
-        } 
+        }
         SelectGenerationContext selectContext = (SelectGenerationContext)context;
         for (Iterator i = selectExpressions.iterator(); i.hasNext();) {
             Node node = (Node)i.next();

@@ -15,7 +15,7 @@ package org.eclipse.persistence.internal.jpa;
 
 import org.eclipse.persistence.exceptions.DatabaseException;
 import org.eclipse.persistence.exceptions.OptimisticLockException;
-import java.util.HashMap;
+import java.util.Map;
 
 import org.eclipse.persistence.queries.DatabaseQuery;
 import org.eclipse.persistence.sessions.Session;
@@ -33,8 +33,7 @@ import org.eclipse.persistence.sessions.Session;
 public class JPAQuery extends DatabaseQuery  {
     private Enum lockMode;
     private String jpqlString;
-    private Boolean flushOnExecute;
-    private HashMap hints;
+    private Map<String, Object> hints;
     
     public JPAQuery() {
     }
@@ -43,20 +42,13 @@ public class JPAQuery extends DatabaseQuery  {
         this.jpqlString=jpqlString;
     }
     
-    public JPAQuery(String name, String jpqlString, Enum lockMode, HashMap hints) {
-        this.name=name;
-        this.jpqlString=jpqlString;
-        this.flushOnExecute=null;
-        this.hints=hints;
-        this.lockMode=lockMode;
-    }  
-    
-    public JPAQuery(String name, String jpqlString,  Boolean flushOnExecute, HashMap hints) {
-        this.name=name;
-        this.jpqlString=jpqlString;
-        this.flushOnExecute=flushOnExecute;
-        this.hints=hints;
-    }    
+    public JPAQuery(String name, String jpqlString, Enum lockMode, Map<String, Object> hints) {
+        this.name = name;
+        this.jpqlString = jpqlString;
+        this.flushOnExecute = null;
+        this.hints = hints;
+        this.lockMode = lockMode;
+    }
 
     /**
      * Return the JPQL string.
@@ -71,10 +63,10 @@ public class JPAQuery extends DatabaseQuery  {
     /**
      * Return the JPA query hints.
      */
-    public HashMap getHints(){
+    public Map<String, Object> getHints(){
         return hints;
     }
-    public void setHints(HashMap hints){
+    public void setHints(Map<String, Object> hints){
         this.hints = hints;
     }
     
@@ -100,7 +92,7 @@ public class JPAQuery extends DatabaseQuery  {
     public DatabaseQuery processJPQLQuery(Session session){
         ClassLoader classloader = session.getDatasourcePlatform().getConversionManager().getLoader();
         DatabaseQuery ejbquery = EJBQueryImpl.buildEJBQLDatabaseQuery(
-            this.getName(), jpqlString,  flushOnExecute, session, lockMode, hints, classloader);
+            this.getName(), this.jpqlString, session, this.lockMode, this.hints, classloader);
         ejbquery.setName(this.getName());
         return ejbquery;
     }    

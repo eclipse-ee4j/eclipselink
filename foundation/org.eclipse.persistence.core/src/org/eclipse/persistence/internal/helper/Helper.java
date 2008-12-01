@@ -456,15 +456,15 @@ public class Helper implements Serializable {
     * same and each of the types in the first Vector are assignable from the types
     * in the corresponding objects in the second Vector.
     */
-    public static boolean areTypesAssignable(Vector types1, Vector types2) {
+    public static boolean areTypesAssignable(List types1, List types2) {
         if ((types1 == null) || (types2 == null)) {
             return false;
         }
 
         if (types1.size() == types2.size()) {
             for (int i = 0; i < types1.size(); i++) {
-                Class type1 = (Class)types1.elementAt(i);
-                Class type2 = (Class)types2.elementAt(i);
+                Class type1 = (Class)types1.get(i);
+                Class type2 = (Class)types2.get(i);
 
                 // if either are null then we assume assignability.
                 if ((type1 != null) && (type2 != null)) {

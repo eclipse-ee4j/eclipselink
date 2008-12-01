@@ -555,7 +555,7 @@ public class DescriptorQueryManager implements Cloneable, Serializable {
     }
     
     /**
-     * INTENAL:
+     * INTERNAL:
      * Return the query from the set of pre-defined queries with the given name and argument types.
      * This allows for common queries to be pre-defined, reused and executed by name.
      * Only returns those queries locally defined, not superclass's queries
@@ -564,8 +564,8 @@ public class DescriptorQueryManager implements Cloneable, Serializable {
      *
      * @see #getQuery(String)
      */
-    public DatabaseQuery getLocalQueryByArgumentTypes(String name, Vector argumentTypes) {
-        Vector queries = (Vector)getQueries().get(name);
+    public DatabaseQuery getLocalQueryByArgumentTypes(String name, List argumentTypes) {
+        List queries = (List)getQueries().get(name);
 
         if (queries == null) {
             return null;
@@ -573,11 +573,11 @@ public class DescriptorQueryManager implements Cloneable, Serializable {
 
         // Short circuit the simple, most common case of only one query.
         if (queries.size() == 1) {
-            return (DatabaseQuery)queries.firstElement();
+            return (DatabaseQuery)queries.get(0);
         }
 
-        for (Enumeration queriesEnum = queries.elements(); queriesEnum.hasMoreElements();) {
-            DatabaseQuery query = (DatabaseQuery)queriesEnum.nextElement();
+        for (Iterator queriesEnum = queries.iterator(); queriesEnum.hasNext();) {
+            DatabaseQuery query = (DatabaseQuery)queriesEnum.next();
 
             // BUG#2698755
             // This check was backward, we default the type to Object

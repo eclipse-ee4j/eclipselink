@@ -104,6 +104,8 @@ public class EJBQueryImpl implements org.eclipse.persistence.jpa.JpaQuery {
             DataModifyQuery query = new DataModifyQuery();
             query.setIsUserDefined(this.databaseQuery.isUserDefined());
             query.copyFromQuery(this.databaseQuery);
+            // Need to clone call, in case was executed as read.
+            query.setDatasourceCall((Call)this.databaseQuery.getDatasourceCall().clone());
             this.databaseQuery = query;
         }
     }
@@ -116,7 +118,7 @@ public class EJBQueryImpl implements org.eclipse.persistence.jpa.JpaQuery {
     protected void setAsSQLReadQuery(){
         if (getDatabaseQuery().isDataModifyQuery()) {
             DataReadQuery query = new DataReadQuery();
-            query.setUseAbstractRecord(false);
+            query.setResultType(DataReadQuery.AUTO);
             query.setIsUserDefined(databaseQuery.isUserDefined());
             query.copyFromQuery(this.databaseQuery);
             this.databaseQuery = query;
@@ -130,7 +132,7 @@ public class EJBQueryImpl implements org.eclipse.persistence.jpa.JpaQuery {
      * @return a DatabaseQuery representing the given jpql.
      */
     public static DatabaseQuery buildEJBQLDatabaseQuery(String jpql, Session session) {
-        return buildEJBQLDatabaseQuery(null, jpql, null, session, null, null, null);
+        return buildEJBQLDatabaseQuery(null, jpql, session, null, null, null);
     }
     
     /**
@@ -143,10 +145,10 @@ public class EJBQueryImpl implements org.eclipse.persistence.jpa.JpaQuery {
      * @return a DatabaseQuery representing the given jpql.
      */
     public static DatabaseQuery buildEJBQLDatabaseQuery(String queryName, String jpql, 
-            Boolean flushOnExecute, Session session, Enum lockMode, HashMap hints, ClassLoader classLoader) {            
+            Session session, Enum lockMode, Map<String, Object> hints, ClassLoader classLoader) {            
         // PERF: Check if the JPQL has already been parsed.
         // Only allow queries with default properties to be parse cached.
-        boolean isCacheable = (queryName == null) && (hints == null) && (flushOnExecute == null);
+        boolean isCacheable = (queryName == null) && (hints == null);
         DatabaseQuery databaseQuery = null;
         if (isCacheable) {
             databaseQuery = (DatabaseQuery)session.getProject().getJPQLParseCache().get(jpql);            
@@ -167,25 +169,24 @@ public class EJBQueryImpl implements org.eclipse.persistence.jpa.JpaQuery {
             // Bug#4646580  Add arguments to query.
             parseTree.addParametersToQuery(databaseQuery);
             ((JPQLCallQueryMechanism)databaseQuery.getQueryMechanism()).getJPQLCall().setIsParsed(true);
-            databaseQuery.setFlushOnExecute(flushOnExecute);            
 
             //GF#1324 eclipselink.refresh query hint does not cascade
             //cascade by mapping as default for read query
-            if(databaseQuery.isReadQuery ()) {
+            if (databaseQuery.isReadQuery()) {
                 databaseQuery.cascadeByMapping();
             }
 
             // Apply the lock mode.
             if (lockMode != null) {
                 if (databaseQuery.isObjectLevelReadQuery()) {
-                    ((ObjectLevelReadQuery) databaseQuery).setLockModeType((LockModeType)lockMode, (AbstractSession)session);
+                    ((ObjectLevelReadQuery)databaseQuery).setLockModeType((LockModeType)lockMode, (AbstractSession)session);
                 } else {
-                    throw new IllegalArgumentException(ExceptionLocalization.buildMessage("invalid_lock_query", (Object[]) null));
+                    throw new IllegalArgumentException(ExceptionLocalization.buildMessage("invalid_lock_query", (Object[])null));
                 }
             }
             
             // Apply any query hints.
-            databaseQuery = applyHints(hints, databaseQuery);
+            databaseQuery = applyHints(hints, databaseQuery, classLoader);
             if (isCacheable) {
                 // Prepare query as hint may cause cloning (but not un-prepare as in read-only).
                 databaseQuery.prepareCall(session, new DatabaseRecord());
@@ -199,8 +200,8 @@ public class EJBQueryImpl implements org.eclipse.persistence.jpa.JpaQuery {
     /**
      * Build a ReadAllQuery from a class and sql string.
      */
-    public static DatabaseQuery buildSQLDatabaseQuery(Class resultClass, String sqlString) {
-        return buildSQLDatabaseQuery(resultClass, sqlString, null);
+    public static DatabaseQuery buildSQLDatabaseQuery(Class resultClass, String sqlString, ClassLoader classLoader) {
+        return buildSQLDatabaseQuery(resultClass, sqlString, null, classLoader);
     }
     
     /**
@@ -208,45 +209,45 @@ public class EJBQueryImpl implements org.eclipse.persistence.jpa.JpaQuery {
      * 
      * @param hints a list of hints to be applied to the query.
      */
-    public static DatabaseQuery buildSQLDatabaseQuery(Class resultClass, String sqlString, HashMap hints) {
+    public static DatabaseQuery buildSQLDatabaseQuery(Class resultClass, String sqlString, Map<String, Object> hints, ClassLoader classLoader) {
         ReadAllQuery query = new ReadAllQuery(resultClass);
         query.setSQLString(sqlString);
         query.setIsUserDefined(true);
         
         // apply any query hints
-        return applyHints(hints, query);
+        return applyHints(hints, query, classLoader);
     }
     /**
      * Build a ResultSetMappingQuery from a sql result set mapping name and sql string.
      */
-    public static DatabaseQuery buildSQLDatabaseQuery(String sqlResultSetMappingName, String sqlString) {
-        return buildSQLDatabaseQuery(sqlResultSetMappingName, sqlString, null);
+    public static DatabaseQuery buildSQLDatabaseQuery(String sqlResultSetMappingName, String sqlString, ClassLoader classLoader) {
+        return buildSQLDatabaseQuery(sqlResultSetMappingName, sqlString, null, classLoader);
     }
     
     /**
      * Build a ResultSetMappingQuery from a sql result set mapping name and sql string.
      * @param hints a list of hints to be applied to the query.
      */
-    public static DatabaseQuery buildSQLDatabaseQuery(String sqlResultSetMappingName, String sqlString, HashMap hints) {
+    public static DatabaseQuery buildSQLDatabaseQuery(String sqlResultSetMappingName, String sqlString, Map<String, Object> hints, ClassLoader classLoader) {
         ResultSetMappingQuery query = new ResultSetMappingQuery();
         query.setSQLResultSetMappingName(sqlResultSetMappingName);
         query.setSQLString(sqlString);
         query.setIsUserDefined(true);
         
         // apply any query hints
-        return applyHints(hints, query);
+        return applyHints(hints, query, classLoader);
     }
     
     /**
      * Build a ReadAllQuery from a class and stored procedure call.
      */
-    public static DatabaseQuery buildStoredProcedureQuery(Class resultClass, StoredProcedureCall call, List<String> arguments, HashMap hints) {
+    public static DatabaseQuery buildStoredProcedureQuery(Class resultClass, StoredProcedureCall call, List<String> arguments, Map<String, Object> hints, ClassLoader classLoader) {
         DatabaseQuery query = new ReadAllQuery(resultClass);
         query.setCall(call);
         query.setIsUserDefined(true);
         
         // apply any query hints
-        query = applyHints(hints, query);
+        query = applyHints(hints, query, classLoader);
         
         // apply any query arguments
         applyArguments(arguments, query);
@@ -258,15 +259,15 @@ public class EJBQueryImpl implements org.eclipse.persistence.jpa.JpaQuery {
      * Build a ResultSetMappingQuery from a sql result set mapping name and a 
      * stored procedure call.
      */
-    public static DatabaseQuery buildStoredProcedureQuery(StoredProcedureCall call, List<String> arguments, HashMap hints) {
+    public static DatabaseQuery buildStoredProcedureQuery(StoredProcedureCall call, List<String> arguments, Map<String, Object> hints, ClassLoader classLoader) {
         DataReadQuery query = new DataReadQuery();
-        query.setUseAbstractRecord(false);
+        query.setResultType(DataReadQuery.AUTO);
         
         query.setCall(call);
         query.setIsUserDefined(true);
         
         // apply any query hints
-        DatabaseQuery hintQuery = applyHints(hints, query);
+        DatabaseQuery hintQuery = applyHints(hints, query, classLoader);
         
         // apply any query arguments
         applyArguments(arguments, hintQuery);
@@ -278,14 +279,14 @@ public class EJBQueryImpl implements org.eclipse.persistence.jpa.JpaQuery {
      * Build a ResultSetMappingQuery from a sql result set mapping name and a
      * stored procedure call.
      */
-    public static DatabaseQuery buildStoredProcedureQuery(String sqlResultSetMappingName, StoredProcedureCall call, List<String> arguments, HashMap hints) {
+    public static DatabaseQuery buildStoredProcedureQuery(String sqlResultSetMappingName, StoredProcedureCall call, List<String> arguments, Map<String, Object> hints, ClassLoader classLoader) {
         ResultSetMappingQuery query = new ResultSetMappingQuery();
         query.setSQLResultSetMappingName(sqlResultSetMappingName);
         query.setCall(call);
         query.setIsUserDefined(true);
         
         // apply any query hints
-        DatabaseQuery hintQuery = applyHints(hints, query);
+        DatabaseQuery hintQuery = applyHints(hints, query, classLoader);
         
         // apply any query arguments
         applyArguments(arguments, hintQuery);
@@ -296,21 +297,21 @@ public class EJBQueryImpl implements org.eclipse.persistence.jpa.JpaQuery {
     /**
      * Build a DataReadQuery from a sql string.
      */
-    public static DatabaseQuery buildSQLDatabaseQuery(String sqlString, Boolean flushOnExecute) {
-        return buildSQLDatabaseQuery(sqlString, new HashMap());
+    public static DatabaseQuery buildSQLDatabaseQuery(String sqlString, ClassLoader classLoader) {
+        return buildSQLDatabaseQuery(sqlString, new HashMap<String, Object>(), classLoader);
     }
     
     /**
      * Build a DataReadQuery from a sql string.
      */
-    public static DatabaseQuery buildSQLDatabaseQuery(String sqlString, HashMap hints) {
+    public static DatabaseQuery buildSQLDatabaseQuery(String sqlString, Map<String, Object> hints, ClassLoader classLoader) {
         DataReadQuery query = new DataReadQuery();
-        query.setUseAbstractRecord(false);
+        query.setResultType(DataReadQuery.AUTO);
         query.setSQLString(sqlString);
         query.setIsUserDefined(true);
 
         // apply any query hints
-        return applyHints(hints, query);
+        return applyHints(hints, query, classLoader);
     }
 
     /**
@@ -486,9 +487,9 @@ public class EJBQueryImpl implements org.eclipse.persistence.jpa.JpaQuery {
         propagateResultProperties();
         //bug:4297903, check container policy class and throw exception if its not the right type 
         if (getDatabaseQuery() instanceof ReadAllQuery){
-          Class containerClass = ((ReadAllQuery)getDatabaseQuery()).getContainerPolicy().getContainerClass();
-          if (! ((ReadAllQuery)getDatabaseQuery()).getContainerPolicy().isCursorPolicy()){
-            throw QueryException.invalidContainerClass( containerClass, Cursor.class );
+          if (!((ReadAllQuery)getDatabaseQuery()).getContainerPolicy().isCursorPolicy()) {
+              Class containerClass = ((ReadAllQuery)getDatabaseQuery()).getContainerPolicy().getContainerClass();
+              throw QueryException.invalidContainerClass( containerClass, Cursor.class);
           }
         } else if (getDatabaseQuery() instanceof ReadObjectQuery){
             //bug:4300879, no support for ReadObjectQuery if a collection is required
@@ -720,8 +721,8 @@ public class EJBQueryImpl implements org.eclipse.persistence.jpa.JpaQuery {
      * @param hints a list of hints to be applied to the query
      * @param query the query to apply the hints to
      */
-    protected static DatabaseQuery applyHints(HashMap hints, DatabaseQuery query) {
-        return QueryHintsHandler.apply(hints, query);
+    protected static DatabaseQuery applyHints(Map<String, Object> hints, DatabaseQuery query, ClassLoader classLoader) {
+        return QueryHintsHandler.apply(hints, query, classLoader);
     }
 
     /**
@@ -769,7 +770,8 @@ public class EJBQueryImpl implements org.eclipse.persistence.jpa.JpaQuery {
      */
     protected void setHintInternal(String hintName, Object value) {
         cloneSharedQuery();
-        DatabaseQuery hintQuery = QueryHintsHandler.apply(hintName, value, getDatabaseQuery());
+        ClassLoader loader = getEntityManager().getServerSession().getLoader();
+        DatabaseQuery hintQuery = QueryHintsHandler.apply(hintName, value, getDatabaseQuery(), loader);
         if (hintQuery != null) {
             setDatabaseQuery(hintQuery);
         }

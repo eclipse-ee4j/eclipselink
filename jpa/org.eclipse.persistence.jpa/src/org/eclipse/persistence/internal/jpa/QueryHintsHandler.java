@@ -40,20 +40,28 @@ import org.eclipse.persistence.internal.localization.ExceptionLocalization;
 import org.eclipse.persistence.internal.queries.ContainerPolicy;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.internal.security.PrivilegedClassForName;
+import org.eclipse.persistence.internal.security.PrivilegedNewInstanceFromClass;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.logging.SessionLog;
 import org.eclipse.persistence.mappings.ForeignReferenceMapping;
 import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.queries.CursorPolicy;
 import org.eclipse.persistence.queries.CursoredStreamPolicy;
+import org.eclipse.persistence.queries.DataModifyQuery;
 import org.eclipse.persistence.queries.DataReadQuery;
+import org.eclipse.persistence.queries.DeleteAllQuery;
+import org.eclipse.persistence.queries.DirectReadQuery;
 import org.eclipse.persistence.queries.FetchGroup;
+import org.eclipse.persistence.queries.InMemoryQueryIndirectionPolicy;
 import org.eclipse.persistence.queries.ModifyAllQuery;
 import org.eclipse.persistence.queries.ObjectBuildingQuery;
 import org.eclipse.persistence.queries.QueryRedirector;
 import org.eclipse.persistence.queries.ReadObjectQuery;
 import org.eclipse.persistence.queries.ReadQuery;
 import org.eclipse.persistence.queries.ReportQuery;
+import org.eclipse.persistence.queries.ResultSetMappingQuery;
+import org.eclipse.persistence.queries.ScrollableCursorPolicy;
+import org.eclipse.persistence.queries.UpdateAllQuery;
 import org.eclipse.persistence.queries.ValueReadQuery;
 
 /**
@@ -115,16 +123,21 @@ public class QueryHintsHandler {
      * Applies the hints to the query.
      * Throws IllegalArgumentException in case the hint value is illegal.
      */
-    public static DatabaseQuery apply(Map hints, DatabaseQuery query) {
+    public static DatabaseQuery apply(Map<String, Object> hints, DatabaseQuery query, ClassLoader loader) {
         if (hints == null) {
             return query;
         }
         DatabaseQuery hintQuery = query;
-        Iterator iterator = hints.entrySet().iterator();
-        while(iterator.hasNext()) {
-            Map.Entry entry = (Map.Entry)iterator.next();
-            String hintName = (String)entry.getKey();
-            hintQuery = apply(hintName, entry.getValue(), hintQuery);
+        for (Map.Entry<String, Object> entry : hints.entrySet()) {
+            String hintName = entry.getKey();
+            if (entry.getValue() instanceof Object[]) {
+                Object[] values = (Object[])entry.getValue();
+                for (int index = 0; index < values.length; index++) {
+                    hintQuery = apply(hintName, values[index], hintQuery, loader);                    
+                }
+            } else {
+                hintQuery = apply(hintName, entry.getValue(), hintQuery, loader);
+            }
         }
         return hintQuery;
     }
@@ -133,8 +146,8 @@ public class QueryHintsHandler {
      * Applies the hint to the query.
      * Throws IllegalArgumentException in case the hint value is illegal.
      */
-    public static DatabaseQuery apply(String hintName, Object hintValue, DatabaseQuery query) {
-        return Hint.apply(hintName, shouldUseDefault(hintValue), hintValue, query);
+    public static DatabaseQuery apply(String hintName, Object hintValue, DatabaseQuery query, ClassLoader loader) {
+        return Hint.apply(hintName, shouldUseDefault(hintValue), hintValue, query, loader);
     }
     
     /**
@@ -197,6 +210,7 @@ public class QueryHintsHandler {
             addHint(new CascadePolicyHint());
             addHint(new BatchHint());
             addHint(new FetchHint());
+            addHint(new LeftFetchHint());
             addHint(new ReadOnlyHint());
             addHint(new JDBCTimeoutHint());
             addHint(new JDBCFetchSizeHint());
@@ -220,12 +234,17 @@ public class QueryHintsHandler {
             addHint(new ScrollableCursorHint());
             addHint(new CursorSizeHint());
             addHint(new FetchGroupHint());
+            addHint(new FetchGroupNameHint());
             addHint(new FetchGroupDefaultHint());
             addHint(new FetchGroupAttributeHint());
             addHint(new ExclusiveHint());
             addHint(new InheritanceJoinHint());
             addHint(new AsOfHint());
             addHint(new AsOfSCNHint());
+            addHint(new ResultTypeHint());
+            addHint(new ResultSetTypeHint());
+            addHint(new ResultSetConcurrencyHint());
+            addHint(new IndirectionPolicyHint());
         }
         
         Hint(String name, String defaultValue) {
@@ -233,7 +252,7 @@ public class QueryHintsHandler {
             this.defaultValue = defaultValue;
         }
 
-        abstract DatabaseQuery applyToDatabaseQuery(Object valueToApply, DatabaseQuery query);
+        abstract DatabaseQuery applyToDatabaseQuery(Object valueToApply, DatabaseQuery query, ClassLoader loader);
                 
         static void verify(String hintName, boolean shouldUseDefault, Object hintValue, String queryName, AbstractSession session) {
             Hint hint = (Hint)mainMap.get(hintName);
@@ -259,36 +278,36 @@ public class QueryHintsHandler {
             }
         }
         
-        static DatabaseQuery apply(String hintName, boolean shouldUseDefault, Object hintValue, DatabaseQuery query) {
+        static DatabaseQuery apply(String hintName, boolean shouldUseDefault, Object hintValue, DatabaseQuery query, ClassLoader loader) {
             Hint hint = (Hint)mainMap.get(hintName);
             if (hint == null) {
                 // unknown hint name - silently ignored.
                 return query;
             }
             
-            return hint.apply(hintValue, shouldUseDefault, query);
+            return hint.apply(hintValue, shouldUseDefault, query, loader);
         }
         
-        DatabaseQuery apply(Object hintValue, boolean shouldUseDefault, DatabaseQuery query) {
+        DatabaseQuery apply(Object hintValue, boolean shouldUseDefault, DatabaseQuery query, ClassLoader loader) {
             Object valueToApply = hintValue;
-            if(shouldUseDefault) {
+            if (shouldUseDefault) {
                 valueToApply = defaultValueToApply;
             } else {
-                if(valueMap != null) {
+                if( valueMap != null) {
                     String key = getUpperCaseString(hintValue);
                     valueToApply = valueMap.get(key);
-                    if(valueToApply == null) {
+                    if (valueToApply == null) {
                         boolean wrongKey = true;
-                        if(valueToApplyMayBeNull) {
+                        if (valueToApplyMayBeNull) {
                             wrongKey = !valueMap.containsKey(key);
                         }
-                        if(wrongKey) {
+                        if (wrongKey) {
                             throw new IllegalArgumentException(ExceptionLocalization.buildMessage("ejb30-wrong-query-hint-value",new Object[]{getQueryId(query), name, getPrintValue(hintValue)}));
                         }
                     }
                 }
             }
-            return applyToDatabaseQuery(valueToApply, query);
+            return applyToDatabaseQuery(valueToApply, query, loader);
         }
 
         static String getQueryId(DatabaseQuery query) {
@@ -307,11 +326,31 @@ public class QueryHintsHandler {
             return hintValue != null ? hintValue.toString().toUpperCase() : null;
         }
 
-        static Class loadClass(String className, ClassLoader loader) throws ClassNotFoundException, PrivilegedActionException {
-            if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
-                return (Class)AccessController.doPrivileged(new PrivilegedClassForName(className, true, loader));
-            } else {
-                return PrivilegedAccessHelper.getClassForName(className, true, loader);
+        static Class loadClass(String className, DatabaseQuery query, ClassLoader loader) throws QueryException {
+            try {
+                if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) {
+                    try {
+                        return (Class)AccessController.doPrivileged(new PrivilegedClassForName(className, true, loader));
+                    } catch (PrivilegedActionException exception) {
+                        throw QueryException.classNotFoundWhileUsingQueryHint(query, className, exception.getException());
+                    }
+                } else {
+                    return PrivilegedAccessHelper.getClassForName(className, true, loader);
+                }
+            } catch (ClassNotFoundException exception){
+                throw QueryException.classNotFoundWhileUsingQueryHint(query, className, exception);
+            }
+        }
+        
+        static Object newInstance(Class theClass, DatabaseQuery query, String hint) {
+            try {
+                if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
+                    return AccessController.doPrivileged(new PrivilegedNewInstanceFromClass(theClass));
+                } else {
+                    return PrivilegedAccessHelper.newInstanceFromClass(theClass);
+                }
+            } catch (Exception exception) {
+                throw QueryException.errorInstantiatedClassForQueryHint(exception, query, theClass, hint);                
             }
         }
 
@@ -354,7 +393,7 @@ public class QueryHintsHandler {
             };
         }
     
-        DatabaseQuery applyToDatabaseQuery(Object valueToApply, DatabaseQuery query) {
+        DatabaseQuery applyToDatabaseQuery(Object valueToApply, DatabaseQuery query, ClassLoader loader) {
             if (valueToApply == null) {
                 query.ignoreBindAllParameters();
             } else {
@@ -384,7 +423,7 @@ public class QueryHintsHandler {
             };
         }
     
-        DatabaseQuery applyToDatabaseQuery(Object valueToApply, DatabaseQuery query) {
+        DatabaseQuery applyToDatabaseQuery(Object valueToApply, DatabaseQuery query, ClassLoader loader) {
             if (query.isObjectLevelReadQuery()) {
                 int cacheUsage = ((Integer)valueToApply).intValue();
                 ((ObjectLevelReadQuery)query).setCacheUsage(cacheUsage);
@@ -416,7 +455,7 @@ public class QueryHintsHandler {
             };
         }
     
-        DatabaseQuery applyToDatabaseQuery(Object valueToApply, DatabaseQuery query) {
+        DatabaseQuery applyToDatabaseQuery(Object valueToApply, DatabaseQuery query, ClassLoader loader) {
             query.setCascadePolicy((Integer)valueToApply);
             return query;
         }
@@ -428,31 +467,43 @@ public class QueryHintsHandler {
     protected static class QueryTypeHint extends Hint {
         QueryTypeHint() {
             super(QueryHints.QUERY_TYPE, QueryType.DEFAULT);
-            valueArray = new Object[][] {
-                {QueryType.Auto, QueryType.Auto},
-                {QueryType.ReadAll, QueryType.ReadAll},
-                {QueryType.ReadObject, QueryType.ReadObject},
-                {QueryType.Report, QueryType.Report}
-            };
         }
     
-        DatabaseQuery applyToDatabaseQuery(Object valueToApply, DatabaseQuery query) {
-            if (query.isObjectLevelReadQuery()) {
-                if (valueToApply == QueryType.ReadAll) {
-                    ReadAllQuery newQuery = new ReadAllQuery();
-                    newQuery.copyFromQuery(query);
-                    return newQuery;
-                } else if (valueToApply == QueryType.ReadObject) {
-                    ReadObjectQuery newQuery = new ReadObjectQuery();
-                    newQuery.copyFromQuery(query);
-                    return newQuery;
-                } else if (valueToApply == QueryType.Report) {
-                    ReportQuery newQuery = new ReportQuery();
-                    newQuery.copyFromQuery(query);
-                    return newQuery;
-                }
+        DatabaseQuery applyToDatabaseQuery(Object valueToApply, DatabaseQuery query, ClassLoader loader) {
+            if (valueToApply.equals(QueryType.DEFAULT)) {
+                return query;
             }
-            return query;
+            // Allows an query type, or a custom query class.
+            DatabaseQuery newQuery = query;
+            if (valueToApply.equals(QueryType.ReadAll)) {
+                newQuery = new ReadAllQuery();
+            } else if (valueToApply.equals(QueryType.ReadObject)) {
+                newQuery = new ReadObjectQuery();
+            } else if (valueToApply.equals(QueryType.Report)) {
+                newQuery = new ReportQuery();
+                if (query.isObjectLevelReadQuery()) {
+                    ((ReportQuery)newQuery).addAttribute("root", ((ReportQuery)newQuery).getExpressionBuilder());
+                }
+            } else if (valueToApply.equals(QueryType.ResultSetMapping)) {
+                newQuery = new ResultSetMappingQuery();
+            } else if (valueToApply.equals(QueryType.UpdateAll)) {
+                newQuery = new UpdateAllQuery();
+            } else if (valueToApply.equals(QueryType.DeleteAll)) {
+                newQuery = new DeleteAllQuery();
+            } else if (valueToApply.equals(QueryType.DataModify)) {
+                newQuery = new DataModifyQuery();
+            } else if (valueToApply.equals(QueryType.DataRead)) {
+                newQuery = new DataReadQuery();
+            } else if (valueToApply.equals(QueryType.DirectRead)) {
+                newQuery = new DirectReadQuery();
+            } else if (valueToApply.equals(QueryType.ValueRead)) {
+                newQuery = new ValueReadQuery();
+            } else {
+                Class queryClass = loadClass((String)valueToApply, query, loader);
+                newQuery = (DatabaseQuery)newInstance(queryClass, query, QueryHints.QUERY_TYPE);
+            }
+            newQuery.copyFromQuery(query);
+            return newQuery;
         }
     }
     
@@ -466,7 +517,7 @@ public class QueryHintsHandler {
             };
         }
     
-        DatabaseQuery applyToDatabaseQuery(Object valueToApply, DatabaseQuery query) {
+        DatabaseQuery applyToDatabaseQuery(Object valueToApply, DatabaseQuery query, ClassLoader loader) {
             if (query.isObjectBuildingQuery()) {
                 ((ObjectBuildingQuery)query).setLockMode(((Short)valueToApply).shortValue());
             } else {
@@ -481,7 +532,7 @@ public class QueryHintsHandler {
             super(QueryHints.PESSIMISTIC_LOCK_TIMEOUT, "");
         }
     
-        DatabaseQuery applyToDatabaseQuery(Object valueToApply, DatabaseQuery query) {
+        DatabaseQuery applyToDatabaseQuery(Object valueToApply, DatabaseQuery query, ClassLoader loader) {
             if (query.isObjectLevelReadQuery()) {                    
                 ((ObjectLevelReadQuery) query).setWaitTimeout(QueryHintsHandler.parseIntegerHint(valueToApply, QueryHints.PESSIMISTIC_LOCK_TIMEOUT));
             } else {
@@ -501,9 +552,129 @@ public class QueryHintsHandler {
             };
         }
     
-        DatabaseQuery applyToDatabaseQuery(Object valueToApply, DatabaseQuery query) {
+        DatabaseQuery applyToDatabaseQuery(Object valueToApply, DatabaseQuery query, ClassLoader loader) {
             if (query.isObjectBuildingQuery()) {
                 ((ObjectBuildingQuery)query).setShouldRefreshIdentityMapResult(((Boolean)valueToApply).booleanValue());
+            } else {
+                throw new IllegalArgumentException(ExceptionLocalization.buildMessage("ejb30-wrong-type-for-query-hint",new Object[]{getQueryId(query), name, getPrintValue(valueToApply)}));
+            }
+            return query;
+        }
+    }
+    
+    protected static class ResultTypeHint extends Hint {
+        ResultTypeHint() {
+            super(QueryHints.RESULT_TYPE, ResultType.DEFAULT);
+            valueArray = new Object[][] { 
+                {ResultType.Map, ResultType.Map},
+                {ResultType.Array, ResultType.Array},
+                {ResultType.Value, ResultType.Value},
+                {ResultType.Attribute, ResultType.Attribute}
+            };
+        }
+    
+        DatabaseQuery applyToDatabaseQuery(Object valueToApply, DatabaseQuery query, ClassLoader loader) {
+            if (query.isDataReadQuery()) {
+                if (valueToApply == ResultType.Map) {
+                    ((DataReadQuery)query).setResultType(DataReadQuery.MAP);
+                } else if (valueToApply == ResultType.Array) {
+                    ((DataReadQuery)query).setResultType(DataReadQuery.ARRAY);
+                } else if (valueToApply == ResultType.Attribute) {
+                    ((DataReadQuery)query).setResultType(DataReadQuery.ATTRIBUTE);
+                } else if (valueToApply == ResultType.Value) {
+                    ((DataReadQuery)query).setResultType(DataReadQuery.VALUE);
+                }
+            } else if (query.isReportQuery()) {
+                if (valueToApply == ResultType.Map) {
+                    ((ReportQuery)query).setReturnType(ReportQuery.ShouldReturnReportResult);
+                } else if (valueToApply == ResultType.Array) {
+                    ((ReportQuery)query).setReturnType(ReportQuery.ShouldReturnArray);
+                } else if (valueToApply == ResultType.Attribute) {
+                    ((ReportQuery)query).setReturnType(ReportQuery.ShouldReturnSingleAttribute);
+                } else if (valueToApply == ResultType.Value) {
+                    ((ReportQuery)query).setReturnType(ReportQuery.ShouldReturnSingleValue);
+                }
+            } else {
+                throw new IllegalArgumentException(ExceptionLocalization.buildMessage("ejb30-wrong-type-for-query-hint",new Object[]{getQueryId(query), name, getPrintValue(valueToApply)}));
+            }
+            return query;
+        }
+    }
+    
+    protected static class IndirectionPolicyHint extends Hint {
+        IndirectionPolicyHint() {
+            super(QueryHints.INDIRECTION_POLICY, CacheUsageIndirectionPolicy.DEFAULT);
+            valueArray = new Object[][] { 
+                {CacheUsageIndirectionPolicy.Conform, InMemoryQueryIndirectionPolicy.SHOULD_IGNORE_EXCEPTION_RETURN_CONFORMED},
+                {CacheUsageIndirectionPolicy.NotConform, InMemoryQueryIndirectionPolicy.SHOULD_IGNORE_EXCEPTION_RETURN_CONFORMED},
+                {CacheUsageIndirectionPolicy.Trigger, InMemoryQueryIndirectionPolicy.SHOULD_TRIGGER_INDIRECTION},
+                {CacheUsageIndirectionPolicy.Exception, InMemoryQueryIndirectionPolicy.SHOULD_THROW_INDIRECTION_EXCEPTION}
+            };
+        }
+    
+        DatabaseQuery applyToDatabaseQuery(Object valueToApply, DatabaseQuery query, ClassLoader loader) {
+            if (query.isObjectLevelReadQuery()) {
+                ((ObjectLevelReadQuery) query).setInMemoryQueryIndirectionPolicyState((Integer)valueToApply);
+            } else {
+                throw new IllegalArgumentException(ExceptionLocalization.buildMessage("ejb30-wrong-type-for-query-hint",new Object[]{getQueryId(query), name, getPrintValue(valueToApply)}));
+            }
+            return query;
+        }
+    }
+    
+    protected static class ResultSetTypeHint extends Hint {
+        ResultSetTypeHint() {
+            super(QueryHints.RESULT_SET_TYPE, ResultSetType.DEFAULT);
+            valueArray = new Object[][] { 
+                {ResultSetType.Forward, ScrollableCursorPolicy.FETCH_FORWARD},
+                {ResultSetType.ForwardOnly, ScrollableCursorPolicy.TYPE_FORWARD_ONLY},
+                {ResultSetType.Reverse, ScrollableCursorPolicy.FETCH_REVERSE},
+                {ResultSetType.ScrollInsensitive, ScrollableCursorPolicy.TYPE_SCROLL_INSENSITIVE},
+                {ResultSetType.ScrollSensitive, ScrollableCursorPolicy.TYPE_SCROLL_SENSITIVE},
+                {ResultSetType.Unknown, ScrollableCursorPolicy.FETCH_UNKNOWN}
+            };
+        }
+    
+        DatabaseQuery applyToDatabaseQuery(Object valueToApply, DatabaseQuery query, ClassLoader loader) {  
+            int value = (Integer)valueToApply;
+            if (query.isReadAllQuery()) {
+                if (!((ReadAllQuery) query).getContainerPolicy().isScrollableCursorPolicy()) {
+                    ((ReadAllQuery) query).useScrollableCursor();                    
+                }
+                ((ScrollableCursorPolicy)((ReadAllQuery) query).getContainerPolicy()).setResultSetType(value);
+            } else if (query.isDataReadQuery()) {
+                if (!((DataReadQuery) query).getContainerPolicy().isScrollableCursorPolicy()) {
+                    ((DataReadQuery) query).useScrollableCursor();
+                }
+                ((ScrollableCursorPolicy)((DataReadQuery) query).getContainerPolicy()).setResultSetType(value);
+            } else {
+                throw new IllegalArgumentException(ExceptionLocalization.buildMessage("ejb30-wrong-type-for-query-hint",new Object[]{getQueryId(query), name, getPrintValue(valueToApply)}));
+            }
+            return query;
+        }
+    }
+    
+    protected static class ResultSetConcurrencyHint extends Hint {
+        ResultSetConcurrencyHint() {
+            super(QueryHints.RESULT_SET_CONCURRENCY, ResultSetConcurrency.DEFAULT);
+            valueArray = new Object[][] {
+                {ResultSetConcurrency.ReadOnly, ScrollableCursorPolicy.CONCUR_READ_ONLY},
+                {ResultSetConcurrency.Updatable, ScrollableCursorPolicy.CONCUR_UPDATABLE}
+            };
+        }
+    
+        DatabaseQuery applyToDatabaseQuery(Object valueToApply, DatabaseQuery query, ClassLoader loader) {  
+            int value = (Integer)valueToApply;
+            if (query.isReadAllQuery()) {
+                if (!((ReadAllQuery) query).getContainerPolicy().isScrollableCursorPolicy()) {
+                    ((ReadAllQuery) query).useScrollableCursor();                    
+                }
+                ((ScrollableCursorPolicy)((ReadAllQuery) query).getContainerPolicy()).setResultSetConcurrency(value);
+            } else if (query.isDataReadQuery()) {
+                if (!((DataReadQuery) query).getContainerPolicy().isScrollableCursorPolicy()) {
+                    ((DataReadQuery) query).useScrollableCursor();
+                }
+                ((ScrollableCursorPolicy)((DataReadQuery) query).getContainerPolicy()).setResultSetConcurrency(value);
             } else {
                 throw new IllegalArgumentException(ExceptionLocalization.buildMessage("ejb30-wrong-type-for-query-hint",new Object[]{getQueryId(query), name, getPrintValue(valueToApply)}));
             }
@@ -520,7 +691,7 @@ public class QueryHintsHandler {
             };
         }
     
-        DatabaseQuery applyToDatabaseQuery(Object valueToApply, DatabaseQuery query) {
+        DatabaseQuery applyToDatabaseQuery(Object valueToApply, DatabaseQuery query, ClassLoader loader) {
             if (query.isObjectBuildingQuery()) {
                 ((ObjectBuildingQuery)query).setShouldUseExclusiveConnection(((Boolean)valueToApply).booleanValue());
             } else {
@@ -539,7 +710,7 @@ public class QueryHintsHandler {
             };
         }
     
-        DatabaseQuery applyToDatabaseQuery(Object valueToApply, DatabaseQuery query) {
+        DatabaseQuery applyToDatabaseQuery(Object valueToApply, DatabaseQuery query, ClassLoader loader) {
             if (query.isObjectLevelReadQuery()) {
                 ((ObjectLevelReadQuery)query).setShouldOuterJoinSubclasses(((Boolean)valueToApply).booleanValue());
             } else {
@@ -558,7 +729,7 @@ public class QueryHintsHandler {
             };
         }
     
-        DatabaseQuery applyToDatabaseQuery(Object valueToApply, DatabaseQuery query) {
+        DatabaseQuery applyToDatabaseQuery(Object valueToApply, DatabaseQuery query, ClassLoader loader) {
             if (query.isObjectLevelReadQuery()) {
                 ((ObjectLevelReadQuery)query).setShouldUseDefaultFetchGroup(((Boolean)valueToApply).booleanValue());
             } else {
@@ -568,14 +739,29 @@ public class QueryHintsHandler {
         }
     }
     
-    protected static class FetchGroupHint extends Hint {
-        FetchGroupHint() {
+    protected static class FetchGroupNameHint extends Hint {
+        FetchGroupNameHint() {
             super(QueryHints.FETCH_GROUP_NAME, "");
         }
     
-        DatabaseQuery applyToDatabaseQuery(Object valueToApply, DatabaseQuery query) {
+        DatabaseQuery applyToDatabaseQuery(Object valueToApply, DatabaseQuery query, ClassLoader loader) {
             if (query.isObjectLevelReadQuery()) {
                 ((ObjectLevelReadQuery)query).setFetchGroupName((String)valueToApply);
+            } else {
+                throw new IllegalArgumentException(ExceptionLocalization.buildMessage("ejb30-wrong-type-for-query-hint",new Object[]{getQueryId(query), name, getPrintValue(valueToApply)}));
+            }
+            return query;
+        }
+    }
+    
+    protected static class FetchGroupHint extends Hint {
+        FetchGroupHint() {
+            super(QueryHints.FETCH_GROUP, "");
+        }
+    
+        DatabaseQuery applyToDatabaseQuery(Object valueToApply, DatabaseQuery query, ClassLoader loader) {
+            if (query.isObjectLevelReadQuery()) {
+                ((ObjectLevelReadQuery)query).setFetchGroup((FetchGroup)valueToApply);
             } else {
                 throw new IllegalArgumentException(ExceptionLocalization.buildMessage("ejb30-wrong-type-for-query-hint",new Object[]{getQueryId(query), name, getPrintValue(valueToApply)}));
             }
@@ -588,7 +774,7 @@ public class QueryHintsHandler {
             super(QueryHints.FETCH_GROUP_ATTRIBUTE, "");
         }
     
-        DatabaseQuery applyToDatabaseQuery(Object valueToApply, DatabaseQuery query) {
+        DatabaseQuery applyToDatabaseQuery(Object valueToApply, DatabaseQuery query, ClassLoader loader) {
             if (query.isObjectLevelReadQuery()) {
                 FetchGroup fetchGroup = ((ObjectLevelReadQuery)query).getFetchGroup();
                 if (fetchGroup == null) {
@@ -616,7 +802,7 @@ public class QueryHintsHandler {
             };
         }
     
-        DatabaseQuery applyToDatabaseQuery(Object valueToApply, DatabaseQuery query) {
+        DatabaseQuery applyToDatabaseQuery(Object valueToApply, DatabaseQuery query, ClassLoader loader) {
             if (query.isReadQuery()) {
                 if (((Boolean)valueToApply).booleanValue()) {
                     if (((ReadQuery)query).getQueryResultsCachePolicy() == null) {
@@ -639,7 +825,7 @@ public class QueryHintsHandler {
             super(QueryHints.QUERY_RESULTS_CACHE_SIZE, "");
         }
     
-        DatabaseQuery applyToDatabaseQuery(Object valueToApply, DatabaseQuery query) {
+        DatabaseQuery applyToDatabaseQuery(Object valueToApply, DatabaseQuery query, ClassLoader loader) {
             if (query.isReadQuery()) {
                 ReadQuery readQuery = (ReadQuery)query;
                 if (readQuery.getQueryResultsCachePolicy() == null) {
@@ -666,7 +852,7 @@ public class QueryHintsHandler {
             super(QueryHints.QUERY_RESULTS_CACHE_EXPIRY, "");
         }
     
-        DatabaseQuery applyToDatabaseQuery(Object valueToApply, DatabaseQuery query) {
+        DatabaseQuery applyToDatabaseQuery(Object valueToApply, DatabaseQuery query, ClassLoader loader) {
             if (query.isReadQuery()) {
                 ReadQuery readQuery = (ReadQuery)query;
                 if (readQuery.getQueryResultsCachePolicy() == null) {
@@ -694,7 +880,7 @@ public class QueryHintsHandler {
             super(QueryHints.QUERY_RESULTS_CACHE_EXPIRY_TIME_OF_DAY, "");
         }
     
-        DatabaseQuery applyToDatabaseQuery(Object valueToApply, DatabaseQuery query) {
+        DatabaseQuery applyToDatabaseQuery(Object valueToApply, DatabaseQuery query, ClassLoader loader) {
             if (query.isReadQuery()) {
                 ReadQuery readQuery = (ReadQuery)query;
                 if (readQuery.getQueryResultsCachePolicy() == null) {
@@ -721,7 +907,7 @@ public class QueryHintsHandler {
             super(QueryHints.BATCH, "");
         }
     
-        DatabaseQuery applyToDatabaseQuery(Object valueToApply, DatabaseQuery query) {
+        DatabaseQuery applyToDatabaseQuery(Object valueToApply, DatabaseQuery query, ClassLoader loader) {
             if (query.isReadAllQuery() && !query.isReportQuery()) {
                 ReadAllQuery raq = (ReadAllQuery)query;
                 StringTokenizer tokenizer = new StringTokenizer((String)valueToApply, ".");
@@ -765,12 +951,12 @@ public class QueryHintsHandler {
             super(QueryHints.FETCH, "");
         }
     
-        DatabaseQuery applyToDatabaseQuery(Object valueToApply, DatabaseQuery query) {
+        DatabaseQuery applyToDatabaseQuery(Object valueToApply, DatabaseQuery query, ClassLoader loader) {
             if (query.isObjectLevelReadQuery() && !query.isReportQuery()) {
                 ObjectLevelReadQuery olrq = (ObjectLevelReadQuery)query;
                 StringTokenizer tokenizer = new StringTokenizer((String)valueToApply, ".");
                 if (tokenizer.countTokens() < 2){
-                    throw QueryException.queryHintDidNotContainEnoughTokens(query, QueryHints.BATCH, valueToApply);
+                    throw QueryException.queryHintDidNotContainEnoughTokens(query, QueryHints.FETCH, valueToApply);
                 }
                 // ignore the first token since we are assuming read all query
                 // e.g. In e.phoneNumbers we will assume "e" refers to the base of the query
@@ -782,9 +968,9 @@ public class QueryHintsHandler {
                     ForeignReferenceMapping frMapping = null;
                     DatabaseMapping mapping = descriptor.getObjectBuilder().getMappingForAttributeName(token);
                     if (mapping == null){
-                        throw QueryException.queryHintNavigatedNonExistantRelationship(query, QueryHints.BATCH, valueToApply, previousToken + "." + token);
+                        throw QueryException.queryHintNavigatedNonExistantRelationship(query, QueryHints.FETCH, valueToApply, previousToken + "." + token);
                     } else if (!mapping.isForeignReferenceMapping()){
-                        throw QueryException.queryHintNavigatedIllegalRelationship(query, QueryHints.BATCH, valueToApply, previousToken + "." + token);
+                        throw QueryException.queryHintNavigatedIllegalRelationship(query, QueryHints.FETCH, valueToApply, previousToken + "." + token);
                     } else {
                         frMapping = (ForeignReferenceMapping)mapping;
                     }
@@ -793,6 +979,50 @@ public class QueryHintsHandler {
                         expression = expression.anyOf(token);
                     } else {
                         expression = expression.get(token);
+                    }
+                    previousToken = token;
+                }
+                olrq.addJoinedAttribute(expression);
+            } else {
+                throw new IllegalArgumentException(ExceptionLocalization.buildMessage("ejb30-wrong-type-for-query-hint",new Object[]{getQueryId(query), name, getPrintValue(valueToApply)}));
+            }
+            return query;
+        }
+    }
+    
+    protected static class LeftFetchHint extends Hint {
+        LeftFetchHint() {
+            super(QueryHints.LEFT_FETCH, "");
+        }
+    
+        DatabaseQuery applyToDatabaseQuery(Object valueToApply, DatabaseQuery query, ClassLoader loader) {
+            if (query.isObjectLevelReadQuery() && !query.isReportQuery()) {
+                ObjectLevelReadQuery olrq = (ObjectLevelReadQuery)query;
+                StringTokenizer tokenizer = new StringTokenizer((String)valueToApply, ".");
+                if (tokenizer.countTokens() < 2){
+                    throw QueryException.queryHintDidNotContainEnoughTokens(query, QueryHints.LEFT_FETCH, valueToApply);
+                }
+                // ignore the first token since we are assuming read all query
+                // e.g. In e.phoneNumbers we will assume "e" refers to the base of the query
+                String previousToken = tokenizer.nextToken();
+                ClassDescriptor descriptor = olrq.getDescriptor();
+                Expression expression = olrq.getExpressionBuilder();
+                while (tokenizer.hasMoreTokens()){
+                    String token = tokenizer.nextToken();
+                    ForeignReferenceMapping frMapping = null;
+                    DatabaseMapping mapping = descriptor.getObjectBuilder().getMappingForAttributeName(token);
+                    if (mapping == null){
+                        throw QueryException.queryHintNavigatedNonExistantRelationship(query, QueryHints.LEFT_FETCH, valueToApply, previousToken + "." + token);
+                    } else if (!mapping.isForeignReferenceMapping()){
+                        throw QueryException.queryHintNavigatedIllegalRelationship(query, QueryHints.LEFT_FETCH, valueToApply, previousToken + "." + token);
+                    } else {
+                        frMapping = (ForeignReferenceMapping)mapping;
+                    }
+                    descriptor = frMapping.getReferenceDescriptor();
+                    if (frMapping.isCollectionMapping()){
+                        expression = expression.anyOfAllowingNone(token);
+                    } else {
+                        expression = expression.getAllowingNull(token);
                     }
                     previousToken = token;
                 }
@@ -813,7 +1043,7 @@ public class QueryHintsHandler {
             };
         }
     
-        DatabaseQuery applyToDatabaseQuery(Object valueToApply, DatabaseQuery query) {
+        DatabaseQuery applyToDatabaseQuery(Object valueToApply, DatabaseQuery query, ClassLoader loader) {
             if (query.isObjectLevelReadQuery()) {
                 ((ObjectLevelReadQuery)query).setIsReadOnly(((Boolean)valueToApply).booleanValue());
             } else {
@@ -832,7 +1062,7 @@ public class QueryHintsHandler {
             };
         }
     
-        DatabaseQuery applyToDatabaseQuery(Object valueToApply, DatabaseQuery query) {
+        DatabaseQuery applyToDatabaseQuery(Object valueToApply, DatabaseQuery query, ClassLoader loader) {
             query.setIsNativeConnectionRequired(((Boolean)valueToApply).booleanValue());
             return query;
         }
@@ -847,7 +1077,7 @@ public class QueryHintsHandler {
             };
         }
     
-        DatabaseQuery applyToDatabaseQuery(Object valueToApply, DatabaseQuery query) {
+        DatabaseQuery applyToDatabaseQuery(Object valueToApply, DatabaseQuery query, ClassLoader loader) {
             if (!((Boolean)valueToApply).booleanValue()) {
                 if (query.isReadAllQuery()) {
                     if (((ReadAllQuery) query).getContainerPolicy().isCursoredStreamPolicy()) {
@@ -881,7 +1111,7 @@ public class QueryHintsHandler {
             super(QueryHints.CURSOR_INITIAL_SIZE, "");
         }
     
-        DatabaseQuery applyToDatabaseQuery(Object valueToApply, DatabaseQuery query) {
+        DatabaseQuery applyToDatabaseQuery(Object valueToApply, DatabaseQuery query, ClassLoader loader) {
             if (query.isReadAllQuery()) {
                 if (!((ReadAllQuery) query).getContainerPolicy().isCursoredStreamPolicy()) {
                     ((ReadAllQuery) query).useCursoredStream();
@@ -905,7 +1135,7 @@ public class QueryHintsHandler {
             super(QueryHints.CURSOR_PAGE_SIZE, "");
         }
     
-        DatabaseQuery applyToDatabaseQuery(Object valueToApply, DatabaseQuery query) {
+        DatabaseQuery applyToDatabaseQuery(Object valueToApply, DatabaseQuery query, ClassLoader loader) {
             if (query.isReadAllQuery()) {
                 if (!((ReadAllQuery) query).getContainerPolicy().isCursorPolicy()) {
                     ((ReadAllQuery) query).useCursoredStream();
@@ -929,7 +1159,7 @@ public class QueryHintsHandler {
             super(QueryHints.CURSOR_SIZE, "");
         }
     
-        DatabaseQuery applyToDatabaseQuery(Object valueToApply, DatabaseQuery query) {
+        DatabaseQuery applyToDatabaseQuery(Object valueToApply, DatabaseQuery query, ClassLoader loader) {
             if (query.isReadAllQuery()) {
                 if (!((ReadAllQuery) query).getContainerPolicy().isCursoredStreamPolicy()) {
                     ((ReadAllQuery) query).useCursoredStream();
@@ -957,7 +1187,7 @@ public class QueryHintsHandler {
             };
         }
     
-        DatabaseQuery applyToDatabaseQuery(Object valueToApply, DatabaseQuery query) {
+        DatabaseQuery applyToDatabaseQuery(Object valueToApply, DatabaseQuery query, ClassLoader loader) {
             if (!((Boolean)valueToApply).booleanValue()) {
                 if (query.isReadAllQuery()) {
                     if (((ReadAllQuery) query).getContainerPolicy().isScrollableCursorPolicy()) {
@@ -995,7 +1225,7 @@ public class QueryHintsHandler {
             };
         }
     
-        DatabaseQuery applyToDatabaseQuery(Object valueToApply, DatabaseQuery query) {
+        DatabaseQuery applyToDatabaseQuery(Object valueToApply, DatabaseQuery query, ClassLoader loader) {
             query.setShouldMaintainCache(((Boolean)valueToApply).booleanValue());
             return query;
         }
@@ -1010,7 +1240,7 @@ public class QueryHintsHandler {
             };
         }
     
-        DatabaseQuery applyToDatabaseQuery(Object valueToApply, DatabaseQuery query) {
+        DatabaseQuery applyToDatabaseQuery(Object valueToApply, DatabaseQuery query, ClassLoader loader) {
             query.setShouldPrepare(((Boolean)valueToApply).booleanValue());
             return query;
         }
@@ -1025,7 +1255,7 @@ public class QueryHintsHandler {
             };
         }
     
-        DatabaseQuery applyToDatabaseQuery(Object valueToApply, DatabaseQuery query) {
+        DatabaseQuery applyToDatabaseQuery(Object valueToApply, DatabaseQuery query, ClassLoader loader) {
             query.setShouldCacheStatement(((Boolean)valueToApply).booleanValue());
             return query;
         }
@@ -1040,7 +1270,7 @@ public class QueryHintsHandler {
             };
         }
     
-        DatabaseQuery applyToDatabaseQuery(Object valueToApply, DatabaseQuery query) {
+        DatabaseQuery applyToDatabaseQuery(Object valueToApply, DatabaseQuery query, ClassLoader loader) {
             query.setFlushOnExecute((Boolean)valueToApply);
             return query;
         }
@@ -1051,7 +1281,7 @@ public class QueryHintsHandler {
             super(QueryHints.HINT, "");
         }
     
-        DatabaseQuery applyToDatabaseQuery(Object valueToApply, DatabaseQuery query) {
+        DatabaseQuery applyToDatabaseQuery(Object valueToApply, DatabaseQuery query, ClassLoader loader) {
             query.setHintString((String)valueToApply);
             return query;
         }
@@ -1062,7 +1292,7 @@ public class QueryHintsHandler {
             super(QueryHints.JDBC_TIMEOUT, "");
         }
     
-        DatabaseQuery applyToDatabaseQuery(Object valueToApply, DatabaseQuery query) {
+        DatabaseQuery applyToDatabaseQuery(Object valueToApply, DatabaseQuery query, ClassLoader loader) {
             query.setQueryTimeout(QueryHintsHandler.parseIntegerHint(valueToApply, QueryHints.JDBC_TIMEOUT));
             return query;
         }
@@ -1073,7 +1303,7 @@ public class QueryHintsHandler {
             super(QueryHints.JDBC_FETCH_SIZE, "");
         }
     
-        DatabaseQuery applyToDatabaseQuery(Object valueToApply, DatabaseQuery query) {
+        DatabaseQuery applyToDatabaseQuery(Object valueToApply, DatabaseQuery query, ClassLoader loader) {
             if (query.isReadQuery()) {
                 ((ReadQuery) query).setFetchSize(QueryHintsHandler.parseIntegerHint(valueToApply, QueryHints.JDBC_FETCH_SIZE));
             } else {
@@ -1089,7 +1319,7 @@ public class QueryHintsHandler {
             super(QueryHints.AS_OF, "");
         }
     
-        DatabaseQuery applyToDatabaseQuery(Object valueToApply, DatabaseQuery query) {
+        DatabaseQuery applyToDatabaseQuery(Object valueToApply, DatabaseQuery query, ClassLoader loader) {
             if (query.isObjectLevelReadQuery()) {
                 ((ObjectLevelReadQuery) query).setAsOfClause(new AsOfClause(Helper.timeFromString((String)valueToApply)));
             } else {
@@ -1105,7 +1335,7 @@ public class QueryHintsHandler {
             super(QueryHints.AS_OF_SCN, "");
         }
     
-        DatabaseQuery applyToDatabaseQuery(Object valueToApply, DatabaseQuery query) {
+        DatabaseQuery applyToDatabaseQuery(Object valueToApply, DatabaseQuery query, ClassLoader loader) {
             if (query.isObjectLevelReadQuery()) {
                 ((ObjectLevelReadQuery) query).setAsOfClause(new AsOfSCNClause(QueryHintsHandler.parseIntegerHint(valueToApply, QueryHints.AS_OF_SCN)));
             } else {
@@ -1121,7 +1351,7 @@ public class QueryHintsHandler {
             super(QueryHints.JDBC_MAX_ROWS, "");
         }
     
-        DatabaseQuery applyToDatabaseQuery(Object valueToApply, DatabaseQuery query) {
+        DatabaseQuery applyToDatabaseQuery(Object valueToApply, DatabaseQuery query, ClassLoader loader) {
             if (query.isReadQuery()) {
                 ((ReadQuery) query).setMaxRows(QueryHintsHandler.parseIntegerHint(valueToApply, QueryHints.JDBC_MAX_ROWS));
             } else {
@@ -1136,7 +1366,7 @@ public class QueryHintsHandler {
             super(QueryHints.JDBC_FIRST_RESULT, "");
         }
     
-        DatabaseQuery applyToDatabaseQuery(Object valueToApply, DatabaseQuery query) {
+        DatabaseQuery applyToDatabaseQuery(Object valueToApply, DatabaseQuery query, ClassLoader loader) {
             if (query.isReadQuery()) {
                 ((ReadQuery) query).setFirstResult(QueryHintsHandler.parseIntegerHint(valueToApply, QueryHints.JDBC_FIRST_RESULT));
             } else {
@@ -1151,24 +1381,11 @@ public class QueryHintsHandler {
             super(QueryHints.RESULT_COLLECTION_TYPE, "");
         }
     
-        DatabaseQuery applyToDatabaseQuery(Object valueToApply, DatabaseQuery query) {
+        DatabaseQuery applyToDatabaseQuery(Object valueToApply, DatabaseQuery query, ClassLoader loader) {
             if (query.isReadAllQuery()) {
                 Class collectionClass = null;
                 if (valueToApply instanceof String) {
-                    try {
-                        // TODO: This is not using the correct classloader.
-                        if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) {
-                            try {
-                                collectionClass = (Class)AccessController.doPrivileged(new PrivilegedClassForName((String)valueToApply));
-                            } catch (PrivilegedActionException exception) {
-                                throw QueryException.classNotFoundWhileUsingQueryHint(query, valueToApply, exception.getException());
-                            }
-                        } else {
-                            collectionClass = PrivilegedAccessHelper.getClassForName((String)valueToApply);
-                        }
-                    } catch (ClassNotFoundException exc){
-                        throw QueryException.classNotFoundWhileUsingQueryHint(query, valueToApply, exc);
-                    }
+                    collectionClass = loadClass((String)valueToApply, query, loader);
                 } else {
                     collectionClass = (Class)valueToApply;
                 }
@@ -1185,11 +1402,19 @@ public class QueryHintsHandler {
             super(QueryHints.QUERY_REDIRECTOR, "");
         }
     
-        DatabaseQuery applyToDatabaseQuery(Object valueToApply, DatabaseQuery query) {
-            try{
-                query.setRedirector((QueryRedirector)valueToApply);
-            }catch(ClassCastException ex){
-                throw QueryException.unableToSetRedirectorOnQueryFromHint(query,QueryHints.QUERY_REDIRECTOR, valueToApply.getClass().getName(), ex);
+        DatabaseQuery applyToDatabaseQuery(Object valueToApply, DatabaseQuery query, ClassLoader loader) {
+            // Can be an instance, class, or class name.
+            try {
+                Object redirector = null;
+                if (valueToApply instanceof Class) {
+                    redirector = newInstance((Class)valueToApply, query, QueryHints.QUERY_REDIRECTOR);
+                } else if (valueToApply instanceof String) {
+                    Class redirectorClass = loadClass((String)valueToApply, query, loader);
+                    redirector = newInstance(redirectorClass, query, QueryHints.QUERY_REDIRECTOR);
+                }
+                query.setRedirector((QueryRedirector)redirector);
+            } catch (ClassCastException exception){
+                throw QueryException.unableToSetRedirectorOnQueryFromHint(query,QueryHints.QUERY_REDIRECTOR, valueToApply.getClass().getName(), exception);
             }
             return query;
         }

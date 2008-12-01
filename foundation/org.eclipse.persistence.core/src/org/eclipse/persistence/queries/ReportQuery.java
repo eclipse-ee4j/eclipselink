@@ -54,6 +54,9 @@ import org.eclipse.persistence.mappings.*;
  */
 public class ReportQuery extends ReadAllQuery {
 
+    /** Default, returns ReportQueryResult objects. */
+    public static final int ShouldReturnReportResult = 0;
+    
     /** Simplifies the result by only returning the first result. */
     public static final int ShouldReturnSingleResult = 1;
 
@@ -66,6 +69,9 @@ public class ReportQuery extends ReadAllQuery {
     
     /** For EJB 3 support returns results without using the ReportQueryResult */
     public static final int ShouldReturnWithoutReportQueryResult = 4;
+    
+    /** For EJB 3 support returns results as an Object array. */
+    public static final int ShouldReturnArray = 5;
 
     /** Specifies whether to retrieve primary keys, first primary key, or no primary key.*/
     public static final int FULL_PRIMARY_KEY = 2;
@@ -599,16 +605,21 @@ public class ReportQuery extends ReadAllQuery {
             }
         }
         //end GF_ISSUE_395
-        if (this.shouldReturnSingleAttribute()) {
-            return reportQueryResult.getResults().firstElement();
-        } 
-        if (this.shouldReturnWithoutReportQueryResult()){
-            if (reportQueryResult.getResults().size() == 1){
-                return reportQueryResult.getResults().firstElement();
-            }
+        if (shouldReturnSingleAttribute()) {
+            return reportQueryResult.getResults().get(0);
+        } else if (shouldReturnArray()) {
             return reportQueryResult.toArray();
+        } else if (shouldReturnWithoutReportQueryResult()) {
+            if (reportQueryResult.size() == 1) {
+                return reportQueryResult.getResults().get(0);
+            } else {
+                return reportQueryResult.toArray();
+            }
+        } else if (shouldReturnSingleValue()) {
+            return reportQueryResult.getResults().get(0);
+        } else {
+            return reportQueryResult;
         }
-        return reportQueryResult;
     }
 
     /**
@@ -621,30 +632,27 @@ public class ReportQuery extends ReadAllQuery {
             if (rows.isEmpty()) {
                 return null;
             }
-            ReportQueryResult result = (ReportQueryResult)buildObject((AbstractRecord)rows.firstElement(), rows);
-            if (shouldReturnSingleValue()) {
-                return result.elements().nextElement();
-            }
-            return result;
+            return buildObject((AbstractRecord)rows.get(0), rows);
         }
 
         ContainerPolicy containerPolicy = getContainerPolicy();
-        Object reportResults = containerPolicy.containerInstance(rows.size());
+        int size = rows.size();
+        Object reportResults = containerPolicy.containerInstance(size);
         // GF_ISSUE_395
         if (shouldDistinctBeUsed()){
-            this.returnedKeys = new HashSet();
+            this.returnedKeys = new HashSet(size);
         }
         //end GF_ISSUE
         //If only the attribute is desired, then buildObject will only get the first attribute each time
-        for (Enumeration rowsEnum = rows.elements(); rowsEnum.hasMoreElements();) {
+        for (int index = 0; index < size; index++) {
             // GF_ISSUE_395
-            Object result = buildObject((AbstractRecord)rowsEnum.nextElement(), rows);
-            if (result != RESULT_IGNORED){
-                containerPolicy.addInto(result, reportResults, getSession());
+            Object result = buildObject((AbstractRecord)rows.get(index), rows);
+            if (result != RESULT_IGNORED) {
+                containerPolicy.addInto(result, reportResults, this.session);
             }
             //end GF_ISSUE
         }
-        if (shouldCacheQueryResults()){
+        if (shouldCacheQueryResults()) {
             setTemporaryCachedQueryResults(reportResults);
         }
         return reportResults;
@@ -958,7 +966,7 @@ public class ReportQuery extends ReadAllQuery {
             if (! lockModeType.equals(PESSIMISTIC) && ! lockModeType.equals(NONE)) {
                 for (ReportItem reportItem : (Vector<ReportItem>) getItems()) {
                     if (reportItem.getAttributeExpression() != null && reportItem.getAttributeExpression().isExpressionBuilder()) {
-                        OptimisticLockingPolicy lockingPolicy = ((ReportItem) reportItem).getDescriptor().getOptimisticLockingPolicy();
+                        OptimisticLockingPolicy lockingPolicy = reportItem.getDescriptor().getOptimisticLockingPolicy();
                     
                         if (lockingPolicy == null || !(lockingPolicy instanceof VersionLockingPolicy)) {
                             //throw new PersistenceException(ExceptionLocalization.buildMessage("ejb30-wrong-lock_called_without_version_locking-index", null));
@@ -1337,6 +1345,30 @@ public class ReportQuery extends ReadAllQuery {
 
     /**
      * PUBLIC:
+     * Return the return type.
+     */
+    public int getReturnType() {
+        return returnChoice;
+    }
+
+    /**
+     * PUBLIC:
+     * Set the return type.
+     * This can be one of several constants,
+     * <ul>
+     * <li>ShouldReturnReportResult - return List<ReportQueryResult> : ReportQueryResult (Map) of each row is returned.
+     * <li>ShouldReturnSingleResult - return ReportQueryResult : Only first row is returned.
+     * <li>ShouldReturnSingleAttribute - return List<Object> : Only first column of (all) rows are returned.
+     * <li>ShouldReturnSingleValue - return Object : Only first value of first row is returned.
+     * <li>ShouldReturnWithoutReportQueryResult - return List<Object[]> : Array of each row is returned.
+     * </ul>
+     */
+    public void setReturnType(int returnChoice) {
+        this.returnChoice = returnChoice;
+    }
+
+    /**
+     * PUBLIC:
      * Simplify the result by returning a single attribute. Don't wrap in a ReportQueryResult.
      */
     public void returnSingleAttribute() {
@@ -1453,7 +1485,7 @@ public class ReportQuery extends ReadAllQuery {
      * This make retrieving the real object easier.
      */
     public boolean shouldRetrievePrimaryKeys() {
-        return (shouldRetrievePrimaryKeys == FULL_PRIMARY_KEY);
+        return this.shouldRetrievePrimaryKeys == FULL_PRIMARY_KEY;
     }
 
     /**
@@ -1463,7 +1495,7 @@ public class ReportQuery extends ReadAllQuery {
      * so long as it is a single field.
      */
     public boolean shouldRetrieveFirstPrimaryKey() {
-        return (shouldRetrievePrimaryKeys == FIRST_PRIMARY_KEY);
+        return this.shouldRetrievePrimaryKeys == FIRST_PRIMARY_KEY;
     }
 
     /**
@@ -1472,7 +1504,7 @@ public class ReportQuery extends ReadAllQuery {
      * This can be used if it is known that only one attribute is returned by the report query.
      */
     public boolean shouldReturnSingleAttribute() {
-        return returnChoice == ShouldReturnSingleAttribute;
+        return this.returnChoice == ShouldReturnSingleAttribute;
     }
 
     /**
@@ -1481,7 +1513,7 @@ public class ReportQuery extends ReadAllQuery {
      * This can be used if it known that only one row is returned by the report query.
      */
     public boolean shouldReturnSingleResult() {
-        return returnChoice == ShouldReturnSingleResult;
+        return this.returnChoice == ShouldReturnSingleResult;
     }
 
     /**
@@ -1491,7 +1523,7 @@ public class ReportQuery extends ReadAllQuery {
      * to the report.
      */
     public boolean shouldReturnSingleValue() {
-        return returnChoice == ShouldReturnSingleValue;
+        return this.returnChoice == ShouldReturnSingleValue;
     }
 
     /**
@@ -1500,7 +1532,15 @@ public class ReportQuery extends ReadAllQuery {
      * This is used by EJB 3.
      */
     public boolean shouldReturnWithoutReportQueryResult() {
-        return returnChoice == ShouldReturnWithoutReportQueryResult;
+        return this.returnChoice == ShouldReturnWithoutReportQueryResult;
+    }
+
+    /**
+     * PUBLIC:
+     * Returns true if results should be returned as an Object array.
+     */
+    public boolean shouldReturnArray() {
+        return this.returnChoice == ShouldReturnArray;
     }
 
 }

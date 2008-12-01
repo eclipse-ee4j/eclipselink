@@ -12,7 +12,6 @@
  ******************************************************************************/  
 package org.eclipse.persistence.testing.tests.jpa.relationships;
 
-import java.util.Vector;
 import javax.persistence.*;
 
 import junit.framework.*;
@@ -118,8 +117,8 @@ public class UniAndBiDirectionalMappingTestSuite extends JUnitTestCase {
         owen = entityManager.find(Customer.class, owenId);
         kirty = entityManager.find(Customer.class, kirtyId);
         
-        owen.setCCustomers(new Vector());
-        kirty.setCCustomers(new Vector());
+        owen.setCCustomers(new CustomerCollection());
+        kirty.setCCustomers(new CustomerCollection());
         entityManager.merge(owen);
         entityManager.merge(kirty);
         entityManager.remove(owen);

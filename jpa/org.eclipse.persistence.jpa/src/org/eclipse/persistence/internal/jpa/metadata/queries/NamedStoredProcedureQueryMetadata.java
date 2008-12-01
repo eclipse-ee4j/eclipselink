@@ -16,8 +16,8 @@ package org.eclipse.persistence.internal.jpa.metadata.queries;
 
 import java.lang.annotation.Annotation;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.eclipse.persistence.internal.jpa.EJBQueryImpl;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAccessibleObject;
@@ -135,18 +135,18 @@ public class NamedStoredProcedureQueryMetadata extends NamedNativeQueryMetadata 
         call.setReturnsResultSet((m_returnsResultSet == null) ? false : m_returnsResultSet);
         
         // Process the query hints.
-        HashMap<String, String> hints = processQueryHints(session);
+        Map<String, Object> hints = processQueryHints(session);
         
         // Process the result class.
         if (getResultClass() == void.class) {
             if (getResultSetMapping().equals("")) {
                 // Neither a resultClass or resultSetMapping is specified so place in a temp query on the session
-                session.addQuery(getName(), EJBQueryImpl.buildStoredProcedureQuery(call, queryArguments, hints));
+                session.addQuery(getName(), EJBQueryImpl.buildStoredProcedureQuery(call, queryArguments, hints, loader));
             } else {
-                session.addQuery(getName(), EJBQueryImpl.buildStoredProcedureQuery(getResultSetMapping(), call, queryArguments, hints));
+                session.addQuery(getName(), EJBQueryImpl.buildStoredProcedureQuery(getResultSetMapping(), call, queryArguments, hints, loader));
             }
         } else {
-            session.addQuery(getName(), EJBQueryImpl.buildStoredProcedureQuery(MetadataHelper.getClassForName(getResultClass().getName(), loader), call, queryArguments, hints));
+            session.addQuery(getName(), EJBQueryImpl.buildStoredProcedureQuery(MetadataHelper.getClassForName(getResultClass().getName(), loader), call, queryArguments, hints, loader));
         }
     }
     

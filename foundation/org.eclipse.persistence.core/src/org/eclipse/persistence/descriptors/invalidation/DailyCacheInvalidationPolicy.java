@@ -15,7 +15,6 @@ package org.eclipse.persistence.descriptors.invalidation;
 import java.util.*;
 import org.eclipse.persistence.internal.identitymaps.CacheKey;
 import org.eclipse.persistence.descriptors.invalidation.CacheInvalidationPolicy;
-import org.eclipse.persistence.internal.helper.*;
 
 /**
  * PUBLIC:

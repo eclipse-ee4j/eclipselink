@@ -14,10 +14,12 @@ package org.eclipse.persistence.queries;
 
 import java.util.*;
 import org.eclipse.persistence.internal.helper.*;
+import org.eclipse.persistence.config.ResultType;
 import org.eclipse.persistence.exceptions.*;
 import org.eclipse.persistence.internal.queries.*;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
+import org.eclipse.persistence.mappings.converters.Converter;
 
 /**
  * <p><b>Purpose</b>:
@@ -33,8 +35,21 @@ import org.eclipse.persistence.internal.sessions.AbstractSession;
 public class DataReadQuery extends ReadQuery {
     protected ContainerPolicy containerPolicy;
     
-    //** For EJB 3 support returns results without using the AbstractRecord */
-    protected boolean useAbstractRecord = true;
+    /**
+     * Allow return type to be configured, MAP, ARRAY, VALUE, ATTRIBUTE (MAP is the default, i.e. DatabaseRecord).
+     */
+    protected int resultType;
+    
+    /** A Map (DatabaseRecord) is returned for each row. */
+    public static final int MAP = 0;
+    /** An Object[] of values is returned for each row. */
+    public static final int ARRAY = 1;
+    /** A single value is returned. */
+    public static final int VALUE = 2;
+    /** A single value is returned for each row. */
+    public static final int ATTRIBUTE = 3;
+    /** Auto, a single value if a single field is selected, otherwise an Object[] (JPA default). */
+    public static final int AUTO = 4;
 
     /**
      * PUBLIC:
@@ -43,7 +58,7 @@ public class DataReadQuery extends ReadQuery {
     public DataReadQuery() {
         super();
         this.shouldMaintainCache = false;
-        this.useAbstractRecord = true;
+        this.resultType = MAP;
         setContainerPolicy(ContainerPolicy.buildDefaultPolicy());
     }
 
@@ -129,6 +144,40 @@ public class DataReadQuery extends ReadQuery {
         return executeNonCursor();
     }
 
+
+    /**
+     * INTERNAL:
+     * Conversion not supported.
+     */
+    public Converter getValueConverter() {
+        return null;
+    }
+
+
+    /**
+     * INTERNAL:
+     * Build the result value for the row.
+     */
+    public Object buildObject(AbstractRecord row) {
+        if (this.resultType == AUTO) {
+            List values = row.getValues();
+            if (values.size() == 1) {
+                return row.getValues().get(0);
+            } else {
+                return row.getValues().toArray();
+            }
+        } else if (this.resultType == ARRAY) {
+            return row.getValues().toArray();
+        } else if (this.resultType == ATTRIBUTE) {
+            Object value = row.getValues().get(0);
+            if (getValueConverter() != null) {
+                value = getValueConverter().convertDataValueToObjectValue(value, this.session);
+            }
+            return value;
+        }
+        return row;
+    }
+    
     /**
      * INTERNAL:
      * The results are *not* in a cursor, build the collection.
@@ -136,14 +185,23 @@ public class DataReadQuery extends ReadQuery {
      */
     protected Object executeNonCursor() throws DatabaseException {
         Vector rows = getQueryMechanism().executeSelect();
-        ContainerPolicy containerPolicy = getContainerPolicy();
         Object results = null;
-        if (useAbstractRecord) {
-            results = containerPolicy.buildContainerFromVector(rows, getSession());
+        if (this.resultType == MAP) {
+            results = getContainerPolicy().buildContainerFromVector(rows, this.session);
+        } else if (this.resultType == VALUE) {
+            if (!rows.isEmpty()) {
+                results = ((AbstractRecord)rows.get(0)).getValues().get(0);
+                if (getValueConverter() != null) {
+                    results = getValueConverter().convertDataValueToObjectValue(results, this.session);
+                }
+            }
         } else {
-            results = containerPolicy.containerInstance(rows.size());
-            for (Iterator rowsEnum = rows.iterator(); rowsEnum.hasNext();) {
-                containerPolicy.addInto(((AbstractRecord)rowsEnum.next()).getValues(), results, getSession());
+            int size = rows.size();
+            ContainerPolicy containerPolicy = getContainerPolicy();
+            results = containerPolicy.containerInstance(size);
+            for (int index = 0;  index < size; index++) {
+                Object value = buildObject((AbstractRecord)rows.get(index));
+                containerPolicy.addInto(value, results, this.session);
             }
         }
         // Bug 6135563 - cache DataReadQuery results verbatim, as ObjectBuilder is not invoked
@@ -234,11 +292,34 @@ public class DataReadQuery extends ReadQuery {
     }
 
     /**
-     * INTERNAL:
-     * Allow changing the default behavior so that AbstractRecords are not returned as query results.  
+     * Return the result type to be configured, MAP, ARRAY, VALUE, ATTRIBUTE (MAP is the default, DatabaseRecord).
+     * @see ResultType
      */
-    public void setUseAbstractRecord(boolean useAbstractRecord){
-        this.useAbstractRecord = useAbstractRecord;
+    public int getResultType() {
+        return resultType;
+    }
+
+    /**
+     * Set the result type to be configured, MAP, ARRAY, VALUE, ATTRIBUTE (MAP is the default, DatabaseRecord).
+     */
+    public void setResultType(int resultType) {
+        this.resultType = resultType;
+    }
+
+    /**
+     * Set the result type to be configured, Map, Array, Value, Attribute (Map is the default, DatabaseRecord).
+     * @see ResultType
+     */
+    public void setResultType(String resultType) {
+        if (ResultType.Map.equals(resultType)) {
+            this.resultType = MAP;
+        } else if (ResultType.Array.equals(resultType)) {
+            this.resultType = ARRAY;
+        } else if (ResultType.Value.equals(resultType)) {
+            this.resultType = VALUE;
+        } else if (ResultType.Attribute.equals(resultType)) {
+            this.resultType = ATTRIBUTE;
+        }
     }
 
     /**

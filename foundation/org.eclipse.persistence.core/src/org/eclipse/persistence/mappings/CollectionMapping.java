@@ -549,7 +549,7 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
     public void convertClassNamesToClasses(ClassLoader classLoader){
         super.convertClassNamesToClasses(classLoader);
         containerPolicy.convertClassNamesToClasses(classLoader);
-    };
+    }
 
     /**
      * INTERNAL:

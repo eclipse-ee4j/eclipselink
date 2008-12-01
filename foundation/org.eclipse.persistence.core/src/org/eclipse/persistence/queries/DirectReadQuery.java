@@ -12,12 +12,7 @@
  ******************************************************************************/  
 package org.eclipse.persistence.queries;
 
-import java.util.*;
-import org.eclipse.persistence.mappings.converters.*;
-import org.eclipse.persistence.internal.helper.*;
-import org.eclipse.persistence.exceptions.*;
-import org.eclipse.persistence.internal.queries.*;
-import org.eclipse.persistence.internal.sessions.AbstractRecord;
+import org.eclipse.persistence.mappings.converters.Converter;
 
 /**
  * <p><b>Purpose</b>:
@@ -42,6 +37,7 @@ public class DirectReadQuery extends DataReadQuery {
      */
     public DirectReadQuery() {
         super();
+        this.resultType = ATTRIBUTE;
     }
 
     /**
@@ -52,6 +48,7 @@ public class DirectReadQuery extends DataReadQuery {
      */
     public DirectReadQuery(String sqlString) {
         super(sqlString);
+        this.resultType = ATTRIBUTE;
     }
 
     /**
@@ -60,6 +57,7 @@ public class DirectReadQuery extends DataReadQuery {
      */
     public DirectReadQuery(Call call) {
         super(call);
+        this.resultType = ATTRIBUTE;
     }
 
     /**
@@ -78,44 +76,6 @@ public class DirectReadQuery extends DataReadQuery {
      */
     public void setValueConverter(Converter valueConverter) {
         this.valueConverter = valueConverter;
-    }
-
-    /**
-     * INTERNAL:
-     * Used by cursored stream.
-     * Return the first field in the row.
-     */
-    public Object buildObject(AbstractRecord row) {
-        Object value = row.get(row.getFields().firstElement());
-        if (getValueConverter() != null) {
-            value = getValueConverter().convertDataValueToObjectValue(value, session);
-        }
-        return value;
-    }
-
-    /**
-     * INTERNAL:
-     * The results are *not* in a cursor, build the collection.
-     */
-    public Object executeNonCursor() throws DatabaseException, QueryException {
-        ContainerPolicy cp = getContainerPolicy();
-
-        Vector rows = getQueryMechanism().executeSelect();
-        Object result = cp.containerInstance(rows.size());
-        DatabaseField resultDirectField = null;
-
-        for (Enumeration stream = rows.elements(); stream.hasMoreElements();) {
-        	AbstractRecord row = (AbstractRecord)stream.nextElement();
-            if (resultDirectField == null) {
-                resultDirectField = (DatabaseField)row.getFields().firstElement();
-            }
-            Object value = row.get(resultDirectField);
-            if (getValueConverter() != null) {
-                value = getValueConverter().convertDataValueToObjectValue(value, session);
-            }
-            cp.addInto(value, result, getSession());
-        }
-        return result;
     }
     
     /**

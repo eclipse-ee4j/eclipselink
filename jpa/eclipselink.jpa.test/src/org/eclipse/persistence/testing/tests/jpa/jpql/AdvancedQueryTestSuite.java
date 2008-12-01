@@ -15,6 +15,7 @@ package org.eclipse.persistence.testing.tests.jpa.jpql;
 
 import java.util.Calendar;
 import java.util.List;
+import java.util.Map;
 
 import javax.persistence.Query;
 import javax.persistence.EntityManager;
@@ -25,11 +26,16 @@ import junit.framework.TestSuite;
 import org.eclipse.persistence.config.CacheUsage;
 import org.eclipse.persistence.config.QueryHints;
 import org.eclipse.persistence.config.QueryType;
+import org.eclipse.persistence.config.ResultSetConcurrency;
+import org.eclipse.persistence.config.ResultSetType;
+import org.eclipse.persistence.config.ResultType;
 import org.eclipse.persistence.descriptors.invalidation.DailyCacheInvalidationPolicy;
 import org.eclipse.persistence.descriptors.invalidation.TimeToLiveCacheInvalidationPolicy;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.jpa.JpaQuery;
+import org.eclipse.persistence.queries.Cursor;
 import org.eclipse.persistence.queries.ReadQuery;
+import org.eclipse.persistence.queries.ScrollableCursor;
 import org.eclipse.persistence.sessions.DatabaseSession;
 
 import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
@@ -94,6 +100,12 @@ public class AdvancedQueryTestSuite extends JUnitTestCase {
         // Temporary removal of JPA 2.0 dependency
         //suite.addTest(new AdvancedQueryTestSuite("testQueryPESSIMISTICTIMEOUTLock"));
 */        
+        suite.addTest(new AdvancedQueryTestSuite("testObjectResultType"));
+        suite.addTest(new AdvancedQueryTestSuite("testNativeResultType"));
+        suite.addTest(new AdvancedQueryTestSuite("testCursors"));
+        suite.addTest(new AdvancedQueryTestSuite("testFetchGroups"));
+        suite.addTest(new AdvancedQueryTestSuite("testMultipleNamedJoinFetchs"));
+        
         return suite;
     }
     
@@ -183,6 +195,337 @@ public class AdvancedQueryTestSuite extends JUnitTestCase {
             if (counter != null) {
                 counter.remove();
             }
+        }
+    }
+
+    /**
+     * Test fetch groups.
+     */
+    public void testFetchGroups() {
+        EntityManager em = createEntityManager();
+        beginTransaction(em);
+        QuerySQLTracker counter = null;
+        try {
+            // Load an employee into the cache.  
+            Query query = em.createQuery("Select employee from Employee employee");
+            List result = query.getResultList();
+            Employee employee = (Employee)result.get(0);
+
+            rollbackTransaction(em);
+            closeEntityManager(em);
+            clearCache();
+            em = createEntityManager();
+            beginTransaction(em);
+            
+            // Count SQL.
+            counter = new QuerySQLTracker(getServerSession());
+            // Query by primary key.
+            query = em.createQuery("Select employee from Employee employee where employee.id = :id");
+            query.setHint(QueryHints.FETCH_GROUP_ATTRIBUTE, "firstName");
+            query.setHint(QueryHints.FETCH_GROUP_ATTRIBUTE, "lastName");
+            query.setParameter("id", employee.getId());
+            Employee queryResult = (Employee)query.getSingleResult();
+            if (counter.getSqlStatements().size() != 1) {
+                fail("More than fetch group selected: " + counter.getSqlStatements());
+            }
+            queryResult.getGender();
+            if (counter.getSqlStatements().size() != 2) {
+                fail("Access to unfetch did not cause fetch: " + counter.getSqlStatements());
+            }
+            verifyObject(employee);
+        } finally {
+            rollbackTransaction(em);
+            closeEntityManager(em);
+            if (counter != null) {
+                counter.remove();
+            }
+        }
+    }
+
+    /**
+     * Test multiple fetch joining from named queries.
+     */
+    public void testMultipleNamedJoinFetchs() {
+        EntityManager em = createEntityManager();
+        beginTransaction(em);
+        QuerySQLTracker counter = null;
+        try {
+            clearCache();
+            // Count SQL.
+            counter = new QuerySQLTracker(getServerSession());
+            Query query = em.createNamedQuery("findAllEmployeesJoinAddressPhones");
+            List<Employee> result = query.getResultList();
+            if (counter.getSqlStatements().size() != 1) {
+                fail("More than join fetches selected: " + counter.getSqlStatements());
+            }
+            for (Employee each : result) {
+                each.getAddress().getCity();
+                each.getPhoneNumbers().size();
+            }
+            if (counter.getSqlStatements().size() != 1) {
+                fail("Join fetches triggered query: " + counter.getSqlStatements());
+            }
+        } finally {
+            rollbackTransaction(em);
+            closeEntityManager(em);
+            if (counter != null) {
+                counter.remove();
+            }
+        }
+    }
+    
+    /**
+     * Test cursored queries.
+     */
+    public void testCursors() {
+        EntityManager em = createEntityManager();
+        beginTransaction(em);
+        try {
+            // Test cusored stream.
+            Query query = em.createQuery("Select employee from Employee employee");
+            query.setHint(QueryHints.CURSOR, true);
+            query.setHint(QueryHints.CURSOR_INITIAL_SIZE, 2);
+            query.setHint(QueryHints.CURSOR_PAGE_SIZE, 5);
+            query.setHint(QueryHints.CURSOR_SIZE, "Select count(*) from CMP3_EMPLOYEE");
+            Cursor cursor = (Cursor)query.getSingleResult();
+            cursor.nextElement();
+            cursor.size();
+            cursor.close();
+            
+            // Test cursor result API.
+            JpaQuery jpaQuery = (JpaQuery)((EntityManager)em.getDelegate()).createQuery("Select employee from Employee employee");
+            jpaQuery.setHint(QueryHints.CURSOR, true);
+            cursor = jpaQuery.getResultCursor();
+            cursor.nextElement();
+            cursor.size();
+            cursor.close();
+            
+            // Test scrollable cursor.
+            jpaQuery = (JpaQuery)((EntityManager)em.getDelegate()).createQuery("Select employee from Employee employee");
+            jpaQuery.setHint(QueryHints.SCROLLABLE_CURSOR, true);
+            jpaQuery.setHint(QueryHints.RESULT_SET_CONCURRENCY, ResultSetConcurrency.ReadOnly);
+            jpaQuery.setHint(QueryHints.RESULT_SET_TYPE, ResultSetType.ForwardOnly);
+            ScrollableCursor scrollableCursor = (ScrollableCursor)jpaQuery.getResultCursor();
+            scrollableCursor.next();
+            scrollableCursor.close();
+            
+        } finally {
+            rollbackTransaction(em);
+            closeEntityManager(em);
+        }
+    }
+
+    /**
+     * Test the result type of various queries.
+     */
+    public void testObjectResultType() {
+        EntityManager em = createEntityManager();
+        beginTransaction(em);
+        try {
+            // Load an employee into the cache.  
+            Query query = em.createQuery("Select employee from Employee employee");
+            List result = query.getResultList();
+            Employee employee = (Employee)result.get(0);
+
+            // Test multi object, as an array.
+            query = em.createQuery("Select employee, employee.address, employee.id from Employee employee where employee.id = :id and employee.firstName = :firstName");
+            query.setParameter("id", employee.getId());
+            query.setParameter("firstName", employee.getFirstName());
+            Object[] arrayResult = (Object[])query.getSingleResult();
+            if ((arrayResult.length != 3) && (arrayResult[0] != employee) || (arrayResult[1] != employee.getAddress()) || (!arrayResult[2].equals(employee.getId()))) {
+                fail("Array result not correct: " + arrayResult);
+            }
+            List listResult = query.getResultList();
+            arrayResult = (Object[])listResult.get(0);
+            if ((arrayResult.length != 3) || (arrayResult[0] != employee) || (arrayResult[1] != employee.getAddress()) || (!arrayResult[2].equals(employee.getId()))) {
+                fail("Array result not correct: " + arrayResult);
+            }
+            
+            // Test single object, as an array.
+            query = em.createQuery("Select employee.id from Employee employee where employee.id = :id and employee.firstName = :firstName");
+            query.setHint(QueryHints.RESULT_TYPE, ResultType.Array);
+            query.setParameter("id", employee.getId());
+            query.setParameter("firstName", employee.getFirstName());
+            arrayResult = (Object[])query.getSingleResult();
+            if ((arrayResult.length != 1) || (!arrayResult[0].equals(employee.getId()))) {
+                fail("Array result not correct: " + arrayResult);
+            }
+            listResult = query.getResultList();
+            arrayResult = (Object[])listResult.get(0);
+            if ((arrayResult.length != 1) || (!arrayResult[0].equals(employee.getId()))) {
+                fail("Array result not correct: " + arrayResult);
+            }
+            
+            // Test multi object, as a Map.
+            query = em.createQuery("Select employee, employee.address, employee.id from Employee employee where employee.id = :id and employee.firstName = :firstName");
+            query.setHint(QueryHints.RESULT_TYPE, ResultType.Map);
+            query.setParameter("id", employee.getId());
+            query.setParameter("firstName", employee.getFirstName());
+            Map mapResult = (Map)query.getSingleResult();
+            if ((mapResult.size() != 3) ||(mapResult.get("employee") != employee) || (mapResult.get("address") != employee.getAddress()) || (!mapResult.get("id").equals(employee.getId()))) {
+                fail("Map result not correct: " + mapResult);
+            }
+            listResult = query.getResultList();
+            mapResult = (Map)listResult.get(0);
+            if ((mapResult.size() != 3) ||(mapResult.get("employee") != employee) || (mapResult.get("address") != employee.getAddress()) || (!mapResult.get("id").equals(employee.getId()))) {
+                fail("Map result not correct: " + mapResult);
+            }
+            
+            // Test single object, as a Map.
+            query = em.createQuery("Select employee.id from Employee employee where employee.id = :id and employee.firstName = :firstName");
+            query.setHint(QueryHints.RESULT_TYPE, ResultType.Map);
+            query.setParameter("id", employee.getId());
+            query.setParameter("firstName", employee.getFirstName());
+            mapResult = (Map)query.getSingleResult();
+            if ((mapResult.size() != 1) || (!mapResult.get("id").equals(employee.getId()))) {
+                fail("Map result not correct: " + mapResult);
+            }
+            listResult = query.getResultList();
+            mapResult = (Map)listResult.get(0);
+            if ((mapResult.size() != 1) || (!mapResult.get("id").equals(employee.getId()))) {
+                fail("Map result not correct: " + mapResult);
+            }
+            
+            // Test single object, as an array.
+            query = em.createQuery("Select employee from Employee employee where employee.id = :id and employee.firstName = :firstName");
+            query.setHint(QueryHints.QUERY_TYPE, QueryType.Report);
+            query.setHint(QueryHints.RESULT_TYPE, ResultType.Array);
+            query.setParameter("id", employee.getId());
+            query.setParameter("firstName", employee.getFirstName());
+            arrayResult = (Object[])query.getSingleResult();
+            if (arrayResult[0] != employee) {
+                fail("Array result not correct: " + arrayResult);
+            }
+            
+            // Test single object, as value.
+            query = em.createQuery("Select employee.id from Employee employee where employee.id = :id and employee.firstName = :firstName");
+            query.setParameter("id", employee.getId());
+            query.setParameter("firstName", employee.getFirstName());
+            Object valueResult = query.getSingleResult();
+            if (! valueResult.equals(employee.getId())) {
+                fail("Value result not correct: " + valueResult);
+            }
+            listResult = query.getResultList();
+            valueResult = listResult.get(0);
+            if (! valueResult.equals(employee.getId())) {
+                fail("Value result not correct: " + valueResult);
+            }
+            
+            // Test multi object, as value.
+            query = em.createQuery("Select employee.id, employee.firstName from Employee employee where employee.id = :id and employee.firstName = :firstName");
+            query.setHint(QueryHints.RESULT_TYPE, ResultType.Value);
+            query.setParameter("id", employee.getId());
+            query.setParameter("firstName", employee.getFirstName());
+            valueResult = query.getSingleResult();
+            if (! valueResult.equals(employee.getId())) {
+                fail("Value result not correct: " + valueResult);
+            }
+            
+            // Test single object, as attribute.
+            query = em.createQuery("Select employee.id from Employee employee where employee.id = :id and employee.firstName = :firstName");
+            query.setHint(QueryHints.RESULT_TYPE, ResultType.Attribute);
+            query.setParameter("id", employee.getId());
+            query.setParameter("firstName", employee.getFirstName());
+            valueResult = query.getSingleResult();
+            if (! valueResult.equals(employee.getId())) {
+                fail("Value result not correct: " + valueResult);
+            }
+            listResult = query.getResultList();
+            valueResult = listResult.get(0);
+            if (! valueResult.equals(employee.getId())) {
+                fail("Value result not correct: " + valueResult);
+            }
+        } finally {
+            rollbackTransaction(em);
+        }
+    }
+
+    /**
+     * Test the result type of various native queries.
+     */
+    public void testNativeResultType() {
+        EntityManager em = createEntityManager();
+        beginTransaction(em);
+        try {
+            // Load an employee into the cache.  
+            Query query = em.createNativeQuery("Select * from CMP3_EMPLOYEE employee", Employee.class);
+            List result = query.getResultList();
+            Employee employee = (Employee)result.get(0);
+
+            // Test multi object, as an array.
+            query = em.createNativeQuery("Select employee.F_NAME, employee.EMP_ID from CMP3_EMPLOYEE employee where employee.EMP_ID = ? and employee.F_NAME = ?");
+            query.setParameter(1, employee.getId());
+            query.setParameter(2, employee.getFirstName());
+            Object[] arrayResult = (Object[])query.getSingleResult();
+            if ((arrayResult.length != 2) || (!arrayResult[0].equals(employee.getFirstName())) && (!arrayResult[1].equals(employee.getId()))) {
+                fail("Array result not correct: " + arrayResult);
+            }
+            List listResult = query.getResultList();
+            arrayResult = (Object[])listResult.get(0);
+            if ((arrayResult.length != 2) || (!arrayResult[0].equals(employee.getFirstName())) && (!arrayResult[1].equals(employee.getId()))) {
+                fail("Array result not correct: " + arrayResult);
+            }
+            
+            // Test single object, as an array.
+            query = em.createNativeQuery("Select employee.EMP_ID from CMP3_EMPLOYEE employee where employee.EMP_ID = ? and employee.F_NAME = ?");
+            query.setHint(QueryHints.RESULT_TYPE, ResultType.Array);
+            query.setParameter(1, employee.getId());
+            query.setParameter(2, employee.getFirstName());
+            arrayResult = (Object[])query.getSingleResult();
+            if ((arrayResult.length != 1) || (!new Integer(((Number)arrayResult[0]).intValue()).equals(employee.getId()))) {
+                fail("Array result not correct: " + arrayResult);
+            }
+            listResult = query.getResultList();
+            arrayResult = (Object[])listResult.get(0);
+            if ((arrayResult.length != 1) || (!new Integer(((Number)arrayResult[0]).intValue()).equals(employee.getId()))) {
+                fail("Array result not correct: " + arrayResult);
+            }
+            
+            // Test multi object, as a Map.
+            query = em.createNativeQuery("Select employee.F_NAME, employee.EMP_ID from CMP3_EMPLOYEE employee where employee.EMP_ID = ? and employee.F_NAME = ?");
+            query.setHint(QueryHints.RESULT_TYPE, ResultType.Map);
+            query.setParameter(1, employee.getId());
+            query.setParameter(2, employee.getFirstName());
+            Map mapResult = (Map)query.getSingleResult();
+            if ((mapResult.size() != 2) || (!mapResult.get("F_NAME").equals(employee.getFirstName())) || (!(new Integer(((Number)mapResult.get("EMP_ID")).intValue())).equals(employee.getId()))) {
+                fail("Map result not correct: " + mapResult);
+            }
+            listResult = query.getResultList();
+            mapResult = (Map)listResult.get(0);
+            if ((mapResult.size() != 2) || (!mapResult.get("F_NAME").equals(employee.getFirstName())) || (!(new Integer(((Number)mapResult.get("EMP_ID")).intValue())).equals(employee.getId()))) {
+                fail("Map result not correct: " + mapResult);
+            }
+            
+            // Test single object, as a Map.
+            query = em.createNativeQuery("Select employee.EMP_ID from CMP3_EMPLOYEE employee where employee.EMP_ID = ? and employee.F_NAME = ?");
+            query.setHint(QueryHints.RESULT_TYPE, ResultType.Map);
+            query.setParameter(1, employee.getId());
+            query.setParameter(2, employee.getFirstName());
+            mapResult = (Map)query.getSingleResult();
+            if ((mapResult.size() != 1) || (!(new Integer(((Number)mapResult.get("EMP_ID")).intValue())).equals(employee.getId()))) {
+                fail("Map result not correct: " + mapResult);
+            }
+            listResult = query.getResultList();
+            mapResult = (Map)listResult.get(0);
+            if ((mapResult.size() != 1) || (!(new Integer(((Number)mapResult.get("EMP_ID")).intValue())).equals(employee.getId()))) {
+                fail("Map result not correct: " + mapResult);
+            }
+            
+            // Test single object, as value.
+            query = em.createNativeQuery("Select employee.EMP_ID from CMP3_EMPLOYEE employee where employee.EMP_ID = ? and employee.F_NAME = ?");
+            query.setParameter(1, employee.getId());
+            query.setParameter(2, employee.getFirstName());
+            Object valueResult = query.getSingleResult();
+            if (!(new Integer(((Number)valueResult).intValue())).equals(employee.getId())) {
+                fail("Value result not correct: " + valueResult);
+            }
+            listResult = query.getResultList();
+            valueResult = listResult.get(0);
+            if (!(new Integer(((Number)valueResult).intValue())).equals(employee.getId())) {
+                fail("Value result not correct: " + valueResult);
+            }
+        } finally {
+            rollbackTransaction(em);
         }
     }
 
@@ -422,6 +765,7 @@ public class AdvancedQueryTestSuite extends JUnitTestCase {
             query.setParameter("id", employee.getId());
             query.setParameter("firstName", employee.getFirstName());
             Employee queryResult = (Employee) query.getSingleResult();
+            queryResult.toString();
             
             EntityManager em2 = createEntityManager();
             
@@ -535,6 +879,7 @@ public class AdvancedQueryTestSuite extends JUnitTestCase {
                 query.setParameter("id", employee.getId());
                 query.setParameter("firstName", employee.getFirstName());
                 Employee queryResult = (Employee) query.getSingleResult();
+                queryResult.toString();
             
                 EntityManager em2 = createEntityManager();
                 
@@ -684,7 +1029,6 @@ public class AdvancedQueryTestSuite extends JUnitTestCase {
     public void testQueryPESSIMISTIC_FORCE_INCREMENTLock() {        
         Employee employee = null;
         Integer version1;
-        Integer version2;
         
         EntityManager em = createEntityManager();
         beginTransaction(em);
@@ -748,6 +1092,7 @@ public class AdvancedQueryTestSuite extends JUnitTestCase {
                 query.setParameter("id", employee.getId());
                 query.setParameter("firstName", employee.getFirstName());
                 Employee queryResult = (Employee) query.getSingleResult();
+                queryResult.toString();
             
                 EntityManager em2 = createEntityManager();
             

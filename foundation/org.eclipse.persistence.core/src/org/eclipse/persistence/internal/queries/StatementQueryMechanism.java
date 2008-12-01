@@ -183,7 +183,7 @@ public class StatementQueryMechanism extends CallQueryMechanism {
      * Remove a potential sequence number field and invoke the ReturningPolicy trimModifyRowsForInsert method
      */
     public void trimFieldsForInsert() {
-        getDescriptor().getObjectBuilder().trimFieldsForInsert((AbstractSession)getSession(), getModifyRow());
+        getDescriptor().getObjectBuilder().trimFieldsForInsert(getSession(), getModifyRow());
     }
     
     /**

@@ -49,9 +49,16 @@ import org.eclipse.persistence.config.ExclusiveConnectionMode;
 import org.eclipse.persistence.internal.jpa.EJBQueryImpl;
 import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.queries.CursoredStreamPolicy;
+import org.eclipse.persistence.queries.DataModifyQuery;
 import org.eclipse.persistence.queries.DatabaseQuery;
+import org.eclipse.persistence.queries.FetchGroup;
+import org.eclipse.persistence.queries.InMemoryQueryIndirectionPolicy;
 import org.eclipse.persistence.queries.ObjectLevelReadQuery;
 import org.eclipse.persistence.queries.ReadAllQuery;
+import org.eclipse.persistence.queries.ReadObjectQuery;
+import org.eclipse.persistence.queries.ReportQuery;
+import org.eclipse.persistence.queries.ScrollableCursorPolicy;
+import org.eclipse.persistence.queries.ValueReadQuery;
 import org.eclipse.persistence.sequencing.NativeSequence;
 import org.eclipse.persistence.sequencing.Sequence;
 import org.eclipse.persistence.sessions.server.ClientSession;
@@ -60,8 +67,7 @@ import org.eclipse.persistence.sessions.server.ReadConnectionPool;
 import org.eclipse.persistence.sessions.server.ServerSession;
 import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.tools.schemaframework.SequenceObjectDefinition;
-import org.eclipse.persistence.jpa.JpaEntityManager;
-import org.eclipse.persistence.jpa.JpaHelper;
+import org.eclipse.persistence.jpa.JpaQuery;
 import org.eclipse.persistence.jpa.PersistenceProvider;
 import org.eclipse.persistence.exceptions.QueryException;
 import org.eclipse.persistence.expressions.Expression;
@@ -70,10 +76,15 @@ import org.eclipse.persistence.sessions.DatasourceLogin;
 import org.eclipse.persistence.sessions.JNDIConnector;
 import org.eclipse.persistence.sessions.Session;
 import org.eclipse.persistence.config.CacheUsage;
+import org.eclipse.persistence.config.CacheUsageIndirectionPolicy;
 import org.eclipse.persistence.config.CascadePolicy;
 import org.eclipse.persistence.config.QueryHints;
 import org.eclipse.persistence.config.PersistenceUnitProperties;
 import org.eclipse.persistence.config.PessimisticLock;
+import org.eclipse.persistence.config.QueryType;
+import org.eclipse.persistence.config.ResultSetConcurrency;
+import org.eclipse.persistence.config.ResultSetType;
+import org.eclipse.persistence.config.ResultType;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.descriptors.InheritancePolicy;
 import org.eclipse.persistence.descriptors.changetracking.ChangeTracker;
@@ -86,6 +97,7 @@ import org.eclipse.persistence.queries.FetchGroupTracker;
 import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
 import org.eclipse.persistence.testing.framework.junit.JUnitTestCaseHelper;
 import org.eclipse.persistence.testing.models.jpa.advanced.*;
+import org.eclipse.persistence.testing.models.jpa.relationships.CustomerCollection;
 
 /**
  * Test the EntityManager API using the advanced model.
@@ -718,6 +730,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
             em.setFlushMode(emFlushMode);
             em.persist(emp);
             result = (Employee) query.getSingleResult();
+            result.toString();
         } catch (javax.persistence.NoResultException ex) {
             // failed to flush to database
             flushed = false;
@@ -758,6 +771,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
                 em.persist(emp);
                 updateQuery.executeUpdate();
                 Employee result = (Employee) readQuery.getSingleResult();
+                result.toString();
             }catch (javax.persistence.EntityNotFoundException ex){
                 rollbackTransaction(em);
                 fail("Failed to flush to database");
@@ -799,6 +813,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         beginTransaction(em);
         List result = em.createQuery("SELECT e FROM Employee e").getResultList();
         Employee emp = (Employee)result.get(0);
+        emp.toString();
         Employee emp2 = (Employee)result.get(1);
         String newName = ""+System.currentTimeMillis();
         emp2.setFirstName(newName);
@@ -1378,7 +1393,6 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
     public void testPESSIMISTIC_FORCE_INCREMENTLock() {        
         Employee employee = null;
         Integer version1;
-        Integer version2;
         
         EntityManager em = createEntityManager();
         
@@ -3037,12 +3051,14 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         // Find both to bring into the cache, delete empWithoutAddress.
         // Because the address VH is not triggered both objects should be invalidated.
         beginTransaction(em);
-        try{
+        try {
             Employee empWithAddressFound = em.find(Employee.class, empWithAddress.getId());
+            empWithAddressFound.toString();
             Employee empWithoutAddressFound = em.find(Employee.class, empWithoutAddress.getId());
-            int nDeleted = em.createQuery("DELETE FROM Employee e WHERE e.firstName = '"+firstName+"' and e.address IS NULL").executeUpdate();
+            empWithoutAddressFound.toString();
+            em.createQuery("DELETE FROM Employee e WHERE e.firstName = '"+firstName+"' and e.address IS NULL").executeUpdate();
             commitTransaction(em);
-        }catch (RuntimeException ex){
+        } catch (RuntimeException ex){
             if (isTransactionActive(em)){
                 rollbackTransaction(em);
             }
@@ -3175,6 +3191,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         try {
             factory = Persistence.createEntityManagerFactory("broken-PU", JUnitTestCaseHelper.getDatabaseProperties());
             EntityManager em = factory.createEntityManager();
+            em.close();
         } catch (javax.persistence.PersistenceException e)  {
             // Ignore - it's expected exception type
         } finally {
@@ -3197,6 +3214,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         try {
             factory = Persistence.createEntityManagerFactory("default1", JUnitTestCaseHelper.getDatabaseProperties());
             EntityManager em = factory.createEntityManager();
+            em.close();
         } catch (Exception e)  {   
             fail("Exception caught while creating EM with no \"transaction-type\" specified in persistence.xml");        
         } finally {
@@ -3307,6 +3325,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         RuntimeException exception = null;
         try {
             Employee persistedEmployee = (Employee)em.createQuery("SELECT OBJECT(e) FROM Employee e WHERE e.firstName = '"+firstName+"'").getSingleResult();
+            persistedEmployee.toString();
         } catch (RuntimeException runtimeException) {
             exception = runtimeException;
         }
@@ -3502,11 +3521,11 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
     }
     
     public void testQueryHints() {
-        EntityManager em = getEntityManagerFactory().createEntityManager();
+        EntityManager em = (EntityManager)getEntityManagerFactory().createEntityManager().getDelegate();
         Query query = em.createQuery("SELECT OBJECT(e) FROM Employee e WHERE e.firstName = 'testQueryHints'");
         // Set a hint first to trigger query clone (because query is accessed before other hints are set).
         query.setHint(QueryHints.READ_ONLY, false);
-        ObjectLevelReadQuery olrQuery = (ObjectLevelReadQuery)((EJBQueryImpl)query).getDatabaseQuery();
+        ObjectLevelReadQuery olrQuery = (ObjectLevelReadQuery)((JpaQuery)query).getDatabaseQuery();
 
         // binding
         // original state = default state
@@ -3533,6 +3552,10 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         assertTrue("Cache usage not set.", olrQuery.shouldCheckCacheOnly());
         query.setHint(QueryHints.CACHE_USAGE, CacheUsage.ConformResultsInUnitOfWork);
         assertTrue("Cache usage not set.", olrQuery.shouldConformResultsInUnitOfWork());
+        
+        query.setHint(QueryHints.INDIRECTION_POLICY, CacheUsageIndirectionPolicy.Trigger);
+        assertTrue("INDIRECTION_POLICY not set.", olrQuery.getInMemoryQueryIndirectionPolicyState() == InMemoryQueryIndirectionPolicy.SHOULD_TRIGGER_INDIRECTION);
+        
         // reset to the original state
         query.setHint(QueryHints.CACHE_USAGE, "");
         assertTrue("Cache usage not set.", olrQuery.shouldCheckDescriptorForCacheUsage());
@@ -3682,6 +3705,12 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         query.setHint(QueryHints.SCROLLABLE_CURSOR, Boolean.FALSE);
         assertFalse("SCROLLABLE_CURSOR set.", ((ReadAllQuery)olrQuery).getContainerPolicy().isScrollableCursorPolicy());
 
+        query.setHint(QueryHints.RESULT_SET_TYPE, ResultSetType.Reverse);
+        assertTrue("RESULT_SET_TYPE not set.", ((ScrollableCursorPolicy)((ReadAllQuery)olrQuery).getContainerPolicy()).getResultSetType() == ScrollableCursorPolicy.FETCH_REVERSE);
+
+        query.setHint(QueryHints.RESULT_SET_CONCURRENCY, ResultSetConcurrency.Updatable);
+        assertTrue("RESULT_SET_CONCURRENCY not set.", ((ScrollableCursorPolicy)((ReadAllQuery)olrQuery).getContainerPolicy()).getResultSetConcurrency() == ScrollableCursorPolicy.CONCUR_UPDATABLE);
+      
         // Exclusive connection
         query.setHint(QueryHints.EXCLUSIVE_CONNECTION, Boolean.TRUE);
         assertTrue("EXCLUSIVE_CONNECTION not set.", olrQuery.shouldUseExclusiveConnection());
@@ -3708,6 +3737,11 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         query.setHint(QueryHints.FETCH_GROUP_ATTRIBUTE, "lastName");
         assertTrue("FETCH_GROUP_ATTRIBUTE not set.", olrQuery.getFetchGroup().containsAttribute("firstName"));
         assertTrue("FETCH_GROUP_ATTRIBUTE not set.", olrQuery.getFetchGroup().containsAttribute("lastName"));
+
+        FetchGroup fetchGroup = new FetchGroup();
+        fetchGroup.addAttribute("id");
+        query.setHint(QueryHints.FETCH_GROUP, fetchGroup);
+        assertTrue("FETCH_GROUP not set.", olrQuery.getFetchGroup() == fetchGroup);
         
         // Timeout
         query.setHint(QueryHints.JDBC_TIMEOUT, new Integer(100));
@@ -3736,12 +3770,48 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         query.setHint(QueryHints.REFRESH_CASCADE, "");
         assertTrue(olrQuery.getCascadePolicy()==DatabaseQuery.CascadeByMapping);
         
+        // Result collection
         query.setHint(QueryHints.RESULT_COLLECTION_TYPE, java.util.ArrayList.class);
-        assertTrue("ArrayList not set.", ((ReadAllQuery)olrQuery).getContainerPolicy().getContainerClassName().equals(java.util.ArrayList.class.getName())); 
+        assertTrue("ArrayList not set.", ((ReadAllQuery)olrQuery).getContainerPolicy().getContainerClass().equals(java.util.ArrayList.class)); 
 
         query.setHint(QueryHints.RESULT_COLLECTION_TYPE, "java.util.Vector");
-        assertTrue("Vector not set.", ((ReadAllQuery)olrQuery).getContainerPolicy().getContainerClassName().equals(java.util.Vector.class.getName())); 
+        assertTrue("Vector not set.", ((ReadAllQuery)olrQuery).getContainerPolicy().getContainerClass().equals(java.util.Vector.class)); 
 
+        query.setHint(QueryHints.RESULT_COLLECTION_TYPE, "org.eclipse.persistence.testing.models.jpa.relationships.CustomerCollection");
+        assertTrue("CustomerCollection not set.", ((ReadAllQuery)olrQuery).getContainerPolicy().getContainerClass().equals(CustomerCollection.class)); 
+        
+        // Query type
+        query.setHint(QueryHints.QUERY_TYPE, QueryType.ReadObject);
+        assertTrue("QUERY_TYPE not set.", ((JpaQuery)query).getDatabaseQuery().getClass().equals(ReadObjectQuery.class)); 
+
+        query.setHint(QueryHints.QUERY_TYPE, QueryType.Report);
+        assertTrue("QUERY_TYPE not set.", ((JpaQuery)query).getDatabaseQuery().getClass().equals(ReportQuery.class));
+        
+        query.setHint(QueryHints.QUERY_TYPE, QueryType.DataModify);
+        assertTrue("QUERY_TYPE not set.", ((JpaQuery)query).getDatabaseQuery().getClass().equals(DataModifyQuery.class));
+
+        query.setHint(QueryHints.QUERY_TYPE, "org.eclipse.persistence.queries.ValueReadQuery");
+        assertTrue("QUERY_TYPE not set.", ((JpaQuery)query).getDatabaseQuery().getClass().equals(ValueReadQuery.class));
+        
+        query.setHint(QueryHints.QUERY_TYPE, QueryType.ReadAll);
+        assertTrue("QUERY_TYPE not set.", ((JpaQuery)query).getDatabaseQuery().getClass().equals(ReadAllQuery.class)); 
+
+        // Result type
+        query.setHint(QueryHints.QUERY_TYPE, QueryType.Report);
+        query.setHint(QueryHints.RESULT_TYPE, ResultType.Map);
+        assertTrue("RESULT_TYPE not set.", ((ReportQuery)((JpaQuery)query).getDatabaseQuery()).getReturnType() == ReportQuery.ShouldReturnReportResult);
+
+        query.setHint(QueryHints.RESULT_TYPE, ResultType.Array);
+        assertTrue("RESULT_TYPE not set.", ((ReportQuery)((JpaQuery)query).getDatabaseQuery()).getReturnType() == ReportQuery.ShouldReturnArray);
+
+        query.setHint(QueryHints.RESULT_TYPE, ResultType.Value);
+        assertTrue("RESULT_TYPE not set.", ((ReportQuery)((JpaQuery)query).getDatabaseQuery()).getReturnType() == ReportQuery.ShouldReturnSingleValue);
+        
+        query.setHint(QueryHints.QUERY_TYPE, QueryType.DataRead);
+        query.setHint(QueryHints.RESULT_TYPE, ResultType.Map);
+        query.setHint(QueryHints.RESULT_TYPE, ResultType.Array);
+        query.setHint(QueryHints.RESULT_TYPE, ResultType.Value);
+   
         closeEntityManager(em);
     }
     
@@ -3836,7 +3906,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
      * This test ensures that the eclipselink.fetch query hint works.
      * It tests two things. 
      * 
-     * 1. That the jined attribute is properly added to the query
+     * 1. That the joined attribute is properly added to the query
      * 2. That the query will execute
      * 
      * It does not do any verification that the joining feature actually works.  That is
@@ -3884,7 +3954,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
 
         //org.eclipse.persistence.jpa.JpaQuery query = (org.eclipse.persistence.jpa.JpaQuery)em.createQuery("SELECT e FROM Employee e WHERE e.lastName = 'Malone' order by e.firstName");
         org.eclipse.persistence.jpa.JpaQuery query = (org.eclipse.persistence.jpa.JpaQuery)getEntityManagerFactory().createEntityManager().createQuery("SELECT e FROM Employee e WHERE e.lastName = 'Malone' order by e.firstName");
-        query.setHint(QueryHints.FETCH, "e.manager");
+        query.setHint(QueryHints.LEFT_FETCH, "e.manager");
         ReadAllQuery raq = (ReadAllQuery)query.getDatabaseQuery();
         List expressions = raq.getJoinedAttributeExpressions();
         assertTrue(expressions.size() == 1);
@@ -4022,6 +4092,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
     public void testLeftJoinOneToOneQuery() {
         EntityManager em = createEntityManager();
         List results = em.createQuery("SELECT a FROM Employee e LEFT JOIN e.address a").getResultList();
+        results.toString();
         closeEntityManager(em);
     }
     /* // KERNEL_SRG_TEMP       
@@ -4443,6 +4514,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         try {
             beginTransaction(em);
             Employee managedEmp = em.merge(manager);
+            managedEmp.toString();
         } finally {
             if (isTransactionActive(em)){
                 rollbackTransaction(em);
@@ -4843,7 +4915,6 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
     public void testCascadePersistToNonEntitySubclass() {
         EntityManager em = createEntityManager();
         // added new setting for bug 237281
-        JpaEntityManager eclipseLinkEm = JpaHelper.getEntityManager(em);
         InheritancePolicy ip = getServerSession().getDescriptor(Project.class).getInheritancePolicy();
         boolean describesNonPersistentSubclasses = ip.getDescribesNonPersistentSubclasses();
         ip.setDescribesNonPersistentSubclasses(true);
@@ -5724,6 +5795,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         beginTransaction(em);
         try {
             Employee emp = em.find(Employee.class, "");
+            emp.toString();
             fail("IllegalArgumentException has not been thrown");
         } catch(IllegalArgumentException ex) {
             if (isOnServer()) {
@@ -6029,6 +6101,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         query.setHint("eclipselink.pessimistic-lock", PessimisticLock.Lock);
         query.setParameter("firstname", "Sarah");
         List results = query.getResultList();
+        results.toString();
         assertTrue("The extended persistence context is not in a transaction after a pessmimistic lock query", em.getActivePersistenceContext(em.getTransaction()).getParent().isInTransaction());
         rollbackTransaction(em);
     }
@@ -6047,7 +6120,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
             internalTestWeaving(new Buyer(), false, false);  // field-locking
             internalTestWeaving(new GoldBuyer(), false, false);  // field-locking
             internalTestWeaving(new PlatinumBuyer(), false, false);  // field-locking
-            internalTestWeaving(new Department(), false, false);  // eager 1-m
+            internalTestWeaving(new Department(), true, false);  // eager 1-m
             internalTestWeaving(new Golfer(), true, false);
             internalTestWeaving(new GolferPK(), true, false);
             internalTestWeaving(new SmallProject(), true, false);
@@ -6649,12 +6722,10 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         EntityManager em = null;        
         try {
             em = createEntityManager(puName);
-        } catch (Exception e) {
-            Throwable cause = e.getCause();
-            e.printStackTrace();
-            fail("A Persistence Unit [" + puName + "] " + failureMessagePostScript);
+        } catch (Exception exception) {
+            throw new RuntimeException("A Persistence Unit [" + puName + "] " + failureMessagePostScript, exception);
         } finally {
-            if(null != em) {
+            if (null != em) {
                 closeEntityManager(em);
             }
         }
@@ -6747,7 +6818,8 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
                         setParameter("GENDER1", Employee.Gender.Male).
                         setParameter("GENDER2", Employee.Gender.Female).
                         getResultList();
-        //em.close();
+        emps.toString();
+        closeEntityManager(em);
     }
     
     
@@ -6773,8 +6845,6 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
     // superclass works
     public void testEnabledPersistNonEntitySubclass() {
         EntityManager em = createEntityManager();
-        // added new setting for bug 237281
-        JpaEntityManager eclipseLinkEm = JpaHelper.getEntityManager(em);
         InheritancePolicy ip = getServerSession().getDescriptor(Project.class).getInheritancePolicy();
         boolean describesNonPersistentSubclasses = ip.getDescribesNonPersistentSubclasses();
         ip.setDescribesNonPersistentSubclasses(true);

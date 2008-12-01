@@ -101,6 +101,14 @@ import static org.eclipse.persistence.annotations.OptimisticLockingType.VERSION_
         query="SELECT e FROM Employee e order by e.id"
 ),
 @NamedQuery(
+        name="findAllEmployeesJoinAddressPhones",
+        query="SELECT e FROM Employee e",
+        hints={
+                @QueryHint(name=QueryHints.FETCH, value="e.address"),
+                @QueryHint(name=QueryHints.FETCH, value="e.phoneNumbers")
+        }
+),
+@NamedQuery(
         name="CachedAllEmployees",
         query="SELECT e FROM Employee e",
         hints={

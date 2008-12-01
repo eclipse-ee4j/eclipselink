@@ -65,37 +65,94 @@ import static org.eclipse.persistence.annotations.Direction.IN_OUT;
 )
 @NamedStoredProcedureQueries({
     @NamedStoredProcedureQuery(
-    name="SProcAddress",
-    resultClass=org.eclipse.persistence.testing.models.jpa.advanced.Address.class,
-    procedureName="SProc_Read_Address",
-    parameters={@StoredProcedureParameter(direction=IN_OUT, name="address_id_v", queryParameter="ADDRESS_ID", type=Integer.class),
-                @StoredProcedureParameter(direction=OUT, name="street_v", queryParameter="STREET", type=String.class),
-                @StoredProcedureParameter(direction=OUT, name="city_v", queryParameter="CITY", type=String.class),
-                @StoredProcedureParameter(direction=OUT, name="country_v", queryParameter="COUNTRY", type=String.class),
-                @StoredProcedureParameter(direction=OUT, name="province_v", queryParameter="PROVINCE", type=String.class),
-                @StoredProcedureParameter(direction=OUT, name="p_code_v", queryParameter="P_CODE", type=String.class)}),
+        name="SProcAddress",
+        resultClass=org.eclipse.persistence.testing.models.jpa.advanced.Address.class,
+        procedureName="SProc_Read_Address",
+        parameters={
+            @StoredProcedureParameter(direction=IN_OUT, name="address_id_v", queryParameter="ADDRESS_ID", type=Integer.class),
+            @StoredProcedureParameter(direction=OUT, name="street_v", queryParameter="STREET", type=String.class),
+            @StoredProcedureParameter(direction=OUT, name="city_v", queryParameter="CITY", type=String.class),
+            @StoredProcedureParameter(direction=OUT, name="country_v", queryParameter="COUNTRY", type=String.class),
+            @StoredProcedureParameter(direction=OUT, name="province_v", queryParameter="PROVINCE", type=String.class),
+            @StoredProcedureParameter(direction=OUT, name="p_code_v", queryParameter="P_CODE", type=String.class)
+        }),
     @NamedStoredProcedureQuery(
-    name="SProcInOut",
-    resultClass=org.eclipse.persistence.testing.models.jpa.advanced.Address.class,
-    procedureName="SProc_Read_InOut",
-    parameters={@StoredProcedureParameter(direction=IN_OUT, name="address_id_v", queryParameter="ADDRESS_ID", type=Long.class),
-                @StoredProcedureParameter(direction=OUT, name="street_v", queryParameter="STREET", type=String.class)}),
+            name="SProcAddressWithResultSetMapping",
+            resultSetMapping="address-map",
+            procedureName="SProc_Read_Address",
+            parameters={
+                @StoredProcedureParameter(direction=IN_OUT, name="address_id_v", queryParameter="address_id_v", type=Integer.class),
+                @StoredProcedureParameter(direction=OUT, name="street_v", queryParameter="street_v", type=String.class),
+                @StoredProcedureParameter(direction=OUT, name="city_v", queryParameter="city_v", type=String.class),
+                @StoredProcedureParameter(direction=OUT, name="country_v", queryParameter="country_v", type=String.class),
+                @StoredProcedureParameter(direction=OUT, name="province_v", queryParameter="province_v", type=String.class),
+                @StoredProcedureParameter(direction=OUT, name="p_code_v", queryParameter="p_code_v", type=String.class)
+            }),
     @NamedStoredProcedureQuery(
-    name="SProcInOutReturningRawData",
-    procedureName="SProc_Read_InOut",
-    parameters={@StoredProcedureParameter(direction=IN_OUT, name="address_id_v", queryParameter="ADDRESS_ID", type=Long.class),
-                @StoredProcedureParameter(direction=OUT, name="street_v", queryParameter="STREET", type=String.class)})
+            name="SProcAddressWithResultSetFieldMapping",
+            resultSetMapping="address-field-map",
+            procedureName="SProc_Read_Address",
+            parameters={
+                @StoredProcedureParameter(direction=IN_OUT, name="address_id_v", queryParameter="address_id_v", type=Integer.class),
+                @StoredProcedureParameter(direction=OUT, name="street_v", queryParameter="street_v", type=String.class),
+                @StoredProcedureParameter(direction=OUT, name="city_v", queryParameter="city_v", type=String.class),
+                @StoredProcedureParameter(direction=OUT, name="country_v", queryParameter="country_v", type=String.class),
+                @StoredProcedureParameter(direction=OUT, name="province_v", queryParameter="province_v", type=String.class),
+                @StoredProcedureParameter(direction=OUT, name="p_code_v", queryParameter="p_code_v", type=String.class)
+            }),
+    @NamedStoredProcedureQuery(
+        name="SProcInOut",
+        resultClass=org.eclipse.persistence.testing.models.jpa.advanced.Address.class,
+        procedureName="SProc_Read_InOut",
+        parameters={
+            @StoredProcedureParameter(direction=IN_OUT, name="address_id_v", queryParameter="ADDRESS_ID", type=Long.class),
+            @StoredProcedureParameter(direction=OUT, name="street_v", queryParameter="STREET", type=String.class)
+        }),
+    @NamedStoredProcedureQuery(
+        name="SProcInOutReturningRawData",
+        procedureName="SProc_Read_InOut",
+        parameters={
+                @StoredProcedureParameter(direction=IN_OUT, name="address_id_v", queryParameter="ADDRESS_ID", type=Long.class),
+                @StoredProcedureParameter(direction=OUT, name="street_v", queryParameter="STREET", type=String.class)
+        })
+})
+@SqlResultSetMappings({
+    @SqlResultSetMapping(
+        name = "address-map",
+        entities = {
+            @EntityResult(
+                entityClass=Address.class,
+                fields={
+                    @FieldResult(name="id", column="address_id_v"),
+                    @FieldResult(name="street", column="street_v"),
+                    @FieldResult(name="city", column="city_v"),
+                    @FieldResult(name="country", column="country_v"),
+                    @FieldResult(name="province", column="province_v"),
+                    @FieldResult(name="postalCode", column="p_code_v")
+                }
+            )
+        }),
+    @SqlResultSetMapping(
+        name = "address-field-map",
+        columns = {
+            @ColumnResult(name="address_id_v"),
+            @ColumnResult(name="street_v"),
+            @ColumnResult(name="city_v"),
+            @ColumnResult(name="country_v"),
+            @ColumnResult(name="province_v"),
+            @ColumnResult(name="p_code_v")
+        })
 })
 public class Address implements Serializable {
-	private int id;
-	private Integer version;
-	private String street;
-	private String city;
+    private int id;
+    private Integer version;
+    private String street;
+    private String city;
     private String province;
     private String postalCode;
     private String country;
     private AddressType type;
-	private Collection<Employee> employees;
+    private Collection<Employee> employees;
 
     public Address() {
         city = "";
@@ -115,87 +172,87 @@ public class Address implements Serializable {
         this.employees = new Vector<Employee>();
     }
 
-	@Id
+    @Id
     // BUG 5079973 - this should be a valid specification, that is the generator
     // trumps the AUTO strategy defaulting.
     // BUG 6273529 - SHOULD BE ABLE TO SKIP SEQUENCENAME IN SEQUENCEGENERATOR
     // In case sequenceName is not specified generator's name used instead.
     @GeneratedValue(generator="ADDRESS_SEQ")
     @SequenceGenerator(name="ADDRESS_SEQ", allocationSize=25)
-	@Column(name="ADDRESS_ID")
-	public int getId() { 
+    @Column(name="ADDRESS_ID")
+    public int getId() { 
         return id; 
     }
-    
-	public void setId(int id) { 
+
+    public void setId(int id) { 
         this.id = id; 
     }
 
-	public String getStreet() { 
+    public String getStreet() { 
         return street; 
     }
-    
-	public void setStreet(String street) { 
+
+    public void setStreet(String street) { 
         this.street = street; 
     }
 
-	public String getCity() { 
+    public String getCity() { 
         return city; 
     }
-    
-	public void setCity(String city) { 
+
+    public void setCity(String city) { 
         this.city = city; 
     }
 
-	public String getProvince() { 
+    public String getProvince() { 
         return province; 
     }
-        
-	public void setProvince(String province) { 
+
+    public void setProvince(String province) { 
         this.province = province; 
     }
 
-	@Column(name="P_CODE")
-	public String getPostalCode() { 
+    @Column(name="P_CODE")
+    public String getPostalCode() { 
         return postalCode; 
     }
-    
-	public void setPostalCode(String postalCode) { 
+
+    public void setPostalCode(String postalCode) { 
         this.postalCode = postalCode; 
     }
 
-	public String getCountry() { 
+    public String getCountry() { 
         return country; 
     }
-    
-	public void setCountry(String country) { 
+
+    public void setCountry(String country) { 
         this.country = country;
     }
-    
-	@OneToMany(cascade=ALL, mappedBy="address")
-	public Collection<Employee> getEmployees() { 
+
+    @OneToMany(cascade=ALL, mappedBy="address")
+    public Collection<Employee> getEmployees() { 
         return employees; 
     }
-    
+
     public void setEmployees(Collection<Employee> employees) {
-		this.employees = employees;
-	}
-    
+        this.employees = employees;
+    }
+
     @Basic
     @Convert("class-instance")
     public AddressType getType(){
         return type;
     }
-    
+
     public void setType(AddressType type){
         this.type = type;
     }
-    
+
     @Version
     public Integer getVersion() {
         return version; 
     }
-    
+
     public void setVersion(Integer version) {
         this.version = version;
     }

@@ -37,6 +37,8 @@ import org.eclipse.persistence.exceptions.EclipseLinkException;
 import org.eclipse.persistence.exceptions.JPQLException;
 import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.expressions.Expression;
+import org.eclipse.persistence.queries.Call;
+import org.eclipse.persistence.queries.DataReadQuery;
 import org.eclipse.persistence.queries.DatabaseQuery;
 import org.eclipse.persistence.queries.ObjectLevelReadQuery;
 import org.eclipse.persistence.queries.ReadAllQuery;
@@ -419,7 +421,7 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
     public <T> T find(Class<T> entityClass, Object primaryKey, LockModeType lockMode, Map properties) {
         try {
             verifyOpen();
-            Session session = getActiveSession();
+            AbstractSession session = (AbstractSession)getActiveSession();
             ClassDescriptor descriptor = session.getDescriptor(entityClass);
             if (descriptor == null || descriptor.isAggregateDescriptor() || descriptor.isAggregateCollectionDescriptor()) {
                 throw new IllegalArgumentException(ExceptionLocalization.buildMessage("unknown_bean_class", new Object[] { entityClass }));
@@ -444,7 +446,7 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
     public Object find(String entityName, Object primaryKey) {
         try {
             verifyOpen();
-            Session session = getActiveSession();
+            AbstractSession session = (AbstractSession)getActiveSession();
             ClassDescriptor descriptor = session.getDescriptorForAlias(entityName);
             if (descriptor == null || descriptor.isAggregateDescriptor() || descriptor.isAggregateCollectionDescriptor()) {
                 throw new IllegalArgumentException(ExceptionLocalization.buildMessage("unknown_entitybean_name", new Object[] { entityName }));
@@ -467,7 +469,7 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
      *   not denote an entity type or the second argument is not a valid type for that
      *   entity's primary key.
      */
-    protected Object findInternal(ClassDescriptor descriptor, Session session, Object primaryKey, LockModeType lockMode, Map properties) {
+    protected Object findInternal(ClassDescriptor descriptor, AbstractSession session, Object primaryKey, LockModeType lockMode, Map properties) {
         if (primaryKey == null) { //gf721 - check for null PK
             throw new IllegalArgumentException(ExceptionLocalization.buildMessage("null_pk"));
         }
@@ -481,7 +483,7 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
             if ((pkClass != null) && (pkClass != primaryKey.getClass()) && (!pkClass.isAssignableFrom(primaryKey.getClass()))) {
                 throw new IllegalArgumentException(ExceptionLocalization.buildMessage("invalid_pk_class", new Object[] { descriptor.getCMPPolicy().getPKClass(), primaryKey.getClass() }));
             }
-            primaryKeyValues = policy.createPkVectorFromKey(primaryKey, (AbstractSession)session);
+            primaryKeyValues = policy.createPkVectorFromKey(primaryKey, session);
         }
         
         // Get the read object query and apply the properties to it.
@@ -493,11 +495,11 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
             // in the getReadObjectQuery.
             query = getReadObjectQuery(descriptor.getJavaClass(), primaryKeyValues, properties);
         } else {
-            query.checkPrepare((AbstractSession)session, null);
+            query.checkPrepare(session, null);
             query = (ReadObjectQuery)query.clone();
             
             // Apply the properties if there are some.
-            QueryHintsHandler.apply(properties, query);
+            QueryHintsHandler.apply(properties, query, session.getLoader());
             
             query.setIsExecutionClone(true);
             query.setSelectionKey(primaryKeyValues);
@@ -706,11 +708,11 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
         return createDescriptorNamedQuery(queryName, descriptorClass, null);
     }
     
-    public javax.persistence.Query createDescriptorNamedQuery(String queryName, Class descriptorClass, Vector argumentTypes){
+    public javax.persistence.Query createDescriptorNamedQuery(String queryName, Class descriptorClass, List argumentTypes){
         try {
             verifyOpen();
             ClassDescriptor descriptor = this.serverSession.getDescriptor(descriptorClass);
-            if (descriptor != null){
+            if (descriptor != null) {
                 DatabaseQuery query = descriptor.getQueryManager().getLocalQueryByArgumentTypes(queryName, argumentTypes);
                 if (query != null){
                     return new EJBQueryImpl(query, this);
@@ -750,7 +752,7 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
         try {
             verifyOpen();
             return new EJBQueryImpl(EJBQueryImpl.buildSQLDatabaseQuery(
-                    sqlString, false), this);
+                    sqlString, this.serverSession.getLoader()), this);
         } catch (RuntimeException e) {
             setRollbackOnly();
             throw e;
@@ -905,7 +907,7 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
         ReadObjectQuery query = new ReadObjectQuery();
         
         // Apply the properties if there are some.
-        QueryHintsHandler.apply(properties, query);
+        QueryHintsHandler.apply(properties, query, this.serverSession.getDatasourcePlatform().getConversionManager().getLoader());
         query.setIsExecutionClone(true);
         return query;
     }
@@ -980,8 +982,7 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
         query.setIsUserDefined(true);
         return query;
     }
-    
-    
+
     /**
      * This method is used to create a query using a EclipseLink Expression and the return type.
      */
@@ -994,7 +995,63 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
             setRollbackOnly();
             throw e;
         }
-    }  
+    }
+
+    /**
+     * This method is used to create a query using a EclipseLink DatabaseQuery.
+     */
+    public javax.persistence.Query createQuery(DatabaseQuery databaseQuery) {
+        try {
+            verifyOpen();
+            return new EJBQueryImpl(databaseQuery, this);
+        } catch (RuntimeException e) {
+            setRollbackOnly();
+            throw e;
+        }
+    }
+
+    /**
+     * This method is used to create a query using a EclipseLink by example.
+     */
+    public javax.persistence.Query createQueryByExample(Object exampleObject) {
+        try {
+            verifyOpen();
+            ReadAllQuery query = new ReadAllQuery(exampleObject.getClass());
+            query.setExampleObject(exampleObject);
+            return new EJBQueryImpl(query, this);
+        } catch (RuntimeException e) {
+            setRollbackOnly();
+            throw e;
+        }
+    }
+
+    /**
+     * This method is used to create a query using a EclipseLink Call.
+     */
+    public javax.persistence.Query createQuery(Call call) {
+        try {
+            verifyOpen();
+            DataReadQuery query = new DataReadQuery(call);
+            return new EJBQueryImpl(query, this);
+        } catch (RuntimeException e) {
+            setRollbackOnly();
+            throw e;
+        }
+    }
+
+    /**
+     * This method is used to create a query using a EclipseLink Call.
+     */
+    public javax.persistence.Query createQuery(Call call, Class entityClass) {
+        try {
+            verifyOpen();
+            ReadAllQuery query = new ReadAllQuery(entityClass, call);
+            return new EJBQueryImpl(query, this);
+        } catch (RuntimeException e) {
+            setRollbackOnly();
+            throw e;
+        }
+    }
     
     /**
      * Create an instance of Query for executing an JPQL query.

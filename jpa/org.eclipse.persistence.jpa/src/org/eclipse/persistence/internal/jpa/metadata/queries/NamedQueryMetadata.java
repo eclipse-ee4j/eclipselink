@@ -16,8 +16,10 @@ package org.eclipse.persistence.internal.jpa.metadata.queries;
 
 import java.lang.annotation.Annotation;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.internal.jpa.JPAQuery;
@@ -137,7 +139,7 @@ public class NamedQueryMetadata extends ORMetadata {
      */
     public void process(AbstractSession session, ClassLoader loader) {
         try {
-            HashMap<String, String> hints = processQueryHints(session);
+            Map<String, Object> hints = processQueryHints(session);
             session.addJPAQuery(new JPAQuery(getName(), getQuery(), getLockMode(), hints));
         } catch (Exception exception) {
             throw ValidationException.errorProcessingNamedQuery(getClass(), getName(), exception);
@@ -147,12 +149,27 @@ public class NamedQueryMetadata extends ORMetadata {
     /**
      * INTERNAL:
      */ 
-    protected HashMap<String, String> processQueryHints(AbstractSession session) {
-        HashMap<String, String> hints = new HashMap<String, String>();
+    protected Map<String, Object> processQueryHints(AbstractSession session) {
+        Map<String, Object> hints = new HashMap<String, Object>();
         
-        for (QueryHintMetadata hint : m_hints) {
-            QueryHintsHandler.verify(hint.getName(), hint.getValue(), m_name, session);
-            hints.put(hint.getName(), hint.getValue());
+        for (QueryHintMetadata hint : this.m_hints) {
+            QueryHintsHandler.verify(hint.getName(), hint.getValue(), this.m_name, session);
+            Object value = hints.get(hint.getName());
+            if (value != null) {
+                Object[] values = null;
+                if (value instanceof Object[]) {
+                    List list = new ArrayList(Arrays.asList((Object[])value));
+                    list.add(hint.getValue());
+                    values = list.toArray();                
+                } else {
+                    values = new Object[2];
+                    values[0] = value;
+                    values[1] = hint.getValue();
+                }
+                hints.put(hint.getName(), values);
+            } else {
+                hints.put(hint.getName(), hint.getValue());
+            }
         }
         
         return hints;

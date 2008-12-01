@@ -289,7 +289,6 @@ public class CMPPolicy implements java.io.Serializable {
      */
     public Object createPrimaryKeyInstance(Vector key) {
         Object keyInstance = getPKClassInstance();
-        ObjectBuilder builder = getDescriptor().getObjectBuilder();
         KeyElementAccessor[] pkElementArray = this.getKeyClassFields(getPKClass());
                 
         for (int index = 0; index < pkElementArray.length; index++) {

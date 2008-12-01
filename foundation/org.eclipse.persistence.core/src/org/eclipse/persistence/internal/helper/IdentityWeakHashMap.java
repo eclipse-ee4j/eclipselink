@@ -272,7 +272,7 @@ public class IdentityWeakHashMap<K,V> extends AbstractMap<K,V> implements Map<K,
                 }else{
                     e.value = new HardEntryReference<V>(obj);
                 }
-                return (V)old.get();
+                return old.get();
             }
         }
 

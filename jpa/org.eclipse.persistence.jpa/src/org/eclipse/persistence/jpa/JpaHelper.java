@@ -37,7 +37,7 @@ public class JpaHelper {
      * It is always more reliable to check isEclipseLink on the EMF or Query. 
      */ 
     public static boolean isEclipseLink(javax.persistence.EntityManager em) {
-    	return getEntityManager(em) != null; 
+        return getEntityManager(em) != null; 
     } 
 
     /** 
@@ -57,13 +57,7 @@ public class JpaHelper {
      * Verify if the JPA provider is EclipseLink 
      */ 
     public static boolean isEclipseLink(Query query) { 
-        try { 
-            getReadAllQuery(query); 
-        } catch (IllegalArgumentException iae) { 
-            return false; 
-        }
-
-        return true; 
+        return query instanceof JpaQuery;
     } 
 
     /** 
@@ -72,12 +66,7 @@ public class JpaHelper {
      * safely invoke. 
      */ 
     public static boolean isReportQuery(Query query) { 
-        try { 
-            getReportQuery(query); 
-        } catch (IllegalArgumentException iae) { 
-            return false; 
-        } 
-        return true; 
+        return isEclipseLink(query) && getDatabaseQuery(query).isReportQuery();
     } 
 
     /** 
@@ -89,17 +78,24 @@ public class JpaHelper {
      * @see JpaHelper#getReadAllQuery 
      */ 
     public static ReportQuery getReportQuery(Query query) { 
-        if (EJBQueryImpl.class.isAssignableFrom(query.getClass())) { 
-            DatabaseQuery dbQuery = ((EJBQueryImpl)query).getDatabaseQuery(); 
-            if (dbQuery.isReportQuery()) { 
-                return (ReportQuery)dbQuery; 
-            } 
-
-            throw new IllegalArgumentException(ExceptionLocalization.buildMessage("jpa_helper_invalid_report_query" + query.getClass()));
+        DatabaseQuery dbQuery = getDatabaseQuery(query);
+        if (dbQuery.isReportQuery()) { 
+            return (ReportQuery)dbQuery; 
         } 
- 
-        throw new IllegalArgumentException(ExceptionLocalization.buildMessage("jpa_helper_invalid_query" + query.getClass()));         
-    } 
+
+        throw new IllegalArgumentException(ExceptionLocalization.buildMessage("jpa_helper_invalid_report_query" + query.getClass()));
+    }
+
+    /** 
+     * Access the internal EclipseLink query wrapped within the JPA query.
+     */ 
+    public static DatabaseQuery getDatabaseQuery(Query query) { 
+        if (query instanceof JpaQuery) {
+            return ((JpaQuery)query).getDatabaseQuery();
+        }
+
+        throw new IllegalArgumentException(ExceptionLocalization.buildMessage("jpa_helper_invalid_query" + query.getClass()));
+    }
 
     /** 
      * Access the internal EclipseLink query wrapped within the JPA query. A EclipseLink 
@@ -109,25 +105,20 @@ public class JpaHelper {
      * A ReadAllQuery is the super class of a ReportQuery so this method will 
      * always work for either a ReportQuery or ReadAllQuery. 
      */ 
-    public static ReadAllQuery getReadAllQuery(Query query) { 
-        if (EJBQueryImpl.class.isAssignableFrom(query.getClass())) { 
-            DatabaseQuery dbQuery = ((EJBQueryImpl)query).getDatabaseQuery(); 
-            if (dbQuery.isReadAllQuery()) { 
-                return (ReadAllQuery)dbQuery; 
-            } 
-
-            throw new IllegalArgumentException(ExceptionLocalization.buildMessage("jpa_helper_invalid_read_all_query" + query.getClass()));
+    public static ReadAllQuery getReadAllQuery(Query query) {
+        DatabaseQuery dbQuery = getDatabaseQuery(query);
+        if (dbQuery.isReadAllQuery()) { 
+            return (ReadAllQuery)dbQuery; 
         } 
-        
-        throw new IllegalArgumentException(ExceptionLocalization.buildMessage("jpa_helper_invalid_query" + query.getClass()));                
+
+        throw new IllegalArgumentException(ExceptionLocalization.buildMessage("jpa_helper_invalid_read_all_query" + query.getClass()));           
     } 
 
     /** 
      * Create a EclipseLink JPA query dynamically given a EclipseLink query. 
      */ 
-    public static Query createQuery(ReadAllQuery query, javax.persistence.EntityManager em) { 
-        EntityManagerImpl emImpl = (EntityManagerImpl)getEntityManager(em); 
-        return new EJBQueryImpl(query, emImpl); 
+    public static Query createQuery(DatabaseQuery query, javax.persistence.EntityManager em) { 
+        return getEntityManager(em).createQuery(query);
     } 
 
     /** 
@@ -141,13 +132,13 @@ public class JpaHelper {
      * application manage its lifecycle. 
      */ 
     public static JpaEntityManager getEntityManager(javax.persistence.EntityManager entityManager) { 
-        if (JpaEntityManager.class.isAssignableFrom(entityManager.getClass())) { 
+        if (entityManager instanceof JpaEntityManager) { 
             return (JpaEntityManager)entityManager; 
-        } 
+        }
 
         if (entityManager.getDelegate() != null) { 
             return getEntityManager((JpaEntityManager)entityManager.getDelegate()); 
-        } 
+        }
 
         return null; 
     } 
@@ -156,9 +147,9 @@ public class JpaHelper {
      * Given a JPA EntityManagerFactory attempt to cast it to a EclipseLink EMF. 
      */ 
     public static EntityManagerFactoryImpl getEntityManagerFactory(EntityManagerFactory emf) { 
-        if (EntityManagerFactoryImpl.class.isAssignableFrom(emf.getClass())) { 
+        if (emf instanceof EntityManagerFactoryImpl) { 
             return (EntityManagerFactoryImpl)emf; 
-        } 
+        }
 
         throw new IllegalArgumentException(ExceptionLocalization.buildMessage("jpa_helper_invalid_entity_manager_factory" + emf.getClass()));
     } 
@@ -166,9 +157,9 @@ public class JpaHelper {
     /** 
      * Retrieve the shared server session from the EMF. 
      */ 
-    public static Server getServerSession(EntityManagerFactory emf) { 
+    public static Server getServerSession(EntityManagerFactory emf) {
         return getEntityManagerFactory(emf).getServerSession(); 
-    } 
+    }
 
     /** 
      * Create a EclipseLink EMF given a ServerSession that has already been created 
@@ -191,10 +182,10 @@ public class JpaHelper {
         return new EntityManagerFactoryImpl((ServerSession)sf.getSharedSession()); 
     } 
 
-     /**
-      * Load/fetch the unfetched object.  This method is used by the ClassWeaver.
-      */
-     public static void loadUnfetchedObject(Object object) {
+    /**
+     * Load/fetch the unfetched object.  This method is used by the ClassWeaver.
+     */
+    public static void loadUnfetchedObject(Object object) {
         ReadObjectQuery query = new ReadObjectQuery(object);
         query.setShouldUseDefaultFetchGroup(false);
         Object result = ((FetchGroupTracker)object)._persistence_getSession().executeQuery(query);

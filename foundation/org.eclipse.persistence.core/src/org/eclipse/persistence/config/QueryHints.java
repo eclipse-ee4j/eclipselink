@@ -104,6 +104,9 @@ public class QueryHints {
      * The redirector must implement the QueryRedirector interface.
      * This can be used to perform advanced query operations in code,
      * or dynamically customize the query in code before execution.
+     * The value should be the name of the QueryRedirector class.
+     * <p>i.e. "org.acme.persistence.MyQueryRedirector"
+     * <p> The value could also be a Class, or an instance that implements the QueryRedirector interface.
      * @see org.eclipse.persistence.queries.QueryRedirector
      * @see org.eclipse.persistence.queries.DatabaseQuery#setRedirector(org.eclipse.persistence.queries.QueryRedirector)
      */
@@ -115,6 +118,8 @@ public class QueryHints {
      * By default EclipseLink ReportQuery or ReadAllQuery are used for most JPQL queries, this allows other query types to be used,
      * such as ReadObjectQuery which can be used for queries that are know to return a single object, and has different caching semantics.
      * Valid values are all declared in QueryType class.
+     * A fully qualified class name of a valid subclass of DatabaseQuery can also be used.
+     * <p>i.e. "org.acme.persistence.CustomQuery"
      * @see QueryType
      */
     public static final String QUERY_TYPE = "eclipselink.query-type";
@@ -171,12 +176,30 @@ public class QueryHints {
      * <p>Configures the query to optimize the retrieval of the related objects,
      * the related objects will be joined into the query instead of being queried independently.
      * This allow for nested join fetching which is not supported in JPQL.
+     * It also allows for join fetching with native queries.
+     * This uses an INNER join and will filter null or empty values, see LEFT_FETCH for outer joins.
      * Valid values are strings that represent JPQL style navigations to a relationship.
      * <p>e.g. e.manager.phoneNumbers
      * @see #BATCH
+     * @see #LEFT_FETCH
      * @see org.eclipse.persistence.queries.ObjectLevelReadQuery#addJoinedAttribute(String)
      */
     public static final String FETCH = "eclipselink.join-fetch";
+    
+    /**
+     * "eclipselink.left-join-fetch"
+     * <p>Configures the query to optimize the retrieval of the related objects,
+     * the related objects will be joined into the query instead of being queried independently.
+     * This allow for nested join fetching which is not supported in JPQL.
+     * It also allows for join fetching with native queries.
+     * This uses an OUTER join to allow null or empty values.
+     * Valid values are strings that represent JPQL style navigations to a relationship.
+     * <p>e.g. e.manager.phoneNumbers
+     * @see #BATCH
+     * @see #FETCH
+     * @see org.eclipse.persistence.queries.ObjectLevelReadQuery#addJoinedAttribute(String)
+     */
+    public static final String LEFT_FETCH = "eclipselink.left-join-fetch";
     
     /**
      * "eclipselink.read-only"
@@ -382,6 +405,18 @@ public class QueryHints {
     public static final String CURSOR_PAGE_SIZE = "eclipselink.cursor.page-size";
 
     /**
+     * "eclipselink.cursor.size-sql"
+     * <p>Configures the SQL string for the size query of a Cursor query.
+     * This is only required for cursor queries that use native SQL or procedures.
+     * The size query is only used if the size() is called on the Cursor.
+     * The SQL should perform a COUNT of the rows returned by the original query.
+     * @see #CURSOR
+     * @see org.eclipse.persistence.queries.Cursor#size()
+     * @see org.eclipse.persistence.queries.ReadAllQuery#useCursoredStream(int, int, org.eclipse.persistence.queries.ValueReadQuery)
+     */
+    public static final String CURSOR_SIZE = "eclipselink.cursor.size-sql";
+    
+    /**
      * "eclipselink.cursor.scrollable"
      * <p>Configures the query to return a ScrollableCursor.
      * A cursor is a stream of the JDBC ResultSet.
@@ -404,17 +439,40 @@ public class QueryHints {
     public static final String SCROLLABLE_CURSOR = "eclipselink.cursor.scrollable";
 
     /**
-     * "eclipselink.cursor.size-sql"
-     * <p>Configures the SQL string for the size query of a Cursor query.
-     * This is only required for cursor queries that use native SQL or procedures.
-     * The size query is only used if the size() is called on the Cursor.
-     * The SQL should perform a COUNT of the rows returned by the original query.
-     * @see #CURSOR
-     * @see org.eclipse.persistence.queries.Cursor#size()
-     * @see org.eclipse.persistence.queries.ReadAllQuery#useCursoredStream(int, int, org.eclipse.persistence.queries.ValueReadQuery)
+     * "eclipselink.cursor.scrollable.result-set-type"
+     * <p>This can be used on ScrollableCursor queries to set the JDBC ResultSet scroll type.
+     * @see ResultSetType
+     * @see #SCROLLABLE_CURSOR
+     * @see org.eclipse.persistence.queries.ScrollableCursorPolicy#setResultSetType(int)
      */
-    public static final String CURSOR_SIZE = "eclipselink.cursor.size-sql";
-
+    public static final String RESULT_SET_TYPE = "eclipselink.cursor.scrollable.result-set-type";
+    
+    /**
+     * "eclipselink.cursor.scrollable.result-set-concurrency"
+     * <p>This can be used on ScrollableCursor queries to set the JDBC ResultSet concurrency.
+     * @see ResultSetConcurrency
+     * @see #SCROLLABLE_CURSOR
+     * @see org.eclipse.persistence.queries.ScrollableCursorPolicy#setResultSetConcurrency(int)
+     */
+    public static final String RESULT_SET_CONCURRENCY = "eclipselink.cursor.scrollable.result-set-concurrency";
+    
+    /**
+     * "eclipselink.fetch-group"
+     * <p>Configures the query to use the fetch group object.
+     * This is an instance of FetchGroup.
+     * The query will only fetch the attributes defined in the fetch group, if any other attribute is accessed
+     * it will cause the object to be refreshed.
+     * FetchGroups are only supported for queries returning objects (only a single alias can be the select clause).
+     * Weaving is required to allow usage of fetch groups.
+     * @see #FETCH_GROUP_NAME
+     * @see #FETCH_GROUP_ATTRIBUTE
+     * @see #FETCH_GROUP_DEFAULT
+     * @see org.eclipse.persistence.queries.FetchGroup
+     * @see org.eclipse.persistence.descriptors.FetchGroupManager
+     * @see org.eclipse.persistence.queries.ObjectLevelReadQuery#setFetchGroup(org.eclipse.persistence.queries.FetchGroup)
+     */
+    public static final String FETCH_GROUP = "eclipselink.fetch-group";
+    
     /**
      * "eclipselink.fetch-group.name"
      * <p>Configures the query to use a named fetch group defined for the result class.
@@ -515,5 +573,35 @@ public class QueryHints {
      * @see org.eclipse.persistence.queries.ObjectLevelReadQuery#setAsOfClause(org.eclipse.persistence.history.AsOfClause)
      */
     public static final String AS_OF_SCN = "eclipselink.history.as-of.scn";
+
+    /**
+     * "eclipselink.result-type"
+     * <p> By default in JPA for non-single select queries an Array of values is returned.
+     * If getSingleResult() is called the first array is returned, for getResultList() a List of arrays is returned.
+     * <p>i.e. "Select e.firstName, e.lastName from Employee e" returns List<Object[]>
+     * <p>or the native query, "SELECT * FROM EMPLOYEE" returns List<Object[]>
+     * <p>The ResultType can be used to instead return a Map of values (DatabaseRecord, ReportQueryResult).
+     * <p>It can also be used to return a single column, or single value.
+     * Valid values are defined in ResultType.
+     * @see ResultType
+     * @see org.eclipse.persistence.sessions.Record
+     * @see org.eclipse.persistence.sessions.DatabaseRecord
+     * @see org.eclipse.persistence.queries.ReportQueryResult
+     * @see org.eclipse.persistence.queries.ReportQuery#setReturnType(int)
+     * @see org.eclipse.persistence.queries.DataReadQuery#setUseAbstractRecord(boolean)
+     */
+    public static final String RESULT_TYPE = "eclipselink.result-type";
+    
+    /**
+     * "eclipselink.cache-usage.indirection-policy"
+     * <p>This can be used on a query with a CACHE_USAGE hint to configure the behavior of in-memory
+     * querying and conforming's treatment of uninstantiated indirection/lazy relationships.
+     * This is only relevant when the query traverses a join across a lazy relationship.
+     * Valid values are defined in CacheUsageIndirectionPolicy.
+     * @see CacheUsageIndirectionPolicy
+     * @see #CACHE_USAGE
+     * @see org.eclipse.persistence.queries.ObjectLevelReadQuery#setInMemoryQueryIndirectionPolicyState(int)
+     */
+    public static final String INDIRECTION_POLICY = "eclipselink.cache-usage.indirection-policy";
 
 }

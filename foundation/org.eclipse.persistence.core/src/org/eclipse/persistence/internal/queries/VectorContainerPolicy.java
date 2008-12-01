@@ -15,7 +15,6 @@ package org.eclipse.persistence.internal.queries;
 import java.util.Collection;
 import java.util.Vector;
 
-import org.eclipse.persistence.indirection.IndirectList;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 
 /**

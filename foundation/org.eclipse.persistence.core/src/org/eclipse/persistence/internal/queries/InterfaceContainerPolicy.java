@@ -102,25 +102,25 @@ public abstract class InterfaceContainerPolicy extends ContainerPolicy {
      */
     public void convertClassNamesToClasses(ClassLoader classLoader){
         super.convertClassNamesToClasses(classLoader);
-        if (containerClassName == null){
+        if (getContainerClassName() == null){
             return;
         }
         Class containerClass = null;
         try{
-            if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
+            if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) {
                 try {
-                    containerClass = (Class)AccessController.doPrivileged(new PrivilegedClassForName(containerClassName, true, classLoader));
+                    containerClass = (Class)AccessController.doPrivileged(new PrivilegedClassForName(getContainerClassName(), true, classLoader));
                 } catch (PrivilegedActionException exception) {
-                    throw ValidationException.classNotFoundWhileConvertingClassNames(containerClassName, exception.getException());
+                    throw ValidationException.classNotFoundWhileConvertingClassNames(getContainerClassName(), exception.getException());
                 }
             } else {
-                containerClass = org.eclipse.persistence.internal.security.PrivilegedAccessHelper.getClassForName(containerClassName, true, classLoader);
+                containerClass = org.eclipse.persistence.internal.security.PrivilegedAccessHelper.getClassForName(getContainerClassName(), true, classLoader);
             }
-        } catch (ClassNotFoundException exc){
-            throw ValidationException.classNotFoundWhileConvertingClassNames(containerClassName, exc);
+        } catch (ClassNotFoundException exception) {
+            throw ValidationException.classNotFoundWhileConvertingClassNames(getContainerClassName(), exception);
         }
         setContainerClass(containerClass);
-    };
+    }
 
     /**
      * INTERNAL:

@@ -12,9 +12,6 @@
  ******************************************************************************/  
 package org.eclipse.persistence.queries;
 
-import org.eclipse.persistence.internal.queries.*;
-import org.eclipse.persistence.exceptions.*;
-
 /**
  * <p><b>Purpose</b>:
  * Concrete class to perform a read of a single data value.
@@ -35,6 +32,7 @@ public class ValueReadQuery extends DirectReadQuery {
      */
     public ValueReadQuery() {
         super();
+        this.resultType = VALUE;
     }
 
     /**
@@ -45,6 +43,7 @@ public class ValueReadQuery extends DirectReadQuery {
      */
     public ValueReadQuery(String sqlString) {
         super(sqlString);
+        this.resultType = VALUE;
     }
 
     /**
@@ -53,23 +52,7 @@ public class ValueReadQuery extends DirectReadQuery {
      */
     public ValueReadQuery(Call call) {
         super(call);
-    }
-
-    /**
-     * INTERNAL:
-     * Execute the query.
-     * Perform the work to execute the SQL string.
-     * @exception  DatabaseException an error has occurred on the database
-     * @return Object the data value or null.
-     */
-    public Object executeDatabaseQuery() throws DatabaseException {
-        Object values = super.executeDatabaseQuery();
-        ContainerPolicy cp = getContainerPolicy();
-        if (cp.sizeFor(values) == 0) {
-            return null;
-        } else {
-            return cp.next(cp.iteratorFor(values), getSession());
-        }
+        this.resultType = VALUE;
     }
     
     /**
