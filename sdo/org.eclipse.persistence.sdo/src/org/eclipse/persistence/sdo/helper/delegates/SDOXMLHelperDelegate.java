@@ -341,8 +341,8 @@ public class SDOXMLHelperDelegate implements SDOXMLHelper {
      * @throws IllegalArgumentException if the dataObject tree
      *    is not closed or has no container.
      */
-    public void save(DataObject dataObject, String rootElementURI, String rootElementName, OutputStream outputStream) throws XMLMarshalException {
-        OutputStreamWriter writer = new OutputStreamWriter(outputStream);
+    public void save(DataObject dataObject, String rootElementURI, String rootElementName, OutputStream outputStream) throws XMLMarshalException, IOException {
+        OutputStreamWriter writer = new OutputStreamWriter(outputStream, getXmlMarshaller().getEncoding());
         save(dataObject, rootElementURI, rootElementName, writer);
     }
 
@@ -362,7 +362,11 @@ public class SDOXMLHelperDelegate implements SDOXMLHelper {
      *    is not closed or has no container.
      */
     public void save(XMLDocument xmlDocument, OutputStream outputStream, Object options) throws IOException {
-        OutputStreamWriter writer = new OutputStreamWriter(outputStream);
+        String encoding = this.getXmlMarshaller().getEncoding();
+        if(xmlDocument.getEncoding() != null) {
+            encoding = xmlDocument.getEncoding();
+        }
+        OutputStreamWriter writer = new OutputStreamWriter(outputStream, encoding);
         save(xmlDocument, writer, options);
     }
 

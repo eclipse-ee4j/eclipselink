@@ -314,7 +314,13 @@ public class XMLMarshaller {
             throw XMLMarshalException.nullArgumentException();
         }
         try {
-            OutputStreamWriter writer = new OutputStreamWriter(outputStream, getEncoding());
+            String encoding = getEncoding();
+            if(object instanceof XMLRoot) {
+                if(((XMLRoot)object).getEncoding() != null) {
+                    encoding = ((XMLRoot)object).getEncoding();
+                }
+            }
+            OutputStreamWriter writer = new OutputStreamWriter(outputStream, encoding);
             marshal(object, writer);
             writer.flush();
         } catch (UnsupportedEncodingException exception) {
