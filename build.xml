@@ -359,6 +359,16 @@
                 prefix="sdo/resource"
             />
             <zipfileset
+                dir="${eclipselink.sdo.test.server.wls}/${src.dir}"
+                includes="**"
+                prefix="sdo"
+            />
+            <zipfileset
+                dir="${eclipselink.sdo.test.server.wls}/${resource.dir}"
+                includes="**"
+                prefix="sdo/resource"
+            />
+			<zipfileset
                 dir="${eclipselink.moxy.test}/${src.dir}"
                 includes="**"
                 prefix="moxy"
