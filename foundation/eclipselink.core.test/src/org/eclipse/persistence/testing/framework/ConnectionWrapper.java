@@ -13,14 +13,21 @@
  ******************************************************************************/  
 package org.eclipse.persistence.testing.framework;
 
+import java.sql.Array;
+import java.sql.Blob;
 import java.sql.CallableStatement;
+import java.sql.Clob;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
+import java.sql.NClob;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.SQLWarning;
+import java.sql.SQLXML;
 import java.sql.Savepoint;
 import java.sql.Statement;
+import java.sql.Struct;
+import java.util.Properties;
 
 /*
  * DriverWrapper works together with ConnectionWrapper.
@@ -361,5 +368,59 @@ public class ConnectionWrapper implements Connection {
             throw new SQLException(getExceptionString());
         }
         return conn.prepareStatement(sql, columnNames);
+    }
+
+    // 236070: Methods introduced in JDK 1.6 (stolen from EmulatedConnection).
+    // Those *must* be no-op as long as this code should compile under jdk 1.5 
+    public Array createArrayOf(String typeName, Object[] elements)  throws SQLException {
+        return null;
+    }
+
+    public Blob createBlob() throws SQLException {
+        return null;
+    }
+
+    public Clob createClob() throws SQLException {
+        return null;
+    }
+
+    public NClob createNClob()  throws SQLException {
+        return null;
+    }
+
+    public SQLXML createSQLXML()  throws SQLException {
+        return null;
+    }
+
+    public Struct createStruct(String typeName, Object[] attributes)  throws SQLException {
+        return null;
+    }
+
+    public Properties getClientInfo()  throws SQLException {
+        return null;
+    }
+
+    public String getClientInfo(String name)  throws SQLException {
+        return null;
+    }
+
+    public boolean isValid(int timeout)  throws SQLException {
+        return false;
+    }
+
+    public void setClientInfo(String name, String value) {
+    }
+
+    public void setClientInfo(Properties properties) {
+    }
+
+    // From java.sql.Wrapper
+
+    public boolean isWrapperFor(Class<?> iFace) throws SQLException {
+        return false;
+    }
+
+    public <T> T unwrap(Class<T> iFace) throws SQLException {
+        return iFace.cast(this);
     }
 }
