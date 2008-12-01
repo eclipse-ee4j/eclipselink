@@ -19,6 +19,8 @@ import org.eclipse.persistence.sdo.SDOConstants;
 import org.eclipse.persistence.sdo.SDOProperty;
 import org.eclipse.persistence.sdo.SDOType;
 
+import commonj.sdo.DataObject;
+
 public class DefineWithNestedNamespacesTestCases extends XSDHelperDefineTestCases {
     public DefineWithNestedNamespacesTestCases(String name) {
         super(name);
@@ -33,50 +35,34 @@ public class DefineWithNestedNamespacesTestCases extends XSDHelperDefineTestCase
     }
 
     public List getControlTypes() {
+        // create a new Type for Address
+        DataObject AddressDO = dataFactory.create("commonj.sdo", "Type");
+        AddressDO.set("uri", "uri1");
+        AddressDO.set("name", "Address");
+        DataObject streetProperty = AddressDO.createDataObject("property");
+        streetProperty.set("name", "street");
+        streetProperty.set("type", SDOConstants.SDO_STRING);
+        streetProperty.set(SDOConstants.XMLELEMENT_PROPERTY, Boolean.TRUE);
+        SDOType addressType = (SDOType) typeHelper.define(AddressDO);
+        addressType.setInstanceClassName("uri1.Address");
+        
+        // create a new Type for Employee
+        DataObject EmployeeDO = dataFactory.create("commonj.sdo", "Type");
+        EmployeeDO.set("uri", "uri1");
+        EmployeeDO.set("name", "Employee");
+        DataObject nameProperty = EmployeeDO.createDataObject("property");
+        nameProperty.set("name", "name");
+        nameProperty.set("type", SDOConstants.SDO_STRING);
+        nameProperty.set(SDOConstants.XMLELEMENT_PROPERTY, Boolean.TRUE);
+        DataObject addressProperty = EmployeeDO.createDataObject("property");
+        nameProperty.set("name", "address");
+        nameProperty.set("type", addressType);
+        SDOType employeeType = (SDOType) typeHelper.define(EmployeeDO);
+        employeeType.setInstanceClassName("uri1.Employee");
+
         List types = new ArrayList();
-
-        SDOType addressType = new SDOType("uri1", "Address");
-        addressType.setXsd(true);
-        addressType.setXsdLocalName("Address");
-        addressType.setDataType(false);
-        addressType.setInstanceClassName("uri1" + "." + "Address");
-
-        SDOProperty streetProp = new SDOProperty(aHelperContext);
-        streetProp.setName("street");
-        streetProp.setXsdLocalName("street");
-        streetProp.setXsd(true);
-        streetProp.setInstanceProperty(SDOConstants.XMLELEMENT_PROPERTY, Boolean.TRUE);
-        streetProp.setContainingType(addressType);
-        streetProp.setType(SDOConstants.SDO_STRING);
-        addressType.addDeclaredProperty(streetProp);
-
-        SDOType empType = new SDOType("uri1", "Employee");
-        empType.setXsd(true);
-        empType.setXsdLocalName("Employee");
-        empType.setDataType(false);
-        empType.setInstanceClassName("uri1" + "." + "Employee");
-
-        SDOProperty nameProp = new SDOProperty(aHelperContext);
-        nameProp.setName("name");
-        nameProp.setXsdLocalName("name");
-        nameProp.setXsd(true);
-        nameProp.setContainingType(empType);
-        nameProp.setInstanceProperty(SDOConstants.XMLELEMENT_PROPERTY, Boolean.TRUE);
-        nameProp.setType(SDOConstants.SDO_STRING);
-        empType.addDeclaredProperty(nameProp);
-
-        SDOProperty addressProp = new SDOProperty(aHelperContext);
-        addressProp.setName("address");
-        addressProp.setXsdLocalName("address");
-        addressProp.setXsd(true);
-        addressProp.setContainingType(empType);
-        addressProp.setContainment(true);
-        addressProp.setType(addressType);
-        empType.addDeclaredProperty(addressProp);
-
         types.add(addressType);
-        types.add(empType);
-
+        types.add(employeeType);
         return types;
     }
 }

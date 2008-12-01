@@ -71,60 +71,40 @@ public class CyclicElementRefTestCases extends XSDHelperDefineTestCases {
 
     
      public List<SDOType> getControlTypes() {
-        List<SDOType> types = new ArrayList<SDOType>();
+        SDOType stringType = (SDOType) typeHelper.getType("commonj.sdo", "String");
+        SDOType intType = (SDOType) typeHelper.getType("commonj.sdo", "Int");
 
-        Type stringType = typeHelper.getType("commonj.sdo", "String");
-        Type intType = typeHelper.getType("commonj.sdo", "Int");
-
-        /****PHONE TYPE*****/
-        SDOType phoneType = new SDOType(uri, "PhoneType");
-        phoneType.setXsd(true);
-        phoneType.setXsdLocalName("PhoneType");
-        phoneType.setDataType(false);
+        // create a new Type for Phone
+        DataObject PhoneTypeDO = dataFactory.create("commonj.sdo", "Type");
+        PhoneTypeDO.set("uri", "my.uri");
+        PhoneTypeDO.set("name", "PhoneType");
+        DataObject numberProperty = PhoneTypeDO.createDataObject("property");
+        numberProperty.set("name", "number");
+        SDOType phoneType = (SDOType) typeHelper.define(PhoneTypeDO);
+        phoneType.addBaseType(stringType);
         phoneType.setInstanceClassName("uri.my.PhoneType");
-
-        SDOProperty numberProp = new SDOProperty(aHelperContext);
-        numberProp.setName("number");
-        numberProp.setXsdLocalName("number");
-        numberProp.setXsd(true);
-        numberProp.setType(stringType);
-        phoneType.addDeclaredProperty(numberProp);
       
-        /****PURCHASEORDER TYPE*****/
-        SDOProperty orderNameProp = new SDOProperty(aHelperContext);
-        orderNameProp.setName("ordername");
-        orderNameProp.setXsdLocalName("ordername");
-        orderNameProp.setContainment(false);
-        orderNameProp.setInstanceProperty(SDOConstants.XMLELEMENT_PROPERTY, Boolean.TRUE);
-        orderNameProp.setType(SDOConstants.SDO_STRING);
-        orderNameProp.setXsd(true);
+        // create a new Type for PurchaseOrder
+        DataObject PurchaseOrderDO = dataFactory.create("commonj.sdo", "Type");
+        PurchaseOrderDO.set("uri", "my.uri2");
+        PurchaseOrderDO.set("name", "PurchaseOrder");
+        DataObject orderNameProperty = PurchaseOrderDO.createDataObject("property");
+        orderNameProperty.set("name", "ordername");
+        orderNameProperty.set("type", SDOConstants.SDO_STRING);
+        orderNameProperty.set(SDOConstants.XMLELEMENT_PROPERTY, Boolean.TRUE);
+        DataObject phoneTypeProperty = PurchaseOrderDO.createDataObject("property");
+        phoneTypeProperty.set("name", "phoneType");
+        phoneTypeProperty.set("type", phoneType);
+        DataObject phoneTypeAttrProperty = PurchaseOrderDO.createDataObject("property");
+        phoneTypeAttrProperty.set("name", "phoneTypeAttr");
+        phoneTypeAttrProperty.set("type", SDOConstants.SDO_STRING);
+        
+        SDOType purchaseOrderType = (SDOType) typeHelper.define(PurchaseOrderDO);
+        purchaseOrderType.setInstanceClassName("uri2.my.PurchaseOrder");
 
-        SDOProperty phoneProp = new SDOProperty(aHelperContext);
-        phoneProp.setName("phoneType");
-        phoneProp.setXsdLocalName("phoneType");
-        phoneProp.setContainment(true);
-        phoneProp.setType(phoneType);
-        phoneProp.setXsd(true);
-        
-        SDOProperty phoneAttrProp = new SDOProperty(aHelperContext);
-        phoneAttrProp.setName("phoneTypeAttr");
-        phoneAttrProp.setXsdLocalName("phoneTypeAttr");
-        phoneAttrProp.setContainment(false);
-        phoneAttrProp.setType(SDOConstants.SDO_STRING);
-        phoneAttrProp.setXsd(true);
-
-        SDOType POtype = new SDOType(uri2, "PurchaseOrder");
-        POtype.setXsd(true);
-        POtype.setXsdLocalName("PurchaseOrder");
-        POtype.setInstanceClassName("uri2.my.PurchaseOrder");
-        POtype.setDataType(false);
-        POtype.addDeclaredProperty(orderNameProp);
-        POtype.addDeclaredProperty(phoneProp);
-        POtype.addDeclaredProperty(phoneAttrProp);
-        
-        
+        List<SDOType> types = new ArrayList<SDOType>();
         types.add(phoneType);
-        types.add(POtype);        
+        types.add(purchaseOrderType);        
         return types;
     }
 }

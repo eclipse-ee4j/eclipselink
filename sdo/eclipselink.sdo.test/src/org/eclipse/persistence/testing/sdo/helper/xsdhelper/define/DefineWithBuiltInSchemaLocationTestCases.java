@@ -12,6 +12,7 @@
  ******************************************************************************/  
 package org.eclipse.persistence.testing.sdo.helper.xsdhelper.define;
 
+import commonj.sdo.DataObject;
 import commonj.sdo.Type;
 import java.util.ArrayList;
 import java.util.List;
@@ -35,183 +36,90 @@ public class DefineWithBuiltInSchemaLocationTestCases extends XSDHelperDefineTes
     protected String getSchemaLocation() {
         return FILE_PROTOCOL + USER_DIR + "/org/eclipse/persistence/testing/sdo/helper/xsdhelper/generate/";
     }
+    
+    public List<Type> getControlTypes() {
+        SDOType intType = (SDOType) typeHelper.getType("commonj.sdo", "Int");
+        SDOType stringType = (SDOType) typeHelper.getType("commonj.sdo", "String");
+        SDOType decimalType = (SDOType) typeHelper.getType("commonj.sdo", "Decimal");
 
-    public List getControlTypes() {
-        List types = new ArrayList();
-
-        String uri = "my.uri";
-        Type stringType = typeHelper.getType("commonj.sdo", "String");
-        Type intType = typeHelper.getType("commonj.sdo", "Int");
-
-        Type decimalType = typeHelper.getType("commonj.sdo", "Decimal");
-
-        /****ADDRESS TYPE*****/
-
-        //ADDRESS TYPE
-        SDOType USaddrType = new SDOType(uri, "USAddress");
-        USaddrType.setXsd(true);
-        USaddrType.setXsdLocalName("USAddress");
-        USaddrType.setDataType(false);
-        USaddrType.setInstanceClassName("com.example.myPackage.USAddress");
-
-        SDOProperty addrNameProp = new SDOProperty(aHelperContext);
-        addrNameProp.setName("name");
-        addrNameProp.setXsd(true);
-        addrNameProp.setXsdLocalName("name");
-        addrNameProp.setType(stringType);
-
-        USaddrType.addDeclaredProperty(addrNameProp);
-
-        SDOProperty streetProp = new SDOProperty(aHelperContext);
-        streetProp.setName("street");
-        streetProp.setXsd(true);
-        streetProp.setXsdLocalName("street");
-        streetProp.setType(stringType);
-        USaddrType.addDeclaredProperty(streetProp);
-
-        SDOProperty cityProp = new SDOProperty(aHelperContext);
-        cityProp.setName("city");
-        cityProp.setXsd(true);
-        cityProp.setXsdLocalName("city");
-        cityProp.setType(stringType);
-        USaddrType.addDeclaredProperty(cityProp);
-
-        SDOProperty stateProp = new SDOProperty(aHelperContext);
-        stateProp.setName("state");
-        stateProp.setXsd(true);
-        stateProp.setXsdLocalName("state");
-        stateProp.setType(stringType);
-        USaddrType.addDeclaredProperty(stateProp);
-
-        SDOProperty zipProp = new SDOProperty(aHelperContext);
-        zipProp.setName("zip");
-        zipProp.setXsd(true);
-        zipProp.setXsdLocalName("zip");
-        zipProp.setType(decimalType);
-        USaddrType.addDeclaredProperty(zipProp);
-
-        SDOProperty countryProp = new SDOProperty(aHelperContext);
-        countryProp.setName("country");
-        countryProp.setXsd(true);
-        countryProp.setXsdLocalName("country");
-        countryProp.setType(stringType);
-        countryProp.setDefault("US");
-        USaddrType.addDeclaredProperty(countryProp);
-
-        /****ITEM TYPE*****/
-        SDOType itemType = new SDOType(uri, "ItemSDO");
-        itemType.setXsd(true);
-        itemType.setXsdLocalName("ItemSDO");
-        itemType.setInstanceClassName("com.example.myPackage.ItemSDO");
-        itemType.setDataType(false);
-
-        SDOProperty productNameProp = new SDOProperty(aHelperContext);
-        productNameProp.setName("productName");
-        productNameProp.setXsd(true);
-        productNameProp.setXsdLocalName("productName");
-        productNameProp.setType(stringType);
-        productNameProp.setReadOnly(true);
-        itemType.addDeclaredProperty(productNameProp);
-
-        SDOProperty USPriceProp = new SDOProperty(aHelperContext);
-        USPriceProp.setName("USPrice");
-        USPriceProp.setXsd(true);
-        USPriceProp.setXsdLocalName("USPrice");
-        USPriceProp.setType(decimalType);
-        itemType.addDeclaredProperty(USPriceProp);
-
-        SDOProperty itemCommentProp = new SDOProperty(aHelperContext);
-        itemCommentProp.setName("comment");
-        itemCommentProp.setXsd(true);
-        itemCommentProp.setXsdLocalName("comment");
-        itemCommentProp.setType(stringType);
-        itemCommentProp.setContainment(false);
+        // create a new Type for USAddress
+        DataObject USaddrDO = dataFactory.create("commonj.sdo", "Type");
+        USaddrDO.set("uri", "my.uri");
+        USaddrDO.set("name", "USAddress");
+        DataObject streetProperty = USaddrDO.createDataObject("property");
+        streetProperty.set("name", "street");
+        DataObject cityProperty = USaddrDO.createDataObject("property");
+        cityProperty.set("name", "city");
+        DataObject stateProperty = USaddrDO.createDataObject("property");
+        stateProperty.set("name", "state");
+        DataObject zipProperty = USaddrDO.createDataObject("property");
+        zipProperty.set("name", "zip");
+        zipProperty.set("type", decimalType);
+        DataObject countryProperty = USaddrDO.createDataObject("property");
+        countryProperty.set("name", "country");
+        
+        SDOType usAddrType = (SDOType) typeHelper.define(USaddrDO);
+        usAddrType.setInstanceClassName("com.example.myPackage.USAddress");
+        
+        // create a new Type for Item
+        DataObject ItemDO = dataFactory.create("commonj.sdo", "Type");
+        ItemDO.set("uri", "my.uri");
+        ItemDO.set("name", "ItemSDO");
+        DataObject prodProperty = ItemDO.createDataObject("property");
+        prodProperty.set("name", "productName");
+        DataObject usPriceProperty = ItemDO.createDataObject("property");
+        usPriceProperty.set("name", "USPrice");
+        usPriceProperty.set("type", decimalType);
+        DataObject commentProperty = ItemDO.createDataObject("property");
+        commentProperty.set("name", "comment");
+        commentProperty.set("type", decimalType);
         List aliasNames = new ArrayList();
         aliasNames.add("itemComment");
-        itemCommentProp.setAliasNames(aliasNames);
-        itemType.addDeclaredProperty(itemCommentProp);
+        commentProperty.set("AliasNames", aliasNames);
+        DataObject shipDateProperty = ItemDO.createDataObject("property");
+        shipDateProperty.set("name", "shipDate");
+        
+        SDOType itemType = (SDOType) typeHelper.define(ItemDO);
+        itemType.setInstanceClassName("com.example.myPackage.ItemSDO");
 
-        SDOProperty shipDateProp = new SDOProperty(aHelperContext);
-        shipDateProp.setName("shipDate");
-        shipDateProp.setXsd(true);
-        shipDateProp.setXsdLocalName("shipDate");
-        shipDateProp.setType(stringType);
-        shipDateProp.setContainment(false);
-        itemType.addDeclaredProperty(shipDateProp);
+        // create a new Type for Items
+        DataObject ItemsDO = dataFactory.create("commonj.sdo", "Type");
+        ItemsDO.set("uri", "my.uri");
+        ItemsDO.set("name", "ItemSDO");
+        DataObject itemProperty = ItemsDO.createDataObject("property");
+        itemProperty.set("name", "item");
+        itemProperty.set("type", itemType);
 
-        /****ITEMS TYPE*****/
-        SDOType itemsType = new SDOType(uri, "Items");
-        itemsType.setXsd(true);
-        itemsType.setXsdLocalName("Items");
-        itemsType.setDataType(false);
+        SDOType itemsType = (SDOType) typeHelper.define(ItemsDO);
         itemsType.setInstanceClassName("com.example.myPackage.Items");
+        
+        // create a new Type for PurchaseOrder
+        DataObject PurchaseOrderDO = dataFactory.create("commonj.sdo", "Type");
+        PurchaseOrderDO.set("uri", "my.uri");
+        PurchaseOrderDO.set("name", "PurchaseOrder");
+        DataObject shipToProperty = PurchaseOrderDO.createDataObject("property");
+        shipToProperty.set("name", "shipTo");
+        shipToProperty.set("type", usAddrType);
+        DataObject billToProperty = PurchaseOrderDO.createDataObject("property");
+        billToProperty.set("name", "billTo");
+        billToProperty.set("type", usAddrType);
+        DataObject itemsProperty = PurchaseOrderDO.createDataObject("property");
+        itemsProperty.set("name", "items");
+        itemsProperty.set("type", itemsType);
+        DataObject partNumberProperty = PurchaseOrderDO.createDataObject("property");
+        partNumberProperty.set("name", "comment");
+        DataObject orderDateProperty = PurchaseOrderDO.createDataObject("property");
+        orderDateProperty.set("name", "orderDate");
 
-        SDOProperty itemProp = new SDOProperty(aHelperContext);
-        itemProp.setName("item");
-        itemProp.setContainment(true);
-        itemProp.setMany(true);
-        itemProp.setXsd(true);
-        itemProp.setXsdLocalName("item");
-        itemProp.setType(itemType);
-        itemsType.addDeclaredProperty(itemProp);
+        SDOType purchaseOrderType = (SDOType) typeHelper.define(PurchaseOrderDO);
+        purchaseOrderType.setInstanceClassName("com.example.myPackage.PurchaseOrder");
 
-        /****PURCHASEORDER TYPE*****/
-        SDOProperty shipToProp = new SDOProperty(aHelperContext);
-        shipToProp.setName("shipTo");
-        shipToProp.setXsd(true);
-        shipToProp.setXsdLocalName("shipTo");
-        shipToProp.setContainment(true);
-        shipToProp.setMany(true);
-        shipToProp.setType(USaddrType);
-
-        SDOProperty billToProp = new SDOProperty(aHelperContext);
-        billToProp.setName("billTo");
-        billToProp.setXsd(true);
-        billToProp.setXsdLocalName("billTo");
-        billToProp.setContainment(true);
-        billToProp.setReadOnly(true);
-        billToProp.setMany(false);
-        billToProp.setType(USaddrType);
-
-        SDOProperty itemsProp = new SDOProperty(aHelperContext);
-        itemsProp.setName("items");
-        itemsProp.setXsd(true);
-        itemsProp.setXsdLocalName("items");
-        itemsProp.setMany(false);
-        itemsProp.setContainment(true);
-        itemsProp.setType(itemsType);
-
-        SDOProperty commentProp = new SDOProperty(aHelperContext);
-        commentProp.setName("comment");
-        commentProp.setXsd(true);
-        commentProp.setXsdLocalName("comment");
-        commentProp.setType(stringType);
-        commentProp.setContainment(false);
-
-        SDOProperty orderDateProp = new SDOProperty(aHelperContext);
-        orderDateProp.setName("orderDate");
-        orderDateProp.setXsd(true);
-        orderDateProp.setXsdLocalName("orderDate");
-        orderDateProp.setType(stringType);
-        orderDateProp.setContainment(false);
-
-        SDOType POtype = new SDOType(uri, "PurchaseOrder");
-        POtype.setXsd(true);
-        POtype.setXsdLocalName("PurchaseOrder");
-        POtype.setSequenced(true);
-        POtype.setInstanceClassName("com.example.myPackage.PurchaseOrder");
-        POtype.setDataType(false);
-        POtype.addDeclaredProperty(shipToProp);
-        POtype.addDeclaredProperty(billToProp);
-        POtype.addDeclaredProperty(itemsProp);
-        POtype.addDeclaredProperty(commentProp);
-        POtype.addDeclaredProperty(orderDateProp);
-
+        // add the types to a List to return
+        List<Type> types = new ArrayList<Type>();
         types.add(itemType);
-        types.add(POtype);
+        types.add(purchaseOrderType);
         types.add(itemsType);
-        types.add(USaddrType);
-
+        types.add(usAddrType);
         return types;
     }
 }

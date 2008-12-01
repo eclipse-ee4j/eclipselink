@@ -119,7 +119,7 @@ public class CyclicImportsDefineTestCases extends XSDHelperDefineTestCases {
         List types = ((SDOXSDHelper)xsdHelper).define(xsdSource, schemaResolver);
         
         log("\nExpected:\n");
-        List<SDOType> controlTypes = getControlTypes();
+        List<Type> controlTypes = getControlTypes();
         log(controlTypes);
 
         log("\nActual:\n");
@@ -144,118 +144,70 @@ public class CyclicImportsDefineTestCases extends XSDHelperDefineTestCases {
             fail("An error occurred during xmlhelper.load");
         }
     }
+    
+    public List<Type> getControlTypes() {
+        SDOType intType = (SDOType) typeHelper.getType("commonj.sdo", "Int");
+        SDOType stringType = (SDOType) typeHelper.getType("commonj.sdo", "String");
 
-    public List<SDOType> getControlTypes() {
-        List<SDOType> types = new ArrayList<SDOType>();
-
-        Type stringType = typeHelper.getType("commonj.sdo", "String");
-        Type intType = typeHelper.getType("commonj.sdo", "Int");
-
-        /****QUANTITY TYPE*****/
-        SDOType quantityType = new SDOType(uri, "quantityType");
-        quantityType.setXsd(true);
-        quantityType.setXsdLocalName("quantityType");
-        quantityType.setDataType(true);
-        quantityType.setInstanceClassName("java.lang.String");
-        quantityType.addBaseType((SDOType)intType);
-
-        /****SKU TYPE*****/
-        SDOType SKUType = new SDOType(uri, "SKU");
-        SKUType.setXsd(true);
-        SKUType.setXsdLocalName("SKU");
-        SKUType.setInstanceClassName("java.lang.String");
-        SKUType.setDataType(true);
-        SKUType.addBaseType((SDOType)stringType);
-
-        /****PHONE TYPE*****/
-        SDOType phoneType = new SDOType(uri, "PhoneType");
-        phoneType.setXsd(true);
-        phoneType.setXsdLocalName("PhoneType");
-        phoneType.setDataType(false);
+        // create a new Type for Phone
+        DataObject PhoneTypeDO = dataFactory.create("commonj.sdo", "Type");
+        PhoneTypeDO.set("uri", "my.uri");
+        PhoneTypeDO.set("name", "PhoneType");
+        DataObject numberProperty = PhoneTypeDO.createDataObject("property");
+        numberProperty.set("name", "number");
+        SDOType phoneType = (SDOType) typeHelper.define(PhoneTypeDO);
+        phoneType.addBaseType(stringType);
         phoneType.setInstanceClassName("uri.my.PhoneType");
+        
+        // create a new Type for USAddress
+        DataObject USaddrDO = dataFactory.create("commonj.sdo", "Type");
+        USaddrDO.set("uri", "my.uri2");
+        USaddrDO.set("name", "USAddress");
+        DataObject streetProperty = USaddrDO.createDataObject("property");
+        streetProperty.set("name", "street");
+        DataObject cityProperty = USaddrDO.createDataObject("property");
+        cityProperty.set("name", "city");
+        DataObject quantityProperty = USaddrDO.createDataObject("property");
+        quantityProperty.set("name", "quantity");
+        DataObject partNumProperty = USaddrDO.createDataObject("property");
+        partNumProperty.set("name", "partNum");
+        DataObject phoneProperty = USaddrDO.createDataObject("property");
+        phoneProperty.set("name", "thePhone");
+        phoneProperty.set("type", phoneType);
+        SDOType usAddrType = (SDOType) typeHelper.define(USaddrDO);
+        usAddrType.setInstanceClassName("uri2.my.USAddress");
 
-        SDOProperty numberProp = new SDOProperty(aHelperContext);
-        numberProp.setName("number");
-        numberProp.setXsdLocalName("number");
-        numberProp.setXsd(true);
-        numberProp.setType(stringType);
-        phoneType.addDeclaredProperty(numberProp);
-
-        /****ADDRESS TYPE*****/
-
-        //ADDRESS TYPE
-        SDOType USaddrType = new SDOType(uri2, "USAddress");
-        USaddrType.setXsd(true);
-        USaddrType.setXsdLocalName("USAddress");
-        USaddrType.setDataType(false);
-        USaddrType.setInstanceClassName("uri2.my.USAddress");
-
-        SDOProperty streetProp = new SDOProperty(aHelperContext);
-        streetProp.setName("street");
-        streetProp.setXsd(true);
-        streetProp.setXsdLocalName("street");
-        streetProp.setType(stringType);
-        USaddrType.addDeclaredProperty(streetProp);
-
-        SDOProperty cityProp = new SDOProperty(aHelperContext);
-        cityProp.setName("city");
-        cityProp.setXsdLocalName("city");
-        cityProp.setType(stringType);
-        cityProp.setXsd(true);
-        USaddrType.addDeclaredProperty(cityProp);
-
-        SDOProperty quantityProp = new SDOProperty(aHelperContext);
-        quantityProp.setName("quantity");
-        quantityProp.setXsdLocalName("quantity");
-        //quantityProp.setType(quantityType);
-        quantityProp.setType(stringType);
-        quantityProp.setXsd(true);
-        USaddrType.addDeclaredProperty(quantityProp);
-
-        SDOProperty partNumProp = new SDOProperty(aHelperContext);
-        partNumProp.setName("partNum");
-        partNumProp.setXsdLocalName("partNum");
-        partNumProp.setType(SKUType);
-        partNumProp.setXsd(true);
-        USaddrType.addDeclaredProperty(partNumProp);
-
-        SDOProperty phoneProp = new SDOProperty(aHelperContext);
-        phoneProp.setName("thePhone");
-        phoneProp.setXsdLocalName("thePhone");
-        phoneProp.setType(phoneType);
-        phoneProp.setXsd(true);
-        phoneProp.setInstanceProperty(SDOConstants.XMLELEMENT_PROPERTY, Boolean.TRUE);
-        USaddrType.addDeclaredProperty(phoneProp);
-
-        /****PURCHASEORDER TYPE*****/
-        SDOProperty shipToProp = new SDOProperty(aHelperContext);
-        shipToProp.setName("shipTo");
-        shipToProp.setXsdLocalName("shipTo");
-        shipToProp.setContainment(true);
-        shipToProp.setType(USaddrType);
-        shipToProp.setXsd(true);
-
-        SDOProperty billToProp = new SDOProperty(aHelperContext);
-        billToProp.setName("billTo");
-        billToProp.setXsdLocalName("billTo");
-        billToProp.setContainment(true);
-        billToProp.setType(USaddrType);
-        billToProp.setXsd(true);
-
-        SDOType POtype = new SDOType(uri, "PurchaseOrder");
-        POtype.setXsd(true);
-        POtype.setXsdLocalName("PurchaseOrder");
-        POtype.setInstanceClassName("uri.my.PurchaseOrder");
-        POtype.setDataType(false);
-        POtype.addDeclaredProperty(shipToProp);
-        POtype.addDeclaredProperty(billToProp);
-        //POtype.addDeclaredProperty(quantityProp);
-        //POtype.addDeclaredProperty(partNumProp);
-        types.add(POtype);
-        types.add(USaddrType);
+        // create a new Type for Quantity
+        DataObject QuantityTypeDO = dataFactory.create("commonj.sdo", "Type");
+        QuantityTypeDO.set("uri", "my.uri");
+        QuantityTypeDO.set("name", "quantityType");
+        SDOType quantityType = (SDOType) typeHelper.define(QuantityTypeDO);
+        quantityType.addBaseType(intType);
+        
+        // create a new Type for SKU
+        DataObject SkuDO = dataFactory.create("commonj.sdo", "Type");
+        SkuDO.set("uri", "my.uri");
+        SkuDO.set("name", "SKU");
+        SDOType skuType = (SDOType) typeHelper.define(SkuDO);
+        skuType.addBaseType(stringType);
+        
+        // create a new Type for PurchaseOrder
+        DataObject PurchaseOrderDO = dataFactory.create("commonj.sdo", "Type");
+        PurchaseOrderDO.set("uri", "my.uri");
+        PurchaseOrderDO.set("name", "PurchaseOrder");
+        DataObject shipToProperty = PurchaseOrderDO.createDataObject("property");
+        shipToProperty.set("name", "shipTo");
+        shipToProperty.set("type", usAddrType);
+        DataObject billToProperty = PurchaseOrderDO.createDataObject("property");
+        billToProperty.set("name", "billTo");
+        billToProperty.set("type", usAddrType);
+        Type purchaseOrderType = typeHelper.define(PurchaseOrderDO);
+        
+        List<Type> types = new ArrayList<Type>();
+        types.add(usAddrType);
         types.add(phoneType);
-        //types.add(quantityType);
-        types.add(SKUType);
+        types.add(skuType);
+        types.add(purchaseOrderType);
         return types;
     }
 }

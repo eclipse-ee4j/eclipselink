@@ -15,6 +15,7 @@ package org.eclipse.persistence.sdo.helper.delegates;
 import commonj.sdo.Property;
 import commonj.sdo.Type;
 import commonj.sdo.helper.HelperContext;
+
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
@@ -36,8 +37,10 @@ import org.eclipse.persistence.sdo.helper.SDOXSDHelper;
 import org.eclipse.persistence.sdo.helper.SchemaLocationResolver;
 import org.eclipse.persistence.sdo.helper.SchemaResolver;
 import org.eclipse.persistence.exceptions.SDOException;
+import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.oxm.NamespaceResolver;
 import org.eclipse.persistence.oxm.XMLConstants;
+import org.eclipse.persistence.oxm.XMLField;
 import org.eclipse.persistence.oxm.record.FormattedWriterRecord;
 import org.eclipse.persistence.oxm.record.WriterRecord;
 import org.w3c.dom.Element;
@@ -101,10 +104,19 @@ public class SDOXSDHelperDelegate implements SDOXSDHelper {
      * @return the namespace URI as declared in the XSD.
      */
     public String getNamespaceURI(Property property) {
-        if(property.getContainingType() != null){
-          return property.getContainingType().getURI();
+        String uri = null;
+        if (property.isOpenContent()) {
+            uri = ((SDOProperty)property).getUri();
+        } else {
+            DatabaseMapping mapping = ((SDOProperty)property).getXmlMapping();
+            if (mapping != null) {
+                XMLField xmlField = (XMLField) mapping.getField();
+                if (xmlField != null && xmlField.getXPathFragment() != null) {
+                    uri = xmlField.getXPathFragment().getNamespaceURI();
+                }
+            }
         }
-        return null;
+        return uri == null ? "" : uri;
     }
 
     /**
