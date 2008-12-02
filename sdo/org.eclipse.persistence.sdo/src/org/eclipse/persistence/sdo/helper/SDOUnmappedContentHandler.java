@@ -14,6 +14,7 @@ package org.eclipse.persistence.sdo.helper;
 
 import commonj.sdo.DataObject;
 import commonj.sdo.Property;
+import commonj.sdo.Sequence;
 import commonj.sdo.Type;
 import commonj.sdo.helper.DataFactory;
 import commonj.sdo.helper.HelperContext;
@@ -248,6 +249,11 @@ public class SDOUnmappedContentHandler implements UnmappedContentHandler {
 
                 if (nextDO.getInstanceProperties().size() > 0) {
                     simple = false;
+                    if (!currentBuffer.toString().trim().equals("")) {
+                        DataObject dObj = (DataObject) currentDataObjects.peek();
+                        dObj.getSequence().addText(currentBuffer.toString());
+                        //currentBuffer.reset();
+                    }
                 } else {
                     currentDataObjects.pop();
                 }
