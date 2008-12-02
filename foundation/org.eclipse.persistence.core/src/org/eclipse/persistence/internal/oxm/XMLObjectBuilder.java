@@ -207,6 +207,18 @@ public class XMLObjectBuilder extends ObjectBuilder {
     }
 
     /**
+     * Create a new row/record for the object builder. This allows subclasses to
+     * define different record types.  This will typically be called when a 
+     * record will be used for temporarily holding on to primary key fields.
+     */
+    protected AbstractRecord createRecordForPKExtraction(int size, AbstractSession session) {
+        NamespaceResolver namespaceResolver = getNamespaceResolver();
+        XMLRecord xmlRec = new DOMRecord(getDescriptor().getTableName(), namespaceResolver);
+        xmlRec.setSession(session);
+        return xmlRec;
+    }
+    
+    /**
      * INTERNAL: Override the parent's buildObject to allow for the caching of
      * aggregate objects in OX. By caching aggregates along with XML Nodes that
      * they were created from, we are able to preserve the structure and

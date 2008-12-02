@@ -117,6 +117,15 @@ public class ObjectBuilder implements Cloneable, Serializable {
     }
 
     /**
+     * Create a new row/record for the object builder. This allows subclasses to
+     * define different record types.  This will typically be called when a 
+     * record will be used for temporarily holding on to primary key fields.
+     */
+    protected AbstractRecord createRecordForPKExtraction(int size, AbstractSession session) {
+        return createRecord(size, session);
+    }
+
+    /**
      * Add the primary key and its value to the Record for all the non default tables.
      * This method is used while writing into the multiple tables.
      */
@@ -1771,7 +1780,7 @@ public class ObjectBuilder implements Cloneable, Serializable {
                     primaryKeyValues.add(keyValue);
                 }
             } else {
-                AbstractRecord databaseRow = createRecord(size, session);
+                AbstractRecord databaseRow = createRecordForPKExtraction(size, session);
                 // PERF: use index not enumeration			
                 for (int index = 0; index < size; index++) {
                     DatabaseMapping mapping = (DatabaseMapping)mappings.get(index);
