@@ -15,6 +15,9 @@
  ******************************************************************************/  
 package org.eclipse.persistence.testing.tests.jpa.ddlgeneration;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import junit.framework.Test;
 import junit.framework.TestSuite;
 import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
@@ -396,6 +399,38 @@ public class DDLGenerationJUnitTestSuite extends JUnitTestCase {
             
             commitTransaction(em);
             
+        } catch (RuntimeException e) {
+            if (isTransactionActive(em))
+                rollbackTransaction(em);
+            throw e;
+        } finally {
+            closeEntityManager(em);
+        }
+    }
+    
+    public void testDDLUnidirectionalOneToMany() {        
+        EntityManager em = createEntityManager(DDL_PU);
+        beginTransaction(em);
+        try {
+            // add comments
+            long seq = System.currentTimeMillis(); // just to get unique value :-)
+            CKeyEntityB b = new CKeyEntityB(new CKeyEntityBPK(seq, "B1210"));
+            List<Comment> comments = new ArrayList(2);
+            comments.add(new Comment("comment 1"));
+            comments.add(new Comment("comment 2"));
+            b.setComments(comments);
+            //set unique keys
+            b.setUnq1("u0003");
+            b.setUnq2("u0004");
+            em.persist(b);
+            em.getTransaction().commit();
+            
+            // clean-up
+            beginTransaction(em);
+            em.remove(b.getComments().get(0));
+            em.remove(b.getComments().get(1));
+            em.remove(b);
+            em.getTransaction().commit();
         } catch (RuntimeException e) {
             if (isTransactionActive(em))
                 rollbackTransaction(em);

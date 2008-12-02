@@ -12,8 +12,13 @@
  ******************************************************************************/  
 package org.eclipse.persistence.testing.models.jpa.ddlgeneration;
 
+import static javax.persistence.CascadeType.MERGE;
+import static javax.persistence.CascadeType.PERSIST;
+
 import javax.persistence.*;
+
 import java.util.Collection;
+import java.util.List;
 
 /**
  * Composite Key Entity.
@@ -46,6 +51,13 @@ public class CKeyEntityB {
     @OneToOne(mappedBy="uniqueB")
     private CKeyEntityA uniqueA;
 
+    @OneToMany(cascade={PERSIST, MERGE})
+    @JoinColumns({
+        @JoinColumn(name="FK_SEQ", referencedColumnName="SEQ"),
+        @JoinColumn(name="FK_CODE", referencedColumnName="CODE")
+    })
+    private List<Comment> comments;
+    
     public CKeyEntityB() {
     }
 
@@ -99,5 +111,12 @@ public class CKeyEntityB {
 
     public void setUniqueA(CKeyEntityA uniqueA) {
         this.uniqueA = uniqueA;
+    }
+    public List<Comment> getComments() {
+        return comments;
+    }
+
+    public void setComments(List<Comment> comments) {
+        this.comments = comments;
     }
 }

@@ -107,7 +107,7 @@ public class DefaultTableGenerator {
     //by the table definition object
     private Map<String, TableDefinition> tableMap = null;
 
-    //used to track th field definition: keyed by the database field object, and 
+    //used to track the field definition: keyed by the database field object, and 
     //valued by the field definition.
     private Map<DatabaseField, FieldDefinition> fieldMap = null;
 
@@ -284,12 +284,12 @@ public class DefaultTableGenerator {
                 if(seq instanceof DefaultSequence) {
                     seq = login.getDefaultSequence();
                 }
-                //The native sequence whose value should be aquired after insert is identity sequence
+                //The native sequence whose value should be acquired after insert is identity sequence
                 boolean isIdentity = seq instanceof NativeSequence && seq.shouldAcquireValueAfterInsert();
                 fieldDef.setIsIdentity(isIdentity);
             }
 
-            //find the table the field belongs to, and add it to the table, ony if not already added.
+            //find the table the field belongs to, and add it to the table, only if not already added.
             tblDef = tableMap.get(dbField.getTableName());
 
             if (!tblDef.getFields().contains(fieldDef)) {
@@ -706,6 +706,9 @@ public class DefaultTableGenerator {
         Vector<String> fkFieldNames = new Vector();
         Vector<String> targetFieldNames = new Vector();
         
+        DatabaseTable sourceTable = fkFields.get(0).getTable();
+        TableDefinition sourceTableDef = getTableDefFromDBTable(sourceTable);
+        
         for (int i=0; i < fkFields.size(); i++) {            
             fkField = fkFields.get(i);
             targetField = targetFields.get(i);
@@ -715,7 +718,14 @@ public class DefaultTableGenerator {
             FieldDefinition fkFieldDef = fieldMap.get(fkField);
             FieldDefinition targetFieldDef = fieldMap.get(targetField);
             
-            if (fkFieldDef != null && targetFieldDef != null) {
+            if (targetFieldDef != null) {
+                // UnidirectionalOneToOneMapping case
+                if (fkFieldDef == null) {
+                    fkFieldDef = getFieldDefFromDBField(fkField, false);
+                    if (!sourceTableDef.getFields().contains(fkFieldDef)) {
+                        sourceTableDef.addField(fkFieldDef);
+                    }
+                }
                 // Also ensure that the type, size and subsize of the foreign key field is 
                 // same as that of the original field.
                 fkFieldDef.setType(targetFieldDef.getType());
@@ -726,9 +736,7 @@ public class DefaultTableGenerator {
         }
 
         // add a foreign key constraint
-        DatabaseTable sourceTable = fkField.getTable();
         DatabaseTable targetTable = targetField.getTable();
-        TableDefinition sourceTableDef = getTableDefFromDBTable(sourceTable);
         TableDefinition targetTableDef = getTableDefFromDBTable(targetTable);
         
         addForeignKeyConstraint(sourceTableDef, targetTableDef, fkFieldNames, targetFieldNames);

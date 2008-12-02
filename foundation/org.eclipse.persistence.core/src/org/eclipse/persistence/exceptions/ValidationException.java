@@ -259,7 +259,6 @@ public class ValidationException extends EclipseLinkException {
     
     // EJB 3.0 JoinColumn(s) and PrimaryKeyJoinColumn(s) validation
     public static final int INCOMPLETE_JOIN_COLUMNS_SPECIFIED = 7220;
-    public static final int EXCESSIVE_JOIN_COLUMNS_SPECIFIED = 7221;
     public static final int INCOMPLETE_PRIMARY_KEY_JOIN_COLUMNS_SPECIFIED = 7222;
     public static final int EXCESSIVE_PRIMARY_KEY_JOIN_COLUMNS_SPECIFIED = 7223;
     
@@ -2186,14 +2185,6 @@ public class ValidationException extends EclipseLinkException {
         return validationException;
     }
 
-    public static ValidationException excessiveJoinColumnsSpecified(Object annotatedElement, Class javaClass) {
-        Object[] args = { annotatedElement, javaClass };
-
-        ValidationException validationException = new ValidationException(ExceptionMessageGenerator.buildMessage(ValidationException.class, EXCESSIVE_JOIN_COLUMNS_SPECIFIED, args));
-        validationException.setErrorCode(EXCESSIVE_JOIN_COLUMNS_SPECIFIED);
-        return validationException;
-    }
-    
     public static ValidationException excessivePrimaryKeyJoinColumnsSpecified(Object annotatedElement) {
         Object[] args = { annotatedElement };
 

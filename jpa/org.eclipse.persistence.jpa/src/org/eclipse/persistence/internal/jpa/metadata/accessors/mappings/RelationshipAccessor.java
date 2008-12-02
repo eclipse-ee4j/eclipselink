@@ -330,10 +330,6 @@ public abstract class RelationshipAccessor extends MappingAccessor {
                     throw ValidationException.incompleteJoinColumnsSpecified(getAnnotatedElement(), getJavaClass());
                 }
             }
-        } else {
-            if (joinColumns.size() > 1) {
-                throw ValidationException.excessiveJoinColumnsSpecified(getAnnotatedElement(), getJavaClass());
-            }
         }
         
         return joinColumns;

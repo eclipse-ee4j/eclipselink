@@ -26,6 +26,7 @@
             <basic name="column32"><column nullable="false"/></basic>
         </attributes>
     </entity>
+	<entity class="Comment"/>
     
     <embeddable class="ThreadInfo"/>
 </entity-mappings>
