@@ -202,6 +202,9 @@ public class AdvancedQueryTestSuite extends JUnitTestCase {
      * Test fetch groups.
      */
     public void testFetchGroups() {
+        if (!isWeavingEnabled()) {
+            return;
+        }
         EntityManager em = createEntityManager();
         beginTransaction(em);
         QuerySQLTracker counter = null;
@@ -246,6 +249,9 @@ public class AdvancedQueryTestSuite extends JUnitTestCase {
      * Test multiple fetch joining from named queries.
      */
     public void testMultipleNamedJoinFetchs() {
+        if (!isWeavingEnabled()) {
+            return;
+        }
         EntityManager em = createEntityManager();
         beginTransaction(em);
         QuerySQLTracker counter = null;
@@ -304,7 +310,7 @@ public class AdvancedQueryTestSuite extends JUnitTestCase {
             jpaQuery = (JpaQuery)((EntityManager)em.getDelegate()).createQuery("Select employee from Employee employee");
             jpaQuery.setHint(QueryHints.SCROLLABLE_CURSOR, true);
             jpaQuery.setHint(QueryHints.RESULT_SET_CONCURRENCY, ResultSetConcurrency.ReadOnly);
-            jpaQuery.setHint(QueryHints.RESULT_SET_TYPE, ResultSetType.ForwardOnly);
+            jpaQuery.setHint(QueryHints.RESULT_SET_TYPE, ResultSetType.DEFAULT);
             ScrollableCursor scrollableCursor = (ScrollableCursor)jpaQuery.getResultCursor();
             scrollableCursor.next();
             scrollableCursor.close();

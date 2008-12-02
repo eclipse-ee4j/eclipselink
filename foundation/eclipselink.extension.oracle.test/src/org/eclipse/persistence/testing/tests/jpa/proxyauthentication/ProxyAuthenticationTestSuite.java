@@ -354,7 +354,7 @@ public class ProxyAuthenticationTestSuite extends JUnitTestCase {
     }
 
     String getReadUser(EntityManager em) {
-        return (String)((Vector)em.createNativeQuery(readQueryString).getSingleResult()).firstElement();
+        return (String)em.createNativeQuery(readQueryString).getSingleResult();
     }
 
     String getWriteUser(EntityManager em) {
