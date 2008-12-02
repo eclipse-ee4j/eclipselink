@@ -98,7 +98,7 @@ public class DefaultConnector implements Connector {
             } catch (SQLException sqlException) {
                 driverManagerException = sqlException;
                 if(session != null) {
-                    ((org.eclipse.persistence.internal.sessions.AbstractSession)session).logThrowable(SessionLog.WARNING, SessionLog.CONNECTION, sqlException);
+                    ((org.eclipse.persistence.internal.sessions.AbstractSession)session).logThrowable(SessionLog.FINER, SessionLog.CONNECTION, sqlException);
                 }
             }
         }
