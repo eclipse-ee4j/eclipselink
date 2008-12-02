@@ -252,7 +252,6 @@ public class SDOUnmappedContentHandler implements UnmappedContentHandler {
                     if (!currentBuffer.toString().trim().equals("")) {
                         DataObject dObj = (DataObject) currentDataObjects.peek();
                         dObj.getSequence().addText(currentBuffer.toString());
-                        //currentBuffer.reset();
                     }
                 } else {
                     currentDataObjects.pop();
