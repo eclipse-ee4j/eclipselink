@@ -12,6 +12,7 @@
  ******************************************************************************/  
 package org.eclipse.persistence.testing.tests.optimization.queryandsqlcounting;
 
+import org.eclipse.persistence.queries.ReadAllQuery;
 import org.eclipse.persistence.testing.framework.TestErrorException;
 
 /**
@@ -22,21 +23,33 @@ public class RownumFilteringFirstResultQueryTest extends RownumFilteringQueryTes
         super(0,11,1);
     }
     
+    public RownumFilteringFirstResultQueryTest(Class classToQueryOn){
+        super(0,11,1);
+        this.queryToUse = new ReadAllQuery(classToQueryOn);
+    }
+    
+    public void test(){
+        int totalresults = ((java.util.Vector)getSession().executeQuery(getQuery())).size();
+        expectedResultSize = totalresults - firstResult;
+        expectedResultSize = expectedResultSize<0 ? 0:expectedResultSize;
+        super.test();
+    }
+    
     public void verify() {
         if ( resultSize != expectedResultSize){
-            throw new TestErrorException("A ReadAllQuery with MaxRows=2,FirstResult=1 returned "+
-                resultSize+" result(s) when 1 was expected.");
+            throw new TestErrorException("A ReadAllQuery with MaxRows="+maxRows+",FirstResult="+firstResult+" returned "+
+                    resultSize+" result(s) when "+expectedResultSize+" result(s) were expected.");
         }
         if ( queryString==null){
-            throw new TestErrorException("A ReadAllQuery with MaxRows=2,FirstResult=1 did not generate an SQL string.");
+            throw new TestErrorException("A ReadAllQuery with MaxRows="+maxRows+",FirstResult="+firstResult+" did not generate an SQL string.");
         }
         int firstSelectIndex = queryString.indexOf("SELECT");
         int lastSelectIndex = queryString.lastIndexOf("SELECT");
         int firstRowNumIndex = queryString.indexOf("ROWNUM");
         
         if ( (firstSelectIndex == lastSelectIndex) || (firstRowNumIndex ==-1) ){
-            throw new TestErrorException("A ReadAllQuery with MaxRows=2,FirstResult=1 did not generate proper SQL "+
-                "string Using Oracle pagination feature.");
+            throw new TestErrorException("A ReadAllQuery with MaxRows="+maxRows+",FirstResult="+firstResult
+                    +" did not generate proper SQL string Using Oracle pagination feature.");
         }
     }
 }

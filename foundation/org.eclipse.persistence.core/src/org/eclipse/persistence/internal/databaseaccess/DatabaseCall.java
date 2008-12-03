@@ -37,8 +37,8 @@ public abstract class DatabaseCall extends DatasourceCall {
      * Following fields are used to bind MaxResults and FirstRow settings into 
      * the query instead of using the values stored in the call.
      */
-    public static DatabaseField MAXROW_FIELD = new DatabaseField("TopLink-MaxResults");
-    public static DatabaseField FIRSTRESULT_FIELD = new DatabaseField("TopLink-FirstRow");
+    public static DatabaseField MAXROW_FIELD = new DatabaseField("EclipseLink-MaxResults");
+    public static DatabaseField FIRSTRESULT_FIELD = new DatabaseField("EclipseLink-FirstRow");
     
     /**
      * Indicates if the FirstRow and MaxResults values in this

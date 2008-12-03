@@ -25,7 +25,9 @@ public class QueryAndSQLCountingTestSuite extends TestSuite {
         addTest(new JoiningValueholderInstantiationTest());
         addTest(new BatchWritingFlushQueryTest());
         addTest(new RownumFilteringQueryTest());
+        addTest(new RownumFilteringQueryTest(org.eclipse.persistence.testing.models.employee.domain.Project.class));
         addTest(new RownumFilteringFirstResultQueryTest());
+        addTest(new RownumFilteringFirstResultQueryTest(org.eclipse.persistence.testing.models.employee.domain.Project.class));
         addTest(new ParameterBatchWritingFlushQueryTest());
         addTest(new BatchWritingFlushInWriteChangesTest());
         addTest(new QueryCacheTestSuite());

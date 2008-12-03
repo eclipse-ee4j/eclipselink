@@ -1534,22 +1534,25 @@ public class ExpressionQueryMechanism extends StatementQueryMechanism {
      */
     public void prepareSelectAllRows() {
         // Check for multiple table inheritance which may require multiple queries.
-        if ((!((ObjectLevelReadQuery)getQuery()).shouldOuterJoinSubclasses()) && getDescriptor().hasInheritance() && getDescriptor().getInheritancePolicy().requiresMultipleTableSubclassRead()) {
-            if (getDescriptor().getInheritancePolicy().hasView()) {
+        if (!getDescriptor().hasInheritance() || !getDescriptor().getInheritancePolicy().requiresMultipleTableSubclassRead()){
+            setSQLStatement(buildNormalSelectStatement());
+            super.prepareSelectAllRows();
+        } else {
+            InheritancePolicy policy = getDescriptor().getInheritancePolicy();
+            if (policy.hasView()){
                 // CR#3158703 if the descriptor has a view, then it requires a single select,
                 // so can be prepared.
                 setSQLStatement(getDescriptor().getInheritancePolicy().buildViewSelectStatement((ObjectLevelReadQuery)getQuery()));
+                super.prepareSelectAllRows();
+            } else if ( ((ObjectLevelReadQuery)getQuery()).shouldOuterJoinSubclasses() ){
+                //outer join into a single select that can be built normally
+                setSQLStatement(buildNormalSelectStatement());
                 super.prepareSelectAllRows();
             } else if (!getDescriptor().getInheritancePolicy().hasClassExtractor()) {
                 // CR#3158703 otherwise if using a type indicator at least the type select can be prepared.
                 setSQLStatement(getDescriptor().getInheritancePolicy().buildClassIndicatorSelectStatement((ObjectLevelReadQuery)getQuery()));
                 super.prepareSelectAllRows();
-            }
-
-            // else - otherwise cannot prepare the select.
-        } else {
-            setSQLStatement(buildNormalSelectStatement());
-            super.prepareSelectAllRows();
+            } 
         }
     }
 
@@ -1558,22 +1561,25 @@ public class ExpressionQueryMechanism extends StatementQueryMechanism {
      */
     public void prepareSelectOneRow() {
         // Check for multiple table inheritance which may require multiple queries.
-        if ((!getReadObjectQuery().shouldOuterJoinSubclasses()) && getDescriptor().hasInheritance() && getDescriptor().getInheritancePolicy().requiresMultipleTableSubclassRead()) {
-            if (getDescriptor().getInheritancePolicy().hasView()) {
+        if (!getDescriptor().hasInheritance() || !getDescriptor().getInheritancePolicy().requiresMultipleTableSubclassRead()){
+            setSQLStatement(buildNormalSelectStatement());
+            super.prepareSelectOneRow();
+        } else {
+            InheritancePolicy policy = getDescriptor().getInheritancePolicy();
+            if (policy.hasView()){
                 // CR#3158703 if the descriptor has a view, then it requires a single select,
                 // so can be prepared.
                 setSQLStatement(getDescriptor().getInheritancePolicy().buildViewSelectStatement((ObjectLevelReadQuery)getQuery()));
+                super.prepareSelectOneRow();
+            } else if ( ((ObjectLevelReadQuery)getQuery()).shouldOuterJoinSubclasses() ){
+                //outer join into a single select that can be built normally
+                setSQLStatement(buildNormalSelectStatement());
                 super.prepareSelectOneRow();
             } else if (!getDescriptor().getInheritancePolicy().hasClassExtractor()) {
                 // CR#3158703 otherwise if using a type indicator at least the type select can be prepared.
                 setSQLStatement(getDescriptor().getInheritancePolicy().buildClassIndicatorSelectStatement((ObjectLevelReadQuery)getQuery()));
                 super.prepareSelectOneRow();
-            }
-
-            // else - otherwise cannot prepare the select.
-        } else {
-            setSQLStatement(buildNormalSelectStatement());
-            super.prepareSelectOneRow();
+            } 
         }
     }
 

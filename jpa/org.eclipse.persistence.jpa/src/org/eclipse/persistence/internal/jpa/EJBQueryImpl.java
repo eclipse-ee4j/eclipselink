@@ -946,19 +946,12 @@ public class EJBQueryImpl implements org.eclipse.persistence.jpa.JpaQuery {
                 int maxRows = maxResults + ((firstResultIndex >= 0) ? firstResultIndex : 0);
                 readQuery.setMaxRows(maxRows);
                 maxResults = -1;
-                if (readQuery.isObjectLevelReadQuery()){
-                    ((org.eclipse.persistence.queries.ObjectLevelReadQuery)readQuery).setShouldOuterJoinSubclasses(true);
-                }
             }
-            
             if (firstResultIndex > -1) {
                 cloneSharedQuery();
                 readQuery = (ReadQuery)getDatabaseQuery();
                 readQuery.setFirstResult(firstResultIndex);
                 firstResultIndex = -1;
-                if (readQuery.isObjectLevelReadQuery()){
-                    ((org.eclipse.persistence.queries.ObjectLevelReadQuery)readQuery).setShouldOuterJoinSubclasses(true);
-                }
             }
         }
     }
