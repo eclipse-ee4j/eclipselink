@@ -13,15 +13,17 @@
 
 package org.eclipse.persistence.tools.dbws;
 
-// J2SE imports
+//javase imports
 import java.io.OutputStream;
 
-// Java extension imports
+//Java extension imports
 import javax.wsdl.Binding;
+import javax.wsdl.BindingFault;
 import javax.wsdl.BindingInput;
 import javax.wsdl.BindingOperation;
 import javax.wsdl.BindingOutput;
 import javax.wsdl.Definition;
+import javax.wsdl.Fault;
 import javax.wsdl.Input;
 import javax.wsdl.Message;
 import javax.wsdl.Output;
@@ -35,13 +37,14 @@ import javax.wsdl.extensions.ExtensionRegistry;
 import javax.wsdl.extensions.soap.SOAPAddress;
 import javax.wsdl.extensions.soap.SOAPBinding;
 import javax.wsdl.extensions.soap.SOAPBody;
+import javax.wsdl.extensions.soap.SOAPFault;
 import javax.wsdl.extensions.soap.SOAPOperation;
 import javax.wsdl.factory.WSDLFactory;
 import javax.wsdl.xml.WSDLWriter;
 import javax.xml.namespace.QName;
 import static javax.xml.XMLConstants.W3C_XML_SCHEMA_NS_URI;
 
-// EclipseLink imports
+//EclipseLink imports
 import org.eclipse.persistence.internal.oxm.schema.SchemaModelProject;
 import org.eclipse.persistence.internal.oxm.schema.model.Any;
 import org.eclipse.persistence.internal.oxm.schema.model.ComplexType;
@@ -67,24 +70,28 @@ import static org.eclipse.persistence.tools.dbws.Util.WSI_SWAREF_XSD_FILE;
 public class WSDLGenerator {
 
     public static final String BINDING_SUFFIX = "_SOAP_HTTP";
+    public static final String EMPTY_RESPONSE = "EmptyResponse";
+    public static final String EXCEPTION_SUFFIX = "Exception";
+    public static final String FAULT_SUFFIX = "Fault";
+    public static final String NS_IMPORTED_PREFIX = "ns1";
     public static final String NS_SCHEMA_PREFIX = "xsd";
-    public static final String SERVICE_SUFFIX = "Service";
-    public static final String TYPE_SUFFIX = "Type";
-    public static final String RESPONSE_SUFFIX = "Response";
-    public static final String REQUEST_SUFFIX = "Request";
+    public static final String NS_TNS_PREFIX = "tns";
+    public static final String NS_WSDL_SOAP = "http://schemas.xmlsoap.org/wsdl/soap/";
+    public static final String NS_WSDL_SOAP_PREFIX = "soap";
     public static final String PORT_SUFFIX = "_Interface";
-    public static final String TAG_SCHEMA = "schema";
-    public static final String TAG_SOAP_ADDRESS = "address";
-    public static final String TAG_SOAP_OPERATION = "operation";
-    public static final String TAG_SOAP_BODY = "body";
-    public static final String TAG_SOAP_BINDING = "binding";
-    public static final String SOAP_USE = "literal";
+    public static final String REQUEST_SUFFIX = "Request";
+    public static final String RESPONSE_SUFFIX = "Response";
+    public static final String SERVICE_SUFFIX = "Service";
     public static final String SOAP_STYLE = "document";
     public static final String SOAP_TRANSPORT = "http://schemas.xmlsoap.org/soap/http";
-    public static final String NS_WSDL_SOAP_PREFIX = "soap";
-    public static final String NS_WSDL_SOAP = "http://schemas.xmlsoap.org/wsdl/soap/";
-    public static final String NS_TNS_PREFIX = "tns";
-    public static final String NS_IMPORTED_PREFIX = "ns1";
+    public static final String SOAP_USE = "literal";
+    public static final String TAG_SCHEMA = "schema";
+    public static final String TAG_SOAP_ADDRESS = "address";
+    public static final String TAG_SOAP_BINDING = "binding";
+    public static final String TAG_SOAP_BODY = "body";
+    public static final String TAG_SOAP_FAULT = "fault";
+    public static final String TAG_SOAP_OPERATION = "operation";
+    public static final String TYPE_SUFFIX = "Type";
 
     protected XRServiceModel xrServiceModel;
     protected NamingConventionTransformer nct;
@@ -158,6 +165,43 @@ public class WSDLGenerator {
         ws.addPort(port);
         def.addService(ws);
 
+        boolean requireEmptyResponseMessages = false;
+        for (Operation op : xrServiceModel.getOperationsList()) {
+            if (!(op instanceof QueryOperation)) {
+                requireEmptyResponseMessages = true;
+                break;
+            }
+        }
+        if (requireEmptyResponseMessages) {
+            /*
+             * Add in empty response message
+             * <wsdl:message name="EmptyResponse">
+             *   <wsdl:part name="emptyResponse" element="tns:EmptyResponse"></wsdl:part>
+             * </wsdl:message>
+             */
+            Message emptyResponseMessage = def.createMessage();
+            emptyResponseMessage.setUndefined(false);
+            emptyResponseMessage.setQName(new QName(serviceNameSpace, EMPTY_RESPONSE));
+            Part responsePart = def.createPart();
+            responsePart.setName("emptyResponse");
+            responsePart.setElementName(new QName(serviceNameSpace, EMPTY_RESPONSE));
+            emptyResponseMessage.addPart(responsePart);
+            def.addMessage(emptyResponseMessage);
+            /*
+             * Add in Fault message
+             * <wsdl:message name="FaultType">
+             *   <wsdl:part name="fault" element="tns:FaultType"></wsdl:part>
+             * </wsdl:message>
+             */
+            Message faultMessage = def.createMessage(); 
+            faultMessage.setUndefined(false);
+            faultMessage.setQName(new QName(serviceNameSpace, FAULT_SUFFIX + TYPE_SUFFIX));
+            Part faultPart = def.createPart();
+            faultPart.setName("fault");
+            faultPart.setElementName(new QName(serviceNameSpace, FAULT_SUFFIX + TYPE_SUFFIX));
+            faultMessage.addPart(faultPart);
+            def.addMessage(faultMessage);
+        }
         for (Operation op : xrServiceModel.getOperationsList()) {
             createMethodDefinition(factory, registry, def, op);
         }
@@ -179,7 +223,7 @@ public class WSDLGenerator {
         requestPart.setElementName(new QName(serviceNameSpace, operation.getName()));
         requestMessage.addPart(requestPart);
         def.addMessage(requestMessage);
-
+        
         Message responseMessage = null;
         if (operation.hasResponse()) {
             responseMessage = def.createMessage();
@@ -219,21 +263,54 @@ public class WSDLGenerator {
         so.setSoapActionURI(serviceNameSpace + ":" + op.getName());
         bop.addExtensibilityElement(so);
         BindingInput bi = def.createBindingInput();
-        SOAPBody soapInput =
+        SOAPBody soapInputBody =
             (SOAPBody) registry.createExtension(BindingInput.class, new QName(NS_WSDL_SOAP,
                 TAG_SOAP_BODY));
-        soapInput.setUse(SOAP_USE);
-        bi.addExtensibilityElement(soapInput);
+        soapInputBody.setUse(SOAP_USE);
+        bi.addExtensibilityElement(soapInputBody);
         bop.setBindingInput(bi);
 
         if (operation.hasResponse()) {
             BindingOutput bo = def.createBindingOutput();
-            SOAPBody soapOutput =
+            SOAPBody soapOutputBody =
                 (SOAPBody) registry.createExtension(BindingOutput.class, new QName(NS_WSDL_SOAP,
                     TAG_SOAP_BODY));
-            soapOutput.setUse(SOAP_USE);
-            bo.addExtensibilityElement(soapOutput);
+            soapOutputBody.setUse(SOAP_USE);
+            bo.addExtensibilityElement(soapOutputBody);
             bop.setBindingOutput(bo);
+        }
+        if (!(operation instanceof QueryOperation)) {
+            // non-QueryOperations don't have Responses, but the fault requirements
+            // mean we have to create 'dummy' WSDL outputs
+            BindingOutput bo = def.createBindingOutput();
+            SOAPBody soapOutputBody =
+                (SOAPBody) registry.createExtension(BindingOutput.class, new QName(NS_WSDL_SOAP,
+                    TAG_SOAP_BODY));
+            soapOutputBody.setUse(SOAP_USE);
+            bo.addExtensibilityElement(soapOutputBody);
+            bop.setBindingOutput(bo);
+            // add WSDL fault to binding operations
+            BindingFault bindingFault = def.createBindingFault();
+            String exceptionName = FAULT_SUFFIX + EXCEPTION_SUFFIX;
+            bindingFault.setName(exceptionName);
+            SOAPFault soapFaultBody =
+                (SOAPFault) registry.createExtension(BindingFault.class, new QName(NS_WSDL_SOAP,
+                    TAG_SOAP_FAULT));
+            soapFaultBody.setUse(SOAP_USE);
+            soapFaultBody.setName(exceptionName);
+            bindingFault.addExtensibilityElement(soapFaultBody);
+            bop.addBindingFault(bindingFault);
+            Message emptyResponseMessage = def.getMessage(new QName(serviceNameSpace, EMPTY_RESPONSE));
+            Output output = def.createOutput();
+            output.setName(operation.getName() + EMPTY_RESPONSE);
+            output.setMessage(emptyResponseMessage);
+            op.setOutput(output);
+            Message faultMessage = def.getMessage(new QName(serviceNameSpace, 
+                FAULT_SUFFIX + TYPE_SUFFIX));
+            Fault fault = def.createFault();
+            fault.setMessage(faultMessage);
+            fault.setName(exceptionName);
+            op.addFault(fault);
         }
         binding.addBindingOperation(bop);
     }
@@ -268,6 +345,7 @@ public class WSDLGenerator {
             ref.setSchemaLocation(WSI_SWAREF_XSD_FILE);
             schema.getImports().add(ref);
         }
+        boolean requireFaultTypeEmptyResponse = false;
         for (Operation op : xrServiceModel.getOperationsList()) {
             String opName = op.getName();
             ComplexType requestType = new ComplexType();
@@ -352,6 +430,44 @@ public class WSDLGenerator {
                 responseElement.setType(NS_TNS_PREFIX + ":" + responseType.getName());
                 schema.addTopLevelElement(responseElement);
             }
+            else {
+                requireFaultTypeEmptyResponse = true;
+            }
+        }
+        if (requireFaultTypeEmptyResponse) {
+            // <element name="EmptyResponse">
+            //   <xsd:complexType/>
+            // </element>
+            Element emptyResponseElement = new Element();
+            emptyResponseElement.setName(EMPTY_RESPONSE);
+            ComplexType emptyResponseComplexType = new ComplexType();
+            emptyResponseElement.setComplexType(emptyResponseComplexType);
+            schema.addTopLevelElement(emptyResponseElement);
+            // <xsd:element name="FaultType">
+            //   <xsd:complexType>
+            //     <xsd:sequence>
+            //       <xsd:element name="faultCode" type="xsd:string"/> 
+            //       <xsd:element name="faultString" type="xsd:string"/> 
+            //     </xsd:sequence>
+            //   </xsd:complexType>
+            // </element>
+            Element elementFaultType = new Element();
+            elementFaultType.setName(FAULT_SUFFIX + TYPE_SUFFIX);
+            ComplexType faultComplexType = new ComplexType();
+            elementFaultType.setComplexType(faultComplexType);
+            Sequence nestedSequence = new Sequence();
+            faultComplexType.setSequence(nestedSequence);
+            Element faultCodeElement = new Element();
+            faultCodeElement.setName("faultCode");
+            faultCodeElement.setMinOccurs("1");
+            faultCodeElement.setType(NS_SCHEMA_PREFIX + ":string");
+            nestedSequence.addElement(faultCodeElement);
+            Element faultStringElement = new Element();
+            faultStringElement.setMinOccurs("1");
+            faultStringElement.setName("faultString");
+            faultStringElement.setType(NS_SCHEMA_PREFIX + ":string");
+            nestedSequence.addElement(faultStringElement);
+            schema.addTopLevelElement(elementFaultType);
         }
         return marshaller.objectToXML(schema).getDocumentElement();
     }

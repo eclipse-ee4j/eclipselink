@@ -8,20 +8,19 @@
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
- *     Mike Norman - May 26 2008, creating packager for JAX-WS RI
+ *     Mike Norman - Oct 30 2008: some re-work of DBWSPackager hierarchy
  ******************************************************************************/
+package org.eclipse.persistence.tools.dbws;
 
- package org.eclipse.persistence.tools.dbws;
-
-// javase imports
-import java.io.BufferedOutputStream;
+//javase imports
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.io.OutputStreamWriter;
-// EclipseLink imports
+import javax.xml.ws.Provider;
+
+//EclipseLink imports
 import org.eclipse.persistence.internal.dbws.ProviderHelper;
 import org.eclipse.persistence.internal.libraries.asm.ClassWriter;
 import org.eclipse.persistence.internal.libraries.asm.CodeVisitor;
@@ -31,11 +30,9 @@ import org.eclipse.persistence.internal.libraries.asm.attrs.Annotation;
 import org.eclipse.persistence.internal.libraries.asm.attrs.RuntimeVisibleAnnotations;
 import org.eclipse.persistence.internal.libraries.asm.attrs.SignatureAttribute;
 import org.eclipse.persistence.tools.dbws.DBWSBuilder;
-import org.eclipse.persistence.tools.dbws.DBWSPackager;
-import org.eclipse.persistence.tools.dbws.SimpleFilesPackager;
+import org.eclipse.persistence.tools.dbws.XRPackager;
 import static org.eclipse.persistence.internal.libraries.asm.Constants.AASTORE;
 import static org.eclipse.persistence.internal.libraries.asm.Constants.ACC_BRIDGE;
-import static org.eclipse.persistence.internal.libraries.asm.Constants.ACC_ENUM;
 import static org.eclipse.persistence.internal.libraries.asm.Constants.ACC_FINAL;
 import static org.eclipse.persistence.internal.libraries.asm.Constants.ACC_PRIVATE;
 import static org.eclipse.persistence.internal.libraries.asm.Constants.ACC_PUBLIC;
@@ -58,138 +55,27 @@ import static org.eclipse.persistence.internal.libraries.asm.Constants.INVOKEVIR
 import static org.eclipse.persistence.internal.libraries.asm.Constants.RETURN;
 import static org.eclipse.persistence.internal.libraries.asm.Constants.V1_5;
 import static org.eclipse.persistence.internal.xr.Util.DBWS_WSDL;
-import static org.eclipse.persistence.internal.xr.Util.WEB_INF_DIR;
-import static org.eclipse.persistence.internal.xr.Util.WSDL_DIR;
-import static org.eclipse.persistence.tools.dbws.Util.DBWS_PROVIDER_NAME;
+import static org.eclipse.persistence.tools.dbws.DBWSPackager.ArchiveUse.noArchive;
 import static org.eclipse.persistence.tools.dbws.Util.DBWS_PROVIDER_CLASS_FILE;
+import static org.eclipse.persistence.tools.dbws.Util.DBWS_PROVIDER_NAME;
 import static org.eclipse.persistence.tools.dbws.Util.DBWS_PROVIDER_PACKAGE;
-import static org.eclipse.persistence.tools.dbws.Util.DBWS_PROVIDER_SOURCE_FILE;
-import static org.eclipse.persistence.tools.dbws.Util.WEB_XML_FILENAME;
-import static org.eclipse.persistence.tools.dbws.Util.WEBSERVICES_FILENAME;
 
 /**
  * <p>
- * <b>INTERNAL:</b> WebFilesPackager implements the {@link DBWSPackager} interface.
- * The output files from the {@link DBWSBuilder} are written to the <tt>stageDir</tt>
- * 'flat' with no directory structure.
- * <p>
- *
+ * <b>INTERNAL:</b> ProviderPackager extends {@link XRPackager}. It is responsible for generating<br>
+ * the JAX-WS {@link Provider} and saves the generated WSDL to ${stageDir}
+ * <pre>
+ * ${PACKAGER_ROOT}
+ *   | DBWSProvider.class     -- code-generated javax.xml.ws.Provider
+ * </pre>
+ * 
  * @author Mike Norman - michael.norman@oracle.com
  * @since EclipseLink 1.x
- * <pre>
- * \--- <b>stageDir</b> root directory
- *    |   <b>eclipselink-dbws-schema.xsd</b>
- *    |   swaref.xsd                  -- optional if attachements are enabled
- *    |   <b>eclipselink-dbws-or.xml</b>
- *    |   <b>eclipselink-dbws-ox.xml</b>
- *    |   <b>eclipselink-dbws-sessions.xml</b>
- *    |   <b>eclipselink-dbws.xml</b>
- *    |   <u>web.xml</u>
- *    |   <u>webservices.xml</u>
- *    |   <u>DBWSProvider.class</u>
- *    |   <u>DBWSProvider.java</u>    -- code-generated javax.xml.ws.Provider
- *    |   <b>eclipselink-dbws.wsdl</b>
- *
- * </pre>
  */
-public class WebFilesPackager extends SimpleFilesPackager {
+public class ProviderPackager extends XRPackager {
 
-    public static final String WEBSERVICES_PREAMBLE =
-        "<?xml version=\"1.0\" encoding=\"UTF-8\"?> \n" +
-        "<webservices \n" +
-          "  xmlns=\"http://java.sun.com/xml/ns/javaee\" \n" +
-          "  xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" \n" +
-          "  xsi:schemaLocation=\"http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/javaee_web_services_1_2.xsd\" \n" +
-          "  version=\"1.2\" \n" +
-          "  > \n" +
-          "  <webservice-description> \n" +
-            "  <webservice-description-name>";
-                           // serviceName ^^ here
-    public static final String WEBSERVICES_PORT_COMPONENT_NAME =
-                                             "</webservice-description-name> \n" +
-            "    <port-component> \n" +
-            "      <port-component-name>";
-    // dotted-format serviceName.portName ^^ here
-    public static final String WEBSERVICES_WSDL_SERVICE =
-                                             "</port-component-name> \n" +
-            "      <wsdl-service xmlns:ns0=\"";
-                          // service URI ^^ here
-    public static final String WEBSERVICES_WSDL_PORT =
-                                             "</wsdl-service> \n" +
-            "      <wsdl-port xmlns:ns1=\"";
-    public static final String WEBSERVICES_SUFFIX =
-                                             "</wsdl-port> \n" +
-            "      <service-impl-bean> \n" +
-            "        <servlet-link>DBWSProvider</servlet-link> \n" +
-            "      </service-impl-bean> \n" +
-            "    </port-component> \n" +
-            "  </webservice-description> \n" +
-            "</webservices>";
-    public static final String DBWS_PROVIDER_SOURCE_PREAMBLE =
-        "package _dbws;\n" +
-        "\n" +
-        "import java.lang.reflect.Method;\n" +
-        "\n" +
-        "import javax.annotation.PostConstruct;\n" +
-        "import javax.annotation.PreDestroy;\n" +
-        "import javax.servlet.ServletContext;\n" +
-        "import javax.xml.soap.SOAPMessage;\n" +
-        "import javax.xml.ws.Provider;\n" +
-        "import javax.xml.ws.ServiceMode;\n" +
-        "import javax.xml.ws.WebServiceProvider;\n" +
-        "import static javax.xml.ws.Service.Mode.MESSAGE;\n" +
-        "\n" +
-        "import " + ProviderHelper.class.getName() + ";\n" +
-        "\n" +
-        "@WebServiceProvider(\n" +
-        "    wsdlLocation = \"" + WEB_INF_DIR + WSDL_DIR + DBWS_WSDL + "\",\n" +
-        "    serviceName = \"";
-    public static final String DBWS_PROVIDER_SOURCE_PORT_NAME =
-        "\",\n    portName = \"";
-    public static final String DBWS_PROVIDER_SOURCE_TARGET_NAMESPACE =
-        "\",\n    targetNamespace = \"";
-    public static final String DBWS_PROVIDER_SOURCE_SUFFIX =
-        "\"\n)\n@ServiceMode(MESSAGE)\n" +
-        "public class DBWSProvider extends ProviderHelper implements Provider<SOAPMessage> {\n" +
-        "    public  DBWSProvider() {\n" +
-        "        super();\n" +
-        "    }\n" +
-        "    private static final String CONTAINER_RESOLVER_CLASSNAME =\n" +
-        "        \"com.sun.xml.ws.api.server.ContainerResolver\";\n" +
-        "    @PostConstruct\n" +
-        "    public void init() {\n" +
-        "        ClassLoader parentClassLoader = Thread.currentThread().getContextClassLoader();\n" +
-        "        ServletContext sc = null;\n" +
-        "        //ServletContext sc = ContainerResolver.getInstance().getContainer().getSPI(ServletContext.class);\n" +
-        "        try {\n" +
-        "            Class<?> containerResolverClass = parentClassLoader.loadClass(\n" +
-        "                CONTAINER_RESOLVER_CLASSNAME);\n" +
-        "            Method getInstanceMethod = containerResolverClass.getMethod(\"getInstance\");\n" +
-        "            Object containerResolver = getInstanceMethod.invoke(null);\n" +
-        "            Method getContainerMethod = containerResolver.getClass().getMethod(\"getContainer\");\n" +
-        "            getContainerMethod.setAccessible(true);\n" +
-        "            Object container = getContainerMethod.invoke(containerResolver);\n" +
-        "            Method getSPIMethod = container.getClass().getMethod(\"getSPI\", Class.class);\n" +
-        "            getSPIMethod.setAccessible(true);\n" +
-        "            sc = (ServletContext)getSPIMethod.invoke(container, ServletContext.class);\n" +
-        "            super.init(parentClassLoader, sc);\n" +
-        "        }\n" +
-        "        catch (Exception e) {\n" +
-        "            // e.printStackTrace();\n" +
-        "        }\n" +
-        "    }\n" +
-        "    @Override\n" +
-        "    public SOAPMessage invoke(SOAPMessage request) {\n" +
-        "        return super.invoke(request);\n" +
-        "    }\n" +
-        "    @Override\n" +
-        "    @PreDestroy\n" +
-        "    public void destroy() {\n" +
-        "        super.destroy();\n" +
-        "    }\n" +
-        "};";
     public static final String ASMIFIED_DBWS_PROVIDER_HELPER =
-    	ProviderHelper.class.getName().replace('.', '/');
+        ProviderHelper.class.getName().replace('.', '/');
     public static final String ASMIFIED_JAX_WS_PROVIDER =
         "javax/xml/ws/Provider";
     public static final String ASMIFIED_JAX_WS_WEB_SERVICE_PROVIDER =
@@ -205,77 +91,39 @@ public class WebFilesPackager extends SimpleFilesPackager {
     public static final String ASMIFIED_SOAP_MESSAGE =
         "javax/xml/soap/SOAPMessage";
 
-	public WebFilesPackager() {
-        super();
+    public ProviderPackager() {
+        this(new WarArchiver(),"provider", noArchive);
     }
-    public WebFilesPackager(boolean useArchiver) {
-        super(useArchiver);
-    }
-    public WebFilesPackager(boolean useArchiver, String name) {
-        super();
-        setArchiver(useArchiver
-            ? (name == null
-                ? new WarArchiver(this)
-                : new WarArchiver(this, name + ".war"))
-            : null);
+    protected ProviderPackager(Archiver archiver, String packagerLabel, ArchiveUse useJavaArchive) {
+        super(archiver, packagerLabel, useJavaArchive);
     }
 
     @Override
-	public OutputStream getWebXmlStream() throws FileNotFoundException {
-        return new FileOutputStream(new File(stageDir, WEB_XML_FILENAME));
-	}
-
-	@Override
-	public OutputStream getWSDLStream() throws FileNotFoundException {
+    public Archiver buildDefaultArchiver() {
+        return new WarArchiver(this);
+    }
+    
+    @Override
+    public OutputStream getWSDLStream() throws FileNotFoundException {
         return new FileOutputStream(new File(stageDir, DBWS_WSDL));
-	}
-
-	@Override
-    public OutputStream getWebservicesXmlStream() throws FileNotFoundException {
-        return new FileOutputStream(new File(stageDir, WEBSERVICES_FILENAME));
     }
-    @Override
-	public void writeWebservicesXML(OutputStream webservicesXmlStream, DBWSBuilder builder) {
-		StringBuilder sb = new StringBuilder(WEBSERVICES_PREAMBLE);
-		String serviceName = builder.getWSDLGenerator().getServiceName();
-		String serviceNameSpace = builder.getWSDLGenerator().getServiceNameSpace();
-		sb.append(serviceName);
-		sb.append(WEBSERVICES_PORT_COMPONENT_NAME);
-		sb.append(serviceName + "." + serviceName);
-		sb.append(WEBSERVICES_WSDL_SERVICE);
-		sb.append(serviceNameSpace);
-		sb.append("\">ns0:");
-		sb.append(serviceName);
-		sb.append(WEBSERVICES_WSDL_PORT);
-		sb.append(serviceNameSpace);
-		sb.append("\">ns1:");
-		sb.append(serviceName);
-		sb.append(WEBSERVICES_SUFFIX);
-		OutputStreamWriter osw = new OutputStreamWriter(new BufferedOutputStream(webservicesXmlStream));
-		try {
-		    osw.write(sb.toString());
-		    osw.flush();
-		}
-		catch (IOException e) {/* ignore */}
-	}
 
     @Override
-    public OutputStream getCodeGenProviderStream() throws FileNotFoundException {
+    public OutputStream getProviderClassStream() throws FileNotFoundException {
         return new FileOutputStream(new File(stageDir, DBWS_PROVIDER_CLASS_FILE));
     }
     @Override
     @SuppressWarnings("unchecked")
-    public void writeDBWSProviderClass(OutputStream codeGenProviderStream, DBWSBuilder builder) {
-    	String serviceName = builder.getWSDLGenerator().getServiceName();
+    public void writeProviderClass(OutputStream codeGenProviderStream, DBWSBuilder builder) {
+        String serviceName = builder.getWSDLGenerator().getServiceName();
         ClassWriter cw = new ClassWriter(true);
         CodeVisitor cv;
 
         cw.visit(V1_5, ACC_PUBLIC + ACC_SUPER, DBWS_PROVIDER_PACKAGE + "/" + DBWS_PROVIDER_NAME,
-            ASMIFIED_DBWS_PROVIDER_HELPER, new String[]{ASMIFIED_JAX_WS_PROVIDER}, null);
+            ASMIFIED_DBWS_PROVIDER_HELPER, new String[]{ASMIFIED_JAX_WS_PROVIDER}, 
+            DBWS_PROVIDER_NAME + ".java");
         cw.visitField(ACC_PRIVATE + ACC_FINAL + ACC_STATIC, "CONTAINER_RESOLVER_CLASSNAME",
             "Ljava/lang/String;", "com.sun.xml.ws.api.server.ContainerResolver", null);
-        cw.visitInnerClass(ASMIFIED_JAX_WS_SERVICE + "$Mode", ASMIFIED_JAX_WS_SERVICE,
-            "Mode", ACC_PUBLIC + ACC_FINAL + ACC_STATIC + ACC_ENUM);
 
         cv = cw.visitMethod(ACC_PUBLIC, "<init>", "()V", null, null);
         cv.visitVarInsn(ALOAD, 0);
@@ -364,11 +212,6 @@ public class WebFilesPackager extends SimpleFilesPackager {
             "(Ljava/lang/Object;[Ljava/lang/Object;)Ljava/lang/Object;");
         cv.visitTypeInsn(CHECKCAST, "javax/servlet/ServletContext");
         cv.visitVarInsn(ASTORE, 2);
-        cv.visitVarInsn(ALOAD, 0);
-        cv.visitVarInsn(ALOAD, 1);
-        cv.visitVarInsn(ALOAD, 2);
-        cv.visitMethodInsn(INVOKESPECIAL, ASMIFIED_DBWS_PROVIDER_HELPER,
-            "init", "(Ljava/lang/ClassLoader;Ljavax/servlet/ServletContext;)V");
         Label l2 = new Label();
         cv.visitLabel(l2);
         Label l3 = new Label();
@@ -377,6 +220,11 @@ public class WebFilesPackager extends SimpleFilesPackager {
         cv.visitLabel(l4);
         cv.visitVarInsn(ASTORE, 3);
         cv.visitLabel(l3);
+        cv.visitVarInsn(ALOAD, 0);
+        cv.visitVarInsn(ALOAD, 1);
+        cv.visitVarInsn(ALOAD, 2);
+        cv.visitMethodInsn(INVOKESPECIAL, ASMIFIED_DBWS_PROVIDER_HELPER,
+            "init", "(Ljava/lang/ClassLoader;Ljavax/servlet/ServletContext;)V");
         cv.visitInsn(RETURN);
         cv.visitTryCatchBlock(l0, l2, l4, "java/lang/Exception");
         cv.visitMaxs(0, 0);
@@ -422,7 +270,10 @@ public class WebFilesPackager extends SimpleFilesPackager {
         // CLASS ATRIBUTE
         RuntimeVisibleAnnotations classAttr = new RuntimeVisibleAnnotations();
         Annotation attrann0 = new Annotation("L" + ASMIFIED_JAX_WS_WEB_SERVICE_PROVIDER + ";");
-        attrann0.add("wsdlLocation", WEB_INF_DIR + WSDL_DIR + DBWS_WSDL);
+        String wsdlPathPrevix = getWSDLPathPrefix();
+        if (wsdlPathPrevix != null) {
+            attrann0.add("wsdlLocation", wsdlPathPrevix + DBWS_WSDL);
+        }
         attrann0.add("serviceName", serviceName);
         attrann0.add("portName", serviceName + "Port");
         attrann0.add("targetNamespace", builder.getWSDLGenerator().getServiceNameSpace());
@@ -438,29 +289,6 @@ public class WebFilesPackager extends SimpleFilesPackager {
         byte[] bytes = cw.toByteArray();
         try {
             codeGenProviderStream.write(bytes, 0, bytes.length);
-        }
-        catch (IOException e) {/* ignore */}
-    }
-
-    @Override
-    public OutputStream getSourceProviderStream() throws FileNotFoundException {
-        return new FileOutputStream(new File(stageDir, DBWS_PROVIDER_SOURCE_FILE));
-    }
-    @Override
-    public void writeDBWSProviderSource(OutputStream sourceProviderStream, DBWSBuilder builder) {
-        StringBuilder sb = new StringBuilder(DBWS_PROVIDER_SOURCE_PREAMBLE);
-        String serviceName = builder.getWSDLGenerator().getServiceName();
-        sb.append(serviceName);
-        sb.append(DBWS_PROVIDER_SOURCE_PORT_NAME);
-        sb.append(serviceName + "Port");
-        sb.append(DBWS_PROVIDER_SOURCE_TARGET_NAMESPACE);
-        sb.append(builder.getWSDLGenerator().getServiceNameSpace());
-        sb.append(DBWS_PROVIDER_SOURCE_SUFFIX);
-        OutputStreamWriter osw =
-            new OutputStreamWriter(new BufferedOutputStream(sourceProviderStream));
-        try {
-            osw.write(sb.toString());
-            osw.flush();
         }
         catch (IOException e) {/* ignore */}
     }

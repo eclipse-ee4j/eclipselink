@@ -472,6 +472,7 @@ public class JDBCHelper {
                             else {
                                 matchingProc.getArguments().add(dbStoredArgument);
                             }
+                            tmpProcs.remove(matchingProc);
                         }
                         // else some argument that doesn't have a matching proc? ignore for now
                     }
@@ -544,7 +545,7 @@ public class JDBCHelper {
             }
         }
         catch (SQLException sqlException) {
-            throw new IllegalStateException("failure retrieving Oracle Stored Procedure metadata",
+            throw new IllegalStateException("failure retrieving Stored Procedure metadata",
                 sqlException);
         }
         if (dbStoredProcedures != null && !dbStoredProcedures.isEmpty()) {

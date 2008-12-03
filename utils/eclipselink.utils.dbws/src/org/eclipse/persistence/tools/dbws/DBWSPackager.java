@@ -13,23 +13,32 @@
 
 package org.eclipse.persistence.tools.dbws;
 
-// Javase imports
+//javase imports
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.OutputStream;
 
-// EclipseLink imports
+//EclipseLink imports
 import org.eclipse.persistence.internal.sessions.factories.model.SessionConfigs;
 
 public interface DBWSPackager {
 
+    public enum ArchiveUse {
+        archive, noArchive, ignore;
+    }
+    
 	// attribute methods
+    public void setDBWSBuilder(DBWSBuilder builder);
+    public void setAdditionalArgs(String[] additionalArgs);
     public File getStageDir();
     public void setStageDir(File stageDir);
     public String getSessionsFileName();
     public void setSessionsFileName(String sessionsFileName);
     public void setHasAttachments(boolean hasAttachments);
     public boolean hasAttachments();
+    public String getPackagerLabel();
+    public void setArchiveFilename(String archiveFilename);
+    public String getArchiveFilename();
     
     public void start(); // lifecycle methods
     public void end();
@@ -46,14 +55,15 @@ public interface DBWSPackager {
     public void closeServiceStream(OutputStream serviceStream);
 
     public OutputStream getOrStream() throws FileNotFoundException;
-	public String getOrProjectPathPrefix();
+    public String getOrProjectPathPrefix();
     public void closeOrStream(OutputStream orStream);
 
     public OutputStream getOxStream() throws FileNotFoundException;
-	public String getOxProjectPathPrefix();
+    public String getOxProjectPathPrefix();
     public void closeOxStream(OutputStream oxStream);
 
     public OutputStream getWSDLStream() throws FileNotFoundException;
+    public String getWSDLPathPrefix();
     public void closeWSDLStream(OutputStream wsdlStream);
 
     public OutputStream getSWARefStream() throws FileNotFoundException;
@@ -63,25 +73,26 @@ public interface DBWSPackager {
     public void writeWebXml(OutputStream webXmlStream, DBWSBuilder dbwsBuilder);
     public void closeWebXmlStream(OutputStream webXmlStream);
 
-    public OutputStream getWebservicesXmlStream() throws FileNotFoundException;
-	public void writeWebservicesXML(OutputStream webservicesXmlStream, DBWSBuilder builder);
-    public void closeWebservicesXmlStream(OutputStream webservicesXmlStream);
+    public OutputStream getProviderClassStream() throws FileNotFoundException;
+	public void writeProviderClass(OutputStream codeGenProviderStream, DBWSBuilder builder);
+    public void closeProviderClassStream(OutputStream codeGenProviderStream);
 
-    public String getPlatformWebservicesFilename();
-    public OutputStream getPlatformWebservicesXmlStream() throws FileNotFoundException;
-	public void writePlatformWebservicesXML(OutputStream platformWebservicesXmlStream,
-			DBWSBuilder builder);
-    public void closePlatformWebservicesXmlStream(OutputStream platformWebservicesXmlStream);
+    public OutputStream getProviderSourceStream() throws FileNotFoundException;
+	public void writeProviderSource(OutputStream sourceProviderStream, DBWSBuilder builder);
+    public void closeProviderSourceStream(OutputStream sourceProviderStream);
 
-    public OutputStream getCodeGenProviderStream() throws FileNotFoundException;
-	public void writeDBWSProviderClass(OutputStream codeGenProviderStream, DBWSBuilder builder);
-    public void closeCodeGenProviderStream(OutputStream codeGenProviderStream);
-
-    public OutputStream getSourceProviderStream() throws FileNotFoundException;
-	public void writeDBWSProviderSource(OutputStream sourceProviderStream, DBWSBuilder builder);
-    public void closeSourceProviderStream(OutputStream sourceProviderStream);
-
-    static interface Archiver {
-        void archive();
+    public void setArchiveUse(ArchiveUse archiveUse);
+    public String getUsage();
+    
+    public static interface Archiver {
+        public void setPackager(DBWSPackager packager);
+        public DBWSPackager getPackager();
+        public void archive();
+        public String getFilename();
+        public void setFilename(String filename);
+        public String getOrProjectPathPrefix();
+        public String getOxProjectPathPrefix();
+        public String getWSDLPathPrefix();
     }
+
 }

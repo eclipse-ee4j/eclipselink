@@ -13,12 +13,8 @@
 
  package org.eclipse.persistence.tools.dbws;
 
-// javase imports
-import java.io.BufferedOutputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
+//javase imports
 import java.io.OutputStream;
-import java.io.OutputStreamWriter;
 
 import org.eclipse.persistence.internal.sessions.factories.model.SessionConfigs;
 import org.eclipse.persistence.internal.sessions.factories.model.log.LogConfig;
@@ -27,59 +23,32 @@ import org.eclipse.persistence.internal.sessions.factories.model.platform.Custom
 import org.eclipse.persistence.internal.sessions.factories.model.project.ProjectConfig;
 import org.eclipse.persistence.internal.sessions.factories.model.session.DatabaseSessionConfig;
 import org.eclipse.persistence.internal.sessions.factories.model.session.ServerSessionConfig;
+import static org.eclipse.persistence.tools.dbws.DBWSPackager.ArchiveUse.archive;
 
-public class WeblogicPackager extends WebFilesPackager {
+/**
+ * <p>
+ * <b>PUBLIC:</b> WeblogicPackager extends {@link WebServicePackager}. It is responsible for generating <br>
+ * the WebLogic-specific deployment information - specifically, the settings in the sessions.xml file <br>
+ * that require WebLogic-specific platform information
+ * 
+ * @author Mike Norman - michael.norman@oracle.com
+ * @since EclipseLink 1.x
+ */
+public class WeblogicPackager extends WebServicePackager {
 
-    public static final String WEB_XML_PREAMBLE =
-        "<?xml version='1.0' encoding='UTF-8'?>\n" +
-        "<web-app xmlns=\"http://java.sun.com/xml/ns/javaee\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" version=\"2.5\">\n" +
-        "  <display-name>";
-    public static final String WEB_XML_SERVICE_NAME =
-                                          "</display-name>\n" +
-        "  <servlet>\n" +
-        "    <servlet-name>DBWSProvider</servlet-name>\n" +
-        "    <servlet-class>_dbws.DBWSProvider</servlet-class>\n" +
-        "    <load-on-startup>0</load-on-startup>\n" +
-        "  </servlet>\n" +
-        "  <servlet-mapping>\n" +
-        "    <servlet-name>DBWSProvider</servlet-name>\n" +
-        "    <url-pattern>";
-    public static final String WEB_XML_URL_PATTERN =
-                               "</url-pattern>\n" +
-        "  </servlet-mapping>\n" +
-        "</web-app>";
 
     public WeblogicPackager() {
-        super();
+        this(new WarArchiver(),"wls", archive);
     }
-    public WeblogicPackager(boolean useArchiver) {
-        super(useArchiver);
-    }
-    public WeblogicPackager(boolean useArchiver, String warName) {
-        super(useArchiver, warName);
+    protected WeblogicPackager(Archiver archiver, String packagerLabel, ArchiveUse useJavaArchive) {
+        super(archiver, packagerLabel, useJavaArchive);
     }
 
     @Override
-    public OutputStream getWebservicesXmlStream() throws FileNotFoundException {
-        return __nullStream;
+    public String getAdditionalUsage() {
+        return " [warFilename]";
     }
-
-    @Override
-    public void writeWebXml(OutputStream webXmlStream, DBWSBuilder dbwsBuilder) {
-        StringBuilder sb = new StringBuilder(WEB_XML_PREAMBLE);
-        String serviceName = dbwsBuilder.getWSDLGenerator().getServiceName();
-        sb.append(serviceName);
-        sb.append(WEB_XML_SERVICE_NAME);
-        sb.append(dbwsBuilder.getContextRoot());
-        sb.append(WEB_XML_URL_PATTERN);
-        OutputStreamWriter osw = new OutputStreamWriter(new BufferedOutputStream(webXmlStream));
-        try {
-            osw.write(sb.toString());
-            osw.flush();
-        }
-        catch (IOException e) {/* ignore */}
-    }
-
+    
     @SuppressWarnings("unchecked")
     @Override
     public SessionConfigs buildSessionsXML(OutputStream dbwsSessionsStream, DBWSBuilder builder) {

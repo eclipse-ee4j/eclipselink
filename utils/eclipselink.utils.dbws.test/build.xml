@@ -42,7 +42,7 @@
         <contains string="${dbws_util_test.build.location}" substring="util"/>
     </condition>
     <property name="dbws_util_test.2.dbws_util.dir" value="../eclipselink.utils.dbws"/>
-    
+
     <!-- OS environment variables have 'env' as a prefix -->
     <property environment="env"/>
     <!-- local property overrides -->
@@ -399,16 +399,15 @@
         <antcall target="build" inheritAll="true" inheritRefs="true"/>
         <available file="./${eclipselink.utils.dbws.common.jar.name}" property="dbws_util_test.common.jar.exist"/>
     </target>
-  
+
     <target name="run-tests" if="support.test" description="setup, compile, and run dbws util testsuites">
         <DeleteDirQuietly dir="./${report.dir}"/>
         <mkdir dir="./${report.dir}"/>
-        
         <SetupCompileRunTeardown testsuite-name="AttachedBinary"/>
         <SetupCompileRunTeardown testsuite-name="CRUD"/>
         <SetupCompileRunTeardown testsuite-name="CustomSQL"/>
         <SetupCompileRunTeardown testsuite-name="InlineBinary"/>
-        <SetupCompileRunTeardown testsuite-name="SimpleSP"/>
         <SetupCompileRunTeardown testsuite-name="SimpleTable"/>
+        <SetupCompileRunTeardown testsuite-name="SimpleSP"/>
     </target>
 </project>

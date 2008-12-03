@@ -13,7 +13,7 @@
 
 package org.eclipse.persistence.tools.dbws;
 
-// javase imports
+//javase imports
 import static java.sql.Types.BIGINT;
 import static java.sql.Types.CHAR;
 import static java.sql.Types.DATE;
@@ -34,7 +34,7 @@ import static javax.xml.XMLConstants.DEFAULT_NS_PREFIX;
 import static javax.xml.XMLConstants.NULL_NS_URI;
 import static javax.xml.XMLConstants.W3C_XML_SCHEMA_NS_URI;
 
-// EclipseLink imports
+//EclipseLink imports
 import org.eclipse.persistence.internal.oxm.schema.model.Any;
 import org.eclipse.persistence.internal.oxm.schema.model.ComplexType;
 import org.eclipse.persistence.internal.oxm.schema.model.Element;
@@ -72,8 +72,6 @@ public class Util {
         "web.xml";
     public static final String DEFAULT_PLATFORM_CLASSNAME =
         "org.eclipse.persistence.platform.database.OraclePlatform";
-    public static final String WEBSERVICES_FILENAME =
-        "webservices.xml";
     public static final String UNDER_DBWS =
         "_dbws";
     public static final String WSI_SWAREF =

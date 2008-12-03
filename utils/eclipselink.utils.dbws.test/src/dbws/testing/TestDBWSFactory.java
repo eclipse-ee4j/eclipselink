@@ -13,12 +13,12 @@
 
 package dbws.testing;
 
-// Javase imports
+//javase imports
 import java.io.InputStream;
 
 //Java extension imports
 
-// EclipseLink imports
+//EclipseLink imports
 import org.eclipse.persistence.internal.xr.XRServiceAdapter;
 import org.eclipse.persistence.internal.xr.XRServiceFactory;
 import org.eclipse.persistence.internal.xr.XRServiceModel;
@@ -66,4 +66,5 @@ public class TestDBWSFactory extends XRServiceFactory {
         }
         return buildService(dbwsModel);
     }
+
 }

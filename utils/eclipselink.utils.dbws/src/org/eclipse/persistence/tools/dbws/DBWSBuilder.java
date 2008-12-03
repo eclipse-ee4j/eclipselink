@@ -13,7 +13,7 @@
 
 package org.eclipse.persistence.tools.dbws;
 
-// javase imports
+//javase imports
 import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -26,6 +26,7 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.Types;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -44,13 +45,13 @@ import static java.util.logging.Level.FINE;
 import static java.util.logging.Level.FINEST;
 import static java.util.logging.Level.SEVERE;
 
-// Java extension imports
+//Java extension imports
 import javax.wsdl.WSDLException;
 import javax.xml.namespace.QName;
 import static javax.xml.XMLConstants.W3C_XML_SCHEMA_INSTANCE_NS_URI;
 import static javax.xml.XMLConstants.W3C_XML_SCHEMA_NS_URI;
 
-// EclipseLink imports
+//EclipseLink imports
 import org.eclipse.persistence.dbws.DBWSModel;
 import org.eclipse.persistence.dbws.DBWSModelProject;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
@@ -105,6 +106,7 @@ import org.eclipse.persistence.queries.ReadAllQuery;
 import org.eclipse.persistence.queries.ReadObjectQuery;
 import org.eclipse.persistence.sessions.DatabaseLogin;
 import org.eclipse.persistence.sessions.Project;
+import org.eclipse.persistence.tools.dbws.DBWSPackager.ArchiveUse;
 import org.eclipse.persistence.tools.dbws.NamingConventionTransformer.ElementStyle;
 import org.eclipse.persistence.tools.dbws.jdbc.DbColumn;
 import org.eclipse.persistence.tools.dbws.jdbc.DbStoredArgument;
@@ -125,7 +127,9 @@ import static org.eclipse.persistence.internal.xr.Util.DEFAULT_ATTACHMENT_MIMETY
 import static org.eclipse.persistence.internal.xr.Util.TARGET_NAMESPACE_PREFIX;
 import static org.eclipse.persistence.internal.xr.Util.getClassFromJDBCType;
 import static org.eclipse.persistence.oxm.XMLConstants.BASE_64_BINARY_QNAME;
-import static org.eclipse.persistence.tools.dbws.DBWSBasePackager.__nullStream;
+import static org.eclipse.persistence.tools.dbws.DBWSPackager.ArchiveUse.archive;
+import static org.eclipse.persistence.tools.dbws.DBWSPackager.ArchiveUse.noArchive;
+import static org.eclipse.persistence.tools.dbws.DBWSPackager.ArchiveUse.ignore;
 import static org.eclipse.persistence.tools.dbws.NamingConventionTransformer.ElementStyle.ATTRIBUTE;
 import static org.eclipse.persistence.tools.dbws.NamingConventionTransformer.ElementStyle.ELEMENT;
 import static org.eclipse.persistence.tools.dbws.NamingConventionTransformer.ElementStyle.NONE;
@@ -140,7 +144,6 @@ import static org.eclipse.persistence.tools.dbws.Util.REMOVE_OPERATION_NAME;
 import static org.eclipse.persistence.tools.dbws.Util.SWAREF_FILENAME;
 import static org.eclipse.persistence.tools.dbws.Util.THE_INSTANCE_NAME;
 import static org.eclipse.persistence.tools.dbws.Util.UPDATE_OPERATION_NAME;
-import static org.eclipse.persistence.tools.dbws.Util.WEBSERVICES_FILENAME;
 import static org.eclipse.persistence.tools.dbws.Util.WEB_XML_FILENAME;
 import static org.eclipse.persistence.tools.dbws.Util.WSI_SWAREF;
 import static org.eclipse.persistence.tools.dbws.Util.WSI_SWAREF_PREFIX;
@@ -148,17 +151,13 @@ import static org.eclipse.persistence.tools.dbws.Util.WSI_SWAREF_URI;
 import static org.eclipse.persistence.tools.dbws.Util.WSI_SWAREF_XSD_FILE;
 import static org.eclipse.persistence.tools.dbws.Util.getXMLTypeFromJDBCType;
 import static org.eclipse.persistence.tools.dbws.Util.InOut.OUT;
+import static org.eclipse.persistence.tools.dbws.XRPackager.__nullStream;
 
 public class DBWSBuilder extends DBWSBuilderModel {
 
     public static final String BUILDER_FILE_PATH = "-builderFile";
     public static final String BUILDER_PACKAGING = "-packageAs";
-    public static final String SIMPLEFILES = "simpleFiles";
-    public static final String SIMPLEJAR = "simpleJar";
-    public static final String METRO = "metro";
-    public static final String WLS103 = "wls103";
-    public static final String JDEV = "jDev";
-    public static final String STAGE_DIR = "-stagedir";
+    public static final String STAGE_DIR = "-stageDir";
     public static final String DRIVER_KEY = "driver";
     public static final String USERNAME_KEY= "username";
     public static final String PASSWORD_KEY = "password";
@@ -181,11 +180,19 @@ public class DBWSBuilder extends DBWSBuilderModel {
         "  </xsd:simpleType> \n" +
         "</xsd:schema>";
 
+    public static Map<String,DBWSPackager> PACKAGERS = new HashMap<String,DBWSPackager>();
+    static {
+        ServiceLoader<DBWSPackager> packagers = ServiceLoader.load(DBWSPackager.class);
+        for (DBWSPackager packager : packagers) {
+            PACKAGERS.put(packager.getPackagerLabel(), packager);
+        }
+    }
     protected DBWSPackager packager;
     protected Logger logger;
     public boolean quiet = false;
     protected String destDir;
     protected DatabasePlatform databasePlatform;
+    protected Connection conn;
     protected Project orProject;
     protected Project oxProject;
     protected WSDLGenerator wsdlGenerator = null;
@@ -208,12 +215,29 @@ public class DBWSBuilder extends DBWSBuilderModel {
 
     public void start(String[] args) throws WSDLException {
 
-        if (args.length == 6 && BUILDER_FILE_PATH.equalsIgnoreCase(args[0]) &&
-            BUILDER_PACKAGING.equalsIgnoreCase(args[2])  &&
-            STAGE_DIR.equalsIgnoreCase(args[4])) {
+        if (args.length > 5 && BUILDER_FILE_PATH.equals(args[0]) &&
+            STAGE_DIR.equals(args[2]) &&
+            args[4].startsWith(BUILDER_PACKAGING)) {
             String builderFilename = args[1];
-            String packageAs = args[3];
-            String stageDirname = args[5];
+            String stageDirname = args[3];
+            String packagerTag = args[5];
+            String archiverTag = null;
+            ArchiveUse archiveUse = ignore;
+            int cIdx = args[4].indexOf(':');
+            if (cIdx == 10) {
+                archiverTag = args[4].substring(cIdx+1);
+                if (archive.name().equals(archiverTag)) {
+                    archiveUse = archive;
+                }
+                else if (noArchive.name().equals(archiverTag)) {
+                    archiveUse = noArchive;
+                }
+            }
+            String[] additionalArgs = null;
+            if (args.length > 6) {
+                additionalArgs = new String[args.length - 6];
+                System.arraycopy(args, 6, additionalArgs, 0, args.length - 6);
+            }
             File builderFile = new File(builderFilename);
             if (builderFile.exists() && builderFile.isFile()) {
                 File stageDir = new File(stageDirname);
@@ -227,29 +251,16 @@ public class DBWSBuilder extends DBWSBuilderModel {
                         logMessage(SEVERE, "No operations specified");
                         return;
                     }
-                    if (SIMPLEFILES.equals(packageAs)) {
-                        setPackager(new SimpleFilesPackager(false));
-                    }
-                    else if (SIMPLEJAR.equals(packageAs)) {
-                        setPackager(new SimpleFilesPackager(true, getProjectName()));
-                    }
-                    else if (WLS103.equals(packageAs)) {
-                        setPackager(new WeblogicPackager(true, getProjectName()));
-                    }
-                    else if (METRO.equals(packageAs)) {
-                        setPackager(new MetroPackager(true, getProjectName()));
-                    }
-                    else if (JDEV.equals(packageAs)) {
-                        setPackager(new JDevPackager(false, getProjectName()));
-                    }
-                    else {
-                        logMessage(SEVERE, "unknown " + BUILDER_PACKAGING +
-                            " option: " + packageAs);
+                    packager = PACKAGERS.get(packagerTag);
+                    if (packager != null) {
+                        packager.setDBWSBuilder(this);
+                        packager.setArchiveUse(archiveUse);
+                        packager.setAdditionalArgs(additionalArgs);
+                        packager.setStageDir(stageDir);
+                        packager.setSessionsFileName(getSessionsFileName());
+                        start();
                         return;
                     }
-                    packager.setStageDir(stageDir);
-                    packager.setSessionsFileName(getSessionsFileName());
-                    start();
                 }
                 else {
                     logMessage(SEVERE, "DBWSBuilder unable to locate stage directory " +
@@ -263,13 +274,30 @@ public class DBWSBuilder extends DBWSBuilderModel {
                 return;
             }
         }
-        else {
-            logMessage(SEVERE,
-            	"DBWSBuilder requires " + BUILDER_FILE_PATH + " {path_to_dbws-builder.xml_file} " +
-            	BUILDER_PACKAGING + " {how_to_package_output} " +
-            	STAGE_DIR + " {path_to_stage_directory}");
-                return;
+/*
+prompt> java -cp eclipselink.jar:eclipselink-dbwsutils.jar:your_favourite_jdbc_driver.jar org.eclipse.persistence.tools.dbws.DBWSBuilder -builderFile {path_to_dbws_builder.xml_file} -stageDir {path_to_staging_directory} -packageAs {how_to_package_output} [additionalArgs]        
+ */
+        StringBuilder sb = new StringBuilder(30);
+        sb.append("DBWSBuilder usage ([] indicates optional argument):\nprompt> java -cp eclipselink.jar:eclipselink-dbwsutils.jar:your_favourite_jdbc_driver.jar \\\n\t");
+        sb.append(this.getClass().getName());
+        sb.append(" ");
+        sb.append(BUILDER_FILE_PATH);
+        sb.append(" {path_to_dbwsbuilder.xml} \\\n\t");
+        sb.append(STAGE_DIR);
+        sb.append(" ");
+        sb.append(" {path_to_stageDir}");
+        sb.append(" ");
+        sb.append(BUILDER_PACKAGING);
+        sb.append("[:archive_flag - archive, noArchive, ignore] {packager} [additional arguments]\nAvailable packagers:\n\t");
+        for (Iterator<Map.Entry<String, DBWSPackager>> i = PACKAGERS.entrySet().iterator(); i.hasNext();) {
+            Map.Entry<String, DBWSPackager> me = i.next();
+            sb.append(me.getValue().getUsage());
+            if (i.hasNext()) {
+                sb.append("\n\t");
             }
+        }
+        logMessage(SEVERE, sb.toString());
+        return;
     }
 
     public void start() throws WSDLException {
@@ -338,27 +366,9 @@ public class DBWSBuilder extends DBWSBuilderModel {
             logMessage(SEVERE, "DBWSBuilder unable to create " + WEB_XML_FILENAME, fnfe);
             return;
         };
-        OutputStream webservicesXmlStream = null;
-        try {
-            webservicesXmlStream = packager.getWebservicesXmlStream();
-        }
-        catch (FileNotFoundException fnfe) {
-            logMessage(SEVERE,
-                "DBWSBuilder unable to create " + WEBSERVICES_FILENAME, fnfe);
-            return;
-        };
-        OutputStream platformWebservicesXmlStream = null;
-        try {
-            platformWebservicesXmlStream = packager.getPlatformWebservicesXmlStream();
-        }
-        catch (FileNotFoundException fnfe) {
-            logMessage(SEVERE,
-                "DBWSBuilder unable to create " + packager.getPlatformWebservicesFilename(), fnfe);
-            return;
-        };
         OutputStream codeGenProviderStream = null;
         try {
-            codeGenProviderStream = packager.getCodeGenProviderStream();
+            codeGenProviderStream = packager.getProviderClassStream();
         }
         catch (FileNotFoundException fnfe) {
             logMessage(SEVERE,
@@ -367,7 +377,7 @@ public class DBWSBuilder extends DBWSBuilderModel {
         };
         OutputStream sourceProviderStream = null;
         try {
-            sourceProviderStream = packager.getSourceProviderStream();
+            sourceProviderStream = packager.getProviderSourceStream();
         }
         catch (FileNotFoundException fnfe) {
             logMessage(SEVERE,
@@ -375,15 +385,13 @@ public class DBWSBuilder extends DBWSBuilderModel {
             return;
         };
         build(dbwsSchemaStream, dbwsSessionsStream, dbwsServiceStream, dbwsOrStream,
-            dbwsOxStream, swarefStream, webXmlStream, webservicesXmlStream,
-            platformWebservicesXmlStream, wsdlStream, codeGenProviderStream,
+            dbwsOxStream, swarefStream, webXmlStream, wsdlStream, codeGenProviderStream,
             sourceProviderStream, logger);
     }
 
     public void build(OutputStream dbwsSchemaStream, OutputStream dbwsSessionsStream,
         OutputStream dbwsServiceStream, OutputStream dbwsOrStream, OutputStream dbwsOxStream,
-        OutputStream swarefStream, OutputStream webXmlStream, OutputStream webservicesXmlStream,
-        OutputStream platformWebservicesXmlStream, OutputStream wsdlStream,
+        OutputStream swarefStream, OutputStream webXmlStream, OutputStream wsdlStream,
         OutputStream codeGenProviderStream, OutputStream sourceProviderStream, Logger logger)
         throws WSDLException {
 
@@ -437,8 +445,6 @@ public class DBWSBuilder extends DBWSBuilderModel {
         writeAttachmentSchema(swarefStream);
         buildWSDL(wsdlStream, topTransformer);
         writeWebXML(webXmlStream);
-        writeWebservicesXML(webservicesXmlStream);
-        writePlatformWebservicesXML(platformWebservicesXmlStream);
         writeDBWSProviderClass(codeGenProviderStream);
         writeDBWSProviderSource(sourceProviderStream);
         writeSchema(dbwsSchemaStream); // now write out schema
@@ -511,7 +517,7 @@ public class DBWSBuilder extends DBWSBuilderModel {
     protected List<DbTable> loadTables(String catalogPattern, String schemaPattern,
         String tableNamePattern) {
         return checkTables(JDBCHelper.buildDbTable(getConnection(),
-            databasePlatform, catalogPattern, schemaPattern, tableNamePattern));
+                databasePlatform, catalogPattern, schemaPattern, tableNamePattern));
     }
 
     public List<DbTable> checkTables(List<DbTable> dbTables) {
@@ -520,8 +526,8 @@ public class DBWSBuilder extends DBWSBuilderModel {
             boolean unSupportedColumnType = false;
             for (DbColumn dbColumn : dbTable.getColumns()) {
                 switch (dbColumn.getJDBCType()) {
-                    case Types.ARRAY :
-                    case Types.STRUCT :
+                    case Types.ARRAY :   // TODO - once JPub stuff is in EclipseLink, take 
+                    case Types.STRUCT :  // ARRAY and STRUCT out of this list
                     case Types.OTHER :
                     case Types.DATALINK :
                     case Types.JAVA_OBJECT :
@@ -540,7 +546,7 @@ public class DBWSBuilder extends DBWSBuilderModel {
         dbTables.add(dbTable);
     }
 
-    protected List<DbStoredProcedure> loadProcedures (String catalogPattern, String schemaPattern,
+    protected List<DbStoredProcedure> loadProcedures(String catalogPattern, String schemaPattern,
         String procedurePattern, int overload) {
         return checkStoredProcedures(
             JDBCHelper.buildStoredProcedure(getConnection(), databasePlatform, catalogPattern,
@@ -587,8 +593,8 @@ public class DBWSBuilder extends DBWSBuilderModel {
                         break;
                     }
                 }
-                else if (jdbcType == ARRAY ||
-                         jdbcType == STRUCT ||
+                else if (jdbcType == ARRAY ||     // TODO - once JPub stuff is in EclipseLink, take 
+                         jdbcType == STRUCT ||    // ARRAY and STRUCT out of this list 
                          jdbcType == DATALINK ||
                          jdbcType == JAVA_OBJECT) {
                         unSupportedArgType = true;
@@ -790,16 +796,16 @@ public class DBWSBuilder extends DBWSBuilderModel {
     protected void writeDBWSProviderClass(OutputStream codeGenProviderStream) {
         if (!isNullStream(codeGenProviderStream)) {
             logMessage(FINEST, "writing " + DBWS_PROVIDER_CLASS_FILE);
-        	packager.writeDBWSProviderClass(codeGenProviderStream, this);
-            packager.closeCodeGenProviderStream(codeGenProviderStream);
+        	packager.writeProviderClass(codeGenProviderStream, this);
+            packager.closeProviderClassStream(codeGenProviderStream);
         }
     }
 
     public void writeDBWSProviderSource(OutputStream sourceProviderStream) {
         if (!isNullStream(sourceProviderStream)) {
             logMessage(FINEST, "writing " + DBWS_PROVIDER_SOURCE_FILE);
-            packager.writeDBWSProviderSource(sourceProviderStream, this);
-            packager.closeSourceProviderStream(sourceProviderStream);
+            packager.writeProviderSource(sourceProviderStream, this);
+            packager.closeProviderSourceStream(sourceProviderStream);
         }
     }
 
@@ -1033,22 +1039,6 @@ public class DBWSBuilder extends DBWSBuilderModel {
         }
     }
 
-    protected void writeWebservicesXML(OutputStream webservicesXmlStream) {
-        if (!isNullStream(webservicesXmlStream)) {
-            logMessage(FINEST, "writing " + WEBSERVICES_FILENAME);
-            packager.writeWebservicesXML(webservicesXmlStream, this);
-            packager.closePlatformWebservicesXmlStream(webservicesXmlStream);
-        }
-    }
-
-    protected void writePlatformWebservicesXML(OutputStream platformWebservicesXmlStream) {
-        if (!isNullStream(platformWebservicesXmlStream)) {
-            logMessage(FINEST, "writing " + packager.getPlatformWebservicesFilename());
-            packager.writePlatformWebservicesXML(platformWebservicesXmlStream, this);
-            packager.closePlatformWebservicesXmlStream(platformWebservicesXmlStream);
-        }
-    }
-
     public void buildWSDL(OutputStream wsdlStream, NamingConventionTransformer nct) throws WSDLException {
         if (!isNullStream(wsdlStream)) {
             logMessage(FINEST, "building " + DBWS_WSDL);
@@ -1057,34 +1047,6 @@ public class DBWSBuilder extends DBWSBuilderModel {
             wsdlGenerator.generateWSDL();
             packager.closeWSDLStream(wsdlStream);
         }
-    }
-
-    @SuppressWarnings("unchecked")
-    protected Connection getConnection() {
-        Connection conn = null;
-        String driverClassName = getDriver();
-        try {
-            @SuppressWarnings("unused")
-            Class driverClass = null;
-            if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
-                driverClass = (Class)AccessController.doPrivileged(
-                    new PrivilegedClassForName(driverClassName));
-            }
-            else {
-                driverClass = PrivilegedAccessHelper.getClassForName(driverClassName);
-            }
-            Properties props = new Properties();
-            props.put("user", getUsername());
-            props.put("password", getPassword());
-            if (getPlatformClassname().contains("MySQL")) {
-            	props.put("useInformationSchema", "true");
-            }
-            conn = DriverManager.getConnection(getUrl(), props);
-        }
-        catch (Exception e) {
-            logMessage(SEVERE, "cannot load JDBC driver " + driverClassName, e);
-        }
-        return conn;
     }
 
     protected ProjectConfig buildORProjectConfig() {
@@ -1171,10 +1133,41 @@ public class DBWSBuilder extends DBWSBuilderModel {
         properties.put(URL_KEY, url);
     }
 
+    @SuppressWarnings("unchecked")
+    public Connection getConnection() {
+        if (conn == null ) {
+            String driverClassName = getDriver();
+            try {
+                @SuppressWarnings("unused")
+                Class driverClass = null;
+                if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
+                    driverClass = (Class)AccessController.doPrivileged(
+                        new PrivilegedClassForName(driverClassName));
+                }
+                else {
+                    driverClass = PrivilegedAccessHelper.getClassForName(driverClassName);
+                }
+                Properties props = new Properties();
+                props.put("user", getUsername());
+                props.put("password", getPassword());
+                if (getPlatformClassname().contains("MySQL")) {
+                    props.put("useInformationSchema", "true");
+                }
+                conn = DriverManager.getConnection(getUrl(), props);
+            }
+            catch (Exception e) {
+                logMessage(SEVERE, "cannot load JDBC driver " + driverClassName, e);
+            }
+        }
+        return conn;
+    }
+    public void setConnection(Connection conn) {
+        this.conn = conn;
+    }
+    
     public String getProjectName() {
         return properties.get(PROJNAME_KEY);
     }
-
     public void setProjectName(String projectName) {
         properties.put(PROJNAME_KEY, projectName);
     }
@@ -1187,7 +1180,6 @@ public class DBWSBuilder extends DBWSBuilderModel {
         }
         return contextRoot;
     }
-
     public void setContextRoot(String contextRoot) {
         properties.put(CONTEXT_ROOT_KEY, contextRoot);
     }
@@ -1195,7 +1187,6 @@ public class DBWSBuilder extends DBWSBuilderModel {
     public String getDataSource() {
         return properties.get(DATASOURCE_KEY);
     }
-
     public void setDataSource(String dataSource) {
         properties.put(DATASOURCE_KEY, dataSource);
     }
@@ -1208,7 +1199,6 @@ public class DBWSBuilder extends DBWSBuilderModel {
         }
         return sessionsFileName;
     }
-
     public void setSessionsFileName(String sessionsFileName) {
         properties.put(SESSIONS_FILENAME_KEY, sessionsFileName);
     }

@@ -13,24 +13,24 @@
 
 package dbws.testing;
 
-// Javase imports
+//javase imports
 import java.io.File;
 import java.io.IOException;
 import java.io.StringReader;
 import java.io.StringWriter;
 import org.w3c.dom.Document;
 
-// Java extension imports
+//Java extension imports
 import javax.wsdl.WSDLException;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
-// JUnit imports
+//JUnit imports
 import org.junit.BeforeClass;
 
-// EclipseLink imports
+//EclipseLink imports
 import org.eclipse.persistence.internal.xr.XRServiceAdapter;
 import org.eclipse.persistence.oxm.XMLContext;
 import org.eclipse.persistence.oxm.XMLUnmarshaller;
@@ -41,7 +41,9 @@ import org.eclipse.persistence.platform.xml.XMLPlatformFactory;
 import org.eclipse.persistence.tools.dbws.DBWSBuilder;
 import org.eclipse.persistence.tools.dbws.DBWSBuilderModel;
 import org.eclipse.persistence.tools.dbws.DBWSBuilderModelProject;
-import org.eclipse.persistence.tools.dbws.SimpleFilesPackager;
+import org.eclipse.persistence.tools.dbws.JarArchiver;
+import org.eclipse.persistence.tools.dbws.XRPackager;
+import static org.eclipse.persistence.tools.dbws.DBWSPackager.ArchiveUse.ignore;
 
 // domain-specific (testing) imports
 
@@ -92,11 +94,14 @@ public class DBWSTestSuite {
         dbwsBuilder.quiet = true;
         dbwsBuilder.properties = builderModel.properties;
         dbwsBuilder.operations = builderModel.operations;
-        SimpleFilesPackager simpleFilesPackager = new SimpleFilesPackager(true,
-            "dbws" + jarName + ".jar");
-        simpleFilesPackager.setStageDir(new File("."));
-        simpleFilesPackager.setSessionsFileName(dbwsBuilder.getSessionsFileName());
-        dbwsBuilder.setPackager(simpleFilesPackager);
+        XRPackager xrPackager = new XRPackager();
+        xrPackager.setArchiveUse(ignore);
+        xrPackager.setArchiver(new JarArchiver(xrPackager));
+        xrPackager.setArchiveFilename("dbws" + jarName + ".jar");
+        xrPackager.setStageDir(new File("."));
+        xrPackager.setSessionsFileName(dbwsBuilder.getSessionsFileName());
+        xrPackager.setDBWSBuilder(dbwsBuilder);
+        dbwsBuilder.setPackager(xrPackager);
         dbwsBuilder.start();
     }
 

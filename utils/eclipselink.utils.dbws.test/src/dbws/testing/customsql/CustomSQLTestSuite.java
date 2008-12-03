@@ -13,27 +13,27 @@
 
 package dbws.testing.customsql;
 
-// Javase imports
+//javase imports
 import java.io.IOException;
 import java.io.StringReader;
 import java.util.Vector;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
-// Java extension imports
+//Java extension imports
 import javax.wsdl.WSDLException;
 
-// JUnit imports
+//JUnit imports
 import org.junit.Test;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
-// EclipseLink imports
+//EclipseLink imports
 import org.eclipse.persistence.internal.xr.Invocation;
 import org.eclipse.persistence.internal.xr.Operation;
 import org.eclipse.persistence.oxm.XMLMarshaller;
 
-// domain-specific imports
+//domain-specific imports
 import dbws.testing.DBWSTestSuite;
 
 public class CustomSQLTestSuite extends DBWSTestSuite {
@@ -139,19 +139,20 @@ public class CustomSQLTestSuite extends DBWSTestSuite {
         XMLMarshaller marshaller = xrService.getXMLContext().createMarshaller();
         Document doc = xmlPlatform.createDocument();
         marshaller.marshal(result, doc);
+        System.out.println(documentToString(doc));
         Document controlDoc = xmlParser.parse(new StringReader(FINDBYPK_7788_CONTROL_DOC));
         assertTrue("control document not same as instance document",
             comparer.isNodeEqual(controlDoc, doc));
     }
 
     public static final String FINDBYPK_7788_CONTROL_DOC =
-        "<?xml version = '1.0' encoding = 'UTF-8'?>" +
-        "<ns1:customType xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:ns1=\"urn:customSQL\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +
+        "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?>" +
+        "<ns1:customType xmlns:ns1=\"urn:customSQL\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +
           "<ns1:empno>7788</ns1:empno>" +
           "<ns1:ename>SCOTT</ns1:ename>" +
           "<ns1:job>ANALYST</ns1:job>" +
           "<ns1:mgr>7566</ns1:mgr>" +
-          "<ns1:hiredate>1981-06-09</ns1:hiredate>" +
+          "<ns1:hiredate>1981-06-09-05:00</ns1:hiredate>" +
           "<ns1:sal>3000.00</ns1:sal>" +
           "<ns1:deptno>20</ns1:deptno>" +
         "</ns1:customType>";
@@ -183,7 +184,7 @@ public class CustomSQLTestSuite extends DBWSTestSuite {
     	    "<ns1:ename>SMITH</ns1:ename>" +
     	    "<ns1:job>CLERK</ns1:job>" +
     	    "<ns1:mgr>7902</ns1:mgr>" +
-    	    "<ns1:hiredate>1980-12-17</ns1:hiredate>" +
+    	    "<ns1:hiredate>1980-12-17-05:00</ns1:hiredate>" +
     	    "<ns1:sal>800.00</ns1:sal>" +
     	    "<ns1:deptno>20</ns1:deptno>" +
     	  "</ns1:customType>" +
@@ -192,7 +193,7 @@ public class CustomSQLTestSuite extends DBWSTestSuite {
     	    "<ns1:ename>ALLEN</ns1:ename>" +
     	    "<ns1:job>SALESMAN</ns1:job>" +
     	    "<ns1:mgr>7698</ns1:mgr>" +
-    	    "<ns1:hiredate>1981-02-20</ns1:hiredate>" +
+    	    "<ns1:hiredate>1981-02-20-05:00</ns1:hiredate>" +
     	    "<ns1:sal>1600.00</ns1:sal>" +
     	    "<ns1:comm>300.00</ns1:comm>" +
     	    "<ns1:deptno>30</ns1:deptno>" +
@@ -202,7 +203,7 @@ public class CustomSQLTestSuite extends DBWSTestSuite {
     	    "<ns1:ename>WARD</ns1:ename>" +
     	    "<ns1:job>SALESMAN</ns1:job>" +
     	    "<ns1:mgr>7698</ns1:mgr>" +
-    	    "<ns1:hiredate>1981-02-22</ns1:hiredate>" +
+    	    "<ns1:hiredate>1981-02-22-05:00</ns1:hiredate>" +
     	    "<ns1:sal>1250.00</ns1:sal>" +
     	    "<ns1:comm>500.00</ns1:comm>" +
     	    "<ns1:deptno>30</ns1:deptno>" +
@@ -212,7 +213,7 @@ public class CustomSQLTestSuite extends DBWSTestSuite {
     	    "<ns1:ename>JONES</ns1:ename>" +
     	    "<ns1:job>MANAGER</ns1:job>" +
     	    "<ns1:mgr>7839</ns1:mgr>" +
-    	    "<ns1:hiredate>1981-04-02</ns1:hiredate>" +
+    	    "<ns1:hiredate>1981-04-02-05:00</ns1:hiredate>" +
     	    "<ns1:sal>2975.00</ns1:sal>" +
     	    "<ns1:deptno>20</ns1:deptno>" +
     	  "</ns1:customType>" +
@@ -221,7 +222,7 @@ public class CustomSQLTestSuite extends DBWSTestSuite {
     	    "<ns1:ename>MARTIN</ns1:ename>" +
     	    "<ns1:job>SALESMAN</ns1:job>" +
     	    "<ns1:mgr>7698</ns1:mgr>" +
-    	    "<ns1:hiredate>1981-09-28</ns1:hiredate>" +
+    	    "<ns1:hiredate>1981-09-28-05:00</ns1:hiredate>" +
     	    "<ns1:sal>1250.00</ns1:sal>" +
     	    "<ns1:comm>1400.00</ns1:comm>" +
     	    "<ns1:deptno>30</ns1:deptno>" +
@@ -231,7 +232,7 @@ public class CustomSQLTestSuite extends DBWSTestSuite {
     	    "<ns1:ename>BLAKE</ns1:ename>" +
     	    "<ns1:job>MANAGER</ns1:job>" +
     	    "<ns1:mgr>7839</ns1:mgr>" +
-    	    "<ns1:hiredate>1981-05-01</ns1:hiredate>" +
+    	    "<ns1:hiredate>1981-05-01-05:00</ns1:hiredate>" +
     	    "<ns1:sal>2850.00</ns1:sal>" +
     	    "<ns1:deptno>30</ns1:deptno>" +
     	  "</ns1:customType>" +
@@ -240,7 +241,7 @@ public class CustomSQLTestSuite extends DBWSTestSuite {
     	    "<ns1:ename>CLARK</ns1:ename>" +
     	    "<ns1:job>MANAGER</ns1:job>" +
     	    "<ns1:mgr>7839</ns1:mgr>" +
-    	    "<ns1:hiredate>1981-06-09</ns1:hiredate>" +
+    	    "<ns1:hiredate>1981-06-09-05:00</ns1:hiredate>" +
     	    "<ns1:sal>2450.00</ns1:sal>" +
     	    "<ns1:deptno>10</ns1:deptno>" +
     	  "</ns1:customType>" +
@@ -249,7 +250,7 @@ public class CustomSQLTestSuite extends DBWSTestSuite {
     	    "<ns1:ename>SCOTT</ns1:ename>" +
     	    "<ns1:job>ANALYST</ns1:job>" +
     	    "<ns1:mgr>7566</ns1:mgr>" +
-    	    "<ns1:hiredate>1981-06-09</ns1:hiredate>" +
+    	    "<ns1:hiredate>1981-06-09-05:00</ns1:hiredate>" +
     	    "<ns1:sal>3000.00</ns1:sal>" +
     	    "<ns1:deptno>20</ns1:deptno>" +
     	  "</ns1:customType>" +
@@ -257,7 +258,7 @@ public class CustomSQLTestSuite extends DBWSTestSuite {
     	    "<ns1:empno>7839</ns1:empno>" +
     	    "<ns1:ename>KING</ns1:ename>" +
     	    "<ns1:job>PRESIDENT</ns1:job>" +
-    	    "<ns1:hiredate>1981-11-17</ns1:hiredate>" +
+    	    "<ns1:hiredate>1981-11-17-05:00</ns1:hiredate>" +
     	    "<ns1:sal>5000.00</ns1:sal>" +
     	    "<ns1:deptno>10</ns1:deptno>" +
     	  "</ns1:customType>" +
@@ -266,7 +267,7 @@ public class CustomSQLTestSuite extends DBWSTestSuite {
     	    "<ns1:ename>TURNER</ns1:ename>" +
     	    "<ns1:job>SALESMAN</ns1:job>" +
     	    "<ns1:mgr>7698</ns1:mgr>" +
-    	    "<ns1:hiredate>1981-09-08</ns1:hiredate>" +
+    	    "<ns1:hiredate>1981-09-08-05:00</ns1:hiredate>" +
     	    "<ns1:sal>1500.00</ns1:sal>" +
     	    "<ns1:comm>0.00</ns1:comm>" +
     	    "<ns1:deptno>30</ns1:deptno>" +
@@ -276,7 +277,7 @@ public class CustomSQLTestSuite extends DBWSTestSuite {
     	    "<ns1:ename>ADAMS</ns1:ename>" +
     	    "<ns1:job>CLERK</ns1:job>" +
     	    "<ns1:mgr>7788</ns1:mgr>" +
-    	    "<ns1:hiredate>1987-05-23</ns1:hiredate>" +
+    	    "<ns1:hiredate>1987-05-23-05:00</ns1:hiredate>" +
     	    "<ns1:sal>1100.00</ns1:sal>" +
     	    "<ns1:deptno>20</ns1:deptno>" +
     	  "</ns1:customType>" +
@@ -285,7 +286,7 @@ public class CustomSQLTestSuite extends DBWSTestSuite {
     	    "<ns1:ename>JAMES</ns1:ename>" +
     	    "<ns1:job>CLERK</ns1:job>" +
     	    "<ns1:mgr>7698</ns1:mgr>" +
-    	    "<ns1:hiredate>1981-12-03</ns1:hiredate>" +
+    	    "<ns1:hiredate>1981-12-03-05:00</ns1:hiredate>" +
     	    "<ns1:sal>950.00</ns1:sal>" +
     	    "<ns1:deptno>30</ns1:deptno>" +
     	  "</ns1:customType>" +
@@ -294,7 +295,7 @@ public class CustomSQLTestSuite extends DBWSTestSuite {
     	    "<ns1:ename>FORD</ns1:ename>" +
     	    "<ns1:job>ANALYST</ns1:job>" +
     	    "<ns1:mgr>7566</ns1:mgr>" +
-    	    "<ns1:hiredate>1981-12-03</ns1:hiredate>" +
+    	    "<ns1:hiredate>1981-12-03-05:00</ns1:hiredate>" +
     	    "<ns1:sal>3000.00</ns1:sal>" +
     	    "<ns1:deptno>20</ns1:deptno>" +
     	  "</ns1:customType>" +
@@ -303,7 +304,7 @@ public class CustomSQLTestSuite extends DBWSTestSuite {
     	    "<ns1:ename>MILLER</ns1:ename>" +
     	    "<ns1:job>CLERK</ns1:job>" +
     	    "<ns1:mgr>7782</ns1:mgr>" +
-    	    "<ns1:hiredate>1982-01-23</ns1:hiredate>" +
+    	    "<ns1:hiredate>1982-01-23-05:00</ns1:hiredate>" +
     	    "<ns1:sal>1300.00</ns1:sal>" +
     	    "<ns1:deptno>10</ns1:deptno>" +
     	  "</ns1:customType>" +
