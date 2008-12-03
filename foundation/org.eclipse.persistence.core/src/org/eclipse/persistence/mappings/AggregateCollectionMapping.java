@@ -26,6 +26,7 @@ import org.eclipse.persistence.descriptors.DescriptorEvent;
 import org.eclipse.persistence.descriptors.DescriptorEventManager;
 import org.eclipse.persistence.queries.*;
 import org.eclipse.persistence.sessions.Project;
+import org.eclipse.persistence.sessions.remote.DistributedSession;
 
 /**
  * <p><b>Purpose</b>: The aggregate collection mapping is used to represent the aggregate relationship between a single
@@ -55,6 +56,12 @@ public class AggregateCollectionMapping extends CollectionMapping implements Rel
      * that should be applied to this mapping.
      */  
     protected transient Map<String, Map<String, String>> nestedAggregateToSourceFieldNames;
+    
+    /** In RemoteSession case the mapping needs the reference descriptor serialized from the server, 
+     * but referenceDescriptor attribute defined as transient in the superclass. To overcome that
+     * in non-remote case referenceDescriptor is assigned to remoteReferenceDescriptor; in remote - another way around.
+     */  
+    protected ClassDescriptor remoteReferenceDescriptor;
 
 
     /**
@@ -656,6 +663,9 @@ public class AggregateCollectionMapping extends CollectionMapping implements Rel
      * descriptor is part of an inheritance tree.
      */
     public ClassDescriptor getReferenceDescriptor() {
+        if(referenceDescriptor == null) {
+            referenceDescriptor = remoteReferenceDescriptor;
+        }
         return referenceDescriptor;
     }
 
@@ -1575,6 +1585,16 @@ public class AggregateCollectionMapping extends CollectionMapping implements Rel
     }
 
     /**
+     * INTERNAL:
+     * Set the referenceDescriptor. This is a descriptor which is associated with
+     * the reference class.
+     */
+    protected void setReferenceDescriptor(ClassDescriptor aDescriptor) {
+        this.referenceDescriptor = aDescriptor;
+        this.remoteReferenceDescriptor = this.referenceDescriptor;
+    }
+
+    /**
      * PUBLIC:
      * Set the source key field names associated with the mapping.
      * These must be in-order with the targetForeignKeyFieldNames.
@@ -1776,5 +1796,16 @@ public class AggregateCollectionMapping extends CollectionMapping implements Rel
      */
     public void removeFromCollectionChangeRecord(Object newKey, Object newValue, ObjectChangeSet objectChangeSet, UnitOfWorkImpl uow) throws DescriptorException {
         throw DescriptorException.invalidMappingOperation(this, "removeFromCollectionChangeRecord");
+    }
+
+    /**
+     * INTERNAL:
+     * Once a descriptor is serialized to the remote session, all its mappings and reference descriptors are traversed.
+     * Usually the mappings are initialized and the serialized reference descriptors are replaced with local descriptors
+     * if they already exist in the remote session.
+     */
+    public void remoteInitialization(DistributedSession session) {
+        super.remoteInitialization(session);
+        getReferenceDescriptor().remoteInitialization(session);
     }
 }
