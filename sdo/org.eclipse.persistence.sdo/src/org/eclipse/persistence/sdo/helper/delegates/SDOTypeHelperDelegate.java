@@ -826,8 +826,15 @@ public class SDOTypeHelperDelegate implements SDOTypeHelper {
 
         Object opposite = dataObject.get("opposite");
         if (opposite != null) {
-            if (opposite instanceof Property) {
-                newProperty.setOpposite((Property)opposite);
+            if (opposite instanceof SDOProperty) {
+                newProperty.setOpposite((SDOProperty)opposite);
+                ((SDOProperty)opposite).setOpposite(newProperty);
+            } else if(opposite instanceof DataObject) {
+                SDOProperty prop = (SDOProperty)typeValue.getProperty(((DataObject)opposite).getString("name"));
+                if(prop != null) {
+                    newProperty.setOpposite(prop);
+                    prop.setOpposite(newProperty);
+                }
             }
         }
 
