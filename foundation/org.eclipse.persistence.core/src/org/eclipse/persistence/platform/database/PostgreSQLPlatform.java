@@ -413,10 +413,8 @@ public class PostgreSQLPlatform extends DatabasePlatform {
         call.setFields(statement.printSQL(printer));
         printer.printString(LIMIT);
         printer.printParameter(DatabaseCall.MAXROW_FIELD);
-        if (firstRow > 0) {
-           printer.printString(OFFSET);
-           printer.printParameter(DatabaseCall.FIRSTRESULT_FIELD);
-        }
+        printer.printString(OFFSET);
+        printer.printParameter(DatabaseCall.FIRSTRESULT_FIELD);
         call.setIgnoreFirstRowMaxResultsSettings(true);
     }
 

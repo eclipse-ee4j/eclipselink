@@ -571,10 +571,8 @@ public class MySQLPlatform extends DatabasePlatform {
         statement.setUseUniqueFieldAliases(true);
         call.setFields(statement.printSQL(printer));
         printer.printString(LIMIT);
-        if (firstRow > 0) {
-           printer.printParameter(DatabaseCall.FIRSTRESULT_FIELD);
-           printer.printString(", ");
-        }
+        printer.printParameter(DatabaseCall.FIRSTRESULT_FIELD);
+        printer.printString(", ");
         printer.printParameter(DatabaseCall.MAXROW_FIELD);
         call.setIgnoreFirstRowMaxResultsSettings(true);
     }

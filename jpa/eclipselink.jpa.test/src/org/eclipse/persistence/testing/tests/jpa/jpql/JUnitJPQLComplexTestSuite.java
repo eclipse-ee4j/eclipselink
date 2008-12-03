@@ -1114,12 +1114,18 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
         int nrOfEmps = allEmps.size();
         int firstResult = 2;
 
-        // Test case 1. setFirstResult and MaxResults
+        // Test case 0.  MaxResults
         Query query1 = em.createNamedQuery("findAllEmployeesOrderById");
+        query1.setMaxResults(nrOfEmps - 2);
+        List result1 = query1.getResultList();
+        List expectedResult1 = allEmps.subList(0, nrOfEmps - 2);
+        Assert.assertTrue("Query1 set  MaxResults Test Case Failed", result1.equals(expectedResult1));
+        
+        // Test case 1. setFirstResult and MaxResults
         query1.setFirstResult(firstResult);
         query1.setMaxResults(nrOfEmps - 1);
-        List result1 = query1.getResultList();
-        List expectedResult1 = allEmps.subList(firstResult, nrOfEmps);
+        result1 = query1.getResultList();
+        expectedResult1 = allEmps.subList(firstResult, nrOfEmps);
         Assert.assertTrue("Query1 set FirstResult and MaxResults Test Case Failed", result1.equals(expectedResult1));
 
         // Test case 2. The expected result should be exactly same as test case 1 
