@@ -28,7 +28,7 @@
     <!-- Test to make certain that build is run from component dir -->
     <available file="../${ant.project.name}" type="dir" property="dbws_test.is.local"/>
     <fail unless="dbws_test.is.local" message="Not running from '${ant.project.name}' directory"/>
-    
+
     <condition property="is.java.version.16">
         <equals arg1="${ant.java.version}" arg2="1.6"/>
     </condition>
@@ -43,7 +43,7 @@
     <condition property="dbws_test.2.common.plugins.dir" value="../../plugins" else="../plugins">
         <contains string="${dbws_test.build.location}" substring="dbws"/>
     </condition>
-    
+
     <!-- OS environment variables have 'env' as a prefix -->
     <property environment="env"/>
     <!-- local property overrides -->
@@ -348,8 +348,10 @@
         <antcall target="build" inheritAll="true" inheritRefs="true"/>
         <available file="./${eclipselink.dbws.test.common.jar.name}" property="dbws_test.common.jar.exist"/>
     </target>
-  
+
     <target name="run-tests" if="support.test" description="setup, compile, and run dbws util testsuites">
+        <DeleteDirQuietly dir="./${report.dir}"/>
+        <mkdir dir="./${report.dir}"/>
         <SetupCompileRunTeardown testsuite-name="KeyMappings"/>
         <SetupCompileRunTeardown testsuite-name="Relationships"/>
     </target>

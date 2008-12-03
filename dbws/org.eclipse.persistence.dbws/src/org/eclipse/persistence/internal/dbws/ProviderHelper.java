@@ -30,15 +30,22 @@ import javax.xml.namespace.QName;
 import javax.xml.soap.SOAPBodyElement;
 import javax.xml.soap.SOAPElement;
 import javax.xml.soap.SOAPException;
+import javax.xml.soap.SOAPFactory;
+import javax.xml.soap.SOAPFault;
 import javax.xml.soap.SOAPMessage;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
+import javax.xml.ws.WebServiceException;
+import javax.xml.ws.soap.SOAPFaultException;
+import static javax.xml.soap.SOAPConstants.URI_NS_SOAP_1_1_ENVELOPE;
 
 // EclipseLink imports
 import org.eclipse.persistence.dbws.DBWSModelProject;
 import org.eclipse.persistence.exceptions.DBWSException;
+import org.eclipse.persistence.exceptions.EclipseLinkException;
+import org.eclipse.persistence.exceptions.XMLMarshalException;
 import org.eclipse.persistence.internal.dbws.DBWSAdapter;
 import org.eclipse.persistence.internal.oxm.XMLConversionManager;
 import org.eclipse.persistence.internal.oxm.schema.SchemaModelProject;
@@ -68,21 +75,18 @@ import static org.eclipse.persistence.internal.xr.Util.WEB_INF_DIR;
 import static org.eclipse.persistence.internal.xr.Util.WSDL_DIR;
 import static org.eclipse.persistence.oxm.mappings.UnmarshalKeepAsElementPolicy.KEEP_UNKNOWN_AS_ELEMENT;
 
-
 /**
  * <p>
  * <b>INTERNAL:</b> ProviderHelper bridges between {@link DBWSAdapter}'s and JAX-WS {@link Provider}'s
  * <p>
  *
  * @author Mike Norman - michael.norman@oracle.com
- * @since EclipseLink 1.0
+ * @since EclipseLink 1.1
  * <pre>
  * packaging required for deployment as a Web Service
  * \--- root of war file
  *      |
  *      \---web-inf
- *          |   webservices.xml
- *          |   <vendor_specific_files: sun-jaxws.xml, weblogic-webservices.xml>
  *          |   web.xml
  *          |
  *          +---classes
@@ -93,7 +97,8 @@ import static org.eclipse.persistence.oxm.mappings.UnmarshalKeepAsElementPolicy.
  *          |   |    eclipselink-dbws-ox.xml
  *          |   |
  *          |   +---_dbws
- *          |   |    DBWSProvider.class        -- code-generated javax.xml.ws.Provider
+ *          |   |    DBWSProvider.java         -- (source provided as a convenience for IDE integration)
+ *          |   |    DBWSProvider.class        -- ASM-generated javax.xml.ws.Provider
  *          |   |
  *          |   \---foo                        -- optional domain classes
  *          |       \---bar
@@ -126,8 +131,7 @@ public class ProviderHelper extends XRServiceFactory {
           "<xsl:copy-of select=\".\"/>" +
         "</xsl:template>" +
       XSL_POSTSCRIPT;
-    protected static TransformerFactory tf = TransformerFactory.newInstance();
-    protected SOAPResponseWriter responseWriter;
+    protected SOAPResponseWriter responseWriter = null;
 
     // Default constructor required by servlet/jax-ws spec
     public ProviderHelper() {
@@ -136,115 +140,145 @@ public class ProviderHelper extends XRServiceFactory {
 
     @SuppressWarnings("unchecked")
     public void init(ClassLoader parentClassLoader, ServletContext sc) {
+
+        this.parentClassLoader = parentClassLoader;
+        InputStream xrServiceStream = null;
+        for (String searchPath : META_INF_PATHS) {
+            String path = searchPath + DBWS_SERVICE_XML;
+            xrServiceStream = parentClassLoader.getResourceAsStream(path);
+            if (xrServiceStream != null) {
+                break;
+            }
+        }
+        if (xrServiceStream == null) {
+            throw new WebServiceException(DBWSException.couldNotLocateFile(DBWS_SERVICE_XML));
+        }
+        DBWSModelProject xrServiceModelProject = new DBWSModelProject();
+        XMLContext xmlContext = new XMLContext(xrServiceModelProject);
+        XMLUnmarshaller unmarshaller = xmlContext.createUnmarshaller();
+        XRServiceModel xrServiceModel;
         try {
-            this.parentClassLoader = parentClassLoader;
-            InputStream xrServiceStream = null;
-            for (String searchPath : META_INF_PATHS) {
-                String path = searchPath + DBWS_SERVICE_XML;
-                xrServiceStream = parentClassLoader.getResourceAsStream(path);
-                if (xrServiceStream != null) {
-                    break;
-                }
-            }
-            if (xrServiceStream == null) {
-                throw DBWSException.couldNotLocateFile(DBWS_SERVICE_XML);
-            }
-            DBWSModelProject xrServiceModelProject = new DBWSModelProject();
-            XMLContext xmlContext = new XMLContext(xrServiceModelProject);
-            XMLUnmarshaller unmarshaller = xmlContext.createUnmarshaller();
-            XRServiceModel xrServiceModel = (XRServiceModel)unmarshaller.unmarshal(xrServiceStream);
-            try {
-                xrServiceStream.close();
-            }
-            catch (IOException ioe) {
-                /* ignore */
-            }
+            xrServiceModel = (XRServiceModel)unmarshaller.unmarshal(xrServiceStream);
+        }
+        catch (XMLMarshalException e) {
+            // something went wrong parsing the eclipselink-dbws.xml - can't recover from that
+            throw new WebServiceException(DBWSException.couldNotParseDBWSFile());
+        }
+        try {
+            xrServiceStream.close();
+        }
+        catch (IOException ioe) {
+            /* safe to ignore */
+        }
 
-            String path = "WEB-INF/" + WSDL_DIR + DBWS_SCHEMA_XML;
+        String path = WSDL_DIR + DBWS_SCHEMA_XML;
+        if (sc != null) {
+            path = "WEB-INF/" + path; 
             xrSchemaStream = sc.getResourceAsStream(path);
-            if (xrSchemaStream == null) {
-                throw DBWSException.couldNotLocateFile(DBWS_SCHEMA_XML);
-            }
+        }
+        else {
+            // if ServletContext is null, then we are running in JavaSE6 'container-less' mode
+            xrSchemaStream = parentClassLoader.getResourceAsStream(path); 
+        }
+        if (xrSchemaStream == null) {
+            throw new WebServiceException(DBWSException.couldNotLocateFile(DBWS_SCHEMA_XML));
+        }
+        try {
             buildService(xrServiceModel); // inherit xrService processing from XRServiceFactory
+        }
+        catch (Exception e) {
+            // something went wrong building the service
+            throw new WebServiceException(e);
+        }
 
-            // the xrService built by 'buildService' above is overridden to produce an
-            // instance of DBWSAdapter (a sub-class of XRService)
-            DBWSAdapter dbwsAdapter = (DBWSAdapter)xrService;
+        // the xrService built by 'buildService' above is overridden to produce an
+        // instance of DBWSAdapter (a sub-class of XRService)
+        DBWSAdapter dbwsAdapter = (DBWSAdapter)xrService;
 
-            // get extended schema from WSDL - has additional types for the operations
-            StringWriter sw = new StringWriter();
-            path = WEB_INF_DIR + WSDL_DIR + DBWS_WSDL;
-            InputStream wsdlInputStream = sc.getResourceAsStream(path);
-            if (wsdlInputStream == null) {
-                throw DBWSException.couldNotLocateFile(DBWS_WSDL);
-            }
-            try {
-                StreamSource wsdlStreamSource = new StreamSource(wsdlInputStream);
-            	Transformer t = tf.newTransformer(new StreamSource(new StringReader(MATCH_SCHEMA)));
-            	StreamResult streamResult = new StreamResult(sw);
-            	t.transform(wsdlStreamSource, streamResult);
-            	sw.toString();
-            	wsdlInputStream.close();
-            }
-            catch (Exception e) {
-            	// e.printStackTrace();
-            }
-
+        // get inline schema from WSDL - has additional types for the operations
+        StringWriter sw = new StringWriter();
+        InputStream wsdlInputStream = null;
+        path = WSDL_DIR + DBWS_WSDL;
+        if (sc != null) {
+            path = WEB_INF_DIR + path;
+            wsdlInputStream = sc.getResourceAsStream(path);
+        }
+        else {
+            // if ServletContext is null, then we are running in JavaSE6 'container-less' mode
+            wsdlInputStream = parentClassLoader.getResourceAsStream(path);
+        } 
+        if (wsdlInputStream == null) {
+            throw new WebServiceException(DBWSException.couldNotLocateFile(DBWS_WSDL));
+        }
+        try {
+            StreamSource wsdlStreamSource = new StreamSource(wsdlInputStream);
+        	Transformer t = getTransformerFactory().newTransformer(new StreamSource(
+        	    new StringReader(MATCH_SCHEMA)));
+        	StreamResult streamResult = new StreamResult(sw);
+        	t.transform(wsdlStreamSource, streamResult);
+        	sw.toString();
+        	wsdlInputStream.close();
             SchemaModelProject schemaProject = new SchemaModelProject();
             XMLContext xmlContext2 = new XMLContext(schemaProject);
             unmarshaller = xmlContext2.createUnmarshaller();
             Schema extendedSchema = (Schema)unmarshaller.unmarshal(new StringReader(sw.toString()));
             dbwsAdapter.setExtendedSchema(extendedSchema);
-            Project oxProject = dbwsAdapter.getOXSession().getProject();
-            for (Iterator i = oxProject.getDescriptors().values().iterator(); i.hasNext();) {
-              XMLDescriptor d = (XMLDescriptor)i.next();
-              NamespaceResolver ns = d.getNamespaceResolver();
-              String tns = dbwsAdapter.getExtendedSchema().getTargetNamespace();
-              if (ns != null) {
-                ns.put(SERVICE_NS_PREFIX, tns);
+        }
+        catch (Exception e) {
+        	// that's Ok, WSDL may not contain inline schema
+        }
+
+        Project oxProject = dbwsAdapter.getOXSession().getProject();
+        for (Iterator i = oxProject.getDescriptors().values().iterator(); i.hasNext();) {
+          XMLDescriptor d = (XMLDescriptor)i.next();
+          NamespaceResolver ns = d.getNamespaceResolver();
+          String tns = dbwsAdapter.getExtendedSchema().getTargetNamespace();
+          if (ns != null) {
+            ns.put(SERVICE_NS_PREFIX, tns);
+          }
+          String defaultRootElement = d.getDefaultRootElement();
+          if (defaultRootElement != null ) {
+              int idx = defaultRootElement.indexOf(':');
+              if (idx > 0) {
+                  defaultRootElement = defaultRootElement.substring(idx+1);
               }
-              String defaultRootElement = d.getDefaultRootElement();
-              if (defaultRootElement != null ) {
-                  int idx = defaultRootElement.indexOf(':');
-                  if (idx > 0) {
-                      defaultRootElement = defaultRootElement.substring(idx+1);
-                  }
-                  d.addRootElement(SERVICE_NS_PREFIX + ":" + defaultRootElement);
-              }
+              d.addRootElement(SERVICE_NS_PREFIX + ":" + defaultRootElement);
+          }
+        }
+        XMLDescriptor invocationDescriptor = new XMLDescriptor();
+        invocationDescriptor.setJavaClass(Invocation.class);
+        NamespaceResolver ns = new NamespaceResolver();
+        invocationDescriptor.setNamespaceResolver(ns);
+        ns.put(SERVICE_NS_PREFIX, dbwsAdapter.getExtendedSchema().getTargetNamespace());
+        XMLAnyCollectionMapping parametersMapping = new XMLAnyCollectionMapping();
+        parametersMapping.setAttributeName("parameters");
+        parametersMapping.setAttributeAccessor(new AttributeAccessor() {
+            Project oxProject;
+            @Override
+            public Object getAttributeValueFromObject(Object object) {
+              return ((Invocation)object).getParameters();
             }
-            XMLDescriptor invocationDescriptor = new XMLDescriptor();
-            invocationDescriptor.setJavaClass(Invocation.class);
-            NamespaceResolver ns = new NamespaceResolver();
-            invocationDescriptor.setNamespaceResolver(ns);
-            ns.put(SERVICE_NS_PREFIX, dbwsAdapter.getExtendedSchema().getTargetNamespace());
-            XMLAnyCollectionMapping parametersMapping = new XMLAnyCollectionMapping();
-            parametersMapping.setAttributeName("parameters");
-            parametersMapping.setAttributeAccessor(new AttributeAccessor() {
-                Project oxProject;
-                @Override
-                public Object getAttributeValueFromObject(Object object) {
-                  return ((Invocation)object).getParameters();
-                }
-                @Override
-                public void setAttributeValueInObject(Object object, Object value) {
-                    Invocation invocation = (Invocation)object;
-                    Vector values = (Vector)value;
-                    for (Iterator i = values.iterator(); i.hasNext();) {
-                      /* scan through values:
-                       *  if XML conforms to something mapped, it an object; else it is a DOM Element
-                       *  (probably a scalar). Walk through operations for the types, converting
-                       *   as required. The 'key' is the local name of the element - for mapped objects,
-                       *   have to get the root element name from the descriptor for the object
-                       */
-                      Object o = i.next();
-                      if (o instanceof Element) {
-                        Element e = (Element)o;
-                        String key = e.getLocalName();
-                        if ("theInstance".equals(key)) {
-                            NodeList nl = e.getChildNodes();
-                            for (int j = 0; j < nl.getLength(); j++) {
-                                Node n = nl.item(j);
-                                if (n.getNodeType() == Node.ELEMENT_NODE) {
+            @Override
+            public void setAttributeValueInObject(Object object, Object value) {
+                Invocation invocation = (Invocation)object;
+                Vector values = (Vector)value;
+                for (Iterator i = values.iterator(); i.hasNext();) {
+                  /* scan through values:
+                   *  if XML conforms to something mapped, it an object; else it is a DOM Element
+                   *  (probably a scalar). Walk through operations for the types, converting
+                   *   as required. The 'key' is the local name of the element - for mapped objects,
+                   *   have to get the root element name from the descriptor for the object
+                   */
+                  Object o = i.next();
+                  if (o instanceof Element) {
+                    Element e = (Element)o;
+                    String key = e.getLocalName();
+                    if ("theInstance".equals(key)) {
+                        NodeList nl = e.getChildNodes();
+                        for (int j = 0; j < nl.getLength(); j++) {
+                            Node n = nl.item(j);
+                            if (n.getNodeType() == Node.ELEMENT_NODE) {
+                                try {
                                     Object theInstance = new XMLContext(oxProject).createUnmarshaller().unmarshal(n);
                                     if (theInstance instanceof XMLRoot) {
                                         theInstance = ((XMLRoot)theInstance).getObject();
@@ -252,116 +286,175 @@ public class ProviderHelper extends XRServiceFactory {
                                     invocation.setParameter(key, theInstance);
                                     break;
                                 }
+                                catch (XMLMarshalException xmlMarshallException) {
+                                   throw new WebServiceException(xmlMarshallException);
+                                }
                             }
                         }
-                        else {
-                            String val = e.getTextContent();
-                            invocation.setParameter(key, val);
-                        }
-                      }
-                      else {
-                        XMLDescriptor descriptor = (XMLDescriptor)oxProject.getDescriptor(o.getClass());
-                        String key = descriptor.getDefaultRootElement();
-                        int idx = key.indexOf(':');
-                        if (idx != -1) {
-                          key = key.substring(idx+1);
-                        }
-                        invocation.setParameter(key, o);
-                      }
                     }
+                    else {
+                        String val = e.getTextContent();
+                        invocation.setParameter(key, val);
+                    }
+                  }
+                  else {
+                    XMLDescriptor descriptor = (XMLDescriptor)oxProject.getDescriptor(o.getClass());
+                    String key = descriptor.getDefaultRootElement();
+                    int idx = key.indexOf(':');
+                    if (idx != -1) {
+                      key = key.substring(idx+1);
+                    }
+                    invocation.setParameter(key, o);
+                  }
                 }
-                public AttributeAccessor setProject(Project oxProject) {
-                  this.oxProject = oxProject;
-                  return this;
-                }
-            }.setProject(oxProject));
-            parametersMapping.setKeepAsElementPolicy(KEEP_UNKNOWN_AS_ELEMENT);
-            invocationDescriptor.addMapping(parametersMapping);
-            oxProject.addDescriptor(invocationDescriptor);
-            ((DatabaseSessionImpl)dbwsAdapter.getOXSession()).initializeDescriptorIfSessionAlive(invocationDescriptor);
-            dbwsAdapter.getXMLContext().storeXMLDescriptorByQName(invocationDescriptor);
+            }
+            public AttributeAccessor setProject(Project oxProject) {
+              this.oxProject = oxProject;
+              return this;
+            }
+        }.setProject(oxProject));
+        parametersMapping.setKeepAsElementPolicy(KEEP_UNKNOWN_AS_ELEMENT);
+        invocationDescriptor.addMapping(parametersMapping);
+        oxProject.addDescriptor(invocationDescriptor);
+        ((DatabaseSessionImpl)dbwsAdapter.getOXSession()).initializeDescriptorIfSessionAlive(invocationDescriptor);
+        dbwsAdapter.getXMLContext().storeXMLDescriptorByQName(invocationDescriptor);
 
-            // create SOAP message response handler
-            responseWriter = new SOAPResponseWriter(dbwsAdapter);
-            responseWriter.initialize();
-        }
-        catch (Exception e) {
-            e.printStackTrace();
-        }
+        // create SOAP message response handler
+        responseWriter = new SOAPResponseWriter(dbwsAdapter);
+        responseWriter.initialize();
     }
 
     @SuppressWarnings("unchecked")
     public SOAPMessage invoke(SOAPMessage request) {
         SOAPMessage response = null;
         DBWSAdapter dbwsAdapter = (DBWSAdapter)xrService;
+
+        SOAPElement body;
         try {
-            SOAPElement body = getSOAPBodyElement(request);
-            if (body == null) {
-                throw new IllegalArgumentException("unknown SOAPMessage request format");
+            body = getSOAPBodyElement(request);
+        }
+        catch (SOAPException se) {
+            throw new WebServiceException(se.getMessage());
+        }
+
+        if (body == null) {
+            SOAPFault soapFault = null;
+            try {
+                soapFault = getSOAPFactory().createFault(
+                    "SOAPMessage request format error - missing body element",
+                    new QName(URI_NS_SOAP_1_1_ENVELOPE, "Client"));
             }
+            catch (SOAPException se) {
+                /* safe to ignore */
+            }
+            throw new SOAPFaultException(soapFault);
+        }
+
+        XMLRoot xmlRoot = null;
+        try {
             XMLContext xmlContext = dbwsAdapter.getXMLContext();
-            XMLRoot xmlRoot = (XMLRoot)xmlContext.createUnmarshaller().unmarshal(body,
-              Invocation.class);
-            Invocation invocation = (Invocation)xmlRoot.getObject();
-            invocation.setName(xmlRoot.getLocalName());
-            Operation op = dbwsAdapter.getOperation(invocation.getName());
-            /*
-             * Fix up types for arguments - scan the extended schema for the operation's Request type.
-             *
-             * For most parameters, the textual node content is fine, but for date/time and
-             * binary objects, we must convert
-             */
-            org.eclipse.persistence.internal.oxm.schema.model.Element invocationElement =
-              (org.eclipse.persistence.internal.oxm.schema.model.Element)
-               dbwsAdapter.getExtendedSchema().getTopLevelElements().get(invocation.getName());
-            String typeName = invocationElement.getType();
-            int idx = typeName.indexOf(':');
-            if (idx != -1) {
-              // strip-off any namespace prefix
-              typeName = typeName.substring(idx+1);
+            xmlRoot = (XMLRoot)xmlContext.createUnmarshaller().unmarshal(body,
+                Invocation.class);
+        }
+        catch (XMLMarshalException e) {
+            SOAPFault soapFault = null;
+            try {
+                soapFault = getSOAPFactory().createFault("SOAPMessage request format error - " +
+                    e.getMessage(),new QName(URI_NS_SOAP_1_1_ENVELOPE, "Client"));
             }
-            ComplexType complexType =
-              (ComplexType)dbwsAdapter.getExtendedSchema().getTopLevelComplexTypes().get(typeName);
-            if (complexType.getSequence() != null) {
-                // for each operation, there is a corresponding top-level Request type
-                // which has the arguments to the operation
-                for (Iterator i = complexType.getSequence().getOrderedElements().iterator(); i .hasNext();) {
-                    org.eclipse.persistence.internal.oxm.schema.model.Element e =
-                    (org.eclipse.persistence.internal.oxm.schema.model.Element)i.next();
-                  String argName = e.getName();
-                  Object argValue = invocation.getParameter(argName);
-                  String argType = e.getType();
-                  if (argType != null) {
-                     String argTypePrefix = null;
-                     String nameSpaceURI = null;
-                     idx = argType.indexOf(':');
-                     if (idx != -1) {
-                       argTypePrefix = argType.substring(0,idx);
-                       argType = argType.substring(idx+1);
-                       nameSpaceURI =
-                         dbwsAdapter.getSchema().getNamespaceResolver().resolveNamespacePrefix(argTypePrefix);
-                     }
-                     QName argQName = argTypePrefix == null ? new QName(nameSpaceURI, argType) :
-                         new QName(nameSpaceURI, argType, argTypePrefix);
-                     Class clz = SCHEMA_2_CLASS.get(argQName);
-                     if (clz != null) {
-                       argValue = ((XMLConversionManager)dbwsAdapter.getOXSession().getDatasourcePlatform().
-                         getConversionManager()).convertObject(argValue, clz, argQName);
-                       invocation.setParameter(argName, argValue);
-                     }
-                  }
-                  // incoming attachments ?
-                }
+            catch (SOAPException se) {
+                // ignore
             }
-            Object result = op.invoke(dbwsAdapter, invocation);
+            throw new SOAPFaultException(soapFault);
+        }
+
+        Invocation invocation = (Invocation)xmlRoot.getObject();
+        invocation.setName(xmlRoot.getLocalName());
+        Operation op = dbwsAdapter.getOperation(invocation.getName());
+        /*
+         * Fix up types for arguments - scan the extended schema for the operation's Request type.
+         *
+         * For most parameters, the textual node content is fine, but for date/time and
+         * binary objects, we must convert
+         */
+        org.eclipse.persistence.internal.oxm.schema.model.Element invocationElement =
+          (org.eclipse.persistence.internal.oxm.schema.model.Element)
+           dbwsAdapter.getExtendedSchema().getTopLevelElements().get(invocation.getName());
+        String typeName = invocationElement.getType();
+        int idx = typeName.indexOf(':');
+        if (idx != -1) {
+          // strip-off any namespace prefix
+          typeName = typeName.substring(idx+1);
+        }
+        ComplexType complexType =
+          (ComplexType)dbwsAdapter.getExtendedSchema().getTopLevelComplexTypes().get(typeName);
+        if (complexType.getSequence() != null) {
+            // for each operation, there is a corresponding top-level Request type
+            // which has the arguments to the operation
+            for (Iterator i = complexType.getSequence().getOrderedElements().iterator(); i .hasNext();) {
+                org.eclipse.persistence.internal.oxm.schema.model.Element e =
+                (org.eclipse.persistence.internal.oxm.schema.model.Element)i.next();
+              String argName = e.getName();
+              Object argValue = invocation.getParameter(argName);
+              String argType = e.getType();
+              if (argType != null) {
+                 String argTypePrefix = null;
+                 String nameSpaceURI = null;
+                 idx = argType.indexOf(':');
+                 if (idx != -1) {
+                   argTypePrefix = argType.substring(0,idx);
+                   argType = argType.substring(idx+1);
+                   nameSpaceURI =
+                     dbwsAdapter.getSchema().getNamespaceResolver().resolveNamespacePrefix(argTypePrefix);
+                 }
+                 QName argQName = argTypePrefix == null ? new QName(nameSpaceURI, argType) :
+                     new QName(nameSpaceURI, argType, argTypePrefix);
+                 Class clz = SCHEMA_2_CLASS.get(argQName);
+                 if (clz != null) {
+                   argValue = ((XMLConversionManager)dbwsAdapter.getOXSession().getDatasourcePlatform().
+                     getConversionManager()).convertObject(argValue, clz, argQName);
+                   invocation.setParameter(argName, argValue);
+                 }
+              }
+              // incoming attachments ?
+            }
+        }
+        Object result = null;
+        try {
+            result = op.invoke(dbwsAdapter, invocation);
             if (result instanceof ValueObject) {
                 result = ((ValueObject)result).value;
             }
+        }
+        catch (EclipseLinkException ele) {
+            try {
+                response = responseWriter.generateResponse(op, ele);
+            }
+            catch (SOAPException e) {
+                SOAPFault soapFault = null;
+                try {
+                    soapFault = getSOAPFactory().createFault("SOAPMessage response error - " + 
+                        e.getMessage(), new QName(URI_NS_SOAP_1_1_ENVELOPE, "Server"));
+                }
+                catch (SOAPException se) {
+                    // ignore
+                }
+                throw new SOAPFaultException(soapFault);
+            }
+        }
+        try {
             response = responseWriter.generateResponse(op, result);
         }
         catch (Exception e) {
-          //e.printStackTrace();
-          throw new RuntimeException("something went wrong parsing SOAPMessage", e);
+            SOAPFault soapFault = null;
+            try {
+                soapFault = getSOAPFactory().createFault("SOAPMessage response format error - " + 
+                    e.getMessage(), new QName(URI_NS_SOAP_1_1_ENVELOPE, "Server"));
+            }
+            catch (SOAPException se) {
+                /* safe to ignore */
+            }
+            throw new SOAPFaultException(soapFault);
         }
         return response;
     }
@@ -373,7 +466,7 @@ public class ProviderHelper extends XRServiceFactory {
             xrSchemaStream.close();
         }
         catch (IOException ioe) {
-            /* ignore */
+            /* safe to ignore */
         }
         xrSchemaStream = null;
         parentClassLoader = null;
@@ -401,5 +494,36 @@ public class ProviderHelper extends XRServiceFactory {
             }
         }
         return null;
+    }
+    
+    // thread-safe way of lazy-initializing a static singleton - please see
+    // http://www.cs.umd.edu/~pugh/java/memoryModel/DoubleCheckedLocking.html
+    // for more details
+    private static class LazyTransformerFactorySingleton {
+        static TransformerFactory tf = TransformerFactory.newInstance();
+        static TransformerFactory getInstance() {
+            return tf;
+        }
+    }
+    private static TransformerFactory getTransformerFactory() {
+        return LazyTransformerFactorySingleton.getInstance();
+    }
+    private static class LazySOAPFactorySingleton {
+        // little more complicated 'cause SOAPFactory.newInstance() throws a checked exception
+        static SOAPFactory sf = null;
+        static {
+            try {
+                sf = SOAPFactory.newInstance();
+            }
+            catch (SOAPException e) {
+                /* safe to ignore */
+            }
+        }
+        static SOAPFactory getInstance() {
+            return sf;
+        }
+    }
+    private static SOAPFactory getSOAPFactory() {
+        return LazySOAPFactorySingleton.getInstance();
     }
 }

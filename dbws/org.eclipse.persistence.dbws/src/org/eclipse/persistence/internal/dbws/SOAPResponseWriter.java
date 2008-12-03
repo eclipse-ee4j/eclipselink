@@ -28,9 +28,11 @@ import javax.xml.soap.MessageFactory;
 import javax.xml.soap.SOAPBody;
 import javax.xml.soap.SOAPException;
 import javax.xml.soap.SOAPMessage;
+import static javax.xml.soap.SOAPConstants.URI_NS_SOAP_1_1_ENVELOPE;
 import static javax.xml.XMLConstants.W3C_XML_SCHEMA_NS_URI;
 
 // EclipseLink imports
+import org.eclipse.persistence.exceptions.EclipseLinkException;
 import org.eclipse.persistence.internal.descriptors.Namespace;
 import org.eclipse.persistence.internal.oxm.schema.model.Element;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
@@ -173,6 +175,14 @@ public class SOAPResponseWriter {
         }
     }
 
+    public SOAPMessage generateResponse(Operation op, EclipseLinkException ele) throws SOAPException {
+        SOAPMessage message = messageFactory.createMessage();
+        SOAPBody body = message.getSOAPPart().getEnvelope().getBody();
+        body.addFault(new QName(URI_NS_SOAP_1_1_ENVELOPE, "Server"),
+            op.getName() + " failed: " + ele.getMessage());
+        return message;
+    }
+
     public SOAPMessage generateResponse(Operation op, Object result) throws SOAPException {
         SOAPMessage message = messageFactory.createMessage();
         SOAPBody body = message.getSOAPPart().getEnvelope().getBody();
@@ -181,10 +191,10 @@ public class SOAPResponseWriter {
         SOAPResponse response = null;
         try {
             response = (SOAPResponse) descriptor.getJavaClass().newInstance();
-        } catch (InstantiationException e) {
-            throw new RuntimeException(e);
-        } catch (IllegalAccessException e) {
-            throw new RuntimeException(e);
+        } catch (InstantiationException ie) {
+            throw new SOAPException(ie);
+        } catch (IllegalAccessException iae) {
+            throw new SOAPException(iae);
         }
         response.setResult(result);
 
