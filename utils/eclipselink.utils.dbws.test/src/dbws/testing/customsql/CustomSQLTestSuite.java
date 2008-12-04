@@ -139,7 +139,6 @@ public class CustomSQLTestSuite extends DBWSTestSuite {
         XMLMarshaller marshaller = xrService.getXMLContext().createMarshaller();
         Document doc = xmlPlatform.createDocument();
         marshaller.marshal(result, doc);
-        System.out.println(documentToString(doc));
         Document controlDoc = xmlParser.parse(new StringReader(FINDBYPK_7788_CONTROL_DOC));
         assertTrue("control document not same as instance document",
             comparer.isNodeEqual(controlDoc, doc));
