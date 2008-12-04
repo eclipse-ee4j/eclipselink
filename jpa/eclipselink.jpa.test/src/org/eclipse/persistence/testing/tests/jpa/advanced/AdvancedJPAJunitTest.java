@@ -19,6 +19,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Vector;
 
+import javax.persistence.Query;
 import javax.persistence.EntityManager;
 
 import junit.framework.*;
@@ -86,6 +87,7 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
         TestSuite suite = new TestSuite();
         suite.setName("AdvancedJPAJunitTest");
 
+        suite.addTest(new AdvancedJPAJunitTest("testSetup"));
         suite.addTest(new AdvancedJPAJunitTest("testExistenceCheckingSetting"));
         
         suite.addTest(new AdvancedJPAJunitTest("testJoinFetchAnnotation"));
@@ -128,36 +130,35 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
         suite.addTest(new AdvancedJPAJunitTest("testUnidirectionalTargetLocking_AddRemoveTarget"));
         suite.addTest(new AdvancedJPAJunitTest("testUnidirectionalTargetLocking_DeleteSource"));
         
-        return new TestSetup(suite) {
-            protected void setUp() { 
-                ServerSession session = JUnitTestCase.getServerSession();
-                
-                new AdvancedTableCreator().replaceTables(session);
-                
-                // The EquipmentCode class 'should' be set to read only. We want 
-                // to be able to create a couple in the Employee populator, so 
-                // force the read only to false. If EquipmentCode is not 
-                // actually read only, don't worry, we set the original read
-                // only value back on the descriptor and the error will be 
-                // caught in a later test in this suite.
-                ClassDescriptor descriptor = session.getDescriptor(EquipmentCode.class);
-                boolean shouldBeReadOnly = descriptor.shouldBeReadOnly();
-                descriptor.setShouldBeReadOnly(false);
-                
-                // Populate the database with our examples.
-                EmployeePopulator employeePopulator = new EmployeePopulator();         
-                employeePopulator.buildExamples();
-                employeePopulator.persistExample(session);
-                
-                descriptor.setShouldBeReadOnly(shouldBeReadOnly);
-            }
+        return suite;
+    }
+    
+    /**
+     * The setup is done as a test, both to record its failure, and to allow execution in the server.
+     */
+    public void testSetup() {
+        ServerSession session = JUnitTestCase.getServerSession();
+        new AdvancedTableCreator().replaceTables(session);
+        // The EquipmentCode class 'should' be set to read only. We want 
+        // to be able to create a couple in the Employee populator, so 
+         // force the read only to false. If EquipmentCode is not 
+        // actually read only, don't worry, we set the original read
+        // only value back on the descriptor and the error will be 
+        // caught in a later test in this suite.
+        ClassDescriptor descriptor = session.getDescriptor(EquipmentCode.class);
+        boolean shouldBeReadOnly = descriptor.shouldBeReadOnly();
+        descriptor.setShouldBeReadOnly(false);
+        
+        // Populate the database with our examples.
+        EmployeePopulator employeePopulator = new EmployeePopulator();         
+        employeePopulator.buildExamples();
+        employeePopulator.persistExample(session);
+        
+        descriptor.setShouldBeReadOnly(shouldBeReadOnly);
 
-            protected void tearDown() {
-                clearCache();
-            }
-        };
-    }    
-
+        clearCache();
+    }
+    
     /**
      * Verifies that existence-checking metadata is correctly processed.
      */
@@ -182,8 +183,13 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
      */
     public void testVerifyEmployeeCacheSettings() {
         EntityManager em = createEntityManager("default1");
-        ClassDescriptor descriptor = ((EntityManagerImpl) em).getServerSession().getDescriptorForAlias("Employee");
-            
+        ClassDescriptor descriptor;
+        if (isOnServer()) {
+            descriptor = getServerSession().getDescriptorForAlias("Employee");
+        } else {
+            descriptor = ((EntityManagerImpl) em).getServerSession().getDescriptorForAlias("Employee");
+        }
+        
         if (descriptor == null) {
             fail("A descriptor for the Employee alias was not found in the default1 PU.");
         } else {            
@@ -211,8 +217,8 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
     public void testVerifyEmployeeCustomizerSettings() {
         EntityManager em = createEntityManager();
         
-        ClassDescriptor descriptor = ((EntityManagerImpl) em).getServerSession().getDescriptorForAlias("Employee");
-            
+        ClassDescriptor descriptor = getServerSession().getDescriptorForAlias("Employee");
+        
         if (descriptor == null) {
             fail("A descriptor for the Employee alias was not found.");    
         } else {
@@ -290,7 +296,7 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
                     break;
                 }
             }
-            
+            commitTransaction(em);
             assertTrue("The new responsibility was not added.", found);
             assertTrue("The basic collection using enums was not persisted correctly.", emp.worksMondayToFriday());
         } catch (RuntimeException e) {
@@ -365,7 +371,7 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
             assertTrue("Diners Club card did not persist correctly.", buyer.hasDinersClub(diners));
             assertTrue("Mastercard card did not persist correctly.", buyer.hasMastercard(mastercard));
             assertTrue("The serialized enum set was not persisted correctly.", buyer.buysSaturdayToSunday());
-            
+            commitTransaction(em);
         } catch (RuntimeException e) {
             if (isTransactionActive(em)){
                 rollbackTransaction(em);
@@ -383,6 +389,11 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
      * Tests an OptimisticLocking policy set on Buyer.
      */
     public void testBuyerOptimisticLocking() {
+        // Cannot create parallel entity managers in the server.
+        if (isOnServer()) {
+            return;
+        }
+
         EntityManager em1 = createEntityManager();
         EntityManager em2 = createEntityManager();
         em1.getTransaction().begin();
@@ -440,7 +451,7 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
                 // Did Fred chicken out?
                 fail("No employees named Fred were found. Test requires at least one Fred to be created in the EmployeePopulator.");
             } else {
-                Employee fred = employees.iterator().next();    
+                Employee fred = employees.iterator().next();
                 fred.setFemale();
                 fred.setFirstName("Penelope");
                 penelopeId = fred.getId();
@@ -695,7 +706,7 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
             commitTransaction(em);
             
             Address address2 = (Address) em.createNamedQuery("SProcAddress").setParameter("ADDRESS_ID", address1.getId()).getSingleResult();
-            assertTrue("Address not found using stored procedure", address2.equals(address1));
+            assertTrue("Address not found using stored procedure", (address2.getId() == address1.getId()));
             
         } catch (RuntimeException e) {
             if (isTransactionActive(em)){
@@ -731,7 +742,7 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
             commitTransaction(em);
             
             Address address2 = (Address) em.createNamedQuery("SProcAddressWithResultSetMapping").setParameter("address_id_v", address1.getId()).getSingleResult();
-            assertTrue("Address not found using stored procedure", address2.equals(address1));
+            assertTrue("Address not found using stored procedure", (address2.getId() == address1.getId()));
             
         } catch (RuntimeException e) {
             if (isTransactionActive(em)){
@@ -938,7 +949,7 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
         beginTransaction(em);
         
         try {    
-            EJBQueryImpl query = (EJBQueryImpl) em.createNamedQuery("findSQLEquipmentCodeA");
+            Query query = em.createNamedQuery("findSQLEquipmentCodeA");
             EquipmentCode equipmentCode = (EquipmentCode) query.getSingleResult();
             
             equipmentCode.setCode("Z");
@@ -948,6 +959,7 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
             // EquipmentCode A again. If an exception is caught, then it was 
             // not found, therefore, updated on the db.
             try {
+                query = em.createNamedQuery("findSQLEquipmentCodeA");
                 query.getSingleResult();
             } catch (Exception e) {
                 fail("The read only EquipmentA was modified");
@@ -1041,6 +1053,7 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
         // clean up
         beginTransaction(em);
         try {    
+            employee = em.find(Employee.class, employee.getId());
             em.remove(employee);
             commitTransaction(em);
         } finally {
@@ -1060,9 +1073,10 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
      */
     public void testProperty() {
         EntityManager em = createEntityManager();
-        ClassDescriptor descriptor = ((EntityManagerImpl) em).getServerSession().getDescriptorForAlias("Employee");
-        ClassDescriptor aggregateDescriptor = ((EntityManagerImpl) em).getServerSession().getDescriptor(EmploymentPeriod.class);
-        em.close();
+        ClassDescriptor descriptor = getServerSession().getDescriptorForAlias("Employee");
+        ClassDescriptor aggregateDescriptor = getServerSession().getDescriptor(EmploymentPeriod.class);
+        
+        closeEntityManager(em);
         
         String errorMsg = "";
         
@@ -1213,7 +1227,7 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
             if(this.isTransactionActive(em)) {
                 rollbackTransaction(em);
             }
-            em.close();
+            closeEntityManager(em);
         }
         
         // clear cache
@@ -1222,7 +1236,6 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
         em = createEntityManager();
         // read the updated employees back
         List<Employee> employeesRead = em.createQuery("SELECT OBJECT(e) FROM Employee e WHERE e.lastName = '"+lastName+"'").getResultList();
-        closeEntityManager(em);
         
         // verify number persisted and read is the same
         if(employeesPersisted.size() != employeesRead.size()) {
@@ -1233,15 +1246,33 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
         
         // verify that the persisted and read objects are equal
         ServerSession session = JUnitTestCase.getServerSession();
+        beginTransaction(em);
         String errorMsg = "";
-        for(int i=0; i<employeesPersisted.size(); i++) {
-            for(int j=0; j<employeesRead.size(); j++) {
-                if(employeesPersisted.get(i).getFirstName().equals(employeesRead.get(j).getFirstName())) {
-                    if(!session.compareObjects(employeesPersisted.get(i), employeesRead.get(j))) {
-                        errorMsg += "Employee " + employeesPersisted.get(i).getFirstName() +"  was not updated correctly.";
+        try{
+            for(int i=0; i<employeesPersisted.size(); i++) {
+                for(int j=0; j<employeesRead.size(); j++) {
+                    if (isOnServer()) {
+                        Employee emp1 = em.find(Employee.class, employeesPersisted.get(i).getId());
+                        Employee emp2 = em.find(Employee.class, employeesRead.get(j).getId());
+                        if(emp1.getFirstName().equals(emp2.getFirstName())) {
+                            if(!session.compareObjects(emp1, emp2)) {
+                                errorMsg += "Employee " + emp1.getFirstName() +"  was not updated correctly.";
+                            }
+                        }
+                    } else {
+                        if(employeesPersisted.get(i).getFirstName().equals(employeesRead.get(j).getFirstName())) {
+                            if(!session.compareObjects(employeesPersisted.get(i), employeesRead.get(j))) {
+                                errorMsg += "Employee " + employeesPersisted.get(i).getFirstName() +"  was not updated correctly.";
+                            }
+                        }
                     }
                 }
             }
+        } finally {
+           if(this.isTransactionActive(em)) {
+               rollbackTransaction(em);
+              }
+               closeEntityManager(em);
         }
         
         // clean-up
@@ -1310,7 +1341,8 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
         Dealer dealer;
         beginTransaction(em);
         try {
-            dealer = employeesPersisted.get(1).getDealers().remove(1);
+            Employee emp1 = em.find(Employee.class, employeesPersisted.get(1).getId());
+            dealer = emp1.getDealers().remove(1);
             commitTransaction(em);
         } finally {
             if(this.isTransactionActive(em)) {
@@ -1326,31 +1358,49 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
         if(version2 != 2) {
             errorMsg += "In the cache the removed dealer's version is " + version2 + " (2 was expected); ";
         }
-        em.refresh(dealer);
-        version2 = getVersion(em, dealer);
-        if(version2 != 2) {
-            errorMsg += "In the db the removed dealer's version is " + version2 + " (2 was expected); ";
-        }
-        
-        // add the dealer to the first employee:
         beginTransaction(em);
         try {
-            employeesPersisted.get(0).getDealers().add(dealer);
-            commitTransaction(em);
+            Dealer dealer2 = em.find(Dealer.class, dealer.getId());
+            em.refresh(dealer2);
+            version2 = getVersion(em, dealer2);
         } finally {
             if(this.isTransactionActive(em)) {
                 rollbackTransaction(em);
+            }
+        }
+        if(version2 != 2) {
+            errorMsg += "In the db the removed dealer's version is " + version2 + " (2 was expected); ";
+        }
+        beginTransaction(em);
+        Dealer dealer3;
+        try {
+            Employee emp2 = em.find(Employee.class, employeesPersisted.get(1).getId());
+            dealer3 = em.find(Dealer.class, dealer.getId());
+            emp2.getDealers().add(dealer3);
+            commitTransaction(em);
+        } finally {
+            if(this.isTransactionActive(em)) {
+                rollbackTransaction(em); 
                 closeEntityManager(em);
             }
         }
         
         // verify the version both in the cache and in the db
-        int version3 = getVersion(em, dealer);
+        int version3 = getVersion(em, dealer3);
         if(version3 != 3) {
             errorMsg += "In the cache the added dealer's version is " + version3 + " (3 was expected); ";
         }
-        em.refresh(dealer);
-        version3 = getVersion(em, dealer);
+
+        beginTransaction(em);
+        try {
+            Dealer dealer4 = em.find(Dealer.class, dealer3.getId());
+            em.refresh(dealer4);
+            version3 = getVersion(em, dealer4);
+        } finally {
+            if(this.isTransactionActive(em)) {
+                rollbackTransaction(em);
+            }
+        }
         if(version3 != 3) {
             errorMsg += "In the db the added dealer's version is " + version3 + " (3 was expected)";
         }
@@ -1384,6 +1434,7 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
         clearCache();
         
         EntityManager em = createEntityManager();
+        beginTransaction(em);
         // read the persisted employees
         List<Employee> readEmployees = em.createQuery("SELECT OBJECT(e) FROM Employee e WHERE e.lastName = '"+lastName+"'").getResultList();
         
@@ -1391,10 +1442,9 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
         readEmployees.get(1).getDealers().size();
         
         // delete the Employees (there should be two of them).
-        beginTransaction(em);
         try {
-            for(int i=0; i < readEmployees.size(); i++) {
-                em.remove(readEmployees.get(i));
+            for(Employee emp:  readEmployees) {
+                em.remove(emp);
             }
             commitTransaction(em);
         } finally {
@@ -1405,21 +1455,28 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
         }
 
         // find employees' dealers and verify their versions - all should be 2.
-        
+        beginTransaction(em);
         String errorMsg = "";
-        for(int i=0; i<dealersIds.size(); i++) {
-            Dealer dealer = em.find(Dealer.class, dealersIds.get(i));
+        try{
+            for(int i=0; i<dealersIds.size(); i++) {
+                Dealer dealer = em.find(Dealer.class, dealersIds.get(i));
 
-            // verify the version both in the cache and in the db
-            int version2 = getVersion(em, dealer);
-            if(version2 != 2) {
-                errorMsg += "In the cache dealer "+dealer.getFirstName()+"'s version is " + version2 + " (2 was expected); ";
+                // verify the version both in the cache and in the db
+                int version2 = getVersion(em, dealer);
+                if(version2 != 2) {
+                    errorMsg += "In the cache dealer "+dealer.getFirstName()+"'s version is " + version2 + " (2 was expected); ";
+                }
+                em.refresh(dealer);
+                
+                version2 = getVersion(em, dealer);
+                if(version2 != 2) {
+                    errorMsg += "In the db dealer "+dealer.getFirstName()+"'s version is " + version2 + " (2 was expected); ";
+                }
             }
-            em.refresh(dealer);
-            version2 = getVersion(em, dealer);
-            if(version2 != 2) {
-                errorMsg += "In the db dealer "+dealer.getFirstName()+"'s version is " + version2 + " (2 was expected); ";
-            }
+        } finally {
+           if(this.isTransactionActive(em)) {
+               rollbackTransaction(em);               
+           }
         }
 
         closeEntityManager(em);
@@ -1437,7 +1494,7 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
         Vector pk = new Vector(1);
         pk.add(dealer.getId());
         
-        return ((Integer)((EntityManagerImpl)em).getServerSession().getDescriptor(Dealer.class).getOptimisticLockingPolicy().getWriteLockValue(dealer, pk, ((EntityManagerImpl)em).getServerSession())).intValue();
+        return ((Integer)getServerSession().getDescriptor(Dealer.class).getOptimisticLockingPolicy().getWriteLockValue(dealer, pk, getServerSession())).intValue();
     }
 
     protected List<Employee> createEmployeesWithUnidirectionalMappings(String lastName) {
@@ -1469,7 +1526,7 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
         try {
             return persistEmployeesWithUnidirectionalMappings(lastName, em);
         } finally {
-            em.close();
+            closeEntityManager(em);
         }
     }
     
@@ -1501,7 +1558,7 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
             if(this.isTransactionActive(em)) {
                 rollbackTransaction(em);
             }
-            em.close();
+            closeEntityManager(em);
             clearCache();
         }
     }

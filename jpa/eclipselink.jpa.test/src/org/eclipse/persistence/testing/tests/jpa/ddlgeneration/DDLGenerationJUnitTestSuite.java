@@ -423,14 +423,14 @@ public class DDLGenerationJUnitTestSuite extends JUnitTestCase {
             b.setUnq1("u0003");
             b.setUnq2("u0004");
             em.persist(b);
-            em.getTransaction().commit();
+            commitTransaction(em);
             
             // clean-up
             beginTransaction(em);
             em.remove(b.getComments().get(0));
             em.remove(b.getComments().get(1));
             em.remove(b);
-            em.getTransaction().commit();
+            commitTransaction(em);
         } catch (RuntimeException e) {
             if (isTransactionActive(em))
                 rollbackTransaction(em);

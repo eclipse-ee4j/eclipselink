@@ -43,25 +43,30 @@ public class AdvancedJunitTest extends JUnitTestCase {
         super(name);
     }
     
-    public void setUp() {
-        super.setUp();
+    
+    public static Test suite() {
+        TestSuite suite = new TestSuite("AdvancedJunitTest");
+
+        suite.addTest(new AdvancedJunitTest("testSetup"));
+        suite.addTest(new AdvancedJunitTest("testGF1818"));
+        suite.addTest(new AdvancedJunitTest("testEL254937"));
+        suite.addTest(new AdvancedJunitTest("testGF1894"));
+        suite.addTest(new AdvancedJunitTest("testGF894"));
+        suite.addTest(new AdvancedJunitTest("testManAndWoman"));
+        suite.addTest(new AdvancedJunitTest("testStringArrayField"));
+        
+        return suite;
+    }
+    
+    /**
+     * The setup is done as a test, both to record its failure, and to allow execution in the server.
+     */
+    public void testSetup() {
+        new AdvancedTableCreator().replaceTables(JUnitTestCase.getServerSession());
+
         clearCache();
     }
     
-    public static Test suite() {
-        TestSuite suite = new TestSuite(AdvancedJunitTest.class);
-
-        return new TestSetup(suite) {
-            protected void setUp() { 
-                new AdvancedTableCreator().replaceTables(JUnitTestCase.getServerSession());
-            }
-
-            protected void tearDown() {
-                clearCache();
-            }
-        };
-    }
-
     public void testGF1818() {
         EntityManager em = createEntityManager();
         beginTransaction(em);
@@ -101,12 +106,11 @@ public class AdvancedJunitTest extends JUnitTestCase {
         //commit the transaction
         uow.setShouldTerminateTransaction(true);
         uow.commitTransaction();
-        
         //duplicate the AfterCompletion call.  This should merge, removing the LargeProject from the shared cache
         uow.mergeClonesAfterCompletion();
         em = createEntityManager();
         LargeProject cachedLargeProject = em.find(LargeProject.class, lp1.getId());
-        em.close();
+        closeEntityManager(em);
         assertTrue("Entity removed during flush was not removed from the shared cache on commit", cachedLargeProject==null);
     }
     
@@ -234,7 +238,7 @@ public class AdvancedJunitTest extends JUnitTestCase {
         Vegetable vegetable;
         try {
             vegetable = em.find(Vegetable.class, pk);
-            
+            commitTransaction(em);
             assertNotNull(vegetable);
             assertTrue(Arrays.equals(tags, vegetable.getTags()));
             

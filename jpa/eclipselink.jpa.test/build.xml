@@ -1104,6 +1104,7 @@
         <antcall target="server-test-datetime" inheritRefs="true"/>
         <antcall target="server-test-ddlgeneration" inheritRefs="true"/>
         <antcall target="server-test-fieldaccess-advanced" inheritRefs="true"/>
+        <antcall target="server-test-fieldaccess-relationships" inheritRefs="true"/>
         <antcall target="server-test-inheritance" inheritRefs="true"/>
         <antcall target="server-test-inherited" inheritRefs="true"/>
         <antcall target="server-test-jpaadvancedproperties" inheritRefs="true"/>
@@ -1126,7 +1127,7 @@
             <param name="TEST_DIR" value="org/eclipse/persistence/testing/tests/jpa/advanced"/>
             <param name="TEST_NAME" value="eclipselink-advanced-model"/>
             <param name="EAR_NAME" value="eclipselink-advanced-model"/>
-            <param name="TEST_SUITE" value="org.eclipse.persistence.testing.tests.jpa.advanced.EntityManagerJUnitTestSuite"/>
+            <param name="TEST_SUITE" value="org.eclipse.persistence.testing.tests.jpa.advanced.ServerTestSuite"/>
             <param name="eclipselink.jpa.test.dir" value="."/>
         </antcall>
     </target>
@@ -1179,6 +1180,19 @@
             <param name="TEST_NAME" value="eclipselink-advanced-field-access-model"/>
             <param name="EAR_NAME" value="eclipselink-advanced-field-access-model"/>
             <param name="TEST_SUITE" value="org.eclipse.persistence.testing.tests.jpa.fieldaccess.advanced.EntityManagerJUnitTestSuite"/>
+            <param name="eclipselink.jpa.test.dir" value="."/>
+        </antcall>
+    </target>
+
+    <target name="server-test-fieldaccess-relationships">
+        <antcall target="server-run-all" inheritRefs="true">
+            <param name="PERSISTENCE_UNIT_NAME" value="default"/>
+            <param name="MODEL_DIR" value="org/eclipse/persistence/testing/models/jpa/fieldaccess/relationships"/>
+            <param name="MODEL_NAME" value="eclipselink-relationships-field-access-model"/>
+            <param name="TEST_DIR" value="org/eclipse/persistence/testing/tests/jpa/fieldaccess/relationships"/>
+            <param name="TEST_NAME" value="eclipselink-relationships-field-access-model"/>
+            <param name="EAR_NAME" value="eclipselink-relationships-field-access-model"/>
+            <param name="TEST_SUITE" value="org.eclipse.persistence.testing.tests.jpa.fieldaccess.relationships.ServerTestSuite"/>
             <param name="eclipselink.jpa.test.dir" value="."/>
         </antcall>
     </target>

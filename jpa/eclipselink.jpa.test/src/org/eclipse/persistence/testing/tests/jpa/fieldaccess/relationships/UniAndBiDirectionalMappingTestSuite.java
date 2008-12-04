@@ -33,29 +33,24 @@ public class UniAndBiDirectionalMappingTestSuite extends JUnitTestCase {
         super(name);
     }
     
-    public void setUp () {
-        super.setUp();
-        new RelationshipsTableManager().replaceTables(JUnitTestCase.getServerSession());
-    }
-    
     public static Test suite() {
         TestSuite suite = new TestSuite();
         suite.setName("UniAndBiDirectionalMappingTestSuite (fieldaccess)");
+        suite.addTest(new UniAndBiDirectionalMappingTestSuite("testSetup"));
         suite.addTest(new UniAndBiDirectionalMappingTestSuite("selfReferencingManyToManyTest"));
         suite.addTest(new UniAndBiDirectionalMappingTestSuite("testManyToManyClearDelete"));
         
-        return new TestSetup(suite) {
-        
-            protected void setUp() {
-                new RelationshipsTableManager().replaceTables(JUnitTestCase.getServerSession());
-            }
-
-            protected void tearDown() {
-                clearCache();
-            }
-        };
+        return suite;
     }
-     
+    
+    /**
+     * The setup is done as a test, both to record its failure, and to allow execution in the server.
+     */
+    public void testSetup() {
+        new RelationshipsTableManager().replaceTables(JUnitTestCase.getServerSession());
+        clearCache();
+    }
+    
     public void selfReferencingManyToManyTest() throws Exception {
         EntityManager em = createEntityManager();
         
@@ -105,8 +100,7 @@ public class UniAndBiDirectionalMappingTestSuite extends JUnitTestCase {
     public void testManyToManyClearDelete() throws Exception {
         EntityManager entityManager = createEntityManager();
 
-        entityManager.getTransaction().begin();
-
+        beginTransaction(entityManager);
         Customer owen = new Customer();
         owen.setName("Owen Pelletier");
         owen.setCity("Ottawa");
@@ -122,10 +116,10 @@ public class UniAndBiDirectionalMappingTestSuite extends JUnitTestCase {
 
         owen.addCCustomer(kirty);
 
-        entityManager.getTransaction().commit();
+        commitTransaction(entityManager);
 
-        entityManager.getTransaction().begin();
-        
+        beginTransaction(entityManager);
+
         owen = entityManager.find(Customer.class, owenId);
         kirty = entityManager.find(Customer.class, kirtyId);
         
@@ -136,7 +130,7 @@ public class UniAndBiDirectionalMappingTestSuite extends JUnitTestCase {
         entityManager.remove(owen);
         entityManager.remove(kirty);
         
-        entityManager.getTransaction().commit();
-        entityManager.close();
+        commitTransaction(entityManager);
+        closeEntityManager(entityManager);
     }
 }

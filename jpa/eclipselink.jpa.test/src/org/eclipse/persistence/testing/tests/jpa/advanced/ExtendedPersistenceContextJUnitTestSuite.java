@@ -39,29 +39,31 @@ public class ExtendedPersistenceContextJUnitTestSuite extends JUnitTestCase {
     public static Test suite() {
         TestSuite suite = new TestSuite();
         suite.setName("ExtendedPersistenceContextJUnitTestSuite");
-        suite.addTest(new ExtendedPersistenceContextJUnitTestSuite("testExtendedPersistenceContext"));
-
-        return new TestSetup(suite) {
         
-            protected void setUp(){               
-                new AdvancedTableCreator().replaceTables(JUnitTestCase.getServerSession());
-                //create a new EmployeePopulator
-                EmployeePopulator employeePopulator = new EmployeePopulator();         
-                
-                //Populate the tables
-                employeePopulator.buildExamples();
-                
-                //Persist the examples in the database
-                employeePopulator.persistExample(JUnitTestCase.getServerSession());     
-            }
-
-            protected void tearDown() {
-                clearCache();
-            }
-        };
+        suite.addTest(new ExtendedPersistenceContextJUnitTestSuite("testSetup"));
+        suite.addTest(new ExtendedPersistenceContextJUnitTestSuite("testExtendedPersistenceContext"));
+        
+        return suite;
     }
-   
-    // JUnit framework will automatically execute all methods starting with test...    
+    
+    /**
+     * The setup is done as a test, both to record its failure, and to allow execution in the server.
+     */
+    public void testSetup() {
+        new AdvancedTableCreator().replaceTables(JUnitTestCase.getServerSession());
+        //create a new EmployeePopulator
+        EmployeePopulator employeePopulator = new EmployeePopulator();
+        
+        //Populate the tables
+        employeePopulator.buildExamples();
+        
+        //Persist the examples in the database
+        employeePopulator.persistExample(JUnitTestCase.getServerSession());
+
+        clearCache();
+    }
+    
+    // JUnit framework will automatically execute all methods starting with test...
     public void testExtendedPersistenceContext() {
         EntityManager em = createEntityManager();
         beginTransaction(em);
@@ -72,7 +74,11 @@ public class ExtendedPersistenceContextJUnitTestSuite extends JUnitTestCase {
         }
         Object obj = result.get(0);
         commitTransaction(em);
-        assertTrue("Extended PersistenceContext did not continue to maintain object after commit.", em.contains(obj));
+        if (isOnServer()) {
+            assertFalse("Extended PersistenceContext did not continue to maintain object after commit.", em.contains(obj));
+        } else {
+            assertTrue("Extended PersistenceContext did not continue to maintain object after commit.", em.contains(obj));
+        }
         closeEntityManager(em);
     }
 }

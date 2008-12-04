@@ -42,30 +42,26 @@ public class AdvancedCompositePKJunitTest extends JUnitTestCase {
         super(name);
     }
     
-    public void setUp() {
-        clearCache();
-        super.setUp();
-    }
-    
     public static Test suite() {
         TestSuite suite = new TestSuite();
         suite.setName("AdvancedCompositePKJunitTest");
+        
+        suite.addTest(new AdvancedCompositePKJunitTest("testSetup"));
         suite.addTest(new AdvancedCompositePKJunitTest("testCreateDepartment"));
         suite.addTest(new AdvancedCompositePKJunitTest("testCreateScientists"));
         suite.addTest(new AdvancedCompositePKJunitTest("testReadDepartment"));
         suite.addTest(new AdvancedCompositePKJunitTest("testReadJuniorScientist"));
         suite.addTest(new AdvancedCompositePKJunitTest("testAnyAndAll"));
-
-        return new TestSetup(suite) {
-            protected void setUp() {               
-                DatabaseSession session = JUnitTestCase.getServerSession();
-                new CompositePKTableCreator().replaceTables(session);
-            }
-
-            protected void tearDown() {
-                clearCache();
-            }
-        };
+        
+        return suite;
+    }
+    
+    /**
+     * The setup is done as a test, both to record its failure, and to allow execution in the server.
+     */
+    public void testSetup() {
+        new CompositePKTableCreator().replaceTables(JUnitTestCase.getServerSession());
+        clearCache();
     }
     
     public void testCreateDepartment() {
@@ -184,47 +180,51 @@ public class AdvancedCompositePKJunitTest extends JUnitTestCase {
     public void testAnyAndAll() {
         EntityManager em = createEntityManager();
         
-        // queries to test
-        
-        Query query1 = em.createQuery("SELECT s FROM Scientist s WHERE s = ANY (SELECT s2 FROM Scientist s2)");
-        List<Scientist> results1 = query1.getResultList();
+        beginTransaction(em);
+        try {
+            Query query1 = em.createQuery("SELECT s FROM Scientist s WHERE s = ANY (SELECT s2 FROM Scientist s2)");
+            List<Scientist> results1 = query1.getResultList();
 
-        Query query2 = em.createQuery("SELECT s FROM Scientist s WHERE s = ALL (SELECT s2 FROM Scientist s2)");
-        List<Scientist> results2 = query2.getResultList();
+            Query query2 = em.createQuery("SELECT s FROM Scientist s WHERE s = ALL (SELECT s2 FROM Scientist s2)");
+            List<Scientist> results2 = query2.getResultList();
 
-        Query query3 = em.createQuery("SELECT s FROM Scientist s WHERE s.department = ALL (SELECT DISTINCT d FROM Department d WHERE d.name = 'DEPT A' AND d.role = 'ROLE A' AND d.location = 'LOCATION A')");
-        List<Scientist> results3 = query3.getResultList();
+            Query query3 = em.createQuery("SELECT s FROM Scientist s WHERE s.department = ALL (SELECT DISTINCT d FROM Department d WHERE d.name = 'DEPT A' AND d.role = 'ROLE A' AND d.location = 'LOCATION A')");
+            List<Scientist> results3 = query3.getResultList();
 
-        Query query4 = em.createQuery("SELECT s FROM Scientist s WHERE s.department = ANY (SELECT DISTINCT d FROM Department d JOIN d.scientists ds JOIN ds.cubicle c WHERE c.code = 'G')");
-        List<Scientist> results4 = query4.getResultList();
+            Query query4 = em.createQuery("SELECT s FROM Scientist s WHERE s.department = ANY (SELECT DISTINCT d FROM Department d JOIN d.scientists ds JOIN ds.cubicle c WHERE c.code = 'G')");
+            List<Scientist> results4 = query4.getResultList();
 
-        // control queries
-        
-        Query controlQuery1 = em.createQuery("SELECT s FROM Scientist s");
-        List<Scientist> controlResults1 = controlQuery1.getResultList();
-        
-        List<Scientist> controlResults2;
-        if(controlResults1.size() == 1) {
-            controlResults2 = controlResults1;
-        } else {
-            controlResults2 = new ArrayList<Scientist>();
+            // control queries
+            
+            Query controlQuery1 = em.createQuery("SELECT s FROM Scientist s");
+            List<Scientist> controlResults1 = controlQuery1.getResultList();
+            
+            List<Scientist> controlResults2;
+            if(controlResults1.size() == 1) {
+                controlResults2 = controlResults1;
+            } else {
+                controlResults2 = new ArrayList<Scientist>();
+            }
+
+            Query controlQuery3 = em.createQuery("SELECT s FROM Scientist s JOIN s.department d WHERE d.name = 'DEPT A' AND d.role = 'ROLE A' AND d.location = 'LOCATION A'");
+            List<Scientist> controlResults3 = controlQuery3.getResultList();
+            
+            Query controlQuery4 = em.createQuery("SELECT s FROM Scientist s WHERE EXISTS (SELECT DISTINCT d FROM Department d JOIN d.scientists ds JOIN ds.cubicle c WHERE c.code = 'G' AND d = s.department)");
+            List<Scientist> controlResults4 = controlQuery4.getResultList();
+
+            //compare results - they should be the same
+            compareResults(results1, controlResults1, "query1");
+            compareResults(results2, controlResults2, "query2");
+            compareResults(results3, controlResults3, "query3");
+            compareResults(results4, controlResults4, "query4");
+        } finally {
+            if (isTransactionActive(em)){
+                rollbackTransaction(em);
+            }
+            closeEntityManager(em);
         }
-        
-        Query controlQuery3 = em.createQuery("SELECT s FROM Scientist s JOIN s.department d WHERE d.name = 'DEPT A' AND d.role = 'ROLE A' AND d.location = 'LOCATION A'");
-        List<Scientist> controlResults3 = controlQuery3.getResultList();
-        
-        Query controlQuery4 = em.createQuery("SELECT s FROM Scientist s WHERE EXISTS (SELECT DISTINCT d FROM Department d JOIN d.scientists ds JOIN ds.cubicle c WHERE c.code = 'G' AND d = s.department)");
-        List<Scientist> controlResults4 = controlQuery4.getResultList();
-
-        closeEntityManager(em);        
-
-        // compare results - they should be the same
-        compareResults(results1, controlResults1, "query1");
-        compareResults(results2, controlResults2, "query2");
-        compareResults(results3, controlResults3, "query3");
-        compareResults(results4, controlResults4, "query4");
-    } 
-
+    }
+    
     protected void compareResults(List results, List controlResults, String testName) {
         if(results.size() != controlResults.size()) {
             fail(testName + ": results.size() = " + results.size() + "; controlResults.size() = " + controlResults.size());

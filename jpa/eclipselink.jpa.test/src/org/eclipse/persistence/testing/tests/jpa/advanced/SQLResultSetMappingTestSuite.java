@@ -56,7 +56,42 @@ public class SQLResultSetMappingTestSuite extends JUnitTestCase {
         super.setUp();
         clearCache();
     }
-
+    
+    public void tearDown () {
+        if (m_reset) {
+            m_reset = false;
+        }
+        super.tearDown();
+    }
+    
+    public static Test suite() {
+        TestSuite suite = new TestSuite();
+        suite.setName("SQLResultSetMappingTestSuite");
+        
+        suite.addTest(new SQLResultSetMappingTestSuite("testSetup"));
+        suite.addTest(new SQLResultSetMappingTestSuite("testInheritanceNoDiscriminatorColumn"));
+        suite.addTest(new SQLResultSetMappingTestSuite("testComplicateResultWithInheritance"));
+        suite.addTest(new SQLResultSetMappingTestSuite("testRefresh"));
+        suite.addTest(new SQLResultSetMappingTestSuite("testBindParameters"));
+        suite.addTest(new SQLResultSetMappingTestSuite("testBindParametersWithPostitional"));
+        suite.addTest(new SQLResultSetMappingTestSuite("testSimpleInheritance"));
+        suite.addTest(new SQLResultSetMappingTestSuite("testPessimisticLocking"));
+        suite.addTest(new SQLResultSetMappingTestSuite("testComplicateResults"));
+        return suite;
+    }
+    
+    /**
+     * The setup is done as a test, both to record its failure, and to allow execution in the server.
+     */
+    public void testSetup() {
+        new AdvancedTableCreator().replaceTables(JUnitTestCase.getServerSession());
+        EmployeePopulator employeePopulator = new EmployeePopulator();
+        employeePopulator.buildExamples();
+        //Persist the examples in the database
+        employeePopulator.persistExample(getServerSession());
+        clearCache();
+    }
+    
     public void testInheritanceNoDiscriminatorColumn() throws Exception {
         SQLResultSetMapping resultSetMapping = new SQLResultSetMapping("testInheritanceNoDiscriminatorColumn");
         EntityResult entityResult = new EntityResult(Buyer.class);
@@ -70,12 +105,12 @@ public class SQLResultSetMappingTestSuite extends JUnitTestCase {
         EntityManager em = createEntityManager();
         beginTransaction(em);
         try{
-            List results = (List)((EntityManagerImpl)em).getServerSession().executeQuery(query);
+            List results = (List)getServerSession().executeQuery(query);
             assertNotNull("No result returned", results);
             
             Buyer buyer = (Buyer)results.get(0);
             buyer.setDescription("To A new changed description");
-            results = (List)((EntityManagerImpl)em).getServerSession().executeQuery(query);
+            results = (List)getServerSession().executeQuery(query);
             assertNotNull("No result returned", results);
             assertFalse("Object was not refreshed", buyer.getDescription().equals("To A new changed description"));
         }finally{
@@ -102,7 +137,7 @@ public class SQLResultSetMappingTestSuite extends JUnitTestCase {
         SQLCall call = new SQLCall("SELECT (t1.BUDGET/t0.PROJ_ID) AS BUDGET_SUM, t0.PROJ_ID, t0.PROJ_TYPE, t0.PROJ_NAME, t0.DESCRIP, t0.LEADER_ID, t0.VERSION, t1.BUDGET, t2.PROJ_ID AS SMALL_ID, t2.PROJ_TYPE AS SMALL_DESCRIM, t2.PROJ_NAME AS SMALL_NAME, t2.DESCRIP AS SMALL_DESCRIPTION, t2.LEADER_ID AS SMALL_TEAMLEAD, t2.VERSION AS SMALL_VERSION FROM CMP3_PROJECT t0, CMP3_PROJECT t2, CMP3_LPROJECT t1 WHERE t1.PROJ_ID = t0.PROJ_ID AND t2.PROJ_TYPE='S'");
         ResultSetMappingQuery query = new ResultSetMappingQuery(call);
         query.setSQLResultSetMapping(resultSetMapping);
-        List results = (List)((EntityManagerImpl)createEntityManager()).getActiveSession().executeQuery(query);
+        List results = (List)getServerSession().executeQuery(query);
         assertNotNull("No result returned", results);
         assertTrue("Empty list returned", (results.size()!=0));
         
@@ -132,16 +167,20 @@ public class SQLResultSetMappingTestSuite extends JUnitTestCase {
         EntityManager em = createEntityManager();
         beginTransaction(em);
         try{
-            List results = (List)((EntityManagerImpl)em).getActiveSession().executeQuery(query);
+            List results = (List)getServerSession().executeQuery(query);
             assertNotNull("No result returned", results);
             Project project = (Project)results.get(0);
             project.setDescription("To A new changed description");
-            results = (List)((EntityManagerImpl)em).getActiveSession().executeQuery(query);
+            results = (List)getServerSession().executeQuery(query);
             assertNotNull("No result returned", results);
             assertTrue("Empty list returned", (results.size()!=0));
             assertFalse("Object was not refreshed", project.getDescription().equals("To A new changed description"));
         }finally{
-            ((EntityManagerImpl)em).getTransaction().rollback();
+            if (isTransactionActive(em)){
+                rollbackTransaction(em);
+            }
+            closeEntityManager(em);
+
         }
     }
 
@@ -160,7 +199,7 @@ public class SQLResultSetMappingTestSuite extends JUnitTestCase {
         Vector params = new Vector();
         //4000 is a more reasonable budget given test data if results are expected
         params.add(new Integer(4000));
-        List results = (List)((EntityManagerImpl)createEntityManager()).getActiveSession().executeQuery(query, params);
+        List results = (List)getServerSession().executeQuery(query, params);
         assertNotNull("No result returned", results);
         assertTrue("Empty list returned", (results.size()!=0));
     }
@@ -179,7 +218,7 @@ public class SQLResultSetMappingTestSuite extends JUnitTestCase {
         query.addArgument("1");
         Vector params = new Vector();
         params.add(new Integer(4000));
-        List results = (List)((EntityManagerImpl)createEntityManager()).getActiveSession().executeQuery(query, params);
+        List results = (List)getServerSession().executeQuery(query, params);
         assertNotNull("No result returned", results);
         assertTrue("Empty list returned", (results.size()!=0));
     }
@@ -194,7 +233,7 @@ public class SQLResultSetMappingTestSuite extends JUnitTestCase {
         SQLCall call = new SQLCall("SELECT t0.PROJ_ID, t0.PROJ_TYPE AS SMALL_DESCRIM,  t0.PROJ_NAME, t0.DESCRIP, t0.LEADER_ID, t0.VERSION, t1.BUDGET FROM CMP3_PROJECT t0 left outer join CMP3_LPROJECT t1 on t1.PROJ_ID = t0.PROJ_ID");
         ResultSetMappingQuery query = new ResultSetMappingQuery(call);
         query.setSQLResultSetMapping(resultSetMapping);
-        List results = (List)((EntityManagerImpl)createEntityManager()).getActiveSession().executeQuery(query);
+        List results = (List)getServerSession().executeQuery(query);
         assertNotNull("No result returned", results);
         assertTrue("Empty list returned", (results.size()!=0));
         for (Iterator iterator = results.iterator(); iterator.hasNext(); ){
@@ -205,7 +244,7 @@ public class SQLResultSetMappingTestSuite extends JUnitTestCase {
 
     public void testPessimisticLocking() throws Exception {
         EntityManager em = createEntityManager();
-        SmallProject smallProject = (SmallProject)((EntityManagerImpl)em).getActiveSession().readObject(SmallProject.class);
+        SmallProject smallProject = (SmallProject)getServerSession().readObject(SmallProject.class);
         SQLResultSetMapping resultSetMapping = new SQLResultSetMapping("PessimisticLocking");
         EntityResult entityResult = new EntityResult(SmallProject.class);
         resultSetMapping.addResult(entityResult);
@@ -216,7 +255,7 @@ public class SQLResultSetMappingTestSuite extends JUnitTestCase {
         query.setLockMode(query.LOCK);
         beginTransaction(em);
         try{
-            List results = (List)((EntityManagerImpl)em).getActiveSession().executeQuery(query);
+            List results = (List)getServerSession().executeQuery(query);
             assertNotNull("No result returned", results);
             assertTrue("Empty list returned", (results.size()!=0));
             smallProject = (SmallProject)(results.get(0));
@@ -249,7 +288,7 @@ public class SQLResultSetMappingTestSuite extends JUnitTestCase {
         SQLCall call = new SQLCall("SELECT t0.EMP_ID, t1.EMP_ID, t0.F_NAME, t0.L_NAME, t0.VERSION, t1.SALARY, t0.START_DATE AS STARTDATE, t0.END_DATE, t0.ADDR_ID AS EMP_ADDR, t0.manager_EMP_ID FROM CMP3_EMPLOYEE t0, CMP3_SALARY t1 WHERE ((t1.EMP_ID = t0.EMP_ID) AND ( t0.L_NAME = 'Smith' ))");
         ResultSetMappingQuery query = new ResultSetMappingQuery(call);
         query.setSQLResultSetMapping(resultSetMapping);
-        List results = (List)((EntityManagerImpl)createEntityManager()).getActiveSession().executeQuery(query);
+        List results = (List)getServerSession().executeQuery(query);
         assertNotNull("No result returned", results);
         assertTrue("Incorrect number of results returned, expected 2 got "+results.size(), (results.size()==2));
         
@@ -260,39 +299,4 @@ public class SQLResultSetMappingTestSuite extends JUnitTestCase {
             assertNotNull("Failed to get an address for Employee "+emp.getFirstName(), emp.getAddress() );
         }
     }
-
-
-    public void tearDown () {
-        if (m_reset) {
-            m_reset = false;
-        }
-        super.tearDown();
-    }
-    
-    public static Test suite() {
-        TestSuite suite = new TestSuite(SQLResultSetMappingTestSuite.class);
-        
-        suite.setName("SQLResultSetMappingTestSuite");
-        
-        return new TestSetup(suite) {
-        
-            protected void setUp(){      
-            
-              new AdvancedTableCreator().replaceTables(((EntityManagerImpl)createEntityManager()).getServerSession());
-         
-                EmployeePopulator employeePopulator = new EmployeePopulator();
-         
-               employeePopulator.buildExamples();
-                
-              //Persist the examples in the database
-              employeePopulator.persistExample(getServerSession());   
-            }
-
-            protected void tearDown() {
-                clearCache();
-            }
-        };
-    }
-    
-
 }

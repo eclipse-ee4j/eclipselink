@@ -45,23 +45,30 @@ public class CallbackEventJUnitTestSuite extends JUnitTestCase {
         super(name);
     }
 
-	public static Test suite() {
-        TestSuite suite = new TestSuite(CallbackEventJUnitTestSuite.class);
-        
+    public static Test suite() {
+        TestSuite suite = new TestSuite();
         suite.setName("CallbackEventJUnitTestSuite");
         
-        return new TestSetup(suite) {
+        suite.addTest(new CallbackEventJUnitTestSuite("testSetup"));
+        suite.addTest(new CallbackEventJUnitTestSuite("testPersistThenRemoveCalls"));
+        suite.addTest(new CallbackEventJUnitTestSuite("testRemoveUnmanagedNewEntity"));
+        suite.addTest(new CallbackEventJUnitTestSuite("testPersistOnRegisteredObject"));
+        suite.addTest(new CallbackEventJUnitTestSuite("testPreUpdateEvent_UpdateAltered"));
+        suite.addTest(new CallbackEventJUnitTestSuite("testPreUpdateEvent_UpdateReverted"));
+        suite.addTest(new CallbackEventJUnitTestSuite("testMergeCascadeTriggersPrePersist"));
         
-            protected void setUp(){      
-                new AdvancedTableCreator().replaceTables(JUnitTestCase.getServerSession());
-            }
-
-            protected void tearDown() {
-                clearCache();
-            }
-        };
+        return suite;
     }
- 
+    
+    /**
+     * The setup is done as a test, both to record its failure, and to allow execution in the server.
+     */
+    public void testSetup() {
+        new AdvancedTableCreator().replaceTables(JUnitTestCase.getServerSession());
+        
+        clearCache();
+    }
+    
     public void setUp () {
         m_reset = true;
         super.setUp();
@@ -84,8 +91,7 @@ public class CallbackEventJUnitTestSuite extends JUnitTestCase {
             
         clearCache();
     }
-
-
+    
     /*
      * test for bug 4568370:TopLink should perform an unregister on the remove call on a new object
      *   Calls persist/remove on an existing object which will cause a DB exception if the insert
@@ -252,7 +258,7 @@ public class CallbackEventJUnitTestSuite extends JUnitTestCase {
         Vector pk = new Vector();
         pk.add(emp.getId());
         return ((Integer)getServerSession().getDescriptor(Employee.class).getOptimisticLockingPolicy().getWriteLockValue(emp, pk, getServerSession())).intValue();
-    }    
+    }
     
     // gf 2894:  merge does not trigger prePersist callbacks
     public void testMergeCascadeTriggersPrePersist() {
@@ -288,25 +294,4 @@ public class CallbackEventJUnitTestSuite extends JUnitTestCase {
         }
     }
     
-    public void tearDown () {
-        if (m_reset) {
-            EntityManager em = createEntityManager();
-            beginTransaction(em);
-            try{
-                Employee emp = em.find(Employee.class, new_emp.getId());
-                em.remove(emp);
-                commitTransaction(em);
-            }catch (RuntimeException ex){
-                if (isTransactionActive(em)){
-                    rollbackTransaction(em);
-                }
-                closeEntityManager(em);
-                throw ex;
-            }
-            m_reset = false;
-        }
-        super.tearDown();
-    }
-    
-
 }
