@@ -15,6 +15,8 @@ package org.eclipse.persistence.oxm;
 import java.io.*;
 import java.util.List;
 import java.util.Properties;
+
+import javax.xml.namespace.QName;
 import javax.xml.transform.Result;
 import javax.xml.transform.dom.DOMResult;
 import javax.xml.transform.sax.SAXResult;
@@ -705,7 +707,32 @@ public class XMLMarshaller {
     private void writeTypeAttribute(MarshalRecord marshalRecord, XMLDescriptor descriptor, String xsiPrefix) {
         //xsi:type=schemacontext               
         String typeValue = descriptor.getSchemaReference().getSchemaContext();
-        typeValue = typeValue.substring(1);
+        
+        // handle case where the schema context is set as a QName
+        if (typeValue == null) {
+            QName contextAsQName = descriptor.getSchemaReference().getSchemaContextAsQName();
+            if (contextAsQName == null) {
+                return;
+            }
+            String uri = contextAsQName.getNamespaceURI();
+            String localPart = contextAsQName.getLocalPart();
+            String prefix = marshalRecord.getNamespaceResolver().resolveNamespaceURI(uri);
+            if (prefix == null) {
+                String defaultUri = marshalRecord.getNamespaceResolver().getDefaultNamespaceURI();
+                if (defaultUri != null && defaultUri.equals(uri)) {
+                    typeValue = localPart;
+                } else {
+                    prefix = marshalRecord.getNamespaceResolver().generatePrefix();
+                    marshalRecord.attribute(XMLConstants.XMLNS_URL, XMLConstants.XMLNS, XMLConstants.XMLNS + ":" + prefix, uri);
+                    typeValue = prefix + ":" + localPart;
+                }
+            } else {
+                typeValue = prefix + ":" + localPart;
+            }
+        } else {
+            typeValue = typeValue.substring(1);
+        }
+        
         marshalRecord.attribute(XMLConstants.SCHEMA_INSTANCE_URL, XMLConstants.SCHEMA_TYPE_ATTRIBUTE, xsiPrefix + ":" + XMLConstants.SCHEMA_TYPE_ATTRIBUTE, typeValue);
     }
 
@@ -948,6 +975,13 @@ public class XMLMarshaller {
         boolean writeTypeAttribute = false;
 
         if (isXMLRoot && (descriptor != null)) {
+            XMLRoot xr = (XMLRoot) object;
+            QName qName = new QName(xr.getNamespaceURI(),xr.getLocalName());
+            XMLDescriptor xdesc = xmlContext.getDescriptor(qName);
+            if (xdesc != null) {
+                return xdesc.getJavaClass() != descriptor.getJavaClass();
+            }
+            
             if (descriptor.hasInheritance()) {
                 XMLField classIndicatorField = (XMLField) descriptor.getInheritancePolicy().getClassIndicatorField();
                 String classIndicatorUri = null;
@@ -961,13 +995,14 @@ public class XMLMarshaller {
                     return false;
                 }
             }
-            String xmlRootLocalName = ((XMLRoot) object).getLocalName();
-            String xmlRootUri = ((XMLRoot) object).getNamespaceURI();
 
-            writeTypeAttribute = true;
             if (descriptor.getSchemaReference() == null) {
                 return false;
             }
+            
+            String xmlRootLocalName = xr.getLocalName();
+            String xmlRootUri = xr.getNamespaceURI();
+            writeTypeAttribute = true;
             for (int i = 0; i < descriptor.getTableNames().size(); i++) {
                 if (!writeTypeAttribute) {
                     break;
@@ -980,10 +1015,6 @@ public class XMLMarshaller {
                     int colonIndex = defaultRootQualifiedName.indexOf(':');
                     if (colonIndex > 0) {
                         String defaultRootPrefix = defaultRootQualifiedName.substring(0, colonIndex);
-
-                        //use this prefix to declare xmlns 
-                        //xmlns=xmlRootUri
-                        //xmlns:xsi  
                         defaultRootLocalName = defaultRootQualifiedName.substring(colonIndex + 1);
                         if (descriptor.getNamespaceResolver() != null) {
                             defaultRootUri = descriptor.getNamespaceResolver().resolveNamespacePrefix(defaultRootPrefix);
@@ -991,22 +1022,17 @@ public class XMLMarshaller {
                     } else {
                         defaultRootLocalName = defaultRootQualifiedName;
                     }
-
+                    
                     if (xmlRootLocalName != null) {
                         if ((((defaultRootLocalName == null) && (xmlRootLocalName == null)) || (defaultRootLocalName.equals(xmlRootLocalName)))
                                 && (((defaultRootUri == null) && (xmlRootUri == null)) || ((xmlRootUri != null) && (defaultRootUri != null) && (defaultRootUri.equals(xmlRootUri))))) {
                             //if both local name and uris are equal then don't need to write type attribute
                             writeTypeAttribute = false;
                         }
-                    } else {
-                        //this means there was a default root element
-                        //but xmlRoot.getName was null
-                        //writeTypeAttribute = true
                     }
                 } else {
-                    //then no default rootElement was set
-                    //if xmlRootName = null then writeTypeAttribute = false
-                    //not really valid because xmlRootLocalName shouldn't ever be null
+                    // no default rootElement was set
+                    // if xmlRootName = null then writeTypeAttribute = false
                     if (xmlRootLocalName == null) {
                         writeTypeAttribute = false;
                     }

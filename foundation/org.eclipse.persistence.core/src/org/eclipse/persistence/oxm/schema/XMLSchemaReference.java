@@ -122,7 +122,15 @@ public abstract class XMLSchemaReference implements org.eclipse.persistence.plat
     public void setSchemaContext(String schemaContext) {
         this.schemaContext = schemaContext;
     }
+    
+    public void setSchemaContextAsQName(QName qname) {
+        schemaContextAsQName = qname;
+    }
 
+    public QName getSchemaContextAsQName() {
+        return schemaContextAsQName;
+    }
+    
     public QName getSchemaContextAsQName(NamespaceResolver nsResolver) {
         if (schemaContext == null) {
             return null;

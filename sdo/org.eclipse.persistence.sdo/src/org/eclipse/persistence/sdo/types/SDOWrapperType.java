@@ -27,6 +27,7 @@ import org.eclipse.persistence.exceptions.SDOException;
 import org.eclipse.persistence.oxm.XMLDescriptor;
 import org.eclipse.persistence.oxm.XMLField;
 import org.eclipse.persistence.oxm.mappings.XMLDirectMapping;
+import org.eclipse.persistence.oxm.schema.XMLSchemaURLReference;
 import org.eclipse.persistence.sdo.SDOConstants;
 import org.eclipse.persistence.sdo.SDOProperty;
 import org.eclipse.persistence.sdo.SDOType;
@@ -60,10 +61,7 @@ public class SDOWrapperType extends SDOType implements Type {
 
     public SDOWrapperType(Type aPropertyType, String aTypeName, SDOTypeHelper aSDOTypeHelper, QName[] schemaTypes) {
         super(SDOConstants.ORACLE_SDO_URL, aTypeName, aSDOTypeHelper);
-
         typeName = aTypeName;
-
-        descriptorsMap = new HashMap<QName, XMLDescriptor>();
 
         SDOProperty valueProperty = new SDOProperty(aHelperContext);
         valueProperty.setName("value");
@@ -89,7 +87,10 @@ public class SDOWrapperType extends SDOType implements Type {
         // change getType(Class) on typehelperdelegate to check map first
 
         initializeDescriptor(xmlDescriptor, schemaTypes[0], aPropertyType, valueProperty);
+        
+        descriptorsMap = new HashMap<QName, XMLDescriptor>();
         descriptorsMap.put(schemaTypes[0], xmlDescriptor);
+        setSchemaContext(xmlDescriptor, schemaTypes[0]);
 
         if (schemaTypes.length > 1) {
             for (int i = 1; i < schemaTypes.length; i++) {
@@ -109,12 +110,29 @@ public class SDOWrapperType extends SDOType implements Type {
                 }
 
                 initializeDescriptor(d, schemaType, aPropertyType, valueProperty);
-
                 descriptorsMap.put(schemaTypes[i], d);
+                setSchemaContext(d, schemaTypes[i]);
             }
         }
     }
 
+    /**
+     * Convenience method that sets a schema context (as QName) on a given descriptor.
+     * 
+     * If either schemaType or desc is null, no action is performed.
+     * 
+     * @param desc XML descriptor to which an XMLSchemaReference will be added
+     * @param schemaType QName that will be set as the schema context QName
+     */
+    private void setSchemaContext(XMLDescriptor desc, QName schemaType) {
+        if (schemaType == null || desc == null) {
+            return;
+        }
+        XMLSchemaURLReference urlRef = new XMLSchemaURLReference();
+        urlRef.setSchemaContextAsQName(schemaType);
+        desc.setSchemaReference(urlRef);
+    }
+    
     private void initializeDescriptor(XMLDescriptor aDescriptor, QName aQName, Type aPropertyType, SDOProperty aValueProperty) {
         aDescriptor.setNamespaceResolver(null);
 
