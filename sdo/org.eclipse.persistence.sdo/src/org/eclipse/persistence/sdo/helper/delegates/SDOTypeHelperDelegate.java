@@ -971,7 +971,7 @@ public class SDOTypeHelperDelegate implements SDOTypeHelper {
     public Property defineOpenContentProperty(String uri, DataObject propertyDO) {
         String name = propertyDO.getString("name");
 
-        Object propertyToReturn = aHelperContext.getXSDHelper().getGlobalProperty(uri, name, true);
+        Property propertyToReturn = aHelperContext.getXSDHelper().getGlobalProperty(uri, name, true);
         if (propertyToReturn == null) {
             propertyToReturn = aHelperContext.getXSDHelper().getGlobalProperty(uri, name, false);
         }
@@ -983,7 +983,29 @@ public class SDOTypeHelperDelegate implements SDOTypeHelper {
             defineOpenContentProperty(uri, name, (Property)propertyToReturn);
         }
 
-        return (Property)propertyToReturn;
+        if (propertyToReturn != null) {
+            Object propDOType = propertyDO.get("type");
+            SDOType existingType = (SDOType) propertyToReturn.getType();
+            boolean typeMismatch = false;
+            
+            if (propDOType instanceof SDOType) {
+                SDOType newType = (SDOType) propDOType;
+                if (!newType.getQName().equals(existingType.getQName())) {
+                    typeMismatch = true;
+                }
+            } else if (propDOType instanceof DataObject) {
+                DataObject newTypeDO = (DataObject) propDOType;
+                if (!newTypeDO.get("name").equals(existingType.getName()) || !newTypeDO.get("uri").equals(existingType.getURI())) {
+                    typeMismatch = true;
+                }
+            }
+            
+            if (typeMismatch) {
+                throw new IllegalArgumentException("Should not be able to redefine a Property with a different Type.");
+            }
+        }
+        
+        return propertyToReturn;
     }
 
     /**
