@@ -20,7 +20,6 @@ import org.eclipse.persistence.internal.helper.*;
 import org.eclipse.persistence.exceptions.*;
 import org.eclipse.persistence.queries.*;
 import org.eclipse.persistence.sessions.SessionProfiler;
-import org.eclipse.persistence.internal.sessions.AbstractSession;
 /**
  * <p><b>Purpose</b>:
  * Mechanism used for all  statement objects.
