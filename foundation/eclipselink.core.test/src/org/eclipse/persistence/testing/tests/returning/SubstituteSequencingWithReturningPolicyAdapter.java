@@ -156,6 +156,14 @@ public class SubstituteSequencingWithReturningPolicyAdapter implements ProjectAn
         }
     }
 
+    public Map getTableToField() {
+        return this.tableToField;
+    }
+    
+    public Map getTableToSequence() {
+        return this.tableToSequence;
+    }
+    
     protected String getSequenceNameFromTableName(String tableName) {
         String sequenceName;
         if (tableToSequence != null) {

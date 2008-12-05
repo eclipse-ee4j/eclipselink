@@ -51,7 +51,15 @@ public class ReturningPolicyTestModel extends TestModel {
         if (getSession().getPlatform().isOracle()) {
             addTest(new TestModelAdapted(new ComplexUpdateAndUnitOfWorkTestModel(), new SubstituteSequencingWithReturningPolicyAdapter(false)));
             addTest(new TestModelAdapted(new EmployeeBasicTestModel(), new SubstituteSequencingWithReturningPolicyAdapter()));
-            addTest(new TestModelAdapted(new AggregateTestModel(), new SubstituteSequencingWithReturningPolicyAdapter()));
+
+            // Need to add the tables that were mapped by AggregateCollectionMappings 
+            // overriding the original settings in AggregateCollectionMapping descriptors
+            SubstituteSequencingWithReturningPolicyAdapter substitute = new SubstituteSequencingWithReturningPolicyAdapter();
+            // Builder.customers
+            substitute.getTableToField().put("BUILDER_CUSTOMER", "CUSTOMER_ID");
+            substitute.getTableToSequence().put("BUILDER_CUSTOMER", "CUSTOMER_SEQ");
+            addTest(new TestModelAdapted(new AggregateTestModel(), substitute));
+
             addTest(new TestModelAdapted(new InheritanceTestModel(), new SubstituteSequencingWithReturningPolicyAdapter()));
         }
         if (getSession().getPlatform().isOracle()) {

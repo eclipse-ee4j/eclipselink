@@ -64,7 +64,7 @@ public class ReturningPolicy implements Serializable, Cloneable {
     // returned on Update as read-write.
     // main[i][RETURN_ONLY] + main[i][WRITE_RETURN] = main[i][MAPPED]
     // main[i][MAPPED] + main[i][UNMAPPED] = main[i][ALL]
-    protected Collection[][] main = new Collection[NUM_OPERATIONS][MAIN_SIZE];
+    protected Collection[][] main;
 
     // maps ClassDescriptor's tables into Vectors of fields to be used for call generation.
     // Lazily initialized array [NUM_OPERATIONS]
@@ -221,6 +221,8 @@ public class ReturningPolicy implements Serializable, Cloneable {
 
     /**
      * INTERNAL:
+     * Normally cloned when not yet initialized.
+     * If initialized ReturningPolicy cloned then the clone should be re-initialized.
      */
     public Object clone() {
         try {
@@ -576,8 +578,13 @@ public class ReturningPolicy implements Serializable, Cloneable {
         Hashtable infoHashtable = new Hashtable();
         for (int i = 0; i < infos.size(); i++) {
             Info info1 = (Info)infos.elementAt(i);
-            if (!info1.getField().hasTableName()) {
-                info1 = (Info)info1.clone();
+            info1 = (Info)info1.clone();
+            DatabaseField descField = getDescriptor().buildField(info1.getField()); 
+            if(info1.getField().getType() == null) {
+                info1.setField(descField);
+            } else {
+                // keep the original type if specified
+                info1.getField().setName(descField.getName()); 
                 info1.getField().setTableName(getDescriptor().getDefaultTable().getQualifiedName());
             }
             Info info2 = (Info)infoHashtable.get(info1.getField());
@@ -603,6 +610,7 @@ public class ReturningPolicy implements Serializable, Cloneable {
      */
     public void initialize(AbstractSession session) {
         clearInitialization();
+        main = new Collection[NUM_OPERATIONS][MAIN_SIZE];
 
         // The order of descriptor initialization guarantees initialization of Parent before children.
         // main array is copied from Parent's ReturningPolicy
@@ -747,11 +755,7 @@ public class ReturningPolicy implements Serializable, Cloneable {
 
     // only infos is filled out
     protected void clearInitialization() {
-        for (int operation = INSERT; operation <= UPDATE; operation++) {
-            for (int state = RETURN_ONLY; state < MAIN_SIZE; state++) {
-                main[operation][state] = null;
-            }
-        }
+        main = null;
         tableToVectorOfFieldsForGenerationMap = null;
         fieldsNotFromDescriptor_DefaultTable = null;
         fieldsNotFromDescriptor_OtherTables = null;
