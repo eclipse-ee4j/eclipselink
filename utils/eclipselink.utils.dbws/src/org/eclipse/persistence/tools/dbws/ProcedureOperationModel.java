@@ -141,7 +141,7 @@ public class ProcedureOperationModel extends OperationModel {
               spqh = new StoredProcedureQueryHandler();
             }
             sb = new StringBuilder();
-            if (builder.databasePlatform.getClass().getName().matches("Oracle*Platform")) {
+            if (builder.databasePlatform.getClass().getName().contains("Oracle")) {
                 if (storedProcedure.getSchema() != null && storedProcedure.getSchema().length() > 0) {
                     sb.append(storedProcedure.getSchema());
                     sb.append('.');
