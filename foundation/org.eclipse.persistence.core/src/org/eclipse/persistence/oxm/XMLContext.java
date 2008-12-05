@@ -521,6 +521,14 @@ public class XMLContext {
                         typeFragment.setNamespaceURI(xmlDescriptor.getNamespaceResolver().resolveNamespacePrefix(typeFragment.getPrefix()));
                     }
                     this.descriptorsByGlobalType.put(typeFragment, xmlDescriptor);
+                } else {
+                    QName qname = xmlSchemaReference.getSchemaContextAsQName();
+                    if (qname != null) {
+                        XPathFragment typeFragment = new XPathFragment();
+                        typeFragment.setLocalName(qname.getLocalPart());
+                        typeFragment.setNamespaceURI(qname.getNamespaceURI());
+                        this.descriptorsByGlobalType.put(typeFragment, xmlDescriptor);
+                    }
                 }
             }
         }
