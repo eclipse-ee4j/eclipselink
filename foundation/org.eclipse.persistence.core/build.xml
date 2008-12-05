@@ -65,13 +65,13 @@
             includes="${eclipselink.core.depend}"/>
 
          <!-- TEMPORARY HACK PENDING DECISION ABOUT WHETHER ECLIPSELINK FOUNDATION WILL DEPEND ON JPA CLASSES -->
-         <pathelement path="${core.2.jpa.plugins.dir}/javax.persistence_1.99.0.jar"/>
+         <pathelement path="${core.2.jpa.plugins.dir}/javax.persistence_2.0_preview.jar"/>
          <!-- End of Temporary hack -->
     </path>
     <available file="${core.2.common.plugins.dir}/${antlr}_${version.string}.jar" property="antlr.bundle.exist"/>
     <available file="${core.2.common.plugins.dir}/${asm}_${version.string}.jar" property="asm.bundle.exist"/>
     <!-- TEMPORARY HACK PENDING DECISION ABOUT WHETHER ECLIPSELINK FOUNDATION WILL DEPEND ON JPA CLASSES -->
-    <available file="${core.2.jpa.plugins.dir}/javax.persistence_1.99.0.jar" property="jpa2.jar.exist"/>
+    <available file="${core.2.jpa.plugins.dir}/javax.persistence_2.0_preview.jar" property="jpa2.jar.exist"/>
     <!-- End of Temporary hack -->
     
 
@@ -91,7 +91,7 @@
         <fail message="Cannot find ANTLR: '${core.2.common.plugins.dir}/${antlr}_${version.string}.jar'." unless="antlr.bundle.exist"/>
         <fail message="Cannot find ASM: '${core.2.common.plugins.dir}/${asm}_${version.string}.jar'." unless="asm.bundle.exist"/>
         <!-- TEMPORARY HACK PENDING DECISION ABOUT WHETHER ECLIPSELINK FOUNDATION WILL DEPEND ON JPA CLASSES -->
-        <fail message="Cannot find JPA 2.0:'../plugins/javax.persistence_1.99.0.jar'." unless="jpa2.jar.exist"/>
+        <fail message="Cannot find JPA 2.0:'../plugins/javax.persistence_2.0_preview.jar'." unless="jpa2.jar.exist"/>
         <!-- End of Temporary hack -->
         <mkdir dir="${classes.dir}"/>
         <echo message="Stamping the following values:"/>

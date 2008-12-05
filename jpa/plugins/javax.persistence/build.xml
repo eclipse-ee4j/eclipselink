@@ -37,7 +37,7 @@
         <contains string="${jpaproto.build.location}" substring="jpa"/>
     </condition>
 
-    <property name="jpaproto.version" value="1.99.0"/>
+    <property name="jpaproto.version" value="1.99.1"/>
     <property name="jpaproto.jar"     value="${ant.project.name}_2.0_preview.jar"/>
     <property name="jpaproto.src.jar" value="${ant.project.name}.source_2.0_preview.jar"/>
     <property name="src.dir"          value="src"/>

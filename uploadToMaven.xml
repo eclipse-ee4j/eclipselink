@@ -136,7 +136,13 @@
             <param name="artifact" value="${eclipselink.jar.name}"/>
             <param name="artifactSrc" value="${eclipselink.src.install.prefix}${eclipselink.zip.suffix}"/>
             <param name="artifactName" value="EclipseLink"/>
-       </antcall>
+        </antcall>
+        <antcall target="upload-artifact">
+            <param name="artifactId" value="javax.persistence"/>
+            <param name="artifact" value="${eclipselink.jpa.base}/${plugins.dir}/javax.persistence_2.0_preview.jar"/>
+            <param name="artifactSrc" value="${eclipselink.jpa.base}/${plugins.dir}/javax.persistence.source_2.0_preview.jar"/>
+            <param name="artifactName" value="Javax Persistence 2.0 Preview"/>
+        </antcall>
    </target>
 
    <!-- Uploads a single artifact to maven repository -->
