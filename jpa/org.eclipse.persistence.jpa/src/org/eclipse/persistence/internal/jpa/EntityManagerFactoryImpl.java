@@ -14,6 +14,7 @@ package org.eclipse.persistence.internal.jpa;
 
 import java.util.Map;
 
+import javax.persistence.Cache;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.FlushModeType;
@@ -43,6 +44,8 @@ import org.eclipse.persistence.internal.sessions.PropertiesHandler;
 * @since   TopLink 10.1.3 EJB 3.0 Preview
 */
 public class EntityManagerFactoryImpl implements EntityManagerFactory {
+    /** Reference to Cache Interface. */
+    protected Cache myCache;
     /** Reference to the ServerSession for this deployment. */
     protected volatile ServerSession serverSession;
     /** EntityManagerSetupImpl that deployed this factory. */
@@ -326,4 +329,14 @@ public class EntityManagerFactoryImpl implements EntityManagerFactory {
     public void setShouldValidateExistence(boolean shouldValidateExistence) {
         this.shouldValidateExistence = shouldValidateExistence;
     }
+
+    public Cache getCache(){
+        verifyOpen();
+        if (myCache == null){
+            ServerSession session=this.getServerSession();
+            myCache = new CacheImpl(this,session.getIdentityMapAccessor());
+            }
+            return myCache;
+    }
+
 }

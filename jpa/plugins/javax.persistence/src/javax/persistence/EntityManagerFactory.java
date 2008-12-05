@@ -82,4 +82,13 @@ public interface EntityManagerFactory {
     * until a call to close has been made.
     */
     public boolean isOpen();
+
+    /**
+     * Access the cache that is associated with the entity manager
+     * factory(the "second level cache").
+     * @return instance of the Cache interface
+     * @throws IllegalStateException if the entity manager factory
+     * has been closed.
+     */
+    public Cache getCache();
 }

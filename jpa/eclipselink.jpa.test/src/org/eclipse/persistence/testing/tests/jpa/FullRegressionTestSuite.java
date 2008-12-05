@@ -17,6 +17,7 @@ import junit.framework.Test;
 
 import org.eclipse.persistence.testing.tests.jpa.advanced.AdvancedJPAJunitTest;
 import org.eclipse.persistence.testing.tests.jpa.advanced.AdvancedJunitTest;
+import org.eclipse.persistence.testing.tests.jpa.advanced.CacheImplJUnitTest;
 import org.eclipse.persistence.testing.tests.jpa.advanced.NamedNativeQueryJUnitTest;
 import org.eclipse.persistence.testing.tests.jpa.advanced.CallbackEventJUnitTestSuite;
 import org.eclipse.persistence.testing.tests.jpa.advanced.EntityManagerJUnitTestSuite;
@@ -76,6 +77,7 @@ public class FullRegressionTestSuite extends TestSuite{
         TestSuite suite = new TestSuite();
         suite.setName("advanced");
         suite.addTest(NamedNativeQueryJUnitTest.suite());
+        suite.addTest(CacheImplJUnitTest.suite());
         suite.addTest(CallbackEventJUnitTestSuite.suite());
         suite.addTest(EntityManagerJUnitTestSuite.suite());
         suite.addTest(SQLResultSetMappingTestSuite.suite());
