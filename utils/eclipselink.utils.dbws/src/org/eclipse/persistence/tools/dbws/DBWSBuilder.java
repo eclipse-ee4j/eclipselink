@@ -454,8 +454,8 @@ prompt> java -cp eclipselink.jar:eclipselink-dbwsutils.jar:your_favourite_jdbc_d
 
     protected void buildDbArtifacts() {
         // do Table operations first
-        boolean isOracle =
-            getDatabasePlatform().getClass().getName().matches("Oracle*Platform") ? true : false;
+        boolean isOracle = 
+            getDatabasePlatform().getClass().getName().contains("Oracle") ? true : false;
         for (OperationModel operation : operations) {
             if (operation.isTableOperation()) {
                 TableOperationModel tableModel = (TableOperationModel)operation;

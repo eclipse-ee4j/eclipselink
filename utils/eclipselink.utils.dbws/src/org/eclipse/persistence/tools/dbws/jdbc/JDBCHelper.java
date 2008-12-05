@@ -215,7 +215,7 @@ public class JDBCHelper {
         String originalCatalogPattern, String originalSchemaPattern, String originalTablePattern) {
 
         List<DbTable> dbTables = null;
-        boolean isOracle = platform.getClass().getName().matches("Oracle*Platform") ? true : false;
+        boolean isOracle = platform.getClass().getName().contains("Oracle") ? true : false;
         String schemaPattern = trimPunctuation(originalSchemaPattern, isOracle);
         String tablePattern = trimPunctuation(originalTablePattern, isOracle);
         DatabaseMetaData databaseMetaData = getDatabaseMetaData(connection);
