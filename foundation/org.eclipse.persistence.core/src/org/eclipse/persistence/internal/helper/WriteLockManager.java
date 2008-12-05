@@ -388,7 +388,7 @@ public class WriteLockManager {
         if ((objectToLock != null) && !lockedObjects.containsKey(objectToLock)) {
             Vector primaryKeysToLock = null;
             ClassDescriptor referenceDescriptor = null;
-            if (mapping.getReferenceDescriptor().hasInheritance()) {
+            if (mapping.getReferenceDescriptor().hasInheritance() || mapping.getReferenceDescriptor().isDescriptorForInterface()) {
                 referenceDescriptor = session.getDescriptor(objectToLock);
             } else {
                 referenceDescriptor = mapping.getReferenceDescriptor();

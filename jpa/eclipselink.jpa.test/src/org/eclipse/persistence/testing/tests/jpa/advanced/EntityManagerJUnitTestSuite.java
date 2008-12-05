@@ -3448,6 +3448,12 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
             fail("addressCacheSize is wrong");
         }
         
+        // Department cache size specified in @Cache annotation - that should override default property
+        int departmentCacheSize = ss.getDescriptor(Department.class).getIdentityMapSize();
+        if(departmentCacheSize != 777) {
+            fail("departmentCacheSize is wrong");
+        }
+        
         Class defaultCacheType = ss.getDescriptor(Project.class).getIdentityMapClass();
         if(! Helper.getShortClassName(defaultCacheType).equals("FullIdentityMap")) {
             fail("defaultCacheType is wrong");
@@ -3461,6 +3467,12 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         Class addressCacheType = ss.getDescriptor(Address.class).getIdentityMapClass();
         if(! Helper.getShortClassName(addressCacheType).equals("HardCacheWeakIdentityMap")) {
             fail("addressCacheType is wrong");
+        }
+        
+        // Department cache type specified in @Cache annotation - that should override default property
+        Class departmentCacheType = ss.getDescriptor(Department.class).getIdentityMapClass();
+        if(! Helper.getShortClassName(departmentCacheType).equals("SoftCacheWeakIdentityMap")) {
+            fail("departmentCacheType is wrong");
         }
         
         int numSessionCalls = Customizer.getNumberOfCallsForSession(ss.getName());

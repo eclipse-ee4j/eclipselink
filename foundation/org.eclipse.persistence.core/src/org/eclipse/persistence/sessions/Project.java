@@ -17,6 +17,7 @@ import java.io.*;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.internal.sessions.DatabaseSessionImpl;
 import org.eclipse.persistence.internal.helper.*;
+import org.eclipse.persistence.internal.identitymaps.AbstractIdentityMap;
 import org.eclipse.persistence.queries.SQLResultSetMapping;
 import org.eclipse.persistence.sessions.server.*;
 
@@ -64,6 +65,16 @@ public class Project implements Serializable, Cloneable {
      *  require a call on deleted objects to update change sets. 
      */
     protected transient boolean hasMappingsPostCalculateChangesOnDeleted = false;
+    
+    /** Default value for ClassDescriptor.identityMapClass 
+     */
+    protected Class defaultIdentityMapClass = AbstractIdentityMap.getDefaultIdentityMapClass();
+    /** Default value for ClassDescriptor.identityMapSize 
+     */
+    protected int defaultIdentityMapSize = 100;
+    /** Default value for ClassDescriptor.isIsolated 
+     */
+    protected boolean defaultIsIsolated = false;
     
     /**
      * PUBLIC:
@@ -401,6 +412,30 @@ public class Project implements Serializable, Cloneable {
         return defaultReadOnlyClasses;
     }
 
+    /** 
+     * PUBLIC:
+     * Return default value for descriptor cache type. 
+     */
+    public Class getDefaultIdentityMapClass() {
+        return this.defaultIdentityMapClass;
+    }
+    
+    /**
+     * PUBLIC: 
+     * Return default value descriptor cache size. 
+     */
+    public int getDefaultIdentityMapSize() {
+        return this.defaultIdentityMapSize;
+    }
+    
+    /** 
+     * PUBLIC:
+     * Return default value for whether descriptor should use isolated cache.
+     */
+    public boolean getDefaultIsIsolated() {
+        return this.defaultIsIsolated;
+    }
+    
     /**
      * PUBLIC:
      * Return the descriptor specified for the class.
@@ -518,6 +553,30 @@ public class Project implements Serializable, Cloneable {
         this.defaultReadOnlyClasses = new Vector(newValue);
     }
 
+    /** 
+     * PUBLIC:
+     * Set default value for descriptor cache type. 
+     */
+    public void setDefaultIdentityMapClass(Class defaultIdentityMapClass) {
+        this.defaultIdentityMapClass = defaultIdentityMapClass;
+    }
+    
+    /**
+     * PUBLIC: 
+     * Set default value descriptor cache size. 
+     */
+    public void setDefaultIdentityMapSize(int defaultIdentityMapSize) {
+        this.defaultIdentityMapSize = defaultIdentityMapSize;
+    }
+    
+    /** 
+     * PUBLIC:
+     * Set default value for whether descriptor should use isolated cache.
+     */
+    public void setDefaultIsIsolated(boolean defaultIsIsolated) {
+        this.defaultIsIsolated = defaultIsIsolated;
+    }
+    
     /**
      * INTERNAL:
      * Set the descriptors registered with this session.

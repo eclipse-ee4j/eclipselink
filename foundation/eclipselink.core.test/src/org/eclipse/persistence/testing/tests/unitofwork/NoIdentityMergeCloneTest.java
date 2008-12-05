@@ -64,7 +64,10 @@ public class NoIdentityMergeCloneTest extends TransactionalTestCase {
             ClassDescriptor descriptor = (ClassDescriptor)iterator.next();
             checkCacheState.put(descriptor, 
                                 new Integer(descriptor.getQueryManager().getDoesExistQuery().getExistencePolicy()));
-            identityMapTypes.put(descriptor, descriptor.getIdentityMapClass());
+            if(descriptor.requiresInitialization()) {
+                // identityMapClass is null for AggregateObject, AggregateMapping and Interface descriptors.
+                identityMapTypes.put(descriptor, descriptor.getIdentityMapClass());
+            }
         }
         getSession().getProject().checkDatabaseForDoesExist();
         getSession().getProject().useCacheIdentityMap(1);

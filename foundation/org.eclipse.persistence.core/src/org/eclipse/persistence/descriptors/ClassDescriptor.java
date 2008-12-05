@@ -27,7 +27,6 @@ import org.eclipse.persistence.internal.expressions.SQLSelectStatement;
 import org.eclipse.persistence.internal.expressions.SQLStatement;
 import org.eclipse.persistence.internal.helper.*;
 import org.eclipse.persistence.history.*;
-import org.eclipse.persistence.internal.identitymaps.*;
 import org.eclipse.persistence.internal.indirection.ProxyIndirectionPolicy;
 import org.eclipse.persistence.mappings.*;
 import org.eclipse.persistence.mappings.foundation.AbstractDirectMapping;
@@ -101,7 +100,7 @@ public class ClassDescriptor implements Cloneable, Serializable {
     protected boolean shouldAlwaysConformResultsInUnitOfWork;
 
     // this attribute is used to determine what classes should be isolated from the shared cache
-    protected boolean isIsolated;
+    protected Boolean isIsolated;
 
     // for bug 2612601 allow ability not to register results in UOW.
     protected boolean shouldRegisterResultsInUnitOfWork = true;
@@ -229,9 +228,8 @@ public class ClassDescriptor implements Cloneable, Serializable {
         this.shouldAlwaysRefreshCache = false;
         this.shouldOnlyRefreshCacheIfNewerVersion = false;
         this.shouldDisableCacheHits = false;
-        this.identityMapSize = 100;
+        this.identityMapSize = -1;
         this.remoteIdentityMapSize = -1;
-        this.identityMapClass = AbstractIdentityMap.getDefaultIdentityMapClass();
         this.remoteIdentityMapClass = null;
         this.descriptorType = NORMAL;
         this.shouldAlwaysRefreshCacheOnRemote = false;
@@ -241,7 +239,6 @@ public class ClassDescriptor implements Cloneable, Serializable {
         this.shouldAlwaysConformResultsInUnitOfWork = false;
         this.shouldAcquireCascadedLocks = false;
         this.hasSimplePrimaryKey = false;
-        this.isIsolated = false;
 
         // Policies
         this.objectBuilder = new ObjectBuilder(this);
@@ -616,6 +613,23 @@ public class ClassDescriptor implements Cloneable, Serializable {
         return true;
     }
 
+    /**
+     * INTERNAL:
+     * Some attributes have default values defined in Project.
+     * If such the value for the attribute hasn't been set then the default value is assigned.
+     */
+    protected void assignDefaultValues(AbstractSession session) {
+        if(this.identityMapSize == -1) {
+            this.identityMapSize = session.getProject().getDefaultIdentityMapSize();
+        }
+        if(this.identityMapClass == null) {
+            this.identityMapClass = session.getProject().getDefaultIdentityMapClass();
+        }
+        if(this.isIsolated == null) {
+            this.isIsolated = Boolean.valueOf(session.getProject().getDefaultIsIsolated());
+        }
+    }
+    
     /**
      * INTERNAL:
      * Return a call built from a statement. Subclasses may throw an exception
@@ -2943,7 +2957,11 @@ public class ClassDescriptor implements Cloneable, Serializable {
      * Returns true if the descriptor represents an isolated class
      */
     public boolean isIsolated() {
-        return this.isIsolated;
+        if(this.isIsolated == null) {
+            return false;
+        } else {
+            return this.isIsolated.booleanValue();
+        }
     }
     /**
      * INTERNAL:
@@ -3090,6 +3108,8 @@ public class ClassDescriptor implements Cloneable, Serializable {
         }
         setInitializationStage(PREINITIALIZED);
                 
+        assignDefaultValues(session);
+        
         // Set the fetchgroup manager is the class implements the tracking interface.
         if (FetchGroupTracker.class.isAssignableFrom(getJavaClass())) {
             if (getFetchGroupManager() == null) {
@@ -3220,6 +3240,8 @@ public class ClassDescriptor implements Cloneable, Serializable {
 
         setInterfaceInitializationStage(PREINITIALIZED);
 
+        assignDefaultValues(session);
+        
         if (isInterfaceChildDescriptor()) {
             for (Enumeration interfaces = getInterfacePolicy().getParentInterfaces().elements();
                      interfaces.hasMoreElements();) {
@@ -3501,7 +3523,7 @@ public class ClassDescriptor implements Cloneable, Serializable {
      */
     public void setCacheSynchronizationType(int type) {
         // bug 3587273
-        if (!isIsolated) {
+        if (!isIsolated()) {
             cacheSynchronizationType = type;
         }
     }
@@ -3788,7 +3810,7 @@ public class ClassDescriptor implements Cloneable, Serializable {
      * since isolated objects cannot be sent by  cache synchronization.
      */
     public void setIsIsolated(boolean isIsolated) {
-        this.isIsolated = isIsolated;
+        this.isIsolated = Boolean.valueOf(isIsolated);
         if (isIsolated) {
             // bug 3587273 - set the cache synchronization type so isolated objects are not sent
             // do not call the setter method because it does not allow changing the cache synchronization

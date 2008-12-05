@@ -154,7 +154,7 @@ public class DoesExistQuery extends DatabaseQuery {
         }
         
         // Need to do the cache check first if flag set or if we should check the cache only for existence.
-        if (shouldCheckCacheForDoesExist() ||(this.checkCacheFirst)) {
+        if ((shouldCheckCacheForDoesExist() ||this.checkCacheFirst) && !descriptor.isDescriptorForInterface()) {
         
             // If this is a UOW and modification queries have been executed, the cache cannot be trusted.
             if (this.checkDatabaseIfInvalid && (session.isUnitOfWork() &&  ((UnitOfWorkImpl)session).shouldReadFromDB())) {

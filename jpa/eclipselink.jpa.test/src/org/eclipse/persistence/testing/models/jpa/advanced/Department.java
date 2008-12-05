@@ -29,7 +29,9 @@ import javax.persistence.TableGenerator;
 
 import static javax.persistence.CascadeType.PERSIST;
 import static javax.persistence.GenerationType.TABLE;
+import static org.eclipse.persistence.annotations.CacheType.SOFT_WEAK;
 
+import org.eclipse.persistence.annotations.Cache;
 import org.eclipse.persistence.annotations.PrivateOwned;
 
 /**
@@ -46,6 +48,10 @@ import org.eclipse.persistence.annotations.PrivateOwned;
         name = "findAllSQLDepartments",
         query = "select * from CMP3_DEPT",
         resultClass = Department.class)
+@Cache(
+    type=SOFT_WEAK,
+    size=777
+)
 public class Department implements Serializable {
     private Integer id;
     private String name;

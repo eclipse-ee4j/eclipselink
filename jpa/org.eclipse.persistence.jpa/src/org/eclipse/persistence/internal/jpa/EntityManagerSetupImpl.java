@@ -568,31 +568,26 @@ public class EntityManagerSetupImpl {
             return;
         }
 
-        boolean hasDefault = false;
-        
         String defaultTypeName = (String)typeMap.remove(PersistenceUnitProperties.DEFAULT);
-        Class defaultType = null;
         if(defaultTypeName != null) {
-            defaultType = findClassForProperty(defaultTypeName, PersistenceUnitProperties.CACHE_TYPE_DEFAULT, loader);
-            hasDefault = true;
+            Class defaultType = findClassForProperty(defaultTypeName, PersistenceUnitProperties.CACHE_TYPE_DEFAULT, loader);
+            session.getProject().setDefaultIdentityMapClass(defaultType);
         }
         
         String defaultSizeString = (String)sizeMap.remove(PersistenceUnitProperties.DEFAULT);
-        Integer defaultSize = null;
         if(defaultSizeString != null) {
-            defaultSize = Integer.parseInt(defaultSizeString);
-            hasDefault = true;
+            int defaultSize = Integer.parseInt(defaultSizeString);
+            session.getProject().setDefaultIdentityMapSize(defaultSize);
         }
         
         String defaultSharedString = (String)sharedMap.remove(PersistenceUnitProperties.DEFAULT);
-        Boolean defaultShared = null;
         if(defaultSharedString != null) {
-            defaultShared = Boolean.parseBoolean(defaultSharedString);
-            hasDefault = true;
+            boolean defaultShared = Boolean.parseBoolean(defaultSharedString);
+            session.getProject().setDefaultIsIsolated(!defaultShared);
         }
         
         Iterator it = session.getDescriptors().values().iterator();
-        while (it.hasNext() && (hasDefault || !typeMap.isEmpty() || !sizeMap.isEmpty() || !sharedMap.isEmpty())) {
+        while (it.hasNext() && (!typeMap.isEmpty() || !sizeMap.isEmpty() || !sharedMap.isEmpty())) {
             ClassDescriptor descriptor = (ClassDescriptor)it.next();
             
             if(descriptor.isAggregateDescriptor() || descriptor.isAggregateCollectionDescriptor()) {
@@ -603,7 +598,6 @@ public class EntityManagerSetupImpl {
             String className = descriptor.getJavaClass().getName();
             String name;
             
-            Class type = defaultType;
             name = entityName;
             String typeName = (String)typeMap.remove(name);
             if(typeName == null) {
@@ -611,13 +605,10 @@ public class EntityManagerSetupImpl {
                 typeName = (String)typeMap.remove(name);
             }
             if(typeName != null) {
-                type = findClassForProperty(typeName, PersistenceUnitProperties.CACHE_TYPE_ + name, loader);
-            }
-            if(type != null) {
+                Class type = findClassForProperty(typeName, PersistenceUnitProperties.CACHE_TYPE_ + name, loader);
                 descriptor.setIdentityMapClass(type);
             }
 
-            Integer size = defaultSize;
             name = entityName;
             String sizeString = (String)sizeMap.remove(name);
             if(sizeString == null) {
@@ -625,13 +616,10 @@ public class EntityManagerSetupImpl {
                 sizeString = (String)sizeMap.remove(name);
             }
             if(sizeString != null) {
-                size = Integer.parseInt(sizeString);
-            }
-            if(size != null) {
-                descriptor.setIdentityMapSize(size.intValue());
+                int size = Integer.parseInt(sizeString);
+                descriptor.setIdentityMapSize(size);
             }
 
-            Boolean shared = defaultShared;
             name = entityName;
             String sharedString = (String)sharedMap.remove(name);
             if(sharedString == null) {
@@ -639,10 +627,8 @@ public class EntityManagerSetupImpl {
                 sharedString = (String)sharedMap.remove(name);
             }
             if(sharedString != null) {
-                shared = Boolean.parseBoolean(sharedString);
-            }
-            if(shared != null) {
-                descriptor.setIsIsolated(!shared.booleanValue());
+                boolean shared = Boolean.parseBoolean(sharedString);
+                descriptor.setIsIsolated(!shared);
             }
         }
     }
