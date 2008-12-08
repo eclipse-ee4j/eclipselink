@@ -22,12 +22,9 @@ public class GetFunctionWithTwoArgumentsTest extends ReadAllExpressionTest {
 
     public void setup() {
         if (this.getSession().getLogin().getPlatform().isOracle() || getSession().getLogin().getPlatform().isMySQL()) {
-            ExpressionOperator op = getSession().getLogin().getPlatform().getOperator(ExpressionOperator.Concat);
-            String concatFunctionName;
 
             ExpressionBuilder emp = new ExpressionBuilder();
 
-            //expression = emp.get("firstName").getFunction(concatFunctionName, " is cool!").equal("Sarah" + " is cool!");
             expression = emp.get("firstName").getFunction("CONCAT", " is cool!").equal("Sarah" + " is cool!");
             getQuery(true).setSelectionCriteria(expression);
 

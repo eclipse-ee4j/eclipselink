@@ -3020,6 +3020,7 @@ public class LoginEditorPanel extends JPanel implements javax.swing.event.CaretL
         getDriverChoice().addItem("com.ibm.db2.jcc.DB2Driver");
         getDriverChoice().addItem("com.sybase.jdbc2.jdbc.SybDriver");
         getDriverChoice().addItem("com.oracle.ias.jdbc.db2.DB2Driver");
+        getDriverChoice().addItem("org.apache.derby.EmbeddedDriver");
         getDriverChoice().addItem("com.oracle.ias.jdbc.sybase.SybaseDriver");
         getDriverChoice().addItem("com.oracle.ias.jdbc.sqlserver.SQLServerDriver");
         getDriverChoice().addItem("com.microsoft.jdbc.sqlserver.SQLServerDriver");
@@ -3032,8 +3033,16 @@ public class LoginEditorPanel extends JPanel implements javax.swing.event.CaretL
         getPlatformChoice().addItem("org.eclipse.persistence.platform.database.oracle.Oracle8Platform");
         getPlatformChoice().addItem("org.eclipse.persistence.platform.database.oracle.Oracle9Platform");
         getPlatformChoice().addItem("org.eclipse.persistence.platform.database.DB2Platform");
+        getPlatformChoice().addItem("org.eclipse.persistence.platform.database.InformixPlatform");
+        getPlatformChoice().addItem("org.eclipse.persistence.platform.database.DerbyPlatform");
+        getPlatformChoice().addItem("org.eclipse.persistence.platform.database.JavaDBPlatform");
+        getPlatformChoice().addItem("org.eclipse.persistence.platform.database.HSQLPlatform");
+        getPlatformChoice().addItem("org.eclipse.persistence.platform.database.PostgreSQLPlatform");
         getPlatformChoice().addItem("org.eclipse.persistence.platform.database.SybasePlatform");
+        getPlatformChoice().addItem("org.eclipse.persistence.platform.database.SQLAnywherePlatform");
         getPlatformChoice().addItem("org.eclipse.persistence.platform.database.SQLServerPlatform");
+        getPlatformChoice().addItem("org.eclipse.persistence.platform.database.TimesTenPlatform");
+        getPlatformChoice().addItem("org.eclipse.persistence.platform.database.TimesTen7Platform");
         getPlatformChoice().addItem("org.eclipse.persistence.platform.database.AccessPlatform");
         getPlatformChoice().addItem("org.eclipse.persistence.platform.database.MySQLPlatform");
         getPlatformChoice().addItem("org.eclipse.persistence.platform.database.DatabasePlatform");

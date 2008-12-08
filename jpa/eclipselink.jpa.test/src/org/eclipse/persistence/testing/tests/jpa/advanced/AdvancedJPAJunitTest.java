@@ -690,6 +690,9 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
      * Tests a @NamedStoredProcedureQuery.
      */
     public void testNamedStoredProcedureQuery() {
+        if (!supportsStoredProcedures()) {
+            return;
+        }
         EntityManager em = createEntityManager();
         beginTransaction(em);
         
@@ -726,6 +729,9 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
      * Tests a @NamedStoredProcedureQuery using a result-set mapping.
      */
     public void testNamedStoredProcedureQueryWithResultSetMapping() {
+        if (!supportsStoredProcedures()) {
+            return;
+        }
         EntityManager em = createEntityManager();
         beginTransaction(em);
         
@@ -762,6 +768,9 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
      * Tests a @NamedStoredProcedureQuery using a result-set mapping.
      */
     public void testNamedStoredProcedureQueryWithResultSetFieldMapping() {
+        if (!supportsStoredProcedures()) {
+            return;
+        }
         EntityManager em = createEntityManager();
         beginTransaction(em);
         
@@ -798,6 +807,9 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
      * Tests a @NamedStoredProcedureQuery.
      */
     public void testNamedStoredProcedureQueryInOut() {
+        if (!supportsStoredProcedures()) {
+            return;
+        }
         EntityManager em = createEntityManager();
         beginTransaction(em);
         
@@ -835,6 +847,9 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
      * bug 254946 
      */
     public void testNamedStoredProcedureQueryWithRawData() {
+        if (!supportsStoredProcedures()) {
+            return;
+        }
         EntityManager em = createEntityManager();
         beginTransaction(em);
         
@@ -871,6 +886,9 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
      * Tests a @NamedStoredProcedureQuery that returns raw data using executeUpdate().
      */
     public void testModifyNamedStoredProcedureQueryWithRawData() {
+        if (!supportsStoredProcedures()) {
+            return;
+        }
         EntityManager em = createEntityManager();
         beginTransaction(em);
         

@@ -85,10 +85,10 @@ public class Computer implements Serializable {
             //MySQL does not support millis as of 5.0
             this.creationTimestampMillis = this.creationTimestamp.getNanos();
             this.creationTimestamp.setNanos(0);
-            try {
-                Thread.sleep(50);
-            } catch (InterruptedException exception) {
-            }
+        }
+        try {
+            Thread.sleep(50);
+        } catch (InterruptedException exception) {
         }
     }
 

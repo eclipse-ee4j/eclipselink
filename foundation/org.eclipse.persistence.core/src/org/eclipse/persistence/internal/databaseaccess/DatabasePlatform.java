@@ -2187,16 +2187,21 @@ public class DatabasePlatform extends DatasourcePlatform {
                 fields = allFields;
             }
             Iterator itFields = fields.iterator();
-            while(itFields.hasNext()) {
+            while (itFields.hasNext()) {
                 DatabaseField field = (DatabaseField)itFields.next();
                 FieldDefinition fieldDef;
                 //gfbug3307, should use columnDefinition if it was defined.
-                if( field.getColumnDefinition()!=null && field.getColumnDefinition().length() == 0){
-                   fieldDef = new FieldDefinition(field.getName(), ConversionManager.getObjectClass(field.getType()));
-                }else{
+                if ((field.getColumnDefinition()!= null) && (field.getColumnDefinition().length() == 0)) {
+                    Class type = ConversionManager.getObjectClass(field.getType());
+                    // Default type to VARCHAR, if unknown.
+                    if (type == null) {
+                        type = ClassConstants.STRING;
+                    }
+                   fieldDef = new FieldDefinition(field.getName(), type);
+                } else {
                    fieldDef = new FieldDefinition(field.getName(), field.getColumnDefinition());
                 }
-                if(pkFields.contains(field) && shouldTempTableSpecifyPrimaryKeys()) {
+                if (pkFields.contains(field) && shouldTempTableSpecifyPrimaryKeys()) {
                     fieldDef.setIsPrimaryKey(true);
                 }
                 tableDef.addField(fieldDef);

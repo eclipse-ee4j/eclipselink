@@ -100,7 +100,7 @@ public class NoIdentityMapProject extends org.eclipse.persistence.sessions.Proje
         directtofieldmapping2.setIsReadOnly(false);
         directtofieldmapping2.setGetMethodName("getTest2");
         directtofieldmapping2.setSetMethodName("setTest2");
-        directtofieldmapping2.setFieldName("TESTTABLE1.SECOND");
+        directtofieldmapping2.setFieldName("TESTTABLE1.SECOND_");
         descriptor.addMapping(directtofieldmapping2);
         addDescriptor(descriptor);
     }

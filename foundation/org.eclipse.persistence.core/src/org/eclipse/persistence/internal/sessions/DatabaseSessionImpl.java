@@ -29,6 +29,7 @@ import org.eclipse.persistence.sessions.Login;
 import org.eclipse.persistence.sessions.DatasourceLogin;
 import org.eclipse.persistence.sessions.SessionProfiler;
 import org.eclipse.persistence.platform.database.DatabasePlatform;
+import org.eclipse.persistence.platform.database.OraclePlatform;
 import org.eclipse.persistence.platform.server.ServerPlatform;
 import org.eclipse.persistence.platform.server.NoServerPlatform;
 import org.eclipse.persistence.platform.server.ServerPlatformBase;
@@ -581,8 +582,18 @@ public class DatabaseSessionImpl extends AbstractSession implements org.eclipse.
         try{
             conn = (Connection)getReadLogin().connectToDatasource(null,this);
             // null out the cached platform because the platform on the login will be changed by the following line of code
-            platform = null;
-            getLogin().setPlatformClassName(DBPlatformHelper.getDBPlatform(conn.getMetaData().getDatabaseProductName(), getSessionLog()));
+            this.platform = null;
+            String platformName = null;
+            try {
+                platformName = DBPlatformHelper.getDBPlatform(conn.getMetaData().getDatabaseProductName(), getSessionLog());
+                getLogin().setPlatformClassName(platformName);
+            } catch (EclipseLinkException classNotFound) {
+                if (platformName.indexOf("Oracle") != -1) {
+                    getLogin().setPlatform(new OraclePlatform());
+                } else {
+                    throw classNotFound;
+                }
+            }
         }catch (SQLException ex){
             DatabaseException dbEx =  DatabaseException.errorRetrieveDbMetadataThroughJDBCConnection();
             // Typically exception would occur if user did not provide correct connection

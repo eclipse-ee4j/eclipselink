@@ -13,6 +13,7 @@
 
 package org.eclipse.persistence.testing.models.jpa.advanced.compositepk;
 
+import org.eclipse.persistence.sessions.DatabaseSession;
 import org.eclipse.persistence.tools.schemaframework.*;
 
 public class CompositePKTableCreator extends TableCreator {
@@ -120,7 +121,7 @@ public class CompositePKTableCreator extends TableCreator {
         table.addField(fieldDTYPE);
 
         ForeignKeyConstraint fkConstraint1 = new ForeignKeyConstraint();
-        fkConstraint1.setName("CMP3_SCIENTIST_CUBICLE");
+        fkConstraint1.setName("CMP3_SC_CUBICLE");
         fkConstraint1.addSourceField("CUBE_ID");
         fkConstraint1.addSourceField("CUBE_CODE");
         fkConstraint1.setTargetTable("CMP3_CUBICLE");
@@ -129,7 +130,7 @@ public class CompositePKTableCreator extends TableCreator {
         table.addForeignKeyConstraint(fkConstraint1);
 
         ForeignKeyConstraint fkConstraint2 = new ForeignKeyConstraint();
-        fkConstraint2.setName("CMP3_SCIENTIST_DEPT");
+        fkConstraint2.setName("CMP3_SC_DEPT");
         fkConstraint2.addSourceField("DEPT_NAME");
         fkConstraint2.addSourceField("DEPT_ROLE");
         fkConstraint2.addSourceField("DEPT_LOCATION");
@@ -204,5 +205,16 @@ public class CompositePKTableCreator extends TableCreator {
         table.addField(CODE_field);
     
         return table;
+    }
+    
+    /**
+     * Dropping old foreign keys from schema change.
+     */
+    public void replaceTables(DatabaseSession session) {
+        try {
+            session.executeNonSelectingSQL("Alter table CMP3_SCIENTIST drop constraint CMP3_SCIENTIST_CUBICLE");
+            session.executeNonSelectingSQL("Alter table CMP3_SCIENTIST drop constraint CMP3_SCIENTIST_DEPT");
+        } catch (Exception ignore) {}
+        super.replaceTables(session);
     }
 }

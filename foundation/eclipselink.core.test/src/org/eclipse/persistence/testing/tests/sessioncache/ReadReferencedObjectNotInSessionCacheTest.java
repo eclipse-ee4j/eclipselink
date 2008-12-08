@@ -30,9 +30,7 @@ public class ReadReferencedObjectNotInSessionCacheTest extends TestCase {
     }
 
     protected void setup() {
-        if(getSession().getPlatform().isMySQL() || getSession().getPlatform().isSybase() || getSession().getPlatform().isSQLAnywhere() /*|| getSession().getPlatform().isSQLServer()*/ || getSession().getPlatform().isDB2()) {
-          throw new TestWarningException("This database does not support \"FOR UPDATE NOWAIT\"") ;
-        }
+        checkNoWaitSupported();
 
         // Flush the cache 								
         getSession().getIdentityMapAccessor().initializeIdentityMaps();

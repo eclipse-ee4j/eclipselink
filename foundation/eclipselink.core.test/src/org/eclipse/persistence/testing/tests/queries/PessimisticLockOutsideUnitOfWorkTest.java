@@ -37,14 +37,10 @@ public class PessimisticLockOutsideUnitOfWorkTest extends PessimisticLockFineGra
     }
 
     public void test() throws Exception {
-        if (getSession().getPlatform().isDB2() || getSession().getPlatform().isAccess() || 
-            getSession().getPlatform().isSybase() || getSession().getPlatform().isSQLAnywhere() /*|| getSession().getPlatform().isSQLServer()*/) {
-            throw new TestWarningException("This database does not support for update");
-        }
+        checkSelectForUpateSupported();
 
-        if ((getSession().getPlatform().isMySQL() ) && 
-            lockMode == org.eclipse.persistence.queries.ObjectLevelReadQuery.LOCK_NOWAIT) {
-            throw new TestWarningException("This database does not support NOWAIT");
+        if (this.lockMode == ObjectLevelReadQuery.LOCK_NOWAIT) {
+            checkNoWaitSupported();
         }
 
         // If this did not work, would have had thrown a fetch out of sequence exception.
@@ -82,6 +78,7 @@ public class PessimisticLockOutsideUnitOfWorkTest extends PessimisticLockFineGra
 
             try {
                 Address lockedAddress = (Address)uow2.executeQuery(query);
+                lockedAddress.toString();
             } catch (EclipseLinkException exeception) {
                 session2.logMessage(exeception.toString());
                 isLocked = true;

@@ -110,6 +110,7 @@ public class ExpressionTestSuite extends TestSuite {
         test.setName("AdvancedDB2ExpressionFunctionTest");
         test.setDescription("advanced expression function test");
         test.addSupportedPlatform(DB2Platform.class);
+        test.addUnsupportedPlatform(DerbyPlatform.class);
         addTest(test);
     }
 
@@ -1601,7 +1602,7 @@ public class ExpressionTestSuite extends TestSuite {
         //Add new tests here, if any.
         addAdvancedSybaseExpressionFunctionTest();
         // ET. The test doesn't work with DB2 jcc driver(Bug 4563813)
-        //addAdvancedDB2ExpressionFunctionTest();
+        addAdvancedDB2ExpressionFunctionTest();
         addInCollectionTest();
         // Bug 247076 - LiteralExpression does not print SQL in statement 
         addTest(new LiteralExpressionTest());

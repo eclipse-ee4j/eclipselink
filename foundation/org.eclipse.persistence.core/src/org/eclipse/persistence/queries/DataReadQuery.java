@@ -169,7 +169,8 @@ public class DataReadQuery extends ReadQuery {
         } else if (this.resultType == ARRAY) {
             return row.getValues().toArray();
         } else if (this.resultType == ATTRIBUTE) {
-            Object value = row.getValues().get(0);
+            // Use get with field for XML records.
+            Object value = row.get(row.getFields().get(0));
             if (getValueConverter() != null) {
                 value = getValueConverter().convertDataValueToObjectValue(value, this.session);
             }
@@ -190,7 +191,9 @@ public class DataReadQuery extends ReadQuery {
             results = getContainerPolicy().buildContainerFromVector(rows, this.session);
         } else if (this.resultType == VALUE) {
             if (!rows.isEmpty()) {
-                results = ((AbstractRecord)rows.get(0)).getValues().get(0);
+                AbstractRecord record = (AbstractRecord)rows.get(0);
+                // Use get with field for XML records.
+                results = record.get(record.getFields().get(0));
                 if (getValueConverter() != null) {
                     results = getValueConverter().convertDataValueToObjectValue(results, this.session);
                 }

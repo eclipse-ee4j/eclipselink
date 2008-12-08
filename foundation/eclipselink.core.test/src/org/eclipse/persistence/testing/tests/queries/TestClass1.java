@@ -53,7 +53,7 @@ public class TestClass1 {
         definition.setName("TESTTABLE1");
         definition.addIdentityField("PKEY", BigDecimal.class, 15);
         definition.addField("FIRST_", String.class, 40);
-        definition.addField("SECOND", String.class, 40);
+        definition.addField("SECOND_", String.class, 40);
         return definition;
     }
 }

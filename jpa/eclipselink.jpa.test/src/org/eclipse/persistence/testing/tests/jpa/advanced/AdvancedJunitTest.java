@@ -19,6 +19,8 @@ import javax.persistence.EntityManager;
 import junit.framework.*;
 import junit.extensions.TestSetup;
 
+import org.eclipse.persistence.internal.sessions.RepeatableWriteUnitOfWork;
+import org.eclipse.persistence.jpa.JpaEntityManager;
 import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
 import org.eclipse.persistence.testing.models.jpa.advanced.AdvancedTableCreator;
 
@@ -97,10 +99,9 @@ public class AdvancedJunitTest extends JUnitTestCase {
         beginTransaction(em);
         em.remove(em.find(LargeProject.class, lp1.getId()));
         em.flush();
-        System.out.println("done the flush!!!");
-        org.eclipse.persistence.jpa.JpaEntityManager eclipselinkEm = (org.eclipse.persistence.jpa.JpaEntityManager)em;
-        org.eclipse.persistence.internal.sessions.RepeatableWriteUnitOfWork uow = 
-            (org.eclipse.persistence.internal.sessions.RepeatableWriteUnitOfWork)eclipselinkEm.getActiveSession();
+        JpaEntityManager eclipselinkEm = (JpaEntityManager)em.getDelegate();
+        RepeatableWriteUnitOfWork uow = 
+            (RepeatableWriteUnitOfWork)eclipselinkEm.getActiveSession();
         //duplicate the beforeCompletion call
         uow.issueSQLbeforeCompletion();
         //commit the transaction

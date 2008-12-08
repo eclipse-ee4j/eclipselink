@@ -14,7 +14,6 @@ package org.eclipse.persistence.testing.tests.queries;
 
 import org.eclipse.persistence.queries.*;
 import org.eclipse.persistence.testing.models.employee.domain.*;
-import org.eclipse.persistence.testing.framework.*;
 
 /**
  * Tests the decoupling of bean-level pessimistic locking and refresh queries.
@@ -33,14 +32,10 @@ public class PessimisticLockRefreshTest extends PessimisticLockFineGrainedTest {
     }
 
     public void test() throws Exception {
-        if (getSession().getPlatform().isDB2() || getSession().getPlatform().isAccess() || 
-            getSession().getPlatform().isSybase() || getSession().getPlatform().isSQLAnywhere() /*|| getSession().getPlatform().isSQLServer()*/) {
-            throw new TestWarningException("This database does not support for update");
-        }
+        checkSelectForUpateSupported();
 
-        if ((getSession().getPlatform().isMySQL() ) && 
-            lockMode == org.eclipse.persistence.queries.ObjectLevelReadQuery.LOCK_NOWAIT) {
-            throw new TestWarningException("This database does not support NOWAIT");
+        if (this.lockMode == ObjectLevelReadQuery.LOCK_NOWAIT) {
+            checkNoWaitSupported();
         }
 
         // If this did not work, would have had thrown a fetch out of sequence exception.
@@ -50,7 +45,7 @@ public class PessimisticLockRefreshTest extends PessimisticLockFineGrainedTest {
 
         Address address = (Address)uow.executeQuery(query);
 
-        String oldCity = address.getCountry();
+        String oldCity = address.getCity();
 
         address.setCity("Naboo");
 
@@ -59,7 +54,7 @@ public class PessimisticLockRefreshTest extends PessimisticLockFineGrainedTest {
 
         Address newAddress = (Address)uow.executeQuery(query);
 
-        strongAssert(!newAddress.getCity().equals("Naboo"), 
+        strongAssert(newAddress.getCity().equals(oldCity), 
                      "A pessimistically locked object could not be refreshed.");
 
 

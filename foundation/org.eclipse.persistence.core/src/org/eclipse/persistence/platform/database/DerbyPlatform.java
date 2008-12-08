@@ -17,6 +17,7 @@ import org.eclipse.persistence.internal.databaseaccess.FieldTypeDefinition;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.internal.helper.DatabaseTable;
 import org.eclipse.persistence.exceptions.ValidationException;
+import org.eclipse.persistence.expressions.ExpressionOperator;
 import org.eclipse.persistence.queries.ValueReadQuery;
 
 import java.util.Vector;
@@ -219,13 +220,13 @@ public class DerbyPlatform extends DB2Platform {
 
         fieldTypeMapping.put(Integer.class, new FieldTypeDefinition("INTEGER", false));
         fieldTypeMapping.put(Long.class, new FieldTypeDefinition("BIGINT", false));
-        fieldTypeMapping.put(Float.class, new FieldTypeDefinition("FLOAT"));
+        fieldTypeMapping.put(Float.class, new FieldTypeDefinition("FLOAT", false));
         fieldTypeMapping.put(Double.class, new FieldTypeDefinition("FLOAT", false));
         fieldTypeMapping.put(Short.class, new FieldTypeDefinition("SMALLINT", false));
         fieldTypeMapping.put(Byte.class, new FieldTypeDefinition("SMALLINT", false));
         fieldTypeMapping.put(java.math.BigInteger.class, new FieldTypeDefinition("BIGINT", false));
-        fieldTypeMapping.put(java.math.BigDecimal.class, new FieldTypeDefinition("DECIMAL"));
-        fieldTypeMapping.put(Number.class, new FieldTypeDefinition("DECIMAL"));
+        fieldTypeMapping.put(java.math.BigDecimal.class, new FieldTypeDefinition("DECIMAL", 15));
+        fieldTypeMapping.put(Number.class, new FieldTypeDefinition("DECIMAL", 15));
 
         fieldTypeMapping.put(String.class, new FieldTypeDefinition("VARCHAR", 255));
         fieldTypeMapping.put(Character.class, new FieldTypeDefinition("CHAR", 1));
@@ -243,4 +244,13 @@ public class DerbyPlatform extends DB2Platform {
         return fieldTypeMapping;
     }
 
+
+    /**
+     * Initialize any platform-specific operators
+     */
+    protected void initializePlatformOperators() {
+        super.initializePlatformOperators();
+        // Derby does not support DECIMAL, but does have a DOUBLE function.
+        addOperator(ExpressionOperator.simpleFunction(ExpressionOperator.ToNumber, "DOUBLE"));
+    }
 }

@@ -431,7 +431,6 @@ public class JoinedAttributeAdvancedJunitTest extends JUnitTestCase {
         query.setSelectionCriteria(query.getExpressionBuilder().get("lastName").equal("Way").
                                     or(query.getExpressionBuilder().get("lastName").equal("Jones")));
         
-        List list = new ArrayList();
         ReadAllQuery controlQuery = (ReadAllQuery)query.clone();
         Expression manager = query.getExpressionBuilder().get("manager");
         query.addJoinedAttribute(manager);

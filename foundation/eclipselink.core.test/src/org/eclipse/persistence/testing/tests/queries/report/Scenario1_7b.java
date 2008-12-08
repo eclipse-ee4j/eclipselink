@@ -47,7 +47,7 @@ public class Scenario1_7b extends ReportQueryTestCase {
             }
 
             // Convert the PK Value from BigDecimal to long.  MySQL getObject() returns long for BIGINT
-            if (getSession().getPlatform().isMySQL() || getSession().getPlatform().isTimesTen()) {
+            if (getSession().getPlatform().isMySQL() || getSession().getPlatform().isTimesTen() || getSession().getPlatform().isDerby()) {
                 result[0] = ConversionManager.getDefaultManager().convertObject(result[0], Long.class);
             }
             result[1] = phone.getType();

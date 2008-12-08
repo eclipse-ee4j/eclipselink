@@ -88,7 +88,7 @@ public class DDLGenerationJUnitTestSuite extends JUnitTestCase {
         beginTransaction(em);
         try {
             CKeyEntityA a = new CKeyEntityA("Wonseok", "Kim");
-            long seq = System.currentTimeMillis(); // just to get unique value :-)
+            int seq = (int)System.currentTimeMillis(); // just to get unique value :-)
             CKeyEntityB b = new CKeyEntityB(new CKeyEntityBPK(seq, "B1209"));
             //set unique keys
             b.setUnq1("u0001");
@@ -345,7 +345,7 @@ public class DDLGenerationJUnitTestSuite extends JUnitTestCase {
         beginTransaction(em);
         // let's see if a subclass entity is persisted and found well
         try {
-            long seq = System.currentTimeMillis(); // just to get unique value :-)
+            int seq = (int)System.currentTimeMillis(); // just to get unique value :-)
             String code = "B1215";
             CKeyEntityB2 b = new CKeyEntityB2(new CKeyEntityBPK(seq, code));
             //set unique keys

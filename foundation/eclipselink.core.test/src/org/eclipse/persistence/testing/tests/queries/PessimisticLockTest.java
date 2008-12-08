@@ -12,6 +12,7 @@
  ******************************************************************************/  
 package org.eclipse.persistence.testing.tests.queries;
 
+import org.eclipse.persistence.queries.ObjectBuildingQuery;
 import org.eclipse.persistence.sessions.*;
 import org.eclipse.persistence.testing.models.employee.domain.*;
 import org.eclipse.persistence.testing.framework.*;
@@ -41,12 +42,10 @@ public class PessimisticLockTest extends RefreshTest {
     }
 
     public void test() throws Exception {
-        if (getSession().getPlatform().isDB2() || getSession().getPlatform().isAccess() || getSession().getPlatform().isSybase() || getSession().getPlatform().isSQLAnywhere() /*|| getSession().getPlatform().isSQLServer()*/) {
-            throw new TestWarningException("This database does not support for update");
-        }
+        checkSelectForUpateSupported();
 
-        if ((getSession().getPlatform().isMySQL() ) && (lockMode == org.eclipse.persistence.queries.ObjectBuildingQuery.LOCK_NOWAIT)) {
-            throw new TestWarningException("This database does not support NOWAIT");
+        if (this.lockMode == ObjectBuildingQuery.LOCK_NOWAIT) {
+            checkNoWaitSupported();
         }
 
         uow = getSession().acquireUnitOfWork();

@@ -40,7 +40,6 @@ import javax.persistence.RollbackException;
 
 import junit.framework.*;
 
-import org.eclipse.persistence.jpa.JpaHelper;
 import org.eclipse.persistence.jpa.JpaQuery;
 import org.eclipse.persistence.jpa.JpaEntityManager;
 import org.eclipse.persistence.queries.DatabaseQuery;
@@ -410,6 +409,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
             em.setFlushMode(emFlushMode);
             em.persist(emp);
             result = (Employee) query.getSingleResult();
+            result.toString();
         } catch (javax.persistence.NoResultException ex) {
             // failed to flush to database
             flushed = false;
@@ -449,6 +449,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
                 em.persist(emp);
                 updateQuery.executeUpdate();
                 Employee result = (Employee) readQuery.getSingleResult();
+                result.toString();
             }catch (javax.persistence.EntityNotFoundException ex){
                 rollbackTransaction(em);
                 fail("Failed to flush to database");
@@ -490,6 +491,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         beginTransaction(em);
         List result = em.createQuery("SELECT e FROM Employee e").getResultList();
         Employee emp = (Employee)result.get(0);
+        emp.toString();
         Employee emp2 = (Employee)result.get(1);
         String newName = ""+System.currentTimeMillis();
         emp2.setFirstName(newName);
@@ -1850,8 +1852,11 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         beginTransaction(em);
         try{
             Employee empWithAddressFound = em.find(Employee.class, empWithAddress.getId());
+            empWithAddressFound.toString();
             Employee empWithoutAddressFound = em.find(Employee.class, empWithoutAddress.getId());
+            empWithoutAddressFound.toString();
             int nDeleted = em.createQuery("DELETE FROM Employee e WHERE e.firstName = '"+firstName+"' and e.address IS NULL").executeUpdate();
+            assertTrue(nDeleted > 0);
             commitTransaction(em);
         }catch (RuntimeException ex){
             if (isTransactionActive(em)){
@@ -2072,6 +2077,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         RuntimeException exception = null;
         try {
             Employee persistedEmployee = (Employee)em.createQuery("SELECT OBJECT(e) FROM Employee e WHERE e.firstName = '"+firstName+"'").getSingleResult();
+            persistedEmployee.toString();
         } catch (RuntimeException runtimeException) {
             exception = runtimeException;
         }
@@ -2164,9 +2170,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
 			<property name="eclipselink.descriptor.customizer.Employee" value="org.eclipse.persistence.testing.models.jpa.advanced.Customizer"/>
 			<property name="eclipselink.descriptor.customizer.org.eclipse.persistence.testing.models.jpa.advanced.Address" value="org.eclipse.persistence.testing.models.jpa.advanced.Customizer"/>
         */
-        
-        String sessionName = ss.getName();
-        
+                
         int defaultCacheSize = ss.getDescriptor(Project.class).getIdentityMapSize();
         if(defaultCacheSize != 500) {
             fail("defaultCacheSize is wrong");
@@ -2641,6 +2645,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
     public void testLeftJoinOneToOneQuery() {
         EntityManager em = createEntityManager("fieldaccess");
         List results = em.createQuery("SELECT a FROM Employee e LEFT JOIN e.address a").getResultList();
+        results.toString();
         closeEntityManager(em);
     }
 
@@ -3179,8 +3184,6 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
     //Glassfish bug 1021 - allow cascading persist operation to non-entities
     public void testCascadePersistToNonEntitySubclass() {
         EntityManager em = createEntityManager("fieldaccess");
-        // added new setting for bug 237281
-        JpaEntityManager eclipseLinkEm = JpaHelper.getEntityManager(em);
         InheritancePolicy ip = getServerSession("fieldaccess").getDescriptor(Project.class).getInheritancePolicy();
         boolean describesNonPersistentSubclasses = ip.getDescribesNonPersistentSubclasses();
         ip.setDescribesNonPersistentSubclasses(true);
@@ -3602,12 +3605,10 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
                 nUpdated = em.createQuery("UPDATE Employee e set e.salary = e.roomNumber, e.roomNumber = e.salary, e.address = null where e.firstName = '" + firstName + "'").executeUpdate();
             }
             commitTransaction(em);
-        } catch (Exception e) {
-            if (isTransactionActive(em)){
-                 rollbackTransaction(em);
-            }
-        	fail("Exception thrown: " + e.getClass());
         } finally {
+            if (isTransactionActive(em)){
+                rollbackTransaction(em);
+            }
             closeEntityManager(em);
         }
 
@@ -4015,6 +4016,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         beginTransaction(em);
         try {
             Employee emp = em.find(Employee.class, "");
+            emp.toString();
             fail("IllegalArgumentException has not been thrown");
         } catch(IllegalArgumentException ex) {
             if (isOnServer()) {

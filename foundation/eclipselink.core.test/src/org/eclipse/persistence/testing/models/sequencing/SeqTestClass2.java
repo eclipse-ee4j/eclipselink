@@ -56,7 +56,7 @@ public class SeqTestClass2 {
         definition.setName("SEQTESTTABLE2");
         definition.addPrimaryKeyField("PKEY", String.class, 15);
         definition.addField("FIRST_", String.class, 40);
-        definition.addField("SECOND", String.class, 40);
+        definition.addField("SECOND_", String.class, 40);
         return definition;
     }
 }

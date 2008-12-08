@@ -12,6 +12,7 @@
  ******************************************************************************/  
 package org.eclipse.persistence.testing.models.jpa.inheritance;
 
+import org.eclipse.persistence.sessions.DatabaseSession;
 import org.eclipse.persistence.tools.schemaframework.*;
 
 /**
@@ -998,7 +999,7 @@ public class InheritanceTableCreator extends org.eclipse.persistence.tools.schem
 
         // FOREIGN KEY (LAPTOP_MFR, LAPTOP_SNO) REFERENCES CMP3_LAPTOP (MFR, SNO) 
         ForeignKeyConstraint fkConstraint = new ForeignKeyConstraint();
-        fkConstraint.setName("CMP3_ENGINEER_LAPTOP_FK1");
+        fkConstraint.setName("CMP3_ENG_LAP_FK1");
         fkConstraint.addSourceField("LAPTOP_MFR");
         fkConstraint.addSourceField("LAPTOP_SNO");
         fkConstraint.setTargetTable("CMP3_LAPTOP");
@@ -1007,5 +1008,15 @@ public class InheritanceTableCreator extends org.eclipse.persistence.tools.schem
         
         table.addForeignKeyConstraint(fkConstraint);
         return table;
+    }
+    
+    /**
+     * Dropping old foreign keys from schema change.
+     */
+    public void replaceTables(DatabaseSession session) {
+        try {
+            session.executeNonSelectingSQL("Alter table CMP3_ENGINEER_LAPTOP drop constraint CMP3_ENGINEER_LAPTOP_FK1");
+        } catch (Exception ignore) {}
+        super.replaceTables(session);
     }
 }

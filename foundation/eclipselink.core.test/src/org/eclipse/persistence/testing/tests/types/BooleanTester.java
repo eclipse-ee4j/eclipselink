@@ -45,7 +45,7 @@ public class BooleanTester extends TypeTester {
 
         /* Next define the attribute mappings. */
         descriptor.addDirectMapping("testName", "getTestName", "setTestName", "NAME");
-        descriptor.addDirectMapping("booleanValue", "BOOLEAN");
+        descriptor.addDirectMapping("booleanValue", "BOOLEANV");
         descriptor.addDirectMapping("booleanClassValue", "BOOLEANC");
         return descriptor;
     }
@@ -61,7 +61,7 @@ public class BooleanTester extends TypeTester {
         /* Next define the attribute mappings. */
         try {
             descriptor.addDirectMapping("testName", "getTestName", "setTestName", "NAME");
-            descriptor.addDirectMapping("booleanValue", "getBooleanValue", "setBooleanValue", "BOOLEAN");
+            descriptor.addDirectMapping("booleanValue", "getBooleanValue", "setBooleanValue", "BOOLEANV");
             descriptor.addDirectMapping("booleanClassValue", "getBooleanClassValue", "setBooleanClassValue", "BOOLEANC");
         } catch (DescriptorException exception) {
         }
@@ -100,7 +100,7 @@ public class BooleanTester extends TypeTester {
         FieldDefinition fieldDef;
 
         definition.setName("BOOLEANS");
-        fieldDef = new FieldDefinition("BOOLEAN", Boolean.class);
+        fieldDef = new FieldDefinition("BOOLEANV", Boolean.class);
         fieldDef.setShouldAllowNull(false);
         definition.addField(fieldDef);
 

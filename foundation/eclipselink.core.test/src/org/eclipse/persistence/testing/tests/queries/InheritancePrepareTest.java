@@ -34,9 +34,9 @@ public class InheritancePrepareTest extends AutoVerifyTestCase {
         if (getSession().getPlatform().isTimesTen()) {
             throw new TestWarningException("TimesTen does not support TO_NUMBER");
         }
-    if (getSession().getPlatform().isDB2()) {
-      throw new TestWarningException("The test does not support DB2 (Bug 4563813).");        
-    }
+        if (getSession().getPlatform().isDB2()) {
+            throw new TestWarningException("The test does not support DB2 (Bug 4563813).");        
+        }
     
         query = new ReadAllQuery();
         query.setReferenceClass(Employee.class);
@@ -50,6 +50,7 @@ public class InheritancePrepareTest extends AutoVerifyTestCase {
         Vector arguments = new Vector(1);
         arguments.add(null);
         List result = (List)getSession().executeQuery(query, arguments);
+        result.toString();
         arguments = new Vector(1);
         arguments.add(new Long(0));
         result = (List)getSession().executeQuery(query, arguments);

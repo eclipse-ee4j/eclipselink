@@ -862,8 +862,6 @@ public class JUnitJPQLValidationTestSuite extends JUnitTestCase
             }
             secondEm.close();
             undoEmployeeChanges();
-            System.out.println("*** flushOptimisticLockExceptionTest Diagnosis message - Got Exception: ");
-            e.printStackTrace();
             if (isKnownMySQLIssue(e.getCause())) {
                 warning("EOFException found on MySQL db.  This is a known problem with the MySQL Database");
             } else {         
@@ -912,8 +910,6 @@ public class JUnitJPQLValidationTestSuite extends JUnitTestCase
             }
             secondEm.close();
             undoEmployeeChanges();
-            System.out.println("*** commitOptimisticLockExceptionTest Diagnosis message - Got Exception: ");
-            e.printStackTrace();
             if (isKnownMySQLIssue(e.getCause())) {
                 warning("EOFException found on MySQL db.  This is a known problem with the MySQL Database");
             } else {         

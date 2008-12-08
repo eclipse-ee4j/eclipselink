@@ -22,6 +22,7 @@ import javax.rmi.PortableRemoteObject;
 import javax.persistence.*;
 import junit.framework.*;
 
+import org.eclipse.persistence.internal.databaseaccess.DatabasePlatform;
 import org.eclipse.persistence.internal.databaseaccess.Platform;
 import org.eclipse.persistence.logging.SessionLog;
 import org.eclipse.persistence.sessions.server.ServerSession;
@@ -432,4 +433,45 @@ public abstract class JUnitTestCase extends TestCase {
         getServerSession().getSessionLog().logThrowable(SessionLog.WARNING, exception);
     }
 
+    /**
+     * Return if pessimistic locking/select for update is supported for this test platform.
+     * Currently testing supports select for update on Oracle, MySQL, SQLServer, TimesTen.
+     * Some of the other platforms may have some support for select for update, but the databases we test with
+     * for these do not have sufficient support to pass the tests.
+     * TODO: Need to recheck tests on DB2 as it has some support for this.
+     * Derby has some support, but does not work with joins (2008-12-01).
+     */
+    public boolean isSelectForUpateSupported() {
+        DatabasePlatform platform = getServerSession().getPlatform();
+        if (platform.isDB2() || platform.isAccess() || platform.isSybase() || platform.isSQLAnywhere() || platform.isDerby()) {
+            warning("This database does not support FOR UPDATE.");
+            return false;
+        }
+        return true;
+    }
+
+    /**
+     * Return if pessimistic locking/select for update nowait is supported for this test platform.
+     * Currently testing supports nowait on Oracle, SQLServer.
+     */
+    public boolean isNoWaitSupported() {
+        DatabasePlatform platform = getServerSession().getPlatform();
+        if (platform.isDB2() || platform.isAccess() || platform.isSybase() || platform.isSQLAnywhere() || platform.isDerby() || platform.isMySQL() || platform.isTimesTen()) {
+            warning("This database does not support NOWAIT.");
+            return false;        
+        }
+        return true;
+    }
+    
+    /**
+     * Return if stored procedures are supported for the database platform for the test database.
+     */
+    public boolean supportsStoredProcedures() {
+        DatabasePlatform platform = getServerSession().getPlatform();
+        if (platform.isOracle() || platform.isSybase() || platform.isMySQL() || platform.isSQLServer()) {
+            return true;
+        }
+        warning("This database does not support stored procedure creation.");
+        return false;
+    }
 }

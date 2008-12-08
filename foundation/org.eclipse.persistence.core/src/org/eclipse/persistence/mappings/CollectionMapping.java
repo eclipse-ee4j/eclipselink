@@ -110,7 +110,7 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
         
         ReadAllQuery readAllQuery = (ReadAllQuery) getSelectionQuery();
         ExpressionBuilder builder = readAllQuery.getExpressionBuilder();
-        Expression expression = builder.get(aggregateName).get(queryKeyName).toUpperCase();
+        Expression expression = builder.get(aggregateName).get(queryKeyName);
         
         if (isDescending) {
             readAllQuery.addOrdering(expression.descending());

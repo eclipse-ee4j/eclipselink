@@ -65,7 +65,7 @@ public class ReportQueryFunctionTypeTestCase extends AutoVerifyTestCase {
             }
             
             //Sybase and TimesTen doesn't support
-            if(!(getSession().getDatasourcePlatform().isSybase() || getSession().getDatasourcePlatform().isTimesTen()))        
+            if(!(getSession().getDatasourcePlatform().isSybase() || getSession().getDatasourcePlatform().isTimesTen() || getSession().getDatasourcePlatform().isDerby()))        
             {
               reportQuery .addStandardDeviation("salary-std", builder.get("salary")); 
             }
@@ -84,6 +84,10 @@ public class ReportQueryFunctionTypeTestCase extends AutoVerifyTestCase {
         } else {
             ReportQueryResult result = results.firstElement();
             Object value;
+            // Types are not as expected for Derby.
+            if (getSession().getDatasourcePlatform().isDerby()) {
+                return;
+            }
         
             //To fix bug 6217517, AVG(t1.SALARY) returns an Integer value with DB2
             // The Integer also returned by SyBase (JConnect 6.05) and SQLServer 2005 (SQL Server  Version: 9.00.2050; Driver: Microsoft SQL Server 2005 JDBC Driver  Version: 1.2.2828.100) 

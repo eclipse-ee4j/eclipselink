@@ -13,7 +13,6 @@
 package org.eclipse.persistence.testing.tests.jpa.fieldaccess.advanced;
 
 import java.util.Collection;
-import java.util.Vector;
 
 import javax.persistence.EntityManager;
 
@@ -555,6 +554,9 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
      * Tests a @NamedStoredProcedureQuery.
      */
     public void testNamedStoredProcedureQuery() {
+        if (!supportsStoredProcedures()) {
+            return;
+        }
         EntityManager em = createEntityManager("fieldaccess");
         beginTransaction(em);
         
@@ -591,6 +593,9 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
      * Tests a @NamedStoredProcedureQuery.
      */
     public void testNamedStoredProcedureQueryInOut() {
+        if (!supportsStoredProcedures()) {
+            return;
+        }
         EntityManager em = createEntityManager("fieldaccess");
         beginTransaction(em);
         
@@ -628,6 +633,9 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
      * bug 254946 
      */
     public void testNamedStoredProcedureQueryWithRawData() {
+        if (!supportsStoredProcedures()) {
+            return;
+        }
         EntityManager em = createEntityManager("fieldaccess");
         beginTransaction(em);
         

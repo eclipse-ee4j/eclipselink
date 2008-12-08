@@ -46,6 +46,9 @@ public class ReportQueryAndExistsSubQuery extends ReportQueryTestCase {
         if (getSession().isRemoteSession()) {
             throwWarning("Report queries with objects are not supported on remote session.");
         }
+        if (getSession().getPlatform().isDerby()) {
+            throwWarning("Exists with multiple values not supported on Derby.");
+        }
         super.setup();
 
         reportQuery = new ReportQuery(Employee.class, new ExpressionBuilder()); 

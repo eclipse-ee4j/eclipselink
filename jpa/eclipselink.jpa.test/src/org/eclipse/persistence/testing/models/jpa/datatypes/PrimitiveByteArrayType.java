@@ -51,6 +51,7 @@ public class PrimitiveByteArrayType implements java.io.Serializable {
     }
 
     @Column(name = "PBYTEARRAY_DATA")
+    @Lob
     public byte[] getPrimitiveByteArrayData()
     {
         return primitiveByteArrayData;

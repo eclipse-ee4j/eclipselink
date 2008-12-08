@@ -201,12 +201,13 @@ public class TestSystem {
     }
 
     /**
-     * You must have the Cloudscape driver loaded.
+     * You must have the Derby driver loaded.
      */
-    public void useCloudscape() {
-        DatabaseLogin login = new DatabaseLogin(new org.eclipse.persistence.platform.database.CloudscapePlatform());
-        login.useCloudscapeDriver();
-        login.setDatabaseURL("J:\\CloudscapeDatabase\\Cloudscape_3.5\\demo\\databases\\toursDB");
+    public void useDerby() {
+        DatabaseLogin login = new DatabaseLogin(new org.eclipse.persistence.platform.database.DerbyPlatform());
+        login.setDriverClassName("org.apache.derby.jdbc.EmbeddedDriver");
+        login.setDriverURLHeader("jdbc:derby:");
+        login.setDatabaseURL("test;create=true");
         setLogin(login);
     }
 

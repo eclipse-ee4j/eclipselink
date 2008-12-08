@@ -88,12 +88,10 @@ public class PessimisticLockIndirectionJoiningTest extends TestCase {
     }
 
     public void test() throws Exception {
-        if (getSession().getPlatform().isDB2() || getSession().getPlatform().isAccess() || getSession().getPlatform().isSybase() || getSession().getPlatform().isSQLAnywhere() /*|| getSession().getPlatform().isSQLServer()*/) {
-            throw new TestWarningException("This database does not support for update");
-        }
+        checkSelectForUpateSupported();
 
-        if ((getSession().getPlatform().isMySQL() || getSession().getPlatform().isTimesTen()) && lockMode == org.eclipse.persistence.queries.ObjectLevelReadQuery.LOCK_NOWAIT) {
-            throw new TestWarningException("This database does not support NOWAIT");        
+        if (this.lockMode == ObjectLevelReadQuery.LOCK_NOWAIT) {
+            checkNoWaitSupported();     
         }
     
         uow = getSession().acquireUnitOfWork();
@@ -131,8 +129,9 @@ public class PessimisticLockIndirectionJoiningTest extends TestCase {
             boolean isLocked = false;
             try {
                 List addresses = (List)uow2.executeQuery(doomedQuery);
+                addresses.toString();
             } catch (EclipseLinkException exeception) {
-                //session2.logMessage(exeception.toString());
+                //session2.logMessage(exception.toString());
                 isLocked = true;
             }
             if (!isLocked) {

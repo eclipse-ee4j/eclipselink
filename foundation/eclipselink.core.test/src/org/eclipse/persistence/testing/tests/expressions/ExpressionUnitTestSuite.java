@@ -336,9 +336,8 @@ public class ExpressionUnitTestSuite extends ExpressionTestSuite {
 
         ReadAllExpressionTest test = new ReadAllExpressionTest(Employee.class, 1);
         test.setExpression(expression);
-        test.addUnsupportedPlatform(SybasePlatform.class);
-        test.addUnsupportedPlatform(SQLAnywherePlatform.class);
-        test.addUnsupportedPlatform(SQLServerPlatform.class);
+        test.addSupportedPlatform(OraclePlatform.class);
+        test.addSupportedPlatform(MySQLPlatform.class);
         test.setName("GetFunctionWithArgumentsTest");
         test.setDescription("Test GetFunctionWithArguments expression");
         addTest(test);
@@ -1119,7 +1118,7 @@ public class ExpressionUnitTestSuite extends ExpressionTestSuite {
         ExpressionBuilder builder = new ExpressionBuilder();
         ExpressionBuilder builder2 = new ExpressionBuilder();
         Expression expression1 = builder.get("firstName").equal("Bob");
-        Expression expression2 = builder.get("firstName").equal("Betty");
+        Expression expression2 = builder2.get("firstName").equal("Betty");
         Expression expression = expression1.or(expression2);
 
         ReadAllExpressionTest test = new ReadAllExpressionTest(Employee.class, 2);
@@ -1239,6 +1238,7 @@ public class ExpressionUnitTestSuite extends ExpressionTestSuite {
         test.addUnsupportedPlatform(SybasePlatform.class);
         test.addUnsupportedPlatform(SQLAnywherePlatform.class);
         test.addUnsupportedPlatform(TimesTenPlatform.class);
+        test.addUnsupportedPlatform(DerbyPlatform.class);
         test.setExpression(expression);
         test.setName("StandardDeviationTest");
         test.setDescription("Test StandardDeviation expression");
@@ -1369,7 +1369,8 @@ public class ExpressionUnitTestSuite extends ExpressionTestSuite {
         test.addUnsupportedPlatform(SybasePlatform.class);
         test.addUnsupportedPlatform(SQLAnywherePlatform.class);
         test.addUnsupportedPlatform(SQLServerPlatform.class);
-        test.addUnsupportedPlatform(org.eclipse.persistence.platform.database.TimesTenPlatform.class);
+        test.addUnsupportedPlatform(DerbyPlatform.class);
+        test.addUnsupportedPlatform(TimesTenPlatform.class);
         test.setExpression(expression);
         test.setName("VarianceTest");
         test.setDescription("Test Variance expression");
@@ -1412,7 +1413,7 @@ public class ExpressionUnitTestSuite extends ExpressionTestSuite {
 
     public void _testGetField$DatabaseFieldTest() {
         try {
-            Expression exp = (new ExpressionBuilder()).value(0).getField(new DatabaseField("Foo"));
+            (new ExpressionBuilder()).value(0).getField(new DatabaseField("Foo"));
             throw new TestErrorException("Expression.getField(DatabaseField) should throw query exception.");
         } catch (QueryException e) {
             ;
@@ -1421,7 +1422,7 @@ public class ExpressionUnitTestSuite extends ExpressionTestSuite {
 
     public void _testGetField$StringTest() {
         try {
-            Expression exp = (new ExpressionBuilder()).value(0).getField(new String("Foo"));
+            (new ExpressionBuilder()).value(0).getField(new String("Foo"));
             throw new TestErrorException("Expression.getField(String) should throw query exception.");
         } catch (QueryException e) {
             ;
@@ -1454,7 +1455,7 @@ public class ExpressionUnitTestSuite extends ExpressionTestSuite {
 
     public void _testGetTable$DatabaseTableTest() {
         try {
-            Expression exp = (new ExpressionBuilder()).value(0).getTable(new DatabaseTable("Foo"));
+            (new ExpressionBuilder()).value(0).getTable(new DatabaseTable("Foo"));
             throw new TestErrorException("Expression.getTable(DatabaseTable) should throw query exception.");
         } catch (QueryException e) {
             ;
@@ -1463,7 +1464,7 @@ public class ExpressionUnitTestSuite extends ExpressionTestSuite {
 
     public void _testGetTable$StringTest() {
         try {
-            Expression exp = (new ExpressionBuilder()).value(0).getTable(new String("Foo"));
+            (new ExpressionBuilder()).value(0).getTable(new String("Foo"));
             throw new TestErrorException("Expression.getTable(String) should throw query exception.");
         } catch (QueryException e) {
             ;

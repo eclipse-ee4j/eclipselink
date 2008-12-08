@@ -102,7 +102,7 @@ public class TestProjectForSequenceChecking extends org.eclipse.persistence.sess
         directtofieldmapping2.setIsReadOnly(false);
         directtofieldmapping2.setGetMethodName("getTest2");
         directtofieldmapping2.setSetMethodName("setTest2");
-        directtofieldmapping2.setFieldName("SEQTESTTABLE1.SECOND");
+        directtofieldmapping2.setFieldName("SEQTESTTABLE1.SECOND_");
         descriptor.addMapping(directtofieldmapping2);
         addDescriptor(descriptor);
     }
@@ -159,7 +159,7 @@ public class TestProjectForSequenceChecking extends org.eclipse.persistence.sess
         directtofieldmapping2.setIsReadOnly(false);
         directtofieldmapping2.setGetMethodName("getTest2");
         directtofieldmapping2.setSetMethodName("setTest2");
-        directtofieldmapping2.setFieldName("SEQTESTTABLE2.SECOND");
+        directtofieldmapping2.setFieldName("SEQTESTTABLE2.SECOND_");
         descriptor.addMapping(directtofieldmapping2);
         addDescriptor(descriptor);
 

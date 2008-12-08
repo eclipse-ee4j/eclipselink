@@ -178,15 +178,10 @@ public class ClearQueryOptionsOnStatementTest extends AutoVerifyTestCase {
         boolean query2TimedOut = false;
         
         String sql;
-        if(getSession().getLogin().getDatasourcePlatform().isDB2() || getSession().getLogin().getDatasourcePlatform().isMySQL())
-        {
+        if (getSession().getLogin().getDatasourcePlatform().isDB2() || getSession().getLogin().getDatasourcePlatform().isMySQL()) {
           sql = "SELECT SUM(e.EMP_ID) from EMPLOYEE e , EMPLOYEE b, EMPLOYEE c,EMPLOYEE d";
-        } else if (getSession().getLogin().getDatasourcePlatform().isSybase() || getSession().getLogin().getDatasourcePlatform().isSQLServer() ||  getSession().getLogin().getDatasourcePlatform().isSQLAnywhere())
-        {
+        } else {
           sql = "SELECT SUM(e.EMP_ID) from EMPLOYEE a , EMPLOYEE b, EMPLOYEE c, EMPLOYEE d, EMPLOYEE e, EMPLOYEE f, EMPLOYEE g";
-        } else
-        {
-          sql = "SELECT SUM(e.EMP_ID) from EMPLOYEE e , EMPLOYEE b, EMPLOYEE c, EMPLOYEE c, EMPLOYEE b, EMPLOYEE c, EMPLOYEE c";
         }
         // set the lowest timeout value on a query which is virtually guaranteed to produce a timeout
         try {

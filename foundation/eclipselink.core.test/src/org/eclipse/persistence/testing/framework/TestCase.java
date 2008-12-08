@@ -15,9 +15,12 @@ package org.eclipse.persistence.testing.framework;
 import java.io.*;
 import javax.persistence.*;
 import org.eclipse.persistence.exceptions.*;
+import org.eclipse.persistence.internal.databaseaccess.DatabasePlatform;
 import org.eclipse.persistence.internal.helper.*;
 import org.eclipse.persistence.sessions.*;
 import org.eclipse.persistence.sessions.server.Server;
+import org.eclipse.persistence.sessions.server.ServerSession;
+import org.eclipse.persistence.testing.tests.unitofwork.SybaseTransactionIsolationListener;
 
 /**
  * <p>Purpose<b></b>:
@@ -628,5 +631,61 @@ public abstract class TestCase extends junit.framework.TestCase implements TestE
      * If the execute fails, do the necessary cleanup to ensure the next test gets no residue
      */
     public void cleanAfterExecuteFailed() {
+    }
+    
+    /**
+     * Throws a warning of pessimistic locking/select for update is not supported for this test platform.
+     * Currently testing supports select for update on Oracle, MySQL, SQLServer, TimesTen.
+     * Some of the other platforms may have some support for select for update, but the databases we test with
+     * for these do not have sufficient support to pass the tests.
+     * TODO: Need to recheck tests on DB2 as it has some support for this.
+     * Derby has some support, but does not work with joins (2008-12-01).
+     */
+    public void checkSelectForUpateSupported() {
+        DatabasePlatform platform = getSession().getPlatform();
+        if (platform.isDB2() || platform.isAccess() || platform.isSybase() || platform.isSQLAnywhere() || platform.isDerby()) {
+            throw new TestWarningException("This database does not support FOR UPDATE");
+        }
+    }
+
+    /**
+     * Throws a warning of pessimistic locking/select for update nowait is not supported for this test platform.
+     * Currently testing supports nowait on Oracle, SQLServer.
+     */
+    public void checkNoWaitSupported() {
+        DatabasePlatform platform = getSession().getPlatform();
+        if (platform.isDB2() || platform.isAccess() || platform.isSybase() || platform.isSQLAnywhere() || platform.isDerby() || platform.isMySQL() || platform.isTimesTen()) {
+            throw new TestWarningException("This database does not support NOWAIT");        
+        }
+    }
+
+
+    /**
+     * Throws a warning if the test database is using serializable transaction isolation.
+     */
+    public void checkTransactionIsolation() {
+        DatabasePlatform platform = getSession().getPlatform();
+        if (platform.isSybase()) {
+            if (SybaseTransactionIsolationListener.isDatabaseVersionSupported((ServerSession)getAbstractSession().getParent())) {
+                SybaseTransactionIsolationListener listener = new SybaseTransactionIsolationListener();
+                getAbstractSession().getParent().getEventManager().addListener(listener);
+            } else {
+                throw new TestWarningException("The test requires Sybase version "+SybaseTransactionIsolationListener.requiredVersion+" or higher");
+            }
+        } else if (platform.isSQLServer()) {
+            throw new TestWarningException("This test requires transaction isolation setup on SQLServer database which is currently not set in tlsvrdb6");
+        } else if (platform.isSQLAnywhere()) {
+            throw new TestWarningException("This test requires transaction isolation setup on SQLAnywhere database which is currently not set");
+        } else if (platform.isDB2()) {
+            throw new TestWarningException("This test requires transaction isolation setup on DB2 database which is currently not set");
+        }
+    }
+    
+    /**
+     * Return if stored procedures are supported for the database platform for the test database.
+     */
+    public static boolean supportsStoredProcedures(Session session) {
+        DatabasePlatform platform = session.getPlatform();
+        return platform.isOracle() || platform.isSybase() || platform.isMySQL() || platform.isSQLServer();
     }
 }

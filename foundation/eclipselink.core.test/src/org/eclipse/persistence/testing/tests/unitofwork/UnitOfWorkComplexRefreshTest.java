@@ -21,11 +21,9 @@ import org.eclipse.persistence.logging.SessionLog;
 import org.eclipse.persistence.sessions.Session;
 import org.eclipse.persistence.sessions.SessionEventListener;
 import org.eclipse.persistence.sessions.UnitOfWork;
-import org.eclipse.persistence.sessions.server.ServerSession;
 import org.eclipse.persistence.testing.tests.remote.RemoteModel;
 import org.eclipse.persistence.testing.framework.AutoVerifyTestCase;
 import org.eclipse.persistence.testing.framework.TestErrorException;
-import org.eclipse.persistence.testing.framework.TestWarningException;
 import org.eclipse.persistence.testing.models.employee.domain.Employee;
 
 
@@ -52,19 +50,8 @@ public class UnitOfWorkComplexRefreshTest extends AutoVerifyTestCase {
     }
 
     public void setup() {
-        if(getSession().isClientSession()) {
-            if(getSession().getPlatform().isSybase()) {
-                if(SybaseTransactionIsolationListener.isDatabaseVersionSupported((ServerSession)getAbstractSession().getParent())) {
-                    listener = new SybaseTransactionIsolationListener();
-                    getAbstractSession().getParent().getEventManager().addListener(listener);
-                } else {
-                    throw new TestWarningException("The test requires Sybase version "+SybaseTransactionIsolationListener.requiredVersion+" or higher");
-                }
-            } else if(getSession().getPlatform().isSQLServer()) {
-                throw new TestWarningException("This test requires transaction isolation setup on SQLServer database which is currently not set in tlsvrdb6");
-            } else if(getSession().getPlatform().isSQLAnywhere()) {
-                throw new TestWarningException("This test requires transaction isolation setup on SQLAnywhere database which is currently not set");
-            }
+        if (getSession().isClientSession()) {
+            checkTransactionIsolation();
         }
         
         getAbstractSession().beginTransaction();

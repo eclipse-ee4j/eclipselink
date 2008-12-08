@@ -12,7 +12,8 @@
  ******************************************************************************/  
 package org.eclipse.persistence.testing.tests.jpa.complexaggregate;
 
-import java.util.Vector;
+import java.util.Collection;
+
 import org.eclipse.persistence.internal.jpa.EntityManagerImpl;
 import org.eclipse.persistence.testing.models.jpa.complexaggregate.*;
 import org.eclipse.persistence.testing.tests.jpa.EntityContainerTestBase;
@@ -116,8 +117,10 @@ public class AggregatePrimaryKeyOrderByTest extends EntityContainerTestBase {
             
             World w = getEntityManager().find(World.class, world.getId());
             
-            Vector css = (Vector) w.getCitySlickers();
-            Vector cds = (Vector) w.getCountryDwellers();
+            Collection css = w.getCitySlickers();
+            css.toString();
+            Collection cds = w.getCountryDwellers();
+            cds.toString();
         
             // Check the ordering
             // JBS - Ordering check removed as order is random based on class method order which is not consistent in Java.

@@ -509,8 +509,7 @@ public class EmployeeCustomSQLSystem extends EmployeeSystem {
         empDescriptor.getQueryManager().setDoesExistSQLString("select EMP_ID FROM EMPLOYEE WHERE EMP_ID = #EMP_ID");
 
         OneToOneMapping managerMapping = (OneToOneMapping)empDescriptor.getMappingForAttributeName("manager");
-        managerMapping.setSelectionSQLString("select /* Mine */ * FROM EMPLOYEE WHERE EMP_ID = #MANAGER_ID");
-        
+        managerMapping.setSelectionSQLString("select * FROM EMPLOYEE WHERE EMP_ID = #MANAGER_ID");
         OneToOneMapping oneToOne = (OneToOneMapping)empDescriptor.getMappingForAttributeName("address");
         oneToOne.setSelectionSQLString("select * FROM ADDRESS WHERE ADDRESS_ID = #ADDR_ID");
 

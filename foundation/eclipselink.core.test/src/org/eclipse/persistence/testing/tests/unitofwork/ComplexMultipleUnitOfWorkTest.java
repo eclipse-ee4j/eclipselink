@@ -20,14 +20,12 @@ import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.queries.ReadObjectQuery;
 import org.eclipse.persistence.sessions.remote.RemoteSession;
-import org.eclipse.persistence.sessions.server.ServerSession;
 import org.eclipse.persistence.sessions.Session;
 import org.eclipse.persistence.sessions.SessionEventListener;
 import org.eclipse.persistence.sessions.UnitOfWork;
 import org.eclipse.persistence.testing.tests.remote.RemoteModel;
 import org.eclipse.persistence.testing.framework.AutoVerifyTestCase;
 import org.eclipse.persistence.testing.framework.TestErrorException;
-import org.eclipse.persistence.testing.framework.TestWarningException;
 import org.eclipse.persistence.testing.models.employee.domain.Address;
 import org.eclipse.persistence.testing.models.employee.domain.Employee;
 import org.eclipse.persistence.testing.models.employee.domain.EmploymentPeriod;
@@ -284,25 +282,14 @@ public class ComplexMultipleUnitOfWorkTest extends AutoVerifyTestCase {
     }
 
     public void setup() {
-        if(getSession().isClientSession()) {
-            if(getSession().getPlatform().isSybase()) {
-                if(SybaseTransactionIsolationListener.isDatabaseVersionSupported((ServerSession)getAbstractSession().getParent())) {
-                    listener = new SybaseTransactionIsolationListener();
-                    getAbstractSession().getParent().getEventManager().addListener(listener);
-                } else {
-                    throw new TestWarningException("The test requires Sybase version "+SybaseTransactionIsolationListener.requiredVersion+" or higher");
-                }
-            } else if(getSession().getPlatform().isSQLServer()) {
-                throw new TestWarningException("This test requires transaction isolation setup on SQLServer database which is currently not set in tlsvrdb6");
-            } else if(getSession().getPlatform().isSQLAnywhere()) {
-                throw new TestWarningException("This test requires transaction isolation setup on SQLAnywhere database which is currently not set");
-            }
+        if (getSession().isClientSession()) {
+            checkTransactionIsolation();
         }
         getAbstractSession().beginTransaction();
     }
 
     public SmallProject smallProjectExample() {
-        SmallProject smallProject = new org.eclipse.persistence.testing.models.employee.domain.SmallProject();
+        SmallProject smallProject = new SmallProject();
 
         smallProject.setName("Enterprise");
         smallProject.setDescription("A enterprise wide application using Visual J++ to report on the corporations Sybase and DB/2 database through TopLink.");

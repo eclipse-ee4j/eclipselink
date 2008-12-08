@@ -5403,12 +5403,10 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
                 nUpdated = em.createQuery("UPDATE Employee e set e.salary = e.roomNumber, e.roomNumber = e.salary, e.address = null where e.firstName = '" + firstName + "'").executeUpdate();
             }
             commitTransaction(em);
-        } catch (Exception e) {
-            if (isTransactionActive(em)){
-                 rollbackTransaction(em);
-            }
-            fail("Exception thrown: " + e.getClass());
         } finally {
+            if (isTransactionActive(em)){
+                rollbackTransaction(em);
+            }
             closeEntityManager(em);
         }
 
@@ -6114,8 +6112,9 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
             // Extended persistence context are not supported in the server.
             return;
         }
-        Assert.assertFalse("Warning: DerbyPlatform does not currently support pessimistic locking",  ((Session)JUnitTestCase.getServerSession()).getPlatform().isDerby());
-        Assert.assertFalse("Warning: PostgreSQLPlatform. does not currently support pessimistic locking",  ((Session)JUnitTestCase.getServerSession()).getPlatform().isPostgreSQL());
+        if (!isSelectForUpateSupported()) {
+            return;
+        }
         EntityManagerImpl em = (EntityManagerImpl)createEntityManager();
         beginTransaction(em);
         Query query = em.createNamedQuery("findAllEmployeesByFirstName");

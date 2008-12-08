@@ -1001,6 +1001,8 @@ public class TestingBrowserPanel extends JPanel implements ItemListener, junit.f
             system.useDB2UniversalDriver();
         } else if (platform.equals("DB2 (DataDirect)")) {
             system.useDB2DataDirect();
+        } else if (platform.equals("Derby")) {
+            system.useDerby();
         } else if (platform.equals("Informix IDS 11.1")) {
             system.useInformix11();
         } else if (platform.equals("Sybase (JConnect)")) {
@@ -1145,6 +1147,7 @@ public class TestingBrowserPanel extends JPanel implements ItemListener, junit.f
         getLoginChoice().addItem("DB2 (Net)");
         getLoginChoice().addItem("DB2 (Universal Driver)");
         getLoginChoice().addItem("DB2 (DataDirect)");
+        getLoginChoice().addItem("Derby");
         getLoginChoice().addItem("Informix IDS 11.1");        
         getLoginChoice().addItem("Sybase (JConnect)");
         getLoginChoice().addItem("Sybase (DataDirect)");

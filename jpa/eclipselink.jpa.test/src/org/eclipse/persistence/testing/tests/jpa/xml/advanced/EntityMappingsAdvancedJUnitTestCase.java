@@ -27,6 +27,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.EntityNotFoundException;
 
 import junit.framework.*;
+import junit.extensions.TestSetup;
 
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.descriptors.SelectedFieldsLockingPolicy;
@@ -142,7 +143,7 @@ public class EntityMappingsAdvancedJUnitTestCase extends JUnitTestCase {
         EmployeePopulator employeePopulator = new EmployeePopulator();
         employeePopulator.buildExamples();
         employeePopulator.persistExample(session);
-        //clearCache(m_persistenceUnit); - temp commented out due to bug 256484
+        clearCache(m_persistenceUnit);
     }
     
     /**

@@ -15,6 +15,7 @@ package org.eclipse.persistence.testing.models.jpa.advanced;
 import java.util.*;
 import org.eclipse.persistence.sessions.Session;
 import org.eclipse.persistence.sessions.UnitOfWork;
+import org.eclipse.persistence.testing.framework.TestCase;
 import org.eclipse.persistence.tools.schemaframework.PopulationManager;
 import org.eclipse.persistence.tools.schemaframework.SchemaManager;
 import org.eclipse.persistence.tools.schemaframework.StoredProcedureDefinition;
@@ -932,9 +933,11 @@ public class EmployeePopulator {
         unitOfWork.registerAllObjects(allObjects);
         unitOfWork.commit();
         
-        SchemaManager schema = new SchemaManager(((org.eclipse.persistence.sessions.DatabaseSession) session));
-        schema.replaceObject(buildOracleStoredProcedureReadFromAddress());
-        schema.replaceObject(buildOracleStoredProcedureReadInOut());
+        if (TestCase.supportsStoredProcedures(session)) {
+            SchemaManager schema = new SchemaManager(((org.eclipse.persistence.sessions.DatabaseSession) session));
+            schema.replaceObject(buildOracleStoredProcedureReadFromAddress());
+            schema.replaceObject(buildOracleStoredProcedureReadInOut());
+        }
         
     }
     protected boolean containsObject(Class domainClass, String identifier) {

@@ -33,12 +33,15 @@ public class ExpressionPersistenceTest extends AutoVerifyTestCase {
         setDescription("Test that expressions persisted by the WorkBench in the deployent XML works correctly");
     }
 
-    public void test() {
+    public void setup() {
         if ((queryName.startsWith("AddStandardDeviationReportQuery") || 
              queryName.startsWith("AddVarianceReportQuery")) && 
-            (getSession().getPlatform().isSybase() || getSession().getPlatform().isSQLAnywhere() || getSession().getPlatform().isSQLServer())) {
+            (getSession().getPlatform().isSybase() || getSession().getPlatform().isSQLAnywhere() || getSession().getPlatform().isSQLServer()) || getSession().getPlatform().isDB2() || getSession().getPlatform().isDerby()) {
             throw new TestWarningException("The test is not supported on this database.");
         }
+    }
+    
+    public void test() {
         getSession().executeQuery(basicQuery);
         systemQuery = 
                 (getSession().getDescriptor(org.eclipse.persistence.testing.models.employee.domain.Employee.class)).getQueryManager().getQuery(queryName);

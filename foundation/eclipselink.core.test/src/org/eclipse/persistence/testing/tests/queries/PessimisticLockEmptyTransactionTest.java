@@ -47,9 +47,7 @@ public class PessimisticLockEmptyTransactionTest extends AutoVerifyTestCase {
     }
 
     public void setup() {
-        if (getSession().getPlatform().isDB2() || getSession().getPlatform().isAccess() || getSession().getPlatform().isSybase() || getSession().getPlatform().isSQLAnywhere() /*|| getSession().getPlatform().isSQLServer()*/) {
-            throw new TestWarningException("This database does not support for update");
-        }
+        checkSelectForUpateSupported();
         getSession().getEventManager().addListener(eventAdapter);
         getSession().getIdentityMapAccessor().initializeIdentityMaps();
         stillInTransaction = false;

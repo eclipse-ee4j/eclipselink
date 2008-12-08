@@ -127,8 +127,8 @@ public class AdvancedTableCreator extends TableCreator {
         
         String[] unq1 = {"BUYER_ID", "BUYER_NAME"};
         String[] unq2 = {"BUYER_ID", "DESCRIP"};
-        table.addUniqueKeyConstraint("UNQ_CMP3_FA_BUYER_1", unq1);
-        table.addUniqueKeyConstraint("UNQ_CMP3_FA_BUYER_2", unq2);
+        table.addUniqueKeyConstraint("UNQ_CMP3_FA_BUY_1", unq1);
+        table.addUniqueKeyConstraint("UNQ_CMP3_FA_BUY_2", unq2);
 
         FieldDefinition field = new FieldDefinition();
         field.setName("BUYER_ID");
