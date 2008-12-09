@@ -22,6 +22,7 @@ import java.beans.PropertyChangeListener;
 import java.util.ListIterator;
 
 import javax.swing.BorderFactory;
+import javax.swing.JButton;
 import javax.swing.JPanel;
 import javax.swing.ListCellRenderer;
 
@@ -301,7 +302,13 @@ public class SequencingPropertiesPage extends AbstractLoginPropertiesPage
 			getApplicationContext(),
 			buildSequenceListAdapter(),
 			buildSortedSequenceListHolder()
-		);
+		) {
+			@Override
+			protected void updateRemoveButton(JButton removeButton) {
+				SequenceAdapter sequence = (SequenceAdapter)this.getSelectionModel().getSelectedValue();
+		        removeButton.setEnabled((sequence != null)&&(getSelectedValues().length == 1)&&(!sequence.isTheDefaultSequence()));
+			}
+		};
 		panel.setCellRenderer(buildSequenceListRenderer());
 		return panel;
 		
