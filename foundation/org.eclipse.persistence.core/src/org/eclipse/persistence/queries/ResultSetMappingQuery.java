@@ -13,7 +13,6 @@
 package org.eclipse.persistence.queries;
 import java.util.*;
 
-import org.eclipse.persistence.internal.localization.ExceptionLocalization;
 import org.eclipse.persistence.exceptions.QueryException;
 import org.eclipse.persistence.exceptions.DatabaseException;
 import org.eclipse.persistence.internal.sessions.UnitOfWorkImpl;
@@ -131,7 +130,7 @@ public class ResultSetMappingQuery extends ObjectBuildingQuery {
      */
     public void setSQLResultSetMappingName(String name){
         if (name == null && this.resultSetMapping == null){
-            throw new IllegalArgumentException(ExceptionLocalization.buildMessage("null_sqlresultsetmapping_in_query"));
+            //throw new IllegalArgumentException(ExceptionLocalization.buildMessage("null_sqlresultsetmapping_in_query"));
         }
         this.resultSetMappingName = name;
         
@@ -145,21 +144,31 @@ public class ResultSetMappingQuery extends ObjectBuildingQuery {
     protected List buildObjectsFromRecords(List databaseRecords){
         List results = new ArrayList(databaseRecords.size() );
         SQLResultSetMapping mapping = this.getSQLResultSetMapping();
-        for (Iterator iterator = databaseRecords.iterator(); iterator.hasNext();){
-            if (mapping.getResults().size()>1){
-                Object[] resultElement = new Object[mapping.getResults().size()];
+        
+        if (mapping == null) {
+	        for (Iterator iterator = databaseRecords.iterator(); iterator.hasNext();){
                 DatabaseRecord record = (DatabaseRecord)iterator.next();
-                for (int i = 0;i<mapping.getResults().size();i++){
-                    resultElement[i] = ((SQLResult)mapping.getResults().get(i)).getValueFromRecord(record, this);
-                }
-                results.add(resultElement);
-            }else if (mapping.getResults().size()==1) {
-                DatabaseRecord record = (DatabaseRecord)iterator.next();
-                results.add( ((SQLResult)mapping.getResults().get(0)).getValueFromRecord(record, this));
-            }else {
-                return results;
-            }
+                
+                results.add(record.values().toArray());
+	        }
+        } else {
+	        for (Iterator iterator = databaseRecords.iterator(); iterator.hasNext();){
+	            if (mapping.getResults().size()>1){
+	                Object[] resultElement = new Object[mapping.getResults().size()];
+	                DatabaseRecord record = (DatabaseRecord)iterator.next();
+	                for (int i = 0;i<mapping.getResults().size();i++){
+	                    resultElement[i] = ((SQLResult)mapping.getResults().get(i)).getValueFromRecord(record, this);
+	                }
+	                results.add(resultElement);
+	            }else if (mapping.getResults().size()==1) {
+	                DatabaseRecord record = (DatabaseRecord)iterator.next();
+	                results.add( ((SQLResult)mapping.getResults().get(0)).getValueFromRecord(record, this));
+	            }else {
+	                return results;
+	            }
+	        }
         }
+        
         return results;
         
     }
