@@ -524,6 +524,9 @@ public class XMLContext {
                 } else {
                     QName qname = xmlSchemaReference.getSchemaContextAsQName();
                     if (qname != null) {
+                        if (xmlDescriptor.isWrapper() && xmlDescriptor.getJavaClassName().contains("ObjectWrapper")) {
+                            return;
+                        }
                         XPathFragment typeFragment = new XPathFragment();
                         typeFragment.setLocalName(qname.getLocalPart());
                         typeFragment.setNamespaceURI(qname.getNamespaceURI());
