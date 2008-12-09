@@ -173,7 +173,7 @@ public class InterfacePolicy implements Serializable {
 
         for (Enumeration childDescriptors = getChildDescriptors().elements();
                  childDescriptors.hasMoreElements();) {
-            ReadAllQuery concreteQuery = (ReadAllQuery)query.clone();
+            ReadAllQuery concreteQuery = (ReadAllQuery)query.deepClone();
             ClassDescriptor descriptor = (ClassDescriptor)childDescriptors.nextElement();
             Class javaClass = descriptor.getJavaClass();
             concreteQuery.setReferenceClass(javaClass);

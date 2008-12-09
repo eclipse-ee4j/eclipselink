@@ -137,6 +137,7 @@ public class InterfaceWithoutTablesTestModel extends TestModel {
         suite.addTest(test);
 
         suite.addTest(new ReadAllTest(Employee.class, 4));
+        suite.addTest(new ReadAllConformInUowTest());
         return suite;
     }
 
