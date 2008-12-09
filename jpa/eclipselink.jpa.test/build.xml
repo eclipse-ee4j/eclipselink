@@ -1290,6 +1290,23 @@
         </antcall>
     </target>
 
+    <!-- This target can only be called in an Oracle High Availability environment - 
+        a WebLogic server configured with Multi Data Sources to connect to Oracle RAC database
+    -->
+    <target name="server-test-sessionbean-ha">
+        <antcall target="server-run-all" inheritRefs="true">
+            <param name="PERSISTENCE_UNIT_NAME" value="sessionbean"/>
+            <param name="MODEL_DIR" value="org/eclipse/persistence/testing/models/jpa/sessionbean"/>
+            <param name="MODEL_DIR2" value="org/eclipse/persistence/testing/models/jpa/fieldaccess/advanced"/>
+            <param name="MODEL_NAME" value="eclipselink-sessionbean-model"/>
+            <param name="TEST_DIR" value="org/eclipse/persistence/testing/tests/jpa/sessionbean"/>
+            <param name="TEST_NAME" value="eclipselink-sessionbean-model"/>
+            <param name="EAR_NAME" value="eclipselink-sessionbean-model"/>
+            <param name="TEST_SUITE" value="org.eclipse.persistence.testing.tests.jpa.sessionbean.SessionBeanHATests"/>
+            <param name="eclipselink.jpa.test.dir" value="."/>
+        </antcall>
+    </target>
+
     <target name="server-test-validation">
         <antcall target="server-run-all" inheritRefs="true">
             <param name="PERSISTENCE_UNIT_NAME" value="default"/>
