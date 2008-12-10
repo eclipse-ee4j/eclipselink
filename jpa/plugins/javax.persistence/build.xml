@@ -59,8 +59,9 @@
     <target name="build" depends="clean, compile, generate-manifest, package" description="build JAXB 2.0 Prototype component"/>
 
     <target name="clean" description="Clean the build">
-        <delete dir="${classes.dir}"  includeEmptyDirs="true" quiet="true"/>
+        <delete dir="${classes.dir}" includeEmptyDirs="true" quiet="true"/>
         <delete file="${package.dir}/${jpaproto.jar}" quiet="true"/>
+        <delete file="${package.dir}/${jpaproto.src.jar}" quiet="true"/>
     </target>
 
     <!-- compile -->

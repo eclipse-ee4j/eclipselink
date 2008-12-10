@@ -480,7 +480,7 @@
             <!-- jpa persistence jar -->
             <zipfileset dir="${eclipselink.plugins}/" includes="${persistence.jar}" prefix="eclipselink/jlib/jpa"/>
             <!-- jpa persistence 2.0 prototype jar -->
-            <!-- zipfileset dir="${eclipselink.jpa.plugins}/" includes="${jpa.prototype.jar}" prefix="eclipselink/jlib/jpa"/ -->
+            <zipfileset dir="${eclipselink.jpa.plugins}/" includes="${jpa.prototype.jar}" prefix="eclipselink/jlib/jpa"/>
             <!-- moxy jar's and zips -->
             <zipfileset dir="${eclipselink.plugins}/" prefix="eclipselink/jlib/moxy">
                 <include name="${activation.jar}"/>
