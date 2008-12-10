@@ -72,7 +72,7 @@ public final class SCPlugin implements Plugin {
 	public static final String SERVER_PLATFORM_PREFERENCE   = "platform.server";
 	public static final String NEW_NAME_SESSIONS_CONFIGURATION_PREFERENCE = "new name.sessions configuration";
 
-	public static final String DATABASE_PLATFORM_PREFERENCE_DEFAULT = "Oracle10g";
+	public static final String DATABASE_PLATFORM_PREFERENCE_DEFAULT = "Oracle11";
 	public static final String EIS_PLATFORM_PREFERENCE_DEFAULT      = "AQPlatform";
 	public static final String SERVER_PLATFORM_PREFERENCE_DEFAULT   = "WebLogic_10_Platform";
 
