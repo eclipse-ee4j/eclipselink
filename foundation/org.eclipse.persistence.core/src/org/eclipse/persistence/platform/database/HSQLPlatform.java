@@ -12,9 +12,13 @@
  ******************************************************************************/  
 package org.eclipse.persistence.platform.database;
 
+import java.io.Writer;
+import java.io.IOException;
 import java.util.*;
 
 import org.eclipse.persistence.internal.databaseaccess.FieldTypeDefinition;
+import org.eclipse.persistence.exceptions.ValidationException;
+import org.eclipse.persistence.queries.ValueReadQuery;
 
 /**
  *    <p><b>Purpose</b>: Provides HSQL specific behavior.
@@ -60,4 +64,21 @@ public class HSQLPlatform extends DatabasePlatform {
     public boolean supportsForeignKeyConstraints() {
         return false;
     }
+    
+    public boolean supportsIdentity() {
+        return true;
+    }
+
+    public ValueReadQuery buildSelectQueryForIdentity() {
+        return new ValueReadQuery("CALL IDENTITY()");
+    }
+
+    public void printFieldIdentityClause(Writer writer) throws ValidationException {
+        try {
+            writer.write(" IDENTITY");
+        } catch (IOException ex) {
+            throw ValidationException.fileError(ex);
+        }
+    }
+
 }
