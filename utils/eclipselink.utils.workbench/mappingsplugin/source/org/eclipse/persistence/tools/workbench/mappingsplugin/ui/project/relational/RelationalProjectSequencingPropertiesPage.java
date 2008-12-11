@@ -362,16 +362,16 @@ final class RelationalProjectSequencingPropertiesPage extends ScrollableProperti
 	}
 
 	private SpinnerNumberModel buildSequencingPrealocationSizeSpinnerModel() {
-		return new NumberSpinnerModelAdapter(buildSequencingPrealocationSizeHolder(getSelectionHolder()), new Integer(0), null, new Integer(1), new Integer(0));
+		return new NumberSpinnerModelAdapter(buildSequencingPrealocationSizeHolder(), new Integer(0), null, new Integer(1), new Integer(0));
 	}
 
-	private PropertyValueModel buildSequencingPrealocationSizeHolder(ValueModel sequencingPolicyHolder) {
-		return new PropertyAspectAdapter(sequencingPolicyHolder, MWSequencingPolicy.PREALLOCATION_SIZE_PROPERTY) {
+	private PropertyValueModel buildSequencingPrealocationSizeHolder() {
+		return new PropertyAspectAdapter(this.sequencingPolicyHolder, MWSequencingPolicy.PREALLOCATION_SIZE_PROPERTY) {
 			protected Object getValueFromSubject() {
-				return new Integer(((MWRelationalProject) subject).getSequencingPolicy().getPreallocationSize());
+				return new Integer(((MWSequencingPolicy) subject).getPreallocationSize());
 			}
 			protected void setValueOnSubject(Object value) {
-				((MWRelationalProject) subject).getSequencingPolicy().setPreallocationSize(((Number) value).intValue());
+				((MWSequencingPolicy) subject).setPreallocationSize(((Number) value).intValue());
 			}
 		};
 	}
