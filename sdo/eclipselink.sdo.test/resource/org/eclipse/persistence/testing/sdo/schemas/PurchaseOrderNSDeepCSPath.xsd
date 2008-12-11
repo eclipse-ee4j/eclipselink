@@ -1,5 +1,5 @@
 <xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema"
-            xmlns="commonj.sdo" 
+            xmlns="http://www.example.org" 
             xmlns:sdo="commonj.sdo"
             targetNamespace="http://www.example.org"
             elementFormDefault="qualified"
