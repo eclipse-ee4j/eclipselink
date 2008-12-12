@@ -125,7 +125,7 @@ public class TypeInfo {
     }
 
     public void setPropOrder(String[] order) {
-        if(order.length == 0 || order[0].equals("")) {
+        if(order.length == 0) {
             propOrder = null;
         } else {
             propOrder = new ArrayList(order.length);

@@ -224,7 +224,6 @@ public class SchemaGenerator {
             content.setExtension(extension);
             type.setSimpleContent(content);
             info.setComplexType(type);
-            info.setPropOrder(propOrder);
         }  else {
             ComplexType type = new ComplexType();
             JavaClass superClass = (JavaClass) myClass.getSuperclass();
