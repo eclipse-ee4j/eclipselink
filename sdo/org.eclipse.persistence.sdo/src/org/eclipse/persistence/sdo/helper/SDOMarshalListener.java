@@ -36,6 +36,7 @@ import org.eclipse.persistence.oxm.XMLMarshalListener;
 import org.eclipse.persistence.oxm.XMLMarshaller;
 import org.eclipse.persistence.oxm.XMLRoot;
 import org.eclipse.persistence.oxm.record.DOMRecord;
+import org.eclipse.persistence.oxm.record.MarshalRecord;
 import org.eclipse.persistence.platform.xml.XMLPlatformFactory;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -49,6 +50,8 @@ import org.w3c.dom.Element;
 public class SDOMarshalListener implements XMLMarshalListener {
     // marshalledObject may or may not be the root object
     private Object marshalledObject;
+    private QName marshalledObjectRootQName;
+    private MarshalRecord rootMarshalRecord;
     private SDOTypeHelper typeHelper;
 
     /** maintain narrowed context from the larger HelperContext (inside the xmlMarshaller)<br>
@@ -73,6 +76,18 @@ public class SDOMarshalListener implements XMLMarshalListener {
             List createdSet = changeSummary.getCreated();
             List xpaths = new ArrayList(createdSet.size());
 
+            String rootElementName = this.marshalledObjectRootQName.getLocalPart();
+            String rootNamespaceUri = this.marshalledObjectRootQName.getNamespaceURI();
+            String rootPrefix = null;
+            if(rootNamespaceUri != null && !rootNamespaceUri.equals("")) {
+                NamespaceResolver resolver = getRootMarshalRecord().getNamespaceResolver();
+                if(resolver != null) {
+                    String prefix = resolver.resolveNamespaceURI(this.marshalledObjectRootQName.getNamespaceURI());
+                    if(prefix != null) {
+                        rootElementName = prefix + ":" + rootElementName;
+                    }
+                }
+            }
             if ((createdSet != null) && (createdSet.size() > 0)) {
                 Iterator anIterator = createdSet.iterator();
                 SDODataObject nextCreatedDO = null;
@@ -80,8 +95,19 @@ public class SDOMarshalListener implements XMLMarshalListener {
                     // TODO: change to ID's when available
                     // get path to the changeSummaryRoot (may not be the root marshalled object - may be internal)
                     nextCreatedDO = ((SDODataObject)anIterator.next());
-                    xpaths.add(SDOConstants.SDO_CHANGESUMMARY_REF_PATH_PREFIX + SDOConstants.SDO_XPATH_SEPARATOR_FRAGMENT//
-                                +getPathFromAncestor(nextCreatedDO, (SDODataObject)marshalledObject, changeSummary));
+                    String nextPath = getPathFromAncestor(nextCreatedDO, (SDODataObject)marshalledObject, changeSummary);
+                    //Add sdoRef attribute...all modified objects written should have this                
+                    if(nextPath == SDOConstants.EMPTY_STRING) {
+                        //if this is the root, just put the root element
+                        xpaths.add(SDOConstants.SDO_CHANGESUMMARY_REF_PATH_PREFIX + 
+                                SDOConstants.SDO_XPATH_SEPARATOR_FRAGMENT +//
+                                rootElementName);
+                        
+                    } else {
+                        xpaths.add(SDOConstants.SDO_CHANGESUMMARY_REF_PATH_PREFIX + 
+                                SDOConstants.SDO_XPATH_SEPARATOR_FRAGMENT +//
+                                rootElementName + SDOConstants.SDO_XPATH_SEPARATOR_FRAGMENT + nextPath);
+                    }
                 }
             }
             changeSummary.setCreatedXPaths(xpaths);
@@ -90,7 +116,7 @@ public class SDOMarshalListener implements XMLMarshalListener {
             String xpathMarshalledObjToCS = getPathFromAncestor(((SDODataObject)changeSummary.getRootObject()), (SDODataObject)marshalledObject, changeSummary);
             String xpathChangeSumProp = getXPathForProperty((SDOProperty)((SDOType)changeSummary.getRootObject().getType()).getChangeSummaryProperty());
 
-            String xpathToCS = SDOConstants.SDO_CHANGESUMMARY_REF_PATH_PREFIX;
+            String xpathToCS = SDOConstants.SDO_CHANGESUMMARY_REF_PATH_PREFIX + SDOConstants.SDO_XPATH_SEPARATOR_FRAGMENT + rootElementName;
 
             // check if the CS is at the local-cs-root or is in a child property
             if ((xpathMarshalledObjToCS != null) && !xpathMarshalledObjToCS.equals(SDOConstants.EMPTY_STRING)) {//SDO_XPATH_TO_ROOT)) {
@@ -125,11 +151,21 @@ public class SDOMarshalListener implements XMLMarshalListener {
                     csNode = document.createElementNS(uri, qualifiedName);
                 }
 
+                String nextPath = getPathFromAncestor(nextModifiedDO, (SDODataObject)marshalledObject, changeSummary);
                 //Add sdoRef attribute...all modified objects written should have this                
-                csNode.setAttributeNS(SDOConstants.SDO_URL, sdoPrefix +//
+                if(nextPath == SDOConstants.EMPTY_STRING) {
+                    //if this is the root, just put the root element
+                    csNode.setAttributeNS(SDOConstants.SDO_URL, sdoPrefix +//
+                            SDOConstants.SDO_XPATH_NS_SEPARATOR_FRAGMENT +//
+                            SDOConstants.CHANGESUMMARY_REF,//                                      
+                            sdoRefPrefix + rootElementName);
+                    
+                } else {
+                    csNode.setAttributeNS(SDOConstants.SDO_URL, sdoPrefix +//
                                       SDOConstants.SDO_XPATH_NS_SEPARATOR_FRAGMENT +//
                                       SDOConstants.CHANGESUMMARY_REF,//                                      
-                                      sdoRefPrefix + getPathFromAncestor(nextModifiedDO, (SDODataObject)marshalledObject, changeSummary));
+                                      sdoRefPrefix + rootElementName + "/" + nextPath);
+                }
 
                 //Bug6346754 Add all namespaces if they are not yet declared above.                
                 Vector namespaces = ((SDOType)nextModifiedDO.getType()).getXmlDescriptor().getNonNullNamespaceResolver().getNamespaces();
@@ -156,11 +192,11 @@ public class SDOMarshalListener implements XMLMarshalListener {
                                 List values = (List)nextSetting.getValue();
                                 for (int k = 0; k < values.size(); k++) {
                                     doMarshal((SDOProperty)nextSetting.getProperty(), (DataObject)values.get(k),//
-                                              changeSummary, csNode, nextModifiedDO, deletedXPaths, xpathToCS, sdoPrefix);
+                                              changeSummary, csNode, nextModifiedDO, deletedXPaths, xpathToCS, sdoPrefix, rootElementName);
                                 }
                             } else {
                                 doMarshal((SDOProperty)nextSetting.getProperty(), (DataObject)nextSetting.getValue(),//
-                                          changeSummary, csNode, nextModifiedDO, deletedXPaths, xpathToCS, sdoPrefix);
+                                          changeSummary, csNode, nextModifiedDO, deletedXPaths, xpathToCS, sdoPrefix, rootElementName);
                             }
                         } else {
                             //This writes out simple values                            
@@ -196,7 +232,7 @@ public class SDOMarshalListener implements XMLMarshalListener {
     }
 
     private void doMarshal(SDOProperty prop, DataObject value, SDOChangeSummary cs,//
-                           Element csNode, SDODataObject modifiedObject, List deletedXPaths, String xpathToCS, String sdoPrefix) {
+                           Element csNode, SDODataObject modifiedObject, List deletedXPaths, String xpathToCS, String sdoPrefix, String rootElementName) {
         if (value == null) {
             //Marshal out xsi:nil=true   
             DOMRecord row = new DOMRecord(csNode);
@@ -246,12 +282,26 @@ public class SDOMarshalListener implements XMLMarshalListener {
                 modifiedElement = csNode.getOwnerDocument().createElementNS(uri, qualifiedName);
             }
             csNode.appendChild(modifiedElement);
-            modifiedElement.setAttributeNS(SDOConstants.SDO_URL, sdoPrefix +//
-                                           SDOConstants.SDO_XPATH_NS_SEPARATOR_FRAGMENT +//
-                                           SDOConstants.CHANGESUMMARY_REF,//
-                                           SDOConstants.SDO_CHANGESUMMARY_REF_PATH_PREFIX + SDOConstants.SDO_XPATH_SEPARATOR_FRAGMENT +//
-                                           getPathFromAncestor(((SDODataObject)original), (SDODataObject)marshalledObject, cs));
-
+            String nextPath = getPathFromAncestor((SDODataObject)original, (SDODataObject)marshalledObject, cs);
+            //Add sdoRef attribute...all modified objects written should have this                
+            if(nextPath == SDOConstants.EMPTY_STRING) {
+                //if this is the root, just put the root element
+                modifiedElement.setAttributeNS(SDOConstants.SDO_URL, sdoPrefix +//
+                        SDOConstants.SDO_XPATH_NS_SEPARATOR_FRAGMENT +//
+                        SDOConstants.CHANGESUMMARY_REF,//                                
+                        SDOConstants.SDO_CHANGESUMMARY_REF_PATH_PREFIX + 
+                        SDOConstants.SDO_XPATH_SEPARATOR_FRAGMENT +//
+                        rootElementName);
+                
+            } else {
+                modifiedElement.setAttributeNS(SDOConstants.SDO_URL, sdoPrefix +//
+                                  SDOConstants.SDO_XPATH_NS_SEPARATOR_FRAGMENT +//
+                                  SDOConstants.CHANGESUMMARY_REF,//
+                                  SDOConstants.SDO_CHANGESUMMARY_REF_PATH_PREFIX + 
+                                  SDOConstants.SDO_XPATH_SEPARATOR_FRAGMENT +//
+                                  rootElementName + "/" + nextPath);
+            }
+            
             //Added for bug 6346754            
             if ((((SDODataObject)original).getContainmentProperty() != null) && ((SDODataObject)original).getContainmentProperty().getType().isDataObjectType()) {
                 //may also need xsi:type                      
@@ -318,6 +368,22 @@ public class SDOMarshalListener implements XMLMarshalListener {
         return marshalledObject;
     }
 
+    public void setMarshalledObjectRootQName(QName rootQName) {
+        this.marshalledObjectRootQName = rootQName;
+    }
+    
+    public QName getMarshalledObjectRootQName() {
+        return this.marshalledObjectRootQName;
+    }
+    
+    public void setRootMarshalReocrd(MarshalRecord rootRecord) {
+        this.rootMarshalRecord = rootRecord;
+    }
+    
+    public MarshalRecord getRootMarshalRecord() {
+        return this.rootMarshalRecord;
+    }
+    
     private boolean declareNamespace(String uri, String prefix, DataObject theDataObject) {
         while (theDataObject != null) {
             NamespaceResolver nr = ((SDOType)theDataObject.getType()).getXmlDescriptor().getNonNullNamespaceResolver();

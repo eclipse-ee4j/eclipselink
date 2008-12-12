@@ -19,7 +19,7 @@
       </ns0:phone>
    </ns0:manager>
    </ns0:manager>
-   <ns0:myChangeSummary sdo:ref="#/ns0:manager/ns0:phone[3]" xmlns:sdo="commonj.sdo">
+   <ns0:myChangeSummary sdo:ref="#/ns0:root/ns0:manager/ns0:phone[3]" xmlns:sdo="commonj.sdo">
       <ns0:manager>
          <ns0:phone>
             <ns0:number>4567890</ns0:number>

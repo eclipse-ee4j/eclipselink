@@ -15,7 +15,7 @@
       </ns2:SupplierSite>
    </ns0:Value>
    <ns0:ChangeSummary xmlns:sdo="commonj.sdo">
-      <ns0:Value sdo:ref="#/ns0:Value[1]" xmlns:ns2="http://example.com/supplier/">
+      <ns0:Value sdo:ref="#/ns1:processData/ns0:Value[1]" xmlns:ns2="http://example.com/supplier/">
          <ns2:Name>NDSvc</ns2:Name>
       </ns0:Value>
    </ns0:ChangeSummary>

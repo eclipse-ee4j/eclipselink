@@ -4,7 +4,7 @@
       <name>Jane Doe</name>
    </ns0:manager>
    <myChangeSummary logging="true">
-      <ns0:manager sdo:ref="#manager">
+      <ns0:manager sdo:ref="#/root/ns0:manager">
          <name>Original Name</name>
       </ns0:manager>
    </myChangeSummary>   

@@ -28,15 +28,15 @@
             <shipDate>1999-05-21</shipDate>
          </item>
       </items>
-      <theCS delete="#/ns0:purchaseOrder[1]/theCS/ns0:purchaseOrder/foo[1]" xmlns:sdo="commonj.sdo">
-         <ns0:purchaseOrder sdo:ref="#/ns0:purchaseOrder[1]">
+      <theCS delete="#/someUnknownRoot/ns0:purchaseOrder[1]/theCS/ns0:purchaseOrder/foo[1]" xmlns:sdo="commonj.sdo">
+         <ns0:purchaseOrder sdo:ref="#/someUnknownRoot/ns0:purchaseOrder[1]">
             <comment>oldComment</comment>
             <blah>123</blah>
             <foo>
                <name>someName</name>
             </foo>
          </ns0:purchaseOrder>
-         <phone sdo:ref="#/ns0:purchaseOrder[1]/phone[1]">
+         <phone sdo:ref="#/someUnknownRoot/ns0:purchaseOrder[1]/phone[1]">
             <number>33333333</number>
             <ext>444</ext>
          </phone>

@@ -112,8 +112,8 @@
    <ns0:sales>
       <ns0:name>Sales</ns0:name>
       <ns0:purchaseOrder orderDate="2007-10-10">
-         <ns0:myChangeSummary delete="#/ns0:sales/ns0:purchaseOrder[1]/ns0:myChangeSummary/ns0:purchaseOrder/ns0:items" xmlns:sdo="commonj.sdo">
-            <ns0:purchaseOrder sdo:ref="#/ns0:sales/ns0:purchaseOrder[1]">
+         <ns0:myChangeSummary delete="#/ns0:corporation/ns0:sales/ns0:purchaseOrder[1]/ns0:myChangeSummary/ns0:purchaseOrder/ns0:items" xmlns:sdo="commonj.sdo">
+            <ns0:purchaseOrder sdo:ref="#/ns0:corporation/ns0:sales/ns0:purchaseOrder[1]">
                <ns0:items xsi:type="ns0:Items">
                   <ns0:item partNum="901-AA">
                      <ns0:product>

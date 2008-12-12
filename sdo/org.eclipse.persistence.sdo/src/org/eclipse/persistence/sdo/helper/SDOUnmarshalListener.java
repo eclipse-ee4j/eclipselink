@@ -93,7 +93,19 @@ public class SDOUnmarshalListener extends SDOCSUnmarshalListener {
                 SDODataObject nextCreatedDO = null;
                 for (int j = 0; j < xpaths.size(); j++) {
                     nextXPath = (String)xpaths.get(j);
-                    nextCreatedDO = (SDODataObject)targetDataObject.getDataObject(convertXPathToSDOPath(nextXPath));
+                    String sdoPath = convertXPathToSDOPath(nextXPath);
+                    nextCreatedDO = (SDODataObject)targetDataObject.getDataObject(sdoPath);
+
+                    if(nextCreatedDO == null) {
+                        int nextSlash = sdoPath.indexOf('/');
+                        if(nextSlash != -1) {
+                            sdoPath = sdoPath.substring(nextSlash + 1);
+                        } else {
+                            sdoPath = "/";
+                        }
+                        nextCreatedDO = (SDODataObject)targetDataObject.getDataObject(sdoPath);
+                    }
+                    
                     if (nextCreatedDO != null) {
                         nextCreatedDO._setCreated(true);
                         nextCS.getOldContainers().remove(nextCreatedDO);
@@ -107,7 +119,7 @@ public class SDOUnmarshalListener extends SDOCSUnmarshalListener {
                 List modifiedDoms = nextCS.getModifiedDoms();
                 Element nextNode = null;
                 String refValue = null;
-                SDODataObject nextModifiedDO;
+                SDODataObject nextModifiedDO = null;
                 for (int j = 0; j < modifiedDoms.size(); j++) {
                     nextNode = (Element)modifiedDoms.get(j);
                     refValue = nextNode.getAttributeNS(SDOConstants.SDO_URL, SDOConstants.CHANGESUMMARY_REF);
@@ -115,7 +127,18 @@ public class SDOUnmarshalListener extends SDOCSUnmarshalListener {
                         throw SDOException.missingRefAttribute();
                     }
                     //nextModifiedDO is the real modified current data object
-                    nextModifiedDO = (SDODataObject)targetDataObject.getDataObject(convertXPathToSDOPath(refValue));
+                    String sdoPath = convertXPathToSDOPath(refValue);
+                    nextModifiedDO = (SDODataObject)targetDataObject.getDataObject(sdoPath);
+                    //if it failed, try peeling off the first fragment (may be the root
+                    if(nextModifiedDO == null) {
+                        int nextSlash = sdoPath.indexOf('/');
+                        if(nextSlash != -1) {
+                            sdoPath = sdoPath.substring(nextSlash + 1);
+                        } else {
+                            sdoPath = "/";
+                        }
+                        nextModifiedDO = (SDODataObject)targetDataObject.getDataObject(sdoPath);
+                    }
                     String unsetValue = nextNode.getAttributeNS(SDOConstants.SDO_URL, SDOConstants.CHANGESUMMARY_UNSET);
                     List unsetValueList = new ArrayList();
                     if ((unsetValue != null) && (unsetValue.length() > 0)) {
@@ -167,8 +190,15 @@ public class SDOUnmarshalListener extends SDOCSUnmarshalListener {
                                         SDODataObject nextInList = (SDODataObject)originalValue.get(l);
                                         String sdoRef = nextInList._getSdoRef();
                                         if (sdoRef != null) {
-                                            //if sdoRef is not null then object is modified                                                                                                                    
-                                            newList.add(targetDataObject.getDataObject(convertXPathToSDOPath(sdoRef)));
+                                            //if sdoRef is not null then object is modified
+                                            String sdoRefPath = convertXPathToSDOPath(sdoRef);
+                                            int nextSlash = sdoRefPath.indexOf('/');
+                                            if(nextSlash != -1) {
+                                                sdoRefPath = sdoRefPath.substring(nextSlash + 1);
+                                            } else {
+                                                sdoRefPath = "/";
+                                            }
+                                            newList.add(targetDataObject.getDataObject(sdoRefPath));
                                         } else {
                                             //if sdo ref is null there is a deleted object                                                                                                                                                                                                  
                                             toDelete.add(nextInList);

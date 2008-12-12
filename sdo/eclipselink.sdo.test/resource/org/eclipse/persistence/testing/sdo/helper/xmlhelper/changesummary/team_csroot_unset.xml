@@ -23,7 +23,7 @@
       </ns0:phone>
    </ns0:manager>
    <ns0:myChangeSummary xmlns:sdo="commonj.sdo">
-      <ns0:manager sdo:ref="#/ns0:manager" sdo:unset="id address previousLastNames phone">
+      <ns0:manager sdo:ref="#/ns0:root/ns0:manager" sdo:unset="id address previousLastNames phone">
          <ns0:name>Old Name</ns0:name>
       </ns0:manager>
    </ns0:myChangeSummary>

@@ -21,10 +21,10 @@
       <ns0:quantity>1</ns0:quantity>
    </ns0:relatedQuoteItem>
    <ns0:changeSummary xmlns:sdo="commonj.sdo">
-      <ns0:relatedQuoteItem sdo:ref="#/ns0:relatedQuoteItem[1]">
+      <ns0:relatedQuoteItem sdo:ref="#/ns0:quoteType/ns0:relatedQuoteItem[1]">
          <ns0:cost>379</ns0:cost>
       </ns0:relatedQuoteItem>
-      <ns0:relatedQuoteItem sdo:ref="#/ns0:relatedQuoteItem[2]">
+      <ns0:relatedQuoteItem sdo:ref="#/ns0:quoteType/ns0:relatedQuoteItem[2]">
          <ns0:cost>345</ns0:cost>
       </ns0:relatedQuoteItem>
    </ns0:changeSummary>

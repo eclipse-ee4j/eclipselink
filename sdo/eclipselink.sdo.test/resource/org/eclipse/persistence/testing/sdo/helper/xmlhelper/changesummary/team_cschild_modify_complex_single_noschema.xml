@@ -20,13 +20,13 @@
          <ns0:number>4567890</ns0:number>
       </ns0:phone>
       <ns0:myChangeSummary xmlns:sdo="commonj.sdo">
-         <ns0:manager sdo:ref="#/ns0:manager">
+         <ns0:manager sdo:ref="#/ns0:team/ns0:manager">
             <ns0:name>Old Name</ns0:name>
          </ns0:manager>
-         <ns0:address sdo:ref="#/ns0:manager/ns0:address" sdo:unset="street city">
+         <ns0:address sdo:ref="#/ns0:team/ns0:manager/ns0:address" sdo:unset="street city">
             <ns0:province>old province</ns0:province>
          </ns0:address>
-         <ns0:phone sdo:ref="#/ns0:manager/ns0:phone[3]">
+         <ns0:phone sdo:ref="#/ns0:team/ns0:manager/ns0:phone[3]">
             <ns0:number>1111111</ns0:number>
          </ns0:phone>
       </ns0:myChangeSummary>

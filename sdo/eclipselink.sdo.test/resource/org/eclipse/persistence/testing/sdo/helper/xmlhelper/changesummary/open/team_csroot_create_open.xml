@@ -21,7 +21,7 @@
          <ns0:width>theWidthUndefined</ns0:width>
       </ns0:theYardUndefined>
    </ns0:manager>
-   <ns0:myChangeSummary create="#/ns0:manager/ns0:address #/ns0:manager/ns0:theYard[1] #/ns0:manager/ns0:theYardDefined[1] #/ns0:manager/ns0:theYardUndefined[1]" xmlns:sdo="commonj.sdo">
-      <ns0:manager sdo:ref="#/ns0:manager" sdo:unset="address theYard"/>
+   <ns0:myChangeSummary create="#/ns0:root/ns0:manager/ns0:address #/ns0:root/ns0:manager/ns0:theYard[1] #/ns0:root/ns0:manager/ns0:theYardDefined[1] #/ns0:root/ns0:manager/ns0:theYardUndefined[1]" xmlns:sdo="commonj.sdo">
+      <ns0:manager sdo:ref="#/ns0:root/ns0:manager" sdo:unset="address theYard"/>
    </ns0:myChangeSummary>
 </ns0:root>

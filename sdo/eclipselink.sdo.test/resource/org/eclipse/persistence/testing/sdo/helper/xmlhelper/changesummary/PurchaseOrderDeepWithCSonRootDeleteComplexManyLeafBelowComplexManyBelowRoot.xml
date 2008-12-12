@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ns0:purchaseOrder orderDate="1999-10-20" xmlns:ns0="http://www.example.org" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-   <ns0:myChangeSummary delete="#/ns0:myChangeSummary/ns0:product/ns0:price[1]" xmlns:sdo="commonj.sdo">
-      <ns0:product sdo:ref="#/ns0:items/ns0:item[2]/ns0:product">
+   <ns0:myChangeSummary delete="#/ns0:purchaseOrder/ns0:myChangeSummary/ns0:product/ns0:price[1]" xmlns:sdo="commonj.sdo">
+      <ns0:product sdo:ref="#/ns0:purchaseOrder/ns0:items/ns0:item[2]/ns0:product">
          <ns0:price xsi:type="ns0:PriceType">
             <ns0:dollarAmount>39.95</ns0:dollarAmount>
             <ns0:currency>US</ns0:currency>
          </ns0:price>
-         <ns0:price sdo:ref="#/ns0:items/ns0:item[2]/ns0:product/ns0:price[1]"/>
+         <ns0:price sdo:ref="#/ns0:purchaseOrder/ns0:items/ns0:item[2]/ns0:product/ns0:price[1]"/>
       </ns0:product>
    </ns0:myChangeSummary>
    <ns0:shipTo country="US">

@@ -112,8 +112,8 @@
    <ns0:sales>
       <ns0:name>Sales</ns0:name>
       <ns0:purchaseOrder orderDate="2007-10-10">
-         <ns0:myChangeSummary delete="#/ns0:sales/ns0:purchaseOrder[1]/ns0:myChangeSummary/ns0:items/ns0:item[1]" xmlns:sdo="commonj.sdo">
-            <ns0:items sdo:ref="#/ns0:sales/ns0:purchaseOrder[1]/ns0:items">
+         <ns0:myChangeSummary delete="#/ns0:corporation/ns0:sales/ns0:purchaseOrder[1]/ns0:myChangeSummary/ns0:items/ns0:item[1]" xmlns:sdo="commonj.sdo">
+            <ns0:items sdo:ref="#/ns0:corporation/ns0:sales/ns0:purchaseOrder[1]/ns0:items">
                <ns0:item xsi:type="ns0:LineItemType" partNum="901-AA">
                   <ns0:product>
                      <ns0:productName>Lawnmower</ns0:productName>
@@ -130,7 +130,7 @@
                   <ns0:comment>First Item</ns0:comment>
                   <ns0:comment>First Item comment 2</ns0:comment>
                </ns0:item>
-               <ns0:item sdo:ref="#/ns0:sales/ns0:purchaseOrder[1]/ns0:items/ns0:item[1]"/>
+               <ns0:item sdo:ref="#/ns0:corporation/ns0:sales/ns0:purchaseOrder[1]/ns0:items/ns0:item[1]"/>
             </ns0:items>
          </ns0:myChangeSummary>
          <ns0:shipTo country="US">

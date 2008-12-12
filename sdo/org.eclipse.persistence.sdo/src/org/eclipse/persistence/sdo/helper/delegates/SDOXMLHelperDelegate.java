@@ -28,8 +28,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.TimeZone;
 import java.util.WeakHashMap;
+import javax.xml.namespace.QName;
 import javax.xml.transform.Result;
 import javax.xml.transform.Source;
+import javax.xml.transform.dom.DOMResult;
+import javax.xml.transform.sax.SAXResult;
+import javax.xml.transform.stream.StreamResult;
+import javax.xml.transform.stream.StreamSource;
+
 import org.eclipse.persistence.sdo.SDOConstants;
 import org.eclipse.persistence.sdo.SDOType;
 import org.eclipse.persistence.sdo.SDOXMLDocument;
@@ -52,6 +58,11 @@ import org.eclipse.persistence.oxm.XMLLogin;
 import org.eclipse.persistence.oxm.XMLMarshaller;
 import org.eclipse.persistence.oxm.XMLRoot;
 import org.eclipse.persistence.oxm.XMLUnmarshaller;
+import org.eclipse.persistence.oxm.record.ContentHandlerRecord;
+import org.eclipse.persistence.oxm.record.FormattedWriterRecord;
+import org.eclipse.persistence.oxm.record.MarshalRecord;
+import org.eclipse.persistence.oxm.record.NodeRecord;
+import org.eclipse.persistence.oxm.record.WriterRecord;
 import org.eclipse.persistence.sessions.Project;
 import org.xml.sax.InputSource;
 
@@ -395,23 +406,67 @@ public class SDOXMLHelperDelegate implements SDOXMLHelper {
         anXMLMarshaller.setEncoding(xmlDocument.getEncoding());
         anXMLMarshaller.setSchemaLocation(xmlDocument.getSchemaLocation());
         anXMLMarshaller.setNoNamespaceSchemaLocation(xmlDocument.getNoNamespaceSchemaLocation());
-        ((SDOMarshalListener)anXMLMarshaller.getMarshalListener()).setMarshalledObject(xmlDocument.getRootObject());
         
-        anXMLMarshaller.marshal(xmlDocument, outputWriter);
+        WriterRecord writerRecord;
+        if(anXMLMarshaller.isFormattedOutput()) {
+            writerRecord = new FormattedWriterRecord();
+        } else {
+            writerRecord = new WriterRecord();
+        }
+        writerRecord.setWriter(outputWriter);
+        writerRecord.setMarshaller(anXMLMarshaller);
+        
+        ((SDOMarshalListener)anXMLMarshaller.getMarshalListener()).setMarshalledObject(xmlDocument.getRootObject());
+        ((SDOMarshalListener)anXMLMarshaller.getMarshalListener()).setMarshalledObjectRootQName(new QName(xmlDocument.getRootElementURI(), xmlDocument.getRootElementName()));
+        ((SDOMarshalListener)anXMLMarshaller.getMarshalListener()).setRootMarshalReocrd(writerRecord);
+        
+        anXMLMarshaller.marshal(xmlDocument, writerRecord);
+        outputWriter.flush();
     }
 
     public void save(XMLDocument xmlDocument, Result result, Object options) throws IOException {
-        // get XMLMarshaller once - as we may create a new instance if this helper isDirty=true
-        XMLMarshaller anXMLMarshaller = getXmlMarshaller();
+        if(result instanceof StreamResult) {
+            StreamResult streamResult = (StreamResult)result;
+            Writer writer = streamResult.getWriter();
+            if (null == writer) {
+                save(xmlDocument, streamResult.getOutputStream(), options);
+            } else {
+                save(xmlDocument, writer, options);
+            }
+            
+        } else {
+            // get XMLMarshaller once - as we may create a new instance if this helper isDirty=true
+            XMLMarshaller anXMLMarshaller = getXmlMarshaller();
 
-        // Ask the SDOXMLDocument if we should include the XML declaration in the resulting XML
-        anXMLMarshaller.setFragment(!xmlDocument.isXMLDeclaration());
+            // Ask the SDOXMLDocument if we should include the XML declaration in the resulting XML
+            anXMLMarshaller.setFragment(!xmlDocument.isXMLDeclaration());
         
-        anXMLMarshaller.setEncoding(xmlDocument.getEncoding());
-        anXMLMarshaller.setSchemaLocation(xmlDocument.getSchemaLocation());
-        anXMLMarshaller.setNoNamespaceSchemaLocation(xmlDocument.getNoNamespaceSchemaLocation());
-        ((SDOMarshalListener)anXMLMarshaller.getMarshalListener()).setMarshalledObject(xmlDocument.getRootObject());
-        anXMLMarshaller.marshal(xmlDocument, result);
+            anXMLMarshaller.setEncoding(xmlDocument.getEncoding());
+            anXMLMarshaller.setSchemaLocation(xmlDocument.getSchemaLocation());
+            anXMLMarshaller.setNoNamespaceSchemaLocation(xmlDocument.getNoNamespaceSchemaLocation());
+            ((SDOMarshalListener)anXMLMarshaller.getMarshalListener()).setMarshalledObject(xmlDocument.getRootObject());
+            ((SDOMarshalListener)anXMLMarshaller.getMarshalListener()).setMarshalledObjectRootQName(new QName(xmlDocument.getRootElementURI(), xmlDocument.getRootElementName()));
+            
+            if(result instanceof SAXResult) {
+                ContentHandlerRecord marshalRecord = new ContentHandlerRecord();
+                marshalRecord.setContentHandler(((SAXResult)result).getHandler());
+                marshalRecord.setMarshaller(anXMLMarshaller);
+                ((SDOMarshalListener)anXMLMarshaller.getMarshalListener()).setRootMarshalReocrd(marshalRecord);
+                anXMLMarshaller.marshal(xmlDocument, marshalRecord);
+            } else if(result instanceof DOMResult) {
+                NodeRecord marshalRecord = new NodeRecord();
+                marshalRecord.setDOM(((DOMResult)result).getNode());
+                marshalRecord.setMarshaller(anXMLMarshaller);
+                ((SDOMarshalListener)anXMLMarshaller.getMarshalListener()).setRootMarshalReocrd(marshalRecord);
+                anXMLMarshaller.marshal(xmlDocument, marshalRecord);
+            } else {
+                StringWriter writer = new StringWriter();
+                this.save(xmlDocument, writer, options);
+                String xml = writer.toString();
+                StreamSource source = new StreamSource(new java.io.StringReader(writer.toString()));
+                anXMLMarshaller.getTransformer().transform(source, result);
+            }
+        }
 
     }
 
@@ -465,9 +520,24 @@ public class SDOXMLHelperDelegate implements SDOXMLHelper {
         
         // Ask the SDOXMLDocument if we should include the XML declaration in the resulting XML
         anXMLMarshaller.setFragment(!xmlDocument.isXMLDeclaration());
+        WriterRecord writerRecord;
+        if(anXMLMarshaller.isFormattedOutput()) {
+            writerRecord = new FormattedWriterRecord();
+        } else {
+            writerRecord = new WriterRecord();
+        }
+        writerRecord.setWriter(writer);
+        writerRecord.setMarshaller(anXMLMarshaller);
         
         ((SDOMarshalListener)anXMLMarshaller.getMarshalListener()).setMarshalledObject(rootObject);
-        anXMLMarshaller.marshal(xmlDocument, writer);
+        ((SDOMarshalListener)anXMLMarshaller.getMarshalListener()).setMarshalledObjectRootQName(new QName(rootElementURI, rootElementName));
+        ((SDOMarshalListener)anXMLMarshaller.getMarshalListener()).setRootMarshalReocrd(writerRecord);
+        anXMLMarshaller.marshal(xmlDocument, writerRecord);
+        try {
+            writer.flush();
+        } catch(IOException ex) {
+            throw XMLMarshalException.marshalException(ex);
+        }
     }
 
     public void setLoader(SDOClassLoader loader) {
