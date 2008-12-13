@@ -212,7 +212,7 @@ public class AnnotationsProcessor {
         }
       
 
-        String[] propOrder = new String[0];
+        String[] propOrder = new String[]{""};
         String typeName = "";
         
         if (helper.isAnnotationPresent(javaClass, XmlType.class)) {
