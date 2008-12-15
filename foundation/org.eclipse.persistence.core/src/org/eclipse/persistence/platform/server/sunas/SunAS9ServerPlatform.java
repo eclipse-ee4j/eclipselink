@@ -40,7 +40,7 @@ public class SunAS9ServerPlatform extends ServerPlatformBase {
 
     /**
      * INTERNAL: getExternalTransactionControllerClass(): Answer the class of external transaction controller to use
-     * for Oc4j. This is read-only.
+     * for SUN AS9. This is read-only.
      *
      * @return Class externalTransactionControllerClass
      *

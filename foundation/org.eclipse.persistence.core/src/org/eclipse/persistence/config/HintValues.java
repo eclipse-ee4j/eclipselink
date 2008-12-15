@@ -15,7 +15,7 @@ package org.eclipse.persistence.config;
 /**
  * Hint values.
  * 
- * The class defines boolean values used by some TopLink query hint.
+ * The class defines boolean values used by some EclipseLink query hints.
  * 
  * <p>JPA Query Hint Usage:
  * 

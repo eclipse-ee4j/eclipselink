@@ -350,6 +350,12 @@ public class PersistenceUnitProperties {
      */
     public static final String THROW_EXCEPTIONS = "eclipselink.orm.throw.exceptions";
     
+    /** 
+     * This property set on the session is used to override orm.xml schema validation from its default of false. 
+     */
+    public static final String ORM_SCHEMA_VALIDATION = "eclipselink.orm.validate.schema";
+    
+    
     /** Validate deployment, but do not connect. */
     public static final String VALIDATION_ONLY_PROPERTY = "eclipselink.validation-only";
 

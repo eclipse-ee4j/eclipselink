@@ -13,6 +13,8 @@
  *       - 218084: Implement metadata merging functionality between mapping files
  *     05/23/2008-1.0M8 Guy Pelletier 
  *       - 211330: Add attributes-complete support to the EclipseLink-ORM.XML Schema
+ *     12/10/2008-1.1 Michael O'Brien 
+ *       - 257606: Add orm.xml schema validation true/(false) flag support in persistence.xml
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata;
 
@@ -339,8 +341,9 @@ public class MetadataProcessor {
                 logMessage("Found a default mapping file at " + ormURL + " for root URL " + rootURL);
                 
                 try {
-                    // Read the document through OX and add it to the project.
-                    XMLEntityMappings entityMappings = XMLEntityMappingsReader.read(ormURL, m_loader);
+                    // Read the document through OX and add it to the project., pass persistence unit properties for any orm properties set there
+                    XMLEntityMappings entityMappings = XMLEntityMappingsReader.read(
+                            ormURL, m_loader, m_project.getPersistenceUnitInfo().getProperties());
                     entityMappings.setIsEclipseLinkORMFile(ormXMLFile.equals(MetadataHelper.ECLIPSELINK_ORM_FILE));
                     m_project.addEntityMappings(entityMappings);
                 } catch (IOException e) {

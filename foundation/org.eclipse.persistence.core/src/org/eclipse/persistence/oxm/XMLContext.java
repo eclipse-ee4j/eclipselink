@@ -40,13 +40,13 @@ import org.eclipse.persistence.sessions.factories.XMLSessionConfigLoader;
 
 /**
  * <p>
- * An XMLContext is created based on TopLink sessions or projects and can then
+ * An XMLContext is created based on EclipseLink sessions or projects and can then
  * used to create instances of XMLMarshaller, XMLUnmarshaller and XMLValidator.
  *
  * <p>
- * There are constructors to create an XMLContext with a single TopLink project
- * or with a String which is a single TopLink session name or a ':' separated
- * list of TopLink session names.
+ * There are constructors to create an XMLContext with a single EclipseLink project
+ * or with a String which is a single EclipseLink session name or a ':' separated
+ * list of EclipseLink session names.
  *
  * <p>
  * <em>Code Sample</em><br>
@@ -149,7 +149,7 @@ public class XMLContext {
      * Create a new XMLContext based on the specified project
      *
      * @param project
-     *            A TopLink project
+     *            An EclipseLink project
      */
     public XMLContext(Project project) {
         this(project, Thread.currentThread().getContextClassLoader());
@@ -389,7 +389,7 @@ public class XMLContext {
     }
 
     /**
-     * INTERNAL: Return the TopLink session used to marshall.
+     * INTERNAL: Return the EclipseLink session used to marshall.
      */
     public List getSessions() {
         return sessions;
