@@ -290,6 +290,7 @@
                 <include name="**.zip"/>
                 <exclude name="osgi.core.zip"/>
             </zipfileset>
+            <zipfileset dir="${eclipselink.jpa.plugins}/" prefix="plugins" includes="*.jar"/>
         </zip>
     </target>
 
