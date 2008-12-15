@@ -275,6 +275,7 @@
     
     <target name="publish-maven" depends="properties-init" description="Manually trigger just Maven publish">
         <echo message="'publish' target: Calling 'build-nightly' target in '${build.root.dir}/${autobld.file}'"/>
+        <ant antfile="autobuild.xml" dir="${build.root.dir}" target="init"/>
         <ant antfile="uploadToMaven.xml" dir="${build.root.dir}" target="upload-maven-all"/>
     </target>
 

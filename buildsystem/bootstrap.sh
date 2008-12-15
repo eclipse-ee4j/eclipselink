@@ -193,7 +193,7 @@ fi
 # May need to add "release" flag to alert build
 if [ "${RELEASE}" = "true" ]
 then
-    ANT_BASEARG="${ANT_BASEARG} -Dbuild.type=RELEASE" -Dbuild_id=
+    ANT_BASEARG="${ANT_BASEARG} -Dbuild.type=RELEASE -Dbuild_id= "
     TARGET="milestone"
 fi
 
@@ -222,18 +222,23 @@ export SVN_EXEC BLD_DEPS_DIR JUNIT_HOME TARGET
 
 cd ${HOME_DIR}
 echo "Results logged to: ${DATED_LOG}"
+touch ${DATED_LOG}
 
 echo "Cleaning the db for build..."
+echo "Cleaning the db for build..." >> ${DATED_LOG}
 echo "drop schema ${DB_NAME};" > sql.sql
 echo "create schema ${DB_NAME};" >> sql.sql
 mysql -u${DB_USER} -p${DB_PWD} < sql.sql
 rm sql.sql
+echo "done."
+echo "done." >> ${DATED_LOG}
 
-touch ${DATED_LOG}
+echo "Build starting..."
 echo "Build started at: `date`" >> ${DATED_LOG}
-source ~/.ssh-agent >> ${DATED_LOG} 2>&1
+#source ~/.ssh-agent >> ${DATED_LOG} 2>&1
 echo "ant ${ANT_BASEARG} ${TARGET}" >> ${DATED_LOG}
 ant ${ANT_BASEARG} -Ddb.user="${DB_USER}" -Ddb.pwd="${DB_PWD}" -Ddb.url="${DB_URL}" ${TARGET} >> ${DATED_LOG} 2>&1
 echo "Build completed at: `date`" >> ${DATED_LOG}
+echo "Build complete."
 
 CLASSPATH=${OLD_CLASSPATH}
