@@ -60,7 +60,7 @@ public class ReportQueryMultipleReturnTestSuite extends JUnitTestCase {
         ExpressionBuilder empbuilder = new ExpressionBuilder();
         reportQuery.addAttribute("salary",empbuilder.get("salary"));
         reportQuery.setSelectionCriteria(empbuilder.get("salary").greaterThan(1));
-        List result = (List)getServerSession().executeQuery(reportQuery);
+        List result = (List)((EntityManagerImpl)createEntityManager()).getActiveSession().executeQuery(reportQuery);
         Object resultItem = result.get(0);
         assertTrue("Failed to return Employees correctly, Not A Number", Number.class.isAssignableFrom(resultItem.getClass()));
         assertTrue("Failed to return Employees correctly, Not Correct Result", ((Number)resultItem).intValue() > 1);
@@ -73,7 +73,7 @@ public class ReportQueryMultipleReturnTestSuite extends JUnitTestCase {
         ExpressionBuilder empbuilder = new ExpressionBuilder();
         reportQuery.addAttribute("manager",empbuilder.get("manager"));
         reportQuery.setSelectionCriteria(empbuilder.get("salary").greaterThan(1));
-        List result = (List)getServerSession().executeQuery(reportQuery);
+        List result = (List)((EntityManagerImpl)createEntityManager()).getActiveSession().executeQuery(reportQuery);
         Object resultItem = result.get(0);
         assertTrue("Failed to return Employees correctly, Not An Employee", Employee.class.isAssignableFrom(resultItem.getClass()));
     }
@@ -86,7 +86,7 @@ public class ReportQueryMultipleReturnTestSuite extends JUnitTestCase {
         reportQuery.addAttribute("salary",empbuilder.get("salary"));
         reportQuery.addAttribute("manager",empbuilder.get("manager"));
         reportQuery.setSelectionCriteria(empbuilder.get("salary").greaterThan(1));
-        List result = (List)getServerSession().executeQuery(reportQuery);
+        List result = (List)((EntityManagerImpl)createEntityManager()).getActiveSession().executeQuery(reportQuery);
         Object innerResult = result.get(0);
         assertTrue("Failed to return Employees correctly, Not an Object Array", Object[].class.isAssignableFrom(innerResult.getClass()));
         Object resultItem = ((Object[])innerResult)[0];
@@ -106,7 +106,7 @@ public class ReportQueryMultipleReturnTestSuite extends JUnitTestCase {
         reportQuery.addAttribute("manager",empbuilder.get("manager"));
         reportQuery.addAttribute("adress.city",addBuilder.get("city"));
         reportQuery.setSelectionCriteria(empbuilder.get("salary").greaterThan(1));
-        List result = (List)getServerSession().executeQuery(reportQuery);
+        List result = (List)((EntityManagerImpl)createEntityManager()).getActiveSession().executeQuery(reportQuery);
         Object innerResult = result.get(0);
         assertTrue("Failed to return Employees correctly, Not an Object Array", Object[].class.isAssignableFrom(innerResult.getClass()));
         Object resultItem = ((Object[])innerResult)[0];
@@ -125,7 +125,7 @@ public class ReportQueryMultipleReturnTestSuite extends JUnitTestCase {
             reportQuery.setReferenceClass(Project.class);
             ExpressionBuilder empbuilder = new ExpressionBuilder();
             reportQuery.addAttribute("project",empbuilder);
-            List result = (List)getServerSession().executeQuery(reportQuery);
+            List result = (List)((EntityManagerImpl)createEntityManager()).getActiveSession().executeQuery(reportQuery);
         }catch (QueryException ex){
            return; 
         }
@@ -138,7 +138,7 @@ public class ReportQueryMultipleReturnTestSuite extends JUnitTestCase {
         reportQuery.setReferenceClass(LargeProject.class);
         ExpressionBuilder empbuilder = new ExpressionBuilder();
         reportQuery.addAttribute("project",empbuilder);
-        List result = (List)getServerSession().executeQuery(reportQuery);
+        List result = (List)((EntityManagerImpl)createEntityManager()).getActiveSession().executeQuery(reportQuery);
         Object resultItem = result.get(0);
         assertTrue("Failed to return Project as expression root correctly, Not A Project", LargeProject.class.isAssignableFrom(resultItem.getClass()));
     }

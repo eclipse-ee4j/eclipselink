@@ -114,38 +114,16 @@ public class JoinedAttributeAdvancedJunitTest extends JUnitTestCase {
     }
     
     public static Test suite() {
-        TestSuite suite = new TestSuite();
-        suite.setName("JoinedAttributeAdvancedJunitTest");
+        TestSuite suite = new TestSuite(JoinedAttributeAdvancedJunitTest.class);
         
-        suite.addTest(new JoinedAttributeAdvancedJunitTest("testSetup"));
-        suite.addTest(new JoinedAttributeAdvancedJunitTest("testProjectJoinTeamMembers"));
-        suite.addTest(new JoinedAttributeAdvancedJunitTest("testProjectJoinTeamLeaderJoinAddressWhereTeamLeaderNotNull"));
-        suite.addTest(new JoinedAttributeAdvancedJunitTest("testProjectJoinTeamMembersJoinAddress"));
-        suite.addTest(new JoinedAttributeAdvancedJunitTest("testProjectOuterJoinTeamMembersJoinAddress"));
-        suite.addTest(new JoinedAttributeAdvancedJunitTest("testProjectOuterJoinTeamMembersOuterJoinAddress"));
-        suite.addTest(new JoinedAttributeAdvancedJunitTest("testProjectJoinTeamMembersOuterJoinAddress"));
-        suite.addTest(new JoinedAttributeAdvancedJunitTest("testProblemReporterProjectJoinTeamMembersJoinAddress"));
-        suite.addTest(new JoinedAttributeAdvancedJunitTest("testEmployeeJoinProjects"));
-        suite.addTest(new JoinedAttributeAdvancedJunitTest("testEmployeeJoinProjectsOnUOW"));
-        suite.addTest(new JoinedAttributeAdvancedJunitTest("testEmployeeJoinProjectsJoinTeamLeaderJoinAddressWhereManagerIsNull"));
-        suite.addTest(new JoinedAttributeAdvancedJunitTest("testProjectOuterJoinTeamLeaderAddressTeamMembersAddressPhonesWhereProjectName"));
-        suite.addTest(new JoinedAttributeAdvancedJunitTest("testEmployeeOuterJoinAddressPhoneProjectsTeamLeaderAddressTeamMembersPhones"));
-        suite.addTest(new JoinedAttributeAdvancedJunitTest("testEmployeeOuterJoinAddressPhoneProjectsTeamLeaderAddressTeamMembersPhonesOnUOW"));
-        suite.addTest(new JoinedAttributeAdvancedJunitTest("testEmployeeJoinManagerAddressOuterJoinManagerAddress"));
-        suite.addTest(new JoinedAttributeAdvancedJunitTest("testTwoUnrelatedResultWithOneToManyJoins"));
-        suite.addTest(new JoinedAttributeAdvancedJunitTest("testMultipleUnrelatedResultWithOneToManyJoins"));
-        suite.addTest(new JoinedAttributeAdvancedJunitTest("testTwoUnrelatedResultWithOneToOneJoins"));
-        suite.addTest(new JoinedAttributeAdvancedJunitTest("testTwoUnrelatedResultWithOneToOneJoinsWithExtraItem"));
-        
-        return suite;
-    }
-    
-    /**
-     * The setup is done as a test, both to record its failure, and to allow execution in the server.
-     */
-    public void testSetup() {
-        new AdvancedTableCreator().replaceTables(JUnitTestCase.getServerSession());
-        clearCache();
+        return new TestSetup(suite) {
+            protected void setUp(){               
+                new AdvancedTableCreator().replaceTables(JUnitTestCase.getServerSession());
+            }
+
+            protected void tearDown() {
+            }
+        };
     }
     
     public void tearDown() {
@@ -296,7 +274,6 @@ public class JoinedAttributeAdvancedJunitTest extends JUnitTestCase {
         UnitOfWork uow = acquireUnitOfWork();
         //loads objects into cache without using joins
         uow.executeQuery(controlQuery);
-        uow.commit();
         ((UnitOfWorkImpl)uow).setShouldCascadeCloneToJoinedRelationship(true);
         Collection results = (Collection)uow.executeQuery(queryWithJoins);
         getDbSession().getIdentityMapAccessor().initializeAllIdentityMaps();
@@ -305,7 +282,7 @@ public class JoinedAttributeAdvancedJunitTest extends JUnitTestCase {
         if(errorMsg.length() > 0) {
             fail(errorMsg);
         }
-    }
+    }    
     
     public void testEmployeeJoinProjectsJoinTeamLeaderJoinAddressWhereManagerIsNull() {
         ReadAllQuery query = new ReadAllQuery();
@@ -412,7 +389,6 @@ public class JoinedAttributeAdvancedJunitTest extends JUnitTestCase {
 
         UnitOfWork uow = acquireUnitOfWork();
         //loads objects into cache without using joins
-        uow.commit();
         uow.executeQuery(controlQuery);
         ((UnitOfWorkImpl)uow).setShouldCascadeCloneToJoinedRelationship(true);
         Collection results = (Collection)uow.executeQuery(queryWithJoins);
@@ -431,6 +407,7 @@ public class JoinedAttributeAdvancedJunitTest extends JUnitTestCase {
         query.setSelectionCriteria(query.getExpressionBuilder().get("lastName").equal("Way").
                                     or(query.getExpressionBuilder().get("lastName").equal("Jones")));
         
+        List list = new ArrayList();
         ReadAllQuery controlQuery = (ReadAllQuery)query.clone();
         Expression manager = query.getExpressionBuilder().get("manager");
         query.addJoinedAttribute(manager);

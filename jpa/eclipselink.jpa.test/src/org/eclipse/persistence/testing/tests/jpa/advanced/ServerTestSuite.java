@@ -41,10 +41,10 @@ public class ServerTestSuite extends TestSuite {
         suite.addTest(NamedNativeQueryJUnitTest.suite());
         suite.addTest(CallbackEventJUnitTestSuite.suite());
         suite.addTest(EntityManagerJUnitTestSuite.suite());
-        suite.addTest(SQLResultSetMappingTestSuite.suite());
-        suite.addTest(JoinedAttributeAdvancedJunitTest.suite());
-        suite.addTest(ReportQueryMultipleReturnTestSuite.suite());
-        suite.addTest(ReportQueryAdvancedJUnitTest.suite());
+        //suite.addTest(SQLResultSetMappingTestSuite.suite());
+        //suite.addTest(JoinedAttributeAdvancedJunitTest.suite());
+        //suite.addTest(ReportQueryMultipleReturnTestSuite.suite());
+        //suite.addTest(ReportQueryAdvancedJUnitTest.suite());
         suite.addTest(ExtendedPersistenceContextJUnitTestSuite.suite());
         suite.addTest(ReportQueryConstructorExpressionTestSuite.suite());
         suite.addTest(OptimisticConcurrencyJUnitTestSuite.suite());
