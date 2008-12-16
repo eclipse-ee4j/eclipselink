@@ -466,6 +466,7 @@ public class ReadAllQuery extends ObjectLevelReadQuery {
      */
     protected Object executeObjectLevelReadQuery() throws DatabaseException {
         Object result = null;
+        
         if (getContainerPolicy().overridesRead()) {
             return getContainerPolicy().execute();
         }
@@ -478,6 +479,7 @@ public class ReadAllQuery extends ObjectLevelReadQuery {
 
         List rows = getQueryMechanism().selectAllRows();
         setExecutionTime(System.currentTimeMillis());
+        
         // If using 1-m joins, must set all rows.
         if (hasJoining() && this.joinedAttributeManager.isToManyJoin()) {
             this.joinedAttributeManager.setDataResults(rows, this.session);
@@ -497,6 +499,11 @@ public class ReadAllQuery extends ObjectLevelReadQuery {
             return complexResult;
         }
 
+        // Add the other (already registered) results and return them.
+        if (getDescriptor().hasTablePerClassPolicy()) {
+            result = containerPolicy.concatenateContainers(result, getDescriptor().getTablePerClassPolicy().selectAllObjectsUsingMultipleTableSubclassRead(this));
+        }
+        
         return result;
     }
 
@@ -785,7 +792,7 @@ public class ReadAllQuery extends ObjectLevelReadQuery {
         if (getDescriptor().isDescriptorForInterface()) {
             return;
         }
-
+        
         prepareSelectAllRows();
         computeBatchReadMappingQueries();
     }

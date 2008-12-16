@@ -402,6 +402,13 @@ public class OneToManyMapping extends CollectionMapping implements RelationalMap
         }
 
         initializeDeleteAllQuery();
+        
+        if (getReferenceDescriptor() != null && getReferenceDescriptor().hasTablePerClassPolicy()) {
+            // This will do nothing if we have already prepared for this 
+            // source mapping or if the source mapping does not require
+            // any special prepare logic.
+            getReferenceDescriptor().getTablePerClassPolicy().prepareChildrenSelectionQuery(this, session);              
+        }
     }
 
     /**

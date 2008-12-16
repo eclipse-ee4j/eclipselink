@@ -21,6 +21,8 @@
  *       - 241651: JPA 2.0 Access Type support
  *     10/01/2008-1.1 Guy Pelletier 
  *       - 249329: To remain JPA 1.0 compliant, any new JPA 2.0 annotations should be referenced by name
+ *     12/12/2008-1.1 Guy Pelletier 
+ *       - 249860: Implement table per class inheritance support.
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.accessors.classes;
 
@@ -111,7 +113,6 @@ public abstract class ClassAccessor extends MetadataAccessor {
     private CustomCopyPolicyMetadata m_customCopyPolicy;
     private InstantiationCopyPolicyMetadata m_instantiationCopyPolicy;
     
-    //private Enum m_access;
     private String m_className;
     private String m_customizerClassName;
     private String m_description;
@@ -140,8 +141,90 @@ public abstract class ClassAccessor extends MetadataAccessor {
      * Called from MappedSuperclassAccessor. We want to avoid setting the
      * class accessor on the descriptor to be the MappedSuperclassAccessor.
      */
-    protected ClassAccessor(Annotation annotation, Class cls, MetadataDescriptor descriptor, MetadataProject project) {
-        super(annotation, new MetadataClass(cls), descriptor, project);
+    protected ClassAccessor(Annotation annotation, Class cls, MetadataDescriptor descriptor) {    
+        super(annotation, new MetadataClass(cls), descriptor, descriptor.getProject());
+    }
+    
+    /**
+     * INTERNAL:
+     * Add the accessors from this class accessors java class to the descriptor
+     * tied to this class accessor. This method is called for every class
+     * accessor and is also called from parent class accessors to each of its
+     * subclasses of a TABLE_PER_CLASS inhertiance strategy.
+     */
+    public void addAccessors() {        
+        if (m_attributes != null) {
+            for (MappingAccessor accessor : m_attributes.getAccessors()) {
+                // Load the accessible object from the class.
+                MetadataAccessibleObject accessibleObject = null;
+                
+                // We must init all xml mapping accessors with a reference
+                // of their owning class accessor. The mapping accessors 
+                // require metatata information from them to ensure they 
+                // process themselves correctly.
+                accessor.initXMLMappingAccessor(this);
+                
+                if (accessor.usesPropertyAccess(getDescriptor())) {
+                    if (accessor.getAccessMethods() != null) {
+                        // Can't rely on MappingAccessor's getGetMethodName 
+                        // methods as they could result in NPE if 
+                        // accessibleObject isn't set first
+                        String getMethodName = accessor.getAccessMethods().getGetMethodName();
+                        Method getMethod = MetadataHelper.getMethod(getMethodName, getJavaClass(), new Class[]{});
+                        String setMethodName = accessor.getAccessMethods().getSetMethodName();
+                        Method setMethod = MetadataHelper.getMethod(setMethodName, getJavaClass(), new Class[]{getMethod.getReturnType()});
+                        
+                        accessibleObject = new MetadataMethod(getMethod, setMethod, accessor.getName(), getEntityMappings());
+                    } else {
+                        Method method = MetadataHelper.getMethodForPropertyName(accessor.getName(), getJavaClass());
+                        
+                        if (method == null) {
+                            throw ValidationException.invalidPropertyForClass(accessor.getName(), getJavaClass());
+                        } else {
+                            MetadataMethod metadataMethod = new MetadataMethod(method, getEntityMappings());
+                            
+                            // True will force an exception to be thrown if it 
+                            // is not a valid method. However, if it is a
+                            // transient accessor, don't validate it and just 
+                            // let it through.
+                            if (accessor.isTransient() || metadataMethod.isValidPersistenceMethod(getDescriptor(), true)) {    
+                                accessibleObject = metadataMethod;
+                            }
+                        }  
+                    }
+                } else {
+                    Field field = MetadataHelper.getFieldForName(accessor.getName(), getJavaClass());
+                
+                    if (field == null) {
+                        throw ValidationException.invalidFieldForClass(accessor.getName(), getJavaClass());
+                    } else {
+                        MetadataField metadataField = new MetadataField(field, getEntityMappings());
+                    
+                        // True will force an exception to be thrown if it is 
+                        // not a valid field. However, if it is a transient 
+                        // accessor, don't validate it and just let it through.
+                        if (accessor.isTransient() || metadataField.isValidPersistenceField(getDescriptor(), true)) {
+                            accessibleObject = metadataField;
+                        }
+                    }
+                }
+                
+                // Initialize the accessor with its real accessible object,
+                // that is a field or method since it will currently hold a 
+                // reference to its owning class' accessible object.
+                accessor.initXMLObject(accessibleObject);
+                
+                // Add the accessor to the descriptor's list
+                getDescriptor().addAccessor(accessor);
+            }
+        }
+        
+        // Process the fields or methods on the class for annotations.
+        if (usesPropertyAccess()) {
+            processAccessorMethods(false);
+        } else {
+            processAccessorFields(false);
+        }
     }
     
     /**
@@ -528,90 +611,11 @@ public abstract class ClassAccessor extends MetadataAccessor {
      * Process the accessors for the given class.
      */
     protected void processAccessors() {
-        // Add all the available accessors to the descritor.
+        // Add all the available accessors to the descriptor.
         addAccessors();
         
         // Now tell the descriptor to process its accessors.
         getDescriptor().processAccessors(getOwningDescriptor());
-    }
-    
-    /**
-     * INTERNAL:
-     * Process the accessors for the given class.
-     */
-    protected void addAccessors() {        
-        if (m_attributes != null) {
-            for (MappingAccessor accessor : m_attributes.getAccessors()) {
-                // Load the accessible object from the class.
-                MetadataAccessibleObject accessibleObject = null;
-                
-                // We must init all xml mapping accessors with a reference
-                // of their owning class accessor. The mapping accessors 
-                // require metatata information from them to ensure they 
-                // process themselves correctly.
-                accessor.initXMLMappingAccessor(this);
-                
-                if (accessor.usesPropertyAccess(getDescriptor())) {
-                    if (accessor.getAccessMethods() != null) {
-                        // Can't rely on MappingAccessor's getGetMethodName 
-                        // methods as they could result in NPE if 
-                        // accessibleObject isn't set first
-                        String getMethodName = accessor.getAccessMethods().getGetMethodName();
-                        Method getMethod = MetadataHelper.getMethod(getMethodName, getJavaClass(), new Class[]{});
-                        String setMethodName = accessor.getAccessMethods().getSetMethodName();
-                        Method setMethod = MetadataHelper.getMethod(setMethodName, getJavaClass(), new Class[]{getMethod.getReturnType()});
-                        
-                        accessibleObject = new MetadataMethod(getMethod, setMethod, accessor.getName(), getEntityMappings());
-                    } else {
-                        Method method = MetadataHelper.getMethodForPropertyName(accessor.getName(), getJavaClass());
-                        
-                        if (method == null) {
-                            throw ValidationException.invalidPropertyForClass(accessor.getName(), getJavaClass());
-                        } else {
-                            MetadataMethod metadataMethod = new MetadataMethod(method, getEntityMappings());
-                            
-                            // True will force an exception to be thrown if it 
-                            // is not a valid method. However, if it is a
-                            // transient accessor, don't validate it and just 
-                            // let it through.
-                            if (accessor.isTransient() || metadataMethod.isValidPersistenceMethod(getDescriptor(), true)) {    
-                                accessibleObject = metadataMethod;
-                            }
-                        }  
-                    }
-                } else {
-                    Field field = MetadataHelper.getFieldForName(accessor.getName(), getJavaClass());
-                
-                    if (field == null) {
-                        throw ValidationException.invalidFieldForClass(accessor.getName(), getJavaClass());
-                    } else {
-                        MetadataField metadataField = new MetadataField(field, getEntityMappings());
-                    
-                        // True will force an exception to be thrown if it is 
-                        // not a valid field. However, if it is a transient 
-                        // accessor, don't validate it and just let it through.
-                        if (accessor.isTransient() || metadataField.isValidPersistenceField(getDescriptor(), true)) {
-                            accessibleObject = metadataField;
-                        }
-                    }
-                }
-                
-                // Initialize the accessor with its real accessible object,
-                // that is a field or method since it will currently hold a 
-                // reference to its owning class' accessible object.
-                accessor.initXMLObject(accessibleObject);
-                
-                // Add the accessor to the descriptor's list
-                getDescriptor().addAccessor(accessor);
-            }
-        }
-        
-        // Process the fields or methods on the class for annotations.
-        if (usesPropertyAccess()) {
-            processAccessorMethods(false);
-        } else {
-            processAccessorFields(false);
-        }
     }
     
     /**

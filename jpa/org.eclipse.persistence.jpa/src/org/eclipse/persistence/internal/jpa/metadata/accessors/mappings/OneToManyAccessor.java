@@ -13,6 +13,8 @@
  *       - 218084: Implement metadata merging functionality between mapping files
  *     09/23/2008-1.1 Guy Pelletier 
  *       - 241651: JPA 2.0 Access Type support
+ *     12/12/2008-1.1 Guy Pelletier 
+ *       - 249860: Implement table per class inheritance support.
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.accessors.mappings;
 
@@ -85,7 +87,8 @@ public class OneToManyAccessor extends CollectionAccessor {
         
         // Should be treated as a uni-directional mapping.
         if (getMappedBy() == null || getMappedBy().equals("")) {
-            // If we find a JoinColumn(s) annotations, then throw an exception.
+            // If we find a JoinColumn(s) annotations then process a
+            // uni-directional one to many.
             if (!getJoinColumns().isEmpty()) {
                 // Create a 1-M unidirectional mapping and process common collection mapping
                 // metadata.
@@ -101,7 +104,6 @@ public class OneToManyAccessor extends CollectionAccessor {
                 // Add the mapping to the descriptor.
                 getDescriptor().addMapping(mapping);
             } else {
-            
                 // Create a M-M mapping and process common collection mapping
                 // metadata.
                 ManyToManyMapping mapping = new ManyToManyMapping();
@@ -133,7 +135,20 @@ public class OneToManyAccessor extends CollectionAccessor {
                 
             Map<DatabaseField, DatabaseField> keys = ownerMapping.getSourceToTargetKeyFields();
             for (DatabaseField fkField : keys.keySet()) {
-                mapping.addTargetForeignKeyField(fkField, keys.get(fkField));
+                DatabaseField pkField = keys.get(fkField);
+                
+                // If we are within a table per class strategy we have to update
+                // the primary key field to point to our own database table. 
+                // The extra table check is if the mapping is actually defined
+                // on our java class (meaning we have the right table at this
+                // point and can avoid the cloning)
+                if (getDescriptor().usesTablePerClassInheritanceStrategy() && ! pkField.getTable().equals(getDescriptor().getPrimaryTable())) {
+                    // We need to update the pk field to be to our table.
+                    pkField = (DatabaseField) pkField.clone();
+                    pkField.setTable(getDescriptor().getPrimaryTable());
+                }
+            
+                mapping.addTargetForeignKeyField(fkField, pkField);
             }   
             
             // Process properties

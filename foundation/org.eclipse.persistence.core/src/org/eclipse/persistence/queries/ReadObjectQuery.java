@@ -41,7 +41,6 @@ import org.eclipse.persistence.tools.profiler.QueryMonitor;
  * @since TOPLink/Java 1.0
  */
 public class ReadObjectQuery extends ObjectLevelReadQuery {
-    
     /** Object that can be used in place of a selection criteria. */
     protected transient Object selectionObject;
 
@@ -406,12 +405,17 @@ public class ReadObjectQuery extends ObjectLevelReadQuery {
      * @return object - the first object found or null if none.
      */
     protected Object executeObjectLevelReadQuery() throws DatabaseException {
-        if (getDescriptor().isDescriptorForInterface()) {
+        if (getDescriptor().isDescriptorForInterface()  || getDescriptor().hasTablePerClassPolicy()) {
             Object returnValue = getDescriptor().getInterfacePolicy().selectOneObjectUsingMultipleTableSubclassRead(this);
-            setExecutionTime(System.currentTimeMillis());
-            return returnValue;
+            
+            if (getDescriptor().hasTablePerClassPolicy() && returnValue == null) {
+                // let it fall through to query the root.
+            } else {
+                setExecutionTime(System.currentTimeMillis());
+                return returnValue;
+            }
         }
-
+        
         AbstractRecord row = null;
         AbstractSession session = getSession();
         // If using 1-m joins, must select all rows.
@@ -424,6 +428,7 @@ public class ReadObjectQuery extends ObjectLevelReadQuery {
         } else {
             row = getQueryMechanism().selectOneRow();
         }
+        
         setExecutionTime(System.currentTimeMillis());
         Object result = null;
 
@@ -609,7 +614,7 @@ public class ReadObjectQuery extends ObjectLevelReadQuery {
         if (getDescriptor().isDescriptorForInterface()) {
             return;
         }
-
+        
         // If using 1-m joining select all rows.
         if (hasJoining() && getJoinedAttributeManager().isToManyJoin()) {
             getQueryMechanism().prepareSelectAllRows();
@@ -617,7 +622,7 @@ public class ReadObjectQuery extends ObjectLevelReadQuery {
             getQueryMechanism().prepareSelectOneRow();
         }
     }
-
+    
     /**
      * INTERNAL:
      * Set the properties needed to be cascaded into the custom query inlucding the translation row.

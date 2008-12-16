@@ -26,6 +26,7 @@ import org.eclipse.persistence.internal.sessions.remote.*;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.internal.sessions.UnitOfWorkImpl;
+import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.sessions.remote.*;
 import org.eclipse.persistence.sessions.DatabaseRecord;
 import org.eclipse.persistence.sessions.Record;
@@ -136,6 +137,16 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
 
     /** Use the WrapperPolicy for the objects returned by the query */
     protected boolean shouldUseWrapperPolicy;
+    
+    /** 
+     * Table per class requires multiple query executions. Internally we
+     * prepare those queries and cache them against the source mapping's 
+     * selection query. When queries are executed they are cloned so we
+     * need a mechanism to keep a reference back to the actual selection
+     * query so that we can successfully look up and chain query executions
+     * within a table per class inheritance hierarchy.
+     */
+    protected DatabaseMapping sourceMapping;
 
     /**
      * queryTimeout has three possible settings: DefaultTimeout, NoTimeout, and 1..N
@@ -462,6 +473,9 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
         try {
             DatabaseQuery cloneQuery = (DatabaseQuery)super.clone();
 
+            // Keep a reference back to the original source query.
+            cloneQuery.sourceMapping = this.sourceMapping;
+            
             // partial fix for 3054240 
             // need to pay attention to other components of the query, too  MWN
             if (cloneQuery.properties != null) {
@@ -1100,6 +1114,13 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
         return this.shouldBindAllParameters;
     }
 
+    /**
+     * INTERNAL:
+     */
+    public DatabaseMapping getSourceMapping() {
+       return sourceMapping; 
+    }
+    
     /**
      * ADVANCED:
      * This can be used to access a queries translated SQL if they have been prepared, (i.e. query.prepareCall()).
@@ -1965,6 +1986,13 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
         this.shouldUseWrapperPolicy = shouldUseWrapperPolicy;
     }
 
+    /**
+     * INTERNAL:
+     */
+    public void setSourceMapping(DatabaseMapping sourceMapping) {
+       this.sourceMapping = sourceMapping; 
+    }
+    
     /**
      * PUBLIC:
      * To any user of this object. Set the SQL statement of the query.

@@ -35,6 +35,7 @@ import org.eclipse.persistence.testing.tests.jpa.inheritance.DeleteAllQueryInher
 import org.eclipse.persistence.testing.tests.jpa.inheritance.EntityManagerJUnitTestCase;
 import org.eclipse.persistence.testing.tests.jpa.inheritance.MixedInheritanceJUnitTestCase;
 import org.eclipse.persistence.testing.tests.jpa.inheritance.JoinedAttributeInheritanceJunitTest;
+import org.eclipse.persistence.testing.tests.jpa.inheritance.TablePerClassInheritanceJUnitTest;
 
 import org.eclipse.persistence.testing.tests.jpa.inherited.OrderedListJunitTest;
 import org.eclipse.persistence.testing.tests.jpa.inherited.OrderedListAttributeChangeTrackingJunitTest;
@@ -120,6 +121,7 @@ public class FullRegressionTestSuite extends TestSuite{
         suite.addTest(EntityManagerJUnitTestCase.suite());
         suite.addTest(MixedInheritanceJUnitTestCase.suite());
         suite.addTest(JoinedAttributeInheritanceJunitTest.suite());
+        suite.addTest(TablePerClassInheritanceJUnitTest.suite());
         fullSuite.addTest(suite);
 
         // Inherited model.

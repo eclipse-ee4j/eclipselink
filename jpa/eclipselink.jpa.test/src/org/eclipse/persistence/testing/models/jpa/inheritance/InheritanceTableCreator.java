@@ -47,6 +47,23 @@ public class InheritanceTableCreator extends org.eclipse.persistence.tools.schem
         addTableDefinition(buildENGINEER_DESKTOPTable());
         addTableDefinition(buildLAPTOPTable());
         addTableDefinition(buildENGINEER_LAPTOPTable());
+        
+        // Table per class testing, all tables prefixed with TPC_
+        addTableDefinition(buildWEAPONTable());
+        addTableDefinition(buildDIRECTWEAPONTable());
+        addTableDefinition(buildINDIRECTWEAPONTable());
+        addTableDefinition(buildGUNTable());
+        addTableDefinition(buildKNIFETable());
+        addTableDefinition(buildPOISONTable());
+        addTableDefinition(buildBOMBTable());
+        addTableDefinition(buildELIMINATIONTable());
+        addTableDefinition(buildDIRECTELIMINATIONTable());
+        addTableDefinition(buildINDIRECTELIMINATIONTable());
+        addTableDefinition(buildCONTRACTEDPERSONELTable());
+        addTableDefinition(buildASSASSINTable());
+        addTableDefinition(buildSPECIALASSASSINTable());
+        addTableDefinition(buildSOCIALCLUBTable());
+        addTableDefinition(buildPERSONELCLUBTable());
     }
 
     public TableDefinition buildBICYCLETable() {
@@ -1007,6 +1024,617 @@ public class InheritanceTableCreator extends org.eclipse.persistence.tools.schem
         fkConstraint.addTargetField("SNO");
         
         table.addForeignKeyConstraint(fkConstraint);
+        return table;
+    }
+    
+    public TableDefinition buildWEAPONTable() {
+        TableDefinition table = new TableDefinition();
+        table.setName("TPC_WEAPON");
+
+        FieldDefinition fieldSERIAL_NUMBER = new FieldDefinition();
+        fieldSERIAL_NUMBER.setName("SERIAL_NUMBER");
+        fieldSERIAL_NUMBER.setTypeName("NUMBER");
+        fieldSERIAL_NUMBER.setSize(10);
+        fieldSERIAL_NUMBER.setIsPrimaryKey(true);
+        fieldSERIAL_NUMBER.setIsIdentity(false);
+        fieldSERIAL_NUMBER.setUnique(false);
+        fieldSERIAL_NUMBER.setShouldAllowNull(false);
+        table.addField(fieldSERIAL_NUMBER);
+
+        FieldDefinition fieldDESCRIP = new FieldDefinition();
+        fieldDESCRIP.setName("DESCRIP");
+        fieldDESCRIP.setTypeName("VARCHAR");
+        fieldDESCRIP.setSize(50);
+        fieldDESCRIP.setIsPrimaryKey(false);
+        fieldDESCRIP.setIsIdentity(false);
+        fieldDESCRIP.setUnique(false);
+        fieldDESCRIP.setShouldAllowNull(true);
+        table.addField(fieldDESCRIP);
+
+        return table;
+    }
+    
+    public TableDefinition buildDIRECTWEAPONTable() {
+        TableDefinition table = new TableDefinition();
+        table.setName("TPC_DIR_WEAPON");
+
+        FieldDefinition fieldSERIAL_NUMBER = new FieldDefinition();
+        fieldSERIAL_NUMBER.setName("SERIAL_NUMBER");
+        fieldSERIAL_NUMBER.setTypeName("NUMBER");
+        fieldSERIAL_NUMBER.setSize(10);
+        fieldSERIAL_NUMBER.setIsPrimaryKey(true);
+        fieldSERIAL_NUMBER.setIsIdentity(false);
+        fieldSERIAL_NUMBER.setUnique(false);
+        fieldSERIAL_NUMBER.setShouldAllowNull(false);
+        table.addField(fieldSERIAL_NUMBER);
+
+        FieldDefinition fieldDESCRIP = new FieldDefinition();
+        fieldDESCRIP.setName("DESCRIP");
+        fieldDESCRIP.setTypeName("VARCHAR");
+        fieldDESCRIP.setSize(50);
+        fieldDESCRIP.setIsPrimaryKey(false);
+        fieldDESCRIP.setIsIdentity(false);
+        fieldDESCRIP.setUnique(false);
+        fieldDESCRIP.setShouldAllowNull(true);
+        table.addField(fieldDESCRIP);
+
+        return table;
+    }
+    
+    public TableDefinition buildINDIRECTWEAPONTable() {
+        TableDefinition table = new TableDefinition();
+        table.setName("TPC_IND_WEAPON");
+
+        FieldDefinition fieldSERIAL_NUMBER = new FieldDefinition();
+        fieldSERIAL_NUMBER.setName("SERIAL_NUMBER");
+        fieldSERIAL_NUMBER.setTypeName("NUMBER");
+        fieldSERIAL_NUMBER.setSize(10);
+        fieldSERIAL_NUMBER.setIsPrimaryKey(true);
+        fieldSERIAL_NUMBER.setIsIdentity(false);
+        fieldSERIAL_NUMBER.setUnique(false);
+        fieldSERIAL_NUMBER.setShouldAllowNull(false);
+        table.addField(fieldSERIAL_NUMBER);
+
+        FieldDefinition fieldDESCRIP = new FieldDefinition();
+        fieldDESCRIP.setName("DESCRIP");
+        fieldDESCRIP.setTypeName("VARCHAR");
+        fieldDESCRIP.setSize(50);
+        fieldDESCRIP.setIsPrimaryKey(false);
+        fieldDESCRIP.setIsIdentity(false);
+        fieldDESCRIP.setUnique(false);
+        fieldDESCRIP.setShouldAllowNull(true);
+        table.addField(fieldDESCRIP);
+
+        return table;
+    }
+    
+    public TableDefinition buildGUNTable() {
+        TableDefinition table = new TableDefinition();
+        table.setName("TPC_GUN");
+
+        FieldDefinition fieldSERIAL_NUMBER = new FieldDefinition();
+        fieldSERIAL_NUMBER.setName("SERIAL_NUMBER");
+        fieldSERIAL_NUMBER.setTypeName("NUMBER");
+        fieldSERIAL_NUMBER.setSize(10);
+        fieldSERIAL_NUMBER.setIsPrimaryKey(true);
+        fieldSERIAL_NUMBER.setIsIdentity(false);
+        fieldSERIAL_NUMBER.setUnique(false);
+        fieldSERIAL_NUMBER.setShouldAllowNull(false);
+        table.addField(fieldSERIAL_NUMBER);
+
+        FieldDefinition fieldDESCRIP = new FieldDefinition();
+        fieldDESCRIP.setName("DESCRIP");
+        fieldDESCRIP.setTypeName("VARCHAR");
+        fieldDESCRIP.setSize(50);
+        fieldDESCRIP.setIsPrimaryKey(false);
+        fieldDESCRIP.setIsIdentity(false);
+        fieldDESCRIP.setUnique(false);
+        fieldDESCRIP.setShouldAllowNull(true);
+        table.addField(fieldDESCRIP);
+        
+        FieldDefinition fieldCALIBER = new FieldDefinition();
+        fieldCALIBER.setName("CALIBER");
+        fieldCALIBER.setTypeName("NUMBER");
+        fieldCALIBER.setSize(10);
+        fieldCALIBER.setIsPrimaryKey(false);
+        fieldCALIBER.setIsIdentity(false);
+        fieldCALIBER.setUnique(false);
+        fieldCALIBER.setShouldAllowNull(false);
+        table.addField(fieldCALIBER);
+
+        FieldDefinition fieldMODEL = new FieldDefinition();
+        fieldMODEL.setName("MODEL");
+        fieldMODEL.setTypeName("VARCHAR");
+        fieldMODEL.setSize(50);
+        fieldMODEL.setIsPrimaryKey(false);
+        fieldMODEL.setIsIdentity(false);
+        fieldMODEL.setUnique(false);
+        fieldMODEL.setShouldAllowNull(true);
+        table.addField(fieldMODEL);
+
+        return table;
+    }
+    
+    public TableDefinition buildKNIFETable() {
+        TableDefinition table = new TableDefinition();
+        table.setName("TPC_KNIFE");
+
+        FieldDefinition fieldSERIAL_NUMBER = new FieldDefinition();
+        fieldSERIAL_NUMBER.setName("SERIAL_NUMBER");
+        fieldSERIAL_NUMBER.setTypeName("NUMBER");
+        fieldSERIAL_NUMBER.setSize(10);
+        fieldSERIAL_NUMBER.setIsPrimaryKey(true);
+        fieldSERIAL_NUMBER.setIsIdentity(false);
+        fieldSERIAL_NUMBER.setUnique(false);
+        fieldSERIAL_NUMBER.setShouldAllowNull(false);
+        table.addField(fieldSERIAL_NUMBER);
+
+        FieldDefinition fieldDESCRIP = new FieldDefinition();
+        fieldDESCRIP.setName("DESCRIP");
+        fieldDESCRIP.setTypeName("VARCHAR");
+        fieldDESCRIP.setSize(50);
+        fieldDESCRIP.setIsPrimaryKey(false);
+        fieldDESCRIP.setIsIdentity(false);
+        fieldDESCRIP.setUnique(false);
+        fieldDESCRIP.setShouldAllowNull(true);
+        table.addField(fieldDESCRIP);
+        
+        FieldDefinition fieldNAME = new FieldDefinition();
+        fieldNAME.setName("NAME");
+        fieldNAME.setTypeName("VARCHAR");
+        fieldNAME.setSize(50);
+        fieldNAME.setIsPrimaryKey(false);
+        fieldNAME.setIsIdentity(false);
+        fieldNAME.setUnique(false);
+        fieldNAME.setShouldAllowNull(true);
+        table.addField(fieldNAME);
+        
+        FieldDefinition fieldBLADE = new FieldDefinition();
+        fieldBLADE.setName("BLADE");
+        fieldBLADE.setTypeName("NUMBER");
+        fieldBLADE.setSize(10);
+        fieldBLADE.setIsPrimaryKey(false);
+        fieldBLADE.setIsIdentity(false);
+        fieldBLADE.setUnique(false);
+        fieldBLADE.setShouldAllowNull(false);
+        table.addField(fieldBLADE);
+
+        FieldDefinition fieldKNIFE_TYPE = new FieldDefinition();
+        fieldKNIFE_TYPE.setName("KNIFE_TYPE");
+        fieldKNIFE_TYPE.setTypeName("VARCHAR");
+        fieldKNIFE_TYPE.setSize(50);
+        fieldKNIFE_TYPE.setIsPrimaryKey(false);
+        fieldKNIFE_TYPE.setIsIdentity(false);
+        fieldKNIFE_TYPE.setUnique(false);
+        fieldKNIFE_TYPE.setShouldAllowNull(true);
+        table.addField(fieldKNIFE_TYPE);
+
+        return table;
+    }
+
+    public TableDefinition buildPOISONTable() {
+        TableDefinition table = new TableDefinition();
+        table.setName("TPC_POISON");
+
+        FieldDefinition fieldSERIAL_NUMBER = new FieldDefinition();
+        fieldSERIAL_NUMBER.setName("SERIAL_NUMBER");
+        fieldSERIAL_NUMBER.setTypeName("NUMBER");
+        fieldSERIAL_NUMBER.setSize(10);
+        fieldSERIAL_NUMBER.setIsPrimaryKey(true);
+        fieldSERIAL_NUMBER.setIsIdentity(false);
+        fieldSERIAL_NUMBER.setUnique(false);
+        fieldSERIAL_NUMBER.setShouldAllowNull(false);
+        table.addField(fieldSERIAL_NUMBER);
+
+        FieldDefinition fieldDESCRIP = new FieldDefinition();
+        fieldDESCRIP.setName("DESCRIP");
+        fieldDESCRIP.setTypeName("VARCHAR");
+        fieldDESCRIP.setSize(50);
+        fieldDESCRIP.setIsPrimaryKey(false);
+        fieldDESCRIP.setIsIdentity(false);
+        fieldDESCRIP.setUnique(false);
+        fieldDESCRIP.setShouldAllowNull(true);
+        table.addField(fieldDESCRIP);
+        
+        FieldDefinition fieldNAME = new FieldDefinition();
+        fieldNAME.setName("E_TIME");
+        fieldNAME.setTypeName("VARCHAR");
+        fieldNAME.setSize(50);
+        fieldNAME.setIsPrimaryKey(false);
+        fieldNAME.setIsIdentity(false);
+        fieldNAME.setUnique(false);
+        fieldNAME.setShouldAllowNull(true);
+        table.addField(fieldNAME);
+
+        return table;
+    }
+    
+    public TableDefinition buildBOMBTable() {
+        TableDefinition table = new TableDefinition();
+        table.setName("TPC_BOMB");
+
+        FieldDefinition fieldSERIAL_NUMBER = new FieldDefinition();
+        fieldSERIAL_NUMBER.setName("SERIAL_NUMBER");
+        fieldSERIAL_NUMBER.setTypeName("NUMBER");
+        fieldSERIAL_NUMBER.setSize(10);
+        fieldSERIAL_NUMBER.setIsPrimaryKey(true);
+        fieldSERIAL_NUMBER.setIsIdentity(false);
+        fieldSERIAL_NUMBER.setUnique(false);
+        fieldSERIAL_NUMBER.setShouldAllowNull(false);
+        table.addField(fieldSERIAL_NUMBER);
+
+        FieldDefinition fieldDESCRIP = new FieldDefinition();
+        fieldDESCRIP.setName("DESCRIP");
+        fieldDESCRIP.setTypeName("VARCHAR");
+        fieldDESCRIP.setSize(50);
+        fieldDESCRIP.setIsPrimaryKey(false);
+        fieldDESCRIP.setIsIdentity(false);
+        fieldDESCRIP.setUnique(false);
+        fieldDESCRIP.setShouldAllowNull(true);
+        table.addField(fieldDESCRIP);
+
+        FieldDefinition fieldBOMB_TYPE = new FieldDefinition();
+        fieldBOMB_TYPE.setName("B_TYPE");
+        fieldBOMB_TYPE.setTypeName("VARCHAR");
+        fieldBOMB_TYPE.setSize(50);
+        fieldBOMB_TYPE.setIsPrimaryKey(false);
+        fieldBOMB_TYPE.setIsIdentity(false);
+        fieldBOMB_TYPE.setUnique(false);
+        fieldBOMB_TYPE.setShouldAllowNull(true);
+        table.addField(fieldBOMB_TYPE);
+
+        return table;
+    }
+    
+    public TableDefinition buildELIMINATIONTable() {
+        TableDefinition table = new TableDefinition();
+        table.setName("TPC_ELIMINATION");
+
+        FieldDefinition fieldID = new FieldDefinition();
+        fieldID.setName("ID");
+        fieldID.setTypeName("NUMBER");
+        fieldID.setSize(10);
+        fieldID.setIsPrimaryKey(false);
+        fieldID.setIsIdentity(false);
+        fieldID.setUnique(false);
+        fieldID.setShouldAllowNull(false);
+        table.addField(fieldID);
+
+        FieldDefinition fieldNAME = new FieldDefinition();
+        fieldNAME.setName("NAME");
+        fieldNAME.setTypeName("VARCHAR");
+        fieldNAME.setSize(50);
+        fieldNAME.setIsPrimaryKey(false);
+        fieldNAME.setIsIdentity(false);
+        fieldNAME.setUnique(false);
+        fieldNAME.setShouldAllowNull(false);
+        table.addField(fieldNAME);
+        
+        FieldDefinition fieldDESCRIP = new FieldDefinition();
+        fieldDESCRIP.setName("DESCRIP");
+        fieldDESCRIP.setTypeName("VARCHAR");
+        fieldDESCRIP.setSize(50);
+        fieldDESCRIP.setIsPrimaryKey(false);
+        fieldDESCRIP.setIsIdentity(false);
+        fieldDESCRIP.setUnique(false);
+        fieldDESCRIP.setShouldAllowNull(true);
+        table.addField(fieldDESCRIP);
+        
+        FieldDefinition fieldASSASSIN = new FieldDefinition();
+        fieldASSASSIN.setName("ASSASSIN_ID");
+        fieldASSASSIN.setTypeName("NUMBER");
+        fieldASSASSIN.setSize(10);
+        fieldASSASSIN.setIsPrimaryKey(false);
+        fieldASSASSIN.setIsIdentity(false);
+        fieldASSASSIN.setUnique(false);
+        fieldASSASSIN.setShouldAllowNull(false);
+        table.addField(fieldASSASSIN);
+
+        return table;
+    }
+    
+    public TableDefinition buildDIRECTELIMINATIONTable() {
+        TableDefinition table = new TableDefinition();
+        table.setName("TPC_DIR_ELIMINATION");
+
+        FieldDefinition fieldID = new FieldDefinition();
+        fieldID.setName("ID");
+        fieldID.setTypeName("NUMBER");
+        fieldID.setSize(10);
+        fieldID.setIsPrimaryKey(false);
+        fieldID.setIsIdentity(false);
+        fieldID.setUnique(false);
+        fieldID.setShouldAllowNull(false);
+        table.addField(fieldID);
+
+        FieldDefinition fieldNAME = new FieldDefinition();
+        fieldNAME.setName("NAME");
+        fieldNAME.setTypeName("VARCHAR");
+        fieldNAME.setSize(50);
+        fieldNAME.setIsPrimaryKey(false);
+        fieldNAME.setIsIdentity(false);
+        fieldNAME.setUnique(false);
+        fieldNAME.setShouldAllowNull(false);
+        table.addField(fieldNAME);
+        
+        FieldDefinition fieldDESCRIP = new FieldDefinition();
+        fieldDESCRIP.setName("DESCRIP");
+        fieldDESCRIP.setTypeName("VARCHAR");
+        fieldDESCRIP.setSize(50);
+        fieldDESCRIP.setIsPrimaryKey(false);
+        fieldDESCRIP.setIsIdentity(false);
+        fieldDESCRIP.setUnique(false);
+        fieldDESCRIP.setShouldAllowNull(true);
+        table.addField(fieldDESCRIP);
+        
+        FieldDefinition fieldASSASSIN = new FieldDefinition();
+        fieldASSASSIN.setName("ASSASSIN_ID");
+        fieldASSASSIN.setTypeName("NUMBER");
+        fieldASSASSIN.setSize(10);
+        fieldASSASSIN.setIsPrimaryKey(false);
+        fieldASSASSIN.setIsIdentity(false);
+        fieldASSASSIN.setUnique(false);
+        fieldASSASSIN.setShouldAllowNull(false);
+        table.addField(fieldASSASSIN);
+        
+        FieldDefinition fieldWEAPON = new FieldDefinition();
+        fieldWEAPON.setName("WEAPON_ID");
+        fieldWEAPON.setTypeName("NUMBER");
+        fieldWEAPON.setSize(10);
+        fieldWEAPON.setIsPrimaryKey(false);
+        fieldWEAPON.setIsIdentity(false);
+        fieldWEAPON.setUnique(false);
+        fieldWEAPON.setShouldAllowNull(false);
+        table.addField(fieldWEAPON);
+
+        return table;
+    }
+    
+    public TableDefinition buildINDIRECTELIMINATIONTable() {
+        TableDefinition table = new TableDefinition();
+        table.setName("TPC_IND_ELIMINATION");
+
+        FieldDefinition fieldID = new FieldDefinition();
+        fieldID.setName("ID");
+        fieldID.setTypeName("NUMBER");
+        fieldID.setSize(10);
+        fieldID.setIsPrimaryKey(false);
+        fieldID.setIsIdentity(false);
+        fieldID.setUnique(false);
+        fieldID.setShouldAllowNull(false);
+        table.addField(fieldID);
+
+        FieldDefinition fieldNAME = new FieldDefinition();
+        fieldNAME.setName("NAME");
+        fieldNAME.setTypeName("VARCHAR");
+        fieldNAME.setSize(50);
+        fieldNAME.setIsPrimaryKey(false);
+        fieldNAME.setIsIdentity(false);
+        fieldNAME.setUnique(false);
+        fieldNAME.setShouldAllowNull(false);
+        table.addField(fieldNAME);
+        
+        FieldDefinition fieldDESCRIP = new FieldDefinition();
+        fieldDESCRIP.setName("DESCRIP");
+        fieldDESCRIP.setTypeName("VARCHAR");
+        fieldDESCRIP.setSize(50);
+        fieldDESCRIP.setIsPrimaryKey(false);
+        fieldDESCRIP.setIsIdentity(false);
+        fieldDESCRIP.setUnique(false);
+        fieldDESCRIP.setShouldAllowNull(true);
+        table.addField(fieldDESCRIP);
+        
+        FieldDefinition fieldASSASSIN = new FieldDefinition();
+        fieldASSASSIN.setName("ASSASSIN_ID");
+        fieldASSASSIN.setTypeName("NUMBER");
+        fieldASSASSIN.setSize(10);
+        fieldASSASSIN.setIsPrimaryKey(false);
+        fieldASSASSIN.setIsIdentity(false);
+        fieldASSASSIN.setUnique(false);
+        fieldASSASSIN.setShouldAllowNull(false);
+        table.addField(fieldASSASSIN);
+        
+        FieldDefinition fieldWEAPON = new FieldDefinition();
+        fieldWEAPON.setName("WEAPON_ID");
+        fieldWEAPON.setTypeName("NUMBER");
+        fieldWEAPON.setSize(10);
+        fieldWEAPON.setIsPrimaryKey(false);
+        fieldWEAPON.setIsIdentity(false);
+        fieldWEAPON.setUnique(false);
+        fieldWEAPON.setShouldAllowNull(false);
+        table.addField(fieldWEAPON);
+
+        return table;
+    }
+    
+    public TableDefinition buildCONTRACTEDPERSONELTable() {
+        TableDefinition table = new TableDefinition();
+        table.setName("TPC_PERSONEL");
+
+        FieldDefinition fieldID = new FieldDefinition();
+        fieldID.setName("ID");
+        fieldID.setTypeName("NUMBER");
+        fieldID.setSize(10);
+        fieldID.setIsPrimaryKey(true);
+        fieldID.setIsIdentity(false);
+        fieldID.setUnique(false);
+        fieldID.setShouldAllowNull(false);
+        table.addField(fieldID);
+
+        FieldDefinition fieldNAME = new FieldDefinition();
+        fieldNAME.setName("NAME");
+        fieldNAME.setTypeName("VARCHAR");
+        fieldNAME.setSize(50);
+        fieldNAME.setIsPrimaryKey(false);
+        fieldNAME.setIsIdentity(false);
+        fieldNAME.setUnique(false);
+        fieldNAME.setShouldAllowNull(true);
+        table.addField(fieldNAME);
+        
+        FieldDefinition fieldVERSION = new FieldDefinition();
+        fieldVERSION.setName("VERSION");
+        fieldVERSION.setTypeName("NUMERIC");
+        fieldVERSION.setSize(15);
+        fieldVERSION.setShouldAllowNull(true);
+        fieldVERSION.setIsPrimaryKey(false);
+        fieldVERSION.setUnique(false);
+        fieldVERSION.setIsIdentity(false);
+        table.addField(fieldVERSION);
+
+        return table;
+    }
+    
+    public TableDefinition buildASSASSINTable() {
+        TableDefinition table = new TableDefinition();
+        table.setName("TPC_ASSASSIN");
+
+        FieldDefinition fieldID = new FieldDefinition();
+        fieldID.setName("ID");
+        fieldID.setTypeName("NUMBER");
+        fieldID.setSize(10);
+        fieldID.setIsPrimaryKey(true);
+        fieldID.setIsIdentity(false);
+        fieldID.setUnique(false);
+        fieldID.setShouldAllowNull(false);
+        table.addField(fieldID);
+
+        FieldDefinition fieldNAME = new FieldDefinition();
+        fieldNAME.setName("NAME");
+        fieldNAME.setTypeName("VARCHAR");
+        fieldNAME.setSize(50);
+        fieldNAME.setIsPrimaryKey(false);
+        fieldNAME.setIsIdentity(false);
+        fieldNAME.setUnique(false);
+        fieldNAME.setShouldAllowNull(true);
+        table.addField(fieldNAME);
+        
+        FieldDefinition fieldWEAPON = new FieldDefinition();
+        fieldWEAPON.setName("WEAPON_ID");
+        fieldWEAPON.setTypeName("NUMBER");
+        fieldWEAPON.setSize(10);
+        fieldWEAPON.setIsPrimaryKey(false);
+        fieldWEAPON.setIsIdentity(false);
+        fieldWEAPON.setUnique(false);
+        fieldWEAPON.setShouldAllowNull(true);
+        table.addField(fieldWEAPON);
+        
+        FieldDefinition fieldVERSION = new FieldDefinition();
+        fieldVERSION.setName("VERSION");
+        fieldVERSION.setTypeName("NUMERIC");
+        fieldVERSION.setSize(15);
+        fieldVERSION.setShouldAllowNull(true);
+        fieldVERSION.setIsPrimaryKey(false);
+        fieldVERSION.setUnique(false);
+        fieldVERSION.setIsIdentity(false);
+        table.addField(fieldVERSION);
+
+        return table;
+    }
+    
+    public TableDefinition buildSPECIALASSASSINTable() {
+        TableDefinition table = new TableDefinition();
+        table.setName("TPC_SPECIAL_ASSASSIN");
+
+        FieldDefinition fieldID = new FieldDefinition();
+        fieldID.setName("ID");
+        fieldID.setTypeName("NUMBER");
+        fieldID.setSize(10);
+        fieldID.setIsPrimaryKey(true);
+        fieldID.setIsIdentity(false);
+        fieldID.setUnique(false);
+        fieldID.setShouldAllowNull(false);
+        table.addField(fieldID);
+
+        FieldDefinition fieldNAME = new FieldDefinition();
+        fieldNAME.setName("NAME");
+        fieldNAME.setTypeName("VARCHAR");
+        fieldNAME.setSize(50);
+        fieldNAME.setIsPrimaryKey(false);
+        fieldNAME.setIsIdentity(false);
+        fieldNAME.setUnique(false);
+        fieldNAME.setShouldAllowNull(true);
+        table.addField(fieldNAME);
+        
+        FieldDefinition fieldWEAPON = new FieldDefinition();
+        fieldWEAPON.setName("WEAPON_ID");
+        fieldWEAPON.setTypeName("NUMBER");
+        fieldWEAPON.setSize(10);
+        fieldWEAPON.setIsPrimaryKey(false);
+        fieldWEAPON.setIsIdentity(false);
+        fieldWEAPON.setUnique(false);
+        fieldWEAPON.setShouldAllowNull(true);
+        table.addField(fieldWEAPON);
+        
+        FieldDefinition fieldVERSION = new FieldDefinition();
+        fieldVERSION.setName("SP_VERSION");
+        fieldVERSION.setTypeName("NUMERIC");
+        fieldVERSION.setSize(15);
+        fieldVERSION.setShouldAllowNull(true);
+        fieldVERSION.setIsPrimaryKey(false);
+        fieldVERSION.setUnique(false);
+        fieldVERSION.setIsIdentity(false);
+        table.addField(fieldVERSION);
+
+        return table;
+    }
+    
+    public TableDefinition buildSOCIALCLUBTable() {
+        TableDefinition table = new TableDefinition();
+        table.setName("TPC_SOCIAL_CLUB");
+
+        FieldDefinition fieldID = new FieldDefinition();
+        fieldID.setName("ID");
+        fieldID.setTypeName("NUMBER");
+        fieldID.setSize(10);
+        fieldID.setIsPrimaryKey(true);
+        fieldID.setIsIdentity(false);
+        fieldID.setUnique(false);
+        fieldID.setShouldAllowNull(false);
+        table.addField(fieldID);
+
+        FieldDefinition fieldNAME = new FieldDefinition();
+        fieldNAME.setName("NAME");
+        fieldNAME.setTypeName("VARCHAR");
+        fieldNAME.setSize(50);
+        fieldNAME.setIsPrimaryKey(false);
+        fieldNAME.setIsIdentity(false);
+        fieldNAME.setUnique(false);
+        fieldNAME.setShouldAllowNull(true);
+        table.addField(fieldNAME);
+
+        return table;
+    }
+    
+    public TableDefinition buildPERSONELCLUBTable() {
+        TableDefinition table = new TableDefinition();
+        table.setName("TPC_PERSONEL_CLUB");
+
+        // SECTION: FIELD
+        FieldDefinition fieldPERSONELID = new FieldDefinition();
+        fieldPERSONELID.setName("PERSONEL_ID");
+        fieldPERSONELID.setTypeName("NUMERIC");
+        fieldPERSONELID.setSize(10);
+        fieldPERSONELID.setShouldAllowNull(false);
+        fieldPERSONELID.setIsPrimaryKey(true);
+        fieldPERSONELID.setUnique(false);
+        fieldPERSONELID.setIsIdentity(false);
+        // Can't set foreign key field constraints.
+        //fieldPERSONELID.setForeignKeyFieldName("CMP3_PERSONEL.ID");
+        table.addField(fieldPERSONELID);
+    
+        // SECTION: FIELD
+        FieldDefinition fieldCLUBID = new FieldDefinition();
+        fieldCLUBID.setName("CLUB_ID");
+        fieldCLUBID.setTypeName("NUMERIC");
+        fieldCLUBID.setSize(10);
+        fieldCLUBID.setShouldAllowNull(false);
+        fieldCLUBID.setIsPrimaryKey(true);
+        fieldCLUBID.setUnique(false);
+        fieldCLUBID.setIsIdentity(false);
+        // Can't set foreign key field constraints.
+        //fieldCLUBID.setForeignKeyFieldName("CMP3_SOCIAL_CLUB.ID");
+        table.addField(fieldCLUBID);
+
         return table;
     }
     

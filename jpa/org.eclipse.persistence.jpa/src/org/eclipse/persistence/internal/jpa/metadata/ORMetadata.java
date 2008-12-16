@@ -9,7 +9,9 @@
  *
  * Contributors:
  *     05/16/2008-1.0M8 Guy Pelletier 
- *       - 218084: Implement metadata merging functionality between mapping files  
+ *       - 218084: Implement metadata merging functionality between mapping files
+ *     12/12/2008-1.1 Guy Pelletier 
+ *       - 249860: Implement table per class inheritance support.  
  ******************************************************************************/ 
 package org.eclipse.persistence.internal.jpa.metadata;
 
@@ -19,6 +21,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.persistence.exceptions.ValidationException;
+import org.eclipse.persistence.internal.jpa.metadata.accessors.classes.EntityAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.classes.MappedSuperclassAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAccessibleObject;
 import org.eclipse.persistence.internal.jpa.metadata.xml.XMLEntityMappings;
@@ -143,16 +146,6 @@ public abstract class ORMetadata {
      */
     protected Class initXMLClassName(String className) {
         return m_accessibleObject.getEntityMappings().getClassForName(className);
-    }
-    
-    /**
-     * INTERNAL:
-     * This method should only be called on those objects that were loaded 
-     * from XML and that need to initialize a mapped superclass. The assumption
-     * here is that an entity mappings object will be available. 
-     */
-    protected MappedSuperclassAccessor initXMLMappedSuperclass(MappedSuperclassAccessor mappedSuperclass, MetadataDescriptor descriptor) {
-        return m_accessibleObject.getEntityMappings().reloadMappedSuperclass(mappedSuperclass, descriptor);
     }
     
     /**
@@ -321,6 +314,47 @@ public abstract class ORMetadata {
                     
             // After this call return the value from the returned simple object.
             return ((SimpleORMetadata) mergeORObjects(object1, object2)).getValue();
+        }
+    }
+    
+    /**
+     * INTERNAL:
+     * This method should be called to reload an entity (that was either
+     * loaded from XML or an annotation) as a way of cloning it. This is needed
+     * when we process TABLE_PER_CLASS inheritance. We must process the parent
+     * classes for every subclasses descriptor. The processing is similar to
+     * that of processing a mapped superclass, in that we process the parents 
+     * with the subclasses context (that is, the descriptor we are given).
+     */
+    protected EntityAccessor reloadEntity(EntityAccessor entity, MetadataDescriptor descriptor) {
+        if (m_accessibleObject.getEntityMappings() == null) {
+            // Create a new EntityAccesor.
+            EntityAccessor entityAccessor = new EntityAccessor(entity.getAnnotation(), entity.getJavaClass(), entity.getProject());
+            // Things we care about ...
+            descriptor.setDefaultAccess(entity.getDescriptor().getDefaultAccess());
+            entityAccessor.setDescriptor(descriptor);
+            return entityAccessor;            
+        } else {
+            return m_accessibleObject.getEntityMappings().reloadEntity(entity, descriptor);
+        }
+    }
+    
+    /**
+     * INTERNAL:
+     * This method should be called to reload an entity (that was either
+     * loaded from XML or an annotation) as a way of cloning it. This is needed
+     * when processing TABLE_PER_CLASS inheritance and when building invidiual
+     * entity accessor's mapped superclass list. 
+     */
+    protected MappedSuperclassAccessor reloadMappedSuperclass(MappedSuperclassAccessor mappedSuperclass, MetadataDescriptor descriptor) {
+        if (m_accessibleObject.getEntityMappings() == null) {
+            // TODO: Just changing the descriptor on the mapped superclass should
+            // work .. in theory .. since we are just going to go through it's
+            // accessor list.
+            MappedSuperclassAccessor mappedSuperclassAccessor = new MappedSuperclassAccessor(mappedSuperclass.getAnnotation(), mappedSuperclass.getJavaClass(), descriptor);
+            return mappedSuperclassAccessor;
+        } else {
+            return m_accessibleObject.getEntityMappings().reloadMappedSuperclass(mappedSuperclass, descriptor);
         }
     }
     

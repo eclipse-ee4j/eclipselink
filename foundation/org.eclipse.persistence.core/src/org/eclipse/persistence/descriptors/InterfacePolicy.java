@@ -161,6 +161,36 @@ public class InterfacePolicy implements Serializable {
 
     /**
      * INTERNAL:
+     */
+    public boolean isTablePerClassPolicy() {
+        return false;
+    }
+    
+    /**
+     * INTERNAL:
+     * Select all objects for a concrete descriptor.
+     */
+    protected Object selectAllObjects(ReadAllQuery query) {
+        ReadAllQuery concreteQuery = (ReadAllQuery) query.deepClone();
+        concreteQuery.setReferenceClass(descriptor.getJavaClass());
+        concreteQuery.setDescriptor(descriptor);
+        
+        // Avoid cloning the query again ...
+        concreteQuery.setIsExecutionClone(true);
+        concreteQuery.getExpressionBuilder().setQueryClassAndDescriptor(descriptor.getJavaClass(), descriptor);
+            
+        // Update the selection criteria if needed as well and don't lose 
+        // the translation row.
+        if (concreteQuery.getQueryMechanism().getSelectionCriteria() != null) {
+            concreteQuery.getQueryMechanism().getSelectionCriteria().getBuilder().setQueryClassAndDescriptor(descriptor.getJavaClass(), descriptor);
+            return query.getSession().executeQuery(concreteQuery, query.getTranslationRow());
+        }
+        
+        return query.getSession().executeQuery(concreteQuery);
+    }
+    
+    /**
+     * INTERNAL:
      * Select all objects for an interface descriptor.
      * This is accomplished by selecting for all of the concrete classes and then merging the objects.
      *
@@ -171,34 +201,35 @@ public class InterfacePolicy implements Serializable {
         org.eclipse.persistence.internal.queries.ContainerPolicy containerPolicy = query.getContainerPolicy();
         Object objects = containerPolicy.containerInstance(1);
 
-        for (Enumeration childDescriptors = getChildDescriptors().elements();
-                 childDescriptors.hasMoreElements();) {
-            ReadAllQuery concreteQuery = (ReadAllQuery)query.deepClone();
+        for (Enumeration childDescriptors = getChildDescriptors().elements(); childDescriptors.hasMoreElements();) {
             ClassDescriptor descriptor = (ClassDescriptor)childDescriptors.nextElement();
-            Class javaClass = descriptor.getJavaClass();
-            concreteQuery.setReferenceClass(javaClass);
-            concreteQuery.setDescriptor(descriptor);
-
-            objects = containerPolicy.concatenateContainers(objects, query.getSession().executeQuery(concreteQuery));
+            objects = containerPolicy.concatenateContainers(objects, descriptor.getInterfacePolicy().selectAllObjects(query));
         }
 
         return objects;
     }
-
+    
+    /**
+     * INTERNAL:
+     * Select one object of any concrete subclass.
+     */     
+    protected Object selectOneObject(ReadObjectQuery query) throws DescriptorException {
+        ReadObjectQuery concreteQuery = (ReadObjectQuery) query.clone();
+        Class javaClass = descriptor.getJavaClass();
+        concreteQuery.setReferenceClass(javaClass);
+        concreteQuery.setDescriptor(descriptor);
+        return query.getSession().executeQuery(concreteQuery, concreteQuery.getTranslationRow());
+    }
+    
     /**
      * INTERNAL:
      * Select one object of any concrete subclass.
      */
     public Object selectOneObjectUsingMultipleTableSubclassRead(ReadObjectQuery query) throws DatabaseException, QueryException {
         Object object = null;
-        for (Enumeration childDescriptors = getChildDescriptors().elements();
-                 childDescriptors.hasMoreElements() && (object == null);) {
-            ReadObjectQuery concreteQuery = (ReadObjectQuery)query.clone();
+        for (Enumeration childDescriptors = getChildDescriptors().elements(); childDescriptors.hasMoreElements() && (object == null);) {
             ClassDescriptor descriptor = (ClassDescriptor)childDescriptors.nextElement();
-            Class javaClass = descriptor.getJavaClass();
-            concreteQuery.setReferenceClass(javaClass);
-            concreteQuery.setDescriptor(descriptor);
-            object = query.getSession().executeQuery(concreteQuery, concreteQuery.getTranslationRow());
+            object = descriptor.getInterfacePolicy().selectOneObject(query);
         }
 
         return object;

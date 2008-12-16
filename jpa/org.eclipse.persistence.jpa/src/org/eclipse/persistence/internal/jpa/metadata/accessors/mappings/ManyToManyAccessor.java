@@ -11,12 +11,16 @@
  *     Oracle - initial API and implementation from Oracle TopLink
  *     05/16/2008-1.0M8 Guy Pelletier 
  *       - 218084: Implement metadata merging functionality between mapping files
+ *     12/12/2008-1.1 Guy Pelletier 
+ *       - 249860: Implement table per class inheritance support.
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.accessors.mappings;
 
 import java.lang.annotation.Annotation;
+import java.util.Vector;
 
 import org.eclipse.persistence.exceptions.ValidationException;
+import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataLogger;
 
 import org.eclipse.persistence.internal.jpa.metadata.accessors.classes.ClassAccessor;
@@ -112,10 +116,34 @@ public class ManyToManyAccessor extends CollectionAccessor {
             // Set the relation table name from the owner.
             mapping.setRelationTable(ownerMapping.getRelationTable());
                  
-            // Add all the source foreign keys we found on the owner.
-            mapping.setSourceKeyFields(ownerMapping.getTargetKeyFields());
-            mapping.setSourceRelationKeyFields(ownerMapping.getTargetRelationKeyFields());
+            // In a table per class inheritance we need to update the target 
+            // keys before setting them to mapping's source key fields.
+            if (getDescriptor().usesTablePerClassInheritanceStrategy()) {
+                // Update the target key fields.
+                Vector<DatabaseField> targetKeyFields = new Vector<DatabaseField>();
+                for (DatabaseField targetKeyField : ownerMapping.getTargetKeyFields()) {
+                    DatabaseField newTargetKeyField = (DatabaseField) targetKeyField.clone();
+                    newTargetKeyField.setTable(getDescriptor().getPrimaryTable());
+                    targetKeyFields.add(newTargetKeyField);
+                }
                 
+                mapping.setSourceKeyFields(targetKeyFields);
+                
+                // Update the targetRelationKeyFields.
+                Vector<DatabaseField> targetRelationKeyFields = new Vector<DatabaseField>();
+                for (DatabaseField targetRelationKeyField : ownerMapping.getTargetRelationKeyFields()) {
+                    DatabaseField newTargetRelationKeyField = (DatabaseField) targetRelationKeyField.clone();
+                    newTargetRelationKeyField.setTable(getDescriptor().getPrimaryTable());
+                    targetRelationKeyFields.add(newTargetRelationKeyField);
+                }
+                
+                mapping.setSourceRelationKeyFields(targetRelationKeyFields);
+            } else {
+                // Add all the source foreign keys we found on the owner.
+                mapping.setSourceKeyFields(ownerMapping.getTargetKeyFields());
+                mapping.setSourceRelationKeyFields(ownerMapping.getTargetRelationKeyFields()); 
+            }
+            
             // Add all the target foreign keys we found on the owner.
             mapping.setTargetKeyFields(ownerMapping.getSourceKeyFields());
             mapping.setTargetRelationKeyFields(ownerMapping.getSourceRelationKeyFields());

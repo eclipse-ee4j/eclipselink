@@ -15,6 +15,8 @@
  *       - 211330: Add attributes-complete support to the EclipseLink-ORM.XML Schema
  *     09/23/2008-1.1 Guy Pelletier 
  *       - 241651: JPA 2.0 Access Type support
+ *     12/12/2008-1.1 Guy Pelletier 
+ *       - 249860: Implement table per class inheritance support.
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.accessors.classes;
 
@@ -133,8 +135,8 @@ public class MappedSuperclassAccessor extends ClassAccessor {
     /**
      * INTERNAL:
      */
-    public MappedSuperclassAccessor(Annotation annotation, Class cls, MetadataDescriptor descriptor, MetadataProject project) {
-        super(annotation, cls, descriptor, project);
+    public MappedSuperclassAccessor(Annotation annotation, Class cls, MetadataDescriptor descriptor) {        
+        super(annotation, cls, descriptor);
     }
     
     /**
@@ -338,6 +340,7 @@ public class MappedSuperclassAccessor extends ClassAccessor {
      * INTERNAL:
      * Process the items of interest on a mapped superclass.
      */
+    @Override
     public void process() {
         // Process the common class level attributes that an entity or
         // mapped superclass may define.

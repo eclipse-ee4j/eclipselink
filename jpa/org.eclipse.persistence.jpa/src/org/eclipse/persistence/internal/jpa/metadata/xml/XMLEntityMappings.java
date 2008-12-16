@@ -17,6 +17,8 @@
  *       - 241651: JPA 2.0 Access Type support
  *     10/01/2008-1.1 Guy Pelletier 
  *       - 249329: To remain JPA 1.0 compliant, any new JPA 2.0 annotations should be referenced by name
+ *     12/12/2008-1.1 Guy Pelletier 
+ *       - 249860: Implement table per class inheritance support.
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.xml;
 
@@ -468,6 +470,17 @@ public class XMLEntityMappings extends ORMetadata {
     
     /**
      * INTERNAL:
+     * Return a new XMLEntityMappings instance. Used for reloading entities
+     * and mapped superclasses.
+     */
+    protected XMLEntityMappings newXMLEntityMappingsObject() {
+        XMLEntityMappings entityMappingsOut = new XMLEntityMappings();
+        entityMappingsOut.setVersion(getVersion());
+        return entityMappingsOut;
+    }
+    
+    /**
+     * INTERNAL:
      * Process the metadata from the <entity-mappings> level except for the
      * classes themselves. They will be processed afterwards and controlled
      * by the MetadataProcessor. Note: this method does a few things of
@@ -601,31 +614,64 @@ public class XMLEntityMappings extends ORMetadata {
     
     /**
      * INTERNAL:
+     * We clone/reload an entity class by writing it out to XML and reload it 
+     * through OX.
+     */
+    public EntityAccessor reloadEntity(EntityAccessor accessor, MetadataDescriptor descriptor) {
+        // Create entity mappings object to write out.
+        XMLEntityMappings xmlEntityMappings = newXMLEntityMappingsObject();
+            
+        ArrayList list = new ArrayList();
+        list.add(accessor);
+        xmlEntityMappings.setEntities(list);
+            
+        // Reload the xml entity mappings object
+        xmlEntityMappings = reloadXMLEntityMappingsObject(xmlEntityMappings);
+            
+        // Initialize the newly loaded/built entity
+        EntityAccessor entity = xmlEntityMappings.getEntities().get(0);
+        Class entityClass = getClassForName(entity.getClassName());
+        entity.initXMLClassAccessor(new MetadataClass(entityClass, this), descriptor, m_project);
+            
+        return entity;
+    }
+    
+    /**
+     * INTERNAL:
      * We clone/reload a mapped-superclass by writing it out to XML and 
      * reload it through OX.
      */
-    @SuppressWarnings("deprecation")
     public MappedSuperclassAccessor reloadMappedSuperclass(MappedSuperclassAccessor accessor, MetadataDescriptor descriptor) {
-        try {
-            // Create entity mappings object to write out.
-            XMLEntityMappings entityMappingsOut = new XMLEntityMappings();
-            entityMappingsOut.setVersion(getVersion());
-            ArrayList list = new ArrayList();
-            list.add(accessor);
-            entityMappingsOut.setMappedSuperclasses(list);
+        // Create entity mappings object to write out.
+        XMLEntityMappings xmlEntityMappings = newXMLEntityMappingsObject();
 
-            // Create a temp file, write it out, read it back in and delete.
+        ArrayList list = new ArrayList();
+        list.add(accessor);
+        xmlEntityMappings.setMappedSuperclasses(list);
+
+        // Reload the xml entity mappings object
+        xmlEntityMappings = reloadXMLEntityMappingsObject(xmlEntityMappings);
+        
+        // Initialize the newly loaded/built mapped superclass
+        MappedSuperclassAccessor mappedSuperclass = xmlEntityMappings.getMappedSuperclasses().get(0);
+        Class mappedSuperclassClass = getClassForName(mappedSuperclass.getClassName());
+        mappedSuperclass.initXMLClassAccessor(new MetadataClass(mappedSuperclassClass, this), descriptor, m_project);
+        
+        return mappedSuperclass;
+    }
+    
+    /**
+     * INTERNAL:
+     */
+    @SuppressWarnings("deprecation")
+    protected XMLEntityMappings reloadXMLEntityMappingsObject(XMLEntityMappings xmlEntityMappings) {
+        // Create a temp file, write it out, read it back in and delete.
+        try {
             File file = new File("tempToDelete.xml");
-            XMLEntityMappingsWriter.write(entityMappingsOut, file.toURI());
-            XMLEntityMappings entityMappings = XMLEntityMappingsReader.read(file.toURL(), m_loader);
+            XMLEntityMappingsWriter.write(xmlEntityMappings, file.toURI());
+            XMLEntityMappings newXMLEntityMappings = XMLEntityMappingsReader.read(file.toURL(), m_loader);
             file.delete();
-            
-            // Initialize the newly loaded/built mapped superclass
-            MappedSuperclassAccessor mappedSuperclass = entityMappings.getMappedSuperclasses().get(0);
-            Class mappedSuperclassClass = getClassForName(mappedSuperclass.getClassName());
-            mappedSuperclass.initXMLClassAccessor(new MetadataClass(mappedSuperclassClass, this), descriptor, m_project);
-            
-            return mappedSuperclass;
+            return newXMLEntityMappings;
         } catch (Exception e) {
             throw new RuntimeException(e);
             // TODO: Throw an EclipseLink exception.

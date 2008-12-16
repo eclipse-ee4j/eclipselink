@@ -576,12 +576,23 @@ public class OneToOneMapping extends ObjectReferenceMapping implements Relationa
         }
 
         if (shouldInitializeSelectionCriteria()) {
-            initializeSelectionCriteria(session);
+            if (shouldForceInitializationOfSelectionCriteria()) {
+                setSelectionCriteria(buildSelectionCriteria());
+            } else {
+                initializeSelectionCriteria(session);
+            }
         } else {
             setShouldVerifyDelete(false);
         }
 
         setFields(collectFields());
+        
+        if (getReferenceDescriptor() != null && getReferenceDescriptor().hasTablePerClassPolicy()) {
+            // This will do nothing if we have already prepared for this 
+            // source mapping or if the source mapping does not require
+            // any special prepare logic.
+            getReferenceDescriptor().getTablePerClassPolicy().prepareChildrenSelectionQuery(this, session);              
+        }
     }
 
     /**

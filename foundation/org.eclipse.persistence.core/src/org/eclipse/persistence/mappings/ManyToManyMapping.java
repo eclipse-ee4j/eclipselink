@@ -479,7 +479,11 @@ public class ManyToManyMapping extends CollectionMapping implements RelationalMa
         }
         
         if (shouldInitializeSelectionCriteria()) {
-            initializeSelectionCriteria(session);
+            if (shouldForceInitializationOfSelectionCriteria()) {
+                initializeSelectionCriteria(session, null);
+            } else {
+                initializeSelectionCriteria(session, getSelectionCriteria());
+            }
         }
         if (!getSelectionQuery().hasSessionName()) {
             getSelectionQuery().setSessionName(session.getName());
@@ -490,6 +494,13 @@ public class ManyToManyMapping extends CollectionMapping implements RelationalMa
         initializeDeleteQuery(session);
         if (getHistoryPolicy() != null) {
             getHistoryPolicy().initialize(session);
+        }
+        
+        if (getReferenceDescriptor() != null && getReferenceDescriptor().hasTablePerClassPolicy()) {
+            // This will do nothing if we have already prepared for this 
+            // source mapping or if the source mapping does not require
+            // any special prepare logic.
+            getReferenceDescriptor().getTablePerClassPolicy().prepareChildrenSelectionQuery(this, session);              
         }
     }
 
@@ -617,13 +628,21 @@ public class ManyToManyMapping extends CollectionMapping implements RelationalMa
      * Selection criteria is created to read target records from the table.
      */
     protected void initializeSelectionCriteria(AbstractSession session) {
+        initializeSelectionCriteria(session, getSelectionCriteria());
+    }
+    
+    /**
+     * INTERNAL:
+     * Selection criteria is created to read target records from the table.
+     */
+    protected void initializeSelectionCriteria(AbstractSession session, Expression startCriteria) {
         DatabaseField relationKey;
         DatabaseField sourceKey;
         DatabaseField targetKey;
         Expression exp1;
         Expression exp2;
         Expression expression;
-        Expression criteria;
+        Expression criteria = startCriteria;
         Expression builder = new ExpressionBuilder();
         Enumeration relationKeyEnum;
         Enumeration sourceKeyEnum;
@@ -644,7 +663,7 @@ public class ManyToManyMapping extends CollectionMapping implements RelationalMa
             exp2 = linkTable.getField(relationKey);
             expression = exp1.equal(exp2);
 
-            if ((criteria = getSelectionCriteria()) == null) {
+            if (criteria == null) {
                 criteria = expression;
             } else {
                 criteria = expression.and(criteria);
@@ -664,7 +683,7 @@ public class ManyToManyMapping extends CollectionMapping implements RelationalMa
             exp2 = builder.getParameter(sourceKey);
             expression = exp1.equal(exp2);
 
-            if ((criteria = getSelectionCriteria()) == null) {
+            if (criteria == null) {
                 criteria = expression;
             } else {
                 criteria = expression.and(criteria);
@@ -673,7 +692,7 @@ public class ManyToManyMapping extends CollectionMapping implements RelationalMa
             setSelectionCriteria(criteria);
         }
     }
-
+    
     /**
      * INTERNAL:
      * All the source key field names are converted to DatabaseField and stored.

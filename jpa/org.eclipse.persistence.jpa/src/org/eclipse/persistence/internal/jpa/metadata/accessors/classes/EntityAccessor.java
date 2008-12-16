@@ -23,6 +23,8 @@
  *       - 241651: JPA 2.0 Access Type support
  *     10/01/2008-1.1 Guy Pelletier 
  *       - 249329: To remain JPA 1.0 compliant, any new JPA 2.0 annotations should be referenced by name
+ *     12/12/2008-1.1 Guy Pelletier 
+ *       - 249860: Implement table per class inheritance support.
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.accessors.classes;
 
@@ -102,6 +104,8 @@ public class EntityAccessor extends MappedSuperclassAccessor {
     private List<SecondaryTableMetadata> m_secondaryTables = new ArrayList<SecondaryTableMetadata>();
     private List<PrimaryKeyJoinColumnMetadata> m_primaryKeyJoinColumns = new ArrayList<PrimaryKeyJoinColumnMetadata>();
     
+    private ArrayList<MappedSuperclassAccessor> m_mappedSuperclasses;
+    
     private SequenceGeneratorMetadata m_sequenceGenerator;
  
     private String m_discriminatorValue;
@@ -154,54 +158,6 @@ public class EntityAccessor extends MappedSuperclassAccessor {
     
     /**
      * INTERNAL:
-     * Used for OX mapping.
-     */
-    public List<AssociationOverrideMetadata> getAssociationOverrides() {
-        return m_associationOverrides;
-    } 
-    
-    /**
-     * INTERNAL:
-     * Used for OX mapping.
-     */
-    public List<AttributeOverrideMetadata> getAttributeOverrides() {
-        return m_attributeOverrides;
-    } 
-    
-    /**
-     * INTERNAL:
-     * Used for OX mapping.
-     */
-    public DiscriminatorColumnMetadata getDiscriminatorColumn() {
-        return m_discriminatorColumn;
-    }
-    
-    /**
-     * INTERNAL:
-     * Used for OX mapping.
-     */
-    public String getDiscriminatorValue() {
-        return m_discriminatorValue;
-    }
- 
-    /**
-     * INTERNAL:
-     * Used for OX mapping.
-     */
-    public String getEntityName() {
-        return m_entityName;
-    }
-    
-    /**
-     * INTERNAL:
-     * Used for OX mapping.
-     */
-    public InheritanceMetadata getInheritance() {
-        return m_inheritance;
-    }
-    
-    /**
-     * INTERNAL:
      * Build a list of classes that are decorated with a MappedSuperclass
      * annotation or that are tagged as a mapped-superclass in an XML document.
      * 
@@ -216,11 +172,13 @@ public class EntityAccessor extends MappedSuperclassAccessor {
      * it is called both during pre-deploy and deploy where the class loader
      * dependencies change.
      */
-    protected List<MappedSuperclassAccessor> getMappedSuperclassesAndDiscoverInheritanceParents() {
+    protected void discoverMappedSuperclassesAndInheritanceParents() {
         Class parent = getJavaClass().getSuperclass();
         ClassAccessor lastParent = null;
         Type genericParent = getJavaClass().getGenericSuperclass();
-        ArrayList<MappedSuperclassAccessor> mappedSuperclasses = new ArrayList<MappedSuperclassAccessor>();
+     
+        // Re-initialize the mapped superclass list.
+        m_mappedSuperclasses = new ArrayList<MappedSuperclassAccessor>();
         
         // Null out the inheritance parent and root descriptor before we start
         // since they will be recalculated and used to determine when to stop
@@ -237,7 +195,6 @@ public class EntityAccessor extends MappedSuperclassAccessor {
                     // Set the immediate parent's descriptor and class on this
                     // entity's descriptor.
                     getDescriptor().setInheritanceParentDescriptor(parentAccessor.getDescriptor());
-                    getDescriptor().setParentClass(parent);
                 }
                 
                 lastParent = parentAccessor;
@@ -280,10 +237,10 @@ public class EntityAccessor extends MappedSuperclassAccessor {
                 if (accessor == null) {
                     MetadataClass metadataClass = new MetadataClass(parent);
                     if (metadataClass.isAnnotationPresent(MappedSuperclass.class)) {
-                        mappedSuperclasses.add(new MappedSuperclassAccessor(metadataClass.getAnnotation(MappedSuperclass.class), parent, getDescriptor(), getProject()));
+                        m_mappedSuperclasses.add(new MappedSuperclassAccessor(metadataClass.getAnnotation(MappedSuperclass.class), parent, getDescriptor()));
                     }
                 } else {
-                    mappedSuperclasses.add(initXMLMappedSuperclass(accessor, getDescriptor()));
+                    m_mappedSuperclasses.add(reloadMappedSuperclass(accessor, getDescriptor()));
                 }
             }
             
@@ -295,8 +252,93 @@ public class EntityAccessor extends MappedSuperclassAccessor {
         if (lastParent != null) {
             getDescriptor().setInheritanceRootDescriptor(lastParent.getDescriptor()); 
         }
+    }
+    
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+    public List<AssociationOverrideMetadata> getAssociationOverrides() {
+        return m_associationOverrides;
+    } 
+    
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+    public List<AttributeOverrideMetadata> getAttributeOverrides() {
+        return m_attributeOverrides;
+    } 
+    
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+    public DiscriminatorColumnMetadata getDiscriminatorColumn() {
+        return m_discriminatorColumn;
+    }
+    
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+    public String getDiscriminatorValue() {
+        return m_discriminatorValue;
+    }
+ 
+    /**
+     * INTERNAL:
+     * Process a discriminator value to set the class indicator on the root 
+     * descriptor of the inheritance hierarchy. 
+     * 
+     * If there is no discriminator value, the class indicator defaults to 
+     * the class name.
+     */
+    public String getDiscriminatorValueOrNull() {
+        if (! Modifier.isAbstract(getJavaClass().getModifiers())) {
+            // Add the indicator to the inheritance root class' descriptor. The
+            // default is the short class name.
+            if (m_discriminatorValue == null) {
+                Annotation discriminatorValue = getAnnotation(DiscriminatorValue.class);
+                
+                if (discriminatorValue == null) {
+                    return Helper.getShortClassName(getJavaClassName());
+                } else {
+                    return (String) MetadataHelper.invokeMethod("value", discriminatorValue); 
+                }
+            } else {
+                return m_discriminatorValue;
+            }  
+        }
         
-        return mappedSuperclasses;
+        return null;
+    }
+    
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+    public String getEntityName() {
+        return m_entityName;
+    }
+    
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+    public InheritanceMetadata getInheritance() {
+        return m_inheritance;
+    }
+    
+    /**
+     * INTERNAL:
+     * Return the mapped superclasses associated with this entity accessor.
+     * A call to discoverMappedSuperclassesAndInheritanceParents() should be
+     * made before calling this method. 
+     * @see process()
+     */
+    public ArrayList<MappedSuperclassAccessor> getMappedSuperclasses() {
+        return m_mappedSuperclasses;
     }
     
     /**
@@ -375,7 +417,7 @@ public class EntityAccessor extends MappedSuperclassAccessor {
      * INTERNAL: 
      * Return true if this class has an inheritance specifications.
      */
-    protected boolean hasInheritance() {
+    public boolean hasInheritance() {
         if (m_inheritance == null) {
             return isAnnotationPresent(Inheritance.class);
         } else {
@@ -447,10 +489,9 @@ public class EntityAccessor extends MappedSuperclassAccessor {
      */
     @Override
     public void process() {
-        // Build our list of mapped superclasses and pass them around to
-        // those methods that depend on them. Avoids rebuilding the list
-        // multiple times.
-        List<MappedSuperclassAccessor> mappedSuperclasses = getMappedSuperclassesAndDiscoverInheritanceParents();
+        // Discover our mapped superclasses and inheritance parents before
+        // doing any processing.
+        discoverMappedSuperclassesAndInheritanceParents();
         
         // If we are an inheritance subclass process out root first.
         if (getDescriptor().isInheritanceSubclass()) {
@@ -461,7 +502,7 @@ public class EntityAccessor extends MappedSuperclassAccessor {
             // to itself. The first entity in the hierarchy (going down) that
             // does not specify an explicit type will be used to determine
             // the default access type.
-            EntityAccessor parentAccessor = (EntityAccessor) getDescriptor().getInheritanceParentDescriptor().getClassAccessor();
+            ClassAccessor parentAccessor = getDescriptor().getInheritanceParentDescriptor().getClassAccessor();
             if (! parentAccessor.isProcessed()) {
                 parentAccessor.process();
                 parentAccessor.setIsProcessed();
@@ -471,26 +512,21 @@ public class EntityAccessor extends MappedSuperclassAccessor {
         // Process the Entity metadata first. Need to ensure we determine the 
         // access, metadata complete and exclude default mappings before we 
         // process further.
-        processEntity(mappedSuperclasses);
+        processEntity();
             
         // Process the Table and Inheritance metadata.
         processTableAndInheritance();
         
         // Process the common class level attributes that an entity or mapped 
         // superclass may define. This should be done before processing the
-        // mapped superclasses call since it will call this method also. We 
-        // want to be able to grab the metadata off the actual entity class 
-        // first because it needs to override any settings from the mapped 
-        // superclass and may need to log a warning.
+        // mapped superclasses call (within processAccessors) since it will 
+        // call this method also. We want to be able to grab the metadata off 
+        // the actual entity class first because it needs to override any 
+        // settings from the mapped superclass and may need to log a warning.
         processClassMetadata();
         
-        // Process the MappedSuperclass(es) metadata now. There may be
-        // several MappedSuperclasses for any given Entity.
-        for (MappedSuperclassAccessor mappedSuperclass : mappedSuperclasses) {
-            mappedSuperclass.process();
-        }
-        
-        // Process the accessors on this entity.
+        // Finally, process the accessors on this entity (and all those from
+        // super classes that apply to us).
         processAccessors();
     }
     
@@ -542,35 +578,36 @@ public class EntityAccessor extends MappedSuperclassAccessor {
     
     /**
      * INTERNAL:
-     * Process a discriminator value to set the class indicator on the root 
-     * descriptor of the inheritance hierarchy. 
-     * 
-     * If there is no discriminator value, the class indicator defaults to 
-     * the class name.
+     * Process the discriminator column metadata (defaulting is necessary),
+     * and return the EclipseLink database field.
      */
-    protected void processDiscriminatorValue() {
-        if (! Modifier.isAbstract(getJavaClass().getModifiers())) {
-            // Add the indicator to the inheritance root class' descriptor. The
-            // default is the short class name.
-            if (m_discriminatorValue == null) {
-                Annotation discriminatorValue = getAnnotation(DiscriminatorValue.class);
-                
-                if (discriminatorValue == null) {
-                    getDescriptor().addClassIndicator(getJavaClass(), Helper.getShortClassName(getJavaClassName()));
-                } else {
-                    getDescriptor().addClassIndicator(getJavaClass(),(String) MetadataHelper.invokeMethod("value", discriminatorValue)); 
-                }
-            } else {
-                getDescriptor().addClassIndicator(getJavaClass(), m_discriminatorValue);
-            }  
+    public DatabaseField processDiscriminatorColumn() {
+        if (m_discriminatorColumn == null) {
+            m_discriminatorColumn = new DiscriminatorColumnMetadata(getAnnotation(DiscriminatorColumn.class), getAccessibleObject()); 
+        } else {
+            // TODO: Log an ignore warning/override if there is an annotation present.
         }
+        
+        return m_discriminatorColumn.process(getDescriptor(), getAnnotatedElementName(), MetadataLogger.INHERITANCE_DISCRIMINATOR_COLUMN);
     }
     
     /**
      * INTERNAL:
      * Process the accessors for the given class.
+     * If we are within a TABLE_PER_CLASS inheritance hierarchy, our parent
+     * accessors will already have been added at this point. 
+     * @see InheritanceMetadata process()
      */
+    @Override
     protected void processAccessors() {
+        // Process the MappedSuperclass(es) metadata now. There may be
+        // several MappedSuperclasses for any given Entity.
+        for (MappedSuperclassAccessor mappedSuperclass : m_mappedSuperclasses) {
+            mappedSuperclass.process();
+        }
+        
+        // This will add our immediate accessors and then process them into
+        // EclipseLink mappings.
         super.processAccessors();
         
         // After processing the accessors for this entity we need to run 
@@ -604,7 +641,7 @@ public class EntityAccessor extends MappedSuperclassAccessor {
      *     entity-mappings setting.    
      * 6 - we have exhausted our search, default to FIELD.
      */
-    protected void processAccessType(List<MappedSuperclassAccessor> mappedSuperclasses) {
+    protected void processAccessType() {
         // Step 1 - Check for an explicit setting.
         String explicitAccessType = getAccess(); 
         
@@ -634,7 +671,7 @@ public class EntityAccessor extends MappedSuperclassAccessor {
         // explicitly define an access type. Let's check this entities mapped 
         // superclasses now.
         if (defaultAccessType == null) {
-            for (MappedSuperclassAccessor mappedSuperclass : mappedSuperclasses) {
+            for (MappedSuperclassAccessor mappedSuperclass : m_mappedSuperclasses) {
                 if (! mappedSuperclass.hasAccess()) {
                     if (havePersistenceAnnotationsDefined(MetadataHelper.getFields(mappedSuperclass.getJavaClass()))) {
                         defaultAccessType = MetadataConstants.FIELD;
@@ -683,17 +720,17 @@ public class EntityAccessor extends MappedSuperclassAccessor {
      * INTERNAL:
      * Process the entity metadata.
      */
-    protected void processEntity(List<MappedSuperclassAccessor> mappedSuperclasses) {
+    protected void processEntity() {
         // We must first process the correct access type before any other
         // processing.
-        processAccessType(mappedSuperclasses);
+        processAccessType();
         
         // Set a metadata complete flag if specified on the entity class or a 
         // mapped superclass.
         if (getMetadataComplete() != null) {
             getDescriptor().setIgnoreAnnotations(isMetadataComplete());
         } else {
-            for (MappedSuperclassAccessor mappedSuperclass : mappedSuperclasses) {
+            for (MappedSuperclassAccessor mappedSuperclass : m_mappedSuperclasses) {
                 if (mappedSuperclass.getMetadataComplete() != null) {
                     getDescriptor().setIgnoreAnnotations(mappedSuperclass.isMetadataComplete());
                     break; // stop searching.
@@ -706,7 +743,7 @@ public class EntityAccessor extends MappedSuperclassAccessor {
         if (getExcludeDefaultMappings() != null) {
             getDescriptor().setIgnoreDefaultMappings(excludeDefaultMappings());
         } else {
-            for (MappedSuperclassAccessor mappedSuperclass : mappedSuperclasses) {
+            for (MappedSuperclassAccessor mappedSuperclass : m_mappedSuperclasses) {
                 if (mappedSuperclass.getExcludeDefaultMappings() != null) {
                     getDescriptor().setIgnoreDefaultMappings(mappedSuperclass.excludeDefaultMappings());
                     break; // stop searching.
@@ -729,30 +766,20 @@ public class EntityAccessor extends MappedSuperclassAccessor {
     
     /**
      * INTERNAL:
-     * Process the Inheritance metadata for a parent of an inheritance 
+     * Process the Inheritance metadata for a root of an inheritance 
      * hierarchy. One may or may not be specified for the entity class that is 
      * the root of the entity class hierarchy, so we need to default in this 
      * case. This method should only be called on the root of the inheritance 
      * hierarchy.
      */
     protected void processInheritance() {
-        // Process the inheritance metadata.
+        // Process the inheritance metadata first. Create one if one does not 
+        // exist.
         if (m_inheritance == null) {
-            new InheritanceMetadata(getAnnotation(Inheritance.class), getAccessibleObject()).process(getDescriptor());
-        } else {
-            m_inheritance.process(getDescriptor());
+            m_inheritance = new InheritanceMetadata(getAnnotation(Inheritance.class), getAccessibleObject());
         }
-                    
-        // Process the discriminator column metadata.
-        if (m_discriminatorColumn == null) {
-            getDescriptor().setClassIndicatorField(new DiscriminatorColumnMetadata(getAnnotation(DiscriminatorColumn.class), getAccessibleObject()).process(getDescriptor(), getAnnotatedElementName(), MetadataLogger.INHERITANCE_DISCRIMINATOR_COLUMN));
-        } else {
-            // Future log a warning if we are ignoring an annotation.
-            getDescriptor().setClassIndicatorField(m_discriminatorColumn.process(getDescriptor(), getAnnotatedElementName(), MetadataLogger.INHERITANCE_DISCRIMINATOR_COLUMN));
-        }
-                    
-        // Process the discriminator value metadata.
-        processDiscriminatorValue();
+        
+        m_inheritance.process(getDescriptor());
     }
     
     /**
@@ -761,41 +788,21 @@ public class EntityAccessor extends MappedSuperclassAccessor {
      * Process the inheritance metadata for an inheritance subclass. The
      * parent descriptor must be provided.
      */
-    protected void processInheritanceSubclass(MetadataDescriptor parentDescriptor) {
-        // Inheritance.stategy() = SINGLE_TABLE, set the flag. Unless this
-        // descriptor has its own inheritance.
-        if (parentDescriptor.usesSingleTableInheritanceStrategy() && ! hasInheritance()) {
-            getDescriptor().setSingleTableInheritanceStrategy();
-        } else {
-            // Inheritance.stategy() = JOINED, look for primary key join 
-            // column(s) and add multiple table key fields.
-            PrimaryKeyJoinColumnsMetadata pkJoinColumns;
+    public void processInheritancePrimaryKeyJoinColumns() {
+        PrimaryKeyJoinColumnsMetadata pkJoinColumns;
+        
+        if (m_primaryKeyJoinColumns.isEmpty()) {
+            // Look for annotations.
+            Annotation primaryKeyJoinColumn = getAnnotation(PrimaryKeyJoinColumn.class);
+            Annotation primaryKeyJoinColumns = getAnnotation(PrimaryKeyJoinColumns.class);
                 
-            if (m_primaryKeyJoinColumns.isEmpty()) {
-                // Look for annotations.
-                Annotation primaryKeyJoinColumn = getAnnotation(PrimaryKeyJoinColumn.class);
-                Annotation primaryKeyJoinColumns = getAnnotation(PrimaryKeyJoinColumns.class);
-                    
-                pkJoinColumns = new PrimaryKeyJoinColumnsMetadata(primaryKeyJoinColumns, primaryKeyJoinColumn, getAccessibleObject());
-            } else {
-                // Used what is specified in XML.
-                pkJoinColumns = new PrimaryKeyJoinColumnsMetadata(m_primaryKeyJoinColumns);
-            }
-            
-            addMultipleTableKeyFields(pkJoinColumns, getDescriptor().getPrimaryKeyTable(), getDescriptor().getPrimaryTable(), MetadataLogger.INHERITANCE_PK_COLUMN, MetadataLogger.INHERITANCE_FK_COLUMN);
-        }    
-            
-        // Process the discriminator value, unless this descriptor has its own 
-        // inheritance.
-        if (! hasInheritance()) {
-            processDiscriminatorValue();
+            pkJoinColumns = new PrimaryKeyJoinColumnsMetadata(primaryKeyJoinColumns, primaryKeyJoinColumn, getAccessibleObject());
+        } else {
+            // Used what is specified in XML.
+            pkJoinColumns = new PrimaryKeyJoinColumnsMetadata(m_primaryKeyJoinColumns);
         }
-            
-        // If the root descriptor has an id class, we need to set the same id 
-        // class on our descriptor.
-        if (parentDescriptor.hasCompositePrimaryKey()) {
-            getDescriptor().setPKClass(parentDescriptor.getPKClassName());
-        }
+        
+        addMultipleTableKeyFields(pkJoinColumns, getDescriptor().getPrimaryKeyTable(), getDescriptor().getPrimaryTable(), MetadataLogger.INHERITANCE_PK_COLUMN, MetadataLogger.INHERITANCE_FK_COLUMN);
     }
     
     /**
@@ -819,12 +826,13 @@ public class EntityAccessor extends MappedSuperclassAccessor {
         // class and mapped superclasses (taking metadata-complete into 
         // consideration). Go through the mapped superclasses first, top->down 
         // only if the exclude superclass listeners flag is not set.
-        List<MappedSuperclassAccessor> mappedSuperclasses = getMappedSuperclassesAndDiscoverInheritanceParents();
+        discoverMappedSuperclassesAndInheritanceParents();
+        
         if (! getDescriptor().excludeSuperclassListeners()) {
-            int mappedSuperclassesSize = mappedSuperclasses.size();
+            int mappedSuperclassesSize = m_mappedSuperclasses.size();
             
             for (int i = mappedSuperclassesSize - 1; i >= 0; i--) {
-                mappedSuperclasses.get(i).processEntityListeners(loader);
+                m_mappedSuperclasses.get(i).processEntityListeners(loader);
             }
         }
         
@@ -832,7 +840,7 @@ public class EntityAccessor extends MappedSuperclassAccessor {
         
         // Step 3 - process the entity class for lifecycle callback methods. Go
         // through the mapped superclasses as well.
-        new EntityClassListenerMetadata(this).process(mappedSuperclasses);
+        new EntityClassListenerMetadata(this).process(m_mappedSuperclasses);
     }
     
     /**
@@ -1000,44 +1008,47 @@ public class EntityAccessor extends MappedSuperclassAccessor {
     
     /**
      * INTERNAL:
-     * Process any inheritance specifics. This method will fast track any 
-     * parent inheritance processing, be it specified or defaulted.
+     * Process any inheritance specifics. NOTE: Inheritance hierarchies are
+     * always processed from the top down so it is safe to assume that all
+     * our parents have already been processed fully. The only exception being
+     * when a root accessor doesn't know they are a root (defaulting case). In
+     * this case we'll tell the root accessor to process the inheritance 
+     * metadata befor continuing with our own processing.
      */
     protected void processTableAndInheritance() {
         // If we are an inheritance subclass, ensure our root is processed 
         // first since it has information its subclasses depend on.
         if (getDescriptor().isInheritanceSubclass()) {
-            MetadataDescriptor parentDescriptor = getDescriptor().getInheritanceRootDescriptor();
-            EntityAccessor parentAccessor = (EntityAccessor) parentDescriptor.getClassAccessor();
+            MetadataDescriptor rootDescriptor = getDescriptor().getInheritanceRootDescriptor();
+            EntityAccessor rootAccessor = (EntityAccessor) rootDescriptor.getClassAccessor();
             
             // An entity who didn't know they were the root of an inheritance 
             // hierarchy (that is, does not define inheritance metadata) must 
             // process and default the inheritance metadata.
-            if (! parentAccessor.hasInheritance()) {    
-                parentAccessor.processInheritance();
+            if (! rootAccessor.hasInheritance()) {    
+                rootAccessor.processInheritance();
             }
-                
+            
+            // Process the table metadata for this descriptor if either there
+            // is an inheritance specification (we're a new root) or if we are
+            // part of a joined or table per class inheritance strategy.
+            if (hasInheritance() || ! rootDescriptor.usesSingleTableInheritanceStrategy()) {
+                processTable();
+            }
+            
             // If this entity has inheritance metadata as well, then the 
             // inheritance strategy is mixed and we need to process the 
             // inheritance metadata to ensure this entity's subclasses process 
             // correctly.
             if (hasInheritance()) {
-                // Process the table metadata if there is some, otherwise default.
-                processTable();
-                
                 // Process the inheritance metadata.
                 processInheritance();    
-            } else {
-                // Process the table metadata for this descriptor (for a 
-                // joined strategy), if there is some. Must be called
-                // before processing the inheritance subclass metadata.
-                if (parentDescriptor.usesJoinedInheritanceStrategy()) {
-                    processTable();
-                }
+            } else {                
+                // Process the inheritance details using the inheritance 
+                // metadata from our parent. This will put the right 
+                // inheritance policy on our descriptor.
+                rootAccessor.getInheritance().process(getDescriptor());
             }
-            
-            // Process the inheritance subclass metadata.
-            processInheritanceSubclass(parentDescriptor);
         } else {
             // Process the table metadata if there is some, otherwise default.
             processTable();

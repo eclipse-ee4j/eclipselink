@@ -183,7 +183,6 @@ public class ValidationException extends EclipseLinkException {
     public static final int INVALID_COMPOSITE_PK_ATTRIBUTE = 7149;
     public static final int INVALID_COMPOSITE_PK_SPECIFICATION = 7150;
     public static final int INVALID_TYPE_FOR_ENUMERATED_ATTRIBUTE = 7151;
-    public static final int TABLE_PER_CLASS_INHERITANCE_NOT_SUPPORTED = 7152;
     public static final int MAPPING_ANNOTATIONS_APPLIED_TO_TRANSIENT_ATTRIBUTE = 7153;
     public static final int NO_MAPPED_BY_ATTRIBUTE_FOUND = 7154;
     public static final int INVALID_TYPE_FOR_SERIALIZED_ATTRIBUTE = 7155;
@@ -1520,14 +1519,6 @@ public class ValidationException extends EclipseLinkException {
 
         ValidationException validationException = new ValidationException(ExceptionMessageGenerator.buildMessage(ValidationException.class, SUB_SESSION_NOT_DEFINED_FOR_BROKER, args));
         validationException.setErrorCode(SUB_SESSION_NOT_DEFINED_FOR_BROKER);
-        return validationException;
-    }
-
-    public static ValidationException tablePerClassInheritanceNotSupported(Object entityClass) {
-        Object[] args = { entityClass };
-
-        ValidationException validationException = new ValidationException(ExceptionMessageGenerator.buildMessage(ValidationException.class, TABLE_PER_CLASS_INHERITANCE_NOT_SUPPORTED, args));
-        validationException.setErrorCode(TABLE_PER_CLASS_INHERITANCE_NOT_SUPPORTED);
         return validationException;
     }
 

@@ -17,6 +17,8 @@
  *       - 241651: JPA 2.0 Access Type support
  *     10/01/2008-1.1 Guy Pelletier 
  *       - 249329: To remain JPA 1.0 compliant, any new JPA 2.0 annotations should be referenced by name
+ *     12/12/2008-1.1 Guy Pelletier 
+ *       - 249860: Implement table per class inheritance support.
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.accessors;
 
@@ -96,10 +98,7 @@ public abstract class MetadataAccessor extends ORMetadata {
         m_descriptor = descriptor;
         
         // Look for an explicit access type specification.
-        Annotation access = getAnnotation(MetadataConstants.ACCESS_ANNOTATION);
-        if (access != null) {
-            setAccess(((Enum) MetadataHelper.invokeMethod("value", access)).name());
-        }
+        initAccess();
     }
     
     /**
@@ -356,6 +355,20 @@ public abstract class MetadataAccessor extends ORMetadata {
         return hasAccess() && m_access.equals(MetadataConstants.PROPERTY);
     }
     
+    /**
+     * INTERNAL: 
+     * Called from annotation and xml initialization.
+     */
+    protected void initAccess() {
+        // Look for an annotation as long as an access type hasn't already been 
+        // loaded from XML (meaning m_access will not be null at this point)
+        if (m_access == null) {
+            Annotation access = getAnnotation(MetadataConstants.ACCESS_ANNOTATION);
+            if (access != null) {
+                setAccess(((Enum) MetadataHelper.invokeMethod("value", access)).name());
+            }
+        }
+    }
     
     /**
      * INTERNAL: 
@@ -380,6 +393,9 @@ public abstract class MetadataAccessor extends ORMetadata {
         initXMLObjects(m_structConverters, accessibleObject);
         initXMLObjects(m_typeConverters, accessibleObject);
         initXMLObjects(m_properties, accessibleObject);
+
+        // Make sure our access type is set.
+        initAccess();
     }
     
     /** 

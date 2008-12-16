@@ -13,6 +13,8 @@
  *       - 218084: Implement metadata merging functionality between mapping files
  *     09/23/2008-1.1 Guy Pelletier 
  *       - 241651: JPA 2.0 Access Type support
+ *     12/12/2008-1.1 Guy Pelletier 
+ *       - 249860: Implement table per class inheritance support.       
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata;
 
@@ -268,7 +270,7 @@ public class MetadataLogger {
      * Logging utility method.
      */
     public void logConfigMessage(String ctx, MetadataAccessor accessor, Object param) {
-        log(SessionLog.CONFIG, ctx, new Object[] { accessor.getAnnotatedElement(), param });
+        log(SessionLog.FINEST, ctx, new Object[] { accessor.getAnnotatedElement(), param });
     }
     
     /**
@@ -276,7 +278,7 @@ public class MetadataLogger {
      * Logging utility method.
      */
     public void logConfigMessage(String ctx, MetadataAccessor accessor, Object param1, Object param2) {
-        log(SessionLog.CONFIG, ctx, new Object[] { accessor.getJavaClass(), accessor.getAnnotatedElement(), param1, param2 });
+        log(SessionLog.FINEST, ctx, new Object[] { accessor.getJavaClass(), accessor.getAnnotatedElement(), param1, param2 });
     }
     
     /**
@@ -284,7 +286,7 @@ public class MetadataLogger {
      * Logging utility method.
      */
     public void logConfigMessage(String ctx, MetadataDescriptor descriptor, Object param) {
-        log(SessionLog.CONFIG, ctx, new Object[] { descriptor.getJavaClass(), param });
+        log(SessionLog.FINEST, ctx, new Object[] { descriptor.getJavaClass(), param });
     }
     
     /**
@@ -292,7 +294,7 @@ public class MetadataLogger {
      * Logging utility method.
      */
     public void logConfigMessage(String ctx, Object object) {
-        log(SessionLog.CONFIG, ctx, new Object[] { object });    
+        log(SessionLog.FINEST, ctx, new Object[] { object });    
     }
     
     /**
@@ -300,7 +302,7 @@ public class MetadataLogger {
      * Logging utility method.
      */
     public void logConfigMessage(String ctx, Object param1, Object param2) {
-        log(SessionLog.CONFIG, ctx, new Object[] { param1, param2 });    
+        log(SessionLog.FINEST, ctx, new Object[] { param1, param2 });    
     }
     
     /**

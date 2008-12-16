@@ -90,6 +90,9 @@ public abstract class ForeignReferenceMapping extends DatabaseMapping {
     /** Specify no join fetch, this is the default. */
     public static final int NONE = 0;
 
+    /** This is a way (after cloning) to force the initialization of the selection criteria */
+    protected boolean forceInitializationOfSelectionCriteria;
+    
     protected ForeignReferenceMapping() {
         this.isPrivateOwned = false;
         this.hasCustomSelectionQuery = false;
@@ -100,6 +103,7 @@ public abstract class ForeignReferenceMapping extends DatabaseMapping {
         this.cascadeRefresh = false;
         this.cascadeRemove = false;
         this.requiresTransientWeavedFields = true;
+        this.forceInitializationOfSelectionCriteria = false;
     }
 
     /**
@@ -798,6 +802,7 @@ public abstract class ForeignReferenceMapping extends DatabaseMapping {
         }
         getSelectionQuery().setName(getAttributeName());
         getSelectionQuery().setDescriptor(getReferenceDescriptor());
+        getSelectionQuery().setSourceMapping(this);
     }
 
     /**
@@ -986,6 +991,14 @@ public abstract class ForeignReferenceMapping extends DatabaseMapping {
     }
 
     /**
+     * INTERNAL:
+     * A way of forcing the selection criteria to be rebuilt.
+     */
+    public void setForceInitializationOfSelectionCriteria(boolean bool) {
+        forceInitializationOfSelectionCriteria = bool;
+    }
+    
+    /**
      * ADVANCED:
      * Set the indirection policy.
      */
@@ -1144,7 +1157,18 @@ public abstract class ForeignReferenceMapping extends DatabaseMapping {
         }
     }
 
+    /**
+     * INTERNAL:
+     */
+    protected boolean shouldForceInitializationOfSelectionCriteria() {
+        return forceInitializationOfSelectionCriteria;
+    }
+    
     protected boolean shouldInitializeSelectionCriteria() {
+        if (shouldForceInitializationOfSelectionCriteria()) {
+            return true;
+        }
+        
         if (hasCustomSelectionQuery()) {
             return false;
         }

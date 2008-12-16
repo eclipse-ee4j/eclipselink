@@ -11,7 +11,9 @@
  *     Guy Pelletier (Oracle), March 6, 2008 
  *        - New file introduced for bug 221658.
  *     05/16/2008-1.0M8 Guy Pelletier 
- *       - 218084: Implement metadata merging functionality between mapping files  
+ *       - 218084: Implement metadata merging functionality between mapping files
+ *     12/12/2008-1.1 Guy Pelletier 
+ *       - 249860: Implement table per class inheritance support.  
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.accessors.classes;
 
@@ -46,7 +48,7 @@ public class MetadataHelper {
      * INTERNAL:
      * Get the declared methods from a class using the doPriveleged security
      * access. This call returns all methods (private, protected, package and
-     * public) on the give class ONLY. It does not traverse the superclasses.
+     * public) on the given class ONLY. It does not traverse the superclasses.
      */
     static Method[] getDeclaredMethods(Class cls) {
         if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){

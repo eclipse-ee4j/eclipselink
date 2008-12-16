@@ -23,6 +23,8 @@
  *       - 241651: JPA 2.0 Access Type support
  *     10/01/2008-1.1 Guy Pelletier 
  *       - 249329: To remain JPA 1.0 compliant, any new JPA 2.0 annotations should be referenced by name
+ *     12/12/2008-1.1 Guy Pelletier 
+ *       - 249860: Implement table per class inheritance support.
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata;
 
@@ -46,6 +48,7 @@ import org.eclipse.persistence.internal.descriptors.OptimisticLockingPolicy;
 import org.eclipse.persistence.internal.jpa.CMP3Policy;
 
 import org.eclipse.persistence.internal.jpa.metadata.accessors.classes.ClassAccessor;
+import org.eclipse.persistence.internal.jpa.metadata.accessors.classes.EntityAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.mappings.BasicCollectionAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.mappings.CollectionAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.mappings.ManyToManyAccessor;
@@ -212,17 +215,6 @@ public class MetadataDescriptor {
         m_basicCollectionAccessors.add((BasicCollectionAccessor) accessor);
     }
     
-    /**
-     * INTERNAL:
-     */
-    public void addClassIndicator(Class entityClass, String value) {
-        if (isInheritanceSubclass()) {
-            getInheritanceRootDescriptor().addClassIndicator(entityClass, value);   
-        } else {
-            m_descriptor.getInheritancePolicy().addClassNameIndicator(entityClass.getName(), value);
-        }
-    }
-    
     /** 
      * INTERNAL:
      */
@@ -381,8 +373,10 @@ public class MetadataDescriptor {
             accessor = m_accessors.get(MetadataMethod.getAttributeNameFromMethodName(fieldOrPropertyName));
            
             // If still no accessor and we are an inheritance subclass, check 
-            // our parent descriptor.
-            if (accessor == null && isInheritanceSubclass()) {
+            // our parent descriptor. Unless we are within a table per class 
+            // strategy in which case, if the mapping doesn't exist within our
+            // accessor list, we don't want to deal with it.
+            if (accessor == null && isInheritanceSubclass() && ! usesTablePerClassInheritanceStrategy()) {
                 accessor = getInheritanceParentDescriptor().getAccessorFor(fieldOrPropertyName);
             }
         }
@@ -484,6 +478,16 @@ public class MetadataDescriptor {
      */
     public String getEmbeddedIdAttributeName() {
         return m_embeddedIdAttributeName;
+    }
+    
+    /**
+     * INTERNAL:
+     * This method assumes that by calling this method you are certain that
+     * the related class accessor to this descriptor is an EntityAccessor.
+     * You should not call this method otherwise, @see getClassAccessor()
+     */
+    public EntityAccessor getEntityAccessor() {
+        return (EntityAccessor) m_classAccessor;
     }
     
     /**
@@ -882,13 +886,6 @@ public class MetadataDescriptor {
     /**
      * INTERNAL:
      */
-    public boolean hasInheritance() {
-        return m_descriptor.hasInheritance();
-    }
-    
-    /**
-     * INTERNAL:
-     */
     public boolean hasBiDirectionalManyToManyAccessorFor(String className, String attributeName) {
         if (m_biDirectionalManyToManyAccessors.containsKey(className)) {
             return m_biDirectionalManyToManyAccessors.get(className).containsKey(attributeName);
@@ -1130,13 +1127,6 @@ public class MetadataDescriptor {
     /**
      * INTERNAL:
      */
-    public void setClassIndicatorField(DatabaseField field) {
-        m_descriptor.getInheritancePolicy().setClassIndicatorField(field);    
-    }
-    
-    /**
-     * INTERNAL:
-     */
     public void setDefaultAccess(String defaultAccess) {
         m_defaultAccess = defaultAccess;
     }
@@ -1266,7 +1256,7 @@ public class MetadataDescriptor {
     public void setIgnoreDefaultMappings(boolean ignoreDefaultMappings) {
         m_ignoreDefaultMappings = ignoreDefaultMappings;
     }
-
+    
     /**
      * INTERNAL:
      * Set the immediate parent's descriptor of the inheritance hierarchy.
@@ -1324,14 +1314,6 @@ public class MetadataDescriptor {
     
     /**
      * INTERNAL:
-     * Set the inheritance parent class for this class.
-     */
-    public void setParentClass(Class parent) {
-        m_descriptor.getInheritancePolicy().setParentClassName(parent.getName());
-    }
-    
-    /**
-     * INTERNAL:
      */
     public void setPKClass(Class pkClass) {
         setPKClass(pkClass.getName());
@@ -1378,15 +1360,6 @@ public class MetadataDescriptor {
     public void setSequenceNumberName(String name) {
         m_descriptor.setSequenceNumberName(name);
     }
-    
-    /**
-     * INTERNAL:
-     * Sets the strategy on the descriptor's inheritance policy to SINGLE_TABLE.  
-     * The default is JOINED.
-     */
-    public void setSingleTableInheritanceStrategy() {
-        m_descriptor.getInheritancePolicy().setSingleTableStrategy();
-    }
  
     /**
      * INTERNAL:
@@ -1414,15 +1387,6 @@ public class MetadataDescriptor {
     
     /**
      * INTERNAL:
-     * Indicates if the strategy on the descriptor's inheritance policy is 
-     * JOINED.
-     */
-    public boolean usesJoinedInheritanceStrategy() {
-        return m_descriptor.getInheritancePolicy().isJoinedStrategy();
-    }
-    
-    /**
-     * INTERNAL:
      */
     public boolean usesOptimisticLocking() {
         return m_descriptor.usesOptimisticLocking();
@@ -1431,10 +1395,20 @@ public class MetadataDescriptor {
     /**
      * INTERNAL:
      * Indicates if the strategy on the descriptor's inheritance policy is 
-     * SINGLE_TABLE.
+     * SINGLE_TABLE. This method must only be called on those descriptors 
+     * holding an EntityAccessor. NOTE: Inheritance is currently not supported 
+     * on embeddables.
      */
     public boolean usesSingleTableInheritanceStrategy() {
-        return ! usesJoinedInheritanceStrategy();
+        return ((EntityAccessor) m_classAccessor).getInheritance().usesSingleTableStrategy();
+    }
+    
+    /**
+     * INTERNAL:
+     * Return true if this descriptor uses a table per class inheritance policy.
+     */
+    public boolean usesTablePerClassInheritanceStrategy() {
+        return m_descriptor.hasTablePerClassPolicy();
     }
     
     /**

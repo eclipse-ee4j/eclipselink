@@ -2329,6 +2329,19 @@ public class ClassDescriptor implements Cloneable, Serializable {
     }
 
     /**
+     * PUBLIC:
+     * Returns the TablePerClassPolicy.
+     * The table per class policy allows JPA users to configure the 
+     * TABLE_PER_CLASS inheritance strategy. Calling this on a descriptor that 
+     * does not use table per class will cause problems, 
+     * #hasTablePerClassPolicy() must always first be called.
+     * @see setTablePerClassPolicy()
+     */
+    public TablePerClassPolicy getTablePerClassPolicy() {
+        return (TablePerClassPolicy) interfacePolicy;
+    }
+    
+    /**
      * INTERNAL:
      * Return all the tables.
      */
@@ -2409,7 +2422,7 @@ public class ClassDescriptor implements Cloneable, Serializable {
     public boolean hasInterfacePolicy() {
         return (interfacePolicy != null);
     }
-
+    
     /**
      * INTERNAL:
      * Check if descriptor has multiple tables
@@ -4307,6 +4320,17 @@ public class ClassDescriptor implements Cloneable, Serializable {
     }
 
     /**
+     * INTERNAL:
+     * Sets the table per class policy.
+     */
+    public void setTablePerClassPolicy(TablePerClassPolicy tablePerClassPolicy) {
+        interfacePolicy = tablePerClassPolicy;
+        if (interfacePolicy != null) {
+            interfacePolicy.setDescriptor(this);
+        }
+    }
+    
+    /**
      * PUBLIC: Set the table Qualifier for this descriptor.  This table creator will be used for
      * all tables in this descriptor
      */
@@ -4432,6 +4456,14 @@ public class ClassDescriptor implements Cloneable, Serializable {
         return hasSimplePrimaryKey;
     }
 
+    /**
+     * INTERNAL:
+     * Return if this descriptor is involved in a table per class inheritance.
+     */
+    public boolean hasTablePerClassPolicy() {
+        return hasInterfacePolicy() && interfacePolicy.isTablePerClassPolicy();
+    }
+    
     /**
      * INTERNAL:
      * PERF: Set if the primary key is simple (direct-mapped) to allow fast extraction.
