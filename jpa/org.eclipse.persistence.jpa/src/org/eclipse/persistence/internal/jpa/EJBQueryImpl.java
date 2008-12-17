@@ -16,6 +16,7 @@ package org.eclipse.persistence.internal.jpa;
 import java.util.*;
 
 import javax.persistence.LockModeType;
+import javax.persistence.PersistenceException;
 import javax.persistence.LockTimeoutException;
 import javax.persistence.PessimisticLockException;
 import javax.persistence.Query;
@@ -27,6 +28,7 @@ import org.eclipse.persistence.queries.*;
 import org.eclipse.persistence.sessions.DatabaseRecord;
 import org.eclipse.persistence.sessions.Session;
 import org.eclipse.persistence.jpa.JpaEntityManager;
+import org.eclipse.persistence.exceptions.DatabaseException;
 import org.eclipse.persistence.exceptions.QueryException;
 import org.eclipse.persistence.internal.helper.*;
 import org.eclipse.persistence.internal.jpa.EntityManagerImpl;
@@ -179,7 +181,11 @@ public class EJBQueryImpl implements org.eclipse.persistence.jpa.JpaQuery {
             // Apply the lock mode.
             if (lockMode != null) {
                 if (databaseQuery.isObjectLevelReadQuery()) {
-                    ((ObjectLevelReadQuery)databaseQuery).setLockModeType((LockModeType)lockMode, (AbstractSession)session);
+                    // If setting the lock mode returns true, we were unable to
+                    // set the lock mode, throw an exception.
+                    if (((ObjectLevelReadQuery)databaseQuery).setLockModeType((LockModeType)lockMode, (AbstractSession)session)) {
+                        throw new PersistenceException(ExceptionLocalization.buildMessage("ejb30-wrong-lock_called_without_version_locking-index", null));
+                    }
                 } else {
                     throw new IllegalArgumentException(ExceptionLocalization.buildMessage("invalid_lock_query", (Object[])null));
                 }
@@ -359,7 +365,11 @@ public class EJBQueryImpl implements org.eclipse.persistence.jpa.JpaQuery {
             cloneSharedQuery();
             
             // Set the lock mode (the session is passed in to do some validation checks)
-            ((ObjectLevelReadQuery) getDatabaseQuery()).setLockModeType(lockMode, (AbstractSession) getActiveSession());
+            // If the return value from the set returns true, it indicates that
+            // we were unable to set the lock mode.
+            if (((ObjectLevelReadQuery) getDatabaseQuery()).setLockModeType(lockMode, (AbstractSession) getActiveSession())) {
+                throw new PersistenceException(ExceptionLocalization.buildMessage("ejb30-wrong-lock_called_without_version_locking-index", null));
+            }
         }
         
         Session session = getActiveSession();
@@ -380,10 +390,23 @@ public class EJBQueryImpl implements org.eclipse.persistence.jpa.JpaQuery {
             
             // Execute the query and return the result.
             return session.executeQuery(getDatabaseQuery(), parameterValues);
-        } catch (LockTimeoutException e) {
-            throw e;
-        } catch (PessimisticLockException e) {
-            throw e;
+        } catch (DatabaseException e) {
+            // If we catch a database exception as a result of executing a
+            // pessimistic locking query we need to ask the platform which
+            // JPA 2.0 locking exception we should throw. It will be either
+            // be a PessimisticLockException or a LockTimeoutException (if
+            // the query was executed using a wait timeout value)
+            if (lockMode != null && lockMode.name().contains(ObjectLevelReadQuery.PESSIMISTIC)) {
+                // ask the platform if it is a lock timeout
+                if (session.getPlatform().isLockTimeoutException(e)) {
+                    throw new LockTimeoutException(e);
+                } else {
+                    throw new PessimisticLockException(e);
+                }
+            } else {
+                setRollbackOnly();
+                throw e;
+            }
         } catch (RuntimeException e) {
             setRollbackOnly();
             throw e;

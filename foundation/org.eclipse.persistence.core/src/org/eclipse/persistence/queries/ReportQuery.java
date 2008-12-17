@@ -15,7 +15,6 @@ package org.eclipse.persistence.queries;
 import java.util.*;
 
 import javax.persistence.LockModeType;
-//import javax.persistence.PersistenceException;
 
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.descriptors.VersionLockingPolicy;
@@ -25,7 +24,6 @@ import org.eclipse.persistence.internal.expressions.*;
 import org.eclipse.persistence.internal.queries.*;
 import org.eclipse.persistence.exceptions.*;
 import org.eclipse.persistence.internal.helper.*;
-import org.eclipse.persistence.internal.localization.ExceptionLocalization;
 import org.eclipse.persistence.internal.sessions.remote.*;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
@@ -953,31 +951,35 @@ public class ReportQuery extends ReadAllQuery {
      *  - PESSIMISTIC_FORCE_INCREMENT
      *  - NONE
      * Setting a null type will do nothing.
+     * @return returns a failure flag indicating that we were UNABLE to set the 
+     * lock mode because of validation. Callers to this method should check the 
+     * return value and throw the necessary exception.
      */
     @Override
-    public void setLockModeType(LockModeType lockModeType, AbstractSession session) {
+    public boolean setLockModeType(LockModeType lockModeType, AbstractSession session) {
         if (lockModeType != null) {
-            super.setLockModeType(lockModeType, session);
-        
-            // When a lock mode is used, we must validate that our report items 
-            // all have a version locking policy if the lock is set to anything 
-            // but PESSIMISTIC and NONE. Validate only those report items that
-            // are expression builders (ignoring the others)
-            if (! lockModeType.equals(PESSIMISTIC) && ! lockModeType.equals(NONE)) {
-                for (ReportItem reportItem : (Vector<ReportItem>) getItems()) {
-                    if (reportItem.getAttributeExpression() != null && reportItem.getAttributeExpression().isExpressionBuilder()) {
-                        OptimisticLockingPolicy lockingPolicy = reportItem.getDescriptor().getOptimisticLockingPolicy();
-                    
-                        if (lockingPolicy == null || !(lockingPolicy instanceof VersionLockingPolicy)) {
-                            //throw new PersistenceException(ExceptionLocalization.buildMessage("ejb30-wrong-lock_called_without_version_locking-index", null));
-                            
-                            // Temporary removal of JPA 2.0 dependency.
-                            throw new RuntimeException(ExceptionLocalization.buildMessage("ejb30-wrong-lock_called_without_version_locking-index", null));
+            if (super.setLockModeType(lockModeType, session)) {
+                return true;
+            } else {
+                // When a lock mode is used, we must validate that our report items 
+                // all have a version locking policy if the lock is set to anything 
+                // but PESSIMISTIC and NONE. Validate only those report items that
+                // are expression builders (ignoring the others)
+                if (! lockModeType.equals(PESSIMISTIC) && ! lockModeType.equals(NONE)) {
+                    for (ReportItem reportItem : (Vector<ReportItem>) getItems()) {
+                        if (reportItem.getAttributeExpression() != null && reportItem.getAttributeExpression().isExpressionBuilder()) {
+                            OptimisticLockingPolicy lockingPolicy = reportItem.getDescriptor().getOptimisticLockingPolicy();
+                        
+                            if (lockingPolicy == null || !(lockingPolicy instanceof VersionLockingPolicy)) {
+                                return true;
+                            }
                         }
                     }
                 }
             }
         }
+        
+        return false;
     }
     
     /**

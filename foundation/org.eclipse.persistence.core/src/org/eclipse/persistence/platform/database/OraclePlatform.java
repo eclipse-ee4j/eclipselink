@@ -24,9 +24,6 @@ import java.util.Calendar;
 import java.util.Hashtable;
 import java.util.Vector;
 
-// Temporary dependency removal.
-//import javax.persistence.LockTimeoutException;
-
 import org.eclipse.persistence.exceptions.DatabaseException;
 import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.expressions.ExpressionOperator;
@@ -310,27 +307,6 @@ public class OraclePlatform extends org.eclipse.persistence.platform.database.Da
             }
         }
         return session.executeSelectingCall(new SQLCall(query));
-    }
-
-    /**
-     * Return a JPA 2.0 pessimistic locking exception.
-     * Oracle supports the WAIT clause. If there is a way we can determine the
-     * exception was indeed caused by a WAIT expiry, it should be figured out
-     * here. For the time being, if a query was executed with a timeout value
-     * greater than 0 we assume we need to throw a LockTimeoutException. A
-     * LockTimeoutException will not cause a rollback to occur.
-     */
-    @Override
-    public RuntimeException getLockException(DatabaseException e) {
-        return e;
-        
-        // Temporary dependency removal.
-        
-        //if (e.getInternalException() instanceof java.sql.SQLException && ((java.sql.SQLException) e.getInternalException()).getErrorCode() == 30006) {
-          //  return new LockTimeoutException(e);
-        //} else {
-            //return super.getLockException(e);
-        //}
     }
     
     /**
@@ -775,6 +751,15 @@ public class OraclePlatform extends org.eclipse.persistence.platform.database.Da
         return true;
     }
 
+    /**
+     * Return true if the given exception occurred as a result of a lock
+     * time out exception (WAIT clause).
+     */
+    @Override
+    public boolean isLockTimeoutException(DatabaseException e) {
+        return (e.getInternalException() instanceof java.sql.SQLException && ((java.sql.SQLException) e.getInternalException()).getErrorCode() == 30006);
+    }
+    
     /**
      * INTERNAL:
      * A call to this method will perform a platform based check on the connection and exception

@@ -29,10 +29,12 @@ import javax.persistence.FlushModeType;
 import javax.persistence.LockModeType;
 import javax.persistence.LockTimeoutException;
 import javax.persistence.PersistenceException;
+import javax.persistence.PessimisticLockException;
 import javax.persistence.Query;
 
 import javax.sql.DataSource;
 
+import org.eclipse.persistence.exceptions.DatabaseException;
 import org.eclipse.persistence.exceptions.EclipseLinkException;
 import org.eclipse.persistence.exceptions.JPQLException;
 import org.eclipse.persistence.exceptions.ValidationException;
@@ -556,10 +558,36 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
     private Object executeQuery(ReadObjectQuery query, LockModeType lockMode, UnitOfWork uow) {
         // Make sure we set the lock mode type if there is one. It will
         // be handled in the query prepare statement. Setting the lock mode
-        // will validate that a valid locking policy is in place if needed.
-        query.setLockModeType(lockMode, (AbstractSession) getActiveSession());
+        // will validate that a valid locking policy is in place if needed. If
+        // a true value is returned it indicates that we were unable to set the
+        // lock mode, throw an exception.
+        if (query.setLockModeType(lockMode, (AbstractSession) getActiveSession())) {
+            throw new PersistenceException(ExceptionLocalization.buildMessage("ejb30-wrong-lock_called_without_version_locking-index", null));
+        }
         
-        return uow.executeQuery(query);
+        Object result = null;
+        
+        try {
+            result = uow.executeQuery(query);
+        } catch (DatabaseException e) {
+            // If we catch a database exception as a result of executing a
+            // pessimistic locking query we need to ask the platform which
+            // JPA 2.0 locking exception we should throw. It will be either
+            // be a PessimisticLockException or a LockTimeoutException (if
+            // the query was executed using a wait timeout value)
+            if (lockMode != null && lockMode.name().contains(ObjectLevelReadQuery.PESSIMISTIC)) {
+                // ask the platform if it is a lock timeout
+                if (uow.getPlatform().isLockTimeoutException(e)) {
+                    throw new LockTimeoutException(e);
+                } else {
+                    throw new PessimisticLockException(e);
+                }
+            } else {
+                throw e;
+            }
+        }
+        
+        return result;
     }
     
     /**

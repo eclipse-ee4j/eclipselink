@@ -16,7 +16,6 @@ import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 import javax.persistence.LockModeType;
-//import javax.persistence.PersistenceException;
 
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.descriptors.VersionLockingPolicy;
@@ -28,7 +27,6 @@ import org.eclipse.persistence.internal.descriptors.OptimisticLockingPolicy;
 import org.eclipse.persistence.internal.expressions.*;
 import org.eclipse.persistence.internal.helper.*;
 import org.eclipse.persistence.internal.history.*;
-import org.eclipse.persistence.internal.localization.ExceptionLocalization;
 import org.eclipse.persistence.internal.queries.*;
 import org.eclipse.persistence.mappings.*;
 import org.eclipse.persistence.mappings.querykeys.*;
@@ -949,53 +947,40 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
     public Object executeInUnitOfWork(UnitOfWorkImpl unitOfWork, AbstractRecord translationRow) throws DatabaseException, OptimisticLockException {        
         Object result = null;
         
-        try {
-            if (!shouldMaintainCache() || isReadOnly()) {
-                result = unitOfWork.getParent().executeQuery(this, translationRow);
-            } else {
-                result = execute(unitOfWork, translationRow);
-            }
+        if (!shouldMaintainCache() || isReadOnly()) {
+            result = unitOfWork.getParent().executeQuery(this, translationRow);
+        } else {
+            result = execute(unitOfWork, translationRow);
+        }
             
-            // If a lockModeType was set (from JPA) we need to check if we need
-            // to perform a force update to the version field.
-            if (lockModeType != null && result != null) {
-                if (lockModeType.equals(READ) || lockModeType.equals(WRITE) || lockModeType.contains(OPTIMISTIC)) {
-                    boolean forceUpdateToVersionField = lockModeType.equals(WRITE) || lockModeType.equals(OPTIMISTIC_FORCE_INCREMENT);
+        // If a lockModeType was set (from JPA) we need to check if we need
+        // to perform a force update to the version field.
+        if (lockModeType != null && result != null) {
+            if (lockModeType.equals(READ) || lockModeType.equals(WRITE) || lockModeType.contains(OPTIMISTIC)) {
+                boolean forceUpdateToVersionField = lockModeType.equals(WRITE) || lockModeType.equals(OPTIMISTIC_FORCE_INCREMENT);
                     
-                    if (result instanceof Collection) {
-                        Iterator i = ((Collection) result).iterator();
-                        while (i.hasNext()) {
-                            Object obj = i.next();
+                if (result instanceof Collection) {
+                    Iterator i = ((Collection) result).iterator();
+                    while (i.hasNext()) {
+                        Object obj = i.next();
                             
-                            if (obj != null) {
-                                // If it is a report query the result could be an array of objects. Must
-                                // also deal with null results.
-                                if (obj instanceof Object[]) {    
-                                    for (Object o : (Object[]) obj) {
-                                        if (o != null) {
-                                            unitOfWork.forceUpdateToVersionField(o, forceUpdateToVersionField);
-                                        }
+                        if (obj != null) {
+                            // If it is a report query the result could be an array of objects. Must
+                            // also deal with null results.
+                            if (obj instanceof Object[]) {    
+                                for (Object o : (Object[]) obj) {
+                                    if (o != null) {
+                                        unitOfWork.forceUpdateToVersionField(o, forceUpdateToVersionField);
                                     }
-                                } else {
-                                    unitOfWork.forceUpdateToVersionField(obj, forceUpdateToVersionField);
                                 }
+                            } else {
+                                unitOfWork.forceUpdateToVersionField(obj, forceUpdateToVersionField);
                             }
                         }
-                    } else {
-                        unitOfWork.forceUpdateToVersionField(result, forceUpdateToVersionField);
                     }
+                } else {
+                    unitOfWork.forceUpdateToVersionField(result, forceUpdateToVersionField);
                 }
-            }
-        } catch (DatabaseException e) {
-            // If we catch a database exception as a result of executing a
-            // pessimistic locking query we need to ask the platform which
-            // JPA 2.0 locking exception we should throw. It will be either
-            // be a PessimisticLockException or a LockTimeoutException (if
-            // the query was executed using a wait timeout value)
-            if (lockModeType != null && lockModeType.contains(PESSIMISTIC)) {
-                throw unitOfWork.getPlatform().getLockException(e);
-            } else {
-                throw e;
             }
         }
         
@@ -2090,18 +2075,20 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
      *  - PESSIMISTIC_FORCE_INCREMENT
      *  - NONE
      * Setting a null type will do nothing.
+     * @return returns a failure flag indicating that we were UNABLE to set the 
+     * lock mode because of validation. Callers to this method should check the 
+     * return value and throw the necessary exception.
      */
-    public void setLockModeType(LockModeType lockModeType, AbstractSession session) {
+    public boolean setLockModeType(LockModeType lockModeType, AbstractSession session) {
         if (lockModeType != null) {
             OptimisticLockingPolicy lockingPolicy = session.getDescriptor(getReferenceClass()).getOptimisticLockingPolicy();
         
             if (lockingPolicy == null || !(lockingPolicy instanceof VersionLockingPolicy)) {
                 if (! lockModeType.name().equals(PESSIMISTIC) && ! lockModeType.name().equals(NONE)) {
                     // Any locking mode other than PESSIMISTIC and NONE needs a 
-                    // version locking policy to be present, otherwise an exception is thrown.
-                    //throw new PersistenceException(ExceptionLocalization.buildMessage("ejb30-wrong-lock_called_without_version_locking-index", null));
-                    // Temporary removal of JPA 2.0 dependency.
-                    throw new RuntimeException(ExceptionLocalization.buildMessage("ejb30-wrong-lock_called_without_version_locking-index", null));
+                    // version locking policy to be present, otherwise return a
+                    // failure flag of true.
+                    return true;
                 }
             }
             
@@ -2110,6 +2097,8 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
             setIsPrepared(false);
             setWasDefaultLockMode(false);
         }
+        
+        return false;
     }
     
     /**

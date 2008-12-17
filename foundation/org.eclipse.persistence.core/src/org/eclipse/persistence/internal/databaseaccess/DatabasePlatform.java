@@ -41,9 +41,6 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Vector;
 
-// Temporary dependency removal.
-//import javax.persistence.PessimisticLockException;
-
 // EclipseLink imports
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.exceptions.DatabaseException;
@@ -1057,23 +1054,6 @@ public class DatabasePlatform extends DatasourcePlatform {
     public String getOutputProcedureToken() {
         return "OUT";
     }
-
-    /**
-     * Return a JPA 2.0 PessimisticLockException.
-     * If a WAIT clause is specified, we need to throw a LockTimeoutException.
-     * Therefore, if the platform supports this clause, this method should be
-     * overridden and handled accordingly.
-     * 
-     * By default though, this method will return a PessimisticLockException 
-     * which forces a rollback of the transaction.
-     * 
-     * @see OraclePlatform.
-     */
-    public RuntimeException getLockException(DatabaseException e) {
-        return e;
-        // Temporary dependency removal.
-        //return new PessimisticLockException(e);
-    }
     
     /**
      * Used for determining if an SQL exception was communication based. This SQL should be
@@ -1230,6 +1210,19 @@ public class DatabasePlatform extends DatasourcePlatform {
         return false;
     }
 
+    /**
+     * Return true is the given exception occurred as a result of a lock
+     * time out exception (WAIT clause). If sub-platform supports this clause, 
+     * this method should be necessary checks should be made.
+     * 
+     * By default though, this method return false.
+     * 
+     * @see OraclePlatform.
+     */
+    public boolean isLockTimeoutException(DatabaseException e) {
+        return false;
+    }
+    
     /**
      *    Builds a table of maximum numeric values keyed on java class. This is used for type testing but
      * might also be useful to end users attempting to sanitize values.
