@@ -60,16 +60,16 @@ public final class MWEisLoginSpec extends MWModel {
 
 	private volatile String j2cAdapterName;
 		public static String J2C_ADAPTER_NAME_PROPERTY = "j2cAdapter";
-		public static String AQ_ADAPTER_NAME = "AQ";
-		public static String JMS_ADAPTER_NAME = "JMS";
-		public static String XML_FILE_ADAPTER_NAME = "XML File";
-		public static String DEFAULT_ADAPTER_NAME = AQ_ADAPTER_NAME;
-	public static String[] j2cAdapterNames = { AQ_ADAPTER_NAME, JMS_ADAPTER_NAME, XML_FILE_ADAPTER_NAME };
+			public static String AQ_ADAPTER_NAME = "Oracle AQ";
+			public static String JMS_ADAPTER_NAME = "JMS";
+			public static String XML_FILE_ADAPTER_NAME = "XML File";
+			public static String DEFAULT_ADAPTER_NAME = AQ_ADAPTER_NAME;
+		public static String[] j2cAdapterNames = { AQ_ADAPTER_NAME, JMS_ADAPTER_NAME, XML_FILE_ADAPTER_NAME };
 		public static final String J2C_ADAPTER_NAMES_COLLECTION = "j2cAdapterNames";
 
-	public static String ORACLE_AQ_ADAPTER_CLASS_NAME = "org.eclipse.persistence.eis.adapters.aq.AQPlatform";
-	public static String JMS_ADAPTER_CLASS_NAME = "org.eclipse.persistence.eis.adapters.jms.JMSPlatform";
-	public static String XML_FILE_ADAPTER_CLASS_NAME = "org.eclipse.persistence.eis.adapters.xmlfile.XMLFilePlatform";
+		public static String JMS_ADAPTER_CLASS_NAME = "org.eclipse.persistence.eis.adapters.jms.JMSPlatform";
+		public static String ORACLE_AQ_ADAPTER_CLASS_NAME = "org.eclipse.persistence.eis.adapters.aq.AQPlatform";
+		public static String XML_FILE_ADAPTER_CLASS_NAME = "org.eclipse.persistence.eis.adapters.xmlfile.XMLFilePlatform";
 	
 	public static final String PLATFORM_PREFERENCE = "eis platform";
 	public static final String PLATFORM_PREFERENCE_DEFAULT = AQ_ADAPTER_NAME;

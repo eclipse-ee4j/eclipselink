@@ -178,6 +178,9 @@ public class MultiTableInfoPropertiesPage extends ScrollablePropertiesPage {
 		LabelPanel primaryTableLabelPanel = new LabelPanel(this.buildLabelPanelTextAdapter());
 
 		Insets insets = UIManager.getInsets("TextField.margin");
+		if (insets == null) {
+			insets = UIManager.getInsets("TextField.contentMargins");
+		}
 		primaryTableLabelPanel.setBorder(BorderFactory.createCompoundBorder(UIManager.getBorder("TextField.border"), BorderFactory.createEmptyBorder(insets.top, insets.left, insets.bottom, insets.right)));
 
 		Dimension size = tableLabel.getPreferredSize();

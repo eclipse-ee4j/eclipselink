@@ -186,7 +186,7 @@ final class AboutDialog extends JDialog {
 		mainPanel.add(applicationLabel, constraints);
 
 		// version
-		JLabel versionLabel = new JLabel(context.getApplication().getReleaseDesignation());
+		JLabel versionLabel = new JLabel(context.getResourceRepository().getString("VERSION", context.getApplication().getVersionNumber()));
 		versionLabel.setHorizontalAlignment(SwingConstants.CENTER);
 
 		font = versionLabel.getFont();

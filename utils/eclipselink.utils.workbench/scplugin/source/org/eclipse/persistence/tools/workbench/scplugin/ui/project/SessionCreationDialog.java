@@ -648,12 +648,15 @@ public final class SessionCreationDialog extends AbstractValidatingDialog {
 			protected String buildText(Object cellValue) {
 				String string = (String) cellValue;
 				if (string.equals("AQPlatform")) {
-					return "Oracle AQ";
+					return EisPlatformManager.AQ_ID;
 				}
-				if (string.equals("AttunityPlatform")) {
-					return "Attunity Connect";
+				if (string.equals("MQPlatform")) {
+					return EisPlatformManager.MQ_ID;
 				}
-				return "IBM MQSeries";
+				if (string.equals("JMSPlatform")) {
+					return EisPlatformManager.JMS_ID;
+				}
+				return EisPlatformManager.XML_ID;
 			}
 		};
 	}

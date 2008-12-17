@@ -324,15 +324,19 @@ final class PlatformPreferencesPage extends AbstractPanel
 			{
 				if (((String) cellValue).equals("AQPlatform"))
 				{
-					return "Oracle AQ";
+					return EisPlatformManager.AQ_ID;
 				}
-				else if (((String) cellValue).equals("AttunityPlatform"))
+				else if (((String)cellValue).equals("JMSPlatform"))
 				{
-					return "Attunity Connect";
+					return EisPlatformManager.JMS_ID;
 				}
-				else
+				else if (((String)cellValue).equals("MQPlatform"))
 				{
-					return "IBM MQSeries";
+					return EisPlatformManager.MQ_ID;
+				} 
+				else 
+				{
+					return EisPlatformManager.XML_ID;
 				}
 			}
 		};

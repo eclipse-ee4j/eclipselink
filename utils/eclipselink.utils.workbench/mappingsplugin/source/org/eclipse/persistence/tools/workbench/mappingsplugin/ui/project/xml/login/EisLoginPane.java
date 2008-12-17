@@ -34,6 +34,7 @@ import org.eclipse.persistence.tools.workbench.uitools.app.PropertyValueModel;
 import org.eclipse.persistence.tools.workbench.uitools.app.ReadOnlyCollectionValueModel;
 import org.eclipse.persistence.tools.workbench.uitools.app.swing.ComboBoxModelAdapter;
 import org.eclipse.persistence.tools.workbench.uitools.app.swing.DocumentAdapter;
+import org.eclipse.persistence.tools.workbench.utility.CollectionTools;
 
 
 class EisLoginPane extends AbstractLoginPane
@@ -280,6 +281,6 @@ class EisLoginPane extends AbstractLoginPane
 	
 	private CollectionValueModel buildJ2CAdaptersCollectionAdapter()
 	{
-	    return new ReadOnlyCollectionValueModel(MWEisLoginSpec.getJ2CAdapterNames());
+	    return new ReadOnlyCollectionValueModel(CollectionTools.sort(MWEisLoginSpec.j2CAdapterNames()));
 	}
 }

@@ -22,8 +22,9 @@ import org.eclipse.persistence.tools.workbench.utility.ClassTools;
 public class EisPlatformManager extends SCPlatformManager {
 
     public static final String AQ_ID = "Oracle AQ";
-    public static final String ATTUNITY_ID = "Attunity Connect";
+    public static final String JMS_ID = "JMS";
     public static final String MQ_ID = "IBM MQSeries";
+    public static final String XML_ID = "XML File";
 	
 	private static EisPlatformManager INSTANCE;
 	
@@ -45,13 +46,17 @@ public class EisPlatformManager extends SCPlatformManager {
 	protected void buidPlatforms() {
 
 	    this.addPlatform( AQ_ID, "org.eclipse.persistence.eis.adapters.aq.AQPlatform");
+	    this.addPlatform( JMS_ID, "org.eclipse.persistence.eis.adapters.jms.JMSPlatform");
 	    this.addPlatform( MQ_ID, "org.eclipse.persistence.eis.adapters.mqseries.MQPlatform");
+	    this.addPlatform( XML_ID, "org.eclipse.persistence.eis.adapters.xmlfile.XMLFilePlatform");
 	}
 	
 	private void buidConnectionSpecs() {
 
 	    this.connectionSpecs.put( AQ_ID, "org.eclipse.persistence.eis.adapters.aq.AQEISConnectionSpec");
+	    this.connectionSpecs.put( JMS_ID, "org.eclipse.persistence.eis.adapters.jms.JMSEISConnectionSpec");
 	    this.connectionSpecs.put( MQ_ID, "org.eclipse.persistence.eis.adapters.mqseries.MQConnectionSpec");
+	    this.connectionSpecs.put( XML_ID, "org.eclipse.persistence.eis.adapters.xmlfile.XMLFileEISConnectionSpec");
 	}
 	
 	public String getRuntimeConnectionSpecClassName( String platformClassName) {
