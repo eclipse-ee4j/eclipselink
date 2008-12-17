@@ -42,10 +42,6 @@
     <!-- This copy junit.jar to WebSphere server lib/ext. -->
     <target name="websphere-install">
         <copy file="${junit.lib}" todir="${was.home}/lib/ext"/>
-        <!-- The line below copies JPA 2.0 interfaces to ${was.home}/lib/ext. 
-            It can be removed when WebSphere ships JPA 2.0 interfaces 
-        -->
-        <copy file="${eclipselink.jpa}/../${plugins.dir}/${eclipselink.jpa.depend}" todir="${was.home}/lib/ext"/>
     </target>
 
     <!-- Start the server. -->

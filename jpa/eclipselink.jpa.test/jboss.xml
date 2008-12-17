@@ -63,10 +63,6 @@
         <copy file="${junit.lib}" todir="${jboss.server}/lib"/>
         <copy file="${eclipselink.jar.name}" todir="${jboss.server}/lib"/>
         <copy file="${jdbc.driver.jar}" todir="${jboss.server}/lib"/>
-        <!-- The line below copies JPA 2.0 interfaces to ${jboss.home}/lib. 
-            It can be removed when JBoss ships JPA 2.0 interfaces 
-        -->
-        <copy file="${eclipselink.jpa}/../${plugins.dir}/${eclipselink.jpa.depend}" todir="${jboss.home}/lib"/>
     </target>
 
     <!-- This target is to create datasource required for running JPA tests on the JBoss server. -->
