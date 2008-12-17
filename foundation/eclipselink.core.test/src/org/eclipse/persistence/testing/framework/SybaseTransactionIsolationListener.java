@@ -10,8 +10,11 @@
  * Contributors:
  *     Created July 9, 2008 - ailitchev 
  *        bug 240210: Tests: Several LRG tests hang on Sybase
+ *     Changed Dec 17, 2008 - etang
+ *        Move the class from org.eclipse.persistence.testing.tests.unitofwork 
+ *        to org.eclipse.persistence.testing.framework
  ******************************************************************************/  
-package org.eclipse.persistence.testing.tests.unitofwork;
+package org.eclipse.persistence.testing.framework;
 
 import java.sql.Connection;
 import java.sql.ResultSet;

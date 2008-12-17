@@ -20,7 +20,6 @@ import org.eclipse.persistence.internal.helper.*;
 import org.eclipse.persistence.sessions.*;
 import org.eclipse.persistence.sessions.server.Server;
 import org.eclipse.persistence.sessions.server.ServerSession;
-import org.eclipse.persistence.testing.tests.unitofwork.SybaseTransactionIsolationListener;
 
 /**
  * <p>Purpose<b></b>:
