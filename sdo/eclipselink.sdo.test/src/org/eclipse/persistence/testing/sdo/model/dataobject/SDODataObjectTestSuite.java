@@ -68,6 +68,8 @@ public class SDODataObjectTestSuite {
         suite.addTest(new TestSuite(SDODataObjectJIRA102NillableCompositeObjectTestCases.class));
         suite.addTest(new TestSuite(SDODataObjectOpenContentBug6011530TestCases.class));
 
+        suite.addTest(new TestSuite(SetAndGetWithManyPropertyTestCases.class));
+        suite.addTest(new TestSuite(SetAndGetWithManyPropertyViaPathTestCases.class));
         return suite;
     }
 }

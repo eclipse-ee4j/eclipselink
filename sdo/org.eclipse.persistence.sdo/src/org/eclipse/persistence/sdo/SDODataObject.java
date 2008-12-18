@@ -2163,7 +2163,20 @@ public class SDODataObject implements DataObject, SequencedObject {
      * INTERNAL:
      */
     private void convertValueAndSet(Property property, Object originalValue) {
-        Object convertedValue = aHelperContext.getDataHelper().convert(property, originalValue);
+        Object convertedValue;
+    	if (property.isMany()) {
+    		if (originalValue == null) {
+    			convertedValue = new ArrayList();
+    	    } else if (originalValue instanceof List) {
+    	        convertedValue = aHelperContext.getDataHelper().convert(property, originalValue);
+    		} else {
+        		List l = new ArrayList();
+        		l.add(originalValue);
+    	        convertedValue = aHelperContext.getDataHelper().convert(property, l);
+    		}
+    	} else {
+    		convertedValue = aHelperContext.getDataHelper().convert(property, originalValue);
+    	}
         set(property, convertedValue);
     }
 
@@ -2199,7 +2212,7 @@ public class SDODataObject implements DataObject, SequencedObject {
             throw new IllegalArgumentException(SDOException.cannotPerformOperationOnNullArgument("convertObjectToValue"));
         }
 
-        Object obj = get(property);
+        Object obj = unwrapListValue(property, get(property));
 
         try {
             return ((SDODataHelper)aHelperContext.getDataHelper()).convertValueToClass(property, obj, cls);
@@ -2221,7 +2234,6 @@ public class SDODataObject implements DataObject, SequencedObject {
     public Object convertObjectToValue(Property property, int position, Class cls) throws ClassCastException, IllegalArgumentException {
         if (null == property) {
             throw new IllegalArgumentException(SDOException.cannotPerformOperationOnNullArgument("convertObjectToValue"));
-
         }
 
         if ((cls == ClassConstants.List_Class) && !property.isMany()) {
@@ -2230,7 +2242,11 @@ public class SDODataObject implements DataObject, SequencedObject {
 
         Object obj;
         if (position == -1) {
-            obj = get(property);
+        	if (cls == ClassConstants.List_Class) {
+        		obj = get(property);
+        	} else {
+        		obj = unwrapListValue(property, get(property));
+        	}
         } else {
             obj = getList(property).get(position);
         }
@@ -2807,4 +2823,27 @@ public class SDODataObject implements DataObject, SequencedObject {
     public void _setSdoRef(String newRef) {
         sdoRef = newRef;
     }
+
+    /**
+     * Convenience method that unwraps a list and returns the first element,
+     * if necessary.
+     * 
+     * @param prop
+     * @param val
+     * @return
+     */
+    private Object unwrapListValue(Property prop, Object val) {
+    	if (prop == null || val == null) {
+    		return null;
+    	}
+    	if (! (prop.isMany() &&  val instanceof ListWrapper) ) {
+    		return val;
+    	}
+    	List l = (ListWrapper) val;
+    	if (l.size() == 0) {
+    		return null;
+    	}
+    	return l.get(0);
+    }
+    
 }
