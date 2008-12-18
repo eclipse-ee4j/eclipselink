@@ -22,6 +22,7 @@ import org.eclipse.persistence.internal.queries.*;
 import org.eclipse.persistence.internal.sessions.*;
 import org.eclipse.persistence.queries.*;
 import org.eclipse.persistence.internal.descriptors.CascadeLockingPolicy;
+import org.eclipse.persistence.mappings.foundation.MapComponentMapping;
 
 /**
  * <p><b>Purpose</b>: This mapping is used to represent the
@@ -33,7 +34,7 @@ import org.eclipse.persistence.internal.descriptors.CascadeLockingPolicy;
  * @author Sati
  * @since TOPLink/Java 1.0
  */
-public class OneToManyMapping extends CollectionMapping implements RelationalMapping {
+public class OneToManyMapping extends CollectionMapping implements RelationalMapping, MapComponentMapping {
 
     /** The target foreign key fields that reference the sourceKeyFields. */
     protected transient Vector<DatabaseField> targetForeignKeyFields;

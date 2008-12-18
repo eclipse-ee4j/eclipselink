@@ -52,7 +52,7 @@ import org.eclipse.persistence.internal.security.PrivilegedNewInstanceFromClass;
  * @author Sati
  * @since TopLink/Java 1.0
  */
-public abstract class AbstractDirectMapping extends DatabaseMapping {
+public abstract class AbstractDirectMapping extends DatabaseMapping implements MapKeyMapping {
 
     /** DatabaseField which this mapping represents. */
     protected DatabaseField field;

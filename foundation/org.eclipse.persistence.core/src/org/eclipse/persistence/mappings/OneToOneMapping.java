@@ -26,6 +26,7 @@ import org.eclipse.persistence.sessions.DatabaseRecord;
 import org.eclipse.persistence.queries.*;
 import org.eclipse.persistence.internal.descriptors.CascadeLockingPolicy;
 import org.eclipse.persistence.internal.expressions.ObjectExpression;
+import org.eclipse.persistence.mappings.foundation.MapKeyMapping;
 
 /**
  * <p><b>Purpose</b>: One to one mappings are used to represent a pointer references
@@ -36,7 +37,7 @@ import org.eclipse.persistence.internal.expressions.ObjectExpression;
  * @author Sati
  * @since TOPLink/Java 1.0
  */
-public class OneToOneMapping extends ObjectReferenceMapping implements RelationalMapping {
+public class OneToOneMapping extends ObjectReferenceMapping implements RelationalMapping, MapKeyMapping {
 
     /** Maps the source foreign/primary key fields to the target primary/foreign key fields. */
     protected Map<DatabaseField, DatabaseField> sourceToTargetKeyFields;

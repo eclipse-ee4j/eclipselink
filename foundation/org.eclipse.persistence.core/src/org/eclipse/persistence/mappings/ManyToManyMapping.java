@@ -22,6 +22,7 @@ import org.eclipse.persistence.internal.helper.*;
 import org.eclipse.persistence.internal.identitymaps.*;
 import org.eclipse.persistence.internal.queries.*;
 import org.eclipse.persistence.internal.sessions.*;
+import org.eclipse.persistence.mappings.foundation.MapComponentMapping;
 import org.eclipse.persistence.sessions.DatabaseRecord;
 import org.eclipse.persistence.queries.*;
 
@@ -34,7 +35,7 @@ import org.eclipse.persistence.queries.*;
  * @author Sati
  * @since TOPLink/Java 1.0
  */
-public class ManyToManyMapping extends CollectionMapping implements RelationalMapping {
+public class ManyToManyMapping extends CollectionMapping implements RelationalMapping, MapComponentMapping {
 
     /** Used for data modification events. */
     protected static final String PostInsert = "postInsert";

@@ -20,6 +20,7 @@ import org.eclipse.persistence.internal.helper.*;
 import org.eclipse.persistence.internal.identitymaps.*;
 import org.eclipse.persistence.internal.queries.*;
 import org.eclipse.persistence.internal.sessions.*;
+import org.eclipse.persistence.mappings.foundation.MapComponentMapping;
 import org.eclipse.persistence.sessions.DatabaseRecord;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.descriptors.DescriptorEvent;
@@ -38,7 +39,7 @@ import org.eclipse.persistence.sessions.remote.DistributedSession;
  * @author King (Yaoping) Wang
  * @since TOPLink/Java 3.0
  */
-public class AggregateCollectionMapping extends CollectionMapping implements RelationalMapping {
+public class AggregateCollectionMapping extends CollectionMapping implements RelationalMapping, MapComponentMapping {
 
     /** This is a key in the target table which is a foreign key in the target table. */
     protected transient Vector<DatabaseField> targetForeignKeyFields;

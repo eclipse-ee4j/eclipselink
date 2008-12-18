@@ -37,6 +37,7 @@ import org.eclipse.persistence.internal.security.PrivilegedClassForName;
 import org.eclipse.persistence.internal.security.PrivilegedNewInstanceFromClass;
 import org.eclipse.persistence.internal.sessions.*;
 import org.eclipse.persistence.mappings.converters.*;
+import org.eclipse.persistence.mappings.foundation.MapComponentMapping;
 import org.eclipse.persistence.queries.*;
 import org.eclipse.persistence.sessions.remote.*;
 import org.eclipse.persistence.sessions.ObjectCopyingPolicy;
@@ -55,7 +56,7 @@ import org.eclipse.persistence.sessions.DatabaseRecord;
  * @author Sati
  * @since TOPLink/Java 1.0
  */
-public class DirectCollectionMapping extends CollectionMapping implements RelationalMapping {
+public class DirectCollectionMapping extends CollectionMapping implements RelationalMapping, MapComponentMapping {
 
     /** Used for data modification events. */
     protected static final String Delete = "delete";

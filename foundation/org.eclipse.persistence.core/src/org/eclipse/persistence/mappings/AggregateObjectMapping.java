@@ -27,6 +27,7 @@ import org.eclipse.persistence.internal.queries.JoinedAttributeManager;
 import org.eclipse.persistence.internal.sessions.*;
 import org.eclipse.persistence.internal.descriptors.ObjectBuilder;
 import org.eclipse.persistence.mappings.foundation.AbstractTransformationMapping;
+import org.eclipse.persistence.mappings.foundation.MapKeyMapping;
 import org.eclipse.persistence.queries.*;
 import org.eclipse.persistence.sessions.Project;
 
@@ -41,7 +42,7 @@ import org.eclipse.persistence.sessions.Project;
  * @author Sati
  * @since TOPLink/Java 1.0
  */
-public class AggregateObjectMapping extends AggregateMapping implements RelationalMapping {
+public class AggregateObjectMapping extends AggregateMapping implements RelationalMapping, MapKeyMapping {
 
     /**
      * If <em>all</em> the fields in the database row for the aggregate object are NULL,
