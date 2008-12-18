@@ -19,5 +19,5 @@ import org.eclipse.persistence.descriptors.ClassDescriptor;
  * This interface is to allow extra customization on a EclipseLink Session
  */
 public interface DescriptorCustomizer {
-    public void customize(ClassDescriptor Descriptor) throws Exception;
+    public void customize(ClassDescriptor descriptor) throws Exception;
 }
