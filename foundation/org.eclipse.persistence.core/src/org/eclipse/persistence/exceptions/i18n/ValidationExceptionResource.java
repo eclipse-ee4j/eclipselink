@@ -285,6 +285,7 @@ public class ValidationExceptionResource extends ListResourceBundle {
                                            { "7304", "PersistenceUnitProperties.ORACLE_PROXY_TYPE property set to unknown type [{0}], known types are [{1}], [{2}], [{3}]." },
                                            { "7305", "An exception was thrown while processing the mapping file from URL: [{0}]." },
                                            { "7306", "The annotated element [{0}] from the class [{1}] has an incorrect explicit access type specified. It should specify an access type of [{2}]." },
+                                           { "7307", "Missing a logging context string for the context [{0}]. This is an internal exception that occurred retrieving a log message for JPA metadata processing, please report a bug." },
                                            
  };
     

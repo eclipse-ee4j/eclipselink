@@ -19,6 +19,7 @@ import java.util.ArrayList;
 import javax.persistence.Table;
 import javax.persistence.Entity;
 import javax.persistence.Column;
+import javax.persistence.TableGenerator;
 import javax.persistence.Temporal;
 import javax.persistence.OneToOne;
 import javax.persistence.PrePersist;
@@ -28,6 +29,12 @@ import static javax.persistence.TemporalType.DATE;
 
 @Entity
 @Table(name="CMP3_ALPINE")
+@TableGenerator(
+  name="USED_TO_TEST_A_LOG_MESSAGE", 
+  //table="leave this commented out", 
+  pkColumnName="SEQ_NAME", 
+  valueColumnName="SEQ_COUNT",
+  pkColumnValue="BEVERAGE_SEQ")
 public class Alpine extends Beer<Integer, Double> implements Cloneable {
     public enum Classification { STRONG, BITTER, SWEET, NONE }
     

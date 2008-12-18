@@ -20,6 +20,8 @@ package org.eclipse.persistence.internal.jpa.metadata;
 
 import java.util.HashMap;
 
+import org.eclipse.persistence.exceptions.ValidationException;
+
 import org.eclipse.persistence.logging.SessionLog;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 
@@ -205,6 +207,10 @@ public class MetadataLogger {
         m_ctxStrings.put(TABLE_SCHEMA, TABLE_SCHEMA);
         m_ctxStrings.put(TABLE_CATALOG, TABLE_CATALOG);
         
+        m_ctxStrings.put(TABLE_GENERATOR_NAME, TABLE_GENERATOR_NAME);
+        m_ctxStrings.put(TABLE_GENERATOR_SCHEMA, TABLE_GENERATOR_SCHEMA);
+        m_ctxStrings.put(TABLE_GENERATOR_CATALOG, TABLE_GENERATOR_CATALOG);
+        
         m_ctxStrings.put(JOIN_TABLE_NAME, JOIN_TABLE_NAME);
         m_ctxStrings.put(JOIN_TABLE_SCHEMA, JOIN_TABLE_SCHEMA);
         m_ctxStrings.put(JOIN_TABLE_CATALOG, JOIN_TABLE_CATALOG);
@@ -254,7 +260,13 @@ public class MetadataLogger {
      * Return the logging context string for the given context.
      */
     protected String getLoggingContextString(String context) {
-        return (String) m_ctxStrings.get(context);
+        String ctxString = (String) m_ctxStrings.get(context);
+        
+        if (ctxString == null) {
+           throw ValidationException.missingContextStringForContext(context);
+        }
+        
+        return ctxString;
     }  
     
     /**
@@ -268,41 +280,61 @@ public class MetadataLogger {
     /**
      * INTERNAL:
      * Logging utility method.
+     * We currently can not log any lower than CONFIG since all our metadata
+     * logging messages are located in LoggingLocalizationResource. Any lower
+     * than CONFIG and those message strings would have to move to 
+     * TraceLocalizationResource.
      */
     public void logConfigMessage(String ctx, MetadataAccessor accessor, Object param) {
-        log(SessionLog.FINEST, ctx, new Object[] { accessor.getAnnotatedElement(), param });
+        log(SessionLog.CONFIG, ctx, new Object[] { accessor.getAnnotatedElement(), param });
     }
     
     /**
      * INTERNAL:
      * Logging utility method.
+     * We currently can not log any lower than CONFIG since all our metadata
+     * logging messages are located in LoggingLocalizationResource. Any lower
+     * than CONFIG and those message strings would have to move to 
+     * TraceLocalizationResource.
      */
     public void logConfigMessage(String ctx, MetadataAccessor accessor, Object param1, Object param2) {
-        log(SessionLog.FINEST, ctx, new Object[] { accessor.getJavaClass(), accessor.getAnnotatedElement(), param1, param2 });
+        log(SessionLog.CONFIG, ctx, new Object[] { accessor.getJavaClass(), accessor.getAnnotatedElement(), param1, param2 });
     }
     
     /**
      * INTERNAL:
      * Logging utility method.
+     * We currently can not log any lower than CONFIG since all our metadata
+     * logging messages are located in LoggingLocalizationResource. Any lower
+     * than CONFIG and those message strings would have to move to 
+     * TraceLocalizationResource.
      */
     public void logConfigMessage(String ctx, MetadataDescriptor descriptor, Object param) {
-        log(SessionLog.FINEST, ctx, new Object[] { descriptor.getJavaClass(), param });
+        log(SessionLog.CONFIG, ctx, new Object[] { descriptor.getJavaClass(), param });
     }
     
     /**
      * INTERNAL:
      * Logging utility method.
+     * We currently can not log any lower than CONFIG since all our metadata
+     * logging messages are located in LoggingLocalizationResource. Any lower
+     * than CONFIG and those message strings would have to move to 
+     * TraceLocalizationResource.
      */
     public void logConfigMessage(String ctx, Object object) {
-        log(SessionLog.FINEST, ctx, new Object[] { object });    
+        log(SessionLog.CONFIG, ctx, new Object[] { object });    
     }
     
     /**
      * INTERNAL:
      * Logging utility method.
+     * We currently can not log any lower than CONFIG since all our metadata
+     * logging messages are located in LoggingLocalizationResource. Any lower
+     * than CONFIG and those message strings would have to move to 
+     * TraceLocalizationResource.
      */
     public void logConfigMessage(String ctx, Object param1, Object param2) {
-        log(SessionLog.FINEST, ctx, new Object[] { param1, param2 });    
+        log(SessionLog.CONFIG, ctx, new Object[] { param1, param2 });    
     }
     
     /**

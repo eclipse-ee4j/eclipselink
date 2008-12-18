@@ -369,6 +369,9 @@ public class ValidationException extends EclipseLinkException {
     // JPA 2.0 Access type
     public static final int INVALID_EXPLICIT_ACCESS_TYPE = 7306;
     
+    // JPA - Internal exception
+    public static final int MISSING_CONTEXT_STRING_FOR_CONTEXT = 7307;
+    
     /**
      * INTERNAL:
      * EclipseLink exceptions should only be thrown by EclipseLink.
@@ -2065,6 +2068,14 @@ public class ValidationException extends EclipseLinkException {
 
         ValidationException validationException = new ValidationException(ExceptionMessageGenerator.buildMessage(ValidationException.class, MISSING_DESCRIPTOR, args));
         validationException.setErrorCode(MISSING_DESCRIPTOR);
+        return validationException;
+    }
+    
+    public static ValidationException missingContextStringForContext(String context) {
+        Object[] args = { context };
+
+        ValidationException validationException = new ValidationException(ExceptionMessageGenerator.buildMessage(ValidationException.class, MISSING_CONTEXT_STRING_FOR_CONTEXT, args));
+        validationException.setErrorCode(MISSING_CONTEXT_STRING_FOR_CONTEXT);
         return validationException;
     }
     
