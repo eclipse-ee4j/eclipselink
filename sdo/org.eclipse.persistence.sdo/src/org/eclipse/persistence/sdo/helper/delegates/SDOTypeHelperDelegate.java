@@ -76,6 +76,9 @@ public class SDOTypeHelperDelegate implements SDOTypeHelper {
     /** a HashMap keyed on Qname of defined open content properties */
     private Map openContentProperties;
 
+    /** a List of Anonymous Types */
+    private List anonymousTypes;
+
     // hold the context containing all helpers so that we can preserve inter-helper relationships
     private HelperContext aHelperContext;
     private NamespaceResolver namespaceResolver;
@@ -581,7 +584,17 @@ public class SDOTypeHelperDelegate implements SDOTypeHelper {
                 return value;
             }
         }
-        
+
+        //Check in list of anonymous types
+        iter = getAnonymousTypes().iterator();
+        while(iter.hasNext()) {
+            SDOType value = (SDOType)iter.next();
+            
+            if(value.getInstanceClass() == interfaceClass) {
+                return value;
+            }
+        }
+
         //Check in the commonjHashMap as well.
         iter = this.commonjHashMap.keySet().iterator();
         while (iter.hasNext()) {
@@ -1199,6 +1212,13 @@ public class SDOTypeHelperDelegate implements SDOTypeHelper {
 
     public Map getInterfacesToSDOTypeHashMap() {
         return interfacesToSDOTypeHashMap;
+    }
+
+    public List getAnonymousTypes() {
+        if(this.anonymousTypes == null) {
+            anonymousTypes = new ArrayList();
+        }
+        return anonymousTypes;
     }
 
 }

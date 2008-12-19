@@ -54,7 +54,7 @@ public class SDOClassGenerator {
     private HelperContext aHelperContext;
 
     public SDOClassGenerator() {
-        this(HelperProvider.getDefaultContext());
+        this(new SDOHelperContext());
     }
 
     public SDOClassGenerator(HelperContext aContext) {

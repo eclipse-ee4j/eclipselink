@@ -163,4 +163,8 @@ public class SDOTypeHelperDelegator extends AbstractHelperDelegator implements S
         return getSDOTypeHelperDelegate().getInterfacesToSDOTypeHashMap();
     }
 
+    public List getAnonymousTypes() {
+        return getSDOTypeHelperDelegate().getAnonymousTypes();
+    }
+
 }

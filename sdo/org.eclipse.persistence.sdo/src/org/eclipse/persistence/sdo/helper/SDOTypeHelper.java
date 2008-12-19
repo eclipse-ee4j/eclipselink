@@ -15,6 +15,8 @@ package org.eclipse.persistence.sdo.helper;
 import commonj.sdo.Type;
 import commonj.sdo.helper.HelperContext;
 import commonj.sdo.helper.TypeHelper;
+
+import java.util.List;
 import java.util.Map;
 import javax.xml.namespace.QName;
 import org.eclipse.persistence.sdo.SDOType;
@@ -146,5 +148,7 @@ public interface SDOTypeHelper extends TypeHelper {
     public void addWrappersToProject(Project toplinkProject);
 
     public Map getInterfacesToSDOTypeHashMap();
+
+    public List getAnonymousTypes();
 
 }

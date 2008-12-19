@@ -24,6 +24,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.Vector;
+
 import javax.xml.namespace.QName;
 import org.eclipse.persistence.sdo.helper.AttributeMimeTypePolicy;
 import org.eclipse.persistence.sdo.helper.InstanceClassConverter;
@@ -598,11 +600,27 @@ public class SDOProperty implements Property, Serializable {
                 if (mapping != null) {
                     ((SDOType)getContainingType()).getXmlDescriptor().getMappings().remove(mapping);
                 }
-                if ((indexToAdd > -1) && (indexToAdd < ((SDOType)getContainingType()).getXmlDescriptor().getMappings().size())) {
-                    ((SDOType)getContainingType()).getXmlDescriptor().getMappings().add(indexToAdd, xmlMapping);
-                } else {
+                if(indexToAdd == -1) {
                     ((SDOType)getContainingType()).getXmlDescriptor().getMappings().add(xmlMapping);
-                }        
+                } else {
+                    //iterate over the mappings and find the correct place to insert this mapping relative to the 
+                    //indecies of the others.
+                    SDOType containingType = (SDOType)getContainingType();
+                    Vector<DatabaseMapping> mappings = containingType.getXmlDescriptor().getMappings();
+                    boolean added = false;
+                    for(int i = 0; i < mappings.size(); i++) {
+                        DatabaseMapping next = mappings.get(i);
+                        SDOProperty associatedProperty = containingType.getProperty(next.getAttributeName());
+                        if(associatedProperty != null && indexToAdd < associatedProperty.getIndexInType()) {
+                            mappings.add(i, xmlMapping);
+                            added = true;
+                            break;
+                        }
+                    }
+                    if(!added) {
+                        ((SDOType)getContainingType()).getXmlDescriptor().getMappings().add(xmlMapping);
+                    }
+                }
             }
         }
     }
