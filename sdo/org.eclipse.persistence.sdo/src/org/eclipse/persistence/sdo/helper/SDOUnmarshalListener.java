@@ -83,8 +83,9 @@ public class SDOUnmarshalListener extends SDOCSUnmarshalListener {
             XMLUnmarshaller unmarshaller = ((SDOXMLHelper)aHelperContext.getXMLHelper()).getXmlContext().createUnmarshaller();
             for (int i = 0; i < changeSummaries.size(); i++) {
                 nextCS = (SDOChangeSummary)changeSummaries.get(i);
-                // LOGGING
-                nextCS.setLogging(nextCS.isLoggingMapping());
+                // Set logging to true until finished building modified list.
+                boolean loggingValue = nextCS.isLoggingMapping();
+                nextCS.setLogging(true);
                 // CREATES
                 // For each xpath in the create attribute convert it to an sdo path and execute it against the root
                 // dataobject to get the dataobject being pointed to and set that dataobject to be created
@@ -346,7 +347,7 @@ public class SDOUnmarshalListener extends SDOCSUnmarshalListener {
                         }
                     }
                 }
-                
+                nextCS.setLogging(loggingValue);
             }
             // reset changeSummary list - we are done with it
             initialize();
