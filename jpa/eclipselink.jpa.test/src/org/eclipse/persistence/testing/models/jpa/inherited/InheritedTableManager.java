@@ -564,6 +564,16 @@ public class InheritedTableManager extends TableCreator {
         NUMBER_field.setIsIdentity(false);
         NUMBER_field.setShouldAllowNull(false);
         table.addField(NUMBER_field);
+         
+        FieldDefinition ISSUE_DATE_field = new FieldDefinition();
+        ISSUE_DATE_field.setName("ISSUE_DATE");
+        ISSUE_DATE_field.setTypeName("DATETIME");
+        ISSUE_DATE_field.setSize(23);
+        ISSUE_DATE_field.setIsPrimaryKey(false);
+        ISSUE_DATE_field.setUnique(false);
+        ISSUE_DATE_field.setIsIdentity(false);
+        ISSUE_DATE_field.setShouldAllowNull(true);
+        table.addField(ISSUE_DATE_field);   
         
         return table;
     }

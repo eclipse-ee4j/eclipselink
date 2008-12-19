@@ -42,6 +42,7 @@ public class InheritedCallbacksJunitTest extends JUnitTestCase {
         suite.addTest(new InheritedCallbacksJunitTest("testSetup"));
         suite.addTest(new InheritedCallbacksJunitTest("testPreAndPostPersistAlpine"));
         suite.addTest(new InheritedCallbacksJunitTest("testPrePersistAlpineOnMerge"));
+        suite.addTest(new InheritedCallbacksJunitTest("testPrePersistAlpineAndSerialNumberOnBeerConsumerMerge"));
         suite.addTest(new InheritedCallbacksJunitTest("testPreAndPostPersistBeerConsumer"));
         suite.addTest(new InheritedCallbacksJunitTest("testPostLoadOnFind"));
         suite.addTest(new InheritedCallbacksJunitTest("testPostLoadOnRefresh"));
@@ -119,6 +120,49 @@ public class InheritedCallbacksJunitTest extends JUnitTestCase {
             closeEntityManager(em);
             throw ex;
         }
+    }
+    
+    public void testPrePersistAlpineAndSerialNumberOnBeerConsumerMerge() {
+        int beerPrePersistCount = Beer.BEER_PRE_PERSIST_COUNT;
+        int alpinePrePersistCount = Alpine.ALPINE_PRE_PERSIST_COUNT;
+        int serialNumberPrePersistCount = SerialNumber.SERIAL_NUMBER_PRE_PERSIST_COUNT;
+                
+        BeerConsumer beerConsumer = null;
+        Alpine alpine = null;
+        EntityManager em = createEntityManager();
+                
+        try {
+            beginTransaction(em);
+            beerConsumer = new BeerConsumer();
+            beerConsumer.setName("A consumer to delete eventually");
+            em.persist(beerConsumer);
+            em.clear();
+         
+            SerialNumber serialNumber = new SerialNumber();
+                    
+            alpine = new Alpine(serialNumber);
+            alpine.setBestBeforeDate(new java.util.Date(2007, 8, 17));
+            alpine.setAlcoholContent(5.0);
+                    
+            alpine.setClassification(Alpine.Classification.NONE);
+            beerConsumer.addAlpineBeerToConsume(alpine);
+                    
+            BeerConsumer mergedBeerConsumer = em.merge(beerConsumer);
+            
+            mergedBeerConsumer.getAlpineBeerToConsume(0).setId(mergedBeerConsumer.getAlpineBeerToConsume(0).getSerialNumber().getNumber());
+            verifyNotCalled(beerPrePersistCount, Beer.BEER_PRE_PERSIST_COUNT, "PrePersist");
+            verifyCalled(alpinePrePersistCount, Alpine.ALPINE_PRE_PERSIST_COUNT, "PrePersist");
+            verifyCalled(serialNumberPrePersistCount, SerialNumber.SERIAL_NUMBER_PRE_PERSIST_COUNT, "PrePersist");
+            assertTrue("The merged alpine classification was not updated from the PrePersist lifecycle method", mergedBeerConsumer.getAlpineBeerToConsume(0).getSerialNumber().getIssueDate() != null);
+                     
+            commitTransaction(em);
+        } catch (RuntimeException ex) {
+            if (isTransactionActive(em)){
+                rollbackTransaction(em);
+            }
+            closeEntityManager(em);
+            throw ex;
+        }  
     }
     
     public void testPreAndPostPersistBeerConsumer() {

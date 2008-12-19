@@ -391,19 +391,23 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
      * INTERNAL:
      * Assign sequence number to the object.
      */
-    public void assignSequenceNumber(Object object, ClassDescriptor descriptor) throws DatabaseException {
+    public Object assignSequenceNumber(Object object, ClassDescriptor descriptor) throws DatabaseException {
+        Object value = null;
+        
         // This is done outside of a transaction to ensure optimal concurrency and deadlock avoidance in the sequence table.
         if (descriptor.usesSequenceNumbers() && !descriptor.getSequence().shouldAcquireValueAfterInsert()) {
             startOperationProfile(SessionProfiler.AssignSequence);
             ObjectBuilder builder = descriptor.getObjectBuilder();
             try {
-                builder.assignSequenceNumber(object, this);
+                value = builder.assignSequenceNumber(object, this);
             } catch (RuntimeException exception) {
                 handleException(exception);
             } finally {
                 endOperationProfile(SessionProfiler.AssignSequence);
             }
-        }        
+        }    
+        
+        return value;
     }
     
     /**

@@ -12,20 +12,29 @@
  ******************************************************************************/  
 package org.eclipse.persistence.testing.models.jpa.inherited;
 
+import java.util.Date;
+
 import javax.persistence.Id;
+import javax.persistence.PrePersist;
 import javax.persistence.Table;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.OneToOne;
 import javax.persistence.GeneratedValue;
 import javax.persistence.TableGenerator;
+import javax.persistence.Temporal;
+
 import static javax.persistence.GenerationType.*;
+import static javax.persistence.TemporalType.DATE;
 
 @Entity
 @Table(name="CMP3_SERIAL_NUMBER")
 public class SerialNumber {
     private Alpine alpine;
     private Integer number;
+    private Date issueDate;
+    
+    public static int SERIAL_NUMBER_PRE_PERSIST_COUNT = 0;
     
     public SerialNumber() {}
     
@@ -47,11 +56,30 @@ public class SerialNumber {
         return alpine;
     }
     
+    @Column(name="ISSUE_DATE")
+    @Temporal(DATE)
+    public Date getIssueDate() {
+        return issueDate;
+    }
+    
     public void setAlpine(Alpine alpine) {
         this.alpine = alpine;
     }
     
+    public void setIssueDate(Date issueDate) {
+        this.issueDate = issueDate;
+    }
+    
     protected void setNumber(Integer number) {
         this.number = number;
+    }
+    
+    @PrePersist
+    public void setupIssueDate() {
+        if (issueDate == null) {
+            setIssueDate(new Date());
+        }
+            
+        SERIAL_NUMBER_PRE_PERSIST_COUNT++;
     }
 }

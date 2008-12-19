@@ -255,8 +255,12 @@ public class RepeatableWriteUnitOfWork extends UnitOfWorkImpl {
             while (iterator.hasNext()) {
                 Object newObjectClone = iterator.next();
                 ClassDescriptor descriptor = getDescriptor(newObjectClone);
-                assignSequenceNumber(newObjectClone, descriptor);
-                registerNewObjectInIdentityMap(newObjectClone, null, descriptor);
+                if (assignSequenceNumber(newObjectClone, descriptor) != null) {
+                    // Avoid putting the merged object in the cache twice. If
+                    // the sequence number has already been assigned then we
+                    // don't need to put it in the cache.
+                    registerNewObjectInIdentityMap(newObjectClone, null, descriptor);
+                }
             }
         }
         
