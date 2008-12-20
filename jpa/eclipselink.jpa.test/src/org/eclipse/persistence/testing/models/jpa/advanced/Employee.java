@@ -125,6 +125,12 @@ import static org.eclipse.persistence.annotations.OptimisticLockingType.VERSION_
                 @QueryHint(name=QueryHints.QUERY_RESULTS_CACHE_SIZE, value="200"),
                 @QueryHint(name=QueryHints.QUERY_RESULTS_CACHE_EXPIRY_TIME_OF_DAY, value="23:59:59")
         }
+),
+// BUG 259329 - Update named queries have a lock mode type defaulted to NONE need to 
+// internally not only check for null but NONE as well.
+@NamedQuery(
+        name="UpdateEmployeeQueryWithLockModeNONE",
+        query="UPDATE Employee e set e.salary = 100 where e.firstName like 'blah'"
 )
 }
 )

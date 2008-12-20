@@ -179,7 +179,7 @@ public class EJBQueryImpl implements org.eclipse.persistence.jpa.JpaQuery {
             }
 
             // Apply the lock mode.
-            if (lockMode != null) {
+            if (lockMode != null && ! lockMode.name().equals(ObjectLevelReadQuery.NONE)) {
                 if (databaseQuery.isObjectLevelReadQuery()) {
                     // If setting the lock mode returns true, we were unable to
                     // set the lock mode, throw an exception.

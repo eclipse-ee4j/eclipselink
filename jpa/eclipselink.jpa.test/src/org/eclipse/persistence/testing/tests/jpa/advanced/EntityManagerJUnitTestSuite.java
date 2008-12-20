@@ -139,6 +139,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         suite.addTest(new EntityManagerJUnitTestSuite("testTransactionRequired"));
         suite.addTest(new EntityManagerJUnitTestSuite("testSubString"));
         suite.addTest(new EntityManagerJUnitTestSuite("testFlushModeOnUpdateQuery"));
+        suite.addTest(new EntityManagerJUnitTestSuite("testAnnotationDefaultLockModeNONEOnUpdateQuery"));
         suite.addTest(new EntityManagerJUnitTestSuite("testContainsRemoved"));
         suite.addTest(new EntityManagerJUnitTestSuite("testRefreshRemoved"));
         suite.addTest(new EntityManagerJUnitTestSuite("testRefreshNotManaged"));
@@ -794,6 +795,24 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
                 rollbackTransaction(em);
             }
             throw ex;
+        }
+    }
+    
+    public void testAnnotationDefaultLockModeNONEOnUpdateQuery() {
+        EntityManager em = createEntityManager();
+        
+        try {
+            beginTransaction(em);
+            em.createNamedQuery("UpdateEmployeeQueryWithLockModeNONE").executeUpdate();
+            commitTransaction(em);
+        } catch (Exception e) {
+            if (isTransactionActive(em)){
+                rollbackTransaction(em);
+            }
+            
+            fail("Update query failed: " + e.getMessage());
+        } finally {
+            closeEntityManager(em);
         }
     }
 
@@ -4192,6 +4211,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         }
     }
 */
+    
     // Test the clone method works correctly with lazy attributes.
     public void testCloneable() {
         EntityManager em = createEntityManager();
