@@ -92,7 +92,7 @@ public class CollectionChangeRecord extends DeferrableChangeRecord implements or
             ObjectChangeSet change = session.getDescriptor(object.getClass()).getObjectBuilder().createObjectChangeSet(object, changeSet, session);
             if (change.hasKeys()){
                 // if change set has keys this is a map comparison.  Maps are
-                // not support in change tracking so do not need to prevent duplicates
+                // not supported in change tracking so do not need to prevent duplicates
                 // when map support is added this will have to be refactored
                 getAddObjectList().put(change, change);
             } else {
