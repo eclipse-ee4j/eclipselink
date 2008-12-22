@@ -1047,7 +1047,7 @@ public class DatabaseAccessor extends DatasourceAccessor {
             if (optimizeData) {
                 try {
                     value = getObjectThroughOptimizedDataConversion(resultSet, field, type, columnNumber, platform, session);
-                    // Since null cannot be distighighsed from no optimization done, this is return for no-op.
+                    // Since null cannot be distinguished from no optimization done, this is return for no-op.
                     if (value == null) {
                         return null;
                     }
