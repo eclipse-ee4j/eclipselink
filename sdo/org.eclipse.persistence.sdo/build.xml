@@ -132,5 +132,47 @@
         <echo message=" commonj.sdo.impl;version=&quot;2.1.0&quot;;resolution:=optional${line.separator}"                                                 file="META-INF/MANIFEST.MF" append="true"/>
         <echo message="HK2-Bundle-Name: org.eclipse.persistence:${ant.project.name}${line.separator}"                                                     file="META-INF/MANIFEST.MF" append="true"/>
     </target>
-    
+
+	<target name="build_sdo_lib_jar" depends="compile-sdo-lib, package-sdo-lib-jar" description="Build SDO API lib"/>
+
+    <!-- compile -->
+    <target name="compile-sdo-lib" description="Compile SDO API lib">
+        <mkdir dir="../plugins/${commonj.sdo.dir}/${classes.dir}"/>
+        <javac srcdir="../plugins/${commonj.sdo.dir}/commonj"
+               destdir="../plugins/${commonj.sdo.dir}/${classes.dir}"
+               includes="**/*.java"
+               debug="${javac.debug}"
+               optimize="${javac.optimize}"
+               source="${javac.version}"
+               target="${javac.version}"
+               deprecation="${javac.deprecation}"
+               failonerror="true"
+               memoryMaximumSize="512m"
+               fork="true"
+        />
+    </target>
+
+	<!-- Packages the SDO API jar-->
+    <target name="package-sdo-lib-jar" description="Package SDO API lib jar">
+        <delete file="../plugins/${commonj.sdo.jar}"/>
+        <echo message="Implementation-Version: ${version.string}"/>
+        <jar jarfile="../plugins/${commonj.sdo.jar}">
+             <manifest>
+                <attribute name="Manifest-Version"    value="1.0"/>
+                <attribute name="Bundle-ManifestVersion"   value="2"/>
+                <attribute name="Bundle-Name"  value="SDO"/>
+                <attribute name="Bundle-SymbolicName"   value="commonj.sdo"/>
+                <attribute name="Bundle-Version"  value="2.1.1"/>
+				<attribute name="Export-Package" value="${osgi.export.package}"/>
+            </manifest>
+			<fileset
+                dir="../plugins/${commonj.sdo.dir}/${classes.dir}"
+                includes="**/*.class"
+			/>
+            <fileset
+                dir="../plugins/${commonj.sdo.dir}"
+                includes="xml/*.xsd"
+			/>
+        </jar>
+    </target>
 </project>
