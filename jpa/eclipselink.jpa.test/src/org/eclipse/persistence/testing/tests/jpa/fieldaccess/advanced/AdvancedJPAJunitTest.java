@@ -14,6 +14,7 @@ package org.eclipse.persistence.testing.tests.jpa.fieldaccess.advanced;
 
 import java.util.Collection;
 
+import javax.persistence.Query;
 import javax.persistence.EntityManager;
 
 import junit.framework.*;
@@ -66,6 +67,7 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
     public static Test suite() {
         TestSuite suite = new TestSuite();
         suite.setName("AdvancedJPAJunitTest (fieldaccess)");
+        suite.addTest(new AdvancedJPAJunitTest("testSetup"));
         
         suite.addTest(new AdvancedJPAJunitTest("testJoinFetchAnnotation"));
         suite.addTest(new AdvancedJPAJunitTest("testVerifyEmployeeCustomizerSettings"));
@@ -93,33 +95,33 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
         // Temporary removal of JPA 2.0 dependency
         //suite.addTest(new AdvancedJPAJunitTest("testPessimisticLockingNamedQuery"));
 
-        return new TestSetup(suite) {
-            protected void setUp() { 
-                ServerSession session = JUnitTestCase.getServerSession("fieldaccess");
-                new AdvancedTableCreator().replaceTables(session);
-                
-                // The EquipmentCode class 'should' be set to read only. We want 
-                // to be able to create a couple in the Employee populator, so 
-                // force the read only to false. If EquipmentCode is not 
-                // actually read only, don't worry, we set the original read
-                // only value back on the descriptor and the error will be 
-                // caught in a later test in this suite.
-                ClassDescriptor descriptor = session.getDescriptor(EquipmentCode.class);
-                boolean shouldBeReadOnly = descriptor.shouldBeReadOnly();
-                descriptor.setShouldBeReadOnly(false);
-                
-                // Populate the database with our examples.
-                EmployeePopulator employeePopulator = new EmployeePopulator();         
-                employeePopulator.buildExamples();
-                employeePopulator.persistExample(session);
-                
-                descriptor.setShouldBeReadOnly(shouldBeReadOnly);
-            }
+        return suite;
+    }
+    
+    /**
+     * The setup is done as a test, both to record its failure, and to allow execution in the server.
+     */
+    public void testSetup() {
+        ServerSession session = JUnitTestCase.getServerSession("fieldaccess");
+        new AdvancedTableCreator().replaceTables(session);
+        // The EquipmentCode class 'should' be set to read only. We want 
+        // to be able to create a couple in the Employee populator, so 
+         // force the read only to false. If EquipmentCode is not 
+        // actually read only, don't worry, we set the original read
+        // only value back on the descriptor and the error will be 
+        // caught in a later test in this suite.
+        ClassDescriptor descriptor = session.getDescriptor(EquipmentCode.class);
+        boolean shouldBeReadOnly = descriptor.shouldBeReadOnly();
+        descriptor.setShouldBeReadOnly(false);
+        
+        // Populate the database with our examples.
+        EmployeePopulator employeePopulator = new EmployeePopulator();         
+        employeePopulator.buildExamples();
+        employeePopulator.persistExample(session);
+        
+        descriptor.setShouldBeReadOnly(shouldBeReadOnly);
 
-            protected void tearDown() {
-                clearCache("fieldaccess");
-            }
-        };
+        clearCache("fieldaccess");
     }
     
     /**
@@ -128,7 +130,7 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
     public void testVerifyEmployeeCustomizerSettings() {
         EntityManager em = createEntityManager("fieldaccess");
         
-        ClassDescriptor descriptor = ((EntityManagerImpl) em).getServerSession().getDescriptorForAlias("Employee");
+        ClassDescriptor descriptor = getServerSession("fieldaccess").getDescriptorForAlias("Employee");
             
         if (descriptor == null) {
             fail("A descriptor for the Employee alias was not found.");    
@@ -207,7 +209,7 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
                     break;
                 }
             }
-            
+            commitTransaction(em);
             assertTrue("The new responsibility was not added.", found);
             assertTrue("The basic collection using enums was not persisted correctly.", emp.worksMondayToFriday());
         } catch (RuntimeException e) {
@@ -282,7 +284,7 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
             assertTrue("Diners Club card did not persist correctly.", buyer.hasDinersClub(diners));
             assertTrue("Mastercard card did not persist correctly.", buyer.hasMastercard(mastercard));
             assertTrue("The serialized enum set was not persisted correctly.", buyer.buysSaturdayToSunday());
-            
+            commitTransaction(em);
         } catch (RuntimeException e) {
             if (isTransactionActive(em)){
                 rollbackTransaction(em);
@@ -300,6 +302,11 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
      * Tests an OptimisticLocking policy set on Buyer.
      */
     public void testBuyerOptimisticLocking() {
+        // Cannot create parallel entity managers in the server.
+        if (isOnServer()) {
+            return;
+        }
+
         EntityManager em1 = createEntityManager("fieldaccess");
         EntityManager em2 = createEntityManager("fieldaccess");
         em1.getTransaction().begin();
@@ -573,7 +580,7 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
             commitTransaction(em);
             
             Address address2 = (Address) em.createNamedQuery("SProcAddress").setParameter("ADDRESS_ID", address1.getId()).getSingleResult();
-            assertTrue("Address not found using stored procedure", address2.equals(address1));
+            assertTrue("Address not found using stored procedure", (address2.getId() == address1.getId()));
             
         } catch (RuntimeException e) {
             if (isTransactionActive(em)){
@@ -716,7 +723,7 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
         beginTransaction(em);
         
         try {    
-            EJBQueryImpl query = (EJBQueryImpl) em.createNamedQuery("findSQLEquipmentCodeA");
+            Query query = em.createNamedQuery("findSQLEquipmentCodeA");
             EquipmentCode equipmentCode = (EquipmentCode) query.getSingleResult();
             
             equipmentCode.setCode("Z");
@@ -726,6 +733,7 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
             // EquipmentCode A again. If an exception is caught, then it was 
             // not found, therefore, updated on the db.
             try {
+                query = em.createNamedQuery("findSQLEquipmentCodeA");
                 query.getSingleResult();
             } catch (Exception e) {
                 fail("The read only EquipmentA was modified");
@@ -752,7 +760,7 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
      */
     /* // KERNEL_SRG_TEMP       
     public void testPessimisticLockingNamedQuery() {
-        ServerSession session = JUnitTestCase.getServerSession();
+        ServerSession session = JUnitTestCase.getServerSession("fieldaccess");
         
         // Cannot create parallel entity managers in the server.
         if (! isOnServer() && ! session.getPlatform().isMySQL() && ! session.getPlatform().isTimesTen()) {

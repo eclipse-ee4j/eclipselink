@@ -15,6 +15,7 @@
 package org.eclipse.persistence.testing.tests.jpa.fieldaccess.advanced;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Vector;
@@ -112,16 +113,36 @@ public class JoinedAttributeAdvancedJunitTest extends JUnitTestCase {
     }
     
     public static Test suite() {
-        TestSuite suite = new TestSuite(JoinedAttributeAdvancedJunitTest.class);
+        TestSuite suite = new TestSuite();
+        suite.setName("JoinedAttributeAdvancedJunitTest (fieldaccess)");
         
-        return new TestSetup(suite) {
-            protected void setUp(){               
-                new AdvancedTableCreator().replaceTables(JUnitTestCase.getServerSession("fieldaccess"));
-            }
-
-            protected void tearDown() {
-            }
-        };
+        suite.addTest(new JoinedAttributeAdvancedJunitTest("testSetup"));
+        suite.addTest(new JoinedAttributeAdvancedJunitTest("testProjectJoinTeamMembers"));
+        suite.addTest(new JoinedAttributeAdvancedJunitTest("testProjectJoinTeamLeaderJoinAddressWhereTeamLeaderNotNull"));
+        suite.addTest(new JoinedAttributeAdvancedJunitTest("testProjectJoinTeamMembersJoinAddress"));
+        suite.addTest(new JoinedAttributeAdvancedJunitTest("testProjectOuterJoinTeamMembersJoinAddress"));
+        suite.addTest(new JoinedAttributeAdvancedJunitTest("testProjectOuterJoinTeamMembersOuterJoinAddress"));
+        suite.addTest(new JoinedAttributeAdvancedJunitTest("testProjectJoinTeamMembersOuterJoinAddress"));
+        suite.addTest(new JoinedAttributeAdvancedJunitTest("testProblemReporterProjectJoinTeamMembersJoinAddress"));
+        suite.addTest(new JoinedAttributeAdvancedJunitTest("testEmployeeJoinProjects"));
+        suite.addTest(new JoinedAttributeAdvancedJunitTest("testEmployeeJoinProjectsJoinTeamLeaderJoinAddressWhereManagerIsNull"));
+        suite.addTest(new JoinedAttributeAdvancedJunitTest("testProjectOuterJoinTeamLeaderAddressTeamMembersAddressPhonesWhereProjectName"));
+        suite.addTest(new JoinedAttributeAdvancedJunitTest("testEmployeeOuterJoinAddressPhoneProjectsTeamLeaderAddressTeamMembersPhones"));
+        suite.addTest(new JoinedAttributeAdvancedJunitTest("testEmployeeJoinManagerAddressOuterJoinManagerAddress"));
+        suite.addTest(new JoinedAttributeAdvancedJunitTest("testTwoUnrelatedResultWithOneToManyJoins"));
+        suite.addTest(new JoinedAttributeAdvancedJunitTest("testMultipleUnrelatedResultWithOneToManyJoins"));
+        suite.addTest(new JoinedAttributeAdvancedJunitTest("testTwoUnrelatedResultWithOneToOneJoins"));
+        suite.addTest(new JoinedAttributeAdvancedJunitTest("testTwoUnrelatedResultWithOneToOneJoinsWithExtraItem"));
+        
+        return suite;
+    }
+    
+    /**
+     * The setup is done as a test, both to record its failure, and to allow execution in the server.
+     */
+    public void testSetup() {
+        new AdvancedTableCreator().replaceTables(JUnitTestCase.getServerSession("fieldaccess"));
+        clearCache("fieldaccess");
     }
     
     public void tearDown() {
@@ -130,252 +151,6 @@ public class JoinedAttributeAdvancedJunitTest extends JUnitTestCase {
         super.tearDown();
     }
         
-/*    public void testProjectJoinTeamMembers() {
-        ReportQuery query = new ReportQuery();
-        query.setShouldReturnWithoutReportQueryResult(true);
-        query.setReferenceClass(Project.class);
-        
-        ReportQuery controlQuery = (ReportQuery)query.clone();
-        ArrayList joins = new ArrayList();
-        joins.add(query.getExpressionBuilder().anyOf("teamMembers"));
-        
-        query.addItem("project", query.getExpressionBuilder(), joins);
-
-        String errorMsg = executeQueriesAndCompareResults(controlQuery, query);
-        if(errorMsg.length() > 0) {
-            fail(errorMsg);
-        }
-    }
-    
-    public void testProjectJoinTeamLeaderJoinAddressWhereTeamLeaderNotNull() {
-        ReportQuery query = new ReportQuery();
-        query.setShouldReturnWithoutReportQueryResult(true);
-        query.setReferenceClass(Project.class);
-        Expression teamLeader = query.getExpressionBuilder().get("teamLeader");
-        query.setSelectionCriteria(teamLeader.notNull());
-        
-        ReportQuery controlQuery = (ReportQuery)query.clone();
-        ArrayList joins = new ArrayList();
-        joins.add(teamLeader);
-        Expression teamLeaderAddress = teamLeader.get("address");
-        joins.add(teamLeaderAddress);
-        
-        query.addItem("project", query.getExpressionBuilder(), joins);
-
-        String errorMsg = executeQueriesAndCompareResults(controlQuery, query);
-        if(errorMsg.length() > 0) {
-            fail(errorMsg);
-        }
-    }
-    
-    public void testProjectJoinTeamMembersJoinAddress() {
-        ReportQuery query = new ReportQuery();
-        query.setShouldReturnWithoutReportQueryResult(true);
-        query.setReferenceClass(Project.class);
-        
-        ReportQuery controlQuery = (ReportQuery)query.clone();
-        
-        ArrayList joins = new ArrayList();
-        Expression teamMembers = query.getExpressionBuilder().anyOf("teamMembers");
-        joins.add(teamMembers);
-        Expression teamMembersAddress = teamMembers.get("address");
-        joins.add(teamMembersAddress);
-        
-        query.addItem("proejct", query.getExpressionBuilder(), joins);
-
-        String errorMsg = executeQueriesAndCompareResults(controlQuery, query);
-        if(errorMsg.length() > 0) {
-            fail(errorMsg);
-        }
-    }
-    
-    public void testProjectOuterJoinTeamMembersJoinAddress() {
-        ReportQuery query = new ReportQuery();
-        query.setShouldReturnWithoutReportQueryResult(true);
-        query.setReferenceClass(Project.class);
-        
-        ReportQuery controlQuery = (ReportQuery)query.clone();
-        
-        ArrayList joins = new ArrayList();
-        Expression teamMembers = query.getExpressionBuilder().anyOfAllowingNone("teamMembers");
-        joins.add(teamMembers);
-        Expression teamMembersAddress = teamMembers.get("address");
-        joins.add(teamMembersAddress);
-        
-        query.addItem("project", query.getExpressionBuilder(), joins);
-
-        String errorMsg = executeQueriesAndCompareResults(controlQuery, query);
-        if(errorMsg.length() > 0) {
-            fail(errorMsg);
-        }
-    }
-    
-    public void testProjectOuterJoinTeamMembersOuterJoinAddress() {
-        ReportQuery query = new ReportQuery();
-        query.setShouldReturnWithoutReportQueryResult(true);
-        query.setReferenceClass(Project.class);
-        
-        ReportQuery controlQuery = (ReportQuery)query.clone();
-        
-        ArrayList joins = new ArrayList();
-        Expression teamMembers = query.getExpressionBuilder().anyOfAllowingNone("teamMembers");
-        joins.add(teamMembers);
-        Expression teamMembersAddress = teamMembers.getAllowingNull("address");
-        joins.add(teamMembersAddress);
-        
-        query.addItem("project", query.getExpressionBuilder(), joins);
-
-        String errorMsg = executeQueriesAndCompareResults(controlQuery, query);
-        if(errorMsg.length() > 0) {
-            fail(errorMsg);
-        }
-    }
-    
-    public void testProjectJoinTeamMembersOuterJoinAddress() {
-        ReportQuery query = new ReportQuery();
-        query.setShouldReturnWithoutReportQueryResult(true);
-        query.setReferenceClass(Project.class);
-        
-        ReportQuery controlQuery = (ReportQuery)query.clone();
-        
-        ArrayList joins = new ArrayList();
-        Expression teamMembers = query.getExpressionBuilder().anyOf("teamMembers");
-        joins.add(teamMembers);
-        Expression teamMembersAddress = teamMembers.getAllowingNull("address");
-        joins.add(teamMembersAddress);
-        
-        query.addItem("project", query.getExpressionBuilder(), joins);
-
-        String errorMsg = executeQueriesAndCompareResults(controlQuery, query);
-        if(errorMsg.length() > 0) {
-            fail(errorMsg);
-        }
-    }
-    
-    public void testProblemReporterProjectJoinTeamMembersJoinAddress() {
-        ReportQuery query = new ReportQuery();
-        query.setShouldReturnWithoutReportQueryResult(true);
-        query.setReferenceClass(Project.class);
-        query.setSelectionCriteria(query.getExpressionBuilder().get("name").equal("Problem Reporter"));
-        
-        ReportQuery controlQuery = (ReportQuery)query.clone();
-        
-        ArrayList joins = new ArrayList();
-        Expression teamMembers = query.getExpressionBuilder().anyOf("teamMembers");
-        joins.add(teamMembers);
-        Expression teamMembersAddress = teamMembers.get("address");
-        joins.add(teamMembersAddress);
-        
-        query.addItem("project", query.getExpressionBuilder(), joins);
-
-        String errorMsg = executeQueriesAndCompareResults(controlQuery, query);
-        if(errorMsg.length() > 0) {
-            fail(errorMsg);
-        }
-    }
-    
-    public void testEmployeeJoinProjects() {
-        ReportQuery query = new ReportQuery();
-        query.setShouldReturnWithoutReportQueryResult(true);
-        query.setReferenceClass(Employee.class);
-        
-        ReportQuery controlQuery = (ReportQuery)query.clone();
-        ArrayList list = new ArrayList();
-        list.add(query.getExpressionBuilder().anyOf("projects"));
-
-        query.addItem("employee", query.getExpressionBuilder(), list);
-        String errorMsg = executeQueriesAndCompareResults(controlQuery, query);
-        if(errorMsg.length() > 0) {
-            fail(errorMsg);
-        }
-    }
-    
-    public void testEmployeeJoinProjectsJoinTeamLeaderJoinAddressWhereManagerIsNull() {
-        ReportQuery query = new ReportQuery();
-        query.setShouldReturnWithoutReportQueryResult(true);
-        query.setReferenceClass(Employee.class);
-        query.setSelectionCriteria(query.getExpressionBuilder().get("manager").isNull());
-        
-        ReportQuery controlQuery = (ReportQuery)query.clone();
-        ArrayList joins = new ArrayList();
-        Expression projects = query.getExpressionBuilder().anyOf("projects");
-        joins.add(projects);
-        Expression teamLeader = projects.get("teamLeader");
-        joins.add(teamLeader);
-        Expression teamLeaderAddress = teamLeader.get("address");
-        joins.add(teamLeaderAddress);
-        query.addItem("employee", query.getExpressionBuilder(), joins);
-        
-        String errorMsg = executeQueriesAndCompareResults(controlQuery, query);
-        if(errorMsg.length() > 0) {
-            fail(errorMsg);
-        }
-    }
-    
-    public void testProjectOuterJoinTeamLeaderAddressTeamMembersAddressPhonesWhereProjectName() {
-        ReportQuery query = new ReportQuery();
-        query.setShouldReturnWithoutReportQueryResult(true);
-        query.setReferenceClass(Project.class);
-        query.setSelectionCriteria(query.getExpressionBuilder().get("name").equal("Problem Reporting System").
-            or(query.getExpressionBuilder().get("name").equal("Bleep Blob")));
-        
-        ReportQuery controlQuery = (ReportQuery)query.clone();
-        
-        ArrayList joins = new ArrayList();
-        Expression teamLeader = query.getExpressionBuilder().getAllowingNull("teamLeader");
-        joins.add(teamLeader);
-        Expression teamLeaderAddress = teamLeader.getAllowingNull("address");
-        joins.add(teamLeaderAddress);
-        Expression teamMembers = query.getExpressionBuilder().anyOfAllowingNone("teamMembers");
-        joins.add(teamMembers);
-        Expression teamMembersAddress = teamMembers.getAllowingNull("address");
-        joins.add(teamMembersAddress);
-        Expression teamMembersPhones = teamMembers.anyOfAllowingNone("phoneNumbers");
-        joins.add(teamMembersPhones);
-        query.addItem("project", query.getExpressionBuilder(), joins);
-
-        String errorMsg = executeQueriesAndCompareResults(controlQuery, query);
-        if(errorMsg.length() > 0) {
-            fail(errorMsg);
-        }
-    }
-    
-    public void testEmployeeOuterJoinAddressPhoneProjectsTeamLeaderAddressTeamMembersPhones() {
-        ReportQuery query = new ReportQuery();
-        query.setShouldReturnWithoutReportQueryResult(true);
-        query.setReferenceClass(Employee.class);
-        
-        ReportQuery controlQuery = (ReportQuery)query.clone();
-        
-        // Note that without the following two lines address and phones are not read not for all Employees:
-        // once an Employee is built (without Address and Phones)
-        // it's not going to be rebuilt (get Address and Phones) when it's
-        // up again either as a teamLeader or teamMember.
-        // That means that only Employees read first indirectly (either as teamLeaders or
-        // teamMembers would've got Phones and Addresses).
-        ArrayList joins = new ArrayList();
-        joins.add(query.getExpressionBuilder().getAllowingNull("address"));
-        joins.add(query.getExpressionBuilder().anyOfAllowingNone("phoneNumbers"));
-        
-        Expression projects = query.getExpressionBuilder().anyOfAllowingNone("projects");
-        joins.add(projects);
-        Expression teamLeader = projects.getAllowingNull("teamLeader");
-        joins.add(teamLeader);
-        Expression teamLeaderAddress = teamLeader.getAllowingNull("address");
-        joins.add(teamLeaderAddress);
-        Expression teamMembers = projects.anyOfAllowingNone("teamMembers");
-        joins.add(teamMembers);
-        Expression teamMembersPhones = teamMembers.anyOfAllowingNone("phoneNumbers");
-        joins.add(teamMembersPhones);
-        query.addItem("employee", query.getExpressionBuilder(), joins);
-
-        String errorMsg = executeQueriesAndCompareResults(controlQuery, query);
-        if(errorMsg.length() > 0) {
-            fail(errorMsg);
-        }
-    }
-    
-*/
     public void testProjectJoinTeamMembers() {
         ReadAllQuery query = new ReadAllQuery();
         query.setReferenceClass(Project.class);

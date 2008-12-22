@@ -1105,6 +1105,7 @@
     <!-- Run all the JPA tests in the server -->
     <target name="server-test-lrg" depends="clean-test">
         <antcall target="server-test-advanced" inheritRefs="true"/>
+        <antcall target="server-test-advanced2" inheritRefs="true"/>
         <antcall target="server-test-datatypes" inheritRefs="true"/>
         <antcall target="server-test-datetime" inheritRefs="true"/>
         <antcall target="server-test-ddlgeneration" inheritRefs="true"/>
@@ -1133,6 +1134,19 @@
             <param name="TEST_NAME" value="eclipselink-advanced-model"/>
             <param name="EAR_NAME" value="eclipselink-advanced-model"/>
             <param name="TEST_SUITE" value="org.eclipse.persistence.testing.tests.jpa.advanced.ServerTestSuite"/>
+            <param name="eclipselink.jpa.test.dir" value="."/>
+        </antcall>
+    </target>
+
+    <target name="server-test-advanced2">
+        <antcall target="server-run-all" inheritRefs="true">
+            <param name="PERSISTENCE_UNIT_NAME" value="default"/>
+            <param name="MODEL_DIR" value="org/eclipse/persistence/testing/models/jpa/advanced"/>
+            <param name="MODEL_NAME" value="eclipselink-advanced-model"/>
+            <param name="TEST_DIR" value="org/eclipse/persistence/testing/tests/jpa/advanced"/>
+            <param name="TEST_NAME" value="eclipselink-advanced-model"/>
+            <param name="EAR_NAME" value="eclipselink-advanced-model"/>
+            <param name="TEST_SUITE" value="org.eclipse.persistence.testing.tests.jpa.advanced.EntityManagerJUnitTestSuite"/>
             <param name="eclipselink.jpa.test.dir" value="."/>
         </antcall>
     </target>
@@ -1184,7 +1198,7 @@
             <param name="TEST_DIR" value="org/eclipse/persistence/testing/tests/jpa/fieldaccess/advanced"/>
             <param name="TEST_NAME" value="eclipselink-advanced-field-access-model"/>
             <param name="EAR_NAME" value="eclipselink-advanced-field-access-model"/>
-            <param name="TEST_SUITE" value="org.eclipse.persistence.testing.tests.jpa.fieldaccess.advanced.EntityManagerJUnitTestSuite"/>
+            <param name="TEST_SUITE" value="org.eclipse.persistence.testing.tests.jpa.fieldaccess.advanced.ServerTestSuite"/>
             <param name="eclipselink.jpa.test.dir" value="."/>
         </antcall>
     </target>

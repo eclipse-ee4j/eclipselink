@@ -49,25 +49,24 @@ import javax.persistence.PersistenceException;
 
     public static Test suite() {
         TestSuite suite = new TestSuite("Optimistic Concurrency (fieldaccess)");
+        suite.addTest(new OptimisticConcurrencyJUnitTestSuite("testSetup"));
         suite.addTest(new OptimisticConcurrencyJUnitTestSuite("testCreateProjects"));
         suite.addTest(new OptimisticConcurrencyJUnitTestSuite("testCreateEmployeeWithFlush"));
         suite.addTest(new OptimisticConcurrencyJUnitTestSuite("testVersionUpdateWithCorrectValue"));
         suite.addTest(new OptimisticConcurrencyJUnitTestSuite("testVersionUpdateWithIncorrectValue"));
         suite.addTest(new OptimisticConcurrencyJUnitTestSuite("testVersionUpdateWithNullValue"));
-
-        return new TestSetup(suite) {
-
-            protected void setUp(){
-                DatabaseSession session = JUnitTestCase.getServerSession("fieldaccess");
-                new AdvancedTableCreator().replaceTables(session);
-            }
-
-            protected void tearDown() {
-                clearCache("fieldaccess");
-            }
-        };
+        
+        return suite;
     }
-
+    
+    /**
+     * The setup is done as a test, both to record its failure, and to allow execution in the server.
+     */
+    public void testSetup() {
+        new AdvancedTableCreator().replaceTables(JUnitTestCase.getServerSession("fieldaccess"));
+        clearCache("fieldaccess");
+    }
+    
     /**
      * Creates two projects used in later tests.
      */
@@ -166,7 +165,8 @@ import javax.persistence.PersistenceException;
             commitTransaction(em);
 
             beginTransaction(em);
-            employee.setVersion(2);
+            Employee employee1 = em.find(Employee.class, employee.getId());
+            employee1.setVersion(2);
             commitTransaction(em);
             fail("updating object version with wrong value didn't throw exception");
         } catch (PersistenceException pe) {
@@ -196,13 +196,14 @@ import javax.persistence.PersistenceException;
             commitTransaction(em);
 
             beginTransaction(em);
-            employee.setVersion(null);
+            Employee employee2 = em.find(Employee.class, employee.getId());
+            employee2.setVersion(null);
             commitTransaction(em);
-            fail("employee.setVersion(null) didn't throw exception");
+            fail("employee2.setVersion(null) didn't throw exception");
         } catch (PersistenceException pe) {
             // expected behavior
         } catch (Exception e) {
-            fail("employee.setVersion(null) threw a wrong exception: " + e.getMessage());
+            fail("employee2.setVersion(null) threw a wrong exception: " + e.getMessage());
         } finally {
             if (isTransactionActive(em)){
                 rollbackTransaction(em);

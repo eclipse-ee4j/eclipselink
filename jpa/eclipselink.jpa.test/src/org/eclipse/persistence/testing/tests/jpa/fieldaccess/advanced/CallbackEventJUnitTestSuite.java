@@ -41,23 +41,29 @@ public class CallbackEventJUnitTestSuite extends JUnitTestCase {
         super(name);
     }
 
-	public static Test suite() {
-        TestSuite suite = new TestSuite(CallbackEventJUnitTestSuite.class);
+    public static Test suite() {
+        TestSuite suite = new TestSuite();
+        suite.setName("CallbackEventJUnitTestSuite");
         
-        suite.setName("CallbackEventJUnitTestSuite (fieldaccess)");
+        suite.addTest(new CallbackEventJUnitTestSuite("testSetup"));
+        suite.addTest(new CallbackEventJUnitTestSuite("testPersistThenRemoveCalls"));
+        suite.addTest(new CallbackEventJUnitTestSuite("testRemoveUnmanagedNewEntity"));
+        suite.addTest(new CallbackEventJUnitTestSuite("testPersistOnRegisteredObject"));
+        suite.addTest(new CallbackEventJUnitTestSuite("testPreUpdateEvent_UpdateAltered"));
+        suite.addTest(new CallbackEventJUnitTestSuite("testPreUpdateEvent_UpdateReverted"));
         
-        return new TestSetup(suite) {
-        
-            protected void setUp(){      
-                new AdvancedTableCreator().replaceTables(JUnitTestCase.getServerSession("fieldaccess"));
-            }
-
-            protected void tearDown() {
-                clearCache("fieldaccess");
-            }
-        };
+        return suite;
     }
- 
+    
+    /**
+     * The setup is done as a test, both to record its failure, and to allow execution in the server.
+     */
+    public void testSetup() {
+        new AdvancedTableCreator().replaceTables(JUnitTestCase.getServerSession("fieldaccess"));
+        
+        clearCache("fieldaccess");
+    }
+    
     public void setUp () {
         m_reset = true;
         super.setUp();
@@ -248,27 +254,6 @@ public class CallbackEventJUnitTestSuite extends JUnitTestCase {
         Vector pk = new Vector();
         pk.add(emp.getId());
         return ((Integer)getServerSession("fieldaccess").getDescriptor(Employee.class).getOptimisticLockingPolicy().getWriteLockValue(emp, pk, getServerSession("fieldaccess"))).intValue();
-    }    
-    
-    public void tearDown () {
-        if (m_reset) {
-            EntityManager em = createEntityManager("fieldaccess");
-            beginTransaction(em);
-            try {
-                Employee emp = em.find(Employee.class, new_emp.getId());
-                em.remove(emp);
-                commitTransaction(em);
-            } catch (RuntimeException ex){
-                if (isTransactionActive(em)){
-                    rollbackTransaction(em);
-                }
-                closeEntityManager(em);
-                throw ex;
-            }
-            m_reset = false;
-        }
-        super.tearDown();
     }
     
-
 }

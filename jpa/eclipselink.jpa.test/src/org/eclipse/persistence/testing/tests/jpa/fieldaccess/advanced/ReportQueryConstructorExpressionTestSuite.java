@@ -30,6 +30,8 @@ import junit.framework.TestSuite;
 import junit.framework.Test;
 import junit.extensions.TestSetup;
 
+import javax.persistence.EntityManager;
+
 import java.util.Vector;
 import java.util.Iterator;
 
@@ -58,32 +60,36 @@ public class ReportQueryConstructorExpressionTestSuite extends JUnitTestCase {
     }
     
     public static Test suite() {    
-        TestSuite suite = new TestSuite(ReportQueryConstructorExpressionTestSuite.class);
-        suite.setName("ReportQueryConstructorExpressionTestSuite (fieldaccess)");      
-
-        return new TestSetup(suite) {
+        TestSuite suite = new TestSuite();
+        suite.setName("ReportQueryConstructorExpressionTestSuite (fieldaccess)");
         
-            protected void setUp(){
-                           
-                //get session to start setup
-                DatabaseSession session = JUnitTestCase.getServerSession("fieldaccess");
-                
-                //create a new EmployeePopulator
-                EmployeePopulator employeePopulator = new EmployeePopulator();
-                
-                new AdvancedTableCreator().replaceTables(session);
-           
-                //Populate the tables
-                employeePopulator.buildExamples();
-                
-                //Persist the examples in the database
-                employeePopulator.persistExample(session);       
-            }
+        suite.addTest(new ReportQueryConstructorExpressionTestSuite("testSetup"));
+        suite.addTest(new ReportQueryConstructorExpressionTestSuite("testSimpleConstructorExpression"));
+        suite.addTest(new ReportQueryConstructorExpressionTestSuite("testSimpleConstructorExpressionWithNamedQuery"));
+        suite.addTest(new ReportQueryConstructorExpressionTestSuite("testMultipleTypeConstructorExpression"));
+        suite.addTest(new ReportQueryConstructorExpressionTestSuite("testNonExistantConstructorConstructorExpression"));
+        suite.addTest(new ReportQueryConstructorExpressionTestSuite("testPrimitiveConstructorExpression"));
+        suite.addTest(new ReportQueryConstructorExpressionTestSuite("testConstructorEJBQLWithInheritance"));
+        suite.addTest(new ReportQueryConstructorExpressionTestSuite("testConstructorExpressionWithOtherAttributes"));
+        
+        return suite;
+    }
+    
+    /**
+     * The setup is done as a test, both to record its failure, and to allow execution in the server.
+     */
+    public void testSetup() {
+        new AdvancedTableCreator().replaceTables(JUnitTestCase.getServerSession("fieldaccess"));
+        //create a new EmployeePopulator
+        EmployeePopulator employeePopulator = new EmployeePopulator();
+        
+        //Populate the tables
+        employeePopulator.buildExamples();
+        
+        //Persist the examples in the database
+        employeePopulator.persistExample(JUnitTestCase.getServerSession("fieldaccess"));
 
-            protected void tearDown() {
-                clearCache("fieldaccess");
-            }
-        };
+        clearCache("fieldaccess");
     }
     
     public void testSimpleConstructorExpression(){
@@ -91,9 +97,9 @@ public class ReportQueryConstructorExpressionTestSuite extends JUnitTestCase {
         ReportQuery query = new ReportQuery(Employee.class, employees);
         query.addAttribute("firstName");
         query.addAttribute("lastName");
-        org.eclipse.persistence.jpa.JpaEntityManager em = (org.eclipse.persistence.jpa.JpaEntityManager) createEntityManager("fieldaccess");          
+        EntityManager em = createEntityManager("fieldaccess");          
 
-        Vector reportResults = (Vector)em.getActiveSession().executeQuery(query);
+        Vector reportResults = (Vector)getServerSession("fieldaccess").executeQuery(query);
         
         employees = new ExpressionBuilder();
         query = new ReportQuery(Employee.class, employees);
@@ -103,7 +109,7 @@ public class ReportQueryConstructorExpressionTestSuite extends JUnitTestCase {
         query.addAttribute("firstName");
         query.addAttribute("lastName");
         query.endAddingToConstructorItem();
-        Vector results = (Vector)em.getActiveSession().executeQuery(query);
+        Vector results = (Vector)getServerSession("fieldaccess").executeQuery(query);
         Iterator i = results.iterator();
         Iterator report = reportResults.iterator();
         while (i.hasNext()){
@@ -127,9 +133,9 @@ public class ReportQueryConstructorExpressionTestSuite extends JUnitTestCase {
         ReportQuery query = new ReportQuery(Employee.class, employees);
         query.addAttribute("firstName");
         query.addAttribute("lastName");
-        org.eclipse.persistence.jpa.JpaEntityManager em = (org.eclipse.persistence.jpa.JpaEntityManager) createEntityManager("fieldaccess");          
+        EntityManager em = createEntityManager("fieldaccess");          
 
-        Vector reportResults = (Vector)em.getActiveSession().executeQuery(query);
+        Vector reportResults = (Vector)getServerSession("fieldaccess").executeQuery(query);
 
         Vector results = (Vector)em.createNamedQuery("constuctFieldAccessEmployees").getResultList();
         Iterator i = results.iterator();
@@ -157,9 +163,9 @@ public class ReportQueryConstructorExpressionTestSuite extends JUnitTestCase {
         query.addItem("endDate", employees.get("period").get("endDate"));
         query.addAttribute("id");
 
-        org.eclipse.persistence.jpa.JpaEntityManager em = (org.eclipse.persistence.jpa.JpaEntityManager) createEntityManager("fieldaccess");          
+        EntityManager em = createEntityManager("fieldaccess");          
 
-        Vector reportResults = (Vector)em.getActiveSession().executeQuery(query);
+        Vector reportResults = (Vector)getServerSession("fieldaccess").executeQuery(query);
         query = new ReportQuery(Employee.class, employees);
 
         Class[] argTypes = new Class[]{String.class, java.sql.Date.class, Integer.class};
@@ -168,7 +174,7 @@ public class ReportQueryConstructorExpressionTestSuite extends JUnitTestCase {
         query.addItem("endDate", employees.get("period").get("endDate"));
         query.addAttribute("id");
         query.endAddingToConstructorItem();
-        Vector results = (Vector)em.getActiveSession().executeQuery(query);
+        Vector results = (Vector)getServerSession("fieldaccess").executeQuery(query);
         Iterator i = results.iterator();
         Iterator report = reportResults.iterator();
         while (i.hasNext()){
@@ -197,10 +203,10 @@ public class ReportQueryConstructorExpressionTestSuite extends JUnitTestCase {
         query.addItem("endDate", employees.get("period").get("endDate"));
         query.addAttribute("id");
         query.endAddingToConstructorItem();
-        org.eclipse.persistence.jpa.JpaEntityManager em = (org.eclipse.persistence.jpa.JpaEntityManager) createEntityManager("fieldaccess");          
+        EntityManager em = createEntityManager("fieldaccess");          
         QueryException exception = null;
         try{
-            em.getActiveSession().executeQuery(query);
+            getServerSession("fieldaccess").executeQuery(query);
         } catch (QueryException ex){
             exception = ex;
         }
@@ -212,16 +218,16 @@ public class ReportQueryConstructorExpressionTestSuite extends JUnitTestCase {
         ExpressionBuilder employees = new ExpressionBuilder();
         ReportQuery query = new ReportQuery(Employee.class, employees);
         query.addAttribute("salary");
-        org.eclipse.persistence.jpa.JpaEntityManager em = (org.eclipse.persistence.jpa.JpaEntityManager) createEntityManager("fieldaccess");          
+        EntityManager em = createEntityManager("fieldaccess");          
 
-        Vector reportResults = (Vector)em.getActiveSession().executeQuery(query);
+        Vector reportResults = (Vector)getServerSession("fieldaccess").executeQuery(query);
 
         query = new ReportQuery(Employee.class, employees);
         Class[] argTypes = new Class[]{int.class};
         query.beginAddingConstructorArguments(DataHolder.class, argTypes);
         query.addAttribute("salary");
         query.endAddingToConstructorItem();
-        Vector results = (Vector)em.getActiveSession().executeQuery(query);
+        Vector results = (Vector)getServerSession("fieldaccess").executeQuery(query);
         Iterator i = results.iterator();
         Iterator report = reportResults.iterator();
         while (i.hasNext()){
@@ -250,9 +256,9 @@ public class ReportQueryConstructorExpressionTestSuite extends JUnitTestCase {
         ReportQuery query = new ReportQuery(Employee.class, employees);
         query.addAttribute("firstName");
         query.addAttribute("lastName");
-        org.eclipse.persistence.jpa.JpaEntityManager em = (org.eclipse.persistence.jpa.JpaEntityManager) createEntityManager("fieldaccess");          
+        EntityManager em = createEntityManager("fieldaccess");          
 
-        Vector reportResults = (Vector)em.getActiveSession().executeQuery(query);
+        Vector reportResults = (Vector)getServerSession("fieldaccess").executeQuery(query);
 
         ConstructorReportItem citem = new ConstructorReportItem("Employee");
         citem.setResultType(Employee.class);
@@ -262,7 +268,7 @@ public class ReportQueryConstructorExpressionTestSuite extends JUnitTestCase {
         
         query.addConstructorReportItem(citem);
 
-        Vector results = (Vector)em.getActiveSession().executeQuery(query);
+        Vector results = (Vector)getServerSession("fieldaccess").executeQuery(query);
         Iterator i = results.iterator();
         Iterator report = reportResults.iterator();
         while (i.hasNext()){

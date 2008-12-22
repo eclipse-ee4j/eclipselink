@@ -37,21 +37,21 @@ public class ServerTestSuite extends TestSuite {
     public static Test suite() {
         TestSuite suite = new TestSuite();
         suite.setName("Advanced ServerTestSuite");
-
+        
         suite.addTest(NamedNativeQueryJUnitTest.suite());
         suite.addTest(CallbackEventJUnitTestSuite.suite());
-        suite.addTest(EntityManagerJUnitTestSuite.suite());
-        //suite.addTest(SQLResultSetMappingTestSuite.suite());
-        //suite.addTest(JoinedAttributeAdvancedJunitTest.suite());
-        //suite.addTest(ReportQueryMultipleReturnTestSuite.suite());
-        //suite.addTest(ReportQueryAdvancedJUnitTest.suite());
+        //suite.addTest(EntityManagerJUnitTestSuite.suite()); - run separately since not all EM didn't close
+        //suite.addTest(SQLResultSetMappingTestSuite.suite()); - hangup for J2SE
+        suite.addTest(JoinedAttributeAdvancedJunitTest.suite());
+        suite.addTest(ReportQueryMultipleReturnTestSuite.suite());
+        suite.addTest(ReportQueryAdvancedJUnitTest.suite());
         suite.addTest(ExtendedPersistenceContextJUnitTestSuite.suite());
         suite.addTest(ReportQueryConstructorExpressionTestSuite.suite());
         suite.addTest(OptimisticConcurrencyJUnitTestSuite.suite());
         suite.addTest(AdvancedJPAJunitTest.suite());
         suite.addTest(AdvancedJunitTest.suite());
         suite.addTest(AdvancedCompositePKJunitTest.suite());
-        
+
         return suite;
     }
 }

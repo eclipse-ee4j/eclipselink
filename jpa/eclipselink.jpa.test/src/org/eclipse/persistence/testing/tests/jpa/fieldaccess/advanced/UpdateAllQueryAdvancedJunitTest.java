@@ -20,6 +20,8 @@ import java.util.Vector;
 import junit.extensions.TestSetup;
 import junit.framework.*;
 
+import javax.persistence.EntityManager;
+
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.expressions.Expression;
 import org.eclipse.persistence.expressions.ExpressionBuilder;
@@ -96,118 +98,241 @@ public class UpdateAllQueryAdvancedJunitTest extends JUnitTestCase {
     }
     
     public static Test suite() {
-        TestSuite suite = new TestSuite(UpdateAllQueryAdvancedJunitTest.class);
+        TestSuite suite = new TestSuite();
+        suite.setName("UpdateAllQueryAdvancedJunitTest (fieldaccess)");
         
-        return new TestSetup(suite) {
-            protected void setUp(){               
-                new AdvancedTableCreator().replaceTables(JUnitTestCase.getServerSession());
-            }
-
-            protected void tearDown() {
-                clearCache("fieldaccess");
-            }
-        };
+        suite.addTest(new UpdateAllQueryAdvancedJunitTest("testSetup"));
+        suite.addTest(new UpdateAllQueryAdvancedJunitTest("testFirstNamePrefixBLAForAll"));
+        suite.addTest(new UpdateAllQueryAdvancedJunitTest("testFirstNamePrefixBLAForSalary"));
+        suite.addTest(new UpdateAllQueryAdvancedJunitTest("testDoubleSalaryForAll"));
+        suite.addTest(new UpdateAllQueryAdvancedJunitTest("testDoubleSalaryForSalary"));
+        suite.addTest(new UpdateAllQueryAdvancedJunitTest("testFirstNamePrefixBLADoubleSalaryForAll"));
+        suite.addTest(new UpdateAllQueryAdvancedJunitTest("testFirstNamePrefixBLADoubleSalaryForSalary"));
+        suite.addTest(new UpdateAllQueryAdvancedJunitTest("testFirstNamePrefixBLADoubleSalaryForSalaryForFirstName"));
+        suite.addTest(new UpdateAllQueryAdvancedJunitTest("testAssignManagerName"));
+        suite.addTest(new UpdateAllQueryAdvancedJunitTest("testAssignNullToAddress"));
+        suite.addTest(new UpdateAllQueryAdvancedJunitTest("testAssignObjectToAddress"));
+        suite.addTest(new UpdateAllQueryAdvancedJunitTest("testAssignExpressionToAddress"));
+        suite.addTest(new UpdateAllQueryAdvancedJunitTest("testAggregate"));
+        
+        return suite;
     }
     
-    public static void testFirstNamePrefixBLAForAll() {
-        ExpressionBuilder builder = new ExpressionBuilder();
-        UpdateAllQuery updateQuery = new UpdateAllQuery(Employee.class);        
-        updateQuery.addUpdate("firstName", Expression.fromLiteral("'BLA'", null).concat(builder.get("firstName")));
-        updateAllQueryInternal(updateQuery);
-    }    
+    /**
+     * The setup is done as a test, both to record its failure, and to allow execution in the server.
+     */
+    public void testSetup() {
+        new AdvancedTableCreator().replaceTables(JUnitTestCase.getServerSession("fieldaccess"));
+        clearCache("fieldaccess");
+    }
     
-    public static void testFirstNamePrefixBLAForSalary() {
-        ExpressionBuilder builder = new ExpressionBuilder();
-        Expression selectionExpression = builder.get("salary").lessThan(20000);
-        UpdateAllQuery updateQuery = new UpdateAllQuery(Employee.class, selectionExpression);
-        updateQuery.addUpdate("firstName", Expression.fromLiteral("'BLA'", null).concat(builder.get("firstName")));
-        updateAllQueryInternal(updateQuery);
-    }    
+    public void testFirstNamePrefixBLAForAll() {
+        EntityManager em = createEntityManager("fieldaccess");
+        beginTransaction(em);
+        try{
+            ExpressionBuilder builder = new ExpressionBuilder();
+            UpdateAllQuery updateQuery = new UpdateAllQuery(Employee.class);        
+            updateQuery.addUpdate("firstName", Expression.fromLiteral("'BLA'", null).concat(builder.get("firstName")));
+            updateAllQueryInternal(updateQuery);
+        }finally{
+            if (isTransactionActive(em)){
+                rollbackTransaction(em);
+            }
+            closeEntityManager(em);
+        }
+    }
     
-    public static void testDoubleSalaryForAll() {
-        ExpressionBuilder builder = new ExpressionBuilder();
-        UpdateAllQuery updateQuery = new UpdateAllQuery(Employee.class);
-        updateQuery.addUpdate("salary", ExpressionMath.multiply(builder.get("salary"), new Integer(2)));
-        updateAllQueryInternal(updateQuery);
-    }    
+    public void testFirstNamePrefixBLAForSalary() {
+        EntityManager em = createEntityManager("fieldaccess");
+        beginTransaction(em);
+        try{
+            ExpressionBuilder builder = new ExpressionBuilder();
+            Expression selectionExpression = builder.get("salary").lessThan(20000);
+            UpdateAllQuery updateQuery = new UpdateAllQuery(Employee.class, selectionExpression);
+            updateQuery.addUpdate("firstName", Expression.fromLiteral("'BLA'", null).concat(builder.get("firstName")));
+            updateAllQueryInternal(updateQuery);
+        }finally{
+            if (isTransactionActive(em)){
+                rollbackTransaction(em);
+            }
+            closeEntityManager(em);
+        }
+    }
     
-    public static void testDoubleSalaryForSalary() {
-        ExpressionBuilder builder = new ExpressionBuilder();
-        Expression selectionExpression = builder.get("salary").lessThan(20000);
-        UpdateAllQuery updateQuery = new UpdateAllQuery(Employee.class, selectionExpression);
-        updateQuery.addUpdate("salary", ExpressionMath.multiply(builder.get("salary"), new Integer(2)));
-        updateAllQueryInternal(updateQuery);
-    }    
+    public void testDoubleSalaryForAll() {
+        EntityManager em = createEntityManager("fieldaccess");
+        beginTransaction(em);
+        try{
+            ExpressionBuilder builder = new ExpressionBuilder();
+            UpdateAllQuery updateQuery = new UpdateAllQuery(Employee.class);
+            updateQuery.addUpdate("salary", ExpressionMath.multiply(builder.get("salary"), new Integer(2)));
+            updateAllQueryInternal(updateQuery);
+        }finally{
+            if (isTransactionActive(em)){
+                rollbackTransaction(em);
+            }
+            closeEntityManager(em);
+        }
+    }
     
-    public static void testFirstNamePrefixBLADoubleSalaryForAll() {
-        ExpressionBuilder builder = new ExpressionBuilder();
-        UpdateAllQuery updateQuery = new UpdateAllQuery(Employee.class);
-        updateQuery.addUpdate("firstName", Expression.fromLiteral("'BLA'", null).concat(builder.get("firstName")));
-        updateQuery.addUpdate("salary", ExpressionMath.multiply(builder.get("salary"), new Integer(2)));
-        updateAllQueryInternal(updateQuery);
-    }    
+    public void testDoubleSalaryForSalary() {
+        EntityManager em = createEntityManager("fieldaccess");
+        beginTransaction(em);
+        try{
+            ExpressionBuilder builder = new ExpressionBuilder();
+            Expression selectionExpression = builder.get("salary").lessThan(20000);
+            UpdateAllQuery updateQuery = new UpdateAllQuery(Employee.class, selectionExpression);
+            updateQuery.addUpdate("salary", ExpressionMath.multiply(builder.get("salary"), new Integer(2)));
+            updateAllQueryInternal(updateQuery);
+        }finally{
+            if (isTransactionActive(em)){
+                rollbackTransaction(em);
+            }
+            closeEntityManager(em);
+        }
+    }
     
-    public static void testFirstNamePrefixBLADoubleSalaryForSalary() {
-        ExpressionBuilder builder = new ExpressionBuilder();
-        Expression selectionExpression = builder.get("salary").lessThan(20000);
-        UpdateAllQuery updateQuery = new UpdateAllQuery(Employee.class, selectionExpression);
-        updateQuery.addUpdate("firstName", Expression.fromLiteral("'BLA'", null).concat(builder.get("firstName")));
-        updateQuery.addUpdate("salary", ExpressionMath.multiply(builder.get("salary"), new Integer(2)));
-        updateAllQueryInternal(updateQuery);
-    }    
+    public void testFirstNamePrefixBLADoubleSalaryForAll() {
+        EntityManager em = createEntityManager("fieldaccess");
+        beginTransaction(em);
+        try{
+            ExpressionBuilder builder = new ExpressionBuilder();
+            UpdateAllQuery updateQuery = new UpdateAllQuery(Employee.class);
+            updateQuery.addUpdate("firstName", Expression.fromLiteral("'BLA'", null).concat(builder.get("firstName")));
+            updateQuery.addUpdate("salary", ExpressionMath.multiply(builder.get("salary"), new Integer(2)));
+            updateAllQueryInternal(updateQuery);
+        }finally{
+            if (isTransactionActive(em)){
+                rollbackTransaction(em);
+            }
+            closeEntityManager(em);
+        }
+    }
     
-    public static void testFirstNamePrefixBLADoubleSalaryForSalaryForFirstName() {
-        ExpressionBuilder builder = new ExpressionBuilder();
-        Expression selectionExpression = builder.get("salary").lessThan(20000).and(builder.get("firstName").like("J%"));
-        UpdateAllQuery updateQuery = new UpdateAllQuery(Employee.class, selectionExpression);
-        updateQuery.addUpdate("firstName", Expression.fromLiteral("'BLA'", null).concat(builder.get("firstName")));
-        updateQuery.addUpdate("salary", ExpressionMath.multiply(builder.get("salary"), new Integer(2)));
-        updateAllQueryInternal(updateQuery);
-    }    
+    public void testFirstNamePrefixBLADoubleSalaryForSalary() {
+        EntityManager em = createEntityManager("fieldaccess");
+        beginTransaction(em);
+        try{
+            ExpressionBuilder builder = new ExpressionBuilder();
+            Expression selectionExpression = builder.get("salary").lessThan(20000);
+            UpdateAllQuery updateQuery = new UpdateAllQuery(Employee.class, selectionExpression);
+            updateQuery.addUpdate("firstName", Expression.fromLiteral("'BLA'", null).concat(builder.get("firstName")));
+            updateQuery.addUpdate("salary", ExpressionMath.multiply(builder.get("salary"), new Integer(2)));
+            updateAllQueryInternal(updateQuery);
+        }finally{
+            if (isTransactionActive(em)){
+                rollbackTransaction(em);
+            }
+            closeEntityManager(em);
+        }
+    }
     
-    public static void testAssignManagerName() {
-        ExpressionBuilder builder = new ExpressionBuilder();    
-        Expression selectionExpression = builder.get("manager").notNull();
-        UpdateAllQuery updateQuery = new UpdateAllQuery(Employee.class, selectionExpression);
-        updateQuery.addUpdate("firstName", builder.get("manager").get("firstName"));
-        updateAllQueryInternal(updateQuery);
-    }    
+    public void testFirstNamePrefixBLADoubleSalaryForSalaryForFirstName() {
+        EntityManager em = createEntityManager("fieldaccess");
+        beginTransaction(em);
+        try{
+            ExpressionBuilder builder = new ExpressionBuilder();
+            Expression selectionExpression = builder.get("salary").lessThan(20000).and(builder.get("firstName").like("J%"));
+            UpdateAllQuery updateQuery = new UpdateAllQuery(Employee.class, selectionExpression);
+            updateQuery.addUpdate("firstName", Expression.fromLiteral("'BLA'", null).concat(builder.get("firstName")));
+            updateQuery.addUpdate("salary", ExpressionMath.multiply(builder.get("salary"), new Integer(2)));
+            updateAllQueryInternal(updateQuery);
+        }finally{
+            if (isTransactionActive(em)){
+                rollbackTransaction(em);
+            }
+            closeEntityManager(em);
+        }
+    }
     
-    public static void testAssignNullToAddress() {
-        UpdateAllQuery updateQuery = new UpdateAllQuery(Employee.class);
-        updateQuery.addUpdate("address", null);
-        updateAllQueryInternal(updateQuery);
-    }    
+    public void testAssignManagerName() {
+        EntityManager em = createEntityManager("fieldaccess");
+        beginTransaction(em);
+        try{
+            ExpressionBuilder builder = new ExpressionBuilder();    
+            Expression selectionExpression = builder.get("manager").notNull();
+            UpdateAllQuery updateQuery = new UpdateAllQuery(Employee.class, selectionExpression);
+            updateQuery.addUpdate("firstName", builder.get("manager").get("firstName"));
+            updateAllQueryInternal(updateQuery);
+        }finally{
+            if (isTransactionActive(em)){
+                rollbackTransaction(em);
+            }
+            closeEntityManager(em);
+        }
+    }
     
-    public static void testAssignObjectToAddress() {
-        Address address = new Address();
-        address.setCountry("Canada");
-        address.setProvince("Ontario");
-        address.setCity("Ottawa");
-        address.setStreet("O'Connor");
-        UnitOfWork uow = acquireUnitOfWork();
-        uow.registerNewObject(address);
-        uow.commit();
-        UpdateAllQuery updateQuery = new UpdateAllQuery(Employee.class);
-        updateQuery.addUpdate("address", address);
-        updateAllQueryInternal(updateQuery);
-    }    
+    public void testAssignNullToAddress() {
+        EntityManager em = createEntityManager("fieldaccess");
+        beginTransaction(em);
+        try{
+            UpdateAllQuery updateQuery = new UpdateAllQuery(Employee.class);
+            updateQuery.addUpdate("address", null);
+            updateAllQueryInternal(updateQuery);
+        }finally{
+            if (isTransactionActive(em)){
+                rollbackTransaction(em);
+            }
+            closeEntityManager(em);
+        }
+    }
     
-    public static void testAssignExpressionToAddress() {
-        ExpressionBuilder builder = new ExpressionBuilder();    
-        Expression selectionExpression = builder.get("manager").notNull();
-        UpdateAllQuery updateQuery = new UpdateAllQuery(Employee.class, selectionExpression);
-        updateQuery.addUpdate("address", builder.get("manager").get("address"));
-        updateAllQueryInternal(updateQuery);
-    }    
+    public void testAssignObjectToAddress() {
+        EntityManager em = createEntityManager("fieldaccess");
+        beginTransaction(em);
+        try{
+            Address address = new Address();
+            address.setCountry("Canada");
+            address.setProvince("Ontario");
+            address.setCity("Ottawa");
+            address.setStreet("O'Connor");
+            UnitOfWork uow = acquireUnitOfWork();
+            uow.registerNewObject(address);
+            uow.commit();
+            UpdateAllQuery updateQuery = new UpdateAllQuery(Employee.class);
+            updateQuery.addUpdate("address", address);
+            updateAllQueryInternal(updateQuery);
+        }finally{
+            if (isTransactionActive(em)){
+                rollbackTransaction(em);
+            }
+            closeEntityManager(em);
+        }
+    }
     
-    public static void testAggregate() {
-        ExpressionBuilder builder = new ExpressionBuilder();    
-        Expression selectionExpression = builder.get("manager").notNull();
-        UpdateAllQuery updateQuery = new UpdateAllQuery(Employee.class, selectionExpression);
-        updateQuery.addUpdate(builder.get("period").get("startDate"), builder.get("period").get("endDate"));
-        updateQuery.addUpdate(builder.get("period").get("endDate"), builder.get("period").get("startDate"));
-        updateAllQueryInternal(updateQuery);
+    public void testAssignExpressionToAddress() {
+        EntityManager em = createEntityManager("fieldaccess");
+        beginTransaction(em);
+        try{
+            ExpressionBuilder builder = new ExpressionBuilder();    
+            Expression selectionExpression = builder.get("manager").notNull();
+            UpdateAllQuery updateQuery = new UpdateAllQuery(Employee.class, selectionExpression);
+            updateQuery.addUpdate("address", builder.get("manager").get("address"));
+            updateAllQueryInternal(updateQuery);
+        }finally{
+            if (isTransactionActive(em)){
+                rollbackTransaction(em);
+            }
+            closeEntityManager(em);
+        }
+    }
+    
+    public void testAggregate() {
+        EntityManager em = createEntityManager("fieldaccess");
+        beginTransaction(em);
+        try{
+            ExpressionBuilder builder = new ExpressionBuilder();    
+            Expression selectionExpression = builder.get("manager").notNull();
+            UpdateAllQuery updateQuery = new UpdateAllQuery(Employee.class, selectionExpression);
+            updateQuery.addUpdate(builder.get("period").get("startDate"), builder.get("period").get("endDate"));
+            updateQuery.addUpdate(builder.get("period").get("endDate"), builder.get("period").get("startDate"));
+            updateAllQueryInternal(updateQuery);
+        }finally{
+            if (isTransactionActive(em)){
+                rollbackTransaction(em);
+            }
+            closeEntityManager(em);
+        }
     }
     
     protected static void updateAllQueryInternal(Class referenceClass, HashMap updateClauses, Expression selectionExpression) {

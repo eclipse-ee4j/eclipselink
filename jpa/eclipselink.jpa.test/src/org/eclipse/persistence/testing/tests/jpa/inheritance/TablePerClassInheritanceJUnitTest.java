@@ -597,7 +597,6 @@ public class TablePerClassInheritanceJUnitTest extends JUnitTestCase {
             //updateQuery.setSelectionCriteria(eb.get("name"));
             updateQuery.addUpdate(eb.get("name"), "Generic Assassin Name");
             ((JpaEntityManager) em).getServerSession().executeQuery(updateQuery);
-            
             Assassin assassin = (Assassin) em.find(ContractedPersonel.class, assassinId);
             em.refresh(assassin);
             

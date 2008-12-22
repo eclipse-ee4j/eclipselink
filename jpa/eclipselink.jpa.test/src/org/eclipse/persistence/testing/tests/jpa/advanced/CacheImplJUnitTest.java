@@ -51,24 +51,23 @@ public class CacheImplJUnitTest extends JUnitTestCase {
         TestSuite suite = new TestSuite();
         suite.setName("CacheImplJUnitTest");
 
+        suite.addTest(new CacheImplJUnitTest("testSetup"));
         suite.addTest(new CacheImplJUnitTest("testContains"));
         suite.addTest(new CacheImplJUnitTest("testEvictClassObject"));
         suite.addTest(new CacheImplJUnitTest("testEvictClass"));
         suite.addTest(new CacheImplJUnitTest("testEvictAll"));
-        return new TestSetup(suite) {
-
-            protected void setUp() {
-                ServerSession session = JUnitTestCase.getServerSession();
-
-                new AdvancedTableCreator().replaceTables(session);
-            }
-
-            protected void tearDown() {
-                clearCache();
-            }
-        };
+        
+        return suite;
     }
-
+    
+    /**
+     * The setup is done as a test, both to record its failure, and to allow execution in the server.
+     */
+    public void testSetup() {
+        new AdvancedTableCreator().replaceTables(JUnitTestCase.getServerSession());
+        clearCache();
+    }
+    
     /**
      * Test of contains method, of class CacheImpl.
      */

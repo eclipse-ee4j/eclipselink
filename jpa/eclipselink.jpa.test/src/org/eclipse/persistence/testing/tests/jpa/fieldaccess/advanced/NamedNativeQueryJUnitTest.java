@@ -32,20 +32,18 @@ public class NamedNativeQueryJUnitTest extends JUnitTestCase {
     public static Test suite() {
         TestSuite suite = new TestSuite();
         suite.setName("NamedNativeQueryJUnitTest (fieldaccess)");
+        suite.addTest(new NamedNativeQueryJUnitTest("testSetup"));
         suite.addTest(new NamedNativeQueryJUnitTest("testNamedNativeQuery"));
         
-        return new TestSetup(suite) {
-        
-            protected void setUp(){               
-                DatabaseSession session = JUnitTestCase.getServerSession("fieldaccess");
-                
-                new AdvancedTableCreator().replaceTables(session);
-            }
-
-            protected void tearDown() {
-                clearCache("fieldaccess");
-            }
-        };
+        return suite;
+    }
+    
+    /**
+     * The setup is done as a test, both to record its failure, and to allow execution in the server.
+     */
+    public void testSetup() {
+        new AdvancedTableCreator().replaceTables(JUnitTestCase.getServerSession("fieldaccess"));
+        clearCache("fieldaccess");
     }
     
     public void testNamedNativeQuery() {

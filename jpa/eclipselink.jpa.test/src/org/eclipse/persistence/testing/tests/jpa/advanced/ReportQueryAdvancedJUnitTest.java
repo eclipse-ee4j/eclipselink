@@ -97,17 +97,25 @@ public class ReportQueryAdvancedJUnitTest  extends JUnitTestCase {
     }
     
     public static Test suite() {
-        TestSuite suite = new TestSuite(ReportQueryAdvancedJUnitTest.class);
+        TestSuite suite = new TestSuite();
+        suite.setName("ReportQueryAdvancedJUnitTest");
         
-        return new TestSetup(suite) {
-            protected void setUp(){               
-                new AdvancedTableCreator().replaceTables(JUnitTestCase.getServerSession());
-            }
-
-            protected void tearDown() {
-                clearCache();
-            }
-        };
+        suite.addTest(new ReportQueryAdvancedJUnitTest("testSetup"));
+        suite.addTest(new ReportQueryAdvancedJUnitTest("testPhoneCountGroupByOwner"));
+        suite.addTest(new ReportQueryAdvancedJUnitTest("testPhoneCountGroupByOwnersAddress"));
+        suite.addTest(new ReportQueryAdvancedJUnitTest("testProjectCountGroupByTeamMembers"));
+        suite.addTest(new ReportQueryAdvancedJUnitTest("testProjectCountGroupByTeamMemberAddress"));
+        suite.addTest(new ReportQueryAdvancedJUnitTest("testProjectCountGroupByTeamMemberPhone"));
+        
+        return suite;
+    }
+    
+    /**
+     * The setup is done as a test, both to record its failure, and to allow execution in the server.
+     */
+    public void testSetup() {
+        new AdvancedTableCreator().replaceTables(JUnitTestCase.getServerSession());
+        clearCache();
     }
     
     public void testPhoneCountGroupByOwner() {

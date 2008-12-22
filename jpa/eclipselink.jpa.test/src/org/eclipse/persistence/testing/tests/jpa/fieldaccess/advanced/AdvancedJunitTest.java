@@ -50,17 +50,26 @@ public class AdvancedJunitTest extends JUnitTestCase {
     }
     
     public static Test suite() {
-        TestSuite suite = new TestSuite(AdvancedJunitTest.class);
+        TestSuite suite = new TestSuite("AdvancedJunitTest");
 
-        return new TestSetup(suite) {
-            protected void setUp() { 
-                new AdvancedTableCreator().replaceTables(JUnitTestCase.getServerSession("fieldaccess"));
-            }
+        suite.addTest(new AdvancedJunitTest("testSetup"));
+        suite.addTest(new AdvancedJunitTest("testGF1818"));
+        suite.addTest(new AdvancedJunitTest("testGF1894"));
+        suite.addTest(new AdvancedJunitTest("testGF894"));
+        suite.addTest(new AdvancedJunitTest("testManAndWoman"));
+        suite.addTest(new AdvancedJunitTest("testStringArrayField"));
+        suite.addTest(new AdvancedJunitTest("testBUG241388"));
+        
+        return suite;
+    }
+    
+    /**
+     * The setup is done as a test, both to record its failure, and to allow execution in the server.
+     */
+    public void testSetup() {
+        new AdvancedTableCreator().replaceTables(JUnitTestCase.getServerSession("fieldaccess"));
 
-            protected void tearDown() {
-                clearCache("fieldaccess");
-            }
-        };
+        clearCache("fieldaccess");
     }
 
     public void testGF1818() {
@@ -206,7 +215,7 @@ public class AdvancedJunitTest extends JUnitTestCase {
         Vegetable vegetable;
         try {
             vegetable = em.find(Vegetable.class, pk);
-            
+            commitTransaction(em);
             assertNotNull(vegetable);
             assertTrue(Arrays.equals(tags, vegetable.getTags()));
             

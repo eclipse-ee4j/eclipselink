@@ -27,6 +27,7 @@ public class ServerTestSuite extends TestSuite {
         suite.addTest(EntityManagerJUnitTestCase.suite());
         suite.addTest(MixedInheritanceJUnitTestCase.suite());
         suite.addTest(JoinedAttributeInheritanceJunitTest.suite());
+        suite.addTest(TablePerClassInheritanceJUnitTest.suite());
         
         return suite;
     }
