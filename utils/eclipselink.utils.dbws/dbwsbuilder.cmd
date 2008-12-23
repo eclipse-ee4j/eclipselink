@@ -10,9 +10,9 @@ set _FIXPATH=
 call :fixpath "%~dp0"
 set THIS=%_FIXPATH:~1%
 
-set CLASSPATH=%THIS%..\jlib\javax.wsdl_1.6.2.jar
-set CLASSPATH=%CLASSPATH%;%THIS%..\..\..\jlib\eclipselink.jar
-set CLASSPATH=%CLASSPATH%;%THIS%..\eclipselink-dbwsutils.jar
+set CLASSPATH=%THIS%\javax.wsdl_1.6.2.jar
+set CLASSPATH=%CLASSPATH%;%THIS%..\..\jlib\eclipselink.jar
+set CLASSPATH=%CLASSPATH%;%THIS%\eclipselink-dbwsutils.jar
 set CLASSPATH=%CLASSPATH%;%DRIVER_CLASSPATH%
 
 set DBWSBUILDER_ARGS=%*

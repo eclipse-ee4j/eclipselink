@@ -5,8 +5,8 @@
 JVM_ARGS=-Xmx256m
 
 # Please do not change any of the following lines:
-CLASSPATH=`dirname $0`/../jlib/javax.wsdl_1.6.2.jar:\
-`dirname $0`/../../../jlib/eclipselink.jar:\
+CLASSPATH=`dirname $0`/javax.wsdl_1.6.2.jar:\
+`dirname $0`/../../jlib/eclipselink.jar:\
 `dirname $0`/eclipselink-dbwsutils.jar:\
 ${DRIVER_CLASSPATH}
 
