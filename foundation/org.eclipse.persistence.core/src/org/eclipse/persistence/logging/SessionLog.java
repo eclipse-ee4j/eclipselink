@@ -91,7 +91,7 @@ public interface SessionLog extends Cloneable {
     public static final int FINEST = 1;
     public static final String FINEST_LABEL = "FINEST";    
     public static final int ALL = 0;
-    public static final String ALL_LABEL = "SEVERE";    
+    public static final String ALL_LABEL = "ALL";    
 
     //EclipseLink categories used for logging name space.
     public static final String SQL = "sql";
