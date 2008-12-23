@@ -49,6 +49,7 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
     // Names of the possible lock more types.
     public static final String NONE = "NONE";
     public static final String PESSIMISTIC = "PESSIMISTIC";
+    public static final String PESSIMISTIC_FORCE_INCREMENT = "PESSIMISTIC_FORCE_INCREMENT";
     public static final String READ = "READ";
     public static final String WRITE = "WRITE";
     public static final String OPTIMISTIC = "OPTIMISTIC";
@@ -956,8 +957,8 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
         // If a lockModeType was set (from JPA) we need to check if we need
         // to perform a force update to the version field.
         if (lockModeType != null && result != null) {
-            if (lockModeType.equals(READ) || lockModeType.equals(WRITE) || lockModeType.contains(OPTIMISTIC)) {
-                boolean forceUpdateToVersionField = lockModeType.equals(WRITE) || lockModeType.equals(OPTIMISTIC_FORCE_INCREMENT);
+            if (lockModeType.equals(READ) || lockModeType.equals(WRITE) || lockModeType.contains(OPTIMISTIC) || lockModeType.equals(PESSIMISTIC_FORCE_INCREMENT)) {
+                boolean forceUpdateToVersionField = lockModeType.equals(WRITE) || lockModeType.equals(OPTIMISTIC_FORCE_INCREMENT) || lockModeType.equals(PESSIMISTIC_FORCE_INCREMENT);
                     
                 if (result instanceof Collection) {
                     Iterator i = ((Collection) result).iterator();

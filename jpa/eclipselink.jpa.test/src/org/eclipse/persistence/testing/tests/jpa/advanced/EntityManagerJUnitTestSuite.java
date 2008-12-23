@@ -235,6 +235,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         // Temporary removal of JPA 2.0 dependency
         //suite.addTest(new EntityManagerJUnitTestSuite("testPESSIMISTICLock"));
         suite.addTest(new EntityManagerJUnitTestSuite("testPESSIMISTIC_FORCE_INCREMENTLock"));
+        suite.addTest(new EntityManagerJUnitTestSuite("testPESSIMISTICLockWithNoChanges"));
         // Temporary removal of JPA 2.0 dependency
         //suite.addTest(new EntityManagerJUnitTestSuite("testPESSIMISTIC_TIMEOUTLock"));
         suite.addTest(new EntityManagerJUnitTestSuite("testRefreshOPTIMISTICLock"));
@@ -1445,10 +1446,50 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         try {
             beginTransaction(em);
             employee = em.find(Employee.class, employee.getId(), LockModeType.PESSIMISTIC_FORCE_INCREMENT);
-            employee.setLastName("Auger");
             commitTransaction(em);
             
             assertTrue("The version was not updated on the pessimistic lock.", version1.intValue() < employee.getVersion().intValue());
+        } catch (RuntimeException ex) {
+            if (isTransactionActive(em)) {
+                rollbackTransaction(em);
+            }
+            
+            throw ex;
+        } finally {
+            closeEntityManager(em);
+        }
+    }
+    
+    public void testPESSIMISTICLockWithNoChanges() {        
+        Employee employee = null;
+        Integer version1;
+        
+        EntityManager em = createEntityManager();
+        
+        try {
+            beginTransaction(em);
+            employee = new Employee();
+            employee.setFirstName("Black");
+            employee.setLastName("Crappie");
+            em.persist(employee);
+            commitTransaction(em);
+        } catch (RuntimeException ex) {
+            if (isTransactionActive(em)) {
+                rollbackTransaction(em);
+            }
+         
+            closeEntityManager(em);
+            throw ex;
+        }
+        
+        version1 = employee.getVersion();
+        
+        try {
+            beginTransaction(em);
+            employee = em.find(Employee.class, employee.getId(), LockModeType.PESSIMISTIC);
+            commitTransaction(em);
+            
+            assertTrue("The version was updated on the pessimistic lock.", version1.intValue() == employee.getVersion().intValue());
         } catch (RuntimeException ex) {
             if (isTransactionActive(em)) {
                 rollbackTransaction(em);
