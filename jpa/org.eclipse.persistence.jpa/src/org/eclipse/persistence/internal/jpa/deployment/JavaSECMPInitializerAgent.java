@@ -19,9 +19,9 @@ import java.lang.reflect.Method;
 
 /**
  * This agent is intended to be run prior to start up on a CMP3 JavaSE application.
- * It gets the globalInstrumentation and makes it available to TopLink's initialization code.
+ * It gets the globalInstrumentation and makes it available to EclipseLink's initialization code.
  * There are two kinds of initialization.  Normally, initialization occurs through reflective
- * creation and invocation of TopLink JavaSECMPInitializer.
+ * creation and invocation of EclipseLink JavaSECMPInitializer.
  * It is possible to run it with the "main" argument to the agent in which case it will simply
  * try to set the globalInstrumentation field on the JavaSECMPInitializer.  This type of initialization
  * is useful when debugging, but imposes some restrictions on the user.  One such restriction is

@@ -128,7 +128,7 @@ public class JavaSECMPInitializer extends JPAInitializer {
     public void initializeClassLoader(PersistenceInitializationHelper persistenceHelper){
         initializationClassloader = persistenceHelper.getClassLoader(null, null);
     }
-    
+
     /**
      * INTERNAL:
      * Should be called only by the agent. (when weaving classes)
@@ -150,8 +150,8 @@ public class JavaSECMPInitializer extends JPAInitializer {
      * to ensure that the classes to be weaved haven't been loaded before initialization.
      * However, in this case initialization can't be debugged.
      * In order to be able to debug initialization specify
-     * in java options -javaagent with parameter "main":
-     *   -javaagent:c:\dev_main\jlib\tl\toplink-agent.jar=main
+     * in java options -javaagent with parameter "main":  (note: a separate eclipselink-agent.jar is no longer required)
+     *   -javaagent:c:\trunk\eclipselink.jar=main
      * that causes instrumentation to be cached during premain and postpones initialization until main.
      * With initialization done in main (during the first createEntityManagerFactory call) 
      * there's a danger of the classes to be weaved being already loaded.
@@ -162,9 +162,9 @@ public class JavaSECMPInitializer extends JPAInitializer {
      * The same could be achieved by calling PersistenceProvider.createEntityManagerFactory method instead 
      * of JavaSECMPInitializer.initializeFromMain method,
      * however initializeFromMain might be more convenient because it
-     * doesn't require persistence unit name.
+     * doesn't require a persistence unit name.
      * The method doesn't do anything if JavaSECMPInitializer has been already initialized.
-     * @param m a map containing the set of properties to instantiate with.
+     * @param m - a map containing the set of properties to instantiate with.
      */
     public static void initializeFromMain(Map m) {
         if (javaSECMPInitializer != null) {
@@ -182,7 +182,7 @@ public class JavaSECMPInitializer extends JPAInitializer {
 
     /**
      * Register a transformer.  In this case, we use the instrumentation to add a transformer for the
-     * JavaSE environemnt
+     * JavaSE environment
      * @param transformer
      * @param persistenceUnitInfo
      */
@@ -272,5 +272,4 @@ public class JavaSECMPInitializer extends JPAInitializer {
             }
         }
     }
-
 }

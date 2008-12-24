@@ -9,6 +9,8 @@
  *
  * Contributors:
  *     tware, ssmith = 1.0 - deployment of JPA with EE and SE
+ *     12/23/2008-1.1M5 Michael O'Brien 
+ *        - 253701: add unsetInitializer() for JavaSECMPInitializer undeploy()
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.deployment;
 
@@ -24,10 +26,27 @@ import org.eclipse.persistence.config.PersistenceUnitProperties;
  */
 public class PersistenceInitializationHelper {
    
+    /**
+     * Return the singleton instance of a JPAInitializer
+     * @param classLoader
+     * @param m
+     * @return
+     */
     public JPAInitializer getInitializer(ClassLoader classLoader, Map m){
         return JavaSECMPInitializer.getJavaSECMPInitializer();
     }
 
+    /**
+     * Clear all references inside the initializer
+     */
+    public void unsetInitializer() {
+        // 253701: release reference to classloader tree for non-OSGI initializers
+        if(null != JavaSECMPInitializer.javaSECMPInitializer && JavaSECMPInitializer.javaSECMPInitializer.isSingletonInitialized()) {
+            JavaSECMPInitializer.javaSECMPInitializer.initializationClassloader = null;
+            JavaSECMPInitializer.javaSECMPInitializer.globalInstrumentation = null;
+        }
+    }
+    
     /**
      * Answer the classloader to use to create an EntityManager.
      * If a classloader is not found in the properties map then 

@@ -24,7 +24,7 @@ import org.eclipse.persistence.sessions.server.ServerSession;
 import org.eclipse.persistence.tools.schemaframework.SchemaManager;
 
 /**
- * This is a helper/impl class for the TopLink EJB 3.0 provider
+ * This is a helper/impl class for the EclipseLink EJB 3.0 provider
  * The default constructor can be used to build the provider by reflection, after which it can
  * be used to create EntityManagerFactories
  */

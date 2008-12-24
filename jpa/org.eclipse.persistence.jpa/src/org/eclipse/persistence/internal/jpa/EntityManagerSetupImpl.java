@@ -16,7 +16,9 @@
  *        Some methods, like setSessionEventListener called from deploy still used predeploy properties,
  *        that meant it was impossible to set listener through createEMF property in SE case with an agent - fixed that.
  *        Also if creating / closing the same emSetupImpl many times (24 in my case) "java.lang.OutOfMemoryError: PermGen space" resulted:
- *        partially fixed partially worked around this - see a big comment in predeploy method. 
+ *        partially fixed partially worked around this - see a big comment in predeploy method.
+ *     12/23/2008-1.1M5 Michael O'Brien 
+ *        - 253701: add persistenceInitializationHelper field used by undeploy() to clear the JavaSECMPInitializer
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa;
 
@@ -63,6 +65,8 @@ import org.eclipse.persistence.exceptions.*;
 import org.eclipse.persistence.internal.helper.JPAClassLoaderHolder;
 import org.eclipse.persistence.internal.helper.JPAConversionManager;
 import javax.persistence.spi.PersistenceUnitTransactionType;
+
+import org.eclipse.persistence.internal.jpa.deployment.PersistenceInitializationHelper;
 import org.eclipse.persistence.internal.jpa.deployment.PersistenceUnitProcessor;
 import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.internal.security.PrivilegedNewInstanceFromClass;
@@ -78,7 +82,6 @@ import static org.eclipse.persistence.internal.jpa.EntityManagerFactoryProvider.
 
 /**
  * INTERNAL:
- * An EclipseLink specific implementer of the EntityManagerInitializer interface.
  * This class handles deployment of a persistence unit.
  * In predeploy the meta-data is processed and weaver transformer is returned to allow weaving of the persistent classes.
  * In deploy the project and session are initialize and registered.
@@ -107,6 +110,9 @@ public class EntityManagerSetupImpl {
     protected boolean isWeavingStatic = false;
     protected SecurableObjectHolder securableObjectHolder = new SecurableObjectHolder();
 
+    // 253701: cache initializationHelper for later use during undeploy() - set by PersistenceProvider.createEntityManagerFactory()
+    protected PersistenceInitializationHelper persistenceInitializationHelper = null;
+    
     // factoryCount==0; session==null
     public static final String STATE_INITIAL        = "Initial";
     
@@ -1371,6 +1377,21 @@ public class EntityManagerSetupImpl {
             }
             state = STATE_UNDEPLOYED;
             removeSessionFromGlobalSessionManager();
+
+            // There is a single map entry for each instance of an EMSetupImpl
+            // 253701: This instance of EMSetupImpl must remove itself as key:value=name:emSetupImpl from the EntityManagerFactoryProvider HashMapCache 
+            synchronized (EntityManagerFactoryProvider.emSetupImpls) {
+                EntityManagerFactoryProvider.emSetupImpls.remove(
+                        PersistenceUnitProcessor.buildPersistenceUnitName(
+                                getPersistenceUnitInfo().getPersistenceUnitRootUrl(), 
+                                getPersistenceUnitInfo().getPersistenceUnitName()));
+            }
+            
+            // 253701: remove any JPAInitializer singleton so GC can occur on the entityManagerFactoryImpl instance
+            if(null != persistenceInitializationHelper) {
+                // clear classloader references
+                persistenceInitializationHelper.unsetInitializer();
+            }
         } finally {
             session.log(SessionLog.FINEST, SessionLog.PROPERTIES, "undeploy_end", new Object[]{getPersistenceUnitInfo().getPersistenceUnitName(), state, factoryCount});
             if(state == STATE_UNDEPLOYED) {
@@ -1548,4 +1569,26 @@ public class EntityManagerSetupImpl {
             }
         }
     }
+
+    /**
+     * INTERNAL:
+     * Return the persistenceInitializationHelper instance 
+     * @return
+     */
+    public PersistenceInitializationHelper getPersistenceInitializationHelper() {
+        return persistenceInitializationHelper;
+    }
+
+    /**
+     * INTERNAL:
+     * Set the persistenceInitializationHelper instance.
+     * Currently implemented only by PersistenceProvideder
+     * @param persistenceInitializationHelper
+     */
+    public void setPersistenceInitializationHelper(
+            PersistenceInitializationHelper persistenceInitializationHelper) {
+        this.persistenceInitializationHelper = persistenceInitializationHelper;
+    }
+
+    
 }

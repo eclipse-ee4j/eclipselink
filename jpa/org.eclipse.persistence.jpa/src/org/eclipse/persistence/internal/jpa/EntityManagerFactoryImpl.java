@@ -126,7 +126,7 @@ public class EntityManagerFactoryImpl implements EntityManagerFactory {
     public synchronized void close(){
         verifyOpen();
         isOpen = false;
-        setupImpl.undeploy();
+        setupImpl.undeploy();        
     }
 
 

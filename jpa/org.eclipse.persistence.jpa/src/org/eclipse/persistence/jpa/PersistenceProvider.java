@@ -10,6 +10,8 @@
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
  *     tware - 1.0RC1 - OSGI refactor
+ *     12/23/2008-1.1M5 Michael O'Brien 
+ *        - 253701: set persistenceInitializationHelper so EntityManagerSetupImpl.undeploy() can clear the JavaSECMPInitializer
  ******************************************************************************/  
 package org.eclipse.persistence.jpa;
 
@@ -117,7 +119,7 @@ public class PersistenceProvider implements javax.persistence.spi.PersistencePro
             throw PersistenceUnitLoadingException.exceptionSearchingForPersistenceResources(currentLoader, e);
         }
 
-        //gf bug 854  Returns null if EntityManagerSetupImpl for the name doesn't exist (e.g. a non-existant PU)
+        //gf bug 854  Returns null if EntityManagerSetupImpl for the name doesn't exist (e.g. a non-existent PU)
         if (emSetupImpl == null) {
             return null;
         }
@@ -137,6 +139,10 @@ public class PersistenceProvider implements javax.persistence.spi.PersistencePro
                     persistenceInfo.setNewTempClassLoader(initializationHelper.getClassLoader(emName, properties));
                 }
             }
+            
+            // 253701: cache a reference to (this) PersistenceProvider's initializer for later use during undeploy()
+            emSetupImpl.setPersistenceInitializationHelper(this.initializationHelper);
+            
             // call predeploy
             // this will just increment the factory count since we should already be deployed
             emSetupImpl.predeploy(emSetupImpl.getPersistenceUnitInfo(), nonNullProperties);
