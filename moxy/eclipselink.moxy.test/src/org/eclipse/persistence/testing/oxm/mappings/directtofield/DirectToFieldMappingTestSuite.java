@@ -24,6 +24,7 @@ import org.eclipse.persistence.testing.oxm.mappings.directtofield.errortests.Dir
 import org.eclipse.persistence.testing.oxm.mappings.directtofield.identifiedbyname.IdentifiedByNameTestCases;
 import org.eclipse.persistence.testing.oxm.mappings.directtofield.identifiedbynamespace.IdentifiedByNamespaceTestCases;
 import org.eclipse.persistence.testing.oxm.mappings.directtofield.identifiedbyposition.IdentifiedByPositionTestCases;
+import org.eclipse.persistence.testing.oxm.mappings.directtofield.leafelement.DirectWithLeafElementTestCases;
 import org.eclipse.persistence.testing.oxm.mappings.directtofield.nillable.DirectIsSetNodeNullPolicyFalseTestCases;
 import org.eclipse.persistence.testing.oxm.mappings.directtofield.nillable.DirectIsSetNodeNullPolicyTrueTestCases;
 import org.eclipse.persistence.testing.oxm.mappings.directtofield.nillable.DirectIsSetNullPolicyAttributeAbsentIsSetAbsentFalseTestCases;
@@ -146,6 +147,8 @@ public class DirectToFieldMappingTestSuite extends OXTestCase {
 		//suite.addTestSuite(DirectIsSetNullPolicyAttributeSetEmptyTrueTestCases.class); // 3 docpres
 		suite.addTestSuite(DirectIsSetNullPolicyAttributeAbsentIsSetAbsentFalseTestCases.class); // g
 		//suite.addTestSuite(DirectIsSetNullPolicyAttributeAbsentIsSetAbsentTrueTestCases.class);  // TODO: UC 5-9 Is not valid
+
+		suite.addTestSuite(DirectWithLeafElementTestCases.class);
 
 		return suite;
     }

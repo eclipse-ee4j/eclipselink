@@ -466,8 +466,8 @@ public class XMLField extends DatabaseField {
         while (st.hasMoreTokens()) {
             next = st.nextToken();
             if (null != next) {
-                if (next.equals("text()")) {
-                    nextXPathFragment = XPathFragment.TEXT_FRAGMENT;
+                if (next.equals(XPathFragment.TEXT)) {
+                    nextXPathFragment = new XPathFragment(XPathFragment.TEXT);
                 } else {
                     nextXPathFragment = new XPathFragment(next);
                 }

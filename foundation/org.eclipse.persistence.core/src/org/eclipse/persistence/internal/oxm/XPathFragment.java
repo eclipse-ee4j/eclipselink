@@ -28,7 +28,8 @@ import javax.xml.namespace.QName;
  * </ul>
  */
 public class XPathFragment {
-    public static final XPathFragment TEXT_FRAGMENT = new XPathFragment("text()");
+    public static final String TEXT = "text()";
+    public static final XPathFragment TEXT_FRAGMENT = new XPathFragment(TEXT);
     public static final XPathFragment SELF_FRAGMENT = new XPathFragment(".");
     public static final XPathFragment ANY_FRAGMENT = null;
     private XPathFragment nextFragment;
@@ -253,7 +254,7 @@ public class XPathFragment {
                 return true;
             }
             XPathFragment xPathFragment = (XPathFragment)object;
-            return ((localName == xPathFragment.getLocalName()) || ((localName != null) && localName.equals(xPathFragment.getLocalName()))) && ((namespaceURI == xPathFragment.getNamespaceURI()) || ((namespaceURI != null) && namespaceURI.equals(xPathFragment.getNamespaceURI()))) && (this.indexValue == xPathFragment.getIndexValue()) && (nameIsText == xPathFragment.nameIsText());
+            return ((nameIsText && xPathFragment.nameIsText()) || (localName == xPathFragment.getLocalName()) || ((localName != null) && localName.equals(xPathFragment.getLocalName()))) && ((namespaceURI == xPathFragment.getNamespaceURI()) || ((namespaceURI != null) && namespaceURI.equals(xPathFragment.getNamespaceURI()))) && (this.indexValue == xPathFragment.getIndexValue()) && (nameIsText == xPathFragment.nameIsText());
         } catch (ClassCastException e) {
             return false;
         }
