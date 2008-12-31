@@ -12,13 +12,21 @@
  ******************************************************************************/  
 package org.eclipse.persistence.testing.oxm.mappings.choicecollection;
 
+import java.io.FileInputStream;
+import java.io.FileReader;
+import java.io.InputStream;
+
+import org.eclipse.persistence.oxm.XMLContext;
+import org.eclipse.persistence.oxm.XMLUnmarshaller;
 import org.eclipse.persistence.oxm.platform.SAXPlatform;
 import org.eclipse.persistence.sessions.Project;
+import org.eclipse.persistence.sessions.factories.XMLProjectReader;
 import org.eclipse.persistence.testing.oxm.mappings.XMLMappingTestCases;
 
 public class XMLChoiceCollectionMappingMixedTestCases extends XMLMappingTestCases {
 
   private final static String XML_RESOURCE = "org/eclipse/persistence/testing/oxm/mappings/choicecollection/ChoiceCollectionMixed.xml";
+  private final static String DEPLOYMENT_XML_RESOURCE = "org/eclipse/persistence/testing/oxm/mappings/choicecollection/deploymentXML-file.xml";
 
   public XMLChoiceCollectionMappingMixedTestCases(String name) throws Exception {
     super(name);
@@ -43,7 +51,6 @@ public class XMLChoiceCollectionMappingMixedTestCases extends XMLMappingTestCase
     employee.phone = "123-4567"; 
     
     return employee;
-
   }
   
   public Project getNewProject(Project originalProject, ClassLoader classLoader) {
@@ -53,5 +60,22 @@ public class XMLChoiceCollectionMappingMixedTestCases extends XMLMappingTestCase
       return project;
   }  
   
-
+  public void testReadDeploymentXML() {
+	  try {
+          // Read the deploymentXML-file.xml back in with XMLProjectReader							
+          FileReader fileReader = new FileReader(DEPLOYMENT_XML_RESOURCE);
+          Project newProject = XMLProjectReader.read(fileReader);
+          fileReader.close();
+          XMLContext ctx = new XMLContext(newProject);
+		  XMLUnmarshaller unmarshaller = ctx.createUnmarshaller();
+	      InputStream instream = ClassLoader.getSystemResourceAsStream(XML_RESOURCE);
+	      Employee emp = (Employee) unmarshaller.unmarshal(instream);
+          instream.close();
+          Object[] choices = emp.choice.toArray();
+          assertTrue("Choice collection did not unmarshal properly", (choices!=null && choices.length>0));
+	  } catch (Exception x) {
+		  x.printStackTrace();
+		  fail("Deployment XML read test failed");
+	  }
+  }
 }

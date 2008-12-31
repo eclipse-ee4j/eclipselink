@@ -1691,7 +1691,7 @@ public class ObjectPersistenceRuntimeXMLProject_11_1_1 extends ObjectPersistence
          fieldToClassNameMapping.setSetMethodName("setChoiceFieldToClassAssociations");
          fieldToClassNameMapping.setReferenceClass(XMLChoiceFieldToClassAssociation.class);
          fieldToClassNameMapping.useCollectionClass(ArrayList.class);
-         fieldToClassNameMapping.setXPath(getPrimaryNamespacePrefix() + "field-to-class-association");
+         fieldToClassNameMapping.setXPath(getPrimaryNamespaceXPath() + "field-to-class-association");
          descriptor.addMapping(fieldToClassNameMapping);
          
          return descriptor;
