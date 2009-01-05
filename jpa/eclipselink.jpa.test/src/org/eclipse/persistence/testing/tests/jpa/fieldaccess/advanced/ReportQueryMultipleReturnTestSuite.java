@@ -20,7 +20,6 @@ import junit.framework.Test;
 import junit.framework.TestSuite;
 
 import org.eclipse.persistence.exceptions.QueryException;
-import org.eclipse.persistence.internal.jpa.EntityManagerImpl;
 import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
 import org.eclipse.persistence.queries.ReportQuery;
 import org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced.Address;
