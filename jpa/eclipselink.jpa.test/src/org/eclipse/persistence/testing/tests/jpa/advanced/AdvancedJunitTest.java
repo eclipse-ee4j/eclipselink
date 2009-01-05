@@ -17,7 +17,6 @@ import java.util.Arrays;
 import javax.persistence.EntityManager;
 
 import junit.framework.*;
-import junit.extensions.TestSetup;
 
 import org.eclipse.persistence.internal.sessions.RepeatableWriteUnitOfWork;
 import org.eclipse.persistence.jpa.JpaEntityManager;
