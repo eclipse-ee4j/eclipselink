@@ -24,7 +24,6 @@ import javax.xml.namespace.QName;
 import org.eclipse.persistence.sdo.SDODataObject;
 import org.eclipse.persistence.sdo.helper.ListWrapper;
 import org.eclipse.persistence.sdo.helper.SDOTypeHelper;
-import org.eclipse.persistence.sdo.helper.SDOXSDHelper;
 import org.eclipse.persistence.exceptions.SDOException;
 import org.eclipse.persistence.internal.oxm.XPathFragment;
 import org.eclipse.persistence.oxm.NamespaceResolver;
