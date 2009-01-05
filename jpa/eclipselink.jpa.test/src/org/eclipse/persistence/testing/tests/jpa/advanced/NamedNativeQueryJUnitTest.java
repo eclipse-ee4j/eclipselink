@@ -15,8 +15,6 @@
 package org.eclipse.persistence.testing.tests.jpa.advanced;
 
 import junit.framework.*;
-import junit.extensions.TestSetup;
-import org.eclipse.persistence.sessions.DatabaseSession;
 import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
 import org.eclipse.persistence.testing.models.jpa.advanced.AdvancedTableCreator;
 
