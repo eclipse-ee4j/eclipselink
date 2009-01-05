@@ -13,13 +13,11 @@
 package org.eclipse.persistence.testing.tests.jpa.advanced;
 
 import javax.persistence.EntityManager;
-import junit.extensions.TestSetup;
 import junit.framework.Test;
 import junit.framework.TestSuite;
 import org.eclipse.persistence.testing.models.jpa.advanced.*;
 import org.eclipse.persistence.internal.jpa.EntityManagerFactoryImpl;
 import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
-import org.eclipse.persistence.sessions.server.ServerSession;
 
 /**
  * @author DaraniY
