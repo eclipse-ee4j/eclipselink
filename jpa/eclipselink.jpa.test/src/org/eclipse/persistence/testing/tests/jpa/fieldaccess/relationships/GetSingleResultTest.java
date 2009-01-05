@@ -16,7 +16,7 @@ import java.util.HashMap;
 import javax.persistence.NoResultException;
 import javax.persistence.NonUniqueResultException;
 import javax.persistence.Query;
-import javax.persistence.RollbackException;
+
 import org.eclipse.persistence.internal.jpa.EJBQueryImpl;
 import org.eclipse.persistence.internal.jpa.EntityManagerImpl;
 import org.eclipse.persistence.internal.queries.MapContainerPolicy;
