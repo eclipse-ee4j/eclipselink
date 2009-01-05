@@ -60,7 +60,6 @@ import org.eclipse.persistence.oxm.XMLRoot;
 import org.eclipse.persistence.oxm.XMLUnmarshaller;
 import org.eclipse.persistence.oxm.record.ContentHandlerRecord;
 import org.eclipse.persistence.oxm.record.FormattedWriterRecord;
-import org.eclipse.persistence.oxm.record.MarshalRecord;
 import org.eclipse.persistence.oxm.record.NodeRecord;
 import org.eclipse.persistence.oxm.record.WriterRecord;
 import org.eclipse.persistence.sessions.Project;
@@ -463,7 +462,7 @@ public class SDOXMLHelperDelegate implements SDOXMLHelper {
                 StringWriter writer = new StringWriter();
                 this.save(xmlDocument, writer, options);
                 String xml = writer.toString();
-                StreamSource source = new StreamSource(new java.io.StringReader(writer.toString()));
+                StreamSource source = new StreamSource(new java.io.StringReader(xml));
                 anXMLMarshaller.getTransformer().transform(source, result);
             }
         }
