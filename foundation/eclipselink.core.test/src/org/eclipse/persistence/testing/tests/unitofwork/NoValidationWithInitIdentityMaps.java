@@ -14,7 +14,6 @@ package org.eclipse.persistence.testing.tests.unitofwork;
 
 import org.eclipse.persistence.sessions.SessionEventListener;
 import org.eclipse.persistence.sessions.UnitOfWork;
-import org.eclipse.persistence.sessions.server.ServerSession;
 import org.eclipse.persistence.testing.framework.TestErrorException;
 import org.eclipse.persistence.testing.framework.TestWarningException;
 import org.eclipse.persistence.testing.framework.TransactionalTestCase;
