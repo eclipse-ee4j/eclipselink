@@ -14,11 +14,9 @@ package org.eclipse.persistence.testing.tests.jpa.advanced;
 
 import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
 import org.eclipse.persistence.testing.models.jpa.advanced.*;
-import org.eclipse.persistence.sessions.DatabaseSession;
 
 import junit.framework.Test;
 import junit.framework.TestSuite;
-import junit.extensions.TestSetup;
 
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
