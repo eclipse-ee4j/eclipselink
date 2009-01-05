@@ -17,7 +17,6 @@ import java.util.Vector;
 import javax.persistence.*;
 
 import junit.framework.*;
-import junit.extensions.TestSetup;
 
 import org.eclipse.persistence.testing.models.jpa.fieldaccess.relationships.*;
 import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
