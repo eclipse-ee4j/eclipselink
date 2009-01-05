@@ -20,10 +20,10 @@ import javax.persistence.EntityManager;
 import javax.persistence.Query;
 
 import junit.framework.*;
+
 import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
 import org.eclipse.persistence.testing.models.jpa.advanced.AdvancedTableCreator;
 import org.eclipse.persistence.testing.models.jpa.advanced.EmployeePopulator;
-import junit.extensions.TestSetup;
 
  
 public class ExtendedPersistenceContextJUnitTestSuite extends JUnitTestCase {
