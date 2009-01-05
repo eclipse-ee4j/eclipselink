@@ -26,7 +26,6 @@ import javax.persistence.EntityManager;
 
 import junit.framework.TestSuite;
 import junit.framework.Test;
-import junit.extensions.TestSetup;
 
 
 /*
