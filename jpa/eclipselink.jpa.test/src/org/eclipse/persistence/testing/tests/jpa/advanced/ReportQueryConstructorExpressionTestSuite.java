@@ -17,7 +17,6 @@ package org.eclipse.persistence.testing.tests.jpa.advanced;
 import org.eclipse.persistence.queries.ReportQuery;
 import org.eclipse.persistence.expressions.ExpressionBuilder;
 import org.eclipse.persistence.queries.ReportQueryResult;
-import org.eclipse.persistence.sessions.DatabaseSession;
 import org.eclipse.persistence.exceptions.QueryException;
 
 import org.eclipse.persistence.testing.models.jpa.advanced.Employee;
@@ -28,7 +27,6 @@ import org.eclipse.persistence.queries.ConstructorReportItem;
 
 import junit.framework.TestSuite;
 import junit.framework.Test;
-import junit.extensions.TestSetup;
 
 import javax.persistence.EntityManager;
 
