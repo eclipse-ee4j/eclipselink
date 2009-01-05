@@ -20,7 +20,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Vector;
 
-import junit.extensions.TestSetup;
 import junit.framework.*;
 
 import org.eclipse.persistence.descriptors.ClassDescriptor;
