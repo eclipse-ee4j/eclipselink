@@ -17,7 +17,6 @@ package org.eclipse.persistence.testing.tests.jpa.fieldaccess.advanced;
 import java.util.HashMap;
 import java.util.Vector;
 
-import junit.extensions.TestSetup;
 import junit.framework.*;
 
 import javax.persistence.EntityManager;
