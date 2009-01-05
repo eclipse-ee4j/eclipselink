@@ -26,7 +26,6 @@ import org.eclipse.persistence.testing.tests.jpa.fieldaccess.advanced.Optimistic
 import org.eclipse.persistence.testing.tests.jpa.fieldaccess.advanced.ReportQueryAdvancedJUnitTest;
 import org.eclipse.persistence.testing.tests.jpa.fieldaccess.advanced.ReportQueryConstructorExpressionTestSuite;
 import org.eclipse.persistence.testing.tests.jpa.fieldaccess.advanced.ReportQueryMultipleReturnTestSuite;
-import org.eclipse.persistence.testing.tests.jpa.fieldaccess.advanced.SQLResultSetMappingTestSuite;
 import org.eclipse.persistence.testing.tests.jpa.fieldaccess.advanced.UpdateAllQueryAdvancedJunitTest;
 
 /**
