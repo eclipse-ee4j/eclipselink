@@ -15,12 +15,10 @@
 package org.eclipse.persistence.testing.tests.jpa.fieldaccess.advanced;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Vector;
 
-import junit.extensions.TestSetup;
 import junit.framework.*;
 
 import org.eclipse.persistence.descriptors.ClassDescriptor;
