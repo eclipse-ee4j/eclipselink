@@ -14,7 +14,6 @@ package org.eclipse.persistence.sdo.helper;
 
 import commonj.sdo.DataObject;
 import commonj.sdo.Property;
-import commonj.sdo.Sequence;
 import commonj.sdo.Type;
 import commonj.sdo.helper.DataFactory;
 import commonj.sdo.helper.HelperContext;
