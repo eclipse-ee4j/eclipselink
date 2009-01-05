@@ -23,7 +23,6 @@ import javax.persistence.Query;
 import javax.persistence.EntityManager;
 
 import junit.framework.*;
-import junit.extensions.TestSetup;
 
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.descriptors.invalidation.TimeToLiveCacheInvalidationPolicy;
