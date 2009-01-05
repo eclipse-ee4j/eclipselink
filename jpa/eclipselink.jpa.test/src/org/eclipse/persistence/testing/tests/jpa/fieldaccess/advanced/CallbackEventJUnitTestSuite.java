@@ -18,7 +18,6 @@ import javax.persistence.EntityManager;
 
 import junit.framework.TestSuite;
 import junit.framework.Test;
-import junit.extensions.TestSetup;
 
 import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
 import org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced.Employee;
