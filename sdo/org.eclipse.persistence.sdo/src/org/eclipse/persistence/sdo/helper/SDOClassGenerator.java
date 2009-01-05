@@ -14,7 +14,7 @@ package org.eclipse.persistence.sdo.helper;
 
 import commonj.sdo.Property;
 import commonj.sdo.helper.HelperContext;
-import commonj.sdo.impl.HelperProvider;
+
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.Reader;
