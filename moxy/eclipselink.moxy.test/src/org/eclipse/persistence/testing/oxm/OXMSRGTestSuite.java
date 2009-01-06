@@ -17,6 +17,8 @@ import junit.framework.TestCase;
 import junit.framework.TestResult;
 import junit.framework.TestSuite;
 import org.eclipse.persistence.testing.oxm.inheritance.*;
+import org.eclipse.persistence.testing.oxm.inheritance.typetests.TypeTestSuite;
+import org.eclipse.persistence.testing.oxm.inheritance.classextractor.CarClassExtractorTestCases;
 import org.eclipse.persistence.testing.oxm.xmlmarshaller.XMLMarshalTestCases;
 import org.eclipse.persistence.testing.oxm.xmlmarshaller.XMLUnmarshalTestCases;
 import org.eclipse.persistence.testing.oxm.descriptor.rootelement.RootElementTestSuite;
@@ -36,7 +38,8 @@ public class OXMSRGTestSuite extends TestCase {
         TestSuite suite = new TestSuite("OXM SRG Test Suite");
         suite.addTestSuite(XMLMarshalTestCases.class);
         suite.addTestSuite(XMLUnmarshalTestCases.class);
-		suite.addTestSuite(InheritanceTestCases.class);
+        suite.addTestSuite(InheritanceMissingDescriptorTestCases.class);
+        suite.addTestSuite(InheritanceCarTestCases.class);
         suite.addTest(RootElementTestSuite.suite());
         suite.addTest(XPathEngineTestSuite.suite());
         suite.addTest(XMLLoginTestSuite.suite());
