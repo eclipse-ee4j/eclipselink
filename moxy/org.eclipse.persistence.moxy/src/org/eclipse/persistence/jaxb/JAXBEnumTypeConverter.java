@@ -12,11 +12,15 @@
  ******************************************************************************/  
 package org.eclipse.persistence.jaxb;
 
+import java.security.AccessController;
+import java.security.PrivilegedActionException;
 import java.util.*;
 import org.eclipse.persistence.sessions.Session;
 import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.mappings.converters.ObjectTypeConverter;
+import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
+import org.eclipse.persistence.internal.security.PrivilegedClassForName;
 
 /**
  * INTERNAL:
@@ -50,11 +54,19 @@ public class JAXBEnumTypeConverter extends ObjectTypeConverter {
      * that has been built with class names to a project with classes.
      * @param classLoader 
      */
-    public void convertClassNamesToClasses(){
-        try {
-            m_enumClass = PrivilegedAccessHelper.getClassForName(m_enumClassName);
+    public void convertClassNamesToClasses(){       
+    	try {
+            if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
+                try {
+                    m_enumClass = (Class)AccessController.doPrivileged(new PrivilegedClassForName(m_enumClassName));
+                } catch (PrivilegedActionException exception) {
+                    throw ValidationException.classNotFoundWhileConvertingClassNames(m_enumClassName, exception.getException());
+                }
+            } else {
+                m_enumClass = org.eclipse.persistence.internal.security.PrivilegedAccessHelper.getClassForName(m_enumClassName);
+            }
         } catch (ClassNotFoundException exception){
-            //throw new ValidationException(exception.getMessage(), exception);
+            throw ValidationException.classNotFoundWhileConvertingClassNames(m_enumClassName, exception);
         }
     }
     

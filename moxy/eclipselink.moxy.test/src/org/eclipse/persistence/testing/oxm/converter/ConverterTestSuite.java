@@ -15,6 +15,7 @@ package org.eclipse.persistence.testing.oxm.converter;
 import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
+import org.eclipse.persistence.testing.oxm.converter.jaxbenum.JAXBEnumTypeConverterTestCases;
 import org.eclipse.persistence.testing.oxm.converter.typesafeenum.TypeSafeEnumConverterTestCases;
 
 public class ConverterTestSuite extends TestCase {
@@ -22,6 +23,7 @@ public class ConverterTestSuite extends TestCase {
         TestSuite suite = new TestSuite("Object Type Converter");
         suite.addTestSuite(ObjectTypeConverterTestCases.class);
         suite.addTestSuite(TypeSafeEnumConverterTestCases.class);
+        suite.addTestSuite(JAXBEnumTypeConverterTestCases.class);
         return suite;
     }
 }
