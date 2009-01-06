@@ -497,7 +497,7 @@
                 <include name="${jaxb-impl.jar}"/>
             </zipfileset>
             <!-- grab the sdo jar -->
-            <zipfileset dir="${eclipselink.sdo.base}/${plugins.dir}/" includes="${commonj-sdo.jar}" prefix="eclipselink/jlib/sdo"/>
+            <zipfileset dir="${eclipselink.sdo.base}/${plugins.dir}/" includes="${commonj.sdo.lib}" prefix="eclipselink/jlib/sdo"/>
             <!-- grab the dbws util stuff -->
             <zipfileset dir="${eclipselink.util.dbws}"    includes="${dbws-util.jar.name}, setenv.*, dbwsbuilder.*" prefix="eclipselink/utils/dbws"/>
             <zipfileset dir="${eclipselink.util.plugins}" includes="javax.wsdl_1.6.2.jar" prefix="eclipselink/utils/dbws"/>
