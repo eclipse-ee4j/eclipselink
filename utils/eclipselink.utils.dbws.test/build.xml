@@ -79,6 +79,7 @@
             includes="${eclipselink.dbws.core.depend}"
         />
     </path>
+    <echo message="junit.lib='${junit.lib}'"/>
     <!-- Set Run Path-->
     <path id="dbws_util_test.run.path">
         <path refid="dbws_util_test.compile.path"/>
