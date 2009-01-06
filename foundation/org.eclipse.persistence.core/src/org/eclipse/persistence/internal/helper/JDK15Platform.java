@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2008 Oracle. All rights reserved.
+ * Copyright (c) 1998, 2009 Oracle. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -13,9 +13,8 @@
 package org.eclipse.persistence.internal.helper;
 
 import java.util.regex.Pattern;
-import java.util.Hashtable;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.Map;
-
 
 /**
  *  INTERNAL:
@@ -24,18 +23,18 @@ import java.util.Map;
 public class JDK15Platform implements JDKPlatform {
 
     /**
+     * PERF: The regular expression compiled Pattern objects are cached
+     * to avoid re-compilation on every usage.
+     */
+    protected static ConcurrentHashMap patternCache = new ConcurrentHashMap();
+	
+    /**
      * Get a concurrent Map that allow concurrent gets but block on put.
      */
     public Map getConcurrentMap(){
     	return new java.util.concurrent.ConcurrentHashMap();
     }
     
-    /**
-     * PERF: The regular expression compiled Pattern objects are cached
-     * to avoid recompilation on every usage.
-     */
-    protected static Hashtable patternCache = new Hashtable();
-
     /**
      * INTERNAL:
      * An implementation of in memory queries with Like which uses the JDK 1.4
