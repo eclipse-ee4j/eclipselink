@@ -7053,6 +7053,19 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
             return;
         }
         
+        // Added to test bug 258546: testEMCloseAndOpen failed with dynamic and static weave configs.
+        // define cache-only query to see whether the Employee is in the shared cache.
+        ReadObjectQuery query = new ReadObjectQuery();
+        query.setReferenceClass(Employee.class);
+        query.shouldCheckCacheOnly();
+        Expression exp = query.getExpressionBuilder().get("id").equal(query.getExpressionBuilder().getParameter("id"));
+        query.addArgument("id", int.class);
+        query.setSelectionCriteria(exp);
+        // define vector that will contain paramete value for the query.
+        Vector arg = new Vector(1);
+        // this will be overridden with emp.getId()
+        arg.add(0);
+        
         // make sure the id hasn't been already used - it will be assigned to a new object (in case sequencing is not used). 
         int id = ((Number)((EntityManagerFactoryImpl)getEntityManagerFactory()).getServerSession().getNextSequenceNumberValue(Employee.class)).intValue();
         
@@ -7106,6 +7119,10 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
                     }
                     em.persist(emp);
                     em.getTransaction().commit();
+
+                    // should never get here - all connections should be broken.
+                    closeEntityManager(em);
+                    fail("Commit has unexpectedly succeeded - should have failed because all connections broken");
                 } catch (Exception e){
                     // expected exception - connection is invalid and cannot be reconnected.
                     if(em.getTransaction().isActive()) {
@@ -7114,7 +7131,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
                 }
                 closeEntityManager(em);
                 
-                // verify - all connections should be release
+                // verify - all connections should be released
                 String localErrorMsg = "";
                 if(listener.nAcquredWriteConnections() > 0) {
                     localErrorMsg += "writeConnection not released; ";
@@ -7143,6 +7160,15 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
                     }
                     em.persist(emp);
                     em.getTransaction().commit();
+
+                    // Added to test bug 258546: testEMCloseAndOpen failed with dynamic and static weave configs.
+                    // verify that the persisted Employee is in the shared cache.
+                    arg.set(0, emp.getId());
+                    Employee empInSharedCache = (Employee)((EntityManagerFactoryImpl)getEntityManagerFactory()).getServerSession().executeQuery(query, arg);
+                    if(empInSharedCache == null) {
+                        errorMsg += "useSequencing = " + useSequencing + "; exclusiveConnectionMode = " + exclusiveConnectionMode + ": persisted object in not in the shared cache";
+                        break;
+                    }
                 } catch (RuntimeException ex) {
                     // This should not happen
                     if(em.getTransaction().isActive()) {
@@ -7160,6 +7186,14 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
                 em.remove(emp);
                 em.getTransaction().commit();
                 closeEntityManager(em);
+                
+                // Added to test bug 258546: testEMCloseAndOpen failed with dynamic and static weave configs.
+                // verify that the removed Employee is no longer in the shared cache.
+                Employee empInSharedCache = (Employee)((EntityManagerFactoryImpl)getEntityManagerFactory()).getServerSession().executeQuery(query, arg);
+                if(empInSharedCache != null) {
+                    errorMsg += "useSequencing = " + useSequencing + "; exclusiveConnectionMode = " + exclusiveConnectionMode + ": removed object still in the shared cache";
+                    break;
+                }
             }
         }
 
