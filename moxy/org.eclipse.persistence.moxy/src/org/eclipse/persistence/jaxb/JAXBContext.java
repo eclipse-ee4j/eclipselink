@@ -69,6 +69,10 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
         this.generatedClassesToQName = generator.getMappingsGenerator().getGeneratedClassesToQName();
     }
     
+    public XMLContext getXMLContext() {
+        return this.xmlContext;
+    }
+    
     public void generateSchema(SchemaOutputResolver outputResolver) {
         if(generator == null) {
             return;

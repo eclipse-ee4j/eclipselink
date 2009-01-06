@@ -59,8 +59,8 @@ public class ListWrapper implements List, Serializable {
         04/16/07 - implement sequences
         04/25/07 - adding duplicate containment true dataObjects are ignored - only a single instance can exist
      */
-    private SDODataObject dataObject;
-    private Property property;
+    protected SDODataObject dataObject;
+    protected Property property;
 
     /**
      * We are maintaining two pointers to potentially two ArrayList objects.
@@ -69,7 +69,7 @@ public class ListWrapper implements List, Serializable {
      * The List (originalElements) on ChangeSummary will maintain the current state of our model after logged changes.
      * The List (currentElements) will be a progressively deeper distinct shallow copy of the current list as it changes
      */
-    private List currentElements;
+    protected List currentElements;
 
     /**
      * INTERNAL:
@@ -190,7 +190,7 @@ public class ListWrapper implements List, Serializable {
      * Shallow copy elements
      *
      */
-    private void copyElements() {
+    protected void copyElements() {
         // update element arrays before we modify original object        
         if (isLogging() && (!((SDOChangeSummary)dataObject.getChangeSummary()).isDirty(this))) {
             // original will maintain object identity - swap before copying            
@@ -224,7 +224,7 @@ public class ListWrapper implements List, Serializable {
      * @param items
      * @param updateSequence
      */
-    private void updateSequence(Property aProperty, Collection items, boolean updateSequence) {
+    protected void updateSequence(Property aProperty, Collection items, boolean updateSequence) {
         if (updateSequence) {
             Iterator valuesIter = items.iterator();
             ArrayList duplicatesList = new ArrayList();// <DataObject>
@@ -275,7 +275,7 @@ public class ListWrapper implements List, Serializable {
      * @param item
      * @param updateSequence
      */
-    private void updateContainment(Object item, boolean updateSequence) {
+    protected void updateContainment(Object item, boolean updateSequence) {
         if ((property != null) && property.isContainment() && item instanceof SDODataObject) {
             dataObject.updateContainment(property, (SDODataObject)item);
         }
@@ -292,7 +292,7 @@ public class ListWrapper implements List, Serializable {
      * @param fromDelete
      * @param updateSequence
      */
-    private void removeContainment(Object item, boolean fromDelete, boolean updateSequence) {
+    protected void removeContainment(Object item, boolean fromDelete, boolean updateSequence) {
 
         /**
          * Case multiple occurrences of a single item - which to remove?
@@ -311,7 +311,7 @@ public class ListWrapper implements List, Serializable {
      * @param fromDelete
      * @param updateSequence
      */
-    private void removeContainment(int occurrence, Object item, boolean fromDelete, boolean updateSequence) {
+    protected void removeContainment(int occurrence, Object item, boolean fromDelete, boolean updateSequence) {
         if ((property != null) && property.isContainment() && (item != null)) {
             // passing a false fromDelete flag will not remove containment
             ((SDODataObject)item).detachOrDelete(fromDelete);
@@ -570,7 +570,7 @@ public class ListWrapper implements List, Serializable {
      */
     public void clear(boolean updateSequence) {
         // update element arrays before we modify original object
-        int size = currentElements.size();
+        int size = this.size();
         for (int i = size - 1; i >= 0; i--) {
             remove(i, updateSequence);
         }

@@ -59,13 +59,13 @@ import commonj.sdo.helper.XSDHelper;
 import commonj.sdo.impl.ExternalizableDelegator;
 
 public class SDOHelperContext implements HelperContext {
-    private CopyHelper copyHelper;
-    private DataFactory dataFactory;
-    private DataHelper dataHelper;
-    private EqualityHelper equalityHelper;
-    private XMLHelper xmlHelper;
-    private TypeHelper typeHelper;
-    private XSDHelper xsdHelper;
+    protected CopyHelper copyHelper;
+    protected DataFactory dataFactory;
+    protected DataHelper dataHelper;
+    protected EqualityHelper equalityHelper;
+    protected XMLHelper xmlHelper;
+    protected TypeHelper typeHelper;
+    protected XSDHelper xsdHelper;
 
     // Each application will have its own helper context - it is assumed that application 
     // names/loaders are unique within each active server instance
@@ -104,15 +104,19 @@ public class SDOHelperContext implements HelperContext {
      */
     public SDOHelperContext(ClassLoader aClassLoader) {
         super();
+        initialize(aClassLoader);
+    }
+
+    protected void initialize(ClassLoader aClassLoader)  {
         copyHelper = new SDOCopyHelper(this);
         dataFactory = new SDODataFactoryDelegate(this);
         dataHelper = new SDODataHelper(this);
         equalityHelper = new SDOEqualityHelper(this);
         xmlHelper = new SDOXMLHelperDelegate(this, aClassLoader);
         typeHelper = new SDOTypeHelperDelegate(this);
-        xsdHelper = new SDOXSDHelperDelegate(this);
+        xsdHelper = new SDOXSDHelperDelegate(this);        
     }
-
+    
     /**
      * Reset the Type,XML and XSD helper instances.
      */
