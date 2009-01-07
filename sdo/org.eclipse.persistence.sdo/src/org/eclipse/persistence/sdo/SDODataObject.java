@@ -47,7 +47,7 @@ import org.eclipse.persistence.oxm.XMLRoot;
 import org.eclipse.persistence.oxm.sequenced.SequencedObject;
 import org.eclipse.persistence.oxm.sequenced.Setting;
 
-public class SDODataObject implements DataObject, SequencedObject {
+public class SDODataObject implements DataObject, SequencedObject, Cloneable {
 
     /**
      * Development Guidelines:
@@ -2844,6 +2844,13 @@ public class SDODataObject implements DataObject, SequencedObject {
     		return null;
     	}
     	return l.get(0);
+    }
+
+    /**
+     * Return a clone of this DataObject.  This returned object will be a deep copy of this DataObject. 
+     */
+    public Object clone() {
+    	return aHelperContext.getCopyHelper().copy(this);    	
     }
     
 }
