@@ -87,35 +87,6 @@ public class SDODataObject implements DataObject, SequencedObject, Cloneable {
 
     //static final long serialVersionUID = 5930094058760264198L;
 
-    /** The ValueStore implementation class used in construction */
-    private static Class pluggableClass;
-
-    static {
-        String pluggableClassName = System.getProperty(SDOConstants.SDO_PLUGGABLE_MAP_IMPL_CLASS_KEY,//
-                SDOConstants.SDO_PLUGGABLE_MAP_IMPL_CLASS_VALUE);
-        if(SDOConstants.SDO_PLUGGABLE_MAP_IMPL_CLASS_VALUE.equals(pluggableClassName)) {
-            pluggableClass = DefaultValueStore.class;
-        } else {
-            try {
-                if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) {
-                    try {
-                        pluggableClass = (Class)AccessController.doPrivileged(new PrivilegedClassForName(pluggableClassName));
-                    } catch (PrivilegedActionException ex) {
-                        if (ex.getCause() instanceof ClassNotFoundException) {
-                            throw (ClassNotFoundException)ex.getCause();
-                        }
-                        throw (RuntimeException)ex.getCause();
-                    }
-                } else {
-                    pluggableClass = PrivilegedAccessHelper.getClassForName(pluggableClassName);
-                }
-            } catch (ClassNotFoundException cnfe) {
-                // TODO: throw or propagate these properly
-                throw new IllegalArgumentException(cnfe.getMessage());
-            }
-        }
-    }
-
     /**
      * INTERNAL:
      * Private constructor.
@@ -126,13 +97,7 @@ public class SDODataObject implements DataObject, SequencedObject, Cloneable {
         // however if it is called we will initialize the default implementation of the currentValueStore Map
         // initialize Map Implementation        
         // set currentValueStore Map implementation (replace any that was set in the constructor in newInstance() above)
-        try {
-            _setCurrentValueStore((ValueStore)pluggableClass.newInstance());
-        } catch (IllegalAccessException iae) {
-            throw new IllegalArgumentException(iae.getMessage());
-        } catch (InstantiationException ie) {
-            throw new IllegalArgumentException(ie.getMessage());
-        }
+        _setCurrentValueStore(new DefaultValueStore());
     }
 
     /**

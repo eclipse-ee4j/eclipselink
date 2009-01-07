@@ -20,6 +20,8 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+
+import org.eclipse.persistence.sdo.DefaultValueStore;
 import org.eclipse.persistence.sdo.SDOChangeSummary;
 import org.eclipse.persistence.sdo.SDOConstants;
 import org.eclipse.persistence.sdo.SDODataObject;
@@ -481,39 +483,12 @@ public class SDOCopyHelper implements CopyHelper {
     }
 
     /**
-     * INTERNAL: Create a new uninitialized ValueStore (see SDODataObject static block)
+     * INTERNAL: Create a new uninitialized ValueStore.
      *
      * @return
      */
     private ValueStore createValueStore() {
-        Class aValueStore;
-        try {
-            String pluggableClassName = System.getProperty(SDOConstants.SDO_PLUGGABLE_MAP_IMPL_CLASS_KEY,//
-                                                           SDOConstants.SDO_PLUGGABLE_MAP_IMPL_CLASS_VALUE);
-            if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) {
-                // TODO: code coverage test case for copy with cs on required - temporarily clear the pluggable_map env variable
-                try {
-                    aValueStore = (Class)AccessController.doPrivileged(new PrivilegedClassForName(pluggableClassName));
-                } catch (PrivilegedActionException ex) {
-                    if (ex.getCause() instanceof ClassNotFoundException) {
-                        throw (ClassNotFoundException)ex.getCause();
-                    }
-                    throw (RuntimeException)ex.getCause();
-                }
-            } else {
-                aValueStore = PrivilegedAccessHelper.getClassForName(pluggableClassName);
-            }
-        } catch (ClassNotFoundException cnfe) {
-            // TODO: throw or propagate these properly
-            throw new IllegalArgumentException(cnfe.getMessage());
-        }
-        try {
-            return (ValueStore)aValueStore.newInstance();
-        } catch (IllegalAccessException iae) {
-            throw new IllegalArgumentException(iae.getMessage());
-        } catch (InstantiationException ie) {
-            throw new IllegalArgumentException(ie.getMessage());
-        }
+        return new DefaultValueStore();
     }
 
     /**

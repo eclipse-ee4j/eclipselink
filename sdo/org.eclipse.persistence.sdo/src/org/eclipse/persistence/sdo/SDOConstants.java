@@ -307,13 +307,6 @@ public class SDOConstants {
     public static final String SDO_CHANGESUMMARY_REF_PATH_PREFIX = "#";
     public static final int SDO_CHANGESUMMARY_REF_PATH_PREFIX_LENGTH = SDO_CHANGESUMMARY_REF_PATH_PREFIX.length();
 
-    /** Pluggable valuestore constants*/
-    /** System property key valuestore.impl.class for implementation class DefaultValueStore or org.eclipse.persistence.testing.sdo.helper.pluggable.impl.POJOValueStore  */
-    public static final String SDO_PLUGGABLE_MAP_IMPL_CLASS_KEY = "valuestore.impl.class";
-
-    /** default implementation class java.util.HashMap */
-    public static final String SDO_PLUGGABLE_MAP_IMPL_CLASS_VALUE = "org.eclipse.persistence.sdo.DefaultValueStore";
-
     /** default implementation class java.util.HashMap */
     public static final String SDO_DATA_OBJECT_IMPL_CLASS_NAME = "org.eclipse.persistence.sdo.SDODataObject";
 
