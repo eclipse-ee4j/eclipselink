@@ -13,7 +13,7 @@
 
 package org.eclipse.persistence.internal.dbws;
 
-// Javase imports
+//javase imports
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringReader;
@@ -293,8 +293,33 @@ public class ProviderHelper extends XRServiceFactory {
                         }
                     }
                     else {
-                        String val = e.getTextContent();
-                        invocation.setParameter(key, val);
+                        String lname = e.getLocalName();
+                        if (oxProject.getDescriptorForAlias(lname) != null) {
+                            // skip over any blank text nodes to next element
+                            Node n = null;
+                            NodeList nl = e.getChildNodes();
+                            for (int j = 0; j < nl.getLength(); j++) {
+                                n = nl.item(j);
+                                if (n.getNodeType() == Node.ELEMENT_NODE) {
+                                    break;
+                                }
+                            }
+                            try {
+                                Object theObject =
+                                    new XMLContext(oxProject).createUnmarshaller().unmarshal(n);
+                                if (theObject instanceof XMLRoot) {
+                                    theObject = ((XMLRoot)theObject).getObject();
+                                }
+                                invocation.setParameter(key, theObject);
+                            }
+                            catch (XMLMarshalException xmlMarshallException) {
+                               throw new WebServiceException(xmlMarshallException);
+                            }
+                        }
+                        else {
+                            String val = e.getTextContent();
+                            invocation.setParameter(key, val);
+                        }
                     }
                   }
                   else {

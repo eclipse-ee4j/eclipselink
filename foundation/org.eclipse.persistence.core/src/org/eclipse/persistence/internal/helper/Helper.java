@@ -53,6 +53,12 @@ public class Helper implements Serializable {
 
     /** Store CR string, for some reason \n is not platform independent. */
     protected static String CR = null;
+    
+    /** Store tab string */
+    public static String TAB = "\t";
+    
+    /** Store newline string */
+    public static String NL = "\n";
 
     /** Prime the platform-dependent path separator */
     protected static String PATH_SEPARATOR = null;

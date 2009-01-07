@@ -13,10 +13,9 @@
 
 package org.eclipse.persistence.platform.database.jdbc;
 
-// Javse imports
+//javase imports
 import java.util.ListIterator;
 import java.util.Vector;
-
 import static java.sql.Types.ARRAY;
 import static java.sql.Types.BIGINT;
 import static java.sql.Types.BINARY;
@@ -49,21 +48,23 @@ import static java.sql.Types.VARBINARY;
 import static java.sql.Types.VARCHAR;
 import static java.lang.Integer.MIN_VALUE;
 
-// Java extension imports
-
-// EclipseLink imports
+//EclipseLink imports
 import org.eclipse.persistence.internal.helper.DatabaseType;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.platform.database.DatabasePlatform;
+import org.eclipse.persistence.platform.database.oracle.plsql.PLSQLStoredProcedureCall;
 import org.eclipse.persistence.platform.database.oracle.plsql.PLSQLargument;
+import org.eclipse.persistence.queries.StoredProcedureCall;
 import org.eclipse.persistence.sessions.DatabaseRecord;
 import static org.eclipse.persistence.internal.helper.DatabaseType.DatabaseTypeHelper.databaseTypeHelper;
+import static org.eclipse.persistence.internal.helper.Helper.NL;
 
 /**
  * <b>PUBLIC</b>: JDBC types
  * @author  Mike Norman - michael.norman@oracle.com
  * @since  Oracle TopLink 11.x.x
  */
+@SuppressWarnings("unchecked")
 public enum JDBCTypes implements JDBCType {
 
         ARRAY_TYPE(ARRAY, "ARRAY"),
@@ -103,12 +104,14 @@ public enum JDBCTypes implements JDBCType {
                 buildInitialDeclare(sb, inArg);
                 sb.append(" := :");
                 sb.append(inArg.inIndex);
-                sb.append(";\n");
+                sb.append(";");
+                sb.append(NL);
             }
             @Override
             public void buildOutDeclare(StringBuilder sb, PLSQLargument outArg) {
                 buildInitialDeclare(sb, outArg);
-                sb.append(";\n");
+                sb.append(";");
+                sb.append(NL);
             }
         },
         OTHER_TYPE(OTHER, "OTHER"),
@@ -134,12 +137,14 @@ public enum JDBCTypes implements JDBCType {
                 buildInitialDeclare(sb, inArg);
                 sb.append(" := :");
                 sb.append(inArg.inIndex);
-                sb.append(";\n");
+                sb.append(";");
+                sb.append(NL);
             }
             @Override
             public void buildOutDeclare(StringBuilder sb, PLSQLargument outArg) {
                 buildInitialDeclare(sb, outArg);
-                sb.append(";\n");
+                sb.append(";");
+                sb.append(NL);
             }
         },
         ;
@@ -186,27 +191,30 @@ public enum JDBCTypes implements JDBCType {
             databaseTypeHelper.declareTarget(sb, inArg, this);
             sb.append(" := :");
             sb.append(inArg.inIndex);
-            sb.append(";\n");
+            sb.append(";");
+            sb.append(NL);
         }
 
         public void buildOutDeclare(StringBuilder sb, PLSQLargument outArg) {
             databaseTypeHelper.declareTarget(sb, outArg, this);
-            sb.append(";\n");
+            sb.append(";");
+            sb.append(NL);
         }
 
-        public void buildBeginBlock(StringBuilder sb, PLSQLargument arg) {
+        public void buildBeginBlock(StringBuilder sb, PLSQLargument arg, PLSQLStoredProcedureCall call) {
             // nothing to do for simple types
         }
 
-        public void buildOutAssignment(StringBuilder sb, PLSQLargument outArg) {
-            databaseTypeHelper.buildOutAssignment(sb, outArg);
+        public void buildOutAssignment(StringBuilder sb, PLSQLargument outArg, PLSQLStoredProcedureCall call) {
+            databaseTypeHelper.buildOutAssignment(sb, outArg, call);
         }
 
         public void translate(PLSQLargument arg, AbstractRecord translationRow,
             AbstractRecord copyOfTranslationRow, Vector copyOfTranslationFields,
-            Vector translationRowFields, Vector translationRowValues) {
+            Vector translationRowFields, Vector translationRowValues,
+            StoredProcedureCall call) {
             databaseTypeHelper.translate(arg, translationRow, copyOfTranslationRow,
-                copyOfTranslationFields, translationRowFields, translationRowValues);
+                copyOfTranslationFields, translationRowFields, translationRowValues, call);
         }
 
         public void buildOutputRow(PLSQLargument outArg, AbstractRecord outputRow,

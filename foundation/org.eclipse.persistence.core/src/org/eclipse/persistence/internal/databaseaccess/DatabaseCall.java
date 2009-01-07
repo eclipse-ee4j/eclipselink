@@ -218,7 +218,8 @@ public abstract class DatabaseCall extends DatasourceCall {
                             AbstractRecord nestedRow = ((ObjectRelationalDataTypeDescriptor)descriptor).buildRowFromStructure((Struct)value);
                             ReadObjectQuery query = new ReadObjectQuery();
                             query.setSession(this.getQuery().getSession());
-                            value = descriptor.getObjectBuilder().buildObject(query, nestedRow);
+                            value = descriptor.getObjectBuilder().buildNewInstance();
+                            descriptor.getObjectBuilder().buildAttributesIntoObject(value, nestedRow, query, null, false);
                         }
                     } else if ((value instanceof Array)&&( field.isObjectRelationalDatabaseField() )){
                         value = ObjectRelationalDataTypeDescriptor.buildContainerFromArray((Array)value, (ObjectRelationalDatabaseField)field, this.getQuery().getSession());

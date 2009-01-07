@@ -223,4 +223,34 @@ public class Util {
         }
         return noOutArguments;
     }
+
+    public static String trimPunctuation(String originalName, boolean isOracle) {
+        if (originalName == null ||
+            originalName.length() == 0) {
+            if (isOracle) {
+                return null;
+            }
+            else {
+                return originalName;
+            }
+        }
+        String nameWithNoPunctuation = null;
+        // paranoid much? - trim leading/trailing spaces
+        String tmpname1 = originalName.trim();
+        // strip out all punctuation except period (catalog/schema/package separator characater),
+        // underscore and percent (allowed in table names)
+        String tmpname2 = tmpname1.replaceAll("[\\p{Punct}&&[^\\._%]]", " ");
+        // now trim spaces and see if still same size as before
+        String tmpname3 = tmpname2.trim();
+        if (tmpname3.length() != tmpname1.length()) {
+            throw new IllegalArgumentException(originalName + " contains illegal characters");
+        }
+        if (isOracle) {
+            nameWithNoPunctuation = tmpname3.toUpperCase();
+        }
+        else {
+            nameWithNoPunctuation = tmpname3;
+        }
+        return nameWithNoPunctuation;
+    }
 }

@@ -2556,7 +2556,7 @@ public class DatabasePlatform extends DatasourcePlatform {
      * @return Array
      */
     public Array createArray(String elementDataTypeName, Object[] elements, Connection connection) throws SQLException {
-        return null;
+        return connection.createArrayOf(elementDataTypeName, elements);
     }
     
     /**
@@ -2565,7 +2565,7 @@ public class DatabasePlatform extends DatasourcePlatform {
      * @return Struct
      */
     public Struct createStruct(String structTypeName, Object[] attributes, Connection connection) throws SQLException {
-        return null;
+        return connection.createStruct(structTypeName, attributes);
     }
 
     

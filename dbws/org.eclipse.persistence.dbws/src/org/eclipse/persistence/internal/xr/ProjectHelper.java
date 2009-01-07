@@ -22,10 +22,15 @@ import java.util.Iterator;
 // EclipseLink imports
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.internal.databaseaccess.Platform;
+import org.eclipse.persistence.internal.dynamicpersist.BaseEntity;
+import org.eclipse.persistence.internal.dynamicpersist.BaseEntityAccessor;
+import org.eclipse.persistence.internal.dynamicpersist.BaseEntityClassLoader;
+import org.eclipse.persistence.internal.dynamicpersist.BaseEntityVHAccessor;
 import org.eclipse.persistence.internal.helper.ConversionManager;
 import org.eclipse.persistence.internal.indirection.BasicIndirectionPolicy;
 import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.mappings.ForeignReferenceMapping;
+import org.eclipse.persistence.mappings.foundation.AbstractCompositeDirectCollectionMapping;
 import org.eclipse.persistence.oxm.XMLField;
 import org.eclipse.persistence.oxm.mappings.XMLDirectMapping;
 import org.eclipse.persistence.sessions.Login;
@@ -80,6 +85,18 @@ public class ProjectHelper {
                         if (xdm.isDirectToFieldMapping()) {
                             XMLDirectMapping xmlDM = (XMLDirectMapping)xdm;
                             XMLField xmlField = (XMLField)xmlDM.getField();
+                            Class clz = SCHEMA_2_CLASS.get(xmlField.getSchemaType());
+                            if (clz != null) {
+                                xmlField.setType(clz);
+                            }
+                            else {
+                                xmlField.setType(OBJECT);
+                            }
+                        }
+                        else if (xdm.isAbstractCompositeDirectCollectionMapping()) {
+                            AbstractCompositeDirectCollectionMapping acdcm =
+                                (AbstractCompositeDirectCollectionMapping)xdm;
+                            XMLField xmlField = (XMLField)acdcm.getField();
                             Class clz = SCHEMA_2_CLASS.get(xmlField.getSchemaType());
                             if (clz != null) {
                                 xmlField.setType(clz);

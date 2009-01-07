@@ -1,0 +1,63 @@
+package org.eclipse.persistence.platform.database.oracle.publisher.viewcache;
+
+import java.sql.ResultSet;
+
+public class AllTypeAttrs extends ViewRowFactory implements ViewRow {
+    // Attributes
+    public String attrName;
+    public int attrNo;
+    public String attrTypeMod;
+    public String attrTypeOwner;
+    public String attrTypeName;
+    public String characterSetName;
+    public int attrLength;
+    public int attrPrecision;
+    public int attrScale;
+
+    public static int iATTR_NAME;
+    public static int iATTR_NO;
+    public static int iATTR_TYPE_MOD;
+    public static int iATTR_TYPE_OWNER;
+    public static int iATTR_TYPE_NAME;
+    public static int iCHARACTER_SET_NAME;
+    public static int iLENGTH;
+    public static int iPRECISION;
+    public static int iSCALE;
+    private static boolean m_indexed = false;
+
+    public AllTypeAttrs(ResultSet rs) throws java.sql.SQLException {
+        super();
+        if (!m_indexed) {
+            m_indexed = true;
+            iATTR_NAME = rs.findColumn("ATTR_NAME");
+            iATTR_NO = rs.findColumn("ATTR_NO");
+            iATTR_TYPE_MOD = rs.findColumn("ATTR_TYPE_MOD");
+            iATTR_TYPE_OWNER = rs.findColumn("ATTR_TYPE_OWNER");
+            iATTR_TYPE_NAME = rs.findColumn("ATTR_TYPE_NAME");
+            iLENGTH = rs.findColumn("LENGTH");
+            iPRECISION = rs.findColumn("PRECISION");
+            iSCALE = rs.findColumn("SCALE");
+            iCHARACTER_SET_NAME = rs.findColumn("CHARACTER_SET_NAME");
+        }
+        attrName = rs.getString(iATTR_NAME);
+        attrNo = rs.getInt(iATTR_NO);
+        attrTypeMod = rs.getString(iATTR_TYPE_MOD);
+        attrTypeOwner = rs.getString(iATTR_TYPE_OWNER);
+        attrTypeName = rs.getString(iATTR_TYPE_NAME);
+        attrLength = rs.getInt(iLENGTH);
+        attrPrecision = rs.getInt(iPRECISION);
+        attrScale = rs.getInt(iSCALE);
+        characterSetName = rs.getString(iCHARACTER_SET_NAME);
+    }
+
+    public String toString() {
+        return attrName + "," + attrNo + "," + attrTypeMod + "," + attrTypeOwner + ","
+            + attrTypeName + "," + attrLength + "," + attrPrecision + "," + attrScale + ","
+            + characterSetName;
+    }
+
+    public static String[] getProjectList() {
+        return new String[]{"ATTR_NAME", "ATTR_NO", "ATTR_TYPE_MOD", "ATTR_TYPE_OWNER",
+            "ATTR_TYPE_NAME", "LENGTH", "SCALE", "CHARACTER_SET_NAME"};
+    }
+}

@@ -39,6 +39,8 @@ import org.eclipse.persistence.tools.dbws.Util.InOut;
 import org.eclipse.persistence.tools.dbws.jdbc.DbStoredArgument;
 import org.eclipse.persistence.tools.dbws.jdbc.DbStoredFunction;
 import org.eclipse.persistence.tools.dbws.jdbc.DbStoredProcedure;
+import org.eclipse.persistence.tools.dbws.oracle.OracleHelper;
+import org.eclipse.persistence.tools.dbws.oracle.PLSQLStoredArgument;
 import static org.eclipse.persistence.internal.xr.QNameTransformer.SCHEMA_QNAMES;
 import static org.eclipse.persistence.internal.xr.sxf.SimpleXMLFormat.DEFAULT_SIMPLE_XML_FORMAT_TAG;
 import static org.eclipse.persistence.internal.xr.Util.SXF_QNAME;
@@ -108,9 +110,10 @@ public class ProcedureOperationModel extends OperationModel {
     public void buildOperation(DBWSBuilder builder) {
 
         super.buildOperation(builder);
-
+        boolean isOracle = 
+            builder.getDatabasePlatform().getClass().getName().contains("Oracle") ? true : false;
         List<DbStoredProcedure> procs = builder.loadProcedures(catalogPattern, schemaPattern,
-            procedurePattern, overload);
+            procedurePattern, overload, isOracle);
         for (DbStoredProcedure storedProcedure : procs) {
             StringBuilder sb = new StringBuilder();
             if (name == null || name.length() == 0) {
@@ -258,7 +261,13 @@ public class ProcedureOperationModel extends OperationModel {
                     ProcedureArgument pa = null;
                     Parameter parm = null;
                     InOut direction = arg.getInOut();
-                    QName xmlType = getXMLTypeFromJDBCType(arg.getJdbcType());
+                    QName xmlType = null;
+                    if (isOracle) {
+                        xmlType = OracleHelper.getXMLTypeFromJDBCType(arg, builder.getTargetNamespace());
+                    }
+                    else {
+                        xmlType = getXMLTypeFromJDBCType(arg.getJdbcType());
+                    }
                     if (direction == IN) {
                         parm = new Parameter();
                         parm.setName(argName);
@@ -286,7 +295,7 @@ public class ProcedureOperationModel extends OperationModel {
                             // if user overrides returnType, assume they're right
                             // Hmm, multiple OUT's gonna be a problem - later!
                             if (returnType != null && sxf == null) {
-                                xmlType = qNameFromString("{" +builder.getTargetNamespace() + "}" +
+                                xmlType = qNameFromString("{" + builder.getTargetNamespace() + "}" +
                                     returnType, builder.schema);
                             }
                             pao.setResultType(xmlType);
@@ -305,6 +314,12 @@ public class ProcedureOperationModel extends OperationModel {
                         }
                         else {
                             spqh.getOutArguments().add(pao);
+                        }
+                    }
+                    if (arg instanceof PLSQLStoredArgument) {
+                        pa.setComplexTypeName(((PLSQLStoredArgument)arg).getPlSqlTypeName());
+                        if (spqh instanceof StoredProcedureQueryHandler) {
+                            
                         }
                     }
                     if (parm != null) {

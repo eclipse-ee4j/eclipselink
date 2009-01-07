@@ -13,10 +13,6 @@
 
 package org.eclipse.persistence.platform.database.oracle.plsql;
 
-// Javse imports
-
-// Java extension imports
-
 // EclipseLink imports
 import org.eclipse.persistence.internal.helper.SimpleDatabaseType;
 
@@ -28,4 +24,6 @@ import org.eclipse.persistence.internal.helper.SimpleDatabaseType;
  */
 public interface OraclePLSQLType extends SimpleDatabaseType {
 
+    public static final String PLSQLBoolean_IN_CONV = "SYS.SQLJUTL.INT2BOOL";
+    public static final String PLSQLBoolean_OUT_CONV = "SYS.SQLJUTL.BOOL2INT";
 }

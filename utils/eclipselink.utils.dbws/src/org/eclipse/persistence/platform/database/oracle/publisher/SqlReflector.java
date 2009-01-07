@@ -1,15 +1,17 @@
 package org.eclipse.persistence.platform.database.oracle.publisher;
 
+//javase imports
 import java.sql.Connection;
+
+//EclipseLink
+import org.eclipse.persistence.platform.database.oracle.publisher.sqlrefl.SqlReflectorImpl;
 
 public interface SqlReflector {
 
     public enum SqlReflectorHelper {
         sqlReflectorHelper;
-        static SqlReflector emptyReflector = new SqlReflector() {
-        };
         public static SqlReflector getDefaultSqlReflector(Connection conn, String user) {
-            return emptyReflector;
+            return new SqlReflectorImpl(conn, user);
         }
     }
 }

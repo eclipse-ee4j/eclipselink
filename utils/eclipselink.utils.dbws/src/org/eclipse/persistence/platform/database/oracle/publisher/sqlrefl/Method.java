@@ -1,0 +1,138 @@
+/* 1998 (c) Oracle Corporation */
+package org.eclipse.persistence.platform.database.oracle.publisher.sqlrefl;
+
+/**
+ * A Method provides information about a single method of a type.
+ */
+public class Method extends Member implements Sortable {
+
+    public static final int IN = 1;
+    public static final int OUT = 2;
+    public static final int INOUT = IN ^ OUT;
+    public static final int RETURN = 4;
+    public static final int ALL = 0;
+
+    /**
+     * Construct a Method
+     */
+    public Method(String name, String overloadNumber, int modifiers, Type returnType,
+        Type[] parameterTypes, String[] parameterNames, int[] parameterModes,
+        boolean[] parameterDefaults, int paramLen) {
+        super(name, modifiers);
+        m_returnType = returnType;
+        m_overloadNumber = overloadNumber;
+        if (paramLen > -1 && parameterTypes != null && parameterNames != null
+            && parameterModes != null && parameterDefaults != null) {
+            m_paramTypes = new Type[paramLen];
+            m_paramNames = new String[paramLen];
+            m_paramModes = new int[paramLen];
+            m_paramDefaults = new boolean[paramLen];
+            m_hasDefault = false;
+            for (int i = 0; i < paramLen; i++) {
+                m_paramModes[i] = parameterModes[i];
+                m_paramNames[i] = parameterNames[i];
+                m_paramTypes[i] = parameterTypes[i];
+                m_paramDefaults[i] = parameterDefaults[i];
+                if (m_paramDefaults[i]) {
+                    m_hasDefault = true;
+                }
+            }
+        }
+    }
+
+    /**
+     * Returns a Type object that represents the formal return type of the method represented by
+     * this Method object. If the method does not return anything, getReturnType() may return null
+     * or a representation of the void type.
+     */
+    public Type getReturnType() {
+        return m_returnType;
+    }
+
+    /**
+     * Returns an array of String objects that represent the formal parameter names, in declaration
+     * order, of the method represented by this Method object. Returns an array of length 0 if the
+     * underlying method takes no parameters. Returns null if the parameter names are not known.
+     */
+    public String[] getParamNames() {
+        return m_paramNames;
+    }
+
+    /**
+     * Returns an array of Type objects that represent the formal parameter types, in declaration
+     * order, of the method represented by this Method object. Returns an array of length 0 if the
+     * underlying method takes no parameters.
+     */
+    public Type[] getParamTypes() {
+        return m_paramTypes;
+    }
+
+    /**
+     * Returns an array of ints that represent the parameter modes, in declaration order, of the
+     * method represented by this Method object. Returns an array of length 0 if the underlying
+     * method takes no parameters. Possible modes are: IN, OUT, INOUT.
+     */
+    public int[] getParamModes() {
+        return m_paramModes;
+    }
+
+    public boolean[] getParamDefaults() {
+        return m_paramDefaults;
+    }
+
+    public boolean hasDefault() {
+        return m_hasDefault;
+    }
+
+    public String getSqlStatement() {
+        return null;
+    }
+
+    public String toString() {
+        String printout = m_returnType + " " + m_name + "(";
+        for (int i = 0; i < m_paramTypes.length; i++) {
+            printout += m_paramTypes[i].toString() + " " + m_paramNames[i].toString();
+            if (i < m_paramTypes.length - 1) {
+                printout += ",";
+            }
+        }
+        printout += ");";
+        return printout;
+    }
+
+    // Keep Java method name same as Sql method name
+    // Use case: SqlStatementMethod and -dbjava generated methods
+    public boolean keepMethodName() {
+        return m_keepMethodName;
+    }
+
+    public void setKeepMethodName(boolean keep) {
+        m_keepMethodName = keep;
+    }
+
+    public String getSortingKey() {
+        String key = m_name;
+        if (m_overloadNumber != null) {
+            for (int i = 0; i < 6 - m_overloadNumber.length(); i++) {
+                key = key + "9";
+            }
+
+            key = key + m_overloadNumber;
+        }
+        for (int i = 0; i < m_paramTypes.length; i++) {
+            if (i > 0)
+                key += ",";
+            key += m_paramTypes[i].getName();
+        }
+        return key;
+    }
+
+    protected Type m_returnType;
+    protected Type[] m_paramTypes;
+    protected String[] m_paramNames;
+    protected int[] m_paramModes;
+    protected boolean[] m_paramDefaults;
+    protected boolean m_hasDefault;
+    protected boolean m_keepMethodName = false;
+    protected String m_overloadNumber;
+}

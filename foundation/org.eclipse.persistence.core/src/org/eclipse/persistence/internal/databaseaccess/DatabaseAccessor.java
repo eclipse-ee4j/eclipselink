@@ -24,6 +24,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
+import java.sql.SQLWarning;
 import java.sql.Statement;
 import java.sql.Types;
 import java.util.Enumeration;
@@ -632,6 +633,15 @@ public class DatabaseAccessor extends DatasourceAccessor {
                     session.endOperationProfile(SessionProfiler.ROW_FETCH, dbCall.getQuery(), SessionProfiler.ALL);
                 }
             }
+            // Log any warnings on finest.
+            if (session.shouldLog(SessionLog.FINEST, SessionLog.SQL)) {// Avoid printing if no logging required.
+            	SQLWarning warning = statement.getWarnings();
+            	while (warning != null) {
+            		String message = warning.getMessage() + ":" + warning.getSQLState() + " - " + warning.getCause();
+            		session.log(SessionLog.FINEST, SessionLog.SQL, message, (Object[])null, this, false);
+            		warning = warning.getNextWarning();
+            	}
+            }
         } catch (SQLException exception) {
             //If this is a connection from an external pool then closeStatement will close the connection.
             //we must test the connection before that happens.
@@ -657,7 +667,7 @@ public class DatabaseAccessor extends DatasourceAccessor {
             }
             throw exception;
         }
-
+        
         // This is in a separate try block to ensure that the real exception is not masked by the close exception.
         try {
             // Allow for caching of statement, forced closes are not cache as they failed execution so are most likely bad.

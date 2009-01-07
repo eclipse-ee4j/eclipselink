@@ -13,12 +13,6 @@
 
 package org.eclipse.persistence.internal.xr;
 
-// Javase imports
-
-// Java extension imports
-
-// EclipseLink imports
-
 /**
  * <p><b>INTERNAL</b>:
  *
@@ -27,13 +21,13 @@ package org.eclipse.persistence.internal.xr;
  */
 public class ProcedureArgument {
 
-    protected String name;
     protected String parameterName;
+    protected String name;
+    protected String complexTypeName;
 
     public String getParameterName() {
         return parameterName;
     }
-
     public void setParameterName(String argumentName) {
         this.parameterName = argumentName;
     }
@@ -41,8 +35,14 @@ public class ProcedureArgument {
     public String getName() {
         return name;
     }
-
     public void setName(String name) {
         this.name = name;
+    }
+
+    public String getComplexTypeName() {
+        return complexTypeName;
+    }
+    public void setComplexTypeName(String complexTypeName) {
+        this.complexTypeName = complexTypeName;
     }
 }

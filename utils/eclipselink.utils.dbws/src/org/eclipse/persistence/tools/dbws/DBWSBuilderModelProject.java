@@ -52,6 +52,7 @@ public class DBWSBuilderModelProject extends Project {
         addDescriptor(buildDBWSBuilderModelDescriptor());
         addDescriptor(buildTableOperationModelDescriptor());
         addDescriptor(buildProcedureOperationModelDescriptor());
+        addDescriptor(buildPLSQLProcedureOperationModelDescriptor());
         addDescriptor(buildSQLOperationModelDescriptor());
         addDescriptor(buildBindingModelDescriptor());
 
@@ -122,6 +123,7 @@ public class DBWSBuilderModelProject extends Project {
         operationsMapping.setContainerPolicy(new ListContainerPolicy(ArrayList.class));
         operationsMapping.addChoiceElement("table", TableOperationModel.class);
         operationsMapping.addChoiceElement("procedure", ProcedureOperationModel.class);
+        operationsMapping.addChoiceElement("plsql-procedure", PLSQLProcedureOperationModel.class);
         operationsMapping.addChoiceElement("sql", SQLOperationModel.class);
         descriptor.addMapping(operationsMapping);
 
@@ -195,6 +197,7 @@ public class DBWSBuilderModelProject extends Project {
         additionalOperationsMapping.setAttributeName("additionalOperations");
         additionalOperationsMapping.setContainerPolicy(new ListContainerPolicy(ArrayList.class));
         additionalOperationsMapping.addChoiceElement("procedure", ProcedureOperationModel.class);
+        additionalOperationsMapping.addChoiceElement("plsql-procedure", PLSQLProcedureOperationModel.class);
         additionalOperationsMapping.addChoiceElement("sql", SQLOperationModel.class);
         descriptor.addMapping(additionalOperationsMapping);
 
@@ -274,7 +277,14 @@ public class DBWSBuilderModelProject extends Project {
 
         return descriptor;
     }
-
+    protected ClassDescriptor buildPLSQLProcedureOperationModelDescriptor() {
+        XMLDescriptor descriptor = (XMLDescriptor)buildProcedureOperationModelDescriptor();
+        descriptor.setJavaClass(PLSQLProcedureOperationModel.class);
+        descriptor.setDefaultRootElement("plsql-procedure");
+        
+        return descriptor;
+    }
+    
     protected ClassDescriptor buildSQLOperationModelDescriptor() {
 
         XMLDescriptor descriptor = new XMLDescriptor();

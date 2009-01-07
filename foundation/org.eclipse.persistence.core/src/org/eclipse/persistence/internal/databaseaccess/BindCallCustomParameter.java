@@ -17,6 +17,7 @@ import java.sql.SQLException;
 import java.sql.Array;
 import java.sql.Struct;
 import java.sql.Types;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Iterator;
 
@@ -115,7 +116,10 @@ public class BindCallCustomParameter {
             }
             return parameter;
         }
-        //handle ARRAY conversions
+        // Handle java.sql.Array conversions from Collection or Java Arrays.
+        if (parameter instanceof Object[]) {
+        	parameter = Arrays.asList((Object[])parameter);
+        }
         if ((dbField.getSqlType()!=Types.ARRAY)||(parameter instanceof Array) || !(parameter instanceof Collection) ){
             return parameter;
         }
@@ -134,7 +138,7 @@ public class BindCallCustomParameter {
             fields[i++] = element;
         }
 
-        return session.getPlatform().createArray(((ObjectRelationalDatabaseField)dbField).getSqlTypeName(), fields, session,connection);
+        return session.getPlatform().createArray(((ObjectRelationalDatabaseField)dbField).getSqlTypeName(), fields, session, connection);
     }
     
 }

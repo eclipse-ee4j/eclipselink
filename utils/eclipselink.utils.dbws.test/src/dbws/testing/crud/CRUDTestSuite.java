@@ -31,7 +31,7 @@ import static junit.framework.Assert.assertNotNull;
 import static junit.framework.Assert.assertTrue;
 
 // EclipseLink imports
-import org.eclipse.persistence.internal.xr.BaseEntity;
+import org.eclipse.persistence.internal.dynamicpersist.BaseEntity;
 import org.eclipse.persistence.internal.xr.Invocation;
 import org.eclipse.persistence.internal.xr.Operation;
 import org.eclipse.persistence.oxm.XMLMarshaller;

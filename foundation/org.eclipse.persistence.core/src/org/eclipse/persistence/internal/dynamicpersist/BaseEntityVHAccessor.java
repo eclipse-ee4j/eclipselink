@@ -11,7 +11,7 @@
  *     Oracle - initial API and implementation from Oracle TopLink
  ******************************************************************************/
 
-package org.eclipse.persistence.internal.xr;
+package org.eclipse.persistence.internal.dynamicpersist;
 
 // Javase imports
 

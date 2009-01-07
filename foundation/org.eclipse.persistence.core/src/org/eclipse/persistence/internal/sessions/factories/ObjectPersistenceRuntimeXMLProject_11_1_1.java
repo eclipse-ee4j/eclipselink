@@ -27,8 +27,10 @@ import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.descriptors.RelationalDescriptor;
 import org.eclipse.persistence.exceptions.DescriptorException;
 import org.eclipse.persistence.internal.descriptors.InstantiationPolicy;
+import org.eclipse.persistence.internal.helper.ComplexDatabaseType;
 import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.helper.DatabaseTable;
+import org.eclipse.persistence.internal.helper.DatabaseType;
 import org.eclipse.persistence.internal.helper.DatabaseTypeWrapper;
 import org.eclipse.persistence.internal.helper.NonSynchronizedVector;
 import org.eclipse.persistence.internal.identitymaps.SoftIdentityMap;
@@ -78,8 +80,10 @@ import org.eclipse.persistence.oxm.mappings.nullpolicy.XMLNullRepresentationType
 import org.eclipse.persistence.oxm.schema.XMLSchemaClassPathReference;
 import org.eclipse.persistence.platform.database.jdbc.JDBCTypeWrapper;
 import org.eclipse.persistence.platform.database.jdbc.JDBCTypes;
-import org.eclipse.persistence.platform.database.oracle.plsql.ComplexPLSQLTypeWrapper;
+import org.eclipse.persistence.platform.database.oracle.plsql.PLSQLCollection;
+import org.eclipse.persistence.platform.database.oracle.plsql.PLSQLrecordWrapper;
 import org.eclipse.persistence.platform.database.oracle.plsql.OraclePLSQLTypes;
+import org.eclipse.persistence.platform.database.oracle.plsql.PLSQLCollectionWrapper;
 import org.eclipse.persistence.platform.database.oracle.plsql.PLSQLStoredProcedureCall;
 import org.eclipse.persistence.platform.database.oracle.plsql.PLSQLargument;
 import org.eclipse.persistence.platform.database.oracle.plsql.PLSQLrecord;
@@ -104,7 +108,36 @@ import static org.eclipse.persistence.sessions.factories.XMLProjectReader.TOPLIN
  * Note any changes must be reflected in the XML schema.
  * This project contains the 11gR1 mappings to the 11gR1 schema.
  */
+@SuppressWarnings("unchecked")
 public class ObjectPersistenceRuntimeXMLProject_11_1_1 extends ObjectPersistenceRuntimeXMLProject {
+
+    /**
+     * Wrap the type in a type wrapper to handle XML conversion.
+     */
+    public static DatabaseTypeWrapper wrapType(DatabaseType databaseType) {
+        if (databaseType.isJDBCType()) {
+            return new JDBCTypeWrapper(databaseType);
+        }
+        else if (databaseType.isComplexDatabaseType()) {
+            ComplexDatabaseType complexType = (ComplexDatabaseType)databaseType;
+            if (complexType.isRecord()) {
+                return new PLSQLrecordWrapper(databaseType);
+            }
+            else if (complexType.isCollection()) {
+                return new PLSQLCollectionWrapper(databaseType);
+            }
+        }
+        else {
+            return new SimplePLSQLTypeWrapper(databaseType);
+        }
+        return null;
+    }
+    /**
+     * Unwrap the type from a type wrapper to handle XML conversion.
+     */
+    public static DatabaseType unwrapType(DatabaseTypeWrapper databaseType) {
+        return databaseType.getWrappedType();
+    }
 
     public ObjectPersistenceRuntimeXMLProject_11_1_1() {
         super();
@@ -147,10 +180,12 @@ public class ObjectPersistenceRuntimeXMLProject_11_1_1 extends ObjectPersistence
         addDescriptor(buildDatabaseTypeWrapperDescriptor());
         addDescriptor(buildJDBCTypeWrapperDescriptor());
         addDescriptor(buildSimplePLSQLTypeWrapperDescriptor());
-        addDescriptor(buildComplexPLSQLTypeWrapperDescriptor());
+        addDescriptor(buildPLSQLrecordWrapperDescriptor());
+        addDescriptor(buildPLSQLCollectionWrapperDescriptor());
         addDescriptor(buildPLSQLargumentDescriptor());
         addDescriptor(buildPLSQLStoredProcedureCallDescriptor());
         addDescriptor(buildPLSQLrecordDescriptor());
+        addDescriptor(buildPLSQLCollectionDescriptor());
 
         // 5757849 -- add metadata support for ObjectRelationalDatabaseField
         addDescriptor(buildObjectRelationalDatabaseFieldDescriptor());
@@ -1440,16 +1475,32 @@ public class ObjectPersistenceRuntimeXMLProject_11_1_1 extends ObjectPersistence
 
      public static final String TYPE_NAME = "type-name";
 
-     protected ClassDescriptor buildComplexPLSQLTypeWrapperDescriptor() {
+     protected ClassDescriptor buildJDBCTypeWrapperDescriptor() {
 
          XMLDescriptor descriptor = new XMLDescriptor();
-         descriptor.setJavaClass(ComplexPLSQLTypeWrapper.class);
+         descriptor.setJavaClass(JDBCTypeWrapper.class);
+         descriptor.getInheritancePolicy().setParentClass(DatabaseTypeWrapper.class);
+
+         XMLDirectMapping wrappedDatabaseTypeMapping = new XMLDirectMapping();
+         wrappedDatabaseTypeMapping.setAttributeName("wrappedDatabaseType");
+         wrappedDatabaseTypeMapping.setXPath("@" + TYPE_NAME);
+         EnumTypeConverter jdbcTypesEnumTypeConverter = new EnumTypeConverter(
+             wrappedDatabaseTypeMapping, JDBCTypes.class, false);
+         wrappedDatabaseTypeMapping.setConverter(jdbcTypesEnumTypeConverter);
+         descriptor.addMapping(wrappedDatabaseTypeMapping);
+
+         return descriptor;
+     }
+     protected ClassDescriptor buildPLSQLcollectionWrapperDescriptor() {
+
+         XMLDescriptor descriptor = new XMLDescriptor();
+         descriptor.setJavaClass(PLSQLCollectionWrapper.class);
          descriptor.getInheritancePolicy().setParentClass(DatabaseTypeWrapper.class);
 
          XMLCompositeObjectMapping wrappedDatabaseTypeMapping = new XMLCompositeObjectMapping();
          wrappedDatabaseTypeMapping.setAttributeName("wrappedDatabaseType");
          wrappedDatabaseTypeMapping.setXPath(".");
-         wrappedDatabaseTypeMapping.setReferenceClass(PLSQLrecord.class);
+         wrappedDatabaseTypeMapping.setReferenceClass(PLSQLCollection.class);
          descriptor.addMapping(wrappedDatabaseTypeMapping);
 
          return descriptor;
@@ -1472,32 +1523,39 @@ public class ObjectPersistenceRuntimeXMLProject_11_1_1 extends ObjectPersistence
          return descriptor;
      }
 
-     protected ClassDescriptor buildJDBCTypeWrapperDescriptor() {
+     protected ClassDescriptor buildPLSQLrecordWrapperDescriptor() {
 
          XMLDescriptor descriptor = new XMLDescriptor();
-         descriptor.setJavaClass(JDBCTypeWrapper.class);
+         descriptor.setJavaClass(PLSQLrecordWrapper.class);
          descriptor.getInheritancePolicy().setParentClass(DatabaseTypeWrapper.class);
 
-         XMLDirectMapping wrappedDatabaseTypeMapping = new XMLDirectMapping();
+         XMLCompositeObjectMapping wrappedDatabaseTypeMapping = new XMLCompositeObjectMapping();
          wrappedDatabaseTypeMapping.setAttributeName("wrappedDatabaseType");
-         wrappedDatabaseTypeMapping.setXPath("@" + TYPE_NAME);
-         EnumTypeConverter jdbcTypesEnumTypeConverter = new EnumTypeConverter(
-             wrappedDatabaseTypeMapping, JDBCTypes.class, false);
-         wrappedDatabaseTypeMapping.setConverter(jdbcTypesEnumTypeConverter);
+         wrappedDatabaseTypeMapping.setXPath(".");
+         wrappedDatabaseTypeMapping.setReferenceClass(PLSQLrecord.class);
          descriptor.addMapping(wrappedDatabaseTypeMapping);
 
          return descriptor;
+     }
+
+     protected ClassDescriptor buildPLSQLCollectionWrapperDescriptor() {
+
+        XMLDescriptor descriptor = new XMLDescriptor();
+        descriptor.setJavaClass(PLSQLCollectionWrapper.class);
+        descriptor.getInheritancePolicy().setParentClass(DatabaseTypeWrapper.class);
+        XMLCompositeObjectMapping wrappedDatabaseTypeMapping = new XMLCompositeObjectMapping();
+        wrappedDatabaseTypeMapping.setAttributeName("wrappedDatabaseType");
+        wrappedDatabaseTypeMapping.setXPath(".");
+        wrappedDatabaseTypeMapping.setReferenceClass(PLSQLCollection.class);
+        descriptor.addMapping(wrappedDatabaseTypeMapping);
+
+        return descriptor;
      }
 
      protected ClassDescriptor buildPLSQLrecordDescriptor() {
 
          XMLDescriptor descriptor = new XMLDescriptor();
          descriptor.setJavaClass(PLSQLrecord.class);
-
-         XMLDirectMapping nameMapping = new XMLDirectMapping();
-         nameMapping.setAttributeName("recordName");
-         nameMapping.setXPath(getPrimaryNamespaceXPath() + "record-name/text()");
-         descriptor.addMapping(nameMapping);
 
          XMLDirectMapping typeNameMapping = new XMLDirectMapping();
          typeNameMapping.setAttributeName("typeName");
@@ -1506,10 +1564,13 @@ public class ObjectPersistenceRuntimeXMLProject_11_1_1 extends ObjectPersistence
 
          XMLDirectMapping compatibleTypeMapping = new XMLDirectMapping();
          compatibleTypeMapping.setAttributeName("compatibleType");
-         compatibleTypeMapping.setGetMethodName("getCompatibleType");
-         compatibleTypeMapping.setSetMethodName("setCompatibleType");
          compatibleTypeMapping.setXPath(getPrimaryNamespaceXPath() + "compatible-type/text()");
          descriptor.addMapping(compatibleTypeMapping);
+
+         XMLDirectMapping javaTypeMapping = new XMLDirectMapping();
+         javaTypeMapping.setAttributeName("javaType");
+         javaTypeMapping.setXPath(getPrimaryNamespaceXPath() + "java-type/text()");
+         descriptor.addMapping(javaTypeMapping);
 
          XMLCompositeCollectionMapping fieldsMapping = new XMLCompositeCollectionMapping();
          fieldsMapping.setAttributeName("fields");
@@ -1520,18 +1581,61 @@ public class ObjectPersistenceRuntimeXMLProject_11_1_1 extends ObjectPersistence
          return descriptor;
      }
 
+     protected ClassDescriptor buildPLSQLCollectionDescriptor() {
+
+        XMLDescriptor descriptor = new XMLDescriptor();
+        descriptor.setJavaClass(PLSQLCollection.class);
+
+        XMLDirectMapping typeNameMapping = new XMLDirectMapping();
+        typeNameMapping.setAttributeName("typeName");
+        typeNameMapping.setXPath(getPrimaryNamespaceXPath() + "type-name/text()");
+        descriptor.addMapping(typeNameMapping);
+
+        XMLDirectMapping compatibleTypeMapping = new XMLDirectMapping();
+        compatibleTypeMapping.setAttributeName("compatibleType");
+        compatibleTypeMapping.setXPath(getPrimaryNamespaceXPath() + "compatible-type/text()");
+        descriptor.addMapping(compatibleTypeMapping);
+
+        XMLDirectMapping javaTypeMapping = new XMLDirectMapping();
+        javaTypeMapping.setAttributeName("javaType");
+        javaTypeMapping.setXPath(getPrimaryNamespaceXPath() + "java-type/text()");
+        descriptor.addMapping(javaTypeMapping);
+
+        XMLCompositeObjectMapping databaseTypeMapping = new XMLCompositeObjectMapping();
+        databaseTypeMapping.setAttributeName("databaseTypeWrapper");
+        databaseTypeMapping.setAttributeAccessor(new AttributeAccessor() {
+            public Object getAttributeValueFromObject(Object object) {
+                PLSQLCollection collection = (PLSQLCollection)object;
+                DatabaseType type = collection.getNestedType();
+                return wrapType(type);
+            }
+            public void setAttributeValueInObject(Object object, Object value) {
+                PLSQLCollection collection = (PLSQLCollection)object;
+                DatabaseTypeWrapper type = (DatabaseTypeWrapper)value;
+                collection.setNestedType(type.getWrappedType());
+            }
+        });
+        databaseTypeMapping.setReferenceClass(DatabaseTypeWrapper.class);
+        databaseTypeMapping.setXPath("nested-type");
+        descriptor.addMapping(databaseTypeMapping);
+
+        return descriptor;
+    }
+
      protected ClassDescriptor buildDatabaseTypeWrapperDescriptor() {
 
          XMLDescriptor descriptor = new XMLDescriptor();
          descriptor.setJavaClass(DatabaseTypeWrapper.class);
          descriptor.getInheritancePolicy().setClassIndicatorField(
-                 new XMLField("@xsi:type"));
+             new XMLField("@xsi:type"));
          descriptor.getInheritancePolicy().addClassIndicator(
-                 JDBCTypeWrapper.class, getPrimaryNamespaceXPath() + "jdbc-type");
+             JDBCTypeWrapper.class, getPrimaryNamespaceXPath() + "jdbc-type");
          descriptor.getInheritancePolicy().addClassIndicator(
-                 SimplePLSQLTypeWrapper.class, getPrimaryNamespaceXPath() + "plsql-type");
+             SimplePLSQLTypeWrapper.class, getPrimaryNamespaceXPath() + "plsql-type");
          descriptor.getInheritancePolicy().addClassIndicator(
-                 ComplexPLSQLTypeWrapper.class, getPrimaryNamespaceXPath() + "plsql-record");
+                 PLSQLrecordWrapper.class, getPrimaryNamespaceXPath() + "plsql-record");
+         descriptor.getInheritancePolicy().addClassIndicator(
+             PLSQLCollectionWrapper.class, getPrimaryNamespaceXPath() + "plsql-collection");
 
          return descriptor;
      }

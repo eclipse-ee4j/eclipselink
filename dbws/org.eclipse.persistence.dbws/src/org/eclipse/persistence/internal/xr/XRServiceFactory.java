@@ -23,6 +23,7 @@ import javax.xml.namespace.QName;
 
 // EclipseLink imports
 import org.eclipse.persistence.exceptions.DBWSException;
+import org.eclipse.persistence.internal.dynamicpersist.BaseEntityClassLoader;
 import org.eclipse.persistence.internal.oxm.schema.SchemaModelProject;
 import org.eclipse.persistence.internal.oxm.schema.model.Schema;
 import org.eclipse.persistence.oxm.NamespaceResolver;

@@ -372,6 +372,9 @@ public class WSDLGenerator {
                         if (p.getType().getNamespaceURI().equals(W3C_XML_SCHEMA_NS_URI)) {
                             arg.setType(NS_SCHEMA_PREFIX + ":" + p.getType().getLocalPart());
                         }
+                        else if (p.getType().getNamespaceURI().equals(importedSchemaNameSpace)) {
+                            arg.setType(NS_IMPORTED_PREFIX + ":" + p.getType().getLocalPart());
+                        }
                         else {
                             arg.setType(p.getType().getLocalPart());
                         }

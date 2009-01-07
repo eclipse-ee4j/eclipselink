@@ -155,6 +155,8 @@ public class QueryExceptionResource extends ListResourceBundle {
        { "6150", "A null value can not be used as a key in a container of type [{1}]. Ensure your key values for the objects of type [{0}] can not be null." },
        { "6151", "An exception occurred while attempting to set a Redirector {0} passed through a JPA Query Hint {1}.  Please verify that the provided Redirector implements org.eclipse.persistence.queries.QueryRedirector."},
        { "6152", "An exception occurred while attempting to instantiate the class {0} passed through a JPA Query Hint {1}.  Please verify that the class has a default constructor."},
+       { "6153", "CompatibleType must be set on complex type: {0}."},
+       { "6154", "TypeName must be set on complex type: {0}."},
     };
 
     /**

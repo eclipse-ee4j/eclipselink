@@ -17,6 +17,7 @@ package org.eclipse.persistence.platform.database.oracle.plsql;
 import static java.lang.Integer.MIN_VALUE;
 
 // EclipseLink imports
+import org.eclipse.persistence.internal.helper.ComplexDatabaseType;
 import org.eclipse.persistence.internal.helper.DatabaseType;
 import org.eclipse.persistence.internal.helper.DatabaseTypeWrapper;
 import org.eclipse.persistence.platform.database.jdbc.JDBCTypeWrapper;
@@ -52,11 +53,17 @@ public class PLSQLargument implements Cloneable {
         DatabaseType databaseType) {
         this();
         this.name = name;
-        if (databaseType.isComplexDatabaseType()) {
-            databaseTypeWrapper = new ComplexPLSQLTypeWrapper(databaseType);
-        }
-        else if (databaseType.isJDBCType()) {
+        if (databaseType.isJDBCType()) {
             databaseTypeWrapper = new JDBCTypeWrapper(databaseType);
+        }
+        else if (databaseType.isComplexDatabaseType()) {
+            ComplexDatabaseType cdt = (ComplexDatabaseType)databaseType;
+            if (cdt.isRecord()) {
+                databaseTypeWrapper = new PLSQLrecordWrapper(databaseType);
+            }
+            else if (cdt.isCollection()) {
+                databaseTypeWrapper = new PLSQLCollectionWrapper(databaseType);
+            }
         }
         else {
             databaseTypeWrapper = new SimplePLSQLTypeWrapper(databaseType);

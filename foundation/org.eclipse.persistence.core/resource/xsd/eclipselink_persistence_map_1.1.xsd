@@ -2982,9 +2982,9 @@
     <xsd:complexContent mixed="false">
       <xsd:extension base="plsql-procedure-argument-type">
         <xsd:sequence>
-          <xsd:element name="record-name" type="xsd:string" />
           <xsd:element name="type-name" type="xsd:string" />
           <xsd:element minOccurs="0" name="compatible-type" type="xsd:string" />
+          <xsd:element minOccurs="0" name="java-type" type="xsd:string" />
           <xsd:element minOccurs="0" name="fields">
             <xsd:annotation>
               <xsd:documentation>The list of fields.</xsd:documentation>
@@ -2999,6 +2999,18 @@
               </xsd:sequence>
             </xsd:complexType>
           </xsd:element>
+        </xsd:sequence>
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+  <xsd:complexType name="plsql-collection">
+    <xsd:complexContent mixed="false">
+      <xsd:extension base="plsql-procedure-argument-type">
+        <xsd:sequence>
+          <xsd:element name="type-name" type="xsd:string" />
+          <xsd:element minOccurs="0" name="compatible-type" type="xsd:string" />
+          <xsd:element minOccurs="0" name="java-type" type="xsd:string" />
+          <xsd:element minOccurs="0" name="nested-type" type="plsql-procedure-argument-type" />
         </xsd:sequence>
       </xsd:extension>
     </xsd:complexContent>

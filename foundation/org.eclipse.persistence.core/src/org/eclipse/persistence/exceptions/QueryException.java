@@ -163,6 +163,8 @@ public class QueryException extends ValidationException {
     public final static int MAP_KEY_IS_NULL = 6150;
     public final static int UNABLE_TO_SET_REDIRECTOR_FROM_HINT = 6151;
     public final static int ERROR_INSTANTIATING_CLASS_FOR_QUERY_HINT = 6152;
+    public final static int COMPATIBLE_TYPE_NOT_SET = 6153;
+    public final static int TYPE_NAME_NOT_SET = 6154;
 
     /**
      * INTERNAL:
@@ -1355,6 +1357,26 @@ public class QueryException extends ValidationException {
             new QueryException(ExceptionMessageGenerator.buildMessage(QueryException.class,
 		UNNAMED_ARG_NOT_SUPPORTED, args));
         queryException.setErrorCode(UNNAMED_ARG_NOT_SUPPORTED);
+        return queryException;
+    }
+
+    public static QueryException compatibleTypeNotSet(DatabaseType type) {
+        Object[] args = { type };
+
+        QueryException queryException = 
+            new QueryException(ExceptionMessageGenerator.buildMessage(QueryException.class,
+                COMPATIBLE_TYPE_NOT_SET, args));
+        queryException.setErrorCode(COMPATIBLE_TYPE_NOT_SET);
+        return queryException;
+    }
+
+    public static QueryException typeNameNotSet(DatabaseType type) {
+        Object[] args = { type };
+
+        QueryException queryException = 
+            new QueryException(ExceptionMessageGenerator.buildMessage(QueryException.class,
+            		TYPE_NAME_NOT_SET, args));
+        queryException.setErrorCode(TYPE_NAME_NOT_SET);
         return queryException;
     }
 

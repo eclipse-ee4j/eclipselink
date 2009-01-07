@@ -68,7 +68,6 @@ public class PLSQLrecordWithCompatibleTypeInOutTestSet  {
     public void writeToXml() {
 
         PLSQLrecord r1 = new PLSQLrecord();
-        r1.setRecordName("Z");
         r1.setTypeName("emp%ROWTYPE");
         r1.setCompatibleType("EMP_TYPE");
         r1.addField("EMPNO", JDBCTypes.NUMERIC_TYPE, 4, 0);

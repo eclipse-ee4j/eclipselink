@@ -13,13 +13,6 @@
 
 package org.eclipse.persistence.internal.helper;
 
-
-// Javase imports
-
-// Java extension imports
-
-// EclipseLink imports
-
 /**
  * <b>PUBLIC</b>: Marker interface for Simple Database types
  * (e.g. JDBC types, PL/SQL BOOLEAN, etc.)

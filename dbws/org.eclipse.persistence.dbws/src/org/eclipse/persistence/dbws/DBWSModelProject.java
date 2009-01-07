@@ -13,7 +13,7 @@
 
 package org.eclipse.persistence.dbws;
 
-// Javase imports
+//javase imports
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Vector;
@@ -460,6 +460,11 @@ public class DBWSModelProject extends Project {
         parameterName.setAttributeName("parameterName");
         parameterName.setXPath("parameter");
         descriptor.addMapping(parameterName);
+
+        XMLDirectMapping complexTypeName = new XMLDirectMapping();
+        complexTypeName.setAttributeName("complexTypeName");
+        complexTypeName.setXPath("complex-type");
+        descriptor.addMapping(complexTypeName);
 
         return descriptor;
     }

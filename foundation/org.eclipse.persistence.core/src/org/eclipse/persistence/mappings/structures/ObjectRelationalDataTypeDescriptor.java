@@ -35,6 +35,7 @@ import org.eclipse.persistence.sessions.DatabaseRecord;
  * The object-relational descriptor describes a type not a table, (although there
  * is normally a table associated with the type, unless it is aggregate).
  */
+@SuppressWarnings("unchecked")
 public class ObjectRelationalDataTypeDescriptor extends RelationalDescriptor {
     protected String structureName;
     protected Vector orderedFields;
@@ -199,8 +200,9 @@ public class ObjectRelationalDataTypeDescriptor extends RelationalDescriptor {
                         }
                     }
                 }
-                arrayValue = descriptor.getObjectBuilder().buildObject(query, nestedRow);
-            }else if (isNestedStructure && (arrayValue instanceof Array)){
+                arrayValue = descriptor.getObjectBuilder().buildNewInstance();
+                descriptor.getObjectBuilder().buildAttributesIntoObject(arrayValue, nestedRow, query, null, false);
+            } else if (isNestedStructure && (arrayValue instanceof Array)){
                 arrayValue = buildContainerFromArray((Array)arrayValue, (ObjectRelationalDatabaseField)nestedType, session);
             }             
              
@@ -380,6 +382,18 @@ public class ObjectRelationalDataTypeDescriptor extends RelationalDescriptor {
         }
 
         return super.extractDefaultTable();
+    }
+
+    @Override
+    public DatabaseField buildField(DatabaseField field) {
+        DatabaseField foundField = null;
+        for (DatabaseMapping dm : mappings) {
+            if (dm.getField().getName().equals(field.getName())) {
+                foundField = dm.getField();
+                break;
+            }
+        }
+        return foundField;
     }
 
     /**

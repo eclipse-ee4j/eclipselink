@@ -24,10 +24,13 @@ import static java.lang.Integer.MIN_VALUE;
 // EclipseLink imports
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.platform.database.DatabasePlatform;
+import org.eclipse.persistence.platform.database.oracle.plsql.PLSQLStoredProcedureCall;
 import org.eclipse.persistence.platform.database.oracle.plsql.PLSQLargument;
+import org.eclipse.persistence.queries.StoredProcedureCall;
 import org.eclipse.persistence.sessions.DatabaseRecord;
 import static org.eclipse.persistence.internal.databaseaccess.DatasourceCall.IN;
 import static org.eclipse.persistence.internal.databaseaccess.DatasourceCall.OUT;
+import static org.eclipse.persistence.internal.helper.Helper.NL;
 
 /**
  * <b>PUBLIC</b>: Interface used to categorize arguments to Stored Procedures as either
@@ -36,6 +39,7 @@ import static org.eclipse.persistence.internal.databaseaccess.DatasourceCall.OUT
  * @author Mike Norman - michael.norman@oracle.com
  * @since Oracle TopLink 11.x.x
  */
+@SuppressWarnings("unchecked")
 public interface DatabaseType {
 
     public static final String TARGET_SUFFIX = "_TARGET";
@@ -61,13 +65,14 @@ public interface DatabaseType {
     
     public void buildOutDeclare(StringBuilder sb, PLSQLargument outArg);
 
-    public void buildBeginBlock(StringBuilder sb, PLSQLargument arg);
+    public void buildBeginBlock(StringBuilder sb, PLSQLargument arg, PLSQLStoredProcedureCall call);
     
-    public void buildOutAssignment(StringBuilder sb, PLSQLargument outArg);
+    public void buildOutAssignment(StringBuilder sb, PLSQLargument outArg, PLSQLStoredProcedureCall call);
 
     public void translate(PLSQLargument arg, AbstractRecord translationRow,
         AbstractRecord copyOfTranslationRow, Vector copyOfTranslationFields,
-        Vector translationRowFields, Vector translationRowValues);
+        Vector translationRowFields, Vector translationRowValues,
+        StoredProcedureCall call);
 
     public void buildOutputRow(PLSQLargument outArg, AbstractRecord outputRow,
         DatabaseRecord newOutputRow, Vector outputRowFields, Vector outputRowValues);
@@ -107,17 +112,19 @@ public interface DatabaseType {
             outArg.outIndex = newIndex;
             return ++newIndex;
         }
-        public void buildOutAssignment(StringBuilder sb, PLSQLargument outArg) {
+        public void buildOutAssignment(StringBuilder sb, PLSQLargument outArg, PLSQLStoredProcedureCall call) {
             sb.append("  :");
             sb.append(outArg.outIndex);
             sb.append(" := ");
             sb.append(buildTarget(outArg));
-            sb.append(";\n");
+            sb.append(";");
+            sb.append(NL);
         }
 
         public void translate(PLSQLargument arg, AbstractRecord translationRow,
             AbstractRecord copyOfTranslationRow, Vector copyOfTranslationFields,
-            Vector translationRowFields, Vector translationRowValues) {
+            Vector translationRowFields, Vector translationRowValues,
+            StoredProcedureCall call) {
             DatabaseField field = null;
             for (Iterator i = copyOfTranslationFields.iterator(); i.hasNext(); ) {
                 DatabaseField f = (DatabaseField)i.next();
