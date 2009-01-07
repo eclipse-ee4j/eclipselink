@@ -42,8 +42,6 @@ public class SDODataObjectTestSuite {
     public static Test suite() {
         TestSuite suite = new TestSuite("All SDODataObject Tests");
 
-        suite.addTest(new TestSuite(SDODataObjectCloneTestCases.class));
-        
         suite.addTest(new TestSuite(SDODataObjectSetGetWithPropertyTest.class));
         suite.addTest(new TestSuite(SDODataObjectSetGetWithIndexTest.class));
 

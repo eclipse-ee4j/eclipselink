@@ -47,7 +47,7 @@ import org.eclipse.persistence.oxm.XMLRoot;
 import org.eclipse.persistence.oxm.sequenced.SequencedObject;
 import org.eclipse.persistence.oxm.sequenced.Setting;
 
-public class SDODataObject implements DataObject, SequencedObject, Cloneable {
+public class SDODataObject implements DataObject, SequencedObject {
 
     /**
      * Development Guidelines:
@@ -2645,19 +2645,55 @@ public class SDODataObject implements DataObject, SequencedObject, Cloneable {
             _getCurrentValueStore().setOpenContentProperty(property, value);
         } else {
             _getCurrentValueStore().setDeclaredProperty(index, value);
-        }
+            SDOProperty oppositeProperty = (SDOProperty) property.getOpposite();
+            if(null != oppositeProperty) {
+                if(null != value) {
+                    if(property.isMany()) {
+                        List<SDODataObject> valueList = (List<SDODataObject>) value;
+                        for(SDODataObject valueDO : valueList) {
+                            if(this != valueDO.get(oppositeProperty)) {
+                                valueDO.setInternal(oppositeProperty, this, true);
+                            }
+                        }
+                    } else {
+                        SDODataObject valueDO = (SDODataObject) value;
+                        if(oppositeProperty.isMany()) {
+                            List oppositeList = valueDO.getList(oppositeProperty);
+                            if(!oppositeList.contains(this)) {
+                                oppositeList.add(this);
+                            }
+                        } else {
+                            if(this != valueDO.get(oppositeProperty)) {
+                                valueDO.setInternal(oppositeProperty, this, true);
+                            }
+                        }
+                    }
+                }
 
-        if (origValue != null && property.getOpposite() != null && property.getType() != null && !property.getType().isDataType()) {
-            // Set the opposite property in the new value
-            Property oppositeProp = property.getOpposite();
-            DataObject valueDO = (DataObject) value;
-            valueDO.set(oppositeProp, this);
-            
-            // Clear the old opposite property in the original value
-            DataObject origValueDO = (DataObject) origValue;
-            origValueDO.set(oppositeProp, null);
+                if(null != origValue) {
+                    if(property.isMany()) {
+                        List<SDODataObject> origValueList = (List<SDODataObject>) origValue;
+                        for(SDODataObject origValueDO : origValueList) {
+                            if(null != origValueDO.get(oppositeProperty)) {
+                                origValueDO.set(oppositeProperty, null);
+                            }
+                        }
+                    } else {
+                        DataObject origValueDO = (DataObject) origValue;
+                        if(oppositeProperty.isMany()) {
+                            List oppositeList = origValueDO.getList(oppositeProperty);
+                            if(oppositeList.contains(this)) {
+                                oppositeList.remove(this);
+                            }
+                        } else {
+                            if(null != origValueDO.get(oppositeProperty)) {
+                                origValueDO.set(oppositeProperty, null);
+                            }
+                        }
+                    }
+                }
+            }
         }
-
     }
 
     /**
@@ -2809,13 +2845,6 @@ public class SDODataObject implements DataObject, SequencedObject, Cloneable {
     		return null;
     	}
     	return l.get(0);
-    }
-
-    /**
-     * Return a clone of this DataObject.  This returned object will be a deep copy of this DataObject. 
-     */
-    public Object clone() {
-    	return aHelperContext.getCopyHelper().copy(this);    	
     }
     
 }
