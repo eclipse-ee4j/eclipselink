@@ -412,7 +412,7 @@ public class SDOUtil {
         	int logLevel;
         	// log capitalization-only changes at a lower level
         	if(!s.equalsIgnoreCase(normalizedName)) {
-        		logLevel = AbstractSessionLog.WARNING;
+        		logLevel = AbstractSessionLog.INFO;
         	} else {
         		logLevel = AbstractSessionLog.FINER;
         	}
