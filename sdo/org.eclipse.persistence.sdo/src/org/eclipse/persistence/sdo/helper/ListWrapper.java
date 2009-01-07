@@ -39,7 +39,7 @@ import org.eclipse.persistence.sdo.SDOSequence;
  * @see org.eclipse.persistence.sdo.SDODataObject
  * @since Oracle TopLink 11.1.1.0.0
  */
-public class ListWrapper implements List, Serializable {
+public class ListWrapper implements List, Serializable, Cloneable {
 
     /*
         05/23/06 - Update addAll(int,Collection), retainAll(Collection), set(int, Object),
@@ -795,5 +795,16 @@ public class ListWrapper implements List, Serializable {
      */
     public void setCurrentElements(List currentElementsList) {
         currentElements = currentElementsList;
+    }
+    
+    /**
+     * Clone the ListWrapper.
+     * This creates a new ListWrapper with the same contents as the original (shallow clone)
+     * Minimal clone operation implemented to support usage in JPA 
+     */
+    public Object clone() {
+    	ListWrapper listWrapperClone = new ListWrapper(dataObject, property);
+    	listWrapperClone.setCurrentElements(new ArrayList(currentElements));
+    	return listWrapperClone;
     }
 }

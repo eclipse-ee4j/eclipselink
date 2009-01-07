@@ -99,4 +99,19 @@ public class SDODataObjectCloneTestCases extends SDOTestCase {
 		
 	}	
 
+	
+	public void testListClone() {
+		
+		DataObject items = purchaseOrder.getDataObject("items");
+		ListWrapper lineItems = (ListWrapper)items.getList("item");
+		ListWrapper lineItemsClone = (ListWrapper)lineItems.clone();
+		
+		assertFalse(lineItems == lineItemsClone);
+		
+		assertFalse(lineItems.getCurrentElements() == lineItemsClone.getCurrentElements());
+		
+		assertTrue(lineItems.size() == lineItemsClone.size());
+		assertTrue(lineItems.get(0) == lineItemsClone.get(0));
+		assertTrue(lineItems.get(1) == lineItemsClone.get(1));
+	}
 }
