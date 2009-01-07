@@ -7055,13 +7055,20 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         
         // Added to test bug 258546: testEMCloseAndOpen failed with dynamic and static weave configs.
         // define cache-only query to see whether the Employee is in the shared cache.
-        ReadObjectQuery query = new ReadObjectQuery();
-        query.setReferenceClass(Employee.class);
-        query.shouldCheckCacheOnly();
-        Expression exp = query.getExpressionBuilder().get("id").equal(query.getExpressionBuilder().getParameter("id"));
-        query.addArgument("id", int.class);
-        query.setSelectionCriteria(exp);
-        // define vector that will contain paramete value for the query.
+        ReadObjectQuery cacheQuery = new ReadObjectQuery();
+        cacheQuery.setReferenceClass(Employee.class);
+        cacheQuery.shouldCheckCacheOnly();
+        Expression cacheExp = cacheQuery.getExpressionBuilder().get("id").equal(cacheQuery.getExpressionBuilder().getParameter("id"));
+        cacheQuery.addArgument("id", int.class);
+        cacheQuery.setSelectionCriteria(cacheExp);
+        // define db-only query to see whether the Employee is in the db.
+        ReadObjectQuery dbQuery = new ReadObjectQuery();
+        dbQuery.setReferenceClass(Employee.class);
+        dbQuery.dontCheckCache();
+        Expression dbExp = dbQuery.getExpressionBuilder().get("id").equal(dbQuery.getExpressionBuilder().getParameter("id"));
+        dbQuery.addArgument("id", int.class);
+        dbQuery.setSelectionCriteria(dbExp);
+        // define vector that will contain paramete value for both queries.
         Vector arg = new Vector(1);
         // this will be overridden with emp.getId()
         arg.add(0);
@@ -7105,6 +7112,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
                 
                 em.find(Employee.class, 1);
                 Employee emp = null;
+                boolean hasUnexpectedlyCommitted = false;
                 try{
                     em.getTransaction().begin();
 
@@ -7121,8 +7129,8 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
                     em.getTransaction().commit();
 
                     // should never get here - all connections should be broken.
-                    closeEntityManager(em);
-                    fail("Commit has unexpectedly succeeded - should have failed because all connections broken");
+                    hasUnexpectedlyCommitted = true;
+                    errorMsg += "useSequencing = " + useSequencing + "; exclusiveConnectionMode = " + exclusiveConnectionMode + ": Commit has unexpectedly succeeded - should have failed because all connections broken. ";
                 } catch (Exception e){
                     // expected exception - connection is invalid and cannot be reconnected.
                     if(em.getTransaction().isActive()) {
@@ -7153,20 +7161,39 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
                 try {
                     em = createEntityManager();
                     em.find(Employee.class, 1);
-                    em.getTransaction().begin();
-                    emp = new Employee();
-                    if(!useSequencing) {
-                        emp.setId(id);
+                    if(!hasUnexpectedlyCommitted) {
+                        em.getTransaction().begin();
+                        emp = new Employee();
+                        if(!useSequencing) {
+                            emp.setId(id);
+                        }
+                        em.persist(emp);
+                        em.getTransaction().commit();
                     }
-                    em.persist(emp);
-                    em.getTransaction().commit();
 
                     // Added to test bug 258546: testEMCloseAndOpen failed with dynamic and static weave configs.
                     // verify that the persisted Employee is in the shared cache.
                     arg.set(0, emp.getId());
-                    Employee empInSharedCache = (Employee)((EntityManagerFactoryImpl)getEntityManagerFactory()).getServerSession().executeQuery(query, arg);
-                    if(empInSharedCache == null) {
-                        errorMsg += "useSequencing = " + useSequencing + "; exclusiveConnectionMode = " + exclusiveConnectionMode + ": persisted object in not in the shared cache";
+                    Employee empInSharedCache = (Employee)((EntityManagerFactoryImpl)getEntityManagerFactory()).getServerSession().executeQuery(cacheQuery, arg);
+                    if(!hasUnexpectedlyCommitted) {
+                        if(empInSharedCache == null) {
+                            errorMsg += "useSequencing = " + useSequencing + "; exclusiveConnectionMode = " + exclusiveConnectionMode + ": persisted object in not in the shared cache";
+                            closeEntityManager(em);
+                            break;
+                        }
+                    } else {
+                        if(empInSharedCache == null) {
+                            errorMsg += "object is NOT in cache;";
+                        } else {
+                            errorMsg += "object is in cache;";
+                        }
+                        Employee empInDb = (Employee)((EntityManagerFactoryImpl)getEntityManagerFactory()).getServerSession().executeQuery(dbQuery, arg);
+                        if(empInDb == null) {
+                            errorMsg += "object is NOT in db;";
+                        } else {
+                            errorMsg += "object is in db;";
+                        }
+                        closeEntityManager(em);
                         break;
                     }
                 } catch (RuntimeException ex) {
@@ -7189,7 +7216,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
                 
                 // Added to test bug 258546: testEMCloseAndOpen failed with dynamic and static weave configs.
                 // verify that the removed Employee is no longer in the shared cache.
-                Employee empInSharedCache = (Employee)((EntityManagerFactoryImpl)getEntityManagerFactory()).getServerSession().executeQuery(query, arg);
+                Employee empInSharedCache = (Employee)((EntityManagerFactoryImpl)getEntityManagerFactory()).getServerSession().executeQuery(cacheQuery, arg);
                 if(empInSharedCache != null) {
                     errorMsg += "useSequencing = " + useSequencing + "; exclusiveConnectionMode = " + exclusiveConnectionMode + ": removed object still in the shared cache";
                     break;
