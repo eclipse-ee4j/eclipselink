@@ -78,7 +78,6 @@ public class SDOMarshalListener implements XMLMarshalListener {
 
             String rootElementName = this.marshalledObjectRootQName.getLocalPart();
             String rootNamespaceUri = this.marshalledObjectRootQName.getNamespaceURI();
-            String rootPrefix = null;
             if(rootNamespaceUri != null && !rootNamespaceUri.equals("")) {
                 NamespaceResolver resolver = getRootMarshalRecord().getNamespaceResolver();
                 if(resolver != null) {
