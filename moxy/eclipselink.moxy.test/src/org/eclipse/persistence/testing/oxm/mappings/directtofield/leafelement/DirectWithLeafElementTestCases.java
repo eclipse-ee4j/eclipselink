@@ -24,8 +24,6 @@ import org.eclipse.persistence.oxm.XMLField;
 import org.eclipse.persistence.sessions.Project;
 import org.eclipse.persistence.testing.oxm.mappings.XMLMappingTestCases;
 
-import com.sun.org.apache.xerces.internal.xni.QName;
-
 public class DirectWithLeafElementTestCases extends XMLMappingTestCases {
 
 	private final static String XML_RESOURCE = "org/eclipse/persistence/testing/oxm/mappings/directtofield/leafelement/DirectWithLeafElement.xml";
