@@ -295,15 +295,7 @@ public class ProviderHelper extends XRServiceFactory {
                     else {
                         String lname = e.getLocalName();
                         if (oxProject.getDescriptorForAlias(lname) != null) {
-                            // skip over any blank text nodes to next element
-                            Node n = null;
-                            NodeList nl = e.getChildNodes();
-                            for (int j = 0; j < nl.getLength(); j++) {
-                                n = nl.item(j);
-                                if (n.getNodeType() == Node.ELEMENT_NODE) {
-                                    break;
-                                }
-                            }
+                            Node n = e;
                             try {
                                 Object theObject =
                                     new XMLContext(oxProject).createUnmarshaller().unmarshal(n);

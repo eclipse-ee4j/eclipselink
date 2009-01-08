@@ -54,8 +54,8 @@ public class Helper implements Serializable {
     /** Store CR string, for some reason \n is not platform independent. */
     protected static String CR = null;
     
-    /** Store tab string */
-    public static String TAB = "  ";
+    /** a formatting string for indenting */
+    public static String INDENT = "  ";
     
     /** Store newline string */
     public static String NL = "\n";

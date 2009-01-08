@@ -900,10 +900,11 @@ prompt> java -cp eclipselink.jar:eclipselink-dbwsutils.jar:your_favourite_jdbc_d
         }
         if (!isNullStream(dbwsOxStream)) {
             boolean writeOXProject = false;
-            if (oxProject instanceof SimpleXMLFormatProject) {
-                if (oxProject.getOrderedDescriptors().size() > 1) {
+            if (!(oxProject instanceof SimpleXMLFormatProject)) {
+                writeOXProject = true;
+            }
+            else if (oxProject.getOrderedDescriptors().size() > 1) {
                     writeOXProject = true;
-                }
             }
             if (writeOXProject) {
                 XMLContext context = new XMLContext(new ObjectPersistenceWorkbenchXMLProject());
@@ -1120,7 +1121,7 @@ prompt> java -cp eclipselink.jar:eclipselink-dbwsutils.jar:your_favourite_jdbc_d
                 String tablenameAlias = desc.getAlias();
                 boolean buildCRUDoperations = false;
                 for (DbTable dbTable : dbTables) {
-                    if (dbTable.getName().equals(tablenameAlias)) {
+                    if (nct.generateSchemaAlias(dbTable.getName()).equals(tablenameAlias)) {
                         buildCRUDoperations = true;
                         break;
                     }

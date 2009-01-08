@@ -164,10 +164,10 @@ public class XRServiceFactory  {
         logoutSessions();
         buildSessions();
         customizeSession(xrService.orSession, xrService.oxSession);
-        loginSessions();
         buildDescriptorIndex();
         validateOperations();
         initializeOperations();
+        loginSessions();
     }
 
     @SuppressWarnings("unused")
@@ -257,12 +257,7 @@ public class XRServiceFactory  {
             i.hasNext();) {
             XMLDescriptor xd = (XMLDescriptor)i.next();
             XMLSchemaReference schemaReference = xd.getSchemaReference();
-            QName descriptorQName = null;
-            if (schemaReference == null) {
-                descriptorQName = resolveName(xd.getDefaultRootElementField().getQualifiedName(),
-                    xd.getNamespaceResolver());
-            }
-            else if (schemaReference.getType() == XMLSchemaReference.ELEMENT) {
+            if (schemaReference != null && schemaReference.getType() == XMLSchemaReference.ELEMENT) {
                 String context = schemaReference.getSchemaContext();
                 if (context != null && context.lastIndexOf('/') == 0) {
                     String elementNameNS = context.substring(1);
@@ -273,6 +268,8 @@ public class XRServiceFactory  {
                     xrService.descriptorsByElement.put(elementName, xd);
                 }
             }
+            QName descriptorQName = resolveName(xd.getDefaultRootElementField().getQualifiedName(),
+                    xd.getNamespaceResolver());
             if (descriptorQName != null) {
                 xrService.descriptorsByElement.put(descriptorQName, xd);
             }
