@@ -1253,6 +1253,13 @@ public class ObjectBuilder implements Cloneable, Serializable {
                 event.setEventCode(DescriptorEventManager.PostBuildEvent);
             }
             this.descriptor.getEventManager().executeEvent(event);
+            
+            //bug 259404: ensure postClone is called for objects built directly into the UnitOfWork
+            event = new DescriptorEvent(clone);
+            event.setSession(unitOfWork);
+            event.setOriginalObject(clone);
+            event.setEventCode(DescriptorEventManager.PostCloneEvent);
+            this.descriptor.getEventManager().executeEvent(event);
         }
     }
 
@@ -2358,15 +2365,15 @@ public class ObjectBuilder implements Cloneable, Serializable {
     public void initializePrimaryKey(AbstractSession session) throws DescriptorException {
         createPrimaryKeyExpression(session);
 
-        List primaryKeyfields = this.descriptor.getPrimaryKeyFields();
-        if(primaryKeyfields.isEmpty() && getDescriptor().isAggregateCollectionDescriptor()) {
+        List primaryKeyFields = this.descriptor.getPrimaryKeyFields();
+        if(primaryKeyFields.isEmpty() && getDescriptor().isAggregateCollectionDescriptor()) {
             // populate primaryKeys with all mapped fields found in the main table.
             DatabaseTable defaultTable = getDescriptor().getDefaultTable();
             Iterator<DatabaseField> it = getDescriptor().getFields().iterator();
             while(it.hasNext()) {
                 DatabaseField field = it.next();
                 if(field.getTable().equals(defaultTable) && getMappingsByField().containsKey(field)) {
-                    primaryKeyfields.add(field);
+                    primaryKeyFields.add(field);
                 }
             }
         }
@@ -2377,14 +2384,14 @@ public class ObjectBuilder implements Cloneable, Serializable {
         // This must be before because the secondary table primary key fields are registered after
         for (Iterator fields = getMappingsByField().keySet().iterator(); fields.hasNext();) {
             DatabaseField field = (DatabaseField)fields.next();
-            if (!primaryKeyfields.contains(field)) {
+            if (!primaryKeyFields.contains(field)) {
                 DatabaseMapping mapping = getMappingForField(field);
                 if (!getNonPrimaryKeyMappings().contains(mapping)) {
                     getNonPrimaryKeyMappings().add(mapping);
                 }
             }
         }
-        List primaryKeyFields = this.descriptor.getPrimaryKeyFields();
+
         for (int index = 0; index < primaryKeyFields.size(); index++) {
             DatabaseField primaryKeyField = (DatabaseField)primaryKeyFields.get(index);
             DatabaseMapping mapping = getMappingForField(primaryKeyField);

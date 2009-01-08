@@ -58,9 +58,5 @@ public class CloneAndMergeEventHookTest extends EventHookTestCase {
         if (!getAddressListener().postMergeExecuted) {
             throw new TestErrorException("Event hook failed. The post clone method on " + getAddressListener() + " failed to execute.");
         }
-
-        if (!getAddressListener().postMergeExecuted) {
-            throw new TestErrorException("Event hook failed. The post clone method on " + getAddressListener() + " failed to execute.");
-        }
     }
 }

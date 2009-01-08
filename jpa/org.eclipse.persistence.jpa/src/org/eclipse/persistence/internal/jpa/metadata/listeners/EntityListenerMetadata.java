@@ -406,7 +406,7 @@ public class EntityListenerMetadata extends ORMetadata {
      * Set the post load event method on the listener.
      */
     protected void setPostLoad(Method method) {
-        m_listener.setPostBuildMethod(method);
+        // bug 259404: PostClone is called for all objects when registered with the unitOfWork
         m_listener.setPostCloneMethod(method);
         m_listener.setPostRefreshMethod(method);
     }

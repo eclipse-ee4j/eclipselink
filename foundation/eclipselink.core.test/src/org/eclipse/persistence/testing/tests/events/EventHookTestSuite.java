@@ -47,6 +47,7 @@ public class EventHookTestSuite extends TestSuite {
         addTest(new BuildEventHookTest());
         addTest(new BuildOnRefreshEventHookTest());
         addTest(new CloneAndMergeEventHookTest());
+        addTest(new CloneEventOnIsolatedSessionTest());
         addTest(new SessionEventTestCase());
         addTest(new SingleTableAboutToInsertTest(new AboutToInsertSingleTableObject(), false));
         addTest(new MultipleTableAboutToInsertTest(new AboutToInsertMultiTableObject(), false));

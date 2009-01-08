@@ -23,7 +23,7 @@ import org.eclipse.persistence.testing.framework.JUnitTestCase;
  * <p><b>Purpose</b>: To collect the tests that will test specifics of our
  * EJB3.0 implementation through the use of the EntityContainer.  In order for
  * this test model to work correctly the EntityContainer must be initialized
- * thought the comandline agent.
+ * through the command line agent.
  */
 public class JPAAdvancedTestModel extends CMP3TestModel{
 
@@ -106,6 +106,7 @@ public class JPAAdvancedTestModel extends CMP3TestModel{
         suite.addTest(new EntityListenerPreRemoveTest());
         suite.addTest(new EntityListenerPostRemoveTest());
         suite.addTest(new EntityListenerPostLoadTest());
+        suite.addTest(new EntityListenerPostLoadTransactionTest());
         
         suite.addTest(new EntityMethodPrePersistTest());
         suite.addTest(new EntityMethodPostPersistTest());
@@ -114,6 +115,7 @@ public class JPAAdvancedTestModel extends CMP3TestModel{
         suite.addTest(new EntityMethodPreRemoveTest());
         suite.addTest(new EntityMethodPostRemoveTest());
         suite.addTest(new EntityMethodPostLoadTest());
+        suite.addTest(new EntityMethoPostLoadTransactionTest());
   
         suite.addTest(new NonDBChangePreUpdateTest());
         
