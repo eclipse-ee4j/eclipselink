@@ -56,7 +56,7 @@ public class LiteralNode extends Node {
      * Generate the a new EclipseLink ConstantExpression for this node.
      */
     public Expression generateExpression(GenerationContext context) {
-        Expression whereClause = new ConstantExpression(getLiteral(), new ExpressionBuilder());
+        Expression whereClause = new ConstantExpression(getLiteral(), context.getBaseExpression());
         return whereClause;
     }
 

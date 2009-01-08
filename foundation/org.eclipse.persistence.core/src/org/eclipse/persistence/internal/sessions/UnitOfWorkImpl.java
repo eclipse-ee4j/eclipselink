@@ -2475,12 +2475,8 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
     }
 
     /**
-     * INTERNAL:
-     * Returns the set of read-only classes for the receiver.
-     * Use this method with setReadOnlyClasses() to modify a UnitOfWork's set of read-only
-     * classes before using the UnitOfWork.
-     * @return Set containing the Java Classes that are currently read-only.
-     * @see #setReadOnlyClasses(Vector)
+     * ADVANCED:
+     * Returns the set of read-only classes in this UnitOfWork.
      */
     public Set getReadOnlyClasses() {
         if (this.readOnlyClasses == null) {
@@ -2853,7 +2849,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
     }
 
     /**
-     * INTERNAL:
+     * ADVANCED:
      * Return whether the clone object is already registered.
      */
     public boolean isObjectRegistered(Object clone) {

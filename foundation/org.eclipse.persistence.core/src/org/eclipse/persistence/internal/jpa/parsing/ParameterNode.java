@@ -54,19 +54,18 @@ public class ParameterNode extends Node {
         setType(context.getParameterType(name));
     }
 
-    /** */
+    /**
+     * Generate the result expression, must use the base builder
+     * to avoid getting multiple builders.
+     */
     public Expression generateExpression(GenerationContext context) {
-        //create builder, and add
-        Class baseClass = context.getBaseQueryClass();
-        ExpressionBuilder builder = new ExpressionBuilder(baseClass);
-        Expression whereClause = builder.getParameter(getParameterName(), getType());
+        Expression whereClause = context.getBaseExpression().getParameter(getParameterName(), getType());
         return whereClause;
     }
 
     /**
      * INTERNAL
      * Return the parameterName
-     *
      */
     public String getAsString() {
         return getParameterName();

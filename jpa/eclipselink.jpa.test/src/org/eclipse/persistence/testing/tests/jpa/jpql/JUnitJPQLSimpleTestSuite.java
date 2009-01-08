@@ -48,6 +48,7 @@ import org.eclipse.persistence.testing.models.jpa.advanced.SmallProject;
 import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
 import org.eclipse.persistence.sessions.DatabaseSession;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
+import org.eclipse.persistence.jpa.JpaEntityManager;
 import org.eclipse.persistence.testing.models.jpa.advanced.AdvancedTableCreator;
 import org.eclipse.persistence.sessions.server.Server;
 
@@ -158,7 +159,8 @@ public class JUnitJPQLSimpleTestSuite extends JUnitTestCase {
         suite.addTest(new JUnitJPQLSimpleTestSuite("multipleExecutionOfNamedQueryTest"));
         suite.addTest(new JUnitJPQLSimpleTestSuite("selectNamedNativeQueryWithPositionalParameterTest"));
         suite.addTest(new JUnitJPQLSimpleTestSuite("selectNativeQueryWithPositionalParameterTest"));
-        
+        suite.addTest(new JUnitJPQLSimpleTestSuite("testOneEqualsOne"));
+
         return suite;
     }
     
@@ -188,12 +190,50 @@ public class JUnitJPQLSimpleTestSuite extends JUnitTestCase {
         employeePopulator.persistExample(session);
     }
     
+    /**
+     * Tests 1=1 returns correct result.
+     */
+    public void testOneEqualsOne() throws Exception {
+    	EntityManager em = createEntityManager();
+    	beginTransaction(em);
+    	try {
+	        Query query = em.createQuery("SELECT e FROM Employee e");
+	        List<Employee> emps = query.getResultList();
+	
+	        Assert.assertNotNull(emps);
+	        int numRead = emps.size();
+	
+	        query = em.createQuery("SELECT e FROM Employee e WHERE 1=1");
+	        emps = query.getResultList();
+	
+	        Assert.assertNotNull(emps);
+	        Assert.assertEquals(numRead, emps.size());
+	        
+	        query = em.createQuery("SELECT e FROM Employee e WHERE :arg1=:arg2");
+	        query.setParameter("arg1", 1);
+	        query.setParameter("arg2", 1);
+	        emps = query.getResultList();
+	
+	        Assert.assertNotNull(emps);
+	        Assert.assertEquals(numRead, emps.size());
+	        
+	        ExpressionBuilder builder = new ExpressionBuilder();
+	        query = ((JpaEntityManager)em.getDelegate()).createQuery(builder.value(1).equal(builder.value(1)), Employee.class);
+	        emps = query.getResultList();
+	
+	        Assert.assertNotNull(emps);
+	        Assert.assertEquals(numRead, emps.size());
+    	} finally {
+        	rollbackTransaction(em);
+            closeEntityManager(em);
+    	}    
+    }
+    
     //GF Bug#404
     //1.  Fetch join now works with LAZY.  The fix is to trigger the value holder during object registration.  The test is to serialize
     //the results and deserialize it, then call getPhoneNumbers().size().  It used to throw an exception because the value holder 
     //wasn't triggered and the data was in a transient attribute that was lost during serialization
     //2.  Test both scenarios of using the cache and bypassing the cache
-
     public void simpleJoinFetchTest() throws Exception {
         if (isOnServer()) {
             // Not work on server.

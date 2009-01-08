@@ -182,7 +182,7 @@ public class CacheMetadata extends ORMetadata {
         classDescriptor.setIdentityMapSize((m_size == null) ? 100 : m_size);
         
         // Process shared.
-        classDescriptor.setIsIsolated(m_shared == null ? true : ! m_shared);
+        classDescriptor.setIsIsolated(m_shared == null ? false : ! m_shared);
         
         // Process expiry or expiry time of day.
         if (m_expiryTimeOfDay == null) {

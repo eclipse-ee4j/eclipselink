@@ -13,6 +13,7 @@
 package org.eclipse.persistence.sessions;
 
 import java.util.*;
+
 import org.eclipse.persistence.exceptions.*;
 import org.eclipse.persistence.sessions.changesets.UnitOfWorkChangeSet;
 
@@ -42,6 +43,12 @@ import org.eclipse.persistence.sessions.changesets.UnitOfWorkChangeSet;
  */
 public interface UnitOfWork extends Session {
 
+    /**
+     * ADVANCED:
+     * Returns the set of read-only classes in this UnitOfWork.
+     */
+    public Set getReadOnlyClasses();
+    
     /**
      * PUBLIC:
      * Adds the given Java class to the receiver's set of read-only classes.
@@ -282,6 +289,12 @@ public interface UnitOfWork extends Session {
      */
     public boolean isClassReadOnly(Class theClass);
 
+    /**
+     * ADVANCED:
+     * Return whether the clone object is already registered.
+     */
+    public boolean isObjectRegistered(Object clone);
+    
     /**
      * ADVANCED:
      * Return if this session is a nested unit of work.
