@@ -32,7 +32,6 @@
 *********************************************************************************-->
 
 <project name="Upload EclipseLink artifacts to Maven repository"  basedir="." xmlns:artifact="urn:maven-artifact-ant" default="upload-maven-all">
-  <!-- path id="maven-ant-tasks.classpath" path="lib/maven-ant-tasks-2.0.8.jar" />  TODO discuss with Tom where should this value and the actual lib go -->
   <path id="maven-ant-tasks.classpath" path="${build.deps.dir}/mavenant/maven-ant-tasks-2.0.8.jar" />
     <typedef resource="org/apache/maven/artifact/ant/antlib.xml" uri="urn:maven-artifact-ant"
            classpathref="maven-ant-tasks.classpath" />
@@ -90,55 +89,76 @@
    <target name = "upload-maven-all" depends = "upload-maven-init">
      <!-- call upload for each artifact we want to upload -->
         <antcall target="upload-artifact">
+            <param name="groupId" value="org.eclipse.persistence"/>
             <param name="artifactId" value="org.eclipse.persistence.core"/>
+            <param name="artifactVersion" value="${maven.version}"/>
             <param name="artifact" value="${eclipselink.plugins}/${eclipselink.core.bndl.prefix}_${version.string}.jar"/>
             <param name="artifactSrc" value="${eclipselink.plugins}/${eclipselink.core.bndl.prefix}.source_${version.string}.jar"/>
             <param name="artifactName" value="EclipseLink Core"/>
         </antcall>
         <antcall target="upload-artifact">
+            <param name="groupId" value="org.eclipse.persistence"/>
             <param name="artifactId" value="org.eclipse.persistence.jpa"/>
+            <param name="artifactVersion" value="${maven.version}"/>
             <param name="artifact" value="${eclipselink.plugins}/${eclipselink.jpa.bndl.prefix}_${version.string}.jar"/>
             <param name="artifactSrc" value="${eclipselink.plugins}/${eclipselink.jpa.bndl.prefix}.source_${version.string}.jar"/>
             <param name="artifactName" value="EclipseLink JPA"/>
         </antcall>
         <antcall target="upload-artifact">
+            <param name="groupId" value="org.eclipse.persistence"/>
             <param name="artifactId" value="org.eclipse.persistence.moxy"/>
+            <param name="artifactVersion" value="${maven.version}"/>
             <param name="artifact" value="${eclipselink.plugins}/${eclipselink.moxy.bndl.prefix}_${version.string}.jar"/>
             <param name="artifactSrc" value="${eclipselink.plugins}/${eclipselink.moxy.bndl.prefix}.source_${version.string}.jar"/>
             <param name="artifactName" value="EclipseLink Moxy"/>
         </antcall>
         <antcall target="upload-artifact">
+            <param name="groupId" value="org.eclipse.persistence"/>
             <param name="artifactId" value="org.eclipse.persistence.sdo"/>
+            <param name="artifactVersion" value="${maven.version}"/>
             <param name="artifact" value="${eclipselink.plugins}/${eclipselink.sdo.bndl.prefix}_${version.string}.jar"/>
             <param name="artifactSrc" value="${eclipselink.plugins}/${eclipselink.sdo.bndl.prefix}.source_${version.string}.jar"/>
             <param name="artifactName" value="EclipseLink SDO"/>
         </antcall>
         <antcall target="upload-artifact">
+            <param name="groupId" value="org.eclipse.persistence"/>
             <param name="artifactId" value="org.eclipse.persistence.oracle"/>
+            <param name="artifactVersion" value="${maven.version}"/>
             <param name="artifact" value="${eclipselink.plugins}/${eclipselink.extension.oracle.bndl.prefix}_${version.string}.jar"/>
             <param name="artifactSrc" value="${eclipselink.plugins}/${eclipselink.extension.oracle.bndl.prefix}.source_${version.string}.jar"/>
             <param name="artifactName" value="EclipseLink Oracle Extensions"/>
         </antcall>
         <antcall target="upload-artifact">
+            <param name="groupId" value="org.eclipse.persistence"/>
             <param name="artifactId" value="org.eclipse.persistence.antlr"/>
+            <param name="artifactVersion" value="${maven.version}"/>
             <param name="artifact" value="${eclipselink.plugins}/${eclipselink.antlr.bndl.prefix}_${version.string}.jar"/>
             <param name="artifactSrc" value="${eclipselink.plugins}/${eclipselink.antlr.bndl.prefix}.source_${version.string}.jar"/>
             <param name="artifactName" value="EclipseLink ANTLR"/>
         </antcall>
         <antcall target="upload-artifact">
+            <param name="groupId" value="org.eclipse.persistence"/>
             <param name="artifactId" value="org.eclipse.persistence.asm"/>
+            <param name="artifactVersion" value="${maven.version}"/>
             <param name="artifact" value="${eclipselink.plugins}/${eclipselink.asm.bndl.prefix}_${version.string}.jar"/>
             <param name="artifactSrc" value="${eclipselink.plugins}/${eclipselink.asm.bndl.prefix}.source_${version.string}.jar"/>
             <param name="artifactName" value="EclipseLink ASM"/>
         </antcall>
         <antcall target="upload-artifact">
+            <param name="groupId" value="org.eclipse.persistence"/>
             <param name="artifactId" value="eclipselink"/>
+            <param name="artifactVersion" value="${maven.version}"/>
             <param name="artifact" value="${eclipselink.jar.name}"/>
             <param name="artifactSrc" value="${eclipselink.src.install.prefix}${eclipselink.zip.suffix}"/>
             <param name="artifactName" value="EclipseLink"/>
         </antcall>
         <antcall target="upload-artifact">
+            <!-- eventually this will ship separately, comments for future use -->
+            <param name="groupId" value="org.eclipse.persistence"/>
+            <!-- param name="groupId" value="javax.persistence"/ -->
             <param name="artifactId" value="javax.persistence"/>
+            <param name="artifactVersion" value="${maven.version}"/>
+            <!-- param name="artifactVersion" value="2.0-SNAPSHOT"/ --> 
             <param name="artifact" value="${eclipselink.jpa.base}/${plugins.dir}/javax.persistence_2.0_preview.jar"/>
             <param name="artifactSrc" value="${eclipselink.jpa.base}/${plugins.dir}/javax.persistence.source_2.0_preview.jar"/>
             <param name="artifactName" value="Javax Persistence 2.0 Preview"/>
@@ -150,9 +170,10 @@
        <!-- Copy pom.template to pom.xml filtering various properties -->
        <copy file="pom.xml.template" tofile="pom.xml" overwrite="true">
          <filterset>
-           <filter token="version" value="${maven.version}"/>
+           <filter token="groupId"      value="${groupId}"/>
+           <filter token="version"      value="${artifactVersion}"/>
            <filter token="svn.revision" value="${svn.revision}"/>
-           <filter token="artifactId" value="${artifactId}"/>
+           <filter token="artifactId"   value="${artifactId}"/>
            <filter token="artifactName" value="${artifactName}"/>
           </filterset>
        </copy>
