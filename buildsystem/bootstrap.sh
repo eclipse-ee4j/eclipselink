@@ -9,6 +9,7 @@ MILESTONE=false
 RELEASE=false
 TEST=false
 RHB=false
+UD2M=false
 TARGET=$1
 BRANCH=$2
 if [ ! "${TARGET}" = "" ]
@@ -54,6 +55,16 @@ if [ "${TARGET}" = "release" ]
 then
     RELEASE=true
 fi
+if [ "${TARGET}" = "uploadDeps" ]
+then
+    UD2M=true
+    TARGET=
+    TARG_NM=uploadDeps
+    if [ ! "${BRANCH}" = "" ]
+    then
+        BRANCH=
+    fi
+fi
 
 echo "Target=${TARGET}"
 
@@ -80,6 +91,7 @@ fi
 
 #Define common variables
 BOOTSTRAP_BLDFILE=bootstrap.xml
+UD2M_BLDFILE=uploadDepsToMaven.xml
 JAVA_HOME=/shared/common/ibm-java-jdk-ppc-60
 ANT_HOME=/shared/common/apache-ant-1.7.0
 HOME_DIR=/shared/rt/eclipselink
@@ -215,6 +227,11 @@ then
     ANT_BASEARG="${ANT_BASEARG} -D_DoNotUpdate=1"
 else
     ANT_BASEARG="${ANT_BASEARG} -DMailLogger.properties.file=${BRANCH_PATH}/buildsystem/maillogger.properties -logger org.apache.tools.ant.listener.MailLogger"
+fi
+
+if [ "${UD2M}" = "true" ]
+then
+    ANT_BASEARG="-f \"${UD2M_BLDFILE}\" -Dbranch.name=\"${BRANCH}\" -D_DoNotUpdate=1"
 fi
 
 export ANT_ARGS ANT_OPTS ANT_HOME BRANCH_PATH HOME_DIR LOG_DIR JAVA_HOME JUNIT_HOME MAVENANT_DIR PATH CLASSPATH
