@@ -46,7 +46,9 @@ public class Beer<G, H> extends Beverage<G> {
     }
     
     public Object clone() throws CloneNotSupportedException {
-        return super.clone();
+        Beer beer = (Beer)super.clone();
+        beer.setBeerConsumer(null);
+        return beer;
     }
     
     @Basic

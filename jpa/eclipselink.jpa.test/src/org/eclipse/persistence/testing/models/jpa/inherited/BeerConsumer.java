@@ -18,6 +18,8 @@ package org.eclipse.persistence.testing.models.jpa.inherited;
 
 import java.beans.PropertyChangeListener;
 import java.math.BigInteger;
+import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.Vector;
 import java.util.Hashtable;
@@ -36,7 +38,7 @@ import org.eclipse.persistence.descriptors.changetracking.*;
 @Table(name="CMP3_CONSUMER")
 @Inheritance(strategy=JOINED)
 @DiscriminatorValue(value="BC")
-public class BeerConsumer implements ChangeTracker{
+public class BeerConsumer implements ChangeTracker, Cloneable{
     public int post_load_count = 0;
     public int post_persist_count = 0;
     public int post_remove_count = 0;
@@ -97,6 +99,24 @@ public class BeerConsumer implements ChangeTracker{
     public void addBlueLightBeerToConsume(BlueLight blueLight) {
         blueLight.setBeerConsumer(this);
         ((Vector) blueLightBeersToConsume).add(blueLight);
+    }
+    
+    public Object clone() throws CloneNotSupportedException {
+        BeerConsumer consumer = (BeerConsumer)super.clone();
+        consumer.setAlpineBeersToConsume(new Vector());
+        Iterator<Alpine> alpineIterator = this.getAlpineBeersToConsume().iterator();
+        while (alpineIterator.hasNext()) {
+            Alpine alpine = alpineIterator.next();
+            consumer.addAlpineBeerToConsume(alpine.clone());
+        }
+        
+        consumer.setBlueLightBeersToConsume(new Vector());
+        Iterator<BlueLight> blueLightIterator = this.getBlueLightBeersToConsume().iterator();
+        while (blueLightIterator.hasNext()) {
+            Blue blue = blueLightIterator.next();
+            consumer.addBlueLightBeerToConsume((BlueLight)blue.clone());
+        }
+        return consumer;
     }
     
     /**

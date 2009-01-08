@@ -50,6 +50,8 @@ public class ClassDetails {
     protected boolean isEmbedable = false;
     /** Determine if class uses attribute access, lazily initialized. */
     protected Boolean usesAttributeAccess = null;
+    /** Determine if this class specifically implements a clone method */
+    protected boolean implementsCloneMethod = false;
     
     public ClassDetails() {
     }
@@ -144,6 +146,31 @@ public class ClassDetails {
     
     public void setLazyMappings(List lazyMappings){
         this.lazyMappings = lazyMappings;
+    }
+    
+    public boolean getImplementsCloneMethod(){
+        return implementsCloneMethod;
+    }
+    
+    
+    public void setImplementsCloneMethod(boolean implementsCloneMethod){
+        this.implementsCloneMethod = implementsCloneMethod;
+    }
+    
+    /**
+     * Return the name of the most direct superclass that has a direct implementation of 
+     * a clone method.
+     * If there is not one, return null
+     * @return
+     */
+    public String getNameOfSuperclassImplementingCloneMethod(){
+        if (superClassDetails == null){
+            return null;
+        } else if (superClassDetails.getImplementsCloneMethod()){
+            return superClassDetails.getClassName();
+        } else {
+            return superClassDetails.getNameOfSuperclassImplementingCloneMethod();
+        }   
     }
     
     public boolean isMappedSuperClass(){

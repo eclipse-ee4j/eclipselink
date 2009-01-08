@@ -17,7 +17,9 @@
 package org.eclipse.persistence.testing.tests.jpa.inherited;
 
 import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.util.Date;
+import java.util.Iterator;
 
 import javax.persistence.EntityManager;
 
@@ -307,6 +309,12 @@ public class InheritedModelJunitTest extends JUnitTestCase {
         
         BeerConsumer consumer = new BeerConsumer();
         consumer.setName("Keith Alexander");
+        
+        BlueLight blueLight = new BlueLight();
+        blueLight.setAlcoholContent(new Float(4.0));
+        blueLight.setUniqueKey(new BigInteger((new Long(System.currentTimeMillis()).toString())));
+        em.persist(blueLight);
+        consumer.addBlueLightBeerToConsume(blueLight);
         clone.setBeerConsumer(consumer);
         consumer.addAlpineBeerToConsume(clone);
         em.persist(clone);
@@ -317,6 +325,7 @@ public class InheritedModelJunitTest extends JUnitTestCase {
         commitTransaction(em);
         Integer alpineId = clone.getId();
         Integer consumerId = consumer.getId();
+        BigDecimal blueLightId = blueLight.getId();
         clearCache();
         closeEntityManager(em);
         em = createEntityManager();
@@ -342,8 +351,42 @@ public class InheritedModelJunitTest extends JUnitTestCase {
         if (clone.getBeerConsumer() != consumer) {
             fail("Changing clone did not work.");
         }
+        
+        try{
+            consumer = em.find(BeerConsumer.class, consumerId);
+            BeerConsumer consumerClone = (BeerConsumer)consumer.clone();
+            
+            Iterator<Alpine> alpineIterator = consumer.getAlpineBeersToConsume().iterator();
+            while (alpineIterator.hasNext()){
+                alpine = alpineIterator.next();
+                assertTrue("The original beerConsumer has an alpine beer with an incorrect back pointer.", consumer == alpine.getBeerConsumer());
+            }
+            
+            alpineIterator = consumerClone.getAlpineBeersToConsume().iterator();
+            while (alpineIterator.hasNext()){
+                alpine = alpineIterator.next();
+                assertTrue("The cloned beerConsumer has an alpine beer with an incorrect back pointer.", consumerClone == alpine.getBeerConsumer());
+            }
+            
+            Iterator<BlueLight> blueLightIterator = consumer.getBlueLightBeersToConsume().iterator();
+            while (blueLightIterator.hasNext()){
+                blueLight = blueLightIterator.next();
+                assertTrue("The original beerConsumer has an BlueLight beer with an incorrect back pointer.", consumer == blueLight.getBeerConsumer());
+            }
+            
+            blueLightIterator = consumerClone.getBlueLightBeersToConsume().iterator();
+            while (blueLightIterator.hasNext()){
+                blueLight = blueLightIterator.next();
+                assertTrue("The cloned beerConsumer has an BlueLight beer with an incorrect back pointer.", consumerClone == blueLight.getBeerConsumer());
+            }
+        } catch (CloneNotSupportedException e){
+            fail("Call to clone threw CloneNotSupportedException");
+        }
+        
         alpine = em.find(Alpine.class, clone.getId());
         em.remove(alpine);
+        blueLight = em.find(BlueLight.class, blueLightId);
+        em.remove(blueLight);
         consumer = em.find(BeerConsumer.class, consumerId);
         em.remove(consumer);
         commitTransaction(em);

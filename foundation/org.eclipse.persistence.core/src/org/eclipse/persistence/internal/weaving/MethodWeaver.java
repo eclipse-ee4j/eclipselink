@@ -84,9 +84,11 @@ public class MethodWeaver extends CodeAdapter implements Constants {
         // Need to find super.clone and add _persistence_post_clone(clone).
         if (this.tcw.classDetails.shouldWeaveInternal() && name.equals("clone") && 
                 /* the following will return true if we are calling a method stored on our direct superclass or one of its superclasses
-                 * that is involved in our metadata hierarchy.
+                 * that is involved in our metadata hierarchy and if there are no classes farther up the hierarchy that implement a clone method
+                 * The goal is to call _persistence_post_clone() at the highest level in the hierarchy possible
                  * For completeness, we check to ensure the return type is in that same hierarchy */
-                this.tcw.classDetails.isInSuperclassHierarchy(owner) && this.tcw.classDetails.isInMetadataHierarchy(descClassName)) {
+                this.tcw.classDetails.isInSuperclassHierarchy(owner) && this.tcw.classDetails.isInMetadataHierarchy(descClassName) && 
+                (this.tcw.classDetails.getNameOfSuperclassImplementingCloneMethod() == null)) {
             super.visitMethodInsn(opcode, owner, name, desc);
             super.visitTypeInsn(CHECKCAST, this.tcw.classDetails.getClassName());
             super.visitMethodInsn(INVOKEVIRTUAL, this.tcw.classDetails.getClassName(), "_persistence_post_clone", "()Ljava/lang/Object;");

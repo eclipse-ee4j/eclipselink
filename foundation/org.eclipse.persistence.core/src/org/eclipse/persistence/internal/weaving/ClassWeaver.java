@@ -602,6 +602,13 @@ public class ClassWeaver extends ClassAdapter implements Constants {
         // create the _persistence_post_clone() method
         CodeVisitor cv_clone = cv.visitMethod(ACC_PUBLIC, "_persistence_post_clone", "()Ljava/lang/Object;", null, null);
 
+        // if there is a weaved superclass, it will implement _persistence_post_clone.  Call that method
+        // super._persistence_post_clone()
+        if (classDetails.getSuperClassDetails() != null && classDetails.getSuperClassDetails().shouldWeaveInternal()){
+           cv_clone.visitVarInsn(ALOAD, 0);
+            cv_clone.visitMethodInsn(INVOKESPECIAL, classDetails.getSuperClassName(), "_persistence_post_clone", "()Ljava/lang/Object;");
+        }
+
         if (classDetails.shouldWeaveValueHolders()) {
             for (Iterator iterator = classDetails.getAttributesMap().values().iterator(); iterator.hasNext(); ) {
                 AttributeDetails attributeDetails = (AttributeDetails)iterator.next();

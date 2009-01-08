@@ -269,6 +269,18 @@ public class TransformerFactory {
         classDetails.setShouldWeaveChangeTracking(weaveChangeTracking);
         classDetails.setShouldWeaveFetchGroups(weaveFetchGroups);
         classDetails.setShouldWeaveInternal(weaveInternal);
+        Method method = null;
+        try {
+            if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
+                try {
+                    method = (Method)AccessController.doPrivileged(new PrivilegedGetDeclaredMethod(clz, "clone", null));
+                } catch (PrivilegedActionException exception) {
+                }
+            } else {
+                method = PrivilegedAccessHelper.getDeclaredMethod(clz, "clone", null);
+            }
+        } catch (NoSuchMethodException e){}
+        classDetails.setImplementsCloneMethod(method != null);
         return classDetails;
     }
     
