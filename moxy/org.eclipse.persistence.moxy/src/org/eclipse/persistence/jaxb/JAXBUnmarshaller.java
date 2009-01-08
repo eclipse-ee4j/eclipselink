@@ -78,7 +78,11 @@ public class JAXBUnmarshaller implements Unmarshaller {
         xmlUnmarshaller.setValidationMode(XMLUnmarshaller.NONVALIDATING);
         xmlUnmarshaller.setUnmarshalListener(new JAXBUnmarshalListener(this));
     }
-    
+
+    public XMLUnmarshaller getXMLUnmarshaller() {
+        return xmlUnmarshaller;
+    }
+
     public Object unmarshal(File file) throws JAXBException {
         if (file == null) {
             throw new IllegalArgumentException();
