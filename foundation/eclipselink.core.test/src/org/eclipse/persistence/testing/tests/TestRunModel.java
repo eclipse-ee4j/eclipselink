@@ -149,6 +149,10 @@ public class TestRunModel extends TestModel {
             // Requires EIS datasources config.
             tests.addElement("org.eclipse.persistence.testing.tests.eis.cobol.CobolTestModel");
             tests.addElement("org.eclipse.persistence.testing.tests.eis.xmlfile.XMLFileTestModel");
+            
+            // PLSQL
+            tests.addElement("org.eclipse.persistence.testing.tests.plsql.PLSQLTestModel");
+            tests.addElement("org.eclipse.persistence.testing.tests.plsql.PLSQLXMLTestModel");
         }
 
         for (int index = 0; index < tests.size(); ++index) {

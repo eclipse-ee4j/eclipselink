@@ -55,7 +55,7 @@ public class Helper implements Serializable {
     protected static String CR = null;
     
     /** Store tab string */
-    public static String TAB = "\t";
+    public static String TAB = "  ";
     
     /** Store newline string */
     public static String NL = "\n";

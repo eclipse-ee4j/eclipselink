@@ -267,7 +267,7 @@ public class StoredProcedureCall extends DatabaseCall {
             outField.setType(javaType);//needed for out, less neccessary for in.  maybe use containerPolicy instead?
             outField.setNestedTypeField(nestedType);
             appendInOut(inField, outField);
-        } 
+        }
     }
 
     /**
@@ -366,7 +366,12 @@ public class StoredProcedureCall extends DatabaseCall {
      * The javaType is the java class to return instead of the ARRAY and STRUCT types if a conversion is possible.
      */
     public void addNamedOutputArgument(String procedureParameterName, String argumentFieldName, int jdbcType, String typeName, Class javaType) {
-        addNamedOutputArgument(procedureParameterName, argumentFieldName, jdbcType, typeName, javaType, null);
+    	getProcedureArgumentNames().add(procedureParameterName);
+        ObjectRelationalDatabaseField field = new ObjectRelationalDatabaseField(argumentFieldName);
+        field.setSqlType(jdbcType);
+        field.setSqlTypeName(typeName);
+        field.setType(javaType);
+        appendOut(field);
     }
     
     /**

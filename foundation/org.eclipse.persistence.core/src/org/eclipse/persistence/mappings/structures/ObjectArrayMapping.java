@@ -59,7 +59,7 @@ public class ObjectArrayMapping extends AbstractCompositeCollectionMapping  impl
      */
     public void initialize(AbstractSession session) throws DescriptorException {
         super.initialize(session);
-        if (this.getStructureName().length() == 0) {
+        if ((getStructureName() == null) || getStructureName().length() == 0) {
             throw DescriptorException.structureNameNotSetInMapping(this);
         }
 

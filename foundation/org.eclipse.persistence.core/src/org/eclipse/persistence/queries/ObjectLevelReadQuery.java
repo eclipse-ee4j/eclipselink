@@ -2313,6 +2313,7 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
      */
     public void setShouldOuterJoinSubclasses(boolean shouldOuterJoinSubclasses) {
         this.shouldOuterJoinSubclasses = Boolean.valueOf(shouldOuterJoinSubclasses);
+        setIsPrepared(false);
     }
     
     /**
@@ -2377,13 +2378,6 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
      */
     public boolean shouldRefreshRemoteIdentityMapResult() {
         return shouldRefreshRemoteIdentityMapResult;
-    }
-
-    public String toString() {
-        if (getReferenceClass() == null) {
-            return super.toString();
-        }
-        return Helper.getShortClassName(getClass()) + "(" + getReferenceClass().getName() + ")";
     }
 
     /**

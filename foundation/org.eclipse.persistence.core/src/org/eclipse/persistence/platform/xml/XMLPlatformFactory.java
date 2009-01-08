@@ -61,17 +61,22 @@ public class XMLPlatformFactory {
 
         try {
             ClassLoader classLoader = null;
-            if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
-                try{
+            if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) {
+                try {
                     classLoader = (ClassLoader)AccessController.doPrivileged(new PrivilegedGetClassLoaderForClass(this.getClass()));
-                }catch (PrivilegedActionException ex){
+                } catch (PrivilegedActionException ex){
                     throw (RuntimeException) ex.getCause();
                 }
-            }else{
+            } else {
                 classLoader = PrivilegedAccessHelper.getClassLoaderForClass(this.getClass());
             }
-            // ClassLoader classLoader = ClassLoader.getSystemClassLoader();
-            // ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
+            // Loader may be null if the class was loaded by the root loader in some JVM's/configs.
+            if (classLoader == null) {
+            	classLoader = Thread.currentThread().getContextClassLoader();
+            }
+            if (classLoader == null) {
+            	classLoader = ClassLoader.getSystemClassLoader();
+            }
             Class newXMLPlatformClass = classLoader.loadClass(newXMLPlatformClassName);
             setXMLPlatformClass(newXMLPlatformClass);
             return xmlPlatformClass;

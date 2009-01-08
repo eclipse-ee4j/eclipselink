@@ -16,7 +16,6 @@ import java.security.AccessController;
 import java.security.PrivilegedActionException;
 import java.util.*;
 import org.eclipse.persistence.internal.expressions.*;
-import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.internal.security.PrivilegedClassForName;
@@ -605,13 +604,6 @@ public abstract class ObjectBuildingQuery extends ReadQuery {
      */
     public boolean shouldRefreshRemoteIdentityMapResult() {
         return shouldRefreshRemoteIdentityMapResult;
-    }
-
-    public String toString() {
-        if (getReferenceClass() == null) {
-            return super.toString();
-        }
-        return Helper.getShortClassName(getClass()) + "(" + getReferenceClass().getName() + ")";
     }
 
     /**

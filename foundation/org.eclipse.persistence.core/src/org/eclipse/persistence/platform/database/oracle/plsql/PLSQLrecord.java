@@ -95,9 +95,9 @@ public class PLSQLrecord extends ComplexDatabaseType implements OraclePLSQLType,
         else {
             iterator.remove();
             inArg.inIndex = newIndex;
-            for (PLSQLargument f : fields) {
-                f.inIndex = newIndex++;
-                iterator.add(f);
+            for (PLSQLargument argument : fields) {
+            	argument.inIndex = newIndex++;
+                iterator.add(argument);
             }
             return newIndex;
         }
@@ -111,10 +111,10 @@ public class PLSQLrecord extends ComplexDatabaseType implements OraclePLSQLType,
         else {
             iterator.remove();
             outArg.outIndex = newIndex;
-            for (PLSQLargument f : fields) {
-                f.outIndex = newIndex++;
-                f.direction = OUT;
-                iterator.add(f);
+            for (PLSQLargument argument : fields) {
+            	argument.outIndex = newIndex++;
+                argument.direction = OUT;
+                iterator.add(argument);
             }
             return newIndex;
         }
@@ -123,8 +123,7 @@ public class PLSQLrecord extends ComplexDatabaseType implements OraclePLSQLType,
     public void buildInDeclare(StringBuilder sb, PLSQLargument inArg) {
         if (hasCompatibleType()) {
             super.buildInDeclare(sb, inArg);
-        }
-        else {
+        } else {
             if ((getTypeName() == null) || getTypeName().equals("")) {
                 throw QueryException.typeNameNotSet(this);        
             }                                                         
@@ -139,8 +138,7 @@ public class PLSQLrecord extends ComplexDatabaseType implements OraclePLSQLType,
     public void buildOutDeclare(StringBuilder sb, PLSQLargument outArg) {
         if (hasCompatibleType()) {
             super.buildOutDeclare(sb, outArg);
-        }
-        else {
+        } else {
             if ((getTypeName() == null) || getTypeName().equals("")) {
                 throw QueryException.typeNameNotSet(this);        
             }
@@ -155,8 +153,7 @@ public class PLSQLrecord extends ComplexDatabaseType implements OraclePLSQLType,
     public void buildBeginBlock(StringBuilder sb, PLSQLargument arg, PLSQLStoredProcedureCall call) {
         if (hasCompatibleType()) {
             super.buildBeginBlock(sb, arg, call);
-        }
-        else {
+        } else {
             String target = databaseTypeHelper.buildTarget(arg);
             String compat = databaseTypeHelper.buildCompatible(arg);
             if (arg.direction == IN | arg.direction == INOUT) {
@@ -177,8 +174,7 @@ public class PLSQLrecord extends ComplexDatabaseType implements OraclePLSQLType,
     public void buildOutAssignment(StringBuilder sb, PLSQLargument outArg, PLSQLStoredProcedureCall call) {
         if (hasCompatibleType()) {
             super.buildOutAssignment(sb, outArg, call);
-        }
-        else {
+        } else {
             String target = databaseTypeHelper.buildTarget(outArg);
             String compat = databaseTypeHelper.buildCompatible(outArg);
             for (PLSQLargument f : fields) {
@@ -201,37 +197,34 @@ public class PLSQLrecord extends ComplexDatabaseType implements OraclePLSQLType,
         if (hasCompatibleType()) {
             super.translate(arg, translationRow, copyOfTranslationRow,
                 copyOfTranslationFields, translationRowFields, translationRowValues, call);
-        }
-        else {
-            for (PLSQLargument f : fields) {
-                databaseTypeHelper.translate(f, translationRow, copyOfTranslationRow,
+        } else {
+            for (PLSQLargument argument : fields) {
+                databaseTypeHelper.translate(argument, translationRow, copyOfTranslationRow,
                     copyOfTranslationFields, translationRowFields, translationRowValues, call);
             }
         }
     }
 
     public void buildOutputRow(PLSQLargument outArg, AbstractRecord outputRow,
-        DatabaseRecord newOutputRow, Vector outputRowFields, Vector outputRowValues) {
+                DatabaseRecord newOutputRow, Vector outputRowFields, Vector outputRowValues) {
         if (hasCompatibleType()) {
             super.buildOutputRow(outArg, outputRow, newOutputRow, outputRowFields, outputRowValues);
-        }
-        else {
-            for (PLSQLargument f : fields) {
-                databaseTypeHelper.buildOutputRow(f, outputRow, newOutputRow,
+        } else {
+            for (PLSQLargument field : fields) {
+            	databaseTypeHelper.buildOutputRow(field, outputRow, newOutputRow,
                     outputRowFields, outputRowValues);
             }
         }
     }
 
     public void logParameter(StringBuilder sb, Integer direction, PLSQLargument arg,
-        AbstractRecord translationRow, DatabasePlatform platform) {
+                AbstractRecord translationRow, DatabasePlatform platform) {
         if (hasCompatibleType()) {
             super.logParameter(sb, direction, arg, translationRow, platform);
-        }
-        else {
+        } else {
             for (Iterator<PLSQLargument> iterator = fields.iterator(); iterator.hasNext(); ) {
-                PLSQLargument f = iterator.next();
-                f.databaseTypeWrapper.getWrappedType().logParameter(sb, direction, f, translationRow,
+                PLSQLargument argument = iterator.next();
+                argument.databaseType.logParameter(sb, direction, argument, translationRow,
                     platform);
                 if (iterator.hasNext()) {
                     sb.append(", ");

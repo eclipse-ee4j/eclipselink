@@ -17,10 +17,7 @@ package org.eclipse.persistence.platform.database.oracle.plsql;
 import static java.lang.Integer.MIN_VALUE;
 
 // EclipseLink imports
-import org.eclipse.persistence.internal.helper.ComplexDatabaseType;
 import org.eclipse.persistence.internal.helper.DatabaseType;
-import org.eclipse.persistence.internal.helper.DatabaseTypeWrapper;
-import org.eclipse.persistence.platform.database.jdbc.JDBCTypeWrapper;
 import static org.eclipse.persistence.internal.databaseaccess.DatasourceCall.IN;
 import static org.eclipse.persistence.internal.databaseaccess.DatasourceCall.INOUT;
 import static org.eclipse.persistence.internal.databaseaccess.DatasourceCall.OUT;
@@ -29,7 +26,7 @@ import static org.eclipse.persistence.internal.databaseaccess.DatasourceCall.OUT
 /**
  * <p>
  * <b>INTERNAL:</b> 
- * helper class - tracks argument's original position as well as re-ordered position
+ * Helper class - tracks argument's original position as well as re-ordered position
  * Used by PLSQLrecord and PLSQLStoredProcedureCall
  */
 public class PLSQLargument implements Cloneable {
@@ -39,7 +36,7 @@ public class PLSQLargument implements Cloneable {
     public int originalIndex = MIN_VALUE;
     public int inIndex = MIN_VALUE;   // re-computed positional index for IN argument
     public int outIndex = MIN_VALUE;  // re-computed positional index for OUT argument
-    public DatabaseTypeWrapper databaseTypeWrapper;
+    public DatabaseType databaseType;
     public int length = 255;          //default from the EJB 3.0 spec.
     public int precision = MIN_VALUE;
     public int scale = MIN_VALUE;
@@ -53,21 +50,7 @@ public class PLSQLargument implements Cloneable {
         DatabaseType databaseType) {
         this();
         this.name = name;
-        if (databaseType.isJDBCType()) {
-            databaseTypeWrapper = new JDBCTypeWrapper(databaseType);
-        }
-        else if (databaseType.isComplexDatabaseType()) {
-            ComplexDatabaseType cdt = (ComplexDatabaseType)databaseType;
-            if (cdt.isRecord()) {
-                databaseTypeWrapper = new PLSQLrecordWrapper(databaseType);
-            }
-            else if (cdt.isCollection()) {
-                databaseTypeWrapper = new PLSQLCollectionWrapper(databaseType);
-            }
-        }
-        else {
-            databaseTypeWrapper = new SimplePLSQLTypeWrapper(databaseType);
-        }
+        this.databaseType = databaseType;
         this.originalIndex = originalIndex;
         this.direction = direction;
     }

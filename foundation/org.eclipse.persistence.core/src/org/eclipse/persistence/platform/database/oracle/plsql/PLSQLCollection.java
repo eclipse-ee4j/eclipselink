@@ -85,7 +85,7 @@ public class PLSQLCollection extends ComplexDatabaseType implements Cloneable, O
                     AbstractSession s = call.getQuery().getSession();
                     Array convertedValue = (Array)((ObjectRelationalDataTypeDescriptor)s.
                         getDescriptorForAlias(arg.name)).buildFieldValueFromDirectValues((Vector)be.get(0),
-                          ((ComplexDatabaseType)arg.databaseTypeWrapper.getWrappedType()).getCompatibleType(),s);
+                          ((ComplexDatabaseType)arg.databaseType).getCompatibleType(),s);
                     copyOfTranslationRow.put(df.getName(), convertedValue);
                 }
             }

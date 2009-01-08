@@ -1425,6 +1425,15 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
     }
 
     /**
+     * PUBLIC:
+     * Return true if this query uses an JPQL query mechanism .
+     */
+    public boolean isJPQLCallQuery() {
+        Call call = getDatasourceCall();
+        return (call != null) && (call instanceof JPQLCall);
+    }
+
+    /**
      * INTERNAL:
      * Return true if the query is a custom user defined query.
      */
@@ -2143,7 +2152,21 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
     }
 
     public String toString() {
-        return Helper.getShortClassName(getClass()) + "()";
+    	String referenceClassString = "";
+    	String nameString = "";
+    	String queryString = "";
+    	if (getReferenceClass() != null) {
+    		referenceClassString = "referenceClass=" + getReferenceClass().getSimpleName() + " ";
+    	}
+    	if ((getName() != null) && (!getName().equals(""))) {
+    		nameString = "name=\"" + getName() + "\" ";
+    	}
+    	if (isSQLCallQuery()) {
+    		queryString = "sql=\"" + getSQLString() + "\"";
+    	} else if (isJPQLCallQuery()) {
+    		queryString = "jpql=\"" + getJPQLString() + "\"";
+    	}
+    	return getClass().getSimpleName() + "(" + nameString + referenceClassString + queryString + ")";
     }
 
     /**
