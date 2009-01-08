@@ -13,8 +13,6 @@
 package org.eclipse.persistence.sdo.helper;
 
 import commonj.sdo.Property;
-import java.security.AccessController;
-import java.security.PrivilegedActionException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -23,15 +21,12 @@ import java.util.Map;
 
 import org.eclipse.persistence.sdo.DefaultValueStore;
 import org.eclipse.persistence.sdo.SDOChangeSummary;
-import org.eclipse.persistence.sdo.SDOConstants;
 import org.eclipse.persistence.sdo.SDODataObject;
 import org.eclipse.persistence.sdo.SDOProperty;
 import org.eclipse.persistence.sdo.SDOSequence;
 import org.eclipse.persistence.sdo.SDOType;
 import org.eclipse.persistence.sdo.ValueStore;
 import org.eclipse.persistence.exceptions.SDOException;
-import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
-import org.eclipse.persistence.internal.security.PrivilegedClassForName;
 import commonj.sdo.ChangeSummary;
 import commonj.sdo.DataObject;
 import commonj.sdo.helper.CopyHelper;
@@ -89,8 +84,7 @@ public class SDOCopyHelper implements CopyHelper {
      * This default constructor must be used in conjunction with the setHelperContext() function.
      * The custom constructor that takes a HelperContext parameter is recommended over this default constructor.
      */
-    public SDOCopyHelper() {
-        // TODO: JIRA129 - default to static global context - Do Not use this convenience constructor outside of JUnit testing
+    public SDOCopyHelper() { 
     }
 
     /**
@@ -365,8 +359,6 @@ public class SDOCopyHelper implements CopyHelper {
                     isPropertyInsideCopyTreeScope = targetDOCopy != null;
                 }
 
-                // TODO: non-containment IllegalArgument check - verify we do not need it anymore
-                // since we do not call copyPropertyValue() 
                 // set nc property if we are in the copy tree
                 // check if the target copy is in our map (inside copy tree scope)
                 if (isPropertyInsideCopyTreeScope) {
@@ -400,13 +392,9 @@ public class SDOCopyHelper implements CopyHelper {
         try {
             List settings = origSequence.getSettings();
             for (int index = 0, size = origSequence.size(); index < size; index++) {
-                Setting nextSetting = (Setting)settings.get(index);
-
-                //TODO:verify should this be seqProp not prop
-                //Property prop = dataObject.getSequence().getProperty(index);                                               
-                //seqProperty = dataObject.getSequence().getProperty(index);
-                
+                Setting nextSetting = (Setting)settings.get(index);                
                 seqProperty = origSequence.getProperty(nextSetting);
+                
                 if ((null == seqProperty) || seqProperty.getType().isDataType()) {
                     Setting copySetting = nextSetting.copy(copy);
                     copySequence.getSettings().add(copySetting);
@@ -543,10 +531,7 @@ public class SDOCopyHelper implements CopyHelper {
             if (null == origDOCS1toCopyDOCS2Map.get(anOriginalObject)) {
                 // add temp map of original  : copy of original            
                 origDOCS1toCopyDOCS2Map.put(anOriginalObject, aCopyOfOriginalObject);
-            } else {
-                // TODO: throw warning exception: we should not be attempting to put duplicates
-                // attempt to map duplicate entry for " + aCopyOfOriginalDeletedObject+ " :" + aDeletedObject);
-            }
+            } 
         }
 
         // iterate created objects    	
@@ -573,8 +558,7 @@ public class SDOCopyHelper implements CopyHelper {
 
             /**
              * Recursively shallow-copy elements (by iterating the ovs map and iterating the properties of each item)
-             * Fix the dataObject pointer
-             * TODO: merge both these loops based on open=true|false
+             * Fix the dataObject pointer 
              */
             aVSCopy = createValueStore();
             aVSOriginal = (ValueStore)originalCS.getOriginalValueStores().get(anOriginalObject);
@@ -692,10 +676,8 @@ public class SDOCopyHelper implements CopyHelper {
                 if (!aProperty.getType().isDataType()) {
                     // get the copy of the original (in the current valuestore) - we need do not make a copy of this copy
                     // we should have a copy of the copy for List items - ListWrapper.add(item) will remove the item from its original wrapper
-                    // TODO: possible move lists before valuestores and reuse items in the listwrapper value of this map
                     aListItemCopy = origDOCS1toCopyDOCS2Map.get(aListItem);
-                } else {
-                    // TODO: coverage test case required - 
+                } else { 
                     aListItemCopy = aListItem;
                 }
                 aCopyList.add(aListItemCopy);
@@ -713,11 +695,7 @@ public class SDOCopyHelper implements CopyHelper {
                 aListItem = aListIterator.next();
                 // for simple many types we use the original in the copy
                 if (!aProperty.getType().isDataType()) {
-                    aListItemCopy = origDOCS1toCopyDOCS2Map.get(aListItem);
-                    if (null == aListItemCopy) {
-                        // TODO: coverage test case required
-                        // TODO: throw exception "cannot find reference in reverseDeletedMap for " + aListItem                      
-                    }
+                    aListItemCopy = origDOCS1toCopyDOCS2Map.get(aListItem);                    
                 } else {
                     aListItemCopy = aListItem;
                 }
@@ -725,9 +703,7 @@ public class SDOCopyHelper implements CopyHelper {
                 // don't add nulls to the listWrapper so an undoChanges will encounter an NPE later
                 if (aListItemCopy != null) {
                     listValueCopy.add(aListItemCopy);
-                } else {
-                    // TODO: coverage test case required
-                }
+                } 
             }
 
             // set the copy map entry keyed on copy with value a deep copy of the copy
@@ -854,7 +830,6 @@ public class SDOCopyHelper implements CopyHelper {
             return null;// this is acceptable behavior
         }
 
-        // TODO: Throw IllegalArgument exception as above
         SDODataObject copy = (SDODataObject)getHelperContext()// 
         .getDataFactory().create(dataObject.getType().getURI(), dataObject.getType().getName());
 
@@ -917,9 +892,7 @@ public class SDOCopyHelper implements CopyHelper {
                         }
                     }
                 }
-            }
-
-            // TODO: handle !dataObject.isSet
+            }            
         }
 
         // sequences will not be processed until the entire tree is copied so we can resolve any reference relationships

@@ -71,6 +71,7 @@ public class SDOException extends EclipseLinkException {
     public static final int GLOBAL_PROPERTY_NOT_FOUND = 45036;
     public static final int PREFIX_USED_BUT_NOT_DEFINED = 45037;
     public static final int CANNOT_PERFORM_OPERATION_ON_PROPERTY = 45038;
+    public static final int ERROR_ACCESSING_EXTERNALIZABLEDELEGATOR = 45039;
     
     protected SDOException(String message) {
         super(message);
@@ -518,4 +519,13 @@ public class SDOException extends EclipseLinkException {
         exception.setErrorCode(PREFIX_USED_BUT_NOT_DEFINED);
         return exception;
     }
+     /**
+      * INTERNAL:
+      */     								  
+     public static SDOException errorAccessingExternalizableDelegator(String fieldName, Exception nestedException) {
+         Object[] args = { fieldName };
+         SDOException exception = new SDOException(ExceptionMessageGenerator.buildMessage(SDOException.class, ERROR_ACCESSING_EXTERNALIZABLEDELEGATOR, args), nestedException);
+         exception.setErrorCode(ERROR_ACCESSING_EXTERNALIZABLEDELEGATOR);
+         return exception;
+     }
 }

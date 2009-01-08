@@ -73,17 +73,13 @@ public class SDOSchemaGenerator {
     public String generate(List types, SchemaLocationResolver aSchemaLocationResolver) {
         schemaLocationResolver = aSchemaLocationResolver;
         if ((types == null) || (types.size() == 0)) {
-            //TODO: throw exception no types given to generate schema
             throw new IllegalArgumentException("No Schema was generated from null or empty list of types.");
         }
 
         String uri = null;
         Type firstType = (Type)types.get(0);
-        if (firstType == null) {
-            //TODO: throw exception
-        } else {
-            uri = firstType.getURI();
-        }
+        uri = firstType.getURI();
+
         allTypes = types;
         generateSchema(uri, types);
 
@@ -146,17 +142,14 @@ public class SDOSchemaGenerator {
     */
     public String generate(List types, Map aNamespaceToSchemaLocation) {
         if ((types == null) || (types.size() == 0)) {
-            //TODO: throw exception no types given to generate schema
             throw new IllegalArgumentException("No Schema was generated from null or empty list of types.");
         }
 
         String uri = null;
         namespaceToSchemaLocation = aNamespaceToSchemaLocation;
-
-        //TODO: write sdo:java 
+ 
         Type firstType = (Type)types.get(0);
         if (firstType == null) {
-            //TODO: throw exception (case types.size > 0 but each type=null)
             throw new IllegalArgumentException("No Schema was generated from a list of types containing null elements");
         } else {
             uri = firstType.getURI();
@@ -164,7 +157,6 @@ public class SDOSchemaGenerator {
         allTypes = types;
         generateSchema(uri, types);
 
-        //TODO: generating xmiversion is optional
         //Now we have a built schema model						      
         Project p = new SchemaModelProject();
         Vector namespaces = generatedSchema.getNamespaceResolver().getNamespaces();
@@ -184,13 +176,11 @@ public class SDOSchemaGenerator {
         return generatedSchemaWriter.toString();
     }
 
-    private void generateSchema(String uri, List typesWithSameUri) {
-        //TODO: SDO specific need to handles setting the sdo:javaPackage on the schema 
-        //TODO: SDO specific Ensure all types have same javaPackage? Type.getInstanceClass().getPackage().toString()
+    private void generateSchema(String uri, List typesWithSameUri) { 
         generatedSchema = new Schema();
         generatedSchema.setTargetNamespace(uri);
         generatedSchema.setDefaultNamespace(uri);
-        //TODO: qualify elements and attributes appropriately based on these settings
+
         generatedSchema.setAttributeFormDefault(false);
         generatedSchema.setElementFormDefault(true);
         String javaPackage = null;
@@ -198,12 +188,11 @@ public class SDOSchemaGenerator {
         for (int i = 0; i < typesWithSameUri.size(); i++) {
             Type nextType = (Type)typesWithSameUri.get(i);
             if ((nextType.getBaseTypes() != null) && (nextType.getBaseTypes().size() > 1)) {
-                //TODO: throw an error
                 //A schema can not be generated because the following type has more than 1 base type + type
             }
             String nextUri = nextType.getURI();
             if (nextUri != uri) {
-                //TODO: throw exception  -- all types must have same uri
+                //all types must have same uri
             }
 
             if (!nextType.isDataType()) {
@@ -220,11 +209,7 @@ public class SDOSchemaGenerator {
                         javaPackage = nextPackage;
                     }
                 }
-            }
-            boolean validName = validateName(nextType.getName());
-            if (!validName) {
-                //TODO: throw Exception 
-            }
+            }            
 
             if (nextType.isDataType()) {
                 //generate simple type
@@ -273,10 +258,7 @@ public class SDOSchemaGenerator {
 
         //TODO:  simpleType.setAbstractValue(type.isAbstract());
         //SDO specific or not?  spec says no but don't see it in the schema.xsd
-
-        /*TODO: SDO specific generate aliasNames
-                 * simpleType.setAliasNames(buildAliasNames(type.getAliasNames()));
-        */
+        
         if ((type.getAliasNames() != null) && (type.getAliasNames().size() > 0)) {
             String sdoXmlPrefix = getPrefixForURI(SDOConstants.SDOXML_URL);
             String aliasNamesString = buildAliasNameString(type.getAliasNames());
@@ -295,12 +277,7 @@ public class SDOSchemaGenerator {
         if ((type.getBaseTypes() != null) && (type.getBaseTypes().size() > 0) && ((Type)type.getBaseTypes().get(0) != null)) {
             baseType = (SDOType)type.getBaseTypes().get(0);
             //TODO: need to add something on SimpleType to track referenced uris for includes/imports?
-        } else if (type.getInstanceClass() != null) {
-            //TODO: Mapping of SDO DataTypes to XSD Built in Data Types"
-            //String javaInstanceClass = type.getInstanceClass().getName();
-            //getBaseTypeFromTable(type.getInstanceClass());
-            //table pg108
-        }
+        } 
 
         if (baseType != null) {
             Restriction restriction = new Restriction();
@@ -350,9 +327,6 @@ public class SDOSchemaGenerator {
             complexType.getAttributesMap().put(qname, aliasNamesString);
         }
 
-        /* TODO:  SDO Specific
-         * complexType.setAliasNames(buildAliasNames(type.getAliasNames()));
-         */
         complexType.setMixed(type.isSequenced());
         Type baseType = null;
         if ((type.getBaseTypes() != null) && (type.getBaseTypes().size() > 0) && ((Type)type.getBaseTypes().get(0) != null)) {
@@ -365,7 +339,6 @@ public class SDOSchemaGenerator {
             //}
         }
 
-        //TODO: else { //what to do in the else case...spec seems different for simple vs. complex types
         if (baseType != null) {
             addTypeToListIfNeeded(type, baseType);
             Extension extension = new Extension();
@@ -378,7 +351,6 @@ public class SDOSchemaGenerator {
             } else if ((baseType.getURI() == null) || (baseType.getURI().equalsIgnoreCase(generatedSchema.getTargetNamespace()))) {
                 extension.setBaseType(baseType.getName());
             } else {
-                //TODO: not the sdo type name but the complex/simple type name corresponding to this sdo type
                 extension.setBaseType(getPrefixStringForURI(baseType.getURI()) + baseType.getName());
             }
 
@@ -569,17 +541,8 @@ public class SDOSchemaGenerator {
                 elem.setDefaultValue((String)xmlConversionManager.convertObject(property.getDefault(), ClassConstants.STRING, ((SDOProperty)property).getXsdType()));
             }
 
-            /*TODO: is property.default and is produced if the default is not null and the default
-            differs from the XSD default for that data type .
-            */
         }
 
-        /*TODO: SDO specific generate aliasNames
-                * elem.setAliasNames(buildAliasNames(property.getAliasNames()));
-        */
-        //TODO: SDO Specific opposite setting property.getOpposite
-        //TODO: SDO Specific readonly setting property.readOnly
-        //TOD: update containment
         addSimpleComponentAnnotations(elem, property, true);
 
         /*
@@ -614,21 +577,16 @@ public class SDOSchemaGenerator {
 
         Type propertyType = property.getType();
 
-        //if (property.isContainment() && (propertyType != null)) {
         if (propertyType != null) {
             if (property.getContainingType() != null) {
                 addTypeToListIfNeeded(property.getContainingType(), propertyType);
             }
 
-            //TODO: prefix not currently set on type
-            //elem.setType(property.getType().getName());
-            //TODO: SDO Specific readonly setting property.readOnly
             if (schemaType == null) {
                 schemaType = ((SDOTypeHelper)aHelperContext.getTypeHelper()).getXSDTypeFromSDOType(propertyType);
             }
 
             //get url for prefix in namespace resolver and map sure it is added to the schema if necessary
-            //TODO: types
             if (schemaType != null) {
                 elem.setType(getPrefixStringForURI(schemaType.getNamespaceURI()) + schemaType.getLocalPart());
                 if (schemaSDOType != null) {
@@ -649,8 +607,7 @@ public class SDOSchemaGenerator {
                 } else {
                     nameString = propertyType.getName();
                 }
-
-                //TODO: not the sdo type name but the complex/simple type name corresponding to this sdo type                
+                
                 elem.setType(getPrefixStringForURI(propertyType.getURI()) + nameString);
             }
         } else {
@@ -688,20 +645,10 @@ public class SDOSchemaGenerator {
             if (!property.isMany() && property.getType().isDataType()) {
                 XMLConversionManager xmlConversionManager = (XMLConversionManager)((SDOXMLHelper)aHelperContext.getXMLHelper()).getXmlConversionManager();
                 attr.setDefaultValue((String)xmlConversionManager.convertObject(property.getDefault(), ClassConstants.STRING, ((SDOProperty)property).getXsdType()));
-            }
-
-            /*TODO: is property.default and is produced if the default is not null and the default
-            differs from the XSD default for that data type .
-            */
+            }            
         }
         addSimpleComponentAnnotations(attr, property, false);
 
-        //TODO: SDO specific read only setting
-        //TODO: SDO specific opposite setting
-
-        /*TODO: SDO specific generate aliasNames
-        * attr.setAliasNames(buildAliasNames(property.getAliasNames()));
-        */
         Type propertyType = property.getType();
         QName schemaType = ((SDOProperty)property).getXsdType();
 
@@ -744,13 +691,11 @@ public class SDOSchemaGenerator {
                 } else {
                     nameString = propertyType.getName();
                 }
-
-                //TODO: not the sdo type name but the complex/simple type name corresponding to this sdo type                
+             
                 attr.setType(getPrefixStringForURI(propertyType.getURI()) + nameString);
             }
 
             //get url for prefix in namespace resolver and map sure it is added to the schema if necessary
-            //TODO: types
 
             /*
             if (schemaType != null) {
@@ -820,13 +765,7 @@ public class SDOSchemaGenerator {
         }
     }
 
-    private boolean validateName(String nameToValidate) {
-        //TODO: make sure nameToValidate is a valid xsd name
-        return true;
-    }
-
     private Element buildElementForComplexType(Schema schema, ComplexType type) {
-        //TODO: conflict when complextype "Test" then complextype "test" generated
         Element elem = new Element();
         String name = type.getName();
         if (name == null) {
@@ -836,6 +775,7 @@ public class SDOSchemaGenerator {
 
         Object exists = schema.getTopLevelElements().get(lowerName);
         if (exists != null) {
+            //conflict when complextype "Test" then complextype "test" generated
             //if lower case name already exists then 
             //TODO: if my first letter was originally lowercase then my name should be lower name and
             //exists type should be modified to have uppercase name
@@ -845,7 +785,6 @@ public class SDOSchemaGenerator {
             elem.setName(lowerName);
         }
 
-        //TODO: probably need to generate prefix:type.getName() from qname
         elem.setType(type.getName());
 
         return elem;

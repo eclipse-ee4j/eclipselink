@@ -107,7 +107,6 @@ public class SDOSetting implements commonj.sdo.ChangeSummary.Setting, XMLSetting
      * Print out a String representation of this object
      */
     public String toString() {
-        // TODO: expand past HashCode output
         StringBuffer aBuffer = new StringBuffer();
         aBuffer.append(getClass().getName());
         aBuffer.append("@");

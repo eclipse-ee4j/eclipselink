@@ -241,7 +241,7 @@ public class SDOHelperContext implements HelperContext {
                 try {
                     Method getMethod = PrivilegedAccessHelper.getPublicMethod(executeThread.getClass(), WLS_APPLICATION_NAME_GET_METHOD_NAME, PARAMETER_TYPES, false);
                     delegateKey = PrivilegedAccessHelper.invokeMethod(getMethod, executeThread);
-                    // TODO:  remove this fix once ExecuteThread stops returning null
+                    //ExecuteThread returns null
                     if (delegateKey == null) {
                         delegateKey = classLoader;
                     }

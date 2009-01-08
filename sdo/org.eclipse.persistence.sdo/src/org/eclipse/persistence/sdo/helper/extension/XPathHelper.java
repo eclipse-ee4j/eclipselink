@@ -136,12 +136,7 @@ public class XPathHelper {
         // handle containing DataObject expression
         if (xpFrag.equals("..")) {
             return dataObject.getContainer();
-        }
-        
-        // TODO: remove this code if we are not going to remove 
-        // namespace prefixes from the fragment
-        // ignore namespace prefix
-        // xpFrag = getPathWithPrefixRemoved(xpFrag);
+        }        
         
         // ignore '@'
         xpFrag = getPathWithAtRemoved(xpFrag);

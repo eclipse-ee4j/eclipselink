@@ -172,11 +172,7 @@ public class ListWrapper implements List, Serializable, Cloneable {
 
         // update containment
         updateContainment(item, updateSequence);
-
-        // TODO: invalid for property to be null - throw exception?         
     }
-
-    // TODO: this function should be made public in SDODataObject and removed here
 
     /**
      * INTERNAL:
@@ -400,8 +396,6 @@ public class ListWrapper implements List, Serializable, Cloneable {
         // add new elements before we have updated containment on the items - duplicates will be removed 
         boolean modified = currentElements.addAll(items);
 
-        // TODO: We need to answer if updateContainment occurs before or after setManyProperty
-        //dataObject.updateContainment(property, items);
         // non-default Pluggable implementations do not require updateContainment
         dataObject._getCurrentValueStore().setManyProperty(property, this);
 
@@ -507,8 +501,6 @@ public class ListWrapper implements List, Serializable, Cloneable {
         return modified;
     }
 
-    //TODO:
-
     /**
      * Retains only the currentElements in this collection that are contained in the specified collection
      * (optional operation).<br>
@@ -525,12 +517,10 @@ public class ListWrapper implements List, Serializable, Cloneable {
         }
 
         if (itemsToKeep.size() == 0) {
-            //TODO: assume a global clear()
             clear();
             return true;
         }
 
-        // TODO: check list for null currentElements and throw optional NPE 
         boolean modified = false;
 
         // iterate across the full collection and remove only non-(itemsToKeep)    	
@@ -576,8 +566,6 @@ public class ListWrapper implements List, Serializable, Cloneable {
         }
     }
 
-    //TODO:
-
     /**
      * Replaces the element at the specified index in this list with the specified element.<br>
      * @param index
@@ -588,10 +576,8 @@ public class ListWrapper implements List, Serializable, Cloneable {
         // fail-fast range checking
         if ((index < 0) || (index > size())) {
             throw new IndexOutOfBoundsException("index " + index + " is out of bounds.");
-
         }
 
-        // TODO: perf: containment updating is done twice when delegating
         // delegate removal
         Object aPreviousObject = remove(index);
 
@@ -599,8 +585,6 @@ public class ListWrapper implements List, Serializable, Cloneable {
         add(index, item);
         return aPreviousObject;
     }
-
-    //TODO:
 
     /**
      * INTERNAL:

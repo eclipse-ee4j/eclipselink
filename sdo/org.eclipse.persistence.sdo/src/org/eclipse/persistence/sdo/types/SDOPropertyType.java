@@ -140,11 +140,7 @@ public class SDOPropertyType extends SDOType implements Type {
                 mapping.setConverter(new TypeStringConverter(this.typeHelper));
                 if (getXsdType() != null) {
                     ((XMLField)mapping.getField()).setSchemaType(getXsdType());
-                } else {
-                    //TODO: should we always set the schema type???
-                    // QName schemaType = ((SDOTypeHelper)aHelperContext.getTypeHelper()).getXSDTypeFromSDOType(getType());
-                    //((XMLField)mapping.getField()).setSchemaType(schemaType);
-                }
+                } 
                 nextProp.setXmlMapping(mapping);
                 nextProp.addMappingToOwner(true, -1);
                 

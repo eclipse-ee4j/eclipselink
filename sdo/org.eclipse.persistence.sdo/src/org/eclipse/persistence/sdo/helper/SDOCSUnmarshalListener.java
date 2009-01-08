@@ -55,9 +55,7 @@ public class SDOCSUnmarshalListener implements XMLUnmarshalListener {
                 aDataObject._setHelperContext(aHelperContext);
                 aDataObject._setType(type);
             } else if (target instanceof SDOChangeSummary) {
-                if (isCSUnmarshalListener) {
-                    //TODO:if not root throw exception can't have nested cs or skip it                                
-                } else {
+                if (!isCSUnmarshalListener) {                     
                     ((SDOChangeSummary)target).setHelperContext(aHelperContext);
                 }
             }

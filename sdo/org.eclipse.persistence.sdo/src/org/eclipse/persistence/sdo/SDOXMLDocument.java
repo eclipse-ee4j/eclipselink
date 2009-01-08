@@ -97,7 +97,6 @@ public class SDOXMLDocument extends XMLRoot implements XMLDocument {
      * @return the XML encoding of the document, or null if not specified.
      */
     public String getEncoding() {
-        //TODO:  do we return null or if null do we return the default value
         return encoding;
     }
 
@@ -136,7 +135,6 @@ public class SDOXMLDocument extends XMLRoot implements XMLDocument {
      * @return the XML version of the document, or null if not specified.
      */
     public String getXMLVersion() {
-        //TODO:  do we return null or if null do we return the default value
         return xmlVersion;
     }
 

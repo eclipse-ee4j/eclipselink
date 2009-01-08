@@ -511,7 +511,6 @@ public class SDOXMLHelperDelegate implements SDOXMLHelper {
          *    is not closed or has no container.
          */
     private void save(DataObject rootObject, String rootElementURI, String rootElementName, Writer writer) throws XMLMarshalException {
-    	// TODO: Change IOException here and in the public String save() caller to propagate XMLMarshalException instead of IOException
         SDOXMLDocument xmlDocument = (SDOXMLDocument)createDocument(rootObject, rootElementURI, rootElementName);
 
         // get XMLMarshaller once - as we may create a new instance if this helper isDirty=true
@@ -593,7 +592,6 @@ public class SDOXMLHelperDelegate implements SDOXMLHelper {
 
     public void setTopLinkProject(Project toplinkProject) {
         this.topLinkProject = toplinkProject;
-        //TODO: temporarily nulling things out but should eventually have sessionbroker or list of sessions        
         this.xmlContext = null;
         this.xmlMarshallerMap.clear();
         this.xmlUnmarshallerMap.clear();

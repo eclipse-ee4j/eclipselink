@@ -40,7 +40,6 @@ import commonj.sdo.helper.HelperContext;
 public class SDOXSDHelperDelegator extends AbstractHelperDelegator implements SDOXSDHelper {
 
     public SDOXSDHelperDelegator() {
-        // TODO: JIRA129 - default to static global context - Do Not use this convenience constructor outside of JUnit testing
     }
 
     public SDOXSDHelperDelegator(HelperContext aContext) {

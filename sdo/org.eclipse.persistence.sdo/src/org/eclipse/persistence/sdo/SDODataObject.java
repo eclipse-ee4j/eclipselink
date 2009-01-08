@@ -22,8 +22,6 @@ import commonj.sdo.helper.DataHelper;
 import commonj.sdo.helper.HelperContext;
 import java.math.BigDecimal;
 import java.math.BigInteger;
-import java.security.AccessController;
-import java.security.PrivilegedActionException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
@@ -40,8 +38,6 @@ import org.eclipse.persistence.sdo.helper.XPathEngine;
 import org.eclipse.persistence.exceptions.SDOException;
 import org.eclipse.persistence.internal.helper.ClassConstants;
 import org.eclipse.persistence.internal.oxm.XMLConversionManager;
-import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
-import org.eclipse.persistence.internal.security.PrivilegedClassForName;
 import org.eclipse.persistence.oxm.XMLConstants;
 import org.eclipse.persistence.oxm.XMLRoot;
 import org.eclipse.persistence.oxm.sequenced.SequencedObject;
@@ -138,7 +134,6 @@ public class SDODataObject implements DataObject, SequencedObject {
         try {
             Boolean value = (Boolean)XPathEngine.getInstance().convertObjectToValueByPath(path, Boolean.class, this);
 
-            //TODO: this is temporary
             if (value == null) {
                 return false;
             }
@@ -473,8 +468,6 @@ public class SDODataObject implements DataObject, SequencedObject {
         // get property from path
         Object anObject = get(path);
 
-        // TODO: handle a sequence with a null Value?
-        // TODO: performance hit requires a refactor of instanceof in the absence of a property
         if ((null == anObject) || !(anObject instanceof DataObject)) {
             // throw exception because there is no way to get the property from a null object in this context
             throw SDOException.sequenceNotFoundForPath(path);
@@ -592,7 +585,6 @@ public class SDODataObject implements DataObject, SequencedObject {
             return getList(property);
         }
 
-        // TODO: handle NULL = (NULL) value and !(!found)
         if (isSet(property)) {
             return getPropertyInternal(property);
         }
@@ -614,7 +606,6 @@ public class SDODataObject implements DataObject, SequencedObject {
     public Property defineOpenContentProperty(String name, Object value) throws UnsupportedOperationException, IllegalArgumentException {
         DataObject propertyDO = aHelperContext.getDataFactory().create(SDOConstants.SDO_URL, SDOConstants.PROPERTY);
 
-        // TODO: see #5770518: we should not be here with a property that was not found in an instanceProperties call IE: value == null
         propertyDO.set("name", name);
         Type sdotype = null;
         boolean isMany = false;
@@ -713,8 +704,6 @@ public class SDODataObject implements DataObject, SequencedObject {
     }
 
     public void setInternal(SDOProperty property, Object value, boolean updateSequence) throws UnsupportedOperationException, IllegalArgumentException {
-        //TODO: if property is many do we check that the value is a list and if not create one              
-        //TODO: if is many do we clear current list or just replace with the new one
         if (null == getType()) {
             throw new UnsupportedOperationException("Type is null");
         }
@@ -735,7 +724,6 @@ public class SDODataObject implements DataObject, SequencedObject {
         if (property.isMany()) {
             List listValue;
             if (null == value) {
-                // TODO: handle different implementations of List
                 listValue = new ListWrapper(this, property);
             } else {
                 try {
@@ -745,7 +733,6 @@ public class SDODataObject implements DataObject, SequencedObject {
                 }
             }
             if (property.isContainment() || isContainedByDataGraph(property)) {
-                //TODO: need to check for circular reference in Many case
                 for(Object next: listValue) {
                     if(next instanceof SDODataObject) {
                         if (parentContains((SDODataObject) next)) {
@@ -790,11 +777,6 @@ public class SDODataObject implements DataObject, SequencedObject {
         if (getType().isOpen() && property.isOpenContent()) {
             addOpenContentProperty(property);
         }
-
-        //TODO:When a DataObject is set or added to a containment Property, it is
-        //removed from any previous containment Property. Containment cannot have cycles. If a set or
-        //add would produce a containment cycle, an exception is thrown.
-        //account for Lists in circular cycles    
     }
         
     /**
@@ -839,7 +821,6 @@ public class SDODataObject implements DataObject, SequencedObject {
             return !value.isEmpty();
         } else {
             return isSetInternal(property);
-            // TODO: handle NULL = (NULL) value and !(!found)
         }
     }
 
@@ -1045,7 +1026,6 @@ public class SDODataObject implements DataObject, SequencedObject {
             return (List)value;
         }
 
-        // TODO: handle different implementations of List
         // get a default empty list
         List theList = new ListWrapper(this, property);
         if (getType().isOpen() && property.isOpenContent()) {
@@ -1134,8 +1114,6 @@ public class SDODataObject implements DataObject, SequencedObject {
                 return createDataObject(aProperty, aType);
             }
         }
-
-        //TODO: throw exception?
         return null;
     }
 
@@ -1157,12 +1135,10 @@ public class SDODataObject implements DataObject, SequencedObject {
         if (property.isMany()) {
             //getList.add will call updateContainment
             ((ListWrapper)getList(property)).add(created, true);
-        } else {//TODO:  do we need this check if (property.getType().equals(aType)) {
+        } else {
             set(property, created);
-            //TODO: should we be calling set
         }
 
-        // TODO: verify refactor
         _setModified(true);
         ((SDODataObject)created)._setCreated(true);
 
@@ -1372,9 +1348,7 @@ public class SDODataObject implements DataObject, SequencedObject {
         }
     }
 
-    public void delete() {
-        //TODO: unset all non read-only currentValueStore
-        //TODO: many shouldn't clear list just remove item from list                
+    public void delete() {                
         deleteWithSequenceUpdate();
     }
 
@@ -1692,7 +1666,6 @@ public class SDODataObject implements DataObject, SequencedObject {
         if (((SDOChangeSummary)cs).isDirty(this)) {
             // reset only if changes were done       
             if (!isCSRoot) {
-                // TODO: verify we can ignore state of cs, container, contPropertyName - because no nested CSs are allowed
                 // reset changeSummary
                 if (null == changeSummary) {
                     // we are not recursively setting cs - so don't use the set function as child nodes will be replaced later
@@ -1713,7 +1686,6 @@ public class SDODataObject implements DataObject, SequencedObject {
             // swap valueStores   		
             _setCurrentValueStore((ValueStore)((SDOChangeSummary)cs).getOriginalValueStores().get(this));
             // return original to null (no changes)
-            // TODO: we do not need to clear this map if resetChanges() is always called after undoChanges
             ((SDOChangeSummary)cs).getOriginalValueStores().remove(this);
         }
 
@@ -1731,7 +1703,6 @@ public class SDODataObject implements DataObject, SequencedObject {
                     sequence = originalSequence;
                 }
 
-                // TODO: we do not need to clear this map if resetChanges() is always called after undoChanges
                 // reset the cache map
                 ((SDOChangeSummary)cs).getOldSequences().remove(this);
                 // rest the primary map
@@ -1807,7 +1778,6 @@ public class SDODataObject implements DataObject, SequencedObject {
         // dont store an original sequence if there are already is one in the map
         if (isLogging() && (!((SDOChangeSummary)getChangeSummary()).isDirty(this)) && (!((SDOChangeSummary)getChangeSummary()).isCreated(this))) {
             // dont copy containers of many props
-            // TODO: Do not shallowcopy child nodes
             // original valuestore becomes current one (from null)                              
             ((SDOChangeSummary)getChangeSummary()).getOriginalValueStores().put(this, _getCurrentValueStore());
             // we make a shallow copy of the current valuestore arrays at this level in the tree        
@@ -1828,7 +1798,6 @@ public class SDODataObject implements DataObject, SequencedObject {
      * INTERNAL:
      * Initialize all old settings related to ChangeSummary and recursively go down
      * the tree to initialize all DataObjects rooted at this DataObject.
-     * TODO: FIX
      */
     public void resetChanges() {
         // fill all oldSettings when logging is turned on
@@ -1849,7 +1818,6 @@ public class SDODataObject implements DataObject, SequencedObject {
             if ((property.isContainment() || isContainedByDataGraph(property)) && //
                 !property.isMany() && (value != null) && !property.getType().isChangeSummaryType()) {
 
-                // TODO: Do not shallowcopy child nodes
                 ((SDODataObject)value).resetChanges();
             } else {
                 // Handle isMany objects and store the oldCont* values for each item in the list            
@@ -1862,7 +1830,6 @@ public class SDODataObject implements DataObject, SequencedObject {
                             // do not recurse into a non-containment relationship unless inside a dataGraph                            
                             if ((property.isContainment() || isContainedByDataGraph(property)) && // 
                                 (valueMany != null) && !property.getType().isChangeSummaryType()) {
-                                // TODO: Do not shallowcopy child nodes
                                 ((SDODataObject)valueMany).resetChanges();
                             }
                         }
@@ -1910,9 +1877,6 @@ public class SDODataObject implements DataObject, SequencedObject {
      */
     public void _setCurrentValueStore(ValueStore aValueStore) {
         currentValueStore = aValueStore;
-
-        // TODO: verify that we are not resetting the originalValueStore (only if logging is on)
-        //originalValueStore = currentValueStore;
     }
 
     /**
@@ -2528,7 +2492,6 @@ public class SDODataObject implements DataObject, SequencedObject {
         if (aChild.isMany()) {
             int index = (aParent.getList(aChild)).indexOf(targetObject);
 
-            // TODO: throw exception on index = -1 (not found)
             return getPathPrivate(aContainmentPropertyName +// 
                                   SDOConstants.SDO_XPATH_LIST_INDEX_OPEN_BRACKET +// 
                                   (1 + index) +// [indexes] start at 1

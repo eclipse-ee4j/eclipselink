@@ -37,8 +37,7 @@ import org.eclipse.persistence.oxm.NamespaceResolver;
  */
 public class SDOTypeHelperDelegator extends AbstractHelperDelegator implements SDOTypeHelper {
 
-    public SDOTypeHelperDelegator() {
-        // TODO: JIRA129 - default to static global context - Do Not use this convenience constructor outside of JUnit testing
+    public SDOTypeHelperDelegator() { 
     }
 
     public SDOTypeHelperDelegator(HelperContext aContext) {

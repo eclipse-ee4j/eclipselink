@@ -91,7 +91,6 @@ public class SDOMarshalListener implements XMLMarshalListener {
                 Iterator anIterator = createdSet.iterator();
                 SDODataObject nextCreatedDO = null;
                 while (anIterator.hasNext()) {
-                    // TODO: change to ID's when available
                     // get path to the changeSummaryRoot (may not be the root marshalled object - may be internal)
                     nextCreatedDO = ((SDODataObject)anIterator.next());
                     String nextPath = getPathFromAncestor(nextCreatedDO, (SDODataObject)marshalledObject, changeSummary);
@@ -140,8 +139,8 @@ public class SDOMarshalListener implements XMLMarshalListener {
                 String sdoPrefix = ((SDOTypeHelper)typeHelper).getPrefix(SDOConstants.SDO_URL);
 
                 //List unsetPropNames = new ArrayList();
-                String uri = getURI(nextModifiedDO);// TODO: see #5837243 for production fix after spec consultation for handling root property
-                String qualifiedName = getQualifiedName(nextModifiedDO);// TODO: see #5837243 for production fix after spec consultation for handling root property
+                String uri = getURI(nextModifiedDO);
+                String qualifiedName = getQualifiedName(nextModifiedDO);
                 String sdoRefPrefix = SDOConstants.SDO_CHANGESUMMARY_REF_PATH_PREFIX + SDOConstants.SDO_XPATH_SEPARATOR_FRAGMENT;
 
                 if (uri == null) {
@@ -264,13 +263,11 @@ public class SDOMarshalListener implements XMLMarshalListener {
             containerPath = getQualifiedName(modifiedObject);
             deletedXPaths.add(xpathToCS + containerPath + SDOConstants.SDO_XPATH_SEPARATOR_FRAGMENT + pathToNode);
 
-            //TODO: do we need a new marshaller
-            //TODO: need to update OX Marshaller to allow you to suppress xsi:type attribute
+            //TODO: need to update OX Marshaller to allow you to suppress xsi:type attribute (ie:xmlroot.setSupressTypeAttribute(true)
             XMLRoot xmlroot = new XMLRoot();
             xmlroot.setObject(value);//set the object to the deep copy            
             xmlroot.setNamespaceURI(uri);
             xmlroot.setLocalName(qualifiedName);
-            //xmlroot.setSupressTypeAttribute(true);
             xmlMarshaller.marshal(xmlroot, csNode);
         } else {
             //need sdoref
@@ -322,8 +319,6 @@ public class SDOMarshalListener implements XMLMarshalListener {
             }
         }
     }
-
-    // TODO: See bug# 5837243: we will be refactoring this function with a formal solution after spec consultation
     private String getURI(SDODataObject currentObject) {
         String uri = null;
 
@@ -340,7 +335,6 @@ public class SDOMarshalListener implements XMLMarshalListener {
         return uri;
     }
 
-    // TODO: See bug# 5837243: we will be refactoring this function with a formal solution after spec consultation    
     private String getQualifiedName(SDODataObject currentObject) {
         String qualifiedName = null;
 
@@ -497,7 +491,6 @@ public class SDOMarshalListener implements XMLMarshalListener {
         if (parentContainmentProperty.isMany()) {
             int index = (((SDODataObject)parent).getList(parentContainmentProperty)).indexOf(currentObject);
 
-            // TODO: throw exception on index = -1 (not found)
             if (index < 0) {
 
                 /*

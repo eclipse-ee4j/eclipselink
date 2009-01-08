@@ -58,7 +58,8 @@ public class SDOExceptionResource extends ListResourceBundle {
                                            { "45035", "The value that corresponds to the 'type' property must be a Type object." },
                                            { "45036", "A global property corresponding to the XML node being loaded was not found." },                                           
                                            { "45037", "The prefix [{0}] is used but not declared in the XML schema." },                                                                          
-                                           { "45038", "Cannot perform operation on property [{0}] because it is not reachable from the path [{1}]. The path is invalid, or one or more Data Objects on the path are null." }                                                                                      
+                                           { "45038", "Cannot perform operation on property [{0}] because it is not reachable from the path [{1}]. The path is invalid, or one or more Data Objects on the path are null." }, 
+                                           { "45039", "An error occurred accessing the externalizableDelegator field [{0}] on the DataObject." }
     };
 
     /**

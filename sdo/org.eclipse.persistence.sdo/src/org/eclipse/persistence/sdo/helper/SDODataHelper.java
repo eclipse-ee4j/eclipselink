@@ -49,8 +49,6 @@ public class SDODataHelper implements DataHelper {
     private HelperContext aHelperContext;
 
     public SDODataHelper() {
-        // TODO: JIRA129 - default to static global context - Do Not use this
-        // convenience constructor outside of JUnit testing
     }
 
     public SDODataHelper(HelperContext aContext) {

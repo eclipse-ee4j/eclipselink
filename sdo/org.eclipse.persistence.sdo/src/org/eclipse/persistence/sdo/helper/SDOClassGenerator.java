@@ -486,7 +486,6 @@ public class SDOClassGenerator {
             //cast return value        
             String builtIn = getBuiltInType(returnType);
 
-            //TODO: if simple type instead of get() then do getString()
             if (builtIn != null) {
                 String wrapperCall = getWrapperCall(returnType);
                 if (wrapperCall != null) {
@@ -598,7 +597,6 @@ public class SDOClassGenerator {
      * @return
      */
     private String getBuiltInType(String typeName) {
-        //TODO: check URi
         if ((typeName.equals(ClassConstants.PBOOLEAN.getName())) || (typeName.equals(ClassConstants.BOOLEAN.getName()))) {
             return "Boolean";
         } else if ((typeName.equals(ClassConstants.PBYTE.getName())) || (typeName.equals(ClassConstants.BYTE.getName()))) {

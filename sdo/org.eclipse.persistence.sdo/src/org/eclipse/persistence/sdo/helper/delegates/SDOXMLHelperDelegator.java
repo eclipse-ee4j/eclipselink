@@ -47,8 +47,7 @@ import org.xml.sax.InputSource;
  */
 public class SDOXMLHelperDelegator extends AbstractHelperDelegator implements SDOXMLHelper {
 
-    public SDOXMLHelperDelegator() {
-        // TODO: JIRA129 - default to static global context - Do Not use this convenience constructor outside of JUnit testing
+    public SDOXMLHelperDelegator() {   
     }
 
     public SDOXMLHelperDelegator(HelperContext aContext) {

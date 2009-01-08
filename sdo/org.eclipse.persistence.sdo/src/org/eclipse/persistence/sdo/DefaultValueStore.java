@@ -170,8 +170,6 @@ public class DefaultValueStore implements ValueStore {
         // shallow copy the object values
         anOriginalValueStore.setTypePropertyValues(valueCopy);
 
-        //TODO: open content
-        //Map clonedMap = (Map)getOpenContentValues().clone();
         HashMap clonedMap = new HashMap();
 
         /**

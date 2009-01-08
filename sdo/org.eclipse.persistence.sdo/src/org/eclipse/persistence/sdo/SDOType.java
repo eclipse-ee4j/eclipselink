@@ -858,13 +858,11 @@ public class SDOType implements Type, Serializable {
         return javaImplClass;
     }
 
-    public Object get(Property property) {
-        //TODO: SDO Jira issue 17        
+    public Object get(Property property) {        
         return getPropertyValues().get(property);
     }
 
     public List getInstanceProperties() {
-        //TODO: SDO Jira issue 17                
         return new ArrayList(getPropertyValues().keySet());
     }
 

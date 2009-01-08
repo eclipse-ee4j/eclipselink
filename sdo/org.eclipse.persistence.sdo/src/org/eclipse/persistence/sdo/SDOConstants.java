@@ -38,8 +38,7 @@ public class SDOConstants {
     public static final String SDOJAVA_URL = "commonj.sdo/java";
 
     /** namespace for custom unique properties */
-
-    // TODO: flag for possible rename and deprecation after EclipseLink move
+ 
     public static final String ORACLE_SDO_URL = "org.eclipse.persistence.sdo";
     public static final String MIMETYPE_URL = "http://www.w3.org/2005/05/xmlmime";
 
@@ -273,8 +272,6 @@ public class SDOConstants {
     public static final String JAVA_TYPEGENERATION_NO_NAMESPACE = "noNamespace";
     public static final String SDO_IMPL_NAME = "Impl";
 
-    // TODO: verify J2SE6 keywords
-
     /** The following reserved words are not valid in generated classes with prepended get/set */
     public static final String[] javaReservedWordsList = { "class" };
 
@@ -311,8 +308,6 @@ public class SDOConstants {
     public static final String SDO_DATA_OBJECT_IMPL_CLASS_NAME = "org.eclipse.persistence.sdo.SDODataObject";
 
     // constants used during helperContext resolutions based on classloader
-    // TODO: These matching strings should not be hardcoded to a particular J2EE server - need to test on WebSphere/WebLogic etc...
-
     /** A classloader toString containing (.web.) means we are running from a web container client */
     public static final String CLASSLOADER_WEB_FRAGMENT = ".web.";
 

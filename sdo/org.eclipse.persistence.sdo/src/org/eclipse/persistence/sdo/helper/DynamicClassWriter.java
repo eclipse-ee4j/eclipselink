@@ -95,7 +95,6 @@ public class DynamicClassWriter {
         mv.visitMaxs(1, 1);
     }
 
-    // TODO: JIRA129: This static call must be refactored to return an instance of HelperContext or remove this method entirely
     private void addWriteReplace(ClassWriter cw) {
         Method method;
         try {

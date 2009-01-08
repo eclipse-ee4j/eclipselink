@@ -635,10 +635,6 @@ public class SDOProperty implements Property, Serializable {
 
         if (getXsdType() != null) {
             ((XMLField)mapping.getField()).setSchemaType(getXsdType());
-        } else {
-            //TODO: should we always set the schema type???
-            // QName schemaType = ((SDOTypeHelper)aHelperContext.getTypeHelper()).getXSDTypeFromSDOType(getType());
-            //((XMLField)mapping.getField()).setSchemaType(schemaType);
         }
         if (shouldAddInstanceClassConverter()) {
             InstanceClassConverter converter = new InstanceClassConverter();
@@ -663,10 +659,6 @@ public class SDOProperty implements Property, Serializable {
 
         if (getXsdType() != null) {
             ((XMLField)mapping.getField()).setSchemaType(getXsdType());
-        } else {
-            //TODO: should we always set the schema type???
-            // QName schemaType = ((SDOTypeHelper)aHelperContext.getTypeHelper()).getXSDTypeFromSDOType(getType());
-            //((XMLField)mapping.getField()).setSchemaType(schemaType);
         }
         if (shouldAddInstanceClassConverter()) {
             InstanceClassConverter converter = new InstanceClassConverter();
@@ -709,11 +701,7 @@ public class SDOProperty implements Property, Serializable {
 
         if (getXsdType() != null) {
             ((XMLField)mapping.getField()).setSchemaType(getXsdType());
-        } else {
-            //TODO: should we always set the schema type???
-            // QName schemaType = ((SDOTypeHelper)aHelperContext.getTypeHelper()).getXSDTypeFromSDOType(getType());
-            //((XMLField)mapping.getField()).setSchemaType(schemaType);
-        }
+        } 
 
         if (getType().getInstanceClass() != null) {
             if (shouldAddInstanceClassConverter()) {
@@ -744,12 +732,7 @@ public class SDOProperty implements Property, Serializable {
 
         if (getXsdType() != null) {
             ((XMLField)mapping.getField()).setSchemaType(getXsdType());
-
-        } else {
-            //TODO: should we always set the schema type???
-            // QName schemaType = ((SDOTypeHelper)aHelperContext.getTypeHelper()).getXSDTypeFromSDOType(getType());
-            //((XMLField)mapping.getField()).setSchemaType(schemaType);
-        }
+        } 
 
         if (getType().equals(SDOConstants.SDO_STRINGS)) {
             mapping.setUsesSingleNode(true);
@@ -995,13 +978,11 @@ public class SDOProperty implements Property, Serializable {
         return xpath;
     }
 
-    public Object get(Property property) {
-        //TODO: SDO Jira issue 17               
+    public Object get(Property property) {               
         return getPropertyValues().get(property);
     }
 
     public List getInstanceProperties() {
-        //TODO: SDO Jira issue 17                
         return new ArrayList(getPropertyValues().keySet());
     }
 

@@ -166,12 +166,7 @@ public class SDOXSDHelperDelegate implements SDOXSDHelper {
             return true;
         }
 
-        //TODO: what is this case? else if nextProperty.get(xmlElement) != null and nextProperty.get(xmlElement) ==true
-        // Case: open content non-element property
-        return false;
-
-        //TODO:???undefined
-        //return false;                      
+        return false;                    
     }
 
     /**

@@ -223,7 +223,6 @@ public class SDOSequence implements Sequence {
         }
     }
 
-    // TODO - NEED TO FACTOR IN NAMESPACE URI
     public Property getProperty(Setting setting) {
         DatabaseMapping mapping = setting.getMapping();
         if (null == mapping) {
@@ -236,7 +235,6 @@ public class SDOSequence implements Sequence {
             if (null == setting.getName()) {
                 Object value = setting.getValue();
                 if (value instanceof DataObject) {
-                    // TODO: is it right to check containment property?
                     Property containmentProp = ((DataObject) value).getContainmentProperty();
                     if (containmentProp != null) {
                         property = dataObject.getInstanceProperty(containmentProp.getName());
@@ -320,14 +318,12 @@ public class SDOSequence implements Sequence {
         }
     }
 
-    // TODO: add exception handling...
     public void remove(int index) {
         Setting setting = settings.get(index);
         remove(setting);
         settings.remove(setting);
     }
 
-    // TODO - NEED TO FACTOR IN NAMESPACE URI
     private void remove(Setting setting) {
         DatabaseMapping mapping = setting.getMapping();
         if (null != mapping) {

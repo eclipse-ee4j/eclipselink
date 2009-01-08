@@ -146,8 +146,6 @@ public class SDOTypesGenerator {
                         // This property was likely created as a stub, and isContainment never got reset
                         // when the property was fully defined.
                         // This problem was uncovered in bug 6809767
-                        // TODO: We might want to refactor this for performance reasons so that isContainment
-                        // gets reset at a more opportune time
                         prop.setContainment(false);
                     }
                 }
@@ -388,7 +386,7 @@ public class SDOTypesGenerator {
         Object processed = processedComplexTypes.get(qname);
 
         if (processed == null) {
-            SDOType type = processComplexType(targetNamespace, defaultNamespace, complexType.getName(), complexType);
+            processComplexType(targetNamespace, defaultNamespace, complexType.getName(), complexType);
             processedComplexTypes.put(qname, complexType);
         }
     }
@@ -652,7 +650,7 @@ public class SDOTypesGenerator {
     private void processGlobalSimpleType(String targetNamespace, String defaultNamespace, SimpleType simpleType) {
         QName qname = new QName(targetNamespace, simpleType.getName());
         if (!processedSimpleTypes.containsKey(qname)) {
-            SDOType type = processSimpleType(targetNamespace, defaultNamespace, simpleType.getName(), simpleType);
+        	processSimpleType(targetNamespace, defaultNamespace, simpleType.getName(), simpleType);
             processedSimpleTypes.put(qname, simpleType);
         }
     }
@@ -767,15 +765,12 @@ public class SDOTypesGenerator {
 
         String instanceClassValue = (String) simpleType.getAttributesMap().get(SDOConstants.SDOJAVA_INSTANCECLASS_QNAME);
         if (instanceClassValue != null) {
-            //TODO: also set class?
             currentType.setInstanceProperty(SDOConstants.JAVA_CLASS_PROPERTY, instanceClassValue);
             currentType.setBaseTypes(null);
         }
 
         String extendedInstanceClassValue = (String) simpleType.getAttributesMap().get(SDOConstants.SDOJAVA_EXTENDEDINSTANCECLASS_QNAME);
         if (extendedInstanceClassValue != null) {
-            //TODO: also set class?
-            //TODO: make sure extended Instance class extend the base Type's instance class
             currentType.setInstanceClassName(extendedInstanceClassValue);
         }
         currentType.postInitialize();
@@ -892,7 +887,6 @@ public class SDOTypesGenerator {
             if (qualifiedType != null) {
                 processBaseType(baseType, targetNamespace, defaultNamespace, owningType, qualifiedType, simpleContent);
             }
-            //TODO: typedefparticle all seq choice
             //TODO: attrDecls
             if (extension.getChoice() != null) {
                 processChoice(targetNamespace, defaultNamespace, owningType, extension.getChoice(), false);
@@ -914,8 +908,6 @@ public class SDOTypesGenerator {
                 inRestriction = true;
             }
 
-            //TODO: typedefparticle all seq choice
-            //TODO: attrDecls
             if (restriction.getChoice() != null) {
                 processChoice(targetNamespace, defaultNamespace, owningType, restriction.getChoice(), false);
             } else if (restriction.getSequence() != null) {
@@ -956,7 +948,6 @@ public class SDOTypesGenerator {
                     }
                 }
 
-                // TODO: process union spec page. 84
             }
             if (firstInstanceClassName != null) {
                 type.setInstanceClassName(firstInstanceClassName);
@@ -992,7 +983,6 @@ public class SDOTypesGenerator {
         if (list != null) {
             type.setXsdList(true);
             type.setInstanceClass(ClassConstants.List_Class);
-            //TODO: process union spec page. 84
         }
     }
 
@@ -1084,7 +1074,6 @@ public class SDOTypesGenerator {
                 owningType.addBaseType(baseType);
             }
         }
-        //TODO: need owner currentType.setOpen(true);
     }
 
     private void processTypeDef(String targetNamespace, String defaultNamespace, SDOType owningType, TypeDefParticle typeDefParticle) {
@@ -1136,7 +1125,6 @@ public class SDOTypesGenerator {
             owningType.setSequenced(true);
         }
 
-        //TODO: need owner currentType.setOpen(true);??
     }
 
     private void processGlobalElements(Schema schema) {
@@ -1189,7 +1177,6 @@ public class SDOTypesGenerator {
         }
 
         if (complexType != null) {
-            //TODO: if this is nested we need to add new type to owner
             type = processComplexType(targetNamespace, defaultNamespace, element.getName(), complexType);
             type.setXsdLocalName(element.getName());
             type.setXsd(true);
@@ -1286,7 +1273,6 @@ public class SDOTypesGenerator {
             }
             return;
         } else {
-            // TODO: if global prop already exists don't modify it
             if (isGlobal) {
                 SDOProperty lookedUpProp = getExistingGlobalProperty(targetNamespace, element.getName(), true);
                 if (lookedUpProp != null && lookedUpProp.isFinalized()) {
@@ -1357,7 +1343,6 @@ public class SDOTypesGenerator {
 
         p.setType(sdoPropertyType);
         // TODO: anonymous complexType has null name? null or name from containing element
-        // could set complexType.setName earlier
         setDefaultValue(p, element);
 
         p.setMany(isMany);

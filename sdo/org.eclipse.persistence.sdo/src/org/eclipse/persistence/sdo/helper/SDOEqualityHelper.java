@@ -56,7 +56,6 @@ public class SDOEqualityHelper implements EqualityHelper {
      * The custom constructor that takes a HelperContext parameter is recommended over this default constructor.
      */
     public SDOEqualityHelper() {
-        // TODO: JIRA129 - default to static global context - Do Not use this convenience constructor outside of JUnit testing
     }
 
     /**
@@ -141,6 +140,9 @@ public class SDOEqualityHelper implements EqualityHelper {
      * @return              true if two DataObjects meet requirements of shallow equal or deep equal
      */
     private boolean compareDataObjects(DataObject dataObject1, DataObject dataObject2, boolean isDeep) {
+        // Note that properties to a containing DataObject are not compared which
+        // means two DataObject trees can be equal even if their containers are not equal.
+
         if (null == dataObject1) {
             return dataObject2 == null;
         }
@@ -203,12 +205,6 @@ public class SDOEqualityHelper implements EqualityHelper {
 
             return true;
         }
-
-        // ToDo: the following meaning is still not sure !!
-        // Note that properties to a containing DataObject are not compared
-        // which
-        // means two DataObject trees can be equal even if their containers are
-        // not equal.
     }
 
     /**

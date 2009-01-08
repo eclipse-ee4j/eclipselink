@@ -26,9 +26,6 @@ import commonj.sdo.helper.HelperContext;
 import org.eclipse.persistence.sdo.helper.ListWrapper;
 import org.eclipse.persistence.sdo.helper.SDOCopyHelper;
 
-//TODO: - unset - set instead of list so no duplication
-//TODO: - oldvalues map of maps instead of map of lists
-
 /**
  * <p><b>Purpose</b>:A change summary is used to record changes to DataObjects.
  * <p><b>Responsibilities</b>:<ul>
@@ -90,7 +87,6 @@ public class SDOChangeSummary implements ChangeSummary {
     private HelperContext aHelperContext;
 
     public SDOChangeSummary() {
-        // TODO: JIRA129 - default to static global context - Do Not use this convience constructor directly outside of JUnit testing
         // HelperContext is set during unmarshalling in SDOUnmarshalListener
         createdList = new ArrayList();
         deepCopies = new HashMap();
@@ -107,13 +103,13 @@ public class SDOChangeSummary implements ChangeSummary {
 
     public SDOChangeSummary(SDODataObject dataObject, HelperContext aContext) {
         this();
-        aHelperContext = aContext;// TODO: aContext should not be null;
+        aHelperContext = aContext;
         rootDataObject = dataObject;
     }
 
     public SDOChangeSummary(SDODataGraph dataGraph, HelperContext aContext) {
         this();
-        aHelperContext = aContext;// TODO: aContext should not be null;
+        aHelperContext = aContext;
         this.dataGraph = dataGraph;
     }
 
@@ -142,7 +138,6 @@ public class SDOChangeSummary implements ChangeSummary {
             createdList.remove(anObject);
         }
 
-        // TODO: verify can removed when using sets
         if (isLogging() && !isCreated(anObject)) {
             if (created) {
                 // remove from other sets
@@ -255,8 +250,6 @@ public class SDOChangeSummary implements ChangeSummary {
      * @see #isModified(DataObject)
      */
     public List getChangedDataObjects() {
-        // TODO: check performance should we maintain this or calculate on request
-        // TODO: is order relevant
         // merge all the sets
         ArrayList aList = new ArrayList();
         aList.addAll(getModified());
@@ -414,8 +407,7 @@ public class SDOChangeSummary implements ChangeSummary {
             
             return oldSettingsList;
         }
-
-        // TODO: verify non-null return case ie: see NPE on .iterator()        
+        
         return new ArrayList();// Note: spec did not mention null value case.
     }
 
@@ -596,14 +588,12 @@ public class SDOChangeSummary implements ChangeSummary {
         if (!isCreated(dataObject) && isDirty(dataObject)) {
             return getOldValueForChangedDataObject(dataObject, (SDOProperty) property);
         }
-
-        // TODO: Investigate why the case of a null dataObject is not mentioned in the Spec.
         return null; 
     }
 
     /**
      * INTERNAL:
-    * @param dataObject which is not null and not created and is dirty in ths scope of this changesummary
+    * @param dataObject which is not null and not created and is dirty in the scope of this changesummary
     * @param property
     * @return new or already existing Setting
     */
@@ -695,7 +685,6 @@ public class SDOChangeSummary implements ChangeSummary {
      * @return the old container data object.
      */
     public DataObject getOldContainer(DataObject dataObject) {
-        // TODO: verify set behavior returns null instead of checking
         return (DataObject)oldContainer.get(dataObject);
     }
 
@@ -1012,7 +1001,6 @@ public class SDOChangeSummary implements ChangeSummary {
             ListWrapper currentValue = (ListWrapper)dataObject.getList(property);            
             originalElements.put(currentValue, new ArrayList());
             if (property.isOpenContent()) {
-                //TODO:
                 vs.unsetOpenContentProperty(property);                
             } else {
                 vs.unsetDeclaredProperty(((SDOProperty)property).getIndexInType());

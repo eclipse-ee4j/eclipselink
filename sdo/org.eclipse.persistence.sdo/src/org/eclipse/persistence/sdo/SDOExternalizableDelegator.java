@@ -20,6 +20,7 @@ import commonj.sdo.helper.HelperContext;
 import commonj.sdo.impl.ExternalizableDelegator;
 import commonj.sdo.impl.HelperProvider;
 import org.eclipse.persistence.sdo.helper.SDOHelperContext;
+import org.eclipse.persistence.exceptions.SDOException;
 import org.eclipse.persistence.internal.security.PrivilegedGetField;
 import org.eclipse.persistence.internal.security.PrivilegedGetValueFromField;
 import org.eclipse.persistence.internal.security.PrivilegedSetValueInField;
@@ -60,29 +61,27 @@ public class SDOExternalizableDelegator extends ExternalizableDelegator {
     }
 
 	private SDOResolvable getDelegate() {
-		try
-		{
+		try {	
 			Field delegateField = (Field) privilegedGetDelegateField.run();
 			PrivilegedGetValueFromField privilegedGetValueFromDelegateField = new PrivilegedGetValueFromField(delegateField, this);
 			return (SDOResolvable) privilegedGetValueFromDelegateField.run();
-		}
-		catch (Exception e)
-		{
-			throw new RuntimeException(e);
+		}catch (NoSuchFieldException nsfException){
+			throw SDOException.errorAccessingExternalizableDelegator("delegate", nsfException);
+		}catch (IllegalAccessException iaException){
+			throw SDOException.errorAccessingExternalizableDelegator("delegate", iaException);
 		}
 	}
 
 	private void setDelegate(Resolvable resolvable) {
-		try
-		{
+		try {
 			Field delegateField = (Field) privilegedGetDelegateField.run();
 			PrivilegedSetValueInField privilegedSetValueInDelegateField = new PrivilegedSetValueInField(delegateField, this, resolvable);
 			privilegedSetValueInDelegateField.run();
-		}
-		catch (Exception e)
-		{
-			throw new RuntimeException(e);
-		}
+		} catch (NoSuchFieldException nsfException){
+			throw SDOException.errorAccessingExternalizableDelegator("delegate", nsfException);
+		} catch (IllegalAccessException iaException){
+			throw SDOException.errorAccessingExternalizableDelegator("delegate", iaException);
+		}		
 	}
 
 }
