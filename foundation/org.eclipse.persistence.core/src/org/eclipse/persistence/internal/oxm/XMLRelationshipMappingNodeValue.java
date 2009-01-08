@@ -32,7 +32,7 @@ import org.xml.sax.SAXException;
 import org.xml.sax.SAXNotRecognizedException;
 import org.xml.sax.SAXNotSupportedException;
 
-public abstract class XMLRelationshipMappingNodeValue extends NodeValue {
+public abstract class XMLRelationshipMappingNodeValue extends MappingNodeValue {
 	// Protected to public
     public void processChild(XPathFragment xPathFragment, UnmarshalRecord unmarshalRecord, Attributes atts, XMLDescriptor xmlDescriptor) throws SAXException {
         if (xmlDescriptor.hasInheritance()) {

@@ -167,4 +167,9 @@ public class XMLObjectReferenceMappingNodeValue extends XMLSimpleMappingNodeValu
         }
         return true;
     }
+
+    public XMLObjectReferenceMapping getMapping() {
+        return xmlObjectReferenceMapping;
+    }
+
 }

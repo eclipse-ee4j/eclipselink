@@ -39,7 +39,7 @@ import org.eclipse.persistence.oxm.record.UnmarshalRecord;
  * handled when used with the TreeObjectBuilder.</p>
  */
 
-public class XMLBinaryDataCollectionMappingNodeValue extends NodeValue implements ContainerValue {
+public class XMLBinaryDataCollectionMappingNodeValue extends MappingNodeValue implements ContainerValue {
 
     private XMLBinaryDataCollectionMapping xmlBinaryDataCollectionMapping;
 

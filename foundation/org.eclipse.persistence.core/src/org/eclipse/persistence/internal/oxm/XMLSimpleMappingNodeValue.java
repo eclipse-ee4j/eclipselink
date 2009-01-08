@@ -20,7 +20,7 @@ import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.oxm.XMLField;
 import org.eclipse.persistence.oxm.XMLUnionField;
 
-public abstract class XMLSimpleMappingNodeValue extends NodeValue {
+public abstract class XMLSimpleMappingNodeValue extends MappingNodeValue {
     protected String getValueToWrite(QName schemaType, Object value, XMLConversionManager xmlConversionManager) {
         return (String) xmlConversionManager.convertObject(value, ClassConstants.STRING, schemaType);
     }

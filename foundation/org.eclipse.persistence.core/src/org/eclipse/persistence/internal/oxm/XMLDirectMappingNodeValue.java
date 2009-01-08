@@ -119,4 +119,9 @@ public class XMLDirectMappingNodeValue extends XMLSimpleMappingNodeValue impleme
     public boolean isNullCapableValue() {
         return xmlDirectMapping.getNullPolicy().getIsSetPerformedForAbsentNode();
     }
+
+    public XMLDirectMapping getMapping() {
+        return xmlDirectMapping;
+    }
+
 }

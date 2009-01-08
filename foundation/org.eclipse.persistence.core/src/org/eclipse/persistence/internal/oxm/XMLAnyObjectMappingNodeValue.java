@@ -315,4 +315,9 @@ public class XMLAnyObjectMappingNodeValue extends XMLRelationshipMappingNodeValu
             marshalRecord.endElement(xmlRootFragment, namespaceResolver);
         }
     }
+
+    public XMLAnyObjectMapping getMapping() {
+        return xmlAnyObjectMapping;
+    }
+
 }

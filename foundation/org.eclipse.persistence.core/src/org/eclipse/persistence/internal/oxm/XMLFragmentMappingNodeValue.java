@@ -114,5 +114,9 @@ public class XMLFragmentMappingNodeValue extends XMLSimpleMappingNodeValue imple
         Object attributeValue = builder.buildAttributeNode(namespaceURI, localName, value);
         xmlFragmentMapping.setAttributeValueInObject(unmarshalRecord.getCurrentObject(), attributeValue);    	
     }
-    
+
+    public XMLFragmentMapping getMapping() {
+        return xmlFragmentMapping;
+    }
+
 }

@@ -264,4 +264,9 @@ public class XMLCompositeObjectMappingNodeValue extends XMLRelationshipMappingNo
             addTypeAttribute(descriptor, marshalRecord, xmlRef.getSchemaContext());
         }
     }
+
+    public XMLCompositeObjectMapping getMapping() {
+        return xmlCompositeObjectMapping;
+    }
+
 }

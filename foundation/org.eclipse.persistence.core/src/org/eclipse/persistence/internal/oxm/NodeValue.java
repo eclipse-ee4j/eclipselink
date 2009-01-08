@@ -194,4 +194,9 @@ public abstract class NodeValue {
     public boolean marshalSelfAttributes(XPathFragment xPathFragment, MarshalRecord marshalRecord, Object object, AbstractSession session, NamespaceResolver namespaceResolver, XMLMarshaller marshaller) {
         return false;
     }
+
+    public boolean isMappingNodeValue() {
+        return true;
+    }
+
 }
