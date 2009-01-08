@@ -96,6 +96,7 @@
         <contains string="${java.version}" substring="1.5"/>
     </condition>
     <echo message="${jdk_message}"/>
+    <echo message="jdbc.driver='${jdbc.driver}'"/>
 
     <!-- versioning -->
     <!-- These variables  are set in autobuild.xml. A manual build gets defaults -->
@@ -281,16 +282,16 @@
             failonerror="false"
         />
         <zip destfile="${eclipselink.plugins.install.prefix}${eclipselink.zip.suffix}">
-            <zipfileset dir="${eclipselink.plugins}" prefix="plugins">
+            <zipfileset dir="${eclipselink.plugins}">
                 <include name="**.jar"/>
                 <exclude name="javax.ejb_3.0.0.jar"/>
                 <exclude name="org.apache.ant_1.7.0.jar"/>
             </zipfileset>
-            <zipfileset dir="${eclipselink.plugins}" prefix="plugins">
+            <zipfileset dir="${eclipselink.plugins}">
                 <include name="**.zip"/>
                 <exclude name="osgi.core.zip"/>
             </zipfileset>
-            <zipfileset dir="${eclipselink.jpa.plugins}/" prefix="plugins" includes="*.jar"/>
+            <zipfileset dir="${eclipselink.jpa.plugins}/" includes="javax.persistence*.jar"/>
         </zip>
     </target>
 
