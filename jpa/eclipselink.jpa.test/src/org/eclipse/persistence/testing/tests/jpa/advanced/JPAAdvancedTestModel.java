@@ -107,6 +107,7 @@ public class JPAAdvancedTestModel extends CMP3TestModel{
         suite.addTest(new EntityListenerPostRemoveTest());
         suite.addTest(new EntityListenerPostLoadTest());
         suite.addTest(new EntityListenerPostLoadTransactionTest());
+        suite.addTest(new EntityListenerPostLoadRefreshTest());
         
         suite.addTest(new EntityMethodPrePersistTest());
         suite.addTest(new EntityMethodPostPersistTest());
@@ -115,7 +116,8 @@ public class JPAAdvancedTestModel extends CMP3TestModel{
         suite.addTest(new EntityMethodPreRemoveTest());
         suite.addTest(new EntityMethodPostRemoveTest());
         suite.addTest(new EntityMethodPostLoadTest());
-        suite.addTest(new EntityMethoPostLoadTransactionTest());
+        suite.addTest(new EntityMethodPostLoadTransactionTest());
+        suite.addTest(new EntityMethodPostLoadRefreshTest());
   
         suite.addTest(new NonDBChangePreUpdateTest());
         

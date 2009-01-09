@@ -1250,16 +1250,18 @@ public class ObjectBuilder implements Cloneable, Serializable {
             if (forRefresh) {
                 event.setEventCode(DescriptorEventManager.PostRefreshEvent);
             } else {
+                //bug 259404: ensure postClone is called for objects built directly into the UnitOfWork
+                event = new DescriptorEvent(clone);
+                event.setSession(unitOfWork);
+                event.setOriginalObject(clone);
+                event.setEventCode(DescriptorEventManager.PostCloneEvent);
+                this.descriptor.getEventManager().executeEvent(event);
+                //still fire a postbuildevent
                 event.setEventCode(DescriptorEventManager.PostBuildEvent);
             }
             this.descriptor.getEventManager().executeEvent(event);
             
-            //bug 259404: ensure postClone is called for objects built directly into the UnitOfWork
-            event = new DescriptorEvent(clone);
-            event.setSession(unitOfWork);
-            event.setOriginalObject(clone);
-            event.setEventCode(DescriptorEventManager.PostCloneEvent);
-            this.descriptor.getEventManager().executeEvent(event);
+            
         }
     }
 

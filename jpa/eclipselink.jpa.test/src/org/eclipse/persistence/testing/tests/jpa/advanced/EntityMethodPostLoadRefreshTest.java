@@ -8,28 +8,32 @@
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
- *     Jan 8, 2009-1.1 Chris Delahunt 
+ *     Jan 9, 2009-1.1 Chris Delahunt 
  *       - Bug 244802: PostLoad callback getting invoked twice 
  ******************************************************************************/  
 package org.eclipse.persistence.testing.tests.jpa.advanced;
 
-import org.eclipse.persistence.testing.framework.TestErrorException;
-import org.eclipse.persistence.testing.models.jpa.advanced.Employee;
-import org.eclipse.persistence.testing.models.jpa.advanced.EmployeeListener;
+import org.eclipse.persistence.testing.models.jpa.advanced.Project;
 
 /**
  * Tests the @PostLoad event from an EntityListener is fired only once when in a transaction.
  *
  * @author Chris Delahunt
  */
-public class EntityListenerPostLoadTransactionTest extends CallbackEventTest {
+public class EntityMethodPostLoadRefreshTest extends EntityListenerPostLoadRefreshTest{
+    
     public void test() throws Exception {
         beginTransaction();
-        m_beforeEvent = EmployeeListener.POST_LOAD_COUNT;
+        m_beforeEvent = 0;  // New object, count starts at 0.
         
-        getEntityManager().find(Employee.class, m_employee.getId());
-        
-        m_afterEvent = EmployeeListener.POST_LOAD_COUNT;
+        Project project= new Project();
+        project.setName("new project");
+        getEntityManager().persist(project);
+        getEntityManager().flush();
+        getEntityManager().refresh( project );
+
+        m_afterEvent = project.post_load_count;
         this.rollbackTransaction();
     }
+
 }

@@ -8,7 +8,7 @@
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
- *     Jan 8, 2009-1.1 Chris Delahunt 
+ *     Jan 9, 2009-1.1 Chris Delahunt 
  *       - Bug 244802: PostLoad callback getting invoked twice 
  ******************************************************************************/  
 package org.eclipse.persistence.testing.tests.jpa.advanced;
@@ -16,21 +16,35 @@ package org.eclipse.persistence.testing.tests.jpa.advanced;
 import org.eclipse.persistence.testing.framework.TestErrorException;
 import org.eclipse.persistence.testing.models.jpa.advanced.Employee;
 import org.eclipse.persistence.testing.models.jpa.advanced.EmployeeListener;
-import org.eclipse.persistence.testing.models.jpa.advanced.Project;
+import org.eclipse.persistence.testing.tests.jpa.EntityContainerTestBase;
 
 /**
- * Tests the @PostLoad event from an EntityMethod is fired only once when in a transaction.
+ * Tests the @PostLoad event from an EntityListener is fired only once when in a transaction.
  *
  * @author Chris Delahunt
  */
-public class EntityMethoPostLoadTransactionTest extends EntityListenerPostLoadTransactionTest {
+public class EntityListenerPostLoadRefreshTest extends EntityContainerTestBase {
+    protected int m_beforeEvent, m_afterEvent;
+    
     public void test() throws Exception {
         beginTransaction();
-        m_beforeEvent = 0;  // New object, count starts at 0.
         
-        Project project = getEntityManager().find(Project.class, m_project.getId());
-        
-        m_afterEvent = project.post_load_count;
+        Employee employee= new Employee();
+        employee.setFirstName("Bob");
+        employee.setLastName("Smith");
+        m_beforeEvent = EmployeeListener.POST_LOAD_COUNT;
+        getEntityManager().persist(employee);
+        getEntityManager().flush();
+        getEntityManager().refresh( employee );
+       
+        m_afterEvent = EmployeeListener.POST_LOAD_COUNT;
         this.rollbackTransaction();
+    }
+    
+    public void verify() {
+        if ((m_afterEvent-m_beforeEvent) != 1) {
+            throw new TestErrorException("The callback method was called "+(m_afterEvent - m_beforeEvent)+
+                    " times.  It should have been called only once");
+        }
     }
 }

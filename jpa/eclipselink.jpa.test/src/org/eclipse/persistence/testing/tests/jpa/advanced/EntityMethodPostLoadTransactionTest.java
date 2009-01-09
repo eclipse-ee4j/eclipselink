@@ -16,20 +16,21 @@ package org.eclipse.persistence.testing.tests.jpa.advanced;
 import org.eclipse.persistence.testing.framework.TestErrorException;
 import org.eclipse.persistence.testing.models.jpa.advanced.Employee;
 import org.eclipse.persistence.testing.models.jpa.advanced.EmployeeListener;
+import org.eclipse.persistence.testing.models.jpa.advanced.Project;
 
 /**
- * Tests the @PostLoad event from an EntityListener is fired only once when in a transaction.
+ * Tests the @PostLoad event from an EntityMethod is fired only once when in a transaction.
  *
  * @author Chris Delahunt
  */
-public class EntityListenerPostLoadTransactionTest extends CallbackEventTest {
+public class EntityMethodPostLoadTransactionTest extends CallbackEventTest {
     public void test() throws Exception {
         beginTransaction();
-        m_beforeEvent = EmployeeListener.POST_LOAD_COUNT;
+        m_beforeEvent = 0;  // New object, count starts at 0.
         
-        getEntityManager().find(Employee.class, m_employee.getId());
+        Project project = getEntityManager().find(Project.class, m_project.getId());
         
-        m_afterEvent = EmployeeListener.POST_LOAD_COUNT;
+        m_afterEvent = project.post_load_count;
         this.rollbackTransaction();
     }
 }
