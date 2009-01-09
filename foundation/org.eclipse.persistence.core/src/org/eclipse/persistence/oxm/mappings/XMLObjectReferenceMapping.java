@@ -24,6 +24,7 @@ import org.eclipse.persistence.internal.descriptors.ObjectBuilder;
 import org.eclipse.persistence.internal.helper.ClassConstants;
 import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.oxm.Reference;
+import org.eclipse.persistence.internal.oxm.ReferenceListener;
 import org.eclipse.persistence.internal.oxm.ReferenceResolver;
 import org.eclipse.persistence.internal.oxm.XMLConversionManager;
 import org.eclipse.persistence.internal.queries.JoinedAttributeManager;
@@ -287,9 +288,9 @@ public class XMLObjectReferenceMapping extends AggregateMapping implements XMLMa
         }
         super.initialize(session);
 
-        ReferenceResolver resolver = new ReferenceResolver();
-        if (!(session.getEventManager().getListeners().contains(resolver))) {
-            session.getEventManager().addListener(resolver);
+        ReferenceListener listener = new ReferenceListener();
+        if (!(session.getEventManager().getListeners().contains(listener))) {
+            session.getEventManager().addListener(listener);
         }
 
         // iterate over each source & target XMLField and set the 

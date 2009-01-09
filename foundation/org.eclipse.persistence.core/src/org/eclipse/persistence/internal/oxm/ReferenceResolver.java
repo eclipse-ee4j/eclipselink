@@ -21,11 +21,9 @@ import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.oxm.mappings.XMLCollectionReferenceMapping;
 import org.eclipse.persistence.oxm.mappings.XMLObjectReferenceMapping;
 import org.eclipse.persistence.sessions.Session;
-import org.eclipse.persistence.sessions.SessionEvent;
-import org.eclipse.persistence.sessions.SessionEventAdapter;
 import org.eclipse.persistence.sessions.UnitOfWork;
 
-public class ReferenceResolver extends SessionEventAdapter {
+public class ReferenceResolver {
     public static final String KEY = "REFERENCE_RESOLVER";
     private ArrayList references;
 
@@ -122,15 +120,6 @@ public class ReferenceResolver extends SessionEventAdapter {
             }
         }    	
         return null;
-    }
-
-    /**
-     * PUBLIC:
-     * This event is raised on the unit of work after creation/acquiring.
-     * This will be raised on nest units of work.
-     */
-    public void postAcquireUnitOfWork(SessionEvent event) {
-    	event.getSession().setProperty(KEY, this);
     }
 
     /**
