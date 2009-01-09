@@ -133,6 +133,8 @@ final class CollectionOrderingPanel extends AbstractSubjectPanel
                     else {
                         getCollectionMapping().addOrdering((MWQueryKey) queryKeys.iterator().next());
                     }
+                } else {
+                    getCollectionMapping().addOrdering(null);
                 }
         
             }
