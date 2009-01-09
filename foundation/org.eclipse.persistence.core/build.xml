@@ -73,7 +73,7 @@
     <!-- TEMPORARY HACK PENDING DECISION ABOUT WHETHER ECLIPSELINK FOUNDATION WILL DEPEND ON JPA CLASSES -->
     <available file="${core.2.jpa.plugins.dir}/javax.persistence_2.0_preview.jar" property="jpa2.jar.exist"/>
     <!-- End of Temporary hack -->
-    
+
 
     <!-- all -->
     <target name="build" depends="clean, compile, generate-manifest, package" description="build Core component"/>
@@ -177,6 +177,7 @@
         <echo message=" org.eclipse.persistence.config;version=&quot;${release.version}&quot;,${line.separator}"                                                file="META-INF/MANIFEST.MF" append="true"/>
         <echo message=" org.eclipse.persistence.descriptors;version=&quot;${release.version}&quot;,${line.separator}"                                           file="META-INF/MANIFEST.MF" append="true"/>
         <echo message=" org.eclipse.persistence.descriptors.changetracking;version=&quot;${release.version}&quot;,${line.separator}"                            file="META-INF/MANIFEST.MF" append="true"/>
+        <echo message=" org.eclipse.persistence.internal.dynamicpersist;version=&quot;${release.version}&quot;,${line.separator}"                            file="META-INF/MANIFEST.MF" append="true"/>
         <echo message=" org.eclipse.persistence.descriptors.copying;version=&quot;${release.version}&quot;,${line.separator}"                                   file="META-INF/MANIFEST.MF" append="true"/>
         <echo message=" org.eclipse.persistence.descriptors.invalidation;version=&quot;${release.version}&quot;,${line.separator}"                              file="META-INF/MANIFEST.MF" append="true"/>
         <echo message=" org.eclipse.persistence.eis;version=&quot;${release.version}&quot;,${line.separator}"                                                   file="META-INF/MANIFEST.MF" append="true"/>
