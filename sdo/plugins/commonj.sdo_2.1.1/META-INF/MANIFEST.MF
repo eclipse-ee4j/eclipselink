@@ -1,0 +1,10 @@
+Manifest-Version: 1.0
+Ant-Version: Apache Ant 1.7.0
+Created-By: 11.0-b15 (Sun Microsystems Inc.)
+Bundle-ManifestVersion: 2
+Bundle-Name: SDO
+Bundle-SymbolicName: commonj.sdo
+Bundle-Version: 2.1.1
+Export-Package: commonj.sdo;version="2.1.1",commonj.sdo.helper;version
+ ="2.1.1",commonj.sdo.impl;version="2.1.1"
+
