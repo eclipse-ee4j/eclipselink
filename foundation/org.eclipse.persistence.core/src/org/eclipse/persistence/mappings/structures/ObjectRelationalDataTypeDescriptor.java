@@ -384,18 +384,6 @@ public class ObjectRelationalDataTypeDescriptor extends RelationalDescriptor {
         return super.extractDefaultTable();
     }
 
-    @Override
-    public DatabaseField buildField(DatabaseField field) {
-        DatabaseField foundField = null;
-        for (DatabaseMapping dm : mappings) {
-            if (dm.getField().getName().equals(field.getName())) {
-                foundField = dm.getField();
-                break;
-            }
-        }
-        return foundField;
-    }
-
     /**
      * INTERNAL:
      * Return the field order.
