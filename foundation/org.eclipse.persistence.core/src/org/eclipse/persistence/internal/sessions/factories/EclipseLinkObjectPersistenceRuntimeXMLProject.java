@@ -18,10 +18,15 @@ import static javax.xml.XMLConstants.W3C_XML_SCHEMA_NS_URI;
 
 // EclipseLink imports
 import org.eclipse.persistence.descriptors.ClassDescriptor;
+import org.eclipse.persistence.internal.sessions.factories.ObjectPersistenceRuntimeXMLProject_11_1_1.NullPolicyAttributeAccessor;
+import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.mappings.converters.Converter;
 import org.eclipse.persistence.mappings.transformers.ConstantTransformer;
 import org.eclipse.persistence.oxm.XMLDescriptor;
 import org.eclipse.persistence.oxm.mappings.XMLCompositeObjectMapping;
+import org.eclipse.persistence.oxm.mappings.XMLDirectMapping;
+import org.eclipse.persistence.oxm.mappings.nullpolicy.AbstractNullPolicy;
+import org.eclipse.persistence.oxm.mappings.nullpolicy.NullPolicy;
 import org.eclipse.persistence.oxm.schema.XMLSchemaClassPathReference;
 import org.eclipse.persistence.sessions.DatabaseLogin;
 import static org.eclipse.persistence.sessions.factories.XMLProjectReader.ECLIPSELINK_SCHEMA;
@@ -102,5 +107,67 @@ public class EclipseLinkObjectPersistenceRuntimeXMLProject extends ObjectPersist
         return descriptor;
     }
     
+    @Override
+    protected ClassDescriptor buildXMLCompositeObjectMappingDescriptor() {
+        ClassDescriptor descriptor = super.buildXMLCompositeObjectMappingDescriptor();
+        //Add container accessor mapping
+        
+        XMLDirectMapping containerAttributeMapping = new XMLDirectMapping();
+        containerAttributeMapping.setAttributeName("containerAttributeName");
+        containerAttributeMapping.setGetMethodName("getContainerAttributeName");
+        containerAttributeMapping.setSetMethodName("setContainerAttributeName");
+        containerAttributeMapping.setXPath("container-attribute/text()");
+        ((NullPolicy)containerAttributeMapping.getNullPolicy()).setSetPerformedForAbsentNode(false);
+        descriptor.addMapping(containerAttributeMapping);
+        
+        XMLDirectMapping containerGetMethodMapping = new XMLDirectMapping();
+        containerGetMethodMapping.setAttributeName("containerGetMethodName");
+        containerGetMethodMapping.setGetMethodName("getContainerGetMethodName");
+        containerGetMethodMapping.setSetMethodName("setContainerGetMethodName");
+        containerGetMethodMapping.setXPath("container-get-method/text()");
+        ((NullPolicy)containerGetMethodMapping.getNullPolicy()).setSetPerformedForAbsentNode(false);
+        descriptor.addMapping(containerGetMethodMapping);
+        
+        XMLDirectMapping containerSetMethodMapping = new XMLDirectMapping();
+        containerSetMethodMapping.setAttributeName("containerSetMethodName");
+        containerSetMethodMapping.setGetMethodName("getContainerSetMethodName");
+        containerSetMethodMapping.setSetMethodName("setContainerSetMethodName");
+        containerSetMethodMapping.setXPath("container-set-method/text()");
+        ((NullPolicy)containerSetMethodMapping.getNullPolicy()).setSetPerformedForAbsentNode(false);
+        descriptor.addMapping(containerSetMethodMapping);
+        
+        return descriptor;
+    }
+    
+    @Override
+    protected ClassDescriptor buildXMLCompositeCollectionMappingDescriptor() {
+        ClassDescriptor descriptor = super.buildXMLCompositeCollectionMappingDescriptor();
+        //Add container accessor mapping
 
+        XMLDirectMapping containerAttributeMapping = new XMLDirectMapping();
+        containerAttributeMapping.setAttributeName("containerAttributeName");
+        containerAttributeMapping.setGetMethodName("getContainerAttributeName");
+        containerAttributeMapping.setSetMethodName("setContainerAttributeName");
+        containerAttributeMapping.setXPath("container-attribute/text()");
+        ((NullPolicy)containerAttributeMapping.getNullPolicy()).setSetPerformedForAbsentNode(false);
+        descriptor.addMapping(containerAttributeMapping);
+        
+        XMLDirectMapping containerGetMethodMapping = new XMLDirectMapping();
+        containerGetMethodMapping.setAttributeName("containerGetMethodName");
+        containerGetMethodMapping.setGetMethodName("getContainerGetMethodName");
+        containerGetMethodMapping.setSetMethodName("setContainerGetMethodName");
+        containerGetMethodMapping.setXPath("container-get-method/text()");
+        ((NullPolicy)containerGetMethodMapping.getNullPolicy()).setSetPerformedForAbsentNode(false);
+        descriptor.addMapping(containerGetMethodMapping);
+        
+        XMLDirectMapping containerSetMethodMapping = new XMLDirectMapping();
+        containerSetMethodMapping.setAttributeName("containerSetMethodName");
+        containerSetMethodMapping.setGetMethodName("getContainerSetMethodName");
+        containerSetMethodMapping.setSetMethodName("setContainerSetMethodName");
+        containerSetMethodMapping.setXPath("container-set-method/text()");
+        ((NullPolicy)containerSetMethodMapping.getNullPolicy()).setSetPerformedForAbsentNode(false);
+        descriptor.addMapping(containerSetMethodMapping);
+        
+        return descriptor;
+    }     
 }

@@ -117,6 +117,10 @@ public class XMLCompositeCollectionMappingNodeValue extends XMLRelationshipMappi
             }
         }
         unmarshalRecord.addAttributeValue(this, objectValue, collection);
+        
+        if(xmlCompositeCollectionMapping.getContainerAccessor() != null) {
+        	xmlCompositeCollectionMapping.getContainerAccessor().setAttributeValueInObject(objectValue, unmarshalRecord.getCurrentObject());
+        }
         unmarshalRecord.setChildRecord(null);
 
     }

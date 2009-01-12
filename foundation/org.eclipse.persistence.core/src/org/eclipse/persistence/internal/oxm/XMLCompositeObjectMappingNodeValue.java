@@ -197,6 +197,9 @@ public class XMLCompositeObjectMappingNodeValue extends XMLRelationshipMappingNo
         }
         // Set the child object on the parent
         unmarshalRecord.setAttributeValue(object, xmlCompositeObjectMapping);
+        if(xmlCompositeObjectMapping.getContainerAccessor() != null) {
+        	xmlCompositeObjectMapping.getContainerAccessor().setAttributeValueInObject(object, unmarshalRecord.getCurrentObject());
+        }        
         unmarshalRecord.setChildRecord(null);
     }
 
@@ -240,6 +243,9 @@ public class XMLCompositeObjectMappingNodeValue extends XMLRelationshipMappingNo
             childRecord.setXMLReader(unmarshalRecord.getXMLReader());
             childRecord.startDocument(this.xmlCompositeObjectMapping);
             xmlCompositeObjectMapping.setAttributeValueInObject(unmarshalRecord.getCurrentObject(), childRecord.getCurrentObject());
+            if(xmlCompositeObjectMapping.getContainerAccessor() != null) {
+            	xmlCompositeObjectMapping.getContainerAccessor().setAttributeValueInObject(childRecord.getCurrentObject(), unmarshalRecord.getCurrentObject());
+            }
             return childRecord;
         } catch (SAXException e) {
             throw XMLMarshalException.unmarshalException(e);

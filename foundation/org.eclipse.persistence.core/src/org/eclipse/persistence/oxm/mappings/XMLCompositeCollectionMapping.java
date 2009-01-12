@@ -23,6 +23,8 @@ import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.exceptions.DatabaseException;
 import org.eclipse.persistence.exceptions.DescriptorException;
 import org.eclipse.persistence.exceptions.XMLMarshalException;
+import org.eclipse.persistence.internal.descriptors.InstanceVariableAttributeAccessor;
+import org.eclipse.persistence.internal.descriptors.MethodAttributeAccessor;
 import org.eclipse.persistence.internal.oxm.XPathFragment;
 import org.eclipse.persistence.oxm.XMLConstants;
 import org.eclipse.persistence.oxm.XMLField;
@@ -32,6 +34,7 @@ import org.eclipse.persistence.internal.queries.JoinedAttributeManager;
 import org.eclipse.persistence.internal.queries.MapContainerPolicy;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
+import org.eclipse.persistence.mappings.AttributeAccessor;
 import org.eclipse.persistence.mappings.foundation.AbstractCompositeCollectionMapping;
 import org.eclipse.persistence.oxm.XMLDescriptor;
 import org.eclipse.persistence.oxm.mappings.converters.XMLConverter;
@@ -140,11 +143,131 @@ import org.eclipse.persistence.queries.ObjectBuildingQuery;
  */
 public class XMLCompositeCollectionMapping extends AbstractCompositeCollectionMapping implements XMLMapping, XMLNillableMapping {
     AbstractNullPolicy nullPolicy;
+    private AttributeAccessor containerAccessor;
 
     public XMLCompositeCollectionMapping() {
         super();
         // The default policy is NullPolicy
         nullPolicy = new NullPolicy();
+    }
+
+    /**
+     * Gets the AttributeAccessor that is used to get and set the value of the
+     * container on the target object.
+     */    
+    public AttributeAccessor getContainerAccessor() {
+        return this.containerAccessor;
+    }
+    
+    /**
+     * Sets the AttributeAccessor that is used to get and set the value of the 
+     * container on the target object.
+     * 
+     * @param anAttributeAccessor - the accessor to be used.
+     */    
+    public void setContainerAccessor(AttributeAccessor anAttributeAccessor) {
+        this.containerAccessor = anAttributeAccessor;
+    }
+    
+    /**
+     * Sets the name of the backpointer attribute on the target object. Used to 
+     * populate the backpointer. If the specified attribute doesn't exist on the
+     * reference class of this mapping, a DescriptorException will be thrown
+     * during initialize.
+     * 
+     * @param attributeName - the name of the backpointer attribute to be populated
+     */    
+    public void setContainerAttributeName(String attributeName) {
+    	if(attributeName != null) {
+    		if(this.getContainerAccessor() == null) {
+    			this.containerAccessor = new InstanceVariableAttributeAccessor();
+    		}
+    		this.getContainerAccessor().setAttributeName(attributeName);
+    	}
+    }
+    
+    /**
+     * Gets the name of the backpointer attribute on the target object. 
+     */        
+    public String getContainerAttributeName() {
+    	if(this.getContainerAccessor() == null) {
+    		return null;
+    	}
+    	return this.getContainerAccessor().getAttributeName();
+    }
+
+    /**
+     * Sets the method name to be used when accessing the value of the back pointer 
+     * on the target object of this mapping. If the specified method isn't declared
+     * on the reference class of this mapping, a DescriptorException will be thrown
+     * during initialize.
+     * 
+     * @param methodName - the name of the getter method to be used.
+     */    
+    public void setContainerGetMethodName(String methodName) {
+        if (methodName == null) {
+            return;
+        }
+
+        if(getContainerAccessor() == null) {
+        	this.containerAccessor = new MethodAttributeAccessor();
+        }
+        // This is done because setting attribute name by defaults create InstanceVariableAttributeAccessor	
+        if (!getContainerAccessor().isMethodAttributeAccessor()) {
+            String attributeName = this.containerAccessor.getAttributeName();
+            setContainerAccessor(new MethodAttributeAccessor());
+            getContainerAccessor().setAttributeName(attributeName);
+        }
+
+        ((MethodAttributeAccessor)getContainerAccessor()).setGetMethodName(methodName);    	
+    }
+ 
+    /**
+     * Gets the name of the method to be used when accessing the value of the 
+     * back pointer on the target object of this mapping.
+     */      
+    public String getContainerGetMethodName() {
+        if (getContainerAccessor() == null || !getContainerAccessor().isMethodAttributeAccessor()) {
+            return null;
+        }
+        return ((MethodAttributeAccessor)getContainerAccessor()).getGetMethodName();
+    }
+    
+    /**
+     * Gets the name of the method to be used when setting the value of the 
+     * back pointer on the target object of this mapping.
+     */       
+    public String getContainerSetMethodName() {
+        if (getContainerAccessor() == null || !getContainerAccessor().isMethodAttributeAccessor()) {
+            return null;
+        }
+        return ((MethodAttributeAccessor)getContainerAccessor()).getSetMethodName();
+    }
+
+    /**
+     * Sets the name of the method to be used when setting the value of the back pointer 
+     * on the target object of this mapping. If the specified method isn't declared on
+     * the reference class of this mapping, a DescriptorException will be
+     * raised during initialize.
+     * 
+     * @param methodName - the name of the setter method to be used.
+     */    
+    public void setContainerSetMethodName(String methodName) {
+        if (methodName == null) {
+            return;
+        }
+
+        if(getContainerAccessor() == null) {
+        	this.containerAccessor = new MethodAttributeAccessor();
+        }
+        // This is done because setting attribute name by defaults create InstanceVariableAttributeAccessor		
+        if (!getContainerAccessor().isMethodAttributeAccessor()) {
+            String attributeName = this.containerAccessor.getAttributeName();
+            setContainerAccessor(new MethodAttributeAccessor());
+            getContainerAccessor().setAttributeName(attributeName);
+        }
+
+        ((MethodAttributeAccessor)getContainerAccessor()).setSetMethodName(methodName);
     }
 
     /**
@@ -188,6 +311,9 @@ public class XMLCompositeCollectionMapping extends AbstractCompositeCollectionMa
                 ((MapContainerPolicy) cp).setElementClass(this.getReferenceClass());
             }
         }
+        if(null != containerAccessor) {
+            containerAccessor.initializeAttributes(this.referenceClass);
+        }        
     }
 
     /**
@@ -320,6 +446,9 @@ public class XMLCompositeCollectionMapping extends AbstractCompositeCollectionMa
                 }
             }
             cp.addInto(element, result, sourceQuery.getSession());
+            if(null != containerAccessor) {
+                containerAccessor.setAttributeValueInObject(element, ((DOMRecord)nestedRow).getOwningObject());
+            }
         }
         return result;
     }

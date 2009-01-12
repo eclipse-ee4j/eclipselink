@@ -10,23 +10,30 @@
 * Contributors:
 * mmacivor - January 09, 2009 - 1.1 - Initial implementation
 ******************************************************************************/
-package org.eclipse.persistence.internal.oxm;
+package org.eclipse.persistence.testing.jaxb.annotations.xmlcontainerproperty;
 
-import org.eclipse.persistence.sessions.SessionEvent;
-import org.eclipse.persistence.sessions.SessionEventAdapter;
+import javax.xml.bind.annotation.*;
 
-public class ReferenceListener extends SessionEventAdapter {
-    public static final String KEY = "REFERENCE_RESOLVER";
-    /**
-     * PUBLIC:
-     * This event is raised on the unit of work after creation/acquiring.
-     * This will be raised on nest units of work.
-     */
-    public void postAcquireUnitOfWork(SessionEvent event) {
-    	event.getSession().setProperty(KEY, new ReferenceResolver());
-    }
-    
-    public boolean equals(Object obj) {
-    	return obj instanceof ReferenceListener;
-    }
+
+public class Address {
+	public String street;
+	public String city;
+	
+	@XmlTransient
+	public Employee owningEmployee;
+	
+	public boolean equals(Object o) {
+		if(!(o instanceof Address)) {
+			return false;
+		}
+		Address obj = (Address)o;
+		boolean equal = true;
+		
+		equal = equal && street.equals(obj.street);
+		equal = equal && city.equals(obj.city);
+		
+		equal = equal && owningEmployee.id == obj.owningEmployee.id;
+		
+		return equal;
+	}	
 }

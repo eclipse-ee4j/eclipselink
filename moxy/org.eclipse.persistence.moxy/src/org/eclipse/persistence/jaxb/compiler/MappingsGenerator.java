@@ -26,6 +26,7 @@ import java.util.Set;
 import javax.xml.bind.annotation.*;
 import javax.xml.namespace.QName;
 
+import org.eclipse.persistence.oxm.annotations.*;
 import org.eclipse.persistence.jaxb.javamodel.Helper;
 import org.eclipse.persistence.jaxb.javamodel.JavaClass;
 import org.eclipse.persistence.jaxb.javamodel.JavaField;
@@ -354,6 +355,16 @@ public class MappingsGenerator {
             mapping.setSetMethodName(property.getSetMethodName());
         }
         mapping.setXPath(getXPathForField(property, namespaceInfo, false).getXPath());
+        if(helper.isAnnotationPresent(property.getElement(), XmlContainerProperty.class)) {
+        	XmlContainerProperty containerProp = (XmlContainerProperty)helper.getAnnotation(property.getElement(), XmlContainerProperty.class);
+        	String name = containerProp.value();
+        	mapping.setContainerAttributeName(name);
+        	if(!containerProp.getMethodName().equals("") && !containerProp.setMethodName().equals("")) {
+        		mapping.setContainerGetMethodName(containerProp.getMethodName());
+        		mapping.setContainerSetMethodName(containerProp.setMethodName());
+        	}
+        }
+
         descriptor.addMapping(mapping);
         return mapping;
         
@@ -506,6 +517,16 @@ public class MappingsGenerator {
         mapping.useCollectionClassName(collectionType.getRawName());
         XMLField xmlField = getXPathForField(property, namespaceInfo, false);
         mapping.setXPath(xmlField.getXPath());
+        if(helper.isAnnotationPresent(property.getElement(), XmlContainerProperty.class)) {
+        	XmlContainerProperty containerProp = (XmlContainerProperty)helper.getAnnotation(property.getElement(), XmlContainerProperty.class);
+        	String name = containerProp.value();
+        	mapping.setContainerAttributeName(name);
+        	if(!containerProp.getMethodName().equals("") && !containerProp.setMethodName().equals("")) {
+        		mapping.setContainerGetMethodName(containerProp.getMethodName());
+        		mapping.setContainerSetMethodName(containerProp.setMethodName());
+        	}
+        }
+        
         descriptor.addMapping(mapping);
         
         return mapping;

@@ -3432,7 +3432,13 @@
       <xsd:documentation>Defines a composite collection mapping for an XML list of nested elements.</xsd:documentation>
     </xsd:annotation>
     <xsd:complexContent mixed="false">
-      <xsd:extension base="abstract-composite-collection-mapping" />
+      <xsd:extension base="abstract-composite-collection-mapping">
+        <xsd:sequence>
+	  <xsd:element name="container-attribute" minOccurs="0"/>
+	  <xsd:element name="container-get-method" minOccurs="0"/>
+	  <xsd:element name="container-set-method" minOccurs="0"/>
+	</xsd:sequence>
+      </xsd:extension>
     </xsd:complexContent>
   </xsd:complexType>
   <xsd:complexType name="eis-composite-collection-mapping">
@@ -3452,6 +3458,9 @@
         <xsd:sequence>
           <xsd:element minOccurs="0" name="reference-class" type="xsd:string" />
           <xsd:element name="field" type="field" />
+	  <xsd:element name="container-attribute" minOccurs="0"/>
+	  <xsd:element name="container-get-method" minOccurs="0"/>
+	  <xsd:element name="container-set-method" minOccurs="0"/>
         </xsd:sequence>
       </xsd:extension>
     </xsd:complexContent>
