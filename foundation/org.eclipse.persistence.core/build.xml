@@ -177,7 +177,6 @@
         <echo message=" org.eclipse.persistence.config;version=&quot;${release.version}&quot;,${line.separator}"                                                file="META-INF/MANIFEST.MF" append="true"/>
         <echo message=" org.eclipse.persistence.descriptors;version=&quot;${release.version}&quot;,${line.separator}"                                           file="META-INF/MANIFEST.MF" append="true"/>
         <echo message=" org.eclipse.persistence.descriptors.changetracking;version=&quot;${release.version}&quot;,${line.separator}"                            file="META-INF/MANIFEST.MF" append="true"/>
-        <echo message=" org.eclipse.persistence.internal.dynamicpersist;version=&quot;${release.version}&quot;,${line.separator}"                            file="META-INF/MANIFEST.MF" append="true"/>
         <echo message=" org.eclipse.persistence.descriptors.copying;version=&quot;${release.version}&quot;,${line.separator}"                                   file="META-INF/MANIFEST.MF" append="true"/>
         <echo message=" org.eclipse.persistence.descriptors.invalidation;version=&quot;${release.version}&quot;,${line.separator}"                              file="META-INF/MANIFEST.MF" append="true"/>
         <echo message=" org.eclipse.persistence.eis;version=&quot;${release.version}&quot;,${line.separator}"                                                   file="META-INF/MANIFEST.MF" append="true"/>
@@ -195,6 +194,7 @@
         <echo message=" org.eclipse.persistence.internal.databaseaccess;version=&quot;${release.version}&quot;,${line.separator}"                               file="META-INF/MANIFEST.MF" append="true"/>
         <echo message=" org.eclipse.persistence.internal.descriptors;version=&quot;${release.version}&quot;,${line.separator}"                                  file="META-INF/MANIFEST.MF" append="true"/>
         <echo message=" org.eclipse.persistence.internal.descriptors.changetracking;version=&quot;${release.version}&quot;,${line.separator}"                   file="META-INF/MANIFEST.MF" append="true"/>
+        <echo message=" org.eclipse.persistence.internal.dynamicpersist;version=&quot;${release.version}&quot;,${line.separator}"                            file="META-INF/MANIFEST.MF" append="true"/>
         <echo message=" org.eclipse.persistence.internal.eis.adapters.jms;version=&quot;${release.version}&quot;,${line.separator}"                             file="META-INF/MANIFEST.MF" append="true"/>
         <echo message=" org.eclipse.persistence.internal.eis.adapters.xmlfile;version=&quot;${release.version}&quot;,${line.separator}"                         file="META-INF/MANIFEST.MF" append="true"/>
         <echo message=" org.eclipse.persistence.internal.eis.cobol;version=&quot;${release.version}&quot;,${line.separator}"                                    file="META-INF/MANIFEST.MF" append="true"/>
@@ -256,6 +256,7 @@
         <echo message=" org.eclipse.persistence.mappings.transformers;version=&quot;${release.version}&quot;,${line.separator}"                                 file="META-INF/MANIFEST.MF" append="true"/>
         <echo message=" org.eclipse.persistence.mappings.xdb;version=&quot;${release.version}&quot;,${line.separator}"                                          file="META-INF/MANIFEST.MF" append="true"/>
         <echo message=" org.eclipse.persistence.oxm;version=&quot;${release.version}&quot;,${line.separator}"                                                   file="META-INF/MANIFEST.MF" append="true"/>
+        <echo message=" org.eclipse.persistence.oxm.annotations;version=&quot;${release.version}&quot;,${line.separator}"                                                   file="META-INF/MANIFEST.MF" append="true"/>
         <echo message=" org.eclipse.persistence.oxm.attachment;version=&quot;${release.version}&quot;,${line.separator}"                                        file="META-INF/MANIFEST.MF" append="true"/>
         <echo message=" org.eclipse.persistence.oxm.documentpreservation;version=&quot;${release.version}&quot;,${line.separator}"                              file="META-INF/MANIFEST.MF" append="true"/>
         <echo message=" org.eclipse.persistence.oxm.mappings;version=&quot;${release.version}&quot;,${line.separator}"                                          file="META-INF/MANIFEST.MF" append="true"/>

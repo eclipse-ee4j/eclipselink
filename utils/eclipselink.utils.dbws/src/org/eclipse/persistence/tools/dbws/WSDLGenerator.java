@@ -61,6 +61,7 @@ import org.eclipse.persistence.oxm.XMLContext;
 import org.eclipse.persistence.oxm.XMLDescriptor;
 import org.eclipse.persistence.oxm.XMLMarshaller;
 import static org.eclipse.persistence.internal.xr.Util.DBWS_SCHEMA_XML;
+import static org.eclipse.persistence.internal.xr.Util.TARGET_NAMESPACE_PREFIX;
 import static org.eclipse.persistence.tools.dbws.Util.THE_INSTANCE_NAME;
 import static org.eclipse.persistence.tools.dbws.Util.WSI_SWAREF;
 import static org.eclipse.persistence.tools.dbws.Util.WSI_SWAREF_PREFIX;
@@ -73,7 +74,6 @@ public class WSDLGenerator {
     public static final String EMPTY_RESPONSE = "EmptyResponse";
     public static final String EXCEPTION_SUFFIX = "Exception";
     public static final String FAULT_SUFFIX = "Fault";
-    public static final String NS_IMPORTED_PREFIX = "ns1";
     public static final String NS_SCHEMA_PREFIX = "xsd";
     public static final String NS_TNS_PREFIX = "tns";
     public static final String NS_WSDL_SOAP = "http://schemas.xmlsoap.org/wsdl/soap/";
@@ -123,7 +123,7 @@ public class WSDLGenerator {
         def.setTargetNamespace(serviceNameSpace);
         def.setQName(new QName(serviceNameSpace, serviceName));
         def.addNamespace(NS_TNS_PREFIX, serviceNameSpace);
-        def.addNamespace(NS_IMPORTED_PREFIX, importedSchemaNameSpace);
+        def.addNamespace(TARGET_NAMESPACE_PREFIX, importedSchemaNameSpace);
         def.addNamespace(NS_SCHEMA_PREFIX, W3C_XML_SCHEMA_NS_URI);
         def.addNamespace(NS_WSDL_SOAP_PREFIX, NS_WSDL_SOAP);
 
@@ -363,7 +363,7 @@ public class WSDLGenerator {
                         Sequence nestedSequence = new Sequence();
                         nestedComplexType.setSequence(nestedSequence);
                         Element nestedElement = new Element();
-                        nestedElement.setRef(NS_IMPORTED_PREFIX + ":" + tableNameAlias);
+                        nestedElement.setRef(TARGET_NAMESPACE_PREFIX + ":" + tableNameAlias);
                         nestedSequence.addElement(nestedElement);
                         arg.setComplexType(nestedComplexType);
                     }
@@ -373,7 +373,7 @@ public class WSDLGenerator {
                             arg.setType(NS_SCHEMA_PREFIX + ":" + p.getType().getLocalPart());
                         }
                         else if (p.getType().getNamespaceURI().equals(importedSchemaNameSpace)) {
-                            arg.setType(NS_IMPORTED_PREFIX + ":" + p.getType().getLocalPart());
+                            arg.setType(TARGET_NAMESPACE_PREFIX + ":" + p.getType().getLocalPart());
                         }
                         else {
                             arg.setType(p.getType().getLocalPart());
@@ -416,7 +416,7 @@ public class WSDLGenerator {
                         Sequence nestedSequence = new Sequence();
                         nestedComplexType.setSequence(nestedSequence);
                         Element nestedElement = new Element();
-                        nestedElement.setRef(NS_IMPORTED_PREFIX + ":" + tableNameAlias);
+                        nestedElement.setRef(TARGET_NAMESPACE_PREFIX + ":" + tableNameAlias);
                         nestedElement.setMinOccurs("0");
                         if (q.isCollection()) {
                             nestedElement.setMaxOccurs("unbounded");

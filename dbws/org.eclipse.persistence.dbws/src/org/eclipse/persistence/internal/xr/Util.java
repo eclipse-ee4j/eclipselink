@@ -475,4 +475,5 @@ public class Util {
     public static final String DBWS_OX_SESSION_NAME_SUFFIX =
         DBWS_OX_LABEL + "-session";
     public static final String TARGET_NAMESPACE_PREFIX = "ns1";
+    public static final String SERVICE_NAMESPACE_PREFIX = "srvc";
 }

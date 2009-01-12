@@ -108,6 +108,8 @@ import org.eclipse.persistence.oxm.mappings.XMLBinaryDataMapping;
 import org.eclipse.persistence.oxm.mappings.XMLCompositeDirectCollectionMapping;
 import org.eclipse.persistence.oxm.mappings.XMLDirectMapping;
 import org.eclipse.persistence.oxm.platform.SAXPlatform;
+import org.eclipse.persistence.oxm.schema.XMLSchemaReference;
+import org.eclipse.persistence.oxm.schema.XMLSchemaURLReference;
 import org.eclipse.persistence.platform.database.MySQLPlatform;
 import org.eclipse.persistence.platform.database.jdbc.JDBCTypes;
 import org.eclipse.persistence.platform.database.oracle.plsql.PLSQLCollection;
@@ -137,6 +139,7 @@ import static org.eclipse.persistence.internal.xr.Util.DBWS_SERVICE_XML;
 import static org.eclipse.persistence.internal.xr.Util.DBWS_SESSIONS_XML;
 import static org.eclipse.persistence.internal.xr.Util.DBWS_WSDL;
 import static org.eclipse.persistence.internal.xr.Util.DEFAULT_ATTACHMENT_MIMETYPE;
+import static org.eclipse.persistence.internal.xr.Util.SERVICE_NAMESPACE_PREFIX;
 import static org.eclipse.persistence.internal.xr.Util.TARGET_NAMESPACE_PREFIX;
 import static org.eclipse.persistence.internal.xr.Util.getClassFromJDBCType;
 import static org.eclipse.persistence.oxm.XMLConstants.BASE_64_BINARY_QNAME;
@@ -793,14 +796,13 @@ prompt> java -cp eclipselink.jar:eclipselink-dbwsutils.jar:your_favourite_jdbc_d
                 PLSQLStoredArgument plsqlStoredArgument = (PLSQLStoredArgument)arguments.get(i);
                 ObjectRelationalDataTypeDescriptor ordtDescriptor = 
                     new ObjectRelationalDataTypeDescriptor();
+                ordtDescriptor.descriptorIsAggregate();
                 String alias = plsqlStoredArgument.getName();
                 ordtDescriptor.setAlias(alias);
                 String javaClassName = plsqlStoredArgument.getPlSqlTypeName().toLowerCase() + "." + 
                     plsqlStoredArgument.getName();
                 String arrayName = plsqlStoredArgument.getJdbcTypeName();
                 ordtDescriptor.setJavaClassName(javaClassName);
-                ordtDescriptor.setTableName(arrayName);
-                ordtDescriptor.setPrimaryKeyFieldName("ITEMS");
                 ArrayMapping itemsMapping = new ArrayMapping();
                 itemsMapping.setAttributeName("items");
                 ObjectRelationalDatabaseField field = new ObjectRelationalDatabaseField("ITEMS");
@@ -810,11 +812,15 @@ prompt> java -cp eclipselink.jar:eclipselink-dbwsutils.jar:your_favourite_jdbc_d
                 XMLDescriptor xdesc = new XMLDescriptor();
                 xdesc.setAlias(alias);
                 xdesc.setJavaClassName(javaClassName);
-                xdesc.setDefaultRootElement(TARGET_NAMESPACE_PREFIX + ":" +
-                    plsqlStoredArgument.getJdbcTypeName());
+                xdesc.setDefaultRootElement(SERVICE_NAMESPACE_PREFIX + ":" + alias);
                 NamespaceResolver nr = new NamespaceResolver();
                 nr.put(TARGET_NAMESPACE_PREFIX, getTargetNamespace());
+                nr.put(SERVICE_NAMESPACE_PREFIX, getTargetNamespace() + WSDLGenerator.SERVICE_SUFFIX);
                 xdesc.setNamespaceResolver(nr);
+                XMLSchemaURLReference schemaRef = new XMLSchemaURLReference();
+                schemaRef.setSchemaContext("/" + TARGET_NAMESPACE_PREFIX + ":" + arrayName);
+                schemaRef.setType(XMLSchemaReference.ELEMENT);
+                xdesc.setSchemaReference(schemaRef);
                 XMLCompositeDirectCollectionMapping listOfStringsMapping = 
                     new XMLCompositeDirectCollectionMapping();
                 listOfStringsMapping.useCollectionClass(Vector.class);
@@ -853,7 +859,6 @@ prompt> java -cp eclipselink.jar:eclipselink-dbwsutils.jar:your_favourite_jdbc_d
                         DatabaseType databaseType = 
                             JDBCTypes.getDatabaseTypeForCode(argument.getJdbcType());
                         call.addNamedArgument(argument.getName(), databaseType);
-                        //mdq.addArgument(argument.getName(), databaseType.getTypeName());
                         mdq.addArgument(argument.getName(), String.class);
                     }
                 }
@@ -1049,13 +1054,7 @@ prompt> java -cp eclipselink.jar:eclipselink-dbwsutils.jar:your_favourite_jdbc_d
                     /*
                     <xsd:complexType name=${schemaAlias}>
                       <xsd:sequence>
-                        <xsd:element name=${schemaAlias}>
-                          <xsd:complexType>
-                            <xsd:sequence>
-                              <xs:element name="item" type="xsd:string" minOccurs=0 maxOccurs="unbounded"/>
-                            </xsd:sequence>
-                          </xsd:complexType>
-                        </xsd:element>
+                        <xs:element name="item" type="xsd:string" minOccurs=0 maxOccurs="unbounded"/>
                       </xsd:sequence>
                     </xsd:complexType>
                     TODO - need to figure out nested complex types
@@ -1064,19 +1063,12 @@ prompt> java -cp eclipselink.jar:eclipselink-dbwsutils.jar:your_favourite_jdbc_d
                     complexType.setName(schemaAlias);
                     Sequence sequence = new Sequence();
                     complexType.setSequence(sequence);
-                    Element wrappedElement = new Element();
-                    wrappedElement.setName(schemaAlias);
-                    sequence.addElement(wrappedElement);
-                    ComplexType wrappedComplexType = new ComplexType();
-                    wrappedElement.setComplexType(wrappedComplexType);
-                    Sequence wrappedsequence = new Sequence();
-                    wrappedComplexType.setSequence(wrappedsequence);
                     Element itemsElement = new Element();
                     itemsElement.setName("item");
                     itemsElement.setType("xsd:string");
                     itemsElement.setMinOccurs("0");
                     itemsElement.setMaxOccurs("unbounded");
-                    wrappedsequence.addElement(itemsElement);
+                    sequence.addElement(itemsElement);
                     schema.addTopLevelComplexTypes(complexType);
                     Element element = new Element();
                     element.setName(schemaAlias);
