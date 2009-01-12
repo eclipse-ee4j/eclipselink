@@ -12,7 +12,9 @@
  *     08/20/2008-1.0.1 Nathan Beyer (Cerner) 
  *       - 241308: Primary key is incorrectly assigned to embeddable class 
  *                 field with the same name as the primary key field's name
- ******************************************************************************/  
+ *     01/12/2009-1.1 Daniel Lo, Tom Ware, Guy Pelletier
+ *       - 247041: Null element inserted in the ArrayList 
+ ******************************************************************************/   
 package org.eclipse.persistence.testing.tests.jpa.ddlgeneration;
 
 import java.util.ArrayList;
@@ -21,10 +23,16 @@ import java.util.List;
 import junit.framework.Test;
 import junit.framework.TestSuite;
 import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
+import org.eclipse.persistence.testing.models.jpa.ddlgeneration.weaving.Port;
+import org.eclipse.persistence.testing.models.jpa.ddlgeneration.weaving.impl.EquipmentDAO;
+import org.eclipse.persistence.testing.models.jpa.ddlgeneration.weaving.impl.PortDAO;
 import org.eclipse.persistence.testing.models.jpa.ddlgeneration.*;
+import org.eclipse.persistence.testing.models.jpa.ddlgeneration.weaving.Equipment;
 
 import javax.persistence.EntityManager;
+import javax.persistence.EntityManagerFactory;
 import javax.persistence.PersistenceException;
+import javax.persistence.Query;
 
 /**
  * JUnit test case(s) for DDL generation.
@@ -437,6 +445,148 @@ public class DDLGenerationJUnitTestSuite extends JUnitTestCase {
             throw e;
         } finally {
             closeEntityManager(em);
+        }
+    }
+    
+    public void testCascadeMergeOnManagedEntityWithOrderedList() {
+        EntityManagerFactory factory = getEntityManagerFactory(DDL_PU);
+        
+        // Clean up first
+        cleanupEquipmentAndPorts(factory);
+        
+        // Create a piece equipment with one port.
+        createEquipment(factory);
+            
+        // Add two ports to the equipment
+        addPorts(factory);
+            
+        // Fetch the equipment and validate there is no null elements in
+        // the ArrayList of Port.
+        verifyPorts(factory);
+    }
+    
+    protected void cleanupEquipmentAndPorts(EntityManagerFactory factory) {
+        EntityManager em = null;
+        
+        try {
+            em = factory.createEntityManager();
+            beginTransaction(em);
+            
+            em.createQuery("DELETE FROM PortDAO").executeUpdate();     
+            em.createQuery("DELETE FROM EquipmentDAO").executeUpdate();
+            
+            commitTransaction(em);
+        } catch (Exception e) {
+            if (isTransactionActive(em)) {
+                rollbackTransaction(em);
+            }
+            
+            fail("En error occurred cleaning up: " + e.getMessage());
+        } finally {
+            if (em != null) {
+                em.close();
+            }
+        }
+    }
+    
+    protected void createEquipment(EntityManagerFactory factory) {
+        EntityManager em = null;
+
+        try {
+            em = factory.createEntityManager();
+            
+            beginTransaction(em);
+            
+            Equipment eq = new EquipmentDAO();
+            eq.setId("eq");
+            
+            Port port = new PortDAO();
+            port.setId("p1");
+            port.setPortOrder(0);
+            
+            eq.addPort(port);
+            
+            em.persist(eq);
+            commitTransaction(em);
+        } catch (Exception e) {
+            if (em != null && isTransactionActive(em)) {
+                rollbackTransaction(em);
+            }
+            
+            fail("En error occurred creating new equipment: " + e.getMessage());
+        } finally {
+            if (em != null) {
+                em.close();
+            }
+        }
+    }
+
+    protected void addPorts(EntityManagerFactory factory) {
+        EntityManager em = null;
+        
+        try {
+            em = factory.createEntityManager();
+            beginTransaction(em);
+            Query query = em.createNamedQuery("Equipment.findEquipmentById");
+            query.setParameter("id", "eq");
+            Equipment eq = (Equipment) query.getResultList().get(0);
+            commitTransaction(em);
+            
+            em = factory.createEntityManager();
+            beginTransaction(em); 
+            eq = em.merge(eq);
+            
+            Port port = new PortDAO();
+            port.setId("p2");
+            port.setPortOrder(1);
+            eq.addPort(port);
+            
+            port = new PortDAO();
+            port.setId("p3");
+            port.setPortOrder(2);
+            eq.addPort(port);
+            
+            eq = em.merge(eq);
+            commitTransaction(em);
+        } catch (Exception e) {
+            if (isTransactionActive(em)) {
+                rollbackTransaction(em);
+            }
+            
+            fail("En error occurred adding new ports: " + e.getMessage());
+        } finally {
+            if (em != null) {
+                em.close();
+            }
+        }
+    }
+
+    protected void verifyPorts(EntityManagerFactory factory) {
+        EntityManager em = null;
+        
+        try {
+            em = factory.createEntityManager();
+            beginTransaction(em);
+            Query query = em.createNamedQuery("Equipment.findEquipmentById");
+            query.setParameter("id", "eq");
+            Equipment eq = (Equipment) query.getResultList().get(0);
+            commitTransaction(em);
+
+            for (Port port: eq.getPorts()) {
+                if (port == null) {
+                    fail("A null PORT was found in the collection of ports.");
+                }
+            } 
+        } catch (Exception e) {
+            if (isTransactionActive(em)) {
+                rollbackTransaction(em);
+            }
+            
+            fail("En error occurred fetching the results to verify: " + e.getMessage());
+        } finally {
+            if (em != null) {
+                em.close();
+            }
         }
     }
     

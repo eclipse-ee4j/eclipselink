@@ -13,6 +13,8 @@
         <mapping-file>META-INF/merge-inherited-certification.xml</mapping-file>
         <mapping-file>META-INF/ddl-generation-model.xml</mapping-file>
         <class>org.eclipse.persistence.testing.models.jpa.xml.merge.inherited.EmbeddedSerialNumber</class>
+        <class>org.eclipse.persistence.testing.models.jpa.ddlgeneration.weaving.impl.EquipmentDAO</class>
+        <class>org.eclipse.persistence.testing.models.jpa.ddlgeneration.weaving.impl.PortDAO</class>
         <properties>
             <property name="eclipselink.session=name" value="mergeinherited-session"/>
             <property name="eclipselink.jdbc.read-connections.shared" value="true"/>
@@ -28,6 +30,7 @@
             <property name="eclipselink.ddl-generation" value="drop-and-create-tables"/>
             <property name="eclipselink.create-ddl-jdbc-file-name" value="createDDL_ddlGeneration.jdbc"/>
             <property name="eclipselink.drop-ddl-jdbc-file-name" value="dropDDL_ddlGeneration.jdbc"/>
+            <property name="eclipselink.ddl-generation.output-mode" value="both"/>
         </properties>
     </persistence-unit>
 </persistence>

@@ -837,12 +837,19 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
             // valueholder in the case of transparent indirection
             Object newContainer = containerPolicy.containerInstance(containerPolicy.sizeFor(valueOfSource));
             if ((this.descriptor.getObjectChangePolicy().isObjectChangeTrackingPolicy()) && (target instanceof ChangeTracker) && (((ChangeTracker)target)._persistence_getPropertyChangeListener() != null)) {
-                fireChangeEvents = true;
+                // Avoid triggering events if we are dealing with the same list.
+                // We rebuild the new container though since any cascade merge
+                // activity such as lifecycle methods etc will be captured on
+                // newly registered objects and not the clones and we need to
+                // make sure the target has these updates once we are done.
+                fireChangeEvents = valueOfSource != valueOfTarget;
                 // Collections may not be indirect list or may have been replaced with user collection.
                 Object iterator = containerPolicy.iteratorFor(valueOfTarget);
                 PropertyChangeListener listener = ((ChangeTracker)target)._persistence_getPropertyChangeListener();
-                while (containerPolicy.hasNext(iterator)) {
-                    ((ObjectChangeListener)listener).internalPropertyChange(new CollectionChangeEvent(target, getAttributeName(), valueOfTarget, containerPolicy.next(iterator, mergeSession), CollectionChangeEvent.REMOVE));// make the remove change event fire.
+                if (fireChangeEvents) {
+                    while (containerPolicy.hasNext(iterator)) {
+                        ((ObjectChangeListener)listener).internalPropertyChange(new CollectionChangeEvent(target, getAttributeName(), valueOfTarget, containerPolicy.next(iterator, mergeSession), CollectionChangeEvent.REMOVE));// make the remove change event fire.
+                    }
                 }
                 if (newContainer instanceof ChangeTracker) {
                     ((CollectionChangeTracker)newContainer).setTrackedAttributeName(getAttributeName());
