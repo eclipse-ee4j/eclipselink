@@ -3341,7 +3341,7 @@ public class ObjectPersistenceRuntimeXMLProject extends NamespaceResolvableProje
         XMLDescriptor descriptor = new XMLDescriptor();
         descriptor.setJavaClass(ObjectArrayMapping.class);
 
-        descriptor.getInheritancePolicy().setParentClass(XMLCompositeCollectionMapping.class);
+        descriptor.getInheritancePolicy().setParentClass(AbstractCompositeCollectionMapping.class);
 
         XMLDirectMapping structureMapping = new XMLDirectMapping();
         structureMapping.setAttributeName("structureName");
