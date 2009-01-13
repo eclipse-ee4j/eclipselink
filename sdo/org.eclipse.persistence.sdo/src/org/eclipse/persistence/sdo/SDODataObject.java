@@ -857,7 +857,7 @@ public class SDODataObject implements DataObject, SequencedObject {
         }
 
         if (property.isReadOnly()) {
-            //TODO: throw UnsupportedOperationException
+        	throw new UnsupportedOperationException("Property is Readonly." + property.getName() + "  " + getType().getName());
         }
 
         boolean wasSet = isSet(property);
@@ -1329,7 +1329,7 @@ public class SDODataObject implements DataObject, SequencedObject {
         Property containmentProperty = getContainmentProperty();
 
         if ((containmentProperty != null) && containmentProperty.isReadOnly()) {
-            //TODO: throw UnsupportedOperationException                                  
+        	throw new UnsupportedOperationException("Property is Readonly." + containmentProperty.getName() + "  " + getType().getName());
         }
 
         if (containmentProperty != null) {

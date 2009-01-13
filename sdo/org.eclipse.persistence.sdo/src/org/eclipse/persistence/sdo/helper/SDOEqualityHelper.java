@@ -483,8 +483,7 @@ public class SDOEqualityHelper implements EqualityHelper {
                     // 20060906: handle bidirectional properties 
                     // the check across to another branch in the tree will only go 1 shallow level deep
                     // avoiding an infinite recursive loop and deferring the check for that branch when it
-                    // is encountered in its PreOrder sequence.
-                    // TODO: process non-containment side of bidirectionals see #5853175                	
+                    // is encountered in its PreOrder sequence.                	
                     return compareDataObjects(dataObject1.getDataObject(p), dataObject2.getDataObject(p), false);
 
                     // Spec 3.10 "All reachable DOs in their graphs are equal"

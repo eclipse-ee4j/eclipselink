@@ -887,7 +887,6 @@ public class SDOTypesGenerator {
             if (qualifiedType != null) {
                 processBaseType(baseType, targetNamespace, defaultNamespace, owningType, qualifiedType, simpleContent);
             }
-            //TODO: attrDecls
             if (extension.getChoice() != null) {
                 processChoice(targetNamespace, defaultNamespace, owningType, extension.getChoice(), false);
             } else if (extension.getSequence() != null) {
@@ -1342,7 +1341,6 @@ public class SDOTypesGenerator {
         sdoPropertyType = processSimpleComponentAnnotations(owningType, element, p, targetNamespace, defaultNamespace, sdoPropertyType);
 
         p.setType(sdoPropertyType);
-        // TODO: anonymous complexType has null name? null or name from containing element
         setDefaultValue(p, element);
 
         p.setMany(isMany);
@@ -1737,7 +1735,6 @@ public class SDOTypesGenerator {
         }
 
         // propertyType annotation
-        //TODO: only process if !datatype if(!sdoPropertyType.isDataType()){
         String propertyTypeValue = (String) simpleComponent.getAttributesMap().get(SDOConstants.SDOXML_PROPERTYTYPE_QNAME);
         if (propertyTypeValue != null) {
             String uri = targetNamespace;

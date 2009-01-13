@@ -76,7 +76,6 @@ public class FileCodeWriter implements CodeWriter {
             outStream.write(bytes);
             outStream.flush();          
         } catch (IOException e) {
-            //TODO: exception
             e.printStackTrace();
         } finally {
             try{

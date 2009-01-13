@@ -317,7 +317,6 @@ public class SDOType implements Type, Serializable {
      * @param makeAbstract    boolean value implying if this Type is abstract.
      */
     public void setAbstract(boolean makeAbstract) {
-        //TODO: if isDataType can't be abstract
         isAbstract = makeAbstract;
     }
 
@@ -555,11 +554,7 @@ public class SDOType implements Type, Serializable {
       */
     public void setInstanceClassName(String instanceClassName) {
         javaClassName = instanceClassName;
-        javaClass = null;
-        // TODO: below would cause an infinite loop, but if users call setinstanceclassname, open content prop wont get set with out this
-        //if(isDataType()) {
-        //   setInstanceProperty(SDOConstants.JAVA_CLASS_PROPERTY, instanceClassName);
-        // }
+        javaClass = null;       
     }
 
     /**

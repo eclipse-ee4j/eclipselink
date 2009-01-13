@@ -171,7 +171,6 @@ public class XPathEngine {
         }
         Property lastProperty = lastDataObject.getInstanceProperty(lastPropertyName);// get property of this dataobject
         
-        //TODO: int equalSignIndex = isQueryPath(frag, indexOfOpenBracket, indexOfCloseBracket);
         switch (_case) {
         case SET:                        
             if (lastProperty == null) {
@@ -232,8 +231,6 @@ public class XPathEngine {
      */
     private void set(Property lastProperty, DataObject lastDataObject, int numInLastProperty, Object value, boolean convertValue) {
         if (numInLastProperty == -1) {
-            // ToDo: if (numInLastProperty == -1 && equalSignIndex == -1) {
-            //ToDo: need to handle null pointer exception: lastDataObject maybe null
             if (lastDataObject != null) {
                 if(convertValue){
                   value = DataHelper.INSTANCE.convert(lastProperty, value);
@@ -371,7 +368,7 @@ public class XPathEngine {
             }
             if ((firstQuoteIndex != -1) && (lastQuoteIndex != -1) && (firstQuoteIndex < lastQuoteIndex)) {// quoted string existed
                 value = query.substring(firstQuoteIndex + 1, lastQuoteIndex);
-            } else {// TODO: not sure if ' can become value or not: [sn='123] or [sn=123'] !!
+            } else {
                 // if the value is not enclosed on quotes, trim off any whitespace
                 value = query.trim();
             }

@@ -874,7 +874,6 @@ public class SDOCopyHelper implements CopyHelper {
                     if (eachProperty.isContainment()) {
                         // process containment properties (normal, half of bidirectionals)                        
                         copyContainmentPropertyValue(copy, eachProperty, o, doMap, ncPropMap, cs);
-                        // TODO: process non-containment side of bidirectionals see #5853175
                     } else {
                         // copy non-containment do (not properties (unidirectional, half of bidirectionals))
                         //copyPropertyValue(dataObject, copy, eachProperty, o, copyRoot, doMap);

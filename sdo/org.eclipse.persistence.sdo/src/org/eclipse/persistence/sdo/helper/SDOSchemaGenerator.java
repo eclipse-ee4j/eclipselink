@@ -82,8 +82,7 @@ public class SDOSchemaGenerator {
 
         allTypes = types;
         generateSchema(uri, types);
-
-        //TODO: generating xmiversion is optional
+        
         //Now we have a built schema model        
         Project p = new SchemaModelProject();
         Vector generatedNamespaces = generatedSchema.getNamespaceResolver().getNamespaces();
@@ -256,9 +255,6 @@ public class SDOSchemaGenerator {
             simpleType.getAttributesMap().put(qname, type.getName());
         }
 
-        //TODO:  simpleType.setAbstractValue(type.isAbstract());
-        //SDO specific or not?  spec says no but don't see it in the schema.xsd
-        
         if ((type.getAliasNames() != null) && (type.getAliasNames().size() > 0)) {
             String sdoXmlPrefix = getPrefixForURI(SDOConstants.SDOXML_URL);
             String aliasNamesString = buildAliasNameString(type.getAliasNames());
@@ -276,7 +272,6 @@ public class SDOSchemaGenerator {
         SDOType baseType = null;
         if ((type.getBaseTypes() != null) && (type.getBaseTypes().size() > 0) && ((Type)type.getBaseTypes().get(0) != null)) {
             baseType = (SDOType)type.getBaseTypes().get(0);
-            //TODO: need to add something on SimpleType to track referenced uris for includes/imports?
         } 
 
         if (baseType != null) {
@@ -345,7 +340,6 @@ public class SDOSchemaGenerator {
             QName schemaType = ((SDOTypeHelper)aHelperContext.getTypeHelper()).getXSDTypeFromSDOType(baseType);
 
             //fixed below for bug5893546
-            //TODO: get url for prefix in namespace resolver and map sure it is added to the schema if necessary
             if (schemaType != null) {
                 extension.setBaseType(getPrefixStringForURI(schemaType.getNamespaceURI()) + schemaType.getLocalPart());
             } else if ((baseType.getURI() == null) || (baseType.getURI().equalsIgnoreCase(generatedSchema.getTargetNamespace()))) {
@@ -361,12 +355,6 @@ public class SDOSchemaGenerator {
             return complexType;
         }
 
-        /*TODO: sequenced If true, the complex type declaration is mixed and the content of the element is placed in a <choice>. If false,
-        the complex type contents are placed in a <sequence>. If no local elements are generated,
-        the <choice> or <sequence> is suppressed.
-
-        TODO: open:indicates if the type accepts open content, type.open. An <any> is placed in the
-        content and <anyAttribute> is placed after the content.*/
         buildElementsAndAttributes(complexType, type);
 
         return complexType;
@@ -775,11 +763,6 @@ public class SDOSchemaGenerator {
 
         Object exists = schema.getTopLevelElements().get(lowerName);
         if (exists != null) {
-            //conflict when complextype "Test" then complextype "test" generated
-            //if lower case name already exists then 
-            //TODO: if my first letter was originally lowercase then my name should be lower name and
-            //exists type should be modified to have uppercase name
-            //TODO: else keep the uppercase name if
             elem.setName(name);
         } else {
             elem.setName(lowerName);

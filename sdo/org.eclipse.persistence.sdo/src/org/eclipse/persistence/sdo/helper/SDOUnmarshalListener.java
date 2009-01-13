@@ -187,7 +187,6 @@ public class SDOUnmarshalListener extends SDOCSUnmarshalListener {
                                     List toDelete = new ArrayList();
                                     List indexsToDelete = new ArrayList();
                                     for (int l = 0; l < originalValue.size(); l++) {
-                                        //TODO: need to handle "already set" existing value in the many case
                                         SDODataObject nextInList = (SDODataObject)originalValue.get(l);
                                         String sdoRef = nextInList._getSdoRef();
                                         if (sdoRef != null) {
@@ -242,7 +241,6 @@ public class SDOUnmarshalListener extends SDOCSUnmarshalListener {
                                             nextModifiedDO._setModified(true);
                                         } else {
                                             //deleted       
-                                            //TODO: should be able to clean this up
                                             value._setChangeSummary(nextCS);
                                             nextModifiedDO._setModified(true);
                                             nextCS.pauseLogging();
@@ -263,7 +261,6 @@ public class SDOUnmarshalListener extends SDOCSUnmarshalListener {
                                             if(nextSeq != null){
                                               nextSeq.addSettingWithoutModifyingDataObject(-1, nextProp, value);
                                             }
-      
   
                                             nextCS.resumeLogging();
                                             nextModifiedDO._setModified(true);

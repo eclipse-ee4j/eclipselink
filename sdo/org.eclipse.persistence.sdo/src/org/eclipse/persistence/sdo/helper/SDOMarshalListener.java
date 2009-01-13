@@ -263,7 +263,6 @@ public class SDOMarshalListener implements XMLMarshalListener {
             containerPath = getQualifiedName(modifiedObject);
             deletedXPaths.add(xpathToCS + containerPath + SDOConstants.SDO_XPATH_SEPARATOR_FRAGMENT + pathToNode);
 
-            //TODO: need to update OX Marshaller to allow you to suppress xsi:type attribute (ie:xmlroot.setSupressTypeAttribute(true)
             XMLRoot xmlroot = new XMLRoot();
             xmlroot.setObject(value);//set the object to the deep copy            
             xmlroot.setNamespaceURI(uri);

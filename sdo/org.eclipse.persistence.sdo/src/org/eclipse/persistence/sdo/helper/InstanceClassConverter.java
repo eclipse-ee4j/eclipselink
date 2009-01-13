@@ -93,9 +93,6 @@ public class InstanceClassConverter implements Converter {
     }
 
     public void initialize(DatabaseMapping mapping, Session session) {
-        if (getCustomClass() == null) {
-            //TODO: throw exception            
-        }
     }
 
     public void setCustomClass(Class customClass) {

@@ -113,7 +113,6 @@ public class XPathHelper {
                     }
                     return results;
                 } else {
-                    // TODO: throw exception "ChangeSummary not found using xpath or xpath invalid"
                     return null;
                 }
             }
@@ -140,13 +139,6 @@ public class XPathHelper {
         
         // ignore '@'
         xpFrag = getPathWithAtRemoved(xpFrag);
-
-        // TODO: uncomment the following when '.' positional expressions are permitted
-        // handle positional '.' expression
-        // int idx = xpFrag.indexOf('.');
-        // if (idx > -1) {
-        //     return processIndexFromZero(xpFrag, dataObject, idx);
-        // }
         
         // handle positional '[]' expression
         int idx = xpFrag.indexOf('[');
@@ -603,7 +595,6 @@ public class XPathHelper {
                 try {
                     resultOfComparison = ((Comparable)actualVal).compareTo(queryVal) ;
                 } catch (Exception x) {
-                    // TODO: can't compare values, need to handle this
                     continue;
                 }
                 

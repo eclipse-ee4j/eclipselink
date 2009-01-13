@@ -46,8 +46,6 @@ public class SDOSetting implements commonj.sdo.ChangeSummary.Setting, XMLSetting
      * @return The TopLink OXM mapping associated with this setting
      */
     public XMLMapping getMapping() {
-        // TODO: Complete implementation
-        // see ((XMLDescriptor)((SDOProperty)property).getXmlMapping().getDescriptor()).isSequencedObject();
         return (XMLMapping)((SDOProperty)property).getXmlMapping();
     }
 

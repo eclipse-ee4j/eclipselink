@@ -159,8 +159,6 @@ public class ListWrapper implements List, Serializable, Cloneable {
         // see testLitWrapperAddMaintainsContainment()
         // fail-fast range checking
         if ((index < 0) || (index > size())) {
-            // TODO: throw IndexOutOfBoundsException
-            //throw new IndexOutOfBoundsException("index " + index + " is out of bounds.");
             return;
         }
 
@@ -430,12 +428,9 @@ public class ListWrapper implements List, Serializable, Cloneable {
     public boolean addAll(int position, Collection items, boolean updateSequence) {
         // fail-fast range checking
         if ((position < 0) || (position > size())) {
-            // TODO: throw IndexOutOfBoundsException
-            //throw new IndexOutOfBoundsException("position " + position + " is out of bounds.");
             return false;
         }
         if ((items == null) || (items.size() == 0)) {
-            //TODO: throw new IllegalArgumentException();
             return false;
         }
 
@@ -512,7 +507,6 @@ public class ListWrapper implements List, Serializable, Cloneable {
     public boolean retainAll(Collection itemsToKeep) {
         // fail-fast range checking
         if (itemsToKeep == null) {
-            //TODO: throw new IllegalArgumentException();
             return false;
         }
 
@@ -597,8 +591,6 @@ public class ListWrapper implements List, Serializable, Cloneable {
     public Object remove(int index, boolean updateSequence) {
         // fail-fast range checking
         if ((index < 0) || (index >= size())) {
-            // TODO: throw IndexOutOfBoundsException
-            //throw new IndexOutOfBoundsException("index " + index + " is out of bounds.");
             return null;
         }
 

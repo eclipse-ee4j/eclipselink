@@ -190,10 +190,7 @@ public class SDOResolvable implements ExternalizableDelegator.Resolvable {
                 // write gzip buffer length
                 objectOutput.writeInt(buf.length);// compressed xml file length
                 // write gzip buffer to ostream
-                objectOutput.write(buf);
-            } catch (IOException ioe) {            	
-            	// TODO: Full SDO wrapped exception required here
-            	ioe.printStackTrace();
+                objectOutput.write(buf);            
             } finally {
                 // close streams on all Exceptions
                 if (aGZIPOutputStream != null) {// Clover: false case testing requires IO/comm failure
@@ -282,10 +279,7 @@ public class SDOResolvable implements ExternalizableDelegator.Resolvable {
                 // read XML Serialization of the root DataObject from the GZIP input stream
                 XMLDocument aDocument = aHelperContext.getXMLHelper().load(aGZIPInputStream);
 
-                theSDODataObject = (SDODataObject)aDocument.getRootObject();
-            } catch(IOException ioe) {
-            	// TODO: Full SDO wrapped exception required here 
-            	ioe.printStackTrace();
+                theSDODataObject = (SDODataObject)aDocument.getRootObject();            
             } finally {
                 // close streams on all Exceptions
                 if (aGZIPInputStream != null) {// Clover: false case testing requires IO/comm failure
@@ -295,9 +289,7 @@ public class SDOResolvable implements ExternalizableDelegator.Resolvable {
                     aByteInputStream.close();
                 }
             }
-            break;
-        default:
-            // TODO: log warning "unsupported Object type"
+            break;        
         }
     }
 
