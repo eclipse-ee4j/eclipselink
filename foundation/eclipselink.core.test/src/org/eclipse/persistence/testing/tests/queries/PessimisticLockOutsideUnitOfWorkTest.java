@@ -42,6 +42,11 @@ public class PessimisticLockOutsideUnitOfWorkTest extends PessimisticLockFineGra
         if (this.lockMode == ObjectLevelReadQuery.LOCK_NOWAIT) {
             checkNoWaitSupported();
         }
+        
+        // Does not work on Postgres as it aborts transaction after first error.
+        if (getSession().getPlatform().isPostgreSQL()) {
+            throwWarning("Postgres aborts transaction after lock error.");
+        }
 
         // If this did not work, would have had thrown a fetch out of sequence exception.
         ReadObjectQuery query = new ReadObjectQuery(Address.class);

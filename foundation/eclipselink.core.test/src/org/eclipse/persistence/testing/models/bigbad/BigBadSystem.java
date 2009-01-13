@@ -14,6 +14,7 @@ package org.eclipse.persistence.testing.models.bigbad;
 
 import java.util.*;
 
+import java.io.StringWriter;
 import java.math.*;
 
 import org.eclipse.persistence.indirection.*;
@@ -72,9 +73,13 @@ public class BigBadSystem extends TestSystem {
                 bigBadObject.serializedBlob.add(new BigDecimal(count));
             }
 
-            bigBadObject.largeString01 = new String(new char[500]);
-            bigBadObject.largeString02 = new String(new char[500]);
-            bigBadObject.largeString03 = new String(new char[500]);
+            StringWriter stream = new StringWriter();
+            for (int size = 0; size < 100; size++) {
+                stream.write("abcde");
+            }
+            bigBadObject.largeString01 = stream.toString();
+            bigBadObject.largeString02 = stream.toString();
+            bigBadObject.largeString03 = stream.toString();
 
             bigBadObject.number01 = new BigDecimal(12345);
             bigBadObject.number02 = new BigDecimal(12345);

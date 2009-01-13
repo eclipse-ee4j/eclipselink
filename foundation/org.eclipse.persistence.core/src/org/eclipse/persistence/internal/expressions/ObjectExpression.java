@@ -403,10 +403,13 @@ public abstract class ObjectExpression extends DataExpression {
      * fine-grained pessimistic locking.
      */
     protected void writeForUpdateOfFields(ExpressionSQLPrinter printer, SQLSelectStatement statement) {
-        for (Enumeration fieldsEnum = getForUpdateOfFields().elements();
-                 fieldsEnum.hasMoreElements();) {
-            DatabaseField field = (DatabaseField)fieldsEnum.nextElement();
-            writeField(printer, field, statement);
+        for (Iterator iterator = getForUpdateOfFields().iterator(); iterator.hasNext();) {
+            DatabaseField field = (DatabaseField)iterator.next();
+            if (printer.getPlatform().shouldPrintAliasForUpdate()) {
+                writeAlias(printer, field, statement);
+            } else {
+                writeField(printer, field, statement);                
+            }
         }
     }
 }

@@ -742,12 +742,12 @@ public abstract class AbstractTransformationMapping extends DatabaseMapping {
     protected void initializeFieldToTransformers(AbstractSession session) throws DescriptorException {
         for (Enumeration stream = getFieldToTransformers().elements(); stream.hasMoreElements();) {
             Object[] pair = (Object[])stream.nextElement();
-            pair[0] = getDescriptor().buildField(((DatabaseField)pair[0]).getQualifiedName());
+            pair[0] = getDescriptor().buildField(((DatabaseField)pair[0]));
             ((FieldTransformer)pair[1]).initialize(this);
         }
         for (Enumeration stream = getFieldTransformations().elements(); stream.hasMoreElements();) {
             FieldTransformation transformation = (FieldTransformation)stream.nextElement();
-            DatabaseField field = getDescriptor().buildField(transformation.getField().getQualifiedName());
+            DatabaseField field = getDescriptor().buildField(transformation.getField());
             String transformerClassName = "MethodBasedFieldTransformer";
             FieldTransformer transformer = null;
             try {

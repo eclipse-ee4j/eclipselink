@@ -1781,7 +1781,6 @@ public class Helper implements Serializable {
      * @param timestampString - string representation of timestamp
      * @return  - timestamp representation of string
      */
-    @SuppressWarnings("deprecation")
     public static java.sql.Timestamp timestampFromString(String timestampString) throws ConversionException {
         if ((timestampString.indexOf('-') == -1) && (timestampString.indexOf('/') == -1) && (timestampString.indexOf('.') == -1) && (timestampString.indexOf(':') == -1)) {
             throw ConversionException.incorrectTimestampFormat(timestampString);

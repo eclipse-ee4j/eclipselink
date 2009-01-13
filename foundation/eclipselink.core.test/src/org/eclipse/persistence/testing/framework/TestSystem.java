@@ -212,6 +212,17 @@ public class TestSystem {
     }
 
     /**
+     * You must have the Postgres driver loaded.
+     */
+    public void usePostgres() {
+        DatabaseLogin login = new DatabaseLogin(new org.eclipse.persistence.platform.database.PostgreSQLPlatform());
+        login.setDriverClassName("org.postgresql.Driver");
+        login.setDriverURLHeader("jdbc:postgresql:");
+        login.setDatabaseURL("//qaott40.ca.oracle.com/toplink");
+        setLogin(login);
+    }
+
+    /**
      * You must have the Universal drivers and license files loaded.
      */
     public void useDB2UniversalDriver() {

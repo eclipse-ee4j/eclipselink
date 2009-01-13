@@ -184,10 +184,14 @@ public class IntegrityChecker implements Serializable {
      * This method is used to get all the database tables and add them into a vector.
      */
     public void initializeTables(AbstractSession session) {
-        Vector result = session.getAccessor().getTableInfo(null, null, null, null, session);
-        for (Enumeration resultEnum = result.elements(); resultEnum.hasMoreElements();) {
-            AbstractRecord row = (AbstractRecord)resultEnum.nextElement();
-            tables.addElement(row.get("TABLE_NAME"));
+        List result = session.getAccessor().getTableInfo(null, null, null, null, session);
+        for (Iterator iterator = result.iterator(); iterator.hasNext();) {
+            AbstractRecord row = (AbstractRecord)iterator.next();
+            if (session.getPlatform().shouldForceFieldNamesToUpperCase()) {
+                this.tables.add(((String)row.get("TABLE_NAME")).toUpperCase());
+            } else {
+                this.tables.add(row.get("TABLE_NAME"));                
+            }
         }
     }
 

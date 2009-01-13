@@ -290,6 +290,13 @@ public class PersistenceUnitProperties {
     public static final String NATIVE_SQL = "eclipselink.jdbc.native-sql";
     
     /**
+     * When native SQL queries are used, the JDBC meta-data may return column names in lower case on some platforms.
+     * If the column names are uppercase in the mappings (default) then they will not match.
+     * This setting allows for forcing the column names from the meta-data to uppercase.
+     */
+    public static final String NATIVE_QUERY_UPPERCASE_COLUMNS = "eclipselink.jdbc.uppercase-columns";
+    
+    /**
      * Specify the use of batch writing to optimize transactions with multiple writes, by default batch writing is not used.
      * @see BatchWriting
      */

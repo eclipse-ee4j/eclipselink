@@ -256,6 +256,22 @@ public class UnidirectionalOneToManyMapping extends OneToManyMapping {
             }
         }
     }
+    
+    /**
+     * Initialize the type of the target foreign key, as it will be null as it is not mapped in the target.
+     */
+    public void postInitialize(AbstractSession session) {
+        super.postInitialize(session);
+        Iterator<DatabaseField> targetForeignKeys = getTargetForeignKeyFields().iterator();
+        Iterator<DatabaseField> sourceKeys = getSourceKeyFields().iterator();
+        while (targetForeignKeys.hasNext()) {
+            DatabaseField targetForeignKey = targetForeignKeys.next();
+            DatabaseField sourcePrimaryKey = sourceKeys.next();
+            if (targetForeignKey.getType() == null) {
+                targetForeignKey.setType(getDescriptor().getObjectBuilder().getMappingForField(sourcePrimaryKey).getFieldClassification(sourcePrimaryKey));
+            }
+        }
+    }
 
     /**
      * INTERNAL:
@@ -323,7 +339,7 @@ public class UnidirectionalOneToManyMapping extends OneToManyMapping {
         size = targetForeignKeyFields.size();
         for (int index = 0; index < size; index++) {
             DatabaseField targetForeignKey = targetForeignKeyFields.get(index);
-            modifyRow.put(targetForeignKey, builder.value(null));
+            modifyRow.put(targetForeignKey, null);
             Expression expression = builder.getField(targetForeignKey).equal(builder.getParameter(targetForeignKey));
             whereClause = expression.and(whereClause);
         }
@@ -355,7 +371,7 @@ public class UnidirectionalOneToManyMapping extends OneToManyMapping {
         int size = targetForeignKeyFields.size();
         for (int index = 0; index < size; index++) {
             DatabaseField targetForeignKey = targetForeignKeyFields.get(index);
-            modifyRow.put(targetForeignKey, builder.value(null));
+            modifyRow.put(targetForeignKey, null);
             Expression expression = builder.getField(targetForeignKey).equal(builder.getParameter(targetForeignKey));
             whereClause = expression.and(whereClause);
         }
@@ -767,32 +783,39 @@ public class UnidirectionalOneToManyMapping extends OneToManyMapping {
      * <p>- execute the statement.
      */
     public void updateTargetForeignKeyPostUpdateSource_ObjectRemoved(ObjectLevelModifyQuery query, Object objectRemoved) throws DatabaseException {
-        if (isReadOnly()) {
+        if (this.isReadOnly) {
             return;
         }
+        AbstractSession session = query.getSession();
+        prepareTranslationRow(query.getTranslationRow(), query.getObject(), session);
+        AbstractRecord translationRow = new DatabaseRecord();
 
-        prepareTranslationRow(query.getTranslationRow(), query.getObject(), query.getSession());
-        AbstractRecord databaseRow = new DatabaseRecord();
-
-        // Extract primary key and value from the source.
-        int size = sourceKeyFields.size();
+        // Extract primary key and value from the source (use translation row).
+        int size = this.sourceKeyFields.size();
+        AbstractRecord modifyRow = new DatabaseRecord(size);
         for (int index = 0; index < size; index++) {
-            DatabaseField sourceKey = sourceKeyFields.get(index);
-            DatabaseField targetForeignKey = targetForeignKeyFields.get(index);
+            DatabaseField sourceKey = this.sourceKeyFields.get(index);
+            DatabaseField targetForeignKey = this.targetForeignKeyFields.get(index);
             Object sourceKeyValue = query.getTranslationRow().get(sourceKey);
-            databaseRow.put(targetForeignKey, sourceKeyValue);
+            translationRow.add(targetForeignKey, sourceKeyValue);
+            // Need to set this value to null in the modify row.
+            modifyRow.add(targetForeignKey, null);
         }
 
-        // Extract target field and its value. Construct insert statement and execute it
+        // Extract target field and its value from the object.
         List<DatabaseField> targetPrimaryKeyFields = getReferenceDescriptor().getPrimaryKeyFields();
         size = targetPrimaryKeyFields.size();
         for (int index = 0; index < size; index++) {
             DatabaseField targetPrimaryKey = targetPrimaryKeyFields.get(index);
-            Object targetKeyValue = getReferenceDescriptor().getObjectBuilder().extractValueFromObjectForField(objectRemoved, targetPrimaryKey, query.getSession());
-            databaseRow.put(targetPrimaryKey, targetKeyValue);
+            Object targetKeyValue = getReferenceDescriptor().getObjectBuilder().extractValueFromObjectForField(objectRemoved, targetPrimaryKey, session);
+            translationRow.add(targetPrimaryKey, targetKeyValue);
         }
-
-        query.getSession().executeQuery(removeTargetQuery, databaseRow);
+        // Need a different modify row than translation row, as the same field has different values in each.
+        DataModifyQuery removeQuery = (DataModifyQuery)this.removeTargetQuery.clone();
+        removeQuery.setModifyRow(modifyRow);
+        removeQuery.setHasModifyRow(true);
+        removeQuery.setIsExecutionClone(true);
+        session.executeQuery(removeQuery, translationRow);
     }
 
     /**
@@ -804,21 +827,27 @@ public class UnidirectionalOneToManyMapping extends OneToManyMapping {
      * <p>- execute the statement.
      */
     public void updateTargetForeignKeyPreDeleteSource(ObjectLevelModifyQuery query) throws DatabaseException {
-        if (isReadOnly()) {
+        if (this.isReadOnly) {
             return;
         }
 
-        AbstractRecord databaseRow = new DatabaseRecord();
-
         // Extract primary key and value from the source.
-        int size = sourceKeyFields.size();
+        int size = this.sourceKeyFields.size();
+        AbstractRecord translationRow = new DatabaseRecord(size);
+        AbstractRecord modifyRow = new DatabaseRecord(size);
         for (int index = 0; index < size; index++) {
-            DatabaseField sourceKey = sourceKeyFields.get(index);
-            DatabaseField targetForeignKey = targetForeignKeyFields.get(index);
+            DatabaseField sourceKey = this.sourceKeyFields.get(index);
+            DatabaseField targetForeignKey = this.targetForeignKeyFields.get(index);
             Object sourceKeyValue = query.getTranslationRow().get(sourceKey);
-            databaseRow.put(targetForeignKey, sourceKeyValue);
+            translationRow.add(targetForeignKey, sourceKeyValue);
+            // Need to set this value to null in the modify row.
+            modifyRow.add(targetForeignKey, null);
         }
-
-        query.getSession().executeQuery(removeAllTargetsQuery, databaseRow);
+        // Need a different modify row than translation row, as the same field has different values in each.
+        DataModifyQuery removeQuery = (DataModifyQuery)this.removeAllTargetsQuery.clone();
+        removeQuery.setModifyRow(modifyRow);
+        removeQuery.setHasModifyRow(true);
+        removeQuery.setIsExecutionClone(true);
+        query.getSession().executeQuery(removeQuery, translationRow);
     }
 }

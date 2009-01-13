@@ -37,6 +37,9 @@ public class UnitOfWorkRevertAndResumeWithNewTest extends AutoVerifyTestCase {
         if (getSession().isDistributedSession()) {
             throw new TestWarningException("Test unavailable on Remote UnitOfWork");
         }
+        if (getSession().getPlatform().isPostgreSQL()) {
+            throwWarning("Postgres aborts transaction after error.");
+        }
         UnitOfWork uow = getSession().acquireUnitOfWork();
 
         Vector results = uow.readAllObjects(Employee.class);

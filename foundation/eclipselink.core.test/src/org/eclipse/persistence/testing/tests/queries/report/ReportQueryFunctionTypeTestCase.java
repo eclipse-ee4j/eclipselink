@@ -117,14 +117,16 @@ public class ReportQueryFunctionTypeTestCase extends AutoVerifyTestCase {
             //To fix bug 6217517, MIN(t0.EMP_ID) returns an Integer value with DB2; Long on MySQL
             value = result.get("id-min");
             if (! (value instanceof BigDecimal || (value instanceof Integer && getSession().getDatasourcePlatform().isDB2())
-                                               || (value instanceof Long && getSession().getDatasourcePlatform().isMySQL()))) {
+                                               || (value instanceof Long && getSession().getDatasourcePlatform().isMySQL()
+                                               || (value instanceof Long && getSession().getDatasourcePlatform().isPostgreSQL())))) {
                 throw new TestErrorException("Incorrect result type for min function of report query.");
             }
         
             //To fix bug 6217517, MAX(t0.EMP_ID) returns an Integer value with DB2; Long on MySQL
             value = result.get("id-max");
             if (! (value instanceof BigDecimal || (value instanceof Integer && getSession().getDatasourcePlatform().isDB2())
-                                               || (value instanceof Long && getSession().getDatasourcePlatform().isMySQL()))) {
+                                               || (value instanceof Long && getSession().getDatasourcePlatform().isMySQL()
+                                               || (value instanceof Long && getSession().getDatasourcePlatform().isPostgreSQL())))) {
                 throw new TestErrorException("Incorrect result type for max function of report query.");
             }
         }

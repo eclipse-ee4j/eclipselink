@@ -1205,6 +1205,7 @@ public class EntityManagerSetupImpl {
         updateBatchWritingSetting(m);
 
         updateNativeSQLSetting(m);
+        updateUppercaseSetting(m);
         updateCacheStatementSettings(m);
         updateTemporalMutableSetting(m);
         
@@ -1487,6 +1488,24 @@ public class EntityManagerSetupImpl {
                  session.getProject().getLogin().dontUseNativeSQL();
            }else{
                  session.handleException(ValidationException.invalidBooleanValueForSettingNativeSQL(nativeSQLString));
+           }
+        }
+    }
+    
+    /**
+     * Enable or disable forcing field names to uppercase.  
+     * The method needs to be called in deploy stage.
+     */
+    protected void updateUppercaseSetting(Map m){
+        //Set Native SQL flag if it was specified.
+        String uppercaseString = EntityManagerFactoryProvider.getConfigPropertyAsStringLogDebug(PersistenceUnitProperties.NATIVE_QUERY_UPPERCASE_COLUMNS, m, session);
+        if (uppercaseString != null) {
+           if (uppercaseString.equalsIgnoreCase("true") ){
+               this.session.getProject().getLogin().setShouldForceFieldNamesToUpperCase(true);
+           } else if (uppercaseString.equalsIgnoreCase("false")) {
+               this.session.getProject().getLogin().setShouldForceFieldNamesToUpperCase(false);
+           } else {
+               this.session.handleException(ValidationException.invalidBooleanValueForProperty(uppercaseString, PersistenceUnitProperties.NATIVE_QUERY_UPPERCASE_COLUMNS));
            }
         }
     }

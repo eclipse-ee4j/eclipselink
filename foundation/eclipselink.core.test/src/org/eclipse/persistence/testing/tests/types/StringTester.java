@@ -153,6 +153,9 @@ public class StringTester extends TypeTester {
      * This will compare the objects and all of their privately owned parts.
      */
     protected void verify(WriteTypeObjectTest testCase) throws TestErrorException, TestWarningException {
+        if ((caughtException != null) && (getVarString().length() > 30)) {
+            throw new TestWarningException("Too long exception: " + caughtException.toString());
+        }
         try {
             super.verify(testCase);
         } catch (TestErrorException verifyFailedException) {
@@ -165,11 +168,6 @@ public class StringTester extends TypeTester {
                     }
                     throw new TestErrorException("Trailing blanks were not removed from char field.");
                 }
-            }
-
-            // Database throws an exception when the string is too long
-            if ((caughtException != null) && (getVarString().length() > 30)) {
-                throw new TestWarningException("Too long exception: " + caughtException.toString());
             }
 
             // Databases which return empty strings as null

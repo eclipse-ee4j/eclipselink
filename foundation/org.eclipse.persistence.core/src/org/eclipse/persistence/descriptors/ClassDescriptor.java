@@ -755,20 +755,27 @@ public class ClassDescriptor implements Cloneable, Serializable {
      */
     protected void checkDatabase(AbstractSession session) {
         if (session.getIntegrityChecker().shouldCheckDatabase()) {
-            for (Enumeration enumTable = getTables().elements(); enumTable.hasMoreElements();) {
-                DatabaseTable table = (DatabaseTable)enumTable.nextElement();
+            for (Iterator iterator = getTables().iterator(); iterator.hasNext();) {
+                DatabaseTable table = (DatabaseTable)iterator.next();
                 if (session.getIntegrityChecker().checkTable(table, session)) {
                     // To load the fields of database into a vector
-                    Vector databaseFields = new Vector();
-                    Vector result = session.getAccessor().getColumnInfo(null, null, table.getName(), null, session);
-                    for (Enumeration resultEnum = result.elements(); resultEnum.hasMoreElements();) {
-                        AbstractRecord row = (AbstractRecord)resultEnum.nextElement();
-                        databaseFields.addElement(row.get("COLUMN_NAME"));
+                    List databaseFields = new ArrayList();
+                    List result = session.getAccessor().getColumnInfo(null, null, table.getName(), null, session);
+                    // Table name may need to be lowercase.
+                    if (result.isEmpty() && session.getPlatform().shouldForceFieldNamesToUpperCase()) {
+                        result = session.getAccessor().getColumnInfo(null, null, table.getName().toLowerCase(), null, session);
+                    }
+                    for (Iterator resultIterator = result.iterator(); resultIterator.hasNext();) {
+                        AbstractRecord row = (AbstractRecord)resultIterator.next();
+                        if (session.getPlatform().shouldForceFieldNamesToUpperCase()) {
+                            databaseFields.add(((String)row.get("COLUMN_NAME")).toUpperCase());
+                        } else {
+                            databaseFields.add(row.get("COLUMN_NAME"));
+                        }
                     }
 
                     // To check that the fields of descriptor are present in the database.
-                    for (Enumeration row = getFields().elements(); row.hasMoreElements();) {
-                        DatabaseField field = (DatabaseField)row.nextElement();
+                    for (DatabaseField field : getFields()) {
                         if (field.getTable().equals(table) && (!databaseFields.contains(field.getName()))) {
                             session.getIntegrityChecker().handleError(DescriptorException.fieldIsNotPresentInDatabase(this, table.getName(), field.getName()));
                         }

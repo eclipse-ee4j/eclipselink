@@ -19,8 +19,10 @@ public class CustomizedExceptionHandler implements ExceptionHandler {
 
     public Object handleException(RuntimeException exception) {
         if (exception instanceof QueryException) {
-            return "return from CustomizedExceptionHandler";
+            if (((QueryException)exception).getErrorCode() == 6015) {
+                return "return from CustomizedExceptionHandler";
+            }
         }
-        return null;
+        throw exception;
     }
 }

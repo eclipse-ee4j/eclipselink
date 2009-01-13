@@ -15,6 +15,7 @@ package org.eclipse.persistence.platform.database;
 
 import java.io.*;
 import java.util.*;
+
 import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.expressions.ExpressionOperator;
 import org.eclipse.persistence.internal.databaseaccess.DatabaseCall;
@@ -100,10 +101,27 @@ public class PostgreSQLPlatform extends DatabasePlatform {
     protected void initializePlatformOperators() {
         super.initializePlatformOperators();
         addOperator(ExpressionOperator.simpleLogicalNoParens(ExpressionOperator.Concat, "||"));
-        addOperator(ExpressionOperator.simpleTwoArgumentFunction(ExpressionOperator.Nvl, "NULLIF"));
+        addOperator(ExpressionOperator.simpleTwoArgumentFunction(ExpressionOperator.Nvl, "COALESCE"));
         addOperator(operatorLocate());
+        addOperator(toNumberOperator());
     }
 
+    /**
+     * INTERNAL:
+     * Postgres to_number has two arguments, as fix format argument.
+     */
+    protected ExpressionOperator toNumberOperator() {
+        ExpressionOperator exOperator = new ExpressionOperator();
+        exOperator.setType(ExpressionOperator.FunctionOperator);
+        exOperator.setSelector(ExpressionOperator.ToNumber);
+        Vector v = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance(2);
+        v.addElement("TO_NUMBER(");
+        v.addElement(", '999999999.9999')");
+        exOperator.printsAs(v);
+        exOperator.bePrefix();
+        exOperator.setNodeClass(ClassConstants.FunctionExpression_Class);
+        return exOperator;
+    }
 
     /**
      * INTERNAL:
@@ -153,6 +171,19 @@ public class PostgreSQLPlatform extends DatabasePlatform {
         return " ON COMMIT PRESERVE ROWS";
     }
 
+    /**
+     * INTERNAL:
+     * Indicates whether locking OF clause should print alias for field.
+     * Example: 
+     *   on Oracle platform (method returns false):
+     *     SELECT ADDRESS_ID, ... FROM ADDRESS T1 WHERE (T1.ADDRESS_ID = ?) FOR UPDATE OF T1.ADDRESS_ID
+     *   on Postgres platform (method returns true):
+     *     SELECT ADDRESS_ID, ... FROM ADDRESS T1 WHERE (T1.ADDRESS_ID = ?) FOR UPDATE OF T1
+     */
+    public boolean shouldPrintAliasForUpdate() {
+        return true;
+    }
+    
     /**
      *  INTERNAL:
      *  Indicates whether the platform supports identity.

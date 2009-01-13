@@ -73,6 +73,11 @@ public class ConversionManagerTestModelWithoutBinding extends TestModel {
     }
 
     public void addForcedRequiredSystems() {
+        this.originalBindingState = this.getSession().getLogin().getPlatform().shouldBindAllParameters();
+        this.originalStatementCachingState = this.getSession().getLogin().getPlatform().shouldCacheAllStatements();
+        this.getSession().getLogin().getPlatform().setShouldBindAllParameters(false);
+        this.getSession().getLogin().getPlatform().setShouldCacheAllStatements(false);
+        
         addForcedRequiredSystem(new ConversionManagerSystem());
     }
 
@@ -152,12 +157,5 @@ public class ConversionManagerTestModelWithoutBinding extends TestModel {
     public void reset() {
         this.getSession().getLogin().getPlatform().setShouldCacheAllStatements(this.originalStatementCachingState);
         this.getSession().getLogin().getPlatform().setShouldBindAllParameters(this.originalBindingState);
-    }
-
-    public void setup() {
-        this.originalBindingState = this.getSession().getLogin().getPlatform().shouldBindAllParameters();
-        this.originalStatementCachingState = this.getSession().getLogin().getPlatform().shouldCacheAllStatements();
-        this.getSession().getLogin().getPlatform().setShouldBindAllParameters(false);
-        this.getSession().getLogin().getPlatform().setShouldCacheAllStatements(false);
     }
 }

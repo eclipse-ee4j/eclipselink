@@ -4039,6 +4039,30 @@ public abstract class Expression implements Serializable, Cloneable {
 
     /**
      * INTERNAL:
+     * Append the field's alias to the writer.
+     * This is used for pessimistic locking.
+     */
+    protected void writeAlias(ExpressionSQLPrinter printer, DatabaseField field, SQLSelectStatement statement) {
+        //print ", " before each selected field except the first one
+        if (printer.isFirstElementPrinted()) {
+            printer.printString(", ");
+        } else {
+            printer.setIsFirstElementPrinted(true);
+        }
+        
+        if (statement.requiresAliases()) {
+            if (field.getTable() != this.lastTable) {
+                this.lastTable = field.getTable();
+                this.currentAlias = aliasForTable(this.lastTable);
+            }
+            printer.printString(this.currentAlias.getQualifiedName());
+        } else {
+            printer.printString(field.getTable().getQualifiedName());
+        }
+    }
+
+    /**
+     * INTERNAL:
      * called from SQLSelectStatement.writeFieldsFromExpression(...)
      */
     public void writeFields(ExpressionSQLPrinter printer, Vector newFields, SQLSelectStatement statement) {

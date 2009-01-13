@@ -16,7 +16,6 @@ import java.util.*;
 
 import org.eclipse.persistence.expressions.*;
 import org.eclipse.persistence.queries.*;
-import org.eclipse.persistence.internal.helper.*;
 import org.eclipse.persistence.testing.models.employee.domain.*;
 
 /**
@@ -37,20 +36,8 @@ public class Scenario1_7b extends ReportQueryTestCase {
                 getSession().getDescriptor(PhoneNumber.class).getObjectBuilder().extractPrimaryKeyFromObject(phone, 
                                                                                                              getAbstractSession());
 
-            Object[] result = new Object[2];
-            result[0] = pks.firstElement();
-            if (getSession().getPlatform().isAccess()) { // Convert the PK value
-                result[0] = ConversionManager.getDefaultManager().convertObject(result[0], Double.class);
-            }
-            if (getSession().getPlatform().isDB2()) { // Convert the PK Value
-                result[0] = ConversionManager.getDefaultManager().convertObject(result[0], Integer.class);
-            }
-
-            // Convert the PK Value from BigDecimal to long.  MySQL getObject() returns long for BIGINT
-            if (getSession().getPlatform().isMySQL() || getSession().getPlatform().isTimesTen() || getSession().getPlatform().isDerby()) {
-                result[0] = ConversionManager.getDefaultManager().convertObject(result[0], Long.class);
-            }
-            result[1] = phone.getType();
+            Object[] result = new Object[1];
+            result[0] = phone.getType();
             addResult(result, pks);
         }
     }
@@ -61,7 +48,6 @@ public class Scenario1_7b extends ReportQueryTestCase {
 
         reportQuery.setReferenceClass(PhoneNumber.class);
         reportQuery.retrievePrimaryKeys();
-        reportQuery.addAttribute("id", reportQuery.getExpressionBuilder().getField("PHONE.EMP_ID"));
         reportQuery.addAttribute("type", reportQuery.getExpressionBuilder().get("type"));
     }
 }

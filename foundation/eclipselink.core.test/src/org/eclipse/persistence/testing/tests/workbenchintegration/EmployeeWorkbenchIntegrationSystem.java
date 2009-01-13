@@ -31,6 +31,7 @@ import org.eclipse.persistence.queries.ReadAllQuery;
 import org.eclipse.persistence.queries.ReadObjectQuery;
 import org.eclipse.persistence.queries.ReportQuery;
 import org.eclipse.persistence.sessions.Project;
+import org.eclipse.persistence.testing.framework.TestExecutor;
 import org.eclipse.persistence.testing.models.employee.domain.Address;
 import org.eclipse.persistence.testing.models.employee.domain.Employee;
 import org.eclipse.persistence.testing.models.employee.domain.LargeProject;
@@ -131,7 +132,10 @@ public class EmployeeWorkbenchIntegrationSystem extends EmployeeSystem {
         
         // Amend the project descriptor
         ClassDescriptor projectDescriptor = descriptors.get(org.eclipse.persistence.testing.models.employee.domain.Project.class);
-        projectDescriptor.getQueryManager().setQueryTimeout(QUERY_MANAGER_TIMEOUT);
+        // Postgres throws an error if you try to set the timeout.
+        if (!TestExecutor.getDefaultExecutor().getSession().getPlatform().isPostgreSQL()) {
+            projectDescriptor.getQueryManager().setQueryTimeout(QUERY_MANAGER_TIMEOUT);
+        }
         projectDescriptor.setCacheSynchronizationType(ClassDescriptor.SEND_NEW_OBJECTS_WITH_CHANGES); // Setting added for validation only - no tests currently run against this setting - Bug 3599101
         projectDescriptor.setCacheInvalidationPolicy(new NoExpiryCacheInvalidationPolicy()); // Setting added for validation only - no tests currently run against this setting - Bug 3599101
     

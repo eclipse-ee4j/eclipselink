@@ -54,21 +54,6 @@ public class JoinedAttributeAdvancedJunitTest extends JUnitTestCase {
         super(name);
     }
     
-    // This method is designed to make sure that the tests always work in the same environment:
-    // db has all the objects produced by populate method - and no other objects of the relevant classes.
-    // In order to enforce that the first test populates the db and caches the objects in static collections,
-    // the following test reads all the objects from the db, compares them with the cached ones - if they are the
-    // same (the case if the tests run directly one after another) then no population occurs.
-    public void setUp() {
-        super.setUp();
-        dbSessionClearCache();
-        if(!compare()) {
-            clear();
-            populate();
-        }
-        dbSessionClearCache();
-    }
-    
     // the session is cached to avoid extra dealing with SessionManager - 
     // without session caching each test caused at least 5 ClientSessins being acquired / released.
     protected DatabaseSession getDbSession() {
@@ -143,7 +128,9 @@ public class JoinedAttributeAdvancedJunitTest extends JUnitTestCase {
      * The setup is done as a test, both to record its failure, and to allow execution in the server.
      */
     public void testSetup() {
+        clearCache();
         new AdvancedTableCreator().replaceTables(JUnitTestCase.getServerSession());
+        populate();
         clearCache();
     }
     
@@ -493,27 +480,14 @@ public class JoinedAttributeAdvancedJunitTest extends JUnitTestCase {
         
         uow.commit();
         
-        try{
+        try {
             Employee emp2 = (Employee)((Object[])result.firstElement())[0];
             Address addr2 = (Address)((Object[])result.firstElement())[1];
     
             assertTrue("PhoneNumbers were not joined correctly, emp.getPhoneNumbers().size = " + emp.getPhoneNumbers().size() + " emp2.getPhoneNumbers().size = " + emp2.getPhoneNumbers().size(), (emp.getPhoneNumbers().size() == emp2.getPhoneNumbers().size()));
             assertTrue("Employees were not joined correctly, addr.employees.size = " + addr.getEmployees().size() + "addr2.employees.size = " + addr2.getEmployees().size(), (addr.getEmployees().size() == addr2.getEmployees().size()));
-        }finally{
-            
-            getDbSession().getIdentityMapAccessor().initializeAllIdentityMaps();
-            uow = getDbSession().acquireUnitOfWork();
-            Address addrClone = (Address)uow.readObject(addr);
-            for (Iterator iterator = addr.getEmployees().iterator(); iterator.hasNext();){
-                Employee empClone = (Employee)uow.readObject(iterator.next());
-                empClone.setAddress(addrClone);
-                addrClone.getEmployees().add(empClone);
-            }
-            Employee empClone = (Employee)uow.readObject(emp);
-            for (Iterator iter = emp.getPhoneNumbers().iterator(); iter.hasNext();){
-                empClone.addPhoneNumber((PhoneNumber)iter.next());
-            }
-            uow.commit();
+        } finally {
+            testSetup();
         }
 
     }
@@ -570,7 +544,7 @@ public class JoinedAttributeAdvancedJunitTest extends JUnitTestCase {
         
         uow.commit();
         
-        try{
+        try {
             Employee emp2 = null;
             Address addr2 = null;
             for (Iterator iterator = result.iterator(); iterator.hasNext();){
@@ -583,21 +557,8 @@ public class JoinedAttributeAdvancedJunitTest extends JUnitTestCase {
             }
             assertTrue("PhoneNumbers were not joined correctly, emp.getPhoneNumbers().size = " + emp.getPhoneNumbers().size() + " emp2.getPhoneNumbers().size = " + emp2.getPhoneNumbers().size(), (emp.getPhoneNumbers().size() == emp2.getPhoneNumbers().size()));
             assertTrue("Employees were not joined correctly, addr.employees.size = " + addr.getEmployees().size() + "addr2.employees.size = " + addr2.getEmployees().size(), (addr.getEmployees().size() == addr2.getEmployees().size()));
-        }finally{
-            
-            getDbSession().getIdentityMapAccessor().initializeAllIdentityMaps();
-            uow = getDbSession().acquireUnitOfWork();
-            Address addrClone = (Address)uow.readObject(addr);
-            for (Iterator iterator = addr.getEmployees().iterator(); iterator.hasNext();){
-                Employee empClone = (Employee)uow.readObject(iterator.next());
-                empClone.setAddress(addrClone);
-                addrClone.getEmployees().add(empClone);
-            }
-            Employee empClone = (Employee)uow.readObject(emp);
-            for (Iterator iter = emp.getPhoneNumbers().iterator(); iter.hasNext();){
-                empClone.addPhoneNumber((PhoneNumber)iter.next());
-            }
-            uow.commit();
+        } finally {
+            testSetup();
         }
 
     }
@@ -633,7 +594,7 @@ public class JoinedAttributeAdvancedJunitTest extends JUnitTestCase {
         list.add(eb.anyOf("employees"));
         query.addItem("address", eb, list);
         
-        Vector result = (Vector)getDbSession().executeQuery(query);
+        List result = (List)getDbSession().executeQuery(query);
         
         UpdateAllQuery updall = new UpdateAllQuery(Employee.class);
         updall.addUpdate("address", null);
@@ -648,29 +609,16 @@ public class JoinedAttributeAdvancedJunitTest extends JUnitTestCase {
         
         uow.commit();
         
-        try{
-            Employee emp2 = (Employee)((Object[])result.firstElement())[0];
-            Address addr2 = (Address)((Object[])result.firstElement())[1];
+        try {
+            Employee emp2 = (Employee)((Object[])result.get(0))[0];
+            Address addr2 = (Address)((Object[])result.get(0))[1];
 
             assertTrue("Address were not joined correctly, emp.getAddress() = null", (emp2.getAddress() != null));
             assertTrue("Employees were not joined correctly, addr.employees.size = " + addr.getEmployees().size() + "addr2.employees.size = " + addr2.getEmployees().size(), (addr.getEmployees().size() == addr2.getEmployees().size()));
 
-            }finally{
-                
-  /*              getDbSession().getIdentityMapAccessor().initializeAllIdentityMaps();
-                uow = getDbSession().acquireUnitOfWork();
-                emp.setVersion(emp.getVersion() + 1);
-                Address addrClone = (Address)uow.readObject(addr);
-                for (Iterator iterator = addr.getEmployees().iterator(); iterator.hasNext();){
-                    Employee empClone = (Employee)uow.readObject(iterator.next());
-                    empClone.setAddress(addrClone);
-                    addrClone.getEmployees().add(empClone);
-                }
-                Employee empClone = (Employee)uow.readObject(emp);
-                empClone.setAddress((Address)uow.readObject(emp.getAddress()));
-                uow.commit();
-    */        }
-
+        } finally {
+            testSetup();
+        }
     }
     
     public void testTwoUnrelatedResultWithOneToOneJoinsWithExtraItem() {
@@ -705,7 +653,7 @@ public class JoinedAttributeAdvancedJunitTest extends JUnitTestCase {
         list.add(eb.anyOf("employees"));
         query.addItem("address", eb, list);
         
-        Vector result = (Vector)getDbSession().executeQuery(query);
+        List result = (List)getDbSession().executeQuery(query);
         
         UpdateAllQuery updall = new UpdateAllQuery(Employee.class);
         updall.addUpdate("address", null);
@@ -719,30 +667,18 @@ public class JoinedAttributeAdvancedJunitTest extends JUnitTestCase {
         uow.executeQuery(updall);
         
         uow.commit();
-        
-        Employee emp2 = (Employee)((Object[])result.firstElement())[0];
-        Address addr2 = (Address)((Object[])result.firstElement())[2];
-        try{
+
+        try {
+            Employee emp2 = (Employee)((Object[])result.get(0))[0];
+            Address addr2 = (Address)((Object[])result.get(0))[2];
             assertTrue("Address were not joined correctly, emp.getAddress() = null", (emp2.getAddress() != null));
             assertTrue("Employees were not joined correctly, addr.employees.size = " + addr.getEmployees().size() + "addr2.employees.size = " + addr2.getEmployees().size(), (addr.getEmployees().size() == addr2.getEmployees().size()));
-            if (!emp2.getFirstName().equals(((Object[])result.firstElement())[1])){
+            if (!emp2.getFirstName().equals(((Object[])result.get(0))[1])) {
                 fail("Failed to return employee name as an separate item");
             }
     
-        }finally{
-            
-            getDbSession().getIdentityMapAccessor().initializeAllIdentityMaps();
-            uow = getDbSession().acquireUnitOfWork();
-            emp.setVersion(emp.getVersion() + 1);
-            Address addrClone = (Address)uow.readObject(addr);
-            for (Iterator iterator = addr.getEmployees().iterator(); iterator.hasNext();){
-                Employee empClone = (Employee)uow.readObject(iterator.next());
-                empClone.setAddress(addrClone);
-                addrClone.getEmployees().add(empClone);
-            }
-            Employee empClone = (Employee)uow.readObject(emp);
-            empClone.setAddress((Address)uow.readObject(emp.getAddress()));
-            uow.commit();
+        } finally {
+            testSetup();
         }
     }
 

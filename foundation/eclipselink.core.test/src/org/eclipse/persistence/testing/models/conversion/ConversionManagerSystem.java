@@ -29,37 +29,10 @@ public class ConversionManagerSystem extends TestSystem {
         }
         DatabasePlatform platform = session.getLogin().getPlatform();
 
-        // If on Access or DB2, remove the byte array mapping
-        if (platform.isAccess()) {
+        // If on Access, Oracle or DB2, remove the byte array mapping
+        if (platform.isAccess() || platform.isOracle()) {
             ClassDescriptor objDescriptor = ((ClassDescriptor)project.getDescriptors().get(ConversionDataObject.class));
             objDescriptor.getMappings().removeElement(objDescriptor.getMappingForAttributeName("aPByteArray"));
-        }
-
-        if (!(platform.isSybase() || platform.isSQLServer())) {
-            // Must switch boolean to type converion as these do not support booleans.
-            ClassDescriptor objDescriptor = ((ClassDescriptor)project.getDescriptors().get(ConversionDataObject.class));
-            objDescriptor.getMappings().removeElement(objDescriptor.getMappingForAttributeName("aBoolean"));
-            objDescriptor.getMappings().removeElement(objDescriptor.getMappingForAttributeName("aPBoolean"));
-
-            // SECTION: TYPECONVERSIONMAPPING
-            org.eclipse.persistence.mappings.DirectToFieldMapping typeconversionmapping12 = new org.eclipse.persistence.mappings.DirectToFieldMapping();
-            org.eclipse.persistence.mappings.converters.TypeConversionConverter typeconversionconverter12 = new org.eclipse.persistence.mappings.converters.TypeConversionConverter();
-            typeconversionmapping12.setConverter(typeconversionconverter12);
-            typeconversionmapping12.setAttributeName("aBoolean");
-            typeconversionmapping12.setFieldName("CM_OBJ.A_BOOLEAN");
-            typeconversionconverter12.setObjectClass(java.lang.Boolean.class);
-            typeconversionconverter12.setDataClass(java.lang.Integer.class);
-            objDescriptor.addMapping(typeconversionmapping12);
-
-            // SECTION: TYPECONVERSIONMAPPING
-            typeconversionmapping12 = new org.eclipse.persistence.mappings.DirectToFieldMapping();
-            typeconversionconverter12 = new org.eclipse.persistence.mappings.converters.TypeConversionConverter();
-            typeconversionmapping12.setConverter(typeconversionconverter12);
-            typeconversionmapping12.setAttributeName("aPBoolean");
-            typeconversionmapping12.setFieldName("CM_OBJ.A_PBOOLEAN");
-            typeconversionconverter12.setObjectClass(boolean.class);
-            typeconversionconverter12.setDataClass(int.class);
-            objDescriptor.addMapping(typeconversionmapping12);
         }
 
         if (platform.isDB2()) {
@@ -75,21 +48,7 @@ public class ConversionManagerSystem extends TestSystem {
             objDescriptor.addMapping(directtofieldmapping28);
         }
 
-        if (platform.isOracle() || platform.isDB2()) {
-            // Must switch short/byte to type converion as Oracle does not support those tow types.
-            ClassDescriptor objDescriptor = ((ClassDescriptor)project.getDescriptors().get(ConversionDataObject.class));
-            objDescriptor.getMappings().removeElement(objDescriptor.getMappingForAttributeName("aByte"));
-            objDescriptor.getMappings().removeElement(objDescriptor.getMappingForAttributeName("aPByte"));
-            objDescriptor.getMappings().removeElement(objDescriptor.getMappingForAttributeName("aPByteArray"));
-            objDescriptor.getMappings().removeElement(objDescriptor.getMappingForAttributeName("aPShort"));
-            objDescriptor.getMappings().removeElement(objDescriptor.getMappingForAttributeName("aShort"));
-            objDescriptor.getMappings().removeElement(objDescriptor.getMappingForAttributeName("floatToByte"));
-            objDescriptor.getMappings().removeElement(objDescriptor.getMappingForAttributeName("floatToShort"));
-            objDescriptor.getMappings().removeElement(objDescriptor.getMappingForAttributeName("intToByte"));
-            objDescriptor.getMappings().removeElement(objDescriptor.getMappingForAttributeName("intToShort"));
-        }
-
-        (session).addDescriptors(project);
+        session.addDescriptors(project);
     }
 
     public void createTables(DatabaseSession session) {

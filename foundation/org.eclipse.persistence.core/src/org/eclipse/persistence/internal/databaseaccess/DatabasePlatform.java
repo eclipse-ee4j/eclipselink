@@ -2556,7 +2556,7 @@ public class DatabasePlatform extends DatasourcePlatform {
      * @return Array
      */
     public Array createArray(String elementDataTypeName, Object[] elements, Connection connection) throws SQLException {
-        return null;
+        return null; //JDK 1.6 connection.createArrayOf(elementDataTypeName, elements);
     }
     
     /**
@@ -2565,7 +2565,7 @@ public class DatabasePlatform extends DatasourcePlatform {
      * @return Struct
      */
     public Struct createStruct(String structTypeName, Object[] attributes, Connection connection) throws SQLException {
-        return null;
+        return null; //JDK 1.6 connection.createStruct(structTypeName, attributes);
     }
 
     
@@ -2630,6 +2630,19 @@ public class DatabasePlatform extends DatasourcePlatform {
         return true;
     }
 
+    /**
+     * INTERNAL:
+     * Indicates whether locking OF clause should print alias for field.
+     * Example: 
+     *   on Oracle platform (method returns false):
+     *     SELECT ADDRESS_ID, ... FROM ADDRESS T1 WHERE (T1.ADDRESS_ID = ?) FOR UPDATE OF T1.ADDRESS_ID
+     *   on Postgres platform (method returns true):
+     *     SELECT ADDRESS_ID, ... FROM ADDRESS T1 WHERE (T1.ADDRESS_ID = ?) FOR UPDATE OF T1
+     */
+    public boolean shouldPrintAliasForUpdate() {
+        return false;
+    }
+    
     /**
      * INTERNAL:
      * Override this method if the platform supports sequence objects.

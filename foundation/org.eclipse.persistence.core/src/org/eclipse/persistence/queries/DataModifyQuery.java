@@ -28,14 +28,17 @@ import org.eclipse.persistence.internal.sessions.UnitOfWorkImpl;
  * @since TOPLink/Java 1.0
  */
 public class DataModifyQuery extends ModifyQuery {
+    /** Used to distinguish query that have a different modify row than translation row. */
+    protected boolean hasModifyRow;
+    
     public DataModifyQuery() {
         super();
     }
 
-	/** 
-	  * Warning: Allowing an unverified SQL string to be passed into this 
-	  * method makes your application vulnerable to SQL injection attacks. 
-	  */
+    /** 
+     * Warning: Allowing an unverified SQL string to be passed into this 
+     * method makes your application vulnerable to SQL injection attacks. 
+     */
     public DataModifyQuery(String sqlString) {
         this();
 
@@ -48,6 +51,22 @@ public class DataModifyQuery extends ModifyQuery {
     }
 
     /**
+     * Return if a modify row has been set.
+     * Allows distinguishing query that have a different modify row than translation row.
+     */
+    public boolean hasModifyRow() {
+        return hasModifyRow;
+    }
+
+    /**
+     * Set if a modify row has been set.
+     * Allows distinguishing query that have a different modify row than translation row.
+     */
+    public void setHasModifyRow(boolean hasModifyRow) {
+        this.hasModifyRow = hasModifyRow;
+    }
+    
+    /**
      * INTERNAL:
      * Perform the work to execute the SQL call.
      * Return the row count of the number of rows effected by the SQL call.
@@ -55,10 +74,10 @@ public class DataModifyQuery extends ModifyQuery {
     public Object executeDatabaseQuery() throws DatabaseException {
 
         /* Fix to allow executing non-selecting SQL in a UnitOfWork. - RB */
-        if (getSession().isUnitOfWork()) {
-            UnitOfWorkImpl unitOfWork = (UnitOfWorkImpl)getSession();
+        if (this.session.isUnitOfWork()) {
+            UnitOfWorkImpl unitOfWork = (UnitOfWorkImpl)this.session;
             /* bug:4211104 for DataModifyQueries executed during an event, while transaction was started by the uow*/
-            if ( !unitOfWork.getCommitManager().isActive() && !unitOfWork.isInTransaction()) {
+            if (!unitOfWork.getCommitManager().isActive() && !unitOfWork.isInTransaction()) {
                 unitOfWork.beginEarlyTransaction();
             }
             unitOfWork.setWasNonObjectLevelModifyQueryExecuted(true);
@@ -93,6 +112,9 @@ public class DataModifyQuery extends ModifyQuery {
     public void prepareForExecution() throws QueryException {
         super.prepareForExecution();
 
-        setModifyRow(getTranslationRow());
+        // Only replace the modify row if unset.
+        if (!this.hasModifyRow) {
+            this.modifyRow = this.translationRow;
+        }
     }
 }

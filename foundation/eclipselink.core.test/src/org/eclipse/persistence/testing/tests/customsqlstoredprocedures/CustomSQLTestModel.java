@@ -42,8 +42,12 @@ public class CustomSQLTestModel extends TestModel {
 
         // Force the database to be recreated using custom SQL.
         addForcedRequiredSystem(new EmployeeCustomSQLSystem());
-        if (getSession().getPlatform() instanceof org.eclipse.persistence.platform.database.OraclePlatform) {
+        if (getSession().getPlatform().isOracle()) {
             addForcedRequiredSystem(new InsuranceORStoredProcedureSystem());
+        } 
+        // Force field names to upper case for custom SQL tests on postgres.
+        if (getSession().getPlatform().isPostgreSQL()) {
+            getSession().getPlatform().setShouldForceFieldNamesToUpperCase(true);
         }
     }
 
@@ -243,7 +247,6 @@ public class CustomSQLTestModel extends TestModel {
      */
     public void setup() {
         // Setup complex mapping employee as well.
-        org.eclipse.persistence.sessions.DatabaseSession session =(org.eclipse.persistence.sessions.DatabaseSession) getSession();
         ClassDescriptor empDescriptor = getSession().getClassDescriptor(org.eclipse.persistence.testing.models.legacy.Employee.class);
         empDescriptor.getQueryManager().setReadObjectSQLString("select LEG_EMP.*, LEG_ADD.* FROM LEG_EMP, LEG_ADD WHERE (((LEG_EMP.FNAME = #LEG_EMP.FNAME) AND (LEG_EMP.LNAME = #LEG_EMP.LNAME)) AND ((LEG_ADD.FIRST_NM = #LEG_EMP.FNAME) AND (LEG_ADD.LNAME = #LEG_EMP.LNAME)))");
     }

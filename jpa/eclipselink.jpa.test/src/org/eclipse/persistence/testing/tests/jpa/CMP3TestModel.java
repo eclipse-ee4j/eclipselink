@@ -33,6 +33,7 @@ import org.eclipse.persistence.testing.framework.junit.JUnitTestCaseHelper;
 public class CMP3TestModel extends TestModel {
     public static EntityManager entityManager;
     public static boolean shouldLogoutOnReset = true;
+    protected static Map originalProperties;
 
     public void setup() {
         setup(getSession());
@@ -53,6 +54,7 @@ public class CMP3TestModel extends TestModel {
         currentMap.putAll(JUnitTestCaseHelper.persistencePropertiesTestMap);
 
         if (!currentMap.equals(JUnitTestCaseHelper.propertiesMap)) {
+            originalProperties = JUnitTestCaseHelper.propertiesMap;
             JUnitTestCaseHelper.propertiesMap = currentMap;
             JUnitTestCase.closeEntityManagerFactory();
             entityManager = null;
@@ -67,6 +69,9 @@ public class CMP3TestModel extends TestModel {
         if (shouldLogoutOnReset) {
             JUnitTestCase.closeEntityManagerFactory();
             entityManager = null;
+        }
+        if (originalProperties != null) {
+            JUnitTestCaseHelper.propertiesMap = originalProperties;
         }
     }
 

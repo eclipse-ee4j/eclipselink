@@ -808,6 +808,7 @@ public class ExpressionUnitTestSuite extends ExpressionTestSuite {
         test.addUnsupportedPlatform(SQLServerPlatform.class);
         test.addUnsupportedPlatform(MySQLPlatform.class);
         test.addUnsupportedPlatform(TimesTenPlatform.class);
+        test.addUnsupportedPlatform(PostgreSQLPlatform.class);
         addTest(test);
     }
 
@@ -825,6 +826,7 @@ public class ExpressionUnitTestSuite extends ExpressionTestSuite {
         test.addUnsupportedPlatform(SQLServerPlatform.class);
         test.addUnsupportedPlatform(MySQLPlatform.class);
         test.addUnsupportedPlatform(TimesTenPlatform.class);
+        test.addUnsupportedPlatform(PostgreSQLPlatform.class);
         addTest(test);
     }
 

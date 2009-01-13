@@ -30,6 +30,9 @@ public class QueryManagerTimeoutTest extends AutoVerifyTestCase {
     }
 
     public void verify() {
+        if (getSession().getPlatform().isPostgreSQL()) {
+            throwWarning("Postgres does not support setting query timeout.");
+        }
         if (getSession().getDescriptor(org.eclipse.persistence.testing.models.employee.domain.Project.class).getQueryManager().getQueryTimeout() != 
             EmployeeWorkbenchIntegrationSystem.QUERY_MANAGER_TIMEOUT) {
             throw new TestErrorException("QueryManager timeout was not preserved in exported project.");
