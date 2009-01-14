@@ -91,6 +91,17 @@ public class ContainerIndirectionPolicy extends BasicIndirectionPolicy {
     }
 
     /**
+     * INTERNAL: This method can be used when an Indirection Object is required
+     * to be built from a provided ValueHolderInterface object. This may be used
+     * for custom value holder types. Certain policies like the
+     * TransparentIndirectionPolicy may wrap the valueholder in another object.
+     */
+    
+    public Object buildIndirectObject(ValueHolderInterface valueHolder){
+        return buildContainer(valueHolder);
+    }
+
+    /**
      * INTERNAL:
      *    Return a clone of the attribute.
      *  @param buildDirectlyFromRow indicates that we are building the clone directly

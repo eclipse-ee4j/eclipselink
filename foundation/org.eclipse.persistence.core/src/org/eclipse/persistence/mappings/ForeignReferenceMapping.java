@@ -202,8 +202,16 @@ public abstract class ForeignReferenceMapping extends DatabaseMapping {
     }
 
     /**
-     * INTERNAL:
-     * Compare the attributes belonging to this mapping for the objects.
+     * INTERNAL: This method will access the target relationship and create a
+     * list of PKs of the target entities. This method is used in combination
+     * with the CachedValueHolder to store references to PK's to be loaded from
+     * a cache instead of a query.
+     */
+    public abstract Object[] buildReferencesPKList(Object entity, Object attribute, AbstractSession session);
+
+    /**
+     * INTERNAL: Compare the attributes belonging to this mapping for the
+     * objects.
      */
     public boolean compareObjects(Object firstObject, Object secondObject, AbstractSession session) {
         if (isPrivateOwned()) {
@@ -1371,9 +1379,15 @@ public abstract class ForeignReferenceMapping extends DatabaseMapping {
     }
 
     /**
-     * INTERNAL:
-     * Return the value of the reference attribute or a value holder.
-     * Check whether the mapping's attribute should be optimized through batch and joining.
+     * This method is used to load a relationship from a list of PKs. This list
+     * may be available if the relationship has been cached.
+     */
+    public abstract Object valueFromPKList(Object[] pks, AbstractSession session);
+
+    /**
+     * INTERNAL: Return the value of the reference attribute or a value holder.
+     * Check whether the mapping's attribute should be optimized through batch
+     * and joining.
      */
     public Object valueFromRow(AbstractRecord row, JoinedAttributeManager joinManager, ObjectBuildingQuery sourceQuery, AbstractSession executionSession) throws DatabaseException {
         // PERF: Direct variable access.

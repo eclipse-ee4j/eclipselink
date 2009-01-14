@@ -14,6 +14,7 @@ package org.eclipse.persistence.mappings;
 
 import java.util.*;
 
+import org.eclipse.persistence.descriptors.CMPPolicy;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.exceptions.*;
 import org.eclipse.persistence.expressions.*;
@@ -22,9 +23,11 @@ import org.eclipse.persistence.internal.descriptors.*;
 import org.eclipse.persistence.internal.helper.*;
 import org.eclipse.persistence.internal.identitymaps.CacheKey;
 import org.eclipse.persistence.internal.indirection.*;
+import org.eclipse.persistence.internal.queries.ContainerPolicy;
 import org.eclipse.persistence.internal.sessions.*;
 import org.eclipse.persistence.queries.*;
 import org.eclipse.persistence.sessions.remote.*;
+import org.eclipse.persistence.sessions.DatabaseRecord;
 import org.eclipse.persistence.sessions.ObjectCopyingPolicy;
 import org.eclipse.persistence.sessions.Project;
 
@@ -336,8 +339,7 @@ public abstract class ObjectReferenceMapping extends ForeignReferenceMapping {
                         mergeManager.mergeChanges(targetValueOfSource, set);
                     }
                     //bug:3604593 - ensure reference not changed source is invalidated if target object not found
-                    if (targetValueOfSource ==null)
-                    {
+                    if (targetValueOfSource == null) {
                       mergeManager.getSession().getIdentityMapAccessorInstance().invalidateObject(target);
                       return;
                     }
@@ -974,6 +976,28 @@ public abstract class ObjectReferenceMapping extends ForeignReferenceMapping {
     }
 
     /**
+     * INTERNAL: This method will access the target relationship and create a
+     * list of PKs of the target entities. This method is used in combination
+     * with the CachedValueHolder to store references to PK's to be loaded from
+     * a cache instead of a query.
+     */
+    public Object[] buildReferencesPKList(Object entity, Object attribute, AbstractSession session) {
+        ClassDescriptor referenceDescriptor = getReferenceDescriptor();
+        Object target = getIndirectionPolicy().getRealAttributeValueFromObject(entity, attribute);
+        Object[] result = new Object[1];
+        if (target != null){
+            Vector pks = referenceDescriptor.getObjectBuilder().extractPrimaryKeyFromObject(target, session);
+            CMPPolicy policy = referenceDescriptor.getCMPPolicy();
+            if (policy != null && policy.isCMP3Policy()) {
+                result[0] = policy.createPrimaryKeyInstance(pks);
+            } else {
+                result[0] = pks;
+            }
+        }
+        return result;
+    }
+
+    /**
      * INTERNAL:
      * Build a list of all the interfaces and super interfaces for a given class.
      */
@@ -1039,7 +1063,26 @@ public abstract class ObjectReferenceMapping extends ForeignReferenceMapping {
     }
 
     /**
-     * INTERNAL:
+     * INTERNAL: 
+     * This method is used to load a relationship from a list of PKs.
+     * This list may be available if the relationship has been cached.
+     */
+    public Object valueFromPKList(Object[] pks, AbstractSession session) {
+        Vector pk = null;
+        if (getReferenceDescriptor().hasCMPPolicy()) {
+            pk = getReferenceDescriptor().getCMPPolicy().createPkVectorFromKey(pks[0], session);
+        } else {
+            pk = (Vector) pks[0];
+        }
+        ReadObjectQuery query = new ReadObjectQuery();
+        query.setReferenceClass(getReferenceClass());
+        query.setSelectionKey(pk);
+        query.setIsExecutionClone(true);
+        return session.executeQuery(query);
+    }
+
+    /**
+     * INTERNAL: 
      * To verify if the specified object is deleted or not.
      */
     public boolean verifyDelete(Object object, AbstractSession session) throws DatabaseException {

@@ -16,6 +16,7 @@ import java.util.*;
 import org.eclipse.persistence.queries.*;
 import org.eclipse.persistence.sessions.remote.*;
 import org.eclipse.persistence.exceptions.*;
+import org.eclipse.persistence.indirection.ValueHolderInterface;
 import org.eclipse.persistence.internal.queries.InterfaceContainerPolicy;
 import org.eclipse.persistence.internal.sessions.remote.*;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
@@ -41,6 +42,17 @@ public class NoIndirectionPolicy extends IndirectionPolicy {
      */
     public NoIndirectionPolicy() {
         super();
+    }
+
+    /**
+     * INTERNAL: This method can be used when an Indirection Object is required
+     * to be built from a provided ValueHolderInterface object. This may be used
+     * for custom value holder types. Certain policies like the
+     * TransparentIndirectionPolicy may wrap the valueholder in another object.
+     */
+    
+    public Object buildIndirectObject(ValueHolderInterface valueHolder){
+        return valueHolder.getValue();
     }
 
     /**
@@ -98,6 +110,15 @@ public class NoIndirectionPolicy extends IndirectionPolicy {
     public Object getOriginalIndirectionObject(Object unitOfWorkIndirectionObject, AbstractSession session) {
         // This code appears broken, but actually is unreachable because
         // only called when indirection is true.
+        return unitOfWorkIndirectionObject;
+    }
+
+    /**
+     * INTERNAL: Return the original valueHolder object. Access to the
+     * underlying valueholder may be required when serializing the valueholder
+     * or converting the valueHolder to another type.
+     */
+    public Object getOriginalValueHolder(Object unitOfWorkIndirectionObject, AbstractSession session){
         return unitOfWorkIndirectionObject;
     }
 

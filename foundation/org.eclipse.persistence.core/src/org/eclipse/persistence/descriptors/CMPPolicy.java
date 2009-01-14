@@ -288,9 +288,11 @@ public class CMPPolicy implements java.io.Serializable {
      * Create an instance of the composite primary key class for the key object.
      */
     public Object createPrimaryKeyInstance(Vector key) {
-        Object keyInstance = getPKClassInstance();
         KeyElementAccessor[] pkElementArray = this.getKeyClassFields(getPKClass());
-                
+        if (pkElementArray.length == 1 && pkElementArray[0] instanceof KeyIsElementAccessor){
+            return key.get(0);
+        }
+        Object keyInstance = getPKClassInstance();
         for (int index = 0; index < pkElementArray.length; index++) {
             KeyElementAccessor accessor = pkElementArray[index];
             Object fieldValue = key.get(index);
@@ -306,10 +308,14 @@ public class CMPPolicy implements java.io.Serializable {
      * Create an instance of the composite primary key class for the key object.
      */
     public Object createPrimaryKeyInstance(Object key, AbstractSession session) {
-        Object keyInstance = getPKClassInstance();
-        ObjectBuilder builder = getDescriptor().getObjectBuilder();
         KeyElementAccessor[] pkElementArray = this.getKeyClassFields(getPKClass());
-                
+        ObjectBuilder builder = getDescriptor().getObjectBuilder();
+        if (pkElementArray.length == 1 && pkElementArray[0] instanceof KeyIsElementAccessor){
+            DatabaseMapping mapping = builder.getMappingForAttributeName(pkElementArray[0].getAttributeName());
+            return mapping.getRealAttributeValueFromObject(key, session);
+        }
+        
+        Object keyInstance = getPKClassInstance();
         for (int index = 0; index < pkElementArray.length; index++) {
             KeyElementAccessor accessor = pkElementArray[index];
             DatabaseMapping mapping = builder.getMappingForAttributeName(accessor.getAttributeName());

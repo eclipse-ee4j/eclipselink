@@ -108,6 +108,16 @@ public class TransparentIndirectionPolicy extends IndirectionPolicy {
     }
 
     /**
+     * INTERNAL: This method can be used when an Indirection Object is required
+     * to be built from a provided ValueHolderInterface object. This may be used
+     * for custom value holder types. Certain policies like the
+     * TransparentIndirectionPolicy may wrap the valueholder in another object.
+     */
+    
+    public Object buildIndirectObject(ValueHolderInterface valueHolder){
+        return buildIndirectContainer(valueHolder);
+    }
+    /**
      * Return a clone of the attribute.
      * @param buildDirectlyFromRow indicates that we are building the clone directly
      * from a row as opposed to building the original from the row, putting it in
@@ -278,6 +288,25 @@ public class TransparentIndirectionPolicy extends IndirectionPolicy {
             return buildIndirectContainer(valueHolder);
         } else {
             return container;
+        }
+    }
+
+    /**
+     * INTERNAL: Return the original valueHolder object. Access to the
+     * underlying valueholder may be required when serializing the valueholder
+     * or converting the valueHolder to another type.
+     */
+    public Object getOriginalValueHolder(Object unitOfWorkIndirectionObject, AbstractSession session) {
+        IndirectContainer container = (IndirectContainer)unitOfWorkIndirectionObject;
+        if (container.getValueHolder() instanceof UnitOfWorkValueHolder) {
+            ValueHolderInterface valueHolder = ((UnitOfWorkValueHolder)container.getValueHolder()).getWrappedValueHolder();
+            if ((valueHolder == null) && session.isRemoteUnitOfWork()) {
+                RemoteSessionController controller = ((RemoteUnitOfWork)session).getParentSessionController();
+                valueHolder = (ValueHolderInterface)controller.getRemoteValueHolders().get(((UnitOfWorkValueHolder)container.getValueHolder()).getWrappedValueHolderRemoteID());
+            }
+            return valueHolder;
+        } else {
+            return container.getValueHolder();
         }
     }
 

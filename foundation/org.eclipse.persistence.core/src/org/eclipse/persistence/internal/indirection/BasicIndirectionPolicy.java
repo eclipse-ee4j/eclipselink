@@ -69,6 +69,17 @@ public class BasicIndirectionPolicy extends IndirectionPolicy {
     }
 
     /**
+     * INTERNAL: This method can be used when an Indirection Object is required
+     * to be built from a provided ValueHolderInterface object. This may be used
+     * for custom value holder types. Certain policies like the
+     * TransparentIndirectionPolicy may wrap the valueholder in another object.
+     */
+    
+    public Object buildIndirectObject(ValueHolderInterface valueHolder){
+        return valueHolder;
+    }
+
+    /**
      * INTERNAL:
      *    Return a clone of the attribute.
      *  @param buildDirectlyFromRow indicates that we are building the clone
@@ -176,33 +187,41 @@ public class BasicIndirectionPolicy extends IndirectionPolicy {
      * This is used when building a new object from the unit of work when the original fell out of the cache.
      */
     public Object getOriginalIndirectionObject(Object unitOfWorkIndirectionObject, AbstractSession session) {
+        return this.getOriginalValueHolder(unitOfWorkIndirectionObject, session);
+    }
+
+    /**
+     * INTERNAL: Return the original valueHolder object. Access to the
+     * underlying valueholder may be required when serializing the valueholder
+     * or converting the valueHolder to another type.
+     */
+    public Object getOriginalValueHolder(Object unitOfWorkIndirectionObject, AbstractSession session) {
         if (unitOfWorkIndirectionObject instanceof UnitOfWorkValueHolder) {
-            ValueHolderInterface valueHolder = ((UnitOfWorkValueHolder)unitOfWorkIndirectionObject).getWrappedValueHolder();
+            ValueHolderInterface valueHolder = ((UnitOfWorkValueHolder) unitOfWorkIndirectionObject).getWrappedValueHolder();
             if ((valueHolder == null) && session.isRemoteUnitOfWork()) {
                 // For remote session the original value holder is transient,
                 // so the value must be found in the registry or created.
-                RemoteSessionController controller = ((RemoteUnitOfWork)session).getParentSessionController();
-                Object id = ((UnitOfWorkValueHolder)unitOfWorkIndirectionObject).getWrappedValueHolderRemoteID();
+                RemoteSessionController controller = ((RemoteUnitOfWork) session).getParentSessionController();
+                Object id = ((UnitOfWorkValueHolder) unitOfWorkIndirectionObject).getWrappedValueHolderRemoteID();
                 if (id == null) {
                     // Must build a new value holder.
-                    Object object = ((UnitOfWorkValueHolder)unitOfWorkIndirectionObject).getSourceObject();
+                    Object object = ((UnitOfWorkValueHolder) unitOfWorkIndirectionObject).getSourceObject();
                     AbstractRecord row = getMapping().getDescriptor().getObjectBuilder().buildRow(object, session);
                     ReadObjectQuery query = new ReadObjectQuery();
-                    query.setSession(((RemoteUnitOfWork)session).getParent());
-                    valueHolder = (ValueHolderInterface)getMapping().valueFromRow(row, null, query);
+                    query.setSession(((RemoteUnitOfWork) session).getParent());
+                    valueHolder = (ValueHolderInterface) getMapping().valueFromRow(row, null, query);
                 } else {
-                    valueHolder = (ValueHolderInterface)controller.getRemoteValueHolders().get(id);
+                    valueHolder = (ValueHolderInterface) controller.getRemoteValueHolders().get(id);
                 }
             }
             if ((valueHolder != null) && (valueHolder instanceof DatabaseValueHolder)) {
-                ((DatabaseValueHolder)valueHolder).releaseWrappedValueHolder();
+                ((DatabaseValueHolder) valueHolder).releaseWrappedValueHolder();
             }
             return valueHolder;
         } else {
             return unitOfWorkIndirectionObject;
         }
     }
-
     /**
      * Reset the wrapper used to store the value.
      */

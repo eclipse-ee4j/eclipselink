@@ -15,6 +15,7 @@ package org.eclipse.persistence.internal.indirection;
 import java.io.*;
 import java.util.*;
 import org.eclipse.persistence.exceptions.*;
+import org.eclipse.persistence.indirection.ValueHolderInterface;
 import org.eclipse.persistence.internal.descriptors.*;
 import org.eclipse.persistence.internal.sessions.remote.*;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
@@ -89,6 +90,15 @@ public abstract class IndirectionPolicy implements Cloneable, Serializable {
 
         return cascadeQuery;
     }
+    
+    /**
+     * INTERNAL: This method can be used when an Indirection Object is required
+     * to be built from a provided ValueHolderInterface object. This may be used
+     * for custom value holder types. Certain policies like the
+     * TransparentIndirectionPolicy may wrap the valueholder in another object.
+     */
+    
+    public abstract Object buildIndirectObject(ValueHolderInterface valueHolder);
 
     /**
      * INTERNAL:
@@ -176,6 +186,13 @@ public abstract class IndirectionPolicy implements Cloneable, Serializable {
      */
     public abstract Object getOriginalIndirectionObject(Object unitOfWorkIndirectionObject, AbstractSession session);
 
+    /**
+     * INTERNAL: Return the original valueHolder object. Access to the
+     * underlying valueholder may be required when serializing the valueholder
+     * or converting the valueHolder to another type.
+     */
+    public abstract Object getOriginalValueHolder(Object unitOfWorkIndirectionObject, AbstractSession session);
+    
     /**
      * INTERNAL:
      * Return the "real" attribute value, as opposed to any wrapper.

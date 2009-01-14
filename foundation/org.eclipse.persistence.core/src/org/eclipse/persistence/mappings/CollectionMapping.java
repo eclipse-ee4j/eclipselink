@@ -16,6 +16,7 @@ import java.beans.PropertyChangeListener;
 
 import java.util.*;
 
+import org.eclipse.persistence.descriptors.CMPPolicy;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.descriptors.changetracking.*;
 import org.eclipse.persistence.internal.descriptors.changetracking.*;
@@ -207,6 +208,34 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
         } else {// not known whether existing or not
             return unitOfWork.registerObject(element);
         }
+    }
+
+    /**
+     * INTERNAL:
+     * This method will access the target relationship and create a list of PKs of the target entities.
+     * This method is used in combination with the CachedValueHolder to store references to PK's to be loaded
+     * from a cache instead of a query.
+     */
+    public Object[] buildReferencesPKList(Object entity, Object attribute, AbstractSession session){
+        ClassDescriptor referenceDescriptor = getReferenceDescriptor();
+        Object collection = getIndirectionPolicy().getRealAttributeValueFromObject(entity, attribute);
+        Object[] result = new Object[getContainerPolicy().sizeFor(collection)];
+        Iterator iterator = (Iterator)getContainerPolicy().iteratorFor(collection);
+        int index = 0;
+        while(iterator.hasNext()){
+            Object target = iterator.next();
+            if (target != null){
+                Vector pks = referenceDescriptor.getObjectBuilder().extractPrimaryKeyFromObject(target, session);
+                CMPPolicy policy = referenceDescriptor.getCMPPolicy();
+                if (policy != null && policy.isCMP3Policy()){
+                    result[index] = policy.createPrimaryKeyInstance(pks);
+                }else{
+                    result[index] = pks;
+                }
+                ++index;
+            }
+        }
+        return result;
     }
 
     /**
@@ -1576,6 +1605,30 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
         return null;
     }
     
+    /**
+     * INTERNAL:
+     * This method is used to load a relationship from a list of PKs. This list
+     * may be available if the relationship has been cached.
+     */
+    public Object valueFromPKList(Object[] pks, AbstractSession session){
+        ContainerPolicy cp = getContainerPolicy();
+        Object result = cp.containerInstance();
+        for (int index = 0; index < pks.length; ++index){
+            Vector pk = null;
+            if (getReferenceDescriptor().hasCMPPolicy()){
+                pk = getReferenceDescriptor().getCMPPolicy().createPkVectorFromKey(pks[index], session);
+            }else{
+                pk = (Vector)pks[index];
+            }
+            ReadObjectQuery query = new ReadObjectQuery();
+            query.setReferenceClass(getReferenceClass());
+            query.setSelectionKey(pk);
+            query.setIsExecutionClone(true);
+            cp.addInto(session.executeQuery(query), result, session);
+        }
+        return result;
+    }
+
     /**
      * INTERNAL:
      * Return the value of the field from the row or a value holder on the query to obtain the object.
