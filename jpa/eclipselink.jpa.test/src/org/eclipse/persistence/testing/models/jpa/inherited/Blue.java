@@ -29,7 +29,7 @@ import static javax.persistence.InheritanceType.SINGLE_TABLE;
 @Entity
 @Inheritance(strategy=SINGLE_TABLE)
 @Table(name="CMP3_BLUE")
-public class Blue extends Beer<BigDecimal, Float>  {
+public class Blue extends Beer<BigDecimal, Float> implements Cloneable  {
     private BigInteger uniqueKey;
     public Blue() {}
     
@@ -42,6 +42,10 @@ public class Blue extends Beer<BigDecimal, Float>  {
         }
         
         return (getId().equals(((Blue)anotherBlue).getId()));
+    }
+    
+    public Object clone() throws CloneNotSupportedException {
+        return super.clone();
     }
     
     public BigInteger getUniqueKey() {
