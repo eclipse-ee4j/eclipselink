@@ -704,6 +704,7 @@ public class EntityManagerSetupImpl {
             // Translate old properties.
             // This should be done before using properties (i.e. ServerPlatform).
             translateOldProperties(predeployProperties, null);
+            
 
             String sessionsXMLStr = (String)predeployProperties.get(PersistenceUnitProperties.SESSIONS_XML);
             String sessionNameStr = (String)predeployProperties.get(PersistenceUnitProperties.SESSION_NAME);            
@@ -1382,10 +1383,16 @@ public class EntityManagerSetupImpl {
             // There is a single map entry for each instance of an EMSetupImpl
             // 253701: This instance of EMSetupImpl must remove itself as key:value=name:emSetupImpl from the EntityManagerFactoryProvider HashMapCache 
             synchronized (EntityManagerFactoryProvider.emSetupImpls) {
-                EntityManagerFactoryProvider.emSetupImpls.remove(
-                        PersistenceUnitProcessor.buildPersistenceUnitName(
-                                getPersistenceUnitInfo().getPersistenceUnitRootUrl(), 
-                                getPersistenceUnitInfo().getPersistenceUnitName()));
+                String puName = PersistenceUnitProcessor.buildPersistenceUnitName(getPersistenceUnitInfo().getPersistenceUnitRootUrl(), getPersistenceUnitInfo().getPersistenceUnitName());
+                String esiName = puName;
+                if (this.predeployProperties.get(PersistenceUnitProperties.SESSION_NAME) != null) {
+                    esiName = puName + this.predeployProperties.get(PersistenceUnitProperties.SESSION_NAME);
+                }
+                EntityManagerFactoryProvider.emSetupImpls.remove(esiName);
+                --EntityManagerFactoryProvider.PUIUsageCount;
+                if (EntityManagerFactoryProvider.PUIUsageCount <= 0){
+                    EntityManagerFactoryProvider.persistenceUnits.remove(puName);
+                }
             }
             
             // 253701: remove any JPAInitializer singleton so GC can occur on the entityManagerFactoryImpl instance

@@ -16,6 +16,8 @@ import java.io.File;
 import java.util.Map;
 import java.util.HashMap;
 
+import javax.persistence.spi.PersistenceUnitInfo;
+
 import org.eclipse.persistence.config.PersistenceUnitProperties;
 import org.eclipse.persistence.config.TargetDatabase;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
@@ -30,6 +32,10 @@ import org.eclipse.persistence.tools.schemaframework.SchemaManager;
  */
 public class EntityManagerFactoryProvider { 
     public static final HashMap<String, EntityManagerSetupImpl> emSetupImpls = new HashMap<String, EntityManagerSetupImpl>();
+    
+    //Cache the Persistence Units
+    public static final HashMap<String, PersistenceUnitInfo> persistenceUnits = new HashMap<String, PersistenceUnitInfo>();
+    public static volatile int PUIUsageCount = 0;
     
     // TEMPORARY - WILL BE REMOVED.
     // Used to warn users about deprecated property name and suggest the valid name.
@@ -197,6 +203,16 @@ public class EntityManagerFactoryProvider {
         return emSetupImpls.get(emName);
     }
 
+    /**
+     * Return the setup class for a given entity manager name 
+     * @param emName 
+     */
+    public static PersistenceUnitInfo getPersistenceUnitInfo(String puName){
+        if (puName == null){
+            return persistenceUnits.get("");
+        }
+        return persistenceUnits.get(puName);
+    }
     /**
      * Logs in to given session. If user has not specified  <codeTARGET_DATABASE</code>
      * the platform would be auto detected

@@ -69,13 +69,19 @@ public abstract class JPAInitializer {
      * This method will prepare to call predeploy, call it and finally register the
      * transformer returned to be used for weaving.
      */
-    protected boolean callPredeploy(SEPersistenceUnitInfo persistenceUnitInfo, Map m, PersistenceInitializationHelper persistenceHelper) {
+    public boolean callPredeploy(PersistenceUnitInfo persistenceUnitInfo, Map m, PersistenceInitializationHelper persistenceHelper) {
         // we will only attempt to deploy when EclipseLink is specified as the provider or the provider is unspecified
         String providerClassName = persistenceUnitInfo.getPersistenceProviderClassName();
         if (isPersistenceProviderSupported(providerClassName)){
             // Bug 210280/215865: this decoded URL path + PU name [puName] must be used as the key in the EMSetup map below
-            String puName = PersistenceUnitProcessor.buildPersistenceUnitName(persistenceUnitInfo.getPersistenceUnitRootUrl(),persistenceUnitInfo.getPersistenceUnitName());
-            EntityManagerSetupImpl emSetupImpl = EntityManagerFactoryProvider.getEntityManagerSetupImpl(puName);
+            String sessionName = (String)m.get(PersistenceUnitProperties.SESSION_NAME);
+            if (sessionName == null){
+                sessionName = (String)persistenceUnitInfo.getProperties().get(PersistenceUnitProperties.SESSION_NAME);
+            }
+            if (sessionName == null) sessionName = "";
+            String emName = PersistenceUnitProcessor.buildPersistenceUnitName(persistenceUnitInfo.getPersistenceUnitRootUrl(),persistenceUnitInfo.getPersistenceUnitName()) + sessionName;
+            
+            EntityManagerSetupImpl emSetupImpl = EntityManagerFactoryProvider.getEntityManagerSetupImpl(emName);
             // if we already have an EntityManagerSetupImpl this PU has already been processed.  Use the existing one
             if (emSetupImpl != null && !emSetupImpl.isUndeployed()){
                 return false;
@@ -85,17 +91,20 @@ public abstract class JPAInitializer {
             Map mergedProperties = EntityManagerFactoryProvider.mergeMaps(m, persistenceUnitInfo.getProperties());
             // Bug#4452468  When globalInstrumentation is null, there is no weaving
             checkWeaving(mergedProperties);
-
-            // Create the temp loader that will not cache classes for entities in our persistence unit
-            ClassLoader tempLoader = createTempLoader(tempLoaderSet);
-            persistenceUnitInfo.setNewTempClassLoader(tempLoader);
+            
+            if (persistenceUnitInfo instanceof SEPersistenceUnitInfo){
+                // Create the temp loader that will not cache classes for entities in our persistence unit
+                ClassLoader tempLoader = createTempLoader(tempLoaderSet);
+                ((SEPersistenceUnitInfo)persistenceUnitInfo).setNewTempClassLoader(tempLoader);
+                ((SEPersistenceUnitInfo)persistenceUnitInfo).setClassLoader(persistenceHelper.getClassLoader(persistenceUnitInfo.getPersistenceUnitName(), m));
+            }
             if (emSetupImpl == null){
                 emSetupImpl = new EntityManagerSetupImpl();
                 // Bug 210280/215865: use the decoded URL path + PU name as the key in the EMSetup map - to handle paths with spaces
-                EntityManagerFactoryProvider.addEntityManagerSetupImpl(puName, emSetupImpl);
+                EntityManagerFactoryProvider.addEntityManagerSetupImpl(emName, emSetupImpl);
+                ++ EntityManagerFactoryProvider.PUIUsageCount;
             }
            
-            persistenceUnitInfo.setClassLoader(persistenceHelper.getClassLoader(persistenceUnitInfo.getPersistenceUnitName(), m));
     
             // A call to predeploy will partially build the session we will use
             final ClassTransformer transformer = emSetupImpl.predeploy(persistenceUnitInfo, mergedProperties);
@@ -146,6 +155,7 @@ public abstract class JPAInitializer {
         Iterator<SEPersistenceUnitInfo> persistenceUnits = PersistenceUnitProcessor.getPersistenceUnits(archive, initializationClassloader).iterator();
         while (persistenceUnits.hasNext()) {
             SEPersistenceUnitInfo persistenceUnitInfo = persistenceUnits.next();
+            EntityManagerFactoryProvider.persistenceUnits.put(PersistenceUnitProcessor.buildPersistenceUnitName(persistenceUnitInfo.getPersistenceUnitRootUrl(), persistenceUnitInfo.getPersistenceUnitName()), persistenceUnitInfo);
             callPredeploy(persistenceUnitInfo, m, persistenceActivator);
         }
     }

@@ -24,6 +24,7 @@ import javax.persistence.EntityManagerFactory;
 import javax.persistence.spi.ClassTransformer;
 import javax.persistence.spi.PersistenceUnitInfo;
 
+import org.eclipse.persistence.config.PersistenceUnitProperties;
 import org.eclipse.persistence.exceptions.PersistenceUnitLoadingException;
 import org.eclipse.persistence.internal.jpa.EntityManagerFactoryImpl;
 import org.eclipse.persistence.internal.jpa.EntityManagerFactoryProvider;
@@ -98,24 +99,39 @@ public class PersistenceProvider implements javax.persistence.spi.PersistencePro
             boolean initialized = false;
             while (resources.hasMoreElements()) {
                 String puName = PersistenceUnitProcessor.buildPersistenceUnitName(PersistenceUnitProcessor.computePURootURL(resources.nextElement()), name);
-                
-                synchronized (EntityManagerFactoryProvider.emSetupImpls){
-                    emSetupImpl = EntityManagerFactoryProvider.getEntityManagerSetupImpl(puName);
-                    if (emSetupImpl == null || emSetupImpl.isUndeployed()){
-                        if (!initialized){                           
+
+                synchronized (EntityManagerFactoryProvider.persistenceUnits) {
+                    PersistenceUnitInfo puInfo = EntityManagerFactoryProvider.getPersistenceUnitInfo(puName);
+                    if (puInfo == null) {
+                        if (!initialized) {
                             initializer.initialize(nonNullProperties, initializationHelper);
                             initialized = true;
                         }
-                        emSetupImpl = EntityManagerFactoryProvider.getEntityManagerSetupImpl(puName);
+                        puInfo = EntityManagerFactoryProvider.getPersistenceUnitInfo(puName);
+                    }
+                    if (puInfo != null) {
+                        String esiName = puName;
+                        if (nonNullProperties.get(PersistenceUnitProperties.SESSION_NAME) != null) {
+                            esiName = puName + nonNullProperties.get(PersistenceUnitProperties.SESSION_NAME);
+                        } else {
+                            if (puInfo.getProperties().get(PersistenceUnitProperties.SESSION_NAME) != null) {
+                                esiName = puName + puInfo.getProperties().get(PersistenceUnitProperties.SESSION_NAME);
+                            }
+                        }
+                        emSetupImpl = EntityManagerFactoryProvider.getEntityManagerSetupImpl(esiName);
+                        if (emSetupImpl == null) {
+                            initializer.callPredeploy(puInfo, nonNullProperties, initializationHelper);
+                            emSetupImpl = EntityManagerFactoryProvider.getEntityManagerSetupImpl(esiName);
+                        }
+                    }
+
+                    // We found a match, stop looking.
+                    if (emSetupImpl != null) {
+                        break;
                     }
                 }
-
-                // We found a match, stop looking.
-                if (emSetupImpl != null) {
-                    break;
-                }
             }
-        } catch (Exception e){
+        } catch (Exception e) {
             throw PersistenceUnitLoadingException.exceptionSearchingForPersistenceResources(currentLoader, e);
         }
 
@@ -185,15 +201,22 @@ public class PersistenceProvider implements javax.persistence.spi.PersistencePro
             ClassTransformer transformer = null;
         synchronized (EntityManagerFactoryProvider.emSetupImpls) {
             String puName = PersistenceUnitProcessor.buildPersistenceUnitName(info.getPersistenceUnitRootUrl(), info.getPersistenceUnitName());
-            
-            emSetupImpl = EntityManagerFactoryProvider.getEntityManagerSetupImpl(puName);
+            String esiName = puName;
+            if (nonNullProperties.get(PersistenceUnitProperties.SESSION_NAME) != null) {
+                esiName = puName + nonNullProperties.get(PersistenceUnitProperties.SESSION_NAME);
+            } else {
+                if (info.getProperties().get(PersistenceUnitProperties.SESSION_NAME) != null) {
+                    esiName = puName + info.getProperties().get(PersistenceUnitProperties.SESSION_NAME);
+                }
+            }
+            emSetupImpl = EntityManagerFactoryProvider.getEntityManagerSetupImpl(esiName);
             if (emSetupImpl == null){
                 emSetupImpl = new EntityManagerSetupImpl();
                     isNew = true;
                 emSetupImpl.setIsInContainerMode(true);        
                     // if predeploy fails then emSetupImpl shouldn't be added to FactoryProvider
                     transformer = emSetupImpl.predeploy(info, nonNullProperties);
-                EntityManagerFactoryProvider.addEntityManagerSetupImpl(puName, emSetupImpl);
+                EntityManagerFactoryProvider.addEntityManagerSetupImpl(esiName, emSetupImpl);
             }
         }
             
