@@ -270,7 +270,6 @@ public abstract class AbstractNullPolicy {
         // Nillable 
         if (isNullRepresentedByXsiNil()) {
             // Ignore any other attributes that are in addition to xsi:nil
-            // TODO: check for xsi:nil="false" or assume always set to xsi:nil="true"
             int index = attributes.getIndex(XMLConstants.SCHEMA_INSTANCE_URL, XMLConstants.SCHEMA_NIL_ATTRIBUTE);
             if (index >= 0) {
                 return true;
@@ -293,7 +292,6 @@ public abstract class AbstractNullPolicy {
      */
     public boolean valueIsNull(Element element) {
         // Check Nillable: Ignore any other attributes that are in addition to xsi:nil
-        // TODO: check for xsi:nil="false" or assume always set to xsi:nil="true"
         if (null == element) {
             return true;
         } else {

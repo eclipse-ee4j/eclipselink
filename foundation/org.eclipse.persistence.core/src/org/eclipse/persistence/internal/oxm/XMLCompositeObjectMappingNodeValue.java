@@ -152,7 +152,7 @@ public class XMLCompositeObjectMappingNodeValue extends XMLRelationshipMappingNo
              */
             // Check if we need to create the DeferredContentHandler based on policy state
             if(xmlCompositeObjectMapping.getNullPolicy().isNullRepresentedByEmptyNode() || xmlCompositeObjectMapping.getNullPolicy().isNullRepresentedByXsiNil()) {
-            	if(null != xmlDescriptor) { // TODO: handle a null descriptor
+            	if(null != xmlDescriptor) {
             		// Process null capable value
             		String qnameString = xPathFragment.getLocalName();
             		if(xPathFragment.getPrefix() != null) {

@@ -176,7 +176,6 @@ public class Schema {
                     prefix = prefix.substring(index + 1, prefix.length());
                 }
                 namespaceResolver.put(prefix, value);
-                //TODO: remove from attributes map?
             }
         }
     }

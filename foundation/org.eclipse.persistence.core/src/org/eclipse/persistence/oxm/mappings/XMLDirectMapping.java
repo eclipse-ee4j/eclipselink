@@ -251,7 +251,7 @@ public class XMLDirectMapping extends AbstractDirectMapping implements XMLMappin
         Object attributeValue = fieldValue;
         // If attribute is absent check the policy
         if(attributeValue == XMLRecord.noEntry) {
-            if(!getNullPolicy().getIsSetPerformedForAbsentNode()) { // TODO: valid for absent subset of use cases
+            if(!getNullPolicy().getIsSetPerformedForAbsentNode()) {
                 return attributeValue;
             } else {
                 fieldValue = null;

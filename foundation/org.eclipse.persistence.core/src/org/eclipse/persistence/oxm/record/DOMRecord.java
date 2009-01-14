@@ -518,7 +518,6 @@ public class DOMRecord extends XMLRecord {
 
     /**
      * PUBLIC:
-     * todo: need to check attributes, should be prefix or nodename? / innerclass
      */
     public Set entrySet() {
         int size = this.size();
@@ -617,7 +616,6 @@ public class DOMRecord extends XMLRecord {
     /**
      * PUBLIC:
      * Return the set of element names from the DOM.
-     * todo: need to check attributes, should be prefix or nodename? / innerclass
      */
     public Set keySet() {
         int length = getDOM().getChildNodes().getLength();
@@ -631,7 +629,6 @@ public class DOMRecord extends XMLRecord {
     /**
      * PUBLIC:
      * Return the collection of element values from the DOM.
-     * todo: needs to do gets with the keys to have correct values, need to check attributes / innerclass
      */
     public Collection values() {
         int length = getDOM().getChildNodes().getLength();

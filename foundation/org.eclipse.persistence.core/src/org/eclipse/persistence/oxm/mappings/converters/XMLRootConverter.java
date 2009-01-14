@@ -66,7 +66,6 @@ public class XMLRootConverter implements XMLConverter {
 	}
 
 	public boolean isMutable() {
-		// TODO Auto-generated method stub
 		return false;
 	}
 
