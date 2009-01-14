@@ -13,7 +13,7 @@
 package org.eclipse.persistence.internal.localization.i18n;
 
 import java.util.ListResourceBundle;
- 
+
 /**
  * English ResourceBundle for LoggingLocalization messages.
  *
@@ -355,7 +355,8 @@ public class LoggingLocalizationResource extends ListResourceBundle {
         { "jmx_mbean_runtime_services_failed_toget_initial_context", "Failed to get InitialContext for MBean registration: {0}" },        
         { "jmx_mbean_runtime_services_mbeanserver_lookup_failed", "Failed to get InitialContext for MBean registration: {0}" },
         { "jmx_mbean_runtime_services_threadpool_initialize_failed", "Failed to initialize MBean threadPoolRuntime: {0}" },
-        { "jmx_mbean_runtime_services_get_executethreadruntime_object_failed", "Version of WebLogic does not support executeThreadRuntime - using ClassLoader: {0}" },        
+        { "jmx_mbean_runtime_services_get_executethreadruntime_object_failed", "Version of WebLogic does not support executeThreadRuntime - using ClassLoader: {0}" },
+        { "nested_entity_manager_flush_not_executed_pre_query_changes_may_be_pending", "The class {0} is already flushing. The query will be executed without further changes being written to the database.  If the query is conditional upon changed data the changes may not be reflected in the results.  Users should issue a flush() call upon completion of the dependent changes and prior to this flush() to ensure correct results." },
         
         
         // newly added for message id
@@ -611,7 +612,8 @@ public class LoggingLocalizationResource extends ListResourceBundle {
         { "jmx_mbean_runtime_services_failed_toget_initial_context.MSGID", "TOP-50229"},        
         { "jmx_mbean_runtime_services_mbeanserver_lookup_failed.MSGID", "TOP-50230"},
         { "jmx_mbean_runtime_services_threadpool_initialize_failed.MSGID", "TOP-50231"},
-        { "jmx_mbean_runtime_services_get_executethreadruntime_object_failed.MSGID", "TOP-50232"}        
+        { "jmx_mbean_runtime_services_get_executethreadruntime_object_failed.MSGID", "TOP-50232"},        
+        { "nested_entity_manager_flush_not_executed_pre_query_changes_may_be_pending.MSGID", "TOP-50233"}        
         
     }; 
      

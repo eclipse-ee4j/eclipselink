@@ -19,6 +19,8 @@ import org.eclipse.persistence.config.FlushClearCache;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.descriptors.changetracking.AttributeChangeTrackingPolicy;
 import org.eclipse.persistence.internal.descriptors.ObjectBuilder;
+import org.eclipse.persistence.logging.AbstractSessionLog;
+import org.eclipse.persistence.logging.SessionLog;
 import org.eclipse.persistence.exceptions.DatabaseException;
 import org.eclipse.persistence.exceptions.OptimisticLockException;
 import org.eclipse.persistence.exceptions.ValidationException;
@@ -46,6 +48,11 @@ public class RepeatableWriteUnitOfWork extends UnitOfWorkImpl {
      */
     protected transient String flushClearCache;
     
+    /** 
+     * Track whether we are already in a flush().
+     */
+    protected boolean isWithinFlush;
+    
     /** Contains classes that should be invalidated in the shared cache on commit.
      * Used only in case fushClearCache == FlushClearCache.DropInvalidate:
      * clear method copies contents of updatedObjectsClasses to this set,
@@ -61,6 +68,7 @@ public class RepeatableWriteUnitOfWork extends UnitOfWorkImpl {
         super(parentSession, referenceMode);
         this.shouldTerminateTransaction = true;
         this.shouldNewObjectsBeCached = true;
+        this.isWithinFlush = false;
     }
     
     /**
@@ -281,14 +289,27 @@ public class RepeatableWriteUnitOfWork extends UnitOfWorkImpl {
      * and create or merge into the cumulativeUOWChangeSet.
      */
     public void writeChanges() {
+        // Check for a nested flush and return early if we are in one
+        if(this.isWithinFlush()) {
+            AbstractSessionLog.getLog().log(SessionLog.WARNING,
+                "nested_entity_manager_flush_not_executed_pre_query_changes_may_be_pending", this.getClass().getSimpleName());
+            return;
+        } 
+        
         if (this.unitOfWorkChangeSet == null) {
             this.unitOfWorkChangeSet = new UnitOfWorkChangeSet(this);
         }
+
+        // 256277: stop any nested flushing - there should only be one level 
+        this.isWithinFlush = true; // set before calculateChanges as a PrePersist callback may contain a query that requires a pre flush()
+
         UnitOfWorkChangeSet changeSet = this.unitOfWorkChangeSet;
         // This also discovers unregistered new objects, (which persists them and assign sequence, so no need to assign sequence twice).
         calculateChanges(getCloneMapping(), changeSet, false);
+        
         // Write those changes to the database.
         if (!changeSet.hasChanges() && !changeSet.hasForcedChanges() && ! this.hasDeletedObjects() && ! this.hasModifyAllQueries()) {
+            this.isWithinFlush = false; // clear the flag in the case that we don't have changes
             return;
         }
         try {
@@ -298,6 +319,8 @@ public class RepeatableWriteUnitOfWork extends UnitOfWorkImpl {
             clearFlushClearCache();
             setLifecycle(WriteChangesFailed);
             throw exception;
+        } finally {
+            isWithinFlush = false;  // clear the flag in the case that we have changes          
         }
 
         if (this.cumulativeUOWChangeSet == null) {
@@ -487,5 +510,13 @@ public class RepeatableWriteUnitOfWork extends UnitOfWorkImpl {
      */
     public void setFlushClearCache(String flushClearCache) {
         this.flushClearCache = flushClearCache;
+    }
+
+    /**
+     * Return whether we are already performing a flush() call
+     * @return
+     */
+    public boolean isWithinFlush() {
+        return isWithinFlush;
     }
 }

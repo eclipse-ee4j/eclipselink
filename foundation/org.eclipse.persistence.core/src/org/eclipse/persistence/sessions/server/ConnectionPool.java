@@ -62,7 +62,7 @@ public class ConnectionPool {
     
     /**
      * INTERNAL:
-     * Wait until a connection is avaiable and allocate the connection for the client.
+     * Wait until a connection is available and allocate the connection for the client.
      */
     public synchronized Accessor acquireConnection() throws ConcurrencyException {
         // PERF: Using direct variable access to minimize concurrency bottleneck.

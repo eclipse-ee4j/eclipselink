@@ -3864,7 +3864,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
                 unregisteredExistingObjects.put(object, object);
                 return;
             } else {
-                // It is new but not reference by a cascade persist mapping, throw an error.
+                // It is new but not referenced by a cascade persist mapping, throw an error.
                 throw new IllegalStateException(ExceptionLocalization.buildMessage("new_object_found_during_commit", new Object[]{object}));
             }
         }
