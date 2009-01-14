@@ -176,8 +176,8 @@ public class XMLProjectReader {
         if (project == null) {
             project = new EclipseLinkObjectPersistenceRuntimeXMLProject();
         }
-
-        return readObjectPersistenceRuntimeFormat(document, classLoader, project);
+        // bug261072: clone the project since readObjectPersistenceRuntimeFormat will change its datasourceLogin and Classloader 
+        return readObjectPersistenceRuntimeFormat(document, classLoader, (Project)project.clone());
     }
 
     private static XMLParser createXMLParser(XMLPlatform xmlPlatform, boolean namespaceAware, boolean whitespacePreserving, String schema){
@@ -276,11 +276,11 @@ public class XMLProjectReader {
         xmlLogin.setDatasourcePlatform(new org.eclipse.persistence.oxm.platform.DOMPlatform());
         opmProject.setDatasourceLogin(xmlLogin);
 
-        // Create the OPM prooject.
+        // Create the OPM project.
         if (classLoader != null) {
-        	opmProject.getDatasourceLogin().getDatasourcePlatform().getConversionManager().setLoader(classLoader);
+            xmlLogin.getDatasourcePlatform().getConversionManager().setLoader(classLoader);
         }
-        // Marshall OPM format.
+        // Marshal OPM format.
         XMLContext context = new XMLContext(opmProject);
         context.getSession(Project.class).getEventManager().addListener(new MissingDescriptorListener());
         XMLUnmarshaller unmarshaller = context.createUnmarshaller();
