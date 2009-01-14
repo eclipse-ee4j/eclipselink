@@ -67,6 +67,21 @@ public class UiMappingBundle extends java.util.ListResourceBundle {
 		{"SET_METHOD_LIST_BROWSER_DIALOG.title", "Select a Set Method"},
 		{"SET_METHOD_LIST_BROWSER_DIALOG.listLabel", "&Methods:"},
 		
+		// ContainerAccessorPanel
+		{"USE_CONTAINER_ACCESSOR_CHECK_BOX", "&Use Container Accessor"},
+		{"CONTAINER_ACCESSOR_LABEL", "Container &Accessor:"},
+		{"CONTAINER_ACCESSOR_EDIT_BUTTON", "&Edit..."},
+		{"ACCESSOR_PANEL_METHODS_BUTTON", "Use Accessor Get/Set &Methods"},
+		{"ACCESSOR_PANEL_GET_METHOD_CHOOSER", "&Get Method:"},
+		{"ACCESSOR_PANEL_SET_METHOD_CHOOSER", "&Set Method:"},
+		{"ACCESSOR_PANEL_ATTRIBUTE_BUTTON", "Use &Attribute"},
+		{"ACCESSOR_PANEL_ATTRIBUTE_CHOOSER", "At&tribute:"},
+		{"CONTAINER_ACCESSOR_EDITING_DIALOG_TITLE", "Specify Accessor"},
+		{"ACCESSOR_EDITING_DIALOG.NULL_ACCESSOR_ERROR", "Accessor type is not specified."},
+		{"ACCESSOR_EDITING_DIALOG.NULL_ACCESSOR_ATTRIBUTE_ERROR", "Accessor attribute is not specified."},
+		{"ACCESSOR_EDITING_DIALOG.NULL_ACCESSOR_GET_METHOD_ERROR", "Accessor get method is not specified"},
+		{"ACCESSOR_EDITING_DIALOG.NULL_ACCESSOR_SET_METHOD_ERROR", "Accessor set method is not specified"},
+		
 		// NullValuePolicyPanel
 		{"DEFAULT_NULL_VALUE_CHECK_BOX", "Def&ault Null Value"},
 		{"DEFAULT_NULL_VALUE_TYPE_LABEL", "Ty&pe:"},
@@ -162,6 +177,12 @@ public class UiMappingBundle extends java.util.ListResourceBundle {
 		{"TRANSFORMER_METHOD_TOOLTIP", "Transformation method: {0}"},
 		{"TRANSFORMER_CLASS_TOOLTIP", "Transformer class: {0}"},
 		
+		// *** ContainerAccessorRendererAdapter ***
+		{"ACCESSOR_METHODS_MISSING_TEXT", "<Container Accessor methods missing ...>"},
+		{"ACCESSOR_ATTRIBUTE_MISSING_TEXT", "<Container Accessor attribute missing ...>"},
+		{"ACCESSOR_METHODS_TOOLTIP", "Container Accessor methods: {0}"},
+		{"ACCESSOR_ATTRIBUTE_TOOLTIP", "Container Accessor attribute: {0}"},
+
 		// *** TransformerEditingPanel ***
 		{"TRANSFORMER_PANEL_METHOD_BUTTON", "&Use Transformation Method"},
 		{"TRANSFORMER_PANEL_METHOD_CHOOSER", "&Method: "},

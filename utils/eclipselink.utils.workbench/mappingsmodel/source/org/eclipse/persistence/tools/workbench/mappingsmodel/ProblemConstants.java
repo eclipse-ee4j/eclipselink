@@ -413,6 +413,12 @@ public final class ProblemConstants
 	
 	// *** MWAbstractXmlReferenceMapping ***
 	public static final String MAPPING_TARGET_NOT_PRIMARY_KEY_ON_REFERENCE_DESCRIPTOR		= "0626";
+	
+	// *** MWAbstractCompositeMapping ***
+	public static final String MAPPING_CONTAINER_ACCESSOR_NOT_CONFIGURED					= "0630";
+	public static final String MAPPING_CONTAINER_ACCESSOR_ATTRIBUTE_NOT_SELECTED			= "0631";
+	public static final String MAPPING_CONTAINER_ACCESSOR_GET_METHOD_NOT_SELECTED			= "0632";
+	public static final String MAPPING_CONTAINER_ACCESSOR_SET_METHOD_NOT_SELECTED			= "0633";
 
 	// ********************************************************************
 	//		tables, fields, references, etc.

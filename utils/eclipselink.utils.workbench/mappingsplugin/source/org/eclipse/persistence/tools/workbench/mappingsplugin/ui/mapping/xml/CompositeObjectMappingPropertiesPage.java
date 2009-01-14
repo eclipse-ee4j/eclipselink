@@ -16,6 +16,7 @@ import java.awt.Component;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
+
 import javax.swing.BorderFactory;
 import javax.swing.JComponent;
 import javax.swing.JPanel;
@@ -33,12 +34,10 @@ import org.eclipse.persistence.tools.workbench.mappingsplugin.ui.xml.UiXmlBundle
 import org.eclipse.persistence.tools.workbench.uitools.app.PropertyAspectAdapter;
 import org.eclipse.persistence.tools.workbench.uitools.app.ValueModel;
 
-import org.eclipse.persistence.indirection.ValueHolder;
-
 abstract class CompositeObjectMappingPropertiesPage 
 	extends TitledPropertiesPage
 {
-	private JPanel mainPanel;
+	protected JPanel mainPanel;
 		
 	private static final Class[] REQUIRED_RESOURCE_BUNDLES = new Class[] {
 		UiCommonBundle.class,
@@ -110,7 +109,7 @@ abstract class CompositeObjectMappingPropertiesPage
 		constraints.insets     = new Insets(5, 0, 0, 0);
 		this.mainPanel.add(pane, constraints);
 		this.addPaneForAlignment(pane);
-
+		
 		// read only check box
 		constraints.gridx      = 0;
 		constraints.gridy      = 3;
@@ -151,18 +150,18 @@ abstract class CompositeObjectMappingPropertiesPage
 		};
 	}
 	
-	private Component buildReferenceDescriptorPanel() {
+	protected Component buildReferenceDescriptorPanel() {
 		return this.buildLabeledComponent(
 			"COMPOSITE_OBJECT_MAPPING_REFERENCE_DESCRIPTOR_CHOOSER", 
 			MappingComponentFactory.buildReferenceDescriptorChooser(this.getSelectionHolder(), this.getWorkbenchContextHolder())
 		);
 	}
 	
-	private MethodAccessingPanel buildMethodAccessingPanel() {
+	protected MethodAccessingPanel buildMethodAccessingPanel() {
 		return new MethodAccessingPanel(this.getSelectionHolder(), this.getWorkbenchContextHolder());
 	}
 	
-	private Component buildReadOnlyCheckBox() {
+	protected Component buildReadOnlyCheckBox() {
 		return MappingComponentFactory.buildReadOnlyCheckBox(this.getSelectionHolder(), this.getApplicationContext());
 	}
 }

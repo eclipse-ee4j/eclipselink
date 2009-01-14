@@ -108,6 +108,20 @@ public final class OXCompositeCollectionMappingPropertiesPage
 		this.mainPanel.add(pane, constraints);
 		this.addPaneForAlignment(pane);
 		
+		// container accessor panel
+		pane = this.buildContainerAccessorPanel();
+		constraints.gridx      = 0;
+		constraints.gridy      = 3;
+		constraints.gridwidth  = 1;
+		constraints.gridheight = 1;
+		constraints.weightx    = 1;
+		constraints.weighty    = 0;
+		constraints.fill       = GridBagConstraints.HORIZONTAL;
+		constraints.anchor     = GridBagConstraints.CENTER;
+		constraints.insets     = new Insets(5, 0, 0, 0);
+		this.mainPanel.add(pane, constraints);
+		this.addPaneForAlignment(pane);
+
 		// read only check box
 		JCheckBox readOnlyCheckBox = this.buildReadOnlyCheckBox();
 		constraints.gridx      = 0;
@@ -178,6 +192,10 @@ public final class OXCompositeCollectionMappingPropertiesPage
 	
 	private MethodAccessingPanel buildMethodAccessingPanel() {
 		return new MethodAccessingPanel(this.getSelectionHolder(), this.getWorkbenchContextHolder());
+	}
+	
+	private UseContainerAccessorPanel buildContainerAccessorPanel() {
+		return new UseContainerAccessorPanel(this.getSelectionHolder(), this.getWorkbenchContextHolder());
 	}
 		
 	private JCheckBox buildReadOnlyCheckBox() {

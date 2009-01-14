@@ -15,6 +15,12 @@ package org.eclipse.persistence.tools.workbench.mappingsmodel.mapping.xml;
 import java.util.Iterator;
 import java.util.List;
 
+import org.eclipse.persistence.internal.helper.DatabaseField;
+import org.eclipse.persistence.mappings.DatabaseMapping;
+import org.eclipse.persistence.mappings.foundation.AbstractCompositeCollectionMapping;
+import org.eclipse.persistence.oxm.XMLDescriptor;
+import org.eclipse.persistence.oxm.mappings.XMLCompositeCollectionMapping;
+import org.eclipse.persistence.oxm.mappings.XMLCompositeObjectMapping;
 import org.eclipse.persistence.tools.workbench.mappingsmodel.descriptor.xml.MWXmlDescriptor;
 import org.eclipse.persistence.tools.workbench.mappingsmodel.mapping.MWCollectionContainerPolicy;
 import org.eclipse.persistence.tools.workbench.mappingsmodel.mapping.MWContainerPolicy;
@@ -28,12 +34,6 @@ import org.eclipse.persistence.tools.workbench.utility.ClassTools;
 import org.eclipse.persistence.tools.workbench.utility.filters.Filter;
 import org.eclipse.persistence.tools.workbench.utility.iterators.FilteringIterator;
 import org.eclipse.persistence.tools.workbench.utility.iterators.NullIterator;
-
-import org.eclipse.persistence.internal.helper.DatabaseField;
-import org.eclipse.persistence.mappings.DatabaseMapping;
-import org.eclipse.persistence.mappings.foundation.AbstractCompositeCollectionMapping;
-import org.eclipse.persistence.oxm.XMLDescriptor;
-import org.eclipse.persistence.oxm.mappings.XMLCompositeObjectMapping;
 
 public final class MWCompositeCollectionMapping
 	extends MWAbstractCompositeMapping
@@ -178,6 +178,11 @@ public final class MWCompositeCollectionMapping
 			(AbstractCompositeCollectionMapping) super.runtimeMapping();
 		ClassTools.invokeMethod(runtimeMapping, "setField", new Class[] {DatabaseField.class}, new Object[] {this.getXmlField().runtimeField()});
         runtimeMapping.setContainerPolicy(this.containerPolicy.runtimeContainerPolicy());
+        
+        if (runtimeMapping instanceof XMLCompositeCollectionMapping) {
+        	this.getContainerAccessor().adjustRuntimeMapping(runtimeMapping);
+        }
+        
 		return runtimeMapping;
 	}
 	

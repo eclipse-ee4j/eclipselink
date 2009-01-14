@@ -14,16 +14,16 @@ package org.eclipse.persistence.tools.workbench.mappingsmodel.mapping.xml;
 
 import java.util.List;
 
+import org.eclipse.persistence.internal.helper.DatabaseField;
+import org.eclipse.persistence.mappings.DatabaseMapping;
+import org.eclipse.persistence.mappings.foundation.AbstractCompositeObjectMapping;
+import org.eclipse.persistence.oxm.XMLDescriptor;
+import org.eclipse.persistence.oxm.mappings.XMLCompositeObjectMapping;
 import org.eclipse.persistence.tools.workbench.mappingsmodel.ProblemConstants;
 import org.eclipse.persistence.tools.workbench.mappingsmodel.descriptor.xml.MWXmlDescriptor;
 import org.eclipse.persistence.tools.workbench.mappingsmodel.mapping.MWMapping;
 import org.eclipse.persistence.tools.workbench.mappingsmodel.meta.MWClassAttribute;
 import org.eclipse.persistence.tools.workbench.utility.ClassTools;
-
-import org.eclipse.persistence.internal.helper.DatabaseField;
-import org.eclipse.persistence.mappings.DatabaseMapping;
-import org.eclipse.persistence.mappings.foundation.AbstractCompositeObjectMapping;
-import org.eclipse.persistence.oxm.XMLDescriptor;
 
 public final class MWCompositeObjectMapping 
 	extends MWAbstractCompositeMapping
@@ -82,6 +82,11 @@ public final class MWCompositeObjectMapping
 		AbstractCompositeObjectMapping runtimeMapping = 
 			(AbstractCompositeObjectMapping) super.runtimeMapping();
 		ClassTools.invokeMethod(runtimeMapping, "setField", new Class[] {DatabaseField.class}, new Object[] {this.getXmlField().runtimeField()});
+		
+		if (runtimeMapping instanceof XMLCompositeObjectMapping) {
+			this.getContainerAccessor().adjustRuntimeMapping(runtimeMapping);
+		}
+		
 		return runtimeMapping;
 	}
 	

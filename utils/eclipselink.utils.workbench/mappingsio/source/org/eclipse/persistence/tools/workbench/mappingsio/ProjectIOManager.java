@@ -15,15 +15,14 @@ package org.eclipse.persistence.tools.workbench.mappingsio;
 import java.io.File;
 import java.util.prefs.Preferences;
 
-import org.eclipse.persistence.tools.workbench.mappingsmodel.project.MWProject;
-import org.eclipse.persistence.tools.workbench.utility.ClassTools;
-
+import org.eclipse.persistence.oxm.XMLContext;
 import org.eclipse.persistence.oxm.XMLLogin;
 import org.eclipse.persistence.oxm.XMLMarshaller;
 import org.eclipse.persistence.oxm.XMLUnmarshaller;
-import org.eclipse.persistence.oxm.XMLContext;
 import org.eclipse.persistence.oxm.platform.DOMPlatform;
 import org.eclipse.persistence.sessions.Project;
+import org.eclipse.persistence.tools.workbench.mappingsmodel.project.MWProject;
+import org.eclipse.persistence.tools.workbench.utility.ClassTools;
 
 /**
  * Use an instance of this class to read and write MW projects.
@@ -330,6 +329,9 @@ public class ProjectIOManager {
 		topLinkProject.addDescriptor(org.eclipse.persistence.tools.workbench.mappingsmodel.mapping.xml.MWEisReferenceMapping.buildDescriptor());
 		topLinkProject.addDescriptor(org.eclipse.persistence.tools.workbench.mappingsmodel.mapping.xml.MWEisOneToManyMapping.buildDescriptor());
 		topLinkProject.addDescriptor(org.eclipse.persistence.tools.workbench.mappingsmodel.mapping.xml.MWXmlTypeConversionConverter.buildDescriptor());
+		topLinkProject.addDescriptor(org.eclipse.persistence.tools.workbench.mappingsmodel.mapping.xml.MWContainerAccessor.buildDescriptor());
+		topLinkProject.addDescriptor(org.eclipse.persistence.tools.workbench.mappingsmodel.mapping.xml.MWAttributeContainerAccessor.buildDescriptor());
+		topLinkProject.addDescriptor(org.eclipse.persistence.tools.workbench.mappingsmodel.mapping.xml.MWMethodContainerAccessor.buildDescriptor());
 
 		// MWQuery and associated classes
 		topLinkProject.addDescriptor(org.eclipse.persistence.tools.workbench.mappingsmodel.query.MWQueryManager.buildDescriptor());

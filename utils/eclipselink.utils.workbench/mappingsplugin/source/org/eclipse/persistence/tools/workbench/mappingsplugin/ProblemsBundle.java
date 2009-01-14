@@ -394,6 +394,12 @@ public class ProblemsBundle extends ListResourceBundle
 		
 		// *** MWAbstractXmlReferenceMapping ***
 		{"0626", "The selected target field \"{0}\" is not a primary key on the referenced descriptor."},
+		
+		// *** MWAbstractCompositeMapping ***
+		{"0630", "The container accessor is not configured."},
+		{"0631", "The attribute is not selected for the container accessor."},
+		{"0632", "The get method is not selected for the container accessor."},
+		{"0633", "The set method is not selected for the container accessor."},
 
 		// ********************************************************************
 		//		Database, Tables, Fields, etc. 

@@ -13,10 +13,16 @@
 package org.eclipse.persistence.tools.workbench.mappingsmodel.mapping.xml;
 
 import java.util.Collection;
+import java.util.Iterator;
 import java.util.List;
 
 import javax.xml.namespace.QName;
 
+import org.eclipse.persistence.mappings.AggregateMapping;
+import org.eclipse.persistence.mappings.DatabaseMapping;
+import org.eclipse.persistence.oxm.XMLDescriptor;
+import org.eclipse.persistence.oxm.XMLField;
+import org.eclipse.persistence.oxm.mappings.XMLCompositeObjectMapping;
 import org.eclipse.persistence.tools.workbench.mappingsmodel.ProblemConstants;
 import org.eclipse.persistence.tools.workbench.mappingsmodel.descriptor.MWDescriptor;
 import org.eclipse.persistence.tools.workbench.mappingsmodel.descriptor.xml.MWXmlDescriptor;
@@ -25,9 +31,9 @@ import org.eclipse.persistence.tools.workbench.mappingsmodel.handles.MWHandle;
 import org.eclipse.persistence.tools.workbench.mappingsmodel.handles.MWNamedSchemaComponentHandle;
 import org.eclipse.persistence.tools.workbench.mappingsmodel.handles.MWHandle.NodeReferenceScrubber;
 import org.eclipse.persistence.tools.workbench.mappingsmodel.mapping.MWMapping;
-import org.eclipse.persistence.tools.workbench.mappingsmodel.mapping.MWMethodBasedTransformer;
 import org.eclipse.persistence.tools.workbench.mappingsmodel.mapping.MWReferenceObjectMapping;
 import org.eclipse.persistence.tools.workbench.mappingsmodel.meta.MWClassAttribute;
+import org.eclipse.persistence.tools.workbench.mappingsmodel.meta.MWMethod;
 import org.eclipse.persistence.tools.workbench.mappingsmodel.schema.MWComplexTypeDefinition;
 import org.eclipse.persistence.tools.workbench.mappingsmodel.schema.MWSchemaContextComponent;
 import org.eclipse.persistence.tools.workbench.mappingsmodel.xml.MWXmlField;
@@ -35,13 +41,8 @@ import org.eclipse.persistence.tools.workbench.mappingsmodel.xml.MWXmlNode;
 import org.eclipse.persistence.tools.workbench.mappingsmodel.xml.MWXpathContext;
 import org.eclipse.persistence.tools.workbench.mappingsmodel.xml.MWXpathSpec;
 import org.eclipse.persistence.tools.workbench.mappingsmodel.xml.SchemaChange;
+import org.eclipse.persistence.tools.workbench.utility.iterators.NullIterator;
 import org.eclipse.persistence.tools.workbench.utility.node.Node;
-
-import org.eclipse.persistence.mappings.AggregateMapping;
-import org.eclipse.persistence.mappings.DatabaseMapping;
-import org.eclipse.persistence.oxm.XMLDescriptor;
-import org.eclipse.persistence.oxm.XMLField;
-import org.eclipse.persistence.oxm.mappings.XMLCompositeObjectMapping;
 
 public abstract class MWAbstractCompositeMapping 
 	extends MWMapping
@@ -56,6 +57,12 @@ public abstract class MWAbstractCompositeMapping
 	
 	private MWNamedSchemaComponentHandle elementTypeHandle;
 		public final static String ELEMENT_TYPE_PROPERTY = "elementType";
+		
+	private MWContainerAccessor containerAccessor;
+		public final static String CONTAINER_ACCESSOR_PROPERTY = "containerAccessor";
+		
+	private Boolean usesContainerAccessor;
+		public final static String USES_CONTAINER_ACCESSOR_PROPERTY = "usesContainerAccessor";
 
 	
 	// **************** Constructors ******************************************
@@ -77,6 +84,8 @@ public abstract class MWAbstractCompositeMapping
 		this.referenceDescriptorHandle = new MWDescriptorHandle(this, this.buildReferenceDescriptorScrubber());
 		this.xmlField = new MWXmlField(this);
 		this.elementTypeHandle = new MWNamedSchemaComponentHandle(this, this.buildElementTypeScrubber());
+		this.containerAccessor = new MWNullContainerAccessor(this);
+		this.usesContainerAccessor = new Boolean(false);
 	}
 	
 	private NodeReferenceScrubber buildElementTypeScrubber() {
@@ -117,6 +126,62 @@ public abstract class MWAbstractCompositeMapping
 		MWComplexTypeDefinition oldElementType = this.getElementType();
 		this.elementTypeHandle.setComponent(newElementType);
 		this.firePropertyChanged(ELEMENT_TYPE_PROPERTY, oldElementType, newElementType);
+	}
+
+	// **************** container accessor ************************************
+	
+	public Boolean usesContainerAccessor() {
+		return this.usesContainerAccessor;
+	}
+	
+	public void setUsesContainerAccessor(Boolean use) {
+		boolean oldValue = this.usesContainerAccessor().booleanValue();
+		this.usesContainerAccessor = use;
+		this.firePropertyChanged(USES_CONTAINER_ACCESSOR_PROPERTY, oldValue, use.booleanValue());
+	}
+	
+	public MWContainerAccessor getContainerAccessor() {
+		return this.containerAccessor;
+	}
+	
+	public void setContainerAccessor(MWContainerAccessor newAccessor) {
+		MWContainerAccessor oldValue = this.getContainerAccessor();
+		this.containerAccessor = newAccessor;
+		this.firePropertyChanged(CONTAINER_ACCESSOR_PROPERTY, oldValue, newAccessor);
+	}
+	
+	public void setContainerAccessorGetMethod(MWMethod getMethod) {
+		if(getContainerAccessor().isNull() || getContainerAccessor().isAttribute()) {
+			this.setContainerAccessor(new MWMethodContainerAccessor(this, getMethod, null));
+		} else {
+			((MWMethodContainerAccessor)this.getContainerAccessor()).setAccessorGetMethod(getMethod);
+		}
+	}
+	
+	public void setContainerAccessorSetMethod(MWMethod setMethod) {
+		if(getContainerAccessor().isNull() || getContainerAccessor().isAttribute()) {
+			this.setContainerAccessor(new MWMethodContainerAccessor(this, null, setMethod));
+		} else {
+			((MWMethodContainerAccessor)this.getContainerAccessor()).setAccessorSetMethod(setMethod);
+		}
+	}
+	
+	public void setContainerAccessorAttribute(MWClassAttribute attribute) {
+		this.setContainerAccessor(new MWAttributeContainerAccessor(this, attribute));
+	}
+	
+	public Iterator candidateAccessorMethods() {
+		if (this.getReferenceDescriptor() != null) {
+			return this.getReferenceDescriptor().getMWClass().allInstanceMethods();
+		}
+		return NullIterator.instance();
+	}
+
+	public Iterator candidateAccessorAttributes() {
+		if (this.getReferenceDescriptor() != null) {
+			return this.getReferenceDescriptor().getMWClass().allInstanceVariables();
+		}
+		return NullIterator.instance();
 	}
 
 	// **************** MWXpathedMapping implementation  **********************
@@ -203,7 +268,14 @@ public abstract class MWAbstractCompositeMapping
 		this.addReferenceDescriptorNotSpecifiedProblemTo(newProblems);
 		// TODO: reference descriptor validation ??
 		this.addReferenceDescriptorInactiveProblemTo(newProblems);
+		this.addContainerAccessorNotSpecifiedProblemTo(newProblems);
 		super.addProblemsTo(newProblems);
+	}
+	
+	protected void addContainerAccessorNotSpecifiedProblemTo(List newProblems) {
+		if (this.usesContainerAccessor() && this.containerAccessor.isNull()) {
+			newProblems.add(this.buildProblem(ProblemConstants.MAPPING_CONTAINER_ACCESSOR_NOT_CONFIGURED));
+		}
 	}
 	
 	protected void addXmlFieldProblemsTo(List newProblems) {
@@ -242,6 +314,7 @@ public abstract class MWAbstractCompositeMapping
 		children.add(this.referenceDescriptorHandle);
 		children.add(this.xmlField);
 		children.add(this.elementTypeHandle);
+		children.add(this.containerAccessor);
 	}
 	
 	private NodeReferenceScrubber buildReferenceDescriptorScrubber() {
@@ -287,7 +360,7 @@ public abstract class MWAbstractCompositeMapping
 		if (this.getElementType() != null && runtimeMapping.getField() != null) {
 			((XMLField)runtimeMapping.getField()).setLeafElementType(new QName(getElementType().qName()));
 		}
-
+		
 		return runtimeMapping;
 	}
 	
@@ -300,6 +373,8 @@ public abstract class MWAbstractCompositeMapping
 		descriptor.descriptorIsAggregate();
 		
 		descriptor.getInheritancePolicy().setParentClass(MWMapping.class);
+		
+		descriptor.addDirectMapping("usesContainerAccessor", "getUsesContainerAccessorForTopLink", "setUsesContainerAccessorForTopLink", "uses-container-accessor");
 		
 		XMLCompositeObjectMapping referenceDescriptorMapping = new XMLCompositeObjectMapping();
 		referenceDescriptorMapping.setAttributeName("referenceDescriptorHandle");
@@ -324,8 +399,32 @@ public abstract class MWAbstractCompositeMapping
 		elementTypeHandleMapping.setReferenceClass(MWNamedSchemaComponentHandle.class);
 		elementTypeHandleMapping.setXPath("element-type-handle");
 		descriptor.addMapping(elementTypeHandleMapping);
+		
+		XMLCompositeObjectMapping containerAccessorMapping = new XMLCompositeObjectMapping();
+		containerAccessorMapping.setAttributeName("containerAccessor");
+		containerAccessorMapping.setGetMethodName("getContainerAccessorForTopLink");
+		containerAccessorMapping.setSetMethodName("setContainerAccessorForTopLink");
+		containerAccessorMapping.setReferenceClass(MWContainerAccessor.class);
+		containerAccessorMapping.setXPath("container-accessor");
+		descriptor.addMapping(containerAccessorMapping);
 
 		return descriptor;
+	}
+	
+	private Boolean getUsesContainerAccessorForTopLink() {
+		return this.usesContainerAccessor;
+	}
+	
+	private void setUsesContainerAccessorForTopLink(Boolean value) {
+		this.usesContainerAccessor = value;
+	}
+	
+	private MWContainerAccessor getContainerAccessorForTopLink() {
+		return this.containerAccessor.valueForTopLink();
+	}
+	
+	private void setContainerAccessorForTopLink(MWContainerAccessor newAccessor) {
+		this.containerAccessor = MWContainerAccessor.buildAccessorForTopLink(newAccessor);
 	}
 	
 	/**
