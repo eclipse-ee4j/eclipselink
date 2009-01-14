@@ -272,12 +272,27 @@ public class ListWrapper implements List, Serializable, Cloneable {
     protected void updateContainment(Object item, boolean updateSequence) {
         if ((property != null) && property.isContainment() && item instanceof SDODataObject) {
             dataObject.updateContainment(property, (SDODataObject)item);
+        } else {
+        	if(dataObject != null) {
+        		dataObject._setModified(true);
+        	}
         }
 
         // update sequence for containment and non-containment objects
         if ((property != null) && updateSequence) {
             updateSequenceSettingInternal(property, item);
         }
+    }
+    
+    protected void updateContainment(Collection items, boolean updateSequence) {
+        if ((property != null) && property.isContainment()) {
+            dataObject.updateContainment(property, items, updateSequence);
+        } else {
+        	if(dataObject != null) {
+        		dataObject._setModified(true);
+        	}
+        }
+    	
     }
 
     /**
@@ -309,6 +324,8 @@ public class ListWrapper implements List, Serializable, Cloneable {
         if ((property != null) && property.isContainment() && (item != null)) {
             // passing a false fromDelete flag will not remove containment
             ((SDODataObject)item).detachOrDelete(fromDelete);
+        } else {
+        	dataObject._setModified(true);
         }
         if ((property != null) && dataObject.getType().isSequenced() && updateSequence) {
             removeSequenceSettingInternal(occurrence, property, item);
@@ -403,7 +420,7 @@ public class ListWrapper implements List, Serializable, Cloneable {
          * in the items collection that was added.
          * For sequences we must remove duplicates from items to match updateContainment for containment dataObjects
          */
-        dataObject.updateContainment(property, items, updateSequence);
+       	updateContainment(items, updateSequence);
 
         // create new settings outside of updateContainment as we do earlier in currentElements.add
         updateSequence(property, items, updateSequence);
@@ -461,7 +478,7 @@ public class ListWrapper implements List, Serializable, Cloneable {
          * For sequences we must remove duplicates from items to match updateContainment for containment dataObjects
          */
         // update containment
-        dataObject.updateContainment(property, items);
+        updateContainment(items, updateSequence);
 
         // create new settings outside of updateContainment as we do earlier in currentElements.add
         updateSequence(property, items, updateSequence);

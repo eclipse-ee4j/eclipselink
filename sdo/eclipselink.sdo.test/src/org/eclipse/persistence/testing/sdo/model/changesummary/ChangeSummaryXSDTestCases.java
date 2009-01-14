@@ -2594,7 +2594,49 @@ public class ChangeSummaryXSDTestCases extends SDOTestCase {
         assertEquals(comments.size(), ((List)theSetting.getValue()).size());
         //writeXML(rootObject);
     }
+    public void testModifySimpleCollection() {
+        DataObject item = rootObject.createDataObject("items");
+        DataObject lineItem = item.createDataObject("item");
+        //lineItem.setList("comments", new ArrayList());
+        cs.beginLogging();
+//        DataObject item = (DataObject)rootObject.getList("items").get(0);
+        
+        assertUnchanged(lineItem, cs);
+        
+        lineItem.getList("comment").add("a comment");
+        lineItem.getList("comment").add("another comment");
+        
+        assertModified(lineItem, cs);
+        
+        cs.endLogging();
+        cs.beginLogging();
+        
+        assertUnchanged(lineItem, cs);
+        
+        lineItem.getList("comment").remove(1);
+        
+        assertModified(lineItem, cs);
 
+        cs.endLogging();
+        cs.beginLogging();
+        
+        assertUnchanged(lineItem, cs);
+
+        ArrayList newComments = new ArrayList();
+        newComments.add("new comment 1");
+        newComments.add("new comment 2");
+        lineItem.getList("comment").addAll(newComments);
+        
+        assertModified(lineItem, cs);
+
+        cs.endLogging();
+        cs.beginLogging();
+
+        assertUnchanged(lineItem, cs);
+
+        lineItem.getList("comment").removeAll(newComments);
+        assertModified(lineItem, cs);
+    }
     public void testSetCommentToSameValue() {
         rootObject.set("poId", "123");
         cs.beginLogging();
