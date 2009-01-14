@@ -46,37 +46,31 @@ public class MethodWeaver extends CodeAdapter implements Constants {
         if (opcode == RETURN) {
             weaveEndOfMethodIfRequired();
         }
-        methodStarted = true;
         super.visitInsn(opcode);
     }
 
     public void visitIntInsn (final int opcode, final int operand) {
         weaveBeginningOfMethodIfRequired();
-        methodStarted = true;
         cv.visitIntInsn(opcode, operand);
     }
 
     public void visitVarInsn (final int opcode, final int var) {
         weaveBeginningOfMethodIfRequired();
-        methodStarted = true;
         cv.visitVarInsn(opcode, var);
     }
 
     public void visitTypeInsn (final int opcode, final String desc) {
         weaveBeginningOfMethodIfRequired();
-        methodStarted = true;
         cv.visitTypeInsn(opcode, desc);
     }
 
     public void visitFieldInsn (final int opcode, final String owner, final String name, final String desc) {
         weaveBeginningOfMethodIfRequired();
-        methodStarted = true;
         weaveAttributesIfRequired(opcode, owner, name, desc);
     }
 
     public void visitMethodInsn (final int opcode, final String owner, final String name, final String desc) {
         weaveBeginningOfMethodIfRequired();
-        methodStarted = true;
         String descClassName = "";
         if (desc.length() > 3){
             descClassName = desc.substring(3, desc.length()-1);
@@ -99,7 +93,6 @@ public class MethodWeaver extends CodeAdapter implements Constants {
 
     public void visitJumpInsn (final int opcode, final Label label) {
         weaveBeginningOfMethodIfRequired();
-        methodStarted = true;
         cv.visitJumpInsn(opcode, label);
     }
 
@@ -110,49 +103,41 @@ public class MethodWeaver extends CodeAdapter implements Constants {
 
     public void visitLdcInsn (final Object cst) {
         weaveBeginningOfMethodIfRequired();
-        methodStarted = true;
         cv.visitLdcInsn(cst);
     }
 
     public void visitIincInsn (final int var, final int increment) {
         weaveBeginningOfMethodIfRequired();
-        methodStarted = true;
         cv.visitIincInsn(var, increment);
     }
 
     public void visitTableSwitchInsn (final int min, final int max, final Label dflt, final Label labels[]) {
         weaveBeginningOfMethodIfRequired();
-        methodStarted = true;
         cv.visitTableSwitchInsn(min, max, dflt, labels);
     }
 
     public void visitLookupSwitchInsn (final Label dflt, final int keys[], final Label labels[]) {
         weaveBeginningOfMethodIfRequired();
-        methodStarted = true;
         cv.visitLookupSwitchInsn(dflt, keys, labels);
     }
 
     public void visitMultiANewArrayInsn (final String desc, final int dims) {
         weaveBeginningOfMethodIfRequired();
-        methodStarted = true;
         cv.visitMultiANewArrayInsn(desc, dims);
     }
 
     public void visitTryCatchBlock (final Label start, final Label end,final Label handler, final String type) {
         weaveBeginningOfMethodIfRequired();
-        methodStarted = true;
         cv.visitTryCatchBlock(start, end, handler, type);
     }
 
     public void visitMaxs (final int maxStack, final int maxLocals) {
         weaveBeginningOfMethodIfRequired();
-        methodStarted = true;
         cv.visitMaxs(0, 0);
     }
 
     public void visitLocalVariable (final String name, final String desc, final Label start, final Label end, final int index) {
         weaveBeginningOfMethodIfRequired();
-        methodStarted = true;
         cv.visitLocalVariable(name, desc, start, end, index);
     }
 
@@ -163,7 +148,6 @@ public class MethodWeaver extends CodeAdapter implements Constants {
 
     public void visitAttribute (final Attribute attr) {
         weaveBeginningOfMethodIfRequired();
-        methodStarted = true;
         cv.visitAttribute(attr);
     }
 
@@ -229,9 +213,11 @@ public class MethodWeaver extends CodeAdapter implements Constants {
      *  e.g. Double oldDouble = new Double(getAttribute());
      */
     public void weaveBeginningOfMethodIfRequired() {
-        if (methodStarted){
+        if (this.methodStarted){
             return;
         }
+        // Must set immediately, as weaving can trigger this method.
+        this.methodStarted = true;
         AttributeDetails attributeDetails = (AttributeDetails)tcw.classDetails.getGetterMethodToAttributeDetails().get(methodName);
         boolean isGetMethod = (attributeDetails != null) && this.methodDescriptor.startsWith("()");
         if (isGetMethod && !attributeDetails.hasField()) {
