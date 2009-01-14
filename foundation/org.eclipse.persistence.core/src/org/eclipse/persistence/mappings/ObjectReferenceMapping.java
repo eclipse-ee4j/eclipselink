@@ -1069,6 +1069,7 @@ public abstract class ObjectReferenceMapping extends ForeignReferenceMapping {
      */
     public Object valueFromPKList(Object[] pks, AbstractSession session) {
         Vector pk = null;
+        if (pks[0] == null) return null;
         if (getReferenceDescriptor().hasCMPPolicy()) {
             pk = getReferenceDescriptor().getCMPPolicy().createPkVectorFromKey(pks[0], session);
         } else {
