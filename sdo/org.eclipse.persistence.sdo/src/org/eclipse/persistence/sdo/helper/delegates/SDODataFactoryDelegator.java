@@ -30,24 +30,25 @@ public class SDODataFactoryDelegator extends AbstractHelperDelegator implements 
 
     public SDODataFactoryDelegator() {
     }
-    
+
     public SDODataFactoryDelegator(HelperContext aContext) {
         aHelperContext = aContext;
     }
-    
+
     public DataObject create(String uri, String typeName) {
-        return getSDODataFactoryDelegate().create(uri, typeName);
+        return getDataFactoryDelegate().create(uri, typeName);
     }
 
     public DataObject create(Class interfaceClass) {
-        return getSDODataFactoryDelegate().create(interfaceClass);
+        return getDataFactoryDelegate().create(interfaceClass);
     }
 
     public DataObject create(Type type) {
-        return getSDODataFactoryDelegate().create(type);
+        return getDataFactoryDelegate().create(type);
     }
 
-    private SDODataFactoryDelegate getSDODataFactoryDelegate() {
+    public SDODataFactoryDelegate getDataFactoryDelegate() {
         return (SDODataFactoryDelegate) SDOHelperContext.getHelperContext().getDataFactory();
     }
+
 }

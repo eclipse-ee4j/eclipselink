@@ -45,47 +45,47 @@ public class SDOTypeHelperDelegator extends AbstractHelperDelegator implements S
     }
 
     public Class getJavaWrapperTypeForSDOType(Type sdoType) {
-        return getSDOTypeHelperDelegate().getJavaWrapperTypeForSDOType(sdoType);
+        return getTypeHelperDelegate().getJavaWrapperTypeForSDOType(sdoType);
     }
 
     public Type getType(String uri, String typeName) {
-        return getSDOTypeHelperDelegate().getType(uri, typeName);
+        return getTypeHelperDelegate().getType(uri, typeName);
     }
 
     public Type getTypeForSimpleJavaType(Class implClass) {
-        return getSDOTypeHelperDelegate().getTypeForSimpleJavaType(implClass);
+        return getTypeHelperDelegate().getTypeForSimpleJavaType(implClass);
     }
 
     public void addType(SDOType newType) {
-        getSDOTypeHelperDelegate().addType(newType);
+        getTypeHelperDelegate().addType(newType);
     }
 
     public Type getType(Class interfaceClass) {
-        return getSDOTypeHelperDelegate().getType(interfaceClass);
+        return getTypeHelperDelegate().getType(interfaceClass);
     }
 
     public Type define(DataObject dataObject) {
-        return getSDOTypeHelperDelegate().define(dataObject);
+        return getTypeHelperDelegate().define(dataObject);
     }
 
     public List define(List types) {
-        return getSDOTypeHelperDelegate().define(types);
+        return getTypeHelperDelegate().define(types);
     }
 
     public QName getXSDTypeFromSDOType(Type aType) {
-        return getSDOTypeHelperDelegate().getXSDTypeFromSDOType(aType);
+        return getTypeHelperDelegate().getXSDTypeFromSDOType(aType);
     }
 
     public SDOType getSDOTypeFromXSDType(QName aName) {
-        return getSDOTypeHelperDelegate().getSDOTypeFromXSDType(aName);
+        return getTypeHelperDelegate().getSDOTypeFromXSDType(aName);
     }
 
     public void setTypesHashMap(Map typesHashMap) {
-        getSDOTypeHelperDelegate().setTypesHashMap(typesHashMap);
+        getTypeHelperDelegate().setTypesHashMap(typesHashMap);
     }
 
     public Map getTypesHashMap() {
-        return getSDOTypeHelperDelegate().getTypesHashMap();
+        return getTypeHelperDelegate().getTypesHashMap();
     }
 
     /**
@@ -94,7 +94,7 @@ public class SDOTypeHelperDelegator extends AbstractHelperDelegator implements S
      * @return a HashMap of SDOWrapperTypes, keyed on the XSD type that it wraps.
      */
     public Map getWrappersHashMap() {
-        return getSDOTypeHelperDelegate().getWrappersHashMap();
+        return getTypeHelperDelegate().getWrappersHashMap();
     }
 
     /**
@@ -103,22 +103,22 @@ public class SDOTypeHelperDelegator extends AbstractHelperDelegator implements S
      * @param   aMap        a HashMap of SDOWrapperTypes, keyed on the XSD type that it wraps.
      */
     public void setWrappersHashMap(Map aMap) {
-        getSDOTypeHelperDelegate().setWrappersHashMap(aMap);
+        getTypeHelperDelegate().setWrappersHashMap(aMap);
     }
 
     public void reset() {
-        getSDOTypeHelperDelegate().reset();
+        getTypeHelperDelegate().reset();
     }
 
     public Property defineOpenContentProperty(String uri, DataObject property) {
-        return getSDOTypeHelperDelegate().defineOpenContentProperty(uri, property);
+        return getTypeHelperDelegate().defineOpenContentProperty(uri, property);
     }
 
     public Property getOpenContentProperty(String uri, String propertyName) {
-        return getSDOTypeHelperDelegate().getOpenContentProperty(uri, propertyName);
+        return getTypeHelperDelegate().getOpenContentProperty(uri, propertyName);
     }
-    
-    private SDOTypeHelperDelegate getSDOTypeHelperDelegate() {
+
+    public SDOTypeHelperDelegate getTypeHelperDelegate() {
         return (SDOTypeHelperDelegate) SDOHelperContext.getHelperContext().getTypeHelper();
     }
 
@@ -127,7 +127,7 @@ public class SDOTypeHelperDelegator extends AbstractHelperDelegator implements S
       * Add the given namespace uri and prefix to the global namespace resolver.
       */
     public String addNamespace(String prefix, String uri) {
-        return getSDOTypeHelperDelegate().addNamespace(prefix, uri);
+        return getTypeHelperDelegate().addNamespace(prefix, uri);
     }
 
     /**
@@ -135,7 +135,7 @@ public class SDOTypeHelperDelegator extends AbstractHelperDelegator implements S
       * Return the prefix for the given uri, or generate a new one if necessary
       */
     public String getPrefix(String uri) {
-        return getSDOTypeHelperDelegate().getPrefix(uri);
+        return getTypeHelperDelegate().getPrefix(uri);
     }
 
     /**
@@ -143,7 +143,7 @@ public class SDOTypeHelperDelegator extends AbstractHelperDelegator implements S
       * Return the NamespaceResolver
       */
     public NamespaceResolver getNamespaceResolver() {
-        return getSDOTypeHelperDelegate().getNamespaceResolver();
+        return getTypeHelperDelegate().getNamespaceResolver();
     }
 
     /**
@@ -151,19 +151,19 @@ public class SDOTypeHelperDelegator extends AbstractHelperDelegator implements S
     * Return the Map of Open Content Properties
     */
     public Map getOpenContentProperties() {
-        return getSDOTypeHelperDelegate().getOpenContentProperties();
+        return getTypeHelperDelegate().getOpenContentProperties();
     }
 
     public void addWrappersToProject(Project toplinkProject) {
-        getSDOTypeHelperDelegate().addWrappersToProject(toplinkProject);
+        getTypeHelperDelegate().addWrappersToProject(toplinkProject);
     }
 
     public Map getInterfacesToSDOTypeHashMap() {
-        return getSDOTypeHelperDelegate().getInterfacesToSDOTypeHashMap();
+        return getTypeHelperDelegate().getInterfacesToSDOTypeHashMap();
     }
 
     public List getAnonymousTypes() {
-        return getSDOTypeHelperDelegate().getAnonymousTypes();
+        return getTypeHelperDelegate().getAnonymousTypes();
     }
 
 }

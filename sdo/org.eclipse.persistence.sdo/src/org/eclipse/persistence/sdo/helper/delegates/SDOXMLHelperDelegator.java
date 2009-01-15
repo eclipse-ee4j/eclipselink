@@ -47,7 +47,7 @@ import org.xml.sax.InputSource;
  */
 public class SDOXMLHelperDelegator extends AbstractHelperDelegator implements SDOXMLHelper {
 
-    public SDOXMLHelperDelegator() {   
+    public SDOXMLHelperDelegator() {
     }
 
     public SDOXMLHelperDelegator(HelperContext aContext) {
@@ -60,127 +60,124 @@ public class SDOXMLHelperDelegator extends AbstractHelperDelegator implements SD
      * conversions.  By default the TimeZone from the JVM is used.
      */   
     public void setTimeZone(TimeZone timeZone) {
-    	getSDOXMLHelperDelegate().setTimeZone(timeZone);	
+        getXMLHelperDelegate().setTimeZone(timeZone);
     }
-    
+
     /**
      * By setting this flag to true the marshalled date objects marshalled to 
      * the XML schema types time and dateTime will be qualified by a time zone.  
      * By default time information is not time zone qualified.
      */
     public void setTimeZoneQualified(boolean timeZoneQualified) {
-    	getSDOXMLHelperDelegate().setTimeZoneQualified(timeZoneQualified);	    	
+        getXMLHelperDelegate().setTimeZoneQualified(timeZoneQualified);
     }
 
     public XMLDocument load(String inputString) {
-        return getSDOXMLHelperDelegate().load(inputString);
+        return getXMLHelperDelegate().load(inputString);
     }
 
     public XMLDocument load(InputStream inputStream) throws IOException {
-        return getSDOXMLHelperDelegate().load(inputStream);
+        return getXMLHelperDelegate().load(inputStream);
     }
 
     public XMLDocument load(InputStream inputStream, String locationURI, Object options) throws IOException {
-        return getSDOXMLHelperDelegate().load(inputStream, locationURI, options);
+        return getXMLHelperDelegate().load(inputStream, locationURI, options);
     }
 
     public XMLDocument load(InputSource inputSource, String locationURI, Object options) throws IOException {
-        return getSDOXMLHelperDelegate().load(inputSource, locationURI, options);
+        return getXMLHelperDelegate().load(inputSource, locationURI, options);
     }
 
     public XMLDocument load(Reader inputReader, String locationURI, Object options) throws IOException {
-        return getSDOXMLHelperDelegate().load(inputReader, locationURI, options);
+        return getXMLHelperDelegate().load(inputReader, locationURI, options);
     }
 
     public XMLDocument load(Source source, String locationURI, Object options) throws IOException {
-        return getSDOXMLHelperDelegate().load(source, locationURI, options);
+        return getXMLHelperDelegate().load(source, locationURI, options);
     }
 
     public String save(DataObject dataObject, String rootElementURI, String rootElementName) {
-        return getSDOXMLHelperDelegate().save(dataObject, rootElementURI, rootElementName);
+        return getXMLHelperDelegate().save(dataObject, rootElementURI, rootElementName);
     }
 
     public void save(DataObject dataObject, String rootElementURI, String rootElementName, OutputStream outputStream) throws IOException {
-        getSDOXMLHelperDelegate().save(dataObject, rootElementURI, rootElementName, outputStream);
+        getXMLHelperDelegate().save(dataObject, rootElementURI, rootElementName, outputStream);
     }
 
     public void save(XMLDocument xmlDocument, OutputStream outputStream, Object options) throws IOException {
-        getSDOXMLHelperDelegate().save(xmlDocument, outputStream, options);
+        getXMLHelperDelegate().save(xmlDocument, outputStream, options);
     }
 
     public void save(XMLDocument xmlDocument, Writer outputWriter, Object options) throws IOException {
-        getSDOXMLHelperDelegate().save(xmlDocument, outputWriter, options);
+        getXMLHelperDelegate().save(xmlDocument, outputWriter, options);
     }
 
     public void save(XMLDocument xmlDocument, Result result, Object options) throws IOException {
-        getSDOXMLHelperDelegate().save(xmlDocument, result, options);
+        getXMLHelperDelegate().save(xmlDocument, result, options);
     }
 
     public XMLDocument createDocument(DataObject dataObject, String rootElementURI, String rootElementName) {
-        return getSDOXMLHelperDelegate().createDocument(dataObject, rootElementURI, rootElementName);
+        return getXMLHelperDelegate().createDocument(dataObject, rootElementURI, rootElementName);
     }
 
     public void setLoader(SDOClassLoader loader) {
-        getSDOXMLHelperDelegate().setLoader(loader);
+        getXMLHelperDelegate().setLoader(loader);
     }
 
     public SDOClassLoader getLoader() {
-        return getSDOXMLHelperDelegate().getLoader();
+        return getXMLHelperDelegate().getLoader();
     }
 
     public void setXmlContext(XMLContext xmlContext) {
-        getSDOXMLHelperDelegate().setXmlContext(xmlContext);
+        getXMLHelperDelegate().setXmlContext(xmlContext);
     }
 
     public XMLContext getXmlContext() {
-        return getSDOXMLHelperDelegate().getXmlContext();
+        return getXMLHelperDelegate().getXmlContext();
     }
 
     public void addDescriptors(List descriptors) {
-        getSDOXMLHelperDelegate().addDescriptors(descriptors);
+        getXMLHelperDelegate().addDescriptors(descriptors);
     }
 
     public void setTopLinkProject(Project toplinkProject) {
-        getSDOXMLHelperDelegate().setTopLinkProject(toplinkProject);
+        getXMLHelperDelegate().setTopLinkProject(toplinkProject);
     }
 
     public void initializeDescriptor(XMLDescriptor descriptor) {
-    	getSDOXMLHelperDelegate().initializeDescriptor(descriptor);
+    	getXMLHelperDelegate().initializeDescriptor(descriptor);
     }
     
     public Project getTopLinkProject() {
-        return getSDOXMLHelperDelegate().getTopLinkProject();
+        return getXMLHelperDelegate().getTopLinkProject();
     }
 
     public void setXmlMarshaller(XMLMarshaller xmlMarshaller) {
-        getSDOXMLHelperDelegate().setXmlMarshaller(xmlMarshaller);
+        getXMLHelperDelegate().setXmlMarshaller(xmlMarshaller);
     }
 
     public XMLMarshaller getXmlMarshaller() {
-        return getSDOXMLHelperDelegate().getXmlMarshaller();
+        return getXMLHelperDelegate().getXmlMarshaller();
     }
 
     public void setXmlUnmarshaller(XMLUnmarshaller xmlUnmarshaller) {
-        getSDOXMLHelperDelegate().setXmlUnmarshaller(xmlUnmarshaller);
+        getXMLHelperDelegate().setXmlUnmarshaller(xmlUnmarshaller);
     }
 
     public XMLUnmarshaller getXmlUnmarshaller() {
-        return getSDOXMLHelperDelegate().getXmlUnmarshaller();
+        return getXMLHelperDelegate().getXmlUnmarshaller();
     }
-    
-    /**
-     * INTERNAL:
-     */
-    private SDOXMLHelperDelegate getSDOXMLHelperDelegate() {
+
+    public SDOXMLHelperDelegate getXMLHelperDelegate() {
         return (SDOXMLHelperDelegate) SDOHelperContext.getHelperContext().getXMLHelper();
     }
 
     public void reset() {
-        getSDOXMLHelperDelegate().reset();
+        getXMLHelperDelegate().reset();
     }
-    
+
     public XMLConversionManager getXmlConversionManager() {
-        return getSDOXMLHelperDelegate().getXmlConversionManager();
+        return getXMLHelperDelegate().getXmlConversionManager();
     }
 
 }

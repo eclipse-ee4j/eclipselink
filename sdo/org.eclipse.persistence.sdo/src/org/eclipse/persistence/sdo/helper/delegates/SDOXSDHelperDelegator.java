@@ -48,88 +48,88 @@ public class SDOXSDHelperDelegator extends AbstractHelperDelegator implements SD
     }
 
     public String getLocalName(Type type) {
-        return getSDOXSDHelperDelegate().getLocalName(type);
+        return getXSDHelperDelegate().getLocalName(type);
     }
 
     public String getLocalName(Property property) {
-        return getSDOXSDHelperDelegate().getLocalName(property);
+        return getXSDHelperDelegate().getLocalName(property);
     }
 
     public String getNamespaceURI(Type type) {
-        return getSDOXSDHelperDelegate().getNamespaceURI(type);
+        return getXSDHelperDelegate().getNamespaceURI(type);
     }
 
     public String getNamespaceURI(Property property) {
-        return getSDOXSDHelperDelegate().getNamespaceURI(property);
+        return getXSDHelperDelegate().getNamespaceURI(property);
     }
 
     public boolean isAttribute(Property property) {
-        return getSDOXSDHelperDelegate().isAttribute(property);
+        return getXSDHelperDelegate().isAttribute(property);
     }
 
     public boolean isElement(Property property) {
-        return getSDOXSDHelperDelegate().isElement(property);
+        return getXSDHelperDelegate().isElement(property);
     }
 
     public boolean isMixed(Type type) {
-        return getSDOXSDHelperDelegate().isMixed(type);
+        return getXSDHelperDelegate().isMixed(type);
     }
 
     public boolean isXSD(Type type) {
-        return getSDOXSDHelperDelegate().isXSD(type);
+        return getXSDHelperDelegate().isXSD(type);
     }
 
     public Property getGlobalProperty(String uri, String propertyName, boolean isElement) {
-        return getSDOXSDHelperDelegate().getGlobalProperty(uri, propertyName, isElement);
+        return getXSDHelperDelegate().getGlobalProperty(uri, propertyName, isElement);
     }
 
     public Property getGlobalProperty(QName qname, boolean isElement) {
-        return getSDOXSDHelperDelegate().getGlobalProperty(qname, isElement);
+        return getXSDHelperDelegate().getGlobalProperty(qname, isElement);
     }
 
     public String getAppinfo(Type type, String source) {
-        return getSDOXSDHelperDelegate().getAppinfo(type, source);
+        return getXSDHelperDelegate().getAppinfo(type, source);
     }
 
     public String getAppinfo(Property property, String source) {
-        return getSDOXSDHelperDelegate().getAppinfo(property, source);
+        return getXSDHelperDelegate().getAppinfo(property, source);
     }
 
     public List define(String xsd) {
-        return getSDOXSDHelperDelegate().define(xsd);
+        return getXSDHelperDelegate().define(xsd);
     }
 
     public List define(Reader xsdReader, String schemaLocation) {
-        return getSDOXSDHelperDelegate().define(xsdReader, schemaLocation);
+        return getXSDHelperDelegate().define(xsdReader, schemaLocation);
     }
 
     public List define(Source xsdSource, SchemaResolver schemaResolver) {
-        return getSDOXSDHelperDelegate().define(xsdSource, schemaResolver);
+        return getXSDHelperDelegate().define(xsdSource, schemaResolver);
     }
 
     public List define(InputStream xsdInputStream, String schemaLocation) {
-        return getSDOXSDHelperDelegate().define(xsdInputStream, schemaLocation);
+        return getXSDHelperDelegate().define(xsdInputStream, schemaLocation);
     }
 
     public String generate(List types) {
-        return getSDOXSDHelperDelegate().generate(types);
+        return getXSDHelperDelegate().generate(types);
     }
 
     public String generate(List types, Map namespaceToSchemaLocation) {
-        return getSDOXSDHelperDelegate().generate(types, namespaceToSchemaLocation);
+        return getXSDHelperDelegate().generate(types, namespaceToSchemaLocation);
     }
 
     public String generate(List types, SchemaLocationResolver schemaLocationResolver) {
-        return getSDOXSDHelperDelegate().generate(types, schemaLocationResolver);
+        return getXSDHelperDelegate().generate(types, schemaLocationResolver);
     }
 
     /**
      * INTERNAL:
-     */	  
+     */
     public Map buildAppInfoMap(List appInfoElements) {
-        return getSDOXSDHelperDelegate().buildAppInfoMap(appInfoElements);
+        return getXSDHelperDelegate().buildAppInfoMap(appInfoElements);
     }
-    
+
     /**
      * INTERNAL:
      * 
@@ -139,17 +139,15 @@ public class SDOXSDHelperDelegator extends AbstractHelperDelegator implements SD
      * Register the given property with the given qname.
      */
     public void addGlobalProperty(QName qname, Property prop, boolean isElement) {
-        getSDOXSDHelperDelegate().addGlobalProperty(qname, prop, isElement);
+        getXSDHelperDelegate().addGlobalProperty(qname, prop, isElement);
     }
 
-    /**
-     * INTERNAL:
-     */
-    private SDOXSDHelperDelegate getSDOXSDHelperDelegate() {
+    public SDOXSDHelperDelegate getXSDHelperDelegate() {
         return (SDOXSDHelperDelegate) SDOHelperContext.getHelperContext().getXSDHelper();
     }
-    
+
     public void reset() {
-        getSDOXSDHelperDelegate().reset();
+        getXSDHelperDelegate().reset();
     }
+
 }
