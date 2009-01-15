@@ -25,7 +25,7 @@ public class JDKVersionDetectionTester
 	public static void main(String[] args)
 	{
 		System.out.println(Version.getProduct() + " " + Version.getVersion());
-		System.out.println("Build " + Version.getBuildNumber());
+		System.out.println("Build " + Version.getVersionString() + " on " + Version.getBuildDate());
 		System.out.println("isJDK15() - " + Version.isJDK15());
 	}
 }

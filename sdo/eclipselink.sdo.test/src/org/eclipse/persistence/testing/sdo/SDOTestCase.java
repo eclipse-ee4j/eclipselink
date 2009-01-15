@@ -99,8 +99,8 @@ public class SDOTestCase extends junit.framework.TestCase {
         if (loggingLevelFinest && AbstractSessionLog.getLog().getLevel() != AbstractSessionLog.FINEST) {
             // override default INFO logging level for static logs
             AbstractSessionLog.getLog().setLevel(AbstractSessionLog.FINEST);
-            AbstractSessionLog.getLog().log(AbstractSessionLog.FINEST, "{0} {1} build (yymmdd): {2}", //
-                    new Object[] {Version.getProduct(), Version.getVersion(),  Version.getBuildNumber()}, false);
+            AbstractSessionLog.getLog().log(AbstractSessionLog.FINEST, "{0} {1}", //
+                    new Object[] {Version.getProduct(), Version.getVersionString()}, false);
         }
 
         // reverse the flags so that a false(from the flag not found) will not

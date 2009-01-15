@@ -34,7 +34,8 @@ public class BuildNumberDetectionTester
 
 		System.out.println("T_WORK:  "+tWork);
 		System.out.println("filename:  "+sucDifFile);
-		System.out.println("TopLink jar build:  "+Version.getBuildNumber());
+		System.out.println(Version.getProduct()+" jar build String:  "+Version.getVersionString());
+		System.out.println(Version.getProduct()+" jar build date (yymmdd):  "+Version.getBuildDate());
 
 		if (args != null) {
 			// Need to read in the toplink-oc4j.jar build number from it's manifest file

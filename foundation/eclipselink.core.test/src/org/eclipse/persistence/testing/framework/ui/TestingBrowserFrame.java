@@ -879,7 +879,7 @@ public class TestingBrowserFrame extends javax.swing.JFrame implements java.awt.
             setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
             setJMenuBar(getTestingBrowserFrameJMenuBar());
             setSize(901, 574);
-            setTitle("Testing Browser" + ":  EclipseLink " + Version.getVersion() + " " + Version.getBuildNumber());
+            setTitle("Testing Browser" + ":  EclipseLink " + Version.getVersionString());
             setContentPane(getJFrameContentPane());
             initConnections();
         } catch (java.lang.Throwable ivjExc) {

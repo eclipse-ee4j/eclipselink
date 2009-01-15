@@ -44,7 +44,7 @@ import org.eclipse.persistence.internal.security.PrivilegedNewInstanceFromClass;
 public abstract class DatasourceLogin implements org.eclipse.persistence.sessions.Login, Serializable, Cloneable {
 
     /** Version info */
-    private static final String versionStringTemplate = "{0} - {1} (Build {2})";
+    private static final String versionStringTemplate = "{0} - {1}";
     public static String versionString = null;
 
     /** Connection properties (e.g. user, password, and driver-specific settings) */
@@ -281,7 +281,7 @@ public abstract class DatasourceLogin implements org.eclipse.persistence.session
      */
     public static String getVersion() {
         if (versionString == null) {
-            Object[] args = { Version.getProduct(), Version.getVersion(), Version.getBuildNumber() };
+            Object[] args = { Version.getProduct(), Version.getVersionString() };
             versionString = MessageFormat.format(versionStringTemplate, args);
         }
         return versionString;
