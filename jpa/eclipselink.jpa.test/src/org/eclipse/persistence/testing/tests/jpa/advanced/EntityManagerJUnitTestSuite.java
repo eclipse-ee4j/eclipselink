@@ -223,6 +223,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         suite.addTest(new EntityManagerJUnitTestSuite("testClearInTransaction"));
         suite.addTest(new EntityManagerJUnitTestSuite("testClearWithFlush"));
         suite.addTest(new EntityManagerJUnitTestSuite("testClear"));
+        suite.addTest(new EntityManagerJUnitTestSuite("testEMClose"));
         suite.addTest(new EntityManagerJUnitTestSuite("testCheckVersionOnMerge"));
         suite.addTest(new EntityManagerJUnitTestSuite("testFindWithNullPk"));
         suite.addTest(new EntityManagerJUnitTestSuite("testFindWithWrongTypePk"));
@@ -360,6 +361,23 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         } finally {
             rollbackTransaction(em);
             closeEntityManager(em);
+        }
+    }
+
+    public void testEMClose() {
+        // This test tests the bug fix for 260511
+    	// The NPE would be thrown if the EnityManager 
+    	// was created through the constructor
+    	String errorMsg = "";
+    	EntityManager em = new EntityManagerImpl(JUnitTestCase.getServerSession());
+        try {
+        	em.close();
+        } catch (RuntimeException ex) {
+        	errorMsg ="EMClose: " + ex.getMessage() +";";
+        }
+
+        if(errorMsg.length() > 0) {
+            fail(errorMsg);
         }
     }
 

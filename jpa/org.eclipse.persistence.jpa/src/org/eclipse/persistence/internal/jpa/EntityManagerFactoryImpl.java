@@ -126,7 +126,11 @@ public class EntityManagerFactoryImpl implements EntityManagerFactory {
     public synchronized void close(){
         verifyOpen();
         isOpen = false;
-        setupImpl.undeploy();        
+        if (setupImpl != null) {
+        	//260511 null check so that closing a EM 
+        	//created from the constructor no longer throws a NPE
+        	setupImpl.undeploy();
+        }
     }
 
 
