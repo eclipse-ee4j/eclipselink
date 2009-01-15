@@ -83,7 +83,7 @@ public final class MWCompositeObjectMapping
 			(AbstractCompositeObjectMapping) super.runtimeMapping();
 		ClassTools.invokeMethod(runtimeMapping, "setField", new Class[] {DatabaseField.class}, new Object[] {this.getXmlField().runtimeField()});
 		
-		if (runtimeMapping instanceof XMLCompositeObjectMapping) {
+		if (runtimeMapping.isXMLMapping()) {
 			this.getContainerAccessor().adjustRuntimeMapping(runtimeMapping);
 		}
 		

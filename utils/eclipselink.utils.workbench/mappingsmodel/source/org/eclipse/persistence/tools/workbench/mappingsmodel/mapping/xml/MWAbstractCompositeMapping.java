@@ -23,6 +23,7 @@ import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.oxm.XMLDescriptor;
 import org.eclipse.persistence.oxm.XMLField;
 import org.eclipse.persistence.oxm.mappings.XMLCompositeObjectMapping;
+import org.eclipse.persistence.tools.workbench.mappingsmodel.MWModel;
 import org.eclipse.persistence.tools.workbench.mappingsmodel.ProblemConstants;
 import org.eclipse.persistence.tools.workbench.mappingsmodel.descriptor.MWDescriptor;
 import org.eclipse.persistence.tools.workbench.mappingsmodel.descriptor.xml.MWXmlDescriptor;
@@ -408,6 +409,40 @@ public abstract class MWAbstractCompositeMapping
 		containerAccessorMapping.setXPath("container-accessor");
 		descriptor.addMapping(containerAccessorMapping);
 
+		return descriptor;
+	}
+	
+	public static XMLDescriptor legacy60BuildDescriptor() {
+		XMLDescriptor descriptor = MWModel.legacy60BuildStandardDescriptor();
+		descriptor.setJavaClass(MWAbstractCompositeMapping.class);
+		descriptor.descriptorIsAggregate();
+		
+		descriptor.getInheritancePolicy().setParentClass(MWMapping.class);
+		
+		XMLCompositeObjectMapping referenceDescriptorMapping = new XMLCompositeObjectMapping();
+		referenceDescriptorMapping.setAttributeName("referenceDescriptorHandle");
+		referenceDescriptorMapping.setGetMethodName("getReferenceDescriptorHandleForTopLink");
+		referenceDescriptorMapping.setSetMethodName("setReferenceDescriptorHandleForTopLink");
+		referenceDescriptorMapping.setXPath("reference-descriptor-handle");
+		referenceDescriptorMapping.setReferenceClass(MWDescriptorHandle.class);
+		descriptor.addMapping(referenceDescriptorMapping);
+		
+		XMLCompositeObjectMapping xmlFieldMapping = new XMLCompositeObjectMapping();
+		xmlFieldMapping.setReferenceClass(MWXmlField.class);
+		xmlFieldMapping.setAttributeName("xmlField");
+		xmlFieldMapping.setGetMethodName("getXmlFieldForTopLink");
+		xmlFieldMapping.setSetMethodName("setXmlFieldForTopLink");
+		xmlFieldMapping.setXPath("xpath");
+		descriptor.addMapping(xmlFieldMapping);
+		
+		XMLCompositeObjectMapping elementTypeHandleMapping = new XMLCompositeObjectMapping();
+		elementTypeHandleMapping.setAttributeName("elementTypeHandle");
+		elementTypeHandleMapping.setGetMethodName("getElementTypeHandleForTopLink");
+		elementTypeHandleMapping.setSetMethodName("setElementTypeHandleForTopLink");
+		elementTypeHandleMapping.setReferenceClass(MWNamedSchemaComponentHandle.class);
+		elementTypeHandleMapping.setXPath("element-type-handle");
+		descriptor.addMapping(elementTypeHandleMapping);
+		
 		return descriptor;
 	}
 	

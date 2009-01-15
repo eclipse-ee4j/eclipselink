@@ -179,7 +179,7 @@ public final class MWCompositeCollectionMapping
 		ClassTools.invokeMethod(runtimeMapping, "setField", new Class[] {DatabaseField.class}, new Object[] {this.getXmlField().runtimeField()});
         runtimeMapping.setContainerPolicy(this.containerPolicy.runtimeContainerPolicy());
         
-        if (runtimeMapping instanceof XMLCompositeCollectionMapping) {
+        if (runtimeMapping.isXMLMapping()) {
         	this.getContainerAccessor().adjustRuntimeMapping(runtimeMapping);
         }
         

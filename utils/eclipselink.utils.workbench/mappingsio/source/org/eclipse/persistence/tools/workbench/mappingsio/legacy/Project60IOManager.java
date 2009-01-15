@@ -305,7 +305,7 @@ public class Project60IOManager {
 		topLinkProject.addDescriptor(org.eclipse.persistence.tools.workbench.mappingsmodel.mapping.xml.MWAbstractAnyMapping.buildDescriptor());
 		topLinkProject.addDescriptor(org.eclipse.persistence.tools.workbench.mappingsmodel.mapping.xml.MWAnyObjectMapping.buildDescriptor());
 		topLinkProject.addDescriptor(org.eclipse.persistence.tools.workbench.mappingsmodel.mapping.xml.MWAnyCollectionMapping.buildDescriptor());
-		topLinkProject.addDescriptor(org.eclipse.persistence.tools.workbench.mappingsmodel.mapping.xml.MWAbstractCompositeMapping.buildDescriptor());
+		topLinkProject.addDescriptor(org.eclipse.persistence.tools.workbench.mappingsmodel.mapping.xml.MWAbstractCompositeMapping.legacy60BuildDescriptor());
 		topLinkProject.addDescriptor(org.eclipse.persistence.tools.workbench.mappingsmodel.mapping.xml.MWCompositeObjectMapping.buildDescriptor());
 		topLinkProject.addDescriptor(org.eclipse.persistence.tools.workbench.mappingsmodel.mapping.xml.MWCompositeCollectionMapping.buildDescriptor());
 		topLinkProject.addDescriptor(org.eclipse.persistence.tools.workbench.mappingsmodel.mapping.xml.MWXmlTransformationMapping.buildDescriptor());
