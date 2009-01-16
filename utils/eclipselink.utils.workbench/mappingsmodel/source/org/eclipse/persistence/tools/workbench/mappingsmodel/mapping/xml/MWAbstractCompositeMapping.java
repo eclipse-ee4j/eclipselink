@@ -23,6 +23,7 @@ import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.oxm.XMLDescriptor;
 import org.eclipse.persistence.oxm.XMLField;
 import org.eclipse.persistence.oxm.mappings.XMLCompositeObjectMapping;
+import org.eclipse.persistence.oxm.mappings.XMLDirectMapping;
 import org.eclipse.persistence.tools.workbench.mappingsmodel.MWModel;
 import org.eclipse.persistence.tools.workbench.mappingsmodel.ProblemConstants;
 import org.eclipse.persistence.tools.workbench.mappingsmodel.descriptor.MWDescriptor;
@@ -99,7 +100,7 @@ public abstract class MWAbstractCompositeMapping
 			}
 		};
 	}
-		
+	
 	// **************** Reference descriptor **********************************
 	
 	public MWDescriptor getReferenceDescriptor() {
@@ -451,7 +452,11 @@ public abstract class MWAbstractCompositeMapping
 	}
 	
 	private void setUsesContainerAccessorForTopLink(Boolean value) {
-		this.usesContainerAccessor = value;
+		if (value == null) {
+			this.usesContainerAccessor = Boolean.FALSE;
+		} else {
+			this.usesContainerAccessor = value;
+		}
 	}
 	
 	private MWContainerAccessor getContainerAccessorForTopLink() {
