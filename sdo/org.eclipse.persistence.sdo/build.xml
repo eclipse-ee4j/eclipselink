@@ -171,8 +171,12 @@
 			/>
             <fileset
                 dir="../plugins/${commonj.sdo.dir}"
-                includes="xml/*.xsd"
+                includes="xsd/*.xsd"
 			/>
-        </jar>
+            <fileset
+                dir="../plugins/${commonj.sdo.dir}"
+                includes="license.txt"
+			/>
+		</jar>
     </target>
 </project>

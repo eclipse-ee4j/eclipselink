@@ -83,8 +83,11 @@ public interface TypeHelper
   /**
    * Define the list of DataObjects as Types.
    * The Types are available through {@link TypeHelper#getType} methods.
-   * For every item in the input List, the output list will contain either the Type newly defined
-   * or a pre-existing Type in case a Type with the given name already exists.
+   * The output list will contain, for every item in the input list, either 
+   * the Type newly defined or a pre-existing Type in case a Type with the 
+   * given name already exists,  followed by any other types defined as a 
+   * result of this call.
+   * 
    * @param types a List of DataObjects representing the Types.
    * @return the defined Types.
    * @throws IllegalArgumentException if the Types could not be defined.

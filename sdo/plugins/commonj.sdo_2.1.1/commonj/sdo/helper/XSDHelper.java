@@ -146,7 +146,9 @@ public interface XSDHelper
    * The Types are available through {@link TypeHelper#getType} methods.
    * Same as define(new StringReader(xsd), null)
    * @param xsd the XML Schema.
-   * @return the defined Types.
+   * @return the defined Types. Not all of the XML Schema types cause an SDO 
+   *   type to be defined (for example in case of duplicates), the returned 
+   *   list only includes the newly defined types.
    * @throws IllegalArgumentException if the Types could not be defined.
    */
   List /*Type*/ define(String xsd);
@@ -157,7 +159,9 @@ public interface XSDHelper
    * @param xsdReader reader to an XML Schema.
    * @param schemaLocation the URI of the location of the schema, used 
    *   for processing relative imports and includes.  May be null if not used.
-   * @return the defined Types.
+   * @return the defined Types. Not all of the XML Schema types cause an SDO 
+   *   type to be defined (for example in case of duplicates), the returned 
+   *   list only includes the newly defined types.
    * @throws IllegalArgumentException if the Types could not be defined.
    */
   List /*Type*/ define(Reader xsdReader, String schemaLocation);
@@ -168,7 +172,9 @@ public interface XSDHelper
    * @param xsdInputStream input stream to an XML Schema.
    * @param schemaLocation the URI of the location of the schema, used 
    *   for processing relative imports and includes.  May be null if not used.
-   * @return the defined Types.
+   * @return the defined Types. Not all of the XML Schema types cause an SDO 
+   *   type to be defined (for example in case of duplicates), the returned 
+   *   list only includes the newly defined types.
    * @throws IllegalArgumentException if the Types could not be defined.
    */
   List /*Type*/ define(InputStream xsdInputStream, String schemaLocation);
