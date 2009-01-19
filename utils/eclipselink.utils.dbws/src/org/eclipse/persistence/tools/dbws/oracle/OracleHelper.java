@@ -10,12 +10,11 @@ import javax.xml.namespace.QName;
 
 //EclipseLink imports
 import org.eclipse.persistence.internal.databaseaccess.DatabasePlatform;
-import org.eclipse.persistence.platform.database.oracle.publisher.SqlReflector;
 import org.eclipse.persistence.platform.database.oracle.publisher.sqlrefl.Method;
 import org.eclipse.persistence.platform.database.oracle.publisher.sqlrefl.Name;
 import org.eclipse.persistence.platform.database.oracle.publisher.sqlrefl.OracleTypes;
 import org.eclipse.persistence.platform.database.oracle.publisher.sqlrefl.SqlName;
-import org.eclipse.persistence.platform.database.oracle.publisher.sqlrefl.SqlReflectorImpl;
+import org.eclipse.persistence.platform.database.oracle.publisher.sqlrefl.SqlReflector;
 import org.eclipse.persistence.platform.database.oracle.publisher.sqlrefl.SqlTypeWithMethods;
 import org.eclipse.persistence.platform.database.oracle.publisher.sqlrefl.Type;
 import org.eclipse.persistence.tools.dbws.Util;
@@ -42,8 +41,7 @@ public class OracleHelper {
         if (schemaPattern == null || schemaPattern.length() == 0) {
             schemaPattern = username;
         }
-        SqlReflectorImpl sqlReflector = (SqlReflectorImpl)SqlReflector.SqlReflectorHelper.
-            getDefaultSqlReflector(connection,username);
+        SqlReflector sqlReflector = new SqlReflector(connection,username);
         try {
             SqlTypeWithMethods typ = (SqlTypeWithMethods)sqlReflector.addSqlUserType(schemaPattern,
                 packageName, 4, true, 0, 0, null);

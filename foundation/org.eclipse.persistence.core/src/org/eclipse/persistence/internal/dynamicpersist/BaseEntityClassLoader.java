@@ -49,6 +49,11 @@ public class BaseEntityClassLoader extends ClassLoader {
 
     private static final String BASE_ENTITY_CLASSNAME_SLASHES =
         BaseEntity.class.getName().replace('.', '/');
+    
+    public static final String COLLECTION_WRAPPER_SUFFIX = 
+        "_CollectionWrapper";
+    private static final String BASE_ENTITY_COLLECTION_WRAPPER_CLASSNAME_SLASHES =
+        BaseEntityCollectionWrapper.class.getName().replace('.', '/');
 
     protected boolean generateSubclasses = true;
 
@@ -98,39 +103,52 @@ public class BaseEntityClassLoader extends ClassLoader {
         ClassWriter cw = new ClassWriter(true);
         CodeVisitor cv;
 
-        cw.visit(V1_5, ACC_PUBLIC + ACC_SUPER, classNameAsSlashes, BASE_ENTITY_CLASSNAME_SLASHES,
-            null, null);
+        if (className.endsWith(COLLECTION_WRAPPER_SUFFIX)) {
+            cw.visit(V1_5, ACC_PUBLIC + ACC_SUPER, classNameAsSlashes,
+                BASE_ENTITY_COLLECTION_WRAPPER_CLASSNAME_SLASHES, null, null);
 
-        cw.visitField(ACC_PUBLIC + ACC_STATIC, "NUM_ATTRIBUTES", "I", null, null);
-        cv = cw.visitMethod(ACC_STATIC, "<clinit>", "()V", null, null);
-        cv.visitInsn(ICONST_1);
-        cv.visitFieldInsn(PUTSTATIC, classNameAsSlashes, "NUM_ATTRIBUTES", "I");
-        cv.visitInsn(RETURN);
-        cv.visitMaxs(0, 0);
+            cv = cw.visitMethod(ACC_PUBLIC, "<init>", "()V", null, null);
+            cv.visitVarInsn(ALOAD, 0);
+            cv.visitMethodInsn(INVOKESPECIAL, BASE_ENTITY_COLLECTION_WRAPPER_CLASSNAME_SLASHES,
+                "<init>", "()V");
+            cv.visitInsn(RETURN);
+            cv.visitMaxs(0, 0);
+        }
 
-        cv = cw.visitMethod(ACC_PUBLIC + ACC_STATIC, "setNumAttributes", "(Ljava/lang/Integer;)V",
-            null, null);
-        cv.visitVarInsn(ALOAD, 0);
-        cv.visitMethodInsn(INVOKEVIRTUAL, "java/lang/Integer", "intValue", "()I");
-        cv.visitFieldInsn(PUTSTATIC, classNameAsSlashes, "NUM_ATTRIBUTES", "I");
-        cv.visitInsn(RETURN);
-        cv.visitMaxs(0, 0);
-
-        cv = cw.visitMethod(ACC_PUBLIC + ACC_STATIC, "getNumAttributes", "()I", null, null);
-        cv.visitFieldInsn(GETSTATIC, classNameAsSlashes, "NUM_ATTRIBUTES", "I");
-        cv.visitInsn(IRETURN);
-        cv.visitMaxs(0, 0);
-
-        cv = cw.visitMethod(ACC_PUBLIC, "<init>", "()V", null, null);
-        cv.visitVarInsn(ALOAD, 0);
-        cv.visitMethodInsn(INVOKESPECIAL, BASE_ENTITY_CLASSNAME_SLASHES, "<init>", "()V");
-        cv.visitVarInsn(ALOAD, 0);
-        cv.visitMethodInsn(INVOKESTATIC, classNameAsSlashes, "getNumAttributes", "()I");
-        cv.visitTypeInsn(ANEWARRAY, "java/lang/Object");
-        cv.visitFieldInsn(PUTFIELD, classNameAsSlashes, "fields", "[Ljava/lang/Object;");
-        cv.visitInsn(RETURN);
-        cv.visitMaxs(0, 0);
-
+        else {
+            cw.visit(V1_5, ACC_PUBLIC + ACC_SUPER, classNameAsSlashes, BASE_ENTITY_CLASSNAME_SLASHES,
+                null, null);
+           
+            cw.visitField(ACC_PUBLIC + ACC_STATIC, "NUM_ATTRIBUTES", "I", null, null);
+            cv = cw.visitMethod(ACC_STATIC, "<clinit>", "()V", null, null);
+            cv.visitInsn(ICONST_1);
+            cv.visitFieldInsn(PUTSTATIC, classNameAsSlashes, "NUM_ATTRIBUTES", "I");
+            cv.visitInsn(RETURN);
+            cv.visitMaxs(0, 0);
+    
+            cv = cw.visitMethod(ACC_PUBLIC + ACC_STATIC, "setNumAttributes", "(Ljava/lang/Integer;)V",
+                null, null);
+            cv.visitVarInsn(ALOAD, 0);
+            cv.visitMethodInsn(INVOKEVIRTUAL, "java/lang/Integer", "intValue", "()I");
+            cv.visitFieldInsn(PUTSTATIC, classNameAsSlashes, "NUM_ATTRIBUTES", "I");
+            cv.visitInsn(RETURN);
+            cv.visitMaxs(0, 0);
+    
+            cv = cw.visitMethod(ACC_PUBLIC + ACC_STATIC, "getNumAttributes", "()I", null, null);
+            cv.visitFieldInsn(GETSTATIC, classNameAsSlashes, "NUM_ATTRIBUTES", "I");
+            cv.visitInsn(IRETURN);
+            cv.visitMaxs(0, 0);
+    
+            cv = cw.visitMethod(ACC_PUBLIC, "<init>", "()V", null, null);
+            cv.visitVarInsn(ALOAD, 0);
+            cv.visitMethodInsn(INVOKESPECIAL, BASE_ENTITY_CLASSNAME_SLASHES, "<init>", "()V");
+            cv.visitVarInsn(ALOAD, 0);
+            cv.visitMethodInsn(INVOKESTATIC, classNameAsSlashes, "getNumAttributes", "()I");
+            cv.visitTypeInsn(ANEWARRAY, "java/lang/Object");
+            cv.visitFieldInsn(PUTFIELD, classNameAsSlashes, "fields", "[Ljava/lang/Object;");
+            cv.visitInsn(RETURN);
+            cv.visitMaxs(0, 0);
+        }
         cw.visitEnd();
         return cw.toByteArray();
     }
@@ -138,5 +156,4 @@ public class BaseEntityClassLoader extends ClassLoader {
     public void dontGenerateSubclasses() {
         generateSubclasses = false;
     }
-
 }

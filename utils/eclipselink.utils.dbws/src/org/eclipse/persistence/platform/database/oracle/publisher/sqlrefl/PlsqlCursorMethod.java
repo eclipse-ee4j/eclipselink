@@ -11,10 +11,10 @@ import org.eclipse.persistence.platform.database.oracle.publisher.viewcache.Rowt
 public class PlsqlCursorMethod extends PlsqlMethod implements CursorMethod {
     public PlsqlCursorMethod(String packageName, String methodName, String methodNo, int modifiers,
         int sequence, Type[] parameterTypes, String[] parameterNames, int[] parameterModes,
-        boolean[] parameterDefaults, int paramLen, boolean returnBeans, SqlReflectorImpl reflector)
+        boolean[] parameterDefaults, int paramLen, boolean returnBeans, SqlReflector reflector)
         throws SQLException {
         super(methodName, null, /* overloadNumber */
-        modifiers, SqlReflectorImpl.REF_CURSOR_TYPE, parameterTypes, parameterNames, parameterModes,
+        modifiers, SqlReflector.REF_CURSOR_TYPE, parameterTypes, parameterNames, parameterModes,
             parameterDefaults, paramLen);
         m_returnBeans = returnBeans;
         m_reflector = reflector;
@@ -74,7 +74,7 @@ public class PlsqlCursorMethod extends PlsqlMethod implements CursorMethod {
             m_returnEleType = m_reflector.addJavaType(returnEleTypeName, new Field[0], null, true,
                 null);
         }
-        m_returnType = new JavaArrayType(m_returnEleType, m_reflector, SqlReflectorImpl.REF_CURSOR_TYPE);
+        m_returnType = new JavaArrayType(m_returnEleType, m_reflector, SqlReflector.REF_CURSOR_TYPE);
     }
 
     public Type getReturnEleType() {
@@ -102,7 +102,7 @@ public class PlsqlCursorMethod extends PlsqlMethod implements CursorMethod {
         return !m_returnBeans;
     }
 
-    private SqlReflectorImpl m_reflector;
+    private SqlReflector m_reflector;
     private String m_singleColName;
     private Type m_returnEleType;
     private boolean m_returnBeans;

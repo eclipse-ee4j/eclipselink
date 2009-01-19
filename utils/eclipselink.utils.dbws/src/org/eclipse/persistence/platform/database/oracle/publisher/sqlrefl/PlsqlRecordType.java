@@ -14,7 +14,7 @@ import org.eclipse.persistence.platform.database.oracle.publisher.viewcache.View
 @SuppressWarnings("unchecked")
 public class PlsqlRecordType extends SqlTypeWithFields {
     public PlsqlRecordType(SqlName sqlName, FieldInfo[] fieldInfo, Field[] fields,
-        RowtypeInfo[] rowtypeInfo, boolean generateMe, SqlType parentType, SqlReflectorImpl reflector)
+        RowtypeInfo[] rowtypeInfo, boolean generateMe, SqlType parentType, SqlReflector reflector)
         throws SQLException {
         super(sqlName, OracleTypes.PLSQL_RECORD, generateMe, parentType, reflector);
         m_rowtypeInfo = rowtypeInfo;
@@ -60,7 +60,7 @@ public class PlsqlRecordType extends SqlTypeWithFields {
     }
 
     static FieldInfo[] getFieldInfo(String packageName, String methodName, String methodNo,
-        int sequence, SqlReflectorImpl reflector) throws SQLException {
+        int sequence, SqlReflector reflector) throws SQLException {
 
         int data_level = -1;
         int next_rec_sequence = -1;

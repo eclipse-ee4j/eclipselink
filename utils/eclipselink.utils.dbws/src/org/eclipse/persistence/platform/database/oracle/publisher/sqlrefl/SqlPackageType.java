@@ -22,13 +22,13 @@ public class SqlPackageType extends SqlTypeWithMethods {
     }
 
     public SqlPackageType(SqlName sqlName, SqlType parentType, MethodFilter signatureFilter,
-        SqlReflectorImpl reflector) throws SQLException {
+        SqlReflector reflector) throws SQLException {
         super(sqlName, OracleTypes.PACKAGE, true, parentType, signatureFilter, reflector);
         initSecurityAttributes(sqlName);
     }
 
     // No database reflection. Currently used by oracle.j2ee.ws.db.genproxy.PlsqlProxy.
-    public SqlPackageType(SqlName sqlName, Method[] methods, SqlReflectorImpl reflector)
+    public SqlPackageType(SqlName sqlName, Method[] methods, SqlReflector reflector)
         throws SQLException {
         super(sqlName, OracleTypes.PACKAGE, true, null, null, reflector);
         m_methods = methods;

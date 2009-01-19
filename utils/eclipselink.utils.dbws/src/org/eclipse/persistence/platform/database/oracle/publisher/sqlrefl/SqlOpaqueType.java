@@ -3,7 +3,7 @@ package org.eclipse.persistence.platform.database.oracle.publisher.sqlrefl;
 public class SqlOpaqueType extends SqlType {
 
     public SqlOpaqueType(SqlName sqlName, boolean generateMe, SqlType parentType,
-        SqlReflectorImpl reflector) {
+        SqlReflector reflector) {
         super(sqlName, OracleTypes.OPAQUE, generateMe, parentType, reflector);
     }
 

@@ -1,7 +1,7 @@
 package org.eclipse.persistence.platform.database.oracle.publisher.sqlrefl;
 
 public class PLSQLMap extends Map {
-    public PLSQLMap(Type s, SqlReflectorImpl reflector) {
+    public PLSQLMap(Type s, SqlReflector reflector) {
         super(s, reflector);
         mapInit();
     }

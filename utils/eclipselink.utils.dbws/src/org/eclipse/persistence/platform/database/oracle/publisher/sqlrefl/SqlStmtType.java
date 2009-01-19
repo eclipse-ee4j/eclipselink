@@ -13,7 +13,7 @@ import org.eclipse.persistence.platform.database.oracle.publisher.PublisherExcep
 @SuppressWarnings("unchecked")
 public class SqlStmtType extends SqlType {
 
-    SqlStmtType(SqlName sqlName, SqlReflectorImpl reflector) throws SQLException {
+    SqlStmtType(SqlName sqlName, SqlReflector reflector) throws SQLException {
         super(sqlName, OracleTypes.SQL_STATEMENTS, true, null, reflector);
     }
 

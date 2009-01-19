@@ -21,7 +21,7 @@ public class DefaultArgsHolderName extends SqlName {
      *            created for
      */
     public DefaultArgsHolderName(String schema, String type, boolean fromDB, int line, int col,
-        String packageName, SqlType parentType, SqlType valueType, SqlReflectorImpl reflector)
+        String packageName, SqlType parentType, SqlType valueType, SqlReflector reflector)
         throws SQLException {
         super(schema, null, fromDB, line, col, false, false, null, null, null, reflector);
         m_context = Util.getSchema(schema, type);

@@ -8,7 +8,7 @@ public class SerializableType extends SqlType {
     /**
      * Construct a SqlRef Type
      */
-    public SerializableType(String serType, SqlReflectorImpl reflector) {
+    public SerializableType(String serType, SqlReflector reflector) {
         super(new SqlName("", serType, false, reflector), OracleTypes.BLOB, false, null, reflector);
         ((SqlName)m_name).setLangName(null, serType, null, null, null, null, null, null, true);
         String eleType = serType;
@@ -29,7 +29,7 @@ public class SerializableType extends SqlType {
      */
     public String getName() { // BLOB
         // return m_name.getSimpleName();
-        return SqlReflectorImpl.BLOB_TYPE.getSqlName().getSimpleName();
+        return SqlReflector.BLOB_TYPE.getSqlName().getSimpleName();
     }
 
     public String getTargetTypeName() {
@@ -49,7 +49,7 @@ public class SerializableType extends SqlType {
 
     public String getJdbcType(Map map) {
         // java.sql.Blob or oracle.sql.BLOB
-        return map.writeTypeName(SqlReflectorImpl.BLOB_TYPE);
+        return map.writeTypeName(SqlReflector.BLOB_TYPE);
     }
 
     public String getJdbcClass() {

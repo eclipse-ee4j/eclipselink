@@ -7,7 +7,7 @@ import org.eclipse.persistence.platform.database.oracle.publisher.viewcache.Fiel
 
 public class DefaultArgsHolderType extends SqlTypeWithFields {
     public DefaultArgsHolderType(SqlName sqlName, SqlType valueType, boolean ncharFormOfUse,
-        SqlReflectorImpl reflector) throws SQLException {
+        SqlReflector reflector) throws SQLException {
         super(sqlName, Types.STRUCT, true/* generateMe */, null/* parent */, reflector);
         m_valueType = valueType;
         Field field = new Field("value", m_valueType, 0/* dataLength */, 0/* precision */,

@@ -21,7 +21,7 @@ public class PlsqlRecordName extends SqlName {
      *            created for
      */
     public PlsqlRecordName(String schema, String type, boolean fromDB, int line, int col,
-        String packageName, SqlType parentType, Field[] fields, SqlReflectorImpl reflector)
+        String packageName, SqlType parentType, Field[] fields, SqlReflector reflector)
         throws SQLException {
         super(schema, null, fromDB, line, col, false, false, null, null, null, reflector);
 

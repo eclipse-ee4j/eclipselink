@@ -11,13 +11,13 @@ import org.eclipse.persistence.platform.database.oracle.publisher.viewcache.Elem
 @SuppressWarnings("unchecked")
 public class SqlCollectionType extends SqlType {
     public SqlCollectionType(SqlName sqlName, int typecode, boolean generateMe, SqlType parentType,
-        SqlReflectorImpl reflector) {
+        SqlReflector reflector) {
         super(sqlName, typecode, generateMe, parentType, reflector);
         ((JavaName)sqlName.getLangName()).ungenPattern(sqlName.getSimpleName());
     }
 
     // No database reflection. Currently used by oracle.j2ee.ws.db.genproxy.PlsqlProxy.
-    public SqlCollectionType(SqlName sqlName, Type eleType, SqlReflectorImpl reflector)
+    public SqlCollectionType(SqlName sqlName, Type eleType, SqlReflector reflector)
         throws SQLException {
         super(sqlName, OracleTypes.TABLE, true, null, reflector);
         ((JavaName)sqlName.getLangName()).ungenPattern(sqlName.getSimpleName());
@@ -47,7 +47,7 @@ public class SqlCollectionType extends SqlType {
             catch (SQLException e) {
                 e.printStackTrace();
                 if (result == null) {
-                    result = SqlReflectorImpl.UNKNOWN_TYPE;
+                    result = SqlReflector.UNKNOWN_TYPE;
                 }
             }
             m_elementType = result;
@@ -70,10 +70,10 @@ public class SqlCollectionType extends SqlType {
         String elemTypeMod = null;
         if (scti.hasNext()) {
             AllCollTypes viewRow = (AllCollTypes)scti.next();
-            m_isNChar = SqlReflectorImpl.NCHAR_CS.equals(viewRow.characterSetName);
+            m_isNChar = SqlReflector.NCHAR_CS.equals(viewRow.characterSetName);
             elemInfo = new ElemInfo(viewRow);
-            if (SqlReflectorImpl.isNull(elemInfo.elemTypeMod)
-                && !SqlReflectorImpl.isNull(elemInfo.elemTypeName)) {
+            if (SqlReflector.isNull(elemInfo.elemTypeMod)
+                && !SqlReflector.isNull(elemInfo.elemTypeName)) {
                 scti = m_viewCache.getRows(Util.ALL_TYPES, new String[0], new String[]{"OWNER",
                     "TYPE_NAME"}, new Object[]{elemInfo.elemTypeOwner, elemInfo.elemTypeName},
                     new String[0]);

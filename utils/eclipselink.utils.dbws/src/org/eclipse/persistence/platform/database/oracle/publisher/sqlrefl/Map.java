@@ -89,7 +89,7 @@ public class Map {
 
     /**
      */
-    public Map(Type s, SqlReflectorImpl reflector) {
+    public Map(Type s, SqlReflector reflector) {
         if (s != null && (s instanceof JavaType)) {
             m_field_map = null;
             m_package = s.getNameObject().getDeclPackage();
@@ -253,25 +253,25 @@ public class Map {
         int typecode = getJavaTypecode(elemType.getTypecode());
         switch (typecode) {
             case DOUBLE:
-                return SqlReflectorImpl.plsqlTableDouble;
+                return SqlReflector.plsqlTableDouble;
             case FLOAT:
-                return SqlReflectorImpl.plsqlTableFloat;
+                return SqlReflector.plsqlTableFloat;
             case INT:
-                return SqlReflectorImpl.plsqlTableInt;
+                return SqlReflector.plsqlTableInt;
             case SHORT:
-                return SqlReflectorImpl.plsqlTableShort;
+                return SqlReflector.plsqlTableShort;
             case JL_DOUBLE:
-                return SqlReflectorImpl.plsqlTableJldouble;
+                return SqlReflector.plsqlTableJldouble;
             case JL_FLOAT:
-                return SqlReflectorImpl.plsqlTableJlfloat;
+                return SqlReflector.plsqlTableJlfloat;
             case JL_INTEGER:
-                return SqlReflectorImpl.plsqlTableJlinteger;
+                return SqlReflector.plsqlTableJlinteger;
             case JL_SHORT:
-                return SqlReflectorImpl.plsqlTableJlshort;
+                return SqlReflector.plsqlTableJlshort;
             case JM_BIGDECIMAL:
-                return SqlReflectorImpl.plsqlTableJmbigdecimal;
+                return SqlReflector.plsqlTableJmbigdecimal;
             case JL_STRING:
-                return SqlReflectorImpl.plsqlTableString;
+                return SqlReflector.plsqlTableString;
             default:
                 return null;
         }
@@ -382,7 +382,7 @@ public class Map {
     protected int binaryFloatMap;
     protected int binaryDoubleMap;
 
-    protected SqlReflectorImpl m_reflector;
+    protected SqlReflector m_reflector;
 
     static final String[] NAMES = {"<unsupported type>",
 

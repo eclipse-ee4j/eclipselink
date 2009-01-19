@@ -30,11 +30,11 @@ public class SqlName extends Name {
      *            the declared name of the entity in the schema
      */
     public SqlName(String schema, String type, boolean fromDB, int line, int col,
-        SqlReflectorImpl reflector) {
+        SqlReflector reflector) {
         this(schema, type, fromDB, line, col, false, false, null, null, null, reflector);
     }
 
-    public SqlName(String schema, String type, boolean fromDB, SqlReflectorImpl reflector) {
+    public SqlName(String schema, String type, boolean fromDB, SqlReflector reflector) {
         this(schema, type, fromDB, 0, 0, false, false, null, null, null, reflector);
     }
 
@@ -49,14 +49,14 @@ public class SqlName extends Name {
     // are not null
     public SqlName(String schema, String type, boolean fromDB, boolean printAsIs,
         boolean predefined, String convertInto, String convertOutOf, String conversionTarget,
-        SqlReflectorImpl reflector) {
+        SqlReflector reflector) {
         this(schema, type, fromDB, 0, 0, printAsIs, predefined, convertInto, convertOutOf,
             conversionTarget, reflector);
     }
 
     protected SqlName(String schema, String type, boolean fromDB, int line, int col,
         boolean printAsIs, boolean predefined, String convertInto, String convertOutOf,
-        String conversionTarget, SqlReflectorImpl reflector) {
+        String conversionTarget, SqlReflector reflector) {
         super(massageSchema(schema, fromDB, predefined, reflector), fromDB ? type : reflector
             .getViewCache().dbifyName(type));
         if (m_context == null) {
@@ -93,7 +93,7 @@ public class SqlName extends Name {
      *            created for
      */
     public SqlName(String schema, String type, boolean fromDB, int line, int col,
-        String packageName, SqlType parentType, SqlReflectorImpl reflector) {
+        String packageName, SqlType parentType, SqlReflector reflector) {
         this(schema, null, fromDB, line, col, false, false, null, null, null, reflector);
 
         // Figure out an identifying name for the SQL type
@@ -139,7 +139,7 @@ public class SqlName extends Name {
      * 
      **/
     public static String determineSqlName(String packageName, String[] sourceName, Type parentType,
-        boolean[] isRowType, SqlReflectorImpl reflector) {
+        boolean[] isRowType, SqlReflector reflector) {
         String parentName = null; // Java name for the PL/SQL package
         if (parentType != null) {
             SqlName parentSqlName = (SqlName)parentType.getNameObject();
@@ -620,7 +620,7 @@ public class SqlName extends Name {
     }
 
     private static String massageSchema(String schema, boolean fromDB, boolean predefined,
-        SqlReflectorImpl reflector) {
+        SqlReflector reflector) {
         if (schema == null) {
             schema = NO_CONTEXT;
         }
@@ -762,7 +762,7 @@ public class SqlName extends Name {
         return m_isReused;
     }
 
-    public static String dbifyName(String s, SqlReflectorImpl reflector) {
+    public static String dbifyName(String s, SqlReflector reflector) {
 
         if (s == null || s.equals("") || reflector == null || reflector.getConnection() == null)
             return s;

@@ -141,13 +141,13 @@ public class SqlType extends Type {
      * for the same non-null sqlName.
      */
     protected SqlType(SqlName sqlName, int typecode, boolean generateMe, SqlType parentType,
-        SqlReflectorImpl reflector) {
+        SqlReflector reflector) {
         this(sqlName, typecode, generateMe, false, parentType, reflector);
         m_isReused = false;
     }
 
     SqlType(SqlName sqlName, int typecode, boolean generateMe, boolean isPrimitive,
-        SqlType parentType, SqlReflectorImpl reflector) {
+        SqlType parentType, SqlReflector reflector) {
         super(sqlName, typecode, isPrimitive);
         m_isReused = false;
         m_reflector = reflector;
@@ -521,7 +521,7 @@ public class SqlType extends Type {
     }
 
     private String m_version;
-    protected SqlReflectorImpl m_reflector; // null for predefined types
+    protected SqlReflector m_reflector; // null for predefined types
     protected ViewCache m_viewCache;
     protected SqlType m_parentType;
     protected boolean m_isReused;

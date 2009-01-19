@@ -9,7 +9,7 @@ public class SqlRefType extends SqlType {
      * Construct a SqlRef Type
      */
     SqlRefType(SqlName sqlName, SqlType refeeType, SqlType parentType, boolean generateMe,
-        SqlReflectorImpl reflector) {
+        SqlReflector reflector) {
         super(null, OracleTypes.REF, false, parentType, reflector);
 
         m_refeeType = refeeType;

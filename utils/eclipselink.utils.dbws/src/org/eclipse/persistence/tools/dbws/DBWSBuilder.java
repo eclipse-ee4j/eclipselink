@@ -61,6 +61,7 @@ import org.eclipse.persistence.descriptors.RelationalDescriptor;
 import org.eclipse.persistence.expressions.Expression;
 import org.eclipse.persistence.expressions.ExpressionBuilder;
 import org.eclipse.persistence.internal.databaseaccess.DatabasePlatform;
+import org.eclipse.persistence.internal.dynamicpersist.BaseEntityClassLoader;
 import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.helper.DatabaseType;
 import org.eclipse.persistence.internal.helper.Helper;
@@ -800,7 +801,7 @@ prompt> java -cp eclipselink.jar:eclipselink-dbwsutils.jar:your_favourite_jdbc_d
                 String alias = plsqlStoredArgument.getName();
                 ordtDescriptor.setAlias(alias);
                 String javaClassName = plsqlStoredArgument.getPlSqlTypeName().toLowerCase() + "." + 
-                    plsqlStoredArgument.getName();
+                    plsqlStoredArgument.getName() + BaseEntityClassLoader.COLLECTION_WRAPPER_SUFFIX;
                 String arrayName = plsqlStoredArgument.getJdbcTypeName();
                 ordtDescriptor.setJavaClassName(javaClassName);
                 ArrayMapping itemsMapping = new ArrayMapping();

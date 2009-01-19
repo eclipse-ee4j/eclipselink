@@ -12,7 +12,7 @@ public class QueryMethod extends SqlStmtMethod implements CursorMethod {
      * Construct a Method that is a query that returns java.lang.ResultSet or Beans
      */
     public QueryMethod(String methodName, int modifiers, String sqlStmt, boolean returnBeans,
-        SqlStmtType sqlStmtType, SqlReflectorImpl reflector) throws SQLException,
+        SqlStmtType sqlStmtType, SqlReflector reflector) throws SQLException,
         org.eclipse.persistence.platform.database.oracle.publisher.PublisherException {
         super(methodName, modifiers, sqlStmt, reflector);
         m_returnBeans = returnBeans;

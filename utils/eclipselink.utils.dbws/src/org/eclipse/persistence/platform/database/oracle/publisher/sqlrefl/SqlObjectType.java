@@ -14,19 +14,19 @@ import org.eclipse.persistence.platform.database.oracle.publisher.viewcache.Resu
 public class SqlObjectType extends SqlTypeWithMethods {
 
     public SqlObjectType(SqlName sqlName, boolean generateMe, SqlType parentType,
-        SqlReflectorImpl reflector) throws SQLException {
+        SqlReflector reflector) throws SQLException {
         this(sqlName, OracleTypes.STRUCT, generateMe, parentType, reflector);
     }
 
     public SqlObjectType(SqlName sqlName, int typecode, boolean generateMe, SqlType parentType,
-        SqlReflectorImpl reflector) throws SQLException {
+        SqlReflector reflector) throws SQLException {
         super(sqlName, typecode, generateMe, parentType, null, reflector);
     }
 
     /*
      * BEGIN No database reflection. Currently used by oracle.j2ee.ws.db.genproxy.PlsqlProxy.
      */
-    public SqlObjectType(SqlName sqlName, Field[] fields, SqlReflectorImpl reflector)
+    public SqlObjectType(SqlName sqlName, Field[] fields, SqlReflector reflector)
         throws SQLException {
         super(sqlName, OracleTypes.STRUCT, true, null, null, reflector);
         m_modifiers = Modifier.PUBLIC;

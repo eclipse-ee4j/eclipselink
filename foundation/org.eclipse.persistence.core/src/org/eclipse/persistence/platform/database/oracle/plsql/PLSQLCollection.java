@@ -13,21 +13,13 @@
 package org.eclipse.persistence.platform.database.oracle.plsql;
 
 //javase imports
-import java.sql.Array;
-import java.util.Vector;
+import java.util.ArrayList;
 import static java.sql.Types.ARRAY;
 
 //EclipseLink imports
-import org.eclipse.persistence.internal.dynamicpersist.BaseEntity;
 import org.eclipse.persistence.internal.helper.ComplexDatabaseType;
-import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.helper.DatabaseType;
-import org.eclipse.persistence.internal.sessions.AbstractRecord;
-import org.eclipse.persistence.internal.sessions.AbstractSession;
-import org.eclipse.persistence.mappings.structures.ObjectRelationalDataTypeDescriptor;
-import org.eclipse.persistence.queries.StoredProcedureCall;
 
-@SuppressWarnings("unchecked")
 public class PLSQLCollection extends ComplexDatabaseType implements Cloneable, OraclePLSQLType {
 
     /**
@@ -39,7 +31,7 @@ public class PLSQLCollection extends ComplexDatabaseType implements Cloneable, O
     
     public PLSQLCollection() {
         super();
-        this.javaType = Vector.class;
+        this.javaType = ArrayList.class;
     }
 
     @Override
@@ -70,27 +62,4 @@ public class PLSQLCollection extends ComplexDatabaseType implements Cloneable, O
         return ARRAY;
     }
 
-    @Override
-    public void translate(PLSQLargument arg, AbstractRecord translationRow,
-        AbstractRecord copyOfTranslationRow, Vector copyOfTranslationFields,
-        Vector translationRowFields, Vector translationRowValues, StoredProcedureCall call) {
-        Object f = copyOfTranslationFields.get(arg.originalIndex);
-        if (f instanceof DatabaseField) {
-            DatabaseField df = (DatabaseField)f;
-            if (df.getName().equals(arg.name)) {
-                Object value = copyOfTranslationRow.get(df.getName());
-                if (value instanceof BaseEntity) {
-                    // dynamic persistence
-                    BaseEntity be = (BaseEntity)value;
-                    AbstractSession s = call.getQuery().getSession();
-                    Array convertedValue = (Array)((ObjectRelationalDataTypeDescriptor)s.
-                        getDescriptorForAlias(arg.name)).buildFieldValueFromDirectValues((Vector)be.get(0),
-                          ((ComplexDatabaseType)arg.databaseType).getCompatibleType(),s);
-                    copyOfTranslationRow.put(df.getName(), convertedValue);
-                }
-            }
-        }
-        super.translate(arg, translationRow, copyOfTranslationRow, copyOfTranslationFields,
-            translationRowFields, translationRowValues, call);
-    }
 }

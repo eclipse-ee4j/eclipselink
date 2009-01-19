@@ -8,7 +8,7 @@ import org.eclipse.persistence.platform.database.oracle.publisher.Util;
 
 public class Field implements Sortable {
     public Field(String name, Type type, int dataLength, int precision, int scale,
-        boolean ncharFormOfUse, SqlReflectorImpl reflector) {
+        boolean ncharFormOfUse, SqlReflector reflector) {
         m_name = name;
         m_type = type;
         m_dataLength = dataLength;
@@ -19,8 +19,8 @@ public class Field implements Sortable {
     }
 
     public Field(String name, Type type, int dataLength, int precision, int scale,
-        String character_set_name, SqlReflectorImpl reflector) {
-        this(name, type, dataLength, precision, scale, SqlReflectorImpl.NCHAR_CS
+        String character_set_name, SqlReflector reflector) {
+        this(name, type, dataLength, precision, scale, SqlReflector.NCHAR_CS
             .equals(character_set_name), reflector);
     }
 
@@ -90,6 +90,6 @@ public class Field implements Sortable {
     private int m_scale;
     private boolean m_isNChar;
     @SuppressWarnings("unused")
-    private SqlReflectorImpl m_reflector;
+    private SqlReflector m_reflector;
 
 }

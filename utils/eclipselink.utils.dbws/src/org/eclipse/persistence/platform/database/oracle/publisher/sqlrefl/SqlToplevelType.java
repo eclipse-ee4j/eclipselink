@@ -18,7 +18,7 @@ public class SqlToplevelType extends SqlTypeWithMethods {
     }
 
     public SqlToplevelType(SqlName sqlName, SqlType parentType, MethodFilter methodFilter,
-        SqlReflectorImpl reflector) throws SQLException {
+        SqlReflector reflector) throws SQLException {
         super(sqlName, OracleTypes.PACKAGE, true, parentType, methodFilter, reflector);
     }
 

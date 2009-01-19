@@ -18,7 +18,7 @@ import org.eclipse.persistence.platform.database.oracle.publisher.viewcache.Sing
 @SuppressWarnings("unchecked")
 public abstract class SqlTypeWithMethods extends SqlTypeWithFields {
     public SqlTypeWithMethods(SqlName sqlName, int typecode, boolean generateMe,
-        SqlType parentType, MethodFilter signatureFilter, SqlReflectorImpl reflector)
+        SqlType parentType, MethodFilter signatureFilter, SqlReflector reflector)
         throws SQLException {
         super(sqlName, typecode, generateMe, parentType, reflector);
         m_methodFilter = signatureFilter;
@@ -189,7 +189,7 @@ public abstract class SqlTypeWithMethods extends SqlTypeWithFields {
             Method method = null;
             for (int paramLen = firstNoDefault + 1; paramLen <= paramCount; paramLen++) {
                 if (this instanceof SqlPackageType && returnType != null && resultInfo != null
-                    && returnType.equals(SqlReflectorImpl.REF_CURSOR_TYPE)) {
+                    && returnType.equals(SqlReflector.REF_CURSOR_TYPE)) {
                     method = new PlsqlCursorMethod(type, methodName, methodNo, modifiers,
                         resultInfo.sequence, paramTypes, paramNames, paramModes, paramDefaults,
                         paramLen, false, m_reflector);
@@ -206,7 +206,7 @@ public abstract class SqlTypeWithMethods extends SqlTypeWithFields {
                 if (acceptMethod(method, false)) {
                     methodl.add(method);
                     if (returnType != null && resultInfo != null
-                        && returnType.equals(SqlReflectorImpl.REF_CURSOR_TYPE)) {
+                        && returnType.equals(SqlReflector.REF_CURSOR_TYPE)) {
                         method = new PlsqlCursorMethod(type, methodName, methodNo, modifiers,
                             resultInfo.sequence, paramTypes, paramNames, paramModes, paramDefaults,
                             paramLen, true, /* returnBeans */

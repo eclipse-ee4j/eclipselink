@@ -2,7 +2,7 @@ package org.eclipse.persistence.platform.database.oracle.publisher.viewcache;
 
 import java.util.ArrayList;
 import java.util.Iterator;
-import org.eclipse.persistence.platform.database.oracle.publisher.sqlrefl.SqlReflectorImpl;
+import org.eclipse.persistence.platform.database.oracle.publisher.sqlrefl.SqlReflector;
 
 @SuppressWarnings("unchecked")
 public class FieldInfo {
@@ -29,7 +29,7 @@ public class FieldInfo {
         fieldName = r.ARGUMENT_NAME;
         fieldTypeOwner = r.TYPE_OWNER;
         fieldTypeName = r.TYPE_NAME;
-        if (SqlReflectorImpl.isNull(fieldTypeName)) {
+        if (SqlReflector.isNull(fieldTypeName)) {
             fieldTypeName = r.DATA_TYPE;
         }
         if ("PL/SQL BOOLEAN".equalsIgnoreCase(fieldTypeName)) {

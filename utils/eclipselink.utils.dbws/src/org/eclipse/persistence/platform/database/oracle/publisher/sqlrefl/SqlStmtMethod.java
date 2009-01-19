@@ -15,7 +15,7 @@ import static org.eclipse.persistence.platform.database.oracle.publisher.Util.IS
 @SuppressWarnings("unchecked")
 public abstract class SqlStmtMethod extends Method {
 
-    public SqlStmtMethod(String name, int modifiers, String sqlStmt, SqlReflectorImpl reflector)
+    public SqlStmtMethod(String name, int modifiers, String sqlStmt, SqlReflector reflector)
         throws SQLException,
         org.eclipse.persistence.platform.database.oracle.publisher.PublisherException {
         super(name, null, /* overloadNumber */
@@ -164,5 +164,5 @@ public abstract class SqlStmtMethod extends Method {
     protected String m_sqlStmt; // ? represents host variables
     protected String m_sqlStmtTmp;
     protected String m_sqlStmtQuoted;
-    protected SqlReflectorImpl m_reflector;
+    protected SqlReflector m_reflector;
 }

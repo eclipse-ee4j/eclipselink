@@ -2,7 +2,7 @@ package org.eclipse.persistence.platform.database.oracle.publisher.viewcache;
 
 import java.util.ArrayList;
 import java.util.Iterator;
-import org.eclipse.persistence.platform.database.oracle.publisher.sqlrefl.SqlReflectorImpl;
+import org.eclipse.persistence.platform.database.oracle.publisher.sqlrefl.SqlReflector;
 
 @SuppressWarnings("unchecked")
 public class ParamInfo {
@@ -35,7 +35,7 @@ public class ParamInfo {
         }
         paramTypeSubname = null;
         ncharFormOfUse = false;
-        if (SqlReflectorImpl.NCHAR_CS.equals(r.characterSetName)) {
+        if (SqlReflector.NCHAR_CS.equals(r.characterSetName)) {
             ncharFormOfUse = true;
         }
         methodName = r.methodName;
@@ -65,10 +65,10 @@ public class ParamInfo {
         }
 
         paramTypeName = r.TYPE_NAME;
-        if (SqlReflectorImpl.isNull(paramTypeName)) {
+        if (SqlReflector.isNull(paramTypeName)) {
             paramTypeName = r.PLS_TYPE;
         }
-        if (SqlReflectorImpl.isNull(paramTypeName)) {
+        if (SqlReflector.isNull(paramTypeName)) {
             paramTypeName = r.DATA_TYPE;
         }
         if ("PL/SQL BOOLEAN".equalsIgnoreCase(paramTypeName)) {
@@ -76,7 +76,7 @@ public class ParamInfo {
         }
         paramTypeSubname = r.TYPE_SUBNAME;
         ncharFormOfUse = false;
-        if (SqlReflectorImpl.NCHAR_CS.equals(r.CHARACTER_SET_NAME)) {
+        if (SqlReflector.NCHAR_CS.equals(r.CHARACTER_SET_NAME)) {
             ncharFormOfUse = true;
         }
         methodName = r.OBJECT_NAME;

@@ -10,7 +10,6 @@ import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.StringTokenizer;
 import java.util.Vector;
-import org.eclipse.persistence.platform.database.oracle.publisher.SqlReflector;
 import org.eclipse.persistence.platform.database.oracle.publisher.MethodFilter;
 import org.eclipse.persistence.platform.database.oracle.publisher.PublisherException;
 import org.eclipse.persistence.platform.database.oracle.publisher.Util;
@@ -33,7 +32,7 @@ import static org.eclipse.persistence.platform.database.oracle.publisher.Util.MA
  * SQL Type Reflection Facility
  */
 @SuppressWarnings("unchecked")
-public class SqlReflectorImpl implements SqlReflector {
+public class SqlReflector {
 
     public static final String CHAR_CS = "CHAR_CS";
     public static final String NCHAR_CS = "NCHAR_CS";
@@ -190,7 +189,7 @@ public class SqlReflectorImpl implements SqlReflector {
     public static final SqlType UNKNOWN_TYPE = new SqlType("<unknown type or type not found>",
         OracleTypes.UNSUPPORTED);
 
-    public SqlReflectorImpl(Connection conn, String user) {
+    public SqlReflector(Connection conn, String user) {
         m_viewCacheManager = new ViewCacheManager(conn);
         m_user = user;
         reset(conn);
@@ -232,7 +231,7 @@ public class SqlReflectorImpl implements SqlReflector {
         m_wrapperPackageMetadata = null;
 
         if (conn != null) {
-            m_geq9i = SqlReflectorImpl.geqOracle9(conn);
+            m_geq9i = SqlReflector.geqOracle9(conn);
         }
     }
 

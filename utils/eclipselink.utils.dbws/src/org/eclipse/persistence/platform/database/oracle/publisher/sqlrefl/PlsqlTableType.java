@@ -17,7 +17,7 @@ import static org.eclipse.persistence.platform.database.oracle.publisher.Util.AL
 @SuppressWarnings("unchecked")
 public class PlsqlTableType extends SqlCollectionType {
     public PlsqlTableType(SqlName sqlName, int typeCode, ElemInfo elemInfo, SqlType elemType,
-        int[] details, boolean generateMe, SqlType parentType, SqlReflectorImpl reflector) {
+        int[] details, boolean generateMe, SqlType parentType, SqlReflector reflector) {
         super(sqlName, typeCode, generateMe, parentType, reflector);
         m_elemInfo = elemInfo;
         m_elementType = elemType;
@@ -109,7 +109,7 @@ public class PlsqlTableType extends SqlCollectionType {
     public static final int DETAILS_TYPE_PRECISION = 1;
     public static final int DETAILS_TYPE_SCALE = 2;
 
-    static Type getComponentType(ElemInfo elemInfo, SqlReflectorImpl reflector, SqlType parentType,
+    static Type getComponentType(ElemInfo elemInfo, SqlReflector reflector, SqlType parentType,
         int[] details) throws SQLException, PublisherException {
         SqlType result = null;
         try {
@@ -132,7 +132,7 @@ public class PlsqlTableType extends SqlCollectionType {
         catch (SQLException e) {
             System.err.println(e.getMessage());
             if (result == null) {
-                result = SqlReflectorImpl.UNKNOWN_TYPE;
+                result = SqlReflector.UNKNOWN_TYPE;
             }
         }
         return result;
@@ -187,7 +187,7 @@ public class PlsqlTableType extends SqlCollectionType {
 
     public static SqlType newInstance(SqlName sqlName, int typeCode, ElemInfo elemInfo,
         SqlType elemType, int[] details, boolean generateMe, SqlType parentType,
-        boolean isGrandparent, SqlReflectorImpl reflector) throws java.sql.SQLException,
+        boolean isGrandparent, SqlReflector reflector) throws java.sql.SQLException,
         org.eclipse.persistence.platform.database.oracle.publisher.PublisherException {
         /**
          * Identify toplevel scalar PL/SQL indexby table, to be mapped to predefined PL/SQL indexby

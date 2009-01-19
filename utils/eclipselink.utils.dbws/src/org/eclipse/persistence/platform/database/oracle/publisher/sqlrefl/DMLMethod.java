@@ -14,10 +14,10 @@ public class DMLMethod extends SqlStmtMethod {
      * m_isBatched <= isBatched
      */
     public DMLMethod(String name, int modifiers, String sqlStmt, boolean isBatched,
-        SqlReflectorImpl reflector) throws SQLException,
+        SqlReflector reflector) throws SQLException,
         org.eclipse.persistence.platform.database.oracle.publisher.PublisherException {
         super(name, modifiers, sqlStmt, reflector);
-        m_returnType = new JavaBaseType("int", null, null, SqlReflectorImpl.INT_TYPE);
+        m_returnType = new JavaBaseType("int", null, null, SqlReflector.INT_TYPE);
         m_isBatched = isBatched;
         if (isBatched) {
             Type[] batchParamTypes = new Type[m_paramTypes.length];

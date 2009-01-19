@@ -14,7 +14,7 @@ import org.eclipse.persistence.platform.database.oracle.publisher.viewcache.View
 public abstract class SqlTypeWithFields extends SqlType {
 
     public SqlTypeWithFields(SqlName sqlName, int typecode, boolean generateMe, SqlType parentType,
-        SqlReflectorImpl reflector) throws SQLException {
+        SqlReflector reflector) throws SQLException {
         super(sqlName, typecode, generateMe, parentType, reflector);
     }
 
@@ -46,7 +46,7 @@ public abstract class SqlTypeWithFields extends SqlType {
         return reflectFields(publishedOnly, getFieldInfo(), m_reflector, this, false);
     }
 
-    static Field[] reflectFields(boolean publishedOnly, FieldInfo[] sfi, SqlReflectorImpl reflector,
+    static Field[] reflectFields(boolean publishedOnly, FieldInfo[] sfi, SqlReflector reflector,
         SqlType parent, boolean isGrandparent) throws SQLException, PublisherException {
         ArrayList fieldsCS = new ArrayList();
         ViewCache viewCache = reflector.getViewCache();

@@ -1,7 +1,7 @@
 package org.eclipse.persistence.platform.database.oracle.publisher.sqlrefl;
 
 public class JavaArrayType extends JavaType {
-    public JavaArrayType(Type eleType, SqlReflectorImpl reflector, Type sqlType) {
+    public JavaArrayType(Type eleType, SqlReflector reflector, Type sqlType) {
         super((((JavaType)eleType).getTypeName() + "[]"), sqlType);
         m_eleType = eleType;
         m_reflector = reflector;
@@ -19,5 +19,5 @@ public class JavaArrayType extends JavaType {
     }
 
     private Type m_eleType;
-    protected SqlReflectorImpl m_reflector;
+    protected SqlReflector m_reflector;
 }
