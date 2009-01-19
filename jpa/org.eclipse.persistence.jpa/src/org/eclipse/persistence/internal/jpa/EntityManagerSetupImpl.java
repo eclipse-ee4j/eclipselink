@@ -1466,19 +1466,28 @@ public class EntityManagerSetupImpl {
      * The method needs to be called in deploy stage.
      */
     protected void updateBatchWritingSetting(Map persistenceProperties) {
-        String batchWritingSettingString = PropertiesHandler.getPropertyValueLogDebug(PersistenceUnitProperties.BATCH_WRITING, persistenceProperties, session);
+        String batchWritingSettingString = PropertiesHandler.getPropertyValueLogDebug(PersistenceUnitProperties.BATCH_WRITING, persistenceProperties, this.session);
         if (batchWritingSettingString != null) {
-             session.getPlatform().setUsesBatchWriting(batchWritingSettingString != BatchWriting.None);
+        	this.session.getPlatform().setUsesBatchWriting(batchWritingSettingString != BatchWriting.None);
              if (batchWritingSettingString == BatchWriting.JDBC) {
-                 session.getPlatform().setUsesJDBCBatchWriting(true);
-                 session.getPlatform().setUsesNativeBatchWriting(false);
+            	 this.session.getPlatform().setUsesJDBCBatchWriting(true);
+                 this.session.getPlatform().setUsesNativeBatchWriting(false);
              } else if (batchWritingSettingString == BatchWriting.Buffered) {
-                 session.getPlatform().setUsesJDBCBatchWriting(false);
-                 session.getPlatform().setUsesNativeBatchWriting(false);
+            	 this.session.getPlatform().setUsesJDBCBatchWriting(false);
+                 this.session.getPlatform().setUsesNativeBatchWriting(false);
              } else if (batchWritingSettingString == BatchWriting.OracleJDBC) {
-                 session.getPlatform().setUsesNativeBatchWriting(true);
-                 session.getPlatform().setUsesJDBCBatchWriting(true);
+            	 this.session.getPlatform().setUsesNativeBatchWriting(true);
+                 this.session.getPlatform().setUsesJDBCBatchWriting(true);
              }
+        }
+        // Set batch size.
+        String sizeString = EntityManagerFactoryProvider.getConfigPropertyAsStringLogDebug(PersistenceUnitProperties.BATCH_WRITING_SIZE, persistenceProperties, this.session);
+        if (sizeString != null) {
+        	try {
+        		this.session.getPlatform().setMaxBatchWritingSize(Integer.parseInt(sizeString));
+        	} catch (NumberFormatException invalid) {
+                session.handleException(ValidationException.invalidValueForProperty(sizeString, PersistenceUnitProperties.BATCH_WRITING_SIZE, invalid));
+            }
         }
     }
     
@@ -1524,9 +1533,13 @@ public class EntityManagerSetupImpl {
      */
     protected void updatePessimisticLockTimeout(Map persistenceProperties) {
         String pessimisticLockTimeout = PropertiesHandler.getPropertyValueLogDebug(PersistenceUnitProperties.PESSIMISTIC_LOCK_TIMEOUT, persistenceProperties, session);
-        
+
         if (pessimisticLockTimeout != null) {
-            session.setPessimisticLockTimeoutDefault(Integer.parseInt(pessimisticLockTimeout));
+	        try {
+	            session.setPessimisticLockTimeoutDefault(Integer.parseInt(pessimisticLockTimeout));
+	    	} catch (NumberFormatException invalid) {
+	            session.handleException(ValidationException.invalidValueForProperty(pessimisticLockTimeout, PersistenceUnitProperties.PESSIMISTIC_LOCK_TIMEOUT, invalid));
+	        }
         }
     }
     

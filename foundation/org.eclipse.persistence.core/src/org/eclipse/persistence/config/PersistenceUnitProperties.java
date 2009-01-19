@@ -302,6 +302,14 @@ public class PersistenceUnitProperties {
      */
     public static final String BATCH_WRITING = "eclipselink.jdbc.batch-writing";
     
+    /**
+     * Specify the batch size used for batch writing.
+     * For parameterized batch writing this is the number of statements to batch, default 100.
+     * For dynamic batch writing, this is the size of the batched SQL buffer, default 32k.
+     * @see #BATCH_WRITING
+     */
+    public static final String BATCH_WRITING_SIZE = "eclipselink.jdbc.batch-writing.size";
+    
     /** Specify ExceptionHandler implementing class. */
     public static final String EXCEPTION_HANDLER_CLASS = "eclipselink.exception-handler";
     

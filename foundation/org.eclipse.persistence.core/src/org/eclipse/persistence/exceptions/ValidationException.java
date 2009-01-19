@@ -326,6 +326,7 @@ public class ValidationException extends EclipseLinkException {
     public static final int CANNOT_INSTANTIATE_SESSIONEVENTLISTENER_CLASS = 7276;
     public static final int LOGGING_FILE_NAME_CANNOT_BE_EMPTY = 7277;
     public static final int INVALID_BOOLEAN_VALUE_FOR_PROPERTY = 7278;
+    public static final int INVALID_VALUE_FOR_PROPERTY = 7308;
     
     // Converters
     // 7279-7281 deleted
@@ -2360,6 +2361,13 @@ public class ValidationException extends EclipseLinkException {
         Object[] args = { specifiedBooleanValue, property };
         ValidationException validationException = new ValidationException(ExceptionMessageGenerator.buildMessage(ValidationException.class, INVALID_BOOLEAN_VALUE_FOR_PROPERTY, args));
         validationException.setErrorCode(INVALID_BOOLEAN_VALUE_FOR_PROPERTY);
+        return validationException;
+    }
+    
+    public static ValidationException invalidValueForProperty(String specifiedValue, String property, Exception error) {
+        Object[] args = { specifiedValue, property, error.toString() };
+        ValidationException validationException = new ValidationException(ExceptionMessageGenerator.buildMessage(ValidationException.class, INVALID_VALUE_FOR_PROPERTY, args), error);
+        validationException.setErrorCode(INVALID_VALUE_FOR_PROPERTY);
         return validationException;
     }
     

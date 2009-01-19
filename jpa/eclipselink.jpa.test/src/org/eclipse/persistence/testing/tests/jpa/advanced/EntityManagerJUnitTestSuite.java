@@ -3492,6 +3492,11 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
             fail("readMax is wrong");
         }
         
+        int batchSize = ss.getPlatform().getMaxBatchWritingSize();
+        if (batchSize != Integer.parseInt((String)JUnitTestCaseHelper.propertiesMap.get(PersistenceUnitProperties.BATCH_WRITING_SIZE))) {
+            fail("batchSize is wrong");
+        }
+        
         // these properties were set in persistence unit - the values should be the same as in persistence.xml
         /*
             <property name="eclipselink.session-name" value="default-session"/>
