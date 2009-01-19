@@ -206,6 +206,7 @@
                    type="orm:primary-key-join-column" 
                    minOccurs="0" maxOccurs="unbounded"/>
       <xsd:element name="id-class" type="orm:id-class" minOccurs="0"/>
+      <xsd:element name="primary-key" type="orm:primary-key" minOccurs="0"/>
       <xsd:element name="inheritance" type="orm:inheritance" minOccurs="0"/>
       <xsd:element name="discriminator-value" type="orm:discriminator-value" 
                    minOccurs="0"/>
@@ -1742,6 +1743,7 @@
       <xsd:element name="change-tracking" type="orm:change-tracking" 
                    minOccurs="0"/>
       <xsd:element name="id-class" type="orm:id-class" minOccurs="0"/>
+      <xsd:element name="primary-key" type="orm:primary-key" minOccurs="0"/>
       <xsd:element name="optimistic-locking" type="orm:optimistic-locking"
                    minOccurs="0"/>
       <xsd:element name="cache" type="orm:cache" minOccurs="0"/>
@@ -2438,6 +2440,89 @@
     </xsd:restriction>
   </xsd:simpleType>
 
+  <!-- **************************************************** -->
+  
+  <xsd:complexType name="primary-key">
+    <xsd:annotation>
+      <xsd:documentation>
+
+		/** 
+		 *  The PrimaryKey annotation allows advanced configuration of the Id.
+		 *  A validation policy can be given that allows specifying if zero is a valid id value.
+		 *  The set of primary key columns can also be specified precisely.
+		 * 
+		 * @author James Sutherland
+		 * @since EclipseLink 1.1
+		 */ 
+		@Target({TYPE})
+		@Retention(RUNTIME)
+		public @interface PrimaryKey {
+		    /**
+		     * (Optional) Configures what id validation is done.
+		     * By default 0 is not a valid id value, this can be used to allow 0 id values.
+		     */
+		    IdValidation validation() default IdValidation.ZERO; 
+		
+		    /**
+		     * (Optional) Used to specify the primary key columns directly.
+		     * This can be used instead of @Id if the primary key includes a non basic field,
+		     * such as a foreign key, or a inheritance discriminator, embedded, or transformation mapped field.
+		     */
+		    Column[] columns() default {};
+		}
+
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:sequence>
+      <xsd:element name="column" type="orm:column" minOccurs="0" maxOccurs="unbounded"/>    
+    </xsd:sequence>
+    <xsd:attribute name="validation" type="orm:id-validation"/>
+  </xsd:complexType>
+
+  <!-- **************************************************** -->
+  
+  <xsd:simpleType name="id-validation">
+    <xsd:annotation>
+      <xsd:documentation>
+
+		/** 
+		 * The IdValidation enum determines the type value that are valid for an Id.
+		 * By default null is not allowed, and 0 is not allow for singleton ids of long or int type.
+		 * The default value is ZERO for singleton ids, and NULL for composite ids.
+		 * This can be set using the @PrimaryKey annotation, or ClassDescriptor API.
+		 * 
+		 * @see PrimaryKey
+		 * @see org.eclipse.persistence.descriptors.ClassDescriptor#setIdValidation(IdValidation)
+		 * @author James Sutherland
+		 * @since EclipseLink 1.0 
+		 */ 
+		public enum IdValidation {
+		    /**
+		     * Only null is not allowed as an id value, 0 is allowed.
+		     */
+		    NULL,
+		
+		    /**
+		     * null and 0 are not allowed, (only int and long).
+		     */
+		    ZERO,
+		
+		    /**
+		     * No id validation is done.
+		     */
+		    NONE
+		}
+
+      </xsd:documentation>
+    </xsd:annotation>
+
+    <xsd:restriction base="xsd:token">
+      <xsd:enumeration value="NULL"/>
+      <xsd:enumeration value="ZERO"/>
+      <xsd:enumeration value="NONE"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+  
   <!-- **************************************************** -->
     
   <xsd:complexType name="cache">

@@ -14,6 +14,7 @@ package org.eclipse.persistence.testing.models.jpa.fieldaccess.relationships;
 
 import javax.persistence.*;
 import javax.xml.bind.annotation.*;
+
 import static javax.persistence.GenerationType.*;
 import static javax.persistence.CascadeType.*;
 import static javax.persistence.FetchType.*;

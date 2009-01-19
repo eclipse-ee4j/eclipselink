@@ -38,7 +38,7 @@ public class UniAndBiDirectionalMappingTestSuite extends JUnitTestCase {
         suite.addTest(new UniAndBiDirectionalMappingTestSuite("testSetup"));
         suite.addTest(new UniAndBiDirectionalMappingTestSuite("selfReferencingManyToManyTest"));
         suite.addTest(new UniAndBiDirectionalMappingTestSuite("testManyToManyClearDelete"));
-        
+                
         return suite;
     }
     
@@ -90,8 +90,8 @@ public class UniAndBiDirectionalMappingTestSuite extends JUnitTestCase {
         assertFalse("Guy did not have any controlled customers.", newGuy.getCCustomers().isEmpty());
 
         closeEntityManager(em);
-    }    
-    
+    }
+
     /**
      * Test deletion of both sides of a many-to-many.
      * This test emulates a CTS test that failed.

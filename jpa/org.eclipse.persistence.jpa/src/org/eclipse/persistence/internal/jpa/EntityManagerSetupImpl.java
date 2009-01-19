@@ -1209,6 +1209,7 @@ public class EntityManagerSetupImpl {
         updateUppercaseSetting(m);
         updateCacheStatementSettings(m);
         updateTemporalMutableSetting(m);
+        updateAllowZeroIdSetting(m);
         
         // Customizers should be processed last
         processDescriptorCustomizers(m, loader);
@@ -1557,6 +1558,22 @@ public class EntityManagerSetupImpl {
                 session.getProject().getLogin().setStatementCacheSize(Integer.parseInt(cacheStatementsSize));
             } catch (NumberFormatException e) {
                 session.handleException(ValidationException.invalidCacheStatementsSize(cacheStatementsSize,e.getMessage()));
+            }
+        }
+    }
+
+    /**
+     * Enable or disable default allowing 0 as an id. 
+     */
+    protected void updateAllowZeroIdSetting(Map m) {
+        String allowZero = EntityManagerFactoryProvider.getConfigPropertyAsStringLogDebug(PersistenceUnitProperties.ALLOW_ZERO_ID, m, this.session);
+        if (allowZero != null) {
+            if (allowZero.equalsIgnoreCase("true")) {
+               Helper.isZeroValidPrimaryKey = true;
+            } else if (allowZero.equalsIgnoreCase("false")) {
+                Helper.isZeroValidPrimaryKey = false;
+            } else {
+                session.handleException(ValidationException.invalidBooleanValueForProperty(allowZero, PersistenceUnitProperties.ALLOW_ZERO_ID));
             }
         }
     }

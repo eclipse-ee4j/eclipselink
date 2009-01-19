@@ -58,6 +58,7 @@ public class AdvancedJunitTest extends JUnitTestCase {
         suite.addTest(new AdvancedJunitTest("testManAndWoman"));
         suite.addTest(new AdvancedJunitTest("testStringArrayField"));
         suite.addTest(new AdvancedJunitTest("testBUG241388"));
+        suite.addTest(new AdvancedJunitTest("testZeroId"));
         
         return suite;
     }
@@ -119,6 +120,49 @@ public class AdvancedJunitTest extends JUnitTestCase {
         }
         
         closeEntityManager(em);
+    }
+
+    /**
+     * Test that a zero id can be used.
+     */
+    public void testZeroId() {
+        EntityManager entityManager = createEntityManager("fieldaccess");
+
+        beginTransaction(entityManager);
+        Golfer golfer = entityManager.find(Golfer.class, new GolferPK(0));
+        WorldRank rank = entityManager.find(WorldRank.class, 0);
+        if (golfer != null) {
+        	entityManager.remove(golfer);
+        }
+        if (rank != null) {
+        	entityManager.remove(rank);
+        }
+        commitTransaction(entityManager);
+        
+        beginTransaction(entityManager);
+        rank = new WorldRank();
+        rank.setId(0);
+        entityManager.persist(rank);
+        commitTransaction(entityManager);
+        this.assertTrue("Zero id assigned sequence value.", rank.getId() == 0);
+
+        closeEntityManager(entityManager);
+        clearCache("fieldaccess");
+        entityManager = createEntityManager("fieldaccess");
+
+        beginTransaction(entityManager);
+        rank = new WorldRank();
+        rank.setId(0);
+        rank = entityManager.merge(rank);
+        commitTransaction(entityManager);
+        this.assertTrue("Zero id assigned sequence value.", rank.getId() == 0);
+        
+        beginTransaction(entityManager);
+        rank = entityManager.find(WorldRank.class, 0);
+        this.assertTrue("Zero id assigned sequence value.", rank.getId() == 0);
+    	entityManager.remove(rank);
+    	commitTransaction(entityManager);
+        closeEntityManager(entityManager);
     }
     
     public void testGF894() {

@@ -46,6 +46,7 @@ import javax.persistence.TableGenerator;
 
 import org.eclipse.persistence.annotations.Cache;
 import org.eclipse.persistence.annotations.CacheInterceptor;
+import org.eclipse.persistence.annotations.PrimaryKey;
 import org.eclipse.persistence.annotations.QueryRedirectors;
 import org.eclipse.persistence.annotations.ExistenceChecking;
 import org.eclipse.persistence.annotations.ExistenceType;
@@ -71,6 +72,7 @@ import org.eclipse.persistence.internal.jpa.metadata.MetadataDescriptor;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataLogger;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataProject;
 import org.eclipse.persistence.internal.jpa.metadata.ORMetadata;
+import org.eclipse.persistence.internal.jpa.metadata.PrimaryKeyMetadata;
 
 import org.eclipse.persistence.internal.jpa.metadata.queries.DefaultRedirectorsMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.queries.NamedNativeQueryMetadata;
@@ -93,6 +95,7 @@ public class MappedSuperclassAccessor extends ClassAccessor {
     
     private Boolean m_readOnly;
     private Class m_idClass;
+    private PrimaryKeyMetadata m_primaryKey;
     private CacheMetadata m_cache;
     private CacheInterceptorMetadata m_cacheInterceptor;
     private DefaultRedirectorsMetadata m_defaultRedirectors;
@@ -218,6 +221,10 @@ public class MappedSuperclassAccessor extends ClassAccessor {
     public OptimisticLockingMetadata getOptimisticLocking() {
         return m_optimisticLocking;
     }
+
+    public PrimaryKeyMetadata getPrimaryKey() {
+        return m_primaryKey;
+    }
     
     /**
      * INTERNAL:
@@ -331,6 +338,7 @@ public class MappedSuperclassAccessor extends ClassAccessor {
         m_cache = (CacheMetadata) mergeORObjects(m_cache, accessor.getCache());
         m_cacheInterceptor = (CacheInterceptorMetadata)mergeORObjects(m_cacheInterceptor, accessor.getCacheInterceptor());
         m_optimisticLocking = (OptimisticLockingMetadata) mergeORObjects(m_optimisticLocking, accessor.getOptimisticLocking());
+        m_primaryKey = (PrimaryKeyMetadata) mergeORObjects(m_primaryKey, accessor.getPrimaryKey());
         
         // ORMetadata list merging. 
         m_entityListeners = mergeORObjectLists(m_entityListeners, accessor.getEntityListeners());
@@ -528,6 +536,9 @@ public class MappedSuperclassAccessor extends ClassAccessor {
                     
         // Process the id class metadata.
         processIdClass();
+        
+        // Process the primary key metadata.
+        processPrimaryKey();
         
         // Process the exclude default listeners metadata.
         processExcludeDefaultListeners();
@@ -826,6 +837,30 @@ public class MappedSuperclassAccessor extends ClassAccessor {
                     getDescriptor().setReadOnly(m_readOnly);
                 }
             }
+        }
+    }
+    
+    /**
+     * INTERNAL:
+     * Process the primary key annotation.
+     */
+    protected void processPrimaryKey() {
+        Annotation primaryKey = getAnnotation(PrimaryKey.class);
+        
+        if (m_primaryKey == null) {
+            if (primaryKey != null) {
+                // Process the meta data for this accessor's descriptor.
+                new PrimaryKeyMetadata(primaryKey, getAccessibleObject()).process(getDescriptor());
+            }
+        } else {
+            // If there is an annotation log a warning that we are 
+            // ignoring it.
+            if (primaryKey != null) {
+                getLogger().logWarningMessage(MetadataLogger.OVERRIDE_ANNOTATION_WITH_XML, primaryKey, getJavaClassName(), getLocation());
+            }
+        
+            // Process the meta data for this accessor's descriptor.
+            m_primaryKey.process(getDescriptor());
         }
     }
     

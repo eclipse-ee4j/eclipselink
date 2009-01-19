@@ -16,10 +16,10 @@ package org.eclipse.persistence.annotations;
  * The IdValidation enum determines the type value that are valid for an Id.
  * By default null is not allowed, and 0 is not allow for singleton ids of long or int type.
  * The default value is ZERO for singleton ids, and NULL for composite ids.
- * This can only be currently set through the ClassDescriptor.setIdValidation() API using
- * a DescriptorCustomizer.
+ * This can be set using the @PrimaryKey annotation, or ClassDescriptor API.
  * 
- * @see org.eclipse.persistence.descriptors.ClassDescriptor
+ * @see PrimaryKey
+ * @see org.eclipse.persistence.descriptors.ClassDescriptor#setIdValidation(IdValidation)
  * @author James Sutherland
  * @since EclipseLink 1.0 
  */ 

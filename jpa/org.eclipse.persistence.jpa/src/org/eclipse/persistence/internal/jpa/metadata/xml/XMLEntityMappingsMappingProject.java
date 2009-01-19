@@ -37,10 +37,12 @@ import org.eclipse.persistence.annotations.CacheType;
 import org.eclipse.persistence.annotations.ChangeTrackingType;
 import org.eclipse.persistence.annotations.Direction;
 import org.eclipse.persistence.annotations.ExistenceType;
+import org.eclipse.persistence.annotations.IdValidation;
 import org.eclipse.persistence.annotations.JoinFetchType;
 import org.eclipse.persistence.annotations.OptimisticLockingType;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 
+import org.eclipse.persistence.internal.jpa.metadata.PrimaryKeyMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.PropertyMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.AccessMethodsMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.classes.EmbeddableAccessor;
@@ -145,6 +147,7 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         addDescriptor(buildUniqueConstraintDescriptor());
         addDescriptor(buildAttributesDescriptor());
         addDescriptor(buildEntityListenerDescriptor());
+        addDescriptor(buildPrimaryKeyDescriptor());
         addDescriptor(buildOptimisticLockingDescriptor());
         addDescriptor(buildCacheDescriptor());
         addDescriptor(buildTimeOfDayDescriptor());
@@ -948,6 +951,7 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         
         descriptor.addMapping(getPrimaryKeyJoinColumnMapping());
         descriptor.addMapping(getIdClassMapping());
+        descriptor.addMapping(getPrimaryKeyMapping());
         
         XMLCompositeObjectMapping inheritanceMapping = new XMLCompositeObjectMapping();
         inheritanceMapping.setAttributeName("m_inheritance");
@@ -1348,6 +1352,7 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         descriptor.addMapping(getCustomizerMapping());
         descriptor.addMapping(getChangeTrackingMapping());
         descriptor.addMapping(getIdClassMapping());
+        descriptor.addMapping(getPrimaryKeyMapping());
         descriptor.addMapping(getOptimisticLockingMapping());
         descriptor.addMapping(getCacheMapping());
         descriptor.addMapping(getConverterMapping());
@@ -1571,6 +1576,29 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         cascadeMapping.setSetMethodName("setCascade");
         cascadeMapping.setXPath("@cascade");
         descriptor.addMapping(cascadeMapping);
+        
+        return descriptor;
+    }
+
+    
+    /**
+     * XSD: primary-key
+     */
+    protected ClassDescriptor buildPrimaryKeyDescriptor() {
+        XMLDescriptor descriptor = new XMLDescriptor();
+        descriptor.setJavaClass(PrimaryKeyMetadata.class);
+        
+        XMLDirectMapping validationMapping = new XMLDirectMapping();
+        validationMapping.setAttributeName("m_validation");
+        validationMapping.setConverter(new EnumTypeConverter(validationMapping, IdValidation.class, false));
+        validationMapping.setXPath("@validation");
+        descriptor.addMapping(validationMapping);
+        
+        XMLCompositeCollectionMapping columnsMapping = new XMLCompositeCollectionMapping();
+        columnsMapping.setAttributeName("m_columns");
+        columnsMapping.setReferenceClass(ColumnMetadata.class);
+        columnsMapping.setXPath("orm:column");
+        descriptor.addMapping(columnsMapping);
         
         return descriptor;
     }
@@ -2889,6 +2917,14 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         optimisticLockingMapping.setReferenceClass(OptimisticLockingMetadata.class);
         optimisticLockingMapping.setXPath("orm:optimistic-locking");
         return optimisticLockingMapping;
+    }
+
+    protected XMLCompositeObjectMapping getPrimaryKeyMapping() {
+        XMLCompositeObjectMapping primaryKeyMapping = new XMLCompositeObjectMapping();
+        primaryKeyMapping.setAttributeName("m_primaryKey");
+        primaryKeyMapping.setReferenceClass(PrimaryKeyMetadata.class);
+        primaryKeyMapping.setXPath("orm:primary-key");
+        return primaryKeyMapping;
     }
     
     /**

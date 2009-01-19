@@ -334,6 +334,15 @@ public class PersistenceUnitProperties {
     public static final String TEMPORAL_MUTABLE = "eclipselink.temporal.mutable";
     
     /**
+     * By default an id value of 0 is assumed to be null/unassigned.
+     * This allows 0 to be a valid id value.
+     * This can also be set per class using the @PrimaryKey annotation and IdValidation.
+     * @see org.eclipse.persistence.annotations.PrimaryKey
+     * @see org.eclipse.persistence.annotations.IdValidation
+     */
+    public static final String ALLOW_ZERO_ID = "eclipselink.allow-zero-id";
+    
+    /**
      * Defines EntityManager cache behavior after  a call to flush method
      * followed by a call to clear method.
      * This property could be specified while creating either EntityManagerFactory 

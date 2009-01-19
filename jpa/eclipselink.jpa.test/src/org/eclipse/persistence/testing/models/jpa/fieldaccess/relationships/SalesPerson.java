@@ -14,6 +14,10 @@ package org.eclipse.persistence.testing.models.jpa.fieldaccess.relationships;
 
 
 import javax.persistence.*;
+
+import org.eclipse.persistence.annotations.IdValidation;
+import org.eclipse.persistence.annotations.PrimaryKey;
+
 import static javax.persistence.GenerationType.*;
 import static javax.persistence.CascadeType.*;
 import java.util.Collection;

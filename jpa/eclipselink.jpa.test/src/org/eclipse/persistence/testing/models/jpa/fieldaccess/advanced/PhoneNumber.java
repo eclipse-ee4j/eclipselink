@@ -14,35 +14,34 @@ package org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced;
 
 import java.io.*;
 import java.util.Collection;
+import java.util.List;
 import java.util.Vector;
 
 import javax.persistence.*;
 import static javax.persistence.EnumType.STRING;
 
+import org.eclipse.persistence.annotations.PrimaryKey;
 import org.eclipse.persistence.annotations.BasicCollection;
 import org.eclipse.persistence.annotations.CollectionTable;
 
 /**
  * <p><b>Purpose</b>: Describes an Employee's phone number.
- *    <p><b>Description</b>: Used in a 1:M relationship from an employee.
+ * <p><b>Description</b>: Used in a 1:M relationship from an employee.
+ * Test @PrimaryKey support with composite primary key.
  */
-@IdClass(org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced.PhoneNumberPK.class)
 @Entity(name="PhoneNumber")
 @Table(name="CMP3_FA_PHONENUMBER")
+@PrimaryKey(columns={@Column(name="OWNER_ID"),@Column(name="TYPE")})
 public class PhoneNumber implements Serializable {
     public enum PhoneStatus { ACTIVE, ASSIGNED, UNASSIGNED, DEAD }
     
 	@Column(name="NUMB")
 	private String number;
-	@Id
     @Column(name="TYPE")
 	private String type;
 	@ManyToOne
 	@JoinColumn(name="OWNER_ID", referencedColumnName="EMP_ID")
 	private Employee owner;
-	@Id
-	@Column(name="OWNER_ID", insertable=false, updatable=false)
-    private Integer id;
 	@Column(name="AREA_CODE")
     private String areaCode;
     
@@ -66,14 +65,6 @@ public class PhoneNumber implements Serializable {
     public void addStatus(PhoneStatus status) {
         getStatus().add(status);
     }
-        
-	public Integer getId() { 
-        return id; 
-    }
-    
-	public void setId(Integer id) {
-		this.id = id;
-	}
 	
 	public String getNumber() { 
         return number; 
@@ -123,6 +114,16 @@ public class PhoneNumber implements Serializable {
     }
     
     /**
+     * Uses a Vector as its primary key.
+     */
+    public List buildPK(){
+        List pk = new Vector();
+        pk.add(getOwner().getId());
+        pk.add(getType());
+        return pk;
+    }
+    
+    /**
      * Example: Phone[Work]: (613) 225-8812
      */
     public String toString() {
@@ -134,7 +135,7 @@ public class PhoneNumber implements Serializable {
         writer.write(getAreaCode());
         writer.write(") ");
 
-        int numberLength = this.getNumber().length();
+        int numberLength = getNumber().length();
         writer.write(getNumber().substring(0, Math.min(3, numberLength)));
         if (numberLength > 3) {
             writer.write("-");
@@ -142,15 +143,5 @@ public class PhoneNumber implements Serializable {
         }
 
         return writer.toString();
-    }
-    
-    /**
-     * Builds the PhoneNumberPK for this class
-     */
-    public PhoneNumberPK buildPK(){
-        PhoneNumberPK pk = new PhoneNumberPK();
-        pk.setId(this.getOwner().getId());
-        pk.setType(this.getType());
-        return pk;
     }
 }

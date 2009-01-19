@@ -14,8 +14,12 @@ package org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced;
 
 import javax.persistence.*;
 
+import org.eclipse.persistence.annotations.IdValidation;
+import org.eclipse.persistence.annotations.PrimaryKey;
+
 @Entity(name="WorldRank")
 @Table(name="CMP3_FA_WORLDRANK")
+@PrimaryKey(validation=IdValidation.NULL)
 public class WorldRank implements java.io.Serializable {
     @Id
     @Column(name="ID")
