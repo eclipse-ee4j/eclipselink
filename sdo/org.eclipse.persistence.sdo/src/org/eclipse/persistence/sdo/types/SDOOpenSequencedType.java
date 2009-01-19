@@ -25,10 +25,13 @@ public class SDOOpenSequencedType extends SDOType implements Type {
 
     private static final List EMPTY_LIST = new ArrayList(0);
     
+    private static final String ORACLE_SDO_DO_URL = "org.eclipse.persistence.sdo.dataobjects";
+    
     public SDOOpenSequencedType(SDOTypeHelper sdoTypeHelper) {
         super(SDOConstants.ORACLE_SDO_URL, "OpenSequencedType", sdoTypeHelper);
         this.xmlDescriptor.setNamespaceResolver(new NamespaceResolver());
-        setInstanceClassName(SDOConstants.ORACLE_SDO_URL + ".OpenSequencedClass");        
+        setInstanceClassName(ORACLE_SDO_DO_URL + ".OpenSequencedType");
+        setImplClassName(ORACLE_SDO_DO_URL + ".OpenSequencedTypeImpl");
         //need to call getInstanceClass to initialize the class in the SDOClassLoader
         getInstanceClass();
         Class implClass = getImplClass();
