@@ -14,12 +14,16 @@ package org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced;
 
 import javax.persistence.*;
 
+import org.eclipse.persistence.annotations.IdValidation;
+import org.eclipse.persistence.annotations.PrimaryKey;
+
 @Entity(name="Golfer")
 @Table(name="CMP3_FA_GOLFER")
+@PrimaryKey(validation=IdValidation.NULL)
 public class Golfer implements java.io.Serializable {
-	@EmbeddedId
+    @EmbeddedId
     private GolferPK golferPK;
-	@OneToOne
+    @OneToOne
     @JoinColumn(name="ID", referencedColumnName="ID")
     private WorldRank worldRank;
     
