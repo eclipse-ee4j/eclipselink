@@ -237,6 +237,13 @@ public abstract class AbstractIdentityMap implements IdentityMap, Serializable, 
     }
 
     /**
+     * Get the cache key (with object) for the primary key.
+     */
+    public CacheKey getCacheKeyForLock(Vector primaryKey) {
+        return getCacheKey(primaryKey);
+    }
+
+    /**
      * Return the cache key (with object) matching the searchKey.
      */
     protected abstract CacheKey getCacheKey(CacheKey searchKey);
@@ -344,7 +351,7 @@ public abstract class AbstractIdentityMap implements IdentityMap, Serializable, 
      * This is also an advanced (very) user API.
      */
     public Object remove(Vector primaryKey, Object object) {
-        CacheKey key = getCacheKey(primaryKey);
+        CacheKey key = getCacheKeyForLock(primaryKey);
         return remove(key);
     }
 
@@ -396,7 +403,7 @@ public abstract class AbstractIdentityMap implements IdentityMap, Serializable, 
      * this is used for EJB2.
      */
     public void setWrapper(Vector primaryKey, Object wrapper) {
-        CacheKey cacheKey = getCacheKey(primaryKey);
+        CacheKey cacheKey = getCacheKeyForLock(primaryKey);
         if (cacheKey != null) {
             cacheKey.setWrapper(wrapper);
         }
@@ -407,7 +414,7 @@ public abstract class AbstractIdentityMap implements IdentityMap, Serializable, 
      * This is used by UpdateObjectQuery, and is also an advanced (very) user API.
      */
     public void setWriteLockValue(Vector primaryKey, Object writeLockValue) {
-        CacheKey cacheKey = getCacheKey(primaryKey);
+        CacheKey cacheKey = getCacheKeyForLock(primaryKey);
         if (cacheKey != null) {
             //lock/release the cache key during the lock value updating
             cacheKey.acquire();

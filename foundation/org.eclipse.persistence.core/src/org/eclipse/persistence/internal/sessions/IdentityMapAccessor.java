@@ -288,6 +288,16 @@ public class IdentityMapAccessor implements org.eclipse.persistence.sessions.Ide
      * @param primaryKey the primary key of the cache key to be retrieved.
      * @param myClass the class of the cache key to be retrieved.
      */
+    public CacheKey getCacheKeyForObjectForLock(Vector primaryKey, Class myClass, ClassDescriptor descriptor) {
+        return getIdentityMapManager().getCacheKeyForObjectForLock(primaryKey, myClass, descriptor);
+    }
+
+    /**
+     * INTERNAL:
+     * Retrieve the cache key for the given identity information.
+     * @param primaryKey the primary key of the cache key to be retrieved.
+     * @param myClass the class of the cache key to be retrieved.
+     */
     public CacheKey getCacheKeyForObject(Vector primaryKey, Class myClass, ClassDescriptor descriptor) {
         return getIdentityMapManager().getCacheKeyForObject(primaryKey, myClass, descriptor);
     }
@@ -476,7 +486,7 @@ public class IdentityMapAccessor implements org.eclipse.persistence.sessions.Ide
     public long getRemainingValidTime(Object object) {
         Vector primaryKey = getSession().keyFromObject(object);
         ClassDescriptor descriptor = getSession().getDescriptor(object);
-        CacheKey key = getCacheKeyForObject(primaryKey, object.getClass(), descriptor);
+        CacheKey key = getCacheKeyForObjectForLock(primaryKey, object.getClass(), descriptor);
         if (key == null) {
             throw QueryException.objectDoesNotExistInCache(object);
         }
@@ -593,7 +603,7 @@ public class IdentityMapAccessor implements org.eclipse.persistence.sessions.Ide
     public void invalidateObject(Vector primaryKey, Class theClass) {
         ClassDescriptor descriptor = getSession().getDescriptor(theClass);
         //forward the call to getCacheKeyForObject locally in case subclasses overload
-        CacheKey key = this.getCacheKeyForObject(primaryKey, theClass, descriptor);
+        CacheKey key = this.getCacheKeyForObjectForLock(primaryKey, theClass, descriptor);
         if (key != null) {
             key.setInvalidationState(CacheKey.CACHE_KEY_INVALID);
         }
@@ -694,7 +704,7 @@ public class IdentityMapAccessor implements org.eclipse.persistence.sessions.Ide
     public boolean isValid(Vector primaryKey, Class theClass) {
         ClassDescriptor descriptor = getSession().getDescriptor(theClass);
         //forward the call to getCacheKeyForObject locally in case subclasses overload
-        CacheKey key = this.getCacheKeyForObject(primaryKey, theClass, descriptor);
+        CacheKey key = this.getCacheKeyForObjectForLock(primaryKey, theClass, descriptor);
         if (key == null) {
             throw QueryException.classPkDoesNotExistInCache(theClass, primaryKey);
         }

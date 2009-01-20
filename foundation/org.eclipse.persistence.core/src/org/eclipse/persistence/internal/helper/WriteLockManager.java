@@ -272,7 +272,7 @@ public class WriteLockManager {
                                 //failed to acquire lock, release all acquired locks and place thread on waiting list
                                 releaseAllAcquiredLocks(mergeManager);
                                 //get cacheKey
-                                activeCacheKey = session.getIdentityMapAccessorInstance().getCacheKeyForObject(objectChangeSet.getCacheKey().getKey(), objectClass, descriptor);
+                                activeCacheKey = session.getIdentityMapAccessorInstance().getCacheKeyForObjectForLock(objectChangeSet.getCacheKey().getKey(), objectClass, descriptor);
                                 if (session.shouldLog(SessionLog.FINER, SessionLog.CACHE)){
                                     Object[] params = new Object[3];
                                     params[0] = objectClass;
@@ -398,7 +398,7 @@ public class WriteLockManager {
                 traverseRelatedLocks(objectToLock, lockedObjects, refreshedObjects, referenceDescriptor, session, unitOfWork);
             } else {
                 primaryKeysToLock = referenceDescriptor.getObjectBuilder().extractPrimaryKeyFromObject(objectToLock, session);
-                CacheKey cacheKey = session.getIdentityMapAccessorInstance().getCacheKeyForObject(primaryKeysToLock, objectToLock.getClass(), referenceDescriptor);
+                CacheKey cacheKey = session.getIdentityMapAccessorInstance().getCacheKeyForObjectForLock(primaryKeysToLock, objectToLock.getClass(), referenceDescriptor);
                 if (cacheKey == null) {
                     // Cache key may be null for no-identity map, missing or deleted object, just create a new one to be locked.
                     cacheKey = new CacheKey(primaryKeysToLock);

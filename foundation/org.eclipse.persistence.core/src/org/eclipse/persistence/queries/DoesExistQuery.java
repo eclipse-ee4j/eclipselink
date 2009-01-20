@@ -165,7 +165,7 @@ public class DoesExistQuery extends DatabaseQuery {
             Class objectClass = object.getClass();
             AbstractSession tempSession = session;
             while (tempSession.isUnitOfWork()){ //could be nested lets check all UOWs
-                cacheKey = tempSession.getIdentityMapAccessorInstance().getCacheKeyForObject(primaryKey, objectClass, descriptor);
+                cacheKey = tempSession.getIdentityMapAccessorInstance().getCacheKeyForObjectForLock(primaryKey, objectClass, descriptor);
                 if (cacheKey != null) {
                     // If in the UOW cache it can't be invalid.
                     return Boolean.TRUE;

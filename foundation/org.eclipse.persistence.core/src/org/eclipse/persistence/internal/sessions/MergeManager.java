@@ -306,7 +306,7 @@ public class MergeManager {
                     objectDescriptor.setWriteLockValue(policy.getBaseValue());
                 }
             }
-            CacheKey key = getSession().getIdentityMapAccessorInstance().getCacheKeyForObject(primaryKey, clientSideDomainObject.getClass(), descriptor);
+            CacheKey key = getSession().getIdentityMapAccessorInstance().getCacheKeyForObjectForLock(primaryKey, clientSideDomainObject.getClass(), descriptor);
 
             // Check for null because when there is NoIdentityMap, CacheKey will be null
             if (key != null) {
@@ -515,8 +515,8 @@ public class MergeManager {
             descriptor.getOptimisticLockingPolicy().mergeIntoParentCache((UnitOfWorkImpl)getSession(), primaryKey, clone);
         }
 
-        CacheKey parentCacheKey = ((UnitOfWorkImpl)getSession()).getParent().getIdentityMapAccessorInstance().getCacheKeyForObject(primaryKey, clone.getClass(), descriptor);
-        CacheKey uowCacheKey = getSession().getIdentityMapAccessorInstance().getCacheKeyForObject(primaryKey, clone.getClass(), descriptor);
+        CacheKey parentCacheKey = ((UnitOfWorkImpl)getSession()).getParent().getIdentityMapAccessorInstance().getCacheKeyForObjectForLock(primaryKey, clone.getClass(), descriptor);
+        CacheKey uowCacheKey = getSession().getIdentityMapAccessorInstance().getCacheKeyForObjectForLock(primaryKey, clone.getClass(), descriptor);
 
         // Check for null because when there is NoIdentityMap, CacheKey will be null
         if ((parentCacheKey != null) && (uowCacheKey != null)) {

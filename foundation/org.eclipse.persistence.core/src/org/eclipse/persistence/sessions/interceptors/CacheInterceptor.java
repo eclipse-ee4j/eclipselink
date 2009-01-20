@@ -156,6 +156,13 @@ public abstract class CacheInterceptor implements IdentityMap{
     }
 
     /**
+     * Get the cache key (with object) for the primary key.
+     */
+    public CacheKey getCacheKeyForLock(Vector primaryKey){
+        return this.targetIdentityMap.getCacheKeyForLock(primaryKey);
+    }
+
+    /**
      * Return the descriptor that this is the map for.
      */
     public ClassDescriptor getDescriptor(){

@@ -137,7 +137,7 @@ public class UnitOfWorkIdentityMap extends FullIdentityMap {
      * Avoid acquiring any lock as uow is single threaded.
      */
     public void setWriteLockValue(Vector primaryKey, Object writeLockValue) {
-        CacheKey cacheKey = getCacheKey(primaryKey);
+        CacheKey cacheKey = getCacheKeyForLock(primaryKey);
         if (cacheKey != null) {
             cacheKey.setWriteLockValue(writeLockValue);
         }

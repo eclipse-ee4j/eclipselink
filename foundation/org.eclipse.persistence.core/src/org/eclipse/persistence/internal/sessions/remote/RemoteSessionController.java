@@ -107,7 +107,7 @@ public class RemoteSessionController {
         objectDescriptor.setKey(key);
         objectDescriptor.setWriteLockValue(getSession().getIdentityMapAccessorInstance().getWriteLockValue(key, object.getClass(), descriptor));
         objectDescriptor.setObject(object);
-        CacheKey cacheKey = getSession().getIdentityMapAccessorInstance().getCacheKeyForObject(key, object.getClass(), descriptor);
+        CacheKey cacheKey = getSession().getIdentityMapAccessorInstance().getCacheKeyForObjectForLock(key, object.getClass(), descriptor);
 
         // Check for null because when there is NoIdentityMap, CacheKey will be null
         if (cacheKey != null) {

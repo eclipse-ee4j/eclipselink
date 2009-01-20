@@ -101,6 +101,11 @@ public interface IdentityMap extends Cloneable{
      */
     public CacheKey getCacheKey(Vector primaryKey);
 
+    /**
+     * Get the cache key (with object) for the primary key in order to acquire a lock.
+     */
+    public CacheKey getCacheKeyForLock(Vector primaryKey);
+
         /**
      * Return the class that this is the map for.
      */

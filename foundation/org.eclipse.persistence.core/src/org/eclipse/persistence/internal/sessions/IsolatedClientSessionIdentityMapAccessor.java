@@ -186,6 +186,20 @@ public class IsolatedClientSessionIdentityMapAccessor extends org.eclipse.persis
     }
 
     /**
+     * INTERNAL:
+     * Retrieve the cache key for the given identity information.
+     * @param primaryKey the primary key of the cache key to be retrieved.
+     * @param myClass the class of the cache key to be retrieved.
+     */
+    public CacheKey getCacheKeyForObjectForLock(Vector primaryKey, Class myClass, ClassDescriptor descriptor) {
+        if (descriptor.isIsolated()) {
+            return getIdentityMapManager().getCacheKeyForObjectForLock(primaryKey, myClass, descriptor);
+        } else {
+            return ((IsolatedClientSession)session).getParent().getIdentityMapAccessorInstance().getCacheKeyForObjectForLock(primaryKey, myClass, descriptor);
+        }
+    }
+
+    /**
      * ADVANCED:
      * Return the object from the identity with the primary and class.
      */

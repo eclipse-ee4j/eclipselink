@@ -480,6 +480,27 @@ public class IdentityMapManager implements Serializable, Cloneable {
     /**
      * Retrieve the cache key for the given identity information.
      */
+    public CacheKey getCacheKeyForObjectForLock(Vector primaryKey, Class theClass, ClassDescriptor descriptor) {
+        IdentityMap map = getIdentityMap(descriptor);
+        CacheKey cacheKey = null;
+        if (isCacheAccessPreCheckRequired()) {
+            getSession().startOperationProfile(SessionProfiler.CACHE);
+            acquireReadLock();
+            try {
+                cacheKey = map.getCacheKeyForLock(primaryKey);
+            } finally {
+                releaseReadLock();
+                getSession().endOperationProfile(SessionProfiler.CACHE);
+            }
+        } else {
+            cacheKey = map.getCacheKeyForLock(primaryKey);
+        }
+        return cacheKey;
+    }
+
+    /**
+     * Retrieve the cache key for the given identity information.
+     */
     public CacheKey getCacheKeyForObject(Vector primaryKey, Class theClass, ClassDescriptor descriptor) {
         IdentityMap map = getIdentityMap(descriptor);
         CacheKey cacheKey = null;
@@ -497,7 +518,6 @@ public class IdentityMapManager implements Serializable, Cloneable {
         }
         return cacheKey;
     }
-
     /**
      * Return the cache mutex.
      * This allows for the entire cache to be locked.
