@@ -7076,47 +7076,40 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
             return;
         }
         
-        // Added to test bug 258546: testEMCloseAndOpen failed with dynamic and static weave configs.
-        // define cache-only query to see whether the Employee is in the shared cache.
-        ReadObjectQuery cacheQuery = new ReadObjectQuery();
-        cacheQuery.setReferenceClass(Employee.class);
-        cacheQuery.shouldCheckCacheOnly();
-        Expression cacheExp = cacheQuery.getExpressionBuilder().get("id").equal(cacheQuery.getExpressionBuilder().getParameter("id"));
-        cacheQuery.addArgument("id", int.class);
-        cacheQuery.setSelectionCriteria(cacheExp);
-        // define db-only query to see whether the Employee is in the db.
-        ReadObjectQuery dbQuery = new ReadObjectQuery();
-        dbQuery.setReferenceClass(Employee.class);
-        dbQuery.dontCheckCache();
-        Expression dbExp = dbQuery.getExpressionBuilder().get("id").equal(dbQuery.getExpressionBuilder().getParameter("id"));
-        dbQuery.addArgument("id", int.class);
-        dbQuery.setSelectionCriteria(dbExp);
-        // define vector that will contain paramete value for both queries.
-        Vector arg = new Vector(1);
-        // this will be overridden with emp.getId()
-        arg.add(0);
+        ServerSession ss = ((EntityManagerFactoryImpl)getEntityManagerFactory()).getServerSession();
         
         // make sure the id hasn't been already used - it will be assigned to a new object (in case sequencing is not used). 
-        int id = ((Number)((EntityManagerFactoryImpl)getEntityManagerFactory()).getServerSession().getNextSequenceNumberValue(Employee.class)).intValue();
+        int id = ((Number)ss.getNextSequenceNumberValue(Employee.class)).intValue();
         
-        // cache the driver name
-        String driverName = ((EntityManagerFactoryImpl)getEntityManagerFactory()).getServerSession().getLogin().getDriverClassName();
+        // cache the original driver name and connection string.
+        String originalDriverName = ss.getLogin().getDriverClassName();
+        String originalConnectionString = ss.getLogin().getConnectionString();
         
-        // disconnect the session
-        closeEntityManagerFactory();
+        // the new driver name and connection string to be used by the test
+        String newDriverName = DriverWrapper.class.getName();
+        String newConnectionString = DriverWrapper.codeUrl(originalConnectionString);
         
         // setup the wrapper driver
-        DriverWrapper.initialize(driverName);
+        DriverWrapper.initialize(originalDriverName);
         
-        // connect the session using the wrapper driver
-        HashMap properties = new HashMap(JUnitTestCaseHelper.getDatabaseProperties());
-        // required by DriverWrapper (if DriverManager is used, JDBC_DRIVER may be skipped) 
-        properties.put(PersistenceUnitProperties.JDBC_DRIVER, DriverWrapper.class.getName());
-        properties.put(PersistenceUnitProperties.JDBC_URL, DriverWrapper.codeUrl((String)properties.get(PersistenceUnitProperties.JDBC_URL)));
-        
-        ServerSession ss = ((EntityManagerFactoryImpl)getEntityManagerFactory(properties)).getServerSession();
+        // The test need to connect with the new driver and connection string.
+        // That could be done in JPA:
+        //    // close the existing emf
+        //    closeEntityManagerFactory();
+        //    HashMap properties = new HashMap(JUnitTestCaseHelper.getDatabaseProperties());
+        //    properties.put(PersistenceUnitProperties.JDBC_DRIVER, newDriverName);
+        //    properties.put(PersistenceUnitProperties.JDBC_URL, newConnectionString);
+        //    emf = getEntityManagerFactory(properties);
+        // However this only works in case closeEntityManagerFactory disconnects the original ServerSession,
+        // which requires the factory to be the only one using the persistence unit.
+        // Alternative - and faster - approach is to disconnect the original session directly
+        // and then reconnected it with the new driver and connection string.        
+        ss.logout();
+        ss.getLogin().setDriverClassName(newDriverName);
+        ss.getLogin().setConnectionString(newConnectionString);
         AcquireReleaseListener listener = new AcquireReleaseListener();  
         ss.getEventManager().addListener(listener);
+        ss.login();
         
         RuntimeException exception = null;
         String errorMsg = "";
@@ -7153,7 +7146,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
 
                     // should never get here - all connections should be broken.
                     hasUnexpectedlyCommitted = true;
-                    errorMsg += "useSequencing = " + useSequencing + "; exclusiveConnectionMode = " + exclusiveConnectionMode + ": Commit has unexpectedly succeeded - should have failed because all connections broken. ";
+                    errorMsg += "useSequencing = " + useSequencing + "; exclusiveConnectionMode = " + exclusiveConnectionMode + ": Commit has unexpectedly succeeded - should have failed because all connections broken. driver = " + ss.getLogin().getDriverClassName() + "; url = " + ss.getLogin().getConnectionString();
                 } catch (Exception e){
                     // expected exception - connection is invalid and cannot be reconnected.
                     if(em.getTransaction().isActive()) {
@@ -7193,32 +7186,6 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
                         em.persist(emp);
                         em.getTransaction().commit();
                     }
-
-                    // Added to test bug 258546: testEMCloseAndOpen failed with dynamic and static weave configs.
-                    // verify that the persisted Employee is in the shared cache.
-                    arg.set(0, emp.getId());
-                    Employee empInSharedCache = (Employee)((EntityManagerFactoryImpl)getEntityManagerFactory()).getServerSession().executeQuery(cacheQuery, arg);
-                    if(!hasUnexpectedlyCommitted) {
-                        if(empInSharedCache == null) {
-                            errorMsg += "useSequencing = " + useSequencing + "; exclusiveConnectionMode = " + exclusiveConnectionMode + ": persisted object in not in the shared cache";
-                            closeEntityManager(em);
-                            break;
-                        }
-                    } else {
-                        if(empInSharedCache == null) {
-                            errorMsg += "object is NOT in cache;";
-                        } else {
-                            errorMsg += "object is in cache;";
-                        }
-                        Employee empInDb = (Employee)((EntityManagerFactoryImpl)getEntityManagerFactory()).getServerSession().executeQuery(dbQuery, arg);
-                        if(empInDb == null) {
-                            errorMsg += "object is NOT in db;";
-                        } else {
-                            errorMsg += "object is in db;";
-                        }
-                        closeEntityManager(em);
-                        break;
-                    }
                 } catch (RuntimeException ex) {
                     // This should not happen
                     if(em.getTransaction().isActive()) {
@@ -7235,25 +7202,19 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
                 em.getTransaction().begin();
                 em.remove(emp);
                 em.getTransaction().commit();
-                closeEntityManager(em);
-                
-                // Added to test bug 258546: testEMCloseAndOpen failed with dynamic and static weave configs.
-                // verify that the removed Employee is no longer in the shared cache.
-                Employee empInSharedCache = (Employee)((EntityManagerFactoryImpl)getEntityManagerFactory()).getServerSession().executeQuery(cacheQuery, arg);
-                if(empInSharedCache != null) {
-                    errorMsg += "useSequencing = " + useSequencing + "; exclusiveConnectionMode = " + exclusiveConnectionMode + ": removed object still in the shared cache";
-                    break;
-                }
+                closeEntityManager(em);                
             }
         }
 
-        // clean-up
-        // disconnect the session that uses the wrapped driver
-        closeEntityManagerFactory();
         // clear the driver wrapper
         DriverWrapper.clear();
-        // reconnect the session using the original driver
-        EntityManager em = createEntityManager();
+
+        // reconnect the session using the original driver and connection string
+        ss.getEventManager().removeListener(listener);
+        ss.logout();
+        ss.getLogin().setDriverClassName(originalDriverName);
+        ss.getLogin().setConnectionString(originalConnectionString);
+        ss.login();
         
         if(exception != null) {
             throw exception;
