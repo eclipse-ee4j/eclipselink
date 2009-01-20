@@ -1405,7 +1405,7 @@ public class QueryHintsHandler {
         DatabaseQuery applyToDatabaseQuery(Object valueToApply, DatabaseQuery query, ClassLoader loader) {
             // Can be an instance, class, or class name.
             try {
-                Object redirector = null;
+                Object redirector = valueToApply;
                 if (valueToApply instanceof Class) {
                     redirector = newInstance((Class)valueToApply, query, QueryHints.QUERY_REDIRECTOR);
                 } else if (valueToApply instanceof String) {
