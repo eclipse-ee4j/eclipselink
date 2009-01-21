@@ -28,10 +28,10 @@ import org.eclipse.persistence.exceptions.i18n.ExceptionMessageGenerator;
  * @since Oracle TopLink 11.1.1.0.0
  */
 public class SDOException extends EclipseLinkException {
-	/*
-	 * The following ID's are expanded to Strings in org.eclipse.persistence.exceptions.i18n.SDOExceptionResource
-	 * 
-	 */
+    /*
+     * The following ID's are expanded to Strings in org.eclipse.persistence.exceptions.i18n.SDOExceptionResource
+     * 
+     */
     public static final int NO_ID_SPECIFIED = 45000;
     public static final int ERROR_PROCESSING_IMPORT = 45001;
     public static final int ERROR_PROCESSING_INCLUDE = 45002;
@@ -72,6 +72,10 @@ public class SDOException extends EclipseLinkException {
     public static final int PREFIX_USED_BUT_NOT_DEFINED = 45037;
     public static final int CANNOT_PERFORM_OPERATION_ON_PROPERTY = 45038;
     public static final int ERROR_ACCESSING_EXTERNALIZABLEDELEGATOR = 45039;
+    public static final int ERROR_PERFORMING_WLS_LOOKUP = 45100;
+    public static final int ERROR_MAKING_WLS_REFLECTIVE_CALL = 45101;
+    public static final int ERROR_GETTING_OBJECTNAME = 45102;
+    public static final int ERROR_CREATING_INITIAL_CONTEXT = 45103;
     
     protected SDOException(String message) {
         super(message);
@@ -81,6 +85,65 @@ public class SDOException extends EclipseLinkException {
         super(message, internalException);
     }
 
+    /**
+     * INTERNAL:
+     * Exception when acquiring the SDOHelperContext cache key for WLS.  This method should be
+     * used when a lookup fails.  The lookup strings would typically be:
+     *   - "java:comp/jmx/runtime"
+     *   - "java:comp/env/jmx/runtime"
+     */
+    public static SDOException errorPerformingWLSLookup(String failedLookup, Exception nestedException) {
+        Object[] args = { failedLookup };
+        SDOException exception = new SDOException(ExceptionMessageGenerator.buildMessage(//
+                SDOException.class, ERROR_PERFORMING_WLS_LOOKUP, args), nestedException);
+        exception.setErrorCode(ERROR_PERFORMING_WLS_LOOKUP);
+        return exception;
+    }
+    
+    /**
+     * INTERNAL:
+     * Exception when acquiring the SDOHelperContext cache key for WLS.  This method should be
+     * used when a reflective call fails.  The method names would typically be:
+     *   - "getExecuteThread"
+     *   - "getApplicationName"
+     */
+    public static SDOException errorInvokingWLSMethodReflectively(String methodName, String theClass, Exception nestedException) {
+        Object[] args = { methodName, theClass };
+        SDOException exception = new SDOException(ExceptionMessageGenerator.buildMessage(//
+                SDOException.class, ERROR_MAKING_WLS_REFLECTIVE_CALL, args), nestedException);
+        exception.setErrorCode(ERROR_MAKING_WLS_REFLECTIVE_CALL);
+        return exception;
+    }
+    
+    /**
+     * INTERNAL:
+     * Exception when acquiring the SDOHelperContext cache key for WLS.  This method should be
+     * used when an attempt to get an ObjectName fails.  The object names would typically be:
+     *   - "com.bea:Name=RuntimeService,Type=weblogic.management.mbeanservers.runtime.RuntimeServiceMBean"
+     *   - "ServerRuntime"
+     *   - "ThreadPoolRuntime"
+     */
+    public static SDOException errorGettingWLSObjectName(String objectName, Exception nestedException) {
+        Object[] args = { objectName };
+        SDOException exception = new SDOException(ExceptionMessageGenerator.buildMessage(//
+                SDOException.class, ERROR_GETTING_OBJECTNAME, args), nestedException);
+        exception.setErrorCode(ERROR_GETTING_OBJECTNAME);
+        return exception;
+    }
+        
+    /**
+     * INTERNAL:
+     * Exception when acquiring the SDOHelperContext cache key for WLS.  This method should be
+     * used when an attempt to create an InitialContext fails. 
+     */
+    public static SDOException errorCreatingWLSInitialContext(Exception nestedException) {
+        Object[] args = {};
+        SDOException exception = new SDOException(ExceptionMessageGenerator.buildMessage(//
+                SDOException.class, ERROR_CREATING_INITIAL_CONTEXT, args), nestedException);
+        exception.setErrorCode(ERROR_CREATING_INITIAL_CONTEXT);
+        return exception;
+    }
+    
     /**
      * INTERNAL:
      * Exception when building an ObjectReferenceMapping and referenced object does not have an id property
@@ -99,7 +162,7 @@ public class SDOException extends EclipseLinkException {
     public static SDOException errorProcessingImport(String schemaLocation, String namespace, Exception nestedException) {
         Object[] args = { schemaLocation, namespace };
         SDOException exception = new SDOException(ExceptionMessageGenerator.buildMessage(//
-        		SDOException.class, ERROR_PROCESSING_IMPORT, args), nestedException);
+                SDOException.class, ERROR_PROCESSING_IMPORT, args), nestedException);
         exception.setErrorCode(ERROR_PROCESSING_IMPORT);
         return exception;
     }
@@ -111,7 +174,7 @@ public class SDOException extends EclipseLinkException {
     public static SDOException errorProcessingInclude(String schemaLocation, Exception nestedException) {
         Object[] args = { schemaLocation };
         SDOException exception = new SDOException(ExceptionMessageGenerator.buildMessage(//
-        		SDOException.class, ERROR_PROCESSING_INCLUDE, args), nestedException);
+                SDOException.class, ERROR_PROCESSING_INCLUDE, args), nestedException);
         exception.setErrorCode(ERROR_PROCESSING_INCLUDE);
         return exception;
     }
@@ -474,7 +537,7 @@ public class SDOException extends EclipseLinkException {
       public static SDOException propertyTypeAnnotationTargetCannotBeDataTypeTrue(String targetTypeName, String sourcePropertyName) {
           Object[] args = { targetTypeName, sourcePropertyName};
           SDOException exception = new SDOException(ExceptionMessageGenerator.buildMessage(//
-        		  SDOException.class, CANNOT_SET_PROPERTY_TYPE_ANNOTATION_IF_TARGET_DATATYPE_TRUE, args));        
+                  SDOException.class, CANNOT_SET_PROPERTY_TYPE_ANNOTATION_IF_TARGET_DATATYPE_TRUE, args));        
           exception.setErrorCode(CANNOT_SET_PROPERTY_TYPE_ANNOTATION_IF_TARGET_DATATYPE_TRUE);
           return exception;
       }
@@ -521,7 +584,7 @@ public class SDOException extends EclipseLinkException {
     }
      /**
       * INTERNAL:
-      */     								  
+      */                                      
      public static SDOException errorAccessingExternalizableDelegator(String fieldName, Exception nestedException) {
          Object[] args = { fieldName };
          SDOException exception = new SDOException(ExceptionMessageGenerator.buildMessage(SDOException.class, ERROR_ACCESSING_EXTERNALIZABLEDELEGATOR, args), nestedException);

@@ -59,7 +59,11 @@ public class SDOExceptionResource extends ListResourceBundle {
                                            { "45036", "A global property corresponding to the XML node being loaded was not found." },                                           
                                            { "45037", "The prefix [{0}] is used but not declared in the XML schema." },                                                                          
                                            { "45038", "Cannot perform operation on property [{0}] because it is not reachable from the path [{1}]. The path is invalid, or one or more Data Objects on the path are null." }, 
-                                           { "45039", "An error occurred accessing the externalizableDelegator field [{0}] on the DataObject." }
+                                           { "45039", "An error occurred accessing the externalizableDelegator field [{0}] on the DataObject." },
+                                           { "45100", "An error occurred attempting to return the requested SDOHelperContext.  In an active WebLogic instance the application name is required for helper context cache lookups.  The application name could not be determined because {0} lookup failed." },
+                                           { "45101", "An error occurred attempting to return the requested SDOHelperContext.  In an active WebLogic instance the application name is required for helper context cache lookups.  The application name could not be determined because {0} could not be invoked reflectively on {1}." },
+                                           { "45102", "An error occurred attempting to return the requested SDOHelperContext.  In an active WebLogic instance the application name is required for helper context cache lookups.  The application name could not be determined because an ObjectName could not be created/returned for {0}." },
+                                           { "45103", "An error occurred attempting to return the requested SDOHelperContext.  In an active WebLogic instance the application name is required for helper context cache lookups.  The application name could not be determined because an InitialContext could not be instantiated." }
     };
 
     /**
