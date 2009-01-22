@@ -12,14 +12,14 @@
  ******************************************************************************/  
 package org.eclipse.persistence.testing.tests.jpa.fieldaccess.relationships;
 
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Vector;
 
-import org.eclipse.persistence.internal.jpa.EntityManagerImpl;
+import org.eclipse.persistence.jpa.JpaEntityManager;
 import org.eclipse.persistence.testing.framework.*;
 import org.eclipse.persistence.testing.models.jpa.fieldaccess.relationships.*;
 import org.eclipse.persistence.testing.tests.jpa.EntityContainerTestBase;
-import org.eclipse.persistence.sessions.server.ServerSession;
+import org.eclipse.persistence.sessions.Session;
 
 //Bug#4646580  Query arguments are added in EJBQL
 public class NamedQueryWithArgumentsTest extends EntityContainerTestBase {
@@ -75,10 +75,10 @@ public class NamedQueryWithArgumentsTest extends EntityContainerTestBase {
     
   public void test(){
       try {
-          ServerSession ss = ((EntityManagerImpl)getEntityManager()).getServerSession();
-          Vector vec = new Vector();
-          vec.add(itemIDs[0]);
-          list = (List)ss.executeQuery("findAllFieldAccessOrdersByItem", vec);
+          Session session = ((JpaEntityManager)getEntityManager().getDelegate()).getActiveSession();
+          List args = new ArrayList();
+          args.add(itemIDs[0]);
+          list = (List)session.executeQuery("findAllFieldAccessOrdersByItem", args);
       } catch (Exception ex) {
           exception = ex;
       }

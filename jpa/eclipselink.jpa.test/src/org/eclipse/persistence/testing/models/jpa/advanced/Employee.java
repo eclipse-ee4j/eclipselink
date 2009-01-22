@@ -329,7 +329,7 @@ public class Employee implements Serializable, Cloneable {
     
     @Column(name="F_NAME")
     @Property(name="attributeName", value="firstName")
-    public String getFirstName() {
+    public String getFirstName() { 
         return m_firstName; 
     }
     
@@ -409,8 +409,8 @@ public class Employee implements Serializable, Cloneable {
     @Mutable(false)
     @ReadTransformer(transformerClass=org.eclipse.persistence.testing.models.jpa.advanced.AdvancedReadTransformer.class)
     @WriteTransformers({
-        @WriteTransformer(transformerClass=org.eclipse.persistence.testing.models.jpa.advanced.AdvancedWriteTransformer.class, column=@Column(name="START_OVERTIME")),
-        @WriteTransformer(transformerClass=org.eclipse.persistence.testing.models.jpa.advanced.AdvancedWriteTransformer.class, column=@Column(name="END_OVERTIME"))
+        @WriteTransformer(transformerClass=org.eclipse.persistence.testing.models.jpa.advanced.AdvancedWriteTransformer.class, column=@Column(name="START_OVERTIME", columnDefinition="TIME")),
+        @WriteTransformer(transformerClass=org.eclipse.persistence.testing.models.jpa.advanced.AdvancedWriteTransformer.class, column=@Column(name="END_OVERTIME", columnDefinition="TIME"))
     })
     @Property(name="attributeName", value="overtimeHours")
     protected Time[] getOvertimeHours() {
@@ -603,7 +603,7 @@ public class Employee implements Serializable, Cloneable {
         this.gender = Gender.Female;
     }
        
-    public void setFirstName(String name) {
+    public void setFirstName(String name) { 
         this.m_firstName = name; 
     }
     

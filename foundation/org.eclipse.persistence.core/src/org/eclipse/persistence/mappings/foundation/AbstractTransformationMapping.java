@@ -17,6 +17,8 @@ import java.security.PrivilegedActionException;
 import java.util.*;
 import org.eclipse.persistence.exceptions.*;
 import org.eclipse.persistence.indirection.*;
+import org.eclipse.persistence.internal.databaseaccess.DatabasePlatform;
+import org.eclipse.persistence.internal.databaseaccess.FieldTypeDefinition;
 import org.eclipse.persistence.internal.descriptors.*;
 import org.eclipse.persistence.internal.helper.*;
 import org.eclipse.persistence.internal.indirection.*;
@@ -767,6 +769,24 @@ public abstract class AbstractTransformationMapping extends DatabaseMapping {
             }
  
             transformer.initialize(this);
+            // Attempt to ensure a type is set on the field.
+            if (field.getType() == null) {
+                if (transformer instanceof MethodBasedFieldTransformer) {
+                    field.setType(((MethodBasedFieldTransformer)transformer).getFieldType());
+                } else if (field.getColumnDefinition() != null) {
+                    // Search for the type for this field definition.
+                    if (session.getDatasourcePlatform() instanceof DatabasePlatform) {
+                        Iterator iterator = session.getPlatform().getFieldTypes().entrySet().iterator();
+                        while (iterator.hasNext()) {
+                            Map.Entry entry = (Map.Entry)iterator.next();
+                            if (((FieldTypeDefinition)entry.getValue()).getName().equals(field.getColumnDefinition())) {
+                                field.setType((Class)entry.getKey());
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
             Object[] fieldToTransformer = new Object[2];
             fieldToTransformer[0] = field;
             fieldToTransformer[1] = transformer;

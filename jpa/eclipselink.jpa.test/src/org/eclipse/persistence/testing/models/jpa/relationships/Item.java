@@ -27,52 +27,52 @@ import static javax.persistence.GenerationType.TABLE;
 @Entity
 @Table(name="CMP3_ITEM")
 @NamedQuery(
-	name="findAllItemsByName",
-	query="SELECT OBJECT(item) FROM Item item WHERE item.name = ?1"
+        name="findAllItemsByName",
+        query="SELECT OBJECT(item) FROM Item item WHERE item.name = ?1"
 )
 @InstantiationCopyPolicy // explicitly exercise the code that sets this (even though it is the default)
 public class Item implements java.io.Serializable {
-	private Integer itemId;
-	private int version;
-	private String name;
-	private String description;
-	private Manufacturer manufacturer;
-	private Distributor distributor;
+    private Integer itemId;
+    private int version;
+    private String name;
+    private String description;
+    private Manufacturer manufacturer;
+    private Distributor distributor;
 
-	public Item() {}
+    public Item() {}
 
-	@Id
+    @Id
     @GeneratedValue(strategy=TABLE, generator="ITEM_TABLE_GENERATOR")
     @TableGenerator(
-        name="ITEM_TABLE_GENERATOR", 
-        table="CMP3_CUSTOMER_SEQ", 
-        pkColumnName="SEQ_NAME", 
-        valueColumnName="SEQ_COUNT",
-        pkColumnValue="ITEM_SEQ"
+            name="ITEM_TABLE_GENERATOR", 
+            table="CMP3_CUSTOMER_SEQ", 
+            pkColumnName="SEQ_NAME", 
+            valueColumnName="SEQ_COUNT",
+            pkColumnValue="ITEM_SEQ"
     )
-	@Column(name="ID")
+    @Column(name="ID")
     public Integer getItemId() { 
         return itemId; 
     }
-    
+
     public void setItemId(Integer id) { 
         this.itemId = id; 
     }
 
-	@Version
-	@Column(name="ITEM_VERSION")
-	protected int getVersion() { 
+    @Version
+    @Column(name="ITEM_VERSION")
+    protected int getVersion() { 
         return version; 
     }
-    
-	protected void setVersion(int version) { 
+
+    protected void setVersion(int version) { 
         this.version = version; 
     }
 
-	public String getDescription() { 
+    public String getDescription() { 
         return description; 
     }
-    
+
     public void setDescription(String desc) { 
         this.description = desc; 
     }
@@ -80,7 +80,7 @@ public class Item implements java.io.Serializable {
     public String getName() { 
         return name; 
     }
-    
+
     public void setName(String name) {
         this.name = name; 
     }

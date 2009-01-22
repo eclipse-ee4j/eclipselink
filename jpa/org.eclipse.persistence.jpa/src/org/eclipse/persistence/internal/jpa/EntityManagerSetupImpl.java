@@ -1468,24 +1468,24 @@ public class EntityManagerSetupImpl {
     protected void updateBatchWritingSetting(Map persistenceProperties) {
         String batchWritingSettingString = PropertiesHandler.getPropertyValueLogDebug(PersistenceUnitProperties.BATCH_WRITING, persistenceProperties, this.session);
         if (batchWritingSettingString != null) {
-        	this.session.getPlatform().setUsesBatchWriting(batchWritingSettingString != BatchWriting.None);
+             this.session.getPlatform().setUsesBatchWriting(batchWritingSettingString != BatchWriting.None);
              if (batchWritingSettingString == BatchWriting.JDBC) {
-            	 this.session.getPlatform().setUsesJDBCBatchWriting(true);
+                 this.session.getPlatform().setUsesJDBCBatchWriting(true);
                  this.session.getPlatform().setUsesNativeBatchWriting(false);
              } else if (batchWritingSettingString == BatchWriting.Buffered) {
-            	 this.session.getPlatform().setUsesJDBCBatchWriting(false);
+                 this.session.getPlatform().setUsesJDBCBatchWriting(false);
                  this.session.getPlatform().setUsesNativeBatchWriting(false);
              } else if (batchWritingSettingString == BatchWriting.OracleJDBC) {
-            	 this.session.getPlatform().setUsesNativeBatchWriting(true);
+                 this.session.getPlatform().setUsesNativeBatchWriting(true);
                  this.session.getPlatform().setUsesJDBCBatchWriting(true);
              }
         }
         // Set batch size.
         String sizeString = EntityManagerFactoryProvider.getConfigPropertyAsStringLogDebug(PersistenceUnitProperties.BATCH_WRITING_SIZE, persistenceProperties, this.session);
         if (sizeString != null) {
-        	try {
-        		this.session.getPlatform().setMaxBatchWritingSize(Integer.parseInt(sizeString));
-        	} catch (NumberFormatException invalid) {
+            try {
+                this.session.getPlatform().setMaxBatchWritingSize(Integer.parseInt(sizeString));
+            } catch (NumberFormatException invalid) {
                 session.handleException(ValidationException.invalidValueForProperty(sizeString, PersistenceUnitProperties.BATCH_WRITING_SIZE, invalid));
             }
         }
@@ -1535,11 +1535,11 @@ public class EntityManagerSetupImpl {
         String pessimisticLockTimeout = PropertiesHandler.getPropertyValueLogDebug(PersistenceUnitProperties.PESSIMISTIC_LOCK_TIMEOUT, persistenceProperties, session);
 
         if (pessimisticLockTimeout != null) {
-	        try {
-	            session.setPessimisticLockTimeoutDefault(Integer.parseInt(pessimisticLockTimeout));
-	    	} catch (NumberFormatException invalid) {
-	            session.handleException(ValidationException.invalidValueForProperty(pessimisticLockTimeout, PersistenceUnitProperties.PESSIMISTIC_LOCK_TIMEOUT, invalid));
-	        }
+            try {
+                session.setPessimisticLockTimeoutDefault(Integer.parseInt(pessimisticLockTimeout));
+            } catch (NumberFormatException invalid) {
+                session.handleException(ValidationException.invalidValueForProperty(pessimisticLockTimeout, PersistenceUnitProperties.PESSIMISTIC_LOCK_TIMEOUT, invalid));
+            }
         }
     }
     

@@ -476,12 +476,11 @@ public class DDLGenerationJUnitTestSuite extends JUnitTestCase {
             em.createQuery("DELETE FROM EquipmentDAO").executeUpdate();
             
             commitTransaction(em);
-        } catch (Exception e) {
+        } catch (RuntimeException e) {
             if (isTransactionActive(em)) {
                 rollbackTransaction(em);
             }
-            
-            fail("En error occurred cleaning up: " + e.getMessage());
+            throw e;
         } finally {
             if (em != null) {
                 em.close();

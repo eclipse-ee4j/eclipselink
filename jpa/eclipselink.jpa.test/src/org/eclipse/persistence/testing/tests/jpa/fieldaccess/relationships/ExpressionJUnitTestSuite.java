@@ -10,19 +10,19 @@
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
  ******************************************************************************/  
-
 package org.eclipse.persistence.testing.tests.jpa.fieldaccess.relationships;
 
-import java.util.Vector;
+import java.util.List;
 
 import javax.persistence.EntityManager;
 
 import org.eclipse.persistence.expressions.Expression;
 import org.eclipse.persistence.expressions.ExpressionBuilder;
 import org.eclipse.persistence.internal.databaseaccess.Platform;
+import org.eclipse.persistence.jpa.JpaEntityManager;
 import org.eclipse.persistence.queries.ReadAllQuery;
-import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
 
+import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
 import org.eclipse.persistence.testing.models.jpa.fieldaccess.relationships.*;
 
 public class ExpressionJUnitTestSuite extends JUnitTestCase {
@@ -67,19 +67,31 @@ public class ExpressionJUnitTestSuite extends JUnitTestCase {
             throw e;
         }
         closeEntityManager(em);
-        try{
+        em = createEntityManager();
+        beginTransaction(em);
+        try {
             ExpressionBuilder builder = new ExpressionBuilder();
             Expression expression = builder.get("city").leftTrim("M").equal("anotick");
 
-            ReadAllQuery r = new ReadAllQuery();
-            r.setReferenceClass(Customer.class);
-            r.setSelectionCriteria(expression);
-            Vector v = (Vector)getServerSession().executeQuery(r);
-            assertTrue("Test error: No Customers found",v.size()!=0 );
-            Customer returned = (Customer)v.firstElement();
+            ReadAllQuery query = new ReadAllQuery();
+            query.setReferenceClass(Customer.class);
+            query.setSelectionCriteria(expression);
+            List result = ((JpaEntityManager)em.getDelegate()).createQuery(query).getResultList();
+            commitTransaction(em);
+            closeEntityManager(em);
+            assertTrue("Test error: No Customers found", result.size()!=0 );
+            Customer returned = (Customer)result.get(0);
             assertTrue("Test error: No Customers found","Manotick".equals(returned.getCity()) );
 
-        }catch(Exception e){
+        } catch(Exception e) {
+            try {
+                commitTransaction(em);
+            } catch (Throwable t) {
+                if (isTransactionActive(em)) {
+                    rollbackTransaction(em);
+                }
+            }
+            closeEntityManager(em);
             em = createEntityManager();
             beginTransaction(em);
             c = em.find(Customer.class, c.getCustomerId());
@@ -117,27 +129,39 @@ public class ExpressionJUnitTestSuite extends JUnitTestCase {
             throw e;
         }
         closeEntityManager(em);
-        try{
+        em = createEntityManager();
+        beginTransaction(em);
+        try {
             ExpressionBuilder builder = new ExpressionBuilder();
             Expression expression = builder.get("city").leftTrim().equal("anotick");
 
-            ReadAllQuery r = new ReadAllQuery();
-            r.setReferenceClass(Customer.class);
-            r.setSelectionCriteria(expression);
-            Vector v = (Vector)getServerSession().executeQuery(r);
-            assertTrue("Test error: No Customers found", v.size()!=0 );
-            Customer returned = (Customer)v.firstElement();
+            ReadAllQuery query = new ReadAllQuery();
+            query.setReferenceClass(Customer.class);
+            query.setSelectionCriteria(expression);
+            List result = ((JpaEntityManager)em.getDelegate()).createQuery(query).getResultList();
+            commitTransaction(em);
+            closeEntityManager(em);
+            assertTrue("Test error: No Customers found", result.size()!=0 );
+            Customer returned = (Customer)result.get(0);
             assertTrue("Test error: No Customers found", " anotick".equals(returned.getCity()) );
 
-        }catch(Exception e){
+        } catch(Exception e) {
+            try {
+                commitTransaction(em);
+            } catch (Throwable t) {
+                if (isTransactionActive(em)) {
+                    rollbackTransaction(em);
+                }
+            }
+            closeEntityManager(em);
             em = createEntityManager();
             beginTransaction(em);
             c = em.find(Customer.class, c.getCustomerId());
             em.remove(c);
-            try{
+            try {
                 commitTransaction(em);
-            }catch (Throwable t){
-                if (isTransactionActive(em)){
+            } catch (Throwable t) {
+                if (isTransactionActive(em)) {
                     rollbackTransaction(em);
                 }
             }
@@ -172,19 +196,30 @@ public class ExpressionJUnitTestSuite extends JUnitTestCase {
             throw e;
         }
         closeEntityManager(em);
-        try{
+        em = createEntityManager();
+        beginTransaction(em);
+        try {
             ExpressionBuilder builder = new ExpressionBuilder();
             Expression expression = builder.get("city").rightTrim("M").equal("Manotick");
 
-            ReadAllQuery r = new ReadAllQuery();
-            r.setReferenceClass(Customer.class);
-            r.setSelectionCriteria(expression);
-            Vector v = (Vector)getServerSession().executeQuery(r);
-            assertTrue("Test error: No Customers found", v.size()!=0 );
-            Customer returned = (Customer)v.firstElement();
+            ReadAllQuery query = new ReadAllQuery();
+            query.setReferenceClass(Customer.class);
+            query.setSelectionCriteria(expression);
+            List result = ((JpaEntityManager)em.getDelegate()).createQuery(query).getResultList();
+            commitTransaction(em);
+            closeEntityManager(em);
+            assertTrue("Test error: No Items found", result.size()!=0 );
+            Customer returned = (Customer)result.get(0);
             assertTrue("Test error: No Customers found", "ManotickM".equals(returned.getCity()) );
 
-        }catch(Exception e){
+        } catch(Exception e) {
+            try {
+                commitTransaction(em);
+            } catch (Throwable t) {
+                if (isTransactionActive(em)) {
+                    rollbackTransaction(em);
+                }
+            }
             em = createEntityManager();
             beginTransaction(em);
             c = em.find(Customer.class, c.getCustomerId());
@@ -223,19 +258,30 @@ public class ExpressionJUnitTestSuite extends JUnitTestCase {
             throw e;
         }
         closeEntityManager(em);
-        try{
+        em = createEntityManager();
+        beginTransaction(em);
+        try {
             ExpressionBuilder builder = new ExpressionBuilder();
             Expression expression = builder.get("city").rightTrim().equal("Manotic");
 
-            ReadAllQuery r = new ReadAllQuery();
-            r.setReferenceClass(Customer.class);
-            r.setSelectionCriteria(expression);
-            Vector v = (Vector)getServerSession().executeQuery(r);
-            assertTrue("Test error: No Customers found", v.size()!=0 );
-            Customer returned = (Customer)v.firstElement();
+            ReadAllQuery query = new ReadAllQuery();
+            query.setReferenceClass(Customer.class);
+            query.setSelectionCriteria(expression);
+            List result = ((JpaEntityManager)em.getDelegate()).createQuery(query).getResultList();
+            commitTransaction(em);
+            closeEntityManager(em);
+            assertTrue("Test error: No Items found", result.size()!=0 );
+            Customer returned = (Customer)result.get(0);
             assertTrue("Test error: No Customers found", "Manotic ".equals(returned.getCity()) );
 
-        }catch(Exception e){
+        } catch(Exception e) {
+            try {
+                commitTransaction(em);
+            } catch (Throwable t) {
+                if (isTransactionActive(em)) {
+                    rollbackTransaction(em);
+                }
+            }
             em = createEntityManager();
             beginTransaction(em);
             c = em.find(Customer.class, c.getCustomerId());
@@ -277,19 +323,30 @@ public class ExpressionJUnitTestSuite extends JUnitTestCase {
             throw e;
         }
         closeEntityManager(em);
-        try{
+        em = createEntityManager();
+        beginTransaction(em);
+        try {
             ExpressionBuilder builder = new ExpressionBuilder();
             Expression expression = builder.get("name").trim("i").equal("tem");
-            
-            ReadAllQuery r = new ReadAllQuery();
-            r.setReferenceClass(Item.class);
-            r.setSelectionCriteria(expression);
-            Vector v = (Vector)getServerSession().executeQuery(r);
-            assertTrue("Test error: No Items found",v.size()!=0 );
-            Item returned = (Item)v.firstElement();
+
+            ReadAllQuery query = new ReadAllQuery();
+            query.setReferenceClass(Item.class);
+            query.setSelectionCriteria(expression);
+            List result = ((JpaEntityManager)em.getDelegate()).createQuery(query).getResultList();
+            commitTransaction(em);
+            closeEntityManager(em);
+            assertTrue("Test error: No Items found", result.size()!=0 );
+            Item returned = (Item)result.get(0);
             assertTrue("Test error: No Items found","itemi".equals(returned.getName()) );
-            
-        }catch(Exception e){
+
+        } catch(Exception e) {
+            try {
+                commitTransaction(em);
+            } catch (Throwable t) {
+                if (isTransactionActive(em)) {
+                    rollbackTransaction(em);
+                }
+            }
             em = createEntityManager();
             try{
                 beginTransaction(em);
@@ -332,18 +389,30 @@ public class ExpressionJUnitTestSuite extends JUnitTestCase {
             throw e;
         }
         closeEntityManager(em);
-        try{
+        em = createEntityManager();
+        beginTransaction(em);
+        try {
             ExpressionBuilder builder = new ExpressionBuilder();
             Expression expression = builder.get("name").trim().equal("tem");
 
-            ReadAllQuery r = new ReadAllQuery();
-            r.setReferenceClass(Item.class);
-            r.setSelectionCriteria(expression);
-            Vector v = (Vector)getServerSession().executeQuery(r);
-            assertTrue("Test error: No Items found",v.size()!=0 );
-            Item returned = (Item)v.firstElement();
+            ReadAllQuery query = new ReadAllQuery();
+            query.setReferenceClass(Item.class);
+            query.setSelectionCriteria(expression);
+            List result = ((JpaEntityManager)em.getDelegate()).createQuery(query).getResultList();
+            commitTransaction(em);
+            closeEntityManager(em);
+            assertTrue("Test error: No Items found", result.size()!=0 );
+            Item returned = (Item)result.get(0);
             assertTrue("Test error: No Items found"," tem ".equals(returned.getName()) );
-        }catch(Exception e){
+
+        } catch(Exception e) {
+            try {
+                commitTransaction(em);
+            } catch (Throwable t) {
+                if (isTransactionActive(em)) {
+                    rollbackTransaction(em);
+                }
+            }
             em = createEntityManager();
             try{
                 beginTransaction(em);
@@ -380,19 +449,30 @@ public class ExpressionJUnitTestSuite extends JUnitTestCase {
             throw e;
         }
         closeEntityManager(em);
-        try{
+        em = createEntityManager();
+        beginTransaction(em);
+        try {
             ExpressionBuilder builder = new ExpressionBuilder();
             Expression expression = builder.get("name").locate("t").equal(new Integer(2));
-            
-            ReadAllQuery r = new ReadAllQuery();
-            r.setReferenceClass(Item.class);
-            r.setSelectionCriteria(expression);
-            Vector v = (Vector)getServerSession().executeQuery(r);
-            assertTrue("Test error: No Items found", v.size()!=0 );
-            Item returned = (Item)v.firstElement();
+
+            ReadAllQuery query = new ReadAllQuery();
+            query.setReferenceClass(Item.class);
+            query.setSelectionCriteria(expression);
+            List result = ((JpaEntityManager)em.getDelegate()).createQuery(query).getResultList();
+            commitTransaction(em);
+            closeEntityManager(em);
+            assertTrue("Test error: No Items found", result.size()!=0 );
+            Item returned = (Item)result.get(0);
             assertTrue("Test error: IncorrectItem found","itemi".equals(returned.getName()) );
-            
-        }catch(Exception e){
+
+        } catch(Exception e) {
+            try {
+                commitTransaction(em);
+            } catch (Throwable t) {
+                if (isTransactionActive(em)) {
+                    rollbackTransaction(em);
+                }
+            }
             em = createEntityManager();
             try{
                 beginTransaction(em);
@@ -429,19 +509,30 @@ public class ExpressionJUnitTestSuite extends JUnitTestCase {
             throw e;
         }
         closeEntityManager(em);
-        try{
+        em = createEntityManager();
+        beginTransaction(em);
+        try {
             ExpressionBuilder builder = new ExpressionBuilder();
             Expression expression = builder.get("name").locate("i", 2).equal(new Integer(5));
-            
-            ReadAllQuery r = new ReadAllQuery();
-            r.setReferenceClass(Item.class);
-            r.setSelectionCriteria(expression);
-            Vector v = (Vector)getServerSession().executeQuery(r);
-            assertTrue("Test error: No Items found", v.size()!=0 );
-            Item returned = (Item)v.firstElement();
+
+            ReadAllQuery query = new ReadAllQuery();
+            query.setReferenceClass(Item.class);
+            query.setSelectionCriteria(expression);
+            List result = ((JpaEntityManager)em.getDelegate()).createQuery(query).getResultList();
+            commitTransaction(em);
+            closeEntityManager(em);
+            assertTrue("Test error: No Items found", result.size()!=0 );
+            Item returned = (Item)result.get(0);
             assertTrue("Test error: IncorrectItem found","itemi".equals(returned.getName()) );
-            
-        }catch(Exception e){
+
+        } catch(Exception e) {
+            try {
+                commitTransaction(em);
+            } catch (Throwable t) {
+                if (isTransactionActive(em)) {
+                    rollbackTransaction(em);
+                }
+            }
             em = createEntityManager();
             try{
                 beginTransaction(em);

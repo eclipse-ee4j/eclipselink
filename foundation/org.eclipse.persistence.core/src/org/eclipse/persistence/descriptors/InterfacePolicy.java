@@ -13,8 +13,13 @@
 package org.eclipse.persistence.descriptors;
 
 import java.io.*;
+import java.security.AccessController;
+import java.security.PrivilegedActionException;
 import java.util.*;
+
 import org.eclipse.persistence.exceptions.*;
+import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
+import org.eclipse.persistence.internal.security.PrivilegedClassForName;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.queries.*;
 
@@ -143,6 +148,35 @@ public class InterfacePolicy implements Serializable {
         return parentInterfaceNames;
     }
 
+    /**
+     * INTERNAL:
+     * Convert all the class-name-based settings in this InheritancePolicy to actual class-based settings.
+     * This method is used when converting a project that has been built with class names to a project with classes.
+     * It will also convert referenced classes to the versions of the classes from the classLoader.
+     */
+    public void convertClassNamesToClasses(ClassLoader classLoader) {
+        Vector newParentInterfaces = new Vector();
+        for (Iterator iterator = getParentInterfaceNames().iterator(); iterator.hasNext(); ) {
+            String interfaceName = (String)iterator.next();
+            Class interfaceClass = null;
+            try {
+                if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
+                    try {
+                        interfaceClass = (Class)AccessController.doPrivileged(new PrivilegedClassForName(interfaceName, true, classLoader));
+                    } catch (PrivilegedActionException exception) {
+                        throw ValidationException.classNotFoundWhileConvertingClassNames(interfaceName, exception.getException());
+                    }
+                } else {
+                    interfaceClass = org.eclipse.persistence.internal.security.PrivilegedAccessHelper.getClassForName(interfaceName, true, classLoader);
+                }
+            } catch (ClassNotFoundException exc){
+                throw ValidationException.classNotFoundWhileConvertingClassNames(interfaceName, exc);
+            }
+            newParentInterfaces.add(interfaceClass);
+        }
+        this.parentInterfaces = newParentInterfaces;
+    }
+    
     /**
      * INTERNAL:
      * Set the vector to store parent interfaces.

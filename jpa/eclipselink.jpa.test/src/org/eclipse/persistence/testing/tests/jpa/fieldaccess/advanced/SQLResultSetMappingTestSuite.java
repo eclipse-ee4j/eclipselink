@@ -55,6 +55,11 @@ public class SQLResultSetMappingTestSuite extends JUnitTestCase {
         m_reset = true;
         super.setUp();
         clearCache("fieldaccess");
+
+        // Force uppercase for Postgres.
+        if (getServerSession("fieldaccess").getPlatform().isPostgreSQL()) {
+            getServerSession("fieldaccess").getLogin().setShouldForceFieldNamesToUpperCase(true);
+        }
     }
 
     public void testInheritanceNoDiscriminatorColumn() throws Exception {

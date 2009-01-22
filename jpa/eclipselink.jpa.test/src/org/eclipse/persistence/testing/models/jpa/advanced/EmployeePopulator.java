@@ -938,6 +938,10 @@ public class EmployeePopulator {
             schema.replaceObject(buildOracleStoredProcedureReadFromAddress());
             schema.replaceObject(buildOracleStoredProcedureReadInOut());
         }
+        // Force uppercase for Postgres.
+        if (session.getPlatform().isPostgreSQL()) {
+            session.getLogin().setShouldForceFieldNamesToUpperCase(true);
+        }
         
     }
     protected boolean containsObject(Class domainClass, String identifier) {

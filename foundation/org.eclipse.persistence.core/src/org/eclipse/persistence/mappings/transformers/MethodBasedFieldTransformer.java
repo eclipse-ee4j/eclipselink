@@ -68,6 +68,17 @@ public class MethodBasedFieldTransformer implements FieldTransformer {
             }
         }
     }
+    
+    /**
+     * Return the Java class type of the field value.
+     * This uses the method return type.
+     */
+    public Class getFieldType() {
+        if (this.fieldTransformationMethod != null) {
+            return this.fieldTransformationMethod.getReturnType();
+        }
+        return null;
+    }
 
     public Object buildFieldValue(Object object, String fieldName, Session session) {
         Class[] parameterTypes = null;

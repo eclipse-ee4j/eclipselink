@@ -84,7 +84,14 @@ public class VariableOneToOneAccessor extends ObjectAccessor {
      * explicitely added but define the interface associated with this
      * accessors target interface.
      */
-    public void addDiscriminatorClassFor(EntityAccessor accessor) {
+    public void addDiscriminatorClassFor(EntityAccessor accessor) {                
+        // We didn't find a discriminator class metadata for the given entity
+        // accessor so we need to default one.
+        VariableOneToOneMapping mapping = (VariableOneToOneMapping) getDescriptor().getMappingForAttributeName(getAttributeName());
+
+        // Also need to add the interface to the descriptor.
+        accessor.getDescriptor().getClassDescriptor().getInterfacePolicy().addParentInterfaceName(mapping.getReferenceClassName());
+        
         for (DiscriminatorClassMetadata discriminatorClass : m_discriminatorClasses) {
             if (discriminatorClass.getValue().equals(accessor.getJavaClass())) {
                 // A discriminator class was configured for this entity, do
@@ -93,10 +100,6 @@ public class VariableOneToOneAccessor extends ObjectAccessor {
             }
         }
         
-        // We didn't find a discriminator class metadata for the given entity
-        // accessor so we need to default one.
-        VariableOneToOneMapping mapping = (VariableOneToOneMapping) getDescriptor().getMappingForAttributeName(getAttributeName());
-
         Class type = mapping.getTypeField().getType();
         if (type.equals(String.class)) {
             mapping.addClassNameIndicator(accessor.getJavaClassName(), accessor.getDescriptor().getAlias());  

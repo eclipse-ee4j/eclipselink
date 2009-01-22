@@ -18,49 +18,49 @@ import static javax.persistence.GenerationType.*;
 @Entity(name="FieldAccessItem")
 @Table(name="CMP3_FIELDACCESS_ITEM")
 @NamedQuery(
-	name="findAllFieldAccessItemsByName",
-	query="SELECT OBJECT(item) FROM FieldAccessItem item WHERE item.name = ?1"
+        name="findAllFieldAccessItemsByName",
+        query="SELECT OBJECT(item) FROM FieldAccessItem item WHERE item.name = ?1"
 )
 public class Item implements java.io.Serializable {
-	@Id
+    @Id
     @GeneratedValue(strategy=TABLE, generator="FIELDACCESS_ITEM_TABLE_GENERATOR")
     @TableGenerator(
-        name="FIELDACCESS_ITEM_TABLE_GENERATOR", 
-        table="CMP3_FIELDACCESS_CUSTOMER_SEQ", 
-        pkColumnName="SEQ_NAME", 
-        valueColumnName="SEQ_COUNT",
-        pkColumnValue="ITEM_SEQ"
+            name="FIELDACCESS_ITEM_TABLE_GENERATOR", 
+            table="CMP3_FIELDACCESS_CUSTOMER_SEQ", 
+            pkColumnName="SEQ_NAME", 
+            valueColumnName="SEQ_COUNT",
+            pkColumnValue="ITEM_SEQ"
     )
-	@Column(name="ID")
-	private Integer itemId;
-	@Version
-	@Column(name="ITEM_VERSION")
-	private int version;
-	private String name;
-	private String description;
+    @Column(name="ID")
+    private Integer itemId;
+    @Version
+    @Column(name="ITEM_VERSION")
+    private int version;
+    private String name;
+    private String description;
 
-	public Item() {}
+    public Item() {}
 
     public Integer getItemId() { 
         return itemId; 
     }
-    
+
     public void setItemId(Integer id) { 
         this.itemId = id; 
     }
 
-	protected int getVersion() { 
+    protected int getVersion() { 
         return version; 
     }
-    
-	protected void setVersion(int version) { 
+
+    protected void setVersion(int version) { 
         this.version = version; 
     }
 
-	public String getDescription() { 
+    public String getDescription() { 
         return description; 
     }
-    
+
     public void setDescription(String desc) { 
         this.description = desc; 
     }
@@ -68,7 +68,7 @@ public class Item implements java.io.Serializable {
     public String getName() { 
         return name; 
     }
-    
+
     public void setName(String name) {
         this.name = name; 
     }

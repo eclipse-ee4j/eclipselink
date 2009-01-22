@@ -1425,16 +1425,19 @@ public class ClassDescriptor implements Cloneable, Serializable {
         while (mappings.hasNext()){
             ((DatabaseMapping)mappings.next()).convertClassNamesToClasses(classLoader);
         }
-        if (inheritancePolicy != null){
-            inheritancePolicy.convertClassNamesToClasses(classLoader);
+        if (this.inheritancePolicy != null){
+            this.inheritancePolicy.convertClassNamesToClasses(classLoader);
         }
-        if (instantiationPolicy != null){
-            instantiationPolicy.convertClassNamesToClasses(classLoader);
+        if (this.interfacePolicy != null){
+            this.interfacePolicy.convertClassNamesToClasses(classLoader);
+        }
+        if (this.instantiationPolicy != null){
+            this.instantiationPolicy.convertClassNamesToClasses(classLoader);
         }
         if (hasCMPPolicy()) {
             getCMPPolicy().convertClassNamesToClasses(classLoader);
         }
-        queryManager.convertClassNamesToClasses(classLoader);
+        this.queryManager.convertClassNamesToClasses(classLoader);
     }
 
     /**
@@ -2634,7 +2637,7 @@ public class ClassDescriptor implements Cloneable, Serializable {
         if (usesOptimisticLocking() && (!isChildDescriptor())) {
             getOptimisticLockingPolicy().initialize(session);
         }
-        if (hasInterfacePolicy()) {
+        if (hasInterfacePolicy() || isDescriptorForInterface()) {
             interfaceInitialization(session);
         }
         if (hasWrapperPolicy()) {

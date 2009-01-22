@@ -14,6 +14,7 @@
 package org.eclipse.persistence.platform.database;
 
 import java.io.*;
+import java.sql.Types;
 import java.util.*;
 
 import org.eclipse.persistence.exceptions.ValidationException;
@@ -49,6 +50,17 @@ public class PostgreSQLPlatform extends DatabasePlatform {
     public PostgreSQLPlatform() {
         super();
         this.pingSQL = "SELECT 1";
+    }
+
+    /**
+     * Return the JDBC type for the Java type.
+     * For some reason PostgreSQL does not seem to like the JDBC Blob type (PostgreSQL 8.2).
+     */
+    public int getJDBCType(Class javaType) {
+        if (javaType ==  ClassConstants.BLOB) {
+            return Types.LONGVARBINARY;
+        }
+        return super.getJDBCType(javaType);
     }
     
     /**
@@ -103,6 +115,7 @@ public class PostgreSQLPlatform extends DatabasePlatform {
         addOperator(ExpressionOperator.simpleLogicalNoParens(ExpressionOperator.Concat, "||"));
         addOperator(ExpressionOperator.simpleTwoArgumentFunction(ExpressionOperator.Nvl, "COALESCE"));
         addOperator(operatorLocate());
+        addOperator(operatorLocate2());
         addOperator(toNumberOperator());
     }
 
@@ -284,7 +297,7 @@ public class PostgreSQLPlatform extends DatabasePlatform {
     
     /**
      * INTERNAL:
-     * Override the default locate operator
+     * Override the default locate operator.
      */
     protected ExpressionOperator operatorLocate() {
         ExpressionOperator result = new ExpressionOperator();
@@ -299,6 +312,30 @@ public class PostgreSQLPlatform extends DatabasePlatform {
         return result;
     }
 
+    /**
+     * INTERNAL:
+     * Override the default locate operator.
+     */
+    protected ExpressionOperator operatorLocate2() {
+        ExpressionOperator operator = new ExpressionOperator();
+        operator.setSelector(ExpressionOperator.Locate2);
+        Vector v = NonSynchronizedVector.newInstance(2);
+        v.addElement("(STRPOS(SUBSTRING(");
+        v.addElement(" FROM ");
+        v.addElement("), ");
+        v.addElement(") + (");
+        v.addElement(" - 1))");
+        operator.printsAs(v);
+        operator.bePrefix();
+        int[] argumentIndices = new int[4];
+        argumentIndices[0] = 0;
+        argumentIndices[1] = 2;
+        argumentIndices[2] = 1;
+        argumentIndices[3] = 2;
+        operator.setArgumentIndices(argumentIndices);
+        operator.setNodeClass(RelationExpression.class);
+        return operator;
+    }
 
     /**
      * INTERNAL:
@@ -428,13 +465,14 @@ public class PostgreSQLPlatform extends DatabasePlatform {
         return true;
     }
 
+    /**
+     * Print the pagination SQL using Postgres syntax " LIMIT <max> OFFSET <first>".
+     */
     @Override
     public void printSQLSelectStatement(DatabaseCall call, ExpressionSQLPrinter printer, SQLSelectStatement statement) {
         int max = 0;
-        int firstRow = 0;
         if (statement.getQuery() != null) {
             max = statement.getQuery().getMaxRows();
-            firstRow = statement.getQuery().getFirstResult();
         }
         if (max <= 0  || !(this.shouldUseRownumFiltering())) {
             super.printSQLSelectStatement(call, printer, statement);
@@ -447,6 +485,56 @@ public class PostgreSQLPlatform extends DatabasePlatform {
         printer.printString(OFFSET);
         printer.printParameter(DatabaseCall.FIRSTRESULT_FIELD);
         call.setIgnoreFirstRowMaxResultsSettings(true);
+    }
+    
+
+    /**
+     * INTERNAL:
+     * May need to override this method if the platform supports temporary tables
+     * and the generated sql doesn't work.
+     * Write an sql string for updating the original table from the temporary table.
+     * Precondition: supportsTempTables() == true.
+     * Precondition: pkFields and assignFields don't intersect.
+     * @parameter Writer writer for writing the sql
+     * @parameter DatabaseTable table is original table for which temp table is created.
+     * @parameter Collection pkFields - primary key fields for the original table.
+     * @parameter Collection assignedFields - fields to be assigned a new value.
+     */
+    public void writeUpdateOriginalFromTempTableSql(Writer writer, DatabaseTable table,
+                                                     Collection pkFields,
+                                                     Collection assignedFields) throws IOException 
+    {
+        writer.write("UPDATE ");
+        String tableName = table.getQualifiedName();
+        writer.write(tableName);
+        writer.write(" SET ");
+        
+        String tempTableName = getTempTableForTable(table).getQualifiedName();
+        boolean isFirst = true;
+        Iterator itFields = assignedFields.iterator();
+        while(itFields.hasNext()) {
+            if(isFirst) {
+                isFirst = false;
+            } else {
+                writer.write(", ");
+            }
+            DatabaseField field = (DatabaseField)itFields.next();
+            String fieldName = field.getName();
+            writer.write(fieldName);
+            writer.write(" = (SELECT ");
+            writer.write(fieldName);
+            writer.write(" FROM ");
+            writer.write(tempTableName);
+            writeAutoJoinWhereClause(writer, null, tableName, pkFields);
+            writer.write(")");
+        }
+        
+        writer.write(" WHERE EXISTS(SELECT ");
+        writer.write(((DatabaseField)pkFields.iterator().next()).getName());
+        writer.write(" FROM ");
+        writer.write(tempTableName);
+        writeAutoJoinWhereClause(writer, null, tableName, pkFields);
+        writer.write(")");
     }
 
 }

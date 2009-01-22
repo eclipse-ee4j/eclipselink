@@ -211,6 +211,11 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
      */
     public void testSetup() {
         new AdvancedTableCreator().replaceTables(JUnitTestCase.getServerSession("fieldaccess"));
+
+        // Force uppercase for Postgres.
+        if (getServerSession("fieldaccess").getPlatform().isPostgreSQL()) {
+            getServerSession().getLogin().setShouldForceFieldNamesToUpperCase(true);
+        }
     }
     
     // JUnit framework will automatically execute all methods starting with test...    

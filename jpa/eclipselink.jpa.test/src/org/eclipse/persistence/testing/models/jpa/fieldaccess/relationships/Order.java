@@ -15,6 +15,8 @@ package org.eclipse.persistence.testing.models.jpa.fieldaccess.relationships;
 import javax.persistence.*;
 import javax.xml.bind.annotation.*;
 
+import org.eclipse.persistence.annotations.Cache;
+
 import static javax.persistence.GenerationType.*;
 import static javax.persistence.CascadeType.*;
 import static javax.persistence.FetchType.*;
@@ -26,6 +28,7 @@ import static javax.persistence.FetchType.*;
         query="SELECT OBJECT(theorder) FROM FieldAccessOrderBean theorder WHERE theorder.item.itemId = :id"
 )
 @XmlAccessorType(XmlAccessType.FIELD)
+@Cache(shared=false)
 public class Order implements java.io.Serializable {
     @Id
     @GeneratedValue(strategy=TABLE, generator="FIELDACCESS_ORDER_TABLE_GENERATOR")

@@ -296,6 +296,11 @@ public abstract class JUnitTestCase extends TestCase {
             if (emfNamedPersistenceUnit == null){
                 emfNamedPersistenceUnit = Persistence.createEntityManagerFactory(persistenceUnitName, properties);
                 emfNamedPersistenceUnits.put(persistenceUnitName, emfNamedPersistenceUnit);
+
+                // Force uppercase for Postgres.
+                if (getServerSession(persistenceUnitName).getPlatform().isPostgreSQL()) {
+                    getServerSession(persistenceUnitName).getLogin().setShouldForceFieldNamesToUpperCase(true);
+                }
             }
             return emfNamedPersistenceUnit;
         }
@@ -443,7 +448,8 @@ public abstract class JUnitTestCase extends TestCase {
      */
     public boolean isSelectForUpateSupported() {
         DatabasePlatform platform = getServerSession().getPlatform();
-        if (platform.isDB2() || platform.isAccess() || platform.isSybase() || platform.isSQLAnywhere() || platform.isDerby()) {
+        // PostgreSQL supports for update, but no on outerjoins, which the test uses.
+        if (platform.isDB2() || platform.isAccess() || platform.isSybase() || platform.isSQLAnywhere() || platform.isDerby() || platform.isPostgreSQL()) {
             warning("This database does not support FOR UPDATE.");
             return false;
         }
@@ -468,6 +474,8 @@ public abstract class JUnitTestCase extends TestCase {
      */
     public boolean supportsStoredProcedures() {
         DatabasePlatform platform = getServerSession().getPlatform();
+        // PostgreSQL has some level of support for "stored functions", but output parameters do not work as of 8.2.
+        // TODO: DB2 should be in this list.
         if (platform.isOracle() || platform.isSybase() || platform.isMySQL() || platform.isSQLServer()) {
             return true;
         }

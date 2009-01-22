@@ -14,6 +14,9 @@ package org.eclipse.persistence.testing.models.jpa.inheritance;
 
 import javax.persistence.*;
 
+import org.eclipse.persistence.annotations.Convert;
+import org.eclipse.persistence.annotations.TypeConverter;
+
 @Entity
 @Table(name="CMP3_AAA")
 @Inheritance(strategy=InheritanceType.JOINED)
@@ -29,7 +32,10 @@ public  class AAA {
         this.id = id;
     }
     
-    @Id @GeneratedValue(strategy=GenerationType.TABLE, generator="CMP3_AAA_GENERATOR")
+    @Id
+    @GeneratedValue(strategy=GenerationType.TABLE, generator="CMP3_AAA_GENERATOR")
+    @Convert("stringToInt")
+    @TypeConverter(name="stringToInt", dataType=Integer.class, objectType=String.class)
     public String getId() { 
         return id; 
     }

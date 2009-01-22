@@ -15,8 +15,7 @@ package org.eclipse.persistence.testing.models.jpa.fieldaccess.relationships;
 
 import javax.persistence.*;
 
-import org.eclipse.persistence.annotations.IdValidation;
-import org.eclipse.persistence.annotations.PrimaryKey;
+import org.eclipse.persistence.annotations.Cache;
 
 import static javax.persistence.GenerationType.*;
 import static javax.persistence.CascadeType.*;
@@ -24,40 +23,41 @@ import java.util.Collection;
 
 @Entity(name="FieldAccessSalesPerson")
 @Table(name="CMP3_FIELDACCESS_SALESPERSON")
+@Cache(shared=false)
 public class SalesPerson 
 {
     private String name;
-	@Id
+    @Id
     @GeneratedValue(strategy=TABLE, generator="FIELDACCESS_SALESPERSON_TABLE_GENERATOR")
     @TableGenerator(
-        name="FIELDACCESS_SALESPERSON_TABLE_GENERATOR", 
-        table="CMP3_FIELDACCESS_CUSTOMER_SEQ", 
-        pkColumnName="SEQ_NAME", 
-        valueColumnName="SEQ_COUNT",
-        pkColumnValue="SALESPERSON_SEQ"
+            name="FIELDACCESS_SALESPERSON_TABLE_GENERATOR", 
+            table="CMP3_FIELDACCESS_CUSTOMER_SEQ", 
+            pkColumnName="SEQ_NAME", 
+            valueColumnName="SEQ_COUNT",
+            pkColumnValue="SALESPERSON_SEQ"
     )
-	@Column(name="ID")
+    @Column(name="ID")
     private int id;
-	@OneToMany(cascade=ALL, mappedBy="salesPerson")
+    @OneToMany(cascade=ALL, mappedBy="salesPerson")
     private Collection<Order> orders;
-    
+
     public SalesPerson() {};
-    
+
     public int getId() {
         return id;
     }
     public void setId(int id) {
         this.id = id;
     }
-    
+
     public String getName() {
         return name;
     }
-    
+
     public void setName(String name) {
         this.name = name;
     }    
-    
+
     public Collection<Order> getOrders() {
         return orders;
     }

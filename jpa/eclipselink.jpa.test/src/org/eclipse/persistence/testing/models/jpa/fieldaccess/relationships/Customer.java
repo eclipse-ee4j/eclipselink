@@ -17,6 +17,7 @@ import java.util.Collection;
 import javax.persistence.*;
 import static javax.persistence.GenerationType.*;
 import static javax.persistence.CascadeType.*;
+import org.eclipse.persistence.annotations.Cache;
 
 @Entity(name="FieldAccessCustomer")
 @Table(name="CMP3_FIELDACCESS_CUSTOMER")
@@ -31,6 +32,7 @@ import static javax.persistence.CascadeType.*;
         query="INSERT INTO CMP3_FIELDACCESS_CUSTOMER (CUST_ID, NAME, CITY, CUST_VERSION) VALUES (1111, NULL, NULL, 1)"),
     @NamedNativeQuery(name="deleteCustomer1111SQLFieldAccess",
         query="DELETE FROM CMP3_FIELDACCESS_CUSTOMER WHERE (CUST_ID=1111)")})
+@Cache(shared=false)
 public class Customer implements java.io.Serializable{
     @Id
     @GeneratedValue(strategy=TABLE, generator="FIELDACCESS_CUSTOMER_TABLE_GENERATOR")
