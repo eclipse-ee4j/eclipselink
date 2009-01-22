@@ -28,6 +28,7 @@ import org.eclipse.persistence.testing.tests.jpa.advanced.ExtendedPersistenceCon
 import org.eclipse.persistence.testing.tests.jpa.advanced.ReportQueryConstructorExpressionTestSuite;
 import org.eclipse.persistence.testing.tests.jpa.advanced.OptimisticConcurrencyJUnitTestSuite;
 import org.eclipse.persistence.testing.tests.jpa.advanced.compositepk.AdvancedCompositePKJunitTest;
+import org.eclipse.persistence.testing.tests.jpa.advanced.concurrency.ConcurrencyTest;
 import org.eclipse.persistence.testing.tests.jpa.advanced.ReportQueryAdvancedJUnitTest;
 
 import org.eclipse.persistence.testing.tests.jpa.inheritance.LifecycleCallbackJunitTest;
@@ -77,6 +78,7 @@ public class FullRegressionTestSuite extends TestSuite{
         // Advanced model
         TestSuite suite = new TestSuite();
         suite.setName("advanced");
+        suite.addTest(ConcurrencyTest.suite());
         suite.addTest(NamedNativeQueryJUnitTest.suite());
         suite.addTest(CacheImplJUnitTest.suite());
         suite.addTest(CallbackEventJUnitTestSuite.suite());

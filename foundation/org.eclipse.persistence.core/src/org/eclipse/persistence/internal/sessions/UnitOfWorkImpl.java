@@ -2291,7 +2291,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
         Object implementation = builder.unwrapObject(workingClone, this);
 
         Vector primaryKey = builder.extractPrimaryKeyFromObject(implementation, this);
-        Object original = getParent().getIdentityMapAccessorInstance().getFromIdentityMap(primaryKey, implementation.getClass(), descriptor);
+        Object original = getParent().getIdentityMapAccessorInstance().getFromIdentityMap(primaryKey, implementation.getClass(), true, descriptor, false);
 
         if (original == null) {
             // Check if it is a registered new object.
@@ -2348,7 +2348,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
         if (cacheKey == null) {
             // Next check the cache.
             Vector primaryKey = builder.extractPrimaryKeyFromObject(implementation, this);
-            original = getParent().getIdentityMapAccessorInstance().getFromIdentityMap(primaryKey, implementation.getClass(), descriptor);
+            original = getParent().getIdentityMapAccessorInstance().getFromIdentityMap(primaryKey, implementation.getClass(), true, descriptor, false);
         }
 
         if (original == null) {
@@ -2385,7 +2385,20 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
         Object implementation = builder.unwrapObject(workingClone, this);
 
         Vector primaryKey = builder.extractPrimaryKeyFromObject(implementation, this);
-        Object original = getParent().getIdentityMapAccessorInstance().getFromIdentityMap(primaryKey, implementation.getClass(), descriptor);
+        //only get the cachekey here to prevent a readlock deadlock in the case I am only referenceing this object and not actually merging it.
+        CacheKey key = getParent().getIdentityMapAccessorInstance().getCacheKeyForObject(primaryKey, implementation.getClass(), descriptor);
+        Object original = key.getObject();
+        synchronized (key.getMutex()){
+            //if it is null and acquired then someone may be building a new one. Wait until released or not null
+            while (key.isAcquired() && key.getObject() == null){
+                try {
+                    key.getMutex().wait(10);
+                } catch (InterruptedException e) {
+                    throw ConcurrencyException.waitWasInterrupted("");
+                }
+                original = key.getObject();
+            }
+        }
 
         if (original == null) {
             // Check if it is a registered new object.

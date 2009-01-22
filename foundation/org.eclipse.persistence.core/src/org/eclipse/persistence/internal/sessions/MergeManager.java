@@ -575,17 +575,20 @@ public class MergeManager {
                     // PERF: If PersistenceEntity is caching the primary key this must be cleared as the primary key may have changed in new objects.
                     objectBuilder.clearPrimaryKey(original);
                 }
+                updateCacheKeyProperties(unitOfWork, original, clone, objectChangeSet, descriptor);
             } else if (objectChangeSet == null) {
                 // PERF: If we have no change set if it is existing, then no merging is required.
                 // If it is new, then merge the object (normally a new object would have a change set, so this is an odd case.
                 if (unitOfWork.isCloneNewObject(clone)) {
                     objectBuilder.mergeIntoObject(original, true, clone, this, false, !descriptor.getCopyPolicy().buildsNewInstance());
+                    updateCacheKeyProperties(unitOfWork, original, clone, objectChangeSet, descriptor);
                 }
             } else {
                 // Invalidate any object that was marked invalid during the change calculation, even if it was new as multiple flushes 
                 // and custom SQL could still produce invalid new objects.
                 if (objectChangeSet.shouldInvalidateObject(original, parent)) {
                     parent.getIdentityMapAccessor().invalidateObject(original);
+                    updateCacheKeyProperties(unitOfWork, original, clone, objectChangeSet, descriptor);
                 }
                 
                 if (objectChangeSet.isNew()) {
@@ -597,7 +600,12 @@ public class MergeManager {
                 // shared cache for filling in foreign reference relationships. If merge did not occur in some cases (new  objects, garbage 
                 // collection objects, object read in a transaction) then no object would be in the shared cache and foreign reference 
                 // mappings would be set to null when they should be set to an object.
-                objectBuilder.mergeChangesIntoObject(original, objectChangeSet, clone, this, false);
+                if (objectChangeSet.hasChanges()){
+                    //if there are no changes then we just need a reference to the object so skip the merge
+                    // saves trying to lock related objects after the fact producing deadlocks
+                    objectBuilder.mergeChangesIntoObject(original, objectChangeSet, clone, this, false);
+                    updateCacheKeyProperties(unitOfWork, original, clone, objectChangeSet, descriptor);
+                }
             }
         } catch (QueryException exception) {
             // Ignore validation errors if unit of work validation is suppressed.
@@ -621,36 +629,6 @@ public class MergeManager {
             ((UnitOfWorkImpl)parent).registerOriginalNewObjectFromNestedUnitOfWork(original, backupClone, newInstance, descriptor);
         }
 
-        if (!unitOfWork.isNestedUnitOfWork()) {
-            // PERF: Get the cached cache-key from the change-set.
-            CacheKey cacheKey = null;
-            if (objectChangeSet != null) {
-                cacheKey = objectChangeSet.getActiveCacheKey();
-            }
-            boolean locked = false;
-            // The cache key should never be null for the new commit, but may be for old commit, or depending on the cache isolation level may not be locked,
-            // so needs to be re-acquired.
-            if (cacheKey == null || (!cacheKey.isAcquired())) {
-                // This is only true for the old merge.
-                Vector primaryKey = objectBuilder.extractPrimaryKeyFromObject(original, unitOfWork);
-                cacheKey = parent.getIdentityMapAccessorInstance().acquireLock(primaryKey, original.getClass(), descriptor);
-                locked = true;
-            }
-            try {
-                if (descriptor.usesOptimisticLocking() && descriptor.getOptimisticLockingPolicy().isStoredInCache()) {
-                    cacheKey.setWriteLockValue(unitOfWork.getIdentityMapAccessor().getWriteLockValue(clone));
-                }
-                cacheKey.setObject(original);
-                if (descriptor.getCacheInvalidationPolicy().shouldUpdateReadTimeOnUpdate() || ((objectChangeSet != null) && objectChangeSet.isNew())) {
-                    cacheKey.setReadTime(getSystemTime());
-                }
-                cacheKey.updateAccess();
-            } finally {
-                if (locked) {
-                    cacheKey.release();
-                }
-            }
-        }
         return clone;
     }
 
@@ -1010,5 +988,44 @@ public class MergeManager {
      */
     public IdentityHashMap getMergedNewObjects(){
         return mergedNewObjects;
+    }
+    
+    /**
+     * INTERNAL:
+     * Update CacheKey properties with new information.  This method is called if this code
+     * actually merges
+     */
+    protected void updateCacheKeyProperties(UnitOfWorkImpl unitOfWork, Object original, Object clone, ObjectChangeSet objectChangeSet, ClassDescriptor descriptor){
+        if (!unitOfWork.isNestedUnitOfWork()) {
+            // PERF: Get the cached cache-key from the change-set.
+            CacheKey cacheKey = null;
+            if (objectChangeSet != null) {
+                cacheKey = objectChangeSet.getActiveCacheKey();
+            }
+            boolean locked = false;
+            // The cache key should never be null for the new commit, but may be for old commit, or depending on the cache isolation level may not be locked,
+            // so needs to be re-acquired.
+            if (cacheKey == null || !cacheKey.isAcquired()) {
+                Vector primaryKey = descriptor.getObjectBuilder().extractPrimaryKeyFromObject(original, unitOfWork);
+                
+                cacheKey = unitOfWork.getParent().getIdentityMapAccessorInstance().acquireLock(primaryKey, original.getClass(), descriptor);
+                locked = true;
+            }
+            try {
+                if (descriptor.usesOptimisticLocking() && descriptor.getOptimisticLockingPolicy().isStoredInCache()) {
+                    cacheKey.setWriteLockValue(unitOfWork.getIdentityMapAccessor().getWriteLockValue(clone));
+                }
+                cacheKey.setObject(original);
+                if (descriptor.getCacheInvalidationPolicy().shouldUpdateReadTimeOnUpdate() || ((objectChangeSet != null) && objectChangeSet.isNew())) {
+                    cacheKey.setReadTime(getSystemTime());
+                }
+                cacheKey.updateAccess();
+            } finally {
+                if (locked) {
+                    cacheKey.release();
+                }
+            }
+        }
+
     }
 }

@@ -553,14 +553,14 @@ public class IdentityMapManager implements Serializable, Cloneable {
      * Get the object from the identity map which has the given primary key and class.
      */
     public Object getFromIdentityMap(Vector key, Class theClass, ClassDescriptor descriptor) {
-        return getFromIdentityMap(key, theClass, true, descriptor);
+        return getFromIdentityMap(key, theClass, true, descriptor, true);
     }
 
     /**
      * Get the object from the identity map which has the given primary key and class.
      * Only return the object if it has not been invalidated.
      */
-    public Object getFromIdentityMap(Vector key, Class theClass, boolean shouldReturnInvalidatedObjects, ClassDescriptor descriptor) {
+    public Object getFromIdentityMap(Vector key, Class theClass, boolean shouldReturnInvalidatedObjects, ClassDescriptor descriptor, boolean withReadLock) {
         if (key == null) {
             return null;
         }
@@ -585,7 +585,7 @@ public class IdentityMapManager implements Serializable, Cloneable {
             // PERF: Just check the read-lock to avoid acquire if not locked.
             // This is ok if you get the object first, as the object cannot gc and identity is always maintained.
             domainObject = cacheKey.getObject();
-            cacheKey.checkReadLock();
+            if (withReadLock)cacheKey.checkReadLock();
             // Resolve the inheritance issues.
             domainObject = checkForInheritance(domainObject, theClass, descriptor);
         }

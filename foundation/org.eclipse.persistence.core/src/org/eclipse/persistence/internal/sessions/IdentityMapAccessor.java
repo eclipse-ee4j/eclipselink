@@ -315,7 +315,7 @@ public class IdentityMapAccessor implements org.eclipse.persistence.sessions.Ide
      * Return the object from the identity with the primary and class.
      */
     public Object getFromIdentityMap(Vector primaryKey, Class theClass, ClassDescriptor descriptor) {
-        return getFromIdentityMap(primaryKey, theClass, true, descriptor);
+        return getFromIdentityMap(primaryKey, theClass, true, descriptor, true);
     }
 
     /**
@@ -324,7 +324,7 @@ public class IdentityMapAccessor implements org.eclipse.persistence.sessions.Ide
      * Only return invalidated objects if requested.
      */
     public Object getFromIdentityMap(Vector primaryKey, Class theClass, boolean shouldReturnInvalidatedObjects) {
-        return getFromIdentityMap(primaryKey, theClass, shouldReturnInvalidatedObjects, getSession().getDescriptor(theClass));
+        return getFromIdentityMap(primaryKey, theClass, shouldReturnInvalidatedObjects, getSession().getDescriptor(theClass), true);
     }
     
     /**
@@ -333,9 +333,17 @@ public class IdentityMapAccessor implements org.eclipse.persistence.sessions.Ide
      * Only return invalidated objects if requested.
      */
     public Object getFromIdentityMap(Vector primaryKey, Class theClass, boolean shouldReturnInvalidatedObjects, ClassDescriptor descriptor) {
-        return getIdentityMapManager().getFromIdentityMap(primaryKey, theClass, shouldReturnInvalidatedObjects, descriptor);
+        return getIdentityMapManager().getFromIdentityMap(primaryKey, theClass, shouldReturnInvalidatedObjects, descriptor, true);
     }
 
+    /**
+     * INTERNAL:
+     * Return the object from the identity with the primary and class.
+     * Only return invalidated objects if requested.
+     */
+    public Object getFromIdentityMap(Vector primaryKey, Class theClass, boolean shouldReturnInvalidatedObjects, ClassDescriptor descriptor, boolean withReadLock) {
+        return getIdentityMapManager().getFromIdentityMap(primaryKey, theClass, shouldReturnInvalidatedObjects, descriptor, withReadLock);
+    }
     /**
      * ADVANCED:
      * Return the object from the identity with the primary and class.

@@ -181,6 +181,7 @@ public class LoggingLocalizationResource extends ListResourceBundle {
         { "toplink_ejb_jar_in_jar", "toplink-ejb-jar.xml is included in jar({0}) file, no migration therefore will be performed for this jar." },
         { "jta_cannot_be_disabled_in_cmp", "When using Container Managed Persistence (CMP), JTA cannot be disabled. EclipseLink will act as if JTA is enabled." },
         { "descriptor_named_query_cannot_be_added", "Cannot add a descriptor named query whose name conflict with an existing query. Query To Be Added: [{0}] is named: [{1}] with arguments [{2}]." },
+        { "dead_lock_encountered_on_write_no_cachekey", "Potential deadlock encountered while thread: {2} attempted to lock object of class: {0} with id: {1}, entering deadlock avoidance algorythm.  This is a notice only."},
 
         { "metadata_access_type", "The access type for the persistent class [{1}] is set to [{0}]." },        
         { "metadata_default_alias", "The alias name for the entity class [{0}] is being defaulted to: {1}." },
@@ -613,7 +614,8 @@ public class LoggingLocalizationResource extends ListResourceBundle {
         { "jmx_mbean_runtime_services_mbeanserver_lookup_failed.MSGID", "TOP-50230"},
         { "jmx_mbean_runtime_services_threadpool_initialize_failed.MSGID", "TOP-50231"},
         { "jmx_mbean_runtime_services_get_executethreadruntime_object_failed.MSGID", "TOP-50232"},        
-        { "nested_entity_manager_flush_not_executed_pre_query_changes_may_be_pending.MSGID", "TOP-50233"}        
+        { "nested_entity_manager_flush_not_executed_pre_query_changes_may_be_pending.MSGID", "TOP-50233"},
+        { "dead_lock_encountered_on_write_no_cachekey.MSGID", "TOP-50234"}
         
     }; 
      
