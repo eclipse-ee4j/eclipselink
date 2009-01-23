@@ -702,7 +702,8 @@ public final class SessionCreationDialog extends AbstractValidatingDialog {
 	}
      
 	private Iterator supportedJ2CAdapters() {
-			return EisPlatformManager.instance().platformShortNames();
+		Collection platforms = CollectionTools.sortedSet(EisPlatformManager.instance().platformDisplayNames());
+		return platforms.iterator();
 	}
 
 //	   ********** opening **********
