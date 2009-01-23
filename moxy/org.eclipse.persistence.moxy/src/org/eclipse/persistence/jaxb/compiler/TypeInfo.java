@@ -20,6 +20,7 @@ import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessOrder;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlValue;
+import javax.xml.namespace.QName;
 
 import org.eclipse.persistence.internal.oxm.schema.model.*;
 import org.eclipse.persistence.oxm.XMLDescriptor;
@@ -96,6 +97,7 @@ public class TypeInfo {
         // TODO: do we need to relocate this code? 
         XMLSchemaClassPathReference schemaRef = new XMLSchemaClassPathReference();
         schemaRef.setSchemaContext("/" + schemaTypeName);
+        schemaRef.setSchemaContextAsQName(new QName(classNamespace, schemaTypeName));
         // the default type is complex;  need to check for simple type case
         if(isEnumerationType() || (propertyNames.size() == 1 && helper.isAnnotationPresent(getProperties().get(propertyNames.get(0)).getElement(), XmlValue.class))) {
             schemaRef.setType(XMLSchemaReference.SIMPLE_TYPE);  
