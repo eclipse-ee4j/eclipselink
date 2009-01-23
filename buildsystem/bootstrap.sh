@@ -42,6 +42,7 @@ then
     if [ ! "${BRANCH}" = "" ]
     then
         #temporarily store Name of Milestone in TARGET
+        #Syntax: ./bootstrap.sh milestone M4 [branch]
         TARGET=${BRANCH}
         BRANCH=$3
         TARG_NM=${TARGET}
