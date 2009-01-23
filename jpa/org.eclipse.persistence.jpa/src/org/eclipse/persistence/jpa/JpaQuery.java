@@ -19,7 +19,7 @@ import org.eclipse.persistence.queries.DatabaseQuery;
 
 /**
  * PUBLIC:
- * EclipseLInk specific EJB 3.0 query interface.  Provides the functionality defined in
+ * EclipseLInk specific JPA query interface.  Provides the functionality defined in
  * javax.persistence.Query and adds access to the underlying database query for EclipseLink specific
  * functionality.
  */
