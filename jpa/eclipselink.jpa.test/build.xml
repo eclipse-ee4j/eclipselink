@@ -187,6 +187,7 @@
         <javac srcdir="${eclipselink.jpa.test}/${src.dir}"
                destdir="${eclipselink.jpa.test}/${classes.dir}"
                debug="${javac.debug}"
+               debuglevel="${javac.debuglevel}"
                optimize="${javac.optimize}"
                source="${javac.version}"
                target="${javac.version}"
@@ -876,6 +877,7 @@
             srcdir="${eclipselink.jpa.test}/${src.dir}"
             destdir="${eclipselink.jpa.test}/stage"
             debug="${javac.debug}"
+            debuglevel="${javac.debuglevel}"
             optimize="${javac.optimize}"
             source="${javac.version}"
             target="${javac.version}"
@@ -888,6 +890,7 @@
             srcdir="${eclipselink.jpa.test.dir}/${src.dir}"
             destdir="${eclipselink.jpa.test}/stage"
             debug="${javac.debug}"
+            debuglevel="${javac.debuglevel}"
             optimize="${javac.optimize}"
             source="${javac.version}"
             target="${javac.version}"
@@ -900,6 +903,7 @@
             srcdir="${eclipselink.core.test.dir}/${src.dir}"
             destdir="${eclipselink.jpa.test}/stage"
             debug="${javac.debug}"
+            debuglevel="${javac.debuglevel}"
             optimize="${javac.optimize}"
             source="${javac.version}"
             target="${javac.version}"
@@ -927,6 +931,7 @@
             srcdir="${eclipselink.jpa.test}/${src.dir}"
             destdir="${eclipselink.jpa.test}/stage"
             debug="${javac.debug}"
+            debuglevel="${javac.debuglevel}"
             optimize="${javac.optimize}"
             source="${javac.version}"
             target="${javac.version}"
@@ -939,6 +944,7 @@
             srcdir="${eclipselink.jpa.test.dir}/${src.dir}"
             destdir="${eclipselink.jpa.test}/stage"
             debug="${javac.debug}"
+            debuglevel="${javac.debuglevel}"
             optimize="${javac.optimize}"
             source="${javac.version}"
             target="${javac.version}"
@@ -951,6 +957,7 @@
             srcdir="${eclipselink.core.test.dir}/${src.dir}"
             destdir="${eclipselink.jpa.test}/stage"
             debug="${javac.debug}"
+            debuglevel="${javac.debuglevel}"
             optimize="${javac.optimize}"
             source="${javac.version}"
             target="${javac.version}"
@@ -975,6 +982,7 @@
             srcdir="${eclipselink.jpa.test.dir}/${src.dir}"
             destdir="${eclipselink.jpa.test}/stage"
             debug="${javac.debug}"
+            debuglevel="${javac.debuglevel}"
             optimize="${javac.optimize}"
             source="${javac.version}"
             target="${javac.version}"
@@ -987,6 +995,7 @@
             srcdir="${eclipselink.jpa.test.dir}/${src.dir}"
             destdir="${eclipselink.jpa.test}/stage"
             debug="${javac.debug}"
+            debuglevel="${javac.debuglevel}"
             optimize="${javac.optimize}"
             source="${javac.version}"
             target="${javac.version}"
@@ -1309,7 +1318,7 @@
         </antcall>
     </target>
 
-    <!-- This target can only be called in an Oracle High Availability environment - 
+    <!-- This target can only be called in an Oracle High Availability environment -
         a WebLogic server configured with Multi Data Sources to connect to Oracle RAC database
     -->
     <target name="server-test-sessionbean-ha">

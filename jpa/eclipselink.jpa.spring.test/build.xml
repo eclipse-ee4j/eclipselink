@@ -115,6 +115,7 @@
         <javac srcdir="${eclipselink.jpa.spring.test}/${src.dir}"
                destdir="${eclipselink.jpa.spring.test}/${classes.dir}"
                debug="${javac.debug}"
+               debuglevel="${javac.debuglevel}"
                optimize="${javac.optimize}"
                source="${javac.version}"
                target="${javac.version}"

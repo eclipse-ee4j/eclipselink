@@ -52,17 +52,17 @@
     <!-- =================================================================== -->
     <target name="set-release" unless="debug" depends="init">
         <property name="debug.postfix" value=""/>
-        <property name="debug.level"     value="lines,source"/>
+        <property name="javac.debuglevel"     value="lines,source"/>
         <property name="debug.set"    value="true"/>
-        <echo message="debug.level='${debug.level}'"/>
+        <echo message="javac.debuglevel='${javac.debuglevel}'"/>
         <echo message="debug.set='${debug.set}'"/>
         <echo message="debug.postfix='${debug.postfix}'"/>
     </target>
 
     <target name="set-debug" if="debug" depends="set-release">
         <property name="debug.postfix" value="debug"/>
-        <property name="debug.level"     value="lines,vars,source"/>
-        <echo message="debug.level='${debug.level}'"/>
+        <property name="javac.debuglevel"     value="lines,vars,source"/>
+        <echo message="javac.debuglevel='${javac.debuglevel}'"/>
         <echo message="debug.set not defined."/>
         <echo message="debug.postfix='${debug.postfix}'"/>
     </target>
@@ -108,7 +108,7 @@
             srcdir="${compile.scplugin.srcdir}"
             destdir="${compile.scplugin.destdir}"
             debug="${javac.debug}"
-            debuglevel="${debug.level}"
+            debuglevel="${javac.debuglevel}"
             failonerror="${stop.on.error}"
             optimize="${optimize.code}"
             deprecation="${report.deprecation}"
