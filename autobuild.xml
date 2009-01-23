@@ -349,5 +349,19 @@
 
     <target name="create-tag">
         <echo message="Create a tag (${milestone.tag}) of this revision (${svn.revision}) for this milestone (${build.type})"/>
+        <echo message="   ${svn.branch.url} = ${svn.branch.url}"/>
+        <echo message="   ${svn.base.url}   = ${svn.base.url}"/>
+        <echo message="   "/>
+        <echo message="${svn.exec} copy -r ${svn.revision} \"/>        
+        <echo message="            ${svn.branch.url} \"/>        
+        <echo message="            ${svn.base.url}/tags/${milestone.tag} \"/>        
+        <echo message="            -m \"Create ${milestone.tag} Tag for ${version.string}\""/>        
+        <!-- exec executable="${svn.exec}" failonerror="false" logError="true">
+            <arg value="copy"/>
+            <arg value="-r ${svn.revision}"/>
+            <arg value="${svn.branch.url}"/>
+            <arg value="${svn.base.url}/tags/${milestone.tag}"/>
+            <arg value="-m \"Create ${milestone.tag} Tag for ${version.string}\""/>
+        </exec -->
     </target>
 </project>
