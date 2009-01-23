@@ -14,6 +14,7 @@
 package org.eclipse.persistence.sdo.helper;
 
 import java.lang.reflect.Method;
+import java.util.WeakHashMap;
 import java.util.concurrent.ConcurrentHashMap;
 
 import javax.management.AttributeChangeNotification;
@@ -70,6 +71,7 @@ public class SDOHelperContext implements HelperContext {
     // Each application will have its own helper context - it is assumed that application 
     // names/loaders are unique within each active server instance
     private static ConcurrentHashMap<Object, HelperContext> helperContexts = new ConcurrentHashMap<Object, HelperContext>();
+    private static WeakHashMap<ClassLoader, HelperContext> userSetHelperContexts = new WeakHashMap<ClassLoader, HelperContext>();
     
     private static String OC4J_CLASSLOADER_NAME = "oracle";
     private static String WLS_CLASSLOADER_NAME = "weblogic";
@@ -166,6 +168,38 @@ public class SDOHelperContext implements HelperContext {
     }
     
     /**
+     * INTERNAL:
+     * Put a ClassLoader/HelperContext key/value pair in the Thread HelperContext 
+     * map.  If Thread.currentThread().getContextClassLoader() == key during 
+     * getHelperContext() call then the HelperContext (value) will be returned.
+     * This method will overwrite an existing entry in the map with the same
+     * ClassLoader key.
+     * 
+     * @param key class loader
+     * @param value helper context
+     */
+    public static void putHelperContext(ClassLoader key, HelperContext value) {
+        if (key == null || value == null) {
+            return;
+        }
+        userSetHelperContexts.put(key, value);
+    }
+    
+    /**
+     * INTERNAL:
+     * Remove a ClassLoader/HelperContext key/value pair from the Thread 
+     * HelperContext map.
+     * 
+     * @param key class loader
+     */
+    public static void removeHelperContext(ClassLoader key) {
+        if (key == null) {
+            return;
+        }
+        userSetHelperContexts.remove(key);
+    }
+    
+    /**
      * INTERNAL: 
      * Return the helper context for a given key.  The key will either
      * be a ClassLoader or a String (representing an application name).
@@ -178,8 +212,14 @@ public class SDOHelperContext implements HelperContext {
      * throw a null pointer exception if the key is null.   
      */
     public static HelperContext getHelperContext() {
-        Object key = getDelegateMapKey();
-        HelperContext hCtx = helperContexts.get(key);
+        ClassLoader contextClassLoader = Thread.currentThread().getContextClassLoader();
+        // check the map for contextClassLoader and return it if it exists
+        HelperContext hCtx = userSetHelperContexts.get(contextClassLoader);
+        if (hCtx != null) {
+            return hCtx;
+        }
+        Object key = getDelegateMapKey(contextClassLoader);
+        hCtx = helperContexts.get(key);
         if (hCtx == null) {
             hCtx = new SDOHelperContext();
             HelperContext existingCtx = helperContexts.putIfAbsent(key, hCtx);
@@ -221,8 +261,7 @@ public class SDOHelperContext implements HelperContext {
      * @return Application classloader for OC4J, application name for WebLogic, 
      *         otherwise Thread.currentThread().getContextClassLoader()
      */
-    private static Object getDelegateMapKey() {
-        ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
+    private static Object getDelegateMapKey(ClassLoader classLoader) {
         String classLoaderName = classLoader.getClass().getName();
 
         // Default to Thread.currentThread().getContextClassLoader()
