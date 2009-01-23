@@ -31,10 +31,6 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
-import javax.sql.rowset.Predicate;
-
-import com.sun.org.apache.xpath.internal.Expression;
-
 /**
  * Interface for construction of query definitions
  * 
