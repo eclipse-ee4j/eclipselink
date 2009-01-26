@@ -56,8 +56,10 @@
         <pathelement path="../plugins/${commonj.sdo.lib}"/>
         <pathelement path="${sdo.2.common.plugins.dir}/${asm}"/>
         <pathelement path="${sdo.2.common.plugins.dir}/org.eclipse.persistence.core_${version.string}.jar"/>
+        <pathelement path="${sdo.2.common.plugins.dir}/org.eclipse.persistence.moxy_${version.string}.jar"/>
     </path>
     <available file="${sdo.2.common.plugins.dir}/org.eclipse.persistence.core_${version.string}.jar" property="core.bundle.exist"/>
+    <available file="${sdo.2.common.plugins.dir}/org.eclipse.persistence.moxy_${version.string}.jar" property="moxy.bundle.exist"/>
 
     <!-- all -->
     <target name="build" depends="clean, compile, generate-manifest, package" description="build SDO component"/>
@@ -73,6 +75,7 @@
     <!-- compile -->
     <target name="compile" description="Compile EclipseLink SDO">
         <fail message="Cannot find Core: '${sdo.2.common.plugins.dir}/org.eclipse.persistence.core_${version.string}.jar'." unless="core.bundle.exist"/>
+        <fail message="Cannot find MOXY: '${sdo.2.common.plugins.dir}/org.eclipse.persistence.moxy_${version.string}.jar'." unless="moxy.bundle.exist"/>
         <mkdir dir="${classes.dir}"/>
         <javac srcdir="${src.dir}"
                destdir="${classes.dir}"
@@ -121,12 +124,13 @@
         <echo message="Bundle-SymbolicName: ${ant.project.name}${line.separator}"                                   file="META-INF/MANIFEST.MF" append="true"/>                                                    
         <echo message="Bundle-Version: ${release.version}${line.separator}"                                         file="META-INF/MANIFEST.MF" append="true"/>                                                    
         <echo message="Require-Bundle: org.eclipse.persistence.core;bundle-version=&quot;${release.version}&quot;;visibility:=reexport,${line.separator}" file="META-INF/MANIFEST.MF" append="true"/>              
-        <echo message=" org.eclipse.persistence.asm;bundle-version=&quot;${release.version}&quot;${line.separator}"                                       file="META-INF/MANIFEST.MF" append="true"/>              
+        <echo message=" org.eclipse.persistence.asm;bundle-version=&quot;${release.version}&quot;,${line.separator}"                                      file="META-INF/MANIFEST.MF" append="true"/>              
+        <echo message=" org.eclipse.persistence.moxy;bundle-version=&quot;${release.version}&quot;;resolution:=optional${line.separator}"                 file="META-INF/MANIFEST.MF" append="true"/>
         <echo message="Export-Package: org.eclipse.persistence.sdo;version=&quot;${release.version}&quot;,${line.separator}"                              file="META-INF/MANIFEST.MF" append="true"/>
         <echo message=" org.eclipse.persistence.sdo.helper;version=&quot;${release.version}&quot;,${line.separator}"                                      file="META-INF/MANIFEST.MF" append="true"/>
         <echo message=" org.eclipse.persistence.sdo.helper.delegates;version=&quot;${release.version}&quot;,${line.separator}"                            file="META-INF/MANIFEST.MF" append="true"/>
         <echo message=" org.eclipse.persistence.sdo.helper.extension;version=&quot;${release.version}&quot;,${line.separator}"                            file="META-INF/MANIFEST.MF" append="true"/>
-        <echo message=" org.eclipse.persistence.sdo.types;version=&quot;${release.version}&quot;${line.separator}"                                       file="META-INF/MANIFEST.MF" append="true"/>
+        <echo message=" org.eclipse.persistence.sdo.types;version=&quot;${release.version}&quot;${line.separator}"                                        file="META-INF/MANIFEST.MF" append="true"/>
         <echo message="Bundle-ClassPath: .${line.separator}"                                                                                              file="META-INF/MANIFEST.MF" append="true"/>
         <echo message="Import-Package: commonj.sdo;version=&quot;2.1.1&quot;;resolution:=optional,${line.separator}"                                      file="META-INF/MANIFEST.MF" append="true"/>
         <echo message=" commonj.sdo.helper;version=&quot;2.1.1&quot;;resolution:=optional,${line.separator}"                                              file="META-INF/MANIFEST.MF" append="true"/>

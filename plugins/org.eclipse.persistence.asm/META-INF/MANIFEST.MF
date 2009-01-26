@@ -2,14 +2,14 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: EclipseLink ASM
 Bundle-SymbolicName: org.eclipse.persistence.asm
-Bundle-Version: 1.1.0
-Export-Package: org.eclipse.persistence.internal.libraries.asm;version="1.1.0",
- org.eclipse.persistence.internal.libraries.asm.attrs;version="1.1.0",
- org.eclipse.persistence.internal.libraries.asm.commons;version="1.1.0",
- org.eclipse.persistence.internal.libraries.asm.tree;version="1.1.0",
- org.eclipse.persistence.internal.libraries.asm.tree.analysis;version="1.1.0",
- org.eclipse.persistence.internal.libraries.asm.util;version="1.1.0",
- org.eclipse.persistence.internal.libraries.asm.util.attrs;version="1.1.0",
- org.eclipse.persistence.internal.libraries.asm.xml;version="1.1.0"
+Bundle-Version: 2.0.0
+Export-Package: org.eclipse.persistence.internal.libraries.asm;version="2.0.0",
+ org.eclipse.persistence.internal.libraries.asm.attrs;version="2.0.0",
+ org.eclipse.persistence.internal.libraries.asm.commons;version="2.0.0",
+ org.eclipse.persistence.internal.libraries.asm.tree;version="2.0.0",
+ org.eclipse.persistence.internal.libraries.asm.tree.analysis;version="2.0.0",
+ org.eclipse.persistence.internal.libraries.asm.util;version="2.0.0",
+ org.eclipse.persistence.internal.libraries.asm.util.attrs;version="2.0.0",
+ org.eclipse.persistence.internal.libraries.asm.xml;version="2.0.0"
 Bundle-ClassPath: .
 HK2-Bundle-Name: org.eclipse.persistence:org.eclipse.persistence.asm
