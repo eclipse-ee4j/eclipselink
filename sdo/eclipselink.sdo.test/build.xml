@@ -59,12 +59,13 @@
     <property name="version.string" value="${release.version}.${build.date}-${build.type}"/>
     <property name="release.designation"  value="EclipseLink DeveloperBuild"/>
 
-    <!-- path to OSGi Bundle compile dependencies --> 
+    <!-- path to OSGi Bundle compile dependencies -->
     <path id="sdotest.bundle.compile.path">
         <fileset
             dir="${sdotest.2.common.plugins.dir}"
             includes="
                org.eclipse.persistence.core_${version.string}.jar,
+               org.eclipse.persistence.moxy_${version.string}.jar,
                org.eclipse.persistence.sdo_${version.string}.jar
             "/>
     </path>
@@ -85,7 +86,7 @@
         <pathelement path="${classes.dir}"/>
         <pathelement path="${sdotest.2.common.plugins.dir}/${asm}"/>
     </path>
-    
+
     <!-- Set Compile/Run Paths using product OSGi bundles -->
     <path id="sdotest.compile.path">
         <path refid="sdotest.bundle.compile.path"/>
@@ -105,7 +106,7 @@
         <path refid="sdotest.compile.against.jar.path"/>
         <path refid="sdotest.thirdparty.run.path"/>
     </path>
-    
+
     <!-- Should be relative from the eclipselink.sdo.test/resource directory -->
     <path id="sdotest.classgen.run.path">
         <pathelement path="../${sdotest.2.common.plugins.dir}/org.eclipse.persistence.core_${version.string}.jar"/>
@@ -115,8 +116,9 @@
         <pathelement path="../${sdotest.2.common.plugins.dir}/javax.activation_1.1.0.jar"/>
         <pathelement path="../${sdotest.2.common.plugins.dir}/javax.mail_1.4.0.jar"/>
     </path>
-    
+
     <available file="${sdotest.2.common.plugins.dir}/org.eclipse.persistence.core_${version.string}.jar" property="core.bundle.exist"/>
+    <available file="${sdotest.2.common.plugins.dir}/org.eclipse.persistence.moxy_${version.string}.jar" property="moxy.bundle.exist"/>
     <available file="${sdotest.2.common.plugins.dir}/org.eclipse.persistence.sdo_${version.string}.jar" property="sdo.bundle.exist"/>
     <available file="${sdotest.2.trunk.dir}/${eclipselink.jar.name}" property="eclipselink.jar.exist"/>
 
@@ -136,6 +138,7 @@
     </target>
     <target name="compile-sdo-tests" depends="clean" description="build sdo test classes">
         <fail message="Cannot find CORE: '${sdotest.2.common.plugins.dir}/org.eclipse.persistence.core_${version.string}.jar'." unless="core.bundle.exist"/>
+        <fail message="Cannot find MOXY: '${sdotest.2.common.plugins.dir}/org.eclipse.persistence.moxy_${version.string}.jar'." unless="moxy.bundle.exist"/>
         <fail message="Cannot find SDO: '${sdotest.2.common.plugins.dir}/org.eclipse.persistence.sdo_${version.string}.jar'." unless="sdo.bundle.exist"/>
         <compile_sdo_tests compilepathref="sdotest.compile.path"/>
     </target>
