@@ -623,35 +623,12 @@ public class WebLogicRuntimeServices extends RuntimeServices {
     }
 
     /**
-     * PUBLIC: Answer the EclipseLink log level at deployment time for the given category.
-     * This is read-only.
-     *
-     * @param String category: category of log level desired
-     */
-    public String getDeployedEclipseLinkLogLevel(String category) {
-        return getNameForLogLevel(this.deployedSessionLog.getLevel(category));
-    }
-
-    /**
      * PUBLIC: Answer the EclipseLink log level that is changeable.
      * This does not affect the log level in the project (i.e. The next
      * time the application is deployed, changes are forgotten)
      */
     public String getCurrentEclipseLinkLogLevel() {
         return getNameForLogLevel(this.getSession().getSessionLog().getLevel());
-    }
-
-    /**
-     * PUBLIC: Answer the EclipseLink log level that is changeable, given the passed
-     * category.
-     *
-     * This does not affect the log level in the project (i.e. The next
-     * time the application is deployed, changes are forgotten)
-     *
-     * @param String category: category for level
-     */
-    public String getCurrentEclipseLinkLogLevel(String category) {
-        return getNameForLogLevel(this.getSession().getSessionLog().getLevel(category));
     }
 
     /**
