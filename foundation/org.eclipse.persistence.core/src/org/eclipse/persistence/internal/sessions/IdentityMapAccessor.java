@@ -87,6 +87,15 @@ public class IdentityMapAccessor implements org.eclipse.persistence.sessions.Ide
 
     /**
      * INTERNAL:
+     * Provides access for setting a concurrency lock on an object in the IdentityMap.
+     * Called with true from the merge process, if true then the refresh will not refresh the object.
+     */
+    public CacheKey acquireLockWithWait(Vector primaryKey, Class domainClass, boolean forMerge, ClassDescriptor descriptor, int wait) {
+        return getIdentityMapManager().acquireLockWithWait(primaryKey, domainClass, forMerge, descriptor, wait);
+    }
+
+    /**
+     * INTERNAL:
      * Find the cachekey for the provided primary key and place a readlock on it.
      * This will allow multiple users to read the same object but prevent writes to
      * the object while the read lock is held.
@@ -315,7 +324,7 @@ public class IdentityMapAccessor implements org.eclipse.persistence.sessions.Ide
      * Return the object from the identity with the primary and class.
      */
     public Object getFromIdentityMap(Vector primaryKey, Class theClass, ClassDescriptor descriptor) {
-        return getFromIdentityMap(primaryKey, theClass, true, descriptor, true);
+        return getFromIdentityMap(primaryKey, theClass, true, descriptor);
     }
 
     /**
@@ -324,7 +333,7 @@ public class IdentityMapAccessor implements org.eclipse.persistence.sessions.Ide
      * Only return invalidated objects if requested.
      */
     public Object getFromIdentityMap(Vector primaryKey, Class theClass, boolean shouldReturnInvalidatedObjects) {
-        return getFromIdentityMap(primaryKey, theClass, shouldReturnInvalidatedObjects, getSession().getDescriptor(theClass), true);
+        return getFromIdentityMap(primaryKey, theClass, shouldReturnInvalidatedObjects, getSession().getDescriptor(theClass));
     }
     
     /**
@@ -333,17 +342,9 @@ public class IdentityMapAccessor implements org.eclipse.persistence.sessions.Ide
      * Only return invalidated objects if requested.
      */
     public Object getFromIdentityMap(Vector primaryKey, Class theClass, boolean shouldReturnInvalidatedObjects, ClassDescriptor descriptor) {
-        return getIdentityMapManager().getFromIdentityMap(primaryKey, theClass, shouldReturnInvalidatedObjects, descriptor, true);
+        return getIdentityMapManager().getFromIdentityMap(primaryKey, theClass, shouldReturnInvalidatedObjects, descriptor);
     }
 
-    /**
-     * INTERNAL:
-     * Return the object from the identity with the primary and class.
-     * Only return invalidated objects if requested.
-     */
-    public Object getFromIdentityMap(Vector primaryKey, Class theClass, boolean shouldReturnInvalidatedObjects, ClassDescriptor descriptor, boolean withReadLock) {
-        return getIdentityMapManager().getFromIdentityMap(primaryKey, theClass, shouldReturnInvalidatedObjects, descriptor, withReadLock);
-    }
     /**
      * ADVANCED:
      * Return the object from the identity with the primary and class.

@@ -100,8 +100,8 @@ public class UnitOfWorkIdentityMapAccessor extends IdentityMapAccessor {
      * Note: in a UnitOfWork, invalidated objects will always be returned from the identity map
      * In the parent session, only return the object if it has not been Invalidated
      */
-    public Object getFromIdentityMap(Vector primaryKey, Class theClass, boolean shouldReturnInvalidatedObjects, ClassDescriptor descriptor, boolean withReadLock) {
-        Object objectFromCache = super.getFromIdentityMap(primaryKey, theClass, true, descriptor, withReadLock);
+    public Object getFromIdentityMap(Vector primaryKey, Class theClass, boolean shouldReturnInvalidatedObjects, ClassDescriptor descriptor) {
+        Object objectFromCache = super.getFromIdentityMap(primaryKey, theClass, true, descriptor);
 
         if (objectFromCache != null) {
             return objectFromCache;

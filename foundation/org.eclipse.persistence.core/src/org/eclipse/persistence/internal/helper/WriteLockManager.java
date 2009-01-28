@@ -156,6 +156,22 @@ public class WriteLockManager {
     }
 
     /**
+     * INTERNAL: 
+     * This method will transition the previously acquired active
+     * locks to deferred locks in the case a readlock could not be acquired for
+     * a related object. Deferred locks must be employed to prevent deadlock
+     * when waiting for the readlock while still protecting readers from
+     * incomplete data.
+     */
+    public void transitionToDeferredLocks(MergeManager mergeManager){
+        if (mergeManager.isTransitionedToDeferredLocks()) return;
+        for (CacheKey cacheKey : mergeManager.getAcquiredLocks()){
+            cacheKey.transitionToDeferredLock();
+        }
+        mergeManager.transitionToDeferredLocks();
+    }
+    
+    /**
      * INTERNAL:
      * Traverse the object and acquire locks on all related objects.
      */
@@ -261,19 +277,20 @@ public class WriteLockManager {
                         }
                         CacheKey activeCacheKey = attemptToAcquireLock(objectClass, objectChangeSet.getCacheKey(), session);
                         if (activeCacheKey == null) {
-                            //if cacheKey is null then the lock was not available
-                            //no need to synchronize this block,because if the check fails then this thread
-                            //will just return to the queue until it gets woken up.
+                            // if cacheKey is null then the lock was not available no need to synchronize this block,because if the
+                            // check fails then this thread will just return to the queue until it gets woken up.
                             if (this.prevailingQueue.getFirst() == mergeManager) {
-                                //wait on this object until it is free, because this thread is the prevailing thread
-                                activeCacheKey = waitOnObjectLock(objectClass, objectChangeSet.getCacheKey(), session);
-                                mergeManager.getAcquiredLocks().add(activeCacheKey);
-                            } else {
-                                //failed to acquire lock, release all acquired locks and place thread on waiting list
+                                // wait on this object until it is free,  or until wait time expires because
+                                // this thread is the prevailing thread
+                                activeCacheKey = waitOnObjectLock(objectClass, objectChangeSet.getCacheKey(), session,(int)Math.round((Math.random()*500)));
+                            }
+                            if (activeCacheKey == null) {
+                                // failed to acquire lock, release all acquired
+                                // locks and place thread on waiting list
                                 releaseAllAcquiredLocks(mergeManager);
-                                //get cacheKey
+                                // get cacheKey
                                 activeCacheKey = session.getIdentityMapAccessorInstance().getCacheKeyForObjectForLock(objectChangeSet.getCacheKey().getKey(), objectClass, descriptor);
-                                if (session.shouldLog(SessionLog.FINER, SessionLog.CACHE)){
+                                if (session.shouldLog(SessionLog.FINER, SessionLog.CACHE)) {
                                     Object[] params = new Object[3];
                                     params[0] = objectClass;
                                     params[1] = objectChangeSet.getCacheKey() != null ? objectChangeSet.getCacheKey().getKey() : new Vector();
@@ -281,15 +298,18 @@ public class WriteLockManager {
                                     session.log(SessionLog.FINER, SessionLog.CACHE, "dead_lock_encountered_on_write_no_cachekey", params, null, true);
                                 }
                                 if (mergeManager.getWriteLockQueued() == null) {
-                                    //thread is entering the wait queue for the first time
-                                    //set the QueueNode to be the node from the linked list for quick removal upon 
-                                    //acquiring all locks
-                                    synchronized(this.prevailingQueue) {
+                                    // thread is entering the wait queue for the
+                                    // first time
+                                    // set the QueueNode to be the node from the
+                                    // linked list for quick removal upon
+                                    // acquiring all locks
+                                    synchronized (this.prevailingQueue) {
                                         mergeManager.setQueueNode(this.prevailingQueue.addLast(mergeManager));
                                     }
                                 }
 
-                                //set the cache key on the merge manager for the object that could not be acquired
+                                // set the cache key on the merge manager for
+                                // the object that could not be acquired
                                 mergeManager.setWriteLockQueued(objectChangeSet.getCacheKey());
                                 try {
                                     if (activeCacheKey != null){
@@ -308,6 +328,9 @@ public class WriteLockManager {
                                 locksToAcquire = true;
                                 //failed to acquire, exit this loop and ensure that the original loop will continue
                                 break;
+                            }else{
+                                objectChangeSet.setActiveCacheKey(activeCacheKey);
+                                mergeManager.getAcquiredLocks().add(activeCacheKey);
                             }
                         } else {
                             objectChangeSet.setActiveCacheKey(activeCacheKey);
@@ -344,31 +367,27 @@ public class WriteLockManager {
 	 * a new object that was not locked previously.  Unlike the other methods
 	 * within this class this method will lock only this object.
 	 */
-	public Object appendLock(Vector primaryKeys, Object objectToLock, ClassDescriptor descriptor, MergeManager mergeManager, AbstractSession session){
-        for (int tries = 0; tries < 1000; ++tries) {  //lets try a fixed number of times
-            CacheKey lockedCacheKey = session.getIdentityMapAccessorInstance().acquireLockNoWait(primaryKeys, descriptor.getJavaClass(), true, descriptor);
-            if (lockedCacheKey == null){
-                //acquire readlock and wait for owning thread to populate cachekey
-                //bug 4483312
-                lockedCacheKey = session.getIdentityMapAccessorInstance().acquireReadLockOnCacheKey(primaryKeys, descriptor.getJavaClass(), descriptor);
-                Object cachedObject = lockedCacheKey.getObject();
-                lockedCacheKey.releaseReadLock();
-                if (cachedObject == null){
-                    session.getSessionLog().log(SessionLog.FINEST, SessionLog.CACHE, "Found null object in identity map on appendLock, retrying");
-                    continue;
-                }else{
-                    return cachedObject;
-                }
+	public Object appendLock(Vector primaryKeys, Object objectToLock, ClassDescriptor descriptor, MergeManager mergeManager, AbstractSession session) {
+        CacheKey lockedCacheKey = session.getIdentityMapAccessorInstance().acquireLockNoWait(primaryKeys, descriptor.getJavaClass(), true, descriptor);
+        if (lockedCacheKey == null) {
+            session.getIdentityMapAccessorInstance().getWriteLockManager().transitionToDeferredLocks(mergeManager);
+            lockedCacheKey.acquireDeferredLock();
+            Object cachedObject = lockedCacheKey.getObject();
+            if (cachedObject == null) {
+                cachedObject = lockedCacheKey.waitForObject();
             }
-            if (lockedCacheKey.getObject() == null){
-                lockedCacheKey.setObject(objectToLock); // set the object in the cachekey
+            lockedCacheKey.releaseDeferredLock();
+            return cachedObject;
+        } else {
+            if (lockedCacheKey.getObject() == null) {
+                lockedCacheKey.setObject(objectToLock); // set the object in the
+                // cachekey
                 // for others to find an prevent cycles
             }
             mergeManager.getAcquiredLocks().add(lockedCacheKey);
-            return objectToLock;
+            return lockedCacheKey.getObject();
         }
-        throw ConcurrencyException.maxTriesLockOnMergeExceded(objectToLock); 
-	}
+    }
 	
 	/**
      * INTERNAL:
@@ -421,14 +440,22 @@ public class WriteLockManager {
         if (!MergeManager.LOCK_ON_MERGE) {//lockOnMerge is a backdoor and not public
             return;
         }
-        Iterator locks = mergeManager.getAcquiredLocks().iterator();
-        while (locks.hasNext()) {
-            CacheKey cacheKeyToRemove = (CacheKey)locks.next();
-            if (cacheKeyToRemove.getObject() == null ){
-                cacheKeyToRemove.removeFromOwningMap();
+        try {
+            Iterator locks = mergeManager.getAcquiredLocks().iterator();
+            while (locks.hasNext()) {
+                CacheKey cacheKeyToRemove = (CacheKey) locks.next();
+                if (cacheKeyToRemove.getObject() == null) {
+                    cacheKeyToRemove.removeFromOwningMap();
+                }
+                if (mergeManager.isTransitionedToDeferredLocks()) {
+                    cacheKeyToRemove.releaseDeferredLock();
+                } else {
+                    cacheKeyToRemove.release();
+                }
+                locks.remove();
             }
-            cacheKeyToRemove.release();
-            locks.remove();
+        } catch (Exception ex) {
+            System.out.println("break on exception");
         }
     }
 
@@ -437,7 +464,7 @@ public class WriteLockManager {
       * This method performs the operations of finding the cacheKey and locking it if possible.
       * Waits until the lock can be acquired
       */
-    protected CacheKey waitOnObjectLock(Class objectClass, CacheKey cacheKey, AbstractSession session) {
-        return session.getIdentityMapAccessorInstance().acquireLock(cacheKey.getKey(), objectClass, true, session.getDescriptor(objectClass));
+    protected CacheKey waitOnObjectLock(Class objectClass, CacheKey cacheKey, AbstractSession session, int waitTime) {
+        return session.getIdentityMapAccessorInstance().acquireLockWithWait(cacheKey.getKey(), objectClass, true, session.getDescriptor(objectClass), waitTime);
     }
 }

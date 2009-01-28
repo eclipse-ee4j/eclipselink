@@ -30,7 +30,7 @@ import org.eclipse.persistence.internal.helper.*;
  */
 public abstract class AbstractIdentityMap implements IdentityMap, Serializable, Cloneable {
 
-    /** The innitial or maximum size of the cache depending upon the concrete implementation. */
+    /** The initial or maximum size of the cache depending upon the concrete implementation. */
     protected int maxSize;
 
     /** PERF: Store the descriptor to allow lastAccessed cache lookup optimization. */
@@ -121,6 +121,30 @@ public abstract class AbstractIdentityMap implements IdentityMap, Serializable, 
         // Acquire a lock on the cache key.
         // Return null if already locked.
         if (!cacheKey.acquireNoWait(forMerge)) {
+            return null;
+        }
+        return cacheKey;
+    }
+
+    /**
+     * Acquire an active lock on the object, if not already locked.
+     * This is used by merge for missing existing objects.
+     */
+    public CacheKey acquireLockWithWait(Vector primaryKey, boolean forMerge, int wait) {
+        // Create and lock a new cacheKey.
+        CacheKey newCacheKey = createCacheKey(primaryKey, null, null);
+        newCacheKey.acquire(forMerge);
+        // PERF: To avoid synchronization, getIfAbsentPut is used.
+        CacheKey cacheKey = getCacheKeyIfAbsentPut(newCacheKey);
+        // Return if the newCacheKey was put as already lock, otherwise must still lock.
+        if (cacheKey == null) {
+            return newCacheKey;
+        } else {
+            newCacheKey.release();
+        }
+        // Acquire a lock on the cache key.
+        // Return null if already locked.
+        if (!cacheKey.acquireWithWait(forMerge, wait)) {
             return null;
         }
         return cacheKey;

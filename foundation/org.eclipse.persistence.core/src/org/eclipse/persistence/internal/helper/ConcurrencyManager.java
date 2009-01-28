@@ -123,7 +123,32 @@ public class ConcurrencyManager implements Serializable {
             return false;
         }
     }
-    
+
+    /**
+     * If the lock is not acquired already acquire it and return true.
+     * If it has been acquired already return false
+     * Added for CR 2317
+     * called with true from the merge process, if true then the refresh will not refresh the object
+     */
+    public synchronized boolean acquireWithWait(boolean forMerge, int wait) throws ConcurrencyException {
+        if ((this.activeThread == null) || (this.activeThread == Thread.currentThread())) {
+            //if I own the lock increment depth
+            acquire(forMerge);
+            return true;
+        } else {
+            try {
+                wait(wait);
+            } catch (InterruptedException e) {
+                return false;
+            }
+            if ((this.activeThread == null) || (this.activeThread == Thread.currentThread())){
+                acquire(forMerge);
+                return true;
+            }
+            return false;
+        }
+    }
+
     /**
      * If the activeThread is not set, acquire it and return true.
      * If the activeThread is set, it has been acquired already, return false.
@@ -491,6 +516,21 @@ public class ConcurrencyManager implements Serializable {
      */
     protected void setNumberOfWritersWaiting(int numberOfWritersWaiting) {
         this.numberOfWritersWaiting = numberOfWritersWaiting;
+    }
+    
+    public synchronized void transitionToDeferredLock(){
+        Thread currentThread = Thread.currentThread();
+        DeferredLockManager lockManager = getDeferredLockManager(currentThread);
+        if (lockManager == null) {
+            lockManager = new DeferredLockManager();
+            putDeferredLock(currentThread, lockManager);
+        }
+        if (lockManager.getThreadDepth() != 0){
+            throw ConcurrencyException.activeLockAlreadyTransitioned(currentThread);
+        }
+        lockManager.incrementDepth();
+        lockManager.addActiveLock(this);
+        --this.depth;
     }
 
     /**

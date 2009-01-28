@@ -152,6 +152,28 @@ public class IdentityMapManager implements Serializable, Cloneable {
     }
 
     /**
+     * Provides access for setting a concurrency lock on an object in the IdentityMap.
+     * called with true from the merge process, if true then the refresh will not refresh the object.
+     */
+    public CacheKey acquireLockWithWait(Vector primaryKey, Class domainClass, boolean forMerge, ClassDescriptor descriptor, int wait) {
+        CacheKey cacheKey = null;
+        if (isCacheAccessPreCheckRequired()) {
+            getSession().startOperationProfile(SessionProfiler.CACHE);
+            acquireReadLock();
+            try {
+                cacheKey = getIdentityMap(descriptor).acquireLockWithWait(primaryKey, forMerge, wait);
+            } finally {
+                releaseReadLock();
+            }
+            getSession().endOperationProfile(SessionProfiler.CACHE);
+        } else {
+            cacheKey = getIdentityMap(descriptor).acquireLockWithWait(primaryKey, forMerge, wait);
+        }
+
+        return cacheKey;
+    }
+
+    /**
      * PERF: Used to micro optimize cache access.
      * Avoid the readLock and profile checks if not required.
      */
@@ -553,14 +575,14 @@ public class IdentityMapManager implements Serializable, Cloneable {
      * Get the object from the identity map which has the given primary key and class.
      */
     public Object getFromIdentityMap(Vector key, Class theClass, ClassDescriptor descriptor) {
-        return getFromIdentityMap(key, theClass, true, descriptor, true);
+        return getFromIdentityMap(key, theClass, true, descriptor);
     }
 
     /**
      * Get the object from the identity map which has the given primary key and class.
      * Only return the object if it has not been invalidated.
      */
-    public Object getFromIdentityMap(Vector key, Class theClass, boolean shouldReturnInvalidatedObjects, ClassDescriptor descriptor, boolean withReadLock) {
+    public Object getFromIdentityMap(Vector key, Class theClass, boolean shouldReturnInvalidatedObjects, ClassDescriptor descriptor) {
         if (key == null) {
             return null;
         }
@@ -585,7 +607,7 @@ public class IdentityMapManager implements Serializable, Cloneable {
             // PERF: Just check the read-lock to avoid acquire if not locked.
             // This is ok if you get the object first, as the object cannot gc and identity is always maintained.
             domainObject = cacheKey.getObject();
-            if (withReadLock)cacheKey.checkReadLock();
+            cacheKey.checkReadLock();
             // Resolve the inheritance issues.
             domainObject = checkForInheritance(domainObject, theClass, descriptor);
         }

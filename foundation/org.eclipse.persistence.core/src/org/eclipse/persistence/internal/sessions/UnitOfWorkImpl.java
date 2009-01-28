@@ -2289,9 +2289,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
         ClassDescriptor descriptor = getDescriptor(workingClone);
         ObjectBuilder builder = descriptor.getObjectBuilder();
         Object implementation = builder.unwrapObject(workingClone, this);
-
-        Vector primaryKey = builder.extractPrimaryKeyFromObject(implementation, this);
-        Object original = getParent().getIdentityMapAccessorInstance().getFromIdentityMap(primaryKey, implementation.getClass(), true, descriptor, false);
+        Object original = getObjectFromSharedCacheForMerge(implementation, builder, descriptor);
 
         if (original == null) {
             // Check if it is a registered new object.
@@ -2346,9 +2344,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
         Object implementation = builder.unwrapObject(workingClone, this);
         // If the cache key was missing check the cache.
         if (cacheKey == null) {
-            // Next check the cache.
-            Vector primaryKey = builder.extractPrimaryKeyFromObject(implementation, this);
-            original = getParent().getIdentityMapAccessorInstance().getFromIdentityMap(primaryKey, implementation.getClass(), true, descriptor, false);
+            original = getObjectFromSharedCacheForMerge(implementation, builder, descriptor);
         }
 
         if (original == null) {
@@ -2385,20 +2381,9 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
         Object implementation = builder.unwrapObject(workingClone, this);
 
         Vector primaryKey = builder.extractPrimaryKeyFromObject(implementation, this);
-        //only get the cachekey here to prevent a readlock deadlock in the case I am only referenceing this object and not actually merging it.
-        CacheKey key = getParent().getIdentityMapAccessorInstance().getCacheKeyForObject(primaryKey, implementation.getClass(), descriptor);
-        Object original = key.getObject();
-        synchronized (key.getMutex()){
-            //if it is null and acquired then someone may be building a new one. Wait until released or not null
-            while (key.isAcquired() && key.getObject() == null){
-                try {
-                    key.getMutex().wait(10);
-                } catch (InterruptedException e) {
-                    throw ConcurrencyException.waitWasInterrupted("");
-                }
-                original = key.getObject();
-            }
-        }
+        // there's no need to elaborately avoid the readlock like the other getOriginalVersionOfObjectOrNull
+        // method as this one is not used during the commit cycle
+        Object original = getParent().getIdentityMapAccessorInstance().getFromIdentityMap(primaryKey, implementation.getClass(), descriptor);
 
         if (original == null) {
             // Check if it is a registered new object.
@@ -2449,6 +2434,47 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
      */
     public Platform getPlatform(Class domainClass) {
         return getParent().getPlatform(domainClass);
+    }
+    
+    /**
+     * INTERNAL:
+     * For use within the merge process this method will get an object from the shared 
+     * cache using a readlock.  If a readlock is unavailable then the merge manager will be 
+     * transitioned to deferred locks and a deferred lock will be used.
+     */
+    protected Object getObjectFromSharedCacheForMerge(Object implementation, ObjectBuilder builder, ClassDescriptor descriptor){
+        Object original = null;
+        Vector primaryKey = builder.extractPrimaryKeyFromObject(implementation, this);
+        if (this.lastUsedMergeManager == null){
+            // not merging into the shared cache so just return object from parent identity map
+            return getParent().getIdentityMapAccessorInstance().getFromIdentityMap(primaryKey, implementation.getClass(), descriptor);
+        }
+        CacheKey cacheKey = getParent().getIdentityMapAccessorInstance().getCacheKeyForObject(primaryKey, implementation.getClass(), descriptor);
+        if (cacheKey != null){
+            if ( cacheKey.acquireReadLockNoWait()){
+                original = cacheKey.getObject();
+                cacheKey.releaseReadLock();
+            }else{
+                if (getMergeManager().isTransitionedToDeferredLocks())
+                getParent().getIdentityMapAccessorInstance().getWriteLockManager().transitionToDeferredLocks(getMergeManager());
+                cacheKey.acquireDeferredLock();
+                original = cacheKey.getObject();
+                if (original == null) {
+                    synchronized (cacheKey.getMutex()) {
+                        if (cacheKey.isAcquired()) {
+                            try {
+                                cacheKey.getMutex().wait();
+                            } catch (InterruptedException e) {
+                                //ignore and return
+                            }
+                        }
+                        original = cacheKey.getObject();
+                    }
+                }
+                cacheKey.releaseDeferredLock();
+            }
+        }
+        return original;
     }
 
     /**

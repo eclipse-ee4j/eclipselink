@@ -84,6 +84,19 @@ public class IsolatedClientSessionIdentityMapAccessor extends org.eclipse.persis
 
     /**
      * INTERNAL:
+     * Provides access for setting a concurrency lock on an object in the IdentityMap.
+     * called with true from the merge process, if true then the refresh will not refresh the object.
+     */
+    public CacheKey acquireLockWithWait(Vector primaryKey, Class domainClass, boolean forMerge, ClassDescriptor descriptor, int wait) {
+        if (descriptor.isIsolated()) {
+            return getIdentityMapManager().acquireLockWithWait(primaryKey, domainClass, forMerge, descriptor, wait);
+        } else {
+            return ((IsolatedClientSession)session).getParent().getIdentityMapAccessorInstance().acquireLockWithWait(primaryKey, domainClass, forMerge, descriptor, wait);
+        }
+    }
+
+    /**
+     * INTERNAL:
      * Find the cachekey for the provided primary key and place a readlock on it.
      * This will allow multiple users to read the same object but prevent writes to
      * the object while the read lock is held.
@@ -205,7 +218,7 @@ public class IsolatedClientSessionIdentityMapAccessor extends org.eclipse.persis
      */
     public Object getFromIdentityMap(Vector primaryKey, Class theClass, boolean shouldReturnInvalidatedObjects, ClassDescriptor descriptor) {
         if (descriptor.isIsolated()) {
-            return getIdentityMapManager().getFromIdentityMap(primaryKey, theClass, shouldReturnInvalidatedObjects, descriptor, true);
+            return getIdentityMapManager().getFromIdentityMap(primaryKey, theClass, shouldReturnInvalidatedObjects, descriptor);
         } else {
             return ((IsolatedClientSession)session).getParent().getIdentityMapAccessorInstance().getFromIdentityMap(primaryKey, theClass, shouldReturnInvalidatedObjects, descriptor);
         }

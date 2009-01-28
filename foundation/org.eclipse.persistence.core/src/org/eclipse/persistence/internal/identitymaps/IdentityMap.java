@@ -52,6 +52,12 @@ public interface IdentityMap extends Cloneable{
     public CacheKey acquireLockNoWait(Vector primaryKey, boolean forMerge);
 
     /**
+     * Acquire an active lock on the object, if not already locked.
+     * This is used by merge for missing existing objects.
+     */
+    public CacheKey acquireLockWithWait(Vector primaryKey, boolean forMerge, int wait);
+
+    /**
      * Acquire a read lock on the object.
      * This is used by UnitOfWork cloning.
      * This will allow multiple users to read the same object but prevent writes to the object while the read lock is held.

@@ -15,6 +15,8 @@ package org.eclipse.persistence.internal.identitymaps;
 import java.io.*;
 import java.util.Arrays;
 import java.util.Vector;
+
+import org.eclipse.persistence.exceptions.ConcurrencyException;
 import org.eclipse.persistence.internal.helper.*;
 import org.eclipse.persistence.sessions.Record;
 
@@ -64,6 +66,8 @@ public class CacheKey implements Serializable, Cloneable {
     /** The following constants are used for the invalidationState variable */
     public static final int CHECK_INVALIDATION_POLICY = 0;
     public static final int CACHE_KEY_INVALID = -1;
+    
+    public static final int MAX_WAIT_TRIES = 10000;
 
     /** The read time stores the millisecond value of the last time the object help by
     this cache key was confirmed as up to date. */
@@ -152,6 +156,15 @@ public class CacheKey implements Serializable, Cloneable {
     }
 
     /**
+     * Acquire the lock on the cache key object. But only if the object has no lock on it
+     * Added for CR 2317
+     * called with true from the merge process, if true then the refresh will not refresh the object
+     */
+    public boolean acquireWithWait(boolean forMerge, int wait) {
+        return getMutex().acquireWithWait(forMerge, wait);
+    }
+
+    /**
      * Acquire the deferred lock.
      */
     public void acquireDeferredLock() {
@@ -184,7 +197,7 @@ public class CacheKey implements Serializable, Cloneable {
     }
 
     /**
-     * Acquire the read lock on the cache key object.
+     * Acquire the read lock on the cache key object.  Return true if acquired.
      */
     public boolean acquireReadLockNoWait() {
         return getMutex().acquireReadLockNoWait();
@@ -501,6 +514,10 @@ public class CacheKey implements Serializable, Cloneable {
 
         return "[" + getKey() + ": " + hashCode + ": " + getWriteLockValue() + ": " + getReadTime() + ": " + getObject() + "]";
     }
+    
+    public void transitionToDeferredLock(){
+        getMutex().transitionToDeferredLock();
+    }
 
     /**
      * Notifies that cache key that it has been accessed.
@@ -512,5 +529,22 @@ public class CacheKey implements Serializable, Cloneable {
 
     public void setIsWrapper(boolean isWrapper) {
         this.isWrapper = isWrapper;
+    }
+    
+    public Object waitForObject(){
+        synchronized (getMutex()) {
+            try{
+                int count = 0;
+                while(this.object == null && this.isAcquired()){
+                    if (count > MAX_WAIT_TRIES)
+                        throw ConcurrencyException.maxTriesLockOnBuildObjectExceded(getMutex().getActiveThread(), Thread.currentThread());
+                    getMutex().wait(10);
+                    ++count;
+                }
+            }catch(InterruptedException ex){
+                //ignore as the loop is broken
+            }
+            return this.object;
+        }
     }
 }

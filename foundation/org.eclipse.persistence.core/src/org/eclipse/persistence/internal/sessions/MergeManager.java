@@ -50,7 +50,7 @@ public class MergeManager {
     protected IdentityHashMap mergedNewObjects;
 
     /** Used to store the list of locks that this merge manager has acquired for this merge */
-    protected ArrayList acquiredLocks;
+    protected ArrayList<CacheKey> acquiredLocks;
 
     /** If this variable is not null then the mergemanager is waiting on a particular cacheKey */
     protected CacheKey writeLockQueued;
@@ -84,6 +84,9 @@ public class MergeManager {
     /** Force cascade merge even if a clone is already registered */
     // GF#1139 Cascade doesn't work when merging managed entity
     protected boolean forceCascade;
+    
+    /** records that deferred locks have been employed for the merge process */
+    protected boolean isTransitionedToDeferredLocks = false;
 
     public MergeManager(AbstractSession session) {
         this.session = session;
@@ -91,7 +94,7 @@ public class MergeManager {
         this.objectsAlreadyMerged = new IdentityHashMap();
         this.cascadePolicy = CASCADE_ALL_PARTS;
         this.mergePolicy = WORKING_COPY_INTO_ORIGINAL;
-        this.acquiredLocks = new ArrayList();
+        this.acquiredLocks = new ArrayList<CacheKey>();
     }
 
     /**
@@ -132,7 +135,7 @@ public class MergeManager {
         setCascadePolicy(NO_CASCADE);
     }
 
-    public ArrayList getAcquiredLocks() {
+    public ArrayList<CacheKey> getAcquiredLocks() {
         return this.acquiredLocks;
     }
 
@@ -215,6 +218,15 @@ public class MergeManager {
      */
     public CacheKey getWriteLockQueued() {
         return this.writeLockQueued;
+    }
+    
+    /**
+     * INTERNAL:
+     * Will return if the merge process has transitioned the active merge locks to deferred locks for
+     * readlock deadlock avoidance.
+     */
+    public boolean isTransitionedToDeferredLocks(){
+        return this.isTransitionedToDeferredLocks;
     }
     
     /**
@@ -588,7 +600,7 @@ public class MergeManager {
                 // and custom SQL could still produce invalid new objects.
                 if (objectChangeSet.shouldInvalidateObject(original, parent)) {
                     parent.getIdentityMapAccessor().invalidateObject(original);
-                    updateCacheKeyProperties(unitOfWork, original, clone, objectChangeSet, descriptor);
+                    // no need to update cacheKey properties here
                 }
                 
                 if (objectChangeSet.isNew()) {
@@ -992,6 +1004,14 @@ public class MergeManager {
     
     /**
      * INTERNAL:
+     * Records that this merge manager has transitioned to use deferred locks during the merge.
+     */
+    public void transitionToDeferredLocks(){
+        this.isTransitionedToDeferredLocks = true;
+    }
+    
+    /**
+     * INTERNAL:
      * Update CacheKey properties with new information.  This method is called if this code
      * actually merges
      */
@@ -1028,4 +1048,5 @@ public class MergeManager {
         }
 
     }
+    
 }
