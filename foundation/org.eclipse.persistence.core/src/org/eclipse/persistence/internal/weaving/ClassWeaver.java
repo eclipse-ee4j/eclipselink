@@ -195,9 +195,6 @@ public class ClassWeaver extends ClassAdapter implements Constants {
      */
     public void addSetPropertyChangeListener(ClassDetails classDetails){
         RuntimeVisibleAnnotations annotations = null;
-        if (!classDetails.usesAttributeAccess()){
-            annotations = getTransientAnnotation();
-        }
         CodeVisitor cv_setPCL =  cv.visitMethod(ACC_PUBLIC, "_persistence_setPropertyChangeListener", "(" + PCL_SIGNATURE + ")V", null, annotations);
         cv_setPCL.visitVarInsn(ALOAD, 0);
         cv_setPCL.visitVarInsn(ALOAD, 1);
