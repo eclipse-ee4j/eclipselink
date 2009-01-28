@@ -27,6 +27,7 @@ public class ConcurrencyException extends EclipseLinkException {
     public final static int MAX_TRIES_EXCEDED_FOR_LOCK_ON_CLONE = 2007;
     public final static int MAX_TRIES_EXCEDED_FOR_LOCK_ON_MERGE = 2008;
     public final static int MAX_TRIES_EXCEDED_FOR_LOCK_ON_BUILD_OBJECT = 2009;
+    public final static int ACTIVE_LOCK_ALREADY_TRANSITIONED = 2010;
 
     /**
      * INTERNAL:
@@ -43,6 +44,15 @@ public class ConcurrencyException extends EclipseLinkException {
     protected ConcurrencyException(String theMessage, Exception exception) {
         super(theMessage, exception);
     }
+
+    public static ConcurrencyException activeLockAlreadyTransitioned(Thread currentThread) {
+        Object[] args = { currentThread};
+
+        ConcurrencyException concurrencyException = new ConcurrencyException(ExceptionMessageGenerator.buildMessage(ConcurrencyException.class, ACTIVE_LOCK_ALREADY_TRANSITIONED, args));
+        concurrencyException.setErrorCode(ACTIVE_LOCK_ALREADY_TRANSITIONED);
+        return concurrencyException;
+    }
+
 
     public static ConcurrencyException maxTriesLockOnCloneExceded(Object objectToClone) {
         Object[] args = { objectToClone, CR };

@@ -127,6 +127,30 @@ public abstract class AbstractIdentityMap implements IdentityMap, Serializable, 
     }
 
     /**
+     * Acquire an active lock on the object, if not already locked.
+     * This is used by merge for missing existing objects.
+     */
+    public CacheKey acquireLockWithWait(Vector primaryKey, boolean forMerge, int wait) {
+        // Create and lock a new cacheKey.
+        CacheKey newCacheKey = createCacheKey(primaryKey, null, null);
+        newCacheKey.acquire(forMerge);
+        // PERF: To avoid synchronization, getIfAbsentPut is used.
+        CacheKey cacheKey = getCacheKeyIfAbsentPut(newCacheKey);
+        // Return if the newCacheKey was put as already lock, otherwise must still lock.
+        if (cacheKey == null) {
+            return newCacheKey;
+        } else {
+            newCacheKey.release();
+        }
+        // Acquire a lock on the cache key.
+        // Return null if already locked.
+        if (!cacheKey.acquireWithWait(forMerge, wait)) {
+            return null;
+        }
+        return cacheKey;
+    }
+
+    /**
      * Acquire a read lock on the object.
      * This is used by UnitOfWork cloning.
      * This will allow multiple users to read the same object but prevent writes to the object while the read lock is held.

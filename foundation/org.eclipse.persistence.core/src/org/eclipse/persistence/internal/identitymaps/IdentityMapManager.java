@@ -152,6 +152,28 @@ public class IdentityMapManager implements Serializable, Cloneable {
     }
 
     /**
+     * Provides access for setting a concurrency lock on an object in the IdentityMap.
+     * called with true from the merge process, if true then the refresh will not refresh the object.
+     */
+    public CacheKey acquireLockWithWait(Vector primaryKey, Class domainClass, boolean forMerge, ClassDescriptor descriptor, int wait) {
+        CacheKey cacheKey = null;
+        if (isCacheAccessPreCheckRequired()) {
+            getSession().startOperationProfile(SessionProfiler.CACHE);
+            acquireReadLock();
+            try {
+                cacheKey = getIdentityMap(descriptor).acquireLockWithWait(primaryKey, forMerge, wait);
+            } finally {
+                releaseReadLock();
+            }
+            getSession().endOperationProfile(SessionProfiler.CACHE);
+        } else {
+            cacheKey = getIdentityMap(descriptor).acquireLockWithWait(primaryKey, forMerge, wait);
+        }
+
+        return cacheKey;
+    }
+
+    /**
      * PERF: Used to micro optimize cache access.
      * Avoid the readLock and profile checks if not required.
      */

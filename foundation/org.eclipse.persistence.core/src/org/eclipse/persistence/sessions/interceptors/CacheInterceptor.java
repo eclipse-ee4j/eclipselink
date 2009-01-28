@@ -85,6 +85,18 @@ public abstract class CacheInterceptor implements IdentityMap{
     }
     
     /**
+     * Acquire an active lock on the object, if not already locked.
+     * This is used by merge for missing existing objects.
+     */
+    public CacheKey acquireLockWithWait(Vector primaryKey, boolean forMerge, int wait) {
+        CacheKey cacheKeyToBeWrapped = this.targetIdentityMap.acquireLockWithWait(primaryKey, forMerge, wait);
+        if (cacheKeyToBeWrapped != null) {
+            return createCacheKeyInterceptor(cacheKeyToBeWrapped);
+        }
+        return null;
+    }
+
+    /**
      * Acquire a read lock on the object.
      * This is used by UnitOfWork cloning.
      * This will allow multiple users to read the same object but prevent writes to the object while the read lock is held.

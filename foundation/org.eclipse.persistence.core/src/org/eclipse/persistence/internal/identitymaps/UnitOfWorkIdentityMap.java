@@ -75,6 +75,18 @@ public class UnitOfWorkIdentityMap extends FullIdentityMap {
     /**
      * Avoid acquiring any lock as uow is single threaded.
      */
+    public CacheKey acquireLockWithWait(Vector primaryKey, boolean forMerge, int wait) {
+        CacheKey newCacheKey = createCacheKey(primaryKey, null, null);
+        CacheKey cacheKey = getCacheKeyIfAbsentPut(newCacheKey);
+        if (cacheKey == null) {
+            return newCacheKey;
+        }
+        return cacheKey;
+    }
+
+    /**
+     * Avoid acquiring any lock as uow is single threaded.
+     */
     public CacheKey acquireReadLockOnCacheKey(Vector primaryKey) {
         return acquireReadLockOnCacheKeyNoWait(primaryKey);
     }
