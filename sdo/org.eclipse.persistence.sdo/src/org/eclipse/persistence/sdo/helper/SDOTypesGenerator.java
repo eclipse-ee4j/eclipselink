@@ -183,11 +183,9 @@ public class SDOTypesGenerator {
                 ((SDOTypeHelper) aHelperContext.getTypeHelper()).getAnonymousTypes().add(nextSDOType);
             }
 
-            iter = descriptorsToAdd.iterator();
-            //If we get here all types were finalized correctly
-            while (iter.hasNext()) {
-                SDOType nextSDOType = (SDOType) iter.next();
-
+            // add any base types to the list
+            for (int i=0; i<descriptorsToAdd.size(); i++) {
+                SDOType nextSDOType = (SDOType) descriptorsToAdd.get(i);
                 if (!nextSDOType.isDataType() && nextSDOType.getBaseTypes().size() == 0 && nextSDOType.getSubTypes().size() > 0) {
                     nextSDOType.setupInheritance(null);
                 } else if (!nextSDOType.isDataType() && nextSDOType.getBaseTypes().size() > 0 && !getGeneratedTypes().values().contains(nextSDOType.getBaseTypes().get(0))) {
@@ -195,8 +193,7 @@ public class SDOTypesGenerator {
                     while (baseType != null) {
                         descriptorsToAdd.add(baseType);
                         if (baseType.getBaseTypes().size() == 0) {
-                            descriptorsToAdd.add(baseType);
-                            //baseType should now be root of inheritance
+                            // baseType should now be root of inheritance
                             baseType.setupInheritance(null);
                             baseType = null;
                         } else {
@@ -205,6 +202,7 @@ public class SDOTypesGenerator {
                     }
                 }
             }
+            
             ((SDOXMLHelper) aHelperContext.getXMLHelper()).addDescriptors(descriptorsToAdd);
 
             //go through generatedGlobalProperties and add to xsdhelper
