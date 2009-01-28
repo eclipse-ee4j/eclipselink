@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2008 Oracle. All rights reserved.
+ * Copyright (c) 1998, 2009 Oracle. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -13,6 +13,8 @@
  *       - 218084: Implement metadata merging functionality between mapping files
  *     06/20/2008-1.0 Guy Pelletier 
  *       - 232975: Failure when attribute type is generic
+ *     01/28/2009-1.1 Guy Pelletier 
+ *       - 248293: JPA 2.0 Element Collections (part 1)
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.accessors.mappings;
 
@@ -24,7 +26,10 @@ import java.util.StringTokenizer;
 import javax.persistence.FetchType;
 import javax.persistence.JoinTable;
 import javax.persistence.MapKey;
+import javax.persistence.MapKeyClass;
+import javax.persistence.MapKeyColumn;
 import javax.persistence.OrderBy;
+import javax.persistence.OrderColumn;
 
 import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.internal.helper.DatabaseField;
@@ -33,6 +38,7 @@ import org.eclipse.persistence.internal.jpa.metadata.accessors.MetadataAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.classes.ClassAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAccessibleObject;
 
+import org.eclipse.persistence.internal.jpa.metadata.columns.ColumnMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.columns.JoinColumnMetadata;
 
 import org.eclipse.persistence.internal.jpa.metadata.MetadataDescriptor;
@@ -55,9 +61,22 @@ public abstract class CollectionAccessor extends RelationshipAccessor {
     private static final String ASCENDING = "ASC";
     private static final String DESCENDING = "DESC";
     
+    // TODO: mapped but not processed.
+    private Class m_mapKeyClass;
+    
+    // TODO: mapped but not processed.
+    private ColumnMetadata m_mapKeyColumn;
+    // TODO: mapped but not processed.
+    private ColumnMetadata m_orderColumn;
+    
+    // TODO: mapped but not processed.
+    private List<JoinColumnMetadata> m_mapKeyJoinColumns;
+    
     private String m_mapKey;
     private String m_mappedBy;
     private String m_orderBy;
+    private String m_mapKeyClassName;
+    
     private JoinTableMetadata m_joinTable;
     
     /**
@@ -91,6 +110,21 @@ public abstract class CollectionAccessor extends RelationshipAccessor {
         Annotation mapKey = getAnnotation(MapKey.class);
         if (mapKey != null) {
             m_mapKey = (String) MetadataHelper.invokeMethod("name", mapKey);
+        }
+        
+        // Set the map key column if one is defined.
+        if (isAnnotationPresent(MapKeyColumn.class)) {
+            m_mapKeyColumn = new ColumnMetadata(getAnnotation(MapKeyColumn.class), accessibleObject, getAttributeName());
+        }
+        
+        // Set the map key class if one is defined.
+        if (isAnnotationPresent(MapKeyClass.class)) {
+            m_mapKeyClass = (Class) MetadataHelper.invokeMethod("value", getAnnotation(MapKeyClass.class));
+        }
+        
+        // Set the order column if one is defined.
+        if (isAnnotationPresent(OrderColumn.class)) {
+            m_orderColumn = new ColumnMetadata(getAnnotation(OrderColumn.class), accessibleObject, getAttributeName());
         }
     }
     
@@ -169,6 +203,38 @@ public abstract class CollectionAccessor extends RelationshipAccessor {
     }
     
     /**
+     * INTERNAL: 
+     * TODO: Do we need this method?
+     */
+    public Class getMapKeyClass() {
+        return m_mapKeyClass;
+    }
+    
+    /**
+     * INTERNAL: 
+     * Used for OX mapping.
+     */
+    public String getMapKeyClassName() {
+        return m_mapKeyClassName;
+    }
+    
+    /**
+     * INTERNAL: 
+     * Used for OX mapping.
+     */
+    public ColumnMetadata getMapKeyColumn() {
+        return m_mapKeyColumn;
+    } 
+    
+    /**
+     * INTERNAL: 
+     * Used for OX mapping.
+     */
+    public List<JoinColumnMetadata> getMapKeyJoinColumns() {
+        return m_mapKeyJoinColumns;
+    }
+    
+    /**
      * INTERNAL:
      * Used for OX mapping.
      */
@@ -182,6 +248,14 @@ public abstract class CollectionAccessor extends RelationshipAccessor {
      */
     public String getOrderBy() {
         return m_orderBy; 
+    }
+    
+    /**
+     * INTERNAL: 
+     * Used for OX mapping.
+     */
+    protected ColumnMetadata getOrderColumn() {
+        return m_orderColumn;
     }
     
     /**
@@ -238,6 +312,11 @@ public abstract class CollectionAccessor extends RelationshipAccessor {
         
         // Initialize single ORMetadata objects.
         initXMLObject(m_joinTable, accessibleObject);
+        initXMLObject(m_mapKeyColumn, accessibleObject);
+        initXMLObject(m_orderColumn, accessibleObject);
+        
+        // Initialize the map key class name we read from XML.
+        m_mapKeyClass = initXMLClassName(m_mapKeyClassName);
     }
     
     /**
@@ -440,6 +519,30 @@ public abstract class CollectionAccessor extends RelationshipAccessor {
     }
     
     /**
+     * INTERNAL: 
+     * Used for OX mapping.
+     */
+    public void setMapKeyClassName(String mapKeyClassName) {
+        m_mapKeyClassName = mapKeyClassName;
+    }
+    
+    /**
+     * INTERNAL: 
+     * Used for OX mapping.
+     */
+    public void setMapKeyColumn(ColumnMetadata mapKeyColumn) {
+        m_mapKeyColumn = mapKeyColumn;
+    } 
+    
+    /**
+     * INTERNAL: 
+     * Used for OX mapping.
+     */
+    public void setMapKeyJoinColumns(List<JoinColumnMetadata> mapKeyJoinColumns) {
+        m_mapKeyJoinColumns = mapKeyJoinColumns;
+    }
+    
+    /**
      * INTERNAL:
      * Used for OX mapping.
      */
@@ -453,5 +556,13 @@ public abstract class CollectionAccessor extends RelationshipAccessor {
      */
     public void setOrderBy(String orderBy) {
         m_orderBy = orderBy;
+    }
+    
+    /**
+     * INTERNAL: 
+     * Used for OX mapping.
+     */
+    public void setOrderColumn(ColumnMetadata orderColumn) {
+        m_orderColumn = orderColumn;
     }
 }

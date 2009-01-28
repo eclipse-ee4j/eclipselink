@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2008 Oracle. All rights reserved.
+ * Copyright (c) 1998, 2009 Oracle. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -11,6 +11,8 @@
  *     Oracle - initial API and implementation from Oracle TopLink
  *     05/16/2008-1.0M8 Guy Pelletier 
  *       - 218084: Implement metadata merging functionality between mapping files
+ *     01/28/2009-1.1 Guy Pelletier 
+ *       - 248293: JPA 2.0 Element Collections (part 1)
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.accessors.mappings;
 
@@ -57,7 +59,7 @@ public abstract class RelationshipAccessor extends MappingAccessor {
     
     private Enum m_fetch;
     private Enum m_joinFetch;
-    
+   
     private List<JoinColumnMetadata> m_joinColumns = new ArrayList<JoinColumnMetadata>();
   
     private String m_targetEntityName;
@@ -272,67 +274,8 @@ public abstract class RelationshipAccessor extends MappingAccessor {
      * INTERNAL:
      * Process the join column metadata. Will look for association overrides.
      */    
-    protected List<JoinColumnMetadata> processJoinColumns() { 
-        if (getDescriptor().hasAssociationOverrideFor(getAttributeName())) {
-            return processJoinColumns(getDescriptor().getAssociationOverrideFor(getAttributeName()).getJoinColumns(), getReferenceDescriptor());
-        } else {
-            return processJoinColumns(m_joinColumns, getReferenceDescriptor());
-        }
-    }
-    
-    /**
-     * INTERNAL:
-     * Process the join column metadata. Note: if an accessor requires a check 
-     * for association overrides, it should call processJoinColumns(),
-     * otherwise, calling this method directly assumes your accessor doesn't 
-     * support association overrides.
-     */    
-    protected List<JoinColumnMetadata> processJoinColumns(List<JoinColumnMetadata> joinColumns, MetadataDescriptor descriptor) {
-        if (joinColumns.isEmpty()) {
-            if (descriptor.hasCompositePrimaryKey()) {
-                // Add a default one for each part of the composite primary
-                // key. Foreign and primary key to have the same name.
-                for (String primaryKeyField : descriptor.getPrimaryKeyFieldNames()) {
-                    JoinColumnMetadata joinColumn = new JoinColumnMetadata();
-                    joinColumn.setReferencedColumnName(primaryKeyField);
-                    joinColumn.setName(primaryKeyField);
-                    joinColumns.add(joinColumn);
-                }
-            } else {
-                // Add a default one for the single case, not setting any
-                // foreign and primary key names. They will default based
-                // on which accessor is using them.
-                joinColumns.add(new JoinColumnMetadata());
-            }
-        } else {
-            // Need to update any join columns that use a foreign key name
-            // for the primary key name. E.G. User specifies the renamed id
-            // field name from a primary key join column as the primary key in
-            // an inheritance subclass.
-            for (JoinColumnMetadata joinColumn : joinColumns) {
-                // Doing this could potentially change a value entered in XML.
-                // However, in this case I think that is ok since in theory we 
-                // are writing out the correct value that EclipseLink needs to 
-                // form valid queries.
-                joinColumn.setReferencedColumnName(descriptor.getPrimaryKeyJoinColumnAssociation(joinColumn.getReferencedColumnName()));
-            }
-        }
-        
-        if (descriptor.hasCompositePrimaryKey()) {
-            // The number of join columns should equal the number of primary key fields.
-            if (joinColumns.size() != descriptor.getPrimaryKeyFields().size()) {
-                throw ValidationException.incompleteJoinColumnsSpecified(getAnnotatedElement(), getJavaClass());
-            }
-            
-            // All the primary and foreign key field names should be specified.
-            for (JoinColumnMetadata joinColumn : joinColumns) {
-                if (joinColumn.isPrimaryKeyFieldNotSpecified() || joinColumn.isForeignKeyFieldNotSpecified()) {
-                    throw ValidationException.incompleteJoinColumnsSpecified(getAnnotatedElement(), getJavaClass());
-                }
-            }
-        }
-        
-        return joinColumns;
+    protected List<JoinColumnMetadata> processJoinColumns() {
+        return super.processJoinColumns(m_joinColumns);
     }
     
     /**

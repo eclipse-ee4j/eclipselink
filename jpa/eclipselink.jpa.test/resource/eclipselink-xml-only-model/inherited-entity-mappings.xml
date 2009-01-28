@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<entity-mappings version="1.0" xmlns="http://java.sun.com/xml/ns/persistence/orm" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://java.sun.com/xml/ns/persistence/orm orm_1_0.xsd">
+<entity-mappings version="2.0" xmlns="http://java.sun.com/xml/ns/persistence/orm" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://java.sun.com/xml/ns/persistence/orm orm_2_0.xsd">
     <description>Inherited Test Model Instance Document</description>
     <table-generator name="XML_BEER_TABLE_GENERATOR" table="CMP3_XML_BEER_SEQ" pk-column-name="SEQ_NAME" value-column-name="SEQ_COUNT" pk-column-value="BEER_SEQ"/>
+    <table-generator name="XML_LOCATION_TABLE_GENERATOR" table="JPA2_XML_LOCATION_SEQ" pk-column-name="SEQ_NAME" value-column-name="SEQ_COUNT" pk-column-value="LOCATION_SEQ"/>
     <named-native-query name="findAnySQLBeerConsumer" result-class="org.eclipse.persistence.testing.models.jpa.xml.inherited.BeerConsumer">
         <query>SELECT * FROM CMP3_XML_CONSUMER</query>
         <hint name="cascadeLevel" value="1"/>
@@ -47,8 +48,28 @@
             </many-to-one>
         </attributes>
     </mapped-superclass>
+    <mapped-superclass class="org.eclipse.persistence.testing.models.jpa.xml.inherited.RatedBeerConsumer" access="FIELD">
+        <attributes>
+            <basic name="IQ" access="PROPERTY">
+                <column name="CONSUMER_IQ"/>
+            </basic>
+            <element-collection name="acclaims">
+                <column name="ACCLAIM"/>
+            </element-collection>
+            <element-collection name="awards">
+                <column name="AWARD_CODE"/>
+                <map-key-column name="AWARDS_KEY"/>
+            </element-collection>
+            <element-collection name="designations">
+                <column name="DESIGNATION"/>
+            </element-collection>
+            <element-collection name="records"/>
+        </attributes>
+    </mapped-superclass>
     <entity name="XMLBeerConsumer" class="org.eclipse.persistence.testing.models.jpa.xml.inherited.BeerConsumer" access="PROPERTY">
         <table name="CMP3_XML_CONSUMER"/>
+        <inheritance strategy="JOINED"/>
+        <discriminator-value>BC</discriminator-value>
         <table-generator name="XML_BEER_CONSUMER_TABLE_GENERATOR" table="CMP3_XML_BEER_SEQ" pk-column-name="SEQ_NAME" value-column-name="SEQ_COUNT" pk-column-value="CONSUMER_SEQ"/>
         <exclude-default-listeners/>
         <exclude-superclass-listeners/>
@@ -149,4 +170,66 @@
             </basic>
         </attributes>
     </entity>
+    <entity name="XMLLocation" class="org.eclipse.persistence.testing.models.jpa.xml.inherited.Location" access="FIELD">
+        <table name="JPA2_XML_LOCATION"/>
+        <attributes>
+            <id name="id">
+                <generated-value strategy="TABLE" generator="XML_LOCATION_TABLE_GENERATOR"/>
+            </id>
+            <basic name="city"/>
+            <basic name="country"/>
+        </attributes>
+    </entity>
+    <entity name="XML_NBC" class="org.eclipse.persistence.testing.models.jpa.xml.inherited.NoviceBeerConsumer" access="PROPERTY">
+        <table name="XML_NOVICE_CONSUMER"/>
+        <discriminator-value>NBC</discriminator-value>
+        <attribute-override name="date">
+            <column name="REC_DATE"/>
+        </attribute-override>
+        <attribute-override name="description">
+            <column name="DESCRIP"/>
+        </attribute-override>
+        <association-override name="location">
+            <join-column name="LOC_ID" referenced-column-name="ID"/>
+        </association-override>
+    </entity>
+    <entity name="XML_EBC" class="org.eclipse.persistence.testing.models.jpa.xml.inherited.ExpertBeerConsumer" access="PROPERTY">
+        <table name="XML_EXPERT_CONSUMER"/>
+        <discriminator-value>EBC</discriminator-value>
+        <attribute-override name="date">
+            <column name="RECORD_DATE"/>
+        </attribute-override>
+        <attribute-override name="description">
+            <column name="DESCRIPTION"/>
+        </attribute-override>
+        <association-override name="location">
+            <join-column name="LOCATION_ID" referenced-column-name="ID"/>
+        </association-override>
+        <attributes>
+            <!-- audio attribute mapped on class with ElementCollection since we are testing with @Lob -->
+            <element-collection name="quotes">
+                <column name="QUOTE"/>
+                <map-key-column name="Q_DATE"/>
+                <collection-table name="EBC_QUOTES">
+                    <join-column name="EBC_ID"/>
+                </collection-table>
+            </element-collection>
+        </attributes>
+    </entity>
+    <embeddable class="org.eclipse.persistence.testing.models.jpa.xml.inherited.Record" access="PROPERTY">
+        <attributes>
+            <basic name="description">
+                <column name="DESC"/>
+            </basic>
+            <basic name="date">
+                <column name="R_DATE"/>
+            </basic>
+            <many-to-one name="location">
+                <join-column name="L_ID"/>
+                <cascade>
+                    <cascade-persist/>
+                </cascade>
+            </many-to-one>
+        </attributes>
+    </embeddable>
 </entity-mappings>

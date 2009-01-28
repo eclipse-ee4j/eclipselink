@@ -15,6 +15,8 @@
  *       - 211330: Add attributes-complete support to the EclipseLink-ORM.XML Schema
  *     12/10/2008-1.1 Michael O'Brien 
  *       - 257606: Add orm.xml schema validation true/(false) flag support in persistence.xml
+ *     01/28/2009-1.1 Guy Pelletier 
+ *       - 248293: JPA 2.0 Element Collections (part 1)
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata;
 
@@ -432,27 +434,12 @@ public class MetadataProcessor {
 
     /**
      * INTERNAL:
-     * Process the ORM metadata for all the entities that were added to the
-     * project for this persistence unit.
+     * Process the ORM metadata on this processors metadata project 
+     * (representing a single persistence-unit)
      */
     public void processORMMetadata() {
-        // Step 1: Process all the entity accessors that were added to the 
-        // project. Mapped superclasses and embeddables are processed/discovered
-        // through the entity processing. 
-        for (EntityAccessor entity : m_project.getEntityAccessors()) {
-            // If the accessor hasn't been processed yet, then process it.
-            if (! entity.isProcessed()) {
-                // Tell the entity to process itself ...
-                entity.process();
-                
-                // Once it's done, set the flag to processed to avoid multiple
-                // processing of the same entity.
-                entity.setIsProcessed();
-            }
-        }
-        
-        // Step 2: Process any left over metadata we couldn't complete in step 1
-        m_project.process();
+        m_project.processStage1();
+        m_project.processStage2();
     }
 
     /**

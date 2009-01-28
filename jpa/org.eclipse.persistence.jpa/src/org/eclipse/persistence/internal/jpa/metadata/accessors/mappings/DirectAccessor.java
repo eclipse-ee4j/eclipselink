@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2008 Oracle. All rights reserved.
+ * Copyright (c) 1998, 2009 Oracle. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -15,6 +15,8 @@
  *       - 232975: Failure when attribute type is generic
  *     09/23/2008-1.1 Guy Pelletier 
  *       - 241651: JPA 2.0 Access Type support
+ *     01/28/2009-1.1 Guy Pelletier 
+ *       - 248293: JPA 2.0 Element Collections (part 1)
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.accessors.mappings;
 
@@ -529,19 +531,6 @@ public abstract class DirectAccessor extends MappingAccessor {
         } else {
             // The referenceClass is neither a valid BLOB or CLOB attribute.   
             throw ValidationException.invalidTypeForLOBAttribute(mapping.getAttributeName(), getReferenceClass(), getJavaClass());
-        }
-    }
- 
-    /**
-     * INTERNAL:
-     * Process a converter for the given mapping. Will look for a converter
-     * name from a convert specification.
-     */
-    protected void processMappingConverter(DatabaseMapping mapping) {
-        if (m_convert == null) {
-            processJPAConverters(mapping);
-        } else {
-            processMappingConverter(mapping, m_convert);
         }
     }
     

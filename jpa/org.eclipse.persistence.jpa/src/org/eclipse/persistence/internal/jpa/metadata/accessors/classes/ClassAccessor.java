@@ -23,6 +23,8 @@
  *       - 249329: To remain JPA 1.0 compliant, any new JPA 2.0 annotations should be referenced by name
  *     12/12/2008-1.1 Guy Pelletier 
  *       - 249860: Implement table per class inheritance support.
+ *     01/28/2009-1.1 Guy Pelletier 
+ *       - 248293: JPA 2.0 Element Collections (part 1)
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.accessors.classes;
 
@@ -31,6 +33,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 
 import javax.persistence.Basic;
+import javax.persistence.ElementCollection;
 import javax.persistence.Embedded;
 import javax.persistence.EmbeddedId;
 import javax.persistence.Id;
@@ -57,6 +60,7 @@ import org.eclipse.persistence.exceptions.ValidationException;
 
 import org.eclipse.persistence.internal.jpa.metadata.accessors.PropertyMetadata;
 
+import org.eclipse.persistence.internal.jpa.metadata.accessors.mappings.ElementCollectionAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.mappings.EmbeddedIdAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.mappings.ManyToManyAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.mappings.ManyToOneAccessor;
@@ -239,6 +243,8 @@ public abstract class ClassAccessor extends MetadataAccessor {
             return new BasicCollectionAccessor(accessibleObject.getAnnotation(BasicCollection.class), accessibleObject, this);
         } else if (accessibleObject.isBasicMap(getDescriptor())) {
             return new BasicMapAccessor(accessibleObject.getAnnotation(BasicMap.class), accessibleObject, this);
+        } else if (accessibleObject.isElementCollection(getDescriptor())) {
+                return new ElementCollectionAccessor(accessibleObject.getAnnotation(ElementCollection.class), accessibleObject, this);
         } else if (accessibleObject.isId(getDescriptor())) {
             return new IdAccessor(accessibleObject.getAnnotation(Id.class), accessibleObject, this);
         } else if (accessibleObject.isVersion(getDescriptor())) {
@@ -420,6 +426,13 @@ public abstract class ClassAccessor extends MetadataAccessor {
      */
     public Boolean getMetadataComplete() {
         return m_metadataComplete;
+    }
+    
+    /**
+     * INTERNAL:
+     */
+    public boolean isMappedSuperclass() {
+        return false;
     }
     
     /**

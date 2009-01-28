@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2008 Oracle. All rights reserved.
+ * Copyright (c) 1998, 2009 Oracle. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -15,6 +15,8 @@
  *       - 241651: JPA 2.0 Access Type support
  *     10/01/2008-1.1 Guy Pelletier 
  *       - 249329: To remain JPA 1.0 compliant, any new JPA 2.0 annotations should be referenced by name
+ *     01/28/2009-1.1 Guy Pelletier 
+ *       - 248293: JPA 2.0 Element Collections (part 1)
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.accessors.mappings;
 
@@ -29,8 +31,8 @@ import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataA
 
 import org.eclipse.persistence.internal.jpa.metadata.columns.AttributeOverrideMetadata;
 
-import org.eclipse.persistence.mappings.AggregateObjectMapping;
 import org.eclipse.persistence.mappings.DatabaseMapping;
+import org.eclipse.persistence.mappings.EmbeddableMapping;
 
 /**
  * An embedded id relationship accessor.
@@ -57,6 +59,14 @@ public class EmbeddedIdAccessor extends EmbeddedAccessor {
      */
     public EmbeddedIdAccessor(Annotation embeddedId, MetadataAccessibleObject accessibleObject, ClassAccessor classAccessor) {
         super(embeddedId, accessibleObject, classAccessor);
+    }
+    
+    /**
+     * INTERNAL:
+     */
+    @Override
+    public boolean isEmbeddedId() {
+        return true;
     }
     
     /**
@@ -132,8 +142,8 @@ public class EmbeddedIdAccessor extends EmbeddedAccessor {
      * aggregate object mapping in EclipseLink.
      */
     @Override
-    protected void processAttributeOverride(AggregateObjectMapping mapping, AttributeOverrideMetadata attributeOverride) {
-        super.processAttributeOverride(mapping, attributeOverride);
+    protected void processAttributeOverride(AttributeOverrideMetadata attributeOverride, EmbeddableMapping mapping) {
+        super.processAttributeOverride(attributeOverride, mapping);
         
         // Update our primary key field with the attribute override field.
         // The super class will ensure the correct field is on the metadata

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2008 Oracle. All rights reserved.
+ * Copyright (c) 1998, 2009 Oracle. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -19,7 +19,6 @@ import java.lang.annotation.Annotation;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataLogger;
 import org.eclipse.persistence.internal.jpa.metadata.ORMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAccessibleObject;
-import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataClass;
 
 /**
  * INTERNAL:
@@ -29,7 +28,6 @@ import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataC
  * @since EclipseLink 1.0
  */
 public abstract class OverrideMetadata extends ORMetadata {
-    private String m_javaClassName; // Class where this override was found.
     private String m_name;
     
     /**
@@ -47,10 +45,6 @@ public abstract class OverrideMetadata extends ORMetadata {
         super(annotation, accessibleObject);
         
         m_name = (String) MetadataHelper.invokeMethod("name", annotation);
-
-        if (accessibleObject instanceof MetadataClass) {
-            m_javaClassName = ((Class) accessibleObject.getElement()).getName();
-        }
     }
     
     /**
@@ -81,24 +75,10 @@ public abstract class OverrideMetadata extends ORMetadata {
     
     /**
      * INTERNAL:
-     */
-    public String getJavaClassName() {
-        return m_javaClassName;
-    }
-    
-    /**
-     * INTERNAL:
      * Used for OX mapping.
      */
     public String getName() {
         return m_name;
-    }
-    
-    /**
-     * INTERNAL:
-     */
-    public void setJavaClassName(String javaClassName) {
-        m_javaClassName = javaClassName;
     }
     
     /**
@@ -121,7 +101,7 @@ public abstract class OverrideMetadata extends ORMetadata {
         if (existing == null) {
             // There is no existing, no override occurs, just use it!
             return true;
-        } else if (existing.getJavaClassName().equals(getJavaClassName())) {
+        } else if (existing.getLocation().equals(getLocation())) {
             // Both were loaded from the same class, check if we need an 
             // override.
             return shouldOverride(existing);
@@ -129,7 +109,7 @@ public abstract class OverrideMetadata extends ORMetadata {
             // We already have an attribute override specified and the 
             // java class names are different. We must be processing
             // a mapped superclass therefore, ignore and log a message.
-            logger.logWarningMessage(getIgnoreMappedSuperclassContext(), getName(), getJavaClassName(), descriptorClass);
+            logger.logWarningMessage(getIgnoreMappedSuperclassContext(), getName(), getLocation(), descriptorClass);
             return false;
         }
     }

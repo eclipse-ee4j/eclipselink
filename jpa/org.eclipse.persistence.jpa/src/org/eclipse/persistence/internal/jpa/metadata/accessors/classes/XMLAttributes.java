@@ -11,6 +11,8 @@
  *     Oracle - initial API and implementation from Oracle TopLink
  *     05/16/2008-1.0M8 Guy Pelletier 
  *       - 218084: Implement metadata merging functionality between mapping files
+ *     01/28/2009-1.1 Guy Pelletier 
+ *       - 248293: JPA 2.0 Element Collections (part 1)
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.accessors.classes;
 
@@ -22,6 +24,7 @@ import org.eclipse.persistence.internal.jpa.metadata.ORMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.mappings.BasicAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.mappings.BasicCollectionAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.mappings.BasicMapAccessor;
+import org.eclipse.persistence.internal.jpa.metadata.accessors.mappings.ElementCollectionAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.mappings.EmbeddedAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.mappings.EmbeddedIdAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.mappings.IdAccessor;
@@ -49,6 +52,7 @@ public class XMLAttributes extends ORMetadata {
     private List<BasicAccessor> m_basics;
     private List<BasicCollectionAccessor> m_basicCollections;
     private List<BasicMapAccessor> m_basicMaps;
+    private List<ElementCollectionAccessor> m_elementCollections;
     private List<EmbeddedAccessor> m_embeddeds;
     private List<IdAccessor> m_ids;
     private List<ManyToManyAccessor> m_manyToManys;
@@ -85,6 +89,7 @@ public class XMLAttributes extends ORMetadata {
             m_allAccessors.addAll(m_basicMaps);
             m_allAccessors.addAll(m_versions);
             m_allAccessors.addAll(m_embeddeds);
+            m_allAccessors.addAll(m_elementCollections);
             m_allAccessors.addAll(m_transformations);
             m_allAccessors.addAll(m_transients);
             m_allAccessors.addAll(m_manyToManys);
@@ -121,6 +126,14 @@ public class XMLAttributes extends ORMetadata {
         return m_basics;
     }
 
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+    public List<ElementCollectionAccessor> getElementCollections() {
+        return m_elementCollections;
+    }
+    
     /**
      * INTERNAL:
      * Used for OX mapping.
@@ -262,6 +275,14 @@ public class XMLAttributes extends ORMetadata {
     public void setBasics(List<BasicAccessor> basics) {
         m_basics = basics;
     }    
+    
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+    public void setElementCollections(List<ElementCollectionAccessor> elementCollections) {
+        m_elementCollections = elementCollections;
+    }
     
     /**
      * INTERNAL:

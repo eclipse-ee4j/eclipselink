@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2008 Oracle. All rights reserved.
+ * Copyright (c) 1998, 2009 Oracle. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -61,6 +61,12 @@ public abstract class MetadataAccessibleObject {
     public XMLEntityMappings getEntityMappings() {
         return m_entityMappings;
     }
+    
+    /**
+     * INTERNAL:
+     * Return the attribute name of this accessible object.
+     */
+    public abstract String getAttributeName();
     
     /**
      * INTERNAL:

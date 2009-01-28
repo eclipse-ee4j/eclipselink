@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2008 Oracle. All rights reserved.
+ * Copyright (c) 1998, 2009 Oracle. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -19,6 +19,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAccessibleObject;
+import org.eclipse.persistence.internal.jpa.metadata.columns.JoinColumnMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.columns.PrimaryKeyJoinColumnMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataLogger;
 
@@ -31,6 +32,7 @@ import org.eclipse.persistence.internal.jpa.metadata.MetadataLogger;
  * @since TopLink 11g
  */
 public class CollectionTableMetadata extends TableMetadata {
+    private List<JoinColumnMetadata> m_joinColumns = new ArrayList<JoinColumnMetadata>();
     private List<PrimaryKeyJoinColumnMetadata> m_primaryKeyJoinColumns = new ArrayList<PrimaryKeyJoinColumnMetadata>();
     
     /**
@@ -43,12 +45,25 @@ public class CollectionTableMetadata extends TableMetadata {
     /**
      * INTERNAL:
      */
-    public CollectionTableMetadata(Annotation collectionTable, MetadataAccessibleObject accessibleObject) {
+    public CollectionTableMetadata(MetadataAccessibleObject accessibleObject) {
+        super(null, accessibleObject);
+    }
+    
+    /**
+     * INTERNAL:
+     */
+    public CollectionTableMetadata(Annotation collectionTable, MetadataAccessibleObject accessibleObject, boolean isJPACollectionTable) {
         super(collectionTable, accessibleObject);
         
         if (collectionTable != null) {
-            for (Annotation primaryKeyJoinColumn : (Annotation[]) MetadataHelper.invokeMethod("primaryKeyJoinColumns", collectionTable)) {
-                m_primaryKeyJoinColumns.add(new PrimaryKeyJoinColumnMetadata(primaryKeyJoinColumn, accessibleObject));
+            if (isJPACollectionTable) {
+                for (Annotation joinColumn : (Annotation[]) MetadataHelper.invokeMethod("joinColumns", collectionTable)) {
+                    m_joinColumns.add(new JoinColumnMetadata(joinColumn, accessibleObject));
+                }
+            } else {
+                for (Annotation primaryKeyJoinColumn : (Annotation[]) MetadataHelper.invokeMethod("primaryKeyJoinColumns", collectionTable)) {
+                    m_primaryKeyJoinColumns.add(new PrimaryKeyJoinColumnMetadata(primaryKeyJoinColumn, accessibleObject));
+                }
             }
         }
     }
@@ -59,6 +74,13 @@ public class CollectionTableMetadata extends TableMetadata {
     @Override
     public String getCatalogContext() {
         return MetadataLogger.COLLECTION_TABLE_CATALOG;
+    }
+    
+    /**
+     * INTERNAL:
+     */
+    public List<JoinColumnMetadata> getJoinColumns() {
+        return m_joinColumns;
     }
     
     /**
@@ -82,6 +104,13 @@ public class CollectionTableMetadata extends TableMetadata {
     @Override
     public String getSchemaContext() {
         return MetadataLogger.COLLECTION_TABLE_SCHEMA;
+    }
+    
+    /**
+     * INTERNAL:
+     */
+    public void setJoinColumns(List<JoinColumnMetadata> joinColumns) {
+        m_joinColumns = joinColumns;
     }
     
     /**

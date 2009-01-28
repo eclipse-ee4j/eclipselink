@@ -14,7 +14,9 @@
  *     09/23/2008-1.1 Guy Pelletier 
  *       - 241651: JPA 2.0 Access Type support
  *     12/12/2008-1.1 Guy Pelletier 
- *       - 249860: Implement table per class inheritance support.       
+ *       - 249860: Implement table per class inheritance support.
+ *     01/28/2009-1.1 Guy Pelletier 
+ *       - 248293: JPA 2.0 Element Collections (part 1)       
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata;
 
@@ -137,6 +139,7 @@ public class MetadataLogger {
     public static final String MANY_TO_ONE_MAPPING_REFERENCE_CLASS = "metadata_default_many_to_one_reference_class";
     public static final String MANY_TO_MANY_MAPPING_REFERENCE_CLASS = "metadata_default_many_to_many_reference_class";
     public static final String VARIABLE_ONE_TO_ONE_MAPPING_REFERENCE_CLASS = "metadata_default_variable_one_to_one_reference_class";
+    public static final String ELEMENT_COLLECTION_MAPPING_REFERENCE_CLASS = "metadata_default_element_collection_reference_class";
     
     /*************************************************************************/
     /*                       OTHER WARNING MESSSAGES                         */ 
@@ -251,6 +254,7 @@ public class MetadataLogger {
         m_ctxStrings.put(MANY_TO_ONE_MAPPING_REFERENCE_CLASS, MANY_TO_ONE_MAPPING_REFERENCE_CLASS);
         m_ctxStrings.put(MANY_TO_MANY_MAPPING_REFERENCE_CLASS, MANY_TO_MANY_MAPPING_REFERENCE_CLASS);
         m_ctxStrings.put(VARIABLE_ONE_TO_ONE_MAPPING_REFERENCE_CLASS, VARIABLE_ONE_TO_ONE_MAPPING_REFERENCE_CLASS);
+        m_ctxStrings.put(ELEMENT_COLLECTION_MAPPING_REFERENCE_CLASS, ELEMENT_COLLECTION_MAPPING_REFERENCE_CLASS);
         
         m_ctxStrings.put(WARNING_INVALID_COLLECTION_USED_ON_LAZY_RELATION, WARNING_INVALID_COLLECTION_USED_ON_LAZY_RELATION);
     }

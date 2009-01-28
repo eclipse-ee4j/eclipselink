@@ -15,6 +15,8 @@
  *       - 211330: Add attributes-complete support to the EclipseLink-ORM.XML Schema
  *     09/23/2008-1.1 Guy Pelletier 
  *       - 241651: JPA 2.0 Access Type support
+ *     01/28/2009-1.1 Guy Pelletier 
+ *       - 248293: JPA 2.0 Element Collections (part 1)
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata;
 
@@ -30,6 +32,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Set;
 
+import javax.persistence.Embeddable;
 import javax.persistence.GenerationType;
 import javax.persistence.spi.PersistenceUnitInfo;
 
@@ -43,7 +46,10 @@ import org.eclipse.persistence.internal.jpa.metadata.accessors.classes.Interface
 import org.eclipse.persistence.internal.jpa.metadata.accessors.classes.MappedSuperclassAccessor;
 
 import org.eclipse.persistence.internal.jpa.metadata.accessors.mappings.DirectAccessor;
+import org.eclipse.persistence.internal.jpa.metadata.accessors.mappings.DirectCollectionAccessor;
+import org.eclipse.persistence.internal.jpa.metadata.accessors.mappings.MappingAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.mappings.RelationshipAccessor;
+import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataClass;
 
 import org.eclipse.persistence.internal.jpa.metadata.converters.AbstractConverterMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.converters.StructConverterMetadata;
@@ -142,14 +148,22 @@ public class MetadataProject {
     // persistence unit (unless they exclude them).
     private HashSet< EntityListenerMetadata> m_defaultListeners;
     
-    // Class accessors that have relationships.
-    private HashSet<ClassAccessor> m_accessorsWithRelationships;
+    // TODO: Talk about these some more ....
     
     // Class accessors that have a customizer.
     private HashSet<ClassAccessor> m_accessorsWithCustomizer;
     
     // Accessors that use an EclipseLink converter.
     private HashSet<DirectAccessor> m_convertAccessors;
+    
+    // All direct collection accessors.
+    private HashSet<DirectCollectionAccessor> m_directCollectionAccessors;
+    
+    // Accessors that map to an Embeddable class
+    private HashSet<MappingAccessor> m_embeddableMappingAccessors;
+    
+    // All relationship accessors.
+    private HashSet<RelationshipAccessor> m_relationshipAccessors;
     
     /**
      * INTERNAL:
@@ -180,7 +194,9 @@ public class MetadataProject {
         m_interfaceAccessors = new HashMap<String, InterfaceAccessor>();
         
         m_accessorsWithCustomizer = new HashSet<ClassAccessor>();
-        m_accessorsWithRelationships = new HashSet<ClassAccessor>();
+        m_relationshipAccessors = new HashSet<RelationshipAccessor>();
+        m_embeddableMappingAccessors = new HashSet<MappingAccessor>();
+        m_directCollectionAccessors = new HashSet<DirectCollectionAccessor>();
 
         m_generatedValues = new HashMap<Class, GeneratedValueMetadata>();
         m_tableGenerators = new HashMap<String, TableGeneratorMetadata>();
@@ -232,13 +248,6 @@ public class MetadataProject {
     /**
      * INTERNAL:
      */
-    public void addAccessorWithRelationships(ClassAccessor accessor) {
-        m_accessorsWithRelationships.add(accessor);
-    }
- 
-    /**
-     * INTERNAL:
-     */
     public void addAlias(String alias, MetadataDescriptor descriptor) {
         ClassDescriptor existingDescriptor = m_session.getProject().getDescriptorForAlias(alias);
         
@@ -278,6 +287,14 @@ public class MetadataProject {
 
     /**
      * INTERNAL:
+     * Store basic collection accessors for later processing and quick look up.
+     */
+    public void addDirectCollectionAccessor(MappingAccessor accessor) {
+        m_directCollectionAccessors.add((DirectCollectionAccessor) accessor);
+    }
+    
+    /**
+     * INTERNAL:
      * Add an embeddable accessor to this project. Assumes the embeddable
      * needs to be added. That is, does not check if it already exists and
      * cause a merge. The caller is responsible for that.
@@ -287,6 +304,13 @@ public class MetadataProject {
         addAccessor(accessor);
         accessor.getDescriptor().setIsEmbeddable();
         m_embeddableAccessors.put(accessor.getJavaClassName(), accessor);
+    }
+    
+    /**
+     * INTERNAL:
+     */
+    public void addEmbeddableMappingAccessor(MappingAccessor accessor) {
+        m_embeddableMappingAccessors.add(accessor);
     }
     
     /**
@@ -356,6 +380,13 @@ public class MetadataProject {
         if (query.shouldOverride(m_queries.get(query.getName()))) {
             m_queries.put(query.getName(), query);
         }
+    }
+    
+    /**
+     * INTERNAL:
+     */
+    public void addRelationshipAccessor(MappingAccessor accessor) {
+        m_relationshipAccessors.add((RelationshipAccessor) accessor);
     }
     
     /**
@@ -464,13 +495,6 @@ public class MetadataProject {
     /**
      * INTERNAL:
      */
-    public Set<ClassAccessor> getAccessorsWithRelationships() {
-        return m_accessorsWithRelationships;
-    }
-    
-    /**
-     * INTERNAL:
-     */
     public Collection<ClassAccessor> getAllAccessors() {
         return m_allAccessors.values();
     }
@@ -491,9 +515,29 @@ public class MetadataProject {
     
     /**
      * INTERNAL:
+     * This method will attempt to look up the embeddable accessor for the
+     * reference class provided. If no accessor is found, null is returned.
      */
-    public EmbeddableAccessor getEmbeddableAccessor(String className) {
-        return m_embeddableAccessors.get(className);
+    public EmbeddableAccessor getEmbeddableAccessor(Class cls) {
+        EmbeddableAccessor accessor = m_embeddableAccessors.get(cls.getName());
+
+        if (accessor == null) {
+          // Before return null we must make one final check for an Embeddable 
+          // annotation on the class itself. At this point we know the class was 
+          // not tagged as an embeddable in a mapping file and was not included 
+          // in the list of classes for this persistence unit. Its inclusion 
+          // therefore in the persistence unit is through the use of an Embedded 
+          // annotation or an embedded element within a known entity. The
+          // callers to this method will have to handle the null case if they
+          // so desire.
+          MetadataClass metadataClass = new MetadataClass(cls);
+          if (metadataClass.isAnnotationPresent(Embeddable.class)) {
+              accessor = new EmbeddableAccessor(metadataClass.getAnnotation(Embeddable.class), cls, this);
+              addEmbeddableAccessor(accessor);
+          }
+       } 
+        
+       return accessor;
     }
     
     /**
@@ -625,24 +669,79 @@ public class MetadataProject {
     
     /**
      * INTERNAL:
-     * Stage 2 processing. That is, it does all the extra processing that 
-     * couldn't be completed in the original metadata accessor processing.
+     * Stage 1 processing. Process all the class accessors available to the
+     * project. This includes entities, mapped superclasses and embeddables.
+     * 
+     * Stage one's goal is to process through all the classes accessors, 
+     * processing only class level metadata and direct accessors. At the same
+     * time gather lists of other metadata to process in stage 2.
+     * @see processStage2
      */
-    public void process() {
-        processConvertAccessors();
-        processSequencing();
-        processAccessorsWithRelationships();
-        processInterfaceAccessors();
+    public void processStage1() {
+        // Mapped superclasses and embeddables are discovered and processed
+        // through the entity processing.
+        for (EntityAccessor entity : getEntityAccessors()) {
+            // If the accessor hasn't been processed yet, then process it. An
+            // EntityAccessor may get fast tracked if it is an inheritance
+            // parent.
+            if (! entity.isProcessed()) {
+                // Tell the entity to process itself ...
+                entity.process();
+                
+                // Once it's done, set the flag to processed to avoid multiple
+                // processing of the same entity.
+                entity.setIsProcessed();
+            }
+        }
     }
     
     /**
      * INTERNAL:
-     * Process the related descriptors.
+     * Stage 2 processing. That is, it does all the extra processing that 
+     * couldn't be completed in the first stage of processing. The biggest 
+     * thing being that all entities will have processed an id by now and we 
+     * can process those accessors that rely on them now. NOTE: The order of
+     * invocation here is very important here, see the comments.
      */
-    protected void processAccessorsWithRelationships() {
-        for (ClassAccessor classAccessor : getAccessorsWithRelationships()) {
-            for (RelationshipAccessor accessor : classAccessor.getDescriptor().getRelationshipAccessors()) {
-                accessor.processRelationship();
+    public void processStage2() {
+        // 1 - Process all the direct collection accessors we found. This list
+        // does not include direct collections to an embeddable class.
+        processDirectCollectionAccessors();
+        
+        // 2 - Process the sequencing metadata now that every entity has a 
+        // validated primary key.
+        processSequencingAccessors();
+        
+        // 3 - Process the relationship accessors now that every entity has a 
+        // validated primary key and we can process join columns.
+        processRelationshipAccessors();
+        
+        // 4 - Process the interface accessors which will iterate through all 
+        // the entities in the PU and check if we should add them to a variable 
+        // one to one mapping that was either defined (incompletely) or 
+        // defaulted.
+        processInterfaceAccessors();
+        
+        // 5 - Process the embeddable mapping accessors. These are the
+        // embedded, embedded id and element collection accessors that map
+        // to an embeddable class. We must hold off on their processing till
+        // now to ensure their relationship accessors have been processed and
+        // we can therefore process any association overrides correctly.
+        processEmbeddableMappingAccessors();
+        
+        // 6 - Finally process all those mappings that make use of a converter.
+        processConvertAccessors();
+    }
+    
+    /**
+     * INTERNAL:
+     * Process the embeddable mapping accessors.
+     */
+    protected void processEmbeddableMappingAccessors() {
+        for (MappingAccessor mappingAccessor : this.m_embeddableMappingAccessors) {
+            if (! mappingAccessor.isProcessed()) {
+                mappingAccessor.process();
+                mappingAccessor.setIsProcessed();
             }
         }
     }
@@ -656,6 +755,19 @@ public class MetadataProject {
     protected void processConvertAccessors() {
         for (DirectAccessor accessor : m_convertAccessors) {
             accessor.processConvert();
+        }
+    }
+    
+    /**
+     * INTERNAL:
+     * Process any BasicCollection annotation and/or BasicMap annotation that 
+     * were found. They are not processed till after an id has been processed 
+     * since they rely on one to map the collection table.
+     */
+    public void processDirectCollectionAccessors() {
+        for (DirectCollectionAccessor accessor : m_directCollectionAccessors) {
+            accessor.process();
+            accessor.setIsProcessed();
         }
     }
     
@@ -692,9 +804,19 @@ public class MetadataProject {
     
     /**
      * INTERNAL:
+     * Process the related descriptors.
+     */
+    protected void processRelationshipAccessors() {
+        for (RelationshipAccessor accessor : m_relationshipAccessors) {
+            accessor.processRelationship();
+        }
+    }
+    
+    /**
+     * INTERNAL:
      * Process the sequencing information.
      */
-    protected void processSequencing() {
+    protected void processSequencingAccessors() {
         if (! m_generatedValues.isEmpty()) {
             DatasourceLogin login = m_session.getProject().getLogin();
     

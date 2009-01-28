@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2008 Oracle. All rights reserved.
+ * Copyright (c) 1998, 2009 Oracle. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -28,6 +28,22 @@ public class MetadataFile extends MetadataAccessibleObject {
      */
     public MetadataFile(XMLEntityMappings entityMappings) {
         super(entityMappings.getMappingFile(), entityMappings);
+    }
+    
+    /**
+     * INTERNAL:
+     * Return the attribute name of this accessible object. Right now it's just 
+     * the location. This method is currently never called and is implemented
+     * only to satisfy the abstract definition. An attribute name is very
+     * important on the metadata annotated element side and describes the
+     * attribute the metadata is tied to. This avoids unnecessary casting when
+     * initializing XML objects. If in the future, some logging message (or 
+     * something else would like to use this method, feel free to modify it to 
+     * return whatever is necessary (and of course, change this comment to 
+     * reflect the new dependency).
+     */
+    public String getAttributeName() {
+        return getLocation().toString();
     }
     
     /**

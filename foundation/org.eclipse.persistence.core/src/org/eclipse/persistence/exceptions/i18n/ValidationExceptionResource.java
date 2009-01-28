@@ -287,6 +287,11 @@ public class ValidationExceptionResource extends ListResourceBundle {
                                            { "7306", "The annotated element [{0}] from the class [{1}] has an incorrect explicit access type specified. It should specify an access type of [{2}]." },
                                            { "7307", "Missing a logging context string for the context [{0}]. This is an internal exception that occurred retrieving a log message for JPA metadata processing, please report a bug." },
                                            { "7308", "The specified value [{0}] for for the persistence property [{1}] is invalid - [{2}]."},
+                                           { "7309", "The attribute named [{1}] from the embeddable class [{0}] is not a valid mapping to use with an attribute override for the attribute [{3}] on class [{2}]." },
+                                           { "7310", "The target class of the element collection attribute [{0}] on the class [{1}] cannot be determined.  When not using generics, ensure the target class is defined on the element collection mapping."},
+                                           { "7311", "An invalid target class is being used with the element collection attribute [{0}] on the class [{1}].  Only basic types and embeddable classes are allowed."},
+                                           { "7312", "An invalid embeddable class [{0}] is being used with the element collection attribute [{1}] on the class [{2}]. See section 2.6 of the spec: \" An embeddable class (including an embeddable class within another embeddable class) contained within an element collection must not contain an element collection, nor may it contain a relationship to an entity other than a many-to-one or one-to-one relationship. The embeddable class must be on the owning side of such a relationship and the relationship must be mapped by a foreign key mapping. The mapping for the attribute [{3}] on the embeddable class is in violation of this."},
+                                           
                                            
  };
     

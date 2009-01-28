@@ -13,23 +13,8 @@
  *     01/28/2009-1.1 Guy Pelletier 
  *       - 248293: JPA 2.0 Element Collections (part 1)
  ******************************************************************************/
-package org.eclipse.persistence.testing.models.jpa.inherited;
+package org.eclipse.persistence.testing.models.jpa.xml.inherited;
 
-import javax.persistence.AssociationOverride;
-import javax.persistence.AttributeOverride;
-import javax.persistence.AttributeOverrides;
-import javax.persistence.Column;
-import javax.persistence.DiscriminatorValue;
-import javax.persistence.Entity;
-import javax.persistence.JoinColumn;
-
-@Entity(name="NOVICE_CONSUMER")
-@DiscriminatorValue(value="NBC")
-@AttributeOverrides({
-    @AttributeOverride(name="date", column=@Column(name="REC_DATE")),
-    @AttributeOverride(name="description", column=@Column(name="DESCRIP"))
-})
-@AssociationOverride(name="location", joinColumns=@JoinColumn(name="LOC_ID", referencedColumnName="ID"))
 public class NoviceBeerConsumer extends RatedBeerConsumer<Integer, Integer, Integer> {
     public NoviceBeerConsumer() {
         super();

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2008 Oracle. All rights reserved.
+ * Copyright (c) 1998, 2009 Oracle. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -15,11 +15,12 @@
  *       - 232975: Failure when attribute type is generic
  *     09/23/2008-1.1 Guy Pelletier 
  *       - 241651: JPA 2.0 Access Type support
+ *     01/28/2009-1.1 Guy Pelletier 
+ *       - 248293: JPA 2.0 Element Collections (part 1)
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.accessors.mappings;
 
 import java.lang.annotation.Annotation;
-import java.util.Map;
 
 import org.eclipse.persistence.exceptions.ValidationException;
 
@@ -27,10 +28,6 @@ import org.eclipse.persistence.internal.jpa.metadata.MetadataLogger;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.classes.ClassAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAccessibleObject;
 import org.eclipse.persistence.internal.jpa.metadata.columns.ColumnMetadata;
-
-import org.eclipse.persistence.mappings.DatabaseMapping;
-import org.eclipse.persistence.mappings.DirectMapMapping;
-import org.eclipse.persistence.mappings.converters.Converter;
 
 /**
  * INTERNAL:
@@ -43,7 +40,6 @@ public class BasicMapAccessor extends BasicCollectionAccessor {
     private ColumnMetadata m_keyColumn;
     private String m_keyConverter;
     private String m_valueConverter;
-    private boolean m_keyContextProcessing;
     
     /**
      * INTERNAL:
@@ -107,6 +103,7 @@ public class BasicMapAccessor extends BasicCollectionAccessor {
      * INTERNAL:
      * Used for OX mapping.
      */
+    @Override
     public String getKeyConverter() {
         return m_keyConverter;
     }
@@ -117,7 +114,7 @@ public class BasicMapAccessor extends BasicCollectionAccessor {
      */
     @Override
     public Class getReferenceClass() {
-        if (m_keyContextProcessing) {
+        if (isKeyContextProcessing()) {
             return getAccessibleObject().getMapKeyClass(getDescriptor());            
         } else {
             return getReferenceClassFromGeneric();
@@ -128,6 +125,7 @@ public class BasicMapAccessor extends BasicCollectionAccessor {
      * INTERNAL:
      * Used for OX mapping.
      */
+    @Override
     public String getValueConverter() {
         return m_valueConverter;
     }
@@ -152,20 +150,6 @@ public class BasicMapAccessor extends BasicCollectionAccessor {
         
         // Initialize single ORMetadata objects.
         initXMLObject(m_keyColumn, accessibleObject);
-        
-        // Make sure the attribute name is set on the key column if one is
-        // set through XML.
-        if (m_keyColumn != null) {
-            m_keyColumn.setAttributeName(getAttributeName());
-        }
-    }
-    
-    /**
-     * INTERNAL:
-     * Returns true if the given class is a valid basic map type.
-     */ 
-    protected boolean isValidBasicMapType(Class cls) {
-        return cls.equals(Map.class);
     }
     
     /**
@@ -177,96 +161,10 @@ public class BasicMapAccessor extends BasicCollectionAccessor {
      */
     @Override
     public void process() {
-        if (isValidBasicMapType(getRawClass())) {
-            // Initialize our mapping.
-            DirectMapMapping mapping = new DirectMapMapping();
-            
-            // Process common direct collection metadata. This must be done 
-            // before any field processing since field processing requires that 
-            // the collection table be processed before hand.
-            process(mapping);
-            
-            // Process the fetch type
-            if (usesIndirection()) {
-                mapping.useTransparentMap();
-            } else {
-                mapping.dontUseIndirection();
-                mapping.useMapClass(java.util.Hashtable.class);
-            }
-            
-            // Process the key column (we must process this field before the call
-            // to processConverter, since it may set a field classification)
-            mapping.setDirectKeyField(getDatabaseField(mapping.getReferenceTable(), MetadataLogger.MAP_KEY_COLUMN));
-            
-            // Process a converter for the key column of this mapping.
-            processMappingConverter(mapping, m_keyConverter);
-            
-            // Process the value column (we must process this field before the call
-            // to processConverter, since it may set a field classification)
-            mapping.setDirectField(getDatabaseField(mapping.getReferenceTable(), MetadataLogger.VALUE_COLUMN));
-            
-            // Process a converter for value column of this mapping.
-            processMappingConverter(mapping, m_valueConverter);    
-            
-            // process properties
-            processProperties(mapping);
+        if (isValidDirectMapType()) {
+            processDirectMapMapping();
         } else {
             throw ValidationException.invalidTypeForBasicMapAttribute(getAttributeName(), getRawClass(), getJavaClass());
-        }
-    }
-    
-    /**
-     * INTERNAL:
-     * Process a convert value to apply a specified EclipseLink converter 
-     * (Converter, TypeConverter, ObjectTypeConverter) to the given mapping.
-     * 
-     * This method is called in second stage processing and should only be
-     * called on accessors that have a @Convert specified.
-     */
-    @Override
-    public void processConvert() {
-        DatabaseMapping mapping = getDescriptor().getMappingForAttributeName(getAttributeName());
-        
-        m_keyContextProcessing = true;
-        processConvert(mapping, m_keyConverter);
-        
-        m_keyContextProcessing = false;
-        processConvert(mapping, m_valueConverter);
-    }
-    
-    /**
-     * INTERNAL:
-     */
-    @Override
-    public void setConverter(DatabaseMapping mapping, Converter converter) {
-        if (m_keyContextProcessing) {
-            ((DirectMapMapping) mapping).setKeyConverter(converter);
-        } else {
-            ((DirectMapMapping) mapping).setValueConverter(converter);
-        }
-    }
-    
-    /**
-     * INTERNAL:
-     */
-    @Override
-    public void setConverterClassName(DatabaseMapping mapping, String converterClassName) {
-        if (m_keyContextProcessing) {
-            ((DirectMapMapping) mapping).setKeyConverterClassName(converterClassName);
-        } else {
-            ((DirectMapMapping) mapping).setValueConverterClassName(converterClassName);
-        }
-    }
-    
-    /**
-     * INTERNAL:
-     */
-    @Override
-    public void setFieldClassification(DatabaseMapping mapping, Class classification) {
-        if (m_keyContextProcessing) {
-            ((DirectMapMapping) mapping).setDirectKeyFieldClassification(classification);
-        } else {
-            super.setFieldClassification(mapping, classification);
         }
     }
     

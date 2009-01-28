@@ -39,7 +39,7 @@ import org.eclipse.persistence.sessions.remote.DistributedSession;
  * @author King (Yaoping) Wang
  * @since TOPLink/Java 3.0
  */
-public class AggregateCollectionMapping extends CollectionMapping implements RelationalMapping, MapComponentMapping {
+public class AggregateCollectionMapping extends CollectionMapping implements RelationalMapping, MapComponentMapping, EmbeddableMapping {
 
     /** This is a key in the target table which is a foreign key in the target table. */
     protected transient Vector<DatabaseField> targetForeignKeyFields;
@@ -147,11 +147,20 @@ public class AggregateCollectionMapping extends CollectionMapping implements Rel
     /**
      * PUBLIC:
      * Define the target foreign key relationship in the 1-M aggregate collection mapping.
+     * Both the target foreign key field and the source primary key field must be specified.
+     */
+    public void addTargetForeignKeyField(DatabaseField targetForeignKey, DatabaseField sourceKey) {
+        getTargetForeignKeyFields().addElement(targetForeignKey);
+        getSourceKeyFields().addElement(sourceKey);
+    }
+    
+    /**
+     * PUBLIC:
+     * Define the target foreign key relationship in the 1-M aggregate collection mapping.
      * Both the target foreign key field name and the source primary key field name must be specified.
      */
     public void addTargetForeignKeyFieldName(String targetForeignKey, String sourceKey) {
-        getTargetForeignKeyFields().addElement(new DatabaseField(targetForeignKey));
-        getSourceKeyFields().addElement(new DatabaseField(sourceKey));
+        addTargetForeignKeyField(new DatabaseField(targetForeignKey), new DatabaseField(sourceKey));
     }
 
     /**

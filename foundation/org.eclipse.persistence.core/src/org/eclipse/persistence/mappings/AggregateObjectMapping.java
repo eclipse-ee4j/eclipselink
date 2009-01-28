@@ -42,7 +42,7 @@ import org.eclipse.persistence.sessions.Project;
  * @author Sati
  * @since TOPLink/Java 1.0
  */
-public class AggregateObjectMapping extends AggregateMapping implements RelationalMapping, MapKeyMapping {
+public class AggregateObjectMapping extends AggregateMapping implements RelationalMapping, MapKeyMapping, EmbeddableMapping {
 
     /**
      * If <em>all</em> the fields in the database row for the aggregate object are NULL,

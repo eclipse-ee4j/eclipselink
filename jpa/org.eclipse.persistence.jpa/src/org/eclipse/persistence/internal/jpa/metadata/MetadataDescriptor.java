@@ -25,6 +25,8 @@
  *       - 249329: To remain JPA 1.0 compliant, any new JPA 2.0 annotations should be referenced by name
  *     12/12/2008-1.1 Guy Pelletier 
  *       - 249860: Implement table per class inheritance support.
+ *     01/28/2009-1.1 Guy Pelletier 
+ *       - 248293: JPA 2.0 Element Collections (part 1)
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata;
 
@@ -48,8 +50,8 @@ import org.eclipse.persistence.internal.descriptors.OptimisticLockingPolicy;
 import org.eclipse.persistence.internal.jpa.CMP3Policy;
 
 import org.eclipse.persistence.internal.jpa.metadata.accessors.classes.ClassAccessor;
+import org.eclipse.persistence.internal.jpa.metadata.accessors.classes.EmbeddableAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.classes.EntityAccessor;
-import org.eclipse.persistence.internal.jpa.metadata.accessors.mappings.BasicCollectionAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.mappings.CollectionAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.mappings.ManyToManyAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.mappings.MappingAccessor;
@@ -115,8 +117,6 @@ public class MetadataDescriptor {
     private List<String> m_orderByAttributeNames;
     private List<String> m_idOrderByAttributeNames;
     private List<MetadataDescriptor> m_embeddableDescriptors;
-    private List<RelationshipAccessor> m_relationshipAccessors;
-    private List<BasicCollectionAccessor> m_basicCollectionAccessors;
     
     private Map<String, Type> m_pkClassIDs;
     private Map<String, Type> m_genericTypes;
@@ -153,8 +153,6 @@ public class MetadataDescriptor {
         m_orderByAttributeNames = new ArrayList<String>();
         m_idOrderByAttributeNames = new ArrayList<String>();
         m_embeddableDescriptors = new ArrayList<MetadataDescriptor>();
-        m_relationshipAccessors = new ArrayList<RelationshipAccessor>();
-        m_basicCollectionAccessors = new ArrayList<BasicCollectionAccessor>();
         
         m_pkClassIDs = new HashMap<String, Type>();
         m_genericTypes = new HashMap<String, Type>();
@@ -205,14 +203,6 @@ public class MetadataDescriptor {
      */
     public void addAttributeOverride(AttributeOverrideMetadata attributeOverride) {
         m_attributeOverrides.put(attributeOverride.getName(), attributeOverride);
-    }
-
-    /**
-     * INTERNAL:
-     * Store basic collection accessors for later processing and quick look up.
-     */
-    public void addBasicCollectionAccessor(MetadataAccessor accessor) {
-        m_basicCollectionAccessors.add((BasicCollectionAccessor) accessor);
     }
     
     /** 
@@ -319,7 +309,7 @@ public class MetadataDescriptor {
       * Store relationship accessors for later processing and quick look up.
       */
     public void addRelationshipAccessor(MappingAccessor accessor) {
-        m_relationshipAccessors.add((RelationshipAccessor) accessor);
+        getProject().addRelationshipAccessor(accessor);
         
         // Store bidirectional ManyToMany relationships so that we may look at 
         // attribute names when defaulting join columns.
@@ -337,8 +327,6 @@ public class MetadataDescriptor {
                 m_biDirectionalManyToManyAccessors.get(referenceClassName).put(mappedBy, accessor);
             }
         }
-        
-        m_classAccessor.getProject().addAccessorWithRelationships(m_classAccessor);
     }
     
     /**
@@ -409,15 +397,22 @@ public class MetadataDescriptor {
     /**
      * INTERNAL:
      */
-    public AttributeOverrideMetadata getAttributeOverrideFor(String attributeName) {
-        return m_attributeOverrides.get(attributeName);
+    public Collection<AssociationOverrideMetadata> getAssociationOverrides() {
+        return m_associationOverrides.values();
     }
-
+    
     /**
      * INTERNAL:
      */
-    public List<BasicCollectionAccessor> getBasicCollectionAccessors() {
-        return m_basicCollectionAccessors;
+    public AttributeOverrideMetadata getAttributeOverrideFor(String attributeName) {
+        return m_attributeOverrides.get(attributeName);
+    }
+    
+    /**
+     * INTERNAL:
+     */
+    public Collection<AttributeOverrideMetadata> getAttributeOverrides() {
+        return m_attributeOverrides.values();
     }
     
     /**
@@ -817,13 +812,6 @@ public class MetadataDescriptor {
     /**
      * INTERNAL:
      */
-    public List<RelationshipAccessor> getRelationshipAccessors() {
-        return m_relationshipAccessors;
-    }
-    
-    /**
-     * INTERNAL:
-     */
     protected ReturningPolicy getReturningPolicy() {
         if (! m_descriptor.hasReturningPolicy()) {
             m_descriptor.setReturningPolicy(new ReturningPolicy());
@@ -1053,8 +1041,9 @@ public class MetadataDescriptor {
     
     /**
      * INTERNAL:
-     * Process this descriptos accessors. Relationship accessors will be stored 
-     * for later processing.
+     * Process this descriptors accessors. Some accessors will not be processed
+     * right away, instead stored on the project for processing in a later 
+     * stage.
      */
     public void processAccessors(MetadataDescriptor owningDescriptor) {
         for (MappingAccessor accessor : m_accessors.values()) {
@@ -1069,33 +1058,57 @@ public class MetadataDescriptor {
                 // Process any converters on this accessor.
                 accessor.processConverters();
             
-                if (accessor.isBasicCollection()) {
-                    // BasicCollection and BasicMaps rely on a primary key
-                    // having been processed before hand.
-                    addBasicCollectionAccessor(accessor);
+                // We need to defer the processing of some mappings to stage
+                // 2 processing. Accessors are added to different lists since
+                // the order or processing of those accessors is important.
+                // See MetadataProject.processStage2() for more details.
+                // Care must be taken in the order of checking here.
+                if (accessor.isDirectEmbeddableCollection() || accessor.isEmbedded()) {
+                    EmbeddableAccessor embeddableAccessor = getProject().getEmbeddableAccessor(accessor.getReferenceClass());
+                    
+                    // If there is no embeddable accessor at this point,
+                    // something is wrong, throw an exception. Note a direct
+                    // embeddable collection can't hit here since we don't build 
+                    // a direct embeddable collection if the reference class is 
+                    // not an Embeddable.
+                    if (embeddableAccessor == null) {
+                        throw ValidationException.invalidEmbeddedAttribute(getJavaClass(), accessor.getAttributeName(), accessor.getReferenceClass());
+                    } else {
+                        // Process the embeddable class now.
+                        // Change this around a bit? Order seems to be backwards.
+                        embeddableAccessor.process(accessor);
+                        //accessor.processEmbeddableAccessor(embeddableAccessor);
+                    
+                        // Store this descriptor metadata. It may be needed again 
+                        // later on to look up a mappedBy attribute etc.
+                        addEmbeddableDescriptor(embeddableAccessor.getDescriptor());
+                    
+                        // Since association overrides are not allowed on embeddedid
+                        // cases (since only direct to field mappings are allowed)
+                        // we can process the emebeddedid right now. This will
+                        // likely have to change in the future as I could see 
+                        // embedded id's allowing foreign key references to be part
+                        // of the primary key.
+                        if (accessor.isEmbeddedId()) {
+                            // Process it right now ...
+                            accessor.process();
+                            accessor.setIsProcessed();
+                        } else {
+                            // Otherwise defer it because of association overrides.
+                            // We can't process this mapping till all the
+                            // relationship mappings have been processed.
+                            getProject().addEmbeddableMappingAccessor(accessor);
+                        }
+                    }
+                } else if (accessor.isDirectCollection()) {
+                    getProject().addDirectCollectionAccessor(accessor);
                 } else if (accessor.isRelationship()) {
-                    // Store the relationship accessors for later processing.
-                    // They get processed in stage 2, that is, MetadataProject
-                    // processing.
                     addRelationshipAccessor(accessor);
                 } else {
                     accessor.process();
                     accessor.setIsProcessed();
                 }
             }
-        }
-    }
-    
-    /**
-     * INTERNAL:
-     * Process any BasicCollection annotation and/or BasicMap annotation that 
-     * were found. They are not processed till after an id has been processed 
-     * since they rely on one to map the collection table.
-     */
-    public void processBasicCollectionAccessors() {
-        for (BasicCollectionAccessor accessor : m_basicCollectionAccessors) {
-            accessor.process();
-            accessor.setIsProcessed();
         }
     }
     
@@ -1288,6 +1301,13 @@ public class MetadataDescriptor {
      */
     public void setIsEmbeddable() {
         m_descriptor.descriptorIsAggregate();
+    }
+    
+    /**
+     * INTERNAL:
+     */
+    public void setIsEmbeddableCollection() {
+        m_descriptor.descriptorIsAggregateCollection();
     }
     
     /**

@@ -85,7 +85,7 @@
                     <conversion-value data-value="DI" object-value="DinersClub"/>
                 </object-type-converter>
                 <type-converter name="Long2String" data-type="String" object-type="Long"/>
-                <!-- Let the collection table default in this case (EMPLOYEE_CREDITCARDS) -->
+                <!-- Let the collection table default in this case (XMLEmployee_CREDITCARDS) -->
                 <property name="attributeName" value="creditCards"/>
             </basic-map>
             <version name="version">

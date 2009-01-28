@@ -13,7 +13,7 @@
  *     01/28/2009-1.1 Guy Pelletier 
  *       - 248293: JPA 2.0 Element Collections (part 1)   
  ******************************************************************************/
-package org.eclipse.persistence.testing.models.jpa.inherited;
+package org.eclipse.persistence.testing.models.jpa.xml.inherited;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -21,27 +21,9 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.persistence.AssociationOverride;
-import javax.persistence.AttributeOverride;
-import javax.persistence.AttributeOverrides;
-import javax.persistence.CollectionTable;
-import javax.persistence.Column;
-import javax.persistence.DiscriminatorValue;
 import javax.persistence.ElementCollection;
-import javax.persistence.Entity;
-import javax.persistence.JoinColumn;
 import javax.persistence.Lob;
-import javax.persistence.MapKeyColumn;
 
-import org.eclipse.persistence.annotations.BasicCollection;
-
-@Entity(name="EXPERT_CONSUMER")
-@DiscriminatorValue(value="EBC")
-@AttributeOverrides({
-    @AttributeOverride(name="date", column=@Column(name="RECORD_DATE")),
-    @AttributeOverride(name="description", column=@Column(name="DESCRIPTION"))
-})
-@AssociationOverride(name="location", joinColumns=@JoinColumn(name="LOCATION_ID", referencedColumnName="ID"))
 public class ExpertBeerConsumer extends RatedBeerConsumer<String, String, String> {
     private Map<Date, String> quotes;
     private Collection<byte[]> audio;
@@ -52,18 +34,12 @@ public class ExpertBeerConsumer extends RatedBeerConsumer<String, String, String
         audio = new ArrayList<byte[]>();
     }   
     
-    @BasicCollection
+    @ElementCollection
     @Lob
     public Collection<byte[]> getAudio() {
         return audio;
     }
     
-    @ElementCollection
-    @MapKeyColumn(name="Q_DATE")
-    @Column(name="QUOTE")
-    @CollectionTable(
-            name="EXPERT_QUOTES",
-            joinColumns=@JoinColumn(name="EBC_ID"))
     public Map<Date, String> getQuotes() {
         return quotes;
     }

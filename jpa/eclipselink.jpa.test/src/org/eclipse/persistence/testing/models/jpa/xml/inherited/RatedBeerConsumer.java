@@ -15,7 +15,7 @@
  *     01/28/2009-1.1 Guy Pelletier 
  *       - 248293: JPA 2.0 Element Collections (part 1)   
  ******************************************************************************/
-package org.eclipse.persistence.testing.models.jpa.inherited;
+package org.eclipse.persistence.testing.models.jpa.xml.inherited;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -23,44 +23,12 @@ import java.util.Hashtable;
 import java.util.Map;
 import java.util.Vector;
 
-import javax.persistence.Access;
-import javax.persistence.Basic;
-import javax.persistence.Column;
-import javax.persistence.ElementCollection;
-import javax.persistence.MappedSuperclass;
 import javax.persistence.Transient;
 
-import static javax.persistence.AccessType.FIELD;
-import static javax.persistence.AccessType.PROPERTY;
-
-import org.eclipse.persistence.annotations.BasicCollection;
-import org.eclipse.persistence.annotations.BasicMap;
-
-@MappedSuperclass
-@Access(FIELD)
 public abstract class RatedBeerConsumer<X, Y, Z> extends BeerConsumer {
-    @BasicCollection(valueColumn=@Column(name="ACCLAIM"))
     private Collection<X> acclaims;
-    
-    // Let the key column default. Should default to AWARDS_KEY
-    // A keyColumn specification is tested in org.eclipse.persistence.testing.models.jpa.advanced.Buyer
-    @BasicMap(valueColumn=@Column(name="AWARD_CODE"))
     private Map<Y, Z> awards;
-    
-    // An element collection representing a direct collection mapping.
-    @ElementCollection
-    @Column(name="DESIGNATION")
-    // CollectionTable will default in this case, Entity name + "_" + attribute name
-    // JoinColumns will default in this case which are different from BasicCollection collection table default
     private Collection<String> designations;
-    
-    // An element collection representing an aggregate collection mapping.
-    @ElementCollection
-    // CollectionTable will default
-    // Column is not applicable here.
-    // JoinColumns will default.
-    // Both expert and novice consumers will define attribute overrides and
-    // association overrides to apply to their respective tables.
     private Collection<Record> records;
     
     @Transient
@@ -85,10 +53,7 @@ public abstract class RatedBeerConsumer<X, Y, Z> extends BeerConsumer {
     public Collection<String> getDesignations() {
         return designations;
     }
-    
-    @Basic
-    @Column(name="CONSUMER_IQ")
-    @Access(PROPERTY)
+
     public int getIQ() {
         return iq;
     }

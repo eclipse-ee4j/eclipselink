@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2008 Oracle. All rights reserved.
+ * Copyright (c) 1998, 2009 Oracle. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -55,13 +55,6 @@ public class ColumnMetadata extends ORMetadata {
     /**
      * INTERNAL:
      */
-    public ColumnMetadata(MetadataAccessibleObject accessibleObject, String attributeName) {
-        this(null, accessibleObject, attributeName);
-    }
-    
-    /**
-     * INTERNAL:
-     */
     public ColumnMetadata(Annotation column, MetadataAccessibleObject accessibleObject) {
         this(column, accessibleObject, "");
     }
@@ -89,6 +82,13 @@ public class ColumnMetadata extends ORMetadata {
             setTable((String) MetadataHelper.invokeMethod("table", column));
             setColumnDefinition((String) MetadataHelper.invokeMethod("columnDefinition", column));
         }
+    }
+    
+    /**
+     * INTERNAL:
+     */
+    public ColumnMetadata(MetadataAccessibleObject accessibleObject, String attributeName) {
+        this(null, accessibleObject, attributeName);
     }
     
     /**
@@ -262,6 +262,19 @@ public class ColumnMetadata extends ORMetadata {
     
     /**
      * INTERNAL:
+     */
+    @Override
+    public void initXMLObject(MetadataAccessibleObject accessibleObject) {
+        super.initXMLObject(accessibleObject);
+        
+        m_attributeName = accessibleObject.getAttributeName();
+    }
+    
+    /**
+     * INTERNAL:
+     * The attribute name is used when loggin messages. Users should call this 
+     * method if they would like to override the attribute name for this column
+     * @see AttributeOverrideMetadata initXMLObject. 
      */
     public void setAttributeName(String attributeName) {
         m_attributeName = attributeName;

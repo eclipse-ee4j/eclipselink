@@ -227,6 +227,7 @@ public class LoggingLocalizationResource extends ListResourceBundle {
         { "metadata_default_many_to_one_reference_class", "The target entity (reference) class for the many to one mapping element [{0}] is being defaulted to: {1}." },
         { "metadata_default_many_to_many_reference_class", "The target entity (reference) class for the many to many mapping element [{0}] is being defaulted to: {1}." },
         { "metadata_default_variable_one_to_one_reference_class", "The target interface (reference) class for the variable one to one mapping element [{0}] is being defaulted to: {1}." },
+        { "metadata_default_element_collection_reference_class", "The target class (reference) class for the element collection mapping element [{0}] is being defaulted to: {1}." },
 
         { "non_jpa_allowed_type_used_for_collection_using_lazy_access", "Element [{1}] within entity class [{0}] uses a collection type [{2}] when the JPA specification only supports java.util.Collection, " +
                 "java.util.Set, java.util.List, or java.util.Map.  This type is supported with eager loading; using lazy loading with this collection type requires additional configuration and an IndirectContainer implementation " +

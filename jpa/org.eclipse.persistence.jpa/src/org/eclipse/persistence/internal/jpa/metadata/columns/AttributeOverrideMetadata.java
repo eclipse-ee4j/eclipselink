@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2008 Oracle. All rights reserved.
+ * Copyright (c) 1998, 2009 Oracle. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -16,6 +16,7 @@ package org.eclipse.persistence.internal.jpa.metadata.columns;
 
 import java.lang.annotation.Annotation;
 
+import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataLogger;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAccessibleObject;
 
@@ -75,16 +76,26 @@ public class AttributeOverrideMetadata extends OverrideMetadata {
     
     /**
      * INTERNAL:
+     * Return the database field for this override.
+     */
+    public DatabaseField getOverrideField() {
+        return m_column.getDatabaseField();
+    }
+    
+    /**
+     * INTERNAL:
      */
     @Override
     public void initXMLObject(MetadataAccessibleObject accessibleObject) {
         super.initXMLObject(accessibleObject);
 
-        // Make sure the attribute name is set on the column.
-        m_column.setAttributeName(getName());
-
         // Initialize single objects.
+        // NOTE: We must do this first since this will set the attribute name
+        // on the column to be the attribute name from the accessible object.
         initXMLObject(m_column, accessibleObject);
+        
+        // Now, make sure the correct attribute name is set on the column.
+        m_column.setAttributeName(getName());
     }
     
     /**

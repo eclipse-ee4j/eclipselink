@@ -19,6 +19,8 @@
  *       - 241651: JPA 2.0 Access Type support
  *     10/01/2008-1.1 Guy Pelletier 
  *       - 249329: To remain JPA 1.0 compliant, any new JPA 2.0 annotations should be referenced by name
+ *     01/28/2009-1.1 Guy Pelletier 
+ *       - 248293: JPA 2.0 Element Collections (part 1)
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.accessors.classes;
 
@@ -28,6 +30,7 @@ import org.eclipse.persistence.annotations.Cache;
 import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataLogger;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataProject;
+import org.eclipse.persistence.internal.jpa.metadata.accessors.mappings.MappingAccessor;
 
 /**
  * INTERNAL:
@@ -55,6 +58,7 @@ public class EmbeddableAccessor extends ClassAccessor {
      * INTERNAL:
      * Process the items of interest on an embeddable class.
      */
+    @Override
     public void process() {
         // If a Cache annotation is present throw an exception.
         if (isAnnotationPresent(Cache.class)) {
@@ -83,6 +87,50 @@ public class EmbeddableAccessor extends ClassAccessor {
 
         // Process the accessors on this embeddable.
         processAccessors();
+    }
+    
+    /**
+     * INTERNAL:
+     * This method processes an embeddable class, if we have not processed it 
+     * yet. Be careful while changing the order of processing.
+     */
+    public void process(MappingAccessor mappingAccessor) {
+        if (isProcessed()) {
+            // We have already processed this embeddable class. Let's validate 
+            // that it is not used in entities with conflicting access type
+            // when the embeddable doesn't have its own explicit setting. The
+            // biggest mistake that could occur otherwise is that FIELD
+            // processing 'could' yield a different mapping set then PROPERTY
+            // processing would. Do we really care? If both access types
+            // yielded the same mappings then the only difference would be
+            // how they are accessed and well ... does it really matter at this
+            // point? The only way to know if they would yield different
+            // mappings would be by processing the class for each access type
+            // and comparing the yield or some other code to manually inspect
+            // the class. I think this error should be removed since the spec
+            // states: 
+            //  "Embedded objects belong strictly to their owning entity, and 
+            //   are not sharable across persistent entities. Attempting to 
+            //   share an embedded object across entities has undefined 
+            //   semantics."
+            // I think we should assume the users know what they are are doing
+            // in this case (that is, if they opt to share an embeddable).
+            if (! hasAccess()) {
+                // We inherited our access from our owning entity.
+                if (getDescriptor().getDefaultAccess() != mappingAccessor.getOwningDescriptor().getDefaultAccess()) {
+                    throw ValidationException.conflictingAccessTypeForEmbeddable(getJavaClass(), usesPropertyAccess(), mappingAccessor.getOwningDescriptor().getJavaClass(), mappingAccessor.getOwningDescriptor().getClassAccessor().usesPropertyAccess());
+                }
+            }
+            
+            // TODO: We also need to do more processing here for shared
+            // embeddables. Primary key settings etc...
+        } else {
+            // Need to set the owning descriptor on the embeddable class before 
+            // we proceed any further in the processing.
+            setOwningDescriptor(mappingAccessor.getOwningDescriptor());
+            process();
+            setIsProcessed();    
+        }
     }
     
     /**

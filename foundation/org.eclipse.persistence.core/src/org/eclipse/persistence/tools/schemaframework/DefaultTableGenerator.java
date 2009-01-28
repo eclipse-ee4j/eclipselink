@@ -158,8 +158,10 @@ public class DefaultTableGenerator {
                 return tblCreator;
             }
 
-            //aggregate RelationalDescriptor does not contains table/field data
-            if (!desc.isAggregateDescriptor()) {
+            // Aggregate descriptors do not contain table/field data and are 
+            // processed through their owning entities. Aggregate descriptors
+            // can not exist on their own.
+            if (!desc.isAggregateDescriptor() && !desc.isAggregateCollectionDescriptor()) {
                 initTableSchema(desc);
             }
         }
@@ -170,7 +172,10 @@ public class DefaultTableGenerator {
         while (descIter.hasNext()) {
             ClassDescriptor desc = (ClassDescriptor) descIter.next();
 
-            if (!desc.isAggregateDescriptor()) {
+            // Aggregate descriptors do not contain table/field data and are 
+            // processed through their owning entities. Aggregate descriptors
+            // can not exist on their own.
+            if (!desc.isAggregateDescriptor() && !desc.isAggregateCollectionDescriptor()) {
                 postInitTableSchema(desc);
             }
         }

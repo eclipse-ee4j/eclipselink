@@ -238,7 +238,7 @@ public class ValidationException extends EclipseLinkException {
     public static final int CANNOT_CAST_TO_CLASS = 7196;
     public static final int CLASS_NOT_FOUND_WHILE_CONVERTING_CLASSNAMES = 7198;
     public static final int PRIMARY_TABLE_NOT_DEFINED_FOR_RELATIONSHIP = 7199;    
-    public static final int INVALID_EMBEDDABLE_ATTRIBUTE = 7200;
+    public static final int EMBEDDABLE_ATTRIBUTE_NOT_FOUND = 7200;
     public static final int INVALID_ENTITY_MAPPINGS_DOCUMENT = 7201;    
     public static final int INVALID_ATTRIBUTE_OVERRIDE_NAME = 7202;    
     public static final int INVALID_COLLECTION_TYPE_FOR_RELATIONSHIP = 7203;
@@ -326,7 +326,6 @@ public class ValidationException extends EclipseLinkException {
     public static final int CANNOT_INSTANTIATE_SESSIONEVENTLISTENER_CLASS = 7276;
     public static final int LOGGING_FILE_NAME_CANNOT_BE_EMPTY = 7277;
     public static final int INVALID_BOOLEAN_VALUE_FOR_PROPERTY = 7278;
-    public static final int INVALID_VALUE_FOR_PROPERTY = 7308;
     
     // Converters
     // 7279-7281 deleted
@@ -372,6 +371,12 @@ public class ValidationException extends EclipseLinkException {
     
     // JPA - Internal exception
     public static final int MISSING_CONTEXT_STRING_FOR_CONTEXT = 7307;
+    
+    public static final int INVALID_VALUE_FOR_PROPERTY = 7308;
+    public static final int INVALID_EMBEDDABLE_ATTRIBUTE_FOR_ATTRIBUTE_OVERRIDE = 7309;
+    public static final int UNABLE_TO_DETERMINE_TARGET_CLASS = 7310;
+    public static final int INVALID_TARGET_CLASS = 7311;
+    public static final int INVALID_EMBEDDABLE_CLASS_FOR_ELEMENT_COLLECTION = 7312;
     
     /**
      * INTERNAL:
@@ -1108,11 +1113,27 @@ public class ValidationException extends EclipseLinkException {
         return validationException;
     }
 
-    public static ValidationException invalidEmbeddableAttribute(Class aggregateClass, String aggregateAttributeName, Class owningClass, String owningAttributeName) {
+    public static ValidationException invalidEmbeddableAttributeForAttributeOverride(Class aggregateClass, String aggregateAttributeName, Class owningClass, String owningAttributeName) {
         Object[] args = { aggregateClass, aggregateAttributeName,  owningClass, owningAttributeName};
 
-        ValidationException validationException = new ValidationException(ExceptionMessageGenerator.buildMessage(ValidationException.class, INVALID_EMBEDDABLE_ATTRIBUTE, args));
-        validationException.setErrorCode(INVALID_EMBEDDABLE_ATTRIBUTE);
+        ValidationException validationException = new ValidationException(ExceptionMessageGenerator.buildMessage(ValidationException.class, INVALID_EMBEDDABLE_ATTRIBUTE_FOR_ATTRIBUTE_OVERRIDE, args));
+        validationException.setErrorCode(INVALID_EMBEDDABLE_ATTRIBUTE_FOR_ATTRIBUTE_OVERRIDE);
+        return validationException;
+    }
+    
+    public static ValidationException invalidEmbeddableClassForElementCollection(Class embeddableClass, String attributeName, Class owningClass, String embeddableClassAttributeName) {
+        Object[] args = { embeddableClass, attributeName, owningClass, embeddableClassAttributeName };
+
+        ValidationException validationException = new ValidationException(ExceptionMessageGenerator.buildMessage(ValidationException.class, INVALID_EMBEDDABLE_CLASS_FOR_ELEMENT_COLLECTION, args));
+        validationException.setErrorCode(INVALID_EMBEDDABLE_CLASS_FOR_ELEMENT_COLLECTION);
+        return validationException;
+    }
+    
+    public static ValidationException embeddableAttributeNotFound(Class aggregateClass, String aggregateAttributeName, Class owningClass, String owningAttributeName) {
+        Object[] args = { aggregateClass, aggregateAttributeName,  owningClass, owningAttributeName};
+
+        ValidationException validationException = new ValidationException(ExceptionMessageGenerator.buildMessage(ValidationException.class, EMBEDDABLE_ATTRIBUTE_NOT_FOUND, args));
+        validationException.setErrorCode(EMBEDDABLE_ATTRIBUTE_NOT_FOUND);
         return validationException;
     }
 
@@ -1802,6 +1823,14 @@ public class ValidationException extends EclipseLinkException {
         return validationException;
     }
 
+    public static ValidationException unableToDetermineTargetClass(String attributeName, Class cls) {
+        Object[] args = { attributeName, cls };
+
+        ValidationException validationException = new ValidationException(ExceptionMessageGenerator.buildMessage(ValidationException.class, UNABLE_TO_DETERMINE_TARGET_CLASS, args));
+        validationException.setErrorCode(UNABLE_TO_DETERMINE_TARGET_CLASS);
+        return validationException;
+    }
+    
     /**
      * PUBLIC:
      * Possible cause: the type of the attribute is Map, Set, List or Collection, and no target-entity is defined.
@@ -2335,6 +2364,13 @@ public class ValidationException extends EclipseLinkException {
         return validationException;
     }
 
+    public static ValidationException invalidTargetClass(String attributeName, Class cls) {
+        Object[] args = { attributeName, cls };
+
+        ValidationException validationException = new ValidationException(ExceptionMessageGenerator.buildMessage(ValidationException.class, INVALID_TARGET_CLASS, args));
+        validationException.setErrorCode(INVALID_TARGET_CLASS);
+        return validationException;
+    }
     
     public static ValidationException invalidCacheStatementsSize(String cacheStatementsSize,String errorMessage) {
         Object[] args = { cacheStatementsSize,errorMessage};

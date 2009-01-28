@@ -25,6 +25,8 @@
  *       - 249329: To remain JPA 1.0 compliant, any new JPA 2.0 annotations should be referenced by name
  *     12/12/2008-1.1 Guy Pelletier 
  *       - 249860: Implement table per class inheritance support.
+ *     01/28/2009-1.1 Guy Pelletier 
+ *       - 248293: JPA 2.0 Element Collections (part 1)
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.accessors.classes;
 
@@ -452,6 +454,14 @@ public class EntityAccessor extends MappedSuperclassAccessor {
     
     /**
      * INTERNAL:
+     */
+    @Override
+    public boolean isMappedSuperclass() {
+        return false;
+    }
+    
+    /**
+     * INTERNAL:
      * Entity level merging details.
      */
     @Override
@@ -541,10 +551,6 @@ public class EntityAccessor extends MappedSuperclassAccessor {
     protected void processAssociationOverrides() {
         // Process the XML association override elements first.
         for (AssociationOverrideMetadata associationOverride : m_associationOverrides) {
-            // Set the extra metadata needed for processing that could not
-            // be set during OX loading.
-            associationOverride.setJavaClassName(getJavaClassName());
-                
             // Process the association override.
             processAssociationOverride(associationOverride);
         }
@@ -564,11 +570,6 @@ public class EntityAccessor extends MappedSuperclassAccessor {
     protected void processAttributeOverrides() {
         // Process the XML attribute overrides first.
         for (AttributeOverrideMetadata attributeOverride : m_attributeOverrides) {
-            // Set the extra metadata needed for processing that could not
-            // be set during OX loading.
-            attributeOverride.setJavaClassName(getJavaClassName());             
-            attributeOverride.getColumn().setAttributeName(attributeOverride.getName());
-                
             // Process the attribute override.
             processAttributeOverride(attributeOverride);
         }
@@ -619,13 +620,8 @@ public class EntityAccessor extends MappedSuperclassAccessor {
         // Validate the optimistic locking setting.
         validateOptimisticLocking();
             
-        // Primary key has been validated, let's process those items that
-        // depend on it now.
-            
-        // Process any BasicCollection and BasicMap metadata we found.
-        getDescriptor().processBasicCollectionAccessors();
-            
-        // Process the SecondaryTable(s) metadata.
+        // Process the SecondaryTable(s) metadata now that we have validated
+        // that we have a primary key.
         processSecondaryTables();
     }
     

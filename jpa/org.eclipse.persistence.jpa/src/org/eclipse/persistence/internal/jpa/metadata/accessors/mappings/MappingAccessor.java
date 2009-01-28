@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2008 Oracle. All rights reserved.
+ * Copyright (c) 1998, 2009 Oracle. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -16,6 +16,8 @@
  *       - 211329: Add sequencing on non-id attribute(s) support to the EclipseLink-ORM.XML Schema
  *     09/23/2008-1.1 Guy Pelletier 
  *       - 241651: JPA 2.0 Access Type support
+ *     01/28/2009-1.1 Guy Pelletier 
+ *       - 248293: JPA 2.0 Element Collections (part 1)
  ******************************************************************************/
 package org.eclipse.persistence.internal.jpa.metadata.accessors.mappings;
 
@@ -38,6 +40,8 @@ import org.eclipse.persistence.annotations.ReturnUpdate;
 import org.eclipse.persistence.exceptions.ValidationException;
 
 import org.eclipse.persistence.internal.helper.ClassConstants;
+import org.eclipse.persistence.internal.helper.DatabaseField;
+import org.eclipse.persistence.internal.helper.DatabaseTable;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataDescriptor;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataLogger;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.AccessMethodsMetadata;
@@ -46,11 +50,15 @@ import org.eclipse.persistence.internal.jpa.metadata.accessors.PropertyMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.classes.ClassAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAccessibleObject;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataMethod;
+import org.eclipse.persistence.internal.jpa.metadata.columns.AssociationOverrideMetadata;
+import org.eclipse.persistence.internal.jpa.metadata.columns.JoinColumnMetadata;
 import org.eclipse.persistence.internal.queries.CollectionContainerPolicy;
 
 import org.eclipse.persistence.mappings.CollectionMapping;
 import org.eclipse.persistence.mappings.DatabaseMapping;
+import org.eclipse.persistence.mappings.EmbeddableMapping;
 import org.eclipse.persistence.mappings.ForeignReferenceMapping;
+import org.eclipse.persistence.mappings.OneToOneMapping;
 
 /**
  * INTERNAL:
@@ -67,19 +75,48 @@ public abstract class MappingAccessor extends MetadataAccessor {
     /**
      * INTERNAL:
      */
-    protected MappingAccessor(String xmlElement) {
-        super(xmlElement);
-    }
-    
-    /**
-     * INTERNAL:
-     */
     protected MappingAccessor(Annotation annotation, MetadataAccessibleObject accessibleObject, ClassAccessor classAccessor) {
         super(annotation, accessibleObject, classAccessor.getDescriptor(), classAccessor.getProject());
         
         // We must keep a reference to the class accessors where this
         // mapping accessor is defined. We need it to determine access types.
         m_classAccessor = classAccessor;
+    }
+    
+    /**
+     * INTERNAL:
+     */
+    protected MappingAccessor(String xmlElement) {
+        super(xmlElement);
+    }
+    
+    /**
+     * INTERNAL:
+     * Process an attribute override for either an embedded object mapping, or
+     * an element collection mapping containing embeddable objects.
+     */
+    protected void addFieldNameTranslation(EmbeddableMapping embeddableMapping, DatabaseField overrideField, DatabaseTable defaultTable, DatabaseMapping aggregateMapping) {
+        // Make sure we have a table set on the attribute override field,
+        // otherwise use the default table provided.
+        if (overrideField.getTableName().equals("")) {
+            overrideField.setTable(defaultTable);
+        }
+
+        DatabaseField aggregateField = aggregateMapping.getField();
+        
+        // If the override field is to an id field, we need to update the 
+        // list of primary keys on the owning descriptor. Embeddables can be 
+        // shared and different owners may want to override the attribute 
+        // with a different column.
+        if (getOwningDescriptor().isPrimaryKeyField(aggregateField)) {
+            getOwningDescriptor().removePrimaryKeyField(aggregateField);
+            getOwningDescriptor().addPrimaryKeyField(overrideField);
+        }
+
+        // Set the field name translation on the mapping.
+        embeddableMapping.addFieldNameTranslation(overrideField.getQualifiedName(), aggregateField.getName());
+        
+        // TODO: nestedFieldNameTranslations need to be dealt with for element collection.
     }
     
     /**
@@ -100,7 +137,7 @@ public abstract class MappingAccessor extends MetadataAccessor {
     /**
      * INTERNAL:
      */
-    public Enum getDefaultFetchType() {
+    protected Enum getDefaultFetchType() {
         return FetchType.valueOf("EAGER"); 
     }
     
@@ -127,7 +164,7 @@ public abstract class MappingAccessor extends MetadataAccessor {
         } else if (joinFetchType.name().equals(JoinFetchType.INNER.name())) {
             return ForeignReferenceMapping.INNER_JOIN;
         }
-        
+
         return ForeignReferenceMapping.OUTER_JOIN;
     }
     
@@ -174,10 +211,18 @@ public abstract class MappingAccessor extends MetadataAccessor {
      * Return the reference metadata descriptor for this accessor.
      */
     public MetadataDescriptor getReferenceDescriptor() {
-        ClassAccessor accessor = getProject().getAccessor(getReferenceClassName());
+        return getReferenceDescriptor(getReferenceClassName());
+    }
+    
+    /**
+     * INTERNAL:
+     * Return the reference metadata descriptor for this accessor.
+     */
+    public MetadataDescriptor getReferenceDescriptor(String referenceClassName) {
+        ClassAccessor accessor = getProject().getAccessor(referenceClassName);
         
         if (accessor == null) {
-            throw ValidationException.classNotListedInPersistenceUnit(getReferenceClassName());
+            throw ValidationException.classNotListedInPersistenceUnit(referenceClassName);
         }
         
         return accessor.getDescriptor();
@@ -257,6 +302,25 @@ public abstract class MappingAccessor extends MetadataAccessor {
         return false;
     }
     
+    /**
+     * INTERNAL:
+     * Return true if this accessor represents a direct collection mapping, 
+     * which include basic collection, basic map and element collection 
+     * accessors.
+     */
+    public boolean isDirectCollection() {
+        return false;
+    }
+    
+    /**
+     * INTERNAL:
+     * Return true if this accessor represents an element collection that
+     * contains embeddable objects.
+     */
+    public boolean isDirectEmbeddableCollection() {
+        return false;
+    }
+    
     /** 
      * INTERNAL:
      * Return true if this accessor represents a collection accessor.
@@ -270,6 +334,14 @@ public abstract class MappingAccessor extends MetadataAccessor {
      * Return true if this accessor represents an aggregate mapping.
      */
     public boolean isEmbedded() {
+        return false;
+    }
+    
+    /**
+     * INTERNAL:
+     * Return true if this accessor represents an aggregate id mapping.
+     */
+    public boolean isEmbeddedId() {
         return false;
     }
     
@@ -327,6 +399,113 @@ public abstract class MappingAccessor extends MetadataAccessor {
      */
     public boolean isVariableOneToOne() {
         return false;
+    }
+    
+    /**
+     * INTERNAL:
+     * Process an association override for either an embedded object mapping, or
+     * an element collection mapping containing embeddable objects.
+     */
+    protected void processAssociationOverride(AssociationOverrideMetadata associationOverride, EmbeddableMapping embeddableMapping, DatabaseTable defaultTable, MetadataDescriptor aggregateDescriptor) {
+        // AssociationOverride.name(), the name of the attribute we want to
+        // override.
+        String attributeName = associationOverride.getName();
+        DatabaseMapping mapping = aggregateDescriptor.getMappingForAttributeName(attributeName);
+        
+        if (mapping != null && mapping.isOneToOneMapping()) {
+            MappingAccessor accessor = aggregateDescriptor.getAccessorFor(mapping.getAttributeName());
+            MetadataDescriptor referenceDescriptor = accessor.getReferenceDescriptor();
+            
+            // The process join columns will validate the join column specifics.
+            for (JoinColumnMetadata joinColumn : processJoinColumns(associationOverride.getJoinColumns(), referenceDescriptor)) {
+                DatabaseField pkField = joinColumn.getPrimaryKeyField();
+                pkField.setTable(referenceDescriptor.getPrimaryKeyTable());
+                DatabaseField fkField = ((OneToOneMapping) mapping).getTargetToSourceKeyFields().get(pkField);
+                
+                if (fkField == null) {
+                    // TODO: invalid pk field specified
+                    // TODO: composite primary key case (and correct table)
+                } else {
+                    // Make sure we have a table set on the association override 
+                    // field, otherwise use the default table provided.
+                    DatabaseField translationFKField = joinColumn.getForeignKeyField();
+                    if (! translationFKField.hasTableName()) {
+                        translationFKField.setTable(defaultTable);
+                    }
+                    
+                    embeddableMapping.addFieldNameTranslation(translationFKField.getQualifiedName(),fkField.getName());
+                }
+            }   
+        } else {
+            // TODO: fail loudly now since it is a supported feature from the spec.
+        }
+    }
+    
+    /**
+     * INTERNAL:
+     * Process the join column metadata. Will look for association overrides.
+     */    
+    protected List<JoinColumnMetadata> processJoinColumns(List<JoinColumnMetadata> joinColumns) { 
+        if (getDescriptor().hasAssociationOverrideFor(getAttributeName())) {
+            return processJoinColumns(getDescriptor().getAssociationOverrideFor(getAttributeName()).getJoinColumns(), getReferenceDescriptor());
+        } else {
+            return processJoinColumns(joinColumns, getReferenceDescriptor());
+        }
+    }
+    
+    /**
+     * INTERNAL:
+     * Process the join column metadata. Note: if an accessor requires a check 
+     * for association overrides, it should call processJoinColumns(),
+     * otherwise, calling this method directly assumes your accessor doesn't 
+     * support association overrides.
+     */    
+    protected List<JoinColumnMetadata> processJoinColumns(List<JoinColumnMetadata> joinColumns, MetadataDescriptor descriptor) {
+        if (joinColumns.isEmpty()) {
+            if (descriptor.hasCompositePrimaryKey()) {
+                // Add a default one for each part of the composite primary
+                // key. Foreign and primary key to have the same name.
+                for (String primaryKeyField : descriptor.getPrimaryKeyFieldNames()) {
+                    JoinColumnMetadata joinColumn = new JoinColumnMetadata();
+                    joinColumn.setReferencedColumnName(primaryKeyField);
+                    joinColumn.setName(primaryKeyField);
+                    joinColumns.add(joinColumn);
+                }
+            } else {
+                // Add a default one for the single case, not setting any
+                // foreign and primary key names. They will default based
+                // on which accessor is using them.
+                joinColumns.add(new JoinColumnMetadata());
+            }
+        } else {
+            // Need to update any join columns that use a foreign key name
+            // for the primary key name. E.G. User specifies the renamed id
+            // field name from a primary key join column as the primary key in
+            // an inheritance subclass.
+            for (JoinColumnMetadata joinColumn : joinColumns) {
+                // Doing this could potentially change a value entered in XML.
+                // However, in this case I think that is ok since in theory we 
+                // are writing out the correct value that EclipseLink needs to 
+                // form valid queries.
+                joinColumn.setReferencedColumnName(descriptor.getPrimaryKeyJoinColumnAssociation(joinColumn.getReferencedColumnName()));
+            }
+        }
+        
+        if (descriptor.hasCompositePrimaryKey()) {
+            // The number of join columns should equal the number of primary key fields.
+            if (joinColumns.size() != descriptor.getPrimaryKeyFields().size()) {
+                throw ValidationException.incompleteJoinColumnsSpecified(getAnnotatedElement(), getJavaClass());
+            }
+            
+            // All the primary and foreign key field names should be specified.
+            for (JoinColumnMetadata joinColumn : joinColumns) {
+                if (joinColumn.isPrimaryKeyFieldNotSpecified() || joinColumn.isForeignKeyFieldNotSpecified()) {
+                    throw ValidationException.incompleteJoinColumnsSpecified(getAnnotatedElement(), getJavaClass());
+                }
+            }
+        }
+        
+        return joinColumns;
     }
     
     /**
@@ -446,7 +625,7 @@ public abstract class MappingAccessor extends MetadataAccessor {
                 mapping.useTransparentSet();
             } else {
                 //bug221577: This should be supported when a transparent indirection class can be set through eclipseLink_orm.xml, or basic indirection is used
-                this.getLogger().logWarningMessage(MetadataLogger.WARNING_INVALID_COLLECTION_USED_ON_LAZY_RELATION, this.getJavaClass(), this.getAnnotatedElement(), rawClass);
+                getLogger().logWarningMessage(MetadataLogger.WARNING_INVALID_COLLECTION_USED_ON_LAZY_RELATION, getJavaClass(), getAnnotatedElement(), rawClass);
             }
         } else {
             mapping.dontUseIndirection();

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2008 Oracle. All rights reserved.
+ * Copyright (c) 1998, 2009 Oracle. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -17,6 +17,8 @@
  *       - 211329: Add sequencing on non-id attribute(s) support to the EclipseLink-ORM.XML Schema
  *     09/23/2008-1.1 Guy Pelletier 
  *       - 241651: JPA 2.0 Access Type support
+ *     01/28/2009-1.1 Guy Pelletier 
+ *       - 248293: JPA 2.0 Element Collections (part 1)
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.accessors.mappings;
 
@@ -216,9 +218,6 @@ public class BasicAccessor extends DirectAccessor {
         if (m_column == null) {
             m_column = new ColumnMetadata(accessibleObject, getAttributeName());
         } else {
-            // Make sure the attribute name is set on the column.
-            m_column.setAttributeName(getAttributeName());
-
             // Initialize single objects.
             initXMLObject(m_column, accessibleObject);
         }
@@ -279,7 +278,7 @@ public class BasicAccessor extends DirectAccessor {
         // value first. If none is found then we'll look for a JPA converter, 
         // that is, Enumerated, Lob and Temporal. With everything falling into 
         // a serialized mapping if no converter whatsoever is found.
-        processMappingConverter(mapping);
+        processMappingConverter(mapping, getConvert());
 
         // Process a mutable setting.
         if (m_mutable != null) {

@@ -13,11 +13,14 @@
  *       - 232975: Failure when attribute type is generic
  *     09/23/2008-1.1 Guy Pelletier 
  *       - 241651: JPA 2.0 Access Type support
+ *     01/28/2009-1.1 Guy Pelletier 
+ *       - 248293: JPA 2.0 Element Collections (part 1)
  ******************************************************************************/  
 package org.eclipse.persistence.testing.tests.jpa.inherited;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.sql.Timestamp;
 import java.util.Date;
 import java.util.Iterator;
 
@@ -35,7 +38,9 @@ import org.eclipse.persistence.testing.models.jpa.inherited.Alpine;
 import org.eclipse.persistence.testing.models.jpa.inherited.BlueLight;
 import org.eclipse.persistence.testing.models.jpa.inherited.ExpertBeerConsumer;
 import org.eclipse.persistence.testing.models.jpa.inherited.InheritedTableManager;
+import org.eclipse.persistence.testing.models.jpa.inherited.Location;
 import org.eclipse.persistence.testing.models.jpa.inherited.NoviceBeerConsumer;
+import org.eclipse.persistence.testing.models.jpa.inherited.Record;
 import org.eclipse.persistence.testing.models.jpa.inherited.SerialNumber;
  
 public class InheritedModelJunitTest extends JUnitTestCase {
@@ -43,6 +48,11 @@ public class InheritedModelJunitTest extends JUnitTestCase {
     private static Integer m_beerConsumerId;
     private static Integer m_noviceBeerConsumerId;
     private static Integer m_expertBeerConsumerId;
+    
+    private static Timestamp m_quote1Stamp;
+    private static final String QUOTE_ONE = "Beer is blood";
+    private static Timestamp m_quote2Stamp;
+    private static final String QUOTE_TWO = "My first wife was a beer";
     
     public InheritedModelJunitTest() {
         super();
@@ -141,7 +151,6 @@ public class InheritedModelJunitTest extends JUnitTestCase {
         
         ServerSession session = JUnitTestCase.getServerSession();
         ClassDescriptor desc = session.getDescriptor(NoviceBeerConsumer.class);
-        System.out.println(desc.getMappings().size());
         
         try {    
             NoviceBeerConsumer beerConsumer = new NoviceBeerConsumer();
@@ -155,6 +164,15 @@ public class InheritedModelJunitTest extends JUnitTestCase {
             beerConsumer.getAwards().put(1, 1);
             beerConsumer.getAwards().put(2, 2);
             beerConsumer.getAwards().put(3, 3);
+            
+            beerConsumer.getDesignations().add("1");
+            beerConsumer.getDesignations().add("2");
+
+            Record record1 = new Record();
+            record1.setDescription("Slowest beer ever consumed - 10 hours");
+            record1.setDate(Helper.dateFromYearMonthDate(2008, 1, 1));
+            record1.setLocation(new Location("Paris", "France"));
+            beerConsumer.getRecords().add(record1);
             
             em.persist(beerConsumer);
             m_noviceBeerConsumerId = beerConsumer.getId();
@@ -184,9 +202,33 @@ public class InheritedModelJunitTest extends JUnitTestCase {
             beerConsumer.getAcclaims().add("B");
             beerConsumer.getAcclaims().add("C");
             
+            beerConsumer.getAudio().add(new byte[]{1});
+            beerConsumer.getAudio().add(new byte[]{2});
+            beerConsumer.getAudio().add(new byte[]{3});
+            
             beerConsumer.getAwards().put("A", "A");
             beerConsumer.getAwards().put("B", "B");
             beerConsumer.getAwards().put("C", "C");
+            
+            beerConsumer.getDesignations().add("A");
+            beerConsumer.getDesignations().add("B");
+            
+            m_quote1Stamp = Helper.timestampFromDate(Helper.dateFromYearMonthDate(2009, 1, 1));
+            beerConsumer.getQuotes().put(m_quote1Stamp, QUOTE_ONE);
+            m_quote2Stamp = Helper.timestampFromDate(Helper.dateFromYearMonthDate(2005, 7, 9));
+            beerConsumer.getQuotes().put(m_quote2Stamp, QUOTE_TWO);
+            
+            Record record1 = new Record();
+            record1.setDescription("Fastest beer ever consumed - 10 ms");
+            record1.setDate(Helper.dateFromYearMonthDate(2009, 10, 10));
+            record1.setLocation(new Location("Ottawa", "Canada"));
+            beerConsumer.getRecords().add(record1);
+            
+            Record record2 = new Record();
+            record2.setDescription("Most beers consumed in a second - 5");
+            record2.setDate(Helper.dateFromYearMonthDate(2005, 12, 12));
+            record2.setLocation(new Location("Miami", "USA"));
+            beerConsumer.getRecords().add(record2);
             
             em.persist(beerConsumer);
             m_expertBeerConsumerId = beerConsumer.getId();
@@ -210,12 +252,12 @@ public class InheritedModelJunitTest extends JUnitTestCase {
         
         assertTrue("IQ Level was not persisted.", consumer.getIQ() == 100);
         
-        assertTrue("", consumer.getAcclaims().size() == 3);
+        assertTrue("Incorrect number of acclaims returned.", consumer.getAcclaims().size() == 3);
         assertTrue("Missing acclaim - 1", consumer.getAcclaims().contains(1));
         assertTrue("Missing acclaim - 2", consumer.getAcclaims().contains(2));
         assertTrue("Missing acclaim - 3", consumer.getAcclaims().contains(3));
         
-        assertTrue("", consumer.getAwards().size() == 3);
+        assertTrue("Incorrect number of awards returned.", consumer.getAwards().size() == 3);
         Integer awardCode = consumer.getAwards().get(1);
         assertFalse("Missing award code - 1", awardCode == null);
         assertTrue("Award code 1 is incorrect", awardCode.equals(1));
@@ -226,7 +268,13 @@ public class InheritedModelJunitTest extends JUnitTestCase {
         
         awardCode = consumer.getAwards().get(3);
         assertFalse("Missing award code - 3", awardCode == null);
-        assertTrue("Award code 3 is incorrect", awardCode.equals(3));        
+        assertTrue("Award code 3 is incorrect", awardCode.equals(3));    
+        
+        assertTrue("Incorrect number of designations returned.", consumer.getDesignations().size() == 2);
+        assertTrue("Missing designation - 1", consumer.getDesignations().contains("1"));
+        assertTrue("Missing designation - 2", consumer.getDesignations().contains("2"));
+        
+        assertTrue("Incorrect number of records returned.", consumer.getRecords().size() == 1);
     }
     
     public void testReadExpertBeerConsumer() {
@@ -236,12 +284,15 @@ public class InheritedModelJunitTest extends JUnitTestCase {
         
         assertTrue("IQ Level was not persisted.", consumer.getIQ() == 110);
         
-        assertTrue("", consumer.getAcclaims().size() == 3);
+        assertTrue("Incorrect number of acclaims returned.", consumer.getAcclaims().size() == 3);
         assertTrue("Missing acclaim - A", consumer.getAcclaims().contains("A"));
         assertTrue("Missing acclaim - B", consumer.getAcclaims().contains("B"));
         assertTrue("Missing acclaim - C", consumer.getAcclaims().contains("C"));
         
-        assertTrue("", consumer.getAwards().size() == 3);
+        assertTrue("Incorrect number of audio returned.", consumer.getAudio().size() == 3);
+        // don't individually check them, assume they are correct.
+        
+        assertTrue("Incorrect number of awards returned.", consumer.getAwards().size() == 3);
         String awardCode = consumer.getAwards().get("A");
         assertFalse("Missing award code - A", awardCode == null);
         assertTrue("Award code A is incorrect", awardCode.equals("A"));
@@ -253,6 +304,22 @@ public class InheritedModelJunitTest extends JUnitTestCase {
         awardCode = consumer.getAwards().get("C");
         assertFalse("Missing award code - C", awardCode == null);
         assertTrue("Award code C is incorrect", awardCode.equals("C"));
+        
+        assertTrue("Incorrect number of designations returned.", consumer.getDesignations().size() == 2);
+        assertTrue("Missing designation - A", consumer.getDesignations().contains("A"));
+        assertTrue("Missing designation - B", consumer.getDesignations().contains("B"));
+        
+        assertTrue("Incorrect number of quotes returned.", consumer.getQuotes().size() == 2);
+        String quote = consumer.getQuotes().get(m_quote1Stamp);
+        assertFalse("Missing quote from Jan 1, 2009", quote == null);
+        assertTrue("Quote from Jan 1, 2009 was incorrect", quote.equals(QUOTE_ONE));
+        
+        quote = consumer.getQuotes().get(m_quote2Stamp);
+        assertFalse("Missing quote from Jul 9, 2005", quote == null);
+        assertTrue("Quote from Jul 9, 2005 was incorrect", quote.equals(QUOTE_TWO));
+        
+        assertTrue("Incorrect number of records returned.", consumer.getRecords().size() == 2);
+        // don't individually check them ... assume they are correct.
     }
     
     public void testUpdateBeerConsumer() {

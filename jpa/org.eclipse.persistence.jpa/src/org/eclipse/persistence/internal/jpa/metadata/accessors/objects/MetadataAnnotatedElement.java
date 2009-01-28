@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2008 Oracle. All rights reserved.
+ * Copyright (c) 1998, 2009 Oracle. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -23,6 +23,8 @@ package org.eclipse.persistence.internal.jpa.metadata.accessors.objects;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedElement;
+import java.lang.reflect.Array;
+import java.lang.reflect.GenericArrayType;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
@@ -34,6 +36,7 @@ import java.util.Map;
 import java.util.Set;
 
 import javax.persistence.Basic;
+import javax.persistence.ElementCollection;
 import javax.persistence.Embeddable;
 import javax.persistence.Embedded;
 import javax.persistence.EmbeddedId;
@@ -234,6 +237,8 @@ public class MetadataAnnotatedElement extends MetadataAccessibleObject {
      * 3 - public Employee getEmployee() => null
      * 4 - public Collection getTasks() => null
      * 5 - public Map getTasks() => null
+     * 6 - public Collection<byte[]> getAudio() => byte[].class
+     * TODO: we don't handle multiple levels of generics too well (or at all really :-( )
      */
     public Class getReferenceClassFromGeneric(MetadataDescriptor descriptor) {
         if (isGenericCollectionType()) {
@@ -248,8 +253,18 @@ public class MetadataAnnotatedElement extends MetadataAccessibleObject {
             
             if (referenceType instanceof Class) {
                 return (Class) referenceType;
+            } else if (referenceType instanceof TypeVariable) {
+                Type actualType = descriptor.getGenericType(((TypeVariable) referenceType).getName());
+                
+                if (actualType instanceof GenericArrayType) {
+                    return Array.newInstance((Class) ((GenericArrayType) actualType).getGenericComponentType(), 0).getClass();
+                } else {
+                    return (Class) actualType;
+                }
+            } else if (referenceType instanceof GenericArrayType) {
+                return Array.newInstance((Class) ((GenericArrayType) referenceType).getGenericComponentType(), 0).getClass();
             } else {
-                return (Class) descriptor.getGenericType(((TypeVariable) referenceType).getName());
+                return null;
             }
         } else {
             return null;
@@ -345,6 +360,14 @@ public class MetadataAnnotatedElement extends MetadataAccessibleObject {
      */
     public boolean isBasicMap(MetadataDescriptor descriptor) {
         return isAnnotationPresent(BasicMap.class, descriptor);
+    }
+    
+    /**
+     * INTERNAL: 
+     * Return true if this accessor represents an element collection mapping.
+     */
+    public boolean isElementCollection(MetadataDescriptor descriptor) {
+        return isAnnotationPresent(ElementCollection.class, descriptor);
     }
     
     /**
