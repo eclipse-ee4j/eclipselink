@@ -751,10 +751,10 @@ public class ValidationException extends EclipseLinkException {
         return validationException;
     }
 
-    public static ValidationException errorParsingMappingFile(URL mappingFileURL, Exception exception) {
-        Object[] args = { mappingFileURL };
+    public static ValidationException errorParsingMappingFile(URL mappingFileURL, Exception orm2Error, Exception orm1Error, Exception eclipselinkError) {
+        Object[] args = { mappingFileURL, orm1Error, eclipselinkError };
 
-        ValidationException validationException = new ValidationException(ExceptionMessageGenerator.buildMessage(ValidationException.class, ERROR_PARSING_MAPPING_FILE, args), exception);
+        ValidationException validationException = new ValidationException(ExceptionMessageGenerator.buildMessage(ValidationException.class, ERROR_PARSING_MAPPING_FILE, args), orm2Error);
         validationException.setErrorCode(ERROR_PARSING_MAPPING_FILE);
         return validationException;
     }

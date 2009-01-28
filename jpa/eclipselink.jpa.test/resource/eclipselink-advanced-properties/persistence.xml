@@ -15,6 +15,7 @@
              <property name="eclipselink.logging.file" value="JPAAdvancedProperties.log"/>
              <property name="eclipselink.session.include.descriptor.queries" value="true"/>
              <property name="eclipselink.profiler" value="NoProfiler"/>
+             <property name="eclipselink.orm.validate.schema" value="true"/>
         </properties>
     </persistence-unit>
     <persistence-unit name="JPAADVProperties2" transaction-type="RESOURCE_LOCAL">

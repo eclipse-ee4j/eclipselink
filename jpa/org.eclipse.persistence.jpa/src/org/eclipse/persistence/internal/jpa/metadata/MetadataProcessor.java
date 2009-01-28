@@ -305,7 +305,7 @@ public class MetadataProcessor {
                     }
                     
                     // Read the document through OX and add it to the project.
-                    m_project.addEntityMappings(XMLEntityMappingsReader.read(nextURL, m_loader));
+                    m_project.addEntityMappings(XMLEntityMappingsReader.read(nextURL, m_loader, m_project.getPersistenceUnitInfo().getProperties()));
                 } else {
                     handleORMException(ValidationException.mappingFileNotFound(puInfo.getPersistenceUnitName(), mappingFileName), mappingFileName, throwExceptionOnFail);
                 }

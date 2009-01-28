@@ -65,7 +65,6 @@ public class XMLEntityMappingsReader {
      */
     protected static XMLEntityMappings read(URL mappingFileUrl, Reader reader1, Reader reader2, Reader reader3, 
             ClassLoader classLoader, Properties properties) {
-        // We are going to go through this method twice - once for NoServerPlatform and then for the actual ServerPlatfom implementation
         // Get the schema validation flag if present in the persistence unit properties
         boolean validateORMSchema = isORMSchemaValidationPerformed(properties);
         
@@ -79,22 +78,25 @@ public class XMLEntityMappingsReader {
         // Unmarshall JPA format.
         XMLEntityMappings xmlEntityMappings;
         
+        // This tries to unmarshal three times, once with each different XSD (orm 1.0, orm 2.0, eclipselink-orm)
+        // If the third attempt fails, it reports all three errors, as any may contain the real exception.
+        // TODO: Ideally we would have a better way to determine what xsd to use.
         try {
             XMLUnmarshaller unmarshaller = m_orm2_0Project.createUnmarshaller();
             useLocalSchemaForUnmarshaller(unmarshaller, ORM_2_0_XSD, validateORMSchema);
             xmlEntityMappings = (XMLEntityMappings) unmarshaller.unmarshal(reader1);
-        } catch (Exception eee) {
+        } catch (Exception orm2Error) {
             try {
                 XMLUnmarshaller unmarshaller = m_orm1_0Project.createUnmarshaller();
                 useLocalSchemaForUnmarshaller(unmarshaller, ORM_1_0_XSD, validateORMSchema);
                 xmlEntityMappings = (XMLEntityMappings) unmarshaller.unmarshal(reader2);
-            } catch (Exception e) {
+            } catch (Exception orm1Error) {
                 try {
                     XMLUnmarshaller unmarshaller = m_eclipseLinkOrmProject.createUnmarshaller();
                     useLocalSchemaForUnmarshaller(unmarshaller, ECLIPSELINK_ORM_XSD, validateORMSchema);
                     xmlEntityMappings = (XMLEntityMappings) unmarshaller.unmarshal(reader3);
-                } catch (Exception ee) {
-                    throw ValidationException.errorParsingMappingFile(mappingFileUrl, ee);
+                } catch (Exception eclipselinkError) {
+                    throw ValidationException.errorParsingMappingFile(mappingFileUrl, orm2Error, orm1Error, eclipselinkError);
                 }
             }
         }
@@ -195,26 +197,21 @@ public class XMLEntityMappingsReader {
      * @throws IOException
      * @throws SAXException
      */
-    private static void useLocalSchemaForUnmarshaller(XMLUnmarshaller unmarshaller, String schemaName, boolean validateORMSchema) throws IOException, SAXException{
+    private static void useLocalSchemaForUnmarshaller(XMLUnmarshaller unmarshaller, String schemaName, boolean validateORMSchema) throws IOException, SAXException {
+    	if (!validateORMSchema) {
+    		return;
+    	}
         URL url = XMLEntityMappingsReader.class.getClassLoader().getResource(schemaName);
         InputStream schemaStream = url.openStream();
         StreamSource source = new StreamSource(url.openStream());
         SchemaFactory schemaFactory = SchemaFactory.newInstance(XMLConstants.SCHEMA_URL);
         Schema schema = schemaFactory.newSchema(source);
-        try{
-            // There is no need to set the schema if we are not validating
-            if(validateORMSchema) {
-                unmarshaller.setSchema(schema);
-            }
-        } catch (UnsupportedOperationException ex){
-            // some parsers do not support setSchema.  In that case, setup validation another way
-            if(validateORMSchema) {                
-                unmarshaller.setValidationMode(XMLUnmarshaller.SCHEMA_VALIDATION);
-            } else {
-                // No validation is the default on a new XMLUnmarshaller
-                unmarshaller.setValidationMode(XMLUnmarshaller.NONVALIDATING);
-            }
-        } finally{
+        try {
+            unmarshaller.setSchema(schema);
+        } catch (UnsupportedOperationException ex) {
+            // Some parsers do not support setSchema.  In that case, setup validation another way.
+            unmarshaller.setValidationMode(XMLUnmarshaller.SCHEMA_VALIDATION);
+        } finally {
             schemaStream.close();
         }
     }
