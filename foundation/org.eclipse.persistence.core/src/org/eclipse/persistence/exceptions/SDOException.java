@@ -75,6 +75,10 @@ public class SDOException extends EclipseLinkException {
     public static final int PREFIX_USED_BUT_NOT_DEFINED = 45037;
     public static final int CANNOT_PERFORM_OPERATION_ON_PROPERTY = 45038;
     public static final int ERROR_ACCESSING_EXTERNALIZABLEDELEGATOR = 45039;
+    public static final int ERROR_PERFORMING_WLS_LOOKUP = 45100;
+    public static final int ERROR_MAKING_WLS_REFLECTIVE_CALL = 45101;
+    public static final int ERROR_GETTING_OBJECTNAME = 45102;
+    public static final int ERROR_CREATING_INITIAL_CONTEXT = 45103;
     public static final int SDO_JAXB_NO_DESCRIPTOR_FOR_TYPE = 45200;
     public static final int SDO_JAXB_NO_MAPPING_FOR_PROPERTY = 45201;
     public static final int SDO_JAXB_NO_TYPE_FOR_CLASS = 45202;
@@ -91,6 +95,65 @@ public class SDOException extends EclipseLinkException {
         super(message, internalException);
     }
 
+    /**
+     * INTERNAL:
+     * Exception when acquiring the SDOHelperContext cache key for WLS.  This method should be
+     * used when a lookup fails.  The lookup strings would typically be:
+     *   - "java:comp/jmx/runtime"
+     *   - "java:comp/env/jmx/runtime"
+     */
+    public static SDOException errorPerformingWLSLookup(String failedLookup, Exception nestedException) {
+        Object[] args = { failedLookup };
+        SDOException exception = new SDOException(ExceptionMessageGenerator.buildMessage(//
+                SDOException.class, ERROR_PERFORMING_WLS_LOOKUP, args), nestedException);
+        exception.setErrorCode(ERROR_PERFORMING_WLS_LOOKUP);
+        return exception;
+    }
+    
+    /**
+     * INTERNAL:
+     * Exception when acquiring the SDOHelperContext cache key for WLS.  This method should be
+     * used when a reflective call fails.  The method names would typically be:
+     *   - "getExecuteThread"
+     *   - "getApplicationName"
+     */
+    public static SDOException errorInvokingWLSMethodReflectively(String methodName, String theClass, Exception nestedException) {
+        Object[] args = { methodName, theClass };
+        SDOException exception = new SDOException(ExceptionMessageGenerator.buildMessage(//
+                SDOException.class, ERROR_MAKING_WLS_REFLECTIVE_CALL, args), nestedException);
+        exception.setErrorCode(ERROR_MAKING_WLS_REFLECTIVE_CALL);
+        return exception;
+    }
+    
+    /**
+     * INTERNAL:
+     * Exception when acquiring the SDOHelperContext cache key for WLS.  This method should be
+     * used when an attempt to get an ObjectName fails.  The object names would typically be:
+     *   - "com.bea:Name=RuntimeService,Type=weblogic.management.mbeanservers.runtime.RuntimeServiceMBean"
+     *   - "ServerRuntime"
+     *   - "ThreadPoolRuntime"
+     */
+    public static SDOException errorGettingWLSObjectName(String objectName, Exception nestedException) {
+        Object[] args = { objectName };
+        SDOException exception = new SDOException(ExceptionMessageGenerator.buildMessage(//
+                SDOException.class, ERROR_GETTING_OBJECTNAME, args), nestedException);
+        exception.setErrorCode(ERROR_GETTING_OBJECTNAME);
+        return exception;
+    }
+        
+    /**
+     * INTERNAL:
+     * Exception when acquiring the SDOHelperContext cache key for WLS.  This method should be
+     * used when an attempt to create an InitialContext fails. 
+     */
+    public static SDOException errorCreatingWLSInitialContext(Exception nestedException) {
+        Object[] args = {};
+        SDOException exception = new SDOException(ExceptionMessageGenerator.buildMessage(//
+                SDOException.class, ERROR_CREATING_INITIAL_CONTEXT, args), nestedException);
+        exception.setErrorCode(ERROR_CREATING_INITIAL_CONTEXT);
+        return exception;
+    }
+    
     /**
      * INTERNAL:
      * Exception when building an ObjectReferenceMapping and referenced object does not have an id property

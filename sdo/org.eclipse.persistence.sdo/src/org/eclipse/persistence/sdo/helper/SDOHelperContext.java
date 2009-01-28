@@ -42,6 +42,7 @@ import javax.naming.Context;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 
+import org.eclipse.persistence.exceptions.SDOException;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.sdo.SDOConstants;
 import org.eclipse.persistence.sdo.SDOResolvable;
@@ -81,10 +82,13 @@ public class SDOHelperContext implements HelperContext {
     private static ObjectName wlsThreadPoolRuntime = null;
     private static final String WLS_ENV_CONTEXT_LOOKUP = "java:comp/env/jmx/runtime";
     private static final String WLS_CONTEXT_LOOKUP = "java:comp/jmx/runtime";
+    private static final String WLS_RUNTIME_SERVICE = "RuntimeService";    
     private static final String WLS_SERVICE_KEY = "com.bea:Name=RuntimeService,Type=weblogic.management.mbeanservers.runtime.RuntimeServiceMBean";    
     private static final String WLS_APP_RUNTIMES = "ApplicationRuntimes";    
     private static final String WLS_SERVER_RUNTIME = "ServerRuntime";    
     private static final String WLS_THREADPOOL_RUNTIME = "ThreadPoolRuntime";
+    private static final String WLS_EXECUTE_THREAD = "ExecuteThread";
+    private static final String WLS_MBEAN_SERVER = "MBeanServer";
     private static final String WLS_EXECUTE_THREAD_GET_METHOD_NAME = "getExecuteThread";
     private static final String WLS_APPLICATION_NAME = "ApplicationName";
     private static final String WLS_APPLICATION_NAME_GET_METHOD_NAME = "getApplicationName";
@@ -284,7 +288,9 @@ public class SDOHelperContext implements HelperContext {
                     if (delegateKey == null) {
                         delegateKey = classLoader;
                     }
-                } catch (Exception e) {}
+                } catch (Exception e) {
+                    throw SDOException.errorInvokingWLSMethodReflectively(WLS_APPLICATION_NAME_GET_METHOD_NAME, WLS_EXECUTE_THREAD, e);
+                }
             }
         }        
         return delegateKey;
@@ -308,9 +314,13 @@ public class SDOHelperContext implements HelperContext {
                     // Lookup failed - try java:comp
                     try {
                         wlsMBeanServer = (MBeanServer) weblogicContext.lookup(WLS_CONTEXT_LOOKUP);
-                    } catch (NamingException ne) {}
+                    } catch (NamingException ne) {
+                        throw SDOException.errorPerformingWLSLookup(WLS_MBEAN_SERVER, ne);
+                    }
                 }
-            } catch (NamingException nex) {}
+            } catch (NamingException nex) {
+                throw SDOException.errorCreatingWLSInitialContext(nex);
+            }
         }
         return wlsMBeanServer;
     }
@@ -328,17 +338,29 @@ public class SDOHelperContext implements HelperContext {
         if (getWLSMBeanServer() != null) {
             // Lazy load the ThreadPoolRuntime instance
             if (wlsThreadPoolRuntime == null) {
+                ObjectName service = null;
+                ObjectName serverRuntime = null;
                 try {
-                    ObjectName service = new ObjectName(WLS_SERVICE_KEY);
-                    ObjectName serverRuntime = (ObjectName) wlsMBeanServer.getAttribute(service, WLS_SERVER_RUNTIME);
+                    service = new ObjectName(WLS_SERVICE_KEY);
+                } catch (Exception x) {
+                    throw SDOException.errorGettingWLSObjectName(WLS_RUNTIME_SERVICE + " [" + WLS_SERVICE_KEY + "]", x);
+                }
+                try {
+                    serverRuntime = (ObjectName) wlsMBeanServer.getAttribute(service, WLS_SERVER_RUNTIME);
+                } catch (Exception x) {
+                    throw SDOException.errorGettingWLSObjectName(WLS_SERVER_RUNTIME, x);
+                }
+                try {
                     wlsThreadPoolRuntime = (ObjectName) wlsMBeanServer.getAttribute(serverRuntime, WLS_THREADPOOL_RUNTIME);
                 } catch (Exception x) {
-                    return null;
+                    throw SDOException.errorGettingWLSObjectName(WLS_THREADPOOL_RUNTIME, x);
                 }
             }
             try {
                 return wlsMBeanServer.invoke(wlsThreadPoolRuntime, WLS_EXECUTE_THREAD_GET_METHOD_NAME, new Object[] { Thread.currentThread().getName() }, new String[] { String.class.getName() });
-            } catch (Exception e) {}
+            } catch (Exception x) {
+                throw SDOException.errorInvokingWLSMethodReflectively(WLS_EXECUTE_THREAD_GET_METHOD_NAME, WLS_THREADPOOL_RUNTIME, x);
+            }
         }
         return null;
     }
