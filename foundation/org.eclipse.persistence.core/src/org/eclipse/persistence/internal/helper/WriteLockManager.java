@@ -440,22 +440,18 @@ public class WriteLockManager {
         if (!MergeManager.LOCK_ON_MERGE) {//lockOnMerge is a backdoor and not public
             return;
         }
-        try {
-            Iterator locks = mergeManager.getAcquiredLocks().iterator();
-            while (locks.hasNext()) {
-                CacheKey cacheKeyToRemove = (CacheKey) locks.next();
-                if (cacheKeyToRemove.getObject() == null) {
-                    cacheKeyToRemove.removeFromOwningMap();
-                }
-                if (mergeManager.isTransitionedToDeferredLocks()) {
-                    cacheKeyToRemove.releaseDeferredLock();
-                } else {
-                    cacheKeyToRemove.release();
-                }
-                locks.remove();
+        Iterator locks = mergeManager.getAcquiredLocks().iterator();
+        while (locks.hasNext()) {
+            CacheKey cacheKeyToRemove = (CacheKey) locks.next();
+            if (cacheKeyToRemove.getObject() == null) {
+                cacheKeyToRemove.removeFromOwningMap();
             }
-        } catch (Exception ex) {
-            System.out.println("break on exception");
+            if (mergeManager.isTransitionedToDeferredLocks()) {
+                cacheKeyToRemove.releaseDeferredLock();
+            } else {
+                cacheKeyToRemove.release();
+            }
+            locks.remove();
         }
     }
 

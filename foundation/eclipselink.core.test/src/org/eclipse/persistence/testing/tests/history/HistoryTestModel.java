@@ -101,7 +101,7 @@ public class HistoryTestModel extends FlashbackTestModel {
                 } catch (DatabaseException databaseException) {
                     Throwable internalException = databaseException.getInternalException();
                     if(getSession().getPlatform().isMySQL()) {
-                        if(internalException.getClass().getName().equals("com.mysql.jdbc.exceptions.MySQLIntegrityConstraintViolationException")) {
+                        if(internalException.getClass().getName().contains("MySQLIntegrityConstraintViolationException")) {
                             // two objects created / updated during the same second will have the same date/time representation
                             // in MySQL database column because on MySQL microseconds cannot be stored into a column of any temporal data type.
                             throw new TestWarningException("on MySQL microseconds cannot be stored into a column of any temporal data type, therefore the following exception occurred: ", internalException);
