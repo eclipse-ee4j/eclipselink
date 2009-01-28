@@ -74,7 +74,8 @@ public class XMLHelperTestCases extends SDOTestCase {
         try {
             InputStream xml = Thread.currentThread().getContextClassLoader().getResourceAsStream(XML_INPUT_UTF16);
             XMLDocument xmlDocument = jaxbHelperContext.getXMLHelper().load(xml);
-            assertEquals("UTF-16LE", xmlDocument.getEncoding());
+            boolean correctEncoding = "UTF-16".equals(xmlDocument.getEncoding()) || "UTF-16LE".equals(xmlDocument.getEncoding()); 
+            assertTrue(correctEncoding);
             assertEquals("1.1", xmlDocument.getXMLVersion());
         } catch(IOException e) {
             fail();
