@@ -18,7 +18,7 @@ import java.io.*;
 
 import org.eclipse.persistence.sessions.Session;
 import org.eclipse.persistence.internal.databaseaccess.Accessor;
-import org.eclipse.persistence.internal.helper.DateFormatThreadLocal;
+import org.eclipse.persistence.internal.helper.ConversionManager;
 import org.eclipse.persistence.internal.localization.LoggingLocalization;
 import org.eclipse.persistence.internal.localization.TraceLocalization;
 import org.eclipse.persistence.config.PersistenceUnitProperties;
@@ -112,7 +112,7 @@ public abstract class AbstractSessionLog implements SessionLog, java.lang.Clonea
     /**
      * Format use to print the current date/time.
      */
-    protected DateFormatThreadLocal dateFormat;
+    protected DateFormat dateFormat;
     
     /**
      * Allows the printing of the stack to be explicitly disabled/enabled.
@@ -166,7 +166,6 @@ public abstract class AbstractSessionLog implements SessionLog, java.lang.Clonea
     public AbstractSessionLog() {
         this.writer = new PrintWriter(System.out);
         this.level = getDefaultLoggingLevel();
-        this.dateFormat = new DateFormatThreadLocal(DATE_FORMAT_STR, null);
     }
 
     /**
@@ -633,7 +632,7 @@ public abstract class AbstractSessionLog implements SessionLog, java.lang.Clonea
      * @return the date format
      */
     public DateFormat getDateFormat() {
-        return dateFormat.get();
+        return dateFormat;
     }
 
     /**
@@ -641,9 +640,20 @@ public abstract class AbstractSessionLog implements SessionLog, java.lang.Clonea
      * The format will be determined by the date format settings.
      */
     protected String getDateString(Date date) {
-        return this.getDateFormat().format(date);
-    }
+        if (getDateFormat() != null) {
+            return getDateFormat().format(date);
 
+        }
+        
+        if (date == null) {
+            return null;
+        }
+        
+        // Since we currently do not have a thread-safe way to format dates,
+        // we will use ConversionManager to build the string.
+        return ConversionManager.getDefaultManager().convertObject(date, String.class).toString();
+    }
+    
     /**
      * Return the supplement detail information including date, session, thread and connection.
      */
@@ -763,14 +773,18 @@ public abstract class AbstractSessionLog implements SessionLog, java.lang.Clonea
         }
     }
 
+
     /**
      * PUBLIC:
-     * Set the date format to be used when
-     * printing a log entry date.
+     * Set the date format to be used when printing a log entry date.
+     * <p>Note: the JDK's <tt>java.text.SimpleDateFormat<tt> is <b>NOT</b> thread-safe.<br>
+     * The user is <b>strongly</b> advised to consider using Apache Commons<br>
+     * <tt>org.apache.commons.lang.time.FastDateFormat</tt> instead.</p>
+     *
      * @param dateFormat java.text.DateFormat
      */
     public void setDateFormat(DateFormat dateFormat) {
-        this.dateFormat.set(dateFormat);
+        this.dateFormat = dateFormat;
     }
 
     /**
