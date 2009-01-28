@@ -13,9 +13,6 @@
  ******************************************************************************/  
 package org.eclipse.persistence.testing.tests.jpa.advanced;
 
-import org.eclipse.persistence.testing.framework.TestErrorException;
-import org.eclipse.persistence.testing.models.jpa.advanced.Employee;
-import org.eclipse.persistence.testing.models.jpa.advanced.EmployeeListener;
 import org.eclipse.persistence.testing.models.jpa.advanced.Project;
 
 /**

@@ -6,7 +6,6 @@ import org.eclipse.persistence.testing.models.events.*;
 
 import java.util.Vector;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
-import org.eclipse.persistence.internal.sessions.AbstractSession;
 
 public class CloneEventOnIsolatedSessionTest extends EventHookTestCase {
     Vector<ClassDescriptor> issolatedDescriptors;

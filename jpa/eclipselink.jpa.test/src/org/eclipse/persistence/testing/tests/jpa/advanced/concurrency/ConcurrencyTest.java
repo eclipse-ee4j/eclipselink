@@ -12,31 +12,15 @@
  ******************************************************************************/  
 package org.eclipse.persistence.testing.tests.jpa.advanced.concurrency;
 
-import java.util.Arrays;
-
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 
 import junit.framework.*;
 
-import org.eclipse.persistence.internal.sessions.RepeatableWriteUnitOfWork;
-import org.eclipse.persistence.jpa.JpaEntityManager;
 import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
-import org.eclipse.persistence.testing.models.jpa.advanced.AdvancedTableCreator;
 
-import org.eclipse.persistence.testing.models.jpa.advanced.Address;
 import org.eclipse.persistence.testing.models.jpa.advanced.Department;
-import org.eclipse.persistence.testing.models.jpa.advanced.Employee;
 import org.eclipse.persistence.testing.models.jpa.advanced.Equipment;
-import org.eclipse.persistence.testing.models.jpa.advanced.Man;
-import org.eclipse.persistence.testing.models.jpa.advanced.Woman;
-import org.eclipse.persistence.testing.models.jpa.advanced.Golfer;
-import org.eclipse.persistence.testing.models.jpa.advanced.GolferPK;
-import org.eclipse.persistence.testing.models.jpa.advanced.Vegetable;
-import org.eclipse.persistence.testing.models.jpa.advanced.VegetablePK;
-import org.eclipse.persistence.testing.models.jpa.advanced.WorldRank;
-import org.eclipse.persistence.testing.models.jpa.advanced.PartnerLink;
-import org.eclipse.persistence.testing.models.jpa.advanced.LargeProject;
 
 public class ConcurrencyTest extends JUnitTestCase {
     public ConcurrencyTest() {

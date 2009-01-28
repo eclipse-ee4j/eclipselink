@@ -1,16 +1,16 @@
 /*******************************************************************************
  * Copyright (c) 1998, 2008 Oracle. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
  *     dminsky - added countOccurrencesOf(Object, List) API
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.internal.helper;
 
 import java.util.*;
@@ -53,10 +53,11 @@ public class Helper implements Serializable {
 
     /** Store CR string, for some reason \n is not platform independent. */
     protected static String CR = null;
-    
-    /** a formatting string for indenting */
+
+    /** formatting strings for indenting */
+    public static String SPACE = " ";
     public static String INDENT = "  ";
-    
+
     /** Store newline string */
     public static String NL = "\n";
 
@@ -74,7 +75,7 @@ public class Helper implements Serializable {
 
     /** Backdoor to allow 0 to be used in primary keys. */
     public static boolean isZeroValidPrimaryKey = false;
-    
+
     /**
      * Return if JDBC date access should be optimized.
      */
@@ -88,7 +89,7 @@ public class Helper implements Serializable {
     public static void setShouldOptimizeDates(boolean value) {
         shouldOptimizeDates = value;
     }
-    
+
     /**
      * PERF:
      * Return the calendar cache use to avoid calendar creation for processing java.sql/util.Date/Time/Timestamp objects.
@@ -96,7 +97,7 @@ public class Helper implements Serializable {
     public static Queue<Calendar> getCalendarCache() {
         return calendarCache;
     }
-    
+
     /**
      * PERF:
      * Init the calendar cache use to avoid calendar creation for processing java.sql/util.Date/Time/Timestamp objects.
@@ -378,12 +379,12 @@ public class Helper implements Serializable {
             throw ValidationException.classNotFoundWhileConvertingClassNames(className, exc);
         }
     }
-    
+
     public static String getComponentTypeNameFromArrayString(String aString) {
         if (aString == null || aString.length() == 0) {
             return null;
         }
-        // complex array component type case 
+        // complex array component type case
         if (aString.length() > 3 && (aString.startsWith("[L") & aString.endsWith(";"))) {
             return aString.substring(2, aString.length() - 1);
         } else if (aString.startsWith("[")){
@@ -400,7 +401,7 @@ public class Helper implements Serializable {
         }
         return null;
     }
-    
+
     public static boolean compareArrays(Object[] array1, Object[] array2) {
         if (array1.length != array2.length) {
             return false;
@@ -576,8 +577,8 @@ public class Helper implements Serializable {
         }
         return true;
     }
-    
-    
+
+
     /**
      * Merge the two Maps into a new HashMap.
      */
@@ -707,7 +708,7 @@ public class Helper implements Serializable {
     public static java.sql.Date dateFromLong(Long longObject) {
         return new java.sql.Date(longObject.longValue());
     }
-    
+
     /**
      * Answer a Date with the year, month, date.
      * This builds a date avoiding the deprecated, inefficient and concurrency bottleneck date constructors.
@@ -759,7 +760,7 @@ public class Helper implements Serializable {
             throw ConversionException.incorrectDateFormat(dateString);
         }
 
-        // Java returns the month in terms of 0 - 11 instead of 1 - 12. 
+        // Java returns the month in terms of 0 - 11 instead of 1 - 12.
         month = month - 1;
 
         return dateFromYearMonthDate(year, month, day);
@@ -850,22 +851,22 @@ public class Helper implements Serializable {
 
     /**
      * INTERNAL:
-     * Returns a Method for the specified Class, method name, and that has no 
-     * parameters. Uses Class.getDeclaredMethod(String Class[]) to find the 
-     * method. If the method is not found on the specified class the superclass 
-     * is checked, and so on, recursively. Set accessible to true, so we can 
+     * Returns a Method for the specified Class, method name, and that has no
+     * parameters. Uses Class.getDeclaredMethod(String Class[]) to find the
+     * method. If the method is not found on the specified class the superclass
+     * is checked, and so on, recursively. Set accessible to true, so we can
      * access private/package/protected methods.
      */
     public static Method getDeclaredMethod(Class javaClass, String methodName) throws NoSuchMethodException {
         return getDeclaredMethod(javaClass, methodName, (Class[]) null);
     }
-    
+
     /**
      * INTERNAL:
-     * Returns a Method for the specified Class, method name, and formal 
-     * parameter types. Uses Class.getDeclaredMethod(String Class[]) to find 
-     * the method. If the method is not found on the specified class the 
-     * superclass is checked, and so on, recursively. Set accessible to true, 
+     * Returns a Method for the specified Class, method name, and formal
+     * parameter types. Uses Class.getDeclaredMethod(String Class[]) to find
+     * the method. If the method is not found on the specified class the
+     * superclass is checked, and so on, recursively. Set accessible to true,
      * so we can access private/package/protected methods.
      */
     public static Method getDeclaredMethod(Class javaClass, String methodName, Class[] methodParameterTypes) throws NoSuchMethodException {
@@ -1126,7 +1127,7 @@ public class Helper implements Serializable {
 
         return rehashedTable;
     }
-    
+
     public static Map rehashMap(Map table) {
         HashMap rehashedTable = new HashMap(table.size() + 2);
 
@@ -1150,7 +1151,7 @@ public class Helper implements Serializable {
             return s1;
         }
 
-        // Remove the necessary number of characters	
+        // Remove the necessary number of characters
         StringBuffer buf = new StringBuffer();
         int numberOfCharsToBeRemoved = s1.length() - maximumStringLength;
         int s1Index = 0;
@@ -1185,7 +1186,7 @@ public class Helper implements Serializable {
             return s1;
         }
 
-        // Remove the necessary number of characters	
+        // Remove the necessary number of characters
         StringBuffer buf = new StringBuffer();
         int numberOfCharsToBeRemoved = s1.length() - maximumStringLength;
         int s1Index = 0;
@@ -1537,8 +1538,8 @@ public class Helper implements Serializable {
     }
 
     /**
-     * Build a numerical string with leading 0s.  number is an existing number that 
-     * the new string will be built on.  totalDigits is the number of the required 
+     * Build a numerical string with leading 0s.  number is an existing number that
+     * the new string will be built on.  totalDigits is the number of the required
      * digits of the string.
      */
     public static String buildZeroPrefix(int number, int totalDigits) {
@@ -1553,10 +1554,10 @@ public class Helper implements Serializable {
             numbString = "-" + numbString;
         } else {
             numbString = "+" + numbString;
-        }            
+        }
         return numbString;
     }
- 
+
     /**
      * Build a numerical string with leading 0s and truncate trailing zeros.  number is
      * an existing number that the new string will be built on.  totalDigits is the number
@@ -1654,7 +1655,7 @@ public class Helper implements Serializable {
     public static java.sql.Time timeFromLong(Long longObject) {
         return new java.sql.Time(longObject.longValue());
     }
-        
+
     /**
      * Answer a Time with the hour, minute, second.
      * This builds a time avoiding the deprecated, inefficient and concurrency bottleneck date constructors.
@@ -1781,6 +1782,7 @@ public class Helper implements Serializable {
      * @param timestampString - string representation of timestamp
      * @return  - timestamp representation of string
      */
+    @SuppressWarnings("deprecation")
     public static java.sql.Timestamp timestampFromString(String timestampString) throws ConversionException {
         if ((timestampString.indexOf('-') == -1) && (timestampString.indexOf('/') == -1) && (timestampString.indexOf('.') == -1) && (timestampString.indexOf(':') == -1)) {
             throw ConversionException.incorrectTimestampFormat(timestampString);
@@ -1827,7 +1829,7 @@ public class Helper implements Serializable {
         // Java dates are based on year after 1900 so I need to delete it.
         year = year - 1900;
 
-        // Java returns the month in terms of 0 - 11 instead of 1 - 12. 
+        // Java returns the month in terms of 0 - 11 instead of 1 - 12.
         month = month - 1;
 
         java.sql.Timestamp timestamp;
@@ -1836,7 +1838,7 @@ public class Helper implements Serializable {
         timestamp = new java.sql.Timestamp(year, month, day, hour, minute, second, nanos);
         return timestamp;
     }
-    
+
     /**
      * Answer a Timestamp with the year, month, day, hour, minute, second.
      * The hour, minute, second are the values calendar uses,
@@ -1855,7 +1857,7 @@ public class Helper implements Serializable {
     public static void toDo(String description) {
         // Use sender to find what is needy.
     }
-    
+
     /**
      * Convert dotted format class name to slashed format class name.
      * @param dottedClassName
@@ -1892,7 +1894,7 @@ public class Helper implements Serializable {
         //need to remove the extra characters
         int counter = originalString.length() - size;
         for (int index = (originalString.length() - 1); index >= 0; index--) {
-            //search from the back to the front, if vowel found, do not append it to the resulting (temp) string! 
+            //search from the back to the front, if vowel found, do not append it to the resulting (temp) string!
             //i.e. if vowel not found, append the chararcter to the new string buffer.
             if (vowels.indexOf(originalString.charAt(index)) == -1) {
                 newStringBufferTmp.append(originalString.charAt(index));
@@ -1900,7 +1902,7 @@ public class Helper implements Serializable {
                 //vowel found! do NOT append it to the temp buffer, and decrease the counter
                 counter--;
                 if (counter == 0) {
-                    //if the exceeded characters (counter) of vowel haven been removed, the total 
+                    //if the exceeded characters (counter) of vowel haven been removed, the total
                     //string size should be equal to the limits, so append the reversed remaining string
                     //to the new string, break the loop and return the shrunk string.
                     StringBuffer newStringBuffer = new StringBuffer(size);
@@ -1986,7 +1988,7 @@ public class Helper implements Serializable {
     public static void writeHexString(byte[] bytes, Writer writer) throws IOException {
         writer.write(buildHexStringFromBytes(bytes));
     }
-    
+
     /**
      * Check if the value is null, or 0 (int/long) for primitive ids.
      */
@@ -2015,22 +2017,22 @@ public class Helper implements Serializable {
         }
         return instances;
     }
-    
+
     /**
      * Convert the URL into a URI allowing for special chars.
      */
     public static URI toURI(java.net.URL url) throws URISyntaxException {
         try {
-            // Attempt to use url.toURI since it will deal with all urls 
-            // without special characters and URISyntaxException allows us 
-            // to catch issues with special characters. This will handle 
-            // URLs that already have special characters replaced such as 
-            // URLS derived from searches for persistence.xml on the Java 
+            // Attempt to use url.toURI since it will deal with all urls
+            // without special characters and URISyntaxException allows us
+            // to catch issues with special characters. This will handle
+            // URLs that already have special characters replaced such as
+            // URLS derived from searches for persistence.xml on the Java
             // System class loader
             return url.toURI();
         } catch (URISyntaxException exception) {
-            // Use multi-argument constructor for URI since single-argument 
-            // constructor and URL.toURI() do not deal with special 
+            // Use multi-argument constructor for URI since single-argument
+            // constructor and URL.toURI() do not deal with special
             // characters in path
             return new URI(url.getProtocol(), url.getUserInfo(), url.getHost(), url.getPort(), url.getPath(), url.getQuery(), null);
         }
