@@ -27,6 +27,7 @@ import javax.naming.InitialContext;
 import javax.naming.NamingException;
 
 import org.eclipse.persistence.exceptions.SDOException;
+import org.eclipse.persistence.internal.helper.ClassConstants;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.sdo.SDOConstants;
 import org.eclipse.persistence.sdo.SDOResolvable;
@@ -227,6 +228,9 @@ public class SDOHelperContext implements HelperContext {
                 hCtx = existingCtx;
             }
             addNotificationListener(key);
+        }
+        if (key.getClass() == ClassConstants.STRING) {
+            helperContexts.put(contextClassLoader, hCtx);
         }
         return hCtx;
     }
