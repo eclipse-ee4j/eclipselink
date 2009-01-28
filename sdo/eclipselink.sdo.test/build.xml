@@ -38,6 +38,9 @@
     <condition property="sdotest.2.common.plugins.dir" value="../../plugins" else="../plugins">
         <contains string="${sdotest.build.location}" substring="sdo"/>
     </condition>
+    <condition property="sdotest.2.moxy.plugins.dir" value="../../moxy/plugins" else="../plugins">
+        <contains string="${sdotest.build.location}" substring="sdo"/>
+    </condition>
     <condition property="sdotest.2.trunk.dir" value="../.." else="..">
         <contains string="${sdotest.build.location}" substring="sdo"/>
     </condition>
@@ -78,6 +81,7 @@
             "/>
         <pathelement path="${junit.lib}"/>
         <pathelement path="${sdotest.plugins.dir}/${commonj.sdo.lib}"/>
+        <pathelement path="${sdotest.2.moxy.plugins.dir}/javax.xml.bind_2.0.0.jar"/>
     </path>
     <!-- Run path without product components -->
     <path id="sdotest.thirdparty.run.path">
