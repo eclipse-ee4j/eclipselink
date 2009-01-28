@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema elementFormDefault="qualified" targetNamespace="urn:containment" xmlns:tns="urn:containment" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:sdox="commonj.sdo/xml">
+        <xs:import namespace="commonj.sdo/xml" />
+	<xs:element name="root-element" type="tns:root"/>
+	<xs:complexType name="root">
+                <xs:sequence>
+                        <xs:element name="child" type="tns:child"/>
+                        <xs:element name="child-many" type="tns:child" maxOccurs="unbounded"/>
+                </xs:sequence>
+        </xs:complexType>
+        <xs:complexType name="child">
+                <xs:sequence>
+                        <xs:element name="value" type="xs:string"/>
+                </xs:sequence>
+        </xs:complexType>
+</xs:schema>
