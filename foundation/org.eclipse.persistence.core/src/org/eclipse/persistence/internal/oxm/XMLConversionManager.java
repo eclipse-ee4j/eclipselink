@@ -22,8 +22,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.StringTokenizer;
 import java.util.TimeZone;
-import java.text.DateFormat;
-import java.text.ParseException;
 
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeConstants;
