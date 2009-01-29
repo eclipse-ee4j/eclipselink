@@ -19,6 +19,7 @@ import commonj.sdo.helper.HelperContext;
 import commonj.sdo.impl.HelperProvider;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.Locale;
 import java.util.TimeZone;
@@ -165,9 +166,13 @@ public class SDODataHelper implements DataHelper {
             Calendar cal = toCalendar(getXMLConversionManager().convertStringToDuration(dateString), null);
             return cal.getTime();
         }
-        XMLGregorianCalendar xgc = getXMLConversionManager().convertStringToXMLGregorianCalendar(dateString);
-        QName schemaType = xgc.getXMLSchemaType();
-        return getXMLConversionManager().convertStringToDate(dateString, schemaType);
+
+        try {
+            return getXMLConversionManager().convertStringToDate(dateString, null);
+        } catch(ConversionException e){
+            throw new IllegalArgumentException(e);
+        }
+
     }
 
     /**
@@ -362,7 +367,9 @@ public class SDODataHelper implements DataHelper {
         if (null == date) {
             return null;
         }
-        Calendar dateCalendar = Calendar.getInstance(getXMLConversionManager().getTimeZone());
+        GregorianCalendar dateCalendar = new GregorianCalendar(getXMLConversionManager().getTimeZone());
+        dateCalendar.setGregorianChange(new Date(Long.MIN_VALUE));
+
         dateCalendar.clear();
         dateCalendar.setTime(date);
         dateCalendar.clear(Calendar.ZONE_OFFSET);

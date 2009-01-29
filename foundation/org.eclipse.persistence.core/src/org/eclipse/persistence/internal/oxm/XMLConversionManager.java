@@ -1,10 +1,10 @@
 /*******************************************************************************
  * Copyright (c) 1998, 2008 Oracle. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
@@ -26,6 +26,7 @@ import java.text.DateFormat;
 import java.text.ParseException;
 
 import javax.xml.datatype.DatatypeConfigurationException;
+import javax.xml.datatype.DatatypeConstants;
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.Duration;
 import javax.xml.datatype.XMLGregorianCalendar;
@@ -54,56 +55,25 @@ public class XMLConversionManager extends ConversionManager implements TimeZoneH
     protected static HashMap defaultXMLTypes;
     protected static HashMap defaultJavaTypes;
 
-    // The formatters XML Schema types xsd:date, xsd:time and xsd:dateTime,
-    //  xsd:gDay, xsd:gMonth, xsd:gMonthDay, xsd:gYear, xsd:gYearMonth
-    protected static final String XSD_DATE_FORMAT_STR = "yyyy-MM-dd";
-    protected DateFormatThreadLocal dateFormatter;
-    protected static final String XSD_TIME_FORMAT_STR = "HH:mm:ss";
-    protected DateFormatThreadLocal timeFormatter;
-    protected static final String XSD_DATE_TIME_FORMAT_STR = "yyyy-MM-dd'T'HH:mm:ss";
-    protected DateFormatThreadLocal dateTimeFormatter;
-    protected static final String XSD_GDAY_FORMAT_STR = "---dd";
-    protected DateFormatThreadLocal gDayFormatter;
-    protected static final String XSD_GMONTH_FORMAT_STR = "--MM";
-    protected DateFormatThreadLocal gMonthFormatter;
-    protected static final String XSD_GMONTH_DAY_FORMAT_STR = "--MM-dd";
-    protected DateFormatThreadLocal gMonthDayFormatter;
-    protected static final String XSD_GYEAR_FORMAT_STR = "yyyy";
-    protected DateFormatThreadLocal gYearFormatter;
-    protected static final String XSD_GYEAR_MONTH_FORMAT_STR = "yyyy-MM";
-    protected DateFormatThreadLocal gYearMonthFormatter;
-
     protected boolean timeZoneQualified;
     protected TimeZone timeZone;
 
     protected static int TOTAL_MS_DIGITS = 3;  // total digits for millisecond formatting
     protected static int TOTAL_NS_DIGITS = 9;  // total digits for nanosecond  formatting
     protected static long YEAR_ONE_AD_TIME = -62135769600000L; // time of 1 AD
-    
+
     protected DatatypeFactory datatypeFactory;
-    
+
     public XMLConversionManager() {
         super();
-        buildFormatters(this);
         timeZoneQualified = false;
-    }
-
-    protected static void buildFormatters(XMLConversionManager xmlConversionManager) {
-        xmlConversionManager.dateFormatter = new DateFormatThreadLocal(XSD_DATE_FORMAT_STR, xmlConversionManager);
-        xmlConversionManager.timeFormatter = new DateFormatThreadLocal(XSD_TIME_FORMAT_STR, xmlConversionManager);
-        xmlConversionManager.dateTimeFormatter = new DateFormatThreadLocal(XSD_DATE_TIME_FORMAT_STR, xmlConversionManager);
-        xmlConversionManager.gDayFormatter = new DateFormatThreadLocal(XSD_GDAY_FORMAT_STR, xmlConversionManager);
-        xmlConversionManager.gMonthFormatter = new DateFormatThreadLocal(XSD_GMONTH_FORMAT_STR, xmlConversionManager);
-        xmlConversionManager.gMonthDayFormatter = new DateFormatThreadLocal(XSD_GMONTH_DAY_FORMAT_STR, xmlConversionManager);
-        xmlConversionManager.gYearFormatter = new DateFormatThreadLocal(XSD_GYEAR_FORMAT_STR, xmlConversionManager);
-        xmlConversionManager.gYearMonthFormatter = new DateFormatThreadLocal(XSD_GYEAR_MONTH_FORMAT_STR, xmlConversionManager);
     }
 
     /**
      * INTERNAL:
-     * 
+     *
      * Return the DatatypeFactory instance.
-     * 
+     *
      * @return
      */
     protected DatatypeFactory getDatatypeFactory() {
@@ -116,7 +86,7 @@ public class XMLConversionManager extends ConversionManager implements TimeZoneH
         }
         return datatypeFactory;
     }
-    
+
     public static XMLConversionManager getDefaultXMLManager() {
         if (defaultXMLManager == null) {
             defaultXMLManager = new XMLConversionManager();
@@ -276,7 +246,7 @@ public class XMLConversionManager extends ConversionManager implements TimeZoneH
 
     /**
      * Build a valid instance of Character from the provided sourceObject.
-     * 
+     *
      * @param sourceObject
      */
     protected Character convertObjectToChar(Object sourceObject) throws ConversionException {
@@ -285,8 +255,8 @@ public class XMLConversionManager extends ConversionManager implements TimeZoneH
         }
 
         return super.convertObjectToChar(sourceObject);
-    }    
-    
+    }
+
     /**
      * Convert a String to a URI.
      *
@@ -403,24 +373,39 @@ public class XMLConversionManager extends ConversionManager implements TimeZoneH
 
     /**
      * Return an XMLGregorianCalander created with a given date string
-     * 
+     *
      * @param dateString
      * @return
      */
     public XMLGregorianCalendar convertStringToXMLGregorianCalendar(String dateString) {
-        return getDatatypeFactory().newXMLGregorianCalendar(dateString);
+        XMLGregorianCalendar calToReturn = null;
+
+        try {
+            calToReturn = getDatatypeFactory().newXMLGregorianCalendar(dateString);
+        } catch (IllegalArgumentException e1) {
+            try {
+                // GMonths have different representations depending on JDK version:
+                // JDK 1.5: "--MM--"   JDK 1.6: "--MM"
+                // If we caught an IllegalArgument, try the 1.5 syntax
+                calToReturn = getDatatypeFactory().newXMLGregorianCalendar(dateString + "--");
+            } catch (IllegalArgumentException e2) {
+                throw e1;
+            }
+        }
+
+        return calToReturn;
     }
 
     /**
      * Return a Duration created with a given date string.
-     * 
+     *
      * @param dateString
      * @return
      */
     public Duration convertStringToDuration(String dateString) {
         return getDatatypeFactory().newDuration(dateString);
     }
-    
+
     public Calendar convertStringToCalendar(String sourceString, QName schemaTypeQName) {
         java.util.Date date = convertStringToDate(sourceString, schemaTypeQName);
         applyTimeZone(date, sourceString);
@@ -462,104 +447,111 @@ public class XMLConversionManager extends ConversionManager implements TimeZoneH
     }
 
     public java.sql.Timestamp convertStringToTimestamp(String sourceString, QName schemaType) {
-        Date date;
-        if (XMLConstants.DATE_QNAME.equals(schemaType)) {
-            try {
-                date = dateFormatter.get().parse(sourceString);
-            } catch (ParseException e) {
-                throw ConversionException.incorrectDateFormat(sourceString);
-            }
-        } else if (XMLConstants.TIME_QNAME.equals(schemaType)) {
-            try {
-                return convertStringToTimestamp(sourceString, timeFormatter.get());
-            } catch (ParseException e) {
-                throw XMLConversionException.incorrectTimestampTimeFormat(sourceString);
-            } catch (NumberFormatException e) {
-                throw XMLConversionException.incorrectTimestampTimeFormat(sourceString);
-            }
-        } else if (XMLConstants.G_DAY_QNAME.equals(schemaType)) {
-            try {
-                date = gDayFormatter.get().parse(sourceString);
-            } catch (ParseException e) {
-                throw XMLConversionException.incorrectGDayFormat(sourceString);
-            }
-        } else if (XMLConstants.G_MONTH_QNAME.equals(schemaType)) {
-            try {
-                date = gMonthFormatter.get().parse(sourceString);
-            } catch (ParseException e) {
-                throw XMLConversionException.incorrectGMonthFormat(sourceString);
-            }
-        } else if (XMLConstants.G_MONTH_DAY_QNAME.equals(schemaType)) {
-            try {
-                return Helper.timestampFromDate(gMonthDayFormatter.get().parse(sourceString));
-            } catch (ParseException e) {
-                throw XMLConversionException.incorrectGMonthDayFormat(sourceString);
-            }
-        } else if (XMLConstants.G_YEAR_QNAME.equals(schemaType)) {
-            try {
-                date = gYearFormatter.get().parse(sourceString);
-            } catch (ParseException e) {
-                throw XMLConversionException.incorrectGYearFormat(sourceString);
-            }
-        } else if (XMLConstants.G_YEAR_MONTH_QNAME.equals(schemaType)) {
-            try {
-                date = gYearMonthFormatter.get().parse(sourceString);
-            } catch (ParseException e) {
-                throw XMLConversionException.incorrectGYearMonthFormat(sourceString);
-            }
-        } else if (XMLConstants.DURATION_QNAME.equals(schemaType)) {
-            throw new IllegalArgumentException();
-        } else {
-            try {
-                return convertStringToTimestamp(sourceString, dateTimeFormatter.get());
-            } catch (ParseException e) {
-                throw XMLConversionException.incorrectTimestampDateTimeFormat(sourceString);
-            } catch (NumberFormatException e) {
-                throw XMLConversionException.incorrectTimestampDateTimeFormat(sourceString);
-            }
-        }
-        applyTimeZone(date, sourceString);
-        return Helper.timestampFromDate(date);
-    }
 
-    private Timestamp convertStringToTimestamp(String string, DateFormat dateFormat) throws ParseException {
-        int decimalIndex = string.lastIndexOf('.');
+        XMLGregorianCalendar xmlGregorianCalender = null;
+        try {
+            xmlGregorianCalender = convertStringToXMLGregorianCalendar(sourceString);
+        } catch(Exception ex) {
+
+             if (XMLConstants.DATE_QNAME.equals(schemaType)) {
+                 throw ConversionException.incorrectDateFormat(sourceString);
+             }else if (XMLConstants.TIME_QNAME.equals(schemaType)) {
+                 throw XMLConversionException.incorrectTimestampTimeFormat(sourceString);
+             }else if (XMLConstants.G_DAY_QNAME.equals(schemaType)) {
+                 throw XMLConversionException.incorrectGDayFormat(sourceString);
+             } else if (XMLConstants.G_MONTH_QNAME.equals(schemaType)) {
+                 throw XMLConversionException.incorrectGMonthFormat(sourceString);
+             }else if (XMLConstants.G_MONTH_DAY_QNAME.equals(schemaType)) {
+                 throw XMLConversionException.incorrectGMonthDayFormat(sourceString);
+             }else if (XMLConstants.G_YEAR_QNAME.equals(schemaType)) {
+                 throw XMLConversionException.incorrectGYearFormat(sourceString);
+             }else if (XMLConstants.G_YEAR_MONTH_QNAME.equals(schemaType)) {
+                 throw XMLConversionException.incorrectGYearMonthFormat(sourceString);
+             }else if (XMLConstants.DURATION_QNAME.equals(schemaType)) {
+                 throw new IllegalArgumentException();
+             }else{
+                 throw XMLConversionException.incorrectTimestampDateTimeFormat(sourceString);
+             }
+        }
+
+        GregorianCalendar cal = xmlGregorianCalender.toGregorianCalendar();
+        cal.setTimeZone(getTimeZone());
+
+        QName  calendarQName = xmlGregorianCalender.getXMLSchemaType();
+        if(!calendarQName.equals(schemaType)){
+            if (XMLConstants.DATE_QNAME.equals(schemaType)){
+                if(calendarQName.equals(XMLConstants.DATE_TIME_QNAME)) {
+                    //clear out the time portion
+                    cal.clear(Calendar.HOUR_OF_DAY);
+                    cal.clear(Calendar.MINUTE);
+                    cal.clear(Calendar.SECOND);
+                    cal.clear(Calendar.MILLISECOND);
+                    return Helper.timestampFromCalendar(cal);
+
+                }else{
+                    throw ConversionException.incorrectDateFormat(sourceString);
+                }
+             }else if (XMLConstants.TIME_QNAME.equals(schemaType)){
+                 throw XMLConversionException.incorrectTimestampTimeFormat(sourceString);
+             }else if (XMLConstants.G_DAY_QNAME.equals(schemaType)) {
+                 throw XMLConversionException.incorrectGDayFormat(sourceString);
+
+             } else if (XMLConstants.G_MONTH_QNAME.equals(schemaType)) {
+                 throw XMLConversionException.incorrectGMonthFormat(sourceString);
+
+             }else if (XMLConstants.G_MONTH_DAY_QNAME.equals(schemaType)) {
+                 throw XMLConversionException.incorrectGMonthDayFormat(sourceString);
+
+             }else if (XMLConstants.G_YEAR_QNAME.equals(schemaType)) {
+                 throw XMLConversionException.incorrectGYearFormat(sourceString);
+
+             }else if (XMLConstants.G_YEAR_MONTH_QNAME.equals(schemaType)) {
+                 throw XMLConversionException.incorrectGYearMonthFormat(sourceString);
+
+             }else if (XMLConstants.DURATION_QNAME.equals(schemaType)) {
+                 throw new IllegalArgumentException();
+
+             }else if (XMLConstants.DATE_TIME_QNAME.equals(schemaType)) { //&& XMLConstants.DATE_QNAME.equals(calendarQName)) {
+                 throw XMLConversionException.incorrectTimestampDateTimeFormat(sourceString);
+
+             }
+        }
+        Timestamp timestamp = Helper.timestampFromCalendar(cal);
+        int decimalIndex = sourceString.lastIndexOf('.');
+
         if(-1 == decimalIndex) {
-            Date date = dateFormat.parse(string);
-            applyTimeZone(date, string);
-            return Helper.timestampFromDate(date);
-        }
-        Date date = dateFormat.parse(string.substring(0, decimalIndex));
-        applyTimeZone(date, string);
-        Timestamp timestamp = Helper.timestampFromDate(date);
-
-        int timeZoneIndex = string.lastIndexOf(GMT_SUFFIX);
-        if(-1 == timeZoneIndex) {
-            timeZoneIndex = string.lastIndexOf('-');
-            if(timeZoneIndex < decimalIndex) {
-                timeZoneIndex = -1;
-            }
+            return timestamp;
+        }else{
+            int timeZoneIndex = sourceString.lastIndexOf(GMT_SUFFIX);
             if(-1 == timeZoneIndex) {
-                timeZoneIndex = string.lastIndexOf('+');
+                timeZoneIndex = sourceString.lastIndexOf('-');
+                if(timeZoneIndex < decimalIndex) {
+                    timeZoneIndex = -1;
+                }
+                if(-1 == timeZoneIndex) {
+                    timeZoneIndex = sourceString.lastIndexOf('+');
+                }
+
             }
+
+            String nsString;
+            if(-1 == timeZoneIndex) {
+                nsString = sourceString.substring(decimalIndex + 1);
+            } else {
+                nsString = sourceString.substring((decimalIndex + 1), timeZoneIndex);
+            }
+            double ns = Long.valueOf(nsString).doubleValue();
+            ns = ns * Math.pow(10, 9 - nsString.length());
+            timestamp.setNanos((int) ns);
+            return timestamp;
         }
-        String nsString;
-        if(-1 == timeZoneIndex) {
-            nsString = string.substring(decimalIndex + 1);
-        } else {
-            nsString = string.substring((decimalIndex + 1), timeZoneIndex);
-        }
-        double ns = Long.valueOf(nsString).doubleValue();
-        ns = ns * Math.pow(10, 9 - nsString.length());
-        timestamp.setNanos((int) ns);
-        return timestamp;
+
     }
-    
+
     public String stringFromCalendar(Calendar sourceCalendar, QName schemaTypeQName) {
         Calendar cal = (Calendar) sourceCalendar.clone();
-        try {
-            XMLGregorianCalendar xgc = DatatypeFactory.newInstance().newXMLGregorianCalendar();
-            // use the timezone info on source calendar, if any 
+            XMLGregorianCalendar xgc = getDatatypeFactory().newXMLGregorianCalendar();
+            // use the timezone info on source calendar, if any
             if (sourceCalendar.isSet(Calendar.ZONE_OFFSET)) {
                 xgc.setTimezone(cal.get(Calendar.ZONE_OFFSET) / 60000);
             }
@@ -589,18 +581,30 @@ public class XMLConversionManager extends ConversionManager implements TimeZoneH
             }
             // gYear
             if (XMLConstants.G_YEAR_QNAME.equals(schemaTypeQName)) {
-                xgc.setYear(cal.get(Calendar.YEAR));
+                if(cal.get(Calendar.ERA) == GregorianCalendar.BC){
+                    xgc.setYear(-cal.get(Calendar.YEAR));
+                }else{
+                    xgc.setYear(cal.get(Calendar.YEAR));
+                }
                 return xgc.toXMLFormat();
             }
             // gYearMonth
             if (XMLConstants.G_YEAR_MONTH_QNAME.equals(schemaTypeQName)) {
-                xgc.setYear(cal.get(Calendar.YEAR));
+                if(cal.get(Calendar.ERA) == GregorianCalendar.BC){
+                    xgc.setYear(-cal.get(Calendar.YEAR));
+                }else{
+                    xgc.setYear(cal.get(Calendar.YEAR));
+                }
                 xgc.setMonth(cal.get(Calendar.MONTH) + 1);
                 return xgc.toXMLFormat();
             }
             // Date
             if (XMLConstants.DATE_QNAME.equals(schemaTypeQName)) {
-                xgc.setYear(cal.get(Calendar.YEAR));
+                if(cal.get(Calendar.ERA) == GregorianCalendar.BC){
+                    xgc.setYear(-cal.get(Calendar.YEAR));
+                }else{
+                    xgc.setYear(cal.get(Calendar.YEAR));
+                }
                 xgc.setMonth(cal.get(Calendar.MONTH) + 1);
                 xgc.setDay(cal.get(Calendar.DATE));
                 return xgc.toXMLFormat();
@@ -608,35 +612,34 @@ public class XMLConversionManager extends ConversionManager implements TimeZoneH
             // Time
             if (XMLConstants.TIME_QNAME.equals(schemaTypeQName)) {
                 xgc.setTime(
-                        cal.get(Calendar.HOUR_OF_DAY), 
-                        cal.get(Calendar.MINUTE), 
-                        cal.get(Calendar.SECOND), 
+                        cal.get(Calendar.HOUR_OF_DAY),
+                        cal.get(Calendar.MINUTE),
+                        cal.get(Calendar.SECOND),
                         cal.get(Calendar.MILLISECOND));
                 return truncateMillis(xgc.toXMLFormat());
             }
             // DateTime
-            xgc.setYear(cal.get(Calendar.YEAR));
+            if(cal.get(Calendar.ERA) == GregorianCalendar.BC){
+                xgc.setYear(-cal.get(Calendar.YEAR));
+            }else{
+                xgc.setYear(cal.get(Calendar.YEAR));
+            }
             xgc.setMonth(cal.get(Calendar.MONTH) + 1);
             xgc.setDay(cal.get(Calendar.DATE));
             xgc.setTime(
-                    cal.get(Calendar.HOUR_OF_DAY), 
-                    cal.get(Calendar.MINUTE), 
-                    cal.get(Calendar.SECOND), 
+                    cal.get(Calendar.HOUR_OF_DAY),
+                    cal.get(Calendar.MINUTE),
+                    cal.get(Calendar.SECOND),
                     cal.get(Calendar.MILLISECOND));
-            // Handle negative years
-            if (cal.getTime().getTime() < YEAR_ONE_AD_TIME) {
-                return '-' + truncateMillis(xgc.toXMLFormat());
-            }
+
             return truncateMillis(xgc.toXMLFormat());
-        } catch (DatatypeConfigurationException dce) {}
-        return "";
     }
 
     /**
      * Truncate any trailing zeros from the millisecond portion of a given string.
      * The string is assumed to be in dateTime or time format, as returned by
      * XMLGregorianCalendar.toXMLFormat().
-     * 
+     *
      * @param xmlFormat
      * @return
      */
@@ -663,206 +666,389 @@ public class XMLConversionManager extends ConversionManager implements TimeZoneH
             } else {
                 result = pre + post;
             }
-        }                
+        }
         return result;
     }
-    
+
+
     private String stringFromCalendar(Calendar sourceCalendar) {
         if (!(sourceCalendar.isSet(Calendar.HOUR) || sourceCalendar.isSet(Calendar.MINUTE) || sourceCalendar.isSet(Calendar.SECOND) || sourceCalendar.isSet(Calendar.MILLISECOND))) {
-            return dateFormatter.get().format(sourceCalendar.getTime());
+            return stringFromCalendar(sourceCalendar, XMLConstants.DATE_QNAME);
         } else if (!(sourceCalendar.isSet(Calendar.YEAR) || sourceCalendar.isSet(Calendar.MONTH) || sourceCalendar.isSet(Calendar.DATE))) {
-            String string = timeFormatter.get().format(sourceCalendar.getTime());
-            string = appendMillis(string, sourceCalendar.getTimeInMillis());
-            return appendTimeZone(string);
+            return stringFromCalendar(sourceCalendar, XMLConstants.TIME_QNAME);
         } else {
             return stringFromDate(sourceCalendar.getTime());
         }
     }
 
     public java.util.Date convertStringToDate(String sourceString, QName schemaType) {
-        Date date;
-        if (XMLConstants.DATE_QNAME.equals(schemaType)) {
-            try {
-                date = dateFormatter.get().parse(sourceString);
-            } catch (ParseException e) {
-                throw ConversionException.incorrectDateFormat(sourceString);
-            }
-        } else if (XMLConstants.TIME_QNAME.equals(schemaType)) {
-            try {
-                return convertStringToDate(sourceString, timeFormatter.get());
-            } catch (ParseException e) {
-                throw ConversionException.incorrectTimeFormat(sourceString);
-            } catch (NumberFormatException e) {
-                throw ConversionException.incorrectTimeFormat(sourceString);
-            }
-        } else if (XMLConstants.G_DAY_QNAME.equals(schemaType)) {
-            try {
-                date = gDayFormatter.get().parse(sourceString);
-            } catch (ParseException e) {
-                throw XMLConversionException.incorrectGDayFormat(sourceString);
-            }
-        } else if (XMLConstants.G_MONTH_QNAME.equals(schemaType)) {
-            try {
-                date = gMonthFormatter.get().parse(sourceString);
-            } catch (ParseException e) {
-                throw XMLConversionException.incorrectGMonthFormat(sourceString);
-            }
-        } else if (XMLConstants.G_MONTH_DAY_QNAME.equals(schemaType)) {
-            try {
-                date = gMonthDayFormatter.get().parse(sourceString);
-            } catch (ParseException e) {
-                throw XMLConversionException.incorrectGMonthDayFormat(sourceString);
-            }
-        } else if (XMLConstants.G_YEAR_QNAME.equals(schemaType)) {
-            try {
-                date = gYearFormatter.get().parse(sourceString);
-            } catch (ParseException e) {
-                throw XMLConversionException.incorrectGYearFormat(sourceString);
-            }
-        } else if (XMLConstants.G_YEAR_MONTH_QNAME.equals(schemaType)) {
-            try {
-                date = gYearMonthFormatter.get().parse(sourceString);
-            } catch (ParseException e) {
-                throw XMLConversionException.incorrectGYearMonthFormat(sourceString);
-            }
-        } else if (XMLConstants.DURATION_QNAME.equals(schemaType)) {
-            throw new IllegalArgumentException();
-        } else {
-            try {
-                return convertStringToDate(sourceString, dateTimeFormatter.get());
-            } catch (ParseException e) {
-                throw ConversionException.incorrectDateTimeFormat(sourceString);
-            } catch (NumberFormatException e) {
-                throw ConversionException.incorrectDateTimeFormat(sourceString);
-            }
+        XMLGregorianCalendar xmlGregorianCalender = null;
+        try {
+            xmlGregorianCalender = convertStringToXMLGregorianCalendar(sourceString);
+        } catch(Exception ex) {
+             if (XMLConstants.DATE_QNAME.equals(schemaType)) {
+                 throw ConversionException.incorrectDateFormat(sourceString);
+
+             }else if (XMLConstants.TIME_QNAME.equals(schemaType)) {
+                 throw ConversionException.incorrectTimeFormat(sourceString);
+
+             }else if (XMLConstants.G_DAY_QNAME.equals(schemaType)) {
+                 throw XMLConversionException.incorrectGDayFormat(sourceString);
+
+             } else if (XMLConstants.G_MONTH_QNAME.equals(schemaType)) {
+                 throw XMLConversionException.incorrectGMonthFormat(sourceString);
+
+             }else if (XMLConstants.G_MONTH_DAY_QNAME.equals(schemaType)) {
+                 throw XMLConversionException.incorrectGMonthDayFormat(sourceString);
+
+             }else if (XMLConstants.G_YEAR_QNAME.equals(schemaType)) {
+                 throw XMLConversionException.incorrectGYearFormat(sourceString);
+
+             }else if (XMLConstants.G_YEAR_MONTH_QNAME.equals(schemaType)) {
+                 throw XMLConversionException.incorrectGYearMonthFormat(sourceString);
+
+             }else if (XMLConstants.DURATION_QNAME.equals(schemaType)) {
+                 throw new IllegalArgumentException();
+
+             }else{
+                 throw ConversionException.incorrectDateTimeFormat(sourceString);
+             }
         }
-        applyTimeZone(date, sourceString);
-        return date;
+
+        if(schemaType == null){
+            schemaType = xmlGregorianCalender.getXMLSchemaType();
+        }
+
+        QName  calendarQName = xmlGregorianCalender.getXMLSchemaType();
+        if(!calendarQName.equals(schemaType)){
+            if (XMLConstants.DATE_QNAME.equals(schemaType)){
+                if(calendarQName.equals(XMLConstants.DATE_TIME_QNAME)) {
+                    //clear out the time portion
+                    Calendar cal = xmlGregorianCalender.toGregorianCalendar();
+                    cal.clear(Calendar.HOUR_OF_DAY);
+                    cal.clear(Calendar.MINUTE);
+                    cal.clear(Calendar.SECOND);
+                    cal.clear(Calendar.MILLISECOND);
+                    return cal.getTime();
+                }else{
+                    throw ConversionException.incorrectDateFormat(sourceString);
+                }
+             }else if (XMLConstants.TIME_QNAME.equals(schemaType)){
+                 throw ConversionException.incorrectTimeFormat(sourceString);
+             }else if (XMLConstants.G_DAY_QNAME.equals(schemaType)) {
+                 throw XMLConversionException.incorrectGDayFormat(sourceString);
+
+             } else if (XMLConstants.G_MONTH_QNAME.equals(schemaType)) {
+                 throw XMLConversionException.incorrectGMonthFormat(sourceString);
+
+             }else if (XMLConstants.G_MONTH_DAY_QNAME.equals(schemaType)) {
+                 throw XMLConversionException.incorrectGMonthDayFormat(sourceString);
+
+             }else if (XMLConstants.G_YEAR_QNAME.equals(schemaType)) {
+                 throw XMLConversionException.incorrectGYearFormat(sourceString);
+
+             }else if (XMLConstants.G_YEAR_MONTH_QNAME.equals(schemaType)) {
+                 throw XMLConversionException.incorrectGYearMonthFormat(sourceString);
+
+             }else if (XMLConstants.DURATION_QNAME.equals(schemaType)) {
+                 throw new IllegalArgumentException();
+
+             }else if (XMLConstants.DATE_TIME_QNAME.equals(schemaType)) {
+                 throw ConversionException.incorrectDateTimeFormat(sourceString);
+             }
+
+        }
+
+        XMLGregorianCalendar defaults = getDatatypeFactory().newXMLGregorianCalendar();
+        defaults.setTimezone(getTimeZone().getRawOffset()/60000);
+
+        GregorianCalendar cal;
+        if(xmlGregorianCalender.getTimezone() == DatatypeConstants.FIELD_UNDEFINED){
+            cal = xmlGregorianCalender.toGregorianCalendar(getTimeZone(), null, null);
+        }else{
+            cal = xmlGregorianCalender.toGregorianCalendar();
+        }
+
+        cal.setGregorianChange(new Date(Long.MAX_VALUE));
+        Date returnDate= cal.getTime();
+
+        return returnDate;
     }
 
-    private java.util.Date convertStringToDate(String string, DateFormat dateFormat) throws ParseException {
-        Date date;
-        int decimalIndex = string.lastIndexOf('.');
-        if (-1 == decimalIndex) {
-            date = dateFormat.parse(string);
-            applyTimeZone(date, string);
-            return date;
-        }
-        date = dateFormat.parse(string.substring(0, decimalIndex));
-
-        int timeZoneIndex = string.lastIndexOf(GMT_SUFFIX);
-        if (-1 == timeZoneIndex) {
-            timeZoneIndex = string.lastIndexOf('-');
-            if (timeZoneIndex < decimalIndex) {
-                timeZoneIndex = -1;
-            }
-            if (-1 == timeZoneIndex) {
-                timeZoneIndex = string.lastIndexOf('+');
-            }
-        }
-        String msString;
-        if (-1 == timeZoneIndex) {
-            msString = string.substring(decimalIndex + 1);
-        } else {
-            msString = string.substring((decimalIndex + 1), timeZoneIndex);
-        }
-        double ms = Long.valueOf(msString).doubleValue();
-        ms = ms * Math.pow(10, 3 - msString.length());
-        date.setTime(date.getTime() + (long) ms);
-        applyTimeZone(date, string);
-        return date;
-    }
 
     /**
      * This method returns a dateTime string representing a given
-     * java.util.Date.  
-     * 
-     * BC dates (sourceDate.getTime() < YEAR_ONE_AD_TIME) are handled 
-     * as follows: '2007 BC' --> '-2006 AD' 
-     *  
+     * java.util.Date.
+     *
+     * BC dates (sourceDate.getTime() < YEAR_ONE_AD_TIME) are handled
+     * as follows: '2007 BC' --> '-2006 AD'
+     *
      * @param sourceDate
      * @return
      */
     private String stringFromDate(java.util.Date sourceDate) {
-        // if bc is true, adjust the date from BC to AD, and prepend '-' to the string
-        boolean bc = sourceDate.getTime() < YEAR_ONE_AD_TIME;
-        if (bc) {
-            sourceDate = handleBCDate(sourceDate);
+        XMLGregorianCalendar xgc = getDatatypeFactory().newXMLGregorianCalendar();
+
+        GregorianCalendar cal = new GregorianCalendar(getTimeZone());
+        cal.setGregorianChange(new Date(Long.MIN_VALUE));
+        cal.setTime(sourceDate);
+
+        if(cal.get(Calendar.ERA) == GregorianCalendar.BC){
+            xgc.setYear(-cal.get(Calendar.YEAR));
+        }else{
+            xgc.setYear(cal.get(Calendar.YEAR));
         }
-        String string = dateTimeFormatter.get().format(sourceDate);
+        xgc.setMonth(cal.get(Calendar.MONTH)+1);
+        xgc.setDay(cal.get(Calendar.DAY_OF_MONTH));
+
+        xgc.setHour(cal.get(Calendar.HOUR_OF_DAY));
+        xgc.setMinute(cal.get(Calendar.MINUTE));
+        xgc.setSecond(cal.get(Calendar.SECOND));
+
+        String string= xgc.toXMLFormat();
         string = appendMillis(string, sourceDate.getTime());
-        return bc ? '-' + appendTimeZone(string) : appendTimeZone(string); 
+        string = appendTimeZone(string);
+        return string;
+
     }
 
     /**
      * This method returns a string representing a given java.util.Date
-     * based on a given schema type QName.  
-     * 
-     * BC dates (sourceDate.getTime() < YEAR_ONE_AD_TIME) are handled 
+     * based on a given schema type QName.
+     *
+     * BC dates (sourceDate.getTime() < YEAR_ONE_AD_TIME) are handled
      * as follows: '2007 BC' --> '-2006 AD'.
-     * 
+     *
      * @param sourceDate
      * @param schemaType
      * @return
      */
     public String stringFromDate(java.util.Date sourceDate, QName schemaType) {
-        // if bc is true, adjust the date from BC to AD, and prepend '-' to the string
-        boolean bc = sourceDate.getTime() < YEAR_ONE_AD_TIME;
-        if (bc) {
-            sourceDate = handleBCDate(sourceDate);
-        }
+
+        XMLGregorianCalendar xgc = getDatatypeFactory().newXMLGregorianCalendar();
+
+
         if (XMLConstants.DATE_QNAME.equals(schemaType)) {
-            return bc ? '-' + dateFormatter.get().format(sourceDate) : dateFormatter.get().format(sourceDate);
-        } 
+
+            GregorianCalendar cal = new GregorianCalendar(getTimeZone());
+            cal.setGregorianChange(new Date(Long.MIN_VALUE));
+            cal.setTime(sourceDate);
+
+            xgc.setDay(cal.get(Calendar.DAY_OF_MONTH));
+            xgc.setMonth(cal.get(Calendar.MONTH)+1);
+            if(cal.get(Calendar.ERA) == GregorianCalendar.BC){
+                xgc.setYear(-cal.get(Calendar.YEAR));
+            }else{
+                xgc.setYear(cal.get(Calendar.YEAR));
+            }
+
+            return xgc.toXMLFormat();
+
+        }
         if (XMLConstants.TIME_QNAME.equals(schemaType)) {
-            String string = timeFormatter.get().format(sourceDate);
+
+            GregorianCalendar cal = new GregorianCalendar(getTimeZone());
+            cal.setGregorianChange(new Date(Long.MIN_VALUE));
+            cal.setTime(sourceDate);
+
+            xgc.setHour(cal.get(Calendar.HOUR_OF_DAY));
+            xgc.setMinute(cal.get(Calendar.MINUTE));
+            xgc.setSecond(cal.get(Calendar.SECOND));
+
+            String string = xgc.toXMLFormat();
             string = appendMillis(string, sourceDate.getTime());
             return appendTimeZone(string);
-        } 
+        }
         if (XMLConstants.G_DAY_QNAME.equals(schemaType)) {
-            return gDayFormatter.get().format(sourceDate);
-        } 
+            GregorianCalendar cal = new GregorianCalendar(getTimeZone());
+            cal.setGregorianChange(new Date(Long.MIN_VALUE));
+            cal.setTime(sourceDate);
+            xgc.setDay(cal.get(Calendar.DATE));
+            return xgc.toXMLFormat();
+        }
         if (XMLConstants.G_MONTH_QNAME.equals(schemaType)) {
-            return gMonthFormatter.get().format(sourceDate);
-        } 
+            GregorianCalendar cal = new GregorianCalendar(getTimeZone());
+            cal.setGregorianChange(new Date(Long.MIN_VALUE));
+            cal.setTime(sourceDate);
+
+            xgc.setMonth(cal.get(Calendar.MONTH)+1);
+
+            String xmlFormat = xgc.toXMLFormat();
+            // GMonths have different representations depending on JDK version:
+            // JDK 1.5: "--MM--"   JDK 1.6: "--MM"
+            // Default support is for 1.6, so if string length == 6, chop off the last two characters
+            if (xmlFormat.length() == 6) {
+                xmlFormat = xmlFormat.substring(0, 4);
+            }
+
+            return xmlFormat;
+        }
         if (XMLConstants.G_MONTH_DAY_QNAME.equals(schemaType)) {
-            return gMonthDayFormatter.get().format(sourceDate);
-        } 
+            GregorianCalendar cal = new GregorianCalendar(getTimeZone());
+            cal.setGregorianChange(new Date(Long.MIN_VALUE));
+            cal.setTime(sourceDate);
+            xgc.setMonth(cal.get(Calendar.MONTH)+1);
+            xgc.setDay(cal.get(Calendar.DAY_OF_MONTH));
+            return xgc.toXMLFormat();
+        }
         if (XMLConstants.G_YEAR_QNAME.equals(schemaType)) {
-            return bc ? '-' + gYearFormatter.get().format(sourceDate) : gYearFormatter.get().format(sourceDate); 
-        } 
+            GregorianCalendar cal = new GregorianCalendar(getTimeZone());
+            cal.setGregorianChange(new Date(Long.MIN_VALUE));
+            cal.setTime(sourceDate);
+            if(cal.get(Calendar.ERA) == GregorianCalendar.BC){
+                xgc.setYear(-cal.get(Calendar.YEAR));
+            }else{
+                xgc.setYear(cal.get(Calendar.YEAR));
+            }
+
+            return xgc.toXMLFormat();
+        }
         if (XMLConstants.G_YEAR_MONTH_QNAME.equals(schemaType)) {
-            return bc ? '-' + gYearMonthFormatter.get().format(sourceDate) : gYearMonthFormatter.get().format(sourceDate);
-        } 
+            GregorianCalendar cal = new GregorianCalendar(getTimeZone());
+            cal.setGregorianChange(new Date(Long.MIN_VALUE));
+            cal.setTime(sourceDate);
+            if(cal.get(Calendar.ERA) == GregorianCalendar.BC){
+                xgc.setYear(-cal.get(Calendar.YEAR));
+            }else{
+                xgc.setYear(cal.get(Calendar.YEAR));
+            }
+            xgc.setMonth(cal.get(Calendar.MONTH)+1);
+
+            return xgc.toXMLFormat();
+        }
         if (XMLConstants.DURATION_QNAME.equals(schemaType)) {
             throw new IllegalArgumentException();
         }
         // default is dateTime
-        String string = dateTimeFormatter.get().format(sourceDate);
-        string = appendMillis(string, sourceDate.getTime());
-        return bc ? '-' + appendTimeZone(string) : appendTimeZone(string); 
+        GregorianCalendar cal = new GregorianCalendar(getTimeZone());
+
+        cal.setGregorianChange(new Date(Long.MIN_VALUE));
+        cal.setTime(sourceDate);
+        xgc = getDatatypeFactory().newXMLGregorianCalendar(cal);
+
+        if(!isTimeZoneQualified()){
+            xgc.setTimezone(DatatypeConstants.FIELD_UNDEFINED);
+        }
+
+        String string =  xgc.toXMLFormat();
+        return truncateMillis(string);
     }
-    
+
     private String stringFromSQLDate(java.sql.Date sourceDate) {
-        return dateFormatter.get().format(sourceDate);
+
+        XMLGregorianCalendar xgc = getDatatypeFactory().newXMLGregorianCalendar();
+
+        GregorianCalendar cal = new GregorianCalendar(getTimeZone());
+        cal.setGregorianChange(new Date(Long.MIN_VALUE));
+        cal.setTime(sourceDate);
+
+        if(cal.get(Calendar.ERA) == GregorianCalendar.BC){
+            xgc.setYear(-cal.get(Calendar.YEAR));
+        }else{
+            xgc.setYear(cal.get(Calendar.YEAR));
+        }
+        xgc.setMonth(cal.get(Calendar.MONTH)+1);
+        xgc.setDay(cal.get(Calendar.DAY_OF_MONTH));
+
+        return xgc.toXMLFormat();
     }
 
     private String stringFromSQLDate(java.sql.Date sourceDate, QName schemaType) {
         if (XMLConstants.DATE_TIME_QNAME.equals(schemaType)) {
-            return dateTimeFormatter.get().format(sourceDate);
+
+            XMLGregorianCalendar xgc = getDatatypeFactory().newXMLGregorianCalendar();
+            GregorianCalendar cal = new GregorianCalendar(getTimeZone());
+            cal.setGregorianChange(new Date(Long.MIN_VALUE));
+            cal.setTime(sourceDate);
+
+            if(cal.get(Calendar.ERA) == GregorianCalendar.BC){
+                xgc.setYear(-cal.get(Calendar.YEAR));
+            }else{
+                xgc.setYear(cal.get(Calendar.YEAR));
+            }
+            xgc.setMonth(cal.get(Calendar.MONTH)+1);
+            xgc.setDay(cal.get(Calendar.DAY_OF_MONTH));
+
+            xgc.setHour(cal.get(Calendar.HOUR_OF_DAY));
+            xgc.setMinute(cal.get(Calendar.MINUTE));
+            xgc.setSecond(cal.get(Calendar.SECOND));
+            return xgc.toXMLFormat();
+
         } else if (XMLConstants.TIME_QNAME.equals(schemaType)) {
-            String string = timeFormatter.get().format(sourceDate);
+            XMLGregorianCalendar xgc = getDatatypeFactory().newXMLGregorianCalendar();
+            GregorianCalendar cal = new GregorianCalendar(getTimeZone());
+            cal.setGregorianChange(new Date(Long.MIN_VALUE));
+            cal.setTime(sourceDate);
+
+            xgc.setHour(cal.get(Calendar.HOUR_OF_DAY));
+            xgc.setMinute(cal.get(Calendar.MINUTE));
+            xgc.setSecond(cal.get(Calendar.SECOND));
+
+            String string = xgc.toXMLFormat();
             return appendTimeZone(string);
+
         } else if (XMLConstants.G_DAY_QNAME.equals(schemaType)) {
-            return gDayFormatter.get().format(sourceDate);
+            XMLGregorianCalendar xgc = getDatatypeFactory().newXMLGregorianCalendar();
+
+            GregorianCalendar cal = new GregorianCalendar(getTimeZone());
+            cal.setGregorianChange(new Date(Long.MIN_VALUE));
+            cal.setTime(sourceDate);
+
+            xgc.setDay(cal.get(Calendar.DAY_OF_MONTH));
+            return xgc.toXMLFormat();
+
         } else if (XMLConstants.G_MONTH_QNAME.equals(schemaType)) {
-            return gMonthFormatter.get().format(sourceDate);
+            XMLGregorianCalendar xgc = getDatatypeFactory().newXMLGregorianCalendar();
+            GregorianCalendar cal = new GregorianCalendar(getTimeZone());
+            cal.setGregorianChange(new Date(Long.MIN_VALUE));
+            cal.setTime(sourceDate);
+
+            xgc.setMonth(cal.get(Calendar.MONTH)+1);
+
+            String xmlFormat = xgc.toXMLFormat();
+            // GMonths have different representations depending on JDK version:
+            // JDK 1.5: "--MM--"   JDK 1.6: "--MM"
+            // Default support is for 1.6, so if string length == 6, chop off the last two characters
+            if (xmlFormat.length() == 6) {
+                xmlFormat = xmlFormat.substring(0, 4);
+            }
+
+            return xmlFormat;
+
         } else if (XMLConstants.G_MONTH_DAY_QNAME.equals(schemaType)) {
-            return gMonthDayFormatter.get().format(sourceDate);
+            XMLGregorianCalendar xgc = getDatatypeFactory().newXMLGregorianCalendar();
+            GregorianCalendar cal = new GregorianCalendar(getTimeZone());
+            cal.setGregorianChange(new Date(Long.MIN_VALUE));
+            cal.setTime(sourceDate);
+
+            xgc.setMonth(cal.get(Calendar.MONTH)+1);
+            xgc.setDay(cal.get(Calendar.DAY_OF_MONTH));
+            return xgc.toXMLFormat();
         } else if (XMLConstants.G_YEAR_QNAME.equals(schemaType)) {
-            return gYearFormatter.get().format(sourceDate);
+             XMLGregorianCalendar xgc = getDatatypeFactory().newXMLGregorianCalendar();
+             GregorianCalendar cal = new GregorianCalendar(getTimeZone());
+             cal.setGregorianChange(new Date(Long.MIN_VALUE));
+             cal.setTime(sourceDate);
+             if(cal.get(Calendar.ERA) == GregorianCalendar.BC){
+                xgc.setYear(-cal.get(Calendar.YEAR));
+            }else{
+                xgc.setYear(cal.get(Calendar.YEAR));
+            }
+            return xgc.toXMLFormat();
         } else if (XMLConstants.G_YEAR_MONTH_QNAME.equals(schemaType)) {
-            return gYearMonthFormatter.get().format(sourceDate);
+            XMLGregorianCalendar xgc = getDatatypeFactory().newXMLGregorianCalendar();
+            GregorianCalendar cal = new GregorianCalendar(getTimeZone());
+            cal.setGregorianChange(new Date(Long.MIN_VALUE));
+            cal.setTime(sourceDate);
+
+            if(cal.get(Calendar.ERA) == GregorianCalendar.BC){
+                xgc.setYear(-cal.get(Calendar.YEAR));
+            }else{
+                xgc.setYear(cal.get(Calendar.YEAR));
+            }
+            xgc.setMonth(cal.get(Calendar.MONTH)+1);
+
+            return xgc.toXMLFormat();
         } else if (XMLConstants.DURATION_QNAME.equals(schemaType)) {
             throw new IllegalArgumentException();
         } else {
@@ -871,26 +1057,122 @@ public class XMLConversionManager extends ConversionManager implements TimeZoneH
     }
 
     private String stringFromSQLTime(Time sourceTime) {
-        String string = timeFormatter.get().format(sourceTime);
+        XMLGregorianCalendar xgc = getDatatypeFactory().newXMLGregorianCalendar();
+
+        GregorianCalendar cal = new GregorianCalendar(getTimeZone());
+        cal.setGregorianChange(new Date(Long.MIN_VALUE));
+        cal.setTime(sourceTime);
+
+        xgc.setHour(cal.get(Calendar.HOUR_OF_DAY));
+        xgc.setMinute(cal.get(Calendar.MINUTE));
+        xgc.setSecond(cal.get(Calendar.SECOND));
+
+        String string= xgc.toXMLFormat();
         return appendTimeZone(string);
     }
 
     private String stringFromSQLTime(Time sourceTime, QName schemaType) {
         if (XMLConstants.DATE_TIME_QNAME.equals(schemaType)) {
-            String string = dateTimeFormatter.get().format(sourceTime);
+            XMLGregorianCalendar xgc = getDatatypeFactory().newXMLGregorianCalendar();
+            GregorianCalendar cal = new GregorianCalendar(getTimeZone());
+            cal.setGregorianChange(new Date(Long.MIN_VALUE));
+            cal.setTime(sourceTime);
+
+            if(cal.get(Calendar.ERA) == GregorianCalendar.BC){
+                xgc.setYear(-cal.get(Calendar.YEAR));
+            }else{
+                xgc.setYear(cal.get(Calendar.YEAR));
+            }
+            xgc.setMonth(cal.get(Calendar.MONTH)+1);
+            xgc.setDay(cal.get(Calendar.DAY_OF_MONTH));
+
+            xgc.setHour(cal.get(Calendar.HOUR_OF_DAY));
+            xgc.setMinute(cal.get(Calendar.MINUTE));
+            xgc.setSecond(cal.get(Calendar.SECOND));
+            String string= xgc.toXMLFormat();
             return appendTimeZone(string);
+
         } else if (XMLConstants.DATE_QNAME.equals(schemaType)) {
-            return dateFormatter.get().format(sourceTime);
+
+            XMLGregorianCalendar xgc = getDatatypeFactory().newXMLGregorianCalendar();
+            GregorianCalendar cal = new GregorianCalendar(getTimeZone());
+            cal.setGregorianChange(new Date(Long.MIN_VALUE));
+            cal.setTime(sourceTime);
+
+            if(cal.get(Calendar.ERA) == GregorianCalendar.BC){
+                xgc.setYear(-cal.get(Calendar.YEAR));
+            }else{
+                xgc.setYear(cal.get(Calendar.YEAR));
+            }
+            xgc.setMonth(cal.get(Calendar.MONTH)+1);
+            xgc.setDay(cal.get(Calendar.DAY_OF_MONTH));
+
+            return xgc.toXMLFormat();
         } else if (XMLConstants.G_DAY_QNAME.equals(schemaType)) {
-            return gDayFormatter.get().format(sourceTime);
+            XMLGregorianCalendar xgc = getDatatypeFactory().newXMLGregorianCalendar();
+            GregorianCalendar cal = new GregorianCalendar(getTimeZone());
+            cal.setGregorianChange(new Date(Long.MIN_VALUE));
+            cal.setTime(sourceTime);
+
+            xgc.setDay(cal.get(Calendar.DAY_OF_MONTH));
+
+            return xgc.toXMLFormat();
         } else if (XMLConstants.G_MONTH_QNAME.equals(schemaType)) {
-            return gMonthFormatter.get().format(sourceTime);
+            XMLGregorianCalendar xgc = getDatatypeFactory().newXMLGregorianCalendar();
+            GregorianCalendar cal = new GregorianCalendar(getTimeZone());
+            cal.setGregorianChange(new Date(Long.MIN_VALUE));
+            cal.setTime(sourceTime);
+
+            xgc.setMonth(cal.get(Calendar.MONTH)+1);
+
+
+            String xmlFormat = xgc.toXMLFormat();
+            // GMonths have different representations depending on JDK version:
+            // JDK 1.5: "--MM--"   JDK 1.6: "--MM"
+            // Default support is for 1.6, so if string length == 6, chop off the last two characters
+            if (xmlFormat.length() == 6) {
+                xmlFormat = xmlFormat.substring(0, 4);
+            }
+
+            return xmlFormat;
+
         } else if (XMLConstants.G_MONTH_DAY_QNAME.equals(schemaType)) {
-            return gMonthDayFormatter.get().format(sourceTime);
+            XMLGregorianCalendar xgc = getDatatypeFactory().newXMLGregorianCalendar();
+            GregorianCalendar cal = new GregorianCalendar(getTimeZone());
+            cal.setGregorianChange(new Date(Long.MIN_VALUE));
+            cal.setTime(sourceTime);
+
+            xgc.setMonth(cal.get(Calendar.MONTH)+1);
+            xgc.setDay(cal.get(Calendar.DAY_OF_MONTH));
+
+            return xgc.toXMLFormat();
+
         } else if (XMLConstants.G_YEAR_QNAME.equals(schemaType)) {
-            return gYearFormatter.get().format(sourceTime);
+            XMLGregorianCalendar xgc = getDatatypeFactory().newXMLGregorianCalendar();
+            GregorianCalendar cal = new GregorianCalendar(getTimeZone());
+            cal.setGregorianChange(new Date(Long.MIN_VALUE));
+            cal.setTime(sourceTime);
+            if(cal.get(Calendar.ERA) == GregorianCalendar.BC){
+                xgc.setYear(-cal.get(Calendar.YEAR));
+            }else{
+                xgc.setYear(cal.get(Calendar.YEAR));
+            }
+
+            return xgc.toXMLFormat();
         } else if (XMLConstants.G_YEAR_MONTH_QNAME.equals(schemaType)) {
-            return gYearMonthFormatter.get().format(sourceTime);
+            XMLGregorianCalendar xgc = getDatatypeFactory().newXMLGregorianCalendar();
+            GregorianCalendar cal = new GregorianCalendar(getTimeZone());
+            cal.setGregorianChange(new Date(Long.MIN_VALUE));
+            cal.setTime(sourceTime);
+
+            if(cal.get(Calendar.ERA) == GregorianCalendar.BC){
+                xgc.setYear(-cal.get(Calendar.YEAR));
+            }else{
+                xgc.setYear(cal.get(Calendar.YEAR));
+            }
+            xgc.setMonth(cal.get(Calendar.MONTH)+1);
+
+            return xgc.toXMLFormat();
         } else if (XMLConstants.DURATION_QNAME.equals(schemaType)) {
             throw new IllegalArgumentException();
         } else {
@@ -901,72 +1183,172 @@ public class XMLConversionManager extends ConversionManager implements TimeZoneH
 
     /**
      * This method returns a dateTime string representing a given
-     * Timestamp.  
-     * 
-     * BC dates (sourceDate.getTime() < YEAR_ONE_AD_TIME) are handled 
-     * as follows: '2007 BC' --> '-2006 AD' 
-     *  
+     * Timestamp.
+     *
+     * BC dates (sourceDate.getTime() < YEAR_ONE_AD_TIME) are handled
+     * as follows: '2007 BC' --> '-2006 AD'
+     *
      * @param sourceDate
      * @return
      */
     private String stringFromTimestamp(Timestamp sourceDate) {
-        // if bc is true, adjust the date from BC to AD, and prepend '-' to the string
-        boolean bc = sourceDate.getTime() < YEAR_ONE_AD_TIME;
-        if (bc) {
-            sourceDate = handleBCDate(sourceDate);
+        GregorianCalendar cal = new GregorianCalendar(getTimeZone());
+        cal.setGregorianChange(new Date(Long.MIN_VALUE));
+        cal.setTime(sourceDate);
+
+        XMLGregorianCalendar xgc = getDatatypeFactory().newXMLGregorianCalendar();
+        if(cal.get(Calendar.ERA)== GregorianCalendar.BC){
+            xgc.setYear(-cal.get(Calendar.YEAR));
+        }else{
+            xgc.setYear(cal.get(Calendar.YEAR));
         }
-        String string = dateTimeFormatter.get().format(sourceDate);
+        xgc.setMonth(cal.get(Calendar.MONTH)+1);
+        xgc.setDay(cal.get(Calendar.DAY_OF_MONTH));
+
+        xgc.setHour(cal.get(Calendar.HOUR_OF_DAY));
+        xgc.setMinute(cal.get(Calendar.MINUTE));
+        xgc.setSecond(cal.get(Calendar.SECOND));
+
+        String string= xgc.toXMLFormat();
         string = appendNanos(string, sourceDate);
-        return bc ? '-' + appendTimeZone(string) : appendTimeZone(string);
+        return appendTimeZone(string);
     }
 
     /**
      * This method returns a string representing a given Timestamp
      * based on a given schema type QName.
-     * 
-     * BC dates (sourceDate.getTime() < YEAR_ONE_AD_TIME) are handled 
+     *
+     * BC dates (sourceDate.getTime() < YEAR_ONE_AD_TIME) are handled
      * as follows: '2007 BC' --> '-2006 AD'.
-     * 
+     *
      * @param sourceDate
      * @param schemaType
      * @return
      */
     private String stringFromTimestamp(Timestamp sourceDate, QName schemaType) {
-        // if bc is true, adjust the date from BC to AD, and prepend '-' to the string
-        boolean bc = sourceDate.getTime() < YEAR_ONE_AD_TIME;
-        if (bc) {
-            sourceDate = handleBCDate(sourceDate);
-        }
+
         if (XMLConstants.DATE_QNAME.equals(schemaType)) {
-            return bc ? '-' + dateFormatter.get().format(sourceDate) : dateFormatter.get().format(sourceDate);
-        } 
+            GregorianCalendar cal = new GregorianCalendar(getTimeZone());
+            cal.setGregorianChange(new Date(Long.MIN_VALUE));
+            cal.setTime(sourceDate);
+
+            XMLGregorianCalendar xgc = getDatatypeFactory().newXMLGregorianCalendar();
+
+            if(cal.get(Calendar.ERA) == GregorianCalendar.BC){
+                xgc.setYear(-cal.get(Calendar.YEAR));
+            }else{
+                xgc.setYear(cal.get(Calendar.YEAR));
+            }
+            xgc.setMonth(cal.get(Calendar.MONTH)+1);
+            xgc.setDay(cal.get(Calendar.DAY_OF_MONTH));
+
+            return xgc.toXMLFormat();
+        }
         if (XMLConstants.TIME_QNAME.equals(schemaType)) {
-            String string = timeFormatter.get().format(sourceDate);
-            string = appendNanos(string, sourceDate);
-            return appendTimeZone(string);
-        } 
+
+            Calendar cal = Calendar.getInstance(getTimeZone());
+            cal.setTimeInMillis(sourceDate.getTime());
+
+            XMLGregorianCalendar xgc = getDatatypeFactory().newXMLGregorianCalendar();
+            xgc.setHour(cal.get(Calendar.HOUR_OF_DAY));
+            xgc.setMinute(cal.get(Calendar.MINUTE));
+            xgc.setSecond(cal.get(Calendar.SECOND));
+
+            String string = xgc.toXMLFormat();
+            return appendNanos(string, sourceDate);
+
+        }
         if (XMLConstants.G_DAY_QNAME.equals(schemaType)) {
-            return gDayFormatter.get().format(sourceDate);
-        } 
+            XMLGregorianCalendar xgc = getDatatypeFactory().newXMLGregorianCalendar();
+            GregorianCalendar cal = new GregorianCalendar(getTimeZone());
+            cal.setGregorianChange(new Date(Long.MIN_VALUE));
+            cal.setTime(sourceDate);
+
+            xgc.setDay(cal.get(Calendar.DAY_OF_MONTH));
+
+            return xgc.toXMLFormat();
+        }
         if (XMLConstants.G_MONTH_QNAME.equals(schemaType)) {
-            return gMonthFormatter.get().format(sourceDate);
-        } 
+             XMLGregorianCalendar xgc = getDatatypeFactory().newXMLGregorianCalendar();
+             GregorianCalendar cal = new GregorianCalendar(getTimeZone());
+             cal.setGregorianChange(new Date(Long.MIN_VALUE));
+             cal.setTime(sourceDate);
+
+            xgc.setMonth(cal.get(Calendar.MONTH)+1);
+
+            String xmlFormat = xgc.toXMLFormat();
+            // GMonths have different representations depending on JDK version:
+            // JDK 1.5: "--MM--"   JDK 1.6: "--MM"
+            // Default support is for 1.6, so if string length == 6, chop off the last two characters
+            if (xmlFormat.length() == 6) {
+                xmlFormat = xmlFormat.substring(0, 4);
+            }
+
+            return xmlFormat;
+        }
         if (XMLConstants.G_MONTH_DAY_QNAME.equals(schemaType)) {
-            return gMonthDayFormatter.get().format(sourceDate);
-        } 
+
+             XMLGregorianCalendar xgc = getDatatypeFactory().newXMLGregorianCalendar();
+             GregorianCalendar cal = new GregorianCalendar(getTimeZone());
+             cal.setGregorianChange(new Date(Long.MIN_VALUE));
+             cal.setTime(sourceDate);
+
+             xgc.setMonth(cal.get(Calendar.MONTH)+1);
+             xgc.setDay(cal.get(Calendar.DAY_OF_MONTH));
+             return xgc.toXMLFormat();
+        }
         if (XMLConstants.G_YEAR_QNAME.equals(schemaType)) {
-            return bc ? '-' + gYearFormatter.get().format(sourceDate) : gYearFormatter.get().format(sourceDate); 
+             XMLGregorianCalendar xgc = getDatatypeFactory().newXMLGregorianCalendar();
+             GregorianCalendar cal = new GregorianCalendar(getTimeZone());
+             cal.setGregorianChange(new Date(Long.MIN_VALUE));
+             cal.setTime(sourceDate);
+
+            if(cal.get(Calendar.ERA) == GregorianCalendar.BC){
+                xgc.setYear(-cal.get(Calendar.YEAR));
+            }else{
+                xgc.setYear(cal.get(Calendar.YEAR));
+            }
+
+            return xgc.toXMLFormat();
         }
         if (XMLConstants.G_YEAR_MONTH_QNAME.equals(schemaType)) {
-            return bc ? '-' + gYearMonthFormatter.get().format(sourceDate) : gYearMonthFormatter.get().format(sourceDate);
-        } 
+            XMLGregorianCalendar xgc = getDatatypeFactory().newXMLGregorianCalendar();
+            GregorianCalendar cal = new GregorianCalendar(getTimeZone());
+            cal.setGregorianChange(new Date(Long.MIN_VALUE));
+            cal.setTime(sourceDate);
+            if(cal.get(Calendar.ERA) == GregorianCalendar.BC){
+                xgc.setYear(-cal.get(Calendar.YEAR));
+            }else{
+                xgc.setYear(cal.get(Calendar.YEAR));
+            }
+            xgc.setMonth(cal.get(Calendar.MONTH)+1);
+
+            return xgc.toXMLFormat();
+        }
         if (XMLConstants.DURATION_QNAME.equals(schemaType)) {
             throw new IllegalArgumentException();
-        } 
-        // default is dateTime 
-        String string = dateTimeFormatter.get().format(sourceDate);
+        }
+        // default is dateTime
+        XMLGregorianCalendar xgc = getDatatypeFactory().newXMLGregorianCalendar();
+        GregorianCalendar cal = new GregorianCalendar(getTimeZone());
+        cal.setGregorianChange(new Date(Long.MIN_VALUE));
+        cal.setTime(sourceDate);
+        if(cal.get(Calendar.ERA) == GregorianCalendar.BC){
+            xgc.setYear(-cal.get(Calendar.YEAR));
+        }else{
+            xgc.setYear(cal.get(Calendar.YEAR));
+        }
+        xgc.setMonth(cal.get(Calendar.MONTH)+1);
+        xgc.setDay(cal.get(Calendar.DAY_OF_MONTH));
+
+        xgc.setHour(cal.get(Calendar.HOUR_OF_DAY));
+        xgc.setMinute(cal.get(Calendar.MINUTE));
+        xgc.setSecond(cal.get(Calendar.SECOND));
+
+        String string= xgc.toXMLFormat();
+
         string = appendNanos(string, sourceDate);
-        return bc ? '-' + appendTimeZone(string) : appendTimeZone(string);
+        return appendTimeZone(string);
     }
 
     private String stringFromQName(QName sourceQName) {
@@ -1219,14 +1601,13 @@ public class XMLConversionManager extends ConversionManager implements TimeZoneH
      */
     public Object clone() {
         XMLConversionManager clone = (XMLConversionManager) super.clone();
-        buildFormatters(clone);
         return clone;
     }
 
     /**
      * Convenience method that appends nanosecond values from a given
      * time to a given string.
-     * 
+     *
      * @param string
      * @param time
      * @return
@@ -1239,9 +1620,9 @@ public class XMLConversionManager extends ConversionManager implements TimeZoneH
     }
 
     /**
-     * Convenience method that appends millisecond values from a given 
+     * Convenience method that appends millisecond values from a given
      * time to a given string.
-     * 
+     *
      * @param string
      * @param time
      * @return
@@ -1257,42 +1638,4 @@ public class XMLConversionManager extends ConversionManager implements TimeZoneH
         return strBldr.toString();
     }
 
-    /**
-     * Convenience method for handling BC dates if necessary: '2007 BC' --> '-2006 AD'.
-     * This method will typically be called when converting a java.sql.Timestamp to a 
-     * String.
-     * 
-     * @param sourceTimestamp java.sql.Timestamp that may need to be adjusted from BC --> AD
-     * @return sourceTimestamp converted to AD.
-     */
-    private Timestamp handleBCDate(Timestamp sourceTimestamp) {
-        int nanos = sourceTimestamp.getNanos();
-        Calendar cal = Calendar.getInstance();
-        cal.clear();
-        cal.setTime(sourceTimestamp);
-        cal.roll(Calendar.YEAR, -1);                              // roll back the year
-        cal.set(Calendar.ERA, GregorianCalendar.AD);              // set the ERA to AD
-        sourceTimestamp = new Timestamp(cal.getTime().getTime()); // set adjusted value
-        sourceTimestamp.setNanos(nanos);                          // set original nanos
-        return sourceTimestamp;
-    }
-    
-    /**
-     * 
-     * Convenience method for handling BC dates if necessary: '2007 BC' --> '-2006 AD'.
-     * This method will typically be called when converting a java.util.Date to a 
-     * String.
-     * 
-     * @param sourceDate java.util.Date that may need to be adjusted from BC --> AD 
-     * @return sourceDate converted to AD.
-     */
-    private java.util.Date handleBCDate(java.util.Date sourceDate) {
-        Calendar cal = Calendar.getInstance();
-        cal.clear();
-        cal.setTime(sourceDate);
-        cal.roll(Calendar.YEAR, -1);                 // roll back the year
-        cal.set(Calendar.ERA, GregorianCalendar.AD); // set the ERA to AD
-        return cal.getTime();                        // return adjusted value
-    }
-    
 }
