@@ -37,6 +37,9 @@
     <condition property="sdo.2.common.plugins.dir" value="../../plugins" else="../plugins">
         <contains string="${sdo.build.location}" substring="sdo"/>
     </condition>
+    <condition property="sdo.2.moxy.plugins.dir" value="../../moxy/plugins" else="../plugins">
+        <contains string="${sdo.build.location}" substring="sdo"/>
+    </condition>
 
     <property file="${user.home}/build.properties"/>
     <property file="./build.properties"/>
@@ -57,6 +60,7 @@
         <pathelement path="${sdo.2.common.plugins.dir}/${asm}"/>
         <pathelement path="${sdo.2.common.plugins.dir}/org.eclipse.persistence.core_${version.string}.jar"/>
         <pathelement path="${sdo.2.common.plugins.dir}/org.eclipse.persistence.moxy_${version.string}.jar"/>
+        <pathelement path="${sdo.2.moxy.plugins.dir}/javax.xml.bind_2.0.0.jar"/>
     </path>
     <available file="${sdo.2.common.plugins.dir}/org.eclipse.persistence.core_${version.string}.jar" property="core.bundle.exist"/>
     <available file="${sdo.2.common.plugins.dir}/org.eclipse.persistence.moxy_${version.string}.jar" property="moxy.bundle.exist"/>
