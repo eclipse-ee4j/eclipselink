@@ -5,7 +5,7 @@
   xmlns:xsd="http://www.w3.org/2001/XMLSchema" 
   elementFormDefault="qualified" 
   attributeFormDefault="unqualified" 
-  version="1.0">
+  version="1.1">
 
   <xsd:annotation>
     <xsd:documentation>
@@ -106,7 +106,7 @@
                      minOccurs="0" maxOccurs="unbounded"/>
       </xsd:sequence>
       <xsd:attribute name="version" type="orm:versionType" 
-                     fixed="1.0" use="required"/>
+                     fixed="1.1" use="required"/>
     </xsd:complexType>
   </xsd:element>
 
