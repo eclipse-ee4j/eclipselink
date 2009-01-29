@@ -271,7 +271,13 @@
                     javax/persistence/LockModeType.class,
                     javax/persistence/LockTimeoutException.class,
                     javax/persistence/PessimisticLockException.class,
-                    javax/persistence/NamedQuery.class
+                    javax/persistence/NamedQuery.class,
+					javax/persistence/ElementCollection.class,
+					javax/persistence/CollectionTable.class,
+					javax/persistence/MapKey.class,
+					javax/persistence/MapKeyClass.class,
+					javax/persistence/MapKeyColumn.class,
+					javax/persistence/OrderColumn.class
             "/>
         </jar>
     </target>
