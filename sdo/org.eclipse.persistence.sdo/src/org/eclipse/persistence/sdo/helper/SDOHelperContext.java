@@ -228,10 +228,10 @@ public class SDOHelperContext implements HelperContext {
             if (existingCtx != null) {
                 hCtx = existingCtx;
             }
+            if (key.getClass() == ClassConstants.STRING) {
+                helperContexts.put(contextClassLoader, hCtx);
+            }
             addNotificationListener(key);
-        }
-        if (key.getClass() == ClassConstants.STRING) {
-            helperContexts.put(contextClassLoader, hCtx);
         }
         return hCtx;
     }
