@@ -323,6 +323,12 @@
                 <include name="**.zip"/>
                 <exclude name="osgi.core.zip"/>
             </zipfileset>
+			<zipfileset dir=".">
+                <include name="${about-file}"/>
+                <include name="${readme-file}"/>
+                <include name="${license-files}"/>
+            </zipfileset>
+
             <zipfileset dir="${eclipselink.jpa.plugins}/" includes="javax.persistence*.jar"/>
         </zip>
     </target>
@@ -353,6 +359,12 @@
             <fileset dir="${eclipselink.extension.oracle}/${src.dir}">
                 <include name="org/eclipse/persistence/**/*.java"/>
             </fileset>
+			<fileset dir=".">
+                <include name="${about-file}"/>
+                <include name="${readme-file}"/>
+                <include name="${license-files}"/>
+            </fileset>
+
         </zip>
     </target>
 
