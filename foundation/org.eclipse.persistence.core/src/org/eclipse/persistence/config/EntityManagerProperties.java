@@ -16,6 +16,10 @@
  ******************************************************************************/  
 package org.eclipse.persistence.config;
 
+import java.util.HashSet;
+import java.util.Set;
+import java.util.Collections;
+
 import org.eclipse.persistence.config.PersistenceUnitProperties;
 
 /**
@@ -197,4 +201,31 @@ public class EntityManagerProperties {
      * @see FlushClearCache
      */
     public static final String FLUSH_CLEAR_CACHE = PersistenceUnitProperties.FLUSH_CLEAR_CACHE;
+
+    private static final Set<String> supportedProperties = new HashSet<String>() {
+
+        {
+            add(JOIN_EXISTING_TRANSACTION);
+            add(PERSISTENCE_CONTEXT_REFERENCE_MODE);
+            add(PERSISTENCE_CONTEXT_CLOSE_ON_COMMIT);
+            add(PERSISTENCE_CONTEXT_PERSIST_ON_COMMIT);
+            add(PERSISTENCE_CONTEXT_FLUSH_MODE);
+            add(ORACLE_PROXY_TYPE);
+            add(EXCLUSIVE_CONNECTION_MODE);
+            add(EXCLUSIVE_CONNECTION_IS_LAZY);
+            add(JTA_DATASOURCE);
+            add(NON_JTA_DATASOURCE);
+            add(JDBC_DRIVER);
+            add(JDBC_URL);
+            add(JDBC_USER);
+            add(JDBC_PASSWORD);
+            add(CONNECTION_POLICY);
+            add(VALIDATE_EXISTENCE);
+            add(FLUSH_CLEAR_CACHE);
+        }
+    };
+
+    public static Set<String> getSupportedProperties() {
+        return Collections.unmodifiableSet(supportedProperties);
+    }
 }

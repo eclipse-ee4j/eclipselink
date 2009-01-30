@@ -1,16 +1,16 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2009 Oracle. All rights reserved. 
- * 
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2009 Oracle. All rights reserved.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
- * 
- * The API for this class and its comments are derived from the JPA 2.0 specification 
- * which is developed under the Java Community Process (JSR 317) and is copyright 
- * Sun Microsystems, Inc. 
+ *
+ * The API for this class and its comments are derived from the JPA 2.0 specification
+ * which is developed under the Java Community Process (JSR 317) and is copyright
+ * Sun Microsystems, Inc.
  *
  * Contributors:
  *     dclarke - Java Persistence API 2.0 Public Draft
@@ -18,8 +18,8 @@
  *     		   	 http://jcp.org/en/jsr/detail?id=317
  *
  * EARLY ACCESS - PUBLIC DRAFT
- * This is an implementation of an early-draft specification developed under the 
- * Java Community Process (JCP) and is made available for testing and evaluation 
+ * This is an implementation of an early-draft specification developed under the
+ * Java Community Process (JCP) and is made available for testing and evaluation
  * purposes only. The code is not compatible with any specification of the JCP.
  ******************************************************************************/
 
@@ -30,7 +30,7 @@ import java.util.Set;
 
 /**
  * Interface used to interact with the persistence context.
- * 
+ *
  * <p>
  * An <code>EntityManager</code> instance is associated with a persistence
  * context. A persistence context is a set of entity instances in which for any
@@ -40,20 +40,20 @@ import java.util.Set;
  * persistence context. The <code>EntityManager</code> API is used to create and
  * remove persistent entity instances, to find entities by their primary key,
  * and to query over entities.
- * 
+ *
  * <p>
  * The set of entities that can be managed by a given <code>EntityManager</code>
  * instance is defined by a persistence unit. A persistence unit defines the set
  * of all classes that are related or grouped by the application, and which must
  * be co-located in their mapping to a single database.
- * 
+ *
  * @since Java Persistence API 1.0
  */
 public interface EntityManager {
 
 	/**
 	 * Make an entity instance managed and persistent.
-	 * 
+	 *
 	 * @param entity
 	 * @throws EntityExistsException
 	 *             if the entity already exists. (The EntityExistsException may
@@ -73,7 +73,7 @@ public interface EntityManager {
 
 	/**
 	 * Merge the state of the given entity into the current persistence context.
-	 * 
+	 *
 	 * @param entity
 	 * @return the instance that the state was merged to
 	 * @throws IllegalStateException
@@ -89,7 +89,7 @@ public interface EntityManager {
 
 	/**
 	 * Remove the entity instance.
-	 * 
+	 *
 	 * @param entity
 	 * @throws IllegalStateException
 	 *             if this EntityManager has been closed.
@@ -106,7 +106,7 @@ public interface EntityManager {
 	 * Find by primary key. Search for an entity of the specified class and
 	 * primary key. If the entity instance is contained in the persistence
 	 * context it is returned from there.
-	 * 
+	 *
 	 * @param entityClass
 	 * @param primaryKey
 	 * @return the found entity instance or null if the entity does not exist
@@ -133,7 +133,7 @@ public interface EntityManager {
 	 * causes transaction-level rollback. - the LockTimeoutException will be
 	 * thrown if the database locking failure causes only statement-level
 	 * rollback
-	 * 
+	 *
 	 * @param entityClass
 	 * @param primaryKey
 	 * @param lockMode
@@ -176,7 +176,7 @@ public interface EntityManager {
 	 * silently ignored. Portable applications should not rely on the standard
 	 * timeout hint. Depending on the database in use and the locking mechanisms
 	 * used by the provider, the hint may or may not be observed.
-	 * 
+	 *
 	 * @param entityClass
 	 * @param primaryKey
 	 * @param lockMode
@@ -210,11 +210,11 @@ public interface EntityManager {
 	 * {@link EntityNotFoundException} when the instance state is first
 	 * accessed. (The persistence provider runtime is permitted to throw
 	 * {@link EntityNotFoundException} when {@link #getReference} is called.)
-	 * 
+	 *
 	 * The application should not expect that the instance state will be
 	 * available upon detachment, unless it was accessed by the application
 	 * while the entity manager was open.
-	 * 
+	 *
 	 * @param entityClass
 	 * @param primaryKey
 	 * @return the found entity instance
@@ -231,7 +231,7 @@ public interface EntityManager {
 
 	/**
 	 * Synchronize the persistence context to the underlying database.
-	 * 
+	 *
 	 * @throws IllegalStateException
 	 *             if this EntityManager has been closed.
 	 * @throws TransactionRequiredException
@@ -244,7 +244,7 @@ public interface EntityManager {
 	/**
 	 * Set the flush mode that applies to all objects contained in the
 	 * persistence context.
-	 * 
+	 *
 	 * @param flushMode
 	 * @throws IllegalStateException
 	 *             if this EntityManager has been closed.
@@ -254,7 +254,7 @@ public interface EntityManager {
 	/**
 	 * Get the flush mode that applies to all objects contained in the
 	 * persistence context.
-	 * 
+	 *
 	 * @return flush mode
 	 * @throws IllegalStateException
 	 *             if this EntityManager has been closed.
@@ -264,7 +264,7 @@ public interface EntityManager {
 	/**
 	 * Set the lock mode for an entity object contained in the persistence
 	 * context.
-	 * 
+	 *
 	 * @param entity
 	 * @param lockMode
 	 * @throws IllegalStateException
@@ -281,7 +281,7 @@ public interface EntityManager {
 	/**
 	 * Set the lock mode for an entity object contained in the persistence
 	 * context.
-	 * 
+	 *
 	 * @param entity
 	 * @param lockMode
 	 * @throws PersistenceException
@@ -297,7 +297,7 @@ public interface EntityManager {
 	/**
 	 * Refresh the state of the instance from the database, overwriting changes
 	 * made to the entity, if any.
-	 * 
+	 *
 	 * @param entity
 	 * @throws IllegalStateException
 	 *             if this EntityManager has been closed.
@@ -323,7 +323,7 @@ public interface EntityManager {
 	 * will be thrown if the database locking failure causes only
 	 * statement-level rollback.
 	 * </ul>
-	 * 
+	 *
 	 * @param entity
 	 * @param lockMode
 	 * @throws IllegalArgumentException
@@ -360,7 +360,7 @@ public interface EntityManager {
 	 * Portable applications should not rely on the standard timeout hint.
 	 * Depending on the database in use and the locking mechanisms used by the
 	 * provider, the hint may or may not be observed.
-	 * 
+	 *
 	 * @param entity
 	 * @param lockMode
 	 * @param properties
@@ -387,7 +387,7 @@ public interface EntityManager {
 	 * Clear the persistence context, causing all managed entities to become
 	 * detached. Changes made to entities that have not been flushed to the
 	 * database will not be persisted.
-	 * 
+	 *
 	 * @throws IllegalStateException
 	 *             if this EntityManager has been closed.
 	 */
@@ -398,7 +398,7 @@ public interface EntityManager {
 	 * entity to become detached. Changes made to the entity that have not been
 	 * flushed, if any (including removal of the entity), will not be
 	 * synchronized to the database.
-	 * 
+	 *
 	 * @param entity
 	 * @throws IllegalArgumentException
 	 *             if the instance is not an entity
@@ -408,7 +408,7 @@ public interface EntityManager {
 
 	/**
 	 * Check if the instance belongs to the current persistence context.
-	 * 
+	 *
 	 * @param entity
 	 * @return <code>true</code> if the instance belongs to the current
 	 *         persistence context.
@@ -421,7 +421,7 @@ public interface EntityManager {
 
 	/**
 	 * Get the current lock mode for the entity instance.
-	 * 
+	 *
 	 * @param entity
 	 * @return lock mode
 	 * @throws TransactionRequiredException
@@ -437,7 +437,7 @@ public interface EntityManager {
 	 * Get the properties and associated values that are in effect for the
 	 * entity manager. Changing the contents of the map does not change the
 	 * configuration in effect.
-	 * 
+	 *
 	 * @since Java Persistence API 2.0
 	 */
 	public Map<String, Object> getProperties();
@@ -450,7 +450,7 @@ public interface EntityManager {
 	 * properties include all standard entity manager hints and properties as
 	 * well as vendor-specific ones supported by the provider. These properties
 	 * may or may not currently be in effect.
-	 * 
+	 *
 	 * @return property names
 	 * @since Java Persistence API 2.0
 	 */
@@ -459,7 +459,7 @@ public interface EntityManager {
 	/**
 	 * Create an instance of Query for executing a Java Persistence query
 	 * language statement.
-	 * 
+	 *
 	 * @param qlString
 	 *            a Java Persistence query language query string
 	 * @return the new query instance
@@ -472,7 +472,7 @@ public interface EntityManager {
 
 	/**
 	 * Create an instance of Query for executing a criteria query.
-	 * 
+	 *
 	 * @param qdef
 	 *            a Criteria API query definition object
 	 * @return the new query instance
@@ -485,7 +485,7 @@ public interface EntityManager {
 	/**
 	 * Create an instance of Query for executing a named query (in the Java
 	 * Persistence query language or in native SQL).
-	 * 
+	 *
 	 * @param name
 	 *            the name of a query defined in metadata
 	 * @return the new query instance
@@ -499,7 +499,7 @@ public interface EntityManager {
 	/**
 	 * Create an instance of Query for executing a native SQL statement, e.g.,
 	 * for update or delete.
-	 * 
+	 *
 	 * @param sqlString
 	 *            a native SQL query string
 	 * @return the new query instance
@@ -510,7 +510,7 @@ public interface EntityManager {
 
 	/**
 	 * Create an instance of Query for executing a native SQL query.
-	 * 
+	 *
 	 * @param sqlString
 	 *            a native SQL query string
 	 * @param resultClass
@@ -523,7 +523,7 @@ public interface EntityManager {
 
 	/**
 	 * Create an instance of Query for executing a native SQL query.
-	 * 
+	 *
 	 * @param sqlString
 	 *            a native SQL query string
 	 * @param resultSetMapping
@@ -539,7 +539,7 @@ public interface EntityManager {
 	 * method should be called on a JTA application managed EntityManager that
 	 * was created outside the scope of the active transaction to associate it
 	 * with the current JTA transaction.
-	 * 
+	 *
 	 * @throws IllegalStateException
 	 *             if this EntityManager has been closed.
 	 * @throws TransactionRequiredException
@@ -551,7 +551,7 @@ public interface EntityManager {
 	 * Return an object of the specified type to allow access to the
 	 * provider-specific API. If the provider's EntityManager implementation
 	 * does not support the specified class, the PersistenceException is thrown.
-	 * 
+	 *
 	 * @param cls
 	 *            the class of the object to be returned. This is normally
 	 *            either the underlying EntityManager implementation class or an
@@ -566,7 +566,7 @@ public interface EntityManager {
 	/**
 	 * Return the underlying provider object for the EntityManager, if
 	 * available. The result of this method is implementation specific.
-	 * 
+	 *
 	 * @throws IllegalStateException
 	 *             if this EntityManager has been closed.
 	 */
@@ -579,7 +579,7 @@ public interface EntityManager {
 	 * getTransaction and isOpen (which will return false). If this method is
 	 * called when the EntityManager is associated with an active transaction,
 	 * the persistence context remains managed until the transaction completes.
-	 * 
+	 *
 	 * @throws IllegalStateException
 	 *             if the EntityManager is container-managed or has been already
 	 *             closed..
@@ -588,7 +588,7 @@ public interface EntityManager {
 
 	/**
 	 * Determine whether the EntityManager is open.
-	 * 
+	 *
 	 * @return true until the EntityManager has been closed.
 	 */
 	public boolean isOpen();
@@ -596,7 +596,7 @@ public interface EntityManager {
 	/**
 	 * Returns the resource-level transaction object. The EntityTransaction
 	 * instance may be used serially to begin and commit multiple transactions.
-	 * 
+	 *
 	 * @return EntityTransaction instance
 	 * @throws IllegalStateException
 	 *             if invoked on a JTA EntityManager.
@@ -605,7 +605,7 @@ public interface EntityManager {
 
 	/**
 	 * Return the entity manager factory for the entity manager.
-	 * 
+	 *
 	 * @return EntityManagerFactory instance
 	 * @throws IllegalStateException
 	 *             if the entity manager has been closed.
@@ -616,7 +616,7 @@ public interface EntityManager {
 	/**
 	 * Return an instance of QueryBuilder for the creation of Criteria API
 	 * QueryDefinition objects.
-	 * 
+	 *
 	 * @return QueryBuilder instance
 	 * @throws IllegalStateException
 	 *             if the entity manager has been closed.

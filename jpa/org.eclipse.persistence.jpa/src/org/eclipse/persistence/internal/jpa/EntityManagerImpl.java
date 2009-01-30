@@ -1,22 +1,22 @@
 /*******************************************************************************
  * Copyright (c) 1998, 2008 Oracle. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- *     
- *     05/28/2008-1.0M8 Andrei Ilitchev 
- *        - 224964: Provide support for Proxy Authentication through JPA. 
+ *
+ *     05/28/2008-1.0M8 Andrei Ilitchev
+ *        - 224964: Provide support for Proxy Authentication through JPA.
  *        Added setProperties method to be used in case properties couldn't be passed to createEM method.
  *        The properties now set to the uow's parent - not to the uow itself.
- *        In case there's no active transaction, close method now releases uow. 
+ *        In case there's no active transaction, close method now releases uow.
  *        UowImpl was amended to allow value holders instantiation even after it has been released,
- *        the parent ClientSession is released, too. 
+ *        the parent ClientSession is released, too.
  *
  ******************************************************************************/
 package org.eclipse.persistence.internal.jpa;
@@ -73,10 +73,10 @@ import org.eclipse.persistence.descriptors.VersionLockingPolicy;
  * <p>
  * <b>Responsibilities</b>: It is responsible for tracking transaction state and
  * the objects within that transaction.
- * 
+ *
  * @see javax.persistence.EntityManager
  * @see org.eclipse.persistence.jpa.JpaEntityManager
- * 
+ *
  * @author gyorke
  * @since TopLink Essentials - JPA 1.0
  */
@@ -140,7 +140,7 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
 	/**
 	 * The FlashClearCache mode to be used. Relevant only in case call to flush
 	 * method followed by call to clear method.
-	 * 
+	 *
 	 * @see org.eclipse.persistence.config.FlushClearCache
 	 */
 	protected String flushClearCache;
@@ -151,7 +151,7 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
 	/**
 	 * Constructor returns an EntityManager assigned to the a particular
 	 * ServerSession.
-	 * 
+	 *
 	 * @param sessionName
 	 *            the ServerSession name that should be used. This constructor
 	 *            can potentially throw EclipseLink exceptions regarding the
@@ -164,7 +164,7 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
 	/**
 	 * Constructor called from the EntityManagerFactory to create an
 	 * EntityManager
-	 * 
+	 *
 	 * @param serverSession
 	 *            the serverSession assigned to this deployment.
 	 */
@@ -175,7 +175,7 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
 	/**
 	 * Constructor called from the EntityManagerFactory to create an
 	 * EntityManager
-	 * 
+	 *
 	 * @param serverSession
 	 *            the serverSession assigned to this deployment. Note: The
 	 *            properties argument is provided to allow properties to be
@@ -195,7 +195,7 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
 	/**
 	 * Constructor called from the EntityManagerFactory to create an
 	 * EntityManager
-	 * 
+	 *
 	 * @param factory
 	 *            the EntityMangerFactoryImpl that created this entity manager.
 	 *            Note: The properties argument is provided to allow properties
@@ -267,7 +267,7 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
 	 * If in a transaction this method will check for existence and register the
 	 * object if it is new. The instance of the entity provided will become
 	 * managed.
-	 * 
+	 *
 	 * @param entity
 	 * @throws IllegalArgumentException
 	 *             if the given Object is not an entity.
@@ -295,7 +295,7 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
 	/**
 	 * Merge the state of the given entity into the current persistence context,
 	 * using the unqualified class name as the entity name.
-	 * 
+	 *
 	 * @param entity
 	 * @return the instance that the state was merged to
 	 */
@@ -312,7 +312,7 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
 	/**
 	 * Merge the state of the given entity into the current persistence context,
 	 * using the unqualified class name as the entity name.
-	 * 
+	 *
 	 * @param entity
 	 * @return the instance that the state was merged to
 	 * @throws IllegalArgumentException
@@ -334,7 +334,7 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
 
 	/**
 	 * Remove the instance.
-	 * 
+	 *
 	 * @param entity
 	 * @throws IllegalArgumentException
 	 *             if Object passed in is not an entity
@@ -358,7 +358,7 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
 
 	/**
 	 * Find by primary key.
-	 * 
+	 *
 	 * @param entityClass
 	 *            - the entity class to find.
 	 * @param primaryKey
@@ -388,7 +388,7 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
 	 * causes transaction-level rollback. - the LockTimeoutException will be
 	 * thrown if the database locking failure causes only statement-level
 	 * rollback
-	 * 
+	 *
 	 * @param entityClass
 	 * @param primaryKey
 	 * @param lockMode
@@ -438,7 +438,7 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
 	 * silently ignored. Portable applications should not rely on the standard
 	 * timeout hint. Depending on the database in use and the locking mechanisms
 	 * used by the provider, the hint may or may not be observed.
-	 * 
+	 *
 	 * @param entityClass
 	 * @param primaryKey
 	 * @param lockMode
@@ -482,7 +482,7 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
 
 	/**
 	 * Find by primary key.
-	 * 
+	 *
 	 * @param entityClass
 	 *            - the entity class to find.
 	 * @param primaryKey
@@ -513,7 +513,7 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
 
 	/**
 	 * Find by primary key.
-	 * 
+	 *
 	 * @param entityClass
 	 *            - the entity class to find.
 	 * @param primaryKey
@@ -647,7 +647,7 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
 
 	/**
 	 * Refresh the state of the instance from the database.
-	 * 
+	 *
 	 * @param entity
 	 *            instance registered in the current persistence context.
 	 */
@@ -663,7 +663,7 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
 	 * if the database locking failure causes transaction-level rollback. - the
 	 * LockTimeoutException will be thrown if the database locking failure
 	 * causes only statement-level rollback.
-	 * 
+	 *
 	 * @param entity
 	 * @param lockMode
 	 * @throws IllegalArgumentException
@@ -703,7 +703,7 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
 	 * should not rely on the standard timeout hint. Depending on the database
 	 * in use and the locking mechanisms used by the provider, the hint may or
 	 * may not be observed.
-	 * 
+	 *
 	 * @param entity
 	 * @param lockMode
 	 * @param properties
@@ -760,7 +760,7 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
 
 	/**
 	 * Check if the instance belongs to the current persistence context.
-	 * 
+	 *
 	 * @param entity
 	 * @return
 	 * @throws IllegalArgumentException
@@ -819,7 +819,7 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
 	/**
 	 * Create an instance of Query for executing a named query (in EJBQL or
 	 * native SQL).
-	 * 
+	 *
 	 * @param name
 	 *            the name of a query defined in metadata
 	 * @return the new query instance
@@ -836,7 +836,7 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
 
 	/**
 	 * Create an instance of Query for executing a native SQL query.
-	 * 
+	 *
 	 * @param sqlString
 	 *            a native SQL query string
 	 * @return the new query instance
@@ -868,7 +868,7 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
 
 	/**
 	 * Create an instance of Query for executing a native SQL query.
-	 * 
+	 *
 	 * @param sqlString
 	 *            a native SQL query string
 	 * @param resultSetMapping
@@ -919,7 +919,7 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
 	/**
 	 * Get the flush mode that applies to all objects contained in the
 	 * persistence context.
-	 * 
+	 *
 	 * @return flushMode
 	 */
 	public FlushModeType getFlushMode() {
@@ -953,7 +953,7 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
 	/**
 	 * Returns the resource-level transaction object. The EntityTransaction
 	 * instance may be used serially to begin and commit multiple transactions.
-	 * 
+	 *
 	 * @return EntityTransaction instance
 	 * @throws IllegalStateException
 	 *             if invoked on a JTA EntityManager.
@@ -971,7 +971,7 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
 	 * The method search for user defined property passed in from EntityManager,
 	 * if it is not found then search for it from EntityManagerFactory
 	 * properties.
-	 * 
+	 *
 	 * @param name
 	 * @return
 	 */
@@ -1028,7 +1028,7 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
 	 * not expect that the instance state will be available upon detachment,
 	 * unless it was accessed by the application while the entity manager was
 	 * open.
-	 * 
+	 *
 	 * @param entityClass
 	 * @param primaryKey
 	 * @return the found entity instance.
@@ -1157,7 +1157,7 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
 
 	/**
 	 * Create an instance of Query for executing an JPQL query.
-	 * 
+	 *
 	 * @param jpqlString
 	 *            an JPQL query string
 	 * @return the new query instance
@@ -1193,13 +1193,13 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
 	/**
 	 * <p>
 	 * Closes this EntityManager.
-	 * 
+	 *
 	 * <p>
 	 * After invoking this method, all methods on the instance will throw an
 	 * {@link IllegalStateException} except for {@link #isOpen}, which will
 	 * return <code>false</code> .
 	 * </p>
-	 * 
+	 *
 	 * <p>
 	 * This should be called when a method is finished with the EntityManager in
 	 * a bean-managed transaction environment or when executed outside a
@@ -1240,7 +1240,7 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
 
 	/**
 	 * Internal method. Indicates whether flushMode is AUTO.
-	 * 
+	 *
 	 * @return boolean
 	 */
 	public boolean isFlushModeAUTO() {
@@ -1258,7 +1258,7 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
 	/**
 	 * Set the lock mode for an entity object contained in the persistence
 	 * context.
-	 * 
+	 *
 	 * @param entity
 	 * @param lockMode
 	 * @throws PersistenceException
@@ -1281,7 +1281,7 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
 	/**
 	 * Set the lock mode for an entity object contained in the persistence
 	 * context.
-	 * 
+	 *
 	 * @param entity
 	 * @param lockMode
 	 * @throws PersistenceException
@@ -1416,7 +1416,7 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
 	 * method should be called on a JTA application managed EntityManager that
 	 * was created outside the scope of the active transaction to associate it
 	 * with the current JTA transaction.
-	 * 
+	 *
 	 * @throws javax.persistence.TransactionRequiredException
 	 *             if there is no transaction.
 	 */
@@ -1492,7 +1492,7 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
 	/**
 	 * Set the flush mode that applies to all objects contained in the
 	 * persistence context.
-	 * 
+	 *
 	 * @param flushMode
 	 */
 	public void setFlushMode(FlushModeType flushMode) {
@@ -1815,74 +1815,161 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
 		}
 	}
 
-	/**
-	 * @see javax.persistence.EntityManager#clear(java.lang.Object)
-	 * @since Java Persistence API 2.0
-	 */
-	public void clear(Object entity) {
-		// TODO
-		throw new PersistenceException("Not Yet Implemented");
-	}
+	   /**
+     * Remove the given entity from the persistence context, causing
+     * a managed entity to become detached. Unflushed changes made
+     * to the entity if any (including removal of the entity),
+     * will not be synchronized to the database.
+     */
+    public void clear(Object entity) {
+        try {
+            verifyOpen();
+            if (entity == null) {
+                throw new IllegalArgumentException(ExceptionLocalization.buildMessage("not_an_entity", new Object[]{entity}));
+            }
+            ClassDescriptor descriptor = (ClassDescriptor) this.serverSession.getDescriptors().get(entity.getClass());
+            if (descriptor == null || descriptor.isAggregateDescriptor() || descriptor.isAggregateCollectionDescriptor()) {
+                throw new IllegalArgumentException(ExceptionLocalization.buildMessage("not_an_entity", new Object[]{entity}));
+            }
+            UnitOfWorkImpl uowImpl = (UnitOfWorkImpl) getUnitOfWork();
+            uowImpl.getDeletedObjects().remove(entity);
+            uowImpl.unregisterObject(entity);
+        } catch (RuntimeException exception) {
+            setRollbackOnly();
+            throw exception;
+        }
 
-	/**
-	 * @see javax.persistence.EntityManager#createQuery(javax.persistence.QueryDefinition)
-	 * @since Java Persistence API 2.0
-	 */
-	public Query createQuery(QueryDefinition qdef) {
-		// TODO - May change as Query API is redefined
-		throw new PersistenceException("Not Yet Implemented");
-	}
+    }
 
-	/**
-	 * @see javax.persistence.EntityManager#getQueryBuilder()
-	 * @since Java Persistence API 2.0
-	 */
-	public QueryBuilder getQueryBuilder() {
-		// TODO - May change as Query API is redefined
-		throw new PersistenceException("Not Yet Implemented");
-	}
+    /**
+     * @see javax.persistence.EntityManager#createQuery(javax.persistence.QueryDefinition)
+     * @since Java Persistence API 2.0
+     */
+    public Query createQuery(QueryDefinition qdef) {
+        // TODO - May change as Query API is redefined
+        throw new PersistenceException("Not Yet Implemented");
+    }
 
-	/**
-	 * @see javax.persistence.EntityManager#getEntityManagerFactory()
-	 * @since Java Persistence API 2.0
-	 */
-	public EntityManagerFactory getEntityManagerFactory() {
-		return this.factory;
-	}
+    /**
+     * @see javax.persistence.EntityManager#getQueryBuilder()
+     * @since Java Persistence API 2.0
+     */
+    public QueryBuilder getQueryBuilder() {
+        // TODO - May change as Query API is redefined
+        throw new PersistenceException("Not Yet Implemented");
+    }
 
-	/**
-	 * @see javax.persistence.EntityManager#getLockMode(java.lang.Object)
-	 * @since Java Persistence API 2.0
-	 */
-	public LockModeType getLockMode(Object entity) {
-		// TODO Auto-generated method stub
-		return null;
-	}
+    /**
+     * Return the entity manager factory for the entity manager.
+     * @return EntityManagerFactory instance
+     * @throws IllegalStateException if the entity manager has
+     * been closed.
+     */
+    public EntityManagerFactory getEntityManagerFactory() {
+        try {
+            verifyOpen();
+            return factory;
+        } catch (RuntimeException e) {
+            setRollbackOnly();
+            throw e;
+        }
+    }
 
-	/**
-	 * @see javax.persistence.EntityManager#getProperties()
-	 * @since Java Persistence API 2.0
-	 */
-	public Map<String, Object> getProperties() {
-		// TODO
-		throw new PersistenceException("Not Yet Implemented");
-	}
+    /**
+     * @see javax.persistence.EntityManager#getLockMode(java.lang.Object)
+     * @since Java Persistence API 2.0
+     */
+    public LockModeType getLockMode(Object entity) {
+        try {
+            verifyOpen();
+            UnitOfWorkImpl uowImpl = (UnitOfWorkImpl) getActivePersistenceContext(checkForTransaction(false));
+            LockModeType lockMode = LockModeType.NONE;
+            if (!contains(entity, uowImpl)) {
+                throw new IllegalArgumentException(ExceptionLocalization.buildMessage("cant_getLockMode_of_not_managed_object", new Object[]{entity}));
+            }
+            Boolean optimistickLock = (Boolean) uowImpl.getOptimisticReadLockObjects().get(entity);
+            if (optimistickLock != null) {
+                if (optimistickLock.equals(Boolean.FALSE)) {
+                    lockMode = LockModeType.OPTIMISTIC;
+                } else {
+                    // The entity is present in the map and its version is marked for increment.
+                    // The lockMode can be OPTIMISTIC_FORCE_INCREMENT || PESSIMISTIC_FORCE_INCREMENT
+                    if (uowImpl.getPessimisticLockedObjects().get(entity) != null) {
+                        lockMode = LockModeType.PESSIMISTIC_FORCE_INCREMENT;
+                    } else {
+                        lockMode = LockModeType.OPTIMISTIC_FORCE_INCREMENT;
+                    }
+                }
+            } else { // Not optimistically locked
+                if (uowImpl.getPessimisticLockedObjects().get(entity) != null) {
+                    lockMode = LockModeType.PESSIMISTIC;
+                }
+            }
+            return lockMode;
+        } catch (RuntimeException exception) {
+            setRollbackOnly();
+            throw exception;
+        }
+    }
 
-	/**
-	 * @see javax.persistence.EntityManager#getSupportedProperties()
-	 * @since Java Persistence API 2.0
-	 */
-	public Set<String> getSupportedProperties() {
-		// TODO
-		throw new PersistenceException("Not Yet Implemented");
-	}
+    /**
+     * Get the properties and associated values that are in effect
+     * for the entity manager. Changing the contents of the map does
+     * not change the configuration in effect.
+     */
+    public Map<String, Object> getProperties() {
+        Map propertyValue = new HashMap<String, Object>(this.factory.getServerSession().getProperties());
+        return Collections.unmodifiableMap(propertyValue);
+    }
 
-	/**
-	 * @see javax.persistence.EntityManager#unwrap(java.lang.Class)
-	 * @since Java Persistence API 2.0
-	 */
-	public <T> T unwrap(Class<T> cls) {
-		// TODO
-		throw new PersistenceException("Not Yet Implemented");
-	}
+    /**
+     * Get the names of the properties that are supported for use
+     * with the entity manager.
+     * These correspond to properties and hints that may be passed
+     * to the methods of the EntityManager interface that take a
+     * properties argument or used with the PersistenceContext
+     * annotation. These properties include all standard entity
+     * manager hints and properties as well as vendor-specific ones
+     * supported by the provider. These properties may or may not
+     * currently be in effect.
+     * @return property names
+     */
+    public Set<String> getSupportedProperties() {
+
+        return EntityManagerProperties.getSupportedProperties();
+    }
+
+    /**
+     * Return an object of the specified type to allow access to the
+     * provider-specific API. If the provider's EntityManager
+     * implementation does not support the specified class, the
+     * PersistenceException is thrown.
+     * @param cls the class of the object to be returned. This is
+     * normally either the underlying EntityManager implementation
+     * class or an interface that it implements.
+     * @return an instance of the specified class
+     * @throws PersistenceException if the provider does not
+     * support the call.
+     */
+    public <T> T unwrap(Class<T> cls) {
+        try {
+            if (cls.equals(org.eclipse.persistence.sessions.UnitOfWork.class)) {
+                return (T) this.getUnitOfWork();
+            } else if (cls.equals(org.eclipse.persistence.jpa.JpaEntityManager.class)) {
+                return (T) this;
+            } else if (cls.equals(org.eclipse.persistence.sessions.Session.class)) {
+                return (T) this.getServerSession();
+            } else if (cls.equals(java.sql.Connection.class)) {
+                UnitOfWorkImpl unitOfWork = (UnitOfWorkImpl) this.getUnitOfWork();
+                if (!unitOfWork.isInTransaction()) {
+                    unitOfWork.beginEarlyTransaction();
+                    return (T) unitOfWork.getAccessor().getConnection();
+                }
+            }
+            throw new PersistenceException(ExceptionLocalization.buildMessage("Provider-does-not-support-the-call", null));
+
+        } catch (RuntimeException e) {
+            throw e;
+        }
+    }
 }
