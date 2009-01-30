@@ -275,8 +275,8 @@ public class JAXBHelperContext extends SDOHelperContext {
      * Customer customer = (Customer) jaxbHelperContext.unwrap(customerDO);
      * customer.getAddress().getStreet();  // returns "123 Any Street"
      * </pre>
-     * Multiple calls to unwrap for the same POJO must return the 
-     * same instance of DataObject, in other words the following is always true:
+     * Multiple calls to unwrap for the same DataObject must return the 
+     * same instance of Object, in other words the following is always true:
      * <pre>
      * jaxbHelperContext.unwrap(customerDO123) == jaxbHelperContext.unwrap(customerDO123)
      * jaxbHelperContext.unwrap(customerDO123) != jaxbHelperContext.unwrap(customerDO456)
