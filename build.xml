@@ -277,7 +277,28 @@
 					javax/persistence/MapKey.class,
 					javax/persistence/MapKeyClass.class,
 					javax/persistence/MapKeyColumn.class,
-					javax/persistence/OrderColumn.class
+					javax/persistence/OrderColumn.class,
+					javax/persistence/CaseExpression.class,
+					javax/persistence/Aggregate.class,
+					javax/persistence/TrimSpec.java,
+					javax/persistence/CollectionTable.class,  
+					javax/persistence/MapKeyJoinColumns.class,  
+					javax/persistence/MappedById.class,  
+					javax/persistence/MapKeyJoinColumn.class,  
+					javax/persistence/DomainObject.class,  
+					javax/persistence/Predicate.class,  
+					javax/persistence/FetchJoinObject.class,  
+					javax/persistence/OrderByItem.class,  
+					javax/persistence/Expression.class,  
+					javax/persistence/QueryDefinition.class,   
+					javax/persistence/SelectItem.class,   
+					javax/persistence/QueryBuilder.class,
+					javax/persistence/PredicateOperand.class,  
+					javax/persistence/PathExpression.class,  
+					javax/persistence/Subquery.class  
+
+
+
             "/>
         </jar>
     </target>
