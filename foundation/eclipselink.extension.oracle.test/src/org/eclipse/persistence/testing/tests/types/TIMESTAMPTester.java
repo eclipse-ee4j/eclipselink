@@ -52,6 +52,11 @@ public abstract class TIMESTAMPTester extends TypeTester {
     // ** So... why was this commmented out?  Is it backward compatible??
     //	public Calendar calToDate;
     public String sessionTimeZone;
+    
+    // isTimestampInGmt==true if driverVersion is 11.1.0.7 or later and
+    // oracleConnection's property "oracle.jdbc.timestampTzInGmt" is set to "true".
+    // The flag indicates whether TIMESTAMPTZ keeps its timestamp in GMT.
+    public static boolean isTimestampInGmt;
 
     public TIMESTAMPTester() {
         super("NEW");
@@ -114,6 +119,14 @@ public abstract class TIMESTAMPTester extends TypeTester {
         //		calToDate = c;
     }
 
+    public void setSessionTimezone(String timeZone) {
+        this.sessionTimeZone = timeZone;
+    }
+    
+    protected void setup(Session session) {
+        super.setup(session);
+    }
+    
     public void buildTimestamps(long time) {
         tsToTS = new Timestamp(time);
         tsToTSTZ = tsToTS;
@@ -271,17 +284,36 @@ public abstract class TIMESTAMPTester extends TypeTester {
         return getTestName() + " -> " + TIMESTAMPHelper.printCalendar(calToTSTZ);
     }
 
-    public boolean isDefaultSQLTest() {
-        return getTestName() == "NOW" || getTestName() == "ZERO" || getTestName() == "GMT New Years Eve" || 
-            getTestName() == "PST New Years Eve" || getTestName() == "EST New Years Day 2000" || 
-            getTestName() == "London summer" || getTestName() == "LA summer" || getTestName() == "100 Years ago" || 
-            getTestName() == "100 Years from now" || getTestName() == "GMT Before 1970" || 
-            getTestName() == "Nano with one zero" || getTestName() == "Nano with two zeros";
+    // Calendar's time zone is inserted into the db if the test runs either with binding or with native sql -
+    // otherwise time zone is simply not present in the inserting sql and therefore
+    // Calendar-to-TIMESTAMPTZ and Calendar-to-TIMESTAMPLTZ comparisons fail because
+    // the objects are written into the db with connection's sessionTimeZone instead of the calendar's time zone. 
+    boolean doesTestInsertCalendarTimeZone(WriteTypeObjectTest test) {
+        return test.shouldBindAllParameters()==null || test.shouldBindAllParameters() || test.shouldUseNativeSQL();
     }
 
+    // In case connection's session is not default and isTimestampInGmt==true
+    // tsToTSTZ, utilDateToTSTZ and timeToTSTZ don't work.
+    // Note that dateToTSTZ and calToTSTZ work.
+    // The reason is Oracle jdbc bug 8206596:
+    // Timestamp for 5pm in default zone (say NewYork) written into TIMESTAMPTZ using setObject
+    // is inserted into the db as 5pm LosAngeles (in case it's set as a session time zone).
+    // That happens with both 11.1.0.6 and 11.1.0.7 ojdbc versions.
+    // When the result is read back 11.1.0.7 driver (in case timestampTzInGmt prop. is set to true - which is default setting)
+    // correctly reads 5pm LA - and fails comparison with 5pm NY,
+    // however version 11.0.0.6 (and 11.1.0.7 with timestampTzInGmt prop. set to false)
+    // incorrectly reads back 5pm in default zone - so the inserted and the read back objects are equal.
+    // Note that this incorrect reading happens only in case the target Java type is Timestamp (util.Date, Time),
+    // Eclipselink corrects the result in case the target type is Calendar.
+    boolean doesTimestampTZWork() {
+        return TimeZone.getDefault().getID().equals(this.sessionTimeZone) || !isTimestampInGmt; 
+    }
+    
     protected void test(WriteTypeObjectTest testCase) {
         try {
-            changeTimeZone((DatabaseSession)testCase.getSession(), "America/Los_Angeles");
+            if(this.sessionTimeZone != null) {
+                getConnection((DatabaseSession)testCase.getSession()).setSessionTimeZone(this.sessionTimeZone);
+            }
         } catch (Exception exception) {
             throw new TestProblemException("Error setting timezone on connection.", exception);
         }
@@ -297,86 +329,80 @@ public abstract class TIMESTAMPTester extends TypeTester {
                 throw new TestErrorException("Value from database is null: " + e);
             }
 
+            String errorMsg = "";
             if (!tsToTS.equals(fromDatabase.getTsToTS())) {
-                throw new TestErrorException("The tsToTS should be: " + tsToTS + ", but was read as: " + 
-                                             fromDatabase.getTsToTS(), e);
+                errorMsg += "The tsToTS should be: " + tsToTS + ", but was read as: " + fromDatabase.getTsToTS() + "\n";
             }
-            if (!tsToTSTZ.equals(fromDatabase.getTsToTSTZ())) {
-                throw new TestErrorException("The tsToTSTZ should be: " + tsToTSTZ + ", but was read as: " + 
-                                             fromDatabase.getTsToTSTZ(), e);
+            if(doesTimestampTZWork()) {
+                if (!tsToTSTZ.equals(fromDatabase.getTsToTSTZ())) {
+                    errorMsg += "The tsToTSTZ should be: " + tsToTSTZ + ", but was read as: " + fromDatabase.getTsToTSTZ() + "\n";
+                }
             }
             if (!tsToTSLTZ.equals(fromDatabase.getTsToTSLTZ())) {
-                throw new TestErrorException("The tsToTSLTZ should be: " + tsToTSLTZ + ", but was read as: " + 
-                                             fromDatabase.getTsToTSLTZ(), e);
+                errorMsg += "The tsToTSLTZ should be: " + tsToTSLTZ + ", but was read as: " + fromDatabase.getTsToTSLTZ() + "\n";
             }
             if (!utilDateToTS.equals(fromDatabase.getUtilDateToTS())) {
-                throw new TestErrorException("The utilDateToTS should be: " + utilDateToTS + ", but was read as: " + 
-                                             fromDatabase.getUtilDateToTS(), e);
+                errorMsg += "The utilDateToTS should be: " + utilDateToTS + ", but was read as: " + fromDatabase.getUtilDateToTS() + "\n";
             }
-            if (!utilDateToTSTZ.equals(fromDatabase.getUtilDateToTSTZ())) {
-                throw new TestErrorException("The utilDateToTSTZ should be: " + utilDateToTSTZ + ", but was read as: " + 
-                                             fromDatabase.getUtilDateToTSTZ(), e);
+            if(doesTimestampTZWork()) {
+                if (!utilDateToTSTZ.equals(fromDatabase.getUtilDateToTSTZ())) {
+                    errorMsg += "The utilDateToTSTZ should be: " + utilDateToTSTZ + ", but was read as: " + fromDatabase.getUtilDateToTSTZ() + "\n";
+                }
             }
             if (!utilDateToTSLTZ.equals(fromDatabase.getUtilDateToTSLTZ())) {
-                throw new TestErrorException("The utilDateToTSLTZ should be: " + utilDateToTSLTZ + ", but was read as: " + 
-                                             fromDatabase.getUtilDateToTSLTZ(), e);
+                errorMsg += "The utilDateToTSLTZ should be: " + utilDateToTSLTZ + ", but was read as: " + fromDatabase.getUtilDateToTSLTZ() + "\n";
             }
             if (!dateToTS.equals(fromDatabase.getDateToTS())) {
-                throw new TestErrorException("The dateToTS should be: " + dateToTS + ", but was read as: " + 
-                                             fromDatabase.getDateToTS(), e);
+                errorMsg += "The dateToTS should be: " + dateToTS + ", but was read as: " + fromDatabase.getDateToTS() + "\n";
             }
             if (!dateToTSTZ.equals(fromDatabase.getDateToTSTZ())) {
-                throw new TestErrorException("The dateToTSTZ should be: " + dateToTSTZ + ", but was read as: " + 
-                                             fromDatabase.getDateToTSTZ(), e);
+                errorMsg += "The dateToTSTZ should be: " + dateToTSTZ + ", but was read as: " + fromDatabase.getDateToTSTZ() + "\n";
             }
             if (!dateToTSLTZ.equals(fromDatabase.getDateToTSLTZ())) {
-                throw new TestErrorException("The dateToTSLTZ should be: " + dateToTSLTZ + ", but was read as: " + 
-                                             fromDatabase.getDateToTSLTZ(), e);
+                errorMsg += "The dateToTSLTZ should be: " + dateToTSLTZ + ", but was read as: " + fromDatabase.getDateToTSLTZ() + "\n";
             }
             if (!timeToTS.equals(fromDatabase.getTimeToTS())) {
-                throw new TestErrorException("The dateToTS should be: " + timeToTS + ", but was read as: " + 
-                                             fromDatabase.getTimeToTS(), e);
+                errorMsg += "The timeToTS should be: " + timeToTS + ", but was read as: " + fromDatabase.getTimeToTS() + "\n";
             }
-            if (!timeToTSTZ.equals(fromDatabase.getTimeToTSTZ())) {
-                throw new TestErrorException("The dateToTSTZ should be: " + timeToTSTZ + ", but was read as: " + 
-                                             fromDatabase.getTimeToTSTZ(), e);
+            if(doesTimestampTZWork()) {
+                if (!timeToTSTZ.equals(fromDatabase.getTimeToTSTZ())) {
+                    errorMsg += "The timeToTSTZ should be: " + timeToTSTZ + ", but was read as: " + fromDatabase.getTimeToTSTZ() + "\n";
+                }
             }
             if (!timeToTSLTZ.equals(fromDatabase.getTimeToTSLTZ())) {
-                throw new TestErrorException("The dateToTSLTZ should be: " + timeToTSLTZ + ", but was read as: " + 
-                                             fromDatabase.getTimeToTSLTZ(), e);
+                errorMsg += "The timeToTSLTZ should be: " + timeToTSLTZ + ", but was read as: " + fromDatabase.getTimeToTSLTZ() + "\n";
             }
 
             String originalCal = TIMESTAMPHelper.printCalendar(calToTSLTZ);
             String dbCal = TIMESTAMPHelper.printCalendar(fromDatabase.getCalToTSLTZ());
             //calToTSLTZ from database should have the sessionTimeZone
-            if (!fromDatabase.getCalToTSLTZ().getTimeZone().getID().trim().equals(sessionTimeZone.trim())) {
-                throw new TestErrorException("The sessionTimeZone should be: " + sessionTimeZone + ", but was read as: " + 
-                                             fromDatabase.getCalToTSLTZ().getTimeZone().getID(), e);
-            } else {
-                //The original calToTSLTZ is converted to a Calendar based on the session time zone on read, 
-                //which may not be the same as the original calToTSLTZ (although they represent 
-                //the same GMT time).  Need to assign the original time zone to the calToTSLTZ to make them the same.
-                //Calendar-to-TIMESTAMPLTZ with default sql does not work
-                if (!isDefaultSQLTest()) {
-                    Calendar tempCal = fromDatabase.getCalToTSLTZ();
-                    tempCal.getTimeZone().setID(calToTSLTZ.getTimeZone().getID());
-                    tempCal.getTimeZone().setRawOffset(calToTSLTZ.getTimeZone().getRawOffset());
-                    tempCal.setTime(tempCal.getTime());
-                    dbCal = TIMESTAMPHelper.printCalendar(tempCal);
-                    if (!originalCal.equals(dbCal)) {
-                        throw new TestErrorException("The calToTSLTZ should be: " + originalCal + ", but was read as: " + 
-                                                     dbCal + " after being converted to the original timezone", e);
-                    }
+            if (sessionTimeZone!=null && !fromDatabase.getCalToTSLTZ().getTimeZone().getID().trim().equals(sessionTimeZone.trim())) {
+                errorMsg += "The sessionTimeZone should be: " + sessionTimeZone + ", but was read as: " + 
+                                             fromDatabase.getCalToTSLTZ().getTimeZone().getID();
+            }
+
+            //The original calToTSLTZ is converted to a Calendar based on the session time zone on read, 
+            //which may not be the same as the original calToTSLTZ (although they represent 
+            //the same GMT time).  Need to assign the original time zone to the calToTSLTZ to make them the same.
+            //Calendar-to-TIMESTAMPLTZ does not work if calendar's time stamp is not inserted into the db.
+            if (doesTestInsertCalendarTimeZone(testCase)) {
+                Calendar tempCal = fromDatabase.getCalToTSLTZ();
+                tempCal.getTimeZone().setID(calToTSLTZ.getTimeZone().getID());
+                tempCal.getTimeZone().setRawOffset(calToTSLTZ.getTimeZone().getRawOffset());
+                tempCal.setTime(tempCal.getTime());
+                dbCal = TIMESTAMPHelper.printCalendar(tempCal);
+                if (!originalCal.equals(dbCal)) {
+                    errorMsg += "The calToTSLTZ should be: " + originalCal + ", but was read as: " + 
+                                                 dbCal + " after being converted to the original timezone";
                 }
             }
 
-            //Calendar-to-TIMESTAMPTZ with default sql does not work
-            if (!isDefaultSQLTest()) {
+            //Calendar-to-TIMESTAMPTZ does not work if calendar's time stamp is not inserted into the db.
+            if (doesTestInsertCalendarTimeZone(testCase)) {
                 originalCal = TIMESTAMPHelper.printCalendar(calToTSTZ);
                 dbCal = TIMESTAMPHelper.printCalendar(fromDatabase.getCalToTSTZ());
                 if (!originalCal.equals(dbCal)) {
-                    throw new TestErrorException("The calToTSTZ should be: " + originalCal + ", but was read as: " + dbCal, 
-                                                 e);
+                    errorMsg += "The calToTSTZ should be: " + originalCal + ", but was read as: " + dbCal; 
                 }
             }
 
@@ -394,18 +420,26 @@ public abstract class TIMESTAMPTester extends TypeTester {
             if (objectTimeInCache.equals(objectTimeInDB)) {
                 if (originalTS != objectTimeInDB.getNanos()) {
                     // Nanos don't match, ok, as everything else has been checked, assume this was the reason for the error.
-                    return;
+                    if(errorMsg.length() == 0) {
+                        return;
+                    }
                 } else if (!calToTSLTZ.equals(fromDatabase.getCalToTSLTZ())) {
                     // This seems to be ok, as the timezones are not suppose to come back the same??
                     // So ok, as everything else has been checked, assume this was the reason for the error.
-                    return;
+                    if(errorMsg.length() == 0) {
+                        return;
+                    }
                 }
             } else {
                 objectTimeInCache.setNanos(originalTS);
-                throw new TestErrorException("The tsToDate should be: " + objectTimeInCache + " but were read back as: " + 
-                                             objectTimeInDB, e);
+                errorMsg += "The tsToDate should be: " + objectTimeInCache + " but were read back as: " + 
+                                             objectTimeInDB;
             }
-            throw e;
+            if(errorMsg.length() > 0) {
+                throw new TestErrorException("\n"+errorMsg, e);
+            } else {
+                throw e;
+            }
         }
     }
 
@@ -413,10 +447,4 @@ public abstract class TIMESTAMPTester extends TypeTester {
         Connection connection = ((AbstractSession)session).getAccessor().getConnection();
         return (OracleConnection)session.getServerPlatform().unwrapConnection(connection);
     }
-
-    private void changeTimeZone(DatabaseSession session, String tzID) throws SQLException {
-        getConnection(session).setSessionTimeZone(tzID);
-        sessionTimeZone = tzID;
-    }
-
 }

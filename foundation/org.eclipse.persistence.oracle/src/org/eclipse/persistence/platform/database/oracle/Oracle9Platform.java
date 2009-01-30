@@ -70,7 +70,27 @@ public class Oracle9Platform extends Oracle8Platform {
     public static final Class NSTRING = NString.class;
     public static final Class NCLOB = NClob.class;
     public static final Class XMLTYPE = XMLTypePlaceholder.class;
-
+    
+    /* Driver version set to connection.getMetaData.getDriverVersion() */
+    protected transient String driverVersion;
+    /* Indicates whether printCalendar should be used when creating TIMESTAMPTZ.
+     * Bug5614674.  It used to be a driver bug and Helper.printCalendar(cal, false) was used to make it work.
+     * It has been fixed in 11.  Separate the newer version from the old ones.
+     * */
+    protected transient boolean shouldPrintCalendar;
+    /* Indicates whether TIMESTAMPTZ.timestampValue returns Timestamp in GMT.
+     * The flag is set to false unless 
+     * Oracle jdbc version is 11.1.0.7 or later and
+     * OracleConnection's "oracle.jdbc.timestampTzInGmt" property is set to "true".
+     * Though the property is defined per connection it is safe to assume that all connections
+     * used with the platform are identical because they all created by the same DatabaseLogin
+     * with the same properties. 
+     * */
+    protected transient boolean isTimestampInGmt;
+    /* Indicates whether driverVersion, shouldPrintCalendar, isTimestampInGmt have been initialized.
+     * To re-initialize connection data call clearConnectionData method. 
+     */
+    protected transient boolean isConnectionDataInitialized;
     
     private XMLTypeFactory xmlTypeFactory;
     
@@ -132,10 +152,9 @@ public class Oracle9Platform extends Oracle8Platform {
             //exception later when timestampValue is called in converObject()
             if ((tsTZ != null) && (tsTZ.getLength() != 0)) {
                 Connection connection = getConnection(session, resultSet.getStatement().getConnection());
-                tsTZ.timestampValue(connection);
                 //Bug#4364359  Add a wrapper to overcome TIMESTAMPTZ not serializable as of jdbc 9.2.0.5 and 10.1.0.2.  
                 //It has been fixed in the next version for both streams
-                return new TIMESTAMPTZWrapper(tsTZ, connection);
+                return new TIMESTAMPTZWrapper(tsTZ, connection, isTimestampInGmt(connection));
             }
             return null;
         } else if (type == oracle.jdbc.OracleTypes.TIMESTAMPLTZ) {
@@ -231,6 +250,12 @@ public class Oracle9Platform extends Oracle8Platform {
         return classTypeMapping;
     }
 
+    public Object clone() {
+        Oracle9Platform clone = (Oracle9Platform)super.clone();
+        clone.clearConnectionData();
+        return clone;
+    }
+
     /**
      * INTERNAL:
      * Allow for conversion from the Oracle type to the Java type.
@@ -243,8 +268,18 @@ public class Oracle9Platform extends Oracle8Platform {
         Object valueToConvert = sourceObject;
 
         //Used in Type Conversion Mapping on write
-        if ((javaClass == TIMESTAMPTypes.TIMESTAMP_CLASS) || (javaClass == TIMESTAMPTypes.TIMESTAMPTZ_CLASS) || (javaClass == TIMESTAMPTypes.TIMESTAMPLTZ_CLASS)) {
+        if ((javaClass == TIMESTAMPTypes.TIMESTAMP_CLASS) || (javaClass == TIMESTAMPTypes.TIMESTAMPLTZ_CLASS)) {
             return sourceObject;
+        }
+        
+        if(javaClass == TIMESTAMPTypes.TIMESTAMPTZ_CLASS) {
+            if(sourceObject instanceof java.util.Date) {
+                Calendar cal = Calendar.getInstance();
+                cal.setTimeInMillis(((java.util.Date)sourceObject).getTime());
+                return cal;
+            } else {
+                return sourceObject;
+            }
         }
 
         if (javaClass == XMLTYPE) {
@@ -348,6 +383,64 @@ public class Oracle9Platform extends Oracle8Platform {
     }
 
     /**
+     * INTERNAL:
+     */
+    protected synchronized void initializeConnectionData(Connection conn) throws SQLException {
+        if(isConnectionDataInitialized) {
+            return;
+        }
+        driverVersion = conn.getMetaData().getDriverVersion();
+        shouldPrintCalendar = driverVersion.startsWith("9.") || driverVersion.startsWith("10.");
+        if(Helper.compareVersions(driverVersion, "11.1.0.7") < 0) {
+            isTimestampInGmt = false;
+        } else {
+            if(conn instanceof OracleConnection) {
+                String timestampTzInGmtPropStr = ((OracleConnection)conn).getProperties().getProperty("oracle.jdbc.timestampTzInGmt", "true");
+                isTimestampInGmt = timestampTzInGmtPropStr.equalsIgnoreCase("true");
+            } else {
+                isTimestampInGmt = true;
+            }
+        }
+        isConnectionDataInitialized = true;
+    }
+    
+    public synchronized void clearConnectionData() {
+        driverVersion = null;
+        isConnectionDataInitialized = false;
+    }
+    
+    /**
+     * INTERNAL:
+     * Return driverVersion.
+     */
+    public String getDriverVersion(Connection conn) throws SQLException {
+        if(!isConnectionDataInitialized) {
+            initializeConnectionData(conn);
+        }
+        return driverVersion;
+    }
+    
+    /**
+     * INTERNAL:
+     */
+    public boolean shouldPrintCalendar(Connection conn) throws SQLException {
+        if(!isConnectionDataInitialized) {
+            initializeConnectionData(conn);
+        }
+        return shouldPrintCalendar;
+    }
+    
+    /**
+     * INTERNAL:
+     */
+    public boolean isTimestampInGmt(Connection conn) throws SQLException {
+        if(!isConnectionDataInitialized) {
+            initializeConnectionData(conn);
+        }
+        return isTimestampInGmt;
+    }
+    
+    /**
      *  INTERNAL:
      *  Note that index (not index+1) is used in statement.setObject(index, parameter)
      *    Binding starts with a 1 not 0, so make sure that index > 0.
@@ -356,7 +449,8 @@ public class Oracle9Platform extends Oracle8Platform {
     public void setParameterValueInDatabaseCall(Object parameter, PreparedStatement statement, int index, AbstractSession session) throws SQLException {
         if (parameter instanceof Calendar) {
             Calendar calendar = (Calendar)parameter;
-            TIMESTAMPTZ tsTZ = TIMESTAMPHelper.buildTIMESTAMPTZ(calendar, getConnection(session, statement.getConnection()));
+            Connection conn = getConnection(session, statement.getConnection());
+            TIMESTAMPTZ tsTZ = TIMESTAMPHelper.buildTIMESTAMPTZ(calendar, conn, shouldPrintCalendar(conn));
             statement.setObject(index, tsTZ);
         } else {
             super.setParameterValueInDatabaseCall(parameter, statement, index, session);

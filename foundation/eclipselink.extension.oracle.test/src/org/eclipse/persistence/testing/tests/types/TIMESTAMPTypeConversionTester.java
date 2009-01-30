@@ -290,4 +290,11 @@ public class TIMESTAMPTypeConversionTester extends TIMESTAMPTester {
 		return tests;
 	}
 			
+    // As opposed to TIMESTAMPTester
+    // tsToTSTZ, utilDateToTSTZ and timeToTSTZ work no matter what session time zone is.
+	// Converter makes a difference - Timestamp (Date, Time) object is converted to Calendar first,
+	// which finally converted to TIMESTAMPTZ.
+    boolean doesTimestampTZWork() {
+        return true; 
+    }
 }

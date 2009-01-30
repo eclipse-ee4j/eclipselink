@@ -26,11 +26,13 @@ import org.eclipse.persistence.exceptions.DatabaseException;
 public class TIMESTAMPTZWrapper implements Serializable {
     Timestamp ts;
     TimeZone tz;
+    boolean isTimestampInGmt;
 
-    public TIMESTAMPTZWrapper(TIMESTAMPTZ timestampTZ, Connection connection) {
+    public TIMESTAMPTZWrapper(TIMESTAMPTZ timestampTZ, Connection connection, boolean isTimestampInGmt) {
 		try {
             ts = timestampTZ.timestampValue(connection);
             tz = TIMESTAMPHelper.extractTimeZone(timestampTZ.toBytes());
+            this.isTimestampInGmt = isTimestampInGmt;
 		} catch (SQLException exception) {
 			throw DatabaseException.sqlException(exception);
 		}
@@ -42,5 +44,9 @@ public class TIMESTAMPTZWrapper implements Serializable {
 
     public TimeZone getTimeZone() {
         return tz;
+    }
+    
+    public boolean isTimestampInGmt() {
+        return isTimestampInGmt;
     }
 }
