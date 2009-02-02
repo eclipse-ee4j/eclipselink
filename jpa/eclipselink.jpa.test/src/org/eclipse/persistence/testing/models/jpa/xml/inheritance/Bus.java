@@ -23,13 +23,13 @@ import javax.persistence.EntityListeners;
     org.eclipse.persistence.testing.models.jpa.xml.inheritance.listeners.BusListener2.class
 })
 public class Bus extends FueledVehicle {
-    public static int PRE_PERSIST_COUNT = 0;
-    public static int POST_PERSIST_COUNT = 0;
-    public static int PRE_REMOVE_COUNT = 0;
-    public static int POST_REMOVE_COUNT = 0;
-    public static int PRE_UPDATE_COUNT = 0;
-    public static int POST_UPDATE_COUNT = 0;
-    public static int POST_LOAD_COUNT = 0;
+    public int pre_persist_count = 0;
+    public int post_persist_count = 0;
+    public int pre_remove_count = 0;
+    public int post_remove_count = 0;
+    public int pre_update_count = 0;
+    public int post_update_count = 0;
+    public int post_load_count = 0;
     
     private Person busDriver;
     public ArrayList prePersistCalledListeners = new ArrayList();
@@ -69,30 +69,30 @@ public class Bus extends FueledVehicle {
 
     // CALLBACK METHODS //
     public void prePersist() {
-        PRE_PERSIST_COUNT++;
+        pre_persist_count++;
     }
     
     protected void postPersist() {
-        POST_PERSIST_COUNT++;
+        post_persist_count++;
     }
     
     private void preRemove() {
-        PRE_REMOVE_COUNT++;
+        pre_remove_count++;
     }
     
     void postRemove() {
-        POST_REMOVE_COUNT++;
+        post_remove_count++;
     }
     
     public void preUpdate() {
-        PRE_UPDATE_COUNT++;
+        pre_update_count++;
     }
     
     public void postUpdate() {
-        POST_UPDATE_COUNT++;
+        post_update_count++;
     }
     
     public void postLoad() {
-        POST_LOAD_COUNT++;
+        post_load_count++;
     }
 }
