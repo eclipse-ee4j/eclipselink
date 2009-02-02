@@ -358,6 +358,84 @@ public class Helper implements Serializable {
         return false;
     }
 
+    /**
+     * INTERNAL:
+     * Compares two version in num.num.num.num.num*** format.
+     * -1, 0, 1 means the version1 is less than, equal, greater than version2.
+     * Example: compareVersions("11.1.0.6.0-Production", "11.1.0.7") == -1 
+     */
+    public static int compareVersions(String version1, String version2) {
+        return compareVersions(version(version1), version(version2));
+    }
+
+    /**
+     * INTERNAL:
+     * Expects version in num.num.num.num.num*** format, converts it to a List of Integers.
+     * Example: "11.1.0.6.0_Production" -> {11, 1, 0, 6, 0}
+     */
+    static protected List<Integer> version(String version) {
+        ArrayList<Integer> list = new ArrayList<Integer>(5);
+        // first char - a digit - in the string corresponding to the current list index
+        int iBegin = -1;
+        for(int i=0; i<version.length(); i++) {
+            char ch = version.charAt(i); 
+            if('0' <= ch && ch <= '9') {
+                // it's a digit
+                if(iBegin == -1) {
+                    iBegin = i;
+                }
+            } else {
+                // it's not a digit - try to create a number ending on the previous char.
+                if(iBegin == -1) {
+                    break;
+                } else {
+                    String strNum = version.substring(iBegin, i);
+                    int num = Integer.parseInt(strNum, 10);
+                    list.add(num);
+                    iBegin = -1;
+                    if(ch != '.') {
+                        break;
+                    }
+                }
+            }
+        }
+        if(iBegin >= 0) {
+            String strNum = version.substring(iBegin, version.length());
+            int num = Integer.parseInt(strNum, 10);
+            list.add(num);
+        }
+        return list;
+    }
+ 
+    /**
+     * INTERNAL:
+     * Compares two lists of Integers
+     * -1, 0, 1 means the first list is less than, equal, greater than the second list.
+     * Example: {11, 1, 0, 6, 0} < {11, 1, 0, 7}
+     */
+    static protected int compareVersions(List<Integer> list1, List<Integer>list2) {
+        int n = Math.max(list1.size(), list2.size());
+        int res = 0;
+        for(int i=0; i<n; i++) {
+            int l1 = 0;
+            if(i < list1.size()) {
+                l1 = list1.get(i);
+            }
+            int l2 = 0;
+            if(i < list2.size()) {
+                l2 = list2.get(i);
+            }
+            if(l1 < l2) {
+                res =-1;
+                break;
+            } else if(l1 > l2) {
+                res = 1;
+                break;
+            }
+        }
+        return res;
+    }
+
     public static Class getClassFromClasseName(String className, ClassLoader classLoader){
         Class convertedClass = null;
         if(className==null){
@@ -1542,6 +1620,22 @@ public class Helper implements Serializable {
      * digits of the string.
      */
     public static String buildZeroPrefix(int number, int totalDigits) {
+        String numbString = buildZeroPrefixWithoutSign(number, totalDigits);
+
+        if (number < 0) {
+            numbString = "-" + numbString;
+        } else {
+            numbString = "+" + numbString;
+        }
+        return numbString;
+    }
+ 
+    /**
+     * Build a numerical string with leading 0s.  number is an existing number that 
+     * the new string will be built on.  totalDigits is the number of the required 
+     * digits of the string.
+     */
+    public static String buildZeroPrefixWithoutSign(int number, int totalDigits) {
         String zeros = "000000000";
         int absValue = (number < 0) ? (-number) : number;
         String numbString = Integer.toString(absValue);
@@ -1549,14 +1643,9 @@ public class Helper implements Serializable {
         // Add leading zeros
         numbString = zeros.substring(0, (totalDigits - numbString.length())) + numbString;
 
-        if (number < 0) {
-            numbString = "-" + numbString;
-        } else {
-            numbString = "+" + numbString;
-        }            
         return numbString;
     }
- 
+
     /**
      * Build a numerical string with leading 0s and truncate trailing zeros.  number is
      * an existing number that the new string will be built on.  totalDigits is the number

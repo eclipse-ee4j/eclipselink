@@ -27,38 +27,39 @@ public class TIMESTAMPHelper {
      * This conversion required the use of the literal string to get the same
      * functionality as the native SQL to_timestamp() approach.
      */
-    public static TIMESTAMPTZ buildTIMESTAMPTZ(Calendar cal, Connection con) {
-        try {
-            //Bug5614674.  It used to be a driver bug and Helper.printCalendar(cal, false) was used to make it work.  It has been fixed in 11.  Separate the newer version from the old ones.
-            if (con.getMetaData().getDriverVersion().startsWith("9.") || con.getMetaData().getDriverVersion().startsWith("10.")) {
-                return new TIMESTAMPTZ(con, Helper.printCalendar(cal, false), cal);
-            } else {
-                return new TIMESTAMPTZ(con, new Timestamp(cal.getTimeInMillis()), cal);
-            }
-        } catch (SQLException sqle) {
-            return null;
+    public static TIMESTAMPTZ buildTIMESTAMPTZ(Calendar cal, Connection con, boolean shouldPrintCalendar) throws SQLException {
+        //Bug5614674.  It used to be a driver bug and Helper.printCalendar(cal, false) was used to make it work.  It has been fixed in 11.  Separate the newer version from the old ones.
+        if (shouldPrintCalendar) {
+            return new TIMESTAMPTZ(con, Helper.printCalendar(cal, false), cal);
+        } else {
+            return new TIMESTAMPTZ(con, new Timestamp(cal.getTimeInMillis()), cal);
         }
     }
 
     /**
-   * Build a calendar from TIMESTAMPTZWrapper. 
+     * Build a calendar from TIMESTAMPTZWrapper. 
      */
-  public static Calendar buildCalendar(TIMESTAMPTZWrapper timestampTZ) throws SQLException{
-    Timestamp ts = timestampTZ.getTimestamp();
-    TimeZone tz = timestampTZ.getTimeZone();
+    public static Calendar buildCalendar(TIMESTAMPTZWrapper timestampTZ) throws SQLException{
+        Timestamp ts = timestampTZ.getTimestamp();
+        TimeZone tz = timestampTZ.getTimeZone();
 
-        Calendar gCal = Calendar.getInstance();
-        gCal.setTime(ts);
-        gCal.getTimeZone().setID(tz.getID());
-        gCal.getTimeZone().setRawOffset(tz.getRawOffset());
-
+        Calendar gCal;
+        if(timestampTZ.isTimestampInGmt()) {
+            gCal = Calendar.getInstance(tz);
+            gCal.setTime(ts);
+        } else {
+            gCal = Calendar.getInstance();
+            gCal.setTime(ts);
+            gCal.getTimeZone().setID(tz.getID());
+            gCal.getTimeZone().setRawOffset(tz.getRawOffset());
+        }
         return gCal;
     }
 
-    /**
-   * Build a calendar from TIMESTAMPLTZWrapper. 
-     */
-  public static Calendar buildCalendar(TIMESTAMPLTZWrapper timestampLTZ) throws SQLException{
+   /**
+    * Build a calendar from TIMESTAMPLTZWrapper. 
+    */
+    public static Calendar buildCalendar(TIMESTAMPLTZWrapper timestampLTZ) throws SQLException{
         Calendar gCal;
         if (timestampLTZ.getZoneId() != null) {
             gCal = Calendar.getInstance(TimeZone.getTimeZone(timestampLTZ.getZoneId()));
@@ -124,7 +125,7 @@ public class TIMESTAMPHelper {
         } else {
             int hourOffset = bytes[11] - 20;
             int minuteOffset = bytes[12] - 60;
-            String offset = Helper.buildZeroPrefix(hourOffset, 2) + ":" + Helper.buildZeroPrefix(minuteOffset, 2);
+            String offset = Helper.buildZeroPrefix(hourOffset, 2) + ":" + Helper.buildZeroPrefixWithoutSign(minuteOffset, 2);
             regionName = "GMT" + offset;
         }
         return TimeZone.getTimeZone(regionName);
