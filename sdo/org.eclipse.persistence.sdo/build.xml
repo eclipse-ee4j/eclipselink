@@ -34,12 +34,11 @@
     <dirname  property="sdo.build.location" file="${ant.file.org.eclipse.persistence.core}"/>
     <echo message="sdo.build.location = '${sdo.build.location}'"/>
 
-    <condition property="sdo.2.common.plugins.dir" value="../../plugins" else="../plugins">
+    <condition property="sdo.2.base.dir" value="../.." else="..">
         <contains string="${sdo.build.location}" substring="sdo"/>
     </condition>
-    <condition property="sdo.2.moxy.plugins.dir" value="../../moxy/plugins" else="../plugins">
-        <contains string="${sdo.build.location}" substring="sdo"/>
-    </condition>
+    <property name="sdo.2.common.plugins.dir" value="${sdo.2.base.dir}/plugins"/>
+    <property name="sdo.2.moxy.plugins.dir" value="${sdo.2.base.dir}/moxy/plugins"/>
 
     <property file="${user.home}/build.properties"/>
     <property file="./build.properties"/>
@@ -99,6 +98,11 @@
     <!-- package -->
     <target name="package" description="jar OSGI bundle">
         <jar jarfile="${sdo.2.common.plugins.dir}/${eclipselink.sdo.bndl.prefix}_${version.string}.jar" manifest="META-INF/MANIFEST.MF">
+            <fileset dir="${sdo.2.base.dir}">
+                <include name="about.html"/>
+                <include name="readme.html"/>
+                <include name="license.*"/>
+            </fileset>
             <fileset dir="${classes.dir}">
                 <include name="org/eclipse/persistence/**/*.class"/>
                 <include name="commonj/sdo/impl/HelperProviderImpl.class"/>
@@ -112,6 +116,11 @@
                 <attribute name="Bundle-Version"         value="${release.version}"/>
                 <attribute name="Eclipse-SourceBundle"   value="${ant.project.name};version=&quot;${release.version}&quot;"/>
             </manifest>
+            <fileset dir="${sdo.2.base.dir}">
+                <include name="about.html"/>
+                <include name="readme.html"/>
+                <include name="license.*"/>
+            </fileset>
             <fileset dir="${src.dir}">
                 <include name="org/eclipse/persistence/**/*.java"/>
                 <include name="commonj/sdo/impl/HelperProviderImpl.java"/>

@@ -32,9 +32,10 @@
     <fail message="Not running from '${ant.project.name}' directory" unless="core.is.local"/>
 
     <dirname  property="core.build.location" file="${ant.file.org.eclipse.persistence.core}"/>
-    <condition property="core.2.common.plugins.dir" value="../../plugins" else="../plugins">
+    <condition property="core.2.base.dir" value="../.." else="..">
         <contains string="${core.build.location}" substring="foundation"/>
     </condition>
+    <property name="core.2.common.plugins.dir" value="${core.2.base.dir}/plugins"/>
 
     <!-- TEMPORARY HACK PENDING DECISION ABOUT WHETHER ECLIPSELINK FOUNDATION WILL DEPEND ON JPA CLASSES -->
     <condition property="core.2.jpa.plugins.dir" value="../../jpa/plugins" else="../plugins">
@@ -137,6 +138,11 @@
     <!-- package -->
     <target name="package" description="jar OSGI bundle">
         <jar jarfile="${core.2.common.plugins.dir}/${eclipselink.core.bndl.prefix}_${version.string}.jar" manifest="META-INF/MANIFEST.MF">
+            <fileset dir="${core.2.base.dir}">
+                <include name="about.html"/>
+                <include name="readme.html"/>
+                <include name="license.*"/>
+            </fileset>
             <fileset dir="${classes.dir}">
                 <include name="org/eclipse/persistence/**/*.class"/>
             </fileset>
@@ -153,6 +159,11 @@
                 <attribute name="Bundle-Version"         value="${release.version}"/>
                 <attribute name="Eclipse-SourceBundle"   value="${ant.project.name};version=&quot;${release.version}&quot;"/>
             </manifest>
+            <fileset dir="${core.2.base.dir}">
+                <include name="about.html"/>
+                <include name="readme.html"/>
+                <include name="license.*"/>
+            </fileset>
             <fileset dir="${src.dir}">
                 <include name="org/eclipse/persistence/**/*.java"/>
             </fileset>

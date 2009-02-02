@@ -37,9 +37,10 @@
     <fail message="Not running from '${ant.project.name}' directory" unless="oracle.is.local"/>
 
     <dirname  property="oracle.build.location" file="${ant.file.org.eclipse.persistence.oracle}"/>
-    <condition property="oracle.2.common.plugins.dir" value="../../plugins" else="../plugins">
+    <condition property="oracle.2.base.dir" value="../.." else="..">
         <contains string="${oracle.build.location}" substring="foundation"/>
     </condition>
+    <property name="oracle.2.common.plugins.dir" value="${oracle.2.base.dir}/plugins"/>
     <property name="oracle.plugins.dir" value="../plugins"/>
     
     <property file="${user.home}/build.properties"/>
@@ -110,6 +111,11 @@
 
     <target name="package" description="jar OSGI bundles">
         <jar jarfile="${oracle.plugins.dir}/${eclipselink.extension.oracle.bndl.prefix}.jar" manifest="META-INF/MANIFEST.MF">
+            <fileset dir="${oracle.2.base.dir}">
+                <include name="about.html"/>
+                <include name="readme.html"/>
+                <include name="license.*"/>
+            </fileset>
             <fileset dir="${classes.dir}">
                 <include name="org/eclipse/persistence/**/*.class"/>
             </fileset>
@@ -122,6 +128,11 @@
                 <attribute name="Bundle-Version"         value="${release.version}"/>
                 <attribute name="Eclipse-SourceBundle"   value="${ant.project.name};version=&quot;${release.version}&quot;"/>
             </manifest>
+            <fileset dir="${oracle.2.base.dir}">
+                <include name="about.html"/>
+                <include name="readme.html"/>
+                <include name="license.*"/>
+            </fileset>
             <fileset dir="${src.dir}">
                 <include name="org/eclipse/persistence/**/*.java"/>
             </fileset>

@@ -32,9 +32,10 @@
     <fail message="Not running from '${ant.project.name}' directory" unless="moxy.is.local"/>
 
     <dirname  property="moxy.build.location" file="${ant.file.org.eclipse.persistence.core}"/>
-    <condition property="moxy.2.common.plugins.dir" value="../../plugins" else="../plugins">
+    <condition property="moxy.2.base.dir" value="../.." else="..">
         <contains string="${moxy.build.location}" substring="moxy"/>
     </condition>
+    <property name="moxy.2.common.plugins.dir" value="${moxy.2.base.dir}/plugins"/>
 
     <property file="${user.home}/build.properties"/>
     <property file="./build.properties"/>
@@ -108,6 +109,11 @@
     <!-- package -->
     <target name="package" description="jar OSGI bundle">
         <jar jarfile="${moxy.2.common.plugins.dir}/${eclipselink.moxy.bndl.prefix}_${version.string}.jar" manifest="META-INF/MANIFEST.MF">
+            <fileset dir="${moxy.2.base.dir}">
+                <include name="about.html"/>
+                <include name="readme.html"/>
+                <include name="license.*"/>
+            </fileset>
             <fileset dir="${classes.dir}">
                 <include name="org/eclipse/persistence/**/*.class"/>
             </fileset>
@@ -120,6 +126,11 @@
                 <attribute name="Bundle-Version"         value="${release.version}"/>
                 <attribute name="Eclipse-SourceBundle"   value="${ant.project.name};version=&quot;${release.version}&quot;"/>
             </manifest>
+            <fileset dir="${moxy.2.base.dir}">
+                <include name="about.html"/>
+                <include name="readme.html"/>
+                <include name="license.*"/>
+            </fileset>
             <fileset dir="${src.dir}">
                 <include name="org/eclipse/persistence/**/*.java"/>
             </fileset>
