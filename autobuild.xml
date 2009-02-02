@@ -72,11 +72,15 @@
                 project.setProperty(attributes.get("property"), "NA");
             }
             else {
-                if (input.endsWith("M")) {
-                    trimmedInput = input.substring(0,input.length()-1);
-                    // put result into property - NB overwrites previous value! Not safe for <parallel> tasks
-                    project.setProperty(attributes.get("property"), trimmedInput);
-                }
+                // Last changed revision (branch specific) is stored 2nd to last line of 
+                //    "svn info --revision HEAD <url>" output
+                // Get "endString" Index based on search for last instance of "Last Changed"
+                endLastRev = input.lastIndexOf("Last Changed");
+                // Get "beginString" index based upon the last space in the line above the endString index
+                beginLastRev = input.lastIndexOf(" ", endLastRev); 
+                // Trim the string to not include the leading space, or the end-of-line
+                trimmedInput = input.substring(beginLastRev+1, endLastRev-1);
+                project.setProperty(attributes.get("property"), trimmedInput);
             }
         ]]>
     </scriptdef>
@@ -100,8 +104,12 @@
             failonerror="false"
             failifexecutionfails="false"
             errorproperty="svnversion.failed"
-            executable="svnversion">
-            <arg line="."/>
+            logError="true"
+            executable="${svn.exec}">
+            <arg value="info"/>
+            <arg value="--revision"/>
+            <arg value="HEAD"/>
+            <arg value="${svn.branch.url}"/>
         </exec>
         <cleanRevision input="${svn.revision}" property="svn.revision"/>
         <property name="svn.revision" value="NA"/>
