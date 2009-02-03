@@ -87,7 +87,7 @@ import org.eclipse.persistence.tools.workbench.uitools.app.swing.ObjectListSelec
 	protected PropertyValueModel buildComponentEnablerBooleanHolder() {
 		return new PropertyAspectAdapter(this.queryHolder) {
 			protected Object getValueFromSubject() {
-				return Boolean.valueOf(false);
+				return Boolean.valueOf(true);
 			}
 		};
 	}
