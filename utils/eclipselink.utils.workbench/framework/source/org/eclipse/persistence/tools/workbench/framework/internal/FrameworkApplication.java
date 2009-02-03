@@ -842,7 +842,7 @@ public final class FrameworkApplication
 	 * @see org.eclipse.persistence.tools.workbench.utility.ManifestInterrogator.Defaults#defaultSpecificationTitle()
 	 */
 	public String defaultSpecificationTitle() {
-		return "EclipseLink";
+		return "EclipseLink Workbench";
 	}
 
 	/**

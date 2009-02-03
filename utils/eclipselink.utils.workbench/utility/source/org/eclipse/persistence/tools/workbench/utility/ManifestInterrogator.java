@@ -169,7 +169,7 @@ public class ManifestInterrogator {
 	 * the Library Designation, as derived from the JAR file manifest.
 	 */
 	public String getFullProductName() {
-		return this.getSpecificationVendor() + " " + this.getProductName() + " " + this.getShortProductName();
+		return this.getSpecificationVendor() + " " + this.getProductName();
 	}
 
 	/**
