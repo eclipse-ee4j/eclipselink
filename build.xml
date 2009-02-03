@@ -436,7 +436,13 @@
                 <include name="org/eclipse/persistence/**/*.java"/>
                 <exclude name="org/eclipse/persistence/internal/**/*.java"/>
             </fileset>
-            <fileset dir="${eclipselink.util.rename}/${src.dir}" defaultexcludes="yes">
+			<fileset dir="${jpa.prototype}/${src.dir}" defaultexcludes="yes">
+                <include name="javax/persistence/**/*.java"/>
+            </fileset>
+			<fileset dir="${commonj.sdo.plugins}" defaultexcludes="yes">
+                <include name="commonj/sdo/**/*.java"/>
+            </fileset>
+			<fileset dir="${eclipselink.util.rename}/${src.dir}" defaultexcludes="yes">
                 <include name="org/eclipse/persistence/**/*.java"/>
                 <exclude name="org/eclipse/persistence/internal/**/*.java"/>
             </fileset>
