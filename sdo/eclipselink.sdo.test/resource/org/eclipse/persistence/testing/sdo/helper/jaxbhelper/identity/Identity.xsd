@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema targetNamespace="urn:identity" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:tns="urn:identity" elementFormDefault="qualified" xmlns:sdoXml="commonj.sdo/xml">
+
+        <xs:element name="root" type="root-type"/>
+
+        <xs:complexType name="root-type">
+                <xs:sequence>
+                        <xs:element name="name" type="xs:string"/>
+                </xs:sequence>
+        </xs:complexType>
+
+</xs:schema>
