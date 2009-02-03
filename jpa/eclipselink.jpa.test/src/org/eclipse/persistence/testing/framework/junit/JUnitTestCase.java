@@ -448,7 +448,7 @@ public abstract class JUnitTestCase extends TestCase {
      */
     public boolean isSelectForUpateSupported() {
         DatabasePlatform platform = getServerSession().getPlatform();
-        // PostgreSQL supports for update, but no on outerjoins, which the test uses.
+        // PostgreSQL supports for update, but not on outerjoins, which the test uses.
         if (platform.isDB2() || platform.isAccess() || platform.isSybase() || platform.isSQLAnywhere() || platform.isDerby() || platform.isPostgreSQL()) {
             warning("This database does not support FOR UPDATE.");
             return false;

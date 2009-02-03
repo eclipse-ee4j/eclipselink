@@ -270,6 +270,9 @@ public class BasicAccessor extends DirectAccessor {
         mapping.setAttributeName(getAttributeName());
         mapping.setIsOptional(isOptional());
         mapping.setIsLazy(usesIndirection());
+        
+        //Derived ID: set if this mapping has been marked as an ID 
+        mapping.setIsIDMapping(isId());
 
         // Will check for PROPERTY access.
         setAccessorMethods(mapping);

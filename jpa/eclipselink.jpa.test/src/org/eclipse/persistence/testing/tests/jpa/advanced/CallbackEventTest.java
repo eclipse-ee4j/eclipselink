@@ -67,8 +67,9 @@ public class CallbackEventTest extends EntityContainerTestBase  {
     }
     
     public void verify() {
-        if (m_beforeEvent == m_afterEvent) {
-            throw new TestErrorException("The callback method was not called.");
+        if ((m_afterEvent-m_beforeEvent) != 1) {
+            throw new TestErrorException("The callback method was called "+(m_afterEvent - m_beforeEvent)+
+                    " times.  It should have been called only once");
         }
     }
     

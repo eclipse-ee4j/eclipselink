@@ -21,17 +21,20 @@ public class AdvancedTableCreator extends org.eclipse.persistence.tools.schemafr
         setName("EJB3EmployeeProject");
 
         addTableDefinition(buildADDRESSTable());
-        addTableDefinition(buildEMPLOYEETable());
-        addTableDefinition(buildLARGEPROJECTTable());
-        addTableDefinition(buildPHONENUMBERTable());
-        addTableDefinition(buildPROJECTTable());
-        addTableDefinition(buildPROJECT_EMPTable());
-        addTableDefinition(buildSALARYTable());
-        addTableDefinition(buildRESPONSTable());
         addTableDefinition(buildCREDITCARDSTable());
-        addTableDefinition(buildREADONLYCLASSTable());
         addTableDefinition(buildCUSTOMERTable());
         addTableDefinition(buildDEALERTable());
+        addTableDefinition(buildEMPLOYEETable());
+        addTableDefinition(buildLARGEPROJECTTable());
+        addTableDefinition(buildMANTable());
+        addTableDefinition(buildPARTNERLINKTable());
+        addTableDefinition(buildPHONENUMBERTable());
+        addTableDefinition(buildPROJECT_EMPTable());
+        addTableDefinition(buildPROJECTTable());
+        addTableDefinition(buildREADONLYCLASSTable());
+        addTableDefinition(buildRESPONSTable());
+        addTableDefinition(buildSALARYTable());
+        addTableDefinition(buildWOMANTable());
     }
     
     
@@ -172,6 +175,142 @@ public class AdvancedTableCreator extends org.eclipse.persistence.tools.schemafr
         fieldNUMB.setIsIdentity(false);
         table.addField(fieldNUMB);
     
+        return table;
+    }
+    
+    public static TableDefinition buildCUSTOMERTable() {
+        TableDefinition table = new TableDefinition();
+        table.setName("CMP3_XML_ADV_CUSTOMER");
+
+        FieldDefinition field = new FieldDefinition();
+        field.setName("CUSTOMER_ID");
+        field.setTypeName("NUMERIC");
+        field.setSize(15);
+        field.setShouldAllowNull(false);
+        field.setIsPrimaryKey(true);
+        field.setUnique(false);
+        field.setIsIdentity(true);
+        table.addField(field);
+    
+        FieldDefinition field0 = new FieldDefinition();
+        field0.setName("FK_DEALER_ID");
+        field0.setTypeName("NUMERIC");
+        field0.setSize(15);
+        field0.setShouldAllowNull(true);
+        field0.setIsPrimaryKey(false);
+        field0.setUnique(false);
+        field0.setIsIdentity(false);
+        field0.setForeignKeyFieldName("CMP3_XML_DEALER.DEALER_ID");
+        table.addField(field0);
+    
+        FieldDefinition field1 = new FieldDefinition();
+        field1.setName("F_NAME");
+        field1.setTypeName("VARCHAR");
+        field1.setSize(40);
+        field1.setShouldAllowNull(true);
+        field1.setIsPrimaryKey(false);
+        field1.setUnique(false);
+        field1.setIsIdentity(false);
+        table.addField(field1);
+    
+        FieldDefinition field2 = new FieldDefinition();
+        field2.setName("L_NAME");
+        field2.setTypeName("VARCHAR");
+        field2.setSize(40);
+        field2.setShouldAllowNull(true);
+        field2.setIsPrimaryKey(false);
+        field2.setUnique(false);
+        field2.setIsIdentity(false);
+        table.addField(field2);
+        
+        FieldDefinition field3 = new FieldDefinition();
+        field3.setName("BUDGET");
+        field3.setTypeName("NUMERIC");
+        field3.setSize(15);
+        field3.setShouldAllowNull(true);
+        field3.setIsPrimaryKey(false);
+        field3.setUnique(false);
+        field3.setIsIdentity(false);
+        table.addField(field3);
+        
+        FieldDefinition field4 = new FieldDefinition();
+        field4.setName("VERSION");
+        field4.setTypeName("NUMERIC");
+        field4.setSize(15);
+        field4.setShouldAllowNull(true);
+        field4.setIsPrimaryKey(false);
+        field4.setUnique(false);
+        field4.setIsIdentity(false);
+        table.addField(field4);
+        
+        return table;
+    }
+    
+    public static TableDefinition buildDEALERTable() {
+        TableDefinition table = new TableDefinition();
+        table.setName("CMP3_XML_DEALER");
+
+        FieldDefinition field = new FieldDefinition();
+        field.setName("DEALER_ID");
+        field.setTypeName("NUMERIC");
+        field.setSize(15);
+        field.setShouldAllowNull(false);
+        field.setIsPrimaryKey(true);
+        field.setUnique(false);
+        field.setIsIdentity(true);
+        table.addField(field);
+    
+        FieldDefinition field0 = new FieldDefinition();
+        field0.setName("FK_EMP_ID");
+        field0.setTypeName("NUMERIC");
+        field0.setSize(15);
+        field0.setShouldAllowNull(true);
+        field0.setIsPrimaryKey(false);
+        field0.setUnique(false);
+        field0.setIsIdentity(false);
+        field0.setForeignKeyFieldName("CMP3_XML_EMPLOYEE.EMP_ID");
+        table.addField(field0);
+    
+        FieldDefinition field1 = new FieldDefinition();
+        field1.setName("F_NAME");
+        field1.setTypeName("VARCHAR");
+        field1.setSize(40);
+        field1.setShouldAllowNull(true);
+        field1.setIsPrimaryKey(false);
+        field1.setUnique(false);
+        field1.setIsIdentity(false);
+        table.addField(field1);
+    
+        FieldDefinition field2 = new FieldDefinition();
+        field2.setName("L_NAME");
+        field2.setTypeName("VARCHAR");
+        field2.setSize(40);
+        field2.setShouldAllowNull(true);
+        field2.setIsPrimaryKey(false);
+        field2.setUnique(false);
+        field2.setIsIdentity(false);
+        table.addField(field2);
+        
+        FieldDefinition field3 = new FieldDefinition();
+        field3.setName("STATUS");
+        field3.setTypeName("VARCHAR");
+        field3.setSize(40);
+        field3.setShouldAllowNull(true);
+        field3.setIsPrimaryKey(false);
+        field3.setUnique(false);
+        field3.setIsIdentity(false);
+        table.addField(field3);
+        
+        FieldDefinition field4 = new FieldDefinition();
+        field4.setName("VERSION");
+        field4.setTypeName("NUMERIC");
+        field4.setSize(15);
+        field4.setShouldAllowNull(true);
+        field4.setIsPrimaryKey(false);
+        field4.setUnique(false);
+        field4.setIsIdentity(false);
+        table.addField(field4);
+        
         return table;
     }
     
@@ -333,37 +472,6 @@ public class AdvancedTableCreator extends org.eclipse.persistence.tools.schemafr
         return table;
     }
 
-    public static TableDefinition buildRESPONSTable() {
-        TableDefinition table = new TableDefinition();
-        // SECTION: TABLE
-        table.setName("CMP3_XML_RESPONS");
-    
-        // SECTION: FIELD
-        FieldDefinition field = new FieldDefinition();
-        field.setName("EMP_ID");
-        field.setTypeName("NUMERIC");
-        field.setSize(15);
-        field.setShouldAllowNull(false);
-        field.setIsPrimaryKey(false);
-        field.setUnique(false);
-        field.setIsIdentity(false);
-        field.setForeignKeyFieldName("CMP3_XML_EMPLOYEE.EMP_ID");
-        table.addField(field);
-    
-        // SECTION: FIELD
-        FieldDefinition field1 = new FieldDefinition();
-        field1.setName("DESCRIPTION");
-        field1.setTypeName("VARCHAR");
-        field1.setSize(200);
-        field1.setShouldAllowNull(false);
-        field1.setIsPrimaryKey(false);
-        field1.setUnique(false);
-        field1.setIsIdentity(false);
-        table.addField(field1);
-    
-        return table;
-    }
-    
     public static TableDefinition buildEMPLOYEE_SEQTable() {
         TableDefinition table = new TableDefinition();
         table.setName("CMP3_XML_EMPLOYEE_SEQ");
@@ -422,6 +530,75 @@ public class AdvancedTableCreator extends org.eclipse.persistence.tools.schemafr
         return table;
     }
 
+    public static TableDefinition buildMANTable() {
+        TableDefinition table = new TableDefinition();
+        table.setName("XML_MAN");
+
+        FieldDefinition fieldID = new FieldDefinition();
+        fieldID.setName("ID");
+        fieldID.setTypeName("NUMERIC");
+        fieldID.setSize(15);
+        fieldID.setSubSize(0);
+        fieldID.setIsPrimaryKey(true);
+        fieldID.setIsIdentity(true);
+        fieldID.setUnique(false);
+        fieldID.setShouldAllowNull(false);
+        table.addField(fieldID);
+
+        FieldDefinition field1 = new FieldDefinition();
+        field1.setName("F_NAME");
+        field1.setTypeName("VARCHAR");
+        field1.setSize(40);
+        field1.setShouldAllowNull(true);
+        field1.setIsPrimaryKey(false);
+        field1.setUnique(false);
+        field1.setIsIdentity(false);
+        table.addField(field1);
+    
+        FieldDefinition field2 = new FieldDefinition();
+        field2.setName("L_NAME");
+        field2.setTypeName("VARCHAR");
+        field2.setSize(40);
+        field2.setShouldAllowNull(true);
+        field2.setIsPrimaryKey(false);
+        field2.setUnique(false);
+        field2.setIsIdentity(false);
+        table.addField(field2);        
+
+        return table;
+    }
+
+    public static TableDefinition buildPARTNERLINKTable() {
+        TableDefinition table = new TableDefinition();
+        table.setName("XML_MW");
+
+        FieldDefinition fieldMID = new FieldDefinition();
+        fieldMID.setName("M");
+        fieldMID.setTypeName("NUMERIC");
+        fieldMID.setSize(15);
+        fieldMID.setSubSize(0);
+        fieldMID.setIsPrimaryKey(false);
+        fieldMID.setIsIdentity(false);
+        fieldMID.setUnique(false);
+        fieldMID.setShouldAllowNull(true);
+        fieldMID.setForeignKeyFieldName("XML_MAN.ID");
+        table.addField(fieldMID);
+        
+        FieldDefinition fieldWID = new FieldDefinition();
+        fieldWID.setName("W");
+        fieldWID.setTypeName("NUMERIC");
+        fieldWID.setSize(15);
+        fieldWID.setSubSize(0);
+        fieldWID.setIsPrimaryKey(false);
+        fieldWID.setIsIdentity(false);
+        fieldWID.setUnique(false);
+        fieldWID.setShouldAllowNull(true);
+        fieldWID.setForeignKeyFieldName("XML_WOMAN.ID");
+        table.addField(fieldWID);
+        
+        return table;
+    }
+
     public static TableDefinition buildPHONENUMBERTable() {
         TableDefinition table = new TableDefinition();
         table.setName("CMP3_XML_PHONENUMBER");
@@ -470,6 +647,38 @@ public class AdvancedTableCreator extends org.eclipse.persistence.tools.schemafr
         field3.setUnique(false );
         field3.setIsIdentity(false );
         table.addField(field3);
+
+        return table;
+    }
+
+    public static TableDefinition buildPROJECT_EMPTable() {
+        TableDefinition table = new TableDefinition();
+
+        table.setName("CMP3_XML_PROJ_EMP");
+
+        // SECTION: FIELD
+        org.eclipse.persistence.tools.schemaframework.FieldDefinition field = new org.eclipse.persistence.tools.schemaframework.FieldDefinition();
+        field.setName("EMP_ID");
+        field.setTypeName("NUMERIC");
+        field.setSize(15);
+        field.setShouldAllowNull(false );
+        field.setIsPrimaryKey(true );
+        field.setUnique(false );
+        field.setIsIdentity(false );
+        field.setForeignKeyFieldName("CMP3_XML_EMPLOYEE.EMP_ID");
+        table.addField(field);
+    
+        // SECTION: FIELD
+        org.eclipse.persistence.tools.schemaframework.FieldDefinition field1 = new org.eclipse.persistence.tools.schemaframework.FieldDefinition();
+        field1.setName("PROJ_ID");
+        field1.setTypeName("NUMERIC");
+        field1.setSize(15);
+        field1.setShouldAllowNull(false );
+        field1.setIsPrimaryKey(true );
+        field1.setUnique(false );
+        field1.setIsIdentity(false );
+        field1.setForeignKeyFieldName("CMP3_XML_PROJECT.PROJ_ID");
+        table.addField(field1);
 
         return table;
     }
@@ -549,35 +758,34 @@ public class AdvancedTableCreator extends org.eclipse.persistence.tools.schemafr
         return table;
     }
 
-    public static TableDefinition buildPROJECT_EMPTable() {
+    public static TableDefinition buildRESPONSTable() {
         TableDefinition table = new TableDefinition();
-
-        table.setName("CMP3_XML_PROJ_EMP");
-
+        // SECTION: TABLE
+        table.setName("CMP3_XML_RESPONS");
+    
         // SECTION: FIELD
-        org.eclipse.persistence.tools.schemaframework.FieldDefinition field = new org.eclipse.persistence.tools.schemaframework.FieldDefinition();
+        FieldDefinition field = new FieldDefinition();
         field.setName("EMP_ID");
         field.setTypeName("NUMERIC");
         field.setSize(15);
-        field.setShouldAllowNull(false );
-        field.setIsPrimaryKey(true );
-        field.setUnique(false );
-        field.setIsIdentity(false );
+        field.setShouldAllowNull(false);
+        field.setIsPrimaryKey(false);
+        field.setUnique(false);
+        field.setIsIdentity(false);
         field.setForeignKeyFieldName("CMP3_XML_EMPLOYEE.EMP_ID");
         table.addField(field);
     
         // SECTION: FIELD
-        org.eclipse.persistence.tools.schemaframework.FieldDefinition field1 = new org.eclipse.persistence.tools.schemaframework.FieldDefinition();
-        field1.setName("PROJ_ID");
-        field1.setTypeName("NUMERIC");
-        field1.setSize(15);
-        field1.setShouldAllowNull(false );
-        field1.setIsPrimaryKey(true );
-        field1.setUnique(false );
-        field1.setIsIdentity(false );
-        field1.setForeignKeyFieldName("CMP3_XML_PROJECT.PROJ_ID");
+        FieldDefinition field1 = new FieldDefinition();
+        field1.setName("DESCRIPTION");
+        field1.setTypeName("VARCHAR");
+        field1.setSize(200);
+        field1.setShouldAllowNull(false);
+        field1.setIsPrimaryKey(false);
+        field1.setUnique(false);
+        field1.setIsIdentity(false);
         table.addField(field1);
-
+    
         return table;
     }
 
@@ -611,31 +819,21 @@ public class AdvancedTableCreator extends org.eclipse.persistence.tools.schemafr
         return table;
     }
 
-     public static TableDefinition buildCUSTOMERTable() {
+     public static TableDefinition buildWOMANTable() {
          TableDefinition table = new TableDefinition();
-         table.setName("CMP3_XML_ADV_CUSTOMER");
+         table.setName("XML_WOMAN");
 
-         FieldDefinition field = new FieldDefinition();
-         field.setName("CUSTOMER_ID");
-         field.setTypeName("NUMERIC");
-         field.setSize(15);
-         field.setShouldAllowNull(false);
-         field.setIsPrimaryKey(true);
-         field.setUnique(false);
-         field.setIsIdentity(true);
-         table.addField(field);
-     
-         FieldDefinition field0 = new FieldDefinition();
-         field0.setName("FK_DEALER_ID");
-         field0.setTypeName("NUMERIC");
-         field0.setSize(15);
-         field0.setShouldAllowNull(true);
-         field0.setIsPrimaryKey(false);
-         field0.setUnique(false);
-         field0.setIsIdentity(false);
-         field0.setForeignKeyFieldName("CMP3_XML_DEALER.DEALER_ID");
-         table.addField(field0);
-     
+         FieldDefinition fieldID = new FieldDefinition();
+         fieldID.setName("ID");
+         fieldID.setTypeName("NUMERIC");
+         fieldID.setSize(15);
+         fieldID.setSubSize(0);
+         fieldID.setIsPrimaryKey(true);
+         fieldID.setIsIdentity(true);
+         fieldID.setUnique(false);
+         fieldID.setShouldAllowNull(false);
+         table.addField(fieldID);
+
          FieldDefinition field1 = new FieldDefinition();
          field1.setName("F_NAME");
          field1.setTypeName("VARCHAR");
@@ -645,75 +843,7 @@ public class AdvancedTableCreator extends org.eclipse.persistence.tools.schemafr
          field1.setUnique(false);
          field1.setIsIdentity(false);
          table.addField(field1);
-     
-         FieldDefinition field2 = new FieldDefinition();
-         field2.setName("L_NAME");
-         field2.setTypeName("VARCHAR");
-         field2.setSize(40);
-         field2.setShouldAllowNull(true);
-         field2.setIsPrimaryKey(false);
-         field2.setUnique(false);
-         field2.setIsIdentity(false);
-         table.addField(field2);
-         
-         FieldDefinition field3 = new FieldDefinition();
-         field3.setName("BUDGET");
-         field3.setTypeName("NUMERIC");
-         field3.setSize(15);
-         field3.setShouldAllowNull(true);
-         field3.setIsPrimaryKey(false);
-         field3.setUnique(false);
-         field3.setIsIdentity(false);
-         table.addField(field3);
-         
-         FieldDefinition field4 = new FieldDefinition();
-         field4.setName("VERSION");
-         field4.setTypeName("NUMERIC");
-         field4.setSize(15);
-         field4.setShouldAllowNull(true);
-         field4.setIsPrimaryKey(false);
-         field4.setUnique(false);
-         field4.setIsIdentity(false);
-         table.addField(field4);
-         
-         return table;
-     }
-     
-     public static TableDefinition buildDEALERTable() {
-         TableDefinition table = new TableDefinition();
-         table.setName("CMP3_XML_DEALER");
 
-         FieldDefinition field = new FieldDefinition();
-         field.setName("DEALER_ID");
-         field.setTypeName("NUMERIC");
-         field.setSize(15);
-         field.setShouldAllowNull(false);
-         field.setIsPrimaryKey(true);
-         field.setUnique(false);
-         field.setIsIdentity(true);
-         table.addField(field);
-     
-         FieldDefinition field0 = new FieldDefinition();
-         field0.setName("FK_EMP_ID");
-         field0.setTypeName("NUMERIC");
-         field0.setSize(15);
-         field0.setShouldAllowNull(true);
-         field0.setIsPrimaryKey(false);
-         field0.setUnique(false);
-         field0.setIsIdentity(false);
-         field0.setForeignKeyFieldName("CMP3_XML_EMPLOYEE.EMP_ID");
-         table.addField(field0);
-     
-         FieldDefinition field1 = new FieldDefinition();
-         field1.setName("F_NAME");
-         field1.setTypeName("VARCHAR");
-         field1.setSize(40);
-         field1.setShouldAllowNull(true);
-         field1.setIsPrimaryKey(false);
-         field1.setUnique(false);
-         field1.setIsIdentity(false);
-         table.addField(field1);
-     
          FieldDefinition field2 = new FieldDefinition();
          field2.setName("L_NAME");
          field2.setTypeName("VARCHAR");
@@ -722,28 +852,8 @@ public class AdvancedTableCreator extends org.eclipse.persistence.tools.schemafr
          field2.setIsPrimaryKey(false);
          field2.setUnique(false);
          field2.setIsIdentity(false);
-         table.addField(field2);
-         
-         FieldDefinition field3 = new FieldDefinition();
-         field3.setName("STATUS");
-         field3.setTypeName("VARCHAR");
-         field3.setSize(40);
-         field3.setShouldAllowNull(true);
-         field3.setIsPrimaryKey(false);
-         field3.setUnique(false);
-         field3.setIsIdentity(false);
-         table.addField(field3);
-         
-         FieldDefinition field4 = new FieldDefinition();
-         field4.setName("VERSION");
-         field4.setTypeName("NUMERIC");
-         field4.setSize(15);
-         field4.setShouldAllowNull(true);
-         field4.setIsPrimaryKey(false);
-         field4.setUnique(false);
-         field4.setIsIdentity(false);
-         table.addField(field4);
-         
+         table.addField(field2);        
+
          return table;
      }
 }

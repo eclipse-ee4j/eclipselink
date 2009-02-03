@@ -91,7 +91,7 @@ public class OneToOneAccessor extends ObjectAccessor {
         if (m_mappedBy == null || m_mappedBy.equals("")) {
             // Owning side, look for JoinColumns or PrimaryKeyJoinColumns.
             processOwningMappingKeys(mapping);
-        } else {    
+        } else {
             // Non-owning side, process the foreign keys from the owner.
             OneToOneMapping ownerMapping = null;
             if (getOwningMapping(m_mappedBy).isOneToOneMapping()){
@@ -131,6 +131,7 @@ public class OneToOneAccessor extends ObjectAccessor {
 
         // Add the mapping to the descriptor.
         getDescriptor().addMapping(mapping);
+        setMapping(mapping);
     }
     
     /**

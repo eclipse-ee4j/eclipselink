@@ -1175,7 +1175,7 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
     /**
      * INTERNAL:
      * returns true if the accessor has already been set. The getAccessor() will attempt to
-     * lazily initialzie it.
+     * lazily initialize it.
      */
     public boolean hasAccessor() {
         return accessor != null;

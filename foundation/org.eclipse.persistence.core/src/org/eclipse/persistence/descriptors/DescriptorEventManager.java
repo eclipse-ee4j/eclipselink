@@ -787,7 +787,7 @@ public class DescriptorEventManager implements Cloneable, Serializable {
     /**
      * PUBLIC:
      * A method can be registered to be called on a object that has just been 
-     * built from the database. This uses the optional event argument of the 
+     * built from the database. This uses the optional event argument for the 
      * DatabaseRow. This event can be used to correctly initialize an object's 
      * non-persistent attributes or to perform complex optimizations or 
      * mappings. This event is called whenever an object is built.
@@ -799,8 +799,8 @@ public class DescriptorEventManager implements Cloneable, Serializable {
     /**
      * PUBLIC:
      * A method can be registered to be called on a object that has just been 
-     * cloned into a unit of work. This uses the optional event argument of the 
-     * orignial object (the source object it the clone). This event can be used 
+     * cloned into a unit of work. This uses the optional event argument for the 
+     * original object (the source object is the clone). This event can be used 
      * to correctly initialize an object's non-persistent attributes.
      */
     public void setPostCloneSelector(String postCloneSelector) {

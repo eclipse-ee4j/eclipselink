@@ -224,7 +224,7 @@ public class TableDefinition extends DatabaseObjectDefinition {
     /**
      * INTERNAL:
      * Return the alter table statement to add the constraints.
-     * This is done seperatly from the create because of dependecies.
+     * This is done separately from the create because of dependencies.
      */
     public Writer buildUniqueConstraintCreationWriter(AbstractSession session, UniqueKeyConstraint uniqueKey, Writer writer) throws ValidationException {
         try {
@@ -348,7 +348,7 @@ public class TableDefinition extends DatabaseObjectDefinition {
 
     /**
      * INTERNAL:
-     * Build the foriegn key constraints.
+     * Build the foreign key constraints.
      */
     protected void buildFieldTypes(AbstractSession session) {        
         FieldDefinition field = null;

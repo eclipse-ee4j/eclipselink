@@ -3324,9 +3324,9 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         }
     }
     
-    /*This test case uses the "default2" PU defined in the persistence.xml 
-    located at tltest/resource/essentials/broken-testmodels/META-INF 
-    and included in essentials_testmodels_broken.jar */
+    /*This test case uses the "broken-PU" PU defined in the persistence.xml 
+    located at eclipselink.jpa.test/resource/eclipselink-validation-failed-model/ 
+    and included in eclipselink-validation-failed-model.jar */
     
     public void testEMFWrapValidationException() 
     {

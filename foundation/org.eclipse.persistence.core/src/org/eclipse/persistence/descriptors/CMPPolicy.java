@@ -359,7 +359,7 @@ public class CMPPolicy implements java.io.Serializable {
 
     /**
      * INTERNAL:
-     * Use the key to create a TopLink primary key Vector.
+     * Use the key to create a EclipseLink primary key Vector.
      * If the key is simple (direct mapped) then just add it to a vector,
      * otherwise must go through the inefficient process of copying the key into the bean
      * and extracting the key from the bean.
@@ -384,7 +384,7 @@ public class CMPPolicy implements java.io.Serializable {
      *
      * @param key Object the primary key to use for initializing the bean's
      *            corresponding pk fields
-     * @return TopLinkCmpEntity
+     * @return Object
      */
     public Object createBeanUsingKey(Object key, AbstractSession session) {
         // TODO fix this exception so that it is more descriptive
@@ -411,7 +411,8 @@ public class CMPPolicy implements java.io.Serializable {
     protected interface KeyElementAccessor {
         public String getAttributeName();
         public DatabaseField getDatabaseField();
-        public Object getValue(Object object);
+        public DatabaseMapping getMapping();
+        public Object getValue(Object object, AbstractSession session);
         public void setValue(Object object, Object value);
     }
     
@@ -422,10 +423,12 @@ public class CMPPolicy implements java.io.Serializable {
     protected class KeyIsElementAccessor implements KeyElementAccessor, Serializable {
         protected String attributeName;
         protected DatabaseField databaseField;
+        protected DatabaseMapping mapping;
 
-        public KeyIsElementAccessor(String attributeName, DatabaseField databaseField) {
+        public KeyIsElementAccessor(String attributeName, DatabaseField databaseField, DatabaseMapping mapping) {
             this.attributeName = attributeName;
             this.databaseField = databaseField;
+            this.mapping = mapping;
         }
 
         public String getAttributeName() {
@@ -436,7 +439,11 @@ public class CMPPolicy implements java.io.Serializable {
             return this.databaseField;
         }
         
-        public Object getValue(Object object) {
+        public DatabaseMapping getMapping(){
+            return this.mapping;
+        }
+        
+        public Object getValue(Object object, AbstractSession session) {
             return object;
         }
         

@@ -11,10 +11,11 @@
  *     Oracle - initial API and implementation from Oracle TopLink
  ******************************************************************************/  
 
-package org.eclipse.persistence.testing.models.jpa.advanced.compositepk;
+package org.eclipse.persistence.testing.models.jpa.xml.advanced.compositepk;
 
 import org.eclipse.persistence.sessions.DatabaseSession;
 import org.eclipse.persistence.tools.schemaframework.*;
+import org.eclipse.persistence.testing.models.jpa.advanced.AdvancedTableCreator;
 
 public class CompositePKTableCreator extends TableCreator {
     public CompositePKTableCreator() {
@@ -30,7 +31,7 @@ public class CompositePKTableCreator extends TableCreator {
     
     public static TableDefinition buildADMINTable() {
         TableDefinition table = new TableDefinition();
-        table.setName("CMP3_ADMIN");
+        table.setName("CMP3_XML_ADMIN");
         
         FieldDefinition field = new FieldDefinition();
         field.setName("EMPLOYEE_EMP_ID");
@@ -67,7 +68,7 @@ public class CompositePKTableCreator extends TableCreator {
     
     public static TableDefinition buildADMIN_CONTRACTTable(){
         TableDefinition table = new TableDefinition();
-        table.setName("CMP3_ADMIN_CONTRACT");
+        table.setName("CMP3_XML_ADMIN_CONTRACT");
         
         FieldDefinition field = new FieldDefinition();
         field.setName("EMPLOYEE_EMP_ID");
@@ -94,7 +95,7 @@ public class CompositePKTableCreator extends TableCreator {
 
     public static TableDefinition buildSCIENTISTTable() {
         TableDefinition table = new TableDefinition();
-        table.setName("CMP3_SCIENTIST");
+        table.setName("CMP3_XML_SCIENTIST");
     
         FieldDefinition ID_NUMBER_field = new FieldDefinition();
         ID_NUMBER_field.setName("ID_NUMBER");
@@ -188,20 +189,20 @@ public class CompositePKTableCreator extends TableCreator {
         table.addField(fieldDTYPE);
 
         ForeignKeyConstraint fkConstraint1 = new ForeignKeyConstraint();
-        fkConstraint1.setName("CMP3_SC_CUBICLE");
+        fkConstraint1.setName("CMP3_XML_SC_CUBICLE");
         fkConstraint1.addSourceField("CUBE_ID");
         fkConstraint1.addSourceField("CUBE_CODE");
-        fkConstraint1.setTargetTable("CMP3_CUBICLE");
+        fkConstraint1.setTargetTable("CMP3_XML_CUBICLE");
         fkConstraint1.addTargetField("ID");
         fkConstraint1.addTargetField("CODE");
         table.addForeignKeyConstraint(fkConstraint1);
 
         ForeignKeyConstraint fkConstraint2 = new ForeignKeyConstraint();
-        fkConstraint2.setName("CMP3_SC_DEPT");
+        fkConstraint2.setName("CMP3_XML_SC_DEPT");
         fkConstraint2.addSourceField("DEPT_NAME");
         fkConstraint2.addSourceField("DEPT_ROLE");
         fkConstraint2.addSourceField("DEPT_LOCATION");
-        fkConstraint2.setTargetTable("CMP3_DEPARTMENT");
+        fkConstraint2.setTargetTable("CMP3_XML_DEPARTMENT");
         fkConstraint2.addTargetField("NAME");
         fkConstraint2.addTargetField("ROLE");
         fkConstraint2.addTargetField("LOCATION");
@@ -212,7 +213,7 @@ public class CompositePKTableCreator extends TableCreator {
     
     public static TableDefinition buildDEPT_ADMINTable() {
         TableDefinition table = new TableDefinition();
-        table.setName("CMP3_DEPT_ADMIN");
+        table.setName("CMP3_XML_DEPT_ADMIN");
 
         // SECTION: FIELD
         FieldDefinition fieldName = new FieldDefinition();
@@ -223,7 +224,7 @@ public class CompositePKTableCreator extends TableCreator {
         fieldName.setIsPrimaryKey(true);
         fieldName.setUnique(false);
         fieldName.setIsIdentity(false);
-        //fieldName.setForeignKeyFieldName("CMP3_DEPARTMENT.NAME");
+        //fieldName.setForeignKeyFieldName("CMP3_XML_DEPARTMENT.NAME");
         table.addField(fieldName);
     
         FieldDefinition ROLE_field = new FieldDefinition();
@@ -234,7 +235,7 @@ public class CompositePKTableCreator extends TableCreator {
         ROLE_field.setIsPrimaryKey(true);
         ROLE_field.setUnique(false);
         ROLE_field.setIsIdentity(false);
-        //ROLE_field.setForeignKeyFieldName("CMP3_DEPARTMENT.ROLE");
+        //ROLE_field.setForeignKeyFieldName("CMP3_XML_DEPARTMENT.ROLE");
         table.addField(ROLE_field);
     
         FieldDefinition LOCATION_field = new FieldDefinition();
@@ -245,7 +246,7 @@ public class CompositePKTableCreator extends TableCreator {
         LOCATION_field.setIsPrimaryKey(true);
         LOCATION_field.setUnique(false);
         LOCATION_field.setIsIdentity(false);
-        //LOCATION_field.setForeignKeyFieldName("CMP3_DEPARTMENT.LOCATION");
+        //LOCATION_field.setForeignKeyFieldName("CMP3_XML_DEPARTMENT.LOCATION");
         table.addField(LOCATION_field);
         
         // SECTION: FIELD
@@ -257,7 +258,7 @@ public class CompositePKTableCreator extends TableCreator {
         fieldEMP.setIsPrimaryKey(true);
         fieldEMP.setUnique(false);
         fieldEMP.setIsIdentity(false);
-        //fieldEMP.setForeignKeyFieldName("CMP3_EMPLOYEE.EMP_ID");
+        //fieldEMP.setForeignKeyFieldName("CMP3_XML_EMPLOYEE.EMP_ID");
         table.addField(fieldEMP);
 
         return table;   
@@ -265,7 +266,7 @@ public class CompositePKTableCreator extends TableCreator {
     
     public static TableDefinition buildDEPARTMENTTable() {
         TableDefinition table = new TableDefinition();
-        table.setName("CMP3_DEPARTMENT");
+        table.setName("CMP3_XML_DEPARTMENT");
 
         FieldDefinition NAME_field = new FieldDefinition();
         NAME_field.setName("NAME");
@@ -302,7 +303,7 @@ public class CompositePKTableCreator extends TableCreator {
 
     public static TableDefinition buildCUBICLETable() {
         TableDefinition table = new TableDefinition();
-        table.setName("CMP3_CUBICLE");
+        table.setName("CMP3_XML_CUBICLE");
 
         FieldDefinition ID_field = new FieldDefinition();
         ID_field.setName("ID");
@@ -332,8 +333,8 @@ public class CompositePKTableCreator extends TableCreator {
      */
     public void replaceTables(DatabaseSession session) {
         try {
-            session.executeNonSelectingSQL("Alter table CMP3_SCIENTIST drop constraint CMP3_SCIENTIST_CUBICLE");
-            session.executeNonSelectingSQL("Alter table CMP3_SCIENTIST drop constraint CMP3_SCIENTIST_DEPT");
+            session.executeNonSelectingSQL("Alter table CMP3_XML_SCIENTIST drop constraint CMP3_XML_SCIENTIST_CUBICLE");
+            session.executeNonSelectingSQL("Alter table CMP3_XML_SCIENTIST drop constraint CMP3_XML_SCIENTIST_DEPT");
         } catch (Exception ignore) {}
         super.replaceTables(session);
     }

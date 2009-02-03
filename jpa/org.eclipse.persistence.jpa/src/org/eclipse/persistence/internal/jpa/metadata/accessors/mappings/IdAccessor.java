@@ -47,6 +47,14 @@ public class IdAccessor extends BasicAccessor {
     
     /**
      * INTERNAL:
+     * Marks this accessor as part of the Id
+     */
+    public boolean isId(){
+        return true;
+    }
+    
+    /**
+     * INTERNAL:
      * Process an id accessor.
      */
     @Override

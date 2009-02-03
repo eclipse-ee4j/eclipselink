@@ -37,6 +37,7 @@ import java.lang.reflect.Type;
 import java.lang.reflect.TypeVariable;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 
 import javax.persistence.DiscriminatorColumn;
@@ -579,6 +580,26 @@ public class EntityAccessor extends MappedSuperclassAccessor {
     
     /**
      * INTERNAL:
+     * Allows for processing DerivedIds.  All referenced accessors are processed
+     * first to ensure the necessary fields are set before this derivedId is processed 
+     */
+    @Override
+    public void processDerivedIDs(HashSet<ClassAccessor> processing, HashSet<ClassAccessor> processed) {
+        if (hasDerivedId() && !processed.contains(this)){
+            super.processDerivedIDs(processing, processed);
+            // Validate we found a primary key.
+            validatePrimaryKey();
+                
+            // Primary key has been validated, let's process those items that
+            // depend on it now.
+                
+            // Process the SecondaryTable(s) metadata.
+            processSecondaryTables();
+        }
+    }
+    
+    /**
+     * INTERNAL:
      * Process the discriminator column metadata (defaulting is necessary),
      * and return the EclipseLink database field.
      */
@@ -613,16 +634,23 @@ public class EntityAccessor extends MappedSuperclassAccessor {
         
         // After processing the accessors for this entity we need to run 
         // some validation checks.
-        
-        // Validate we found a primary key.
-        validatePrimaryKey();
-            
+
         // Validate the optimistic locking setting.
         validateOptimisticLocking();
             
-        // Process the SecondaryTable(s) metadata now that we have validated
-        // that we have a primary key.
-        processSecondaryTables();
+        //check that we have a simple pk
+        // if it is a derived id, this will be run in a second pass
+        if (getDescriptor().getDerivedIDAccessors().isEmpty()){
+            
+            // Validate we found a primary key.
+            validatePrimaryKey();
+                
+            // Primary key has been validated, let's process those items that
+            // depend on it now.
+                
+            // Process the SecondaryTable(s) metadata.
+            processSecondaryTables();
+        }
     }
     
     /**

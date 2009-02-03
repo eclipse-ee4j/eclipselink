@@ -58,7 +58,7 @@ public class WrongAnnotation{
     
 
     // Not defined in the XML, this should get processed.
-    //this is the wrong annotaion which causes the ValidationException
+    //this is the wrong annotation which causes the ValidationException
     @Column(name="F_NAME")
 	public String getLastName() { 
         return lastName; 

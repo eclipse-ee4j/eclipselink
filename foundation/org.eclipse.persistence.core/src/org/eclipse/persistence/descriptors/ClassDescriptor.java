@@ -178,6 +178,9 @@ public class ClassDescriptor implements Cloneable, Serializable {
     /** Allow zero primary key validation to be configured. */
     protected IdValidation idValidation;
     
+    //bug241765: JPA 2.0 Derived identities - check if any mappings are marked as an ID
+    protected boolean isIDSpecified;
+    
     //Added for interceptor support.
     protected Class cacheInterceptorClass;
     //Added for interceptor support.
@@ -239,6 +242,7 @@ public class ClassDescriptor implements Cloneable, Serializable {
         this.shouldAlwaysConformResultsInUnitOfWork = false;
         this.shouldAcquireCascadedLocks = false;
         this.hasSimplePrimaryKey = false;
+        this.isIDSpecified = false;
 
         // Policies
         this.objectBuilder = new ObjectBuilder(this);
@@ -2555,6 +2559,11 @@ public class ClassDescriptor implements Cloneable, Serializable {
                 prepareCascadeLockingPolicy(mapping);
             }
 
+            //bug241765: JPA 2.0 Derived identities - check if any mappings are marked as an ID
+            if (mapping.isIDMapping()){
+                setIsIDSpecified(true);
+            }
+            
             // Add all the fields in the mapping to myself.
             Helper.addAllUniqueToVector(getFields(), mapping.getFields());
         }
@@ -2589,6 +2598,10 @@ public class ClassDescriptor implements Cloneable, Serializable {
                     DatabaseMapping mapping = (DatabaseMapping)iterator.next();
                     if (mapping.isAggregateObjectMapping() || ((mapping.isForeignReferenceMapping() && (!mapping.isDirectCollectionMapping())) && (!((ForeignReferenceMapping)mapping).usesIndirection()))) {
                         getLockableMappings().add(mapping);// add those mappings from the parent.
+                    }
+                    //bug241765: JPA 2.0 Derived identities - check if any mappings are marked as an ID
+                    if (mapping.isIDMapping()){
+                        setIsIDSpecified(true);
                     }
                 }
             }
@@ -2935,6 +2948,15 @@ public class ClassDescriptor implements Cloneable, Serializable {
      */
     public boolean isFullyInitialized() {
         return this.initializationStage == POST_INITIALIZED;
+    }
+    
+    /**
+     * INTERNAL:
+     * returns true if users have designated one or more mappings as IDs.  Used for CMP3Policy 
+     * primary key class processing. 
+     */
+    public boolean isIDSpecified() {
+        return this.isIDSpecified;
     }
 
     /**
@@ -3821,6 +3843,15 @@ public class ClassDescriptor implements Cloneable, Serializable {
         if (getDefaultTable() == null) {
             setDefaultTable(defaultTable);
         }
+    }
+
+    /**
+     * INTERNAL:
+     * Set that users have designated mappings as ID.  Used for CMP3Policy 
+     * primary key class processing.  
+     */
+    public void setIsIDSpecified(boolean isIDSpecified){
+        this.isIDSpecified = isIDSpecified;
     }
 
     /**

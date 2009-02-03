@@ -105,6 +105,7 @@ public class EmbeddedIdAccessor extends EmbeddedAccessor {
             // make up the composite primary key.
             for (DatabaseMapping mapping : getReferenceDescriptor().getMappings()) {
                 if (mapping.isDirectToFieldMapping()) {
+                    mapping.setIsIDMapping(true);
                     if (! m_idFields.containsKey(mapping.getAttributeName())) {
                         // It may be in our id fields map already if an attribute
                         // override was specified on the embedded mapping.

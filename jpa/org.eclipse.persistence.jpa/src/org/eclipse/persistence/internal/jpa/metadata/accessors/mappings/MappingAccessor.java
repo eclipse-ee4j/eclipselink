@@ -71,6 +71,7 @@ public abstract class MappingAccessor extends MetadataAccessor {
     private AccessMethodsMetadata m_accessMethods;
     private ClassAccessor m_classAccessor;
     private Map<String, PropertyMetadata> m_properties = new HashMap<String, PropertyMetadata>();
+    private DatabaseMapping m_mapping;
     
     /**
      * INTERNAL:
@@ -152,6 +153,14 @@ public abstract class MappingAccessor extends MetadataAccessor {
         }
         
         return getAccessibleObjectName();
+    }
+    
+    /**
+     * INTERNAL:
+     * Return the mapping that this accessor is associated to.
+     */
+    protected DatabaseMapping getMapping(){
+        return m_mapping;
     }
     
     /**
@@ -334,6 +343,14 @@ public abstract class MappingAccessor extends MetadataAccessor {
      * Return true if this accessor represents an aggregate mapping.
      */
     public boolean isEmbedded() {
+        return false;
+    }
+    
+    /**
+     * INTERNAL:
+     * Checks if this accessor is part of the Id
+     */
+    public boolean isId(){
         return false;
     }
     
@@ -650,6 +667,14 @@ public abstract class MappingAccessor extends MetadataAccessor {
                 }
             }
         }
+    }
+    
+    /**
+     * INTERNAL:
+     * Sets the DatabaseMapping associated to this mapping accessor.
+     */
+    protected void setMapping(DatabaseMapping mapping){
+        m_mapping = mapping;
     }
     
     /**

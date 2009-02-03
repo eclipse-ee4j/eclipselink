@@ -31,6 +31,7 @@ package org.eclipse.persistence.internal.jpa.metadata.accessors.classes;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.util.HashSet;
 
 import javax.persistence.Basic;
 import javax.persistence.ElementCollection;
@@ -96,6 +97,8 @@ import org.eclipse.persistence.internal.jpa.metadata.MetadataDescriptor;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataLogger;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataProject;
 import org.eclipse.persistence.internal.jpa.metadata.ORMetadata;
+
+import org.eclipse.persistence.internal.jpa.metadata.accessors.mappings.ObjectAccessor;
 
 /**
  * INTERNAL:
@@ -245,12 +248,14 @@ public abstract class ClassAccessor extends MetadataAccessor {
             return new BasicMapAccessor(accessibleObject.getAnnotation(BasicMap.class), accessibleObject, this);
         } else if (accessibleObject.isElementCollection(getDescriptor())) {
                 return new ElementCollectionAccessor(accessibleObject.getAnnotation(ElementCollection.class), accessibleObject, this);
-        } else if (accessibleObject.isId(getDescriptor())) {
-            return new IdAccessor(accessibleObject.getAnnotation(Id.class), accessibleObject, this);
         } else if (accessibleObject.isVersion(getDescriptor())) {
             return new VersionAccessor(accessibleObject.getAnnotation(Version.class), accessibleObject, this);
         } else if (accessibleObject.isBasic(getDescriptor())) {
-            return new BasicAccessor(accessibleObject.getAnnotation(Basic.class), accessibleObject, this);
+            if (accessibleObject.isId(getDescriptor())) {
+                return new IdAccessor(accessibleObject.getAnnotation(Id.class), accessibleObject, this);
+            } else {
+                return new BasicAccessor(accessibleObject.getAnnotation(Basic.class), accessibleObject, this);
+            }
         } else if (accessibleObject.isEmbedded(getDescriptor())) {
             return new EmbeddedAccessor(accessibleObject.getAnnotation(Embedded.class), accessibleObject, this);
         } else if (accessibleObject.isEmbeddedId(getDescriptor())) {
@@ -270,7 +275,10 @@ public abstract class ClassAccessor extends MetadataAccessor {
         } else if (accessibleObject.isVariableOneToOne(getDescriptor())) {
             // A VariableOneToOne can default and doesn't require an annotation to be present.
             return new VariableOneToOneAccessor(accessibleObject.getAnnotation(VariableOneToOne.class), accessibleObject, this);
-        } else if (getDescriptor().ignoreDefaultMappings()) {
+        } else if (accessibleObject.isId(getDescriptor())) {
+            //its not defined as one of the above, so default it to a basic Id type
+            return new IdAccessor(accessibleObject.getAnnotation(Id.class), accessibleObject, this);
+        } else if (getDescriptor().ignoreDefaultMappings() ) {
             return null;
         } else {
             // Default case (everything else falls into a Basic)
@@ -440,6 +448,13 @@ public abstract class ClassAccessor extends MetadataAccessor {
      */
     public boolean isMetadataComplete() {
         return m_metadataComplete != null && m_metadataComplete;
+    }
+    
+    /**
+     * INTERNAL:
+     */
+    public boolean hasDerivedId(){
+        return !getDescriptor().getDerivedIDAccessors().isEmpty();
     }
     
     /**
@@ -741,7 +756,27 @@ public abstract class ClassAccessor extends MetadataAccessor {
             }
         }
     }
-    
+
+    /**
+     * INTERNAL:
+     * Allows for processing DerivedIds.  All referenced accessors are processed
+     * first to ensure the necessary fields are set before this derivedId is processed 
+     */
+    public void processDerivedIDs(HashSet<ClassAccessor> processing, HashSet<ClassAccessor> processed) {
+        if (hasDerivedId() && !processed.contains(this)){
+            if (processing.contains(this)){
+                //we have a circular pk reference problem
+                throw ValidationException.idRelationshipCircularReference(processing);
+            }
+            processing.add(this);
+            for (ObjectAccessor accessor : getDescriptor().getDerivedIDAccessors()) {
+                accessor.keyProcessing(processing, processed);
+            }
+            processing.remove(this);
+            processed.add(this);
+        }
+    }
+
     /**
      * INTERNAL:
      * Adds properties to the descriptor.
@@ -854,6 +889,10 @@ public abstract class ClassAccessor extends MetadataAccessor {
      */
     public void setMetadataComplete(Boolean metadataComplete) {
         m_metadataComplete = metadataComplete;
+    }
+    
+    public String toString(){
+        return this.getJavaClassName();
     }
     
     /**

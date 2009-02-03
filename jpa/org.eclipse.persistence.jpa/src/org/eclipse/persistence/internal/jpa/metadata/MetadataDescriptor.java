@@ -39,6 +39,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.eclipse.persistence.annotations.ExistenceType;
+import org.eclipse.persistence.descriptors.CMPPolicy;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.descriptors.RelationalDescriptor;
 import org.eclipse.persistence.descriptors.ReturningPolicy;
@@ -55,6 +56,7 @@ import org.eclipse.persistence.internal.jpa.metadata.accessors.classes.EntityAcc
 import org.eclipse.persistence.internal.jpa.metadata.accessors.mappings.CollectionAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.mappings.ManyToManyAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.mappings.MappingAccessor;
+import org.eclipse.persistence.internal.jpa.metadata.accessors.mappings.ObjectAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.mappings.OneToOneAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.mappings.RelationshipAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataMethod;
@@ -118,15 +120,16 @@ public class MetadataDescriptor {
     private List<String> m_idOrderByAttributeNames;
     private List<MetadataDescriptor> m_embeddableDescriptors;
     
-    private Map<String, Type> m_pkClassIDs;
+    public Map<String, Type> m_pkClassIDs;
     private Map<String, Type> m_genericTypes;
-    private Map<String, MappingAccessor> m_accessors;
+    public Map<String, MappingAccessor> m_accessors;
     private Map<String, PropertyMetadata> m_properties;
     private Map<String, String> m_pkJoinColumnAssociations;
     private Map<String, AttributeOverrideMetadata> m_attributeOverrides;
     private Map<String, AssociationOverrideMetadata> m_associationOverrides;
     private Map<String, Map<String, MetadataAccessor>> m_biDirectionalManyToManyAccessors;
     
+    private List<ObjectAccessor> m_derivedIDAccessors;
     /**
      * INTERNAL: 
      */
@@ -168,6 +171,8 @@ public class MetadataDescriptor {
         
         // This is the default, set it in case no existence-checking is set.
         m_descriptor.getQueryManager().checkDatabaseForDoesExist();
+        
+        m_derivedIDAccessors = new ArrayList<ObjectAccessor>();
                 
         setJavaClass(javaClass);
     }
@@ -211,14 +216,21 @@ public class MetadataDescriptor {
     public void addDefaultEventListener(EntityListener listener) {
         m_descriptor.getEventManager().addDefaultEventListener(listener);
     }
-    
+
+    /** 
+     * INTERNAL:
+     */
+    public void addDerivedIDAccessor(ObjectAccessor accessor){
+        m_derivedIDAccessors.add(accessor);
+    }
+
     /**
      * INTERNAL:
      */
     public void addEmbeddableDescriptor(MetadataDescriptor embeddableDescriptor) {
         m_embeddableDescriptors.add(embeddableDescriptor);
     }
-    
+
     /**
      * INTERNAL:
      */
@@ -450,6 +462,13 @@ public class MetadataDescriptor {
     /**
      * INTERNAL:
      */
+    public CMPPolicy getCMPPolicy() {
+        return m_descriptor.getCMPPolicy();
+    }
+    
+    /**
+     * INTERNAL:
+     */
     public String getDefaultAccess() {
         return m_defaultAccess;
     }
@@ -466,6 +485,13 @@ public class MetadataDescriptor {
      */
     public String getDefaultSchema() {
         return m_defaultSchema;
+    }
+    
+    /**
+     * INTERNAL:
+     */
+    public List<ObjectAccessor> getDerivedIDAccessors(){
+        return m_derivedIDAccessors;
     }
     
     /**
@@ -1057,7 +1083,16 @@ public class MetadataDescriptor {
         
                 // Process any converters on this accessor.
                 accessor.processConverters();
-            
+                if ( accessor.isId() || accessor.getAccessibleObject().isId(this) ){
+                    if (accessor.isManyToOne() || accessor.isOneToOne()) {
+                        ObjectAccessor objectAccessor = (ObjectAccessor)accessor;
+                        objectAccessor.setIsId(true);
+                        m_derivedIDAccessors.add(objectAccessor);
+                        m_classAccessor.getProject().addAccessorWithDerivedIDs(m_classAccessor);
+                    }
+                }
+                //TODO: add mappedbyid handling
+                
                 // We need to defer the processing of some mappings to stage
                 // 2 processing. Accessors are added to different lists since
                 // the order or processing of those accessors is important.
@@ -1456,6 +1491,24 @@ public class MetadataDescriptor {
                 m_pkClassIDs.remove(attributeName);
             } else {
                 throw ValidationException.invalidCompositePKAttribute(getJavaClass(), getPKClassName(), attributeName, expectedType, type);
+            }
+        }
+    }
+
+    /**
+     * INTERNAL:
+     * This method is used only to validate id fields that were found on a
+     * pk class were also found on the entity.  This is used for DerivedIds where the
+     * Type is only available as a string
+     */
+    public void validatePKClassId(String attributeName, String type) {
+        if (m_pkClassIDs.containsKey(attributeName))  {
+            Type expectedType =  m_pkClassIDs.get(attributeName);
+            
+            if ( expectedType.toString().equals(type) ) {
+                m_pkClassIDs.remove(attributeName);
+            } else {
+                throw ValidationException.invalidCompositePKAttribute(getJavaClass(), getPKClassName(), attributeName, expectedType, null);
             }
         }
     }

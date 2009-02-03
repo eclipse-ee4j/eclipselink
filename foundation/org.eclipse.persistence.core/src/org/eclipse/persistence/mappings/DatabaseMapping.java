@@ -90,6 +90,12 @@ public abstract class DatabaseMapping implements Cloneable, Serializable {
 
     /** Allow user defined properties. */
     protected Map properties;
+    
+    /**
+     * Used by the CMP3Policy to see if this mapping should be used in processing pk classes 
+     * for find methods.  
+     */
+    protected boolean isIDMapping = false;
 
     /**
      * PERF: Used as a quick check to see if this mapping is a primary key mapping,
@@ -895,6 +901,15 @@ public abstract class DatabaseMapping implements Cloneable, Serializable {
     public boolean isPrimaryKeyMapping() {
         return this.isPrimaryKeyMapping;
     }
+    
+    /**
+     * ADVANCED:
+     * Returns true if the mapping references a JPA ID attribute for the CMP3Policy and JPA ID classes.  
+     */
+    public boolean isIDMapping() {
+        return this.isIDMapping;
+    }
+    
     /**
      * INTERNAL:
      * Used when determining if a mapping supports cascaded version optimistic
@@ -1288,6 +1303,16 @@ public abstract class DatabaseMapping implements Cloneable, Serializable {
      */
     public void setIsOptional(boolean isOptional) {
         this.isOptional = isOptional;
+    }
+    
+    /**
+     * ADVANCED:
+     * Used to indicate the mapping references a JPA ID attribute for the CMP3Policy and JPA ID classes.  
+     * This is different from isPrimaryKeyMapping, as an ID mapping is user specified and can be read
+     * only, as long as another writable mapping for the field exists.  
+     */
+    public void setIsIDMapping(boolean isIDMapping) {
+        this.isIDMapping = isIDMapping;
     }
     
     /**

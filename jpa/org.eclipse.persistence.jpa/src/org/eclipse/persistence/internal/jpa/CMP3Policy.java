@@ -9,6 +9,8 @@
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
+ *     02/02/2009-2.0 Chris delahunt 
+ *       - 241765: JPA 2.0 Derived identities
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa;
 
@@ -47,9 +49,10 @@ public class CMP3Policy extends CMPPolicy {
 
     /** Stores the fields for this classes compound primary key class if required. */
     protected KeyElementAccessor[] keyClassFields;
-    
-    /** Stores the mappings for the key fields, order is the same as keyClassFields. */
-    protected DatabaseMapping[] keyMappings;
+
+    /** Used to look up the KeyElementAccessor for a specific DatabaseField, used for 
+      resolving DerivedIds */
+    protected HashMap<DatabaseField,KeyElementAccessor> fieldToAccessorMap;
     
     // Store the primary key class name
     protected String pkClassName;
@@ -109,7 +112,7 @@ public class CMP3Policy extends CMPPolicy {
      */
     public Class getPKClass() {
         if(this.pkClass == null && getPKClassName() == null) {
-            initializePrimaryKeyFields(null);
+            getKeyClassFields(null);
         }
         return this.pkClass;
     }
@@ -142,7 +145,7 @@ public class CMP3Policy extends CMPPolicy {
     
     /**
      * INTERNAL:
-     * Use the key to create a TopLink primary key Vector.
+     * Use the key to create a EclipseLink primary key Vector.
      * If the key is simple (direct mapped) then just add it to a vector,
      * otherwise must go through the inefficient process of copying the key into the bean
      * and extracting the key from the bean.
@@ -157,12 +160,24 @@ public class CMP3Policy extends CMPPolicy {
         KeyElementAccessor[] pkElementArray = this.getKeyClassFields(key.getClass());
         Vector pkVector = new NonSynchronizedVector(pkElementArray.length);
         for (int index = 0; index < pkElementArray.length; index++) {
-            DatabaseMapping mapping = this.keyMappings[index];
+            DatabaseMapping mapping = pkElementArray[index].getMapping();
             Object fieldValue = null;
             if (mapping.isDirectToFieldMapping()) {
-                fieldValue = ((AbstractDirectMapping)mapping).getFieldValue(pkElementArray[index].getValue(key), session);
+                fieldValue = ((AbstractDirectMapping)mapping).getFieldValue(pkElementArray[index].getValue(key, session), session);
             } else {
-                fieldValue = pkElementArray[index].getValue(key);
+                fieldValue = pkElementArray[index].getValue(key, session);
+                if ( (fieldValue !=null) && (pkClass != null) && (mapping.isOneToOneMapping()) ){
+                    org.eclipse.persistence.mappings.OneToOneMapping refmapping = (org.eclipse.persistence.mappings.OneToOneMapping)mapping;
+                    DatabaseField targetKey = refmapping.getSourceToTargetKeyFields().get(pkElementArray[index].getDatabaseField());
+                    CMPPolicy refPolicy = refmapping.getReferenceDescriptor().getCMPPolicy();
+                    if (refPolicy.isCMP3Policy()){
+                        Class pkClass = refPolicy.getPKClass();
+                        if ((pkClass != null) && (pkClass != fieldValue.getClass()) && (!pkClass.isAssignableFrom(fieldValue.getClass()))) {
+                            throw new IllegalArgumentException(ExceptionLocalization.buildMessage("invalid_pk_class", new Object[] { pkClass, fieldValue.getClass() }));
+                        }
+                        fieldValue = ((CMP3Policy)refPolicy).getPkValueFromKeyForField(fieldValue, targetKey, session);
+                    }
+                }
             }
             pkVector.add(fieldValue);
         }
@@ -179,7 +194,7 @@ public class CMP3Policy extends CMPPolicy {
      *
      * @param key Object the primary key to use for initializing the bean's
      *            corresponding pk fields
-     * @return TopLinkCmpEntity
+     * @return Object
      */
     public Object createBeanUsingKey(Object key, AbstractSession session) {
         try {
@@ -187,7 +202,7 @@ public class CMP3Policy extends CMPPolicy {
             KeyElementAccessor[] keyElements = this.getKeyClassFields(key.getClass());
             for (int index = 0; index < keyElements.length; ++index) {
                 Object toWriteInto = bean;
-                Object keyFieldValue = keyElements[index].getValue(key);
+                Object keyFieldValue = keyElements[index].getValue(key, session);
                 DatabaseField field = keyElements[index].getDatabaseField();
                 DatabaseMapping mapping = this.getDescriptor().getObjectBuilder().getMappingForAttributeName(keyElements[index].getAttributeName());
                 if (mapping == null) {// must be aggregate
@@ -228,15 +243,15 @@ public class CMP3Policy extends CMPPolicy {
     protected KeyElementAccessor[] initializePrimaryKeyFields(Class keyClass) {
         KeyElementAccessor[] pkAttributes = null;
         ClassDescriptor descriptor = this.getDescriptor();
-
-        pkAttributes = new KeyElementAccessor[descriptor.getObjectBuilder().getPrimaryKeyMappings().size()];
-
+        fieldToAccessorMap = new HashMap<DatabaseField,KeyElementAccessor>();
+        int numberOfIDFields = descriptor.getPrimaryKeyFields().size();
+        pkAttributes = new KeyElementAccessor[numberOfIDFields];
+        
         Iterator attributesIter = descriptor.getPrimaryKeyFields().iterator();
-
         // Used fields in case it is an embedded class
         for (int i = 0; attributesIter.hasNext(); i++) {
             DatabaseField field = (DatabaseField)attributesIter.next();
-
+            
             // This next section looks strange but we need to check all mappings
             // for this field, not just the writable one and instead of having 
             // multiple sections of duplicate code I will just add the writable 
@@ -247,24 +262,26 @@ public class CMP3Policy extends CMPPolicy {
             } 
             allMappings.add(descriptor.getObjectBuilder().getMappingForField(field));
             
+            DatabaseMapping mapping = null;
             Exception elementIsFound = null; // use exception existence to determine if element was found, so we can throw exception later
             for (int index = (allMappings.size() - 1); index >= 0; --index) { // start with the writable first
-                DatabaseMapping mapping = (DatabaseMapping) allMappings.get(index);
-                
-                if (mapping.isForeignReferenceMapping()) {
-                    // In EJB3 this should be a direct to field mapping (either
-                    // on the entity directly or on an embeddable (aggregate).
+                mapping = (DatabaseMapping) allMappings.get(index);
+                if (descriptor.isIDSpecified()&& !mapping.isIDMapping()) {
+                    //if ID is specified, the mapping we want is marked as an ID mapping
                     continue;
-                } else if (mapping.isAggregateMapping()) { // in the case of aggregates drill down.
+                } else if (mapping.isForeignReferenceMapping() && !mapping.isOneToOneMapping()) {
+                 // JPA 2.0 allows DerrivedIds, so Id fields are either OneToOne or DirectToField mappings
+                    continue;
+                } else if (mapping.isAggregateMapping()) { 
+                    // either this aggregate is the key class, or we need to drill down.
                     ObjectBuilder builder = mapping.getReferenceDescriptor().getObjectBuilder();
-                    
                     List aggregateMappings = builder.getReadOnlyMappingsForField(field);
                     if ((aggregateMappings != null) && (!aggregateMappings.isEmpty())) {
                         // Add all the mappings from the aggregate to be
                         // processed.
                         allMappings.addAll(aggregateMappings);
                     }
-                                        
+
                     DatabaseMapping writableMapping = builder.getMappingForField(field);
                     
                     if (writableMapping != null) {
@@ -290,13 +307,20 @@ public class CMP3Policy extends CMPPolicy {
                         
                     // We modified the allMappings list, start over!
                     continue; // for loop.
-                }
+                } 
                 
+     
                 String fieldName = mapping.getAttributeName();
                 if (keyClass == null){
-                    // must be a primitive
-                    pkAttributes[i] = new KeyIsElementAccessor(mapping.getAttributeName(), field);
-                    setPKClass(ConversionManager.getObjectClass(mapping.getAttributeClassification()));
+                    // must be a primitive since key class was not set
+                    pkAttributes[i] = new KeyIsElementAccessor(fieldName, field, mapping);
+                    if (mapping.isDirectToFieldMapping()){
+                        setPKClass(ConversionManager.getObjectClass(mapping.getAttributeClassification()));
+                    } else if (mapping.isOneToOneMapping()) {
+                        CMPPolicy refPolicy = mapping.getReferenceDescriptor().getCMPPolicy();
+                        setPKClass(refPolicy.getPKClass());
+                    } 
+                    fieldToAccessorMap.put(field, pkAttributes[i]);
                     elementIsFound = null;
                 } else {
                     try {
@@ -310,7 +334,8 @@ public class CMP3Policy extends CMPPolicy {
                         } else {
                             keyField = PrivilegedAccessHelper.getField(keyClass, fieldName, true);
                         }
-                        pkAttributes[i] = new FieldAccessor(keyField, fieldName, field);
+                        pkAttributes[i] = new FieldAccessor(keyField, fieldName, field, mapping);
+                        fieldToAccessorMap.put(field, pkAttributes[i]);
                         elementIsFound = null;
                     } catch (NoSuchFieldException ex) {
                         //must be a property
@@ -329,30 +354,24 @@ public class CMP3Policy extends CMPPolicy {
                             } else {
                                 method = PrivilegedAccessHelper.getMethod(keyClass, buffer.toString(), new Class[] {  }, true);
                             }
-                            pkAttributes[i] = new PropertyAccessor(method, fieldName, field);
+                            pkAttributes[i] = new PropertyAccessor(method, fieldName, field, mapping);
+                            fieldToAccessorMap.put(field, pkAttributes[i]);
                             elementIsFound = null;
                         } catch (NoSuchMethodException exs) {
-                            // not a field not a method 
-                            if (descriptor.getObjectBuilder().getPrimaryKeyMappings().size() == 1) {
-                                //must be a primitive
-                                pkAttributes[i] = new KeyIsElementAccessor(mapping.getAttributeName(), field);
-                                setPKClass(ConversionManager.getObjectClass(mapping.getAttributeClassification()));
-                                elementIsFound = null;
-                            } else {
-                                elementIsFound = exs;
-                            }
+                            // not a field not a method, but a pk class is defined.  Check for other mappings
+                            elementIsFound = exs;
                         }
                     }
                 }
                 
-                if (elementIsFound == null) {
+                if ( mapping.isIDMapping() || (elementIsFound == null) ) {
                     break;// break out of the loop we do not need to look for any more
                 }
-            }
+            }//end for loop
             if (elementIsFound != null) {
                 throw DescriptorException.errorUsingPrimaryKey(keyClass, getDescriptor(), elementIsFound);
             }
-        }
+        }//end first for loop
         return pkAttributes;
     }
 
@@ -362,26 +381,7 @@ public class CMP3Policy extends CMPPolicy {
      */
     protected KeyElementAccessor[] getKeyClassFields(Class clazz) {
         if (this.keyClassFields == null) {
-            this.keyClassFields = initializePrimaryKeyFields(this.pkClass == null ? clazz : this.pkClass);
-            // Also initialize the key mappings.
-            int size = this.keyClassFields.length;
-            DatabaseMapping[] mappings = new DatabaseMapping[size];
-            for (int index = 0; index < size; index++) {
-                KeyElementAccessor accessor = this.keyClassFields[index];
-                DatabaseMapping mapping = getDescriptor().getObjectBuilder().getMappingForAttributeName(accessor.getAttributeName());
-                if (mapping == null) {
-                    mapping = this.getDescriptor().getObjectBuilder().getMappingForField(accessor.getDatabaseField());
-                }
-                while (mapping.isAggregateObjectMapping()) {
-                    DatabaseMapping nestedMapping = mapping.getReferenceDescriptor().getObjectBuilder().getMappingForAttributeName(accessor.getAttributeName());
-                    if (nestedMapping == null) {// must be aggregate
-                        nestedMapping = mapping.getReferenceDescriptor().getObjectBuilder().getMappingForField(accessor.getDatabaseField());
-                    }
-                    mapping = nestedMapping;
-                }
-                mappings[index] = mapping;
-            }
-            this.keyMappings = mappings;
+            this.keyClassFields = initializePrimaryKeyFields(this.pkClass );
         }
         return this.keyClassFields;
     }
@@ -394,11 +394,13 @@ public class CMP3Policy extends CMPPolicy {
         protected Method method;
         protected String attributeName;
         protected DatabaseField databaseField;
+        protected DatabaseMapping mapping;
 
-        public PropertyAccessor(Method method, String attributeName, DatabaseField field) {
+        public PropertyAccessor(Method method, String attributeName, DatabaseField field, DatabaseMapping mapping) {
             this.method = method;
             this.attributeName = attributeName;
             this.databaseField = field;
+            this.mapping = mapping;
         }
 
         public String getAttributeName() {
@@ -409,7 +411,11 @@ public class CMP3Policy extends CMPPolicy {
             return this.databaseField;
         }
         
-        public Object getValue(Object object) {
+        public DatabaseMapping getMapping() {
+            return this.mapping;
+        }
+        
+        public Object getValue(Object object, AbstractSession session) {
             try {
                 if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
                     try {
@@ -460,11 +466,13 @@ public class CMP3Policy extends CMPPolicy {
         protected Field field;
         protected String attributeName;
         protected DatabaseField databaseField;
+        protected DatabaseMapping mapping;
 
-        public FieldAccessor(Field field, String attributeName, DatabaseField databaseField) {
+        public FieldAccessor(Field field, String attributeName, DatabaseField databaseField, DatabaseMapping mapping) {
             this.field = field;
             this.attributeName = attributeName;
             this.databaseField = databaseField;
+            this.mapping = mapping;
         }
 
         public String getAttributeName() {
@@ -475,7 +483,11 @@ public class CMP3Policy extends CMPPolicy {
             return this.databaseField;
         }
         
-        public Object getValue(Object object) {
+        public DatabaseMapping getMapping() {
+            return this.mapping;
+        }
+        
+        public Object getValue(Object object, AbstractSession session) {
             try {
                 if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
                     try {
@@ -510,5 +522,36 @@ public class CMP3Policy extends CMPPolicy {
         }
     }
 
-
+    /**
+     * INTERNAL:
+     * Pull the value for the field from the key.
+     *
+     * @param key Object the primary key to use to get the value for the field
+     * @param field DatabaseField the field to find a value for
+     * @return Object
+     */
+    public Object getPkValueFromKeyForField(Object key, DatabaseField field, AbstractSession session){
+        Object fieldValue = null;
+        this.getKeyClassFields(key.getClass());
+        KeyElementAccessor accessor = this.fieldToAccessorMap.get(field);
+        DatabaseMapping mapping = accessor.getMapping();
+        if (mapping.isDirectToFieldMapping()) {
+            fieldValue = ((AbstractDirectMapping)mapping).getFieldValue(accessor.getValue(key, session), session);
+        } else {
+            fieldValue = accessor.getValue(key, session);
+            if (mapping.isOneToOneMapping()){
+                org.eclipse.persistence.mappings.OneToOneMapping refmapping = (org.eclipse.persistence.mappings.OneToOneMapping)mapping;
+                DatabaseField targetKey = refmapping.getSourceToTargetKeyFields().get(field);
+                CMPPolicy refPolicy = refmapping.getReferenceDescriptor().getCMPPolicy();
+                if (refPolicy.isCMP3Policy()){
+                    Class pkClass = refPolicy.getPKClass();
+                    if ((pkClass != null) && (pkClass != fieldValue.getClass()) && (!pkClass.isAssignableFrom(fieldValue.getClass()))) {
+                        throw new IllegalArgumentException(ExceptionLocalization.buildMessage("invalid_pk_class", new Object[] { refPolicy.getPKClass(), fieldValue.getClass() }));
+                    }
+                    fieldValue = ((CMP3Policy)refPolicy).getPkValueFromKeyForField(fieldValue, targetKey, session);
+                }
+            }
+        }
+        return fieldValue;
+    }
 }

@@ -147,11 +147,14 @@ public class MetadataProject {
     // Default listeners that need to be applied to each entity in the
     // persistence unit (unless they exclude them).
     private HashSet< EntityListenerMetadata> m_defaultListeners;
-    
+
     // TODO: Talk about these some more ....
     
     // Class accessors that have a customizer.
     private HashSet<ClassAccessor> m_accessorsWithCustomizer;
+    
+    // Class accessors that have Ids derived from relationships\
+    private HashSet<ClassAccessor> m_accessorsWithDerivedIDs;
     
     // Accessors that use an EclipseLink converter.
     private HashSet<DirectAccessor> m_convertAccessors;
@@ -204,6 +207,8 @@ public class MetadataProject {
         
         m_converters = new HashMap<String, AbstractConverterMetadata>();
         m_convertAccessors = new HashSet<DirectAccessor>();
+        
+        m_accessorsWithDerivedIDs = new HashSet<ClassAccessor>();
     }
     
     /**
@@ -243,6 +248,13 @@ public class MetadataProject {
      */
     public void addAccessorWithCustomizer(ClassAccessor accessor) {
         m_accessorsWithCustomizer.add(accessor);
+    }
+    
+    /**
+     * INTERNAL:
+     */
+    public void addAccessorWithDerivedIDs(ClassAccessor accessor) {
+        m_accessorsWithDerivedIDs.add(accessor);
     }
     
     /**
@@ -495,6 +507,13 @@ public class MetadataProject {
     /**
      * INTERNAL:
      */
+    public Set<ClassAccessor> getAccessorsWithDerivedIDs() {
+        return m_accessorsWithDerivedIDs;
+    }
+    
+    /**
+     * INTERNAL:
+     */
     public Collection<ClassAccessor> getAllAccessors() {
         return m_allAccessors.values();
     }
@@ -704,32 +723,36 @@ public class MetadataProject {
      * invocation here is very important here, see the comments.
      */
     public void processStage2() {
-        // 1 - Process all the direct collection accessors we found. This list
+        // 1 - Process accessors with IDs derived from relationships. This will finish
+        // up any stage1 processing that relied on the PK processing being complete as well
+        processAccessorsWithDerivedIDs();
+
+        // 2 - Process all the direct collection accessors we found. This list
         // does not include direct collections to an embeddable class.
         processDirectCollectionAccessors();
         
-        // 2 - Process the sequencing metadata now that every entity has a 
+        // 3 - Process the sequencing metadata now that every entity has a 
         // validated primary key.
         processSequencingAccessors();
         
-        // 3 - Process the relationship accessors now that every entity has a 
+        // 4 - Process the relationship accessors now that every entity has a 
         // validated primary key and we can process join columns.
         processRelationshipAccessors();
         
-        // 4 - Process the interface accessors which will iterate through all 
+        // 5 - Process the interface accessors which will iterate through all 
         // the entities in the PU and check if we should add them to a variable 
         // one to one mapping that was either defined (incompletely) or 
         // defaulted.
         processInterfaceAccessors();
         
-        // 5 - Process the embeddable mapping accessors. These are the
+        // 6 - Process the embeddable mapping accessors. These are the
         // embedded, embedded id and element collection accessors that map
         // to an embeddable class. We must hold off on their processing till
         // now to ensure their relationship accessors have been processed and
         // we can therefore process any association overrides correctly.
         processEmbeddableMappingAccessors();
         
-        // 6 - Finally process all those mappings that make use of a converter.
+        // 7 - Finally process all those mappings that make use of a converter.
         processConvertAccessors();
     }
     
@@ -745,6 +768,22 @@ public class MetadataProject {
             }
         }
     }
+    
+    /**
+     * INTERNAL:
+     * Process descriptors with IDs derived from relationships.  This will also complete unfinished validation as well as 
+     * secondary table and basic collection processing
+     */
+    protected void processAccessorsWithDerivedIDs() {
+        java.util.Iterator<ClassAccessor> i = getAccessorsWithDerivedIDs().iterator();
+        HashSet<ClassAccessor> processed = new HashSet();
+        HashSet<ClassAccessor> processing = new HashSet();
+        while (i.hasNext()) {
+            ClassAccessor classAccessor = i.next();
+            classAccessor.processDerivedIDs(processing, processed);
+        }
+    }
+  
 
     /**
      * INTERNAL:

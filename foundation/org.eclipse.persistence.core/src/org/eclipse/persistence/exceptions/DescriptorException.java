@@ -214,8 +214,8 @@ public class DescriptorException extends ValidationException {
     public final static int NEED_TO_IMPLEMENT_CHANGETRACKER = 198;
     public final static int NEED_TO_IMPLEMENT_FETCHGROUPTRACKER = 199;
     public final static int ATTEMPT_TO_REGISTER_DEAD_INDIRECTION = 200;
-    public final static int INTERNAL_ERROR_ACCESSING_PKFIELD = 201;
-    public final static int UNIT_OF_WORK_ISOLATED_OBJECTS_ACCESSED_IN_SESSION = 202;
+    public final static int UNIT_OF_WORK_ISOLATED_OBJECTS_ACCESSED_IN_SESSION = 201;
+    public final static int INTERNAL_ERROR_ACCESSING_PKFIELD = 202;
     public final static int INTERNAL_ERROR_SET_METHOD = 203;
     public final static int INSERT_ORDER_CONFLICTS_WITH_MULTIPLE_TABLE_FOREIGN_KEYS = 204;
     public final static int INSERT_ORDER_CYCLICAL_DEPENDENCY_BETWEEN_TWO_TABLES = 205;
@@ -1884,7 +1884,6 @@ public class DescriptorException extends ValidationException {
         Object[] args = { String.valueOf(INTERNAL_ERROR_ACCESSING_PKFIELD), primaryKey };
 
         DescriptorException exception = new DescriptorException(ExceptionMessageGenerator.buildMessage(DescriptorException.class, INTERNAL_ERROR_ACCESSING_PKFIELD, args), descriptor, underlying);
-        exception.initCause(underlying);
         return exception;
     }
 

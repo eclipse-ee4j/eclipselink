@@ -1376,7 +1376,7 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         descriptor.addMapping(getOptionalAttributeMapping());
         descriptor.addMapping(getAccessAttributeMapping());
         // TODO: @mapped-by-id
-        // TODO: @id
+        descriptor.addMapping(getIdAttributeMapping());
         
         return descriptor;
     }
@@ -1582,7 +1582,7 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         descriptor.addMapping(getMappedByAttributeMapping());
         // TODO: @orphan-removal
         // TODO: @mapped-by-id
-        // TODO: @id
+        descriptor.addMapping(getIdAttributeMapping());
         
         return descriptor;
     }
@@ -2670,6 +2670,18 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         hintMapping.setReferenceClass(QueryHintMetadata.class);
         hintMapping.setXPath("orm:hint");
         return hintMapping;
+    }
+    
+    /**
+     * INTERNAL:
+     */
+    protected XMLDirectMapping getIdAttributeMapping() {
+        XMLDirectMapping mappedByMapping = new XMLDirectMapping();
+        mappedByMapping.setAttributeName("m_isId");
+        mappedByMapping.setGetMethodName("getIsId");
+        mappedByMapping.setSetMethodName("setIsId");
+        mappedByMapping.setXPath("@id");
+        return mappedByMapping;
     }
     
     /**

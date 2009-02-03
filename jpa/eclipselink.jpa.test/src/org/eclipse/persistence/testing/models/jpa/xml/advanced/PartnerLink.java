@@ -10,39 +10,38 @@
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
  ******************************************************************************/
-package org.eclipse.persistence.testing.models.jpa.advanced;
+package org.eclipse.persistence.testing.models.jpa.xml.advanced;
 
-import javax.persistence.*;
-
-import static javax.persistence.CascadeType.*;
-
-@Entity
-@Table(name="MW")
-@IdClass(org.eclipse.persistence.testing.models.jpa.advanced.PartnerLinkPK.class)
+import javax.persistence.Transient;
+//@Entity
+//@Table(name="MW")
+//@IdClass(org.eclipse.persistence.testing.models.jpa.xml.advanced.PartnerLinkPK.class)
 public class PartnerLink {
     private Man man;
     private Woman woman;
 
 	public PartnerLink() {}
-	@Id
-    @OneToOne(cascade=PERSIST)
-	@JoinColumn(name="M")
+	//@Id
+    //@OneToOne(cascade=PERSIST)
+	//@JoinColumn(name="M")
 	public Man getMan() { 
         return man; 
     }
-    @Column(name="M", insertable=false, updatable=false)
+	@Transient
+    //@Column(name="M", insertable=false, updatable=false)
 	public Integer getManId() {
         return (getMan() == null) ? null : getMan().getId();
     }
     
-    @Id
-    @OneToOne(cascade=PERSIST)
-	@JoinColumn(name="W")
+    //@Id
+    //@OneToOne(cascade=PERSIST)
+	//@JoinColumn(name="W")
 	public Woman getWoman() { 
         return woman; 
     }
     
-    @Column(name="W", insertable=false, updatable=false)
+	@Transient
+	//@Column(name="W", insertable=false, updatable=false)
 	public Integer getWomanId() {
         return (getWoman() == null) ? null : getWoman().getId();
     }

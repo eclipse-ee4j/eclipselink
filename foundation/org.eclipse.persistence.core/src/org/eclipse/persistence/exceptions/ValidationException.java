@@ -12,6 +12,7 @@
  ******************************************************************************/  
 package org.eclipse.persistence.exceptions;
 
+import java.util.HashSet;
 import java.util.Vector;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.*;
@@ -288,7 +289,7 @@ public class ValidationException extends EclipseLinkException {
     public static final int INVALID_MAPPING = 7244;
     public static final int CONFLICTNG_ACCESS_TYPE_FOR_EMBEDDABLE = 7245;
     public static final int INVALID_EMBEDDED_ATTRIBUTE = 7246;
-    // 7247 deleted
+    public static final int DERIVED_ID_CIRCULAR_REFERENCE = 7247;
     // 7248 deleted
     public static final int EMBEDDED_ID_CLASS_HAS_NO_ATTRIBUTES = 7249;
     public static final int NON_ENTITY_AS_TARGET_IN_RELATIONSHIP = 7250;
@@ -926,6 +927,14 @@ public class ValidationException extends EclipseLinkException {
 
         ValidationException validationException = new ValidationException(ExceptionMessageGenerator.buildMessage(ValidationException.class, FILE_ERROR, args), exception);
         validationException.setErrorCode(FILE_ERROR);
+        return validationException;
+    }
+    
+    public static ValidationException idRelationshipCircularReference(HashSet processing){
+        Object[] args = { processing };
+
+        ValidationException validationException = new ValidationException(ExceptionMessageGenerator.buildMessage(ValidationException.class, DERIVED_ID_CIRCULAR_REFERENCE, args));
+        validationException.setErrorCode(DERIVED_ID_CIRCULAR_REFERENCE);
         return validationException;
     }
 

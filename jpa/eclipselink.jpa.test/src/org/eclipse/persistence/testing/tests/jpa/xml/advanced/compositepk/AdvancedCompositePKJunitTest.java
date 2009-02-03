@@ -10,7 +10,7 @@
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
  ******************************************************************************/  
-package org.eclipse.persistence.testing.tests.jpa.advanced.compositepk;
+package org.eclipse.persistence.testing.tests.jpa.xml.advanced.compositepk;
 
 import java.util.List;
 import java.util.ArrayList;
@@ -21,18 +21,10 @@ import javax.persistence.EntityManager;
 import junit.framework.*;
 
 import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
-import org.eclipse.persistence.testing.models.jpa.advanced.compositepk.Cubicle;
-import org.eclipse.persistence.testing.models.jpa.advanced.compositepk.JuniorScientist;
-import org.eclipse.persistence.testing.models.jpa.advanced.compositepk.Scientist;
-import org.eclipse.persistence.testing.models.jpa.advanced.compositepk.ScientistPK;
-import org.eclipse.persistence.testing.models.jpa.advanced.compositepk.Department;
-import org.eclipse.persistence.testing.models.jpa.advanced.compositepk.DepartmentPK;
-import org.eclipse.persistence.testing.models.jpa.advanced.compositepk.CompositePKTableCreator;
-import org.eclipse.persistence.testing.models.jpa.advanced.derivedid.DepartmentAdminRole;
-import org.eclipse.persistence.testing.models.jpa.advanced.derivedid.DepartmentAdminRolePK;
-import org.eclipse.persistence.testing.models.jpa.advanced.derivedid.Administrator;
-import org.eclipse.persistence.testing.models.jpa.advanced.Employee;
-import org.eclipse.persistence.testing.models.jpa.advanced.AdvancedTableCreator;
+import org.eclipse.persistence.testing.models.jpa.xml.advanced.compositepk.*;
+import org.eclipse.persistence.testing.models.jpa.xml.advanced.derivedid.*;
+import org.eclipse.persistence.testing.models.jpa.xml.advanced.Employee;
+import org.eclipse.persistence.testing.models.jpa.xml.advanced.AdvancedTableCreator;
 
  
 public class AdvancedCompositePKJunitTest extends JUnitTestCase {
@@ -76,7 +68,7 @@ public class AdvancedCompositePKJunitTest extends JUnitTestCase {
         beginTransaction(em);
         try {
             // make sure the department is not left from the previous test run
-            em.createQuery("DELETE FROM Department d WHERE d.name = 'DEPT A' AND d.role = 'ROLE A' AND d.location = 'LOCATION A'").executeUpdate();
+            em.createQuery("DELETE FROM XMLDepartment d WHERE d.name = 'DEPT A' AND d.role = 'ROLE A' AND d.location = 'LOCATION A'").executeUpdate();
             commitTransaction(em);
         } catch (RuntimeException e) {
                 if (isTransactionActive(em)){
@@ -176,8 +168,7 @@ public class AdvancedCompositePKJunitTest extends JUnitTestCase {
         EntityManager em = createEntityManager();
         beginTransaction(em);
         try {
-            Employee emp = new Employee();
-            emp.setFirstName("George");
+            Employee emp = new Employee("George", "Smith");
             em.persist(emp);
 
             Administrator adminEmp = new Administrator();
@@ -232,21 +223,21 @@ public class AdvancedCompositePKJunitTest extends JUnitTestCase {
         
         beginTransaction(em);
         try {
-            Query query1 = em.createQuery("SELECT s FROM Scientist s WHERE s = ANY (SELECT s2 FROM Scientist s2)");
+            Query query1 = em.createQuery("SELECT s FROM XMLScientist s WHERE s = ANY (SELECT s2 FROM XMLScientist s2)");
             List<Scientist> results1 = query1.getResultList();
 
-            Query query2 = em.createQuery("SELECT s FROM Scientist s WHERE s = ALL (SELECT s2 FROM Scientist s2)");
+            Query query2 = em.createQuery("SELECT s FROM XMLScientist s WHERE s = ALL (SELECT s2 FROM XMLScientist s2)");
             List<Scientist> results2 = query2.getResultList();
 
-            Query query3 = em.createQuery("SELECT s FROM Scientist s WHERE s.department = ALL (SELECT DISTINCT d FROM Department d WHERE d.name = 'DEPT A' AND d.role = 'ROLE A' AND d.location = 'LOCATION A')");
+            Query query3 = em.createQuery("SELECT s FROM XMLScientist s WHERE s.department = ALL (SELECT DISTINCT d FROM XMLDepartment d WHERE d.name = 'DEPT A' AND d.role = 'ROLE A' AND d.location = 'LOCATION A')");
             List<Scientist> results3 = query3.getResultList();
 
-            Query query4 = em.createQuery("SELECT s FROM Scientist s WHERE s.department = ANY (SELECT DISTINCT d FROM Department d JOIN d.scientists ds JOIN ds.cubicle c WHERE c.code = 'G')");
+            Query query4 = em.createQuery("SELECT s FROM XMLScientist s WHERE s.department = ANY (SELECT DISTINCT d FROM XMLDepartment d JOIN d.scientists ds JOIN ds.cubicle c WHERE c.code = 'G')");
             List<Scientist> results4 = query4.getResultList();
 
             // control queries
             
-            Query controlQuery1 = em.createQuery("SELECT s FROM Scientist s");
+            Query controlQuery1 = em.createQuery("SELECT s FROM XMLScientist s");
             List<Scientist> controlResults1 = controlQuery1.getResultList();
             
             List<Scientist> controlResults2;
@@ -256,10 +247,10 @@ public class AdvancedCompositePKJunitTest extends JUnitTestCase {
                 controlResults2 = new ArrayList<Scientist>();
             }
 
-            Query controlQuery3 = em.createQuery("SELECT s FROM Scientist s JOIN s.department d WHERE d.name = 'DEPT A' AND d.role = 'ROLE A' AND d.location = 'LOCATION A'");
+            Query controlQuery3 = em.createQuery("SELECT s FROM XMLScientist s JOIN s.department d WHERE d.name = 'DEPT A' AND d.role = 'ROLE A' AND d.location = 'LOCATION A'");
             List<Scientist> controlResults3 = controlQuery3.getResultList();
             
-            Query controlQuery4 = em.createQuery("SELECT s FROM Scientist s WHERE EXISTS (SELECT DISTINCT d FROM Department d JOIN d.scientists ds JOIN ds.cubicle c WHERE c.code = 'G' AND d = s.department)");
+            Query controlQuery4 = em.createQuery("SELECT s FROM XMLScientist s WHERE EXISTS (SELECT DISTINCT d FROM XMLDepartment d JOIN d.scientists ds JOIN ds.cubicle c WHERE c.code = 'G' AND d = s.department)");
             List<Scientist> controlResults4 = controlQuery4.getResultList();
 
             //compare results - they should be the same

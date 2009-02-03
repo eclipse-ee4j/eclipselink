@@ -41,7 +41,7 @@ public abstract class ReadQuery extends DatabaseQuery {
     protected int firstResult;
 
     /* used on read queries to stamp the object to determine the last time it was refreshed to
-     * reduce work and prevent inifinite recursion on Refreshes
+     * reduce work and prevent infinite recursion on Refreshes
      *CR #4365 - used to prevent infinite recursion on refresh object cascade all
      * CR #2698903 - fix for the previous fix. No longer using millis but ids now.
      */
