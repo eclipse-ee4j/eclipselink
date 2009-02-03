@@ -33,11 +33,12 @@
     <dirname  property="jpaproto.build.location" file="${ant.file.org.eclipse.persistence.core}"/>
     <echo message="jpaproto.build.location = '${jpaproto.build.location}'"/>
 
-    <condition property="jpaproto.2.common.plugins.dir" value="../../../plugins" else="../plugins">
+    <condition property="jpaproto.2.base.dir" value="../../.." else="..">
         <contains string="${jpaproto.build.location}" substring="jpa"/>
     </condition>
+    <property name="jpaproto.2.common.plugins.dir" value="${jpaproto.2.base.dir}/plugins"/>
 
-    <property name="jpaproto.version" value="1.99.1"/>
+    <property name="jpaproto.version" value="1.99.3"/>
     <property name="jpaproto.jar"     value="${ant.project.name}_2.0_preview.jar"/>
     <property name="jpaproto.src.jar" value="${ant.project.name}.source_2.0_preview.jar"/>
     <property name="src.dir"          value="src"/>
@@ -88,6 +89,11 @@
     <!-- package -->
     <target name="package" description="package ${ant.project.name}">
         <jar jarfile="${package.dir}/${jpaproto.jar}" manifest="${jpaproto.resource.dir}/MANIFEST.MF">
+            <fileset dir="${jpaproto.2.base.dir}">
+                <include name="about.html"/>
+                <include name="readme.html"/>
+                <include name="license.*"/>
+            </fileset>
             <fileset dir="."
                 includes="readme.txt"
             />
@@ -107,6 +113,11 @@
                 <attribute name="Bundle-Version"         value="${jpaproto.version}"/>
                 <attribute name="Eclipse-SourceBundle"   value="${ant.project.name};version=&quot;${jpaproto.version}&quot;"/>
             </manifest>
+            <fileset dir="${jpaproto.2.base.dir}">
+                <include name="about.html"/>
+                <include name="readme.html"/>
+                <include name="license.*"/>
+            </fileset>
             <fileset dir="."
                 includes="readme.txt"
             />

@@ -33,6 +33,7 @@
     <dirname  property="asm.build.location" file="${ant.file.org.eclipse.persistence.asm}"/>
     <echo message="asm.build.location = '${asm.build.location}'"/>
     <property name="asm.2.common.plugins.dir" value=".."/>
+    <property name="asm.2.base.dir" value="../.."/>
 
     <!-- versioning -->
     <!-- These variables  are set in autobuild.xml. A manual build gets defaults -->
@@ -62,6 +63,11 @@
     <!-- package -->
     <target name="package" description="jar OSGI bundle">
         <jar jarfile="${asm.2.common.plugins.dir}/${eclipselink.asm.bndl.prefix}_${version.string}.jar" manifest="META-INF/MANIFEST.MF">
+            <fileset dir="${asm.2.base.dir}">
+                <include name="about.html"/>
+                <include name="readme.html"/>
+                <include name="license.*"/>
+            </fileset>
             <fileset dir="${asm.classes.dir}">
                 <include name="org/eclipse/persistence/**/*.class"/>
             </fileset>
@@ -74,6 +80,11 @@
                 <attribute name="Bundle-Version"         value="${release.version}"/>
                 <attribute name="Eclipse-SourceBundle"   value="${ant.project.name};version=&quot;${release.version}&quot;"/>
             </manifest>
+            <fileset dir="${asm.2.base.dir}">
+                <include name="about.html"/>
+                <include name="readme.html"/>
+                <include name="license.*"/>
+            </fileset>
             <fileset dir="${src.dir}">
                 <include name="org/eclipse/persistence/**/*.java"/>
             </fileset>
