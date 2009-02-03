@@ -45,6 +45,7 @@ public class SDOHelperContextTestSuite {
         suite.addTest(new TestSuite(SDOHelperContextTest.class));
         // the implementation of this test is pending
         //suite.addTest(new TestSuite(SDOHelperContextMultiClassloaderTest.class));
+        suite.addTest(new TestSuite(UserSetContextMapTestCases.class));
         return suite;
     }
 }
