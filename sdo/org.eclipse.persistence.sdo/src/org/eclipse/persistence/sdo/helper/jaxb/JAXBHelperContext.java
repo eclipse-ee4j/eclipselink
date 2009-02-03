@@ -16,12 +16,12 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
-import java.util.WeakHashMap;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.namespace.QName;
 
 import org.eclipse.persistence.exceptions.SDOException;
+import org.eclipse.persistence.internal.helper.IdentityWeakHashMap;
 import org.eclipse.persistence.oxm.XMLDescriptor;
 import org.eclipse.persistence.oxm.schema.XMLSchemaReference;
 import org.eclipse.persistence.sdo.SDODataObject;
@@ -116,7 +116,7 @@ public class JAXBHelperContext extends SDOHelperContext {
      */
     public JAXBHelperContext(JAXBContext aJAXBContext, ClassLoader aClassLoader) {
         super(aClassLoader);
-        wrapperDataObjects = new WeakHashMap<Object, SDODataObject>();
+        wrapperDataObjects = new IdentityWeakHashMap<Object, SDODataObject>();
         jaxbContext = (org.eclipse.persistence.jaxb.JAXBContext) aJAXBContext;
     }
 
