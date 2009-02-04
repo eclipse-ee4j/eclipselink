@@ -9,7 +9,7 @@
 
   <xsd:annotation>
     <xsd:documentation>
-      @(#)eclipselink_orm_1_0.xsd 1.0  February 1 2008
+      @(#)eclipselink_orm_1_1.xsd 1.1  February 4 2009
     </xsd:documentation>
   </xsd:annotation>
   <xsd:annotation>
