@@ -15,6 +15,7 @@ package org.eclipse.persistence.testing.oxm.xmlconversionmanager;
 import java.sql.Time;
 import java.sql.Timestamp;
 import java.util.Calendar;
+import java.util.GregorianCalendar;
 
 import org.eclipse.persistence.exceptions.ConversionException;
 import org.eclipse.persistence.exceptions.XMLConversionException;
@@ -68,18 +69,6 @@ public class DateAndTimeTestCases extends OXTestCase {
     
     // 1975-02
     private long CONTROL_G_YEAR_MONTH = 160462800000L;
-
-    // -2006-01-01T05:00:00.001
-    private long CONTROL_DATE_TIME_NEGATIVE_YEAR_1MS = -125438871599999L;
-
-    // 1965-01-01T05:00:00.001
-    private long CONTROL_DATE_TIME_BEFORE_EPOCH_1MS = -157748399999L;
-
-    // -2006-01-01T05:00:00
-    private long CONTROL_DATE_TIME_NEGATIVE_YEAR = -125438871599877L;
-
-    // 1965-01-01T05:00:00
-    private long CONTROL_DATE_TIME_BEFORE_EPOCH = -157748400000L;
 
     // XML Conversion Manager
     private XMLConversionManager xcm;
@@ -184,20 +173,41 @@ public class DateAndTimeTestCases extends OXTestCase {
         this.assertEquals(control, test);
     }
 
-    public void testUtilDateToString_dateTime_before_epoch() {
-        java.util.Date utilDate = new java.util.Date(CONTROL_DATE_TIME_BEFORE_EPOCH_1MS);
+    public void testUtilDateToString_dateTime_before_epoch() { 
         // the default timezone will be applied such that the returned datetime 
         // should be 5 hours earlier
         String control = "1965-01-01T00:00:00.001";
+        
+        Calendar cal = Calendar.getInstance();
+        cal.clear();
+        cal.set(Calendar.YEAR, 1965);
+        cal.set(Calendar.MONTH, Calendar.JANUARY);
+        cal.set(Calendar.DAY_OF_MONTH, 1);
+        cal.set(Calendar.MILLISECOND, 1);
+        java.util.Date utilDate = cal.getTime();
+        
         String test = (String)xcm.convertObject(utilDate, String.class, XMLConstants.DATE_TIME_QNAME);
         this.assertEquals(control, test);
     }
 
-    public void testUtilDateToString_dateTime_negative_year() {
-        java.util.Date utilDate = new java.util.Date(CONTROL_DATE_TIME_NEGATIVE_YEAR_1MS);
+    public void testUtilDateToString_dateTime_negative_year() throws Exception{
         // the default timezone will be applied such that the returned datetime 
         // should be 5 hours earlier
         String control = "-2006-01-01T00:00:00.001";
+                      
+        GregorianCalendar cal = new GregorianCalendar();
+        cal.setGregorianChange(new java.util.Date(Long.MIN_VALUE));
+        cal.clear();
+        cal.set(Calendar.ERA, java.util.GregorianCalendar.BC);
+        
+        cal.set(Calendar.YEAR, 2006);
+        
+        cal.set(Calendar.MONTH, Calendar.JANUARY);
+        cal.set(Calendar.DAY_OF_MONTH, 1);
+        cal.set(Calendar.MILLISECOND, 1);
+        
+        java.util.Date utilDate = cal.getTime();
+        
         String test = (String)xcm.convertObject(utilDate, String.class, XMLConstants.DATE_TIME_QNAME);
         this.assertEquals(control, test);
     }
@@ -2060,21 +2070,47 @@ public class DateAndTimeTestCases extends OXTestCase {
     }
 
     public void testTimestampToString_dateTime_negative_year_123456789ns() {
-        java.sql.Timestamp timestamp = new java.sql.Timestamp(CONTROL_DATE_TIME_NEGATIVE_YEAR);
-        timestamp.setNanos(123456789);
         // the default timezone will be applied such that the returned timestamp 
         // should be 5 hours earlier
         String control = "-2006-01-01T00:00:00.123456789";
+        
+        GregorianCalendar cal = new GregorianCalendar();
+        cal.setGregorianChange(new java.util.Date(Long.MIN_VALUE));
+        cal.clear();
+        cal.set(Calendar.ERA, java.util.GregorianCalendar.BC);
+        
+        cal.set(Calendar.YEAR, 2006);
+        
+        cal.set(Calendar.MONTH, Calendar.JANUARY);
+        cal.set(Calendar.DAY_OF_MONTH, 1);
+        cal.set(Calendar.MILLISECOND, 1);
+            
+        java.util.Date utilDate = cal.getTime();
+                
+        java.sql.Timestamp timestamp = new java.sql.Timestamp(utilDate.getTime());
+        timestamp.setNanos(123456789);
+        
         String test = (String)xcm.convertObject(timestamp, String.class, XMLConstants.DATE_TIME_QNAME);
         this.assertEquals(control, test);
     }
 
     public void testTimestampToString_dateTime_before_epoch_123456789ns() {
-        java.sql.Timestamp timestamp = new java.sql.Timestamp(CONTROL_DATE_TIME_BEFORE_EPOCH);
-        timestamp.setNanos(123456789);
         // the default timezone will be applied such that the returned timestamp 
         // should be 5 hours earlier
         String control = "1965-01-01T00:00:00.123456789";
+        
+        Calendar cal = Calendar.getInstance();
+        cal.clear();
+        cal.set(Calendar.YEAR, 1965);
+        cal.set(Calendar.MONTH, Calendar.JANUARY);
+        cal.set(Calendar.DAY_OF_MONTH, 1);
+        
+        java.util.Date utilDate = cal.getTime();
+                
+        java.sql.Timestamp timestamp = new java.sql.Timestamp(utilDate.getTime());
+        timestamp.setNanos(123456789);
+        
+        
         String test = (String)xcm.convertObject(timestamp, String.class, XMLConstants.DATE_TIME_QNAME);
         this.assertEquals(control, test);
     }
