@@ -107,6 +107,11 @@ public class DerbyPlatform extends DB2Platform {
         return false;
     }
 
+    public String getSelectForUpdateString() {
+        return " FOR UPDATE WITH RS";
+    }
+
+
     /**
      * Allow for the platform to ignore exceptions.
      */
