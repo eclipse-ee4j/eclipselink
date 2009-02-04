@@ -14,6 +14,8 @@ package org.eclipse.persistence.testing.jaxb.simpledocument;
 
 import org.eclipse.persistence.testing.jaxb.JAXBTestCases;
 import javax.xml.bind.JAXBElement;
+
+import java.util.Calendar;
 import java.util.Date;
 
 /**
@@ -35,8 +37,14 @@ public class SimpleDocumentDateTestCases extends JAXBTestCases {
 
 	    protected Object getControlObject() {
 	    	JAXBElement value = new ObjectFactory().createDateRoot();
-	    	Date date = new Date(270878400000l);
+	    		    	
+	    	Calendar cal = Calendar.getInstance();
+	    	cal.clear();
+	    	cal.set(Calendar.YEAR, 1978);
+	    	cal.set(Calendar.MONTH, Calendar.AUGUST);
+	    	cal.set(Calendar.DAY_OF_MONTH, 2);
 	    	
+	    	Date date = cal.getTime();
 	    	value.setValue(date);
 	    	return value;      
 	    }
