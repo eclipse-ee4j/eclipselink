@@ -151,7 +151,7 @@ public final class FrameworkResourceBundle extends ListResourceBundle {
 		{"ACCESSIBLE_NODE", "{0}"},
 
 		// AboutAction
-		{"about", "About {0} {1}"},
+		{"about", "About {0}"},
 
 		// CloseAction
 		{"file.close", "&Close"},

@@ -286,7 +286,7 @@ public class SequencingAdapter extends SCAdapter {
 	    SequenceAdapter sequence = new TableSequenceAdapter( this, 
 				SequencingAdapter.DEFAULT_SEQUENCE_NAME,  
 				XMLSessionConfigProject.SEQUENCE_PREALLOCATION_SIZE_DEFAULT);
-		
+		sequence.setTheDefaultSequence(true);		
 		this.config().setDefaultSequenceConfig(( SequenceConfig)sequence.getModel());
 
 		return sequence;

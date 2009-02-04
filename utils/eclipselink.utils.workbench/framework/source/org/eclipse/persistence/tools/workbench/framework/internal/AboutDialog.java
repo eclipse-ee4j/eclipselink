@@ -51,7 +51,7 @@ final class AboutDialog extends JDialog {
 	}
 
 	private void initialize(WorkbenchContext context) {
-		this.setTitle(context.getApplicationContext().getResourceRepository().getString("about", context.getApplicationContext().getApplication().getProductName(), context.getApplicationContext().getApplication().getShortProductName()));
+		this.setTitle(context.getApplicationContext().getResourceRepository().getString("about", context.getApplicationContext().getApplication().getProductName()));
 		this.setName("About");
 
 		this.setModal(true);
@@ -166,25 +166,6 @@ final class AboutDialog extends JDialog {
 
 		mainPanel.add(toplinkLabel, constraints);
 
-		// Mapping Workbench
-		JLabel applicationLabel = new JLabel(context.getApplication().getShortProductName());
-		applicationLabel.setHorizontalAlignment(SwingConstants.CENTER);
-
-		font = applicationLabel.getFont();
-		applicationLabel.setFont(new Font(font.getName(), Font.BOLD, font.getSize() + 5));
-
-		constraints.gridx			= 1;
-		constraints.gridy			= 1;
-		constraints.gridwidth	= 1;
-		constraints.gridheight	= 1;
-		constraints.weightx		= 0;
-		constraints.weighty		= 0;
-		constraints.anchor		= GridBagConstraints.CENTER;
-		constraints.fill				= GridBagConstraints.HORIZONTAL;
-		constraints.insets		= new Insets(5, 10, 0, 50);
-
-		mainPanel.add(applicationLabel, constraints);
-
 		// version
 		JLabel versionLabel = new JLabel(context.getResourceRepository().getString("VERSION", context.getApplication().getVersionNumber()));
 		versionLabel.setHorizontalAlignment(SwingConstants.CENTER);
@@ -193,7 +174,7 @@ final class AboutDialog extends JDialog {
 		versionLabel.setFont(new Font(font.getName(), Font.BOLD, font.getSize()));
 
 		constraints.gridx			= 1;
-		constraints.gridy			= 2;
+		constraints.gridy			= 1;
 		constraints.gridwidth	= 1;
 		constraints.gridheight	= 1;
 		constraints.weightx		= 0;

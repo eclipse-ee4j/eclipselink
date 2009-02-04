@@ -12,6 +12,7 @@
 ******************************************************************************/
 package org.eclipse.persistence.tools.workbench.scplugin.model;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -42,6 +43,16 @@ public class EisPlatformManager extends SCPlatformManager {
 		}
 		return INSTANCE;
 	}	
+
+	public Iterator platformDisplayNames() {
+		ArrayList<String> platformNames = new ArrayList<String>();
+		platformNames.add(AQ_ID);
+		platformNames.add(JMS_ID);
+		platformNames.add(MQ_ID);
+		platformNames.add(XML_ID);
+		return platformNames.listIterator();
+	}
+	
 
 	protected void buidPlatforms() {
 
